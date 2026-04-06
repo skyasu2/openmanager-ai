@@ -31,6 +31,7 @@ function runAnalyze(
       files.filter(
         (file) => file.endsWith('.ts') && !file.startsWith('cloud-run/')
       ),
+    isTypeDefinitionFile: (file: string) => file.startsWith('src/types/'),
     isCloudRunTypeCheckRelevantFile: (file: string) =>
       file.startsWith('cloud-run/ai-engine/src/') &&
       file.endsWith('.ts') &&
@@ -77,6 +78,22 @@ describe('analyzeBuildValidation', () => {
       mode: 'quick',
       rootTypeCheckRelevantFiles: [],
       cloudRunTypeCheckRelevantFiles: [],
+      rootTypeCheckStrategy: 'skip-no-relevant',
+      skipRootTypeCheck: true,
+      skipCloudRunTypeCheck: true,
+      useChangedTypeCheck: false,
+      shouldSkipAll: true,
+    });
+  });
+
+  it('delegates root type-check when only src/types definitions changed', () => {
+    expect(
+      runAnalyze({ isKnown: true, files: ['src/types/common.ts'] })
+    ).toEqual({
+      mode: 'quick',
+      rootTypeCheckRelevantFiles: ['src/types/common.ts'],
+      cloudRunTypeCheckRelevantFiles: [],
+      rootTypeCheckStrategy: 'skip-type-definition-only',
       skipRootTypeCheck: true,
       skipCloudRunTypeCheck: true,
       useChangedTypeCheck: false,
@@ -94,6 +111,7 @@ describe('analyzeBuildValidation', () => {
       mode: 'quick',
       rootTypeCheckRelevantFiles: ['src/lib/utils.ts'],
       cloudRunTypeCheckRelevantFiles: ['cloud-run/ai-engine/src/server.ts'],
+      rootTypeCheckStrategy: 'changed',
       skipRootTypeCheck: false,
       skipCloudRunTypeCheck: false,
       useChangedTypeCheck: true,

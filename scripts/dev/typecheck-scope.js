@@ -28,6 +28,17 @@ function isTypeCheckInfraFile(filePath) {
   );
 }
 
+function isTypeDefinitionFile(filePath) {
+  const normalized = normalizeFilePath(filePath);
+
+  if (!normalized.startsWith('src/types/')) return false;
+  if (!/\.(ts|tsx)$/u.test(normalized)) return false;
+  if (isVitestTestFile(normalized)) return false;
+  if (isStoryFile(normalized)) return false;
+
+  return true;
+}
+
 function isTypeCheckRelevantFile(filePath) {
   const normalized = normalizeFilePath(filePath);
 
@@ -74,6 +85,7 @@ if (require.main === module) {
 
 module.exports = {
   filterTypeCheckRelevantFiles,
+  isTypeDefinitionFile,
   isTypeCheckInfraFile,
   isTypeCheckRelevantFile,
   normalizeFilePath,

@@ -8,6 +8,7 @@ import { describe, expect, it } from 'vitest';
 const require = createRequire(import.meta.url);
 const {
   filterTypeCheckRelevantFiles,
+  isTypeDefinitionFile,
   isTypeCheckInfraFile,
   isTypeCheckRelevantFile,
 } = require('../../../scripts/dev/typecheck-scope.js');
@@ -32,6 +33,15 @@ describe('typecheck-scope', () => {
     expect(isTypeCheckRelevantFile('src/hooks/example.ts')).toBe(true);
     expect(isTypeCheckRelevantFile('src/hooks/example.test.ts')).toBe(false);
     expect(isTypeCheckRelevantFile('src/components/example.stories.tsx')).toBe(
+      false
+    );
+  });
+
+  it('detects src/types files as type definition files', () => {
+    expect(isTypeDefinitionFile('src/types/common.ts')).toBe(true);
+    expect(isTypeDefinitionFile('src/types/common.test.ts')).toBe(false);
+    expect(isTypeDefinitionFile('src/lib/util.ts')).toBe(false);
+    expect(isTypeDefinitionFile('config/testing/vitest.config.dev.ts')).toBe(
       false
     );
   });

@@ -33,6 +33,7 @@ function analyzeBuildValidation({
   quickPush,
   isKnownNoOpPush,
   filterTypeCheckRelevantFiles,
+  isTypeDefinitionFile,
   isCloudRunTypeCheckRelevantFile,
 }) {
   if (skipBuild) {
@@ -54,24 +55,37 @@ function analyzeBuildValidation({
   const rootTypeCheckRelevantFiles = filterTypeCheckRelevantFiles(
     changedFilesResult.files
   );
+  const rootTypeDefinitionOnly =
+    rootTypeCheckRelevantFiles.length > 0 &&
+    rootTypeCheckRelevantFiles.every((filePath) => isTypeDefinitionFile(filePath));
   const cloudRunTypeCheckRelevantFiles = changedFilesResult.files.filter((filePath) =>
     isCloudRunTypeCheckRelevantFile(filePath)
   );
   const hasKnownFiles =
     changedFilesResult.isKnown && changedFilesResult.files.length > 0;
   const skipRootTypeCheck =
-    hasKnownFiles && rootTypeCheckRelevantFiles.length === 0;
+    hasKnownFiles &&
+    (rootTypeCheckRelevantFiles.length === 0 || rootTypeDefinitionOnly);
   const skipCloudRunTypeCheck =
     hasKnownFiles && cloudRunTypeCheckRelevantFiles.length === 0;
+  const rootTypeCheckStrategy =
+    rootTypeCheckRelevantFiles.length === 0
+      ? 'skip-no-relevant'
+      : rootTypeDefinitionOnly
+        ? 'skip-type-definition-only'
+        : 'changed';
 
   return {
     mode: 'quick',
     rootTypeCheckRelevantFiles,
     cloudRunTypeCheckRelevantFiles,
+    rootTypeCheckStrategy,
     skipRootTypeCheck,
     skipCloudRunTypeCheck,
     useChangedTypeCheck:
-      changedFilesResult.isKnown && rootTypeCheckRelevantFiles.length > 0,
+      changedFilesResult.isKnown &&
+      rootTypeCheckRelevantFiles.length > 0 &&
+      !rootTypeDefinitionOnly,
     shouldSkipAll: skipRootTypeCheck && skipCloudRunTypeCheck,
   };
 }

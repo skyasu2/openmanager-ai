@@ -17,7 +17,10 @@ const isWSL =
   fs.existsSync('/proc/version') &&
   fs.readFileSync('/proc/version', 'utf8').toLowerCase().includes('microsoft');
 
-const { filterTypeCheckRelevantFiles } = require('../dev/typecheck-scope');
+const {
+  filterTypeCheckRelevantFiles,
+  isTypeDefinitionFile,
+} = require('../dev/typecheck-scope');
 const { resolveDefaultBaseRefFromGit } = require('./pre-push-base-ref');
 const {
   collectChangedFilesFromUpdates,
@@ -341,6 +344,7 @@ function runBuildValidation(changedFilesResult) {
     quickPush: QUICK_PUSH,
     isKnownNoOpPush,
     filterTypeCheckRelevantFiles,
+    isTypeDefinitionFile,
     isCloudRunTypeCheckRelevantFile,
   });
 
@@ -380,8 +384,15 @@ function runBuildValidation(changedFilesResult) {
 
   if (buildValidation.mode === 'quick') {
     if (buildValidation.shouldSkipAll) {
-      typeCheckStatus = 'skipped-no-relevant-ts';
-      console.log('⚪ TypeScript 검증 스킵 (push 범위에 관련 TS 파일 없음)');
+      typeCheckStatus =
+        buildValidation.rootTypeCheckStrategy === 'skip-type-definition-only'
+          ? 'delegated-type-definition-only'
+          : 'skipped-no-relevant-ts';
+      if (buildValidation.rootTypeCheckStrategy === 'skip-type-definition-only') {
+        console.log('⚪ Root TypeScript 검증 위임 (src/types type-definition-only push)');
+      } else {
+        console.log('⚪ TypeScript 검증 스킵 (push 범위에 관련 TS 파일 없음)');
+      }
       console.log(
         'ℹ️  Full build/type-check는 필요 시 local Docker CI와 Vercel에서 계속 검증됨'
       );
