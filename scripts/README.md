@@ -107,6 +107,7 @@ ENCRYPTION_KEY='long-random-passphrase' GITHUB_PAT=ghp_xxx \
 
 - `scripts/release/publish.sh`: canonical release 경로만 지원합니다. GitHub release/tag 권위는 없습니다.
 - `scripts/test/github-auth-helper.cjs`: 예외적 GitHub HTTPS push helper이며, `.github-auth.json` 사용 시 `ENCRYPTION_KEY`를 반드시 직접 지정해야 합니다.
+- `scripts/test/tavily-key-loader.cjs`: plaintext `TAVILY_API_KEY`만 지원합니다. 과거 encrypted Tavily env/file 경로는 retire 되었고, 발견 시 명시적으로 실패합니다.
 
 - `scripts/dev/tsc-wrapper.js`는 로컬 `typescript/bin/tsc`를 실행하며 `SIGINT`/`SIGTERM`/`SIGHUP`를 자식 프로세스로 전달한다.
 - `TSC_WRAPPER_TIMEOUT_MS`를 주면 full type-check에도 opt-in timeout을 적용할 수 있고, `TSC_WRAPPER_KILL_GRACE_MS`로 SIGTERM 이후 강제 종료 grace period를 조정할 수 있다.
