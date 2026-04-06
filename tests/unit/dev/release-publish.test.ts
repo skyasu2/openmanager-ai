@@ -167,4 +167,61 @@ describe('release publish script', () => {
     );
     expect(`${result.stdout}${result.stderr}`).toContain('current: origin');
   });
+
+  it('fails preflight when current branch is not main', () => {
+    const repoDir = initReleaseRepo();
+    runCommand('git', ['-C', repoDir, 'switch', '-c', 'release-prep'], {
+      cwd: process.cwd(),
+    });
+
+    const result = runPublish(repoDir);
+
+    expect(result.status).toBe(1);
+    expect(`${result.stdout}${result.stderr}`).toContain(
+      '❌ 릴리즈는 main 브랜치에서만 허용됩니다.'
+    );
+    expect(`${result.stdout}${result.stderr}`).toContain(
+      'current: release-prep'
+    );
+  });
+
+  it('fails preflight when main upstream is not gitlab/main', () => {
+    const repoDir = initReleaseRepo();
+    const bareRemoteDir = createTempDir('release-publish-alt-remote-');
+    const altRemoteGitDir = join(bareRemoteDir, 'origin.git');
+
+    runCommand('git', ['init', '--bare', '-q', altRemoteGitDir], {
+      cwd: process.cwd(),
+    });
+    runCommand(
+      'git',
+      ['-C', repoDir, 'remote', 'add', 'origin', altRemoteGitDir],
+      {
+        cwd: process.cwd(),
+      }
+    );
+    runCommand('git', ['-C', repoDir, 'push', '-u', 'origin', 'main'], {
+      cwd: process.cwd(),
+    });
+    runCommand(
+      'git',
+      ['-C', repoDir, 'branch', '--set-upstream-to=origin/main', 'main'],
+      {
+        cwd: process.cwd(),
+      }
+    );
+
+    const result = runPublish(repoDir);
+
+    expect(result.status).toBe(1);
+    expect(`${result.stdout}${result.stderr}`).toContain(
+      '❌ main upstream이 gitlab/main 이어야 합니다.'
+    );
+    expect(`${result.stdout}${result.stderr}`).toContain(
+      'current: origin/main'
+    );
+    expect(`${result.stdout}${result.stderr}`).toContain(
+      'Fix: git branch --set-upstream-to=gitlab/main main'
+    );
+  });
 });
