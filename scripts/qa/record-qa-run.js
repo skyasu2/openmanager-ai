@@ -771,7 +771,55 @@ function assertDurableArtifactPathNames(artifacts, dateStamp) {
   );
 }
 
+function assertDurableArtifactPathsAreRunUnique(tracker, artifacts) {
+  const existingPathToRunId = new Map();
+  const previousRuns = Array.isArray(tracker?.runs) ? tracker.runs : [];
+
+  for (const run of previousRuns) {
+    const runArtifacts = Array.isArray(run?.artifacts) ? run.artifacts : [];
+    for (const artifact of runArtifacts) {
+      if (!artifact?.path) {
+        continue;
+      }
+
+      const normalizedPath = normalizeArtifactPathForPolicy(artifact.path);
+      if (!existingPathToRunId.has(normalizedPath)) {
+        existingPathToRunId.set(normalizedPath, run.runId || 'unknown-run');
+      }
+    }
+  }
+
+  const reusedArtifacts = artifacts
+    .filter((artifact) => artifact && artifact.path)
+    .map((artifact) => {
+      const normalizedPath = normalizeArtifactPathForPolicy(artifact.path);
+      return {
+        artifact,
+        normalizedPath,
+        previousRunId: existingPathToRunId.get(normalizedPath) || '',
+      };
+    })
+    .filter(({ previousRunId }) => Boolean(previousRunId));
+
+  if (reusedArtifacts.length === 0) {
+    return;
+  }
+
+  const details = reusedArtifacts
+    .map(
+      ({ artifact, normalizedPath, previousRunId }) =>
+        `${artifact.label || artifact.type}: ${normalizedPath} (already used by ${previousRunId})`
+    )
+    .join('; ');
+
+  throw new Error(
+    'releaseFacing=true 또는 countsTowardSummary=true 런의 로컬 artifact.path는 run별 고유 evidence여야 합니다. ' +
+      `재사용된 경로: ${details}. 기존 파일을 덮어쓰지 말고 새 slug로 복사한 뒤 기록하세요.`
+  );
+}
+
 function validateArtifactEvidencePolicy(
+  tracker,
   artifacts,
   releaseFacing,
   countsTowardSummary,
@@ -795,6 +843,7 @@ function validateArtifactEvidencePolicy(
     assertDurableArtifactPathsAreTracked(artifacts);
     assertDurableArtifactPathsUseEvidenceRoot(artifacts);
     assertDurableArtifactPathNames(artifacts, dateStamp);
+    assertDurableArtifactPathsAreRunUnique(tracker, artifacts);
     return;
   }
 
@@ -1274,7 +1323,13 @@ function run() {
   ensureDir(RUNS_ROOT);
 
   const tracker = loadTracker(nowIso);
-  validateArtifactEvidencePolicy(artifacts, releaseFacing, countsTowardSummary, dateStamp);
+  validateArtifactEvidencePolicy(
+    tracker,
+    artifacts,
+    releaseFacing,
+    countsTowardSummary,
+    dateStamp
+  );
   const runNumber = Number(tracker.sequence.nextRunNumber || tracker.runs.length + 1);
   const runId = `QA-${dateStamp}-${String(runNumber).padStart(4, '0')}`;
   const runYearDir = path.join(RUNS_ROOT, seoulParts.year);

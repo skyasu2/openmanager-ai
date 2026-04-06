@@ -199,6 +199,12 @@ function createValidPayload(overrides?: Record<string, unknown>) {
   };
 }
 
+function writeTrackerFile(tempDir: string, payload: Record<string, unknown>) {
+  const trackerPath = join(tempDir, 'reports', 'qa', 'qa-tracker.json');
+  writeFileSync(trackerPath, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
+  return trackerPath;
+}
+
 afterEach(() => {
   for (const tempDir of tempDirs.splice(0)) {
     rmSync(tempDir, { recursive: true, force: true });
@@ -915,6 +921,72 @@ describe('QA scripts', () => {
     expectOutputContainsIfCaptured(
       `${recordResult.stdout}${recordResult.stderr}`,
       invalidEvidencePath
+    );
+  });
+
+  it('rejects reusing an evidence path that was already recorded by a previous run', () => {
+    const tempDir = createTempWorkspace();
+    initGitRepo(tempDir);
+    const evidencePath = `reports/qa/evidence/qa-${currentSeoulDateStamp()}-dashboard.png`;
+    writeWorkspaceFile(tempDir, evidencePath, 'dashboard-screenshot');
+    trackWorkspaceFile(tempDir, evidencePath);
+    writeTrackerFile(tempDir, {
+      runs: [
+        {
+          runId: `QA-${currentSeoulDateStamp()}-0001`,
+          artifacts: [
+            {
+              type: 'playwright-screenshot',
+              label: 'Previous dashboard screenshot',
+              path: evidencePath,
+            },
+          ],
+        },
+      ],
+      sequence: {
+        nextRunNumber: 2,
+      },
+    });
+    const inputPath = writeInputFile(
+      tempDir,
+      createValidPayload({
+        artifacts: [
+          {
+            type: 'playwright-screenshot',
+            label: 'Reused dashboard screenshot',
+            path: evidencePath,
+          },
+        ],
+      })
+    );
+
+    const recordResult = runNodeScript(
+      RECORD_QA_RUN_SCRIPT,
+      ['--input', inputPath],
+      {
+        cwd: tempDir,
+        env: {
+          VERCEL_DEPLOYMENT_ID: 'dpl_reused123',
+          VERCEL_GIT_COMMIT_SHA: 'abcdefabcdefabcdefabcdefabcdefabcdefabcd',
+          VERCEL_GIT_COMMIT_REF: 'main',
+          VERCEL_TARGET_ENV: 'production',
+          VERCEL_PROJECT_PRODUCTION_URL: 'openmanager-ai.vercel.app',
+        },
+      }
+    );
+
+    expect(recordResult.status).toBe(1);
+    expectOutputContainsIfCaptured(
+      `${recordResult.stdout}${recordResult.stderr}`,
+      'run별 고유 evidence여야 합니다'
+    );
+    expectOutputContainsIfCaptured(
+      `${recordResult.stdout}${recordResult.stderr}`,
+      `already used by QA-${currentSeoulDateStamp()}-0001`
+    );
+    expectOutputContainsIfCaptured(
+      `${recordResult.stdout}${recordResult.stderr}`,
+      evidencePath
     );
   });
 
