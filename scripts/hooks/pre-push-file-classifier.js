@@ -122,6 +122,13 @@ function isRelatedSourceFile(filePath) {
   return !isVitestTestFile(normalized);
 }
 
+function isTypeDefinitionSourceFile(filePath) {
+  const normalized = normalizeFilePath(filePath);
+  if (!normalized.startsWith('src/types/')) return false;
+  if (!/\.(ts|tsx)$/u.test(normalized)) return false;
+  return !isVitestTestFile(normalized);
+}
+
 function isDomTestInfraFile(filePath) {
   const normalized = normalizeFilePath(filePath);
   return DOM_TEST_INFRA_EXACT.has(normalized);
@@ -162,6 +169,7 @@ module.exports = {
   isCloudRunRelatedSourceFile,
   isCloudRunTypeCheckRelevantFile,
   isRelatedSourceFile,
+  isTypeDefinitionSourceFile,
   isDomTestInfraFile,
   isHookTestInfraFile,
   isFrontendSmokeFile,

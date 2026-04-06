@@ -85,6 +85,24 @@ describe('classifyChangedTestRun', () => {
     expect(result.steps[1].args).toContain('test:related:dom');
   });
 
+  it('routes src/types-only changes to quick smoke instead of related DOM', () => {
+    const result = run(['src/types/common.ts']);
+    expect(result).not.toBeNull();
+    expect(result.mode).toContain('type definition quick smoke');
+    expect(result.steps).toHaveLength(1);
+    expect(result.steps[0].args).toContain('test:super-fast');
+  });
+
+  it('keeps non-type source files on related node + DOM even when src/types changes are mixed in', () => {
+    const result = run(['src/types/common.ts', 'src/lib/util.ts']);
+    expect(result).not.toBeNull();
+    expect(result.mode).toContain('source-related node + DOM');
+    expect(result.mode).not.toContain('type definition quick smoke');
+    expect(result.steps).toHaveLength(2);
+    expect(result.steps[0].args).toContain('test:related:node');
+    expect(result.steps[1].args).toContain('test:related:dom');
+  });
+
   it('routes playwright e2e file to quick smoke', () => {
     const result = run(['tests/e2e/dashboard.spec.ts']);
     expect(result).not.toBeNull();

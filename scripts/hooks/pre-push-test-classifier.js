@@ -14,6 +14,7 @@ const {
   isCloudRunVitestTestFile,
   isCloudRunRelatedSourceFile,
   isRelatedSourceFile,
+  isTypeDefinitionSourceFile,
   isDomTestInfraFile,
   isHookTestInfraFile,
   isFrontendSmokeFile,
@@ -83,7 +84,12 @@ function classifyChangedTestRun(
 
   // --- Main repo test / source files ----------------------------------------
   const testFiles = remainingFiles.filter(isVitestTestFile);
-  const relatedSourceFiles = remainingFiles.filter(isRelatedSourceFile);
+  const allRelatedSourceFiles = remainingFiles.filter(isRelatedSourceFile);
+  const typeDefinitionFiles = allRelatedSourceFiles.filter(isTypeDefinitionSourceFile);
+  const typeDefinitionFileSet = new Set(typeDefinitionFiles);
+  const relatedSourceFiles = allRelatedSourceFiles.filter(
+    (f) => !typeDefinitionFileSet.has(f)
+  );
   const domInfraFiles = remainingFiles.filter(isDomTestInfraFile);
   const hookInfraFiles = remainingFiles.filter(isHookTestInfraFile);
 
@@ -192,6 +198,14 @@ function classifyChangedTestRun(
     guidance.push('npm run test:related:node -- <changed source files>');
     guidance.push('npm run test:related:dom -- <changed source files>');
     scopeFiles.push(...relatedSourceFiles);
+  } else if (typeDefinitionFiles.length > 0) {
+    steps.push({
+      label: `Type definition quick smoke (${typeDefinitionFiles.length} file${typeDefinitionFiles.length > 1 ? 's' : ''})`,
+      args: ['run', 'test:super-fast'],
+    });
+    summaryParts.push('type definition quick smoke');
+    guidance.push('npm run test:super-fast');
+    scopeFiles.push(...typeDefinitionFiles);
   } else if (domInfraFiles.length > 0 && !scopeFiles.includes(DOM_INFRA_SMOKE_SENTINEL)) {
     steps.push({
       label: 'DOM infrastructure smoke',
