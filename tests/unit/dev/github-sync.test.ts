@@ -143,10 +143,16 @@ if (key === 'rev-parse --show-toplevel') {
   process.exit(0);
 }
 
-if (key === 'remote get-url origin') {
+if (key === 'remote get-url github-public') {
   if (!remoteExists) process.exit(2);
   out('git@github.com:skyasu2/openmanager-ai.git\\n');
   process.exit(0);
+}
+
+if (key === 'remote get-url origin') {
+  // legacy fallback remote - only succeed when preferred remote is absent
+  if (!remoteExists) process.exit(2);
+  process.exit(2);
 }
 
 if (key === 'rev-parse --abbrev-ref HEAD') {
@@ -169,7 +175,7 @@ if (key === 'status --porcelain') {
   process.exit(0);
 }
 
-if (key === 'fetch --depth=1 origin main') {
+if (key === 'fetch --depth=1 github-public main') {
   process.exit(fetchSucceeds ? 0 : 1);
 }
 
@@ -290,7 +296,7 @@ describe('github-sync', () => {
     expect(`${result.stdout}${result.stderr}`).toContain(
       '변경 없음 — GitHub가 이미 최신 상태입니다.'
     );
-    expect(commandLog).toContain('fetch --depth=1 origin main');
+    expect(commandLog).toContain('fetch --depth=1 github-public main');
     expect(commandLog).toContain('update-ref refs/heads/main FETCH_HEAD');
     expect(commandLog).toContain('symbolic-ref HEAD refs/heads/main');
     expect(commandLog).toContain('reset --mixed');
