@@ -36,6 +36,7 @@ const {
   readTypeCheckStatus,
   cleanupTypeCheckStatus,
   analyzeBuildValidation,
+  describeQuickBuildValidationSkip,
 } = require('./pre-push-build-validation');
 const {
   CLOUD_RUN_ROOT,
@@ -384,15 +385,11 @@ function runBuildValidation(changedFilesResult) {
 
   if (buildValidation.mode === 'quick') {
     if (buildValidation.shouldSkipAll) {
-      typeCheckStatus =
-        buildValidation.rootTypeCheckStrategy === 'skip-type-definition-only'
-          ? 'delegated-type-definition-only'
-          : 'skipped-no-relevant-ts';
-      if (buildValidation.rootTypeCheckStrategy === 'skip-type-definition-only') {
-        console.log('⚪ Root TypeScript 검증 위임 (src/types type-definition-only push)');
-      } else {
-        console.log('⚪ TypeScript 검증 스킵 (push 범위에 관련 TS 파일 없음)');
-      }
+      const skipDescription = describeQuickBuildValidationSkip(buildValidation);
+      typeCheckStatus = skipDescription?.typeCheckStatus || 'skipped-no-relevant-ts';
+      console.log(
+        skipDescription?.message || '⚪ TypeScript 검증 스킵 (push 범위에 관련 TS 파일 없음)'
+      );
       console.log(
         'ℹ️  Full build/type-check는 필요 시 local Docker CI와 Vercel에서 계속 검증됨'
       );

@@ -90,9 +90,28 @@ function analyzeBuildValidation({
   };
 }
 
+function describeQuickBuildValidationSkip(buildValidation) {
+  if (buildValidation?.mode !== 'quick' || !buildValidation.shouldSkipAll) {
+    return null;
+  }
+
+  if (buildValidation.rootTypeCheckStrategy === 'skip-type-definition-only') {
+    return {
+      typeCheckStatus: 'delegated-type-definition-only',
+      message: '⚪ Root TypeScript 검증 위임 (src/types type-definition-only push)',
+    };
+  }
+
+  return {
+    typeCheckStatus: 'skipped-no-relevant-ts',
+    message: '⚪ TypeScript 검증 스킵 (push 범위에 관련 TS 파일 없음)',
+  };
+}
+
 module.exports = {
   createTypeCheckStatusFile,
   readTypeCheckStatus,
   cleanupTypeCheckStatus,
   analyzeBuildValidation,
+  describeQuickBuildValidationSkip,
 };

@@ -9,6 +9,7 @@ const {
   analyzeBuildValidation,
   cleanupTypeCheckStatus,
   createTypeCheckStatusFile,
+  describeQuickBuildValidationSkip,
   readTypeCheckStatus,
 } = require('../../../scripts/hooks/pre-push-build-validation');
 
@@ -132,5 +133,44 @@ describe('type-check status file helpers', () => {
 
     cleanupTypeCheckStatus(statusFile.tempDir);
     expect(existsSync(statusFile.tempDir)).toBe(false);
+  });
+});
+
+describe('describeQuickBuildValidationSkip', () => {
+  it('describes no-relevant-ts skip state', () => {
+    expect(
+      describeQuickBuildValidationSkip({
+        mode: 'quick',
+        shouldSkipAll: true,
+        rootTypeCheckStrategy: 'skip-no-relevant',
+      })
+    ).toEqual({
+      typeCheckStatus: 'skipped-no-relevant-ts',
+      message: '⚪ TypeScript 검증 스킵 (push 범위에 관련 TS 파일 없음)',
+    });
+  });
+
+  it('describes type-definition-only delegation state', () => {
+    expect(
+      describeQuickBuildValidationSkip({
+        mode: 'quick',
+        shouldSkipAll: true,
+        rootTypeCheckStrategy: 'skip-type-definition-only',
+      })
+    ).toEqual({
+      typeCheckStatus: 'delegated-type-definition-only',
+      message:
+        '⚪ Root TypeScript 검증 위임 (src/types type-definition-only push)',
+    });
+  });
+
+  it('returns null when quick skip is not active', () => {
+    expect(
+      describeQuickBuildValidationSkip({
+        mode: 'quick',
+        shouldSkipAll: false,
+        rootTypeCheckStrategy: 'changed',
+      })
+    ).toBeNull();
   });
 });
