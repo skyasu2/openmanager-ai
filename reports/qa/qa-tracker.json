@@ -2,10 +2,10 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-05T22:02:34.705Z"
+    "updatedAt": "2026-04-06T10:33:12.537Z"
   },
   "sequence": {
-    "nextRunNumber": 245
+    "nextRunNumber": 246
   },
   "summary": {
     "totalRuns": 230,
@@ -21,8 +21,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260406-0244",
     "lastRecordedAt": "2026-04-05T22:02:34.705Z",
-    "latestRecordedRunId": "QA-20260406-0244",
-    "latestRecordedAt": "2026-04-05T22:02:34.705Z"
+    "latestRecordedRunId": "QA-20260406-0245",
+    "latestRecordedAt": "2026-04-06T10:33:12.537Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -21240,6 +21240,90 @@
           "type": "vercel-deployment",
           "label": "Deployment dpl_H2A52Y1DvRKLATu7o1A8fb1WbAXf",
           "url": "https://vercel.com/skyasus-projects/openmanager-ai/H2A52Y1DvRKLATu7o1A8fb1WbAXf"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260406-0245",
+      "recordedAt": "2026-04-06T10:33:12.537Z",
+      "recordedAtKst": "2026-04-06 19:33:12 KST",
+      "title": "Vercel targeted QA - latest production smoke refresh after GitLab-first topology cleanup",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260406-0245.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_EEf7zEdMXFGHWYqYSNMACmtXynQ8",
+        "deploymentUrl": "https://openmanager-q8teujryn-skyasus-projects.vercel.app",
+        "commitSha": "9e722456e9c7e4d0e7595e05fe502b4009b13c6d"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveredSurfaces": [
+        "latest production deployment 9e722456 / dpl_EEf7zEdMXFGHWYqYSNMACmtXynQ8 live on Vercel",
+        "landing render with v8.10.9 badge and console errors 0",
+        "/system-boot reaches ready state and redirects to /dashboard",
+        "dashboard render with 15 total / 14 online / 1 warning / 0 risk and resource top5",
+        "/api/health 200 with database/cache/ai connected",
+        "/api/version 200 with v8.10.9 / Next.js 16.1.6 / production",
+        "/api/ai/supervisor/stream/v2 POST returns 200 SSE with ui-message-stream + X-AI-Latency-Ms",
+        "AI stream returns current server summary with warning server lb-haproxy-dc1-01 CPU 61%",
+        "AI stream done metadata includes Trace ID 71f7179b8e8314a797b6d2cbacbdbd9b and finalAgent NLQ Agent"
+      ],
+      "skippedSurfaces": [
+        "/login route",
+        "/dashboard/ai-assistant fullscreen workspace",
+        "Reporter and Analyst flows",
+        "modal-detail pack",
+        "Cloud Run admin observability endpoints"
+      ],
+      "checks": {
+        "total": 9,
+        "passed": 9,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-06T19:30:11+09:00",
+          "summary": "Current billing period reviewed after latest production smoke refresh; effective 3.2763 USD, billed 0.0000 USD, no unexpected billed usage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "qa-20260406-0245-dashboard.png",
+          "path": "qa-20260406-0245-dashboard.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Deployment dpl_EEf7zEdMXFGHWYqYSNMACmtXynQ8",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/EEf7zEdMXFGHWYqYSNMACmtXynQ8"
         }
       ],
       "expertCount": 0,

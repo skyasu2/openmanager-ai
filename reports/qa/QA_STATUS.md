@@ -1,7 +1,7 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-06 07:02:35 KST
+> Generated at: 2026-04-06 19:33:19 KST
 
 ## Summary
 
@@ -19,11 +19,11 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260406-0244 (2026-04-05T22:02:34.705Z) |
-| Latest Recorded Run | QA-20260406-0244 (2026-04-05T22:02:34.705Z) |
+| Latest Recorded Run | QA-20260406-0245 (2026-04-06T10:33:12.537Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260406-0244 (2026-04-05T22:02:34.705Z)
+Latest run: QA-20260406-0245 (2026-04-06T10:33:12.537Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -33,32 +33,30 @@ Latest run: QA-20260406-0244 (2026-04-05T22:02:34.705Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after latest production AI smoke refresh; effective 2.6265 USD, billed 0.0000 USD, no unexpected billed usage spike. |
+| vercel | cli | checked | normal | Current billing period reviewed after latest production smoke refresh; effective 3.2763 USD, billed 0.0000 USD, no unexpected billed usage spike. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Counts Toward Summary: yes
-- Deployment: dpl_H2A52Y1DvRKLATu7o1A8fb1WbAXf / SHA 40bd7093
-- Coverage Packs: ai-core
-- Covered Surfaces: latest production deployment 40bd7093 / dpl_H2A52Y1DvRKLATu7o1A8fb1WbAXf still live on Vercel, /dashboard AI assistant sidebar opens with engine Ready, new conversation starter prompts render in AI sidebar, starter prompt populates input and message send works, /api/ai/supervisor/stream/v2 POST returns 200, streaming AI response returns current server summary on latest production, analysis basis panel expands with Trace ID 631570a6d7d274d309a6db1f044621c0, analysis basis metadata shows data=일반 대화 응답 and engine=Streaming AI, browser console errors 0 during dashboard AI sidebar flow
-- Skipped Surfaces: /dashboard/ai-assistant fullscreen workspace, Reporter and Analyst flows, feedback flow, timing header extraction and Cloud Run admin observability endpoints
+- Counts Toward Summary: no
+- Deployment: dpl_EEf7zEdMXFGHWYqYSNMACmtXynQ8 / SHA 9e722456
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
+- Covered Surfaces: latest production deployment 9e722456 / dpl_EEf7zEdMXFGHWYqYSNMACmtXynQ8 live on Vercel, landing render with v8.10.9 badge and console errors 0, /system-boot reaches ready state and redirects to /dashboard, dashboard render with 15 total / 14 online / 1 warning / 0 risk and resource top5, /api/health 200 with database/cache/ai connected, /api/version 200 with v8.10.9 / Next.js 16.1.6 / production, /api/ai/supervisor/stream/v2 POST returns 200 SSE with ui-message-stream + X-AI-Latency-Ms, AI stream returns current server summary with warning server lb-haproxy-dc1-01 CPU 61%, AI stream done metadata includes Trace ID 71f7179b8e8314a797b6d2cbacbdbd9b and finalAgent NLQ Agent
+- Skipped Surfaces: /login route, /dashboard/ai-assistant fullscreen workspace, Reporter and Analyst flows, modal-detail pack, Cloud Run admin observability endpoints
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | Vercel URL | [link](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Deployment dpl_H2A52Y1DvRKLATu7o1A8fb1WbAXf | [link](https://vercel.com/skyasus-projects/openmanager-ai/H2A52Y1DvRKLATu7o1A8fb1WbAXf) | - |
+| vercel-deployment | Deployment dpl_EEf7zEdMXFGHWYqYSNMACmtXynQ8 | [link](https://vercel.com/skyasus-projects/openmanager-ai/EEf7zEdMXFGHWYqYSNMACmtXynQ8) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | qa-20260406-0244-ai-analysis-basis.png | `.playwright-mcp/screenshots/qa-20260406-0244-ai-analysis-basis.png` | - |
-| playwright-screenshot | qa-20260406-0244-ai-send.png | `.playwright-mcp/screenshots/qa-20260406-0244-ai-send.png` | - |
-| playwright-screenshot | qa-20260406-0244-ai-sidebar-open.png | `.playwright-mcp/screenshots/qa-20260406-0244-ai-sidebar-open.png` | - |
+| playwright-screenshot | qa-20260406-0245-dashboard.png | `qa-20260406-0245-dashboard.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -386,6 +384,7 @@ Latest run: QA-20260406-0244 (2026-04-05T22:02:34.705Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260406-0245 | 2026-04-06T10:33:12.537Z | targeted | no | no | Vercel targeted QA - latest production smoke refresh after GitLab-first topology cleanup | 9 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260406-0244 | 2026-04-05T22:02:34.705Z | targeted | no | yes | Vercel targeted QA - latest production AI sidebar smoke refresh after canonical routing chore | 9 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260406-0243 | 2026-04-05T17:28:17.948Z | targeted | no | no | Vercel targeted QA - latest production deploy smoke refresh after canonical routing chore | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260405-0242 | 2026-04-05T11:15:27.092Z | targeted | no | no | QA tracker closeout - response process detail production fixes | 1 | 3 | 0 | 0 | 0 | 0 |
@@ -405,5 +404,4 @@ Latest run: QA-20260406-0244 (2026-04-05T22:02:34.705Z)
 | QA-20260404-0228 | 2026-04-04T14:20:17.892Z | targeted | no | yes | Vercel targeted QA - modal/detail pack and AI advanced surface | 18 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260404-0227 | 2026-04-04T14:09:08.887Z | targeted | no | yes | Vercel targeted QA - guest flow and dashboard/AI parity smoke (rerun) | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260404-0226 | 2026-04-04T14:03:16.371Z | targeted | no | yes | Vercel targeted QA - guest flow and dashboard/AI parity smoke | 12 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260404-0225 | 2026-04-04T13:21:41.671Z | broad | yes | yes | Vercel Production Broad Release QA - core routes, dashboard modal tabs, and AI streaming parity | 16 | 0 | 0 | 0 | 0 | 0 |
 
