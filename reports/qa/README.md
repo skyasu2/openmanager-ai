@@ -94,7 +94,7 @@ reports/qa/
   - 허용 값: `playwright-trace`, `playwright-report`, `playwright-screenshot`, `playwright-video`, `playwright-console`, `playwright-network`
   - 각 항목은 `type`, `label`, `url|path`를 가집니다.
   - `path`를 쓸 때는 기록 시점에 실제 파일이 존재해야 합니다.
-  - `releaseFacing: true` 또는 `countsTowardSummary: true` run에서는 `path`가 durable tracked path여야 합니다. `playwright-report/`, `test-results/`, `.playwright-mcp/screenshots/`, `artifacts/`, root `qa*.png` 경로는 허용되지 않습니다.
+  - `releaseFacing: true` 또는 `countsTowardSummary: true` run에서는 `path`가 Git tracked durable path여야 합니다. `playwright-report/`, `test-results/`, `.playwright-mcp/screenshots/`, `artifacts/`, root `qa*.png` 경로는 허용되지 않습니다.
   - `playwright-trace`에 `url`이 있으면 `qa:record`가 `trace.playwright.dev` viewer URL을 자동 생성합니다.
 - `links`는 사람이 보는 관련 링크 필드입니다.
   - 허용 값: `general`, `vercel-deployment`, `github-actions-run`, `github-actions-artifact`, `monitoring`, `langfuse-trace`

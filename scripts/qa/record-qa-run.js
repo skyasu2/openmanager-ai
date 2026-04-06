@@ -647,6 +647,56 @@ function validateArtifactPathExists(artifacts) {
   );
 }
 
+function assertDurableArtifactPathsAreTracked(artifacts) {
+  const pathArtifacts = artifacts.filter((artifact) => artifact && artifact.path);
+  if (pathArtifacts.length === 0) {
+    return;
+  }
+
+  try {
+    const gitResult = execFileSync('git', ['rev-parse', '--is-inside-work-tree'], {
+      cwd: process.cwd(),
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+
+    if (gitResult !== 'true') {
+      throw new Error('not-inside-work-tree');
+    }
+  } catch {
+    throw new Error(
+      'durable artifact path 검증은 Git work tree 안에서만 수행할 수 있습니다. ' +
+        'releaseFacing/counting run은 저장소 루트에서 실행하거나 URL evidence를 사용하세요.'
+    );
+  }
+
+  const untrackedArtifacts = pathArtifacts.filter((artifact) => {
+    const normalizedPath = normalizeArtifactPathForPolicy(artifact.path);
+    try {
+      execFileSync('git', ['ls-files', '--error-unmatch', '--', normalizedPath], {
+        cwd: process.cwd(),
+        stdio: 'ignore',
+      });
+      return false;
+    } catch {
+      return true;
+    }
+  });
+
+  if (untrackedArtifacts.length === 0) {
+    return;
+  }
+
+  const details = untrackedArtifacts
+    .map((artifact) => `${artifact.label || artifact.type}: ${normalizeArtifactPathForPolicy(artifact.path)}`)
+    .join('; ');
+
+  throw new Error(
+    'releaseFacing=true 또는 countsTowardSummary=true 런의 artifact.path는 Git tracked path여야 합니다. ' +
+      `미추적 경로: ${details}. 파일을 git add 한 뒤 기록하거나 URL evidence를 사용하세요.`
+  );
+}
+
 function validateArtifactEvidencePolicy(artifacts, releaseFacing, countsTowardSummary) {
   validateArtifactPathExists(artifacts);
 
@@ -663,6 +713,7 @@ function validateArtifactEvidencePolicy(artifacts, releaseFacing, countsTowardSu
     .filter((entry) => entry.reason);
 
   if (invalidArtifacts.length === 0) {
+    assertDurableArtifactPathsAreTracked(artifacts);
     return;
   }
 

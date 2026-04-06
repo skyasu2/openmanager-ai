@@ -89,6 +89,39 @@ function runNodeScript(
   });
 }
 
+function runCommand(
+  command: string,
+  args: string[],
+  options: {
+    cwd: string;
+    env?: NodeJS.ProcessEnv;
+  }
+) {
+  return spawnSync(command, args, {
+    cwd: options.cwd,
+    encoding: 'utf8',
+    env: buildChildProcessEnv(options.env),
+  });
+}
+
+function initGitRepo(tempDir: string) {
+  const initResult = runCommand('git', ['init', '-q'], { cwd: tempDir });
+  if (initResult.status !== 0) {
+    throw new Error(
+      `git init failed: ${initResult.stderr || initResult.stdout}`
+    );
+  }
+}
+
+function trackWorkspaceFile(tempDir: string, relativePath: string) {
+  const addResult = runCommand('git', ['add', '--', relativePath], {
+    cwd: tempDir,
+  });
+  if (addResult.status !== 0) {
+    throw new Error(`git add failed: ${addResult.stderr || addResult.stdout}`);
+  }
+}
+
 function expectOutputContainsIfCaptured(output: string, expected: string) {
   if (output.trim()) {
     expect(output).toContain(expected);
@@ -618,11 +651,13 @@ describe('QA scripts', () => {
 
   it('records structured Playwright artifacts and prints artifact summary', () => {
     const tempDir = createTempWorkspace();
+    initGitRepo(tempDir);
     writeWorkspaceFile(
       tempDir,
       'reports/qa/evidence/dashboard.png',
       'dashboard-screenshot'
     );
+    trackWorkspaceFile(tempDir, 'reports/qa/evidence/dashboard.png');
     const traceUrl = 'https://storage.example.com/playwright/trace.zip';
     const inputPath = writeInputFile(
       tempDir,
@@ -693,6 +728,7 @@ describe('QA scripts', () => {
 
   it('rejects ephemeral local artifact paths for release-facing runs', () => {
     const tempDir = createTempWorkspace();
+    initGitRepo(tempDir);
     writeWorkspaceFile(
       tempDir,
       'artifacts/dashboard.png',
@@ -734,6 +770,53 @@ describe('QA scripts', () => {
     expectOutputContainsIfCaptured(
       `${recordResult.stdout}${recordResult.stderr}`,
       'artifacts/dashboard.png'
+    );
+  });
+
+  it('rejects untracked durable artifact paths for release-facing runs', () => {
+    const tempDir = createTempWorkspace();
+    initGitRepo(tempDir);
+    writeWorkspaceFile(
+      tempDir,
+      'reports/qa/evidence/untracked-dashboard.png',
+      'dashboard-screenshot'
+    );
+    const inputPath = writeInputFile(
+      tempDir,
+      createValidPayload({
+        artifacts: [
+          {
+            type: 'playwright-screenshot',
+            label: 'Untracked dashboard screenshot',
+            path: 'reports/qa/evidence/untracked-dashboard.png',
+          },
+        ],
+      })
+    );
+
+    const recordResult = runNodeScript(
+      RECORD_QA_RUN_SCRIPT,
+      ['--input', inputPath],
+      {
+        cwd: tempDir,
+        env: {
+          VERCEL_DEPLOYMENT_ID: 'dpl_untracked123',
+          VERCEL_GIT_COMMIT_SHA: 'abcdefabcdefabcdefabcdefabcdefabcdefabcd',
+          VERCEL_GIT_COMMIT_REF: 'main',
+          VERCEL_TARGET_ENV: 'production',
+          VERCEL_PROJECT_PRODUCTION_URL: 'openmanager-ai.vercel.app',
+        },
+      }
+    );
+
+    expect(recordResult.status).toBe(1);
+    expectOutputContainsIfCaptured(
+      `${recordResult.stdout}${recordResult.stderr}`,
+      'artifact.path는 Git tracked path여야 합니다'
+    );
+    expectOutputContainsIfCaptured(
+      `${recordResult.stdout}${recordResult.stderr}`,
+      'reports/qa/evidence/untracked-dashboard.png'
     );
   });
 
