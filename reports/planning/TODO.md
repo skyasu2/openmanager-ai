@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-03-31 KST (v8.10.8, backlog 재정비 — 대형 파일 항목 폐기, Knip 타입 정리 진행 중)
+**Last Updated**: 2026-04-07 KST (v8.10.10, Knip 타입 정리 완료 — ai-sidebar 6개 + intelligent-monitoring 9개 제거)
 
 ## Active Tasks
 
@@ -18,7 +18,10 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| P3: Knip unused export types 정리 (잔여) | Low | 잔여 warn: src/schemas/api.*.schema.ts Zod schema consts 8개 + src/types/ai-sidebar/ 7개 + common.ts 12개 + intelligent-monitoring.types.ts 4개 등. non-blocking, warn 기준 |
+| P3: Knip unused export types 정리 (잔여) | Low | src/types/common.ts 내부 의존성 복잡 — CloudProvider/BaseService/BaseAlert 등 19개 미사용 확인됨, 단계적 정리 필요. non-blocking |
+
+### Completed (2026-04-07 #16)
+- [x] P3: Knip unused export 정리 — `src/types/ai-sidebar/`: AIEngineInfo/AISidebarHandlers/AISidebarProps/AutoReportTrigger/SessionInfo/UseAISidebarReturn 6개 제거. `src/types/intelligent-monitoring.types.ts`: 구형 IntelligentAnalysis* 타입 블록 전체 + SimpleAnalysisRequest 9개 제거. TypeScript 에러 0.
 
 ### Completed (2026-03-31 #15)
 - [x] P3: 백로그 재정비 — `대형 파일(500+줄) 분리 계획` 항목 폐기 확정. 대상 파일(system/route.ts 476줄, jobs stream 464줄)이 이미 기준 미만으로 실효 상실. schemas/api.*.schema.ts 미사용 type alias + src/types/ 미사용 exports 일괄 정리 진행.

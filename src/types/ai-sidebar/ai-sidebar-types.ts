@@ -3,7 +3,6 @@
  * 모든 AI 사이드바 관련 타입 통합 관리
  */
 
-import type { ComponentType, RefObject } from 'react';
 import type { AIMode } from '@/types/ai-types';
 
 /**
@@ -78,18 +77,6 @@ export interface AIQueryResponse {
 }
 
 /**
- * 세션 정보
- */
-export interface SessionInfo {
-  id: string;
-  userId?: string;
-  startTime: Date;
-  lastActivity: Date;
-  messageCount: number;
-  engines: string[];
-}
-
-/**
  * AI 사이드바 상태
  */
 export interface AISidebarState {
@@ -120,70 +107,6 @@ export interface ChatMessage {
     processingTime?: number;
     confidence?: number;
     error?: string;
-  };
-}
-
-/**
- * 자동 보고서 트리거
- */
-export interface AutoReportTrigger {
-  type: 'critical' | 'performance' | 'security';
-  message: string;
-  data?: Record<string, unknown>;
-  shouldGenerate?: boolean;
-  severity?: 'low' | 'medium' | 'high' | 'critical';
-  lastQuery?: string;
-}
-
-/**
- * AI 엔진 정보
- */
-export interface AIEngineInfo {
-  id: string;
-  name: string;
-  description: string;
-  icon: ComponentType<{ className?: string }>;
-  color: string;
-  bgColor: string;
-  features: string[];
-  status: 'ready' | 'loading' | 'error' | 'unavailable';
-  usage?: {
-    used: number;
-    limit: number;
-  };
-}
-
-/**
- * AI 사이드바 Props
- */
-export interface AISidebarProps {
-  className?: string;
-  defaultEngine?: AIMode;
-  sessionId?: string;
-  onClose?: () => void;
-  onEngineChange?: (engine: AIMode) => void;
-  onMessageSend?: (message: string) => void;
-}
-
-/**
- * AI 사이드바 핸들러
- */
-export interface AISidebarHandlers {
-  handleSendMessage: (message: string) => Promise<void>;
-  handleEngineChange: (engine: AIMode) => Promise<void>;
-  handleClearChat: () => void;
-  handleExportChat: () => void;
-}
-
-/**
- * AI 사이드바 상태 훅 반환값
- */
-export interface UseAISidebarReturn {
-  state: AISidebarState;
-  handlers: AISidebarHandlers;
-  refs: {
-    messagesEndRef: RefObject<HTMLDivElement | null>;
-    inputRef: RefObject<HTMLTextAreaElement>;
   };
 }
 

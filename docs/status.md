@@ -4,11 +4,11 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Status
-> Last reviewed: 2026-04-02
+> Last reviewed: 2026-04-07
 > Canonical: docs/status.md
 > Tags: status,changelog,release
 
-**마지막 업데이트**: 2026-04-02
+**마지막 업데이트**: 2026-04-07
 
 ---
 
@@ -21,6 +21,25 @@
 ---
 
 ## 🔄 Recent Changes
+
+- **v8.10.10** (2026-04-06)
+  - chore(release): v8.10.10 릴리즈 — targeted production smoke QA pass (8/8)
+  - fix(docs): qa report markdown lint + evidence path 표준화
+  - fix(qa): release evidence 경로 검증 및 중복 방지 강화
+  - refactor(security): tavily helper 암호화 경로 폐기, key loader 강화
+  - fix(repo): canonical release tooling 강화, github mirror workflow 가드
+
+- **v8.10.9** (2026-04-03)
+  - chore(release): v8.10.9 릴리즈
+  - fix(dev): DOM smoke trigger 범위 축소, 빠른 script 테스트 커버리지 확장
+  - docs(git): canonical remote 기본값 문서화, git graph remote routing 안내
+  - refactor(git): main direct flow 기본화, github-public snapshot export 정비
+
+- **main** (2026-04-01)
+  - refactor(types): schemas/types 미사용 export 일괄 정리 — z.infer 타입 alias, server/ 서브디렉토리 unused types, lib unused exports (-~300 warn → 8 exports + 7 types)
+  - refactor(ui): cicd 모달 반응형 개선 + evidence-based 플로우, portfolio copy 정렬
+  - fix(login): 로그인 헤더 네비게이션 단순화
+  - chore(types): 빈 server 타입 stub 파일 제거
 
 - **main** (2026-03-29)
   - docs(vibe): `Claude Code 메인 + Codex/Gemini 수동 교차 사용` 기준으로 AI 개발 방법론 문구 정렬
