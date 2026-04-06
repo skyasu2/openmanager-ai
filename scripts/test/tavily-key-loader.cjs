@@ -5,16 +5,31 @@
  * MCP 서버에서 사용할 수 있도록 암호화된 키를 복호화
  */
 
-const CryptoJS = require('crypto-js');
 const fs = require('fs');
 const path = require('path');
 
-// 암호화 키
-const ENCRYPTION_KEY = 'openmanager2025';
+function getEncryptionKey() {
+  const encryptionKey = String(process.env.ENCRYPTION_KEY || '').trim();
+  if (!encryptionKey) {
+    throw new Error(
+      'ENCRYPTION_KEY가 필요합니다. 하드코딩된 기본 키 fallback은 허용되지 않습니다.'
+    );
+  }
+  return encryptionKey;
+}
 
 function decrypt(encryptedText) {
   try {
-    const bytes = CryptoJS.AES.decrypt(encryptedText, ENCRYPTION_KEY);
+    let CryptoJS;
+    try {
+      CryptoJS = require('crypto-js');
+    } catch {
+      throw new Error(
+        'crypto-js 의존성이 없어 암호화된 Tavily 키를 복호화할 수 없습니다. 평문 TAVILY_API_KEY를 사용하거나 helper 의존성을 복원하세요.'
+      );
+    }
+
+    const bytes = CryptoJS.AES.decrypt(encryptedText, getEncryptionKey());
     const decrypted = bytes.toString(CryptoJS.enc.Utf8);
     if (!decrypted) {
       throw new Error('복호화 결과가 비어있음');
