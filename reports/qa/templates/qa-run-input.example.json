@@ -56,7 +56,7 @@
     {
       "type": "playwright-screenshot",
       "label": "Dashboard landing screenshot",
-      "path": "artifacts/playwright/dashboard-landing.png"
+      "path": "reports/qa/evidence/dashboard-landing.png"
     }
   ],
   "playwrightArtifacts": {

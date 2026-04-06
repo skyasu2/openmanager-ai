@@ -618,6 +618,11 @@ describe('QA scripts', () => {
 
   it('records structured Playwright artifacts and prints artifact summary', () => {
     const tempDir = createTempWorkspace();
+    writeWorkspaceFile(
+      tempDir,
+      'reports/qa/evidence/dashboard.png',
+      'dashboard-screenshot'
+    );
     const traceUrl = 'https://storage.example.com/playwright/trace.zip';
     const inputPath = writeInputFile(
       tempDir,
@@ -636,7 +641,7 @@ describe('QA scripts', () => {
           {
             type: 'playwright-screenshot',
             label: 'Dashboard screenshot',
-            path: 'artifacts/dashboard.png',
+            path: 'reports/qa/evidence/dashboard.png',
           },
         ],
       })
@@ -683,7 +688,103 @@ describe('QA scripts', () => {
     const statusMarkdown = readFileSync(statusPath, 'utf8');
     expect(statusMarkdown).toContain('## Artifacts (Latest Run)');
     expect(statusMarkdown).toContain('trace.playwright.dev/?trace=');
-    expect(statusMarkdown).toContain('artifacts/dashboard.png');
+    expect(statusMarkdown).toContain('reports/qa/evidence/dashboard.png');
+  });
+
+  it('rejects ephemeral local artifact paths for release-facing runs', () => {
+    const tempDir = createTempWorkspace();
+    writeWorkspaceFile(
+      tempDir,
+      'artifacts/dashboard.png',
+      'dashboard-screenshot'
+    );
+    const inputPath = writeInputFile(
+      tempDir,
+      createValidPayload({
+        artifacts: [
+          {
+            type: 'playwright-screenshot',
+            label: 'Ephemeral dashboard screenshot',
+            path: 'artifacts/dashboard.png',
+          },
+        ],
+      })
+    );
+
+    const recordResult = runNodeScript(
+      RECORD_QA_RUN_SCRIPT,
+      ['--input', inputPath],
+      {
+        cwd: tempDir,
+        env: {
+          VERCEL_DEPLOYMENT_ID: 'dpl_ephemeral123',
+          VERCEL_GIT_COMMIT_SHA: 'abcdefabcdefabcdefabcdefabcdefabcdefabcd',
+          VERCEL_GIT_COMMIT_REF: 'main',
+          VERCEL_TARGET_ENV: 'production',
+          VERCEL_PROJECT_PRODUCTION_URL: 'openmanager-ai.vercel.app',
+        },
+      }
+    );
+
+    expect(recordResult.status).toBe(1);
+    expectOutputContainsIfCaptured(
+      `${recordResult.stdout}${recordResult.stderr}`,
+      'durable artifact evidence가 필요합니다'
+    );
+    expectOutputContainsIfCaptured(
+      `${recordResult.stdout}${recordResult.stderr}`,
+      'artifacts/dashboard.png'
+    );
+  });
+
+  it('allows ephemeral local artifact paths for non-summary verification runs', () => {
+    const tempDir = createTempWorkspace();
+    writeWorkspaceFile(
+      tempDir,
+      'artifacts/dashboard.png',
+      'dashboard-screenshot'
+    );
+    const inputPath = writeInputFile(
+      tempDir,
+      createValidPayload({
+        scope: 'targeted',
+        releaseFacing: false,
+        countsTowardSummary: false,
+        coveragePacks: ['core-routes-smoke'],
+        coveredSurfaces: ['/dashboard'],
+        skippedSurfaces: ['/login'],
+        expertAssessments: [],
+        usageChecks: [],
+        artifacts: [
+          {
+            type: 'playwright-screenshot',
+            label: 'Verification dashboard screenshot',
+            path: 'artifacts/dashboard.png',
+          },
+        ],
+      })
+    );
+
+    const recordResult = runNodeScript(
+      RECORD_QA_RUN_SCRIPT,
+      ['--input', inputPath],
+      {
+        cwd: tempDir,
+      }
+    );
+
+    expect(recordResult.status).toBe(0);
+
+    const runFilePath = findGeneratedRunFile(tempDir);
+    const runRecord = JSON.parse(readFileSync(runFilePath, 'utf8'));
+    expect(runRecord.countsTowardSummary).toBe(false);
+    expect(runRecord.artifacts).toEqual([
+      {
+        type: 'playwright-screenshot',
+        label: 'Verification dashboard screenshot',
+        path: 'artifacts/dashboard.png',
+      },
+    ]);
   });
 
   it('demotes non-blocking pending improvements to wont-fix', () => {
@@ -848,6 +949,14 @@ describe('QA scripts', () => {
       tempDir,
       createValidPayload({
         source: 'playwright',
+        scope: 'targeted',
+        releaseFacing: false,
+        countsTowardSummary: false,
+        coveragePacks: ['core-routes-smoke'],
+        coveredSurfaces: ['/dashboard'],
+        skippedSurfaces: ['/login'],
+        expertAssessments: [],
+        usageChecks: [],
       })
     );
 
@@ -910,6 +1019,14 @@ describe('QA scripts', () => {
       tempDir,
       createValidPayload({
         source: 'playwright-mcp',
+        scope: 'targeted',
+        releaseFacing: false,
+        countsTowardSummary: false,
+        coveragePacks: ['core-routes-smoke'],
+        coveredSurfaces: ['/dashboard'],
+        skippedSurfaces: ['/login'],
+        expertAssessments: [],
+        usageChecks: [],
       })
     );
 
@@ -969,6 +1086,14 @@ describe('QA scripts', () => {
       tempDir,
       createValidPayload({
         source: 'playwright-mcp',
+        scope: 'targeted',
+        releaseFacing: false,
+        countsTowardSummary: false,
+        coveragePacks: ['core-routes-smoke'],
+        coveredSurfaces: ['/dashboard'],
+        skippedSurfaces: ['/login'],
+        expertAssessments: [],
+        usageChecks: [],
         playwrightArtifacts: {
           resultsDir: 'test-results',
           screenshotsDir: '.playwright-mcp/screenshots',

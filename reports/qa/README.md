@@ -25,6 +25,8 @@ reports/qa/
 - `source`가 `playwright`, `playwright-cli`, `playwright-mcp` 계열이면 `qa:record`는 최근 Playwright artifact를 자동 수집한다.
 - 기본 디렉토리나 시간 창을 바꾸려면 `playwrightArtifacts.reportDir/resultsDir/screenshotsDir/recentMinutes/pathIncludes`를 입력 JSON에 명시한다.
 - 수동 MCP QA는 shared `.playwright-mcp/screenshots`를 쓰므로, run별 파일 prefix를 붙이고 `pathIncludes`로 함께 좁혀 fresh artifact only 원칙을 지킨다.
+- `releaseFacing: true` 또는 `countsTowardSummary: true` run은 durable artifact만 허용한다. `playwright-report/`, `test-results/`, `.playwright-mcp/screenshots/`, `artifacts/`, root `qa*.png` 같은 로컬 임시 경로는 금지하고, URL 또는 추적 가능한 repo 경로를 사용한다.
+- release-facing/counting run에서 로컬 Playwright 결과를 증거로 남길 때는 먼저 `reports/qa/evidence/...` 같은 추적 경로로 복사하거나 CI/Vercel URL로 전환한 뒤 기록한다.
 - GitHub Actions `workflow_dispatch`로 실행한 `E2E Critical`은 성공해도 `playwright-report-${run_id}`, `playwright-results-${run_id}` artifact를 3일간 보존하므로, CI 기반 QA 증거 링크로 재사용할 수 있다.
 - 로컬 Playwright browser launch가 막히는 환경에서는 GitHub Actions `workflow_dispatch`의 `run_manual_feedback_trace_status=true`를 사용해 production feedback trace QA를 원격에서 실행하고, `manual-feedback-trace-report-${run_id}` / `manual-feedback-trace-results-${run_id}` artifact를 증거로 재사용한다.
 - CI 근거를 재사용할 때는 `ciEvidence`에 `workflowName`, `runId`, `artifacts[]`를 넣어 `GitHub Actions run/artifact` 링크를 표준 라벨로 자동 생성한다.
@@ -91,6 +93,7 @@ reports/qa/
 - `artifacts`는 Playwright/CI 증거를 위한 구조화 필드입니다.
   - 허용 값: `playwright-trace`, `playwright-report`, `playwright-screenshot`, `playwright-video`, `playwright-console`, `playwright-network`
   - 각 항목은 `type`, `label`, `url|path`를 가집니다.
+  - `releaseFacing: true` 또는 `countsTowardSummary: true` run에서는 `path`가 durable tracked path여야 합니다. `playwright-report/`, `test-results/`, `.playwright-mcp/screenshots/`, `artifacts/`, root `qa*.png` 경로는 허용되지 않습니다.
   - `playwright-trace`에 `url`이 있으면 `qa:record`가 `trace.playwright.dev` viewer URL을 자동 생성합니다.
 - `links`는 사람이 보는 관련 링크 필드입니다.
   - 허용 값: `general`, `vercel-deployment`, `github-actions-run`, `github-actions-artifact`, `monitoring`, `langfuse-trace`
@@ -111,6 +114,7 @@ reports/qa/
   - `playwright-mcp`는 MCP server `--output-dir .playwright-mcp/screenshots`에 저장된 최신 screenshot을 `playwright-screenshot`으로 자동 연결합니다.
   - 최근 수정된 파일만 수집하므로 오래된 실패 산출물은 기본적으로 제외됩니다.
   - `pathIncludes`를 주면 `test-results`와 `.playwright-mcp/screenshots`에서 경로에 해당 문자열이 포함된 artifact만 수집합니다.
+  - 이 자동 수집 경로는 verification/targeted evidence에는 적합하지만, release-facing/counting run에서는 그대로 사용할 수 없습니다. 필요한 파일은 durable repo path로 옮기거나 URL로 바꿔 기록합니다.
 - `coveredSurfaces` / `skippedSurfaces`는 사용자 보고 텍스트가 아니라 run SSOT에도 저장해야 합니다.
 - `observability-pack`은 Vercel dashboard observability와 Cloud Run admin observability를 혼동하지 않도록 기록합니다.
   - Vercel-side 예: dashboard server-status summary, system resource panel, resource alert top5, notification badge, `/api/health`

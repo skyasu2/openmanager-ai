@@ -60,6 +60,21 @@ const REQUIRED_VERCEL_BROAD_COVERAGE_PACKS = [
   'dashboard-core',
   'ai-core',
 ];
+const NON_DURABLE_ARTIFACT_PATH_PREFIXES = [
+  'artifacts/',
+  'playwright-report/',
+  'test-results/',
+  '.playwright-mcp/screenshots/',
+  'screenshots/',
+];
+const NON_DURABLE_ARTIFACT_BASENAME_PATTERNS = [
+  /^openmanager-.*\.png$/i,
+  /^playwright-.*\.png$/i,
+  /^qa.*\.png$/i,
+  /^mobile-.*\.png$/i,
+  /^gradient-verify-.*\.png$/i,
+  /^step.*\.png$/i,
+];
 
 function parseArgs(argv) {
   const args = {
@@ -567,6 +582,70 @@ function normalizeArtifacts(rawValue) {
   });
 }
 
+function normalizeArtifactPathForPolicy(filePath) {
+  return String(filePath || '')
+    .trim()
+    .replace(/\\/g, '/')
+    .replace(/^\.\//, '');
+}
+
+function findNonDurableArtifactPathReason(filePath) {
+  const normalizedPath = normalizeArtifactPathForPolicy(filePath);
+  if (!normalizedPath) {
+    return '';
+  }
+
+  for (const prefix of NON_DURABLE_ARTIFACT_PATH_PREFIXES) {
+    if (normalizedPath.startsWith(prefix)) {
+      return prefix;
+    }
+  }
+
+  const baseName = path.posix.basename(normalizedPath);
+  for (const pattern of NON_DURABLE_ARTIFACT_BASENAME_PATTERNS) {
+    if (pattern.test(baseName)) {
+      return baseName;
+    }
+  }
+
+  return '';
+}
+
+function requiresDurableArtifactEvidence(releaseFacing, countsTowardSummary) {
+  return releaseFacing === true || countsTowardSummary === true;
+}
+
+function validateArtifactEvidencePolicy(artifacts, releaseFacing, countsTowardSummary) {
+  if (!requiresDurableArtifactEvidence(releaseFacing, countsTowardSummary)) {
+    return;
+  }
+
+  const invalidArtifacts = artifacts
+    .filter((artifact) => artifact && artifact.path)
+    .map((artifact) => ({
+      artifact,
+      reason: findNonDurableArtifactPathReason(artifact.path),
+    }))
+    .filter((entry) => entry.reason);
+
+  if (invalidArtifacts.length === 0) {
+    return;
+  }
+
+  const details = invalidArtifacts
+    .map(
+      ({ artifact, reason }) =>
+        `${artifact.label || artifact.type}: ${artifact.path} (ephemeral pattern: ${reason})`
+    )
+    .join('; ');
+
+  throw new Error(
+    'releaseFacing=true 또는 countsTowardSummary=true 런에는 durable artifact evidence가 필요합니다. ' +
+      'playwright-report/test-results/.playwright-mcp/screenshots/artifacts/root qa*.png 같은 로컬 임시 경로는 사용할 수 없습니다. ' +
+      `문제 경로: ${details}. URL을 사용하거나 추적 가능한 repo 경로(예: reports/qa/evidence/... )로 복사한 뒤 기록하세요.`
+  );
+}
+
 function mergeArtifacts(manualArtifacts, detectedArtifacts) {
   const merged = [];
   const seen = new Set();
@@ -889,6 +968,8 @@ function run() {
       'checks.total=0 런은 countsTowardSummary=true 로 기록할 수 없습니다. 상태 검증/운영 기록 런이면 countsTowardSummary=false 로 기록하세요.'
     );
   }
+
+  validateArtifactEvidencePolicy(artifacts, releaseFacing, countsTowardSummary);
 
   const completedRaw = Array.isArray(payload.completedImprovements)
     ? payload.completedImprovements
