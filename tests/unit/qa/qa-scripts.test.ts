@@ -343,9 +343,13 @@ describe('QA scripts', () => {
     expect(existsSync(validationEvidencePath)).toBe(false);
     expect(existsSync(trendsPath)).toBe(false);
 
-    const syncResult = runNodeScript(PRINT_QA_STATUS_SCRIPT, ['--write'], {
-      cwd: tempDir,
-    });
+    const syncResult = runNodeScript(
+      PRINT_QA_STATUS_SCRIPT,
+      ['--write', '--sync-public'],
+      {
+        cwd: tempDir,
+      }
+    );
 
     expect(syncResult.status).toBe(0);
     expectOutputContainsIfCaptured(
@@ -434,9 +438,13 @@ describe('QA scripts', () => {
       '{"stale":true}\n'
     );
 
-    const syncResult = runNodeScript(PRINT_QA_STATUS_SCRIPT, ['--write'], {
-      cwd: tempDir,
-    });
+    const syncResult = runNodeScript(
+      PRINT_QA_STATUS_SCRIPT,
+      ['--write', '--sync-public'],
+      {
+        cwd: tempDir,
+      }
+    );
 
     expect(syncResult.status).toBe(0);
     expectOutputContainsIfCaptured(
