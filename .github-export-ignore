@@ -10,6 +10,7 @@ GEMINI.md
 AGENTS.md
 .github/
 .github-export-ignore
+src/**/README.md
 
 # ── 테스트 ─────────────────────────────────────────
 tests/
@@ -32,6 +33,7 @@ coverage/
 
 # ── 내부 스크립트 / 운영 도구 ──────────────────────
 scripts/
+src/scripts/
 
 # ── AI 도구 설정 ────────────────────────────────────
 .claude/
@@ -54,6 +56,8 @@ scripts/
 
 # ── 루트 임시 파일 / QA 아티팩트 ────────────────────
 public/DEPRECATED_TEST_FILES_REMOVED.md
+public/dev-test-index.html
+public/test-google-ai.html
 qa-*.png
 tmp-*.md
 *.log

@@ -149,6 +149,9 @@ apply_public_overrides() {
   if [[ -f "$PUBLIC_README" ]]; then
     info "공개 README 적용 중..."
     cp "$PUBLIC_README" "$WORK_DIR/README.md"
+    node "$REPO_ROOT/scripts/sync/render-public-readme.js" \
+      "$WORK_DIR/README.md" \
+      "$REPO_ROOT/package.json"
   fi
 
   if [[ -f "$WORK_DIR/package.json" ]]; then
@@ -164,10 +167,7 @@ apply_public_overrides() {
 }
 
 apply_frontend_scope
-
-if ! $DRY_RUN; then
-  apply_excludes
-fi
+apply_excludes
 
 apply_public_overrides
 
