@@ -20,6 +20,7 @@ function getEncryptionKey() {
 
 function decrypt(encryptedText) {
   try {
+    const encryptionKey = getEncryptionKey();
     let CryptoJS;
     try {
       CryptoJS = require('crypto-js');
@@ -29,7 +30,7 @@ function decrypt(encryptedText) {
       );
     }
 
-    const bytes = CryptoJS.AES.decrypt(encryptedText, getEncryptionKey());
+    const bytes = CryptoJS.AES.decrypt(encryptedText, encryptionKey);
     const decrypted = bytes.toString(CryptoJS.enc.Utf8);
     if (!decrypted) {
       throw new Error('복호화 결과가 비어있음');
