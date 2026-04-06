@@ -7,6 +7,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 const ORIGINAL_ENV = { ...process.env };
 
 const {
+  ENCRYPTED_TAVILY_GUIDANCE,
   loadTavilyApiKey,
 } = require('../../../scripts/test/tavily-key-loader.cjs');
 
@@ -23,26 +24,30 @@ describe('tavily-key-loader', () => {
     expect(loadTavilyApiKey()).toBe('tvly-demo-secret');
   });
 
-  it('fails closed when encrypted Tavily key is set without ENCRYPTION_KEY', () => {
+  it('fails with explicit retirement guidance when encrypted Tavily env var is set', () => {
     process.env.TAVILY_API_KEY_ENCRYPTED = 'dummy-payload';
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     expect(loadTavilyApiKey()).toBeNull();
     expect(errorSpy).toHaveBeenCalledWith(
       '❌ Tavily API 키 로드 실패:',
-      expect.stringContaining('ENCRYPTION_KEY가 필요합니다.')
+      ENCRYPTED_TAVILY_GUIDANCE
     );
   });
 
-  it('fails with explicit guidance when encrypted Tavily key needs missing crypto-js', () => {
-    process.env.ENCRYPTION_KEY = 'test-key';
-    process.env.TAVILY_API_KEY_ENCRYPTED = 'dummy-payload';
+  it('fails with explicit retirement guidance when deprecated config file exists', () => {
+    const fs = require('fs');
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(fs, 'existsSync').mockImplementation((target) =>
+      String(target)
+        .replace(/\\/g, '/')
+        .endsWith('/scripts/config/tavily-encrypted.json')
+    );
 
     expect(loadTavilyApiKey()).toBeNull();
     expect(errorSpy).toHaveBeenCalledWith(
       '❌ Tavily API 키 로드 실패:',
-      expect.stringContaining('crypto-js 의존성이 없어')
+      expect.stringContaining(ENCRYPTED_TAVILY_GUIDANCE)
     );
   });
 });

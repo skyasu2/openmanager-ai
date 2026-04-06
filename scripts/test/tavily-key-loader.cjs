@@ -8,38 +8,8 @@
 const fs = require('fs');
 const path = require('path');
 
-function getEncryptionKey() {
-  const encryptionKey = String(process.env.ENCRYPTION_KEY || '').trim();
-  if (!encryptionKey) {
-    throw new Error(
-      'ENCRYPTION_KEY가 필요합니다. 하드코딩된 기본 키 fallback은 허용되지 않습니다.'
-    );
-  }
-  return encryptionKey;
-}
-
-function decrypt(encryptedText) {
-  try {
-    const encryptionKey = getEncryptionKey();
-    let CryptoJS;
-    try {
-      CryptoJS = require('crypto-js');
-    } catch {
-      throw new Error(
-        'crypto-js 의존성이 없어 암호화된 Tavily 키를 복호화할 수 없습니다. 평문 TAVILY_API_KEY를 사용하거나 helper 의존성을 복원하세요.'
-      );
-    }
-
-    const bytes = CryptoJS.AES.decrypt(encryptedText, encryptionKey);
-    const decrypted = bytes.toString(CryptoJS.enc.Utf8);
-    if (!decrypted) {
-      throw new Error('복호화 결과가 비어있음');
-    }
-    return decrypted;
-  } catch (error) {
-    throw new Error(`복호화 실패: ${error.message}`);
-  }
-}
+const ENCRYPTED_TAVILY_GUIDANCE =
+  '암호화된 Tavily 키 경로는 더 이상 지원되지 않습니다. 평문 TAVILY_API_KEY를 직접 설정하세요.';
 
 function loadTavilyApiKey() {
   try {
@@ -48,21 +18,18 @@ function loadTavilyApiKey() {
       return process.env.TAVILY_API_KEY;
     }
 
-    // 2. 암호화된 환경 변수 확인
+    // 2. 폐기된 암호화 경로는 명시적으로 실패시켜 사용자가 즉시 수정할 수 있게 한다.
     if (process.env.TAVILY_API_KEY_ENCRYPTED) {
-      return decrypt(process.env.TAVILY_API_KEY_ENCRYPTED);
+      throw new Error(ENCRYPTED_TAVILY_GUIDANCE);
     }
 
-    // 3. 설정 파일에서 로드
+    // 3. 과거 설정 파일이 남아 있어도 더 이상 읽지 않는다.
     const configPath = path.join(__dirname, '../config/tavily-encrypted.json');
     if (fs.existsSync(configPath)) {
-      const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-      if (config.apiKey) {
-        return decrypt(config.apiKey);
-      }
+      throw new Error(`${ENCRYPTED_TAVILY_GUIDANCE} Deprecated file: ${configPath}`);
     }
 
-    throw new Error('Tavily API 키를 찾을 수 없습니다');
+    throw new Error('Tavily API 키를 찾을 수 없습니다. TAVILY_API_KEY를 설정하세요.');
   } catch (error) {
     console.error('❌ Tavily API 키 로드 실패:', error.message);
     return null;
@@ -71,7 +38,7 @@ function loadTavilyApiKey() {
 
 // 모듈로 내보내기
 if (module.exports) {
-  module.exports = { loadTavilyApiKey, decrypt };
+  module.exports = { loadTavilyApiKey, ENCRYPTED_TAVILY_GUIDANCE };
 }
 
 // CLI로 실행시 키 출력 (테스트용)
