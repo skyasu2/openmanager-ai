@@ -8,11 +8,13 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
-const { exec, execFile } = require('child_process');
+const { execFile } = require('child_process');
 const { promisify } = require('util');
-const execAsync = promisify(exec);
 const execFileAsync = promisify(execFile);
 let originalGitHubRemote = null;
+const REPO_ROOT = path.resolve(__dirname, '..', '..');
+const ENCRYPTED_PAT_PATH = path.join(REPO_ROOT, '.github-auth.json');
+const GITIGNORE_PATH = path.join(REPO_ROOT, '.gitignore');
 
 async function resolveGitHubRemoteName() {
   const preferredRemotes = [
@@ -59,10 +61,14 @@ const IV_LENGTH = 16;
 const TAG_LENGTH = 16;
 const SALT_LENGTH = 32;
 
-// 암호화 키 생성 (환경변수 또는 기본값 사용)
+// 암호화 키 생성 (환경변수 필수)
 const getEncryptionKey = () => {
-  const masterKey =
-    process.env.ENCRYPTION_KEY || 'openmanager-ai-default-key-2026';
+  const masterKey = process.env.ENCRYPTION_KEY;
+  if (!masterKey) {
+    throw new Error(
+      'ENCRYPTION_KEY가 필요합니다. 기본 키 fallback은 보안상 허용되지 않습니다.'
+    );
+  }
   return crypto.scryptSync(masterKey, 'salt', KEY_LENGTH);
 };
 
@@ -103,17 +109,17 @@ function decryptPAT(encryptedData) {
 // 암호화된 PAT 저장
 function saveEncryptedPAT(pat) {
   const encryptedData = encryptPAT(pat);
-  const configPath = path.join(__dirname, '..', '.github-auth.json');
 
-  fs.writeFileSync(configPath, JSON.stringify(encryptedData, null, 2));
+  fs.writeFileSync(ENCRYPTED_PAT_PATH, JSON.stringify(encryptedData, null, 2), {
+    mode: 0o600,
+  });
   console.log('✅ GitHub PAT이 안전하게 암호화되어 저장되었습니다.');
 
   // .gitignore에 추가
-  const gitignorePath = path.join(__dirname, '..', '.gitignore');
-  const gitignoreContent = fs.readFileSync(gitignorePath, 'utf8');
+  const gitignoreContent = fs.readFileSync(GITIGNORE_PATH, 'utf8');
   if (!gitignoreContent.includes('.github-auth.json')) {
     fs.appendFileSync(
-      gitignorePath,
+      GITIGNORE_PATH,
       '\n# GitHub 인증 정보\n.github-auth.json\n'
     );
   }
@@ -121,15 +127,13 @@ function saveEncryptedPAT(pat) {
 
 // 암호화된 PAT 로드
 function loadEncryptedPAT() {
-  const configPath = path.join(__dirname, '..', '.github-auth.json');
-
-  if (!fs.existsSync(configPath)) {
+  if (!fs.existsSync(ENCRYPTED_PAT_PATH)) {
     throw new Error(
       '암호화된 GitHub PAT을 찾을 수 없습니다. 먼저 설정해주세요.'
     );
   }
 
-  const encryptedData = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+  const encryptedData = JSON.parse(fs.readFileSync(ENCRYPTED_PAT_PATH, 'utf8'));
   return decryptPAT(encryptedData);
 }
 
@@ -137,7 +141,7 @@ function loadEncryptedPAT() {
 async function updateGitRemote(pat) {
   try {
     const remoteName = await resolveGitHubRemoteName();
-    const { stdout: remoteUrl } = await execAsync(`git remote get-url ${remoteName}`);
+    const { stdout: remoteUrl } = await execFileAsync('git', ['remote', 'get-url', remoteName]);
     const currentRemoteUrl = remoteUrl.trim();
     const url = toGitHubHttpsUrl(currentRemoteUrl);
 
@@ -204,16 +208,20 @@ async function main() {
 
   switch (command) {
     case 'setup':
-      // PAT 설정 (환경변수 또는 인자에서 가져오기)
-      const pat = process.env.GITHUB_PAT || process.argv[3];
-      if (!pat) {
-        console.error(
-          '사용법: GITHUB_PAT=xxx node github-auth-helper.cjs setup'
-        );
-        console.error('또는: node github-auth-helper.cjs setup <PAT>');
+      try {
+        const pat = process.env.GITHUB_PAT || process.argv[3];
+        if (!pat) {
+          console.error(
+            '사용법: ENCRYPTION_KEY=... GITHUB_PAT=xxx node github-auth-helper.cjs setup'
+          );
+          console.error('또는: node github-auth-helper.cjs setup <PAT>');
+          process.exit(1);
+        }
+        saveEncryptedPAT(pat);
+      } catch (error) {
+        console.error('Setup 실패:', error.message);
         process.exit(1);
       }
-      saveEncryptedPAT(pat);
       break;
 
     case 'push':
@@ -235,18 +243,21 @@ async function main() {
 🔐 GitHub 인증 헬퍼
 
 사용법:
-  node github-auth-helper.js setup <PAT>  - PAT 암호화 저장
-  node github-auth-helper.js push [branch] - 안전한 git push
+  ENCRYPTION_KEY=... node github-auth-helper.cjs setup <PAT>   - PAT 암호화 저장
+  ENCRYPTION_KEY=... node github-auth-helper.cjs push [branch] - 안전한 git push
 
 예시:
-  node github-auth-helper.js setup [YOUR_GITHUB_TOKEN_HERE]
-  node github-auth-helper.js push main
+  ENCRYPTION_KEY=... node github-auth-helper.cjs setup [YOUR_GITHUB_TOKEN_HERE]
+  ENCRYPTION_KEY=... node github-auth-helper.cjs push main
       `);
   }
 }
 
 if (require.main === module) {
-  main().catch(console.error);
+  main().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
 }
 
 module.exports = { encryptPAT, decryptPAT, saveEncryptedPAT, loadEncryptedPAT };

@@ -107,10 +107,14 @@ check_equal \
   "$(git config --local --get branch.main.merge 2>/dev/null || true)" \
   "refs/heads/main"
 
-check_equal \
-  "branch.main.vscode-merge-base(local)" \
-  "$(git config --local --get branch.main.vscode-merge-base 2>/dev/null || true)" \
-  "gitlab/main"
+vscode_merge_base="$(git config --local --get branch.main.vscode-merge-base 2>/dev/null || true)"
+if [[ -z "$vscode_merge_base" ]]; then
+  warn "branch.main.vscode-merge-base(local) is unset (optional IDE hint)"
+elif [[ "$vscode_merge_base" == "gitlab/main" ]]; then
+  pass "branch.main.vscode-merge-base(local): $vscode_merge_base"
+else
+  warn "branch.main.vscode-merge-base(local) expected 'gitlab/main' (actual: '$vscode_merge_base')"
+fi
 
 if has_fixed_text 'npm run hook:pre-push -- "$@"' .husky/pre-push; then
   pass "husky pre-push forwards remote args"
