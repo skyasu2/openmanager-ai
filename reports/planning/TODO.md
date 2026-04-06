@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-07 KST (v8.10.10, Knip 타입 정리 완료 — ai-sidebar 6개 + intelligent-monitoring 9개 제거)
+**Last Updated**: 2026-04-07 KST (v8.10.10, common.ts 미사용 타입 18개 1차 정리 완료)
 
 ## Active Tasks
 
@@ -18,7 +18,10 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| P3: Knip unused export types 정리 (잔여) | Low | src/types/common.ts 내부 의존성 복잡 — CloudProvider/BaseService/BaseAlert 등 19개 미사용 확인됨, 단계적 정리 필요. non-blocking |
+| P3: Knip unused export types 정리 (잔여) | Low | `src/types/common.ts` 1차 정리 후 남은 미사용/재수출 후보 재점검 필요. 현재 blocker 없음, 추가 잔여는 실제 참조 그래프 재확인 후 소단위로 정리. |
+
+### Completed (2026-04-07 #17)
+- [x] P3: `src/types/common.ts` 미사용 export 1차 정리 — 전역 참조 0회인 `CloudProvider`, `BaseService`, `BaseAlert`, `MetadataValue`, `ServerMetadata`, `ExtensibleMetadata`, `BaseServer`, `ApiErrorDetails`, `BaseApiResponse`, `TimeRange`, `FilterOptions`, `SortOptions`, `LogDataValue`, `LogData`, `ErrorContextValue`, `ErrorContext`, `DeepPartial`, `AnalysisDetail` 제거. 내부 전용 `isMetadataValue`/`_isLogData`/`_isErrorContext` 헬퍼도 함께 삭제.
 
 ### Completed (2026-04-07 #16)
 - [x] P3: Knip unused export 정리 — `src/types/ai-sidebar/`: AIEngineInfo/AISidebarHandlers/AISidebarProps/AutoReportTrigger/SessionInfo/UseAISidebarReturn 6개 제거. `src/types/intelligent-monitoring.types.ts`: 구형 IntelligentAnalysis* 타입 블록 전체 + SimpleAnalysisRequest 9개 제거. TypeScript 에러 0.
