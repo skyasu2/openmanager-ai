@@ -212,6 +212,24 @@ describe('release publish script', () => {
     );
   });
 
+  it('fails preflight when main upstream is unset', () => {
+    const repoDir = initReleaseRepo();
+    runCommand('git', ['-C', repoDir, 'branch', '--unset-upstream'], {
+      cwd: process.cwd(),
+    });
+
+    const result = runPublish(repoDir);
+
+    expect(result.status).toBe(1);
+    expect(`${result.stdout}${result.stderr}`).toContain(
+      '❌ main upstream이 gitlab/main 이어야 합니다.'
+    );
+    expect(`${result.stdout}${result.stderr}`).toContain('current: none');
+    expect(`${result.stdout}${result.stderr}`).toContain(
+      'Fix: git branch --set-upstream-to=gitlab/main main'
+    );
+  });
+
   it('fails preflight when main upstream is not gitlab/main', () => {
     const repoDir = initReleaseRepo();
     const bareRemoteDir = createTempDir('release-publish-alt-remote-');
