@@ -168,6 +168,19 @@ describe('release publish script', () => {
     expect(`${result.stdout}${result.stderr}`).toContain('current: origin');
   });
 
+  it('fails preflight when the worktree is dirty', () => {
+    const repoDir = initReleaseRepo();
+    writeFileSync(join(repoDir, 'README.md'), '# fixture updated\n', 'utf8');
+
+    const result = runPublish(repoDir);
+
+    expect(result.status).toBe(1);
+    expect(`${result.stdout}${result.stderr}`).toContain(
+      '❌ 커밋되지 않은 변경사항이 있습니다. 먼저 커밋하세요.'
+    );
+    expect(`${result.stdout}${result.stderr}`).toContain('M README.md');
+  });
+
   it('fails preflight when current branch is not main', () => {
     const repoDir = initReleaseRepo();
     runCommand('git', ['-C', repoDir, 'switch', '-c', 'release-prep'], {
