@@ -3,7 +3,7 @@
 > Owner: team
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-03-14
+> Last reviewed: 2026-04-06
 
 프로젝트 자동화 및 유틸리티 스크립트 모음.
 
@@ -89,6 +89,24 @@ npm run type-check
 # Biome 포맷팅
 bash scripts/dev/biome-wrapper.sh
 ```
+
+### Git / Release 유틸리티
+
+```bash
+# canonical release commit/tag 생성 후 GitLab main으로 push
+npm run release:patch
+git push gitlab --follow-tags
+
+# public GitHub snapshot refresh
+npm run sync:github
+
+# GitHub PAT helper 사용 시 ENCRYPTION_KEY 필수
+ENCRYPTION_KEY='long-random-passphrase' GITHUB_PAT=ghp_xxx \
+  node scripts/test/github-auth-helper.cjs setup
+```
+
+- `scripts/release/publish.sh`: canonical release 경로만 지원합니다. GitHub release/tag 권위는 없습니다.
+- `scripts/test/github-auth-helper.cjs`: 예외적 GitHub HTTPS push helper이며, `.github-auth.json` 사용 시 `ENCRYPTION_KEY`를 반드시 직접 지정해야 합니다.
 
 - `scripts/dev/tsc-wrapper.js`는 로컬 `typescript/bin/tsc`를 실행하며 `SIGINT`/`SIGTERM`/`SIGHUP`를 자식 프로세스로 전달한다.
 - `TSC_WRAPPER_TIMEOUT_MS`를 주면 full type-check에도 opt-in timeout을 적용할 수 있고, `TSC_WRAPPER_KILL_GRACE_MS`로 SIGTERM 이후 강제 종료 grace period를 조정할 수 있다.
