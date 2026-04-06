@@ -7,6 +7,7 @@ import { describe, expect, it } from 'vitest';
 const {
   DEFAULT_NODE_CONFIG,
   DEV_NODE_CONFIG,
+  FAST_NODE_TEST_PREFIXES,
   buildVitestArgs,
   extractTargetFiles,
   shouldUseDevNodeConfig,
@@ -31,6 +32,16 @@ describe('vitest-node-wrapper', () => {
         'tests/unit/dev/pre-push-guards.test.ts',
       ])
     ).toBe(true);
+  });
+
+  it('selects dev node config for qa script tests too', () => {
+    expect(
+      shouldUseDevNodeConfig([
+        'tests/unit/qa/qa-scripts.test.ts',
+        'tests/unit/dev/github-sync.test.ts',
+      ])
+    ).toBe(true);
+    expect(FAST_NODE_TEST_PREFIXES).toContain('tests/unit/qa/');
   });
 
   it('falls back to the default node config for mixed or non-dev targets', () => {

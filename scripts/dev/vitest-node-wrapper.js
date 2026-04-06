@@ -7,7 +7,7 @@ const { spawn } = require('child_process');
 const projectRoot = path.resolve(__dirname, '../..');
 const DEFAULT_NODE_CONFIG = 'config/testing/vitest.config.node.ts';
 const DEV_NODE_CONFIG = 'config/testing/vitest.config.dev.ts';
-const DEV_TEST_PREFIX = 'tests/unit/dev/';
+const FAST_NODE_TEST_PREFIXES = ['tests/unit/dev/', 'tests/unit/qa/'];
 
 function resolveVitestCli() {
   const pkgPath = require.resolve('vitest/package.json');
@@ -40,7 +40,9 @@ function extractTargetFiles(argv) {
 function shouldUseDevNodeConfig(targetFiles) {
   return (
     targetFiles.length > 0 &&
-    targetFiles.every((filePath) => filePath.startsWith(DEV_TEST_PREFIX))
+    targetFiles.every((filePath) =>
+      FAST_NODE_TEST_PREFIXES.some((prefix) => filePath.startsWith(prefix))
+    )
   );
 }
 
@@ -79,7 +81,7 @@ if (require.main === module) {
 module.exports = {
   DEFAULT_NODE_CONFIG,
   DEV_NODE_CONFIG,
-  DEV_TEST_PREFIX,
+  FAST_NODE_TEST_PREFIXES,
   extractTargetFiles,
   shouldUseDevNodeConfig,
   buildVitestArgs,

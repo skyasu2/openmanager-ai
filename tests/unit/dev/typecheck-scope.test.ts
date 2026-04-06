@@ -22,6 +22,10 @@ describe('typecheck-scope', () => {
     expect(isTypeCheckInfraFile('scripts/dev/typecheck-report.js')).toBe(true);
     expect(isTypeCheckInfraFile('scripts/dev/tsc-runner.js')).toBe(true);
     expect(isTypeCheckInfraFile('package.json')).toBe(true);
+    expect(isTypeCheckInfraFile('config/testing/vitest.config.dev.ts')).toBe(
+      true
+    );
+    expect(isTypeCheckInfraFile('config/testing/shared-aliases.ts')).toBe(true);
   });
 
   it('still excludes test and story files from app source classification', () => {
@@ -37,6 +41,7 @@ describe('typecheck-scope', () => {
       filterTypeCheckRelevantFiles([
         'scripts/dev/tsc-wrapper.js',
         'scripts/dev/typecheck-report.js',
+        'config/testing/vitest.config.dev.ts',
         'tsconfig.release.json',
         'src/hooks/example.test.ts',
         'docs/guide.md',
@@ -44,6 +49,7 @@ describe('typecheck-scope', () => {
     ).toEqual([
       'scripts/dev/tsc-wrapper.js',
       'scripts/dev/typecheck-report.js',
+      'config/testing/vitest.config.dev.ts',
       'tsconfig.release.json',
     ]);
   });

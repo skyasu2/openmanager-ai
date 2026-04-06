@@ -22,6 +22,7 @@ function isTypeCheckInfraFile(filePath) {
     normalized === 'package.json' ||
     normalized === 'next-env.d.ts' ||
     path.matchesGlob(normalized, 'tsconfig*.json') ||
+    path.matchesGlob(normalized, 'config/testing/*.{ts,tsx}') ||
     path.matchesGlob(normalized, 'scripts/dev/typecheck-*') ||
     path.matchesGlob(normalized, 'scripts/dev/tsc-*')
   );
