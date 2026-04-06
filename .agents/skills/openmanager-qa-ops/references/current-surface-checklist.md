@@ -114,58 +114,61 @@ not just the original baseline flow.
 
 ## Current Production Reference
 
-- Treat `QA-20260402-0213` as the current broad production reference for
-  `v8.10.8` until a newer release-facing run supersedes it.
+- Treat `QA-20260406-0246` as the current broad production reference for
+  `v8.10.9` until a newer release-facing run supersedes it.
 - Reference source:
-  - `reports/qa/runs/2026/qa-run-QA-20260402-0213.json`
+  - `reports/qa/runs/2026/qa-run-QA-20260406-0246.json`
   - `reports/qa/qa-tracker.json`
   - `reports/qa/QA_STATUS.md`
-- When a future QA run covers the same surface, compare deltas against this run
-  instead of paraphrasing from memory.
+- Compare future broad/release-facing runs against this run instead of
+  paraphrasing from memory.
+- Previous comparable baseline:
+  - `QA-20260402-0213` (`v8.10.8`)
 
-### QA-20260402-0213 Proven Surface
+### QA-20260406-0246 Proven Surface
 
-- landing render + `v8.10.8`
+- landing render + `v8.10.9`
 - `Vibe Coding` modal 3 tabs:
   - `현재 도구`
   - `개발 환경 변화`
   - `CI/CD`
-- `Vibe Coding` overview copy aligned to `배포·CI/CD 파이프라인`
 - `CI/CD` tab pipeline content aligned to:
-  - `로컬 훅 -> GitLab -> validate -> deploy -> Vercel`
+  - `로컬 훅 -> GitLab push -> validate -> deploy -> production`
 - modal close + focus return
 - `/login` minimal header:
-  - `UnifiedProfileHeader` absent
+  - profile menu absent before auth
 - guest PIN login:
   - `4231`
   - login success -> landing redirect
 - system start countdown:
-  - `4s`
+  - starts at `4초`
+  - `/system-boot` observed
   - redirect to `/dashboard`
 - dashboard:
-  - `15` servers
+  - `15` total
   - `14` online
-  - `1` risk
+  - `1` warning
+  - `0` risk
   - resource alert top5 visible
 - AI sidebar open:
-  - engine ready
+  - engine status `Ready`
 - AI chat:
-  - `/api/ai/supervisor/stream/v2` returns `200`
-  - `lb-haproxy-dc1-01` CPU `85%` correctly identified
-- API health/version:
-  - `/api/health` healthy (`db:7ms`, `cache:5ms`, `ai:5ms`)
-  - `/api/version` = `8.10.8`, `Next.js 16.1.6`
+  - sidebar prompt `CPU 사용률이 높은 서버를 찾아줘`
+  - response summary identifies `lb-haproxy-dc1-01` at `65%`
+- API health/version/system:
+  - `/api/health` `200`
+  - `/api/version` = `8.10.9`, `Next.js 16.1.6`, `production`
+  - `/api/system` `200`
 - runtime cleanliness:
-  - browser console errors `0`
-  - `/api/system` `401` regression not reproduced
+  - browser console errors `0` during the tested landing/login/dashboard/sidebar flow
 
 ### Reporting Rule For Similar Runs
 
 - If a later run covers the same release-facing broad surface, report:
-  - what remained green vs `QA-20260402-0213`
+  - what remained green vs `QA-20260406-0246`
   - what regressed
   - what was intentionally skipped
 - Avoid vague statements like `same as previous broad QA`.
 - Name the concrete delta, for example:
-  - `Vibe Coding modal still green vs QA-20260402-0213`
-  - `dashboard AI chat regressed from QA-20260402-0213 baseline`
+  - `Vibe Coding modal still green vs QA-20260406-0246`
+  - `dashboard AI chat regressed from QA-20260406-0246 baseline`

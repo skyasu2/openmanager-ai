@@ -1,0 +1,101 @@
+{
+  "runId": "QA-20260406-0246",
+  "recordedAt": "2026-04-06T10:57:23.899Z",
+  "recordedAtKst": "2026-04-06 19:57:23 KST",
+  "runTitle": "Playwright MCP Production QA - Frontend + AI Assistant v8.10.9 broad baseline refresh",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_EEf7zEdMXFGHWYqYSNMACmtXynQ8",
+    "deploymentUrl": "https://openmanager-q8teujryn-skyasus-projects.vercel.app",
+    "commitSha": "9e722456e9c7e4d0e7595e05fe502b4009b13c6d"
+  },
+  "scope": "broad",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "landing render + v8.10.9 badge",
+    "Vibe Coding modal tabs: 현재 도구 / 개발 환경 변화 / CI/CD",
+    "Vibe Coding CI/CD content aligns to local hook -> GitLab push -> validate -> deploy -> production",
+    "Vibe Coding modal close returns focus to trigger button",
+    "/login minimal header without profile menu",
+    "guest PIN login 4231 succeeds and returns to landing",
+    "system start countdown begins at 4초 and reaches /system-boot -> /dashboard",
+    "dashboard render with 15 total / 14 online / 1 warning / 0 risk and resource top5",
+    "AI sidebar opens with engine Ready state",
+    "AI chat prompt 'CPU 사용률이 높은 서버를 찾아줘' returns current CPU summary with lb-haproxy-dc1-01 at 65%",
+    "/api/health 200 with connected services",
+    "/api/version 200 with v8.10.9 / Next.js 16.1.6 / production",
+    "/api/system 200 (prior 401 regression not reproduced)",
+    "browser console errors 0 before intentional non-test fetches"
+  ],
+  "skippedSurfaces": [
+    "Reporter full report flow",
+    "Analyst advanced forecast flow",
+    "fullscreen AI workspace",
+    "modal detail pack outside Vibe Coding",
+    "Cloud Run observability endpoints"
+  ],
+  "checks": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Core route, dashboard, and AI sidebar/chat broad surface was exercised on live production with concrete UI and API checkpoints.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Deployment identity, version metadata, usage budget, and production route readiness are aligned with the current GitLab-first topology.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "AI core surface was verified via sidebar readiness and one live CPU-summary prompt, but fullscreen/reporter/analyst variants remain outside this broad pack.",
+      "nextAction": "Run a deeper AI advanced-surface pack when the next runtime-facing change lands."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "",
+      "summary": "Current billing period reviewed during broad production QA; effective 3.2825 USD, billed 0.0000 USD, no unexpected billed usage spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": ""
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": [
+    {
+      "type": "vercel-deployment",
+      "label": "Latest production deployment",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/EEf7zEdMXFGHWYqYSNMACmtXynQ8"
+    }
+  ]
+}

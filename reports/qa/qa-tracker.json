@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-06T10:33:12.537Z"
+    "updatedAt": "2026-04-06T10:57:23.899Z"
   },
   "sequence": {
-    "nextRunNumber": 246
+    "nextRunNumber": 247
   },
   "summary": {
-    "totalRuns": 230,
-    "totalChecks": 1778,
-    "totalPassed": 1708,
+    "totalRuns": 231,
+    "totalChecks": 1791,
+    "totalPassed": 1721,
     "totalFailed": 64,
     "completionRate": 100,
     "completedItems": 277,
@@ -18,11 +18,11 @@
     "deferredItems": 0,
     "wontFixItems": 14,
     "expertDomainsTracked": 8,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260406-0244",
-    "lastRecordedAt": "2026-04-05T22:02:34.705Z",
-    "latestRecordedRunId": "QA-20260406-0245",
-    "latestRecordedAt": "2026-04-06T10:33:12.537Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260406-0246",
+    "lastRecordedAt": "2026-04-06T10:57:23.899Z",
+    "latestRecordedRunId": "QA-20260406-0246",
+    "latestRecordedAt": "2026-04-06T10:57:23.899Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -21332,6 +21332,109 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260406-0246",
+      "recordedAt": "2026-04-06T10:57:23.899Z",
+      "recordedAtKst": "2026-04-06 19:57:23 KST",
+      "title": "Playwright MCP Production QA - Frontend + AI Assistant v8.10.9 broad baseline refresh",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260406-0246.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_EEf7zEdMXFGHWYqYSNMACmtXynQ8",
+        "deploymentUrl": "https://openmanager-q8teujryn-skyasus-projects.vercel.app",
+        "commitSha": "9e722456e9c7e4d0e7595e05fe502b4009b13c6d"
+      },
+      "scope": "broad",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveredSurfaces": [
+        "landing render + v8.10.9 badge",
+        "Vibe Coding modal tabs: 현재 도구 / 개발 환경 변화 / CI/CD",
+        "Vibe Coding CI/CD content aligns to local hook -> GitLab push -> validate -> deploy -> production",
+        "Vibe Coding modal close returns focus to trigger button",
+        "/login minimal header without profile menu",
+        "guest PIN login 4231 succeeds and returns to landing",
+        "system start countdown begins at 4초 and reaches /system-boot -> /dashboard",
+        "dashboard render with 15 total / 14 online / 1 warning / 0 risk and resource top5",
+        "AI sidebar opens with engine Ready state",
+        "AI chat prompt 'CPU 사용률이 높은 서버를 찾아줘' returns current CPU summary with lb-haproxy-dc1-01 at 65%",
+        "/api/health 200 with connected services",
+        "/api/version 200 with v8.10.9 / Next.js 16.1.6 / production",
+        "/api/system 200 (prior 401 regression not reproduced)",
+        "browser console errors 0 before intentional non-test fetches"
+      ],
+      "skippedSurfaces": [
+        "Reporter full report flow",
+        "Analyst advanced forecast flow",
+        "fullscreen AI workspace",
+        "modal detail pack outside Vibe Coding",
+        "Cloud Run observability endpoints"
+      ],
+      "checks": {
+        "total": 13,
+        "passed": 13,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Core route, dashboard, and AI sidebar/chat broad surface was exercised on live production with concrete UI and API checkpoints.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Deployment identity, version metadata, usage budget, and production route readiness are aligned with the current GitLab-first topology.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "AI core surface was verified via sidebar readiness and one live CPU-summary prompt, but fullscreen/reporter/analyst variants remain outside this broad pack.",
+          "nextAction": "Run a deeper AI advanced-surface pack when the next runtime-facing change lands."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "",
+          "summary": "Current billing period reviewed during broad production QA; effective 3.2825 USD, billed 0.0000 USD, no unexpected billed usage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": ""
+        }
+      ],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "vercel-deployment",
+          "label": "Latest production deployment",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/EEf7zEdMXFGHWYqYSNMACmtXynQ8"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -21340,17 +21443,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 116,
+      "seenCount": 117,
       "appropriateCount": 112,
-      "partialCount": 4,
+      "partialCount": 5,
       "inappropriateCount": 0,
-      "improvementNeededCount": 14,
-      "lastRunId": "QA-20260405-0236",
-      "lastSeenAt": "2026-04-05T05:47:50.876Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "Fullscreen AI workspace route, starter prompt send, and production response completion were verified in the same session as the secondary route checks.",
-      "lastNextAction": ""
+      "improvementNeededCount": 15,
+      "lastRunId": "QA-20260406-0246",
+      "lastSeenAt": "2026-04-06T10:57:23.899Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "AI core surface was verified via sidebar readiness and one live CPU-summary prompt, but fullscreen/reporter/analyst variants remain outside this broad pack.",
+      "lastNextAction": "Run a deeper AI advanced-surface pack when the next runtime-facing change lands."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -21391,16 +21494,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 69,
-      "appropriateCount": 66,
+      "seenCount": 70,
+      "appropriateCount": 67,
       "partialCount": 3,
       "inappropriateCount": 0,
       "improvementNeededCount": 7,
-      "lastRunId": "QA-20260405-0236",
-      "lastSeenAt": "2026-04-05T05:47:50.876Z",
+      "lastRunId": "QA-20260406-0246",
+      "lastSeenAt": "2026-04-06T10:57:23.899Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The same promoted Vercel production deployment stayed healthy while secondary routes, guest handoff, dashboard modals, and AI route transitions were exercised.",
+      "lastRationale": "Deployment identity, version metadata, usage budget, and production route readiness are aligned with the current GitLab-first topology.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -21408,16 +21511,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 100,
-      "appropriateCount": 93,
+      "seenCount": 101,
+      "appropriateCount": 94,
       "partialCount": 7,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260405-0236",
-      "lastSeenAt": "2026-04-05T05:47:50.876Z",
+      "lastRunId": "QA-20260406-0246",
+      "lastSeenAt": "2026-04-06T10:57:23.899Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "This complementary release-gate run extends reusable Playwright MCP evidence to routes and modals that were skipped in the prior release-gate run.",
+      "lastRationale": "Core route, dashboard, and AI sidebar/chat broad surface was exercised on live production with concrete UI and API checkpoints.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
