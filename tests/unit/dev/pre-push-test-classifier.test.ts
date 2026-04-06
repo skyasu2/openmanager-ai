@@ -111,6 +111,11 @@ describe('classifyChangedTestRun', () => {
     expect(result.mode).toContain('DOM infra smoke');
   });
 
+  it('returns null for node-only test config changes', () => {
+    const result = run(['config/testing/vitest.config.dev.ts']);
+    expect(result).toBeNull();
+  });
+
   it('returns null for package.json-only changes so runner can fall back to quick smoke', () => {
     const result = run(['package.json']);
     expect(result).toBeNull();

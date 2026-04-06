@@ -15,9 +15,13 @@ const CLOUD_RUN_ROOT = 'cloud-run/ai-engine';
 
 const DOM_INFRA_SMOKE_SENTINEL = 'src/test/setup.ts';
 
-const DOM_TEST_INFRA_PREFIXES = ['config/testing/'];
-
 const DOM_TEST_INFRA_EXACT = new Set([
+  'config/testing/dom-test-globs.ts',
+  'config/testing/dom-test-manifest.json',
+  'config/testing/msw-setup.ts',
+  'config/testing/shared-aliases.ts',
+  'config/testing/vitest.config.dom.ts',
+  'config/testing/vitest.config.main.ts',
   'scripts/dev/vitest-main-wrapper.js',
   DOM_INFRA_SMOKE_SENTINEL,
 ]);
@@ -120,8 +124,7 @@ function isRelatedSourceFile(filePath) {
 
 function isDomTestInfraFile(filePath) {
   const normalized = normalizeFilePath(filePath);
-  if (DOM_TEST_INFRA_EXACT.has(normalized)) return true;
-  return DOM_TEST_INFRA_PREFIXES.some((prefix) => normalized.startsWith(prefix));
+  return DOM_TEST_INFRA_EXACT.has(normalized);
 }
 
 function isHookTestInfraFile(filePath) {
@@ -144,7 +147,6 @@ function isDomTestFile(filePath, domTestManifest) {
 module.exports = {
   CLOUD_RUN_ROOT,
   DOM_INFRA_SMOKE_SENTINEL,
-  DOM_TEST_INFRA_PREFIXES,
   DOM_TEST_INFRA_EXACT,
   HOOK_TEST_INFRA_EXACT,
   FRONTEND_SMOKE_PREFIXES,

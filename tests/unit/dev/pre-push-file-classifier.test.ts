@@ -186,14 +186,20 @@ describe('isDomTestInfraFile', () => {
     expect(DOM_TEST_INFRA_EXACT.has('package.json')).toBe(false);
   });
 
-  it('matches config/testing/ prefix', () => {
+  it('matches DOM-specific config files exactly', () => {
     expect(isDomTestInfraFile('config/testing/vitest.config.dom.ts')).toBe(
+      true
+    );
+    expect(isDomTestInfraFile('config/testing/vitest.config.main.ts')).toBe(
       true
     );
   });
 
   it('excludes unrelated files', () => {
     expect(isDomTestInfraFile('src/components/Foo.tsx')).toBe(false);
+    expect(isDomTestInfraFile('config/testing/vitest.config.dev.ts')).toBe(
+      false
+    );
   });
 });
 
