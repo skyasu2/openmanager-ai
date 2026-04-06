@@ -18,7 +18,6 @@ const DOM_INFRA_SMOKE_SENTINEL = 'src/test/setup.ts';
 const DOM_TEST_INFRA_PREFIXES = ['config/testing/'];
 
 const DOM_TEST_INFRA_EXACT = new Set([
-  'package.json',
   'scripts/dev/vitest-main-wrapper.js',
   DOM_INFRA_SMOKE_SENTINEL,
 ]);

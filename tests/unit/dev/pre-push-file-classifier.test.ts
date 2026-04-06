@@ -181,9 +181,9 @@ describe('isDomTestInfraFile', () => {
     expect(isDomTestInfraFile(DOM_INFRA_SMOKE_SENTINEL)).toBe(true);
   });
 
-  it('matches package.json (exact)', () => {
-    expect(isDomTestInfraFile('package.json')).toBe(true);
-    expect(DOM_TEST_INFRA_EXACT.has('package.json')).toBe(true);
+  it('does not treat package.json as DOM infra exact anymore', () => {
+    expect(isDomTestInfraFile('package.json')).toBe(false);
+    expect(DOM_TEST_INFRA_EXACT.has('package.json')).toBe(false);
   });
 
   it('matches config/testing/ prefix', () => {

@@ -111,6 +111,11 @@ describe('classifyChangedTestRun', () => {
     expect(result.mode).toContain('DOM infra smoke');
   });
 
+  it('returns null for package.json-only changes so runner can fall back to quick smoke', () => {
+    const result = run(['package.json']);
+    expect(result).toBeNull();
+  });
+
   it('routes hook infra file to quick smoke when no other steps', () => {
     const result = run(['scripts/hooks/pre-push.js']);
     expect(result).not.toBeNull();
