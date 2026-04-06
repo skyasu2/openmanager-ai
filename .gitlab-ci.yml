@@ -29,6 +29,13 @@ image: node:24-bookworm
   - vercel.json
   - .env.example
   - cloud-run/ai-engine/**/*
+  - scripts/deploy/**/*
+  - scripts/git/**/*
+  - scripts/gitlab/**/*
+  - scripts/hooks/**/*
+  - scripts/release/**/*
+  - scripts/sync/**/*
+  - scripts/test/github-auth-helper.cjs
   - scripts/ci/ai-engine-post-deploy-smoke.sh
   - .gitlab-ci.yml
 
@@ -42,6 +49,13 @@ image: node:24-bookworm
   - tsconfig.json
   - vercel.json
   - .env.example
+  - scripts/deploy/**/*
+  - scripts/git/**/*
+  - scripts/gitlab/**/*
+  - scripts/hooks/**/*
+  - scripts/release/**/*
+  - scripts/sync/**/*
+  - scripts/test/github-auth-helper.cjs
   - .gitlab-ci.yml
 
 .frontend_deploy_paths: &frontend_deploy_paths

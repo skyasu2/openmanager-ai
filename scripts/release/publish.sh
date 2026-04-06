@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # scripts/release/publish.sh
-# Full release pipeline: version bump → push → GitHub Release
+# Canonical release pipeline: version bump -> consistency check -> push commit/tag to GitLab
 #
 # Usage:
 #   ./scripts/release/publish.sh           # auto (commit-and-tag-version decides)
@@ -13,39 +13,7 @@ set -euo pipefail
 
 RELEASE_TYPE="${1:-}"
 DRY_RUN="${DRY_RUN:-}"
-PREFERRED_GITHUB_REMOTE="${GITHUB_PUBLIC_REMOTE:-github-public}"
-LEGACY_GITHUB_REMOTE="${GITHUB_PUBLIC_LEGACY_REMOTE:-origin}"
-
-resolve_github_remote() {
-  local remote
-  for remote in "$PREFERRED_GITHUB_REMOTE" "$LEGACY_GITHUB_REMOTE"; do
-    [[ -z "$remote" ]] && continue
-    if git remote get-url "$remote" >/dev/null 2>&1; then
-      printf '%s\n' "$remote"
-      return 0
-    fi
-  done
-  return 1
-}
-
-GITHUB_REMOTE="$(resolve_github_remote || true)"
-
-# ── Preflight ──────────────────────────────────────────────
-if ! command -v gh &>/dev/null; then
-  echo "❌ gh CLI가 설치되어 있지 않습니다." >&2
-  exit 1
-fi
-
-if ! gh auth status &>/dev/null 2>&1; then
-  echo "❌ gh 인증이 필요합니다: gh auth login" >&2
-  exit 1
-fi
-
-if [[ -n "$(git status --porcelain)" ]]; then
-  echo "❌ 커밋되지 않은 변경사항이 있습니다. 먼저 커밋하세요." >&2
-  git status --short
-  exit 1
-fi
+CANONICAL_REMOTE="${CANONICAL_REMOTE:-gitlab}"
 
 # ── Dry-run mode ───────────────────────────────────────────
 if [[ -n "$DRY_RUN" ]]; then
@@ -55,7 +23,42 @@ if [[ -n "$DRY_RUN" ]]; then
   else
     npx commit-and-tag-version --dry-run
   fi
+  echo ""
+  echo "ℹ️  Dry-run output may mention origin because commit-and-tag-version prints its default hint."
+  echo "   Actual canonical publish path in this repository is: git push --follow-tags ${CANONICAL_REMOTE} main"
   exit 0
+fi
+
+# ── Preflight ──────────────────────────────────────────────
+if ! git remote get-url "$CANONICAL_REMOTE" >/dev/null 2>&1; then
+  echo "❌ Canonical remote '$CANONICAL_REMOTE'가 없습니다." >&2
+  exit 1
+fi
+
+if [[ -n "$(git status --porcelain)" ]]; then
+  echo "❌ 커밋되지 않은 변경사항이 있습니다. 먼저 커밋하세요." >&2
+  git status --short
+  exit 1
+fi
+
+CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+UPSTREAM_BRANCH="$(git rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' 2>/dev/null || true)"
+PUSH_DEFAULT="$(git config --get remote.pushDefault 2>/dev/null || true)"
+
+if [[ "$CURRENT_BRANCH" != "main" ]]; then
+  echo "❌ 릴리즈는 main 브랜치에서만 허용됩니다. (current: ${CURRENT_BRANCH:-unknown})" >&2
+  exit 1
+fi
+
+if [[ "$UPSTREAM_BRANCH" != "${CANONICAL_REMOTE}/main" ]]; then
+  echo "❌ main upstream이 ${CANONICAL_REMOTE}/main 이어야 합니다. (current: ${UPSTREAM_BRANCH:-none})" >&2
+  echo "   Fix: git branch --set-upstream-to=${CANONICAL_REMOTE}/main main" >&2
+  exit 1
+fi
+
+if [[ "$PUSH_DEFAULT" != "$CANONICAL_REMOTE" ]]; then
+  echo "❌ remote.pushDefault가 ${CANONICAL_REMOTE} 이어야 합니다. (current: ${PUSH_DEFAULT:-none})" >&2
+  exit 1
 fi
 
 # ── 1. Version bump + CHANGELOG + tag ─────────────────────
@@ -75,21 +78,13 @@ echo "✅ ${TAG} 태그 생성 완료"
 echo "🔍 릴리스 일관성 점검..."
 node scripts/release/check-release-consistency.js
 
-# ── 3. Push commit + tag ──────────────────────────────────
-echo "🚀 Push 중... (commit + tag)"
-if [[ -z "$GITHUB_REMOTE" ]]; then
-  echo "❌ GitHub public remote가 없습니다. ($PREFERRED_GITHUB_REMOTE / $LEGACY_GITHUB_REMOTE 확인)" >&2
-  exit 1
-fi
-git push --follow-tags "$GITHUB_REMOTE" main
+# ── 3. Push commit + tag to canonical GitLab ──────────────
+echo "🚀 Canonical push 중... (commit + tag -> ${CANONICAL_REMOTE}/main)"
+git push --follow-tags "$CANONICAL_REMOTE" main
 
-# ── 4. GitHub Release ─────────────────────────────────────
-echo "📋 GitHub Release 생성 중..."
-gh release create "$TAG" --generate-notes --title "$TAG"
-
-RELEASE_URL=$(gh release view "$TAG" --json url -q '.url')
 echo ""
 echo "═══════════════════════════════════════════"
 echo "✅ 릴리스 완료: ${TAG}"
-echo "📋 ${RELEASE_URL}"
+echo "📦 canonical remote: ${CANONICAL_REMOTE}"
+echo "ℹ️  public snapshot은 별도 경로입니다: npm run sync:github"
 echo "═══════════════════════════════════════════"
