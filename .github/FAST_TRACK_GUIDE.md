@@ -76,5 +76,5 @@ git commit -m "docs: wording update [skip ci]"
 - 프런트엔드 배포 권한은 GitLab CI `deploy` job에 있습니다.
 - Vercel Git Integration은 해제되어 있으며 GitLab CI가 `vercel build --prod` + `vercel deploy --prebuilt --prod`를 호출합니다.
 - GitHub Actions는 보조 워크플로로 유지되며 canonical 배포 경로가 아닙니다.
-- `release-manual.yml`은 실행형 sync/release job이 아니라 GitHub mirror guard 문서 역할만 수행합니다.
+- GitHub mirror에는 release/sync 전용 workflow가 없습니다. canonical 릴리즈는 로컬 `scripts/release/publish.sh`, public refresh는 `npm run sync:github`로만 수행합니다.
 - larger runner, 상시 스케줄, 무차별 E2E 상시 실행은 추가하지 않습니다.

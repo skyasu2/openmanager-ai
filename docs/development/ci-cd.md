@@ -284,8 +284,7 @@ npm run ci:gitlab:check
 | 6 | **Keep Services Alive** | `keep-alive.yml` | 선택적 주 2회 스케줄 / 수동 | 💓 Supabase 비활성화 방지 |
 | 7 | **Prompt Evaluation** | `prompt-eval.yml` | 수동 전용 | 🔬 Promptfoo 테스트 |
 | 8 | **Docs Quality** | `docs-quality.yml` | docs 변경 / 수동 | 📝 문서 품질 검증 |
-| 9 | **Release Manual** | `release-manual.yml` | 수동 릴리즈 + 선택적 freshness check | 🏷️ 버전/태그/CHANGELOG 릴리즈 |
-| 10 | **Cleanup CI Artifacts** | `artifact-cleanup.yml` | 선택적 주간 스케줄 / 수동 | 🗑️ Playwright artifact 정리 |
+| 9 | **Cleanup CI Artifacts** | `artifact-cleanup.yml` | 선택적 주간 스케줄 / 수동 | 🗑️ Playwright artifact 정리 |
 
 ### 스케줄 가드
 
@@ -433,19 +432,20 @@ cloud-run/ai-engine/src/agents/** 변경 → Promptfoo eval 실행
 
 ---
 
-### 9. Release Manual (`release-manual.yml`) — 수동 릴리즈
+### 9. Canonical Release Path — 로컬 + GitLab
 
-릴리즈 자체는 `workflow_dispatch`로만 실행합니다. 주간 freshness check는 `ENABLE_ACTIONS_SCHEDULES=true`일 때만 동작합니다.
+GitHub Actions 기반의 `release-manual.yml`은 제거되었습니다. 현재 릴리즈 권위 경로는 canonical 로컬 워크스페이스와 GitLab입니다.
 
-- 입력값: `release_type` (`patch|minor|major`), `dry_run` (`true|false`)
-- 실행 흐름:
-  - `npm ci`
-  - `npm run release:<type>` (또는 `release:dry-run`)
-  - `npm run release:check` (태그/CHANGELOG/버전 + freshness required)
-  - `git push --follow-tags`
-- 제약: `main` 브랜치에서만 실행 허용
+- 릴리즈 실행:
+  - `./scripts/release/publish.sh patch|minor|major`
+- canonical 반영:
+  - `git push gitlab --follow-tags`
+- 일상 배포:
+  - `git push gitlab main` → GitLab CI `validate` → GitLab CI `deploy`
+- public snapshot refresh:
+  - 필요할 때만 로컬에서 `npm run sync:github`
 
-릴리즈 전 일상 배포는 `git push gitlab main` → GitLab CI `validate` → GitLab CI `deploy`로 처리합니다.
+즉, GitHub mirror에는 release/sync 전용 workflow가 없고, 공개 snapshot은 canonical 로컬 워크스페이스에서만 생성합니다.
 
 ---
 
