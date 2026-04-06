@@ -1,91 +1,51 @@
-name: Public Snapshot Sync
+name: GitHub Mirror Guard
 
 # canonical release/deploy authority는 GitLab(main)이다.
-# 이 워크플로우는 로컬에서 릴리스 완료 후 GitHub public snapshot을 수동으로
-# 동기화하는 보조 트리거 전용이다. 버전 범프나 태그 생성은 수행하지 않는다.
+# 이 워크플로우는 GitHub mirror 측에서 잘못된 release/sync 기대를 막는 가드다.
+# 버전 범프나 태그 생성은 수행하지 않고, canonical GitLab workspace 밖에서는
+# public snapshot sync를 지원하지 않는다.
 #
 # 정상 릴리스 경로:
 #   1. 로컬: ./scripts/release/publish.sh patch|minor|major
 #   2. GitLab CI: validate → deploy (자동)
-#   3. (선택) 로컬: npm run sync:github  또는 이 워크플로우 dispatch
+#   3. (선택) canonical 로컬 워크스페이스: npm run sync:github
 #
-# 이 파일은 GitHub public snapshot 전용이며 배포 권위가 없다.
+# GitHub mirror/workflow에는 canonical private source tree가 없으므로
+# 여기서는 안내 메시지만 제공한다.
 
 on:
-  schedule:
-    # Weekly freshness check: Monday 09:00 UTC (18:00 KST)
-    - cron: '0 9 * * 1'
   workflow_dispatch:
     inputs:
-      dry_run:
-        description: '실제 반영 없이 동기화 범위만 미리보기'
+      acknowledge:
+        description: '안내 메시지를 확인했습니다'
         required: true
         type: boolean
         default: true
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: public-snapshot-sync
+  group: github-mirror-guard
   cancel-in-progress: false
 
 jobs:
-  check-freshness:
-    name: Release Freshness Check
-    if: github.event_name == 'schedule' && vars.ENABLE_ACTIONS_SCHEDULES == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Check commits since last release
-        run: |
-          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          if [ -z "$LAST_TAG" ]; then
-            echo "No tags found, skipping freshness check"
-            exit 0
-          fi
-
-          COMMITS=$(git rev-list --count "${LAST_TAG}..HEAD")
-          DAYS=$(( ($(date +%s) - $(git log -1 --format=%ct "$LAST_TAG")) / 86400 ))
-
-          echo "Last release: $LAST_TAG ($DAYS days ago)"
-          echo "Commits since: $COMMITS"
-
-          if [ "$COMMITS" -gt 30 ]; then
-            echo "::warning::Release may be overdue: $COMMITS commits since $LAST_TAG ($DAYS days ago). Run release locally: ./scripts/release/publish.sh patch"
-          else
-            echo "Release freshness OK ($COMMITS commits, threshold=30)"
-          fi
-
   sync-public-snapshot:
-    name: Sync Public Snapshot to GitHub
+    name: Explain Supported Public Sync Path
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          cache: 'npm'
-          cache-dependency-path: package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Dry-run preview
-        if: inputs.dry_run == true
-        run: npm run sync:github:dry-run
-
-      - name: Sync public frontend snapshot
-        if: inputs.dry_run == false
+      - name: Explain canonical sync workflow
         run: |
-          echo "Syncing public frontend code snapshot to GitHub."
-          echo "Canonical release (version bump + deploy) happens via GitLab CI."
-          npm run sync:github
+          echo "❌ GitHub Actions cannot produce the canonical public snapshot."
+          echo
+          echo "Reason:"
+          echo "  - canonical source of truth is the private GitLab repo"
+          echo "  - this workflow runs from the GitHub mirror checkout only"
+          echo "  - npm run sync:github must run from a canonical local workspace"
+          echo
+          echo "Supported path:"
+          echo "  1. local canonical workspace: ./scripts/release/publish.sh patch|minor|major"
+          echo "  2. GitLab CI deploys from gitlab/main"
+          echo "  3. optional local public refresh: npm run sync:github"
+          exit 1

@@ -122,10 +122,11 @@ else
   fail "husky pre-push does not forward hook args"
 fi
 
-if has_fixed_text "ALLOW_GITHUB_PUBLIC_RELEASE_PUSH == 'true'" .github/workflows/release-manual.yml; then
-  pass "release-manual workflow is gated by ALLOW_GITHUB_PUBLIC_RELEASE_PUSH"
+if has_fixed_text "name: GitHub Mirror Guard" .github/workflows/release-manual.yml && \
+   has_fixed_text "GitHub Actions cannot produce the canonical public snapshot." .github/workflows/release-manual.yml; then
+  pass "release-manual workflow is a GitHub mirror guard"
 else
-  fail "release-manual workflow missing ALLOW_GITHUB_PUBLIC_RELEASE_PUSH gate"
+  fail "release-manual workflow is not aligned with GitHub mirror guard policy"
 fi
 
 protected_count="$(count_pattern_matches '\$CI_COMMIT_REF_PROTECTED == "true"' .gitlab-ci.yml)"
