@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.10.10](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.10.9...v8.10.10) (2026-04-06)
+
+
+### Bug Fixes
+
+* **dev:** avoid DOM smoke on release version bumps ([2440f91](https://gitlab.com/skyasu2/openmanager-ai/-/commit/2440f91b09dddef7f1d664016bede56001f6164d))
+* **dev:** narrow DOM infra smoke triggers ([e92cb45](https://gitlab.com/skyasu2/openmanager-ai/-/commit/e92cb45fff737ef1fd069f29577d051b058dbb48))
+* **dev:** widen fast script test coverage ([740a1ed](https://gitlab.com/skyasu2/openmanager-ai/-/commit/740a1edb3f88cf5dc9b23790f7a16ff4b0d68873))
+* **docs:** lint qa report markdown changes ([9384bb0](https://gitlab.com/skyasu2/openmanager-ai/-/commit/9384bb0500141113d2e2417eeb1004650bdbd29d))
+* **qa:** limit release evidence to qa root ([c29fb9e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/c29fb9e195468478c46ddeac31daa404d0893fa0))
+* **qa:** prevent evidence path reuse ([4b12a2d](https://gitlab.com/skyasu2/openmanager-ai/-/commit/4b12a2d49a3096b8fc949b0b9259ddb364e310ca))
+* **qa:** require durable release evidence ([ea91cac](https://gitlab.com/skyasu2/openmanager-ai/-/commit/ea91cac4501f466013b45f29d3a15c42a4f66ea1))
+* **qa:** require tracked release evidence ([bcb31bd](https://gitlab.com/skyasu2/openmanager-ai/-/commit/bcb31bd99c3087940ce7ee749ee2f9f656ef8530))
+* **qa:** standardize release evidence filenames ([08a31be](https://gitlab.com/skyasu2/openmanager-ai/-/commit/08a31be81ec2283ddc8777b1c24576e5992ed506))
+* **qa:** verify artifact paths exist ([59e9a35](https://gitlab.com/skyasu2/openmanager-ai/-/commit/59e9a35dbf5fe89412f3e2e5790f13b72cfc34c5))
+* **repo:** guard github mirror workflow ([9e72245](https://gitlab.com/skyasu2/openmanager-ai/-/commit/9e722456e9c7e4d0e7595e05fe502b4009b13c6d))
+
+
+### Performance Improvements
+
+* **test:** speed up targeted dev script tests ([21b6273](https://gitlab.com/skyasu2/openmanager-ai/-/commit/21b6273a0ddcfc334a86c3f89ec4c84930cfa291))
+
+
+### Code Refactoring
+
+* **repo:** align github references to gitlab-canonical topology ([30b4bdc](https://gitlab.com/skyasu2/openmanager-ai/-/commit/30b4bdc24fcea60a9227274e26988060a33803a3))
+
+
+### Tests
+
+* **docs:** cover qa report lint selection ([54171eb](https://gitlab.com/skyasu2/openmanager-ai/-/commit/54171eb9cc46a4bcf02356d89974c86545b885e3))
+* **qa:** add --sync-public flag to public evidence sync tests ([a97cd75](https://gitlab.com/skyasu2/openmanager-ai/-/commit/a97cd75e953f80a7f775b539f53cd34c61f31009))
+* **qa:** record production smoke refresh ([39f6dd0](https://gitlab.com/skyasu2/openmanager-ai/-/commit/39f6dd04a300af58cc8867d599f0002122d247fa))
+* **qa:** refresh v8.10.9 broad baseline ([fe75f10](https://gitlab.com/skyasu2/openmanager-ai/-/commit/fe75f107be2ff7a822e8794ffcbb51e08782374e))
+* **sync:** align github-public remote stub ([04b770b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/04b770be84915ceb0877947d6355aba96bac004e))
+
 ## [8.10.9](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.10.8...v8.10.9) (2026-04-06)
 
 
