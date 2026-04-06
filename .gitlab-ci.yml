@@ -35,7 +35,7 @@ image: node:24-bookworm
   - scripts/hooks/**/*
   - scripts/release/**/*
   - scripts/sync/**/*
-  - scripts/test/github-auth-helper.cjs
+  - scripts/test/**/*
   - scripts/ci/ai-engine-post-deploy-smoke.sh
   - .gitlab-ci.yml
 
@@ -55,7 +55,7 @@ image: node:24-bookworm
   - scripts/hooks/**/*
   - scripts/release/**/*
   - scripts/sync/**/*
-  - scripts/test/github-auth-helper.cjs
+  - scripts/test/**/*
   - .gitlab-ci.yml
 
 .frontend_deploy_paths: &frontend_deploy_paths
