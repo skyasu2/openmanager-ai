@@ -95,7 +95,7 @@
     "format": "bash scripts/dev/biome-wrapper.sh format --write .",
     "format:check": "bash scripts/dev/biome-wrapper.sh format .",
     "test": "npm run test:node && npm run test:dom",
-    "test:node": "vitest run --config config/testing/vitest.config.node.ts",
+    "test:node": "node scripts/dev/vitest-node-wrapper.js run",
     "test:dom": "node scripts/dev/vitest-main-wrapper.js run --config config/testing/vitest.config.dom.ts",
     "test:related:node": "vitest related --run --passWithNoTests --config config/testing/vitest.config.node.ts",
     "test:related:dom": "node scripts/dev/vitest-main-wrapper.js related --run --passWithNoTests --config config/testing/vitest.config.dom.ts",
