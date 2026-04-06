@@ -68,6 +68,7 @@
     "deploy:safe": "npm run deploy:guard:canonical && npm run build:ci && npm run lint:ci && npm run test:quick && npx vercel --prod",
     "sync:github": "bash scripts/sync/github-sync.sh",
     "sync:github:dry-run": "bash scripts/sync/github-sync.sh --dry-run",
+    "git:rename-public-remote": "bash scripts/git/rename-public-remote.sh",
     "gitlab:protection:check": "node scripts/gitlab/check-main-protection.mjs",
     "git:topology": "bash scripts/git/show-topology.sh topology",
     "git:doctor": "bash scripts/git/show-topology.sh doctor",

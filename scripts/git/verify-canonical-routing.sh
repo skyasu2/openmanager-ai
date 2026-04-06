@@ -56,7 +56,17 @@ count_pattern_matches() {
 echo "== Canonical Routing Verify =="
 
 gitlab_url="$(git remote get-url gitlab 2>/dev/null || true)"
-origin_url="$(git remote get-url origin 2>/dev/null || true)"
+public_remote_name=""
+public_remote_url=""
+
+for candidate in github-public origin; do
+  candidate_url="$(git remote get-url "$candidate" 2>/dev/null || true)"
+  if [[ -n "$candidate_url" ]]; then
+    public_remote_name="$candidate"
+    public_remote_url="$candidate_url"
+    break
+  fi
+done
 
 if [[ -n "$gitlab_url" ]]; then
   pass "gitlab remote exists ($gitlab_url)"
@@ -64,18 +74,22 @@ else
   fail "gitlab remote is missing"
 fi
 
-if [[ -n "$origin_url" ]]; then
-  pass "origin remote exists ($origin_url)"
+if [[ -n "$public_remote_url" ]]; then
+  pass "GitHub public remote exists ($public_remote_name -> $public_remote_url)"
 else
-  warn "origin remote is missing (public snapshot sync unavailable)"
+  warn "GitHub public remote is missing (public snapshot sync unavailable)"
 fi
 
 if [[ -n "$gitlab_url" && "$gitlab_url" != *"gitlab.com"* ]]; then
   warn "gitlab remote does not look like gitlab.com URL ($gitlab_url)"
 fi
 
-if [[ -n "$origin_url" && "$origin_url" != *"github.com"* ]]; then
-  warn "origin remote does not look like github.com URL ($origin_url)"
+if [[ -n "$public_remote_url" && "$public_remote_url" != *"github.com"* ]]; then
+  warn "GitHub public remote does not look like github.com URL ($public_remote_url)"
+fi
+
+if [[ "$public_remote_name" == "origin" ]]; then
+  warn "legacy GitHub public remote name in use (origin). Prefer: github-public"
 fi
 
 check_equal \

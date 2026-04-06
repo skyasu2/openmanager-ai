@@ -6,7 +6,7 @@ function resolveDefaultBaseRefFromGit(runGit, branchName = '') {
   }
 
   preferredRemotes.push(runGit(['config', '--get', 'remote.pushDefault']));
-  preferredRemotes.push('gitlab', 'origin');
+  preferredRemotes.push('gitlab', 'github-public', 'origin');
 
   const remoteCandidates = Array.from(
     new Set(preferredRemotes.map((remote) => String(remote || '').trim()).filter(Boolean))
