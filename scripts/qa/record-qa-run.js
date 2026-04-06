@@ -615,7 +615,41 @@ function requiresDurableArtifactEvidence(releaseFacing, countsTowardSummary) {
   return releaseFacing === true || countsTowardSummary === true;
 }
 
+function validateArtifactPathExists(artifacts) {
+  const missingArtifacts = artifacts
+    .filter((artifact) => artifact && artifact.path)
+    .map((artifact) => {
+      const normalizedPath = normalizeArtifactPathForPolicy(artifact.path);
+      const resolvedPath = path.resolve(process.cwd(), normalizedPath);
+      return {
+        artifact,
+        normalizedPath,
+        resolvedPath,
+        exists: fs.existsSync(resolvedPath),
+      };
+    })
+    .filter((entry) => !entry.exists);
+
+  if (missingArtifacts.length === 0) {
+    return;
+  }
+
+  const details = missingArtifacts
+    .map(
+      ({ artifact, normalizedPath }) =>
+        `${artifact.label || artifact.type}: ${normalizedPath}`
+    )
+    .join('; ');
+
+  throw new Error(
+    'artifacts.path는 기록 시점에 실제 파일이어야 합니다. ' +
+      `누락 경로: ${details}. 파일을 먼저 생성/복사하거나 URL evidence를 사용하세요.`
+  );
+}
+
 function validateArtifactEvidencePolicy(artifacts, releaseFacing, countsTowardSummary) {
+  validateArtifactPathExists(artifacts);
+
   if (!requiresDurableArtifactEvidence(releaseFacing, countsTowardSummary)) {
     return;
   }

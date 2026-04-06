@@ -787,6 +787,48 @@ describe('QA scripts', () => {
     ]);
   });
 
+  it('rejects artifact paths that do not exist at record time', () => {
+    const tempDir = createTempWorkspace();
+    const inputPath = writeInputFile(
+      tempDir,
+      createValidPayload({
+        scope: 'targeted',
+        releaseFacing: false,
+        countsTowardSummary: false,
+        coveragePacks: ['core-routes-smoke'],
+        coveredSurfaces: ['/dashboard'],
+        skippedSurfaces: ['/login'],
+        expertAssessments: [],
+        usageChecks: [],
+        artifacts: [
+          {
+            type: 'playwright-screenshot',
+            label: 'Missing dashboard screenshot',
+            path: 'reports/qa/evidence/missing-dashboard.png',
+          },
+        ],
+      })
+    );
+
+    const recordResult = runNodeScript(
+      RECORD_QA_RUN_SCRIPT,
+      ['--input', inputPath],
+      {
+        cwd: tempDir,
+      }
+    );
+
+    expect(recordResult.status).toBe(1);
+    expectOutputContainsIfCaptured(
+      `${recordResult.stdout}${recordResult.stderr}`,
+      'artifacts.path는 기록 시점에 실제 파일이어야 합니다'
+    );
+    expectOutputContainsIfCaptured(
+      `${recordResult.stdout}${recordResult.stderr}`,
+      'reports/qa/evidence/missing-dashboard.png'
+    );
+  });
+
   it('demotes non-blocking pending improvements to wont-fix', () => {
     const tempDir = createTempWorkspace();
     const inputPath = writeInputFile(
