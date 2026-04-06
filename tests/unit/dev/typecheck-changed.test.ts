@@ -3,7 +3,13 @@
  */
 
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -97,5 +103,33 @@ describe('typecheck-changed', () => {
     expect(result.stdout).toContain(
       'ℹ️ Pre-push에서는 해당 검증을 soft-skip하고 local Docker CI/Vercel 전체 타입체크에 위임합니다.'
     );
+  });
+
+  it('writes delegated-type-definition-only and skips compiler for src/types-only changes', () => {
+    const touchDir = createTempDir();
+    const touchFile = join(touchDir, 'compiler-ran.txt');
+    const compilerPath = createCompilerScript(`
+      const fs = require('node:fs');
+      fs.writeFileSync(process.env.TSC_WRAPPER_TOUCH_FILE, 'ran\\n', 'utf8');
+      process.exit(0);
+    `);
+    const statusDir = createTempDir();
+    const statusFile = join(statusDir, 'status.txt');
+
+    const result = runTypecheckChanged({
+      PRE_PUSH_CHANGED_FILES: 'src/types/common.ts',
+      TYPECHECK_CHANGED_STATUS_FILE: statusFile,
+      TSC_WRAPPER_BIN: compilerPath,
+      TSC_WRAPPER_TOUCH_FILE: touchFile,
+    });
+
+    expect(result.status).toBe(0);
+    expect(readFileSync(statusFile, 'utf8').trim()).toBe(
+      'delegated-type-definition-only'
+    );
+    expect(result.stdout).toContain(
+      '⚪ Root TypeScript 검증 위임 (src/types type-definition-only push)'
+    );
+    expect(existsSync(touchFile)).toBe(false);
   });
 });

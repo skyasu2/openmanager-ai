@@ -31,6 +31,19 @@ if [ -z "$ALL_CHANGED" ]; then
   exit 0
 fi
 
+TYPE_DEFINITION_ONLY=$(printf '%s\n' "$ALL_CHANGED" | node -e "
+const fs = require('node:fs');
+const { isTypeDefinitionFile } = require('./scripts/dev/typecheck-scope');
+const files = fs.readFileSync(0, 'utf8').split('\n').map((line) => line.trim()).filter(Boolean);
+process.stdout.write(files.length > 0 && files.every((filePath) => isTypeDefinitionFile(filePath)) ? 'true' : 'false');
+")
+
+if [ "$TYPE_DEFINITION_ONLY" = "true" ]; then
+  write_status "delegated-type-definition-only"
+  echo "⚪ Root TypeScript 검증 위임 (src/types type-definition-only push)"
+  exit 0
+fi
+
 FILE_COUNT=$(echo "$ALL_CHANGED" | wc -l)
 echo "📝 $FILE_COUNT type-check relevant file(s) modified. Running project type-check..."
 
