@@ -113,7 +113,7 @@ ENCRYPTION_KEY='long-random-passphrase' GITHUB_PAT=ghp_xxx \
 - `TSC_WRAPPER_TIMEOUT_MS`를 주면 full type-check에도 opt-in timeout을 적용할 수 있고, `TSC_WRAPPER_KILL_GRACE_MS`로 SIGTERM 이후 강제 종료 grace period를 조정할 수 있다.
 - local full type-check가 중단되면 wrapper가 종료 시그널/timeout과 경과 시간을 함께 출력해 orphan `tsc` 프로세스 진단을 돕는다.
 - `scripts/dev/typecheck-scope.js`는 `src/**/*.ts(x)`뿐 아니라 `tsconfig*.json`, `package.json`, `scripts/dev/typecheck-*`, `scripts/dev/tsc-*` 패턴에 맞는 type-check 인프라 변경도 root type-check relevant로 간주한다.
-- `scripts/dev/typecheck-changed.sh`는 `TYPECHECK_CHANGED_STATUS_FILE`에 `passed` / `soft-timeout` / `failed` / `timeout` / `skipped-no-relevant-ts` / `delegated-type-definition-only` 상태를 기록할 수 있고, `src/types/**` 단독 변경은 root type-check를 직접 돌리지 않고 위임한다.
+- `scripts/dev/typecheck-changed.sh`는 `TYPECHECK_CHANGED_STATUS_FILE`에 `passed` / `soft-timeout` / `failed` / `timeout` / `skipped-no-relevant-ts` / `delegated-type-definition-only` 상태를 기록할 수 있다. `src/types/**` 단독 변경은 root type-check를 직접 돌리지 않고 위임하고, `scripts/dev/typecheck-*` / `scripts/dev/tsc-*` 같은 도구 스크립트 변경은 project graph 변경이 아니므로 quick smoke와 전용 테스트로 검증한다.
 - Hook 구현 SSOT는 `scripts/hooks/pre-push.js`이며, 문서 정책/운영 흐름은 `docs/development/git-hooks-workflow.md`를 따른다.
 - `scripts/dev/vitest-main-wrapper.js`는 zero-test DOM related 실행에서만 알려진 Vite dep-scan 노이즈를 억제한다. 조건은 `exit 0`, `No test files found`, `vite:dep-scan`의 outdated request 패턴이 모두 맞을 때뿐이라 실제 테스트 실패나 다른 경고는 숨기지 않는다.
 

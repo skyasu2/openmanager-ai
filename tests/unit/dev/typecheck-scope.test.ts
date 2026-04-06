@@ -14,19 +14,21 @@ const {
 } = require('../../../scripts/dev/typecheck-scope.js');
 
 describe('typecheck-scope', () => {
-  it('treats type-check infrastructure files as root type-check relevant', () => {
-    expect(isTypeCheckInfraFile('scripts/dev/tsc-wrapper.js')).toBe(true);
-    expect(isTypeCheckInfraFile('scripts/dev/typecheck-changed.sh')).toBe(true);
+  it('treats only TypeScript project graph infra files as root type-check relevant', () => {
     expect(isTypeCheckInfraFile('tsconfig.json')).toBe(true);
     expect(isTypeCheckInfraFile('tsconfig.check.json')).toBe(true);
     expect(isTypeCheckInfraFile('tsconfig.release.json')).toBe(true);
-    expect(isTypeCheckInfraFile('scripts/dev/typecheck-report.js')).toBe(true);
-    expect(isTypeCheckInfraFile('scripts/dev/tsc-runner.js')).toBe(true);
     expect(isTypeCheckInfraFile('package.json')).toBe(true);
     expect(isTypeCheckInfraFile('config/testing/vitest.config.dev.ts')).toBe(
       true
     );
     expect(isTypeCheckInfraFile('config/testing/shared-aliases.ts')).toBe(true);
+    expect(isTypeCheckInfraFile('scripts/dev/tsc-wrapper.js')).toBe(false);
+    expect(isTypeCheckInfraFile('scripts/dev/typecheck-changed.sh')).toBe(
+      false
+    );
+    expect(isTypeCheckInfraFile('scripts/dev/typecheck-report.js')).toBe(false);
+    expect(isTypeCheckInfraFile('scripts/dev/tsc-runner.js')).toBe(false);
   });
 
   it('still excludes test and story files from app source classification', () => {
@@ -49,18 +51,11 @@ describe('typecheck-scope', () => {
   it('keeps infra files in filtered changed-file output', () => {
     expect(
       filterTypeCheckRelevantFiles([
-        'scripts/dev/tsc-wrapper.js',
-        'scripts/dev/typecheck-report.js',
         'config/testing/vitest.config.dev.ts',
         'tsconfig.release.json',
         'src/hooks/example.test.ts',
         'docs/guide.md',
       ])
-    ).toEqual([
-      'scripts/dev/tsc-wrapper.js',
-      'scripts/dev/typecheck-report.js',
-      'config/testing/vitest.config.dev.ts',
-      'tsconfig.release.json',
-    ]);
+    ).toEqual(['config/testing/vitest.config.dev.ts', 'tsconfig.release.json']);
   });
 });

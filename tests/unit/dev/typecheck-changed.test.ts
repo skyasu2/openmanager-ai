@@ -64,7 +64,7 @@ describe('typecheck-changed', () => {
     const statusFile = join(statusDir, 'status.txt');
 
     const result = runTypecheckChanged({
-      PRE_PUSH_CHANGED_FILES: 'scripts/dev/tsc-wrapper.js',
+      PRE_PUSH_CHANGED_FILES: 'config/testing/vitest.config.dev.ts',
       TYPECHECK_CHANGED_STATUS_FILE: statusFile,
       TSC_WRAPPER_BIN: compilerPath,
     });
@@ -89,7 +89,7 @@ describe('typecheck-changed', () => {
     const statusFile = join(statusDir, 'status.txt');
 
     const result = runTypecheckChanged({
-      PRE_PUSH_CHANGED_FILES: 'scripts/dev/tsc-wrapper.js',
+      PRE_PUSH_CHANGED_FILES: 'config/testing/vitest.config.dev.ts',
       TYPECHECK_CHANGED_STATUS_FILE: statusFile,
       TYPECHECK_CHANGED_SOFT_TIMEOUT: 'true',
       TYPECHECK_CHANGED_TIMEOUT_SECONDS: '1',
@@ -103,6 +103,34 @@ describe('typecheck-changed', () => {
     expect(result.stdout).toContain(
       'ℹ️ Pre-push에서는 해당 검증을 soft-skip하고 local Docker CI/Vercel 전체 타입체크에 위임합니다.'
     );
+  });
+
+  it('skips project type-check for script-only tooling changes', () => {
+    const touchDir = createTempDir();
+    const touchFile = join(touchDir, 'compiler-ran.txt');
+    const compilerPath = createCompilerScript(`
+      const fs = require('node:fs');
+      fs.writeFileSync(process.env.TSC_WRAPPER_TOUCH_FILE, 'ran\\n', 'utf8');
+      process.exit(0);
+    `);
+    const statusDir = createTempDir();
+    const statusFile = join(statusDir, 'status.txt');
+
+    const result = runTypecheckChanged({
+      PRE_PUSH_CHANGED_FILES: 'scripts/dev/typecheck-changed.sh',
+      TYPECHECK_CHANGED_STATUS_FILE: statusFile,
+      TSC_WRAPPER_BIN: compilerPath,
+      TSC_WRAPPER_TOUCH_FILE: touchFile,
+    });
+
+    expect(result.status).toBe(0);
+    expect(readFileSync(statusFile, 'utf8').trim()).toBe(
+      'skipped-no-relevant-ts'
+    );
+    expect(result.stdout).toContain(
+      '✅ No TypeScript files changed. Skipping incremental check.'
+    );
+    expect(existsSync(touchFile)).toBe(false);
   });
 
   it('writes delegated-type-definition-only and skips compiler for src/types-only changes', () => {
