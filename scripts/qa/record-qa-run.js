@@ -73,11 +73,17 @@ const DURABLE_ARTIFACT_PATH_PREFIXES = [
 const NON_DURABLE_ARTIFACT_BASENAME_PATTERNS = [
   /^openmanager-.*\.png$/i,
   /^playwright-.*\.png$/i,
-  /^qa.*\.png$/i,
   /^mobile-.*\.png$/i,
   /^gradient-verify-.*\.png$/i,
   /^step.*\.png$/i,
 ];
+
+function buildDurableArtifactBasenamePattern(dateStamp) {
+  return new RegExp(
+    `^qa-${dateStamp}-[a-z0-9]+(?:-[a-z0-9]+)*\\.[a-z0-9]{2,10}$`,
+    'i'
+  );
+}
 
 function parseArgs(argv) {
   const args = {
@@ -605,6 +611,10 @@ function findNonDurableArtifactPathReason(filePath) {
   }
 
   const baseName = path.posix.basename(normalizedPath);
+  if (!normalizedPath.includes('/') && /^qa.*\.png$/i.test(baseName)) {
+    return baseName;
+  }
+
   for (const pattern of NON_DURABLE_ARTIFACT_BASENAME_PATTERNS) {
     if (pattern.test(baseName)) {
       return baseName;
@@ -729,7 +739,44 @@ function assertDurableArtifactPathsUseEvidenceRoot(artifacts) {
   );
 }
 
-function validateArtifactEvidencePolicy(artifacts, releaseFacing, countsTowardSummary) {
+function assertDurableArtifactPathNames(artifacts, dateStamp) {
+  const expectedPattern = buildDurableArtifactBasenamePattern(dateStamp);
+  const invalidArtifacts = artifacts
+    .filter((artifact) => artifact && artifact.path)
+    .map((artifact) => {
+      const normalizedPath = normalizeArtifactPathForPolicy(artifact.path);
+      return {
+        artifact,
+        normalizedPath,
+        baseName: path.posix.basename(normalizedPath),
+      };
+    })
+    .filter(({ baseName }) => !expectedPattern.test(baseName));
+
+  if (invalidArtifacts.length === 0) {
+    return;
+  }
+
+  const details = invalidArtifacts
+    .map(
+      ({ artifact, normalizedPath }) =>
+        `${artifact.label || artifact.type}: ${normalizedPath}`
+    )
+    .join('; ');
+
+  throw new Error(
+    'releaseFacing=true 또는 countsTowardSummary=true 런의 로컬 artifact.path 파일명은 ' +
+      `qa-${dateStamp}-<slug>.<ext> 형식이어야 합니다. ` +
+      `잘못된 파일명: ${details}. 예: reports/qa/evidence/qa-${dateStamp}-dashboard-landing.png`
+  );
+}
+
+function validateArtifactEvidencePolicy(
+  artifacts,
+  releaseFacing,
+  countsTowardSummary,
+  dateStamp
+) {
   validateArtifactPathExists(artifacts);
 
   if (!requiresDurableArtifactEvidence(releaseFacing, countsTowardSummary)) {
@@ -747,6 +794,7 @@ function validateArtifactEvidencePolicy(artifacts, releaseFacing, countsTowardSu
   if (invalidArtifacts.length === 0) {
     assertDurableArtifactPathsAreTracked(artifacts);
     assertDurableArtifactPathsUseEvidenceRoot(artifacts);
+    assertDurableArtifactPathNames(artifacts, dateStamp);
     return;
   }
 
@@ -1046,6 +1094,8 @@ function run() {
   const environment = normalizeEnvironment(payload.environment);
   const scope = normalizeRunScope(payload.scope, environment);
   const releaseFacing = inferReleaseFacing(payload.releaseFacing, environment, scope);
+  const seoulParts = toSeoulParts(now);
+  const dateStamp = `${seoulParts.year}${seoulParts.month}${seoulParts.day}`;
   const coveredSurfaces = normalizeStringList(payload.coveredSurfaces);
   const skippedSurfaces = normalizeStringList(payload.skippedSurfaces);
   const coveragePacks = normalizeCoveragePacks(payload.coveragePacks);
@@ -1086,8 +1136,6 @@ function run() {
       'checks.total=0 런은 countsTowardSummary=true 로 기록할 수 없습니다. 상태 검증/운영 기록 런이면 countsTowardSummary=false 로 기록하세요.'
     );
   }
-
-  validateArtifactEvidencePolicy(artifacts, releaseFacing, countsTowardSummary);
 
   const completedRaw = Array.isArray(payload.completedImprovements)
     ? payload.completedImprovements
@@ -1226,11 +1274,10 @@ function run() {
   ensureDir(RUNS_ROOT);
 
   const tracker = loadTracker(nowIso);
+  validateArtifactEvidencePolicy(artifacts, releaseFacing, countsTowardSummary, dateStamp);
   const runNumber = Number(tracker.sequence.nextRunNumber || tracker.runs.length + 1);
-  const p = toSeoulParts(now);
-  const dateStamp = `${p.year}${p.month}${p.day}`;
   const runId = `QA-${dateStamp}-${String(runNumber).padStart(4, '0')}`;
-  const runYearDir = path.join(RUNS_ROOT, p.year);
+  const runYearDir = path.join(RUNS_ROOT, seoulParts.year);
   ensureDir(runYearDir);
 
   const runFileName = `qa-run-${runId}.json`;

@@ -27,6 +27,7 @@ reports/qa/
 - 수동 MCP QA는 shared `.playwright-mcp/screenshots`를 쓰므로, run별 파일 prefix를 붙이고 `pathIncludes`로 함께 좁혀 fresh artifact only 원칙을 지킨다.
 - `releaseFacing: true` 또는 `countsTowardSummary: true` run은 durable artifact만 허용한다. `playwright-report/`, `test-results/`, `.playwright-mcp/screenshots/`, `artifacts/`, root `qa*.png` 같은 로컬 임시 경로는 금지하고, URL 또는 `reports/qa/evidence/...` 추적 경로만 사용한다.
 - release-facing/counting run에서 로컬 Playwright 결과를 증거로 남길 때는 먼저 `reports/qa/evidence/...`로 복사하거나 CI/Vercel URL로 전환한 뒤 기록한다.
+- release-facing/counting run의 로컬 evidence 파일명은 `qa-YYYYMMDD-<slug>.<ext>` 형식을 사용한다. 예: `reports/qa/evidence/qa-20260406-dashboard-landing.png`
 - GitHub Actions `workflow_dispatch`로 실행한 `E2E Critical`은 성공해도 `playwright-report-${run_id}`, `playwright-results-${run_id}` artifact를 3일간 보존하므로, CI 기반 QA 증거 링크로 재사용할 수 있다.
 - 로컬 Playwright browser launch가 막히는 환경에서는 GitHub Actions `workflow_dispatch`의 `run_manual_feedback_trace_status=true`를 사용해 production feedback trace QA를 원격에서 실행하고, `manual-feedback-trace-report-${run_id}` / `manual-feedback-trace-results-${run_id}` artifact를 증거로 재사용한다.
 - CI 근거를 재사용할 때는 `ciEvidence`에 `workflowName`, `runId`, `artifacts[]`를 넣어 `GitHub Actions run/artifact` 링크를 표준 라벨로 자동 생성한다.
@@ -95,6 +96,7 @@ reports/qa/
   - 각 항목은 `type`, `label`, `url|path`를 가집니다.
   - `path`를 쓸 때는 기록 시점에 실제 파일이 존재해야 합니다.
   - `releaseFacing: true` 또는 `countsTowardSummary: true` run에서는 `path`가 `reports/qa/evidence/...` 아래의 Git tracked durable path여야 합니다. `playwright-report/`, `test-results/`, `.playwright-mcp/screenshots/`, `artifacts/`, root `qa*.png`, 기타 임의 tracked 경로는 허용되지 않습니다.
+  - 같은 run의 로컬 evidence 파일명은 `qa-YYYYMMDD-<slug>.<ext>` 형식이어야 합니다. 날짜는 KST 기준 run 실행일을 사용합니다.
   - `playwright-trace`에 `url`이 있으면 `qa:record`가 `trace.playwright.dev` viewer URL을 자동 생성합니다.
 - `links`는 사람이 보는 관련 링크 필드입니다.
   - 허용 값: `general`, `vercel-deployment`, `github-actions-run`, `github-actions-artifact`, `monitoring`, `langfuse-trace`

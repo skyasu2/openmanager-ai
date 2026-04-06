@@ -137,6 +137,17 @@ function findGeneratedRunFile(tempDir: string) {
   return join(yearDir, runFile);
 }
 
+function currentSeoulDateStamp() {
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Seoul',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+
+  return formatter.format(new Date()).replace(/-/g, '');
+}
+
 function createValidPayload(overrides?: Record<string, unknown>) {
   return {
     runTitle: 'QA script regression smoke',
@@ -652,12 +663,9 @@ describe('QA scripts', () => {
   it('records structured Playwright artifacts and prints artifact summary', () => {
     const tempDir = createTempWorkspace();
     initGitRepo(tempDir);
-    writeWorkspaceFile(
-      tempDir,
-      'reports/qa/evidence/dashboard.png',
-      'dashboard-screenshot'
-    );
-    trackWorkspaceFile(tempDir, 'reports/qa/evidence/dashboard.png');
+    const evidencePath = `reports/qa/evidence/qa-${currentSeoulDateStamp()}-dashboard.png`;
+    writeWorkspaceFile(tempDir, evidencePath, 'dashboard-screenshot');
+    trackWorkspaceFile(tempDir, evidencePath);
     const traceUrl = 'https://storage.example.com/playwright/trace.zip';
     const inputPath = writeInputFile(
       tempDir,
@@ -676,7 +684,7 @@ describe('QA scripts', () => {
           {
             type: 'playwright-screenshot',
             label: 'Dashboard screenshot',
-            path: 'reports/qa/evidence/dashboard.png',
+            path: evidencePath,
           },
         ],
       })
@@ -723,7 +731,7 @@ describe('QA scripts', () => {
     const statusMarkdown = readFileSync(statusPath, 'utf8');
     expect(statusMarkdown).toContain('## Artifacts (Latest Run)');
     expect(statusMarkdown).toContain('trace.playwright.dev/?trace=');
-    expect(statusMarkdown).toContain('reports/qa/evidence/dashboard.png');
+    expect(statusMarkdown).toContain(evidencePath);
   });
 
   it('rejects ephemeral local artifact paths for release-facing runs', () => {
@@ -776,11 +784,8 @@ describe('QA scripts', () => {
   it('rejects untracked durable artifact paths for release-facing runs', () => {
     const tempDir = createTempWorkspace();
     initGitRepo(tempDir);
-    writeWorkspaceFile(
-      tempDir,
-      'reports/qa/evidence/untracked-dashboard.png',
-      'dashboard-screenshot'
-    );
+    const evidencePath = `reports/qa/evidence/qa-${currentSeoulDateStamp()}-untracked-dashboard.png`;
+    writeWorkspaceFile(tempDir, evidencePath, 'dashboard-screenshot');
     const inputPath = writeInputFile(
       tempDir,
       createValidPayload({
@@ -788,7 +793,7 @@ describe('QA scripts', () => {
           {
             type: 'playwright-screenshot',
             label: 'Untracked dashboard screenshot',
-            path: 'reports/qa/evidence/untracked-dashboard.png',
+            path: evidencePath,
           },
         ],
       })
@@ -816,7 +821,7 @@ describe('QA scripts', () => {
     );
     expectOutputContainsIfCaptured(
       `${recordResult.stdout}${recordResult.stderr}`,
-      'reports/qa/evidence/untracked-dashboard.png'
+      evidencePath
     );
   });
 
@@ -865,6 +870,51 @@ describe('QA scripts', () => {
     expectOutputContainsIfCaptured(
       `${recordResult.stdout}${recordResult.stderr}`,
       'docs/screenshots/demo/dashboard.png'
+    );
+  });
+
+  it('rejects tracked evidence paths with nonstandard filenames for release-facing runs', () => {
+    const tempDir = createTempWorkspace();
+    initGitRepo(tempDir);
+    const invalidEvidencePath = 'reports/qa/evidence/dashboard.png';
+    writeWorkspaceFile(tempDir, invalidEvidencePath, 'dashboard-screenshot');
+    trackWorkspaceFile(tempDir, invalidEvidencePath);
+    const inputPath = writeInputFile(
+      tempDir,
+      createValidPayload({
+        artifacts: [
+          {
+            type: 'playwright-screenshot',
+            label: 'Tracked screenshot with loose name',
+            path: invalidEvidencePath,
+          },
+        ],
+      })
+    );
+
+    const recordResult = runNodeScript(
+      RECORD_QA_RUN_SCRIPT,
+      ['--input', inputPath],
+      {
+        cwd: tempDir,
+        env: {
+          VERCEL_DEPLOYMENT_ID: 'dpl_badname123',
+          VERCEL_GIT_COMMIT_SHA: 'abcdefabcdefabcdefabcdefabcdefabcdefabcd',
+          VERCEL_GIT_COMMIT_REF: 'main',
+          VERCEL_TARGET_ENV: 'production',
+          VERCEL_PROJECT_PRODUCTION_URL: 'openmanager-ai.vercel.app',
+        },
+      }
+    );
+
+    expect(recordResult.status).toBe(1);
+    expectOutputContainsIfCaptured(
+      `${recordResult.stdout}${recordResult.stderr}`,
+      `qa-${currentSeoulDateStamp()}-<slug>.<ext>`
+    );
+    expectOutputContainsIfCaptured(
+      `${recordResult.stdout}${recordResult.stderr}`,
+      invalidEvidencePath
     );
   });
 
@@ -920,6 +970,7 @@ describe('QA scripts', () => {
 
   it('rejects artifact paths that do not exist at record time', () => {
     const tempDir = createTempWorkspace();
+    const missingEvidencePath = `reports/qa/evidence/qa-${currentSeoulDateStamp()}-missing-dashboard.png`;
     const inputPath = writeInputFile(
       tempDir,
       createValidPayload({
@@ -935,7 +986,7 @@ describe('QA scripts', () => {
           {
             type: 'playwright-screenshot',
             label: 'Missing dashboard screenshot',
-            path: 'reports/qa/evidence/missing-dashboard.png',
+            path: missingEvidencePath,
           },
         ],
       })
@@ -956,7 +1007,7 @@ describe('QA scripts', () => {
     );
     expectOutputContainsIfCaptured(
       `${recordResult.stdout}${recordResult.stderr}`,
-      'reports/qa/evidence/missing-dashboard.png'
+      missingEvidencePath
     );
   });
 
