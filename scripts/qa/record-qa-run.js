@@ -67,6 +67,9 @@ const NON_DURABLE_ARTIFACT_PATH_PREFIXES = [
   '.playwright-mcp/screenshots/',
   'screenshots/',
 ];
+const DURABLE_ARTIFACT_PATH_PREFIXES = [
+  'reports/qa/evidence/',
+];
 const NON_DURABLE_ARTIFACT_BASENAME_PATTERNS = [
   /^openmanager-.*\.png$/i,
   /^playwright-.*\.png$/i,
@@ -697,6 +700,35 @@ function assertDurableArtifactPathsAreTracked(artifacts) {
   );
 }
 
+function assertDurableArtifactPathsUseEvidenceRoot(artifacts) {
+  const invalidArtifacts = artifacts
+    .filter((artifact) => artifact && artifact.path)
+    .map((artifact) => ({
+      artifact,
+      normalizedPath: normalizeArtifactPathForPolicy(artifact.path),
+    }))
+    .filter(
+      ({ normalizedPath }) =>
+        !DURABLE_ARTIFACT_PATH_PREFIXES.some((prefix) => normalizedPath.startsWith(prefix))
+    );
+
+  if (invalidArtifacts.length === 0) {
+    return;
+  }
+
+  const details = invalidArtifacts
+    .map(
+      ({ artifact, normalizedPath }) =>
+        `${artifact.label || artifact.type}: ${normalizedPath}`
+    )
+    .join('; ');
+
+  throw new Error(
+    'releaseFacing=true 또는 countsTowardSummary=true 런의 로컬 artifact.path는 reports/qa/evidence/ 아래만 허용됩니다. ' +
+      `허용되지 않은 경로: ${details}. 파일을 reports/qa/evidence/... 로 이동하거나 URL evidence를 사용하세요.`
+  );
+}
+
 function validateArtifactEvidencePolicy(artifacts, releaseFacing, countsTowardSummary) {
   validateArtifactPathExists(artifacts);
 
@@ -714,6 +746,7 @@ function validateArtifactEvidencePolicy(artifacts, releaseFacing, countsTowardSu
 
   if (invalidArtifacts.length === 0) {
     assertDurableArtifactPathsAreTracked(artifacts);
+    assertDurableArtifactPathsUseEvidenceRoot(artifacts);
     return;
   }
 

@@ -820,6 +820,54 @@ describe('QA scripts', () => {
     );
   });
 
+  it('rejects tracked artifact paths outside reports/qa/evidence for release-facing runs', () => {
+    const tempDir = createTempWorkspace();
+    initGitRepo(tempDir);
+    writeWorkspaceFile(
+      tempDir,
+      'docs/screenshots/demo/dashboard.png',
+      'dashboard-screenshot'
+    );
+    trackWorkspaceFile(tempDir, 'docs/screenshots/demo/dashboard.png');
+    const inputPath = writeInputFile(
+      tempDir,
+      createValidPayload({
+        artifacts: [
+          {
+            type: 'playwright-screenshot',
+            label: 'Tracked but disallowed screenshot',
+            path: 'docs/screenshots/demo/dashboard.png',
+          },
+        ],
+      })
+    );
+
+    const recordResult = runNodeScript(
+      RECORD_QA_RUN_SCRIPT,
+      ['--input', inputPath],
+      {
+        cwd: tempDir,
+        env: {
+          VERCEL_DEPLOYMENT_ID: 'dpl_wrongroot123',
+          VERCEL_GIT_COMMIT_SHA: 'abcdefabcdefabcdefabcdefabcdefabcdefabcd',
+          VERCEL_GIT_COMMIT_REF: 'main',
+          VERCEL_TARGET_ENV: 'production',
+          VERCEL_PROJECT_PRODUCTION_URL: 'openmanager-ai.vercel.app',
+        },
+      }
+    );
+
+    expect(recordResult.status).toBe(1);
+    expectOutputContainsIfCaptured(
+      `${recordResult.stdout}${recordResult.stderr}`,
+      'reports/qa/evidence/ 아래만 허용됩니다'
+    );
+    expectOutputContainsIfCaptured(
+      `${recordResult.stdout}${recordResult.stderr}`,
+      'docs/screenshots/demo/dashboard.png'
+    );
+  });
+
   it('allows ephemeral local artifact paths for non-summary verification runs', () => {
     const tempDir = createTempWorkspace();
     writeWorkspaceFile(
