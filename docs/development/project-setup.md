@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-03-31
+> Last reviewed: 2026-04-06
 > Canonical: docs/development/project-setup.md
 > Tags: wsl,github-auth,project-setup
 
@@ -23,7 +23,7 @@
 
 - **GitLab private (`gitlab`)**: canonical development repo
 - **Vercel Frontend**: GitLab CI `deploy` job이 `vercel --prod`로 production 배포
-- **GitHub public (`origin`)**: code-only snapshot, 수동 공개 동기화 전용
+- **GitHub public (`github-public`, `origin` legacy)**: code-only snapshot, 수동 공개 동기화 전용
 - **GitLab CI**: 활성 (`validate -> deploy`, 코드 변경 push 시만 실행)
 
 개발/배포 작업은 기본적으로 GitLab 기준으로 진행하고, GitHub는 공개 코드 스냅샷이 필요할 때만 별도로 다룹니다.
@@ -59,6 +59,7 @@ gh auth login -h github.com -p ssh --insecure-storage
 > **토큰 혼입 방지**: `~/.bashrc` 등에 `GITHUB_PERSONAL_ACCESS_TOKEN` 상시 `export`를 두지 마세요.  
 > 필요 시 임시로만 사용하고 즉시 `unset GITHUB_PERSONAL_ACCESS_TOKEN` 하세요.
 > **Fine-grained PAT**은 `git push`에서 403이 발생할 수 있으므로 **Classic PAT**을 대안으로 권장합니다.
+> `scripts/test/github-auth-helper.cjs`를 써서 PAT을 파일로 보관하려면 `ENCRYPTION_KEY`를 반드시 직접 지정해야 합니다. 기본 키 fallback은 더 이상 허용되지 않습니다.
 
 비교 기준(공식 문서):
 - GitHub CLI 인증/credential helper: https://cli.github.com/manual/gh_auth_login, https://cli.github.com/manual/gh_auth_setup-git

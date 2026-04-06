@@ -186,10 +186,32 @@ unset GITHUB_PERSONAL_ACCESS_TOKEN
 rg -n "GITHUB_PERSONAL_ACCESS_TOKEN" ~/.bashrc ~/.profile ~/.zshrc 2>/dev/null
 
 # 4) GitHub public remote URL도 SSH로 통일 (권장)
-git remote set-url github-public git@github.com:<owner>/<repo>.git
+git remote set-url github-public git@github.com:`owner`/`repo`.git
 # legacy origin 사용 중이면 아래도 가능
-git remote set-url origin git@github.com:<owner>/<repo>.git
+git remote set-url origin git@github.com:`owner`/`repo`.git
 ```
+
+### `github-auth-helper.cjs setup`가 바로 실패함
+
+```
+증상: Setup 실패: ENCRYPTION_KEY가 필요합니다.
+```
+
+**원인**: PAT 파일 저장 helper는 더 이상 기본 암호화 키를 사용하지 않습니다. `ENCRYPTION_KEY` 없이 실행하면 실패가 정상입니다.
+
+**해결**:
+```bash
+# 1) 세션에 직접 암호화 키 지정
+export ENCRYPTION_KEY='long-random-passphrase'
+
+# 2) PAT 저장
+GITHUB_PAT=ghp_xxx node scripts/test/github-auth-helper.cjs setup
+
+# 3) push 시에도 같은 ENCRYPTION_KEY 필요
+node scripts/test/github-auth-helper.cjs push main
+```
+
+권장 경로는 여전히 `gh auth login` 또는 SSH 인증입니다. `github-auth-helper.cjs`는 브라우저 인증이 막힌 예외 환경에서만 사용합니다.
 
 ## Docker / Container Issues
 
