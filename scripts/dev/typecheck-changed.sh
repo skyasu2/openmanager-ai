@@ -17,7 +17,7 @@ write_status() {
 }
 
 if [ -n "$PRESET_FILES" ]; then
-  ALL_CHANGED=$(printf '%s\n' "$PRESET_FILES" | sort -u | node scripts/dev/typecheck-scope.js || true)
+  ALL_CHANGED=$(echo "$PRESET_FILES" | tr ' ' '\n' | sort -u | node scripts/dev/typecheck-scope.js || true)
 else
   # Git에서 변경된 파일 확인 (참고용)
   CHANGED_FILES=$(git diff --name-only --diff-filter=ACM HEAD 2>/dev/null || true)
@@ -45,23 +45,46 @@ if [ "$TYPE_DEFINITION_ONLY" = "true" ]; then
 fi
 
 FILE_COUNT=$(echo "$ALL_CHANGED" | wc -l)
-echo "📝 $FILE_COUNT type-check relevant file(s) modified. Running project type-check..."
 
 TYPECHECK_CHANGED_TIMEOUT_SECONDS="${TYPECHECK_CHANGED_TIMEOUT_SECONDS:-60}"
 TYPECHECK_CHANGED_SOFT_TIMEOUT="${TYPECHECK_CHANGED_SOFT_TIMEOUT:-false}"
+TYPECHECK_SCOPED_THRESHOLD="${TYPECHECK_SCOPED_THRESHOLD:-100}"
 
 # TypeScript는 파일 단위가 아니라 project graph 기준으로 타입을 해석한다.
-# pre-push에서는 응답성 보장을 위해 timeout을 두고, 시간 초과 시 local Docker CI/Vercel 검증으로 이관한다.
-# tsconfig.check.json: incremental=false로 WSL에서 .next/cache/tsbuildinfo Windows FS 접근 방지
-TYPECHECK_CMD=(
-  node
-  scripts/dev/tsc-wrapper.js
-  --noEmit
-  --pretty
-  false
-  --project
-  tsconfig.check.json
-)
+# 하지만 파일 개수가 적으면 include만 제한한 임시 tsconfig를 사용하여 WSL/Windows FS I/O 병목을 피할 수 있다.
+TEMP_CONFIG=""
+if [ "$FILE_COUNT" -gt 0 ] && [ "$FILE_COUNT" -le "$TYPECHECK_SCOPED_THRESHOLD" ]; then
+  echo "📝 $FILE_COUNT type-check relevant file(s) modified. Using scoped incremental check..."
+  TEMP_CONFIG=$(mktemp .tsconfig.temp.XXXXXX.json)
+  # trap: 스크립트 종료 시(정상/오류/시그널) 임시 파일 삭제
+  trap 'rm -f "$TEMP_CONFIG"' EXIT ERR SIGINT SIGTERM
+  
+  # jq를 사용하여 임시 tsconfig 생성
+  # extends: tsconfig.check.json (incremental=false)를 상속하되 include만 제한
+  # files 배열로 직접 지정하는 것이 include보다 더 명확하게 스코프를 좁힌다.
+  printf '%s' "$ALL_CHANGED" | jq -R -s -c 'split("\n") | map(select(length > 0)) | {extends: "./tsconfig.check.json", files: .}' > "$TEMP_CONFIG"
+  
+  TYPECHECK_CMD=(
+    node
+    scripts/dev/tsc-wrapper.js
+    --noEmit
+    --pretty
+    false
+    --project
+    "$TEMP_CONFIG"
+  )
+else
+  echo "📝 $FILE_COUNT type-check relevant file(s) modified (threshold exceeded). Running full project type-check..."
+  TYPECHECK_CMD=(
+    node
+    scripts/dev/tsc-wrapper.js
+    --noEmit
+    --pretty
+    false
+    --project
+    tsconfig.check.json
+  )
+fi
 
 if command -v timeout >/dev/null 2>&1; then
   set +e
