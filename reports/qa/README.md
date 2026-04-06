@@ -22,6 +22,7 @@ reports/qa/
 - `cp reports/qa/templates/qa-run-input.example.json /tmp/qa-run-input.json`
 - `scope`, `releaseFacing`, `coveragePacks`, `coveredSurfaces`, `skippedSurfaces`를 현재 QA 범위에 맞게 채운다.
 - Playwright/CI 증거가 있으면 `artifacts`에 `trace/report/screenshot/video`를 구조화해 남긴다.
+- `reports/qa/**/*.md` 변경은 `npm run docs:lint:changed` 검증 범위에 포함된다. QA 운영 문서를 바꿨다면 push 전에 함께 확인한다.
 - `source`가 `playwright`, `playwright-cli`, `playwright-mcp` 계열이면 `qa:record`는 최근 Playwright artifact를 자동 수집한다.
 - 기본 디렉토리나 시간 창을 바꾸려면 `playwrightArtifacts.reportDir/resultsDir/screenshotsDir/recentMinutes/pathIncludes`를 입력 JSON에 명시한다.
 - 수동 MCP QA는 shared `.playwright-mcp/screenshots`를 쓰므로, run별 파일 prefix를 붙이고 `pathIncludes`로 함께 좁혀 fresh artifact only 원칙을 지킨다.

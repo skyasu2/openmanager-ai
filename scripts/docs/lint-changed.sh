@@ -10,7 +10,7 @@ TMP_FILE="$(mktemp)"
   git diff --name-only --diff-filter=ACMR
   git diff --name-only --cached --diff-filter=ACMR
   git ls-files --others --exclude-standard
-} | grep '^docs/.*\.md$' | sort -u > "$TMP_FILE" || true
+} | grep -E '^(docs|reports/qa)/.*\.md$' | sort -u > "$TMP_FILE" || true
 
 if [[ ! -s "$TMP_FILE" ]]; then
   echo "No changed docs markdown files."
@@ -22,7 +22,12 @@ ACTIVE_FILES=()
 HISTORICAL_FILES=()
 
 while IFS= read -r file; do
-  if [[ "$file" == docs/analysis/* || "$file" == docs/reviews/* || "$file" == docs/status.md ]]; then
+  if [[ \
+    "$file" == docs/analysis/* || \
+    "$file" == docs/reviews/* || \
+    "$file" == docs/status.md || \
+    "$file" == reports/qa/production-qa-* \
+  ]]; then
     HISTORICAL_FILES+=("$file")
   else
     ACTIVE_FILES+=("$file")
