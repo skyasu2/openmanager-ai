@@ -1,0 +1,89 @@
+{
+  "runId": "QA-20260406-0247",
+  "recordedAt": "2026-04-06T14:32:16.188Z",
+  "recordedAtKst": "2026-04-06 23:32:16 KST",
+  "runTitle": "Vercel targeted QA - v8.10.10 production smoke after release guard hardening",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_C26umTtKeFhwLwRTWWdsksaCtNiw",
+    "deploymentUrl": "https://openmanager-l3lv4ee1p-skyasus-projects.vercel.app",
+    "commitSha": "c3d8c6a8dcac1842ebfca6159ce44e188e498938"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "latest production deployment c3d8c6a8 / dpl_C26umTtKeFhwLwRTWWdsksaCtNiw live on Vercel",
+    "landing render with v8.10.10 badge and guest session ready",
+    "system start countdown reaches /system-boot and redirects to /dashboard",
+    "dashboard render with 15 total / 14 online / 1 warning / 0 risk and resource top5",
+    "AI sidebar opens with Ready state and preset CPU query returns current top 3 summary (storage-nfs-dc1-01 65%)",
+    "/api/health 200 with database/cache/ai connected",
+    "/api/version 200 with v8.10.10 / Next.js 16.1.6 / production",
+    "browser console errors 0 during production smoke"
+  ],
+  "skippedSurfaces": [
+    "/login route",
+    "/dashboard/ai-assistant fullscreen workspace",
+    "Reporter and Analyst flows",
+    "modal-detail pack",
+    "Cloud Run admin observability endpoints"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-06T23:29:00+09:00",
+      "summary": "Current billing period reviewed after targeted production smoke; effective 3.2825 USD, billed 0.0000 USD, no unexpected billed usage spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "dashboard production smoke",
+      "path": "reports/qa/evidence/qa-20260406-dashboard-production-smoke.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "ai sidebar cpu summary",
+      "path": "reports/qa/evidence/qa-20260406-ai-sidebar-cpu-summary.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This run refreshes minimal production surface evidence on the live v8.10.10 deployment after release preflight guard hardening on canonical main.",
+    "CountsTowardSummary is false because the run is a verification-only smoke on an already-covered production deployment surface."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Deployment dpl_C26umTtKeFhwLwRTWWdsksaCtNiw",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/C26umTtKeFhwLwRTWWdsksaCtNiw"
+    }
+  ]
+}

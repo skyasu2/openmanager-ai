@@ -1,7 +1,7 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-06 20:03:37 KST
+> Generated at: 2026-04-06 23:32:17 KST
 
 ## Summary
 
@@ -19,45 +19,45 @@
 | Expert Open Gaps | 1 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260406-0246 (2026-04-06T10:57:23.899Z) |
-| Latest Recorded Run | QA-20260406-0246 (2026-04-06T10:57:23.899Z) |
+| Latest Recorded Run | QA-20260406-0247 (2026-04-06T14:32:16.188Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260406-0246 (2026-04-06T10:57:23.899Z)
+Latest run: QA-20260406-0247 (2026-04-06T14:32:16.188Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| Test Automation Architect | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
-| AI Quality Assurance Specialist | partially-appropriate | yes | Run a deeper AI advanced-surface pack when the next runtime-facing change lands. |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed during broad production QA; effective 3.2825 USD, billed 0.0000 USD, no unexpected billed usage spike. |
+| vercel | cli | checked | normal | Current billing period reviewed after targeted production smoke; effective 3.2825 USD, billed 0.0000 USD, no unexpected billed usage spike. |
 
 ## Coverage (Latest Run)
 
-- Scope: broad
-- Release-Facing: yes
-- Counts Toward Summary: yes
-- Deployment: dpl_EEf7zEdMXFGHWYqYSNMACmtXynQ8 / SHA 9e722456
+- Scope: targeted
+- Release-Facing: no
+- Counts Toward Summary: no
+- Deployment: dpl_C26umTtKeFhwLwRTWWdsksaCtNiw / SHA c3d8c6a8
 - Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: landing render + v8.10.9 badge, Vibe Coding modal tabs: 현재 도구 / 개발 환경 변화 / CI/CD, Vibe Coding CI/CD content aligns to local hook -> GitLab push -> validate -> deploy -> production, Vibe Coding modal close returns focus to trigger button, /login minimal header without profile menu, guest PIN login 4231 succeeds and returns to landing, system start countdown begins at 4초 and reaches /system-boot -> /dashboard, dashboard render with 15 total / 14 online / 1 warning / 0 risk and resource top5, AI sidebar opens with engine Ready state, AI chat prompt 'CPU 사용률이 높은 서버를 찾아줘' returns current CPU summary with lb-haproxy-dc1-01 at 65%, /api/health 200 with connected services, /api/version 200 with v8.10.9 / Next.js 16.1.6 / production, /api/system 200 (prior 401 regression not reproduced), browser console errors 0 before intentional non-test fetches
-- Skipped Surfaces: Reporter full report flow, Analyst advanced forecast flow, fullscreen AI workspace, modal detail pack outside Vibe Coding, Cloud Run observability endpoints
+- Covered Surfaces: latest production deployment c3d8c6a8 / dpl_C26umTtKeFhwLwRTWWdsksaCtNiw live on Vercel, landing render with v8.10.10 badge and guest session ready, system start countdown reaches /system-boot and redirects to /dashboard, dashboard render with 15 total / 14 online / 1 warning / 0 risk and resource top5, AI sidebar opens with Ready state and preset CPU query returns current top 3 summary (storage-nfs-dc1-01 65%), /api/health 200 with database/cache/ai connected, /api/version 200 with v8.10.10 / Next.js 16.1.6 / production, browser console errors 0 during production smoke
+- Skipped Surfaces: /login route, /dashboard/ai-assistant fullscreen workspace, Reporter and Analyst flows, modal-detail pack, Cloud Run admin observability endpoints
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| vercel-deployment | Latest production deployment | [link](https://vercel.com/skyasus-projects/openmanager-ai/EEf7zEdMXFGHWYqYSNMACmtXynQ8) | - |
+| general | Vercel URL | [link](https://openmanager-ai.vercel.app/) | - |
+| vercel-deployment | Deployment dpl_C26umTtKeFhwLwRTWWdsksaCtNiw | [link](https://vercel.com/skyasus-projects/openmanager-ai/C26umTtKeFhwLwRTWWdsksaCtNiw) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-screenshot | dashboard production smoke | `reports/qa/evidence/qa-20260406-dashboard-production-smoke.png` | - |
+| playwright-screenshot | ai sidebar cpu summary | `reports/qa/evidence/qa-20260406-ai-sidebar-cpu-summary.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -386,6 +386,7 @@ Latest run: QA-20260406-0246 (2026-04-06T10:57:23.899Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260406-0247 | 2026-04-06T14:32:16.188Z | targeted | no | no | Vercel targeted QA - v8.10.10 production smoke after release guard hardening | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260406-0246 | 2026-04-06T10:57:23.899Z | broad | yes | yes | Playwright MCP Production QA - Frontend + AI Assistant v8.10.9 broad baseline refresh | 13 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260406-0245 | 2026-04-06T10:33:12.537Z | targeted | no | no | Vercel targeted QA - latest production smoke refresh after GitLab-first topology cleanup | 9 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260406-0244 | 2026-04-05T22:02:34.705Z | targeted | no | yes | Vercel targeted QA - latest production AI sidebar smoke refresh after canonical routing chore | 9 | 0 | 0 | 0 | 0 | 0 |
@@ -405,5 +406,4 @@ Latest run: QA-20260406-0246 (2026-04-06T10:57:23.899Z)
 | QA-20260405-0230 | 2026-04-04T15:12:26.849Z | targeted | no | yes | Vercel production deployment health check after gitlab sync | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260404-0229 | 2026-04-04T14:29:25.205Z | release-gate | yes | yes | Vercel Production Broad Release-Gate QA - core routes + dashboard + AI stream parity | 17 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260404-0228 | 2026-04-04T14:20:17.892Z | targeted | no | yes | Vercel targeted QA - modal/detail pack and AI advanced surface | 18 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260404-0227 | 2026-04-04T14:09:08.887Z | targeted | no | yes | Vercel targeted QA - guest flow and dashboard/AI parity smoke (rerun) | 12 | 0 | 0 | 0 | 0 | 0 |
 
