@@ -168,6 +168,20 @@ describe('release publish script', () => {
     expect(`${result.stdout}${result.stderr}`).toContain('current: origin');
   });
 
+  it('fails preflight when canonical remote is missing', () => {
+    const repoDir = initReleaseRepo();
+    runCommand('git', ['-C', repoDir, 'remote', 'remove', 'gitlab'], {
+      cwd: process.cwd(),
+    });
+
+    const result = runPublish(repoDir);
+
+    expect(result.status).toBe(1);
+    expect(`${result.stdout}${result.stderr}`).toContain(
+      "❌ Canonical remote 'gitlab'가 없습니다."
+    );
+  });
+
   it('fails preflight when the worktree is dirty', () => {
     const repoDir = initReleaseRepo();
     writeFileSync(join(repoDir, 'README.md'), '# fixture updated\n', 'utf8');
