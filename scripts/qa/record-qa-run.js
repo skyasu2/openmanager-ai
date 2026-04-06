@@ -298,18 +298,31 @@ function inferGitHubRepository() {
     return { owner, repo };
   }
 
-  const remoteUrl = readGitValue(['config', '--get', 'remote.origin.url']);
-  const match = remoteUrl.match(
-    /github\.com[:/]([^/\s]+)\/([^/\s]+?)(?:\.git)?$/
-  );
-  if (!match) {
-    return { owner: '', repo: '' };
+  const remoteNames = [
+    'github-public',
+    'origin',
+    ...readGitValue(['remote'])
+      .split(/\r?\n/u)
+      .map((entry) => entry.trim())
+      .filter(Boolean),
+  ];
+
+  for (const remoteName of Array.from(new Set(remoteNames))) {
+    const remoteUrl = readGitValue(['config', '--get', `remote.${remoteName}.url`]);
+    const match = remoteUrl.match(
+      /github\.com[:/]([^/\s]+)\/([^/\s]+?)(?:\.git)?$/
+    );
+    if (!match) {
+      continue;
+    }
+
+    return {
+      owner: match[1],
+      repo: match[2],
+    };
   }
 
-  return {
-    owner: match[1],
-    repo: match[2],
-  };
+  return { owner: '', repo: '' };
 }
 
 function buildGitHubActionsRunUrl(owner, repo, runId) {

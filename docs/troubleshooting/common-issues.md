@@ -67,7 +67,8 @@ npm run docs:check
 - GitLab로 옮겼는데도 "아직 GitHub가 canonical 인가?"라는 혼선이 생김
 
 ### Cause
-- 이 저장소는 `origin=GitHub public snapshot`, `gitlab=canonical private repo`를 함께 유지한다.
+- 이 저장소는 `gitlab=canonical private repo`, `github-public=GitHub public snapshot` 구조를 권장한다.
+- 기존 로컬 clone은 `origin=GitHub public snapshot` legacy 구성을 아직 유지할 수 있다.
 - 일부 IDE/확장은 remote provider 해석에서 `origin`을 우선 보여준다.
 - 따라서 GitHub 링크가 보이는 것만으로 canonical upstream이나 배포 권한이 GitHub라는 뜻은 아니다.
 
@@ -84,12 +85,19 @@ bash scripts/git/show-topology.sh doctor
 
 # 3) 로컬 Git metadata에서 gitlab HEAD도 명시
 git remote set-head gitlab main
+
+# 4) GitHub 공개 remote를 origin에서 분리 (권장)
+npm run git:rename-public-remote
+
+# 5) checkout/switch 모호성에서 gitlab 우선
+git config --local checkout.defaultRemote gitlab
 ```
 
 - 정상 기준:
   - `main` upstream은 `gitlab/main`
   - `remote.pushDefault`는 `gitlab`
-  - `origin`은 GitHub snapshot remote로 남아 있어도 정상
+  - GitHub public remote는 `github-public`이 권장
+  - `origin`은 legacy fallback 으로 남아 있어도 동작은 함
 - 주의:
   - `origin`을 GitLab로 재지정하지 않는다.
   - GitHub 공개 갱신은 `npm run sync:github`로만 수행한다.
@@ -177,7 +185,9 @@ unset GITHUB_PERSONAL_ACCESS_TOKEN
 # 3) 셸 시작 스크립트에서 자동 export 제거
 rg -n "GITHUB_PERSONAL_ACCESS_TOKEN" ~/.bashrc ~/.profile ~/.zshrc 2>/dev/null
 
-# 4) 원격 URL도 SSH로 통일 (권장)
+# 4) GitHub public remote URL도 SSH로 통일 (권장)
+git remote set-url github-public git@github.com:<owner>/<repo>.git
+# legacy origin 사용 중이면 아래도 가능
 git remote set-url origin git@github.com:<owner>/<repo>.git
 ```
 

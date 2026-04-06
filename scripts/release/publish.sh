@@ -13,6 +13,22 @@ set -euo pipefail
 
 RELEASE_TYPE="${1:-}"
 DRY_RUN="${DRY_RUN:-}"
+PREFERRED_GITHUB_REMOTE="${GITHUB_PUBLIC_REMOTE:-github-public}"
+LEGACY_GITHUB_REMOTE="${GITHUB_PUBLIC_LEGACY_REMOTE:-origin}"
+
+resolve_github_remote() {
+  local remote
+  for remote in "$PREFERRED_GITHUB_REMOTE" "$LEGACY_GITHUB_REMOTE"; do
+    [[ -z "$remote" ]] && continue
+    if git remote get-url "$remote" >/dev/null 2>&1; then
+      printf '%s\n' "$remote"
+      return 0
+    fi
+  done
+  return 1
+}
+
+GITHUB_REMOTE="$(resolve_github_remote || true)"
 
 # ── Preflight ──────────────────────────────────────────────
 if ! command -v gh &>/dev/null; then
@@ -61,7 +77,11 @@ node scripts/release/check-release-consistency.js
 
 # ── 3. Push commit + tag ──────────────────────────────────
 echo "🚀 Push 중... (commit + tag)"
-git push --follow-tags origin main
+if [[ -z "$GITHUB_REMOTE" ]]; then
+  echo "❌ GitHub public remote가 없습니다. ($PREFERRED_GITHUB_REMOTE / $LEGACY_GITHUB_REMOTE 확인)" >&2
+  exit 1
+fi
+git push --follow-tags "$GITHUB_REMOTE" main
 
 # ── 4. GitHub Release ─────────────────────────────────────
 echo "📋 GitHub Release 생성 중..."

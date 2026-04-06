@@ -12,7 +12,8 @@ Use a deterministic commit/push/PR flow with safety checks.
 ## Current topology (2026-04-03)
 
 - `gitlab` remote: canonical private repo, full history/tests/docs/QA assets, release/tag authority
-- `origin` remote: public GitHub code-only snapshot with minimal public-only history
+- `github-public` remote: preferred public GitHub code-only snapshot with minimal public-only history
+- `origin` remote: legacy fallback for the public GitHub snapshot
 - Vercel frontend deploy source: `gitlab` `main`
 - GitLab CI policy: active split-runner delivery
 - Exact job names/rules live in `.gitlab-ci.yml`; do not hardcode them in a commit message or review unless you re-read that file first.
@@ -23,7 +24,7 @@ Use a deterministic commit/push/PR flow with safety checks.
   - post-deploy smoke and ai-engine validation/deploy paths may evolve independently
 - GitHub public repo: no releases/tags, issues/wiki/projects disabled, not a deployment control plane
 
-Never assume `origin/main` is the canonical branch. Always inspect `git remote -v` before any push/fetch/rebase.
+Never assume `github-public/main` or `origin/main` is the canonical branch. Always inspect `git remote -v` before any push/fetch/rebase.
 
 ## Execute this workflow
 
@@ -68,7 +69,7 @@ Never assume `origin/main` is the canonical branch. Always inspect `git remote -
 1. Verify remote topology first.
 - `git remote -v`
 - Default push target for canonical work: `gitlab`
-- Treat GitHub `origin` as public snapshot only
+- Treat GitHub `github-public` as the preferred public snapshot remote (`origin` is legacy fallback only)
 - Validate GitHub auth only when GitHub work is explicitly requested.
 - `env -u GITHUB_PERSONAL_ACCESS_TOKEN gh auth status -h github.com`
 - `env -u GITHUB_PERSONAL_ACCESS_TOKEN gh api user -q .login`
@@ -88,7 +89,7 @@ Never assume `origin/main` is the canonical branch. Always inspect `git remote -
 4. Push safely.
 - Canonical/private work: `git push gitlab <branch>`
 - If upstream missing on GitLab: `git push -u gitlab <branch>`
-- GitHub `origin` push is only for explicit public snapshot sync via `npm run sync:github`.
+- GitHub public remote push is only for explicit public snapshot sync via `npm run sync:github`.
 - Never force-push the public snapshot from the canonical private worktree.
 
 5. Create PR when requested.
@@ -125,7 +126,7 @@ Never assume `origin/main` is the canonical branch. Always inspect `git remote -
 - Do not revert others' unrelated changes.
 - Stop and ask when unexpected changes or conflicts appear in active scope.
 - Do not mix shell-exported GitHub token and stored `gh` credentials in the same flow.
-- Do not use `git push origin` as a default habit in this repo. Confirm whether the task targets `gitlab` (canonical) or GitHub public snapshot first.
+- Do not use `git push origin` or `git push github-public` as a default habit in this repo. Confirm whether the task targets `gitlab` (canonical) or GitHub public snapshot first.
 
 ## References
 
