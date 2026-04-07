@@ -27,7 +27,6 @@
     "incremental": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "downlevelIteration": true,
     "plugins": [
       {
         "name": "next"
