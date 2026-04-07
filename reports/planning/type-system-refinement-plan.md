@@ -25,7 +25,7 @@
 - [ ] `src/types/server/entities.ts` 내의 데이터/네트워크 엔티티를 `base.ts`와 정렬
 - [ ] `src/types/server/types.ts`의 `ServerRole`, `ServerEnvironment` 표준화
 - [ ] `src/types/server/index.ts` 재수출 구조 최적화 (중복 제거)
-- [ ] `src/components/dashboard/EnhancedServerModal.types.ts`의 `ServerSpecs` / `ServerHealth`를 `src/types/server/base.ts`와 정렬하거나 의도적으로 분리
+- [x] `src/components/dashboard/EnhancedServerModal.types.ts`의 `ServerSpecs` / `ServerHealth`를 `src/types/server/base.ts` 기준으로 정렬
 
 ### Step 3: 공통 유틸리티 타입 통합 (진행 예정)
 - [ ] `PaginationInfo`, `LogLevel` 등을 `common.ts`로 단일화
@@ -42,5 +42,5 @@
 
 ## 5. 일정 및 상태
 - **시작일**: 2026-04-07
-- **현재 단계**: Step 1 완료 / Step 2 착수 준비 중
+- **현재 단계**: Step 1 완료 / Step 2 진행 중
 - **담당**: AI Agent

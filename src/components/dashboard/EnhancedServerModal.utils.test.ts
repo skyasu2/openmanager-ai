@@ -64,4 +64,18 @@ describe('normalizeServerData networkStatus', () => {
     expect(low.networkStatus).toBe('good');
     expect(high.networkStatus).toBe('poor');
   });
+
+  it('기본 health fallback에 status를 함께 채운다', () => {
+    const normalized = normalizeServerData({
+      ...baseServer,
+      health: undefined,
+      status: 'warning',
+    });
+
+    expect(normalized.health).toEqual({
+      score: 0,
+      trend: [],
+      status: 'warning',
+    });
+  });
 });
