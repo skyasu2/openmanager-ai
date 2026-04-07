@@ -28,6 +28,7 @@
   - build(ts): root `TypeScript 6.0.2` 반영, `downlevelIteration` 제거, `src/types/css.d.ts` 추가로 TS6 side-effect CSS import stricter check 대응
   - build(dev): `knip` `6.0.5` 전환 + parser 기준 unused server/api export 정리
   - build(test): shared node test infra(`setup.node`, `vitest.config.{node,dev,main}`, `msw/shared-aliases`, `vitest-node-wrapper`)를 `pre-push`의 일반 related suite에서 분리하고 `test:node:infra:smoke` 경로로 라우팅
+  - build(storybook): framework-generated `vite-inject-mocker-entry.js`(약 `1.52 MB`)에 맞춰 `chunkSizeWarningLimit`를 `1600`으로 조정해 static build large chunk warning 제거
   - build(storybook): stable `10.2.10` 기준 story hygiene 정리 — 71개 story import를 `@storybook/nextjs-vite`로 통일, `AIWorkspace`/`AIDebugPanel` autodocs 적용, `AIDebugPanel` fetch mocking 정상화, Storybook build PASS
   - build(ai-engine): `typescript 6.0.2`, `@types/node 25.5.2`, `@supabase/supabase-js 2.101.1` 반영. `ai@latest`는 Vitest resolver 충돌로 보류하고 `6.0.86` 유지
   - test(node): `vercel-post-deploy-smoke` loopback bind 제한(`EPERM`) 환경 안정화, dev/qa script smoke test의 output assertion을 status/side-effect 중심으로 보강

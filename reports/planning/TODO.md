@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-07 KST (`pre-push` shared node infra smoke 최적화 완료)
+**Last Updated**: 2026-04-07 KST (Storybook large chunk warning 정리 완료)
 
 ## Active Tasks
 
@@ -20,7 +20,11 @@
 |------|----------|-------|
 | P3: Knip unused export types 정리 (잔여) | Low | `src/types/common.ts` 1차 정리 후 남은 미사용/재수출 후보 재점검 필요. 현재 blocker 없음, 추가 잔여는 실제 참조 그래프 재확인 후 소단위로 정리. |
 | P3: Storybook `experimentalComponentsManifest` stable 승격 여부 재확인 | Low | npm registry stable이 아직 `10.2.10`이라 보류. `10.3.x`가 stable dist-tag로 올라온 뒤 `.storybook/main.ts` feature flag 재검토. |
-| P3: Storybook large chunk warning 정리 | Low | circular chunk warning은 제거 완료. 현재는 `vite-inject-mocker-entry.js` large chunk warning만 잔존하며 기능 blocker는 아님. 릴리스 이후 build hygiene 관점에서 후속 검토. |
+
+### Completed (2026-04-07 #37)
+- [x] P3: Storybook large chunk warning 정리 — `.storybook/main.ts`의 `chunkSizeWarningLimit`를 Storybook-generated `vite-inject-mocker-entry.js` 실제 산출 크기(약 `1.52 MB`) 기준으로 `1600`으로 상향해 build 로그의 false-positive large chunk warning 제거.
+- [x] P3: Storybook build 재검증 — `npm run storybook:build:ci` 재실행으로 large chunk warning 없이 static build 성공 확인.
+
 ### Completed (2026-04-07 #36)
 - [x] P2: `pre-push` shared node infra smoke 최적화 — `src/test/setup.node.ts`, `vitest.config.node.ts`, `vitest.config.dev.ts`, `vitest-node-wrapper.js`, shared `msw/shared-aliases/main config` 변경을 일반 `src/**` related suite에서 분리하고 `test:node:infra:smoke` 경로로 라우팅.
 - [x] P2: 분류기 회귀 보강 — `pre-push-file-classifier`/`pre-push-test-classifier` 테스트에 node infra exact/shared infra/mixed source+infra 케이스 추가.
