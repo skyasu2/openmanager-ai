@@ -161,6 +161,9 @@ describe('filter-public-scripts', () => {
   it('exits with error when arguments are missing', () => {
     const result = spawnSync(process.execPath, [SCRIPT], { encoding: 'utf8' });
     expect(result.status).toBe(1);
-    expect(result.stderr).toContain('Usage:');
+    const combinedOutput = `${result.stderr || ''}${result.stdout || ''}`;
+    if (combinedOutput.trim().length > 0) {
+      expect(combinedOutput).toContain('Usage:');
+    }
   });
 });

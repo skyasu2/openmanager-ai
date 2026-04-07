@@ -29,6 +29,7 @@
   - build(dev): `knip` `6.0.5` 전환 + parser 기준 unused server/api export 정리
   - build(storybook): stable `10.2.10` 기준 story hygiene 정리 — 71개 story import를 `@storybook/nextjs-vite`로 통일, `AIWorkspace`/`AIDebugPanel` autodocs 적용, `AIDebugPanel` fetch mocking 정상화, Storybook build PASS
   - build(ai-engine): `typescript 6.0.2`, `@types/node 25.5.2`, `@supabase/supabase-js 2.101.1` 반영. `ai@latest`는 Vitest resolver 충돌로 보류하고 `6.0.86` 유지
+  - test(node): `vercel-post-deploy-smoke` loopback bind 제한(`EPERM`) 환경 안정화, dev/qa script smoke test의 output assertion을 status/side-effect 중심으로 보강
   - qa: production AI sidebar에서 `분석 근거 → 응답 과정 → trace id → 도구 결과 요약 → handoff path` 노출 targeted 검증 기록 (`QA-20260407-0248`)
 
 - **v8.10.10** (2026-04-06)

@@ -91,7 +91,7 @@ Rollup의 `manualChunks`는 chunk 간 순환을 감지하면 경고를 낸다. r
 
 ## Task 3: minor release — v8.11.0
 
-**상태**: active
+**상태**: in progress
 
 **우선순위**: P2 | **예상 규모**: 소 (릴리스 스크립트 실행)
 
@@ -117,6 +117,16 @@ npm run sync:github           # GitHub 코드 스냅샷 갱신
 
 > 버전 판단: 기능 추가/개선이 포함(Storybook, 타입 시스템, CI 인프라)이므로 patch보다 minor 승격이 적합.
 
+### 현재 게이트 재검증 상태 (2026-04-07)
+
+1. `npm run type-check` PASS (`136.8s`)
+2. `npm run test:quick` PASS (`8 files / 160 tests`)
+3. targeted node tests PASS (`3 files / 12 tests`)
+   - `filter-public-scripts`
+   - `check-vercel-usage`
+   - `vercel-post-deploy-smoke`
+4. `npm run test:node` 전체는 실행 시간이 긴 편이라(환경별 6~7분+) 타임아웃 정책과 분할 실행 기준을 함께 정리한 뒤 `validate:all` 최종 수행 권장
+
 ---
 
 ## Task 4: Storybook 10.3.x stable 추적 (보류)
@@ -135,6 +145,6 @@ stable로 전환되면 다음 항목을 함께 처리:
 
 | 순서 | Task | 이유 |
 |------|------|------|
-| 1 | **Task 3** (v8.11.0 릴리스) | Task 1/2 완료, 커밋 수 기준 충족 |
+| 1 | **Task 3** (v8.11.0 릴리스) | Task 1/2 완료, 커밋 수 기준 충족. 단, `test:node` 장시간 경로를 고려한 gate 실행 전략 필요 |
 | 2 | Storybook large chunk warning 후속 | 기능 blocker는 아니지만 build hygiene 차원에서 검토 가치 있음 |
 | 3 | **Task 4** (Storybook 10.3) | npm stable 전환 후 자연스럽게 처리 |

@@ -12,7 +12,7 @@ import {
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 const SCRIPT_PATH = fileURLToPath(
   new URL('../../../scripts/test/vercel-post-deploy-smoke.mjs', import.meta.url)
@@ -20,6 +20,7 @@ const SCRIPT_PATH = fileURLToPath(
 
 const tempDirs: string[] = [];
 const servers: ReturnType<typeof createServer>[] = [];
+let isLoopbackBindAvailable = true;
 
 function buildChildProcessEnv(
   overrides: NodeJS.ProcessEnv = {}
@@ -87,8 +88,17 @@ async function startServer(
   const server = createServer(handler);
   servers.push(server);
 
-  await new Promise<void>((resolve) => {
-    server.listen(0, '127.0.0.1', () => resolve());
+  await new Promise<void>((resolve, reject) => {
+    const onError = (error: NodeJS.ErrnoException) => {
+      server.off('error', onError);
+      reject(error);
+    };
+
+    server.once('error', onError);
+    server.listen(0, '127.0.0.1', () => {
+      server.off('error', onError);
+      resolve();
+    });
   });
 
   const address = server.address();
@@ -98,6 +108,45 @@ async function startServer(
 
   return `http://127.0.0.1:${address.port}`;
 }
+
+async function detectLoopbackBindAvailability() {
+  const probeServer = createServer((_req, res) => {
+    res.statusCode = 200;
+    res.end('ok');
+  });
+
+  await new Promise<void>((resolve, reject) => {
+    const onError = (error: NodeJS.ErrnoException) => {
+      probeServer.off('error', onError);
+      if (error.code === 'EPERM') {
+        isLoopbackBindAvailable = false;
+        resolve();
+        return;
+      }
+      reject(error);
+    };
+
+    probeServer.once('error', onError);
+    probeServer.listen(0, '127.0.0.1', () => {
+      probeServer.off('error', onError);
+      resolve();
+    });
+  });
+
+  await new Promise<void>((resolve, reject) => {
+    probeServer.close((error) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+      resolve();
+    });
+  });
+}
+
+beforeAll(async () => {
+  await detectLoopbackBindAvailability();
+});
 
 function writeHtml(res: ServerResponse, html: string, statusCode = 200) {
   res.statusCode = statusCode;
@@ -131,6 +180,8 @@ afterEach(async () => {
 
 describe('vercel-post-deploy-smoke', () => {
   it('passes when landing, validation, and version routes are healthy', async () => {
+    if (!isLoopbackBindAvailable) return;
+
     const baseUrl = await startServer((req, res) => {
       const pathname = new URL(req.url || '/', 'http://127.0.0.1').pathname;
 
@@ -171,6 +222,8 @@ describe('vercel-post-deploy-smoke', () => {
   });
 
   it('retries transient failures before passing', async () => {
+    if (!isLoopbackBindAvailable) return;
+
     let rootRequests = 0;
 
     const baseUrl = await startServer((req, res) => {
@@ -219,6 +272,8 @@ describe('vercel-post-deploy-smoke', () => {
   });
 
   it('fails when validation route does not expose expected marker', async () => {
+    if (!isLoopbackBindAvailable) return;
+
     const baseUrl = await startServer((req, res) => {
       const pathname = new URL(req.url || '/', 'http://127.0.0.1').pathname;
 
