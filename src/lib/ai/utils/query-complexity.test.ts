@@ -230,6 +230,15 @@ describe('query-complexity', () => {
       expect(result.score).toBeLessThanOrEqual(20);
       expect(result.factors).toContain('streaming_summary_query');
     });
+
+    it('should keep single-server alert analysis prompts on streaming path', () => {
+      const result = analyzeQueryComplexity(
+        'lb-haproxy-dc1-01 서버의 CPU 사용률이 73%입니다. 현재 원인과 우선 조치 방법을 분석해줘.'
+      );
+      expect(result.level).toBe('moderate');
+      expect(result.score).toBeLessThanOrEqual(45);
+      expect(result.factors).toContain('streaming_alert_analysis_query');
+    });
   });
 
   describe('analyzeJobQueryComplexity', () => {
@@ -246,6 +255,15 @@ describe('query-complexity', () => {
       expect(result.level).toBe('simple');
       expect(result.useJobQueue).toBe(false);
       expect(result.factors.analysisDepth).toBe('shallow');
+    });
+
+    it('should keep single-server alert analysis prompts off the job queue', () => {
+      const result = analyzeJobQueryComplexity(
+        'lb-haproxy-dc1-01 서버의 CPU 사용률이 73%입니다. 현재 원인과 우선 조치 방법을 분석해줘.'
+      );
+      expect(result.level).toBe('simple');
+      expect(result.useJobQueue).toBe(false);
+      expect(result.factors.dataVolume).toBe('low');
     });
 
     it('should classify complex analysis query as complex', () => {

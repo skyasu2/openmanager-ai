@@ -144,6 +144,15 @@ describe('useHybridAIQuery - 쿼리 복잡도 기반 모드 선택', () => {
       expect(result.score).toBeLessThanOrEqual(20);
     });
 
+    it('대시보드 알림 prefill 분석 → streaming', () => {
+      const result = analyzeQueryComplexity(
+        'lb-haproxy-dc1-01 서버의 CPU 사용률이 73%입니다. 현재 원인과 우선 조치 방법을 분석해줘.'
+      );
+      expect(result.level).toBe('moderate');
+      expect(result.score).toBeLessThanOrEqual(45);
+      expect(result.factors).toContain('streaming_alert_analysis_query');
+    });
+
     it('전체 서버 비교 분석 → job-queue 권장', () => {
       const result = analyzeQueryComplexity(
         '모든 서버의 성능을 비교 분석하고 개선 방안을 제안해줘'
