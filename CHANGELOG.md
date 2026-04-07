@@ -2,6 +2,45 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.0](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.10.10...v8.11.0) (2026-04-07)
+
+
+### Features
+
+* **ui:** show collapsed analysis basis summary ([42a879f](https://gitlab.com/skyasu2/openmanager-ai/-/commit/42a879f326e07f21481b56a371aa47bde79edce0))
+
+
+### Bug Fixes
+
+* **dev:** delegate type-only changed typecheck ([23a5558](https://gitlab.com/skyasu2/openmanager-ai/-/commit/23a55583684bf180abb74ffa0fe8219d7fff330a))
+* **dev:** delegate type-only pre-push typecheck ([efbdaea](https://gitlab.com/skyasu2/openmanager-ai/-/commit/efbdaeab4f2a8b7bcab4160608c1d3e9e030a9bc))
+* **dev:** narrow pre-push checks for type-only changes ([ea7acc1](https://gitlab.com/skyasu2/openmanager-ai/-/commit/ea7acc10d206b3b635203edc625813739e4bb0b3))
+* **dev:** remove scoped changed typecheck mode ([2ad504f](https://gitlab.com/skyasu2/openmanager-ai/-/commit/2ad504ff9c0d11d6e29cdf1027eeb5c507af93ed))
+* **dev:** skip project typecheck for tooling-only changes ([e9ab237](https://gitlab.com/skyasu2/openmanager-ai/-/commit/e9ab2370d4b623598ab7555920c6cfe2a6d22810))
+* **ui:** narrow collapsed analysis summary typing ([1ff2123](https://gitlab.com/skyasu2/openmanager-ai/-/commit/1ff21231e06f5c4923673ce739bb93023be742bd))
+
+
+### Code Refactoring
+
+* **dev:** optimize typecheck-changed and consolidate server types ([709d889](https://gitlab.com/skyasu2/openmanager-ai/-/commit/709d88954d0a5fbf902cbc54b47a58d480c45872))
+* **types:** align enhanced modal server types ([e375a05](https://gitlab.com/skyasu2/openmanager-ai/-/commit/e375a056f107fbc6b062abe7a70838d0f6554305))
+* **types:** prune unused common type exports ([b4eb93e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/b4eb93e0b3d46b3578c27928ef87056ecf044b53))
+* **types:** remove unused ai-sidebar and intelligent-monitoring exports ([48aae40](https://gitlab.com/skyasu2/openmanager-ai/-/commit/48aae404f9db9ba0b6ac3fbaf00d6ec7f8e5417a))
+* **types:** share server health summary aliases ([3b7bb02](https://gitlab.com/skyasu2/openmanager-ai/-/commit/3b7bb02c6efcc31716af6feffb84d07f4c8e9fe1))
+* **types:** standardize server type aliases ([291d405](https://gitlab.com/skyasu2/openmanager-ai/-/commit/291d405a808e3f33d8a743080acf6761ba5a6908))
+
+
+### Tests
+
+* **dev:** cover type-only pre-push delegation ([808a8af](https://gitlab.com/skyasu2/openmanager-ai/-/commit/808a8af7a0fa517d30673e9dd8d345f983dbbb09))
+* **node:** harden smoke tests and sync release docs ([f363b38](https://gitlab.com/skyasu2/openmanager-ai/-/commit/f363b38caa11785d19c524d61316dc9b14149b47))
+* **qa:** guard loopback probe close in smoke suite ([9fd98a8](https://gitlab.com/skyasu2/openmanager-ai/-/commit/9fd98a825d70c6675f861e2a0ceb9091f38c4aac))
+* **release:** cover branch and upstream guards ([38f57d9](https://gitlab.com/skyasu2/openmanager-ai/-/commit/38f57d9d3d170e17d9a3f8d129859dd625bbb091))
+* **release:** cover canonical publish guards ([ddc46b1](https://gitlab.com/skyasu2/openmanager-ai/-/commit/ddc46b190f38e2bd54c4a75e95ef986eea05a7be))
+* **release:** cover dirty worktree guard ([c5029da](https://gitlab.com/skyasu2/openmanager-ai/-/commit/c5029da9d94e0f91d4456ac4ef075108a54f8c8c))
+* **release:** cover missing canonical remote ([3b4a725](https://gitlab.com/skyasu2/openmanager-ai/-/commit/3b4a725d084e207546e80337ba95706ef4dfb7c7))
+* **release:** cover unset upstream guard ([ce5dcf3](https://gitlab.com/skyasu2/openmanager-ai/-/commit/ce5dcf35cf44260fd75d6a039f241100be353291))
+
 ## [8.10.10](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.10.9...v8.10.10) (2026-04-06)
 
 
