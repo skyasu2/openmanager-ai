@@ -147,6 +147,18 @@ describe('AgentStatusIndicator', () => {
       render(<AgentStatusIndicator agent="Custom Agent" status="processing" />);
       expect(screen.getByText('Custom Agent')).toBeInTheDocument();
     });
+
+    it('should fall back safely when runtime status is unexpected', () => {
+      render(
+        <AgentStatusIndicator
+          agent="Custom Agent"
+          status={'routing' as AgentStatus}
+        />
+      );
+
+      expect(screen.getByText('Custom Agent')).toBeInTheDocument();
+      expect(screen.getByText('• 대기')).toBeInTheDocument();
+    });
   });
 
   describe('Compact Mode', () => {

@@ -122,6 +122,20 @@ describe('handleStreamDataPart', () => {
 
       expect(callbacks.setCurrentAgentStatus).not.toHaveBeenCalled();
     });
+
+    it('should ignore invalid agent status payloads', () => {
+      const part: StreamDataPart = {
+        type: 'data-agent-status',
+        data: {
+          agent: 'Supervisor',
+          status: 'routing',
+        },
+      };
+
+      handleStreamDataPart(part, callbacks);
+
+      expect(callbacks.setCurrentAgentStatus).not.toHaveBeenCalled();
+    });
   });
 
   describe('handoff event', () => {

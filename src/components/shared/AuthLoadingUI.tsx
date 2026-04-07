@@ -12,20 +12,7 @@
 'use client';
 
 import { Loader2 } from 'lucide-react';
-import type { CSSProperties } from 'react';
 import FullScreenLayout from './FullScreenLayout';
-
-const VISUALLY_HIDDEN_STYLES: CSSProperties = {
-  position: 'absolute',
-  width: '1px',
-  height: '1px',
-  padding: 0,
-  margin: '-1px',
-  overflow: 'hidden',
-  clip: 'rect(0, 0, 0, 0)',
-  whiteSpace: 'nowrap',
-  border: 0,
-};
 
 interface AuthLoadingUIProps {
   /**
@@ -64,6 +51,7 @@ export default function AuthLoadingUI({
   onRetry,
   showCopy = true,
 }: AuthLoadingUIProps) {
+  const accessibleLoadingLabel = `${loadingMessage} (${envLabel} 환경)`;
   const visibleAuthError =
     process.env.NODE_ENV === 'development'
       ? authError
@@ -73,16 +61,19 @@ export default function AuthLoadingUI({
 
   return (
     <FullScreenLayout>
-      <div className="text-center">
+      <div
+        className="text-center"
+        role="status"
+        aria-busy="true"
+        aria-live="polite"
+        aria-label={showCopy ? undefined : accessibleLoadingLabel}
+      >
         <div>
           <Loader2 className="mx-auto mb-4 h-8 w-8 animate-spin text-white" />
         </div>
-        <span style={VISUALLY_HIDDEN_STYLES} suppressHydrationWarning>
-          {loadingMessage} ({envLabel} 환경)
-        </span>
         {showCopy && (
           <p className="font-medium text-white/90" suppressHydrationWarning>
-            {loadingMessage} ({envLabel} 환경)
+            {accessibleLoadingLabel}
           </p>
         )}
         {visibleAuthError && onRetry && (

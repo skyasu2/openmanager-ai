@@ -93,6 +93,9 @@ const STATUS_LABELS: Record<AgentStatus, string> = {
   idle: '대기',
 };
 
+const FALLBACK_STATUS_STYLE = STATUS_STYLES.idle;
+const FALLBACK_STATUS_LABEL = STATUS_LABELS.idle;
+
 /**
  * Parse agent_status event data
  */
@@ -121,8 +124,8 @@ export function parseAgentStatus(
 export const AgentStatusIndicator = memo<AgentStatusIndicatorProps>(
   ({ agent, status, compact = false }) => {
     const Icon = AGENT_ICONS[agent] || Bot;
-    const style = STATUS_STYLES[status];
-    const label = STATUS_LABELS[status];
+    const style = STATUS_STYLES[status as AgentStatus] ?? FALLBACK_STATUS_STYLE;
+    const label = STATUS_LABELS[status as AgentStatus] ?? FALLBACK_STATUS_LABEL;
 
     const description = AGENT_DESCRIPTIONS[agent];
 

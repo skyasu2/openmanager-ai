@@ -12,6 +12,13 @@ import {
   type ResponseSourceData,
 } from './response-view-helpers';
 
+const VALID_AGENT_STATUSES = new Set([
+  'thinking',
+  'processing',
+  'completed',
+  'idle',
+]);
+
 type SyntheticToolPart = Extract<
   UIMessage['parts'][number],
   {
@@ -95,6 +102,15 @@ function normalizeHandoffHistory(value: unknown): HandoffEventData[] {
   );
 }
 
+function isAgentStatusEventData(value: unknown): value is AgentStatusEventData {
+  return (
+    isRecord(value) &&
+    typeof value.agent === 'string' &&
+    typeof value.status === 'string' &&
+    VALID_AGENT_STATUSES.has(value.status)
+  );
+}
+
 function _createSyntheticToolParts(
   toolResults: PendingStreamToolResult[]
 ): SyntheticToolPart[] {
@@ -116,7 +132,16 @@ export function handleStreamDataPart(
     callbacks.setPendingToolResults([]);
     callbacks.setPendingMessageMetadata({});
   } else if (partType === 'data-agent-status' && dataPart.data) {
-    const agentStatus = dataPart.data as AgentStatusEventData;
+    if (!isAgentStatusEventData(dataPart.data)) {
+      if (process.env.NODE_ENV === 'development') {
+        logger.warn('⚠️ [Agent Status] Invalid event payload ignored', {
+          data: dataPart.data,
+        });
+      }
+      return;
+    }
+
+    const agentStatus = dataPart.data;
     callbacks.setCurrentAgentStatus(agentStatus);
     if (process.env.NODE_ENV === 'development') {
       logger.info(
