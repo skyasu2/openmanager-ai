@@ -42,7 +42,7 @@
     "@google-cloud/pino-logging-gcp-config": "^1.3.3",
     "@hono/node-server": "^1.19.7",
     "@opentelemetry/api": "^1.9.0",
-    "@supabase/supabase-js": "^2.47.7",
+    "@supabase/supabase-js": "^2.101.1",
     "@tavily/core": "^0.6.0",
     "@upstash/redis": "^1.36.0",
     "ai": "^6.0.86",
@@ -55,11 +55,11 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@types/node": "^24.10.13",
+    "@types/node": "^25.5.2",
     "@types/pg": "^8.11.10",
     "promptfoo": "^0.120.8",
     "tsx": "^4.19.2",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.2",
     "vitest": "^4.0.16"
   }
 }

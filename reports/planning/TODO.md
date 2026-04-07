@@ -1,13 +1,13 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-07 KST (v8.10.11 진행 중, 타입 시스템 정제 Step 3 준비 + 패키지 업그레이드 Step 4 준비 완료)
+**Last Updated**: 2026-04-07 KST (v8.10.11 진행 중, 타입 시스템 정제 Step 3 준비 + 패키지 업그레이드 Step 2/4 완료, Step 5 partial 완료)
 
 ## Active Tasks
 
 | Task | Priority | Status |
 |------|----------|--------|
 | [P2: 타입 시스템 정제 및 인프라 최적화 (Phase 2)](./type-system-refinement-plan.md) | High | In-Progress (Step 3 준비) |
-| [P2: 패키지 기술 부채 업그레이드](./package-upgrade-plan.md) | High | In-Progress (Step 4 준비 완료) |
+| [P2: 패키지 기술 부채 업그레이드](./package-upgrade-plan.md) | High | In-Progress (Step 2/4 완료, Step 5 partial 완료) |
 
 ## On Hold
 
@@ -20,6 +20,16 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | P3: Knip unused export types 정리 (잔여) | Low | `src/types/common.ts` 1차 정리 후 남은 미사용/재수출 후보 재점검 필요. 현재 blocker 없음, 추가 잔여는 실제 참조 그래프 재확인 후 소단위로 정리. |
+| P3: Storybook `experimentalComponentsManifest` stable 승격 여부 재확인 | Low | npm registry stable이 아직 `10.2.10`이라 보류. `10.3.x`가 stable dist-tag로 올라온 뒤 `.storybook/main.ts` feature flag 재검토. |
+
+### Completed (2026-04-07 #27)
+- [x] P2: TypeScript 6 root 업그레이드 — `typescript 5.9.3→6.0.2` 반영. `downlevelIteration` 제거와 `src/types/css.d.ts` 추가로 TS6의 side-effect CSS import stricter check 대응. `npm run type-check`, `npm run lint`, `npm run test:quick` 통과.
+
+### Completed (2026-04-07 #28)
+- [x] P2: Storybook hygiene 정리 — 71개 story type import를 `@storybook/nextjs-vite`로 통일, `AIWorkspace`/`AIDebugPanel` autodocs 적용, `AIDebugPanel` 비표준 `mockData`를 deterministic fetch mocking으로 교체, named export mismatch(`AnalysisBasisBadge`, `WelcomePromptCards`) 수정 후 `npm run storybook:build` 통과.
+
+### Completed (2026-04-07 #29)
+- [x] P2: ai-engine 패키지 분리 트랙 1차 적용 — `typescript 6.0.2`, `@types/node 25.5.2`, `@supabase/supabase-js 2.101.1` 반영. `ai@latest`는 Vitest resolver 충돌로 실패해 `6.0.86` 유지. `cloud-run/ai-engine`의 `npm run type-check`, `npm run test` 통과.
 
 ### Completed (2026-04-07 #25)
 - [x] P2: Knip v6 전환 — `knip` `5.88.1→6.0.5`, `knip.json` schema `@5→@6` 정렬. 새 parser 기준 unused 4건(`src/types/server/guards.ts`, `api-config` default export, server enum alias re-export)도 함께 정리해 `npm run knip:ci` clean 유지.
