@@ -280,7 +280,8 @@ export async function* executeParallelSubtasksStream(
   yield {
     type: 'agent_status',
     data: {
-      status: 'decomposing',
+      agent: 'Orchestrator',
+      status: 'processing',
       subtaskCount: subtasks.length,
       agents: subtasks.map(s => s.agent),
       message: `${subtasks.length}개 서브태스크로 분할하여 병렬 처리 중...`,
@@ -337,7 +338,8 @@ export async function* executeParallelSubtasksStream(
   yield {
     type: 'agent_status',
     data: {
-      status: 'unifying',
+      agent: 'Orchestrator',
+      status: 'processing',
       completed: successfulResults.length,
       total: subtasks.length,
       message: `${successfulResults.length}/${subtasks.length} 서브태스크 완료, 결과 통합 중...`,
@@ -408,7 +410,8 @@ export async function* executeSequentialSubtasksStream(
   yield {
     type: 'agent_status',
     data: {
-      status: 'decomposing',
+      agent: 'Orchestrator',
+      status: 'processing',
       subtaskCount: subtasks.length,
       agents: subtasks.map(s => s.agent),
       sequential: true,
@@ -424,7 +427,7 @@ export async function* executeSequentialSubtasksStream(
     yield {
       type: 'agent_status',
       data: {
-        status: 'executing',
+        status: 'processing',
         current: i + 1,
         total: subtasks.length,
         agent: subtask.agent,

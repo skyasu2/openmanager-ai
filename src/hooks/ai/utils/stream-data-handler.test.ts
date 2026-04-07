@@ -123,6 +123,24 @@ describe('handleStreamDataPart', () => {
       expect(callbacks.setCurrentAgentStatus).not.toHaveBeenCalled();
     });
 
+    it('should normalize legacy orchestration payloads from the server', () => {
+      const part: StreamDataPart = {
+        type: 'data-agent-status',
+        data: {
+          status: 'routing_fallback',
+          message: '라우팅 타임아웃, Analyst Agent로 전환...',
+        },
+      };
+
+      handleStreamDataPart(part, callbacks);
+
+      expect(callbacks.setCurrentAgentStatus).toHaveBeenCalledWith({
+        agent: 'Orchestrator',
+        status: 'processing',
+        message: '라우팅 타임아웃, Analyst Agent로 전환...',
+      });
+    });
+
     it('should ignore invalid agent status payloads', () => {
       const part: StreamDataPart = {
         type: 'data-agent-status',

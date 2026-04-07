@@ -148,6 +148,21 @@ describe('AgentStatusIndicator', () => {
       expect(screen.getByText('Custom Agent')).toBeInTheDocument();
     });
 
+    it('should prefer runtime message over default description in compact mode', () => {
+      render(
+        <AgentStatusIndicator
+          agent="Orchestrator"
+          status="processing"
+          message="라우팅 타임아웃, Analyst Agent로 전환..."
+          compact
+        />
+      );
+
+      expect(
+        screen.getByText('라우팅 타임아웃, Analyst Agent로 전환...')
+      ).toBeInTheDocument();
+    });
+
     it('should fall back safely when runtime status is unexpected', () => {
       render(
         <AgentStatusIndicator

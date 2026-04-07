@@ -576,7 +576,14 @@ export async function* executeMultiAgentStream(
       const visionConfig = getAgentConfig(preFilterResult.suggestedAgent);
       if (!visionConfig || !visionConfig.getModel()) {
         logger.warn('[Stream] Vision Agent model unavailable, falling back to Analyst Agent');
-        yield { type: 'agent_status', data: { status: 'vision_fallback', message: 'Vision Agent 사용 불가, Analyst Agent로 전환 중...' } };
+        yield {
+          type: 'agent_status',
+          data: {
+            agent: 'Vision Agent',
+            status: 'processing',
+            message: 'Vision Agent 사용 불가, Analyst Agent로 전환 중...',
+          },
+        };
         yield* streamWithTrace(trace, startTime, executeAgentStream(
           query, 'Analyst Agent', startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files, contextSummary
         ));
@@ -646,7 +653,14 @@ export async function* executeMultiAgentStream(
       const suggestedAgent = preFilterResult.suggestedAgent;
       if (suggestedAgent && preFilterResult.confidence >= ORCHESTRATOR_CONFIG.fallbackRoutingConfidence) {
         logger.info(`[Stream] Routing timeout fallback to ${suggestedAgent}`);
-        yield { type: 'agent_status', data: { status: 'routing_fallback', message: `라우팅 타임아웃, ${suggestedAgent}로 전환...` } };
+        yield {
+          type: 'agent_status',
+          data: {
+            agent: 'Orchestrator',
+            status: 'processing',
+            message: `라우팅 타임아웃, ${suggestedAgent}로 전환...`,
+          },
+        };
         yield* streamWithTrace(
           trace,
           startTime,

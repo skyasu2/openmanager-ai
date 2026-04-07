@@ -256,7 +256,11 @@ describe('supervisor degraded single fallback', () => {
 
     expect(events[0]).toMatchObject({
       type: 'agent_status',
-      data: { status: 'degraded' },
+      data: {
+        agent: 'Orchestrator',
+        status: 'processing',
+        message: '오케스트레이터 오류로 단일 분석 모드로 전환합니다.',
+      },
     });
     expect(events).toContainEqual({ type: 'text_delta', data: 'single fallback stream' });
     expect(events.at(-1)).toMatchObject({

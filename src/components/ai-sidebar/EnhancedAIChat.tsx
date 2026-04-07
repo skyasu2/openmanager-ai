@@ -280,6 +280,7 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
                 <AgentStatusIndicator
                   agent={currentAgentStatus.agent}
                   status={currentAgentStatus.status}
+                  message={currentAgentStatus.message}
                   compact
                 />
               )}

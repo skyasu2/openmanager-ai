@@ -79,6 +79,7 @@ export interface HandoffEventData {
 export interface AgentStatusEventData {
   agent: string;
   status: AgentStatus;
+  message?: string;
 }
 
 /**

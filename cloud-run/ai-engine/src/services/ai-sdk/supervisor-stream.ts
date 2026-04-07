@@ -81,7 +81,8 @@ export async function* executeSupervisorStream(
             yield {
               type: 'agent_status',
               data: {
-                status: 'degraded',
+                agent: 'Orchestrator',
+                status: 'processing',
                 message: '오케스트레이터 오류로 단일 분석 모드로 전환합니다.',
               },
             };
@@ -128,7 +129,8 @@ export async function* executeSupervisorStream(
         yield { 
           type: 'agent_status', 
           data: { 
-            status: 'degraded', 
+            agent: 'Orchestrator',
+            status: 'processing', 
             message: '오케스트레이터 오류로 단일 분석 모드로 전환합니다.' 
           } 
         };
