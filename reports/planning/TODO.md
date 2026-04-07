@@ -1,12 +1,12 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-07 KST (v8.10.11 진행 중, 타입 시스템 정제 및 인프라 최적화 Phase 2 active)
+**Last Updated**: 2026-04-07 KST (v8.10.11 진행 중, 타입 시스템 정제 및 인프라 최적화 Step 1 correctness 정리 완료)
 
 ## Active Tasks
 
 | Task | Priority | Status |
 |------|----------|--------|
-| [P2: 타입 시스템 정제 및 인프라 최적화 (Phase 2)](./type-system-refinement-plan.md) | High | In-Progress (Step 1 correctness review + Step 2 준비) |
+| [P2: 타입 시스템 정제 및 인프라 최적화 (Phase 2)](./type-system-refinement-plan.md) | High | In-Progress (Step 2 준비) |
 
 ## On Hold
 
@@ -19,6 +19,9 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | P3: Knip unused export types 정리 (잔여) | Low | `src/types/common.ts` 1차 정리 후 남은 미사용/재수출 후보 재점검 필요. 현재 blocker 없음, 추가 잔여는 실제 참조 그래프 재확인 후 소단위로 정리. |
+
+### Completed (2026-04-07 #19)
+- [x] P2: `type-check:changed` correctness 정리 — `files: [...]` scoped mode 제거, changed-file filtering은 전체 project type-check 시작 여부만 판단하도록 환원. `src/types/**` 위임 / tooling-only skip fast path 유지, standalone regression test에서 `tsconfig.check.json` full-project fallback 고정.
 
 ### Completed (2026-04-07 #18)
 - [x] P2: `type-check:changed` 인프라 최적화 — `files: [...]` 스코프형 증분 체크 도입 (100s+ → 12s 단축), `PRESET_FILES` 공백 처리 버그 수정 (`709d88954`)

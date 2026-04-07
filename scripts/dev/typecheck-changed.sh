@@ -48,43 +48,19 @@ FILE_COUNT=$(echo "$ALL_CHANGED" | wc -l)
 
 TYPECHECK_CHANGED_TIMEOUT_SECONDS="${TYPECHECK_CHANGED_TIMEOUT_SECONDS:-60}"
 TYPECHECK_CHANGED_SOFT_TIMEOUT="${TYPECHECK_CHANGED_SOFT_TIMEOUT:-false}"
-TYPECHECK_SCOPED_THRESHOLD="${TYPECHECK_SCOPED_THRESHOLD:-100}"
 
 # TypeScript는 파일 단위가 아니라 project graph 기준으로 타입을 해석한다.
-# 하지만 파일 개수가 적으면 include만 제한한 임시 tsconfig를 사용하여 WSL/Windows FS I/O 병목을 피할 수 있다.
-TEMP_CONFIG=""
-if [ "$FILE_COUNT" -gt 0 ] && [ "$FILE_COUNT" -le "$TYPECHECK_SCOPED_THRESHOLD" ]; then
-  echo "📝 $FILE_COUNT type-check relevant file(s) modified. Using scoped incremental check..."
-  TEMP_CONFIG=$(mktemp .tsconfig.temp.XXXXXX.json)
-  # trap: 스크립트 종료 시(정상/오류/시그널) 임시 파일 삭제
-  trap 'rm -f "$TEMP_CONFIG"' EXIT ERR SIGINT SIGTERM
-  
-  # jq를 사용하여 임시 tsconfig 생성
-  # extends: tsconfig.check.json (incremental=false)를 상속하되 include만 제한
-  # files 배열로 직접 지정하는 것이 include보다 더 명확하게 스코프를 좁힌다.
-  printf '%s' "$ALL_CHANGED" | jq -R -s -c 'split("\n") | map(select(length > 0)) | {extends: "./tsconfig.check.json", files: .}' > "$TEMP_CONFIG"
-  
-  TYPECHECK_CMD=(
-    node
-    scripts/dev/tsc-wrapper.js
-    --noEmit
-    --pretty
-    false
-    --project
-    "$TEMP_CONFIG"
-  )
-else
-  echo "📝 $FILE_COUNT type-check relevant file(s) modified (threshold exceeded). Running full project type-check..."
-  TYPECHECK_CMD=(
-    node
-    scripts/dev/tsc-wrapper.js
-    --noEmit
-    --pretty
-    false
-    --project
-    tsconfig.check.json
-  )
-fi
+# changed-file filtering은 "검사를 시작할지"만 판단하고, 실제 타입 검사는 전체 project graph로 수행한다.
+echo "📝 $FILE_COUNT type-check relevant file(s) modified. Running full project type-check..."
+TYPECHECK_CMD=(
+  node
+  scripts/dev/tsc-wrapper.js
+  --noEmit
+  --pretty
+  false
+  --project
+  tsconfig.check.json
+)
 
 if command -v timeout >/dev/null 2>&1; then
   set +e

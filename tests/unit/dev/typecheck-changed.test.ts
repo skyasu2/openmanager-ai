@@ -55,7 +55,11 @@ afterEach(() => {
 
 describe('typecheck-changed', () => {
   it('writes passed status when the changed project type-check succeeds', () => {
+    const argsDir = createTempDir();
+    const argsFile = join(argsDir, 'args.json');
     const compilerPath = createCompilerScript(`
+      const fs = require('node:fs');
+      fs.writeFileSync(process.env.TSC_WRAPPER_ARGS_FILE, JSON.stringify(process.argv.slice(2)), 'utf8');
       setTimeout(() => {
         process.exit(0);
       }, 20);
@@ -67,11 +71,15 @@ describe('typecheck-changed', () => {
       PRE_PUSH_CHANGED_FILES: 'config/testing/vitest.config.dev.ts',
       TYPECHECK_CHANGED_STATUS_FILE: statusFile,
       TSC_WRAPPER_BIN: compilerPath,
+      TSC_WRAPPER_ARGS_FILE: argsFile,
     });
 
     expect(result.status).toBe(0);
     expect(readFileSync(statusFile, 'utf8').trim()).toBe('passed');
     expect(result.stdout).toContain('✅ Type-check passed!');
+    expect(JSON.parse(readFileSync(argsFile, 'utf8'))).toContain(
+      'tsconfig.check.json'
+    );
   });
 
   it('writes soft-timeout status and exits successfully when soft timeout is enabled', () => {
