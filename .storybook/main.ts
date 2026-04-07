@@ -71,8 +71,6 @@ const config: StorybookConfig = {
         }
 
         if (id.includes('node_modules')) {
-          if (id.includes('/react/') || id.includes('/react-dom/'))
-            return 'vendor-react';
           if (id.includes('/storybook/') || id.includes('/@storybook/'))
             return 'vendor-storybook';
           if (id.includes('/recharts/') || id.includes('/d3-'))
