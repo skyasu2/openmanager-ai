@@ -8,7 +8,7 @@
 ## 배경
 
 v8.10.10 이후 31개 커밋 누적. 패키지 업그레이드(TypeScript 6, Knip v6, Storybook hygiene, ai-engine 후속 정렬)와 UI/Storybook 후속 정리를 완료했다.
-이제 다음 사이클의 중심은 `v8.11.0` 릴리스 판단과 후속 residual 정리다.
+이제 다음 사이클의 중심은 `v8.11.0` 이후 residual 정리와 build hygiene backlog 축소다.
 
 ---
 
@@ -159,6 +159,36 @@ npm run sync:github           # GitHub 코드 스냅샷 갱신
 
 ---
 
+## Task 6: pre-push shared node infra smoke 최적화
+
+**상태**: 완료
+
+**우선순위**: P2 | **예상 규모**: 소~중
+
+### 배경
+
+Task 5 이후에도 `src/test/setup.node.ts` 같은 shared node test infra 파일을 수정하면 pre-push가 이를 일반 `src/**` source change로 분류해 `test:related:node`를 크게 확장했다.
+결과적으로 full `test:node`는 빨라졌지만, shared setup 변경이 들어간 push에서는 다시 500s+급 node suite가 실행되는 잔여 비용이 남아 있었다.
+
+### 완료 결과
+
+1. node infra exact 분리
+   `src/test/setup.node.ts`, `config/testing/vitest.config.{node,dev,main}.ts`, `config/testing/msw-setup.ts`, `config/testing/shared-aliases.ts`, `scripts/dev/vitest-node-wrapper.js`를 node infra exact set으로 분리
+2. pre-push 분류기 보강
+   node infra exact 변경은 일반 related source 목록에서 제외하고 `test:node:infra:smoke`로 라우팅
+3. shared infra dual smoke
+   `msw-setup.ts`, `shared-aliases.ts`, `vitest.config.main.ts`처럼 DOM/node 공용 인프라는 DOM infra smoke + node infra smoke를 함께 수행
+4. 회귀 검증
+   `pre-push-file-classifier`, `pre-push-test-classifier`, `vitest-node-wrapper` targeted tests와 `test:node:infra:smoke` 통과
+
+### 완료 기준
+
+- shared node infra 변경이 `test:related:node` 거의 전체 확장 경로를 직접 타지 않음
+- curated node infra smoke 경로가 deterministic하게 통과
+- mixed source + node infra 변경에서도 일반 source related suite와 node infra smoke가 함께 실행됨
+
+---
+
 ## Task 4: Storybook 10.3.x stable 추적 (보류)
 
 **우선순위**: P3 | **상태**: 대기
@@ -175,6 +205,6 @@ stable로 전환되면 다음 항목을 함께 처리:
 
 | 순서 | Task | 이유 |
 |------|------|------|
-| 1 | Storybook large chunk warning 후속 | 런타임 최적화가 닫혔으므로 현재 남은 build hygiene 이슈 중 우선순위가 가장 높음 |
-| 2 | **Task 4** (Storybook 10.3) | npm stable 전환 후 자연스럽게 처리 |
+| 1 | Storybook large chunk warning 후속 | `test:node`/`pre-push` 최적화가 닫혔으므로 현재 남은 build hygiene 이슈 중 우선순위가 가장 높음 |
+| 2 | **Task 4** (Storybook 10.3) | npm stable 전환 후 feature flag/API 정리를 묶어서 처리 가능 |
 | 3 | `src/types/common.ts` 잔여 unused type 정리 | blocker는 아니지만 타입 표면 정리 차원에서 다음 소단위 후보 |

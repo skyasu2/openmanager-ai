@@ -16,11 +16,13 @@ const {
   isCloudRunTypeCheckRelevantFile,
   isRelatedSourceFile,
   isDomTestInfraFile,
+  isNodeTestInfraFile,
   isHookTestInfraFile,
   isFrontendSmokeFile,
   isDomTestFile,
   DOM_INFRA_SMOKE_SENTINEL,
   DOM_TEST_INFRA_EXACT,
+  NODE_TEST_INFRA_EXACT,
 } = require('../../../scripts/hooks/pre-push-file-classifier');
 
 describe('normalizeFilePath', () => {
@@ -200,6 +202,27 @@ describe('isDomTestInfraFile', () => {
     expect(isDomTestInfraFile('config/testing/vitest.config.dev.ts')).toBe(
       false
     );
+  });
+});
+
+describe('isNodeTestInfraFile', () => {
+  it('matches node setup sentinel', () => {
+    expect(isNodeTestInfraFile('src/test/setup.node.ts')).toBe(true);
+  });
+
+  it('matches shared node infra files exactly', () => {
+    expect(isNodeTestInfraFile('config/testing/msw-setup.ts')).toBe(true);
+    expect(isNodeTestInfraFile('config/testing/vitest.config.node.ts')).toBe(
+      true
+    );
+    expect(NODE_TEST_INFRA_EXACT.has('config/testing/shared-aliases.ts')).toBe(
+      true
+    );
+  });
+
+  it('excludes unrelated files', () => {
+    expect(isNodeTestInfraFile('src/test/setup.ts')).toBe(false);
+    expect(isNodeTestInfraFile('src/components/Foo.tsx')).toBe(false);
   });
 });
 

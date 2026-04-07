@@ -16,6 +16,7 @@ const {
   isRelatedSourceFile,
   isTypeDefinitionSourceFile,
   isDomTestInfraFile,
+  isNodeTestInfraFile,
   isHookTestInfraFile,
   isFrontendSmokeFile,
   isDomTestFile,
@@ -87,8 +88,10 @@ function classifyChangedTestRun(
   const allRelatedSourceFiles = remainingFiles.filter(isRelatedSourceFile);
   const typeDefinitionFiles = allRelatedSourceFiles.filter(isTypeDefinitionSourceFile);
   const typeDefinitionFileSet = new Set(typeDefinitionFiles);
+  const nodeInfraFiles = remainingFiles.filter(isNodeTestInfraFile);
+  const nodeInfraFileSet = new Set(nodeInfraFiles);
   const relatedSourceFiles = allRelatedSourceFiles.filter(
-    (f) => !typeDefinitionFileSet.has(f)
+    (f) => !typeDefinitionFileSet.has(f) && !nodeInfraFileSet.has(f)
   );
   const domInfraFiles = remainingFiles.filter(isDomTestInfraFile);
   const hookInfraFiles = remainingFiles.filter(isHookTestInfraFile);
@@ -214,6 +217,16 @@ function classifyChangedTestRun(
     summaryParts.push('DOM infra smoke');
     guidance.push(`npm run test:related:dom -- ${DOM_INFRA_SMOKE_SENTINEL}`);
     scopeFiles.push(...domInfraFiles);
+  }
+
+  if (nodeInfraFiles.length > 0) {
+    steps.push({
+      label: 'Node infrastructure smoke',
+      args: ['run', 'test:node:infra:smoke'],
+    });
+    summaryParts.push('node infra smoke');
+    guidance.push('npm run test:node:infra:smoke');
+    scopeFiles.push(...nodeInfraFiles);
   }
 
   if (hookInfraFiles.length > 0 && steps.length === 0) {

@@ -129,9 +129,33 @@ describe('classifyChangedTestRun', () => {
     expect(result.mode).toContain('DOM infra smoke');
   });
 
-  it('returns null for node-only test config changes', () => {
+  it('routes node-only test config changes to node infra smoke', () => {
     const result = run(['config/testing/vitest.config.dev.ts']);
-    expect(result).toBeNull();
+    expect(result).not.toBeNull();
+    expect(result.mode).toContain('node infra smoke');
+    expect(result.steps).toHaveLength(1);
+    expect(result.steps[0].args).toEqual(['run', 'test:node:infra:smoke']);
+  });
+
+  it('routes shared node+dom test infra through both smoke paths', () => {
+    const result = run(['config/testing/msw-setup.ts']);
+    expect(result).not.toBeNull();
+    expect(result.mode).toContain('DOM infra smoke');
+    expect(result.mode).toContain('node infra smoke');
+    expect(result.steps).toHaveLength(2);
+    expect(result.steps[0].args).toContain('test:related:dom');
+    expect(result.steps[1].args).toEqual(['run', 'test:node:infra:smoke']);
+  });
+
+  it('keeps regular source files on related suites while isolating node infra smoke', () => {
+    const result = run(['src/lib/util.ts', 'src/test/setup.node.ts']);
+    expect(result).not.toBeNull();
+    expect(result.mode).toContain('source-related node + DOM');
+    expect(result.mode).toContain('node infra smoke');
+    expect(result.steps).toHaveLength(3);
+    expect(result.steps[0].args).toContain('test:related:node');
+    expect(result.steps[1].args).toContain('test:related:dom');
+    expect(result.steps[2].args).toEqual(['run', 'test:node:infra:smoke']);
   });
 
   it('returns null for package.json-only changes so runner can fall back to quick smoke', () => {

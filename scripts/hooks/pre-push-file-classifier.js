@@ -26,6 +26,16 @@ const DOM_TEST_INFRA_EXACT = new Set([
   DOM_INFRA_SMOKE_SENTINEL,
 ]);
 
+const NODE_TEST_INFRA_EXACT = new Set([
+  'config/testing/msw-setup.ts',
+  'config/testing/shared-aliases.ts',
+  'config/testing/vitest.config.dev.ts',
+  'config/testing/vitest.config.main.ts',
+  'config/testing/vitest.config.node.ts',
+  'scripts/dev/vitest-node-wrapper.js',
+  'src/test/setup.node.ts',
+]);
+
 const HOOK_TEST_INFRA_EXACT = new Set(['scripts/hooks/pre-push.js']);
 
 const FRONTEND_SMOKE_PREFIXES = [
@@ -134,6 +144,11 @@ function isDomTestInfraFile(filePath) {
   return DOM_TEST_INFRA_EXACT.has(normalized);
 }
 
+function isNodeTestInfraFile(filePath) {
+  const normalized = normalizeFilePath(filePath);
+  return NODE_TEST_INFRA_EXACT.has(normalized);
+}
+
 function isHookTestInfraFile(filePath) {
   return HOOK_TEST_INFRA_EXACT.has(normalizeFilePath(filePath));
 }
@@ -155,6 +170,7 @@ module.exports = {
   CLOUD_RUN_ROOT,
   DOM_INFRA_SMOKE_SENTINEL,
   DOM_TEST_INFRA_EXACT,
+  NODE_TEST_INFRA_EXACT,
   HOOK_TEST_INFRA_EXACT,
   FRONTEND_SMOKE_PREFIXES,
   FRONTEND_SMOKE_EXACT,
@@ -171,6 +187,7 @@ module.exports = {
   isRelatedSourceFile,
   isTypeDefinitionSourceFile,
   isDomTestInfraFile,
+  isNodeTestInfraFile,
   isHookTestInfraFile,
   isFrontendSmokeFile,
   isDomTestFile,
