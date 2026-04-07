@@ -1,13 +1,12 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-07 KST (v8.10.11 진행 중, 타입 시스템 정제 Step 3 준비 + 패키지 업그레이드 Step 2/4 완료, Step 5 partial 완료)
+**Last Updated**: 2026-04-07 KST (Storybook/ai-engine 후속 정리 완료, v8.11.0 릴리스 준비 중)
 
 ## Active Tasks
 
 | Task | Priority | Status |
 |------|----------|--------|
-| [P2: 타입 시스템 정제 및 인프라 최적화 (Phase 2)](./type-system-refinement-plan.md) | High | In-Progress (Step 3 준비) |
-| [P2: 패키지 기술 부채 업그레이드](./package-upgrade-plan.md) | High | In-Progress (Step 2/4 완료, Step 5 partial 완료) |
+| [다음 작업 목록 (release / residual follow-up)](./next-tasks-plan.md) | High | 릴리스 준비 중 |
 
 ## On Hold
 
@@ -21,6 +20,16 @@
 |------|----------|-------|
 | P3: Knip unused export types 정리 (잔여) | Low | `src/types/common.ts` 1차 정리 후 남은 미사용/재수출 후보 재점검 필요. 현재 blocker 없음, 추가 잔여는 실제 참조 그래프 재확인 후 소단위로 정리. |
 | P3: Storybook `experimentalComponentsManifest` stable 승격 여부 재확인 | Low | npm registry stable이 아직 `10.2.10`이라 보류. `10.3.x`가 stable dist-tag로 올라온 뒤 `.storybook/main.ts` feature flag 재검토. |
+| P3: Storybook large chunk warning 정리 | Low | circular chunk warning은 제거 완료. 현재는 `vite-inject-mocker-entry.js` large chunk warning만 잔존하며 기능 blocker는 아님. 릴리스 이후 build hygiene 관점에서 후속 검토. |
+
+### Completed (2026-04-07 #32)
+- [x] P2: ai-engine `ai` SDK 버전 정렬 — `cloud-run/ai-engine`의 `ai`를 `6.0.86→6.0.145`로 상향해 root app과 동일 버전으로 정렬. `npm run verify:rag`, `npm run type-check`, `npm run test`(69 files / 726 tests) 통과. 기존 Vitest resolver 가설은 현재 재현되지 않아 별도 alias 수정 없이 유지.
+
+### Completed (2026-04-07 #31)
+- [x] P3: Storybook circular chunk warning 제거 — `.storybook/main.ts`에서 `vendor-react` manual chunk를 제거해 `vendor-react -> vendor-storybook`, `vendor-react -> vendor-charts` 순환 경고 해소. `npm run storybook:build` 통과, large chunk warning만 잔존.
+
+### Completed (2026-04-07 #30)
+- [x] P2: AI 응답 `분석 근거` 접힘 상태 요약 추가 — 기본 collapsed 상태에서도 `데이터 · 도구 · 기간` 1줄 요약이 보이도록 개선. `AnalysisBasisBadge` 타입 보정 포함, `npx vitest run src/components/ai/AnalysisBasisBadge.test.tsx`, `npm run lint`, `npm run test:quick`, `npm run type-check` 통과.
 
 ### Completed (2026-04-07 #27)
 - [x] P2: TypeScript 6 root 업그레이드 — `typescript 5.9.3→6.0.2` 반영. `downlevelIteration` 제거와 `src/types/css.d.ts` 추가로 TS6의 side-effect CSS import stricter check 대응. `npm run type-check`, `npm run lint`, `npm run test:quick` 통과.
