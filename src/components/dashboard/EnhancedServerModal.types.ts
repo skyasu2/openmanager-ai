@@ -9,10 +9,7 @@
  */
 
 import type { ComponentType } from 'react';
-import type {
-  ServerHealth as BaseServerHealth,
-  ServerSpecs,
-} from '@/types/server/base';
+import type { ServerHealthSummary, ServerSpecs } from '@/types/server/base';
 import type { ServerStatus } from '@/types/server-enums'; // 🔧 수정: Single Source of Truth
 
 // 🔧 수정: re-export 제거, 직접 사용
@@ -35,11 +32,9 @@ export interface ServerService {
   port: number;
 }
 
-export type { ServerSpecs };
-
 // 모달은 health 요약만 필요하지만 SSOT 필드 집합을 기준으로 파생한다.
-export type ServerHealth = Pick<BaseServerHealth, 'score' | 'trend'> &
-  Partial<Pick<BaseServerHealth, 'status' | 'issues' | 'lastChecked'>>;
+export type ServerHealth = ServerHealthSummary;
+export type { ServerSpecs };
 
 export interface AlertsSummary {
   total: number;

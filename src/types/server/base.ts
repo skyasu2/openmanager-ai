@@ -48,6 +48,14 @@ export interface ServerHealth {
 }
 
 /**
+ * UI/전송 계층에서 자주 쓰는 health 요약 형태
+ * - score/trend는 필수
+ * - status/issues/lastChecked는 점진적으로 채워도 된다
+ */
+export type ServerHealthSummary = Pick<ServerHealth, 'score' | 'trend'> &
+  Partial<Pick<ServerHealth, 'status' | 'issues' | 'lastChecked'>>;
+
+/**
  * 서버 사양 정보
  */
 export interface ServerSpecs {

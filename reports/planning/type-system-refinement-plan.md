@@ -26,6 +26,7 @@
 - [ ] `src/types/server/types.ts`의 `ServerRole`, `ServerEnvironment` 표준화
 - [ ] `src/types/server/index.ts` 재수출 구조 최적화 (중복 제거)
 - [x] `src/components/dashboard/EnhancedServerModal.types.ts`의 `ServerSpecs` / `ServerHealth`를 `src/types/server/base.ts` 기준으로 정렬
+- [x] `src/types/server/core.ts`의 inline `specs` / `health`를 `ServerSpecs` / `ServerHealthSummary`로 치환
 
 ### Step 3: 공통 유틸리티 타입 통합 (진행 예정)
 - [ ] `PaginationInfo`, `LogLevel` 등을 `common.ts`로 단일화

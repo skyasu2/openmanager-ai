@@ -13,6 +13,7 @@ export type { ProcessInfo, ServerAlert } from './base';
 export type {
   Server,
   ServerHealth,
+  ServerHealthSummary,
   ServerMetrics,
   ServerSpecs,
 } from './core';

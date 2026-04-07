@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-07 KST (v8.10.11 진행 중, 타입 시스템 정제 및 인프라 최적화 Step 2 착수)
+**Last Updated**: 2026-04-07 KST (v8.10.11 진행 중, 타입 시스템 정제 및 인프라 최적화 Step 2 진행)
 
 ## Active Tasks
 
@@ -19,6 +19,9 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | P3: Knip unused export types 정리 (잔여) | Low | `src/types/common.ts` 1차 정리 후 남은 미사용/재수출 후보 재점검 필요. 현재 blocker 없음, 추가 잔여는 실제 참조 그래프 재확인 후 소단위로 정리. |
+
+### Completed (2026-04-07 #21)
+- [x] P2: `ServerHealthSummary`/`ServerSpecs` SSOT 정렬 — `src/types/server/base.ts`에 health summary alias 추가, `src/types/server/core.ts`와 `EnhancedServerModal.types.ts`가 동일 summary/specs 타입을 재사용하도록 통합. `src/types/server/index.ts` re-export도 함께 정렬.
 
 ### Completed (2026-04-07 #20)
 - [x] P2: `EnhancedServerModal.types.ts` 서버 타입 정렬 — 중복 `ServerSpecs` 제거, `ServerHealth`를 `src/types/server/base.ts` 기반 요약 타입으로 파생. `normalizeServerData()` fallback health에도 `status`를 채워 모달 데이터와 서버 타입 SSOT를 정렬.
