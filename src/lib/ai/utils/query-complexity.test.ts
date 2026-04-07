@@ -236,7 +236,16 @@ describe('query-complexity', () => {
         'lb-haproxy-dc1-01 서버의 CPU 사용률이 73%입니다. 현재 원인과 우선 조치 방법을 분석해줘.'
       );
       expect(result.level).toBe('moderate');
-      expect(result.score).toBeLessThanOrEqual(45);
+      expect(result.score).toBeLessThanOrEqual(19);
+      expect(result.factors).toContain('streaming_alert_analysis_query');
+    });
+
+    it('should keep disk alert prefill prompts under the streaming threshold', () => {
+      const result = analyzeQueryComplexity(
+        'db-mysql-dc1-primary 서버의 디스크 사용률이 81%입니다. 현재 원인과 우선 조치 방법을 분석해줘.'
+      );
+      expect(result.level).toBe('moderate');
+      expect(result.score).toBeLessThanOrEqual(19);
       expect(result.factors).toContain('streaming_alert_analysis_query');
     });
   });

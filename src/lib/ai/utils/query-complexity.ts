@@ -249,7 +249,9 @@ export function analyzeQueryComplexity(query: string): ComplexityAnalysis {
   if (shouldPreferStreamingAlertAnalysisQuery(normalizedQuery)) {
     return {
       level: 'moderate',
-      score: 30,
+      // Routing uses the numeric threshold (default 19), not the level label.
+      // Keep single-server alert prefill prompts on streaming by staying below it.
+      score: 18,
       factors: ['streaming_alert_analysis_query'],
       recommendedTimeout: 30000,
     };

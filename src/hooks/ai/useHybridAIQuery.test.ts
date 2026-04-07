@@ -149,7 +149,7 @@ describe('useHybridAIQuery - 쿼리 복잡도 기반 모드 선택', () => {
         'lb-haproxy-dc1-01 서버의 CPU 사용률이 73%입니다. 현재 원인과 우선 조치 방법을 분석해줘.'
       );
       expect(result.level).toBe('moderate');
-      expect(result.score).toBeLessThanOrEqual(45);
+      expect(result.score).toBeLessThanOrEqual(19);
       expect(result.factors).toContain('streaming_alert_analysis_query');
     });
 

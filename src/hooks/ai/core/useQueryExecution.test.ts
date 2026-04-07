@@ -71,4 +71,27 @@ describe('useQueryExecution', () => {
       text: '다시 시도',
     });
   });
+
+  it('alert prefill query는 기본 임계값 19에서도 streaming으로 유지한다', async () => {
+    process.env.NODE_ENV = 'production';
+    const deps = {
+      ...createDeps(),
+      complexityThreshold: 19,
+    };
+
+    const { result } = renderHook(() => useQueryExecution(deps));
+
+    act(() => {
+      result.current.executeQuery(
+        'db-mysql-dc1-primary 서버의 디스크 사용률이 81%입니다. 현재 원인과 우선 조치 방법을 분석해줘.'
+      );
+    });
+
+    await Promise.resolve();
+
+    expect(deps.sendMessage).toHaveBeenCalledWith({
+      text: 'db-mysql-dc1-primary 서버의 디스크 사용률이 81%입니다. 현재 원인과 우선 조치 방법을 분석해줘.',
+    });
+    expect(deps.asyncQuery.sendQuery).not.toHaveBeenCalled();
+  });
 });
