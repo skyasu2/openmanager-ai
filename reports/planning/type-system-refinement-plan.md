@@ -21,10 +21,10 @@
 - [x] `files: [...]` scoped mode correctness review 완료 → false-negative 위험 때문에 제거, `tsconfig.check.json` full-project fallback으로 환원
 - **결과**: 커밋 `709d88954` 이후 correctness fix까지 반영, Step 2 착수 가능 상태
 
-### Step 2: 서버 타입 SSOT 정제 (진행 예정)
-- [ ] `src/types/server/entities.ts` 내의 데이터/네트워크 엔티티를 `base.ts`와 정렬
-- [ ] `src/types/server/types.ts`의 `ServerRole`, `ServerEnvironment` 표준화
-- [ ] `src/types/server/index.ts` 재수출 구조 최적화 (중복 제거)
+### Step 2: 서버 타입 SSOT 정제 (완료)
+- [x] `src/types/server/entities.ts` 내의 데이터/네트워크 엔티티를 `base.ts`와 정렬
+- [x] `src/types/server/types.ts`의 `ServerRole`, `ServerEnvironment` 표준화
+- [x] `src/types/server/index.ts` 재수출 구조 최적화 (중복 제거)
 - [x] `src/components/dashboard/EnhancedServerModal.types.ts`의 `ServerSpecs` / `ServerHealth`를 `src/types/server/base.ts` 기준으로 정렬
 - [x] `src/types/server/core.ts`의 inline `specs` / `health`를 `ServerSpecs` / `ServerHealthSummary`로 치환
 
@@ -43,5 +43,5 @@
 
 ## 5. 일정 및 상태
 - **시작일**: 2026-04-07
-- **현재 단계**: Step 1 완료 / Step 2 진행 중
+- **현재 단계**: Step 1 완료 / Step 2 완료, Step 3 준비
 - **담당**: AI Agent

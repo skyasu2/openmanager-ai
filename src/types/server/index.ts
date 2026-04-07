@@ -7,16 +7,23 @@
 
 // Re-export AlertSeverity from common
 export type { AlertSeverity } from '../common';
-// Base types (ProcessInfo, ServerAlert)
-export type { ProcessInfo, ServerAlert } from './base';
-// Core server types
+// Type guards
+export {
+  isValidServerEnvironment,
+  isValidServerRole,
+  isValidServerStatus,
+} from '../server-enums';
+// Base server SSOT
 export type {
-  Server,
+  ProcessInfo,
+  ServerAlert,
   ServerHealth,
   ServerHealthSummary,
   ServerMetrics,
   ServerSpecs,
-} from './core';
+} from './base';
+// Core server type
+export type { Server } from './core';
 // Entity types
 export type {
   LogEntry,
@@ -24,12 +31,6 @@ export type {
   Service,
   SystemInfo,
 } from './entities';
-// Type guards
-export {
-  isValidServerEnvironment,
-  isValidServerRole,
-  isValidServerStatus,
-} from './guards';
 // Metrics types
 export type {
   EnhancedServerMetrics,
