@@ -1,29 +1,29 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-07 12:37:27 KST
+> Generated at: 2026-04-08 07:47:03 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 231 |
-| Total Checks | 1791 |
-| Passed | 1721 |
-| Failed | 64 |
+| Total Runs | 233 |
+| Total Checks | 1815 |
+| Passed | 1743 |
+| Failed | 66 |
 | Completed Items | 278 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 13 |
 | Expert Domains Tracked | 8 |
-| Expert Open Gaps | 1 |
+| Expert Open Gaps | 2 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260406-0246 (2026-04-06T10:57:23.899Z) |
-| Latest Recorded Run | QA-20260407-0248 (2026-04-07T03:31:27.352Z) |
+| Last Counted Run | QA-20260408-0250 (2026-04-07T22:47:01.025Z) |
+| Latest Recorded Run | QA-20260408-0250 (2026-04-07T22:47:01.025Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260407-0248 (2026-04-07T03:31:27.352Z)
+Latest run: QA-20260408-0250 (2026-04-07T22:47:01.025Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -33,36 +33,40 @@ Latest run: QA-20260407-0248 (2026-04-07T03:31:27.352Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after targeted AI process visibility QA; effective 3.2825 USD, billed 0.0000 USD, no unexpected billed usage spike. |
+| vercel | cli | checked | normal | Current billing period reviewed after targeted production QA; effective 3.9429 USD, billed 0.0000 USD, no unexpected billed usage spike. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: dpl_5DeQfQksXoH7hPWfQr36vhrHi3eJ / SHA 60f9a3e0
+- Counts Toward Summary: yes
+- Deployment: dpl_HsUxVfvpeXApZu25dEY4WNrQrcoy / SHA f515817d
 - Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: landing render with v8.10.10 badge, system start countdown reaches /system-boot and redirects to /dashboard, dashboard render with 15 total / 14 online / 1 warning / 0 risk, AI sidebar opens with Ready state, preset CPU query renders analysis basis with process step count, trace id, tool summary, and per-step details, follow-up incident summary query renders agent handoff path in analysis basis, browser console errors 0 during AI process visibility verification
-- Skipped Surfaces: /login route, /dashboard/ai-assistant fullscreen workspace, Reporter and Analyst dedicated flows, modal-detail pack, Cloud Run admin observability endpoints
+- Covered Surfaces: landing bootstrap copy hidden on first settled render (visible text absent, aria-only status), system start countdown redirects to /dashboard on production, dashboard alert CTA opens AI sidebar with alert prefill for api-was-dc1-01 CPU 83%, AI sidebar first-hit alert query completes successfully on production without AI 서비스 오류, AI first-hit request uses /api/ai/supervisor/stream/v2 with 200 response on production, browser console error count remains 0 during landing -> dashboard -> AI prefill targeted flow
+- Skipped Surfaces: broad release-gate pack, fullscreen AI workspace, Reporter/Analyst advanced flows, modal-detail pack outside alert CTA targeted path, Cloud Run admin observability endpoints
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | Vercel URL | [Vercel URL](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Deployment dpl_5DeQfQksXoH7hPWfQr36vhrHi3eJ | [Deployment dpl_5DeQfQksXoH7hPWfQr36vhrHi3eJ](https://vercel.com/skyasus-projects/openmanager-ai/5DeQfQksXoH7hPWfQr36vhrHi3eJ) | - |
+| vercel-deployment | Deployment dpl_HsUxVfvpeXApZu25dEY4WNrQrcoy | [Deployment dpl_HsUxVfvpeXApZu25dEY4WNrQrcoy](https://vercel.com/skyasus-projects/openmanager-ai/HsUxVfvpeXApZu25dEY4WNrQrcoy) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | ai response process trace | `reports/qa/evidence/qa-20260407-ai-response-process-trace.png` | - |
-| playwright-screenshot | ai response handoff summary | `reports/qa/evidence/qa-20260407-ai-response-handoff-summary.png` | - |
+| playwright-screenshot | Landing settled render without visible bootstrap copy | `reports/qa/evidence/qa-20260408-landing-bootstrap-visible.png` | - |
+| playwright-screenshot | AI alert prefill successful response on production | `reports/qa/evidence/qa-20260408-ai-prefill-success.png` | - |
+| playwright-network | AI alert prefill production network log | `reports/qa/evidence/qa-20260408-ai-prefill-network.txt` | - |
+| playwright-console | AI alert prefill production console log | `reports/qa/evidence/qa-20260408-ai-prefill-console.txt` | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260406-0246)
-  next: Run a deeper AI advanced-surface pack when the next runtime-facing change lands.
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260407-0249)
+  next: Stabilize the first-attempt production AI path against transient rate-limit failures, then rerun an AI-focused targeted pack.
+- sre-devops: DevOps / SRE Engineer (last QA-20260407-0249)
+  next: Inspect Cloud Run/provider quota and limiter behavior for first-hit production prompts before treating v8.11.0 as fully green.
 
 ## Pending Improvements
 
@@ -108,7 +112,7 @@ Latest run: QA-20260407-0248 (2026-04-07T03:31:27.352Z)
 - ai-assistant-fullscreen-query-path: AI 전체 화면 핵심 서버 상태 요약 질의 검증 (completed 1회, last QA-20260318-0123)
 - ai-assistant-fullscreen-tools-parity: AI 전체 화면 도구 메뉴 parity 검증 (completed 1회, last QA-20260318-0123)
 - ai-chat-cloud-run-500: AI Chat Cloud Run 자유입력 응답 - 최종 성공 확인 (completed 1회, last QA-20260310-0089)
-- ai-chat-cloud-run-rate-limit-production: Complex Cloud Run AI verification path should complete without rate-limit failure in production (completed 1회, last QA-20260405-0242)
+- ai-chat-cloud-run-rate-limit-production: Complex Cloud Run AI verification path should complete without rate-limit failure in production (completed 2회, last QA-20260408-0250)
 - ai-chat-detail-expand: AI Chat 상세 분석 펼치기 (completed 1회, last QA-20260407-0248)
 - ai-chat-empty-response: AI Chat 서버 상태 요약 질문에 빈 응답 반환 (completed 1회, last QA-20260315-0100)
 - ai-chat-latency-regression-recheck-20260310: AI Chat latency regression claim rechecked on production (completed 1회, last QA-20260310-0071)
@@ -217,7 +221,7 @@ Latest run: QA-20260407-0248 (2026-04-07T03:31:27.352Z)
 - health-route-supabase-session-timeout: 헬스체크 Supabase 세션 프로브 타임아웃 강제 (completed 1회, last QA-20260325-0183)
 - home-semantic-nav: 홈 페이지 nav 랜드마크 보강 (completed 1회, last QA-20260226-0009)
 - landing-bootstrap-auth-copy-hidden: 랜딩 첫 진입 bootstrap 인증 카피 숨김 (completed 1회, last QA-20260402-0206)
-- landing-bootstrap-copy-hidden: 랜딩 첫 진입 시 bootstrap auth copy 비노출 처리 (completed 1회, last QA-20260402-0207)
+- landing-bootstrap-copy-hidden: 랜딩 첫 진입 시 bootstrap auth copy 비노출 처리 (completed 2회, last QA-20260408-0250)
 - landing-copy-alignment: 랜딩/로그인 정책 카피 정합성 (completed 4회, last QA-20260227-0016)
 - landing-feature-cards: 랜딩 피처카드 4개 모달 (completed 1회, last QA-20260317-0114)
 - landing-page-render: 랜딩 페이지 렌더링 (completed 3회, last QA-20260320-0140)
@@ -385,6 +389,8 @@ Latest run: QA-20260407-0248 (2026-04-07T03:31:27.352Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260408-0250 | 2026-04-07T22:47:01.025Z | targeted | no | yes | Production targeted QA - landing bootstrap + AI alert prefill after streaming status contract fix | 6 | 2 | 0 | 0 | 0 | 0 |
+| QA-20260407-0249 | 2026-04-07T11:55:13.126Z | broad | yes | yes | Playwright MCP Production QA - Frontend + AI Assistant v8.11.0 broad baseline refresh | 18 | 0 | 2 | 0 | 0 | 2 |
 | QA-20260407-0248 | 2026-04-07T03:31:27.352Z | targeted | no | no | Vercel Playwright QA - AI response process visibility verification | 7 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260406-0247 | 2026-04-06T14:32:16.188Z | targeted | no | no | Vercel targeted QA - v8.10.10 production smoke after release guard hardening | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260406-0246 | 2026-04-06T10:57:23.899Z | broad | yes | yes | Playwright MCP Production QA - Frontend + AI Assistant v8.10.9 broad baseline refresh | 13 | 0 | 0 | 0 | 0 | 1 |
@@ -403,5 +409,3 @@ Latest run: QA-20260407-0248 (2026-04-07T03:31:27.352Z)
 | QA-20260405-0233 | 2026-04-04T17:01:53.490Z | targeted | no | yes | QA-only commit pipeline skip validation candidate | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260405-0232 | 2026-04-04T15:59:50.897Z | targeted | no | yes | Vercel production re-verification after latest deploy | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260405-0231 | 2026-04-04T15:47:24.010Z | targeted | no | yes | Vercel production re-verification after snapshot sync | 8 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260405-0230 | 2026-04-04T15:12:26.849Z | targeted | no | yes | Vercel production deployment health check after gitlab sync | 7 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260404-0229 | 2026-04-04T14:29:25.205Z | release-gate | yes | yes | Vercel Production Broad Release-Gate QA - core routes + dashboard + AI stream parity | 17 | 0 | 0 | 0 | 0 | 0 |

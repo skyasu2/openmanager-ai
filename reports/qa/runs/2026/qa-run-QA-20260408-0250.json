@@ -1,0 +1,125 @@
+{
+  "runId": "QA-20260408-0250",
+  "recordedAt": "2026-04-07T22:47:01.025Z",
+  "recordedAtKst": "2026-04-08 07:47:01 KST",
+  "runTitle": "Production targeted QA - landing bootstrap + AI alert prefill after streaming status contract fix",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_HsUxVfvpeXApZu25dEY4WNrQrcoy",
+    "deploymentUrl": "https://openmanager-mcjq2yoyc-skyasus-projects.vercel.app",
+    "commitSha": "f515817de711935b5959176a73b9d615737d7b0d"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "landing bootstrap copy hidden on first settled render (visible text absent, aria-only status)",
+    "system start countdown redirects to /dashboard on production",
+    "dashboard alert CTA opens AI sidebar with alert prefill for api-was-dc1-01 CPU 83%",
+    "AI sidebar first-hit alert query completes successfully on production without AI 서비스 오류",
+    "AI first-hit request uses /api/ai/supervisor/stream/v2 with 200 response on production",
+    "browser console error count remains 0 during landing -> dashboard -> AI prefill targeted flow"
+  ],
+  "skippedSurfaces": [
+    "broad release-gate pack",
+    "fullscreen AI workspace",
+    "Reporter/Analyst advanced flows",
+    "modal-detail pack outside alert CTA targeted path",
+    "Cloud Run admin observability endpoints"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-08T07:46:04+09:00",
+      "summary": "Current billing period reviewed after targeted production QA; effective 3.9429 USD, billed 0.0000 USD, no unexpected billed usage spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Landing settled render without visible bootstrap copy",
+      "path": "reports/qa/evidence/qa-20260408-landing-bootstrap-visible.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI alert prefill successful response on production",
+      "path": "reports/qa/evidence/qa-20260408-ai-prefill-success.png"
+    },
+    {
+      "type": "playwright-network",
+      "label": "AI alert prefill production network log",
+      "path": "reports/qa/evidence/qa-20260408-ai-prefill-network.txt"
+    },
+    {
+      "type": "playwright-console",
+      "label": "AI alert prefill production console log",
+      "path": "reports/qa/evidence/qa-20260408-ai-prefill-console.txt"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-chat-cloud-run-rate-limit-production",
+      "title": "Complex Cloud Run AI verification path should complete without rate-limit failure in production",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production deployment dpl_HsUxVfvpeXApZu25dEY4WNrQrcoy completed the alert-prefill first-hit query successfully over /api/ai/supervisor/stream/v2 without AI 서비스 오류 or first-hit rate-limit failure.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "landing-bootstrap-copy-hidden",
+      "title": "랜딩 첫 진입 시 bootstrap auth copy 비노출 처리",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Settled production landing render no longer exposes visible text node for 인증 확인 중... (Vercel 환경); the state is kept as aria-only while the visible landing hero renders immediately.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Targeted production follow-up on commit f515817de after GitLab validate/deploy completion.",
+    "Accessibility snapshot still reports a status name during initial navigation, but DOM text and screenshot confirm no visible bootstrap copy node on the settled landing render.",
+    "Targeted AI path used dashboard alert CTA prefill for api-was-dc1-01 CPU 83% and returned a successful streaming response on first send."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Deployment dpl_HsUxVfvpeXApZu25dEY4WNrQrcoy",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/HsUxVfvpeXApZu25dEY4WNrQrcoy"
+    }
+  ]
+}

@@ -2,27 +2,27 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-07T03:31:27.352Z"
+    "updatedAt": "2026-04-07T22:47:01.025Z"
   },
   "sequence": {
-    "nextRunNumber": 249
+    "nextRunNumber": 251
   },
   "summary": {
-    "totalRuns": 231,
-    "totalChecks": 1791,
-    "totalPassed": 1721,
-    "totalFailed": 64,
+    "totalRuns": 233,
+    "totalChecks": 1815,
+    "totalPassed": 1743,
+    "totalFailed": 66,
     "completionRate": 100,
     "completedItems": 278,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 13,
     "expertDomainsTracked": 8,
-    "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260406-0246",
-    "lastRecordedAt": "2026-04-06T10:57:23.899Z",
-    "latestRecordedRunId": "QA-20260407-0248",
-    "latestRecordedAt": "2026-04-07T03:31:27.352Z"
+    "expertDomainsOpenGaps": 2,
+    "lastRunId": "QA-20260408-0250",
+    "lastRecordedAt": "2026-04-07T22:47:01.025Z",
+    "latestRecordedRunId": "QA-20260408-0250",
+    "latestRecordedAt": "2026-04-07T22:47:01.025Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -6537,22 +6537,22 @@
       "status": "completed",
       "firstSeenRunId": "QA-20260402-0207",
       "firstSeenAt": "2026-04-02T01:12:12.154Z",
-      "lastSeenRunId": "QA-20260402-0207",
-      "lastSeenAt": "2026-04-02T01:12:12.154Z",
-      "seenCount": 1,
-      "completedCount": 1,
-      "pendingCount": 0,
+      "lastSeenRunId": "QA-20260408-0250",
+      "lastSeenAt": "2026-04-07T22:47:01.025Z",
+      "seenCount": 3,
+      "completedCount": 2,
+      "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "src/app/page.tsx and src/components/shared/AuthLoadingUI.tsx",
-      "lastNote": "",
+      "lastEvidence": "Settled production landing render no longer exposes visible text node for 인증 확인 중... (Vercel 환경); the state is kept as aria-only while the visible landing hero renders immediately.",
+      "lastNote": "release-blocking 아님. Production first paint twice showed visible '인증 확인 중... (Vercel 환경)' copy before the landing hero settled, so the earlier hidden-copy fix is no longer holding on the live landing path.",
       "isBlocking": false,
-      "isBlockingExplicit": false,
+      "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-04-02T01:12:12.154Z"
+      "lastStatusChangeAt": "2026-04-07T22:47:01.025Z"
     },
     "vercel-usage-cli-empty-billing-period-handling": {
       "id": "vercel-usage-cli-empty-billing-period-handling",
@@ -6681,22 +6681,22 @@
       "status": "completed",
       "firstSeenRunId": "QA-20260405-0240",
       "firstSeenAt": "2026-04-05T10:18:47.152Z",
-      "lastSeenRunId": "QA-20260405-0242",
-      "lastSeenAt": "2026-04-05T11:15:27.092Z",
-      "seenCount": 2,
-      "completedCount": 1,
-      "pendingCount": 1,
+      "lastSeenRunId": "QA-20260408-0250",
+      "lastSeenAt": "2026-04-07T22:47:01.025Z",
+      "seenCount": 4,
+      "completedCount": 2,
+      "pendingCount": 2,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "QA-20260405-0241 completed a Cloud Run AI prediction prompt successfully on production without rate-limit failure.",
-      "lastNote": "A complex production prompt correctly entered Cloud Run AI job-queue flow, but both initial run and retry ended with 'Rate limit exceeded', blocking verification of the new detailed response-process metadata on the Cloud Run path.",
+      "lastEvidence": "Production deployment dpl_HsUxVfvpeXApZu25dEY4WNrQrcoy completed the alert-prefill first-hit query successfully over /api/ai/supervisor/stream/v2 without AI 서비스 오류 or first-hit rate-limit failure.",
+      "lastNote": "Broad QA on production hit 'Rate limit exceeded' on the first live sidebar prompt from the lb-haproxy warning context; immediate retry succeeded and direct /api/ai/supervisor/stream/v2 SSE probe later returned 200 with X-AI-Latency-Ms=292, so the failure is intermittent but user-facing.",
       "isBlocking": true,
-      "isBlockingExplicit": false,
+      "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-04-05T11:15:27.092Z"
+      "lastStatusChangeAt": "2026-04-07T22:47:01.025Z"
     }
   },
   "runs": [
@@ -21612,6 +21612,222 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260407-0249",
+      "recordedAt": "2026-04-07T11:55:13.126Z",
+      "recordedAtKst": "2026-04-07 20:55:13 KST",
+      "title": "Playwright MCP Production QA - Frontend + AI Assistant v8.11.0 broad baseline refresh",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260407-0249.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_7YFJku7zmAYHWwhF6FrizaLfHkKE",
+        "deploymentUrl": "https://openmanager-ko0ewenx8-skyasus-projects.vercel.app",
+        "commitSha": "8d537c7a8565cf6862dcb1e5df4ea214e964ee2e"
+      },
+      "scope": "broad",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveredSurfaces": [
+        "landing render with v8.11.0 badge after settle",
+        "404 route renders product fallback page with v8.11.0 footer",
+        "/login minimal header without profile menu and guest CTA/privacy link visible",
+        "guest PIN login 4231 succeeds and returns to landing",
+        "system start countdown begins at 4초 and reaches /system-boot -> /dashboard",
+        "dashboard render with 15 total / 14 online / 1 warning / 0 risk and resource top5",
+        "server detail modal opens for lb-haproxy-dc1-01 and all 3 tabs switch: 종합 상황 / 성능 분석 / 로그 & 네트워크",
+        "ESC closes the server detail modal and returns to dashboard",
+        "AI sidebar opens from resource alert context with engine Ready state",
+        "AI sidebar retry completes actionable Cloud Run response for lb-haproxy-dc1-01 CPU 73% context",
+        "/api/ai/supervisor/stream/v2 POST returns 200 SSE with ui-message-stream + X-AI-Latency-Ms=292",
+        "direct AI stream summary identifies 15 total / 14 healthy / 1 warning with lb-haproxy-dc1-01 CPU 74% warning",
+        "/api/health 200 with database/cache/ai connected and version 8.11.0",
+        "/api/version 200 with v8.11.0 / Next.js 16.1.6 / production",
+        "/api/system 200 with services=true and production metadata",
+        "browser console errors 0 during settled landing/login/dashboard/modal/core AI verification flow",
+        "Vibe Coding modal tabs still open and CI/CD pipeline content remains aligned to local hook -> GitLab push -> validate -> deploy -> production"
+      ],
+      "skippedSurfaces": [
+        "/dashboard/ai-assistant fullscreen workspace",
+        "Reporter full report flow",
+        "Analyst advanced forecast flow",
+        "active alerts / topology / log explorer modal-detail pack beyond server detail modal",
+        "Cloud Run admin observability endpoints",
+        "exact Vibe Coding current-tool copy cleanup (@storybook/react-vite -> @storybook/nextjs-vite) was observed as known non-blocking drift and excluded from release fail count"
+      ],
+      "checks": {
+        "total": 18,
+        "passed": 16,
+        "failed": 2
+      },
+      "expertAssessments": [
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Core route, dashboard, modal, and AI core paths were exercised on live production with concrete UI and API checkpoints.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Health/version/system probes and a direct supervisor SSE request confirmed production observability on the documented X-AI-Latency-Ms path; Server-Timing and X-AI-Processing-Ms remained absent, which matches the current Vercel SSOT.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "AI core surface eventually succeeded, but the first live sidebar prompt returned 'Rate limit exceeded' before an immediate retry completed successfully. Fullscreen/Reporter/Analyst variants remain outside this broad pack.",
+          "nextAction": "Stabilize the first-attempt production AI path against transient rate-limit failures, then rerun an AI-focused targeted pack."
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "The promoted production deployment is healthy and usage remains within budget, but user-facing AI reliability is still sensitive to transient rate-limit behavior on the first request.",
+          "nextAction": "Inspect Cloud Run/provider quota and limiter behavior for first-hit production prompts before treating v8.11.0 as fully green."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-07T20:54:08+09:00",
+          "summary": "Current billing period reviewed during broad production QA; effective 3.9425 USD, billed 0.0000 USD, chargeCount 3654, no unexpected billed usage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Deployment dpl_7YFJku7zmAYHWwhF6FrizaLfHkKE",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/7YFJku7zmAYHWwhF6FrizaLfHkKE"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 2,
+      "completedCount": 0,
+      "pendingCount": 2,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260408-0250",
+      "recordedAt": "2026-04-07T22:47:01.025Z",
+      "recordedAtKst": "2026-04-08 07:47:01 KST",
+      "title": "Production targeted QA - landing bootstrap + AI alert prefill after streaming status contract fix",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260408-0250.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_HsUxVfvpeXApZu25dEY4WNrQrcoy",
+        "deploymentUrl": "https://openmanager-mcjq2yoyc-skyasus-projects.vercel.app",
+        "commitSha": "f515817de711935b5959176a73b9d615737d7b0d"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveredSurfaces": [
+        "landing bootstrap copy hidden on first settled render (visible text absent, aria-only status)",
+        "system start countdown redirects to /dashboard on production",
+        "dashboard alert CTA opens AI sidebar with alert prefill for api-was-dc1-01 CPU 83%",
+        "AI sidebar first-hit alert query completes successfully on production without AI 서비스 오류",
+        "AI first-hit request uses /api/ai/supervisor/stream/v2 with 200 response on production",
+        "browser console error count remains 0 during landing -> dashboard -> AI prefill targeted flow"
+      ],
+      "skippedSurfaces": [
+        "broad release-gate pack",
+        "fullscreen AI workspace",
+        "Reporter/Analyst advanced flows",
+        "modal-detail pack outside alert CTA targeted path",
+        "Cloud Run admin observability endpoints"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-08T07:46:04+09:00",
+          "summary": "Current billing period reviewed after targeted production QA; effective 3.9429 USD, billed 0.0000 USD, no unexpected billed usage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Landing settled render without visible bootstrap copy",
+          "path": "reports/qa/evidence/qa-20260408-landing-bootstrap-visible.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI alert prefill successful response on production",
+          "path": "reports/qa/evidence/qa-20260408-ai-prefill-success.png"
+        },
+        {
+          "type": "playwright-network",
+          "label": "AI alert prefill production network log",
+          "path": "reports/qa/evidence/qa-20260408-ai-prefill-network.txt"
+        },
+        {
+          "type": "playwright-console",
+          "label": "AI alert prefill production console log",
+          "path": "reports/qa/evidence/qa-20260408-ai-prefill-console.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Deployment dpl_HsUxVfvpeXApZu25dEY4WNrQrcoy",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/HsUxVfvpeXApZu25dEY4WNrQrcoy"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -21620,33 +21836,33 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 117,
+      "seenCount": 118,
       "appropriateCount": 112,
-      "partialCount": 5,
+      "partialCount": 6,
       "inappropriateCount": 0,
-      "improvementNeededCount": 15,
-      "lastRunId": "QA-20260406-0246",
-      "lastSeenAt": "2026-04-06T10:57:23.899Z",
+      "improvementNeededCount": 16,
+      "lastRunId": "QA-20260407-0249",
+      "lastSeenAt": "2026-04-07T11:55:13.126Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "AI core surface was verified via sidebar readiness and one live CPU-summary prompt, but fullscreen/reporter/analyst variants remain outside this broad pack.",
-      "lastNextAction": "Run a deeper AI advanced-surface pack when the next runtime-facing change lands."
+      "lastRationale": "AI core surface eventually succeeded, but the first live sidebar prompt returned 'Rate limit exceeded' before an immediate retry completed successfully. Fullscreen/Reporter/Analyst variants remain outside this broad pack.",
+      "lastNextAction": "Stabilize the first-attempt production AI path against transient rate-limit failures, then rerun an AI-focused targeted pack."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 76,
-      "appropriateCount": 51,
+      "seenCount": 77,
+      "appropriateCount": 52,
       "partialCount": 25,
       "inappropriateCount": 0,
       "improvementNeededCount": 26,
-      "lastRunId": "QA-20260405-0232",
-      "lastSeenAt": "2026-04-04T15:59:50.897Z",
+      "lastRunId": "QA-20260407-0249",
+      "lastSeenAt": "2026-04-07T11:55:13.126Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Version/health responses and usage telemetry remain stable at current production head.",
+      "lastRationale": "Health/version/system probes and a direct supervisor SSE request confirmed production observability on the documented X-AI-Latency-Ms path; Server-Timing and X-AI-Processing-Ms remained absent, which matches the current Vercel SSOT.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -21671,33 +21887,33 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 70,
+      "seenCount": 71,
       "appropriateCount": 67,
-      "partialCount": 3,
+      "partialCount": 4,
       "inappropriateCount": 0,
-      "improvementNeededCount": 7,
-      "lastRunId": "QA-20260406-0246",
-      "lastSeenAt": "2026-04-06T10:57:23.899Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "Deployment identity, version metadata, usage budget, and production route readiness are aligned with the current GitLab-first topology.",
-      "lastNextAction": ""
+      "improvementNeededCount": 8,
+      "lastRunId": "QA-20260407-0249",
+      "lastSeenAt": "2026-04-07T11:55:13.126Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "The promoted production deployment is healthy and usage remains within budget, but user-facing AI reliability is still sensitive to transient rate-limit behavior on the first request.",
+      "lastNextAction": "Inspect Cloud Run/provider quota and limiter behavior for first-hit production prompts before treating v8.11.0 as fully green."
     },
     "test-automation": {
       "domainId": "test-automation",
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 101,
-      "appropriateCount": 94,
+      "seenCount": 102,
+      "appropriateCount": 95,
       "partialCount": 7,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260406-0246",
-      "lastSeenAt": "2026-04-06T10:57:23.899Z",
+      "lastRunId": "QA-20260407-0249",
+      "lastSeenAt": "2026-04-07T11:55:13.126Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Core route, dashboard, and AI sidebar/chat broad surface was exercised on live production with concrete UI and API checkpoints.",
+      "lastRationale": "Core route, dashboard, modal, and AI core paths were exercised on live production with concrete UI and API checkpoints.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
