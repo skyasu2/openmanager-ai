@@ -138,7 +138,7 @@ npm run sync:github           # GitHub 코드 스냅샷 갱신
 
 ## Task 5: node suite runtime 최적화 (신규)
 
-**상태**: active
+**상태**: 완료
 
 **우선순위**: P2 | **예상 규모**: 중
 
@@ -146,11 +146,16 @@ npm run sync:github           # GitHub 코드 스냅샷 갱신
 
 `npm run test:node`는 현재 통과하지만 전체 소요 시간이 약 13분(`~809s`)으로 길다. pre-push의 `type-check:changed` soft-timeout(60s)과 결합될 때 개발 루프가 늘어질 수 있어, release 이후 별도 최적화 트랙으로 분리한다.
 
-### 완료 기준
+### 완료 결과
 
-1. node suite 실행 시간 단축 또는 병렬 전략 명확화
-2. pre-push에서 긴 전체 검증을 local Docker CI/Vercel과 어떻게 분담할지 기준 문서화
-3. 변경 파일 기반 targeted routing 유지 + false negative 방지 회귀 테스트 추가
+1. `src/test/setup.node.ts` 신설
+   `config/testing/vitest.config.node.ts`가 DOM 전용 `setup.ts` 대신 node 전용 경량 셋업을 사용하도록 변경
+2. lightweight targeted routing 확장
+   `tests/unit/playwright/**`를 `vitest.config.dev.ts` 경로에 포함해 pre-push targeted node 실행도 가볍게 유지
+3. wall time 개선 확인
+   `npm run test:node` 기준 `809.63s → 536.87s`로 약 34% 단축
+4. 회귀 검증
+   `vitest-node-wrapper` 회귀, Playwright config test, MSW 기반 stream contract test, full node suite, `type-check`, `lint` 통과
 
 ---
 
@@ -170,6 +175,6 @@ stable로 전환되면 다음 항목을 함께 처리:
 
 | 순서 | Task | 이유 |
 |------|------|------|
-| 1 | **Task 5** (node suite runtime 최적화) | 릴리스 직후 운영 마찰 감소 효과가 가장 큼 |
-| 2 | Storybook large chunk warning 후속 | 기능 blocker는 아니지만 build hygiene 차원에서 검토 가치 있음 |
-| 3 | **Task 4** (Storybook 10.3) | npm stable 전환 후 자연스럽게 처리 |
+| 1 | Storybook large chunk warning 후속 | 런타임 최적화가 닫혔으므로 현재 남은 build hygiene 이슈 중 우선순위가 가장 높음 |
+| 2 | **Task 4** (Storybook 10.3) | npm stable 전환 후 자연스럽게 처리 |
+| 3 | `src/types/common.ts` 잔여 unused type 정리 | blocker는 아니지만 타입 표면 정리 차원에서 다음 소단위 후보 |

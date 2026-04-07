@@ -9,6 +9,7 @@ export default defineConfig({
     include: [
       'tests/unit/dev/**/*.{test,spec}.{js,ts,tsx}',
       'tests/unit/qa/**/*.{test,spec}.{js,ts,tsx}',
+      'tests/unit/playwright/**/*.{test,spec}.{js,ts,tsx}',
     ],
     exclude: [
       'node_modules/**',

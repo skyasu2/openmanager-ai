@@ -44,6 +44,16 @@ describe('vitest-node-wrapper', () => {
     expect(FAST_NODE_TEST_PREFIXES).toContain('tests/unit/qa/');
   });
 
+  it('selects dev node config for playwright config tests too', () => {
+    expect(
+      shouldUseDevNodeConfig([
+        'tests/unit/playwright/playwright-config.test.ts',
+        'tests/unit/playwright/playwright-vercel-manual-config.test.ts',
+      ])
+    ).toBe(true);
+    expect(FAST_NODE_TEST_PREFIXES).toContain('tests/unit/playwright/');
+  });
+
   it('falls back to the default node config for mixed or non-dev targets', () => {
     expect(
       shouldUseDevNodeConfig([

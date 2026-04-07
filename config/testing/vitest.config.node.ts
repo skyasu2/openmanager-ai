@@ -7,6 +7,10 @@ export default defineConfig({
   test: {
     ...baseConfig.test,
     environment: 'node',
+    setupFiles: [
+      './src/test/setup.node.ts',
+      './config/testing/msw-setup.ts',
+    ],
     exclude: [...(baseConfig.test?.exclude ?? []), ...domTestGlobs],
   },
 });

@@ -7,7 +7,11 @@ const { spawn } = require('child_process');
 const projectRoot = path.resolve(__dirname, '../..');
 const DEFAULT_NODE_CONFIG = 'config/testing/vitest.config.node.ts';
 const DEV_NODE_CONFIG = 'config/testing/vitest.config.dev.ts';
-const FAST_NODE_TEST_PREFIXES = ['tests/unit/dev/', 'tests/unit/qa/'];
+const FAST_NODE_TEST_PREFIXES = [
+  'tests/unit/dev/',
+  'tests/unit/qa/',
+  'tests/unit/playwright/',
+];
 
 function resolveVitestCli() {
   const pkgPath = require.resolve('vitest/package.json');

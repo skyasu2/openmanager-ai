@@ -35,6 +35,7 @@
 - **v8.11.0** (2026-04-07)
   - chore(release): `v8.11.0` 릴리스 커밋/태그 생성 및 canonical(`gitlab`) 배포 완료
   - test(qa): `vercel-post-deploy-smoke` probe close 경로의 `Server is not running` 회귀 수정 후 `test:node` full suite 통과
+  - build(test): node 전용 `setup.node.ts` 분리 + `tests/unit/playwright/**` lightweight routing 추가로 `npm run test:node` wall time `809.63s → 536.87s` 단축
   - docs(plan): WBS/완료보고서 동결 정책 재확인 메모, TODO/next-task release 상태 업데이트
   - sync(github): 공개 snapshot 동기화 완료 (`npm run sync:github`)
 

@@ -1,12 +1,12 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-07 KST (v8.11.0 릴리스/동기화 완료, 후속 최적화 단계로 전환)
+**Last Updated**: 2026-04-07 KST (`test:node` runtime 최적화 완료, 다음 우선순위 재정렬)
 
 ## Active Tasks
 
 | Task | Priority | Status |
 |------|----------|--------|
-| [다음 작업 목록 (release / residual follow-up)](./next-tasks-plan.md) | High | 후속 최적화 진행 중 |
+| [다음 작업 목록 (release / residual follow-up)](./next-tasks-plan.md) | High | 후속 작업 진행 중 |
 
 ## On Hold
 
@@ -21,12 +21,15 @@
 | P3: Knip unused export types 정리 (잔여) | Low | `src/types/common.ts` 1차 정리 후 남은 미사용/재수출 후보 재점검 필요. 현재 blocker 없음, 추가 잔여는 실제 참조 그래프 재확인 후 소단위로 정리. |
 | P3: Storybook `experimentalComponentsManifest` stable 승격 여부 재확인 | Low | npm registry stable이 아직 `10.2.10`이라 보류. `10.3.x`가 stable dist-tag로 올라온 뒤 `.storybook/main.ts` feature flag 재검토. |
 | P3: Storybook large chunk warning 정리 | Low | circular chunk warning은 제거 완료. 현재는 `vite-inject-mocker-entry.js` large chunk warning만 잔존하며 기능 blocker는 아님. 릴리스 이후 build hygiene 관점에서 후속 검토. |
-| P2: `npm run test:node` 장시간 실행 경로 추적 | Medium | `type-check`/`test:quick`/targeted node tests는 통과. 전체 node suite는 환경에 따라 6~7분 이상 소요되어 릴리스 게이트에서 타임아웃 정책/분할 실행 기준 재정의 필요. |
-
 ### Completed (2026-04-07 #34)
 - [x] P1: `v8.11.0` 릴리스 완료 — `chore(release): 8.11.0` 커밋/태그(`v8.11.0`) 생성, release consistency check PASS, `git push --follow-tags gitlab main` 완료.
 - [x] P1: GitHub 공개 스냅샷 동기화 완료 — `npm run sync:github` 실행, `cc1c579f5` 기준 공개 레포 반영.
 - [x] P2: node full-suite 회귀 수정 — `vercel-post-deploy-smoke` probe 경로의 `Server is not running` 오류 수정 후 `npm run test:node` 전체 통과 (`184 files: 181 passed, 3 skipped`).
+
+### Completed (2026-04-07 #35)
+- [x] P2: `test:node` runtime 최적화 — `config/testing/vitest.config.node.ts`에 node 전용 `setup.node.ts`를 분리해 DOM 전용 셋업 비용을 제거.
+- [x] P2: lightweight node routing 확장 — `tests/unit/playwright/**`를 lightweight config(`vitest.config.dev.ts`)로 라우팅해 pre-push targeted node 실행 비용 축소.
+- [x] P2: 회귀 검증 완료 — `tests/unit/dev/vitest-node-wrapper.test.ts`, `tests/api/ai-supervisor-stream.contract.test.ts`, `tests/unit/playwright/playwright-config.test.ts`, `npm run test:node`, `npm run type-check`, `npm run lint` 통과. Full node suite wall time `809.63s → 536.87s`로 약 34% 단축.
 
 ### Completed (2026-04-07 #33)
 - [x] P2: node smoke 테스트 안정화 — `tests/unit/dev/filter-public-scripts.test.ts`, `tests/unit/qa/check-vercel-usage.test.ts`에서 output assertion을 상태/부수효과 중심으로 보강해 무출력 환경 false negative 완화.
