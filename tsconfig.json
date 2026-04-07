@@ -20,13 +20,13 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
+    "types": ["node"],
     "isolatedModules": true,
     "jsx": "react-jsx",
     "jsxImportSource": "react",
     "incremental": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "downlevelIteration": true,
     "plugins": [
       {
         "name": "next"

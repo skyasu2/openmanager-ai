@@ -100,6 +100,16 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
     Boolean(thinkingSteps && thinkingSteps.length > 0) ||
     Boolean(handoffHistory && handoffHistory.length > 0) ||
     Boolean(toolResultSummaries && toolResultSummaries.length > 0);
+  const firstMeaningfulTool = meaningfulTools?.[0];
+  const collapsedSummaryParts = [
+    basis.dataSource ? `데이터: ${basis.dataSource}` : null,
+    firstMeaningfulTool
+      ? `도구: ${getToolLabel(firstMeaningfulTool)}${meaningfulTools.length > 1 ? ` 외 ${meaningfulTools.length - 1}` : ''}`
+      : null,
+    basis.timeRange ? `기간: ${basis.timeRange}` : null,
+    basis.engine ? `엔진: ${basis.engine}` : null,
+  ].filter(Boolean);
+  const collapsedSummary = collapsedSummaryParts.slice(0, 3).join(' · ');
 
   return (
     <div
@@ -123,6 +133,14 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
           <ChevronDown className="h-4 w-4 text-gray-400" />
         )}
       </button>
+
+      {!isExpanded && collapsedSummary && (
+        <div className="px-3 pb-2 text-xs text-gray-500">
+          <p className="truncate" title={collapsedSummary}>
+            {collapsedSummary}
+          </p>
+        </div>
+      )}
 
       {/* 상세 정보 (확장 시) */}
       {isExpanded && (

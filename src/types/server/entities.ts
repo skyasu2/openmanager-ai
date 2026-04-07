@@ -8,15 +8,18 @@ import type { ServiceStatus } from '../common';
 import type { ProcessInfo, ServerAlert } from './base';
 import type { ServerEnvironment, ServerRole, ServerStatus } from './types';
 
+interface ServerEntityScope {
+  environment?: ServerEnvironment;
+  role?: ServerRole;
+}
+
 /**
  * 서비스 정보
  */
-export interface Service {
+export interface Service extends ServerEntityScope {
   name: string;
   status: ServiceStatus;
   port?: number;
-  environment?: ServerEnvironment;
-  role?: ServerRole;
 }
 
 /**
@@ -31,7 +34,7 @@ export interface LogEntry {
 /**
  * 네트워크 정보
  */
-export interface NetworkInfo {
+export interface NetworkInfo extends ServerEntityScope {
   interface: string;
   receivedBytes: string;
   sentBytes: string;
@@ -47,20 +50,16 @@ export interface NetworkInfo {
   last_updated?: string;
   alerts?: ServerAlert[];
   processes?: ProcessInfo[];
-  environment?: ServerEnvironment;
-  role?: ServerRole;
 }
 
 /**
  * 시스템 정보
  */
-export interface SystemInfo {
+export interface SystemInfo extends ServerEntityScope {
   os: string;
   uptime: string;
   processes: number;
   zombieProcesses: number;
   loadAverage: string;
   lastUpdate: string;
-  environment?: ServerEnvironment;
-  role?: ServerRole;
 }

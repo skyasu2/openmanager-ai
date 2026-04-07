@@ -4,16 +4,10 @@
  */
 
 export type {
-  AIEngineInfo,
   AIQueryResponse,
-  AISidebarHandlers,
-  AISidebarProps,
   AISidebarState,
   AIThinkingStep,
-  AutoReportTrigger,
   ChatMessage,
-  SessionInfo,
   SystemAlert,
   ThinkingStep,
-  UseAISidebarReturn,
 } from './ai-sidebar-types';

@@ -5,8 +5,7 @@
  */
 
 import type { OTelLogRecord } from '../otel-metrics';
-import type { ServerSpecs } from '../server-common';
-import type { ProcessInfo, ServerAlert } from './base';
+import type { ProcessInfo, ServerAlert, ServerSpecs } from './base';
 import type { NetworkInfo, Service, SystemInfo } from './entities';
 import type { ServerEnvironment, ServerRole, ServerStatus } from './types';
 

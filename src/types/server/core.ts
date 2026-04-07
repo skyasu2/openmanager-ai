@@ -5,17 +5,24 @@
  */
 
 import type { OTelLogRecord } from '../otel-metrics';
+import type { ServerStatus } from '../server-enums';
 import type {
   ServerHealth,
+  ServerHealthSummary,
   ServerMetrics,
   ServerSpecs,
-  ServerStatus,
-} from '../server-common';
+} from './base';
 import type { LogEntry, NetworkInfo, Service, SystemInfo } from './entities';
 import type { ServerAlert } from './metrics';
 import type { ServerEnvironment, ServerRole } from './types';
 
-export type { ServerHealth, ServerMetrics, ServerSpecs, ServerStatus };
+export type {
+  ServerHealth,
+  ServerHealthSummary,
+  ServerMetrics,
+  ServerSpecs,
+  ServerStatus,
+};
 
 /**
  * 기본 서버 타입
@@ -66,22 +73,14 @@ export interface Server {
     timestamp: string;
     uptime: number;
   };
-  specs?: {
-    cpu_cores: number;
-    memory_gb: number;
-    disk_gb: number;
-    network_speed?: string;
-  };
+  specs?: ServerSpecs;
   lastUpdate?: Date;
   services?: Service[];
   logs?: LogEntry[];
   networkInfo?: NetworkInfo;
   networkStatus?: ServerStatus;
   systemInfo?: SystemInfo;
-  health?: {
-    score: number;
-    trend: number[];
-  };
+  health?: ServerHealthSummary;
   alertsSummary?: {
     total: number;
     critical: number;

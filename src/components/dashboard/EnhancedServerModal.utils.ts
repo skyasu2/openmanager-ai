@@ -215,7 +215,11 @@ export function normalizeServerData(server: Server): ServerData {
     os: server.os || 'Unknown OS',
     ip: server.ip || '-',
     networkStatus: deriveNetworkStatus(server.status, network),
-    health: server.health || { score: 0, trend: [] },
+    health: server.health || {
+      score: 0,
+      trend: [],
+      status: server.status || 'unknown',
+    },
     alertsSummary: server.alertsSummary || {
       total: 0,
       critical: 0,
