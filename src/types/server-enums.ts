@@ -52,41 +52,6 @@ export type ServerRole =
   | 'application'
   | 'fallback';
 
-// ⚡ 최적화된 타입 가드 (O(1) 복잡도)
-const VALID_STATUSES = new Set<string>(SERVER_STATUS_VALUES);
-
-export function isValidServerStatus(status: string): status is ServerStatus {
-  return VALID_STATUSES.has(status); // Set.has() = O(1), Array.includes() = O(n)보다 6배 빠름
-}
-
-export function isValidServerEnvironment(
-  env: string
-): env is ServerEnvironment {
-  return ['production', 'staging', 'development', 'testing'].includes(env);
-}
-
-const VALID_ROLES = new Set<string>([
-  'web',
-  'api',
-  'database',
-  'cache',
-  'monitoring',
-  'security',
-  'backup',
-  'load-balancer',
-  'loadbalancer',
-  'queue',
-  'storage',
-  'log',
-  'app',
-  'application',
-  'fallback',
-]);
-
-export function isValidServerRole(role: string): role is ServerRole {
-  return VALID_ROLES.has(role);
-}
-
 // Enum 배열 (옵션 리스트용)
 // ⚠️ Deprecated: Use SERVER_STATUS_VALUES instead for better type safety
 const _SERVER_STATUSES: ServerStatus[] = [...SERVER_STATUS_VALUES];

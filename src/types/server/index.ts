@@ -7,12 +7,6 @@
 
 // Re-export AlertSeverity from common
 export type { AlertSeverity } from '../common';
-// Type guards
-export {
-  isValidServerEnvironment,
-  isValidServerRole,
-  isValidServerStatus,
-} from '../server-enums';
 // Base server SSOT
 export type {
   ProcessInfo,
@@ -39,9 +33,6 @@ export type {
 // Type aliases
 export type {
   ServerEnvironment,
-  ServerEnvironmentEnum,
   ServerRole,
-  ServerRoleEnum,
   ServerStatus,
-  ServerStatusEnum,
 } from './types';

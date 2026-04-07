@@ -11,10 +11,6 @@ import type {
   ServerStatus as CanonicalServerStatus,
 } from '../server-enums';
 
-export type ServerEnvironmentEnum = CanonicalServerEnvironment;
-export type ServerRoleEnum = CanonicalServerRole;
-export type ServerStatusEnum = CanonicalServerStatus;
-
 export type ServerStatus = CanonicalServerStatus;
 export type ServerEnvironment = CanonicalServerEnvironment;
 export type ServerRole = CanonicalServerRole;

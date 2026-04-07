@@ -1,13 +1,13 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-07 KST (v8.10.11 진행 중, 타입 시스템 정제 Step 3 준비 + 패키지 업그레이드 Step 4 준비)
+**Last Updated**: 2026-04-07 KST (v8.10.11 진행 중, 타입 시스템 정제 Step 3 준비 + 패키지 업그레이드 Step 4 준비 완료)
 
 ## Active Tasks
 
 | Task | Priority | Status |
 |------|----------|--------|
 | [P2: 타입 시스템 정제 및 인프라 최적화 (Phase 2)](./type-system-refinement-plan.md) | High | In-Progress (Step 3 준비) |
-| [P2: 패키지 기술 부채 업그레이드](./package-upgrade-plan.md) | High | In-Progress (Step 4 준비) |
+| [P2: 패키지 기술 부채 업그레이드](./package-upgrade-plan.md) | High | In-Progress (Step 4 준비 완료) |
 
 ## On Hold
 
@@ -20,6 +20,9 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | P3: Knip unused export types 정리 (잔여) | Low | `src/types/common.ts` 1차 정리 후 남은 미사용/재수출 후보 재점검 필요. 현재 blocker 없음, 추가 잔여는 실제 참조 그래프 재확인 후 소단위로 정리. |
+
+### Completed (2026-04-07 #25)
+- [x] P2: Knip v6 전환 — `knip` `5.88.1→6.0.5`, `knip.json` schema `@5→@6` 정렬. 새 parser 기준 unused 4건(`src/types/server/guards.ts`, `api-config` default export, server enum alias re-export)도 함께 정리해 `npm run knip:ci` clean 유지.
 
 ### Completed (2026-04-07 #23)
 - [x] P2: 루트 앱 안전한 patch 업그레이드 적용 — `@supabase/supabase-js` `2.97.0→2.101.1`, `@supabase/ssr` `0.8.0→0.9.0`, `@opentelemetry/sdk-node` `0.212.0→0.214.0`, `@types/node` `25.5.0→25.5.2`, `rollup` `4.53.5→4.59.0` 반영. `ai`는 npm registry 기준 `6.0.145`가 latest라 유지.

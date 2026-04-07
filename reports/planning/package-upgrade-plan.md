@@ -44,9 +44,10 @@
 - [ ] `npm run lint`
 
 ### Step 3: Knip v6 전환
-- [ ] `npm install -D knip@latest`
-- [ ] `npm run knip:ci`
-- [ ] parser 전환에 따른 config/false positive 점검
+- [x] `npm install -D knip@latest`
+- [x] `knip.json` schema `@5` → `@6` 정렬
+- [x] `npm run knip:ci`
+- [x] parser 전환에 따른 config/false positive 점검 (`src/types/server/guards.ts`, `api-config` default export, server enum/type alias 재수출 정리)
 
 ### Step 4: TypeScript 6 준비 및 업그레이드
 - [x] `tsconfig.json`에 `types: ["node"]` 선행 추가
@@ -69,6 +70,6 @@
 - **Supabase 패키지군**: peer dependency 호환성은 우선 패치 업그레이드 범위에서 확인한다.
 
 ## 5. 현재 상태
-- **상태**: In Progress (Step 1 완료, Step 4 준비 완료)
+- **상태**: In Progress (Step 1 완료, Step 3 완료, Step 4 준비 완료)
 - **담당**: AI Agent
 - **실행 시점**: 현재 진행 중

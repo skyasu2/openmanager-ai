@@ -288,7 +288,7 @@
     "husky": "^9.1.7",
     "jest-axe": "^10.0.0",
     "jsdom": "^28.1.0",
-    "knip": "^5.88.1",
+    "knip": "^6.0.5",
     "markdown-link-check": "^3.14.2",
     "markdownlint-cli2": "^0.21.0",
     "msw": "^2.12.10",
