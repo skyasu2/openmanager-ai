@@ -86,7 +86,6 @@ async function startServer(
   handler: (req: IncomingMessage, res: ServerResponse) => void
 ) {
   const server = createServer(handler);
-  servers.push(server);
 
   await new Promise<void>((resolve, reject) => {
     const onError = (error: NodeJS.ErrnoException) => {
@@ -101,6 +100,8 @@ async function startServer(
     });
   });
 
+  servers.push(server);
+
   const address = server.address();
   if (!address || typeof address === 'string') {
     throw new Error('Failed to bind local smoke test server');
@@ -114,6 +115,7 @@ async function detectLoopbackBindAvailability() {
     res.statusCode = 200;
     res.end('ok');
   });
+  let probeListening = false;
 
   await new Promise<void>((resolve, reject) => {
     const onError = (error: NodeJS.ErrnoException) => {
@@ -129,13 +131,18 @@ async function detectLoopbackBindAvailability() {
     probeServer.once('error', onError);
     probeServer.listen(0, '127.0.0.1', () => {
       probeServer.off('error', onError);
+      probeListening = true;
       resolve();
     });
   });
 
+  if (!probeListening) {
+    return;
+  }
+
   await new Promise<void>((resolve, reject) => {
     probeServer.close((error) => {
-      if (error) {
+      if (error && error.code !== 'ERR_SERVER_NOT_RUNNING') {
         reject(error);
         return;
       }
@@ -164,7 +171,7 @@ afterEach(async () => {
   for (const server of servers.splice(0)) {
     await new Promise<void>((resolve, reject) => {
       server.close((error) => {
-        if (error) {
+        if (error && error.code !== 'ERR_SERVER_NOT_RUNNING') {
           reject(error);
           return;
         }
