@@ -91,7 +91,7 @@ Rollup의 `manualChunks`는 chunk 간 순환을 감지하면 경고를 낸다. r
 
 ## Task 3: minor release — v8.11.0
 
-**상태**: in progress
+**상태**: 완료
 
 **우선순위**: P2 | **예상 규모**: 소 (릴리스 스크립트 실행)
 
@@ -127,6 +127,31 @@ npm run sync:github           # GitHub 코드 스냅샷 갱신
    - `vercel-post-deploy-smoke`
 4. `npm run test:node` 전체는 실행 시간이 긴 편이라(환경별 6~7분+) 타임아웃 정책과 분할 실행 기준을 함께 정리한 뒤 `validate:all` 최종 수행 권장
 
+### 완료 결과 (2026-04-07)
+
+1. release commit/tag 생성: `chore(release): 8.11.0`, `v8.11.0`
+2. 릴리스 일관성 점검 PASS (`scripts/release/check-release-consistency.js`)
+3. canonical push 완료 (`gitlab/main`)
+4. GitHub snapshot 동기화 완료 (`npm run sync:github`)
+
+---
+
+## Task 5: node suite runtime 최적화 (신규)
+
+**상태**: active
+
+**우선순위**: P2 | **예상 규모**: 중
+
+### 배경
+
+`npm run test:node`는 현재 통과하지만 전체 소요 시간이 약 13분(`~809s`)으로 길다. pre-push의 `type-check:changed` soft-timeout(60s)과 결합될 때 개발 루프가 늘어질 수 있어, release 이후 별도 최적화 트랙으로 분리한다.
+
+### 완료 기준
+
+1. node suite 실행 시간 단축 또는 병렬 전략 명확화
+2. pre-push에서 긴 전체 검증을 local Docker CI/Vercel과 어떻게 분담할지 기준 문서화
+3. 변경 파일 기반 targeted routing 유지 + false negative 방지 회귀 테스트 추가
+
 ---
 
 ## Task 4: Storybook 10.3.x stable 추적 (보류)
@@ -145,6 +170,6 @@ stable로 전환되면 다음 항목을 함께 처리:
 
 | 순서 | Task | 이유 |
 |------|------|------|
-| 1 | **Task 3** (v8.11.0 릴리스) | Task 1/2 완료, 커밋 수 기준 충족. 단, `test:node` 장시간 경로를 고려한 gate 실행 전략 필요 |
+| 1 | **Task 5** (node suite runtime 최적화) | 릴리스 직후 운영 마찰 감소 효과가 가장 큼 |
 | 2 | Storybook large chunk warning 후속 | 기능 blocker는 아니지만 build hygiene 차원에서 검토 가치 있음 |
 | 3 | **Task 4** (Storybook 10.3) | npm stable 전환 후 자연스럽게 처리 |

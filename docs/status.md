@@ -32,6 +32,12 @@
   - test(node): `vercel-post-deploy-smoke` loopback bind 제한(`EPERM`) 환경 안정화, dev/qa script smoke test의 output assertion을 status/side-effect 중심으로 보강
   - qa: production AI sidebar에서 `분석 근거 → 응답 과정 → trace id → 도구 결과 요약 → handoff path` 노출 targeted 검증 기록 (`QA-20260407-0248`)
 
+- **v8.11.0** (2026-04-07)
+  - chore(release): `v8.11.0` 릴리스 커밋/태그 생성 및 canonical(`gitlab`) 배포 완료
+  - test(qa): `vercel-post-deploy-smoke` probe close 경로의 `Server is not running` 회귀 수정 후 `test:node` full suite 통과
+  - docs(plan): WBS/완료보고서 동결 정책 재확인 메모, TODO/next-task release 상태 업데이트
+  - sync(github): 공개 snapshot 동기화 완료 (`npm run sync:github`)
+
 - **v8.10.10** (2026-04-06)
   - chore(release): v8.10.10 릴리즈 — targeted production smoke QA pass (8/8)
   - fix(docs): qa report markdown lint + evidence path 표준화
