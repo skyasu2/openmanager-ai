@@ -29,8 +29,9 @@
 
 ## 3. 단계별 실행 계획 (Steps)
 
-### Step 1: 안전한 패치 업그레이드
-- [ ] `@supabase/supabase-js`, `@supabase/ssr`, `@opentelemetry/sdk-node`, `ai`, `rollup`, `@types/node` 업그레이드
+### Step 1: 안전한 패치 업그레이드 (진행 중)
+- [x] `@supabase/supabase-js`, `@supabase/ssr`, `@opentelemetry/sdk-node`, `rollup`, `@types/node` 업그레이드
+- [x] `ai` latest 재확인 (`6.0.145`, 추가 업그레이드 없음)
 - [ ] `npm run type-check`
 - [ ] `npm run lint`
 - [ ] `npm run test:quick`
@@ -68,6 +69,6 @@
 - **Supabase 패키지군**: peer dependency 호환성은 우선 패치 업그레이드 범위에서 확인한다.
 
 ## 5. 현재 상태
-- **상태**: Backlog
+- **상태**: In Progress (Step 1 적용 완료, smoke 검증 중)
 - **담당**: AI Agent
-- **실행 시점**: 현재 Phase 2 타입 시스템 정제 종료 후
+- **실행 시점**: 현재 진행 중
