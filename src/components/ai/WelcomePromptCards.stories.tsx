@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { Activity, Shield } from 'lucide-react';
 import { fn } from 'storybook/test';
 import type { StarterPrompt } from './WelcomePromptCards';
-import WelcomePromptCards from './WelcomePromptCards';
+import { WelcomePromptCards } from './WelcomePromptCards';
 
 const meta = {
   title: 'AI/WelcomePromptCards',

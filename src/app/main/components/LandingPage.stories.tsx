@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { Loader2, Play } from 'lucide-react';
 import { fn } from 'storybook/test';
 

@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import AnalysisBasisBadge from './AnalysisBasisBadge';
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { AnalysisBasisBadge } from './AnalysisBasisBadge';
 
 const meta = {
   title: 'AI/AnalysisBasisBadge',

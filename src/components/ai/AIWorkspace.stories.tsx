@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { fn, mocked } from 'storybook/test';
 
 import { useProfileAuth } from '../../components/unified-profile/hooks/useProfileAuth';
@@ -151,6 +151,7 @@ const mockMessages: MockMessage[] = [
 const meta = {
   title: 'Pages/AIAssistant',
   component: AIWorkspace,
+  tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',
     nextjs: { navigation: { pathname: '/dashboard/ai-assistant' } },
