@@ -1,0 +1,103 @@
+{
+  "runId": "QA-20260407-0248",
+  "recordedAt": "2026-04-07T03:31:27.352Z",
+  "recordedAtKst": "2026-04-07 12:31:27 KST",
+  "runTitle": "Vercel Playwright QA - AI response process visibility verification",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_5DeQfQksXoH7hPWfQr36vhrHi3eJ",
+    "deploymentUrl": "https://openmanager-fkx6g1r49-skyasus-projects.vercel.app",
+    "commitSha": "60f9a3e08678aa472dc0c544016f044e4f725417"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "landing render with v8.10.10 badge",
+    "system start countdown reaches /system-boot and redirects to /dashboard",
+    "dashboard render with 15 total / 14 online / 1 warning / 0 risk",
+    "AI sidebar opens with Ready state",
+    "preset CPU query renders analysis basis with process step count, trace id, tool summary, and per-step details",
+    "follow-up incident summary query renders agent handoff path in analysis basis",
+    "browser console errors 0 during AI process visibility verification"
+  ],
+  "skippedSurfaces": [
+    "/login route",
+    "/dashboard/ai-assistant fullscreen workspace",
+    "Reporter and Analyst dedicated flows",
+    "modal-detail pack",
+    "Cloud Run admin observability endpoints"
+  ],
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-07T12:29:37+09:00",
+      "summary": "Current billing period reviewed after targeted AI process visibility QA; effective 3.2825 USD, billed 0.0000 USD, no unexpected billed usage spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": ""
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "ai response process trace",
+      "path": "reports/qa/evidence/qa-20260407-ai-response-process-trace.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "ai response handoff summary",
+      "path": "reports/qa/evidence/qa-20260407-ai-response-handoff-summary.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-chat-detail-expand",
+      "title": "AI Chat 상세 분석 펼치기",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production AI sidebar now exposes 분석 근거 with 응답 과정, step badge, trace id, 도구 결과 요약, 단계별 처리 내역, and agent handoff path.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "AI process visibility verification on latest production deployment dpl_5DeQfQksXoH7hPWfQr36vhrHi3eJ / 60f9a3e08678aa472dc0c544016f044e4f725417.",
+    "Simple preset response exposed 1-step process with trace id and tool summary.",
+    "Follow-up incident summary query exposed agent handoff path: Orchestrator -> NLQ Agent."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Deployment dpl_5DeQfQksXoH7hPWfQr36vhrHi3eJ",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/5DeQfQksXoH7hPWfQr36vhrHi3eJ"
+    }
+  ]
+}

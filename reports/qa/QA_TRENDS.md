@@ -1,19 +1,19 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-04-06 20:03:37 KST
+> Generated at: 2026-04-07 12:37:27 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 245 |
+| Recorded Runs | 247 |
 | Counted Runs | 231 |
 | Total Checks | 1791 |
 | Total Passed | 1721 |
 | Total Failed | 64 |
 | Overall Pass Rate | 96.09% |
-| Latest Recorded Run | QA-20260406-0246 |
+| Latest Recorded Run | QA-20260407-0248 |
 | Last Counted Run | QA-20260406-0246 |
 
 ## Warnings
@@ -47,7 +47,7 @@
 | Scope | Recorded Runs | Counted Runs |
 |---|---:|---:|
 | legacy | 137 | 137 |
-| targeted | 90 | 77 |
+| targeted | 92 | 77 |
 | broad | 12 | 11 |
 | release-gate | 4 | 4 |
 | smoke | 2 | 2 |
@@ -58,7 +58,7 @@
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | P0 | 41 | 7 | 17.07% | 0 | 0 | 0% | 41 | 0 |
 | P1 | 126 | 60 | 47.62% | 0 | 0 | 0% | 122 | 4 |
-| P2 | 109 | 35 | 32.11% | 0 | 0 | 0% | 100 | 9 |
+| P2 | 109 | 36 | 33.03% | 0 | 0 | 0% | 101 | 8 |
 | P3 | 15 | 11 | 73.33% | 0 | 0 | 0% | 14 | 1 |
 
 ## Deployment Regression Correlation
@@ -124,8 +124,8 @@
 | landing-console-api-system-unauthorized | P1 | wont-fix | 1 | QA-20260330-0195 | 랜딩 비로그인 상태에서 /api/system 401 콘솔 에러 제거 또는 graceful handling |
 | landing-vibe-content-deployment-drift | P1 | wont-fix | 1 | QA-20260330-0195 | Vibe Coding 프로덕션 카드 내용과 현재 소스 간 배포 드리프트 해소 |
 | ai-agent-type-metadata | P2 | wont-fix | 1 | QA-20260326-0190 | AI Chat 에이전트 타입 메타데이터 표시 개선 |
-| ai-chat-detail-expand | P2 | wont-fix | 1 | QA-20260301-0030 | AI Chat 상세 분석 펼치기 |
 | analyst-drilldown | P2 | wont-fix | 1 | QA-20260301-0030 | Analyst 서버별 드릴다운 |
+| cloud-run-cold-start-latency | P2 | wont-fix | 1 | QA-20260310-0089 | Cloud Run AI Chat 콜드스타트 대기시간 과도 (5회 재시도, ~5분) |
 
 ## Most Repeated Completed Items
 
@@ -148,4 +148,3 @@
 - Failing Run: `checks.failed > 0` 인 counted run.
 - Regression Run: `checks.failed > 0` 또는 `pendingCount > 0` 인 counted run.
 - Deferred / Wont-Fix 는 추세에서 별도 표기하되 regression rate 계산에는 포함하지 않는다.
-

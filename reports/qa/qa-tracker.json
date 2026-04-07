@@ -2,10 +2,10 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-06T14:32:16.188Z"
+    "updatedAt": "2026-04-07T03:31:27.352Z"
   },
   "sequence": {
-    "nextRunNumber": 248
+    "nextRunNumber": 249
   },
   "summary": {
     "totalRuns": 231,
@@ -13,16 +13,16 @@
     "totalPassed": 1721,
     "totalFailed": 64,
     "completionRate": 100,
-    "completedItems": 277,
+    "completedItems": 278,
     "pendingItems": 0,
     "deferredItems": 0,
-    "wontFixItems": 14,
+    "wontFixItems": 13,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 1,
     "lastRunId": "QA-20260406-0246",
     "lastRecordedAt": "2026-04-06T10:57:23.899Z",
-    "latestRecordedRunId": "QA-20260406-0247",
-    "latestRecordedAt": "2026-04-06T14:32:16.188Z"
+    "latestRecordedRunId": "QA-20260407-0248",
+    "latestRecordedAt": "2026-04-07T03:31:27.352Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -1008,23 +1008,25 @@
       "id": "ai-chat-detail-expand",
       "title": "AI Chat 상세 분석 펼치기",
       "priority": "P2",
-      "status": "wont-fix",
+      "status": "completed",
       "firstSeenRunId": "QA-20260301-0030",
       "firstSeenAt": "2026-03-01T00:54:39.785Z",
-      "lastSeenRunId": "QA-20260301-0030",
-      "lastSeenAt": "2026-03-01T00:54:39.785Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260407-0248",
+      "lastSeenAt": "2026-04-07T03:31:27.352Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 0,
       "wontFixCount": 1,
       "owner": "",
-      "lastEvidence": "",
+      "lastEvidence": "Production AI sidebar now exposes 분석 근거 with 응답 과정, step badge, trace id, 도구 결과 요약, 단계별 처리 내역, and agent handoff path.",
       "lastNote": "",
       "isBlocking": false,
       "isBlockingExplicit": false,
       "overengineeringScope": "",
-      "lastPolicyNote": "이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)",
-      "lastStatusChangeAt": "2026-03-01T00:54:39.785Z"
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-07T03:31:27.352Z",
+      "aliases": [],
+      "deferredCount": 0
     },
     "reporter-generate": {
       "id": "reporter-generate",
@@ -21520,6 +21522,93 @@
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260407-0248",
+      "recordedAt": "2026-04-07T03:31:27.352Z",
+      "recordedAtKst": "2026-04-07 12:31:27 KST",
+      "title": "Vercel Playwright QA - AI response process visibility verification",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260407-0248.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_5DeQfQksXoH7hPWfQr36vhrHi3eJ",
+        "deploymentUrl": "https://openmanager-fkx6g1r49-skyasus-projects.vercel.app",
+        "commitSha": "60f9a3e08678aa472dc0c544016f044e4f725417"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveredSurfaces": [
+        "landing render with v8.10.10 badge",
+        "system start countdown reaches /system-boot and redirects to /dashboard",
+        "dashboard render with 15 total / 14 online / 1 warning / 0 risk",
+        "AI sidebar opens with Ready state",
+        "preset CPU query renders analysis basis with process step count, trace id, tool summary, and per-step details",
+        "follow-up incident summary query renders agent handoff path in analysis basis",
+        "browser console errors 0 during AI process visibility verification"
+      ],
+      "skippedSurfaces": [
+        "/login route",
+        "/dashboard/ai-assistant fullscreen workspace",
+        "Reporter and Analyst dedicated flows",
+        "modal-detail pack",
+        "Cloud Run admin observability endpoints"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-07T12:29:37+09:00",
+          "summary": "Current billing period reviewed after targeted AI process visibility QA; effective 3.2825 USD, billed 0.0000 USD, no unexpected billed usage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": ""
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "ai response process trace",
+          "path": "reports/qa/evidence/qa-20260407-ai-response-process-trace.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "ai response handoff summary",
+          "path": "reports/qa/evidence/qa-20260407-ai-response-handoff-summary.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Deployment dpl_5DeQfQksXoH7hPWfQr36vhrHi3eJ",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/5DeQfQksXoH7hPWfQr36vhrHi3eJ"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0

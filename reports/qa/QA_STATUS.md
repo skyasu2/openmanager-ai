@@ -1,7 +1,7 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-06 23:32:17 KST
+> Generated at: 2026-04-07 12:37:27 KST
 
 ## Summary
 
@@ -11,19 +11,19 @@
 | Total Checks | 1791 |
 | Passed | 1721 |
 | Failed | 64 |
-| Completed Items | 277 |
+| Completed Items | 278 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 14 |
+| Wont-Fix Items | 13 |
 | Expert Domains Tracked | 8 |
 | Expert Open Gaps | 1 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260406-0246 (2026-04-06T10:57:23.899Z) |
-| Latest Recorded Run | QA-20260406-0247 (2026-04-06T14:32:16.188Z) |
+| Latest Recorded Run | QA-20260407-0248 (2026-04-07T03:31:27.352Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260406-0247 (2026-04-06T14:32:16.188Z)
+Latest run: QA-20260407-0248 (2026-04-07T03:31:27.352Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -33,31 +33,31 @@ Latest run: QA-20260406-0247 (2026-04-06T14:32:16.188Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after targeted production smoke; effective 3.2825 USD, billed 0.0000 USD, no unexpected billed usage spike. |
+| vercel | cli | checked | normal | Current billing period reviewed after targeted AI process visibility QA; effective 3.2825 USD, billed 0.0000 USD, no unexpected billed usage spike. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: dpl_C26umTtKeFhwLwRTWWdsksaCtNiw / SHA c3d8c6a8
+- Deployment: dpl_5DeQfQksXoH7hPWfQr36vhrHi3eJ / SHA 60f9a3e0
 - Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: latest production deployment c3d8c6a8 / dpl_C26umTtKeFhwLwRTWWdsksaCtNiw live on Vercel, landing render with v8.10.10 badge and guest session ready, system start countdown reaches /system-boot and redirects to /dashboard, dashboard render with 15 total / 14 online / 1 warning / 0 risk and resource top5, AI sidebar opens with Ready state and preset CPU query returns current top 3 summary (storage-nfs-dc1-01 65%), /api/health 200 with database/cache/ai connected, /api/version 200 with v8.10.10 / Next.js 16.1.6 / production, browser console errors 0 during production smoke
-- Skipped Surfaces: /login route, /dashboard/ai-assistant fullscreen workspace, Reporter and Analyst flows, modal-detail pack, Cloud Run admin observability endpoints
+- Covered Surfaces: landing render with v8.10.10 badge, system start countdown reaches /system-boot and redirects to /dashboard, dashboard render with 15 total / 14 online / 1 warning / 0 risk, AI sidebar opens with Ready state, preset CPU query renders analysis basis with process step count, trace id, tool summary, and per-step details, follow-up incident summary query renders agent handoff path in analysis basis, browser console errors 0 during AI process visibility verification
+- Skipped Surfaces: /login route, /dashboard/ai-assistant fullscreen workspace, Reporter and Analyst dedicated flows, modal-detail pack, Cloud Run admin observability endpoints
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Vercel URL | [link](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Deployment dpl_C26umTtKeFhwLwRTWWdsksaCtNiw | [link](https://vercel.com/skyasus-projects/openmanager-ai/C26umTtKeFhwLwRTWWdsksaCtNiw) | - |
+| general | Vercel URL | [Vercel URL](https://openmanager-ai.vercel.app/) | - |
+| vercel-deployment | Deployment dpl_5DeQfQksXoH7hPWfQr36vhrHi3eJ | [Deployment dpl_5DeQfQksXoH7hPWfQr36vhrHi3eJ](https://vercel.com/skyasus-projects/openmanager-ai/5DeQfQksXoH7hPWfQr36vhrHi3eJ) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | dashboard production smoke | `reports/qa/evidence/qa-20260406-dashboard-production-smoke.png` | - |
-| playwright-screenshot | ai sidebar cpu summary | `reports/qa/evidence/qa-20260406-ai-sidebar-cpu-summary.png` | - |
+| playwright-screenshot | ai response process trace | `reports/qa/evidence/qa-20260407-ai-response-process-trace.png` | - |
+| playwright-screenshot | ai response handoff summary | `reports/qa/evidence/qa-20260407-ai-response-handoff-summary.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -83,8 +83,6 @@ Latest run: QA-20260406-0247 (2026-04-06T14:32:16.188Z)
 - [P1] obs-fp-fn-weekly-report: 오탐/미탐 주간 리포트 자동 생성 (seen 3회, last QA-20260227-0013)
 - [P2] ai-agent-type-metadata: AI Chat 에이전트 타입 메타데이터 표시 개선 (seen 1회, last QA-20260326-0190)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
-- [P2] ai-chat-detail-expand: AI Chat 상세 분석 펼치기 (seen 1회, last QA-20260301-0030)
-  - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] ai-cold-start-latency: Cloud Run cold start 레이턴시 최적화 (seen 2회, last QA-20260327-0193)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] analyst-drilldown: Analyst 서버별 드릴다운 (seen 1회, last QA-20260301-0030)
@@ -111,6 +109,7 @@ Latest run: QA-20260406-0247 (2026-04-06T14:32:16.188Z)
 - ai-assistant-fullscreen-tools-parity: AI 전체 화면 도구 메뉴 parity 검증 (completed 1회, last QA-20260318-0123)
 - ai-chat-cloud-run-500: AI Chat Cloud Run 자유입력 응답 - 최종 성공 확인 (completed 1회, last QA-20260310-0089)
 - ai-chat-cloud-run-rate-limit-production: Complex Cloud Run AI verification path should complete without rate-limit failure in production (completed 1회, last QA-20260405-0242)
+- ai-chat-detail-expand: AI Chat 상세 분석 펼치기 (completed 1회, last QA-20260407-0248)
 - ai-chat-empty-response: AI Chat 서버 상태 요약 질문에 빈 응답 반환 (completed 1회, last QA-20260315-0100)
 - ai-chat-latency-regression-recheck-20260310: AI Chat latency regression claim rechecked on production (completed 1회, last QA-20260310-0071)
 - ai-chat-pass: AI Chat 응답 품질 정상 (OTel 데이터 기반 분석) (completed 1회, last QA-20260326-0190)
@@ -386,6 +385,7 @@ Latest run: QA-20260406-0247 (2026-04-06T14:32:16.188Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260407-0248 | 2026-04-07T03:31:27.352Z | targeted | no | no | Vercel Playwright QA - AI response process visibility verification | 7 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260406-0247 | 2026-04-06T14:32:16.188Z | targeted | no | no | Vercel targeted QA - v8.10.10 production smoke after release guard hardening | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260406-0246 | 2026-04-06T10:57:23.899Z | broad | yes | yes | Playwright MCP Production QA - Frontend + AI Assistant v8.10.9 broad baseline refresh | 13 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260406-0245 | 2026-04-06T10:33:12.537Z | targeted | no | no | Vercel targeted QA - latest production smoke refresh after GitLab-first topology cleanup | 9 | 0 | 0 | 0 | 0 | 0 |
@@ -405,5 +405,3 @@ Latest run: QA-20260406-0247 (2026-04-06T14:32:16.188Z)
 | QA-20260405-0231 | 2026-04-04T15:47:24.010Z | targeted | no | yes | Vercel production re-verification after snapshot sync | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260405-0230 | 2026-04-04T15:12:26.849Z | targeted | no | yes | Vercel production deployment health check after gitlab sync | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260404-0229 | 2026-04-04T14:29:25.205Z | release-gate | yes | yes | Vercel Production Broad Release-Gate QA - core routes + dashboard + AI stream parity | 17 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260404-0228 | 2026-04-04T14:20:17.892Z | targeted | no | yes | Vercel targeted QA - modal/detail pack and AI advanced surface | 18 | 0 | 0 | 0 | 0 | 0 |
-

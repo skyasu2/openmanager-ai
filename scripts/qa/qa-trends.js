@@ -701,7 +701,7 @@ function qaTrendsMarkdown(snapshot) {
   lines.push('- Deferred / Wont-Fix 는 추세에서 별도 표기하되 regression rate 계산에는 포함하지 않는다.');
   lines.push('');
 
-  return `${lines.join('\n')}\n`;
+  return `${lines.join('\n').trimEnd()}\n`;
 }
 
 function writeQaTrendArtifacts({

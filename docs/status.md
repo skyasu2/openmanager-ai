@@ -22,6 +22,13 @@
 
 ## 🔄 Recent Changes
 
+- **main** (2026-04-07)
+  - refactor(types): `type-check:changed` correctness 정리, `common.ts` unused export 1차 정리, `server/*` SSOT alias/summary/entity/re-export 구조 단순화
+  - build(deps): root patch package 업그레이드 적용 (`@supabase/*`, `@opentelemetry/sdk-node`, `@types/node`, `rollup`)
+  - build(ts): TypeScript 6 준비용 `tsconfig.json` `types: ["node"]` 선행 반영
+  - build(dev): `knip` `6.0.5` 전환 + parser 기준 unused server/api export 정리
+  - qa: production AI sidebar에서 `분석 근거 → 응답 과정 → trace id → 도구 결과 요약 → handoff path` 노출 targeted 검증 기록 (`QA-20260407-0248`)
+
 - **v8.10.10** (2026-04-06)
   - chore(release): v8.10.10 릴리즈 — targeted production smoke QA pass (8/8)
   - fix(docs): qa report markdown lint + evidence path 표준화

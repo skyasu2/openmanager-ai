@@ -134,8 +134,9 @@ function statusMarkdown(tracker) {
     lines.push('| - | - | - | - |');
   } else {
     for (const link of latestRunLinks) {
+      const linkText = link.label || link.type || 'external link';
       lines.push(
-        `| ${link.type || 'general'} | ${link.label || '-'} | [link](${link.url}) | ${link.note || '-'} |`
+        `| ${link.type || 'general'} | ${link.label || '-'} | [${linkText}](${link.url}) | ${link.note || '-'} |`
       );
     }
   }
@@ -149,7 +150,7 @@ function statusMarkdown(tracker) {
   } else {
     for (const artifact of latestRunArtifacts) {
       const location = artifact.url
-        ? `[link](${artifact.url})`
+        ? `[${artifact.label || artifact.type || 'artifact'}](${artifact.url})`
         : artifact.path
           ? `\`${artifact.path}\``
           : '-';
@@ -241,7 +242,7 @@ function statusMarkdown(tracker) {
   }
   lines.push('');
 
-  return `${lines.join('\n')}\n`;
+  return `${lines.join('\n').trimEnd()}\n`;
 }
 
 module.exports = {
