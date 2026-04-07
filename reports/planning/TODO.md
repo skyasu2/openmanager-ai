@@ -1,12 +1,12 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-07 KST (v8.10.10, common.ts 미사용 타입 18개 1차 정리 완료)
+**Last Updated**: 2026-04-07 KST (v8.10.11 진행 중, 타입 시스템 정제 및 인프라 최적화 Phase 2 active)
 
 ## Active Tasks
 
 | Task | Priority | Status |
 |------|----------|--------|
-| 진행 중 항목 없음 | - | - |
+| [P2: 타입 시스템 정제 및 인프라 최적화 (Phase 2)](./type-system-refinement-plan.md) | High | In-Progress (Step 1 correctness review + Step 2 준비) |
 
 ## On Hold
 
@@ -19,6 +19,10 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | P3: Knip unused export types 정리 (잔여) | Low | `src/types/common.ts` 1차 정리 후 남은 미사용/재수출 후보 재점검 필요. 현재 blocker 없음, 추가 잔여는 실제 참조 그래프 재확인 후 소단위로 정리. |
+
+### Completed (2026-04-07 #18)
+- [x] P2: `type-check:changed` 인프라 최적화 — `files: [...]` 스코프형 증분 체크 도입 (100s+ → 12s 단축), `PRESET_FILES` 공백 처리 버그 수정 (`709d88954`)
+- [x] P2: 서버 타입 통합 — `server-common.ts` 제거 후 `server/base.ts` 통합, 의존성 인디렉션 제거
 
 ### Completed (2026-04-07 #17)
 - [x] P3: `src/types/common.ts` 미사용 export 1차 정리 — 전역 참조 0회인 `CloudProvider`, `BaseService`, `BaseAlert`, `MetadataValue`, `ServerMetadata`, `ExtensibleMetadata`, `BaseServer`, `ApiErrorDetails`, `BaseApiResponse`, `TimeRange`, `FilterOptions`, `SortOptions`, `LogDataValue`, `LogData`, `ErrorContextValue`, `ErrorContext`, `DeepPartial`, `AnalysisDetail` 제거. 내부 전용 `isMetadataValue`/`_isLogData`/`_isErrorContext` 헬퍼도 함께 삭제.
