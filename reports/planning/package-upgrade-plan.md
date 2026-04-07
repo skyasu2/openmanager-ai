@@ -29,13 +29,13 @@
 
 ## 3. 단계별 실행 계획 (Steps)
 
-### Step 1: 안전한 패치 업그레이드 (진행 중)
+### Step 1: 안전한 패치 업그레이드 (완료)
 - [x] `@supabase/supabase-js`, `@supabase/ssr`, `@opentelemetry/sdk-node`, `rollup`, `@types/node` 업그레이드
 - [x] `ai` latest 재확인 (`6.0.145`, 추가 업그레이드 없음)
-- [ ] `npm run type-check`
-- [ ] `npm run lint`
-- [ ] `npm run test:quick`
-- [ ] 필요 시 `npm run test:contract`
+- [x] `npm run type-check`
+- [x] `npm run lint`
+- [x] `npm run test:quick`
+- [x] 필요 시 `npm run test:contract`
 
 ### Step 2: Storybook minor 업그레이드
 - [ ] `npx storybook@latest upgrade`
@@ -49,7 +49,7 @@
 - [ ] parser 전환에 따른 config/false positive 점검
 
 ### Step 4: TypeScript 6 준비 및 업그레이드
-- [ ] `tsconfig.json`에 `types: ["node"]` 선행 추가
+- [x] `tsconfig.json`에 `types: ["node"]` 선행 추가
 - [ ] `npm install -D typescript@latest`
 - [ ] `npm run type-check`
 - [ ] `npm run test:quick`
@@ -69,6 +69,6 @@
 - **Supabase 패키지군**: peer dependency 호환성은 우선 패치 업그레이드 범위에서 확인한다.
 
 ## 5. 현재 상태
-- **상태**: In Progress (Step 1 적용 완료, smoke 검증 중)
+- **상태**: In Progress (Step 1 완료, Step 4 준비 완료)
 - **담당**: AI Agent
 - **실행 시점**: 현재 진행 중

@@ -1,13 +1,13 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-07 KST (v8.10.11 진행 중, 타입 시스템 정제 Step 3 준비 + 패키지 업그레이드 Step 1 진행)
+**Last Updated**: 2026-04-07 KST (v8.10.11 진행 중, 타입 시스템 정제 Step 3 준비 + 패키지 업그레이드 Step 4 준비)
 
 ## Active Tasks
 
 | Task | Priority | Status |
 |------|----------|--------|
 | [P2: 타입 시스템 정제 및 인프라 최적화 (Phase 2)](./type-system-refinement-plan.md) | High | In-Progress (Step 3 준비) |
-| [P2: 패키지 기술 부채 업그레이드](./package-upgrade-plan.md) | High | In-Progress (Step 1 smoke 검증 중) |
+| [P2: 패키지 기술 부채 업그레이드](./package-upgrade-plan.md) | High | In-Progress (Step 4 준비) |
 
 ## On Hold
 
@@ -23,6 +23,9 @@
 
 ### Completed (2026-04-07 #23)
 - [x] P2: 루트 앱 안전한 patch 업그레이드 적용 — `@supabase/supabase-js` `2.97.0→2.101.1`, `@supabase/ssr` `0.8.0→0.9.0`, `@opentelemetry/sdk-node` `0.212.0→0.214.0`, `@types/node` `25.5.0→25.5.2`, `rollup` `4.53.5→4.59.0` 반영. `ai`는 npm registry 기준 `6.0.145`가 latest라 유지.
+
+### Completed (2026-04-07 #24)
+- [x] P2: TypeScript 6 사전 준비 — root `tsconfig.json`에 `types: ["node"]`를 선행 반영해 TS6 기본 `@types/*` 포함 정책 변경에 대비. TS 자체 업그레이드는 Step 4에서 별도 수행.
 
 ### Completed (2026-04-07 #22)
 - [x] P2: `server-enums` SSOT 정렬 — `src/types/server/types.ts`를 canonical enum passthrough로 단순화하고, `src/types/server/entities.ts`의 환경/역할 필드를 공통 scope로 정렬. `src/types/server/index.ts`도 base/core export 경계를 정리해 Step 2 서버 타입 SSOT 항목 마감.
