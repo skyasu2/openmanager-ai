@@ -58,6 +58,26 @@ describe('AnalysisBasisBadge', () => {
     expect(screen.getByText('redis.io')).toBeInTheDocument();
   });
 
+  it('renders a concise collapsed summary before expansion', () => {
+    render(
+      <AnalysisBasisBadge
+        basis={{
+          ...basis,
+          dataSource: '서버 실시간 데이터 분석',
+          toolsCalled: ['filterServers', 'getServerMetrics'],
+          timeRange: '최근 1시간',
+        }}
+      />
+    );
+
+    expect(
+      screen.getByText(
+        '데이터: 서버 실시간 데이터 분석 · 도구: 서버 필터링 외 1 · 기간: 최근 1시간'
+      )
+    ).toBeInTheDocument();
+    expect(screen.queryByText('응답 과정')).not.toBeInTheDocument();
+  });
+
   it('renders supplemental parity details when provided', () => {
     render(
       <AnalysisBasisBadge
