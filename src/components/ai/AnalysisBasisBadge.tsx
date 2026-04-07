@@ -100,10 +100,11 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
     Boolean(thinkingSteps && thinkingSteps.length > 0) ||
     Boolean(handoffHistory && handoffHistory.length > 0) ||
     Boolean(toolResultSummaries && toolResultSummaries.length > 0);
+  const firstMeaningfulTool = meaningfulTools?.[0];
   const collapsedSummaryParts = [
     basis.dataSource ? `데이터: ${basis.dataSource}` : null,
-    meaningfulTools && meaningfulTools.length > 0
-      ? `도구: ${getToolLabel(meaningfulTools[0])}${meaningfulTools.length > 1 ? ` 외 ${meaningfulTools.length - 1}` : ''}`
+    firstMeaningfulTool
+      ? `도구: ${getToolLabel(firstMeaningfulTool)}${meaningfulTools.length > 1 ? ` 외 ${meaningfulTools.length - 1}` : ''}`
       : null,
     basis.timeRange ? `기간: ${basis.timeRange}` : null,
     basis.engine ? `엔진: ${basis.engine}` : null,
