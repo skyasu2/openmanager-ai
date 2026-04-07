@@ -213,6 +213,33 @@ Storybook static build는 성공했지만 `vite-inject-mocker-entry.js`가 약 `
 
 ---
 
+## Task 8: `src/types/common.ts` 잔여 unused type 정리
+
+**상태**: 완료
+
+**우선순위**: P3 | **예상 규모**: 소
+
+### 배경
+
+`src/types/common.ts`는 1차 정리 이후에도 몇 개의 미사용 export와 중앙 경유 re-export가 남아 있었다.
+현재 실제 사용은 `ServiceStatus`, `ServerStatus`, `AlertSeverity` 중심으로 수렴해 있어, 추가 축소가 가능한 상태였다.
+
+### 완료 결과
+
+1. unused export 제거
+   `Environment`, `ServerType`, `PaginationInfo`, `LogLevel` 삭제
+2. unused re-export 제거
+   `ServerMetrics` 경유 re-export 삭제
+3. 안전성 검증
+   실제 남은 참조(`ServiceStatus`, `ServerStatus`, `AlertSeverity`)를 유지한 상태에서 `npm run type-check`, `npm run lint` 통과
+
+### 완료 기준
+
+- `common.ts`가 실제 공통 타입만 남긴 최소 표면으로 축소
+- 타입체크/린트 통과
+
+---
+
 ## Task 4: Storybook 10.3.x stable 추적 (보류)
 
 **우선순위**: P3 | **상태**: 대기
@@ -229,5 +256,4 @@ stable로 전환되면 다음 항목을 함께 처리:
 
 | 순서 | Task | 이유 |
 |------|------|------|
-| 1 | **Task 4** (Storybook 10.3) | large chunk warning 정리가 닫혔으므로 다음 Storybook 후속은 stable 전환 추적 |
-| 2 | `src/types/common.ts` 잔여 unused type 정리 | blocker는 아니지만 타입 표면 정리 차원에서 다음 소단위 후보 |
+| 1 | **Task 4** (Storybook 10.3) | `2026-04-07` 기준 npm stable은 여전히 `10.2.10`, `10.3`는 `next=10.3.0-alpha.6`라서 채널 전환 시점만 추적하면 됨 |

@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-07 KST (Storybook large chunk warning 정리 완료)
+**Last Updated**: 2026-04-07 KST (`src/types/common.ts` 잔여 unused type 정리 완료)
 
 ## Active Tasks
 
@@ -18,8 +18,11 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| P3: Knip unused export types 정리 (잔여) | Low | `src/types/common.ts` 1차 정리 후 남은 미사용/재수출 후보 재점검 필요. 현재 blocker 없음, 추가 잔여는 실제 참조 그래프 재확인 후 소단위로 정리. |
 | P3: Storybook `experimentalComponentsManifest` stable 승격 여부 재확인 | Low | npm registry stable이 아직 `10.2.10`이라 보류. `10.3.x`가 stable dist-tag로 올라온 뒤 `.storybook/main.ts` feature flag 재검토. |
+
+### Completed (2026-04-07 #38)
+- [x] P3: `src/types/common.ts` 잔여 unused type 정리 — 실참조가 없는 `Environment`, `ServerType`, `PaginationInfo`, `LogLevel`와 미사용 `ServerMetrics` 경유 re-export 제거.
+- [x] P3: 안전성 재검증 — 실제 참조(`ServiceStatus`, `ServerStatus`, `AlertSeverity`) 유지 상태에서 `npm run type-check`, `npm run lint` 통과.
 
 ### Completed (2026-04-07 #37)
 - [x] P3: Storybook large chunk warning 정리 — `.storybook/main.ts`의 `chunkSizeWarningLimit`를 Storybook-generated `vite-inject-mocker-entry.js` 실제 산출 크기(약 `1.52 MB`) 기준으로 `1600`으로 상향해 build 로그의 false-positive large chunk warning 제거.

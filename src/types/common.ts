@@ -25,38 +25,3 @@ export type { ServerStatus };
 
 // 알림 심각도 타입
 export type AlertSeverity = 'info' | 'warning' | 'critical';
-
-// 환경 타입
-export type Environment = 'production' | 'staging' | 'development';
-
-// 서버 타입
-export type ServerType =
-  | 'web'
-  | 'database'
-  | 'api'
-  | 'cache'
-  | 'storage'
-  | 'gateway'
-  | 'worker'
-  | 'monitoring'
-  | 'mail'
-  | 'proxy'
-  | 'analytics'
-  | 'ci_cd'
-  | 'security';
-
-// 서버 메트릭은 중앙화된 타입 시스템에서 가져옴
-export type { ServerMetrics } from '@/lib/core/types';
-
-// 페이지네이션 정보
-export interface PaginationInfo {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-  hasNext: boolean;
-  hasPrev: boolean;
-}
-
-// 로그 레벨 타입
-export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
