@@ -8,6 +8,7 @@
 #   ./scripts/release/publish.sh minor     # force minor
 #   ./scripts/release/publish.sh major     # force major
 #   RELEASE_VERIFY_PRODUCTION=false ./scripts/release/publish.sh patch
+#   RELEASE_VERIFY_RETRIES=80 RELEASE_VERIFY_DELAY_MS=15000 ./scripts/release/publish.sh patch
 #   DRY_RUN=1 ./scripts/release/publish.sh # preview only
 
 set -euo pipefail
@@ -18,9 +19,15 @@ CANONICAL_REMOTE="${CANONICAL_REMOTE:-gitlab}"
 RELEASE_REQUIRE_DEPLOYED_BASE="${RELEASE_REQUIRE_DEPLOYED_BASE:-true}"
 RELEASE_VERIFY_PRODUCTION="${RELEASE_VERIFY_PRODUCTION:-true}"
 RELEASE_VERIFY_URL="${RELEASE_VERIFY_URL:-https://openmanager-ai.vercel.app}"
-RELEASE_VERIFY_RETRIES="${RELEASE_VERIFY_RETRIES:-20}"
+RELEASE_VERIFY_RETRIES="${RELEASE_VERIFY_RETRIES:-80}"
 RELEASE_VERIFY_DELAY_MS="${RELEASE_VERIFY_DELAY_MS:-15000}"
 RELEASE_VERIFY_TIMEOUT_MS="${RELEASE_VERIFY_TIMEOUT_MS:-8000}"
+
+verification_window_minutes() {
+  node -p "((Number(process.argv[1]) * Number(process.argv[2])) / 60000).toFixed(1)" \
+    "$RELEASE_VERIFY_RETRIES" \
+    "$RELEASE_VERIFY_DELAY_MS"
+}
 
 require_current_release_deployed() {
   local version="$1"
@@ -72,6 +79,7 @@ run_post_release_verification() {
   fi
 
   echo "🌐 Production 배포 검증 중... (${RELEASE_VERIFY_URL}, expected=${version})"
+  echo "   verification window: ~$(verification_window_minutes)m (${RELEASE_VERIFY_RETRIES} x ${RELEASE_VERIFY_DELAY_MS}ms)"
   if node scripts/test/vercel-post-deploy-smoke.mjs \
     --url="${RELEASE_VERIFY_URL}" \
     --expected-version="${version}" \
@@ -85,6 +93,8 @@ run_post_release_verification() {
   echo "❌ Production verification failed for ${tag}."
   echo "   Canonical commit/tag push는 완료됐지만, production version mismatch 또는 deploy failure가 남아 있습니다."
   echo "   Next: inspect the GitLab tag pipeline trace and the Vercel production deploy."
+  echo "   If the tag pipeline is simply slower than the local verification window, rerun with:"
+  echo "   RELEASE_VERIFY_RETRIES=120 RELEASE_VERIFY_DELAY_MS=15000 ./scripts/release/publish.sh ${RELEASE_TYPE:-patch}"
   echo "   First check whether the semver tag pattern is protected in GitLab so protected CI variables"
   echo "   (for example VERCEL_TOKEN, GCP_SERVICE_KEY, GCP_PROJECT_ID) are exposed on tag pipelines."
   echo "   If the tag pipeline already exists, fix the settings and retry that failed GitLab job/pipeline."
