@@ -51,6 +51,8 @@ run_post_release_verification() {
   echo "❌ Production verification failed for ${tag}."
   echo "   Canonical commit/tag push는 완료됐지만, production version mismatch 또는 deploy failure가 남아 있습니다."
   echo "   Next: inspect the GitLab tag pipeline trace and the Vercel production deploy."
+  echo "   First check whether the semver tag pattern is protected in GitLab so protected CI variables"
+  echo "   (for example VERCEL_TOKEN, GCP_SERVICE_KEY, GCP_PROJECT_ID) are exposed on tag pipelines."
   return 1
 }
 

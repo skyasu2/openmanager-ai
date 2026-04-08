@@ -10,12 +10,17 @@
 ```
 git push gitlab main (코드 변경 포함)
     ↓
-GitLab CI 트리거
-    ├── Stage 1: validate (type-check + lint + test:quick)
-    │     └── tags: [wsl2-docker] → self-hosted runner 0분 소진
-    │           WSL2 runner 미가동 시 → pending (자동 폴백 없음)
-    └── Stage 2: deploy (vercel build + deploy) ~4분  ← validate 성공 시만
-          └── tags 없음 → shared runner 항상 가용
+GitLab CI main pipeline 트리거
+    └── Stage 1: validate (type-check + lint + test:quick)
+          └── tags: [wsl2-docker] → self-hosted runner 0분 소진
+
+git push --follow-tags gitlab main (release tag 포함)
+    ↓
+GitLab CI semver tag pipeline 트리거
+    ├── Stage 2: deploy (vercel build + deploy)
+    ├── Stage 3: deploy_ai (cloud-run/ai-engine)
+    └── Stage 4: smoke
+          └── tags: [wsl2-docker] → self-hosted runner 0분 소진
 ```
 
 docs/reports/QA 아티팩트 전용 push → CI 스킵 (분 소진 없음)
@@ -114,7 +119,7 @@ HUSKY=0 git push gitlab main   # hook 스킵 (긴급 시)
 
 ## Phase 2: WSL2 Self-hosted Runner 설정 (분 소진 0)
 
-> 목적: validate job을 WSL2 로컬 Docker로 실행 → shared runner 분 소진 없음
+> 목적: GitLab CI job을 WSL2 shell runner로 실행 → shared runner 분 소진 없음
 > 환경: Ubuntu 24.04 LTS + systemd + Docker Desktop WSL2 integration
 
 ### Step 5: GitLab Runner 토큰 발급
@@ -137,7 +142,7 @@ bash scripts/ci/setup-gitlab-runner.sh glrt-xxxxxxxxxxxx
 
 스크립트가 자동으로 수행:
 1. gitlab-runner 설치 (apt)
-2. Docker executor로 runner 등록
+2. shell executor로 runner 등록
 3. systemd 서비스 등록 및 시작
 4. GitLab 연결 verify
 
@@ -166,9 +171,9 @@ git push gitlab main
 
 | 상황 | validate | deploy | 분 소진 |
 |------|----------|--------|:------:|
-| WSL2 가동 중 | self-hosted (0분) | shared (~4분) | ~4분 |
-| WSL2 꺼짐 | pending (대기) | 실행 안 됨 | 0분 |
-| shared 전환 원할 때 | `.gitlab-ci.yml` tags 제거 | shared (~4분) | ~7분 |
+| WSL2 가동 중 | self-hosted (0분) | self-hosted (0분) | 0분 |
+| WSL2 꺼짐 | pending (대기) | tag pipeline pending 또는 직접 배포 fallback 필요 | 0분 |
+| 긴급 직접 배포 | validate 없음 | `vercel --prod` | GitLab 0분 |
 
 > WSL2가 꺼진 상태에서 push하면 validate job이 runner를 기다리며 pending 상태가 됩니다.
-> 이 경우 `.gitlab-ci.yml`에서 `tags:` 블록을 제거하고 push하면 shared runner가 즉시 실행합니다.
+> 릴리즈 tag 배포에서 protected 변수를 쓰려면 GitLab protected tags에 `v*.*.*`를 함께 등록해야 합니다.

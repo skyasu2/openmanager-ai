@@ -197,6 +197,8 @@ stages:
     if [ -z "${GCP_SERVICE_KEY:-}" ]; then
       echo "❌ Missing required GitLab CI variable: GCP_SERVICE_KEY"
       echo "   Add the base64-encoded service account JSON in GitLab → Settings → CI/CD → Variables."
+      echo "   If this is a semver tag pipeline, protect the tag pattern (for example: v*.*.*)"
+      echo "   so protected variables are exposed to the release tag as well."
       exit 1
     fi
     if [ -z "${GCP_PROJECT_ID:-}" ]; then
@@ -258,6 +260,8 @@ deploy:
       if [ -z "${VERCEL_TOKEN:-}" ]; then
         echo "❌ Missing required GitLab CI variable: VERCEL_TOKEN"
         echo "   Add it in GitLab → Settings → CI/CD → Variables before running deploy."
+        echo "   If this is a semver tag pipeline, protect the tag pattern (for example: v*.*.*)"
+        echo "   so protected variables are exposed to the release tag as well."
         exit 1
       fi
     - npm install -g vercel@50 --no-audit --silent  # 버전 고정: 50.x (breaking change 방지)

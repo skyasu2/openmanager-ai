@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # GitLab Runner WSL2 셀프 호스트 설치 스크립트
-# 효과: validate job을 로컬 Docker로 실행 → GitLab.com shared runner 분 소진 0
+# 효과: GitLab CI job을 WSL2 shell runner로 실행 → GitLab.com shared runner 분 소진 0
 #
 # 사전 조건:
-#   - Docker Desktop (WSL2 integration 활성)
+#   - WSL2 Ubuntu + systemd
 #   - GitLab project → Settings → CI/CD → Runners → "New project runner" 에서 토큰 발급
 #
 # 사용법:
@@ -18,7 +18,6 @@ set -euo pipefail
 
 RUNNER_NAME="${RUNNER_NAME:-wsl2-docker}"
 RUNNER_TAGS="${RUNNER_TAGS:-wsl2-docker}"
-RUNNER_IMAGE="${RUNNER_IMAGE:-node:24-bookworm}"
 GITLAB_URL="${GITLAB_URL:-https://gitlab.com}"
 REGISTRATION_TOKEN="${1:-}"
 
@@ -26,11 +25,11 @@ log()   { echo "[setup-gitlab-runner] $*"; }
 error() { echo "[setup-gitlab-runner] ERROR: $*" >&2; exit 1; }
 
 check_prerequisites() {
-  command -v docker >/dev/null 2>&1 \
-    || error "Docker not found. Start Docker Desktop and enable WSL integration."
-  docker info >/dev/null 2>&1 \
-    || error "Docker daemon not running."
-  log "✓ Docker: OK"
+  if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
+    log "✓ Docker: OK (local Docker CI / deploy fallback available)"
+  else
+    log "⚠ Docker unavailable. Runner registration continues, but local Docker CI / deploy fallback는 별도 복구가 필요합니다."
+  fi
 
   if [ -z "$REGISTRATION_TOKEN" ]; then
     log ""
@@ -77,12 +76,9 @@ register_runner() {
     --non-interactive \
     --url "$GITLAB_URL" \
     --token "$REGISTRATION_TOKEN" \
-    --executor docker \
-    --docker-image "$RUNNER_IMAGE" \
+    --executor shell \
     --description "$RUNNER_NAME" \
     --tag-list "$RUNNER_TAGS" \
-    --docker-volumes "/cache" \
-    --docker-pull-policy "if-not-present" \
     --run-untagged=false \
     --locked=false
 
@@ -125,13 +121,14 @@ print_summary() {
   log "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   log "  Runner:   $RUNNER_NAME"
   log "  Tags:     $RUNNER_TAGS"
-  log "  Executor: docker ($RUNNER_IMAGE)"
+  log "  Executor: shell"
   log "  Service:  systemd (자동 시작)"
   log ""
   log "다음 단계:"
   log "  1. git push gitlab main  (코드 변경 포함)"
-  log "  2. GitLab 파이프라인에서 validate job이 wsl2-docker runner로 실행 확인"
-  log "  3. validate: 0분 소진 / deploy: ~4분 소진 (shared runner)"
+  log "  2. GitLab 파이프라인에서 validate/deploy job이 wsl2-docker runner로 실행 확인"
+  log "  3. semver tag(v*.*.*) deploy를 쓰면 GitLab protected tags에도 같은 패턴 등록"
+  log "  4. current policy: validate/deploy/smoke 모두 self-hosted runner 0분 소진"
   log ""
   log "서비스 관리:"
   log "  sudo systemctl status gitlab-runner"
