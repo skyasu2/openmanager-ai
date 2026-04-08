@@ -1,107 +1,98 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-07T03:37:27.619Z",
-  "generatedAtKst": "2026-04-07 12:37:27 KST",
-  "trackerUpdatedAt": "2026-04-07T03:31:27.352Z",
+  "generatedAt": "2026-04-08T03:14:34.666Z",
+  "generatedAtKst": "2026-04-08 12:14:34 KST",
+  "trackerUpdatedAt": "2026-04-08T01:31:37.341Z",
   "totals": {
-    "recordedRuns": 247,
-    "countedRuns": 231,
-    "totalChecks": 1791,
-    "totalPassed": 1721,
-    "totalFailed": 64,
-    "overallPassRatePct": 96.09,
-    "latestRecordedRunId": "QA-20260407-0248",
-    "lastCountedRunId": "QA-20260406-0246"
+    "recordedRuns": 251,
+    "countedRuns": 235,
+    "totalChecks": 1828,
+    "totalPassed": 1756,
+    "totalFailed": 66,
+    "overallPassRatePct": 96.06,
+    "latestRecordedRunId": "QA-20260408-0252",
+    "lastCountedRunId": "QA-20260408-0252"
   },
   "windows": [
     {
       "label": "All Counted Runs",
-      "recordedRuns": 231,
-      "countedRuns": 231,
-      "totalChecks": 1791,
-      "totalPassed": 1721,
-      "totalFailed": 64,
-      "passRatePct": 96.09,
-      "failingRunCount": 40,
-      "failingRunRatePct": 17.32,
-      "regressionRunCount": 45,
-      "regressionRunRatePct": 19.48,
-      "pendingRunCount": 34,
-      "releaseFacingRuns": 20
+      "recordedRuns": 235,
+      "countedRuns": 235,
+      "totalChecks": 1828,
+      "totalPassed": 1756,
+      "totalFailed": 66,
+      "passRatePct": 96.06,
+      "failingRunCount": 41,
+      "failingRunRatePct": 17.45,
+      "regressionRunCount": 46,
+      "regressionRunRatePct": 19.57,
+      "pendingRunCount": 35,
+      "releaseFacingRuns": 21
     },
     {
       "label": "Last 30 Counted Runs",
       "recordedRuns": 30,
       "countedRuns": 30,
-      "totalChecks": 304,
-      "totalPassed": 302,
-      "totalFailed": 2,
-      "passRatePct": 99.34,
-      "failingRunCount": 2,
-      "failingRunRatePct": 6.67,
-      "regressionRunCount": 2,
-      "regressionRunRatePct": 6.67,
-      "pendingRunCount": 2,
-      "releaseFacingRuns": 11
+      "totalChecks": 316,
+      "totalPassed": 312,
+      "totalFailed": 4,
+      "passRatePct": 98.73,
+      "failingRunCount": 3,
+      "failingRunRatePct": 10,
+      "regressionRunCount": 3,
+      "regressionRunRatePct": 10,
+      "pendingRunCount": 3,
+      "releaseFacingRuns": 12
     },
     {
       "label": "Last 10 Counted Runs",
       "recordedRuns": 10,
       "countedRuns": 10,
-      "totalChecks": 111,
-      "totalPassed": 111,
-      "totalFailed": 0,
-      "passRatePct": 100,
-      "failingRunCount": 0,
-      "failingRunRatePct": 0,
-      "regressionRunCount": 0,
-      "regressionRunRatePct": 0,
-      "pendingRunCount": 0,
+      "totalChecks": 108,
+      "totalPassed": 106,
+      "totalFailed": 2,
+      "passRatePct": 98.15,
+      "failingRunCount": 1,
+      "failingRunRatePct": 10,
+      "regressionRunCount": 1,
+      "regressionRunRatePct": 10,
+      "pendingRunCount": 1,
       "releaseFacingRuns": 5
     }
   ],
   "gateWindows": [
     {
       "label": "All Gate Runs",
-      "recordedRuns": 15,
-      "countedRuns": 15,
-      "totalChecks": 208,
-      "totalPassed": 204,
-      "totalFailed": 2,
-      "passRatePct": 98.08,
-      "failingRunCount": 2,
-      "failingRunRatePct": 13.33,
-      "regressionRunCount": 2,
-      "regressionRunRatePct": 13.33,
-      "pendingRunCount": 2,
-      "releaseFacingRuns": 14
+      "recordedRuns": 16,
+      "countedRuns": 16,
+      "totalChecks": 226,
+      "totalPassed": 220,
+      "totalFailed": 4,
+      "passRatePct": 97.35,
+      "failingRunCount": 3,
+      "failingRunRatePct": 18.75,
+      "regressionRunCount": 3,
+      "regressionRunRatePct": 18.75,
+      "pendingRunCount": 3,
+      "releaseFacingRuns": 15
     },
     {
       "label": "Last 5 Gate Runs",
       "recordedRuns": 5,
       "countedRuns": 5,
-      "totalChecks": 74,
-      "totalPassed": 74,
-      "totalFailed": 0,
-      "passRatePct": 100,
-      "failingRunCount": 0,
-      "failingRunRatePct": 0,
-      "regressionRunCount": 0,
-      "regressionRunRatePct": 0,
-      "pendingRunCount": 0,
+      "totalChecks": 75,
+      "totalPassed": 73,
+      "totalFailed": 2,
+      "passRatePct": 97.33,
+      "failingRunCount": 1,
+      "failingRunRatePct": 20,
+      "regressionRunCount": 1,
+      "regressionRunRatePct": 20,
+      "pendingRunCount": 1,
       "releaseFacingRuns": 5
     }
   ],
   "recentGateRuns": [
-    {
-      "runId": "QA-20260404-0229",
-      "scope": "release-gate",
-      "releaseFacing": true,
-      "title": "Vercel Production Broad Release-Gate QA - core routes + dashboard + AI stream parity",
-      "failedChecks": 0,
-      "pendingCount": 0,
-      "deferredCount": 0
-    },
     {
       "runId": "QA-20260405-0235",
       "scope": "release-gate",
@@ -136,6 +127,15 @@
       "title": "Playwright MCP Production QA - Frontend + AI Assistant v8.10.9 broad baseline refresh",
       "failedChecks": 0,
       "pendingCount": 0,
+      "deferredCount": 0
+    },
+    {
+      "runId": "QA-20260407-0249",
+      "scope": "broad",
+      "releaseFacing": true,
+      "title": "Playwright MCP Production QA - Frontend + AI Assistant v8.11.0 broad baseline refresh",
+      "failedChecks": 2,
+      "pendingCount": 2,
       "deferredCount": 0
     }
   ],
@@ -217,13 +217,13 @@
     },
     {
       "scope": "targeted",
-      "totalRuns": 92,
-      "countedRuns": 77
+      "totalRuns": 95,
+      "countedRuns": 80
     },
     {
       "scope": "broad",
-      "totalRuns": 12,
-      "countedRuns": 11
+      "totalRuns": 13,
+      "countedRuns": 12
     },
     {
       "scope": "release-gate",
@@ -261,13 +261,13 @@
     },
     {
       "priority": "P2",
-      "totalItems": 109,
-      "recurringItems": 36,
+      "totalItems": 112,
+      "recurringItems": 37,
       "openItems": 0,
       "openRecurringItems": 0,
-      "completedItems": 101,
+      "completedItems": 104,
       "wontFixItems": 8,
-      "recurrenceRatePct": 33.03,
+      "recurrenceRatePct": 33.04,
       "openRecurrenceRatePct": 0
     },
     {
@@ -283,6 +283,34 @@
     }
   ],
   "deploymentCorrelation": [
+    {
+      "deploymentId": "dpl_HsUxVfvpeXApZu25dEY4WNrQrcoy",
+      "target": "vercel-production",
+      "commitSha": "f515817de711935b5959176a73b9d615737d7b0d",
+      "runCount": 1,
+      "totalChecks": 6,
+      "totalFailed": 0,
+      "regressionRuns": 0,
+      "failingRuns": 0,
+      "latestRecordedAt": "2026-04-07T22:47:01.025Z",
+      "latestRunId": "QA-20260408-0250",
+      "passRatePct": 100,
+      "regressionRunRatePct": 0
+    },
+    {
+      "deploymentId": "dpl_7YFJku7zmAYHWwhF6FrizaLfHkKE",
+      "target": "vercel-production",
+      "commitSha": "8d537c7a8565cf6862dcb1e5df4ea214e964ee2e",
+      "runCount": 1,
+      "totalChecks": 18,
+      "totalFailed": 2,
+      "regressionRuns": 1,
+      "failingRuns": 1,
+      "latestRecordedAt": "2026-04-07T11:55:13.126Z",
+      "latestRunId": "QA-20260407-0249",
+      "passRatePct": 88.89,
+      "regressionRunRatePct": 100
+    },
     {
       "deploymentId": "dpl_EEf7zEdMXFGHWYqYSNMACmtXynQ8",
       "target": "vercel-production",
@@ -422,59 +450,9 @@
       "latestRunId": "QA-20260404-0222",
       "passRatePct": 92.31,
       "regressionRunRatePct": 100
-    },
-    {
-      "deploymentId": "dpl_v8108_20260402_targeted",
-      "target": "vercel-production",
-      "commitSha": "52b38df2e6ab1aa8e1ab4a4ce111099c631a66f7",
-      "runCount": 1,
-      "totalChecks": 10,
-      "totalFailed": 0,
-      "regressionRuns": 0,
-      "failingRuns": 0,
-      "latestRecordedAt": "2026-04-02T14:54:37.522Z",
-      "latestRunId": "QA-20260402-0217",
-      "passRatePct": 100,
-      "regressionRunRatePct": 0
-    },
-    {
-      "deploymentId": "dpl_v8108_20260402_2",
-      "target": "vercel-production",
-      "commitSha": "84c375ac517bd2aac6c56c4372883ad0f72b5a58",
-      "runCount": 1,
-      "totalChecks": 14,
-      "totalFailed": 0,
-      "regressionRuns": 0,
-      "failingRuns": 0,
-      "latestRecordedAt": "2026-04-02T12:41:23.224Z",
-      "latestRunId": "QA-20260402-0213",
-      "passRatePct": 100,
-      "regressionRunRatePct": 0
     }
   ],
   "recentDailyTrend": [
-    {
-      "date": "2026-03-23",
-      "runCount": 8,
-      "totalChecks": 33,
-      "totalPassed": 32,
-      "totalFailed": 1,
-      "failingRuns": 1,
-      "regressionRuns": 1,
-      "passRatePct": 96.97,
-      "regressionRunRatePct": 12.5
-    },
-    {
-      "date": "2026-03-24",
-      "runCount": 13,
-      "totalChecks": 61,
-      "totalPassed": 54,
-      "totalFailed": 7,
-      "failingRuns": 6,
-      "regressionRuns": 6,
-      "passRatePct": 88.52,
-      "regressionRunRatePct": 46.15
-    },
     {
       "date": "2026-03-25",
       "runCount": 4,
@@ -606,9 +584,41 @@
       "regressionRuns": 0,
       "passRatePct": 100,
       "regressionRunRatePct": 0
+    },
+    {
+      "date": "2026-04-07",
+      "runCount": 1,
+      "totalChecks": 18,
+      "totalPassed": 16,
+      "totalFailed": 2,
+      "failingRuns": 1,
+      "regressionRuns": 1,
+      "passRatePct": 88.89,
+      "regressionRunRatePct": 100
+    },
+    {
+      "date": "2026-04-08",
+      "runCount": 3,
+      "totalChecks": 19,
+      "totalPassed": 19,
+      "totalFailed": 0,
+      "failingRuns": 0,
+      "regressionRuns": 0,
+      "passRatePct": 100,
+      "regressionRunRatePct": 0
     }
   ],
   "recentRegressionRuns": [
+    {
+      "runId": "QA-20260407-0249",
+      "recordedAt": "2026-04-07T11:55:13.126Z",
+      "scope": "broad",
+      "title": "Playwright MCP Production QA - Frontend + AI Assistant v8.11.0 broad baseline refresh",
+      "failedChecks": 2,
+      "pendingCount": 2,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
     {
       "runId": "QA-20260404-0223",
       "recordedAt": "2026-04-04T11:06:01.219Z",
@@ -694,16 +704,6 @@
       "recordedAt": "2026-03-24T05:45:00.758Z",
       "scope": "targeted",
       "title": "Vercel Production QA - deferred parity metadata preserved but detail contract still incomplete",
-      "failedChecks": 1,
-      "pendingCount": 1,
-      "deferredCount": 0,
-      "wontFixCount": 0
-    },
-    {
-      "runId": "QA-20260324-0174",
-      "recordedAt": "2026-03-24T05:13:06.470Z",
-      "scope": "targeted",
-      "title": "Vercel Production QA - parity metadata after type-fix deploy",
       "failedChecks": 1,
       "pendingCount": 1,
       "deferredCount": 0,
@@ -917,5 +917,13 @@
       }
     ]
   },
-  "warnings": []
+  "warnings": [
+    {
+      "code": "gate-window-regression-open",
+      "severity": "warning",
+      "headline": "Recent gate runs still show regressions",
+      "detail": "The last 5 gate runs include 1 regression run(s), but the current release-gate-only window is clean. This warning is currently driven by QA-20260407-0249 (broad) lingering in the rolling gate window.",
+      "recommendedAction": "Treat this as historical gate context, not an active release-gate failure. Keep broad/release-gate QA green; the warning will clear once enough clean gate runs replace the older regression in the rolling window."
+    }
+  ]
 }

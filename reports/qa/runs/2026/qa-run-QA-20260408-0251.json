@@ -55,7 +55,28 @@
       "url": "https://vercel.com/dashboard"
     }
   ],
-  "artifacts": [],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Landing page before guest/system-start flow",
+      "path": "reports/qa/evidence/qa-20260408-landing-page.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Dashboard after system start",
+      "path": "reports/qa/evidence/qa-20260408-dashboard.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI sidebar alert prefill visible",
+      "path": "reports/qa/evidence/qa-20260408-alert-prefill-sidebar.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI streaming response success",
+      "path": "reports/qa/evidence/qa-20260408-ai-streaming-response.png"
+    }
+  ],
   "completedImprovements": [],
   "pendingImprovements": [],
   "deferredImprovements": [],

@@ -9,6 +9,9 @@ reports/qa/
 ├── QA_STATUS.md                    # 자동 생성 대시보드
 ├── qa-tracker.json                 # 누적 메타/요약/상태 SSOT
 ├── production-qa-2026-02-25.md     # 레거시 기준 리포트(참고)
+├── evidence/                       # run JSON artifacts에 연결된 durable evidence만 보관
+├── repro/
+│   └── YYYY/                       # post-mortem / 실패 재현용 보조 증거 아카이브
 ├── templates/
 │   └── qa-run-input.example.json   # 신규 QA 입력 템플릿
 └── runs/
@@ -23,6 +26,10 @@ reports/qa/
 - `scope`, `releaseFacing`, `coveragePacks`, `coveredSurfaces`, `skippedSurfaces`를 현재 QA 범위에 맞게 채운다.
 - Playwright/CI 증거가 있으면 `artifacts`에 `trace/report/screenshot/video`를 구조화해 남긴다.
 - `reports/qa/**/*.md` 변경은 `npm run docs:lint:changed` 검증 범위에 포함된다. QA 운영 문서를 바꿨다면 push 전에 함께 확인한다.
+- 증거 분류 기준:
+  - `reports/qa/evidence/...`: run JSON `artifacts[].path`에 직접 연결되는 durable evidence만 둔다.
+  - `reports/qa/repro/YYYY/...`: post-mortem, 실패 재현, 원인 분석 보조 증거를 둔다.
+  - scratch/local capture는 `.playwright-mcp/screenshots`, `test-results`, `/tmp` 같은 비추적 경로에 둔다.
 - `source`가 `playwright`, `playwright-cli`, `playwright-mcp` 계열이면 `qa:record`는 최근 Playwright artifact를 자동 수집한다.
 - 기본 디렉토리나 시간 창을 바꾸려면 `playwrightArtifacts.reportDir/resultsDir/screenshotsDir/recentMinutes/pathIncludes`를 입력 JSON에 명시한다.
 - 수동 MCP QA는 shared `.playwright-mcp/screenshots`를 쓰므로, run별 파일 prefix를 붙이고 `pathIncludes`로 함께 좁혀 fresh artifact only 원칙을 지킨다.
@@ -30,6 +37,10 @@ reports/qa/
 - release-facing/counting run에서 로컬 Playwright 결과를 증거로 남길 때는 먼저 `reports/qa/evidence/...`로 복사하거나 CI/Vercel URL로 전환한 뒤 기록한다.
 - release-facing/counting run의 로컬 evidence 파일명은 `qa-YYYYMMDD-<slug>.<ext>` 형식을 사용한다. 예: `reports/qa/evidence/qa-20260406-dashboard-landing.png`
 - release-facing/counting run에서는 이전 run에서 이미 기록한 동일 `artifact.path`를 재사용하지 않는다. 같은 surface를 다시 검증해도 새 slug 파일로 복사해 run별 증거를 분리한다.
+- 커밋 기준:
+  - `countsTowardSummary=true` 또는 `releaseFacing=true` run의 evidence는 run JSON `artifacts`에 연결된 파일만 커밋한다.
+  - non-counting supporting evidence도 커밋하려면 run JSON 또는 repro 문서에서 참조되어야 한다.
+  - 참조되지 않는 파일은 `reports/qa/evidence/`에 두지 않는다.
 - GitHub Actions `workflow_dispatch`로 실행한 `E2E Critical`은 성공해도 `playwright-report-${run_id}`, `playwright-results-${run_id}` artifact를 3일간 보존하므로, CI 기반 QA 증거 링크로 재사용할 수 있다.
 - 로컬 Playwright browser launch가 막히는 환경에서는 GitHub Actions `workflow_dispatch`의 `run_manual_feedback_trace_status=true`를 사용해 production feedback trace QA를 원격에서 실행하고, `manual-feedback-trace-report-${run_id}` / `manual-feedback-trace-results-${run_id}` artifact를 증거로 재사용한다.
 - CI 근거를 재사용할 때는 `ciEvidence`에 `workflowName`, `runId`, `artifacts[]`를 넣어 `GitHub Actions run/artifact` 링크를 표준 라벨로 자동 생성한다.
@@ -66,6 +77,7 @@ reports/qa/
 1. 요약 확인
 - `npm run qa:status`
 - `npm run qa:status -- --write`
+- `npm run qa:evidence:audit`
 - public snapshot까지 같이 반영하려면 `npm run qa:status -- --write --sync-public`
 - `reports/qa/QA_STATUS.md` 확인
 - `qa:status -- --write`는 `QA_STATUS.md`와 trend artifacts만 재생성한다.
@@ -154,6 +166,10 @@ reports/qa/
 - `qa:status`는 기본적으로 `qa-tracker.json`만 읽는 read-only 요약 명령입니다.
 - 대시보드를 수동으로 다시 맞출 때만 `npm run qa:status:sync` 또는 `npm run qa:status -- --write`를 사용합니다.
 - validation evidence snapshot은 stale `summary`를 그대로 신뢰하지 않고, `runs/items/experts` 기반으로 파생 필드를 self-heal한 뒤 다시 생성합니다.
+- `qa:evidence:audit`는 다음을 점검합니다.
+  - `reports/qa/evidence` 아래 고아 durable evidence
+  - run JSON이 참조하지만 실제 파일이 없는 artifact path
+  - counted run인데 artifacts가 비어 있는 historical debt warning
 
 ## Reporting Style
 

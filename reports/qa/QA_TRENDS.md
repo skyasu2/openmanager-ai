@@ -1,39 +1,39 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-04-07 12:37:27 KST
+> Generated at: 2026-04-08 12:14:34 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 247 |
-| Counted Runs | 231 |
-| Total Checks | 1791 |
-| Total Passed | 1721 |
-| Total Failed | 64 |
-| Overall Pass Rate | 96.09% |
-| Latest Recorded Run | QA-20260407-0248 |
-| Last Counted Run | QA-20260406-0246 |
+| Recorded Runs | 251 |
+| Counted Runs | 235 |
+| Total Checks | 1828 |
+| Total Passed | 1756 |
+| Total Failed | 66 |
+| Overall Pass Rate | 96.06% |
+| Latest Recorded Run | QA-20260408-0252 |
+| Last Counted Run | QA-20260408-0252 |
 
 ## Warnings
 
-- None
+- [warning] gate-window-regression-open: Recent gate runs still show regressions. The last 5 gate runs include 1 regression run(s), but the current release-gate-only window is clean. This warning is currently driven by QA-20260407-0249 (broad) lingering in the rolling gate window. Next: Treat this as historical gate context, not an active release-gate failure. Keep broad/release-gate QA green; the warning will clear once enough clean gate runs replace the older regression in the rolling window.
 
 ## Rolling Windows
 
 | Window | Counted Runs | Checks | Pass Rate | Failed Runs | Failing Run Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| All Counted Runs | 231 | 1791 | 96.09% | 40 | 17.32% | 45 | 19.48% |
-| Last 30 Counted Runs | 30 | 304 | 99.34% | 2 | 6.67% | 2 | 6.67% |
-| Last 10 Counted Runs | 10 | 111 | 100% | 0 | 0% | 0 | 0% |
+| All Counted Runs | 235 | 1828 | 96.06% | 41 | 17.45% | 46 | 19.57% |
+| Last 30 Counted Runs | 30 | 316 | 98.73% | 3 | 10% | 3 | 10% |
+| Last 10 Counted Runs | 10 | 108 | 98.15% | 1 | 10% | 1 | 10% |
 
 ## Gate Run Windows
 
 | Window | Counted Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|
-| All Gate Runs | 15 | 208 | 98.08% | 2 | 13.33% |
-| Last 5 Gate Runs | 5 | 74 | 100% | 0 | 0% |
+| All Gate Runs | 16 | 226 | 97.35% | 3 | 18.75% |
+| Last 5 Gate Runs | 5 | 75 | 97.33% | 1 | 20% |
 
 ## Release-Gate Only Windows
 
@@ -47,8 +47,8 @@
 | Scope | Recorded Runs | Counted Runs |
 |---|---:|---:|
 | legacy | 137 | 137 |
-| targeted | 92 | 77 |
-| broad | 12 | 11 |
+| targeted | 95 | 80 |
+| broad | 13 | 12 |
 | release-gate | 4 | 4 |
 | smoke | 2 | 2 |
 
@@ -58,13 +58,15 @@
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | P0 | 41 | 7 | 17.07% | 0 | 0 | 0% | 41 | 0 |
 | P1 | 126 | 60 | 47.62% | 0 | 0 | 0% | 122 | 4 |
-| P2 | 109 | 36 | 33.03% | 0 | 0 | 0% | 101 | 8 |
+| P2 | 112 | 37 | 33.04% | 0 | 0 | 0% | 104 | 8 |
 | P3 | 15 | 11 | 73.33% | 0 | 0 | 0% | 14 | 1 |
 
 ## Deployment Regression Correlation
 
 | Deployment ID | Target | Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate | Latest Run | Commit |
 |---|---|---:|---:|---:|---:|---:|---|---|
+| dpl_HsUxVfvpeXApZu25dEY4WNrQrcoy | vercel-production | 1 | 6 | 100% | 0 | 0% | QA-20260408-0250 | f515817d |
+| dpl_7YFJku7zmAYHWwhF6FrizaLfHkKE | vercel-production | 1 | 18 | 88.89% | 1 | 100% | QA-20260407-0249 | 8d537c7a |
 | dpl_EEf7zEdMXFGHWYqYSNMACmtXynQ8 | vercel-production | 1 | 13 | 100% | 0 | 0% | QA-20260406-0246 | 9e722456 |
 | dpl_H2A52Y1DvRKLATu7o1A8fb1WbAXf | vercel-production | 1 | 9 | 100% | 0 | 0% | QA-20260406-0244 | 40bd7093 |
 | dpl_2MuHQZg4ePQmikAr8MYk5rkWj1ic | vercel-production | 3 | 44 | 100% | 0 | 0% | QA-20260405-0238 | b15fd073 |
@@ -75,15 +77,11 @@
 | dpl_BC2L2XzJ6JCXcQauXB3wviMfuPXZ | vercel-production | 4 | 59 | 100% | 0 | 0% | QA-20260404-0229 | 0b0f5c4e |
 | dpl_RMZadPVLmjXrbdkkQTwRpFTx6nv4 | vercel-production | 1 | 16 | 100% | 0 | 0% | QA-20260404-0225 | fc725862 |
 | dpl_Eh3o4WUwA374u7zqM4seojLawoKP | vercel-production | 1 | 13 | 92.31% | 1 | 100% | QA-20260404-0222 | 00e750bb |
-| dpl_v8108_20260402_targeted | vercel-production | 1 | 10 | 100% | 0 | 0% | QA-20260402-0217 | 52b38df2 |
-| dpl_v8108_20260402_2 | vercel-production | 1 | 14 | 100% | 0 | 0% | QA-20260402-0213 | 84c375ac |
 
 ## Recent Daily Trend (KST)
 
 | Date | Runs | Checks | Pass Rate | Failed Runs | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-03-23 | 8 | 33 | 96.97% | 1 | 1 | 12.5% |
-| 2026-03-24 | 13 | 61 | 88.52% | 6 | 6 | 46.15% |
 | 2026-03-25 | 4 | 18 | 100% | 0 | 0 | 0% |
 | 2026-03-26 | 6 | 72 | 97.22% | 0 | 0 | 0% |
 | 2026-03-27 | 1 | 12 | 91.67% | 1 | 1 | 100% |
@@ -96,11 +94,14 @@
 | 2026-04-04 | 8 | 106 | 98.11% | 2 | 2 | 25% |
 | 2026-04-05 | 7 | 72 | 100% | 0 | 0 | 0% |
 | 2026-04-06 | 2 | 22 | 100% | 0 | 0 | 0% |
+| 2026-04-07 | 1 | 18 | 88.89% | 1 | 1 | 100% |
+| 2026-04-08 | 3 | 19 | 100% | 0 | 0 | 0% |
 
 ## Recent Regression Runs
 
 | Run ID | Time (UTC) | Scope | Failed Checks | Pending | Deferred | Wont-Fix | Title |
 |---|---|---|---:|---:|---:|---:|---|
+| QA-20260407-0249 | 2026-04-07T11:55:13.126Z | broad | 2 | 2 | 0 | 0 | Playwright MCP Production QA - Frontend + AI Assistant v8.11.0 broad baseline refresh |
 | QA-20260404-0223 | 2026-04-04T11:06:01.219Z | targeted | 1 | 1 | 0 | 0 | Vercel Playwright QA - dashboard/AI parity rerun after ai-engine parity patch |
 | QA-20260404-0222 | 2026-04-04T09:17:33.588Z | broad | 1 | 1 | 0 | 1 | Vercel Playwright QA - dashboard, AI assistant, and monitoring parity check |
 | QA-20260331-0201 | 2026-03-31T11:58:25.987Z | targeted | 2 | 1 | 0 | 0 | Local dev Playwright QA - Vibe Coding modal CI/CD regression check |
@@ -110,7 +111,6 @@
 | QA-20260324-0177 | 2026-03-24T07:57:28.735Z | targeted | 1 | 1 | 0 | 0 | Vercel Production QA - false realtime-analysis badge removed but parity mismatch remains |
 | QA-20260324-0176 | 2026-03-24T07:35:13.658Z | targeted | 2 | 1 | 0 | 0 | Vercel Production QA - parity gate still open after analysis detail patch |
 | QA-20260324-0175 | 2026-03-24T05:45:00.758Z | targeted | 1 | 1 | 0 | 0 | Vercel Production QA - deferred parity metadata preserved but detail contract still incomplete |
-| QA-20260324-0174 | 2026-03-24T05:13:06.470Z | targeted | 1 | 1 | 0 | 0 | Vercel Production QA - parity metadata after type-fix deploy |
 
 ## Recurring Open Items
 

@@ -130,6 +130,8 @@
     "test:cloud:essential": "NODE_OPTIONS=--dns-result-order=ipv4first node scripts/test/cloud-deploy-essential-smoke.mjs",
     "test:cloud:essential:strict": "NODE_OPTIONS=--dns-result-order=ipv4first node scripts/test/cloud-deploy-essential-smoke.mjs --require-auth",
     "test:cloud:essential:llm-once": "NODE_OPTIONS=--dns-result-order=ipv4first node scripts/test/cloud-deploy-essential-smoke.mjs --require-auth --with-supervisor-call",
+    "qa:evidence:audit": "node scripts/qa/audit-qa-evidence.js",
+    "qa:evidence:audit:strict": "node scripts/qa/audit-qa-evidence.js --strict",
     "qa:evidence:build": "node scripts/qa/build-validation-evidence.js",
     "qa:record": "node scripts/qa/record-qa-run.js",
     "qa:status": "node scripts/qa/print-qa-status.js",
