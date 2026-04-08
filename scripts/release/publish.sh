@@ -7,6 +7,7 @@
 #   ./scripts/release/publish.sh patch     # force patch
 #   ./scripts/release/publish.sh minor     # force minor
 #   ./scripts/release/publish.sh major     # force major
+#   RELEASE_VERIFY_PRODUCTION=false ./scripts/release/publish.sh patch
 #   DRY_RUN=1 ./scripts/release/publish.sh # preview only
 
 set -euo pipefail
@@ -14,6 +15,44 @@ set -euo pipefail
 RELEASE_TYPE="${1:-}"
 DRY_RUN="${DRY_RUN:-}"
 CANONICAL_REMOTE="${CANONICAL_REMOTE:-gitlab}"
+RELEASE_VERIFY_PRODUCTION="${RELEASE_VERIFY_PRODUCTION:-true}"
+RELEASE_VERIFY_URL="${RELEASE_VERIFY_URL:-https://openmanager-ai.vercel.app}"
+RELEASE_VERIFY_RETRIES="${RELEASE_VERIFY_RETRIES:-20}"
+RELEASE_VERIFY_DELAY_MS="${RELEASE_VERIFY_DELAY_MS:-15000}"
+RELEASE_VERIFY_TIMEOUT_MS="${RELEASE_VERIFY_TIMEOUT_MS:-8000}"
+
+run_post_release_verification() {
+  local version="$1"
+  local tag="$2"
+  local verify_enabled
+  verify_enabled="$(printf '%s' "$RELEASE_VERIFY_PRODUCTION" | tr '[:upper:]' '[:lower:]')"
+
+  if [[ "$verify_enabled" == "false" || "$verify_enabled" == "0" || "$verify_enabled" == "off" ]]; then
+    echo "⚪ Production verification skipped (RELEASE_VERIFY_PRODUCTION=${RELEASE_VERIFY_PRODUCTION})"
+    return 0
+  fi
+
+  if [[ ! -f "scripts/test/vercel-post-deploy-smoke.mjs" ]]; then
+    echo "⚪ Production verification skipped (missing scripts/test/vercel-post-deploy-smoke.mjs)"
+    return 0
+  fi
+
+  echo "🌐 Production 배포 검증 중... (${RELEASE_VERIFY_URL}, expected=${version})"
+  if node scripts/test/vercel-post-deploy-smoke.mjs \
+    --url="${RELEASE_VERIFY_URL}" \
+    --expected-version="${version}" \
+    --timeout-ms="${RELEASE_VERIFY_TIMEOUT_MS}" \
+    --retries="${RELEASE_VERIFY_RETRIES}" \
+    --retry-delay-ms="${RELEASE_VERIFY_DELAY_MS}"; then
+    echo "✅ Production version verification passed for ${tag}"
+    return 0
+  fi
+
+  echo "❌ Production verification failed for ${tag}."
+  echo "   Canonical commit/tag push는 완료됐지만, production version mismatch 또는 deploy failure가 남아 있습니다."
+  echo "   Next: inspect the GitLab tag pipeline trace and the Vercel production deploy."
+  return 1
+}
 
 # ── Dry-run mode ───────────────────────────────────────────
 if [[ -n "$DRY_RUN" ]]; then
@@ -81,6 +120,9 @@ node scripts/release/check-release-consistency.js
 # ── 3. Push commit + tag to canonical GitLab ──────────────
 echo "🚀 Canonical push 중... (commit + tag -> ${CANONICAL_REMOTE}/main)"
 git push --follow-tags "$CANONICAL_REMOTE" main
+
+# ── 4. Production verification ────────────────────────────
+run_post_release_verification "$NEW_VERSION" "$TAG"
 
 echo ""
 echo "═══════════════════════════════════════════"
