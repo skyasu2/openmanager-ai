@@ -1,7 +1,7 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-08 23:09:01 KST
+> Generated at: 2026-04-08 23:15:24 KST
 
 ## Summary
 
@@ -11,19 +11,19 @@
 | Total Checks | 1835 |
 | Passed | 1763 |
 | Failed | 66 |
-| Completed Items | 283 |
-| Pending Items | 2 |
+| Completed Items | 284 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 13 |
 | Expert Domains Tracked | 8 |
 | Expert Open Gaps | 1 |
-| Completion Rate | 99.3% |
+| Completion Rate | 99.65% |
 | Last Counted Run | QA-20260408-0253 (2026-04-08T04:54:22.471Z) |
-| Latest Recorded Run | QA-20260408-0255 (2026-04-08T14:09:01.310Z) |
+| Latest Recorded Run | QA-20260408-0256 (2026-04-08T14:15:23.840Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260408-0255 (2026-04-08T14:09:01.310Z)
+Latest run: QA-20260408-0256 (2026-04-08T14:15:23.840Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -33,7 +33,7 @@ Latest run: QA-20260408-0255 (2026-04-08T14:09:01.310Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after root cause confirmation; effective 4.5991 USD, billed 0.0000 USD, no unexpected billed spike. |
+| vercel | cli | checked | normal | Metadata sync run after confirming root cause; no additional billed usage concern. |
 
 ## Coverage (Latest Run)
 
@@ -42,8 +42,8 @@ Latest run: QA-20260408-0255 (2026-04-08T14:09:01.310Z)
 - Counts Toward Summary: no
 - Deployment: dpl_8K7ZKcNUsY3U6X1Q4tuwU81D6N1d / SHA 18209be8
 - Coverage Packs: core-routes-smoke, observability-pack
-- Covered Surfaces: /, /validation, /api/version, tag deploy preflight
-- Skipped Surfaces: dashboard, ai-sidebar, Cloud Run runtime QA
+- Covered Surfaces: qa-tracker, v8.11.3 deploy root cause tracking
+- Skipped Surfaces: frontend runtime, dashboard, ai-sidebar, Cloud Run runtime QA
 
 ## Links (Latest Run)
 
@@ -56,17 +56,16 @@ Latest run: QA-20260408-0255 (2026-04-08T14:09:01.310Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | v8.11.3 root cause confirmed evidence | `reports/qa/evidence/qa-20260408-v8113-root-cause-confirmed.md` | - |
+| playwright-console | v8.11.3 trace analysis closed evidence | `reports/qa/evidence/qa-20260408-v8113-trace-analysis-closed.md` | - |
 
 ## Expert Domain Open Gaps
 
-- sre-devops: DevOps / SRE Engineer (last QA-20260408-0255)
+- sre-devops: DevOps / SRE Engineer (last QA-20260408-0256)
   next: Configure GitLab protected tag pattern v*.*.* and retry failed job 13829853789 or the existing v8.11.3 tag pipeline.
 
 ## Pending Improvements
 
-- [P1] gitlab-tag-deploy-trace-v8113: GitLab tag deploy failure root cause analysis for v8.11.3 (seen 1회, last QA-20260408-0254)
-- [P1] gitlab-tag-protected-variable-exposure-v8113: Fix GitLab protected variable exposure for semver tag deploy (seen 1회, last QA-20260408-0255)
+- [P1] gitlab-tag-protected-variable-exposure-v8113: Fix GitLab protected variable exposure for semver tag deploy (seen 2회, last QA-20260408-0256)
 
 ## Deferred Improvements
 
@@ -207,6 +206,7 @@ Latest run: QA-20260408-0255 (2026-04-08T14:09:01.310Z)
 - fix-multi-agent-tool-result-bubble: 멀티 에이전트 경로 tool_result 이벤트 누락 수정 (completed 1회, last QA-20260408-0253)
 - frontend-ai-data-parity-gate: 프론트엔드 표시 상태와 AI 분석 상태 동일 슬롯 참조 검증 (completed 2회, last QA-20260324-0178)
 - frontend-landing-v880: Landing page v8.8.0 정상 렌더링 (completed 2회, last QA-20260314-0097)
+- gitlab-tag-deploy-trace-v8113: GitLab tag deploy failure root cause analysis for v8.11.3 (completed 1회, last QA-20260408-0256)
 - guest-auth-proof-cookie: 게스트 PIN 로그인 후 auth_proof 쿠키 발급 정상 (completed 2회, last QA-20260314-0097)
 - guest-dashboard-auth-check: 게스트 대시보드 로컬 인증 체크 우회 보완 (completed 1회, last QA-20260310-0078)
 - guest-flow-server-card-and-startflow-resilience: 게스트 플로우 시스템 시작/AI 진입 내성 보강 (completed 3회, last QA-20260302-0039)
@@ -390,6 +390,7 @@ Latest run: QA-20260408-0255 (2026-04-08T14:09:01.310Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260408-0256 | 2026-04-08T14:15:23.840Z | targeted | yes | no | QA Metadata Sync - v8.11.3 trace analysis closed | 0 | 1 | 1 | 0 | 0 | 1 |
 | QA-20260408-0255 | 2026-04-08T14:09:01.310Z | targeted | yes | no | Vercel Targeted Release Validation - v8.11.3 root cause confirmed | 3 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260408-0254 | 2026-04-08T13:25:34.065Z | targeted | yes | no | Vercel Targeted Release Validation - v8.11.3 production drift | 3 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260408-0253 | 2026-04-08T04:54:22.471Z | targeted | no | yes | Playwright MCP Production QA - v8.11.0 analysis basis sanitization + agent label fix | 7 | 2 | 0 | 0 | 0 | 0 |
@@ -409,4 +410,3 @@ Latest run: QA-20260408-0255 (2026-04-08T14:09:01.310Z)
 | QA-20260405-0239 | 2026-04-05T09:34:55.345Z | targeted | no | no | Vercel targeted QA - assistant response process detail visibility | 4 | 0 | 1 | 0 | 0 | 0 |
 | QA-20260405-0238 | 2026-04-05T06:21:39.750Z | release-gate | yes | yes | Broad Release-Gate QA - Final Golden State Baseline Alignment | 15 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260405-0237 | 2026-04-05T06:10:23.695Z | targeted | no | no | Vercel production targeted health recheck after gate warning clarification | 6 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260405-0236 | 2026-04-05T05:47:50.876Z | release-gate | yes | yes | Vercel production complementary release-gate QA for secondary routes and AI workspace | 12 | 0 | 0 | 0 | 0 | 0 |

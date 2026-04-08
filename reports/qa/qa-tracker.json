@@ -2,27 +2,27 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-08T14:09:01.310Z"
+    "updatedAt": "2026-04-08T14:15:23.840Z"
   },
   "sequence": {
-    "nextRunNumber": 256
+    "nextRunNumber": 257
   },
   "summary": {
     "totalRuns": 236,
     "totalChecks": 1835,
     "totalPassed": 1763,
     "totalFailed": 66,
-    "completionRate": 99.3,
-    "completedItems": 283,
-    "pendingItems": 2,
+    "completionRate": 99.65,
+    "completedItems": 284,
+    "pendingItems": 1,
     "deferredItems": 0,
     "wontFixItems": 13,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 1,
     "lastRunId": "QA-20260408-0253",
     "lastRecordedAt": "2026-04-08T04:54:22.471Z",
-    "latestRecordedRunId": "QA-20260408-0255",
-    "latestRecordedAt": "2026-04-08T14:09:01.310Z"
+    "latestRecordedRunId": "QA-20260408-0256",
+    "latestRecordedAt": "2026-04-08T14:15:23.840Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -6822,25 +6822,25 @@
       "id": "gitlab-tag-deploy-trace-v8113",
       "title": "GitLab tag deploy failure root cause analysis for v8.11.3",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260408-0254",
       "firstSeenAt": "2026-04-08T13:25:34.065Z",
-      "lastSeenRunId": "QA-20260408-0254",
-      "lastSeenAt": "2026-04-08T13:25:34.065Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260408-0256",
+      "lastSeenAt": "2026-04-08T14:15:23.840Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
       "lastEvidence": "",
-      "lastNote": "Need failed job 13829853789 trace to confirm whether VERCEL_TOKEN/protected variable or vercel build step caused the deploy miss.",
-      "isBlocking": true,
+      "lastNote": "Trace review confirmed the failing frontend deploy job is blocked by missing VERCEL_TOKEN exposure.",
+      "isBlocking": false,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-04-08T13:25:34.065Z"
+      "lastStatusChangeAt": "2026-04-08T14:15:23.840Z"
     },
     "gitlab-tag-protected-variable-exposure-v8113": {
       "id": "gitlab-tag-protected-variable-exposure-v8113",
@@ -6849,22 +6849,22 @@
       "status": "pending",
       "firstSeenRunId": "QA-20260408-0255",
       "firstSeenAt": "2026-04-08T14:09:01.310Z",
-      "lastSeenRunId": "QA-20260408-0255",
-      "lastSeenAt": "2026-04-08T14:09:01.310Z",
-      "seenCount": 1,
+      "lastSeenRunId": "QA-20260408-0256",
+      "lastSeenAt": "2026-04-08T14:15:23.840Z",
+      "seenCount": 2,
       "completedCount": 0,
-      "pendingCount": 1,
+      "pendingCount": 2,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
       "lastEvidence": "",
-      "lastNote": "VERCEL_TOKEN is not exposed to the v8.11.3 tag pipeline; protected tags/variables must be aligned before retrying the failed deploy job.",
+      "lastNote": "GitLab protected tags and protected CI/CD variables must be aligned before retrying the existing v8.11.3 failed deploy job.",
       "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-04-08T14:09:01.310Z"
+      "lastStatusChangeAt": "2026-04-08T14:15:23.840Z"
     }
   },
   "runs": [
@@ -22434,6 +22434,88 @@
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260408-0256",
+      "recordedAt": "2026-04-08T14:15:23.840Z",
+      "recordedAtKst": "2026-04-08 23:15:23 KST",
+      "title": "QA Metadata Sync - v8.11.3 trace analysis closed",
+      "owner": "codex",
+      "source": "codex-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260408-0256.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_8K7ZKcNUsY3U6X1Q4tuwU81D6N1d",
+        "deploymentUrl": "https://openmanager-jc49472pn-skyasus-projects.vercel.app",
+        "commitSha": "18209be8b8843445fef001f13aa3c3aa9e20cfa9"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": false,
+      "coveragePacks": ["core-routes-smoke", "observability-pack"],
+      "coveredSurfaces": ["qa-tracker", "v8.11.3 deploy root cause tracking"],
+      "skippedSurfaces": [
+        "frontend runtime",
+        "dashboard",
+        "ai-sidebar",
+        "Cloud Run runtime QA"
+      ],
+      "checks": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "The failed tag deploy trace has been analyzed and the remaining blocker is GitLab protected variable exposure.",
+          "nextAction": "Configure GitLab protected tag pattern v*.*.* and retry failed job 13829853789 or the existing v8.11.3 tag pipeline."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-08T23:20:00+09:00",
+          "summary": "Metadata sync run after confirming root cause; no additional billed usage concern.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "v8.11.3 trace analysis closed evidence",
+          "path": "reports/qa/evidence/qa-20260408-v8113-trace-analysis-closed.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Active production deployment",
+          "url": "https://openmanager-jc49472pn-skyasus-projects.vercel.app/"
+        },
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 1,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -22493,16 +22575,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 73,
+      "seenCount": 74,
       "appropriateCount": 67,
-      "partialCount": 6,
+      "partialCount": 7,
       "inappropriateCount": 0,
-      "improvementNeededCount": 10,
-      "lastRunId": "QA-20260408-0255",
-      "lastSeenAt": "2026-04-08T14:09:01.310Z",
+      "improvementNeededCount": 11,
+      "lastRunId": "QA-20260408-0256",
+      "lastSeenAt": "2026-04-08T14:15:23.840Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "The production drift is now traced to GitLab protected variable exposure on the semver tag deploy path.",
+      "lastRationale": "The failed tag deploy trace has been analyzed and the remaining blocker is GitLab protected variable exposure.",
       "lastNextAction": "Configure GitLab protected tag pattern v*.*.* and retry failed job 13829853789 or the existing v8.11.3 tag pipeline."
     },
     "test-automation": {
