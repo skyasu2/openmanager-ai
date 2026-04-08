@@ -1,0 +1,98 @@
+{
+  "runId": "QA-20260408-0255",
+  "recordedAt": "2026-04-08T14:09:01.310Z",
+  "recordedAtKst": "2026-04-08 23:09:01 KST",
+  "runTitle": "Vercel Targeted Release Validation - v8.11.3 root cause confirmed",
+  "owner": "codex",
+  "source": "codex-cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_8K7ZKcNUsY3U6X1Q4tuwU81D6N1d",
+    "deploymentUrl": "https://openmanager-jc49472pn-skyasus-projects.vercel.app",
+    "commitSha": "18209be8b8843445fef001f13aa3c3aa9e20cfa9"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": false,
+  "coveragePacks": ["core-routes-smoke", "observability-pack"],
+  "coveredSurfaces": [
+    "/",
+    "/validation",
+    "/api/version",
+    "tag deploy preflight"
+  ],
+  "skippedSurfaces": ["dashboard", "ai-sidebar", "Cloud Run runtime QA"],
+  "checks": {
+    "total": 3,
+    "passed": 2,
+    "failed": 1
+  },
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "The production drift is now traced to GitLab protected variable exposure on the semver tag deploy path.",
+      "nextAction": "Configure GitLab protected tag pattern v*.*.* and retry failed job 13829853789 or the existing v8.11.3 tag pipeline."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-08T23:10:00+09:00",
+      "summary": "Current billing period reviewed after root cause confirmation; effective 4.5991 USD, billed 0.0000 USD, no unexpected billed spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "v8.11.3 root cause confirmed evidence",
+      "path": "reports/qa/evidence/qa-20260408-v8113-root-cause-confirmed.md"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "gitlab-tag-protected-variable-exposure-v8113",
+      "title": "Fix GitLab protected variable exposure for semver tag deploy",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "VERCEL_TOKEN is not exposed to the v8.11.3 tag pipeline; protected tags/variables must be aligned before retrying the failed deploy job.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production alias still points to deployment dpl_8K7ZKcNUsY3U6X1Q4tuwU81D6N1d.",
+    "Runner health remains normal; the blocker is CI variable exposure, not runner availability.",
+    "Retry the existing failed tag pipeline after fixing GitLab settings instead of re-pushing the same tag."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Active production deployment",
+      "url": "https://openmanager-jc49472pn-skyasus-projects.vercel.app/"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

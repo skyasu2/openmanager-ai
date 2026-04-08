@@ -2,27 +2,27 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-08T13:25:34.065Z"
+    "updatedAt": "2026-04-08T14:09:01.310Z"
   },
   "sequence": {
-    "nextRunNumber": 255
+    "nextRunNumber": 256
   },
   "summary": {
     "totalRuns": 236,
     "totalChecks": 1835,
     "totalPassed": 1763,
     "totalFailed": 66,
-    "completionRate": 99.65,
+    "completionRate": 99.3,
     "completedItems": 283,
-    "pendingItems": 1,
+    "pendingItems": 2,
     "deferredItems": 0,
     "wontFixItems": 13,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 1,
     "lastRunId": "QA-20260408-0253",
     "lastRecordedAt": "2026-04-08T04:54:22.471Z",
-    "latestRecordedRunId": "QA-20260408-0254",
-    "latestRecordedAt": "2026-04-08T13:25:34.065Z"
+    "latestRecordedRunId": "QA-20260408-0255",
+    "latestRecordedAt": "2026-04-08T14:09:01.310Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -6841,6 +6841,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-08T13:25:34.065Z"
+    },
+    "gitlab-tag-protected-variable-exposure-v8113": {
+      "id": "gitlab-tag-protected-variable-exposure-v8113",
+      "title": "Fix GitLab protected variable exposure for semver tag deploy",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260408-0255",
+      "firstSeenAt": "2026-04-08T14:09:01.310Z",
+      "lastSeenRunId": "QA-20260408-0255",
+      "lastSeenAt": "2026-04-08T14:09:01.310Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "VERCEL_TOKEN is not exposed to the v8.11.3 tag pipeline; protected tags/variables must be aligned before retrying the failed deploy job.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-08T14:09:01.310Z"
     }
   },
   "runs": [
@@ -22328,6 +22352,88 @@
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260408-0255",
+      "recordedAt": "2026-04-08T14:09:01.310Z",
+      "recordedAtKst": "2026-04-08 23:09:01 KST",
+      "title": "Vercel Targeted Release Validation - v8.11.3 root cause confirmed",
+      "owner": "codex",
+      "source": "codex-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260408-0255.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_8K7ZKcNUsY3U6X1Q4tuwU81D6N1d",
+        "deploymentUrl": "https://openmanager-jc49472pn-skyasus-projects.vercel.app",
+        "commitSha": "18209be8b8843445fef001f13aa3c3aa9e20cfa9"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": false,
+      "coveragePacks": ["core-routes-smoke", "observability-pack"],
+      "coveredSurfaces": [
+        "/",
+        "/validation",
+        "/api/version",
+        "tag deploy preflight"
+      ],
+      "skippedSurfaces": ["dashboard", "ai-sidebar", "Cloud Run runtime QA"],
+      "checks": {
+        "total": 3,
+        "passed": 2,
+        "failed": 1
+      },
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "The production drift is now traced to GitLab protected variable exposure on the semver tag deploy path.",
+          "nextAction": "Configure GitLab protected tag pattern v*.*.* and retry failed job 13829853789 or the existing v8.11.3 tag pipeline."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-08T23:10:00+09:00",
+          "summary": "Current billing period reviewed after root cause confirmation; effective 4.5991 USD, billed 0.0000 USD, no unexpected billed spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "v8.11.3 root cause confirmed evidence",
+          "path": "reports/qa/evidence/qa-20260408-v8113-root-cause-confirmed.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Active production deployment",
+          "url": "https://openmanager-jc49472pn-skyasus-projects.vercel.app/"
+        },
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -22387,17 +22493,17 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 72,
+      "seenCount": 73,
       "appropriateCount": 67,
-      "partialCount": 5,
+      "partialCount": 6,
       "inappropriateCount": 0,
-      "improvementNeededCount": 9,
-      "lastRunId": "QA-20260408-0254",
-      "lastSeenAt": "2026-04-08T13:25:34.065Z",
+      "improvementNeededCount": 10,
+      "lastRunId": "QA-20260408-0255",
+      "lastSeenAt": "2026-04-08T14:09:01.310Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "Release automation now detects version drift, but the GitLab tag deploy failure still blocks production rollout.",
-      "lastNextAction": "Inspect GitLab failed job 13829853789 trace and fix the frontend deploy stage before retrying with v8.11.4."
+      "lastRationale": "The production drift is now traced to GitLab protected variable exposure on the semver tag deploy path.",
+      "lastNextAction": "Configure GitLab protected tag pattern v*.*.* and retry failed job 13829853789 or the existing v8.11.3 tag pipeline."
     },
     "test-automation": {
       "domainId": "test-automation",
