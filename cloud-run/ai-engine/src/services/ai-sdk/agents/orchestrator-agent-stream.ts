@@ -289,6 +289,14 @@ export async function* executeAgentStream(
                 toolName: toolResult.toolName,
                 result: toolResultOutput,
               });
+              // ⚠️ PARITY: supervisor-stream.ts:498 단일 에이전트 경로와 동일하게 tool_result를
+              // 상위 stream으로 yield 해야 함. 누락 시 프론트엔드 분석 근거 영역이 비어있게 됨.
+              if (toolResult.toolName !== 'finalAnswer') {
+                yield {
+                  type: 'tool_result',
+                  data: { toolName: toolResult.toolName, result: toolResultOutput },
+                };
+              }
               if (
                 toolResult.toolName === 'finalAnswer' &&
                 toolResultOutput &&

@@ -100,12 +100,20 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
     Boolean(thinkingSteps && thinkingSteps.length > 0) ||
     Boolean(handoffHistory && handoffHistory.length > 0) ||
     Boolean(toolResultSummaries && toolResultSummaries.length > 0);
-  const firstMeaningfulTool = meaningfulTools?.[0];
+  // Progressive Disclosure: 분석 단계 요약을 우선 표시, 없으면 데이터 소스로 fallback
+  const analysisStepSummary =
+    meaningfulTools && meaningfulTools.length > 0
+      ? `분석 단계: ${meaningfulTools
+          .slice(0, 2)
+          .map(getToolLabel)
+          .join(
+            ' · '
+          )}${meaningfulTools.length > 2 ? ` 외 ${meaningfulTools.length - 2}` : ''}`
+      : basis.dataSource
+        ? `데이터: ${basis.dataSource}`
+        : null;
   const collapsedSummaryParts = [
-    basis.dataSource ? `데이터: ${basis.dataSource}` : null,
-    firstMeaningfulTool
-      ? `도구: ${getToolLabel(firstMeaningfulTool)}${meaningfulTools.length > 1 ? ` 외 ${meaningfulTools.length - 1}` : ''}`
-      : null,
+    analysisStepSummary,
     basis.timeRange ? `기간: ${basis.timeRange}` : null,
     basis.engine ? `엔진: ${basis.engine}` : null,
   ].filter(Boolean);
