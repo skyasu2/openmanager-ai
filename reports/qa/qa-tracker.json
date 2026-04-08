@@ -2,27 +2,27 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-07T22:47:01.025Z"
+    "updatedAt": "2026-04-08T01:31:37.341Z"
   },
   "sequence": {
-    "nextRunNumber": 251
+    "nextRunNumber": 253
   },
   "summary": {
-    "totalRuns": 233,
-    "totalChecks": 1815,
-    "totalPassed": 1743,
+    "totalRuns": 235,
+    "totalChecks": 1828,
+    "totalPassed": 1756,
     "totalFailed": 66,
     "completionRate": 100,
-    "completedItems": 278,
+    "completedItems": 281,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 13,
     "expertDomainsTracked": 8,
-    "expertDomainsOpenGaps": 2,
-    "lastRunId": "QA-20260408-0250",
-    "lastRecordedAt": "2026-04-07T22:47:01.025Z",
-    "latestRecordedRunId": "QA-20260408-0250",
-    "latestRecordedAt": "2026-04-07T22:47:01.025Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260408-0252",
+    "lastRecordedAt": "2026-04-08T01:31:37.341Z",
+    "latestRecordedRunId": "QA-20260408-0252",
+    "latestRecordedAt": "2026-04-08T01:31:37.341Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -6697,6 +6697,78 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-07T22:47:01.025Z"
+    },
+    "multi-agent-tool-result-bubble-up": {
+      "id": "multi-agent-tool-result-bubble-up",
+      "title": "orchestrator-agent-stream.ts: tool_result yield 누락으로 분석 근거 영역 비어있던 문제 수정",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260408-0252",
+      "firstSeenAt": "2026-04-08T01:31:37.341Z",
+      "lastSeenRunId": "QA-20260408-0252",
+      "lastSeenAt": "2026-04-08T01:31:37.341Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-08T01:31:37.341Z"
+    },
+    "analyst-instruction-tool-name-exposure": {
+      "id": "analyst-instruction-tool-name-exposure",
+      "title": "analyst.ts: '분석 과정' 섹션 제거 및 도구명 응답 본문 노출 금지",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260408-0252",
+      "firstSeenAt": "2026-04-08T01:31:37.341Z",
+      "lastSeenRunId": "QA-20260408-0252",
+      "lastSeenAt": "2026-04-08T01:31:37.341Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-08T01:31:37.341Z"
+    },
+    "analysis-basis-badge-label": {
+      "id": "analysis-basis-badge-label",
+      "title": "AnalysisBasisBadge.tsx: collapsed 표시 '도구:' → '분석 단계:' Progressive Disclosure 개선",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260408-0252",
+      "firstSeenAt": "2026-04-08T01:31:37.341Z",
+      "lastSeenRunId": "QA-20260408-0252",
+      "lastSeenAt": "2026-04-08T01:31:37.341Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-08T01:31:37.341Z"
     }
   },
   "runs": [
@@ -21828,6 +21900,151 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260408-0251",
+      "recordedAt": "2026-04-07T23:31:32.252Z",
+      "recordedAtKst": "2026-04-08 08:31:32 KST",
+      "title": "Playwright MCP Production QA - v8.11.0 streaming status + alert prefill",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260408-0251.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "1e4f16c66ef1287a685de2c8c19c8e1c54b8a616"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": ["ai-core"],
+      "coveredSurfaces": [
+        "/",
+        "/system-boot",
+        "/dashboard",
+        "ai-sidebar",
+        "alert-prefill",
+        "ai-streaming-response"
+      ],
+      "skippedSurfaces": ["login", "observability pack"],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Alert prefill path verified on streaming route: prefill text populated correctly, AI streaming response completed without error, agent status indicator showed Ready state, console errors 0.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-08T08:28:00+09:00",
+          "summary": "Reusing QA-20260408-0250 billing check: effective 3.9429 USD, billed 0.0000 USD, no unexpected spike.",
+          "evidence": "QA-20260408-0250 usageChecks",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260408-0252",
+      "recordedAt": "2026-04-08T01:31:37.341Z",
+      "recordedAtKst": "2026-04-08 10:31:37 KST",
+      "title": "Playwright MCP Production QA - fix(ai): multi-agent tool_result bubble-up + analyst instruction + AnalysisBasisBadge",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260408-0252.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "7e86978c0"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": ["ai-core"],
+      "coveredSurfaces": [
+        "/",
+        "/dashboard",
+        "ai-sidebar",
+        "alert-prefill",
+        "ai-streaming-response",
+        "analysis-basis-panel"
+      ],
+      "skippedSurfaces": ["login", "observability pack"],
+      "checks": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Multi-agent tool_result bubble-up fix verified: (1) response body shows 3-section format (현황 요약/근본 원인/권장 조치) with no tool function names, (2) analysis basis collapsed shows '분석 단계: 근본 원인 분석' instead of previous '도구:', (3) analysis basis expanded shows actual tool result summary ('근본 원인 분석 완료') and step history ('findRootCause 완료'), (4) dataSource changed from '일반 대화 응답' to '서버 실시간 데이터 분석' confirming tool_result SSE events are now received by frontend, (5) console errors 0.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-08T01:30:00+09:00",
+          "summary": "Reusing QA-20260408-0250 billing check: effective 3.9429 USD, billed 0.0000 USD, no unexpected spike.",
+          "evidence": "QA-20260408-0250 usageChecks",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "AI response after fix - 3 sections, no tool names",
+          "path": "reports/qa/evidence/qa-20260408-ai-response-after-fix.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Analysis basis expanded - tool results visible",
+          "path": "reports/qa/evidence/qa-20260408-analysis-basis-expanded.png"
+        }
+      ],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 3,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -21836,17 +22053,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 118,
-      "appropriateCount": 112,
+      "seenCount": 120,
+      "appropriateCount": 114,
       "partialCount": 6,
       "inappropriateCount": 0,
       "improvementNeededCount": 16,
-      "lastRunId": "QA-20260407-0249",
-      "lastSeenAt": "2026-04-07T11:55:13.126Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "AI core surface eventually succeeded, but the first live sidebar prompt returned 'Rate limit exceeded' before an immediate retry completed successfully. Fullscreen/Reporter/Analyst variants remain outside this broad pack.",
-      "lastNextAction": "Stabilize the first-attempt production AI path against transient rate-limit failures, then rerun an AI-focused targeted pack."
+      "lastRunId": "QA-20260408-0252",
+      "lastSeenAt": "2026-04-08T01:31:37.341Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "Multi-agent tool_result bubble-up fix verified: (1) response body shows 3-section format (현황 요약/근본 원인/권장 조치) with no tool function names, (2) analysis basis collapsed shows '분석 단계: 근본 원인 분석' instead of previous '도구:', (3) analysis basis expanded shows actual tool result summary ('근본 원인 분석 완료') and step history ('findRootCause 완료'), (4) dataSource changed from '일반 대화 응답' to '서버 실시간 데이터 분석' confirming tool_result SSE events are now received by frontend, (5) console errors 0.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",

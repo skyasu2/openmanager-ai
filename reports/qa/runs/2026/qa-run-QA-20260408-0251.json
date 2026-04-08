@@ -1,0 +1,65 @@
+{
+  "runId": "QA-20260408-0251",
+  "recordedAt": "2026-04-07T23:31:32.252Z",
+  "recordedAtKst": "2026-04-08 08:31:32 KST",
+  "runTitle": "Playwright MCP Production QA - v8.11.0 streaming status + alert prefill",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "1e4f16c66ef1287a685de2c8c19c8e1c54b8a616"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "/",
+    "/system-boot",
+    "/dashboard",
+    "ai-sidebar",
+    "alert-prefill",
+    "ai-streaming-response"
+  ],
+  "skippedSurfaces": ["login", "observability pack"],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Alert prefill path verified on streaming route: prefill text populated correctly, AI streaming response completed without error, agent status indicator showed Ready state, console errors 0.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-08T08:28:00+09:00",
+      "summary": "Reusing QA-20260408-0250 billing check: effective 3.9429 USD, billed 0.0000 USD, no unexpected spike.",
+      "evidence": "QA-20260408-0250 usageChecks",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}

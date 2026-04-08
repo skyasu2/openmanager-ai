@@ -1,0 +1,33 @@
+Total messages: 2 (Errors: 2, Warnings: 0)
+
+[ERROR] TypeError: Cannot read properties of undefined (reading 'bg')
+    at https://openmanager-ai.vercel.app/_next/static/chunks/571249c820fd9121.js:1:295484
+    at ov (https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:1:259650)
+    at iZ (https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:1:279923)
+    at iV (https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:1:278372)
+    at iq (https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:1:277986)
+    at ll (https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:1:294951)
+    at uc (https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:1:334376)
+    at https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:1:334221
+    at uu (https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:1:334229)
+    at s7 (https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:1:330154)
+    at uW (https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:1:355870)
+    at uU (https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:1:354084)
+    at uB (https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:1:354428)
+    at https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:1:353713 @ https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:0
+[ERROR] [AIErrorBoundary:AISidebar] Error caught: TypeError: Cannot read properties of undefined (reading 'bg')
+    at https://openmanager-ai.vercel.app/_next/static/chunks/571249c820fd9121.js:1:295484
+    at ov (https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:1:259650)
+    at iZ (https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:1:279923)
+    at iV (https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:1:278372)
+    at iq (https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:1:277986)
+    at ll (https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:1:294951)
+    at uc (https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:1:334376)
+    at https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:1:334221
+    at uu (https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:1:334229)
+    at s7 (https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:1:330154)
+    at uW (https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:1:355870)
+    at uU (https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:1:354084)
+    at uB (https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:1:354428)
+    at https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:1:353713 {componentStack: 
+    at https://openmanager-ai.vercel.app/_next/st…_next/static/chunks/34c5763c03156191.js:1:419815)} @ https://openmanager-ai.vercel.app/_next/static/chunks/34c5763c03156191.js:0

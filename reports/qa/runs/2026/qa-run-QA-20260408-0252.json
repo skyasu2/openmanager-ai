@@ -1,0 +1,120 @@
+{
+  "runId": "QA-20260408-0252",
+  "recordedAt": "2026-04-08T01:31:37.341Z",
+  "recordedAtKst": "2026-04-08 10:31:37 KST",
+  "runTitle": "Playwright MCP Production QA - fix(ai): multi-agent tool_result bubble-up + analyst instruction + AnalysisBasisBadge",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "7e86978c0"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "/",
+    "/dashboard",
+    "ai-sidebar",
+    "alert-prefill",
+    "ai-streaming-response",
+    "analysis-basis-panel"
+  ],
+  "skippedSurfaces": ["login", "observability pack"],
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Multi-agent tool_result bubble-up fix verified: (1) response body shows 3-section format (현황 요약/근본 원인/권장 조치) with no tool function names, (2) analysis basis collapsed shows '분석 단계: 근본 원인 분석' instead of previous '도구:', (3) analysis basis expanded shows actual tool result summary ('근본 원인 분석 완료') and step history ('findRootCause 완료'), (4) dataSource changed from '일반 대화 응답' to '서버 실시간 데이터 분석' confirming tool_result SSE events are now received by frontend, (5) console errors 0.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-08T01:30:00+09:00",
+      "summary": "Reusing QA-20260408-0250 billing check: effective 3.9429 USD, billed 0.0000 USD, no unexpected spike.",
+      "evidence": "QA-20260408-0250 usageChecks",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "AI response after fix - 3 sections, no tool names",
+      "path": "reports/qa/evidence/qa-20260408-ai-response-after-fix.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Analysis basis expanded - tool results visible",
+      "path": "reports/qa/evidence/qa-20260408-analysis-basis-expanded.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "multi-agent-tool-result-bubble-up",
+      "title": "orchestrator-agent-stream.ts: tool_result yield 누락으로 분석 근거 영역 비어있던 문제 수정",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "analyst-instruction-tool-name-exposure",
+      "title": "analyst.ts: '분석 과정' 섹션 제거 및 도구명 응답 본문 노출 금지",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "analysis-basis-badge-label",
+      "title": "AnalysisBasisBadge.tsx: collapsed 표시 '도구:' → '분석 단계:' Progressive Disclosure 개선",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Root cause confirmed: b51e0dbd6 refactor split orchestrator to separate file but did not port tool_result yield, causing single/multi agent asymmetry. Bug masked by QA using simple preset queries (single-agent path).",
+    "Best practice basis: Vercel AI SDK v6 onStepFinish pattern, NN/g Progressive Disclosure, OWASP LLM prompt output isolation.",
+    "dataSource changed from '일반 대화 응답' to '서버 실시간 데이터 분석' confirming tool_result events now reach frontend via SSE."
+  ],
+  "links": []
+}

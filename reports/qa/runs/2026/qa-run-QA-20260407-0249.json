@@ -1,0 +1,150 @@
+{
+  "runId": "QA-20260407-0249",
+  "recordedAt": "2026-04-07T11:55:13.126Z",
+  "recordedAtKst": "2026-04-07 20:55:13 KST",
+  "runTitle": "Playwright MCP Production QA - Frontend + AI Assistant v8.11.0 broad baseline refresh",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_7YFJku7zmAYHWwhF6FrizaLfHkKE",
+    "deploymentUrl": "https://openmanager-ko0ewenx8-skyasus-projects.vercel.app",
+    "commitSha": "8d537c7a8565cf6862dcb1e5df4ea214e964ee2e"
+  },
+  "scope": "broad",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "landing render with v8.11.0 badge after settle",
+    "404 route renders product fallback page with v8.11.0 footer",
+    "/login minimal header without profile menu and guest CTA/privacy link visible",
+    "guest PIN login 4231 succeeds and returns to landing",
+    "system start countdown begins at 4초 and reaches /system-boot -> /dashboard",
+    "dashboard render with 15 total / 14 online / 1 warning / 0 risk and resource top5",
+    "server detail modal opens for lb-haproxy-dc1-01 and all 3 tabs switch: 종합 상황 / 성능 분석 / 로그 & 네트워크",
+    "ESC closes the server detail modal and returns to dashboard",
+    "AI sidebar opens from resource alert context with engine Ready state",
+    "AI sidebar retry completes actionable Cloud Run response for lb-haproxy-dc1-01 CPU 73% context",
+    "/api/ai/supervisor/stream/v2 POST returns 200 SSE with ui-message-stream + X-AI-Latency-Ms=292",
+    "direct AI stream summary identifies 15 total / 14 healthy / 1 warning with lb-haproxy-dc1-01 CPU 74% warning",
+    "/api/health 200 with database/cache/ai connected and version 8.11.0",
+    "/api/version 200 with v8.11.0 / Next.js 16.1.6 / production",
+    "/api/system 200 with services=true and production metadata",
+    "browser console errors 0 during settled landing/login/dashboard/modal/core AI verification flow",
+    "Vibe Coding modal tabs still open and CI/CD pipeline content remains aligned to local hook -> GitLab push -> validate -> deploy -> production"
+  ],
+  "skippedSurfaces": [
+    "/dashboard/ai-assistant fullscreen workspace",
+    "Reporter full report flow",
+    "Analyst advanced forecast flow",
+    "active alerts / topology / log explorer modal-detail pack beyond server detail modal",
+    "Cloud Run admin observability endpoints",
+    "exact Vibe Coding current-tool copy cleanup (@storybook/react-vite -> @storybook/nextjs-vite) was observed as known non-blocking drift and excluded from release fail count"
+  ],
+  "checks": {
+    "total": 18,
+    "passed": 16,
+    "failed": 2
+  },
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Core route, dashboard, modal, and AI core paths were exercised on live production with concrete UI and API checkpoints.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Health/version/system probes and a direct supervisor SSE request confirmed production observability on the documented X-AI-Latency-Ms path; Server-Timing and X-AI-Processing-Ms remained absent, which matches the current Vercel SSOT.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "AI core surface eventually succeeded, but the first live sidebar prompt returned 'Rate limit exceeded' before an immediate retry completed successfully. Fullscreen/Reporter/Analyst variants remain outside this broad pack.",
+      "nextAction": "Stabilize the first-attempt production AI path against transient rate-limit failures, then rerun an AI-focused targeted pack."
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "The promoted production deployment is healthy and usage remains within budget, but user-facing AI reliability is still sensitive to transient rate-limit behavior on the first request.",
+      "nextAction": "Inspect Cloud Run/provider quota and limiter behavior for first-hit production prompts before treating v8.11.0 as fully green."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-07T20:54:08+09:00",
+      "summary": "Current billing period reviewed during broad production QA; effective 3.9425 USD, billed 0.0000 USD, chargeCount 3654, no unexpected billed usage spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "ai-chat-cloud-run-rate-limit-production",
+      "title": "Complex Cloud Run AI verification path should complete without rate-limit failure in production",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Broad QA on production hit 'Rate limit exceeded' on the first live sidebar prompt from the lb-haproxy warning context; immediate retry succeeded and direct /api/ai/supervisor/stream/v2 SSE probe later returned 200 with X-AI-Latency-Ms=292, so the failure is intermittent but user-facing.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    },
+    {
+      "id": "landing-bootstrap-copy-hidden",
+      "title": "랜딩 첫 진입 시 bootstrap auth copy 비노출 처리",
+      "priority": "P2",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "release-blocking 아님. Production first paint twice showed visible '인증 확인 중... (Vercel 환경)' copy before the landing hero settled, so the earlier hidden-copy fix is no longer holding on the live landing path.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Compared with QA-20260406-0246: landing/login/dashboard/server-detail modal/Vibe Coding CI-CD content remained green on v8.11.0, but first-paint landing copy and first-attempt AI reliability regressed.",
+    "Vibe Coding current-tool text still references '@storybook/react-vite 기반'; this matches the user-reported non-blocking cleanup item and was not used to fail the release-facing QA run.",
+    "mode audit: direct supervisor SSE probe showed requestedMode=auto and resolvedMode=multi via auto_complexity.",
+    "AI timing observability passed through X-AI-Latency-Ms=292; X-AI-Processing-Ms and Server-Timing were absent, which matches the documented Vercel production rule."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Deployment dpl_7YFJku7zmAYHWwhF6FrizaLfHkKE",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/7YFJku7zmAYHWwhF6FrizaLfHkKE"
+    }
+  ]
+}
