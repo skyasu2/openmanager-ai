@@ -194,6 +194,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
           jobId: null,
           isLoading: true,
           error: null,
+          errorDetails: null,
           warning: null,
           processingTime: 0,
           clarification: null,
@@ -213,6 +214,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
               isLoading: false,
               error:
                 error instanceof Error ? error.message : 'Job Queue 쿼리 실패',
+              errorDetails: null,
             }));
           });
       } else {
@@ -226,6 +228,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
           jobId: null,
           isLoading: true,
           error: null,
+          errorDetails: null,
           warning: null,
           processingTime: 0,
           clarification: null,
@@ -361,7 +364,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
       refs.pendingAttachments.current = attachments || null;
 
       // 초기화
-      setState((prev) => ({ ...prev, error: null }));
+      setState((prev) => ({ ...prev, error: null, errorDetails: null }));
 
       try {
         // 파일 첨부가 있으면 명확화 스킵 (Vision Agent 직접 호출)

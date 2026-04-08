@@ -218,6 +218,7 @@ describe('connectAsyncQuerySSE', () => {
     const resultData = {
       response: 'Analysis complete',
       targetAgent: 'analyst',
+      toolsCalled: ['getServerMetrics', 'detectAnomalies'],
       toolResults: [],
       ragSources: [],
       processingTimeMs: 1200,
@@ -240,6 +241,7 @@ describe('connectAsyncQuerySSE', () => {
       success: true,
       response: 'Analysis complete',
       targetAgent: 'analyst',
+      toolsCalled: ['getServerMetrics', 'detectAnomalies'],
       toolResults: [],
       ragSources: [],
       processingTimeMs: 1200,
@@ -267,7 +269,47 @@ describe('connectAsyncQuerySSE', () => {
     const errorPayload = { error: 'Rate limit exceeded' };
     es.emit('error', JSON.stringify(errorPayload));
 
-    expect(params.onError).toHaveBeenCalledWith('Rate limit exceeded');
+    expect(params.onError).toHaveBeenCalledWith(
+      'Rate limit exceeded',
+      expect.objectContaining({
+        kind: 'rate-limit',
+        message: 'Rate limit exceeded',
+      })
+    );
+  });
+
+  it('prefers structured errorDetails from SSE error payload', () => {
+    const params = buildDefaultParams();
+
+    connectAsyncQuerySSE(params);
+
+    const es = getMock(params.eventSourceRef);
+    es.emit(
+      'error',
+      JSON.stringify({
+        error: 'Cloud Run AI 엔진 요청 제한으로 8초 후 다시 시도해주세요.',
+        errorDetails: {
+          kind: 'rate-limit',
+          message: 'Cloud Run AI 엔진 요청 제한으로 8초 후 다시 시도해주세요.',
+          source: 'cloud-run-ai',
+          scope: 'minute',
+          retryAfterSeconds: 8,
+          remaining: 0,
+        },
+      })
+    );
+
+    expect(params.onError).toHaveBeenCalledWith(
+      'Cloud Run AI 엔진 요청 제한으로 8초 후 다시 시도해주세요.',
+      expect.objectContaining({
+        kind: 'rate-limit',
+        message: 'Cloud Run AI 엔진 요청 제한으로 8초 후 다시 시도해주세요.',
+        source: 'cloud-run-ai',
+        scope: 'minute',
+        retryAfterSeconds: 8,
+        remaining: 0,
+      })
+    );
   });
 
   it('calls onError with timeout message when "timeout" event fires', () => {

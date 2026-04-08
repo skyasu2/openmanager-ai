@@ -18,6 +18,7 @@ function createMessage(params: {
   metadata?: {
     traceId?: string;
     ragSources?: RagSource[];
+    toolsCalled?: string[];
     handoffHistory?: Array<{
       from: string;
       to: string;
@@ -163,6 +164,40 @@ describe('transformMessages', () => {
 
     const assistant = messages.find((m) => m.id === 'a1');
     expect(assistant?.metadata?.traceId).toBe('trace-fallback-123');
+  });
+
+  it('derives job-queue analysis basis from metadata toolsCalled', () => {
+    const messages = transformMessages(
+      [
+        createMessage({
+          id: 'u1',
+          role: 'user',
+          text: 'CPU 높은 서버 분석해줘',
+        }),
+        createMessage({
+          id: 'a1',
+          role: 'assistant',
+          text: '분석 결과',
+          metadata: {
+            traceId: 'trace-job-tools-1',
+            toolsCalled: ['getServerMetrics', 'detectAnomalies'],
+          },
+        }),
+      ],
+      { isLoading: false, currentMode: 'job-queue' }
+    );
+
+    const assistant = messages.find((m) => m.id === 'a1');
+
+    expect(assistant?.metadata?.analysisBasis?.engine).toBe('Cloud Run AI');
+    expect(assistant?.metadata?.analysisBasis?.toolsCalled).toEqual([
+      'getServerMetrics',
+      'detectAnomalies',
+    ]);
+    expect(assistant?.metadata?.analysisBasis?.dataSource).toBe(
+      '서버 실시간 데이터 분석'
+    );
+    expect(assistant?.metadata?.analysisBasis?.timeRange).toBe('최근 1시간');
   });
 
   it('replaces legacy parity metadata wording with the typed getServerMetrics contract', () => {

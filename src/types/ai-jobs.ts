@@ -5,6 +5,8 @@
  * @version 1.0.0
  */
 
+import type { AIErrorDetails } from '@/lib/ai/error-details';
+
 // ============================================
 // Job 상태 및 타입
 // ============================================
@@ -69,6 +71,7 @@ export interface JobStatusResponse {
   currentStep: string | null;
   result: AIJobResult | null;
   error: string | null;
+  errorDetails?: AIErrorDetails | null;
   createdAt: string;
   startedAt: string | null;
   completedAt: string | null;
@@ -97,6 +100,7 @@ export interface AIJob {
   currentStep: string | null;
   result: string | null;
   error: string | null;
+  errorDetails?: AIErrorDetails | null;
   createdAt: string;
   startedAt: string | null;
   completedAt: string | null;
@@ -147,5 +151,12 @@ export interface RedisJobProgress {
   stage: string;
   progress: number;
   message?: string;
+  agent?: string;
+  handoffFrom?: string;
+  handoffTo?: string;
+  executionPath?: string[];
+  handoffCount?: number;
+  stageLabel?: string;
+  stageDetail?: string;
   updatedAt: string;
 }

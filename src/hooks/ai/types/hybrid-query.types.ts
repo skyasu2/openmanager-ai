@@ -9,6 +9,7 @@ import type {
   ClarificationOption,
   ClarificationRequest,
 } from '@/lib/ai/clarification-generator';
+import type { AIErrorDetails } from '@/lib/ai/error-details';
 import type { QueryComplexity } from '@/lib/ai/utils/query-complexity';
 import type { AsyncQueryProgress, AsyncQueryResult } from '../useAsyncAIQuery';
 import type { FileAttachment } from '../useFileAttachments';
@@ -31,6 +32,8 @@ export interface HybridQueryState {
   isLoading: boolean;
   /** 에러 메시지 */
   error: string | null;
+  /** 구조화된 에러 메타데이터 */
+  errorDetails?: AIErrorDetails | null;
   /** 명확화 요청 (모호한 쿼리일 때) */
   clarification: ClarificationRequest | null;
   /** 처리 지연 경고 메시지 (25초 초과 시) */

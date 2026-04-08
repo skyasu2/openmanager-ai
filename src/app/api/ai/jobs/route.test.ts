@@ -104,6 +104,12 @@ describe('GET /api/ai/jobs', () => {
         currentStep: 'done',
         result: 'result text',
         error: null,
+        errorDetails: {
+          kind: 'rate-limit',
+          message: '요청 제한',
+          source: 'cloud-run-ai',
+          scope: 'minute',
+        },
         createdAt: now,
         startedAt: now,
         completedAt: now,
@@ -126,6 +132,14 @@ describe('GET /api/ai/jobs', () => {
     expect(payload.jobs).toHaveLength(1);
     expect(payload.total).toBe(2);
     expect(payload.hasMore).toBe(true);
+    expect(payload.jobs[0]).toMatchObject({
+      errorDetails: {
+        kind: 'rate-limit',
+        message: '요청 제한',
+        source: 'cloud-run-ai',
+        scope: 'minute',
+      },
+    });
     expect(mockBuildScopedJobListKey).toHaveBeenCalledWith(
       'owner-key-1',
       'session-1'

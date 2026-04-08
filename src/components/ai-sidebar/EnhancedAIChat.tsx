@@ -13,6 +13,7 @@ import type {
   HandoffEventData,
 } from '@/hooks/ai/useHybridAIQuery';
 import { loadChatHistory } from '@/hooks/ai/utils/chat-history-storage';
+import type { AIErrorDetails } from '@/lib/ai/error-details';
 import {
   type EnhancedChatMessage,
   useAISidebarStore,
@@ -67,6 +68,7 @@ interface EnhancedAIChatProps {
   onCancelJob?: () => void;
   queryMode?: 'streaming' | 'job-queue';
   error?: string | null;
+  errorDetails?: AIErrorDetails | null;
   onClearError?: () => void;
   onRetry?: () => void;
   clarification?: ClarificationRequest | null;
@@ -115,6 +117,7 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
   onCancelJob,
   queryMode,
   error,
+  errorDetails,
   onClearError,
   onRetry,
   clarification,
@@ -300,6 +303,7 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
       {error && !(queryMode === 'streaming' && warmingUp && isGenerating) && (
         <ColdStartErrorBanner
           error={error}
+          errorDetails={errorDetails}
           onRetry={onRetry}
           onClearError={onClearError}
         />

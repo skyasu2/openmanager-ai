@@ -162,6 +162,43 @@ describe('AI Job Stream Route', () => {
       });
     });
 
+    it('should preserve agent path metadata when provided', () => {
+      expect(
+        buildProgressEventData({
+          jobId: 'job-agent-path',
+          status: 'processing',
+          progressState: {
+            stage: 'analyst',
+            progress: 62,
+            message: '심층 분석으로 전달 중...',
+            agent: 'analyst',
+            handoffFrom: 'supervisor',
+            handoffTo: 'analyst',
+            executionPath: ['supervisor', 'analyst'],
+            handoffCount: 1,
+            stageLabel: '심층 분석',
+            stageDetail: '분석 조율 → 심층 분석',
+            updatedAt: new Date().toISOString(),
+          },
+          elapsedMs: 3300,
+        })
+      ).toEqual({
+        jobId: 'job-agent-path',
+        status: 'processing',
+        progress: 62,
+        stage: 'analyst',
+        message: '심층 분석으로 전달 중...',
+        elapsedMs: 3300,
+        agent: 'analyst',
+        handoffFrom: 'supervisor',
+        handoffTo: 'analyst',
+        executionPath: ['supervisor', 'analyst'],
+        handoffCount: 1,
+        stageLabel: '심층 분석',
+        stageDetail: '분석 조율 → 심층 분석',
+      });
+    });
+
     it('should use stage-based defaults when progress number is missing', () => {
       expect(
         buildProgressEventData({
@@ -258,5 +295,53 @@ describe('AI Job Stream Route', () => {
       expect.any(Function),
       { timeoutMs: 987 }
     );
+  });
+
+  it('should include structured errorDetails in failed job stream events', async () => {
+    mockGetSystemRunningFlag.mockResolvedValue(true);
+    mockRedisGet.mockResolvedValue({
+      status: 'failed',
+      startedAt: new Date().toISOString(),
+      completedAt: new Date().toISOString(),
+      error: 'Cloud Run AI 엔진 요청 제한으로 12초 후 다시 시도해주세요.',
+      errorDetails: {
+        kind: 'rate-limit',
+        message: 'Cloud Run AI 엔진 요청 제한으로 12초 후 다시 시도해주세요.',
+        source: 'cloud-run-ai',
+        scope: 'minute',
+        retryAfterSeconds: 12,
+        remaining: 0,
+      },
+    });
+    mockRedisMGet.mockResolvedValue([
+      {
+        status: 'failed',
+        startedAt: new Date().toISOString(),
+        completedAt: new Date().toISOString(),
+        error: 'Cloud Run AI 엔진 요청 제한으로 12초 후 다시 시도해주세요.',
+        errorDetails: {
+          kind: 'rate-limit',
+          message: 'Cloud Run AI 엔진 요청 제한으로 12초 후 다시 시도해주세요.',
+          source: 'cloud-run-ai',
+          scope: 'minute',
+          retryAfterSeconds: 12,
+          remaining: 0,
+        },
+      },
+      null,
+    ]);
+
+    const request = new NextRequest(
+      'http://localhost/api/ai/jobs/job-3/stream'
+    );
+    const response = await GET(request, {
+      params: Promise.resolve({ id: 'job-3' }),
+    });
+
+    expect(response.status).toBe(200);
+    const text = await response.text();
+    expect(text).toContain('"errorDetails"');
+    expect(text).toContain('"source":"cloud-run-ai"');
+    expect(text).toContain('"retryAfterSeconds":12');
   });
 });

@@ -231,6 +231,10 @@ export async function rateLimitMiddleware(
         error: 'Too Many Requests',
         message: '요청 제한을 초과했습니다. 잠시 후 다시 시도해주세요.',
         retryAfter,
+        source: 'cloud-run-ai',
+        limitScope: 'minute',
+        remaining: result.remaining,
+        resetAt: result.resetTime,
       },
       429
     );

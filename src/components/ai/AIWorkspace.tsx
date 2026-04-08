@@ -198,6 +198,7 @@ export default function AIWorkspace({ mode, onClose }: AIWorkspaceProps) {
               onCancelJob={cancel}
               queryMode={currentMode}
               error={error}
+              errorDetails={hybridState.errorDetails}
               onClearError={clearError}
               onRetry={retryLastQuery}
               clarification={clarification}
@@ -490,6 +491,7 @@ export default function AIWorkspace({ mode, onClose }: AIWorkspaceProps) {
                   onCancelJob={cancel}
                   queryMode={currentMode}
                   error={error}
+                  errorDetails={hybridState.errorDetails}
                   onClearError={clearError}
                   onRetry={retryLastQuery}
                   clarification={clarification}

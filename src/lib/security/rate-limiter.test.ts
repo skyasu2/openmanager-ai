@@ -56,11 +56,19 @@ describe('withRateLimit', () => {
 
     const response = await wrapped(request);
 
-    const payload = (await response.json()) as { error: string };
+    const payload = (await response.json()) as {
+      error: string;
+      source: string;
+      limitScope: string;
+      remaining: number;
+    };
     expect(mockRateLimiter.checkLimit).toHaveBeenCalledOnce();
     expect(mockHandler).not.toHaveBeenCalled();
     expect(response.status).toBe(429);
     expect(payload.error).toBe('Too Many Requests');
+    expect(payload.source).toBe('frontend-gateway');
+    expect(payload.limitScope).toBe('minute');
+    expect(payload.remaining).toBe(0);
     expect(response.headers.get('X-RateLimit-Limit')).toBe('10');
     expect(response.headers.get('X-RateLimit-Remaining')).toBe('0');
   });

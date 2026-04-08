@@ -27,31 +27,54 @@ vi.mock('../lib/job-notifier', () => ({
 }));
 
 vi.mock('../services/ai-sdk', () => ({
-  executeSupervisor: vi.fn(async () => ({
-    success: true,
-    response: 'AI 응답',
-    toolsCalled: ['detectAnomalies'],
-    toolResults: [{ toolName: 'getServerMetrics', dataSlot: { slotIndex: 57 } }],
-    ragSources: [],
-    metadata: {
-      provider: 'cerebras',
-      modelId: 'gpt-oss-120b',
-      stepsExecuted: 2,
-      durationMs: 500,
-      traceId: 'trace-job-123',
-      handoffs: [{ from: 'supervisor', to: 'analyst', reason: 'trend analysis' }],
-      toolResultSummaries: [
-        {
-          toolName: 'detectAnomalies',
-          label: '이상 탐지',
-          summary: '1개 이상 징후를 감지했습니다.',
-          status: 'completed',
+  executeSupervisorStream: vi.fn(async function* () {
+    yield {
+      type: 'agent_status',
+      data: {
+        agent: 'Orchestrator',
+        status: 'processing',
+        message: '분석 조율 중...',
+      },
+    };
+    yield {
+      type: 'handoff',
+      data: { from: 'supervisor', to: 'analyst', reason: 'trend analysis' },
+    };
+    yield {
+      type: 'tool_result',
+      data: {
+        toolName: 'getServerMetrics',
+        result: { dataSlot: { slotIndex: 57 } },
+      },
+    };
+    yield { type: 'text_delta', data: 'AI 응답' };
+    yield {
+      type: 'done',
+      data: {
+        success: true,
+        finalAgent: 'NLQ Agent',
+        toolsCalled: ['detectAnomalies'],
+        ragSources: [],
+        metadata: {
+          provider: 'cerebras',
+          modelId: 'gpt-oss-120b',
+          stepsExecuted: 2,
+          durationMs: 500,
+          traceId: 'trace-job-123',
+          handoffs: [{ from: 'supervisor', to: 'analyst', reason: 'trend analysis' }],
+          toolResultSummaries: [
+            {
+              toolName: 'detectAnomalies',
+              label: '이상 탐지',
+              summary: '1개 이상 징후를 감지했습니다.',
+              status: 'completed',
+            },
+          ],
         },
-      ],
-      finalAgent: 'NLQ Agent',
-    },
-    usage: { promptTokens: 100, completionTokens: 50, totalTokens: 150 },
-  })),
+        usage: { promptTokens: 100, completionTokens: 50, totalTokens: 150 },
+      },
+    };
+  }),
   logProviderStatus: vi.fn(),
 }));
 
@@ -63,7 +86,7 @@ import {
   storeJobError,
   storeJobResult,
 } from '../lib/job-notifier';
-import { executeSupervisor } from '../services/ai-sdk';
+import { executeSupervisorStream } from '../services/ai-sdk';
 
 const app = new Hono();
 app.route('/jobs', jobsRouter);
@@ -90,16 +113,22 @@ describe('Jobs Routes', () => {
       expect(json.success).toBe(true);
       expect(json.jobId).toBe('job-123');
       expect(json.status).toBe('completed');
-      expect(vi.mocked(executeSupervisor)).toHaveBeenCalledTimes(1);
+      expect(vi.mocked(executeSupervisorStream)).toHaveBeenCalledTimes(1);
       expect(vi.mocked(storeJobResult)).toHaveBeenCalledWith(
         'job-123',
         'AI 응답',
         expect.objectContaining({
           targetAgent: 'NLQ Agent',
+          toolsCalled: ['detectAnomalies'],
+          ragSources: [],
+          startedAt: expect.any(String),
           toolResults: [
-            { toolName: 'getServerMetrics', dataSlot: { slotIndex: 57 } },
+            {
+              toolName: 'getServerMetrics',
+              result: { dataSlot: { slotIndex: 57 } },
+            },
           ],
-          metadata: {
+          metadata: expect.objectContaining({
             traceId: 'trace-job-123',
             handoffs: [
               {
@@ -116,7 +145,7 @@ describe('Jobs Routes', () => {
                 status: 'completed',
               },
             ],
-          },
+          }),
         })
       );
     });
@@ -208,9 +237,9 @@ describe('Jobs Routes', () => {
     });
 
     it('동기 처리 예외를 저장할 때 내부 메시지 대신 공개 메시지를 사용한다', async () => {
-      vi.mocked(executeSupervisor).mockRejectedValueOnce(
-        new Error('provider secret leaked')
-      );
+      vi.mocked(executeSupervisorStream).mockImplementationOnce(async function* () {
+        throw new Error('provider secret leaked');
+      });
 
       const res = await app.request('/jobs/process', {
         method: 'POST',
@@ -230,6 +259,66 @@ describe('Jobs Routes', () => {
         'job-background-error',
         'Service unavailable',
         expect.any(String),
+        {
+          kind: 'general',
+          message: 'Service unavailable',
+        },
+      ]);
+    });
+
+    it('rate limit 실패 시 구조화 errorDetails를 저장한다', async () => {
+      const rateLimitError = new Error(
+        'Cloud Run AI 엔진 요청 제한으로 15초 후 다시 시도해주세요.'
+      ) as Error & {
+        details?: {
+          kind: 'rate-limit';
+          message: string;
+          source: 'cloud-run-ai';
+          scope: 'minute';
+          retryAfterSeconds: number;
+          remaining: number;
+        };
+      };
+      rateLimitError.details = {
+        kind: 'rate-limit',
+        message: 'Cloud Run AI 엔진 요청 제한으로 15초 후 다시 시도해주세요.',
+        source: 'cloud-run-ai',
+        scope: 'minute',
+        retryAfterSeconds: 15,
+        remaining: 0,
+      };
+
+      vi.mocked(executeSupervisorStream).mockImplementationOnce(async function* () {
+        throw rateLimitError;
+      });
+
+      const res = await app.request('/jobs/process', {
+        method: 'POST',
+        body: JSON.stringify({
+          jobId: 'job-rate-limit',
+          messages: [{ role: 'user', content: 'test' }],
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      expect(res.status).toBe(200);
+      const json = await res.json();
+      expect(json.success).toBe(false);
+      expect(json.status).toBe('failed');
+      expect(json.error).toContain('15초 후');
+
+      expect(vi.mocked(storeJobError).mock.calls).toContainEqual([
+        'job-rate-limit',
+        'Cloud Run AI 엔진 요청 제한으로 15초 후 다시 시도해주세요.',
+        expect.any(String),
+        {
+          kind: 'rate-limit',
+          message: 'Cloud Run AI 엔진 요청 제한으로 15초 후 다시 시도해주세요.',
+          source: 'cloud-run-ai',
+          scope: 'minute',
+          retryAfterSeconds: 15,
+          remaining: 0,
+        },
       ]);
     });
   });

@@ -48,11 +48,17 @@ const TOOL_LABELS: Record<string, string> = {
 // 내부 에이전트 기술명 → 사용자 친화적 역할명 (구현 세부사항 비공개)
 const AGENT_ROLE_LABELS: Record<string, string> = {
   Orchestrator: '분석 조율',
+  supervisor: '분석 조율',
   'NLQ Agent': '자연어 분석',
+  nlq: '자연어 분석',
   'Analyst Agent': '심층 분석',
+  analyst: '심층 분석',
   'Reporter Agent': '보고서 생성',
+  reporter: '보고서 생성',
   'Advisor Agent': '운영 어드바이저',
+  advisor: '운영 어드바이저',
   'Vision Agent': '시각 분석',
+  vision: '시각 분석',
 };
 
 function getAgentRoleLabel(name: string): string {
@@ -61,6 +67,22 @@ function getAgentRoleLabel(name: string): string {
 
 function getToolLabel(toolName: string): string {
   return TOOL_LABELS[toolName] ?? toolName;
+}
+
+function buildExecutionPath(handoffHistory?: ResponseHandoff[]): string[] {
+  if (!handoffHistory || handoffHistory.length === 0) {
+    return [];
+  }
+
+  const path: string[] = [getAgentRoleLabel(handoffHistory[0]?.from ?? '')];
+  for (const handoff of handoffHistory) {
+    const nextLabel = getAgentRoleLabel(handoff.to);
+    if (path[path.length - 1] !== nextLabel) {
+      path.push(nextLabel);
+    }
+  }
+
+  return path.filter(Boolean);
 }
 
 const STEP_STATUS_LABELS: Record<string, string> = {
@@ -109,27 +131,30 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
 
   // finalAnswer 제외한 실질적 도구 호출
   const meaningfulTools = basis.toolsCalled?.filter((t) => t !== 'finalAnswer');
+  const executionPath = buildExecutionPath(handoffHistory);
+  const toolCount = toolResultSummaries?.length ?? meaningfulTools?.length ?? 0;
   const hasProcessDetails =
     Boolean(traceId) ||
     Boolean(thinkingSteps && thinkingSteps.length > 0) ||
     Boolean(handoffHistory && handoffHistory.length > 0) ||
     Boolean(toolResultSummaries && toolResultSummaries.length > 0);
-  // Progressive Disclosure: 분석 단계 요약을 우선 표시, 없으면 데이터 소스로 fallback
   const analysisStepSummary =
-    meaningfulTools && meaningfulTools.length > 0
-      ? `분석 단계: ${meaningfulTools
-          .slice(0, 2)
-          .map(getToolLabel)
-          .join(
-            ' · '
-          )}${meaningfulTools.length > 2 ? ` 외 ${meaningfulTools.length - 2}` : ''}`
-      : basis.dataSource
-        ? `데이터: ${basis.dataSource}`
-        : null;
+    executionPath.length > 0
+      ? `경로: ${executionPath.join(' → ')}`
+      : meaningfulTools && meaningfulTools.length > 0
+        ? `도구: ${meaningfulTools
+            .slice(0, 2)
+            .map(getToolLabel)
+            .join(
+              ' · '
+            )}${meaningfulTools.length > 2 ? ` 외 ${meaningfulTools.length - 2}` : ''}`
+        : basis.dataSource
+          ? `데이터: ${basis.dataSource}`
+          : null;
   const collapsedSummaryParts = [
     analysisStepSummary,
+    executionPath.length > 0 && toolCount > 0 ? `도구 ${toolCount}개` : null,
     basis.timeRange ? `기간: ${basis.timeRange}` : null,
-    basis.engine ? `엔진: ${basis.engine}` : null,
   ].filter(Boolean);
   const collapsedSummary = collapsedSummaryParts.slice(0, 3).join(' · ');
 
@@ -174,23 +199,44 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
                   응답 과정
                 </span>
                 <div className="flex items-center gap-1.5 text-2xs text-slate-500">
+                  {handoffHistory && handoffHistory.length > 0 && (
+                    <span className="rounded bg-slate-100 px-1.5 py-0.5">
+                      handoff {handoffHistory.length}회
+                    </span>
+                  )}
+                  {toolCount > 0 && (
+                    <span className="rounded bg-slate-100 px-1.5 py-0.5">
+                      도구 {toolCount}개
+                    </span>
+                  )}
                   {thinkingSteps && thinkingSteps.length > 0 && (
                     <span className="rounded bg-slate-100 px-1.5 py-0.5">
-                      {thinkingSteps.length}단계
+                      상세 {thinkingSteps.length}단계
                     </span>
                   )}
                   {traceId && (
                     <span className="rounded bg-slate-100 px-1.5 py-0.5">
-                      trace
+                      추적 ID
                     </span>
                   )}
                 </div>
               </div>
 
+              {executionPath.length > 0 && (
+                <div className="mb-3 rounded border border-slate-200 bg-slate-50 p-2">
+                  <p className="mb-1 text-2xs font-medium uppercase tracking-wide text-slate-500">
+                    실행 경로
+                  </p>
+                  <p className="text-xs leading-relaxed text-slate-700">
+                    {executionPath.join(' → ')}
+                  </p>
+                </div>
+              )}
+
               {traceId && (
                 <div className="mb-3 rounded border border-slate-200 bg-slate-50 p-2">
                   <p className="mb-1 text-2xs font-medium uppercase tracking-wide text-slate-500">
-                    Trace ID
+                    추적 가능 ID
                   </p>
                   <code className="block break-all font-mono text-[11px] text-slate-700">
                     {traceId}
@@ -201,7 +247,7 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
               {handoffHistory && handoffHistory.length > 0 && (
                 <div className="space-y-2">
                   <p className="text-2xs font-medium uppercase tracking-wide text-slate-500">
-                    에이전트 전달 경로
+                    전달 이력
                   </p>
                   <div className="space-y-2">
                     {handoffHistory.map((handoff, index) => (
@@ -226,6 +272,14 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
                       </div>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {handoffHistory && handoffHistory.length === 0 && (
+                <div className="rounded border border-dashed border-slate-200 bg-slate-50 p-2">
+                  <p className="text-xs text-slate-600">
+                    이번 응답은 추가 handoff 없이 처리되었습니다.
+                  </p>
                 </div>
               )}
 

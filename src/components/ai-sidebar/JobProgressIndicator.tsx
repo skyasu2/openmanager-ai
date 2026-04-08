@@ -52,6 +52,21 @@ interface StageConfig {
   color: string;
 }
 
+const AGENT_ROLE_LABELS: Record<string, string> = {
+  Orchestrator: '분석 조율',
+  supervisor: '분석 조율',
+  'NLQ Agent': '자연어 분석',
+  nlq: '자연어 분석',
+  'Analyst Agent': '심층 분석',
+  analyst: '심층 분석',
+  'Reporter Agent': '보고서 생성',
+  reporter: '보고서 생성',
+  'Advisor Agent': '운영 어드바이저',
+  advisor: '운영 어드바이저',
+  'Vision Agent': '시각 분석',
+  vision: '시각 분석',
+};
+
 const STAGE_CONFIG: Record<string, StageConfig> = {
   init: {
     icon: <Loader2 className="h-4 w-4 animate-spin" />,
@@ -167,6 +182,13 @@ export const JobProgressIndicator = memo<JobProgressIndicatorProps>(
     const progressPercent = progress?.progress ?? 0;
     const stage = progress?.stage ?? 'init';
     const config = STAGE_CONFIG[stage] || DEFAULT_CONFIG;
+    const executionPathLabel = formatExecutionPath(progress?.executionPath);
+    const handoffLabel = formatHandoff(progress);
+    const stageDescription = getStageDescription(
+      stage,
+      progressPercent,
+      progress
+    );
 
     // 서버에서 보낸 메시지가 있으면 사용, 없으면 기본 메시지
     const displayMessage = progress?.message || config.defaultMessage;
@@ -188,9 +210,7 @@ export const JobProgressIndicator = memo<JobProgressIndicatorProps>(
               <span className={`text-sm font-medium ${config.color}`}>
                 {displayMessage}
               </span>
-              <span className="text-xs text-gray-500">
-                {getStageDescription(stage, progressPercent)}
-              </span>
+              <span className="text-xs text-gray-500">{stageDescription}</span>
             </div>
           </div>
 
@@ -241,13 +261,38 @@ export const JobProgressIndicator = memo<JobProgressIndicatorProps>(
             </span>
             <span className="text-gray-400">•</span>
             <span className="text-gray-500">
-              {getPhaseLabel(progressPercent)}
+              {progress?.stageLabel || getPhaseLabel(progressPercent)}
             </span>
           </div>
           {jobId && (
             <span className="font-mono text-gray-400">{jobId.slice(0, 8)}</span>
           )}
         </div>
+
+        {(executionPathLabel || handoffLabel || progress?.handoffCount) && (
+          <div className="mt-3 rounded-lg border border-white/70 bg-white/70 px-3 py-2 text-xs text-slate-600">
+            <div className="flex flex-wrap items-center gap-2">
+              {executionPathLabel && <span>경로: {executionPathLabel}</span>}
+              {handoffLabel && (
+                <>
+                  {executionPathLabel && (
+                    <span className="text-slate-300">•</span>
+                  )}
+                  <span>전달: {handoffLabel}</span>
+                </>
+              )}
+              {typeof progress?.handoffCount === 'number' &&
+                progress.handoffCount > 0 && (
+                  <>
+                    {(executionPathLabel || handoffLabel) && (
+                      <span className="text-slate-300">•</span>
+                    )}
+                    <span>handoff {progress.handoffCount}회</span>
+                  </>
+                )}
+            </div>
+          </div>
+        )}
 
         {/* AI 작업 단계 시각화 */}
         <div className="mt-3 flex items-center justify-between border-t border-blue-100 pt-3">
@@ -267,12 +312,57 @@ JobProgressIndicator.displayName = 'JobProgressIndicator';
 /**
  * 단계별 상세 설명 반환
  */
-function getStageDescription(_stage: string, progress: number): string {
+function getStageDescription(
+  _stage: string,
+  progress: number,
+  progressState?: AsyncQueryProgress | null
+): string {
+  if (progressState?.stageDetail) {
+    return progressState.stageDetail;
+  }
+
+  const executionPath = formatExecutionPath(progressState?.executionPath);
+  if (executionPath) {
+    return executionPath;
+  }
+
+  const agentLabel = getAgentRoleLabel(progressState?.agent);
+  if (agentLabel) {
+    return `${agentLabel} 처리 중`;
+  }
+
   if (progress < 20) return '에이전트 시스템 준비 중';
   if (progress < 50) return '최적의 처리 방법 결정 중';
   if (progress < 90)
     return 'Cloud Run AI Engine 처리 중 (웜업 시 최대 1분 소요)';
   return '결과 정리 및 반환 준비';
+}
+
+function getAgentRoleLabel(agent?: string | null): string | null {
+  if (!agent) {
+    return null;
+  }
+
+  return AGENT_ROLE_LABELS[agent] ?? agent;
+}
+
+function formatExecutionPath(path?: string[]): string | null {
+  if (!Array.isArray(path) || path.length === 0) {
+    return null;
+  }
+
+  const labels = path.map((agent) => getAgentRoleLabel(agent) ?? agent);
+  return labels.join(' → ');
+}
+
+function formatHandoff(progress?: AsyncQueryProgress | null): string | null {
+  if (!progress?.handoffFrom || !progress?.handoffTo) {
+    return null;
+  }
+
+  const from = getAgentRoleLabel(progress.handoffFrom) ?? progress.handoffFrom;
+  const to = getAgentRoleLabel(progress.handoffTo) ?? progress.handoffTo;
+  return `${from} → ${to}`;
 }
 
 /**

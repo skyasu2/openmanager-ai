@@ -154,6 +154,7 @@ export function useQueryControls(deps: QueryControlDeps) {
       jobId: null,
       isLoading: false,
       error: null,
+      errorDetails: null,
       clarification: null,
       warning: null,
       processingTime: 0,

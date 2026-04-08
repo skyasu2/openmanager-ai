@@ -39,7 +39,22 @@ interface JobResult {
   status: 'pending' | 'processing' | 'completed' | 'failed' | 'queued';
   result?: string;
   error?: string;
+  errorDetails?: {
+    kind: 'rate-limit' | 'general';
+    message: string;
+    source?:
+      | 'frontend-gateway'
+      | 'cloud-run-ai'
+      | 'upstream-provider'
+      | 'unknown';
+    scope?: 'minute' | 'daily' | 'unknown';
+    retryAfterSeconds?: number;
+    remaining?: number;
+    resetAt?: number;
+    dailyLimitExceeded?: boolean;
+  };
   targetAgent?: string;
+  toolsCalled?: string[];
   toolResults?: unknown[];
   ragSources?: Array<{
     title: string;
@@ -184,6 +199,18 @@ function normalizeProgressValue(value: unknown): number | null {
   return Math.min(100, Math.max(0, Math.round(value)));
 }
 
+function normalizeStringArray(value: unknown): string[] | null {
+  if (!Array.isArray(value)) {
+    return null;
+  }
+
+  const items = value
+    .map((item) => getNonEmptyString(item))
+    .filter((item): item is string => item !== null);
+
+  return items.length > 0 ? items : null;
+}
+
 export function buildProgressEventData({
   jobId,
   status,
@@ -213,6 +240,28 @@ export function buildProgressEventData({
     stage,
     message,
     elapsedMs,
+    ...(getNonEmptyString(progressState?.agent) && {
+      agent: getNonEmptyString(progressState?.agent),
+    }),
+    ...(getNonEmptyString(progressState?.handoffFrom) && {
+      handoffFrom: getNonEmptyString(progressState?.handoffFrom),
+    }),
+    ...(getNonEmptyString(progressState?.handoffTo) && {
+      handoffTo: getNonEmptyString(progressState?.handoffTo),
+    }),
+    ...(normalizeStringArray(progressState?.executionPath) && {
+      executionPath: normalizeStringArray(progressState?.executionPath),
+    }),
+    ...(typeof progressState?.handoffCount === 'number' &&
+      Number.isFinite(progressState.handoffCount) && {
+        handoffCount: Math.max(0, Math.round(progressState.handoffCount)),
+      }),
+    ...(getNonEmptyString(progressState?.stageLabel) && {
+      stageLabel: getNonEmptyString(progressState?.stageLabel),
+    }),
+    ...(getNonEmptyString(progressState?.stageDetail) && {
+      stageDetail: getNonEmptyString(progressState?.stageDetail),
+    }),
   };
 }
 
@@ -368,6 +417,7 @@ export async function GET(
                 status: 'completed',
                 response: result.result,
                 targetAgent: result.targetAgent,
+                toolsCalled: result.toolsCalled,
                 toolResults: result.toolResults,
                 ragSources: result.ragSources,
                 metadata: result.metadata,
@@ -387,6 +437,7 @@ export async function GET(
                 jobId,
                 status: 'failed',
                 error: result.error,
+                errorDetails: result.errorDetails,
                 processingTimeMs: result.processingTimeMs,
                 timestamp: result.completedAt,
               });

@@ -20,7 +20,18 @@ export interface JobResult {
   status: 'pending' | 'processing' | 'completed' | 'failed';
   result?: string;
   error?: string;
+  errorDetails?: {
+    kind: 'rate-limit' | 'general';
+    message: string;
+    source?: 'frontend-gateway' | 'cloud-run-ai' | 'upstream-provider' | 'unknown';
+    scope?: 'minute' | 'daily' | 'unknown';
+    retryAfterSeconds?: number;
+    remaining?: number;
+    resetAt?: number;
+    dailyLimitExceeded?: boolean;
+  };
   targetAgent?: string;
+  toolsCalled?: string[];
   toolResults?: unknown[];
   ragSources?: Array<{
     title: string;
@@ -48,6 +59,13 @@ interface JobProgress {
   stage: string;
   progress: number; // 0-100
   message?: string;
+  agent?: string;
+  handoffFrom?: string;
+  handoffTo?: string;
+  executionPath?: string[];
+  handoffCount?: number;
+  stageLabel?: string;
+  stageDetail?: string;
   updatedAt: string;
 }
 
@@ -121,6 +139,7 @@ export async function storeJobResult(
     status: 'completed',
     result: response,
     targetAgent: options?.targetAgent,
+    toolsCalled: options?.toolsCalled,
     toolResults: options?.toolResults,
     ragSources: options?.ragSources,
     metadata: options?.metadata,
@@ -147,7 +166,8 @@ export async function storeJobResult(
 export async function storeJobError(
   jobId: string,
   error: string,
-  startedAt?: string
+  startedAt?: string,
+  errorDetails?: JobResult['errorDetails']
 ): Promise<boolean> {
   // Read existing job data to preserve metadata
   const existingJob = await redisGet<Record<string, unknown>>(`${JOB_KEY_PREFIX}${jobId}`);
@@ -161,6 +181,7 @@ export async function storeJobError(
   const result: JobResult = {
     status: 'failed',
     error,
+    errorDetails,
     startedAt: effectiveStartedAt,
     completedAt,
     processingTimeMs,
@@ -200,12 +221,14 @@ export async function updateJobProgress(
   jobId: string,
   stage: string,
   progress: number,
-  message?: string
+  message?: string,
+  metadata?: Omit<JobProgress, 'stage' | 'progress' | 'message' | 'updatedAt'>
 ): Promise<boolean> {
   const progressData: JobProgress = {
     stage,
     progress: Math.min(100, Math.max(0, progress)),
     message,
+    ...(metadata ?? {}),
     updatedAt: new Date().toISOString(),
   };
 

@@ -263,6 +263,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
             onCancelJob={cancel}
             queryMode={currentMode}
             error={error}
+            errorDetails={hybridState.errorDetails}
             onClearError={clearError}
             onRetry={retryLastQuery}
             clarification={clarification}

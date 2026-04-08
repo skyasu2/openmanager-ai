@@ -29,6 +29,7 @@ import {
   type HandoffEventData,
   useHybridAIQuery,
 } from '@/hooks/ai/useHybridAIQuery';
+import type { AIErrorDetails } from '@/lib/ai/error-details';
 import { logger } from '@/lib/logging';
 import {
   type EnhancedChatMessage,
@@ -81,6 +82,7 @@ export interface UseAIChatCoreReturn {
     progress?: { progress: number; stage: string; message?: string };
     jobId?: string;
     error?: string | null;
+    errorDetails?: AIErrorDetails | null;
   };
   currentMode?: 'streaming' | 'job-queue';
 
@@ -466,6 +468,7 @@ export function useAIChatCore(
       progress: hybridState.progress ?? undefined,
       jobId: hybridState.jobId ?? undefined,
       error: hybridState.error ?? undefined,
+      errorDetails: hybridState.errorDetails ?? undefined,
     },
     currentMode: currentMode ?? undefined,
     error,

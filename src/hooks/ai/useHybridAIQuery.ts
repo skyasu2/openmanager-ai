@@ -68,6 +68,7 @@ import {
   STREAM_ERROR_MARKER,
   STREAM_ERROR_REGEX,
 } from '@/lib/ai/constants/stream-errors';
+import { inferAIErrorDetailsFromMessage } from '@/lib/ai/error-details';
 import type {
   HybridQueryState,
   UseHybridAIQueryOptions,
@@ -203,6 +204,7 @@ export function useHybridAIQuery(
     jobId: null,
     isLoading: false,
     error: null,
+    errorDetails: null,
     clarification: null,
     warning: null,
     processingTime: 0,
@@ -322,6 +324,7 @@ export function useHybridAIQuery(
         ...prev,
         isLoading: false,
         progress: null,
+        errorDetails: null,
         clarification: null,
       }));
       onJobResult?.(result);
@@ -337,12 +340,17 @@ export function useHybridAIQuery(
           metadata:
             result.ragSources ||
             result.traceId ||
+            (result.toolsCalled && result.toolsCalled.length > 0) ||
             (result.handoffHistory && result.handoffHistory.length > 0) ||
             (result.toolResultSummaries &&
               result.toolResultSummaries.length > 0)
               ? {
                   ...(result.ragSources && { ragSources: result.ragSources }),
                   ...(result.traceId && { traceId: result.traceId }),
+                  ...(result.toolsCalled &&
+                    result.toolsCalled.length > 0 && {
+                      toolsCalled: result.toolsCalled,
+                    }),
                   ...(result.handoffHistory &&
                     result.handoffHistory.length > 0 && {
                       handoffHistory: result.handoffHistory,
@@ -357,11 +365,13 @@ export function useHybridAIQuery(
         setMessages((prev) => [...prev, messageWithRag]);
       }
     },
-    onError: (error) => {
+    onError: (error, errorDetails) => {
       setState((prev) => ({
         ...prev,
         isLoading: false,
         error,
+        errorDetails:
+          errorDetails ?? inferAIErrorDetailsFromMessage(error) ?? null,
         clarification: null,
       }));
     },
@@ -433,6 +443,7 @@ export function useHybridAIQuery(
     setState((prev) => ({
       ...prev,
       error: null,
+      errorDetails: null,
       warning: null,
       processingTime: 0,
     }));

@@ -88,9 +88,33 @@ export const NlqAgent: Story = {
       stage: 'nlq',
       progress: 40,
       message: 'NLQ Agent가 자연어 쿼리 처리 중...',
+      agent: 'nlq',
+      executionPath: ['supervisor', 'nlq'],
+      stageLabel: '자연어 분석',
+      stageDetail: '분석 조율 → 자연어 분석',
     },
     isLoading: true,
     jobId: 'job-nlq-98765432',
+    onCancel: fn(),
+  },
+};
+
+export const AgentHandoffPath: Story = {
+  args: {
+    progress: {
+      stage: 'analyst',
+      progress: 65,
+      message: '심층 분석으로 전달 중...',
+      agent: 'analyst',
+      handoffFrom: 'supervisor',
+      handoffTo: 'analyst',
+      executionPath: ['supervisor', 'analyst', 'reporter'],
+      handoffCount: 2,
+      stageLabel: '심층 분석',
+      stageDetail: '분석 조율 → 심층 분석 → 보고서 생성',
+    },
+    isLoading: true,
+    jobId: 'job-path-12345678',
     onCancel: fn(),
   },
 };

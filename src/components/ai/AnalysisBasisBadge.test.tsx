@@ -72,10 +72,46 @@ describe('AnalysisBasisBadge', () => {
 
     expect(
       screen.getByText(
-        '데이터: 서버 실시간 데이터 분석 · 도구: 서버 필터링 외 1 · 기간: 최근 1시간'
+        '도구: 서버 필터링 · 서버 메트릭 조회 · 기간: 최근 1시간'
       )
     ).toBeInTheDocument();
     expect(screen.queryByText('응답 과정')).not.toBeInTheDocument();
+  });
+
+  it('prioritizes execution path in collapsed summary when handoff exists', () => {
+    render(
+      <AnalysisBasisBadge
+        basis={{
+          ...basis,
+          toolsCalled: ['searchKnowledgeBase', 'getServerMetrics'],
+          timeRange: '최근 1시간',
+        }}
+        handoffHistory={[
+          {
+            from: 'supervisor',
+            to: 'analyst',
+          },
+          {
+            from: 'analyst',
+            to: 'reporter',
+          },
+        ]}
+        toolResultSummaries={[
+          {
+            toolName: 'searchKnowledgeBase',
+            label: 'RAG 지식베이스 검색',
+            summary: '2개 결과를 반환했습니다.',
+            status: 'completed',
+          },
+        ]}
+      />
+    );
+
+    expect(
+      screen.getByText(
+        '경로: 분석 조율 → 심층 분석 → 보고서 생성 · 도구 1개 · 기간: 최근 1시간'
+      )
+    ).toBeInTheDocument();
   });
 
   it('renders supplemental parity details when provided', () => {
@@ -143,14 +179,17 @@ describe('AnalysisBasisBadge', () => {
     );
 
     expect(screen.getByText('응답 과정')).toBeInTheDocument();
-    expect(screen.getByText('Trace ID')).toBeInTheDocument();
+    expect(screen.getByText('추적 가능 ID')).toBeInTheDocument();
     expect(screen.getByText('trace-1234567890abcdef')).toBeInTheDocument();
-    expect(screen.getByText('에이전트 전달 경로')).toBeInTheDocument();
-    expect(screen.getByText('supervisor → reporter')).toBeInTheDocument();
+    expect(screen.getByText('실행 경로')).toBeInTheDocument();
+    expect(screen.getAllByText('분석 조율 → 보고서 생성')).toHaveLength(2);
+    expect(screen.getByText('전달 이력')).toBeInTheDocument();
     expect(screen.getByText('도구 결과 요약')).toBeInTheDocument();
     expect(screen.getByText('2개 결과를 반환했습니다.')).toBeInTheDocument();
     expect(screen.getByText('단계별 처리 내역')).toBeInTheDocument();
-    expect(screen.getByText('searchKnowledgeBase')).toBeInTheDocument();
-    expect(screen.getByText('getServerMetrics')).toBeInTheDocument();
+    expect(screen.getAllByText('RAG 지식베이스 검색').length).toBeGreaterThan(
+      0
+    );
+    expect(screen.getAllByText('서버 메트릭 조회').length).toBeGreaterThan(0);
   });
 });

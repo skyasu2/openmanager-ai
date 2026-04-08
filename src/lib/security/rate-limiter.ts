@@ -445,7 +445,11 @@ export function withRateLimit(
         {
           error: 'Too Many Requests',
           message,
+          source: 'frontend-gateway',
+          limitScope: isDailyLimitExceeded ? 'daily' : 'minute',
           retryAfter: Math.ceil((result.resetTime - Date.now()) / 1000),
+          remaining: result.remaining,
+          resetAt: result.resetTime,
           dailyLimitExceeded: isDailyLimitExceeded,
         },
         { status: 429, headers }
