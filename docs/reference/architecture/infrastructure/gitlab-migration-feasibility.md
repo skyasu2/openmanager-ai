@@ -14,8 +14,8 @@
 
 본 문서는 GitLab 이전 이전 단계에서 작성된 사전 타당성 분석입니다.
 
-**현재 상태(2026-04-05 기준): GitLab canonical 전환 완료.**  
-현재 Frontend production 배포는 `git push gitlab main` 이후 GitLab CI가 `vercel build --prod` + `vercel deploy --prebuilt --prod`를 실행하는 경로를 사용합니다.
+**현재 상태(2026-04-08 기준): GitLab canonical 전환 완료.**
+현재 Frontend production 배포는 `git push gitlab main`으로 validate를 통과한 뒤, `git push --follow-tags gitlab main`으로 생성된 semver tag pipeline이 `vercel build --prod` + `vercel deploy --prebuilt --prod`를 실행하는 경로를 사용합니다.
 
 ## 당시 GitHub 종속성 (사전 분석 시점)
 

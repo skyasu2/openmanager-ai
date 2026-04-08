@@ -73,7 +73,8 @@ npm run test           # Run tests
 ### Deployment
 ```bash
 npm run release:patch  # Version bump
-git push gitlab main   # Canonical deploy path via GitLab CI
+git push gitlab main   # Canonical validate path via GitLab CI
+git push --follow-tags gitlab main  # Canonical production deploy path
 ```
 
 ### AI Engine

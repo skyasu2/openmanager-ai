@@ -9,7 +9,9 @@ push_default="$(git config --get remote.pushDefault 2>/dev/null || true)"
 if [[ "$allow_local" != "true" ]]; then
   cat <<'EOF'
 ❌ Local Vercel deploy is blocked by policy.
-   Canonical production deploy path is: git push gitlab main -> GitLab CI deploy job.
+   Canonical production deploy path is:
+   1) git push gitlab main -> GitLab CI validate
+   2) git push --follow-tags gitlab main -> GitLab semver tag deploy job
    If you explicitly need a one-off local deploy, rerun with:
    ALLOW_LOCAL_VERCEL_DEPLOY=true npm run deploy:safe
 EOF

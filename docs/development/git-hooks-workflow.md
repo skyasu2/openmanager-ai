@@ -302,7 +302,7 @@ SKIP_NODE_CHECK=true git push
 해결:
 1. npm run type-check로 에러 확인
 2. 수정 후 다시 push
-3. 긴급 시: HUSKY=0 git push gitlab main 후 GitLab CI validate/deploy 상태와 `npm run ci:local:docker`로 후속 검증
+3. 긴급 시: HUSKY=0 git push gitlab main 후 GitLab CI validate 상태를 확인하고, 실제 deploy가 필요하면 `./scripts/release/publish.sh patch|minor|major` 경로로 이어서 수행
 ```
 
 ---
