@@ -1,11 +1,11 @@
 # Common Issues
 
-> 자주 발생하는 빌드/API 문제의 증상별 해결 가이드
+> 자주 발생하는 빌드/API/CI 문제의 증상별 해결 가이드
 > Owner: documentation
-> Last verified against code: 2026-04-06
+> Last verified against code: 2026-04-09
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-04-06
+> Last reviewed: 2026-04-09
 > Canonical: docs/troubleshooting/common-issues.md
 > Tags: troubleshooting,issues,debugging
 
@@ -48,6 +48,46 @@ find src/app/api -name 'route.ts' -o -name 'route.tsx' | wc -l
 - `CLOUD_RUN_AI_URL` 환경변수 확인
 - `src/app/api/ai/supervisor/route.ts`에서 프록시 에러 로그 확인
 - `/api/ai/wake-up`로 cold-start 완화 확인
+
+## GitLab CI Runner Executor Transition
+
+### Symptoms
+- `ci: route all jobs to wsl2-docker` 같은 executor 전환 직후 tag deploy가 연속 실패
+- `deploy` job이 `Missing required GitLab CI variable: VERCEL_TOKEN`로 즉시 종료
+- `deploy_ai_engine` job이 `gcloud: command not found` 또는 권한 오류로 실패
+- shared runner에서는 되던 `npm install -g` / `image:` 기반 job이 shell runner에서 갑자기 깨짐
+
+### Cause
+- shared Docker runner에서 self-hosted shell runner로 바꾸면 실행 전제가 달라진다.
+- shell executor에서는 `.gitlab-ci.yml`의 `image:`가 적용되지 않는다.
+- protected CI 변수는 protected branch뿐 아니라 protected tag에도 맞아야 semver tag pipeline에서 노출된다.
+- host에 설치된 `node`, `npm`, `vercel`, `gcloud`와 `gitlab-runner` 사용자 권한이 곧 배포 환경이 된다.
+
+### Actions
+```bash
+# 1) GitLab deploy 준비 상태 점검
+npm run gitlab:deploy:check
+
+# 2) runner 자체 상태 확인
+bash scripts/ci/runner-health-check.sh
+
+# 3) runner 사용자의 실제 PATH / 권한 확인
+sudo -u gitlab-runner -H bash -lc 'whoami && which node npm vercel gcloud && npm config get prefix'
+```
+
+- GitLab `Protected tags`에 `v*.*.*`가 있는지 확인한다.
+- GitLab CI/CD variables의 `VERCEL_TOKEN`, `GCP_SERVICE_KEY`, `GCP_PROJECT_ID`가 tag pipeline에 노출되는지 확인한다.
+- shell executor 전환 시 `image: node:*`, `image: google/cloud-sdk:slim` 같은 선언은 무시된다고 가정한다.
+- `npm install -g`가 필요하면 `gitlab-runner` 사용자 기준 writable prefix를 먼저 준비하거나, host에 미리 설치한다.
+- `gcloud`가 사용자 홈 아래 설치돼 있으면 홈 디렉터리 execute 권한과 runner PATH를 같이 확인한다.
+- deploy 복구 중에는 `--silent` 옵션을 제거해 실제 stderr를 먼저 본다.
+- executor 전환은 `main` 직접 반영 전에 별도 branch/MR pipeline에서 `deploy`와 `deploy_ai_engine`를 한 번씩 dry-run한다.
+
+### Checklist
+- 비용 절감 목표와 executor 전환을 같은 커밋에서 처리하지 않는다.
+- `validate`만 green이라고 deploy 전제가 맞는 것으로 판단하지 않는다.
+- semver tag deploy를 쓰면 protected tag + protected variable 조합을 먼저 점검한다.
+- 상세 운영 구조와 현재 runner 정책은 `docs/development/ci-cd.md`를 기준으로 본다.
 
 ## Docs Link Breakage
 
