@@ -57,6 +57,7 @@
   - 입력 템플릿: `reports/qa/templates/qa-run-input.example.json`
   - 기록: `npm run qa:record -- --input <json>`
   - 상태 확인: `npm run qa:status`
+  - 증거 무결성 감사: `npm run qa:evidence:audit` (고아 파일·누락 참조·부채 런 탐지)
 
 ### 2.6 저장소/배포 토폴로지 (Codex)
 - **정본 개발 저장소는 `gitlab` remote** 입니다. 전체 이력/테스트/문서/QA 자산을 유지하며, Vercel Frontend Git 배포 소스도 GitLab `main` 입니다.
@@ -66,6 +67,7 @@
 - GitHub 공개 스냅샷 동기화는 `npm run sync:github` 으로만 수행합니다 (`scripts/sync/github-sync.sh`, 포함 목록: `.github-export-include`, 안전 제외 목록: `.github-export-ignore`). `git push origin` 또는 `git push github-public` 직접 실행 금지.
 - GitLab CI는 **활성** 상태입니다. 현재 `.gitlab-ci.yml`은 `validate(frontend + ai-engine) → deploy(frontend) → deploy_ai_engine(cloud-run) → smoke(frontend)` 다단계 파이프라인으로 동작합니다. docs/reports 전용 push는 CI 스킵(분 예산 보존).
 - **배포 권한은 GitLab CI가 보유**합니다. Frontend는 `deploy` job에서 `vercel build --prod` 후 `vercel deploy --prebuilt --prod`, AI Engine은 `deploy_ai_engine` job에서 `cloud-run/ai-engine/deploy.sh`를 통해 Cloud Run production 배포를 수행합니다. validate 실패 시 각 배포가 차단됩니다.
+- **CI quota 소진 시 긴급 배포 fallback**: `vercel --prod` (소스 업로드 방식). 로컬 `vercel build --prod`는 WSL2에서 `fonts.gstatic.com` 네트워크 차단으로 실패할 수 있으므로 이 방식을 우선 사용합니다.
 - 로컬 전체 검증 표준 경로는 `npm run ci:local:docker` (SSOT 유지, CI와 별개)입니다.
 
 ## 3) 공통 지식 및 유지보수 메모
@@ -74,4 +76,4 @@
 - 공통 정책이 변경되는 경우 이 파일이 아닌 `docs/guides/ai/ai-standards.md`를 갱신해야 합니다.
 
 ---
-_Last reviewed: 2026-04-05_
+_Last reviewed: 2026-04-08_

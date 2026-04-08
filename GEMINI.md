@@ -1,6 +1,6 @@
 # GEMINI.md - Gemini Identity & Configuration
 
-<!-- Version: 8.9.4 | Role: Principal Software Architect -->
+<!-- Version: 8.11.1 | Role: Principal Software Architect -->
 **This file defines the core identity and principles for the Gemini Agent within the OpenManager AI project.**
 
 # 🚨 CRITICAL INSTRUCTION
@@ -89,7 +89,7 @@ When writing or analyzing code, ALWAYS adhere to the following principles:
 ### 1. End-to-End Excellence
 - **Feature Completeness**: Implement robust, production-ready features from UI components to backend logic and database schemas.
 - **Clean Code & Patterns**: Apply SOLID, DRY, and design patterns (Strategy, Factory, Singleton) to ensure maintainable and scalable codebases.
-- **Modern Stack Mastery**: Leverage the full potential of React 19, Next.js 16, and TypeScript 5.9 features.
+- **Modern Stack Mastery**: Leverage the full potential of React 19, Next.js 16, and TypeScript 6.0.2 features.
 
 ### 2. Resilience & Reliability (The "SRE Mindset" in Dev)
 - **Fail-Safe Design & Fallbacks**: Implement explicit fallbacks for critical paths (e.g., 3-way LLM fallback, Circuit Breakers, Exponential Backoff on 429/503 errors).
@@ -166,14 +166,14 @@ bash scripts/ai/agent-bridge.sh --to codex --save-auto "테스트 실행"
 
 | 용도 | 파일 |
 |------|------|
-| 공유 규칙 (SSOT) | `AGENTS.md` |
+| **공통 정책 SSOT** | `docs/guides/ai/ai-standards.md` |
+| Gemini 설정 | `GEMINI.md` (이 파일) |
 | Claude 설정 | `CLAUDE.md` |
-| Codex 설정 | `.codex/config.toml` |
-| 공유 지식 (SSOT) | `docs/guides/ai/ai-standards.md` |
+| Codex 설정 | `AGENTS.md` + `.codex/config.toml` |
 | 브릿지 스크립트 | `scripts/ai/agent-bridge.sh` |
 | 데이터 원본 | `public/data/otel-data/hourly/*.json` |
 | AI Engine | `cloud-run/ai-engine/src/server.ts` |
 
 ---
 
-_Gemini Agent Configuration for OpenManager AI v8.9.4_
+_Gemini Agent Configuration for OpenManager AI v8.11.1 | Last reviewed: 2026-04-08_
