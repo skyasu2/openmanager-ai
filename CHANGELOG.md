@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.3](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.2...v8.11.3) (2026-04-08)
+
+
+### Bug Fixes
+
+* **ci:** harden vercel deploy preflight ([6e710c4](https://gitlab.com/skyasu2/openmanager-ai/-/commit/6e710c43e3c8d151d54dc410de0068c06bf3b0c7))
+* **release:** verify deployed build version ([26f74c1](https://gitlab.com/skyasu2/openmanager-ai/-/commit/26f74c168c561ad1313a186327153008df5bc7f1))
+* **release:** verify production after publish ([0cbc2cc](https://gitlab.com/skyasu2/openmanager-ai/-/commit/0cbc2cc7355420bfef1e90f058bb22fcd3e91324))
+
 ## [8.11.2](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.1...v8.11.2) (2026-04-08)
 
 
