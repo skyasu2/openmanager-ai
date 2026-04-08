@@ -1,7 +1,7 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-08 23:35:03 KST
+> Generated at: 2026-04-09 01:51:20 KST
 
 ## Summary
 
@@ -11,61 +11,60 @@
 | Total Checks | 1835 |
 | Passed | 1763 |
 | Failed | 66 |
-| Completed Items | 284 |
-| Pending Items | 1 |
+| Completed Items | 285 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 13 |
 | Expert Domains Tracked | 8 |
-| Expert Open Gaps | 1 |
-| Completion Rate | 99.65% |
+| Expert Open Gaps | 0 |
+| Completion Rate | 100% |
 | Last Counted Run | QA-20260408-0253 (2026-04-08T04:54:22.471Z) |
-| Latest Recorded Run | QA-20260408-0257 (2026-04-08T14:35:03.410Z) |
+| Latest Recorded Run | QA-20260409-0258 (2026-04-08T16:51:20.163Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260408-0257 (2026-04-08T14:35:03.410Z)
+Latest run: QA-20260409-0258 (2026-04-08T16:51:20.163Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| DevOps / SRE Engineer | partially-appropriate | yes | Fix GitLab protected tag and variable exposure, then retry the existing failed v8.11.3 pipeline or confirm the issue is closed on the next semver release. |
+| DevOps / SRE Engineer | appropriate | no | No immediate deploy-path follow-up required; keep using the GitLab readiness audit before future releases. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Post-recovery billing check after local production deploy; effective 4.6046 USD, billed 0.0000 USD, no unexpected billed spike. |
+| vercel | cli | checked | normal | Post-release billing check after canonical v8.11.4 deploy; effective 4.6046 USD, billed 0.0000 USD, no unexpected billed spike. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: no
-- Deployment: dpl_A3VtpXaxdPvTZYe4t98wRdMVenWz / SHA bcf47771
+- Deployment: dpl_FnzN8yJFRkS5TUkvQYWREJwtJGh2 / SHA 8ca2b7eb
 - Coverage Packs: core-routes-smoke, observability-pack
 - Covered Surfaces: /, /validation, /api/version, production alias
-- Skipped Surfaces: dashboard, ai-sidebar, Cloud Run runtime QA, GitLab retry path
+- Skipped Surfaces: dashboard, ai-sidebar, Cloud Run runtime QA deep checks
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
+| general | Canonical deployment | [Canonical deployment](https://openmanager-d30ys163z-skyasus-projects.vercel.app/) | - |
 | general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
-| general | Recovery deployment | [Recovery deployment](https://openmanager-az99i79wb-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | v8.11.3 local vercel recovery evidence | `reports/qa/evidence/qa-20260408-v8113-local-vercel-recovery.md` | - |
+| playwright-console | v8.11.4 canonical release success evidence | `reports/qa/evidence/qa-20260409-v8114-canonical-release-success.md` | - |
 
 ## Expert Domain Open Gaps
 
-- sre-devops: DevOps / SRE Engineer (last QA-20260408-0257)
-  next: Fix GitLab protected tag and variable exposure, then retry the existing failed v8.11.3 pipeline or confirm the issue is closed on the next semver release.
+- None
 
 ## Pending Improvements
 
-- [P1] gitlab-tag-protected-variable-exposure-v8113: Fix GitLab protected variable exposure for semver tag deploy (seen 3회, last QA-20260408-0257)
+- None
 
 ## Deferred Improvements
 
@@ -207,6 +206,7 @@ Latest run: QA-20260408-0257 (2026-04-08T14:35:03.410Z)
 - frontend-ai-data-parity-gate: 프론트엔드 표시 상태와 AI 분석 상태 동일 슬롯 참조 검증 (completed 2회, last QA-20260324-0178)
 - frontend-landing-v880: Landing page v8.8.0 정상 렌더링 (completed 2회, last QA-20260314-0097)
 - gitlab-tag-deploy-trace-v8113: GitLab tag deploy failure root cause analysis for v8.11.3 (completed 1회, last QA-20260408-0256)
+- gitlab-tag-protected-variable-exposure-v8113: Fix GitLab protected variable exposure for semver tag deploy (completed 1회, last QA-20260409-0258)
 - guest-auth-proof-cookie: 게스트 PIN 로그인 후 auth_proof 쿠키 발급 정상 (completed 2회, last QA-20260314-0097)
 - guest-dashboard-auth-check: 게스트 대시보드 로컬 인증 체크 우회 보완 (completed 1회, last QA-20260310-0078)
 - guest-flow-server-card-and-startflow-resilience: 게스트 플로우 시스템 시작/AI 진입 내성 보강 (completed 3회, last QA-20260302-0039)
@@ -390,6 +390,7 @@ Latest run: QA-20260408-0257 (2026-04-08T14:35:03.410Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260409-0258 | 2026-04-08T16:51:20.163Z | targeted | yes | no | Vercel Targeted Release Validation - v8.11.4 canonical deploy success | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260408-0257 | 2026-04-08T14:35:03.410Z | targeted | yes | no | Vercel Targeted Release Validation - v8.11.3 production recovered via local deploy | 3 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260408-0256 | 2026-04-08T14:15:23.840Z | targeted | yes | no | QA Metadata Sync - v8.11.3 trace analysis closed | 0 | 1 | 1 | 0 | 0 | 1 |
 | QA-20260408-0255 | 2026-04-08T14:09:01.310Z | targeted | yes | no | Vercel Targeted Release Validation - v8.11.3 root cause confirmed | 3 | 0 | 1 | 0 | 0 | 1 |
@@ -409,4 +410,3 @@ Latest run: QA-20260408-0257 (2026-04-08T14:35:03.410Z)
 | QA-20260405-0241 | 2026-04-05T11:14:20.847Z | targeted | no | no | Vercel targeted QA - response process detail visibility after streaming fix | 4 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260405-0240 | 2026-04-05T10:18:47.152Z | targeted | no | no | Vercel targeted QA - response process detail post-deploy verification | 5 | 0 | 2 | 0 | 0 | 0 |
 | QA-20260405-0239 | 2026-04-05T09:34:55.345Z | targeted | no | no | Vercel targeted QA - assistant response process detail visibility | 4 | 0 | 1 | 0 | 0 | 0 |
-| QA-20260405-0238 | 2026-04-05T06:21:39.750Z | release-gate | yes | yes | Broad Release-Gate QA - Final Golden State Baseline Alignment | 15 | 0 | 0 | 0 | 0 | 0 |

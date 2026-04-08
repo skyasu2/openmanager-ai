@@ -1,0 +1,97 @@
+{
+  "runId": "QA-20260409-0258",
+  "recordedAt": "2026-04-08T16:51:20.163Z",
+  "recordedAtKst": "2026-04-09 01:51:20 KST",
+  "runTitle": "Vercel Targeted Release Validation - v8.11.4 canonical deploy success",
+  "owner": "codex",
+  "source": "codex-cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_FnzN8yJFRkS5TUkvQYWREJwtJGh2",
+    "deploymentUrl": "https://openmanager-d30ys163z-skyasus-projects.vercel.app",
+    "commitSha": "8ca2b7eb55c67fb21835f4fe4842b2dcb2fd2854"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": false,
+  "coveragePacks": ["core-routes-smoke", "observability-pack"],
+  "coveredSurfaces": ["/", "/validation", "/api/version", "production alias"],
+  "skippedSurfaces": [
+    "dashboard",
+    "ai-sidebar",
+    "Cloud Run runtime QA deep checks"
+  ],
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Canonical semver tag deploy is healthy again after protected tag and runner environment fixes, and production now serves v8.11.4.",
+      "nextAction": "No immediate deploy-path follow-up required; keep using the GitLab readiness audit before future releases."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-09T01:50:27+09:00",
+      "summary": "Post-release billing check after canonical v8.11.4 deploy; effective 4.6046 USD, billed 0.0000 USD, no unexpected billed spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "v8.11.4 canonical release success evidence",
+      "path": "reports/qa/evidence/qa-20260409-v8114-canonical-release-success.md"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "gitlab-tag-protected-variable-exposure-v8113",
+      "title": "Fix GitLab protected variable exposure for semver tag deploy",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Protected tags and runner environment fixes restored canonical semver release deploys; v8.11.4 reached production successfully.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production alias now serves buildVersion 8.11.4.",
+    "The earlier GitLab protected variable exposure blocker is resolved.",
+    "Release-script verification timeout was a local tooling issue and has already been addressed separately."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Canonical deployment",
+      "url": "https://openmanager-d30ys163z-skyasus-projects.vercel.app/"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}
