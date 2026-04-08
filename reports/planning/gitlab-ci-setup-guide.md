@@ -45,8 +45,12 @@ GitLab 프로젝트 → Settings → CI/CD → Variables → "Add variable"
 | `VERCEL_ORG_ID` | `team_DdU5kNZmstk2visthKS7MGSe` | ✅ | ❌ |
 | `VERCEL_PROJECT_ID` | `prj_WmjP9vVJ1ZlIiSK6O5kuSOuVW7CP` | ✅ | ❌ |
 
-> **Protected**: main 브랜치에서만 사용 가능 (보안)
+> **Protected**: 보호된 브랜치/태그에서만 사용 가능
 > **Masked**: 로그에서 값 가림 (VERCEL_TOKEN만)
+>
+> 현재 deploy는 semver tag(`v*.*.*`) pipeline에서 실행되므로, `main` 보호 브랜치만으로는 부족합니다.
+> GitLab → Settings → Repository → Protected tags 에서 `v*.*.*` 패턴도 함께 보호해야
+> `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` 같은 protected 변수가 tag pipeline에 노출됩니다.
 
 ---
 
