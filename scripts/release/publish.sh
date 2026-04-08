@@ -138,6 +138,11 @@ if [[ "$PUSH_DEFAULT" != "$CANONICAL_REMOTE" ]]; then
   exit 1
 fi
 
+if [[ -f "scripts/gitlab/check-main-protection.mjs" ]]; then
+  echo "🔐 GitLab deploy readiness check..."
+  node scripts/gitlab/check-main-protection.mjs
+fi
+
 CURRENT_VERSION="$(node -p "require('./package.json').version" 2>/dev/null || true)"
 if [[ -n "$CURRENT_VERSION" ]]; then
   require_current_release_deployed "$CURRENT_VERSION"

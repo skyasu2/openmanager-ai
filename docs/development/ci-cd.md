@@ -589,15 +589,19 @@ Dependabot PR 생성
 ```
 `git push gitlab main`
         → GitLab CI validate
+
+`git push --follow-tags gitlab main`
         → GitLab CI deploy (`vercel build --prod` + `vercel deploy --prebuilt --prod`)
         → Vercel Production
 ```
 
-- GitLab CI validate→deploy가 품질 게이트와 배포 경로 역할을 함께 담당합니다.
+- GitLab CI는 `main` push에서는 validate만, semver tag push에서는 deploy/smoke까지 담당합니다.
 - Vercel Git Integration은 해제되어 있어 Git push만으로 Vercel이 별도 자동 빌드를 시작하지 않습니다.
 - `SKIP_ENV_VALIDATION=true`로 환경변수 없이도 빌드 성공 보장
 - 기본 Git push 대상은 canonical remote인 `gitlab` 입니다.
-- 1인 개발 기본 경로는 canonical `main` direct push 입니다. `git push gitlab main`이 표준 배포 트리거입니다.
+- 1인 개발 기본 경로는 canonical `main` direct push + semver tag deploy 입니다.
+- `git push gitlab main`은 표준 validate 트리거입니다.
+- `git push --follow-tags gitlab main`은 semver tag가 있을 때 표준 deploy 트리거입니다.
 - feature branch → MR merge 는 고위험 변경, 병렬 작업, 리뷰 기록이 필요한 경우에만 권장합니다.
 - 원하면 로컬 strict mode로 `BLOCK_MAIN_DIRECT_PUSH=true git push gitlab main`을 사용해 일시적으로 branch/MR 흐름을 강제할 수 있습니다.
 
@@ -609,8 +613,11 @@ Dependabot PR 생성
 npm run gitlab:protection:check
 ```
 
-- `GITLAB_TOKEN`(또는 `GL_TOKEN`)이 없으면 수동 체크리스트를 출력합니다.
-- 토큰이 있으면 GitLab API로 `main` 보호 브랜치 설정(`push/merge/force-push`)을 검증합니다.
+- `GITLAB_TOKEN`(또는 `GL_TOKEN`, `GLAB_TOKEN`)이 없으면 수동 체크리스트를 출력합니다.
+- 토큰이 있으면 GitLab API로 아래를 함께 검증합니다.
+  - `main` 보호 브랜치 설정(`push/merge/force-push`)
+  - semver protected tag 패턴 `v*.*.*`
+  - deploy 필수 변수 `VERCEL_TOKEN`, `GCP_SERVICE_KEY`, `GCP_PROJECT_ID`
 - 아래 명령으로 canonical 라우팅(원격/훅/CI gate/배포 가드) 일관성을 한 번에 점검할 수 있습니다.
 
 ```bash
