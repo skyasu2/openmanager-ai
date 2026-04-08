@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.4](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.3...v8.11.4) (2026-04-08)
+
+
+### Bug Fixes
+
+* **ci:** align tag deploy prerequisites ([66cc2cd](https://gitlab.com/skyasu2/openmanager-ai/-/commit/66cc2cd97e2e72f0260c5ea3951c389aefa0cfb1))
+* **ci:** audit gitlab deploy readiness ([7ddf7cc](https://gitlab.com/skyasu2/openmanager-ai/-/commit/7ddf7ccbe96b6077da1ad16feeeb9bf63fdb7cd9))
+* **ci:** skip vercel global install when already available on runner ([797cb55](https://gitlab.com/skyasu2/openmanager-ai/-/commit/797cb55e11e924e4c478eeb709850c0470f9997c))
+* **release:** block new tags on deploy drift ([65709d5](https://gitlab.com/skyasu2/openmanager-ai/-/commit/65709d5acb854d8d70fa901566610ae15c08cf3c))
+
+
+### Tests
+
+* **qa:** close v8.11.3 trace analysis gap ([bcf4777](https://gitlab.com/skyasu2/openmanager-ai/-/commit/bcf47771dc7540174ad8c636e08c8c9584dfa541))
+* **qa:** record v8.11.3 production recovery ([d7aa756](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d7aa756ab042b911891db524d65fb4c10260e5ef))
+* **qa:** record v8.11.3 release validation drift ([200ebc7](https://gitlab.com/skyasu2/openmanager-ai/-/commit/200ebc736297315137a14796e3511da89ed05885))
+* **qa:** record v8.11.3 root cause confirmation ([1907551](https://gitlab.com/skyasu2/openmanager-ai/-/commit/1907551e68ced502ac02bf56132e7a96d2a1c813))
+
 ## [8.11.3](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.2...v8.11.3) (2026-04-08)
 
 
