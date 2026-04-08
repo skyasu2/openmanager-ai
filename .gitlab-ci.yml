@@ -7,13 +7,11 @@
 #   - smoke(frontend/ai-engine): 각 배포 경로 후 최소 smoke 수행
 # 구조: validate(frontend + ai-engine) → deploy(frontend) / deploy_ai(ai-engine) → smoke(frontend + ai-engine)
 # Runner 전략:
-#   validate: tags: [wsl2-docker] → self-hosted runner (분 소진 0)
-#             WSL2 runner 미가동 시 job은 pending 상태로 남음
-#             shared runner 우회가 필요하면 validate tags를 수동으로 제거해야 함
-#   deploy:   tags 없음 → shared runner (~4분/회)
-#   smoke:    tags 없음 → shared runner (~30초/회)
-# 분 소진 예산: validate 0분 + deploy(frontend) ~4분 + smoke(frontend/ai-engine) ~1분 = ~5~6분/회 (self-hosted 가동 시)
-#             validate를 수동으로 shared runner로 전환하면 ~8분/회 수준까지 증가 가능
+#   모든 job: tags: [wsl2-docker] → self-hosted runner (분 소진 0)
+#   개발이 WSL2에서 진행되므로 runner는 99% 가동 중.
+#   미가동 시 job은 pending 상태로 남음 (CI 게이트로 pending → 실수 배포 차단 효과도 있음)
+#   긴급 배포(runner 미가동) 시: tags를 수동으로 제거하거나 vercel --prod 직접 실행
+# 분 소진 예산: 모든 job 자체 runner → 월 0분 소진 (GitLab shared runner 미사용)
 
 image: node:24-bookworm
 
@@ -246,6 +244,8 @@ validate_ai_engine:
 # ─── deploy job ────────────────────────────────────────────────────────────────
 deploy:
   stage: deploy
+  tags:
+    - wsl2-docker  # self-hosted runner (분 소진 0). 미가동 시 pending 상태 유지.
   <<: [*npm_cache_readonly, *main_frontend_changes_only]  # validate가 작성한 .npm/ 캐시 재사용 → npm ci 속도 향상
   before_script:
     - npm install -g vercel@50 --no-audit --silent  # 버전 고정: 50.x (breaking change 방지)
@@ -264,6 +264,8 @@ deploy:
 
 deploy_ai_engine:
   stage: deploy_ai
+  tags:
+    - wsl2-docker  # self-hosted runner (분 소진 0). 미가동 시 pending 상태 유지.
   <<: *main_ai_engine_changes_only
   image: google/cloud-sdk:slim
   before_script: *gcp_ci_auth
@@ -280,6 +282,8 @@ deploy_ai_engine:
 
 post_deploy_ai_engine_smoke:
   stage: smoke
+  tags:
+    - wsl2-docker  # self-hosted runner (분 소진 0). 미가동 시 pending 상태 유지.
   <<: *main_ai_engine_smoke_changes_only
   image: google/cloud-sdk:slim
   needs:
@@ -298,6 +302,8 @@ post_deploy_ai_engine_smoke:
 # ─── production smoke job ──────────────────────────────────────────────────────
 post_deploy_smoke:
   stage: smoke
+  tags:
+    - wsl2-docker  # self-hosted runner (분 소진 0). 미가동 시 pending 상태 유지.
   <<: *main_frontend_changes_only
   needs:
     - deploy
