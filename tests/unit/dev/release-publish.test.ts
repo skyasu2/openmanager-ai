@@ -60,7 +60,15 @@ function initReleaseRepo() {
     }
   );
   writeFileSync(join(repoDir, 'README.md'), '# fixture\n', 'utf8');
+  writeFileSync(
+    join(repoDir, 'package.json'),
+    JSON.stringify({ name: 'fixture', version: '1.2.3' }, null, 2),
+    'utf8'
+  );
   runCommand('git', ['-C', repoDir, 'add', 'README.md'], {
+    cwd: process.cwd(),
+  });
+  runCommand('git', ['-C', repoDir, 'add', 'package.json'], {
     cwd: process.cwd(),
   });
   runCommand('git', ['-C', repoDir, 'commit', '-m', 'init'], {
@@ -104,6 +112,35 @@ function createFakeNpx(tempDir: string) {
   );
   chmodSync(fakeNpxPath, 0o755);
   return binDir;
+}
+
+function writeSmokeScript(repoDir: string, bodyLines: string[]) {
+  const scriptDir = join(repoDir, 'scripts', 'test');
+  mkdirSync(scriptDir, { recursive: true });
+  writeFileSync(
+    join(scriptDir, 'vercel-post-deploy-smoke.mjs'),
+    bodyLines.join('\n'),
+    'utf8'
+  );
+}
+
+function writeReleaseConsistencyScript(repoDir: string) {
+  const scriptDir = join(repoDir, 'scripts', 'release');
+  mkdirSync(scriptDir, { recursive: true });
+  writeFileSync(
+    join(scriptDir, 'check-release-consistency.js'),
+    'process.exit(0);\n',
+    'utf8'
+  );
+}
+
+function commitRepoChanges(repoDir: string, message: string) {
+  runCommand('git', ['-C', repoDir, 'add', '.'], {
+    cwd: process.cwd(),
+  });
+  runCommand('git', ['-C', repoDir, 'commit', '-m', message], {
+    cwd: process.cwd(),
+  });
 }
 
 function runPublish(
@@ -268,5 +305,61 @@ describe('release publish script', () => {
     expect(`${result.stdout}${result.stderr}`).toContain(
       'Fix: git branch --set-upstream-to=gitlab/main main'
     );
+  });
+
+  it('fails preflight when current production version gate detects drift', () => {
+    const repoDir = initReleaseRepo();
+    writeSmokeScript(repoDir, [
+      '#!/usr/bin/env node',
+      "console.error('expected deployed version 1.2.3, got 1.2.2');",
+      'process.exit(1);',
+      '',
+    ]);
+    commitRepoChanges(repoDir, 'add smoke fixture');
+
+    const result = runPublish(repoDir, ['patch']);
+
+    expect(result.status).toBe(1);
+    expect(`${result.stdout}${result.stderr}`).toContain(
+      '❌ Refusing to create a new release while production drift remains.'
+    );
+    expect(`${result.stdout}${result.stderr}`).toContain(
+      'Expected current production version: 1.2.3'
+    );
+    expect(`${result.stdout}${result.stderr}`).toContain(
+      'RELEASE_REQUIRE_DEPLOYED_BASE=false'
+    );
+  });
+
+  it('allows bypassing the current production version gate explicitly', () => {
+    const repoDir = initReleaseRepo();
+    writeSmokeScript(repoDir, [
+      '#!/usr/bin/env node',
+      "console.error('expected deployed version 1.2.3, got 1.2.2');",
+      'process.exit(1);',
+      '',
+    ]);
+    writeReleaseConsistencyScript(repoDir);
+    commitRepoChanges(repoDir, 'add release fixtures');
+    const tempDir = createTempDir('release-publish-bypass-');
+    const callLog = join(tempDir, 'npx-call.log');
+    const fakeBinDir = createFakeNpx(tempDir);
+
+    const result = runPublish(repoDir, ['patch'], {
+      RELEASE_REQUIRE_DEPLOYED_BASE: 'false',
+      RELEASE_VERIFY_PRODUCTION: 'false',
+      NPX_CALL_LOG: callLog,
+      PATH: `${fakeBinDir}:${process.env.PATH || ''}`,
+    });
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain(
+      '⚪ Base release drift gate skipped (RELEASE_REQUIRE_DEPLOYED_BASE=false)'
+    );
+    expect(result.stdout).toContain(
+      '⚪ Production verification skipped (RELEASE_VERIFY_PRODUCTION=false)'
+    );
+    const loggedArgs = readFileSync(callLog, 'utf8');
+    expect(loggedArgs).toContain('commit-and-tag-version');
   });
 });

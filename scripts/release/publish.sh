@@ -15,11 +15,45 @@ set -euo pipefail
 RELEASE_TYPE="${1:-}"
 DRY_RUN="${DRY_RUN:-}"
 CANONICAL_REMOTE="${CANONICAL_REMOTE:-gitlab}"
+RELEASE_REQUIRE_DEPLOYED_BASE="${RELEASE_REQUIRE_DEPLOYED_BASE:-true}"
 RELEASE_VERIFY_PRODUCTION="${RELEASE_VERIFY_PRODUCTION:-true}"
 RELEASE_VERIFY_URL="${RELEASE_VERIFY_URL:-https://openmanager-ai.vercel.app}"
 RELEASE_VERIFY_RETRIES="${RELEASE_VERIFY_RETRIES:-20}"
 RELEASE_VERIFY_DELAY_MS="${RELEASE_VERIFY_DELAY_MS:-15000}"
 RELEASE_VERIFY_TIMEOUT_MS="${RELEASE_VERIFY_TIMEOUT_MS:-8000}"
+
+require_current_release_deployed() {
+  local version="$1"
+  local gate_enabled
+  gate_enabled="$(printf '%s' "$RELEASE_REQUIRE_DEPLOYED_BASE" | tr '[:upper:]' '[:lower:]')"
+
+  if [[ "$gate_enabled" == "false" || "$gate_enabled" == "0" || "$gate_enabled" == "off" ]]; then
+    echo "⚪ Base release drift gate skipped (RELEASE_REQUIRE_DEPLOYED_BASE=${RELEASE_REQUIRE_DEPLOYED_BASE})"
+    return 0
+  fi
+
+  if [[ ! -f "scripts/test/vercel-post-deploy-smoke.mjs" ]]; then
+    echo "⚪ Base release drift gate skipped (missing scripts/test/vercel-post-deploy-smoke.mjs)"
+    return 0
+  fi
+
+  echo "🔒 Current production version gate... (${RELEASE_VERIFY_URL}, expected=${version})"
+  if node scripts/test/vercel-post-deploy-smoke.mjs \
+    --url="${RELEASE_VERIFY_URL}" \
+    --expected-version="${version}" \
+    --timeout-ms="${RELEASE_VERIFY_TIMEOUT_MS}" \
+    --retries=0 \
+    --retry-delay-ms=0; then
+    echo "✅ Current production already serves ${version}"
+    return 0
+  fi
+
+  echo "❌ Refusing to create a new release while production drift remains."
+  echo "   Expected current production version: ${version}"
+  echo "   Fix the previous tag deploy first, or override once with:"
+  echo "   RELEASE_REQUIRE_DEPLOYED_BASE=false ./scripts/release/publish.sh ${RELEASE_TYPE:-patch}"
+  return 1
+}
 
 run_post_release_verification() {
   local version="$1"
@@ -100,6 +134,11 @@ fi
 if [[ "$PUSH_DEFAULT" != "$CANONICAL_REMOTE" ]]; then
   echo "❌ remote.pushDefault가 ${CANONICAL_REMOTE} 이어야 합니다. (current: ${PUSH_DEFAULT:-none})" >&2
   exit 1
+fi
+
+CURRENT_VERSION="$(node -p "require('./package.json').version" 2>/dev/null || true)"
+if [[ -n "$CURRENT_VERSION" ]]; then
+  require_current_release_deployed "$CURRENT_VERSION"
 fi
 
 # ── 1. Version bump + CHANGELOG + tag ─────────────────────
