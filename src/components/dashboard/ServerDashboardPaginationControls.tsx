@@ -47,7 +47,7 @@ export default function ServerDashboardPaginationControls({
         <PaginationItem key={1}>
           <PaginationLink
             href="#"
-            onClick={(e) => {
+            onClick={(e: React.MouseEvent) => {
               e.preventDefault();
               onPageChange(1);
             }}
