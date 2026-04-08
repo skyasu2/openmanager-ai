@@ -62,10 +62,15 @@
   - `npm run qa:status`
 
 ## 📦 CI/CD & Deployment Protocol
-- **GitLab CI validate → deploy**: 기본 배포 경로는 `git push gitlab main` 후 GitLab CI가 validate와 deploy를 순차 수행하는 방식입니다.
-- **배포 권한은 CI `deploy` job에만 있음**: Vercel Git Integration은 해제되어 있으며 `vercel build --prod`와 `vercel deploy --prebuilt --prod`는 GitLab CI 안에서만 실행합니다.
-- broad/release 변경은 push 전 `npm run ci:local:docker`를 추가합니다.
-- GitHub 공개 snapshot 동기화는 기본 push 루프에 섞지 말고, 명시적 요청 시 `npm run sync:github` 으로만 수행합니다.
+- **Conditional Deployment Strategy (Runner Check)**: 배포 수행 전 `bash scripts/ci/runner-health-check.sh`를 실행하여 Runner 상태를 감지합니다.
+    - **Exit 0 (Runner 정상)**: `git push --follow-tags gitlab main` 경로로 canonical GitLab CI 배포를 사용합니다. deploy job은 semver 태그 기준으로만 실행됩니다.
+    - **Exit 1 (Runner 미가동)**: `vercel --prod`로 직접 배포하고, 사용자에게 `"CI 게이트 스킵 후 직접 배포했습니다. runner가 미가동 상태였습니다."`라고 명확히 보고합니다.
+- **배포 권한 및 환경**: Vercel Git Integration은 해제되어 있으며, 정상 시에는 GitLab CI가 배포 권한을 보유합니다. runner 미가동 시에만 직접 배포 fallback을 사용합니다.
+- broad/release 변경은 push 전 `npm run ci:local:docker`를 추가로 수행하여 로컬 검증을 마칩니다.
+- GitHub 공개 snapshot 동기화는 기본 배포 루프에 섞지 말고, 명시적 요청 시 `npm run sync:github` 으로만 수행합니다.
+
+## 📝 Git & Commit Protocol
+- **Commit Message Style**: `git log -n 3`을 통해 기존 프로젝트의 커밋 스타일을 확인하고, Conventional Commit 형식을 유지합니다.
 
 ## 🧰 Project Custom Skills (v2.0 Optimized)
 
