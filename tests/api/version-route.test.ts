@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { version as packageVersion } from '../../package.json';
 
 describe('GET /api/version', () => {
   beforeEach(() => {
@@ -12,10 +13,11 @@ describe('GET /api/version', () => {
     return response.json();
   }
 
-  it('returns 200 with version, nextjs, environment, timestamp', async () => {
+  it('returns 200 with version, buildVersion, nextjs, environment, timestamp', async () => {
     const body = await importAndCall();
 
     expect(body).toHaveProperty('version');
+    expect(body).toHaveProperty('buildVersion');
     expect(body).toHaveProperty('nextjs');
     expect(body).toHaveProperty('environment');
     expect(body).toHaveProperty('timestamp');
@@ -27,6 +29,13 @@ describe('GET /api/version', () => {
     const body = await importAndCall();
 
     expect(body.version).toBe('1.2.3');
+    expect(body.buildVersion).toBe(packageVersion);
+  });
+
+  it('always exposes package buildVersion for deploy verification', async () => {
+    const body = await importAndCall();
+
+    expect(body.buildVersion).toBe(packageVersion);
   });
 
   it('timestamp is a valid ISO string', async () => {
@@ -51,5 +60,6 @@ describe('GET /api/version', () => {
     const body = await importAndCall();
 
     expect(body.version).toBe('unknown');
+    expect(body.buildVersion).toBe(packageVersion);
   });
 });

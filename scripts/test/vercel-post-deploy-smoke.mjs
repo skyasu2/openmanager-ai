@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+
 /**
  * Vercel Post-Deploy Smoke Test (Low-Cost)
  *
@@ -19,6 +22,24 @@
 const DEFAULT_TIMEOUT_MS = 8000;
 const DEFAULT_RETRIES = 8;
 const DEFAULT_RETRY_DELAY_MS = 3000;
+
+function resolveDefaultExpectedVersion() {
+  const envVersion = String(
+    process.env.EXPECTED_APP_VERSION || process.env.npm_package_version || ''
+  ).trim();
+  if (envVersion) {
+    return envVersion;
+  }
+
+  try {
+    const packageJson = JSON.parse(
+      readFileSync(path.join(process.cwd(), 'package.json'), 'utf8')
+    );
+    return String(packageJson.version || '').trim();
+  } catch {
+    return '';
+  }
+}
 
 function normalizeUrl(rawUrl) {
   const trimmed = String(rawUrl || '').trim();
@@ -48,6 +69,7 @@ function parseArgs(argv) {
     timeoutMs: DEFAULT_TIMEOUT_MS,
     retries: DEFAULT_RETRIES,
     retryDelayMs: DEFAULT_RETRY_DELAY_MS,
+    expectedVersion: resolveDefaultExpectedVersion(),
   };
 
   for (const arg of argv) {
@@ -85,6 +107,13 @@ function parseArgs(argv) {
       if (!Number.isNaN(value) && value >= 0) {
         options.retryDelayMs = value;
       }
+      continue;
+    }
+
+    if (arg.startsWith('--expected-version=')) {
+      options.expectedVersion = String(
+        arg.slice('--expected-version='.length)
+      ).trim();
     }
   }
 
@@ -102,6 +131,7 @@ Options:
   --timeout-ms=<number>         Request timeout in ms (default: ${DEFAULT_TIMEOUT_MS})
   --retries=<number>            Retry count after the first attempt (default: ${DEFAULT_RETRIES})
   --retry-delay-ms=<number>     Delay between attempts in ms (default: ${DEFAULT_RETRY_DELAY_MS})
+  --expected-version=<version>  Assert /api/version buildVersion matches this release version
   --help, -h                    Show help
 
 Examples:
@@ -175,7 +205,7 @@ async function checkValidationPage(baseUrl, timeoutMs) {
   );
 }
 
-async function checkVersionApi(baseUrl, timeoutMs) {
+async function checkVersionApi(baseUrl, timeoutMs, expectedVersion) {
   const result = await request(
     baseUrl,
     '/api/version',
@@ -201,18 +231,33 @@ async function checkVersionApi(baseUrl, timeoutMs) {
     typeof payload.version === 'string' && payload.version.trim().length > 0,
     'expected non-empty "version" field'
   );
+  const actualVersion =
+    typeof payload.buildVersion === 'string' && payload.buildVersion.trim().length > 0
+      ? payload.buildVersion.trim()
+      : payload.version.trim();
   assert(
     typeof payload.environment === 'string' &&
       payload.environment.trim().length > 0,
     'expected non-empty "environment" field'
   );
+
+  if (expectedVersion) {
+    assert(
+      actualVersion === expectedVersion,
+      `expected deployed version ${expectedVersion}, got ${actualVersion}`
+    );
+  }
 }
 
-async function runAttempt(baseUrl, timeoutMs) {
+async function runAttempt(baseUrl, timeoutMs, expectedVersion) {
   const checks = [
     { name: 'GET /', fn: checkLandingPage },
     { name: 'GET /validation', fn: checkValidationPage },
-    { name: 'GET /api/version', fn: checkVersionApi },
+    {
+      name: 'GET /api/version',
+      fn: (targetUrl, targetTimeoutMs) =>
+        checkVersionApi(targetUrl, targetTimeoutMs, expectedVersion),
+    },
   ];
 
   const failures = [];
@@ -256,13 +301,20 @@ async function main() {
   console.log(`- timeout: ${options.timeoutMs}ms`);
   console.log(`- retries: ${options.retries}`);
   console.log(`- retry delay: ${options.retryDelayMs}ms`);
+  if (options.expectedVersion) {
+    console.log(`- expected version: ${options.expectedVersion}`);
+  }
   console.log('');
 
   let lastFailures = [];
 
   for (let attempt = 1; attempt <= totalAttempts; attempt += 1) {
     console.log(`Attempt ${attempt}/${totalAttempts}`);
-    lastFailures = await runAttempt(options.url, options.timeoutMs);
+    lastFailures = await runAttempt(
+      options.url,
+      options.timeoutMs,
+      options.expectedVersion
+    );
 
     if (lastFailures.length === 0) {
       console.log('');

@@ -3,7 +3,7 @@
  */
 
 import { spawn } from 'node:child_process';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import {
   createServer,
   type IncomingMessage,
@@ -208,6 +208,7 @@ describe('vercel-post-deploy-smoke', () => {
       if (pathname === '/api/version') {
         writeJson(res, {
           version: '9.0.0',
+          buildVersion: '9.0.0',
           environment: 'production',
         });
         return;
@@ -258,6 +259,7 @@ describe('vercel-post-deploy-smoke', () => {
       if (pathname === '/api/version') {
         writeJson(res, {
           version: '9.0.0',
+          buildVersion: '9.0.0',
           environment: 'production',
         });
         return;
@@ -297,6 +299,7 @@ describe('vercel-post-deploy-smoke', () => {
       if (pathname === '/api/version') {
         writeJson(res, {
           version: '9.0.0',
+          buildVersion: '9.0.0',
           environment: 'production',
         });
         return;
@@ -314,5 +317,103 @@ describe('vercel-post-deploy-smoke', () => {
     expect(result.status).toBe(1);
     expect(`${result.stdout}${result.stderr}`).toContain('GET /validation');
     expect(`${result.stdout}${result.stderr}`).toContain('Validation Evidence');
+  });
+
+  it('uses local package version as the expected deployed version when available', async () => {
+    if (!isLoopbackBindAvailable) return;
+
+    const workspace = createTempWorkspace();
+    writeFileSync(
+      join(workspace, 'package.json'),
+      JSON.stringify({ version: '9.1.0' }, null, 2)
+    );
+
+    const baseUrl = await startServer((req, res) => {
+      const pathname = new URL(req.url || '/', 'http://127.0.0.1').pathname;
+
+      if (pathname === '/') {
+        writeHtml(res, '<html><body><h1>OpenManager AI</h1></body></html>');
+        return;
+      }
+
+      if (pathname === '/validation') {
+        writeHtml(
+          res,
+          '<html><body><main>Validation Evidence</main></body></html>'
+        );
+        return;
+      }
+
+      if (pathname === '/api/version') {
+        writeJson(res, {
+          version: '9.1.0',
+          buildVersion: '9.1.0',
+          environment: 'production',
+        });
+        return;
+      }
+
+      res.statusCode = 404;
+      res.end('not found');
+    });
+
+    const result = await runScript(workspace, [
+      `--url=${baseUrl}`,
+      '--retries=0',
+    ]);
+
+    expect(result.status).toBe(0);
+    expect(`${result.stdout}${result.stderr}`).toContain(
+      '- expected version: 9.1.0'
+    );
+  });
+
+  it('fails when deployed buildVersion does not match the expected release version', async () => {
+    if (!isLoopbackBindAvailable) return;
+
+    const workspace = createTempWorkspace();
+    writeFileSync(
+      join(workspace, 'package.json'),
+      JSON.stringify({ version: '9.2.0' }, null, 2)
+    );
+
+    const baseUrl = await startServer((req, res) => {
+      const pathname = new URL(req.url || '/', 'http://127.0.0.1').pathname;
+
+      if (pathname === '/') {
+        writeHtml(res, '<html><body><h1>OpenManager AI</h1></body></html>');
+        return;
+      }
+
+      if (pathname === '/validation') {
+        writeHtml(
+          res,
+          '<html><body><main>Validation Evidence</main></body></html>'
+        );
+        return;
+      }
+
+      if (pathname === '/api/version') {
+        writeJson(res, {
+          version: '9.0.0',
+          buildVersion: '9.0.0',
+          environment: 'production',
+        });
+        return;
+      }
+
+      res.statusCode = 404;
+      res.end('not found');
+    });
+
+    const result = await runScript(workspace, [
+      `--url=${baseUrl}`,
+      '--retries=0',
+    ]);
+
+    expect(result.status).toBe(1);
+    expect(`${result.stdout}${result.stderr}`).toContain(
+      'expected deployed version 9.2.0, got 9.0.0'
+    );
   });
 });
