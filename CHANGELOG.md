@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.1](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.0...v8.11.1) (2026-04-08)
+
+
+### Bug Fixes
+
+* **ai-ux:** sanitize internal implementation details from analysis basis panel ([6818e12](https://gitlab.com/skyasu2/openmanager-ai/-/commit/6818e12844114271b9f17de354316e927e98dd1b))
+* **ai:** align streaming agent status contract ([f515817](https://gitlab.com/skyasu2/openmanager-ai/-/commit/f515817de711935b5959176a73b9d615737d7b0d))
+* **ai:** bubble up multi-agent tool results + clean analyst response format ([7e86978](https://gitlab.com/skyasu2/openmanager-ai/-/commit/7e86978c0fccade477b9eeb7f53e358baf9f6312))
+* **app:** harden ai sidebar streaming status ([b45a718](https://gitlab.com/skyasu2/openmanager-ai/-/commit/b45a7180612413ba34891ee7bd27507d9fef31b4))
+* **app:** keep alert prefills on streaming path ([bf9599f](https://gitlab.com/skyasu2/openmanager-ai/-/commit/bf9599f59f2e3c9e994d79fc6594eab3cbc7659e))
+* **app:** stabilize ai alert prefill and landing bootstrap ([fc0ab04](https://gitlab.com/skyasu2/openmanager-ai/-/commit/fc0ab04e380dec0d13984129be358616b3e4b492))
+
+
+### Code Refactoring
+
+* **types:** trim common type surface ([8d537c7](https://gitlab.com/skyasu2/openmanager-ai/-/commit/8d537c7a8565cf6862dcb1e5df4ea214e964ee2e))
+
+
+### Tests
+
+* **qa:** add multi-agent handoff label evidence for v8.11.0 ([e070263](https://gitlab.com/skyasu2/openmanager-ai/-/commit/e070263f5957813ee471ec0a2a7bb4e1c6019ac5))
+* **qa:** backfill durable evidence and acknowledge debt ([026459e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/026459e9df0c70d2ee95813fa8c496f8bbad5941))
+* **qa:** govern evidence retention and repro archives ([a80ee38](https://gitlab.com/skyasu2/openmanager-ai/-/commit/a80ee3858391257dda39f3ce5648af917be2d676))
+* **qa:** record production targeted recheck for f515817de ([fbaeb95](https://gitlab.com/skyasu2/openmanager-ai/-/commit/fbaeb954a1f5de9f077d3c7fe536a884b8b8122a))
+* **qa:** record QA-20260408-0252 multi-agent tool_result fix verification ([90fe6a9](https://gitlab.com/skyasu2/openmanager-ai/-/commit/90fe6a9f050e008616f6aab791ec7a256fb8273c))
+* **qa:** record QA-20260408-0253 analysis basis sanitization verification ([016443e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/016443e189bbd3b0dfe162f88e61df71da75c180))
+
 ## [8.11.0](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.10.10...v8.11.0) (2026-04-07)
 
 
