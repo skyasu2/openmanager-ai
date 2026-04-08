@@ -87,6 +87,8 @@ run_post_release_verification() {
   echo "   Next: inspect the GitLab tag pipeline trace and the Vercel production deploy."
   echo "   First check whether the semver tag pattern is protected in GitLab so protected CI variables"
   echo "   (for example VERCEL_TOKEN, GCP_SERVICE_KEY, GCP_PROJECT_ID) are exposed on tag pipelines."
+  echo "   If the tag pipeline already exists, fix the settings and retry that failed GitLab job/pipeline."
+  echo "   Re-pushing the same existing remote tag will not create a new deploy pipeline."
   return 1
 }
 

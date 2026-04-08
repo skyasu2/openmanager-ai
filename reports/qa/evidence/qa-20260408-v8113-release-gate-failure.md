@@ -38,8 +38,10 @@ Relevant runner jobs observed after `v8.11.3` push:
 
 Interpretation:
 
-- The tag-triggered pipeline likely failed in the frontend `deploy` stage before production alias changed.
-- GitLab trace body is still required to confirm whether the failure was `VERCEL_TOKEN`/auth, `vercel pull`, or `vercel build`.
+- Confirmed root cause: the frontend `deploy` job failed immediately because `VERCEL_TOKEN` was not exposed to the semver tag pipeline.
+- The most likely configuration issue is protected variable exposure mismatch: protected CI variables exist, but the protected tag pattern for `v*.*.*` is missing or misconfigured.
+- Recovery path: fix GitLab protected tag / variable exposure, then retry the existing failed tag pipeline or failed job.
+- Re-pushing the same existing remote tag is not sufficient to create a new deploy pipeline.
 
 ## Vercel Usage Check
 
