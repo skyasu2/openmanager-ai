@@ -133,7 +133,8 @@
     "Compared with QA-20260406-0246: landing/login/dashboard/server-detail modal/Vibe Coding CI-CD content remained green on v8.11.0, but first-paint landing copy and first-attempt AI reliability regressed.",
     "Vibe Coding current-tool text still references '@storybook/react-vite 기반'; this matches the user-reported non-blocking cleanup item and was not used to fail the release-facing QA run.",
     "mode audit: direct supervisor SSE probe showed requestedMode=auto and resolvedMode=multi via auto_complexity.",
-    "AI timing observability passed through X-AI-Latency-Ms=292; X-AI-Processing-Ms and Server-Timing were absent, which matches the documented Vercel production rule."
+    "AI timing observability passed through X-AI-Latency-Ms=292; X-AI-Processing-Ms and Server-Timing were absent, which matches the documented Vercel production rule.",
+    "Historical artifact debt acknowledged on 2026-04-08: later repro/fix evidence exists separately, but this original broad run intentionally remains without retrofitted artifacts."
   ],
   "links": [
     {
@@ -146,5 +147,12 @@
       "label": "Deployment dpl_7YFJku7zmAYHWwhF6FrizaLfHkKE",
       "url": "https://vercel.com/skyasus-projects/openmanager-ai/7YFJku7zmAYHWwhF6FrizaLfHkKE"
     }
-  ]
+  ],
+  "artifactDebt": {
+    "status": "acknowledged",
+    "kind": "historical-no-durable-evidence",
+    "recordedAt": "2026-04-08T13:10:00+09:00",
+    "recordedBy": "codex",
+    "reason": "This release-facing broad regression run was recorded without durable artifact paths. Later repro and fix evidence exists, but attaching later-dated files would misrepresent the original run state."
+  }
 }

@@ -59,7 +59,7 @@
     {
       "type": "playwright-screenshot",
       "label": "qa-20260406-0245-dashboard.png",
-      "path": "qa-20260406-0245-dashboard.png"
+      "path": "reports/qa/evidence/qa-20260406-0245-dashboard.png"
     }
   ],
   "completedImprovements": [],
@@ -68,7 +68,8 @@
   "wontFixImprovements": [],
   "notes": [
     "This run refreshes minimal production surface evidence on deployment 9e722456 after GitLab-first topology cleanup; no product-surface regression was observed.",
-    "CountsTowardSummary is false because the run is a verification-only smoke on an already-covered deployment surface, not a new broad release gate."
+    "CountsTowardSummary is false because the run is a verification-only smoke on an already-covered deployment surface, not a new broad release gate.",
+    "2026-04-08 backfill: original root-level screenshot artifact was copied into reports/qa/evidence durable path for governance compliance."
   ],
   "links": [
     {

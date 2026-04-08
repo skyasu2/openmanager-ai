@@ -61,6 +61,10 @@ function collectRunRecords() {
         countsTowardSummary: record.countsTowardSummary !== false,
         recordedAt: record.recordedAt || '',
         artifacts: Array.isArray(record.artifacts) ? record.artifacts : [],
+        artifactDebt:
+          record.artifactDebt && typeof record.artifactDebt === 'object'
+            ? record.artifactDebt
+            : null,
       };
     });
 }
@@ -131,6 +135,7 @@ function main() {
 
   const countedRunsWithoutArtifacts = (args.all ? orderedRuns : recentRuns)
     .filter((run) => run.countsTowardSummary)
+    .filter((run) => run.artifactDebt?.status !== 'acknowledged')
     .filter((run) => run.artifacts.length === 0)
     .map(
       (run) =>
@@ -139,8 +144,17 @@ function main() {
 
   const releaseFacingWithoutArtifacts = (args.all ? orderedRuns : recentRuns)
     .filter((run) => run.releaseFacing)
+    .filter((run) => run.artifactDebt?.status !== 'acknowledged')
     .filter((run) => run.artifacts.length === 0)
     .map((run) => run.runId);
+
+  const acknowledgedArtifactDebt = (args.all ? orderedRuns : recentRuns)
+    .filter((run) => run.artifactDebt?.status === 'acknowledged')
+    .filter((run) => run.artifacts.length === 0)
+    .map((run) => {
+      const kind = run.artifactDebt?.kind || 'unspecified';
+      return `${run.runId} (${kind})`;
+    });
 
   const recentNonEvidenceArtifactRefs = (args.all
     ? nonEvidenceArtifactRefs
@@ -159,6 +173,9 @@ function main() {
     `- ${args.all ? 'all' : 'recent'} counted runs without artifacts: ${countedRunsWithoutArtifacts.length}`
   );
   console.log(
+    `- ${args.all ? 'all' : 'recent'} acknowledged artifact debt runs: ${acknowledgedArtifactDebt.length}`
+  );
+  console.log(
     `- ${args.all ? 'all' : 'recent'} non-evidence artifact refs: ${recentNonEvidenceArtifactRefs.length}`
   );
 
@@ -166,6 +183,13 @@ function main() {
   console.log(formatList('Orphan durable evidence', orphanEvidence));
   console.log('');
   console.log(formatList('Missing durable artifact refs', missingDurableArtifactRefs));
+  console.log('');
+  console.log(
+    formatList(
+      `${args.all ? 'Acknowledged artifact debt runs' : 'Recent acknowledged artifact debt runs'}`,
+      acknowledgedArtifactDebt
+    )
+  );
   console.log('');
   console.log(formatList('Non-evidence artifact refs', recentNonEvidenceArtifactRefs));
   console.log('');

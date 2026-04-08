@@ -58,17 +58,17 @@
     {
       "type": "playwright-screenshot",
       "label": "qa-20260406-0244-ai-analysis-basis.png",
-      "path": ".playwright-mcp/screenshots/qa-20260406-0244-ai-analysis-basis.png"
+      "path": "reports/qa/evidence/qa-20260406-0244-ai-analysis-basis.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "qa-20260406-0244-ai-send.png",
-      "path": ".playwright-mcp/screenshots/qa-20260406-0244-ai-send.png"
+      "path": "reports/qa/evidence/qa-20260406-0244-ai-send.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "qa-20260406-0244-ai-sidebar-open.png",
-      "path": ".playwright-mcp/screenshots/qa-20260406-0244-ai-sidebar-open.png"
+      "path": "reports/qa/evidence/qa-20260406-0244-ai-sidebar-open.png"
     }
   ],
   "completedImprovements": [],
@@ -77,7 +77,8 @@
   "wontFixImprovements": [],
   "notes": [
     "This run complements QA-20260406-0243 by refreshing AI-core coverage on the same live production deployment after the canonical routing chore deploy.",
-    "Evidence includes AI sidebar open, starter prompt send, /api/ai/supervisor/stream/v2 network 200, and expanded analysis basis with trace metadata."
+    "Evidence includes AI sidebar open, starter prompt send, /api/ai/supervisor/stream/v2 network 200, and expanded analysis basis with trace metadata.",
+    "2026-04-08 backfill: original .playwright-mcp screenshot artifacts were copied into reports/qa/evidence durable paths for governance compliance."
   ],
   "links": [
     {

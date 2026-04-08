@@ -21291,17 +21291,17 @@
         {
           "type": "playwright-screenshot",
           "label": "qa-20260406-0244-ai-analysis-basis.png",
-          "path": ".playwright-mcp/screenshots/qa-20260406-0244-ai-analysis-basis.png"
+          "path": "reports/qa/evidence/qa-20260406-0244-ai-analysis-basis.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "qa-20260406-0244-ai-send.png",
-          "path": ".playwright-mcp/screenshots/qa-20260406-0244-ai-send.png"
+          "path": "reports/qa/evidence/qa-20260406-0244-ai-send.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "qa-20260406-0244-ai-sidebar-open.png",
-          "path": ".playwright-mcp/screenshots/qa-20260406-0244-ai-sidebar-open.png"
+          "path": "reports/qa/evidence/qa-20260406-0244-ai-sidebar-open.png"
         }
       ],
       "links": [
@@ -21321,7 +21321,12 @@
       "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
-      "wontFixCount": 0
+      "wontFixCount": 0,
+      "notes": [
+        "This run complements QA-20260406-0243 by refreshing AI-core coverage on the same live production deployment after the canonical routing chore deploy.",
+        "Evidence includes AI sidebar open, starter prompt send, /api/ai/supervisor/stream/v2 network 200, and expanded analysis basis with trace metadata.",
+        "2026-04-08 backfill: original .playwright-mcp screenshot artifacts were copied into reports/qa/evidence durable paths for governance compliance."
+      ]
     },
     {
       "runId": "QA-20260406-0245",
@@ -21385,7 +21390,7 @@
         {
           "type": "playwright-screenshot",
           "label": "qa-20260406-0245-dashboard.png",
-          "path": "qa-20260406-0245-dashboard.png"
+          "path": "reports/qa/evidence/qa-20260406-0245-dashboard.png"
         }
       ],
       "links": [
@@ -21405,7 +21410,12 @@
       "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
-      "wontFixCount": 0
+      "wontFixCount": 0,
+      "notes": [
+        "This run refreshes minimal production surface evidence on deployment 9e722456 after GitLab-first topology cleanup; no product-surface regression was observed.",
+        "CountsTowardSummary is false because the run is a verification-only smoke on an already-covered deployment surface, not a new broad release gate.",
+        "2026-04-08 backfill: original root-level screenshot artifact was copied into reports/qa/evidence durable path for governance compliance."
+      ]
     },
     {
       "runId": "QA-20260406-0246",
@@ -21508,7 +21518,17 @@
       "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
-      "wontFixCount": 0
+      "wontFixCount": 0,
+      "artifactDebt": {
+        "status": "acknowledged",
+        "kind": "historical-no-durable-evidence",
+        "recordedAt": "2026-04-08T13:10:00+09:00",
+        "recordedBy": "codex",
+        "reason": "This release-facing broad run was recorded before durable artifact retention rules were enforced. No contemporaneous repo-tracked evidence survived, so safe backfill is not available."
+      },
+      "notes": [
+        "Historical artifact debt acknowledged on 2026-04-08: contemporaneous durable evidence was not preserved at record time, so this run remains artifact-free by design."
+      ]
     },
     {
       "runId": "QA-20260406-0247",
@@ -21803,7 +21823,21 @@
       "completedCount": 0,
       "pendingCount": 2,
       "deferredCount": 0,
-      "wontFixCount": 0
+      "wontFixCount": 0,
+      "artifactDebt": {
+        "status": "acknowledged",
+        "kind": "historical-no-durable-evidence",
+        "recordedAt": "2026-04-08T13:10:00+09:00",
+        "recordedBy": "codex",
+        "reason": "This release-facing broad regression run was recorded without durable artifact paths. Later repro and fix evidence exists, but attaching later-dated files would misrepresent the original run state."
+      },
+      "notes": [
+        "Compared with QA-20260406-0246: landing/login/dashboard/server-detail modal/Vibe Coding CI-CD content remained green on v8.11.0, but first-paint landing copy and first-attempt AI reliability regressed.",
+        "Vibe Coding current-tool text still references '@storybook/react-vite 기반'; this matches the user-reported non-blocking cleanup item and was not used to fail the release-facing QA run.",
+        "mode audit: direct supervisor SSE probe showed requestedMode=auto and resolvedMode=multi via auto_complexity.",
+        "AI timing observability passed through X-AI-Latency-Ms=292; X-AI-Processing-Ms and Server-Timing were absent, which matches the documented Vercel production rule.",
+        "Historical artifact debt acknowledged on 2026-04-08: later repro/fix evidence exists separately, but this original broad run intentionally remains without retrofitted artifacts."
+      ]
     },
     {
       "runId": "QA-20260408-0250",

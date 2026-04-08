@@ -113,6 +113,11 @@ reports/qa/
   - 같은 run의 로컬 evidence 파일명은 `qa-YYYYMMDD-<slug>.<ext>` 형식이어야 합니다. 날짜는 KST 기준 run 실행일을 사용합니다.
   - release-facing/counting run에서는 과거 run에 이미 기록된 동일 `artifact.path`를 재사용할 수 없습니다. evidence 파일은 run별로 고유해야 합니다.
   - `playwright-trace`에 `url`이 있으면 `qa:record`가 `trace.playwright.dev` viewer URL을 자동 생성합니다.
+- `artifactDebt`는 과거 counted/release-facing run에 contemporaneous durable evidence가 남아 있지 않을 때만 쓰는 예외 필드입니다.
+  - 허용 값: `status: "acknowledged"`
+  - 필수: `kind`, `reason`
+  - 권장: `recordedAt`, `recordedBy`
+  - 새 run의 artifact requirement를 우회하는 용도가 아니라, historical truth를 보존하면서 audit가 "미정리 오류"와 "인정된 과거 부채"를 구분하도록 만드는 용도입니다.
 - `links`는 사람이 보는 관련 링크 필드입니다.
   - 허용 값: `general`, `vercel-deployment`, `github-actions-run`, `github-actions-artifact`, `monitoring`, `langfuse-trace`
   - `qa:record`는 `ciEvidence`가 있으면 `links`에 GitHub Actions run/artifact 링크를 자동 병합합니다.
@@ -170,6 +175,7 @@ reports/qa/
   - `reports/qa/evidence` 아래 고아 durable evidence
   - run JSON이 참조하지만 실제 파일이 없는 artifact path
   - counted run인데 artifacts가 비어 있는 historical debt warning
+  - 단, `artifactDebt.status="acknowledged"`가 붙은 run은 별도 acknowledged debt로 분리 집계합니다.
 
 ## Reporting Style
 

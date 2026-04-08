@@ -90,12 +90,21 @@
   "pendingImprovements": [],
   "deferredImprovements": [],
   "wontFixImprovements": [],
-  "notes": [],
+  "notes": [
+    "Historical artifact debt acknowledged on 2026-04-08: contemporaneous durable evidence was not preserved at record time, so this run remains artifact-free by design."
+  ],
   "links": [
     {
       "type": "vercel-deployment",
       "label": "Latest production deployment",
       "url": "https://vercel.com/skyasus-projects/openmanager-ai/EEf7zEdMXFGHWYqYSNMACmtXynQ8"
     }
-  ]
+  ],
+  "artifactDebt": {
+    "status": "acknowledged",
+    "kind": "historical-no-durable-evidence",
+    "recordedAt": "2026-04-08T13:10:00+09:00",
+    "recordedBy": "codex",
+    "reason": "This release-facing broad run was recorded before durable artifact retention rules were enforced. No contemporaneous repo-tracked evidence survived, so safe backfill is not available."
+  }
 }

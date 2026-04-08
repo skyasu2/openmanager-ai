@@ -910,6 +910,44 @@ function normalizeLinks(rawValue) {
   });
 }
 
+function normalizeArtifactDebt(rawValue) {
+  if (!rawValue) {
+    return null;
+  }
+
+  if (typeof rawValue !== 'object' || Array.isArray(rawValue)) {
+    throw new Error('artifactDebt는 객체여야 합니다.');
+  }
+
+  const status = String(rawValue.status || '').trim().toLowerCase();
+  if (!status) {
+    throw new Error('artifactDebt.status가 필요합니다.');
+  }
+  if (status !== 'acknowledged') {
+    throw new Error('artifactDebt.status는 acknowledged만 지원합니다.');
+  }
+
+  const kind = String(rawValue.kind || '').trim();
+  const reason = String(rawValue.reason || '').trim();
+  if (!kind) {
+    throw new Error('artifactDebt.kind가 필요합니다.');
+  }
+  if (!reason) {
+    throw new Error('artifactDebt.reason가 필요합니다.');
+  }
+
+  const recordedAt = String(rawValue.recordedAt || '').trim();
+  const recordedBy = String(rawValue.recordedBy || '').trim();
+
+  return {
+    status,
+    kind,
+    reason,
+    ...(recordedAt ? { recordedAt } : {}),
+    ...(recordedBy ? { recordedBy } : {}),
+  };
+}
+
 function normalizeCiEvidence(rawValue) {
   if (!rawValue) {
     return [];
@@ -1160,6 +1198,7 @@ function run() {
     normalizeLinks(payload.links),
     normalizeCiEvidence(payload.ciEvidence)
   );
+  const artifactDebt = normalizeArtifactDebt(payload.artifactDebt);
 
   const runTitle = String(payload.runTitle || '').trim();
   const owner = String(payload.owner || '').trim();
@@ -1364,6 +1403,7 @@ function run() {
     expertAssessments,
     usageChecks,
     artifacts,
+    ...(artifactDebt ? { artifactDebt } : {}),
     completedImprovements: finalCompletedImprovements,
     pendingImprovements: finalPendingImprovements,
     deferredImprovements: finalDeferredImprovements,
@@ -1394,6 +1434,7 @@ function run() {
     expertAssessments,
     usageChecks,
     artifacts,
+    artifactDebt,
     links,
     finalCompletedImprovements,
     finalPendingImprovements,

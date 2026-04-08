@@ -65,6 +65,13 @@ npm run qa:evidence:build
       "note": "원격 trace.zip URL"
     }
   ],
+  "artifactDebt": {             // 선택: 과거 run의 historical debt 명시용
+    "status": "acknowledged",
+    "kind": "historical-no-durable-evidence",
+    "reason": "당시 durable artifact를 남기지 못했고, 현재 안전하게 backfill할 동시대 증거가 없음",
+    "recordedAt": "2026-04-08T11:15:00+09:00",
+    "recordedBy": "codex"
+  },
   "playwrightArtifacts": {      // 로컬 Playwright 산출물 자동 수집 옵션 (선택)
     "reportDir": "playwright-report",
     "resultsDir": "test-results",
