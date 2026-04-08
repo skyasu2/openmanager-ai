@@ -14,12 +14,23 @@
 
 set -euo pipefail
 
+QUIET="${1:-}"
 RUNNER_OK=true
 DOCKER_OK=true
 
-# gitlab-runner 서비스 확인
-if ! systemctl is-active --quiet gitlab-runner 2>/dev/null; then
+# gitlab-runner 서비스/프로세스 확인
+if command -v systemctl >/dev/null 2>&1; then
+  if ! systemctl is-active --quiet gitlab-runner 2>/dev/null; then
+    RUNNER_OK=false
+  fi
+else
   RUNNER_OK=false
+fi
+
+if ! $RUNNER_OK && command -v pgrep >/dev/null 2>&1; then
+  if pgrep -f '[g]itlab-runner' >/dev/null 2>&1; then
+    RUNNER_OK=true
+  fi
 fi
 
 # Docker 데몬 확인 (shell executor는 Docker 불필요하지만 명시적 체크)
@@ -27,10 +38,14 @@ if ! docker info &>/dev/null 2>&1; then
   DOCKER_OK=false
 fi
 
-if $RUNNER_OK; then
-  echo "runner=ok"
+if $RUNNER_OK && $DOCKER_OK; then
+  if [[ "$QUIET" != "--quiet" ]]; then
+    echo "runner=ok docker=ok"
+  fi
   exit 0
 else
-  echo "runner=down docker=${DOCKER_OK}"
+  if [[ "$QUIET" != "--quiet" ]]; then
+    echo "runner=${RUNNER_OK} docker=${DOCKER_OK}"
+  fi
   exit 1
 fi

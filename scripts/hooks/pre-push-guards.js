@@ -8,6 +8,7 @@
 
 const path = require('path');
 const fs = require('fs');
+const { spawnSync } = require('child_process');
 
 // ─── Helpers ──────────────────────────────────────────────────────────────
 
@@ -216,6 +217,108 @@ function checkDirectMainPush(remoteName, prePushUpdates, runGit) {
   return createGuardResult(false, {
     reason: 'direct-main-push-blocked',
     canonicalRemote,
+  });
+}
+
+// ─── GitLab runner health guard ───────────────────────────────────────────
+
+function runStatus(command, args) {
+  try {
+    const result = spawnSync(command, args, {
+      encoding: 'utf8',
+      stdio: 'ignore',
+    });
+    return { ok: result.status === 0, error: result.error || null };
+  } catch (error) {
+    return { ok: false, error };
+  }
+}
+
+/**
+ * @param {string} remoteName
+ * @param {Function} runGit - (args: string[]) => string
+ * @param {{ skip?: boolean }} options
+ */
+function checkGitLabRunnerHealth(remoteName, runGit, options = {}) {
+  if (options.skip) {
+    return createGuardResult(true, { skipped: true });
+  }
+
+  const targetRemoteName = normalizeRemoteValue(remoteName);
+  const canonicalRemote = resolveCanonicalRemote(runGit);
+  const isCanonicalPush =
+    targetRemoteName &&
+    canonicalRemote &&
+    targetRemoteName.toLowerCase() === canonicalRemote.toLowerCase();
+
+  if (!isCanonicalPush) {
+    return createGuardResult(true, { skipped: true });
+  }
+
+  if (process.env.SKIP_RUNNER_HEALTH_CHECK === 'true') {
+    console.log('⚪ Runner health check skipped (SKIP_RUNNER_HEALTH_CHECK=true)');
+    return createGuardResult(true, { skipped: true });
+  }
+
+  if (process.env.ALLOW_RUNNER_DOWN_PUSH === 'true') {
+    console.log('⚠️  Runner-down push bypass enabled (ALLOW_RUNNER_DOWN_PUSH=true)');
+    return createGuardResult(true, { skipped: true });
+  }
+
+  if (process.platform === 'win32') {
+    return createGuardResult(true, { skipped: true });
+  }
+
+  const statusRunner = options.statusRunner || runStatus;
+  const issues = [];
+
+  let runnerDetected = false;
+
+  const serviceStatus = statusRunner('systemctl', ['is-active', '--quiet', 'gitlab-runner']);
+  if (serviceStatus.ok) {
+    runnerDetected = true;
+  }
+
+  const canFallbackToProcessCheck =
+    !runnerDetected &&
+    (!serviceStatus.error || serviceStatus.error.code === 'ENOENT');
+
+  const processStatus = canFallbackToProcessCheck
+    ? statusRunner('pgrep', ['-f', '[g]itlab-runner'])
+    : { ok: false, error: null };
+
+  if (processStatus.ok) {
+    runnerDetected = true;
+  }
+
+  if (!runnerDetected) {
+    if (processStatus.error && processStatus.error.code === 'ENOENT') {
+      issues.push('gitlab-runner 상태 확인 명령(systemctl/pgrep)을 찾을 수 없음');
+    } else {
+      issues.push('gitlab-runner 서비스/프로세스를 찾을 수 없음');
+    }
+  }
+
+  const dockerStatus = statusRunner('docker', ['info']);
+  if (!dockerStatus.ok) {
+    issues.push('Docker 데몬 미가동');
+  }
+
+  if (issues.length === 0) {
+    return createGuardResult(true);
+  }
+
+  console.log('❌ Local runner health check failed - push blocked');
+  for (const issue of issues) {
+    console.log(`   - ${issue}`);
+  }
+  console.log('');
+  console.log('💡 Fix: Docker Desktop/daemon과 gitlab-runner를 먼저 복구하세요.');
+  console.log('💡 CI를 우회해야 하면 수동으로 vercel --prod 배포를 사용하세요.');
+  console.log('⚠️  Temporary bypass: ALLOW_RUNNER_DOWN_PUSH=true git push gitlab <branch>');
+  return createGuardResult(false, {
+    reason: 'gitlab-runner-health',
+    issues,
   });
 }
 
@@ -477,6 +580,7 @@ function checkEnvironment(cwd, runNpm) {
 module.exports = {
   checkCanonicalRemotePush,
   checkDirectMainPush,
+  checkGitLabRunnerHealth,
   checkGitLabCiSemanticGuard,
   checkCloudBuildFreeTierGuard,
   checkNodeModules,

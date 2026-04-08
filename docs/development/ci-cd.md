@@ -12,6 +12,15 @@
 
 현재 운영 기준은 **GitLab canonical repo + GitLab CI branch/MR validate(frontend + ai-engine) + main frontend/ai-engine deploy + frontend/ai-engine post-deploy smoke + 로컬 Docker CI 보강 검증** 입니다. 아래 GitHub Actions 내용은 과거/보조 레퍼런스로 유지되며, primary delivery path는 아닙니다.
 
+배포 시작 시점의 runner 상태에 따라 자동 분기하려면 아래 명령을 사용합니다.
+
+```bash
+npm run deploy:smart
+```
+
+- `scripts/ci/runner-health-check.sh`가 `exit 0`이면 `git push --follow-tags gitlab main` 경로로 CI 배포를 사용합니다.
+- `exit 1`이면 CI 게이트를 건너뛰고 `vercel --prod` 직접 배포로 전환하며, 스킵 사실을 콘솔에 명시적으로 출력합니다.
+
 ## 파이프라인 흐름
 
 ```mermaid

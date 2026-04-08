@@ -8,6 +8,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const {
   checkDirectMainPush,
+  checkGitLabRunnerHealth,
   checkGitLabCiSemanticGuard,
   checkCloudBuildFreeTierGuard,
   checkNodeModules,
@@ -277,6 +278,97 @@ deploy_ai_engine:
       ok: false,
       reason: 'direct-main-push-blocked',
       canonicalRemote: 'gitlab',
+    });
+  });
+
+  it('skips runner health check for non-canonical remote push', () => {
+    const result = checkGitLabRunnerHealth(
+      'github-public',
+      (args: string[]) => {
+        if (args.join(' ') === 'config --get remote.pushDefault')
+          return 'gitlab';
+        return '';
+      },
+      {}
+    );
+
+    expect(result).toEqual({ ok: true, skipped: true });
+  });
+
+  it('allows explicit skip for runner health check', () => {
+    const result = checkGitLabRunnerHealth(
+      'gitlab',
+      (args: string[]) => {
+        if (args.join(' ') === 'config --get remote.pushDefault')
+          return 'gitlab';
+        return '';
+      },
+      { skip: true }
+    );
+
+    expect(result).toEqual({ ok: true, skipped: true });
+  });
+
+  it('accepts a live runner process when systemctl is unavailable', () => {
+    const result = checkGitLabRunnerHealth(
+      'gitlab',
+      (args: string[]) => {
+        if (args.join(' ') === 'config --get remote.pushDefault')
+          return 'gitlab';
+        return '';
+      },
+      {
+        statusRunner: (command: string) => {
+          if (command === 'systemctl') {
+            return { ok: false, error: { code: 'ENOENT' } };
+          }
+          if (command === 'pgrep') {
+            return { ok: true, error: null };
+          }
+          if (command === 'docker') {
+            return { ok: true, error: null };
+          }
+          return { ok: false, error: null };
+        },
+      }
+    );
+
+    expect(result).toEqual({ ok: true });
+  });
+
+  it('blocks canonical push when runner process and docker are both unavailable', () => {
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+
+    const result = checkGitLabRunnerHealth(
+      'gitlab',
+      (args: string[]) => {
+        if (args.join(' ') === 'config --get remote.pushDefault')
+          return 'gitlab';
+        return '';
+      },
+      {
+        statusRunner: (command: string) => {
+          if (command === 'systemctl') {
+            return { ok: false, error: { code: 'ENOENT' } };
+          }
+          if (command === 'pgrep') {
+            return { ok: false, error: null };
+          }
+          if (command === 'docker') {
+            return { ok: false, error: null };
+          }
+          return { ok: false, error: null };
+        },
+      }
+    );
+
+    expect(result).toEqual({
+      ok: false,
+      reason: 'gitlab-runner-health',
+      issues: [
+        'gitlab-runner 서비스/프로세스를 찾을 수 없음',
+        'Docker 데몬 미가동',
+      ],
     });
   });
 

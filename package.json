@@ -66,6 +66,7 @@
     "build:vercel": "npm run build:ci && npm run lint:ci && npm run test:quick",
     "deploy:guard:canonical": "bash scripts/deploy/guard-canonical-deploy.sh",
     "deploy:safe": "npm run deploy:guard:canonical && npm run build:ci && npm run lint:ci && npm run test:quick && npx vercel --prod",
+    "deploy:smart": "bash scripts/deploy/deploy-with-runner-fallback.sh",
     "sync:github": "bash scripts/sync/github-sync.sh",
     "sync:github:dry-run": "bash scripts/sync/github-sync.sh --dry-run",
     "git:rename-public-remote": "bash scripts/git/rename-public-remote.sh",

@@ -51,6 +51,7 @@ const {
 const {
   checkCanonicalRemotePush,
   checkDirectMainPush,
+  checkGitLabRunnerHealth,
   checkGitLabCiSemanticGuard,
   checkCloudBuildFreeTierGuard,
   checkNodeModules,
@@ -565,12 +566,16 @@ function main() {
   );
 
   const changedFilesResult = getChangedFilesForPush(prePushUpdates);
+  const docsOnlyPush = isDocsArtifactOnlyPush(changedFilesResult);
+  exitIfGuardFailed(
+    checkGitLabRunnerHealth(prePushRemoteName, runGit, { skip: docsOnlyPush })
+  );
   exitIfGuardFailed(checkGitLabCiSemanticGuard(changedFilesResult, cwd));
   exitIfGuardFailed(
     checkCloudBuildFreeTierGuard(changedFilesResult, cwd, FORCE_CLOUD_BUILD_GUARD)
   );
 
-  if (isDocsArtifactOnlyPush(changedFilesResult)) {
+  if (docsOnlyPush) {
     exitIfGuardFailed(runDocsArtifactValidation(changedFilesResult));
   } else {
     runTests(changedFilesResult);
