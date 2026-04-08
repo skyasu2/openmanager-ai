@@ -1,0 +1,102 @@
+{
+  "runId": "QA-20260408-0253",
+  "recordedAt": "2026-04-08T04:54:22.471Z",
+  "recordedAtKst": "2026-04-08 13:54:22 KST",
+  "runTitle": "Playwright MCP Production QA - v8.11.0 analysis basis sanitization + agent label fix",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "a696a8b60a192754ba31e7749b538093d2ad9ee5"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "/",
+    "/system-boot",
+    "/dashboard",
+    "ai-sidebar",
+    "alert-prefill",
+    "ai-streaming-response",
+    "analysis-basis-panel"
+  ],
+  "skippedSurfaces": ["login", "observability pack"],
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Analysis basis panel verified post-sanitization: (1) tool function names replaced with Korean labels ('메트릭 상관 분석' not 'correlateMetrics'), (2) response body shows 3-section format (현황 요약/추정 원인/권장 조치) with no internal function names, (3) collapsed summary shows '분석 단계:' label not '도구:', (4) raw JSON preview block removed, (5) agent role labels use Korean mapping, (6) alert prefill populated correctly, (7) 0 console errors.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-08T04:53:00+09:00",
+      "summary": "Reusing QA-20260408-0251 billing check: effective 3.9429 USD, billed 0.0000 USD, no unexpected spike.",
+      "evidence": "QA-20260408-0251 usageChecks",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "AI response with 3-section format and sanitized analysis basis panel",
+      "path": "reports/qa/evidence/qa-20260408-analysis-basis-sanitized.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "fix-analysis-basis-sanitization",
+      "title": "분석 근거 패널 내부 구현 정보 노출 제거",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "fix-multi-agent-tool-result-bubble",
+      "title": "멀티 에이전트 경로 tool_result 이벤트 누락 수정",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Deployed via `vercel --prod` (source upload) after GitLab CI quota exceeded and local `vercel build --prod` failed due to WSL2 network issue with fonts.gstatic.com",
+    "Single-agent path verified; multi-agent orchestrator path requires complex query to trigger"
+  ],
+  "links": []
+}

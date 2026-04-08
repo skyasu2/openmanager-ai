@@ -1,29 +1,29 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-08 12:43:21 KST
+> Generated at: 2026-04-08 13:54:45 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 235 |
-| Total Checks | 1828 |
-| Passed | 1756 |
+| Total Runs | 236 |
+| Total Checks | 1835 |
+| Passed | 1763 |
 | Failed | 66 |
-| Completed Items | 281 |
+| Completed Items | 283 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 13 |
 | Expert Domains Tracked | 8 |
 | Expert Open Gaps | 1 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260408-0252 (2026-04-08T01:31:37.341Z) |
-| Latest Recorded Run | QA-20260408-0252 (2026-04-08T01:31:37.341Z) |
+| Last Counted Run | QA-20260408-0253 (2026-04-08T04:54:22.471Z) |
+| Latest Recorded Run | QA-20260408-0253 (2026-04-08T04:54:22.471Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260408-0252 (2026-04-08T01:31:37.341Z)
+Latest run: QA-20260408-0253 (2026-04-08T04:54:22.471Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -33,16 +33,16 @@ Latest run: QA-20260408-0252 (2026-04-08T01:31:37.341Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Reusing QA-20260408-0250 billing check: effective 3.9429 USD, billed 0.0000 USD, no unexpected spike. |
+| vercel | cli | checked | normal | Reusing QA-20260408-0251 billing check: effective 3.9429 USD, billed 0.0000 USD, no unexpected spike. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: SHA 7e86978c
+- Deployment: SHA a696a8b6
 - Coverage Packs: ai-core
-- Covered Surfaces: /, /dashboard, ai-sidebar, alert-prefill, ai-streaming-response, analysis-basis-panel
+- Covered Surfaces: /, /system-boot, /dashboard, ai-sidebar, alert-prefill, ai-streaming-response, analysis-basis-panel
 - Skipped Surfaces: login, observability pack
 
 ## Links (Latest Run)
@@ -55,8 +55,7 @@ Latest run: QA-20260408-0252 (2026-04-08T01:31:37.341Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | AI response after fix - 3 sections, no tool names | `reports/qa/evidence/qa-20260408-ai-response-after-fix.png` | - |
-| playwright-screenshot | Analysis basis expanded - tool results visible | `reports/qa/evidence/qa-20260408-analysis-basis-expanded.png` | - |
+| playwright-screenshot | AI response with 3-section format and sanitized analysis basis panel | `reports/qa/evidence/qa-20260408-analysis-basis-sanitized.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -202,6 +201,8 @@ Latest run: QA-20260408-0252 (2026-04-08T01:31:37.341Z)
 - feature-dod-vitals-integration: vitals:integration 통합 실행 통과 (completed 1회, last QA-20260228-0028)
 - feedback-trace-links-exposed: Feedback API direct trace links exposed for operator follow-up (completed 1회, last QA-20260322-0156)
 - feedback-trace-ui-link-runtime-availability: Feedback API direct trace UI link runtime availability (completed 1회, last QA-20260322-0159)
+- fix-analysis-basis-sanitization: 분석 근거 패널 내부 구현 정보 노출 제거 (completed 1회, last QA-20260408-0253)
+- fix-multi-agent-tool-result-bubble: 멀티 에이전트 경로 tool_result 이벤트 누락 수정 (completed 1회, last QA-20260408-0253)
 - frontend-ai-data-parity-gate: 프론트엔드 표시 상태와 AI 분석 상태 동일 슬롯 참조 검증 (completed 2회, last QA-20260324-0178)
 - frontend-landing-v880: Landing page v8.8.0 정상 렌더링 (completed 2회, last QA-20260314-0097)
 - guest-auth-proof-cookie: 게스트 PIN 로그인 후 auth_proof 쿠키 발급 정상 (completed 2회, last QA-20260314-0097)
@@ -387,6 +388,7 @@ Latest run: QA-20260408-0252 (2026-04-08T01:31:37.341Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260408-0253 | 2026-04-08T04:54:22.471Z | targeted | no | yes | Playwright MCP Production QA - v8.11.0 analysis basis sanitization + agent label fix | 7 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260408-0252 | 2026-04-08T01:31:37.341Z | targeted | no | yes | Playwright MCP Production QA - fix(ai): multi-agent tool_result bubble-up + analyst instruction + AnalysisBasisBadge | 7 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260408-0251 | 2026-04-07T23:31:32.252Z | targeted | no | yes | Playwright MCP Production QA - v8.11.0 streaming status + alert prefill | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260408-0250 | 2026-04-07T22:47:01.025Z | targeted | no | yes | Production targeted QA - landing bootstrap + AI alert prefill after streaming status contract fix | 6 | 2 | 0 | 0 | 0 | 0 |
@@ -406,4 +408,3 @@ Latest run: QA-20260408-0252 (2026-04-08T01:31:37.341Z)
 | QA-20260405-0236 | 2026-04-05T05:47:50.876Z | release-gate | yes | yes | Vercel production complementary release-gate QA for secondary routes and AI workspace | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260405-0235 | 2026-04-05T05:28:30.284Z | release-gate | yes | yes | Vercel production release-gate QA after trend warning rules | 17 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260405-0234 | 2026-04-05T03:57:20.217Z | broad | no | no | GitHub Sync & CI Optimization Golden State Verification | 0 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260405-0233 | 2026-04-04T17:01:53.490Z | targeted | no | yes | QA-only commit pipeline skip validation candidate | 5 | 0 | 0 | 0 | 0 | 0 |

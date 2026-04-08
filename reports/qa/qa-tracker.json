@@ -2,27 +2,27 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-08T01:31:37.341Z"
+    "updatedAt": "2026-04-08T04:54:22.471Z"
   },
   "sequence": {
-    "nextRunNumber": 253
+    "nextRunNumber": 254
   },
   "summary": {
-    "totalRuns": 235,
-    "totalChecks": 1828,
-    "totalPassed": 1756,
+    "totalRuns": 236,
+    "totalChecks": 1835,
+    "totalPassed": 1763,
     "totalFailed": 66,
     "completionRate": 100,
-    "completedItems": 281,
+    "completedItems": 283,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 13,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260408-0252",
-    "lastRecordedAt": "2026-04-08T01:31:37.341Z",
-    "latestRecordedRunId": "QA-20260408-0252",
-    "latestRecordedAt": "2026-04-08T01:31:37.341Z"
+    "lastRunId": "QA-20260408-0253",
+    "lastRecordedAt": "2026-04-08T04:54:22.471Z",
+    "latestRecordedRunId": "QA-20260408-0253",
+    "latestRecordedAt": "2026-04-08T04:54:22.471Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -6769,6 +6769,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-08T01:31:37.341Z"
+    },
+    "fix-analysis-basis-sanitization": {
+      "id": "fix-analysis-basis-sanitization",
+      "title": "분석 근거 패널 내부 구현 정보 노출 제거",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260408-0253",
+      "firstSeenAt": "2026-04-08T04:54:22.471Z",
+      "lastSeenRunId": "QA-20260408-0253",
+      "lastSeenAt": "2026-04-08T04:54:22.471Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-08T04:54:22.471Z"
+    },
+    "fix-multi-agent-tool-result-bubble": {
+      "id": "fix-multi-agent-tool-result-bubble",
+      "title": "멀티 에이전트 경로 tool_result 이벤트 누락 수정",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260408-0253",
+      "firstSeenAt": "2026-04-08T04:54:22.471Z",
+      "lastSeenRunId": "QA-20260408-0253",
+      "lastSeenAt": "2026-04-08T04:54:22.471Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-08T04:54:22.471Z"
     }
   },
   "runs": [
@@ -22100,6 +22148,80 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260408-0253",
+      "recordedAt": "2026-04-08T04:54:22.471Z",
+      "recordedAtKst": "2026-04-08 13:54:22 KST",
+      "title": "Playwright MCP Production QA - v8.11.0 analysis basis sanitization + agent label fix",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260408-0253.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "a696a8b60a192754ba31e7749b538093d2ad9ee5"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": ["ai-core"],
+      "coveredSurfaces": [
+        "/",
+        "/system-boot",
+        "/dashboard",
+        "ai-sidebar",
+        "alert-prefill",
+        "ai-streaming-response",
+        "analysis-basis-panel"
+      ],
+      "skippedSurfaces": ["login", "observability pack"],
+      "checks": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Analysis basis panel verified post-sanitization: (1) tool function names replaced with Korean labels ('메트릭 상관 분석' not 'correlateMetrics'), (2) response body shows 3-section format (현황 요약/추정 원인/권장 조치) with no internal function names, (3) collapsed summary shows '분석 단계:' label not '도구:', (4) raw JSON preview block removed, (5) agent role labels use Korean mapping, (6) alert prefill populated correctly, (7) 0 console errors.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-08T04:53:00+09:00",
+          "summary": "Reusing QA-20260408-0251 billing check: effective 3.9429 USD, billed 0.0000 USD, no unexpected spike.",
+          "evidence": "QA-20260408-0251 usageChecks",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "AI response with 3-section format and sanitized analysis basis panel",
+          "path": "reports/qa/evidence/qa-20260408-analysis-basis-sanitized.png"
+        }
+      ],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -22108,16 +22230,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 120,
-      "appropriateCount": 114,
+      "seenCount": 121,
+      "appropriateCount": 115,
       "partialCount": 6,
       "inappropriateCount": 0,
       "improvementNeededCount": 16,
-      "lastRunId": "QA-20260408-0252",
-      "lastSeenAt": "2026-04-08T01:31:37.341Z",
+      "lastRunId": "QA-20260408-0253",
+      "lastSeenAt": "2026-04-08T04:54:22.471Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Multi-agent tool_result bubble-up fix verified: (1) response body shows 3-section format (현황 요약/근본 원인/권장 조치) with no tool function names, (2) analysis basis collapsed shows '분석 단계: 근본 원인 분석' instead of previous '도구:', (3) analysis basis expanded shows actual tool result summary ('근본 원인 분석 완료') and step history ('findRootCause 완료'), (4) dataSource changed from '일반 대화 응답' to '서버 실시간 데이터 분석' confirming tool_result SSE events are now received by frontend, (5) console errors 0.",
+      "lastRationale": "Analysis basis panel verified post-sanitization: (1) tool function names replaced with Korean labels ('메트릭 상관 분석' not 'correlateMetrics'), (2) response body shows 3-section format (현황 요약/추정 원인/권장 조치) with no internal function names, (3) collapsed summary shows '분석 단계:' label not '도구:', (4) raw JSON preview block removed, (5) agent role labels use Korean mapping, (6) alert prefill populated correctly, (7) 0 console errors.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
