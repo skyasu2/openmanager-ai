@@ -45,6 +45,20 @@ const TOOL_LABELS: Record<string, string> = {
   finalAnswer: '최종 응답',
 };
 
+// 내부 에이전트 기술명 → 사용자 친화적 역할명 (구현 세부사항 비공개)
+const AGENT_ROLE_LABELS: Record<string, string> = {
+  Orchestrator: '분석 조율',
+  'NLQ Agent': '자연어 분석',
+  'Analyst Agent': '심층 분석',
+  'Reporter Agent': '보고서 생성',
+  'Advisor Agent': '운영 어드바이저',
+  'Vision Agent': '시각 분석',
+};
+
+function getAgentRoleLabel(name: string): string {
+  return AGENT_ROLE_LABELS[name] ?? name;
+}
+
 function getToolLabel(toolName: string): string {
   return TOOL_LABELS[toolName] ?? toolName;
 }
@@ -100,12 +114,20 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
     Boolean(thinkingSteps && thinkingSteps.length > 0) ||
     Boolean(handoffHistory && handoffHistory.length > 0) ||
     Boolean(toolResultSummaries && toolResultSummaries.length > 0);
-  const firstMeaningfulTool = meaningfulTools?.[0];
+  // Progressive Disclosure: 분석 단계 요약을 우선 표시, 없으면 데이터 소스로 fallback
+  const analysisStepSummary =
+    meaningfulTools && meaningfulTools.length > 0
+      ? `분석 단계: ${meaningfulTools
+          .slice(0, 2)
+          .map(getToolLabel)
+          .join(
+            ' · '
+          )}${meaningfulTools.length > 2 ? ` 외 ${meaningfulTools.length - 2}` : ''}`
+      : basis.dataSource
+        ? `데이터: ${basis.dataSource}`
+        : null;
   const collapsedSummaryParts = [
-    basis.dataSource ? `데이터: ${basis.dataSource}` : null,
-    firstMeaningfulTool
-      ? `도구: ${getToolLabel(firstMeaningfulTool)}${meaningfulTools.length > 1 ? ` 외 ${meaningfulTools.length - 1}` : ''}`
-      : null,
+    analysisStepSummary,
     basis.timeRange ? `기간: ${basis.timeRange}` : null,
     basis.engine ? `엔진: ${basis.engine}` : null,
   ].filter(Boolean);
@@ -189,10 +211,11 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
                       >
                         <div className="flex items-center justify-between gap-2">
                           <span className="text-xs font-medium text-slate-700">
-                            {handoff.from} → {handoff.to}
+                            {getAgentRoleLabel(handoff.from)} →{' '}
+                            {getAgentRoleLabel(handoff.to)}
                           </span>
                           <span className="rounded bg-white px-1.5 py-0.5 text-2xs text-slate-500">
-                            handoff {index + 1}
+                            {index + 1}단계
                           </span>
                         </div>
                         {handoff.reason && (
@@ -228,16 +251,6 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
                         <p className="mt-1 text-xs leading-relaxed text-slate-600">
                           {toolResult.summary}
                         </p>
-                        {toolResult.preview && (
-                          <details className="mt-2 rounded border border-slate-200 bg-white p-2">
-                            <summary className="cursor-pointer text-2xs font-medium text-slate-500">
-                              결과 미리보기
-                            </summary>
-                            <pre className="mt-2 overflow-x-auto whitespace-pre-wrap break-all font-mono text-[11px] leading-relaxed text-slate-700">
-                              {toolResult.preview}
-                            </pre>
-                          </details>
-                        )}
                       </div>
                     ))}
                   </div>
@@ -257,7 +270,9 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
                       >
                         <div className="flex items-center justify-between gap-2">
                           <span className="text-xs font-medium text-slate-700">
-                            {step.step || step.title || `단계 ${index + 1}`}
+                            {getToolLabel(step.step ?? '') !== (step.step ?? '')
+                              ? getToolLabel(step.step ?? '')
+                              : step.title || `단계 ${index + 1}`}
                           </span>
                           <div className="flex items-center gap-1.5 text-2xs text-slate-500">
                             {step.status && (

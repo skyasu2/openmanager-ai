@@ -180,6 +180,14 @@ const MULTI_STEP_INTENT_KEYWORDS = [
   '추가로',
 ] as const;
 
+const STREAMING_ALERT_ANALYSIS_METRIC_PATTERN =
+  /(cpu|메모리|memory|mem|디스크|disk)\s*사용률.*\d{1,3}%/i;
+const STREAMING_ALERT_ANALYSIS_CAUSE_PATTERN = /(현재\s*)?(원인|발생 원인)/i;
+const STREAMING_ALERT_ANALYSIS_ACTION_PATTERN =
+  /(우선\s*조치|조치\s*방법|대응\s*방안|재발\s*방지)/i;
+const STREAMING_ALERT_ANALYSIS_BROAD_SCOPE_PATTERN =
+  /(전체|모든|비교|예측|리포트|보고서|7일|30일|히스토리|이력|클러스터|group|cluster)/i;
+
 function shouldPreferStreamingSummaryQuery(query: string): boolean {
   if (query.length > 80) return false;
 
@@ -199,6 +207,19 @@ function shouldPreferStreamingSummaryQuery(query: string): boolean {
   if (hasMultiStepIntent) return false;
 
   return /(알려줘|보여줘|정리해줘|요약해줘|확인해줘|체크해줘)/.test(query);
+}
+
+function shouldPreferStreamingAlertAnalysisQuery(query: string): boolean {
+  if (query.length > 140) return false;
+  if (!query.includes('서버')) return false;
+  if (STREAMING_ALERT_ANALYSIS_BROAD_SCOPE_PATTERN.test(query)) return false;
+  if (!STREAMING_ALERT_ANALYSIS_METRIC_PATTERN.test(query)) return false;
+  if (!STREAMING_ALERT_ANALYSIS_CAUSE_PATTERN.test(query)) return false;
+
+  return (
+    STREAMING_ALERT_ANALYSIS_ACTION_PATTERN.test(query) ||
+    /분석해줘|분석해\s*줘/.test(query)
+  );
 }
 
 // ============================================================================
@@ -222,6 +243,17 @@ export function analyzeQueryComplexity(query: string): ComplexityAnalysis {
       score: 15,
       factors: ['streaming_summary_query'],
       recommendedTimeout: 15000,
+    };
+  }
+
+  if (shouldPreferStreamingAlertAnalysisQuery(normalizedQuery)) {
+    return {
+      level: 'moderate',
+      // Routing uses the numeric threshold (default 19), not the level label.
+      // Keep single-server alert prefill prompts on streaming by staying below it.
+      score: 18,
+      factors: ['streaming_alert_analysis_query'],
+      recommendedTimeout: 30000,
     };
   }
 
@@ -520,6 +552,20 @@ export function analyzeJobQueryComplexity(
         analysisDepth: 'shallow',
         multiStep: false,
         keywordCount: countKeywordMatches(q, JOB_SIMPLE_KEYWORDS),
+      },
+      useJobQueue: false,
+    };
+  }
+
+  if (shouldPreferStreamingAlertAnalysisQuery(q)) {
+    return {
+      level: 'simple',
+      estimatedTime: 12,
+      factors: {
+        dataVolume: 'low',
+        analysisDepth: 'shallow',
+        multiStep: false,
+        keywordCount: 1,
       },
       useJobQueue: false,
     };

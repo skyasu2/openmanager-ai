@@ -12,6 +12,25 @@ import {
   type ResponseSourceData,
 } from './response-view-helpers';
 
+const VALID_AGENT_STATUSES = new Set([
+  'thinking',
+  'processing',
+  'completed',
+  'idle',
+]);
+
+const LEGACY_AGENT_STATUS_FALLBACKS: Record<
+  string,
+  Pick<AgentStatusEventData, 'agent' | 'status'>
+> = {
+  degraded: { agent: 'Orchestrator', status: 'processing' },
+  decomposing: { agent: 'Orchestrator', status: 'processing' },
+  executing: { agent: 'Orchestrator', status: 'processing' },
+  routing_fallback: { agent: 'Orchestrator', status: 'processing' },
+  unifying: { agent: 'Orchestrator', status: 'processing' },
+  vision_fallback: { agent: 'Vision Agent', status: 'processing' },
+};
+
 type SyntheticToolPart = Extract<
   UIMessage['parts'][number],
   {
@@ -95,6 +114,44 @@ function normalizeHandoffHistory(value: unknown): HandoffEventData[] {
   );
 }
 
+function isAgentStatusEventData(value: unknown): value is AgentStatusEventData {
+  return (
+    isRecord(value) &&
+    typeof value.agent === 'string' &&
+    typeof value.status === 'string' &&
+    VALID_AGENT_STATUSES.has(value.status)
+  );
+}
+
+function normalizeAgentStatusEventData(
+  value: unknown
+): AgentStatusEventData | null {
+  if (!isRecord(value) || typeof value.status !== 'string') {
+    return null;
+  }
+
+  const message = typeof value.message === 'string' ? value.message : undefined;
+
+  if (isAgentStatusEventData(value)) {
+    return {
+      agent: value.agent,
+      status: value.status,
+      ...(message ? { message } : {}),
+    };
+  }
+
+  const legacyFallback = LEGACY_AGENT_STATUS_FALLBACKS[value.status];
+  if (!legacyFallback) {
+    return null;
+  }
+
+  return {
+    agent: typeof value.agent === 'string' ? value.agent : legacyFallback.agent,
+    status: legacyFallback.status,
+    ...(message ? { message } : {}),
+  };
+}
+
 function _createSyntheticToolParts(
   toolResults: PendingStreamToolResult[]
 ): SyntheticToolPart[] {
@@ -116,7 +173,15 @@ export function handleStreamDataPart(
     callbacks.setPendingToolResults([]);
     callbacks.setPendingMessageMetadata({});
   } else if (partType === 'data-agent-status' && dataPart.data) {
-    const agentStatus = dataPart.data as AgentStatusEventData;
+    const agentStatus = normalizeAgentStatusEventData(dataPart.data);
+    if (!agentStatus) {
+      if (process.env.NODE_ENV === 'development') {
+        logger.warn('⚠️ [Agent Status] Invalid event payload ignored', {
+          data: dataPart.data,
+        });
+      }
+      return;
+    }
     callbacks.setCurrentAgentStatus(agentStatus);
     if (process.env.NODE_ENV === 'development') {
       logger.info(

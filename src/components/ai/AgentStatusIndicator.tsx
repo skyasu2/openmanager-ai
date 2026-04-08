@@ -19,14 +19,17 @@ import {
   Settings,
 } from 'lucide-react';
 import { memo } from 'react';
+import type { AgentStatus } from '@/hooks/ai/useHybridAIQuery';
 
-export type AgentStatus = 'thinking' | 'processing' | 'completed' | 'idle';
+export type { AgentStatus } from '@/hooks/ai/useHybridAIQuery';
 
 export interface AgentStatusIndicatorProps {
   /** Agent name */
   agent: string;
   /** Current status */
   status: AgentStatus;
+  /** Optional runtime detail message from the stream */
+  message?: string;
   /** Compact inline mode */
   compact?: boolean;
 }
@@ -93,6 +96,10 @@ const STATUS_LABELS: Record<AgentStatus, string> = {
   idle: '대기',
 };
 
+const FALLBACK_STATUS_STYLE = STATUS_STYLES.idle;
+const FALLBACK_STATUS_LABEL = STATUS_LABELS.idle;
+const ACTIVE_STATUSES = new Set<AgentStatus>(['thinking', 'processing']);
+
 /**
  * Parse agent_status event data
  */
@@ -119,21 +126,19 @@ export function parseAgentStatus(
  * Agent Status Indicator Component
  */
 export const AgentStatusIndicator = memo<AgentStatusIndicatorProps>(
-  ({ agent, status, compact = false }) => {
+  ({ agent, status, message, compact = false }) => {
     const Icon = AGENT_ICONS[agent] || Bot;
-    const style = STATUS_STYLES[status];
-    const label = STATUS_LABELS[status];
-
-    const description = AGENT_DESCRIPTIONS[agent];
+    const style = STATUS_STYLES[status as AgentStatus] ?? FALLBACK_STATUS_STYLE;
+    const label = STATUS_LABELS[status as AgentStatus] ?? FALLBACK_STATUS_LABEL;
+    const description = message ?? AGENT_DESCRIPTIONS[agent];
+    const isActiveStatus = ACTIVE_STATUSES.has(status);
 
     if (compact) {
       return (
         <div
           className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-medium ${style.bg} ${style.text} ${style.border} border ${style.animate || ''}`}
         >
-          {(status === 'thinking' || status === 'processing') && (
-            <Loader2 className="h-3 w-3 animate-spin" />
-          )}
+          {isActiveStatus && <Loader2 className="h-3 w-3 animate-spin" />}
           <Icon className="h-3.5 w-3.5" />
           <span className="font-semibold">{agent}</span>
           {description && (
@@ -153,9 +158,7 @@ export const AgentStatusIndicator = memo<AgentStatusIndicatorProps>(
         <div
           className={`flex items-center gap-2 rounded-full border px-3 py-1.5 ${style.bg} ${style.text} ${style.border}`}
         >
-          {(status === 'thinking' || status === 'processing') && (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          )}
+          {isActiveStatus && <Loader2 className="h-4 w-4 animate-spin" />}
           <Icon className="h-4 w-4" />
           <span className="text-sm font-medium">{agent}</span>
           <span className="text-xs opacity-75">• {label}</span>

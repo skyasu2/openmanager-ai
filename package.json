@@ -1,6 +1,6 @@
 {
   "name": "openmanager-ai",
-  "version": "8.11.0",
+  "version": "8.11.1",
   "private": true,
   "license": "GPL-3.0-only",
   "author": "skyasu2 (https://github.com/skyasu2)",
@@ -77,7 +77,6 @@
     "@storybook/addon-mcp": "^0.4.2",
     "@storybook/addon-vitest": "^10.2.19",
     "@storybook/nextjs-vite": "^10.2.10",
-    "@storybook/react-vite": "^10.2.10",
     "@tailwindcss/postcss": "^4.2.1",
     "@tanstack/react-query-devtools": "^5.91.3",
     "@testing-library/dom": "^10.4.1",

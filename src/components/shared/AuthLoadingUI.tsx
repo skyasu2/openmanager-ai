@@ -51,6 +51,7 @@ export default function AuthLoadingUI({
   onRetry,
   showCopy = true,
 }: AuthLoadingUIProps) {
+  const accessibleLoadingLabel = `${loadingMessage} (${envLabel} 환경)`;
   const visibleAuthError =
     process.env.NODE_ENV === 'development'
       ? authError
@@ -60,16 +61,19 @@ export default function AuthLoadingUI({
 
   return (
     <FullScreenLayout>
-      <div className="text-center">
+      <div
+        className="text-center"
+        role="status"
+        aria-busy="true"
+        aria-live="polite"
+        aria-label={showCopy ? undefined : accessibleLoadingLabel}
+      >
         <div>
           <Loader2 className="mx-auto mb-4 h-8 w-8 animate-spin text-white" />
         </div>
-        <span className="sr-only" suppressHydrationWarning>
-          {loadingMessage} ({envLabel} 환경)
-        </span>
         {showCopy && (
           <p className="font-medium text-white/90" suppressHydrationWarning>
-            {loadingMessage} ({envLabel} 환경)
+            {accessibleLoadingLabel}
           </p>
         )}
         {visibleAuthError && onRetry && (
