@@ -1,0 +1,98 @@
+{
+  "runId": "QA-20260408-0257",
+  "recordedAt": "2026-04-08T14:35:03.410Z",
+  "recordedAtKst": "2026-04-08 23:35:03 KST",
+  "runTitle": "Vercel Targeted Release Validation - v8.11.3 production recovered via local deploy",
+  "owner": "codex",
+  "source": "codex-cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_A3VtpXaxdPvTZYe4t98wRdMVenWz",
+    "deploymentUrl": "https://openmanager-az99i79wb-skyasus-projects.vercel.app",
+    "commitSha": "bcf47771de89a56274d7f74f5bf75ad4246b89b9"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": false,
+  "coveragePacks": ["core-routes-smoke", "observability-pack"],
+  "coveredSurfaces": ["/", "/validation", "/api/version", "production alias"],
+  "skippedSurfaces": [
+    "dashboard",
+    "ai-sidebar",
+    "Cloud Run runtime QA",
+    "GitLab retry path"
+  ],
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Production is recovered via direct Vercel deploy, but the canonical GitLab tag deploy path still has a protected variable exposure gap.",
+      "nextAction": "Fix GitLab protected tag and variable exposure, then retry the existing failed v8.11.3 pipeline or confirm the issue is closed on the next semver release."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-08T23:34:01+09:00",
+      "summary": "Post-recovery billing check after local production deploy; effective 4.6046 USD, billed 0.0000 USD, no unexpected billed spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "v8.11.3 local vercel recovery evidence",
+      "path": "reports/qa/evidence/qa-20260408-v8113-local-vercel-recovery.md"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "gitlab-tag-protected-variable-exposure-v8113",
+      "title": "Fix GitLab protected variable exposure for semver tag deploy",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Production is healthy again, but canonical semver tag deploy still depends on aligning GitLab protected tags and CI/CD variables.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Local Vercel production deploy was used as recovery because GitLab tag deploy could not expose VERCEL_TOKEN.",
+    "Production alias now serves buildVersion 8.11.3.",
+    "This recovery does not close the canonical GitLab deploy-path configuration gap."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "general",
+      "label": "Recovery deployment",
+      "url": "https://openmanager-az99i79wb-skyasus-projects.vercel.app/"
+    }
+  ]
+}

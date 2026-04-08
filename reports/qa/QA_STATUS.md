@@ -1,7 +1,7 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-08 23:15:24 KST
+> Generated at: 2026-04-08 23:35:03 KST
 
 ## Summary
 
@@ -19,53 +19,53 @@
 | Expert Open Gaps | 1 |
 | Completion Rate | 99.65% |
 | Last Counted Run | QA-20260408-0253 (2026-04-08T04:54:22.471Z) |
-| Latest Recorded Run | QA-20260408-0256 (2026-04-08T14:15:23.840Z) |
+| Latest Recorded Run | QA-20260408-0257 (2026-04-08T14:35:03.410Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260408-0256 (2026-04-08T14:15:23.840Z)
+Latest run: QA-20260408-0257 (2026-04-08T14:35:03.410Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| DevOps / SRE Engineer | partially-appropriate | yes | Configure GitLab protected tag pattern v*.*.* and retry failed job 13829853789 or the existing v8.11.3 tag pipeline. |
+| DevOps / SRE Engineer | partially-appropriate | yes | Fix GitLab protected tag and variable exposure, then retry the existing failed v8.11.3 pipeline or confirm the issue is closed on the next semver release. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Metadata sync run after confirming root cause; no additional billed usage concern. |
+| vercel | cli | checked | normal | Post-recovery billing check after local production deploy; effective 4.6046 USD, billed 0.0000 USD, no unexpected billed spike. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: no
-- Deployment: dpl_8K7ZKcNUsY3U6X1Q4tuwU81D6N1d / SHA 18209be8
+- Deployment: dpl_A3VtpXaxdPvTZYe4t98wRdMVenWz / SHA bcf47771
 - Coverage Packs: core-routes-smoke, observability-pack
-- Covered Surfaces: qa-tracker, v8.11.3 deploy root cause tracking
-- Skipped Surfaces: frontend runtime, dashboard, ai-sidebar, Cloud Run runtime QA
+- Covered Surfaces: /, /validation, /api/version, production alias
+- Skipped Surfaces: dashboard, ai-sidebar, Cloud Run runtime QA, GitLab retry path
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Active production deployment | [Active production deployment](https://openmanager-jc49472pn-skyasus-projects.vercel.app/) | - |
 | general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
+| general | Recovery deployment | [Recovery deployment](https://openmanager-az99i79wb-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | v8.11.3 trace analysis closed evidence | `reports/qa/evidence/qa-20260408-v8113-trace-analysis-closed.md` | - |
+| playwright-console | v8.11.3 local vercel recovery evidence | `reports/qa/evidence/qa-20260408-v8113-local-vercel-recovery.md` | - |
 
 ## Expert Domain Open Gaps
 
-- sre-devops: DevOps / SRE Engineer (last QA-20260408-0256)
-  next: Configure GitLab protected tag pattern v*.*.* and retry failed job 13829853789 or the existing v8.11.3 tag pipeline.
+- sre-devops: DevOps / SRE Engineer (last QA-20260408-0257)
+  next: Fix GitLab protected tag and variable exposure, then retry the existing failed v8.11.3 pipeline or confirm the issue is closed on the next semver release.
 
 ## Pending Improvements
 
-- [P1] gitlab-tag-protected-variable-exposure-v8113: Fix GitLab protected variable exposure for semver tag deploy (seen 2회, last QA-20260408-0256)
+- [P1] gitlab-tag-protected-variable-exposure-v8113: Fix GitLab protected variable exposure for semver tag deploy (seen 3회, last QA-20260408-0257)
 
 ## Deferred Improvements
 
@@ -390,6 +390,7 @@ Latest run: QA-20260408-0256 (2026-04-08T14:15:23.840Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260408-0257 | 2026-04-08T14:35:03.410Z | targeted | yes | no | Vercel Targeted Release Validation - v8.11.3 production recovered via local deploy | 3 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260408-0256 | 2026-04-08T14:15:23.840Z | targeted | yes | no | QA Metadata Sync - v8.11.3 trace analysis closed | 0 | 1 | 1 | 0 | 0 | 1 |
 | QA-20260408-0255 | 2026-04-08T14:09:01.310Z | targeted | yes | no | Vercel Targeted Release Validation - v8.11.3 root cause confirmed | 3 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260408-0254 | 2026-04-08T13:25:34.065Z | targeted | yes | no | Vercel Targeted Release Validation - v8.11.3 production drift | 3 | 0 | 1 | 0 | 0 | 1 |
@@ -409,4 +410,3 @@ Latest run: QA-20260408-0256 (2026-04-08T14:15:23.840Z)
 | QA-20260405-0240 | 2026-04-05T10:18:47.152Z | targeted | no | no | Vercel targeted QA - response process detail post-deploy verification | 5 | 0 | 2 | 0 | 0 | 0 |
 | QA-20260405-0239 | 2026-04-05T09:34:55.345Z | targeted | no | no | Vercel targeted QA - assistant response process detail visibility | 4 | 0 | 1 | 0 | 0 | 0 |
 | QA-20260405-0238 | 2026-04-05T06:21:39.750Z | release-gate | yes | yes | Broad Release-Gate QA - Final Golden State Baseline Alignment | 15 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260405-0237 | 2026-04-05T06:10:23.695Z | targeted | no | no | Vercel production targeted health recheck after gate warning clarification | 6 | 0 | 0 | 0 | 0 | 0 |

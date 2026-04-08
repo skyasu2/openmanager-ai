@@ -2,10 +2,10 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-08T14:15:23.840Z"
+    "updatedAt": "2026-04-08T14:35:03.410Z"
   },
   "sequence": {
-    "nextRunNumber": 257
+    "nextRunNumber": 258
   },
   "summary": {
     "totalRuns": 236,
@@ -21,8 +21,8 @@
     "expertDomainsOpenGaps": 1,
     "lastRunId": "QA-20260408-0253",
     "lastRecordedAt": "2026-04-08T04:54:22.471Z",
-    "latestRecordedRunId": "QA-20260408-0256",
-    "latestRecordedAt": "2026-04-08T14:15:23.840Z"
+    "latestRecordedRunId": "QA-20260408-0257",
+    "latestRecordedAt": "2026-04-08T14:35:03.410Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -6849,22 +6849,22 @@
       "status": "pending",
       "firstSeenRunId": "QA-20260408-0255",
       "firstSeenAt": "2026-04-08T14:09:01.310Z",
-      "lastSeenRunId": "QA-20260408-0256",
-      "lastSeenAt": "2026-04-08T14:15:23.840Z",
-      "seenCount": 2,
+      "lastSeenRunId": "QA-20260408-0257",
+      "lastSeenAt": "2026-04-08T14:35:03.410Z",
+      "seenCount": 3,
       "completedCount": 0,
-      "pendingCount": 2,
+      "pendingCount": 3,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
       "lastEvidence": "",
-      "lastNote": "GitLab protected tags and protected CI/CD variables must be aligned before retrying the existing v8.11.3 failed deploy job.",
+      "lastNote": "Production is healthy again, but canonical semver tag deploy still depends on aligning GitLab protected tags and CI/CD variables.",
       "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-04-08T14:15:23.840Z"
+      "lastStatusChangeAt": "2026-04-08T14:35:03.410Z"
     }
   },
   "runs": [
@@ -22516,6 +22516,93 @@
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260408-0257",
+      "recordedAt": "2026-04-08T14:35:03.410Z",
+      "recordedAtKst": "2026-04-08 23:35:03 KST",
+      "title": "Vercel Targeted Release Validation - v8.11.3 production recovered via local deploy",
+      "owner": "codex",
+      "source": "codex-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260408-0257.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_A3VtpXaxdPvTZYe4t98wRdMVenWz",
+        "deploymentUrl": "https://openmanager-az99i79wb-skyasus-projects.vercel.app",
+        "commitSha": "bcf47771de89a56274d7f74f5bf75ad4246b89b9"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": false,
+      "coveragePacks": ["core-routes-smoke", "observability-pack"],
+      "coveredSurfaces": [
+        "/",
+        "/validation",
+        "/api/version",
+        "production alias"
+      ],
+      "skippedSurfaces": [
+        "dashboard",
+        "ai-sidebar",
+        "Cloud Run runtime QA",
+        "GitLab retry path"
+      ],
+      "checks": {
+        "total": 3,
+        "passed": 3,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Production is recovered via direct Vercel deploy, but the canonical GitLab tag deploy path still has a protected variable exposure gap.",
+          "nextAction": "Fix GitLab protected tag and variable exposure, then retry the existing failed v8.11.3 pipeline or confirm the issue is closed on the next semver release."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-08T23:34:01+09:00",
+          "summary": "Post-recovery billing check after local production deploy; effective 4.6046 USD, billed 0.0000 USD, no unexpected billed spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "v8.11.3 local vercel recovery evidence",
+          "path": "reports/qa/evidence/qa-20260408-v8113-local-vercel-recovery.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "general",
+          "label": "Recovery deployment",
+          "url": "https://openmanager-az99i79wb-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -22575,17 +22662,17 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 74,
+      "seenCount": 75,
       "appropriateCount": 67,
-      "partialCount": 7,
+      "partialCount": 8,
       "inappropriateCount": 0,
-      "improvementNeededCount": 11,
-      "lastRunId": "QA-20260408-0256",
-      "lastSeenAt": "2026-04-08T14:15:23.840Z",
+      "improvementNeededCount": 12,
+      "lastRunId": "QA-20260408-0257",
+      "lastSeenAt": "2026-04-08T14:35:03.410Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "The failed tag deploy trace has been analyzed and the remaining blocker is GitLab protected variable exposure.",
-      "lastNextAction": "Configure GitLab protected tag pattern v*.*.* and retry failed job 13829853789 or the existing v8.11.3 tag pipeline."
+      "lastRationale": "Production is recovered via direct Vercel deploy, but the canonical GitLab tag deploy path still has a protected variable exposure gap.",
+      "lastNextAction": "Fix GitLab protected tag and variable exposure, then retry the existing failed v8.11.3 pipeline or confirm the issue is closed on the next semver release."
     },
     "test-automation": {
       "domainId": "test-automation",
