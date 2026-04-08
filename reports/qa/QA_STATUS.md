@@ -1,7 +1,7 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-08 13:54:45 KST
+> Generated at: 2026-04-08 22:25:34 KST
 
 ## Summary
 
@@ -12,59 +12,60 @@
 | Passed | 1763 |
 | Failed | 66 |
 | Completed Items | 283 |
-| Pending Items | 0 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 13 |
 | Expert Domains Tracked | 8 |
 | Expert Open Gaps | 1 |
-| Completion Rate | 100% |
+| Completion Rate | 99.65% |
 | Last Counted Run | QA-20260408-0253 (2026-04-08T04:54:22.471Z) |
-| Latest Recorded Run | QA-20260408-0253 (2026-04-08T04:54:22.471Z) |
+| Latest Recorded Run | QA-20260408-0254 (2026-04-08T13:25:34.065Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260408-0253 (2026-04-08T04:54:22.471Z)
+Latest run: QA-20260408-0254 (2026-04-08T13:25:34.065Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
+| DevOps / SRE Engineer | partially-appropriate | yes | Inspect GitLab failed job 13829853789 trace and fix the frontend deploy stage before retrying with v8.11.4. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Reusing QA-20260408-0251 billing check: effective 3.9429 USD, billed 0.0000 USD, no unexpected spike. |
+| vercel | cli | checked | normal | Current billing period reviewed after release validation failure; effective 4.5991 USD, billed 0.0000 USD, no unexpected billed spike. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
-- Counts Toward Summary: yes
-- Deployment: SHA a696a8b6
-- Coverage Packs: ai-core
-- Covered Surfaces: /, /system-boot, /dashboard, ai-sidebar, alert-prefill, ai-streaming-response, analysis-basis-panel
-- Skipped Surfaces: login, observability pack
+- Release-Facing: yes
+- Counts Toward Summary: no
+- Deployment: dpl_8K7ZKcNUsY3U6X1Q4tuwU81D6N1d / SHA 18209be8
+- Coverage Packs: core-routes-smoke, observability-pack
+- Covered Surfaces: /, /validation, /api/version, release publish verification
+- Skipped Surfaces: dashboard, ai-sidebar, Cloud Run runtime QA
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | Active production deployment | [Active production deployment](https://openmanager-jc49472pn-skyasus-projects.vercel.app/) | - |
+| general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | AI response with 3-section format and sanitized analysis basis panel | `reports/qa/evidence/qa-20260408-analysis-basis-sanitized.png` | - |
+| playwright-console | v8.11.3 release validation failure evidence | `reports/qa/evidence/qa-20260408-v8113-release-gate-failure.md` | - |
 
 ## Expert Domain Open Gaps
 
-- sre-devops: DevOps / SRE Engineer (last QA-20260407-0249)
-  next: Inspect Cloud Run/provider quota and limiter behavior for first-hit production prompts before treating v8.11.0 as fully green.
+- sre-devops: DevOps / SRE Engineer (last QA-20260408-0254)
+  next: Inspect GitLab failed job 13829853789 trace and fix the frontend deploy stage before retrying with v8.11.4.
 
 ## Pending Improvements
 
-- None
+- [P1] gitlab-tag-deploy-trace-v8113: GitLab tag deploy failure root cause analysis for v8.11.3 (seen 1회, last QA-20260408-0254)
 
 ## Deferred Improvements
 
@@ -388,6 +389,7 @@ Latest run: QA-20260408-0253 (2026-04-08T04:54:22.471Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260408-0254 | 2026-04-08T13:25:34.065Z | targeted | yes | no | Vercel Targeted Release Validation - v8.11.3 production drift | 3 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260408-0253 | 2026-04-08T04:54:22.471Z | targeted | no | yes | Playwright MCP Production QA - v8.11.0 analysis basis sanitization + agent label fix | 7 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260408-0252 | 2026-04-08T01:31:37.341Z | targeted | no | yes | Playwright MCP Production QA - fix(ai): multi-agent tool_result bubble-up + analyst instruction + AnalysisBasisBadge | 7 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260408-0251 | 2026-04-07T23:31:32.252Z | targeted | no | yes | Playwright MCP Production QA - v8.11.0 streaming status + alert prefill | 6 | 0 | 0 | 0 | 0 | 0 |
@@ -407,4 +409,3 @@ Latest run: QA-20260408-0253 (2026-04-08T04:54:22.471Z)
 | QA-20260405-0237 | 2026-04-05T06:10:23.695Z | targeted | no | no | Vercel production targeted health recheck after gate warning clarification | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260405-0236 | 2026-04-05T05:47:50.876Z | release-gate | yes | yes | Vercel production complementary release-gate QA for secondary routes and AI workspace | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260405-0235 | 2026-04-05T05:28:30.284Z | release-gate | yes | yes | Vercel production release-gate QA after trend warning rules | 17 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260405-0234 | 2026-04-05T03:57:20.217Z | broad | no | no | GitHub Sync & CI Optimization Golden State Verification | 0 | 0 | 0 | 0 | 0 | 0 |

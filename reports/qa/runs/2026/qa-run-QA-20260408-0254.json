@@ -1,0 +1,98 @@
+{
+  "runId": "QA-20260408-0254",
+  "recordedAt": "2026-04-08T13:25:34.065Z",
+  "recordedAtKst": "2026-04-08 22:25:34 KST",
+  "runTitle": "Vercel Targeted Release Validation - v8.11.3 production drift",
+  "owner": "codex",
+  "source": "codex-cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_8K7ZKcNUsY3U6X1Q4tuwU81D6N1d",
+    "deploymentUrl": "https://openmanager-jc49472pn-skyasus-projects.vercel.app",
+    "commitSha": "18209be8b8843445fef001f13aa3c3aa9e20cfa9"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": false,
+  "coveragePacks": ["core-routes-smoke", "observability-pack"],
+  "coveredSurfaces": [
+    "/",
+    "/validation",
+    "/api/version",
+    "release publish verification"
+  ],
+  "skippedSurfaces": ["dashboard", "ai-sidebar", "Cloud Run runtime QA"],
+  "checks": {
+    "total": 3,
+    "passed": 2,
+    "failed": 1
+  },
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Release automation now detects version drift, but the GitLab tag deploy failure still blocks production rollout.",
+      "nextAction": "Inspect GitLab failed job 13829853789 trace and fix the frontend deploy stage before retrying with v8.11.4."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-08T22:08:00+09:00",
+      "summary": "Current billing period reviewed after release validation failure; effective 4.5991 USD, billed 0.0000 USD, no unexpected billed spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "v8.11.3 release validation failure evidence",
+      "path": "reports/qa/evidence/qa-20260408-v8113-release-gate-failure.md"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "gitlab-tag-deploy-trace-v8113",
+      "title": "GitLab tag deploy failure root cause analysis for v8.11.3",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Need failed job 13829853789 trace to confirm whether VERCEL_TOKEN/protected variable or vercel build step caused the deploy miss.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Release commit/tag push succeeded but production alias still serves buildVersion 8.11.0.",
+    "Runner health remained normal during the failure window.",
+    "Two successful jobs around the same window indicate the self-hosted runner itself is not the blocker."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Active production deployment",
+      "url": "https://openmanager-jc49472pn-skyasus-projects.vercel.app/"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

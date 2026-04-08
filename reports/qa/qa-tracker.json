@@ -2,27 +2,27 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-08T04:54:22.471Z"
+    "updatedAt": "2026-04-08T13:25:34.065Z"
   },
   "sequence": {
-    "nextRunNumber": 254
+    "nextRunNumber": 255
   },
   "summary": {
     "totalRuns": 236,
     "totalChecks": 1835,
     "totalPassed": 1763,
     "totalFailed": 66,
-    "completionRate": 100,
+    "completionRate": 99.65,
     "completedItems": 283,
-    "pendingItems": 0,
+    "pendingItems": 1,
     "deferredItems": 0,
     "wontFixItems": 13,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 1,
     "lastRunId": "QA-20260408-0253",
     "lastRecordedAt": "2026-04-08T04:54:22.471Z",
-    "latestRecordedRunId": "QA-20260408-0253",
-    "latestRecordedAt": "2026-04-08T04:54:22.471Z"
+    "latestRecordedRunId": "QA-20260408-0254",
+    "latestRecordedAt": "2026-04-08T13:25:34.065Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -6817,6 +6817,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-08T04:54:22.471Z"
+    },
+    "gitlab-tag-deploy-trace-v8113": {
+      "id": "gitlab-tag-deploy-trace-v8113",
+      "title": "GitLab tag deploy failure root cause analysis for v8.11.3",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260408-0254",
+      "firstSeenAt": "2026-04-08T13:25:34.065Z",
+      "lastSeenRunId": "QA-20260408-0254",
+      "lastSeenAt": "2026-04-08T13:25:34.065Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "Need failed job 13829853789 trace to confirm whether VERCEL_TOKEN/protected variable or vercel build step caused the deploy miss.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-08T13:25:34.065Z"
     }
   },
   "runs": [
@@ -22222,6 +22246,88 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260408-0254",
+      "recordedAt": "2026-04-08T13:25:34.065Z",
+      "recordedAtKst": "2026-04-08 22:25:34 KST",
+      "title": "Vercel Targeted Release Validation - v8.11.3 production drift",
+      "owner": "codex",
+      "source": "codex-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260408-0254.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_8K7ZKcNUsY3U6X1Q4tuwU81D6N1d",
+        "deploymentUrl": "https://openmanager-jc49472pn-skyasus-projects.vercel.app",
+        "commitSha": "18209be8b8843445fef001f13aa3c3aa9e20cfa9"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": false,
+      "coveragePacks": ["core-routes-smoke", "observability-pack"],
+      "coveredSurfaces": [
+        "/",
+        "/validation",
+        "/api/version",
+        "release publish verification"
+      ],
+      "skippedSurfaces": ["dashboard", "ai-sidebar", "Cloud Run runtime QA"],
+      "checks": {
+        "total": 3,
+        "passed": 2,
+        "failed": 1
+      },
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Release automation now detects version drift, but the GitLab tag deploy failure still blocks production rollout.",
+          "nextAction": "Inspect GitLab failed job 13829853789 trace and fix the frontend deploy stage before retrying with v8.11.4."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-08T22:08:00+09:00",
+          "summary": "Current billing period reviewed after release validation failure; effective 4.5991 USD, billed 0.0000 USD, no unexpected billed spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "v8.11.3 release validation failure evidence",
+          "path": "reports/qa/evidence/qa-20260408-v8113-release-gate-failure.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Active production deployment",
+          "url": "https://openmanager-jc49472pn-skyasus-projects.vercel.app/"
+        },
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -22281,17 +22387,17 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 71,
+      "seenCount": 72,
       "appropriateCount": 67,
-      "partialCount": 4,
+      "partialCount": 5,
       "inappropriateCount": 0,
-      "improvementNeededCount": 8,
-      "lastRunId": "QA-20260407-0249",
-      "lastSeenAt": "2026-04-07T11:55:13.126Z",
+      "improvementNeededCount": 9,
+      "lastRunId": "QA-20260408-0254",
+      "lastSeenAt": "2026-04-08T13:25:34.065Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "The promoted production deployment is healthy and usage remains within budget, but user-facing AI reliability is still sensitive to transient rate-limit behavior on the first request.",
-      "lastNextAction": "Inspect Cloud Run/provider quota and limiter behavior for first-hit production prompts before treating v8.11.0 as fully green."
+      "lastRationale": "Release automation now detects version drift, but the GitLab tag deploy failure still blocks production rollout.",
+      "lastNextAction": "Inspect GitLab failed job 13829853789 trace and fix the frontend deploy stage before retrying with v8.11.4."
     },
     "test-automation": {
       "domainId": "test-automation",
