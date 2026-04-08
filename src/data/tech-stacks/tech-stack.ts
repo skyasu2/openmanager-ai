@@ -29,13 +29,13 @@ export const TECH_STACK_ITEMS: TechItem[] = [
     type: 'opensource',
   },
   {
-    name: 'TypeScript 5.9',
+    name: 'TypeScript 6.0',
     category: 'language',
     importance: 'critical',
     description:
       'Microsoft의 정적 타입 언어. JavaScript 슈퍼셋으로 컴파일 타임 타입 검사, IDE 자동완성, 리팩토링 안전성 제공',
     implementation: '→ strict 모드로 컴파일 타임 오류 방지 및 개발 생산성 향상',
-    version: '5.9.3',
+    version: '6.0.2',
     status: 'active',
     icon: '🔷',
     tags: ['언어', '오픈소스', '타입안전'],
@@ -111,11 +111,11 @@ export const TECH_STACK_ITEMS: TechItem[] = [
     type: 'opensource',
   },
   {
-    name: 'Loki Log Format',
+    name: 'Loki-Compatible Log Format',
     category: 'framework',
     importance: 'medium',
     description:
-      'Grafana Loki Push API 호환 로그 구조. 라벨 기반 스트림 모델(job, hostname, level)로 구조화된 로그 생성. PLG 스택(Promtail+Loki+Grafana) 즉시 연동 가능',
+      'Grafana Loki Push API와 호환되는 로그 구조. 실제 Loki 서버를 내장한 것은 아니며, 라벨 기반 스트림 모델(job, hostname, level)로 구조화된 로그를 다루기 위한 형식',
     implementation:
       '→ OTel hourly JSON에 로그가 내장(slot.logs[]), 나노초 타임스탬프 + severityText + resource 속성 지원. LogsTab에서 severity 필터링 UI 제공',
     version: 'Loki 3.0+ API',
