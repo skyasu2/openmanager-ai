@@ -1,0 +1,143 @@
+{
+  "runId": "QA-20260409-0259",
+  "recordedAt": "2026-04-08T22:37:58.733Z",
+  "recordedAtKst": "2026-04-09 07:37:58 KST",
+  "runTitle": "Playwright MCP Production QA - Frontend + AI Assistant v8.11.4 broad baseline refresh",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_FnzN8yJFRkS5TUkvQYWREJwtJGh2",
+    "deploymentUrl": "https://openmanager-d30ys163z-skyasus-projects.vercel.app",
+    "commitSha": "8ca2b7eb59ff9de13b6d6ab817cfcd043af38d5a"
+  },
+  "scope": "broad",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "landing render + v8.11.4 badge",
+    "/main -> / redirect",
+    "/login Google/GitHub/email/guest entry points",
+    "/privacy backlink and policy render",
+    "/auth/error recovery actions",
+    "synthetic 404 page render + recovery links",
+    "system start /system-boot -> /dashboard transition",
+    "dashboard render with 15 total / 14 online / 1 warning / 0 risk and resource top5",
+    "server detail modal 3 tabs + Escape close",
+    "AI sidebar Ready state and starter prompt response",
+    "AI streaming header proof via browser-session fetch (X-AI-Latency-Ms=219)",
+    "/api/health 200 connected services",
+    "/api/version 200 with v8.11.4 / buildVersion 8.11.4 / Next.js 16.1.6",
+    "final dashboard + AI flow browser console errors 0"
+  ],
+  "skippedSurfaces": [
+    "guest PIN login explicit /login submission path",
+    "fullscreen AI workspace",
+    "Reporter full report flow",
+    "Analyst advanced forecast flow",
+    "Cloud Run admin observability endpoints",
+    "modal detail pack outside server detail modal"
+  ],
+  "checks": {
+    "total": 14,
+    "passed": 14,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Core route, dashboard core, and one authenticated AI streaming path were exercised on live production with durable evidence.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Deployment identity, version metadata, usage budget, and release-recovered canonical production path remain aligned on v8.11.4.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The production AI sidebar handled a representative CPU-summary prompt and returned streaming output with live latency metadata on the current build.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-09T07:28:14+09:00",
+      "summary": "Current billing period reviewed during broad production QA; effective 4.6046 USD, billed 0.0000 USD, no unexpected billed usage spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "v8.11.4 broad baseline evidence",
+      "path": "reports/qa/evidence/qa-20260409-v8114-broad-baseline-refresh.md"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "v8.11.4 dashboard broad screenshot",
+      "path": "reports/qa/evidence/qa-20260409-v8114-dashboard-broad.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "v8.11.4 AI sidebar broad screenshot",
+      "path": "reports/qa/evidence/qa-20260409-v8114-ai-sidebar-broad.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "v8.11.4 404 synthetic console log",
+      "path": "reports/qa/evidence/qa-20260409-broad-console-errors.txt"
+    },
+    {
+      "type": "playwright-console",
+      "label": "v8.11.4 final dashboard console log",
+      "path": "reports/qa/evidence/qa-20260409-broad-console-final.txt"
+    },
+    {
+      "type": "playwright-network",
+      "label": "v8.11.4 broad network log",
+      "path": "reports/qa/evidence/qa-20260409-broad-network.txt"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Compared against broad production reference QA-20260406-0246 and refreshed the baseline on v8.11.4.",
+    "Synthetic /does-not-exist navigation emitted one top-level 404 resource console entry, but the main landing/login/dashboard/AI flow ended with 0 console errors.",
+    "Direct unauthenticated curl to /api/ai/supervisor/stream/v2 returned 401 as expected; authenticated browser-session fetch returned 200 text/event-stream with X-AI-Latency-Ms=219.",
+    "AI response ranked CPU leaders as api-was-dc1-01 (80%), web-nginx-dc1-02 (57%), web-nginx-dc1-01 (55%)."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Latest production deployment",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/FnzN8yJFRkS5TUkvQYWREJwtJGh2"
+    }
+  ]
+}

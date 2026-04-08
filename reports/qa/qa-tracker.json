@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-08T16:51:20.163Z"
+    "updatedAt": "2026-04-08T22:37:58.733Z"
   },
   "sequence": {
-    "nextRunNumber": 259
+    "nextRunNumber": 260
   },
   "summary": {
-    "totalRuns": 236,
-    "totalChecks": 1835,
-    "totalPassed": 1763,
+    "totalRuns": 237,
+    "totalChecks": 1849,
+    "totalPassed": 1777,
     "totalFailed": 66,
     "completionRate": 100,
     "completedItems": 285,
@@ -19,10 +19,10 @@
     "wontFixItems": 13,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260408-0253",
-    "lastRecordedAt": "2026-04-08T04:54:22.471Z",
-    "latestRecordedRunId": "QA-20260409-0258",
-    "latestRecordedAt": "2026-04-08T16:51:20.163Z"
+    "lastRunId": "QA-20260409-0259",
+    "lastRecordedAt": "2026-04-08T22:37:58.733Z",
+    "latestRecordedRunId": "QA-20260409-0259",
+    "latestRecordedAt": "2026-04-08T22:37:58.733Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -22689,6 +22689,146 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260409-0259",
+      "recordedAt": "2026-04-08T22:37:58.733Z",
+      "recordedAtKst": "2026-04-09 07:37:58 KST",
+      "title": "Playwright MCP Production QA - Frontend + AI Assistant v8.11.4 broad baseline refresh",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260409-0259.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_FnzN8yJFRkS5TUkvQYWREJwtJGh2",
+        "deploymentUrl": "https://openmanager-d30ys163z-skyasus-projects.vercel.app",
+        "commitSha": "8ca2b7eb59ff9de13b6d6ab817cfcd043af38d5a"
+      },
+      "scope": "broad",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveredSurfaces": [
+        "landing render + v8.11.4 badge",
+        "/main -> / redirect",
+        "/login Google/GitHub/email/guest entry points",
+        "/privacy backlink and policy render",
+        "/auth/error recovery actions",
+        "synthetic 404 page render + recovery links",
+        "system start /system-boot -> /dashboard transition",
+        "dashboard render with 15 total / 14 online / 1 warning / 0 risk and resource top5",
+        "server detail modal 3 tabs + Escape close",
+        "AI sidebar Ready state and starter prompt response",
+        "AI streaming header proof via browser-session fetch (X-AI-Latency-Ms=219)",
+        "/api/health 200 connected services",
+        "/api/version 200 with v8.11.4 / buildVersion 8.11.4 / Next.js 16.1.6",
+        "final dashboard + AI flow browser console errors 0"
+      ],
+      "skippedSurfaces": [
+        "guest PIN login explicit /login submission path",
+        "fullscreen AI workspace",
+        "Reporter full report flow",
+        "Analyst advanced forecast flow",
+        "Cloud Run admin observability endpoints",
+        "modal detail pack outside server detail modal"
+      ],
+      "checks": {
+        "total": 14,
+        "passed": 14,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Core route, dashboard core, and one authenticated AI streaming path were exercised on live production with durable evidence.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Deployment identity, version metadata, usage budget, and release-recovered canonical production path remain aligned on v8.11.4.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The production AI sidebar handled a representative CPU-summary prompt and returned streaming output with live latency metadata on the current build.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-09T07:28:14+09:00",
+          "summary": "Current billing period reviewed during broad production QA; effective 4.6046 USD, billed 0.0000 USD, no unexpected billed usage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "v8.11.4 broad baseline evidence",
+          "path": "reports/qa/evidence/qa-20260409-v8114-broad-baseline-refresh.md"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "v8.11.4 dashboard broad screenshot",
+          "path": "reports/qa/evidence/qa-20260409-v8114-dashboard-broad.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "v8.11.4 AI sidebar broad screenshot",
+          "path": "reports/qa/evidence/qa-20260409-v8114-ai-sidebar-broad.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "v8.11.4 404 synthetic console log",
+          "path": "reports/qa/evidence/qa-20260409-broad-console-errors.txt"
+        },
+        {
+          "type": "playwright-console",
+          "label": "v8.11.4 final dashboard console log",
+          "path": "reports/qa/evidence/qa-20260409-broad-console-final.txt"
+        },
+        {
+          "type": "playwright-network",
+          "label": "v8.11.4 broad network log",
+          "path": "reports/qa/evidence/qa-20260409-broad-network.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Latest production deployment",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/FnzN8yJFRkS5TUkvQYWREJwtJGh2"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -22697,16 +22837,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 121,
-      "appropriateCount": 115,
+      "seenCount": 122,
+      "appropriateCount": 116,
       "partialCount": 6,
       "inappropriateCount": 0,
       "improvementNeededCount": 16,
-      "lastRunId": "QA-20260408-0253",
-      "lastSeenAt": "2026-04-08T04:54:22.471Z",
+      "lastRunId": "QA-20260409-0259",
+      "lastSeenAt": "2026-04-08T22:37:58.733Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Analysis basis panel verified post-sanitization: (1) tool function names replaced with Korean labels ('메트릭 상관 분석' not 'correlateMetrics'), (2) response body shows 3-section format (현황 요약/추정 원인/권장 조치) with no internal function names, (3) collapsed summary shows '분석 단계:' label not '도구:', (4) raw JSON preview block removed, (5) agent role labels use Korean mapping, (6) alert prefill populated correctly, (7) 0 console errors.",
+      "lastRationale": "The production AI sidebar handled a representative CPU-summary prompt and returned streaming output with live latency metadata on the current build.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -22748,33 +22888,33 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 76,
-      "appropriateCount": 68,
+      "seenCount": 77,
+      "appropriateCount": 69,
       "partialCount": 8,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260409-0258",
-      "lastSeenAt": "2026-04-08T16:51:20.163Z",
+      "lastRunId": "QA-20260409-0259",
+      "lastSeenAt": "2026-04-08T22:37:58.733Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Canonical semver tag deploy is healthy again after protected tag and runner environment fixes, and production now serves v8.11.4.",
-      "lastNextAction": "No immediate deploy-path follow-up required; keep using the GitLab readiness audit before future releases."
+      "lastRationale": "Deployment identity, version metadata, usage budget, and release-recovered canonical production path remain aligned on v8.11.4.",
+      "lastNextAction": ""
     },
     "test-automation": {
       "domainId": "test-automation",
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 102,
-      "appropriateCount": 95,
+      "seenCount": 103,
+      "appropriateCount": 96,
       "partialCount": 7,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260407-0249",
-      "lastSeenAt": "2026-04-07T11:55:13.126Z",
+      "lastRunId": "QA-20260409-0259",
+      "lastSeenAt": "2026-04-08T22:37:58.733Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Core route, dashboard, modal, and AI core paths were exercised on live production with concrete UI and API checkpoints.",
+      "lastRationale": "Core route, dashboard core, and one authenticated AI streaming path were exercised on live production with durable evidence.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
