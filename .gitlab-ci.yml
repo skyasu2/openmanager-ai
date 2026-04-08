@@ -264,7 +264,12 @@ deploy:
         echo "   so protected variables are exposed to the release tag as well."
         exit 1
       fi
-    - npm install -g vercel@50 --no-audit --silent  # 버전 고정: 50.x (breaking change 방지)
+    - |
+      if command -v vercel >/dev/null 2>&1 && vercel --version 2>/dev/null | grep -q "^50\."; then
+        echo "✅ vercel 50.x already installed: $(vercel --version)"
+      else
+        npm install -g vercel@50 --no-audit --silent  # 버전 고정: 50.x (breaking change 방지)
+      fi
   script:
     - echo "▶ Vercel production 배포..."
     - vercel pull --yes --environment=production --token=$VERCEL_TOKEN
