@@ -7,13 +7,14 @@
 #   - smoke(frontend/ai-engine): 각 배포 경로 후 최소 smoke 수행
 # 구조: validate(frontend + ai-engine) → deploy(frontend) / deploy_ai(ai-engine) → smoke(frontend + ai-engine)
 # Runner 전략:
-#   모든 job: tags: [wsl2-docker] → self-hosted runner (분 소진 0)
+#   모든 job: tags: [wsl2-docker] → self-hosted shell executor (분 소진 0)
+#   executor = "shell": Docker 불필요, WSL2에 설치된 node/npm/vercel/gcloud 직접 사용
 #   개발이 WSL2에서 진행되므로 runner는 99% 가동 중.
-#   미가동 시 job은 pending 상태로 남음 (CI 게이트로 pending → 실수 배포 차단 효과도 있음)
-#   긴급 배포(runner 미가동) 시: tags를 수동으로 제거하거나 vercel --prod 직접 실행
+#   runner 미가동 시: job은 pending 상태 유지 (Docker executor 시절 fail과 달리 안전하게 대기)
+#   긴급 배포(runner 미가동): vercel --prod 직접 실행 또는 tags 임시 제거
 # 분 소진 예산: 모든 job 자체 runner → 월 0분 소진 (GitLab shared runner 미사용)
 
-image: node:24-bookworm
+# image: node:24-bookworm  ← shell executor에서는 무시됨. WSL2 시스템 Node 사용 (현재 v24)
 
 # ─── 변경 감지 경로 앵커 ──────────────────────────────────────────────────────
 .pipeline_relevant_changes: &pipeline_relevant_changes
@@ -267,7 +268,7 @@ deploy_ai_engine:
   tags:
     - wsl2-docker  # self-hosted runner (분 소진 0). 미가동 시 pending 상태 유지.
   <<: *main_ai_engine_changes_only
-  image: google/cloud-sdk:slim
+  # image: google/cloud-sdk:slim  ← shell executor에서는 무시됨. WSL2 시스템 gcloud 사용 (현재 548.0.0)
   before_script: *gcp_ci_auth
   script:
     - echo "▶ AI Engine Cloud Run 배포..."
@@ -285,7 +286,7 @@ post_deploy_ai_engine_smoke:
   tags:
     - wsl2-docker  # self-hosted runner (분 소진 0). 미가동 시 pending 상태 유지.
   <<: *main_ai_engine_smoke_changes_only
-  image: google/cloud-sdk:slim
+  # image: google/cloud-sdk:slim  ← shell executor에서는 무시됨. WSL2 시스템 gcloud 사용
   needs:
     - job: deploy_ai_engine
       optional: true
