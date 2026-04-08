@@ -212,7 +212,8 @@
     "local:smoke": "bash scripts/dev/local-api-smoke.sh",
     "local:smoke:rebuild": "bash scripts/dev/local-api-smoke.sh --rebuild",
     "test:security:smoke": "node scripts/test/security-smoke.mjs",
-    "test:vercel:post-deploy:smoke": "node scripts/test/vercel-post-deploy-smoke.mjs"
+    "test:vercel:post-deploy:smoke": "node scripts/test/vercel-post-deploy-smoke.mjs",
+    "ci:runner:health": "bash scripts/ci/runner-health-check.sh"
   },
   "dependencies": {
     "@ai-sdk/mistral": "^3.0.28",

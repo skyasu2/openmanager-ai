@@ -83,6 +83,9 @@
 #   - MR이 열려 있으면 branch push pipeline 대신 MR pipeline만 유지
 workflow:
   rules:
+    # semver 태그 push → deploy 파이프라인 (validate + deploy + smoke)
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/'
+    # MR / branch push → validate 전용 파이프라인
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: *pipeline_relevant_changes
     - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS && $CI_PIPELINE_SOURCE == "push"'
@@ -152,29 +155,31 @@ stages:
       when: on_success
     - when: never
 
+# deploy는 semver 태그(v*.*.*) push 시에만 실행한다.
+# 이유: 릴리스 케이던스(30커밋 or 1주)를 CI가 강제 보장하고,
+#       매 커밋 배포로 인한 runner 부하와 불필요한 Vercel 빌드를 방지한다.
+# 트리거: git push gitlab --follow-tags  (npm run release:patch/minor/major 후)
+.tag_deploy_rule: &tag_deploy_rule
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/'
+      when: on_success
+    - when: never
+
 .main_frontend_changes_only: &main_frontend_changes_only
   rules:
-    # QA 기록 커밋은 프로덕션 배포 트리거에서 제외해 불필요한 build/deploy를 방지한다.
-    - if: '$CI_COMMIT_BRANCH == "main" && $CI_COMMIT_MESSAGE =~ /^test\(qa\):/'
-      when: never
-    # 보호되지 않은 main에서는 deploy를 차단해 canonical 보호 규칙 누락 시 fail-closed로 동작한다.
-    - if: '$CI_COMMIT_BRANCH == "main" && $CI_COMMIT_REF_PROTECTED == "true"'
-      changes: *frontend_deploy_paths
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/'
       when: on_success
     - when: never
 
 .main_ai_engine_changes_only: &main_ai_engine_changes_only
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main" && $CI_COMMIT_REF_PROTECTED == "true"'
-      changes:
-        - cloud-run/ai-engine/**/*
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/'
       when: on_success
     - when: never
 
 .main_ai_engine_smoke_changes_only: &main_ai_engine_smoke_changes_only
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main" && $CI_COMMIT_REF_PROTECTED == "true"'
-      changes: *ai_engine_smoke_paths
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/'
       when: on_success
     - when: never
 
