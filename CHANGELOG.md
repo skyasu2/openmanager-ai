@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.2](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.1...v8.11.2) (2026-04-08)
+
+
+### Features
+
+* **ai:** improve job queue visibility and rate limit feedback ([eedd578](https://gitlab.com/skyasu2/openmanager-ai/-/commit/eedd5785bbb22e89b7bedd47ec2c57221661f57e))
+
+
+### Bug Fixes
+
+* harden runner-aware deploy fallback ([2ceae5b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/2ceae5b02b950bbce3c60f2a6a2db6332a1885b7))
+
+
+### Code Refactoring
+
+* **ai-engine:** split jobs route helpers ([3d7bcee](https://gitlab.com/skyasu2/openmanager-ai/-/commit/3d7bcee72f38ace598569177fc98ce59fff02b82))
+
 ## [8.11.1](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.0...v8.11.1) (2026-04-08)
 
 
