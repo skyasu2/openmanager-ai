@@ -9,7 +9,7 @@
 1. GitLab canonical / Vercel 배포 경로 고정
 - `gitlab`을 정본 remote로 고정하고 `main -> gitlab/main`, `remote.pushDefault=gitlab`로 전환
 - Vercel Frontend Git 배포가 GitLab `main` 기준으로 동작하는지 검증
-- 관련 커밋/파일: `ff9822827`, `reports/planning/gitlab-canonical-delivery-plan.md`
+- 관련 커밋/파일: `ff9822827`, `reports/planning/archive/gitlab-canonical-delivery-plan.md`
 
 2. 로컬 Docker CI 표준화
 - GitLab SaaS CI 대신 로컬 Docker CI를 전체 검증 기준선으로 확정
@@ -26,12 +26,12 @@
 - public snapshot sync 자동화를 `Completed (2026-03-27)`로 이동
 - 표준 워크플로를 `git push gitlab main` → `npm run sync:github`로 명시
 - 작업 이력 템플릿 경로 문서화 오류 수정
-- 관련 커밋/파일: `reports/planning/TODO.md`, `reports/planning/gitlab-canonical-delivery-plan.md`, `reports/planning/README.md`
+- 관련 커밋/파일: `reports/planning/TODO.md`, `reports/planning/archive/gitlab-canonical-delivery-plan.md`, `reports/planning/README.md`
 
 5. GitLab CI / Local Docker CI 선택 기준 정리
 - GitLab.com shared runner, self-hosted runner, 현재 local Docker CI를 비용/보안/운영 복잡도 기준으로 비교
 - 현재 프로젝트에서는 `local-docker-only` 유지가 최적이고, self-hosted runner는 MR status check 필요 시점까지 보류하기로 정리
-- 관련 커밋/파일: `docs/development/ci-cd.md`, `reports/planning/gitlab-canonical-delivery-plan.md`
+- 관련 커밋/파일: `docs/development/ci-cd.md`, `reports/planning/archive/gitlab-canonical-delivery-plan.md`
 
 ## 결정/보류
 

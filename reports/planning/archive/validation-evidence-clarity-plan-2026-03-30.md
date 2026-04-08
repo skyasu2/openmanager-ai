@@ -1,5 +1,10 @@
 # Validation Evidence Clarity Plan (2026-03-30)
 
+> 상태: 완료 후 아카이브
+> 작성일: 2026-03-30
+> 최종 반영: `validation-evidence.json` latest public run 메타데이터 노출, `/validation`의 snapshot/proof 분리 표시, 관련 테스트 갱신
+> 아카이브 사유: active follow-up이 아니라 이미 반영된 clarity 정리 기록이므로 `reports/planning/archive/`로 이동
+
 ## 최근 변경 분석
 
 - `944d1d30e`
