@@ -67,7 +67,10 @@
 - GitHub 공개 스냅샷 동기화는 `npm run sync:github` 으로만 수행합니다 (`scripts/sync/github-sync.sh`, 포함 목록: `.github-export-include`, 안전 제외 목록: `.github-export-ignore`). `git push origin` 또는 `git push github-public` 직접 실행 금지.
 - GitLab CI는 **활성** 상태입니다. 현재 `.gitlab-ci.yml`은 `validate(frontend + ai-engine) → deploy(frontend) → deploy_ai_engine(cloud-run) → smoke(frontend)` 다단계 파이프라인으로 동작합니다. docs/reports 전용 push는 CI 스킵(분 예산 보존).
 - **배포 권한은 GitLab CI가 보유**합니다. Frontend는 `deploy` job에서 `vercel build --prod` 후 `vercel deploy --prebuilt --prod`, AI Engine은 `deploy_ai_engine` job에서 `cloud-run/ai-engine/deploy.sh`를 통해 Cloud Run production 배포를 수행합니다. validate 실패 시 각 배포가 차단됩니다.
-- **CI quota 소진 시 긴급 배포 fallback**: `vercel --prod` (소스 업로드 방식). 로컬 `vercel build --prod`는 WSL2에서 `fonts.gstatic.com` 네트워크 차단으로 실패할 수 있으므로 이 방식을 우선 사용합니다.
+- **배포 전 runner 상태 확인**: `bash scripts/ci/runner-health-check.sh`
+  - `exit 0` → 정상, 태그 push로 CI 경유 배포
+  - `exit 1` → runner 미가동, `vercel --prod` 직접 배포 후 사용자에게 "CI 게이트 스킵됨" 명시 보고
+- **CI 스킵 fallback**: `vercel --prod` (소스 업로드). 로컬 `vercel build --prod`는 WSL2 `fonts.gstatic.com` 차단으로 실패 가능
 - 로컬 전체 검증 표준 경로는 `npm run ci:local:docker` (SSOT 유지, CI와 별개)입니다.
 
 ## 3) 공통 지식 및 유지보수 메모

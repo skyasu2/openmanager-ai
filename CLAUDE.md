@@ -20,8 +20,11 @@
 - **GitHub public (`origin`)**: code-only snapshot, `npm run sync:github` 으로 동기화 (`scripts/sync/github-sync.sh`, 제외 목록: `.github-export-ignore`)
 - **GitLab CI**: **활성** — `.gitlab-ci.yml` (validate → deploy → deploy_ai_engine → smoke, 코드 변경 push 시만 트리거)
 - **CI 예산**: 월 400분 / validate+deploy ~7분/회 / docs·reports push는 스킵
-- **CI quota 소진 시 배포 fallback**: `vercel --prod` (소스 업로드 방식, 로컬 빌드 불필요)
-  - `vercel build --prod` 로컬 빌드는 WSL2 환경에서 `fonts.gstatic.com` 네트워크 차단으로 실패 가능
+- **배포 전 runner 상태 확인**: `bash scripts/ci/runner-health-check.sh`
+  - `exit 0` → runner 정상, CI 경유 태그 push로 배포
+  - `exit 1` → runner 미가동, `vercel --prod` 직접 배포 후 **사용자에게 "CI 게이트 스킵됨" 명시 보고**
+- **CI 스킵 배포 fallback**: `vercel --prod` (소스 업로드 방식, 로컬 빌드 불필요)
+  - `vercel build --prod` 로컬 빌드는 WSL2에서 `fonts.gstatic.com` 차단으로 실패 가능
 - **로컬 CI 표준 경로**: `npm run ci:local:docker` / `npm run ci:local:docker:full` (SSOT 유지)
 - **기본 원칙**: `origin/main`을 canonical branch로 가정하지 말고, push/fetch 전 `git remote -v` 확인 후 기본 대상은 `gitlab`
 
