@@ -92,9 +92,21 @@
     "Cloud Run ai-engine-00295-lxf 리비전, Supabase ACTIVE_HEALTHY, Redis connected 모두 정상"
   ],
   "expertAssessments": [],
-  "evidenceFiles": [
-    "reports/qa/evidence/qa-20260409-sprint1-2-validation-tc01.png",
-    "reports/qa/evidence/qa-20260409-sprint1-2-validation-tc02-skip.png",
-    "reports/qa/evidence/qa-20260409-sprint1-2-validation-tc03-routing.png"
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "TC-01 v8.11.7 deployment verification",
+      "path": "reports/qa/evidence/qa-20260409-sprint1-2-validation-tc01.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "TC-02 clarification skip validation",
+      "path": "reports/qa/evidence/qa-20260409-sprint1-2-validation-tc02-skip.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "TC-03 routing and RAG cleanup validation",
+      "path": "reports/qa/evidence/qa-20260409-sprint1-2-validation-tc03-routing.png"
+    }
   ]
 }

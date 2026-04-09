@@ -11,6 +11,9 @@
     "frontend": "Vercel",
     "backend": "Cloud Run",
     "branch": "main",
+    "deploymentId": "dpl_GPGUJn324wHFervaNAsicgvQH5Y8",
+    "deploymentUrl": "https://openmanager-fldh3n45b-skyasus-projects.vercel.app",
+    "commitSha": "7e727180ca576339dd6def84c833bac31c0eeacf",
     "version": "8.11.8"
   },
   "scope": "targeted",
@@ -85,9 +88,21 @@
     "GitLab CI deploy job: success → v8.11.8 Vercel production 반영 완료"
   ],
   "expertAssessments": [],
-  "evidenceFiles": [
-    "reports/qa/evidence/qa-20260409-sprint3-tc01-v8118.png",
-    "reports/qa/evidence/qa-20260409-sprint3-tc02-ai-response.png",
-    "reports/qa/evidence/qa-20260409-sprint3-tc03-analysis-response.png"
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "TC-01 v8.11.8 deployment verification",
+      "path": "reports/qa/evidence/qa-20260409-sprint3-tc01-v8118.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "TC-02 AI response validation",
+      "path": "reports/qa/evidence/qa-20260409-sprint3-tc02-ai-response.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "TC-03 analysis response validation",
+      "path": "reports/qa/evidence/qa-20260409-sprint3-tc03-analysis-response.png"
+    }
   ]
 }
