@@ -102,6 +102,8 @@ export const ThinkingProcessVisualizer: FC<ThinkingProcessVisualizerProps> = ({
   className = '',
 }: ThinkingProcessVisualizerProps) => {
   const [visibleSteps, setVisibleSteps] = useState<AIThinkingStep[]>([]);
+  // 기본 축소, isActive 중 자동 펼침, 완료 시 자동 접힘
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     if (steps.length > visibleSteps.length) {
@@ -113,6 +115,15 @@ export const ThinkingProcessVisualizer: FC<ThinkingProcessVisualizerProps> = ({
     setVisibleSteps(steps);
     return undefined;
   }, [steps, visibleSteps.length]);
+
+  // isActive 전환 시 자동 펼침/접힘
+  useEffect(() => {
+    if (isActive) {
+      setIsExpanded(true);
+    } else {
+      setIsExpanded(false);
+    }
+  }, [isActive]);
 
   // 라우팅 결정 단계 찾기
   const routingStep = visibleSteps.find((s) => s.step === '라우팅 결정');
@@ -128,21 +139,36 @@ export const ThinkingProcessVisualizer: FC<ThinkingProcessVisualizerProps> = ({
       className={`space-y-3 rounded-lg border border-gray-200 bg-white p-4 ${className}`}
     >
       {/* 헤더 */}
-      <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+      <button
+        type="button"
+        className="flex w-full items-center justify-between border-b border-gray-100 pb-3 text-left"
+        onClick={() => setIsExpanded((prev) => !prev)}
+        aria-expanded={isExpanded}
+      >
         <div className="flex items-center space-x-2">
           <Activity className="h-5 w-5 text-blue-500" />
           <span className="font-semibold text-gray-800">🤖 AI 처리 과정</span>
+          {!isActive && visibleSteps.length > 0 && (
+            <span className="text-xs text-gray-400">
+              ({visibleSteps.length}단계)
+            </span>
+          )}
         </div>
-        {isActive && (
+        {isActive ? (
           <div className="flex items-center space-x-2">
             <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
             <span className="text-xs text-gray-500">분석 중...</span>
           </div>
+        ) : (
+          <span className="text-xs text-gray-400">
+            {isExpanded ? '▲ 숨기기' : '▼ 보기'}
+          </span>
         )}
-      </div>
+      </button>
 
+      {/* 상세 내용: 펼침 시만 표시 */}
       {/* 라우팅 요약 (라우팅 결정 후 표시) */}
-      {routingStep && (
+      {isExpanded && routingStep && (
         <div
           className={`rounded-lg border p-3 ${
             isLocalRouting
@@ -187,93 +213,95 @@ export const ThinkingProcessVisualizer: FC<ThinkingProcessVisualizerProps> = ({
       )}
 
       {/* 사고 단계 타임라인 */}
-      <div className="space-y-2">
-        {visibleSteps.map((step, index) => {
-          const status: 'pending' | 'processing' | 'completed' | 'failed' =
-            step.status || 'pending';
-          const config = stepStatusConfig[status];
-          const StepIcon = (step.step && stepIconMap[step.step]) || Activity;
-          const StatusIcon = config.icon;
-          const isLast = index === visibleSteps.length - 1;
-          const isRouting = step.step === '라우팅 결정';
+      {isExpanded && (
+        <div className="space-y-2">
+          {visibleSteps.map((step, index) => {
+            const status: 'pending' | 'processing' | 'completed' | 'failed' =
+              step.status || 'pending';
+            const config = stepStatusConfig[status];
+            const StepIcon = (step.step && stepIconMap[step.step]) || Activity;
+            const StatusIcon = config.icon;
+            const isLast = index === visibleSteps.length - 1;
+            const isRouting = step.step === '라우팅 결정';
 
-          return (
-            <Fragment key={step.id || index}>
-              <div
-                className={`relative flex items-start space-x-3 rounded-lg border p-3 transition-all ${
-                  config.borderColor
-                } ${config.bgColor} ${
-                  isLast && isActive ? 'ring-2 ring-blue-200' : ''
-                }`}
-              >
-                {/* 아이콘 */}
+            return (
+              <Fragment key={step.id || index}>
                 <div
-                  className={`shrink-0 rounded-full p-2 ${
-                    step.status === 'completed' ? 'bg-white' : 'bg-white/50'
+                  className={`relative flex items-start space-x-3 rounded-lg border p-3 transition-all ${
+                    config.borderColor
+                  } ${config.bgColor} ${
+                    isLast && isActive ? 'ring-2 ring-blue-200' : ''
                   }`}
                 >
-                  {step.status === 'processing' || (isLast && isActive) ? (
-                    <Loader2
-                      className={`h-4 w-4 animate-spin ${config.color}`}
-                    />
-                  ) : (
-                    <StepIcon className={`h-4 w-4 ${config.color}`} />
-                  )}
-                </div>
-
-                {/* 내용 */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-800">
-                      {step.step}
-                    </span>
-                    {step.duration !== undefined && (
-                      <span className="text-xs text-gray-500">
-                        {step.duration}ms
-                      </span>
+                  {/* 아이콘 */}
+                  <div
+                    className={`shrink-0 rounded-full p-2 ${
+                      step.status === 'completed' ? 'bg-white' : 'bg-white/50'
+                    }`}
+                  >
+                    {step.status === 'processing' || (isLast && isActive) ? (
+                      <Loader2
+                        className={`h-4 w-4 animate-spin ${config.color}`}
+                      />
+                    ) : (
+                      <StepIcon className={`h-4 w-4 ${config.color}`} />
                     )}
                   </div>
 
-                  {step.description && (
-                    <p className="mt-1 text-xs text-gray-600 leading-relaxed">
-                      {step.description}
-                    </p>
-                  )}
-
-                  {/* 라우팅 결정 시 추가 정보 */}
-                  {isRouting && step.status === 'completed' && (
-                    <div className="mt-2 flex items-center space-x-2">
-                      {isLocalRouting ? (
-                        <>
-                          <TrendingDown className="h-3 w-3 text-green-600" />
-                          <span className="text-xs font-medium text-green-700">
-                            API 호출 생략
-                          </span>
-                        </>
-                      ) : (
-                        <>
-                          <Zap className="h-3 w-3 text-blue-600" />
-                          <span className="text-xs font-medium text-blue-700">
-                            고급 AI 분석
-                          </span>
-                        </>
+                  {/* 내용 */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-800">
+                        {step.step}
+                      </span>
+                      {step.duration !== undefined && (
+                        <span className="text-xs text-gray-500">
+                          {step.duration}ms
+                        </span>
                       )}
                     </div>
-                  )}
+
+                    {step.description && (
+                      <p className="mt-1 text-xs text-gray-600 leading-relaxed">
+                        {step.description}
+                      </p>
+                    )}
+
+                    {/* 라우팅 결정 시 추가 정보 */}
+                    {isRouting && step.status === 'completed' && (
+                      <div className="mt-2 flex items-center space-x-2">
+                        {isLocalRouting ? (
+                          <>
+                            <TrendingDown className="h-3 w-3 text-green-600" />
+                            <span className="text-xs font-medium text-green-700">
+                              API 호출 생략
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <Zap className="h-3 w-3 text-blue-600" />
+                            <span className="text-xs font-medium text-blue-700">
+                              고급 AI 분석
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 상태 아이콘 */}
+                  <div className="shrink-0">
+                    <StatusIcon className={`h-4 w-4 ${config.color}`} />
+                  </div>
                 </div>
 
-                {/* 상태 아이콘 */}
-                <div className="shrink-0">
-                  <StatusIcon className={`h-4 w-4 ${config.color}`} />
-                </div>
-              </div>
-
-              {/* 연결선 */}
-              {!isLast && <div className="ml-6 h-4 w-0.5 bg-gray-200" />}
-            </Fragment>
-          );
-        })}
-      </div>
+                {/* 연결선 */}
+                {!isLast && <div className="ml-6 h-4 w-0.5 bg-gray-200" />}
+              </Fragment>
+            );
+          })}
+        </div>
+      )}
 
       {/* 진행 상태 표시 */}
       {isActive && (

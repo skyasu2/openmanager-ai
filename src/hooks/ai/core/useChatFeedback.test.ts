@@ -82,6 +82,19 @@ describe('useChatFeedback', () => {
     expect(body.traceId).toBe('trace-abc');
   });
 
+  it('traceId가 없으면 body에 포함되지 않는다', async () => {
+    global.fetch = vi.fn().mockResolvedValue({ ok: true });
+
+    const { result } = renderHook(() => useChatFeedback(sessionIdRef));
+    const success = await result.current.handleFeedback('msg-7', 'positive');
+
+    expect(success).toBe(true);
+    const body = JSON.parse(
+      (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0][1].body
+    );
+    expect(body.traceId).toBeUndefined();
+  });
+
   it('sessionIdRef의 최신 값을 사용한다', async () => {
     global.fetch = vi.fn().mockResolvedValue({ ok: true });
 
