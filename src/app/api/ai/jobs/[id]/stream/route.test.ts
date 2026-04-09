@@ -54,7 +54,11 @@ vi.mock('../../job-ownership', () => ({
   isJobOwnedByRequester: mockIsJobOwnedByRequester,
 }));
 
-import { buildProgressEventData, GET, getPollIntervalFromEnv } from './route';
+import { GET } from './route';
+import {
+  buildProgressEventData,
+  getPollIntervalFromEnv,
+} from './stream-helpers';
 
 describe('AI Job Stream Route', () => {
   beforeEach(() => {

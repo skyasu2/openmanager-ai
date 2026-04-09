@@ -63,7 +63,6 @@ scripts/
 │   └── create-summary.sh
 ├── wsl/               # WSL 환경 설정
 │   └── fix-wsl-config.ps1
-├── generate-pwa-icons.mjs     # PWA 아이콘 생성
 └── update-hourly-data-scenarios.ts
 ```
 

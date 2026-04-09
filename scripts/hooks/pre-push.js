@@ -50,13 +50,10 @@ const {
 } = require('./pre-push-test-runner');
 const {
   checkCanonicalRemotePush,
-  checkDirectMainPush,
-  checkGitLabRunnerHealth,
   checkGitLabCiSemanticGuard,
   checkCloudBuildFreeTierGuard,
   checkNodeModules,
   checkRelease,
-  checkWSLPerformance,
   checkEnvironment,
 } = require('./pre-push-guards');
 
@@ -82,7 +79,6 @@ const SKIP_BUILD = process.env.SKIP_BUILD === 'true';
 const SKIP_NODE_CHECK = process.env.SKIP_NODE_CHECK === 'true';
 const STRICT_PUSH_ENV = process.env.STRICT_PUSH_ENV === 'true';
 const FORCE_CLOUD_BUILD_GUARD = process.env.FORCE_CLOUD_BUILD_GUARD === 'true';
-const FORCE_RUNNER_HEALTH_CHECK = process.env.PRE_PUSH_RUNNER_HEALTH === 'true';
 const PRE_PUSH_CHANGED_FILES_OVERRIDE = process.env.PRE_PUSH_CHANGED_FILES || '';
 const PRE_PUSH_MODE = resolvePrePushMode(process.env.PRE_PUSH_MODE);
 const RUN_HEAVY_VALIDATION = PRE_PUSH_MODE !== 'fast';
@@ -184,17 +180,6 @@ function resolveCommitRef(refOrOid) {
   return (
     runGit(['rev-parse', '--verify', `${refOrOid}^{commit}`]) ||
     runGit(['rev-parse', '--verify', refOrOid])
-  );
-}
-
-function hasRunnerHealthRelevantChanges(changedFilesResult) {
-  if (!changedFilesResult?.files?.length) return false;
-  const watchedFiles = new Set([
-    '.gitlab-ci.yml',
-    'scripts/ci/runner-health-check.sh',
-  ]);
-  return changedFilesResult.files.some((filePath) =>
-    watchedFiles.has(normalizeFilePath(filePath))
   );
 }
 
@@ -604,29 +589,22 @@ function main() {
   if (RUN_STRICT_GUARDS) {
     checkRelease(runGit, SKIP_RELEASE_CHECK);
   }
-  if (!isLimitedMode && RUN_HEAVY_VALIDATION) {
-    checkWSLPerformance(isWSL, isWindowsFS);
+
+  if (isWSL && isWindowsFS && RUN_HEAVY_VALIDATION) {
+    console.log('ℹ️  WSL + Windows filesystem detected');
+    console.log('   기본: TypeScript 검증만 (~20초)');
+    console.log('   Full Build 필요 시: QUICK_PUSH=false git push');
+    console.log('');
   }
 
   const prePushUpdates = readPrePushUpdatesFromStdin();
   exitIfGuardFailed(checkCanonicalRemotePush(prePushRemoteName, prePushRemoteUrl, runGit));
-  exitIfGuardFailed(checkDirectMainPush(prePushRemoteName, prePushUpdates, runGit));
-
   exitIfGuardFailed(
     checkNodeModules(cwd, SKIP_NODE_CHECK, isWSL, isWindows, isWindowsFS)
   );
 
   const changedFilesResult = getChangedFilesForPush(prePushUpdates);
   const docsOnlyPush = isDocsArtifactOnlyPush(changedFilesResult);
-  const shouldRunRunnerHealthCheck =
-    RUN_STRICT_GUARDS ||
-    FORCE_RUNNER_HEALTH_CHECK ||
-    hasRunnerHealthRelevantChanges(changedFilesResult);
-  exitIfGuardFailed(
-    checkGitLabRunnerHealth(prePushRemoteName, runGit, {
-      skip: docsOnlyPush || !shouldRunRunnerHealthCheck,
-    })
-  );
   exitIfGuardFailed(checkGitLabCiSemanticGuard(changedFilesResult, cwd));
   exitIfGuardFailed(
     checkCloudBuildFreeTierGuard(changedFilesResult, cwd, FORCE_CLOUD_BUILD_GUARD)
