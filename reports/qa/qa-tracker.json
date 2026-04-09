@@ -23381,17 +23381,17 @@
         {
           "type": "playwright-screenshot",
           "label": "thinking-visualizer-screenshot-58388f098f1d860ba4a173316c4c5d0737d12a2f.png",
-          "path": "test-results/manual-thinking-visualizer/ai-thinking-visualizer-Pro-94b5c-at-triggers-reasoning-steps-chromium/attachments/thinking-visualizer-screenshot-58388f098f1d860ba4a173316c4c5d0737d12a2f.png"
+          "path": "reports/qa/evidence/qa-20260409-thinking-visualizer-attachment.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "thinking-visualizer.png",
-          "path": "test-results/manual-thinking-visualizer/ai-thinking-visualizer-Pro-94b5c-at-triggers-reasoning-steps-chromium/thinking-visualizer.png"
+          "path": "reports/qa/evidence/qa-20260409-thinking-visualizer-main.png"
         },
         {
           "type": "playwright-trace",
           "label": "ai-thinking-visualizer-Pro-94b5c-at-triggers-reasoning-steps-chromium",
-          "path": "test-results/manual-thinking-visualizer/ai-thinking-visualizer-Pro-94b5c-at-triggers-reasoning-steps-chromium/trace.zip"
+          "path": "reports/qa/evidence/qa-20260409-thinking-visualizer-trace.zip"
         }
       ],
       "links": [
