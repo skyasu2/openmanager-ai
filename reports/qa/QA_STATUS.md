@@ -1,7 +1,7 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-09 15:18:13 KST
+> Generated at: 2026-04-09 17:00:37 KST
 
 ## Summary
 
@@ -19,11 +19,11 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260409-0259 (2026-04-08T22:37:58.733Z) |
-| Latest Recorded Run | QA-20260409-0262 (2026-04-09T06:18:13.337Z) |
+| Latest Recorded Run | QA-20260409-0263 (2026-04-09T08:00:37.411Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260409-0262 (2026-04-09T06:18:13.337Z)
+Latest run: QA-20260409-0263 (2026-04-09T08:00:37.411Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -33,7 +33,7 @@ Latest run: QA-20260409-0262 (2026-04-09T06:18:13.337Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after AI assistant rerun-2 QA; effective 4.6046 USD, billed 0.0000 USD, no unexpected billed usage spike. |
+| vercel | cli | checked | normal | Current billing period reviewed after rerun-3 QA; effective 5.2516 USD, billed 0.0000 USD, no unexpected billed usage spike. |
 
 ## Coverage (Latest Run)
 
@@ -41,25 +41,25 @@ Latest run: QA-20260409-0262 (2026-04-09T06:18:13.337Z)
 - Release-Facing: no
 - Counts Toward Summary: no
 - Deployment: dpl_98JotoiPEqdfb3DfHbt73hjNS62y / SHA c0470baf
-- Coverage Packs: dashboard-core, ai-core
-- Covered Surfaces: /dashboard counters (15/14/1/0), AI sidebar ready state, new chat initialization, AI prompt response: all-server summary, AI prompt response: redis warning command recommendations, analysis basis panel render, network proof: POST /api/ai/supervisor/stream/v2 => 200 (x2), console error log zero
-- Skipped Surfaces: core route pack (/, /main, /login, /privacy), Reporter full report flow, Analyst advanced drilldown, Cloud Run admin /monitoring and /monitoring/traces, modal/detail pack
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
+- Covered Surfaces: /, /main, /login, /dashboard, /dashboard/ai-assistant, AI clarification dialog, AI prompt response: all-server one-line summary, analysis basis panel render, console errors zero
+- Skipped Surfaces: Reporter full report flow, Analyst advanced drilldown, Cloud Run admin /monitoring and /monitoring/traces authenticated verification, modal/detail pack
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Production URL | [Production URL](https://openmanager-ai.vercel.app/dashboard) | - |
+| general | Production URL | [Production URL](https://openmanager-ai.vercel.app/dashboard/ai-assistant) | - |
 | vercel-deployment | Current production deployment | [Current production deployment](https://vercel.com/skyasus-projects/openmanager-ai/98JotoiPEqdfb3DfHbt73hjNS62y) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-report | AI assistant rerun-2 QA summary | `reports/qa/evidence/qa-20260409-vercel-ai-assistant-rerun2-summary.md` | - |
-| playwright-screenshot | dashboard + ai assistant rerun-2 screenshot | `reports/qa/evidence/qa-20260409-vercel-ai-assistant-rerun2-dashboard.png` | - |
-| playwright-console | AI assistant rerun-2 console errors | `reports/qa/evidence/qa-20260409-vercel-ai-assistant-rerun2-console-error.log` | - |
-| playwright-network | AI assistant rerun-2 network log | `reports/qa/evidence/qa-20260409-vercel-ai-assistant-rerun2-network.log` | - |
+| playwright-report | AI assistant rerun-3 QA summary | `reports/qa/evidence/qa-20260409-vercel-ai-assistant-rerun3-summary.md` | - |
+| playwright-screenshot | dashboard + ai assistant rerun-3 screenshot | `reports/qa/evidence/qa-20260409-vercel-ai-assistant-rerun3-dashboard.png` | - |
+| playwright-console | AI assistant rerun-3 console errors | `reports/qa/evidence/qa-20260409-vercel-ai-assistant-rerun3-console-error.log` | - |
+| playwright-network | AI assistant rerun-3 network log | `reports/qa/evidence/qa-20260409-vercel-ai-assistant-rerun3-network.log` | - |
 
 ## Expert Domain Open Gaps
 
@@ -393,6 +393,7 @@ Latest run: QA-20260409-0262 (2026-04-09T06:18:13.337Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260409-0263 | 2026-04-09T08:00:37.411Z | targeted | no | no | Playwright MCP Vercel Targeted QA - AI assistant rerun-3 validation | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260409-0262 | 2026-04-09T06:18:13.337Z | targeted | no | no | Playwright MCP Vercel Targeted QA - AI assistant rerun-2 validation | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260409-0261 | 2026-04-09T05:47:27.648Z | targeted | no | no | Playwright MCP Vercel Targeted QA - AI assistant rerun validation | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260409-0260 | 2026-04-09T04:23:23.914Z | targeted | no | no | Playwright MCP Vercel Targeted QA - core routes + dashboard + AI sidebar sanity | 15 | 0 | 0 | 0 | 0 | 0 |
@@ -412,4 +413,3 @@ Latest run: QA-20260409-0262 (2026-04-09T06:18:13.337Z)
 | QA-20260406-0246 | 2026-04-06T10:57:23.899Z | broad | yes | yes | Playwright MCP Production QA - Frontend + AI Assistant v8.10.9 broad baseline refresh | 13 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260406-0245 | 2026-04-06T10:33:12.537Z | targeted | no | no | Vercel targeted QA - latest production smoke refresh after GitLab-first topology cleanup | 9 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260406-0244 | 2026-04-05T22:02:34.705Z | targeted | no | yes | Vercel targeted QA - latest production AI sidebar smoke refresh after canonical routing chore | 9 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260406-0243 | 2026-04-05T17:28:17.948Z | targeted | no | no | Vercel targeted QA - latest production deploy smoke refresh after canonical routing chore | 8 | 0 | 0 | 0 | 0 | 0 |

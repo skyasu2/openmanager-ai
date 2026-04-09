@@ -2,10 +2,10 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-09T06:18:13.337Z"
+    "updatedAt": "2026-04-09T08:00:37.411Z"
   },
   "sequence": {
-    "nextRunNumber": 263
+    "nextRunNumber": 264
   },
   "summary": {
     "totalRuns": 237,
@@ -21,8 +21,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260409-0259",
     "lastRecordedAt": "2026-04-08T22:37:58.733Z",
-    "latestRecordedRunId": "QA-20260409-0262",
-    "latestRecordedAt": "2026-04-09T06:18:13.337Z"
+    "latestRecordedRunId": "QA-20260409-0263",
+    "latestRecordedAt": "2026-04-09T08:00:37.411Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -23132,6 +23132,104 @@
           "type": "general",
           "label": "Production URL",
           "url": "https://openmanager-ai.vercel.app/dashboard"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Current production deployment",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/98JotoiPEqdfb3DfHbt73hjNS62y"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260409-0263",
+      "recordedAt": "2026-04-09T08:00:37.411Z",
+      "recordedAtKst": "2026-04-09 17:00:37 KST",
+      "title": "Playwright MCP Vercel Targeted QA - AI assistant rerun-3 validation",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260409-0263.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_98JotoiPEqdfb3DfHbt73hjNS62y",
+        "deploymentUrl": "https://openmanager-he53uou07-skyasus-projects.vercel.app",
+        "commitSha": "c0470baf4709676d292fcc7296e848251e6ce60e"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveredSurfaces": [
+        "/",
+        "/main",
+        "/login",
+        "/dashboard",
+        "/dashboard/ai-assistant",
+        "AI clarification dialog",
+        "AI prompt response: all-server one-line summary",
+        "analysis basis panel render",
+        "console errors zero"
+      ],
+      "skippedSurfaces": [
+        "Reporter full report flow",
+        "Analyst advanced drilldown",
+        "Cloud Run admin /monitoring and /monitoring/traces authenticated verification",
+        "modal/detail pack"
+      ],
+      "checks": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-09T16:54:00+09:00",
+          "summary": "Current billing period reviewed after rerun-3 QA; effective 5.2516 USD, billed 0.0000 USD, no unexpected billed usage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "AI assistant rerun-3 QA summary",
+          "path": "reports/qa/evidence/qa-20260409-vercel-ai-assistant-rerun3-summary.md"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "dashboard + ai assistant rerun-3 screenshot",
+          "path": "reports/qa/evidence/qa-20260409-vercel-ai-assistant-rerun3-dashboard.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "AI assistant rerun-3 console errors",
+          "path": "reports/qa/evidence/qa-20260409-vercel-ai-assistant-rerun3-console-error.log"
+        },
+        {
+          "type": "playwright-network",
+          "label": "AI assistant rerun-3 network log",
+          "path": "reports/qa/evidence/qa-20260409-vercel-ai-assistant-rerun3-network.log"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/dashboard/ai-assistant"
         },
         {
           "type": "vercel-deployment",
