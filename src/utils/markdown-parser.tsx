@@ -307,8 +307,8 @@ function renderFormattedText(text: string): React.ReactNode {
     const headingMatch = line.match(HEADING_REGEX);
     if (headingMatch) {
       flushList(`list-before-h-${i}`);
-      const level = headingMatch[1].length;
-      const headingText = headingMatch[2];
+      const level = (headingMatch[1] ?? '').length;
+      const headingText = headingMatch[2] ?? '';
       const headingClasses: Record<number, string> = {
         1: 'mt-3 mb-1 text-base font-bold text-slate-800',
         2: 'mt-2 mb-1 text-sm font-bold text-slate-700',
@@ -329,7 +329,7 @@ function renderFormattedText(text: string): React.ReactNode {
     if (orderedMatch) {
       if (listBuffer && !listBuffer.ordered) flushList(`list-switch-${i}`);
       if (!listBuffer) listBuffer = { ordered: true, items: [] };
-      listBuffer.items.push(orderedMatch[2]);
+      listBuffer.items.push(orderedMatch[2] ?? '');
       return;
     }
 
@@ -338,7 +338,7 @@ function renderFormattedText(text: string): React.ReactNode {
     if (unorderedMatch) {
       if (listBuffer?.ordered) flushList(`list-switch-${i}`);
       if (!listBuffer) listBuffer = { ordered: false, items: [] };
-      listBuffer.items.push(unorderedMatch[1]);
+      listBuffer.items.push(unorderedMatch[1] ?? '');
       return;
     }
 
