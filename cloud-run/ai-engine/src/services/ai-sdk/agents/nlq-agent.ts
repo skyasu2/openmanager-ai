@@ -13,37 +13,7 @@
  * @updated 2026-01-27 - BaseAgent/AgentFactory migration
  */
 
-import { AGENT_CONFIGS, type AgentConfig } from './config';
 import { AgentFactory, type BaseAgent } from './agent-factory';
-import { logger } from '../../../lib/logger';
-
-// ============================================================================
-// Factory Functions (Backward Compatibility)
-// ============================================================================
-
-/**
- * Get NLQ Agent configuration
- * Use with orchestrator's executeForcedRouting or executeAgentStream
- *
- * @deprecated Use AgentFactory.create('nlq') instead
- */
-export function getNlqAgentConfig(): AgentConfig | null {
-  const config = AGENT_CONFIGS['NLQ Agent'];
-  if (!config) {
-    logger.error('[NLQ Agent] Config not found in AGENT_CONFIGS');
-    return null;
-  }
-  return config;
-}
-
-/**
- * Check if NLQ Agent is available (has valid model)
- *
- * @deprecated Use AgentFactory.isAvailable('nlq') instead
- */
-export function isNlqAgentAvailable(): boolean {
-  return AgentFactory.isAvailable('nlq');
-}
 
 /**
  * Create a new NLQ Agent instance

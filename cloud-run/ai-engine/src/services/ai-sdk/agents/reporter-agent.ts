@@ -15,38 +15,9 @@
  * @updated 2026-01-27 - BaseAgent/AgentFactory migration
  */
 
-import { AGENT_CONFIGS, type AgentConfig } from './config';
 import { AgentFactory, type BaseAgent } from './agent-factory';
 import { executeReporterPipeline, type PipelineConfig, type PipelineResult } from './reporter-pipeline';
 import { logger } from '../../../lib/logger';
-
-// ============================================================================
-// Factory Functions (Backward Compatibility)
-// ============================================================================
-
-/**
- * Get Reporter Agent configuration
- * Use with orchestrator's executeForcedRouting or executeAgentStream
- *
- * @deprecated Use AgentFactory.create('reporter') instead
- */
-export function getReporterAgentConfig(): AgentConfig | null {
-  const config = AGENT_CONFIGS['Reporter Agent'];
-  if (!config) {
-    logger.error('[Reporter Agent] Config not found in AGENT_CONFIGS');
-    return null;
-  }
-  return config;
-}
-
-/**
- * Check if Reporter Agent is available (has valid model)
- *
- * @deprecated Use AgentFactory.isAvailable('reporter') instead
- */
-export function isReporterAgentAvailable(): boolean {
-  return AgentFactory.isAvailable('reporter');
-}
 
 /**
  * Create a new Reporter Agent instance
@@ -63,10 +34,6 @@ export function isReporterAgentAvailable(): boolean {
 export function createReporterAgent(): BaseAgent | null {
   return AgentFactory.create('reporter');
 }
-
-// ============================================================================
-// High-Quality Report Generation (Evaluator-Optimizer Pipeline)
-// ============================================================================
 
 /**
  * Generate a high-quality incident report using the Evaluator-Optimizer pipeline.

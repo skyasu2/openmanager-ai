@@ -52,8 +52,8 @@ export {
   type PipelineConfig,
 } from './agents/reporter-pipeline';
 
-// Individual Agent Configs
-export { getNlqAgentConfig, isNlqAgentAvailable } from './agents/nlq-agent';
-export { getAnalystAgentConfig, isAnalystAgentAvailable } from './agents/analyst-agent';
-export { getReporterAgentConfig, isReporterAgentAvailable, generateHighQualityReport } from './agents/reporter-agent';
-export { getAdvisorAgentConfig, isAdvisorAgentAvailable } from './agents/advisor-agent';
+// Individual Agent Convenience
+export { createNlqAgent } from './agents/nlq-agent';
+export { createAnalystAgent } from './agents/analyst-agent';
+export { createReporterAgent, generateHighQualityReport } from './agents/reporter-agent';
+export { createAdvisorAgent } from './agents/advisor-agent';

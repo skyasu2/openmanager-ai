@@ -149,9 +149,7 @@ vi.mock('../../../../tools-ai-sdk', () => ({
 import { AgentFactory } from './agent-factory';
 import {
   createVisionAgent,
-  getVisionAgentConfig,
   getVisionAgentOrFallback,
-  isVisionAgentAvailable,
   isVisionQuery,
 } from './vision-agent';
 
@@ -228,19 +226,6 @@ describe('VisionAgent', { timeout: 15000 }, () => {
   });
 
   // ==========================================================================
-  // isVisionAgentAvailable() Tests
-  // ==========================================================================
-
-  describe('isVisionAgentAvailable()', () => {
-    it('should return true when Gemini is available', () => {
-
-      expect(isVisionAgentAvailable()).toBe(true);
-    });
-
-    // Note: Test for Gemini unavailability requires dynamic mock changes.
-  });
-
-  // ==========================================================================
   // getVisionAgentOrFallback() Tests
   // ==========================================================================
 
@@ -292,20 +277,6 @@ describe('VisionAgent', { timeout: 15000 }, () => {
     });
 
     // Note: Test for Gemini unavailability requires dynamic mock changes.
-  });
-
-  // ==========================================================================
-  // getVisionAgentConfig() Tests (Deprecated)
-  // ==========================================================================
-
-  describe('getVisionAgentConfig()', () => {
-    it('should return config when available', () => {
-
-      const config = getVisionAgentConfig();
-
-      expect(config).not.toBeNull();
-      expect(config?.name).toBe('Vision Agent');
-    });
   });
 
   // ==========================================================================

@@ -21,7 +21,7 @@
  * @created 2026-01-27
  */
 
-import { AGENT_CONFIGS, type AgentConfig } from './config';
+import { AGENT_CONFIGS } from './config';
 import { AgentFactory, type BaseAgent } from './agent-factory';
 import { logger } from '../../../lib/logger';
 
@@ -115,37 +115,6 @@ function hasDashboardVisualIntent(text: string): boolean {
   );
 }
 
-// ============================================================================
-// Factory Functions
-// ============================================================================
-
-/**
- * Get Vision Agent configuration
- * Use with orchestrator's executeForcedRouting or executeAgentStream
- *
- * @deprecated Use AgentFactory.create('vision') instead
- */
-export function getVisionAgentConfig(): AgentConfig | null {
-  const config = AGENT_CONFIGS['Vision Agent'];
-  if (!config) {
-    logger.warn('[Vision Agent] Config not found in AGENT_CONFIGS');
-    return null;
-  }
-  return config;
-}
-
-/**
- * Check if Vision Agent is available
- *
- * Vision Agent requires at least one vision provider to be configured.
- * Fallback chain: Gemini (primary) -> OpenRouter.
- *
- * @deprecated Use AgentFactory.isAvailable('vision') instead
- */
-export function isVisionAgentAvailable(): boolean {
-  return AgentFactory.isAvailable('vision');
-}
-
 /**
  * Create a new Vision Agent instance
  *
@@ -206,7 +175,7 @@ export function getVisionAgentOrFallback(query: string): {
   fallbackReason?: string;
 } {
   // Check if Vision is available
-  if (isVisionAgentAvailable()) {
+  if (AgentFactory.isAvailable('vision')) {
     return {
       agent: createVisionAgent(),
       isFallback: false,

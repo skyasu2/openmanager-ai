@@ -64,27 +64,29 @@ vi.mock('ai', () => ({
   })),
 }));
 
-vi.mock('../services/ai-sdk/agents/analyst-agent', () => ({
-  getAnalystAgentConfig: vi.fn(() => ({
-    instructions: 'Analyst Agent',
-    getModel: () => ({ model: { modelId: 'test-model' }, provider: 'test' }),
-    tools: {},
-  })),
-  isAnalystAgentAvailable: vi.fn(() => true),
+vi.mock('../services/ai-sdk/agents/config', () => ({
+  AGENT_CONFIGS: {
+    'Analyst Agent': {
+      instructions: 'Analyst Agent',
+      getModel: () => ({ model: { modelId: 'test-model' }, provider: 'test' }),
+      tools: {},
+    },
+    'Reporter Agent': {
+      instructions: 'Reporter Agent',
+      getModel: () => ({ model: { modelId: 'test-model' }, provider: 'test' }),
+      tools: {},
+    },
+  },
 }));
 
-vi.mock('../services/ai-sdk/agents/reporter-agent', () => ({
-  getReporterAgentConfig: vi.fn(() => ({
-    instructions: 'Reporter Agent',
-    getModel: () => ({ model: { modelId: 'test-model' }, provider: 'test' }),
-    tools: {},
-  })),
-  isReporterAgentAvailable: vi.fn(() => true),
+vi.mock('../services/ai-sdk/agents/agent-factory', () => ({
+  AgentFactory: {
+    isAvailable: vi.fn(() => true),
+  },
 }));
 
 import { analyticsRouter } from './analytics';
-import { isAnalystAgentAvailable } from '../services/ai-sdk/agents/analyst-agent';
-import { isReporterAgentAvailable } from '../services/ai-sdk/agents/reporter-agent';
+import { AgentFactory } from '../services/ai-sdk/agents/agent-factory';
 import { generateText } from 'ai';
 
 const app = new Hono();
@@ -127,7 +129,7 @@ describe('Analytics Routes', () => {
     });
 
     it('Agent 사용 불가 시에도 tool 결과를 반환한다', async () => {
-      vi.mocked(isAnalystAgentAvailable).mockReturnValueOnce(false);
+      vi.mocked(AgentFactory.isAvailable).mockImplementationOnce((type) => type !== 'analyst');
 
       const res = await app.request('/analytics/analyze-server', {
         method: 'POST',
@@ -176,7 +178,7 @@ describe('Analytics Routes', () => {
     });
 
     it('Reporter Agent 사용 불가 시 fallback을 반환한다', async () => {
-      vi.mocked(isReporterAgentAvailable).mockReturnValueOnce(false);
+      vi.mocked(AgentFactory.isAvailable).mockImplementationOnce((type) => type !== 'reporter');
 
       const res = await app.request('/analytics/incident-report', {
         method: 'POST',

@@ -534,16 +534,13 @@ describe('preFilterQuery', () => {
 // ============================================================================
 
 describe('Agent Config Exports', () => {
-  it('should have config getters for each agent', async () => {
-    const { getNlqAgentConfig } = await import('./nlq-agent');
-    const { getAnalystAgentConfig } = await import('./analyst-agent');
-    const { getReporterAgentConfig } = await import('./reporter-agent');
-    const { getAdvisorAgentConfig } = await import('./advisor-agent');
+  it('should expose config entries for each public agent type', async () => {
+    const { getAgentConfig } = await import('./config');
 
-    expect(getNlqAgentConfig()).toBeDefined();
-    expect(getAnalystAgentConfig()).toBeDefined();
-    expect(getReporterAgentConfig()).toBeDefined();
-    expect(getAdvisorAgentConfig()).toBeDefined();
+    expect(getAgentConfig('NLQ Agent')).toBeDefined();
+    expect(getAgentConfig('Analyst Agent')).toBeDefined();
+    expect(getAgentConfig('Reporter Agent')).toBeDefined();
+    expect(getAgentConfig('Advisor Agent')).toBeDefined();
   });
 });
 

@@ -52,42 +52,32 @@ export {
 } from './orchestrator';
 
 // ============================================================================
-// Individual Agent Exports (Backward Compatibility)
+// Individual Agent Exports
 // ============================================================================
 
 // NLQ Agent
 export {
-  getNlqAgentConfig,
-  isNlqAgentAvailable,
   createNlqAgent,
 } from './nlq-agent';
 
 // Analyst Agent
 export {
-  getAnalystAgentConfig,
-  isAnalystAgentAvailable,
   createAnalystAgent,
 } from './analyst-agent';
 
 // Reporter Agent
 export {
-  getReporterAgentConfig,
-  isReporterAgentAvailable,
   createReporterAgent,
   generateHighQualityReport,
 } from './reporter-agent';
 
 // Advisor Agent
 export {
-  getAdvisorAgentConfig,
-  isAdvisorAgentAvailable,
   createAdvisorAgent,
 } from './advisor-agent';
 
 // Vision Agent
 export {
-  getVisionAgentConfig,
-  isVisionAgentAvailable,
   createVisionAgent,
   isVisionQuery,
   getVisionAgentOrFallback,

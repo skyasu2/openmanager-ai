@@ -1,21 +1,4 @@
-/**
- * BaseAgent - Abstract base class for all agents
- *
- * Encapsulates the common agent execution pattern using AI SDK v6's
- * ToolLoopAgent for tool-loop orchestration with stopWhen conditions.
- *
- * Key Features:
- * - Unified execution interface via run() method
- * - AI SDK v6 ToolLoopAgent: official agent pattern with stopWhen
- * - Provider fallback chain support
- * - Step-by-step monitoring via onStepFinish
- * - Timeout protection with configurable limits
- * - Redis-based Session Memory & History Recovery
- *
- * @version 2.1.0 - Integrated Session Memory & Context Recovery
- * @created 2026-01-27
- * @updated 2026-02-24 - Session persistence & Redis recovery
- */
+/** Shared execution/streaming implementation for all AI agents. */
 
 import {
   ToolLoopAgent,
@@ -54,60 +37,23 @@ export type {
   ImageAttachment,
 } from './base-agent-types';
 
-// ============================================================================
-// BaseAgent Abstract Class
-// ============================================================================
-
-/**
- * Abstract base class for all agents
- *
- * Subclasses must implement:
- * - getName(): Agent display name
- * - getConfig(): Get AgentConfig from AGENT_CONFIGS
- *
- * Provides:
- * - run(): Execute agent with query and return result
- * - stream(): Execute agent with streaming response
- * - isAvailable(): Check if agent has valid model
- */
 export abstract class BaseAgent {
-  /**
-   * Get the agent's display name
-   */
   abstract getName(): string;
 
-  /**
-   * Get the agent's configuration from AGENT_CONFIGS
-   */
   abstract getConfig(): AgentConfig | null;
 
-  /**
-   * Check if agent is available (has valid model)
-   */
   isAvailable(): boolean {
     const config = this.getConfig();
     if (!config) return false;
     return config.getModel() !== null;
   }
 
-  /**
-   * Get model result from config
-   */
   protected getModel(): ModelResult | null {
     const config = this.getConfig();
     if (!config) return null;
     return config.getModel();
   }
 
-  /**
-   * Create a ToolLoopAgent instance with resolved configuration
-   *
-   * @param model - Resolved language model
-   * @param instructions - Agent system prompt
-   * @param tools - Filtered tools map
-   * @param maxSteps - Maximum number of steps
-   * @returns ToolLoopAgent instance
-   */
   private createToolLoopAgent(params: {
     model: LanguageModel;
     instructions: string;
@@ -132,13 +78,6 @@ export abstract class BaseAgent {
     return buildUserContent(this.getName(), query, options);
   }
 
-  /**
-   * Execute agent with query and return complete result
-   *
-   * @param query - User query to process
-   * @param options - Execution options
-   * @returns AgentResult with response and metadata
-   */
   async run(query: string, options: AgentRunOptions = {}): Promise<AgentResult> {
     const startTime = Date.now();
     const opts = { ...DEFAULT_OPTIONS, ...options };
@@ -146,7 +85,6 @@ export abstract class BaseAgent {
 
     logger.info(`[${agentName}] Starting execution (Session: ${opts.sessionId || 'none'})`);
 
-    // Validate configuration
     const config = this.getConfig();
     if (!config) {
       const durationMs = Date.now() - startTime;
@@ -210,7 +148,6 @@ export abstract class BaseAgent {
         this.buildUserContent.bind(this)
       );
 
-      // Create ToolLoopAgent with resolved configuration
       const agent = this.createToolLoopAgent({
         model,
         instructions: config.instructions,
@@ -220,7 +157,6 @@ export abstract class BaseAgent {
         maxOutputTokens,
       });
 
-      // Execute via ToolLoopAgent.generate()
       const result = await agent.generate({
         messages,
         timeout: { totalMs: opts.timeoutMs ?? DEFAULT_OPTIONS.timeoutMs, stepMs: Math.max((opts.timeoutMs ?? DEFAULT_OPTIONS.timeoutMs) - 5_000, 5_000) },
@@ -230,7 +166,6 @@ export abstract class BaseAgent {
         },
       });
 
-      // Extract tool calls and check for finalAnswer
       const toolsCalled: string[] = [];
       let finalAnswerResult: { answer: string } | null = null;
       let finishReason = 'stop';
@@ -263,7 +198,6 @@ export abstract class BaseAgent {
         fallbackReason = 'EMPTY_RESPONSE';
       }
 
-      // Persist session history in Redis (Async)
       persistAgentHistory(opts.sessionId, messages, sanitizedText);
 
       const durationMs = Date.now() - startTime;
@@ -321,9 +255,6 @@ export abstract class BaseAgent {
     }
   }
 
-  /**
-   * Execute agent with streaming response
-   */
   async *stream(query: string, options: AgentRunOptions = {}): AsyncGenerator<AgentStreamEvent> {
     const startTime = Date.now();
     const opts = { ...DEFAULT_OPTIONS, ...options };
