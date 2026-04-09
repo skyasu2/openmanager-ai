@@ -330,7 +330,7 @@ function renderFormattedText(text: string): React.ReactNode {
     // Unordered list item
     const unorderedMatch = line.match(UNORDERED_LIST_REGEX);
     if (unorderedMatch) {
-      if (listBuffer && listBuffer.ordered) flushList(`list-switch-${i}`);
+      if (listBuffer?.ordered) flushList(`list-switch-${i}`);
       if (!listBuffer) listBuffer = { ordered: false, items: [] };
       listBuffer.items.push(unorderedMatch[1]);
       return;
