@@ -8,9 +8,9 @@
     "nextRunNumber": 264
   },
   "summary": {
-    "totalRuns": 237,
-    "totalChecks": 1849,
-    "totalPassed": 1777,
+    "totalRuns": 238,
+    "totalChecks": 1856,
+    "totalPassed": 1784,
     "totalFailed": 66,
     "completionRate": 100,
     "completedItems": 285,
@@ -21,8 +21,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260409-0259",
     "lastRecordedAt": "2026-04-08T22:37:58.733Z",
-    "latestRecordedRunId": "QA-20260409-0263",
-    "latestRecordedAt": "2026-04-09T08:00:37.411Z"
+    "latestRecordedRunId": "QA-20260409-0264",
+    "latestRecordedAt": "2026-04-09T09:45:00.000Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -23235,6 +23235,69 @@
           "type": "vercel-deployment",
           "label": "Current production deployment",
           "url": "https://vercel.com/skyasus-projects/openmanager-ai/98JotoiPEqdfb3DfHbt73hjNS62y"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260409-0264",
+      "recordedAt": "2026-04-09T09:45:00.000Z",
+      "recordedAtKst": "2026-04-09 18:45:00 KST",
+      "title": "Playwright MCP Vercel Targeted QA - Sprint 1+2 ai-chat improvement validation (v8.11.7)",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260409-0264.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_CAWchymB1KKe4ADsqMwLV6S9uigQ",
+        "commitSha": "ca7f27aef"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": ["ai-core", "dashboard-core", "core-routes-smoke"],
+      "checks": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "TC-01 AI response",
+          "path": "reports/qa/evidence/qa-20260409-sprint1-2-validation-tc01.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "TC-02 Clarification Skip",
+          "path": "reports/qa/evidence/qa-20260409-sprint1-2-validation-tc02-skip.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "TC-03 RAG cleanup + routing",
+          "path": "reports/qa/evidence/qa-20260409-sprint1-2-validation-tc03-routing.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/dashboard"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "v8.11.7 deployment",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/CAWchymB1KKe4ADsqMwLV6S9uigQ"
         }
       ],
       "expertCount": 0,

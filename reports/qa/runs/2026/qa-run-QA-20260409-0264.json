@@ -1,0 +1,100 @@
+{
+  "runId": "QA-20260409-0264",
+  "recordedAt": "2026-04-09T09:45:00.000Z",
+  "recordedAtKst": "2026-04-09 18:45:00 KST",
+  "runTitle": "Playwright MCP Vercel Targeted QA - Sprint 1+2 ai-chat improvement validation (v8.11.7)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_CAWchymB1KKe4ADsqMwLV6S9uigQ",
+    "commitSha": "ca7f27aef"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "version": "8.11.7",
+  "coveragePacks": ["ai-core", "dashboard-core", "core-routes-smoke"],
+  "coveredSurfaces": [
+    "/",
+    "/dashboard",
+    "AI 어시스턴트 사이드바 열기/닫기",
+    "AI 기본 채팅 응답 (메모리 높은 서버)",
+    "Clarification Dialog - 건너뛰고 바로 실행 버튼 (1-C)",
+    "RAG sources 초기화 - 쿼리간 소스 혼합 없음 (1-A)",
+    "피드백 버튼 👍/👎 렌더링",
+    "에이전트 라우팅 - CPU 비정상 → 이상탐지 도구 (routing fix)",
+    "콘솔 에러 0건"
+  ],
+  "skippedSurfaces": [
+    "blocked input 에러 메시지 직접 노출 (SQL injection은 clarification으로 처리됨)",
+    "Reporter full report flow",
+    "Analyst advanced drilldown",
+    "streaming status machine 단계별 전환 직접 관찰"
+  ],
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "testCases": [
+    {
+      "id": "TC-01",
+      "description": "v8.11.7 배포 버전 확인",
+      "result": "pass",
+      "evidence": "footer에서 v8.11.7 확인"
+    },
+    {
+      "id": "TC-02",
+      "description": "AI 기본 채팅 응답 - 메모리 높은 서버 조회",
+      "result": "pass",
+      "evidence": "cache-redis-dc1-01(80%), cache-redis-dc1-02(72%), db-mysql-dc1-primary(68%) 정확히 반환"
+    },
+    {
+      "id": "TC-03",
+      "description": "1-C Clarification Skip 버튼 렌더링 및 동작",
+      "result": "pass",
+      "evidence": "건너뛰고 바로 실행 버튼 클릭 → dialog 해제 후 원본 쿼리 실행 확인"
+    },
+    {
+      "id": "TC-04",
+      "description": "1-A RAG sources 초기화 (쿼리 간 소스 혼합 없음)",
+      "result": "pass",
+      "evidence": "두 번째 쿼리(CPU 비정상)에서 첫 번째 쿼리 RAG 소스 혼합 없음 확인"
+    },
+    {
+      "id": "TC-05",
+      "description": "피드백 버튼 👍/👎 렌더링 (도움이 됐어요/개선이 필요해요)",
+      "result": "pass",
+      "evidence": "모든 AI 응답 메시지에 피드백 버튼 표시 확인 (Sprint 3 선반영 상태)"
+    },
+    {
+      "id": "TC-06",
+      "description": "라우팅 개선 - CPU 비정상 → 전체 서버 이상 탐지 도구",
+      "result": "pass",
+      "evidence": "분석 근거: 도구: 전체 서버 이상 탐지 · 기간: 최근 1시간 확인"
+    },
+    {
+      "id": "TC-07",
+      "description": "콘솔 에러 0건",
+      "result": "pass",
+      "evidence": "Playwright MCP 세션 전체 콘솔 에러 없음"
+    }
+  ],
+  "notes": [
+    "Sprint 1+2 ai-chat 개선사항(1-A RAG cleanup, 1-C Skip button, 2-C status machine, 1-D error message, 2-A throttle) 프로덕션 반영 확인",
+    "피드백 버튼(👍/👎)은 Sprint 3 미구현 예정이었으나 이미 UI에 존재 (이전 구현 유지)",
+    "SQL injection 입력은 차단 대신 clarification dialog → AI 거절로 처리 (설계상 정상)",
+    "Cloud Run ai-engine-00295-lxf 리비전, Supabase ACTIVE_HEALTHY, Redis connected 모두 정상"
+  ],
+  "expertAssessments": [],
+  "evidenceFiles": [
+    "reports/qa/evidence/qa-20260409-sprint1-2-validation-tc01.png",
+    "reports/qa/evidence/qa-20260409-sprint1-2-validation-tc02-skip.png",
+    "reports/qa/evidence/qa-20260409-sprint1-2-validation-tc03-routing.png"
+  ]
+}
