@@ -141,6 +141,15 @@ export const ClarificationDialog: FC<ClarificationDialogProps> = memo(
           </div>
         )}
 
+        <button
+          type="button"
+          onClick={onSkip}
+          className="mt-2 flex w-full items-center justify-center rounded-lg border border-blue-200 bg-white py-2 text-sm font-medium text-blue-600 transition-colors hover:bg-blue-50"
+          data-testid="clarification-skip"
+        >
+          건너뛰고 바로 실행
+        </button>
+
         {/* 취소 힌트 */}
         <p className="mt-2 text-center text-xs text-gray-400">
           X를 누르면 질문을 취소합니다

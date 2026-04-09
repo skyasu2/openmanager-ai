@@ -18,6 +18,7 @@ import type { FileAttachment } from '../useFileAttachments';
 export type { ClarificationOption, ClarificationRequest };
 
 export type QueryMode = 'streaming' | 'job-queue';
+export type AIStreamStatus = 'submitted' | 'streaming' | 'ready' | 'error';
 
 export interface HybridQueryState {
   /** 현재 쿼리 모드 */
@@ -194,6 +195,8 @@ export interface UseHybridAIQueryReturn {
   clearError: () => void;
   /** 현재 모드 */
   currentMode: QueryMode;
+  /** AI SDK useChat 상태 머신 */
+  streamStatus: AIStreamStatus;
   /** 복잡도 미리 분석 (UI에서 힌트 표시용) */
   previewComplexity: (query: string) => QueryComplexity;
   /** 쿼리 직접 실행 (분류/명확화 건너뛰기, 재시도용) */

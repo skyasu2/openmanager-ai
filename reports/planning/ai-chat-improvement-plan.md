@@ -346,9 +346,9 @@ generateText({
 ### Sprint 2 (~1일)
 
 ```
-[ ] 1-C: Clarification Skip 버튼
-[ ] 2-B: Incremental message transformation
-[ ] 2-C: AI SDK status machine 활용
+[x] 1-C: Clarification Skip 버튼 (UI 버튼 + skip/dismiss 동작 테스트 추가)
+[x] 2-B: Incremental message transformation (message 단위 캐시로 변경분만 재변환)
+[x] 2-C: AI SDK status machine 활용 (streamStatus 노출 + submitted/streaming UX 분리)
 ```
 
 ### Sprint 3 (~2일)
@@ -391,5 +391,10 @@ generateText({
 - 검증:
   - `npm run type-check` ✅
   - `npx vitest run --config config/testing/vitest.config.main.ts src/hooks/ai/core/createHybridStreamCallbacks.test.ts src/hooks/ai/useDeferredMessageMetadata.test.ts src/lib/ai/constants/stream-errors.test.ts` ✅
+- 2026-04-09 18:12 KST: Sprint 2의 1-C / 2-B / 2-C 구현 완료
+- 검증:
+  - `npm run type-check` ✅
+  - `npm run lint` ✅
+  - `npx vitest run --config config/testing/vitest.config.main.ts src/hooks/ai/useEnhancedChatMessages.test.ts src/hooks/ai/core/useClarificationHandlers.test.ts src/components/ai-sidebar/ClarificationDialog.test.tsx src/hooks/ai/useAIChatCore.test.ts` ✅
 
-_Last Updated: 2026-04-09 16:47 KST_
+_Last Updated: 2026-04-09 18:12 KST_

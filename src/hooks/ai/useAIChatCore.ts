@@ -24,6 +24,7 @@ import {
 } from 'react';
 import {
   type AgentStatusEventData,
+  type AIStreamStatus,
   type ClarificationOption,
   type ClarificationRequest,
   type HandoffEventData,
@@ -85,6 +86,7 @@ export interface UseAIChatCoreReturn {
     errorDetails?: AIErrorDetails | null;
   };
   currentMode?: 'streaming' | 'job-queue';
+  streamStatus?: AIStreamStatus;
 
   // 에러 상태
   error: string | null;
@@ -234,6 +236,7 @@ export function useAIChatCore(
     reset: resetHybridQuery,
     clearError: clearHybridError,
     currentMode,
+    streamStatus,
     selectClarification,
     submitCustomClarification,
     skipClarification,
@@ -478,6 +481,7 @@ export function useAIChatCore(
       errorDetails: hybridState.errorDetails ?? undefined,
     },
     currentMode: currentMode ?? undefined,
+    streamStatus,
     error,
     clearError,
     sessionId: sessionId,

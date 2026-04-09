@@ -8,6 +8,7 @@ import type { AsyncQueryProgress } from '@/hooks/ai/useAsyncAIQuery';
 import type { FileAttachment } from '@/hooks/ai/useFileAttachments';
 import type {
   AgentStatusEventData,
+  AIStreamStatus,
   ClarificationOption,
   ClarificationRequest,
   HandoffEventData,
@@ -59,6 +60,7 @@ interface EnhancedAIChatProps {
   setInputValue: (value: string) => void;
   handleSendInput: (attachments?: FileAttachment[]) => void;
   isGenerating: boolean;
+  streamStatus?: AIStreamStatus;
   regenerateResponse: (messageId: string) => void;
   sessionState?: SessionState;
   onNewSession?: () => void;
@@ -107,6 +109,7 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
   setInputValue,
   handleSendInput,
   isGenerating,
+  streamStatus,
   regenerateResponse,
   sessionState,
   onNewSession,
@@ -407,6 +410,7 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
         inputValue={inputValue}
         setInputValue={setInputValue}
         isGenerating={isGenerating}
+        streamStatus={streamStatus}
         sessionState={sessionState}
         attachments={attachments}
         isDragging={isDragging}

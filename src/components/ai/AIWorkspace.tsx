@@ -102,6 +102,7 @@ export default function AIWorkspace({ mode, onClose }: AIWorkspaceProps) {
     isLoading,
     hybridState,
     currentMode,
+    streamStatus,
     // 에러 상태
     error,
     clearError,
@@ -190,6 +191,7 @@ export default function AIWorkspace({ mode, onClose }: AIWorkspaceProps) {
               sessionState={sessionState}
               onNewSession={handleNewSession}
               isGenerating={isLoading}
+              streamStatus={streamStatus}
               regenerateResponse={regenerateLastResponse}
               onStopGeneration={stop}
               onFeedback={handleFeedback}
@@ -483,6 +485,7 @@ export default function AIWorkspace({ mode, onClose }: AIWorkspaceProps) {
                   sessionState={sessionState}
                   onNewSession={handleNewSession}
                   isGenerating={isLoading}
+                  streamStatus={streamStatus}
                   regenerateResponse={regenerateLastResponse}
                   onStopGeneration={stop}
                   onFeedback={handleFeedback}

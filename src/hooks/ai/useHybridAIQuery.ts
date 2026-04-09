@@ -48,6 +48,7 @@ import { generateMessageId } from './utils/hybrid-query-utils';
 export type {
   AgentStatus,
   AgentStatusEventData,
+  AIStreamStatus,
   ClarificationOption,
   ClarificationRequest,
   HandoffEventData,
@@ -70,6 +71,7 @@ import {
 } from '@/lib/ai/constants/stream-errors';
 import { inferAIErrorDetailsFromMessage } from '@/lib/ai/error-details';
 import type {
+  AIStreamStatus,
   HybridQueryState,
   UseHybridAIQueryOptions,
   UseHybridAIQueryReturn,
@@ -83,6 +85,18 @@ export {
   STREAM_ERROR_MARKER,
   STREAM_ERROR_REGEX,
 };
+
+function normalizeStreamStatus(status: string): AIStreamStatus {
+  if (
+    status === 'submitted' ||
+    status === 'streaming' ||
+    status === 'ready' ||
+    status === 'error'
+  ) {
+    return status;
+  }
+  return 'ready';
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
@@ -383,6 +397,7 @@ export function useHybridAIQuery(
   asyncQueryRef.current = asyncQuery;
   const isChatLoading =
     chatStatus === 'streaming' || chatStatus === 'submitted';
+  const streamStatus = normalizeStreamStatus(chatStatus);
   const isLoading = state.isLoading || isChatLoading || asyncQuery.isLoading;
   const { executeQuery, sendQuery } = useQueryExecution({
     complexityThreshold,
@@ -476,6 +491,7 @@ export function useHybridAIQuery(
     reset,
     clearError,
     currentMode: state.mode,
+    streamStatus,
     previewComplexity,
     selectClarification,
     submitCustomClarification,
