@@ -171,6 +171,7 @@ export function useHybridAIQuery(
     apiEndpoint: customEndpoint,
     complexityThreshold = getComplexityThreshold(),
     onStreamFinish,
+    onStreamMessageFinish,
     onJobResult,
     onProgress,
     onData,
@@ -254,6 +255,7 @@ export function useHybridAIQuery(
         verboseLogging: observabilityConfig.verboseLogging,
         maxRetries: streamRetryConfig.maxRetries,
         onStreamFinish,
+        onStreamMessageFinish,
         onData,
         persistFinishedAssistantMessage: (message, traceId) =>
           persistFinishedAssistantMessageRef.current(message, traceId),
@@ -278,6 +280,7 @@ export function useHybridAIQuery(
       }),
     [
       onData,
+      onStreamMessageFinish,
       onStreamFinish,
       observabilityConfig.verboseLogging,
       streamRetryConfig.maxRetries,
@@ -294,6 +297,7 @@ export function useHybridAIQuery(
     id: sessionIdRef.current,
     transport,
     resume: resumeEnabled,
+    experimental_throttle: 50,
     onFinish: streamCallbacks.onFinish,
     onData: streamCallbacks.onData,
     onError: streamCallbacks.onError,

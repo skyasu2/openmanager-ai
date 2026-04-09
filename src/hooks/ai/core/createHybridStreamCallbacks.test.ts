@@ -42,6 +42,7 @@ function createDeps() {
       verboseLogging: false,
       maxRetries: 1,
       onStreamFinish: vi.fn(),
+      onStreamMessageFinish: vi.fn(),
       onData: vi.fn(),
       persistFinishedAssistantMessage: vi.fn(),
       setState: vi.fn((updater) => {
@@ -81,6 +82,7 @@ describe('createHybridStreamCallbacks.onFinish', () => {
       message,
       'feedfacefeedfacefeedfacefeedface'
     );
+    expect(context.deps.onStreamMessageFinish).toHaveBeenCalledWith(message);
     expect(context.getState().isLoading).toBe(false);
     expect(context.getState().warmingUp).toBe(false);
   });
@@ -104,6 +106,7 @@ describe('createHybridStreamCallbacks.onFinish', () => {
       message,
       'feedfacefeedfacefeedfacefeedface'
     );
+    expect(context.deps.onStreamMessageFinish).toHaveBeenCalledWith(message);
     expect(context.getState().isLoading).toBe(false);
   });
 });

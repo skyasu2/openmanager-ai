@@ -235,4 +235,37 @@ describe('useDeferredMessageMetadata', () => {
     expect(result.current.handlers.getPendingMessageMetadata()).toEqual({});
     expect(result.current.handlers.getPendingToolResults()).toEqual([]);
   });
+
+  it('flushPendingToMessage가 messages 변경 없이도 pending metadata를 지정 메시지에 반영한다', async () => {
+    const { result } = renderHook(() =>
+      useDeferredMessageMetadata([createTextMessage('user-1', 'user', '질문')])
+    );
+
+    act(() => {
+      result.current.handlers.setPendingMessageMetadata({
+        traceId: 'trace-direct-flush',
+        responseSummary: '직접 flush',
+      });
+      result.current.handlers.setPendingToolResults(pendingToolResults);
+      result.current.handlers.flushPendingToMessage('assistant-direct');
+    });
+
+    await waitFor(() => {
+      expect(result.current.streamTraceIds['assistant-direct']).toBe(
+        'trace-direct-flush'
+      );
+    });
+
+    expect(
+      result.current.deferredAssistantMetadataByMessageId['assistant-direct']
+    ).toMatchObject({
+      traceId: 'trace-direct-flush',
+      responseSummary: '직접 flush',
+    });
+    expect(
+      result.current.deferredToolResultsByMessageId['assistant-direct']
+    ).toEqual(pendingToolResults);
+    expect(result.current.handlers.getPendingMessageMetadata()).toEqual({});
+    expect(result.current.handlers.getPendingToolResults()).toEqual([]);
+  });
 });

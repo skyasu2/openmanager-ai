@@ -322,6 +322,13 @@ export function useAIChatCore(
     }
   }, [hybridState.error]);
 
+  // 새 쿼리 시작 시 이전 스트림 RAG 출처를 초기화해 혼합 표시를 방지한다.
+  useEffect(() => {
+    if (hybridIsLoading) {
+      setStreamRagSources([]);
+    }
+  }, [hybridIsLoading]);
+
   const handleNewSession = useCallback(() => {
     resetHybridQuery();
     refreshSessionId();

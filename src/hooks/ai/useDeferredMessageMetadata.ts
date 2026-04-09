@@ -27,6 +27,7 @@ export interface DeferredMetadataHandlers {
   setPendingToolResults: (results: PendingStreamToolResult[]) => void;
   getPendingMessageMetadata: () => Record<string, unknown>;
   setPendingMessageMetadata: (metadata: Record<string, unknown>) => void;
+  flushPendingToMessage: (messageId: string) => void;
   setDeferredAssistantMetadata: (
     messageId: string,
     metadata: Record<string, unknown>
@@ -68,11 +69,9 @@ export function useDeferredMessageMetadata(
   const pendingStreamToolResultsRef = useRef<PendingStreamToolResult[]>([]);
   const pendingStreamMessageMetadataRef = useRef<Record<string, unknown>>({});
 
-  // ============================================================================
-  // Flush Effect: messages 변경 시 pending refs → deferred state로 이관
-  // ============================================================================
+  const flushPendingToMessage = useCallback((messageId: string) => {
+    if (!messageId) return;
 
-  useEffect(() => {
     const pendingToolResults = pendingStreamToolResultsRef.current;
     const pendingMessageMetadata = pendingStreamMessageMetadataRef.current;
     const hasPendingMessageMetadata =
@@ -82,28 +81,18 @@ export function useDeferredMessageMetadata(
       return;
     }
 
-    const lastAssistantIndex = messages
-      .map((message) => message.role)
-      .lastIndexOf('assistant');
-    if (lastAssistantIndex < 0) return;
-
-    const targetMessage = messages[lastAssistantIndex];
-    if (!targetMessage) return;
-
     if (typeof pendingMessageMetadata.traceId === 'string') {
       const traceId = pendingMessageMetadata.traceId;
       setStreamTraceIds((prev) =>
-        prev[targetMessage.id] === traceId
-          ? prev
-          : { ...prev, [targetMessage.id]: traceId }
+        prev[messageId] === traceId ? prev : { ...prev, [messageId]: traceId }
       );
     }
 
     if (hasPendingMessageMetadata) {
       setDeferredAssistantMetadataByMessageId((prev) => ({
         ...prev,
-        [targetMessage.id]: {
-          ...(prev[targetMessage.id] ?? {}),
+        [messageId]: {
+          ...(prev[messageId] ?? {}),
           ...pendingMessageMetadata,
         },
       }));
@@ -112,13 +101,28 @@ export function useDeferredMessageMetadata(
     if (pendingToolResults.length > 0) {
       setDeferredToolResultsByMessageId((prev) => ({
         ...prev,
-        [targetMessage.id]: pendingToolResults,
+        [messageId]: pendingToolResults,
       }));
     }
 
     pendingStreamToolResultsRef.current = [];
     pendingStreamMessageMetadataRef.current = {};
-  }, [messages]);
+  }, []);
+
+  // ============================================================================
+  // Flush Effect: messages 변경 시 pending refs → deferred state로 이관
+  // ============================================================================
+
+  useEffect(() => {
+    const lastAssistantIndex = messages
+      .map((message) => message.role)
+      .lastIndexOf('assistant');
+    if (lastAssistantIndex < 0) return;
+
+    const targetMessage = messages[lastAssistantIndex];
+    if (!targetMessage) return;
+    flushPendingToMessage(targetMessage.id);
+  }, [messages, flushPendingToMessage]);
 
   // ============================================================================
   // Handlers (onData 콜백에서 사용)
@@ -196,6 +200,7 @@ export function useDeferredMessageMetadata(
       setPendingToolResults,
       getPendingMessageMetadata,
       setPendingMessageMetadata,
+      flushPendingToMessage,
       setDeferredAssistantMetadata,
       setDeferredAssistantToolResults,
     },

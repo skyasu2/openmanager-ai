@@ -24,7 +24,7 @@ describe('sanitizeDisplayedErrorMessage', () => {
       '{"success":false,"error":"Security: blocked input","message":"보안 정책에 의해 차단된 요청입니다."}';
 
     expect(sanitizeDisplayedErrorMessage(error)).toBe(
-      '보안 정책에 의해 차단된 요청입니다.'
+      '입력 내용이 서버 모니터링 AI가 처리할 수 없는 형식입니다. 다른 표현으로 다시 시도해주세요.'
     );
   });
 

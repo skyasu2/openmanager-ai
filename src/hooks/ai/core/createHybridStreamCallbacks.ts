@@ -33,6 +33,7 @@ interface CreateHybridStreamCallbacksDeps {
   verboseLogging: boolean;
   maxRetries: number;
   onStreamFinish?: () => void;
+  onStreamMessageFinish?: (message: UIMessage) => void;
   onData?: (dataPart: StreamDataPart) => void;
   persistFinishedAssistantMessage?: (
     message: UIMessage,
@@ -73,6 +74,7 @@ export function createHybridStreamCallbacks(
     verboseLogging,
     maxRetries,
     onStreamFinish,
+    onStreamMessageFinish,
     onData,
     persistFinishedAssistantMessage,
     setState,
@@ -112,6 +114,7 @@ export function createHybridStreamCallbacks(
     } else {
       refs.retryCount.current = 0;
       persistFinishedAssistantMessage?.(message, traceIdRef.current);
+      onStreamMessageFinish?.(message);
       if (verboseLogging) {
         logger.info(
           `[HybridAI] Stream completed successfully (trace: ${traceIdRef.current})`
