@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-09T10:45:00.000Z"
+    "updatedAt": "2026-04-09T12:04:11.201Z"
   },
   "sequence": {
-    "nextRunNumber": 266
+    "nextRunNumber": 267
   },
   "summary": {
-    "totalRuns": 239,
-    "totalChecks": 1862,
-    "totalPassed": 1790,
+    "totalRuns": 238,
+    "totalChecks": 1856,
+    "totalPassed": 1784,
     "totalFailed": 66,
     "completionRate": 100,
     "completedItems": 285,
@@ -19,10 +19,10 @@
     "wontFixItems": 13,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260409-0259",
-    "lastRecordedAt": "2026-04-08T22:37:58.733Z",
-    "latestRecordedRunId": "QA-20260409-0265",
-    "latestRecordedAt": "2026-04-09T10:45:00.000Z"
+    "lastRunId": "QA-20260409-0264",
+    "lastRecordedAt": "2026-04-09T09:45:00.000Z",
+    "latestRecordedRunId": "QA-20260409-0266",
+    "latestRecordedAt": "2026-04-09T12:04:11.201Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -23298,6 +23298,112 @@
           "type": "vercel-deployment",
           "label": "v8.11.7 deployment",
           "url": "https://vercel.com/skyasus-projects/openmanager-ai/CAWchymB1KKe4ADsqMwLV6S9uigQ"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260409-0266",
+      "recordedAt": "2026-04-09T12:04:11.201Z",
+      "recordedAtKst": "2026-04-09 21:04:11 KST",
+      "title": "Vercel Playwright MCP - AI Assistant Focused Check",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260409-0266.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_GPGUJn324wHFervaNAsicgvQH5Y8",
+        "deploymentUrl": "https://openmanager-fldh3n45b-skyasus-projects.vercel.app",
+        "commitSha": "7e727180ca576339dd6def84c833bac31c0eeacf"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": ["ai-core", "dashboard-core"],
+      "coveredSurfaces": [
+        "/dashboard",
+        "/dashboard/ai-assistant",
+        "AI starter prompt send + stream response",
+        "Clarification dialog render + skip execution",
+        "Thinking process toggle render + expand",
+        "Feedback submit API 200",
+        "Console errors zero"
+      ],
+      "skippedSurfaces": [
+        "Reporter full report flow",
+        "Analyst full drilldown",
+        "Cloud Run admin observability (/monitoring, /monitoring/traces)",
+        "Auth error/success/privacy routes"
+      ],
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "",
+          "summary": "npx vercel usage --format json --non-interactive 재확인: effectiveCost 5.2589 USD, billedCost ~0 USD, 비정상 급증 없음.",
+          "evidence": "npx vercel usage --format json --non-interactive",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "AI assistant focused check screenshot",
+          "path": "reports/qa/evidence/qa-20260409-ai-assistant-focused-check.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "AI assistant focused check console errors",
+          "path": "reports/qa/evidence/qa-20260409-ai-assistant-focused-console.log"
+        },
+        {
+          "type": "playwright-network",
+          "label": "AI assistant focused check network log",
+          "path": "reports/qa/evidence/qa-20260409-ai-assistant-focused-network.log"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "thinking-visualizer-screenshot-58388f098f1d860ba4a173316c4c5d0737d12a2f.png",
+          "path": "test-results/manual-thinking-visualizer/ai-thinking-visualizer-Pro-94b5c-at-triggers-reasoning-steps-chromium/attachments/thinking-visualizer-screenshot-58388f098f1d860ba4a173316c4c5d0737d12a2f.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "thinking-visualizer.png",
+          "path": "test-results/manual-thinking-visualizer/ai-thinking-visualizer-Pro-94b5c-at-triggers-reasoning-steps-chromium/thinking-visualizer.png"
+        },
+        {
+          "type": "playwright-trace",
+          "label": "ai-thinking-visualizer-Pro-94b5c-at-triggers-reasoning-steps-chromium",
+          "path": "test-results/manual-thinking-visualizer/ai-thinking-visualizer-Pro-94b5c-at-triggers-reasoning-steps-chromium/trace.zip"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/dashboard/ai-assistant"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Current production deployment",
+          "url": "https://openmanager-fldh3n45b-skyasus-projects.vercel.app/"
         }
       ],
       "expertCount": 0,

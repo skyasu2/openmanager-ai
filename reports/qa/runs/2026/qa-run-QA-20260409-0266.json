@@ -1,0 +1,109 @@
+{
+  "runId": "QA-20260409-0266",
+  "recordedAt": "2026-04-09T12:04:11.201Z",
+  "recordedAtKst": "2026-04-09 21:04:11 KST",
+  "runTitle": "Vercel Playwright MCP - AI Assistant Focused Check",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_GPGUJn324wHFervaNAsicgvQH5Y8",
+    "deploymentUrl": "https://openmanager-fldh3n45b-skyasus-projects.vercel.app",
+    "commitSha": "7e727180ca576339dd6def84c833bac31c0eeacf"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core", "dashboard-core"],
+  "coveredSurfaces": [
+    "/dashboard",
+    "/dashboard/ai-assistant",
+    "AI starter prompt send + stream response",
+    "Clarification dialog render + skip execution",
+    "Thinking process toggle render + expand",
+    "Feedback submit API 200",
+    "Console errors zero"
+  ],
+  "skippedSurfaces": [
+    "Reporter full report flow",
+    "Analyst full drilldown",
+    "Cloud Run admin observability (/monitoring, /monitoring/traces)",
+    "Auth error/success/privacy routes"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "",
+      "summary": "npx vercel usage --format json --non-interactive 재확인: effectiveCost 5.2589 USD, billedCost ~0 USD, 비정상 급증 없음.",
+      "evidence": "npx vercel usage --format json --non-interactive",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "AI assistant focused check screenshot",
+      "path": "reports/qa/evidence/qa-20260409-ai-assistant-focused-check.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "AI assistant focused check console errors",
+      "path": "reports/qa/evidence/qa-20260409-ai-assistant-focused-console.log"
+    },
+    {
+      "type": "playwright-network",
+      "label": "AI assistant focused check network log",
+      "path": "reports/qa/evidence/qa-20260409-ai-assistant-focused-network.log"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "thinking-visualizer-screenshot-58388f098f1d860ba4a173316c4c5d0737d12a2f.png",
+      "path": "test-results/manual-thinking-visualizer/ai-thinking-visualizer-Pro-94b5c-at-triggers-reasoning-steps-chromium/attachments/thinking-visualizer-screenshot-58388f098f1d860ba4a173316c4c5d0737d12a2f.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "thinking-visualizer.png",
+      "path": "test-results/manual-thinking-visualizer/ai-thinking-visualizer-Pro-94b5c-at-triggers-reasoning-steps-chromium/thinking-visualizer.png"
+    },
+    {
+      "type": "playwright-trace",
+      "label": "ai-thinking-visualizer-Pro-94b5c-at-triggers-reasoning-steps-chromium",
+      "path": "test-results/manual-thinking-visualizer/ai-thinking-visualizer-Pro-94b5c-at-triggers-reasoning-steps-chromium/trace.zip"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "v8.11.8 footer/version endpoint 일치 확인",
+    "Clarification 단계에서 '건너뛰고 바로 실행' 클릭 시 원문 질의 즉시 실행 확인",
+    "Network log의 /api/sentry-tunnel net::ERR_ABORTED 2건은 이후 202 응답으로 회복되어 비차단으로 판정",
+    "countsTowardSummary=false: production targeted 집중 점검 재확인 런"
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/dashboard/ai-assistant"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Current production deployment",
+      "url": "https://openmanager-fldh3n45b-skyasus-projects.vercel.app/"
+    }
+  ]
+}
