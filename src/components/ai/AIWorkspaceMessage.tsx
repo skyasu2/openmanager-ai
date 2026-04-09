@@ -28,6 +28,8 @@ const ThinkingToggle = memo<{
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
+        data-testid="thinking-toggle-button"
+        data-thinking-open={isOpen ? 'true' : 'false'}
         className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-700 transition-colors"
       >
         {isOpen ? (

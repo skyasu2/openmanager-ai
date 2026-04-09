@@ -492,4 +492,29 @@ describe('useAIChatCore', () => {
       );
     });
   });
+
+  it('injects deterministic thinking visualizer messages for qa prompt without calling backend', async () => {
+    const { result } = renderHook(() => useAIChatCore());
+
+    await act(async () => {
+      result.current.setInput('/qa-thinking-visualizer');
+    });
+
+    await act(async () => {
+      result.current.handleSendInput();
+    });
+
+    expect(mocks.sendQuery).not.toHaveBeenCalled();
+    expect(result.current.messages).toHaveLength(2);
+    expect(result.current.messages[0]?.role).toBe('user');
+    expect(result.current.messages[1]?.role).toBe('assistant');
+    expect(result.current.messages[1]?.thinkingSteps?.length).toBeGreaterThan(
+      0
+    );
+    expect(
+      result.current.messages[1]?.thinkingSteps?.some(
+        (step) => step.step === 'analyzeIntent'
+      )
+    ).toBe(true);
+  });
 });

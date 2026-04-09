@@ -28,6 +28,9 @@ npm run test:e2e:external
 
 # 수동 parity 검증 (sidebar + fullscreen state retention)
 npm run test:vercel:ai-retention
+
+# 수동 thinking steps 시각화 검증 (실 렌더링)
+npm run test:vercel:thinking-visualizer
 ```
 
 > `test:e2e:external`는 `--pass-with-no-tests` 설정으로, `@external` 케이스가 없으면 0건 통과로 종료됩니다.
@@ -45,6 +48,9 @@ npm run test:vercel:ai-retention
 필요 시 해당 검증은 운영 점검 창구에서 수동 1회 스모크로 수행합니다.
 
 `npm run test:vercel:ai-retention` 는 이 수동 스모크 경로를 자동화한 전용 스크립트입니다.
+`npm run test:vercel:thinking-visualizer` 는 thinking steps 생성 프롬프트 세트를 순차 시도해
+`ThinkingProcessVisualizer` 토글/패널의 실제 렌더링을 검증합니다.
+첫 프롬프트는 `/qa-thinking-visualizer`이며, 백엔드 응답 상태와 무관하게 UI 렌더링 계약을 강제로 검증합니다.
 
 ---
 

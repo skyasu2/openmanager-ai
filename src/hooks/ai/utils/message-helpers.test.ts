@@ -166,6 +166,67 @@ describe('transformMessages', () => {
     expect(assistant?.metadata?.traceId).toBe('trace-fallback-123');
   });
 
+  it('derives thinkingSteps from metadata.toolResultSummaries when tool parts are not present', () => {
+    const messages = transformMessages(
+      [
+        createMessage({ id: 'u1', role: 'user', text: '서버 상태 알려줘' }),
+        createMessage({
+          id: 'a1',
+          role: 'assistant',
+          text: '분석 결과',
+          metadata: {
+            toolResultSummaries: [
+              {
+                toolName: 'getServerMetrics',
+                label: '서버 메트릭 조회',
+                summary: 'lb-haproxy-dc1-01 CPU 82% (Warning)',
+                status: 'completed',
+              },
+              {
+                toolName: 'detectAnomalies',
+                label: '전체 서버 이상 탐지',
+                summary: '이상 징후 2건 탐지',
+                status: 'completed',
+              },
+            ],
+          },
+        }),
+      ],
+      { isLoading: false, currentMode: 'streaming' }
+    );
+
+    const assistant = messages.find((m) => m.id === 'a1');
+    expect(assistant?.thinkingSteps).toHaveLength(2);
+    expect(assistant?.thinkingSteps?.[0]?.step).toBe('getServerMetrics');
+    expect(assistant?.thinkingSteps?.[0]?.status).toBe('completed');
+    expect(assistant?.thinkingSteps?.[1]?.step).toBe('detectAnomalies');
+  });
+
+  it('derives thinkingSteps from metadata.toolsCalled when summaries and tool parts are missing', () => {
+    const messages = transformMessages(
+      [
+        createMessage({ id: 'u1', role: 'user', text: '이상 징후 알려줘' }),
+        createMessage({
+          id: 'a1',
+          role: 'assistant',
+          text: '분석 결과',
+          metadata: {
+            toolsCalled: ['detectAnomaliesAllServers', 'predictTrends'],
+          },
+        }),
+      ],
+      { isLoading: false, currentMode: 'streaming' }
+    );
+
+    const assistant = messages.find((m) => m.id === 'a1');
+    expect(assistant?.thinkingSteps).toHaveLength(2);
+    expect(assistant?.thinkingSteps?.[0]?.step).toBe(
+      'detectAnomaliesAllServers'
+    );
+    expect(assistant?.thinkingSteps?.[0]?.status).toBe('completed');
+    expect(assistant?.thinkingSteps?.[1]?.step).toBe('predictTrends');
+  });
+
   it('derives job-queue analysis basis from metadata toolsCalled', () => {
     const messages = transformMessages(
       [

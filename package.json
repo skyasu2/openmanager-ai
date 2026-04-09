@@ -127,6 +127,7 @@
     "test:e2e:ai-retention:manual": "playwright test tests/manual/ai-retention-parity.spec.ts --config playwright.manual.config.ts",
     "test:manual:feedback:trace-status": "bash scripts/test/vercel-feedback-trace-status.sh",
     "test:vercel:ai-retention": "bash scripts/test/vercel-ai-retention.sh",
+    "test:vercel:thinking-visualizer": "bash scripts/test/vercel-thinking-visualizer.sh",
     "test:contract": "vitest run --config config/testing/vitest.config.contract.ts",
     "test:storybook:experimental": "vitest run --config config/testing/vitest.config.storybook.ts --project storybook",
     "test:cloud:essential": "NODE_OPTIONS=--dns-result-order=ipv4first node scripts/test/cloud-deploy-essential-smoke.mjs",

@@ -52,6 +52,9 @@ reports/qa/
 - mode audit를 확인한 run이면 `notes`에 최소 1줄 이상 요약을 남긴다.
   - 권장 형식: `mode audit: requested-mode-auto dominant, auto-resolved-single 70%, auto-resolved-multi 30%, single_disallowed_upgrade 0`
   - 비율을 바로 산출하기 어렵다면 `resolved-mode-multi spike 없음`, `single_disallowed_upgrade 0 확인`처럼 정성 요약만 남겨도 된다.
+- thinking visualizer 실렌더링 검증이 필요한 run이면 `npm run test:vercel:thinking-visualizer`를 우선 사용한다.
+  - 이 스크립트는 프롬프트 세트를 순차 시도하여 `thinking-toggle-button`/`thinking-visualizer` 렌더링 증거를 남긴다.
+  - 첫 프롬프트 `/qa-thinking-visualizer`는 UI 계약 검증용 deterministic 플래그다.
 - Langfuse score 기반 운영 증거는 새 스키마를 만들지 않고 기존 `links`에 남긴다.
   - trace 상세 링크는 `langfuse-trace`
   - dashboard/custom dashboard/filter URL은 `general`

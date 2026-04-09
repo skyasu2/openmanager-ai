@@ -199,6 +199,34 @@ function getCompletedToolNames(toolParts: ToolPartWithCallId[]): string[] {
     .map((part) => part.type.slice(5));
 }
 
+function createThinkingStepsFromSummaries(
+  summaries: ToolResultSummary[] | undefined
+): AIThinkingStep[] {
+  if (!summaries || summaries.length === 0) return [];
+
+  return summaries.map((summary, index) => ({
+    id: `summary-${summary.toolName}-${index}`,
+    step: summary.toolName,
+    status: summary.status === 'failed' ? 'failed' : 'completed',
+    description: summary.summary,
+    timestamp: new Date(),
+  }));
+}
+
+function createThinkingStepsFromToolNames(
+  toolNames: string[] | undefined
+): AIThinkingStep[] {
+  if (!toolNames || toolNames.length === 0) return [];
+
+  return toolNames.map((toolName, index) => ({
+    id: `tool-name-${toolName}-${index}`,
+    step: toolName,
+    status: 'completed',
+    description: `${getToolLabel(toolName)} 실행을 완료했습니다.`,
+    timestamp: new Date(),
+  }));
+}
+
 function createDeferredToolParts(
   toolResults: DeferredToolResult[] | undefined
 ): ToolPartWithCallId[] {
@@ -530,6 +558,22 @@ export function transformUIMessageToEnhanced(
       timestamp: new Date(),
     };
   });
+  const fallbackThinkingSteps =
+    thinkingSteps.length > 0
+      ? []
+      : createThinkingStepsFromSummaries(toolResultSummaries);
+  const summaryResolvedThinkingSteps =
+    thinkingSteps.length > 0 ? thinkingSteps : fallbackThinkingSteps;
+  const toolNameFallbackThinkingSteps =
+    summaryResolvedThinkingSteps.length > 0
+      ? []
+      : createThinkingStepsFromToolNames(
+          normalizeToolNames(metadata?.toolsCalled)
+        );
+  const resolvedThinkingSteps =
+    summaryResolvedThinkingSteps.length > 0
+      ? summaryResolvedThinkingSteps
+      : toolNameFallbackThinkingSteps;
 
   // Extract traceId from message metadata (available for all roles)
   const traceId = metadata?.traceId ?? traceIdByMessageId?.[message.id];
@@ -601,7 +645,8 @@ export function transformUIMessageToEnhanced(
     content: textContent,
     timestamp: new Date(),
     isStreaming: isLoading && isLastMessage,
-    thinkingSteps: thinkingSteps.length > 0 ? thinkingSteps : undefined,
+    thinkingSteps:
+      resolvedThinkingSteps.length > 0 ? resolvedThinkingSteps : undefined,
     metadata:
       analysisBasis ||
       traceId ||

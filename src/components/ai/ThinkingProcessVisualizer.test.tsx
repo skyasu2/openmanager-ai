@@ -55,6 +55,15 @@ describe('🧠 ThinkingProcessVisualizer Component', () => {
     vi.useRealTimers();
   });
 
+  const expandPanel = () => {
+    const header = screen.getByTestId('thinking-visualizer-header');
+    if (header.getAttribute('aria-expanded') !== 'true') {
+      act(() => {
+        header.click();
+      });
+    }
+  };
+
   describe('Rendering & State', () => {
     it('헤더와 기본 구조가 렌더링된다', () => {
       render(<ThinkingProcessVisualizer steps={[]} />);
@@ -76,6 +85,7 @@ describe('🧠 ThinkingProcessVisualizer Component', () => {
       act(() => {
         vi.runAllTimers();
       });
+      expandPanel();
 
       expect(screen.getByText('의도 분석')).toBeDefined();
       expect(screen.getByText('라우팅 결정')).toBeDefined();
@@ -89,6 +99,7 @@ describe('🧠 ThinkingProcessVisualizer Component', () => {
       act(() => {
         vi.runAllTimers();
       });
+      expandPanel();
 
       // completed status uses CheckCircle2 which is mocked as icon-check-circle
       const icons = screen.getAllByTestId('icon-check-circle');
@@ -100,6 +111,7 @@ describe('🧠 ThinkingProcessVisualizer Component', () => {
       act(() => {
         vi.runAllTimers();
       });
+      expandPanel();
 
       // processing status uses Loader2 which is mocked as icon-loader
       const loaders = screen.getAllByTestId('icon-loader');
@@ -120,6 +132,7 @@ describe('🧠 ThinkingProcessVisualizer Component', () => {
       act(() => {
         vi.runAllTimers();
       });
+      expandPanel();
 
       // Cloud AI 처리 = Cloud icon
       expect(screen.getByText('🤖 Cloud AI 처리')).toBeDefined();
@@ -138,6 +151,7 @@ describe('🧠 ThinkingProcessVisualizer Component', () => {
       act(() => {
         vi.runAllTimers();
       });
+      expandPanel();
 
       expect(screen.getByText('💾 로컬 처리')).toBeDefined();
       expect(screen.getByTestId('icon-database')).toBeDefined();
@@ -155,6 +169,7 @@ describe('🧠 ThinkingProcessVisualizer Component', () => {
       act(() => {
         vi.runAllTimers();
       });
+      expandPanel();
 
       expect(screen.getByText('비용 절약')).toBeDefined();
       expect(screen.getByTestId('icon-dollar-sign')).toBeDefined();

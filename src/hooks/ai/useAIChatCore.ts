@@ -137,6 +137,62 @@ export interface UseAIChatCoreReturn {
   estimatedWaitSeconds: number;
 }
 
+const QA_THINKING_VISUALIZER_PROMPT = '/qa-thinking-visualizer';
+
+function isQAThinkingVisualizerPrompt(text: string): boolean {
+  const normalized = text.trim().toLowerCase();
+  return normalized.includes(QA_THINKING_VISUALIZER_PROMPT);
+}
+
+function createQAToolResultSummaries() {
+  return [
+    {
+      toolName: 'analyzeIntent',
+      label: '의도 분석',
+      summary: '질문의 핵심 의도를 분석해 서버 진단 요청으로 분류했습니다.',
+      status: 'completed' as const,
+    },
+    {
+      toolName: 'selectRoute',
+      label: '라우팅 결정',
+      summary: '실시간 메트릭 기반 분석 경로를 선택했습니다.',
+      status: 'completed' as const,
+    },
+    {
+      toolName: 'generateInsight',
+      label: '인사이트 생성',
+      summary: '우선 조치 항목과 근거를 구조화했습니다.',
+      status: 'completed' as const,
+    },
+  ];
+}
+
+function createQAAssistantMessages(text: string): [UIMessage, UIMessage] {
+  const token = Date.now().toString(36);
+  const userMessage: UIMessage = {
+    id: `qa-user-${token}`,
+    role: 'user',
+    parts: [{ type: 'text', text }],
+  };
+  const assistantMessage: UIMessage = {
+    id: `qa-assistant-${token}`,
+    role: 'assistant',
+    parts: [
+      {
+        type: 'text',
+        text: 'QA thinking visualizer 샘플 응답입니다. AI 처리 과정 토글을 펼쳐 단계 렌더링을 확인하세요.',
+      },
+    ],
+    metadata: {
+      traceId: `qa-trace-${token}`,
+      toolsCalled: ['analyzeIntent', 'selectRoute', 'generateInsight'],
+      toolResultSummaries: createQAToolResultSummaries(),
+    },
+  };
+
+  return [userMessage, assistantMessage];
+}
+
 // ============================================================================
 // Hook
 // ============================================================================
@@ -444,6 +500,19 @@ export function useAIChatCore(
         return;
       }
 
+      if (isQAThinkingVisualizerPrompt(effectiveText)) {
+        setError(null);
+        setStreamRagSources([]);
+        lastQueryRef.current = effectiveText;
+        lastAttachmentsRef.current = attachments || null;
+        pendingQueryRef.current = '';
+        setInput('');
+        const [qaUserMessage, qaAssistantMessage] =
+          createQAAssistantMessages(effectiveText);
+        setMessages([...messages, qaUserMessage, qaAssistantMessage]);
+        return;
+      }
+
       setError(null);
       setStreamRagSources([]);
       lastQueryRef.current = effectiveText;
@@ -461,6 +530,8 @@ export function useAIChatCore(
       hybridIsLoading,
       sendQuery,
       addToQueue,
+      messages,
+      setMessages,
     ]
   );
 
