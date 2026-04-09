@@ -48,6 +48,7 @@ import { generateMessageId } from './utils/hybrid-query-utils';
 export type {
   AgentStatus,
   AgentStatusEventData,
+  AIStreamStatus,
   ClarificationOption,
   ClarificationRequest,
   HandoffEventData,
@@ -68,7 +69,9 @@ import {
   STREAM_ERROR_MARKER,
   STREAM_ERROR_REGEX,
 } from '@/lib/ai/constants/stream-errors';
+import { inferAIErrorDetailsFromMessage } from '@/lib/ai/error-details';
 import type {
+  AIStreamStatus,
   HybridQueryState,
   UseHybridAIQueryOptions,
   UseHybridAIQueryReturn,
@@ -82,6 +85,18 @@ export {
   STREAM_ERROR_MARKER,
   STREAM_ERROR_REGEX,
 };
+
+function normalizeStreamStatus(status: string): AIStreamStatus {
+  if (
+    status === 'submitted' ||
+    status === 'streaming' ||
+    status === 'ready' ||
+    status === 'error'
+  ) {
+    return status;
+  }
+  return 'ready';
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
@@ -170,6 +185,7 @@ export function useHybridAIQuery(
     apiEndpoint: customEndpoint,
     complexityThreshold = getComplexityThreshold(),
     onStreamFinish,
+    onStreamMessageFinish,
     onJobResult,
     onProgress,
     onData,
@@ -203,6 +219,7 @@ export function useHybridAIQuery(
     jobId: null,
     isLoading: false,
     error: null,
+    errorDetails: null,
     clarification: null,
     warning: null,
     processingTime: 0,
@@ -252,6 +269,7 @@ export function useHybridAIQuery(
         verboseLogging: observabilityConfig.verboseLogging,
         maxRetries: streamRetryConfig.maxRetries,
         onStreamFinish,
+        onStreamMessageFinish,
         onData,
         persistFinishedAssistantMessage: (message, traceId) =>
           persistFinishedAssistantMessageRef.current(message, traceId),
@@ -276,6 +294,7 @@ export function useHybridAIQuery(
       }),
     [
       onData,
+      onStreamMessageFinish,
       onStreamFinish,
       observabilityConfig.verboseLogging,
       streamRetryConfig.maxRetries,
@@ -292,6 +311,7 @@ export function useHybridAIQuery(
     id: sessionIdRef.current,
     transport,
     resume: resumeEnabled,
+    experimental_throttle: 50,
     onFinish: streamCallbacks.onFinish,
     onData: streamCallbacks.onData,
     onError: streamCallbacks.onError,
@@ -322,6 +342,7 @@ export function useHybridAIQuery(
         ...prev,
         isLoading: false,
         progress: null,
+        errorDetails: null,
         clarification: null,
       }));
       onJobResult?.(result);
@@ -337,12 +358,17 @@ export function useHybridAIQuery(
           metadata:
             result.ragSources ||
             result.traceId ||
+            (result.toolsCalled && result.toolsCalled.length > 0) ||
             (result.handoffHistory && result.handoffHistory.length > 0) ||
             (result.toolResultSummaries &&
               result.toolResultSummaries.length > 0)
               ? {
                   ...(result.ragSources && { ragSources: result.ragSources }),
                   ...(result.traceId && { traceId: result.traceId }),
+                  ...(result.toolsCalled &&
+                    result.toolsCalled.length > 0 && {
+                      toolsCalled: result.toolsCalled,
+                    }),
                   ...(result.handoffHistory &&
                     result.handoffHistory.length > 0 && {
                       handoffHistory: result.handoffHistory,
@@ -357,11 +383,13 @@ export function useHybridAIQuery(
         setMessages((prev) => [...prev, messageWithRag]);
       }
     },
-    onError: (error) => {
+    onError: (error, errorDetails) => {
       setState((prev) => ({
         ...prev,
         isLoading: false,
         error,
+        errorDetails:
+          errorDetails ?? inferAIErrorDetailsFromMessage(error) ?? null,
         clarification: null,
       }));
     },
@@ -369,6 +397,7 @@ export function useHybridAIQuery(
   asyncQueryRef.current = asyncQuery;
   const isChatLoading =
     chatStatus === 'streaming' || chatStatus === 'submitted';
+  const streamStatus = normalizeStreamStatus(chatStatus);
   const isLoading = state.isLoading || isChatLoading || asyncQuery.isLoading;
   const { executeQuery, sendQuery } = useQueryExecution({
     complexityThreshold,
@@ -433,6 +462,7 @@ export function useHybridAIQuery(
     setState((prev) => ({
       ...prev,
       error: null,
+      errorDetails: null,
       warning: null,
       processingTime: 0,
     }));
@@ -461,6 +491,7 @@ export function useHybridAIQuery(
     reset,
     clearError,
     currentMode: state.mode,
+    streamStatus,
     previewComplexity,
     selectClarification,
     submitCustomClarification,

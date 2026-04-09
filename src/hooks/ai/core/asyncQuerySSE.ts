@@ -1,5 +1,10 @@
 import type { MutableRefObject } from 'react';
 import { extractStreamError } from '@/lib/ai/constants/stream-errors';
+import {
+  type AIErrorDetails,
+  extractAIErrorDetailsFromPayload,
+  inferAIErrorDetailsFromMessage,
+} from '@/lib/ai/error-details';
 import { logger } from '@/lib/logging';
 import { calculateBackoff } from '@/lib/utils/retry';
 import type { AsyncQueryProgress, AsyncQueryResult } from '../useAsyncAIQuery';
@@ -19,7 +24,7 @@ interface ConnectAsyncQuerySSEParams {
   onConnected: () => void;
   onProgress: (progress: AsyncQueryProgress) => void;
   onResult: (result: AsyncQueryResult) => void;
-  onError: (error: string) => void;
+  onError: (error: string, details?: AIErrorDetails | null) => void;
 }
 
 export function closeTrackedEventSource(
@@ -109,6 +114,9 @@ export function connectAsyncQuerySSE(
         success: true,
         response: resultData.response,
         targetAgent: resultData.targetAgent,
+        toolsCalled: Array.isArray(resultData.toolsCalled)
+          ? resultData.toolsCalled
+          : undefined,
         toolResults: resultData.toolResults,
         ragSources: resultData.ragSources,
         processingTimeMs: resultData.processingTimeMs,
@@ -136,7 +144,17 @@ export function connectAsyncQuerySSE(
     if (messageEvent.data) {
       try {
         const errorData = JSON.parse(messageEvent.data);
-        onError(errorData.error || 'Stream error');
+        const errorMessage =
+          (typeof errorData.error === 'string' && errorData.error) ||
+          (typeof errorData.message === 'string' && errorData.message) ||
+          'Stream error';
+        const details =
+          extractAIErrorDetailsFromPayload(errorData.errorDetails) ??
+          extractAIErrorDetailsFromPayload(errorData);
+        onError(
+          errorMessage,
+          details ?? inferAIErrorDetailsFromMessage(errorMessage)
+        );
         return;
       } catch {
         // ignore parse error and continue with reconnect flow

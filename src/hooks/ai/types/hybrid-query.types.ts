@@ -9,6 +9,7 @@ import type {
   ClarificationOption,
   ClarificationRequest,
 } from '@/lib/ai/clarification-generator';
+import type { AIErrorDetails } from '@/lib/ai/error-details';
 import type { QueryComplexity } from '@/lib/ai/utils/query-complexity';
 import type { AsyncQueryProgress, AsyncQueryResult } from '../useAsyncAIQuery';
 import type { FileAttachment } from '../useFileAttachments';
@@ -17,6 +18,7 @@ import type { FileAttachment } from '../useFileAttachments';
 export type { ClarificationOption, ClarificationRequest };
 
 export type QueryMode = 'streaming' | 'job-queue';
+export type AIStreamStatus = 'submitted' | 'streaming' | 'ready' | 'error';
 
 export interface HybridQueryState {
   /** 현재 쿼리 모드 */
@@ -31,6 +33,8 @@ export interface HybridQueryState {
   isLoading: boolean;
   /** 에러 메시지 */
   error: string | null;
+  /** 구조화된 에러 메타데이터 */
+  errorDetails?: AIErrorDetails | null;
   /** 명확화 요청 (모호한 쿼리일 때) */
   clarification: ClarificationRequest | null;
   /** 처리 지연 경고 메시지 (25초 초과 시) */
@@ -141,6 +145,8 @@ export interface UseHybridAIQueryOptions {
   complexityThreshold?: number;
   /** 스트리밍 완료 콜백 */
   onStreamFinish?: () => void;
+  /** 스트리밍 완료 메시지 콜백 (message.id 기준 후처리) */
+  onStreamMessageFinish?: (message: UIMessage) => void;
   /** Job 결과 콜백 */
   onJobResult?: (result: AsyncQueryResult) => void;
   /** 진행률 업데이트 콜백 */
@@ -189,6 +195,8 @@ export interface UseHybridAIQueryReturn {
   clearError: () => void;
   /** 현재 모드 */
   currentMode: QueryMode;
+  /** AI SDK useChat 상태 머신 */
+  streamStatus: AIStreamStatus;
   /** 복잡도 미리 분석 (UI에서 힌트 표시용) */
   previewComplexity: (query: string) => QueryComplexity;
   /** 쿼리 직접 실행 (분류/명확화 건너뛰기, 재시도용) */

@@ -196,63 +196,169 @@ export function parseMarkdownLinks(text: string): React.ReactNode[] {
 }
 
 /**
- * Render text with basic inline formatting (bold, italic, inline code)
+ * Render inline content: bold, inline code, links
  */
-function renderFormattedText(text: string): React.ReactNode {
+function renderInlineContent(text: string, keyPrefix: string): React.ReactNode {
   const parts = text.split(/(`[^`]+`)/g);
-  const renderBoldText = (value: string, keyPrefix: string) => {
-    let processed: React.ReactNode = value;
 
-    const boldParts = value.split(/(\*\*[^*]+\*\*)/g);
-    if (boldParts.length > 1) {
-      processed = boldParts.map((bp, i) => {
-        if (bp.startsWith('**') && bp.endsWith('**')) {
-          return (
-            <strong key={`${keyPrefix}-bold-${i}`} className="font-semibold">
-              {bp.slice(2, -2)}
-            </strong>
-          );
-        }
-        return <span key={`${keyPrefix}-plain-${i}`}>{bp}</span>;
-      });
-    }
-
-    return <span key={keyPrefix}>{processed}</span>;
+  const renderBoldItalicText = (value: string, kp: string) => {
+    // Split on **bold** and *italic* patterns (bold first to avoid conflict)
+    const parts = value.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
+    if (parts.length === 1) return <span key={kp}>{value}</span>;
+    return (
+      <span key={kp}>
+        {parts.map((p, i) => {
+          if (p.startsWith('**') && p.endsWith('**') && p.length > 4) {
+            return (
+              <strong key={`${kp}-b-${i}`} className="font-semibold">
+                {p.slice(2, -2)}
+              </strong>
+            );
+          }
+          if (p.startsWith('*') && p.endsWith('*') && p.length > 2) {
+            return (
+              <em key={`${kp}-i-${i}`} className="italic">
+                {p.slice(1, -1)}
+              </em>
+            );
+          }
+          return <span key={`${kp}-t-${i}`}>{p}</span>;
+        })}
+      </span>
+    );
   };
 
-  const renderTextWithLinks = (value: string, keyPrefix: string) => {
+  const renderTextWithLinks = (value: string, kp: string) => {
     const linkParts = parseMarkdownLinks(value);
-
     return linkParts.map((linkPart, i) => {
       if (typeof linkPart === 'string') {
-        return renderBoldText(linkPart, `${keyPrefix}-text-${i}`);
+        return renderBoldItalicText(linkPart, `${kp}-text-${i}`);
       }
-
       return (
-        <React.Fragment key={`${keyPrefix}-link-${i}`}>
-          {linkPart}
-        </React.Fragment>
+        <React.Fragment key={`${kp}-link-${i}`}>{linkPart}</React.Fragment>
       );
     });
   };
 
   return parts.map((part, index) => {
-    // Inline code
-    if (part.startsWith('`') && part.endsWith('`')) {
+    if (part.startsWith('`') && part.endsWith('`') && part.length > 2) {
       return (
         <code
-          key={index}
+          key={`${keyPrefix}-code-${index}`}
           className="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-sm text-pink-600 dark:bg-gray-800 dark:text-pink-400"
         >
           {part.slice(1, -1)}
         </code>
       );
     }
-
     return (
-      <React.Fragment key={index}>
-        {renderTextWithLinks(part, `text-${index}`)}
+      <React.Fragment key={`${keyPrefix}-${index}`}>
+        {renderTextWithLinks(part, `${keyPrefix}-${index}`)}
       </React.Fragment>
     );
   });
+}
+
+const HEADING_REGEX = /^(#{1,3})\s+(.+)$/;
+const ORDERED_LIST_REGEX = /^(\d+)\.\s+(.+)$/;
+const UNORDERED_LIST_REGEX = /^[-*]\s+(.+)$/;
+const HR_REGEX = /^---+$/;
+
+/**
+ * Render text with full block-level markdown support:
+ * headings (###/##/#), ordered/unordered lists, horizontal rules,
+ * and inline formatting (bold, code, links).
+ */
+function renderFormattedText(text: string): React.ReactNode {
+  const lines = text.split('\n');
+  const nodes: React.ReactNode[] = [];
+  let listBuffer: { ordered: boolean; items: string[] } | null = null;
+
+  const flushList = (key: string) => {
+    if (!listBuffer) return;
+    const { ordered, items } = listBuffer;
+    const Tag = ordered ? 'ol' : 'ul';
+    const listClass = ordered
+      ? 'my-1 ml-4 list-decimal space-y-0.5'
+      : 'my-1 ml-4 list-disc space-y-0.5';
+    nodes.push(
+      <Tag key={key} className={listClass}>
+        {items.map((item, i) => (
+          <li key={i} className="text-chat leading-relaxed">
+            {renderInlineContent(item, `${key}-li-${i}`)}
+          </li>
+        ))}
+      </Tag>
+    );
+    listBuffer = null;
+  };
+
+  lines.forEach((line, i) => {
+    const key = `line-${i}`;
+
+    // Horizontal rule
+    if (HR_REGEX.test(line.trim())) {
+      flushList(`list-before-hr-${i}`);
+      nodes.push(<hr key={key} className="my-2 border-slate-200" />);
+      return;
+    }
+
+    // Headings
+    const headingMatch = line.match(HEADING_REGEX);
+    if (headingMatch) {
+      flushList(`list-before-h-${i}`);
+      const level = (headingMatch[1] ?? '').length;
+      const headingText = headingMatch[2] ?? '';
+      const headingClasses: Record<number, string> = {
+        1: 'mt-3 mb-1 text-base font-bold text-slate-800',
+        2: 'mt-2 mb-1 text-sm font-bold text-slate-700',
+        3: 'mt-1.5 mb-0.5 text-sm font-semibold text-slate-600',
+      };
+      const cls = headingClasses[level] ?? headingClasses[3];
+      const Tag = `h${level}` as 'h1' | 'h2' | 'h3';
+      nodes.push(
+        <Tag key={key} className={cls}>
+          {renderInlineContent(headingText, key)}
+        </Tag>
+      );
+      return;
+    }
+
+    // Ordered list item
+    const orderedMatch = line.match(ORDERED_LIST_REGEX);
+    if (orderedMatch) {
+      if (listBuffer && !listBuffer.ordered) flushList(`list-switch-${i}`);
+      if (!listBuffer) listBuffer = { ordered: true, items: [] };
+      listBuffer.items.push(orderedMatch[2] ?? '');
+      return;
+    }
+
+    // Unordered list item
+    const unorderedMatch = line.match(UNORDERED_LIST_REGEX);
+    if (unorderedMatch) {
+      if (listBuffer?.ordered) flushList(`list-switch-${i}`);
+      if (!listBuffer) listBuffer = { ordered: false, items: [] };
+      listBuffer.items.push(unorderedMatch[1] ?? '');
+      return;
+    }
+
+    // Empty line — flush pending list, add spacing
+    if (line.trim() === '') {
+      flushList(`list-before-empty-${i}`);
+      nodes.push(<br key={key} />);
+      return;
+    }
+
+    // Regular text line
+    flushList(`list-before-text-${i}`);
+    nodes.push(
+      <span key={key} className="block leading-relaxed">
+        {renderInlineContent(line, key)}
+      </span>
+    );
+  });
+
+  flushList('list-final');
+
+  return <>{nodes}</>;
 }

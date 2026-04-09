@@ -1,6 +1,6 @@
 {
   "name": "openmanager-ai",
-  "version": "8.11.1",
+  "version": "8.11.7",
   "private": true,
   "license": "GPL-3.0-only",
   "author": "skyasu2 (https://github.com/skyasu2)",
@@ -25,7 +25,6 @@
     "@ai-sdk/mistral": "^3.0.28",
     "@ai-sdk/react": "^3.0.140",
     "@dagrejs/dagre": "^2.0.4",
-    "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-label": "^2.1.8",
     "@radix-ui/react-popover": "^1.1.15",

@@ -27,6 +27,7 @@ import { AutoResizeTextarea } from '@/components/ui/AutoResizeTextarea';
 import { ImagePreviewModal } from '@/components/ui/ImagePreviewModal';
 import type { FileAttachment } from '@/hooks/ai/useFileAttachments';
 import { formatFileSize } from '@/hooks/ai/useFileAttachments';
+import type { AIStreamStatus } from '@/hooks/ai/useHybridAIQuery';
 import type { SessionState } from '@/types/session';
 
 interface ChatInputAreaProps {
@@ -35,6 +36,7 @@ interface ChatInputAreaProps {
   inputValue: string;
   setInputValue: (value: string) => void;
   isGenerating: boolean;
+  streamStatus?: AIStreamStatus;
   sessionState?: SessionState;
   attachments: FileAttachment[];
   isDragging: boolean;
@@ -63,6 +65,7 @@ export const ChatInputArea = memo(function ChatInputArea({
   inputValue,
   setInputValue,
   isGenerating,
+  streamStatus,
   sessionState,
   attachments,
   isDragging,
@@ -361,7 +364,9 @@ export const ChatInputArea = memo(function ChatInputArea({
                 sessionState?.isLimitReached
                   ? '새 대화를 시작해주세요'
                   : isGenerating
-                    ? '대답 중에도 편하게 입력하세요 (대기열에 추가됨)'
+                    ? streamStatus === 'submitted'
+                      ? '요청 전송 중입니다... 잠시만 기다려주세요'
+                      : '대답 중에도 편하게 입력하세요 (대기열에 추가됨)'
                     : attachments.length > 0
                       ? '이미지/파일과 함께 질문하세요...'
                       : '메시지를 입력하세요...'
@@ -395,8 +400,20 @@ export const ChatInputArea = memo(function ChatInputArea({
                   sessionState?.isLimitReached
                 }
                 className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500 text-white shadow-sm transition-all hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
-                title={isGenerating ? '대기열에 추가' : '메시지 전송'}
-                aria-label={isGenerating ? '대기열에 추가' : '메시지 전송'}
+                title={
+                  isGenerating
+                    ? streamStatus === 'submitted'
+                      ? '요청 전송 중 (대기열에 추가 가능)'
+                      : '대기열에 추가'
+                    : '메시지 전송'
+                }
+                aria-label={
+                  isGenerating
+                    ? streamStatus === 'submitted'
+                      ? '요청 전송 중 (대기열에 추가 가능)'
+                      : '대기열에 추가'
+                    : '메시지 전송'
+                }
               >
                 <Send className="h-4 w-4" />
               </button>

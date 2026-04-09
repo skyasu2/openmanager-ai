@@ -269,6 +269,7 @@ function mapJobToResponse(job: AIJob): JobStatusResponse {
     currentStep: job.currentStep,
     result: job.result ? { content: job.result } : null,
     error: job.error,
+    errorDetails: job.errorDetails ?? null,
     createdAt: job.createdAt,
     startedAt: job.startedAt,
     completedAt: job.completedAt,

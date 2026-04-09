@@ -29,6 +29,7 @@ type RagSource = {
 type MessageMetadata = {
   traceId?: string;
   ragSources?: RagSource[];
+  toolsCalled?: string[];
   assistantResponseView?: StructuredAssistantResponse;
   handoffHistory?: ResponseHandoff[];
   toolResultSummaries?: ToolResultSummary[];
@@ -125,6 +126,21 @@ function getMessageMetadata(message: UIMessage): MessageMetadata | undefined {
     return message.metadata as MessageMetadata;
   }
   return undefined;
+}
+
+function normalizeToolNames(value: unknown): string[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.filter(
+    (toolName): toolName is string =>
+      typeof toolName === 'string' && toolName.trim().length > 0
+  );
+}
+
+function dedupeToolNames(toolNames: string[]): string[] {
+  return [...new Set(toolNames)];
 }
 
 function mergeMessageMetadata(
@@ -534,8 +550,15 @@ export function transformUIMessageToEnhanced(
     const isJobQueue = currentMode === 'job-queue';
 
     // 실제 호출된 도구 이름 추출
-    const calledToolNames = toolParts.map((p) => p.type.slice(5));
-    const completedToolNames = getCompletedToolNames(toolParts);
+    const metadataToolNames = normalizeToolNames(metadata?.toolsCalled);
+    const calledToolNames = dedupeToolNames([
+      ...metadataToolNames,
+      ...toolParts.map((p) => p.type.slice(5)),
+    ]);
+    const completedToolNames = dedupeToolNames([
+      ...metadataToolNames,
+      ...getCompletedToolNames(toolParts),
+    ]);
     const hasServerAnalysisEvidence = completedToolNames.some((toolName) =>
       SERVER_ANALYSIS_TOOL_NAMES.has(toolName)
     );

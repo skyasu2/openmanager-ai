@@ -4,7 +4,7 @@ export const TECH_STACK_ARCHITECTURE: ArchitectureDiagram = {
   id: 'tech-stack',
   title: 'Frontend Architecture',
   description:
-    'Next.js 16 + React 19 + TypeScript 5.9 기반 Next-Gen 프론트엔드 스택. 레이어별 기술 분리.',
+    'Next.js 16 + React 19 + TypeScript 6.0 기반 Next-Gen 프론트엔드 스택. 레이어별 기술 분리.',
   layers: [
     {
       title: 'Presentation Layer',
@@ -73,7 +73,7 @@ export const TECH_STACK_ARCHITECTURE: ArchitectureDiagram = {
         },
         {
           id: 'typescript',
-          label: 'TypeScript 5.9',
+          label: 'TypeScript 6.0',
           sublabel: 'Strict Mode',
           type: 'primary',
           icon: '📘', // Blue book for TS

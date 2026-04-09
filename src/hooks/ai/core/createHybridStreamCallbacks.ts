@@ -10,6 +10,7 @@ import {
   isColdStartRelatedError,
   sanitizeDisplayedErrorMessage,
 } from '@/lib/ai/constants/stream-errors';
+import { inferAIErrorDetailsFromMessage } from '@/lib/ai/error-details';
 import { logger } from '@/lib/logging';
 import type {
   HybridQueryState,
@@ -32,6 +33,7 @@ interface CreateHybridStreamCallbacksDeps {
   verboseLogging: boolean;
   maxRetries: number;
   onStreamFinish?: () => void;
+  onStreamMessageFinish?: (message: UIMessage) => void;
   onData?: (dataPart: StreamDataPart) => void;
   persistFinishedAssistantMessage?: (
     message: UIMessage,
@@ -72,6 +74,7 @@ export function createHybridStreamCallbacks(
     verboseLogging,
     maxRetries,
     onStreamFinish,
+    onStreamMessageFinish,
     onData,
     persistFinishedAssistantMessage,
     setState,
@@ -106,10 +109,12 @@ export function createHybridStreamCallbacks(
         ...prev,
         isLoading: false,
         error: streamError,
+        errorDetails: inferAIErrorDetailsFromMessage(streamError),
       }));
     } else {
       refs.retryCount.current = 0;
       persistFinishedAssistantMessage?.(message, traceIdRef.current);
+      onStreamMessageFinish?.(message);
       if (verboseLogging) {
         logger.info(
           `[HybridAI] Stream completed successfully (trace: ${traceIdRef.current})`
@@ -120,6 +125,7 @@ export function createHybridStreamCallbacks(
         isLoading: false,
         warmingUp: false,
         estimatedWaitSeconds: 0,
+        errorDetails: null,
       }));
     }
 
@@ -173,6 +179,7 @@ export function createHybridStreamCallbacks(
           ...prev,
           isLoading: false,
           error: 'Job Queue 전환에 필요한 쿼리를 찾을 수 없습니다.',
+          errorDetails: null,
         }));
         return;
       }
@@ -207,6 +214,10 @@ export function createHybridStreamCallbacks(
                   error instanceof Error
                     ? error.message
                     : 'Job Queue 전환 실패',
+                errorDetails:
+                  error instanceof Error
+                    ? inferAIErrorDetailsFromMessage(error.message)
+                    : null,
               }));
             }
           });
@@ -247,7 +258,7 @@ export function createHybridStreamCallbacks(
       logger.debug(
         `[HybridAI] Ignoring resume probe error before first query (trace: ${traceIdRef.current})`
       );
-      setState((prev) => ({ ...prev, isLoading: false }));
+      setState((prev) => ({ ...prev, isLoading: false, errorDetails: null }));
       return;
     }
 
@@ -297,6 +308,7 @@ export function createHybridStreamCallbacks(
             ...prev,
             isLoading: false,
             error: '재시도 준비 중 오류가 발생했습니다.',
+            errorDetails: null,
           }));
           return;
         }
@@ -307,10 +319,12 @@ export function createHybridStreamCallbacks(
     }
 
     refs.retryCount.current = 0;
+    const errorDetails = inferAIErrorDetailsFromMessage(errorMessage);
     setState((prev) => ({
       ...prev,
       isLoading: false,
       error: displayError,
+      errorDetails,
       warning: null,
       processingTime: 0,
       warmingUp: false,

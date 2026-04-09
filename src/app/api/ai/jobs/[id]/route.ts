@@ -68,6 +68,7 @@ export const GET = withAuth(async function GET(
       currentStep: progressInfo?.stage ?? job.currentStep,
       result: job.result ? { content: job.result } : null,
       error: job.error,
+      errorDetails: job.errorDetails ?? null,
       createdAt: job.createdAt,
       startedAt: job.startedAt,
       completedAt: job.completedAt,

@@ -44,6 +44,11 @@ export function useAIChatHybridCallbacks({
         setCurrentAgentStatus(null);
         setCurrentHandoff(null);
       },
+      onStreamMessageFinish: (message: UIMessage) => {
+        const dh = getDeferredHandlers();
+        if (!dh) return;
+        dh.flushPendingToMessage(message.id);
+      },
       onJobResult: (result: { success: boolean; error?: string | null }) => {
         onMessageSend?.(getPendingQuery());
         if (result.success) {

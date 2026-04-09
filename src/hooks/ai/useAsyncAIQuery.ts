@@ -26,6 +26,11 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  type AIErrorDetails,
+  buildRateLimitErrorDetails,
+  inferAIErrorDetailsFromMessage,
+} from '@/lib/ai/error-details';
 import { logger } from '@/lib/logging';
 import { fetchWithRetry, RETRY_STANDARD } from '@/lib/utils/retry';
 import { createCSRFHeaders } from '@/utils/security/csrf-client';
@@ -44,12 +49,20 @@ export interface AsyncQueryProgress {
   progress: number; // 0-100
   message?: string;
   elapsedMs?: number;
+  agent?: string;
+  handoffFrom?: string;
+  handoffTo?: string;
+  executionPath?: string[];
+  handoffCount?: number;
+  stageLabel?: string;
+  stageDetail?: string;
 }
 
 export interface AsyncQueryResult {
   success: boolean;
   response?: string;
   targetAgent?: string;
+  toolsCalled?: string[];
   toolResults?: unknown[];
   ragSources?: Array<{
     title: string;
@@ -83,6 +96,7 @@ export interface AsyncQueryState {
   progress: AsyncQueryProgress | null;
   result: AsyncQueryResult | null;
   error: string | null;
+  errorDetails?: AIErrorDetails | null;
   jobId: string | null;
 }
 
@@ -96,7 +110,7 @@ export interface UseAsyncAIQueryOptions {
   /** Callback when result is received */
   onResult?: (result: AsyncQueryResult) => void;
   /** Callback when error occurs */
-  onError?: (error: string) => void;
+  onError?: (error: string, details?: AIErrorDetails | null) => void;
 }
 
 // ============================================================================
@@ -113,6 +127,7 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
     progress: null,
     result: null,
     error: null,
+    errorDetails: null,
     jobId: null,
   });
 
@@ -182,6 +197,7 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
       isLoading: false,
       isConnected: false,
       error: 'Cancelled by user',
+      errorDetails: null,
     }));
   }, [cleanup]);
 
@@ -198,6 +214,7 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
         progress: null,
         result: null,
         error: null,
+        errorDetails: null,
         jobId: null,
       });
 
@@ -205,7 +222,12 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
         // 🎯 Store jobId for closure access (Stale Closure 방지)
         let capturedJobId: string | null = null;
 
-        const handleError = (error: string) => {
+        const handleError = (
+          error: string,
+          errorDetails: AIErrorDetails | null = inferAIErrorDetailsFromMessage(
+            error
+          )
+        ) => {
           cleanup();
           jobIdRef.current = null;
           progressRef.current = 0;
@@ -214,9 +236,10 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
             isLoading: false,
             isConnected: false,
             error,
+            errorDetails,
             progress: null, // 🎯 P2 Fix: Clear progress on error to avoid "80% complete... ERROR" UX
           }));
-          onError?.(error);
+          onError?.(error, errorDetails);
           resolve({ success: false, error, jobId: capturedJobId ?? undefined });
         };
 
@@ -233,6 +256,7 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
             isLoading: false,
             isConnected: false,
             result: resultWithJobId,
+            errorDetails: null,
           }));
           onResult?.(resultWithJobId);
           resolve(resultWithJobId);
@@ -275,16 +299,17 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
           )
           .then(async (response) => {
             if (response.status === 429) {
-              let message = '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.';
-              try {
-                const body = await response.json();
-                message = body.dailyLimitExceeded
-                  ? body.message || '일일 요청 제한을 초과했습니다.'
-                  : `요청이 너무 많습니다. ${body.retryAfter ?? 60}초 후 다시 시도해주세요.`;
-              } catch {
-                // Non-JSON 429 response (e.g. from CDN/proxy)
-              }
-              throw new Error(message);
+              const body = await response.json().catch(() => null);
+              const details = buildRateLimitErrorDetails({
+                body,
+                headers: response.headers,
+                fallbackSource: 'frontend-gateway',
+              });
+              const rateLimitError = new Error(details.message) as Error & {
+                details?: AIErrorDetails;
+              };
+              rateLimitError.details = details;
+              throw rateLimitError;
             }
             if (!response.ok) {
               throw new Error(`Failed to create job: ${response.status}`);
@@ -317,8 +342,8 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
               onResult: (result) => {
                 handleResult(result);
               },
-              onError: (error) => {
-                handleError(error);
+              onError: (error, errorDetails) => {
+                handleError(error, errorDetails ?? null);
               },
             });
 
@@ -328,7 +353,13 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
             }, timeout);
           })
           .catch((error) => {
-            handleError(`Failed to start query: ${error.message}`);
+            const message =
+              error instanceof Error ? error.message : 'Failed to start query';
+            const errorDetails =
+              error instanceof Error && 'details' in error
+                ? ((error as { details?: AIErrorDetails }).details ?? null)
+                : inferAIErrorDetailsFromMessage(message);
+            handleError(message, errorDetails);
           });
       });
     },
@@ -346,6 +377,7 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
       progress: null,
       result: null,
       error: null,
+      errorDetails: null,
       jobId: null,
     });
   }, [cleanup]);
@@ -361,13 +393,19 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
         progress: { stage: 'retrying', progress: 0, message: '재시도 중...' },
         result: null,
         error: null,
+        errorDetails: null,
         jobId: failedJobId,
       });
 
       return new Promise((resolve) => {
         let capturedJobId: string | null = failedJobId;
 
-        const handleError = (error: string) => {
+        const handleError = (
+          error: string,
+          errorDetails: AIErrorDetails | null = inferAIErrorDetailsFromMessage(
+            error
+          )
+        ) => {
           cleanup();
           jobIdRef.current = null;
           progressRef.current = 0;
@@ -376,9 +414,10 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
             isLoading: false,
             isConnected: false,
             error,
+            errorDetails,
             progress: null,
           }));
-          onError?.(error);
+          onError?.(error, errorDetails);
           resolve({ success: false, error, jobId: capturedJobId ?? undefined });
         };
 
@@ -394,6 +433,7 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
             isLoading: false,
             isConnected: false,
             result: resultWithJobId,
+            errorDetails: null,
           }));
           onResult?.(resultWithJobId);
           resolve(resultWithJobId);

@@ -10,7 +10,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       description:
         'Agent-first AI-powered IDE - AI 에이전트가 계획, 실행, 검증까지 자율 수행 (Google)',
       implementation:
-        'VS Code 포크 기반. 개발자는 아키텍트로, AI 에이전트가 실제 구현을 담당하는 새로운 패러다임. WSL 터미널 컨테이너 역할 — Claude/Codex/Gemini CLI가 여기서 실행',
+        'VS Code 포크 기반 IDE. 현재는 주 개발 환경이라기보다 터미널 뷰어와 시각 보조 도구에 가깝게 사용하며, Claude/Codex/Gemini CLI 실행을 보조',
       status: 'active',
       icon: '🌌',
       tags: ['Google', 'Agent-First', 'IDE'],

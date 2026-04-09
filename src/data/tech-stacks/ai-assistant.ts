@@ -94,9 +94,9 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     category: 'ai',
     importance: 'high',
     description:
-      'LlamaIndex.TS 기반 하이브리드 검색. Vector Search + Knowledge Graph Triplet Extraction으로 개념 간 관계를 탐색하여 정확한 컨텍스트 제공',
+      '벡터 검색과 관계 기반 탐색을 함께 쓰는 검색 계층. 개념 간 연결을 따라가며 더 정확한 컨텍스트를 제공하도록 구성',
     implementation:
-      'LlamaIndex.TS + Mistral AI로 Triplet 추출. Supabase pgVector와 통합된 하이브리드 검색 수행',
+      'LlamaIndex.TS + Mistral AI로 triplet을 추출하고, Supabase pgVector와 결합해 관계 탐색형 검색 흐름을 구성',
     version: 'LlamaIndex.TS',
     status: 'active',
     icon: '🦙',

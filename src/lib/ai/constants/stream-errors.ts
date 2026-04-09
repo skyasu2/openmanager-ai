@@ -62,6 +62,7 @@ const BLOCKED_INPUT_ERROR_PATTERNS = [
   'Security: blocked input',
   'PROMPT_INJECTION',
   '보안 정책에 의해 차단된 요청입니다.',
+  '입력 내용이 서버 모니터링 AI가 처리할 수 없는 형식입니다.',
 ] as const;
 
 // ============================================================================
@@ -179,7 +180,7 @@ export function sanitizeDisplayedErrorMessage(errorMessage: string): string {
   }
 
   if (isBlockedInputError(errorMessage)) {
-    return '보안 정책에 의해 차단된 요청입니다.';
+    return '입력 내용이 서버 모니터링 AI가 처리할 수 없는 형식입니다. 다른 표현으로 다시 시도해주세요.';
   }
 
   const envelope = tryParseErrorEnvelope(errorMessage);

@@ -135,6 +135,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
     isLoading,
     hybridState,
     currentMode,
+    streamStatus,
     // 에러 상태
     error,
     clearError,
@@ -255,6 +256,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
             sessionState={sessionState}
             onNewSession={handleNewSession}
             isGenerating={isLoading}
+            streamStatus={streamStatus}
             regenerateResponse={regenerateLastResponse}
             onFeedback={handleFeedback}
             onStopGeneration={stop}
@@ -263,6 +265,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
             onCancelJob={cancel}
             queryMode={currentMode}
             error={error}
+            errorDetails={hybridState.errorDetails}
             onClearError={clearError}
             onRetry={retryLastQuery}
             clarification={clarification}

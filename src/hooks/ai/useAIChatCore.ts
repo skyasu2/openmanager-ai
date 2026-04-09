@@ -24,11 +24,13 @@ import {
 } from 'react';
 import {
   type AgentStatusEventData,
+  type AIStreamStatus,
   type ClarificationOption,
   type ClarificationRequest,
   type HandoffEventData,
   useHybridAIQuery,
 } from '@/hooks/ai/useHybridAIQuery';
+import type { AIErrorDetails } from '@/lib/ai/error-details';
 import { logger } from '@/lib/logging';
 import {
   type EnhancedChatMessage,
@@ -81,8 +83,10 @@ export interface UseAIChatCoreReturn {
     progress?: { progress: number; stage: string; message?: string };
     jobId?: string;
     error?: string | null;
+    errorDetails?: AIErrorDetails | null;
   };
   currentMode?: 'streaming' | 'job-queue';
+  streamStatus?: AIStreamStatus;
 
   // 에러 상태
   error: string | null;
@@ -232,6 +236,7 @@ export function useAIChatCore(
     reset: resetHybridQuery,
     clearError: clearHybridError,
     currentMode,
+    streamStatus,
     selectClarification,
     submitCustomClarification,
     skipClarification,
@@ -319,6 +324,13 @@ export function useAIChatCore(
       setError(hybridState.error);
     }
   }, [hybridState.error]);
+
+  // 새 쿼리 시작 시 이전 스트림 RAG 출처를 초기화해 혼합 표시를 방지한다.
+  useEffect(() => {
+    if (hybridIsLoading) {
+      setStreamRagSources([]);
+    }
+  }, [hybridIsLoading]);
 
   const handleNewSession = useCallback(() => {
     resetHybridQuery();
@@ -466,8 +478,10 @@ export function useAIChatCore(
       progress: hybridState.progress ?? undefined,
       jobId: hybridState.jobId ?? undefined,
       error: hybridState.error ?? undefined,
+      errorDetails: hybridState.errorDetails ?? undefined,
     },
     currentMode: currentMode ?? undefined,
+    streamStatus,
     error,
     clearError,
     sessionId: sessionId,

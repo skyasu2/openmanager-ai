@@ -11,7 +11,7 @@
  * @extracted-from EnhancedAIChat.tsx
  */
 
-import { AlertCircle, LogIn, RefreshCw, X, Zap } from 'lucide-react';
+import { AlertCircle, Clock, LogIn, RefreshCw, X, Zap } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import {
   isAuthRelatedError,
@@ -19,6 +19,12 @@ import {
   isModelConfigRelatedError,
   sanitizeDisplayedErrorMessage,
 } from '@/lib/ai/constants/stream-errors';
+import {
+  type AIErrorDetails,
+  getRateLimitScopeLabel,
+  getRateLimitSourceLabel,
+  inferAIErrorDetailsFromMessage,
+} from '@/lib/ai/error-details';
 
 // Cold start 타임아웃 50s 증가로 1회 자동 재시도만 수행
 const RETRY_SCHEDULE = [15]; // 15초 후 1회 재시도
@@ -26,6 +32,7 @@ const MAX_AUTO_RETRIES = RETRY_SCHEDULE.length;
 
 export interface ColdStartErrorBannerProps {
   error: string;
+  errorDetails?: AIErrorDetails | null;
   onRetry?: () => void;
   onClearError?: () => void;
 }
@@ -36,9 +43,14 @@ export interface ColdStartErrorBannerProps {
  */
 export function ColdStartErrorBanner({
   error,
+  errorDetails,
   onRetry,
   onClearError,
 }: ColdStartErrorBannerProps) {
+  const resolvedErrorDetails =
+    errorDetails ?? inferAIErrorDetailsFromMessage(error);
+  const rateLimitDetails =
+    resolvedErrorDetails?.kind === 'rate-limit' ? resolvedErrorDetails : null;
   const displayError = sanitizeDisplayedErrorMessage(error);
   const isAuthError = isAuthRelatedError(error);
   const isColdStart = isColdStartRelatedError(error);
@@ -46,6 +58,11 @@ export function ColdStartErrorBanner({
   const [retryAttempt, setRetryAttempt] = useState(0);
   const currentDelay = RETRY_SCHEDULE[retryAttempt] ?? 0;
   const [countdown, setCountdown] = useState(isColdStart ? currentDelay : 0);
+  const [rateLimitCountdown, setRateLimitCountdown] = useState(
+    rateLimitDetails?.scope === 'daily'
+      ? 0
+      : (rateLimitDetails?.retryAfterSeconds ?? 0)
+  );
   const [isAutoRetrying, setIsAutoRetrying] = useState(
     isColdStart && retryAttempt < MAX_AUTO_RETRIES && error.trim().length > 0
   );
@@ -64,6 +81,14 @@ export function ColdStartErrorBanner({
       setIsAutoRetrying(false);
     }
   }, [error, isColdStart]);
+
+  useEffect(() => {
+    setRateLimitCountdown(
+      rateLimitDetails?.scope === 'daily'
+        ? 0
+        : (rateLimitDetails?.retryAfterSeconds ?? 0)
+    );
+  }, [rateLimitDetails?.retryAfterSeconds, rateLimitDetails?.scope]);
 
   // 자동 재시도 카운트다운 (다단계)
   useEffect(() => {
@@ -90,6 +115,16 @@ export function ColdStartErrorBanner({
 
     return () => clearTimeout(timer);
   }, [countdown, isAutoRetrying, onRetry, retryAttempt]);
+
+  useEffect(() => {
+    if (!rateLimitDetails || rateLimitCountdown <= 0) return;
+
+    const timer = setTimeout(() => {
+      setRateLimitCountdown((prev) => Math.max(0, prev - 1));
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [rateLimitCountdown, rateLimitDetails]);
 
   // 자동 재시도 취소
   const cancelAutoRetry = useCallback(() => {
@@ -185,6 +220,84 @@ export function ColdStartErrorBanner({
                 className="text-xs text-orange-600 underline hover:text-orange-800"
               >
                 자동 재시도 취소
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (rateLimitDetails) {
+    const isDailyLimit = rateLimitDetails.scope === 'daily';
+    const retryBlocked = !isDailyLimit && rateLimitCountdown > 0;
+    const title = isDailyLimit
+      ? '오늘 AI 요청 한도가 소진되었습니다'
+      : rateLimitDetails.source === 'cloud-run-ai'
+        ? 'AI 엔진 요청이 잠시 몰렸습니다'
+        : rateLimitDetails.source === 'upstream-provider'
+          ? 'AI 제공자 요청 제한이 발생했습니다'
+          : '요청이 잠시 몰렸습니다';
+    const helperText = isDailyLimit
+      ? rateLimitDetails.message
+      : retryBlocked
+        ? `${rateLimitCountdown}초 후 다시 시도할 수 있습니다.`
+        : rateLimitDetails.message;
+
+    return (
+      <div className="border-t border-amber-200 bg-linear-to-r from-amber-50 to-orange-50 p-3">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start space-x-2">
+            <Clock className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium text-amber-900">{title}</p>
+              <p className="mt-0.5 break-words text-xs text-amber-700">
+                {helperText}
+              </p>
+              <div className="mt-2 flex flex-wrap gap-1.5 text-2xs text-amber-800">
+                <span className="rounded bg-white px-1.5 py-0.5">
+                  차단 위치: {getRateLimitSourceLabel(rateLimitDetails.source)}
+                </span>
+                <span className="rounded bg-white px-1.5 py-0.5">
+                  {getRateLimitScopeLabel(rateLimitDetails.scope)}
+                </span>
+                {typeof rateLimitDetails.remaining === 'number' && (
+                  <span className="rounded bg-white px-1.5 py-0.5">
+                    남은 요청: {rateLimitDetails.remaining}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="flex shrink-0 items-center space-x-2">
+            {onRetry && !isDailyLimit && (
+              <button
+                type="button"
+                onClick={onRetry}
+                disabled={retryBlocked}
+                className={`flex items-center space-x-1 rounded-lg px-3 py-1.5 text-sm font-medium text-white transition-colors ${
+                  retryBlocked
+                    ? 'cursor-not-allowed bg-amber-300'
+                    : 'bg-amber-600 hover:bg-amber-700'
+                }`}
+                aria-label="재시도"
+              >
+                <RefreshCw className="h-4 w-4" />
+                <span>
+                  {retryBlocked
+                    ? `${rateLimitCountdown}초 후 재시도`
+                    : '재시도'}
+                </span>
+              </button>
+            )}
+            {onClearError && (
+              <button
+                type="button"
+                onClick={onClearError}
+                className="rounded-lg p-1.5 text-amber-500 transition-colors hover:bg-amber-100 hover:text-amber-700"
+                aria-label="닫기"
+              >
+                <X className="h-4 w-4" />
               </button>
             )}
           </div>

@@ -8,11 +8,13 @@ import type { AsyncQueryProgress } from '@/hooks/ai/useAsyncAIQuery';
 import type { FileAttachment } from '@/hooks/ai/useFileAttachments';
 import type {
   AgentStatusEventData,
+  AIStreamStatus,
   ClarificationOption,
   ClarificationRequest,
   HandoffEventData,
 } from '@/hooks/ai/useHybridAIQuery';
 import { loadChatHistory } from '@/hooks/ai/utils/chat-history-storage';
+import type { AIErrorDetails } from '@/lib/ai/error-details';
 import {
   type EnhancedChatMessage,
   useAISidebarStore,
@@ -58,6 +60,7 @@ interface EnhancedAIChatProps {
   setInputValue: (value: string) => void;
   handleSendInput: (attachments?: FileAttachment[]) => void;
   isGenerating: boolean;
+  streamStatus?: AIStreamStatus;
   regenerateResponse: (messageId: string) => void;
   sessionState?: SessionState;
   onNewSession?: () => void;
@@ -67,6 +70,7 @@ interface EnhancedAIChatProps {
   onCancelJob?: () => void;
   queryMode?: 'streaming' | 'job-queue';
   error?: string | null;
+  errorDetails?: AIErrorDetails | null;
   onClearError?: () => void;
   onRetry?: () => void;
   clarification?: ClarificationRequest | null;
@@ -105,6 +109,7 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
   setInputValue,
   handleSendInput,
   isGenerating,
+  streamStatus,
   regenerateResponse,
   sessionState,
   onNewSession,
@@ -115,6 +120,7 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
   onCancelJob,
   queryMode,
   error,
+  errorDetails,
   onClearError,
   onRetry,
   clarification,
@@ -300,6 +306,7 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
       {error && !(queryMode === 'streaming' && warmingUp && isGenerating) && (
         <ColdStartErrorBanner
           error={error}
+          errorDetails={errorDetails}
           onRetry={onRetry}
           onClearError={onClearError}
         />
@@ -403,6 +410,7 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
         inputValue={inputValue}
         setInputValue={setInputValue}
         isGenerating={isGenerating}
+        streamStatus={streamStatus}
         sessionState={sessionState}
         attachments={attachments}
         isDragging={isDragging}
