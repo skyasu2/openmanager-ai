@@ -321,17 +321,17 @@ SKIP_ENV_VALIDATION=true npm run build
 
 ### Pre-push 환경변수 검사
 
-pre-push hook에서 `check-env.ts`를 실행하여 필수 변수를 검증합니다.
+pre-push hook에서는 `PRE_PUSH_MODE=verify|strict`일 때만 `check-env.ts`를 실행할 수 있습니다.
 
 ```bash
-# 기본: 환경변수 검사 비활성 (로컬 pre-push + Vercel 배포 빌드에서 수행)
+# 기본(fast): 환경변수 검사 비활성
 git push gitlab main
 
-# 수동 활성화 (릴리스 전 검증)
-STRICT_PUSH_ENV=true git push gitlab main
+# 수동 활성화 (verify/strict 모드에서만)
+STRICT_PUSH_ENV=true PRE_PUSH_MODE=verify git push gitlab main
 ```
 
-> `STRICT_PUSH_ENV`는 기본 `false`입니다. 로컬에서는 테스트/TypeScript 검증을 우선하고, push 이후 GitLab CI가 validate/deploy를 이어서 수행합니다.
+> `STRICT_PUSH_ENV`는 기본 `false`입니다. fast 모드에서는 환경 검증을 건너뛰며, 로컬에서 강제하려면 `PRE_PUSH_MODE=verify|strict`와 함께 사용합니다.
 
 ---
 

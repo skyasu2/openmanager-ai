@@ -20,12 +20,12 @@
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                      │
 │ [코드 작성] → [Pre-commit] → [Commit] → [Pre-push] → [Push] → [Vercel] │
-│                  <1초          즉시       ~78초        + 로컬 Docker CI │
+│                  <1초          즉시       <10초(기본)   + 로컬 Docker CI │
 │                                                                      │
 │  ┌──────────┐   ┌──────────┐   ┌──────────┐                         │
-│  │ 빠른 검증 │   │ 가벼운   │   │ 권위있는 │                         │
-│  │ (로컬)   │ → │ 타입체크 │ → │ 전체검증 │                         │
-│  │ Lint+    │   │ (로컬)   │   │ (CI/CD)  │                         │
+│  │ 빠른 검증 │   │ 정책     │   │ 권위있는 │                         │
+│  │ (로컬)   │ → │ 가드      │ → │ 전체검증 │                         │
+│  │ Lint+    │   │ (pre-push)│   │ (CI/CD)  │                         │
 │  │ Secrets  │   │          │   │          │                         │
 │  └──────────┘   └──────────┘   └──────────┘                         │
 │                                                                      │
@@ -104,7 +104,7 @@ const SKIP_FILES = [
 
 ---
 
-## Pre-push Hook (목표: ~78초)
+## Pre-push Hook (목표: fast 기본 <10초)
 
 ### 위치 및 설정
 
@@ -114,39 +114,32 @@ const SKIP_FILES = [
 
 | 모드 | 환경변수 | 검증 항목 | 시간 |
 |------|---------|----------|------|
-| **Quick (기본)** | `QUICK_PUSH=true` | 변경 범위 기반 targeted 테스트 + 조건부 TypeScript | ~20-100초 |
-| **Full** | `QUICK_PUSH=false` | TypeScript + Full Build | ~4분 |
-| **Strict Env (선택)** | `STRICT_PUSH_ENV=true` | Quick + env:check | +5~15초 |
+| **Fast (기본)** | `PRE_PUSH_MODE=fast` 또는 미지정 | canonical remote/main 보호, node_modules, GitLab CI semantic, Cloud Build free-tier, docs/report artifact | ~3-10초 |
+| **Verify** | `PRE_PUSH_MODE=verify` | Fast + 변경 범위 기반 테스트 + TypeScript | ~20-100초 |
+| **Strict** | `PRE_PUSH_MODE=strict` | Verify + runner health/release advisory | Verify + α |
 | **Skip All** | `HUSKY=0` | 없음 | 0초 |
 
-### Quick Mode (기본값)
+### Fast Mode (기본값)
 
 ```bash
-# 기본 실행 (변경 범위 기반 targeted validation)
 git push
-
-# 출력 예시:
-🔍 Pre-push validation starting...
-ℹ️  WSL + Windows filesystem detected
-   기본: TypeScript 검증만 (~20초)
-   Full Build 필요 시: QUICK_PUSH=false git push
-
-🧪 Running targeted node + DOM infra smoke checks...
-   → Targeted node suite (1 file)
-   → DOM infrastructure smoke
-
-🏗️ Build validation...
-⚪ TypeScript skipped (no relevant TS files in push range)
-ℹ️  Full build/type-check는 Vercel 배포 빌드와 필요 시 로컬 Docker CI에서 계속 검증됨
-
-✅ Pre-push validation passed in 96s
 ```
 
-### Full Build Mode
+기본 pre-push는 **빠른 go/no-go 정책 가드**만 실행합니다.  
+무거운 로컬 검증은 필요 시에만 명시적으로 실행합니다.
+
+### Verify / Strict Mode
 
 ```bash
-# 릴리스 전 전체 검증 (권장하지 않음 - Vercel이 담당)
-QUICK_PUSH=false git push
+# 로컬 테스트 + 타입체크까지 포함
+PRE_PUSH_MODE=verify git push
+
+# verify + runner/release advisory
+PRE_PUSH_MODE=strict git push
+
+# verify/strict 모드에서만 legacy 플래그 적용
+QUICK_PUSH=false PRE_PUSH_MODE=verify git push
+STRICT_PUSH_ENV=true PRE_PUSH_MODE=verify git push
 ```
 
 ### 검증 항목 상세
@@ -173,7 +166,7 @@ QUICK_PUSH=false git push
 │  4. Cloud Build Guard (변경 파일 있을 때만)              │
 │     └─ cloudbuild.yaml / deploy.sh 변경 시만 검사        │
 │                                                          │
-│  5. 환경변수 검증 (STRICT_PUSH_ENV=true 일 때만)         │
+│  5. 환경변수 검증 (STRICT_PUSH_ENV=true + verify/strict) │
 │     └─ npm run env:check                                 │
 │                                                          │
 └─────────────────────────────────────────────────────────┘
@@ -190,7 +183,7 @@ QUICK_PUSH=false git push
 | 계층 | 역할 | 책임 |
 |------|------|------|
 | **Pre-commit** | 빠른 피드백 | 포맷팅, 시크릿 감지 |
-| **Pre-push** | 기본 검증 | TypeScript, 빠른 테스트 |
+| **Pre-push** | 빠른 정책 가드 | push 전 즉시 차단해야 하는 정책 위반 |
 | **Vercel** | 권위있는 검증 | Full Build, E2E, 배포 |
 
 ### 외부 CI 최소화 정책
@@ -222,8 +215,8 @@ on:
 | **Lint** | ✅ | ⚪ | ✅ |
 | **Format** | ✅ | ⚪ | ⚪ |
 | **Secret Detection** | ✅ | ⚪ | ✅ |
-| **TypeScript** | ⚪ | ✅ | ✅ |
-| **Unit Tests** | ⚪ | ✅ (빠른) | ✅ (전체) |
+| **TypeScript** | ⚪ | ⚪ (verify/strict에서만) | ✅ |
+| **Unit Tests** | ⚪ | ⚪ (verify/strict에서만) | ✅ (전체) |
 | **Full Build** | ⚪ | ⚪ | ✅ |
 | **E2E Tests** | ⚪ | ⚪ | ✅ |
 | **배포** | ⚪ | ⚪ | ✅ |
@@ -240,7 +233,7 @@ on:
 ├────────────────────────────────────────────────────────────────┤
 │ 현재 프로젝트 점수: 9/10                                       │
 │ ✅ Pre-commit <1초                                             │
-│ ✅ Pre-push Quick Mode                                         │
+│ ✅ Pre-push Fast Guard-Only 기본값                             │
 │ ✅ Secret Detection                                            │
 │ ✅ CI/CD 자동화 (Vercel)                                       │
 └────────────────────────────────────────────────────────────────┘
@@ -256,11 +249,11 @@ on:
 # 모든 Hook 우회 (긴급 상황만)
 HUSKY=0 git push
 
-# 테스트만 스킵
-SKIP_TESTS=true git push
+# verify 모드에서 테스트만 스킵
+SKIP_TESTS=true PRE_PUSH_MODE=verify git push
 
-# 빌드 검증만 스킵
-SKIP_BUILD=true git push
+# verify 모드에서 빌드 검증만 스킵
+SKIP_BUILD=true PRE_PUSH_MODE=verify git push
 
 # node_modules 검사 스킵
 SKIP_NODE_CHECK=true git push
@@ -290,7 +283,7 @@ SKIP_NODE_CHECK=true git push
 ```
 증상: Pre-push가 5분 이상 소요
 해결:
-1. QUICK_PUSH=true 확인 (기본값)
+1. 기본 모드 확인: `PRE_PUSH_MODE=fast`
 2. node_modules 상태 확인: npm ci
 3. WSL 메모리 설정 확인: .wslconfig
 ```
@@ -311,6 +304,7 @@ SKIP_NODE_CHECK=true git push
 
 | 날짜 | 변경 | 효과 |
 |------|------|------|
+| 2026-04-09 | `PRE_PUSH_MODE=fast` 기본 전환 | 무거운 로컬 검증 opt-in화, push 대기시간 안정화 |
 | 2026-01-27 | QUICK_PUSH 기본값 true로 변경 | Push 407s → 78s (5.2x 개선) |
 | 2026-01-27 | Secret Detection pre-commit 추가 | 보안 강화, 94ms 추가 |
 | 2026-01-27 | 외부 CI 자동 트리거 최소화 | CI 비용 절감 |

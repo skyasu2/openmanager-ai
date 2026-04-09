@@ -315,7 +315,7 @@ query 상태를 `Record<string, string>` 대신 `Array<[string, string]>` 튜플
 ```bash
 # pre-commit: 시크릿 스캔 + Biome(staged)
 # post-commit: 커밋 완료 알림(비차단)
-# pre-push: 변경 범위 기반 targeted 테스트 + 조건부 TypeScript (환경 검사는 STRICT_PUSH_ENV=true일 때만)
+# pre-push: fast(기본)=정책 가드 only, verify/strict에서만 테스트+TypeScript
 ```
 
 핵심 구현 파일:

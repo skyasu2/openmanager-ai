@@ -70,11 +70,11 @@ const isWindowsFS = cwd.startsWith('/mnt/');
 const cloudRunCwd = path.join(cwd, CLOUD_RUN_ROOT);
 
 // Environment flags
-// 🎯 2025 Best Practice: Pre-push는 빠르게, Full Build는 CI/Vercel에서
-// - QUICK_PUSH=true (기본): TypeScript만 (~20초)
-// - QUICK_PUSH=false: Full Build (~3분, 릴리스 전 검증용)
-// - STRICT_PUSH_ENV=true: env:check를 pre-push에서 강제
-// - FORCE_CLOUD_BUILD_GUARD=true: Cloud Build 가드를 항상 실행
+// PRE_PUSH_MODE:
+// - fast (default): policy/consistency guards only
+// - verify: + targeted tests + TypeScript validation
+// - strict: verify + runner/release advisory guards
+// Legacy flags (QUICK_PUSH, SKIP_TESTS, SKIP_BUILD, STRICT_PUSH_ENV) apply only in verify/strict modes.
 const SKIP_RELEASE_CHECK = process.env.SKIP_RELEASE_CHECK === 'true';
 const QUICK_PUSH = process.env.QUICK_PUSH !== 'false'; // 기본값: true
 const SKIP_TESTS = process.env.SKIP_TESTS === 'true';
@@ -82,7 +82,11 @@ const SKIP_BUILD = process.env.SKIP_BUILD === 'true';
 const SKIP_NODE_CHECK = process.env.SKIP_NODE_CHECK === 'true';
 const STRICT_PUSH_ENV = process.env.STRICT_PUSH_ENV === 'true';
 const FORCE_CLOUD_BUILD_GUARD = process.env.FORCE_CLOUD_BUILD_GUARD === 'true';
+const FORCE_RUNNER_HEALTH_CHECK = process.env.PRE_PUSH_RUNNER_HEALTH === 'true';
 const PRE_PUSH_CHANGED_FILES_OVERRIDE = process.env.PRE_PUSH_CHANGED_FILES || '';
+const PRE_PUSH_MODE = resolvePrePushMode(process.env.PRE_PUSH_MODE);
+const RUN_HEAVY_VALIDATION = PRE_PUSH_MODE !== 'fast';
+const RUN_STRICT_GUARDS = PRE_PUSH_MODE === 'strict';
 
 // Windows = limited validation mode (TypeScript + Lint only)
 const isLimitedMode = isWindows;
@@ -138,6 +142,16 @@ function isZeroOid(oid) {
   return /^0+$/.test(oid);
 }
 
+function resolvePrePushMode(rawMode) {
+  const normalized = String(rawMode || 'fast')
+    .trim()
+    .toLowerCase();
+  if (normalized === 'verify' || normalized === 'strict') return normalized;
+  if (!normalized || normalized === 'fast') return 'fast';
+  console.warn(`⚠️  Unknown PRE_PUSH_MODE "${rawMode}", falling back to "fast"`);
+  return 'fast';
+}
+
 function parsePrePushUpdateLine(line) {
   const parts = line.trim().split(/\s+/);
   if (parts.length < 4) return null;
@@ -170,6 +184,17 @@ function resolveCommitRef(refOrOid) {
   return (
     runGit(['rev-parse', '--verify', `${refOrOid}^{commit}`]) ||
     runGit(['rev-parse', '--verify', refOrOid])
+  );
+}
+
+function hasRunnerHealthRelevantChanges(changedFilesResult) {
+  if (!changedFilesResult?.files?.length) return false;
+  const watchedFiles = new Set([
+    '.gitlab-ci.yml',
+    'scripts/ci/runner-health-check.sh',
+  ]);
+  return changedFilesResult.files.some((filePath) =>
+    watchedFiles.has(normalizeFilePath(filePath))
   );
 }
 
@@ -489,6 +514,16 @@ function printSummary(duration) {
   console.log('📊 Summary:');
   if (validationMode === 'docs-artifacts') {
     console.log('  📝 Mode: Docs/Reports artifacts only');
+  } else if (validationMode === 'guard-only') {
+    console.log('  ⚡ Mode: Fast guard-only');
+  } else if (validationMode === 'strict') {
+    console.log(
+      QUICK_PUSH ? '  🔒 Mode: Strict verify (quick)' : '  🔒 Mode: Strict verify (full build)'
+    );
+  } else if (validationMode === 'verify') {
+    console.log(
+      QUICK_PUSH ? '  ✅ Mode: Verify (quick)' : '  ✅ Mode: Verify (full build)'
+    );
   } else if (isLimitedMode) {
     console.log('  🔧 Mode: Windows Limited');
   } else if (QUICK_PUSH) {
@@ -506,6 +541,8 @@ function printSummary(duration) {
     console.log('  ⚪ Tests skipped (docs/report-only push)');
   } else if (testStatus === 'skipped-no-op-push') {
     console.log('  ⚪ Tests skipped (known no-op push)');
+  } else if (testStatus === 'skipped-fast-mode') {
+    console.log('  ⚪ Tests skipped (fast mode)');
   } else {
     console.log(`  ⚪ Tests ${testStatus}`);
   }
@@ -517,19 +554,27 @@ function printSummary(duration) {
     console.log('  ⚪ TypeScript skipped (docs/report-only push)');
   } else if (typeCheckStatus === 'skipped-no-relevant-ts') {
     console.log('  ⚪ TypeScript skipped (no relevant TS files in push range)');
+  } else if (typeCheckStatus === 'delegated-type-definition-only') {
+    console.log('  ⚪ TypeScript delegated (type-definition-only push)');
   } else if (typeCheckStatus === 'skipped-no-op-push') {
     console.log('  ⚪ TypeScript skipped (known no-op push)');
+  } else if (typeCheckStatus === 'skipped-fast-mode') {
+    console.log('  ⚪ TypeScript skipped (fast mode)');
   } else if (typeCheckStatus === 'skipped') {
     console.log('  ⚪ TypeScript skipped (SKIP_BUILD=true)');
   } else if (typeCheckStatus === 'delegated') {
     console.log('  ⚪ TypeScript covered by full build');
   }
-  if (!QUICK_PUSH && !isLimitedMode) {
+  if (validationMode === 'guard-only') {
+    console.log('  ⚪ Full build/test/type-check → CI (GitLab/Vercel)');
+  } else if (!QUICK_PUSH && !isLimitedMode) {
     console.log('  ✅ Full build passed');
   } else {
     console.log('  ⚪ Full build → local Docker CI / Vercel');
   }
-  if (STRICT_PUSH_ENV) {
+  if (validationMode === 'guard-only') {
+    console.log('  ⚪ Environment check skipped (fast mode)');
+  } else if (STRICT_PUSH_ENV) {
     console.log('  ✅ Environment validated');
   } else {
     console.log('  ⚪ Environment check skipped (set STRICT_PUSH_ENV=true)');
@@ -543,6 +588,10 @@ function main() {
   const startTime = Date.now();
 
   console.log('🔍 Pre-push validation starting...');
+  console.log(`🧭 Mode: ${PRE_PUSH_MODE}`);
+  if (!RUN_HEAVY_VALIDATION) {
+    console.log('   Fast guard-only mode (best-practice default)');
+  }
 
   if (isLimitedMode) {
     console.log('');
@@ -552,8 +601,10 @@ function main() {
     console.log('');
   }
 
-  checkRelease(runGit, SKIP_RELEASE_CHECK);
-  if (!isLimitedMode) {
+  if (RUN_STRICT_GUARDS) {
+    checkRelease(runGit, SKIP_RELEASE_CHECK);
+  }
+  if (!isLimitedMode && RUN_HEAVY_VALIDATION) {
     checkWSLPerformance(isWSL, isWindowsFS);
   }
 
@@ -567,8 +618,14 @@ function main() {
 
   const changedFilesResult = getChangedFilesForPush(prePushUpdates);
   const docsOnlyPush = isDocsArtifactOnlyPush(changedFilesResult);
+  const shouldRunRunnerHealthCheck =
+    RUN_STRICT_GUARDS ||
+    FORCE_RUNNER_HEALTH_CHECK ||
+    hasRunnerHealthRelevantChanges(changedFilesResult);
   exitIfGuardFailed(
-    checkGitLabRunnerHealth(prePushRemoteName, runGit, { skip: docsOnlyPush })
+    checkGitLabRunnerHealth(prePushRemoteName, runGit, {
+      skip: docsOnlyPush || !shouldRunRunnerHealthCheck,
+    })
   );
   exitIfGuardFailed(checkGitLabCiSemanticGuard(changedFilesResult, cwd));
   exitIfGuardFailed(
@@ -577,7 +634,19 @@ function main() {
 
   if (docsOnlyPush) {
     exitIfGuardFailed(runDocsArtifactValidation(changedFilesResult));
+  } else if (!RUN_HEAVY_VALIDATION) {
+    validationMode = 'guard-only';
+    testStatus = 'skipped-fast-mode';
+    typeCheckStatus = 'skipped-fast-mode';
+    console.log('⚡ Fast guard-only mode: tests/type-check skipped');
+    console.log(
+      '   Tip: PRE_PUSH_MODE=verify git push   (local tests + TypeScript)'
+    );
+    console.log(
+      '   Tip: PRE_PUSH_MODE=strict git push   (verify + runner/release advisory)'
+    );
   } else {
+    validationMode = RUN_STRICT_GUARDS ? 'strict' : 'verify';
     runTests(changedFilesResult);
     runBuildValidation(changedFilesResult);
     if (STRICT_PUSH_ENV) {

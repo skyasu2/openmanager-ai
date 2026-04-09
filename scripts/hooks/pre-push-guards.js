@@ -542,8 +542,10 @@ function checkWSLPerformance(isWSL, isWindowsFS) {
   if (isWSL && isWindowsFS) {
     console.log('');
     console.log('ℹ️  WSL + Windows filesystem detected');
-    console.log('   기본: TypeScript 검증만 (~20초)');
-    console.log('   Full Build 필요 시: QUICK_PUSH=false git push');
+    console.log('   verify 모드: 변경 범위 테스트 + TypeScript');
+    console.log(
+      '   Full Build 필요 시: QUICK_PUSH=false PRE_PUSH_MODE=verify git push'
+    );
     console.log('');
   }
 }
