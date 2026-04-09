@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.5](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.4...v8.11.5) (2026-04-09)
+
+
+### Bug Fixes
+
+* **release:** extend post-release verification window ([3ee728f](https://gitlab.com/skyasu2/openmanager-ai/-/commit/3ee728fc71c5fe66c6f8876ac25c8c700c8b1966))
+* **ui:** add block-level markdown rendering to RenderMarkdownContent ([2fabc26](https://gitlab.com/skyasu2/openmanager-ai/-/commit/2fabc26140e1231e2ea04de9e34e2f030bee6766))
+* **ui:** add italic rendering and unify bold/italic inline parser ([c70bd03](https://gitlab.com/skyasu2/openmanager-ai/-/commit/c70bd036082970dfab39f990362f0ffbfaeb7f33))
+* **ui:** fix TS2532/TS2345 undefined errors in renderFormattedText ([6f44df4](https://gitlab.com/skyasu2/openmanager-ai/-/commit/6f44df49bfc9cd743a248c00b36b7a1803beebb0))
+
+
+### Code Refactoring
+
+* **ai-engine:** remove deprecated agent wrappers and trim comments ([7732bbd](https://gitlab.com/skyasu2/openmanager-ai/-/commit/7732bbd84093b0eeece9b0df04917a75ac9efbe3))
+* dead code cleanup — orphan stories, dead guards, oversized route ([ade5296](https://gitlab.com/skyasu2/openmanager-ai/-/commit/ade5296e02cb1834fdd6def122dbbbe365ad6a99))
+
+
+### Tests
+
+* **qa:** archive orphan handoff evidence ([7f2be74](https://gitlab.com/skyasu2/openmanager-ai/-/commit/7f2be740dd3d82ac75cbe8127929825b0895f839))
+* **qa:** record QA-20260409-0260 targeted vercel production — 15/15 pass ([2d8cc82](https://gitlab.com/skyasu2/openmanager-ai/-/commit/2d8cc82f166a515669954f0dfad3920c884876fc))
+* **qa:** record v8.11.4 broad production baseline ([d77a35d](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d77a35da73136294a37a4201028c08eafbd566a9))
+* **qa:** record v8.11.4 canonical release success ([fa0c51a](https://gitlab.com/skyasu2/openmanager-ai/-/commit/fa0c51aa347df5fb70eebbcd722991f9e969d97c))
+* **qa:** refresh v8.11.4 broad production baseline ([3b04686](https://gitlab.com/skyasu2/openmanager-ai/-/commit/3b04686702167af82dddf3848a5fd9e438f7aba2))
+
 ## [8.11.4](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.3...v8.11.4) (2026-04-08)
 
 
