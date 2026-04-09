@@ -1,7 +1,7 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-09 13:23:24 KST
+> Generated at: 2026-04-09 15:18:13 KST
 
 ## Summary
 
@@ -19,11 +19,11 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260409-0259 (2026-04-08T22:37:58.733Z) |
-| Latest Recorded Run | QA-20260409-0260 (2026-04-09T04:23:23.914Z) |
+| Latest Recorded Run | QA-20260409-0262 (2026-04-09T06:18:13.337Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260409-0260 (2026-04-09T04:23:23.914Z)
+Latest run: QA-20260409-0262 (2026-04-09T06:18:13.337Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -33,35 +33,33 @@ Latest run: QA-20260409-0260 (2026-04-09T04:23:23.914Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after targeted Vercel QA; effective 4.6046 USD, billed 0.0000 USD, no unexpected billed usage spike. |
+| vercel | cli | checked | normal | Current billing period reviewed after AI assistant rerun-2 QA; effective 4.6046 USD, billed 0.0000 USD, no unexpected billed usage spike. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: dpl_FnzN8yJFRkS5TUkvQYWREJwtJGh2 / SHA 8ca2b7eb
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, observability-pack
-- Covered Surfaces: landing render + v8.11.4 badge, /main -> / redirect, /login OAuth/email/guest entry points, /privacy render and backlink, /auth/error fallback actions, /auth/success -> /login?error=no_user redirect, synthetic 404 page render, system start countdown and /system-boot -> /dashboard, dashboard counters 15/14/1/0 and Top5 resource warning list, AI sidebar open/close, AI query response for all-server summary, network proof: POST /api/ai/supervisor/stream/v2 => 200, /api/health 200 connected services, /api/version 200 with v8.11.4 / Next.js 16.1.6, profile menu open and ESC close
-- Skipped Surfaces: guest PIN explicit submission flow, /dashboard/ai-assistant fullscreen workspace, Reporter full report flow, Analyst advanced drilldown/forecast flow, Cloud Run admin /monitoring and /monitoring/traces, server detail 3-tab modal path
+- Deployment: dpl_98JotoiPEqdfb3DfHbt73hjNS62y / SHA c0470baf
+- Coverage Packs: dashboard-core, ai-core
+- Covered Surfaces: /dashboard counters (15/14/1/0), AI sidebar ready state, new chat initialization, AI prompt response: all-server summary, AI prompt response: redis warning command recommendations, analysis basis panel render, network proof: POST /api/ai/supervisor/stream/v2 => 200 (x2), console error log zero
+- Skipped Surfaces: core route pack (/, /main, /login, /privacy), Reporter full report flow, Analyst advanced drilldown, Cloud Run admin /monitoring and /monitoring/traces, modal/detail pack
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Latest production deployment | [Latest production deployment](https://vercel.com/skyasus-projects/openmanager-ai/FnzN8yJFRkS5TUkvQYWREJwtJGh2) | - |
+| general | Production URL | [Production URL](https://openmanager-ai.vercel.app/dashboard) | - |
+| vercel-deployment | Current production deployment | [Current production deployment](https://vercel.com/skyasus-projects/openmanager-ai/98JotoiPEqdfb3DfHbt73hjNS62y) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-report | targeted QA evidence summary | `reports/qa/evidence/qa-20260409-vercel-targeted-playwright-qa.md` | - |
-| playwright-screenshot | targeted landing screenshot | `reports/qa/evidence/qa-20260409-vercel-targeted-landing.png` | - |
-| playwright-screenshot | targeted dashboard + ai sidebar screenshot | `reports/qa/evidence/qa-20260409-vercel-targeted-dashboard-ai-sidebar.png` | - |
-| playwright-console | targeted console errors log | `reports/qa/evidence/qa-20260409-vercel-targeted-console-errors.txt` | - |
-| playwright-console | targeted console warnings log | `reports/qa/evidence/qa-20260409-vercel-targeted-console-warnings.txt` | - |
-| playwright-network | targeted network log | `reports/qa/evidence/qa-20260409-vercel-targeted-network.txt` | - |
+| playwright-report | AI assistant rerun-2 QA summary | `reports/qa/evidence/qa-20260409-vercel-ai-assistant-rerun2-summary.md` | - |
+| playwright-screenshot | dashboard + ai assistant rerun-2 screenshot | `reports/qa/evidence/qa-20260409-vercel-ai-assistant-rerun2-dashboard.png` | - |
+| playwright-console | AI assistant rerun-2 console errors | `reports/qa/evidence/qa-20260409-vercel-ai-assistant-rerun2-console-error.log` | - |
+| playwright-network | AI assistant rerun-2 network log | `reports/qa/evidence/qa-20260409-vercel-ai-assistant-rerun2-network.log` | - |
 
 ## Expert Domain Open Gaps
 
@@ -395,6 +393,8 @@ Latest run: QA-20260409-0260 (2026-04-09T04:23:23.914Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260409-0262 | 2026-04-09T06:18:13.337Z | targeted | no | no | Playwright MCP Vercel Targeted QA - AI assistant rerun-2 validation | 8 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260409-0261 | 2026-04-09T05:47:27.648Z | targeted | no | no | Playwright MCP Vercel Targeted QA - AI assistant rerun validation | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260409-0260 | 2026-04-09T04:23:23.914Z | targeted | no | no | Playwright MCP Vercel Targeted QA - core routes + dashboard + AI sidebar sanity | 15 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260409-0259 | 2026-04-08T22:37:58.733Z | broad | yes | yes | Playwright MCP Production QA - Frontend + AI Assistant v8.11.4 broad baseline refresh | 14 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260409-0258 | 2026-04-08T16:51:20.163Z | targeted | yes | no | Vercel Targeted Release Validation - v8.11.4 canonical deploy success | 3 | 1 | 0 | 0 | 0 | 0 |
@@ -413,5 +413,3 @@ Latest run: QA-20260409-0260 (2026-04-09T04:23:23.914Z)
 | QA-20260406-0245 | 2026-04-06T10:33:12.537Z | targeted | no | no | Vercel targeted QA - latest production smoke refresh after GitLab-first topology cleanup | 9 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260406-0244 | 2026-04-05T22:02:34.705Z | targeted | no | yes | Vercel targeted QA - latest production AI sidebar smoke refresh after canonical routing chore | 9 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260406-0243 | 2026-04-05T17:28:17.948Z | targeted | no | no | Vercel targeted QA - latest production deploy smoke refresh after canonical routing chore | 8 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260405-0242 | 2026-04-05T11:15:27.092Z | targeted | no | no | QA tracker closeout - response process detail production fixes | 1 | 3 | 0 | 0 | 0 | 0 |
-| QA-20260405-0241 | 2026-04-05T11:14:20.847Z | targeted | no | no | Vercel targeted QA - response process detail visibility after streaming fix | 4 | 0 | 0 | 0 | 0 | 0 |
