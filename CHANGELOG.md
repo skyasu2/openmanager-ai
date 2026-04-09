@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.7](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.6...v8.11.7) (2026-04-09)
+
+
+### Features
+
+* **ai-chat:** complete sprint2 clarification, transform, status UX ([12fda70](https://gitlab.com/skyasu2/openmanager-ai/-/commit/12fda707c41b6a65668619b444e8d34d78e9a34b))
+
 ## [8.11.6](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.5...v8.11.6) (2026-04-09)
 
 
