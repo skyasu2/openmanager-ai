@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.6](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.5...v8.11.6) (2026-04-09)
+
+
+### Bug Fixes
+
+* **ai-chat:** harden stream flush and improve blocked-input UX ([3339910](https://gitlab.com/skyasu2/openmanager-ai/-/commit/3339910aff5537f52226d5bf6388368b44fa5db1))
+* **ai-engine:** improve routing accuracy and Advisor model priority ([2afe3cd](https://gitlab.com/skyasu2/openmanager-ai/-/commit/2afe3cd5c8ada222e03d09a35a2b59208cb46c1e))
+
+
+### Tests
+
+* **qa:** record QA-20260409-0261 and QA-20260409-0262 rerun evidence ([f14fe5d](https://gitlab.com/skyasu2/openmanager-ai/-/commit/f14fe5de0c2ad14a783872304dd9305c5e168e36))
+
 ## [8.11.5](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.4...v8.11.5) (2026-04-09)
 
 
