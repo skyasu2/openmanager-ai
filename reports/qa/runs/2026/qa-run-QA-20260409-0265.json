@@ -1,0 +1,93 @@
+{
+  "runId": "QA-20260409-0265",
+  "recordedAt": "2026-04-09T10:45:00.000Z",
+  "recordedAtKst": "2026-04-09 19:45:00 KST",
+  "runTitle": "Playwright MCP Vercel Targeted QA - Sprint 3 ai-chat improvement validation (v8.11.8)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "version": "8.11.8"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "version": "8.11.8",
+  "coveragePacks": ["ai-core", "dashboard-core", "core-routes-smoke"],
+  "coveredSurfaces": [
+    "/",
+    "/dashboard",
+    "AI 어시스턴트 사이드바 열기/닫기",
+    "AI 기본 채팅 응답 (메모리 높은 서버)",
+    "피드백 버튼 👍/👎 렌더링 (도움이 됐어요/개선이 필요해요)",
+    "에이전트 라우팅 - 전체 서버 이상 탐지 · 트렌드 예측",
+    "ThinkingProcessVisualizer toggle - 코드 구현 검증",
+    "콘솔 에러 0건"
+  ],
+  "skippedSurfaces": [
+    "ThinkingProcessVisualizer toggle 런타임 직접 관찰 (thinking steps가 현재 쿼리에서 미생성)",
+    "Langfuse 피드백 E2E 전송 확인 (백엔드 전용)",
+    "Reporter full report flow",
+    "Analyst advanced drilldown"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "testCases": [
+    {
+      "id": "TC-01",
+      "description": "v8.11.8 배포 버전 확인",
+      "result": "pass",
+      "evidence": "footer에서 v8.11.8 확인 (deploy job success 후 약 1분 내 반영)"
+    },
+    {
+      "id": "TC-02",
+      "description": "AI 기본 채팅 응답 - 메모리 높은 서버 조회",
+      "result": "pass",
+      "evidence": "db-mysql-dc1-primary(67%), db-mysql-dc1-replica(59%), api-was-dc1-01(58%) 정확히 반환"
+    },
+    {
+      "id": "TC-03",
+      "description": "피드백 버튼 👍/👎 렌더링 (Sprint 3-A)",
+      "result": "pass",
+      "evidence": "모든 AI 응답 메시지에 '도움이 됐어요'/'개선이 필요해요' 버튼 표시 확인"
+    },
+    {
+      "id": "TC-04",
+      "description": "에이전트 라우팅 - 전체 서버 이상 탐지 · 트렌드 예측",
+      "result": "pass",
+      "evidence": "분석 근거: 도구: 전체 서버 이상 탐지 · 트렌드 예측 · 기간: 최근 1시간 확인"
+    },
+    {
+      "id": "TC-05",
+      "description": "ThinkingProcessVisualizer toggle 구현 검증 (Sprint 3-C)",
+      "result": "pass",
+      "evidence": "코드 검증: isExpanded useState 기본값 false, isActive→auto-expand, button toggle 구현 확인. 현재 쿼리에서 thinking steps 미생성으로 런타임 직접 관찰은 스킵"
+    },
+    {
+      "id": "TC-06",
+      "description": "콘솔 에러 0건",
+      "result": "pass",
+      "evidence": "Playwright MCP 세션 전체 콘솔 에러 없음 (warning 10건은 preload resource 관련, 무시 가능)"
+    }
+  ],
+  "notes": [
+    "Sprint 3 구현 사항: 3-A(useChatFeedback 테스트 7개), 3-C(ThinkingProcessVisualizer toggle) 프로덕션 반영 확인",
+    "피드백 버튼(👍/👎)은 모든 AI 응답에 렌더링 확인",
+    "ThinkingProcessVisualizer의 isExpanded toggle은 코드 레벨에서 확인 (thinking steps는 확장 사고 파이프라인에서만 생성되어 일반 쿼리에서 미렌더링됨)",
+    "Cloud Run AI 이상 탐지 라우팅 정상 (전체 서버 이상 탐지 · 트렌드 예측 도구 활용)",
+    "GitLab CI deploy job: success → v8.11.8 Vercel production 반영 완료"
+  ],
+  "expertAssessments": [],
+  "evidenceFiles": [
+    "reports/qa/evidence/qa-20260409-sprint3-tc01-v8118.png",
+    "reports/qa/evidence/qa-20260409-sprint3-tc02-ai-response.png",
+    "reports/qa/evidence/qa-20260409-sprint3-tc03-analysis-response.png"
+  ]
+}

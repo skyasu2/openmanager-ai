@@ -356,7 +356,7 @@ generateText({
 ```
 [x] 3-A: Langfuse 피드백 👍/👎 버튼 — useChatFeedback 단위 테스트 7개 추가 (traceId없음·silent-fallback·sessionRef 최신값 포함)
 [x] 3-C: Thinking steps 기본 축소 토글 — ThinkingProcessVisualizer isExpanded 추가, isActive 중 자동 펼침·완료 시 자동 접힘
-[ ] QA-0265 + v8.11.8 태그 배포
+[x] QA-0265 + v8.11.8 태그 배포 — 6/6 pass, 2026-04-09
 ```
 
 ### Sprint 4 (장기, 별도 계획 필요)

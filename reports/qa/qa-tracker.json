@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-09T08:00:37.411Z"
+    "updatedAt": "2026-04-09T10:45:00.000Z"
   },
   "sequence": {
-    "nextRunNumber": 264
+    "nextRunNumber": 266
   },
   "summary": {
-    "totalRuns": 238,
-    "totalChecks": 1856,
-    "totalPassed": 1784,
+    "totalRuns": 239,
+    "totalChecks": 1862,
+    "totalPassed": 1790,
     "totalFailed": 66,
     "completionRate": 100,
     "completedItems": 285,
@@ -21,8 +21,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260409-0259",
     "lastRecordedAt": "2026-04-08T22:37:58.733Z",
-    "latestRecordedRunId": "QA-20260409-0264",
-    "latestRecordedAt": "2026-04-09T09:45:00.000Z"
+    "latestRecordedRunId": "QA-20260409-0265",
+    "latestRecordedAt": "2026-04-09T10:45:00.000Z"
   },
   "items": {
     "modal-backdrop-close": {
