@@ -145,15 +145,24 @@ HUSKY=0 git push gitlab main   # hook 스킵 (긴급 시)
 ### Step 6: Runner 설치 및 등록
 
 ```bash
-# WSL2 터미널에서 실행
-bash scripts/ci/setup-gitlab-runner.sh glrt-xxxxxxxxxxxx
+# gitlab-runner 설치 (apt)
+curl -L "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh" | sudo bash
+sudo apt-get install gitlab-runner
+
+# Runner 등록 (shell executor)
+sudo gitlab-runner register \
+  --url "https://gitlab.com/" \
+  --token "glrt-xxxxxxxxxxxx" \
+  --executor "shell" \
+  --description "WSL2 Docker Runner" \
+  --tag-list "wsl2-docker"
+
+# systemd 서비스 시작
+sudo systemctl enable --now gitlab-runner
 ```
 
-스크립트가 자동으로 수행:
-1. gitlab-runner 설치 (apt)
-2. shell executor로 runner 등록
-3. systemd 서비스 등록 및 시작
-4. GitLab 연결 verify
+> ℹ️ `scripts/ci/setup-gitlab-runner.sh`는 일회성 설정 스크립트로 v8.11.4에서 제거됨.
+> 위 명령어로 직접 수행하거나 GitLab 공식 문서 참조.
 
 ### Step 7: 동작 확인
 
