@@ -32,7 +32,7 @@ echo "========================================"
 echo "  - Strict changed-doc gate: ${STRICT_DOCS_MODE}"
 
 # 1. Markdown Lint 검사 (Active / Historical 분리)
-echo -e "\n${YELLOW}[1/5] Markdown Lint 검사${NC}"
+echo -e "\n${YELLOW}[1/6] Markdown Lint 검사${NC}"
 
 echo "  - Active docs lint"
 if $FIX_MODE; then
@@ -76,7 +76,7 @@ else
 fi
 
 # 2. 내부 링크 유효성 검사 (docs 전체)
-echo -e "\n${YELLOW}[2/5] 내부 링크 유효성 검사 (docs 전체)${NC}"
+echo -e "\n${YELLOW}[2/6] 내부 링크 유효성 검사 (docs 전체)${NC}"
 if node scripts/docs/check-internal-links.js "$DOCS_DIR" 2>&1 | tee "$REPORTS_DIR/internal-links.log"; then
   echo -e "${GREEN}✅ 내부 링크 검사 통과${NC}"
 else
@@ -85,7 +85,7 @@ else
 fi
 
 # 3. 오래된 문서 감지 (90일 이상)
-echo -e "\n${YELLOW}[3/5] 오래된 문서 감지 (90일+)${NC}"
+echo -e "\n${YELLOW}[3/6] 오래된 문서 감지 (90일+)${NC}"
 STALE_DOCS=$(find "$DOCS_DIR" -name "*.md" -not -path "*/archived/*" -mtime +90 -type f 2>/dev/null | head -10)
 
 if [[ -z "$STALE_DOCS" ]]; then
@@ -99,7 +99,7 @@ else
 fi
 
 # 4. 문서 예산 리포트
-echo -e "\n${YELLOW}[4/5] 문서 예산 리포트${NC}"
+echo -e "\n${YELLOW}[4/6] 문서 예산 리포트${NC}"
 DOC_BUDGET_ARGS=(--write)
 if [[ "$STRICT_DOCS_MODE" == "true" ]]; then
   DOC_BUDGET_ARGS+=(--strict)
@@ -113,7 +113,7 @@ else
 fi
 
 # 5. 문서 통계
-echo -e "\n${YELLOW}[5/5] 문서 통계${NC}"
+echo -e "\n${YELLOW}[5/6] 문서 통계${NC}"
 TOTAL_DOCS=$(find "$DOCS_DIR" -name "*.md" -type f | wc -l)
 TOTAL_LINES=$(find "$DOCS_DIR" -name "*.md" -type f -exec cat {} \; | wc -l)
 LARGE_DOCS=$(find "$DOCS_DIR" -name "*.md" -type f -exec wc -l {} \; | awk '$1 > 400 {print $2}' | wc -l)
@@ -124,6 +124,15 @@ echo -e "  📏 400줄 초과 문서: ${YELLOW}${LARGE_DOCS}${NC}개"
 
 node scripts/docs/generate-inventory.js >/dev/null
 echo -e "  📦 인벤토리 갱신: ${GREEN}reports/docs/docs-inventory.md${NC}"
+
+# 6. 컴포넌트 의존도 맵 갱신
+echo -e "\n${YELLOW}[6/6] 컴포넌트 의존도 맵 갱신${NC}"
+if node scripts/docs/generate-component-dependency-map.js >/dev/null 2>&1; then
+  echo -e "  🗺️  의존도 맵 갱신: ${GREEN}docs/reference/architecture/system/component-dependency-map.md${NC}"
+  echo -e "  📊 기계판독 리포트: ${GREEN}reports/docs/component-dependency-map.json${NC}"
+else
+  echo -e "  ${YELLOW}⚠️  의존도 맵 갱신 실패 (non-blocking)${NC}"
+fi
 
 echo -e "\n========================================"
 echo -e "${BLUE}📚 문서 검증 완료${NC}"

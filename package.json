@@ -24,6 +24,8 @@
     "docs:budget": "node scripts/docs/doc-budget-report.js --write",
     "docs:budget:strict": "node scripts/docs/doc-budget-report.js --write --strict",
     "docs:inventory": "node scripts/docs/generate-inventory.js",
+    "docs:components:map": "node scripts/docs/generate-component-dependency-map.js",
+    "docs:components:verify": "bash scripts/docs/verify-component-dependency-map.sh",
     "docs:check:wsl": "bash scripts/wsl/docs-management-check.sh",
     "docs:check:wsl:strict": "bash scripts/wsl/docs-management-check.sh --strict",
     "docs:toc": "npx doctoc docs/README.md --github --notitle",

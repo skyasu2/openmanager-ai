@@ -18,6 +18,7 @@
 5. 자동 점검: `scripts/docs/check-docs.sh`, `scripts/docs/doc-budget-report.js`
 6. WSL 전용 점검 래퍼: `scripts/wsl/docs-management-check.sh`
 7. 자동 생성 인벤토리: `reports/docs/docs-inventory.md`
+8. 자동 생성 컴포넌트 맵: `docs/reference/architecture/system/component-dependency-map.md`, `reports/docs/component-dependency-map.json`
 
 ## 운영 규칙
 
@@ -72,9 +73,17 @@ npm run docs:budget
 
 # 문서 인벤토리 갱신 (reports/docs/docs-inventory.md)
 node scripts/docs/generate-inventory.js
+
+# 컴포넌트 의존도 맵 갱신 (markdown + json)
+npm run docs:components:map
+
+# 컴포넌트 의존도 맵 drift 검증 (CI hard gate)
+npm run docs:components:verify
 ```
 
 CI에서는 `DOCS_STRICT_CHANGED=true`와 `DOCS_DIFF_RANGE`를 함께 전달해 PR/Push diff 기준으로 변경 문서를 판정한다.
+로컬 pre-push에서는 `src/components/**` 또는 컴포넌트 맵 산출물 변경 시 `docs:components:verify`를 자동 실행한다.
+강제 실행이 필요하면 `FORCE_COMPONENT_MAP_VERIFY=true git push`를 사용한다.
 
 ## WSL 문서 관리 영역
 

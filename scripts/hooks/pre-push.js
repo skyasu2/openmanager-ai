@@ -32,6 +32,9 @@ const {
   validateChangedJsonArtifacts,
 } = require('./pre-push-docs-artifacts');
 const {
+  shouldVerifyComponentDependencyMap,
+} = require('./pre-push-component-map');
+const {
   createTypeCheckStatusFile,
   readTypeCheckStatus,
   cleanupTypeCheckStatus,
@@ -91,6 +94,7 @@ let testStatus = 'pending';
 let typeCheckStatus = 'pending';
 let validationMode = 'standard';
 let selectedTestMode = 'quick';
+let componentMapStatus = 'pending';
 
 const DOM_TEST_MANIFEST = loadDomTestManifest(cwd);
 
@@ -279,6 +283,34 @@ function exitIfGuardFailed(result) {
   if (result?.ok === false) {
     process.exit(1);
   }
+}
+
+function runComponentMapVerification(changedFilesResult) {
+  const force = process.env.FORCE_COMPONENT_MAP_VERIFY === 'true';
+  const decision = shouldVerifyComponentDependencyMap({
+    changedFilesResult,
+    force,
+  });
+
+  if (!decision.shouldRun) {
+    componentMapStatus = `skipped-${decision.reason}`;
+    console.log(`⚪ Component map verify skipped (${decision.reason})`);
+    return { ok: true };
+  }
+
+  console.log('🗺️ Component dependency map verify...');
+  const success = runNpm(['run', 'docs:components:verify']);
+  if (!success) {
+    componentMapStatus = 'failed';
+    console.log('❌ Component dependency map verification failed - push blocked');
+    console.log('');
+    console.log('💡 Fix: npm run docs:components:map');
+    return { ok: false, reason: 'component-map-verify-failed' };
+  }
+
+  componentMapStatus = 'passed';
+  console.log('✅ Component dependency map verify passed');
+  return { ok: true };
 }
 
 // ─── Tests ───────────────────────────────────────────────────────────────
@@ -550,6 +582,14 @@ function printSummary(duration) {
   } else if (typeCheckStatus === 'delegated') {
     console.log('  ⚪ TypeScript covered by full build');
   }
+  if (componentMapStatus === 'passed') {
+    console.log('  ✅ Component map verify passed');
+  } else if (componentMapStatus.startsWith('skipped-')) {
+    const reason = componentMapStatus.replace('skipped-', '');
+    console.log(`  ⚪ Component map verify skipped (${reason})`);
+  } else if (componentMapStatus === 'failed') {
+    console.log('  ❌ Component map verify failed');
+  }
   if (validationMode === 'guard-only') {
     console.log('  ⚪ Full build/test/type-check → CI (GitLab/Vercel)');
   } else if (!QUICK_PUSH && !isLimitedMode) {
@@ -631,6 +671,8 @@ function main() {
       exitIfGuardFailed(checkEnvironment(cwd, runNpm));
     }
   }
+
+  exitIfGuardFailed(runComponentMapVerification(changedFilesResult));
 
   const duration = Math.round((Date.now() - startTime) / 1000);
   printSummary(duration);

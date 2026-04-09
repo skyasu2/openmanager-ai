@@ -228,6 +228,8 @@ validate:
     - npm run test:quick
     - echo "▶ API/AI 로컬 계약 테스트 실행..."
     - npm run test:contract
+    - echo "▶ Frontend 컴포넌트 의존도 맵 동기화 검증..."
+    - npm run docs:components:verify
     - echo "✅ validate 통과"
   timeout: 15 minutes
   interruptible: true

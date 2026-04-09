@@ -1,0 +1,231 @@
+{
+  "generatedAt": "2026-04-09",
+  "scope": {
+    "nodes": "src/components/**/*.tsx (excluding test/stories)",
+    "edges": "static import/export-from resolved inside src/components"
+  },
+  "metrics": {
+    "componentSourceLines": 26151,
+    "componentNodes": 141,
+    "componentEdges": 127,
+    "graphDensity": 0.006434,
+    "aliasEdges": 43,
+    "relativeEdges": 84,
+    "isolatedComponents": 30,
+    "sccCycleGroups": 0,
+    "largestCycleSize": 0
+  },
+  "topInDegree": [
+    {
+      "component": "ui/dialog",
+      "inDegree": 5
+    },
+    {
+      "component": "ai/analysis/constants",
+      "inDegree": 4
+    },
+    {
+      "component": "ai/AIAssistantIconPanel",
+      "inDegree": 3
+    },
+    {
+      "component": "dashboard/EnhancedServerModal.components",
+      "inDegree": 3
+    },
+    {
+      "component": "dashboard/shared/StatCell",
+      "inDegree": 3
+    },
+    {
+      "component": "error/ServerCardErrorBoundary",
+      "inDegree": 3
+    },
+    {
+      "component": "ai-sidebar/EnhancedAIChat",
+      "inDegree": 2
+    },
+    {
+      "component": "ai/AgentHandoffBadge",
+      "inDegree": 2
+    },
+    {
+      "component": "ai/AIContentArea",
+      "inDegree": 2
+    },
+    {
+      "component": "ai/AnalysisBasisBadge",
+      "inDegree": 2
+    },
+    {
+      "component": "ai/MarkdownRenderer",
+      "inDegree": 2
+    },
+    {
+      "component": "ai/MessageActions",
+      "inDegree": 2
+    }
+  ],
+  "topOutDegree": [
+    {
+      "component": "ai-sidebar/EnhancedAIChat",
+      "outDegree": 9
+    },
+    {
+      "component": "ai/AIWorkspace",
+      "outDegree": 9
+    },
+    {
+      "component": "ai-sidebar/AISidebarV4",
+      "outDegree": 7
+    },
+    {
+      "component": "dashboard/EnhancedServerModal",
+      "outDegree": 7
+    },
+    {
+      "component": "dashboard/DashboardHeader",
+      "outDegree": 6
+    },
+    {
+      "component": "ai/AIWorkspaceMessage",
+      "outDegree": 5
+    },
+    {
+      "component": "dashboard/ServerDashboard",
+      "outDegree": 5
+    },
+    {
+      "component": "shared/FeatureCardModal",
+      "outDegree": 5
+    },
+    {
+      "component": "ai-sidebar/SidebarMessage",
+      "outDegree": 4
+    },
+    {
+      "component": "ai/analysis/ServerResultCard",
+      "outDegree": 4
+    },
+    {
+      "component": "dashboard/alert-history/AlertHistoryModal",
+      "outDegree": 3
+    },
+    {
+      "component": "dashboard/DashboardContent",
+      "outDegree": 3
+    }
+  ],
+  "topDomainEdges": [
+    {
+      "fromDomain": "dashboard",
+      "toDomain": "dashboard",
+      "count": 29
+    },
+    {
+      "fromDomain": "ai",
+      "toDomain": "ai",
+      "count": 28
+    },
+    {
+      "fromDomain": "ai-sidebar",
+      "toDomain": "ai-sidebar",
+      "count": 13
+    },
+    {
+      "fromDomain": "shared",
+      "toDomain": "shared",
+      "count": 10
+    },
+    {
+      "fromDomain": "ai-sidebar",
+      "toDomain": "ai",
+      "count": 8
+    },
+    {
+      "fromDomain": "dashboard",
+      "toDomain": "ui",
+      "count": 7
+    },
+    {
+      "fromDomain": "dashboard",
+      "toDomain": "shared",
+      "count": 5
+    },
+    {
+      "fromDomain": "ai-sidebar",
+      "toDomain": "ui",
+      "count": 3
+    },
+    {
+      "fromDomain": "dashboard",
+      "toDomain": "error",
+      "count": 3
+    },
+    {
+      "fromDomain": "ui",
+      "toDomain": "ui",
+      "count": 3
+    },
+    {
+      "fromDomain": "ai",
+      "toDomain": "ai-sidebar",
+      "count": 2
+    },
+    {
+      "fromDomain": "ai",
+      "toDomain": "shared",
+      "count": 2
+    },
+    {
+      "fromDomain": "dashboard",
+      "toDomain": "charts",
+      "count": 2
+    },
+    {
+      "fromDomain": "providers",
+      "toDomain": "providers",
+      "count": 2
+    },
+    {
+      "fromDomain": "shared",
+      "toDomain": "unified-profile",
+      "count": 2
+    },
+    {
+      "fromDomain": "unified-profile",
+      "toDomain": "unified-profile",
+      "count": 2
+    },
+    {
+      "fromDomain": "ai",
+      "toDomain": "dashboard",
+      "count": 1
+    },
+    {
+      "fromDomain": "ai",
+      "toDomain": "error",
+      "count": 1
+    },
+    {
+      "fromDomain": "ai-sidebar",
+      "toDomain": "error",
+      "count": 1
+    },
+    {
+      "fromDomain": "charts",
+      "toDomain": "error",
+      "count": 1
+    },
+    {
+      "fromDomain": "home",
+      "toDomain": "shared",
+      "count": 1
+    },
+    {
+      "fromDomain": "unified-profile",
+      "toDomain": "dashboard",
+      "count": 1
+    }
+  ],
+  "topCycles": []
+}

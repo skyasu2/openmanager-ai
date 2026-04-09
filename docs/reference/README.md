@@ -46,6 +46,7 @@
 
 ### System and Design
 - [System Architecture (Current)](./architecture/system/system-architecture-current.md)
+- [Frontend Component Dependency Map](./architecture/system/component-dependency-map.md)
 - [Folder Structure](./architecture/folder-structure.md)
 - [Design Consistency](./architecture/design/consistency.md)
 

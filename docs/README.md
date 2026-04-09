@@ -29,8 +29,9 @@ AI Native 도구(Claude Code, Codex, Gemini)로 서버 모니터링 플랫폼을
 ### 결과물 파악 (무엇을 만들었나)
 1. [Quick Start](./QUICK-START.md)
 2. [System Architecture](./reference/architecture/system/system-architecture-current.md)
-3. [AI Engine Architecture](./reference/architecture/ai/ai-engine-architecture.md)
-4. [API Endpoints](./reference/api/endpoints.md)
+3. [Frontend Component Dependency Map](./reference/architecture/system/component-dependency-map.md)
+4. [AI Engine Architecture](./reference/architecture/ai/ai-engine-architecture.md)
+5. [API Endpoints](./reference/api/endpoints.md)
 
 ### 개발환경 파악 (어떻게 만들었나)
 1. [개발환경 허브](./development/README.md)
