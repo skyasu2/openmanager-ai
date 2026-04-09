@@ -1,0 +1,83 @@
+{
+  "runId": "QA-20260409-0267",
+  "recordedAt": "2026-04-09T13:35:00.812Z",
+  "recordedAtKst": "2026-04-09 22:35:00 KST",
+  "runTitle": "Vercel Production Post-Deploy Smoke - v8.11.8",
+  "owner": "codex",
+  "source": "vercel-cli+smoke-script",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "q9sLLaw5dMDeDbCacX11sTe8fE1t",
+    "deploymentUrl": "https://openmanager-4bc1f5p3k-skyasus-projects.vercel.app",
+    "commitSha": "858a084b36b15c2c8d6697a56c6a646349a63b31"
+  },
+  "scope": "broad",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/",
+    "/validation",
+    "/api/version",
+    "production alias routing"
+  ],
+  "skippedSurfaces": ["full Playwright journey", "AI sidebar interaction flow"],
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Post-deploy smoke plus component map gate keeps release safety baseline for this direct deploy path.",
+      "nextAction": "Run full Playwright release-gate pack on next scheduled release tag pipeline."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-09T22:33:41+09:00",
+      "summary": "Checked current billing period after direct production deploy; no unexpected billed usage reported.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "Production deployment URL",
+      "url": "https://openmanager-4bc1f5p3k-skyasus-projects.vercel.app/"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Smoke command output reference",
+      "url": "https://openmanager-ai.vercel.app/api/version"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "CI runner unavailable, so deployment used vercel --prod direct path.",
+    "Post-deploy smoke passed on first attempt for /, /validation, /api/version."
+  ],
+  "links": [
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel Production Alias",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-09 21:04:11 KST
+> Generated at: 2026-04-09 22:35:01 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 238 |
-| Total Checks | 1856 |
-| Passed | 1784 |
+| Total Runs | 239 |
+| Total Checks | 1859 |
+| Passed | 1787 |
 | Failed | 66 |
 | Completed Items | 285 |
 | Pending Items | 0 |
@@ -18,50 +18,45 @@
 | Expert Domains Tracked | 8 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260409-0264 (2026-04-09T09:45:00.000Z) |
-| Latest Recorded Run | QA-20260409-0266 (2026-04-09T12:04:11.201Z) |
+| Last Counted Run | QA-20260409-0267 (2026-04-09T13:35:00.812Z) |
+| Latest Recorded Run | QA-20260409-0267 (2026-04-09T13:35:00.812Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260409-0266 (2026-04-09T12:04:11.201Z)
+Latest run: QA-20260409-0267 (2026-04-09T13:35:00.812Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| Test Automation Architect | appropriate | no | Run full Playwright release-gate pack on next scheduled release tag pipeline. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | npx vercel usage --format json --non-interactive 재확인: effectiveCost 5.2589 USD, billedCost ~0 USD, 비정상 급증 없음. |
+| vercel | cli | checked | normal | Checked current billing period after direct production deploy; no unexpected billed usage reported. |
 
 ## Coverage (Latest Run)
 
-- Scope: targeted
-- Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: dpl_GPGUJn324wHFervaNAsicgvQH5Y8 / SHA 7e727180
-- Coverage Packs: ai-core, dashboard-core
-- Covered Surfaces: /dashboard, /dashboard/ai-assistant, AI starter prompt send + stream response, Clarification dialog render + skip execution, Thinking process toggle render + expand, Feedback submit API 200, Console errors zero
-- Skipped Surfaces: Reporter full report flow, Analyst full drilldown, Cloud Run admin observability (/monitoring, /monitoring/traces), Auth error/success/privacy routes
+- Scope: broad
+- Release-Facing: yes
+- Counts Toward Summary: yes
+- Deployment: q9sLLaw5dMDeDbCacX11sTe8fE1t / SHA 858a084b
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
+- Covered Surfaces: /, /validation, /api/version, production alias routing
+- Skipped Surfaces: full Playwright journey, AI sidebar interaction flow
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Production URL | [Production URL](https://openmanager-ai.vercel.app/dashboard/ai-assistant) | - |
-| vercel-deployment | Current production deployment | [Current production deployment](https://openmanager-fldh3n45b-skyasus-projects.vercel.app/) | - |
+| vercel-deployment | Vercel Production Alias | [Vercel Production Alias](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | AI assistant focused check screenshot | `reports/qa/evidence/qa-20260409-ai-assistant-focused-check.png` | - |
-| playwright-console | AI assistant focused check console errors | `reports/qa/evidence/qa-20260409-ai-assistant-focused-console.log` | - |
-| playwright-network | AI assistant focused check network log | `reports/qa/evidence/qa-20260409-ai-assistant-focused-network.log` | - |
-| playwright-screenshot | thinking-visualizer-screenshot-58388f098f1d860ba4a173316c4c5d0737d12a2f.png | `test-results/manual-thinking-visualizer/ai-thinking-visualizer-Pro-94b5c-at-triggers-reasoning-steps-chromium/attachments/thinking-visualizer-screenshot-58388f098f1d860ba4a173316c4c5d0737d12a2f.png` | - |
-| playwright-screenshot | thinking-visualizer.png | `test-results/manual-thinking-visualizer/ai-thinking-visualizer-Pro-94b5c-at-triggers-reasoning-steps-chromium/thinking-visualizer.png` | - |
-| playwright-trace | ai-thinking-visualizer-Pro-94b5c-at-triggers-reasoning-steps-chromium | `test-results/manual-thinking-visualizer/ai-thinking-visualizer-Pro-94b5c-at-triggers-reasoning-steps-chromium/trace.zip` | - |
+| playwright-report | Production deployment URL | [Production deployment URL](https://openmanager-4bc1f5p3k-skyasus-projects.vercel.app/) | - |
+| playwright-console | Smoke command output reference | [Smoke command output reference](https://openmanager-ai.vercel.app/api/version) | - |
 
 ## Expert Domain Open Gaps
 
@@ -395,6 +390,7 @@ Latest run: QA-20260409-0266 (2026-04-09T12:04:11.201Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260409-0267 | 2026-04-09T13:35:00.812Z | broad | yes | yes | Vercel Production Post-Deploy Smoke - v8.11.8 | 3 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260409-0266 | 2026-04-09T12:04:11.201Z | targeted | no | no | Vercel Playwright MCP - AI Assistant Focused Check | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260409-0264 | 2026-04-09T09:45:00.000Z | targeted | yes | yes | Playwright MCP Vercel Targeted QA - Sprint 1+2 ai-chat improvement validation (v8.11.7) | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260409-0263 | 2026-04-09T08:00:37.411Z | targeted | no | no | Playwright MCP Vercel Targeted QA - AI assistant rerun-3 validation | 12 | 0 | 0 | 0 | 0 | 0 |
@@ -414,4 +410,3 @@ Latest run: QA-20260409-0266 (2026-04-09T12:04:11.201Z)
 | QA-20260407-0249 | 2026-04-07T11:55:13.126Z | broad | yes | yes | Playwright MCP Production QA - Frontend + AI Assistant v8.11.0 broad baseline refresh | 18 | 0 | 2 | 0 | 0 | 2 |
 | QA-20260407-0248 | 2026-04-07T03:31:27.352Z | targeted | no | no | Vercel Playwright QA - AI response process visibility verification | 7 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260406-0247 | 2026-04-06T14:32:16.188Z | targeted | no | no | Vercel targeted QA - v8.10.10 production smoke after release guard hardening | 8 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260406-0246 | 2026-04-06T10:57:23.899Z | broad | yes | yes | Playwright MCP Production QA - Frontend + AI Assistant v8.10.9 broad baseline refresh | 13 | 0 | 0 | 0 | 0 | 1 |

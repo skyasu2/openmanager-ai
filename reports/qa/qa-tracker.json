@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-09T12:04:11.201Z"
+    "updatedAt": "2026-04-09T13:35:00.812Z"
   },
   "sequence": {
-    "nextRunNumber": 267
+    "nextRunNumber": 268
   },
   "summary": {
-    "totalRuns": 238,
-    "totalChecks": 1856,
-    "totalPassed": 1784,
+    "totalRuns": 239,
+    "totalChecks": 1859,
+    "totalPassed": 1787,
     "totalFailed": 66,
     "completionRate": 100,
     "completedItems": 285,
@@ -19,10 +19,10 @@
     "wontFixItems": 13,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260409-0264",
-    "lastRecordedAt": "2026-04-09T09:45:00.000Z",
-    "latestRecordedRunId": "QA-20260409-0266",
-    "latestRecordedAt": "2026-04-09T12:04:11.201Z"
+    "lastRunId": "QA-20260409-0267",
+    "lastRecordedAt": "2026-04-09T13:35:00.812Z",
+    "latestRecordedRunId": "QA-20260409-0267",
+    "latestRecordedAt": "2026-04-09T13:35:00.812Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -23412,6 +23412,91 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260409-0267",
+      "recordedAt": "2026-04-09T13:35:00.812Z",
+      "recordedAtKst": "2026-04-09 22:35:00 KST",
+      "title": "Vercel Production Post-Deploy Smoke - v8.11.8",
+      "owner": "codex",
+      "source": "vercel-cli+smoke-script",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260409-0267.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "q9sLLaw5dMDeDbCacX11sTe8fE1t",
+        "deploymentUrl": "https://openmanager-4bc1f5p3k-skyasus-projects.vercel.app",
+        "commitSha": "858a084b36b15c2c8d6697a56c6a646349a63b31"
+      },
+      "scope": "broad",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveredSurfaces": [
+        "/",
+        "/validation",
+        "/api/version",
+        "production alias routing"
+      ],
+      "skippedSurfaces": [
+        "full Playwright journey",
+        "AI sidebar interaction flow"
+      ],
+      "checks": {
+        "total": 3,
+        "passed": 3,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Post-deploy smoke plus component map gate keeps release safety baseline for this direct deploy path.",
+          "nextAction": "Run full Playwright release-gate pack on next scheduled release tag pipeline."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-09T22:33:41+09:00",
+          "summary": "Checked current billing period after direct production deploy; no unexpected billed usage reported.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "Production deployment URL",
+          "url": "https://openmanager-4bc1f5p3k-skyasus-projects.vercel.app/"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Smoke command output reference",
+          "url": "https://openmanager-ai.vercel.app/api/version"
+        }
+      ],
+      "links": [
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel Production Alias",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -23488,17 +23573,17 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 103,
-      "appropriateCount": 96,
+      "seenCount": 104,
+      "appropriateCount": 97,
       "partialCount": 7,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260409-0259",
-      "lastSeenAt": "2026-04-08T22:37:58.733Z",
+      "lastRunId": "QA-20260409-0267",
+      "lastSeenAt": "2026-04-09T13:35:00.812Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Core route, dashboard core, and one authenticated AI streaming path were exercised on live production with durable evidence.",
-      "lastNextAction": ""
+      "lastRationale": "Post-deploy smoke plus component map gate keeps release safety baseline for this direct deploy path.",
+      "lastNextAction": "Run full Playwright release-gate pack on next scheduled release tag pipeline."
     },
     "data-metrics-quality": {
       "domainId": "data-metrics-quality",
