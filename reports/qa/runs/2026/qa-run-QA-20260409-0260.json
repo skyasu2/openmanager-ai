@@ -1,0 +1,122 @@
+{
+  "runId": "QA-20260409-0260",
+  "recordedAt": "2026-04-09T04:23:23.914Z",
+  "recordedAtKst": "2026-04-09 13:23:23 KST",
+  "runTitle": "Playwright MCP Vercel Targeted QA - core routes + dashboard + AI sidebar sanity",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_FnzN8yJFRkS5TUkvQYWREJwtJGh2",
+    "deploymentUrl": "https://openmanager-d30ys163z-skyasus-projects.vercel.app",
+    "commitSha": "8ca2b7eb59ff9de13b6d6ab817cfcd043af38d5a"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "landing render + v8.11.4 badge",
+    "/main -> / redirect",
+    "/login OAuth/email/guest entry points",
+    "/privacy render and backlink",
+    "/auth/error fallback actions",
+    "/auth/success -> /login?error=no_user redirect",
+    "synthetic 404 page render",
+    "system start countdown and /system-boot -> /dashboard",
+    "dashboard counters 15/14/1/0 and Top5 resource warning list",
+    "AI sidebar open/close",
+    "AI query response for all-server summary",
+    "network proof: POST /api/ai/supervisor/stream/v2 => 200",
+    "/api/health 200 connected services",
+    "/api/version 200 with v8.11.4 / Next.js 16.1.6",
+    "profile menu open and ESC close"
+  ],
+  "skippedSurfaces": [
+    "guest PIN explicit submission flow",
+    "/dashboard/ai-assistant fullscreen workspace",
+    "Reporter full report flow",
+    "Analyst advanced drilldown/forecast flow",
+    "Cloud Run admin /monitoring and /monitoring/traces",
+    "server detail 3-tab modal path"
+  ],
+  "checks": {
+    "total": 15,
+    "passed": 15,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-09T13:14:00+09:00",
+      "summary": "Current billing period reviewed after targeted Vercel QA; effective 4.6046 USD, billed 0.0000 USD, no unexpected billed usage spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "targeted QA evidence summary",
+      "path": "reports/qa/evidence/qa-20260409-vercel-targeted-playwright-qa.md"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "targeted landing screenshot",
+      "path": "reports/qa/evidence/qa-20260409-vercel-targeted-landing.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "targeted dashboard + ai sidebar screenshot",
+      "path": "reports/qa/evidence/qa-20260409-vercel-targeted-dashboard-ai-sidebar.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "targeted console errors log",
+      "path": "reports/qa/evidence/qa-20260409-vercel-targeted-console-errors.txt"
+    },
+    {
+      "type": "playwright-console",
+      "label": "targeted console warnings log",
+      "path": "reports/qa/evidence/qa-20260409-vercel-targeted-console-warnings.txt"
+    },
+    {
+      "type": "playwright-network",
+      "label": "targeted network log",
+      "path": "reports/qa/evidence/qa-20260409-vercel-targeted-network.txt"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "system-boot/dashboard에서 폰트 preload warning 4건은 비차단 경고로 판정",
+    "AI streaming 헤더는 브라우저 경로에서 stream/v2 200 확인으로 대체 검증"
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Latest production deployment",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/FnzN8yJFRkS5TUkvQYWREJwtJGh2"
+    }
+  ]
+}

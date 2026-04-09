@@ -1,7 +1,7 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-09 07:38:11 KST
+> Generated at: 2026-04-09 13:23:24 KST
 
 ## Summary
 
@@ -19,33 +19,31 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260409-0259 (2026-04-08T22:37:58.733Z) |
-| Latest Recorded Run | QA-20260409-0259 (2026-04-08T22:37:58.733Z) |
+| Latest Recorded Run | QA-20260409-0260 (2026-04-09T04:23:23.914Z) |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260409-0259 (2026-04-08T22:37:58.733Z)
+Latest run: QA-20260409-0260 (2026-04-09T04:23:23.914Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| Test Automation Architect | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
-| AI Quality Assurance Specialist | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed during broad production QA; effective 4.6046 USD, billed 0.0000 USD, no unexpected billed usage spike. |
+| vercel | cli | checked | normal | Current billing period reviewed after targeted Vercel QA; effective 4.6046 USD, billed 0.0000 USD, no unexpected billed usage spike. |
 
 ## Coverage (Latest Run)
 
-- Scope: broad
-- Release-Facing: yes
-- Counts Toward Summary: yes
+- Scope: targeted
+- Release-Facing: no
+- Counts Toward Summary: no
 - Deployment: dpl_FnzN8yJFRkS5TUkvQYWREJwtJGh2 / SHA 8ca2b7eb
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: landing render + v8.11.4 badge, /main -> / redirect, /login Google/GitHub/email/guest entry points, /privacy backlink and policy render, /auth/error recovery actions, synthetic 404 page render + recovery links, system start /system-boot -> /dashboard transition, dashboard render with 15 total / 14 online / 1 warning / 0 risk and resource top5, server detail modal 3 tabs + Escape close, AI sidebar Ready state and starter prompt response, AI streaming header proof via browser-session fetch (X-AI-Latency-Ms=219), /api/health 200 connected services, /api/version 200 with v8.11.4 / buildVersion 8.11.4 / Next.js 16.1.6, final dashboard + AI flow browser console errors 0
-- Skipped Surfaces: guest PIN login explicit /login submission path, fullscreen AI workspace, Reporter full report flow, Analyst advanced forecast flow, Cloud Run admin observability endpoints, modal detail pack outside server detail modal
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, observability-pack
+- Covered Surfaces: landing render + v8.11.4 badge, /main -> / redirect, /login OAuth/email/guest entry points, /privacy render and backlink, /auth/error fallback actions, /auth/success -> /login?error=no_user redirect, synthetic 404 page render, system start countdown and /system-boot -> /dashboard, dashboard counters 15/14/1/0 and Top5 resource warning list, AI sidebar open/close, AI query response for all-server summary, network proof: POST /api/ai/supervisor/stream/v2 => 200, /api/health 200 connected services, /api/version 200 with v8.11.4 / Next.js 16.1.6, profile menu open and ESC close
+- Skipped Surfaces: guest PIN explicit submission flow, /dashboard/ai-assistant fullscreen workspace, Reporter full report flow, Analyst advanced drilldown/forecast flow, Cloud Run admin /monitoring and /monitoring/traces, server detail 3-tab modal path
 
 ## Links (Latest Run)
 
@@ -58,12 +56,12 @@ Latest run: QA-20260409-0259 (2026-04-08T22:37:58.733Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | v8.11.4 broad baseline evidence | `reports/qa/evidence/qa-20260409-v8114-broad-baseline-refresh.md` | - |
-| playwright-screenshot | v8.11.4 dashboard broad screenshot | `reports/qa/evidence/qa-20260409-v8114-dashboard-broad.png` | - |
-| playwright-screenshot | v8.11.4 AI sidebar broad screenshot | `reports/qa/evidence/qa-20260409-v8114-ai-sidebar-broad.png` | - |
-| playwright-console | v8.11.4 404 synthetic console log | `reports/qa/evidence/qa-20260409-broad-console-errors.txt` | - |
-| playwright-console | v8.11.4 final dashboard console log | `reports/qa/evidence/qa-20260409-broad-console-final.txt` | - |
-| playwright-network | v8.11.4 broad network log | `reports/qa/evidence/qa-20260409-broad-network.txt` | - |
+| playwright-report | targeted QA evidence summary | `reports/qa/evidence/qa-20260409-vercel-targeted-playwright-qa.md` | - |
+| playwright-screenshot | targeted landing screenshot | `reports/qa/evidence/qa-20260409-vercel-targeted-landing.png` | - |
+| playwright-screenshot | targeted dashboard + ai sidebar screenshot | `reports/qa/evidence/qa-20260409-vercel-targeted-dashboard-ai-sidebar.png` | - |
+| playwright-console | targeted console errors log | `reports/qa/evidence/qa-20260409-vercel-targeted-console-errors.txt` | - |
+| playwright-console | targeted console warnings log | `reports/qa/evidence/qa-20260409-vercel-targeted-console-warnings.txt` | - |
+| playwright-network | targeted network log | `reports/qa/evidence/qa-20260409-vercel-targeted-network.txt` | - |
 
 ## Expert Domain Open Gaps
 
@@ -397,6 +395,7 @@ Latest run: QA-20260409-0259 (2026-04-08T22:37:58.733Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260409-0260 | 2026-04-09T04:23:23.914Z | targeted | no | no | Playwright MCP Vercel Targeted QA - core routes + dashboard + AI sidebar sanity | 15 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260409-0259 | 2026-04-08T22:37:58.733Z | broad | yes | yes | Playwright MCP Production QA - Frontend + AI Assistant v8.11.4 broad baseline refresh | 14 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260409-0258 | 2026-04-08T16:51:20.163Z | targeted | yes | no | Vercel Targeted Release Validation - v8.11.4 canonical deploy success | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260408-0257 | 2026-04-08T14:35:03.410Z | targeted | yes | no | Vercel Targeted Release Validation - v8.11.3 production recovered via local deploy | 3 | 0 | 1 | 0 | 0 | 1 |
@@ -416,4 +415,3 @@ Latest run: QA-20260409-0259 (2026-04-08T22:37:58.733Z)
 | QA-20260406-0243 | 2026-04-05T17:28:17.948Z | targeted | no | no | Vercel targeted QA - latest production deploy smoke refresh after canonical routing chore | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260405-0242 | 2026-04-05T11:15:27.092Z | targeted | no | no | QA tracker closeout - response process detail production fixes | 1 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260405-0241 | 2026-04-05T11:14:20.847Z | targeted | no | no | Vercel targeted QA - response process detail visibility after streaming fix | 4 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260405-0240 | 2026-04-05T10:18:47.152Z | targeted | no | no | Vercel targeted QA - response process detail post-deploy verification | 5 | 0 | 2 | 0 | 0 | 0 |
