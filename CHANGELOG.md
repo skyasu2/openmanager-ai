@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.8](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.7...v8.11.8) (2026-04-09)
+
+
+### Features
+
+* **ai-chat:** complete sprint3 thinking-toggle and feedback verification ([69bee4d](https://gitlab.com/skyasu2/openmanager-ai/-/commit/69bee4d225cac1e9d40fda1239a05a9fd5f6d09e))
+
 ## [8.11.7](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.6...v8.11.7) (2026-04-09)
 
 
