@@ -201,32 +201,38 @@ export function parseMarkdownLinks(text: string): React.ReactNode[] {
 function renderInlineContent(text: string, keyPrefix: string): React.ReactNode {
   const parts = text.split(/(`[^`]+`)/g);
 
-  const renderBoldText = (value: string, kp: string) => {
-    const boldParts = value.split(/(\*\*[^*]+\*\*)/g);
-    if (boldParts.length > 1) {
-      return (
-        <span key={kp}>
-          {boldParts.map((bp, i) => {
-            if (bp.startsWith('**') && bp.endsWith('**')) {
-              return (
-                <strong key={`${kp}-bold-${i}`} className="font-semibold">
-                  {bp.slice(2, -2)}
-                </strong>
-              );
-            }
-            return <span key={`${kp}-plain-${i}`}>{bp}</span>;
-          })}
-        </span>
-      );
-    }
-    return <span key={kp}>{value}</span>;
+  const renderBoldItalicText = (value: string, kp: string) => {
+    // Split on **bold** and *italic* patterns (bold first to avoid conflict)
+    const parts = value.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
+    if (parts.length === 1) return <span key={kp}>{value}</span>;
+    return (
+      <span key={kp}>
+        {parts.map((p, i) => {
+          if (p.startsWith('**') && p.endsWith('**') && p.length > 4) {
+            return (
+              <strong key={`${kp}-b-${i}`} className="font-semibold">
+                {p.slice(2, -2)}
+              </strong>
+            );
+          }
+          if (p.startsWith('*') && p.endsWith('*') && p.length > 2) {
+            return (
+              <em key={`${kp}-i-${i}`} className="italic">
+                {p.slice(1, -1)}
+              </em>
+            );
+          }
+          return <span key={`${kp}-t-${i}`}>{p}</span>;
+        })}
+      </span>
+    );
   };
 
   const renderTextWithLinks = (value: string, kp: string) => {
     const linkParts = parseMarkdownLinks(value);
     return linkParts.map((linkPart, i) => {
       if (typeof linkPart === 'string') {
-        return renderBoldText(linkPart, `${kp}-text-${i}`);
+        return renderBoldItalicText(linkPart, `${kp}-text-${i}`);
       }
       return (
         <React.Fragment key={`${kp}-link-${i}`}>{linkPart}</React.Fragment>
