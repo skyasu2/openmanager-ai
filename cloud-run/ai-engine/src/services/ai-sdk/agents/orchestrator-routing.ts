@@ -88,7 +88,7 @@ export function getAgentProviderOrder(agentName: string): ProviderName[] {
     case 'NLQ Agent':
       return ['groq', 'cerebras', 'mistral'];
     case 'Advisor Agent':
-      return ['mistral', 'groq', 'cerebras'];
+      return ['groq', 'cerebras', 'mistral'];
     case 'Analyst Agent':
       return ['groq', 'cerebras', 'mistral'];
     case 'Reporter Agent':

@@ -7,7 +7,7 @@ export const INFRA_CONTEXT_PATTERN =
   /서버|서벼|썹|인프라|시스템|시스탬|모니터링|cpu|씨피유|메모리|메머리|멤|디스크|트래픽|네트워크|server|servr|sever|memory|memroy|disk|traffic|network|latency|response|load/i;
 
 export const ANALYST_QUERY_PATTERN =
-  /이상|분석|예측|트렌드|패턴|원인|왜|상관관계|근본\s*원인|rca/i;
+  /이상|비정상|분석|예측|트렌드|패턴|원인|왜|상관관계|근본\s*원인|rca|고장|느려|다운|안\s*됨|안됨|장애/i;
 
 export const REPORTER_QUERY_PATTERN =
   /보고서|리포트|타임라인|인시던트|incident/i;

@@ -180,10 +180,11 @@ export function getReporterModel(): ModelResult | null {
 }
 
 /**
- * Advisor model: Mistral → Groq(llama-4-scout) → Cerebras(qwen-3, Preview)
+ * Advisor model: Groq(llama-4-scout) → Cerebras(qwen-3, Preview) → Mistral
+ * Mistral free tier is ~2 RPM, placing it last avoids rate-limit delays.
  */
 export function getAdvisorModel(): ModelResult | null {
-  return selectTextModel('Advisor Agent', ['mistral', 'groq', 'cerebras'], {
+  return selectTextModel('Advisor Agent', ['groq', 'cerebras', 'mistral'], {
     requiredCapabilities: { requireToolCalling: true },
   });
 }
