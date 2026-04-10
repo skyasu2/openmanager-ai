@@ -85,6 +85,7 @@
     "renovate:config:check": "bash scripts/renovate/check-config.sh",
     "env:sync:production": "bash scripts/env/sync-vercel.sh production",
     "env:sync:preview": "bash scripts/env/sync-vercel.sh preview",
+    "supabase:check:db-auth": "node scripts/env/check-supabase-db-password.js",
     "start": "next start",
     "start:prod": "NODE_ENV=production next start",
     "check": "bash scripts/dev/biome-wrapper.sh check .",

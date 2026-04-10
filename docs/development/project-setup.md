@@ -177,6 +177,9 @@ npx supabase db push
 ### Supabase 원격 반영 (수동)
 
 ```bash
+# direct DB auth 사전 점검
+npm run supabase:check:db-auth
+
 # linked project 기준 schema 반영
 npx supabase db push
 ```
@@ -184,10 +187,14 @@ npx supabase db push
 - 현재 프로젝트에서 Supabase는 Git push 자동 배포 대상이 아닙니다.
 - schema / SQL function / seed 변경이 있을 때만 명시적으로 반영합니다.
 - 현재 레포에는 별도 Supabase Edge Function 배포 경로가 없습니다.
+- `SUPABASE_DB_PASSWORD`가 placeholder면 앱 런타임은 정상이어도 `supabase migration list`, `supabase db pull`, `supabase db push`는 실패합니다.
 
 ### 스키마 확인
 
 ```bash
+# direct DB auth 사전 점검
+npm run supabase:check:db-auth
+
 # 테이블 목록
 npx supabase db dump --schema public
 ```
