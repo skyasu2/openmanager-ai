@@ -8,11 +8,34 @@ const QA_ROOT = path.join(PROJECT_ROOT, 'reports/qa');
 const EVIDENCE_ROOT = path.join(QA_ROOT, 'evidence');
 const REPRO_ROOT = path.join(QA_ROOT, 'repro');
 const RUNS_ROOT = path.join(QA_ROOT, 'runs');
+const MIB = 1024 * 1024;
+
+const STORAGE_DEFAULTS = {
+  qaWarnBytes: toBytesFromEnv('QA_AUDIT_QA_WARN_MB', 100),
+  runsWarnBytes: toBytesFromEnv('QA_AUDIT_RUNS_WARN_MB', 70),
+  evidenceWarnBytes: toBytesFromEnv('QA_AUDIT_EVIDENCE_WARN_MB', 40),
+  largeFileWarnBytes: toBytesFromEnv('QA_AUDIT_LARGE_FILE_MB', 8),
+  archiveAgeDays: toPositiveNumberFromEnv('QA_AUDIT_ARCHIVE_AGE_DAYS', 21),
+  topFiles: toPositiveNumberFromEnv('QA_AUDIT_TOP_FILES', 10),
+  maxArchiveCandidates: toPositiveNumberFromEnv('QA_AUDIT_MAX_ARCHIVE_CANDIDATES', 20),
+};
+
+function toPositiveNumberFromEnv(envKey, fallback) {
+  const raw = process.env[envKey];
+  const parsed = Number(raw);
+  if (!Number.isFinite(parsed) || parsed <= 0) return fallback;
+  return parsed;
+}
+
+function toBytesFromEnv(envKey, fallbackMb) {
+  return Math.floor(toPositiveNumberFromEnv(envKey, fallbackMb) * MIB);
+}
 
 function parseArgs(argv) {
   return {
     all: argv.includes('--all'),
     strict: argv.includes('--strict'),
+    strictStorage: argv.includes('--strict-storage'),
   };
 }
 
@@ -44,6 +67,42 @@ function toRelative(fullPath) {
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+}
+
+function fileInfo(fullPath) {
+  const stat = fs.statSync(fullPath);
+  return {
+    fullPath,
+    relativePath: toRelative(fullPath),
+    size: stat.size,
+    mtimeMs: stat.mtimeMs,
+  };
+}
+
+function summarizeSize(fileInfos) {
+  return fileInfos.reduce(
+    (acc, info) => {
+      acc.count += 1;
+      acc.bytes += info.size;
+      return acc;
+    },
+    { count: 0, bytes: 0 }
+  );
+}
+
+function formatBytes(bytes) {
+  if (bytes >= MIB) return `${(bytes / MIB).toFixed(2)} MiB`;
+  if (bytes >= 1024) return `${(bytes / 1024).toFixed(2)} KiB`;
+  return `${bytes} B`;
+}
+
+function formatSizePathEntry(info) {
+  return `${formatBytes(info.size)} - ${info.relativePath}`;
+}
+
+function formatBudgetLine(label, bytes, warnBytes) {
+  const status = bytes > warnBytes ? 'WARN' : 'PASS';
+  return `${status} ${label}: ${formatBytes(bytes)} (warn ${formatBytes(warnBytes)})`;
 }
 
 function collectRunRecords() {
@@ -84,12 +143,17 @@ function sortByRecordedAtAscending(runs) {
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
-  const evidenceFiles = walkFiles(EVIDENCE_ROOT)
-    .map(toRelative)
+  const qaFileInfos = walkFiles(QA_ROOT).map(fileInfo);
+  const evidenceFileInfos = walkFiles(EVIDENCE_ROOT).map(fileInfo);
+  const reproFileInfos = walkFiles(REPRO_ROOT).map(fileInfo);
+  const runFileInfos = walkFiles(RUNS_ROOT).map(fileInfo);
+
+  const evidenceFiles = evidenceFileInfos
+    .map((info) => info.relativePath)
     .filter((relativePath) => !relativePath.endsWith('/.gitkeep'))
     .filter((relativePath) => path.basename(relativePath) !== '.gitkeep');
-  const reproFiles = walkFiles(REPRO_ROOT)
-    .map(toRelative)
+  const reproFiles = reproFileInfos
+    .map((info) => info.relativePath)
     .filter((relativePath) => path.basename(relativePath) !== '.gitkeep');
   const runs = collectRunRecords();
 
@@ -162,6 +226,60 @@ function main() {
         recentRuns.some((run) => entry.startsWith(`${run.runId} -> `))
       ));
 
+  const qaSummary = summarizeSize(qaFileInfos);
+  const runSummary = summarizeSize(runFileInfos);
+  const evidenceSummary = summarizeSize(evidenceFileInfos);
+
+  const budgetWarnings = [];
+  if (qaSummary.bytes > STORAGE_DEFAULTS.qaWarnBytes) {
+    budgetWarnings.push(
+      formatBudgetLine('qa-total-size', qaSummary.bytes, STORAGE_DEFAULTS.qaWarnBytes)
+    );
+  }
+  if (runSummary.bytes > STORAGE_DEFAULTS.runsWarnBytes) {
+    budgetWarnings.push(
+      formatBudgetLine('qa-runs-size', runSummary.bytes, STORAGE_DEFAULTS.runsWarnBytes)
+    );
+  }
+  if (evidenceSummary.bytes > STORAGE_DEFAULTS.evidenceWarnBytes) {
+    budgetWarnings.push(
+      formatBudgetLine(
+        'qa-evidence-size',
+        evidenceSummary.bytes,
+        STORAGE_DEFAULTS.evidenceWarnBytes
+      )
+    );
+  }
+
+  const topLargeFiles = [...qaFileInfos]
+    .sort((left, right) => right.size - left.size)
+    .slice(0, STORAGE_DEFAULTS.topFiles);
+
+  const largeFilesOverWarn = qaFileInfos
+    .filter((info) => info.size >= STORAGE_DEFAULTS.largeFileWarnBytes)
+    .sort((left, right) => right.size - left.size);
+
+  const nowMs = Date.now();
+  const archiveCutoffMs =
+    nowMs - STORAGE_DEFAULTS.archiveAgeDays * 24 * 60 * 60 * 1000;
+  const referencedArtifactPaths = new Set(artifactRefs.map((entry) => entry.path));
+  const archiveCandidates = runFileInfos
+    .filter((info) => !/\.json$/i.test(info.relativePath))
+    .filter((info) => path.basename(info.relativePath) !== '.gitkeep')
+    .filter((info) => !referencedArtifactPaths.has(info.relativePath))
+    .filter((info) => info.mtimeMs < archiveCutoffMs)
+    .sort((left, right) => right.size - left.size);
+  const archiveCandidatesLimited = archiveCandidates
+    .slice(0, STORAGE_DEFAULTS.maxArchiveCandidates)
+    .map((info) => {
+      const ageDays = Math.floor((nowMs - info.mtimeMs) / (24 * 60 * 60 * 1000));
+      return `${formatBytes(info.size)} - ${info.relativePath} (${ageDays}d old)`;
+    });
+  const archiveCandidatesTotalBytes = archiveCandidates.reduce(
+    (sum, info) => sum + info.size,
+    0
+  );
+
   console.log('QA Evidence Audit');
   console.log(`- run files: ${runs.length}`);
   console.log(`- durable evidence files: ${evidenceFiles.length}`);
@@ -177,6 +295,19 @@ function main() {
   );
   console.log(
     `- ${args.all ? 'all' : 'recent'} non-evidence artifact refs: ${recentNonEvidenceArtifactRefs.length}`
+  );
+  console.log(`- qa total size: ${formatBytes(qaSummary.bytes)} (${qaSummary.count} files)`);
+  console.log(
+    `- qa/runs size: ${formatBytes(runSummary.bytes)} (${runSummary.count} files)`
+  );
+  console.log(
+    `- qa/evidence size: ${formatBytes(evidenceSummary.bytes)} (${evidenceSummary.count} files)`
+  );
+  console.log(
+    `- files >= ${formatBytes(STORAGE_DEFAULTS.largeFileWarnBytes)}: ${largeFilesOverWarn.length}`
+  );
+  console.log(
+    `- archive candidates (unreferenced run assets, ${STORAGE_DEFAULTS.archiveAgeDays}d+): ${archiveCandidates.length} (${formatBytes(archiveCandidatesTotalBytes)})`
   );
 
   console.log('');
@@ -199,11 +330,30 @@ function main() {
       countedRunsWithoutArtifacts
     )
   );
+  console.log('');
+  console.log(
+    formatList('Storage budget warnings', budgetWarnings.length > 0 ? budgetWarnings : [])
+  );
+  console.log('');
+  console.log(
+    formatList(
+      `Top ${STORAGE_DEFAULTS.topFiles} largest QA files`,
+      topLargeFiles.map(formatSizePathEntry)
+    )
+  );
+  console.log('');
+  console.log(
+    formatList(
+      `Archive candidates (max ${STORAGE_DEFAULTS.maxArchiveCandidates} shown)`,
+      archiveCandidatesLimited
+    )
+  );
 
   const hasStrictFailure =
     orphanEvidence.length > 0 ||
     missingDurableArtifactRefs.length > 0 ||
     recentNonEvidenceArtifactRefs.length > 0;
+  const hasStrictStorageFailure = budgetWarnings.length > 0;
 
   if (releaseFacingWithoutArtifacts.length > 0) {
     console.log('');
@@ -216,6 +366,9 @@ function main() {
   }
 
   if (args.strict && hasStrictFailure) {
+    process.exitCode = 1;
+  }
+  if (args.strictStorage && hasStrictStorageFailure) {
     process.exitCode = 1;
   }
 }

@@ -70,7 +70,7 @@
     {
       "type": "playwright-screenshot",
       "label": "Dashboard + AI sidebar latest production state",
-      "path": "qa-20260326-prod-0192-dashboard-ai.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260326-0192-01-qa-20260326-prod-0192-dashboard-ai.png"
     }
   ],
   "completedImprovements": [],

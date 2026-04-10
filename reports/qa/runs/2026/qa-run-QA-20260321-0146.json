@@ -63,13 +63,13 @@
     {
       "type": "playwright-console",
       "label": "qa-20260321-topology-console-errors.log",
-      "path": ".playwright-mcp/screenshots/qa-20260321-topology-console-errors.log",
+      "path": "reports/qa/evidence/legacy/2026/qa-20260321-0146-01-qa-20260321-topology-console-errors.log",
       "note": "browser_console_messages capture after topology modal verification; Total messages: 0 (Errors: 0, Warnings: 0)."
     },
     {
       "type": "playwright-screenshot",
       "label": "qa-20260321-topology-modal.png",
-      "path": ".playwright-mcp/screenshots/qa-20260321-topology-modal.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260321-0146-02-qa-20260321-topology-modal.png"
     }
   ],
   "completedImprovements": [],

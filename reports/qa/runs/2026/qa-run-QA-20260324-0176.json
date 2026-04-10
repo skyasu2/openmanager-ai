@@ -49,7 +49,7 @@
     {
       "type": "playwright-screenshot",
       "label": "Production parity gate regression after analysis detail patch",
-      "path": "artifacts/playwright/parity-gate-regression-2026-03-24.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260324-0176-01-parity-gate-regression-2026-03-24.png"
     }
   ],
   "completedImprovements": [],

@@ -87,17 +87,17 @@
     {
       "type": "playwright-screenshot",
       "label": "Dashboard with AI sidebar response",
-      "path": "qa-20260404-vercel-dashboard-ai-sidebar.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0222-01-qa-20260404-vercel-dashboard-ai-sidebar.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "Active alerts modal",
-      "path": "qa-20260404-vercel-active-alerts-modal.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0222-02-qa-20260404-vercel-active-alerts-modal.png"
     },
     {
       "type": "playwright-console",
       "label": "Playwright browser console log",
-      "path": ".playwright-mcp/screenshots/console-2026-04-04T09-05-36-566Z.log"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0222-03-console-2026-04-04t09-05-36-566z.log"
     }
   ],
   "completedImprovements": [],

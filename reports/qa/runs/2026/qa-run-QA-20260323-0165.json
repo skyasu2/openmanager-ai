@@ -50,7 +50,7 @@
     {
       "type": "playwright-screenshot",
       "label": "Server card warning badge opens AI sidebar with prefilled alert context",
-      "path": "artifacts/playwright/server-card-alert-badge-ai-prefill-2026-03-23.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260323-0165-01-server-card-alert-badge-ai-prefill-2026-03-23.png"
     }
   ],
   "completedImprovements": [

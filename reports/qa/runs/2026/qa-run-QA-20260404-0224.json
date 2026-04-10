@@ -83,12 +83,12 @@
     {
       "type": "playwright-screenshot",
       "label": "Dashboard parity baseline after fix",
-      "path": "qa-20260404-vercel-parity-after-fix-dashboard.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0224-01-qa-20260404-vercel-parity-after-fix-dashboard.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "AI summary parity response after fix",
-      "path": "qa-20260404-vercel-parity-after-fix-ai-summary.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0224-02-qa-20260404-vercel-parity-after-fix-ai-summary.png"
     }
   ],
   "completedImprovements": [

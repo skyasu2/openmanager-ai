@@ -87,6 +87,10 @@ function run() {
     )}, ${path.relative(process.cwd(), jsonPath)}`;
   }
   const summary = tracker.summary || {};
+  const totalRecordedRuns = summary.totalRecordedRuns ?? (tracker.runs || []).length;
+  const totalCountedRuns = summary.totalRuns || 0;
+  const nonCountedRuns =
+    summary.excludedRuns ?? Math.max(totalRecordedRuns - totalCountedRuns, 0);
   const items = Object.values(tracker.items || {});
   const completed = items.filter((item) => item.status === 'completed');
   const pending = items.filter((item) => item.status === 'pending');
@@ -101,7 +105,9 @@ function run() {
   const latestArtifacts = latestRun?.artifacts || [];
 
   console.log('QA Tracker Summary');
-  console.log(`- total runs: ${summary.totalRuns || 0}`);
+  console.log(`- total recorded runs: ${totalRecordedRuns}`);
+  console.log(`- total counted runs: ${totalCountedRuns}`);
+  console.log(`- non-counted runs: ${nonCountedRuns}`);
   console.log(`- total checks: ${summary.totalChecks || 0}`);
   console.log(`- passed/failed: ${summary.totalPassed || 0}/${summary.totalFailed || 0}`);
   console.log(

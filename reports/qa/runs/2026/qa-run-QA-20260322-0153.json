@@ -70,7 +70,7 @@
     {
       "type": "playwright-screenshot",
       "label": "qa-20260322-feedback-trace-success.png",
-      "path": ".playwright-mcp/screenshots/qa-20260322-feedback-trace-success.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260322-0153-01-qa-20260322-feedback-trace-success.png"
     }
   ],
   "completedImprovements": [],

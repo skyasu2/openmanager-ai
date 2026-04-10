@@ -85,17 +85,17 @@
     {
       "type": "playwright-screenshot",
       "label": "Landing production proof",
-      "path": "qa-20260326-release-gate-landing.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260326-0187-01-qa-20260326-release-gate-landing.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "Dashboard and AI sidebar proof",
-      "path": "qa-20260326-release-gate-dashboard-ai.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260326-0187-02-qa-20260326-release-gate-dashboard-ai.png"
     },
     {
       "type": "playwright-console",
       "label": "Console errors",
-      "path": "qa-20260326-release-gate-console-errors.log"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260326-0187-03-qa-20260326-release-gate-console-errors.log"
     }
   ],
   "completedImprovements": [],

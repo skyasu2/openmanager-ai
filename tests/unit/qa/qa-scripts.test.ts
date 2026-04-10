@@ -25,6 +25,12 @@ const RECORD_QA_RUN_SCRIPT = fileURLToPath(
 const PRINT_QA_STATUS_SCRIPT = fileURLToPath(
   new URL('../../../scripts/qa/print-qa-status.js', import.meta.url)
 );
+const MIGRATE_EPHEMERAL_ARTIFACTS_SCRIPT = fileURLToPath(
+  new URL(
+    '../../../scripts/qa/migrate-ephemeral-artifact-paths.js',
+    import.meta.url
+  )
+);
 
 const tempDirs: string[] = [];
 
@@ -203,6 +209,26 @@ function writeTrackerFile(tempDir: string, payload: Record<string, unknown>) {
   const trackerPath = join(tempDir, 'reports', 'qa', 'qa-tracker.json');
   writeFileSync(trackerPath, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
   return trackerPath;
+}
+
+function writeRunRecordFile(
+  tempDir: string,
+  runId: string,
+  payload: Record<string, unknown>
+) {
+  const yearMatch = runId.match(/^QA-(\d{4})/);
+  const year = yearMatch ? yearMatch[1] : '2026';
+  const runFilePath = join(
+    tempDir,
+    'reports',
+    'qa',
+    'runs',
+    year,
+    `qa-run-${runId}.json`
+  );
+  mkdirSync(dirname(runFilePath), { recursive: true });
+  writeFileSync(runFilePath, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
+  return runFilePath;
 }
 
 afterEach(() => {
@@ -1431,5 +1457,237 @@ describe('QA scripts', () => {
         path: 'test-results/qa-20260321-ai-free-text/trace.zip',
       },
     ]);
+  });
+
+  it('migrates historical non-durable artifact refs into durable evidence and syncs tracker', () => {
+    const tempDir = createTempWorkspace();
+    const runId = 'QA-20260330-0001';
+    const runFilePath = writeRunRecordFile(tempDir, runId, {
+      runId,
+      recordedAt: '2026-03-30T10:00:00.000Z',
+      countsTowardSummary: true,
+      releaseFacing: true,
+      artifacts: [
+        {
+          type: 'playwright-screenshot',
+          label: 'Dashboard proof',
+          path: 'qa-20260330-0001-dashboard.png',
+        },
+        {
+          type: 'playwright-screenshot',
+          label: 'Card proof',
+          path: '.playwright-mcp/screenshots/card-title-check.png',
+        },
+      ],
+    });
+    const rootCleanupSource = writeWorkspaceFile(
+      tempDir,
+      'reports/qa/runs/2026/root-cleanup-2026-04-05/qa/qa-20260330-0001-dashboard.png',
+      'dashboard-proof'
+    );
+    const tmpMcpSource = writeWorkspaceFile(
+      tempDir,
+      'tmp/root-artifacts/2026-04-10/dirs/.playwright-mcp/screenshots/card-title-check.png',
+      'card-proof'
+    );
+    writeTrackerFile(tempDir, {
+      runs: [
+        {
+          runId,
+          recordedAt: '2026-03-30T10:00:00.000Z',
+          countsTowardSummary: true,
+          releaseFacing: true,
+          artifacts: [
+            {
+              type: 'playwright-screenshot',
+              label: 'stale artifact',
+              path: 'artifacts/playwright/stale.png',
+            },
+          ],
+        },
+      ],
+      items: {},
+      experts: {},
+      meta: {},
+      sequence: {},
+    });
+
+    const result = runNodeScript(
+      MIGRATE_EPHEMERAL_ARTIFACTS_SCRIPT,
+      ['--apply', '--prune-source'],
+      {
+        cwd: tempDir,
+      }
+    );
+
+    expect(result.status).toBe(0);
+    expectOutputContainsIfCaptured(result.stdout, 'migrated artifacts: 2');
+    expectOutputContainsIfCaptured(result.stdout, 'tracker runs synced: 1');
+
+    const runRecord = JSON.parse(readFileSync(runFilePath, 'utf8'));
+    expect(runRecord.artifacts).toHaveLength(2);
+    for (const artifact of runRecord.artifacts) {
+      expect(artifact.path).toMatch(/^reports\/qa\/evidence\/legacy\/2026\//);
+      expect(existsSync(join(tempDir, artifact.path))).toBe(true);
+    }
+
+    const tracker = JSON.parse(
+      readFileSync(join(tempDir, 'reports', 'qa', 'qa-tracker.json'), 'utf8')
+    );
+    expect(tracker.runs[0].artifacts).toEqual(runRecord.artifacts);
+    expect(existsSync(rootCleanupSource)).toBe(false);
+    expect(existsSync(tmpMcpSource)).toBe(false);
+  });
+
+  it('drops unrecoverable historical artifact refs and acknowledges artifact debt when a counted run is left empty', () => {
+    const tempDir = createTempWorkspace();
+    const runId = 'QA-20260330-0002';
+    const runFilePath = writeRunRecordFile(tempDir, runId, {
+      runId,
+      recordedAt: '2026-03-30T11:00:00.000Z',
+      countsTowardSummary: true,
+      releaseFacing: false,
+      artifacts: [
+        {
+          type: 'playwright-screenshot',
+          label: 'Missing proof',
+          path: 'artifacts/playwright/missing-proof.png',
+        },
+      ],
+    });
+    writeTrackerFile(tempDir, {
+      runs: [
+        {
+          runId,
+          recordedAt: '2026-03-30T11:00:00.000Z',
+          countsTowardSummary: true,
+          releaseFacing: false,
+          artifacts: [
+            {
+              type: 'playwright-screenshot',
+              label: 'Missing proof',
+              path: 'artifacts/playwright/missing-proof.png',
+            },
+          ],
+        },
+      ],
+      items: {},
+      experts: {},
+      meta: {},
+      sequence: {},
+    });
+
+    const result = runNodeScript(
+      MIGRATE_EPHEMERAL_ARTIFACTS_SCRIPT,
+      ['--apply', '--prune-source'],
+      {
+        cwd: tempDir,
+      }
+    );
+
+    expect(result.status).toBe(0);
+    expectOutputContainsIfCaptured(
+      result.stdout,
+      'removed unresolved artifacts: 1'
+    );
+
+    const runRecord = JSON.parse(readFileSync(runFilePath, 'utf8'));
+    expect(runRecord.artifacts).toEqual([]);
+    expect(runRecord.artifactDebt).toMatchObject({
+      status: 'acknowledged',
+      kind: 'historical-no-durable-evidence',
+      recordedBy: 'codex:migrate-ephemeral-artifact-paths',
+    });
+    expect(runRecord.notes).toContain(
+      '[ephemeral-artifact-migration] 1 historical non-durable artifact path(s) could not be recovered and were removed from artifacts list.'
+    );
+    expect(runRecord.notes).toContain(
+      '[ephemeral-artifact-migration] all historical non-durable artifact refs were removed without recoverable durable evidence; artifactDebt acknowledged.'
+    );
+
+    const tracker = JSON.parse(
+      readFileSync(join(tempDir, 'reports', 'qa', 'qa-tracker.json'), 'utf8')
+    );
+    expect(tracker.runs[0].artifacts).toEqual([]);
+    expect(tracker.runs[0].artifactDebt).toMatchObject({
+      status: 'acknowledged',
+      kind: 'historical-no-durable-evidence',
+    });
+  });
+
+  it('preserves url-only historical artifacts during path migration', () => {
+    const tempDir = createTempWorkspace();
+    const runId = 'QA-20260409-9999';
+    const runFilePath = writeRunRecordFile(tempDir, runId, {
+      runId,
+      recordedAt: '2026-04-09T13:35:00.812Z',
+      countsTowardSummary: true,
+      releaseFacing: true,
+      artifacts: [
+        {
+          type: 'playwright-report',
+          label: 'Production deployment URL',
+          url: 'https://openmanager-4bc1f5p3k-skyasus-projects.vercel.app/',
+        },
+        {
+          type: 'playwright-console',
+          label: 'Smoke command output reference',
+          url: 'https://openmanager-ai.vercel.app/api/version',
+        },
+      ],
+    });
+    writeTrackerFile(tempDir, {
+      runs: [
+        {
+          runId,
+          recordedAt: '2026-04-09T13:35:00.812Z',
+          countsTowardSummary: true,
+          releaseFacing: true,
+          artifacts: [
+            {
+              type: 'playwright-report',
+              label: 'Production deployment URL',
+              url: 'https://openmanager-4bc1f5p3k-skyasus-projects.vercel.app/',
+            },
+          ],
+        },
+      ],
+      items: {},
+      experts: {},
+      meta: {},
+      sequence: {},
+    });
+
+    const result = runNodeScript(
+      MIGRATE_EPHEMERAL_ARTIFACTS_SCRIPT,
+      ['--apply', '--prune-source'],
+      {
+        cwd: tempDir,
+      }
+    );
+
+    expect(result.status).toBe(0);
+    expectOutputContainsIfCaptured(result.stdout, 'runs touched: 0');
+
+    const runRecord = JSON.parse(readFileSync(runFilePath, 'utf8'));
+    expect(runRecord.artifacts).toEqual([
+      {
+        type: 'playwright-report',
+        label: 'Production deployment URL',
+        url: 'https://openmanager-4bc1f5p3k-skyasus-projects.vercel.app/',
+      },
+      {
+        type: 'playwright-console',
+        label: 'Smoke command output reference',
+        url: 'https://openmanager-ai.vercel.app/api/version',
+      },
+    ]);
+    expect(runRecord.artifactDebt).toBeUndefined();
+
+    const tracker = JSON.parse(
+      readFileSync(join(tempDir, 'reports', 'qa', 'qa-tracker.json'), 'utf8')
+    );
+    expect(tracker.runs[0].artifacts).toEqual(runRecord.artifacts);
+    expect(tracker.runs[0].artifactDebt).toBeUndefined();
   });
 });

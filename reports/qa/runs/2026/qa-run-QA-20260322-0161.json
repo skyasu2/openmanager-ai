@@ -38,12 +38,12 @@
     {
       "type": "playwright-screenshot",
       "label": "Dashboard dataSource metadata - Dataset v1.0.0 · catalog 2026-02-15 03:56Z",
-      "path": "artifacts/playwright/datasource-parity-metadata-2026-03-22.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260322-0161-01-datasource-parity-metadata-2026-03-22.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "AI sidebar - dataSlot { slotIndex: 143, minuteOfDay: 1430, timeLabel: 23:50 KST } + dataSource { scopeName: openmanager-ai-otel-pipeline, scopeVersion: 1.0.0, catalogGeneratedAt: 2026-02-15T03:56:41.821Z, hour: 23 }",
-      "path": "artifacts/playwright/datasource-ai-metadata-2026-03-22.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260322-0161-02-datasource-ai-metadata-2026-03-22.png"
     }
   ],
   "completedImprovements": [],

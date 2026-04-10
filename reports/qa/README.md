@@ -29,10 +29,10 @@ reports/qa/
 - 증거 분류 기준:
   - `reports/qa/evidence/...`: run JSON `artifacts[].path`에 직접 연결되는 durable evidence만 둔다.
   - `reports/qa/repro/YYYY/...`: post-mortem, 실패 재현, 원인 분석 보조 증거를 둔다.
-  - scratch/local capture는 `.playwright-mcp/screenshots`, `test-results`, `/tmp` 같은 비추적 경로에 둔다.
+  - scratch/local capture는 `tmp/playwright/**`, `/tmp` 같은 비추적 경로에 둔다. (하위 호환: `.playwright-mcp/screenshots`, `test-results`)
 - `source`가 `playwright`, `playwright-cli`, `playwright-mcp` 계열이면 `qa:record`는 최근 Playwright artifact를 자동 수집한다.
 - 기본 디렉토리나 시간 창을 바꾸려면 `playwrightArtifacts.reportDir/resultsDir/screenshotsDir/recentMinutes/pathIncludes`를 입력 JSON에 명시한다.
-- 수동 MCP QA는 shared `.playwright-mcp/screenshots`를 쓰므로, run별 파일 prefix를 붙이고 `pathIncludes`로 함께 좁혀 fresh artifact only 원칙을 지킨다.
+- 수동 MCP QA는 shared `tmp/playwright/mcp/screenshots`를 쓰므로, run별 파일 prefix를 붙이고 `pathIncludes`로 함께 좁혀 fresh artifact only 원칙을 지킨다.
 - `releaseFacing: true` 또는 `countsTowardSummary: true` run은 durable artifact만 허용한다. `playwright-report/`, `test-results/`, `.playwright-mcp/screenshots/`, `artifacts/`, root `qa*.png` 같은 로컬 임시 경로는 금지하고, URL 또는 `reports/qa/evidence/...` 추적 경로만 사용한다.
 - release-facing/counting run에서 로컬 Playwright 결과를 증거로 남길 때는 먼저 `reports/qa/evidence/...`로 복사하거나 CI/Vercel URL로 전환한 뒤 기록한다.
 - release-facing/counting run의 로컬 evidence 파일명은 `qa-YYYYMMDD-<slug>.<ext>` 형식을 사용한다. 예: `reports/qa/evidence/qa-20260406-dashboard-landing.png`
@@ -81,6 +81,14 @@ reports/qa/
 - `npm run qa:status`
 - `npm run qa:status -- --write`
 - `npm run qa:evidence:audit`
+- `npm run qa:evidence:audit -- --all`
+- `npm run qa:evidence:audit:storage:strict` (용량 예산 초과 시 실패)
+- 레거시 `artifacts/*` 경로 이관 (필요 시):
+  - dry-run: `npm run qa:artifacts:migrate`
+  - apply: `npm run qa:artifacts:migrate:apply`
+- 과거 비-durable artifact 경로(`.playwright-mcp/`, `test-results/`, 루트 파일명 등) 재정규화:
+  - dry-run: `npm run qa:artifacts:migrate:ephemeral`
+  - apply: `npm run qa:artifacts:migrate:ephemeral:apply`
 - public snapshot까지 같이 반영하려면 `npm run qa:status -- --write --sync-public`
 - `reports/qa/QA_STATUS.md` 확인
 - `qa:status -- --write`는 `QA_STATUS.md`와 trend artifacts만 재생성한다.
@@ -98,6 +106,8 @@ reports/qa/
 ## Tracking Rules
 
 - `qa-tracker.json`이 상태 추적 SSOT입니다.
+- `summary.totalRuns`/`totalChecks`/`totalPassed`/`totalFailed`는 전체 recorded run이 아니라 `countsTowardSummary !== false`인 counted run만 집계합니다.
+- 전체 recorded run 개수는 `runs.length` 또는 `summary.totalRecordedRuns`로 확인합니다.
 - 개선 항목은 `id` 기준으로 누적됩니다.
 - `usageChecks`는 실환경 QA/배포 후 사용량 확인 근거를 남기는 필드입니다.
   - Vercel Production의 `broad`/`release-gate` 또는 `releaseFacing: true` run이면 `platform: "vercel"` 항목이 최소 1건 필수
@@ -135,11 +145,12 @@ reports/qa/
   - `owner`/`repo`를 비우면 `GITHUB_REPOSITORY` 또는 `git origin`에서 추론합니다.
   - artifact URL이 없으면 workflow run URL로 연결하고, note에 artifact 이름을 남깁니다.
 - `playwrightArtifacts`는 로컬 Playwright 산출물을 자동 수집하는 옵션입니다.
-  - 기본값: `reportDir=playwright-report`, `resultsDir=test-results`, `screenshotsDir=.playwright-mcp/screenshots`, `recentMinutes=180`, `pathIncludes=[]`
+  - 기본값: `reportDir=tmp/playwright/e2e/report`, `resultsDir=tmp/playwright/e2e/test-results`, `screenshotsDir=tmp/playwright/mcp/screenshots`, `recentMinutes=180`, `pathIncludes=[]`
   - `source`가 `playwright`, `playwright-cli`, `playwright-mcp` 계열이면 옵션이 없어도 기본값으로 자동 수집을 시도합니다.
-  - `playwright-mcp`는 MCP server `--output-dir .playwright-mcp/screenshots`에 저장된 최신 screenshot을 `playwright-screenshot`으로 자동 연결합니다.
+  - `playwright-mcp`는 MCP server `--output-dir tmp/playwright/mcp/screenshots`에 저장된 최신 screenshot을 `playwright-screenshot`으로 자동 연결합니다.
+  - 하위 호환으로 `playwright-report/`, `test-results/`, `.playwright-mcp/screenshots/`도 fallback 탐지합니다.
   - 최근 수정된 파일만 수집하므로 오래된 실패 산출물은 기본적으로 제외됩니다.
-  - `pathIncludes`를 주면 `test-results`와 `.playwright-mcp/screenshots`에서 경로에 해당 문자열이 포함된 artifact만 수집합니다.
+  - `pathIncludes`를 주면 `tmp/playwright/**`(fallback 포함)에서 경로에 해당 문자열이 포함된 artifact만 수집합니다.
   - 이 자동 수집 경로는 verification/targeted evidence에는 적합하지만, release-facing/counting run에서는 그대로 사용할 수 없습니다. 필요한 파일은 durable repo path로 옮기거나 URL로 바꿔 기록합니다.
 - `coveredSurfaces` / `skippedSurfaces`는 사용자 보고 텍스트가 아니라 run SSOT에도 저장해야 합니다.
 - `observability-pack`은 Vercel dashboard observability와 Cloud Run admin observability를 혼동하지 않도록 기록합니다.
@@ -178,7 +189,14 @@ reports/qa/
   - `reports/qa/evidence` 아래 고아 durable evidence
   - run JSON이 참조하지만 실제 파일이 없는 artifact path
   - counted run인데 artifacts가 비어 있는 historical debt warning
+  - QA 저장소 용량 예산(`reports/qa`, `reports/qa/runs`, `reports/qa/evidence`)
+  - 대용량 파일(top N) 및 오래된 unreferenced run asset 아카이브 후보
   - 단, `artifactDebt.status="acknowledged"`가 붙은 run은 별도 acknowledged debt로 분리 집계합니다.
+- 기본 storage warning 기준(환경변수로 조정 가능):
+  - `reports/qa` 100MiB
+  - `reports/qa/runs` 70MiB
+  - `reports/qa/evidence` 40MiB
+  - 대용량 파일 기준 8MiB
 
 ## Reporting Style
 

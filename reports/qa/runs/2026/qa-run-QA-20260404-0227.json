@@ -88,17 +88,17 @@
     {
       "type": "playwright-screenshot",
       "label": "Dashboard and AI parity",
-      "path": "qa-20260404-targeted-qa-2306-ai-parity.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0227-01-qa-20260404-targeted-qa-2306-ai-parity.png"
     },
     {
       "type": "playwright-console",
       "label": "Console errors",
-      "path": "qa-20260404-targeted-qa-2306-console.log"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0227-02-qa-20260404-targeted-qa-2306-console.log"
     },
     {
       "type": "playwright-network",
       "label": "Network requests",
-      "path": "qa-20260404-targeted-qa-2306-network.log"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0227-03-qa-20260404-targeted-qa-2306-network.log"
     }
   ],
   "completedImprovements": [],

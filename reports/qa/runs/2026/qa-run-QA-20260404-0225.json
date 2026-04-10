@@ -99,32 +99,32 @@
     {
       "type": "playwright-screenshot",
       "label": "Landing page",
-      "path": "qa-20260404-broad-release-landing.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0225-01-qa-20260404-broad-release-landing.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "Login page",
-      "path": "qa-20260404-broad-release-login.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0225-02-qa-20260404-broad-release-login.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "404 route check",
-      "path": "qa-20260404-broad-release-404.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0225-03-qa-20260404-broad-release-404.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "Dashboard core",
-      "path": "qa-20260404-broad-release-dashboard.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0225-04-qa-20260404-broad-release-dashboard.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "AI sidebar parity response",
-      "path": "qa-20260404-broad-release-ai-summary.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0225-05-qa-20260404-broad-release-ai-summary.png"
     },
     {
       "type": "playwright-console",
       "label": "Browser console errors",
-      "path": "qa-20260404-broad-release-console-errors.log"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0225-06-qa-20260404-broad-release-console-errors.log"
     }
   ],
   "completedImprovements": [],

@@ -54,52 +54,52 @@
     {
       "type": "playwright-screenshot",
       "label": "Landing production after fix",
-      "path": "landing-production-after-fix-20260330.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-01-landing-production-after-fix-20260330.png"
     },
     {
       "type": "playwright-console",
       "label": "Landing production console errors after fix",
-      "path": "landing-production-console-errors-after-fix-20260330.txt"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-02-landing-production-console-errors-after-fix-20260330.txt"
     },
     {
       "type": "playwright-screenshot",
       "label": "card-title-check.png",
-      "path": ".playwright-mcp/screenshots/card-title-check.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-03-card-title-check.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "compare-hero.png",
-      "path": ".playwright-mcp/screenshots/compare-hero.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-04-compare-hero.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "final-landing.png",
-      "path": ".playwright-mcp/screenshots/final-landing.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-05-final-landing.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "landing-modal-ai-assistant.png",
-      "path": ".playwright-mcp/screenshots/landing-modal-ai-assistant.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-06-landing-modal-ai-assistant.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "landing-ux-analysis-01.png",
-      "path": ".playwright-mcp/screenshots/landing-ux-analysis-01.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-07-landing-ux-analysis-01.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "landing-ux-analysis-full.png",
-      "path": ".playwright-mcp/screenshots/landing-ux-analysis-full.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-08-landing-ux-analysis-full.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "local-after-codex.png",
-      "path": ".playwright-mcp/screenshots/local-after-codex.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-09-local-after-codex.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "local-vibe-qa-finish-20260330.png",
-      "path": ".playwright-mcp/screenshots/local-vibe-qa-finish-20260330.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0196-01-local-vibe-qa-finish-20260330.png"
     }
   ],
   "completedImprovements": [

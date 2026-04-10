@@ -49,22 +49,12 @@
     {
       "type": "playwright-screenshot",
       "label": "PR #200 post-merge production AI smoke",
-      "path": "artifacts/playwright/production-pr200-postmerge-ai-smoke-2026-03-24.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "preview-ai-smoke-5f65815b7842022a35e44b801d30f24859653f54.png",
-      "path": "test-results/manual-vercel/tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium/attachments/preview-ai-smoke-5f65815b7842022a35e44b801d30f24859653f54.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "pr200-preview-ai-smoke.png",
-      "path": "test-results/manual-vercel/tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium/pr200-preview-ai-smoke.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260324-0181-01-production-pr200-postmerge-ai-smoke-2026-03-24.png"
     },
     {
       "type": "playwright-trace",
       "label": "tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium",
-      "path": "test-results/manual-vercel/tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium/trace.zip"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260324-0181-04-trace.zip"
     }
   ],
   "completedImprovements": [],
@@ -76,7 +66,8 @@
     "Dashboard snapshot rendered Synthetic OTel snapshot 20:30 KST (slot 123/143).",
     "The assistant answered api-was-dc1-01 current memory usage as 65% and labeled the response as 서버 실시간 데이터 분석.",
     "Assistant response detail exposed Parity Metadata Contract with dataSlot.slotIndex=123, minuteOfDay=1230, timeLabel=20:30 KST.",
-    "Analysis Basis detail exposed 데이터/엔진/도구/기간 with 서버 메트릭 조회 and 최근 1시간."
+    "Analysis Basis detail exposed 데이터/엔진/도구/기간 with 서버 메트릭 조회 and 최근 1시간.",
+    "[ephemeral-artifact-migration] 2 historical non-durable artifact path(s) could not be recovered and were removed from artifacts list."
   ],
   "links": [
     {

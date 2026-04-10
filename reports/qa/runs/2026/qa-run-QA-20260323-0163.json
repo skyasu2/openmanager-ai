@@ -37,7 +37,7 @@
     {
       "type": "playwright-screenshot",
       "label": "Server cards - MEM label no overlap (4 cards visible)",
-      "path": "artifacts/playwright/mem-label-no-overlap-2026-03-23.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260323-0163-01-mem-label-no-overlap-2026-03-23.png"
     }
   ],
   "completedImprovements": [],

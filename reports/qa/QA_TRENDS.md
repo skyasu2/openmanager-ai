@@ -1,20 +1,20 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-04-09 07:38:11 KST
+> Generated at: 2026-04-10 08:18:56 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 258 |
-| Counted Runs | 237 |
-| Total Checks | 1849 |
-| Total Passed | 1777 |
+| Recorded Runs | 265 |
+| Counted Runs | 239 |
+| Total Checks | 1859 |
+| Total Passed | 1787 |
 | Total Failed | 66 |
-| Overall Pass Rate | 96.11% |
-| Latest Recorded Run | QA-20260409-0259 |
-| Last Counted Run | QA-20260409-0259 |
+| Overall Pass Rate | 96.13% |
+| Latest Recorded Run | QA-20260409-0267 |
+| Last Counted Run | QA-20260409-0267 |
 
 ## Warnings
 
@@ -24,16 +24,16 @@
 
 | Window | Counted Runs | Checks | Pass Rate | Failed Runs | Failing Run Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| All Counted Runs | 237 | 1849 | 96.11% | 41 | 17.3% | 46 | 19.41% |
-| Last 30 Counted Runs | 30 | 315 | 98.73% | 3 | 10% | 3 | 10% |
-| Last 10 Counted Runs | 10 | 107 | 98.13% | 1 | 10% | 1 | 10% |
+| All Counted Runs | 239 | 1859 | 96.13% | 41 | 17.15% | 46 | 19.25% |
+| Last 30 Counted Runs | 30 | 309 | 98.71% | 3 | 10% | 3 | 10% |
+| Last 10 Counted Runs | 10 | 90 | 97.78% | 1 | 10% | 1 | 10% |
 
 ## Gate Run Windows
 
 | Window | Counted Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|
-| All Gate Runs | 17 | 240 | 97.5% | 3 | 17.65% |
-| Last 5 Gate Runs | 5 | 72 | 97.22% | 1 | 20% |
+| All Gate Runs | 18 | 243 | 97.53% | 3 | 16.67% |
+| Last 5 Gate Runs | 5 | 63 | 96.83% | 1 | 20% |
 
 ## Release-Gate Only Windows
 
@@ -47,8 +47,8 @@
 | Scope | Recorded Runs | Counted Runs |
 |---|---:|---:|
 | legacy | 137 | 137 |
-| targeted | 101 | 81 |
-| broad | 14 | 13 |
+| targeted | 107 | 82 |
+| broad | 15 | 14 |
 | release-gate | 4 | 4 |
 | smoke | 2 | 2 |
 
@@ -65,6 +65,8 @@
 
 | Deployment ID | Target | Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate | Latest Run | Commit |
 |---|---|---:|---:|---:|---:|---:|---|---|
+| q9sLLaw5dMDeDbCacX11sTe8fE1t | vercel-production | 1 | 3 | 100% | 0 | 0% | QA-20260409-0267 | 858a084b |
+| dpl_CAWchymB1KKe4ADsqMwLV6S9uigQ | vercel-production | 1 | 7 | 100% | 0 | 0% | QA-20260409-0264 | ca7f27ae |
 | dpl_FnzN8yJFRkS5TUkvQYWREJwtJGh2 | vercel-production | 1 | 14 | 100% | 0 | 0% | QA-20260409-0259 | 8ca2b7eb |
 | dpl_HsUxVfvpeXApZu25dEY4WNrQrcoy | vercel-production | 1 | 6 | 100% | 0 | 0% | QA-20260408-0250 | f515817d |
 | dpl_7YFJku7zmAYHWwhF6FrizaLfHkKE | vercel-production | 1 | 18 | 88.89% | 1 | 100% | QA-20260407-0249 | 8d537c7a |
@@ -75,8 +77,6 @@
 | dpl_HrjM2qkwGoVvv1y9jF1sdirjuUMB | vercel-production | 1 | 8 | 100% | 0 | 0% | QA-20260405-0232 | b4bd537a |
 | dpl_Fer4NeUmueSdqxwbajJJqDkCdR9c | vercel-production | 1 | 8 | 100% | 0 | 0% | QA-20260405-0231 | 98d6c0be |
 | dpl_7RVYuLgp44dE9AMHWLBegNxY1hSH | vercel-production | 1 | 7 | 100% | 0 | 0% | QA-20260405-0230 | 1ce348df |
-| dpl_BC2L2XzJ6JCXcQauXB3wviMfuPXZ | vercel-production | 4 | 59 | 100% | 0 | 0% | QA-20260404-0229 | 0b0f5c4e |
-| dpl_RMZadPVLmjXrbdkkQTwRpFTx6nv4 | vercel-production | 1 | 16 | 100% | 0 | 0% | QA-20260404-0225 | fc725862 |
 
 ## Recent Daily Trend (KST)
 
@@ -95,7 +95,7 @@
 | 2026-04-06 | 2 | 22 | 100% | 0 | 0 | 0% |
 | 2026-04-07 | 1 | 18 | 88.89% | 1 | 1 | 100% |
 | 2026-04-08 | 4 | 26 | 100% | 0 | 0 | 0% |
-| 2026-04-09 | 1 | 14 | 100% | 0 | 0 | 0% |
+| 2026-04-09 | 3 | 24 | 100% | 0 | 0 | 0% |
 
 ## Recent Regression Runs
 

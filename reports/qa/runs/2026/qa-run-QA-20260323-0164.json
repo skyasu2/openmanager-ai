@@ -41,7 +41,7 @@
     {
       "type": "playwright-screenshot",
       "label": "AI sidebar parity metadata contract rendered with typed dataSlot/dataSource",
-      "path": "artifacts/playwright/ai-sidebar-parity-contract-2026-03-23.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260323-0164-01-ai-sidebar-parity-contract-2026-03-23.png"
     }
   ],
   "completedImprovements": [

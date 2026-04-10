@@ -50,7 +50,7 @@
     {
       "type": "playwright-screenshot",
       "label": "Production parity gate closed with slot 108 and MEM 82%",
-      "path": "artifacts/playwright/parity-gate-closed-production-2026-03-24.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260324-0178-01-parity-gate-closed-production-2026-03-24.png"
     }
   ],
   "completedImprovements": [

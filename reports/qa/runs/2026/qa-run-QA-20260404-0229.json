@@ -99,37 +99,37 @@
     {
       "type": "playwright-screenshot",
       "label": "Landing",
-      "path": "qa-20260404-broad-0229-landing.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0229-01-qa-20260404-broad-0229-landing.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "Dashboard with AI parity",
-      "path": "qa-20260404-broad-0229-dashboard-ai.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0229-02-qa-20260404-broad-0229-dashboard-ai.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "404 route",
-      "path": "qa-20260404-broad-0229-404.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0229-03-qa-20260404-broad-0229-404.png"
     },
     {
       "type": "playwright-console",
       "label": "Landing console",
-      "path": "qa-20260404-broad-0229-landing-console.log"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0229-04-qa-20260404-broad-0229-landing-console.log"
     },
     {
       "type": "playwright-console",
       "label": "Dashboard console",
-      "path": "qa-20260404-broad-0229-dashboard-console.log"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0229-05-qa-20260404-broad-0229-dashboard-console.log"
     },
     {
       "type": "playwright-console",
       "label": "404 console",
-      "path": "qa-20260404-broad-0229-404-console.log"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0229-06-qa-20260404-broad-0229-404-console.log"
     },
     {
       "type": "playwright-network",
       "label": "Network log",
-      "path": "qa-20260404-broad-0229-network.log"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0229-07-qa-20260404-broad-0229-network.log"
     }
   ],
   "completedImprovements": [],

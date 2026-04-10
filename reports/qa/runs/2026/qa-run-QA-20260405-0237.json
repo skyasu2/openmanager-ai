@@ -62,7 +62,7 @@
     {
       "type": "playwright-screenshot",
       "label": "Validation Evidence page",
-      "path": "qa-20260405-0237-validation.png",
+      "path": "reports/qa/evidence/legacy/2026/qa-20260405-0237-01-qa-20260405-0237-validation.png",
       "note": "Production validation page render after gate warning clarification"
     }
   ],

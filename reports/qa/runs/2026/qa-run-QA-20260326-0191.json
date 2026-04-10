@@ -57,27 +57,27 @@
     {
       "type": "playwright-screenshot",
       "label": "Latest QA data deploy landing proof",
-      "path": "qa-20260326-prod-c049-landing.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260326-0191-01-qa-20260326-prod-c049-landing.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "Latest QA data deploy dashboard proof",
-      "path": "qa-20260326-prod-c049-dashboard.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260326-0191-02-qa-20260326-prod-c049-dashboard.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "Latest QA data deploy AI proof",
-      "path": "qa-20260326-prod-c049-ai.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260326-0191-03-qa-20260326-prod-c049-ai.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "Latest QA data deploy validation page proof",
-      "path": "qa-20260326-prod-c049-validation.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260326-0191-04-qa-20260326-prod-c049-validation.png"
     },
     {
       "type": "playwright-console",
       "label": "Latest QA data deploy console warnings",
-      "path": "qa-20260326-prod-c049-console.log"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260326-0191-05-qa-20260326-prod-c049-console.log"
     }
   ],
   "completedImprovements": [],

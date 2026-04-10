@@ -54,32 +54,32 @@
     {
       "type": "playwright-screenshot",
       "label": "Landing production web vitals smoke",
-      "path": "landing-production-webvitals-20260330.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0199-01-landing-production-webvitals-20260330.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "Validation production web vitals smoke",
-      "path": "validation-production-webvitals-20260330.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0199-02-validation-production-webvitals-20260330.png"
     },
     {
       "type": "playwright-console",
       "label": "Landing production web vitals console",
-      "path": "landing-webvitals-production-console-20260330.txt"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0199-03-landing-webvitals-production-console-20260330.txt"
     },
     {
       "type": "playwright-network",
       "label": "Landing production web vitals network",
-      "path": "landing-webvitals-production-network-20260330.txt"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0199-04-landing-webvitals-production-network-20260330.txt"
     },
     {
       "type": "playwright-screenshot",
       "label": "qa-prod-01-loading.png",
-      "path": ".playwright-mcp/screenshots/qa-prod-01-loading.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0199-05-qa-prod-01-loading.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "qa-prod-02-cards.png",
-      "path": ".playwright-mcp/screenshots/qa-prod-02-cards.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0199-06-qa-prod-02-cards.png"
     }
   ],
   "completedImprovements": [],

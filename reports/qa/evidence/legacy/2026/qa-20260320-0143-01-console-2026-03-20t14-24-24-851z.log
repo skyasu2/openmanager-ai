@@ -1,0 +1,2 @@
+[     356ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://openmanager-ai.vercel.app/nonexistent-page-404-test:0
+[    5600ms] [WARNING] The resource https://openmanager-ai.vercel.app/_next/static/chunks/2fcbddc630838c47.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ https://openmanager-ai.vercel.app/nonexistent-page-404-test:0

@@ -8,7 +8,9 @@
     "nextRunNumber": 268
   },
   "summary": {
+    "totalRecordedRuns": 265,
     "totalRuns": 239,
+    "excludedRuns": 26,
     "totalChecks": 1859,
     "totalPassed": 1787,
     "totalFailed": 66,
@@ -13053,7 +13055,7 @@
         {
           "type": "playwright-console",
           "label": "console-2026-03-20T14-24-24-851Z.log",
-          "path": ".playwright-mcp/screenshots/console-2026-03-20T14-24-24-851Z.log",
+          "path": "reports/qa/evidence/legacy/2026/qa-20260320-0143-01-console-2026-03-20t14-24-24-851z.log",
           "note": "Backfilled from a retained local playwright-mcp console capture recorded 29.8 minutes before the run record; association is inferred from the matching 404 surface and the lack of a nearer release-facing console capture."
         }
       ],
@@ -13145,7 +13147,7 @@
         {
           "type": "playwright-console",
           "label": "console-2026-03-20T21-44-14-550Z.log",
-          "path": ".playwright-mcp/screenshots/console-2026-03-20T21-44-14-550Z.log",
+          "path": "reports/qa/evidence/legacy/2026/qa-20260321-0144-01-console-2026-03-20t21-44-14-550z.log",
           "note": "Backfilled from a retained local playwright-mcp console capture in the QA window; the log includes an intentional __qa-0144-not-found 404 probe outside the validated AI surfaces."
         }
       ],
@@ -13294,13 +13296,13 @@
         {
           "type": "playwright-console",
           "label": "qa-20260321-topology-console-errors.log",
-          "path": ".playwright-mcp/screenshots/qa-20260321-topology-console-errors.log",
+          "path": "reports/qa/evidence/legacy/2026/qa-20260321-0146-01-qa-20260321-topology-console-errors.log",
           "note": "browser_console_messages capture after topology modal verification; Total messages: 0 (Errors: 0, Warnings: 0)."
         },
         {
           "type": "playwright-screenshot",
           "label": "qa-20260321-topology-modal.png",
-          "path": ".playwright-mcp/screenshots/qa-20260321-topology-modal.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260321-0146-02-qa-20260321-topology-modal.png"
         }
       ],
       "expertCount": 0,
@@ -13374,13 +13376,13 @@
         {
           "type": "playwright-console",
           "label": "qa-20260321-ai-sidebar-console-errors.log",
-          "path": ".playwright-mcp/screenshots/qa-20260321-ai-sidebar-console-errors.log",
+          "path": "reports/qa/evidence/legacy/2026/qa-20260321-0147-01-qa-20260321-ai-sidebar-console-errors.log",
           "note": "browser_console_messages capture after AI sidebar, Reporter, Analyst, and starter-prompt validation; Total messages: 0 (Errors: 0, Warnings: 0)."
         },
         {
           "type": "playwright-screenshot",
           "label": "qa-20260321-ai-sidebar.png",
-          "path": ".playwright-mcp/screenshots/qa-20260321-ai-sidebar.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260321-0147-02-qa-20260321-ai-sidebar.png"
         }
       ],
       "expertCount": 0,
@@ -13454,13 +13456,13 @@
         {
           "type": "playwright-console",
           "label": "qa-20260321-ai-fullscreen-console-errors.log",
-          "path": ".playwright-mcp/screenshots/qa-20260321-ai-fullscreen-console-errors.log",
+          "path": "reports/qa/evidence/legacy/2026/qa-20260321-0148-01-qa-20260321-ai-fullscreen-console-errors.log",
           "note": "browser_console_messages capture after fullscreen AI workspace validation; Total messages: 0 (Errors: 0, Warnings: 0)."
         },
         {
           "type": "playwright-screenshot",
           "label": "qa-20260321-ai-fullscreen.png",
-          "path": ".playwright-mcp/screenshots/qa-20260321-ai-fullscreen.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260321-0148-02-qa-20260321-ai-fullscreen.png"
         }
       ],
       "expertCount": 0,
@@ -13533,13 +13535,13 @@
         {
           "type": "playwright-console",
           "label": "qa-20260321-ai-freetext-console-errors.log",
-          "path": ".playwright-mcp/screenshots/qa-20260321-ai-freetext-console-errors.log",
+          "path": "reports/qa/evidence/legacy/2026/qa-20260321-0149-01-qa-20260321-ai-freetext-console-errors.log",
           "note": "browser_console_messages capture after AI sidebar free-text validation; Total messages: 0 (Errors: 0, Warnings: 0)."
         },
         {
           "type": "playwright-screenshot",
           "label": "qa-20260321-ai-freetext.png",
-          "path": ".playwright-mcp/screenshots/qa-20260321-ai-freetext.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260321-0149-02-qa-20260321-ai-freetext.png"
         }
       ],
       "expertCount": 0,
@@ -13652,7 +13654,7 @@
         {
           "type": "playwright-screenshot",
           "label": "Dashboard observability panel - 15 servers, 1 warning",
-          "path": "artifacts/playwright/observability-dashboard-2026-03-21.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260321-0151-01-observability-dashboard-2026-03-21.png"
         }
       ],
       "links": [
@@ -13824,7 +13826,7 @@
         {
           "type": "playwright-screenshot",
           "label": "qa-20260322-feedback-trace-success.png",
-          "path": ".playwright-mcp/screenshots/qa-20260322-feedback-trace-success.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260322-0153-01-qa-20260322-feedback-trace-success.png"
         }
       ],
       "links": [
@@ -13996,17 +13998,17 @@
         {
           "type": "playwright-screenshot",
           "label": "feedback-negative-trace-2026-03-22.png",
-          "path": "artifacts/playwright/feedback-negative-trace-2026-03-22.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260322-0155-01-feedback-negative-trace-2026-03-22.png"
         },
         {
           "type": "playwright-console",
           "label": "feedback-negative-trace-2026-03-22-console.log",
-          "path": "artifacts/playwright/feedback-negative-trace-2026-03-22-console.log"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260322-0155-02-feedback-negative-trace-2026-03-22-console.log"
         },
         {
           "type": "playwright-screenshot",
           "label": "qa-20260322-feedback-trace-success.png",
-          "path": ".playwright-mcp/screenshots/qa-20260322-feedback-trace-success.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260322-0153-01-qa-20260322-feedback-trace-success.png"
         }
       ],
       "links": [
@@ -14101,12 +14103,12 @@
         {
           "type": "playwright-screenshot",
           "label": "feedback-trace-links-2026-03-22.png",
-          "path": "artifacts/playwright/feedback-trace-links-2026-03-22.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260322-0156-01-feedback-trace-links-2026-03-22.png"
         },
         {
           "type": "playwright-console",
           "label": "feedback-trace-links-2026-03-22-console.log",
-          "path": "artifacts/playwright/feedback-trace-links-2026-03-22-console.log"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260322-0156-02-feedback-trace-links-2026-03-22-console.log"
         }
       ],
       "links": [
@@ -14194,12 +14196,12 @@
         {
           "type": "playwright-screenshot",
           "label": "Portfolio negative impression fixes proof",
-          "path": "artifacts/playwright/portfolio-negative-impression-fixes-2026-03-22.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260322-0157-01-portfolio-negative-impression-fixes-2026-03-22.png"
         },
         {
           "type": "playwright-console",
           "label": "Portfolio negative impression fixes console",
-          "path": "artifacts/playwright/portfolio-negative-impression-fixes-2026-03-22-console.log"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260322-0157-02-portfolio-negative-impression-fixes-2026-03-22-console.log"
         }
       ],
       "links": [],
@@ -14274,12 +14276,12 @@
         {
           "type": "playwright-screenshot",
           "label": "Feedback trace UI link proof",
-          "path": "artifacts/playwright/feedback-trace-ui-link-2026-03-22.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260322-0158-01-feedback-trace-ui-link-2026-03-22.png"
         },
         {
           "type": "playwright-console",
           "label": "Feedback trace UI link response",
-          "path": "artifacts/playwright/feedback-trace-ui-link-2026-03-22-response.json"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260322-0158-02-feedback-trace-ui-link-2026-03-22-response.json"
         }
       ],
       "links": [
@@ -14375,17 +14377,17 @@
         {
           "type": "playwright-screenshot",
           "label": "Feedback trace URL status proof",
-          "path": "artifacts/playwright/feedback-trace-url-status-2026-03-22.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260322-0159-01-feedback-trace-url-status-2026-03-22.png"
         },
         {
           "type": "playwright-console",
           "label": "Feedback trace URL status console",
-          "path": "artifacts/playwright/feedback-trace-url-status-2026-03-22-console.log"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260322-0159-02-feedback-trace-url-status-2026-03-22-console.log"
         },
         {
           "type": "playwright-network",
           "label": "Feedback trace URL status response body",
-          "path": "artifacts/playwright/feedback-trace-url-status-2026-03-22-response.json"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260322-0159-03-feedback-trace-url-status-2026-03-22-response.json"
         }
       ],
       "links": [
@@ -14519,12 +14521,12 @@
         {
           "type": "playwright-screenshot",
           "label": "Dashboard dataSource metadata - Dataset v1.0.0 · catalog 2026-02-15 03:56Z",
-          "path": "artifacts/playwright/datasource-parity-metadata-2026-03-22.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260322-0161-01-datasource-parity-metadata-2026-03-22.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "AI sidebar - dataSlot { slotIndex: 143, minuteOfDay: 1430, timeLabel: 23:50 KST } + dataSource { scopeName: openmanager-ai-otel-pipeline, scopeVersion: 1.0.0, catalogGeneratedAt: 2026-02-15T03:56:41.821Z, hour: 23 }",
-          "path": "artifacts/playwright/datasource-ai-metadata-2026-03-22.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260322-0161-02-datasource-ai-metadata-2026-03-22.png"
         }
       ],
       "links": [],
@@ -14590,12 +14592,12 @@
         {
           "type": "playwright-screenshot",
           "label": "Dashboard raw metric + data source parity metadata",
-          "path": "artifacts/playwright/parity-dashboard-raw-metric-2026-03-23.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260323-0162-01-parity-dashboard-raw-metric-2026-03-23.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "AI sidebar detailed analysis still showing _dataSlot/_dataSource",
-          "path": "artifacts/playwright/parity-ai-metadata-detail-2026-03-23.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260323-0162-02-parity-ai-metadata-detail-2026-03-23.png"
         }
       ],
       "links": [],
@@ -14646,7 +14648,7 @@
         {
           "type": "playwright-screenshot",
           "label": "Server cards - MEM label no overlap (4 cards visible)",
-          "path": "artifacts/playwright/mem-label-no-overlap-2026-03-23.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260323-0163-01-mem-label-no-overlap-2026-03-23.png"
         }
       ],
       "links": [],
@@ -14701,7 +14703,7 @@
         {
           "type": "playwright-screenshot",
           "label": "AI sidebar parity metadata contract rendered with typed dataSlot/dataSource",
-          "path": "artifacts/playwright/ai-sidebar-parity-contract-2026-03-23.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260323-0164-01-ai-sidebar-parity-contract-2026-03-23.png"
         }
       ],
       "links": [],
@@ -14765,7 +14767,7 @@
         {
           "type": "playwright-screenshot",
           "label": "Server card warning badge opens AI sidebar with prefilled alert context",
-          "path": "artifacts/playwright/server-card-alert-badge-ai-prefill-2026-03-23.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260323-0165-01-server-card-alert-badge-ai-prefill-2026-03-23.png"
         }
       ],
       "links": [
@@ -14835,7 +14837,7 @@
         {
           "type": "playwright-screenshot",
           "label": "Active alerts modal prefill opens AI sidebar with selected alert context",
-          "path": "artifacts/playwright/active-alerts-ai-prefill-2026-03-23.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260323-0166-01-active-alerts-ai-prefill-2026-03-23.png"
         }
       ],
       "links": [
@@ -14905,7 +14907,7 @@
         {
           "type": "playwright-screenshot",
           "label": "Alert history modal prefill opens AI sidebar with selected alert context",
-          "path": "artifacts/playwright/active-alert-history-ai-prefill-2026-03-23.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260323-0167-01-active-alert-history-ai-prefill-2026-03-23.png"
         }
       ],
       "links": [
@@ -14976,7 +14978,7 @@
         {
           "type": "playwright-screenshot",
           "label": "Validation evidence page with public snapshot badge and proof run summary",
-          "path": "artifacts/playwright/validation-evidence-public-snapshot-2026-03-23.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260323-0168-01-validation-evidence-public-snapshot-2026-03-23.png"
         }
       ],
       "links": [
@@ -15097,7 +15099,7 @@
         {
           "type": "playwright-screenshot",
           "label": "Validation page without stale banner on fresh deployed snapshot",
-          "path": "artifacts/playwright/validation-stale-banner-smoke-2026-03-23.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260324-0170-01-validation-stale-banner-smoke-2026-03-23.png"
         }
       ],
       "links": [
@@ -15173,7 +15175,7 @@
         {
           "type": "playwright-screenshot",
           "label": "Validation Evidence page with clarified hero copy and snapshot note",
-          "path": "artifacts/playwright/validation-evidence-clarified-2026-03-24.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260324-0171-01-validation-evidence-clarified-2026-03-24.png"
         }
       ],
       "links": [
@@ -15292,7 +15294,7 @@
         {
           "type": "playwright-screenshot",
           "label": "Dashboard slot label and AI sidebar service unavailable during parity gate check",
-          "path": "artifacts/playwright/parity-gate-ai-unavailable-2026-03-24.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260324-0173-01-parity-gate-ai-unavailable-2026-03-24.png"
         }
       ],
       "links": [
@@ -15365,7 +15367,7 @@
         {
           "type": "playwright-screenshot",
           "label": "Production AI detail view after type-fix deploy still missing parity metadata block",
-          "path": "artifacts/playwright/parity-detail-metadata-missing-2026-03-24.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260324-0174-01-parity-detail-metadata-missing-2026-03-24.png"
         }
       ],
       "links": [
@@ -15439,7 +15441,7 @@
         {
           "type": "playwright-screenshot",
           "label": "Production AI detail view after deferred parity metadata preserve fix",
-          "path": "artifacts/playwright/parity-detail-data-source-only-2026-03-24.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260324-0175-01-parity-detail-data-source-only-2026-03-24.png"
         }
       ],
       "links": [
@@ -15513,7 +15515,7 @@
         {
           "type": "playwright-screenshot",
           "label": "Production parity gate regression after analysis detail patch",
-          "path": "artifacts/playwright/parity-gate-regression-2026-03-24.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260324-0176-01-parity-gate-regression-2026-03-24.png"
         }
       ],
       "links": [
@@ -15587,7 +15589,7 @@
         {
           "type": "playwright-screenshot",
           "label": "False realtime-analysis badge removed but AI/dashboard parity mismatch remains",
-          "path": "artifacts/playwright/parity-badge-honest-but-mismatch-2026-03-24.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260324-0177-01-parity-badge-honest-but-mismatch-2026-03-24.png"
         }
       ],
       "links": [
@@ -15662,7 +15664,7 @@
         {
           "type": "playwright-screenshot",
           "label": "Production parity gate closed with slot 108 and MEM 82%",
-          "path": "artifacts/playwright/parity-gate-closed-production-2026-03-24.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260324-0178-01-parity-gate-closed-production-2026-03-24.png"
         }
       ],
       "links": [
@@ -15736,7 +15738,7 @@
         {
           "type": "playwright-screenshot",
           "label": "PR #200 preview redirected to Vercel login",
-          "path": "preview-pr200-vercel-sso-block-2026-03-24.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260324-0179-01-preview-pr200-vercel-sso-block-2026-03-24.png"
         }
       ],
       "links": [
@@ -15814,7 +15816,7 @@
         {
           "type": "playwright-screenshot",
           "label": "PR #200 preview AI smoke",
-          "path": "artifacts/playwright/pr200-preview-ai-smoke-2026-03-24.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260324-0180-01-pr200-preview-ai-smoke-2026-03-24.png"
         }
       ],
       "links": [
@@ -15893,22 +15895,12 @@
         {
           "type": "playwright-screenshot",
           "label": "PR #200 post-merge production AI smoke",
-          "path": "artifacts/playwright/production-pr200-postmerge-ai-smoke-2026-03-24.png"
-        },
-        {
-          "type": "playwright-screenshot",
-          "label": "preview-ai-smoke-5f65815b7842022a35e44b801d30f24859653f54.png",
-          "path": "test-results/manual-vercel/tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium/attachments/preview-ai-smoke-5f65815b7842022a35e44b801d30f24859653f54.png"
-        },
-        {
-          "type": "playwright-screenshot",
-          "label": "pr200-preview-ai-smoke.png",
-          "path": "test-results/manual-vercel/tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium/pr200-preview-ai-smoke.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260324-0181-01-production-pr200-postmerge-ai-smoke-2026-03-24.png"
         },
         {
           "type": "playwright-trace",
           "label": "tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium",
-          "path": "test-results/manual-vercel/tmp-pr200-preview-ai-smoke-5d35a-nd-exposes-analysis-details-chromium/trace.zip"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260324-0181-04-trace.zip"
         }
       ],
       "links": [
@@ -16255,17 +16247,17 @@
         {
           "type": "playwright-screenshot",
           "label": "Landing production proof",
-          "path": "qa-20260326-release-gate-landing.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260326-0187-01-qa-20260326-release-gate-landing.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "Dashboard and AI sidebar proof",
-          "path": "qa-20260326-release-gate-dashboard-ai.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260326-0187-02-qa-20260326-release-gate-dashboard-ai.png"
         },
         {
           "type": "playwright-console",
           "label": "Console errors",
-          "path": "qa-20260326-release-gate-console-errors.log"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260326-0187-03-qa-20260326-release-gate-console-errors.log"
         }
       ],
       "links": [
@@ -16360,22 +16352,22 @@
         {
           "type": "playwright-screenshot",
           "label": "Latest deploy landing proof",
-          "path": "qa-20260326-latest-prod-recheck-landing.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260326-0188-01-qa-20260326-latest-prod-recheck-landing.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "Latest deploy dashboard proof",
-          "path": "qa-20260326-latest-prod-recheck-dashboard.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260326-0188-02-qa-20260326-latest-prod-recheck-dashboard.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "Latest deploy AI response proof",
-          "path": "qa-20260326-latest-prod-recheck-ai.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260326-0188-03-qa-20260326-latest-prod-recheck-ai.png"
         },
         {
           "type": "playwright-console",
           "label": "Console errors during recheck",
-          "path": "qa-20260326-latest-prod-recheck-console-errors-final.log"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260326-0188-04-qa-20260326-latest-prod-recheck-console-errors-final.log"
         }
       ],
       "links": [
@@ -16491,22 +16483,22 @@
         {
           "type": "playwright-screenshot",
           "label": "Release 8.10.0 landing proof",
-          "path": "qa-20260326-release-8100-landing.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260326-0189-01-qa-20260326-release-8100-landing.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "Release 8.10.0 dashboard proof",
-          "path": "qa-20260326-release-8100-dashboard.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260326-0189-02-qa-20260326-release-8100-dashboard.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "Release 8.10.0 AI response proof",
-          "path": "qa-20260326-release-8100-ai.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260326-0189-03-qa-20260326-release-8100-ai.png"
         },
         {
           "type": "playwright-console",
           "label": "Release 8.10.0 console warnings",
-          "path": "qa-20260326-release-8100-console.log"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260326-0189-04-qa-20260326-release-8100-console.log"
         }
       ],
       "links": [
@@ -16672,27 +16664,27 @@
         {
           "type": "playwright-screenshot",
           "label": "Latest QA data deploy landing proof",
-          "path": "qa-20260326-prod-c049-landing.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260326-0191-01-qa-20260326-prod-c049-landing.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "Latest QA data deploy dashboard proof",
-          "path": "qa-20260326-prod-c049-dashboard.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260326-0191-02-qa-20260326-prod-c049-dashboard.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "Latest QA data deploy AI proof",
-          "path": "qa-20260326-prod-c049-ai.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260326-0191-03-qa-20260326-prod-c049-ai.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "Latest QA data deploy validation page proof",
-          "path": "qa-20260326-prod-c049-validation.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260326-0191-04-qa-20260326-prod-c049-validation.png"
         },
         {
           "type": "playwright-console",
           "label": "Latest QA data deploy console warnings",
-          "path": "qa-20260326-prod-c049-console.log"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260326-0191-05-qa-20260326-prod-c049-console.log"
         }
       ],
       "links": [
@@ -16787,7 +16779,7 @@
         {
           "type": "playwright-screenshot",
           "label": "Dashboard + AI sidebar latest production state",
-          "path": "qa-20260326-prod-0192-dashboard-ai.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260326-0192-01-qa-20260326-prod-0192-dashboard-ai.png"
         }
       ],
       "links": [
@@ -16883,38 +16875,38 @@
         {
           "type": "playwright-screenshot",
           "label": "Production landing",
-          "path": "qa-20260327-prod-0193-landing.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260327-0193-01-qa-20260327-prod-0193-landing.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "Vibe Coding modal",
-          "path": "qa-20260327-prod-0193-vibe-modal.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260327-0193-02-qa-20260327-prod-0193-vibe-modal.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "Dashboard overview",
-          "path": "qa-20260327-prod-0193-dashboard.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260327-0193-03-qa-20260327-prod-0193-dashboard.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "Active alert to AI prefill",
-          "path": "qa-20260327-prod-0193-alert-modal.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260327-0193-04-qa-20260327-prod-0193-alert-modal.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "AI warm-up state",
-          "path": "qa-20260327-prod-0193-ai-warmup.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260327-0193-05-qa-20260327-prod-0193-ai-warmup.png"
         },
         {
           "type": "playwright-console",
           "label": "Console warnings/errors",
-          "path": "qa-20260327-prod-0193-console.log",
+          "path": "reports/qa/evidence/legacy/2026/qa-20260327-0193-06-qa-20260327-prod-0193-console.log",
           "note": "0 errors, preload warnings only"
         },
         {
           "type": "playwright-network",
           "label": "Network log",
-          "path": "qa-20260327-prod-0193-network-final.log",
+          "path": "reports/qa/evidence/legacy/2026/qa-20260327-0193-07-qa-20260327-prod-0193-network-final.log",
           "note": "Includes /api/ai/wake-up 200 and /api/ai/jobs 201"
         }
       ],
@@ -17084,32 +17076,27 @@
         {
           "type": "playwright-screenshot",
           "label": "Landing page overview",
-          "path": ".playwright-mcp/screenshots/landing-page-overview-20260330.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0195-01-landing-page-overview-20260330.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "AI Assistant modal detail",
-          "path": ".playwright-mcp/screenshots/landing-ai-modal-detail-20260330.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0195-02-landing-ai-modal-detail-20260330.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "AI Assistant architecture",
-          "path": ".playwright-mcp/screenshots/landing-ai-modal-architecture-20260330.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0195-03-landing-ai-modal-architecture-20260330.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "Vibe Coding history",
-          "path": ".playwright-mcp/screenshots/landing-vibe-modal-history-20260330.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0195-04-landing-vibe-modal-history-20260330.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "Vibe Coding architecture",
-          "path": ".playwright-mcp/screenshots/landing-vibe-modal-architecture-20260330.png"
-        },
-        {
-          "type": "playwright-console",
-          "label": "Landing console errors",
-          "path": "artifacts/landing-console-errors.txt"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0195-05-landing-vibe-modal-architecture-20260330.png"
         }
       ],
       "links": [
@@ -17124,7 +17111,14 @@
       "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
-      "wontFixCount": 3
+      "wontFixCount": 3,
+      "artifactDebt": {
+        "status": "acknowledged",
+        "kind": "historical-no-durable-evidence",
+        "reason": "Legacy artifacts/* evidence was missing during root-artifact migration, so the run keeps acknowledged historical debt.",
+        "recordedAt": "2026-04-09T15:35:18.484Z",
+        "recordedBy": "codex:migrate-legacy-artifact-paths"
+      }
     },
     {
       "runId": "QA-20260330-0196",
@@ -17170,7 +17164,7 @@
         {
           "type": "playwright-screenshot",
           "label": "Local Vibe QA Finish view",
-          "path": ".playwright-mcp/screenshots/local-vibe-qa-finish-20260330.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0196-01-local-vibe-qa-finish-20260330.png"
         }
       ],
       "links": [
@@ -17244,52 +17238,52 @@
         {
           "type": "playwright-screenshot",
           "label": "Landing production after fix",
-          "path": "landing-production-after-fix-20260330.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-01-landing-production-after-fix-20260330.png"
         },
         {
           "type": "playwright-console",
           "label": "Landing production console errors after fix",
-          "path": "landing-production-console-errors-after-fix-20260330.txt"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-02-landing-production-console-errors-after-fix-20260330.txt"
         },
         {
           "type": "playwright-screenshot",
           "label": "card-title-check.png",
-          "path": ".playwright-mcp/screenshots/card-title-check.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-03-card-title-check.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "compare-hero.png",
-          "path": ".playwright-mcp/screenshots/compare-hero.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-04-compare-hero.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "final-landing.png",
-          "path": ".playwright-mcp/screenshots/final-landing.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-05-final-landing.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "landing-modal-ai-assistant.png",
-          "path": ".playwright-mcp/screenshots/landing-modal-ai-assistant.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-06-landing-modal-ai-assistant.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "landing-ux-analysis-01.png",
-          "path": ".playwright-mcp/screenshots/landing-ux-analysis-01.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-07-landing-ux-analysis-01.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "landing-ux-analysis-full.png",
-          "path": ".playwright-mcp/screenshots/landing-ux-analysis-full.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-08-landing-ux-analysis-full.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "local-after-codex.png",
-          "path": ".playwright-mcp/screenshots/local-after-codex.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-09-local-after-codex.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "local-vibe-qa-finish-20260330.png",
-          "path": ".playwright-mcp/screenshots/local-vibe-qa-finish-20260330.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0196-01-local-vibe-qa-finish-20260330.png"
         }
       ],
       "links": [
@@ -17367,52 +17361,52 @@
         {
           "type": "playwright-screenshot",
           "label": "Landing production post-docs smoke",
-          "path": "landing-production-post-docs-20260330.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0198-01-landing-production-post-docs-20260330.png"
         },
         {
           "type": "playwright-console",
           "label": "Landing production post-docs console",
-          "path": "landing-production-post-docs-console-20260330.txt"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0198-02-landing-production-post-docs-console-20260330.txt"
         },
         {
           "type": "playwright-screenshot",
           "label": "card-title-check.png",
-          "path": ".playwright-mcp/screenshots/card-title-check.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-03-card-title-check.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "compare-hero.png",
-          "path": ".playwright-mcp/screenshots/compare-hero.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-04-compare-hero.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "final-landing.png",
-          "path": ".playwright-mcp/screenshots/final-landing.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-05-final-landing.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "landing-modal-ai-assistant.png",
-          "path": ".playwright-mcp/screenshots/landing-modal-ai-assistant.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-06-landing-modal-ai-assistant.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "landing-ux-analysis-01.png",
-          "path": ".playwright-mcp/screenshots/landing-ux-analysis-01.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-07-landing-ux-analysis-01.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "landing-ux-analysis-full.png",
-          "path": ".playwright-mcp/screenshots/landing-ux-analysis-full.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-08-landing-ux-analysis-full.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "local-after-codex.png",
-          "path": ".playwright-mcp/screenshots/local-after-codex.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-09-local-after-codex.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "local-vibe-qa-finish-20260330.png",
-          "path": ".playwright-mcp/screenshots/local-vibe-qa-finish-20260330.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0196-01-local-vibe-qa-finish-20260330.png"
         }
       ],
       "links": [
@@ -17491,32 +17485,32 @@
         {
           "type": "playwright-screenshot",
           "label": "Landing production web vitals smoke",
-          "path": "landing-production-webvitals-20260330.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0199-01-landing-production-webvitals-20260330.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "Validation production web vitals smoke",
-          "path": "validation-production-webvitals-20260330.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0199-02-validation-production-webvitals-20260330.png"
         },
         {
           "type": "playwright-console",
           "label": "Landing production web vitals console",
-          "path": "landing-webvitals-production-console-20260330.txt"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0199-03-landing-webvitals-production-console-20260330.txt"
         },
         {
           "type": "playwright-network",
           "label": "Landing production web vitals network",
-          "path": "landing-webvitals-production-network-20260330.txt"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0199-04-landing-webvitals-production-network-20260330.txt"
         },
         {
           "type": "playwright-screenshot",
           "label": "qa-prod-01-loading.png",
-          "path": ".playwright-mcp/screenshots/qa-prod-01-loading.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0199-05-qa-prod-01-loading.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "qa-prod-02-cards.png",
-          "path": ".playwright-mcp/screenshots/qa-prod-02-cards.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0199-06-qa-prod-02-cards.png"
         }
       ],
       "links": [
@@ -17596,12 +17590,12 @@
         {
           "type": "playwright-screenshot",
           "label": "Vibe hybrid delivery production modal",
-          "path": "vibe-hybrid-delivery-production-20260330.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0200-01-vibe-hybrid-delivery-production-20260330.png"
         },
         {
           "type": "playwright-console",
           "label": "Landing vibe hybrid delivery production console",
-          "path": "landing-vibe-hybrid-production-console-20260330.txt"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0200-02-landing-vibe-hybrid-production-console-20260330.txt"
         }
       ],
       "links": [
@@ -17663,13 +17657,7 @@
       },
       "expertAssessments": [],
       "usageChecks": [],
-      "artifacts": [
-        {
-          "type": "playwright-screenshot",
-          "label": "Local dev Vibe Coding modal showing stale QA Finish tab",
-          "path": "artifacts/vibe-cicd-local-dev-failure-20260331.png"
-        }
-      ],
+      "artifacts": [],
       "links": [
         {
           "type": "general",
@@ -17682,7 +17670,14 @@
       "completedCount": 0,
       "pendingCount": 1,
       "deferredCount": 0,
-      "wontFixCount": 0
+      "wontFixCount": 0,
+      "artifactDebt": {
+        "status": "acknowledged",
+        "kind": "historical-no-durable-evidence",
+        "reason": "Legacy artifacts/* evidence was missing during root-artifact migration, so the run keeps acknowledged historical debt.",
+        "recordedAt": "2026-04-09T15:35:18.519Z",
+        "recordedBy": "codex:migrate-legacy-artifact-paths"
+      }
     },
     {
       "runId": "QA-20260331-0202",
@@ -17725,18 +17720,7 @@
       },
       "expertAssessments": [],
       "usageChecks": [],
-      "artifacts": [
-        {
-          "type": "playwright-screenshot",
-          "label": "Local dev Vibe Coding modal CI/CD tab after clean restart",
-          "path": "artifacts/vibe-cicd-local-dev-pass-20260331.png"
-        },
-        {
-          "type": "playwright-console",
-          "label": "Local dev Vibe Coding console errors",
-          "path": "artifacts/vibe-cicd-local-dev-console-20260331.txt"
-        }
-      ],
+      "artifacts": [],
       "links": [
         {
           "type": "general",
@@ -17749,7 +17733,14 @@
       "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
-      "wontFixCount": 0
+      "wontFixCount": 0,
+      "artifactDebt": {
+        "status": "acknowledged",
+        "kind": "historical-no-durable-evidence",
+        "reason": "Legacy artifacts/* evidence was missing during root-artifact migration, so the run keeps acknowledged historical debt.",
+        "recordedAt": "2026-04-09T15:35:18.531Z",
+        "recordedBy": "codex:migrate-legacy-artifact-paths"
+      }
     },
     {
       "runId": "QA-20260401-0203",
@@ -18042,7 +18033,7 @@
         {
           "type": "playwright-screenshot",
           "label": "Production landing first paint",
-          "path": "prod-landing-first-paint-20260402.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260402-0207-01-prod-landing-first-paint-20260402.png"
         }
       ],
       "links": [
@@ -18189,12 +18180,7 @@
         {
           "type": "playwright-screenshot",
           "label": "Broad QA AI workspace",
-          "path": "broad-qa-ai-workspace-20260402.png"
-        },
-        {
-          "type": "playwright-console",
-          "label": "Broad QA console log",
-          "path": "broad-qa-console-20260402.log"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260402-0208-01-broad-qa-ai-workspace-20260402.png"
         }
       ],
       "links": [
@@ -18268,12 +18254,7 @@
         {
           "type": "playwright-screenshot",
           "label": "Local targeted vibe CI/CD modal",
-          "path": "local-targeted-feature-modal-vibe-cicd-20260402.png"
-        },
-        {
-          "type": "playwright-console",
-          "label": "Local targeted landing modal console errors",
-          "path": "local-targeted-feature-modal-console-errors-20260402.log"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260402-0209-01-local-targeted-feature-modal-vibe-cicd-20260402.png"
         }
       ],
       "links": [
@@ -18352,12 +18333,7 @@
         {
           "type": "playwright-screenshot",
           "label": "Production targeted vibe CI/CD modal",
-          "path": "production-targeted-feature-modal-vibe-cicd-20260402.png"
-        },
-        {
-          "type": "playwright-console",
-          "label": "Production targeted landing modal console errors",
-          "path": "production-targeted-feature-modal-console-errors-20260402.log"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260402-0210-01-production-targeted-feature-modal-vibe-cicd-20260402.png"
         }
       ],
       "links": [
@@ -19202,17 +19178,17 @@
         {
           "type": "playwright-screenshot",
           "label": "Dashboard with AI sidebar response",
-          "path": "qa-20260404-vercel-dashboard-ai-sidebar.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0222-01-qa-20260404-vercel-dashboard-ai-sidebar.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "Active alerts modal",
-          "path": "qa-20260404-vercel-active-alerts-modal.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0222-02-qa-20260404-vercel-active-alerts-modal.png"
         },
         {
           "type": "playwright-console",
           "label": "Playwright browser console log",
-          "path": ".playwright-mcp/screenshots/console-2026-04-04T09-05-36-566Z.log"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0222-03-console-2026-04-04t09-05-36-566z.log"
         }
       ],
       "links": [
@@ -19314,12 +19290,12 @@
         {
           "type": "playwright-screenshot",
           "label": "Dashboard and AI sidebar parity rerun",
-          "path": "qa-20260404-vercel-parity-regression-rerun.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0223-01-qa-20260404-vercel-parity-regression-rerun.png"
         },
         {
           "type": "playwright-console",
           "label": "Playwright browser console log",
-          "path": ".playwright-mcp/screenshots/console-2026-04-04T20-04-parity-rerun.log"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0223-02-console-2026-04-04t20-04-parity-rerun.log"
         }
       ],
       "links": [
@@ -19432,12 +19408,12 @@
         {
           "type": "playwright-screenshot",
           "label": "Dashboard parity baseline after fix",
-          "path": "qa-20260404-vercel-parity-after-fix-dashboard.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0224-01-qa-20260404-vercel-parity-after-fix-dashboard.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "AI summary parity response after fix",
-          "path": "qa-20260404-vercel-parity-after-fix-ai-summary.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0224-02-qa-20260404-vercel-parity-after-fix-ai-summary.png"
         }
       ],
       "links": [
@@ -19556,32 +19532,32 @@
         {
           "type": "playwright-screenshot",
           "label": "Landing page",
-          "path": "qa-20260404-broad-release-landing.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0225-01-qa-20260404-broad-release-landing.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "Login page",
-          "path": "qa-20260404-broad-release-login.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0225-02-qa-20260404-broad-release-login.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "404 route check",
-          "path": "qa-20260404-broad-release-404.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0225-03-qa-20260404-broad-release-404.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "Dashboard core",
-          "path": "qa-20260404-broad-release-dashboard.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0225-04-qa-20260404-broad-release-dashboard.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "AI sidebar parity response",
-          "path": "qa-20260404-broad-release-ai-summary.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0225-05-qa-20260404-broad-release-ai-summary.png"
         },
         {
           "type": "playwright-console",
           "label": "Browser console errors",
-          "path": "qa-20260404-broad-release-console-errors.log"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0225-06-qa-20260404-broad-release-console-errors.log"
         }
       ],
       "links": [
@@ -19694,12 +19670,12 @@
         {
           "type": "playwright-screenshot",
           "label": "Dashboard and AI parity",
-          "path": "qa-20260404-targeted-qa-0227-ai-parity.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0226-01-qa-20260404-targeted-qa-0227-ai-parity.png"
         },
         {
           "type": "playwright-console",
           "label": "Console errors",
-          "path": "qa-20260404-targeted-qa-0227-console.log"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0226-02-qa-20260404-targeted-qa-0227-console.log"
         }
       ],
       "links": [
@@ -19812,17 +19788,17 @@
         {
           "type": "playwright-screenshot",
           "label": "Dashboard and AI parity",
-          "path": "qa-20260404-targeted-qa-2306-ai-parity.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0227-01-qa-20260404-targeted-qa-2306-ai-parity.png"
         },
         {
           "type": "playwright-console",
           "label": "Console errors",
-          "path": "qa-20260404-targeted-qa-2306-console.log"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0227-02-qa-20260404-targeted-qa-2306-console.log"
         },
         {
           "type": "playwright-network",
           "label": "Network requests",
-          "path": "qa-20260404-targeted-qa-2306-network.log"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0227-03-qa-20260404-targeted-qa-2306-network.log"
         }
       ],
       "links": [
@@ -19938,47 +19914,47 @@
         {
           "type": "playwright-screenshot",
           "label": "Active alerts modal",
-          "path": "qa-20260404-targeted-qa-0228-active-alerts-modal.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0228-01-qa-20260404-targeted-qa-0228-active-alerts-modal.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "Topology modal",
-          "path": "qa-20260404-targeted-qa-0228-topology-modal.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0228-02-qa-20260404-targeted-qa-0228-topology-modal.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "Server detail tab switch",
-          "path": "qa-20260404-targeted-qa-0228-server-detail-tabs.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0228-03-qa-20260404-targeted-qa-0228-server-detail-tabs.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "Log explorer modal",
-          "path": "qa-20260404-targeted-qa-0228-log-explorer-modal.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0228-04-qa-20260404-targeted-qa-0228-log-explorer-modal.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "Analyst result",
-          "path": "qa-20260404-targeted-qa-0228-analyst-result.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0228-05-qa-20260404-targeted-qa-0228-analyst-result.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "Reporter detail",
-          "path": "qa-20260404-targeted-qa-0228-reporter-detail.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0228-06-qa-20260404-targeted-qa-0228-reporter-detail.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "AI assistant full-screen",
-          "path": "qa-20260404-targeted-qa-0228-ai-assistant-fullscreen.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0228-07-qa-20260404-targeted-qa-0228-ai-assistant-fullscreen.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "404 route",
-          "path": "qa-20260404-targeted-qa-0228-404-route.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0228-08-qa-20260404-targeted-qa-0228-404-route.png"
         },
         {
           "type": "playwright-console",
           "label": "Console errors",
-          "path": "qa-20260404-targeted-qa-0228-console.log"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0228-09-qa-20260404-targeted-qa-0228-console.log"
         }
       ],
       "links": [
@@ -20102,37 +20078,37 @@
         {
           "type": "playwright-screenshot",
           "label": "Landing",
-          "path": "qa-20260404-broad-0229-landing.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0229-01-qa-20260404-broad-0229-landing.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "Dashboard with AI parity",
-          "path": "qa-20260404-broad-0229-dashboard-ai.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0229-02-qa-20260404-broad-0229-dashboard-ai.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "404 route",
-          "path": "qa-20260404-broad-0229-404.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0229-03-qa-20260404-broad-0229-404.png"
         },
         {
           "type": "playwright-console",
           "label": "Landing console",
-          "path": "qa-20260404-broad-0229-landing-console.log"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0229-04-qa-20260404-broad-0229-landing-console.log"
         },
         {
           "type": "playwright-console",
           "label": "Dashboard console",
-          "path": "qa-20260404-broad-0229-dashboard-console.log"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0229-05-qa-20260404-broad-0229-dashboard-console.log"
         },
         {
           "type": "playwright-console",
           "label": "404 console",
-          "path": "qa-20260404-broad-0229-404-console.log"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0229-06-qa-20260404-broad-0229-404-console.log"
         },
         {
           "type": "playwright-network",
           "label": "Network log",
-          "path": "qa-20260404-broad-0229-network.log"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0229-07-qa-20260404-broad-0229-network.log"
         }
       ],
       "links": [
@@ -20664,19 +20640,19 @@
         {
           "type": "playwright-screenshot",
           "label": "404 evidence",
-          "path": ".playwright-mcp/screenshots/qa-20260405-0235-404.png",
+          "path": "reports/qa/evidence/legacy/2026/qa-20260405-0235-01-qa-20260405-0235-404.png",
           "note": "Intentional 404 route validation"
         },
         {
           "type": "playwright-screenshot",
           "label": "Dashboard AI parity",
-          "path": ".playwright-mcp/screenshots/qa-20260405-0235-dashboard-ai.png",
+          "path": "reports/qa/evidence/legacy/2026/qa-20260405-0235-02-qa-20260405-0235-dashboard-ai.png",
           "note": "Dashboard summary and AI response parity evidence"
         },
         {
           "type": "playwright-report",
           "label": "404 console log",
-          "path": ".playwright-mcp/screenshots/console-2026-04-05T05-24-12-330Z.log",
+          "path": "reports/qa/evidence/legacy/2026/qa-20260405-0235-03-console-2026-04-05t05-24-12-330z.log",
           "note": "Expected 404 resource error only on intentional not-found route"
         }
       ],
@@ -20786,30 +20762,30 @@
         {
           "type": "playwright-screenshot",
           "label": "Topology modal",
-          "path": ".playwright-mcp/screenshots/qa-20260405-0236-topology.png",
+          "path": "reports/qa/evidence/legacy/2026/qa-20260405-0236-01-qa-20260405-0236-topology.png",
           "note": "Topology modal open evidence"
         },
         {
           "type": "playwright-screenshot",
           "label": "AI workspace",
-          "path": "qa-20260405-0236-ai-workspace.png",
+          "path": "reports/qa/evidence/legacy/2026/qa-20260405-0236-02-qa-20260405-0236-ai-workspace.png",
           "note": "Fullscreen AI workspace render evidence"
         },
         {
           "type": "playwright-report",
           "label": "AI workspace console log",
-          "path": ".playwright-mcp/screenshots/console-2026-04-05T05-38-03-002Z.log",
+          "path": "reports/qa/evidence/legacy/2026/qa-20260405-0236-03-console-2026-04-05t05-38-03-002z.log",
           "note": "No console errors; only benign preload warnings on AI workspace route"
         },
         {
           "type": "playwright-screenshot",
           "label": "qa-20260405-0235-404.png",
-          "path": ".playwright-mcp/screenshots/qa-20260405-0235-404.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260405-0235-01-qa-20260405-0235-404.png"
         },
         {
           "type": "playwright-screenshot",
           "label": "qa-20260405-0235-dashboard-ai.png",
-          "path": ".playwright-mcp/screenshots/qa-20260405-0235-dashboard-ai.png"
+          "path": "reports/qa/evidence/legacy/2026/qa-20260405-0235-02-qa-20260405-0235-dashboard-ai.png"
         }
       ],
       "links": [],
@@ -20885,7 +20861,7 @@
         {
           "type": "playwright-screenshot",
           "label": "Validation Evidence page",
-          "path": "qa-20260405-0237-validation.png",
+          "path": "reports/qa/evidence/legacy/2026/qa-20260405-0237-01-qa-20260405-0237-validation.png",
           "note": "Production validation page render after gate warning clarification"
         }
       ],
@@ -20980,7 +20956,13 @@
           "url": ""
         }
       ],
-      "artifacts": [],
+      "artifacts": [
+        {
+          "type": "smoke-log",
+          "label": "Vercel Post-Deploy Smoke Log",
+          "url": "local://scripts/test/vercel-post-deploy-smoke.mjs"
+        }
+      ],
       "links": [],
       "expertCount": 2,
       "expertNeedsImprovementCount": 0,
@@ -23274,17 +23256,17 @@
       "artifacts": [
         {
           "type": "playwright-screenshot",
-          "label": "TC-01 AI response",
+          "label": "TC-01 v8.11.7 deployment verification",
           "path": "reports/qa/evidence/qa-20260409-sprint1-2-validation-tc01.png"
         },
         {
           "type": "playwright-screenshot",
-          "label": "TC-02 Clarification Skip",
+          "label": "TC-02 clarification skip validation",
           "path": "reports/qa/evidence/qa-20260409-sprint1-2-validation-tc02-skip.png"
         },
         {
           "type": "playwright-screenshot",
-          "label": "TC-03 RAG cleanup + routing",
+          "label": "TC-03 routing and RAG cleanup validation",
           "path": "reports/qa/evidence/qa-20260409-sprint1-2-validation-tc03-routing.png"
         }
       ],

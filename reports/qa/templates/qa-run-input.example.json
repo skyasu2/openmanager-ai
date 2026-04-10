@@ -60,9 +60,9 @@
     }
   ],
   "playwrightArtifacts": {
-    "reportDir": "playwright-report",
-    "resultsDir": "test-results",
-    "screenshotsDir": ".playwright-mcp/screenshots",
+    "reportDir": "tmp/playwright/e2e/report",
+    "resultsDir": "tmp/playwright/e2e/test-results",
+    "screenshotsDir": "tmp/playwright/mcp/screenshots",
     "recentMinutes": 180,
     "pathIncludes": ["qa-20260321-login-modal"]
   },

@@ -50,7 +50,7 @@
     {
       "type": "playwright-screenshot",
       "label": "Active alerts modal prefill opens AI sidebar with selected alert context",
-      "path": "artifacts/playwright/active-alerts-ai-prefill-2026-03-23.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260323-0166-01-active-alerts-ai-prefill-2026-03-23.png"
     }
   ],
   "completedImprovements": [

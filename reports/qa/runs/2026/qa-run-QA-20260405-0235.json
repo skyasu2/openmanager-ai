@@ -101,19 +101,19 @@
     {
       "type": "playwright-screenshot",
       "label": "404 evidence",
-      "path": ".playwright-mcp/screenshots/qa-20260405-0235-404.png",
+      "path": "reports/qa/evidence/legacy/2026/qa-20260405-0235-01-qa-20260405-0235-404.png",
       "note": "Intentional 404 route validation"
     },
     {
       "type": "playwright-screenshot",
       "label": "Dashboard AI parity",
-      "path": ".playwright-mcp/screenshots/qa-20260405-0235-dashboard-ai.png",
+      "path": "reports/qa/evidence/legacy/2026/qa-20260405-0235-02-qa-20260405-0235-dashboard-ai.png",
       "note": "Dashboard summary and AI response parity evidence"
     },
     {
       "type": "playwright-report",
       "label": "404 console log",
-      "path": ".playwright-mcp/screenshots/console-2026-04-05T05-24-12-330Z.log",
+      "path": "reports/qa/evidence/legacy/2026/qa-20260405-0235-03-console-2026-04-05t05-24-12-330z.log",
       "note": "Expected 404 resource error only on intentional not-found route"
     }
   ],

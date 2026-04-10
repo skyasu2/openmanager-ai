@@ -88,12 +88,12 @@
     {
       "type": "playwright-screenshot",
       "label": "Dashboard and AI parity",
-      "path": "qa-20260404-targeted-qa-0227-ai-parity.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0226-01-qa-20260404-targeted-qa-0227-ai-parity.png"
     },
     {
       "type": "playwright-console",
       "label": "Console errors",
-      "path": "qa-20260404-targeted-qa-0227-console.log"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0226-02-qa-20260404-targeted-qa-0227-console.log"
     }
   ],
   "completedImprovements": [],

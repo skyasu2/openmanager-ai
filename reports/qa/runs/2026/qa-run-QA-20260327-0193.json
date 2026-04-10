@@ -71,38 +71,38 @@
     {
       "type": "playwright-screenshot",
       "label": "Production landing",
-      "path": "qa-20260327-prod-0193-landing.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260327-0193-01-qa-20260327-prod-0193-landing.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "Vibe Coding modal",
-      "path": "qa-20260327-prod-0193-vibe-modal.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260327-0193-02-qa-20260327-prod-0193-vibe-modal.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "Dashboard overview",
-      "path": "qa-20260327-prod-0193-dashboard.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260327-0193-03-qa-20260327-prod-0193-dashboard.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "Active alert to AI prefill",
-      "path": "qa-20260327-prod-0193-alert-modal.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260327-0193-04-qa-20260327-prod-0193-alert-modal.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "AI warm-up state",
-      "path": "qa-20260327-prod-0193-ai-warmup.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260327-0193-05-qa-20260327-prod-0193-ai-warmup.png"
     },
     {
       "type": "playwright-console",
       "label": "Console warnings/errors",
-      "path": "qa-20260327-prod-0193-console.log",
+      "path": "reports/qa/evidence/legacy/2026/qa-20260327-0193-06-qa-20260327-prod-0193-console.log",
       "note": "0 errors, preload warnings only"
     },
     {
       "type": "playwright-network",
       "label": "Network log",
-      "path": "qa-20260327-prod-0193-network-final.log",
+      "path": "reports/qa/evidence/legacy/2026/qa-20260327-0193-07-qa-20260327-prod-0193-network-final.log",
       "note": "Includes /api/ai/wake-up 200 and /api/ai/jobs 201"
     }
   ],

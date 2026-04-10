@@ -43,7 +43,7 @@
     {
       "type": "playwright-screenshot",
       "label": "Production landing first paint",
-      "path": "prod-landing-first-paint-20260402.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260402-0207-01-prod-landing-first-paint-20260402.png"
     }
   ],
   "completedImprovements": [

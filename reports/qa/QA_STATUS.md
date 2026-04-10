@@ -1,13 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-09 22:35:01 KST
+> Generated at: 2026-04-10 08:18:56 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Runs | 239 |
+| Total Recorded Runs | 265 |
+| Total Runs (Counted) | 239 |
+| Non-counted Runs | 26 |
 | Total Checks | 1859 |
 | Passed | 1787 |
 | Failed | 66 |
@@ -20,6 +22,7 @@
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260409-0267 (2026-04-09T13:35:00.812Z) |
 | Latest Recorded Run | QA-20260409-0267 (2026-04-09T13:35:00.812Z) |
+| Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 

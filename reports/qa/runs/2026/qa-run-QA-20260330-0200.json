@@ -55,12 +55,12 @@
     {
       "type": "playwright-screenshot",
       "label": "Vibe hybrid delivery production modal",
-      "path": "vibe-hybrid-delivery-production-20260330.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0200-01-vibe-hybrid-delivery-production-20260330.png"
     },
     {
       "type": "playwright-console",
       "label": "Landing vibe hybrid delivery production console",
-      "path": "landing-vibe-hybrid-production-console-20260330.txt"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0200-02-landing-vibe-hybrid-production-console-20260330.txt"
     }
   ],
   "completedImprovements": [

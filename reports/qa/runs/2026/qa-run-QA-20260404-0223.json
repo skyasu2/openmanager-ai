@@ -77,12 +77,12 @@
     {
       "type": "playwright-screenshot",
       "label": "Dashboard and AI sidebar parity rerun",
-      "path": "qa-20260404-vercel-parity-regression-rerun.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0223-01-qa-20260404-vercel-parity-regression-rerun.png"
     },
     {
       "type": "playwright-console",
       "label": "Playwright browser console log",
-      "path": ".playwright-mcp/screenshots/console-2026-04-04T20-04-parity-rerun.log"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0223-02-console-2026-04-04t20-04-parity-rerun.log"
     }
   ],
   "completedImprovements": [],

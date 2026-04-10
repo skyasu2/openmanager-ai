@@ -122,12 +122,7 @@
     {
       "type": "playwright-screenshot",
       "label": "Broad QA AI workspace",
-      "path": "broad-qa-ai-workspace-20260402.png"
-    },
-    {
-      "type": "playwright-console",
-      "label": "Broad QA console log",
-      "path": "broad-qa-console-20260402.log"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260402-0208-01-broad-qa-ai-workspace-20260402.png"
     }
   ],
   "completedImprovements": [],
@@ -138,7 +133,8 @@
     "Latest production deployment dpl_Ef513T2wzSDxUrkhJm92DK7jszPv for commit ae1eed462 reached READY/PROMOTED before broad QA execution.",
     "Guest PIN 4231 flow still works and leads to system start countdown then dashboard session.",
     "Representative AI chat used the streaming route /api/ai/supervisor/stream/v2 with content-type text/event-stream and X-AI-Latency-Ms header.",
-    "404 route rendered correctly; product routes inspected in this run showed no browser console errors."
+    "404 route rendered correctly; product routes inspected in this run showed no browser console errors.",
+    "[ephemeral-artifact-migration] 1 historical non-durable artifact path(s) could not be recovered and were removed from artifacts list."
   ],
   "links": [
     {

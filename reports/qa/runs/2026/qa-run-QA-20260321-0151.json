@@ -42,7 +42,7 @@
     {
       "type": "playwright-screenshot",
       "label": "Dashboard observability panel - 15 servers, 1 warning",
-      "path": "artifacts/playwright/observability-dashboard-2026-03-21.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260321-0151-01-observability-dashboard-2026-03-21.png"
     }
   ],
   "completedImprovements": [],

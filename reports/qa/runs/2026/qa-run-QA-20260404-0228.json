@@ -91,47 +91,47 @@
     {
       "type": "playwright-screenshot",
       "label": "Active alerts modal",
-      "path": "qa-20260404-targeted-qa-0228-active-alerts-modal.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0228-01-qa-20260404-targeted-qa-0228-active-alerts-modal.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "Topology modal",
-      "path": "qa-20260404-targeted-qa-0228-topology-modal.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0228-02-qa-20260404-targeted-qa-0228-topology-modal.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "Server detail tab switch",
-      "path": "qa-20260404-targeted-qa-0228-server-detail-tabs.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0228-03-qa-20260404-targeted-qa-0228-server-detail-tabs.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "Log explorer modal",
-      "path": "qa-20260404-targeted-qa-0228-log-explorer-modal.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0228-04-qa-20260404-targeted-qa-0228-log-explorer-modal.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "Analyst result",
-      "path": "qa-20260404-targeted-qa-0228-analyst-result.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0228-05-qa-20260404-targeted-qa-0228-analyst-result.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "Reporter detail",
-      "path": "qa-20260404-targeted-qa-0228-reporter-detail.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0228-06-qa-20260404-targeted-qa-0228-reporter-detail.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "AI assistant full-screen",
-      "path": "qa-20260404-targeted-qa-0228-ai-assistant-fullscreen.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0228-07-qa-20260404-targeted-qa-0228-ai-assistant-fullscreen.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "404 route",
-      "path": "qa-20260404-targeted-qa-0228-404-route.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0228-08-qa-20260404-targeted-qa-0228-404-route.png"
     },
     {
       "type": "playwright-console",
       "label": "Console errors",
-      "path": "qa-20260404-targeted-qa-0228-console.log"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0228-09-qa-20260404-targeted-qa-0228-console.log"
     }
   ],
   "completedImprovements": [],

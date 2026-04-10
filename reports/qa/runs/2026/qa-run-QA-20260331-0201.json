@@ -37,13 +37,7 @@
   },
   "expertAssessments": [],
   "usageChecks": [],
-  "artifacts": [
-    {
-      "type": "playwright-screenshot",
-      "label": "Local dev Vibe Coding modal showing stale QA Finish tab",
-      "path": "artifacts/vibe-cicd-local-dev-failure-20260331.png"
-    }
-  ],
+  "artifacts": [],
   "completedImprovements": [],
   "pendingImprovements": [
     {
@@ -65,7 +59,8 @@
   "notes": [
     "Next.js MCP get_errors 기준 브라우저 런타임 에러는 0건",
     "HEAD src 검색에는 QA / Finish 문자열이 없지만 Playwright 브라우저 렌더에는 노출됨",
-    "hard reload 이후에도 동일 증상 재현"
+    "hard reload 이후에도 동일 증상 재현",
+    "[artifact-migration] 1 legacy artifacts/* evidence path(s) were missing and removed from artifacts list; artifactDebt acknowledged."
   ],
   "links": [
     {
@@ -73,5 +68,12 @@
       "label": "Local dev URL",
       "url": "http://localhost:3000/"
     }
-  ]
+  ],
+  "artifactDebt": {
+    "status": "acknowledged",
+    "kind": "historical-no-durable-evidence",
+    "reason": "Legacy artifacts/* evidence was missing during root-artifact migration, so the run keeps acknowledged historical debt.",
+    "recordedAt": "2026-04-09T15:35:18.519Z",
+    "recordedBy": "codex:migrate-legacy-artifact-paths"
+  }
 }

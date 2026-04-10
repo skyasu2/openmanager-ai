@@ -73,9 +73,9 @@ npm run qa:evidence:build
     "recordedBy": "codex"
   },
   "playwrightArtifacts": {      // 로컬 Playwright 산출물 자동 수집 옵션 (선택)
-    "reportDir": "playwright-report",
-    "resultsDir": "test-results",
-    "screenshotsDir": ".playwright-mcp/screenshots",
+    "reportDir": "tmp/playwright/e2e/report",
+    "resultsDir": "tmp/playwright/e2e/test-results",
+    "screenshotsDir": "tmp/playwright/mcp/screenshots",
     "recentMinutes": 180,
     "pathIncludes": ["qa-20260321-login-modal"] // 선택: 최근 파일 중 run prefix/path가 일치하는 것만 수집
   },
@@ -201,7 +201,7 @@ npm run qa:evidence:build
       "type": "playwright-trace",      // 필수
       "label": "Broad smoke trace",    // 선택, 기본 type
       "url": "https://.../trace.zip",  // url 또는 path 중 하나 필수
-      "path": "artifacts/trace.zip",   // 로컬/워크스페이스 경로
+      "path": "reports/qa/evidence/qa-20260410-broad-smoke-trace.zip", // 로컬 durable 경로
       "note": "추가 설명"               // 선택
     }
   ]
@@ -256,9 +256,9 @@ npm run qa:evidence:build
 ```jsonc
 {
   "playwrightArtifacts": {
-    "reportDir": "playwright-report",
-    "resultsDir": "test-results",
-    "screenshotsDir": ".playwright-mcp/screenshots",
+    "reportDir": "tmp/playwright/e2e/report",
+    "resultsDir": "tmp/playwright/e2e/test-results",
+    "screenshotsDir": "tmp/playwright/mcp/screenshots",
     "recentMinutes": 180,
     "pathIncludes": ["qa-20260321-login-modal"]
   }
@@ -267,13 +267,14 @@ npm run qa:evidence:build
 
 - `source`가 `playwright`, `playwright-cli`, `playwright-mcp` 계열이면 위 옵션이 없어도 기본값으로 자동 수집을 시도합니다.
 - 수집 대상
-  - `playwright-report/index.html` → `playwright-report`
-  - `test-results/**/trace.zip` → `playwright-trace`
-  - `test-results/**/*.{png,jpg,jpeg}` → `playwright-screenshot`
-  - `test-results/**/*.{webm,mp4}` → `playwright-video`
-  - `.playwright-mcp/screenshots/**/*.{png,jpg,jpeg}` → `playwright-screenshot`
+  - `tmp/playwright/e2e/report/index.html` → `playwright-report`
+  - `tmp/playwright/e2e/test-results/**/trace.zip` → `playwright-trace`
+  - `tmp/playwright/e2e/test-results/**/*.{png,jpg,jpeg}` → `playwright-screenshot`
+  - `tmp/playwright/e2e/test-results/**/*.{webm,mp4}` → `playwright-video`
+  - `tmp/playwright/mcp/screenshots/**/*.{png,jpg,jpeg}` → `playwright-screenshot`
+  - 하위 호환: `playwright-report/`, `test-results/`, `.playwright-mcp/screenshots/`도 fallback 탐지
 - `recentMinutes` 안에 수정된 파일만 수집해 오래된 잔재를 기본적으로 제외합니다.
-- `pathIncludes`를 주면 `test-results`와 `.playwright-mcp/screenshots`에서 해당 문자열이 경로에 포함된 산출물만 수집합니다.
+- `pathIncludes`를 주면 `tmp/playwright/**`(fallback 포함)에서 해당 문자열이 경로에 포함된 산출물만 수집합니다.
 - 수동 MCP QA는 shared screenshot 디렉터리를 쓰므로, Playwright의 per-test output isolation에 가깝게 운영하려면 run별 파일 prefix를 붙이고 `pathIncludes`로 함께 좁히는 방식을 권장합니다.
 
 ## Normalization 규칙 (스크립트 자동 처리)

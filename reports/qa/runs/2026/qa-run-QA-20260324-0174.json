@@ -48,7 +48,7 @@
     {
       "type": "playwright-screenshot",
       "label": "Production AI detail view after type-fix deploy still missing parity metadata block",
-      "path": "artifacts/playwright/parity-detail-metadata-missing-2026-03-24.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260324-0174-01-parity-detail-metadata-missing-2026-03-24.png"
     }
   ],
   "completedImprovements": [

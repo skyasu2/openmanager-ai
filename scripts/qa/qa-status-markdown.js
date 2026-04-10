@@ -41,6 +41,9 @@ function statusMarkdown(tracker) {
   const latestRunArtifacts = latestRun?.artifacts || [];
   const latestRunEnvironment =
     latestRun && typeof latestRun.environment === 'object' ? latestRun.environment : {};
+  const totalRecordedRuns = tracker.summary.totalRecordedRuns ?? tracker.runs.length;
+  const totalCountedRuns = tracker.summary.totalRuns ?? 0;
+  const excludedRuns = tracker.summary.excludedRuns ?? Math.max(totalRecordedRuns - totalCountedRuns, 0);
 
   lines.push('# QA Status Dashboard');
   lines.push('');
@@ -51,7 +54,9 @@ function statusMarkdown(tracker) {
   lines.push('');
   lines.push('| Metric | Value |');
   lines.push('|---|---:|');
-  lines.push(`| Total Runs | ${tracker.summary.totalRuns} |`);
+  lines.push(`| Total Recorded Runs | ${totalRecordedRuns} |`);
+  lines.push(`| Total Runs (Counted) | ${totalCountedRuns} |`);
+  lines.push(`| Non-counted Runs | ${excludedRuns} |`);
   lines.push(`| Total Checks | ${tracker.summary.totalChecks} |`);
   lines.push(`| Passed | ${tracker.summary.totalPassed} |`);
   lines.push(`| Failed | ${tracker.summary.totalFailed} |`);
@@ -68,6 +73,7 @@ function statusMarkdown(tracker) {
   lines.push(
     `| Latest Recorded Run | ${tracker.summary.latestRecordedRunId || '-'} (${tracker.summary.latestRecordedAt || '-'}) |`
   );
+  lines.push('| Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |');
   lines.push('');
   lines.push('## Expert Domain Assessment (Latest Run)');
   lines.push('');

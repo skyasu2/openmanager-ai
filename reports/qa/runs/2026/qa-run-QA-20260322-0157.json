@@ -53,12 +53,12 @@
     {
       "type": "playwright-screenshot",
       "label": "Portfolio negative impression fixes proof",
-      "path": "artifacts/playwright/portfolio-negative-impression-fixes-2026-03-22.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260322-0157-01-portfolio-negative-impression-fixes-2026-03-22.png"
     },
     {
       "type": "playwright-console",
       "label": "Portfolio negative impression fixes console",
-      "path": "artifacts/playwright/portfolio-negative-impression-fixes-2026-03-22-console.log"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260322-0157-02-portfolio-negative-impression-fixes-2026-03-22-console.log"
     }
   ],
   "completedImprovements": [

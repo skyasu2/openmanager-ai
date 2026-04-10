@@ -48,7 +48,7 @@
     {
       "type": "playwright-screenshot",
       "label": "PR #200 preview AI smoke",
-      "path": "artifacts/playwright/pr200-preview-ai-smoke-2026-03-24.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260324-0180-01-pr200-preview-ai-smoke-2026-03-24.png"
     }
   ],
   "completedImprovements": [],

@@ -38,18 +38,7 @@
   },
   "expertAssessments": [],
   "usageChecks": [],
-  "artifacts": [
-    {
-      "type": "playwright-screenshot",
-      "label": "Local dev Vibe Coding modal CI/CD tab after clean restart",
-      "path": "artifacts/vibe-cicd-local-dev-pass-20260331.png"
-    },
-    {
-      "type": "playwright-console",
-      "label": "Local dev Vibe Coding console errors",
-      "path": "artifacts/vibe-cicd-local-dev-console-20260331.txt"
-    }
-  ],
+  "artifacts": [],
   "completedImprovements": [
     {
       "id": "vibe-cicd-modal-local-dev-stale-view",
@@ -71,7 +60,8 @@
   "notes": [
     "이슈 원인은 코드가 아니라 stale dev server build/.next 캐시 불일치로 판단",
     "재기동 후 Vibe Coding 모달 탭이 현재 도구/개발 환경 변화/CI/CD로 정상 노출",
-    "CI/CD 탭에서 validate self-hosted / deploy shared split-runner 흐름 확인"
+    "CI/CD 탭에서 validate self-hosted / deploy shared split-runner 흐름 확인",
+    "[artifact-migration] 2 legacy artifacts/* evidence path(s) were missing and removed from artifacts list; artifactDebt acknowledged."
   ],
   "links": [
     {
@@ -79,5 +69,12 @@
       "label": "Local dev URL",
       "url": "http://localhost:3000/"
     }
-  ]
+  ],
+  "artifactDebt": {
+    "status": "acknowledged",
+    "kind": "historical-no-durable-evidence",
+    "reason": "Legacy artifacts/* evidence was missing during root-artifact migration, so the run keeps acknowledged historical debt.",
+    "recordedAt": "2026-04-09T15:35:18.531Z",
+    "recordedBy": "codex:migrate-legacy-artifact-paths"
+  }
 }

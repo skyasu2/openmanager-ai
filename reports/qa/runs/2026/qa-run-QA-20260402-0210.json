@@ -59,12 +59,7 @@
     {
       "type": "playwright-screenshot",
       "label": "Production targeted vibe CI/CD modal",
-      "path": "production-targeted-feature-modal-vibe-cicd-20260402.png"
-    },
-    {
-      "type": "playwright-console",
-      "label": "Production targeted landing modal console errors",
-      "path": "production-targeted-feature-modal-console-errors-20260402.log"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260402-0210-01-production-targeted-feature-modal-vibe-cicd-20260402.png"
     }
   ],
   "completedImprovements": [],
@@ -74,7 +69,8 @@
   "notes": [
     "Latest production deployment dpl_5FCMoSTAs2NBcKjVNrvzWaJhK2Vf was READY/PROMOTED and mapped to commit 774171c8456609e330c3dc8a17c38324b53d0bb0 before targeted QA.",
     "Playwright scripted scenario verified tech-stack diagram toggle and vibe-coding history/CI-CD tabs on https://openmanager-ai.vercel.app.",
-    "Production targeted browser console log reported 0 error-level messages."
+    "Production targeted browser console log reported 0 error-level messages.",
+    "[ephemeral-artifact-migration] 1 historical non-durable artifact path(s) could not be recovered and were removed from artifacts list."
   ],
   "links": [
     {

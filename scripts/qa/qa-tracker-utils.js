@@ -8,6 +8,8 @@ function recalculateSummary(tracker) {
   const countedRuns = tracker.runs.filter((run) => run?.countsTowardSummary !== false);
 
   const totalRuns = countedRuns.length;
+  const totalRecordedRuns = tracker.runs.length;
+  const excludedRuns = Math.max(totalRecordedRuns - totalRuns, 0);
   const totalChecks = countedRuns.reduce(
     (sum, run) => sum + (run.checks?.total || 0),
     0
@@ -41,7 +43,9 @@ function recalculateSummary(tracker) {
   const lastCountedRun = countedRuns[countedRuns.length - 1] || null;
   const latestRecordedRun = tracker.runs[tracker.runs.length - 1] || null;
   tracker.summary = {
+    totalRecordedRuns,
     totalRuns,
+    excludedRuns,
     totalChecks,
     totalPassed,
     totalFailed,

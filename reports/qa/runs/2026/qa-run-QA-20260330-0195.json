@@ -55,32 +55,27 @@
     {
       "type": "playwright-screenshot",
       "label": "Landing page overview",
-      "path": ".playwright-mcp/screenshots/landing-page-overview-20260330.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0195-01-landing-page-overview-20260330.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "AI Assistant modal detail",
-      "path": ".playwright-mcp/screenshots/landing-ai-modal-detail-20260330.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0195-02-landing-ai-modal-detail-20260330.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "AI Assistant architecture",
-      "path": ".playwright-mcp/screenshots/landing-ai-modal-architecture-20260330.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0195-03-landing-ai-modal-architecture-20260330.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "Vibe Coding history",
-      "path": ".playwright-mcp/screenshots/landing-vibe-modal-history-20260330.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0195-04-landing-vibe-modal-history-20260330.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "Vibe Coding architecture",
-      "path": ".playwright-mcp/screenshots/landing-vibe-modal-architecture-20260330.png"
-    },
-    {
-      "type": "playwright-console",
-      "label": "Landing console errors",
-      "path": "artifacts/landing-console-errors.txt"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0195-05-landing-vibe-modal-architecture-20260330.png"
     }
   ],
   "completedImprovements": [],
@@ -132,7 +127,8 @@
     "Four cards opened successfully and all modal close interactions worked.",
     "Architecture toggle rendered on all four cards; Vibe Coding history toggle rendered successfully.",
     "AI Assistant content density is strongest, but some copy mixes 5-Agent and 7-Agent terminology in a way that may confuse non-technical viewers.",
-    "Vibe Coding card is differentiated best, but its production copy is not fully aligned with current repository data."
+    "Vibe Coding card is differentiated best, but its production copy is not fully aligned with current repository data.",
+    "[artifact-migration] 1 legacy artifacts/* evidence path(s) were missing and removed from artifacts list; artifactDebt acknowledged."
   ],
   "links": [
     {
@@ -140,5 +136,12 @@
       "label": "Vercel Production URL",
       "url": "https://openmanager-ai.vercel.app/"
     }
-  ]
+  ],
+  "artifactDebt": {
+    "status": "acknowledged",
+    "kind": "historical-no-durable-evidence",
+    "reason": "Legacy artifacts/* evidence was missing during root-artifact migration, so the run keeps acknowledged historical debt.",
+    "recordedAt": "2026-04-09T15:35:18.484Z",
+    "recordedBy": "codex:migrate-legacy-artifact-paths"
+  }
 }

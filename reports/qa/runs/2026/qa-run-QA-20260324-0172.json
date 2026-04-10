@@ -41,7 +41,7 @@
   "wontFixImprovements": [],
   "notes": [
     "Focused DOM validation run executed: npx vitest run --config config/testing/vitest.config.dom.ts src/app/validation/page.test.tsx -t \"snapshot이 7일 이상 오래되면 stale 배너를 보여준다\" --reporter=verbose",
-    "The mocked aged snapshot path rendered the stale banner text successfully: artifacts/local-validation/validation-stale-banner-visible-2026-03-24.log",
+    "The mocked aged snapshot path rendered the stale banner text successfully: reports/qa/repro/2026/validation-stale-banner-visible-2026-03-24.log",
     "This closes the remaining evidence gap for the visible stale-banner path without waiting for production snapshot age to exceed 7 days."
   ],
   "links": []

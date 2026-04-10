@@ -62,6 +62,7 @@ const REQUIRED_VERCEL_BROAD_COVERAGE_PACKS = [
 ];
 const NON_DURABLE_ARTIFACT_PATH_PREFIXES = [
   'artifacts/',
+  'tmp/playwright/',
   'playwright-report/',
   'test-results/',
   '.playwright-mcp/screenshots/',
@@ -70,6 +71,12 @@ const NON_DURABLE_ARTIFACT_PATH_PREFIXES = [
 const DURABLE_ARTIFACT_PATH_PREFIXES = [
   'reports/qa/evidence/',
 ];
+const LOCAL_PLAYWRIGHT_REPORT_DIR = 'tmp/playwright/e2e/report';
+const LOCAL_PLAYWRIGHT_RESULTS_DIR = 'tmp/playwright/e2e/test-results';
+const LOCAL_PLAYWRIGHT_MCP_SCREENSHOTS_DIR = 'tmp/playwright/mcp/screenshots';
+const LEGACY_PLAYWRIGHT_REPORT_DIR = 'playwright-report';
+const LEGACY_PLAYWRIGHT_RESULTS_DIR = 'test-results';
+const LEGACY_PLAYWRIGHT_MCP_SCREENSHOTS_DIR = '.playwright-mcp/screenshots';
 const NON_DURABLE_ARTIFACT_BASENAME_PATTERNS = [
   /^openmanager-.*\.png$/i,
   /^playwright-.*\.png$/i,
@@ -405,9 +412,9 @@ function normalizePlaywrightArtifactOptions(rawValue, source) {
   const sourceText = String(source || '').trim().toLowerCase();
   const shouldAutoDetectBySource = sourceText.includes('playwright');
   const defaults = {
-    reportDir: 'playwright-report',
-    resultsDir: 'test-results',
-    screenshotsDir: '.playwright-mcp/screenshots',
+    reportDir: LOCAL_PLAYWRIGHT_REPORT_DIR,
+    resultsDir: LOCAL_PLAYWRIGHT_RESULTS_DIR,
+    screenshotsDir: LOCAL_PLAYWRIGHT_MCP_SCREENSHOTS_DIR,
     recentMinutes: 180,
     pathIncludes: [],
   };
@@ -439,6 +446,15 @@ function normalizePlaywrightArtifactOptions(rawValue, source) {
   };
 }
 
+function toUniqueDirCandidates(primaryDir, fallbackDirs = []) {
+  const normalized = [primaryDir, ...fallbackDirs]
+    .filter((entry) => typeof entry === 'string')
+    .map((entry) => String(entry).trim())
+    .filter(Boolean);
+
+  return Array.from(new Set(normalized));
+}
+
 function matchesArtifactPathIncludes(relativePath, pathIncludes) {
   if (!Array.isArray(pathIncludes) || pathIncludes.length === 0) {
     return true;
@@ -461,20 +477,39 @@ function detectPlaywrightArtifacts(options, now) {
 
   const cutoffMs = now.getTime() - options.recentMinutes * 60 * 1000;
   const artifacts = [];
-  const reportIndexPath = options.reportDir
-    ? path.resolve(process.cwd(), options.reportDir, 'index.html')
-    : '';
+  const seen = new Set();
+  const reportDirCandidates = toUniqueDirCandidates(
+    options.reportDir,
+    options.reportDir === LOCAL_PLAYWRIGHT_REPORT_DIR ? [LEGACY_PLAYWRIGHT_REPORT_DIR] : []
+  );
 
-  if (reportIndexPath && fs.existsSync(reportIndexPath) && isRecentFile(reportIndexPath, cutoffMs)) {
-    artifacts.push({
-      type: 'playwright-report',
-      label: 'Playwright HTML report',
-      path: toPosixRelativePath(reportIndexPath),
-    });
+  for (const reportDir of reportDirCandidates) {
+    const reportIndexPath = path.resolve(process.cwd(), reportDir, 'index.html');
+    if (
+      reportIndexPath &&
+      fs.existsSync(reportIndexPath) &&
+      isRecentFile(reportIndexPath, cutoffMs)
+    ) {
+      const relativePath = toPosixRelativePath(reportIndexPath);
+      const key = `playwright-report|${relativePath}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        artifacts.push({
+          type: 'playwright-report',
+          label: 'Playwright HTML report',
+          path: relativePath,
+        });
+      }
+    }
   }
 
-  if (options.resultsDir) {
-    const resultsRoot = path.resolve(process.cwd(), options.resultsDir);
+  const resultsDirCandidates = toUniqueDirCandidates(
+    options.resultsDir,
+    options.resultsDir === LOCAL_PLAYWRIGHT_RESULTS_DIR ? [LEGACY_PLAYWRIGHT_RESULTS_DIR] : []
+  );
+
+  for (const resultsDir of resultsDirCandidates) {
+    const resultsRoot = path.resolve(process.cwd(), resultsDir);
     for (const filePath of collectFilesRecursively(resultsRoot)) {
       if (!isRecentFile(filePath, cutoffMs)) {
         continue;
@@ -487,35 +522,54 @@ function detectPlaywrightArtifacts(options, now) {
       }
 
       if (path.basename(filePath) === 'trace.zip') {
-        artifacts.push({
-          type: 'playwright-trace',
-          label: path.basename(path.dirname(filePath)) || 'Playwright trace',
-          path: relativePath,
-        });
+        const key = `playwright-trace|${relativePath}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          artifacts.push({
+            type: 'playwright-trace',
+            label: path.basename(path.dirname(filePath)) || 'Playwright trace',
+            path: relativePath,
+          });
+        }
         continue;
       }
 
       if (['.png', '.jpg', '.jpeg'].includes(ext)) {
-        artifacts.push({
-          type: 'playwright-screenshot',
-          label: path.basename(filePath),
-          path: relativePath,
-        });
+        const key = `playwright-screenshot|${relativePath}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          artifacts.push({
+            type: 'playwright-screenshot',
+            label: path.basename(filePath),
+            path: relativePath,
+          });
+        }
         continue;
       }
 
       if (['.webm', '.mp4'].includes(ext)) {
-        artifacts.push({
-          type: 'playwright-video',
-          label: path.basename(filePath),
-          path: relativePath,
-        });
+        const key = `playwright-video|${relativePath}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          artifacts.push({
+            type: 'playwright-video',
+            label: path.basename(filePath),
+            path: relativePath,
+          });
+        }
       }
     }
   }
 
-  if (options.screenshotsDir) {
-    const screenshotsRoot = path.resolve(process.cwd(), options.screenshotsDir);
+  const screenshotDirCandidates = toUniqueDirCandidates(
+    options.screenshotsDir,
+    options.screenshotsDir === LOCAL_PLAYWRIGHT_MCP_SCREENSHOTS_DIR
+      ? [LEGACY_PLAYWRIGHT_MCP_SCREENSHOTS_DIR]
+      : []
+  );
+
+  for (const screenshotsDir of screenshotDirCandidates) {
+    const screenshotsRoot = path.resolve(process.cwd(), screenshotsDir);
     for (const filePath of collectFilesRecursively(screenshotsRoot)) {
       if (!isRecentFile(filePath, cutoffMs)) {
         continue;
@@ -531,11 +585,15 @@ function detectPlaywrightArtifacts(options, now) {
         continue;
       }
 
-      artifacts.push({
-        type: 'playwright-screenshot',
-        label: path.basename(filePath),
-        path: relativePath,
-      });
+      const key = `playwright-screenshot|${relativePath}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        artifacts.push({
+          type: 'playwright-screenshot',
+          label: path.basename(filePath),
+          path: relativePath,
+        });
+      }
     }
   }
 
@@ -856,7 +914,7 @@ function validateArtifactEvidencePolicy(
 
   throw new Error(
     'releaseFacing=true 또는 countsTowardSummary=true 런에는 durable artifact evidence가 필요합니다. ' +
-      'playwright-report/test-results/.playwright-mcp/screenshots/artifacts/root qa*.png 같은 로컬 임시 경로는 사용할 수 없습니다. ' +
+      'tmp/playwright/**/playwright-report/test-results/.playwright-mcp/screenshots/artifacts/root qa*.png 같은 로컬 임시 경로는 사용할 수 없습니다. ' +
       `문제 경로: ${details}. URL을 사용하거나 추적 가능한 repo 경로(예: reports/qa/evidence/... )로 복사한 뒤 기록하세요.`
   );
 }

@@ -69,17 +69,17 @@
     {
       "type": "playwright-screenshot",
       "label": "feedback-negative-trace-2026-03-22.png",
-      "path": "artifacts/playwright/feedback-negative-trace-2026-03-22.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260322-0155-01-feedback-negative-trace-2026-03-22.png"
     },
     {
       "type": "playwright-console",
       "label": "feedback-negative-trace-2026-03-22-console.log",
-      "path": "artifacts/playwright/feedback-negative-trace-2026-03-22-console.log"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260322-0155-02-feedback-negative-trace-2026-03-22-console.log"
     },
     {
       "type": "playwright-screenshot",
       "label": "qa-20260322-feedback-trace-success.png",
-      "path": ".playwright-mcp/screenshots/qa-20260322-feedback-trace-success.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260322-0153-01-qa-20260322-feedback-trace-success.png"
     }
   ],
   "completedImprovements": [

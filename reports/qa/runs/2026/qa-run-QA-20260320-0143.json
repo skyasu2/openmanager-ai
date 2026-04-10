@@ -81,7 +81,7 @@
     {
       "type": "playwright-console",
       "label": "console-2026-03-20T14-24-24-851Z.log",
-      "path": ".playwright-mcp/screenshots/console-2026-03-20T14-24-24-851Z.log",
+      "path": "reports/qa/evidence/legacy/2026/qa-20260320-0143-01-console-2026-03-20t14-24-24-851z.log",
       "note": "Backfilled from a retained local playwright-mcp console capture recorded 29.8 minutes before the run record; association is inferred from the matching 404 surface and the lack of a nearer release-facing console capture."
     }
   ],

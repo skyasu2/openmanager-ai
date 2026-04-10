@@ -61,12 +61,12 @@
     {
       "type": "playwright-screenshot",
       "label": "Feedback trace UI link proof",
-      "path": "artifacts/playwright/feedback-trace-ui-link-2026-03-22.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260322-0158-01-feedback-trace-ui-link-2026-03-22.png"
     },
     {
       "type": "playwright-console",
       "label": "Feedback trace UI link response",
-      "path": "artifacts/playwright/feedback-trace-ui-link-2026-03-22-response.json"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260322-0158-02-feedback-trace-ui-link-2026-03-22-response.json"
     }
   ],
   "completedImprovements": [],

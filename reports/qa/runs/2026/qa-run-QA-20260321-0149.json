@@ -60,13 +60,13 @@
     {
       "type": "playwright-console",
       "label": "qa-20260321-ai-freetext-console-errors.log",
-      "path": ".playwright-mcp/screenshots/qa-20260321-ai-freetext-console-errors.log",
+      "path": "reports/qa/evidence/legacy/2026/qa-20260321-0149-01-qa-20260321-ai-freetext-console-errors.log",
       "note": "browser_console_messages capture after AI sidebar free-text validation; Total messages: 0 (Errors: 0, Warnings: 0)."
     },
     {
       "type": "playwright-screenshot",
       "label": "qa-20260321-ai-freetext.png",
-      "path": ".playwright-mcp/screenshots/qa-20260321-ai-freetext.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260321-0149-02-qa-20260321-ai-freetext.png"
     }
   ],
   "completedImprovements": [],

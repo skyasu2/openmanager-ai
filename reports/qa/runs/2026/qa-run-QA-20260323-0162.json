@@ -52,12 +52,12 @@
     {
       "type": "playwright-screenshot",
       "label": "Dashboard raw metric + data source parity metadata",
-      "path": "artifacts/playwright/parity-dashboard-raw-metric-2026-03-23.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260323-0162-01-parity-dashboard-raw-metric-2026-03-23.png"
     },
     {
       "type": "playwright-screenshot",
       "label": "AI sidebar detailed analysis still showing _dataSlot/_dataSource",
-      "path": "artifacts/playwright/parity-ai-metadata-detail-2026-03-23.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260323-0162-02-parity-ai-metadata-detail-2026-03-23.png"
     }
   ],
   "completedImprovements": [],

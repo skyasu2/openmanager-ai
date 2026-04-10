@@ -41,7 +41,7 @@
     {
       "type": "playwright-screenshot",
       "label": "Local Vibe QA Finish view",
-      "path": ".playwright-mcp/screenshots/local-vibe-qa-finish-20260330.png"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0196-01-local-vibe-qa-finish-20260330.png"
     }
   ],
   "completedImprovements": [

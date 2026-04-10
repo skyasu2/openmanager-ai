@@ -49,12 +49,7 @@
     {
       "type": "playwright-screenshot",
       "label": "Local targeted vibe CI/CD modal",
-      "path": "local-targeted-feature-modal-vibe-cicd-20260402.png"
-    },
-    {
-      "type": "playwright-console",
-      "label": "Local targeted landing modal console errors",
-      "path": "local-targeted-feature-modal-console-errors-20260402.log"
+      "path": "reports/qa/evidence/legacy/2026/qa-20260402-0209-01-local-targeted-feature-modal-vibe-cicd-20260402.png"
     }
   ],
   "completedImprovements": [],
@@ -65,7 +60,8 @@
     "Targeted local dev QA for HEAD 774171c84 after FeatureCardModalHeader extraction and modal regression tests addition.",
     "Playwright scripted scenario verified tech-stack diagram toggle and vibe-coding history/CI-CD tabs on localhost:3000.",
     "Next.js runtime tool get_errors reported no errors in connected browser sessions.",
-    "Console error log reported 0 error-level messages for the targeted landing modal flow."
+    "Console error log reported 0 error-level messages for the targeted landing modal flow.",
+    "[ephemeral-artifact-migration] 1 historical non-durable artifact path(s) could not be recovered and were removed from artifacts list."
   ],
   "links": [
     {
