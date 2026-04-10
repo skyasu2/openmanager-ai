@@ -38,7 +38,9 @@ const config: StorybookConfig = {
       name: 'storybook:suppress-warnings',
       enforce: 'pre' as const,
       onLog(_level: string, log: RollupLog) {
+        // Suppress known noisy warnings to keep build logs actionable
         if (log.code && SUPPRESSED_CODES.has(log.code)) return false;
+
         const message = String(log.message ?? '');
         if (
           SUPPRESSED_MESSAGES.some((entry) =>
@@ -47,6 +49,9 @@ const config: StorybookConfig = {
         ) {
           return false;
         }
+
+        // Circular chunk warnings (e.g., vendor-react -> vendor-storybook) have been resolved
+        // by removing 'vendor-react' manual chunk. If they reappear, they will be logged here.
       },
     });
 
