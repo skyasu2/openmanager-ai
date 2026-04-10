@@ -1,5 +1,5 @@
 ---
-name: openmanager-qa-state
+name: qa-state
 description: 통합 QA 및 상태 분석 스킬. 최근 QA/런타임 상태를 분석하고, Vercel/로컬 환경에서 QA를 실행하여 결과를 reports/qa에 누적 기록합니다.
 version: v2.0.0
 ---
@@ -42,9 +42,9 @@ version: v2.0.0
 ```
 
 ## 🔗 연관 스킬
-- `openmanager-env-sync`: 환경 변수 불일치 의심 시 호출
-- `openmanager-cloud-run`: GCP 배포 및 비용 상세 분석 필요 시 호출
-- `openmanager-git-workflow`: 문제 해결 후 커밋/푸시 시 호출
+- `env-sync`: 환경 변수 불일치 의심 시 호출
+- `cloud-run`: GCP 배포 및 비용 상세 분석 필요 시 호출
+- `git-workflow`: 문제 해결 후 커밋/푸시 시 호출
 
 ## 🔄 변경 이력
 - 2026-04-02: v2.0.0 - `state-triage`와 `qa-ops`를 통합. Next.js MCP 연동 및 데이터 패리티 체크 강화.

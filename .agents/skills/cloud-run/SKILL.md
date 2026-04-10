@@ -1,5 +1,5 @@
 ---
-name: openmanager-cloud-run
+name: cloud-run
 description: Deploy ai-engine to Cloud Run, check GCP cost risk, and verify CLI access. Combines deployment, free-tier guards, cost inspection, and CLI connectivity checks. Use when user asks to deploy, check billing, verify cloud access, or review cost status.
 version: v1.0.0
 user-invocable: true

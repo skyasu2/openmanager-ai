@@ -1,5 +1,5 @@
 ---
-name: openmanager-env-sync
+name: env-sync
 description: Diagnose and fix OpenManager environment drift across .env.local, Vercel preview/production, and server-side fallbacks. Use when health checks fail after deploy, preview and production behave differently, auth or Supabase envs are missing, or the user asks to sync, verify, or harden runtime environment variables.
 version: v1.0.0
 user-invocable: true
@@ -23,7 +23,7 @@ Resolve runtime env drift before changing product code.
   - `/api/health` or login flow returns `500` after deploy
   - missing `SESSION_SECRET`, `NEXT_PUBLIC_SUPABASE_*`, `SUPABASE_*`, or Cloud Run bridge vars
   - local works but Vercel runtime does not
-- If the request is `HTTP 200` with wrong content, do not default to env sync. Hand off to `$openmanager-state-triage` or code review first.
+- If the request is `HTTP 200` with wrong content, do not default to env sync. Hand off to `$state-triage` or code review first.
 
 3. Inspect local source-of-truth values.
 - Check `.env.local` for the exact variables the failing path needs.

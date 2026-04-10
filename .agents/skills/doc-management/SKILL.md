@@ -1,5 +1,5 @@
 ---
-name: openmanager-doc-management
+name: doc-management
 description: Check documentation budget, detect duplicates, and suggest merges/archives. Use when creating or reviewing docs.
 version: v1.0.0
 user-invocable: true
@@ -75,8 +75,8 @@ FAIL DOC-META-001 file=docs/... action_hint="Add Owner/Status/Doc type/Last revi
 
 ## Related skills
 
-- `$openmanager-git-workflow` - commit after doc changes
-- `$openmanager-lint-smoke` - quality checks alongside doc checks
+- `$git-workflow` - commit after doc changes
+- `$lint-smoke` - quality checks alongside doc checks
 
 ## References
 

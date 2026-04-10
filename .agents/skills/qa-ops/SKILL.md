@@ -1,5 +1,5 @@
 ---
-name: openmanager-qa-ops
+name: qa-ops
 description: Execute final QA for OpenManager with Vercel+Playwright MCP by default, switch to local dev QA when AI validation is unnecessary, and record every run into reports/qa tracker.
 version: v1.1.0
 user-invocable: true
@@ -11,9 +11,9 @@ Final QA operation workflow with cumulative tracking.
 
 ## Use with state triage
 
-- If the user asks `what is wrong`, `why did this fail`, `can this be fixed within free tier`, or `what should we do next after QA`, use `$openmanager-state-triage` before rerunning broad QA.
+- If the user asks `what is wrong`, `why did this fail`, `can this be fixed within free tier`, or `what should we do next after QA`, use `$state-triage` before rerunning broad QA.
 - Use this skill after triage when the next action is actually to execute QA, validate a fix on Vercel, or record a run.
-- If triage points to preview or production env drift, use `$openmanager-env-sync` before broad QA so you do not record a known config failure as a product regression.
+- If triage points to preview or production env drift, use `$env-sync` before broad QA so you do not record a known config failure as a product regression.
 
 ## Execute this workflow
 
@@ -22,7 +22,7 @@ Final QA operation workflow with cumulative tracking.
 - `sed -n '1,220p' reports/qa/QA_STATUS.md`
 - `sed -n '1,220p' reports/qa/README.md`
 - `sed -n '1,220p' reports/qa/production-qa-2026-02-25.md`
-- `sed -n '1,220p' .agents/skills/openmanager-qa-ops/references/current-surface-checklist.md`
+- `sed -n '1,220p' .agents/skills/qa-ops/references/current-surface-checklist.md`
 - Treat `qa-tracker.json` + `QA_STATUS.md` as the current state SSOT.
 - Treat `production-qa-2026-02-25.md` as a historical baseline/reference, not the only coverage source.
 
@@ -118,7 +118,7 @@ Close with one short operator note that explains the highest remaining risk or s
 
 ## References
 
-- `.agents/skills/openmanager-qa-ops/references/current-surface-checklist.md`
+- `.agents/skills/qa-ops/references/current-surface-checklist.md`
 - `reports/qa/production-qa-2026-02-25.md`
 - `reports/qa/README.md`
 - `reports/qa/qa-tracker.json`

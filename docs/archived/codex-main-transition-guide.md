@@ -19,10 +19,10 @@
 
 | 항목 | Claude Skill | 평가 | Codex 반영 상태 |
 |---|---|---|---|
-| Cloud Run 배포+비용 | `.claude/skills/cloud-run` | 높음: 배포/비용/CLI 접근 통합 | `openmanager-cloud-run` (병합 완료) |
-| Lint/Smoke | `.claude/skills/lint-smoke` | 높음: 품질 게이트 표준화 | `openmanager-lint-smoke` (유지) |
-| Git 워크플로우 | `.claude/skills/git-workflow` | 높음: commit+push+PR 통합 | `openmanager-git-workflow` (병합 완료) |
-| Code Review | `.claude/skills/code-review` | 높음: 6-관점 severity 리뷰 | `openmanager-code-review` (v2.0 갱신) |
+| Cloud Run 배포+비용 | `.claude/skills/cloud-run` | 높음: 배포/비용/CLI 접근 통합 | `cloud-run` (병합 완료) |
+| Lint/Smoke | `.claude/skills/lint-smoke` | 높음: 품질 게이트 표준화 | `lint-smoke` (유지) |
+| Git 워크플로우 | `.claude/skills/git-workflow` | 높음: commit+push+PR 통합 | `git-workflow` (병합 완료) |
+| Code Review | `.claude/skills/code-review` | 높음: 6-관점 severity 리뷰 | `code-review` (v2.0 갱신) |
 
 ## 적용 원칙
 
@@ -42,12 +42,12 @@
 
 ## Codex 메인 운영 시 기본 스킬 세트 (6개)
 
-- `openmanager-git-workflow` — Git 커밋/푸시/PR (commit-workflow + github-deploy-safe 병합)
-- `openmanager-cloud-run` — Cloud Run 배포 + 비용 + CLI 접근 (3개 병합)
-- `openmanager-code-review` — Agile 6-관점 severity 리뷰 (v2.0)
-- `openmanager-lint-smoke` — Lint + 테스트 스모크 체크
-- `openmanager-doc-management` — 문서 예산 관리
-- `openmanager-stitch-incremental` — Stitch UI 점진 개선
+- `git-workflow` — Git 커밋/푸시/PR (commit-workflow + github-deploy-safe 병합)
+- `cloud-run` — Cloud Run 배포 + 비용 + CLI 접근 (3개 병합)
+- `code-review` — Agile 6-관점 severity 리뷰 (v2.0)
+- `lint-smoke` — Lint + 테스트 스모크 체크
+- `doc-management` — 문서 예산 관리
+- `stitch-incremental` — Stitch UI 점진 개선
 
 ## 점검 루틴 (주 1회 권장)
 

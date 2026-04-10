@@ -1,5 +1,5 @@
 ---
-name: openmanager-lint-smoke
+name: lint-smoke
 description: Run fast OpenManager quality checks before commit or push. Use when the user asks for lint/type/test smoke validation, pre-commit checks, or quick confidence on changed frontend/backend code.
 version: v1.1.0
 user-invocable: true
@@ -35,13 +35,13 @@ Run quick validation in a fixed order and report pass/fail with next actions.
 
 5. If the user requested a review, hand off to review workflow.
 - Lint smoke is evidence collection, not a substitute for code review.
-- Use `$openmanager-code-review` to produce 6-perspective severity-ranked findings.
+- Use `$code-review` to produce 6-perspective severity-ranked findings.
 
 ## Related skills
 
-- `$openmanager-code-review` - 6-perspective severity-first review
-- `$openmanager-git-workflow` - commit/push after checks pass
-- `$openmanager-qa-ops` - final QA on Vercel/local with cumulative tracker
+- `$code-review` - 6-perspective severity-first review
+- `$git-workflow` - commit/push after checks pass
+- `$qa-ops` - final QA on Vercel/local with cumulative tracker
 
 ## Output format
 

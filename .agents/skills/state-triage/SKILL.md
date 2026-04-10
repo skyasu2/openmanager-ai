@@ -1,5 +1,5 @@
 ---
-name: openmanager-state-triage
+name: state-triage
 description: Analyze current OpenManager QA, runtime, deployment, and AI-path state; identify the primary symptom, root cause, free-tier fit, and next action. Use when the user asks what is broken now, why a recent Vercel or Cloud Run QA failed, whether the issue can be fixed within free-tier rules, how recent runs compare, or what step to take next after QA.
 version: v1.1.0
 user-invocable: true
@@ -17,7 +17,7 @@ Turn recent evidence into a concrete next step before editing code or rerunning 
 - `sed -n '1,220p' reports/qa/QA_STATUS.md`
 - `sed -n '1,220p' reports/qa/README.md`
 - `sed -n '1,220p' reports/qa/production-qa-2026-02-25.md`
-- `sed -n '1,220p' .agents/skills/openmanager-qa-ops/references/current-surface-checklist.md`
+- `sed -n '1,220p' .agents/skills/qa-ops/references/current-surface-checklist.md`
 - If the user says `latest`, `recent`, or names a run id, inspect the latest 1-3 run JSON files in `reports/qa/runs/<year>/`.
 - Treat `qa-tracker.json` + `QA_STATUS.md` as the current QA state SSOT.
 - Distinguish:
@@ -70,11 +70,11 @@ Turn recent evidence into a concrete next step before editing code or rerunning 
 - `broader-qa`: only when there is not enough evidence to localize the issue
 
 7. Pair with the right follow-on skill.
-- Use `$openmanager-qa-ops` when broad or release QA still needs to run.
-- Use `$openmanager-qa-ops` after `qa-checklist-fix` so the new surface coverage is exercised immediately.
-- Use `$openmanager-code-review` when the user wants risk analysis or review on the proposed fix.
-- Use `$openmanager-cloud-run` when the next step involves Cloud Run deploy, cost check, or GCP verification.
-- Use `$openmanager-env-sync` when preview and production differ, health checks fail after deploy, or missing runtime secrets are the likely cause.
+- Use `$qa-ops` when broad or release QA still needs to run.
+- Use `$qa-ops` after `qa-checklist-fix` so the new surface coverage is exercised immediately.
+- Use `$code-review` when the user wants risk analysis or review on the proposed fix.
+- Use `$cloud-run` when the next step involves Cloud Run deploy, cost check, or GCP verification.
+- Use `$env-sync` when preview and production differ, health checks fail after deploy, or missing runtime secrets are the likely cause.
 
 ## Output format
 

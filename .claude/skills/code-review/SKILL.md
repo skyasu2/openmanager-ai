@@ -102,4 +102,4 @@ Release Decision
 
 ## Changelog
 
-- 2026-03-19: v1.0.0 - Codex openmanager-code-review 이식, Claude Code 포맷 적용
+- 2026-03-19: v1.0.0 - Codex code-review 이식, Claude Code 포맷 적용

@@ -77,13 +77,13 @@
 Gemini CLI의 프로젝트 반복 워크플로우는 공식 `Skills` 형식에 맞춰 `.agents/skills/**/*.md` 에 둡니다.
 
 최적화된 핵심 스킬 셋은 다음과 같습니다:
-- `openmanager-qa-state` (v2.0) - **[통합]** 원인 분석, 런타임 진단(MCP), QA 실행 및 결과 누적 기록을 한 번에 처리합니다.
-- `openmanager-git-workflow` (v2.0) - **[강화]** 사전 품질 검증(`lint-smoke` 포함) 후 GitLab(운영)과 GitHub(공개)의 역할을 구분하여 안전하게 커밋/푸시합니다.
-- `openmanager-doc-management` (v2.0) - **[슬림화]** 문서 예산(`npm run docs:budget`) 기반의 현황 점검 및 중복 제거를 제안합니다.
-- `openmanager-env-sync` - `.env.local` ↔ Vercel preview/production env drift 진단 및 동기화.
-- `openmanager-cloud-run` - Cloud Run deploy, free-tier guard, GCP 비용 점검.
-- `openmanager-code-review` - Agile 6-perspective 코드 리뷰 및 severity-first 회귀 위험 점검.
-- `openmanager-stitch-incremental` - 기존 상태 아키텍처를 유지하며 점진적으로 UI 개선 및 프로토타이핑.
+- `qa-state` (v2.0) - **[통합]** 원인 분석, 런타임 진단(MCP), QA 실행 및 결과 누적 기록을 한 번에 처리합니다.
+- `git-workflow` (v2.0) - **[강화]** 사전 품질 검증(`lint-smoke` 포함) 후 GitLab(운영)과 GitHub(공개)의 역할을 구분하여 안전하게 커밋/푸시합니다.
+- `doc-management` (v2.0) - **[슬림화]** 문서 예산(`npm run docs:budget`) 기반의 현황 점검 및 중복 제거를 제안합니다.
+- `env-sync` - `.env.local` ↔ Vercel preview/production env drift 진단 및 동기화.
+- `cloud-run` - Cloud Run deploy, free-tier guard, GCP 비용 점검.
+- `code-review` - Agile 6-perspective 코드 리뷰 및 severity-first 회귀 위험 점검.
+- `stitch-incremental` - 기존 상태 아키텍처를 유지하며 점진적으로 UI 개선 및 프로토타이핑.
 
 해당 스킬 문서들(`SKILL.md`)은 상황에 따라 능동적으로 참조되어 최상의 엔지니어링 품질을 보장합니다.
 

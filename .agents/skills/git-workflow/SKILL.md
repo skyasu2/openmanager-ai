@@ -1,5 +1,5 @@
 ---
-name: openmanager-git-workflow
+name: git-workflow
 description: Safe git commit, push, and PR workflow for OpenManager with conventional commits, non-destructive rules, and MCP-first PR creation. Use when user asks to commit, push, open PR, or sync branch.
 version: v1.3.0
 user-invocable: true
@@ -55,7 +55,7 @@ Never assume `github-public/main` or `origin/main` is the canonical branch. Alwa
   - auth/session/env wiring
   - QA/deploy scripts or config that affect runtime routing
 - Run targeted checks for changed areas when needed.
-- If user asked for "review", run `$openmanager-code-review` first and resolve/acknowledge findings before commit.
+- If user asked for "review", run `$code-review` first and resolve/acknowledge findings before commit.
 
 5. Create conventional commit.
 - Format: `<type>(scope): <summary>`
@@ -84,7 +84,7 @@ Never assume `github-public/main` or `origin/main` is the canonical branch. Alwa
 - If code changed, run `npm run test:quick` or targeted checks.
 - Add `npm run test:contract` when API, auth, env, proxy, or deploy-facing behavior changed.
 - Prefer local Docker CI when changes are broad or deployment-sensitive: `npm run ci:local:docker`
-- For high-risk changes or explicit review requests, run `$openmanager-code-review` and include key findings/residual risks in PR body.
+- For high-risk changes or explicit review requests, run `$code-review` and include key findings/residual risks in PR body.
 
 4. Push safely.
 - Single-maintainer default canonical flow: `git push gitlab main`
