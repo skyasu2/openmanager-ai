@@ -395,10 +395,18 @@ class LoadTester {
    */
   async saveResults() {
     const fs = require('node:fs').promises;
+    const path = require('node:path');
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const filename = `load-test-results-${timestamp}.json`;
+    const outputDir =
+      process.env.LOAD_TEST_OUTPUT_DIR ||
+      path.join('tmp', 'performance', 'load-tests');
+    const filename = path.join(
+      outputDir,
+      `load-test-results-${timestamp}.json`
+    );
 
     try {
+      await fs.mkdir(outputDir, { recursive: true });
       await fs.writeFile(filename, JSON.stringify(this.results, null, 2));
       console.log(`\n💾 결과 저장됨: ${filename}`);
     } catch (error) {

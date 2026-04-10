@@ -203,6 +203,8 @@ jobs:
       CI: true
       PLAYWRIGHT_PORT: 3000
       PLAYWRIGHT_BASE_URL: http://localhost:3000
+      PLAYWRIGHT_OUTPUT_DIR: tmp/playwright/e2e/test-results
+      PLAYWRIGHT_REPORT_DIR: tmp/playwright/e2e/report
       VERCEL_AUTOMATION_BYPASS_SECRET: local-e2e-secret
       TEST_SECRET_KEY: local-e2e-secret
       NEXT_PUBLIC_GUEST_MODE: restricted
@@ -228,7 +230,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report-${{ github.run_id }}
-          path: playwright-report
+          path: tmp/playwright/e2e/report
           if-no-files-found: ignore
           retention-days: 3
       - name: Upload Playwright Test Results
@@ -236,7 +238,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playwright-results-${{ github.run_id }}
-          path: test-results
+          path: tmp/playwright/e2e/test-results
           if-no-files-found: ignore
           retention-days: 3
 
@@ -252,6 +254,8 @@ jobs:
       CI: true
       PLAYWRIGHT_BASE_URL: https://openmanager-ai.vercel.app
       PLAYWRIGHT_CHANNEL: chromium
+      PLAYWRIGHT_MANUAL_OUTPUT_DIR: tmp/playwright/manual-feedback-trace-status/test-results
+      PLAYWRIGHT_MANUAL_REPORT_DIR: tmp/playwright/manual-feedback-trace-status/report
       VERCEL_AUTOMATION_BYPASS_SECRET: local-e2e-secret
       TEST_SECRET_KEY: local-e2e-secret
       NEXT_PUBLIC_GUEST_MODE: restricted
@@ -277,7 +281,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: manual-feedback-trace-report-${{ github.run_id }}
-          path: playwright-report/manual-feedback-trace-status
+          path: tmp/playwright/manual-feedback-trace-status/report
           if-no-files-found: ignore
           retention-days: 3
       - name: Upload manual feedback trace results
@@ -285,7 +289,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: manual-feedback-trace-results-${{ github.run_id }}
-          path: test-results/manual-feedback-trace-status
+          path: tmp/playwright/manual-feedback-trace-status/test-results
           if-no-files-found: ignore
           retention-days: 3
 

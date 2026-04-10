@@ -8,6 +8,8 @@ SPEC="tests/manual/ai-retention-parity.spec.ts"
 CONFIG="playwright.config.vercel.manual.ts"
 BASE_URL="${PLAYWRIGHT_BASE_URL:-https://openmanager-ai.vercel.app}"
 CHANNEL="${PLAYWRIGHT_CHANNEL:-chromium}"
+OUTPUT_DIR="${PLAYWRIGHT_MANUAL_OUTPUT_DIR:-tmp/playwright/manual-ai-retention/test-results}"
+REPORT_DIR="${PLAYWRIGHT_MANUAL_REPORT_DIR:-tmp/playwright/manual-ai-retention/report}"
 LOG_FILE="$(mktemp)"
 
 run_once() {
@@ -18,6 +20,8 @@ run_once() {
   PLAYWRIGHT_BASE_URL="$BASE_URL" \
   PLAYWRIGHT_SKIP_SERVER=1 \
   PLAYWRIGHT_CHANNEL="$channel" \
+  PLAYWRIGHT_MANUAL_OUTPUT_DIR="$OUTPUT_DIR" \
+  PLAYWRIGHT_MANUAL_REPORT_DIR="$REPORT_DIR" \
   VERCEL_AUTOMATION_BYPASS_SECRET="${VERCEL_AUTOMATION_BYPASS_SECRET:-}" \
   npx playwright test "$SPEC" --config "$CONFIG" 2>&1 | tee "$LOG_FILE"
   local status=${PIPESTATUS[0]}

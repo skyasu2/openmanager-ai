@@ -23,6 +23,22 @@ const extraHTTPHeaders = bypassSecret
   : undefined;
 const includeMobileProjects = process.env.PLAYWRIGHT_INCLUDE_MOBILE === '1';
 const mobileOnly = process.env.PLAYWRIGHT_MOBILE_ONLY === '1';
+const resolvedOutputDir =
+  process.env.PLAYWRIGHT_OUTPUT_DIR || 'tmp/playwright/e2e/test-results';
+const resolvedHtmlReportDir =
+  process.env.PLAYWRIGHT_REPORT_DIR || 'tmp/playwright/e2e/report';
+const resolvedReporter =
+  process.env.PLAYWRIGHT_HTML_REPORT === '0'
+    ? 'list'
+    : ([
+        [
+          'html',
+          {
+            open: 'never',
+            outputFolder: resolvedHtmlReportDir,
+          },
+        ],
+      ] as const);
 type PlaywrightTraceMode =
   | 'on'
   | 'off'
@@ -41,7 +57,7 @@ function resolveTraceMode(): PlaywrightTraceMode {
   }
 
   // Keep push/PR runs lean, but make manual workflow_dispatch runs preserve
-  // trace outputs so the uploaded test-results artifact is useful on success.
+  // trace outputs so uploaded artifacts remain useful on success.
   return process.env.GITHUB_EVENT_NAME === 'workflow_dispatch'
     ? 'on'
     : 'retain-on-failure';
@@ -90,7 +106,7 @@ export default defineConfig({
   // Load environment variables globally before any tests run
   globalSetup: path.resolve(__dirname, 'tests/support/globalSetup'),
   testDir: './tests/e2e',
-  outputDir: 'test-results',
+  outputDir: resolvedOutputDir,
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -100,7 +116,7 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: resolvedReporter,
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */

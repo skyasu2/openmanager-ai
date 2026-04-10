@@ -26,4 +26,4 @@ npx -y @playwright/mcp@latest `
   --port $Port `
   --host 0.0.0.0 `
   --browser $Browser `
-  --output-dir ".playwright-mcp/screenshots"
+  --output-dir "tmp/playwright/mcp/screenshots"

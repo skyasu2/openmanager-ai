@@ -147,7 +147,10 @@ type ExportLogsServiceRequest = {
 // ============================================================================
 
 const DATA_DIR = path.resolve(__dirname, '../../public/data/otel-data');
-const OUTPUT_DIR = path.resolve(__dirname, 'output');
+const OUTPUT_DIR = path.resolve(
+  process.env.GRAFANA_OTLP_OUTPUT_DIR ??
+    path.join(__dirname, '../../tmp/grafana/otlp-export'),
+);
 
 // ============================================================================
 // Data Loading

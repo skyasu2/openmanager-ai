@@ -169,6 +169,12 @@ describe('classifyChangedTestRun', () => {
     expect(result.mode).toContain('hook infra quick smoke');
   });
 
+  it('routes root-artifact hook helper changes to quick smoke when no other steps', () => {
+    const result = run(['scripts/hooks/pre-push-root-artifacts.js']);
+    expect(result).not.toBeNull();
+    expect(result.mode).toContain('hook infra quick smoke');
+  });
+
   it('adds AI quick smoke for frontend smoke files on WSL+WindowsFS', () => {
     const result = run(['src/components/ai/ChatPanel.tsx'], {
       isWSL: true,

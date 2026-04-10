@@ -36,7 +36,10 @@ const NODE_TEST_INFRA_EXACT = new Set([
   'src/test/setup.node.ts',
 ]);
 
-const HOOK_TEST_INFRA_EXACT = new Set(['scripts/hooks/pre-push.js']);
+const HOOK_TEST_INFRA_EXACT = new Set([
+  'scripts/hooks/pre-push.js',
+  'scripts/hooks/pre-push-root-artifacts.js',
+]);
 
 const FRONTEND_SMOKE_PREFIXES = [
   'src/components/ai/',

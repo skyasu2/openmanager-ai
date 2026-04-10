@@ -8,8 +8,8 @@ SPEC="tests/manual/ai-thinking-visualizer.spec.ts"
 CONFIG="playwright.config.vercel.manual.ts"
 BASE_URL="${PLAYWRIGHT_BASE_URL:-https://openmanager-ai.vercel.app}"
 CHANNEL="${PLAYWRIGHT_CHANNEL:-chromium}"
-OUTPUT_DIR="${PLAYWRIGHT_MANUAL_OUTPUT_DIR:-test-results/manual-thinking-visualizer}"
-REPORT_DIR="${PLAYWRIGHT_MANUAL_REPORT_DIR:-playwright-report/manual-thinking-visualizer}"
+OUTPUT_DIR="${PLAYWRIGHT_MANUAL_OUTPUT_DIR:-tmp/playwright/manual-thinking-visualizer/test-results}"
+REPORT_DIR="${PLAYWRIGHT_MANUAL_REPORT_DIR:-tmp/playwright/manual-thinking-visualizer/report}"
 LOG_FILE="$(mktemp)"
 
 run_once() {

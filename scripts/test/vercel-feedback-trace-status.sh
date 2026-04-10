@@ -8,8 +8,10 @@ SPEC="tests/manual/feedback-trace-status.spec.ts"
 CONFIG="playwright.config.vercel.manual.ts"
 BASE_URL="${PLAYWRIGHT_BASE_URL:-https://openmanager-ai.vercel.app}"
 CHANNEL="${PLAYWRIGHT_CHANNEL:-chromium}"
-OUTPUT_DIR="${PLAYWRIGHT_MANUAL_OUTPUT_DIR:-test-results/manual-feedback-trace-status}"
-REPORT_DIR="${PLAYWRIGHT_MANUAL_REPORT_DIR:-playwright-report/manual-feedback-trace-status}"
+DEFAULT_OUTPUT_DIR="tmp/playwright/manual-feedback-trace-status/test-results"
+DEFAULT_REPORT_DIR="tmp/playwright/manual-feedback-trace-status/report"
+OUTPUT_DIR="${PLAYWRIGHT_MANUAL_OUTPUT_DIR:-$DEFAULT_OUTPUT_DIR}"
+REPORT_DIR="${PLAYWRIGHT_MANUAL_REPORT_DIR:-$DEFAULT_REPORT_DIR}"
 LOG_FILE="$(mktemp)"
 
 run_once() {

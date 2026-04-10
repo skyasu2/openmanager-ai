@@ -45,7 +45,7 @@ function resolveManualReporter() {
         open: 'never',
         outputFolder:
           process.env.PLAYWRIGHT_MANUAL_REPORT_DIR ||
-          'playwright-report/manual-vercel',
+          'tmp/playwright/manual-vercel/report',
       },
     ],
   ] as const;
@@ -55,7 +55,8 @@ export default defineConfig({
   globalSetup: path.resolve(__dirname, 'tests/support/globalSetup'),
   testDir: './tests/manual',
   outputDir:
-    process.env.PLAYWRIGHT_MANUAL_OUTPUT_DIR || 'test-results/manual-vercel',
+    process.env.PLAYWRIGHT_MANUAL_OUTPUT_DIR ||
+    'tmp/playwright/manual-vercel/test-results',
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,

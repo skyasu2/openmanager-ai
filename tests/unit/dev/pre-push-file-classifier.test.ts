@@ -229,6 +229,9 @@ describe('isNodeTestInfraFile', () => {
 describe('isHookTestInfraFile', () => {
   it('matches pre-push.js exactly', () => {
     expect(isHookTestInfraFile('scripts/hooks/pre-push.js')).toBe(true);
+    expect(
+      isHookTestInfraFile('scripts/hooks/pre-push-root-artifacts.js')
+    ).toBe(true);
   });
 
   it('excludes other hook files', () => {

@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active Supporting
 > Doc type: Reference
-> Last reviewed: 2026-02-25
+> Last reviewed: 2026-04-10
 > Canonical: docs/development/vibe-coding/mcp-servers.md
 > Tags: vibe-coding,mcp,configuration
 
@@ -94,7 +94,7 @@
 | `supabase-db` | `node .../mcp-server-supabase/dist/transports/stdio.js` | `30/120` | DB 조회/SQL/마이그레이션 |
 | `context7` | `npx -y @upstash/context7-mcp` | `120/120` | 최신 공식 문서 검색 |
 | `diagram-converter` | `npx -y diagram-converter-mcp@0.2.6` | `120/180` | Mermaid 렌더/검증 |
-| `playwright` | `npx -y @playwright/mcp --output-dir .playwright-mcp/screenshots` | `180/180` | 브라우저 자동화 QA |
+| `playwright` | `npx -y @playwright/mcp --output-dir tmp/playwright/mcp/screenshots` | `180/180` | 브라우저 자동화 QA |
 | `next-devtools` | `npx -y next-devtools-mcp@latest` | `75/120` | Next.js 런타임 진단 |
 | `github` | `npx -y @modelcontextprotocol/server-github` | `120/120` | PR/Issue/파일 조회 |
 | `sequential-thinking` | `npx -y @modelcontextprotocol/server-sequential-thinking` | `120/90` | 복잡한 추론/계획 |
@@ -142,8 +142,11 @@ bash scripts/mcp/sync-github-mcp-auth.sh
 
 - 기본 모드: `stdio` (Codex에서 직접 실행)
 - 현재 설정 핵심:
-  - `--output-dir .playwright-mcp/screenshots`
+  - `--output-dir tmp/playwright/mcp/screenshots`
   - `DISPLAY=:0` (WSL GUI 브라우저 표시 환경)
+- 이유:
+  - MCP 스크린샷은 재생성 가능한 임시 산출물이므로 루트가 아니라 `tmp/` 아래에 둡니다.
+  - durable QA evidence가 필요하면 `reports/qa/evidence/`로 별도 승격합니다.
 - Windows Headed 모드가 필요하면:
 ```bash
 npm run mcp:playwright:windows:enable

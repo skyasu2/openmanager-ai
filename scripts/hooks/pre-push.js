@@ -31,6 +31,7 @@ const {
   isDocsArtifactOnlyPush,
   validateChangedJsonArtifacts,
 } = require('./pre-push-docs-artifacts');
+const { checkRootArtifactAudit } = require('./pre-push-root-artifacts');
 const {
   shouldVerifyComponentDependencyMap,
 } = require('./pre-push-component-map');
@@ -80,6 +81,8 @@ const QUICK_PUSH = process.env.QUICK_PUSH !== 'false'; // 기본값: true
 const SKIP_TESTS = process.env.SKIP_TESTS === 'true';
 const SKIP_BUILD = process.env.SKIP_BUILD === 'true';
 const SKIP_NODE_CHECK = process.env.SKIP_NODE_CHECK === 'true';
+const SKIP_ROOT_ARTIFACT_AUDIT =
+  process.env.SKIP_ROOT_ARTIFACT_AUDIT === 'true';
 const STRICT_PUSH_ENV = process.env.STRICT_PUSH_ENV === 'true';
 const FORCE_CLOUD_BUILD_GUARD = process.env.FORCE_CLOUD_BUILD_GUARD === 'true';
 const PRE_PUSH_CHANGED_FILES_OVERRIDE = process.env.PRE_PUSH_CHANGED_FILES || '';
@@ -95,6 +98,7 @@ let typeCheckStatus = 'pending';
 let validationMode = 'standard';
 let selectedTestMode = 'quick';
 let componentMapStatus = 'pending';
+let rootArtifactStatus = 'pending';
 
 const DOM_TEST_MANIFEST = loadDomTestManifest(cwd);
 
@@ -311,6 +315,36 @@ function runComponentMapVerification(changedFilesResult) {
   componentMapStatus = 'passed';
   console.log('✅ Component dependency map verify passed');
   return { ok: true };
+}
+
+function runRootArtifactAuditGuard() {
+  console.log('🧹 Root artifact audit...');
+  const result = checkRootArtifactAudit({
+    skip: SKIP_ROOT_ARTIFACT_AUDIT,
+    runNpm,
+  });
+
+  if (result.status === 'skipped') {
+    rootArtifactStatus = 'skipped';
+    console.log('⚪ Root artifact audit skipped (SKIP_ROOT_ARTIFACT_AUDIT=true)');
+    return { ok: true };
+  }
+
+  if (result.ok) {
+    rootArtifactStatus = 'passed';
+    console.log('✅ Root artifact audit passed');
+    return { ok: true };
+  }
+
+  rootArtifactStatus = 'failed';
+  console.log('❌ Root artifact audit failed - push blocked');
+  console.log('');
+  console.log('💡 Fix: npm run root:artifacts:audit');
+  console.log('💡 Fix: npm run root:artifacts:cleanup');
+  console.log('💡 Fix: npm run root:artifacts:cleanup:all');
+  console.log('');
+  console.log('⚠️  Bypass: SKIP_ROOT_ARTIFACT_AUDIT=true git push');
+  return { ok: false, reason: result.reason };
 }
 
 // ─── Tests ───────────────────────────────────────────────────────────────
@@ -590,6 +624,15 @@ function printSummary(duration) {
   } else if (componentMapStatus === 'failed') {
     console.log('  ❌ Component map verify failed');
   }
+  if (rootArtifactStatus === 'passed') {
+    console.log('  ✅ Root artifact audit passed');
+  } else if (rootArtifactStatus === 'skipped') {
+    console.log('  ⚪ Root artifact audit skipped (SKIP_ROOT_ARTIFACT_AUDIT=true)');
+  } else if (rootArtifactStatus === 'failed') {
+    console.log('  ❌ Root artifact audit failed');
+  } else {
+    console.log(`  ⚪ Root artifact audit ${rootArtifactStatus}`);
+  }
   if (validationMode === 'guard-only') {
     console.log('  ⚪ Full build/test/type-check → CI (GitLab/Vercel)');
   } else if (!QUICK_PUSH && !isLimitedMode) {
@@ -649,6 +692,7 @@ function main() {
   exitIfGuardFailed(
     checkCloudBuildFreeTierGuard(changedFilesResult, cwd, FORCE_CLOUD_BUILD_GUARD)
   );
+  exitIfGuardFailed(runRootArtifactAuditGuard());
 
   if (docsOnlyPush) {
     exitIfGuardFailed(runDocsArtifactValidation(changedFilesResult));

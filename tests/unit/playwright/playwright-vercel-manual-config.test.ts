@@ -56,13 +56,18 @@ describe.skipIf(SKIP_IN_DOCKER_CI)(
     it('enables trace and html report by default', async () => {
       const config = await loadManualConfig();
 
-      expect(config.outputDir).toBe('test-results/manual-vercel');
+      expect(config.outputDir).toBe(
+        'tmp/playwright/manual-vercel/test-results'
+      );
       expect(config.use?.trace).toBe('on');
       expect(config.reporter).toEqual([
         ['list'],
         [
           'html',
-          { open: 'never', outputFolder: 'playwright-report/manual-vercel' },
+          {
+            open: 'never',
+            outputFolder: 'tmp/playwright/manual-vercel/report',
+          },
         ],
       ]);
     });

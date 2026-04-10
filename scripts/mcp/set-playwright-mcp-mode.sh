@@ -78,7 +78,7 @@ function print_playwright_section() {
   print "[mcp_servers.playwright]"
   if (mode == "stdio") {
     print "command = \"npx\""
-    print "args = [\"-y\", \"@playwright/mcp\", \"--output-dir\", \".playwright-mcp/screenshots\"]"
+    print "args = [\"-y\", \"@playwright/mcp\", \"--output-dir\", \"tmp/playwright/mcp/screenshots\"]"
     print "startup_timeout_sec = 60"
     print "tool_timeout_sec = 180"
     print "required = false"

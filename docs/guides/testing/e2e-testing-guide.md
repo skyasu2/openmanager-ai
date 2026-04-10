@@ -4,7 +4,7 @@
 > Owner: documentation
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-04-02
+> Last reviewed: 2026-04-10
 > Canonical: docs/guides/testing/e2e-testing-guide.md
 > Tags: testing,e2e,playwright
 
@@ -129,11 +129,13 @@ npm run test:e2e:with-server
 npx playwright test tests/e2e/smoke.spec.ts --project=chromium
 
 # 2) 트레이스 확인
-npx playwright show-trace test-results/**/trace.zip
+npx playwright show-trace tmp/playwright/e2e/test-results/**/trace.zip
 
 # 3) 콘솔/네트워크 확인
 # 필요 시 spec 내부에서 page.on('console'|'requestfailed') 임시 로깅
 ```
+
+- 수동 Playwright 검증에서 스크린샷/임시 파일이 필요하면 `tests/` 아래에 직접 쓰지 말고 `testInfo.outputPath(...)`를 사용합니다.
 
 ---
 

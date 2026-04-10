@@ -1,5 +1,5 @@
 import * as path from 'node:path';
-import { expect, test } from '@playwright/test';
+import { expect, type Page, type TestInfo, test } from '@playwright/test';
 
 /**
  * Vercel 배포 검증 및 E2E 테스트 실패 분석
@@ -12,7 +12,21 @@ import { expect, test } from '@playwright/test';
  */
 
 const VERCEL_URL = 'https://openmanager-ai.vercel.app';
-const SCREENSHOT_DIR = path.join(process.cwd(), 'tests/manual/screenshots');
+
+async function saveArtifactScreenshot(
+  page: Page,
+  testInfo: TestInfo,
+  fileName: string
+) {
+  const screenshotPath = testInfo.outputPath(fileName);
+  await page.screenshot({
+    path: screenshotPath,
+    fullPage: true,
+  });
+  console.log(
+    `📸 스크린샷 저장: ${path.relative(process.cwd(), screenshotPath)}`
+  );
+}
 
 test.describe('Vercel 배포 검증 및 E2E 테스트 분석', () => {
   test.beforeEach(async ({ page }) => {
@@ -25,7 +39,7 @@ test.describe('Vercel 배포 검증 및 E2E 테스트 분석', () => {
     }
   });
 
-  test('1단계: Vercel 배포 확인 및 스크린샷', async ({ page }) => {
+  test('1단계: Vercel 배포 확인 및 스크린샷', async ({ page }, testInfo) => {
     console.log('🔍 1단계: Vercel 배포 상태 확인 시작');
 
     // 1. 페이지 이동
@@ -57,15 +71,7 @@ test.describe('Vercel 배포 검증 및 E2E 테스트 분석', () => {
     expect(title).toBeTruthy();
 
     // 6. 스크린샷 저장
-    const screenshotPath = path.join(
-      SCREENSHOT_DIR,
-      'deployment-verification.png'
-    );
-    await page.screenshot({
-      path: screenshotPath,
-      fullPage: true,
-    });
-    console.log(`📸 스크린샷 저장: ${screenshotPath}`);
+    await saveArtifactScreenshot(page, testInfo, 'deployment-verification.png');
 
     // 7. 콘솔 에러 확인
     const consoleMessages: string[] = [];
@@ -80,7 +86,7 @@ test.describe('Vercel 배포 검증 및 E2E 테스트 분석', () => {
 
   test('2단계: E2E 테스트 실패 케이스 재현 - 게스트 로그인', async ({
     page,
-  }) => {
+  }, testInfo) => {
     console.log('🔍 2단계: E2E 테스트 실패 케이스 재현 시작');
 
     // 로그인 페이지 이동
@@ -106,22 +112,20 @@ test.describe('Vercel 배포 검증 및 E2E 테스트 분석', () => {
       console.log(`🌐 현재 URL: ${currentUrl}`);
 
       // 스크린샷 저장
-      await page.screenshot({
-        path: path.join(SCREENSHOT_DIR, 'guest-login-result.png'),
-        fullPage: true,
-      });
+      await saveArtifactScreenshot(page, testInfo, 'guest-login-result.png');
     } else {
       console.log('⚠️ 게스트 로그인 버튼을 찾을 수 없음');
-      await page.screenshot({
-        path: path.join(SCREENSHOT_DIR, 'guest-login-button-not-found.png'),
-        fullPage: true,
-      });
+      await saveArtifactScreenshot(
+        page,
+        testInfo,
+        'guest-login-button-not-found.png'
+      );
     }
 
     console.log(`✅ 2단계 완료: 게스트 로그인 테스트 완료`);
   });
 
-  test('3단계: 프로덕션 환경 최종 검증', async ({ page }) => {
+  test('3단계: 프로덕션 환경 최종 검증', async ({ page }, testInfo) => {
     console.log('🔍 3단계: 프로덕션 환경 최종 검증 시작');
 
     // 1. 페이지 이동
@@ -189,15 +193,18 @@ test.describe('Vercel 배포 검증 및 E2E 테스트 분석', () => {
     }
 
     // 6. 최종 스크린샷
-    await page.screenshot({
-      path: path.join(SCREENSHOT_DIR, 'production-final-verification.png'),
-      fullPage: true,
-    });
+    await saveArtifactScreenshot(
+      page,
+      testInfo,
+      'production-final-verification.png'
+    );
 
     console.log(`✅ 3단계 완료: 프로덕션 환경 검증 완료`);
   });
 
-  test('4단계: 접근성 테스트 (ARIA, 키보드 네비게이션)', async ({ page }) => {
+  test('4단계: 접근성 테스트 (ARIA, 키보드 네비게이션)', async ({
+    page,
+  }, testInfo) => {
     console.log('🔍 4단계: 접근성 테스트 시작');
 
     await page.goto(VERCEL_URL, { waitUntil: 'networkidle' });
@@ -220,10 +227,7 @@ test.describe('Vercel 배포 검증 및 E2E 테스트 분석', () => {
       console.log(`  Tab ${i}: ${tagName}`);
     }
 
-    await page.screenshot({
-      path: path.join(SCREENSHOT_DIR, 'accessibility-test.png'),
-      fullPage: true,
-    });
+    await saveArtifactScreenshot(page, testInfo, 'accessibility-test.png');
 
     console.log(`✅ 4단계 완료: 접근성 테스트 완료`);
   });
