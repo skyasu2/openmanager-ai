@@ -1,3 +1,13 @@
+# Legacy Server Data Migration Notes
+
+> Status: Historical reference
+> Scope: legacy server-data bootstrap notes only
+> Active workflow: use `docs/development/project-setup.md` for current Supabase CLI flow
+>
+> This file is intentionally kept outside `supabase/migrations/` so Supabase CLI does not
+> treat it as a migration candidate. The active migration ledger is the SQL files under
+> `supabase/migrations/`.
+
 # Portfolio Server Data Migrations
 
 **목적**: 포트폴리오 데모용 현실적인 서버 모니터링 데이터 구축
