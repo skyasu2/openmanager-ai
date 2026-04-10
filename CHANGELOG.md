@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.9](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.8...v8.11.9) (2026-04-10)
+
+
+### Features
+
+* **ai-chat:** add decisive QA case for ThinkingProcessVisualizer + thinking steps fallback ([7e72718](https://gitlab.com/skyasu2/openmanager-ai/-/commit/7e727180ca576339dd6def84c833bac31c0eeacf))
+
+
+### Bug Fixes
+
+* **tooling:** align npm baseline and artifact scripts ([cfd1f12](https://gitlab.com/skyasu2/openmanager-ai/-/commit/cfd1f12167569c5778b66c6ea15dfcb6d3ad1569))
+
+
+### Code Refactoring
+
+* **scripts:** archive legacy helpers and add reference audit ([9e1d89e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/9e1d89eed6d12e2b80625ba0b6732f139df4c832))
+
+
+### Tests
+
+* **dev:** stabilize validation suite expectations ([d0e5fc7](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d0e5fc7e838ea2c425ba9e1f945fc18ff2fa2557))
+* **qa:** backfill durable artifacts for 20260409 runs ([1fc5500](https://gitlab.com/skyasu2/openmanager-ai/-/commit/1fc5500c21de2f366e0321b9648d1604332d92eb))
+* **qa:** normalize QA-20260409-0266 durable artifacts ([e6d4841](https://gitlab.com/skyasu2/openmanager-ai/-/commit/e6d484180bb33077119c130091f2f2671729d9cc))
+* **qa:** record post-deploy smoke run QA-20260409-0267 ([f1f4b32](https://gitlab.com/skyasu2/openmanager-ai/-/commit/f1f4b3290ecea70b6e1de420a48c9c1b8bf69c64))
+
 ## [8.11.8](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.7...v8.11.8) (2026-04-09)
 
 
