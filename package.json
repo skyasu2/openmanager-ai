@@ -8,7 +8,7 @@
     "type": "git",
     "url": "https://gitlab.com/skyasu2/openmanager-ai.git"
   },
-  "packageManager": "npm@10.9.2",
+  "packageManager": "npm@11.10.0",
   "homepage": "https://openmanager-ai.vercel.app",
   "bugs": {
     "url": "https://gitlab.com/skyasu2/openmanager-ai/-/issues"
@@ -137,7 +137,13 @@
     "test:cloud:essential:llm-once": "NODE_OPTIONS=--dns-result-order=ipv4first node scripts/test/cloud-deploy-essential-smoke.mjs --require-auth --with-supervisor-call",
     "qa:evidence:audit": "node scripts/qa/audit-qa-evidence.js",
     "qa:evidence:audit:strict": "node scripts/qa/audit-qa-evidence.js --strict",
+    "qa:evidence:audit:all": "node scripts/qa/audit-qa-evidence.js --all",
+    "qa:evidence:audit:storage:strict": "node scripts/qa/audit-qa-evidence.js --all --strict-storage",
     "qa:evidence:build": "node scripts/qa/build-validation-evidence.js",
+    "qa:artifacts:migrate": "node scripts/qa/migrate-legacy-artifact-paths.js",
+    "qa:artifacts:migrate:apply": "node scripts/qa/migrate-legacy-artifact-paths.js --apply --prune-source",
+    "qa:artifacts:migrate:ephemeral": "node scripts/qa/migrate-ephemeral-artifact-paths.js",
+    "qa:artifacts:migrate:ephemeral:apply": "node scripts/qa/migrate-ephemeral-artifact-paths.js --apply --prune-source",
     "qa:record": "node scripts/qa/record-qa-run.js",
     "qa:status": "node scripts/qa/print-qa-status.js",
     "qa:status:sync": "node scripts/qa/print-qa-status.js --write",
@@ -158,6 +164,12 @@
     "lint:incremental": "npm run validate:changed",
     "check:incremental": "npm run validate:changed",
     "validate:changed": "npm run lint:changed && npm run type-check:changed",
+    "root:artifacts:audit": "node scripts/dev/root-artifact-cleanup.js",
+    "root:artifacts:audit:strict": "node scripts/dev/root-artifact-cleanup.js --strict",
+    "root:artifacts:cleanup": "node scripts/dev/root-artifact-cleanup.js --apply",
+    "root:artifacts:cleanup:all": "node scripts/dev/root-artifact-cleanup.js --apply --apply-dirs",
+    "artifacts:ui:audit": "node scripts/dev/audit-orphan-ui-artifacts.js",
+    "artifacts:scripts:audit": "node scripts/dev/audit-script-references.js",
     "prepare": "husky || true",
     "validate": "npm run type-check && npm run check && npm run line-guard",
     "validate:quick": "npm run type-check && npm run check && npm run line-guard",
@@ -314,12 +326,25 @@
   },
   "engines": {
     "node": ">=24.0.0 <25.0.0",
-    "npm": ">=10.0.0"
+    "npm": ">=11.0.0 <12.0.0"
+  },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": ">=24.0.0 <25.0.0",
+      "onFail": "error"
+    },
+    "packageManager": {
+      "name": "npm",
+      "version": ">=11.0.0 <12.0.0",
+      "onFail": "error"
+    }
   },
   "overrides": {
     "@ai-sdk/react": {
       "ai": "$ai"
     },
+    "@valibot/to-json-schema": "1.5.0",
     "markdown-it": "14.1.1"
   },
   "browserslist": {

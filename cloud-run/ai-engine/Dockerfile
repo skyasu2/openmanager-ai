@@ -44,7 +44,7 @@ COPY package.json package-lock.json ./
 
 # Install dependencies with npm ci for reproducibility
 # Note: Cloud Build caches layers, so npm cache is cleaned to reduce image size
-RUN npm ci --legacy-peer-deps --ignore-scripts && \
+RUN npm ci --ignore-scripts && \
     npm cache clean --force
 
 # ============================================================================
@@ -56,7 +56,7 @@ WORKDIR /app
 
 COPY package.json package-lock.json ./
 
-RUN npm ci --omit=dev --legacy-peer-deps --ignore-scripts && \
+RUN npm ci --omit=dev --ignore-scripts && \
     npm cache clean --force
 
 # ============================================================================

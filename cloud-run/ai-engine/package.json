@@ -9,6 +9,7 @@
     "url": "https://github.com/skyasu2/openmanager-ai.git",
     "directory": "cloud-run/ai-engine"
   },
+  "packageManager": "npm@11.10.0",
   "main": "dist/server.js",
   "scripts": {
     "start": "tsx src/server.ts",
@@ -61,5 +62,21 @@
     "tsx": "^4.19.2",
     "typescript": "^6.0.2",
     "vitest": "^4.0.16"
+  },
+  "engines": {
+    "node": ">=24.0.0 <25.0.0",
+    "npm": ">=11.0.0 <12.0.0"
+  },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": ">=24.0.0 <25.0.0",
+      "onFail": "error"
+    },
+    "packageManager": {
+      "name": "npm",
+      "version": ">=11.0.0 <12.0.0",
+      "onFail": "error"
+    }
   }
 }

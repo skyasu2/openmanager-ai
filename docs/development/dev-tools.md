@@ -14,7 +14,7 @@
 
 ```bash
 # 버전 확인
-node -v  # v24.x
+node -v  # v24.x (Active LTS)
 
 # .nvmrc 파일로 자동 전환
 echo "24" > .nvmrc
@@ -24,7 +24,7 @@ nvm use
 ### npm
 
 ```bash
-npm -v  # 10.9.2
+npm -v  # 11.x
 
 # 유용한 명령어
 npm run dev:network    # 개발 서버
@@ -32,6 +32,9 @@ npm run build          # 프로덕션 빌드
 npm run validate:all   # 전체 검증
 npm run test:quick     # 빠른 테스트
 ```
+
+- 루트/AI Engine 모두 `package.json`의 `engines` / `devEngines`로 `Node 24.x + npm 11.x` 기준선을 명시합니다.
+- 루트 설치는 더 이상 전역 `legacy-peer-deps` 우회에 의존하지 않습니다. peer 충돌은 lockfile/override로 해결합니다.
 
 ## 코드 품질 도구
 

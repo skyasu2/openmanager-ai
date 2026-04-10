@@ -14,7 +14,7 @@
 
 1. Windows 11 업데이트 + WSL 2 설치
 2. Ubuntu 초기 설정 (`apt update && apt upgrade`)
-3. Git/Node.js 24/nvm 설치
+3. Git/Node.js 24 Active LTS/nvm 설치
 4. `gh auth login` + `gh auth status`
 
 제로베이스 부트스트랩 기준은 본 문서를 Canonical로 유지합니다.
@@ -96,6 +96,9 @@ nvm use  # .nvmrc 자동 적용
 # 패키지 설치
 npm install
 ```
+
+- 프로젝트 기준선은 `Node.js 24.x (Active LTS)` + `npm 11.x` 입니다.
+- `package.json`의 `engines` / `devEngines`가 설치 전 런타임 불일치를 빠르게 감지합니다.
 
 ## 환경변수 설정
 
