@@ -1,0 +1,59 @@
+{
+  "runId": "QA-20260410-0269",
+  "recordedAt": "2026-04-10T14:43:09.818Z",
+  "recordedAtKst": "2026-04-10 23:43:09 KST",
+  "runTitle": "Local auth audit smoke - guest login route inserts security_audit_logs",
+  "owner": "codex",
+  "source": "curl+mcp",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://127.0.0.1:3000",
+    "frontend": "Next.js 16 dev",
+    "backend": "local Next route + Supabase cloud",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "68b6d9302815c4c59737f2fbf7454786a04bce21"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["core-routes-smoke", "security-pack"],
+  "coveredSurfaces": [
+    "/api/csrf-token",
+    "/api/auth/guest-login",
+    "security_audit_logs insert via recordLoginEvent",
+    "local Redis-disabled rate limiter fallback"
+  ],
+  "skippedSurfaces": [
+    "Vercel production runtime",
+    "Supabase CLI direct DB auth",
+    "AI assistant surfaces",
+    "Cloud Run admin observability endpoints"
+  ],
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Local targeted smoke on 2026-04-10 confirmed CSRF token issuance and guest login success on the current main HEAD.",
+    "The local Next route returned HTTP 200 for guest login with sessionId codex-smoke-1775831667.",
+    "Supabase MCP confirmed a matching security_audit_logs row was inserted, then the synthetic smoke row was deleted immediately after verification.",
+    "Next dev log showed Redis disabled and rate limiting fell back to in-memory as designed."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Local dev server",
+      "url": "http://127.0.0.1:3000/"
+    }
+  ]
+}

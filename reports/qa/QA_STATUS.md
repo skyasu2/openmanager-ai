@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-10 19:22:22 KST
+> Generated at: 2026-04-10 23:43:09 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 266 |
+| Total Recorded Runs | 267 |
 | Total Runs (Counted) | 239 |
-| Non-counted Runs | 27 |
+| Non-counted Runs | 28 |
 | Total Checks | 1859 |
 | Passed | 1787 |
 | Failed | 66 |
@@ -21,12 +21,12 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260409-0267 (2026-04-09T13:35:00.812Z) |
-| Latest Recorded Run | QA-20260410-0268 (2026-04-10T10:22:22.502Z) |
+| Latest Recorded Run | QA-20260410-0269 (2026-04-10T14:43:09.818Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260410-0268 (2026-04-10T10:22:22.502Z)
+Latest run: QA-20260410-0269 (2026-04-10T14:43:09.818Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -43,10 +43,10 @@ Latest run: QA-20260410-0268 (2026-04-10T10:22:22.502Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: SHA d910e650
-- Coverage Packs: dashboard-core, ai-core, modal-detail-pack
-- Covered Surfaces: /login guest login, /system-boot to /dashboard redirect, /dashboard AI sidebar detail dialog, /dashboard AI sidebar structured response detail sections, /dashboard/ai-assistant fullscreen detail dialog, metadata-only assistant detail button visibility
-- Skipped Surfaces: Vercel production deployment, Cloud Run admin observability endpoints, Reporter workflow, Analyst workflow, feedback flow, security pack
+- Deployment: SHA 68b6d930
+- Coverage Packs: core-routes-smoke, security-pack
+- Covered Surfaces: /api/csrf-token, /api/auth/guest-login, security_audit_logs insert via recordLoginEvent, local Redis-disabled rate limiter fallback
+- Skipped Surfaces: Vercel production runtime, Supabase CLI direct DB auth, AI assistant surfaces, Cloud Run admin observability endpoints
 
 ## Links (Latest Run)
 
@@ -58,9 +58,7 @@ Latest run: QA-20260410-0268 (2026-04-10T10:22:22.502Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Local AI sidebar detail dialog | `reports/qa/evidence/qa-20260410-local-ai-sidebar-detail-dialog.png` | - |
-| playwright-screenshot | Local AI workspace detail dialog | `reports/qa/evidence/qa-20260410-local-ai-workspace-detail-dialog.png` | - |
-| playwright-console | Local AI detail dialog console errors | `reports/qa/evidence/qa-20260410-local-ai-detail-dialog-console-errors.log` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -394,6 +392,7 @@ Latest run: QA-20260410-0268 (2026-04-10T10:22:22.502Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260410-0269 | 2026-04-10T14:43:09.818Z | targeted | no | no | Local auth audit smoke - guest login route inserts security_audit_logs | 4 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260410-0268 | 2026-04-10T10:22:22.502Z | targeted | no | no | Local Playwright QA - AI detail dialog sidebar/workspace verification | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260409-0267 | 2026-04-09T13:35:00.812Z | broad | yes | yes | Vercel Production Post-Deploy Smoke - v8.11.8 | 3 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260409-0266 | 2026-04-09T12:04:11.201Z | targeted | no | no | Vercel Playwright MCP - AI Assistant Focused Check | 8 | 0 | 0 | 0 | 0 | 0 |
@@ -413,4 +412,3 @@ Latest run: QA-20260410-0268 (2026-04-10T10:22:22.502Z)
 | QA-20260408-0251 | 2026-04-07T23:31:32.252Z | targeted | no | yes | Playwright MCP Production QA - v8.11.0 streaming status + alert prefill | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260408-0250 | 2026-04-07T22:47:01.025Z | targeted | no | yes | Production targeted QA - landing bootstrap + AI alert prefill after streaming status contract fix | 6 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260407-0249 | 2026-04-07T11:55:13.126Z | broad | yes | yes | Playwright MCP Production QA - Frontend + AI Assistant v8.11.0 broad baseline refresh | 18 | 0 | 2 | 0 | 0 | 2 |
-| QA-20260407-0248 | 2026-04-07T03:31:27.352Z | targeted | no | no | Vercel Playwright QA - AI response process visibility verification | 7 | 1 | 0 | 0 | 0 | 0 |

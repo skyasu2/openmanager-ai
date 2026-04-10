@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-10T10:22:22.502Z"
+    "updatedAt": "2026-04-10T14:43:09.818Z"
   },
   "sequence": {
-    "nextRunNumber": 269
+    "nextRunNumber": 270
   },
   "summary": {
-    "totalRecordedRuns": 266,
+    "totalRecordedRuns": 267,
     "totalRuns": 239,
-    "excludedRuns": 27,
+    "excludedRuns": 28,
     "totalChecks": 1859,
     "totalPassed": 1787,
     "totalFailed": 66,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260409-0267",
     "lastRecordedAt": "2026-04-09T13:35:00.812Z",
-    "latestRecordedRunId": "QA-20260410-0268",
-    "latestRecordedAt": "2026-04-10T10:22:22.502Z"
+    "latestRecordedRunId": "QA-20260410-0269",
+    "latestRecordedAt": "2026-04-10T14:43:09.818Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -23542,6 +23542,62 @@
           "path": "reports/qa/evidence/qa-20260410-local-ai-detail-dialog-console-errors.log"
         }
       ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Local dev server",
+          "url": "http://127.0.0.1:3000/"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260410-0269",
+      "recordedAt": "2026-04-10T14:43:09.818Z",
+      "recordedAtKst": "2026-04-10 23:43:09 KST",
+      "title": "Local auth audit smoke - guest login route inserts security_audit_logs",
+      "owner": "codex",
+      "source": "curl+mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260410-0269.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://127.0.0.1:3000",
+        "frontend": "Next.js 16 dev",
+        "backend": "local Next route + Supabase cloud",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "68b6d9302815c4c59737f2fbf7454786a04bce21"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": ["core-routes-smoke", "security-pack"],
+      "coveredSurfaces": [
+        "/api/csrf-token",
+        "/api/auth/guest-login",
+        "security_audit_logs insert via recordLoginEvent",
+        "local Redis-disabled rate limiter fallback"
+      ],
+      "skippedSurfaces": [
+        "Vercel production runtime",
+        "Supabase CLI direct DB auth",
+        "AI assistant surfaces",
+        "Cloud Run admin observability endpoints"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
       "links": [
         {
           "type": "general",
