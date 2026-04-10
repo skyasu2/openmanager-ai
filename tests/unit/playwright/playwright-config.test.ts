@@ -8,12 +8,20 @@ async function loadConfig({
   ci,
   outputDir,
   reportDir,
+  testDir,
+  fullyParallel,
+  workers,
+  timeout,
 }: {
   githubEventName?: string;
   traceMode?: string;
   ci?: string;
   outputDir?: string;
   reportDir?: string;
+  testDir?: string;
+  fullyParallel?: string;
+  workers?: string;
+  timeout?: string;
 } = {}) {
   vi.resetModules();
 
@@ -40,6 +48,26 @@ async function loadConfig({
     delete process.env.PLAYWRIGHT_REPORT_DIR;
   } else {
     process.env.PLAYWRIGHT_REPORT_DIR = reportDir;
+  }
+  if (testDir === undefined) {
+    delete process.env.PLAYWRIGHT_TEST_DIR;
+  } else {
+    process.env.PLAYWRIGHT_TEST_DIR = testDir;
+  }
+  if (fullyParallel === undefined) {
+    delete process.env.PLAYWRIGHT_FULLY_PARALLEL;
+  } else {
+    process.env.PLAYWRIGHT_FULLY_PARALLEL = fullyParallel;
+  }
+  if (workers === undefined) {
+    delete process.env.PLAYWRIGHT_WORKERS;
+  } else {
+    process.env.PLAYWRIGHT_WORKERS = workers;
+  }
+  if (timeout === undefined) {
+    delete process.env.PLAYWRIGHT_TIMEOUT;
+  } else {
+    process.env.PLAYWRIGHT_TIMEOUT = timeout;
   }
   delete process.env.PLAYWRIGHT_HTML_REPORT;
 
@@ -88,6 +116,30 @@ describe('playwright.config trace retention', () => {
         },
       ],
     ]);
+  });
+
+  it('supports manual-suite overrides via environment variables', async () => {
+    const config = await loadConfig({
+      testDir: './tests/manual',
+      fullyParallel: '0',
+      workers: '1',
+      timeout: '240000',
+    });
+
+    expect(config.testDir).toBe('./tests/manual');
+    expect(config.fullyParallel).toBe(false);
+    expect(config.workers).toBe(1);
+    expect(config.timeout).toBe(240000);
+  });
+
+  it('falls back to defaults when numeric overrides are invalid', async () => {
+    const config = await loadConfig({
+      workers: 'bad',
+      timeout: '0',
+    });
+
+    expect(config.workers).toBeUndefined();
+    expect(config.timeout).toBe(120000);
   });
 
   it('forces trace collection for workflow_dispatch runs', async () => {
