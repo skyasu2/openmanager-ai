@@ -91,6 +91,17 @@ CI_DOCKER_INSTALL_MODE=prefer-local
 
 > 현재 앱 런타임은 `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`를 우선 사용하며, 값이 없을 때만 `NEXT_PUBLIC_SUPABASE_ANON_KEY`로 fallback합니다.
 
+### 선택 환경변수 - Supabase CLI direct DB 작업
+
+| 변수 | 용도 | 기본값 | 비고 |
+|------|------|--------|------|
+| `SUPABASE_DB_PASSWORD` | Supabase CLI의 direct Postgres 인증 | — | 앱 런타임에서는 사용하지 않음 |
+
+> `SUPABASE_DB_PASSWORD`는 Next.js 앱, Cloud Run 앱, MCP 기반 관리 API 점검에는 필요하지 않습니다.
+> 이 값은 `supabase migration list`, `supabase db pull`, `supabase db push`처럼 CLI가 원격 Postgres에 직접 붙는 작업에서만 사용됩니다.
+> 따라서 `.env.local`에 placeholder가 있어도 앱 자체는 정상 동작할 수 있지만, direct DB 명령은 인증 실패합니다.
+> `supabase projects list`처럼 관리 API만 쓰는 명령은 access token만으로 동작할 수 있습니다.
+
 ### 선택 환경변수 — 인증 (Vercel production 전용)
 
 | 변수 | 용도 | 기본값 | 비고 |
