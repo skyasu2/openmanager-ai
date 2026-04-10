@@ -1,5 +1,7 @@
 # [작업 계획서] 패키지 기술 부채 업그레이드
 
+- 상태: 완료
+
 ## 1. 개요 (Overview)
 - **목표**: 현재 안정 상태를 유지하면서 root app과 `cloud-run/ai-engine`에 남은 패키지 기술 부채를 단계적으로 해소한다.
 - **입력 근거**: 2026-04-07 사용자 수집 현황 보고서 기준.
@@ -42,7 +44,7 @@
 - [x] 모든 story type import를 `@storybook/react-vite` → `@storybook/nextjs-vite`로 정렬
 - [x] `AIWorkspace.stories.tsx`, `AIDebugPanel.stories.tsx`에 `tags: ['autodocs']` 적용
 - [x] `AIDebugPanel.stories.tsx`의 비표준 `parameters.mockData` 제거 후 deterministic fetch mocking으로 교체
-- [ ] `features.experimentalComponentsManifest`의 stable 승격 여부를 다음 stable release에서 재확인
+- [x] `features.experimentalComponentsManifest`의 stable 승격 여부 재확인은 별도 backlog(TODO P3)로 분리
 - [x] `npm run type-check`
 - [x] `npm run lint`
 - [x] `npm run storybook:build`
@@ -77,6 +79,6 @@
 - **Supabase 패키지군**: peer dependency 호환성은 우선 패치 업그레이드 범위에서 확인한다.
 
 ## 5. 현재 상태
-- **상태**: In Progress (Step 1/3/4 완료, Step 2 hygiene 완료, Step 5 partial 완료)
+- **상태**: Completed (실행 범위 완료, Storybook stable 추적 1건은 TODO backlog로 분리)
 - **담당**: AI Agent
-- **실행 시점**: 현재 진행 중
+- **실행 시점**: 2026-04-10 기준 정리 완료

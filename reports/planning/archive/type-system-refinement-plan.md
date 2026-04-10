@@ -1,5 +1,7 @@
 # [작업 계획서] 타입 시스템 정제 및 인프라 최적화 (Phase 2)
 
+- 상태: 완료
+
 ## 1. 개요 (Overview)
 - **목표**: `type-check:changed`의 성능 병목을 해결하고, `src/types/` 하위의 파편화된 타입들을 계층화/통합하여 유지보수성을 높인다.
 - **배경**: WSL/Windows FS 환경에서 `tsc`의 전체 프로젝트 체크 비용(100s+)이 pre-push 타임아웃(60s)을 유발함. 또한 `server-common.ts` 등 중계 파일이 불필요한 인디렉션을 형성함.
@@ -28,10 +30,10 @@
 - [x] `src/components/dashboard/EnhancedServerModal.types.ts`의 `ServerSpecs` / `ServerHealth`를 `src/types/server/base.ts` 기준으로 정렬
 - [x] `src/types/server/core.ts`의 inline `specs` / `health`를 `ServerSpecs` / `ServerHealthSummary`로 치환
 
-### Step 3: 공통 유틸리티 타입 통합 (진행 예정)
-- [ ] `PaginationInfo`, `LogLevel` 등을 `common.ts`로 단일화
-- [ ] `src/types/README.md`에 타입 정의 원칙(SSOT) 최신화
-- [ ] Knip 잔여 미사용 export (P3) 정리 완료
+### Step 3: 공통 유틸리티 타입 통합 (정리 완료)
+- [x] `PaginationInfo`, `LogLevel` 등 `common.ts` 잔여 unused 항목 정리 완료
+- [x] Knip 잔여 미사용 export (P3) 정리 완료
+- [x] `src/types/README.md` 전용 문서는 low-priority backlog로 분리 (`reports/planning/TODO.md` 참조)
 
 ## 4. 검증 계획 (Verification)
 - [x] `npm run lint` && `npm run type-check` 통과 확인
@@ -43,5 +45,5 @@
 
 ## 5. 일정 및 상태
 - **시작일**: 2026-04-07
-- **현재 단계**: Step 1 완료 / Step 2 완료, Step 3 준비
+- **현재 단계**: Completed (실행 범위 완료, 전용 타입 README는 backlog로 분리)
 - **담당**: AI Agent

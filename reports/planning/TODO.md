@@ -19,6 +19,7 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | P3: Storybook `experimentalComponentsManifest` stable 승격 여부 재확인 | Low | npm registry stable이 아직 `10.2.10`이라 보류. `10.3.x`가 stable dist-tag로 올라온 뒤 `.storybook/main.ts` feature flag 재검토. |
+| P3: `src/types/README.md` 전용 타입 SSOT 문서 필요성 재평가 | Low | 현재 전용 README는 없음. 타입 정제 작업은 완료됐고, 신규 문서 추가는 실제 drift가 다시 생길 때만 검토. |
 
 ### Completed (2026-04-07 #38)
 - [x] P3: `src/types/common.ts` 잔여 unused type 정리 — 실참조가 없는 `Environment`, `ServerType`, `PaginationInfo`, `LogLevel`와 미사용 `ServerMetrics` 경유 re-export 제거.

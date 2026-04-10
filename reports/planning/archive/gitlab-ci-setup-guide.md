@@ -1,6 +1,7 @@
 # GitLab CI/CD 설정 가이드
 
 > 작성일: 2026-03-31
+> 상태: 완료 (설정 절차 완료, 운영 SSOT는 docs/development/ci-cd.md)
 > 목적: validate → deploy 파이프라인 + WSL2 self-hosted runner 설정
 
 ---
