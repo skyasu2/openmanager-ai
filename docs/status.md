@@ -4,11 +4,11 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Status
-> Last reviewed: 2026-04-07
+> Last reviewed: 2026-04-10
 > Canonical: docs/status.md
 > Tags: status,changelog,release
 
-**마지막 업데이트**: 2026-04-07
+**마지막 업데이트**: 2026-04-10 | **현재 버전**: v8.11.9 | **완성도**: 97.5% (→ [재평가 상세](../reports/planning/completion-review.md#추록-v820--v8119-재평가))
 
 ---
 
@@ -21,6 +21,29 @@
 ---
 
 ## 🔄 Recent Changes
+
+- **v8.11.9** (2026-04-10) — 툴링 정비 + QA 인프라 완성
+  - fix(tooling): npm baseline 및 artifact 스크립트 정렬 (.npmrc 정리, ai-engine Dockerfile 수정)
+  - chore(dev): 고아 UI artifact 감사 스크립트 + 테스트 추가 (`audit-orphan-ui-artifacts`)
+  - refactor(scripts): 레거시 헬퍼 아카이브 + 스크립트 참조 감사 자동화 (`script-reference-audit-2026-04-10.md`)
+  - chore(artifacts): 루트 비허용 artifact 경로 정책 강제
+  - 완성도 재평가: **97.5%** (v8.1.0 종료 시 95.5% → +2.0%p)
+
+- **v8.11.8** (2026-04-09) — AI Chat Sprint 3 완성
+  - feat(ai-chat): ThinkingProcessVisualizer 접힘/펼침 토글 (기본 collapsed, isActive 연동 자동 전환)
+  - feat(ai-chat): useChatFeedback 테스트 7개 추가 (positive/negative, traceId, sessionId)
+  - QA 15/15 통과 (`QA-20260409-0260`)
+
+- **v8.11.7** (2026-04-09) — AI Chat Sprint 2 + 메시지 캐시 최적화
+  - feat(ai-chat): ClarificationDialog, ChatInputArea 개선, status UX
+  - feat(hooks): useEnhancedChatMessages per-message 변환 캐시 (`useRef<Map>`) 도입
+  - fix(ai-chat): stream RAG 출처 초기화 (이전 쿼리 오염 방지)
+
+- **v8.11.5~6** (2026-04-09) — AI Engine 라우팅 + Markdown 렌더링
+  - fix(ai-engine): Advisor 모델 순서 groq→cerebras→mistral (Mistral ~2 RPM 지연 해소)
+  - fix(ai-engine): ANALYST_QUERY_PATTERN에 비정상/고장/느려/다운 추가 (오라우팅 수정)
+  - fix(ai-engine): NLQ 품질 플래그 이모지 체크 → 서버 ID 실데이터 패턴으로 개선
+  - fix(ui): italic + 블록 레벨 마크다운 렌더링, TS2532/2345 타입 수정
 
 - **main** (2026-04-07)
   - refactor(types): `type-check:changed` correctness 정리, `common.ts` unused export 1차 정리, `server/*` SSOT alias/summary/entity/re-export 구조 단순화

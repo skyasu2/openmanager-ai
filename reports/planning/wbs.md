@@ -3,7 +3,7 @@
 > Owner: project-lead
 > Status: Closed (운영 중 QA 진행으로 전환)
 > Doc type: Reference
-> Last reviewed: 2026-02-26
+> Last reviewed: 2026-04-10
 > Tags: wbs,completion,audit,retrospective
 > Canonical: reports/planning/wbs.md
 > 연관 문서: [최종 검수 확인서](completion-review.md) (가중 점수 교차 검증)
@@ -545,3 +545,81 @@
 | Biome (Lint + Format) | 완료 | PostToolUse hook 자동 포맷팅 |
 | Pre-commit / Pre-push hooks | 완료 | lint, type-check, test 게이트 |
 | VS Code 연동 | 완료 | Biome extension + Claude Code |
+
+---
+
+## 추록: v8.2.0 ~ v8.11.9 운영 단계 개선 이력
+
+> **추록 정책**: 본 섹션은 v8.1.0 공식 종료(2026-02-26) 이후 운영 단계에서 이루어진 주요 개선을 기록합니다.
+> 원본 WBS 본문(§1~§7, 부록 A)은 동결 유지합니다. 최신 점수는 [completion-review.md 추록](completion-review.md#추록-v820--v8119-재평가)을 참조하세요.
+
+### 운영 단계 개요 (2026-03 ~ 2026-04)
+
+| 항목 | v8.1.0 종료 시점 | v8.11.9 현재 |
+|------|:---------------:|:-----------:|
+| 버전 | v8.1.0 | v8.11.9 |
+| 릴리스 수 | — | +35 (v8.2.0~v8.11.9) |
+| feat/fix 커밋 | — | +466개 |
+| src/ 파일 수 | 686 | 881 (+195) |
+| src/ 코드량 | ~107K줄 | ~146K줄 (+39K) |
+| AI Engine 코드량 | ~31K줄 | ~49.5K줄 (+18.5K) |
+| src/ 테스트 파일 | 73개 | 222개 (+149) |
+| tests/ 외부 파일 | 22개 | 93개 (+71) |
+| 활성 문서 | 55개 | 56개 |
+
+### 도메인별 주요 개선
+
+#### Frontend + AI Chat UX (Sprint 1~3, 2026-04-09)
+| 작업 | 버전 | 상태 |
+|------|------|:----:|
+| ThinkingProcessVisualizer 접힘/펼침 토글 (isActive 연동) | v8.11.8 | 완료 |
+| ClarificationDialog + 명확화 핸들러 분리 | v8.11.7 | 완료 |
+| useEnhancedChatMessages per-message 변환 캐시 | v8.11.7 | 완료 |
+| stream RAG 출처 초기화 버그 수정 (이전 쿼리 오염 방지) | v8.11.6 | 완료 |
+| Markdown 렌더링: italic, 블록 레벨, TS 타입 안전 수정 | v8.11.5 | 완료 |
+| AI 스트리밍 상태 계약 정렬 (streaming agent status) | v8.9.x | 완료 |
+| multi-agent tool results 버블업 + Analyst 응답 형식 정리 | v8.8.x | 완료 |
+
+#### AI Engine 라우팅 및 품질 (2026-04-09)
+| 작업 | 버전 | 상태 |
+|------|------|:----:|
+| Advisor 모델 순서 변경: mistral→groq (Mistral ~2 RPM 지연 해소) | v8.11.6 | 완료 |
+| ANALYST_QUERY_PATTERN: 비정상/고장/느려/다운/장애 키워드 추가 | v8.11.6 | 완료 |
+| NLQ 응답 품질 플래그: 이모지 체크 → 서버 ID 실제 데이터 패턴 | v8.11.6 | 완료 |
+| 에이전트 팩토리 통합 (-421줄): AGENT_CONFIGS + AgentFactory | v8.11.4 | 완료 |
+| Cerebras 모델 변경: gpt-oss-120b → qwen-3-235b-a22b-instruct-2507 | v8.11.0 | 완료 |
+| Multi-agent 기본화: 명시적 single도 multi로 업그레이드 | v8.11.0 | 완료 |
+| Gemini flash-lite 하드코딩 제거 → GEMINI_VISION_MODEL_ID env | v8.11.0 | 완료 |
+| GitLab CI deploy_ai_engine 스테이지 추가 (자동 배포) | v8.11.0 | 완료 |
+
+#### 패키지 업그레이드 사이클 (2026-04-07)
+| 작업 | 버전 | 상태 |
+|------|------|:----:|
+| TypeScript 6.0.2 root + ai-engine 전환 | v8.10.10 | 완료 |
+| Knip v6.0.5 전환 (oxc-parser 기반) | v8.10.10 | 완료 |
+| Storybook hygiene: 71개 story @storybook/nextjs-vite 통일 | v8.10.10 | 완료 |
+| 서버 타입 SSOT: server-common.ts 제거, server/base.ts 통합 | v8.10.10 | 완료 |
+
+#### CI/CD 신뢰성 강화 (2026-03 ~ 2026-04)
+| 작업 | 버전 | 상태 |
+|------|------|:----:|
+| GitLab canonical 전환 + dual-remote 운영 | v8.9.x | 완료 |
+| WSL2 Docker self-hosted runner 구성 (validate job 분 소진 0) | v8.9.x | 완료 |
+| deploy drift 감지 + release preflight 강화 | v8.11.x | 완료 |
+| artifacts 경로 정책 (non-root output paths) | v8.11.9 | 완료 |
+| 레거시 스크립트 아카이브 + 참조 감사 자동화 | v8.11.9 | 완료 |
+
+#### 보안 및 접근성
+| 작업 | 버전 | 상태 |
+|------|------|:----:|
+| FeatureCardModal focus trap + aria-describedby (WAI A11y) | v8.10.x | 완료 |
+| CORS/rate-limiter 강화, `any` 타입 제거 | v8.7.x | 완료 |
+| @axe-core/playwright 공식 API 전환 (수동 주입 제거) | v8.10.x | 완료 |
+
+### 잔여 wont-fix 항목 (운영 제약)
+| 항목 | 이유 |
+|------|------|
+| Cloud Run cold start 레이턴시 (~5분 5회 재시도) | 무료 티어 Scale-to-Zero 특성, 포트폴리오 허용 범위 |
+| Streaming AI fallback cold start | 동일 |
+| Server-Timing header 미노출 (production) | Vercel 플랫폼 제약, X-AI-Latency-Ms로 대체 운영 |
+| 오탐/미탐 주간 리포트 자동화 | ROI 낮음, 수동 QA로 대체 |
