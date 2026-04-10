@@ -51,7 +51,10 @@ const CopyButton = memo<{ text: string }>(({ text }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
-    void navigator.clipboard
+    const clipboard = globalThis.navigator?.clipboard;
+    if (!clipboard?.writeText) return;
+
+    void clipboard
       .writeText(text)
       .then(() => {
         setCopied(true);

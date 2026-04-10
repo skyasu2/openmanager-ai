@@ -67,4 +67,28 @@ describe('AIWorkspaceMessage detail affordance', () => {
 
     expect(screen.getByTestId('message-detail-sheet')).toBeInTheDocument();
   });
+
+  it('keeps the detail dialog trigger when only structured response metadata exists', () => {
+    const message: EnhancedChatMessage = {
+      id: 'assistant-2',
+      role: 'assistant',
+      content: '',
+      timestamp: new Date('2026-04-10T17:05:00.000Z'),
+      isStreaming: false,
+      metadata: {
+        assistantResponseView: {
+          summary: '핵심 요약 메타데이터',
+          details: '상세 메타데이터 본문',
+          shouldCollapse: true,
+        },
+      },
+    };
+
+    render(<AIWorkspaceMessage message={message} isLastMessage={true} />);
+
+    expect(
+      screen.getByTestId('message-detail-expand-button')
+    ).toBeInTheDocument();
+    expect(screen.queryByTestId('message-actions')).not.toBeInTheDocument();
+  });
 });

@@ -36,29 +36,30 @@ export const MessageComponent = memo<{
   const [isDetailExpanded, setIsDetailExpanded] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const hasTextContent = Boolean(message.content?.trim());
-  const canShowDetail =
-    message.role === 'assistant' &&
-    !message.isStreaming &&
-    (hasTextContent ||
-      Boolean(message.thinkingSteps?.length) ||
-      Boolean(message.metadata?.handoffHistory?.length) ||
-      Boolean(message.metadata?.toolResultSummaries?.length) ||
-      Boolean(message.metadata?.analysisBasis));
-  const shouldShowActionBar = hasTextContent || canShowDetail;
   const agentSteps = useMemo(
     () => convertToAgentSteps(message.thinkingSteps),
     [message.thinkingSteps]
   );
   const assistantResponseView = useMemo(() => {
-    if (
-      message.role !== 'assistant' ||
-      !message.content ||
-      message.isStreaming
-    ) {
+    if (message.role !== 'assistant' || message.isStreaming) {
       return null;
     }
     return resolveAssistantResponseView(message.content, message.metadata);
   }, [message.content, message.metadata, message.isStreaming, message.role]);
+  const hasStructuredResponse = Boolean(
+    assistantResponseView?.summary.trim() ||
+      assistantResponseView?.details?.trim()
+  );
+  const canShowDetail =
+    message.role === 'assistant' &&
+    !message.isStreaming &&
+    (hasTextContent ||
+      hasStructuredResponse ||
+      Boolean(message.thinkingSteps?.length) ||
+      Boolean(message.metadata?.handoffHistory?.length) ||
+      Boolean(message.metadata?.toolResultSummaries?.length) ||
+      Boolean(message.metadata?.analysisBasis));
+  const shouldShowActionBar = hasTextContent || canShowDetail;
   const isCollapsibleAssistantResponse = Boolean(
     assistantResponseView?.shouldCollapse && assistantResponseView.details
   );

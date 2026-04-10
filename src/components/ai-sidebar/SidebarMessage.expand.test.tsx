@@ -129,4 +129,31 @@ describe('SidebarMessage detail expand', () => {
 
     expect(screen.getByTestId('message-detail-sheet')).toBeInTheDocument();
   });
+
+  it('keeps the detail dialog trigger when only structured response metadata exists', () => {
+    render(
+      <MessageComponent
+        message={{
+          id: 'assistant-3',
+          role: 'assistant',
+          content: '',
+          timestamp: new Date('2026-03-18T12:15:00.000Z'),
+          isStreaming: false,
+          metadata: {
+            assistantResponseView: {
+              summary: '핵심 요약 메타데이터',
+              details: '상세 메타데이터 본문',
+              shouldCollapse: true,
+            },
+          },
+        }}
+        isLastMessage={true}
+      />
+    );
+
+    expect(
+      screen.getByTestId('message-detail-expand-button')
+    ).toBeInTheDocument();
+    expect(screen.queryByTestId('message-actions')).not.toBeInTheDocument();
+  });
 });
