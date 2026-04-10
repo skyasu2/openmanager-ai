@@ -19,6 +19,11 @@ vi.mock('@/components/ai/WebSourceCards', () => ({
   WebSourceCards: () => null,
 }));
 
+vi.mock('@/components/ai/MessageDetailSheet', () => ({
+  MessageDetailSheet: ({ open }: { open: boolean }) =>
+    open ? <div data-testid="message-detail-sheet" /> : null,
+}));
+
 vi.mock('@/utils/markdown-parser', () => ({
   RenderMarkdownContent: ({ content }: { content: string }) => (
     <div>{content}</div>
@@ -52,6 +57,9 @@ describe('SidebarMessage detail expand', () => {
     expect(screen.getByText('핵심 요약')).toBeInTheDocument();
     expect(screen.getByText('핵심 요약 문장')).toBeInTheDocument();
     expect(screen.queryByText('상세 분석 첫 줄')).not.toBeInTheDocument();
+    expect(
+      screen.getByTestId('message-detail-expand-button')
+    ).toBeInTheDocument();
 
     const toggleButton = screen.getByRole('button', {
       name: /상세 분석 보기/i,
@@ -68,5 +76,18 @@ describe('SidebarMessage detail expand', () => {
 
     expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
     expect(screen.queryByText(/상세 분석 첫 줄/)).not.toBeInTheDocument();
+  });
+
+  it('shows the detail dialog trigger even without analysisBasis metadata', () => {
+    render(
+      <MessageComponent
+        message={createAssistantMessage()}
+        isLastMessage={true}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId('message-detail-expand-button'));
+
+    expect(screen.getByTestId('message-detail-sheet')).toBeInTheDocument();
   });
 });
