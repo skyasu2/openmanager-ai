@@ -1,6 +1,6 @@
 {
   "name": "openmanager-ai",
-  "version": "8.11.8",
+  "version": "8.11.9",
   "private": true,
   "license": "GPL-3.0-only",
   "author": "skyasu2 (https://github.com/skyasu2)",
@@ -8,7 +8,7 @@
     "type": "git",
     "url": "https://gitlab.com/skyasu2/openmanager-ai.git"
   },
-  "packageManager": "npm@10.9.2",
+  "packageManager": "npm@11.10.0",
   "homepage": "https://openmanager-ai.vercel.app",
   "bugs": {
     "url": "https://gitlab.com/skyasu2/openmanager-ai/-/issues"
@@ -41,7 +41,7 @@
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.37.0",
     "@xyflow/react": "^12.10.1",
-    "ai": "^6.0.145",
+    "ai": "^6.0.156",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "highlight.js": "^11.11.1",
@@ -113,12 +113,25 @@
   },
   "engines": {
     "node": ">=24.0.0 <25.0.0",
-    "npm": ">=10.0.0"
+    "npm": ">=11.0.0 <12.0.0"
+  },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": ">=24.0.0 <25.0.0",
+      "onFail": "error"
+    },
+    "packageManager": {
+      "name": "npm",
+      "version": ">=11.0.0 <12.0.0",
+      "onFail": "error"
+    }
   },
   "overrides": {
     "@ai-sdk/react": {
       "ai": "$ai"
     },
+    "@valibot/to-json-schema": "1.5.0",
     "markdown-it": "14.1.1"
   },
   "browserslist": {

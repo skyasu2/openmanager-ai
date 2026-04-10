@@ -136,11 +136,14 @@ export const ThinkingProcessVisualizer: FC<ThinkingProcessVisualizerProps> = ({
 
   return (
     <div
+      data-testid="thinking-visualizer"
+      data-thinking-steps-count={visibleSteps.length}
       className={`space-y-3 rounded-lg border border-gray-200 bg-white p-4 ${className}`}
     >
       {/* 헤더 */}
       <button
         type="button"
+        data-testid="thinking-visualizer-header"
         className="flex w-full items-center justify-between border-b border-gray-100 pb-3 text-left"
         onClick={() => setIsExpanded((prev) => !prev)}
         aria-expanded={isExpanded}
