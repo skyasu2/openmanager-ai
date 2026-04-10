@@ -120,7 +120,7 @@ curl -X POST https://openmanager-ai.vercel.app/api/auth/guest-login \
 |------|------|--------|------|
 | `SUPABASE_SERVICE_ROLE_KEY` | 로그인 감사 로그 insert (서버 전용) | — | 없으면 감사 로그 기록만 skip, 로그인 자체는 계속 진행 |
 
-> 로그인 이벤트(`guest/google/github`)는 `security_audit_logs` 테이블에 기록됩니다.
+> 로그인 이벤트(`guest/google/github`)는 `security_audit_logs` 테이블과 `SUPABASE_SERVICE_ROLE_KEY`가 모두 준비된 환경에서만 기록됩니다. 둘 중 하나라도 없으면 로그인 플로우는 계속 진행되고 감사 로그만 생략됩니다.
 
 ### 선택 환경변수 — 앱 설정
 

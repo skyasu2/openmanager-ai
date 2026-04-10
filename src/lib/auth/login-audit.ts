@@ -4,9 +4,11 @@ import { isIP } from 'node:net';
 import type { NextRequest } from 'next/server';
 import { logger } from '@/lib/logging';
 import { supabaseAdmin } from '@/lib/supabase/admin';
+import { getSupabaseServerUrl } from '@/lib/supabase/env';
 import { getRequestCountryCode } from './guest-region-policy';
 
 const SECURITY_AUDIT_TABLE = 'security_audit_logs';
+let auditTableAvailable = true;
 
 type AuthProvider = 'guest' | 'github' | 'google' | 'unknown';
 type LoginActionType = 'login' | 'login_blocked';
@@ -22,6 +24,13 @@ interface RecordLoginEventParams {
   guestUserId?: string | null;
   errorMessage?: string | null;
   metadata?: Record<string, unknown>;
+}
+
+interface SupabaseInsertErrorLike {
+  code?: string | null;
+  details?: string | null;
+  hint?: string | null;
+  message?: string | null;
 }
 
 function extractClientIp(headers: Headers): string | null {
@@ -49,6 +58,26 @@ function isUuidLike(value: string | null | undefined): boolean {
   );
 }
 
+function isMissingAuditTableError(
+  error: SupabaseInsertErrorLike | null | undefined
+): boolean {
+  const errorText = [error?.message, error?.details, error?.hint]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+
+  return (
+    error?.code === 'PGRST205' ||
+    (errorText.includes(SECURITY_AUDIT_TABLE) &&
+      errorText.includes('schema cache')) ||
+    errorText.includes('could not find the table')
+  );
+}
+
+export function resetLoginAuditRuntimeStateForTests() {
+  auditTableAvailable = true;
+}
+
 export function normalizeOAuthProvider(
   provider: string | null | undefined
 ): AuthProvider {
@@ -66,7 +95,8 @@ export async function recordLoginEvent(
     // 서비스 롤 키가 없으면 기록만 스킵 (로그인 플로우는 유지)
     if (
       !process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() ||
-      !process.env.NEXT_PUBLIC_SUPABASE_URL?.trim()
+      !getSupabaseServerUrl() ||
+      !auditTableAvailable
     ) {
       return false;
     }
@@ -107,6 +137,14 @@ export async function recordLoginEvent(
       .insert(payload);
 
     if (error) {
+      if (isMissingAuditTableError(error)) {
+        auditTableAvailable = false;
+        logger.warn(
+          `[AuthAudit] Table '${SECURITY_AUDIT_TABLE}' unavailable - audit logging disabled for this process`
+        );
+        return false;
+      }
+
       logger.warn(`[AuthAudit] Failed to insert login event: ${error.message}`);
       return false;
     }

@@ -54,7 +54,7 @@ export async function signOut() {
 - **소셜 로그인**: Google, GitHub OAuth를 통한 인증. `/auth/callback`에서 PKCE 코드 교환.
 - **이메일 로그인**: Supabase OTP 기반 Magic Link. 사용자가 이메일을 입력하면 로그인 링크가 발송됨.
 - **게스트 로그인**: PIN 검증 후 임시 세션 발급. `NEXT_PUBLIC_GUEST_FULL_ACCESS=false`일 때 4자리 PIN 필요.
-- 모든 로그인 이벤트(성공/실패/차단)는 `security_audit_logs`에 기록됩니다.
+- 로그인 이벤트(성공/실패/차단)는 `security_audit_logs` 테이블과 `SUPABASE_SERVICE_ROLE_KEY`가 구성된 환경에서 기록을 시도합니다. 테이블 또는 시크릿이 없으면 로그인 플로우는 유지하고 감사 기록만 skip합니다.
 - 게스트 로그인은 `/api/auth/guest-login`에서 국가 헤더(`x-vercel-ip-country`) 기반 차단 (`GUEST_LOGIN_BLOCKED_COUNTRIES`, 기본값: `CN`).
 - 감사 로그는 서버에서 IP(`x-vercel-forwarded-for`, `x-forwarded-for`, `x-real-ip`)를 추출해 저장합니다.
 - 보호 라우트의 `proxy`는 세션/게스트 여부만 확인하며, 지역 차단은 로그인 API에서만 적용합니다.

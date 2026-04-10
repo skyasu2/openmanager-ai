@@ -5,30 +5,43 @@
 import { NextRequest } from 'next/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+const { mockInsert, mockLogger } = vi.hoisted(() => ({
+  mockInsert: vi.fn(),
+  mockLogger: {
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
+  },
+}));
+
 vi.mock('server-only', () => ({}));
 
 vi.mock('@/lib/logging', () => ({
-  logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
+  logger: mockLogger,
 }));
 
 vi.mock('./guest-region-policy', () => ({
   getRequestCountryCode: vi.fn(() => 'KR'),
 }));
-
-const mockInsert = vi.fn();
 vi.mock('@/lib/supabase/admin', () => ({
   supabaseAdmin: {
     from: vi.fn(() => ({ insert: mockInsert })),
   },
 }));
 
-import { normalizeOAuthProvider, recordLoginEvent } from './login-audit';
+import {
+  normalizeOAuthProvider,
+  recordLoginEvent,
+  resetLoginAuditRuntimeStateForTests,
+} from './login-audit';
 
 describe('login-audit', () => {
   const originalEnv = process.env;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    resetLoginAuditRuntimeStateForTests();
     process.env = {
       ...originalEnv,
       SUPABASE_SERVICE_ROLE_KEY: 'test-service-role-key',
@@ -150,6 +163,37 @@ describe('login-audit', () => {
       expect(result).toBe(false);
     });
 
+    it('감사 로그 테이블이 없으면 해당 프로세스에서 audit insert를 비활성화한다', async () => {
+      mockInsert.mockResolvedValue({
+        error: {
+          code: 'PGRST205',
+          message:
+            "Could not find the table 'public.security_audit_logs' in the schema cache",
+        },
+      });
+      const request = new NextRequest('http://localhost:3000/api/auth/login');
+
+      const firstAttempt = await recordLoginEvent({
+        request,
+        provider: 'guest',
+        success: true,
+      });
+      const secondAttempt = await recordLoginEvent({
+        request,
+        provider: 'guest',
+        success: true,
+      });
+
+      expect(firstAttempt).toBe(false);
+      expect(secondAttempt).toBe(false);
+      expect(mockInsert).toHaveBeenCalledTimes(1);
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          "Table 'security_audit_logs' unavailable - audit logging disabled for this process"
+        )
+      );
+    });
+
     it('login_blocked 액션 타입을 기록한다', async () => {
       // Given: 차단된 로그인 시도
       mockInsert.mockResolvedValue({ error: null });
@@ -212,6 +256,22 @@ describe('login-audit', () => {
 
       // Then: false 반환 (로그인 플로우 중단 없음)
       expect(result).toBe(false);
+    });
+
+    it('NEXT_PUBLIC_SUPABASE_URL 없이도 SUPABASE_URL이 있으면 감사 로그를 기록한다', async () => {
+      process.env.NEXT_PUBLIC_SUPABASE_URL = '';
+      process.env.SUPABASE_URL = 'https://test.supabase.co';
+      mockInsert.mockResolvedValue({ error: null });
+      const request = new NextRequest('http://localhost:3000/api/auth/login');
+
+      const result = await recordLoginEvent({
+        request,
+        provider: 'guest',
+        success: true,
+      });
+
+      expect(result).toBe(true);
+      expect(mockInsert).toHaveBeenCalledOnce();
     });
   });
 });
