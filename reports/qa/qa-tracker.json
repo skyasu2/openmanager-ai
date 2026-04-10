@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-09T13:35:00.812Z"
+    "updatedAt": "2026-04-10T10:22:22.502Z"
   },
   "sequence": {
-    "nextRunNumber": 268
+    "nextRunNumber": 269
   },
   "summary": {
-    "totalRecordedRuns": 265,
+    "totalRecordedRuns": 266,
     "totalRuns": 239,
-    "excludedRuns": 26,
+    "excludedRuns": 27,
     "totalChecks": 1859,
     "totalPassed": 1787,
     "totalFailed": 66,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260409-0267",
     "lastRecordedAt": "2026-04-09T13:35:00.812Z",
-    "latestRecordedRunId": "QA-20260409-0267",
-    "latestRecordedAt": "2026-04-09T13:35:00.812Z"
+    "latestRecordedRunId": "QA-20260410-0268",
+    "latestRecordedAt": "2026-04-10T10:22:22.502Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -23474,6 +23474,82 @@
         }
       ],
       "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260410-0268",
+      "recordedAt": "2026-04-10T10:22:22.502Z",
+      "recordedAtKst": "2026-04-10 19:22:22 KST",
+      "title": "Local Playwright QA - AI detail dialog sidebar/workspace verification",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260410-0268.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://127.0.0.1:3000",
+        "frontend": "Next.js 16 dev",
+        "backend": "local dev proxy + Cloud Run upstream",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "d910e65015a86c48b6ab1ecdeaba69b99b0eb2e4"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": ["dashboard-core", "ai-core", "modal-detail-pack"],
+      "coveredSurfaces": [
+        "/login guest login",
+        "/system-boot to /dashboard redirect",
+        "/dashboard AI sidebar detail dialog",
+        "/dashboard AI sidebar structured response detail sections",
+        "/dashboard/ai-assistant fullscreen detail dialog",
+        "metadata-only assistant detail button visibility"
+      ],
+      "skippedSurfaces": [
+        "Vercel production deployment",
+        "Cloud Run admin observability endpoints",
+        "Reporter workflow",
+        "Analyst workflow",
+        "feedback flow",
+        "security pack"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Local AI sidebar detail dialog",
+          "path": "reports/qa/evidence/qa-20260410-local-ai-sidebar-detail-dialog.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Local AI workspace detail dialog",
+          "path": "reports/qa/evidence/qa-20260410-local-ai-workspace-detail-dialog.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Local AI detail dialog console errors",
+          "path": "reports/qa/evidence/qa-20260410-local-ai-detail-dialog-console-errors.log"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Local dev server",
+          "url": "http://127.0.0.1:3000/"
+        }
+      ],
+      "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
       "pendingCount": 0,
