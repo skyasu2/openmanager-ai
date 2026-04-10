@@ -51,10 +51,15 @@ const CopyButton = memo<{ text: string }>(({ text }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
-    void navigator.clipboard.writeText(text).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    });
+    void navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500);
+      })
+      .catch(() => {
+        // Clipboard access can fail on insecure/non-focused contexts.
+      });
   };
 
   return (
@@ -346,6 +351,13 @@ export const MessageDetailSheet = memo<MessageDetailSheetProps>(
     const shouldCollapse = Boolean(
       assistantResponseView?.shouldCollapse && assistantResponseView.details
     );
+    const responseContent = shouldCollapse
+      ? (assistantResponseView?.summary ?? '')
+      : (assistantResponseView?.summary ?? message.content);
+    const hasFullResponse = Boolean(
+      responseContent.trim() ||
+        (shouldCollapse && assistantResponseView?.details?.trim())
+    );
 
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -365,15 +377,13 @@ export const MessageDetailSheet = memo<MessageDetailSheetProps>(
 
           <div className="flex-1 space-y-6 overflow-y-auto px-6 py-5">
             {/* 전체 응답 */}
-            <FullResponseSection
-              content={
-                shouldCollapse
-                  ? (assistantResponseView?.summary ?? message.content)
-                  : message.content
-              }
-              details={assistantResponseView?.details}
-              shouldCollapse={shouldCollapse}
-            />
+            {hasFullResponse && (
+              <FullResponseSection
+                content={responseContent}
+                details={assistantResponseView?.details}
+                shouldCollapse={shouldCollapse}
+              />
+            )}
 
             {/* AI 처리 단계 */}
             {hasThinking && (

@@ -35,14 +35,16 @@ export const MessageComponent = memo<{
 }>(({ message, onRegenerateResponse, onFeedback, isLastMessage }) => {
   const [isDetailExpanded, setIsDetailExpanded] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const hasTextContent = Boolean(message.content?.trim());
   const canShowDetail =
     message.role === 'assistant' &&
     !message.isStreaming &&
-    (Boolean(message.content?.trim()) ||
+    (hasTextContent ||
       Boolean(message.thinkingSteps?.length) ||
       Boolean(message.metadata?.handoffHistory?.length) ||
       Boolean(message.metadata?.toolResultSummaries?.length) ||
       Boolean(message.metadata?.analysisBasis));
+  const shouldShowActionBar = hasTextContent || canShowDetail;
   const agentSteps = useMemo(
     () => convertToAgentSteps(message.thinkingSteps),
     [message.thinkingSteps]
@@ -242,7 +244,7 @@ export const MessageComponent = memo<{
               )}
 
             {/* 메시지 액션 (복사, 피드백, 재생성) + 상세 보기 */}
-            {message.content && (
+            {shouldShowActionBar && (
               <div className="mt-2 flex items-center gap-1">
                 {canShowDetail && (
                   <button
@@ -255,15 +257,19 @@ export const MessageComponent = memo<{
                     <Maximize2 className="h-3.5 w-3.5" />
                   </button>
                 )}
-                <MessageActions
-                  messageId={message.id}
-                  content={message.content}
-                  role={message.role}
-                  onRegenerate={onRegenerateResponse}
-                  onFeedback={onFeedback}
-                  traceId={message.metadata?.traceId}
-                  showRegenerate={isLastMessage && message.role === 'assistant'}
-                />
+                {hasTextContent && (
+                  <MessageActions
+                    messageId={message.id}
+                    content={message.content}
+                    role={message.role}
+                    onRegenerate={onRegenerateResponse}
+                    onFeedback={onFeedback}
+                    traceId={message.metadata?.traceId}
+                    showRegenerate={
+                      isLastMessage && message.role === 'assistant'
+                    }
+                  />
+                )}
               </div>
             )}
           </div>

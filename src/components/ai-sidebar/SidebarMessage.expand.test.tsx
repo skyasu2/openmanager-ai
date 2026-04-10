@@ -8,7 +8,7 @@ import { MessageComponent } from '@/components/ai-sidebar/SidebarMessage';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 
 vi.mock('@/components/ai/MessageActions', () => ({
-  MessageActions: () => null,
+  MessageActions: () => <div data-testid="message-actions" />,
 }));
 
 vi.mock('@/components/ai/AnalysisBasisBadge', () => ({
@@ -42,6 +42,27 @@ function createAssistantMessage(): EnhancedChatMessage {
       responseDetails: '상세 분석 첫 줄\n상세 분석 둘째 줄',
       responseShouldCollapse: true,
     },
+  };
+}
+
+function createMetadataOnlyAssistantMessage(): EnhancedChatMessage {
+  return {
+    id: 'assistant-2',
+    role: 'assistant',
+    content: '',
+    timestamp: new Date('2026-03-18T12:10:00.000Z'),
+    isStreaming: false,
+    metadata: {
+      handoffHistory: [{ from: 'Supervisor', to: 'Analyst Agent' }],
+    },
+    thinkingSteps: [
+      {
+        id: 'step-1',
+        title: '분석 중',
+        description: '메타데이터만 있는 응답을 처리합니다.',
+        status: 'completed',
+      },
+    ] as NonNullable<EnhancedChatMessage['thinkingSteps']>,
   };
 }
 
@@ -85,6 +106,24 @@ describe('SidebarMessage detail expand', () => {
         isLastMessage={true}
       />
     );
+
+    fireEvent.click(screen.getByTestId('message-detail-expand-button'));
+
+    expect(screen.getByTestId('message-detail-sheet')).toBeInTheDocument();
+  });
+
+  it('shows the detail dialog trigger for metadata-only assistant messages without rendering content actions', () => {
+    render(
+      <MessageComponent
+        message={createMetadataOnlyAssistantMessage()}
+        isLastMessage={true}
+      />
+    );
+
+    expect(
+      screen.getByTestId('message-detail-expand-button')
+    ).toBeInTheDocument();
+    expect(screen.queryByTestId('message-actions')).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByTestId('message-detail-expand-button'));
 

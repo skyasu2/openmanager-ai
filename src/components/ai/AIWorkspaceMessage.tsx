@@ -70,6 +70,7 @@ export const AIWorkspaceMessage = memo<{
   ) => Promise<boolean>;
   isLastMessage?: boolean;
 }>(({ message, onRegenerateResponse, onFeedback, isLastMessage = false }) => {
+  const hasTextContent = Boolean(message.content?.trim());
   const assistantResponseView = useMemo(() => {
     if (
       message.role !== 'assistant' ||
@@ -89,11 +90,12 @@ export const AIWorkspaceMessage = memo<{
   const canShowDetail =
     message.role === 'assistant' &&
     !message.isStreaming &&
-    (Boolean(message.content?.trim()) ||
+    (hasTextContent ||
       Boolean(message.thinkingSteps?.length) ||
       Boolean(message.metadata?.handoffHistory?.length) ||
       Boolean(message.metadata?.toolResultSummaries?.length) ||
       Boolean(message.metadata?.analysisBasis));
+  const shouldShowActionBar = canShowDetail || hasTextContent;
 
   if (message.role === 'thinking' && message.thinkingSteps) {
     return (
@@ -133,69 +135,71 @@ export const AIWorkspaceMessage = memo<{
           </div>
 
           <div className="flex-1">
-            <div
-              className={`rounded-2xl p-4 shadow-xs ${
-                message.role === 'user'
-                  ? 'rounded-tr-sm bg-linear-to-br from-blue-500 to-blue-600 text-white'
-                  : 'rounded-tl-sm border border-gray-100 bg-white text-gray-800'
-              }`}
-              data-testid={
-                message.role === 'assistant' ? 'ai-response' : undefined
-              }
-            >
-              {message.role === 'assistant' ? (
-                <div className="relative">
-                  {assistantResponseView?.shouldCollapse ? (
-                    <div className="space-y-3">
-                      <div className="rounded-xl border border-indigo-100 bg-indigo-50/40 p-3">
-                        <p className="mb-2 text-2xs font-semibold uppercase tracking-wide text-indigo-500">
-                          핵심 요약
-                        </p>
-                        <MarkdownRenderer
-                          content={assistantResponseView.summary}
-                          className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
-                        />
-                      </div>
+            {hasTextContent && (
+              <div
+                className={`rounded-2xl p-4 shadow-xs ${
+                  message.role === 'user'
+                    ? 'rounded-tr-sm bg-linear-to-br from-blue-500 to-blue-600 text-white'
+                    : 'rounded-tl-sm border border-gray-100 bg-white text-gray-800'
+                }`}
+                data-testid={
+                  message.role === 'assistant' ? 'ai-response' : undefined
+                }
+              >
+                {message.role === 'assistant' ? (
+                  <div className="relative">
+                    {assistantResponseView?.shouldCollapse ? (
+                      <div className="space-y-3">
+                        <div className="rounded-xl border border-indigo-100 bg-indigo-50/40 p-3">
+                          <p className="mb-2 text-2xs font-semibold uppercase tracking-wide text-indigo-500">
+                            핵심 요약
+                          </p>
+                          <MarkdownRenderer
+                            content={assistantResponseView.summary}
+                            className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
+                          />
+                        </div>
 
-                      <details className="group rounded-xl border border-slate-200 bg-slate-50/60 p-3">
-                        <summary className="flex cursor-pointer list-none items-center justify-between text-xs font-semibold text-slate-600 hover:text-slate-800">
-                          <span>상세 분석 보기</span>
-                          <span className="text-2xs text-slate-500 group-open:hidden">
-                            펼치기
-                          </span>
-                          <span className="hidden text-2xs text-slate-500 group-open:inline">
-                            접기
-                          </span>
-                        </summary>
-                        {assistantResponseView.details && (
-                          <div className="mt-3 border-t border-slate-200 pt-3">
-                            <MarkdownRenderer
-                              content={assistantResponseView.details}
-                              className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
-                            />
-                          </div>
-                        )}
-                      </details>
-                    </div>
-                  ) : isLastMessage && !message.isStreaming ? (
-                    <TypewriterMarkdown
-                      content={message.content}
-                      enableTypewriter={true}
-                      speed={12}
-                    />
-                  ) : (
-                    <MarkdownRenderer
-                      content={message.content}
-                      className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
-                    />
-                  )}
-                </div>
-              ) : (
-                <div className="whitespace-pre-wrap wrap-break-word text-chat leading-relaxed">
-                  {message.content}
-                </div>
-              )}
-            </div>
+                        <details className="group rounded-xl border border-slate-200 bg-slate-50/60 p-3">
+                          <summary className="flex cursor-pointer list-none items-center justify-between text-xs font-semibold text-slate-600 hover:text-slate-800">
+                            <span>상세 분석 보기</span>
+                            <span className="text-2xs text-slate-500 group-open:hidden">
+                              펼치기
+                            </span>
+                            <span className="hidden text-2xs text-slate-500 group-open:inline">
+                              접기
+                            </span>
+                          </summary>
+                          {assistantResponseView.details && (
+                            <div className="mt-3 border-t border-slate-200 pt-3">
+                              <MarkdownRenderer
+                                content={assistantResponseView.details}
+                                className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
+                              />
+                            </div>
+                          )}
+                        </details>
+                      </div>
+                    ) : isLastMessage && !message.isStreaming ? (
+                      <TypewriterMarkdown
+                        content={message.content}
+                        enableTypewriter={true}
+                        speed={12}
+                      />
+                    ) : (
+                      <MarkdownRenderer
+                        content={message.content}
+                        className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
+                      />
+                    )}
+                  </div>
+                ) : (
+                  <div className="whitespace-pre-wrap wrap-break-word text-chat leading-relaxed">
+                    {message.content}
+                  </div>
+                )}
+              </div>
+            )}
 
             <div
               className={`mt-1 flex items-center justify-between ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
@@ -224,15 +228,19 @@ export const AIWorkspaceMessage = memo<{
                     <Maximize2 className="h-3.5 w-3.5" />
                   </button>
                 )}
-                <MessageActions
-                  messageId={message.id}
-                  content={message.content}
-                  role={message.role}
-                  onRegenerate={onRegenerateResponse}
-                  onFeedback={onFeedback}
-                  traceId={message.metadata?.traceId}
-                  showRegenerate={isLastMessage && message.role === 'assistant'}
-                />
+                {shouldShowActionBar && hasTextContent && (
+                  <MessageActions
+                    messageId={message.id}
+                    content={message.content}
+                    role={message.role}
+                    onRegenerate={onRegenerateResponse}
+                    onFeedback={onFeedback}
+                    traceId={message.metadata?.traceId}
+                    showRegenerate={
+                      isLastMessage && message.role === 'assistant'
+                    }
+                  />
+                )}
               </div>
             </div>
 

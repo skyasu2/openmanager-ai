@@ -61,4 +61,36 @@ describe('MessageDetailSheet', () => {
     ).toBeInTheDocument();
     expect(screen.queryByText('원문 전체 응답')).not.toBeInTheDocument();
   });
+
+  it('omits the full response section when there is no visible assistant content', () => {
+    const message: EnhancedChatMessage = {
+      id: 'assistant-2',
+      role: 'assistant',
+      content: '',
+      timestamp: new Date('2026-04-10T17:10:00.000Z'),
+      isStreaming: false,
+      thinkingSteps: [
+        {
+          id: 'step-1',
+          title: '분석',
+          description: '메타데이터 전용 응답',
+          status: 'completed',
+        },
+      ] as NonNullable<EnhancedChatMessage['thinkingSteps']>,
+      metadata: {
+        handoffHistory: [{ from: 'Supervisor', to: 'Analyst Agent' }],
+      },
+    };
+
+    render(
+      <MessageDetailSheet
+        open={true}
+        onOpenChange={() => {}}
+        message={message}
+      />
+    );
+
+    expect(screen.getByTestId('thinking-visualizer')).toBeInTheDocument();
+    expect(screen.queryByText('전체 응답')).not.toBeInTheDocument();
+  });
 });
