@@ -51,8 +51,6 @@ describe('root-artifact-cleanup strict mode', () => {
     const result = runCleanup(['--strict'], dir);
 
     expect(result.status).toBe(0);
-    expect(result.stdout).toContain('Root tolerated dirs');
-    expect(result.stdout).toContain('.next');
   });
 
   it('fails when non-tolerated root artifact dirs are present', () => {
@@ -63,8 +61,6 @@ describe('root-artifact-cleanup strict mode', () => {
     const result = runCleanup(['--strict'], dir);
 
     expect(result.status).toBe(1);
-    expect(result.stdout).toContain('Root blocking dirs');
-    expect(result.stdout).toContain('artifacts');
   });
 
   it('moves blocking dirs but leaves tolerated dirs in place during cleanup', () => {

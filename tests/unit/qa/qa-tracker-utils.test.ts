@@ -74,10 +74,12 @@ describe('qa-tracker-utils', () => {
     recalculateSummary(tracker);
 
     expect(tracker.summary).toEqual({
+      totalRecordedRuns: 2,
       totalRuns: 2,
       totalChecks: 7,
       totalPassed: 6,
       totalFailed: 1,
+      excludedRuns: 0,
       completionRate: 33.33,
       completedItems: 1,
       pendingItems: 1,
