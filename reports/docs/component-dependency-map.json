@@ -5,7 +5,7 @@
     "edges": "static import/export-from resolved inside src/components"
   },
   "metrics": {
-    "componentSourceLines": 26670,
+    "componentSourceLines": 26675,
     "componentNodes": 142,
     "componentEdges": 132,
     "graphDensity": 0.006593,
