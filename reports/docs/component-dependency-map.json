@@ -5,12 +5,12 @@
     "edges": "static import/export-from resolved inside src/components"
   },
   "metrics": {
-    "componentSourceLines": 26151,
-    "componentNodes": 141,
-    "componentEdges": 127,
-    "graphDensity": 0.006434,
-    "aliasEdges": 43,
-    "relativeEdges": 84,
+    "componentSourceLines": 26646,
+    "componentNodes": 142,
+    "componentEdges": 132,
+    "graphDensity": 0.006593,
+    "aliasEdges": 46,
+    "relativeEdges": 86,
     "isolatedComponents": 30,
     "sccCycleGroups": 0,
     "largestCycleSize": 0
@@ -18,7 +18,7 @@
   "topInDegree": [
     {
       "component": "ui/dialog",
-      "inDegree": 5
+      "inDegree": 6
     },
     {
       "component": "ai/analysis/constants",
@@ -26,6 +26,10 @@
     },
     {
       "component": "ai/AIAssistantIconPanel",
+      "inDegree": 3
+    },
+    {
+      "component": "ai/MarkdownRenderer",
       "inDegree": 3
     },
     {
@@ -57,10 +61,6 @@
       "inDegree": 2
     },
     {
-      "component": "ai/MarkdownRenderer",
-      "inDegree": 2
-    },
-    {
       "component": "ai/MessageActions",
       "inDegree": 2
     }
@@ -83,11 +83,15 @@
       "outDegree": 7
     },
     {
+      "component": "ai/AIWorkspaceMessage",
+      "outDegree": 6
+    },
+    {
       "component": "dashboard/DashboardHeader",
       "outDegree": 6
     },
     {
-      "component": "ai/AIWorkspaceMessage",
+      "component": "ai-sidebar/SidebarMessage",
       "outDegree": 5
     },
     {
@@ -99,32 +103,28 @@
       "outDegree": 5
     },
     {
-      "component": "ai-sidebar/SidebarMessage",
-      "outDegree": 4
-    },
-    {
       "component": "ai/analysis/ServerResultCard",
       "outDegree": 4
     },
     {
-      "component": "dashboard/alert-history/AlertHistoryModal",
+      "component": "ai/MessageDetailSheet",
       "outDegree": 3
     },
     {
-      "component": "dashboard/DashboardContent",
+      "component": "dashboard/alert-history/AlertHistoryModal",
       "outDegree": 3
     }
   ],
   "topDomainEdges": [
     {
+      "fromDomain": "ai",
+      "toDomain": "ai",
+      "count": 31
+    },
+    {
       "fromDomain": "dashboard",
       "toDomain": "dashboard",
       "count": 29
-    },
-    {
-      "fromDomain": "ai",
-      "toDomain": "ai",
-      "count": 28
     },
     {
       "fromDomain": "ai-sidebar",
@@ -139,7 +139,7 @@
     {
       "fromDomain": "ai-sidebar",
       "toDomain": "ai",
-      "count": 8
+      "count": 9
     },
     {
       "fromDomain": "dashboard",
@@ -204,6 +204,11 @@
     {
       "fromDomain": "ai",
       "toDomain": "error",
+      "count": 1
+    },
+    {
+      "fromDomain": "ai",
+      "toDomain": "ui",
       "count": 1
     },
     {

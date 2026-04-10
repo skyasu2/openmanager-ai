@@ -26,12 +26,12 @@
 
 | Metric | Value |
 | --- | --- |
-| Component source lines | 26151 |
-| Component nodes | 141 |
-| Component edges | 127 |
-| Graph density | 0.64% |
-| Alias edges (`@/components/*`) | 43 |
-| Relative edges (`./`, `../`) | 84 |
+| Component source lines | 26646 |
+| Component nodes | 142 |
+| Component edges | 132 |
+| Graph density | 0.66% |
+| Alias edges (`@/components/*`) | 46 |
+| Relative edges (`./`, `../`) | 86 |
 | Isolated components | 30 |
 | SCC cycle groups | 0 |
 | Largest cycle size | 0 |
@@ -40,7 +40,7 @@
 
 ```mermaid
 flowchart LR
-  d0["ai (33)"]
+  d0["ai (34)"]
   d1["ai-sidebar (15)"]
   d2["auth (1)"]
   d3["charts (2)"]
@@ -53,11 +53,11 @@ flowchart LR
   d10["system (2)"]
   d11["ui (22)"]
   d12["unified-profile (3)"]
+  d0 -->|31| d0
   d4 -->|29| d4
-  d0 -->|28| d0
   d1 -->|13| d1
   d9 -->|10| d9
-  d1 -->|8| d0
+  d1 -->|9| d0
   d4 -->|7| d11
   d4 -->|5| d9
   d1 -->|3| d11
@@ -71,6 +71,7 @@ flowchart LR
   d12 -->|2| d12
   d0 -->|1| d4
   d0 -->|1| d6
+  d0 -->|1| d11
   d1 -->|1| d6
   d3 -->|1| d6
   d7 -->|1| d9
@@ -81,7 +82,7 @@ flowchart LR
 
 | Domain | Node Count |
 | --- | --- |
-| ai | 33 |
+| ai | 34 |
 | dashboard | 30 |
 | shared | 23 |
 | ui | 22 |
@@ -99,11 +100,11 @@ flowchart LR
 
 | From | To | Edge Count |
 | --- | --- | --- |
+| ai | ai | 31 |
 | dashboard | dashboard | 29 |
-| ai | ai | 28 |
 | ai-sidebar | ai-sidebar | 13 |
 | shared | shared | 10 |
-| ai-sidebar | ai | 8 |
+| ai-sidebar | ai | 9 |
 | dashboard | ui | 7 |
 | dashboard | shared | 5 |
 | ai-sidebar | ui | 3 |
@@ -117,6 +118,7 @@ flowchart LR
 | unified-profile | unified-profile | 2 |
 | ai | dashboard | 1 |
 | ai | error | 1 |
+| ai | ui | 1 |
 | ai-sidebar | error | 1 |
 | charts | error | 1 |
 | home | shared | 1 |
@@ -126,9 +128,10 @@ flowchart LR
 
 | Component | In-Degree |
 | --- | --- |
-| ui/dialog | 5 |
+| ui/dialog | 6 |
 | ai/analysis/constants | 4 |
 | ai/AIAssistantIconPanel | 3 |
+| ai/MarkdownRenderer | 3 |
 | dashboard/EnhancedServerModal.components | 3 |
 | dashboard/shared/StatCell | 3 |
 | error/ServerCardErrorBoundary | 3 |
@@ -136,7 +139,6 @@ flowchart LR
 | ai/AgentHandoffBadge | 2 |
 | ai/AIContentArea | 2 |
 | ai/AnalysisBasisBadge | 2 |
-| ai/MarkdownRenderer | 2 |
 | ai/MessageActions | 2 |
 
 ## Top Component Hubs by Out-Degree (Top 12)
@@ -147,14 +149,14 @@ flowchart LR
 | ai/AIWorkspace | 9 |
 | ai-sidebar/AISidebarV4 | 7 |
 | dashboard/EnhancedServerModal | 7 |
+| ai/AIWorkspaceMessage | 6 |
 | dashboard/DashboardHeader | 6 |
-| ai/AIWorkspaceMessage | 5 |
+| ai-sidebar/SidebarMessage | 5 |
 | dashboard/ServerDashboard | 5 |
 | shared/FeatureCardModal | 5 |
-| ai-sidebar/SidebarMessage | 4 |
 | ai/analysis/ServerResultCard | 4 |
+| ai/MessageDetailSheet | 3 |
 | dashboard/alert-history/AlertHistoryModal | 3 |
-| dashboard/DashboardContent | 3 |
 
 ## Cycle Risk (SCC Top 10)
 
@@ -168,10 +170,10 @@ ai-sidebar/EnhancedAIChat -> ai/AgentHandoffBadge, ai/AgentStatusIndicator, ai-s
 ai/AIWorkspace -> ai-sidebar/EnhancedAIChat, error/AIErrorBoundary, dashboard/RealTimeDisplay, shared/OpenManagerLogo, shared/UnifiedProfileHeader, ai/AIAssistantIconPanel
 ai-sidebar/AISidebarV4 -> ai/AIAssistantIconPanel, ai/AIContentArea, error/AIErrorBoundary, ai-sidebar/AISidebarHeader, ai-sidebar/EnhancedAIChat, ai-sidebar/ResizeHandle
 dashboard/EnhancedServerModal -> dashboard/EnhancedServerModal.LogsTab, dashboard/EnhancedServerModal.MetricsTab, dashboard/EnhancedServerModal.NetworkTab, dashboard/EnhancedServerModal.OverviewTab, dashboard/EnhancedServerModal.ProcessesTab, dashboard/ServerModalHeader
+ai/AIWorkspaceMessage -> ai/AnalysisBasisBadge, ai/MessageDetailSheet, ai/MarkdownRenderer, ai/MessageActions, ai/ThinkingProcessVisualizer, ai/TypewriterMarkdown
 dashboard/DashboardHeader -> shared/OpenManagerLogo, shared/UnifiedProfileHeader, dashboard/AIAssistantButton, dashboard/AILoginRequiredModal, dashboard/RealTimeDisplay, dashboard/SessionCountdown
-ai/AIWorkspaceMessage -> ai/AnalysisBasisBadge, ai/MarkdownRenderer, ai/MessageActions, ai/ThinkingProcessVisualizer, ai/TypewriterMarkdown
+ai-sidebar/SidebarMessage -> ai/AnalysisBasisBadge, ai/MessageActions, ai/MessageDetailSheet, ai/WebSourceCards, ai-sidebar/InlineAgentStatus
 dashboard/ServerDashboard -> dashboard/EnhancedServerModal, dashboard/ImprovedServerCard, dashboard/ServerDashboardPaginationControls, dashboard/VirtualizedServerList, error/ServerCardErrorBoundary
-shared/FeatureCardModal -> shared/FeatureCardModalHeader, shared/ReactFlowDiagram, shared/TechStackSection, shared/VibeCiCdSection, shared/VibeHistorySection
 ```
 
 ## Update Rule
