@@ -3,9 +3,12 @@
 > Owner: team
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-04-06
+> Last reviewed: 2026-04-10
 
 프로젝트 자동화 및 유틸리티 스크립트 모음.
+
+- 활성 여부 판단은 파일 존재가 아니라 `npm run artifacts:scripts:audit` 결과를 기준으로 합니다.
+- 2026-04-10 기준 script liveness 분석은 [script-reference-audit-2026-04-10.md](../reports/docs/script-reference-audit-2026-04-10.md)에 기록합니다.
 
 ## 디렉토리 구조
 
@@ -14,11 +17,9 @@ scripts/
 ├── ai/                # AI 에이전트 도구
 │   ├── agent-bridge.sh        # Claude ↔ Codex 브릿지
 │   └── health/                # AI 도구 상태 체크
-├── data/              # 데이터 파이프라인 & SQL
-│   ├── otel/                  # OpenTelemetry 변환
+├── data/              # 데이터 파이프라인 엔트리포인트
 │   ├── otel-fix.ts            # OTel 데이터 보정
-│   ├── otel-verify.ts         # OTel 데이터 검증
-│   └── *.sql                  # Supabase 테이블/함수
+│   └── otel-verify.ts         # OTel 데이터 검증
 ├── dev/               # 개발 도구
 │   ├── biome-wrapper.sh       # Biome 포맷터 래퍼
 │   ├── lint-changed.sh        # 변경 파일만 린트
@@ -48,21 +49,11 @@ scripts/
 │   ├── count-codex-mcp-usage.sh
 │   ├── mcp-health-check-codex.sh
 │   └── resolve-runtime-env.sh
-├── setup/             # 셸 환경 설정
-│   └── .bashrc_claude_additions
 ├── stitch/            # Stitch MCP 검증
 │   └── validate-stitch-registry.js
-├── supabase/          # Supabase 유지보수
-│   └── cleanup-unused-tables.sql
 ├── test/              # 테스트 헬퍼
-│   ├── diagnose-login-error.cjs
 │   ├── github-auth-helper.cjs
-│   ├── supabase-token-setup.cjs
-│   └── verify-oauth-config.cjs
-├── validation/        # 검증 도구
-│   └── create-summary.sh
-├── wsl/               # WSL 환경 설정
-│   └── fix-wsl-config.ps1
+│   └── vercel-post-deploy-smoke.mjs
 └── update-hourly-data-scenarios.ts
 ```
 
@@ -176,6 +167,13 @@ ALLOW_LEGACY_HOURLY_DATA=true npx tsx scripts/generators/generate-hourly-failure
 ALLOW_LEGACY_PUBLIC_SERVER_DATA=true npx tsx scripts/generators/generate-server-data.ts
 ```
 
+- `scripts/grafana/otlp-export.ts`의 기본 출력 경로는 `tmp/grafana/otlp-export`입니다.
+- Grafana/OTLP 변환 결과처럼 재생성 가능한 로컬 산출물은 `scripts/` 아래에 보관하지 않습니다.
+- 2026-04-10에 수동 login/OAuth/token/validation helper 5개를 제거했습니다. 자동 실행 경로에 붙지 않은 manual helper는 `scripts/`에 유지하지 않습니다.
+- 같은 날 수동 SQL, 정적 Grafana dashboard asset, WSL 복구 스크립트 7개를 [legacy-scripts/2026-04-10](../reports/history/legacy-scripts/2026-04-10/README.md)로 archive했습니다.
+- 같은 날 `pipeline-helpers.ts`와 `scripts/data/otel/*` helper 3개도 호출점 부재와 깨진 `./types` import를 근거로 제거했습니다.
+- 현재 기준으로 `scripts/` audit의 unreferenced 후보는 `0`개입니다.
+
 ---
 
-_Last reviewed: 2026-02-16_
+_Last reviewed: 2026-04-10_

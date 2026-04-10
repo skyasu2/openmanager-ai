@@ -86,11 +86,9 @@ backups/
 !.env.example
 !.env.grafana.example
 
-# Grafana OTLP export output
-scripts/grafana/output/
-
 # Cache and debug
 .cache/
+.npm-fix-trash/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -265,6 +263,8 @@ reports/qa/runs/**/root-cleanup-*/
 reports/qa/latest-qa-result.json
 reports/history/*
 !reports/history/README.md
+!reports/history/legacy-scripts/
+!reports/history/legacy-scripts/**
 # AI 코드 리뷰 파일 (로컬 전용, GitHub 제외)
 # - 모든 .md 파일은 추적 제외 (README.md 포함)
 # - .gitkeep만 추적하여 폴더 구조 유지
