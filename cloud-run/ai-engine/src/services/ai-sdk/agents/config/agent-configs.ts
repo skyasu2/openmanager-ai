@@ -103,7 +103,19 @@ export interface AgentConfig {
 // Agent Configurations (SSOT)
 // ============================================================================
 
-export const AGENT_CONFIGS: Record<string, AgentConfig> = {
+export const AGENT_NAMES = [
+  'NLQ Agent',
+  'Analyst Agent',
+  'Reporter Agent',
+  'Advisor Agent',
+  'Evaluator Agent',
+  'Optimizer Agent',
+  'Vision Agent',
+] as const;
+
+export type AgentName = (typeof AGENT_NAMES)[number];
+
+export const AGENT_CONFIGS: Record<AgentName, AgentConfig> = {
   'NLQ Agent': {
     name: 'NLQ Agent',
     description:
@@ -385,23 +397,30 @@ export const AGENT_CONFIGS: Record<string, AgentConfig> = {
 /**
  * Get all agent names
  */
-export function getAgentNames(): string[] {
-  return Object.keys(AGENT_CONFIGS);
+export function getAgentNames(): AgentName[] {
+  return [...AGENT_NAMES];
+}
+
+export function isAgentName(name: string): name is AgentName {
+  return Object.prototype.hasOwnProperty.call(AGENT_CONFIGS, name);
 }
 
 /**
  * Get agent config by name
  */
+export function getAgentConfig(name: AgentName): AgentConfig;
+export function getAgentConfig(name: string): AgentConfig | undefined;
 export function getAgentConfig(name: string): AgentConfig | undefined {
-  return AGENT_CONFIGS[name];
+  return isAgentName(name) ? AGENT_CONFIGS[name] : undefined;
 }
 
 /**
  * Check if agent is available (has valid model and is routable)
  * Agents with empty matchPatterns are internal-only (e.g., Evaluator, Optimizer)
  */
+export function isAgentAvailable(name: AgentName): boolean;
 export function isAgentAvailable(name: string): boolean {
-  const config = AGENT_CONFIGS[name];
+  const config = getAgentConfig(name);
   if (!config) return false;
   // Internal agents (matchPatterns: []) are not publicly available
   if (config.matchPatterns.length === 0) return false;
@@ -411,6 +430,6 @@ export function isAgentAvailable(name: string): boolean {
 /**
  * Get all available agents
  */
-export function getAvailableAgents(): string[] {
-  return Object.keys(AGENT_CONFIGS).filter(isAgentAvailable);
+export function getAvailableAgents(): AgentName[] {
+  return AGENT_NAMES.filter((name) => isAgentAvailable(name));
 }

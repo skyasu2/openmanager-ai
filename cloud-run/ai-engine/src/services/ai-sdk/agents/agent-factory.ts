@@ -1,7 +1,13 @@
 /** Factory and convenience helpers for config-driven agent instances. */
 
 import { BaseAgent, type AgentResult, type AgentRunOptions, type AgentStreamEvent } from './base-agent';
-import { AGENT_CONFIGS, type AgentConfig } from './config';
+import {
+  AGENT_CONFIGS,
+  getAgentConfig,
+  isAgentName,
+  type AgentConfig,
+  type AgentName,
+} from './config';
 import { logger } from '../../../lib/logger';
 
 export type AgentType =
@@ -13,7 +19,7 @@ export type AgentType =
   | 'evaluator'
   | 'optimizer';
 
-const AGENT_TYPE_TO_CONFIG_KEY: Record<AgentType, string> = {
+const AGENT_TYPE_TO_CONFIG_KEY: Record<AgentType, AgentName> = {
   nlq: 'NLQ Agent',
   analyst: 'Analyst Agent',
   reporter: 'Reporter Agent',
@@ -25,12 +31,12 @@ const AGENT_TYPE_TO_CONFIG_KEY: Record<AgentType, string> = {
 
 const CONFIG_KEY_TO_AGENT_TYPE = Object.fromEntries(
   Object.entries(AGENT_TYPE_TO_CONFIG_KEY).map(([k, v]) => [v, k])
-) as Record<string, AgentType>;
+) as Record<AgentName, AgentType>;
 class ConfigBasedAgent extends BaseAgent {
-  private readonly configKey: string;
-  private readonly displayName: string;
+  private readonly configKey: AgentName;
+  private readonly displayName: AgentName;
 
-  constructor(configKey: string) {
+  constructor(configKey: AgentName) {
     super();
     this.configKey = configKey;
     this.displayName = configKey;
@@ -41,7 +47,7 @@ class ConfigBasedAgent extends BaseAgent {
   }
 
   getConfig(): AgentConfig | null {
-    return AGENT_CONFIGS[this.configKey] ?? null;
+    return AGENT_CONFIGS[this.configKey];
   }
 }
 
@@ -64,9 +70,14 @@ export class AgentFactory {
   }
 
   static createByName(configKey: string): BaseAgent | null {
+    if (!isAgentName(configKey)) {
+      logger.warn(`[AgentFactory] Unknown config key: ${configKey}`);
+      return null;
+    }
+
     const type = CONFIG_KEY_TO_AGENT_TYPE[configKey];
     if (!type) {
-      const config = AGENT_CONFIGS[configKey];
+      const config = getAgentConfig(configKey);
       if (!config) {
         logger.warn(`[AgentFactory] Unknown config key: ${configKey}`);
         return null;
@@ -88,7 +99,7 @@ export class AgentFactory {
 
     for (const type of Object.keys(AGENT_TYPE_TO_CONFIG_KEY) as AgentType[]) {
       const configKey = AGENT_TYPE_TO_CONFIG_KEY[type];
-      const config = AGENT_CONFIGS[configKey];
+      const config = getAgentConfig(configKey);
       if (config && config.getModel() !== null) {
         available.push(type);
       }
@@ -110,7 +121,7 @@ export class AgentFactory {
 
     for (const type of Object.keys(status) as AgentType[]) {
       const configKey = AGENT_TYPE_TO_CONFIG_KEY[type];
-      const config = AGENT_CONFIGS[configKey];
+      const config = getAgentConfig(configKey);
       if (config) {
         status[type] = config.getModel() !== null;
       }
@@ -121,7 +132,7 @@ export class AgentFactory {
 
   static isAvailable(type: AgentType): boolean {
     const configKey = AGENT_TYPE_TO_CONFIG_KEY[type];
-    const config = AGENT_CONFIGS[configKey];
+    const config = getAgentConfig(configKey);
     if (!config) return false;
     return config.getModel() !== null;
   }

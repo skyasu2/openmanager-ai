@@ -21,7 +21,7 @@ import {
 } from '../tools-ai-sdk';
 import { handleApiError, jsonSuccess } from '../lib/error-handler';
 import { sanitizeChineseCharacters } from '../lib/text-sanitizer';
-import { AGENT_CONFIGS } from '../services/ai-sdk/agents/config';
+import { getAgentConfig } from '../services/ai-sdk/agents/config';
 import { AgentFactory } from '../services/ai-sdk/agents/agent-factory';
 import {
   extractToolBasedData,
@@ -113,9 +113,9 @@ analyticsRouter.post('/analyze-server', async (c: Context) => {
     }
 
     // 2. Use Agent for natural language insights (if available)
-    const analystConfig = AGENT_CONFIGS['Analyst Agent'];
-    const analystModelResult = analystConfig?.getModel();
-    if (analystConfig && analystModelResult && AgentFactory.isAvailable('analyst')) {
+    const analystConfig = getAgentConfig('Analyst Agent');
+    const analystModelResult = analystConfig.getModel();
+    if (analystModelResult && AgentFactory.isAvailable('analyst')) {
       try {
         const anomalyData = results.anomalyDetection as { hasAnomalies?: boolean; anomalyCount?: number } | undefined;
         const trendData = results.trendPrediction as { summary?: { hasRisingTrends?: boolean } } | undefined;
@@ -225,8 +225,8 @@ analyticsRouter.post('/incident-report', async (c: Context) => {
     const toolBasedData = extractToolBasedData(anomalyData, trendData, timelineData, serverId);
 
     // Check if Reporter Agent is available
-    const reporterConfig = AGENT_CONFIGS['Reporter Agent'];
-    const reporterModelResult = reporterConfig?.getModel();
+    const reporterConfig = getAgentConfig('Reporter Agent');
+    const reporterModelResult = reporterConfig.getModel();
     const createToolBasedFallback = (
       source: string,
       fallbackReason?: string
@@ -238,7 +238,7 @@ analyticsRouter.post('/incident-report', async (c: Context) => {
       ...(fallbackReason ? { _fallbackReason: fallbackReason } : {}),
     });
 
-    if (!reporterConfig || !reporterModelResult || !AgentFactory.isAvailable('reporter')) {
+    if (!reporterModelResult || !AgentFactory.isAvailable('reporter')) {
       logger.warn('[Incident Report] Reporter Agent unavailable, using tool-based fallback');
       return jsonSuccess(
         c,

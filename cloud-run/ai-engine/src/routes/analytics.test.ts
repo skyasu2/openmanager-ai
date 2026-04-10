@@ -65,6 +65,7 @@ vi.mock('ai', () => ({
 }));
 
 vi.mock('../services/ai-sdk/agents/config', () => ({
+  AGENT_NAMES: ['Analyst Agent', 'Reporter Agent'],
   AGENT_CONFIGS: {
     'Analyst Agent': {
       instructions: 'Analyst Agent',
@@ -77,6 +78,21 @@ vi.mock('../services/ai-sdk/agents/config', () => ({
       tools: {},
     },
   },
+  getAgentConfig: (name: string) =>
+    ({
+      'Analyst Agent': {
+        instructions: 'Analyst Agent',
+        getModel: () => ({ model: { modelId: 'test-model' }, provider: 'test' }),
+        tools: {},
+      },
+      'Reporter Agent': {
+        instructions: 'Reporter Agent',
+        getModel: () => ({ model: { modelId: 'test-model' }, provider: 'test' }),
+        tools: {},
+      },
+    } as Record<string, { instructions: string; getModel: () => { model: { modelId: string }; provider: string }; tools: Record<string, never> } | undefined>)[name],
+  isAgentName: (name: string) =>
+    name === 'Analyst Agent' || name === 'Reporter Agent',
 }));
 
 vi.mock('../services/ai-sdk/agents/agent-factory', () => ({

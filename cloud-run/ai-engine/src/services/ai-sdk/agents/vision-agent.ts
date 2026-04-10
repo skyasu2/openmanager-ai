@@ -21,7 +21,7 @@
  * @created 2026-01-27
  */
 
-import { AGENT_CONFIGS } from './config';
+import { getAgentConfig } from './config';
 import { AgentFactory, type BaseAgent } from './agent-factory';
 import { logger } from '../../../lib/logger';
 
@@ -141,14 +141,12 @@ export function createVisionAgent(): BaseAgent | null {
 
 /**
  * Check if a query requires Vision Agent.
- * Derives keywords/patterns from AGENT_CONFIGS (single source of truth).
  *
  * @param query - User query to check
  * @returns true if Vision Agent should handle this query
  */
 export function isVisionQuery(query: string): boolean {
-  const config = AGENT_CONFIGS['Vision Agent'];
-  if (!config) return false;
+  const visionConfig = getAgentConfig('Vision Agent');
 
   const normalized = query.trim().toLowerCase();
   if (!normalized) return false;
@@ -157,7 +155,10 @@ export function isVisionQuery(query: string): boolean {
   const hasDashboardSignal = hasDashboardVisualIntent(normalized);
   const hasAttachmentSignal = hasAttachmentIntent(normalized);
 
-  return hasImageSignal || hasDashboardSignal || hasAttachmentSignal;
+  return (
+    visionConfig.matchPatterns.length > 0 &&
+    (hasImageSignal || hasDashboardSignal || hasAttachmentSignal)
+  );
 }
 
 /**

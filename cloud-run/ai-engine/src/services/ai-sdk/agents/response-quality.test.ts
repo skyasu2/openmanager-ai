@@ -35,6 +35,35 @@ describe('evaluateAgentResponseQuality', () => {
     expect(result.formatCompliance).toBe(true);
   });
 
+  it('flags NLQ response when no server scope is provided', () => {
+    const result = evaluateAgentResponseQuality(
+      'NLQ Agent',
+      [
+        '이상은 없습니다.',
+        'CPU: 52%',
+        '권고: 현재 추세를 계속 모니터링하세요.',
+      ].join('\n'),
+      { durationMs: 900 }
+    );
+
+    expect(result.qualityFlags).toContain('MISSING_SERVER_REFERENCE');
+    expect(result.formatCompliance).toBe(false);
+  });
+
+  it('accepts NLQ response when overall server count is included', () => {
+    const result = evaluateAgentResponseQuality(
+      'NLQ Agent',
+      [
+        '서버 현황 요약: 전체 15대 모두 정상입니다.',
+        'CPU: 52%, 메모리: 48%, 디스크: 41%, 네트워크: 22%',
+        '권고: 현재 임계값을 유지하면서 추세만 확인하고, 변화가 10% 이상 커질 때만 재점검하세요.',
+      ].join('\n'),
+      { durationMs: 900 }
+    );
+
+    expect(result.qualityFlags).not.toContain('MISSING_SERVER_REFERENCE');
+  });
+
   it('marks fallback reason as a quality flag', () => {
     const result = evaluateAgentResponseQuality(
       'Advisor Agent',

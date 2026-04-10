@@ -23,6 +23,27 @@ const extraHTTPHeaders = bypassSecret
   : undefined;
 const includeMobileProjects = process.env.PLAYWRIGHT_INCLUDE_MOBILE === '1';
 const mobileOnly = process.env.PLAYWRIGHT_MOBILE_ONLY === '1';
+function parsePositiveIntegerEnv(name: string): number | undefined {
+  const raw = process.env[name];
+  if (!raw) return undefined;
+
+  const parsed = Number(raw);
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    return undefined;
+  }
+
+  return Math.floor(parsed);
+}
+
+const resolvedTestDir = process.env.PLAYWRIGHT_TEST_DIR || './tests/e2e';
+const resolvedFullyParallel =
+  process.env.PLAYWRIGHT_FULLY_PARALLEL === undefined
+    ? true
+    : process.env.PLAYWRIGHT_FULLY_PARALLEL === '1';
+const workersOverride = parsePositiveIntegerEnv('PLAYWRIGHT_WORKERS');
+const timeoutOverride = parsePositiveIntegerEnv('PLAYWRIGHT_TIMEOUT');
+const resolvedWorkers = workersOverride ?? (process.env.CI ? 1 : undefined);
+const resolvedTimeout = timeoutOverride ?? 120000;
 const resolvedOutputDir =
   process.env.PLAYWRIGHT_OUTPUT_DIR || 'tmp/playwright/e2e/test-results';
 const resolvedHtmlReportDir =
@@ -105,16 +126,16 @@ const projects = mobileOnly
 export default defineConfig({
   // Load environment variables globally before any tests run
   globalSetup: path.resolve(__dirname, 'tests/support/globalSetup'),
-  testDir: './tests/e2e',
+  testDir: resolvedTestDir,
   outputDir: resolvedOutputDir,
   /* Run tests in files in parallel */
-  fullyParallel: true,
+  fullyParallel: resolvedFullyParallel,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  workers: resolvedWorkers,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: resolvedReporter,
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -133,7 +154,7 @@ export default defineConfig({
   },
 
   /* 전역 타임아웃 설정 */
-  timeout: 120000, // 2분 (전체 테스트 타임아웃)
+  timeout: resolvedTimeout,
   expect: {
     timeout: 10000, // assertion 타임아웃 10초
   },

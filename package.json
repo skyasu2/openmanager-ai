@@ -126,7 +126,7 @@
     "test:e2e:visual": "playwright test tests/e2e/visual.spec.ts --config playwright.config.ts",
     "test:e2e:visual:update": "playwright test tests/e2e/visual.spec.ts --config playwright.config.ts --update-snapshots",
     "test:e2e:with-server": "PORT=3000 npm run dev:stable & sleep 5 && playwright test --config playwright.config.ts; kill %1",
-    "test:e2e:ai-retention:manual": "playwright test tests/manual/ai-retention-parity.spec.ts --config playwright.manual.config.ts",
+    "test:e2e:ai-retention:manual": "cross-env PLAYWRIGHT_TEST_DIR=./tests/manual PLAYWRIGHT_FULLY_PARALLEL=0 PLAYWRIGHT_WORKERS=1 PLAYWRIGHT_TIMEOUT=240000 PLAYWRIGHT_HTML_REPORT=0 playwright test tests/manual/ai-retention-parity.spec.ts --config playwright.config.ts",
     "test:manual:feedback:trace-status": "bash scripts/test/vercel-feedback-trace-status.sh",
     "test:vercel:ai-retention": "bash scripts/test/vercel-ai-retention.sh",
     "test:vercel:thinking-visualizer": "bash scripts/test/vercel-thinking-visualizer.sh",

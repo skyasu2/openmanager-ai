@@ -71,7 +71,7 @@ vi.mock('../../model-provider', () => ({
   getOpenRouterVisionModel: vi.fn(),
 }));
 
-import { AGENT_CONFIGS } from './agent-configs';
+import { getAgentConfig } from './agent-configs';
 import {
   checkProviderStatus,
   getGeminiFlashLiteModel,
@@ -80,7 +80,7 @@ import {
 import { getOpenRouterVisionModelId } from '../../../../lib/config-parser';
 
 describe('agent-configs vision fallback', () => {
-  const visionConfig = AGENT_CONFIGS['Vision Agent'];
+  const visionConfig = getAgentConfig('Vision Agent');
 
   beforeEach(() => {
     vi.clearAllMocks();

@@ -8,11 +8,14 @@
 
 export {
   AGENT_CONFIGS,
+  AGENT_NAMES,
   getAgentNames,
   getAgentConfig,
+  isAgentName,
   isAgentAvailable,
   getAvailableAgents,
   type AgentConfig,
+  type AgentName,
   type ModelResult,
 } from './agent-configs';
 

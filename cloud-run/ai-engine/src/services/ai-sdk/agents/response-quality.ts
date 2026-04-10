@@ -23,8 +23,11 @@ const AGENT_RESPONSE_POLICIES: Record<string, AgentResponsePolicy> = {
     requiredPatterns: [
       { pattern: /\d{1,3}(?:\.\d+)?%/, flag: 'MISSING_METRIC_EVIDENCE' },
       { pattern: /(권고|조치|요약|권장|없습니다|정상)/, flag: 'MISSING_ACTION_GUIDANCE' },
-      // 서버명/ID 참조 여부 — 요약 이모지 대신 실제 데이터 근거를 확인
-      { pattern: /[a-z]+-[a-z]+-\w+\d|서버\s*\d+대|전체\s*\d+대|\d+대\s*(서버|중)|없습니다/, flag: 'MISSING_SERVER_REFERENCE' },
+      // 서버명/ID 또는 전체 서버 수량 등 실제 서버 범위를 확인
+      {
+        pattern: /[a-z]+-[a-z]+-\w+\d|서버\s*\d+대|전체\s*\d+대|\d+대\s*(서버|중)/,
+        flag: 'MISSING_SERVER_REFERENCE',
+      },
     ],
   },
   'Analyst Agent': {

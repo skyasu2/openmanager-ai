@@ -12,7 +12,11 @@ import type { ProviderName } from '../model-provider';
 import { generateTextWithRetry } from '../../resilience/retry-with-fallback';
 import { sanitizeChineseCharacters } from '../../../lib/text-sanitizer';
 import { extractToolResultOutput } from '../../../lib/ai-sdk-utils';
-import { AGENT_CONFIGS, type AgentConfig } from './config';
+import {
+  AGENT_NAMES,
+  getAgentConfig as getNamedAgentConfig,
+  type AgentConfig,
+} from './config';
 import {
   selectTextModel,
   type TextProvider,
@@ -64,8 +68,8 @@ export function getOrchestratorModel(): ModelResult | null {
 }
 
 // Log available agents from AGENT_CONFIGS
-const availableAgentNames = Object.keys(AGENT_CONFIGS).filter(name => {
-  const config = AGENT_CONFIGS[name];
+const availableAgentNames = AGENT_NAMES.filter(name => {
+  const config = getNamedAgentConfig(name);
   return config && config.getModel() !== null;
 });
 
@@ -80,7 +84,7 @@ if (availableAgentNames.length === 0) {
 // ============================================================================
 
 export function getAgentConfig(name: string): AgentConfig | null {
-  return AGENT_CONFIGS[name] ?? null;
+  return getNamedAgentConfig(name) ?? null;
 }
 
 export function getAgentProviderOrder(agentName: string): ProviderName[] {
@@ -136,7 +140,7 @@ export async function executeForcedRouting(
     logger.info(`[Forced Routing] Pipeline failed, falling back to direct Reporter Agent`);
   }
 
-  const agentConfig = AGENT_CONFIGS[suggestedAgentName];
+  const agentConfig = getNamedAgentConfig(suggestedAgentName);
 
   if (!agentConfig) {
     logger.warn(`⚠️ [Forced Routing] No config for "${suggestedAgentName}"`);

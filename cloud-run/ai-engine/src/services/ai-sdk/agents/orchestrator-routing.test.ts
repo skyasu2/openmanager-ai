@@ -26,6 +26,7 @@ vi.mock('../../../lib/ai-sdk-utils', () => ({
 }));
 
 vi.mock('./config', () => ({
+  AGENT_NAMES: ['NLQ Agent'],
   AGENT_CONFIGS: {
     'NLQ Agent': {
       name: 'NLQ Agent',
@@ -37,6 +38,18 @@ vi.mock('./config', () => ({
       getModel: vi.fn(() => ({ provider: 'cerebras' })),
     },
   },
+  getAgentConfig: (name: string) =>
+    name === 'NLQ Agent'
+      ? {
+          name: 'NLQ Agent',
+          instructions: 'Test instructions',
+          tools: {
+            getServerMetrics: { execute: vi.fn() },
+            finalAnswer: { execute: vi.fn() },
+          },
+          getModel: vi.fn(() => ({ provider: 'cerebras' })),
+        }
+      : undefined,
 }));
 
 vi.mock('./config/agent-model-selectors', () => ({
