@@ -1,12 +1,13 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-11 KST (`Supabase migration ledger parity repair 완료`)
+**Last Updated**: 2026-04-11 KST (`approval_history smoke 완료, orphan function cleanup 계획 수립`)
 
 ## Active Tasks
 
 | Task | Priority | Status |
 |------|----------|--------|
 | [다음 작업 목록 (release / residual follow-up)](./next-tasks-plan.md) | High | 후속 작업 진행 중 |
+| [orphan-function-cleanup-plan](./orphan-function-cleanup-plan.md) | Medium | drop-safe orphan 함수 집합 확정 |
 
 ## On Hold
 
