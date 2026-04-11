@@ -2,20 +2,20 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-10T14:43:09.818Z"
+    "updatedAt": "2026-04-11T06:08:29.888Z"
   },
   "sequence": {
-    "nextRunNumber": 270
+    "nextRunNumber": 271
   },
   "summary": {
-    "totalRecordedRuns": 267,
+    "totalRecordedRuns": 268,
     "totalRuns": 239,
-    "excludedRuns": 28,
+    "excludedRuns": 29,
     "totalChecks": 1859,
     "totalPassed": 1787,
     "totalFailed": 66,
     "completionRate": 100,
-    "completedItems": 285,
+    "completedItems": 286,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 13,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260409-0267",
     "lastRecordedAt": "2026-04-09T13:35:00.812Z",
-    "latestRecordedRunId": "QA-20260410-0269",
-    "latestRecordedAt": "2026-04-10T14:43:09.818Z"
+    "latestRecordedRunId": "QA-20260411-0270",
+    "latestRecordedAt": "2026-04-11T06:08:29.888Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -6867,6 +6867,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-08T16:51:20.163Z"
+    },
+    "approval-history-runtime-smoke": {
+      "id": "approval-history-runtime-smoke",
+      "title": "approvalStore pending/decision/history/stats runtime path verified",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260411-0270",
+      "firstSeenAt": "2026-04-11T06:08:29.888Z",
+      "lastSeenRunId": "QA-20260411-0270",
+      "lastSeenAt": "2026-04-11T06:08:29.888Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "local tsx smoke against remote Supabase after approval_history table restore",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-11T06:08:29.888Z"
     }
   },
   "runs": [
@@ -23608,6 +23632,54 @@
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260411-0270",
+      "recordedAt": "2026-04-11T06:08:29.888Z",
+      "recordedAtKst": "2026-04-11 15:08:29 KST",
+      "title": "AI Engine approval_history runtime smoke",
+      "owner": "codex",
+      "source": "local-tsx-smoke",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260411-0270.json",
+      "environment": {
+        "target": "local-ai-engine-smoke",
+        "url": "",
+        "frontend": "none",
+        "backend": "Cloud Run ai-engine codepath + Supabase remote",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "da3506e49"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [],
+      "coveredSurfaces": [
+        "cloud-run approvalStore",
+        "Supabase approval_history",
+        "approval history stats"
+      ],
+      "skippedSurfaces": [
+        "incident_report auto-sync",
+        "frontend approval UI",
+        "vercel production"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0

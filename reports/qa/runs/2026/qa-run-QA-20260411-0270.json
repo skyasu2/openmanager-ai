@@ -1,0 +1,60 @@
+{
+  "runId": "QA-20260411-0270",
+  "recordedAt": "2026-04-11T06:08:29.888Z",
+  "recordedAtKst": "2026-04-11 15:08:29 KST",
+  "runTitle": "AI Engine approval_history runtime smoke",
+  "owner": "codex",
+  "source": "local-tsx-smoke",
+  "environment": {
+    "target": "local-ai-engine-smoke",
+    "url": "",
+    "frontend": "none",
+    "backend": "Cloud Run ai-engine codepath + Supabase remote",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "da3506e49"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [],
+  "coveredSurfaces": [
+    "cloud-run approvalStore",
+    "Supabase approval_history",
+    "approval history stats"
+  ],
+  "skippedSurfaces": [
+    "incident_report auto-sync",
+    "frontend approval UI",
+    "vercel production"
+  ],
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "approval-history-runtime-smoke",
+      "title": "approvalStore pending/decision/history/stats runtime path verified",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "local tsx smoke against remote Supabase after approval_history table restore",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}
