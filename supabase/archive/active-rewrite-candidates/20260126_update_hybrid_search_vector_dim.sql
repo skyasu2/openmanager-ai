@@ -1,43 +1,43 @@
--- =============================================================================
--- Update hybrid_search_with_text: Vector Dimension 384 → 1024
--- =============================================================================
--- Purpose: Update the vector dimension to match Mistral mistral-embed (1024d)
---          Previously used Google text-embedding-004 (384d)
---
--- Migration: 2026-01-26
--- Related: 20251219_add_bm25_text_search.sql (original function creation)
--- =============================================================================
+-- 20260126_update_hybrid_search_vector_dim.sql
+-- Canonical bootstrap patch for public.hybrid_search_with_text (remote-schema rewrite)
+-- Purpose: align the local patch ledger with the current hosted knowledge_base hybrid search function.
+-- Notes:
+-- - this is not a command_vectors dimension migration anymore
+-- - authoritative definition follows the current remote hybrid_search_with_text function
+-- - migrate_to_mistral_1024d_embeddings + add_missing_rag_functions_v2 remain the earlier chain context
 
--- Drop and recreate the function with updated vector dimension
-CREATE OR REPLACE FUNCTION hybrid_search_with_text(
-    p_query_embedding vector(1024),  -- Updated: 384 → 1024 (Mistral mistral-embed)
-    p_query_text TEXT DEFAULT NULL,
-    p_similarity_threshold FLOAT DEFAULT 0.5,
-    p_text_weight FLOAT DEFAULT 0.3,
-    p_vector_weight FLOAT DEFAULT 0.5,
-    p_graph_weight FLOAT DEFAULT 0.2,
-    p_max_vector_results INT DEFAULT 5,
-    p_max_text_results INT DEFAULT 5,
-    p_max_graph_hops INT DEFAULT 2,
-    p_max_total_results INT DEFAULT 15,
-    p_filter_category TEXT DEFAULT NULL
+CREATE OR REPLACE FUNCTION public.hybrid_search_with_text(
+    p_query_embedding vector,
+    p_query_text text DEFAULT NULL::text,
+    p_similarity_threshold double precision DEFAULT 0.5,
+    p_text_weight double precision DEFAULT 0.3,
+    p_vector_weight double precision DEFAULT 0.5,
+    p_graph_weight double precision DEFAULT 0.2,
+    p_max_vector_results integer DEFAULT 5,
+    p_max_text_results integer DEFAULT 5,
+    p_max_graph_hops integer DEFAULT 2,
+    p_max_total_results integer DEFAULT 15,
+    p_filter_category text DEFAULT NULL::text
 )
-RETURNS TABLE (
-    id UUID,
-    content TEXT,
-    title TEXT,
-    category TEXT,
-    score FLOAT,
-    vector_score FLOAT,
-    text_score FLOAT,
-    graph_score FLOAT,
-    source_type TEXT,
-    hop_distance INT
-) AS $$
+RETURNS TABLE(
+    id uuid,
+    content text,
+    title text,
+    category text,
+    score double precision,
+    vector_score double precision,
+    text_score double precision,
+    graph_score double precision,
+    source_type text,
+    hop_distance integer
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path TO 'public', 'pg_temp'
+AS $function$
 DECLARE
     query_tsquery tsquery;
 BEGIN
-    -- Parse query text to tsquery if provided
     IF p_query_text IS NOT NULL AND p_query_text != '' THEN
         query_tsquery := plainto_tsquery('simple', p_query_text);
     ELSE
@@ -46,7 +46,6 @@ BEGIN
 
     RETURN QUERY
     WITH
-    -- Step 1: Vector similarity search
     vector_results AS (
         SELECT
             kb.id,
@@ -62,8 +61,6 @@ BEGIN
         ORDER BY kb.embedding <=> p_query_embedding
         LIMIT p_max_vector_results
     ),
-
-    -- Step 2: Text search (BM25-style using ts_rank)
     text_results AS (
         SELECT
             kb.id,
@@ -80,15 +77,11 @@ BEGIN
         ORDER BY ts_rank_cd(kb.search_vector, query_tsquery, 32) DESC
         LIMIT p_max_text_results
     ),
-
-    -- Step 3: Combined initial results for graph expansion
     initial_results AS (
         SELECT * FROM vector_results
         UNION ALL
         SELECT * FROM text_results
     ),
-
-    -- Step 4: Graph expansion from initial results
     graph_results AS (
         SELECT DISTINCT
             tkg.node_id,
@@ -105,8 +98,6 @@ BEGIN
         ) tkg
         WHERE tkg.node_id NOT IN (SELECT ir2.id FROM initial_results ir2)
     ),
-
-    -- Step 5: Fetch graph node details
     graph_details AS (
         SELECT
             kb.id,
@@ -123,8 +114,6 @@ BEGIN
         FROM graph_results gr
         JOIN knowledge_base kb ON kb.id = gr.node_id AND gr.node_table = 'knowledge_base'
     )
-
-    -- Final: Combine all results with weighted scoring
     SELECT
         r.id,
         r.content,
@@ -137,9 +126,7 @@ BEGIN
         'hybrid'::TEXT as source_type,
         0 as hop_distance
     FROM initial_results r
-
     UNION ALL
-
     SELECT
         gd.id,
         gd.content,
@@ -152,11 +139,7 @@ BEGIN
         'graph'::TEXT as source_type,
         gd.hop_distance
     FROM graph_details gd
-
     ORDER BY score DESC, hop_distance ASC
     LIMIT p_max_total_results;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Update comment
-COMMENT ON FUNCTION hybrid_search_with_text IS 'Hybrid RAG search: Vector (1024d Mistral) + BM25 Text + Graph traversal. Updated 2026-01-26.';
+$function$;

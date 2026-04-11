@@ -7,6 +7,7 @@
 | Task | Priority | Status |
 |------|----------|--------|
 | [다음 작업 목록 (release / residual follow-up)](./next-tasks-plan.md) | High | 후속 작업 진행 중 |
+| [Supabase migration ledger repair plan](./supabase-migration-ledger-repair-plan.md) | High | 완료. main repo `supabase/migrations/`를 remote timestamp ledger와 정렬했고, `supabase migration list` local=remote 일치 및 `db pull` shadow DB 생성 단계 진입까지 확인 |
 
 ## On Hold
 

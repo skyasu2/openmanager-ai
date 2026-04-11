@@ -458,6 +458,8 @@ eslint-result.json
 archive/
 !docs/archive/
 !docs/archive/**
+!supabase/archive/
+!supabase/archive/**
 !reports/planning/archive/
 !reports/planning/archive/**
 docs/.backup/
