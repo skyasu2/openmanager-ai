@@ -1,0 +1,60 @@
+{
+  "runId": "QA-20260411-0271",
+  "recordedAt": "2026-04-11T07:18:03.097Z",
+  "recordedAtKst": "2026-04-11 16:18:03 KST",
+  "runTitle": "Local auth audit smoke - guest login route inserts security_audit_logs",
+  "owner": "codex",
+  "source": "local-next-route-smoke",
+  "environment": {
+    "target": "local-next-dev",
+    "url": "",
+    "frontend": "Next.js local dev server",
+    "backend": "Supabase remote",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "2d98f552e"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [],
+  "coveredSurfaces": [
+    "/api/csrf-token",
+    "/api/auth/guest-login",
+    "security_audit_logs insert via recordLoginEvent"
+  ],
+  "skippedSurfaces": [
+    "vercel production",
+    "oauth callback route",
+    "frontend login UI"
+  ],
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "security-audit-logs-live-path-smoke",
+      "title": "guest login route writes security_audit_logs on success",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "local next dev route smoke + remote audit row verification",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}

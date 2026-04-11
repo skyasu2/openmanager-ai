@@ -1,19 +1,19 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-11 15:08:30 KST
+> Generated at: 2026-04-11 16:18:03 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 268 |
+| Total Recorded Runs | 269 |
 | Total Runs (Counted) | 239 |
-| Non-counted Runs | 29 |
+| Non-counted Runs | 30 |
 | Total Checks | 1859 |
 | Passed | 1787 |
 | Failed | 66 |
-| Completed Items | 286 |
+| Completed Items | 287 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 13 |
@@ -21,12 +21,12 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260409-0267 (2026-04-09T13:35:00.812Z) |
-| Latest Recorded Run | QA-20260411-0270 (2026-04-11T06:08:29.888Z) |
+| Latest Recorded Run | QA-20260411-0271 (2026-04-11T07:18:03.097Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260411-0270 (2026-04-11T06:08:29.888Z)
+Latest run: QA-20260411-0271 (2026-04-11T07:18:03.097Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -43,9 +43,9 @@ Latest run: QA-20260411-0270 (2026-04-11T06:08:29.888Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: SHA da3506e4
-- Covered Surfaces: cloud-run approvalStore, Supabase approval_history, approval history stats
-- Skipped Surfaces: incident_report auto-sync, frontend approval UI, vercel production
+- Deployment: SHA 2d98f552
+- Covered Surfaces: /api/csrf-token, /api/auth/guest-login, security_audit_logs insert via recordLoginEvent
+- Skipped Surfaces: vercel production, oauth callback route, frontend login UI
 
 ## Links (Latest Run)
 
@@ -295,6 +295,7 @@ Latest run: QA-20260411-0270 (2026-04-11T06:08:29.888Z)
 - reporter-state-loss-on-tab-switch: Reporter 탭 전환 시 생성 결과 상태 유지 (completed 1회, last QA-20260315-0104)
 - reporter-state-retention-chat-switch: Reporter 생성 결과가 chat 전환 후 유지 (completed 1회, last QA-20260318-0126)
 - security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (completed 4회, last QA-20260320-0138)
+- security-audit-logs-live-path-smoke: guest login route writes security_audit_logs on success (completed 1회, last QA-20260411-0271)
 - security-headers-coop: COOP 헤더 추가 (Cross-Origin-Opener-Policy: same-origin-allow-popups) (completed 1회, last QA-20260329-0194)
 - security-headers-misleading-remove: 수동 X-Vercel-Cache/X-Edge-Runtime 헤더 제거 (completed 1회, last QA-20260329-0194)
 - security-headers-permissions-policy: deprecated interest-cohort=() Permissions-Policy 제거 (completed 1회, last QA-20260329-0194)
@@ -392,6 +393,7 @@ Latest run: QA-20260411-0270 (2026-04-11T06:08:29.888Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260411-0271 | 2026-04-11T07:18:03.097Z | targeted | no | no | Local auth audit smoke - guest login route inserts security_audit_logs | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260411-0270 | 2026-04-11T06:08:29.888Z | targeted | no | no | AI Engine approval_history runtime smoke | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260410-0269 | 2026-04-10T14:43:09.818Z | targeted | no | no | Local auth audit smoke - guest login route inserts security_audit_logs | 4 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260410-0268 | 2026-04-10T10:22:22.502Z | targeted | no | no | Local Playwright QA - AI detail dialog sidebar/workspace verification | 6 | 0 | 0 | 0 | 0 | 0 |
@@ -411,4 +413,3 @@ Latest run: QA-20260411-0270 (2026-04-11T06:08:29.888Z)
 | QA-20260408-0253 | 2026-04-08T04:54:22.471Z | targeted | no | yes | Playwright MCP Production QA - v8.11.0 analysis basis sanitization + agent label fix | 7 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260408-0252 | 2026-04-08T01:31:37.341Z | targeted | no | yes | Playwright MCP Production QA - fix(ai): multi-agent tool_result bubble-up + analyst instruction + AnalysisBasisBadge | 7 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260408-0251 | 2026-04-07T23:31:32.252Z | targeted | no | yes | Playwright MCP Production QA - v8.11.0 streaming status + alert prefill | 6 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260408-0250 | 2026-04-07T22:47:01.025Z | targeted | no | yes | Production targeted QA - landing bootstrap + AI alert prefill after streaming status contract fix | 6 | 2 | 0 | 0 | 0 | 0 |

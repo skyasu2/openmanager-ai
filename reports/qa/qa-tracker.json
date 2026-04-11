@@ -2,20 +2,20 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-11T06:08:29.888Z"
+    "updatedAt": "2026-04-11T07:18:03.097Z"
   },
   "sequence": {
-    "nextRunNumber": 271
+    "nextRunNumber": 272
   },
   "summary": {
-    "totalRecordedRuns": 268,
+    "totalRecordedRuns": 269,
     "totalRuns": 239,
-    "excludedRuns": 29,
+    "excludedRuns": 30,
     "totalChecks": 1859,
     "totalPassed": 1787,
     "totalFailed": 66,
     "completionRate": 100,
-    "completedItems": 286,
+    "completedItems": 287,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 13,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260409-0267",
     "lastRecordedAt": "2026-04-09T13:35:00.812Z",
-    "latestRecordedRunId": "QA-20260411-0270",
-    "latestRecordedAt": "2026-04-11T06:08:29.888Z"
+    "latestRecordedRunId": "QA-20260411-0271",
+    "latestRecordedAt": "2026-04-11T07:18:03.097Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -6891,6 +6891,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-11T06:08:29.888Z"
+    },
+    "security-audit-logs-live-path-smoke": {
+      "id": "security-audit-logs-live-path-smoke",
+      "title": "guest login route writes security_audit_logs on success",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260411-0271",
+      "firstSeenAt": "2026-04-11T07:18:03.097Z",
+      "lastSeenRunId": "QA-20260411-0271",
+      "lastSeenAt": "2026-04-11T07:18:03.097Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "local next dev route smoke + remote audit row verification",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-11T07:18:03.097Z"
     }
   },
   "runs": [
@@ -23671,6 +23695,54 @@
       "checks": {
         "total": 4,
         "passed": 4,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260411-0271",
+      "recordedAt": "2026-04-11T07:18:03.097Z",
+      "recordedAtKst": "2026-04-11 16:18:03 KST",
+      "title": "Local auth audit smoke - guest login route inserts security_audit_logs",
+      "owner": "codex",
+      "source": "local-next-route-smoke",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260411-0271.json",
+      "environment": {
+        "target": "local-next-dev",
+        "url": "",
+        "frontend": "Next.js local dev server",
+        "backend": "Supabase remote",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "2d98f552e"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [],
+      "coveredSurfaces": [
+        "/api/csrf-token",
+        "/api/auth/guest-login",
+        "security_audit_logs insert via recordLoginEvent"
+      ],
+      "skippedSurfaces": [
+        "vercel production",
+        "oauth callback route",
+        "frontend login UI"
+      ],
+      "checks": {
+        "total": 3,
+        "passed": 3,
         "failed": 0
       },
       "expertAssessments": [],
