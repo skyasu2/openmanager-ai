@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-11 KST (`server_logs 폐기, security_audit_logs keep 결정`)
+**Last Updated**: 2026-04-11 KST (Supabase orphan 함수 2차 정리 + exec_sql 제거 + query_statistics drop 완료)
 
 ## Active Tasks
 
@@ -20,6 +20,40 @@
 |------|----------|-------|
 | P3: Storybook `experimentalComponentsManifest` stable 승격 여부 재확인 | Low | npm registry stable이 아직 `10.2.10`이라 보류. `10.3.x`가 stable dist-tag로 올라온 뒤 `.storybook/main.ts` feature flag 재검토. |
 | P3: `src/types/README.md` 전용 타입 SSOT 문서 필요성 재평가 | Low | 현재 전용 README는 없음. 타입 정제 작업은 완료됐고, 신규 문서 추가는 실제 drift가 다시 생길 때만 검토. |
+
+### Completed (2026-04-11 #40)
+
+#### P1: Supabase DB 잔여 orphan 함수 2차 정리 + 보안 함수 제거
+
+**배경**: `drop_legacy_server_logs` (20260411070843) 반영으로 `server_logs` 테이블이 삭제됐으나,
+해당 테이블을 참조하는 함수 `add_server_log` / `cleanup_old_logs` 가 schema에 남아 있음.
+아울러 같은 시점에 확인된 추가 orphan 9개 + SECURITY DEFINER 보안 위험 함수 `exec_sql` 존재.
+
+**대상 함수 (총 10개)**:
+```
+add_server_log             → server_logs (삭제됨) 참조
+cleanup_old_logs           → server_logs (삭제됨) 참조
+cleanup_old_metrics        → server_metrics_history (존재 안 함) 참조
+update_compression_metadata     → conversation_history (삭제됨) 참조
+update_conversation_updated_at  → conversation_history trigger fn (삭제됨)
+update_server_metrics_updated_at → server_metrics_history trigger fn (존재 안 함)
+get_active_patterns        → learned_patterns (존재 안 함) 참조
+get_latest_bottlenecks     → performance_bottlenecks (존재 안 함) 참조
+calculate_system_health_score → code_quality_analysis (존재 안 함) 참조
+exec_sql                   → SECURITY DEFINER arbitrary SQL 실행, 앱 미사용 → 보안 위험
+```
+
+**대상 뷰 (1개)**:
+```
+query_statistics  → 하드코딩 stub (모두 0 반환), 실 데이터 없음, 앱 미사용
+```
+
+- [x] `20260411133303_drop_orphan_functions_batch2.sql` 추가 — `DROP FUNCTION` 10개 + `DROP VIEW public.query_statistics` 반영.
+- [x] remote Supabase에 batch2 migration 적용 완료 — `server_logs` 잔재 2개 + 추가 orphan 7개 + `exec_sql(text)` 제거.
+- [x] clean 재검증 완료 — `supabase migration list` local=remote 정렬, `supabase db push --dry-run --linked` `Remote database is up to date.` 확인.
+- [x] 보안 게이트 확인 — `exec_sql(text)` remote schema에서 실제 제거 확인.
+
+---
 
 ### Completed (2026-04-11 #39)
 - [x] P1: 로그 테이블 정리 완료 — `security_audit_logs`는 auth audit live 경로라 유지, `server_logs`는 runtime 미사용/0행/seed-only 상태라 `get_server_logs`와 함께 제거.
