@@ -81,3 +81,11 @@
 ## Decision
 - Next safe execution step is a **drop-only orphan-function cleanup migration**.
 - Do not mix this with `security_audit_logs` / `server_logs` policy decisions.
+
+## Execution Result (2026-04-11)
+- Applied remote migration: `drop_orphan_legacy_functions`
+- Recorded ledger version: `20260411063810`
+- Removed `19` orphan functions from remote `public` schema
+- Verified remaining live approval RPCs:
+  - `get_approval_history`
+  - `get_approval_stats`
