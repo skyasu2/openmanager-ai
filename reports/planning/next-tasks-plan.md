@@ -1,5 +1,5 @@
 > Owner: AI Agent
-> Status: Active Canonical
+> Status: Completed Canonical
 > Doc type: How-to
 > Last reviewed: 2026-04-07
 
@@ -8,7 +8,7 @@
 ## 배경
 
 v8.10.10 이후 31개 커밋 누적. 패키지 업그레이드(TypeScript 6, Knip v6, Storybook hygiene, ai-engine 후속 정렬)와 UI/Storybook 후속 정리를 완료했다.
-이제 다음 사이클의 중심은 `v8.11.0` 이후 residual 정리와 build hygiene backlog 축소다.
+본 계획서에 포함된 task는 모두 완료되었고, 후속 잔여 작업은 `TODO.md` backlog 기준으로 별도 관리한다.
 
 ---
 

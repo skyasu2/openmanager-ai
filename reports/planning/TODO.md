@@ -1,12 +1,10 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-12 KST (knowledge_base hybrid retrieval 점검 — 인덱스 정상, 현재는 소규모 corpus 기준 허용 범위)
+**Last Updated**: 2026-04-12 KST (security_audit_logs 정책 결정 완료 — DB trigger 없이 app-level audit 유지)
 
 ## Active Tasks
 
-| Task | Priority | Status |
-|------|----------|--------|
-| [다음 작업 목록 (release / residual follow-up)](./next-tasks-plan.md) | High | 후속 작업 진행 중 |
+현재 진행 중인 긴급 작업 없음.
 
 ## On Hold
 
@@ -18,8 +16,18 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| P3: `create_vector_table()` 함수 차원 수정 | Low | 내부 `vector(1536)` + IVFFlat → `vector(1024)` + HNSW 교정. 앱 미사용 함수라 긴급하지 않으나 schema 일관성 위반. |
+| P3: `knowledge_base` RAG corpus 확충 | Low | 현재 49행. AI 답변 품질 향상 위해 커버리지 확대 검토. 트리거: AI 응답 품질 이슈 발생 시. |
 | P3: Storybook `experimentalComponentsManifest` stable 승격 여부 재확인 | Low | npm registry stable이 아직 `10.2.10`이라 보류. `10.3.x`가 stable dist-tag로 올라온 뒤 `.storybook/main.ts` feature flag 재검토. |
 | P3: `src/types/README.md` 전용 타입 SSOT 문서 필요성 재평가 | Low | 현재 전용 README는 없음. 타입 정제 작업은 완료됐고, 신규 문서 추가는 실제 drift가 다시 생길 때만 검토. |
+
+### Completed (2026-04-12 #43)
+- [x] `security_audit_logs` 운영 정책 결정 완료 — DB trigger는 추가하지 않고 현재 app-level explicit audit write를 유지.
+- [x] 근거 확인 — [guest-login route](/mnt/d/dev/openmanager-ai/src/app/api/auth/guest-login/route.ts:286)와 [auth callback](/mnt/d/dev/openmanager-ai/src/app/auth/callback/route.ts:48)가 모두 [recordLoginEvent](/mnt/d/dev/openmanager-ai/src/lib/auth/login-audit.ts:79)를 직접 호출.
+- [x] remote 상태 확인 — `public.security_audit_logs` row count `0`, table-level trigger `0`, RLS policy는 `System can insert audit logs` / `Users can view own audit logs` 유지.
+- [x] 결론 고정 — 현재 0행은 비활성의 증거가 아니라 low-traffic + smoke cleanup 결과다. DB trigger를 추가하면 auth callback / guest login의 명시적 감사 경로와 책임이 중복된다.
+
+---
 
 ### Completed (2026-04-11 #40)
 
