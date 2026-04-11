@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-11 KST (Supabase orphan 함수 2차 정리 + exec_sql 제거 + query_statistics drop 완료)
+**Last Updated**: 2026-04-12 KST (command_vectors query plan 점검 — HNSW 존재 확인, 현재는 row 수가 작아 seq scan 선택)
 
 ## Active Tasks
 
@@ -52,6 +52,14 @@ query_statistics  → 하드코딩 stub (모두 0 반환), 실 데이터 없음,
 - [x] remote Supabase에 batch2 migration 적용 완료 — `server_logs` 잔재 2개 + 추가 orphan 7개 + `exec_sql(text)` 제거.
 - [x] clean 재검증 완료 — `supabase migration list` local=remote 정렬, `supabase db push --dry-run --linked` `Remote database is up to date.` 확인.
 - [x] 보안 게이트 확인 — `exec_sql(text)` remote schema에서 실제 제거 확인.
+
+---
+
+### Completed (2026-04-12 #41)
+- [x] `command_vectors` retrieval 경로 점검 완료 — remote에 `idx_command_vectors_embedding_hnsw` 존재, row 수는 `26`건으로 확인.
+- [x] query plan 확인 — `ORDER BY embedding <=> ... LIMIT` 쿼리는 현재 planner가 `Seq Scan + Sort`를 선택하지만 실행시간은 warm 기준 `~0.5ms`, cold 기준 `~17ms`로 관측.
+- [x] live codepath 분리 확인 — 현재 AI Engine의 주 hybrid retrieval은 [llamaindex-rag-service.ts](../../cloud-run/ai-engine/src/lib/llamaindex-rag-service.ts) → [hybrid-text-search.ts](../../cloud-run/ai-engine/src/lib/hybrid-text-search.ts) → `hybrid_search_with_text` 이며, 이는 `knowledge_base`를 주로 사용.
+- [x] 결론 고정 — `command_vectors` HNSW 추가는 방어적 개선으로 유효하지만, 현재 데이터량/코드 경로 기준 즉시 추가 튜닝 과제는 아님. row 수가 충분히 커지거나 command retrieval path가 주 경로가 될 때 재평가.
 
 ---
 
