@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-12 KST (command_vectors query plan 점검 — HNSW 존재 확인, 현재는 row 수가 작아 seq scan 선택)
+**Last Updated**: 2026-04-12 KST (knowledge_base hybrid retrieval 점검 — 인덱스 정상, 현재는 소규모 corpus 기준 허용 범위)
 
 ## Active Tasks
 
@@ -60,6 +60,15 @@ query_statistics  → 하드코딩 stub (모두 0 반환), 실 데이터 없음,
 - [x] query plan 확인 — `ORDER BY embedding <=> ... LIMIT` 쿼리는 현재 planner가 `Seq Scan + Sort`를 선택하지만 실행시간은 warm 기준 `~0.5ms`, cold 기준 `~17ms`로 관측.
 - [x] live codepath 분리 확인 — 현재 AI Engine의 주 hybrid retrieval은 [llamaindex-rag-service.ts](../../cloud-run/ai-engine/src/lib/llamaindex-rag-service.ts) → [hybrid-text-search.ts](../../cloud-run/ai-engine/src/lib/hybrid-text-search.ts) → `hybrid_search_with_text` 이며, 이는 `knowledge_base`를 주로 사용.
 - [x] 결론 고정 — `command_vectors` HNSW 추가는 방어적 개선으로 유효하지만, 현재 데이터량/코드 경로 기준 즉시 추가 튜닝 과제는 아님. row 수가 충분히 커지거나 command retrieval path가 주 경로가 될 때 재평가.
+
+---
+
+### Completed (2026-04-12 #42)
+- [x] `knowledge_base` hybrid retrieval 경로 점검 완료 — remote에 `idx_knowledge_base_embedding_hnsw`, `idx_knowledge_base_search_vector`, trigram/category/severity 인덱스가 모두 존재하고 row 수는 `49`건으로 확인.
+- [x] vector subquery plan 확인 — `knowledge_base`의 `ORDER BY embedding <=> ... LIMIT` 경로는 현재 planner가 `Seq Scan + Sort`를 선택하며, sample 쿼리 실행시간은 `~29.5ms`.
+- [x] BM25 text plan 확인 — `search_vector @@ plainto_tsquery(...)` 경로는 `Bitmap Index Scan on idx_knowledge_base_search_vector`를 정상 사용하며 sample 실행시간은 `~10ms`.
+- [x] actual RPC wall time 확인 — `hybrid_search_with_text(...)` sample 호출은 `Function Scan` 기준 `~73.8ms / 15 rows`로 관측.
+- [x] 결론 고정 — 현재 hybrid retrieval은 인덱스 미구성 문제가 아니라 `49`건 규모의 소규모 corpus + 함수 내부 vector/text/graph 결합 비용이 지배적이다. 즉시 DDL 추가보다는 corpus 확충 또는 호출 빈도/품질 기준 재평가가 우선이다.
 
 ---
 
