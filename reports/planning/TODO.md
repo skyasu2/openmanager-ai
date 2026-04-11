@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-11 KST (`orphan function cleanup 적용 완료`)
+**Last Updated**: 2026-04-11 KST (`server_logs 폐기, security_audit_logs keep 결정`)
 
 ## Active Tasks
 
@@ -22,6 +22,8 @@
 | P3: `src/types/README.md` 전용 타입 SSOT 문서 필요성 재평가 | Low | 현재 전용 README는 없음. 타입 정제 작업은 완료됐고, 신규 문서 추가는 실제 drift가 다시 생길 때만 검토. |
 
 ### Completed (2026-04-11 #39)
+- [x] P1: 로그 테이블 정리 완료 — `security_audit_logs`는 auth audit live 경로라 유지, `server_logs`는 runtime 미사용/0행/seed-only 상태라 `get_server_logs`와 함께 제거.
+- [x] P1: Supabase parity 재검증 — `20260411070843_drop_legacy_server_logs` 반영 후 `supabase migration list` 정렬 및 `supabase db push --dry-run --linked` clean 유지 확인.
 - [x] P1: orphan 함수 정리 완료 — remote schema에서 backing object가 없는 legacy 함수 `19`개 제거, `get_approval_history` / `get_approval_stats`만 유지.
 - [x] P1: Supabase parity 재검증 — `20260411063810_drop_orphan_legacy_functions` 반영 후 `supabase migration list` 정렬 및 `supabase db push --dry-run --linked` clean 유지 확인.
 - [x] P1: Supabase migration ledger parity repair 완료 — main repo `supabase/migrations/`를 remote timestamp ledger 기준으로 재구성하고 compressed/date-only legacy 세트를 `supabase/archive/`로 분리.
