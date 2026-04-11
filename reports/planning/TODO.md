@@ -1,13 +1,12 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-07 KST (`src/types/common.ts` 잔여 unused type 정리 완료)
+**Last Updated**: 2026-04-11 KST (`Supabase migration ledger parity repair 완료`)
 
 ## Active Tasks
 
 | Task | Priority | Status |
 |------|----------|--------|
 | [다음 작업 목록 (release / residual follow-up)](./next-tasks-plan.md) | High | 후속 작업 진행 중 |
-| [Supabase migration ledger repair plan](./supabase-migration-ledger-repair-plan.md) | High | 완료. main repo `supabase/migrations/`를 remote timestamp ledger와 정렬했고, `supabase migration list` local=remote 일치 및 `db pull` shadow DB 생성 단계 진입까지 확인 |
 
 ## On Hold
 
@@ -21,6 +20,11 @@
 |------|----------|-------|
 | P3: Storybook `experimentalComponentsManifest` stable 승격 여부 재확인 | Low | npm registry stable이 아직 `10.2.10`이라 보류. `10.3.x`가 stable dist-tag로 올라온 뒤 `.storybook/main.ts` feature flag 재검토. |
 | P3: `src/types/README.md` 전용 타입 SSOT 문서 필요성 재평가 | Low | 현재 전용 README는 없음. 타입 정제 작업은 완료됐고, 신규 문서 추가는 실제 drift가 다시 생길 때만 검토. |
+
+### Completed (2026-04-11 #39)
+- [x] P1: Supabase migration ledger parity repair 완료 — main repo `supabase/migrations/`를 remote timestamp ledger 기준으로 재구성하고 compressed/date-only legacy 세트를 `supabase/archive/`로 분리.
+- [x] P1: CLI parity 검증 완료 — `supabase migration list` local=remote 일치, `supabase db pull` shadow DB 생성 단계 진입, `supabase db push --dry-run --linked` `Remote database is up to date.` 확인.
+- [x] P2: 운영 문서 정리 — [supabase-migration-ledger-repair-plan](./supabase-migration-ledger-repair-plan.md) 완료 상태 전환, [README.legacy-ledger-hold](../../supabase/README.legacy-ledger-hold.md) 추가, archive 경로 git 추적 예외 처리.
 
 ### Completed (2026-04-07 #38)
 - [x] P3: `src/types/common.ts` 잔여 unused type 정리 — 실참조가 없는 `Environment`, `ServerType`, `PaginationInfo`, `LogLevel`와 미사용 `ServerMetrics` 경유 re-export 제거.
