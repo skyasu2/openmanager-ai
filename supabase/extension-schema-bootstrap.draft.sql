@@ -134,6 +134,8 @@ BEGIN
     FROM knowledge_base kb
     WHERE kb.embedding IS NOT NULL
       AND 1 - (kb.embedding OPERATOR(extensions.<=>) query_embedding) >= similarity_threshold
+      AND (filter_category IS NULL OR kb.category = filter_category)
+      AND (filter_severity IS NULL OR kb.severity = filter_severity)
     ORDER BY kb.embedding OPERATOR(extensions.<=>) query_embedding
     LIMIT max_results;
 END;
@@ -159,7 +161,8 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
     RETURN QUERY
-    WITH vector_results AS (
+    WITH
+    vector_results AS (
         SELECT
             kb.id,
             kb.content,
@@ -171,6 +174,21 @@ BEGIN
           AND 1 - (kb.embedding OPERATOR(extensions.<=>) p_query_embedding) >= p_similarity_threshold
         ORDER BY kb.embedding OPERATOR(extensions.<=>) p_query_embedding
         LIMIT p_max_vector_results
+    ),
+    graph_results AS (
+        SELECT DISTINCT
+            tkg.node_id,
+            tkg.node_table,
+            tkg.hop_distance,
+            tkg.path_weight
+        FROM vector_results vr
+        CROSS JOIN LATERAL traverse_knowledge_graph(
+            vr.id,
+            'knowledge_base',
+            p_max_graph_hops,
+            NULL,
+            10
+        ) tkg
     )
     SELECT
         vr.id,
@@ -180,7 +198,24 @@ BEGIN
         'vector'::TEXT,
         0,
         vr.metadata
-    FROM vector_results vr;
+    FROM vector_results vr
+
+    UNION ALL
+
+    SELECT
+        kb.id,
+        kb.content,
+        kb.title,
+        gr.path_weight * 0.8,
+        'graph'::TEXT,
+        gr.hop_distance,
+        kb.metadata
+    FROM graph_results gr
+    JOIN knowledge_base kb ON kb.id = gr.node_id AND gr.node_table = 'knowledge_base'
+    WHERE gr.node_id NOT IN (SELECT vr.id FROM vector_results vr)
+
+    ORDER BY score DESC, hop_distance ASC
+    LIMIT p_max_total_results;
 END;
 $$;
 
@@ -213,6 +248,14 @@ BEGIN
         kb.metadata
     FROM knowledge_base kb
     WHERE kb.embedding IS NOT NULL
+      AND (
+          filter->>'category' IS NULL
+          OR kb.category = filter->>'category'
+      )
+      AND (
+          filter->>'severity' IS NULL
+          OR kb.severity = filter->>'severity'
+      )
     ORDER BY kb.embedding OPERATOR(extensions.<=>) query_embedding
     LIMIT match_count;
 END;
@@ -305,8 +348,36 @@ BEGIN
             kb.search_vector
         FROM knowledge_base kb
         WHERE kb.embedding IS NOT NULL
+          AND 1 - (kb.embedding OPERATOR(extensions.<=>) p_query_embedding) >= p_similarity_threshold
+          AND (p_category IS NULL OR kb.category = p_category)
+          AND (p_severity IS NULL OR kb.severity = p_severity)
         ORDER BY kb.embedding OPERATOR(extensions.<=>) p_query_embedding
         LIMIT p_max_results * 2
+    ),
+    text_results AS (
+        SELECT
+            vr.id,
+            CASE
+                WHEN p_query_text IS NOT NULL AND vr.search_vector IS NOT NULL
+                THEN ts_rank_cd(vr.search_vector, plainto_tsquery('english', p_query_text))
+                ELSE 0.0
+            END as t_score
+        FROM vector_results vr
+    ),
+    graph_results AS (
+        SELECT
+            gr.node_id as id,
+            MAX(gr.path_weight) * 0.8 as g_score
+        FROM vector_results vr
+        CROSS JOIN LATERAL traverse_knowledge_graph(
+            vr.id,
+            'knowledge_base',
+            2,
+            NULL,
+            5
+        ) gr
+        WHERE gr.node_table = 'knowledge_base'
+        GROUP BY gr.node_id
     )
     SELECT
         vr.id,
@@ -314,12 +385,19 @@ BEGIN
         vr.content,
         vr.category,
         vr.severity,
-        COALESCE(vr.v_score, 0)::FLOAT as combined_score,
+        (
+            COALESCE(vr.v_score, 0) * p_vector_weight +
+            COALESCE(tr.t_score, 0) * p_text_weight +
+            COALESCE(gr.g_score, 0) * p_graph_weight
+        ) as combined_score,
         COALESCE(vr.v_score, 0)::FLOAT as vector_score,
-        0.0::FLOAT as text_score,
-        0.0::FLOAT as graph_score,
+        COALESCE(tr.t_score, 0)::FLOAT as text_score,
+        COALESCE(gr.g_score, 0)::FLOAT as graph_score,
         'hybrid'::TEXT as source_type
     FROM vector_results vr
+    LEFT JOIN text_results tr ON vr.id = tr.id
+    LEFT JOIN graph_results gr ON vr.id = gr.id
+    ORDER BY combined_score DESC
     LIMIT p_max_results;
 END;
 $$;
