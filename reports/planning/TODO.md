@@ -17,9 +17,15 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | P2: QA evidence 저장소 용량 정리 | Medium | 5차 정리 후 전체 `reports/qa`는 `64.42MiB`, `reports/qa/evidence/`는 `52.67MiB / 196파일`까지 감소. non-release targeted 런 3건에서 redundant landing screenshot 2건을 더 정리했고, orphan/missing/candidate는 모두 `0`. 다만 evidence 경고 임계치(`40MiB`)는 아직 초과이며, 남은 상위 파일은 단일 artifact landing 또는 UX 분석 스냅샷이라 추가 정리는 더 엄격한 보관 정책 판단이 필요. |
-| P3: `knowledge_base` RAG corpus 확충 | Low | 현재 49행. AI 답변 품질 향상 위해 커버리지 확대 검토. 트리거: AI 응답 품질 이슈 발생 시. |
+| P3: `knowledge_base` RAG corpus 확충 | Low | 현재 49행. [knowledge-base-corpus-expansion-plan](./knowledge-base-corpus-expansion-plan.md)을 기준으로 실제 분포 재측정 후 slot budget 안에서 `incident / best_practice / troubleshooting` 우선 보강. 트리거: AI 응답 품질 이슈 발생 시. |
 | P3: Storybook `experimentalComponentsManifest` stable 승격 여부 재확인 | Low | 2026-04-12 재확인 결과 `storybook`/`@storybook/nextjs-vite` stable dist-tag는 둘 다 아직 `10.2.10`, `next`는 `10.3.0-alpha.6`. `.storybook/main.ts`의 feature flag는 그대로 유지. |
 | P3: `src/types/README.md` 전용 타입 SSOT 문서 필요성 재평가 | Low | 현재 전용 README는 없음. 타입 정제 작업은 완료됐고, 신규 문서 추가는 실제 drift가 다시 생길 때만 검토. |
+
+### Completed (2026-04-12 #52)
+- [x] `knowledge_base` corpus 확충 계획서 작성 — [knowledge-base-corpus-expansion-plan](./knowledge-base-corpus-expansion-plan.md) 추가.
+- [x] 핵심 방침 고정 — 현재 `49`행 규모에서는 "많이 추가"가 아니라 권장 한도 `<=52` 안에서 `incident / best_practice / troubleshooting` 중심으로 교체형 확충을 우선.
+- [x] 실행 단계 정의 — 분포 재측정 → slot 예산 확정 → 신규 문서 후보 초안 → 품질 게이트 → 반영 배치 설계 순으로 진행.
+- [x] 리스크 명시 — command 비중 과다와 count drift(`48` vs `49`)를 먼저 정리하지 않으면 corpus 확충이 오히려 retrieval 품질을 악화시킬 수 있음.
 
 ### Completed (2026-04-12 #51)
 - [x] QA evidence 저장소 5차 정리 완료 — non-release targeted 런에서 redundant landing screenshot 2건 추가 제거.
