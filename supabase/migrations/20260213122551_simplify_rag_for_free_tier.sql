@@ -7,6 +7,21 @@
 -- 3) Drop non-essential command_vectors indexes to reduce storage/maintenance
 -- =============================================================================
 
+-- Fresh bootstrap dependency:
+-- `command_vectors` still exists in the hosted schema and is referenced by the
+-- backfill + later hardening/index migrations, but its earlier remote-first
+-- creation path is not replayable in the active local chain.
+CREATE TABLE IF NOT EXISTS public.command_vectors (
+    id text PRIMARY KEY,
+    content text NOT NULL,
+    metadata jsonb NOT NULL,
+    embedding vector(1024),
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now()
+);
+
+ALTER TABLE public.command_vectors ENABLE ROW LEVEL SECURITY;
+
 DO $$
 BEGIN
     IF to_regclass('public.command_vectors') IS NOT NULL
@@ -74,4 +89,3 @@ BEGIN
         ANALYZE public.command_vectors;
     END IF;
 END $$;
-
