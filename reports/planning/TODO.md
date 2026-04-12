@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-12 KST (QA run scratch 정리 — archive candidates 0건, total size 74.52MiB로 감소)
+**Last Updated**: 2026-04-12 KST (QA evidence 3차 정리 — non-counted screenshot 2건 prune, total size 72.37MiB로 감소)
 
 ## Active Tasks
 
@@ -16,10 +16,19 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| P2: QA evidence 저장소 용량 정리 | Medium | 2차 정리 후 전체 `reports/qa`는 `74.52MiB`, unreferenced run asset `31건 → 0건`으로 정리됨. 다만 `reports/qa/evidence/`는 아직 `62.77MiB / 206파일`로 evidence 경고 임계치(`40MiB`)를 초과하므로, 오래된 legacy screenshot 보관 정책 추가 정리 필요. |
+| P2: QA evidence 저장소 용량 정리 | Medium | 3차 정리 후 전체 `reports/qa`는 `72.37MiB`, `reports/qa/evidence/`는 `60.62MiB / 204파일`까지 감소. trace 2건, unreferenced run asset 31건, non-counted screenshot 2건을 정리했지만 evidence 경고 임계치(`40MiB`)는 아직 초과하므로, 오래된 legacy screenshot 보관 정책 추가 정리 필요. |
 | P3: `knowledge_base` RAG corpus 확충 | Low | 현재 49행. AI 답변 품질 향상 위해 커버리지 확대 검토. 트리거: AI 응답 품질 이슈 발생 시. |
 | P3: Storybook `experimentalComponentsManifest` stable 승격 여부 재확인 | Low | npm registry stable이 아직 `10.2.10`이라 보류. `10.3.x`가 stable dist-tag로 올라온 뒤 `.storybook/main.ts` feature flag 재검토. |
 | P3: `src/types/README.md` 전용 타입 SSOT 문서 필요성 재평가 | Low | 현재 전용 README는 없음. 타입 정제 작업은 완료됐고, 신규 문서 추가는 실제 drift가 다시 생길 때만 검토. |
+
+### Completed (2026-04-12 #48)
+- [x] QA evidence 저장소 3차 정리 완료 — `countsTowardSummary=false` verification 런 2개에서 대형 landing/validation screenshot 2건 제거.
+- [x] 대상 런 — [qa-run-QA-20260405-0237.json](/mnt/d/dev/openmanager-ai/reports/qa/runs/2026/qa-run-QA-20260405-0237.json:1), [qa-run-QA-20260409-0260.json](/mnt/d/dev/openmanager-ai/reports/qa/runs/2026/qa-run-QA-20260409-0260.json:1). 다른 report/log/dashboard evidence와 notes는 유지.
+- [x] 용량 절감 확인 — 전체 `reports/qa` `74.52MiB → 72.37MiB`, `reports/qa/evidence` `62.77MiB → 60.62MiB`, durable evidence file `205 → 203`.
+- [x] 무결성 재검증 — `npm run qa:evidence:audit` 기준 orphan `0`, missing durable artifact `0`, recent counted runs without artifacts `0`, archive candidates `0`.
+- [x] 잔여 부채 고정 — evidence 경고는 여전히 남아 있으므로 backlog P2는 유지.
+
+---
 
 ### Completed (2026-04-12 #47)
 - [x] QA run scratch / unreferenced asset 2차 정리 완료 — `reports/qa/runs/2026/root-cleanup-2026-04-05/` 아래 참조 없는 보조 산출물 제거.

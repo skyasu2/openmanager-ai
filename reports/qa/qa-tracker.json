@@ -20900,14 +20900,7 @@
           "url": "https://vercel.com/dashboard"
         }
       ],
-      "artifacts": [
-        {
-          "type": "playwright-screenshot",
-          "label": "Validation Evidence page",
-          "path": "reports/qa/evidence/legacy/2026/qa-20260405-0237-01-qa-20260405-0237-validation.png",
-          "note": "Production validation page render after gate warning clarification"
-        }
-      ],
+      "artifacts": [],
       "links": [
         {
           "type": "general",
@@ -20925,7 +20918,10 @@
       "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
-      "wontFixCount": 0
+      "wontFixCount": 0,
+      "notes": [
+        "[qa-evidence-cleanup] Non-counted targeted validation screenshot pruned on 2026-04-12 to reduce QA evidence storage; run notes/links remain."
+      ]
     },
     {
       "runId": "QA-20260405-0238",
@@ -22933,11 +22929,6 @@
         },
         {
           "type": "playwright-screenshot",
-          "label": "targeted landing screenshot",
-          "path": "reports/qa/evidence/qa-20260409-vercel-targeted-landing.png"
-        },
-        {
-          "type": "playwright-screenshot",
           "label": "targeted dashboard + ai sidebar screenshot",
           "path": "reports/qa/evidence/qa-20260409-vercel-targeted-dashboard-ai-sidebar.png"
         },
@@ -22974,7 +22965,10 @@
       "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
-      "wontFixCount": 0
+      "wontFixCount": 0,
+      "notes": [
+        "[qa-evidence-cleanup] Non-counted targeted landing screenshot pruned on 2026-04-12 to reduce QA evidence storage; report/log/dashboard evidence retained."
+      ]
     },
     {
       "runId": "QA-20260409-0261",

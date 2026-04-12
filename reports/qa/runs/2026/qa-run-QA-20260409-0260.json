@@ -75,11 +75,6 @@
     },
     {
       "type": "playwright-screenshot",
-      "label": "targeted landing screenshot",
-      "path": "reports/qa/evidence/qa-20260409-vercel-targeted-landing.png"
-    },
-    {
-      "type": "playwright-screenshot",
       "label": "targeted dashboard + ai sidebar screenshot",
       "path": "reports/qa/evidence/qa-20260409-vercel-targeted-dashboard-ai-sidebar.png"
     },
@@ -105,7 +100,8 @@
   "wontFixImprovements": [],
   "notes": [
     "system-boot/dashboard에서 폰트 preload warning 4건은 비차단 경고로 판정",
-    "AI streaming 헤더는 브라우저 경로에서 stream/v2 200 확인으로 대체 검증"
+    "AI streaming 헤더는 브라우저 경로에서 stream/v2 200 확인으로 대체 검증",
+    "[qa-evidence-cleanup] Non-counted targeted landing screenshot pruned on 2026-04-12 to reduce QA evidence storage; report/log/dashboard evidence retained."
   ],
   "links": [
     {

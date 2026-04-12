@@ -58,14 +58,7 @@
       "url": "https://vercel.com/dashboard"
     }
   ],
-  "artifacts": [
-    {
-      "type": "playwright-screenshot",
-      "label": "Validation Evidence page",
-      "path": "reports/qa/evidence/legacy/2026/qa-20260405-0237-01-qa-20260405-0237-validation.png",
-      "note": "Production validation page render after gate warning clarification"
-    }
-  ],
+  "artifacts": [],
   "completedImprovements": [],
   "pendingImprovements": [],
   "deferredImprovements": [],
@@ -73,7 +66,8 @@
   "notes": [
     "This targeted recheck was recorded with countsTowardSummary=false because it verifies the already-tested production deployment dpl_2MuHQZg4ePQmikAr8MYk5rkWj1ic rather than introducing new release-surface coverage.",
     "Vercel deployment metadata still points to commit 7095e76834d0a20e9e35640e753dfa731a6a5e7f, confirming that later QA metadata commits did not trigger a new production deployment.",
-    "The live /validation page still exposes the public snapshot dated 2026-04-04 (QA-20260404-0229), which is expected because no newer frontend deploy has been promoted since that snapshot build."
+    "The live /validation page still exposes the public snapshot dated 2026-04-04 (QA-20260404-0229), which is expected because no newer frontend deploy has been promoted since that snapshot build.",
+    "[qa-evidence-cleanup] Non-counted targeted validation screenshot pruned on 2026-04-12 to reduce QA evidence storage; run notes/links remain."
   ],
   "links": [
     {
