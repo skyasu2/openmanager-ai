@@ -257,8 +257,20 @@ describe('validateRedirectUrl', () => {
     expect(validateRedirectUrl('http://localhost:3001/auth')).toBe(true);
   });
 
+  it('127.0.0.1:3000 허용', () => {
+    expect(validateRedirectUrl('http://127.0.0.1:3000/callback')).toBe(true);
+  });
+
+  it('127.0.0.1:3001 허용', () => {
+    expect(validateRedirectUrl('http://127.0.0.1:3001/auth')).toBe(true);
+  });
+
   it('localhost:3002 거부 (허용되지 않은 포트)', () => {
     expect(validateRedirectUrl('http://localhost:3002/callback')).toBe(false);
+  });
+
+  it('127.0.0.1:3002 거부 (허용되지 않은 포트)', () => {
+    expect(validateRedirectUrl('http://127.0.0.1:3002/callback')).toBe(false);
   });
 
   it('악성 도메인 거부', () => {

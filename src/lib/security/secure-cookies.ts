@@ -109,9 +109,9 @@ export function validateRedirectUrl(url: string): boolean {
         hostname.endsWith('.vercel.app')) || // 프리뷰 배포
       hostname.includes('-skyasus-projects.vercel.app'); // 사용자별 배포
 
+    const isLoopbackHost = hostname === 'localhost' || hostname === '127.0.0.1';
     const isLocalDev =
-      hostname === 'localhost' &&
-      (urlObj.port === '3000' || urlObj.port === '3001');
+      isLoopbackHost && (urlObj.port === '3000' || urlObj.port === '3001');
 
     const isAllowed = isVercelDeploy || isLocalDev;
 
