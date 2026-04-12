@@ -21,6 +21,7 @@
   - src/**/*
   - public/**/*
   - config/**/*
+  - supabase/migrations/**/*
   - package.json
   - package-lock.json
   - next.config.mjs
@@ -42,6 +43,7 @@
   - src/**/*
   - public/**/*
   - config/**/*
+  - supabase/migrations/**/*
   - package.json
   - package-lock.json
   - next.config.mjs
