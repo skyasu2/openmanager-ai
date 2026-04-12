@@ -108,6 +108,39 @@ FOR VALUES FROM ('2025-01-01') TO ('2025-02-01');
 4. fresh reset 또는 disposable branch DB에서 bootstrap이 끝까지 성공하는지 검증합니다.
 5. 운영 DB 적용 전, advisor 경고 소거와 RAG RPC 동작을 둘 다 확인합니다.
 
+### 실제 파일 인벤토리
+
+#### 1차 대상: bootstrap blocker
+- `supabase/migrations/20251216233232_create_knowledge_base_table.sql`
+  - `embedding vector(384)`
+  - `query_embedding vector(384)`
+  - `embedding vector_cosine_ops`
+- `supabase/migrations/20251231074458_migrate_to_mistral_1024d_embeddings.sql`
+  - `ALTER COLUMN embedding TYPE vector(1024)`
+  - `query_embedding vector(1024)`
+  - `p_query_embedding vector(1024)`
+  - `embedding vector_cosine_ops`
+- `supabase/migrations/20251231110018_add_missing_rag_functions_v2.sql`
+  - `query_embedding vector(1024)`
+  - `p_query_embedding vector(1024)`
+  - `similarity(...)`
+  - `CREATE EXTENSION IF NOT EXISTS pg_trgm`
+  - `gin_trgm_ops`
+- `supabase/migrations/20260411042939_add_command_vectors_hnsw_index.sql`
+  - `embedding vector_cosine_ops`
+
+#### 2차 대상: historical signature chain
+- `supabase/migrations/20251217182536_create_knowledge_relationships.sql`
+- `supabase/migrations/20251217182600_create_graph_traversal_functions.sql`
+- `supabase/migrations/20251217182619_create_hybrid_graph_vector_search.sql`
+- `supabase/migrations/20251217182637_add_knowledge_relationships_rls.sql`
+- `supabase/migrations/20251217203434_add_bm25_text_search.sql`
+
+#### 3차 대상: hardening dependency
+- `supabase/migrations/20260213121317_harden_rag_functions_and_incident_fk_indexes.sql`
+  - `ALTER FUNCTION ... SET search_path = public, pg_temp`
+  - extension 함수 qualification 전략과 같이 검토해야 합니다.
+
 ### 운영 판단
 - 현재 이 항목은 즉시 수정 대상이 아니라 `migration prep` 선행 과제입니다.
 - checklist가 모두 끝나기 전에는 운영 DB에서 `vector`/`pg_trgm` extension 이동을 진행하지 않습니다.
