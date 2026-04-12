@@ -8,7 +8,7 @@
 > Canonical: docs/reference/architecture/infrastructure/database.md
 > Tags: database,supabase,schema,infrastructure
 >
-> **프로젝트 버전**: v8.11.9 | **Updated**: 2026-04-12
+> **프로젝트 버전**: v8.11.9 | **Updated**: 2026-04-12 (bootstrap blocker 수정 이력 갱신)
 
 ## 🐘 Supabase PostgreSQL 스키마
 
@@ -101,10 +101,18 @@ FOR VALUES FROM ('2025-01-01') TO ('2025-02-01');
 - 벡터 타입과 operator class도 `vector(...)`, `vector_cosine_ops`, `gin_trgm_ops`처럼 비정규화 이름을 직접 사용합니다.
 - 현재 레포에는 `create extension vector with schema extensions`를 정식 bootstrap migration으로 선언한 이력이 없습니다.
 
-### 검증으로 확인된 현재 bootstrap 실패
-- `2026-04-12` 로컬 `supabase start` 재현 기준으로, fresh bootstrap은 `20251216233232_create_knowledge_base_table.sql`에서 중단됩니다.
-- 실제 실패 메시지는 `type "vector" does not exist`이며, 첫 `knowledge_base.embedding vector(384)` 선언에서 발생했습니다.
-- 즉 현재 문제는 단순히 `public -> extensions` 이동 준비 부족만이 아니라, 레포 기준 local reset/bootstrap 자체가 이미 `vector` extension preamble 없이 성립하지 않는다는 점입니다.
+### bootstrap blocker 수정 이력 (2026-04-12)
+
+다음 수정이 같은 날 순차적으로 적용됐습니다.
+
+| 커밋 | 수정 내용 |
+|------|-----------|
+| `15144296d` | `20251216233232_create_knowledge_base_table.sql` 최상단에 `CREATE EXTENSION IF NOT EXISTS vector;` 추가 (최초 vector 사용 직전 진입점 확보) |
+| `8d417ba61` | `20251228073223_sync_servers_with_vercel_json.sql` history-only stub 전환 (hosted schema 비존재 테이블 replay 차단), `add_missing_rag_functions_v2.sql` pg_trgm guard 정비 |
+| `c91570551` | `20260213122551_simplify_rag_for_free_tier.sql`에 command_vectors bootstrap 복원 |
+| `a6d196da1` | `20251223230707_create_conversation_history.sql` · `hourly_server_states_complete.sql` history-only stub 전환 (hosted schema 비존재 객체 replay 제거) |
+
+수정 후 `supabase db reset` 기준 end-to-end 성공 여부는 아직 로컬 실검증 전 상태입니다.
 
 ### 이동 전 체크리스트
 1. 첫 `vector(...)` 사용 전 extension bootstrap 진입점(`CREATE SCHEMA extensions`, `CREATE EXTENSION vector`, 필요 시 `pg_trgm`)을 확정합니다.
