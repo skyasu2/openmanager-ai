@@ -98,14 +98,14 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       type: 'custom',
     },
     {
-      name: 'Vitest 4.0',
+      name: 'Vitest 4.1',
       category: 'testing',
       importance: 'high',
       description:
         'Vite 기반 차세대 테스트 프레임워크. Jest 호환 API, 네이티브 ESM, HMR 지원으로 초고속 테스트 실행. 워치 모드에서 변경 파일만 재실행',
       implementation:
-        '→ 유닛/통합 테스트 전체 적용. Coverage 리포트 및 실시간 피드백',
-      version: '4.0.18',
+        '→ unit/integration/contract 테스트의 기본 축. 빠른 로컬 피드백과 CI 비용 절감을 위해 minimal/ci/main 설정을 분리해 운영',
+      version: '4.1.2',
       status: 'active',
       icon: '🧪',
       tags: ['테스트', 'Vite', 'Jest호환'],
@@ -118,11 +118,25 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       description:
         'Rust 기반 초고속 Linter + Formatter. ESLint/Prettier 통합 대체, 단일 도구로 린트와 포맷팅 동시 수행. 10배 빠른 속도',
       implementation:
-        '→ 코드 스타일 자동 적용. PostToolUse hook으로 저장 시 자동 포맷',
-      version: '2.4.4',
+        '→ scripts/dev/biome-wrapper.sh를 통해 로컬/CI/훅 검증을 단일 경로로 통일. 빠른 feedback loop가 목표이며, 일부 ESLint 플러그인 생태계는 트레이드오프로 감수',
+      version: '2.4.9',
       status: 'active',
       icon: '🔧',
       tags: ['Linter', 'Formatter', 'Rust'],
+      type: 'opensource',
+    },
+    {
+      name: 'Knip 6.0',
+      category: 'tooling',
+      importance: 'high',
+      description:
+        'unused dependency를 넘어 export, file, type dead surface까지 추적하는 정적 분석 도구',
+      implementation:
+        '→ release 전 정리와 대규모 refactor 전후에 dead code를 탐지. AI가 남기기 쉬운 잔재를 장기적으로 줄이는 위생 도구로 사용',
+      version: '6.0.5',
+      status: 'active',
+      icon: '🧹',
+      tags: ['DeadCode', 'StaticAnalysis', 'Hygiene'],
       type: 'opensource',
     },
     {
@@ -146,12 +160,26 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       description:
         'Microsoft의 E2E 테스트 프레임워크. Chromium/Firefox/WebKit 크로스 브라우저, 자동 대기, 트레이싱, 스크린샷 캡처 지원',
       implementation:
-        '→ 크리티컬 플로우 E2E 테스트. MCP 서버로 Claude Code에서 직접 제어',
+        '→ 로컬 회귀와 Vercel 실환경 QA를 모두 담당. MCP 서버로 브라우저를 직접 제어하고 release-facing evidence를 함께 남김',
       version: '1.58.2',
       status: 'active',
       icon: '🎭',
       tags: ['E2E', 'Microsoft', '크로스브라우저'],
       type: 'opensource',
+    },
+    {
+      name: 'Context-Aware Git Hooks',
+      category: 'custom',
+      importance: 'high',
+      description:
+        '문서/코드/아티팩트/no-op push를 구분해 필요한 검증만 실행하는 커스텀 훅 오케스트레이션',
+      implementation:
+        '→ Husky 엔트리포인트 위에 pre-push.js를 두고 fast/verify/strict 모드를 나눠 운영. 일반 lint-staged보다 유지보수는 어렵지만, 불필요한 전체 검증을 크게 줄임',
+      version: 'pre-push.js',
+      status: 'active',
+      icon: '🪝',
+      tags: ['Husky', 'PrePush', 'ShiftLeft'],
+      type: 'custom',
     },
   ],
   history: {

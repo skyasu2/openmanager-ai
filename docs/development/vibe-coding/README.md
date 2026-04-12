@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active Canonical
 > Doc type: Overview
-> Last reviewed: 2026-04-02
+> Last reviewed: 2026-04-12
 > Canonical: docs/development/vibe-coding/README.md
 > Tags: vibe-coding,ai-workflow
 
@@ -42,6 +42,21 @@
 │  └──────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────┘
 ```
+
+## 빠른 피드백 루프를 만드는 기반
+
+Vibe Coding은 프롬프트만으로 성립하지 않습니다. AI가 코드를 빨리 만들더라도, **로컬에서 빨리 검증하고 위험을 초기에 걸러낼 수 있어야** 실제 개발 속도가 유지됩니다.
+
+- `Biome`: lint와 format을 단일 도구로 처리해 저장 직후와 커밋 직전 피드백을 짧게 유지합니다.
+- `Vitest`: 빠른 unit/integration/contract 테스트로 "AI가 만든 변경"을 작은 단위에서 바로 검증합니다.
+- `Playwright`: 최종 QA는 Vercel 실환경 기준으로 닫고, 비동기 UI/인증 흐름 회귀를 브라우저 수준에서 확인합니다.
+- `Knip`: AI가 남기기 쉬운 dead export, dead file, 불필요 dependency를 정리해 장기 드리프트를 줄입니다.
+- 커스텀 Git Hooks: 문서 변경인지, 코드 변경인지, 영향 범위가 어디까지인지 계산해서 필요한 검증만 실행합니다.
+
+핵심은 "도구가 많다"가 아니라, **의도 전달 -> 구현 -> 검증 -> 기록**의 왕복 시간을 줄이는 방향으로 연결되어 있다는 점입니다.
+
+- 상세 도구 설명: [개발 도구](../dev-tools.md)
+- 훅/검증 오케스트레이션: [Git Hooks 워크플로우](../git-hooks-workflow.md)
 
 ## 문서 목록
 

@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-03-25
+> Last reviewed: 2026-04-12
 > Canonical: docs/development/dev-tools.md
 > Tags: tooling,nodejs,biome
 
@@ -51,6 +51,11 @@ npm run lint:fix
 biome.json
 ```
 
+- 루트는 `@biomejs/biome` 단일 도구로 lint/format을 처리합니다.
+- `scripts/dev/biome-wrapper.sh`를 통해 로컬, CI, 훅 경로에서 같은 엔트리포인트를 재사용합니다.
+- `ESLint + Prettier` 조합보다 설정면적과 실행 시간이 작아 빠른 로컬 피드백 루프에 유리합니다.
+- 트레이드오프: `eslint-plugin-*` 생태계의 깊은 아키텍처 전용 규칙은 그대로 가져올 수 없으므로, 필요한 정책은 TypeScript/테스트/커스텀 스크립트로 보완합니다.
+
 ### TypeScript
 
 ```bash
@@ -65,6 +70,18 @@ npm run type-check
   }
 }
 ```
+
+### Knip (Unused Code Hygiene)
+
+```bash
+npm run knip
+npm run knip:ci
+npm run knip:fix
+```
+
+- `Knip`은 unused dependency뿐 아니라 export, 파일, 타입 노출까지 함께 추적합니다.
+- 대규모 리팩터링 전후, release 전 정리, dead surface 제거 시 신뢰할 수 있는 기준선으로 사용합니다.
+- 트레이드오프: 정적 분석 기반이라 runtime reflection이나 동적 import 패턴은 false positive가 날 수 있으므로, 삭제 전에는 코드/테스트 증거를 함께 확인해야 합니다.
 
 ## 테스트 도구
 
@@ -334,6 +351,20 @@ scripts/hooks/post-commit.js
 
 - 운영 정책과 모드 선택 기준은 [Git Hooks 워크플로우 가이드](./git-hooks-workflow.md)를 따릅니다.
 - 구현 디테일과 wrapper 동작은 [scripts/README.md](../../scripts/README.md) 를 참조합니다.
+
+## 2026 Tooling 포지셔닝
+
+이 저장소의 도구 선택은 "유행하는 최신 도구를 붙였다"보다, **AI 보조 개발에서 피드백 루프를 줄이는 방향**에 가깝습니다. 범용 표준 조합과 비교하면 아래와 같습니다.
+
+| 영역 | 현재 선택 | 흔한 대안 | 이 저장소에 맞는 이유 | 트레이드오프 |
+|------|-----------|-----------|----------------------|--------------|
+| Lint/Format | `Biome` | `ESLint + Prettier` | Rust 기반 단일 도구라 로컬/CI/훅 모두 빠르게 수렴 | ESLint 플러그인 생태계를 그대로 쓰기 어렵다 |
+| Unit/Integration Test | `Vitest` | `Jest` | ESM/병렬 실행/빠른 watch loop가 Next.js 프론트엔드와 잘 맞음 | 오래된 Jest 전용 가이드나 matcher 자산은 바로 재사용하기 어렵다 |
+| Browser QA | `Playwright` | `Cypress` | 다중 탭, 브라우저 외부 제어, MCP 연동으로 Vercel 실환경 QA와 연결하기 쉽다 | trace/screenshot artifact 관리 비용이 커질 수 있다 |
+| Dead Code Hygiene | `Knip` | `depcheck` 또는 수동 정리 | 패키지 수준을 넘어 export/file/type dead surface까지 추적 | 동적 로딩 패턴은 수동 확인이 필요하다 |
+| Push Gate | change-aware custom pre-push | `husky + lint-staged` 정도 | 문서/아티팩트/no-op/type/test 범위를 나눠 필요한 검증만 실행 | 스크립트 유지보수 난도가 일반 훅보다 높다 |
+
+정리하면, 이 스택은 **엔터프라이즈급 품질 게이트를 유지하면서도 로컬 속도를 해치지 않도록 최적화된 구성**입니다. 다만 "모든 프로젝트의 정답"은 아니며, 현재처럼 Next.js + 멀티 에이전트 + GitLab/Vercel + QA 기록 자동화가 결합된 저장소에서 특히 효과가 큽니다.
 
 ## Docker
 
