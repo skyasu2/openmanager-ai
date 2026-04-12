@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-12 KST (QA storage 6차 정리 — unreferenced run PNG 23건 제거, qa/runs 3.11MiB로 감소)
+**Last Updated**: 2026-04-12 KST (QA storage 7차 정리 — duplicated UX screenshot 1건 제거, evidence 51.71MiB로 감소)
 
 ## Active Tasks
 
@@ -16,10 +16,17 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| P2: QA evidence 저장소 용량 정리 | Medium | 6차 정리 후 전체 `reports/qa`는 `57.11MiB`, `reports/qa/runs`는 `3.11MiB`, `reports/qa/evidence/`는 여전히 `52.67MiB / 196파일`. `reports/qa/runs/2026`의 무참조 stray PNG 23건을 제거했고 orphan/missing/candidate는 모두 `0`. 다만 실제 경고는 여전히 evidence 임계치(`40MiB`) 초과에서 발생하므로, 다음 정리는 단일 artifact landing/UX 분석 스냅샷의 보관 정책 재판단이 필요. |
+| P2: QA evidence 저장소 용량 정리 | Medium | 7차 정리 후 전체 `reports/qa`는 `56.16MiB`, `reports/qa/runs`는 `3.11MiB`, `reports/qa/evidence/`는 `51.71MiB / 195파일`. `QA-20260330-0197/0198`에서 공유하던 partial UX analysis screenshot 1건을 추가 제거했고 orphan/missing/candidate는 계속 `0`. 다만 실제 경고는 여전히 evidence 임계치(`40MiB`) 초과에서 발생하므로, 다음 정리는 단일 artifact landing/UX 분석 스냅샷의 보관 정책 재판단이 필요. |
 | P3: `knowledge_base` RAG corpus 확충 | Low | 현재 49행. [knowledge-base-corpus-expansion-plan](./knowledge-base-corpus-expansion-plan.md)을 기준으로 실제 분포 재측정 후 slot budget 안에서 `incident / best_practice / troubleshooting` 우선 보강. 트리거: AI 응답 품질 이슈 발생 시. |
 | P3: Storybook `experimentalComponentsManifest` stable 승격 여부 재확인 | Low | 2026-04-12 재확인 결과 `storybook`/`@storybook/nextjs-vite` stable dist-tag는 둘 다 아직 `10.2.10`, `next`는 `10.3.0-alpha.6`. `.storybook/main.ts`의 feature flag는 그대로 유지. |
 | P3: `src/types/README.md` 전용 타입 SSOT 문서 필요성 재평가 | Low | 현재 전용 README는 없음. 타입 정제 작업은 완료됐고, 신규 문서 추가는 실제 drift가 다시 생길 때만 검토. |
+
+### Completed (2026-04-12 #54)
+- [x] QA storage 7차 정리 완료 — `QA-20260330-0197` / `QA-20260330-0198`에서 공유하던 partial UX analysis screenshot `1`건 제거.
+- [x] 보존 원칙 유지 — 같은 개선 묶음 안에서 `landing-ux-analysis-full`을 유지하고 partial variant만 정리해 landing/modal/console/local proof는 그대로 유지.
+- [x] tracker/run 정합성 반영 — [qa-run-QA-20260330-0197.json](/mnt/d/dev/openmanager-ai/reports/qa/runs/2026/qa-run-QA-20260330-0197.json:1), [qa-run-QA-20260330-0198.json](/mnt/d/dev/openmanager-ai/reports/qa/runs/2026/qa-run-QA-20260330-0198.json:1), [qa-tracker.json](/mnt/d/dev/openmanager-ai/reports/qa/qa-tracker.json:1)에서 artifact 참조 제거.
+- [x] 용량 절감 확인 — 전체 `reports/qa` `57.11MiB → 56.16MiB`, `reports/qa/evidence` `52.67MiB → 51.71MiB`, durable evidence file `195 → 194`.
+- [x] 잔여 부채 고정 — evidence warning은 줄었지만 아직 `40MiB` 아래로 내려오지 않아 backlog P2는 유지.
 
 ### Completed (2026-04-12 #53)
 - [x] QA storage 6차 정리 완료 — `reports/qa/runs/2026` 아래 무참조 stray PNG `23`건 제거.

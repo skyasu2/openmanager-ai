@@ -17280,11 +17280,6 @@
         },
         {
           "type": "playwright-screenshot",
-          "label": "landing-ux-analysis-01.png",
-          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-07-landing-ux-analysis-01.png"
-        },
-        {
-          "type": "playwright-screenshot",
           "label": "landing-ux-analysis-full.png",
           "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-08-landing-ux-analysis-full.png"
         },
@@ -17395,11 +17390,6 @@
           "type": "playwright-screenshot",
           "label": "landing-modal-ai-assistant.png",
           "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-06-landing-modal-ai-assistant.png"
-        },
-        {
-          "type": "playwright-screenshot",
-          "label": "landing-ux-analysis-01.png",
-          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-07-landing-ux-analysis-01.png"
         },
         {
           "type": "playwright-screenshot",

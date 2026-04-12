@@ -77,11 +77,6 @@
     },
     {
       "type": "playwright-screenshot",
-      "label": "landing-ux-analysis-01.png",
-      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-07-landing-ux-analysis-01.png"
-    },
-    {
-      "type": "playwright-screenshot",
       "label": "landing-ux-analysis-full.png",
       "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-08-landing-ux-analysis-full.png"
     },
@@ -104,7 +99,8 @@
     "Production deployment b35c36d17 was READY and promoted before smoke execution.",
     "Landing page still rendered the expected hero, question preview, and four feature cards after the docs/dev-config pushes.",
     "Preview QA evidence links were not visible in the main landing surface, and browser console contained zero errors.",
-    "2026-04-12 evidence storage cleanup: duplicate secondary landing screenshot pruned while keeping representative landing and comparison/UX evidence."
+    "2026-04-12 evidence storage cleanup: duplicate secondary landing screenshot pruned while keeping representative landing and comparison/UX evidence.",
+    "2026-04-12 evidence storage cleanup batch 7: partial UX analysis screenshot pruned while keeping the full UX analysis artifact."
   ],
   "links": [
     {

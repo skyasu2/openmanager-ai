@@ -78,11 +78,6 @@
     },
     {
       "type": "playwright-screenshot",
-      "label": "landing-ux-analysis-01.png",
-      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-07-landing-ux-analysis-01.png"
-    },
-    {
-      "type": "playwright-screenshot",
       "label": "landing-ux-analysis-full.png",
       "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-08-landing-ux-analysis-full.png"
     },
@@ -119,7 +114,8 @@
     "Production deployment for commit f44571f08 failed with Module not found: ./VibeFinishSection. Follow-up commit 430bc4fe5 added the missing tracked file and restored deployment.",
     "Landing page now shows the updated card title, preview question examples, and revised validation link labels.",
     "Browser console contained zero errors after the production deployment was promoted.",
-    "2026-04-12 evidence storage cleanup: duplicate secondary landing screenshot pruned; representative landing + modal/UX/local proof retained."
+    "2026-04-12 evidence storage cleanup: duplicate secondary landing screenshot pruned; representative landing + modal/UX/local proof retained.",
+    "2026-04-12 evidence storage cleanup batch 7: partial UX analysis screenshot pruned while keeping the full UX analysis artifact."
   ],
   "links": [
     {
