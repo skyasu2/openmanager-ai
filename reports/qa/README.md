@@ -195,6 +195,7 @@ reports/qa/
 - storage cleanup 보관 정책:
   - `countsTowardSummary=true` 또는 `releaseFacing=true` run이라도, 7일 이상 지난 뒤 같은 run 안에 `dashboard`, `AI`, `login`, `404`, `validation`, `console/network` 같은 차별화 증거가 이미 남아 있으면 중복 `landing` screenshot은 정리할 수 있습니다.
   - non-release targeted run에서도 같은 run 또는 같은 개선 묶음의 후속 run에 대표 `landing` screenshot이 이미 남아 있고, modal/UX 분석/console 같은 차별화 증거가 유지된다면 2장째 이후의 `landing` screenshot은 정리할 수 있습니다.
+  - `reports/qa/runs/` 아래의 binary screenshot은 canonical durable evidence 위치가 아닙니다. run JSON / tracker 어디에도 참조되지 않는 historical PNG는 stray artifact로 보고 정리할 수 있습니다.
   - 단일 artifact run, landing 외 시각 증거가 없는 run, 또는 해당 landing이 유일한 사용자 시각 증거인 run은 정리 대상이 아닙니다.
   - 정리 후에도 각 counted/release-facing run은 최소 1개의 시각 증거와 해당 run의 핵심 차별화 surface 증거를 유지해야 합니다.
 - 기본 storage warning 기준(환경변수로 조정 가능):
