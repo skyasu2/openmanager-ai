@@ -22,6 +22,8 @@
   - public/**/*
   - config/**/*
   - supabase/migrations/**/*
+  - supabase/seeds/**/*
+  - supabase/config.toml
   - package.json
   - package-lock.json
   - next.config.mjs
@@ -44,6 +46,8 @@
   - public/**/*
   - config/**/*
   - supabase/migrations/**/*
+  - supabase/seeds/**/*
+  - supabase/config.toml
   - package.json
   - package-lock.json
   - next.config.mjs
