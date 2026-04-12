@@ -8,7 +8,7 @@
 > Canonical: docs/reference/architecture/infrastructure/database.md
 > Tags: database,supabase,schema,infrastructure
 >
-> **프로젝트 버전**: v8.11.9 | **Updated**: 2026-04-12 (bootstrap blocker 수정 이력 갱신)
+> **프로젝트 버전**: v8.11.9 | **Updated**: 2026-04-12 (bootstrap blocker 해소 완료 검증)
 
 ## 🐘 Supabase PostgreSQL 스키마
 
@@ -112,7 +112,7 @@ FOR VALUES FROM ('2025-01-01') TO ('2025-02-01');
 | `c91570551` | `20260213122551_simplify_rag_for_free_tier.sql`에 command_vectors bootstrap 복원 |
 | `a6d196da1` | `20251223230707_create_conversation_history.sql` · `hourly_server_states_complete.sql` history-only stub 전환 (hosted schema 비존재 객체 replay 제거) |
 
-수정 후 `supabase db reset` 기준 end-to-end 성공 여부는 아직 로컬 실검증 전 상태입니다.
+**검증 완료 (`2026-04-12`)**: `supabase db reset` 기준 전체 migration chain이 에러 없이 완료됨. `type "vector" does not exist` blocker 소거 확인.
 
 ### 이동 전 체크리스트
 1. 첫 `vector(...)` 사용 전 extension bootstrap 진입점(`CREATE SCHEMA extensions`, `CREATE EXTENSION vector`, 필요 시 `pg_trgm`)을 확정합니다.

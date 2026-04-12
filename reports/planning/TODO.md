@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-12 KST (knowledge_base split-first 시나리오 고정 — architecture 장문 1→2 split, 후속 예산 +2)
+**Last Updated**: 2026-04-12 KST (local bootstrap blocker 해소 완료 — supabase db reset 전체 체인 성공 검증)
 
 ## Active Tasks
 
@@ -19,6 +19,10 @@
 | P3: `knowledge_base` RAG corpus 확충 | Low | split-first 시나리오를 고정했다. `현재 인프라 구성 토폴로지 스냅샷`(`1020자`)을 `현재 인프라 역할/트래픽 토폴로지 스냅샷` + `현재 인프라 배치/운영 검증 스냅샷` 2문서로 분할하면 live count는 `49→50`, 권장 한도 `52` 기준 후속 신규 추가 예산은 `+2`. 다음 단계는 [knowledge-base-corpus-expansion-plan](./knowledge-base-corpus-expansion-plan.md)의 Phase 3에서 `manual/imported` 후보 6~9개 초안 작성. |
 | P3: Storybook `experimentalComponentsManifest` stable 승격 여부 재확인 | Low | 2026-04-12 재확인 결과 `storybook`/`@storybook/nextjs-vite` stable dist-tag는 둘 다 아직 `10.2.10`, `next`는 `10.3.0-alpha.6`. `.storybook/main.ts`의 feature flag는 그대로 유지. |
 | P3: `src/types/README.md` 전용 타입 SSOT 문서 필요성 재평가 | Low | 현재 전용 README는 없음. 타입 정제 작업은 완료됐고, 신규 문서 추가는 실제 drift가 다시 생길 때만 검토. |
+
+### Completed (2026-04-12 #58)
+- [x] P1: local bootstrap blocker 해소 완료 — `supabase db reset` 전체 migration chain 성공. `type "vector" does not exist` 에러 소거. conversation_history · hourly_server_states · sync_servers 등 hosted schema 비존재 객체 stub화 완료.
+- [x] P1: database.md bootstrap 이력 갱신 — 수정 4건 테이블화, `2026-04-12` 실검증 완료 명시.
 
 ### Completed (2026-04-12 #57)
 - [x] `knowledge_base` split-first 시나리오 고정 — over-limit architecture 문서 `현재 인프라 구성 토폴로지 스냅샷`을 2개 문서로 분할하는 방향으로 Phase 2를 확정.
