@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-12 KST (QA storage 7차 정리 — duplicated UX screenshot 1건 제거, evidence 51.71MiB로 감소)
+**Last Updated**: 2026-04-12 KST (knowledge_base 분포 재측정 완료 — 49 docs / source 편향 + architecture 장문 1건 확인)
 
 ## Active Tasks
 
@@ -16,9 +16,16 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| P3: `knowledge_base` RAG corpus 확충 | Low | 현재 49행. [knowledge-base-corpus-expansion-plan](./knowledge-base-corpus-expansion-plan.md)을 기준으로 실제 분포 재측정 후 slot budget 안에서 `incident / best_practice / troubleshooting` 우선 보강. 트리거: AI 응답 품질 이슈 발생 시. |
+| P3: `knowledge_base` RAG corpus 확충 | Low | 실측 결과 live `49`행, category는 모두 target range 내. 핵심 debt는 `source` 편향(`seed_script 30 / 61.22%`, `command_vectors_migration 18 / 36.73%`, `manual 0`)과 `architecture/imported` 장문 `1`건(`현재 인프라 구성 토폴로지 스냅샷`, `1020자`). 권장 slot은 `+3`이지만, split-first 전략을 쓰면 실사용 예산은 `+2`가 된다. 다음 단계는 [knowledge-base-corpus-expansion-plan](./knowledge-base-corpus-expansion-plan.md)의 Phase 2 split-first 시나리오 고정. |
 | P3: Storybook `experimentalComponentsManifest` stable 승격 여부 재확인 | Low | 2026-04-12 재확인 결과 `storybook`/`@storybook/nextjs-vite` stable dist-tag는 둘 다 아직 `10.2.10`, `next`는 `10.3.0-alpha.6`. `.storybook/main.ts`의 feature flag는 그대로 유지. |
 | P3: `src/types/README.md` 전용 타입 SSOT 문서 필요성 재평가 | Low | 현재 전용 README는 없음. 타입 정제 작업은 완료됐고, 신규 문서 추가는 실제 drift가 다시 생길 때만 검토. |
+
+### Completed (2026-04-12 #56)
+- [x] `knowledge_base` 실측 분포 재측정 완료 — live count `49`, target 길이 `48`, below target `0`, over limit `1`, placeholder title `0`, auto_generated `0`.
+- [x] category 분포 확인 — `command 18`, `troubleshooting 10`, `incident 9`, `best_practice 8`, `architecture 3`, `security 1`로 모두 target range 안에 있음을 확인.
+- [x] source 편향 확인 — `seed_script 30 (61.22%)`, `command_vectors_migration 18 (36.73%)`, `imported 1 (2.04%)`, `manual 0`.
+- [x] 핵심 debt 식별 — `architecture/imported` 문서 `현재 인프라 구성 토폴로지 스냅샷` 1건이 `1020자`로 hard limit 초과.
+- [x] slot budget 고정 — 권장 `52` 기준 순증 가능 slot은 `+3`, 다만 over-limit architecture split을 먼저 하면 실사용 예산은 `+2`.
 
 ### Completed (2026-04-12 #55)
 - [x] QA evidence 자동 정리 경계선 고정 — [README.md](/mnt/d/dev/openmanager-ai/reports/qa/README.md:195)에 orphan/missing/archive candidate가 모두 `0`인 상태에서 남는 top evidence는 policy-protected로 취급한다고 명시.

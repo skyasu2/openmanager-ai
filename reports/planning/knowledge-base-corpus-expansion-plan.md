@@ -27,14 +27,65 @@
   - architecture `2~4`
   - security `1~2`
 
+## 2026-04-12 실측 결과
+
+### 총괄
+
+- live count: `49`
+- target 길이(280~520자): `48`
+- below target(<280자): `0`
+- over target(521~600자): `0`
+- over limit(>600자): `1`
+- placeholder title: `0`
+- auto_generated: `0`
+- 평균 길이: `360.86자`
+
+### 카테고리 분포
+
+| category | count | pct | 상태 |
+|----------|------:|----:|------|
+| command | 18 | 36.73% | 목표 범위 하한, 비중 상한(`38%`) 아래 |
+| troubleshooting | 10 | 20.41% | 목표 범위 내 |
+| incident | 9 | 18.37% | 목표 범위 내 |
+| best_practice | 8 | 16.33% | 목표 범위 하한 |
+| architecture | 3 | 6.12% | 목표 범위 내, 단 over-limit 1건 포함 |
+| security | 1 | 2.04% | 목표 범위 하한 |
+
+### source 분포
+
+| source | count | pct | 해석 |
+|--------|------:|----:|------|
+| seed_script | 30 | 61.22% | corpus의 기본 골격. manual 비중이 없는 것이 약점 |
+| command_vectors_migration | 18 | 36.73% | command 카테고리 전부가 migration 기원 |
+| imported | 1 | 2.04% | imported 문서는 1건뿐이며, 동시에 유일한 over-limit 문서 |
+
+### 품질 debt
+
+- exact title duplicate: `0`
+- below target 문서: `0`
+- over-limit 문서: `1`
+  - 제목: `현재 인프라 구성 토폴로지 스냅샷`
+  - category/source: `architecture / imported`
+  - 길이: `1020자`
+
+## 실측 해석 (업데이트)
+
+- 이전 가설과 달리 현재 corpus는 **카테고리 부족보다 source 편향**이 더 크다.
+- 모든 카테고리가 목표 범위 안에 들어와 있으므로, 지금 `incident / best_practice / troubleshooting`를 무조건 늘리는 것은 정밀한 근거가 약하다.
+- 대신 다음 순서가 더 합리적이다.
+  1. over-limit architecture 문서 1건을 분할 또는 요약해 retrieval precision을 먼저 높인다.
+  2. 이후 `manual` 또는 사람이 검증한 `imported` 재구성 문서를 넣어 source 다양성을 보강한다.
+  3. 신규 추가는 category deficit 보완이 아니라 source 품질 보강 관점에서 제한적으로 수행한다.
+
 ## 핵심 해석
 
 - 지금 단계의 corpus 확충은 "문서를 많이 넣는 작업"이 아니다.
 - 권장 한도까지 남은 여유는 크지 않으므로, **추가 + 정리**를 같이 해야 한다.
-- 특히 command 문서가 이미 큰 비중을 차지하는 구조라면, 신규 slot을 대부분 `incident / best_practice / troubleshooting`에 써야 한다.
+- 현재는 카테고리 수 자체보다 `source` 품질과 장문 문서 정리가 더 우선이다.
+- 따라서 신규 slot은 `manual` 또는 사람이 검증한 `imported` 재구성 문서에 우선 배정하고, category는 `incident / best_practice / troubleshooting` 쪽에서 품질 공백이 큰 항목만 제한적으로 채운다.
 - 즉, 실행 단위는 다음 둘 중 하나여야 한다.
+  - over-limit 문서를 분할/요약하고 그 빈 자리에 신규 문서를 넣기
   - 약한 기존 문서를 교체하면서 신규 문서를 넣기
-  - 2~3개 저밀도 문서를 병합해 slot을 확보한 뒤 신규 문서를 넣기
 
 ## 범위
 
@@ -101,15 +152,20 @@
 
 ### Phase 1. 실제 분포 재측정
 
-- [ ] live `knowledge_base`의 category/source/title/길이 분포를 다시 측정
-- [ ] `48` vs `49`처럼 문서화된 count drift가 있으면 기준값을 최신화
-- [ ] `below_target`, `over_limit`, `duplicate-like` 후보 목록 생성
+- [x] live `knowledge_base`의 category/source/title/길이 분포를 다시 측정
+- [x] `48` vs `49` count drift를 최신값 `49`로 고정
+- [x] `below_target`, `over_limit`, `duplicate-like` 후보 목록 생성
+  - below target `0`
+  - exact duplicate title `0`
+  - over-limit `1` (`현재 인프라 구성 토폴로지 스냅샷`, 1020자)
 
 ### Phase 2. slot 예산 확정
 
-- [ ] 권장 한도 `52` 기준으로 신규 추가 가능 slot 계산
-- [ ] command 과대표 시 대체/병합 후보 확정
-- [ ] 이번 배치 목표를 `+3 docs 이내` 또는 `교체형 1:1`로 제한
+- [x] 권장 한도 `52` 기준 신규 추가 가능 slot은 `+3`
+- [x] over-limit architecture 문서를 1→2로 분할하면 실사용 예산은 `+2`로 감소
+- [x] command 과대표 여부 확인 — `36.73%`로 cap 아래라 즉시 축소 필요는 없음
+- [x] 이번 배치 목표를 `+3 docs 이내` 또는 `교체형 1:1`로 제한
+- [ ] split-first 전략을 실제 반영 시나리오로 고정 (`architecture split` 후 `+2 docs` 또는 split 없이 `+3 docs`)
 
 ### Phase 3. 신규 corpus 후보 초안 작성
 
@@ -142,3 +198,4 @@
 
 - 지금은 `P3`이므로, 실제 착수 트리거는 "AI 응답 품질 이슈가 반복 관측될 때"가 맞다.
 - 다만 준비 없이 바로 corpus를 늘리면 free-tier footprint와 retrieval precision이 동시에 나빠질 수 있으므로, 다음 실행은 이 계획을 기준으로 해야 한다.
+- 2026-04-12 실측 기준으로는 "카테고리 수 부족"보다 "source 편향 + 장문 architecture 문서 1건"이 더 우선순위가 높다.
