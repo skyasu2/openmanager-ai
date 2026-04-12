@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-12 KST (`create_vector_table()` 제거 완료 — 미사용 구형 pgvector helper 정리)
+**Last Updated**: 2026-04-12 KST (QA evidence 1차 정리 — trace 2건 prune, total size 96.70MiB로 감소)
 
 ## Active Tasks
 
@@ -16,9 +16,30 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| P2: QA evidence 저장소 용량 정리 | Medium | 1차 정리 후 `reports/qa/evidence/` `62.77MiB / 206파일`, 전체 `reports/qa` `96.70MiB`. 대형 trace 2건은 제거했지만 evidence 경고 임계치(`40MiB`)는 아직 초과. 오래된 legacy screenshot 보관 정책 추가 정리 필요. |
 | P3: `knowledge_base` RAG corpus 확충 | Low | 현재 49행. AI 답변 품질 향상 위해 커버리지 확대 검토. 트리거: AI 응답 품질 이슈 발생 시. |
 | P3: Storybook `experimentalComponentsManifest` stable 승격 여부 재확인 | Low | npm registry stable이 아직 `10.2.10`이라 보류. `10.3.x`가 stable dist-tag로 올라온 뒤 `.storybook/main.ts` feature flag 재검토. |
 | P3: `src/types/README.md` 전용 타입 SSOT 문서 필요성 재평가 | Low | 현재 전용 README는 없음. 타입 정제 작업은 완료됐고, 신규 문서 추가는 실제 drift가 다시 생길 때만 검토. |
+
+### Completed (2026-04-12 #46)
+- [x] QA evidence 저장소 1차 정리 완료 — 가장 큰 Playwright trace zip 2건(`~18.1MiB` x 2) 제거.
+- [x] historical run 참조 정합성 유지 — [qa-run-QA-20260324-0181.json](/mnt/d/dev/openmanager-ai/reports/qa/runs/2026/qa-run-QA-20260324-0181.json:1), [qa-run-QA-20260409-0266.json](/mnt/d/dev/openmanager-ai/reports/qa/runs/2026/qa-run-QA-20260409-0266.json:1) 에서 trace artifact만 제거하고 screenshot/console/network evidence는 유지.
+- [x] 용량 절감 확인 — `reports/qa` `132.92MiB → 96.70MiB`, `reports/qa/evidence` `98.99MiB → 62.77MiB`, `files >= 8MiB` `2 → 0`.
+- [x] 무결성 재검증 — `npm run qa:evidence:audit` 기준 orphan `0`, missing durable artifact `0`, recent counted runs without artifacts `0`.
+- [x] 잔여 부채 명확화 — 전체 저장소 경고는 해소됐지만 evidence 경고(`62.77MiB > 40MiB`)는 남아 있어 backlog P2는 유지.
+
+---
+
+### Completed (2026-04-12 #45)
+- [x] QA-20260412-0272 Vercel Production targeted run — 10/10 pass, **GO** 판정.
+- [x] Supabase 변경 영향 없음 확인 — schema cleanup(orphan 함수/뷰 정리, server_logs 제거 등) 이후 dashboard·auth·AI sidebar 경로 회귀 없음.
+- [x] `security_audit_logs` live path 증거 확보 — production guest login 후 `guest_login_success` row 1건 생성 확인.
+- [x] 커버리지 — `/` · `/login` · guest PIN · `/system-boot→/dashboard` · dashboard render · AI sidebar ready · `/api/health` · `/api/version` · audit log insert.
+- [x] 스킵 항목 — OAuth callback, approval_history path(QA-20260411-0270으로 이미 커버), feedback submit, 실제 LLM 호출.
+- [x] 비용/사이드이펙트 — Vercel effective `$6.55` / billed `$0.00`, LLM 호출 없음, audit row 1건(기대 동작).
+- [x] 비차단 운영 메모 — `reports/qa/evidence/` 100MB / 69파일 용량 경고 → Backlog P2로 등록.
+
+---
 
 ### Completed (2026-04-12 #44)
 - [x] `create_vector_table(text)` 제거 완료 — remote에 남아 있던 구형 pgvector helper(`vector(1536)` + `ivfflat`)를 drop migration으로 정리.
