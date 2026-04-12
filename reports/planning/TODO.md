@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-12 KST (knowledge_base 분포 재측정 완료 — 49 docs / source 편향 + architecture 장문 1건 확인)
+**Last Updated**: 2026-04-12 KST (knowledge_base split-first 시나리오 고정 — architecture 장문 1→2 split, 후속 예산 +2)
 
 ## Active Tasks
 
@@ -16,9 +16,15 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| P3: `knowledge_base` RAG corpus 확충 | Low | 실측 결과 live `49`행, category는 모두 target range 내. 핵심 debt는 `source` 편향(`seed_script 30 / 61.22%`, `command_vectors_migration 18 / 36.73%`, `manual 0`)과 `architecture/imported` 장문 `1`건(`현재 인프라 구성 토폴로지 스냅샷`, `1020자`). 권장 slot은 `+3`이지만, split-first 전략을 쓰면 실사용 예산은 `+2`가 된다. 다음 단계는 [knowledge-base-corpus-expansion-plan](./knowledge-base-corpus-expansion-plan.md)의 Phase 2 split-first 시나리오 고정. |
+| P3: `knowledge_base` RAG corpus 확충 | Low | split-first 시나리오를 고정했다. `현재 인프라 구성 토폴로지 스냅샷`(`1020자`)을 `현재 인프라 역할/트래픽 토폴로지 스냅샷` + `현재 인프라 배치/운영 검증 스냅샷` 2문서로 분할하면 live count는 `49→50`, 권장 한도 `52` 기준 후속 신규 추가 예산은 `+2`. 다음 단계는 [knowledge-base-corpus-expansion-plan](./knowledge-base-corpus-expansion-plan.md)의 Phase 3에서 `manual/imported` 후보 6~9개 초안 작성. |
 | P3: Storybook `experimentalComponentsManifest` stable 승격 여부 재확인 | Low | 2026-04-12 재확인 결과 `storybook`/`@storybook/nextjs-vite` stable dist-tag는 둘 다 아직 `10.2.10`, `next`는 `10.3.0-alpha.6`. `.storybook/main.ts`의 feature flag는 그대로 유지. |
 | P3: `src/types/README.md` 전용 타입 SSOT 문서 필요성 재평가 | Low | 현재 전용 README는 없음. 타입 정제 작업은 완료됐고, 신규 문서 추가는 실제 drift가 다시 생길 때만 검토. |
+
+### Completed (2026-04-12 #57)
+- [x] `knowledge_base` split-first 시나리오 고정 — over-limit architecture 문서 `현재 인프라 구성 토폴로지 스냅샷`을 2개 문서로 분할하는 방향으로 Phase 2를 확정.
+- [x] 분할 구조 정의 — `현재 인프라 역할/트래픽 토폴로지 스냅샷`(역할 분포/트래픽 경로) + `현재 인프라 배치/운영 검증 스냅샷`(리전/AZ/환경/운영 규칙)으로 분리.
+- [x] 예산 재계산 — split 적용 시 live count `49→50`, 권장 한도 `52` 기준 후속 신규 추가 예산은 `+2`.
+- [x] 실행 원칙 고정 — split 문서는 모두 `280~520자` 타깃으로 맞추고, 전체 서버 ID 나열 대신 역할/배치 해석 중심으로 요약.
 
 ### Completed (2026-04-12 #56)
 - [x] `knowledge_base` 실측 분포 재측정 완료 — live count `49`, target 길이 `48`, below target `0`, over limit `1`, placeholder title `0`, auto_generated `0`.
