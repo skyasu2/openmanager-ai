@@ -101,12 +101,18 @@ FOR VALUES FROM ('2025-01-01') TO ('2025-02-01');
 - 벡터 타입과 operator class도 `vector(...)`, `vector_cosine_ops`, `gin_trgm_ops`처럼 비정규화 이름을 직접 사용합니다.
 - 현재 레포에는 `create extension vector with schema extensions`를 정식 bootstrap migration으로 선언한 이력이 없습니다.
 
+### 검증으로 확인된 현재 bootstrap 실패
+- `2026-04-12` 로컬 `supabase start` 재현 기준으로, fresh bootstrap은 `20251216233232_create_knowledge_base_table.sql`에서 중단됩니다.
+- 실제 실패 메시지는 `type "vector" does not exist`이며, 첫 `knowledge_base.embedding vector(384)` 선언에서 발생했습니다.
+- 즉 현재 문제는 단순히 `public -> extensions` 이동 준비 부족만이 아니라, 레포 기준 local reset/bootstrap 자체가 이미 `vector` extension preamble 없이 성립하지 않는다는 점입니다.
+
 ### 이동 전 체크리스트
-1. `vector(...)` 타입 선언을 `extensions.vector(...)` 기준으로 정리합니다.
-2. `vector_cosine_ops`, `gin_trgm_ops`, `similarity()` 같은 extension 심볼의 스키마 qualification 전략을 정합니다.
-3. `SECURITY DEFINER` 함수의 고정 `search_path`와 extension 함수 호출이 충돌하지 않도록 함수 본문을 정리합니다.
-4. fresh reset 또는 disposable branch DB에서 bootstrap이 끝까지 성공하는지 검증합니다.
-5. 운영 DB 적용 전, advisor 경고 소거와 RAG RPC 동작을 둘 다 확인합니다.
+1. 첫 `vector(...)` 사용 전 extension bootstrap 진입점(`CREATE SCHEMA extensions`, `CREATE EXTENSION vector`, 필요 시 `pg_trgm`)을 확정합니다.
+2. `vector(...)` 타입 선언을 `extensions.vector(...)` 기준으로 정리합니다.
+3. `vector_cosine_ops`, `gin_trgm_ops`, `similarity()` 같은 extension 심볼의 스키마 qualification 전략을 정합니다.
+4. `SECURITY DEFINER` 함수의 고정 `search_path`와 extension 함수 호출이 충돌하지 않도록 함수 본문을 정리합니다.
+5. fresh reset 또는 disposable branch DB에서 bootstrap이 끝까지 성공하는지 검증합니다.
+6. 운영 DB 적용 전, advisor 경고 소거와 RAG RPC 동작을 둘 다 확인합니다.
 
 ### 실제 파일 인벤토리
 
