@@ -54,11 +54,6 @@
   "artifacts": [
     {
       "type": "playwright-screenshot",
-      "label": "Landing page overview",
-      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0195-01-landing-page-overview-20260330.png"
-    },
-    {
-      "type": "playwright-screenshot",
       "label": "AI Assistant modal detail",
       "path": "reports/qa/evidence/legacy/2026/qa-20260330-0195-02-landing-ai-modal-detail-20260330.png"
     },
@@ -128,7 +123,8 @@
     "Architecture toggle rendered on all four cards; Vibe Coding history toggle rendered successfully.",
     "AI Assistant content density is strongest, but some copy mixes 5-Agent and 7-Agent terminology in a way that may confuse non-technical viewers.",
     "Vibe Coding card is differentiated best, but its production copy is not fully aligned with current repository data.",
-    "[artifact-migration] 1 legacy artifacts/* evidence path(s) were missing and removed from artifacts list; artifactDebt acknowledged."
+    "[artifact-migration] 1 legacy artifacts/* evidence path(s) were missing and removed from artifacts list; artifactDebt acknowledged.",
+    "2026-04-12 evidence storage cleanup batch 8: landing overview screenshot pruned under explicit retention override; modal/detail/history/architecture proof retained."
   ],
   "links": [
     {

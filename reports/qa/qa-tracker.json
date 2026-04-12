@@ -17117,11 +17117,6 @@
       "artifacts": [
         {
           "type": "playwright-screenshot",
-          "label": "Landing page overview",
-          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0195-01-landing-page-overview-20260330.png"
-        },
-        {
-          "type": "playwright-screenshot",
           "label": "AI Assistant modal detail",
           "path": "reports/qa/evidence/legacy/2026/qa-20260330-0195-02-landing-ai-modal-detail-20260330.png"
         },
@@ -17523,16 +17518,6 @@
           "type": "playwright-network",
           "label": "Landing production web vitals network",
           "path": "reports/qa/evidence/legacy/2026/qa-20260330-0199-04-landing-webvitals-production-network-20260330.txt"
-        },
-        {
-          "type": "playwright-screenshot",
-          "label": "qa-prod-01-loading.png",
-          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0199-05-qa-prod-01-loading.png"
-        },
-        {
-          "type": "playwright-screenshot",
-          "label": "qa-prod-02-cards.png",
-          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0199-06-qa-prod-02-cards.png"
         }
       ],
       "links": [

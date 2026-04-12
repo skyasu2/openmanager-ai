@@ -70,16 +70,6 @@
       "type": "playwright-network",
       "label": "Landing production web vitals network",
       "path": "reports/qa/evidence/legacy/2026/qa-20260330-0199-04-landing-webvitals-production-network-20260330.txt"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "qa-prod-01-loading.png",
-      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0199-05-qa-prod-01-loading.png"
-    },
-    {
-      "type": "playwright-screenshot",
-      "label": "qa-prod-02-cards.png",
-      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0199-06-qa-prod-02-cards.png"
     }
   ],
   "completedImprovements": [],
@@ -91,7 +81,8 @@
     "The previous production build blocker was the client render path calling crypto.randomUUID during prerender; deferring session id creation to client mount resolved the deployment.",
     "Direct POST contract to /api/web-vitals returned 200 with success=true and analysis payload.",
     "Playwright network capture did not show an automatic /api/web-vitals beacon during the smoke window, so client-side field beacon correlation remains explicitly unverified in this run.",
-    "Landing and validation surfaces rendered without browser console errors."
+    "Landing and validation surfaces rendered without browser console errors.",
+    "2026-04-12 evidence storage cleanup batch 8: auxiliary loading/cards screenshots pruned under explicit retention override; landing/validation/console/network proof retained."
   ],
   "links": [
     {
