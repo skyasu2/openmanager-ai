@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-12 KST (QA evidence 3차 정리 — non-counted screenshot 2건 prune, total size 72.37MiB로 감소)
+**Last Updated**: 2026-04-12 KST (Storybook stable 재확인 — 10.3.x는 아직 alpha, feature flag 유지)
 
 ## Active Tasks
 
@@ -18,8 +18,16 @@
 |------|----------|-------|
 | P2: QA evidence 저장소 용량 정리 | Medium | 3차 정리 후 전체 `reports/qa`는 `72.37MiB`, `reports/qa/evidence/`는 `60.62MiB / 204파일`까지 감소. trace 2건, unreferenced run asset 31건, non-counted screenshot 2건을 정리했지만 evidence 경고 임계치(`40MiB`)는 아직 초과하므로, 오래된 legacy screenshot 보관 정책 추가 정리 필요. |
 | P3: `knowledge_base` RAG corpus 확충 | Low | 현재 49행. AI 답변 품질 향상 위해 커버리지 확대 검토. 트리거: AI 응답 품질 이슈 발생 시. |
-| P3: Storybook `experimentalComponentsManifest` stable 승격 여부 재확인 | Low | npm registry stable이 아직 `10.2.10`이라 보류. `10.3.x`가 stable dist-tag로 올라온 뒤 `.storybook/main.ts` feature flag 재검토. |
+| P3: Storybook `experimentalComponentsManifest` stable 승격 여부 재확인 | Low | 2026-04-12 재확인 결과 `storybook`/`@storybook/nextjs-vite` stable dist-tag는 둘 다 아직 `10.2.10`, `next`는 `10.3.0-alpha.6`. `.storybook/main.ts`의 feature flag는 그대로 유지. |
 | P3: `src/types/README.md` 전용 타입 SSOT 문서 필요성 재평가 | Low | 현재 전용 README는 없음. 타입 정제 작업은 완료됐고, 신규 문서 추가는 실제 drift가 다시 생길 때만 검토. |
+
+### Completed (2026-04-12 #49)
+- [x] Storybook stable 승격 여부 재확인 완료 — npm registry 기준 `storybook latest=10.2.10`, `@storybook/nextjs-vite latest=10.2.10` 확인.
+- [x] `10.3.x` 상태 확인 — stable이 아니라 `next=10.3.0-alpha.6` 단계라 production config 변경 시점이 아님.
+- [x] 결론 고정 — [.storybook/main.ts](/mnt/d/dev/openmanager-ai/.storybook/main.ts:18)의 `experimentalComponentsManifest: true`는 계속 유지.
+- [x] 코드 변경 없음 — 현재 설정이 최신 stable 기준과 정합하므로 docs/backlog 상태만 갱신.
+
+---
 
 ### Completed (2026-04-12 #48)
 - [x] QA evidence 저장소 3차 정리 완료 — `countsTowardSummary=false` verification 런 2개에서 대형 landing/validation screenshot 2건 제거.
