@@ -1,0 +1,109 @@
+{
+  "runId": "QA-20260412-0272",
+  "recordedAt": "2026-04-12T00:18:52.994Z",
+  "recordedAtKst": "2026-04-12 09:18:52 KST",
+  "runTitle": "Vercel production targeted QA - Supabase impact surfaces after schema cleanup",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run + Supabase",
+    "branch": "main",
+    "deploymentId": "dpl_GZc8iZVSUmgA1P2XoFpjRkxAzXnC",
+    "deploymentUrl": "https://openmanager-euagdperw-skyasus-projects.vercel.app",
+    "commitSha": "665d80cf6b380e13e04816655fc43980290fb69f"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "security-pack"],
+  "coveredSurfaces": [
+    "/",
+    "/login",
+    "guest PIN login via production UI",
+    "/system-boot -> /dashboard redirect",
+    "dashboard auth/session render",
+    "AI sidebar engine Ready state",
+    "/api/health",
+    "/api/version",
+    "security_audit_logs insert via production guest login"
+  ],
+  "skippedSurfaces": [
+    "OAuth callback route",
+    "approval_history internal approval path",
+    "feedback submit path",
+    "AI response generation / paid model call"
+  ],
+  "checks": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-12T09:07:19+09:00",
+      "summary": "Current billing period effective usage 6.5527 USD, billed 0.0000 USD, no unexpected billed usage spike before QA.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Production landing",
+      "path": "reports/qa/evidence/qa-20260412-vercel-landing.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Production login",
+      "path": "reports/qa/evidence/qa-20260412-vercel-login.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Production dashboard",
+      "path": "reports/qa/evidence/qa-20260412-vercel-dashboard.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI sidebar ready",
+      "path": "reports/qa/evidence/qa-20260412-vercel-ai-sidebar-ready.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Console errors",
+      "path": "reports/qa/evidence/qa-20260412-vercel-console-errors.txt",
+      "note": "0 console errors during tested landing/login/dashboard/sidebar flow"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production frontend deploy is v8.11.9 (commit 665d80cf). This run validates the current production surface against already-applied Supabase schema changes.",
+    "No AI prompt was sent in this run to avoid unnecessary paid model usage; AI sidebar readiness only was verified.",
+    "Guest login produced a new security_audit_logs row with reason guest_login_success on remote Supabase.",
+    "API health returned healthy with database/cache/ai connected and version 8.11.9 at 2026-04-12T00:10:41Z."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production app",
+      "url": "https://openmanager-ai.vercel.app/",
+      "note": "Canonical production URL"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/GZc8iZVSUmgA1P2XoFpjRkxAzXnC",
+      "note": "Current production deployment under test"
+    }
+  ]
+}

@@ -1,17 +1,17 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-11 16:18:03 KST
+> Generated at: 2026-04-12 09:18:53 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 269 |
-| Total Runs (Counted) | 239 |
+| Total Recorded Runs | 270 |
+| Total Runs (Counted) | 240 |
 | Non-counted Runs | 30 |
-| Total Checks | 1859 |
-| Passed | 1787 |
+| Total Checks | 1869 |
+| Passed | 1797 |
 | Failed | 66 |
 | Completed Items | 287 |
 | Pending Items | 0 |
@@ -20,13 +20,13 @@
 | Expert Domains Tracked | 8 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260409-0267 (2026-04-09T13:35:00.812Z) |
-| Latest Recorded Run | QA-20260411-0271 (2026-04-11T07:18:03.097Z) |
+| Last Counted Run | QA-20260412-0272 (2026-04-12T00:18:52.994Z) |
+| Latest Recorded Run | QA-20260412-0272 (2026-04-12T00:18:52.994Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260411-0271 (2026-04-11T07:18:03.097Z)
+Latest run: QA-20260412-0272 (2026-04-12T00:18:52.994Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -36,28 +36,34 @@ Latest run: QA-20260411-0271 (2026-04-11T07:18:03.097Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Current billing period effective usage 6.5527 USD, billed 0.0000 USD, no unexpected billed usage spike before QA. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: SHA 2d98f552
-- Covered Surfaces: /api/csrf-token, /api/auth/guest-login, security_audit_logs insert via recordLoginEvent
-- Skipped Surfaces: vercel production, oauth callback route, frontend login UI
+- Counts Toward Summary: yes
+- Deployment: dpl_GZc8iZVSUmgA1P2XoFpjRkxAzXnC / SHA 665d80cf
+- Coverage Packs: core-routes-smoke, dashboard-core, security-pack
+- Covered Surfaces: /, /login, guest PIN login via production UI, /system-boot -> /dashboard redirect, dashboard auth/session render, AI sidebar engine Ready state, /api/health, /api/version, security_audit_logs insert via production guest login
+- Skipped Surfaces: OAuth callback route, approval_history internal approval path, feedback submit path, AI response generation / paid model call
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | Production app | [Production app](https://openmanager-ai.vercel.app/) | Canonical production URL |
+| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://vercel.com/skyasus-projects/openmanager-ai/GZc8iZVSUmgA1P2XoFpjRkxAzXnC) | Current production deployment under test |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-screenshot | Production landing | `reports/qa/evidence/qa-20260412-vercel-landing.png` | - |
+| playwright-screenshot | Production login | `reports/qa/evidence/qa-20260412-vercel-login.png` | - |
+| playwright-screenshot | Production dashboard | `reports/qa/evidence/qa-20260412-vercel-dashboard.png` | - |
+| playwright-screenshot | AI sidebar ready | `reports/qa/evidence/qa-20260412-vercel-ai-sidebar-ready.png` | - |
+| playwright-console | Console errors | `reports/qa/evidence/qa-20260412-vercel-console-errors.txt` | - |
 
 ## Expert Domain Open Gaps
 
@@ -393,6 +399,7 @@ Latest run: QA-20260411-0271 (2026-04-11T07:18:03.097Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260412-0272 | 2026-04-12T00:18:52.994Z | targeted | no | yes | Vercel production targeted QA - Supabase impact surfaces after schema cleanup | 10 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260411-0271 | 2026-04-11T07:18:03.097Z | targeted | no | no | Local auth audit smoke - guest login route inserts security_audit_logs | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260411-0270 | 2026-04-11T06:08:29.888Z | targeted | no | no | AI Engine approval_history runtime smoke | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260410-0269 | 2026-04-10T14:43:09.818Z | targeted | no | no | Local auth audit smoke - guest login route inserts security_audit_logs | 4 | 0 | 0 | 0 | 0 | 0 |
@@ -412,4 +419,3 @@ Latest run: QA-20260411-0271 (2026-04-11T07:18:03.097Z)
 | QA-20260408-0254 | 2026-04-08T13:25:34.065Z | targeted | yes | no | Vercel Targeted Release Validation - v8.11.3 production drift | 3 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260408-0253 | 2026-04-08T04:54:22.471Z | targeted | no | yes | Playwright MCP Production QA - v8.11.0 analysis basis sanitization + agent label fix | 7 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260408-0252 | 2026-04-08T01:31:37.341Z | targeted | no | yes | Playwright MCP Production QA - fix(ai): multi-agent tool_result bubble-up + analyst instruction + AnalysisBasisBadge | 7 | 3 | 0 | 0 | 0 | 0 |
-| QA-20260408-0251 | 2026-04-07T23:31:32.252Z | targeted | no | yes | Playwright MCP Production QA - v8.11.0 streaming status + alert prefill | 6 | 0 | 0 | 0 | 0 | 0 |
