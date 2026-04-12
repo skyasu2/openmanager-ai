@@ -72,11 +72,6 @@
     },
     {
       "type": "playwright-screenshot",
-      "label": "final-landing.png",
-      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-05-final-landing.png"
-    },
-    {
-      "type": "playwright-screenshot",
       "label": "landing-modal-ai-assistant.png",
       "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-06-landing-modal-ai-assistant.png"
     },
@@ -108,7 +103,8 @@
   "notes": [
     "Production deployment b35c36d17 was READY and promoted before smoke execution.",
     "Landing page still rendered the expected hero, question preview, and four feature cards after the docs/dev-config pushes.",
-    "Preview QA evidence links were not visible in the main landing surface, and browser console contained zero errors."
+    "Preview QA evidence links were not visible in the main landing surface, and browser console contained zero errors.",
+    "2026-04-12 evidence storage cleanup: duplicate secondary landing screenshot pruned while keeping representative landing and comparison/UX evidence."
   ],
   "links": [
     {

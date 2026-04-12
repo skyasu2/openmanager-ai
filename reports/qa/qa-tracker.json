@@ -16897,11 +16897,6 @@
       "artifacts": [
         {
           "type": "playwright-screenshot",
-          "label": "Production landing",
-          "path": "reports/qa/evidence/legacy/2026/qa-20260327-0193-01-qa-20260327-prod-0193-landing.png"
-        },
-        {
-          "type": "playwright-screenshot",
           "label": "Vibe Coding modal",
           "path": "reports/qa/evidence/legacy/2026/qa-20260327-0193-02-qa-20260327-prod-0193-vibe-modal.png"
         },
@@ -17280,11 +17275,6 @@
         },
         {
           "type": "playwright-screenshot",
-          "label": "final-landing.png",
-          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-05-final-landing.png"
-        },
-        {
-          "type": "playwright-screenshot",
           "label": "landing-modal-ai-assistant.png",
           "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-06-landing-modal-ai-assistant.png"
         },
@@ -17400,11 +17390,6 @@
           "type": "playwright-screenshot",
           "label": "compare-hero.png",
           "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-04-compare-hero.png"
-        },
-        {
-          "type": "playwright-screenshot",
-          "label": "final-landing.png",
-          "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-05-final-landing.png"
         },
         {
           "type": "playwright-screenshot",

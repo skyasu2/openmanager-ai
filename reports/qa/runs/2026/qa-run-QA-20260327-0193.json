@@ -70,11 +70,6 @@
   "artifacts": [
     {
       "type": "playwright-screenshot",
-      "label": "Production landing",
-      "path": "reports/qa/evidence/legacy/2026/qa-20260327-0193-01-qa-20260327-prod-0193-landing.png"
-    },
-    {
-      "type": "playwright-screenshot",
       "label": "Vibe Coding modal",
       "path": "reports/qa/evidence/legacy/2026/qa-20260327-0193-02-qa-20260327-prod-0193-vibe-modal.png"
     },
@@ -124,7 +119,9 @@
       "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
     }
   ],
-  "notes": [],
+  "notes": [
+    "2026-04-12 evidence storage cleanup: redundant landing screenshot pruned; modal/dashboard/AI/console/network proof retained."
+  ],
   "links": [
     {
       "type": "general",

@@ -73,11 +73,6 @@
     },
     {
       "type": "playwright-screenshot",
-      "label": "final-landing.png",
-      "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-05-final-landing.png"
-    },
-    {
-      "type": "playwright-screenshot",
       "label": "landing-modal-ai-assistant.png",
       "path": "reports/qa/evidence/legacy/2026/qa-20260330-0197-06-landing-modal-ai-assistant.png"
     },
@@ -123,7 +118,8 @@
   "notes": [
     "Production deployment for commit f44571f08 failed with Module not found: ./VibeFinishSection. Follow-up commit 430bc4fe5 added the missing tracked file and restored deployment.",
     "Landing page now shows the updated card title, preview question examples, and revised validation link labels.",
-    "Browser console contained zero errors after the production deployment was promoted."
+    "Browser console contained zero errors after the production deployment was promoted.",
+    "2026-04-12 evidence storage cleanup: duplicate secondary landing screenshot pruned; representative landing + modal/UX/local proof retained."
   ],
   "links": [
     {
