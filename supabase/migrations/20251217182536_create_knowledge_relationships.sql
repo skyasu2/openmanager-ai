@@ -312,10 +312,12 @@ $$ LANGUAGE plpgsql;
 ALTER TABLE knowledge_relationships ENABLE ROW LEVEL SECURITY;
 
 -- Allow read access for authenticated users
+DROP POLICY IF EXISTS "Allow read access for all" ON knowledge_relationships;
 CREATE POLICY "Allow read access for all" ON knowledge_relationships
     FOR SELECT USING (true);
 
 -- Allow insert/update for service role only
+DROP POLICY IF EXISTS "Allow write for service role" ON knowledge_relationships;
 CREATE POLICY "Allow write for service role" ON knowledge_relationships
     FOR ALL USING (auth.role() = 'service_role');
 

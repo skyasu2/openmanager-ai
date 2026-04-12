@@ -11,6 +11,10 @@
 -- 3. hybrid_search_with_text - Update from 384d to 1024d
 -- =============================================================================
 
+-- Fresh bootstrap dependency: match_knowledge_base uses similarity()
+-- and trigram indexes later in this file.
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
 -- =============================================================================
 -- 1. match_documents (Vector-based search for LlamaIndex)
 -- =============================================================================
@@ -218,9 +222,6 @@ COMMENT ON FUNCTION hybrid_search_with_text IS 'Hybrid search combining Vector (
 -- =============================================================================
 -- 4. Create index for text similarity (if not exists)
 -- =============================================================================
--- Enable pg_trgm for text similarity functions
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
-
 -- Create trigram index for faster text search
 CREATE INDEX IF NOT EXISTS idx_knowledge_base_title_trgm
 ON knowledge_base USING gin (title gin_trgm_ops);

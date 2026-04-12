@@ -4,6 +4,10 @@
 -- Free Tier: 500MB DB limit → 예상 사용량 ~5MB (1000 문서 기준)
 -- ============================================================================
 
+-- Fresh bootstrap dependency: this is the first replayable vector usage
+-- in the active migration chain.
+CREATE EXTENSION IF NOT EXISTS vector;
+
 -- 1. knowledge_base 테이블 생성
 CREATE TABLE IF NOT EXISTS knowledge_base (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
