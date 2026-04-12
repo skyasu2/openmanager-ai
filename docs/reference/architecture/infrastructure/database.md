@@ -4,11 +4,11 @@
 > Owner: platform-data
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-02-17
+> Last reviewed: 2026-04-12
 > Canonical: docs/reference/architecture/infrastructure/database.md
 > Tags: database,supabase,schema,infrastructure
 >
-> **프로젝트 버전**: v8.0.0 | **Updated**: 2026-02-17
+> **프로젝트 버전**: v8.11.9 | **Updated**: 2026-04-12
 
 ## 🐘 Supabase PostgreSQL 스키마
 
@@ -88,3 +88,26 @@ CREATE INDEX idx_metrics_server_time ON server_metrics (server_id, timestamp);
 CREATE TABLE server_metrics_2025_01 PARTITION OF server_metrics
 FOR VALUES FROM ('2025-01-01') TO ('2025-02-01');
 ```
+
+## Extension Migration Pre-Check
+
+### 현재 상태
+- 운영 Supabase에는 `vector`와 `pg_trgm` extension이 아직 `public` 스키마에 설치되어 있습니다.
+- Supabase advisor 기준으로는 경고 대상이지만, 현재 레포의 RAG 마이그레이션과 함수 정의는 이 배치를 전제로 작성되어 있습니다.
+
+### 지금 바로 옮기지 않는 이유
+- `SECURITY DEFINER` RAG 함수는 `search_path = public, pg_temp`로 고정되어 있습니다.
+- 일부 함수는 `similarity()`를 비정규화 이름으로 호출합니다.
+- 벡터 타입과 operator class도 `vector(...)`, `vector_cosine_ops`, `gin_trgm_ops`처럼 비정규화 이름을 직접 사용합니다.
+- 현재 레포에는 `create extension vector with schema extensions`를 정식 bootstrap migration으로 선언한 이력이 없습니다.
+
+### 이동 전 체크리스트
+1. `vector(...)` 타입 선언을 `extensions.vector(...)` 기준으로 정리합니다.
+2. `vector_cosine_ops`, `gin_trgm_ops`, `similarity()` 같은 extension 심볼의 스키마 qualification 전략을 정합니다.
+3. `SECURITY DEFINER` 함수의 고정 `search_path`와 extension 함수 호출이 충돌하지 않도록 함수 본문을 정리합니다.
+4. fresh reset 또는 disposable branch DB에서 bootstrap이 끝까지 성공하는지 검증합니다.
+5. 운영 DB 적용 전, advisor 경고 소거와 RAG RPC 동작을 둘 다 확인합니다.
+
+### 운영 판단
+- 현재 이 항목은 즉시 수정 대상이 아니라 `migration prep` 선행 과제입니다.
+- checklist가 모두 끝나기 전에는 운영 DB에서 `vector`/`pg_trgm` extension 이동을 진행하지 않습니다.
