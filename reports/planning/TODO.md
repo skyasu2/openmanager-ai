@@ -10,16 +10,21 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| 진행 중 보류 항목 없음 | - | - | - |
+| P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 7차 정리 후 `reports/qa/evidence`는 `51.71MiB / 195파일`. orphan/missing/archive candidate는 모두 `0`이고 남은 상위 evidence는 single-artifact first-paint, counted/release-facing 대표 proof, modal/detail/history 유일 스크린샷처럼 policy-protected 범주라 routine prune은 중단. 새로운 evidence 누적 시점 또는 명시적 archival override가 있을 때만 재평가. |
 
 ## Backlog
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| P2: QA evidence 저장소 용량 정리 | Medium | 7차 정리 후 전체 `reports/qa`는 `56.16MiB`, `reports/qa/runs`는 `3.11MiB`, `reports/qa/evidence/`는 `51.71MiB / 195파일`. `QA-20260330-0197/0198`에서 공유하던 partial UX analysis screenshot 1건을 추가 제거했고 orphan/missing/candidate는 계속 `0`. 다만 실제 경고는 여전히 evidence 임계치(`40MiB`) 초과에서 발생하므로, 다음 정리는 단일 artifact landing/UX 분석 스냅샷의 보관 정책 재판단이 필요. |
 | P3: `knowledge_base` RAG corpus 확충 | Low | 현재 49행. [knowledge-base-corpus-expansion-plan](./knowledge-base-corpus-expansion-plan.md)을 기준으로 실제 분포 재측정 후 slot budget 안에서 `incident / best_practice / troubleshooting` 우선 보강. 트리거: AI 응답 품질 이슈 발생 시. |
 | P3: Storybook `experimentalComponentsManifest` stable 승격 여부 재확인 | Low | 2026-04-12 재확인 결과 `storybook`/`@storybook/nextjs-vite` stable dist-tag는 둘 다 아직 `10.2.10`, `next`는 `10.3.0-alpha.6`. `.storybook/main.ts`의 feature flag는 그대로 유지. |
 | P3: `src/types/README.md` 전용 타입 SSOT 문서 필요성 재평가 | Low | 현재 전용 README는 없음. 타입 정제 작업은 완료됐고, 신규 문서 추가는 실제 drift가 다시 생길 때만 검토. |
+
+### Completed (2026-04-12 #55)
+- [x] QA evidence 자동 정리 경계선 고정 — [README.md](/mnt/d/dev/openmanager-ai/reports/qa/README.md:195)에 orphan/missing/archive candidate가 모두 `0`인 상태에서 남는 top evidence는 policy-protected로 취급한다고 명시.
+- [x] 보호 범주 정의 — single-artifact first-paint proof, counted/release-facing 대표 proof, modal/detail/history 유일 스크린샷, local-vs-prod 비교 증거를 routine prune 제외 대상으로 고정.
+- [x] backlog 재분류 — `P2 QA evidence 저장소 용량 정리`를 active cleanup이 아니라 `tracking-only` on-hold 항목으로 이동.
+- [x] 운영 결론 명시 — 추가 절감은 routine cleanup이 아니라 명시적 archival/retention override 결정이 필요하므로, 다음 실작업 우선순위는 `knowledge_base` corpus 트랙으로 이동 가능.
 
 ### Completed (2026-04-12 #54)
 - [x] QA storage 7차 정리 완료 — `QA-20260330-0197` / `QA-20260330-0198`에서 공유하던 partial UX analysis screenshot `1`건 제거.
