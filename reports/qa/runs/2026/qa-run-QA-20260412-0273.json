@@ -1,0 +1,65 @@
+{
+  "runId": "QA-20260412-0273",
+  "recordedAt": "2026-04-12T06:56:48.689Z",
+  "recordedAtKst": "2026-04-12 15:56:48 KST",
+  "runTitle": "Local Next.js OAuth smoke - localhost and 127.0.0.1 loopback parity",
+  "owner": "codex",
+  "source": "local-next-dev-playwright-smoke",
+  "environment": {
+    "target": "local-next-dev",
+    "url": "http://localhost:3000",
+    "frontend": "Next.js local dev server",
+    "backend": "Supabase remote",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "3de9be78d"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["core-routes-smoke"],
+  "coveredSurfaces": [
+    "/login on localhost:3000",
+    "/login on 127.0.0.1:3000",
+    "GitHub OAuth start redirect_to=localhost/auth/callback",
+    "GitHub OAuth start redirect_to=127.0.0.1/auth/callback",
+    "Next.js dev HMR/WebSocket on 127.0.0.1"
+  ],
+  "skippedSurfaces": [
+    "OAuth provider login completion",
+    "Supabase auth callback code exchange completion",
+    "vercel production"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "next-dev-allowed-origins-loopback-parity",
+      "title": "127.0.0.1 dev-origin parity for OAuth smoke",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Playwright local smoke + Next dev log verification after normalizing next.config allowedDevOrigins",
+      "note": "127.0.0.1 /login no longer emits blocked cross-origin HMR/WebSocket errors and GitHub OAuth start uses /auth/callback correctly",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Dev-server scope only: validated login rendering, OAuth start redirect generation, and HMR/WebSocket stability for localhost and 127.0.0.1.",
+    "Out of scope by design: external provider sign-in completion and Supabase callback exchange."
+  ],
+  "links": []
+}

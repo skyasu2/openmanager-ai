@@ -2,20 +2,20 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-12T01:15:48.372Z"
+    "updatedAt": "2026-04-12T06:56:48.689Z"
   },
   "sequence": {
-    "nextRunNumber": 273
+    "nextRunNumber": 274
   },
   "summary": {
-    "totalRecordedRuns": 270,
+    "totalRecordedRuns": 271,
     "totalRuns": 240,
-    "excludedRuns": 30,
+    "excludedRuns": 31,
     "totalChecks": 1869,
     "totalPassed": 1797,
     "totalFailed": 66,
     "completionRate": 100,
-    "completedItems": 287,
+    "completedItems": 288,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 13,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260412-0272",
     "lastRecordedAt": "2026-04-12T00:18:52.994Z",
-    "latestRecordedRunId": "QA-20260412-0272",
-    "latestRecordedAt": "2026-04-12T00:18:52.994Z"
+    "latestRecordedRunId": "QA-20260412-0273",
+    "latestRecordedAt": "2026-04-12T06:56:48.689Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -6915,6 +6915,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-11T07:18:03.097Z"
+    },
+    "next-dev-allowed-origins-loopback-parity": {
+      "id": "next-dev-allowed-origins-loopback-parity",
+      "title": "127.0.0.1 dev-origin parity for OAuth smoke",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260412-0273",
+      "firstSeenAt": "2026-04-12T06:56:48.689Z",
+      "lastSeenRunId": "QA-20260412-0273",
+      "lastSeenAt": "2026-04-12T06:56:48.689Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Playwright local smoke + Next dev log verification after normalizing next.config allowedDevOrigins",
+      "lastNote": "127.0.0.1 /login no longer emits blocked cross-origin HMR/WebSocket errors and GitHub OAuth start uses /auth/callback correctly",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-12T06:56:48.689Z"
     }
   },
   "runs": [
@@ -23787,6 +23811,56 @@
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260412-0273",
+      "recordedAt": "2026-04-12T06:56:48.689Z",
+      "recordedAtKst": "2026-04-12 15:56:48 KST",
+      "title": "Local Next.js OAuth smoke - localhost and 127.0.0.1 loopback parity",
+      "owner": "codex",
+      "source": "local-next-dev-playwright-smoke",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260412-0273.json",
+      "environment": {
+        "target": "local-next-dev",
+        "url": "http://localhost:3000",
+        "frontend": "Next.js local dev server",
+        "backend": "Supabase remote",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "3de9be78d"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": ["core-routes-smoke"],
+      "coveredSurfaces": [
+        "/login on localhost:3000",
+        "/login on 127.0.0.1:3000",
+        "GitHub OAuth start redirect_to=localhost/auth/callback",
+        "GitHub OAuth start redirect_to=127.0.0.1/auth/callback",
+        "Next.js dev HMR/WebSocket on 127.0.0.1"
+      ],
+      "skippedSurfaces": [
+        "OAuth provider login completion",
+        "Supabase auth callback code exchange completion",
+        "vercel production"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0

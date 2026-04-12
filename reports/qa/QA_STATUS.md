@@ -1,19 +1,19 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-12 09:18:53 KST
+> Generated at: 2026-04-12 15:56:49 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 270 |
+| Total Recorded Runs | 271 |
 | Total Runs (Counted) | 240 |
-| Non-counted Runs | 30 |
+| Non-counted Runs | 31 |
 | Total Checks | 1869 |
 | Passed | 1797 |
 | Failed | 66 |
-| Completed Items | 287 |
+| Completed Items | 288 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 13 |
@@ -21,12 +21,12 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260412-0272 (2026-04-12T00:18:52.994Z) |
-| Latest Recorded Run | QA-20260412-0272 (2026-04-12T00:18:52.994Z) |
+| Latest Recorded Run | QA-20260412-0273 (2026-04-12T06:56:48.689Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260412-0272 (2026-04-12T00:18:52.994Z)
+Latest run: QA-20260412-0273 (2026-04-12T06:56:48.689Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -36,34 +36,29 @@ Latest run: QA-20260412-0272 (2026-04-12T00:18:52.994Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period effective usage 6.5527 USD, billed 0.0000 USD, no unexpected billed usage spike before QA. |
+| - | - | - | - | - |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Counts Toward Summary: yes
-- Deployment: dpl_GZc8iZVSUmgA1P2XoFpjRkxAzXnC / SHA 665d80cf
-- Coverage Packs: core-routes-smoke, dashboard-core, security-pack
-- Covered Surfaces: /, /login, guest PIN login via production UI, /system-boot -> /dashboard redirect, dashboard auth/session render, AI sidebar engine Ready state, /api/health, /api/version, security_audit_logs insert via production guest login
-- Skipped Surfaces: OAuth callback route, approval_history internal approval path, feedback submit path, AI response generation / paid model call
+- Counts Toward Summary: no
+- Deployment: SHA 3de9be78
+- Coverage Packs: core-routes-smoke
+- Covered Surfaces: /login on localhost:3000, /login on 127.0.0.1:3000, GitHub OAuth start redirect_to=localhost/auth/callback, GitHub OAuth start redirect_to=127.0.0.1/auth/callback, Next.js dev HMR/WebSocket on 127.0.0.1
+- Skipped Surfaces: OAuth provider login completion, Supabase auth callback code exchange completion, vercel production
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Production app | [Production app](https://openmanager-ai.vercel.app/) | Canonical production URL |
-| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://vercel.com/skyasus-projects/openmanager-ai/GZc8iZVSUmgA1P2XoFpjRkxAzXnC) | Current production deployment under test |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Production landing | `reports/qa/evidence/qa-20260412-vercel-landing.png` | - |
-| playwright-screenshot | Production login | `reports/qa/evidence/qa-20260412-vercel-login.png` | - |
-| playwright-screenshot | Production dashboard | `reports/qa/evidence/qa-20260412-vercel-dashboard.png` | - |
-| playwright-screenshot | AI sidebar ready | `reports/qa/evidence/qa-20260412-vercel-ai-sidebar-ready.png` | - |
-| playwright-console | Console errors | `reports/qa/evidence/qa-20260412-vercel-console-errors.txt` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -255,6 +250,7 @@ Latest run: QA-20260412-0272 (2026-04-12T00:18:52.994Z)
 - multi-agent-orchestration: 멀티에이전트 오케스트레이션 활성화 (Steps A-E) (completed 1회, last QA-20260307-0053)
 - multi-agent-tool-result-bubble-up: orchestrator-agent-stream.ts: tool_result yield 누락으로 분석 근거 영역 비어있던 문제 수정 (completed 1회, last QA-20260408-0252)
 - negative-feedback-trace-preserved: Negative feedback traceId preserved through feedback submission (completed 1회, last QA-20260322-0155)
+- next-dev-allowed-origins-loopback-parity: 127.0.0.1 dev-origin parity for OAuth smoke (completed 1회, last QA-20260412-0273)
 - otel-데이터-무결성-24x15-완전: OTel 데이터 무결성 24x15 완전 (completed 1회, last QA-20260301-0032)
 - performance-bundle-excellent: 번들 성능 우수 (completed 1회, last QA-20260314-0096)
 - planning-backlog-clear: planning TODO 잔여 항목 정리 (completed 1회, last QA-20260226-0006)
@@ -399,6 +395,7 @@ Latest run: QA-20260412-0272 (2026-04-12T00:18:52.994Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260412-0273 | 2026-04-12T06:56:48.689Z | targeted | no | no | Local Next.js OAuth smoke - localhost and 127.0.0.1 loopback parity | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260412-0272 | 2026-04-12T00:18:52.994Z | targeted | no | yes | Vercel production targeted QA - Supabase impact surfaces after schema cleanup | 10 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260411-0271 | 2026-04-11T07:18:03.097Z | targeted | no | no | Local auth audit smoke - guest login route inserts security_audit_logs | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260411-0270 | 2026-04-11T06:08:29.888Z | targeted | no | no | AI Engine approval_history runtime smoke | 4 | 1 | 0 | 0 | 0 | 0 |
@@ -418,4 +415,3 @@ Latest run: QA-20260412-0272 (2026-04-12T00:18:52.994Z)
 | QA-20260408-0255 | 2026-04-08T14:09:01.310Z | targeted | yes | no | Vercel Targeted Release Validation - v8.11.3 root cause confirmed | 3 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260408-0254 | 2026-04-08T13:25:34.065Z | targeted | yes | no | Vercel Targeted Release Validation - v8.11.3 production drift | 3 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260408-0253 | 2026-04-08T04:54:22.471Z | targeted | no | yes | Playwright MCP Production QA - v8.11.0 analysis basis sanitization + agent label fix | 7 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260408-0252 | 2026-04-08T01:31:37.341Z | targeted | no | yes | Playwright MCP Production QA - fix(ai): multi-agent tool_result bubble-up + analyst instruction + AnalysisBasisBadge | 7 | 3 | 0 | 0 | 0 | 0 |
