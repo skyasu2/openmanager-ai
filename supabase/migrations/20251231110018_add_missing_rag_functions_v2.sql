@@ -217,7 +217,8 @@ BEGIN
 END;
 $$;
 
-COMMENT ON FUNCTION hybrid_search_with_text IS 'Hybrid search combining Vector (1024d Mistral) + BM25 Text + Graph traversal';
+COMMENT ON FUNCTION hybrid_search_with_text(vector(1024), TEXT, FLOAT, FLOAT, FLOAT, FLOAT, INT, TEXT, TEXT)
+IS 'Hybrid search combining Vector (1024d Mistral) + BM25 Text + Graph traversal';
 
 -- =============================================================================
 -- 4. Create index for text similarity (if not exists)
