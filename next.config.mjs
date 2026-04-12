@@ -53,10 +53,10 @@ const nextConfig = {
 
   // 🔧 Windows IDE에서 WSL 개발 서버 접속 허용 (Cross-Origin)
   allowedDevOrigins: [
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    'http://192.168.0.68:3000', // WSL IP (동적 변경 가능)
-    'http://host.docker.internal:3000',
+    'localhost',
+    '127.0.0.1',
+    '192.168.0.68', // WSL IP (동적 변경 가능)
+    'host.docker.internal',
   ],
 
   // 실험적 기능 (Next.js 16 호환)
