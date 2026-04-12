@@ -2,7 +2,7 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-12T00:18:52.994Z"
+    "updatedAt": "2026-04-12T01:15:48.372Z"
   },
   "sequence": {
     "nextRunNumber": 273
@@ -16289,11 +16289,6 @@
       "artifacts": [
         {
           "type": "playwright-screenshot",
-          "label": "Landing production proof",
-          "path": "reports/qa/evidence/legacy/2026/qa-20260326-0187-01-qa-20260326-release-gate-landing.png"
-        },
-        {
-          "type": "playwright-screenshot",
           "label": "Dashboard and AI sidebar proof",
           "path": "reports/qa/evidence/legacy/2026/qa-20260326-0187-02-qa-20260326-release-gate-dashboard-ai.png"
         },
@@ -16392,11 +16387,6 @@
       ],
       "usageChecks": [],
       "artifacts": [
-        {
-          "type": "playwright-screenshot",
-          "label": "Latest deploy landing proof",
-          "path": "reports/qa/evidence/legacy/2026/qa-20260326-0188-01-qa-20260326-latest-prod-recheck-landing.png"
-        },
         {
           "type": "playwright-screenshot",
           "label": "Latest deploy dashboard proof",
@@ -16523,11 +16513,6 @@
         }
       ],
       "artifacts": [
-        {
-          "type": "playwright-screenshot",
-          "label": "Release 8.10.0 landing proof",
-          "path": "reports/qa/evidence/legacy/2026/qa-20260326-0189-01-qa-20260326-release-8100-landing.png"
-        },
         {
           "type": "playwright-screenshot",
           "label": "Release 8.10.0 dashboard proof",
@@ -16704,11 +16689,6 @@
         }
       ],
       "artifacts": [
-        {
-          "type": "playwright-screenshot",
-          "label": "Latest QA data deploy landing proof",
-          "path": "reports/qa/evidence/legacy/2026/qa-20260326-0191-01-qa-20260326-prod-c049-landing.png"
-        },
         {
           "type": "playwright-screenshot",
           "label": "Latest QA data deploy dashboard proof",
@@ -19574,11 +19554,6 @@
       "artifacts": [
         {
           "type": "playwright-screenshot",
-          "label": "Landing page",
-          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0225-01-qa-20260404-broad-release-landing.png"
-        },
-        {
-          "type": "playwright-screenshot",
           "label": "Login page",
           "path": "reports/qa/evidence/legacy/2026/qa-20260404-0225-02-qa-20260404-broad-release-login.png"
         },
@@ -20118,11 +20093,6 @@
         }
       ],
       "artifacts": [
-        {
-          "type": "playwright-screenshot",
-          "label": "Landing",
-          "path": "reports/qa/evidence/legacy/2026/qa-20260404-0229-01-qa-20260404-broad-0229-landing.png"
-        },
         {
           "type": "playwright-screenshot",
           "label": "Dashboard with AI parity",

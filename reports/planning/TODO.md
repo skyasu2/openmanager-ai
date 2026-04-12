@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-12 KST (Storybook stable 재확인 — 10.3.x는 아직 alpha, feature flag 유지)
+**Last Updated**: 2026-04-12 KST (QA evidence 4차 정리 — counted/release landing screenshot 6건 prune, evidence 54.52MiB로 감소)
 
 ## Active Tasks
 
@@ -16,10 +16,19 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| P2: QA evidence 저장소 용량 정리 | Medium | 3차 정리 후 전체 `reports/qa`는 `72.37MiB`, `reports/qa/evidence/`는 `60.62MiB / 204파일`까지 감소. trace 2건, unreferenced run asset 31건, non-counted screenshot 2건을 정리했지만 evidence 경고 임계치(`40MiB`)는 아직 초과하므로, 오래된 legacy screenshot 보관 정책 추가 정리 필요. |
+| P2: QA evidence 저장소 용량 정리 | Medium | 4차 정리 후 전체 `reports/qa`는 `66.27MiB`, `reports/qa/evidence/`는 `54.52MiB / 198파일`까지 감소. release/counting 런 6건에서 중복 landing screenshot만 정리했고, orphan/missing/candidate는 모두 `0`. 다만 evidence 경고 임계치(`40MiB`)는 아직 초과이며, 남은 상위 파일은 단일 artifact landing 또는 UX 분석 스냅샷이라 추가 정리는 더 엄격한 보관 정책 판단이 필요. |
 | P3: `knowledge_base` RAG corpus 확충 | Low | 현재 49행. AI 답변 품질 향상 위해 커버리지 확대 검토. 트리거: AI 응답 품질 이슈 발생 시. |
 | P3: Storybook `experimentalComponentsManifest` stable 승격 여부 재확인 | Low | 2026-04-12 재확인 결과 `storybook`/`@storybook/nextjs-vite` stable dist-tag는 둘 다 아직 `10.2.10`, `next`는 `10.3.0-alpha.6`. `.storybook/main.ts`의 feature flag는 그대로 유지. |
 | P3: `src/types/README.md` 전용 타입 SSOT 문서 필요성 재평가 | Low | 현재 전용 README는 없음. 타입 정제 작업은 완료됐고, 신규 문서 추가는 실제 drift가 다시 생길 때만 검토. |
+
+### Completed (2026-04-12 #50)
+- [x] QA evidence 저장소 4차 정리 완료 — `countsTowardSummary=true` 또는 `releaseFacing=true`인 오래된 런 6건에서 중복 landing screenshot만 제거.
+- [x] 대상 런 — [qa-run-QA-20260326-0187.json](/mnt/d/dev/openmanager-ai/reports/qa/runs/2026/qa-run-QA-20260326-0187.json:1), [qa-run-QA-20260326-0188.json](/mnt/d/dev/openmanager-ai/reports/qa/runs/2026/qa-run-QA-20260326-0188.json:1), [qa-run-QA-20260326-0189.json](/mnt/d/dev/openmanager-ai/reports/qa/runs/2026/qa-run-QA-20260326-0189.json:1), [qa-run-QA-20260326-0191.json](/mnt/d/dev/openmanager-ai/reports/qa/runs/2026/qa-run-QA-20260326-0191.json:1), [qa-run-QA-20260404-0225.json](/mnt/d/dev/openmanager-ai/reports/qa/runs/2026/qa-run-QA-20260404-0225.json:1), [qa-run-QA-20260404-0229.json](/mnt/d/dev/openmanager-ai/reports/qa/runs/2026/qa-run-QA-20260404-0229.json:1).
+- [x] 보관 정책 고정 — [README.md](/mnt/d/dev/openmanager-ai/reports/qa/README.md:188)에 counted/release-facing run의 중복 landing screenshot prune 조건을 명시.
+- [x] 용량 절감 확인 — 전체 `reports/qa` `72.37MiB → 66.27MiB`, `reports/qa/evidence` `60.62MiB → 54.52MiB`, durable evidence file `203 → 197`.
+- [x] 무결성 재검증 — `npm run qa:evidence:audit` 기준 orphan `0`, missing durable artifact `0`, recent counted runs without artifacts `0`, archive candidates `0`.
+
+---
 
 ### Completed (2026-04-12 #49)
 - [x] Storybook stable 승격 여부 재확인 완료 — npm registry 기준 `storybook latest=10.2.10`, `@storybook/nextjs-vite latest=10.2.10` 확인.

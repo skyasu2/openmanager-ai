@@ -98,11 +98,6 @@
   "artifacts": [
     {
       "type": "playwright-screenshot",
-      "label": "Landing",
-      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0229-01-qa-20260404-broad-0229-landing.png"
-    },
-    {
-      "type": "playwright-screenshot",
       "label": "Dashboard with AI parity",
       "path": "reports/qa/evidence/legacy/2026/qa-20260404-0229-02-qa-20260404-broad-0229-dashboard-ai.png"
     },
@@ -139,7 +134,8 @@
   "notes": [
     "landing/dashboard 콘솔은 error 0으로 깨끗했습니다.",
     "404 route 콘솔 error 1건은 intentionally missing route 테스트로 인해 발생한 expected 404 응답입니다.",
-    "AI assistant는 sidebar open -> starter prompt send -> streaming summary 응답까지 정상 완료되었습니다."
+    "AI assistant는 sidebar open -> starter prompt send -> streaming summary 응답까지 정상 완료되었습니다.",
+    "2026-04-12 evidence storage cleanup: redundant landing screenshot pruned under counted/release retention policy; dashboard/AI/console proof retained."
   ],
   "links": [
     {

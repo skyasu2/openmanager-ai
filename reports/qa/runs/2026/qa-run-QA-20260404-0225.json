@@ -98,11 +98,6 @@
   "artifacts": [
     {
       "type": "playwright-screenshot",
-      "label": "Landing page",
-      "path": "reports/qa/evidence/legacy/2026/qa-20260404-0225-01-qa-20260404-broad-release-landing.png"
-    },
-    {
-      "type": "playwright-screenshot",
       "label": "Login page",
       "path": "reports/qa/evidence/legacy/2026/qa-20260404-0225-02-qa-20260404-broad-release-login.png"
     },
@@ -136,7 +131,8 @@
     "Core route session (login -> dashboard -> AI) console error count was 0.",
     "POST /api/ai/supervisor/stream/v2 via Playwright request API returned 200 with content-type text/event-stream and x-ai-latency-ms=237.",
     "dashboard data slot label observed: Synthetic OTel snapshot · 22:10 KST (slot 133/143).",
-    "AI summary matched dashboard counts/resources in the same session (15/14/1/0/0 and 36/48/32)."
+    "AI summary matched dashboard counts/resources in the same session (15/14/1/0/0 and 36/48/32).",
+    "2026-04-12 evidence storage cleanup: redundant landing screenshot pruned under counted/release retention policy; dashboard/AI/console proof retained."
   ],
   "links": [
     {

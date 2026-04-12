@@ -69,11 +69,6 @@
   "artifacts": [
     {
       "type": "playwright-screenshot",
-      "label": "Latest deploy landing proof",
-      "path": "reports/qa/evidence/legacy/2026/qa-20260326-0188-01-qa-20260326-latest-prod-recheck-landing.png"
-    },
-    {
-      "type": "playwright-screenshot",
       "label": "Latest deploy dashboard proof",
       "path": "reports/qa/evidence/legacy/2026/qa-20260326-0188-02-qa-20260326-latest-prod-recheck-dashboard.png"
     },
@@ -95,7 +90,8 @@
   "notes": [
     "This run closes the conditional note from QA-20260326-0187 by rechecking the newer deployment after it reached READY and PROMOTED.",
     "AI free-text prompt '현재 경고 상태인 서버 2대만 요약해줘' returned a streamed response summarizing db-mysql-dc1-primary and api-was-dc1-01.",
-    "Timing header proof confirmed X-AI-Latency-Ms=204 on /api/ai/supervisor/stream/v2; X-AI-Processing-Ms was absent on this sampled response."
+    "Timing header proof confirmed X-AI-Latency-Ms=204 on /api/ai/supervisor/stream/v2; X-AI-Processing-Ms was absent on this sampled response.",
+    "2026-04-12 evidence storage cleanup: redundant landing screenshot pruned under counted/release retention policy; dashboard/AI/console proof retained."
   ],
   "links": [
     {

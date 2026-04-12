@@ -90,11 +90,6 @@
   "artifacts": [
     {
       "type": "playwright-screenshot",
-      "label": "Release 8.10.0 landing proof",
-      "path": "reports/qa/evidence/legacy/2026/qa-20260326-0189-01-qa-20260326-release-8100-landing.png"
-    },
-    {
-      "type": "playwright-screenshot",
       "label": "Release 8.10.0 dashboard proof",
       "path": "reports/qa/evidence/legacy/2026/qa-20260326-0189-02-qa-20260326-release-8100-dashboard.png"
     },
@@ -116,7 +111,8 @@
   "notes": [
     "This run closes the post-release evidence gap for chore(release): 8.10.0 by validating the latest promoted production deployment directly on Vercel.",
     "AI free-text prompt '현재 경고 상태인 서버 2대만 요약해줘' streamed successfully; current synthetic dataset only exposed one warning server at this time slot.",
-    "Console warnings were limited to repeated font preload notices; no runtime errors were observed on landing, dashboard, or AI sidebar surfaces."
+    "Console warnings were limited to repeated font preload notices; no runtime errors were observed on landing, dashboard, or AI sidebar surfaces.",
+    "2026-04-12 evidence storage cleanup: redundant landing screenshot pruned under counted/release retention policy; dashboard/AI/console proof retained."
   ],
   "links": [
     {

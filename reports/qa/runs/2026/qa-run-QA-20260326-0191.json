@@ -56,11 +56,6 @@
   "artifacts": [
     {
       "type": "playwright-screenshot",
-      "label": "Latest QA data deploy landing proof",
-      "path": "reports/qa/evidence/legacy/2026/qa-20260326-0191-01-qa-20260326-prod-c049-landing.png"
-    },
-    {
-      "type": "playwright-screenshot",
       "label": "Latest QA data deploy dashboard proof",
       "path": "reports/qa/evidence/legacy/2026/qa-20260326-0191-02-qa-20260326-prod-c049-dashboard.png"
     },
@@ -87,7 +82,8 @@
   "notes": [
     "Latest promoted production deployment c0491ce42 is a QA-record-only commit, so this run focused on validation surface freshness plus a targeted AI re-entry smoke instead of repeating the full 0190 broad pack.",
     "AI path first showed wake-up/job queue behavior and a cold-start retry prompt, then succeeded via /api/ai/supervisor/stream/v2 with X-AI-Latency-Ms=238.",
-    "Validation page and public validation snapshot JSON both reflected latestRunId QA-20260326-0190 and aggregate totals 189 runs / 1381 checks / 256 completed / 10 wont-fix."
+    "Validation page and public validation snapshot JSON both reflected latestRunId QA-20260326-0190 and aggregate totals 189 runs / 1381 checks / 256 completed / 10 wont-fix.",
+    "2026-04-12 evidence storage cleanup: redundant landing screenshot pruned under counted/release retention policy; dashboard/AI/console proof retained."
   ],
   "links": [
     {

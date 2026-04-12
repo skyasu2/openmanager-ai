@@ -84,11 +84,6 @@
   "artifacts": [
     {
       "type": "playwright-screenshot",
-      "label": "Landing production proof",
-      "path": "reports/qa/evidence/legacy/2026/qa-20260326-0187-01-qa-20260326-release-gate-landing.png"
-    },
-    {
-      "type": "playwright-screenshot",
       "label": "Dashboard and AI sidebar proof",
       "path": "reports/qa/evidence/legacy/2026/qa-20260326-0187-02-qa-20260326-release-gate-dashboard-ai.png"
     },
@@ -105,7 +100,8 @@
   "notes": [
     "Execution time coincided with a newer docs-only production deployment (72da39ca9) still INITIALIZING; QA was run against the currently promoted production alias deployment dpl_84UPbhciR3EcDsJhPoxJztVKsdkc.",
     "404 route displayed the expected not-found page; landing/dashboard console error log remained empty.",
-    "Timing header proof confirmed X-AI-Latency-Ms=239 on /api/ai/supervisor/stream/v2; X-AI-Processing-Ms was absent on this sampled stream response."
+    "Timing header proof confirmed X-AI-Latency-Ms=239 on /api/ai/supervisor/stream/v2; X-AI-Processing-Ms was absent on this sampled stream response.",
+    "2026-04-12 evidence storage cleanup: redundant landing screenshot pruned under counted/release retention policy; dashboard/AI/console proof retained."
   ],
   "links": [
     {

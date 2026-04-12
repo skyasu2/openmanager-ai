@@ -192,6 +192,10 @@ reports/qa/
   - QA 저장소 용량 예산(`reports/qa`, `reports/qa/runs`, `reports/qa/evidence`)
   - 대용량 파일(top N) 및 오래된 unreferenced run asset 아카이브 후보
   - 단, `artifactDebt.status="acknowledged"`가 붙은 run은 별도 acknowledged debt로 분리 집계합니다.
+- storage cleanup 보관 정책:
+  - `countsTowardSummary=true` 또는 `releaseFacing=true` run이라도, 7일 이상 지난 뒤 같은 run 안에 `dashboard`, `AI`, `login`, `404`, `validation`, `console/network` 같은 차별화 증거가 이미 남아 있으면 중복 `landing` screenshot은 정리할 수 있습니다.
+  - 단일 artifact run, landing 외 시각 증거가 없는 run, 또는 해당 landing이 유일한 사용자 시각 증거인 run은 정리 대상이 아닙니다.
+  - 정리 후에도 각 counted/release-facing run은 최소 1개의 시각 증거와 해당 run의 핵심 차별화 surface 증거를 유지해야 합니다.
 - 기본 storage warning 기준(환경변수로 조정 가능):
   - `reports/qa` 100MiB
   - `reports/qa/runs` 70MiB
