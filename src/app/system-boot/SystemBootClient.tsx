@@ -32,10 +32,10 @@ const BOOT_STAGES = [
     description: '시스템 환경 설정을 확인하고 있습니다...',
   },
   {
-    name: '서버 연결 확인',
+    name: 'AI 엔드포인트 연결',
     delay: 1200,
     icon: ServerIcon,
-    description: 'MCP 서버와 연결을 설정하고 있습니다...',
+    description: 'AI 엔진과 통신을 준비하고 있습니다...',
   },
   {
     name: '데이터베이스 연결',
