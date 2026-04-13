@@ -64,6 +64,7 @@ export interface RetryResult<T> {
 export interface GenerateTextOptions {
   messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>;
   tools?: Parameters<typeof generateText>[0]['tools'];
+  toolChoice?: Parameters<typeof generateText>[0]['toolChoice'];
   temperature?: number;
   maxOutputTokens?: number;
   stopWhen?: Parameters<typeof generateText>[0]['stopWhen'];
@@ -338,6 +339,7 @@ export async function generateTextWithRetry(
               model,
               messages: options.messages,
               tools: options.tools,
+              ...(options.toolChoice && { toolChoice: options.toolChoice }),
               temperature: options.temperature ?? 0.2,
               maxOutputTokens: options.maxOutputTokens ?? 2048,
               maxRetries: 1, // 🎯 P3-1: Delegate network retry to AI SDK

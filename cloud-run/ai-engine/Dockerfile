@@ -27,6 +27,7 @@
 # Build arguments - explicit versions for reproducibility
 ARG NODE_VERSION=24
 ARG ALPINE_VERSION=3.21
+ARG NPM_VERSION=11.10.0
 
 # ============================================================================
 # Stage 1: Dependencies (cached layer)
@@ -38,6 +39,10 @@ WORKDIR /app
 # Install dumb-init for proper signal handling (PID 1 problem)
 # Use --no-cache to avoid storing apk index in image
 RUN apk add --no-cache dumb-init
+
+# Keep npm aligned with the workspace lockfile generator to avoid npm ci drift.
+ARG NPM_VERSION
+RUN npm install -g npm@${NPM_VERSION}
 
 # Copy package files first (maximize cache hit)
 COPY package.json package-lock.json ./
@@ -53,6 +58,9 @@ RUN npm ci --ignore-scripts && \
 FROM node:${NODE_VERSION}-alpine${ALPINE_VERSION} AS prod-deps
 
 WORKDIR /app
+
+ARG NPM_VERSION
+RUN npm install -g npm@${NPM_VERSION}
 
 COPY package.json package-lock.json ./
 

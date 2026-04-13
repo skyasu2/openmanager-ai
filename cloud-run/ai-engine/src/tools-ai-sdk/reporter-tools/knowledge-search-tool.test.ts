@@ -21,7 +21,7 @@ vi.mock('../../lib/embedding', () => ({
   searchWithEmbedding: mockSearchWithEmbedding,
 }));
 
-vi.mock('../../lib/llamaindex-rag-service', () => ({
+vi.mock('../../lib/graphrag-service', () => ({
   hybridGraphSearch: mockHybridGraphSearch,
 }));
 
@@ -48,11 +48,15 @@ vi.mock('../../lib/logger', () => ({
   },
 }));
 
-import { searchKnowledgeBase } from './knowledge-search-tool';
+import {
+  resetKnowledgeSearchCacheForTest,
+  searchKnowledgeBase,
+} from './knowledge-search-tool';
 
 describe('searchKnowledgeBase', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    resetKnowledgeSearchCacheForTest();
   });
 
   it('returns graceful fallback when Supabase client is unavailable', async () => {
@@ -135,5 +139,34 @@ describe('searchKnowledgeBase', () => {
       results: [],
     });
     expect(result.systemMessage).toContain('지식 베이스 검색 중 오류가 발생했습니다');
+  });
+
+  it('reuses cached result for duplicate KB searches', async () => {
+    mockGetSupabaseClient.mockResolvedValue({} as never);
+    mockEmbedText.mockResolvedValue([0.1, 0.2, 0.3]);
+    mockHybridGraphSearch.mockResolvedValue([
+      {
+        id: 'kb-1',
+        title: '현재 인프라 역할/트래픽 토폴로지 스냅샷',
+        content: 'APP, DB, CACHE 트래픽 구조 설명',
+        score: 0.91,
+        sourceType: 'vector',
+        hopDistance: 0,
+        category: 'architecture',
+      },
+    ]);
+
+    const first = await searchKnowledgeBase.execute({
+      query: '현재 인프라 토폴로지 알려줘',
+      category: 'architecture',
+    });
+    const second = await searchKnowledgeBase.execute({
+      query: '현재 인프라 토폴로지 알려줘',
+      category: 'architecture',
+    });
+
+    expect(first).toEqual(second);
+    expect(mockEmbedText).toHaveBeenCalledTimes(1);
+    expect(mockHybridGraphSearch).toHaveBeenCalledTimes(1);
   });
 });

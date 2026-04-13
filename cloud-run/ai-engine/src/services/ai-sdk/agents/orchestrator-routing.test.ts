@@ -26,13 +26,23 @@ vi.mock('../../../lib/ai-sdk-utils', () => ({
 }));
 
 vi.mock('./config', () => ({
-  AGENT_NAMES: ['NLQ Agent'],
+  AGENT_NAMES: ['NLQ Agent', 'Advisor Agent'],
   AGENT_CONFIGS: {
     'NLQ Agent': {
       name: 'NLQ Agent',
       instructions: 'Test instructions',
       tools: {
         getServerMetrics: { execute: vi.fn() },
+        finalAnswer: { execute: vi.fn() },
+      },
+      getModel: vi.fn(() => ({ provider: 'cerebras' })),
+    },
+    'Advisor Agent': {
+      name: 'Advisor Agent',
+      instructions: 'Advisor instructions',
+      tools: {
+        searchKnowledgeBase: { execute: vi.fn() },
+        recommendCommands: { execute: vi.fn() },
         finalAnswer: { execute: vi.fn() },
       },
       getModel: vi.fn(() => ({ provider: 'cerebras' })),
@@ -49,6 +59,17 @@ vi.mock('./config', () => ({
           },
           getModel: vi.fn(() => ({ provider: 'cerebras' })),
         }
+      : name === 'Advisor Agent'
+        ? {
+            name: 'Advisor Agent',
+            instructions: 'Advisor instructions',
+            tools: {
+              searchKnowledgeBase: { execute: vi.fn() },
+              recommendCommands: { execute: vi.fn() },
+              finalAnswer: { execute: vi.fn() },
+            },
+            getModel: vi.fn(() => ({ provider: 'cerebras' })),
+          }
       : undefined,
 }));
 
@@ -305,6 +326,28 @@ describe('executeForcedRouting', () => {
     const firstCall = mockGenerateTextWithRetry.mock.calls[0]?.[0];
     expect(firstCall.messages[1].content).toContain('[세션 컨텍스트 요약]');
     expect(firstCall.messages[1].content).toContain('api-01 CPU 급등');
+  });
+
+  it('forces searchKnowledgeBase toolChoice for advisor topology queries', async () => {
+    mockGenerateTextWithRetry.mockResolvedValueOnce(
+      createRetryResult({
+        text: '토폴로지 요약 완료',
+      })
+    );
+
+    await executeForcedRouting(
+      '현재 인프라 토폴로지 알려줘. 관련된 운영 가이드도 연결해줘',
+      'Advisor Agent',
+      Date.now(),
+      true,
+      true,
+    );
+
+    const firstCall = mockGenerateTextWithRetry.mock.calls[0]?.[0];
+    expect(firstCall.toolChoice).toEqual({
+      type: 'tool',
+      toolName: 'searchKnowledgeBase',
+    });
   });
 });
 

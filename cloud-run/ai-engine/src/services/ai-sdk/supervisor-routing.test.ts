@@ -243,6 +243,19 @@ describe('createPrepareStep', () => {
     expect(result.toolChoice).toBe('auto');
   });
 
+  it('should force searchKnowledgeBase for topology queries when RAG is ON', async () => {
+    const prepare = createPrepareStep('현재 인프라 토폴로지 알려줘', {
+      enableRAG: true,
+    });
+    const result = await prepare({ stepNumber: 0 });
+    expect(result.activeTools).toContain('searchKnowledgeBase');
+    expect(result.activeTools).toContain('recommendCommands');
+    expect(result.toolChoice).toEqual({
+      type: 'tool',
+      toolName: 'searchKnowledgeBase',
+    });
+  });
+
   it('should omit searchKnowledgeBase when RAG is disabled', async () => {
     const prepare = createPrepareStep('해결 방법 알려줘', {
       enableRAG: false,

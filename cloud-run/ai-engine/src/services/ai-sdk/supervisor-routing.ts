@@ -11,6 +11,7 @@ import { logger } from '../../lib/logger';
 import {
   ADVISOR_QUERY_PATTERN,
   COMPOSITE_QUERY_PATTERNS,
+  FORCE_KB_QUERY_PATTERN,
   INFRA_CONTEXT_PATTERN,
   REPORTER_QUERY_PATTERN,
 } from './query-routing-signals';
@@ -288,7 +289,6 @@ const CURRENT_METRIC_VALUE_PATTERNS =
   /(사용률|몇\s*%|몇퍼센트|퍼센트|얼마|수치|값|상태|어때|어떻|알려|보여|확인|usage|percent|percentage|status)/i;
 const NON_CURRENT_METRIC_PATTERNS =
   /(지난|최근|평균|최대|최소|합계|추세|트렌드|예측|비교|대비|변화|last1h|last6h|last24h|last\s+\d+\s*h|avg|max|min|trend|forecast|compare)/i;
-
 /**
  * 웹 검색을 강제해야 하는 쿼리인지 판별.
  * 사용자가 토글 ON + 이 함수가 true → step 0에서 searchWeb 강제 호출.
@@ -314,6 +314,10 @@ function shouldForceRealtimeServerMetricTool(query: string): boolean {
     CURRENT_METRIC_VALUE_PATTERNS.test(q) &&
     !NON_CURRENT_METRIC_PATTERNS.test(q)
   );
+}
+
+function shouldForceKnowledgeBaseTool(query: string): boolean {
+  return FORCE_KB_QUERY_PATTERN.test(query.toLowerCase());
 }
 
 export function createPrepareStep(
@@ -398,7 +402,16 @@ export function createPrepareStep(
       activeTools = activeTools.filter((t) => t !== 'searchKnowledgeBase');
     }
 
-    // ── Step 3: 웹 검색 강제 — 사용자 토글 ON + 외부 정보 필요 쿼리 시 강제 호출 ──
+    // ── Step 3: KB 검색 강제 — topology/architecture 질의는 모델 추정보다 KB를 우선 ──
+    if (
+      ragEnabled &&
+      activeTools.includes('searchKnowledgeBase') &&
+      shouldForceKnowledgeBaseTool(q)
+    ) {
+      toolChoice = { type: 'tool', toolName: 'searchKnowledgeBase' };
+    }
+
+    // ── Step 4: 웹 검색 강제 — 사용자 토글 ON + 외부 정보 필요 쿼리 시 강제 호출 ──
     if (webSearchEnabled && activeTools.includes('searchWeb') && shouldForceWebSearch(q)) {
       toolChoice = { type: 'tool', toolName: 'searchWeb' };
     }

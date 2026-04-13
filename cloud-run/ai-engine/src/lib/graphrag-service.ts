@@ -1,12 +1,12 @@
 /**
- * LlamaIndex.TS RAG Service
+ * GraphRAG Service
  *
- * Replaces custom GraphRAG implementation with LlamaIndex.TS open-source library.
- * Uses Mistral AI for triplet extraction and Supabase pgVector for storage.
+ * Knowledge graph retrieval: hybrid vector + graph traversal via Supabase pgVector.
+ * Auto-extraction (triplet materialization) is disabled — use knowledge_relationships
+ * seeded manually or via seed-knowledge-base.ts.
  *
- * @version 1.0.0
+ * @version 2.0.0
  * @created 2025-12-31
- * @replaces graph-rag-service.ts (custom implementation)
  */
 
 import { generateText, type LanguageModel } from 'ai';
@@ -22,21 +22,21 @@ import {
   extractRelationshipsFromKnowledgeBase,
   fetchRelatedKnowledgeFromGraph,
   type ExtractionResult,
-} from './llamaindex-rag-relations';
+} from './graphrag-relations';
 import {
   mergeDeduplicateAndRankResults,
   traverseAndFetchGraphNodes,
-} from './llamaindex-rag-graph';
+} from './graphrag-graph';
 import type {
   KnowledgeTriplet,
-  LlamaIndexSearchResult,
-  LlamaIndexStats,
-} from './llamaindex-rag-types';
+  GraphRAGSearchResult,
+  GraphRAGStats,
+} from './graphrag-types';
 export type {
   KnowledgeTriplet,
-  LlamaIndexSearchResult,
-  LlamaIndexStats,
-} from './llamaindex-rag-types';
+  GraphRAGSearchResult,
+  GraphRAGStats,
+} from './graphrag-types';
 
 // ============================================================================
 // Configuration
@@ -45,11 +45,21 @@ export type {
 let isInitialized = false;
 let supabaseClient: SupabaseClient | null = null;
 let llamaLlm: LanguageModel | null = null;
+const EXTRACTION_EDGE_SOURCES = new Set(['llamaindex-triplets', 'title-anchor-fallback']);
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  return value as Record<string, unknown>;
+}
+
+function asArray(value: unknown): unknown[] {
+  return Array.isArray(value) ? value : [];
+}
 
 /**
- * Initialize LlamaIndex with the configured Cerebras text model.
+ * Initialize GraphRAG service with Cerebras LLM and Supabase client.
  */
-export async function initializeLlamaIndex(): Promise<boolean> {
+export async function initializeGraphRAG(): Promise<boolean> {
   if (isInitialized) return true;
 
   try {
@@ -66,10 +76,10 @@ export async function initializeLlamaIndex(): Promise<boolean> {
     }
 
     isInitialized = true;
-    logger.info(`[LlamaIndex] Initialized with Cerebras AI (${cerebrasModelId})`);
+    logger.info(`[GraphRAG] Initialized with Cerebras AI (${cerebrasModelId})`);
     return true;
   } catch (error) {
-    logger.error('[LlamaIndex] Initialization failed:', error);
+    logger.error('[GraphRAG] Initialization failed:', error);
     return false;
   }
 }
@@ -86,10 +96,10 @@ export async function extractTriplets(
   text: string,
   maxTriplets: number = 10
 ): Promise<KnowledgeTriplet[]> {
-  await initializeLlamaIndex();
+  await initializeGraphRAG();
 
   if (!llamaLlm) {
-    logger.warn('[LlamaIndex] LLM not configured');
+    logger.warn('[GraphRAG] LLM not configured');
     return [];
   }
 
@@ -117,15 +127,15 @@ Only output the JSON array, no other text.
     // Parse JSON response
     const jsonMatch = responseText.match(/\[[\s\S]*\]/);
     if (!jsonMatch) {
-      logger.warn('[LlamaIndex] Failed to parse triplets JSON');
+      logger.warn('[GraphRAG] Failed to parse triplets JSON');
       return [];
     }
 
     const triplets = JSON.parse(jsonMatch[0]) as KnowledgeTriplet[];
-    logger.info(`[LlamaIndex] Extracted ${triplets.length} triplets`);
+    logger.info(`[GraphRAG] Extracted ${triplets.length} triplets`);
     return triplets;
   } catch (error) {
-    logger.error('[LlamaIndex] Triplet extraction failed:', error);
+    logger.error('[GraphRAG] Triplet extraction failed:', error);
     return [];
   }
 }
@@ -145,8 +155,8 @@ export async function searchKnowledgeBase(
     maxResults?: number;
     category?: string;
   } = {}
-): Promise<LlamaIndexSearchResult[]> {
-  await initializeLlamaIndex();
+): Promise<GraphRAGSearchResult[]> {
+  await initializeGraphRAG();
 
   const {
     similarityThreshold = 0.4,
@@ -155,7 +165,7 @@ export async function searchKnowledgeBase(
   } = options;
 
   if (!supabaseClient) {
-    logger.warn('[LlamaIndex] Supabase not available');
+    logger.warn('[GraphRAG] Supabase not available');
     return [];
   }
 
@@ -188,7 +198,7 @@ export async function searchKnowledgeBase(
       metadata: row.metadata as Record<string, unknown>,
     }));
   } catch (error) {
-    logger.error('[LlamaIndex] Search failed:', error);
+    logger.error('[GraphRAG] Search failed:', error);
     return [];
   }
 }
@@ -199,7 +209,7 @@ export async function searchKnowledgeBase(
 
 /**
  * Hybrid search combining vector similarity and knowledge graph traversal
- * Leverages LlamaIndex's built-in hybrid search capabilities
+ * Hybrid search: BM25 text search + pgVector similarity
  */
 export async function hybridSearch(
   query: string,
@@ -209,8 +219,8 @@ export async function hybridSearch(
     maxGraphHops?: number;
     maxTotalResults?: number;
   } = {}
-): Promise<LlamaIndexSearchResult[]> {
-  await initializeLlamaIndex();
+): Promise<GraphRAGSearchResult[]> {
+  await initializeGraphRAG();
 
   const {
     similarityThreshold = 0.4,
@@ -220,7 +230,7 @@ export async function hybridSearch(
   } = options;
 
   if (!supabaseClient) {
-    logger.warn('[LlamaIndex] Supabase not available');
+    logger.warn('[GraphRAG] Supabase not available');
     return [];
   }
 
@@ -238,7 +248,7 @@ export async function hybridSearch(
 
     return mergeDeduplicateAndRankResults(vectorResults, graphResults, maxTotalResults);
   } catch (error) {
-    logger.error('[LlamaIndex] Hybrid search failed:', error);
+    logger.error('[GraphRAG] Hybrid search failed:', error);
     return [];
   }
 }
@@ -249,12 +259,12 @@ export async function hybridSearch(
 
 /**
  * Index new documents into the knowledge base
- * Uses LlamaIndex for document processing and embedding
+ * Index documents into knowledge_base with metadata
  */
 export async function indexDocuments(
   documents: Array<{ text: string; metadata?: Record<string, unknown> }>
 ): Promise<{ success: boolean; indexed: number }> {
-  await initializeLlamaIndex();
+  await initializeGraphRAG();
 
   if (!supabaseClient) {
     return { success: false, indexed: 0 };
@@ -277,17 +287,17 @@ export async function indexDocuments(
           ...doc.metadata,
           triplets: triplets, // Store extracted triplets
           indexed_at: new Date().toISOString(),
-          indexed_by: 'llamaindex',
+          indexed_by: 'graphrag',
         },
       });
 
       if (!error) indexed++;
     }
 
-    logger.info(`[LlamaIndex] Indexed ${indexed}/${documents.length} documents`);
+    logger.info(`[GraphRAG] Indexed ${indexed}/${documents.length} documents`);
     return { success: true, indexed };
   } catch (error) {
-    logger.error('[LlamaIndex] Indexing failed:', error);
+    logger.error('[GraphRAG] Indexing failed:', error);
     return { success: false, indexed: 0 };
   }
 }
@@ -297,24 +307,70 @@ export async function indexDocuments(
 // ============================================================================
 
 /**
- * Get LlamaIndex RAG statistics
+ * Get GraphRAG statistics from Supabase
  */
-export async function getStats(): Promise<LlamaIndexStats | null> {
+export async function getStats(): Promise<GraphRAGStats | null> {
+  await initializeGraphRAG();
+
   if (!supabaseClient) return null;
 
   try {
-    const [docsResult, relsResult] = await Promise.all([
+    const [docsResult, indexedDocsResult, relationshipRowsResult, latestKnowledgeResult] = await Promise.all([
       supabaseClient.from('knowledge_base').select('id', { count: 'exact', head: true }),
-      supabaseClient.from('knowledge_relationships').select('id, created_at', { count: 'exact' }).order('created_at', { ascending: false }).limit(1),
+      supabaseClient
+        .from('knowledge_base')
+        .select('metadata')
+        .or('metadata->>indexed_by.eq.llamaindex,metadata->>indexed_by.eq.graphrag'),
+      supabaseClient
+        .from('knowledge_relationships')
+        .select('metadata, updated_at')
+        .eq('source_table', 'knowledge_base')
+        .eq('target_table', 'knowledge_base'),
+      supabaseClient
+        .from('knowledge_base')
+        .select('updated_at')
+        .or('metadata->>indexed_by.eq.llamaindex,metadata->>indexed_by.eq.graphrag')
+        .order('updated_at', { ascending: false })
+        .limit(1),
     ]);
+
+    const indexedRows = Array.isArray(indexedDocsResult.data)
+      ? indexedDocsResult.data
+      : [];
+    const relationshipRows = Array.isArray(relationshipRowsResult.data)
+      ? relationshipRowsResult.data
+      : [];
+
+    const totalTriplets = indexedRows.reduce((sum, row) => {
+      const metadata = asRecord((row as Record<string, unknown>).metadata);
+      return sum + asArray(metadata?.triplets).length;
+    }, 0);
+
+    const extractionRelationshipRows = relationshipRows.filter((row) => {
+      const metadata = asRecord((row as Record<string, unknown>).metadata);
+      return EXTRACTION_EDGE_SOURCES.has(String(metadata?.extraction_source || ''));
+    });
+
+    const latestCandidates = [
+      ...extractionRelationshipRows
+        .map((row) => String((row as Record<string, unknown>).updated_at || '').trim())
+        .filter((value) => value.length > 0),
+      latestKnowledgeResult.data?.[0]?.updated_at,
+    ].filter((value): value is string => Boolean(value));
+
+    const lastIndexed =
+      latestCandidates.sort((left, right) => {
+        return new Date(right).getTime() - new Date(left).getTime();
+      })[0] || null;
 
     return {
       totalDocuments: docsResult.count || 0,
-      totalTriplets: relsResult.count || 0,
-      lastIndexed: relsResult.data?.[0]?.created_at || null,
+      totalTriplets,
+      totalExtractionEdges: extractionRelationshipRows.length,
+      lastIndexed,
     };
   } catch (error) {
-    logger.error('[LlamaIndex] Stats fetch failed:', error);
+    logger.error('[GraphRAG] Stats fetch failed:', error);
     return null;
   }
 }
@@ -349,8 +405,8 @@ export async function hybridGraphSearch(
     /** Graph traversal weight (default: 0.2) */
     graphWeight?: number;
   } = {}
-): Promise<LlamaIndexSearchResult[]> {
-  await initializeLlamaIndex();
+): Promise<GraphRAGSearchResult[]> {
+  await initializeGraphRAG();
 
   const {
     query,
@@ -366,7 +422,7 @@ export async function hybridGraphSearch(
 
   // Use BM25 hybrid search if enabled and query text is provided
   if (useBM25 && query) {
-    logger.info(`[LlamaIndex] Using BM25 hybrid search for: "${query.substring(0, 30)}..."`);
+    logger.info(`[GraphRAG] Using BM25 hybrid search for: "${query.substring(0, 30)}..."`);
 
     try {
       const bm25Results = await hybridTextVectorSearch(query, queryEmbedding, {
@@ -380,7 +436,7 @@ export async function hybridGraphSearch(
         maxGraphHops,
       });
 
-      // Convert to LlamaIndexSearchResult format
+      // Convert to GraphRAGSearchResult format
       return bm25Results.map((r: TextSearchResult) => ({
         id: r.id,
         title: r.title,
@@ -396,13 +452,13 @@ export async function hybridGraphSearch(
         },
       }));
     } catch (error) {
-      logger.warn('[LlamaIndex] BM25 search failed, falling back to vector-only:', error);
+      logger.warn('[GraphRAG] BM25 search failed, falling back to vector-only:', error);
       // Fall through to vector-only search
     }
   }
 
   if (!supabaseClient) {
-    logger.warn('[LlamaIndex] Supabase not available');
+    logger.warn('[GraphRAG] Supabase not available');
     return [];
   }
 
@@ -416,7 +472,7 @@ export async function hybridGraphSearch(
 
     if (vectorError) throw vectorError;
 
-    const vectorResults: LlamaIndexSearchResult[] = (vectorData || []).map((row: Record<string, unknown>) => ({
+    const vectorResults: GraphRAGSearchResult[] = (vectorData || []).map((row: Record<string, unknown>) => ({
       id: String(row.id),
       title: String(row.title || ''),
       content: String(row.content || ''),
@@ -434,32 +490,34 @@ export async function hybridGraphSearch(
 
     return mergeDeduplicateAndRankResults(vectorResults, graphResults, maxTotalResults);
   } catch (error) {
-    logger.error('[LlamaIndex] Hybrid graph search failed:', error);
+    logger.error('[GraphRAG] Hybrid graph search failed:', error);
     return [];
   }
 }
 export const getGraphRAGStats = getStats;
 
 /**
- * Extract relationships from unprocessed knowledge base entries
- * Uses LlamaIndex triplet extraction with Mistral AI
+ * @deprecated Route disabled (410). Kept pending graph hit-rate telemetry.
+ * Remove together with graphrag-relations.ts once confirmed unused.
  */
 export const extractRelationships = async (options: {
   batchSize?: number;
   onlyUnprocessed?: boolean;
+  titles?: string[];
 } = {}): Promise<ExtractionResult[]> => {
-  await initializeLlamaIndex();
+  await initializeGraphRAG();
 
-  const { batchSize = 50, onlyUnprocessed = true } = options;
+  const { batchSize = 50, onlyUnprocessed = true, titles = [] } = options;
 
   if (!supabaseClient) {
-    logger.warn('[LlamaIndex] Supabase not available');
+    logger.warn('[GraphRAG] Supabase not available');
     return [];
   }
 
   return extractRelationshipsFromKnowledgeBase(supabaseClient, extractTriplets, {
     batchSize,
     onlyUnprocessed,
+    titles,
   });
 };
 
@@ -467,7 +525,7 @@ export const getRelatedKnowledge = async (
   nodeId: string,
   options: { maxHops?: number; maxResults?: number } = {}
 ) => {
-  await initializeLlamaIndex();
+  await initializeGraphRAG();
 
   if (!supabaseClient) {
     return [];

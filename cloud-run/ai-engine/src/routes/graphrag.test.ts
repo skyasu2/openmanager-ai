@@ -7,15 +7,28 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { Hono } from 'hono';
 
-vi.mock('../lib/llamaindex-rag-service', () => ({
+vi.mock('../lib/graphrag-service', () => ({
   extractRelationships: vi.fn(async () => [
-    { entryId: 'e1', relationships: [{ type: 'related_to', target: 'e2' }] },
-    { entryId: 'e2', relationships: [] },
+    {
+      entryId: 'e1',
+      relationships: [{ type: 'related_to', target: 'e2' }],
+      materializedCount: 3,
+      insertedCount: 1,
+      updatedCount: 2,
+    },
+    {
+      entryId: 'e2',
+      relationships: [],
+      materializedCount: 0,
+      insertedCount: 0,
+      updatedCount: 0,
+    },
   ]),
   getGraphRAGStats: vi.fn(async () => ({
-    totalEntries: 50,
-    totalRelationships: 120,
-    averageDegree: 2.4,
+    totalDocuments: 50,
+    totalTriplets: 120,
+    totalExtractionEdges: 14,
+    lastIndexed: '2026-04-13T01:24:05.870938+00:00',
   })),
   getRelatedKnowledge: vi.fn(async () => [
     { id: 'r1', title: 'Redis OOM', similarity: 0.92 },
@@ -28,7 +41,7 @@ vi.mock('../lib/logger', () => ({
 }));
 
 import { graphragRouter } from './graphrag';
-import { extractRelationships, getGraphRAGStats, getRelatedKnowledge } from '../lib/llamaindex-rag-service';
+import { extractRelationships, getGraphRAGStats, getRelatedKnowledge } from '../lib/graphrag-service';
 
 const app = new Hono();
 app.route('/graphrag', graphragRouter);
@@ -39,47 +52,16 @@ describe('GraphRAG Routes', () => {
   });
 
   describe('POST /graphrag/extract', () => {
-    it('관계를 추출하고 결과를 반환한다', async () => {
+    it('비활성화된 엔드포인트로 410을 반환한다', async () => {
       const res = await app.request('/graphrag/extract', {
         method: 'POST',
         body: JSON.stringify({ batchSize: 25 }),
         headers: { 'Content-Type': 'application/json' },
       });
 
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(410);
       const json = await res.json();
-      expect(json.success).toBe(true);
-      expect(json.entriesProcessed).toBe(2);
-      expect(json.relationshipsCreated).toBe(1);
-      expect(extractRelationships).toHaveBeenCalledWith({
-        batchSize: 25,
-        onlyUnprocessed: true,
-      });
-    });
-
-    it('기본 batchSize 50을 사용한다', async () => {
-      await app.request('/graphrag/extract', {
-        method: 'POST',
-        body: JSON.stringify({}),
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      expect(extractRelationships).toHaveBeenCalledWith({
-        batchSize: 50,
-        onlyUnprocessed: true,
-      });
-    });
-
-    it('서비스 에러 시 에러 응답을 반환한다', async () => {
-      vi.mocked(extractRelationships).mockRejectedValueOnce(new Error('DB not found'));
-
-      const res = await app.request('/graphrag/extract', {
-        method: 'POST',
-        body: JSON.stringify({}),
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      expect(res.status).toBe(404); // classifyError: 'not found' → 404
+      expect(json.error).toBe('disabled');
     });
   });
 
@@ -90,8 +72,10 @@ describe('GraphRAG Routes', () => {
       expect(res.status).toBe(200);
       const json = await res.json();
       expect(json.success).toBe(true);
-      expect(json.totalEntries).toBe(50);
-      expect(json.totalRelationships).toBe(120);
+      expect(json.totalDocuments).toBe(50);
+      expect(json.totalTriplets).toBe(120);
+      expect(json.totalExtractionEdges).toBe(14);
+      expect(json.lastIndexed).toBe('2026-04-13T01:24:05.870938+00:00');
     });
 
     it('통계 조회 실패 시 500을 반환한다', async () => {

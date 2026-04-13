@@ -53,7 +53,7 @@ vi.mock('../lib/embedding', () => ({
   embedText: vi.fn().mockResolvedValue([]),
 }));
 
-vi.mock('../lib/llamaindex-rag-service', () => ({
+vi.mock('../lib/graphrag-service', () => ({
   hybridGraphSearch: vi.fn().mockResolvedValue([]),
 }));
 

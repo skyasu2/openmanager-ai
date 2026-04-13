@@ -13,36 +13,69 @@ import {
   extractRelationships,
   getGraphRAGStats,
   getRelatedKnowledge,
-} from '../lib/llamaindex-rag-service';
+} from '../lib/graphrag-service';
 import { handleApiError, handleValidationError, jsonSuccess } from '../lib/error-handler';
 import { logger } from '../lib/logger';
 
 export const graphragRouter = new Hono();
 
 /**
- * POST /graphrag/extract - Extract relationships from knowledge base
+ * POST /graphrag/extract - DISABLED (410)
  *
- * Automatically identifies and stores relationships between knowledge entries.
- * Uses heuristics-only detection (LLM removed 2025-12-28).
+ * Auto-extraction backfill has been stopped. knowledge_relationships are now
+ * managed exclusively via seed-knowledge-base.ts.
+ *
+ * The underlying extractRelationships() implementation is kept in graphrag-relations.ts
+ * pending graph hit-rate telemetry review. Remove once confirmed unused.
  */
 graphragRouter.post('/extract', async (c: Context) => {
-  try {
-    const { batchSize = 50 } = await c.req.json();
+  // Auto-extraction disabled. Manage relationships via seed-knowledge-base.ts.
+  return c.json(
+    { error: 'disabled', message: '/graphrag/extract is disabled. Manage relationships via seed-knowledge-base.ts.' },
+    410
+  );
 
-    logger.info(`[GraphRAG] Starting extraction (heuristics-only, batch: ${batchSize})`);
+  // eslint-disable-next-line no-unreachable
+  try {
+    const payload = await c.req.json();
+    const batchSize =
+      typeof payload.batchSize === 'number' && Number.isFinite(payload.batchSize)
+        ? payload.batchSize
+        : 50;
+    const titles = Array.isArray(payload.titles)
+      ? payload.titles
+          .map((value: unknown) => String(value).trim())
+          .filter((value: string) => value.length > 0)
+      : [];
+    const onlyUnprocessed =
+      typeof payload.onlyUnprocessed === 'boolean'
+        ? payload.onlyUnprocessed
+        : titles.length === 0;
+
+    logger.info(
+      `[GraphRAG] Starting extraction (triplet materialization, batch: ${batchSize}, onlyUnprocessed: ${onlyUnprocessed}, titles: ${titles.length})`
+    );
 
     const results = await extractRelationships({
       batchSize,
-      onlyUnprocessed: true,
+      onlyUnprocessed,
+      titles,
     });
 
-    const totalRelationships = results.reduce((sum, r) => sum + r.relationships.length, 0);
+    const totalCreated = results.reduce(
+      (sum, r) => sum + (r.insertedCount ?? r.materializedCount ?? r.relationships.length),
+      0
+    );
+    const totalUpdated = results.reduce((sum, r) => sum + (r.updatedCount ?? 0), 0);
 
-    logger.info(`[GraphRAG] Extracted ${totalRelationships} relationships from ${results.length} entries`);
+    logger.info(
+      `[GraphRAG] Materialized relationships from ${results.length} entries (created=${totalCreated}, updated=${totalUpdated})`
+    );
 
     return jsonSuccess(c, {
       entriesProcessed: results.length,
-      relationshipsCreated: totalRelationships,
+      relationshipsCreated: totalCreated,
+      relationshipsUpdated: totalUpdated,
       details: results.slice(0, 10), // Return first 10 for brevity
     });
   } catch (error) {

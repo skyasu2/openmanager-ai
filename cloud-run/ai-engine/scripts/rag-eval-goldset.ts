@@ -6,11 +6,14 @@
  *
  * Usage:
  *   npx tsx scripts/rag-eval-goldset.ts
+ *   npx tsx scripts/rag-eval-goldset.ts --input=scripts/data/rag-goldset.corpus-first-batch.json
+ *   npx tsx scripts/rag-eval-goldset.ts --input=scripts/data/rag-goldset.corpus-first-batch.json --list-cases
  *
  * Notes:
  * - Automatically loads ENV_FILE, .env.local, .env (near scripts/cwd)
  */
 
+import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { performance } from 'node:perf_hooks';
 import path from 'node:path';
@@ -49,6 +52,10 @@ type EvalResult = {
   destructiveLeak: boolean;
   error?: string;
 };
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const PROJECT_ROOT = path.resolve(__dirname, '..');
 
 function clamp01(value: number): number {
   return Math.min(1, Math.max(0, value));
@@ -89,6 +96,48 @@ function percentile(values: number[], p: number): number {
   const sorted = [...values].sort((a, b) => a - b);
   const idx = Math.min(sorted.length - 1, Math.max(0, Math.ceil((p / 100) * sorted.length) - 1));
   return sorted[idx];
+}
+
+function hasFlag(flag: string): boolean {
+  return process.argv.includes(flag);
+}
+
+function getStringArg(name: string): string | undefined {
+  const prefix = `--${name}=`;
+  const inline = process.argv.find((arg) => arg.startsWith(prefix));
+  if (inline) {
+    const value = inline.slice(prefix.length).trim();
+    return value.length > 0 ? value : undefined;
+  }
+
+  const flag = `--${name}`;
+  const index = process.argv.indexOf(flag);
+  if (index === -1) return undefined;
+  const next = process.argv[index + 1];
+  if (!next || next.startsWith('--')) return undefined;
+  return next.trim();
+}
+
+function resolveGoldsetPath(inputPath?: string): string {
+  if (!inputPath) {
+    return path.resolve(__dirname, './data/rag-goldset.monitoring.json');
+  }
+
+  if (path.isAbsolute(inputPath)) {
+    return inputPath;
+  }
+
+  const cwdCandidate = path.resolve(process.cwd(), inputPath);
+  if (existsSync(cwdCandidate)) {
+    return cwdCandidate;
+  }
+
+  const projectCandidate = path.resolve(PROJECT_ROOT, inputPath);
+  if (existsSync(projectCandidate)) {
+    return projectCandidate;
+  }
+
+  return path.resolve(__dirname, inputPath);
 }
 
 function computeCategoryCoverage(items: RagItem[], expectedCategories: string[]): number {
@@ -217,10 +266,7 @@ function summarize(results: EvalResult[]) {
   };
 }
 
-async function loadGoldset(): Promise<GoldsetCase[]> {
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
-  const filePath = path.resolve(__dirname, './data/rag-goldset.monitoring.json');
+async function loadGoldset(filePath: string): Promise<GoldsetCase[]> {
   const raw = await readFile(filePath, 'utf-8');
   const parsed = JSON.parse(raw) as unknown;
 
@@ -245,8 +291,31 @@ async function loadGoldset(): Promise<GoldsetCase[]> {
 }
 
 async function main() {
-  const goldset = await loadGoldset();
-  console.log(`Goldset loaded: ${goldset.length} cases`);
+  const inputPath = resolveGoldsetPath(getStringArg('input'));
+  const goldset = await loadGoldset(inputPath);
+
+  if (hasFlag('--list-cases')) {
+    console.log(
+      JSON.stringify(
+        {
+          input: inputPath,
+          totalCases: goldset.length,
+          cases: goldset.map((testCase) => ({
+            id: testCase.id,
+            query: testCase.query,
+            expectedCategories: testCase.expectedCategories,
+            requiredKeywords: testCase.requiredKeywords,
+            commandIntent: testCase.commandIntent,
+          })),
+        },
+        null,
+        2
+      )
+    );
+    return;
+  }
+
+  console.log(`Goldset loaded: ${goldset.length} cases (${inputPath})`);
 
   const rows: Array<{
     id: string;

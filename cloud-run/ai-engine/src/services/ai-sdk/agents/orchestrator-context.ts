@@ -18,6 +18,7 @@ import {
   ADVISOR_QUERY_PATTERN,
   ANALYST_QUERY_PATTERN,
   COMPOSITE_QUERY_PATTERNS,
+  FORCE_KB_QUERY_PATTERN,
   REPORTER_QUERY_PATTERN,
 } from '../query-routing-signals';
 
@@ -361,7 +362,9 @@ export function preFilterQuery(
   }
 
   // 3. Check for server-related keywords - needs handoff
-  const hasServerKeyword = SERVER_KEYWORDS.some(kw => normalized.includes(kw));
+  const isForceKnowledgeBaseIntent = FORCE_KB_QUERY_PATTERN.test(query);
+  const hasServerKeyword =
+    isForceKnowledgeBaseIntent || SERVER_KEYWORDS.some(kw => normalized.includes(kw));
 
   if (hasServerKeyword) {
     const hasAttachmentVisionHint =
@@ -370,7 +373,8 @@ export function preFilterQuery(
     const isVisionIntent = isVisionQuery(query) || hasAttachmentVisionHint;
     const isAnalystIntent = ANALYST_QUERY_PATTERN.test(query);
     const isReporterIntent = REPORTER_QUERY_PATTERN.test(query);
-    const isAdvisorIntent = ADVISOR_QUERY_PATTERN.test(query);
+    const isAdvisorIntent =
+      isForceKnowledgeBaseIntent || ADVISOR_QUERY_PATTERN.test(query);
 
     const intentMatches = [
       isVisionIntent,
@@ -411,7 +415,7 @@ export function preFilterQuery(
       confidence = 0.88;
     } else if (isAdvisorIntent) {
       suggestedAgent = 'Advisor Agent';
-      confidence = 0.87;
+      confidence = isForceKnowledgeBaseIntent ? 0.9 : 0.87;
     } else {
       // Generic metric/status query: force NLQ for clear infra metric intent.
       confidence = 0.86;

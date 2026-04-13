@@ -1,12 +1,12 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { LlamaIndexSearchResult } from './llamaindex-rag-types';
+import type { GraphRAGSearchResult } from './graphrag-types';
 
 export async function traverseAndFetchGraphNodes(
   client: SupabaseClient,
   seedResults: Array<{ id: string }>,
   maxGraphHops: number,
   topN: number = 3
-): Promise<LlamaIndexSearchResult[]> {
+): Promise<GraphRAGSearchResult[]> {
   const topSeedResults = seedResults.slice(0, topN);
   if (topSeedResults.length === 0) {
     return [];
@@ -71,10 +71,10 @@ export async function traverseAndFetchGraphNodes(
 }
 
 export function mergeDeduplicateAndRankResults(
-  vectorResults: LlamaIndexSearchResult[],
-  graphResults: LlamaIndexSearchResult[],
+  vectorResults: GraphRAGSearchResult[],
+  graphResults: GraphRAGSearchResult[],
   maxTotalResults: number
-): LlamaIndexSearchResult[] {
+): GraphRAGSearchResult[] {
   const allResults = [...vectorResults, ...graphResults];
   const seen = new Set<string>();
   const deduplicated = allResults.filter((result) => {

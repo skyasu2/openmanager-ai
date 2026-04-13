@@ -4,27 +4,42 @@
  * 사용법:
  *   npx tsx scripts/seed-knowledge-base.ts              # 새 문서 추가 (임베딩 포함)
  *   npx tsx scripts/seed-knowledge-base.ts --backfill   # NULL 임베딩 문서 보정 + source 이름 통일
+ *   npx tsx scripts/seed-knowledge-base.ts --input=scripts/data/knowledge-base.first-batch.json --dry-run
+ *   npx tsx scripts/seed-knowledge-base.ts --input=scripts/data/knowledge-base.first-batch.json --upsert
  *
  * knowledge_base 테이블에 운영 지식 문서를 추가합니다.
- * 이미 동일 title이 존재하면 스킵합니다.
+ * 입력 파일을 주면 해당 배치를 검증하거나, title 기준으로 insert/upsert 할 수 있습니다.
+ * 입력 배치에 relationships가 있으면 knowledge_relationships까지 같이 동기화합니다.
  * 각 문서에 Mistral mistral-embed (1024d) 임베딩을 생성하여 저장합니다.
  */
 
 import './_env';
-import { createClient } from '@supabase/supabase-js';
+import { existsSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { embedText, toVectorString } from '../src/lib/embedding';
+import {
+  HARD_DOC_CHAR_MAX,
+  TARGET_DOC_CHAR_MAX,
+  TARGET_DOC_CHAR_MIN,
+} from '../src/lib/rag-doc-policy';
 
-const SUPABASE_URL = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_SERVICE_KEY ?? '';
-
-if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
-  console.error('❌ SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY 환경변수 필요');
-  process.exit(1);
-}
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
-  auth: { persistSession: false },
-});
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const PROJECT_ROOT = path.resolve(__dirname, '..');
+const VALID_RELATIONSHIP_TYPES = new Set([
+  'causes',
+  'solves',
+  'related_to',
+  'prerequisite',
+  'part_of',
+  'similar_to',
+  'contradicts',
+  'follows',
+  'depends_on',
+]);
 
 interface KBDocument {
   title: string;
@@ -34,6 +49,318 @@ interface KBDocument {
   severity: string;
   source: string;
   related_server_types: string[];
+  metadata?: Record<string, unknown>;
+  relationships?: KBDocumentRelationship[];
+}
+
+interface KBDocumentRelationship {
+  target_title: string;
+  relationship_type: string;
+  weight?: number;
+  description?: string;
+  bidirectional?: boolean;
+  metadata?: Record<string, unknown>;
+}
+
+interface CliOptions {
+  backfill: boolean;
+  dryRun: boolean;
+  json: boolean;
+  inputPath?: string;
+  upsert: boolean;
+}
+
+interface SeedPlanItem {
+  title: string;
+  category: string;
+  source: string;
+  charCount: number;
+  tagCount: number;
+  relatedServerTypeCount: number;
+  relationshipCount: number;
+  warnings: string[];
+}
+
+interface SeedPlan {
+  docCount: number;
+  inputPath: string | null;
+  mode: 'insert' | 'upsert';
+  warnings: string[];
+  items: SeedPlanItem[];
+}
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return null;
+  }
+  return value as Record<string, unknown>;
+}
+
+function getEnv(name: string): string {
+  const value = process.env[name];
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function getSupabaseEnv() {
+  const url = getEnv('SUPABASE_URL') || getEnv('NEXT_PUBLIC_SUPABASE_URL');
+  const key = getEnv('SUPABASE_SERVICE_ROLE_KEY') || getEnv('SUPABASE_SERVICE_KEY');
+
+  if (!url || !key) {
+    throw new Error('SUPABASE_URL/NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY 필요');
+  }
+
+  return { url, key };
+}
+
+function createSupabaseClient(): SupabaseClient {
+  const { url, key } = getSupabaseEnv();
+  return createClient(url, key, {
+    auth: { persistSession: false },
+  });
+}
+
+function hasFlag(flag: string): boolean {
+  return process.argv.includes(flag);
+}
+
+function getStringArg(name: string): string | undefined {
+  const prefix = `--${name}=`;
+  const inline = process.argv.find((arg) => arg.startsWith(prefix));
+  if (inline) {
+    const value = inline.slice(prefix.length).trim();
+    return value.length > 0 ? value : undefined;
+  }
+
+  const flag = `--${name}`;
+  const index = process.argv.indexOf(flag);
+  if (index === -1) return undefined;
+  const next = process.argv[index + 1];
+  if (!next || next.startsWith('--')) return undefined;
+  return next.trim();
+}
+
+function parseCliOptions(): CliOptions {
+  return {
+    backfill: hasFlag('--backfill'),
+    dryRun: hasFlag('--dry-run'),
+    json: hasFlag('--json'),
+    inputPath: getStringArg('input'),
+    upsert: hasFlag('--upsert'),
+  };
+}
+
+function resolveInputPath(inputPath: string): string {
+  if (path.isAbsolute(inputPath)) {
+    return inputPath;
+  }
+
+  const cwdCandidate = path.resolve(process.cwd(), inputPath);
+  if (existsSync(cwdCandidate)) {
+    return cwdCandidate;
+  }
+
+  const projectCandidate = path.resolve(PROJECT_ROOT, inputPath);
+  if (existsSync(projectCandidate)) {
+    return projectCandidate;
+  }
+
+  return path.resolve(__dirname, inputPath);
+}
+
+function normalizeStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return Array.from(
+    new Set(
+      value
+        .map((item) => String(item).trim())
+        .filter((item) => item.length > 0)
+    )
+  );
+}
+
+function normalizeRelationship(
+  raw: unknown,
+  index: number,
+  docTitle: string
+): KBDocumentRelationship {
+  const row = asRecord(raw);
+  if (!row) {
+    throw new Error(`Invalid relationship for "${docTitle}" at index ${index}: expected object`);
+  }
+
+  const targetTitle = String(row.target_title ?? '').trim();
+  const relationshipType = String(row.relationship_type ?? '').trim();
+
+  if (!targetTitle) {
+    throw new Error(`Invalid relationship for "${docTitle}" at index ${index}: missing target_title`);
+  }
+
+  if (!VALID_RELATIONSHIP_TYPES.has(relationshipType)) {
+    throw new Error(
+      `Invalid relationship for "${docTitle}" at index ${index}: unsupported relationship_type "${relationshipType}"`
+    );
+  }
+
+  const rawWeight = row.weight;
+  const weight =
+    typeof rawWeight === 'number' && Number.isFinite(rawWeight)
+      ? Math.min(1, Math.max(0, rawWeight))
+      : undefined;
+
+  return {
+    target_title: targetTitle,
+    relationship_type: relationshipType,
+    weight,
+    description: String(row.description ?? '').trim() || undefined,
+    bidirectional: Boolean(row.bidirectional),
+    metadata: asRecord(row.metadata) ?? undefined,
+  };
+}
+
+function normalizeRelationships(value: unknown, docTitle: string): KBDocumentRelationship[] {
+  if (!Array.isArray(value)) return [];
+
+  const deduped = new Map<string, KBDocumentRelationship>();
+  value.forEach((entry, index) => {
+    const relationship = normalizeRelationship(entry, index, docTitle);
+    const key = `${relationship.target_title.toLowerCase()}|||${relationship.relationship_type}`;
+    deduped.set(key, relationship);
+  });
+
+  return Array.from(deduped.values());
+}
+
+function normalizeDocument(raw: unknown, index: number): KBDocument {
+  const row = asRecord(raw);
+  if (!row) {
+    throw new Error(`Invalid document at index ${index}: expected object`);
+  }
+
+  const title = String(row.title ?? '').trim();
+  const content = String(row.content ?? '').trim();
+
+  if (!title) {
+    throw new Error(`Invalid document at index ${index}: missing title`);
+  }
+  if (!content) {
+    throw new Error(`Invalid document at index ${index}: missing content`);
+  }
+
+  const metadata = asRecord(row.metadata) ?? undefined;
+
+  return {
+    title,
+    content,
+    category: String(row.category ?? 'general').trim() || 'general',
+    tags: normalizeStringArray(row.tags),
+    severity: String(row.severity ?? 'info').trim() || 'info',
+    source: String(row.source ?? 'manual').trim() || 'manual',
+    related_server_types: normalizeStringArray(row.related_server_types),
+    metadata,
+    relationships: normalizeRelationships(row.relationships, title),
+  };
+}
+
+function assertUniqueTitles(documents: KBDocument[]): void {
+  const seen = new Map<string, number>();
+  for (const [index, doc] of documents.entries()) {
+    const normalized = doc.title.trim().toLowerCase();
+    const prior = seen.get(normalized);
+    if (prior !== undefined) {
+      throw new Error(`Duplicate title in batch: "${doc.title}" (indexes ${prior} and ${index})`);
+    }
+    seen.set(normalized, index);
+  }
+}
+
+function collectDocumentWarnings(doc: KBDocument): string[] {
+  const warnings: string[] = [];
+  const charCount = doc.content.length;
+
+  if (charCount < TARGET_DOC_CHAR_MIN) {
+    warnings.push(`below-target:${charCount}`);
+  } else if (charCount > HARD_DOC_CHAR_MAX) {
+    warnings.push(`over-hard-limit:${charCount}`);
+  } else if (charCount > TARGET_DOC_CHAR_MAX) {
+    warnings.push(`over-target:${charCount}`);
+  }
+
+  if (doc.tags.length === 0) {
+    warnings.push('missing-tags');
+  }
+
+  for (const relationship of doc.relationships || []) {
+    if (relationship.target_title === doc.title) {
+      warnings.push(`self-relationship:${relationship.relationship_type}`);
+    }
+  }
+
+  return warnings;
+}
+
+function buildSeedPlan(documents: KBDocument[], options: CliOptions): SeedPlan {
+  const items = documents.map((doc) => ({
+    title: doc.title,
+    category: doc.category,
+    source: doc.source,
+    charCount: doc.content.length,
+    tagCount: doc.tags.length,
+    relatedServerTypeCount: doc.related_server_types.length,
+    relationshipCount: doc.relationships?.length ?? 0,
+    warnings: collectDocumentWarnings(doc),
+  }));
+
+  const warnings = items.flatMap((item) =>
+    item.warnings.map((warning) => `${item.title}: ${warning}`)
+  );
+
+  return {
+    docCount: documents.length,
+    inputPath: options.inputPath ? resolveInputPath(options.inputPath) : null,
+    mode: options.upsert ? 'upsert' : 'insert',
+    warnings,
+    items,
+  };
+}
+
+function printSeedPlan(plan: SeedPlan, asJson: boolean): void {
+  if (asJson) {
+    console.log(JSON.stringify(plan, null, 2));
+    return;
+  }
+
+  console.log(
+    `🧪 KB dry-run (${plan.mode}) — docs=${plan.docCount}, input=${plan.inputPath ?? 'built-in seed set'}`
+  );
+  for (const item of plan.items) {
+    const warningText = item.warnings.length > 0 ? ` warnings=${item.warnings.join(',')}` : '';
+    console.log(
+      `  - [${item.category}] ${item.title} | source=${item.source} | chars=${item.charCount} | tags=${item.tagCount} | rels=${item.relationshipCount}${warningText}`
+    );
+  }
+
+  if (plan.warnings.length > 0) {
+    console.log('\n⚠️ Corpus warnings');
+    for (const warning of plan.warnings) {
+      console.log(`  - ${warning}`);
+    }
+  } else {
+    console.log('\n✅ Corpus warnings 없음');
+  }
+}
+
+async function loadDocumentsFromInput(inputPath: string): Promise<KBDocument[]> {
+  const resolved = resolveInputPath(inputPath);
+  const raw = await readFile(resolved, 'utf-8');
+  const parsed = JSON.parse(raw) as unknown;
+
+  if (!Array.isArray(parsed)) {
+    throw new Error(`Invalid input file: expected array (${resolved})`);
+  }
+
+  const documents = parsed.map((row, index) => normalizeDocument(row, index));
+  assertUniqueTitles(documents);
+  return documents;
 }
 
 const SEED_DOCUMENTS: KBDocument[] = [
@@ -472,7 +799,7 @@ grep "ERROR" app.log | awk '{print $1, $2}' | cut -d: -f1,2 | sort | uniq -c
 // Backfill: NULL 임베딩 보정 + source 이름 통일
 // ============================================================================
 
-async function backfillEmbeddings() {
+async function backfillEmbeddings(supabase: SupabaseClient) {
   console.log('🔧 임베딩 백필 시작 — NULL 임베딩 문서 보정 + source 이름 통일...\n');
 
   // 1. source 이름 통일: seed-script → seed_script
@@ -550,22 +877,188 @@ async function backfillEmbeddings() {
 // Seed: 새 문서 추가 (임베딩 포함)
 // ============================================================================
 
-async function seedDocuments() {
-  console.log('🌱 KB 시드 시작 (임베딩 포함)...\n');
+function buildWritePayload(doc: KBDocument, embeddingStr?: string) {
+  const { relationships: _relationships, ...baseDoc } = doc;
+  return embeddingStr
+    ? { ...baseDoc, embedding: embeddingStr }
+    : baseDoc;
+}
+
+async function syncDocumentRelationships(
+  supabase: SupabaseClient,
+  documents: KBDocument[],
+  documentIds: Map<string, string>
+): Promise<{ inserted: number; updated: number; skipped: number; failed: number }> {
+  const relationshipDocs = documents.filter((doc) => (doc.relationships?.length ?? 0) > 0);
+  if (relationshipDocs.length === 0) {
+    return { inserted: 0, updated: 0, skipped: 0, failed: 0 };
+  }
+
+  const allTitles = new Set<string>();
+  for (const doc of relationshipDocs) {
+    allTitles.add(doc.title);
+    for (const relationship of doc.relationships || []) {
+      allTitles.add(relationship.target_title);
+    }
+  }
+
+  const { data: rows, error } = await supabase
+    .from('knowledge_base')
+    .select('id, title')
+    .in('title', Array.from(allTitles));
+
+  if (error) {
+    throw new Error(`relationship title lookup failed: ${error.message}`);
+  }
+
+  const titleToId = new Map<string, string>(documentIds);
+  for (const row of rows || []) {
+    if (typeof row.title === 'string' && typeof row.id === 'string') {
+      titleToId.set(row.title, row.id);
+    }
+  }
 
   let inserted = 0;
+  let updated = 0;
   let skipped = 0;
+  let failed = 0;
 
-  for (const doc of SEED_DOCUMENTS) {
+  for (const doc of relationshipDocs) {
+    const sourceId = titleToId.get(doc.title);
+    if (!sourceId) {
+      console.warn(`  ⚠️ 관계 source 미해결: ${doc.title}`);
+      failed++;
+      continue;
+    }
+
+    for (const relationship of doc.relationships || []) {
+      const targetId = titleToId.get(relationship.target_title);
+      if (!targetId) {
+        console.warn(`  ⚠️ 관계 target 미해결: ${doc.title} -> ${relationship.target_title}`);
+        skipped++;
+        continue;
+      }
+
+      const payload = {
+        source_id: sourceId,
+        target_id: targetId,
+        source_table: 'knowledge_base',
+        target_table: 'knowledge_base',
+        relationship_type: relationship.relationship_type,
+        weight: relationship.weight ?? 0.7,
+        description:
+          relationship.description ??
+          `${doc.title} → ${relationship.target_title} (${relationship.relationship_type})`,
+        bidirectional: relationship.bidirectional ?? false,
+        metadata: {
+          seeded_by: 'seed-knowledge-base',
+          source_title: doc.title,
+          target_title: relationship.target_title,
+          ...(relationship.metadata || {}),
+        },
+      };
+
+      const { data: existing, error: existingError } = await supabase
+        .from('knowledge_relationships')
+        .select('id')
+        .eq('source_id', sourceId)
+        .eq('target_id', targetId)
+        .eq('source_table', 'knowledge_base')
+        .eq('target_table', 'knowledge_base')
+        .eq('relationship_type', relationship.relationship_type)
+        .limit(1);
+
+      if (existingError) {
+        console.warn(
+          `  ⚠️ 관계 existing 조회 실패: ${doc.title} -> ${relationship.target_title}`,
+          existingError.message
+        );
+        failed++;
+        continue;
+      }
+
+      const existingId = existing?.[0]?.id;
+      if (existingId) {
+        const { error: updateError } = await supabase
+          .from('knowledge_relationships')
+          .update(payload)
+          .eq('id', existingId);
+
+        if (updateError) {
+          console.warn(
+            `  ⚠️ 관계 업데이트 실패: ${doc.title} -> ${relationship.target_title}`,
+            updateError.message
+          );
+          failed++;
+        } else {
+          console.log(
+            `🔗 관계 업데이트: ${doc.title} -> ${relationship.target_title} (${relationship.relationship_type})`
+          );
+          updated++;
+        }
+        continue;
+      }
+
+      const { error: insertError } = await supabase.from('knowledge_relationships').insert(payload);
+      if (insertError) {
+        console.warn(
+          `  ⚠️ 관계 추가 실패: ${doc.title} -> ${relationship.target_title}`,
+          insertError.message
+        );
+        failed++;
+      } else {
+        console.log(
+          `🔗 관계 추가: ${doc.title} -> ${relationship.target_title} (${relationship.relationship_type})`
+        );
+        inserted++;
+      }
+    }
+  }
+
+  return { inserted, updated, skipped, failed };
+}
+
+async function seedDocuments(
+  supabase: SupabaseClient,
+  documents: KBDocument[],
+  options: CliOptions,
+  plan: SeedPlan
+) {
+  console.log(
+    `🌱 KB 시드 시작 (${plan.mode}, docs=${documents.length}, input=${plan.inputPath ?? 'built-in seed set'})...\n`
+  );
+  if (plan.warnings.length > 0) {
+    console.log('⚠️ 실행 전 corpus warning');
+    for (const warning of plan.warnings) {
+      console.log(`  - ${warning}`);
+    }
+    console.log('');
+  }
+
+  let inserted = 0;
+  let updated = 0;
+  let skipped = 0;
+  let failed = 0;
+  const documentIds = new Map<string, string>();
+
+  for (const doc of documents) {
     // 중복 체크 (title 기준)
-    const { data: existing } = await supabase
+    const { data: existing, error: existingError } = await supabase
       .from('knowledge_base')
       .select('id')
       .eq('title', doc.title)
       .limit(1);
 
-    if (existing && existing.length > 0) {
+    if (existingError) {
+      console.error(`❌ 조회 실패: ${doc.title}`, existingError.message);
+      failed++;
+      continue;
+    }
+
+    const existingId = existing?.[0]?.id;
+    if (existingId && !options.upsert) {
       console.log(`⏭️  이미 존재: ${doc.title}`);
+      documentIds.set(doc.title, existingId);
       skipped++;
       continue;
     }
@@ -577,29 +1070,59 @@ async function seedDocuments() {
       const embedding = await embedText(textToEmbed);
       embeddingStr = toVectorString(embedding);
     } catch (err) {
-      console.warn(`  ⚠️ 임베딩 생성 실패 (문서는 추가됨): ${doc.title}`, err);
+      console.warn(`  ⚠️ 임베딩 생성 실패 (문서는 계속 반영 시도): ${doc.title}`, err);
     }
 
-    const insertPayload = embeddingStr
-      ? { ...doc, embedding: embeddingStr }
-      : doc;
+    const payload = buildWritePayload(doc, embeddingStr);
 
-    const { error } = await supabase.from('knowledge_base').insert(insertPayload);
+    if (existingId) {
+      const { error } = await supabase
+        .from('knowledge_base')
+        .update(payload)
+        .eq('id', existingId);
+
+      if (error) {
+        console.error(`❌ 업데이트 실패: ${doc.title}`, error.message);
+        failed++;
+      } else {
+        console.log(`♻️  업데이트${embeddingStr ? ' (+ 임베딩)' : ''}: ${doc.title}`);
+        documentIds.set(doc.title, existingId);
+        updated++;
+      }
+      continue;
+    }
+
+    const { data: insertedRow, error } = await supabase
+      .from('knowledge_base')
+      .insert(payload)
+      .select('id')
+      .single();
 
     if (error) {
-      console.error(`❌ 실패: ${doc.title}`, error.message);
+      console.error(`❌ 추가 실패: ${doc.title}`, error.message);
+      failed++;
     } else {
       console.log(`✅ 추가${embeddingStr ? ' (+ 임베딩)' : ''}: ${doc.title}`);
+      if (typeof insertedRow?.id === 'string') {
+        documentIds.set(doc.title, insertedRow.id);
+      }
       inserted++;
     }
   }
+
+  const relationshipSummary = await syncDocumentRelationships(supabase, documents, documentIds);
 
   // 최종 문서 수 확인
   const { count } = await supabase
     .from('knowledge_base')
     .select('id', { count: 'exact', head: true });
 
-  console.log(`\n📊 결과: ${inserted}건 추가, ${skipped}건 스킵`);
+  console.log(
+    `\n📊 결과: ${inserted}건 추가, ${updated}건 업데이트, ${skipped}건 스킵, ${failed}건 실패`
+  );
+  console.log(
+    `🔗 관계: ${relationshipSummary.inserted}건 추가, ${relationshipSummary.updated}건 업데이트, ${relationshipSummary.skipped}건 스킵, ${relationshipSummary.failed}건 실패`
+  );
   console.log(`📚 KB 총 문서 수: ${count ?? '확인 불가'}`);
 }
 
@@ -608,13 +1131,42 @@ async function seedDocuments() {
 // ============================================================================
 
 async function main() {
-  const isBackfill = process.argv.includes('--backfill');
+  const options = parseCliOptions();
 
-  if (isBackfill) {
-    await backfillEmbeddings();
-  } else {
-    await seedDocuments();
+  if (options.backfill && options.inputPath) {
+    throw new Error('--backfill 과 --input 은 함께 사용할 수 없습니다');
   }
+
+  if (options.backfill && options.upsert) {
+    throw new Error('--backfill 과 --upsert 는 함께 사용할 수 없습니다');
+  }
+
+  if (options.backfill) {
+    if (options.dryRun) {
+      console.log('🧪 KB backfill dry-run — live DB 조회/수정 없이 종료');
+      return;
+    }
+
+    const supabase = createSupabaseClient();
+    await backfillEmbeddings(supabase);
+    return;
+  }
+
+  const documents = options.inputPath
+    ? await loadDocumentsFromInput(options.inputPath)
+    : SEED_DOCUMENTS;
+  const plan = buildSeedPlan(documents, options);
+
+  if (options.dryRun) {
+    printSeedPlan(plan, options.json);
+    return;
+  }
+
+  const supabase = createSupabaseClient();
+  await seedDocuments(supabase, documents, options, plan);
 }
 
-main().catch(console.error);
+main().catch((error) => {
+  console.error('[FATAL] seed-knowledge-base failed:', error);
+  process.exit(1);
+});

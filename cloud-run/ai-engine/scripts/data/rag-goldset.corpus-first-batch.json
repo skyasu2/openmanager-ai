@@ -1,0 +1,30 @@
+[
+  {
+    "id": "KB01",
+    "query": "AI 사이드바 응답이 느릴 때 어디부터 봐야 하나요?",
+    "expectedCategories": ["troubleshooting"],
+    "requiredKeywords": ["X-AI-Latency-Ms", "Cloud Run", "첫 토큰"],
+    "commandIntent": false
+  },
+  {
+    "id": "KB02",
+    "query": "Cloud Run Ready인데 AI 첫 응답이 늦을 때 확인 순서",
+    "expectedCategories": ["troubleshooting"],
+    "requiredKeywords": ["cold start", "rate limit", "RAG"],
+    "commandIntent": false
+  },
+  {
+    "id": "KB03",
+    "query": "Supabase migration을 안전하게 진행하는 순서",
+    "expectedCategories": ["best_practice"],
+    "requiredKeywords": ["remote timestamp ledger", "db pull", "safe worktree"],
+    "commandIntent": false
+  },
+  {
+    "id": "KB04",
+    "query": "hosted schema와 migration ledger가 어긋났을 때 원칙",
+    "expectedCategories": ["best_practice"],
+    "requiredKeywords": ["hosted schema", "history-only stub", "active migration chain"],
+    "commandIntent": false
+  }
+]

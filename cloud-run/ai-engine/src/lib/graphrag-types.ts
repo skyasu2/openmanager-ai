@@ -1,4 +1,4 @@
-export interface LlamaIndexSearchResult {
+export interface GraphRAGSearchResult {
   id: string;
   title: string;
   content: string;
@@ -16,8 +16,9 @@ export interface KnowledgeTriplet {
   confidence: number;
 }
 
-export interface LlamaIndexStats {
+export interface GraphRAGStats {
   totalDocuments: number;
   totalTriplets: number;
+  totalExtractionEdges: number;
   lastIndexed: string | null;
 }

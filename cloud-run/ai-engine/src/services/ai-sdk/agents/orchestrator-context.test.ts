@@ -44,6 +44,13 @@ describe('preFilterQuery', () => {
     expect(preFilterQuery('메모리 부족 해결 방법 알려줘').suggestedAgent).toBe('Advisor Agent');
   });
 
+  it('routes topology queries to Advisor Agent with high confidence', () => {
+    const result = preFilterQuery('현재 인프라 토폴로지 알려줘. 관련된 운영 가이드도 연결해줘');
+    expect(result.shouldHandoff).toBe(true);
+    expect(result.suggestedAgent).toBe('Advisor Agent');
+    expect(result.confidence).toBe(0.9);
+  });
+
   it('provides fallback agent hint for composite infra query', () => {
     const result = preFilterQuery('서버 상태와 원인 분석을 비교하고 해결 방법도 알려줘');
     expect(result.shouldHandoff).toBe(true);

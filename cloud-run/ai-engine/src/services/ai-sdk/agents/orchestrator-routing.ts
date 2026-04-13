@@ -31,6 +31,7 @@ import { filterToolsByWebSearch, filterToolsByRAG } from './orchestrator-web-sea
 import { recordHandoff, getRecentHandoffs } from './orchestrator-handoff';
 import { executeReporterWithPipeline } from './orchestrator-reporter-pipeline';
 import { evaluateAgentResponseQuality } from './response-quality';
+import { FORCE_KB_QUERY_PATTERN } from '../query-routing-signals';
 import {
   buildDeterministicSummaryFallback,
   buildDeterministicSummaryFromCurrentState,
@@ -152,6 +153,11 @@ export async function executeForcedRouting(
 
   let filteredTools = filterToolsByWebSearch(agentConfig.tools, webSearchEnabled);
   filteredTools = filterToolsByRAG(filteredTools, ragEnabled);
+  const forceKnowledgeBaseTool =
+    ragEnabled &&
+    suggestedAgentName === 'Advisor Agent' &&
+    FORCE_KB_QUERY_PATTERN.test(query) &&
+    'searchKnowledgeBase' in filteredTools;
   const attachmentHint =
     images?.length || files?.length
       ? `\n\n[첨부 컨텍스트]\n- images: ${images?.length ?? 0}\n- files: ${files?.length ?? 0}`
@@ -169,6 +175,9 @@ export async function executeForcedRouting(
           { role: 'user', content: executionPrompt },
         ],
         tools: filteredTools as Parameters<typeof generateText>[0]['tools'],
+        ...(forceKnowledgeBaseTool && {
+          toolChoice: { type: 'tool' as const, toolName: 'searchKnowledgeBase' as const },
+        }),
         stopWhen: [hasToolCall('finalAnswer'), stepCountIs(agentMaxSteps)],
         temperature: 0.4,
         maxOutputTokens: 2048,

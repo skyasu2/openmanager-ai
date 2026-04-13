@@ -13,6 +13,18 @@
 import pino from 'pino';
 import { version as APP_VERSION } from '../../package.json';
 
+type GcpLoggingPinoConfigFactory = (
+  options: {
+    serviceContext: {
+      service: string;
+      version: string;
+    };
+  },
+  pinoOptions: {
+    level: string;
+  }
+) => unknown;
+
 /**
  * Create GCP-optimized Pino logger
  */
@@ -36,7 +48,9 @@ function createLogger(): pino.Logger {
   if (!useLocalLogger) {
     const { createGcpLoggingPinoConfig } = require(
       '@google-cloud/pino-logging-gcp-config'
-    ) as typeof import('@google-cloud/pino-logging-gcp-config');
+    ) as {
+      createGcpLoggingPinoConfig: GcpLoggingPinoConfigFactory;
+    };
 
     // Production: 공식 GCP 패키지로 severity/insertId/stack_trace 자동 처리
     // GCP 패키지가 pino@10 타입 기준이므로 pino@9와 제네릭 불일치 → LoggerOptions 단언
