@@ -89,5 +89,35 @@ describe('shouldRetryForQuality', () => {
     const result = createResponseFixture();
     expect(shouldRetryForQuality(result, 'rca')).toBe(false);
   });
-});
 
+  it('retries when non-general intent returns without any tool call', () => {
+    const result = createResponseFixture({
+      toolsCalled: [],
+      metadata: {
+        provider: 'groq',
+        modelId: 'test-model',
+        stepsExecuted: 1,
+        durationMs: 1200,
+        qualityFlags: [],
+      },
+    });
+
+    expect(shouldRetryForQuality(result, 'advisor')).toBe(true);
+  });
+
+  it('does not retry when no_provider fallback is already returned', () => {
+    const result = createResponseFixture({
+      response: '현재 AI 엔진 모델이 일시적으로 사용 불가능합니다. 잠시 후 다시 시도해주세요.',
+      toolsCalled: [],
+      metadata: {
+        provider: 'none',
+        modelId: 'none',
+        stepsExecuted: 0,
+        durationMs: 100,
+        qualityFlags: ['TOO_SHORT', 'no_provider'],
+      },
+    });
+
+    expect(shouldRetryForQuality(result, 'metrics')).toBe(false);
+  });
+});

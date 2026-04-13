@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
+  shouldEnableRAG,
   shouldEnableWebSearch,
+  resolveRAGSetting,
   resolveWebSearchSetting,
   filterToolsByWebSearch,
   filterToolsByRAG,
@@ -53,6 +55,38 @@ describe('resolveWebSearchSetting', () => {
   it('auto-detects for "auto" string', () => {
     expect(resolveWebSearchSetting('auto', 'CVE 보안 취약점')).toBe(true);
     expect(resolveWebSearchSetting('auto', '서버 목록 조회')).toBe(false);
+  });
+});
+
+describe('shouldEnableRAG', () => {
+  it('enables for topology and architecture queries', () => {
+    expect(shouldEnableRAG('현재 인프라 토폴로지 알려줘')).toBe(true);
+    expect(shouldEnableRAG('architecture dependency flow 설명')).toBe(true);
+  });
+
+  it('enables for incident/advisory queries', () => {
+    expect(shouldEnableRAG('유사 장애 사례 찾아줘')).toBe(true);
+    expect(shouldEnableRAG('troubleshoot runbook 추천')).toBe(true);
+  });
+
+  it('disables for plain monitoring queries', () => {
+    expect(shouldEnableRAG('CPU 사용률 알려줘')).toBe(false);
+    expect(shouldEnableRAG('서버 상태 확인')).toBe(false);
+  });
+});
+
+describe('resolveRAGSetting', () => {
+  it('returns true when explicitly enabled', () => {
+    expect(resolveRAGSetting(true, 'anything')).toBe(true);
+  });
+
+  it('returns false when explicitly disabled', () => {
+    expect(resolveRAGSetting(false, '현재 인프라 토폴로지 알려줘')).toBe(false);
+  });
+
+  it('auto-detects when undefined', () => {
+    expect(resolveRAGSetting(undefined, '유사 장애 사례 찾아줘')).toBe(true);
+    expect(resolveRAGSetting(undefined, 'CPU 사용률')).toBe(false);
   });
 });
 

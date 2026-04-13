@@ -1,20 +1,20 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-04-12 16:09:09 KST
+> Generated at: 2026-04-13 21:52:33 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 271 |
-| Counted Runs | 240 |
-| Total Checks | 1869 |
-| Total Passed | 1797 |
-| Total Failed | 66 |
-| Overall Pass Rate | 96.15% |
-| Latest Recorded Run | QA-20260412-0273 |
-| Last Counted Run | QA-20260412-0272 |
+| Recorded Runs | 280 |
+| Counted Runs | 243 |
+| Total Checks | 1886 |
+| Total Passed | 1812 |
+| Total Failed | 68 |
+| Overall Pass Rate | 96.08% |
+| Latest Recorded Run | QA-20260413-0282 |
+| Last Counted Run | QA-20260413-0282 |
 
 ## Warnings
 
@@ -24,9 +24,9 @@
 
 | Window | Counted Runs | Checks | Pass Rate | Failed Runs | Failing Run Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| All Counted Runs | 240 | 1869 | 96.15% | 41 | 17.08% | 46 | 19.17% |
-| Last 30 Counted Runs | 30 | 317 | 98.74% | 3 | 10% | 3 | 10% |
-| Last 10 Counted Runs | 10 | 91 | 97.8% | 1 | 10% | 1 | 10% |
+| All Counted Runs | 243 | 1886 | 96.08% | 42 | 17.28% | 48 | 19.75% |
+| Last 30 Counted Runs | 30 | 298 | 97.99% | 4 | 13.33% | 5 | 16.67% |
+| Last 10 Counted Runs | 10 | 71 | 97.18% | 1 | 10% | 2 | 20% |
 
 ## Gate Run Windows
 
@@ -47,7 +47,7 @@
 | Scope | Recorded Runs | Counted Runs |
 |---|---:|---:|
 | legacy | 137 | 137 |
-| targeted | 113 | 83 |
+| targeted | 122 | 86 |
 | broad | 15 | 14 |
 | release-gate | 4 | 4 |
 | smoke | 2 | 2 |
@@ -56,8 +56,8 @@
 
 | Priority | Total Items | Recurring Items | Recurrence Rate | Open Items | Open Recurring | Open Recurrence Rate | Completed | Wont-Fix |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| P0 | 41 | 7 | 17.07% | 0 | 0 | 0% | 41 | 0 |
-| P1 | 131 | 62 | 47.33% | 0 | 0 | 0% | 127 | 4 |
+| P0 | 42 | 7 | 16.67% | 0 | 0 | 0% | 42 | 0 |
+| P1 | 132 | 63 | 47.73% | 0 | 0 | 0% | 128 | 4 |
 | P2 | 114 | 37 | 32.46% | 0 | 0 | 0% | 106 | 8 |
 | P3 | 15 | 11 | 73.33% | 0 | 0 | 0% | 14 | 1 |
 
@@ -82,7 +82,6 @@
 
 | Date | Runs | Checks | Pass Rate | Failed Runs | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-03-27 | 1 | 12 | 91.67% | 1 | 1 | 100% |
 | 2026-03-29 | 1 | 11 | 100% | 0 | 0 | 0% |
 | 2026-03-30 | 6 | 47 | 93.62% | 1 | 1 | 16.67% |
 | 2026-03-31 | 2 | 11 | 81.82% | 1 | 1 | 50% |
@@ -96,11 +95,14 @@
 | 2026-04-08 | 4 | 26 | 100% | 0 | 0 | 0% |
 | 2026-04-09 | 3 | 24 | 100% | 0 | 0 | 0% |
 | 2026-04-12 | 1 | 10 | 100% | 0 | 0 | 0% |
+| 2026-04-13 | 3 | 17 | 88.24% | 1 | 2 | 66.67% |
 
 ## Recent Regression Runs
 
 | Run ID | Time (UTC) | Scope | Failed Checks | Pending | Deferred | Wont-Fix | Title |
 |---|---|---|---:|---:|---:|---:|---|
+| QA-20260413-0281 | 2026-04-13T12:40:26.449Z | targeted | 2 | 1 | 0 | 0 | GraphRAG variant stability recheck after ai-engine-00311 (boolean-string tool schema hotfix) |
+| QA-20260413-0280 | 2026-04-13T11:41:39.894Z | targeted | 0 | 1 | 0 | 0 | GraphRAG variant direct supervisor recheck after ai-engine-00308 (RAG auto + advisor tool required) |
 | QA-20260407-0249 | 2026-04-07T11:55:13.126Z | broad | 2 | 2 | 0 | 0 | Playwright MCP Production QA - Frontend + AI Assistant v8.11.0 broad baseline refresh |
 | QA-20260404-0223 | 2026-04-04T11:06:01.219Z | targeted | 1 | 1 | 0 | 0 | Vercel Playwright QA - dashboard/AI parity rerun after ai-engine parity patch |
 | QA-20260404-0222 | 2026-04-04T09:17:33.588Z | broad | 1 | 1 | 0 | 1 | Vercel Playwright QA - dashboard, AI assistant, and monitoring parity check |
@@ -109,8 +111,6 @@
 | QA-20260327-0193 | 2026-03-26T15:12:25.263Z | targeted | 1 | 0 | 0 | 1 | Vercel production targeted QA recheck after cloud-run pre-init logging fix |
 | QA-20260324-0179 | 2026-03-24T10:48:15.267Z | targeted | 1 | 0 | 0 | 0 | Vercel Preview QA - PR #200 blocked by preview SSO |
 | QA-20260324-0177 | 2026-03-24T07:57:28.735Z | targeted | 1 | 1 | 0 | 0 | Vercel Production QA - false realtime-analysis badge removed but parity mismatch remains |
-| QA-20260324-0176 | 2026-03-24T07:35:13.658Z | targeted | 2 | 1 | 0 | 0 | Vercel Production QA - parity gate still open after analysis detail patch |
-| QA-20260324-0175 | 2026-03-24T05:45:00.758Z | targeted | 1 | 1 | 0 | 0 | Vercel Production QA - deferred parity metadata preserved but detail contract still incomplete |
 
 ## Recurring Open Items
 

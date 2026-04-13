@@ -120,6 +120,113 @@ function getAgentMaxSteps(agentName: string): number {
   }
 }
 
+interface DirectKnowledgeResultItem {
+  title: string;
+  content: string;
+  similarity: number;
+  sourceType: string;
+  category?: string;
+  url?: string;
+}
+
+interface DirectKnowledgeSearchResult {
+  success: boolean;
+  results: DirectKnowledgeResultItem[];
+  totalFound: number;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function toNumber(value: unknown): number | null {
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
+function asDirectKnowledgeResultItem(value: unknown): DirectKnowledgeResultItem | null {
+  if (!isRecord(value)) return null;
+  const title = typeof value.title === 'string' ? value.title : '';
+  const content = typeof value.content === 'string' ? value.content : '';
+  const similarity = toNumber(value.similarity) ?? 0;
+  const sourceType = typeof value.sourceType === 'string' ? value.sourceType : 'vector';
+
+  if (!title || !content) {
+    return null;
+  }
+
+  return {
+    title,
+    content,
+    similarity,
+    sourceType,
+    category: typeof value.category === 'string' ? value.category : undefined,
+    url: typeof value.url === 'string' ? value.url : undefined,
+  };
+}
+
+function asDirectKnowledgeSearchResult(value: unknown): DirectKnowledgeSearchResult | null {
+  if (!isRecord(value) || value.success !== true || !Array.isArray(value.results)) {
+    return null;
+  }
+
+  const results = value.results
+    .map(asDirectKnowledgeResultItem)
+    .filter((item): item is DirectKnowledgeResultItem => item !== null);
+
+  return {
+    success: true,
+    results,
+    totalFound: toNumber(value.totalFound) ?? results.length,
+  };
+}
+
+function extractServerCountHint(results: DirectKnowledgeResultItem[]): number | null {
+  for (const result of results) {
+    const match = result.content.match(/총\s*(\d+)\s*대/);
+    if (match) {
+      return Number(match[1]);
+    }
+  }
+  return null;
+}
+
+function buildTopologyDirectKnowledgeResponse(
+  query: string,
+  results: DirectKnowledgeResultItem[],
+): string {
+  const topResults = results.slice(0, 3);
+  const sourceSummary = {
+    vector: results.filter((item) => item.sourceType === 'vector').length,
+    graph: results.filter((item) => item.sourceType === 'graph').length,
+    web: results.filter((item) => item.sourceType === 'web').length,
+  };
+  const serverCountHint = extractServerCountHint(results);
+  const titleBullets = topResults
+    .map((item, index) => `${index + 1}. ${item.title}`)
+    .join('\n');
+
+  return [
+    '### 인프라 토폴로지 요약',
+    `- 질의: ${query}`,
+    `- 근거 문서: ${results.length}건 (vector ${sourceSummary.vector}, graph ${sourceSummary.graph}, web ${sourceSummary.web})`,
+    serverCountHint !== null
+      ? `- 확인된 서버 규모 힌트: 총 ${serverCountHint}대`
+      : '- 서버 규모는 KB 문서 기준으로 파악되며, 실시간 수치는 별도 조회가 필요합니다.',
+    '',
+    '#### 문제/원인 관점',
+    '- 이번 요청은 장애 원인 진단보다 현재 구성/트래픽 경로 확인 목적입니다.',
+    '- 원인 분석이 필요하면 `findRootCause`/`correlateMetrics` 기반 추가 점검이 필요합니다.',
+    '',
+    '#### 핵심 근거 문서',
+    titleBullets,
+    '',
+    '#### 해결/권장 조치',
+    '1. `getServerMetrics`로 LB→WEB→APP→DB 구간의 현재 부하(CPU/메모리)를 즉시 확인하세요.',
+    '2. `getServerLogs`로 WEB/APP 계층 에러 로그를 교차 점검해 병목 지점을 좁히세요.',
+    '3. 토폴로지 변경 전에는 관련 runbook과 최근 incident 유사 사례를 함께 검토하세요.',
+  ].join('\n');
+}
+
 export async function executeForcedRouting(
   query: string,
   suggestedAgentName: string,
@@ -153,11 +260,84 @@ export async function executeForcedRouting(
 
   let filteredTools = filterToolsByWebSearch(agentConfig.tools, webSearchEnabled);
   filteredTools = filterToolsByRAG(filteredTools, ragEnabled);
+  const isForceKnowledgeBaseQuery = FORCE_KB_QUERY_PATTERN.test(query);
   const forceKnowledgeBaseTool =
     ragEnabled &&
     suggestedAgentName === 'Advisor Agent' &&
-    FORCE_KB_QUERY_PATTERN.test(query) &&
+    isForceKnowledgeBaseQuery &&
     'searchKnowledgeBase' in filteredTools;
+
+  // Topology/architecture queries can bypass LLM generation by using
+  // direct KB retrieval + deterministic synthesis.
+  if (forceKnowledgeBaseTool) {
+    const directSearchTool = (filteredTools as Record<string, unknown>)
+      .searchKnowledgeBase as { execute?: (input: Record<string, unknown>) => Promise<unknown> };
+
+    if (typeof directSearchTool?.execute === 'function') {
+      try {
+        const directSearchResult = await directSearchTool.execute({
+          query,
+          category: 'architecture',
+          useGraphRAG: true,
+          fastMode: true,
+          includeWebSearch: false,
+        });
+        const parsedDirectResult = asDirectKnowledgeSearchResult(directSearchResult);
+
+        if (parsedDirectResult && parsedDirectResult.results.length > 0) {
+          const durationMs = Date.now() - startTime;
+          const response = sanitizeChineseCharacters(
+            buildTopologyDirectKnowledgeResponse(query, parsedDirectResult.results)
+          );
+          const quality = evaluateAgentResponseQuality('Advisor Agent', response, { durationMs });
+
+          logger.info(
+            `[Forced Routing] Topology direct KB path succeeded in ${durationMs}ms (${parsedDirectResult.results.length} docs)`
+          );
+
+          return {
+            success: true,
+            response,
+            ragSources: parsedDirectResult.results.map((item) => ({
+              title: item.title,
+              similarity: item.similarity,
+              sourceType: item.sourceType,
+              category: item.category,
+              url: item.url,
+            })),
+            handoffs: [{
+              from: 'Orchestrator',
+              to: suggestedAgentName,
+              reason: 'Forced routing (topology direct KB path)',
+            }],
+            finalAgent: suggestedAgentName,
+            toolsCalled: ['searchKnowledgeBase', 'finalAnswer'],
+            usage: {
+              promptTokens: 0,
+              completionTokens: 0,
+              totalTokens: 0,
+            },
+            metadata: {
+              provider: 'deterministic',
+              modelId: 'knowledge-search-direct',
+              totalRounds: 1,
+              handoffCount: 1,
+              durationMs,
+              responseChars: quality.responseChars,
+              formatCompliance: quality.formatCompliance,
+              qualityFlags: quality.qualityFlags,
+              latencyTier: quality.latencyTier,
+            },
+          };
+        }
+      } catch (error) {
+        logger.warn(
+          '[Forced Routing] Topology direct KB path failed, falling back to LLM routing:',
+          error instanceof Error ? error.message : String(error)
+        );
+      }
+    }
+  }
   const attachmentHint =
     images?.length || files?.length
       ? `\n\n[첨부 컨텍스트]\n- images: ${images?.length ?? 0}\n- files: ${files?.length ?? 0}`

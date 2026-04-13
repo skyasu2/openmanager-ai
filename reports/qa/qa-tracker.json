@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-13T08:29:27.267Z"
+    "updatedAt": "2026-04-13T12:52:28.892Z"
   },
   "sequence": {
-    "nextRunNumber": 275
+    "nextRunNumber": 283
   },
   "summary": {
-    "totalRecordedRuns": 272,
-    "totalRuns": 240,
-    "excludedRuns": 32,
-    "totalChecks": 1869,
-    "totalPassed": 1797,
-    "totalFailed": 66,
+    "totalRecordedRuns": 280,
+    "totalRuns": 243,
+    "excludedRuns": 37,
+    "totalChecks": 1886,
+    "totalPassed": 1812,
+    "totalFailed": 68,
     "completionRate": 100,
-    "completedItems": 288,
+    "completedItems": 290,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 13,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260412-0272",
-    "lastRecordedAt": "2026-04-12T00:18:52.994Z",
-    "latestRecordedRunId": "QA-20260413-0274",
-    "latestRecordedAt": "2026-04-13T08:29:27.267Z"
+    "lastRunId": "QA-20260413-0282",
+    "lastRecordedAt": "2026-04-13T12:52:28.892Z",
+    "latestRecordedRunId": "QA-20260413-0282",
+    "latestRecordedAt": "2026-04-13T12:52:28.892Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -6939,6 +6939,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-12T06:56:48.689Z"
+    },
+    "ai-topology-variant-function-call-failure": {
+      "id": "ai-topology-variant-function-call-failure",
+      "title": "Topology variant direct supervisor stabilization",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260413-0276",
+      "firstSeenAt": "2026-04-13T09:02:52.483Z",
+      "lastSeenRunId": "QA-20260413-0282",
+      "lastSeenAt": "2026-04-13T12:52:28.892Z",
+      "seenCount": 7,
+      "completedCount": 1,
+      "pendingCount": 6,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "QA-20260413-0282: legacy variant 6/6 success, deterministic routing, no INTERNAL_ERROR/NO_PROVIDER/LATENCY_SLOW flags in sampled run.",
+      "lastNote": "After ai-engine-00311, INTERNAL_ERROR from boolean-string schema mismatch is resolved in sampled runs, but one NO_PROVIDER fallback and persistent slow latency remain on the legacy variant query.",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-13T12:52:28.892Z"
+    },
+    "ai-topology-variant-schema-validation-failure": {
+      "id": "ai-topology-variant-schema-validation-failure",
+      "title": "searchKnowledgeBase boolean-string tool-call validation failure removed",
+      "priority": "P0",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260413-0281",
+      "firstSeenAt": "2026-04-13T12:40:26.449Z",
+      "lastSeenRunId": "QA-20260413-0281",
+      "lastSeenAt": "2026-04-13T12:40:26.449Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "ai-engine-00311-lvf logs no longer show tool schema mismatch for useGraphRAG/fastMode/includeWebSearch.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-13T12:40:26.449Z"
     }
   },
   "runs": [
@@ -23939,6 +23987,639 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260413-0275",
+      "recordedAt": "2026-04-13T08:52:05.906Z",
+      "recordedAtKst": "2026-04-13 17:52:05 KST",
+      "title": "GraphRAG traversal decision QA #1 (topology + incident targeted)",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260413-0275.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run ai-engine-00304-w5n",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "baf40601059849ca16369417157b9c57756346e7"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": ["core-routes-smoke", "ai-core", "observability-pack"],
+      "coveredSurfaces": [
+        "/login render on Vercel production",
+        "guest session system-start to /dashboard",
+        "AI sidebar topology query response render",
+        "AI sidebar incident query response render",
+        "AI analysis-basis panel handoff/tool detail visibility",
+        "browser console errors = 0 during tested flow",
+        "Vercel /api/health",
+        "Vercel /api/version",
+        "Cloud Run /health",
+        "Cloud Run /monitoring direct auth check",
+        "Cloud Run /api/ai/supervisor direct topology probe (toolsCalled duplicate + vector sources)",
+        "Cloud Run /api/ai/supervisor direct incident probe (graph sources observed)"
+      ],
+      "skippedSurfaces": [
+        "OAuth provider completion",
+        "fullscreen AI workspace",
+        "feedback submit path",
+        "security attack regression pack",
+        "sampled graph_rag_search log capture proof"
+      ],
+      "checks": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-13T17:52:05+09:00",
+          "summary": "Current billing period effective usage 7.8436 USD, billed 0.0000 USD, no unexpected billed usage spike before targeted QA #1.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Analysis basis panel (handoff/tool detail)",
+          "path": "reports/qa/evidence/qa-20260413-graphrag-qa1-analysis-basis.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Cloud Run health",
+          "url": "https://ai-engine-490817238363.asia-northeast1.run.app/health",
+          "note": "Direct run.app health endpoint"
+        },
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/",
+          "note": "Target frontend under test"
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run monitoring",
+          "url": "https://ai-engine-490817238363.asia-northeast1.run.app/monitoring",
+          "note": "Requires X-API-Key header"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260413-0276",
+      "recordedAt": "2026-04-13T09:02:52.483Z",
+      "recordedAtKst": "2026-04-13 18:02:52 KST",
+      "title": "GraphRAG traversal decision QA #2 (duplicate invocation + latency + variant failure)",
+      "owner": "codex",
+      "source": "cloud-run-probe",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260413-0276.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run ai-engine-00304-w5n",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "baf40601059849ca16369417157b9c57756346e7"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": ["ai-core", "observability-pack"],
+      "coveredSurfaces": [
+        "Cloud Run /api/ai/supervisor topology repeat probe #1",
+        "Cloud Run /api/ai/supervisor topology repeat probe #2",
+        "Cloud Run /api/ai/supervisor incident repeat probe",
+        "Cloud Run /monitoring/traces observability query",
+        "Vercel /api/health",
+        "Vercel /api/version",
+        "Cloud Run /health",
+        "Vercel usage check via CLI"
+      ],
+      "skippedSurfaces": [
+        "landing/login/dashboard browser flow",
+        "fullscreen AI workspace",
+        "feedback submit path",
+        "security attack regression pack",
+        "sampled graph_rag_search log capture proof"
+      ],
+      "checks": {
+        "total": 9,
+        "passed": 8,
+        "failed": 1
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-13T18:01:53+09:00",
+          "summary": "Current billing period effective usage 7.8436 USD, billed 0.0000 USD, no unexpected billed usage spike before targeted QA #2.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "Cloud Run health",
+          "url": "https://ai-engine-490817238363.asia-northeast1.run.app/health",
+          "note": "Direct run.app health endpoint"
+        },
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/",
+          "note": "Target frontend for this QA wave"
+        },
+        {
+          "type": "langfuse-trace",
+          "label": "Topology variant failure trace",
+          "url": "https://us.cloud.langfuse.com/project/cmjk0fm8u045gad07tf8xaptk/traces/450df1b964310ba2c6eaf078c71a43e2",
+          "note": "outputPreview: Failed to call a function"
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run monitoring traces",
+          "url": "https://ai-engine-490817238363.asia-northeast1.run.app/monitoring/traces?limit=5",
+          "note": "Direct admin traces endpoint (requires X-API-Key)"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260413-0277",
+      "recordedAt": "2026-04-13T09:10:29.270Z",
+      "recordedAtKst": "2026-04-13 18:10:29 KST",
+      "title": "GraphRAG traversal decision QA #3 (UI success vs direct supervisor failure split)",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260413-0277.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run ai-engine-00304-w5n",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "baf40601059849ca16369417157b9c57756346e7"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": ["core-routes-smoke", "ai-core", "observability-pack"],
+      "coveredSurfaces": [
+        "AI sidebar variant topology query render on Vercel production UI",
+        "analysis-basis panel tool/handoff summary visibility for variant query",
+        "Cloud Run /api/ai/supervisor direct variant topology probe",
+        "Cloud Run /monitoring/traces direct query for failure traces",
+        "Vercel /api/health",
+        "Vercel /api/version",
+        "Cloud Run /health",
+        "Vercel usage check via CLI"
+      ],
+      "skippedSurfaces": [
+        "OAuth provider completion",
+        "fullscreen AI workspace",
+        "feedback submit path",
+        "security attack regression pack",
+        "sampled graph_rag_search log capture proof"
+      ],
+      "checks": {
+        "total": 8,
+        "passed": 7,
+        "failed": 1
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-13T18:09:44+09:00",
+          "summary": "Current billing period effective usage 7.8436 USD, billed 0.0000 USD, no unexpected billed usage spike before targeted QA #3.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Variant topology query success on UI",
+          "path": "reports/qa/evidence/qa-20260413-graphrag-qa3-variant-ui-success.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Cloud Run health",
+          "url": "https://ai-engine-490817238363.asia-northeast1.run.app/health",
+          "note": "Direct run.app health endpoint"
+        },
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/",
+          "note": "Target frontend for this QA wave"
+        },
+        {
+          "type": "langfuse-trace",
+          "label": "Topology variant failure trace #1",
+          "url": "https://us.cloud.langfuse.com/project/cmjk0fm8u045gad07tf8xaptk/traces/450df1b964310ba2c6eaf078c71a43e2",
+          "note": "outputPreview: Failed to call a function"
+        },
+        {
+          "type": "langfuse-trace",
+          "label": "Topology variant failure trace #2",
+          "url": "https://us.cloud.langfuse.com/project/cmjk0fm8u045gad07tf8xaptk/traces/455246b4154be9a7ce0a1836a2019e2d",
+          "note": "outputPreview: Failed to call a function"
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run monitoring traces",
+          "url": "https://ai-engine-490817238363.asia-northeast1.run.app/monitoring/traces?limit=8",
+          "note": "Direct admin traces endpoint (requires X-API-Key)"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260413-0278",
+      "recordedAt": "2026-04-13T10:35:18.519Z",
+      "recordedAtKst": "2026-04-13 19:35:18 KST",
+      "title": "GraphRAG variant direct supervisor recheck after ai-engine-00305 deployment",
+      "owner": "codex",
+      "source": "cloud-run-probe",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260413-0278.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run ai-engine-00305-5b4",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "baf40601059849ca16369417157b9c57756346e7"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": ["ai-core", "observability-pack"],
+      "coveredSurfaces": [
+        "Cloud Run ai-engine deployment (revision ai-engine-00305-5b4)",
+        "Cloud Run /health after deployment",
+        "Cloud Run /api/ai/supervisor variant topology direct probe attempt #1",
+        "Cloud Run /api/ai/supervisor variant topology direct probe attempt #2",
+        "Cloud Run /api/ai/supervisor variant topology direct probe attempt #3",
+        "Cloud Run /api/ai/supervisor variant topology direct probe attempt #4",
+        "Vercel usage check via CLI"
+      ],
+      "skippedSurfaces": [
+        "landing/login/dashboard browser flow",
+        "AI sidebar visual render path",
+        "fullscreen AI workspace",
+        "feedback submit path",
+        "security attack regression pack"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 6,
+        "failed": 1
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-13T19:34:41+09:00",
+          "summary": "Current billing period effective usage 7.8436 USD, billed 0.0000 USD, no unexpected billed usage spike before targeted QA #4.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "Cloud Run health",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health",
+          "note": "Post-deploy health endpoint"
+        },
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/",
+          "note": "Frontend baseline for this QA wave"
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run monitoring traces",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/monitoring/traces?limit=5",
+          "note": "Returned Langfuse API timeout (504) during this run"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260413-0279",
+      "recordedAt": "2026-04-13T11:06:13.864Z",
+      "recordedAtKst": "2026-04-13 20:06:13 KST",
+      "title": "GraphRAG variant direct supervisor stability recheck after degraded-single enable",
+      "owner": "codex",
+      "source": "cloud-run-probe",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260413-0279.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run ai-engine-00307-zwt",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "baf40601059849ca16369417157b9c57756346e7"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": ["ai-core", "observability-pack"],
+      "coveredSurfaces": [
+        "Cloud Run env update (ALLOW_DEGRADED_SINGLE=true) and revision ai-engine-00307-zwt",
+        "Cloud Run /health after env update",
+        "Cloud Run /api/ai/supervisor variant topology direct probe 5-attempt stability run",
+        "Vercel usage check via CLI"
+      ],
+      "skippedSurfaces": [
+        "landing/login/dashboard browser flow",
+        "AI sidebar visual render path",
+        "fullscreen AI workspace",
+        "feedback submit path",
+        "security attack regression pack"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 3,
+        "failed": 2
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-13T20:05:41+09:00",
+          "summary": "Current billing period effective usage 7.8436 USD, billed 0.0000 USD, no unexpected billed usage spike before targeted QA #5.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "Cloud Run health",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health",
+          "note": "Post-update health endpoint"
+        },
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/",
+          "note": "Frontend baseline for this QA wave"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260413-0280",
+      "recordedAt": "2026-04-13T11:41:39.894Z",
+      "recordedAtKst": "2026-04-13 20:41:39 KST",
+      "title": "GraphRAG variant direct supervisor recheck after ai-engine-00308 (RAG auto + advisor tool required)",
+      "owner": "codex",
+      "source": "curl",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260413-0280.json",
+      "environment": {
+        "target": "cloud-run-production",
+        "url": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+        "frontend": "N/A",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "baf406010"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [],
+      "coveredSurfaces": [
+        "Cloud Run deploy ai-engine-00308-6qw",
+        "Cloud Run /health",
+        "Cloud Run /api/ai/supervisor variant topology direct probe (3 attempts)"
+      ],
+      "skippedSurfaces": [
+        "Vercel UI sidebar flow",
+        "Playwright browser regression pack"
+      ],
+      "checks": {
+        "total": 3,
+        "passed": 3,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Routing/tool reliability improved: sampled direct probes consistently used searchKnowledgeBase with successful finalAnswer. However latency remains very slow and quality policy flags persist.",
+          "nextAction": "Tune advisor response format and reduce long-tail latency before closing P1."
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260413-0281",
+      "recordedAt": "2026-04-13T12:40:26.449Z",
+      "recordedAtKst": "2026-04-13 21:40:26 KST",
+      "title": "GraphRAG variant stability recheck after ai-engine-00311 (boolean-string tool schema hotfix)",
+      "owner": "codex",
+      "source": "cloud-run-probe",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260413-0281.json",
+      "environment": {
+        "target": "cloud-run-production",
+        "url": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+        "frontend": "N/A",
+        "backend": "Cloud Run ai-engine-00311-lvf",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "baf406010"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [],
+      "coveredSurfaces": [
+        "Cloud Run deploy ai-engine-00311-lvf",
+        "Cloud Run /health",
+        "Cloud Run /api/ai/supervisor legacy variant probe (6 attempts)",
+        "Cloud Run /api/ai/supervisor topology direct deterministic probe (3 attempts)",
+        "Cloud Run revision warning/error log inspection"
+      ],
+      "skippedSurfaces": [
+        "Vercel UI sidebar flow",
+        "Playwright browser regression pack"
+      ],
+      "checks": {
+        "total": 8,
+        "passed": 6,
+        "failed": 2
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Hard INTERNAL_ERROR regression from schema mismatch is mitigated on ai-engine-00311. Remaining quality gap is intermittent NO_PROVIDER fallback and consistently slow latency for the legacy variant prompt.",
+          "nextAction": "Reduce provider-none fallback (Groq quota/rate-limit path) and bring legacy variant latency below 10s with deterministic routing or provider-order throttling strategy."
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "Cloud Run health",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health",
+          "note": "Post-deploy health endpoint"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 1,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260413-0282",
+      "recordedAt": "2026-04-13T12:52:28.892Z",
+      "recordedAtKst": "2026-04-13 21:52:28 KST",
+      "title": "GraphRAG variant closure QA after ai-engine-00312 (force-KB queries to multi deterministic path)",
+      "owner": "codex",
+      "source": "cloud-run-probe",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260413-0282.json",
+      "environment": {
+        "target": "cloud-run-production",
+        "url": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+        "frontend": "N/A",
+        "backend": "Cloud Run ai-engine-00312-r9b",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "baf406010"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [],
+      "coveredSurfaces": [
+        "Cloud Run deploy ai-engine-00312-r9b",
+        "Cloud Run /health",
+        "Cloud Run /api/ai/supervisor legacy variant probe (6 attempts)",
+        "Cloud Run revision warning/error log inspection (post-run)"
+      ],
+      "skippedSurfaces": [
+        "Vercel UI sidebar flow",
+        "Playwright browser regression pack"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Three-step QA wave confirms closure: schema mismatch INTERNAL_ERROR removed, legacy topology/architecture variant now consistently routes to deterministic KB path, and quality/latency regressions are no longer reproduced in sampled runs.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "Cloud Run health",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health",
+          "note": "Post-deploy health endpoint"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -23947,16 +24628,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 122,
-      "appropriateCount": 116,
-      "partialCount": 6,
+      "seenCount": 125,
+      "appropriateCount": 117,
+      "partialCount": 8,
       "inappropriateCount": 0,
-      "improvementNeededCount": 16,
-      "lastRunId": "QA-20260409-0259",
-      "lastSeenAt": "2026-04-08T22:37:58.733Z",
+      "improvementNeededCount": 18,
+      "lastRunId": "QA-20260413-0282",
+      "lastSeenAt": "2026-04-13T12:52:28.892Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The production AI sidebar handled a representative CPU-summary prompt and returned streaming output with live latency metadata on the current build.",
+      "lastRationale": "Three-step QA wave confirms closure: schema mismatch INTERNAL_ERROR removed, legacy topology/architecture variant now consistently routes to deterministic KB path, and quality/latency regressions are no longer reproduced in sampled runs.",
       "lastNextAction": ""
     },
     "observability-monitoring": {

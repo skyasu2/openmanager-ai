@@ -22,7 +22,12 @@ import {
 } from '../../config/timeout-config';
 import { allTools } from '../../tools-ai-sdk';
 import { executeMultiAgent, type MultiAgentRequest, type MultiAgentResponse } from './agents';
-import { filterToolsByRAG, resolveWebSearchSetting, filterToolsByWebSearch } from './agents/orchestrator-web-search';
+import {
+  filterToolsByRAG,
+  resolveRAGSetting,
+  resolveWebSearchSetting,
+  filterToolsByWebSearch,
+} from './agents/orchestrator-web-search';
 import { isTavilyAvailable } from '../../lib/tavily-hybrid-rag';
 import {
   createSupervisorTrace,
@@ -220,12 +225,16 @@ async function executeMultiAgentMode(
         isSingleModeAllowed() &&
         shouldFallbackFromMultiAgentError(multiAgentError.code)
       ) {
+        const degradedReason =
+          multiAgentError.code === 'MODEL_UNAVAILABLE'
+            ? 'multi_agent_model_unavailable'
+            : 'multi_agent_runtime_error';
         logger.info(
           `[Supervisor] Falling back to single-agent mode (degraded) after multi-agent error: ${multiAgentError.code}`
         );
         return executeSingleAgentMode(request, startTime, {
           degradedFromMode: 'multi',
-          degradedReason: 'multi_agent_model_unavailable',
+          degradedReason,
         }, modeDecision);
       }
       return multiAgentError;
@@ -467,7 +476,7 @@ async function executeSupervisorAttempt(
         webSearchEnabled = false;
       }
       logger.debug(`[Single WebSearch] Setting resolved: ${webSearchEnabled} (request: ${request.enableWebSearch})`);
-      const ragEnabled = request.enableRAG ?? false;
+      const ragEnabled = resolveRAGSetting(request.enableRAG, queryText);
       let filteredTools = filterToolsByWebSearch(allTools, webSearchEnabled);
       filteredTools = filterToolsByRAG(filteredTools, ragEnabled);
 

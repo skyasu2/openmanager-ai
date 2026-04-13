@@ -185,6 +185,10 @@ export function selectExecutionMode(query: string): SupervisorMode {
   const q = query.toLowerCase();
   const hasInfraContext = INFRA_CONTEXT_PATTERN.test(q);
 
+  if (FORCE_KB_QUERY_PATTERN.test(q)) {
+    return 'multi';
+  }
+
   const multiAgentPatterns = [
     REPORTER_QUERY_PATTERN,
     /report|장애.*보고|일일.*리포트/i,
@@ -365,7 +369,7 @@ export function createPrepareStep(
       toolChoice = 'required';
     } else if (TOOL_ROUTING_PATTERNS.advisor.test(q)) {
       activeTools = ['recommendCommands', 'finalAnswer'];
-      toolChoice = 'auto';
+      toolChoice = 'required';
     } else if (TOOL_ROUTING_PATTERNS.logs.test(q)) {
       activeTools = ['getServerLogs', 'getServerMetrics', 'filterServers', 'finalAnswer'];
       toolChoice = 'required';

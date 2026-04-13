@@ -1,10 +1,16 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-13 KST (GraphRAG sampled telemetry 배포 완료)
+**Last Updated**: 2026-04-13 KST (ai-engine-00308 배포 + QA #5 반영)
 
 ## Active Tasks
 
-현재 진행 중인 긴급 작업 없음.
+- [ ] P1: topology variant 질의 direct supervisor 품질/지연 안정화 — `ai-engine-00308-6qw` 배포 후 direct `/api/ai/supervisor` 재검증(QA #5, `QA-20260413-0280`)에서 sampled `3/3`은 모두 성공했고 `UNKNOWN_ERROR`/`no_provider`는 재현되지 않았다. 다만 `durationMs 35~86s`의 long-tail 지연과 Advisor 포맷 품질 flag(`MISSING_COMMAND_BLOCK`, `MISSING_PROBLEM_CONTEXT`, `LATENCY_VERY_SLOW`)가 남아 있어 P1을 계속 추적한다.
+
+### Completed (2026-04-13 #89)
+- [x] variant direct path 안정화 패치 적용 — [orchestrator-web-search.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-web-search.ts:1)에 `resolveRAGSetting`(질의 기반 auto) 추가, [supervisor-routing.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/services/ai-sdk/supervisor-routing.ts:1)에서 advisor intent를 `toolChoice='required'`로 강화, [supervisor-quality-retry.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/services/ai-sdk/supervisor-quality-retry.ts:1)에 non-general `toolsCalled=[]` 재시도 규칙을 반영했다.
+- [x] 회귀 검증 완료 — `ai-engine` type-check 및 전체 테스트(`71 files, 745 tests`) 통과.
+- [x] Cloud Run production 재배포 완료 — Cloud Build `58d0cd49-26b3-4cd9-a925-342c240d7967`, revision `ai-engine-00308-6qw` 100% 전환.
+- [x] post-deploy targeted QA #5 기록 — [qa-run-QA-20260413-0280.json](/mnt/d/dev/openmanager-ai/reports/qa/runs/2026/qa-run-QA-20260413-0280.json:1) 반영(variant direct probe sampled `3/3` 성공, hard failure 미재현, 단 long-tail latency/quality flag 잔존).
 
 ## On Hold
 
@@ -16,10 +22,22 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| P3: graph traversal 유지/제거 판단 | Low | revision `ai-engine-00304-w5n` 기준으로 sampled structured telemetry가 배포됐다. 이제 2~4주 동안 `graph_rag_search` 로그의 `queryCategory`, `graphResults`, `cacheHit`, `totalFound`를 기준으로 graph hit-rate와 precision을 관찰한다. 낮으면 `graphrag-graph.ts`/`knowledge_relationships` traversal 제거를 검토한다. |
+| P3: graph traversal 유지/제거 재평가 | Low | targeted QA 3회(`QA-20260413-0275`/`0276`/`0277`) 관찰 결과, incident/일부 topology 질의에서 `sourceType=\"graph\"`가 계속 관측됐다. 반면 variant topology 질의는 direct supervisor에서 `INTERNAL_ERROR`가 재현돼 traversal 제거 판단을 왜곡할 수 있으므로 즉시 제거는 보류한다. P1 direct path 오류를 먼저 수정한 뒤 hit-rate/precision을 다시 측정해 재평가한다. |
 | P3: topology 질의 duplicate tool invocation 완전 제거 여부 판단 | Low | production에서는 여전히 `toolsCalled=["searchKnowledgeBase","searchKnowledgeBase","finalAnswer"]`가 보인다. 현재 cache로 backend 재실행 비용은 줄였으므로 correctness 이슈는 아니고, latency/observability에 실제 부담이 남는지 본 뒤 추가 dedupe를 결정한다. |
 | P3: Storybook `experimentalComponentsManifest` stable 승격 여부 재확인 | Low | 2026-04-12 재확인 결과 `storybook`/`@storybook/nextjs-vite` stable dist-tag는 둘 다 아직 `10.2.10`, `next`는 `10.3.0-alpha.6`. `.storybook/main.ts`의 feature flag는 그대로 유지. |
 | P3: `src/types/README.md` 전용 타입 SSOT 문서 필요성 재평가 | Low | 현재 전용 README는 없음. 타입 정제 작업은 완료됐고, 신규 문서 추가는 실제 drift가 다시 생길 때만 검토. |
+
+### Completed (2026-04-13 #87)
+- [x] GraphRAG targeted QA 3회 기록 완료 — [qa-run-QA-20260413-0275.json](/mnt/d/dev/openmanager-ai/reports/qa/runs/2026/qa-run-QA-20260413-0275.json:1), [qa-run-QA-20260413-0276.json](/mnt/d/dev/openmanager-ai/reports/qa/runs/2026/qa-run-QA-20260413-0276.json:1), [qa-run-QA-20260413-0277.json](/mnt/d/dev/openmanager-ai/reports/qa/runs/2026/qa-run-QA-20260413-0277.json:1) 누적 반영.
+- [x] QA 결론 고정 — 3회 관찰에서 graph source는 계속 확인됐고, 동일 variant topology 의도 질의가 UI 성공 / direct supervisor 실패로 분기되어 traversal 제거 결정을 즉시 내리기 어렵다.
+- [x] 추적 항목 유지 — `ai-topology-variant-function-call-failure`를 pending/P1로 유지하고, 다음 우선순위를 direct supervisor 오류 수정으로 전환.
+- [x] QA 상태/무결성 갱신 — `npm run qa:status` 기준 latest run `QA-20260413-0277`, pending `1`; `npm run qa:evidence:audit` 기준 orphan/missing `0` 유지.
+
+### Completed (2026-04-13 #88)
+- [x] direct supervisor 오류 분류 보정 — [error-handler.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/lib/error-handler.ts:1)에 `Failed to call a function`/`function call` 패턴을 `MODEL_ERROR(503)`로 분류하도록 추가해 non-stream 경로의 retry 가능성을 높였다.
+- [x] 회귀 테스트 추가 — [error-handler.test.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/lib/error-handler.test.ts:1)에 function-call generation error 분류 케이스를 추가했다.
+- [x] Cloud Run production 배포 완료 — `bash cloud-run/ai-engine/deploy.sh` 기준 Cloud Build `cb1cba7b-380f-47a6-9e77-5a2430506e70`, revision `ai-engine-00305-5b4`가 100% 트래픽으로 전환됐다.
+- [x] post-deploy targeted QA #4 기록 — [qa-run-QA-20260413-0278.json](/mnt/d/dev/openmanager-ai/reports/qa/runs/2026/qa-run-QA-20260413-0278.json:1)에 direct variant probe `3/4` 성공, `1/4` `UNKNOWN_ERROR` 실패를 반영해 pending P1을 유지했다.
 
 ### Completed (2026-04-13 #86)
 - [x] Cloud Run runtime observability gap 식별 — production `LOG_LEVEL=warn` 때문에 기존 `logger.info` 기반 GraphRAG 사용 로그는 실제 관찰 지표로 남지 않는다는 점을 확인했다.

@@ -1,0 +1,80 @@
+{
+  "runId": "QA-20260413-0282",
+  "recordedAt": "2026-04-13T12:52:28.892Z",
+  "recordedAtKst": "2026-04-13 21:52:28 KST",
+  "runTitle": "GraphRAG variant closure QA after ai-engine-00312 (force-KB queries to multi deterministic path)",
+  "owner": "codex",
+  "source": "cloud-run-probe",
+  "environment": {
+    "target": "cloud-run-production",
+    "url": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+    "frontend": "N/A",
+    "backend": "Cloud Run ai-engine-00312-r9b",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "baf406010"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": [],
+  "coveredSurfaces": [
+    "Cloud Run deploy ai-engine-00312-r9b",
+    "Cloud Run /health",
+    "Cloud Run /api/ai/supervisor legacy variant probe (6 attempts)",
+    "Cloud Run revision warning/error log inspection (post-run)"
+  ],
+  "skippedSurfaces": [
+    "Vercel UI sidebar flow",
+    "Playwright browser regression pack"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Three-step QA wave confirms closure: schema mismatch INTERNAL_ERROR removed, legacy topology/architecture variant now consistently routes to deterministic KB path, and quality/latency regressions are no longer reproduced in sampled runs.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-topology-variant-function-call-failure",
+      "title": "Topology variant direct supervisor stabilization",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "QA-20260413-0282: legacy variant 6/6 success, deterministic routing, no INTERNAL_ERROR/NO_PROVIDER/LATENCY_SLOW flags in sampled run.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "legacy query used for closure: 현재 인프라 아키텍처와 트래픽 경로를 사내 지식베이스 기준으로 짧게 정리해줘.",
+    "legacy query curl-time summary (sec): 4.607, 0.232, 0.227, 0.261, 0.233, 0.257",
+    "post-run Cloud Run warning/error log query on ai-engine-00312 returned no entries"
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Cloud Run health",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health",
+      "note": "Post-deploy health endpoint"
+    }
+  ]
+}

@@ -68,6 +68,7 @@ vi.mock('../../tools-ai-sdk', () => ({
 vi.mock('./agents/orchestrator-web-search', () => ({
   filterToolsByRAG: vi.fn((tools: unknown) => tools),
   filterToolsByWebSearch: vi.fn((tools: unknown) => tools),
+  resolveRAGSetting: vi.fn(() => false),
   resolveWebSearchSetting: vi.fn(() => false),
 }));
 
@@ -223,6 +224,33 @@ describe('supervisor degraded single fallback', () => {
       resolvedMode: 'multi',
       modeSelectionSource: 'explicit',
     }));
+    expect(mockGenerateText).toHaveBeenCalledTimes(1);
+  });
+
+  it('falls back to single-agent when multi-agent returns UNKNOWN_ERROR and degraded single is allowed', async () => {
+    mockIsSingleModeAllowed.mockReturnValue(true);
+    mockExecuteMultiAgent.mockResolvedValue({
+      success: false,
+      code: 'UNKNOWN_ERROR',
+      error: 'Internal Server Error',
+    });
+
+    const result = await executeSupervisor({
+      mode: 'multi',
+      messages: [{ role: 'user', content: '현재 인프라 아키텍처와 트래픽 경로를 요약해줘' }],
+      sessionId: 'session-fallback-unknown',
+    });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.response).toBe('single fallback response');
+      expect(result.metadata.mode).toBe('single');
+      expect(result.metadata.fallback).toBe(true);
+      expect(result.metadata.fallbackReason).toBe('multi_agent_runtime_error');
+      expect(result.metadata.degradedFromMode).toBe('multi');
+      expect(result.metadata.degradedReason).toBe('multi_agent_runtime_error');
+    }
+    expect(mockExecuteMultiAgent).toHaveBeenCalledTimes(1);
     expect(mockGenerateText).toHaveBeenCalledTimes(1);
   });
 

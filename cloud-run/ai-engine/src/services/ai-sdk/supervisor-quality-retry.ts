@@ -16,6 +16,14 @@ export function shouldRetryForQuality(
   }
 
   const flags = result.metadata.qualityFlags ?? [];
+  if (flags.includes('no_provider')) {
+    return false;
+  }
+
+  if (result.toolsCalled.length === 0) {
+    return true;
+  }
+
   if (flags.length === 0) {
     return false;
   }
@@ -32,4 +40,3 @@ export function shouldRetryForQuality(
 
   return false;
 }
-

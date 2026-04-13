@@ -1,0 +1,103 @@
+{
+  "runId": "QA-20260413-0278",
+  "recordedAt": "2026-04-13T10:35:18.519Z",
+  "recordedAtKst": "2026-04-13 19:35:18 KST",
+  "runTitle": "GraphRAG variant direct supervisor recheck after ai-engine-00305 deployment",
+  "owner": "codex",
+  "source": "cloud-run-probe",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run ai-engine-00305-5b4",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "baf40601059849ca16369417157b9c57756346e7"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "Cloud Run ai-engine deployment (revision ai-engine-00305-5b4)",
+    "Cloud Run /health after deployment",
+    "Cloud Run /api/ai/supervisor variant topology direct probe attempt #1",
+    "Cloud Run /api/ai/supervisor variant topology direct probe attempt #2",
+    "Cloud Run /api/ai/supervisor variant topology direct probe attempt #3",
+    "Cloud Run /api/ai/supervisor variant topology direct probe attempt #4",
+    "Vercel usage check via CLI"
+  ],
+  "skippedSurfaces": [
+    "landing/login/dashboard browser flow",
+    "AI sidebar visual render path",
+    "fullscreen AI workspace",
+    "feedback submit path",
+    "security attack regression pack"
+  ],
+  "checks": {
+    "total": 7,
+    "passed": 6,
+    "failed": 1
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-13T19:34:41+09:00",
+      "summary": "Current billing period effective usage 7.8436 USD, billed 0.0000 USD, no unexpected billed usage spike before targeted QA #4.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "ai-topology-variant-function-call-failure",
+      "title": "Topology variant direct supervisor path remains intermittently unstable",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "After ai-engine-00305 deploy, same variant query succeeded 3/4 attempts on direct /api/ai/supervisor, but one attempt still returned UNKNOWN_ERROR (500, ~189s). INTERNAL_ERROR was not reproduced in this run.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Deployment completed via cloud-run/ai-engine/deploy.sh: Cloud Build cb1cba7b-380f-47a6-9e77-5a2430506e70, revision ai-engine-00305-5b4 serving 100% traffic",
+    "direct variant query attempt #1 succeeded (200, 21.89s): toolsCalled searchKnowledgeBase*3 + finalAnswer",
+    "direct variant query attempt #2 succeeded (200, 51.09s): toolsCalled searchKnowledgeBase*3 + finalAnswer",
+    "direct variant query attempt #3 failed (500, 189.03s): code UNKNOWN_ERROR, no toolsCalled",
+    "direct variant query attempt #4 succeeded (200, 34.20s): toolsCalled searchKnowledgeBase*7",
+    "/monitoring/traces check returned 504 Langfuse API timeout during this run, so trace-level classification evidence was unavailable"
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Cloud Run health",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health",
+      "note": "Post-deploy health endpoint"
+    },
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/",
+      "note": "Frontend baseline for this QA wave"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run monitoring traces",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/monitoring/traces?limit=5",
+      "note": "Returned Langfuse API timeout (504) during this run"
+    }
+  ]
+}

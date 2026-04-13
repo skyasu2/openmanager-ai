@@ -1,0 +1,96 @@
+{
+  "runId": "QA-20260413-0281",
+  "recordedAt": "2026-04-13T12:40:26.449Z",
+  "recordedAtKst": "2026-04-13 21:40:26 KST",
+  "runTitle": "GraphRAG variant stability recheck after ai-engine-00311 (boolean-string tool schema hotfix)",
+  "owner": "codex",
+  "source": "cloud-run-probe",
+  "environment": {
+    "target": "cloud-run-production",
+    "url": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+    "frontend": "N/A",
+    "backend": "Cloud Run ai-engine-00311-lvf",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "baf406010"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": [],
+  "coveredSurfaces": [
+    "Cloud Run deploy ai-engine-00311-lvf",
+    "Cloud Run /health",
+    "Cloud Run /api/ai/supervisor legacy variant probe (6 attempts)",
+    "Cloud Run /api/ai/supervisor topology direct deterministic probe (3 attempts)",
+    "Cloud Run revision warning/error log inspection"
+  ],
+  "skippedSurfaces": [
+    "Vercel UI sidebar flow",
+    "Playwright browser regression pack"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 6,
+    "failed": 2
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Hard INTERNAL_ERROR regression from schema mismatch is mitigated on ai-engine-00311. Remaining quality gap is intermittent NO_PROVIDER fallback and consistently slow latency for the legacy variant prompt.",
+      "nextAction": "Reduce provider-none fallback (Groq quota/rate-limit path) and bring legacy variant latency below 10s with deterministic routing or provider-order throttling strategy."
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-topology-variant-schema-validation-failure",
+      "title": "searchKnowledgeBase boolean-string tool-call validation failure removed",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "ai-engine-00311-lvf logs no longer show tool schema mismatch for useGraphRAG/fastMode/includeWebSearch.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "ai-topology-variant-function-call-failure",
+      "title": "Topology variant path still has quality/latency stabilization gap",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "After ai-engine-00311, INTERNAL_ERROR from boolean-string schema mismatch is resolved in sampled runs, but one NO_PROVIDER fallback and persistent slow latency remain on the legacy variant query.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "legacy query 6-attempt summary: success=6, failed=0 (HTTP level), provider=none observed once",
+    "legacy query durationMs summary: avg=14005.2, min=12047, max=16441",
+    "topology direct query durationMs summary: avg=788.7, min=22, max=2321",
+    "log evidence showed Groq quota/rate-limit pressure during the run window, contributing to provider-none quality fallback"
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Cloud Run health",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health",
+      "note": "Post-deploy health endpoint"
+    }
+  ]
+}

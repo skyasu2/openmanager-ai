@@ -1,0 +1,98 @@
+{
+  "runId": "QA-20260413-0275",
+  "recordedAt": "2026-04-13T08:52:05.906Z",
+  "recordedAtKst": "2026-04-13 17:52:05 KST",
+  "runTitle": "GraphRAG traversal decision QA #1 (topology + incident targeted)",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run ai-engine-00304-w5n",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "baf40601059849ca16369417157b9c57756346e7"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["core-routes-smoke", "ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "/login render on Vercel production",
+    "guest session system-start to /dashboard",
+    "AI sidebar topology query response render",
+    "AI sidebar incident query response render",
+    "AI analysis-basis panel handoff/tool detail visibility",
+    "browser console errors = 0 during tested flow",
+    "Vercel /api/health",
+    "Vercel /api/version",
+    "Cloud Run /health",
+    "Cloud Run /monitoring direct auth check",
+    "Cloud Run /api/ai/supervisor direct topology probe (toolsCalled duplicate + vector sources)",
+    "Cloud Run /api/ai/supervisor direct incident probe (graph sources observed)"
+  ],
+  "skippedSurfaces": [
+    "OAuth provider completion",
+    "fullscreen AI workspace",
+    "feedback submit path",
+    "security attack regression pack",
+    "sampled graph_rag_search log capture proof"
+  ],
+  "checks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-13T17:52:05+09:00",
+      "summary": "Current billing period effective usage 7.8436 USD, billed 0.0000 USD, no unexpected billed usage spike before targeted QA #1.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Analysis basis panel (handoff/tool detail)",
+      "path": "reports/qa/evidence/qa-20260413-graphrag-qa1-analysis-basis.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "targeted QA #1 for graph traversal keep/remove decision",
+    "direct topology probe: toolsCalled=[searchKnowledgeBase,searchKnowledgeBase,finalAnswer], ragSources vector=5 graph=0",
+    "direct incident probe: toolsCalled=[searchKnowledgeBase], ragSources graph=3 vector=0",
+    "topology query in sidebar rendered with Cloud Run AI metadata; incident query exposed handoff 1 and tool 1 in analysis basis"
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Cloud Run health",
+      "url": "https://ai-engine-490817238363.asia-northeast1.run.app/health",
+      "note": "Direct run.app health endpoint"
+    },
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/",
+      "note": "Target frontend under test"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run monitoring",
+      "url": "https://ai-engine-490817238363.asia-northeast1.run.app/monitoring",
+      "note": "Requires X-API-Key header"
+    }
+  ]
+}

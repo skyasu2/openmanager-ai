@@ -1,6 +1,6 @@
 # Knowledge Base Corpus Expansion Plan
 
-- 상태: 1차 corpus 반영 완료, extraction legacy 제거, sampled graph telemetry 관찰 대기
+- 상태: targeted QA 5회 관찰(배포 후 재검증 포함), traversal 제거 보류(유지), direct supervisor 품질/지연 안정화(P1) 진행 중
 - 작성일: 2026-04-12
 - 목표: `knowledge_base`를 무작정 늘리거나 줄이지 않고, 현재 RAG governance 한도 안에서 corpus 품질을 유지하면서 실제 graph traversal 가치가 있는지 계측으로 판단한다.
 
@@ -30,7 +30,7 @@
 - RAG core는 유지한다. 현재 retrieval 경로는 embedding + pgVector + BM25 + `knowledge_relationships` traversal 조합이다.
 - auto-extraction/backfill은 현재 repo 기준 운영 경로에서 중단됐고, extraction legacy 구현도 제거됐다. 관계 업데이트의 공식 경로는 `seed-knowledge-base.ts`와 기존 수동 관계 데이터다.
 - production에서 `sourceType="graph"`가 실제 응답에 포함된 사례는 이미 확인됐다. 따라서 graph traversal은 아직 제거 대상이 아니다.
-- 최신 관찰 기준 revision은 `ai-engine-00304-w5n`이다. 이 revision에는 sampled GraphRAG structured telemetry와 `GRAPH_RAG_TELEMETRY_SAMPLE_RATE=0.1` env가 포함돼 있다.
+- 최신 관찰 기준 revision은 `ai-engine-00308-6qw`이다. 이 revision에는 sampled GraphRAG structured telemetry와 함께 direct supervisor 안정화 패치(`RAG auto`, advisor tool required, quality retry 강화)가 포함돼 있다.
 - deploy 직후 live baseline:
   - `totalDocuments=52`
   - `totalTriplets=150`
@@ -44,12 +44,29 @@
   - incident probe: `toolsCalled=["searchKnowledgeBase","finalAnswer"]`, `ragSources=vector 1 + graph 1`
   - sampled runtime telemetry: `knowledge-search-tool.ts`가 `graph_rag_search` structured log를 warning 레벨로 샘플링 출력한다. payload는 raw query 대신 fingerprint와 `queryCategory`, `graphResults`, `vectorResults`, `cacheHit`, `totalFound`를 담는다.
   - 결론: graph source는 최신 cleanup 배포 후에도 실제 응답에 남아 있고, 이제 probe 외에도 sampled Cloud Logging 경로로 usage를 누적 관찰할 수 있다. 다만 topology 질의의 duplicate tool call 표시는 계속 보인다.
+- targeted QA `3회` 관찰 결과:
+  - `QA-20260413-0275`: direct topology probe는 `vector=5/graph=0`, direct incident probe는 `graph=3/vector=0`.
+  - `QA-20260413-0276`: topology repeat에서 `graph` source가 재등장했고(`graph=1`), variant topology direct probe는 `INTERNAL_ERROR`가 3/3 재현됐다.
+  - `QA-20260413-0277`: 같은 variant 의도 질의가 UI 사이드바에서는 성공했지만 direct `/api/ai/supervisor`는 여전히 `INTERNAL_ERROR`였다.
+- `ai-engine-00305-5b4` 배포 후 targeted QA `4회차` 재검증(`QA-20260413-0278`):
+  - direct variant probe `4회` 중 `3회`는 성공(`200`)했고, `1회`는 `UNKNOWN_ERROR(500, ~189s)`로 실패했다.
+  - 즉시 장애율은 낮아졌지만 direct path는 아직 간헐 실패가 남아 있었다.
+- `ai-engine-00308-6qw` 배포 후 targeted QA `5회차` 재검증(`QA-20260413-0280`):
+  - direct variant probe sampled `3회` 모두 성공(`200`)했고 `UNKNOWN_ERROR`/`no_provider`는 재현되지 않았다.
+  - 모든 샘플에서 `toolsCalled`에 `searchKnowledgeBase`/`finalAnswer`가 포함되어 기존 저품질 decomposition-only 응답 경향은 관측되지 않았다.
+  - 잔여 이슈는 long-tail latency(`35~86s`)와 Advisor 포맷 quality flag(`MISSING_COMMAND_BLOCK`, `MISSING_PROBLEM_CONTEXT`, `LATENCY_VERY_SLOW`)다.
+- 현재 결정:
+  - graph traversal은 즉시 제거하지 않는다(유지).
+  - `ai-topology-variant-function-call-failure`를 P1로 유지하고 direct path 안정화 후 traversal keep/remove를 재평가한다.
 
 ### 남은 작업
 
-1. 2~4주 동안 `toolsCalled`, `ragSources.sourceType`, 그리고 sampled `graph_rag_search` 로그의 `queryCategory`, `graphResults`, `cacheHit`, `totalFound`를 같이 기록해 graph hit-rate와 precision을 관찰한다.
-2. telemetry 결과를 바탕으로 `graphrag-graph.ts`/`knowledge_relationships` traversal 유지 여부를 판단한다.
-3. duplicate `searchKnowledgeBase` tool count가 latency/observability에 실제 부담을 남기면, tool invocation dedupe를 별도 최적화로 검토한다.
+1. P1 `ai-topology-variant-function-call-failure`를 계속 추적/수정한다.
+   - 범위: direct `/api/ai/supervisor` variant topology 질의의 long-tail latency 및 Advisor 포맷 품질 안정화.
+2. 패치 후 targeted QA를 1~2회 추가 실행해 keep/remove 재평가를 갱신한다.
+   - 판단 입력: `toolsCalled`, `ragSources.sourceType`, sampled `graph_rag_search`(`queryCategory`, `graphResults`, `cacheHit`, `totalFound`).
+3. duplicate `searchKnowledgeBase` tool count는 관찰-only로 유지한다.
+   - cache로 재실행 비용은 이미 억제됐으므로, direct variant 실패 해결 전에는 dedupe 최적화를 우선순위에서 뒤로 둔다.
 
 ## 2026-04-12 기준 baseline 요약
 

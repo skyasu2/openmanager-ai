@@ -1,0 +1,110 @@
+{
+  "runId": "QA-20260413-0276",
+  "recordedAt": "2026-04-13T09:02:52.483Z",
+  "recordedAtKst": "2026-04-13 18:02:52 KST",
+  "runTitle": "GraphRAG traversal decision QA #2 (duplicate invocation + latency + variant failure)",
+  "owner": "codex",
+  "source": "cloud-run-probe",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run ai-engine-00304-w5n",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "baf40601059849ca16369417157b9c57756346e7"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "Cloud Run /api/ai/supervisor topology repeat probe #1",
+    "Cloud Run /api/ai/supervisor topology repeat probe #2",
+    "Cloud Run /api/ai/supervisor incident repeat probe",
+    "Cloud Run /monitoring/traces observability query",
+    "Vercel /api/health",
+    "Vercel /api/version",
+    "Cloud Run /health",
+    "Vercel usage check via CLI"
+  ],
+  "skippedSurfaces": [
+    "landing/login/dashboard browser flow",
+    "fullscreen AI workspace",
+    "feedback submit path",
+    "security attack regression pack",
+    "sampled graph_rag_search log capture proof"
+  ],
+  "checks": {
+    "total": 9,
+    "passed": 8,
+    "failed": 1
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-13T18:01:53+09:00",
+      "summary": "Current billing period effective usage 7.8436 USD, billed 0.0000 USD, no unexpected billed usage spike before targeted QA #2.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "ai-topology-variant-function-call-failure",
+      "title": "Topology variant query returns INTERNAL_ERROR on Cloud Run supervisor",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Query variant for topology/architecture failed 3/3 with INTERNAL_ERROR. monitoring/traces outputPreview indicates function-call generation failure.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "targeted QA #2 for duplicate invocation and latency observation",
+    "topology repeat #1: 19.77s, toolsCalled=[searchKnowledgeBase,finalAnswer], vector=3 graph=0",
+    "topology repeat #2: 21.85s, toolsCalled=[searchKnowledgeBase,searchKnowledgeBase,finalAnswer], vector=6 graph=1",
+    "incident repeat: 3.23s, toolsCalled=[searchKnowledgeBase], graph=3 vector=0",
+    "topology variant query produced INTERNAL_ERROR on initial + 2 retries (3/3)",
+    "monitoring/traces captured variant failure trace id 450df1b964310ba2c6eaf078c71a43e2 with outputPreview function-call failure"
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Cloud Run health",
+      "url": "https://ai-engine-490817238363.asia-northeast1.run.app/health",
+      "note": "Direct run.app health endpoint"
+    },
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/",
+      "note": "Target frontend for this QA wave"
+    },
+    {
+      "type": "langfuse-trace",
+      "label": "Topology variant failure trace",
+      "url": "https://us.cloud.langfuse.com/project/cmjk0fm8u045gad07tf8xaptk/traces/450df1b964310ba2c6eaf078c71a43e2",
+      "note": "outputPreview: Failed to call a function"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run monitoring traces",
+      "url": "https://ai-engine-490817238363.asia-northeast1.run.app/monitoring/traces?limit=5",
+      "note": "Direct admin traces endpoint (requires X-API-Key)"
+    }
+  ]
+}

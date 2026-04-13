@@ -174,6 +174,12 @@ export function resetKnowledgeSearchCacheForTest(): void {
   knowledgeSearchCache.clear();
 }
 
+const booleanToolFlagSchema = z
+  .union([z.boolean(), z.string().regex(/^(true|false)$/i)])
+  .transform((value) =>
+    typeof value === 'boolean' ? value : value.toLowerCase() === 'true',
+  );
+
 export const searchKnowledgeBase = tool({
   description:
     '과거 장애 이력 및 해결 방법을 검색합니다 (GraphRAG: Vector + Graph)',
@@ -195,18 +201,18 @@ export const searchKnowledgeBase = tool({
       .enum(['low', 'medium', 'high', 'critical', 'info', 'warning'])
       .optional()
       .describe('심각도 필터'),
-    useGraphRAG: z
-      .boolean()
+    useGraphRAG: booleanToolFlagSchema
+      .optional()
       .default(true)
       .describe('GraphRAG 하이브리드 검색 사용 여부'),
-    fastMode: z
-      .boolean()
+    fastMode: booleanToolFlagSchema
+      .optional()
       .default(true)
       .describe(
         'Fast mode (default: true): HyDE expansion과 LLM reranking을 스킵하여 1-2초 내 응답. 과거 장애 이력 심층 분석 등 정밀도가 필요한 경우에만 false로 설정',
       ),
-    includeWebSearch: z
-      .boolean()
+    includeWebSearch: booleanToolFlagSchema
+      .optional()
       .default(false)
       .describe(
         'KB 결과 부족 시 웹 검색 자동 보강 (개인정보 보호를 위해 기본 비활성화)',

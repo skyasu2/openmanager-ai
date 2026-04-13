@@ -60,6 +60,25 @@ describe('searchKnowledgeBase', () => {
     resetKnowledgeSearchCacheForTest();
   });
 
+  it('coerces string boolean flags in tool-call payloads', () => {
+    const inputSchema = (
+      searchKnowledgeBase as unknown as {
+        inputSchema: { parse: (input: unknown) => Record<string, unknown> };
+      }
+    ).inputSchema;
+
+    const parsed = inputSchema.parse({
+      query: '현재 인프라 아키텍처 요약',
+      useGraphRAG: 'false',
+      fastMode: 'true',
+      includeWebSearch: 'false',
+    });
+
+    expect(parsed.useGraphRAG).toBe(false);
+    expect(parsed.fastMode).toBe(true);
+    expect(parsed.includeWebSearch).toBe(false);
+  });
+
   it('returns graceful fallback when Supabase client is unavailable', async () => {
     mockGetSupabaseClient.mockResolvedValue(null);
 

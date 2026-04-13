@@ -23,7 +23,7 @@ import {
   type MultiAgentResponse,
   type MultiAgentError,
 } from './orchestrator-types';
-import { resolveWebSearchSetting } from './orchestrator-web-search';
+import { resolveRAGSetting, resolveWebSearchSetting } from './orchestrator-web-search';
 import { preFilterQuery, saveAgentFindingsToContext } from './orchestrator-context';
 
 import {
@@ -231,7 +231,7 @@ export async function executeMultiAgent(
   });
 
   const webSearchEnabled = resolveWebSearchSetting(request.enableWebSearch, query);
-  const ragEnabled = request.enableRAG !== false; // default: true
+  const ragEnabled = resolveRAGSetting(request.enableRAG, query);
   logger.debug(`[WebSearch] Setting resolved: ${webSearchEnabled} (request: ${request.enableWebSearch})`);
   logger.debug(`[RAG] Setting resolved: ${ragEnabled} (request: ${request.enableRAG})`);
 
@@ -526,7 +526,7 @@ export async function* executeMultiAgentStream(
   });
 
   const webSearchEnabled = resolveWebSearchSetting(request.enableWebSearch, query);
-  const ragEnabled = request.enableRAG !== false; // default: true
+  const ragEnabled = resolveRAGSetting(request.enableRAG, query);
   logger.debug(`[Stream WebSearch] Setting resolved: ${webSearchEnabled} (request: ${request.enableWebSearch})`);
   logger.debug(`[Stream RAG] Setting resolved: ${ragEnabled} (request: ${request.enableRAG})`);
 

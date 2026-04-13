@@ -1,0 +1,93 @@
+{
+  "runId": "QA-20260413-0279",
+  "recordedAt": "2026-04-13T11:06:13.864Z",
+  "recordedAtKst": "2026-04-13 20:06:13 KST",
+  "runTitle": "GraphRAG variant direct supervisor stability recheck after degraded-single enable",
+  "owner": "codex",
+  "source": "cloud-run-probe",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run ai-engine-00307-zwt",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "baf40601059849ca16369417157b9c57756346e7"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "Cloud Run env update (ALLOW_DEGRADED_SINGLE=true) and revision ai-engine-00307-zwt",
+    "Cloud Run /health after env update",
+    "Cloud Run /api/ai/supervisor variant topology direct probe 5-attempt stability run",
+    "Vercel usage check via CLI"
+  ],
+  "skippedSurfaces": [
+    "landing/login/dashboard browser flow",
+    "AI sidebar visual render path",
+    "fullscreen AI workspace",
+    "feedback submit path",
+    "security attack regression pack"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 3,
+    "failed": 2
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-13T20:05:41+09:00",
+      "summary": "Current billing period effective usage 7.8436 USD, billed 0.0000 USD, no unexpected billed usage spike before targeted QA #5.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "ai-topology-variant-function-call-failure",
+      "title": "Topology variant direct supervisor path still has intermittent degraded quality",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "After enabling ALLOW_DEGRADED_SINGLE, HTTP 500 was not observed in 5 attempts, but one response fell back to 'no_provider' message and one returned low-quality decomposition text without tool usage.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Cloud Run service updated with ALLOW_DEGRADED_SINGLE=true and revision ai-engine-00307-zwt serving 100% traffic",
+    "5-attempt direct probe summary: success=5, failed=0 (HTTP level), fallbackUsed=1, low-quality answer observed=1",
+    "attempt #4 returned degraded single fallback text '현재 AI 엔진 모델이 일시적으로 사용 불가능합니다' (metadata.fallback=true, fallbackReason=no_provider)",
+    "attempt #3 returned decomposition-style low-quality text with toolsCalled=0 and ragCount=0",
+    "error-rate improved versus prior run (UNKNOWN_ERROR 500 removed), but operator-quality stability remains unresolved"
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Cloud Run health",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health",
+      "note": "Post-update health endpoint"
+    },
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/",
+      "note": "Frontend baseline for this QA wave"
+    }
+  ]
+}

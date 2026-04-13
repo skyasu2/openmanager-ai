@@ -1,0 +1,68 @@
+{
+  "runId": "QA-20260413-0280",
+  "recordedAt": "2026-04-13T11:41:39.894Z",
+  "recordedAtKst": "2026-04-13 20:41:39 KST",
+  "runTitle": "GraphRAG variant direct supervisor recheck after ai-engine-00308 (RAG auto + advisor tool required)",
+  "owner": "codex",
+  "source": "curl",
+  "environment": {
+    "target": "cloud-run-production",
+    "url": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+    "frontend": "N/A",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "baf406010"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": [],
+  "coveredSurfaces": [
+    "Cloud Run deploy ai-engine-00308-6qw",
+    "Cloud Run /health",
+    "Cloud Run /api/ai/supervisor variant topology direct probe (3 attempts)"
+  ],
+  "skippedSurfaces": [
+    "Vercel UI sidebar flow",
+    "Playwright browser regression pack"
+  ],
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Routing/tool reliability improved: sampled direct probes consistently used searchKnowledgeBase with successful finalAnswer. However latency remains very slow and quality policy flags persist.",
+      "nextAction": "Tune advisor response format and reduce long-tail latency before closing P1."
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "ai-topology-variant-function-call-failure",
+      "title": "Topology variant direct supervisor path still has quality/latency stabilization gap",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Hard failures are not reproduced in QA-20260413-0280 sample, but latency (35-86s) and advisor-format quality flags remain. Keep open until consistency and latency targets are met.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}

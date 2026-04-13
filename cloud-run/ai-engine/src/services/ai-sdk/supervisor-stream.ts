@@ -13,7 +13,12 @@ import { allTools } from '../../tools-ai-sdk';
 import { createSupervisorTrace, finalizeTrace, logGeneration, logToolCall } from '../observability/langfuse';
 import { CircuitOpenError, getCircuitBreaker } from '../resilience/circuit-breaker';
 import { executeMultiAgentStream } from './agents';
-import { filterToolsByRAG, filterToolsByWebSearch, resolveWebSearchSetting } from './agents/orchestrator-web-search';
+import {
+  filterToolsByRAG,
+  filterToolsByWebSearch,
+  resolveRAGSetting,
+  resolveWebSearchSetting,
+} from './agents/orchestrator-web-search';
 import {
   getSupervisorModel,
   getVisionAgentModel,
@@ -75,6 +80,10 @@ export async function* executeSupervisorStream(
             isSingleModeAllowed() &&
             shouldFallbackFromMultiAgentError(errorData.code)
           ) {
+            const degradedReason =
+              errorData.code === 'MODEL_UNAVAILABLE'
+                ? 'multi_agent_model_unavailable'
+                : 'multi_agent_runtime_error';
             logger.info(
               `[SupervisorStream] Falling back to single-agent mode (degraded) after multi-agent error: ${errorData.code}`
             );
@@ -88,7 +97,7 @@ export async function* executeSupervisorStream(
             };
             yield* streamSingleAgent(request, startTime, {
               degradedFromMode: 'multi',
-              degradedReason: 'multi_agent_model_unavailable',
+              degradedReason,
             }, modeDecision);
             return;
           }
@@ -177,7 +186,7 @@ async function* streamSingleAgent(
     yield { type: 'warning', data: { code: 'WEB_SEARCH_UNAVAILABLE', message: '웹 검색을 사용할 수 없습니다. 내부 데이터로 응답합니다.' } };
   }
   logger.debug(`[Stream Single WebSearch] Setting resolved: ${webSearchEnabled} (request: ${request.enableWebSearch})`);
-  const ragEnabled = request.enableRAG ?? false;
+  const ragEnabled = resolveRAGSetting(request.enableRAG, queryText);
   logger.debug(`[Stream Single RAG] Setting: ${ragEnabled} (request: ${request.enableRAG})`);
   let filteredTools = filterToolsByWebSearch(allTools, webSearchEnabled);
   filteredTools = filterToolsByRAG(filteredTools, ragEnabled);

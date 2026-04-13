@@ -6,7 +6,12 @@ export interface SupervisorDegradedFallbackContext {
 }
 
 export function shouldFallbackFromMultiAgentError(code?: string): boolean {
-  return code === 'MODEL_UNAVAILABLE';
+  return (
+    code === 'MODEL_UNAVAILABLE' ||
+    code === 'MODEL_ERROR' ||
+    code === 'INTERNAL_ERROR' ||
+    code === 'UNKNOWN_ERROR'
+  );
 }
 
 export function hasMeaningfulMultiAgentOutput(eventType: string): boolean {

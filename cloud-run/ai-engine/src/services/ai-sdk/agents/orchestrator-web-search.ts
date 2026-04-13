@@ -39,6 +39,38 @@ const WEB_SEARCH_INDICATORS = {
   ],
 };
 
+// ============================================================================
+// RAG Auto-Detection
+// ============================================================================
+
+/**
+ * Queries that benefit from internal knowledge retrieval (GraphRAG).
+ * Conservative by default: only clear knowledge/advisory intents auto-enable RAG.
+ */
+const RAG_INDICATORS = [
+  '토폴로지',
+  '아키텍처',
+  '구성도',
+  '트래픽 경로',
+  '경로',
+  '의존성',
+  '장애 이력',
+  '유사 장애',
+  '과거 사례',
+  '해결 방법',
+  '대응 방안',
+  'runbook',
+  'playbook',
+  'guide',
+  'topology',
+  'architecture',
+  'root cause',
+  'rca',
+  'incident',
+  'troubleshoot',
+  'how to',
+];
+
 /**
  * Keywords that indicate internal data is sufficient (no web search needed)
  */
@@ -112,6 +144,31 @@ export function resolveWebSearchSetting(
 
   // Auto or undefined: detect based on query
   return shouldEnableWebSearch(query);
+}
+
+/**
+ * Detect if RAG would be beneficial for the query.
+ * Conservative default to avoid unnecessary retrieval overhead.
+ */
+export function shouldEnableRAG(query: string): boolean {
+  const q = query.toLowerCase();
+  return RAG_INDICATORS.some((keyword) => q.includes(keyword.toLowerCase()));
+}
+
+/**
+ * Resolve RAG setting based on request and query.
+ *
+ * - true: force enable
+ * - false: force disable
+ * - undefined: conservative auto-detection
+ */
+export function resolveRAGSetting(
+  enableRAG: boolean | undefined,
+  query: string
+): boolean {
+  if (enableRAG === true) return true;
+  if (enableRAG === false) return false;
+  return shouldEnableRAG(query);
 }
 
 /**

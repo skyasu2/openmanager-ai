@@ -33,6 +33,7 @@ export { ORCHESTRATOR_CONFIG } from './orchestrator-types';
 
 // Web Search
 export {
+  resolveRAGSetting,
   shouldEnableWebSearch,
   resolveWebSearchSetting,
 } from './orchestrator-web-search';

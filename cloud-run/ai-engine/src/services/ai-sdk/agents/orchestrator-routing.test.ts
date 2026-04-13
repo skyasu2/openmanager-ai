@@ -1,7 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { mockGenerateTextWithRetry } = vi.hoisted(() => ({
+const {
+  mockGenerateTextWithRetry,
+  mockSearchKnowledgeBaseExecute,
+} = vi.hoisted(() => ({
   mockGenerateTextWithRetry: vi.fn(),
+  mockSearchKnowledgeBaseExecute: vi.fn(),
 }));
 
 vi.mock('ai', () => ({
@@ -41,7 +45,7 @@ vi.mock('./config', () => ({
       name: 'Advisor Agent',
       instructions: 'Advisor instructions',
       tools: {
-        searchKnowledgeBase: { execute: vi.fn() },
+        searchKnowledgeBase: { execute: mockSearchKnowledgeBaseExecute },
         recommendCommands: { execute: vi.fn() },
         finalAnswer: { execute: vi.fn() },
       },
@@ -64,7 +68,7 @@ vi.mock('./config', () => ({
             name: 'Advisor Agent',
             instructions: 'Advisor instructions',
             tools: {
-              searchKnowledgeBase: { execute: vi.fn() },
+              searchKnowledgeBase: { execute: mockSearchKnowledgeBaseExecute },
               recommendCommands: { execute: vi.fn() },
               finalAnswer: { execute: vi.fn() },
             },
@@ -164,6 +168,7 @@ function createRetryResult(options: {
 describe('executeForcedRouting', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockSearchKnowledgeBaseExecute.mockResolvedValue(undefined);
   });
 
   it('uses deterministic fallback for empty NLQ summary responses without a second retry call', async () => {
@@ -348,6 +353,46 @@ describe('executeForcedRouting', () => {
       type: 'tool',
       toolName: 'searchKnowledgeBase',
     });
+  });
+
+  it('uses direct KB deterministic path for advisor topology queries when KB succeeds', async () => {
+    mockSearchKnowledgeBaseExecute.mockResolvedValueOnce({
+      success: true,
+      totalFound: 2,
+      results: [
+        {
+          id: 'kb-1',
+          title: '현재 인프라 역할/트래픽 토폴로지 스냅샷',
+          content: '총 15대 서버 기준으로 LB->WEB->APP->DB 경로를 사용합니다.',
+          similarity: 0.91,
+          sourceType: 'vector',
+          category: 'architecture',
+        },
+        {
+          id: 'kb-2',
+          title: '현재 인프라 배치/운영 검증 스냅샷',
+          content: '운영 구간에서 트래픽 분산과 장애 대응 절차를 정의합니다.',
+          similarity: 0.83,
+          sourceType: 'graph',
+          category: 'architecture',
+        },
+      ],
+    });
+
+    const result = await executeForcedRouting(
+      '현재 인프라 토폴로지 알려줘',
+      'Advisor Agent',
+      Date.now(),
+      true,
+      true,
+    );
+
+    expect(result?.success).toBe(true);
+    expect(result?.metadata.provider).toBe('deterministic');
+    expect(result?.toolsCalled).toEqual(['searchKnowledgeBase', 'finalAnswer']);
+    expect(result?.response).toContain('해결/권장 조치');
+    expect(result?.response).toContain('`getServerMetrics`');
+    expect(mockGenerateTextWithRetry).not.toHaveBeenCalled();
   });
 });
 

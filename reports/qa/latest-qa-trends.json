@@ -1,63 +1,63 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-12T07:09:09.305Z",
-  "generatedAtKst": "2026-04-12 16:09:09 KST",
-  "trackerUpdatedAt": "2026-04-12T06:56:48.689Z",
+  "generatedAt": "2026-04-13T12:52:33.267Z",
+  "generatedAtKst": "2026-04-13 21:52:33 KST",
+  "trackerUpdatedAt": "2026-04-13T12:52:28.892Z",
   "totals": {
-    "recordedRuns": 271,
-    "countedRuns": 240,
-    "totalChecks": 1869,
-    "totalPassed": 1797,
-    "totalFailed": 66,
-    "overallPassRatePct": 96.15,
-    "latestRecordedRunId": "QA-20260412-0273",
-    "lastCountedRunId": "QA-20260412-0272"
+    "recordedRuns": 280,
+    "countedRuns": 243,
+    "totalChecks": 1886,
+    "totalPassed": 1812,
+    "totalFailed": 68,
+    "overallPassRatePct": 96.08,
+    "latestRecordedRunId": "QA-20260413-0282",
+    "lastCountedRunId": "QA-20260413-0282"
   },
   "windows": [
     {
       "label": "All Counted Runs",
-      "recordedRuns": 240,
-      "countedRuns": 240,
-      "totalChecks": 1869,
-      "totalPassed": 1797,
-      "totalFailed": 66,
-      "passRatePct": 96.15,
-      "failingRunCount": 41,
-      "failingRunRatePct": 17.08,
-      "regressionRunCount": 46,
-      "regressionRunRatePct": 19.17,
-      "pendingRunCount": 35,
+      "recordedRuns": 243,
+      "countedRuns": 243,
+      "totalChecks": 1886,
+      "totalPassed": 1812,
+      "totalFailed": 68,
+      "passRatePct": 96.08,
+      "failingRunCount": 42,
+      "failingRunRatePct": 17.28,
+      "regressionRunCount": 48,
+      "regressionRunRatePct": 19.75,
+      "pendingRunCount": 37,
       "releaseFacingRuns": 24
     },
     {
       "label": "Last 30 Counted Runs",
       "recordedRuns": 30,
       "countedRuns": 30,
-      "totalChecks": 317,
-      "totalPassed": 313,
-      "totalFailed": 4,
-      "passRatePct": 98.74,
-      "failingRunCount": 3,
-      "failingRunRatePct": 10,
-      "regressionRunCount": 3,
-      "regressionRunRatePct": 10,
-      "pendingRunCount": 3,
-      "releaseFacingRuns": 13
+      "totalChecks": 298,
+      "totalPassed": 292,
+      "totalFailed": 6,
+      "passRatePct": 97.99,
+      "failingRunCount": 4,
+      "failingRunRatePct": 13.33,
+      "regressionRunCount": 5,
+      "regressionRunRatePct": 16.67,
+      "pendingRunCount": 5,
+      "releaseFacingRuns": 10
     },
     {
       "label": "Last 10 Counted Runs",
       "recordedRuns": 10,
       "countedRuns": 10,
-      "totalChecks": 91,
-      "totalPassed": 89,
+      "totalChecks": 71,
+      "totalPassed": 69,
       "totalFailed": 2,
-      "passRatePct": 97.8,
+      "passRatePct": 97.18,
       "failingRunCount": 1,
       "failingRunRatePct": 10,
-      "regressionRunCount": 1,
-      "regressionRunRatePct": 10,
-      "pendingRunCount": 1,
-      "releaseFacingRuns": 5
+      "regressionRunCount": 2,
+      "regressionRunRatePct": 20,
+      "pendingRunCount": 2,
+      "releaseFacingRuns": 3
     }
   ],
   "gateWindows": [
@@ -217,8 +217,8 @@
     },
     {
       "scope": "targeted",
-      "totalRuns": 113,
-      "countedRuns": 83
+      "totalRuns": 122,
+      "countedRuns": 86
     },
     {
       "scope": "broad",
@@ -239,24 +239,24 @@
   "priorityRecurrence": [
     {
       "priority": "P0",
-      "totalItems": 41,
+      "totalItems": 42,
       "recurringItems": 7,
       "openItems": 0,
       "openRecurringItems": 0,
-      "completedItems": 41,
+      "completedItems": 42,
       "wontFixItems": 0,
-      "recurrenceRatePct": 17.07,
+      "recurrenceRatePct": 16.67,
       "openRecurrenceRatePct": 0
     },
     {
       "priority": "P1",
-      "totalItems": 131,
-      "recurringItems": 62,
+      "totalItems": 132,
+      "recurringItems": 63,
       "openItems": 0,
       "openRecurringItems": 0,
-      "completedItems": 127,
+      "completedItems": 128,
       "wontFixItems": 4,
-      "recurrenceRatePct": 47.33,
+      "recurrenceRatePct": 47.73,
       "openRecurrenceRatePct": 0
     },
     {
@@ -454,17 +454,6 @@
   ],
   "recentDailyTrend": [
     {
-      "date": "2026-03-27",
-      "runCount": 1,
-      "totalChecks": 12,
-      "totalPassed": 11,
-      "totalFailed": 1,
-      "failingRuns": 1,
-      "regressionRuns": 1,
-      "passRatePct": 91.67,
-      "regressionRunRatePct": 100
-    },
-    {
       "date": "2026-03-29",
       "runCount": 1,
       "totalChecks": 11,
@@ -606,9 +595,40 @@
       "regressionRuns": 0,
       "passRatePct": 100,
       "regressionRunRatePct": 0
+    },
+    {
+      "date": "2026-04-13",
+      "runCount": 3,
+      "totalChecks": 17,
+      "totalPassed": 15,
+      "totalFailed": 2,
+      "failingRuns": 1,
+      "regressionRuns": 2,
+      "passRatePct": 88.24,
+      "regressionRunRatePct": 66.67
     }
   ],
   "recentRegressionRuns": [
+    {
+      "runId": "QA-20260413-0281",
+      "recordedAt": "2026-04-13T12:40:26.449Z",
+      "scope": "targeted",
+      "title": "GraphRAG variant stability recheck after ai-engine-00311 (boolean-string tool schema hotfix)",
+      "failedChecks": 2,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260413-0280",
+      "recordedAt": "2026-04-13T11:41:39.894Z",
+      "scope": "targeted",
+      "title": "GraphRAG variant direct supervisor recheck after ai-engine-00308 (RAG auto + advisor tool required)",
+      "failedChecks": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
     {
       "runId": "QA-20260407-0249",
       "recordedAt": "2026-04-07T11:55:13.126Z",
@@ -684,26 +704,6 @@
       "recordedAt": "2026-03-24T07:57:28.735Z",
       "scope": "targeted",
       "title": "Vercel Production QA - false realtime-analysis badge removed but parity mismatch remains",
-      "failedChecks": 1,
-      "pendingCount": 1,
-      "deferredCount": 0,
-      "wontFixCount": 0
-    },
-    {
-      "runId": "QA-20260324-0176",
-      "recordedAt": "2026-03-24T07:35:13.658Z",
-      "scope": "targeted",
-      "title": "Vercel Production QA - parity gate still open after analysis detail patch",
-      "failedChecks": 2,
-      "pendingCount": 1,
-      "deferredCount": 0,
-      "wontFixCount": 0
-    },
-    {
-      "runId": "QA-20260324-0175",
-      "recordedAt": "2026-03-24T05:45:00.758Z",
-      "scope": "targeted",
-      "title": "Vercel Production QA - deferred parity metadata preserved but detail contract still incomplete",
       "failedChecks": 1,
       "pendingCount": 1,
       "deferredCount": 0,

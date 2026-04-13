@@ -51,6 +51,13 @@ describe('selectExecutionMode', () => {
       expect(selectExecutionMode('monitoring overview')).toBe('multi');
     });
 
+    it('should force multi for topology/architecture KB queries', () => {
+      expect(selectExecutionMode('현재 인프라 토폴로지 알려줘')).toBe('multi');
+      expect(
+        selectExecutionMode('현재 인프라 아키텍처와 트래픽 경로를 사내 지식베이스 기준으로 짧게 정리해줘.'),
+      ).toBe('multi');
+    });
+
     it('should select multi for analysis with infra context', () => {
       expect(selectExecutionMode('서버 왜 느려졌어?')).toBe('multi');
       expect(selectExecutionMode('CPU 왜 높아?')).toBe('multi');
@@ -230,7 +237,7 @@ describe('createPrepareStep', () => {
     expect(result.activeTools).toContain('recommendCommands');
     expect(result.activeTools).not.toContain('searchKnowledgeBase');
     expect(result.activeTools).not.toContain('searchWeb');
-    expect(result.toolChoice).toBe('auto');
+    expect(result.toolChoice).toBe('required');
   });
 
   it('should inject searchKnowledgeBase into advisor tools when RAG is ON', async () => {
@@ -240,7 +247,7 @@ describe('createPrepareStep', () => {
     const result = await prepare({ stepNumber: 0 });
     expect(result.activeTools).toContain('searchKnowledgeBase');
     expect(result.activeTools).toContain('recommendCommands');
-    expect(result.toolChoice).toBe('auto');
+    expect(result.toolChoice).toBe('required');
   });
 
   it('should force searchKnowledgeBase for topology queries when RAG is ON', async () => {
@@ -267,7 +274,7 @@ describe('createPrepareStep', () => {
     expect((result as { activeTools?: string[] }).activeTools).toContain(
       'recommendCommands'
     );
-    expect(result.toolChoice).toBe('auto');
+    expect(result.toolChoice).toBe('required');
   });
 
   it('should route log queries to log tools', async () => {
@@ -317,7 +324,7 @@ describe('createPrepareStep', () => {
     const result = await prepare({ stepNumber: 0 });
     expect((result as { activeTools?: string[] }).activeTools).toContain('recommendCommands');
     expect((result as { activeTools?: string[] }).activeTools).not.toContain('searchWeb');
-    expect(result.toolChoice).toBe('auto');
+    expect(result.toolChoice).toBe('required');
   });
 
   it('should default to metric tools for generic queries', async () => {
