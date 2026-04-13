@@ -38,6 +38,11 @@ function classifyError(error: unknown): { code: ErrorCode; status: ContentfulSta
   }
 
   // Model/Provider errors
+  if (message.includes('failed to call a function') || message.includes('function call')) {
+    return { code: ErrorCodes.MODEL_ERROR, status: 503 };
+  }
+
+  // Model/Provider errors
   if (message.includes('model') || message.includes('provider') || message.includes('llm')) {
     return { code: ErrorCodes.MODEL_ERROR, status: 503 };
   }

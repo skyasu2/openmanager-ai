@@ -72,6 +72,15 @@ describe('handleApiError (classifyError integration)', () => {
     );
   });
 
+  it('should return 503 for function-call generation errors', () => {
+    const c = createMockContext();
+    handleApiError(c, new Error('Failed to call a function while generating response'));
+    expect(c.json).toHaveBeenCalledWith(
+      expect.objectContaining({ code: 'MODEL_ERROR', error: 'Service unavailable' }),
+      503
+    );
+  });
+
   it('should return 400 for validation errors', () => {
     const c = createMockContext();
     handleApiError(c, new Error('Required field missing'));
