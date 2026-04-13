@@ -8,22 +8,6 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { Hono } from 'hono';
 
 vi.mock('../lib/graphrag-service', () => ({
-  extractRelationships: vi.fn(async () => [
-    {
-      entryId: 'e1',
-      relationships: [{ type: 'related_to', target: 'e2' }],
-      materializedCount: 3,
-      insertedCount: 1,
-      updatedCount: 2,
-    },
-    {
-      entryId: 'e2',
-      relationships: [],
-      materializedCount: 0,
-      insertedCount: 0,
-      updatedCount: 0,
-    },
-  ]),
   getGraphRAGStats: vi.fn(async () => ({
     totalDocuments: 50,
     totalTriplets: 120,
@@ -41,7 +25,7 @@ vi.mock('../lib/logger', () => ({
 }));
 
 import { graphragRouter } from './graphrag';
-import { extractRelationships, getGraphRAGStats, getRelatedKnowledge } from '../lib/graphrag-service';
+import { getGraphRAGStats, getRelatedKnowledge } from '../lib/graphrag-service';
 
 const app = new Hono();
 app.route('/graphrag', graphragRouter);

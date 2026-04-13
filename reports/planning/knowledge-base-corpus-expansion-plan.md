@@ -1,6 +1,6 @@
 # Knowledge Base Corpus Expansion Plan
 
-- 상태: 1차 corpus 반영 완료, auto-extraction 중단, graph telemetry 관찰 대기
+- 상태: 1차 corpus 반영 완료, extraction legacy 제거, graph telemetry 관찰 대기
 - 작성일: 2026-04-12
 - 목표: `knowledge_base`를 무작정 늘리거나 줄이지 않고, 현재 RAG governance 한도 안에서 corpus 품질을 유지하면서 실제 graph traversal 가치가 있는지 계측으로 판단한다.
 
@@ -18,16 +18,17 @@
 ### 최근 변경 요약
 
 - canonical repo 최신 커밋은 `bc1fdc472 feat(graphrag): consolidate corpus tooling and retrieval routing`이며, `gitlab/main`까지 push 완료됐다.
-- 최근 변경의 핵심은 다음 네 가지다.
+- 최근 변경의 핵심은 다음 다섯 가지다.
   1. `llamaindex-rag-*` 네이밍을 `graphrag-*`로 정리했다.
   2. `/api/ai/graphrag/extract`를 `410`으로 비활성화해 auto-extraction/backfill 운영 경로를 중단했다.
   3. topology/architecture 질의가 `searchKnowledgeBase`를 타도록 라우팅을 강제했다.
   4. duplicate `searchKnowledgeBase` 재호출 비용을 30초 TTL cache로 coalesce했다.
+  5. extraction legacy (`graphrag-relations.ts`)를 제거하고, traversal helper만 `graphrag-graph.ts`로 유지했다.
 
 ### 현재 상태
 
 - RAG core는 유지한다. 현재 retrieval 경로는 embedding + pgVector + BM25 + `knowledge_relationships` traversal 조합이다.
-- auto-extraction/backfill은 현재 repo 기준 운영 경로에서 중단됐다. 관계 업데이트의 공식 경로는 `seed-knowledge-base.ts`와 기존 수동 관계 데이터다.
+- auto-extraction/backfill은 현재 repo 기준 운영 경로에서 중단됐고, extraction legacy 구현도 제거됐다. 관계 업데이트의 공식 경로는 `seed-knowledge-base.ts`와 기존 수동 관계 데이터다.
 - production에서 `sourceType="graph"`가 실제 응답에 포함된 사례는 이미 확인됐다. 따라서 graph traversal은 아직 제거 대상이 아니다.
 - 최신 cleanup commit `bc1fdc472`는 2026-04-13 KST에 revision `ai-engine-00303-mfh`로 production 재배포됐다.
 - deploy 직후 live baseline:
@@ -47,8 +48,7 @@
 
 1. 2~4주 동안 `toolsCalled`, `ragSources.sourceType`, query category를 같이 기록해 graph hit-rate와 precision을 관찰한다.
 2. telemetry 결과를 바탕으로 `graphrag-graph.ts`/`knowledge_relationships` traversal 유지 여부를 판단한다.
-3. traversal 판단과 별개로 `graphrag-relations.ts` legacy 구현을 삭제할지 보관할지 결정한다.
-4. duplicate `searchKnowledgeBase` tool count가 latency/observability에 실제 부담을 남기면, tool invocation dedupe를 별도 최적화로 검토한다.
+3. duplicate `searchKnowledgeBase` tool count가 latency/observability에 실제 부담을 남기면, tool invocation dedupe를 별도 최적화로 검토한다.
 
 ## 2026-04-12 기준 baseline 요약
 
@@ -292,7 +292,7 @@
   - first batch에서는 `AI 사이드바 응답 지연 점검 순서`에만 강한 anchor가 있어 `Google Cloud Run 운영 가이드`(`related_to`, bidirectional)와 `Vercel/Cloud Run 캐시 전략`(`depends_on`) 2건을 추가했다.
   - `Supabase migration 작업 규칙`은 현재 live corpus 안에 강한 target이 부족해 edge를 억지로 만들지 않았다. 이 문서는 후속 DB governance 문서가 들어올 때 다시 연결하는 편이 맞다.
 - 2026-04-12 GraphRAG 일반 경로 보강:
-  - [graphrag-relations.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/lib/graphrag-relations.ts:1)에서 triplet extraction 후 `knowledge_relationships`를 실제 materialize하도록 수정했다.
+  - 당시 extraction legacy 파일 `graphrag-relations.ts`에서 triplet extraction 후 `knowledge_relationships`를 실제 materialize하도록 수정했다. 해당 파일은 현재 제거됐다.
   - materialization은 현재 entry와 strong anchor를 가진 다른 문서 사이에서만 수행하고, free-form predicate는 enum 타입(`causes`, `depends_on`, `related_to` 등)으로 정규화한다.
   - linked env live verification에서 update-only run도 `relationshipsCreated`로 집계되는 문제가 확인되어, 현재는 신규 insert만 `relationshipsCreated`, 기존 edge update는 `relationshipsUpdated`로 분리 집계하도록 코드베이스를 보정했다.
   - `/graphrag/stats`는 cold 상태에서 초기화 누락으로 실패할 수 있어, `getStats()`도 lazy init을 수행하고 `lastIndexed`는 최신 `updated_at` 기준으로 계산하도록 수정했다.
@@ -312,7 +312,7 @@
   - 따라서 다음 액션은 bulk backfill이 아니라 incident seed 문서군용 anchor 보강 또는 strong-anchor matching threshold 재조정 검토다.
 - 2026-04-13 fallback anchor + targeted replay 준비:
   - live `triplet-only` 3건의 저장 triplet은 `로그 쓰기 실패`, `OOM 재시작`, `사용자 지연`처럼 일반 개념 위주라 target KB title 직접 매칭이 어렵다는 점을 확인했다.
-  - 그래서 [graphrag-relations.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/lib/graphrag-relations.ts:1)에 incident/troubleshooting용 `title-anchor-fallback`을 추가해, triplet anchor가 0건일 때 의미 있는 title token overlap + content similarity가 있는 문서로 `related_to` 1건을 계획하도록 보강했다.
+  - 그래서 당시 extraction legacy 파일 `graphrag-relations.ts`에 incident/troubleshooting용 `title-anchor-fallback`을 추가해, triplet anchor가 0건일 때 의미 있는 title token overlap + content similarity가 있는 문서로 `related_to` 1건을 계획하도록 보강했다. 해당 파일은 현재 제거됐다.
   - [graphrag.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/routes/graphrag.ts:1)는 이제 `titles` 배열과 `onlyUnprocessed`를 받아 이미 indexed 된 문서도 targeted replay할 수 있다.
   - 다음 live 검증은 deploy 후 `/api/ai/graphrag/extract`에 `titles=["CPU 사용량 급증 대응 가이드","디스크 용량 부족 대응","메모리 부족 장애 대응"]`를 넘겨 materialized edge 증가량을 확인하는 단계다.
 - 2026-04-13 production targeted replay 결과:
@@ -344,9 +344,9 @@
   - post-state 기준 `totalTriplets 165 → 168`, `indexedDocs 13 → 18`, `materializedDocs 7 → 11`, `tripletOnlyDocs 6 → 7`, `unprocessed 39 → 34`, `graphEdgesFromExtraction 8 → 12`로 이동했다.
   - 따라서 다음 우선순위는 대량 backfill 재개가 아니라 generic triplet phrase match precision을 먼저 보강하는 것이다. 현재 `metadataMismatches`도 reverse-direction materialization까지 포함한 live graph와 per-run metadata action count를 단순 비교하므로 운영 지표로는 해석에 주의가 필요하다.
 - 2026-04-13 generic phrase precision patch 로컬 검증 결과:
-  - [graphrag-relations.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/lib/graphrag-relations.ts:1)에 phrase stopword와 title-token gate를 추가했다. 이제 exact title이 아닌 경우에는 phrase와 candidate title 사이에 의미 있는 token overlap이 없으면 content match만으로 edge를 만들지 않는다.
+  - 당시 extraction legacy 파일 `graphrag-relations.ts`에 phrase stopword와 title-token gate를 추가했다. 이제 exact title이 아닌 경우에는 phrase와 candidate title 사이에 의미 있는 token overlap이 없으면 content match만으로 edge를 만들지 않는다. 해당 파일은 현재 제거됐다.
   - 이 보정은 production false-positive 후보였던 `Storage 서버 (storage-nas-01, storage-s3-gateway) 장애 대응 -> Docker 컨테이너 트러블슈팅` 유형을 직접 겨냥한다. source phrase `쓰기 부하가 큰 작업 / 대응 절차`는 title anchor가 없으므로 더 이상 planner를 통과하면 안 된다.
-  - [graphrag-relations.test.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/lib/graphrag-relations.test.ts:1)에 generic phrase가 unrelated target으로 연결되지 않는 회귀 테스트를 추가했고, 기존 deterministic edge / fallback / targeted replay 테스트도 유지했다.
+  - 당시 extraction legacy 테스트 `graphrag-relations.test.ts`에 generic phrase가 unrelated target으로 연결되지 않는 회귀 테스트를 추가했고, 기존 deterministic edge / fallback / targeted replay 테스트도 유지했다. 해당 테스트 파일은 현재 제거됐다.
   - 로컬 검증은 `npx vitest run src/lib/graphrag-relations.test.ts --silent=passed-only`, `npm run type-check`, `npm run test` 기준으로 모두 통과했다.
   - 따라서 다음 단계는 Cloud Run production에 이 patch를 배포한 뒤, `Storage 서버 ...` 계열 title replay와 `batchSize=3~5` 소량 backfill로 false-positive 재발 여부를 확인하는 것이다.
 - 2026-04-13 precision patch production 배포 및 live verify 결과:

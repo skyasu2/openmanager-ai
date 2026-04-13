@@ -2,8 +2,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const createClientMock = vi.fn();
 const getSupabaseConfigMock = vi.fn();
-const getCerebrasModelIdMock = vi.fn();
-const getCerebrasModelMock = vi.fn();
 
 vi.mock('@supabase/supabase-js', () => ({
   createClient: createClientMock,
@@ -11,11 +9,6 @@ vi.mock('@supabase/supabase-js', () => ({
 
 vi.mock('./config-parser', () => ({
   getSupabaseConfig: getSupabaseConfigMock,
-  getCerebrasModelId: getCerebrasModelIdMock,
-}));
-
-vi.mock('../services/ai-sdk/model-provider-core', () => ({
-  getCerebrasModel: getCerebrasModelMock,
 }));
 
 vi.mock('./logger', () => ({
@@ -200,8 +193,6 @@ describe('graphrag-service', () => {
       url: 'https://example.supabase.co',
       serviceRoleKey: 'service-role-key',
     });
-    getCerebrasModelIdMock.mockReturnValue('test-model');
-    getCerebrasModelMock.mockReturnValue({ provider: 'mock' });
   });
 
   it('initializes lazily and reports the latest indexed timestamp', async () => {

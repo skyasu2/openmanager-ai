@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { GraphRAGSearchResult } from './graphrag-types';
+import { logger } from './logger';
 
 export async function traverseAndFetchGraphNodes(
   client: SupabaseClient,
@@ -86,4 +87,58 @@ export function mergeDeduplicateAndRankResults(
   });
 
   return deduplicated.sort((left, right) => right.score - left.score).slice(0, maxTotalResults);
+}
+
+export async function fetchRelatedKnowledgeFromGraph(
+  client: SupabaseClient,
+  nodeId: string,
+  options: { maxHops?: number; maxResults?: number } = {}
+): Promise<
+  Array<{
+    id: string;
+    title: string;
+    content: string;
+    hopDistance: number;
+    pathWeight: number;
+    relationshipPath: string[];
+  }>
+> {
+  const { maxHops = 2, maxResults = 10 } = options;
+
+  try {
+    const { data } = await client.rpc('traverse_knowledge_graph', {
+      p_start_id: nodeId,
+      p_start_table: 'knowledge_base',
+      p_max_hops: maxHops,
+      p_relationship_types: null,
+      p_max_results: maxResults,
+    });
+
+    if (!data) {
+      return [];
+    }
+
+    const nodeIds = data.map((row: Record<string, unknown>) => row.node_id);
+    const { data: entries } = await client
+      .from('knowledge_base')
+      .select('id, title, content')
+      .in('id', nodeIds);
+
+    const entryMap = new Map((entries || []).map((entry) => [entry.id, entry]));
+
+    return data.map((row: Record<string, unknown>) => {
+      const entry = entryMap.get(row.node_id as string);
+      return {
+        id: String(row.node_id),
+        title: entry?.title || '',
+        content: entry?.content || '',
+        hopDistance: Number(row.hop_distance),
+        pathWeight: Number(row.path_weight),
+        relationshipPath: (row.relationship_path as string[]) || [],
+      };
+    });
+  } catch (error) {
+    logger.error('[GraphRAG] Related knowledge fetch error:', error);
+    return [];
+  }
 }

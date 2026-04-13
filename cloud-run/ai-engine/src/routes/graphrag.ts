@@ -1,16 +1,15 @@
 /**
  * GraphRAG Routes
  *
- * Knowledge graph relationship extraction and traversal endpoints.
+ * Knowledge graph traversal and stats endpoints.
  *
- * @version 1.0.0
+ * @version 1.1.0
  * @created 2025-12-28
  */
 
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import {
-  extractRelationships,
   getGraphRAGStats,
   getRelatedKnowledge,
 } from '../lib/graphrag-service';
@@ -20,67 +19,17 @@ import { logger } from '../lib/logger';
 export const graphragRouter = new Hono();
 
 /**
- * POST /graphrag/extract - DISABLED (410)
+ * POST /graphrag/extract - GONE (410)
  *
- * Auto-extraction backfill has been stopped. knowledge_relationships are now
- * managed exclusively via seed-knowledge-base.ts.
- *
- * The underlying extractRelationships() implementation is kept in graphrag-relations.ts
- * pending graph hit-rate telemetry review. Remove once confirmed unused.
+ * RFC 9110 recommends 410 when a resource is intentionally unavailable and the
+ * condition is likely to be permanent. Auto-extraction backfill is no longer
+ * part of the runtime API. Manage relationships via seed-knowledge-base.ts.
  */
 graphragRouter.post('/extract', async (c: Context) => {
-  // Auto-extraction disabled. Manage relationships via seed-knowledge-base.ts.
   return c.json(
     { error: 'disabled', message: '/graphrag/extract is disabled. Manage relationships via seed-knowledge-base.ts.' },
     410
   );
-
-  // eslint-disable-next-line no-unreachable
-  try {
-    const payload = await c.req.json();
-    const batchSize =
-      typeof payload.batchSize === 'number' && Number.isFinite(payload.batchSize)
-        ? payload.batchSize
-        : 50;
-    const titles = Array.isArray(payload.titles)
-      ? payload.titles
-          .map((value: unknown) => String(value).trim())
-          .filter((value: string) => value.length > 0)
-      : [];
-    const onlyUnprocessed =
-      typeof payload.onlyUnprocessed === 'boolean'
-        ? payload.onlyUnprocessed
-        : titles.length === 0;
-
-    logger.info(
-      `[GraphRAG] Starting extraction (triplet materialization, batch: ${batchSize}, onlyUnprocessed: ${onlyUnprocessed}, titles: ${titles.length})`
-    );
-
-    const results = await extractRelationships({
-      batchSize,
-      onlyUnprocessed,
-      titles,
-    });
-
-    const totalCreated = results.reduce(
-      (sum, r) => sum + (r.insertedCount ?? r.materializedCount ?? r.relationships.length),
-      0
-    );
-    const totalUpdated = results.reduce((sum, r) => sum + (r.updatedCount ?? 0), 0);
-
-    logger.info(
-      `[GraphRAG] Materialized relationships from ${results.length} entries (created=${totalCreated}, updated=${totalUpdated})`
-    );
-
-    return jsonSuccess(c, {
-      entriesProcessed: results.length,
-      relationshipsCreated: totalCreated,
-      relationshipsUpdated: totalUpdated,
-      details: results.slice(0, 10), // Return first 10 for brevity
-    });
-  } catch (error) {
-    return handleApiError(c, error, 'GraphRAG Extract');
-  }
 });
 
 /**

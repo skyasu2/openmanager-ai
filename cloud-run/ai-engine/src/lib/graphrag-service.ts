@@ -1,39 +1,30 @@
 /**
  * GraphRAG Service
  *
- * Knowledge graph retrieval: hybrid vector + graph traversal via Supabase pgVector.
- * Auto-extraction (triplet materialization) is disabled — use knowledge_relationships
- * seeded manually or via seed-knowledge-base.ts.
+ * Retrieval-only GraphRAG runtime: hybrid vector + graph traversal via Supabase pgVector.
+ * Indexing and auto-extraction are no longer part of this runtime service.
  *
- * @version 2.0.0
+ * @version 2.1.0
  * @created 2025-12-31
  */
 
-import { generateText, type LanguageModel } from 'ai';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { getCerebrasModelId, getSupabaseConfig } from './config-parser';
-import { getCerebrasModel } from '../services/ai-sdk/model-provider-core';
+import { getSupabaseConfig } from './config-parser';
 import { logger } from './logger';
 import {
   hybridTextVectorSearch,
   type HybridSearchResult as TextSearchResult,
 } from './hybrid-text-search';
 import {
-  extractRelationshipsFromKnowledgeBase,
   fetchRelatedKnowledgeFromGraph,
-  type ExtractionResult,
-} from './graphrag-relations';
-import {
   mergeDeduplicateAndRankResults,
   traverseAndFetchGraphNodes,
 } from './graphrag-graph';
 import type {
-  KnowledgeTriplet,
   GraphRAGSearchResult,
   GraphRAGStats,
 } from './graphrag-types';
 export type {
-  KnowledgeTriplet,
   GraphRAGSearchResult,
   GraphRAGStats,
 } from './graphrag-types';
@@ -44,7 +35,6 @@ export type {
 
 let isInitialized = false;
 let supabaseClient: SupabaseClient | null = null;
-let llamaLlm: LanguageModel | null = null;
 const EXTRACTION_EDGE_SOURCES = new Set(['llamaindex-triplets', 'title-anchor-fallback']);
 
 function asRecord(value: unknown): Record<string, unknown> | null {
@@ -57,16 +47,12 @@ function asArray(value: unknown): unknown[] {
 }
 
 /**
- * Initialize GraphRAG service with Cerebras LLM and Supabase client.
+ * Initialize GraphRAG service with Supabase client.
  */
 export async function initializeGraphRAG(): Promise<boolean> {
   if (isInitialized) return true;
 
   try {
-    const cerebrasModelId = getCerebrasModelId();
-    llamaLlm = getCerebrasModel(cerebrasModelId);
-
-    // Initialize Supabase client
     const supabaseConfig = getSupabaseConfig();
     if (supabaseConfig) {
       supabaseClient = createClient(
@@ -76,67 +62,11 @@ export async function initializeGraphRAG(): Promise<boolean> {
     }
 
     isInitialized = true;
-    logger.info(`[GraphRAG] Initialized with Cerebras AI (${cerebrasModelId})`);
+    logger.info('[GraphRAG] Initialized with Supabase client');
     return true;
   } catch (error) {
     logger.error('[GraphRAG] Initialization failed:', error);
     return false;
-  }
-}
-
-// ============================================================================
-// Triplet Extraction (Knowledge Graph)
-// ============================================================================
-
-/**
- * Extract knowledge triplets from text using LLM
- * Replaces heuristic-based detection with LLM-powered extraction
- */
-export async function extractTriplets(
-  text: string,
-  maxTriplets: number = 10
-): Promise<KnowledgeTriplet[]> {
-  await initializeGraphRAG();
-
-  if (!llamaLlm) {
-    logger.warn('[GraphRAG] LLM not configured');
-    return [];
-  }
-
-  try {
-    const prompt = `
-Extract up to ${maxTriplets} knowledge triplets from the following text.
-Each triplet should be in the format: (subject, predicate, object)
-
-Text:
-${text}
-
-Output as JSON array:
-[{"subject": "...", "predicate": "...", "object": "...", "confidence": 0.0-1.0}]
-
-Only output the JSON array, no other text.
-`;
-
-    const { text: responseRaw } = await generateText({
-      model: llamaLlm,
-      prompt,
-      maxOutputTokens: 500,
-    });
-    const responseText = responseRaw.trim();
-
-    // Parse JSON response
-    const jsonMatch = responseText.match(/\[[\s\S]*\]/);
-    if (!jsonMatch) {
-      logger.warn('[GraphRAG] Failed to parse triplets JSON');
-      return [];
-    }
-
-    const triplets = JSON.parse(jsonMatch[0]) as KnowledgeTriplet[];
-    logger.info(`[GraphRAG] Extracted ${triplets.length} triplets`);
-    return triplets;
-  } catch (error) {
-    logger.error('[GraphRAG] Triplet extraction failed:', error);
-    return [];
   }
 }
 
@@ -250,55 +180,6 @@ export async function hybridSearch(
   } catch (error) {
     logger.error('[GraphRAG] Hybrid search failed:', error);
     return [];
-  }
-}
-
-// ============================================================================
-// Index Documents
-// ============================================================================
-
-/**
- * Index new documents into the knowledge base
- * Index documents into knowledge_base with metadata
- */
-export async function indexDocuments(
-  documents: Array<{ text: string; metadata?: Record<string, unknown> }>
-): Promise<{ success: boolean; indexed: number }> {
-  await initializeGraphRAG();
-
-  if (!supabaseClient) {
-    return { success: false, indexed: 0 };
-  }
-
-  try {
-    let indexed = 0;
-
-    for (const doc of documents) {
-      // 1. Extract triplets for knowledge graph
-      const triplets = await extractTriplets(doc.text, 5);
-
-      // 2. Store in Supabase (embeddings handled by existing infrastructure)
-      const { error } = await supabaseClient.from('knowledge_base').insert({
-        content: doc.text,
-        title: doc.metadata?.title || 'Untitled',
-        category: doc.metadata?.category || 'general',
-        tags: doc.metadata?.tags || [],
-        metadata: {
-          ...doc.metadata,
-          triplets: triplets, // Store extracted triplets
-          indexed_at: new Date().toISOString(),
-          indexed_by: 'graphrag',
-        },
-      });
-
-      if (!error) indexed++;
-    }
-
-    logger.info(`[GraphRAG] Indexed ${indexed}/${documents.length} documents`);
-    return { success: true, indexed };
-  } catch (error) {
-    logger.error('[GraphRAG] Indexing failed:', error);
-    return { success: false, indexed: 0 };
   }
 }
 
@@ -495,31 +376,6 @@ export async function hybridGraphSearch(
   }
 }
 export const getGraphRAGStats = getStats;
-
-/**
- * @deprecated Route disabled (410). Kept pending graph hit-rate telemetry.
- * Remove together with graphrag-relations.ts once confirmed unused.
- */
-export const extractRelationships = async (options: {
-  batchSize?: number;
-  onlyUnprocessed?: boolean;
-  titles?: string[];
-} = {}): Promise<ExtractionResult[]> => {
-  await initializeGraphRAG();
-
-  const { batchSize = 50, onlyUnprocessed = true, titles = [] } = options;
-
-  if (!supabaseClient) {
-    logger.warn('[GraphRAG] Supabase not available');
-    return [];
-  }
-
-  return extractRelationshipsFromKnowledgeBase(supabaseClient, extractTriplets, {
-    batchSize,
-    onlyUnprocessed,
-    titles,
-  });
-};
 
 export const getRelatedKnowledge = async (
   nodeId: string,

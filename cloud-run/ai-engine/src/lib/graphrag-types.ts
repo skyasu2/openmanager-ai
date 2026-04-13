@@ -9,13 +9,6 @@ export interface GraphRAGSearchResult {
   metadata?: Record<string, unknown>;
 }
 
-export interface KnowledgeTriplet {
-  subject: string;
-  predicate: string;
-  object: string;
-  confidence: number;
-}
-
 export interface GraphRAGStats {
   totalDocuments: number;
   totalTriplets: number;
