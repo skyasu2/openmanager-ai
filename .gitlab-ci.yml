@@ -224,7 +224,7 @@ validate:
     - wsl2-docker  # self-hosted runner 전용 (분 소진 0). 미가동 시 pending 상태 유지.
   <<: [*npm_cache, *frontend_validate_changes]
   before_script:
-    - npm ci --legacy-peer-deps --prefer-offline --cache .npm --no-audit
+    - npm ci --prefer-offline --cache .npm --no-audit
   script:
     - echo "▶ TypeScript 타입 검사..."
     - npm run type-check

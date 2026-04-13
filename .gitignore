@@ -12,6 +12,9 @@ venv/
 !.yarn/versions
 *.log
 
+# npm cache (--cache .npm 옵션으로 생성, CI 재사용용)
+.npm/
+
 # Testing
 /coverage
 /test-results/
