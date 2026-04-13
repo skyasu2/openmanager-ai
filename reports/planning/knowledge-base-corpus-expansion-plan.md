@@ -1,21 +1,60 @@
 # Knowledge Base Corpus Expansion Plan
 
-- 상태: 1차 반영 + relation edge 완료
+- 상태: 1차 corpus 반영 완료, auto-extraction 중단, graph telemetry 관찰 대기
 - 작성일: 2026-04-12
-- 목표: `knowledge_base`를 무작정 늘리지 않고, 현재 RAG governance 한도 안에서 부족한 카테고리를 우선 보강해 실제 답변 품질을 높인다.
+- 목표: `knowledge_base`를 무작정 늘리거나 줄이지 않고, 현재 RAG governance 한도 안에서 corpus 품질을 유지하면서 실제 graph traversal 가치가 있는지 계측으로 판단한다.
 
 ## 배경
 
-- 현재 backlog에는 `P3: knowledge_base RAG corpus 확충`이 남아 있다.
-- 최근 점검 기준 `knowledge_base` live row는 `49`건이며, hybrid retrieval 경로 자체는 이미 정상이다.
+- 초기 backlog에는 `P3: knowledge_base RAG corpus 확충`이 남아 있었다.
+- 2026-04-12 초기 점검 기준 `knowledge_base` live row는 `49`건이었고, hybrid retrieval 경로 자체는 이미 정상이었다.
 - 현재 병목은 인덱스 부재가 아니라 **소규모 corpus + 카테고리 커버리지 부족 가능성** 쪽에 가깝다.
 - governance 기준은 [rag-knowledge-engine.md](/mnt/d/dev/openmanager-ai/docs/reference/architecture/ai/rag-knowledge-engine.md:19) 와 [rag-doc-policy.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/lib/rag-doc-policy.ts:1)가 정의한다.
 
-## 현재 상태 요약
+## 2026-04-13 현재 SSOT
+
+이 섹션이 아래의 과거 타임라인과 당시 시점의 "다음 단계" 문구보다 우선한다.
+
+### 최근 변경 요약
+
+- canonical repo 최신 커밋은 `bc1fdc472 feat(graphrag): consolidate corpus tooling and retrieval routing`이며, `gitlab/main`까지 push 완료됐다.
+- 최근 변경의 핵심은 다음 네 가지다.
+  1. `llamaindex-rag-*` 네이밍을 `graphrag-*`로 정리했다.
+  2. `/api/ai/graphrag/extract`를 `410`으로 비활성화해 auto-extraction/backfill 운영 경로를 중단했다.
+  3. topology/architecture 질의가 `searchKnowledgeBase`를 타도록 라우팅을 강제했다.
+  4. duplicate `searchKnowledgeBase` 재호출 비용을 30초 TTL cache로 coalesce했다.
+
+### 현재 상태
+
+- RAG core는 유지한다. 현재 retrieval 경로는 embedding + pgVector + BM25 + `knowledge_relationships` traversal 조합이다.
+- auto-extraction/backfill은 현재 repo 기준 운영 경로에서 중단됐다. 관계 업데이트의 공식 경로는 `seed-knowledge-base.ts`와 기존 수동 관계 데이터다.
+- production에서 `sourceType="graph"`가 실제 응답에 포함된 사례는 이미 확인됐다. 따라서 graph traversal은 아직 제거 대상이 아니다.
+- 최신 cleanup commit `bc1fdc472`는 2026-04-13 KST에 revision `ai-engine-00303-mfh`로 production 재배포됐다.
+- deploy 직후 live baseline:
+  - `totalDocuments=52`
+  - `totalTriplets=150`
+  - `totalExtractionEdges=15`
+  - `indexedDocs=30`
+  - `materializedDocs=13`
+  - `tripletOnlyDocs=17`
+  - `unprocessedDocs=22`
+- telemetry baseline:
+  - topology probe: `toolsCalled=["searchKnowledgeBase","searchKnowledgeBase","finalAnswer"]`, `ragSources=vector 6 + graph 2`
+  - incident probe: `toolsCalled=["searchKnowledgeBase","finalAnswer"]`, `ragSources=vector 1 + graph 1`
+  - 결론: graph source는 최신 cleanup 배포 후에도 실제 응답에 남아 있다. 다만 topology 질의의 duplicate tool call 표시는 계속 보인다.
+
+### 남은 작업
+
+1. 2~4주 동안 `toolsCalled`, `ragSources.sourceType`, query category를 같이 기록해 graph hit-rate와 precision을 관찰한다.
+2. telemetry 결과를 바탕으로 `graphrag-graph.ts`/`knowledge_relationships` traversal 유지 여부를 판단한다.
+3. traversal 판단과 별개로 `graphrag-relations.ts` legacy 구현을 삭제할지 보관할지 결정한다.
+4. duplicate `searchKnowledgeBase` tool count가 latency/observability에 실제 부담을 남기면, tool invocation dedupe를 별도 최적화로 검토한다.
+
+## 2026-04-12 기준 baseline 요약
 
 - 권장 총 문서 수: `<=52`
 - 하드 최대 문서 수: `<=60`
-- 현재 live count: `49`
+- 당시 live count: `49`
 - 권장 길이: `280~520자`
 - 하드 최대 길이: `<=600자`
 - command 비중 상한: `<=38%`
@@ -102,6 +141,7 @@
 - embedding 모델 교체
 - retrieval 함수/가중치 조정
 - `knowledge_relationships` 대량 재생성
+- 추가 auto-extraction/backfill 재개
 
 ## 우선 보강 대상
 
@@ -252,7 +292,7 @@
   - first batch에서는 `AI 사이드바 응답 지연 점검 순서`에만 강한 anchor가 있어 `Google Cloud Run 운영 가이드`(`related_to`, bidirectional)와 `Vercel/Cloud Run 캐시 전략`(`depends_on`) 2건을 추가했다.
   - `Supabase migration 작업 규칙`은 현재 live corpus 안에 강한 target이 부족해 edge를 억지로 만들지 않았다. 이 문서는 후속 DB governance 문서가 들어올 때 다시 연결하는 편이 맞다.
 - 2026-04-12 GraphRAG 일반 경로 보강:
-  - [llamaindex-rag-relations.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/lib/llamaindex-rag-relations.ts:1)에서 triplet extraction 후 `knowledge_relationships`를 실제 materialize하도록 수정했다.
+  - [graphrag-relations.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/lib/graphrag-relations.ts:1)에서 triplet extraction 후 `knowledge_relationships`를 실제 materialize하도록 수정했다.
   - materialization은 현재 entry와 strong anchor를 가진 다른 문서 사이에서만 수행하고, free-form predicate는 enum 타입(`causes`, `depends_on`, `related_to` 등)으로 정규화한다.
   - linked env live verification에서 update-only run도 `relationshipsCreated`로 집계되는 문제가 확인되어, 현재는 신규 insert만 `relationshipsCreated`, 기존 edge update는 `relationshipsUpdated`로 분리 집계하도록 코드베이스를 보정했다.
   - `/graphrag/stats`는 cold 상태에서 초기화 누락으로 실패할 수 있어, `getStats()`도 lazy init을 수행하고 `lastIndexed`는 최신 `updated_at` 기준으로 계산하도록 수정했다.
@@ -272,7 +312,7 @@
   - 따라서 다음 액션은 bulk backfill이 아니라 incident seed 문서군용 anchor 보강 또는 strong-anchor matching threshold 재조정 검토다.
 - 2026-04-13 fallback anchor + targeted replay 준비:
   - live `triplet-only` 3건의 저장 triplet은 `로그 쓰기 실패`, `OOM 재시작`, `사용자 지연`처럼 일반 개념 위주라 target KB title 직접 매칭이 어렵다는 점을 확인했다.
-  - 그래서 [llamaindex-rag-relations.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/lib/llamaindex-rag-relations.ts:1)에 incident/troubleshooting용 `title-anchor-fallback`을 추가해, triplet anchor가 0건일 때 의미 있는 title token overlap + content similarity가 있는 문서로 `related_to` 1건을 계획하도록 보강했다.
+  - 그래서 [graphrag-relations.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/lib/graphrag-relations.ts:1)에 incident/troubleshooting용 `title-anchor-fallback`을 추가해, triplet anchor가 0건일 때 의미 있는 title token overlap + content similarity가 있는 문서로 `related_to` 1건을 계획하도록 보강했다.
   - [graphrag.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/routes/graphrag.ts:1)는 이제 `titles` 배열과 `onlyUnprocessed`를 받아 이미 indexed 된 문서도 targeted replay할 수 있다.
   - 다음 live 검증은 deploy 후 `/api/ai/graphrag/extract`에 `titles=["CPU 사용량 급증 대응 가이드","디스크 용량 부족 대응","메모리 부족 장애 대응"]`를 넘겨 materialized edge 증가량을 확인하는 단계다.
 - 2026-04-13 production targeted replay 결과:
@@ -304,10 +344,10 @@
   - post-state 기준 `totalTriplets 165 → 168`, `indexedDocs 13 → 18`, `materializedDocs 7 → 11`, `tripletOnlyDocs 6 → 7`, `unprocessed 39 → 34`, `graphEdgesFromExtraction 8 → 12`로 이동했다.
   - 따라서 다음 우선순위는 대량 backfill 재개가 아니라 generic triplet phrase match precision을 먼저 보강하는 것이다. 현재 `metadataMismatches`도 reverse-direction materialization까지 포함한 live graph와 per-run metadata action count를 단순 비교하므로 운영 지표로는 해석에 주의가 필요하다.
 - 2026-04-13 generic phrase precision patch 로컬 검증 결과:
-  - [llamaindex-rag-relations.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/lib/llamaindex-rag-relations.ts:1)에 phrase stopword와 title-token gate를 추가했다. 이제 exact title이 아닌 경우에는 phrase와 candidate title 사이에 의미 있는 token overlap이 없으면 content match만으로 edge를 만들지 않는다.
+  - [graphrag-relations.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/lib/graphrag-relations.ts:1)에 phrase stopword와 title-token gate를 추가했다. 이제 exact title이 아닌 경우에는 phrase와 candidate title 사이에 의미 있는 token overlap이 없으면 content match만으로 edge를 만들지 않는다.
   - 이 보정은 production false-positive 후보였던 `Storage 서버 (storage-nas-01, storage-s3-gateway) 장애 대응 -> Docker 컨테이너 트러블슈팅` 유형을 직접 겨냥한다. source phrase `쓰기 부하가 큰 작업 / 대응 절차`는 title anchor가 없으므로 더 이상 planner를 통과하면 안 된다.
-  - [llamaindex-rag-relations.test.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/lib/llamaindex-rag-relations.test.ts:1)에 generic phrase가 unrelated target으로 연결되지 않는 회귀 테스트를 추가했고, 기존 deterministic edge / fallback / targeted replay 테스트도 유지했다.
-  - 로컬 검증은 `npx vitest run src/lib/llamaindex-rag-relations.test.ts --silent=passed-only`, `npm run type-check`, `npm run test` 기준으로 모두 통과했다.
+  - [graphrag-relations.test.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/lib/graphrag-relations.test.ts:1)에 generic phrase가 unrelated target으로 연결되지 않는 회귀 테스트를 추가했고, 기존 deterministic edge / fallback / targeted replay 테스트도 유지했다.
+  - 로컬 검증은 `npx vitest run src/lib/graphrag-relations.test.ts --silent=passed-only`, `npm run type-check`, `npm run test` 기준으로 모두 통과했다.
   - 따라서 다음 단계는 Cloud Run production에 이 patch를 배포한 뒤, `Storage 서버 ...` 계열 title replay와 `batchSize=3~5` 소량 backfill로 false-positive 재발 여부를 확인하는 것이다.
 - 2026-04-13 precision patch production 배포 및 live verify 결과:
   - `cloud-run/ai-engine/deploy.sh`로 Cloud Build `0ada53ce-56f7-4c0e-ae7e-2c4bd8579060`, revision `ai-engine-00299-fhv`를 배포했고, canonical service URL `https://ai-engine-jdhrhws7ia-an.a.run.app`에서 `/health` `200`을 확인했다.
@@ -327,11 +367,11 @@
   - 처리 대상은 `Load Balancer (lb-main-01) 장애 대응`, `Load Balancer 설정 및 최적화 가이드`, `현재 인프라 역할/트래픽 토폴로지 스냅샷`, `AI 사이드바 응답 지연 점검 순서`였다.
   - 유일한 graph 변화는 `Load Balancer (lb-main-01) 장애 대응 -> Load Balancer 설정 및 최적화 가이드` `related_to` edge 1건 update였고, source는 `title-anchor-fallback`이었다. 이번 batch에서는 신규 false-positive나 신규 insert는 관측되지 않았다.
   - coverage 기준 post-state는 `indexedDocs 18 → 22`, `materializedDocs 10 → 11`, `tripletOnlyDocs 8 → 11`, `unprocessedDocs 34 → 30`, `graphEdgesFromExtraction 11 → 12`였다.
-  - 다만 `/api/ai/graphrag/stats`의 `totalTriplets`는 batch 전후 모두 `167`로 유지됐다. 현재 구현은 [llamaindex-rag-service.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/lib/llamaindex-rag-service.ts:336)에서 `knowledge_relationships` row count를 `totalTriplets`로 반환하므로, 필드 이름과 실제 의미가 어긋난다.
+  - 다만 `/api/ai/graphrag/stats`의 `totalTriplets`는 batch 전후 모두 `167`로 유지됐다. 현재 구현은 [graphrag-service.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/lib/graphrag-service.ts:336)에서 `knowledge_relationships` row count를 `totalTriplets`로 반환하므로, 필드 이름과 실제 의미가 어긋난다.
   - 따라서 next action은 small-batch를 계속 누적하기 전에 `stats.totalTriplets` semantics를 `totalExtractionEdges`로 개명하거나, 실제 stored triplet 합계 집계로 바꾸는 것이다.
 - 2026-04-13 stats semantics fix production 반영 결과:
-  - [llamaindex-rag-service.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/lib/llamaindex-rag-service.ts:1)에서 `totalTriplets`를 `knowledge_base.metadata.triplets` 길이 합계로 재계산하고, extraction-generated edge 수는 `totalExtractionEdges`로 분리했다.
-  - [llamaindex-rag-service.test.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/lib/llamaindex-rag-service.test.ts:1)와 [graphrag.test.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/routes/graphrag.test.ts:1)를 새 응답 shape에 맞게 갱신했고, local 검증은 `npx vitest run src/lib/llamaindex-rag-service.test.ts src/routes/graphrag.test.ts --silent=passed-only`, `npm run type-check`, `npm run test`로 통과했다.
+  - [graphrag-service.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/lib/graphrag-service.ts:1)에서 `totalTriplets`를 `knowledge_base.metadata.triplets` 길이 합계로 재계산하고, extraction-generated edge 수는 `totalExtractionEdges`로 분리했다.
+  - [graphrag-service.test.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/lib/graphrag-service.test.ts:1)와 [graphrag.test.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/routes/graphrag.test.ts:1)를 새 응답 shape에 맞게 갱신했고, local 검증은 `npx vitest run src/lib/graphrag-service.test.ts src/routes/graphrag.test.ts --silent=passed-only`, `npm run type-check`, `npm run test`로 통과했다.
   - Cloud Build `970d7f58-4dc2-45c3-8e97-63631bb8f66d`, revision `ai-engine-00300-zrb` 배포 후 production `/api/ai/graphrag/stats`는 `totalDocuments=52`, `totalTriplets=110`, `totalExtractionEdges=12`, `lastIndexed=2026-04-13T01:24:05.870938+00:00`를 반환했다.
   - live `rag:analyze:graphrag -- --json` 기준 `indexedDocs=22`, `graphEdgesFromExtraction=12`, `avgTripletsPerIndexedDoc=5`였으므로 `totalTriplets=110`은 실제 corpus 상태와 일치한다.
   - 이로써 `/stats` contract는 운영 의미와 다시 맞아졌고, 다음 단계는 별도 stats 정리가 아니라 `unprocessed 30건` small-batch backfill 재개다.
