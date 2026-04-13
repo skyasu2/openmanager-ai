@@ -35,7 +35,27 @@ OpenManager AI의 AI Engine은 **Vercel AI SDK v6 계열** 기반 **multi-agent 
 > **[비용 분리 원칙]**: `Free Tier` 원칙은 **프로덕션 인프라/API 비용**에만 적용됩니다.
 > 개발 환경 (Claude Code 등 AI 코딩 에이전트)에서는 품질 확보를 위해 유료 토큰을 사용합니다.
 
-## 2. System Architecture
+## 2. Architectural Philosophy & Framework Analysis (2026 Trends)
+
+OpenManager AI Engine은 2025-2026년 AI 업계의 핵심 트렌드인 **"Frameworkless AI"**와 **"Stateless Handoff (Swarm 패턴)"** 철학을 완벽하게 구현한 엔터프라이즈 아키텍처입니다. 
+복잡한 추상화 도구(LangChain, CrewAI)를 배제하고, 통제 가능한 원시 함수(Vercel AI SDK)만으로 구성하여 성능, 비용, 운영 안정성(SRE)을 극대화했습니다.
+
+### 2.1. Frameworkless 전략 (Why not LangChain / LangGraph?)
+- **추상화의 저주 회피**: LangChain과 LangGraph는 `Chain`, `AgentExecutor`, 상태 그래프(Graph) 등 방대한 객체로 이루어져 있어, 프롬프트 변형 과정을 추적하거나 디버깅하기가 매우 어렵습니다.
+- **명시적 통제권 확보**: 본 시스템은 Vercel AI SDK v6의 핵심 함수(`generateText`, `generateObject`)만을 블록처럼 조립합니다. 라우팅 로직(`orchestrator-routing.ts`)이 타입스크립트 기반으로 명시적으로 제어되므로, 디버깅 직관성과 프롬프트 주도권 측면에서 압도적으로 유리합니다.
+
+### 2.2. 단방향 라우팅 구조 (Why not CrewAI / AutoGen?)
+- **상태 공유의 낭비 방지**: CrewAI나 AutoGen과 같은 대화형(Conversational) 멀티 에이전트 프레임워크는 에이전트 간 "토론"을 통해 상태를 공유하므로, 지연 시간(Latency) 증가와 심각한 토큰 비용 폭발을 유발합니다.
+- **비용 최적화(Free Tier 가드룰) 준수**: 서버 모니터링/인프라 제어 도메인에서는 에이전트 간의 수다보다 정확한 툴 실행이 중요합니다. 따라서 **"Orchestrator(의도 파악) → 단일 전문 Agent(실행)"**의 단방향 트리 구조를 채택하여, 예측 불가능한 추론 반복을 막고 클라우드 과금을 원천 방어합니다.
+
+### 2.3. OpenAI Swarm 패턴의 자체 구현
+- **가벼운 제어권 이관 (Stateless Handoff)**: 상태를 무겁게 유지하지 않고, `generateObject`로 의도를 파악한 후 전문 에이전트에게 필요한 컨텍스트만 담아 제어권을 완전히 넘깁니다(Handoff). 이는 최근 OpenAI가 주도하는 경량 멀티 에이전트 워크플로우(Swarm / Agents SDK)의 핵심 철학과 100% 일치합니다.
+
+### 2.4. Serverless의 한계 극복 (Next.js ↔ Cloud Run 분리)
+- **Vercel Edge Timeout 우회**: 일반적인 Vercel AI SDK 튜토리얼은 `app/api/chat` 내부에서 AI 연산을 처리하지만, 이는 Vercel Serverless의 짧은 실행 시간 제한(Timeout)에 취약합니다.
+- **안정적인 Long-running Task 보장**: 무거운 Agentic Workflow나 RAG 검색 연산을 Google Cloud Run(`ai-engine`)으로 분리 위임하고, Next.js는 BFF(Backend For Frontend) 프록시 역할만 수행하도록 설계하여, 완벽한 스트리밍 경험과 엔터프라이즈급 운영 안정성을 동시에 확보했습니다.
+
+## 3. System Architecture
 
 ### Current Request Flow
 
