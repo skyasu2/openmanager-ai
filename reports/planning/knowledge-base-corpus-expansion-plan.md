@@ -1,6 +1,6 @@
 # Knowledge Base Corpus Expansion Plan
 
-- 상태: 1차 corpus 반영 완료, extraction legacy 제거, graph telemetry 관찰 대기
+- 상태: 1차 corpus 반영 완료, extraction legacy 제거, sampled graph telemetry 관찰 대기
 - 작성일: 2026-04-12
 - 목표: `knowledge_base`를 무작정 늘리거나 줄이지 않고, 현재 RAG governance 한도 안에서 corpus 품질을 유지하면서 실제 graph traversal 가치가 있는지 계측으로 판단한다.
 
@@ -30,7 +30,7 @@
 - RAG core는 유지한다. 현재 retrieval 경로는 embedding + pgVector + BM25 + `knowledge_relationships` traversal 조합이다.
 - auto-extraction/backfill은 현재 repo 기준 운영 경로에서 중단됐고, extraction legacy 구현도 제거됐다. 관계 업데이트의 공식 경로는 `seed-knowledge-base.ts`와 기존 수동 관계 데이터다.
 - production에서 `sourceType="graph"`가 실제 응답에 포함된 사례는 이미 확인됐다. 따라서 graph traversal은 아직 제거 대상이 아니다.
-- 최신 cleanup commit `bc1fdc472`는 2026-04-13 KST에 revision `ai-engine-00303-mfh`로 production 재배포됐다.
+- 최신 관찰 기준 revision은 `ai-engine-00304-w5n`이다. 이 revision에는 sampled GraphRAG structured telemetry와 `GRAPH_RAG_TELEMETRY_SAMPLE_RATE=0.1` env가 포함돼 있다.
 - deploy 직후 live baseline:
   - `totalDocuments=52`
   - `totalTriplets=150`
@@ -42,11 +42,12 @@
 - telemetry baseline:
   - topology probe: `toolsCalled=["searchKnowledgeBase","searchKnowledgeBase","finalAnswer"]`, `ragSources=vector 6 + graph 2`
   - incident probe: `toolsCalled=["searchKnowledgeBase","finalAnswer"]`, `ragSources=vector 1 + graph 1`
-  - 결론: graph source는 최신 cleanup 배포 후에도 실제 응답에 남아 있다. 다만 topology 질의의 duplicate tool call 표시는 계속 보인다.
+  - sampled runtime telemetry: `knowledge-search-tool.ts`가 `graph_rag_search` structured log를 warning 레벨로 샘플링 출력한다. payload는 raw query 대신 fingerprint와 `queryCategory`, `graphResults`, `vectorResults`, `cacheHit`, `totalFound`를 담는다.
+  - 결론: graph source는 최신 cleanup 배포 후에도 실제 응답에 남아 있고, 이제 probe 외에도 sampled Cloud Logging 경로로 usage를 누적 관찰할 수 있다. 다만 topology 질의의 duplicate tool call 표시는 계속 보인다.
 
 ### 남은 작업
 
-1. 2~4주 동안 `toolsCalled`, `ragSources.sourceType`, query category를 같이 기록해 graph hit-rate와 precision을 관찰한다.
+1. 2~4주 동안 `toolsCalled`, `ragSources.sourceType`, 그리고 sampled `graph_rag_search` 로그의 `queryCategory`, `graphResults`, `cacheHit`, `totalFound`를 같이 기록해 graph hit-rate와 precision을 관찰한다.
 2. telemetry 결과를 바탕으로 `graphrag-graph.ts`/`knowledge_relationships` traversal 유지 여부를 판단한다.
 3. duplicate `searchKnowledgeBase` tool count가 latency/observability에 실제 부담을 남기면, tool invocation dedupe를 별도 최적화로 검토한다.
 

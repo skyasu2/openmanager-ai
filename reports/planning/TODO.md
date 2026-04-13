@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-13 KST (GraphRAG extraction legacy 제거 반영 완료)
+**Last Updated**: 2026-04-13 KST (GraphRAG sampled telemetry 배포 완료)
 
 ## Active Tasks
 
@@ -16,10 +16,18 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| P3: graph traversal 유지/제거 판단 | Low | revision `ai-engine-00303-mfh` 기준 baseline은 다시 확보됐다. 이제 2~4주 동안 `toolsCalled`, `ragSources.sourceType`, query category를 함께 기록해 graph hit-rate와 precision이 실제로 유지되는지 관찰한다. 낮으면 `graphrag-graph.ts`/`knowledge_relationships` traversal 제거를 검토한다. |
+| P3: graph traversal 유지/제거 판단 | Low | revision `ai-engine-00304-w5n` 기준으로 sampled structured telemetry가 배포됐다. 이제 2~4주 동안 `graph_rag_search` 로그의 `queryCategory`, `graphResults`, `cacheHit`, `totalFound`를 기준으로 graph hit-rate와 precision을 관찰한다. 낮으면 `graphrag-graph.ts`/`knowledge_relationships` traversal 제거를 검토한다. |
 | P3: topology 질의 duplicate tool invocation 완전 제거 여부 판단 | Low | production에서는 여전히 `toolsCalled=["searchKnowledgeBase","searchKnowledgeBase","finalAnswer"]`가 보인다. 현재 cache로 backend 재실행 비용은 줄였으므로 correctness 이슈는 아니고, latency/observability에 실제 부담이 남는지 본 뒤 추가 dedupe를 결정한다. |
 | P3: Storybook `experimentalComponentsManifest` stable 승격 여부 재확인 | Low | 2026-04-12 재확인 결과 `storybook`/`@storybook/nextjs-vite` stable dist-tag는 둘 다 아직 `10.2.10`, `next`는 `10.3.0-alpha.6`. `.storybook/main.ts`의 feature flag는 그대로 유지. |
 | P3: `src/types/README.md` 전용 타입 SSOT 문서 필요성 재평가 | Low | 현재 전용 README는 없음. 타입 정제 작업은 완료됐고, 신규 문서 추가는 실제 drift가 다시 생길 때만 검토. |
+
+### Completed (2026-04-13 #86)
+- [x] Cloud Run runtime observability gap 식별 — production `LOG_LEVEL=warn` 때문에 기존 `logger.info` 기반 GraphRAG 사용 로그는 실제 관찰 지표로 남지 않는다는 점을 확인했다.
+- [x] sampled structured telemetry 추가 — [knowledge-search-tool.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/tools-ai-sdk/reporter-tools/knowledge-search-tool.ts:1)에 `graph_rag_search` structured log를 추가했다. raw query 대신 fingerprint만 남기고, `queryCategory`, `graphResults`, `vectorResults`, `cacheHit`, `totalFound`를 함께 기록한다.
+- [x] production sample rate 명시 — [deploy.sh](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/deploy.sh:1)에 `GRAPH_RAG_TELEMETRY_SAMPLE_RATE=0.1`을 추가해 Cloud Run production에서도 비용을 제어한 관찰이 가능하도록 했다.
+- [x] 로컬 검증 완료 — `cd cloud-run/ai-engine && npm run type-check`, `cd cloud-run/ai-engine && npm run test` 기준 통과했고, `knowledge-search-tool` 테스트에 production warn telemetry 계약을 추가했다.
+- [x] Cloud Run production 배포 완료 — Cloud Build `3a846777-c333-4dd8-ac97-b40109d66a95`, revision `ai-engine-00304-w5n` 배포 후 `/health` `200`과 service env의 `GRAPH_RAG_TELEMETRY_SAMPLE_RATE=0.1` 반영을 확인했다.
+- [x] live probe 재확인 — incident supervisor 질의는 `toolsCalled=["searchKnowledgeBase"]`, `ragSources` 3건 모두 `sourceType="graph"`로 성공 응답했다. 다만 sampled telemetry는 즉시성상 이번 턴 한정 질의에서 아직 로그 매치가 나오지 않았고, 이는 `0.1` sample miss로 해석한다.
 
 ### Completed (2026-04-13 #85)
 - [x] 외부 best-practice 비교 완료 — GraphRAG 공식 문서의 indexing/query 분리 관점과 RFC 9110의 `410 Gone` semantics를 현재 runtime 구조와 대조했다. 결론은 traversal runtime은 유지하고, disabled extraction runtime은 제거하는 쪽이 맞다는 것이었다.
