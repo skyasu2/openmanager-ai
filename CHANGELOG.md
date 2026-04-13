@@ -2,6 +2,67 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.10](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.9...v8.11.10) (2026-04-13)
+
+
+### Features
+
+* **ai:** add assistant message detail dialog ([49cc1c1](https://gitlab.com/skyasu2/openmanager-ai/-/commit/49cc1c1a8c32e8a70ff8cd68a7790d0989b56234))
+* **graphrag:** add sampled runtime telemetry ([b3088fd](https://gitlab.com/skyasu2/openmanager-ai/-/commit/b3088fda335a571d85347b18e95bc7dd74f0fb82))
+* **graphrag:** consolidate corpus tooling and retrieval routing ([bc1fdc4](https://gitlab.com/skyasu2/openmanager-ai/-/commit/bc1fdc472d95bd3137eb7ac15b871b05ea99f643))
+
+
+### Bug Fixes
+
+* **ai-engine:** stabilize topology variant routing and close QA gap ([ad06818](https://gitlab.com/skyasu2/openmanager-ai/-/commit/ad068188eb6e0576e6c5844cc2f06d8d722ae4c6))
+* **ai:** preserve detail dialog for structured-only responses ([d7c4a0c](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d7c4a0c39e9250d1ba2d13a281a4a49351d89388))
+* **ai:** tighten message detail dialog edge cases ([1c0b6e0](https://gitlab.com/skyasu2/openmanager-ai/-/commit/1c0b6e0788136b84938608916811bbf7317a0244))
+* **auth:** allow 127 loopback oauth redirects ([d2780b9](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d2780b939ed9efd58b7dac36e0ad025ac1ecf5a0))
+* **auth:** tighten email OTP expiry to 15 min ([d1298b7](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d1298b78f5d8eb852999b8e2d1c98ce5c8789afd))
+* **next:** normalize allowed dev origins ([3de9be7](https://gitlab.com/skyasu2/openmanager-ai/-/commit/3de9be78d18c36c9a771a0c13d773c2756613e21))
+* **security:** finalize rate limiter fallback hardening ([50200d6](https://gitlab.com/skyasu2/openmanager-ai/-/commit/50200d619460084c2e3bdcaa70a199ba0242464a))
+* **supabase:** advance local bootstrap replay ([8d417ba](https://gitlab.com/skyasu2/openmanager-ai/-/commit/8d417ba616b958a17bb763ff221ae0f2d70783f0))
+* **supabase:** align local auth redirect urls ([383e2ca](https://gitlab.com/skyasu2/openmanager-ai/-/commit/383e2cac62fe2ec290983d47a810d0073b8f95f8))
+* **supabase:** align seed path with repo layout ([c71bda7](https://gitlab.com/skyasu2/openmanager-ai/-/commit/c71bda727788cc6ebae26a5c91463ba49f292cde))
+* **supabase:** drop legacy ai_user_feedback table ([da3506e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/da3506e49a1d2d7b4fc2187a50bbc24da8ae96c2))
+* **supabase:** drop legacy create vector table helper ([03f5eca](https://gitlab.com/skyasu2/openmanager-ai/-/commit/03f5eca10b76119599a057d189f1b4ae036632ac))
+* **supabase:** drop legacy server logs ([2d98f55](https://gitlab.com/skyasu2/openmanager-ai/-/commit/2d98f552e0c9fc329834db899854a7d9184e39fe))
+* **supabase:** drop orphan functions batch2 ([c791c76](https://gitlab.com/skyasu2/openmanager-ai/-/commit/c791c76cfaea152b5cb0602ab94c30bc3e855edf))
+* **supabase:** drop orphan legacy functions ([f81a583](https://gitlab.com/skyasu2/openmanager-ai/-/commit/f81a583c14dd93663ae2412a6a09fe30b93881d6))
+* **supabase:** harden rls and trim redundant indexes ([494fa95](https://gitlab.com/skyasu2/openmanager-ai/-/commit/494fa95106508b0f7c390e4cea5b5392fb613383))
+* **supabase:** match local postgres major version ([d33dd5e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d33dd5e9b5b49a96c63d17558c4a43a0474f0cdd))
+* **supabase:** restore approval history table ([fe07d9b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/fe07d9b5ea2717da09b6055d72eee542f1f8973d))
+* **supabase:** restore command_vectors bootstrap ([c915705](https://gitlab.com/skyasu2/openmanager-ai/-/commit/c91570551d73064e6b7e9f0701fb296b8aa8358b))
+* **supabase:** restore security audit logs minimal migration ([68b6d93](https://gitlab.com/skyasu2/openmanager-ai/-/commit/68b6d9302815c4c59737f2fbf7454786a04bce21))
+* **supabase:** stub out legacy migration and seed for local bootstrap parity ([a6d196d](https://gitlab.com/skyasu2/openmanager-ai/-/commit/a6d196da13367fab282198d657f636e83b305051))
+* **supabase:** unblock local bootstrap vector chain ([1514429](https://gitlab.com/skyasu2/openmanager-ai/-/commit/15144296dca09504fa75fe94a4bdca965af82dfd))
+* **ui:** update misleading MCP connection messages to reflect AI engine initialization ([7f1ef61](https://gitlab.com/skyasu2/openmanager-ai/-/commit/7f1ef6168ae5e7bc5591f3f05a940e0953daa9a8))
+
+
+### Performance Improvements
+
+* **supabase:** add command vectors hnsw index ([50013a4](https://gitlab.com/skyasu2/openmanager-ai/-/commit/50013a44016ff027d848761c3c9e51013b3053e1))
+
+
+### Code Refactoring
+
+* **ai-engine:** strengthen AgentName type safety + consolidate playwright config ([8ff675e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/8ff675e19bd6ffc0ef53cf77a8e08b3e28cb5595))
+* **graphrag:** remove extraction runtime legacy ([d823fa5](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d823fa55bbc06b25571180e151d88432987c2983))
+* **skills:** unify agent skill names — remove openmanager- prefix [Gemini] This commit was generated and applied by the Gemini AI agent. ([abf4eb3](https://gitlab.com/skyasu2/openmanager-ai/-/commit/abf4eb3539cfe51c32d7bc61ca3ba7876a23cf66))
+
+
+### Tests
+
+* **ai-engine:** make topology fixture path CI-safe ([fe1e2cb](https://gitlab.com/skyasu2/openmanager-ai/-/commit/fe1e2cb4332262120af39dc4ca7888d5f36ceafc))
+* **qa:** prune redundant retained evidence ([135a0d2](https://gitlab.com/skyasu2/openmanager-ai/-/commit/135a0d215cf4cd53eca39751bf95ebe1703c62d2))
+* **qa:** record approval history runtime smoke ([35b55f2](https://gitlab.com/skyasu2/openmanager-ai/-/commit/35b55f2d2d88726eee4e7e95a509bae53e78470c))
+* **qa:** record guest login audit smoke ([3de968b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/3de968b5b12fa8927ee68ec462a1ad3d9abde779))
+* **qa:** record local ai detail dialog verification ([e463e08](https://gitlab.com/skyasu2/openmanager-ai/-/commit/e463e089b99e5f6d2c67aa07160b8146e5ea89ad))
+* **qa:** record local oauth loopback smoke ([a217f1b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/a217f1b7b9003bae91cf6029123c7211fb75c303))
+* **qa:** record post-graphrag rollout verification ([baf4060](https://gitlab.com/skyasu2/openmanager-ai/-/commit/baf40601059849ca16369417157b9c57756346e7))
+* **qa:** record security audit route smoke ([691a727](https://gitlab.com/skyasu2/openmanager-ai/-/commit/691a7271f7e29114737c293469e6ea8dff501ebc))
+* **qa:** record vercel supabase impact run ([bc06fe3](https://gitlab.com/skyasu2/openmanager-ai/-/commit/bc06fe3f16555bf7c2b34163644dbf44d53d675c))
+
 ## [8.11.9](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.8...v8.11.9) (2026-04-10)
 
 
