@@ -1,4 +1,5 @@
 import { tool } from 'ai';
+import { createHash } from 'node:crypto';
 import { z } from 'zod';
 import { embedText, searchWithEmbedding } from '../../lib/embedding';
 import { hybridGraphSearch } from '../../lib/graphrag-service';
@@ -20,6 +21,7 @@ import {
 import type { RAGResultItem, ToolSeverityFilter } from './knowledge-types';
 
 const KNOWLEDGE_SEARCH_CACHE_TTL_MS = 30_000;
+const DEFAULT_PRODUCTION_GRAPHRAG_TELEMETRY_SAMPLE_RATE = 0.1;
 
 type KnowledgeSearchInput = {
   query: string;
@@ -62,6 +64,75 @@ const knowledgeSearchCache = new Map<
 
 function normalizeSearchQuery(query: string): string {
   return query.trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
+function buildQueryFingerprint(query: string): string {
+  return createHash('sha256')
+    .update(normalizeSearchQuery(query))
+    .digest('hex')
+    .slice(0, 12);
+}
+
+function getGraphRAGTelemetrySampleRate(): number {
+  const raw = process.env.GRAPH_RAG_TELEMETRY_SAMPLE_RATE;
+  if (!raw) {
+    return process.env.NODE_ENV === 'production'
+      ? DEFAULT_PRODUCTION_GRAPHRAG_TELEMETRY_SAMPLE_RATE
+      : 1;
+  }
+
+  const parsed = Number(raw);
+  if (!Number.isFinite(parsed)) {
+    return process.env.NODE_ENV === 'production'
+      ? DEFAULT_PRODUCTION_GRAPHRAG_TELEMETRY_SAMPLE_RATE
+      : 1;
+  }
+
+  return Math.min(1, Math.max(0, parsed));
+}
+
+function shouldEmitGraphRAGTelemetry(): boolean {
+  return Math.random() < getGraphRAGTelemetrySampleRate();
+}
+
+function emitGraphRAGTelemetry(
+  input: Pick<
+    KnowledgeSearchInput,
+    'query' | 'category' | 'useGraphRAG' | 'fastMode' | 'includeWebSearch'
+  >,
+  result: KnowledgeSearchResult,
+  options: { cacheHit: boolean }
+): void {
+  if (!shouldEmitGraphRAGTelemetry()) {
+    return;
+  }
+
+  const payload = {
+    event: 'graph_rag_search',
+    component: 'reporter_tools',
+    queryFingerprint: buildQueryFingerprint(input.query),
+    queryCategory: input.category ?? 'all',
+    useGraphRAG: input.useGraphRAG ?? true,
+    fastMode: input.fastMode ?? true,
+    includeWebSearch: input.includeWebSearch ?? false,
+    cacheHit: options.cacheHit,
+    success: result.success,
+    source: result._source,
+    totalFound: result.totalFound,
+    vectorResults: result.graphStats?.vectorResults ?? 0,
+    graphResults: result.graphStats?.graphResults ?? 0,
+    webResults: result.graphStats?.webResults ?? 0,
+    hydeApplied: result.hydeApplied ?? false,
+    reranked: result.reranked ?? false,
+    webSearchTriggered: result.webSearchTriggered ?? false,
+  };
+
+  if (process.env.NODE_ENV === 'production') {
+    logger.warn(payload, '[Reporter Tools] GraphRAG telemetry');
+    return;
+  }
+
+  logger.info(payload, '[Reporter Tools] GraphRAG telemetry');
 }
 
 function buildKnowledgeSearchCacheKey(input: KnowledgeSearchInput): string {
@@ -177,7 +248,14 @@ export const searchKnowledgeBase = tool({
       logger.info(
         `[Reporter Tools] GraphRAG cache hit: ${normalizeSearchQuery(query)}`,
       );
-      return cached;
+      return cached.then((result) => {
+        emitGraphRAGTelemetry(
+          { query, category, useGraphRAG, fastMode, includeWebSearch },
+          result,
+          { cacheHit: true }
+        );
+        return result;
+      });
     }
 
     const executionPromise = (async (): Promise<KnowledgeSearchResult> => {
@@ -396,7 +474,7 @@ export const searchKnowledgeBase = tool({
               maxTotalResults,
             );
 
-            return {
+            const response = {
               success: true,
               results: balancedResults,
               totalFound: balancedResults.length,
@@ -415,6 +493,12 @@ export const searchKnowledgeBase = tool({
               fastMode,
               webSearchTriggered,
             };
+            emitGraphRAGTelemetry(
+              { query, category, useGraphRAG, fastMode, includeWebSearch },
+              response,
+              { cacheHit: false }
+            );
+            return response;
           }
         }
 
@@ -442,13 +526,19 @@ export const searchKnowledgeBase = tool({
           5,
         );
 
-        return {
+        const response = {
           success: true,
           results: balancedVectorResults,
           totalFound: balancedVectorResults.length,
           _source: 'Supabase pgvector (Vector Only)',
           hydeApplied,
         };
+        emitGraphRAGTelemetry(
+          { query, category, useGraphRAG, fastMode, includeWebSearch },
+          response,
+          { cacheHit: false }
+        );
+        return response;
       } catch (error) {
         knowledgeSearchCache.delete(cacheKey);
         logger.error('[Reporter Tools] RAG search error:', error);

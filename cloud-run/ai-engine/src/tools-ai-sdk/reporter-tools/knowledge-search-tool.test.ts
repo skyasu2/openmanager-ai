@@ -52,6 +52,7 @@ import {
   resetKnowledgeSearchCacheForTest,
   searchKnowledgeBase,
 } from './knowledge-search-tool';
+import { logger } from '../../lib/logger';
 
 describe('searchKnowledgeBase', () => {
   beforeEach(() => {
@@ -168,5 +169,62 @@ describe('searchKnowledgeBase', () => {
     expect(first).toEqual(second);
     expect(mockEmbedText).toHaveBeenCalledTimes(1);
     expect(mockHybridGraphSearch).toHaveBeenCalledTimes(1);
+  });
+
+  it('emits sampled structured telemetry for production GraphRAG usage', async () => {
+    const previousNodeEnv = process.env.NODE_ENV;
+    const previousSampleRate = process.env.GRAPH_RAG_TELEMETRY_SAMPLE_RATE;
+    process.env.NODE_ENV = 'production';
+    process.env.GRAPH_RAG_TELEMETRY_SAMPLE_RATE = '1';
+    vi.spyOn(Math, 'random').mockReturnValue(0);
+
+    mockGetSupabaseClient.mockResolvedValue({} as never);
+    mockEmbedText.mockResolvedValue([0.1, 0.2, 0.3]);
+    mockHybridGraphSearch.mockResolvedValue([
+      {
+        id: 'kb-1',
+        title: 'Redis OOM 대응 가이드',
+        content: '메모리 사용률 임계치 초과 시 ...',
+        score: 0.93,
+        sourceType: 'vector',
+        hopDistance: 0,
+        category: 'incident',
+      },
+      {
+        id: 'kb-2',
+        title: 'Redis 캐시 정책',
+        content: 'eviction-policy 설정 확인',
+        score: 0.88,
+        sourceType: 'graph',
+        hopDistance: 1,
+        category: 'troubleshooting',
+      },
+    ]);
+
+    await searchKnowledgeBase.execute({
+      query: 'Redis OOM 원인 분석',
+      category: 'incident',
+    });
+
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        event: 'graph_rag_search',
+        component: 'reporter_tools',
+        queryCategory: 'incident',
+        cacheHit: false,
+        success: true,
+        vectorResults: 1,
+        graphResults: 1,
+      }),
+      '[Reporter Tools] GraphRAG telemetry',
+    );
+
+    vi.restoreAllMocks();
+    process.env.NODE_ENV = previousNodeEnv;
+    if (previousSampleRate === undefined) {
+      delete process.env.GRAPH_RAG_TELEMETRY_SAMPLE_RATE;
+    } else {
+      process.env.GRAPH_RAG_TELEMETRY_SAMPLE_RATE = previousSampleRate;
+    }
   });
 });

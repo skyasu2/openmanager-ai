@@ -474,7 +474,7 @@ DEPLOY_CMD=(
   --cpu-boost
   --cpu-throttling
   --no-session-affinity
-  --set-env-vars "NODE_ENV=production,BUILD_SHA=${SHORT_SHA},DEFAULT_ORIGIN=${DEFAULT_ORIGIN},ALLOWED_ORIGINS=${ALLOWED_ORIGINS}"
+  --set-env-vars "NODE_ENV=production,BUILD_SHA=${SHORT_SHA},DEFAULT_ORIGIN=${DEFAULT_ORIGIN},ALLOWED_ORIGINS=${ALLOWED_ORIGINS},GRAPH_RAG_TELEMETRY_SAMPLE_RATE=0.1"
   --set-secrets "SUPABASE_CONFIG=supabase-config:latest,AI_PROVIDERS_CONFIG=ai-providers-config:latest,KV_CONFIG=kv-config:latest,CLOUD_RUN_API_SECRET=cloud-run-api-secret:latest,LANGFUSE_CONFIG=langfuse-config:latest"
   --update-labels "version=${SHORT_SHA},framework=ai-sdk-v6,tier=free,registry=artifact"
 )
