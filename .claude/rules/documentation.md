@@ -8,12 +8,27 @@
 
 | 범위 | 한도 | 비고 |
 |------|:----:|------|
-| 전체 활성 문서 | 60개 | `docs/archived/` 제외 |
-| reference/architecture/* | 22개 | 아키텍처 문서 |
-| development/* | 22개 | vibe-coding/ 포함 |
-| guides/* | 10개 | 운영 지침 |
-| troubleshooting/* | 5개 | 문제 해결 |
+| 전체 활성 문서 | 80개 | `docs/archived/` 제외 |
+| reference/architecture/* | 28개 | 아키텍처 문서 |
+| development/* | 28개 | vibe-coding/ 포함 |
+| guides/* | 14개 | 운영 지침 |
+| troubleshooting/* | 7개 | 문제 해결 |
 | root (docs/) | 5개 | README, QUICK-START 등 |
+
+## 1-1) 파일 길이 기준
+
+> 기준: Diataxis 완결성 원칙 + Google/Microsoft/MDN 실제 운영 관행
+
+| 기준 | 줄 수 | 처리 |
+|------|------:|------|
+| 정상 | ≤ 800 | 무조건 허용 |
+| 경고 | 801 ~ 1500 | 허용. 단 단일 주제인지 확인 |
+| 분할 검토 | > 1500 | 독자·작업 단위가 다르면 분할, 같으면 유지 |
+
+**분할 판단 기준**: 줄 수가 아니라 **별개 독자 또는 별개 작업** 여부.
+- How-to/Tutorial: 800줄 이하 권장 (학습 흐름 유지)
+- Reference/Architecture: 1500줄까지 단일 파일 허용 (완결성 우선)
+- 분할 시 기존 파일에 링크 유지 필수
 
 ## 2) Metadata Schema (Changed Docs Hard Gate)
 

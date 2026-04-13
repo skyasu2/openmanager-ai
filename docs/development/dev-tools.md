@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-04-12
+> Last reviewed: 2026-04-13
 > Canonical: docs/development/dev-tools.md
 > Tags: tooling,nodejs,biome
 
@@ -464,6 +464,62 @@ GROQ_API_KEY=
 # Cloud Run
 CLOUD_RUN_AI_URL=
 ```
+
+## Cloud Run AI Engine 직접 접근 (WSL)
+
+로컬 WSL 환경에서 Claude Code / Codex 등의 도구가 production Cloud Run API를 직접 호출할 수 있습니다.
+
+### 인증 구조
+
+```
+Cloud Run: --allow-unauthenticated (GCP IAM 불필요)
+    ├─ /health, /warmup, /ready  → 인증 없이 접근 가능
+    └─ /api/*                    → x-api-key 헤더 필수 (CLOUD_RUN_API_SECRET)
+```
+
+### 기본 접근 패턴
+
+```bash
+# 환경 변수 로드 (.env.local은 신뢰 가능한 로컬 파일로 가정)
+set -a
+source /mnt/d/dev/openmanager-ai/.env.local >/dev/null 2>&1
+set +a
+
+AI_ENGINE_URL="${CLOUD_RUN_AI_URL:-https://ai-engine-490817238363.asia-northeast1.run.app}"
+
+# 헬스 체크 (인증 불필요)
+curl -s "${AI_ENGINE_URL}/health" | jq .
+
+# GraphRAG 통계 조회
+curl -s \
+  -H "x-api-key: ${CLOUD_RUN_API_SECRET}" \
+  "${AI_ENGINE_URL}/api/ai/graphrag/stats" | jq .
+
+# AI 응답 직접 테스트
+curl -s \
+  -H "x-api-key: ${CLOUD_RUN_API_SECRET}" \
+  -H "Content-Type: application/json" \
+  -d '{"messages":[{"role":"user","content":"Redis 메모리 부족 해결법"}],"enableRAG":true}' \
+  "${AI_ENGINE_URL}/api/ai/supervisor"
+```
+
+### 주요 엔드포인트
+
+| 엔드포인트 | 인증 | 용도 |
+|------------|:----:|------|
+| `GET /health` | 없음 | 서비스 상태 + provider 활성 여부 |
+| `GET /api/ai/graphrag/stats` | 필요 | RAG corpus 현황 |
+| `GET /api/ai/graphrag/related/:id` | 필요 | 문서 관계 탐색 |
+| `POST /api/ai/supervisor` | 필요 | AI 응답 end-to-end 테스트 |
+| `POST /api/ai/graphrag/extract` | 필요 | **410 반환** — 비활성화됨 |
+
+### Claude Code / Codex에서 활용
+
+- **Claude Code**: Bash tool로 `curl` 직접 실행 가능
+- **Codex**: WSL 터미널에서 동일한 curl 명령 사용
+- **Playwright MCP**: `/health` 브라우저 접근 가능, API 호출은 curl 우선
+
+> **주의**: `CLOUD_RUN_API_SECRET`은 `.env.local`에만 존재하며 Git에 포함되지 않습니다. AI 도구가 이 값을 로그/응답에 출력하지 않도록 주의하고, `grep | cut` 같은 단순 파싱 대신 환경 변수 로드를 우선하세요.
 
 ## 관련 문서
 

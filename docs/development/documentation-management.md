@@ -23,8 +23,9 @@
 ## 운영 규칙
 
 1. 우선순위: 병합 > 기존 문서 확장 > 신규 생성
-2. 활성 문서 예산: 총 60개(`docs/archived/` 제외)
-   - Scope 한도: `reference/architecture 22`, `development 22(= vibe-coding 포함)`, `guides 10`, `troubleshooting 5`, `root 5`
+2. 활성 문서 예산: 총 80개(`docs/archived/` 제외)
+   - Scope 한도: `reference/architecture 28`, `development 28(= vibe-coding 포함)`, `guides 14`, `troubleshooting 7`, `root 5`
+   - 파일 길이 기준: How-to/Tutorial은 800줄 이하 권장, Reference/Architecture는 1500줄까지 단일 파일 허용
 3. 메타데이터(변경 문서 Hard gate):
    - 필수: `Owner`, `Status`, `Doc type`, `Last reviewed`
    - 권장: `Canonical`, `Tags`
@@ -57,7 +58,7 @@
 5. CI(`docs-quality.yml`)에서 schedule 제외 이벤트는 strict gate 활성화
 6. Codex/Claude 문서관리 skill 내용을 SSOT 기준으로 동기화
 7. `docs-inventory.md` → `reports/docs/` 이동: 자동 생성 스냅샷은 거버넌스 문서가 아닌 리포트로 분류 (`.gitignore` whitelist 포함)
-8. 예산 한도 재조정 (`reference/architecture 25→22`, `development 20→22`, `guides 12→10`): 과밀 영역 완화 + 과잉 여유 회수, 총 60개 유지
+8. 예산 한도 재조정 (`reference/architecture 22→28`, `development 22→28`, `guides 10→14`, `troubleshooting 5→7`): 활성 문서 증가와 운영 현실을 반영해 예산을 상향하고, root 5개 제한은 유지
 
 ## 자동화 실행 규약
 

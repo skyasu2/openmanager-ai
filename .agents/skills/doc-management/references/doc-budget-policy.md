@@ -4,11 +4,11 @@
 
 | Scope | Limit | Notes |
 |-------|:-----:|-------|
-| Total active (excl. archived) | 60 | Hard limit |
-| reference/architecture/* | 22 | Only `docs/reference/architecture/**` |
-| development/* | 22 | Dev guides + Vibe Coding docs (`development/vibe-coding/**`) |
-| guides/* | 10 | Standards, testing, AI |
-| troubleshooting/* | 5 | Issue resolution |
+| Total active (excl. archived) | 80 | Hard limit |
+| reference/architecture/* | 28 | Only `docs/reference/architecture/**` |
+| development/* | 28 | Dev guides + Vibe Coding docs (`development/vibe-coding/**`) |
+| guides/* | 14 | Standards, testing, AI |
+| troubleshooting/* | 7 | Issue resolution |
 | root (docs/) | 5 | README, QUICK-START |
 
 ## Diataxis Classification (Required)

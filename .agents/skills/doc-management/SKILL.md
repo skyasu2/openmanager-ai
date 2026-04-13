@@ -14,12 +14,12 @@ Enforce Doc Budget Policy to prevent document sprawl.
 1. Scan active documents.
    - Preferred: `npm run docs:budget`
    - `find docs/ -name "*.md" -not -path "*/archived/*" | wc -l`
-   - Compare against budget: **60 max total**
+   - Compare against budget: **80 max total**
    - `find docs/ -name "*.md" -not -path "*/archived/*" | sed 's|docs/||' | cut -d'/' -f1 | sort | uniq -c | sort -rn`
 
 2. Check per-directory budgets.
-   - reference/architecture/*: 22 | development/*: 22 (includes vibe-coding/*) | guides/*: 10
-   - troubleshooting/*: 5 | root: 5
+   - reference/architecture/*: 28 | development/*: 28 (includes vibe-coding/*) | guides/*: 14
+   - troubleshooting/*: 7 | root: 5
    - Flag any directory over budget
 
 3. Detect duplicate candidates.
@@ -60,7 +60,7 @@ Enforce Doc Budget Policy to prevent document sprawl.
 
 ```text
 Doc Budget Report
-- Total active: XX / 60
+- Total active: XX / 80
 - Over-budget dirs: [none | list]
 - Duplicate candidates: [none | list]
 - Stale (90d+): [count] files
