@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-12 16:09:09 KST
+> Generated at: 2026-04-13 17:29:28 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 271 |
+| Total Recorded Runs | 272 |
 | Total Runs (Counted) | 240 |
-| Non-counted Runs | 31 |
+| Non-counted Runs | 32 |
 | Total Checks | 1869 |
 | Passed | 1797 |
 | Failed | 66 |
@@ -21,12 +21,12 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260412-0272 (2026-04-12T00:18:52.994Z) |
-| Latest Recorded Run | QA-20260412-0273 (2026-04-12T06:56:48.689Z) |
+| Latest Recorded Run | QA-20260413-0274 (2026-04-13T08:29:27.267Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260412-0273 (2026-04-12T06:56:48.689Z)
+Latest run: QA-20260413-0274 (2026-04-13T08:29:27.267Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -36,23 +36,25 @@ Latest run: QA-20260412-0273 (2026-04-12T06:56:48.689Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Current billing period effective usage 7.8436 USD, billed 0.0000 USD, no unexpected billed usage spike before targeted QA. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: SHA 3de9be78
-- Coverage Packs: core-routes-smoke
-- Covered Surfaces: /login on localhost:3000, /login on 127.0.0.1:3000, GitHub OAuth start redirect_to=localhost/auth/callback, GitHub OAuth start redirect_to=127.0.0.1/auth/callback, Next.js dev HMR/WebSocket on 127.0.0.1
-- Skipped Surfaces: OAuth provider login completion, Supabase auth callback code exchange completion, vercel production
+- Deployment: SHA 78f09aaf
+- Coverage Packs: core-routes-smoke, ai-core, observability-pack
+- Covered Surfaces: /login render on Vercel production, guest PIN login via production UI, /system-boot -> /dashboard redirect, dashboard render with 15 server summary, AI sidebar ready state, AI sidebar server summary response, browser console errors = 0 during tested Vercel flow, Vercel /api/health, Vercel /api/version, Cloud Run /health, Cloud Run /api/ai/graphrag/stats, Cloud Run /monitoring direct auth check, Cloud Run /api/ai/supervisor direct probe
+- Skipped Surfaces: OAuth provider completion, fullscreen AI workspace, feedback submit path, security attack regression pack, sampled graph_rag_search log capture proof
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | Cloud Run health | [Cloud Run health](https://ai-engine-490817238363.asia-northeast1.run.app/health) | Direct run.app health endpoint |
+| general | Vercel production | [Vercel production](https://openmanager-ai.vercel.app/) | Target frontend under test |
+| monitoring | Cloud Run monitoring | [Cloud Run monitoring](https://ai-engine-490817238363.asia-northeast1.run.app/monitoring) | Requires X-API-Key header |
 
 ## Artifacts (Latest Run)
 
@@ -395,6 +397,7 @@ Latest run: QA-20260412-0273 (2026-04-12T06:56:48.689Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260413-0274 | 2026-04-13T08:29:27.267Z | targeted | no | no | Vercel + Cloud Run targeted verification after GraphRAG telemetry rollout | 13 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260412-0273 | 2026-04-12T06:56:48.689Z | targeted | no | no | Local Next.js OAuth smoke - localhost and 127.0.0.1 loopback parity | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260412-0272 | 2026-04-12T00:18:52.994Z | targeted | no | yes | Vercel production targeted QA - Supabase impact surfaces after schema cleanup | 10 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260411-0271 | 2026-04-11T07:18:03.097Z | targeted | no | no | Local auth audit smoke - guest login route inserts security_audit_logs | 3 | 1 | 0 | 0 | 0 | 0 |
@@ -414,4 +417,3 @@ Latest run: QA-20260412-0273 (2026-04-12T06:56:48.689Z)
 | QA-20260408-0256 | 2026-04-08T14:15:23.840Z | targeted | yes | no | QA Metadata Sync - v8.11.3 trace analysis closed | 0 | 1 | 1 | 0 | 0 | 1 |
 | QA-20260408-0255 | 2026-04-08T14:09:01.310Z | targeted | yes | no | Vercel Targeted Release Validation - v8.11.3 root cause confirmed | 3 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260408-0254 | 2026-04-08T13:25:34.065Z | targeted | yes | no | Vercel Targeted Release Validation - v8.11.3 production drift | 3 | 0 | 1 | 0 | 0 | 1 |
-| QA-20260408-0253 | 2026-04-08T04:54:22.471Z | targeted | no | yes | Playwright MCP Production QA - v8.11.0 analysis basis sanitization + agent label fix | 7 | 2 | 0 | 0 | 0 | 0 |

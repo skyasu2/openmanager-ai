@@ -1,0 +1,93 @@
+{
+  "runId": "QA-20260413-0274",
+  "recordedAt": "2026-04-13T08:29:27.267Z",
+  "recordedAtKst": "2026-04-13 17:29:27 KST",
+  "runTitle": "Vercel + Cloud Run targeted verification after GraphRAG telemetry rollout",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run ai-engine-00304-w5n",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "78f09aafc6cf95e577608ae90e235c51ab2be74f"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["core-routes-smoke", "ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "/login render on Vercel production",
+    "guest PIN login via production UI",
+    "/system-boot -> /dashboard redirect",
+    "dashboard render with 15 server summary",
+    "AI sidebar ready state",
+    "AI sidebar server summary response",
+    "browser console errors = 0 during tested Vercel flow",
+    "Vercel /api/health",
+    "Vercel /api/version",
+    "Cloud Run /health",
+    "Cloud Run /api/ai/graphrag/stats",
+    "Cloud Run /monitoring direct auth check",
+    "Cloud Run /api/ai/supervisor direct probe"
+  ],
+  "skippedSurfaces": [
+    "OAuth provider completion",
+    "fullscreen AI workspace",
+    "feedback submit path",
+    "security attack regression pack",
+    "sampled graph_rag_search log capture proof"
+  ],
+  "checks": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-13T17:25:26+09:00",
+      "summary": "Current billing period effective usage 7.8436 USD, billed 0.0000 USD, no unexpected billed usage spike before targeted QA.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "targeted verification only; counted summary intentionally unchanged",
+    "Cloud Run direct supervisor 500 seen on first probe was caused by malformed local curl JSON quoting, not a product defect",
+    "Vercel AI sidebar returned a valid server summary on production after the Cloud Run telemetry rollout",
+    "Cloud Run direct supervisor returned success with graph ragSources present"
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Cloud Run health",
+      "url": "https://ai-engine-490817238363.asia-northeast1.run.app/health",
+      "note": "Direct run.app health endpoint"
+    },
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/",
+      "note": "Target frontend under test"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run monitoring",
+      "url": "https://ai-engine-490817238363.asia-northeast1.run.app/monitoring",
+      "note": "Requires X-API-Key header"
+    }
+  ]
+}

@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-12T06:56:48.689Z"
+    "updatedAt": "2026-04-13T08:29:27.267Z"
   },
   "sequence": {
-    "nextRunNumber": 274
+    "nextRunNumber": 275
   },
   "summary": {
-    "totalRecordedRuns": 271,
+    "totalRecordedRuns": 272,
     "totalRuns": 240,
-    "excludedRuns": 31,
+    "excludedRuns": 32,
     "totalChecks": 1869,
     "totalPassed": 1797,
     "totalFailed": 66,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260412-0272",
     "lastRecordedAt": "2026-04-12T00:18:52.994Z",
-    "latestRecordedRunId": "QA-20260412-0273",
-    "latestRecordedAt": "2026-04-12T06:56:48.689Z"
+    "latestRecordedRunId": "QA-20260413-0274",
+    "latestRecordedAt": "2026-04-13T08:29:27.267Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -23846,6 +23846,96 @@
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260413-0274",
+      "recordedAt": "2026-04-13T08:29:27.267Z",
+      "recordedAtKst": "2026-04-13 17:29:27 KST",
+      "title": "Vercel + Cloud Run targeted verification after GraphRAG telemetry rollout",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260413-0274.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run ai-engine-00304-w5n",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "78f09aafc6cf95e577608ae90e235c51ab2be74f"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": ["core-routes-smoke", "ai-core", "observability-pack"],
+      "coveredSurfaces": [
+        "/login render on Vercel production",
+        "guest PIN login via production UI",
+        "/system-boot -> /dashboard redirect",
+        "dashboard render with 15 server summary",
+        "AI sidebar ready state",
+        "AI sidebar server summary response",
+        "browser console errors = 0 during tested Vercel flow",
+        "Vercel /api/health",
+        "Vercel /api/version",
+        "Cloud Run /health",
+        "Cloud Run /api/ai/graphrag/stats",
+        "Cloud Run /monitoring direct auth check",
+        "Cloud Run /api/ai/supervisor direct probe"
+      ],
+      "skippedSurfaces": [
+        "OAuth provider completion",
+        "fullscreen AI workspace",
+        "feedback submit path",
+        "security attack regression pack",
+        "sampled graph_rag_search log capture proof"
+      ],
+      "checks": {
+        "total": 13,
+        "passed": 13,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-13T17:25:26+09:00",
+          "summary": "Current billing period effective usage 7.8436 USD, billed 0.0000 USD, no unexpected billed usage spike before targeted QA.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "Cloud Run health",
+          "url": "https://ai-engine-490817238363.asia-northeast1.run.app/health",
+          "note": "Direct run.app health endpoint"
+        },
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/",
+          "note": "Target frontend under test"
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run monitoring",
+          "url": "https://ai-engine-490817238363.asia-northeast1.run.app/monitoring",
+          "note": "Requires X-API-Key header"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
