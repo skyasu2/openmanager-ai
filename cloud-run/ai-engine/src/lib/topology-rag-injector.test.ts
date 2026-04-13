@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
@@ -9,7 +9,18 @@ import { buildTopologyDocuments } from './topology-rag-injector';
 import type { OTelResourceCatalog } from '../types/otel-metrics';
 
 function loadCatalogFixture(): OTelResourceCatalog {
-  const filePath = join(process.cwd(), 'data/otel-data/resource-catalog.json');
+  const fixtureCandidates = [
+    join(process.cwd(), 'data/otel-data/resource-catalog.json'),
+    join(process.cwd(), '../../public/data/otel-data/resource-catalog.json'),
+  ];
+
+  const filePath = fixtureCandidates.find((candidate) => existsSync(candidate));
+  if (!filePath) {
+    throw new Error(
+      `resource-catalog.json fixture not found. tried: ${fixtureCandidates.join(', ')}`,
+    );
+  }
+
   return JSON.parse(readFileSync(filePath, 'utf-8')) as OTelResourceCatalog;
 }
 
