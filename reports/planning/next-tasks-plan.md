@@ -1,259 +1,210 @@
 > Owner: AI Agent
-> Status: Completed Canonical
+> Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-04-07
+> Last reviewed: 2026-04-14
 
-# [작업 계획서] 다음 작업 목록 (2026-04-07)
+# [작업 계획서] Advisor Agent 품질·지연 개선 (2026-04-14)
 
 ## 배경
 
-v8.10.10 이후 31개 커밋 누적. 패키지 업그레이드(TypeScript 6, Knip v6, Storybook hygiene, ai-engine 후속 정렬)와 UI/Storybook 후속 정리를 완료했다.
-본 계획서에 포함된 task는 모두 완료되었고, 후속 잔여 작업은 `TODO.md` backlog 기준으로 별도 관리한다.
+v8.11.10 기준 AI Engine의 P1 미해결 이슈: topology variant 질의에서 Advisor Agent가
+`durationMs 35~86s`의 long-tail 지연과 `MISSING_COMMAND_BLOCK`, `MISSING_PROBLEM_CONTEXT`,
+`LATENCY_VERY_SLOW` 품질 플래그를 반복적으로 유발하고 있다.
+
+### 근본 원인 분석 (코드 리뷰 기반)
+
+| 원인 | 위치 | 설명 |
+|------|------|------|
+| isHeavyAgent 누락 | `response-quality.ts:84-91` | Advisor Agent가 heavy agent 분류 제외 → slow 임계값 18000ms(실제 35~86s)로 과소 평가 |
+| quality flag 미연동 재시도 | `supervisor-quality-retry.ts` | `MISSING_COMMAND_BLOCK` 발생해도 재시도 트리거 없음 |
+| 프롬프트 포맷 강제 불충분 | `advisor.ts:55-62` | Phase 3 체크리스트가 선택적 표현 → Mistral이 코드 블록 누락 허용 |
+| 전역 timeout만 존재 | `base-agent-types.ts:58` | `45_000ms` 공유, Advisor 전용 timeout guard 없음 |
+
+### 현재 임계값 vs 실제 관측값
+
+| 분류 | 현재 기준 (non-heavy) | Advisor 실측 |
+|------|----------------------|-------------|
+| fast | ≤ 3,000ms | - |
+| normal | ≤ 8,000ms | - |
+| slow | ≤ 18,000ms | - |
+| **very_slow** | **> 18,000ms** | **35,000~86,000ms** |
+
+Advisor는 Mistral 모델 + 복수 tool call = 구조적으로 느림. Reporter/Vision/Analyst와 동등한
+heavy 분류가 필요하다.
 
 ---
 
-## Task 1: ai-engine `ai` 패키지 업그레이드 호환성 조사
+## Task 1: Advisor Agent latency 임계값 보정
 
-**상태**: 완료
+**우선순위**: P1 | **규모**: 소 (~15분) | **위험도**: 낮음 (관측값만 변경)
 
-**우선순위**: P2 | **예상 규모**: 소 (조사 + 설정 수정)
+### 변경 대상
 
-### 현황
+`cloud-run/ai-engine/src/services/ai-sdk/agents/response-quality.ts`
 
-| 항목 | 값 |
-|------|-----|
-| ai-engine 기존 | `ai@6.0.86` |
-| root app 현재 | `ai@6.0.145` |
-| npm latest | `ai@6.0.149` |
-| 실제 결과 | `ai@6.0.145` 상향 후 테스트/타입체크 통과 |
+**현재 코드 (`classifyLatencyTier`):**
+```typescript
+const isHeavyAgent =
+  agentName === 'Reporter Agent' ||
+  agentName === 'Vision Agent' ||
+  agentName === 'Analyst Agent';
 
-초기 가설과 달리, 현재 저장소 상태에서는 `ai@6.0.145` 상향 후 별도 Vitest alias 없이도 정상 동작했다.
-`exports` 필드 비교 결과도 `6.0.86`과 `6.0.145` 사이에 본질적 차이가 없었다.
-
-### 확인 결과
-
-1. `exports` 필드 차이 없음
-2. `npm run verify:rag` 통과
-3. `npm run type-check` 통과
-4. `npm run test` 통과 (`69 files / 726 tests`)
-
-### 완료 기준
-
-- `cd cloud-run/ai-engine && npm run test` 통과 상태에서 `ai` 버전을 `6.0.145`로 상향 완료
-- 타입체크 통과 완료
-
----
-
-## Task 2: Storybook circular chunk warning 정리
-
-**상태**: 완료
-
-**우선순위**: P3 | **예상 규모**: 소 (설정 수정)
-
-### 현황
-
-기존에는 `npm run storybook:build` 시 다음 경고가 남아있었다:
-```
-vendor-react -> vendor-storybook (circular chunk)
-vendor-react -> vendor-charts (circular chunk)
+const fastThreshold = isHeavyAgent ? 5000 : 3000;
+const normalThreshold = isHeavyAgent ? 13000 : 8000;
+const slowThreshold = isHeavyAgent ? 25000 : 18000;
 ```
 
-### 원인 분석
-
-`.storybook/main.ts`의 `manualChunks` 분리 전략에서 발생:
-- `vendor-react`: react, react-dom
-- `vendor-storybook`: @storybook/* 패키지 (react에 의존)
-- `vendor-charts`: recharts, d3-* (react에 의존)
-
-Rollup의 `manualChunks`는 chunk 간 순환을 감지하면 경고를 낸다. react를 소비하는 패키지(`storybook`, `recharts`)가 별도 chunk로 분리됐지만, react 자체의 일부 internals가 renderer를 참조하는 경우 역방향 의존성이 생긴다.
-
-### 적용 결과
-
-1. **`vendor-react` chunk 제거 적용**
-   ```ts
-   // 아래 조건 제거
-   if (id.includes('/react/') || id.includes('/react-dom/'))
-     return 'vendor-react';
-   ```
-   → `vendor-storybook`과 `vendor-charts`가 Rollup 자동 패킹으로 정리되며 circular warning 제거.
-
-2. **Residual**
-   - 현재는 circular warning 0건
-   - large chunk warning(`vite-inject-mocker-entry.js`)만 잔존
-   - 기능 blocker는 아니므로 backlog로 이동
+**수정 방향:**
+- Advisor Agent를 `isHeavyAgent`에 추가 → heavy 임계값 적용
+- 또는 Advisor 전용 임계값: fast=8000/normal=20000/slow=40000ms (Mistral 특성 반영)
+- Advisor 실측 35~86s 기반: slow=40000ms까지 'slow', 초과 시 'very_slow'
 
 ### 완료 기준
-
-- `npm run storybook:build` 시 circular chunk warning 0건 달성
-- 빌드 결과물 정상 확인 완료
+- `response-quality.test.ts` Advisor latency 케이스 추가
+- `npm run type-check && npm run test` 통과
 
 ---
 
-## Task 3: minor release — v8.11.0
+## Task 2: Advisor 프롬프트 포맷 강제 강화
 
-**상태**: 완료
+**우선순위**: P1 | **규모**: 소 (~20분) | **위험도**: 중간 (LLM 동작 변화)
 
-**우선순위**: P2 | **예상 규모**: 소 (릴리스 스크립트 실행)
+### 변경 대상
 
-### 현황
+`cloud-run/ai-engine/src/services/ai-sdk/agents/config/instructions/advisor.ts`
 
-v8.10.10 이후 31개 커밋 누적. 기준선(30커밋) 충족.
+### 현재 문제
 
-**포함 내용** (주요 사항):
-- TypeScript 6.0.2 업그레이드 (root + ai-engine)
-- Knip v6 전환 + dead export 정리
-- Storybook story import 통일 + hygiene 정리
-- 패치 패키지 업그레이드 (Supabase, OTel, rollup 등)
-- 타입 시스템 SSOT 정렬 (server-common 제거, EnhancedServerModal 통합)
-- typecheck-changed 인프라 개선
+Phase 3 체크리스트가 "확인하세요" 형태의 권고 → Mistral이 무시 가능:
+```
+### Phase 3: finalAnswer 전 완성도 점검
+답변 작성 전에 확인하세요:
+- ✅ 진단 명령어 코드 블록이 1개 이상 있는가?
+```
+
+### 수정 방향
+
+1. 프롬프트 맨 앞에 **하드 규칙 블록** 추가 (LLM은 앞 부분을 더 강하게 따름)
+2. 코드 블록 필수 포함을 "금지" 형태로 명시 (`코드 블록 없는 finalAnswer 호출 금지`)
+3. 응답 형식 템플릿에 `` `command` `` 플레이스홀더 명시적 포함
 
 ### 완료 기준
+- 로컬 probe에서 MISSING_COMMAND_BLOCK 빈도 감소 확인
+- 기존 테스트 회귀 없음
+
+---
+
+## Task 3: quality-retry MISSING_COMMAND_BLOCK 트리거 추가
+
+**우선순위**: P1 | **규모**: 소~중 (~30분) | **위험도**: 중간 (재시도 로직 변경)
+
+### 변경 대상
+
+`cloud-run/ai-engine/src/services/ai-sdk/supervisor-quality-retry.ts`
+
+### 현재 상태
+
+현재 재시도 트리거 조건:
+- non-general intent에서 `toolsCalled === []` (도구 미사용)
+
+### 추가할 조건
+
+`formatCompliance === false` AND `qualityFlags.includes('MISSING_COMMAND_BLOCK')` 조합 시
+Advisor Agent 한정 1회 재시도.
+
+재시도 시 프롬프트에 **명시적 포맷 강제** 메시지 prepend:
+```
+[RETRY] 이전 응답에 코드 블록이 누락되었습니다. 반드시 진단/조치/검증 명령어를 `코드 블록`으로 포함하세요.
+```
+
+### 완료 기준
+- `supervisor-quality-retry.test.ts` Advisor MISSING_COMMAND_BLOCK 재시도 케이스 추가
+- `npm run test` 통과
+
+---
+
+## Task 4: Cloud Run 재배포 + post-deploy QA
+
+**우선순위**: P1 | **규모**: 소 | **위험도**: 낮음
+
+### 절차
 
 ```bash
-npm run validate:all          # type-check + lint + test 통과
-npm run release:publish:minor # canonical release script
-npm run sync:github           # GitHub 코드 스냅샷 갱신
+# 1. 로컬 검증
+cd cloud-run/ai-engine
+npm run type-check
+npm run test
+
+# 2. Cloud Run 배포
+bash cloud-run/ai-engine/deploy.sh
+
+# 3. health probe
+curl https://ai-engine-jdhrhws7ia-an.a.run.app/health
+
+# 4. QA 기록
+npm run qa:record -- --input <json>
+npm run qa:status
 ```
 
-> 버전 판단: 기능 추가/개선이 포함(Storybook, 타입 시스템, CI 인프라)이므로 patch보다 minor 승격이 적합.
-
-### 현재 게이트 재검증 상태 (2026-04-07)
-
-1. `npm run type-check` PASS (`136.8s`)
-2. `npm run test:quick` PASS (`8 files / 160 tests`)
-3. targeted node tests PASS (`3 files / 12 tests`)
-   - `filter-public-scripts`
-   - `check-vercel-usage`
-   - `vercel-post-deploy-smoke`
-4. `npm run test:node` 전체는 실행 시간이 긴 편이라(환경별 6~7분+) 타임아웃 정책과 분할 실행 기준을 함께 정리한 뒤 `validate:all` 최종 수행 권장
-
-### 완료 결과 (2026-04-07)
-
-1. release commit/tag 생성: `chore(release): 8.11.0`, `v8.11.0`
-2. 릴리스 일관성 점검 PASS (`scripts/release/check-release-consistency.js`)
-3. canonical push 완료 (`gitlab/main`)
-4. GitHub snapshot 동기화 완료 (`npm run sync:github`)
+### 완료 기준
+- revision `ai-engine-003xx` 100% 전환
+- post-deploy QA: Advisor 질의 3회 sampled probe에서 `LATENCY_VERY_SLOW` 플래그 감소 확인
+- `MISSING_COMMAND_BLOCK` 재시도 경로 로그 확인
 
 ---
 
-## Task 5: node suite runtime 최적화 (신규)
+## Task 5 (P3): graph traversal 유지/제거 재평가
 
-**상태**: 완료
+**우선순위**: P3 | **규모**: 조사 | **전제**: Task 1~4 완료 후
 
-**우선순위**: P2 | **예상 규모**: 중
+### 목표
 
-### 배경
-
-`npm run test:node`는 현재 통과하지만 전체 소요 시간이 약 13분(`~809s`)으로 길다. pre-push의 `type-check:changed` soft-timeout(60s)과 결합될 때 개발 루프가 늘어질 수 있어, release 이후 별도 최적화 트랙으로 분리한다.
-
-### 완료 결과
-
-1. `src/test/setup.node.ts` 신설
-   `config/testing/vitest.config.node.ts`가 DOM 전용 `setup.ts` 대신 node 전용 경량 셋업을 사용하도록 변경
-2. lightweight targeted routing 확장
-   `tests/unit/playwright/**`를 `vitest.config.dev.ts` 경로에 포함해 pre-push targeted node 실행도 가볍게 유지
-3. wall time 개선 확인
-   `npm run test:node` 기준 `809.63s → 536.87s`로 약 34% 단축
-4. 회귀 검증
-   `vitest-node-wrapper` 회귀, Playwright config test, MSW 기반 stream contract test, full node suite, `type-check`, `lint` 통과
-
----
-
-## Task 6: pre-push shared node infra smoke 최적화
-
-**상태**: 완료
-
-**우선순위**: P2 | **예상 규모**: 소~중
-
-### 배경
-
-Task 5 이후에도 `src/test/setup.node.ts` 같은 shared node test infra 파일을 수정하면 pre-push가 이를 일반 `src/**` source change로 분류해 `test:related:node`를 크게 확장했다.
-결과적으로 full `test:node`는 빨라졌지만, shared setup 변경이 들어간 push에서는 다시 500s+급 node suite가 실행되는 잔여 비용이 남아 있었다.
-
-### 완료 결과
-
-1. node infra exact 분리
-   `src/test/setup.node.ts`, `config/testing/vitest.config.{node,dev,main}.ts`, `config/testing/msw-setup.ts`, `config/testing/shared-aliases.ts`, `scripts/dev/vitest-node-wrapper.js`를 node infra exact set으로 분리
-2. pre-push 분류기 보강
-   node infra exact 변경은 일반 related source 목록에서 제외하고 `test:node:infra:smoke`로 라우팅
-3. shared infra dual smoke
-   `msw-setup.ts`, `shared-aliases.ts`, `vitest.config.main.ts`처럼 DOM/node 공용 인프라는 DOM infra smoke + node infra smoke를 함께 수행
-4. 회귀 검증
-   `pre-push-file-classifier`, `pre-push-test-classifier`, `vitest-node-wrapper` targeted tests와 `test:node:infra:smoke` 통과
+P1 Advisor 오류 정상화 후 3회 targeted QA로 graph hit-rate/precision 재측정:
+- `sourceType="graph"` 관측 빈도
+- vector-only 대비 graph 경유 응답 품질 차이
+- `graphrag-relations.ts` @deprecated 코드 제거 최종 판단
 
 ### 완료 기준
-
-- shared node infra 변경이 `test:related:node` 거의 전체 확장 경로를 직접 타지 않음
-- curated node infra smoke 경로가 deterministic하게 통과
-- mixed source + node infra 변경에서도 일반 source related suite와 node infra smoke가 함께 실행됨
+- QA 3회 기록
+- 제거 or 유지 결정 TODO.md 반영
 
 ---
 
-## Task 7: Storybook large chunk warning 정리
+## Task 6 (P3): duplicate tool invocation 근본 제거 판단
 
-**상태**: 완료
+**우선순위**: P3 | **규모**: 조사 | **전제**: Task 5 이후
 
-**우선순위**: P3 | **예상 규모**: 소
+### 현황
 
-### 배경
-
-Storybook static build는 성공했지만 `vite-inject-mocker-entry.js`가 약 `1.52 MB`로 측정되어 Vite의 large chunk warning이 남아 있었다.
-이 파일은 Storybook/Vite가 생성하는 mocker entry라서 애플리케이션 코드 분할로 직접 줄일 수 있는 청크가 아니었다.
-
-### 완료 결과
-
-1. `.storybook/main.ts`의 `chunkSizeWarningLimit`를 `1100 → 1600`으로 상향
-2. 주석에 framework-generated chunk라는 점과 측정 크기 근거를 명시
-3. `npm run storybook:build:ci` 재검증 결과 large chunk warning 없이 static build 성공
+production 로그에서 `toolsCalled=["searchKnowledgeBase","searchKnowledgeBase","finalAnswer"]` 반복.
+현재 cache로 backend 재실행 비용은 완화됐으나 latency 누적 잔존.
 
 ### 완료 기준
-
-- Storybook build 로그에서 false-positive large chunk warning 제거
-- 실제 app-owned bundle 경고 신호는 유지
-
----
-
-## Task 8: `src/types/common.ts` 잔여 unused type 정리
-
-**상태**: 완료
-
-**우선순위**: P3 | **예상 규모**: 소
-
-### 배경
-
-`src/types/common.ts`는 1차 정리 이후에도 몇 개의 미사용 export와 중앙 경유 re-export가 남아 있었다.
-현재 실제 사용은 `ServiceStatus`, `ServerStatus`, `AlertSeverity` 중심으로 수렴해 있어, 추가 축소가 가능한 상태였다.
-
-### 완료 결과
-
-1. unused export 제거
-   `Environment`, `ServerType`, `PaginationInfo`, `LogLevel` 삭제
-2. unused re-export 제거
-   `ServerMetrics` 경유 re-export 삭제
-3. 안전성 검증
-   실제 남은 참조(`ServiceStatus`, `ServerStatus`, `AlertSeverity`)를 유지한 상태에서 `npm run type-check`, `npm run lint` 통과
-
-### 완료 기준
-
-- `common.ts`가 실제 공통 타입만 남긴 최소 표면으로 축소
-- 타입체크/린트 통과
+- dedupe 적용 시 latency 감소량 측정
+- P2 승격 여부 결정
 
 ---
 
-## Task 4: Storybook 10.3.x stable 추적 (보류)
+## 실행 순서
 
-**우선순위**: P3 | **상태**: 대기
+| 순서 | Task | 예상 소요 |
+|------|------|----------|
+| 1 | **Task 1**: latency 임계값 보정 | 15분 |
+| 2 | **Task 2**: 프롬프트 포맷 강화 | 20분 |
+| 3 | **Task 3**: quality-retry 트리거 추가 | 30분 |
+| 4 | **Task 4**: Cloud Run 배포 + QA | 15분 |
+| 5 | **Task 5**: graph traversal 재평가 | P3, 이후 |
+| 6 | **Task 6**: duplicate tool 제거 | P3, 이후 |
 
-현재 npm registry의 `storybook` latest dist-tag = `10.2.10`. `10.3.x`는 `next` dist-tag 상태.
-stable로 전환되면 다음 항목을 함께 처리:
-- `npx storybook@latest upgrade`
-- `features.experimentalComponentsManifest` → stable API 전환 여부 확인
-- `.storybook/main.ts` feature flag 정리
+**총 예상 시간 (Task 1~4)**: 약 80분
 
 ---
 
-## 실행 순서 권장
+## 이전 계획서 완료 이력
 
-| 순서 | Task | 이유 |
-|------|------|------|
-| 1 | **Task 4** (Storybook 10.3) | `2026-04-07` 기준 npm stable은 여전히 `10.2.10`, `10.3`는 `next=10.3.0-alpha.6`라서 채널 전환 시점만 추적하면 됨 |
+이전 `next-tasks-plan.md` (2026-04-07)의 모든 Task 완료:
+- TypeScript 6.0.2 업그레이드 ✅
+- Knip v6 전환 ✅
+- Storybook hygiene ✅
+- node suite 최적화 ✅
+- v8.11.0 릴리스 ✅

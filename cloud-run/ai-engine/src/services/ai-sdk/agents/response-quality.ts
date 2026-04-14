@@ -80,7 +80,19 @@ function getAgentResponsePolicy(agentName: string): AgentResponsePolicy {
   return AGENT_RESPONSE_POLICIES[agentName] ?? DEFAULT_POLICY;
 }
 
+// Advisor Agent uses Mistral + multiple tool calls — observed 35~86s in production.
+// Separate thresholds prevent false VERY_SLOW flags for structurally slow agents.
+const ADVISOR_LATENCY_THRESHOLDS = { fast: 8_000, normal: 20_000, slow: 40_000 };
+
 export function classifyLatencyTier(durationMs: number, agentName: string): LatencyTier {
+  if (agentName === 'Advisor Agent') {
+    const t = ADVISOR_LATENCY_THRESHOLDS;
+    if (durationMs <= t.fast) return 'fast';
+    if (durationMs <= t.normal) return 'normal';
+    if (durationMs <= t.slow) return 'slow';
+    return 'very_slow';
+  }
+
   const isHeavyAgent =
     agentName === 'Reporter Agent' ||
     agentName === 'Vision Agent' ||

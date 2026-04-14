@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { evaluateAgentResponseQuality } from './response-quality';
+import { classifyLatencyTier, evaluateAgentResponseQuality } from './response-quality';
 
 describe('evaluateAgentResponseQuality', () => {
   it('flags Analyst responses missing required sections', () => {
@@ -62,6 +62,41 @@ describe('evaluateAgentResponseQuality', () => {
     );
 
     expect(result.qualityFlags).not.toContain('MISSING_SERVER_REFERENCE');
+  });
+
+  describe('Advisor Agent latency thresholds', () => {
+    it('classifies Advisor ≤8s as fast', () => {
+      expect(classifyLatencyTier(7_500, 'Advisor Agent')).toBe('fast');
+    });
+
+    it('classifies Advisor 8~20s as normal', () => {
+      expect(classifyLatencyTier(15_000, 'Advisor Agent')).toBe('normal');
+    });
+
+    it('classifies Advisor 20~40s as slow (not very_slow)', () => {
+      expect(classifyLatencyTier(35_000, 'Advisor Agent')).toBe('slow');
+    });
+
+    it('classifies Advisor >40s as very_slow', () => {
+      expect(classifyLatencyTier(86_000, 'Advisor Agent')).toBe('very_slow');
+    });
+
+    it('does NOT flag LATENCY_VERY_SLOW for 35s Advisor response', () => {
+      const text = [
+        '## 문제 요약: CPU 과부하',
+        '### 💡 원인 분석',
+        '- 원인: 과도한 프로세스 실행 (신뢰도: 85%)',
+        '### 🛠️ 권장 조치 절차',
+        '1. **진단**: `top -o %CPU`',
+        '2. **조치**: `kill -9 <PID>` ⚠️ 서비스 중단 주의',
+        '3. **검증**: `top -o %CPU`',
+        '### ⚠️ 주의사항',
+        '- 서비스 재시작 전 백업 확인',
+      ].join('\n');
+      const result = evaluateAgentResponseQuality('Advisor Agent', text, { durationMs: 35_000 });
+      expect(result.qualityFlags).not.toContain('LATENCY_VERY_SLOW');
+      expect(result.latencyTier).toBe('slow');
+    });
   });
 
   it('marks fallback reason as a quality flag', () => {
