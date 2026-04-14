@@ -558,3 +558,6 @@ cloud-run/docker-compose.override.yml
 
 # Storybook
 storybook-static/
+
+# Planning tmp/ — local-only scratch files, not committed
+reports/planning/tmp/
