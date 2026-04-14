@@ -127,12 +127,6 @@ export function useSystemAutoShutdown({
     return null;
   }, []);
 
-  // 시스템 재시작 (페이지 새로고침)
-  const restartSystem = useCallback(() => {
-    logger.info('🔄 시스템 재시작 요청');
-    window.location.reload();
-  }, []);
-
   // 초기 로드 시 이전 종료 확인
   useEffect(() => {
     const timeSinceShutdown = checkPreviousShutdown();
@@ -148,7 +142,6 @@ export function useSystemAutoShutdown({
     isWarning,
     formatTime,
     getRemainingPercentage,
-    restartSystem,
     // UI 표시용 정보
     remainingMinutes: Math.floor(remainingTime / 60000),
     remainingSeconds: Math.floor((remainingTime % 60000) / 1000),
