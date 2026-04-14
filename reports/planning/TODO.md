@@ -1,10 +1,17 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-13 KST (ai-engine-00308 배포 + QA #5 반영)
+**Last Updated**: 2026-04-15 KST (ai-engine-00316 배포 + Advisor quality improvement Task 1~4 완료)
 
 ## Active Tasks
 
-- [ ] P1: topology variant 질의 direct supervisor 품질/지연 안정화 — `ai-engine-00308-6qw` 배포 후 direct `/api/ai/supervisor` 재검증(QA #5, `QA-20260413-0280`)에서 sampled `3/3`은 모두 성공했고 `UNKNOWN_ERROR`/`no_provider`는 재현되지 않았다. 다만 `durationMs 35~86s`의 long-tail 지연과 Advisor 포맷 품질 flag(`MISSING_COMMAND_BLOCK`, `MISSING_PROBLEM_CONTEXT`, `LATENCY_VERY_SLOW`)가 남아 있어 P1을 계속 추적한다.
+_현재 P1 없음. 다음 작업은 Backlog 참조._
+
+### Completed (2026-04-15 #90)
+- [x] Advisor latency 임계값 보정 (Task 1) — [response-quality.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/services/ai-sdk/agents/response-quality.ts:1) Advisor 전용 임계값 추가 (fast≤8s/normal≤20s/slow≤40s). `aedbfbc91`.
+- [x] Advisor 프롬프트 포맷 강화 (Task 2) — [advisor.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/services/ai-sdk/agents/config/instructions/advisor.ts:1) 맨 앞에 hard-rule 블록 추가, Phase 3 체크리스트 mandatory gate로 강화. `aedbfbc91`.
+- [x] quality-retry MISSING_COMMAND_BLOCK 트리거 추가 (Task 3) — [supervisor-quality-retry.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/services/ai-sdk/supervisor-quality-retry.ts:1) Advisor formatCompliance=false 시 1회 재시도. `aedbfbc91`.
+- [x] Cloud Run 재배포 + post-deploy QA (Task 4) — Cloud Build `9bfa352c-70a1-47c2-8fad-5f4d32e99acf`, revision `ai-engine-00316-l67` 100% 전환. post-deploy probe 3/3 성공, `qualityFlags=[]`, `latencyTier=fast`. `QA-20260415-0283`.
+- [x] 프론트엔드 component audit round 1+2 완료 — 50+ 컴포넌트 테스트 추가, BrowserNotification fix. `1ff731169`, `12138be34`.
 
 ### Completed (2026-04-13 #89)
 - [x] variant direct path 안정화 패치 적용 — [orchestrator-web-search.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-web-search.ts:1)에 `resolveRAGSetting`(질의 기반 auto) 추가, [supervisor-routing.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/services/ai-sdk/supervisor-routing.ts:1)에서 advisor intent를 `toolChoice='required'`로 강화, [supervisor-quality-retry.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/services/ai-sdk/supervisor-quality-retry.ts:1)에 non-general `toolsCalled=[]` 재시도 규칙을 반영했다.

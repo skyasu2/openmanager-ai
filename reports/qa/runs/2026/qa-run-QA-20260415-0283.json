@@ -1,0 +1,71 @@
+{
+  "runId": "QA-20260415-0283",
+  "recordedAt": "2026-04-14T16:16:39.275Z",
+  "recordedAtKst": "2026-04-15 01:16:39 KST",
+  "runTitle": "Advisor quality improvement post-deploy QA (ai-engine-00316, Task 1~3 verification)",
+  "owner": "claude",
+  "source": "curl",
+  "environment": {
+    "target": "cloud-run-production",
+    "url": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+    "frontend": "N/A",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "ai-engine-00316-l67",
+    "deploymentUrl": "",
+    "commitSha": "facd93407"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": [],
+  "coveredSurfaces": [
+    "Cloud Run deploy ai-engine-00316-l67 health check (HTTP 200)",
+    "Cloud Run /api/ai/supervisor Advisor-path probe x3 (CPU/topology/OOM queries)",
+    "qualityFlags=[], formatCompliance=true, latencyTier=fast verification"
+  ],
+  "skippedSurfaces": [
+    "Vercel UI sidebar flow",
+    "Playwright browser regression pack"
+  ],
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Post-deploy probes show qualityFlags=[], formatCompliance=true, latencyTier=fast (1.4-3.4s). Task1 Advisor-specific latency thresholds and Task3 MISSING_COMMAND_BLOCK retry trigger are live. No regressions observed.",
+      "nextAction": "Close P1 ai-topology-variant-function-call-failure if broader probes confirm stability."
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-topology-variant-function-call-failure",
+      "title": "Advisor Agent latency/format quality stabilization (Task 1-3)",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Deployed ai-engine-00316: Advisor-specific latency thresholds (fast<=8s/normal<=20s/slow<=40s), MISSING_COMMAND_BLOCK retry trigger, and hard-rule prompt block all live. Probes: 3/3 success, qualityFlags=[], latencyTier=fast.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Probes used deterministic KB-direct path (Advisor forced routing). LLM Mistral path validation pending.",
+    "Task 5/6 (graph traversal re-eval, duplicate tool) remain P3 backlog."
+  ],
+  "links": []
+}
