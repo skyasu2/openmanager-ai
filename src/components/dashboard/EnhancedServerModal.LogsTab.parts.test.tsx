@@ -5,10 +5,10 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import {
-  StreamsView,
-  ViewButton,
   formatNsTimestamp,
   formatTimestamp,
+  StreamsView,
+  ViewButton,
 } from './EnhancedServerModal.LogsTab.parts';
 
 describe('EnhancedServerModal.LogsTab.parts', () => {

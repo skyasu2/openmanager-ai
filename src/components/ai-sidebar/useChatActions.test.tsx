@@ -3,8 +3,8 @@
  */
 
 import { renderHook } from '@testing-library/react';
-import { act } from 'react';
 import type { RefObject } from 'react';
+import { act } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useChatActions } from './useChatActions';
 
