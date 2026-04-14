@@ -1,3 +1,4 @@
+import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { signOut, useSession } from '@/hooks/useSupabaseSession';
 import { authStateManager, clearAuthData } from '@/lib/auth/auth-state-manager';
@@ -20,6 +21,7 @@ import type {
  * 사용자 정보, 인증 상태 관리
  */
 export function useProfileAuth(): ProfileAuthHook {
+  const router = useRouter();
   const { status } = useSession();
 
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
@@ -99,7 +101,7 @@ export function useProfileAuth(): ProfileAuthHook {
       logger.info('✅ 통합 로그아웃 완료 - 리다이렉트 진행');
 
       // 로그인 페이지로 리다이렉트
-      window.location.href = '/login';
+      router.replace('/login');
       return true;
     } catch (error) {
       logger.error('❌ 통합 로그아웃 실패:', error);
@@ -131,10 +133,10 @@ export function useProfileAuth(): ProfileAuthHook {
       }
 
       // 실패해도 로그인 페이지로 강제 이동
-      window.location.href = '/login';
+      router.replace('/login');
       return false;
     }
-  }, [userType]);
+  }, [router, userType]);
 
   // 비활성 타이머는 사용하지 않음 (max-lines-per-function 경고 해결)
 
@@ -143,13 +145,13 @@ export function useProfileAuth(): ProfileAuthHook {
    */
   const navigateToLogin = useCallback(() => {
     logger.info('🚀 navigateToLogin 호출됨 - /login으로 이동');
-    window.location.href = '/login';
-  }, []);
+    router.replace('/login');
+  }, [router]);
 
   const navigateToDashboard = useCallback(() => {
     logger.info('🚀 navigateToDashboard 호출됨 - /dashboard로 이동');
-    window.location.href = '/dashboard';
-  }, []);
+    router.replace('/dashboard');
+  }, [router]);
 
   return {
     userInfo,

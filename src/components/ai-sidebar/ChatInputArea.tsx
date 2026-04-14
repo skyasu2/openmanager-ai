@@ -91,6 +91,15 @@ export const ChatInputArea = memo(function ChatInputArea({
   const popoverRef = useRef<HTMLDivElement>(null);
   const toggleButtonRef = useRef<HTMLButtonElement>(null);
 
+  const closePopover = useCallback((restoreFocus: boolean = false) => {
+    setIsPopoverOpen(false);
+    if (restoreFocus) {
+      requestAnimationFrame(() => {
+        toggleButtonRef.current?.focus();
+      });
+    }
+  }, []);
+
   // 활성화된 도구 수 (badge 표시용)
   const activeToolCount = (webSearchEnabled ? 1 : 0) + (ragEnabled ? 1 : 0);
 
@@ -98,20 +107,34 @@ export const ChatInputArea = memo(function ChatInputArea({
   useEffect(() => {
     if (!isPopoverOpen) return;
 
-    const handleClickOutside = (e: MouseEvent) => {
+    const handlePointerOutside = (e: MouseEvent | TouchEvent) => {
       if (
         popoverRef.current &&
         !popoverRef.current.contains(e.target as Node) &&
         toggleButtonRef.current &&
         !toggleButtonRef.current.contains(e.target as Node)
       ) {
-        setIsPopoverOpen(false);
+        closePopover();
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isPopoverOpen]);
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closePopover(true);
+      }
+    };
+
+    document.addEventListener('mousedown', handlePointerOutside);
+    document.addEventListener('touchstart', handlePointerOutside);
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerOutside);
+      document.removeEventListener('touchstart', handlePointerOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [closePopover, isPopoverOpen]);
 
   const handleTogglePopover = useCallback(() => {
     setIsPopoverOpen((prev) => !prev);
@@ -119,8 +142,8 @@ export const ChatInputArea = memo(function ChatInputArea({
 
   const handleFileAttach = useCallback(() => {
     onOpenFileDialog();
-    setIsPopoverOpen(false);
-  }, [onOpenFileDialog]);
+    closePopover();
+  }, [closePopover, onOpenFileDialog]);
 
   return (
     <>
@@ -261,6 +284,7 @@ export const ChatInputArea = memo(function ChatInputArea({
                 title="도구 및 옵션"
                 aria-label="도구 메뉴 열기"
                 aria-expanded={isPopoverOpen}
+                aria-haspopup="dialog"
               >
                 <Plus
                   className={`h-5 w-5 transition-transform duration-200 ${isPopoverOpen ? 'rotate-45' : ''}`}

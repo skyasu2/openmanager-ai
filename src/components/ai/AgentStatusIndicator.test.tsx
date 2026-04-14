@@ -163,6 +163,20 @@ describe('AgentStatusIndicator', () => {
       ).toBeInTheDocument();
     });
 
+    it('should render runtime message in full mode when provided', () => {
+      render(
+        <AgentStatusIndicator
+          agent="Orchestrator"
+          status="processing"
+          message="라우팅 타임아웃, Analyst Agent로 전환..."
+        />
+      );
+
+      expect(
+        screen.getByText('· 라우팅 타임아웃, Analyst Agent로 전환...')
+      ).toBeInTheDocument();
+    });
+
     it('should fall back safely when runtime status is unexpected', () => {
       render(
         <AgentStatusIndicator

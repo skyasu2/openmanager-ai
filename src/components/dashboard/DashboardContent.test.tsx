@@ -4,7 +4,8 @@
 
 import { fireEvent, render, screen } from '@testing-library/react';
 import type { ComponentProps } from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { useDashboardStats } from '@/hooks/dashboard/useDashboardStats';
 import type { Server } from '@/types/server';
 import { toDashboardAlertContext } from './alert-ai-context';
 import DashboardContent from './DashboardContent';
@@ -132,6 +133,19 @@ vi.mock('./log-explorer/LogExplorerModal', () => ({
   ),
 }));
 
+const mockedUseDashboardStats = vi.mocked(useDashboardStats);
+
+beforeEach(() => {
+  mockedUseDashboardStats.mockReturnValue({
+    total: 15,
+    online: 15,
+    offline: 0,
+    warning: 0,
+    critical: 0,
+    unknown: 0,
+  });
+});
+
 const createProps = (
   overrides: Partial<ComponentProps<typeof DashboardContent>> = {}
 ): ComponentProps<typeof DashboardContent> => ({
@@ -186,6 +200,36 @@ describe('DashboardContent empty state', () => {
     expect(
       screen.queryByRole('button', { name: '상태 필터 초기화' })
     ).not.toBeInTheDocument();
+  });
+
+  it('빈 결과셋에서도 0 통계를 부모로 전달해야 한다', () => {
+    const onStatsUpdate = vi.fn();
+
+    mockedUseDashboardStats.mockReturnValue({
+      total: 0,
+      online: 0,
+      offline: 0,
+      warning: 0,
+      critical: 0,
+      unknown: 0,
+    });
+
+    render(
+      <DashboardContent
+        {...createProps({
+          onStatsUpdate,
+        })}
+      />
+    );
+
+    expect(onStatsUpdate).toHaveBeenCalledWith({
+      total: 0,
+      online: 0,
+      offline: 0,
+      warning: 0,
+      critical: 0,
+      unknown: 0,
+    });
   });
 
   it('요약 액션 콜백을 각 모달 open 상태로 연결한다', () => {

@@ -61,7 +61,20 @@ function AuthSuccessContent() {
         searchParams.has('error') ||
         searchParams.has('error_description')
       ) {
-        const query = searchParams.toString();
+        const callbackParams = new URLSearchParams(searchParams.toString());
+
+        if (
+          searchParams.has('code') &&
+          !callbackParams.has('next') &&
+          !callbackParams.has('redirectTo')
+        ) {
+          const targetPath = getTargetPath();
+          if (targetPath !== DEFAULT_REDIRECT_PATH) {
+            callbackParams.set('next', targetPath);
+          }
+        }
+
+        const query = callbackParams.toString();
         const callbackUrl = query
           ? `/auth/callback?${query}`
           : '/auth/callback';

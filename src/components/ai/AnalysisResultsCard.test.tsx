@@ -7,6 +7,23 @@ import { describe, expect, it, vi } from 'vitest';
 import type { MultiServerAnalysisResponse } from '@/types/intelligent-monitoring.types';
 import AnalysisResultsCard from './AnalysisResultsCard';
 
+vi.mock('next/link', () => ({
+  __esModule: true,
+  default: ({
+    href,
+    children,
+    className,
+  }: {
+    href: string;
+    children: React.ReactNode;
+    className?: string;
+  }) => (
+    <a href={href} className={className}>
+      {children}
+    </a>
+  ),
+}));
+
 vi.mock('@/lib/format-date', () => ({
   formatDateTime: () => '2026-03-17 17:55:00',
 }));
@@ -210,5 +227,20 @@ describe('AnalysisResultsCard', () => {
     expect(screen.getByText('cache-redis-dc1-01')).toBeInTheDocument();
     expect(screen.getByText('api-was-dc1-01')).toBeInTheDocument();
     expect(screen.queryByText('web-nginx-dc1-01')).not.toBeInTheDocument();
+  });
+
+  it('uses client-side login navigation for auth errors', () => {
+    render(
+      <AnalysisResultsCard
+        result={null}
+        isLoading={false}
+        error="로그인이 필요합니다. 게스트 로그인 후 이용해주세요."
+      />
+    );
+
+    expect(screen.getByRole('link', { name: '로그인하기' })).toHaveAttribute(
+      'href',
+      '/login'
+    );
   });
 });

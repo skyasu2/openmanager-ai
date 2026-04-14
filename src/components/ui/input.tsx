@@ -15,7 +15,6 @@ const Input = forwardRef<HTMLInputElement, ComponentProps<'input'>>(
   ({ className, type, style, ...props }, ref) => {
     return (
       <input
-        aria-label="입력"
         type={type}
         className={cn(
           'flex h-9 w-full border bg-white px-3 py-1 text-base hover:border-gray-400 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',

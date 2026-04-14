@@ -47,16 +47,23 @@ export const ChatMessageList = memo(function ChatMessageList({
   regenerateResponse,
   setInputValue,
 }: ChatMessageListProps) {
+  const hasMessages = allMessages.length > 0;
+  const liveRegionProps = hasMessages
+    ? {
+        role: 'log' as const,
+        'aria-live': 'polite' as const,
+        'aria-label': 'AI 대화 메시지',
+        'aria-relevant': 'additions text' as const,
+        'aria-atomic': 'false' as const,
+      }
+    : {};
+
   return (
     <div
       ref={scrollContainerRef}
       className="flex-1 overflow-y-auto scroll-smooth will-change-scroll"
-      role="log"
-      aria-live="polite"
-      aria-label="AI 대화 메시지"
-      aria-relevant="additions text"
-      aria-atomic="false"
       aria-busy={isGenerating}
+      {...liveRegionProps}
     >
       <div className="mx-auto max-w-3xl space-y-3 p-3 sm:space-y-4 sm:p-4">
         {/* 자동장애보고서 알림 */}

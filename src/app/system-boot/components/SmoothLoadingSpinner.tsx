@@ -10,7 +10,7 @@ export const SmoothLoadingSpinner = () => {
       />
       {/* 내부 링 - 더 부드러운 애니메이션 (역방향) */}
       <div
-        className="border-3 animate-spin absolute inset-2 rounded-full border-transparent border-b-purple-400 border-l-pink-400"
+        className="absolute inset-2 animate-spin rounded-full border-[3px] border-transparent border-b-purple-400 border-l-pink-400"
         style={{ animationDuration: '2.5s', animationDirection: 'reverse' }}
       />
       {/* 중앙 아이콘 - 부드러운 펄스 */}

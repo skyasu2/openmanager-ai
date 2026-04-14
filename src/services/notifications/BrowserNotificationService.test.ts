@@ -40,6 +40,7 @@ describe('BrowserNotificationService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     browserNotificationService.clearHistory();
+    vi.useRealTimers();
   });
 
   describe('processServerNotification', () => {
@@ -285,6 +286,72 @@ describe('BrowserNotificationService', () => {
         'warning',
         undefined
       );
+    });
+
+    it('should cancel a pending shutdown prompt timer', () => {
+      vi.useFakeTimers();
+
+      const confirmMock = vi.fn(() => true);
+      const reloadMock = vi.fn();
+      const sendNotificationMock = vi
+        .spyOn(browserNotificationService as never, 'sendNotification' as never)
+        .mockImplementation(() => {});
+
+      vi.stubGlobal('confirm', confirmMock);
+      vi.stubGlobal('window', {
+        location: {
+          reload: reloadMock,
+        },
+        focus: vi.fn(),
+      });
+
+      (browserNotificationService as { isEnabled: boolean }).isEnabled = true;
+
+      browserNotificationService.sendSystemShutdownNotification(
+        '30분 자동 종료'
+      );
+      browserNotificationService.clearHistory();
+
+      vi.advanceTimersByTime(2000);
+
+      expect(sendNotificationMock).toHaveBeenCalledTimes(1);
+      expect(confirmMock).not.toHaveBeenCalled();
+      expect(reloadMock).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('sendSystemShutdownNotification', () => {
+    it('should dedupe pending shutdown confirmation prompts', () => {
+      vi.useFakeTimers();
+
+      const confirmMock = vi.fn(() => true);
+      const reloadMock = vi.fn();
+      const sendNotificationMock = vi
+        .spyOn(browserNotificationService as never, 'sendNotification' as never)
+        .mockImplementation(() => {});
+
+      vi.stubGlobal('confirm', confirmMock);
+      vi.stubGlobal('window', {
+        location: {
+          reload: reloadMock,
+        },
+        focus: vi.fn(),
+      });
+
+      (browserNotificationService as { isEnabled: boolean }).isEnabled = true;
+
+      browserNotificationService.sendSystemShutdownNotification(
+        '30분 자동 종료'
+      );
+      browserNotificationService.sendSystemShutdownNotification(
+        '30분 자동 종료'
+      );
+
+      vi.advanceTimersByTime(2000);
+
+      expect(sendNotificationMock).toHaveBeenCalledTimes(2);
+      expect(confirmMock).toHaveBeenCalledTimes(1);
+      expect(reloadMock).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -173,6 +173,7 @@ export const IncidentTable = memo(function IncidentTable({
               type="button"
               onClick={onPrevPage}
               disabled={pagination.page <= 1}
+              aria-label="이전 페이지"
               className="rounded-lg border border-gray-200 p-2 text-gray-500 hover:bg-gray-50 disabled:opacity-50"
             >
               <ChevronLeft className="h-4 w-4" />
@@ -184,6 +185,7 @@ export const IncidentTable = memo(function IncidentTable({
               type="button"
               onClick={onNextPage}
               disabled={pagination.page >= pagination.totalPages}
+              aria-label="다음 페이지"
               className="rounded-lg border border-gray-200 p-2 text-gray-500 hover:bg-gray-50 disabled:opacity-50"
             >
               <ChevronRight className="h-4 w-4" />
@@ -200,6 +202,7 @@ export const IncidentTable = memo(function IncidentTable({
             <button
               type="button"
               onClick={onCloseDetail}
+              aria-label="보고서 상세 닫기"
               className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
             >
               <X className="h-5 w-5" />

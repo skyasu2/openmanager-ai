@@ -40,9 +40,33 @@ const DashboardHeader = memo(function DashboardHeader({
 }: DashboardHeaderProps) {
   // 🔒 Hydration 불일치 방지를 위한 클라이언트 전용 상태
   const [isMounted, setIsMounted] = React.useState(false);
+  const [isDesktopLayout, setIsDesktopLayout] = React.useState(false);
 
   React.useEffect(() => {
     setIsMounted(true);
+
+    const mediaQuery = window.matchMedia('(min-width: 1024px)');
+    const syncLayout = (matches: boolean) => {
+      setIsDesktopLayout(matches);
+    };
+
+    syncLayout(mediaQuery.matches);
+
+    const handleChange = (event: MediaQueryListEvent) => {
+      syncLayout(event.matches);
+    };
+
+    if (typeof mediaQuery.addEventListener === 'function') {
+      mediaQuery.addEventListener('change', handleChange);
+      return () => {
+        mediaQuery.removeEventListener('change', handleChange);
+      };
+    }
+
+    mediaQuery.addListener(handleChange);
+    return () => {
+      mediaQuery.removeListener(handleChange);
+    };
   }, []);
 
   // 🔧 P2: 세분화된 Selector - aiAgent.isEnabled만 구독하여 불필요한 리렌더 방지
@@ -111,10 +135,12 @@ const DashboardHeader = memo(function DashboardHeader({
         </div>
 
         {/* 중앙: 실시간 정보 + 세션 카운트다운 */}
-        <div className="hidden items-center gap-4 lg:flex">
-          <RealTimeDisplay />
-          <SessionCountdown />
-        </div>
+        {isDesktopLayout && (
+          <div className="hidden items-center gap-4 lg:flex">
+            <RealTimeDisplay />
+            <SessionCountdown />
+          </div>
+        )}
 
         {/* 오른쪽: AI 어시스턴트 & 프로필 */}
         <div className="flex shrink-0 items-center gap-2 sm:gap-4">
@@ -137,12 +163,14 @@ const DashboardHeader = memo(function DashboardHeader({
       />
 
       {/* 모바일용 실시간 정보 + 세션 카운트다운 */}
-      <div className="border-t border-gray-200 bg-gray-50 px-4 py-2 lg:hidden">
-        <div className="flex flex-nowrap items-center justify-center gap-2 text-xs">
-          <RealTimeDisplay />
-          <SessionCountdown />
+      {!isDesktopLayout && (
+        <div className="border-t border-gray-200 bg-gray-50 px-4 py-2 lg:hidden">
+          <div className="flex flex-nowrap items-center justify-center gap-2 text-xs">
+            <RealTimeDisplay />
+            <SessionCountdown />
+          </div>
         </div>
-      </div>
+      )}
     </header>
   );
 });

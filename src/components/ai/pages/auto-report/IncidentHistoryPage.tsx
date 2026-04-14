@@ -35,6 +35,14 @@ export const IncidentHistoryPage = memo(function IncidentHistoryPage() {
     clearFilters,
     formatDate,
   } = useIncidentHistory();
+  const rangeStart =
+    pagination.total === 0
+      ? 0
+      : pagination.page * pagination.limit - pagination.limit + 1;
+  const rangeEnd =
+    pagination.total === 0
+      ? 0
+      : Math.min(pagination.page * pagination.limit, pagination.total);
 
   return (
     <div className="flex h-full flex-col bg-linear-to-br from-slate-50 to-blue-50">
@@ -122,9 +130,7 @@ export const IncidentHistoryPage = memo(function IncidentHistoryPage() {
         <div className="flex items-center justify-between text-sm text-gray-600">
           <span>총 {pagination.total}개 보고서</span>
           <span>
-            {pagination.page * pagination.limit - pagination.limit + 1} -{' '}
-            {Math.min(pagination.page * pagination.limit, pagination.total)}{' '}
-            표시 중
+            {rangeStart} - {rangeEnd} 표시 중
           </span>
         </div>
       </div>

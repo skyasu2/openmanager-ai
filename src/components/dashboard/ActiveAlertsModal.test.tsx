@@ -72,4 +72,22 @@ describe('ActiveAlertsModal', () => {
     ).not.toBeInTheDocument();
     expect(screen.getByText('Network I/O = 82.0%')).toBeInTheDocument();
   });
+
+  it('60초 미만 활성 알림은 0m elapsed 대신 just now로 표시해야 한다', () => {
+    render(
+      <ActiveAlertsModal
+        open
+        onClose={vi.fn()}
+        alerts={[
+          createAlert({
+            duration: 25,
+            value: 88,
+          }),
+        ]}
+      />
+    );
+
+    expect(screen.getByText('just now')).toBeInTheDocument();
+    expect(screen.queryByText('0m elapsed')).not.toBeInTheDocument();
+  });
 });

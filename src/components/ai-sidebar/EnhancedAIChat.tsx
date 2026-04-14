@@ -162,6 +162,7 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
     handleSendInput,
     isGenerating,
     isLimitReached: sessionState?.isLimitReached,
+    shouldRestoreFocus: !clarification,
     messagesEndRef,
     limitedMessagesLength: limitedMessages.length,
   });
@@ -251,6 +252,7 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
         onSubmitCustomClarification &&
         onSkipClarification && (
           <ClarificationDialog
+            key={`${clarification.originalQuery}:${clarification.options[0]?.id ?? 'none'}`}
             clarification={clarification}
             onSelectOption={onSelectClarification}
             onSubmitCustom={onSubmitCustomClarification}

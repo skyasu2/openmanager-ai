@@ -98,7 +98,11 @@ export const AIWorkspaceMessage = memo<{
       Boolean(message.metadata?.analysisBasis));
   const shouldShowActionBar = canShowDetail || hasTextContent;
 
-  if (message.role === 'thinking' && message.thinkingSteps) {
+  if (message.role === 'thinking' && !message.thinkingSteps?.length) {
+    return null;
+  }
+
+  if (message.role === 'thinking' && message.thinkingSteps?.length) {
     return (
       <div className="my-4">
         <MemoizedThinkingProcessVisualizer

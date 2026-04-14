@@ -19,6 +19,11 @@ const severityBadge: Record<MonitoringAlert['severity'], string> = {
   warning: 'bg-amber-100 text-amber-700 border-amber-200',
 };
 
+function formatElapsedDuration(seconds: number): string {
+  if (seconds < 60) return 'just now';
+  return `${Math.round(seconds / 60)}m elapsed`;
+}
+
 interface ActiveAlertsModalProps {
   open: boolean;
   onClose: () => void;
@@ -153,9 +158,7 @@ function AlertRow({
         </div>
       </div>
       <span className="ml-3 shrink-0 tabular-nums text-xs text-gray-400">
-        {alert.duration > 0
-          ? `${Math.round(alert.duration / 60)}m elapsed`
-          : 'just now'}
+        {formatElapsedDuration(alert.duration)}
       </span>
     </>
   );

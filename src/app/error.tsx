@@ -13,10 +13,12 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    logger.error(error);
-    Sentry.captureException(error, {
-      tags: { boundary: 'root', digest: error.digest },
-    });
+    if (process.env.NODE_ENV === 'production') {
+      logger.error(error);
+      Sentry.captureException(error, {
+        tags: { boundary: 'root', digest: error.digest },
+      });
+    }
   }, [error]);
 
   return (

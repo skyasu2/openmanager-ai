@@ -130,23 +130,33 @@ export function useSession(): UseSessionReturn {
     void checkSession();
 
     // 세션 변경 감지
-    const response = getSupabase().auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        setUser(session.user);
-        setStatus('authenticated');
-      } else {
-        setUser(null);
-        setStatus('unauthenticated');
-      }
+    let unsubscribe: (() => void) | undefined;
 
-      // 🎯 router.refresh() 제거: 불필요한 전체 페이지 리렌더링 방지
-      // React의 자연스러운 상태 전파를 통해 필요한 컴포넌트만 리렌더링
-    });
+    try {
+      const response = getSupabase().auth.onAuthStateChange(
+        (_event, session) => {
+          if (session?.user) {
+            setUser(session.user);
+            setStatus('authenticated');
+          } else {
+            setUser(null);
+            setStatus('unauthenticated');
+          }
+
+          // 🎯 router.refresh() 제거: 불필요한 전체 페이지 리렌더링 방지
+          // React의 자연스러운 상태 전파를 통해 필요한 컴포넌트만 리렌더링
+        }
+      );
+
+      unsubscribe = response?.data?.subscription?.unsubscribe;
+    } catch (error) {
+      logger.warn('⚠️ Supabase 세션 리스너 초기화 실패:', error);
+      setUser(null);
+      setStatus('unauthenticated');
+    }
 
     return () => {
-      if (response?.data?.subscription) {
-        response.data.subscription.unsubscribe();
-      }
+      unsubscribe?.();
     };
   }, []); // router 의존성 제거 - Next.js router는 불안정한 참조로 무한 리렌더링 유발
 
@@ -166,18 +176,44 @@ export function useSession(): UseSessionReturn {
 
   // 세션 업데이트 함수 - getUser()로 JWT 검증 활성화
   const update = async (): Promise<Session | null> => {
-    const {
-      data: { user: validatedUser },
-      error,
-    } = await getSupabase().auth.getUser();
-    if (error && error.message !== 'Auth session missing!') {
-      logger.warn('⚠️ 세션 업데이트 JWT 검증 실패:', error.message);
-    }
-    if (validatedUser) {
+    try {
+      const {
+        data: { user: validatedUser },
+        error,
+      } = await getSupabase().auth.getUser();
+      if (error && error.message !== 'Auth session missing!') {
+        logger.warn('⚠️ 세션 업데이트 JWT 검증 실패:', error.message);
+      }
+
+      if (!validatedUser) {
+        setUser(null);
+        setStatus('unauthenticated');
+        return null;
+      }
+
+      const nextSession: Session = {
+        user: {
+          id: validatedUser.id,
+          email: validatedUser.email,
+          name:
+            validatedUser.user_metadata?.name ||
+            validatedUser.email?.split('@')[0] ||
+            null,
+          image: validatedUser.user_metadata?.avatar_url || null,
+          provider: validatedUser.app_metadata?.provider || 'unknown',
+        },
+        expires: new Date(Date.now() + 60 * 60 * 24 * 30 * 1000).toISOString(),
+      };
+
       setUser(validatedUser);
       setStatus('authenticated');
+      return nextSession;
+    } catch (error) {
+      logger.error('세션 업데이트 오류:', error);
+      setUser(null);
+      setStatus('unauthenticated');
+      return null;
     }
-    return data;
   };
 
   return {

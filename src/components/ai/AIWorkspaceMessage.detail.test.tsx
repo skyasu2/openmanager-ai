@@ -91,4 +91,22 @@ describe('AIWorkspaceMessage detail affordance', () => {
     ).toBeInTheDocument();
     expect(screen.queryByTestId('message-actions')).not.toBeInTheDocument();
   });
+
+  it('does not render an empty thinking visualizer when thinking steps are empty', () => {
+    const message: EnhancedChatMessage = {
+      id: 'thinking-1',
+      role: 'thinking',
+      content: '',
+      timestamp: new Date('2026-04-10T17:10:00.000Z'),
+      isStreaming: true,
+      thinkingSteps: [],
+    };
+
+    const { container } = render(
+      <AIWorkspaceMessage message={message} isLastMessage={true} />
+    );
+
+    expect(screen.queryByTestId('thinking-visualizer')).not.toBeInTheDocument();
+    expect(container).toBeEmptyDOMElement();
+  });
 });

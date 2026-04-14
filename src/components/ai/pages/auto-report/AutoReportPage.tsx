@@ -27,6 +27,7 @@ import {
   RefreshCw,
   X,
 } from 'lucide-react';
+import Link from 'next/link';
 import { useCallback, useState } from 'react';
 import { rulesLoader } from '@/config/rules/loader';
 import { useServerQuery } from '@/hooks/useServerQuery';
@@ -462,12 +463,12 @@ export default function AutoReportPage() {
                   {error}
                 </p>
                 {error.includes('로그인이 필요합니다') && (
-                  <a
+                  <Link
                     href="/login"
                     className="mt-2 inline-flex items-center gap-1 rounded bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700"
                   >
                     로그인하기
-                  </a>
+                  </Link>
                 )}
               </div>
             </div>

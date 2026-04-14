@@ -8,7 +8,7 @@
  */
 
 import { HelpCircle, MessageSquare, X } from 'lucide-react';
-import { type FC, memo, useState } from 'react';
+import { type FC, memo, useEffect, useId, useRef, useState } from 'react';
 import type {
   ClarificationOption,
   ClarificationRequest,
@@ -46,6 +46,10 @@ export const ClarificationDialog: FC<ClarificationDialogProps> = memo(
   ({ clarification, onSelectOption, onSubmitCustom, onSkip, onDismiss }) => {
     const [customInput, setCustomInput] = useState('');
     const [showCustomInput, setShowCustomInput] = useState(false);
+    const titleId = useId();
+    const descriptionId = useId();
+    const firstOptionRef = useRef<HTMLButtonElement>(null);
+    const customInputRef = useRef<HTMLInputElement>(null);
 
     const handleCustomSubmit = () => {
       if (customInput.trim()) {
@@ -54,10 +58,28 @@ export const ClarificationDialog: FC<ClarificationDialogProps> = memo(
       }
     };
 
+    useEffect(() => {
+      if (showCustomInput) {
+        customInputRef.current?.focus();
+        return;
+      }
+
+      firstOptionRef.current?.focus();
+    }, [showCustomInput]);
+
     return (
       <div
+        role="dialog"
+        aria-labelledby={titleId}
+        aria-describedby={descriptionId}
         className="mx-4 my-3 rounded-xl border border-amber-200 bg-linear-to-br from-amber-50 to-orange-50 p-4 shadow-sm"
         data-testid="clarification-dialog"
+        onKeyDown={(event) => {
+          if (event.key === 'Escape') {
+            event.preventDefault();
+            (onDismiss ?? onSkip)();
+          }
+        }}
       >
         {/* 헤더 */}
         <div className="mb-3 flex items-start justify-between">
@@ -66,10 +88,12 @@ export const ClarificationDialog: FC<ClarificationDialogProps> = memo(
               <HelpCircle className="h-4 w-4 text-amber-600" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-gray-800">
+              <h3 id={titleId} className="text-sm font-semibold text-gray-800">
                 조금 더 구체적으로 알려주세요
               </h3>
-              <p className="text-xs text-gray-500">{clarification.reason}</p>
+              <p id={descriptionId} className="text-xs text-gray-500">
+                {clarification.reason}
+              </p>
             </div>
           </div>
           <button
@@ -91,9 +115,10 @@ export const ClarificationDialog: FC<ClarificationDialogProps> = memo(
 
         {/* 옵션 그리드 */}
         <div className="mb-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-          {clarification.options.map((option) => (
+          {clarification.options.map((option, index) => (
             <button
               key={option.id}
+              ref={index === 0 ? firstOptionRef : undefined}
               type="button"
               onClick={() => onSelectOption(option)}
               className={`flex items-center gap-2 rounded-lg border px-3 py-2.5 text-left text-sm font-medium transition-all ${categoryColors[option.category]}`}
@@ -119,6 +144,7 @@ export const ClarificationDialog: FC<ClarificationDialogProps> = memo(
         ) : (
           <div className="flex gap-2">
             <input
+              ref={customInputRef}
               type="text"
               value={customInput}
               onChange={(e) => setCustomInput(e.target.value)}

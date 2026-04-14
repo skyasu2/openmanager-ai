@@ -65,7 +65,7 @@ interface QueryProviderProps {
 function QueryErrorBoundary({ children }: { children: ReactNode }) {
   return (
     <ErrorBoundary
-      fallback={
+      fallbackRender={({ resetErrorBoundary }) => (
         <div className="flex min-h-screen items-center justify-center">
           <div className="text-center">
             <h2 className="mb-4 text-2xl font-bold text-red-600">
@@ -73,14 +73,14 @@ function QueryErrorBoundary({ children }: { children: ReactNode }) {
             </h2>
             <button
               type="button"
-              onClick={() => window.location.reload()}
+              onClick={resetErrorBoundary}
               className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
             >
-              페이지 새로고침
+              다시 시도
             </button>
           </div>
         </div>
-      }
+      )}
     >
       {children}
     </ErrorBoundary>

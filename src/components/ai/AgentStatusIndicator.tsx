@@ -131,6 +131,7 @@ export const AgentStatusIndicator = memo<AgentStatusIndicatorProps>(
     const style = STATUS_STYLES[status as AgentStatus] ?? FALLBACK_STATUS_STYLE;
     const label = STATUS_LABELS[status as AgentStatus] ?? FALLBACK_STATUS_LABEL;
     const description = message ?? AGENT_DESCRIPTIONS[agent];
+    const runtimeDetail = message?.trim() || null;
     const isActiveStatus = ACTIVE_STATUSES.has(status);
 
     if (compact) {
@@ -162,6 +163,9 @@ export const AgentStatusIndicator = memo<AgentStatusIndicatorProps>(
           <Icon className="h-4 w-4" />
           <span className="text-sm font-medium">{agent}</span>
           <span className="text-xs opacity-75">• {label}</span>
+          {runtimeDetail && (
+            <span className="text-xs opacity-60">· {runtimeDetail}</span>
+          )}
         </div>
       </div>
     );

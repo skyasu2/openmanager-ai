@@ -67,4 +67,34 @@ describe('MarkdownRenderer', () => {
     );
     expect(clearTimeoutSpy).toHaveBeenCalled();
   });
+
+  it('standalone handoff marker는 배지로 렌더링해야 한다', () => {
+    const { container } = render(
+      <MarkdownRenderer
+        content={'🔄 **Orchestrator** → **Analyst Agent**: 이상 탐지 요청'}
+      />
+    );
+
+    expect(screen.getByText('Orchestrator')).toBeInTheDocument();
+    expect(screen.getByText('Analyst Agent')).toBeInTheDocument();
+    expect(screen.getByText('이상 탐지 요청')).toBeInTheDocument();
+    expect(
+      container.querySelector('div.my-3.flex.items-center.justify-center')
+    ).toBeInTheDocument();
+  });
+
+  it('문장 중간에 포함된 handoff marker는 주변 텍스트를 유지해야 한다', () => {
+    const { container } = render(
+      <MarkdownRenderer
+        content={
+          '분석 시작합니다. 🔄 **Orchestrator** → **Analyst Agent**: 이상 탐지 요청됨'
+        }
+      />
+    );
+
+    expect(screen.getByText(/분석 시작합니다\./)).toBeInTheDocument();
+    expect(
+      container.querySelector('div.my-3.flex.items-center.justify-center')
+    ).not.toBeInTheDocument();
+  });
 });

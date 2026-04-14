@@ -60,6 +60,10 @@ const StatusIcon: FC<{ status: AgentStep['status'] }> = ({ status }) => {
  */
 export const InlineAgentStatus: FC<InlineAgentStatusProps> = memo(
   ({ steps, isComplete }) => {
+    if (steps.length === 0) {
+      return null;
+    }
+
     const currentStep = steps.find((s) => s.status === 'processing');
     const hasError = steps.some((s) => s.status === 'error');
 

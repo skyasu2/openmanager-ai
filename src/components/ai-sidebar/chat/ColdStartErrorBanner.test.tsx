@@ -69,4 +69,46 @@ describe('ColdStartErrorBanner', () => {
       screen.queryByRole('button', { name: '재시도' })
     ).not.toBeInTheDocument();
   });
+
+  it('allows auth-related errors to be dismissed explicitly', () => {
+    const onClearError = vi.fn();
+
+    render(
+      <ColdStartErrorBanner
+        error="401 Unauthorized"
+        onClearError={onClearError}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '닫기' }));
+
+    expect(onClearError).toHaveBeenCalledOnce();
+    expect(screen.getByRole('link', { name: '로그인' })).toHaveAttribute(
+      'href',
+      '/login'
+    );
+  });
+
+  it('dismisses cold start errors and stops pending auto-retry', () => {
+    vi.useFakeTimers();
+    const onRetry = vi.fn();
+    const onClearError = vi.fn();
+
+    render(
+      <ColdStartErrorBanner
+        error="504 timeout while waking Cloud Run"
+        onRetry={onRetry}
+        onClearError={onClearError}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '닫기' }));
+
+    act(() => {
+      vi.advanceTimersByTime(16_000);
+    });
+
+    expect(onClearError).toHaveBeenCalledOnce();
+    expect(onRetry).not.toHaveBeenCalled();
+  });
 });

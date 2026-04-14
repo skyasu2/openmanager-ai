@@ -5,11 +5,7 @@ import { memo, useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import remarkGfm from 'remark-gfm';
-import {
-  AgentHandoffBadge,
-  containsHandoffMarker,
-  parseHandoffMarker,
-} from './AgentHandoffBadge';
+import { AgentHandoffBadge, parseHandoffMarker } from './AgentHandoffBadge';
 
 // Highlight.js 스타일 import (Dark Theme)
 import 'highlight.js/styles/github-dark.css';
@@ -17,6 +13,29 @@ import 'highlight.js/styles/github-dark.css';
 interface MarkdownRendererProps {
   content: string;
   className?: string;
+}
+
+const STANDALONE_HANDOFF_PATTERN =
+  /^🔄\s*\*\*([^*]+)\*\*\s*→\s*\*\*([^*]+)\*\*\s*(?::\s*(.+))?$/;
+const STANDALONE_RENDERED_HANDOFF_PATTERN =
+  /^🔄\s*([^→:]+?)\s*→\s*([^:]+?)(?:\s*:\s*(.+))?$/;
+
+function getStandaloneHandoff(text: string) {
+  const trimmed = text.trim();
+  if (STANDALONE_HANDOFF_PATTERN.test(trimmed)) {
+    return parseHandoffMarker(trimmed);
+  }
+
+  const plainTextMatch = trimmed.match(STANDALONE_RENDERED_HANDOFF_PATTERN);
+  if (!plainTextMatch?.[1] || !plainTextMatch?.[2]) {
+    return null;
+  }
+
+  return {
+    from: plainTextMatch[1].trim(),
+    to: plainTextMatch[2].trim(),
+    reason: plainTextMatch[3]?.trim(),
+  };
 }
 
 /**
@@ -217,12 +236,9 @@ export const MarkdownRenderer = memo(function MarkdownRenderer({
           hr: () => <hr className="my-4 border-gray-200" />,
           // 단락 - handoff 마커 감지 및 변환
           p: ({ children }) => {
-            // children이 문자열이고 handoff 마커가 포함된 경우
-            if (
-              typeof children === 'string' &&
-              containsHandoffMarker(children)
-            ) {
-              const handoff = parseHandoffMarker(children);
+            // children이 문자열이고 standalone handoff 마커인 경우만 변환
+            if (typeof children === 'string') {
+              const handoff = getStandaloneHandoff(children);
               if (handoff) {
                 return <AgentHandoffBadge {...handoff} />;
               }
@@ -236,11 +252,9 @@ export const MarkdownRenderer = memo(function MarkdownRenderer({
                   return '';
                 })
                 .join('');
-              if (containsHandoffMarker(textContent)) {
-                const handoff = parseHandoffMarker(textContent);
-                if (handoff) {
-                  return <AgentHandoffBadge {...handoff} />;
-                }
+              const handoff = getStandaloneHandoff(textContent);
+              if (handoff) {
+                return <AgentHandoffBadge {...handoff} />;
               }
             }
             return (

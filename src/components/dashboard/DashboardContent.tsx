@@ -220,7 +220,7 @@ export default memo(function DashboardContent({
   useEffect(() => {
     debug.log('✅ DashboardContent 마운트됨');
     // 🎯 상위 컴포넌트에 통계 업데이트 전달 (ref 사용으로 무한 루프 방지)
-    if (onStatsUpdateRef.current && serverStats.total > 0) {
+    if (onStatsUpdateRef.current) {
       onStatsUpdateRef.current(serverStats);
     }
   }, [serverStats]);

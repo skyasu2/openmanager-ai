@@ -1,6 +1,7 @@
 'use client';
 
 import { AlertTriangle, Bug, Home, RefreshCw, Settings } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,6 +14,7 @@ interface DashboardErrorProps {
 }
 
 export default function DashboardError({ error, reset }: DashboardErrorProps) {
+  const router = useRouter();
   const [isReporting, setIsReporting] = useState(false);
 
   const handleReport = async () => {
@@ -131,7 +133,7 @@ export default function DashboardError({ error, reset }: DashboardErrorProps) {
                 다시 시도
               </Button>
               <Button
-                onClick={() => (window.location.href = '/')}
+                onClick={() => router.replace('/')}
                 variant="outline"
                 className="w-full"
               >
@@ -144,7 +146,7 @@ export default function DashboardError({ error, reset }: DashboardErrorProps) {
             <div className="text-center">
               <Button
                 onClick={() =>
-                  (window.location.href = '/dashboard?instant=true&safe=true')
+                  router.replace('/dashboard?instant=true&safe=true')
                 }
                 variant="outline"
                 className="w-full border-green-300 text-green-700 hover:bg-green-50 dark:border-green-700 dark:text-green-400"

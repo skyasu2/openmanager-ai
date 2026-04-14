@@ -81,6 +81,7 @@ export function ViewButton({
     <button
       type="button"
       onClick={onClick}
+      aria-pressed={active}
       className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
         active
           ? 'bg-white text-gray-900 shadow-sm'
@@ -242,6 +243,7 @@ export const StreamsView: FC<{
                   <button
                     type="button"
                     onClick={() => toggleStream(streamKey)}
+                    aria-expanded={isExpanded}
                     className="mb-2 flex w-full items-center gap-2 rounded-lg bg-white/5 px-3 py-2 text-left transition-colors hover:bg-white/10"
                   >
                     <span className="text-gray-400">
@@ -304,6 +306,7 @@ function FilterChip({
     <button
       type="button"
       onClick={onClick}
+      aria-pressed={active}
       className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
         active
           ? 'border-blue-500 bg-blue-500 text-white'

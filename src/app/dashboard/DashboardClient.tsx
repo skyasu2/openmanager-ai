@@ -211,7 +211,7 @@ function DashboardPageContent({
     onShutdown: () => {
       debug.log('🛑 시스템 자동 종료 완료');
       // 세션 만료 → 홈으로 리다이렉트
-      window.location.href = '/';
+      router.replace('/');
     },
   });
 

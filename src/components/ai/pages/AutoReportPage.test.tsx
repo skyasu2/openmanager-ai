@@ -9,6 +9,23 @@ import AutoReportPage from './auto-report/AutoReportPage';
 const mockFetch = vi.fn();
 const mockUseServerQuery = vi.fn();
 
+vi.mock('next/link', () => ({
+  __esModule: true,
+  default: ({
+    href,
+    children,
+    className,
+  }: {
+    href: string;
+    children: React.ReactNode;
+    className?: string;
+  }) => (
+    <a href={href} className={className}>
+      {children}
+    </a>
+  ),
+}));
+
 vi.mock('lucide-react', () => ({
   AlertCircle: () => <svg data-testid="icon-alert-circle" />,
   BookOpen: () => <svg data-testid="icon-book-open" />,
@@ -122,5 +139,23 @@ describe('AutoReportPage', () => {
     expect(
       screen.getByRole('heading', { name: 'API 서버 CPU 사용률 급증' })
     ).toBeInTheDocument();
+  });
+
+  it('renders a client-side login link when the report API requires auth', async () => {
+    mockFetch.mockResolvedValue({
+      ok: false,
+      status: 401,
+    });
+
+    render(<AutoReportPage />);
+
+    fireEvent.click(screen.getByTestId('report-generate-btn'));
+
+    await waitFor(() => {
+      expect(screen.getByRole('link', { name: '로그인하기' })).toHaveAttribute(
+        'href',
+        '/login'
+      );
+    });
   });
 });

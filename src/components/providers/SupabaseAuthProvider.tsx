@@ -20,18 +20,26 @@ export default function SupabaseAuthProvider({
   children,
 }: SupabaseAuthProviderProps) {
   useEffect(() => {
-    const { data: authListener } = getSupabase().auth.onAuthStateChange(
-      (_event, session) => {
-        authStateManager.invalidateCache();
-        logger.info(
-          '🔐 Auth state changed:',
-          session ? 'Authenticated' : 'Not authenticated'
-        );
-      }
-    );
+    let unsubscribe: (() => void) | undefined;
+
+    try {
+      const { data: authListener } = getSupabase().auth.onAuthStateChange(
+        (_event, session) => {
+          authStateManager.invalidateCache();
+          logger.info(
+            '🔐 Auth state changed:',
+            session ? 'Authenticated' : 'Not authenticated'
+          );
+        }
+      );
+
+      unsubscribe = authListener?.subscription?.unsubscribe;
+    } catch (error) {
+      logger.warn('⚠️ Supabase auth listener 초기화 실패:', error);
+    }
 
     return () => {
-      authListener?.subscription?.unsubscribe();
+      unsubscribe?.();
     };
   }, []);
 
