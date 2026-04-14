@@ -2,8 +2,8 @@
  * @vitest-environment jsdom
  */
 
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 import { MessageDetailSheet } from './MessageDetailSheet';
 
@@ -33,6 +33,21 @@ vi.mock('./ThinkingProcessVisualizer', () => ({
 }));
 
 describe('MessageDetailSheet', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    Object.defineProperty(globalThis.navigator, 'clipboard', {
+      configurable: true,
+      value: {
+        writeText: vi.fn(() => Promise.resolve()),
+      },
+    });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
   it('combines summary and details for collapsed responses without duplicating raw content', () => {
     const message: EnhancedChatMessage = {
       id: 'assistant-1',
@@ -92,5 +107,42 @@ describe('MessageDetailSheet', () => {
 
     expect(screen.getByTestId('thinking-visualizer')).toBeInTheDocument();
     expect(screen.queryByText('전체 응답')).not.toBeInTheDocument();
+  });
+
+  it('trace id copy timer를 unmount 시 정리해야 한다', async () => {
+    const clearTimeoutSpy = vi.spyOn(globalThis, 'clearTimeout');
+
+    const message: EnhancedChatMessage = {
+      id: 'assistant-3',
+      role: 'assistant',
+      content: '응답',
+      timestamp: new Date('2026-04-10T17:20:00.000Z'),
+      isStreaming: false,
+      metadata: {
+        traceId: 'trace-123',
+        analysisBasis: {
+          engine: 'ai-engine',
+          dataSource: 'otel',
+          toolsCalled: [],
+        },
+      },
+    };
+
+    const { unmount } = render(
+      <MessageDetailSheet
+        open={true}
+        onOpenChange={() => {}}
+        message={message}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '복사' }));
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    unmount();
+
+    expect(clearTimeoutSpy).toHaveBeenCalled();
   });
 });

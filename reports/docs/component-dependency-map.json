@@ -2,10 +2,16 @@
   "generatedAt": "2026-04-09",
   "scope": {
     "nodes": "src/components/**/*.tsx (excluding test/stories)",
-    "edges": "static import/export-from resolved inside src/components"
+    "edges": "static import/export-from resolved inside src/components",
+    "excludedRouteLocalNodes": "src/app/**/components/**/*.tsx (counted in inventory, excluded from graph)"
+  },
+  "inventory": {
+    "sharedComponentNodes": 142,
+    "routeLocalComponentNodes": 7,
+    "totalComponentNodes": 149
   },
   "metrics": {
-    "componentSourceLines": 26675,
+    "componentSourceLines": 26662,
     "componentNodes": 142,
     "componentEdges": 132,
     "graphDensity": 0.006593,
@@ -231,6 +237,25 @@
       "toDomain": "dashboard",
       "count": 1
     }
+  ],
+  "appRouteLocalDistribution": [
+    {
+      "area": "main",
+      "count": 5
+    },
+    {
+      "area": "system-boot",
+      "count": 2
+    }
+  ],
+  "appRouteLocalFiles": [
+    "main/components/DashboardSection",
+    "main/components/GuestRestrictionModal",
+    "main/components/LoginPrompt",
+    "main/components/MainPageErrorBoundary",
+    "main/components/SystemStartSection",
+    "system-boot/components/BootProgressBar",
+    "system-boot/components/SmoothLoadingSpinner"
   ],
   "topCycles": []
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { AlertTriangle, Clock, RotateCcw } from 'lucide-react';
+import { useEffect, useId, useRef } from 'react';
 
 /**
  * 자동 로그아웃 경고 컴포넌트 v1.0
@@ -20,21 +21,46 @@ export function AutoLogoutWarning({
   onExtendSession,
   onLogoutNow,
 }: AutoLogoutWarningProps) {
-  if (!isWarning) return null;
+  const titleId = useId();
+  const descriptionId = useId();
+  const extendButtonRef = useRef<HTMLButtonElement>(null);
+  const safeRemainingTime = Math.max(0, remainingTime);
+  const minutes = Math.floor(safeRemainingTime / 60);
+  const seconds = safeRemainingTime % 60;
 
-  const minutes = Math.floor(remainingTime / 60);
-  const seconds = remainingTime % 60;
+  useEffect(() => {
+    if (isWarning) {
+      extendButtonRef.current?.focus();
+    }
+  }, [isWarning]);
+
+  if (!isWarning) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-      <div className="animate-in w-full max-w-md rounded-xl bg-white p-6 shadow-2xl duration-300 zoom-in-95 dark:bg-gray-800">
+      <button
+        type="button"
+        aria-label="배경 클릭으로 세션 연장"
+        className="absolute inset-0 cursor-default"
+        onClick={onExtendSession}
+      />
+      <div
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        aria-describedby={descriptionId}
+        className="animate-in relative z-10 w-full max-w-md rounded-xl bg-white p-6 shadow-2xl duration-300 zoom-in-95 dark:bg-gray-800"
+      >
         {/* 헤더 */}
         <div className="mb-4 flex items-center gap-3">
           <div className="rounded-lg bg-amber-100 p-2 dark:bg-amber-900/30">
             <AlertTriangle className="h-6 w-6 text-amber-600 dark:text-amber-400" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <h3
+              id={titleId}
+              className="text-lg font-semibold text-gray-900 dark:text-white"
+            >
               자동 로그아웃 경고
             </h3>
             <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -47,7 +73,11 @@ export function AutoLogoutWarning({
         <div className="mb-6 rounded-lg bg-amber-50 p-4 dark:bg-amber-900/20">
           <div className="mb-2 flex items-center justify-center gap-2">
             <Clock className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-            <span className="font-mono text-lg font-bold text-amber-700 dark:text-amber-300">
+            <span
+              aria-live="assertive"
+              aria-atomic="true"
+              className="font-mono text-lg font-bold text-amber-700 dark:text-amber-300"
+            >
               {minutes}:{seconds.toString().padStart(2, '0')}
             </span>
           </div>
@@ -57,7 +87,7 @@ export function AutoLogoutWarning({
         </div>
 
         {/* 설명 */}
-        <div className="mb-6 space-y-2">
+        <div id={descriptionId} className="mb-6 space-y-2">
           <p className="text-sm text-gray-600 dark:text-gray-300">
             <strong>사용자 비활성 상태가 감지되었습니다.</strong>
           </p>
@@ -71,6 +101,7 @@ export function AutoLogoutWarning({
         {/* 버튼들 */}
         <div className="flex gap-3">
           <button
+            ref={extendButtonRef}
             type="button"
             onClick={onExtendSession}
             className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 font-medium text-white transition-colors hover:bg-blue-700"

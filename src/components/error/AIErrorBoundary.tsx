@@ -30,6 +30,8 @@ interface AIErrorBoundaryProps {
   onReset?: () => void;
   /** 컴포넌트 이름 (로깅용) */
   componentName?: string;
+  /** 외부 상태 변화 시 에러 상태 초기화 */
+  resetKey?: string | number | null;
 }
 
 interface AIErrorBoundaryState {
@@ -48,6 +50,7 @@ export class AIErrorBoundary extends Component<
   AIErrorBoundaryState
 > {
   private static readonly isDevelopment = process.env.NODE_ENV !== 'production';
+  private copyResetTimeoutRef: ReturnType<typeof setTimeout> | null = null;
 
   constructor(props: AIErrorBoundaryProps) {
     super(props);
@@ -77,7 +80,35 @@ export class AIErrorBoundary extends Component<
     this.props.onError?.(error, errorInfo);
   }
 
+  componentDidUpdate(prevProps: AIErrorBoundaryProps): void {
+    if (
+      this.state.hasError &&
+      prevProps.resetKey !== this.props.resetKey &&
+      this.props.resetKey != null
+    ) {
+      this.clearCopyResetTimeout();
+      this.setState({
+        hasError: false,
+        error: null,
+        errorInfo: null,
+        copied: false,
+      });
+    }
+  }
+
+  componentWillUnmount(): void {
+    this.clearCopyResetTimeout();
+  }
+
+  private clearCopyResetTimeout(): void {
+    if (this.copyResetTimeoutRef) {
+      clearTimeout(this.copyResetTimeoutRef);
+      this.copyResetTimeoutRef = null;
+    }
+  }
+
   handleReset = (): void => {
+    this.clearCopyResetTimeout();
     this.setState({
       hasError: false,
       error: null,
@@ -94,7 +125,11 @@ export class AIErrorBoundary extends Component<
     try {
       await navigator.clipboard.writeText(errorText);
       this.setState({ copied: true });
-      setTimeout(() => this.setState({ copied: false }), 2000);
+      this.clearCopyResetTimeout();
+      this.copyResetTimeoutRef = setTimeout(() => {
+        this.setState({ copied: false });
+        this.copyResetTimeoutRef = null;
+      }, 2000);
     } catch {
       logger.warn('Failed to copy error to clipboard');
     }

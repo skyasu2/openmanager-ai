@@ -105,10 +105,6 @@ export function WebVitalsReporter() {
   const metricsRef = useRef<Record<string, WebVitalsMetricPayload>>({});
 
   useEffect(() => {
-    pathnameRef.current = pathname ?? window.location.pathname;
-  }, [pathname]);
-
-  useEffect(() => {
     if (sessionIdRef.current === 'pending') {
       sessionIdRef.current = createSessionId();
     }
@@ -147,6 +143,14 @@ export function WebVitalsReporter() {
       flushMetrics();
     }, FLUSH_DELAY_MS);
   }, [flushMetrics]);
+
+  useEffect(() => {
+    const nextPath = pathname ?? window.location.pathname;
+    if (pathnameRef.current !== nextPath) {
+      flushMetrics();
+    }
+    pathnameRef.current = nextPath;
+  }, [flushMetrics, pathname]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {

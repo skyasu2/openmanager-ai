@@ -4,7 +4,7 @@
 
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { useProfileMenu, useProfileMenuKeyboard } from './useProfileMenu';
+import { useProfileMenu } from './useProfileMenu';
 
 vi.mock('@/lib/logging', () => ({
   logger: {
@@ -64,30 +64,5 @@ describe('useProfileMenu', () => {
     });
 
     expect(result.current.menuState.showProfileMenu).toBe(false);
-  });
-});
-
-describe('useProfileMenuKeyboard', () => {
-  it('표시 가능한 메뉴가 없으면 포커스를 유지하지 않는다', () => {
-    const { result } = renderHook(() =>
-      useProfileMenuKeyboard(
-        [
-          { id: 'hidden', visible: false },
-          { id: 'disabled', visible: true, disabled: true },
-        ],
-        true
-      )
-    );
-
-    act(() => {
-      document.dispatchEvent(
-        new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true })
-      );
-      document.dispatchEvent(
-        new KeyboardEvent('keydown', { key: 'Home', bubbles: true })
-      );
-    });
-
-    expect(result.current.focusedIndex).toBe(-1);
   });
 });

@@ -57,7 +57,7 @@ export const ResizeHandle = memo(function ResizeHandle({
       aria-orientation="vertical"
       title="드래그하여 너비 조절"
       className={cn(
-        'absolute left-0 top-0 z-10 h-full w-1.5',
+        'group absolute left-0 top-0 z-10 h-full w-1.5',
         'cursor-col-resize',
         'bg-transparent',
         'hover:bg-blue-400/30',
@@ -76,7 +76,7 @@ export const ResizeHandle = memo(function ResizeHandle({
           'flex h-8 w-4 items-center justify-center',
           'rounded bg-gray-200/80 opacity-0',
           'transition-opacity duration-150',
-          'group-hover:opacity-100',
+          'group-hover:opacity-100 group-active:opacity-100',
           isResizing && 'opacity-100 bg-blue-200'
         )}
       >

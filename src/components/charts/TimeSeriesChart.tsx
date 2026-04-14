@@ -458,6 +458,33 @@ const TimeSeriesChartInner = memo(function TimeSeriesChartInner({
 
 TimeSeriesChartInner.displayName = 'TimeSeriesChartInner';
 
+function getBoundaryResetKey(props: TimeSeriesChartProps): string {
+  const lastData = props.data[props.data.length - 1];
+  const firstPrediction = props.predictions?.[0];
+  const lastPrediction = props.predictions?.[props.predictions.length - 1];
+  const firstAnomaly = props.anomalies?.[0];
+  const lastAnomaly = props.anomalies?.[props.anomalies.length - 1];
+
+  return [
+    props.metric,
+    props.height ?? 300,
+    props.compact ? 'compact' : 'full',
+    props.showPrediction ?? true,
+    props.showAnomalies ?? true,
+    props.showThresholds ?? true,
+    props.showBrush ?? false,
+    props.data.length,
+    props.data[0]?.timestamp ?? '',
+    lastData?.timestamp ?? '',
+    props.predictions?.length ?? 0,
+    firstPrediction?.timestamp ?? '',
+    lastPrediction?.timestamp ?? '',
+    props.anomalies?.length ?? 0,
+    firstAnomaly?.startTime ?? '',
+    lastAnomaly?.endTime ?? '',
+  ].join('|');
+}
+
 /**
  * TimeSeriesChart with Error Boundary
  * 차트 렌더링 오류를 안전하게 처리합니다.
@@ -465,10 +492,13 @@ TimeSeriesChartInner.displayName = 'TimeSeriesChartInner';
 export const TimeSeriesChart = memo(function TimeSeriesChart(
   props: TimeSeriesChartProps
 ) {
+  const resetKey = getBoundaryResetKey(props);
+
   return (
     <ChartErrorBoundary
       height={props.height || 300}
       chartName={props.metric ? METRIC_LABELS[props.metric] : undefined}
+      resetKey={resetKey}
     >
       <TimeSeriesChartInner {...props} />
     </ChartErrorBoundary>

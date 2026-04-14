@@ -313,10 +313,7 @@ export default memo(function DashboardContent({
             </Suspense>
           </>
         ) : (
-          <div
-            role="status"
-            className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg"
-          >
+          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg">
             <div className="text-center text-gray-500">
               {emptyStateMode === 'filtered-empty' ? (
                 <>

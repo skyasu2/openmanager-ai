@@ -53,6 +53,15 @@ const statusStyles = {
   },
 } as const;
 
+const statusLabels: Record<ServerStatus, string> = {
+  online: '정상',
+  warning: '경고',
+  critical: '심각',
+  offline: '오프라인',
+  maintenance: '점검 중',
+  unknown: '알 수 없음',
+};
+
 export const ServerStatusIndicator: React.FC<ServerStatusIndicatorProps> = memo(
   ({ status, size = 'md', showText = true, className = '' }) => {
     const sizeClasses = {
@@ -61,12 +70,13 @@ export const ServerStatusIndicator: React.FC<ServerStatusIndicatorProps> = memo(
       lg: 'w-4 h-4',
     };
 
-    const statusStyle = statusStyles[status];
+    const safeStatus = status in statusStyles ? status : 'unknown';
+    const statusStyle = statusStyles[safeStatus];
 
     return (
       <output
         className={`inline-flex items-center gap-1.5 ${className}`}
-        aria-label={`서버 상태: ${status}`}
+        aria-label={`서버 상태: ${safeStatus}`}
       >
         <div
           className={`rounded-full ${statusStyle.indicator} ${sizeClasses[size]} ${statusStyle.pulse} transition-colors duration-300 ease-in-out`}
@@ -76,17 +86,7 @@ export const ServerStatusIndicator: React.FC<ServerStatusIndicatorProps> = memo(
           <span
             className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusStyle.text} transition-colors duration-300 ease-in-out`}
           >
-            {status === 'online'
-              ? '정상'
-              : status === 'warning'
-                ? '경고'
-                : status === 'critical'
-                  ? '심각'
-                  : status === 'offline'
-                    ? '오프라인'
-                    : status === 'maintenance'
-                      ? '점검 중'
-                      : '알 수 없음'}
+            {statusLabels[safeStatus]}
           </span>
         )}
       </output>

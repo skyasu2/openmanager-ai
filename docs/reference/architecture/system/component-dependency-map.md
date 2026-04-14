@@ -22,11 +22,36 @@
 - 대상 엣지: 정적 `import`/`export ... from` 중 내부 컴포넌트로 해석되는 참조
 - 제외: 런타임 동적 import, Next route(`src/app`) 전용 컴포넌트, 외부 패키지 의존성
 
+## Inventory Coverage
+
+| Inventory Slice | Count |
+| --- | --- |
+| Shared component graph scope (`src/components/**/*.tsx`) | 142 |
+| Route-local components excluded from graph (`src/app/**/components/**/*.tsx`) | 7 |
+| Total TSX component inventory | 149 |
+
+## App Route-Local Component Distribution
+
+| App Area | Node Count |
+| --- | --- |
+| main | 5 |
+| system-boot | 2 |
+
+Route-local component files:
+
+- `main/components/DashboardSection`
+- `main/components/GuestRestrictionModal`
+- `main/components/LoginPrompt`
+- `main/components/MainPageErrorBoundary`
+- `main/components/SystemStartSection`
+- `system-boot/components/BootProgressBar`
+- `system-boot/components/SmoothLoadingSpinner`
+
 ## Snapshot Metrics
 
 | Metric | Value |
 | --- | --- |
-| Component source lines | 26675 |
+| Component source lines | 26662 |
 | Component nodes | 142 |
 | Component edges | 132 |
 | Graph density | 0.66% |

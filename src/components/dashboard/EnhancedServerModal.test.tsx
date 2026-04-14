@@ -11,7 +11,8 @@
  */
 
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { useState } from 'react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Server } from '@/types/server';
 import EnhancedServerModal from './EnhancedServerModal';
 
@@ -35,7 +36,18 @@ vi.mock('./EnhancedServerModal.ProcessesTab', () => ({
 }));
 
 vi.mock('./EnhancedServerModal.LogsTab', () => ({
-  LogsTab: vi.fn(() => <div data-testid="mock-logs-tab">Logs Tab</div>),
+  LogsTab: vi.fn(({ serverId }: { serverId: string }) => {
+    const [mountToken] = useState(() => `mount:${serverId}:${Math.random()}`);
+    return (
+      <div
+        data-testid="mock-logs-tab"
+        data-server-id={serverId}
+        data-mount-token={mountToken}
+      >
+        Logs Tab
+      </div>
+    );
+  }),
 }));
 
 vi.mock('./EnhancedServerModal.NetworkTab', () => ({
@@ -88,6 +100,10 @@ describe('🎯 EnhancedServerModal - User Event 테스트', () => {
     vi.clearAllMocks();
   });
 
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   describe('기본 모달 렌더링', () => {
     it('모달이 dialog role로 표시된다', () => {
       render(<EnhancedServerModal server={mockServer} onClose={mockOnClose} />);
@@ -110,6 +126,37 @@ describe('🎯 EnhancedServerModal - User Event 테스트', () => {
 
       const overlay = container.querySelector('.backdrop-blur-md');
       expect(overlay).toBeDefined();
+    });
+
+    it('서버가 바뀌면 LAST UPDATE 시간이 새로 계산된다', () => {
+      const firstUpdate = new Date('2026-04-14T01:00:00.000Z');
+      const secondUpdate = new Date('2026-04-14T01:00:05.000Z');
+      const firstServer = { ...mockServer, lastUpdate: firstUpdate };
+
+      const { rerender } = render(
+        <EnhancedServerModal server={firstServer} onClose={mockOnClose} />
+      );
+
+      const firstTimestamp = firstUpdate.toLocaleTimeString('en-US', {
+        hour12: false,
+      });
+      expect(screen.getByText(`LAST UPDATE: ${firstTimestamp}`)).toBeDefined();
+
+      const nextServer = {
+        ...mockServer,
+        id: 'server-2',
+        name: 'DB Server 01',
+        lastUpdate: secondUpdate,
+      };
+
+      rerender(
+        <EnhancedServerModal server={nextServer} onClose={mockOnClose} />
+      );
+
+      const secondTimestamp = secondUpdate.toLocaleTimeString('en-US', {
+        hour12: false,
+      });
+      expect(screen.getByText(`LAST UPDATE: ${secondTimestamp}`)).toBeDefined();
     });
   });
 
@@ -193,6 +240,29 @@ describe('🎯 EnhancedServerModal - User Event 테스트', () => {
       // LogsTab과 NetworkTab이 표시됨 (통합 탭)
       expect(screen.getByTestId('mock-logs-tab')).toBeDefined();
       expect(screen.getByTestId('mock-network-tab')).toBeDefined();
+    });
+
+    it('서버가 바뀌면 LogsTab을 remount해서 로컬 상태를 초기화한다', () => {
+      const { rerender } = render(
+        <EnhancedServerModal server={mockServer} onClose={mockOnClose} />
+      );
+
+      fireEvent.click(screen.getByRole('tab', { name: /로그/ }));
+      const firstLogsTab = screen.getByTestId('mock-logs-tab');
+      const firstMountToken = firstLogsTab.getAttribute('data-mount-token');
+
+      rerender(
+        <EnhancedServerModal
+          server={{ ...mockServer, id: 'server-2', name: 'DB Server 01' }}
+          onClose={mockOnClose}
+        />
+      );
+
+      const secondLogsTab = screen.getByTestId('mock-logs-tab');
+      expect(secondLogsTab.getAttribute('data-server-id')).toBe('server-2');
+      expect(secondLogsTab.getAttribute('data-mount-token')).not.toBe(
+        firstMountToken
+      );
     });
   });
 

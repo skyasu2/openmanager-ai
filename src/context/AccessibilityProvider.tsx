@@ -422,12 +422,7 @@ export const AccessibilityProvider: React.FC<AccessibilityProviderProps> = ({
     <AccessibilityContext.Provider value={value}>
       {children}
       {/* 🔊 ARIA Live 영역 - 항상 렌더링 (깜빡임 방지, sr-only로 숨김) */}
-      <div
-        aria-live={state.ariaLive}
-        aria-atomic="true"
-        className="sr-only"
-        role="status"
-      >
+      <div aria-live={state.ariaLive} aria-atomic="true" className="sr-only">
         {/* 클라이언트 사이드에서만 announcements 표시 */}
         {isClient &&
           state.announcements.map((announcement, index) => (

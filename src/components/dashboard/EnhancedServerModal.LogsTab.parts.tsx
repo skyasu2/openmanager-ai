@@ -9,6 +9,9 @@ type ServerContext = {
   serverType: string;
 };
 
+const FALLBACK_TIME_LABEL = '--:--:--';
+const FALLBACK_NS_TIME_LABEL = '--:--:--.---';
+
 export const getLogLevelStyles = (level: LogLevel | string) => {
   switch (level) {
     case 'error':
@@ -36,19 +39,23 @@ export const formatTimestamp = (timestamp: string): string => {
   try {
     const date = new Date(timestamp);
     return Number.isNaN(date.getTime())
-      ? new Date().toLocaleTimeString()
+      ? FALLBACK_TIME_LABEL
       : date.toLocaleTimeString();
   } catch {
-    return new Date().toLocaleTimeString();
+    return FALLBACK_TIME_LABEL;
   }
 };
 
 export const formatNsTimestamp = (ns: string): string => {
   const ms = Number(ns) / 1_000_000;
+  if (!Number.isFinite(ms)) {
+    return FALLBACK_NS_TIME_LABEL;
+  }
+
   try {
     const date = new Date(ms);
     return Number.isNaN(date.getTime())
-      ? new Date().toLocaleTimeString()
+      ? FALLBACK_NS_TIME_LABEL
       : date.toLocaleTimeString('en-US', {
           hour12: false,
           hour: '2-digit',
@@ -57,7 +64,7 @@ export const formatNsTimestamp = (ns: string): string => {
           fractionalSecondDigits: 3,
         });
   } catch {
-    return new Date().toLocaleTimeString();
+    return FALLBACK_NS_TIME_LABEL;
   }
 };
 

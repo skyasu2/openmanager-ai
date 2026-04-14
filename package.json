@@ -105,7 +105,7 @@
     "test:dom": "node scripts/dev/vitest-main-wrapper.js run --config config/testing/vitest.config.dom.ts",
     "test:related:node": "vitest related --run --passWithNoTests --config config/testing/vitest.config.node.ts",
     "test:related:dom": "node scripts/dev/vitest-main-wrapper.js related --run --passWithNoTests --config config/testing/vitest.config.dom.ts",
-    "test:quick": "vitest run --config config/testing/vitest.config.minimal.ts",
+    "test:quick": "node scripts/dev/vitest-quick-wrapper.js",
     "test:ci": "vitest run --config config/testing/vitest.config.ci.ts",
     "test:coverage": "vitest run --config config/testing/vitest.config.simple.ts --coverage",
     "test:coverage:full": "node scripts/dev/vitest-main-wrapper.js run --config config/testing/vitest.config.main.ts --coverage.enabled=true",

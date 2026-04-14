@@ -90,6 +90,16 @@ function isComponentFile(file) {
   );
 }
 
+function isAppLocalComponentFile(file) {
+  return (
+    file.startsWith('src/app/') &&
+    file.includes('/components/') &&
+    file.endsWith('.tsx') &&
+    !file.endsWith('.test.tsx') &&
+    !file.endsWith('.stories.tsx')
+  );
+}
+
 function resolveWithCandidates(basePath, componentSet) {
   const candidates = [
     basePath,
@@ -158,6 +168,18 @@ function domainOf(file) {
 
 function componentLabel(file) {
   return file.replace(/^src\/components\//, '').replace(/\.tsx$/, '');
+}
+
+function appLocalComponentLabel(file) {
+  return file.replace(/^src\/app\//, '').replace(/\.tsx$/, '');
+}
+
+function appLocalComponentArea(file) {
+  const relative = file.replace(/^src\/app\//, '');
+  const componentsIndex = relative.indexOf('/components/');
+  if (componentsIndex === -1) return '(unknown)';
+
+  return relative.slice(0, componentsIndex) || '(root)';
 }
 
 function buildComponentGraph(componentFiles) {
@@ -342,10 +364,23 @@ function main() {
   const trackedFiles = walkFiles('.');
 
   const componentFiles = trackedFiles.filter(isComponentFile).sort((a, b) => a.localeCompare(b));
+  const appLocalComponentFiles = trackedFiles
+    .filter(isAppLocalComponentFile)
+    .sort((a, b) => a.localeCompare(b));
   let componentSourceLines = 0;
   for (const file of componentFiles) {
     componentSourceLines += countLines(file);
   }
+
+  const appLocalAreaRows = Array.from(
+    appLocalComponentFiles.reduce((acc, file) => {
+      const area = appLocalComponentArea(file);
+      acc.set(area, (acc.get(area) || 0) + 1);
+      return acc;
+    }, new Map()),
+  )
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .map(([area, count]) => [area, String(count)]);
 
   const graph = buildComponentGraph(componentFiles);
   const domainStats = buildDomainStats(componentFiles, graph.edges);
@@ -413,6 +448,30 @@ function main() {
   doc += '- 대상 노드: `src/components/**/*.tsx` (단, `*.test.tsx`, `*.stories.tsx` 제외)\n';
   doc += '- 대상 엣지: 정적 `import`/`export ... from` 중 내부 컴포넌트로 해석되는 참조\n';
   doc += '- 제외: 런타임 동적 import, Next route(`src/app`) 전용 컴포넌트, 외부 패키지 의존성\n\n';
+
+  doc += '## Inventory Coverage\n\n';
+  doc += markdownTable(
+    [
+      ['Shared component graph scope (`src/components/**/*.tsx`)', String(componentFiles.length)],
+      ['Route-local components excluded from graph (`src/app/**/components/**/*.tsx`)', String(appLocalComponentFiles.length)],
+      ['Total TSX component inventory', String(componentFiles.length + appLocalComponentFiles.length)],
+    ],
+    ['Inventory Slice', 'Count'],
+  );
+  doc += '\n';
+
+  doc += '## App Route-Local Component Distribution\n\n';
+  if (appLocalAreaRows.length === 0) {
+    doc += '- No route-local component files detected under `src/app/**/components`.\n\n';
+  } else {
+    doc += markdownTable(appLocalAreaRows, ['App Area', 'Node Count']);
+    doc += '\n';
+    doc += 'Route-local component files:\n\n';
+    for (const file of appLocalComponentFiles) {
+      doc += `- \`${appLocalComponentLabel(file)}\`\n`;
+    }
+    doc += '\n';
+  }
 
   doc += '## Snapshot Metrics\n\n';
   doc += markdownTable(
@@ -484,6 +543,13 @@ function main() {
         scope: {
           nodes: 'src/components/**/*.tsx (excluding test/stories)',
           edges: 'static import/export-from resolved inside src/components',
+          excludedRouteLocalNodes:
+            'src/app/**/components/**/*.tsx (counted in inventory, excluded from graph)',
+        },
+        inventory: {
+          sharedComponentNodes: componentFiles.length,
+          routeLocalComponentNodes: appLocalComponentFiles.length,
+          totalComponentNodes: componentFiles.length + appLocalComponentFiles.length,
         },
         metrics: {
           componentSourceLines,
@@ -499,6 +565,11 @@ function main() {
         topInDegree: topIn.map(([file, count]) => ({ component: componentLabel(file), inDegree: count })),
         topOutDegree: topOut.map(([file, count]) => ({ component: componentLabel(file), outDegree: count })),
         topDomainEdges: domainStats.domainEdgeRows.slice(0, TOP_DOMAIN_EDGE_LIMIT),
+        appRouteLocalDistribution: appLocalAreaRows.map(([area, count]) => ({
+          area,
+          count: Number(count),
+        })),
+        appRouteLocalFiles: appLocalComponentFiles.map((file) => appLocalComponentLabel(file)),
         topCycles: scc.cycleGroups.slice(0, TOP_SCC_LIMIT).map((group, idx) => ({
           id: `C${idx + 1}`,
           size: group.length,

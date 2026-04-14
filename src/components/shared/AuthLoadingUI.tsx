@@ -61,16 +61,11 @@ export default function AuthLoadingUI({
 
   return (
     <FullScreenLayout>
-      <div
-        className="text-center"
-        role="status"
-        aria-busy="true"
-        aria-live="polite"
-        aria-label={showCopy ? undefined : accessibleLoadingLabel}
-      >
+      <div className="text-center" aria-busy="true" aria-live="polite">
         <div>
           <Loader2 className="mx-auto mb-4 h-8 w-8 animate-spin text-white" />
         </div>
+        {!showCopy && <span className="sr-only">{accessibleLoadingLabel}</span>}
         {showCopy && (
           <p className="font-medium text-white/90" suppressHydrationWarning>
             {accessibleLoadingLabel}

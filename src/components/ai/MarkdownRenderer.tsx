@@ -1,7 +1,7 @@
 'use client';
 
 import { Check, Copy } from 'lucide-react';
-import { memo, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import remarkGfm from 'remark-gfm';
@@ -33,8 +33,19 @@ const CodeBlock = memo(function CodeBlock({
 }) {
   const [copied, setCopied] = useState(false);
   const codeRef = useRef<HTMLElement>(null);
+  const copyResetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
   const match = /language-(\w+)/.exec(className || '');
   const language = match ? match[1] : '';
+
+  useEffect(() => {
+    return () => {
+      if (copyResetTimeoutRef.current) {
+        clearTimeout(copyResetTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // rehype-highlight 적용 시 children이 객체 트리일 수 있으므로,
   // ref를 통해 실제 텍스트를 추출합니다.
@@ -45,7 +56,13 @@ const CodeBlock = memo(function CodeBlock({
     try {
       await navigator.clipboard.writeText(textToCopy);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      if (copyResetTimeoutRef.current) {
+        clearTimeout(copyResetTimeoutRef.current);
+      }
+      copyResetTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+        copyResetTimeoutRef.current = null;
+      }, 2000);
     } catch {
       // 클립보드 API 실패 시 (권한 거부, HTTPS 미사용 등)
       // 조용히 실패 처리 - 사용자 경험 방해 최소화

@@ -139,6 +139,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
     // 에러 상태
     error,
     clearError,
+    sessionId,
     // 세션 관리
     sessionState,
     handleNewSession,
@@ -350,6 +351,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
           <div className="flex-1 overflow-hidden pb-20 sm:pb-0">
             <AIErrorBoundary
               componentName="AISidebar"
+              resetKey={`${isOpen}:${selectedFunction}:${sessionId}`}
               onReset={() => {
                 // 에러 발생 시 세션 리셋
                 setInput('');

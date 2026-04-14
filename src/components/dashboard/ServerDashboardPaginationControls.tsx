@@ -31,6 +31,12 @@ export default function ServerDashboardPaginationControls({
   onPageChange,
   onPageSizeChange,
 }: ServerDashboardPaginationControlsProps) {
+  const hasServers = totalServers > 0;
+  const displayStart = hasServers ? (currentPage - 1) * pageSize + 1 : 0;
+  const displayEnd = hasServers
+    ? Math.min(currentPage * pageSize, totalServers)
+    : 0;
+
   const renderPageItems = () => {
     const maxVisiblePages = 5;
     let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
@@ -119,7 +125,6 @@ export default function ServerDashboardPaginationControls({
             value={String(pageSize)}
             onValueChange={(value) => {
               onPageSizeChange(Number(value));
-              onPageChange(1);
             }}
           >
             <SelectTrigger className="w-[90px]">
@@ -178,8 +183,7 @@ export default function ServerDashboardPaginationControls({
       </div>
 
       <div className="text-center text-sm text-gray-600 dark:text-gray-400">
-        {totalServers}개 서버 중 {(currentPage - 1) * pageSize + 1}-
-        {Math.min(currentPage * pageSize, totalServers)}번째 표시 중
+        {totalServers}개 서버 중 {displayStart}-{displayEnd}번째 표시 중
       </div>
     </div>
   );

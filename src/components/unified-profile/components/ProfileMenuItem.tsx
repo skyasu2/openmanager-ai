@@ -5,7 +5,9 @@ import { logger } from '@/lib/logging';
 import type { MenuItem } from '../types/profile.types';
 
 interface ProfileMenuItemProps extends MenuItem {
-  onClick?: (e: MouseEvent) => void;
+  onClick?: (
+    e?: MouseEvent<HTMLButtonElement> | KeyboardEvent<HTMLButtonElement>
+  ) => void;
 }
 
 /**
@@ -25,10 +27,10 @@ export const ProfileMenuItem = memo(function ProfileMenuItem({
   dividerBefore = false,
   onClick,
 }: ProfileMenuItemProps) {
-  if (!visible) return null;
-
-  const handleClick = async (e: MouseEvent) => {
-    e.stopPropagation();
+  const handleActivate = async (
+    e?: MouseEvent<HTMLButtonElement> | KeyboardEvent<HTMLButtonElement>
+  ) => {
+    e?.stopPropagation();
 
     if (onClick) {
       onClick(e);
@@ -40,13 +42,12 @@ export const ProfileMenuItem = memo(function ProfileMenuItem({
     }
   };
 
+  if (!visible) return null;
+
   const handleKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
     if ((e.key === 'Enter' || e.key === ' ') && !disabled) {
       e.preventDefault();
-      if (action) {
-        logger.info(`🔘 메뉴 클릭: ${label}`);
-        void action();
-      }
+      void handleActivate(e);
     }
   };
 
@@ -76,7 +77,7 @@ export const ProfileMenuItem = memo(function ProfileMenuItem({
         id={id}
         data-testid={id}
         onClick={(e) => {
-          void handleClick(e);
+          void handleActivate(e);
         }}
         onKeyDown={handleKeyDown}
         disabled={disabled}
@@ -107,27 +108,5 @@ export const ProfileMenuItem = memo(function ProfileMenuItem({
         )}
       </button>
     </>
-  );
-});
-
-/**
- * 메뉴 구분선 컴포넌트
- */
-const _MenuDivider = memo(function MenuDivider() {
-  return <div className="my-1 border-t border-gray-100" />;
-});
-
-/**
- * 메뉴 섹션 헤더 컴포넌트
- */
-const _MenuSectionHeader = memo(function MenuSectionHeader({
-  title,
-}: {
-  title: string;
-}) {
-  return (
-    <div className="px-4 py-2 text-xs font-medium uppercase tracking-wider text-gray-500">
-      {title}
-    </div>
   );
 });

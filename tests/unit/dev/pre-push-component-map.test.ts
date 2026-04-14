@@ -25,6 +25,11 @@ describe('pre-push component map helpers', () => {
     expect(isComponentMapRelevantFile('src/app/dashboard/page.tsx')).toBe(
       false
     );
+    expect(
+      isComponentMapRelevantFile(
+        'src/app/main/components/SystemStartSection.tsx'
+      )
+    ).toBe(true);
   });
 
   it('normalizes windows-style paths', () => {
@@ -56,7 +61,7 @@ describe('pre-push component map helpers', () => {
       shouldVerifyComponentDependencyMap({
         changedFilesResult: {
           isKnown: true,
-          files: ['src/components/ai/AIWorkspace.tsx'],
+          files: ['src/app/main/components/SystemStartSection.tsx'],
         },
       })
     ).toEqual({

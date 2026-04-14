@@ -11,7 +11,7 @@ import {
   Hash,
   Wrench,
 } from 'lucide-react';
-import { memo, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -49,6 +49,15 @@ SectionHeader.displayName = 'SectionHeader';
 
 const CopyButton = memo<{ text: string }>(({ text }) => {
   const [copied, setCopied] = useState(false);
+  const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (resetTimerRef.current) {
+        clearTimeout(resetTimerRef.current);
+      }
+    };
+  }, []);
 
   const handleCopy = () => {
     const clipboard = globalThis.navigator?.clipboard;
@@ -58,7 +67,13 @@ const CopyButton = memo<{ text: string }>(({ text }) => {
       .writeText(text)
       .then(() => {
         setCopied(true);
-        setTimeout(() => setCopied(false), 1500);
+        if (resetTimerRef.current) {
+          clearTimeout(resetTimerRef.current);
+        }
+        resetTimerRef.current = setTimeout(() => {
+          setCopied(false);
+          resetTimerRef.current = null;
+        }, 1500);
       })
       .catch(() => {
         // Clipboard access can fail on insecure/non-focused contexts.

@@ -16,7 +16,10 @@ import { Activity, AlertCircle, Layout, RefreshCw, Server } from 'lucide-react';
 import { memo, useMemo } from 'react';
 import { AIDebugPanel } from '@/components/ai-sidebar/AIDebugPanel';
 import { AI_PROVIDERS, type AIProviderConfig } from '@/config/ai-providers';
-import { useHealthCheck } from '@/hooks/system/useHealthCheck';
+import {
+  type HealthStatus,
+  useHealthCheck,
+} from '@/hooks/system/useHealthCheck';
 import { formatTime } from '@/lib/format-date';
 
 /**
@@ -37,10 +40,11 @@ const SystemContextPanel = memo(function SystemContextPanel({
   // useHealthCheck 훅으로 통합 (10분 데이터 주기 기준으로 폴링 최소화)
   const {
     providers: healthProviders,
-    isSystemOnline,
+    status: healthStatus,
     lastChecked,
     isChecking,
     check,
+    error,
   } = useHealthCheck({
     pollingInterval: 600000, // 10분 (서버 데이터 갱신 주기 정렬)
     pauseWhenHidden: true,
@@ -85,6 +89,41 @@ const SystemContextPanel = memo(function SystemContextPanel({
         );
     }
   };
+
+  const systemStatusConfig = useMemo(() => {
+    const configs: Record<
+      HealthStatus,
+      { label: string; className: string; description: string }
+    > = {
+      healthy: {
+        label: 'Online',
+        className: 'text-emerald-600',
+        description: 'AI Engine is responding normally.',
+      },
+      checking: {
+        label: 'Checking',
+        className: 'text-blue-600',
+        description: 'Health check in progress.',
+      },
+      degraded: {
+        label: 'Degraded',
+        className: 'text-amber-600',
+        description: 'Health endpoint responded but reported a degraded state.',
+      },
+      error: {
+        label: 'Error',
+        className: 'text-red-600',
+        description: error ?? 'Unable to reach the AI Engine health endpoint.',
+      },
+      unknown: {
+        label: 'Unknown',
+        className: 'text-gray-500',
+        description: 'No health result has been collected yet.',
+      },
+    };
+
+    return configs[healthStatus];
+  }, [error, healthStatus]);
 
   return (
     <div
@@ -151,16 +190,18 @@ const SystemContextPanel = memo(function SystemContextPanel({
                 <Server className="h-3.5 w-3.5 text-blue-500" />
                 AI Engine
               </span>
-              {isSystemOnline ? (
-                <span className="text-sm font-bold text-emerald-600">
-                  Online
-                </span>
-              ) : (
-                <span className="flex items-center gap-1 text-sm font-bold text-amber-600">
+              <span
+                className={`flex items-center gap-1 text-sm font-bold ${systemStatusConfig.className}`}
+                title={systemStatusConfig.description}
+              >
+                {(healthStatus === 'error' || healthStatus === 'degraded') && (
                   <AlertCircle className="h-3.5 w-3.5" />
-                  Checking
-                </span>
-              )}
+                )}
+                {(healthStatus === 'checking' || isChecking) && (
+                  <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                )}
+                {systemStatusConfig.label}
+              </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-2 text-sm text-gray-600">

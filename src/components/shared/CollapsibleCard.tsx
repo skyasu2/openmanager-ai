@@ -1,7 +1,7 @@
 'use client';
 
 import { ChevronDown } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { type ReactNode, useId } from 'react';
 import { cn } from '@/lib/utils';
 
 interface CollapsibleCardProps {
@@ -31,6 +31,8 @@ export default function CollapsibleCard({
   variant = 'default',
   size = 'md',
 }: CollapsibleCardProps) {
+  const contentId = useId();
+
   const baseClasses = {
     default: 'bg-white rounded-lg shadow-xs',
     bordered: 'bg-white rounded-lg border border-gray-200',
@@ -56,7 +58,7 @@ export default function CollapsibleCard({
         )}
         onClick={onToggle}
         aria-expanded={isExpanded}
-        aria-controls="collapsible-card-content"
+        aria-controls={contentId}
       >
         <div className="flex items-center gap-3">
           {icon && <div className="shrink-0">{icon}</div>}
@@ -77,7 +79,7 @@ export default function CollapsibleCard({
       {/* 콘텐츠 */}
       {isExpanded && (
         <div
-          id="collapsible-card-content"
+          id={contentId}
           className="overflow-hidden transition-all duration-300 ease-in-out"
         >
           <div

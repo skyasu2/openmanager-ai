@@ -181,7 +181,7 @@ export const FullscreenWithMessages: Story = {
   },
 };
 
-/** 사이드바 모드 */
-export const SidebarMode: Story = {
+/** 레거시 사이드바 모드 */
+export const LegacySidebarMode: Story = {
   args: { mode: 'sidebar', onClose: fn() },
 };

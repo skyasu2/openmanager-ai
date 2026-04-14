@@ -38,8 +38,13 @@ export default defineConfig({
     retry: 1, // 실패 시 1번 재시도
     deps: {
       optimizer: {
-        web: {
-          enabled: true,
+        // Node-only quick smoke tests do not need Vite pre-bundling.
+        // Keeping this off avoids noisy dep-scan over generated HTML artifacts.
+        client: {
+          enabled: false,
+        },
+        ssr: {
+          enabled: false,
         },
       },
     },

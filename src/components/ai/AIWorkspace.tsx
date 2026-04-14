@@ -41,11 +41,11 @@ import SystemContextPanel from './SystemContextPanel';
 
 /**
  * AIWorkspace Props
- * @property mode - 뷰 모드 ('sidebar' | 'fullscreen')
+ * @property mode - 뷰 모드. 기본값은 fullscreen이며 sidebar는 레거시 스토리/테스트 호환 용도
  * @property onClose - 사이드바 모드일 때 닫기 함수
  */
 interface AIWorkspaceProps {
-  mode: 'sidebar' | 'fullscreen';
+  mode?: 'sidebar' | 'fullscreen';
   onClose?: () => void;
 }
 
@@ -56,7 +56,10 @@ interface AIWorkspaceProps {
  * Sidebar 모드와 Fullscreen 모드를 모두 지원하며,
  * Chat, Auto Report, Intelligent Monitoring 기능을 포함합니다.
  */
-export default function AIWorkspace({ mode, onClose }: AIWorkspaceProps) {
+export default function AIWorkspace({
+  mode = 'fullscreen',
+  onClose,
+}: AIWorkspaceProps) {
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
   const [selectedFunction, setSelectedFunction] =
@@ -106,6 +109,7 @@ export default function AIWorkspace({ mode, onClose }: AIWorkspaceProps) {
     // 에러 상태
     error,
     clearError,
+    sessionId,
     // 세션 관리
     sessionState,
     handleNewSession,
@@ -465,6 +469,7 @@ export default function AIWorkspace({ mode, onClose }: AIWorkspaceProps) {
           <div className="flex-1 overflow-hidden relative">
             <AIErrorBoundary
               componentName="AIWorkspace"
+              resetKey={`${selectedFunction}:${sessionId}`}
               onReset={() => {
                 setInput('');
                 handleNewSession();
