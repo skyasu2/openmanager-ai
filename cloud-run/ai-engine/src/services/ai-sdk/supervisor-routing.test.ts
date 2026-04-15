@@ -391,6 +391,17 @@ describe('createPrepareStep', () => {
     expect(result.toolChoice).toEqual({ type: 'tool', toolName: 'searchWeb' });
   });
 
+  it('should omit searchWeb after the forced web lookup step', async () => {
+    const prepare = createPrepareStep('Redis 최신 보안 패치 알려줘', {
+      enableWebSearch: true,
+    });
+    const result = await prepare({ stepNumber: 1 });
+    expect(result.activeTools).not.toContain('searchWeb');
+    expect(result.activeTools).toContain('recommendCommands');
+    expect(result.activeTools).toContain('finalAnswer');
+    expect(result.toolChoice).toBe('required');
+  });
+
   it('should not force searchWeb for internal monitoring queries even with toggle ON', async () => {
     const prepare = createPrepareStep('서버 상태 확인', {
       enableWebSearch: true,
