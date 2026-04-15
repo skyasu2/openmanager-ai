@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.12](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.11...v8.11.12) (2026-04-15)
+
+
+### Bug Fixes
+
+* **ai:** preserve fullscreen analysis basis parity ([435595b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/435595b1b2fc9431984b06d1bf347a21f6d70d8d))
+* **ai:** restore analysisBasis provenance after hydration or workspace navigation ([b630b07](https://gitlab.com/skyasu2/openmanager-ai/-/commit/b630b07480158eaf185e587ee6bd950a79df6dda))
+* **data:** update Claude Code model version to claude-sonnet-4-6 ([5751996](https://gitlab.com/skyasu2/openmanager-ai/-/commit/57519967329b0652317bcf8f1ce785f59842e1ea))
+
+
+### Tests
+
+* **ai-engine:** cover searchWeb step dedupe ([2d41de1](https://gitlab.com/skyasu2/openmanager-ai/-/commit/2d41de1fe12cfa044f98bbe7447ea74959156e9a))
+* **ai:** cover chat history metadata restore ([70c7adc](https://gitlab.com/skyasu2/openmanager-ai/-/commit/70c7adce130532e0eddaa2703f95f8c0076c7a2c))
+
 ## [8.11.11](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.10...v8.11.11) (2026-04-15)
 
 
