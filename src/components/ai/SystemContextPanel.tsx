@@ -27,7 +27,7 @@ import { formatTime } from '@/lib/format-date';
  * @see config/ai-providers.ts
  */
 type AIProviderStatus = Pick<AIProviderConfig, 'name' | 'role' | 'color'> & {
-  status: 'active' | 'inactive' | 'error';
+  status: 'active' | 'configured' | 'error';
 };
 
 type SystemContextPanelProps = {
@@ -57,12 +57,18 @@ const SystemContextPanel = memo(function SystemContextPanel({
       const healthProvider = healthProviders.find(
         (hp) => hp.name.toLowerCase() === configProvider.name.toLowerCase()
       );
+      const status: AIProviderStatus['status'] =
+        healthProvider?.status === 'active'
+          ? 'active'
+          : healthProvider?.status === 'error'
+            ? 'error'
+            : 'configured';
 
       return {
         name: configProvider.name,
         role: configProvider.role,
         color: configProvider.color,
-        status: healthProvider?.status ?? 'inactive',
+        status,
       };
     });
   }, [healthProviders]);
@@ -75,10 +81,10 @@ const SystemContextPanel = memo(function SystemContextPanel({
             Active
           </span>
         );
-      case 'inactive':
+      case 'configured':
         return (
-          <span className="rounded bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500">
-            Standby
+          <span className="rounded bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
+            Configured
           </span>
         );
       case 'error':
@@ -152,7 +158,7 @@ const SystemContextPanel = memo(function SystemContextPanel({
         {/* AI Provider Status */}
         <div className="space-y-3">
           <h4 className="text-xs font-medium uppercase tracking-wider text-gray-500">
-            AI Providers
+            Provider Routing
           </h4>
           <div className="space-y-2.5 rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
             {providers.map((provider) => (
@@ -171,6 +177,10 @@ const SystemContextPanel = memo(function SystemContextPanel({
               </div>
             ))}
           </div>
+          <p className="text-2xs text-gray-500">
+            표시 역할은 현재 라우팅 정책 기준이며, 실제 요청별 선택은 쿼리
+            유형과 fallback 상태에 따라 달라집니다.
+          </p>
           <p
             className="text-right text-2xs text-gray-400"
             suppressHydrationWarning
