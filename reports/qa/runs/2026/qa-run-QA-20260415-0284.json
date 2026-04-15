@@ -1,0 +1,73 @@
+{
+  "runId": "QA-20260415-0284",
+  "recordedAt": "2026-04-14T16:50:52.817Z",
+  "recordedAtKst": "2026-04-15 01:50:52 KST",
+  "runTitle": "Topology duplicate tool invocation post-deploy QA (ai-engine-00317)",
+  "owner": "codex",
+  "source": "curl",
+  "environment": {
+    "target": "cloud-run-production",
+    "url": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+    "frontend": "N/A",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "ai-engine-00317-sss",
+    "deploymentUrl": "",
+    "commitSha": "6e42f8345"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "Cloud Run deploy ai-engine-00317-sss health check (HTTP 200)",
+    "Cloud Run /api/ai/supervisor topology probe #1 (toolsCalled searchKnowledgeBase + finalAnswer)",
+    "Cloud Run /api/ai/supervisor topology probe #2 (duplicate invocation absent, graph source retained)"
+  ],
+  "skippedSurfaces": [
+    "Vercel UI sidebar flow",
+    "Playwright browser regression pack",
+    "broad advisor latency regression pack"
+  ],
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Post-deploy topology probes no longer show duplicate searchKnowledgeBase invocation. Both sampled responses converged to searchKnowledgeBase -> finalAnswer with graph-backed sources still present.",
+      "nextAction": "Keep remaining P3 backlog limited to graph traversal re-evaluation and Storybook stable recheck."
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-topology-duplicate-tool-invocation",
+      "title": "Topology query duplicate searchKnowledgeBase invocation removed",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "After ai-engine-00317 deploy, repeated production topology probes returned toolsCalled=[searchKnowledgeBase, finalAnswer] with no duplicate KB invocation and latencyTier=fast.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "topology probe #1: 403ms end-to-end, resolvedMode=multi, toolsCalled=[searchKnowledgeBase, finalAnswer], ragSources=vector 3 + graph 1",
+    "topology probe #2: 595ms end-to-end, resolvedMode=multi, toolsCalled=[searchKnowledgeBase, finalAnswer], ragSources=vector 3 + graph 1",
+    "out-of-scope advisor OOM prompt remained successful but very slow (43s, searchWeb path); not counted in this targeted duplicate-invocation QA run"
+  ],
+  "links": []
+}

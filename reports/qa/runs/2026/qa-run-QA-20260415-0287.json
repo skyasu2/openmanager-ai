@@ -1,0 +1,113 @@
+{
+  "runId": "QA-20260415-0287",
+  "recordedAt": "2026-04-15T00:53:57.310Z",
+  "recordedAtKst": "2026-04-15 09:53:57 KST",
+  "runTitle": "Production release-gate QA refresh after ai-engine-00317 stabilization",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_97A4qLDxVvCdunBXh93T87B4eSLQ",
+    "deploymentUrl": "https://openmanager-b6spao5jz-skyasus-projects.vercel.app",
+    "commitSha": "6e42f8345edc2b3cb7a6766893884b4dc9c5b605"
+  },
+  "scope": "release-gate",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "landing settled render on production",
+    "system start redirect to /dashboard",
+    "dashboard render with system summary and resource panels",
+    "AI sidebar open from dashboard alert-analysis CTA",
+    "AI first-hit production response for api-was-dc1-01 CPU 93% context",
+    "/api/health 200 on production",
+    "/api/version 200 on production",
+    "browser console error count 0 during landing -> dashboard -> AI flow"
+  ],
+  "skippedSurfaces": [
+    "fullscreen AI workspace",
+    "Reporter full report flow",
+    "Analyst advanced forecast flow",
+    "modal-detail pack outside dashboard -> AI alert path",
+    "Cloud Run admin observability endpoints"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Core landing, dashboard transition, and representative AI production path were exercised end-to-end with live Playwright evidence.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The first-hit dashboard alert analysis path returned a grounded production answer without rate-limit failure or empty response drift.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production /api/health and /api/version were healthy, and the UI flow completed with zero browser console errors.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel usage stayed within expected budget and the release-facing production path remained operational across route, dashboard, and AI surfaces.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-15T09:50:47+09:00",
+      "summary": "Current billing period reviewed before release-gate QA; effective 8.4927 USD, billed 0.0000 USD, chargeCount 7917, no unexpected billed usage spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Release-gate dashboard + AI sidebar response",
+      "path": "reports/qa/evidence/qa-20260415-release-gate-ai-sidebar.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Release-gate console warnings log",
+      "path": "reports/qa/evidence/qa-20260415-release-gate-console.txt"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Settled landing render remained green and the session entered /dashboard successfully via the system start flow.",
+    "Dashboard snapshot at run time showed total 15, online 13, warning 1, risk 1, offline 0 and resource panels rendered normally.",
+    "AI sidebar first-hit query for api-was-dc1-01 CPU 93% completed successfully with a grounded response and no browser console errors.",
+    "Browser warnings were limited to repeated font preload notices on /system-boot and /dashboard; they were non-blocking and no console errors were observed."
+  ],
+  "links": []
+}

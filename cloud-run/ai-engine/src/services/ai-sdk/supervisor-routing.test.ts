@@ -193,10 +193,12 @@ describe('createPrepareStep', () => {
     expect(result).toEqual({ toolChoice: 'none' });
   });
 
-  it('should return empty object for stepNumber > 0', async () => {
+  it('should keep intent-based tool filtering for stepNumber > 0', async () => {
     const prepare = createPrepareStep('CPU 분석해줘');
     const result = await prepare({ stepNumber: 1 });
-    expect(result).toEqual({});
+    expect(result.activeTools).toContain('getServerMetrics');
+    expect(result.activeTools).toContain('finalAnswer');
+    expect(result.toolChoice).toBe('auto');
   });
 
   it('should route anomaly queries to anomaly tools', async () => {
@@ -263,6 +265,17 @@ describe('createPrepareStep', () => {
     });
   });
 
+  it('should omit searchKnowledgeBase after the forced topology lookup step', async () => {
+    const prepare = createPrepareStep('현재 인프라 토폴로지 알려줘', {
+      enableRAG: true,
+    });
+    const result = await prepare({ stepNumber: 1 });
+    expect(result.activeTools).not.toContain('searchKnowledgeBase');
+    expect(result.activeTools).toContain('recommendCommands');
+    expect(result.activeTools).toContain('finalAnswer');
+    expect(result.toolChoice).toBe('required');
+  });
+
   it('should omit searchKnowledgeBase when RAG is disabled', async () => {
     const prepare = createPrepareStep('해결 방법 알려줘', {
       enableRAG: false,
@@ -299,6 +312,13 @@ describe('createPrepareStep', () => {
       type: 'tool',
       toolName: 'getServerMetrics',
     });
+  });
+
+  it('should finalize direct current metric queries after the forced metric lookup step', async () => {
+    const prepare = createPrepareStep('cache-redis-dc1-01 메모리 사용률 몇 %야?');
+    const result = await prepare({ stepNumber: 1 });
+    expect(result.activeTools).toEqual(['finalAnswer']);
+    expect(result.toolChoice).toBe('required');
   });
 
   it('should not force getServerMetrics for historical metric aggregation queries', async () => {

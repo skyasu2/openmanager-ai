@@ -1,63 +1,68 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-13 21:52:33 KST
+> Generated at: 2026-04-15 09:54:38 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 280 |
-| Total Runs (Counted) | 243 |
-| Non-counted Runs | 37 |
-| Total Checks | 1886 |
-| Passed | 1812 |
+| Total Recorded Runs | 285 |
+| Total Runs (Counted) | 247 |
+| Non-counted Runs | 38 |
+| Total Checks | 1905 |
+| Passed | 1831 |
 | Failed | 68 |
-| Completed Items | 290 |
+| Completed Items | 292 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 13 |
 | Expert Domains Tracked | 8 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260413-0282 (2026-04-13T12:52:28.892Z) |
-| Latest Recorded Run | QA-20260413-0282 (2026-04-13T12:52:28.892Z) |
+| Last Counted Run | QA-20260415-0287 (2026-04-15T00:53:57.310Z) |
+| Latest Recorded Run | QA-20260415-0287 (2026-04-15T00:53:57.310Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260413-0282 (2026-04-13T12:52:28.892Z)
+Latest run: QA-20260415-0287 (2026-04-15T00:53:57.310Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
+| Test Automation Architect | appropriate | no | - |
 | AI Quality Assurance Specialist | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Current billing period reviewed before release-gate QA; effective 8.4927 USD, billed 0.0000 USD, chargeCount 7917, no unexpected billed usage spike. |
 
 ## Coverage (Latest Run)
 
-- Scope: targeted
-- Release-Facing: no
+- Scope: release-gate
+- Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: SHA baf40601
-- Covered Surfaces: Cloud Run deploy ai-engine-00312-r9b, Cloud Run /health, Cloud Run /api/ai/supervisor legacy variant probe (6 attempts), Cloud Run revision warning/error log inspection (post-run)
-- Skipped Surfaces: Vercel UI sidebar flow, Playwright browser regression pack
+- Deployment: dpl_97A4qLDxVvCdunBXh93T87B4eSLQ / SHA 6e42f834
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
+- Covered Surfaces: landing settled render on production, system start redirect to /dashboard, dashboard render with system summary and resource panels, AI sidebar open from dashboard alert-analysis CTA, AI first-hit production response for api-was-dc1-01 CPU 93% context, /api/health 200 on production, /api/version 200 on production, browser console error count 0 during landing -> dashboard -> AI flow
+- Skipped Surfaces: fullscreen AI workspace, Reporter full report flow, Analyst advanced forecast flow, modal-detail pack outside dashboard -> AI alert path, Cloud Run admin observability endpoints
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Cloud Run health | [Cloud Run health](https://ai-engine-jdhrhws7ia-an.a.run.app/health) | Post-deploy health endpoint |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-screenshot | Release-gate dashboard + AI sidebar response | `reports/qa/evidence/qa-20260415-release-gate-ai-sidebar.png` | - |
+| playwright-console | Release-gate console warnings log | `reports/qa/evidence/qa-20260415-release-gate-console.txt` | - |
 
 ## Expert Domain Open Gaps
 
@@ -141,7 +146,8 @@ Latest run: QA-20260413-0282 (2026-04-13T12:52:28.892Z)
 - ai-summary-query-clarification-skip-production: Explicit all-server summary query skips clarification in production (completed 1회, last QA-20260310-0071)
 - ai-timing-header-ssot-policy: QA timing header SSOT standardized to X-AI-Latency-Ms (completed 1회, last QA-20260310-0081)
 - ai-timing-x-headers-production: AI proxy responses expose production timing headers (completed 1회, last QA-20260309-0070)
-- ai-topology-variant-function-call-failure: Topology variant direct supervisor stabilization (completed 1회, last QA-20260413-0282)
+- ai-topology-duplicate-tool-invocation: Topology query duplicate searchKnowledgeBase invocation removed (completed 1회, last QA-20260415-0284)
+- ai-topology-variant-function-call-failure: Advisor Agent latency/format quality stabilization (Task 1-3) (completed 2회, last QA-20260415-0283)
 - ai-topology-variant-schema-validation-failure: searchKnowledgeBase boolean-string tool-call validation failure removed (completed 1회, last QA-20260413-0281)
 - ai-workspace-dom-test-runner-hang: AIWorkspace DOM test runner hang 정리 (completed 1회, last QA-20260318-0124)
 - ai-사이드바-열기닫기: AI 사이드바 열기/닫기 (completed 1회, last QA-20260317-0114)
@@ -211,6 +217,7 @@ Latest run: QA-20260413-0282 (2026-04-13T12:52:28.892Z)
 - frontend-landing-v880: Landing page v8.8.0 정상 렌더링 (completed 2회, last QA-20260314-0097)
 - gitlab-tag-deploy-trace-v8113: GitLab tag deploy failure root cause analysis for v8.11.3 (completed 1회, last QA-20260408-0256)
 - gitlab-tag-protected-variable-exposure-v8113: Fix GitLab protected variable exposure for semver tag deploy (completed 1회, last QA-20260409-0258)
+- graphrag-traversal-keep-decision: Graph traversal keep/remove re-evaluation closed with KEEP decision (completed 1회, last QA-20260415-0285)
 - guest-auth-proof-cookie: 게스트 PIN 로그인 후 auth_proof 쿠키 발급 정상 (completed 2회, last QA-20260314-0097)
 - guest-dashboard-auth-check: 게스트 대시보드 로컬 인증 체크 우회 보완 (completed 1회, last QA-20260310-0078)
 - guest-flow-server-card-and-startflow-resilience: 게스트 플로우 시스템 시작/AI 진입 내성 보강 (completed 3회, last QA-20260302-0039)
@@ -396,6 +403,11 @@ Latest run: QA-20260413-0282 (2026-04-13T12:52:28.892Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260415-0287 | 2026-04-15T00:53:57.310Z | release-gate | yes | yes | Production release-gate QA refresh after ai-engine-00317 stabilization | 8 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260415-0286 | 2026-04-14T23:41:31.531Z | targeted | no | no | Mixed advisory residual follow-up QA (ai-engine-00317) | 3 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260415-0285 | 2026-04-14T17:11:51.995Z | targeted | no | yes | Graph traversal re-evaluation post-variant-fix QA (ai-engine-00317) | 4 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260415-0284 | 2026-04-14T16:50:52.817Z | targeted | no | yes | Topology duplicate tool invocation post-deploy QA (ai-engine-00317) | 3 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260415-0283 | 2026-04-14T16:16:39.275Z | targeted | no | yes | Advisor quality improvement post-deploy QA (ai-engine-00316, Task 1~3 verification) | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260413-0282 | 2026-04-13T12:52:28.892Z | targeted | no | yes | GraphRAG variant closure QA after ai-engine-00312 (force-KB queries to multi deterministic path) | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260413-0281 | 2026-04-13T12:40:26.449Z | targeted | no | yes | GraphRAG variant stability recheck after ai-engine-00311 (boolean-string tool schema hotfix) | 8 | 1 | 1 | 0 | 0 | 1 |
 | QA-20260413-0280 | 2026-04-13T11:41:39.894Z | targeted | no | yes | GraphRAG variant direct supervisor recheck after ai-engine-00308 (RAG auto + advisor tool required) | 3 | 0 | 1 | 0 | 0 | 1 |
@@ -411,8 +423,3 @@ Latest run: QA-20260413-0282 (2026-04-13T12:52:28.892Z)
 | QA-20260411-0270 | 2026-04-11T06:08:29.888Z | targeted | no | no | AI Engine approval_history runtime smoke | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260410-0269 | 2026-04-10T14:43:09.818Z | targeted | no | no | Local auth audit smoke - guest login route inserts security_audit_logs | 4 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260410-0268 | 2026-04-10T10:22:22.502Z | targeted | no | no | Local Playwright QA - AI detail dialog sidebar/workspace verification | 6 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260409-0267 | 2026-04-09T13:35:00.812Z | broad | yes | yes | Vercel Production Post-Deploy Smoke - v8.11.8 | 3 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260409-0266 | 2026-04-09T12:04:11.201Z | targeted | no | no | Vercel Playwright MCP - AI Assistant Focused Check | 8 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260409-0264 | 2026-04-09T09:45:00.000Z | targeted | yes | yes | Playwright MCP Vercel Targeted QA - Sprint 1+2 ai-chat improvement validation (v8.11.7) | 7 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260409-0263 | 2026-04-09T08:00:37.411Z | targeted | no | no | Playwright MCP Vercel Targeted QA - AI assistant rerun-3 validation | 12 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260409-0262 | 2026-04-09T06:18:13.337Z | targeted | no | no | Playwright MCP Vercel Targeted QA - AI assistant rerun-2 validation | 8 | 0 | 0 | 0 | 0 | 0 |

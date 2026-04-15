@@ -1,0 +1,60 @@
+{
+  "runId": "QA-20260415-0286",
+  "recordedAt": "2026-04-14T23:41:31.531Z",
+  "recordedAtKst": "2026-04-15 08:41:31 KST",
+  "runTitle": "Mixed advisory residual follow-up QA (ai-engine-00317)",
+  "owner": "codex",
+  "source": "cloud-run-probe",
+  "environment": {
+    "target": "cloud-run-production",
+    "url": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+    "frontend": "N/A",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "ai-engine-00317-sss",
+    "deploymentUrl": "",
+    "commitSha": "6e42f8345"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "Cloud Run /api/ai/supervisor mixed advisory probe #1 (OOM triage)",
+    "Cloud Run /api/ai/supervisor mixed advisory probe #2 (CPU+memory triage)",
+    "Cloud Run /api/ai/supervisor mixed advisory probe #3 (CPU+memory+logs initial response)"
+  ],
+  "skippedSurfaces": [
+    "Vercel UI sidebar flow",
+    "Playwright browser regression pack",
+    "broad latency characterization across all advisor prompts"
+  ],
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Previously observed mixed advisory no-tool drift did not reproduce on ai-engine-00317. All three follow-up prompts called searchKnowledgeBase and returned grounded responses.",
+      "nextAction": "Keep this as a non-blocking latency watch only; do not open a new backlog item unless no-tool drift reappears or the very_slow pattern spreads beyond this narrow prompt family."
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "mixed-1: 12.91s, toolsCalled=[searchKnowledgeBase], latencyTier=fast, ragSources=graph 2 + vector 0",
+    "mixed-2: 3.23s, toolsCalled=[searchKnowledgeBase], latencyTier=fast, ragSources=graph 4 + vector 0",
+    "mixed-3: 29.26s, toolsCalled=[searchKnowledgeBase, finalAnswer], latencyTier=very_slow, mode=single/resolvedMode=multi, ragSources=graph 5 + vector 0",
+    "No follow-up probe reproduced the previous toolsCalled=[] / ragSources=0 drift, so a new backlog item is not justified at this time."
+  ],
+  "links": []
+}

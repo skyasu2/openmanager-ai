@@ -1,0 +1,76 @@
+{
+  "runId": "QA-20260415-0285",
+  "recordedAt": "2026-04-14T17:11:51.995Z",
+  "recordedAtKst": "2026-04-15 02:11:51 KST",
+  "runTitle": "Graph traversal re-evaluation post-variant-fix QA (ai-engine-00317)",
+  "owner": "codex",
+  "source": "cloud-run-probe",
+  "environment": {
+    "target": "cloud-run-production",
+    "url": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+    "frontend": "N/A",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "ai-engine-00317-sss",
+    "deploymentUrl": "",
+    "commitSha": "6e42f8345"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "Cloud Run /health",
+    "Cloud Run /api/ai/supervisor topology probe (graph source retained)",
+    "Cloud Run /api/ai/supervisor topology variant probe (variant path now successful with graph source)",
+    "Cloud Run /api/ai/supervisor incident probe (graph-only sources observed)"
+  ],
+  "skippedSurfaces": [
+    "Vercel UI sidebar flow",
+    "Playwright browser regression pack",
+    "sampled graph_rag_search log capture proof",
+    "broad latency characterization across all advisor prompts"
+  ],
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "On ai-engine-00317, graph-backed sources are still user-visible on topology, topology-variant, and incident prompts. The previous direct variant failure no longer distorts the keep/remove decision, so traversal should remain enabled.",
+      "nextAction": "Treat mixed advisory prompt latency/no-tool drift as a separate non-blocking investigation if it reproduces outside this targeted traversal decision scope."
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "graphrag-traversal-keep-decision",
+      "title": "Graph traversal keep/remove re-evaluation closed with KEEP decision",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Production re-evaluation on ai-engine-00317 confirmed graph source usage on topology, topology-variant, and incident prompts, so graph traversal remains enabled.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "topology probe: 9.17s end-to-end, toolsCalled=[searchKnowledgeBase, finalAnswer], ragSources=vector 3 + graph 1",
+    "topology variant probe: 5.12s end-to-end, toolsCalled=[searchKnowledgeBase, finalAnswer], ragSources=vector 3 + graph 1; prior INTERNAL_ERROR path no longer reproduced",
+    "incident probe: 7.02s end-to-end, toolsCalled=[searchKnowledgeBase], ragSources=graph 3 + vector 0",
+    "mixed advisory probe returned success but no tools/rag and latencyTier=slow (~21.7s); outside this traversal keep/remove decision but worth separate follow-up if repeated"
+  ],
+  "links": []
+}

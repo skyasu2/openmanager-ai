@@ -336,15 +336,24 @@ export function createPrepareStep(
   const ragEnabled = options?.enableRAG === true;
 
   return async ({ stepNumber }: { stepNumber: number }) => {
-    if (stepNumber > 0) return {};
-
     if (SIMPLE_CONVERSATION_PATTERNS.test(query.trim())) {
       logger.debug('[PrepareStep] Simple conversation detected, toolChoice: none');
       return { toolChoice: 'none' as const };
     }
 
-    if (shouldForceRealtimeServerMetricTool(q)) {
+    const shouldForceRealtimeMetric = shouldForceRealtimeServerMetricTool(q);
+    const shouldForceKnowledgeBase = ragEnabled && shouldForceKnowledgeBaseTool(q);
+    const shouldForceWeb = webSearchEnabled && shouldForceWebSearch(q);
+
+    if (shouldForceRealtimeMetric) {
       logger.debug('[PrepareStep] Direct realtime server metric query detected, forcing getServerMetrics');
+      if (stepNumber > 0) {
+        return {
+          activeTools: ['finalAnswer'] as ToolName[],
+          toolChoice: 'required' as const,
+        };
+      }
+
       return {
         activeTools: ['getServerMetrics', 'finalAnswer'] as ToolName[],
         toolChoice: { type: 'tool', toolName: 'getServerMetrics' } as const,
@@ -407,16 +416,28 @@ export function createPrepareStep(
     }
 
     // ── Step 3: KB 검색 강제 — topology/architecture 질의는 모델 추정보다 KB를 우선 ──
+    if (shouldForceKnowledgeBase && stepNumber > 0) {
+      activeTools = activeTools.filter((toolName) => toolName !== 'searchKnowledgeBase');
+    }
+
     if (
-      ragEnabled &&
+      shouldForceWeb &&
+      stepNumber > 0 &&
+      activeTools.includes('searchWeb')
+    ) {
+      activeTools = activeTools.filter((toolName) => toolName !== 'searchWeb');
+    }
+
+    if (
+      shouldForceKnowledgeBase &&
       activeTools.includes('searchKnowledgeBase') &&
-      shouldForceKnowledgeBaseTool(q)
+      stepNumber === 0
     ) {
       toolChoice = { type: 'tool', toolName: 'searchKnowledgeBase' };
     }
 
     // ── Step 4: 웹 검색 강제 — 사용자 토글 ON + 외부 정보 필요 쿼리 시 강제 호출 ──
-    if (webSearchEnabled && activeTools.includes('searchWeb') && shouldForceWebSearch(q)) {
+    if (shouldForceWeb && activeTools.includes('searchWeb') && stepNumber === 0) {
       toolChoice = { type: 'tool', toolName: 'searchWeb' };
     }
 

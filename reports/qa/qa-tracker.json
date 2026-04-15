@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-13T12:52:28.892Z"
+    "updatedAt": "2026-04-15T00:53:57.310Z"
   },
   "sequence": {
-    "nextRunNumber": 283
+    "nextRunNumber": 288
   },
   "summary": {
-    "totalRecordedRuns": 280,
-    "totalRuns": 243,
-    "excludedRuns": 37,
-    "totalChecks": 1886,
-    "totalPassed": 1812,
+    "totalRecordedRuns": 285,
+    "totalRuns": 247,
+    "excludedRuns": 38,
+    "totalChecks": 1905,
+    "totalPassed": 1831,
     "totalFailed": 68,
     "completionRate": 100,
-    "completedItems": 290,
+    "completedItems": 292,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 13,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260413-0282",
-    "lastRecordedAt": "2026-04-13T12:52:28.892Z",
-    "latestRecordedRunId": "QA-20260413-0282",
-    "latestRecordedAt": "2026-04-13T12:52:28.892Z"
+    "lastRunId": "QA-20260415-0287",
+    "lastRecordedAt": "2026-04-15T00:53:57.310Z",
+    "latestRecordedRunId": "QA-20260415-0287",
+    "latestRecordedAt": "2026-04-15T00:53:57.310Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -6942,27 +6942,27 @@
     },
     "ai-topology-variant-function-call-failure": {
       "id": "ai-topology-variant-function-call-failure",
-      "title": "Topology variant direct supervisor stabilization",
-      "priority": "P1",
+      "title": "Advisor Agent latency/format quality stabilization (Task 1-3)",
+      "priority": "P2",
       "status": "completed",
       "firstSeenRunId": "QA-20260413-0276",
       "firstSeenAt": "2026-04-13T09:02:52.483Z",
-      "lastSeenRunId": "QA-20260413-0282",
-      "lastSeenAt": "2026-04-13T12:52:28.892Z",
-      "seenCount": 7,
-      "completedCount": 1,
+      "lastSeenRunId": "QA-20260415-0283",
+      "lastSeenAt": "2026-04-14T16:16:39.275Z",
+      "seenCount": 8,
+      "completedCount": 2,
       "pendingCount": 6,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
       "lastEvidence": "QA-20260413-0282: legacy variant 6/6 success, deterministic routing, no INTERNAL_ERROR/NO_PROVIDER/LATENCY_SLOW flags in sampled run.",
-      "lastNote": "After ai-engine-00311, INTERNAL_ERROR from boolean-string schema mismatch is resolved in sampled runs, but one NO_PROVIDER fallback and persistent slow latency remain on the legacy variant query.",
-      "isBlocking": true,
+      "lastNote": "Deployed ai-engine-00316: Advisor-specific latency thresholds (fast<=8s/normal<=20s/slow<=40s), MISSING_COMMAND_BLOCK retry trigger, and hard-rule prompt block all live. Probes: 3/3 success, qualityFlags=[], latencyTier=fast.",
+      "isBlocking": false,
       "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-04-13T12:52:28.892Z"
+      "lastStatusChangeAt": "2026-04-14T16:16:39.275Z"
     },
     "ai-topology-variant-schema-validation-failure": {
       "id": "ai-topology-variant-schema-validation-failure",
@@ -6987,6 +6987,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-13T12:40:26.449Z"
+    },
+    "ai-topology-duplicate-tool-invocation": {
+      "id": "ai-topology-duplicate-tool-invocation",
+      "title": "Topology query duplicate searchKnowledgeBase invocation removed",
+      "priority": "P3",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260415-0284",
+      "firstSeenAt": "2026-04-14T16:50:52.817Z",
+      "lastSeenRunId": "QA-20260415-0284",
+      "lastSeenAt": "2026-04-14T16:50:52.817Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "After ai-engine-00317 deploy, repeated production topology probes returned toolsCalled=[searchKnowledgeBase, finalAnswer] with no duplicate KB invocation and latencyTier=fast.",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-14T16:50:52.817Z"
+    },
+    "graphrag-traversal-keep-decision": {
+      "id": "graphrag-traversal-keep-decision",
+      "title": "Graph traversal keep/remove re-evaluation closed with KEEP decision",
+      "priority": "P3",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260415-0285",
+      "firstSeenAt": "2026-04-14T17:11:51.995Z",
+      "lastSeenRunId": "QA-20260415-0285",
+      "lastSeenAt": "2026-04-14T17:11:51.995Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "Production re-evaluation on ai-engine-00317 confirmed graph source usage on topology, topology-variant, and incident prompts, so graph traversal remains enabled.",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-14T17:11:51.995Z"
     }
   },
   "runs": [
@@ -24620,6 +24668,345 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260415-0283",
+      "recordedAt": "2026-04-14T16:16:39.275Z",
+      "recordedAtKst": "2026-04-15 01:16:39 KST",
+      "title": "Advisor quality improvement post-deploy QA (ai-engine-00316, Task 1~3 verification)",
+      "owner": "claude",
+      "source": "curl",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260415-0283.json",
+      "environment": {
+        "target": "cloud-run-production",
+        "url": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+        "frontend": "N/A",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "ai-engine-00316-l67",
+        "deploymentUrl": "",
+        "commitSha": "facd93407"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [],
+      "coveredSurfaces": [
+        "Cloud Run deploy ai-engine-00316-l67 health check (HTTP 200)",
+        "Cloud Run /api/ai/supervisor Advisor-path probe x3 (CPU/topology/OOM queries)",
+        "qualityFlags=[], formatCompliance=true, latencyTier=fast verification"
+      ],
+      "skippedSurfaces": [
+        "Vercel UI sidebar flow",
+        "Playwright browser regression pack"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Post-deploy probes show qualityFlags=[], formatCompliance=true, latencyTier=fast (1.4-3.4s). Task1 Advisor-specific latency thresholds and Task3 MISSING_COMMAND_BLOCK retry trigger are live. No regressions observed.",
+          "nextAction": "Close P1 ai-topology-variant-function-call-failure if broader probes confirm stability."
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260415-0284",
+      "recordedAt": "2026-04-14T16:50:52.817Z",
+      "recordedAtKst": "2026-04-15 01:50:52 KST",
+      "title": "Topology duplicate tool invocation post-deploy QA (ai-engine-00317)",
+      "owner": "codex",
+      "source": "curl",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260415-0284.json",
+      "environment": {
+        "target": "cloud-run-production",
+        "url": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+        "frontend": "N/A",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "ai-engine-00317-sss",
+        "deploymentUrl": "",
+        "commitSha": "6e42f8345"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": ["ai-core"],
+      "coveredSurfaces": [
+        "Cloud Run deploy ai-engine-00317-sss health check (HTTP 200)",
+        "Cloud Run /api/ai/supervisor topology probe #1 (toolsCalled searchKnowledgeBase + finalAnswer)",
+        "Cloud Run /api/ai/supervisor topology probe #2 (duplicate invocation absent, graph source retained)"
+      ],
+      "skippedSurfaces": [
+        "Vercel UI sidebar flow",
+        "Playwright browser regression pack",
+        "broad advisor latency regression pack"
+      ],
+      "checks": {
+        "total": 3,
+        "passed": 3,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Post-deploy topology probes no longer show duplicate searchKnowledgeBase invocation. Both sampled responses converged to searchKnowledgeBase -> finalAnswer with graph-backed sources still present.",
+          "nextAction": "Keep remaining P3 backlog limited to graph traversal re-evaluation and Storybook stable recheck."
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260415-0285",
+      "recordedAt": "2026-04-14T17:11:51.995Z",
+      "recordedAtKst": "2026-04-15 02:11:51 KST",
+      "title": "Graph traversal re-evaluation post-variant-fix QA (ai-engine-00317)",
+      "owner": "codex",
+      "source": "cloud-run-probe",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260415-0285.json",
+      "environment": {
+        "target": "cloud-run-production",
+        "url": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+        "frontend": "N/A",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "ai-engine-00317-sss",
+        "deploymentUrl": "",
+        "commitSha": "6e42f8345"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": ["ai-core", "observability-pack"],
+      "coveredSurfaces": [
+        "Cloud Run /health",
+        "Cloud Run /api/ai/supervisor topology probe (graph source retained)",
+        "Cloud Run /api/ai/supervisor topology variant probe (variant path now successful with graph source)",
+        "Cloud Run /api/ai/supervisor incident probe (graph-only sources observed)"
+      ],
+      "skippedSurfaces": [
+        "Vercel UI sidebar flow",
+        "Playwright browser regression pack",
+        "sampled graph_rag_search log capture proof",
+        "broad latency characterization across all advisor prompts"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "On ai-engine-00317, graph-backed sources are still user-visible on topology, topology-variant, and incident prompts. The previous direct variant failure no longer distorts the keep/remove decision, so traversal should remain enabled.",
+          "nextAction": "Treat mixed advisory prompt latency/no-tool drift as a separate non-blocking investigation if it reproduces outside this targeted traversal decision scope."
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260415-0286",
+      "recordedAt": "2026-04-14T23:41:31.531Z",
+      "recordedAtKst": "2026-04-15 08:41:31 KST",
+      "title": "Mixed advisory residual follow-up QA (ai-engine-00317)",
+      "owner": "codex",
+      "source": "cloud-run-probe",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260415-0286.json",
+      "environment": {
+        "target": "cloud-run-production",
+        "url": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+        "frontend": "N/A",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "ai-engine-00317-sss",
+        "deploymentUrl": "",
+        "commitSha": "6e42f8345"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": ["ai-core", "observability-pack"],
+      "coveredSurfaces": [
+        "Cloud Run /api/ai/supervisor mixed advisory probe #1 (OOM triage)",
+        "Cloud Run /api/ai/supervisor mixed advisory probe #2 (CPU+memory triage)",
+        "Cloud Run /api/ai/supervisor mixed advisory probe #3 (CPU+memory+logs initial response)"
+      ],
+      "skippedSurfaces": [
+        "Vercel UI sidebar flow",
+        "Playwright browser regression pack",
+        "broad latency characterization across all advisor prompts"
+      ],
+      "checks": {
+        "total": 3,
+        "passed": 3,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Previously observed mixed advisory no-tool drift did not reproduce on ai-engine-00317. All three follow-up prompts called searchKnowledgeBase and returned grounded responses.",
+          "nextAction": "Keep this as a non-blocking latency watch only; do not open a new backlog item unless no-tool drift reappears or the very_slow pattern spreads beyond this narrow prompt family."
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260415-0287",
+      "recordedAt": "2026-04-15T00:53:57.310Z",
+      "recordedAtKst": "2026-04-15 09:53:57 KST",
+      "title": "Production release-gate QA refresh after ai-engine-00317 stabilization",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260415-0287.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_97A4qLDxVvCdunBXh93T87B4eSLQ",
+        "deploymentUrl": "https://openmanager-b6spao5jz-skyasus-projects.vercel.app",
+        "commitSha": "6e42f8345edc2b3cb7a6766893884b4dc9c5b605"
+      },
+      "scope": "release-gate",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveredSurfaces": [
+        "landing settled render on production",
+        "system start redirect to /dashboard",
+        "dashboard render with system summary and resource panels",
+        "AI sidebar open from dashboard alert-analysis CTA",
+        "AI first-hit production response for api-was-dc1-01 CPU 93% context",
+        "/api/health 200 on production",
+        "/api/version 200 on production",
+        "browser console error count 0 during landing -> dashboard -> AI flow"
+      ],
+      "skippedSurfaces": [
+        "fullscreen AI workspace",
+        "Reporter full report flow",
+        "Analyst advanced forecast flow",
+        "modal-detail pack outside dashboard -> AI alert path",
+        "Cloud Run admin observability endpoints"
+      ],
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Core landing, dashboard transition, and representative AI production path were exercised end-to-end with live Playwright evidence.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The first-hit dashboard alert analysis path returned a grounded production answer without rate-limit failure or empty response drift.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production /api/health and /api/version were healthy, and the UI flow completed with zero browser console errors.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel usage stayed within expected budget and the release-facing production path remained operational across route, dashboard, and AI surfaces.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-15T09:50:47+09:00",
+          "summary": "Current billing period reviewed before release-gate QA; effective 8.4927 USD, billed 0.0000 USD, chargeCount 7917, no unexpected billed usage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Release-gate dashboard + AI sidebar response",
+          "path": "reports/qa/evidence/qa-20260415-release-gate-ai-sidebar.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Release-gate console warnings log",
+          "path": "reports/qa/evidence/qa-20260415-release-gate-console.txt"
+        }
+      ],
+      "links": [],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -24628,16 +25015,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 125,
-      "appropriateCount": 117,
+      "seenCount": 130,
+      "appropriateCount": 122,
       "partialCount": 8,
       "inappropriateCount": 0,
       "improvementNeededCount": 18,
-      "lastRunId": "QA-20260413-0282",
-      "lastSeenAt": "2026-04-13T12:52:28.892Z",
+      "lastRunId": "QA-20260415-0287",
+      "lastSeenAt": "2026-04-15T00:53:57.310Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Three-step QA wave confirms closure: schema mismatch INTERNAL_ERROR removed, legacy topology/architecture variant now consistently routes to deterministic KB path, and quality/latency regressions are no longer reproduced in sampled runs.",
+      "lastRationale": "The first-hit dashboard alert analysis path returned a grounded production answer without rate-limit failure or empty response drift.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -24645,16 +25032,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 77,
-      "appropriateCount": 52,
+      "seenCount": 78,
+      "appropriateCount": 53,
       "partialCount": 25,
       "inappropriateCount": 0,
       "improvementNeededCount": 26,
-      "lastRunId": "QA-20260407-0249",
-      "lastSeenAt": "2026-04-07T11:55:13.126Z",
+      "lastRunId": "QA-20260415-0287",
+      "lastSeenAt": "2026-04-15T00:53:57.310Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Health/version/system probes and a direct supervisor SSE request confirmed production observability on the documented X-AI-Latency-Ms path; Server-Timing and X-AI-Processing-Ms remained absent, which matches the current Vercel SSOT.",
+      "lastRationale": "Production /api/health and /api/version were healthy, and the UI flow completed with zero browser console errors.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -24679,16 +25066,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 77,
-      "appropriateCount": 69,
+      "seenCount": 78,
+      "appropriateCount": 70,
       "partialCount": 8,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260409-0259",
-      "lastSeenAt": "2026-04-08T22:37:58.733Z",
+      "lastRunId": "QA-20260415-0287",
+      "lastSeenAt": "2026-04-15T00:53:57.310Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Deployment identity, version metadata, usage budget, and release-recovered canonical production path remain aligned on v8.11.4.",
+      "lastRationale": "Vercel usage stayed within expected budget and the release-facing production path remained operational across route, dashboard, and AI surfaces.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -24696,17 +25083,17 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 104,
-      "appropriateCount": 97,
+      "seenCount": 105,
+      "appropriateCount": 98,
       "partialCount": 7,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260409-0267",
-      "lastSeenAt": "2026-04-09T13:35:00.812Z",
+      "lastRunId": "QA-20260415-0287",
+      "lastSeenAt": "2026-04-15T00:53:57.310Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Post-deploy smoke plus component map gate keeps release safety baseline for this direct deploy path.",
-      "lastNextAction": "Run full Playwright release-gate pack on next scheduled release tag pipeline."
+      "lastRationale": "Core landing, dashboard transition, and representative AI production path were exercised end-to-end with live Playwright evidence.",
+      "lastNextAction": ""
     },
     "data-metrics-quality": {
       "domainId": "data-metrics-quality",

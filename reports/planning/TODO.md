@@ -1,10 +1,10 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-15 KST (ai-engine-00316 배포 + Advisor quality improvement Task 1~4 완료)
+**Last Updated**: 2026-04-15 KST (release-gate QA refresh 완료, backlog zero 유지)
 
 ## Active Tasks
 
-_현재 P1 없음. 다음 작업은 Backlog 참조._
+_현재 Active Task 없음. backlog도 비어 있으며, 남은 항목은 On Hold tracking-only 뿐이다._
 
 ### Completed (2026-04-15 #90)
 - [x] Advisor latency 임계값 보정 (Task 1) — [response-quality.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/services/ai-sdk/agents/response-quality.ts:1) Advisor 전용 임계값 추가 (fast≤8s/normal≤20s/slow≤40s). `aedbfbc91`.
@@ -12,6 +12,48 @@ _현재 P1 없음. 다음 작업은 Backlog 참조._
 - [x] quality-retry MISSING_COMMAND_BLOCK 트리거 추가 (Task 3) — [supervisor-quality-retry.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/services/ai-sdk/supervisor-quality-retry.ts:1) Advisor formatCompliance=false 시 1회 재시도. `aedbfbc91`.
 - [x] Cloud Run 재배포 + post-deploy QA (Task 4) — Cloud Build `9bfa352c-70a1-47c2-8fad-5f4d32e99acf`, revision `ai-engine-00316-l67` 100% 전환. post-deploy probe 3/3 성공, `qualityFlags=[]`, `latencyTier=fast`. `QA-20260415-0283`.
 - [x] 프론트엔드 component audit round 1+2 완료 — 50+ 컴포넌트 테스트 추가, BrowserNotification fix. `1ff731169`, `12138be34`.
+
+### Completed (2026-04-15 #91)
+- [x] topology duplicate invocation dedupe 적용 — [supervisor-routing.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/services/ai-sdk/supervisor-routing.ts:1)에서 후속 step도 의도 기반 tool filtering을 유지하고, 강제 KB/metric/web-search 도구는 step 0 이후 재노출되지 않도록 정리했다.
+- [x] 회귀 테스트 추가 — [supervisor-routing.test.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/services/ai-sdk/supervisor-routing.test.ts:1)에 topology 후속 step dedupe, direct metric finalize 동작을 고정했다.
+- [x] 로컬 ai-engine 검증 완료 — `npm run type-check`, `npx vitest run src/services/ai-sdk/supervisor-routing.test.ts --silent=passed-only`, `npm run test`(`71 files, 760 tests`) 통과.
+- [x] Cloud Run production 재배포 완료 — Cloud Build `c40ce541-e334-4d0e-9700-901c3cb0f1b8`, revision `ai-engine-00317-sss`가 100% 트래픽으로 전환됐다.
+- [x] post-deploy targeted QA 기록 — [qa-run-QA-20260415-0284.json](/mnt/d/dev/openmanager-ai/reports/qa/runs/2026/qa-run-QA-20260415-0284.json:1) 기준 topology probe 2회 모두 `toolsCalled=["searchKnowledgeBase","finalAnswer"]`, `latencyTier=fast`, `qualityFlags=[]` 확인.
+
+### Completed (2026-04-15 #92)
+- [x] Storybook stable dist-tag 재확인 — npm registry 기준 `storybook latest=10.2.10`, `@storybook/nextjs-vite latest=10.2.10`, `next=10.3.0-alpha.6`로 stable 승격은 아직 아니었다.
+- [x] 현재 config 유지 판단 고정 — [.storybook/main.ts](/mnt/d/dev/openmanager-ai/.storybook/main.ts:1)의 `experimentalComponentsManifest` flag는 유지하고, stable 승격 전까지 추가 변경하지 않기로 했다.
+- [x] build 재검증 완료 — `npm run storybook:build:ci` 기준 `storybook-static/index.html`, `storybook-static/manifests/components.json` 생성 확인으로 현재 설정이 정상 동작함을 다시 확인했다.
+
+### Completed (2026-04-15 #93)
+- [x] Graph traversal production 재평가 완료 — [qa-run-QA-20260415-0285.json](/mnt/d/dev/openmanager-ai/reports/qa/runs/2026/qa-run-QA-20260415-0285.json:1) 기준 `topology`, `topology variant`, `incident` 질의 모두에서 graph source가 실제 응답에 남는 것을 확인했다.
+- [x] variant distortion 제거 확인 — 이전 QA를 왜곡하던 direct variant failure는 현재 `ai-engine-00317-sss`에서 재현되지 않았고, `topology variant` probe도 `toolsCalled=["searchKnowledgeBase","finalAnswer"]`, `graphCount=1`로 수렴했다.
+- [x] 운영 결론 고정 — graph traversal은 `KEEP`이 맞다. 현재 production에서는 topology 계열도 `vector 3 + graph 1`, incident 계열은 `graph 3 + vector 0`으로 user-visible 응답에 graph source가 직접 반영된다.
+
+### Completed (2026-04-15 #94)
+- [x] `src/types/README.md` 필요성 재평가 완료 — 신규 README는 만들지 않기로 했다. 현재 타입 구조 설명은 [folder-structure.md](/mnt/d/dev/openmanager-ai/docs/reference/architecture/folder-structure.md:1), [server-metadata-comparison.md](/mnt/d/dev/openmanager-ai/docs/reference/architecture/data/server-metadata-comparison.md:1), [status.md](/mnt/d/dev/openmanager-ai/docs/status.md:1)와 `src/types/*` 상단 주석으로 충분히 커버된다.
+- [x] 문서 예산/중복 점검 완료 — `npm run docs:budget` 기준 active docs `56/80`, duplicate candidate `none`, stale `0`이었다. 예산 여유는 있지만 새 README를 추가해도 정보 이득보다 SSOT 분산 리스크가 더 크다고 판단했다.
+- [x] 운영 결론 고정 — 타입 SSOT는 별도 `src/types/README.md`가 아니라 기존 canonical reference + 코드 인접 주석으로 유지한다. 실제 drift가 다시 생기거나 import 규칙/alias 정책이 복잡해질 때만 문서 추가를 재검토한다.
+
+### Completed (2026-04-15 #95)
+- [x] mixed advisory residual follow-up 수행 — [qa-run-QA-20260415-0286.json](/mnt/d/dev/openmanager-ai/reports/qa/runs/2026/qa-run-QA-20260415-0286.json:1) 기준 OOM/CPU+memory/CPU+memory+logs 혼합 advisory 질의 3건을 production `ai-engine-00317-sss`에서 재검증했다.
+- [x] `no-tool` drift 미재현 확인 — 세 질의 모두 `searchKnowledgeBase`를 호출했고, 이전에 1회 관찰된 `toolsCalled=[]`, `ragSources=0` 경로는 다시 나오지 않았다.
+- [x] 잔여 리스크 축소 — 세 번째 변형만 `29.26s`, `latencyTier=very_slow`, `graph 5`로 느렸지만 grounding은 유지됐다. 따라서 새 backlog item은 열지 않고 non-blocking latency watch로만 남긴다.
+
+### Completed (2026-04-15 #96)
+- [x] QA trend metadata sync 완료 — `npm run qa:status -- --write`로 [QA_TRENDS.md](/mnt/d/dev/openmanager-ai/reports/qa/QA_TRENDS.md:1), [latest-qa-trends.json](/mnt/d/dev/openmanager-ai/reports/qa/latest-qa-trends.json:1), [QA_STATUS.md](/mnt/d/dev/openmanager-ai/reports/qa/QA_STATUS.md:1)를 현재 tracker 기준으로 재생성했다.
+- [x] stale trend artifact 해소 — 기존 `QA-20260413-0282` 기준 stale snapshot이 `QA-20260415-0286` / `QA-20260415-0285` 기준으로 갱신됐다.
+- [x] active warning 성격 재확인 — 남은 `gate-window-regression-open`은 실제 open issue가 아니라 `QA-20260407-0249`가 rolling gate window에 남아 생기는 historical warning이다. 새 backlog item은 열지 않는다.
+
+### Completed (2026-04-15 #97)
+- [x] zero-backlog planning 정합성 반영 — [TODO.md](/mnt/d/dev/openmanager-ai/reports/planning/TODO.md:1)의 `Active Tasks` 안내 문구를 실제 상태에 맞게 고쳤다.
+- [x] backlog zero-state 명시 — `Backlog` 표에 `없음` 행을 추가해 현재 backlog가 비어 있음을 문서에서 바로 확인할 수 있게 했다.
+- [x] 운영 판단 유지 — 남은 항목은 `On Hold`의 QA evidence tracking-only와 historical gate warning뿐이며, 둘 다 새 구현 작업으로 승격하지 않는다.
+
+### Completed (2026-04-15 #98)
+- [x] production release-gate QA refresh 수행 — [qa-run-QA-20260415-0287.json](/mnt/d/dev/openmanager-ai/reports/qa/runs/2026/qa-run-QA-20260415-0287.json:1) 기준 Vercel production에서 landing → system start → dashboard → AI sidebar first-hit 흐름과 `/api/health`, `/api/version`을 재검증했다.
+- [x] release-facing 증거 확보 — [qa-20260415-release-gate-ai-sidebar.png](/mnt/d/dev/openmanager-ai/reports/qa/evidence/qa-20260415-release-gate-ai-sidebar.png:1), [qa-20260415-release-gate-console.txt](/mnt/d/dev/openmanager-ai/reports/qa/evidence/qa-20260415-release-gate-console.txt:1)를 durable artifact로 남겼다.
+- [x] 운영 결론 갱신 — run 자체는 `8/8` green이었지만 `gate-window-regression-open` warning은 여전히 `QA-20260407-0249` broad regression이 rolling gate window에 남아 있어서 유지된다. 이는 active failure가 아니라 historical gate context로 계속 취급한다.
 
 ### Completed (2026-04-13 #89)
 - [x] variant direct path 안정화 패치 적용 — [orchestrator-web-search.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-web-search.ts:1)에 `resolveRAGSetting`(질의 기반 auto) 추가, [supervisor-routing.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/services/ai-sdk/supervisor-routing.ts:1)에서 advisor intent를 `toolChoice='required'`로 강화, [supervisor-quality-retry.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/services/ai-sdk/supervisor-quality-retry.ts:1)에 non-general `toolsCalled=[]` 재시도 규칙을 반영했다.
@@ -23,16 +65,13 @@ _현재 P1 없음. 다음 작업은 Backlog 참조._
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 7차 정리 후 `reports/qa/evidence`는 `51.71MiB / 195파일`. orphan/missing/archive candidate는 모두 `0`이고 남은 상위 evidence는 single-artifact first-paint, counted/release-facing 대표 proof, modal/detail/history 유일 스크린샷처럼 policy-protected 범주라 routine prune은 중단. 새로운 evidence 누적 시점 또는 명시적 archival override가 있을 때만 재평가. |
+| P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-04-15 재검증 기준 `reports/qa=53.78MiB`, `reports/qa/evidence=49.26MiB / 194파일`, `reports/qa/runs=3.15MiB`. `npm run qa:evidence:audit` 결과 orphan/missing/archive candidate는 모두 `0`이고 남은 상위 evidence는 legacy representative screenshots + counted/release-facing proof + tracker SSOT 파일이라 routine prune 이득이 낮다. 최근 counted probe run들(`QA-20260415-0283`~`0285`)은 artifact 없는 curl/cloud-run verification 성격이라 warning만 남기고, 새로운 evidence 누적 시점 또는 명시적 archival override가 있을 때만 재평가한다. |
 
 ## Backlog
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| P3: graph traversal 유지/제거 재평가 | Low | targeted QA 3회(`QA-20260413-0275`/`0276`/`0277`) 관찰 결과, incident/일부 topology 질의에서 `sourceType=\"graph\"`가 계속 관측됐다. 반면 variant topology 질의는 direct supervisor에서 `INTERNAL_ERROR`가 재현돼 traversal 제거 판단을 왜곡할 수 있으므로 즉시 제거는 보류한다. P1 direct path 오류를 먼저 수정한 뒤 hit-rate/precision을 다시 측정해 재평가한다. |
-| P3: topology 질의 duplicate tool invocation 완전 제거 여부 판단 | Low | production에서는 여전히 `toolsCalled=["searchKnowledgeBase","searchKnowledgeBase","finalAnswer"]`가 보인다. 현재 cache로 backend 재실행 비용은 줄였으므로 correctness 이슈는 아니고, latency/observability에 실제 부담이 남는지 본 뒤 추가 dedupe를 결정한다. |
-| P3: Storybook `experimentalComponentsManifest` stable 승격 여부 재확인 | Low | 2026-04-12 재확인 결과 `storybook`/`@storybook/nextjs-vite` stable dist-tag는 둘 다 아직 `10.2.10`, `next`는 `10.3.0-alpha.6`. `.storybook/main.ts`의 feature flag는 그대로 유지. |
-| P3: `src/types/README.md` 전용 타입 SSOT 문서 필요성 재평가 | Low | 현재 전용 README는 없음. 타입 정제 작업은 완료됐고, 신규 문서 추가는 실제 drift가 다시 생길 때만 검토. |
+| 없음 | - | 2026-04-15 기준 backlog zero 유지 |
 
 ### Completed (2026-04-13 #87)
 - [x] GraphRAG targeted QA 3회 기록 완료 — [qa-run-QA-20260413-0275.json](/mnt/d/dev/openmanager-ai/reports/qa/runs/2026/qa-run-QA-20260413-0275.json:1), [qa-run-QA-20260413-0276.json](/mnt/d/dev/openmanager-ai/reports/qa/runs/2026/qa-run-QA-20260413-0276.json:1), [qa-run-QA-20260413-0277.json](/mnt/d/dev/openmanager-ai/reports/qa/runs/2026/qa-run-QA-20260413-0277.json:1) 누적 반영.
