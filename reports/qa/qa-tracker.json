@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-15T14:18:02.870Z"
+    "updatedAt": "2026-04-15T14:40:05.458Z"
   },
   "sequence": {
-    "nextRunNumber": 291
+    "nextRunNumber": 292
   },
   "summary": {
-    "totalRecordedRuns": 288,
-    "totalRuns": 248,
+    "totalRecordedRuns": 289,
+    "totalRuns": 249,
     "excludedRuns": 40,
-    "totalChecks": 1921,
-    "totalPassed": 1845,
+    "totalChecks": 1939,
+    "totalPassed": 1863,
     "totalFailed": 70,
     "completionRate": 100,
     "completedItems": 293,
@@ -21,10 +21,10 @@
     "wontFixItems": 13,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260415-0288",
-    "lastRecordedAt": "2026-04-15T11:09:03.713Z",
-    "latestRecordedRunId": "QA-20260415-0290",
-    "latestRecordedAt": "2026-04-15T14:18:02.870Z"
+    "lastRunId": "QA-20260415-0291",
+    "lastRecordedAt": "2026-04-15T14:40:05.458Z",
+    "latestRecordedRunId": "QA-20260415-0291",
+    "latestRecordedAt": "2026-04-15T14:40:05.458Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -25357,6 +25357,151 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260415-0291",
+      "recordedAt": "2026-04-15T14:40:05.458Z",
+      "recordedAtKst": "2026-04-15 23:40:05 KST",
+      "title": "Vercel broad QA - v8.11.12 production frontend and AI refresh",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260415-0291.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_8oAdopQezsQhTUtaSMnxpkNJhuF9",
+        "deploymentUrl": "https://openmanager-5o9tan4q9-skyasus-projects.vercel.app",
+        "commitSha": "80d53371ceb582616b73801b21eb51b66c010f0c"
+      },
+      "scope": "broad",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "modal-detail-pack"
+      ],
+      "coveredSurfaces": [
+        "landing render and version badge on production v8.11.12",
+        "/main redirects to / on production",
+        "/login render with Google/GitHub/email/guest PIN entry",
+        "/privacy render with back-link to login",
+        "404 route returns 404 page on production",
+        "/system-boot transitions to /dashboard",
+        "dashboard summary render with total 15 / online 14 / warning 1 / risk 0 / offline 0",
+        "dashboard system resource panel render with CPU 37 / Memory 47 / Disk 37",
+        "active alerts modal render and ESC close",
+        "topology modal render with 15 nodes / 20 edges and ESC close",
+        "dashboard warning CTA opens AI sidebar with prefilled prompt",
+        "AI sidebar first-hit response completes with grounded disk warning analysis",
+        "AI sidebar analysis basis detail shows traceId + tools + timeRange",
+        "/dashboard/ai-assistant fullscreen workspace restores the same conversation",
+        "fullscreen analysis basis detail preserves traceId + tools + timeRange parity",
+        "/api/health 200 on production",
+        "/api/version 200 on production with version 8.11.12 / nextjs 16.1.6 / environment production",
+        "browser console error count 0 and warning count 0 during normal landing/login/dashboard/AI flow"
+      ],
+      "skippedSurfaces": [
+        "/auth/error fallback route",
+        "/auth/success legacy callback route",
+        "server detail modal 3-tab switch",
+        "log explorer modal",
+        "Reporter generate/detail flow",
+        "Analyst advanced forecast and drilldown flow",
+        "feedback submission flow",
+        "security blocked-prompt regression pack",
+        "Cloud Run admin observability endpoints"
+      ],
+      "checks": {
+        "total": 18,
+        "passed": 18,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Core routes, dashboard modal pack, AI sidebar, fullscreen workspace, API checks, and console cleanliness were validated in one production browser session.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The storage warning analysis returned grounded content and fullscreen retained the same traceId, tool chain, and recent 1 hour time range after hydration.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Dashboard snapshot, active alerts, topology graph, and health/version endpoints remained stable on the v8.11.12 production deployment.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production deployment dpl_8oAdopQezsQhTUtaSMnxpkNJhuF9 was live before QA started, and Vercel usage remained within the current no-billed-usage expectation.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-15T23:28:55+09:00",
+          "summary": "Current billing period reviewed before broad production QA; effective 9.1391 USD, billed 0.0000 USD, no unexpected billed usage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Dashboard with AI sidebar response on v8.11.12",
+          "path": "reports/qa/evidence/qa-20260415-broad-v812-dashboard.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Fullscreen AI workspace with preserved analysis basis detail on v8.11.12",
+          "path": "reports/qa/evidence/qa-20260415-broad-v812-ai-workspace.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Broad production console log on v8.11.12",
+          "path": "reports/qa/evidence/qa-20260415-broad-v812-console.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Deployment dpl_8oAdopQezsQhTUtaSMnxpkNJhuF9",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/8oAdopQezsQhTUtaSMnxpkNJhuF9"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -25365,16 +25510,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 133,
-      "appropriateCount": 124,
+      "seenCount": 134,
+      "appropriateCount": 125,
       "partialCount": 9,
       "inappropriateCount": 0,
       "improvementNeededCount": 19,
-      "lastRunId": "QA-20260415-0290",
-      "lastSeenAt": "2026-04-15T14:18:02.870Z",
+      "lastRunId": "QA-20260415-0291",
+      "lastSeenAt": "2026-04-15T14:40:05.458Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production deployment on v8.11.12 preserved traceId, engine label, tool result, and recent 1 hour time range across sidebar to fullscreen handoff.",
+      "lastRationale": "The storage warning analysis returned grounded content and fullscreen retained the same traceId, tool chain, and recent 1 hour time range after hydration.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -25382,16 +25527,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 79,
-      "appropriateCount": 54,
+      "seenCount": 80,
+      "appropriateCount": 55,
       "partialCount": 25,
       "inappropriateCount": 0,
       "improvementNeededCount": 26,
-      "lastRunId": "QA-20260415-0288",
-      "lastSeenAt": "2026-04-15T11:09:03.713Z",
+      "lastRunId": "QA-20260415-0291",
+      "lastSeenAt": "2026-04-15T14:40:05.458Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Dashboard summary/resource/top5, /api/health, /api/version, console cleanliness까지 production 기준으로 확인했다.",
+      "lastRationale": "Dashboard snapshot, active alerts, topology graph, and health/version endpoints remained stable on the v8.11.12 production deployment.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -25416,16 +25561,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 79,
-      "appropriateCount": 71,
+      "seenCount": 80,
+      "appropriateCount": 72,
       "partialCount": 8,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260415-0288",
-      "lastSeenAt": "2026-04-15T11:09:03.713Z",
+      "lastRunId": "QA-20260415-0291",
+      "lastSeenAt": "2026-04-15T14:40:05.458Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Latest production deployment dpl_CtSR9Wk698mkgBjyjzLREtfNiC5s on v8.11.11 remained reachable and budget usage stayed normal.",
+      "lastRationale": "Production deployment dpl_8oAdopQezsQhTUtaSMnxpkNJhuF9 was live before QA started, and Vercel usage remained within the current no-billed-usage expectation.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -25433,16 +25578,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 108,
-      "appropriateCount": 101,
+      "seenCount": 109,
+      "appropriateCount": 102,
       "partialCount": 7,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260415-0290",
-      "lastSeenAt": "2026-04-15T14:18:02.870Z",
+      "lastRunId": "QA-20260415-0291",
+      "lastSeenAt": "2026-04-15T14:40:05.458Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Post-deploy user flow validated the exact regression path on production using Playwright from landing through dashboard AI sidebar to fullscreen workspace.",
+      "lastRationale": "Core routes, dashboard modal pack, AI sidebar, fullscreen workspace, API checks, and console cleanliness were validated in one production browser session.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

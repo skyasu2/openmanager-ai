@@ -1,0 +1,151 @@
+{
+  "runId": "QA-20260415-0291",
+  "recordedAt": "2026-04-15T14:40:05.458Z",
+  "recordedAtKst": "2026-04-15 23:40:05 KST",
+  "runTitle": "Vercel broad QA - v8.11.12 production frontend and AI refresh",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_8oAdopQezsQhTUtaSMnxpkNJhuF9",
+    "deploymentUrl": "https://openmanager-5o9tan4q9-skyasus-projects.vercel.app",
+    "commitSha": "80d53371ceb582616b73801b21eb51b66c010f0c"
+  },
+  "scope": "broad",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "modal-detail-pack"
+  ],
+  "coveredSurfaces": [
+    "landing render and version badge on production v8.11.12",
+    "/main redirects to / on production",
+    "/login render with Google/GitHub/email/guest PIN entry",
+    "/privacy render with back-link to login",
+    "404 route returns 404 page on production",
+    "/system-boot transitions to /dashboard",
+    "dashboard summary render with total 15 / online 14 / warning 1 / risk 0 / offline 0",
+    "dashboard system resource panel render with CPU 37 / Memory 47 / Disk 37",
+    "active alerts modal render and ESC close",
+    "topology modal render with 15 nodes / 20 edges and ESC close",
+    "dashboard warning CTA opens AI sidebar with prefilled prompt",
+    "AI sidebar first-hit response completes with grounded disk warning analysis",
+    "AI sidebar analysis basis detail shows traceId + tools + timeRange",
+    "/dashboard/ai-assistant fullscreen workspace restores the same conversation",
+    "fullscreen analysis basis detail preserves traceId + tools + timeRange parity",
+    "/api/health 200 on production",
+    "/api/version 200 on production with version 8.11.12 / nextjs 16.1.6 / environment production",
+    "browser console error count 0 and warning count 0 during normal landing/login/dashboard/AI flow"
+  ],
+  "skippedSurfaces": [
+    "/auth/error fallback route",
+    "/auth/success legacy callback route",
+    "server detail modal 3-tab switch",
+    "log explorer modal",
+    "Reporter generate/detail flow",
+    "Analyst advanced forecast and drilldown flow",
+    "feedback submission flow",
+    "security blocked-prompt regression pack",
+    "Cloud Run admin observability endpoints"
+  ],
+  "checks": {
+    "total": 18,
+    "passed": 18,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Core routes, dashboard modal pack, AI sidebar, fullscreen workspace, API checks, and console cleanliness were validated in one production browser session.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The storage warning analysis returned grounded content and fullscreen retained the same traceId, tool chain, and recent 1 hour time range after hydration.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Dashboard snapshot, active alerts, topology graph, and health/version endpoints remained stable on the v8.11.12 production deployment.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production deployment dpl_8oAdopQezsQhTUtaSMnxpkNJhuF9 was live before QA started, and Vercel usage remained within the current no-billed-usage expectation.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-15T23:28:55+09:00",
+      "summary": "Current billing period reviewed before broad production QA; effective 9.1391 USD, billed 0.0000 USD, no unexpected billed usage spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Dashboard with AI sidebar response on v8.11.12",
+      "path": "reports/qa/evidence/qa-20260415-broad-v812-dashboard.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Fullscreen AI workspace with preserved analysis basis detail on v8.11.12",
+      "path": "reports/qa/evidence/qa-20260415-broad-v812-ai-workspace.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Broad production console log on v8.11.12",
+      "path": "reports/qa/evidence/qa-20260415-broad-v812-console.txt"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Landing and login remained green on production v8.11.12.",
+    "404 route produced the expected 404 page; its expected missing-route resource error was excluded from the normal-flow console cleanliness baseline.",
+    "Guest login required the current PIN modal flow and accepted PIN 4231 successfully.",
+    "Dashboard snapshot during run: total 15, online 14, warning 1, risk 0, offline 0; system resources 37/47/37.",
+    "AI warning analysis for storage-nfs-dc1-01 completed with a two-tool chain (이상 탐지, 근본 원인 분석).",
+    "Fullscreen workspace preserved traceId f38803c9d1bd80cf0ddbac782666453d and the same tool/timeRange metadata after sidebar handoff.",
+    "browser_console_messages reported 0 errors and 0 warnings across the normal landing/login/dashboard/AI flow."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Deployment dpl_8oAdopQezsQhTUtaSMnxpkNJhuF9",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/8oAdopQezsQhTUtaSMnxpkNJhuF9"
+    }
+  ]
+}

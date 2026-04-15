@@ -1,17 +1,17 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-15 23:18:03 KST
+> Generated at: 2026-04-15 23:40:06 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 288 |
-| Total Runs (Counted) | 248 |
+| Total Recorded Runs | 289 |
+| Total Runs (Counted) | 249 |
 | Non-counted Runs | 40 |
-| Total Checks | 1921 |
-| Passed | 1845 |
+| Total Checks | 1939 |
+| Passed | 1863 |
 | Failed | 70 |
 | Completed Items | 293 |
 | Pending Items | 0 |
@@ -20,34 +20,36 @@
 | Expert Domains Tracked | 8 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260415-0288 (2026-04-15T11:09:03.713Z) |
-| Latest Recorded Run | QA-20260415-0290 (2026-04-15T14:18:02.870Z) |
+| Last Counted Run | QA-20260415-0291 (2026-04-15T14:40:05.458Z) |
+| Latest Recorded Run | QA-20260415-0291 (2026-04-15T14:40:05.458Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260415-0290 (2026-04-15T14:18:02.870Z)
+Latest run: QA-20260415-0291 (2026-04-15T14:40:05.458Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after v8.11.12 production deployment; effective 9.1391 USD, billed 0.0000 USD, no unexpected billed usage spike. |
+| vercel | cli | checked | normal | Current billing period reviewed before broad production QA; effective 9.1391 USD, billed 0.0000 USD, no unexpected billed usage spike. |
 
 ## Coverage (Latest Run)
 
-- Scope: targeted
+- Scope: broad
 - Release-Facing: yes
-- Counts Toward Summary: no
+- Counts Toward Summary: yes
 - Deployment: dpl_8oAdopQezsQhTUtaSMnxpkNJhuF9 / SHA 80d53371
-- Coverage Packs: ai-core, ai-advanced-surface
-- Covered Surfaces: production landing version badge on v8.11.12, system-boot to dashboard transition on production, dashboard warning CTA opens AI sidebar with prefilled prompt, AI sidebar first response renders analysis basis detail with traceId/tool/timeRange, fullscreen AI workspace restores the same conversation on production, fullscreen analysis basis detail preserves traceId/tool/timeRange parity on production
-- Skipped Surfaces: broad release-gate pack, Reporter flow, Analyst forecast flow, console cleanliness baseline
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, modal-detail-pack
+- Covered Surfaces: landing render and version badge on production v8.11.12, /main redirects to / on production, /login render with Google/GitHub/email/guest PIN entry, /privacy render with back-link to login, 404 route returns 404 page on production, /system-boot transitions to /dashboard, dashboard summary render with total 15 / online 14 / warning 1 / risk 0 / offline 0, dashboard system resource panel render with CPU 37 / Memory 47 / Disk 37, active alerts modal render and ESC close, topology modal render with 15 nodes / 20 edges and ESC close, dashboard warning CTA opens AI sidebar with prefilled prompt, AI sidebar first-hit response completes with grounded disk warning analysis, AI sidebar analysis basis detail shows traceId + tools + timeRange, /dashboard/ai-assistant fullscreen workspace restores the same conversation, fullscreen analysis basis detail preserves traceId + tools + timeRange parity, /api/health 200 on production, /api/version 200 on production with version 8.11.12 / nextjs 16.1.6 / environment production, browser console error count 0 and warning count 0 during normal landing/login/dashboard/AI flow
+- Skipped Surfaces: /auth/error fallback route, /auth/success legacy callback route, server detail modal 3-tab switch, log explorer modal, Reporter generate/detail flow, Analyst advanced forecast and drilldown flow, feedback submission flow, security blocked-prompt regression pack, Cloud Run admin observability endpoints
 
 ## Links (Latest Run)
 
@@ -60,7 +62,9 @@ Latest run: QA-20260415-0290 (2026-04-15T14:18:02.870Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Production fullscreen AI workspace with preserved analysis basis detail | `reports/qa/evidence/qa-20260415-production-ai-sidebar-fullscreen-parity.png` | - |
+| playwright-screenshot | Dashboard with AI sidebar response on v8.11.12 | `reports/qa/evidence/qa-20260415-broad-v812-dashboard.png` | - |
+| playwright-screenshot | Fullscreen AI workspace with preserved analysis basis detail on v8.11.12 | `reports/qa/evidence/qa-20260415-broad-v812-ai-workspace.png` | - |
+| playwright-console | Broad production console log on v8.11.12 | `reports/qa/evidence/qa-20260415-broad-v812-console.txt` | - |
 
 ## Expert Domain Open Gaps
 
@@ -402,6 +406,7 @@ Latest run: QA-20260415-0290 (2026-04-15T14:18:02.870Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260415-0291 | 2026-04-15T14:40:05.458Z | broad | yes | yes | Vercel broad QA - v8.11.12 production frontend and AI refresh | 18 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260415-0290 | 2026-04-15T14:18:02.870Z | targeted | yes | no | Vercel production targeted QA - fullscreen analysis basis parity after v8.11.12 deploy | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260415-0289 | 2026-04-15T13:37:22.863Z | targeted | no | no | Vercel preview targeted QA - fullscreen analysis basis parity after hydration fix | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260415-0288 | 2026-04-15T11:09:03.713Z | broad | yes | yes | Vercel broad QA - frontend and AI assistant evaluation on latest production | 16 | 0 | 1 | 0 | 0 | 1 |
@@ -421,4 +426,3 @@ Latest run: QA-20260415-0290 (2026-04-15T14:18:02.870Z)
 | QA-20260413-0274 | 2026-04-13T08:29:27.267Z | targeted | no | no | Vercel + Cloud Run targeted verification after GraphRAG telemetry rollout | 13 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260412-0273 | 2026-04-12T06:56:48.689Z | targeted | no | no | Local Next.js OAuth smoke - localhost and 127.0.0.1 loopback parity | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260412-0272 | 2026-04-12T00:18:52.994Z | targeted | no | yes | Vercel production targeted QA - Supabase impact surfaces after schema cleanup | 10 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260411-0271 | 2026-04-11T07:18:03.097Z | targeted | no | no | Local auth audit smoke - guest login route inserts security_audit_logs | 3 | 1 | 0 | 0 | 0 | 0 |
