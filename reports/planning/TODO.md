@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-15 KST (release-gate QA refresh 완료, backlog zero 유지)
+**Last Updated**: 2026-04-15 KST (AI SDK version drift 정리, backlog zero 유지)
 
 ## Active Tasks
 
@@ -54,6 +54,11 @@ _현재 Active Task 없음. backlog도 비어 있으며, 남은 항목은 On Hol
 - [x] production release-gate QA refresh 수행 — [qa-run-QA-20260415-0287.json](/mnt/d/dev/openmanager-ai/reports/qa/runs/2026/qa-run-QA-20260415-0287.json:1) 기준 Vercel production에서 landing → system start → dashboard → AI sidebar first-hit 흐름과 `/api/health`, `/api/version`을 재검증했다.
 - [x] release-facing 증거 확보 — [qa-20260415-release-gate-ai-sidebar.png](/mnt/d/dev/openmanager-ai/reports/qa/evidence/qa-20260415-release-gate-ai-sidebar.png:1), [qa-20260415-release-gate-console.txt](/mnt/d/dev/openmanager-ai/reports/qa/evidence/qa-20260415-release-gate-console.txt:1)를 durable artifact로 남겼다.
 - [x] 운영 결론 갱신 — run 자체는 `8/8` green이었지만 `gate-window-regression-open` warning은 여전히 `QA-20260407-0249` broad regression이 rolling gate window에 남아 있어서 유지된다. 이는 active failure가 아니라 historical gate context로 계속 취급한다.
+
+### Completed (2026-04-15 #99)
+- [x] AI SDK 버전 재조사 완료 — 실제 의존성은 root와 `cloud-run/ai-engine` 모두 `ai ^6.0.156`이며, `@ai-sdk/react`는 root에서 `^3.0.140`를 사용 중임을 재확인했다.
+- [x] blocker 상태 재분류 — 과거 `ai@latest`/Vitest resolver 충돌은 현재 현행 blocker가 아니다. 동일 세션에서 `cloud-run/ai-engine` `npm run type-check`, `npm run test`(`71 files / 760 tests`)가 green이었다.
+- [x] 후속 우선순위 조정 — `ai@latest 호환성 재조사`는 별도 backlog로 열지 않고 stale 문서 정리로 닫는다. 다음 장기 후보는 Storybook circular chunk warning 같은 비차단 정리 항목이다.
 
 ### Completed (2026-04-13 #89)
 - [x] variant direct path 안정화 패치 적용 — [orchestrator-web-search.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-web-search.ts:1)에 `resolveRAGSetting`(질의 기반 auto) 추가, [supervisor-routing.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/services/ai-sdk/supervisor-routing.ts:1)에서 advisor intent를 `toolChoice='required'`로 강화, [supervisor-quality-retry.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/services/ai-sdk/supervisor-quality-retry.ts:1)에 non-general `toolsCalled=[]` 재시도 규칙을 반영했다.

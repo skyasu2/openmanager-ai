@@ -397,7 +397,8 @@
 - **Utility**: tailwind-merge `v3.5.0`
 
 **AI Ecosystem** (상세: [AI Engine Architecture](./reference/architecture/ai/ai-engine-architecture.md))
-- **SDK**: Vercel AI SDK `ai 6.0.138` / `@ai-sdk/react 3.0.140`
+- **SDK**: Vercel AI SDK `ai 6.0.156` / `@ai-sdk/react 3.0.140`
+- **Current Compatibility**: root와 `cloud-run/ai-engine` 모두 `ai ^6.0.156` 정렬 상태이며, 과거 `ai@latest`/Vitest resolver 충돌 가설은 현재 재현되지 않음
 - **Native Patterns** (v6.1.0):
   - `finalAnswer` 도구: `stopWhen: [hasToolCall('finalAnswer'), stepCountIs(5)]`
   - `UIMessageStream`: 네이티브 스트리밍 프로토콜

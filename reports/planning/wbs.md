@@ -246,7 +246,7 @@
 | Scripts (데이터 동기화) | 100% | sync-hourly-data + otel-precompute (로그 적재 완료) |
 | Utils/Lib 정리 | 100% | api-batcher, error-response, safeFormat, network-tracking, timeout-config, CentralizedDataManager 삭제 |
 | 테스트 인프라 | 94% | 73개(src)+22개(cloud-run)+36개(tests) 테스트 파일, CI `cloud-run-unit` job 추가, Vercel 경량 회귀 94 passed (3.9m) + 고부하 분리 운영 |
-| AI SDK 버전 정합성 | 100% | Root `ai@6.0.86`, `@ai-sdk/react@3.0.88`로 상향 및 스모크 검증 |
+| AI SDK 버전 정합성 | 100% | Root/ai-engine `ai@^6.0.156`, Root `@ai-sdk/react@^3.0.140` 사용 중이며 현행 `ai-engine` type-check/test green으로 blocker 없음 |
 
 ### 3.6 문서 (97%)
 
