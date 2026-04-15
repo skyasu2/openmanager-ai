@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.11](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.10...v8.11.11) (2026-04-15)
+
+
+### Features
+
+* **frontend:** component audit round 2 — hardening, tests, BrowserNotification fix ([12138be](https://gitlab.com/skyasu2/openmanager-ai/-/commit/12138be34b835800f7442979f7cb02089098b1b5))
+* **frontend:** component hardening, test coverage, and tooling improvements ([1ff7311](https://gitlab.com/skyasu2/openmanager-ai/-/commit/1ff731169e91276ece3bf81f494f74477c6cdc3a))
+
+
+### Bug Fixes
+
+* **ai-engine:** add ALLOW_DEGRADED_SINGLE env and function-call error handling ([5e88866](https://gitlab.com/skyasu2/openmanager-ai/-/commit/5e8886604c15602c62ff1cfecbb321c4360a3f3d))
+* **ai-engine:** improve Advisor agent latency thresholds and format quality ([aedbfbc](https://gitlab.com/skyasu2/openmanager-ai/-/commit/aedbfbc912c19d91ed82a91730adf80e18e53442))
+* **ai-engine:** stabilize supervisor routing and QA gates ([e8d331a](https://gitlab.com/skyasu2/openmanager-ai/-/commit/e8d331a411e80dab908a93185924459b54e054f6))
+* **deps:** align addon-vitest lock with storybook 10.2.10 ([b82e7bf](https://gitlab.com/skyasu2/openmanager-ai/-/commit/b82e7bf780ccb97579824c188f387139d20ad830))
+
+
+### Code Refactoring
+
+* **hooks:** remove dead restartSystem export from useSystemAutoShutdown ([72963b2](https://gitlab.com/skyasu2/openmanager-ai/-/commit/72963b229b21ef1098e2bd2f7a53c643012714fe))
+
 ## [8.11.10](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.9...v8.11.10) (2026-04-13)
 
 
