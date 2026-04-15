@@ -449,7 +449,7 @@ cloud-run/ai-engine/src/
 │   │       ├── agent-factory.ts       # AgentFactory (생성 + 가용성)
 │   │       ├── reporter-pipeline.ts   # Evaluator-Optimizer 파이프라인
 │   │       └── config/
-│   │           ├── agent-configs.ts   # 5개 라우팅 에이전트 설정 (SSOT)
+│   │           ├── agent-configs.ts   # 7개 AgentConfig SSOT (5 routing + 2 pipeline internal)
 │   │           └── agent-model-selectors.ts  # 에이전트별 모델 선택
 │   ├── resilience/
 │   │   ├── circuit-breaker.ts         # CB (CLOSED/OPEN/HALF_OPEN)

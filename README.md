@@ -80,19 +80,18 @@ graph TD
     S -->|Routing| C[Reporter Agent]:::agent
     S -->|Routing| D[Advisor Agent]:::agent
     S -->|Routing| E[Vision Agent]:::agent
-    S -->|Routing| F[Evaluator Agent]:::agent
-    S -->|Routing| G[Optimizer Agent]:::agent
 
     A -.->|Time/Filter Parse| DB[(Metrics DB)]:::tools
     B -.->|Anomaly Detect| DB
     C -.->|Draft Report| MD[Markdown Gen]:::tools
     D -.->|Troubleshoot| Docs[Guide DB]:::tools
     E -.->|Log/Image| Model[Gemini Vision]:::tools
-    F -.->|Quality Review| MD
-    G -.->|Refine Output| MD
+    C -.->|Quality Review| F[Evaluator Step]:::agent
+    F -.->|Refine Output| G[Optimizer Step]:::agent
+    G -.->|Improved Report| MD
 ```
 
-> Source of truth (2026-03-03): `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (execution agents 7) + `cloud-run/ai-engine/src/services/ai-sdk/supervisor.ts`.
+> Source of truth (2026-04-15): `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (5개 라우팅 AgentConfig + Evaluator/Optimizer pipeline config) + `cloud-run/ai-engine/src/services/ai-sdk/model-provider.ts` + `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-routing.ts`.
 
 📡 **Resumable Stream v2**: 새로고침해도 스트림 유지 (Redis 기반)
 
