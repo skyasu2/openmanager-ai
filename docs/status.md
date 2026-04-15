@@ -410,7 +410,7 @@
   - Mistral `mistral-large-latest`: Advisor (Tier 0: 1 RPS)
   - **Gemini 2.5 Flash**: Vision Agent (250 RPD, 10 RPM, 1M context)
   - **OpenRouter (Fallback)**: `nvidia/nemotron-nano-12b-v2-vl:free` (Gemini Vision 백업)
-- **Agents**: 7개 실행 에이전트 (NLQ/Analyst/Reporter/Advisor/Vision/Evaluator/Optimizer) + 1 Orchestrator 코디네이터
+- **Agents**: 5개 라우팅 에이전트 (NLQ/Analyst/Reporter/Advisor/Vision) + Evaluator/Optimizer는 Reporter 파이프라인 내부 품질 도구 + 1 Orchestrator 코디네이터
 - **Tools**: 27개 도구 Registry (Metrics 5, RCA 3, Analyst 4, Reporter 4, Evaluation 6, Control 1, Vision 4)
 - **Reporter Pipeline**: Evaluator-Optimizer 패턴 (0.75 품질 임계값, 최대 2회 반복)
 - **MCP**: 9/9 Server Connected (Context7, Stitch, Supabase-DB, Vercel, Playwright, GitHub, Sequential-Thinking, Next-DevTools, Storybook)
@@ -643,7 +643,7 @@
 **Cloud Run AI Engine**
 - **Service URL**: `gcloud run services describe ai-engine --region asia-northeast1 --format='value(status.url)'`
 - **Health**: ✅ All providers connected (Supabase, Upstash, Groq, Mistral, Cerebras, Gemini, OpenRouter, Langfuse)
-- **Agents**: 7개 실행 (NLQ, Analyst, Reporter, Advisor, Vision, Evaluator, Optimizer) + 1 Orchestrator
+- **Agents**: 5개 라우팅 (NLQ, Analyst, Reporter, Advisor, Vision) + Evaluator/Optimizer는 내부 품질 도구 + 1 Orchestrator
 - **Observability**: Langfuse (10% sampling, 무료 티어 보호)
 - **Features**: cpu-boost, cpu-throttling, no-session-affinity, gen2, 512Mi/1vCPU, max-instances=1
 

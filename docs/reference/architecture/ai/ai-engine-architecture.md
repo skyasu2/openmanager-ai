@@ -200,14 +200,15 @@ Structured routing은 3-way fallback을 유지하고, tool-loop 경로는 기본
 
 | Agent | Primary | → 2nd | → 3rd (Last Resort) |
 |-------|---------|-------|---------------------|
-| Supervisor | Groq | Mistral | Cerebras (opt-in tool loop) |
-| NLQ | Groq | Mistral | Cerebras (opt-in tool loop) |
-| Orchestrator (structured output) | Cerebras | Mistral | Groq |
-| Analyst | Groq | Mistral | Cerebras (opt-in tool loop) |
-| Reporter | Groq | Mistral | Cerebras (opt-in tool loop) |
-| **Advisor** | **Mistral** | **Groq** | **Cerebras (opt-in tool loop)** |
+| Supervisor | Groq | Cerebras | Mistral |
+| NLQ | Groq | Cerebras | Mistral |
+| Analyst | Groq | Cerebras | Mistral |
+| Reporter | Groq | Cerebras | Mistral |
+| Advisor | Groq | Cerebras | Mistral |
 | Vision | Gemini | OpenRouter | — |
 | RAG Embedding | Mistral (`mistral-embed`) | local fallback (SHA256) | — |
+
+> SSOT: `agent-model-selectors.ts` — 모든 텍스트 에이전트가 동일한 `['groq', 'cerebras', 'mistral']` fallback chain 공유.
 
 ### Cerebras Tool-Calling 변화 대응
 
@@ -448,7 +449,7 @@ cloud-run/ai-engine/src/
 │   │       ├── agent-factory.ts       # AgentFactory (생성 + 가용성)
 │   │       ├── reporter-pipeline.ts   # Evaluator-Optimizer 파이프라인
 │   │       └── config/
-│   │           ├── agent-configs.ts   # 7개 에이전트 설정 (SSOT)
+│   │           ├── agent-configs.ts   # 5개 라우팅 에이전트 설정 (SSOT)
 │   │           └── agent-model-selectors.ts  # 에이전트별 모델 선택
 │   ├── resilience/
 │   │   ├── circuit-breaker.ts         # CB (CLOSED/OPEN/HALF_OPEN)
@@ -471,7 +472,7 @@ cloud-run/ai-engine/src/
 
 | 항목 | 값 |
 |------|-----|
-| 에이전트 | 7개 config (작업 5 + 내부 품질 단계 2) |
+| 에이전트 | 5개 라우팅 AgentType + Evaluator/Optimizer는 Reporter 파이프라인 내부 도구 |
 | 도구 | 30개 (8개 카테고리) |
 | LLM Provider | 5개 (Cerebras, Groq, Mistral, Gemini, OpenRouter) |
 | Fallback 체인 | 3-way (모든 에이전트) |
@@ -532,7 +533,7 @@ cloud-run/ai-engine/src/
 <details>
 <summary>v8.0.0 (2026-02-15) - ConfigBasedAgent + Reporter Pipeline</summary>
 
-- **ConfigBasedAgent**: 7개 에이전트 단일 클래스 구현
+- **ConfigBasedAgent**: 5개 라우팅 에이전트 단일 클래스 구현 (Evaluator/Optimizer는 내부 도구)
 - **Reporter Pipeline**: Evaluator-Optimizer 패턴 (품질 ≥ 0.75)
 - **Vision Agent**: Gemini 2.5 Flash + OpenRouter Fallback
 - **Task Decomposition**: Parallel/Sequential/Hybrid 실행

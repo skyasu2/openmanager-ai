@@ -217,11 +217,13 @@ await pipeline.exec();
 
 | 우선순위 | 프로바이더 | 무료 한도 | Agent 역할 | 위험도 |
 |---------|-----------|---------|-----------|--------|
-| 1 | **Cerebras** | 1M TPD, 3,000 tok/s | Supervisor·NLQ·Analyst·Orchestrator | ⚠️ 트래픽 많으면 소진 |
-| 2 | **Groq** | 100K TPD, 12K TPM | Reporter (Primary) | ⚠️ 분당 30 요청 상한 |
-| 3 | **Mistral** | Tier 0: 1 RPS, 40K~500K TPM | Advisor (Primary) | ✅ 여유 있음 |
+| 1 | **Groq** | 100K TPD, 12K TPM | Supervisor·NLQ·Analyst·Reporter·Advisor (Primary) | ⚠️ 분당 30 요청 상한 |
+| 2 | **Cerebras** | 1M TPD, 3,000 tok/s | 위 전체 에이전트 2nd fallback | ⚠️ 트래픽 많으면 소진 |
+| 3 | **Mistral** | Tier 0: 1 RPS, 40K~500K TPM | 위 전체 에이전트 3rd fallback + RAG Embedding | ✅ 여유 있음 |
 | Vision 1 | **Google Gemini Flash** | 1,000 RPD, 250K TPM | Vision Agent | ⚠️ 일 1,000회 |
 | Vision 2 | **OpenRouter Free** | 무료 모델 제공 | Vision Fallback | ✅ 응답 느림 |
+
+> SSOT: `agent-model-selectors.ts` — 모든 텍스트 에이전트 `['groq', 'cerebras', 'mistral']` 동일 체인.
 
 > **개발 환경 AI (Claude/Codex/Gemini CLI)는 별개 예산** — 개발자 구독 선납 비용이며 위 표와 무관합니다.
 
