@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.13](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.12...v8.11.13) (2026-04-15)
+
+
+### Bug Fixes
+
+* **ai:** align system context provider transparency ([c1cb519](https://gitlab.com/skyasu2/openmanager-ai/-/commit/c1cb519e923b91d8fa5f6805d378940a2e04cff3))
+* **ai:** forward toolsCalled from data-done into deferred assistant metadata ([ac18ca2](https://gitlab.com/skyasu2/openmanager-ai/-/commit/ac18ca2f99e4ade8fcad2e0646e6d20cffd23de3))
+
 ## [8.11.12](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.11...v8.11.12) (2026-04-15)
 
 
