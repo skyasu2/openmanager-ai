@@ -349,6 +349,23 @@ export function useAIChatCore(
   });
 
   // 🧩 History Hook (Needs messages from hybrid query)
+  const handleMetadataRestore = useCallback(
+    (
+      metadataByMessageId: Record<
+        string,
+        { toolsCalled?: string[]; ragSources?: unknown[] }
+      >
+    ) => {
+      for (const [messageId, meta] of Object.entries(metadataByMessageId)) {
+        deferredHandlers.setDeferredAssistantMetadata(
+          messageId,
+          meta as Record<string, unknown>
+        );
+      }
+    },
+    [deferredHandlers]
+  );
+
   const { clearHistory } = useChatHistory({
     sessionId,
     isMessagesEmpty: messages.length === 0,
@@ -356,6 +373,7 @@ export function useAIChatCore(
     setMessages,
     isLoading: hybridIsLoading,
     onSessionRestore: setSessionId,
+    onMetadataRestore: handleMetadataRestore,
   });
 
   // 🧩 Session State Hook

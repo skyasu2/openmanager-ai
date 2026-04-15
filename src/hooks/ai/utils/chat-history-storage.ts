@@ -19,6 +19,17 @@ const HISTORY_EXPIRY_HOURS = 24;
 // Types
 // ============================================================================
 
+export interface StoredMessageMetadata {
+  toolsCalled?: string[];
+  ragSources?: Array<{
+    title: string;
+    similarity: number;
+    sourceType: string;
+    category?: string;
+    url?: string;
+  }>;
+}
+
 export interface StoredChatHistory {
   sessionId: string;
   messages: Array<{
@@ -26,6 +37,7 @@ export interface StoredChatHistory {
     role: string;
     content: string;
     timestamp: string;
+    metadata?: StoredMessageMetadata;
   }>;
   lastUpdated: string;
 }
@@ -81,13 +93,31 @@ export function saveChatHistory(
           m.content.trim().length > 0
       )
       .slice(-MAX_STORED_MESSAGES)
-      .map((m) => ({
-        id: m.id,
-        role: m.role,
-        content: m.content,
-        timestamp:
-          m.timestamp instanceof Date ? m.timestamp.toISOString() : m.timestamp,
-      }));
+      .map((m) => {
+        const analysisBasis = m.metadata?.analysisBasis;
+        const storedMetadata: StoredMessageMetadata | undefined =
+          analysisBasis?.toolsCalled || analysisBasis?.ragSources
+            ? {
+                ...(analysisBasis.toolsCalled && {
+                  toolsCalled: analysisBasis.toolsCalled,
+                }),
+                ...(analysisBasis.ragSources && {
+                  ragSources: analysisBasis.ragSources,
+                }),
+              }
+            : undefined;
+
+        return {
+          id: m.id,
+          role: m.role,
+          content: m.content,
+          timestamp:
+            m.timestamp instanceof Date
+              ? m.timestamp.toISOString()
+              : m.timestamp,
+          ...(storedMetadata && { metadata: storedMetadata }),
+        };
+      });
 
     const history: StoredChatHistory = {
       sessionId,

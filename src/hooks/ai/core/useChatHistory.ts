@@ -6,6 +6,7 @@ import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 import {
   clearChatHistory as clearStorage,
   loadChatHistory,
+  type StoredMessageMetadata,
   saveChatHistory,
 } from '../utils/chat-history-storage';
 
@@ -27,6 +28,10 @@ interface UseChatHistoryProps<
   setMessages: (messages: TMessage[]) => void;
   isLoading: boolean;
   onSessionRestore?: (sessionId: string) => void;
+  /** 복원된 메시지의 메타데이터(toolsCalled/ragSources)를 deferred state에 주입하는 콜백 */
+  onMetadataRestore?: (
+    metadataByMessageId: Record<string, StoredMessageMetadata>
+  ) => void;
 }
 
 export function useChatHistory<TMessage extends RestoredMessage>({
@@ -36,6 +41,7 @@ export function useChatHistory<TMessage extends RestoredMessage>({
   setMessages,
   isLoading,
   onSessionRestore,
+  onMetadataRestore,
 }: UseChatHistoryProps<TMessage>) {
   const isHistoryLoaded = useRef(false);
 
@@ -47,16 +53,31 @@ export function useChatHistory<TMessage extends RestoredMessage>({
     const localHistory = loadChatHistory();
     if (!localHistory || localHistory.messages.length === 0) return;
 
-    const restoredMessages = localHistory.messages
-      .filter((m) => m.content && m.content.trim().length > 0)
-      .map((m) => ({
-        id: m.id,
-        role: m.role as 'user' | 'assistant',
-        content: m.content,
-        parts: [{ type: 'text' as const, text: m.content }],
-      }));
+    const filteredHistory = localHistory.messages.filter(
+      (m) => m.content && m.content.trim().length > 0
+    );
+
+    const restoredMessages = filteredHistory.map((m) => ({
+      id: m.id,
+      role: m.role as 'user' | 'assistant',
+      content: m.content,
+      parts: [{ type: 'text' as const, text: m.content }],
+    }));
 
     setMessages(restoredMessages as TMessage[]);
+
+    // analysisBasis 메타데이터(toolsCalled/ragSources) 복원 — deferred state에 주입
+    if (onMetadataRestore) {
+      const metadataByMessageId: Record<string, StoredMessageMetadata> = {};
+      for (const m of filteredHistory) {
+        if (m.metadata && (m.metadata.toolsCalled || m.metadata.ragSources)) {
+          metadataByMessageId[m.id] = m.metadata;
+        }
+      }
+      if (Object.keys(metadataByMessageId).length > 0) {
+        onMetadataRestore(metadataByMessageId);
+      }
+    }
 
     if (localHistory.sessionId && onSessionRestore) {
       onSessionRestore(localHistory.sessionId);
