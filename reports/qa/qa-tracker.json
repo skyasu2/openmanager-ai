@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-15T00:53:57.310Z"
+    "updatedAt": "2026-04-15T11:09:03.713Z"
   },
   "sequence": {
-    "nextRunNumber": 288
+    "nextRunNumber": 289
   },
   "summary": {
-    "totalRecordedRuns": 285,
-    "totalRuns": 247,
+    "totalRecordedRuns": 286,
+    "totalRuns": 248,
     "excludedRuns": 38,
-    "totalChecks": 1905,
-    "totalPassed": 1831,
-    "totalFailed": 68,
-    "completionRate": 100,
+    "totalChecks": 1921,
+    "totalPassed": 1845,
+    "totalFailed": 70,
+    "completionRate": 99.66,
     "completedItems": 292,
-    "pendingItems": 0,
+    "pendingItems": 1,
     "deferredItems": 0,
     "wontFixItems": 13,
     "expertDomainsTracked": 8,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260415-0287",
-    "lastRecordedAt": "2026-04-15T00:53:57.310Z",
-    "latestRecordedRunId": "QA-20260415-0287",
-    "latestRecordedAt": "2026-04-15T00:53:57.310Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260415-0288",
+    "lastRecordedAt": "2026-04-15T11:09:03.713Z",
+    "latestRecordedRunId": "QA-20260415-0288",
+    "latestRecordedAt": "2026-04-15T11:09:03.713Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -7035,6 +7035,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-14T17:11:51.995Z"
+    },
+    "ai-workspace-analysis-basis-hydration-drift": {
+      "id": "ai-workspace-analysis-basis-hydration-drift",
+      "title": "Fullscreen AI workspace should preserve tool-grounded analysis basis metadata",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260415-0288",
+      "firstSeenAt": "2026-04-15T11:09:03.713Z",
+      "lastSeenRunId": "QA-20260415-0288",
+      "lastSeenAt": "2026-04-15T11:09:03.713Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "release-blocking 아님, tracking-only: dashboard sidebar에서는 tool-grounded basis가 보였지만 fullscreen workspace hydration 후 동일 대화가 '일반 대화 응답'으로 축소 표기됨",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-15T11:09:03.713Z"
     }
   },
   "runs": [
@@ -25007,6 +25031,149 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260415-0288",
+      "recordedAt": "2026-04-15T11:09:03.713Z",
+      "recordedAtKst": "2026-04-15 20:09:03 KST",
+      "title": "Vercel broad QA - frontend and AI assistant evaluation on latest production",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260415-0288.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_CtSR9Wk698mkgBjyjzLREtfNiC5s",
+        "deploymentUrl": "https://openmanager-oo6ssnr9o-skyasus-projects.vercel.app",
+        "commitSha": "e506140c6ea2231245075eb7285cbf3cd50cf81f"
+      },
+      "scope": "broad",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "ai-advanced-surface",
+        "modal-detail-pack"
+      ],
+      "coveredSurfaces": [
+        "landing render and version badge on production",
+        "/main redirects to / on production",
+        "/login render with Google/GitHub/email/guest options",
+        "/privacy render with back-link to login",
+        "/system-boot transitions to /dashboard",
+        "dashboard summary render with total 15 / online 14 / warning 1 / risk 0 / offline 0",
+        "dashboard system resource panel render with CPU 35 / Memory 47 / Disk 32",
+        "active alerts modal render and dismiss",
+        "topology modal render with 15 nodes / 20 edges and dismiss",
+        "dashboard AI sidebar opens from warning CTA with prefilled prompt",
+        "AI sidebar first-hit response completes with grounded warning analysis",
+        "/dashboard/ai-assistant fullscreen workspace render with existing conversation restored",
+        "fullscreen workspace follow-up prompt completes with server summary response",
+        "/api/health 200 on production",
+        "/api/version 200 on production",
+        "browser console error count 0 during landing/login/dashboard/AI workspace flow"
+      ],
+      "skippedSurfaces": [
+        "/auth/error fallback route",
+        "/auth/success legacy callback route",
+        "Reporter generate/detail flow",
+        "Analyst advanced forecast and drilldown flow",
+        "feedback submission flow",
+        "security blocked-prompt regression pack",
+        "Cloud Run admin observability endpoints",
+        "timing header extraction"
+      ],
+      "checks": {
+        "total": 16,
+        "passed": 14,
+        "failed": 2
+      },
+      "expertAssessments": [
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Landing, login, dashboard, modal/detail pack 일부, AI sidebar, fullscreen workspace를 같은 production session에서 실제 사용자 흐름으로 검증했다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "AI 답변 자체는 유의미하고 grounded했지만, fullscreen workspace에서 analysis basis provenance가 '일반 대화 응답'으로 표시되어 sidebar와의 explainability parity가 깨졌다.",
+          "nextAction": "sidebar와 fullscreen workspace 간 analysis basis hydration/source parity를 복구한다."
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Dashboard summary/resource/top5, /api/health, /api/version, console cleanliness까지 production 기준으로 확인했다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Latest production deployment dpl_CtSR9Wk698mkgBjyjzLREtfNiC5s on v8.11.11 remained reachable and budget usage stayed normal.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-15T20:01:32+09:00",
+          "summary": "Current billing period reviewed before broad production QA; effective 9.1382 USD, billed 0.0000 USD, chargeCount 8526, no unexpected billed usage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Dashboard warning card with AI sidebar response",
+          "path": "reports/qa/evidence/qa-20260415-broad-dashboard-ai-sidebar.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Fullscreen AI workspace with follow-up response",
+          "path": "reports/qa/evidence/qa-20260415-broad-ai-workspace.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Broad frontend and AI workspace console log",
+          "path": "reports/qa/evidence/qa-20260415-broad-console.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Deployment dpl_CtSR9Wk698mkgBjyjzLREtfNiC5s",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/CtSR9Wk698mkgBjyjzLREtfNiC5s"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -25015,33 +25182,33 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 130,
+      "seenCount": 131,
       "appropriateCount": 122,
-      "partialCount": 8,
+      "partialCount": 9,
       "inappropriateCount": 0,
-      "improvementNeededCount": 18,
-      "lastRunId": "QA-20260415-0287",
-      "lastSeenAt": "2026-04-15T00:53:57.310Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "The first-hit dashboard alert analysis path returned a grounded production answer without rate-limit failure or empty response drift.",
-      "lastNextAction": ""
+      "improvementNeededCount": 19,
+      "lastRunId": "QA-20260415-0288",
+      "lastSeenAt": "2026-04-15T11:09:03.713Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "AI 답변 자체는 유의미하고 grounded했지만, fullscreen workspace에서 analysis basis provenance가 '일반 대화 응답'으로 표시되어 sidebar와의 explainability parity가 깨졌다.",
+      "lastNextAction": "sidebar와 fullscreen workspace 간 analysis basis hydration/source parity를 복구한다."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 78,
-      "appropriateCount": 53,
+      "seenCount": 79,
+      "appropriateCount": 54,
       "partialCount": 25,
       "inappropriateCount": 0,
       "improvementNeededCount": 26,
-      "lastRunId": "QA-20260415-0287",
-      "lastSeenAt": "2026-04-15T00:53:57.310Z",
+      "lastRunId": "QA-20260415-0288",
+      "lastSeenAt": "2026-04-15T11:09:03.713Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production /api/health and /api/version were healthy, and the UI flow completed with zero browser console errors.",
+      "lastRationale": "Dashboard summary/resource/top5, /api/health, /api/version, console cleanliness까지 production 기준으로 확인했다.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -25066,16 +25233,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 78,
-      "appropriateCount": 70,
+      "seenCount": 79,
+      "appropriateCount": 71,
       "partialCount": 8,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260415-0287",
-      "lastSeenAt": "2026-04-15T00:53:57.310Z",
+      "lastRunId": "QA-20260415-0288",
+      "lastSeenAt": "2026-04-15T11:09:03.713Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Vercel usage stayed within expected budget and the release-facing production path remained operational across route, dashboard, and AI surfaces.",
+      "lastRationale": "Latest production deployment dpl_CtSR9Wk698mkgBjyjzLREtfNiC5s on v8.11.11 remained reachable and budget usage stayed normal.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -25083,16 +25250,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 105,
-      "appropriateCount": 98,
+      "seenCount": 106,
+      "appropriateCount": 99,
       "partialCount": 7,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260415-0287",
-      "lastSeenAt": "2026-04-15T00:53:57.310Z",
+      "lastRunId": "QA-20260415-0288",
+      "lastSeenAt": "2026-04-15T11:09:03.713Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Core landing, dashboard transition, and representative AI production path were exercised end-to-end with live Playwright evidence.",
+      "lastRationale": "Landing, login, dashboard, modal/detail pack 일부, AI sidebar, fullscreen workspace를 같은 production session에서 실제 사용자 흐름으로 검증했다.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

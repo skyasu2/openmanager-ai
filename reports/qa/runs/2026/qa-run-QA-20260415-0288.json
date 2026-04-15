@@ -1,0 +1,162 @@
+{
+  "runId": "QA-20260415-0288",
+  "recordedAt": "2026-04-15T11:09:03.713Z",
+  "recordedAtKst": "2026-04-15 20:09:03 KST",
+  "runTitle": "Vercel broad QA - frontend and AI assistant evaluation on latest production",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_CtSR9Wk698mkgBjyjzLREtfNiC5s",
+    "deploymentUrl": "https://openmanager-oo6ssnr9o-skyasus-projects.vercel.app",
+    "commitSha": "e506140c6ea2231245075eb7285cbf3cd50cf81f"
+  },
+  "scope": "broad",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "ai-advanced-surface",
+    "modal-detail-pack"
+  ],
+  "coveredSurfaces": [
+    "landing render and version badge on production",
+    "/main redirects to / on production",
+    "/login render with Google/GitHub/email/guest options",
+    "/privacy render with back-link to login",
+    "/system-boot transitions to /dashboard",
+    "dashboard summary render with total 15 / online 14 / warning 1 / risk 0 / offline 0",
+    "dashboard system resource panel render with CPU 35 / Memory 47 / Disk 32",
+    "active alerts modal render and dismiss",
+    "topology modal render with 15 nodes / 20 edges and dismiss",
+    "dashboard AI sidebar opens from warning CTA with prefilled prompt",
+    "AI sidebar first-hit response completes with grounded warning analysis",
+    "/dashboard/ai-assistant fullscreen workspace render with existing conversation restored",
+    "fullscreen workspace follow-up prompt completes with server summary response",
+    "/api/health 200 on production",
+    "/api/version 200 on production",
+    "browser console error count 0 during landing/login/dashboard/AI workspace flow"
+  ],
+  "skippedSurfaces": [
+    "/auth/error fallback route",
+    "/auth/success legacy callback route",
+    "Reporter generate/detail flow",
+    "Analyst advanced forecast and drilldown flow",
+    "feedback submission flow",
+    "security blocked-prompt regression pack",
+    "Cloud Run admin observability endpoints",
+    "timing header extraction"
+  ],
+  "checks": {
+    "total": 16,
+    "passed": 14,
+    "failed": 2
+  },
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Landing, login, dashboard, modal/detail pack 일부, AI sidebar, fullscreen workspace를 같은 production session에서 실제 사용자 흐름으로 검증했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "AI 답변 자체는 유의미하고 grounded했지만, fullscreen workspace에서 analysis basis provenance가 '일반 대화 응답'으로 표시되어 sidebar와의 explainability parity가 깨졌다.",
+      "nextAction": "sidebar와 fullscreen workspace 간 analysis basis hydration/source parity를 복구한다."
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Dashboard summary/resource/top5, /api/health, /api/version, console cleanliness까지 production 기준으로 확인했다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Latest production deployment dpl_CtSR9Wk698mkgBjyjzLREtfNiC5s on v8.11.11 remained reachable and budget usage stayed normal.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-15T20:01:32+09:00",
+      "summary": "Current billing period reviewed before broad production QA; effective 9.1382 USD, billed 0.0000 USD, chargeCount 8526, no unexpected billed usage spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Dashboard warning card with AI sidebar response",
+      "path": "reports/qa/evidence/qa-20260415-broad-dashboard-ai-sidebar.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Fullscreen AI workspace with follow-up response",
+      "path": "reports/qa/evidence/qa-20260415-broad-ai-workspace.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Broad frontend and AI workspace console log",
+      "path": "reports/qa/evidence/qa-20260415-broad-console.txt"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "ai-workspace-analysis-basis-hydration-drift",
+      "title": "Fullscreen AI workspace should preserve tool-grounded analysis basis metadata",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "release-blocking 아님, tracking-only: dashboard sidebar에서는 tool-grounded basis가 보였지만 fullscreen workspace hydration 후 동일 대화가 '일반 대화 응답'으로 축소 표기됨",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Landing and main redirect remained green on production v8.11.11.",
+    "Dashboard snapshot during run: total 15, online 14, warning 1, risk 0, offline 0; system resources 35/47/32.",
+    "AI sidebar warning analysis response completed successfully and showed warning summary, root-cause estimate, and recommended actions.",
+    "Fullscreen workspace restored the conversation and accepted a follow-up summary prompt, but analysis basis metadata regressed to '일반 대화 응답' after hydration.",
+    "System Context panel showed stale provider role copy (Cerebras Supervisor/NLQ/Verifier, Groq Analyst/Reporter, Mistral Advisor/Fallback) relative to current routing policy; observed as existing non-blocking copy drift.",
+    "browser_console_messages reported 0 errors and 0 warnings across the tested flow."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Deployment dpl_CtSR9Wk698mkgBjyjzLREtfNiC5s",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/CtSR9Wk698mkgBjyjzLREtfNiC5s"
+    }
+  ]
+}

@@ -1,37 +1,37 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-15 09:54:38 KST
+> Generated at: 2026-04-15 20:09:04 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 285 |
-| Total Runs (Counted) | 247 |
+| Total Recorded Runs | 286 |
+| Total Runs (Counted) | 248 |
 | Non-counted Runs | 38 |
-| Total Checks | 1905 |
-| Passed | 1831 |
-| Failed | 68 |
+| Total Checks | 1921 |
+| Passed | 1845 |
+| Failed | 70 |
 | Completed Items | 292 |
-| Pending Items | 0 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 13 |
 | Expert Domains Tracked | 8 |
-| Expert Open Gaps | 0 |
-| Completion Rate | 100% |
-| Last Counted Run | QA-20260415-0287 (2026-04-15T00:53:57.310Z) |
-| Latest Recorded Run | QA-20260415-0287 (2026-04-15T00:53:57.310Z) |
+| Expert Open Gaps | 1 |
+| Completion Rate | 99.66% |
+| Last Counted Run | QA-20260415-0288 (2026-04-15T11:09:03.713Z) |
+| Latest Recorded Run | QA-20260415-0288 (2026-04-15T11:09:03.713Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260415-0287 (2026-04-15T00:53:57.310Z)
+Latest run: QA-20260415-0288 (2026-04-15T11:09:03.713Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | Test Automation Architect | appropriate | no | - |
-| AI Quality Assurance Specialist | appropriate | no | - |
+| AI Quality Assurance Specialist | partially-appropriate | yes | sidebar와 fullscreen workspace 간 analysis basis hydration/source parity를 복구한다. |
 | IT Monitoring & Observability SME | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
 
@@ -39,38 +39,41 @@ Latest run: QA-20260415-0287 (2026-04-15T00:53:57.310Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed before release-gate QA; effective 8.4927 USD, billed 0.0000 USD, chargeCount 7917, no unexpected billed usage spike. |
+| vercel | cli | checked | normal | Current billing period reviewed before broad production QA; effective 9.1382 USD, billed 0.0000 USD, chargeCount 8526, no unexpected billed usage spike. |
 
 ## Coverage (Latest Run)
 
-- Scope: release-gate
+- Scope: broad
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_97A4qLDxVvCdunBXh93T87B4eSLQ / SHA 6e42f834
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: landing settled render on production, system start redirect to /dashboard, dashboard render with system summary and resource panels, AI sidebar open from dashboard alert-analysis CTA, AI first-hit production response for api-was-dc1-01 CPU 93% context, /api/health 200 on production, /api/version 200 on production, browser console error count 0 during landing -> dashboard -> AI flow
-- Skipped Surfaces: fullscreen AI workspace, Reporter full report flow, Analyst advanced forecast flow, modal-detail pack outside dashboard -> AI alert path, Cloud Run admin observability endpoints
+- Deployment: dpl_CtSR9Wk698mkgBjyjzLREtfNiC5s / SHA e506140c
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, ai-advanced-surface, modal-detail-pack
+- Covered Surfaces: landing render and version badge on production, /main redirects to / on production, /login render with Google/GitHub/email/guest options, /privacy render with back-link to login, /system-boot transitions to /dashboard, dashboard summary render with total 15 / online 14 / warning 1 / risk 0 / offline 0, dashboard system resource panel render with CPU 35 / Memory 47 / Disk 32, active alerts modal render and dismiss, topology modal render with 15 nodes / 20 edges and dismiss, dashboard AI sidebar opens from warning CTA with prefilled prompt, AI sidebar first-hit response completes with grounded warning analysis, /dashboard/ai-assistant fullscreen workspace render with existing conversation restored, fullscreen workspace follow-up prompt completes with server summary response, /api/health 200 on production, /api/version 200 on production, browser console error count 0 during landing/login/dashboard/AI workspace flow
+- Skipped Surfaces: /auth/error fallback route, /auth/success legacy callback route, Reporter generate/detail flow, Analyst advanced forecast and drilldown flow, feedback submission flow, security blocked-prompt regression pack, Cloud Run admin observability endpoints, timing header extraction
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | Production | [Production](https://openmanager-ai.vercel.app/) | - |
+| vercel-deployment | Deployment dpl_CtSR9Wk698mkgBjyjzLREtfNiC5s | [Deployment dpl_CtSR9Wk698mkgBjyjzLREtfNiC5s](https://vercel.com/skyasus-projects/openmanager-ai/CtSR9Wk698mkgBjyjzLREtfNiC5s) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Release-gate dashboard + AI sidebar response | `reports/qa/evidence/qa-20260415-release-gate-ai-sidebar.png` | - |
-| playwright-console | Release-gate console warnings log | `reports/qa/evidence/qa-20260415-release-gate-console.txt` | - |
+| playwright-screenshot | Dashboard warning card with AI sidebar response | `reports/qa/evidence/qa-20260415-broad-dashboard-ai-sidebar.png` | - |
+| playwright-screenshot | Fullscreen AI workspace with follow-up response | `reports/qa/evidence/qa-20260415-broad-ai-workspace.png` | - |
+| playwright-console | Broad frontend and AI workspace console log | `reports/qa/evidence/qa-20260415-broad-console.txt` | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260415-0288)
+  next: sidebar와 fullscreen workspace 간 analysis basis hydration/source parity를 복구한다.
 
 ## Pending Improvements
 
-- None
+- [P1] ai-workspace-analysis-basis-hydration-drift: Fullscreen AI workspace should preserve tool-grounded analysis basis metadata (seen 1회, last QA-20260415-0288)
 
 ## Deferred Improvements
 
@@ -403,6 +406,7 @@ Latest run: QA-20260415-0287 (2026-04-15T00:53:57.310Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260415-0288 | 2026-04-15T11:09:03.713Z | broad | yes | yes | Vercel broad QA - frontend and AI assistant evaluation on latest production | 16 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260415-0287 | 2026-04-15T00:53:57.310Z | release-gate | yes | yes | Production release-gate QA refresh after ai-engine-00317 stabilization | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260415-0286 | 2026-04-14T23:41:31.531Z | targeted | no | no | Mixed advisory residual follow-up QA (ai-engine-00317) | 3 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260415-0285 | 2026-04-14T17:11:51.995Z | targeted | no | yes | Graph traversal re-evaluation post-variant-fix QA (ai-engine-00317) | 4 | 1 | 0 | 0 | 0 | 0 |
@@ -422,4 +426,3 @@ Latest run: QA-20260415-0287 (2026-04-15T00:53:57.310Z)
 | QA-20260411-0271 | 2026-04-11T07:18:03.097Z | targeted | no | no | Local auth audit smoke - guest login route inserts security_audit_logs | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260411-0270 | 2026-04-11T06:08:29.888Z | targeted | no | no | AI Engine approval_history runtime smoke | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260410-0269 | 2026-04-10T14:43:09.818Z | targeted | no | no | Local auth audit smoke - guest login route inserts security_audit_logs | 4 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260410-0268 | 2026-04-10T10:22:22.502Z | targeted | no | no | Local Playwright QA - AI detail dialog sidebar/workspace verification | 6 | 0 | 0 | 0 | 0 | 0 |
