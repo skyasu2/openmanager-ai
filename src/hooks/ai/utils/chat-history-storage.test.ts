@@ -155,6 +155,7 @@ describe('chat-history-storage', () => {
             content: '분석 결과',
           }),
           metadata: {
+            traceId: 'trace-storage-save-1',
             analysisBasis: {
               dataSource: '서버 실시간 데이터 분석',
               engine: 'Cloud Run AI',
@@ -168,6 +169,11 @@ describe('chat-history-storage', () => {
                 },
               ],
             },
+            assistantResponseView: {
+              summary: '요약',
+              details: '상세',
+              shouldCollapse: true,
+            },
           },
         },
       ];
@@ -176,6 +182,7 @@ describe('chat-history-storage', () => {
 
       const stored = JSON.parse(localStorage.getItem(CHAT_HISTORY_KEY)!);
       expect(stored.messages[0].metadata).toEqual({
+        traceId: 'trace-storage-save-1',
         toolsCalled: ['getServerMetrics', 'detectAnomalies'],
         ragSources: [
           {
@@ -185,6 +192,11 @@ describe('chat-history-storage', () => {
             category: 'incident',
           },
         ],
+        assistantResponseView: {
+          summary: '요약',
+          details: '상세',
+          shouldCollapse: true,
+        },
       });
     });
   });

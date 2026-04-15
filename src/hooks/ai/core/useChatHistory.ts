@@ -24,6 +24,8 @@ interface UseChatHistoryProps<
   sessionId: string;
   isMessagesEmpty: boolean;
   enhancedMessages: EnhancedChatMessage[];
+  seedMessages?: EnhancedChatMessage[];
+  seedSessionId?: string;
   /** setMessages that accepts our restored message format */
   setMessages: (messages: TMessage[]) => void;
   isLoading: boolean;
@@ -38,6 +40,8 @@ export function useChatHistory<TMessage extends RestoredMessage>({
   sessionId,
   isMessagesEmpty,
   enhancedMessages,
+  seedMessages = [],
+  seedSessionId,
   setMessages,
   isLoading,
   onSessionRestore,
@@ -45,15 +49,65 @@ export function useChatHistory<TMessage extends RestoredMessage>({
 }: UseChatHistoryProps<TMessage>) {
   const isHistoryLoaded = useRef(false);
 
+  const buildMetadataFromEnhancedMessage = (
+    message: EnhancedChatMessage
+  ): StoredMessageMetadata | undefined => {
+    const metadata = message.metadata;
+    const analysisBasis = metadata?.analysisBasis;
+
+    if (
+      !metadata?.traceId &&
+      !analysisBasis?.toolsCalled &&
+      !analysisBasis?.ragSources &&
+      !metadata?.assistantResponseView &&
+      !(metadata?.handoffHistory && metadata.handoffHistory.length > 0) &&
+      !(
+        metadata?.toolResultSummaries && metadata.toolResultSummaries.length > 0
+      )
+    ) {
+      return undefined;
+    }
+
+    return {
+      ...(metadata?.traceId && { traceId: metadata.traceId }),
+      ...(analysisBasis?.toolsCalled && {
+        toolsCalled: analysisBasis.toolsCalled,
+      }),
+      ...(analysisBasis?.ragSources && {
+        ragSources: analysisBasis.ragSources,
+      }),
+      ...(metadata?.assistantResponseView && {
+        assistantResponseView: metadata.assistantResponseView,
+      }),
+      ...(metadata?.handoffHistory &&
+        metadata.handoffHistory.length > 0 && {
+          handoffHistory: metadata.handoffHistory,
+        }),
+      ...(metadata?.toolResultSummaries &&
+        metadata.toolResultSummaries.length > 0 && {
+          toolResultSummaries: metadata.toolResultSummaries,
+        }),
+    };
+  };
+
   // 로컬 스토리지에서 히스토리 복원
   useEffect(() => {
     if (isHistoryLoaded.current || !isMessagesEmpty) return;
     isHistoryLoaded.current = true;
 
     const localHistory = loadChatHistory();
-    if (!localHistory || localHistory.messages.length === 0) return;
+    const shouldUseSeedHistory =
+      seedMessages.length > 0 && seedSessionId === sessionId;
+    const restoredSourceMessages = shouldUseSeedHistory
+      ? seedMessages
+      : (localHistory?.messages ?? []);
+    const restoredSessionId = shouldUseSeedHistory
+      ? seedSessionId
+      : localHistory?.sessionId;
 
-    const filteredHistory = localHistory.messages.filter(
+    if (restoredSourceMessages.length === 0) return;
+
+    const filteredHistory = restoredSourceMessages.filter(
       (m) => m.content && m.content.trim().length > 0
     );
 
@@ -70,8 +124,12 @@ export function useChatHistory<TMessage extends RestoredMessage>({
     if (onMetadataRestore) {
       const metadataByMessageId: Record<string, StoredMessageMetadata> = {};
       for (const m of filteredHistory) {
-        if (m.metadata && (m.metadata.toolsCalled || m.metadata.ragSources)) {
-          metadataByMessageId[m.id] = m.metadata;
+        const restoredMetadata = shouldUseSeedHistory
+          ? buildMetadataFromEnhancedMessage(m as EnhancedChatMessage)
+          : (m.metadata as StoredMessageMetadata | undefined);
+
+        if (restoredMetadata) {
+          metadataByMessageId[m.id] = restoredMetadata;
         }
       }
       if (Object.keys(metadataByMessageId).length > 0) {
@@ -79,8 +137,8 @@ export function useChatHistory<TMessage extends RestoredMessage>({
       }
     }
 
-    if (localHistory.sessionId && onSessionRestore) {
-      onSessionRestore(localHistory.sessionId);
+    if (restoredSessionId && onSessionRestore) {
+      onSessionRestore(restoredSessionId);
     }
 
     if (process.env.NODE_ENV === 'development') {
@@ -88,7 +146,15 @@ export function useChatHistory<TMessage extends RestoredMessage>({
         `📂 [ChatHistory] Restored ${restoredMessages.length} messages`
       );
     }
-  }, [isMessagesEmpty, setMessages, onSessionRestore]);
+  }, [
+    isMessagesEmpty,
+    onMetadataRestore,
+    onSessionRestore,
+    seedMessages,
+    seedSessionId,
+    sessionId,
+    setMessages,
+  ]);
 
   // 메시지 변경 시 localStorage 자동 저장
   useEffect(() => {

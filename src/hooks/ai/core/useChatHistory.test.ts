@@ -40,6 +40,7 @@ describe('useChatHistory', () => {
             content: 'lb-haproxy-dc1-01 CPU가 높습니다.',
             timestamp: '2026-04-15T10:00:05.000Z',
             metadata: {
+              traceId: 'trace-storage-1',
               toolsCalled: ['getServerMetrics', 'detectAnomalies'],
               ragSources: [
                 {
@@ -89,6 +90,7 @@ describe('useChatHistory', () => {
     expect(onSessionRestore).toHaveBeenCalledWith('session-restored');
     expect(onMetadataRestore).toHaveBeenCalledWith({
       'assistant-1': {
+        traceId: 'trace-storage-1',
         toolsCalled: ['getServerMetrics', 'detectAnomalies'],
         ragSources: [
           {
@@ -135,5 +137,98 @@ describe('useChatHistory', () => {
 
     expect(setMessages).toHaveBeenCalledTimes(1);
     expect(onMetadataRestore).not.toHaveBeenCalled();
+  });
+
+  it('prefers richer seed messages from sidebar snapshot over local history', () => {
+    localStorage.setItem(
+      CHAT_HISTORY_KEY,
+      JSON.stringify({
+        sessionId: 'session-seeded',
+        messages: [
+          {
+            id: 'assistant-1',
+            role: 'assistant',
+            content: 'stale local history',
+            timestamp: '2026-04-15T10:00:05.000Z',
+            metadata: {
+              toolsCalled: ['getServerMetrics'],
+            },
+          },
+        ],
+        lastUpdated: new Date().toISOString(),
+      })
+    );
+
+    const setMessages = vi.fn();
+    const onMetadataRestore = vi.fn();
+
+    renderHook(() =>
+      useChatHistory({
+        sessionId: 'session-seeded',
+        isMessagesEmpty: true,
+        enhancedMessages: [],
+        seedMessages: [
+          {
+            id: 'assistant-live',
+            role: 'assistant',
+            content: 'sidebar live response',
+            timestamp: new Date(),
+            metadata: {
+              traceId: 'trace-live-1',
+              analysisBasis: {
+                dataSource: '서버 실시간 데이터 분석',
+                engine: 'Streaming AI + RAG',
+                toolsCalled: ['getServerMetrics'],
+                ragSources: [
+                  {
+                    title: 'live source',
+                    similarity: 0.97,
+                    sourceType: 'graph',
+                    category: 'incident',
+                  },
+                ],
+              },
+              assistantResponseView: {
+                summary: 'live summary',
+                details: 'live details',
+                shouldCollapse: true,
+              },
+            },
+          },
+        ],
+        seedSessionId: 'session-seeded',
+        setMessages,
+        isLoading: false,
+        onMetadataRestore,
+      })
+    );
+
+    expect(setMessages).toHaveBeenCalledWith([
+      {
+        id: 'assistant-live',
+        role: 'assistant',
+        content: 'sidebar live response',
+        parts: [{ type: 'text', text: 'sidebar live response' }],
+      },
+    ]);
+    expect(onMetadataRestore).toHaveBeenCalledWith({
+      'assistant-live': {
+        traceId: 'trace-live-1',
+        toolsCalled: ['getServerMetrics'],
+        ragSources: [
+          {
+            title: 'live source',
+            similarity: 0.97,
+            sourceType: 'graph',
+            category: 'incident',
+          },
+        ],
+        assistantResponseView: {
+          summary: 'live summary',
+          details: 'live details',
+          shouldCollapse: true,
+        },
+      },
+    });
   });
 });

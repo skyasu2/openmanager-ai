@@ -252,6 +252,10 @@ interface AISidebarState {
 
   // 채팅 관련 액션들
   addMessage: (message: EnhancedChatMessage) => void;
+  syncChatSnapshot: (
+    messages: EnhancedChatMessage[],
+    sessionId: string
+  ) => void;
   updateMessage: (
     messageId: string,
     updates: Partial<EnhancedChatMessage>
@@ -332,6 +336,12 @@ export const useAISidebarStore = create<AISidebarState>()(
               -SESSION_LIMITS.MESSAGE_LIMIT
             ), // SESSION_LIMITS 상수 사용 (50개, 보안 강화)
           })),
+
+        syncChatSnapshot: (messages, sessionId) =>
+          set({
+            messages: messages.slice(-SESSION_LIMITS.MESSAGE_LIMIT),
+            sessionId,
+          }),
 
         updateMessage: (messageId, updates) =>
           set((state) => ({

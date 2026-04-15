@@ -20,6 +20,7 @@ const HISTORY_EXPIRY_HOURS = 24;
 // ============================================================================
 
 export interface StoredMessageMetadata {
+  traceId?: string;
   toolsCalled?: string[];
   ragSources?: Array<{
     title: string;
@@ -27,6 +28,23 @@ export interface StoredMessageMetadata {
     sourceType: string;
     category?: string;
     url?: string;
+  }>;
+  assistantResponseView?: {
+    summary: string;
+    details?: string | null;
+    shouldCollapse?: boolean;
+  };
+  handoffHistory?: Array<{
+    from: string;
+    to: string;
+    reason?: string;
+  }>;
+  toolResultSummaries?: Array<{
+    toolName: string;
+    label: string;
+    summary: string;
+    preview?: string;
+    status: 'completed' | 'failed';
   }>;
 }
 
@@ -94,16 +112,35 @@ export function saveChatHistory(
       )
       .slice(-MAX_STORED_MESSAGES)
       .map((m) => {
+        const metadata = m.metadata;
         const analysisBasis = m.metadata?.analysisBasis;
         const storedMetadata: StoredMessageMetadata | undefined =
-          analysisBasis?.toolsCalled || analysisBasis?.ragSources
+          metadata?.traceId ||
+          analysisBasis?.toolsCalled ||
+          analysisBasis?.ragSources ||
+          metadata?.assistantResponseView ||
+          (metadata?.handoffHistory && metadata.handoffHistory.length > 0) ||
+          (metadata?.toolResultSummaries &&
+            metadata.toolResultSummaries.length > 0)
             ? {
-                ...(analysisBasis.toolsCalled && {
+                ...(metadata?.traceId && { traceId: metadata.traceId }),
+                ...(analysisBasis?.toolsCalled && {
                   toolsCalled: analysisBasis.toolsCalled,
                 }),
-                ...(analysisBasis.ragSources && {
+                ...(analysisBasis?.ragSources && {
                   ragSources: analysisBasis.ragSources,
                 }),
+                ...(metadata?.assistantResponseView && {
+                  assistantResponseView: metadata.assistantResponseView,
+                }),
+                ...(metadata?.handoffHistory &&
+                  metadata.handoffHistory.length > 0 && {
+                    handoffHistory: metadata.handoffHistory,
+                  }),
+                ...(metadata?.toolResultSummaries &&
+                  metadata.toolResultSummaries.length > 0 && {
+                    toolResultSummaries: metadata.toolResultSummaries,
+                  }),
               }
             : undefined;
 

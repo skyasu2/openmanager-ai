@@ -21,6 +21,7 @@ const mocks = vi.hoisted(() => {
   const clearError = vi.fn();
   const triggerAIWarmup = vi.fn(async () => undefined);
   const hybridSetMessagesSpy = vi.fn();
+  const syncChatSnapshot = vi.fn();
 
   let latestHybridOptions: Record<string, unknown> | null = null;
   let seedHybridMessages:
@@ -42,6 +43,7 @@ const mocks = vi.hoisted(() => {
     clearError,
     triggerAIWarmup,
     hybridSetMessagesSpy,
+    syncChatSnapshot,
     getLatestHybridOptions: () => latestHybridOptions,
     setLatestHybridOptions: (options: Record<string, unknown>) => {
       latestHybridOptions = options;
@@ -60,11 +62,17 @@ vi.mock('@/stores/useAISidebarStore', () => ({
     selector: (state: {
       webSearchEnabled: boolean;
       ragEnabled: boolean;
+      messages: unknown[];
+      sessionId: string;
+      syncChatSnapshot: typeof mocks.syncChatSnapshot;
     }) => unknown
   ) =>
     selector({
       webSearchEnabled: false,
       ragEnabled: false,
+      messages: [],
+      sessionId: 'session-test',
+      syncChatSnapshot: mocks.syncChatSnapshot,
     }),
 }));
 
@@ -171,6 +179,38 @@ import { useAIChatCore } from './useAIChatCore';
 describe('useAIChatCore', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  it('syncs enhanced chat snapshot into sidebar store when messages are present', async () => {
+    const { result } = renderHook(() => useAIChatCore());
+
+    await act(async () => {
+      mocks.getSeedHybridMessages()?.([
+        {
+          id: 'user-1',
+          role: 'user',
+          parts: [{ type: 'text', text: 'CPU 상태 알려줘' }],
+        },
+        {
+          id: 'assistant-1',
+          role: 'assistant',
+          parts: [{ type: 'text', text: '응답 본문' }],
+          metadata: {
+            traceId: 'trace-sync-1',
+            toolsCalled: ['getServerMetrics'],
+          },
+        },
+      ]);
+    });
+
+    await waitFor(() => {
+      expect(result.current.messages).toHaveLength(2);
+    });
+
+    expect(mocks.syncChatSnapshot).toHaveBeenCalledWith(
+      result.current.messages,
+      'session-test'
+    );
   });
 
   it('stale onData callback also injects traceId into the latest assistant message', async () => {

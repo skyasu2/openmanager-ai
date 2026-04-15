@@ -265,6 +265,21 @@ describe('useAISidebarStore', () => {
 
       expect(result.current.messages).toHaveLength(0);
     });
+
+    it('syncChatSnapshot으로 최신 대화와 세션을 동기화할 수 있어야 함', () => {
+      const { result } = renderHook(() => useAISidebarStore());
+      const snapshotMessages = [
+        createMockMessage('msg-1', 'First'),
+        createMockMessage('msg-2', 'Second'),
+      ];
+
+      act(() => {
+        result.current.syncChatSnapshot(snapshotMessages, 'session-synced');
+      });
+
+      expect(result.current.messages).toEqual(snapshotMessages);
+      expect(result.current.sessionId).toBe('session-synced');
+    });
   });
 
   describe('탭 관리', () => {

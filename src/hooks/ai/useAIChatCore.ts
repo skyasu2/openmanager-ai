@@ -220,6 +220,9 @@ export function useAIChatCore(
   // 웹 검색 / RAG 토글 상태 (Store에서 읽기)
   const webSearchEnabled = useAISidebarStore((s) => s.webSearchEnabled);
   const ragEnabled = useAISidebarStore((s) => s.ragEnabled);
+  const persistedSidebarMessages = useAISidebarStore((s) => s.messages);
+  const persistedSidebarSessionId = useAISidebarStore((s) => s.sessionId);
+  const syncChatSnapshot = useAISidebarStore((s) => s.syncChatSnapshot);
 
   // 🧩 Chat Queue Hook (메시지 대기열 Batching)
   const {
@@ -370,6 +373,8 @@ export function useAIChatCore(
     sessionId,
     isMessagesEmpty: messages.length === 0,
     enhancedMessages,
+    seedMessages: persistedSidebarMessages,
+    seedSessionId: persistedSidebarSessionId,
     setMessages,
     isLoading: hybridIsLoading,
     onSessionRestore: setSessionId,
@@ -406,9 +411,14 @@ export function useAIChatCore(
     }
   }, [hybridIsLoading]);
 
+  useEffect(() => {
+    if (enhancedMessages.length === 0) return;
+    syncChatSnapshot(enhancedMessages, sessionId);
+  }, [enhancedMessages, sessionId, syncChatSnapshot]);
+
   const handleNewSession = useCallback(() => {
     resetHybridQuery();
-    refreshSessionId();
+    const nextSessionId = refreshSessionId();
     setInput('');
     setError(null);
     setStreamRagSources([]);
@@ -419,12 +429,14 @@ export function useAIChatCore(
     lastAttachmentsRef.current = null;
     clearHistory();
     clearQueue();
+    syncChatSnapshot([], nextSessionId);
   }, [
     resetHybridQuery,
     refreshSessionId,
     resetDeferredMetadata,
     clearHistory,
     clearQueue,
+    syncChatSnapshot,
   ]);
 
   const clearError = useCallback(() => {
