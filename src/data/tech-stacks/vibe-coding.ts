@@ -36,7 +36,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         'An agentic coding tool that lives in your terminal, understands your codebase (Anthropic) — 전체 개발의 99% 주도',
       implementation:
         '기획·아키텍처 설계부터 구현·리팩토링·배포까지 전체 개발 사이클을 단독 주도. MCP 서버로 외부 시스템 직접 제어. v8.10.x 이후에도 핵심 설계·리뷰 역할 유지',
-      version: 'claude-opus-4-6',
+      version: 'claude-sonnet-4-6',
       status: 'active',
       icon: '🤖',
       tags: ['Anthropic', 'Agentic', 'MCP'],
