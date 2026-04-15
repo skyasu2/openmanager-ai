@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-15T14:40:05.458Z"
+    "updatedAt": "2026-04-15T23:53:23.445Z"
   },
   "sequence": {
-    "nextRunNumber": 292
+    "nextRunNumber": 293
   },
   "summary": {
-    "totalRecordedRuns": 289,
+    "totalRecordedRuns": 290,
     "totalRuns": 249,
-    "excludedRuns": 40,
+    "excludedRuns": 41,
     "totalChecks": 1939,
     "totalPassed": 1863,
     "totalFailed": 70,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260415-0291",
     "lastRecordedAt": "2026-04-15T14:40:05.458Z",
-    "latestRecordedRunId": "QA-20260415-0291",
-    "latestRecordedAt": "2026-04-15T14:40:05.458Z"
+    "latestRecordedRunId": "QA-20260416-0292",
+    "latestRecordedAt": "2026-04-15T23:53:23.445Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -7043,22 +7043,22 @@
       "status": "completed",
       "firstSeenRunId": "QA-20260415-0288",
       "firstSeenAt": "2026-04-15T11:09:03.713Z",
-      "lastSeenRunId": "QA-20260415-0289",
-      "lastSeenAt": "2026-04-15T13:37:22.863Z",
-      "seenCount": 2,
-      "completedCount": 1,
+      "lastSeenRunId": "QA-20260416-0292",
+      "lastSeenAt": "2026-04-15T23:53:23.445Z",
+      "seenCount": 3,
+      "completedCount": 2,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "Preview commit 435595b1b preserved traceId, Streaming AI + RAG engine label, tool result, and recent 1 hour time range in fullscreen analysis basis detail.",
-      "lastNote": "release-blocking 아님, tracking-only: dashboard sidebar에서는 tool-grounded basis가 보였지만 fullscreen workspace hydration 후 동일 대화가 '일반 대화 응답'으로 축소 표기됨",
+      "lastEvidence": "Preview commit ac18ca2f9 preserved traceId 1c1d30da737acdc4ca231683db98026e, Streaming AI + RAG label, tool chain 이상 탐지 + 근본 원인 분석, and 최근 1시간 period after sidebar to fullscreen handoff.",
+      "lastNote": "data-done now forwards toolsCalled into deferred assistant metadata, closing the remaining ingestion gap.",
       "isBlocking": true,
-      "isBlockingExplicit": false,
+      "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-04-15T13:37:22.863Z"
+      "lastStatusChangeAt": "2026-04-15T23:53:23.445Z"
     }
   },
   "runs": [
@@ -25502,6 +25502,109 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260416-0292",
+      "recordedAt": "2026-04-15T23:53:23.445Z",
+      "recordedAtKst": "2026-04-16 08:53:23 KST",
+      "title": "Vercel preview targeted QA - fullscreen analysis basis parity after data-done toolsCalled fix",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260416-0292.json",
+      "environment": {
+        "target": "vercel-preview",
+        "url": "https://openmanager-8i3pryse2-skyasus-projects.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_348Uoi8vqHWxPNoCMfo1Gxa2fbuN",
+        "deploymentUrl": "https://openmanager-8i3pryse2-skyasus-projects.vercel.app",
+        "commitSha": "ac18ca2f99e4ade8fcad2e0646e6d20cffd23de3"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": ["ai-core", "ai-advanced-surface"],
+      "coveredSurfaces": [
+        "preview guest login and system-boot to dashboard transition",
+        "dashboard warning CTA opens AI sidebar with prefilled prompt",
+        "AI sidebar response completes with analysis basis detail",
+        "sidebar analysis basis detail shows traceId + tools + timeRange after data-done toolsCalled fix",
+        "fullscreen AI workspace restores the same conversation from sidebar handoff",
+        "fullscreen analysis basis detail preserves traceId + tools + timeRange parity on commit ac18ca2f9",
+        "browser console error count 0 and warning count 0 during preview AI parity flow"
+      ],
+      "skippedSurfaces": [
+        "production deployment verification",
+        "Reporter flow",
+        "Analyst forecast flow",
+        "feedback submission flow"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Preview deployment on commit ac18ca2f9 preserved the same traceId, tool chain, engine label, and recent 1 hour time range after sidebar to fullscreen handoff.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The protected preview path was exercised end-to-end with Playwright, including guest login, dashboard CTA, sidebar response, fullscreen transition, and console cleanliness check.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-16T08:44:00+09:00",
+          "summary": "Current billing period reviewed before preview QA; effective 9.1391 USD, billed 0.0000 USD, no unexpected billed usage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Preview fullscreen AI workspace with preserved analysis basis after toolsCalled fix",
+          "path": "reports/qa/evidence/qa-20260416-preview-ai-sidebar-fullscreen-toolscalled-parity.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Preview AI parity console log after toolsCalled fix",
+          "path": "reports/qa/evidence/qa-20260416-preview-ai-sidebar-fullscreen-toolscalled-console.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Preview deployment",
+          "url": "https://openmanager-8i3pryse2-skyasus-projects.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Deployment dpl_348Uoi8vqHWxPNoCMfo1Gxa2fbuN",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/348Uoi8vqHWxPNoCMfo1Gxa2fbuN"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -25510,16 +25613,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 134,
-      "appropriateCount": 125,
+      "seenCount": 135,
+      "appropriateCount": 126,
       "partialCount": 9,
       "inappropriateCount": 0,
       "improvementNeededCount": 19,
-      "lastRunId": "QA-20260415-0291",
-      "lastSeenAt": "2026-04-15T14:40:05.458Z",
+      "lastRunId": "QA-20260416-0292",
+      "lastSeenAt": "2026-04-15T23:53:23.445Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The storage warning analysis returned grounded content and fullscreen retained the same traceId, tool chain, and recent 1 hour time range after hydration.",
+      "lastRationale": "Preview deployment on commit ac18ca2f9 preserved the same traceId, tool chain, engine label, and recent 1 hour time range after sidebar to fullscreen handoff.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -25578,16 +25681,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 109,
-      "appropriateCount": 102,
+      "seenCount": 110,
+      "appropriateCount": 103,
       "partialCount": 7,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260415-0291",
-      "lastSeenAt": "2026-04-15T14:40:05.458Z",
+      "lastRunId": "QA-20260416-0292",
+      "lastSeenAt": "2026-04-15T23:53:23.445Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Core routes, dashboard modal pack, AI sidebar, fullscreen workspace, API checks, and console cleanliness were validated in one production browser session.",
+      "lastRationale": "The protected preview path was exercised end-to-end with Playwright, including guest login, dashboard CTA, sidebar response, fullscreen transition, and console cleanliness check.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
