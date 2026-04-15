@@ -13,6 +13,8 @@ export type ResponseSourceData = {
   ragSources?: unknown;
   traceId?: unknown;
   metadata?: unknown;
+  /** 실제 호출된 도구 이름 목록 (Cloud Run done 이벤트에서 전달) */
+  toolsCalled?: unknown;
 };
 
 export function normalizeRagSources(

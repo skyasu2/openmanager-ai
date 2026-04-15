@@ -84,6 +84,15 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
 
+function normalizeToolNames(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+
+  return value.filter(
+    (toolName): toolName is string =>
+      typeof toolName === 'string' && toolName.trim().length > 0
+  );
+}
+
 function extractPendingToolResult(
   data: unknown
 ): PendingStreamToolResult | null {
@@ -229,8 +238,10 @@ export function handleStreamDataPart(
 
     const structuredView = buildStructuredResponseView(doneData);
     const traceId = extractTraceIdFromDoneData(doneData);
+    const toolsCalled = normalizeToolNames(doneData?.toolsCalled);
     const nextMessageMetadata = {
       ...(traceId && { traceId }),
+      ...(toolsCalled.length > 0 && { toolsCalled }),
       ...(structuredView && {
         assistantResponseView: structuredView,
       }),
@@ -239,6 +250,7 @@ export function handleStreamDataPart(
     if (
       structuredView ||
       traceId ||
+      toolsCalled.length > 0 ||
       pendingToolResults.length > 0 ||
       Object.keys(pendingMessageMetadata).length > 0
     ) {

@@ -354,6 +354,24 @@ describe('handleStreamDataPart', () => {
       );
     });
 
+    it('should persist toolsCalled into deferred assistant metadata', () => {
+      const part: StreamDataPart = {
+        type: 'data-done',
+        data: {
+          toolsCalled: ['getServerMetrics', 'detectAnomalies', '', 42],
+        },
+      };
+
+      handleStreamDataPart(part, callbacks);
+
+      expect(callbacks.setDeferredAssistantMetadata).toHaveBeenCalledWith(
+        'msg-2',
+        expect.objectContaining({
+          toolsCalled: ['getServerMetrics', 'detectAnomalies'],
+        })
+      );
+    });
+
     it('should persist accumulated handoff history into deferred assistant metadata', () => {
       handleStreamDataPart(
         {
@@ -450,6 +468,7 @@ describe('handleStreamDataPart', () => {
       const part: StreamDataPart = {
         type: 'data-done',
         data: {
+          toolsCalled: ['getServerMetrics'],
           responseSummary: '요약',
         },
       };
@@ -458,6 +477,7 @@ describe('handleStreamDataPart', () => {
 
       expect(callbacks.setDeferredAssistantMetadata).not.toHaveBeenCalled();
       expect(callbacks.setPendingMessageMetadata).toHaveBeenCalledWith({
+        toolsCalled: ['getServerMetrics'],
         assistantResponseView: {
           summary: '요약',
           details: null,
@@ -506,6 +526,7 @@ describe('handleStreamDataPart', () => {
         {
           type: 'data-done',
           data: {
+            toolsCalled: ['getServerMetrics'],
             responseSummary: '최신 응답 요약',
             metadata: {
               traceId: 'trace-latest-assistant',
@@ -523,6 +544,7 @@ describe('handleStreamDataPart', () => {
       expect(callbacks.setDeferredAssistantToolResults).not.toHaveBeenCalled();
       expect(callbacks.setPendingMessageMetadata).toHaveBeenCalledWith({
         traceId: 'trace-latest-assistant',
+        toolsCalled: ['getServerMetrics'],
         assistantResponseView: {
           summary: '최신 응답 요약',
           details: null,
