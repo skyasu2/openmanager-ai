@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-15T13:37:22.863Z"
+    "updatedAt": "2026-04-15T14:18:02.870Z"
   },
   "sequence": {
-    "nextRunNumber": 290
+    "nextRunNumber": 291
   },
   "summary": {
-    "totalRecordedRuns": 287,
+    "totalRecordedRuns": 288,
     "totalRuns": 248,
-    "excludedRuns": 39,
+    "excludedRuns": 40,
     "totalChecks": 1921,
     "totalPassed": 1845,
     "totalFailed": 70,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260415-0288",
     "lastRecordedAt": "2026-04-15T11:09:03.713Z",
-    "latestRecordedRunId": "QA-20260415-0289",
-    "latestRecordedAt": "2026-04-15T13:37:22.863Z"
+    "latestRecordedRunId": "QA-20260415-0290",
+    "latestRecordedAt": "2026-04-15T14:18:02.870Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -25260,6 +25260,103 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260415-0290",
+      "recordedAt": "2026-04-15T14:18:02.870Z",
+      "recordedAtKst": "2026-04-15 23:18:02 KST",
+      "title": "Vercel production targeted QA - fullscreen analysis basis parity after v8.11.12 deploy",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260415-0290.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_8oAdopQezsQhTUtaSMnxpkNJhuF9",
+        "deploymentUrl": "https://openmanager-5o9tan4q9-skyasus-projects.vercel.app",
+        "commitSha": "80d53371ceb582616b73801b21eb51b66c010f0c"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": false,
+      "coveragePacks": ["ai-core", "ai-advanced-surface"],
+      "coveredSurfaces": [
+        "production landing version badge on v8.11.12",
+        "system-boot to dashboard transition on production",
+        "dashboard warning CTA opens AI sidebar with prefilled prompt",
+        "AI sidebar first response renders analysis basis detail with traceId/tool/timeRange",
+        "fullscreen AI workspace restores the same conversation on production",
+        "fullscreen analysis basis detail preserves traceId/tool/timeRange parity on production"
+      ],
+      "skippedSurfaces": [
+        "broad release-gate pack",
+        "Reporter flow",
+        "Analyst forecast flow",
+        "console cleanliness baseline"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production deployment on v8.11.12 preserved traceId, engine label, tool result, and recent 1 hour time range across sidebar to fullscreen handoff.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Post-deploy user flow validated the exact regression path on production using Playwright from landing through dashboard AI sidebar to fullscreen workspace.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-15T23:17:02+09:00",
+          "summary": "Current billing period reviewed after v8.11.12 production deployment; effective 9.1391 USD, billed 0.0000 USD, no unexpected billed usage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Production fullscreen AI workspace with preserved analysis basis detail",
+          "path": "reports/qa/evidence/qa-20260415-production-ai-sidebar-fullscreen-parity.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Deployment dpl_8oAdopQezsQhTUtaSMnxpkNJhuF9",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/8oAdopQezsQhTUtaSMnxpkNJhuF9"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -25268,16 +25365,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 132,
-      "appropriateCount": 123,
+      "seenCount": 133,
+      "appropriateCount": 124,
       "partialCount": 9,
       "inappropriateCount": 0,
       "improvementNeededCount": 19,
-      "lastRunId": "QA-20260415-0289",
-      "lastSeenAt": "2026-04-15T13:37:22.863Z",
+      "lastRunId": "QA-20260415-0290",
+      "lastSeenAt": "2026-04-15T14:18:02.870Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Preview deployment on commit 435595b1b preserved traceId, engine, tool, and timeRange metadata across sidebar to fullscreen handoff.",
+      "lastRationale": "Production deployment on v8.11.12 preserved traceId, engine label, tool result, and recent 1 hour time range across sidebar to fullscreen handoff.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -25336,16 +25433,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 107,
-      "appropriateCount": 100,
+      "seenCount": 108,
+      "appropriateCount": 101,
       "partialCount": 7,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260415-0289",
-      "lastSeenAt": "2026-04-15T13:37:22.863Z",
+      "lastRunId": "QA-20260415-0290",
+      "lastSeenAt": "2026-04-15T14:18:02.870Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Protected preview was exercised end-to-end with Playwright using Vercel automation bypass, including guest login, dashboard CTA, AI response, and fullscreen workspace restore.",
+      "lastRationale": "Post-deploy user flow validated the exact regression path on production using Playwright from landing through dashboard AI sidebar to fullscreen workspace.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

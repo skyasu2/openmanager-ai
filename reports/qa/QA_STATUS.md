@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-15 22:37:24 KST
+> Generated at: 2026-04-15 23:18:03 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 287 |
+| Total Recorded Runs | 288 |
 | Total Runs (Counted) | 248 |
-| Non-counted Runs | 39 |
+| Non-counted Runs | 40 |
 | Total Checks | 1921 |
 | Passed | 1845 |
 | Failed | 70 |
@@ -21,12 +21,12 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260415-0288 (2026-04-15T11:09:03.713Z) |
-| Latest Recorded Run | QA-20260415-0289 (2026-04-15T13:37:22.863Z) |
+| Latest Recorded Run | QA-20260415-0290 (2026-04-15T14:18:02.870Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260415-0289 (2026-04-15T13:37:22.863Z)
+Latest run: QA-20260415-0290 (2026-04-15T14:18:02.870Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -37,30 +37,30 @@ Latest run: QA-20260415-0289 (2026-04-15T13:37:22.863Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Current billing period reviewed after v8.11.12 production deployment; effective 9.1391 USD, billed 0.0000 USD, no unexpected billed usage spike. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
+- Release-Facing: yes
 - Counts Toward Summary: no
-- Deployment: dpl_GKzdaWXjwcGMnfzEFYbtqkabmpii / SHA 435595b1
+- Deployment: dpl_8oAdopQezsQhTUtaSMnxpkNJhuF9 / SHA 80d53371
 - Coverage Packs: ai-core, ai-advanced-surface
-- Covered Surfaces: preview login with guest mode, system-boot to dashboard transition on preview, dashboard warning CTA opens AI sidebar with prefilled prompt, AI sidebar first response renders analysis basis detail with traceId/tool/timeRange, fullscreen AI workspace restores same conversation after sidebar handoff, fullscreen analysis basis detail preserves traceId/tool/timeRange parity
-- Skipped Surfaces: production deployment verification, console cleanliness baseline, Reporter flow, Analyst forecast flow
+- Covered Surfaces: production landing version badge on v8.11.12, system-boot to dashboard transition on production, dashboard warning CTA opens AI sidebar with prefilled prompt, AI sidebar first response renders analysis basis detail with traceId/tool/timeRange, fullscreen AI workspace restores the same conversation on production, fullscreen analysis basis detail preserves traceId/tool/timeRange parity on production
+- Skipped Surfaces: broad release-gate pack, Reporter flow, Analyst forecast flow, console cleanliness baseline
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Preview deployment | [Preview deployment](https://openmanager-g9obe5rrn-skyasus-projects.vercel.app/) | - |
-| vercel-deployment | Deployment dpl_GKzdaWXjwcGMnfzEFYbtqkabmpii | [Deployment dpl_GKzdaWXjwcGMnfzEFYbtqkabmpii](https://vercel.com/skyasus-projects/openmanager-ai/GKzdaWXjwcGMnfzEFYbtqkabmpii) | - |
+| general | Production | [Production](https://openmanager-ai.vercel.app/) | - |
+| vercel-deployment | Deployment dpl_8oAdopQezsQhTUtaSMnxpkNJhuF9 | [Deployment dpl_8oAdopQezsQhTUtaSMnxpkNJhuF9](https://vercel.com/skyasus-projects/openmanager-ai/8oAdopQezsQhTUtaSMnxpkNJhuF9) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Fullscreen AI workspace with preserved analysis basis detail | `reports/qa/evidence/qa-20260415-preview-ai-sidebar-fullscreen-parity.png` | - |
+| playwright-screenshot | Production fullscreen AI workspace with preserved analysis basis detail | `reports/qa/evidence/qa-20260415-production-ai-sidebar-fullscreen-parity.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -402,6 +402,7 @@ Latest run: QA-20260415-0289 (2026-04-15T13:37:22.863Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260415-0290 | 2026-04-15T14:18:02.870Z | targeted | yes | no | Vercel production targeted QA - fullscreen analysis basis parity after v8.11.12 deploy | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260415-0289 | 2026-04-15T13:37:22.863Z | targeted | no | no | Vercel preview targeted QA - fullscreen analysis basis parity after hydration fix | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260415-0288 | 2026-04-15T11:09:03.713Z | broad | yes | yes | Vercel broad QA - frontend and AI assistant evaluation on latest production | 16 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260415-0287 | 2026-04-15T00:53:57.310Z | release-gate | yes | yes | Production release-gate QA refresh after ai-engine-00317 stabilization | 8 | 0 | 0 | 0 | 0 | 0 |
@@ -421,4 +422,3 @@ Latest run: QA-20260415-0289 (2026-04-15T13:37:22.863Z)
 | QA-20260412-0273 | 2026-04-12T06:56:48.689Z | targeted | no | no | Local Next.js OAuth smoke - localhost and 127.0.0.1 loopback parity | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260412-0272 | 2026-04-12T00:18:52.994Z | targeted | no | yes | Vercel production targeted QA - Supabase impact surfaces after schema cleanup | 10 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260411-0271 | 2026-04-11T07:18:03.097Z | targeted | no | no | Local auth audit smoke - guest login route inserts security_audit_logs | 3 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260411-0270 | 2026-04-11T06:08:29.888Z | targeted | no | no | AI Engine approval_history runtime smoke | 4 | 1 | 0 | 0 | 0 | 0 |
