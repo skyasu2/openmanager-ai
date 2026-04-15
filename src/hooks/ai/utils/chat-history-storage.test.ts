@@ -145,6 +145,48 @@ describe('chat-history-storage', () => {
       const stored = JSON.parse(localStorage.getItem(CHAT_HISTORY_KEY)!);
       expect(stored.messages[0].timestamp).toBe('2026-03-06T12:00:00.000Z');
     });
+
+    it('persists analysisBasis toolsCalled and ragSources for assistant messages', () => {
+      const messages = [
+        {
+          ...makeMessage({
+            id: 'assistant-1',
+            role: 'assistant',
+            content: '분석 결과',
+          }),
+          metadata: {
+            analysisBasis: {
+              dataSource: '서버 실시간 데이터 분석',
+              engine: 'Cloud Run AI',
+              toolsCalled: ['getServerMetrics', 'detectAnomalies'],
+              ragSources: [
+                {
+                  title: 'runbook',
+                  similarity: 0.91,
+                  sourceType: 'graph',
+                  category: 'incident',
+                },
+              ],
+            },
+          },
+        },
+      ];
+
+      saveChatHistory('s4', messages as never[]);
+
+      const stored = JSON.parse(localStorage.getItem(CHAT_HISTORY_KEY)!);
+      expect(stored.messages[0].metadata).toEqual({
+        toolsCalled: ['getServerMetrics', 'detectAnomalies'],
+        ragSources: [
+          {
+            title: 'runbook',
+            similarity: 0.91,
+            sourceType: 'graph',
+            category: 'incident',
+          },
+        ],
+      });
+    });
   });
 
   // ── clearChatHistory ─────────────────────────────────────────────
