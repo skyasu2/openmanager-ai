@@ -1,0 +1,103 @@
+{
+  "runId": "QA-20260415-0289",
+  "recordedAt": "2026-04-15T13:37:22.863Z",
+  "recordedAtKst": "2026-04-15 22:37:22 KST",
+  "runTitle": "Vercel preview targeted QA - fullscreen analysis basis parity after hydration fix",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-preview",
+    "url": "https://openmanager-g9obe5rrn-skyasus-projects.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_GKzdaWXjwcGMnfzEFYbtqkabmpii",
+    "deploymentUrl": "https://openmanager-g9obe5rrn-skyasus-projects.vercel.app",
+    "commitSha": "435595b1b2fc9431984b06d1bf347a21f6d70d8d"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core", "ai-advanced-surface"],
+  "coveredSurfaces": [
+    "preview login with guest mode",
+    "system-boot to dashboard transition on preview",
+    "dashboard warning CTA opens AI sidebar with prefilled prompt",
+    "AI sidebar first response renders analysis basis detail with traceId/tool/timeRange",
+    "fullscreen AI workspace restores same conversation after sidebar handoff",
+    "fullscreen analysis basis detail preserves traceId/tool/timeRange parity"
+  ],
+  "skippedSurfaces": [
+    "production deployment verification",
+    "console cleanliness baseline",
+    "Reporter flow",
+    "Analyst forecast flow"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Preview deployment on commit 435595b1b preserved traceId, engine, tool, and timeRange metadata across sidebar to fullscreen handoff.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Protected preview was exercised end-to-end with Playwright using Vercel automation bypass, including guest login, dashboard CTA, AI response, and fullscreen workspace restore.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Fullscreen AI workspace with preserved analysis basis detail",
+      "path": "reports/qa/evidence/qa-20260415-preview-ai-sidebar-fullscreen-parity.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-workspace-analysis-basis-hydration-drift",
+      "title": "Fullscreen AI workspace should preserve tool-grounded analysis basis metadata",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Preview commit 435595b1b preserved traceId, Streaming AI + RAG engine label, tool result, and recent 1 hour time range in fullscreen analysis basis detail.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Preview deployment was protected by Vercel Deployment Protection; QA accessed it with the configured automation bypass secret and header-based bypass.",
+    "Sidebar analysis basis detail showed traceId 9d1bbc19c77e125a987573d226de57c8, tool 이상 탐지, and period 최근 1시간.",
+    "Fullscreen workspace restored the same message and preserved the same traceId, tool summary, engine label Streaming AI + RAG, and 최근 1시간 period.",
+    "The prior regression where fullscreen collapsed to 일반 대화 응답 was not reproduced on commit 435595b1b."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Preview deployment",
+      "url": "https://openmanager-g9obe5rrn-skyasus-projects.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Deployment dpl_GKzdaWXjwcGMnfzEFYbtqkabmpii",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/GKzdaWXjwcGMnfzEFYbtqkabmpii"
+    }
+  ]
+}

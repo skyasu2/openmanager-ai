@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-15T11:09:03.713Z"
+    "updatedAt": "2026-04-15T13:37:22.863Z"
   },
   "sequence": {
-    "nextRunNumber": 289
+    "nextRunNumber": 290
   },
   "summary": {
-    "totalRecordedRuns": 286,
+    "totalRecordedRuns": 287,
     "totalRuns": 248,
-    "excludedRuns": 38,
+    "excludedRuns": 39,
     "totalChecks": 1921,
     "totalPassed": 1845,
     "totalFailed": 70,
-    "completionRate": 99.66,
-    "completedItems": 292,
-    "pendingItems": 1,
+    "completionRate": 100,
+    "completedItems": 293,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 13,
     "expertDomainsTracked": 8,
-    "expertDomainsOpenGaps": 1,
+    "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260415-0288",
     "lastRecordedAt": "2026-04-15T11:09:03.713Z",
-    "latestRecordedRunId": "QA-20260415-0288",
-    "latestRecordedAt": "2026-04-15T11:09:03.713Z"
+    "latestRecordedRunId": "QA-20260415-0289",
+    "latestRecordedAt": "2026-04-15T13:37:22.863Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -7040,25 +7040,25 @@
       "id": "ai-workspace-analysis-basis-hydration-drift",
       "title": "Fullscreen AI workspace should preserve tool-grounded analysis basis metadata",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260415-0288",
       "firstSeenAt": "2026-04-15T11:09:03.713Z",
-      "lastSeenRunId": "QA-20260415-0288",
-      "lastSeenAt": "2026-04-15T11:09:03.713Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260415-0289",
+      "lastSeenAt": "2026-04-15T13:37:22.863Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "",
+      "lastEvidence": "Preview commit 435595b1b preserved traceId, Streaming AI + RAG engine label, tool result, and recent 1 hour time range in fullscreen analysis basis detail.",
       "lastNote": "release-blocking 아님, tracking-only: dashboard sidebar에서는 tool-grounded basis가 보였지만 fullscreen workspace hydration 후 동일 대화가 '일반 대화 응답'으로 축소 표기됨",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-04-15T11:09:03.713Z"
+      "lastStatusChangeAt": "2026-04-15T13:37:22.863Z"
     }
   },
   "runs": [
@@ -25174,6 +25174,92 @@
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260415-0289",
+      "recordedAt": "2026-04-15T13:37:22.863Z",
+      "recordedAtKst": "2026-04-15 22:37:22 KST",
+      "title": "Vercel preview targeted QA - fullscreen analysis basis parity after hydration fix",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260415-0289.json",
+      "environment": {
+        "target": "vercel-preview",
+        "url": "https://openmanager-g9obe5rrn-skyasus-projects.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_GKzdaWXjwcGMnfzEFYbtqkabmpii",
+        "deploymentUrl": "https://openmanager-g9obe5rrn-skyasus-projects.vercel.app",
+        "commitSha": "435595b1b2fc9431984b06d1bf347a21f6d70d8d"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": ["ai-core", "ai-advanced-surface"],
+      "coveredSurfaces": [
+        "preview login with guest mode",
+        "system-boot to dashboard transition on preview",
+        "dashboard warning CTA opens AI sidebar with prefilled prompt",
+        "AI sidebar first response renders analysis basis detail with traceId/tool/timeRange",
+        "fullscreen AI workspace restores same conversation after sidebar handoff",
+        "fullscreen analysis basis detail preserves traceId/tool/timeRange parity"
+      ],
+      "skippedSurfaces": [
+        "production deployment verification",
+        "console cleanliness baseline",
+        "Reporter flow",
+        "Analyst forecast flow"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Preview deployment on commit 435595b1b preserved traceId, engine, tool, and timeRange metadata across sidebar to fullscreen handoff.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Protected preview was exercised end-to-end with Playwright using Vercel automation bypass, including guest login, dashboard CTA, AI response, and fullscreen workspace restore.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Fullscreen AI workspace with preserved analysis basis detail",
+          "path": "reports/qa/evidence/qa-20260415-preview-ai-sidebar-fullscreen-parity.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Preview deployment",
+          "url": "https://openmanager-g9obe5rrn-skyasus-projects.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Deployment dpl_GKzdaWXjwcGMnfzEFYbtqkabmpii",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/GKzdaWXjwcGMnfzEFYbtqkabmpii"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -25182,17 +25268,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 131,
-      "appropriateCount": 122,
+      "seenCount": 132,
+      "appropriateCount": 123,
       "partialCount": 9,
       "inappropriateCount": 0,
       "improvementNeededCount": 19,
-      "lastRunId": "QA-20260415-0288",
-      "lastSeenAt": "2026-04-15T11:09:03.713Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "AI 답변 자체는 유의미하고 grounded했지만, fullscreen workspace에서 analysis basis provenance가 '일반 대화 응답'으로 표시되어 sidebar와의 explainability parity가 깨졌다.",
-      "lastNextAction": "sidebar와 fullscreen workspace 간 analysis basis hydration/source parity를 복구한다."
+      "lastRunId": "QA-20260415-0289",
+      "lastSeenAt": "2026-04-15T13:37:22.863Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "Preview deployment on commit 435595b1b preserved traceId, engine, tool, and timeRange metadata across sidebar to fullscreen handoff.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -25250,16 +25336,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 106,
-      "appropriateCount": 99,
+      "seenCount": 107,
+      "appropriateCount": 100,
       "partialCount": 7,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260415-0288",
-      "lastSeenAt": "2026-04-15T11:09:03.713Z",
+      "lastRunId": "QA-20260415-0289",
+      "lastSeenAt": "2026-04-15T13:37:22.863Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Landing, login, dashboard, modal/detail pack 일부, AI sidebar, fullscreen workspace를 같은 production session에서 실제 사용자 흐름으로 검증했다.",
+      "lastRationale": "Protected preview was exercised end-to-end with Playwright using Vercel automation bypass, including guest login, dashboard CTA, AI response, and fullscreen workspace restore.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
