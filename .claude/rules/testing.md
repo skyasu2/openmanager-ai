@@ -64,6 +64,21 @@ tests/
 └── utils/              # 테스트 유틸리티
 ```
 
+## SDD 테스트 선행 원칙
+
+plan 파일이 존재하는 기능 구현 시 아래 순서를 따른다.
+
+```
+1. plan 파일의 '계약 > 테스트 시나리오' 확인
+2. 시나리오 기반 failing test 파일 먼저 커밋 (구현 없이)
+   커밋 메시지: test(spec): [기능명] add failing tests before implementation
+3. 구현 후 test 통과 커밋
+   커밋 메시지: feat: [기능명] implement to pass specs
+```
+
+**적용 기준**: plan 파일이 있고 Status가 Approved인 작업에만 적용.
+단일 버그 수정·소규모 리팩터링은 일반 테스트 작성 방식 유지.
+
 ## Pre-commit Validation
 
 - Biome 자동 포맷팅 (PostToolUse hook)

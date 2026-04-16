@@ -180,6 +180,24 @@ bash scripts/ai/agent-bridge.sh --to codex --save-auto "테스트 실행"
 
 **Owner 규칙**: plan 파일 `Owner` 필드는 항상 `project`. AI 이름 금지.
 
+### SDD 게이트 (구현 착수 전 필수)
+
+plan 파일이 있는 작업은 아래 순서를 따른다.
+
+```
+1. plan 파일 Status 확인
+   - Draft    → 계약 섹션(Contract) 완성 후 Approved로 변경
+   - Approved → 구현 착수 가능
+
+2. Approved 확인 후 → 테스트 시나리오 failing test 먼저 커밋
+   커밋 메시지: test(spec): [기능명] add failing tests before implementation
+
+3. 이후 → 구현 커밋
+   커밋 메시지: feat: [기능명] implement to pass specs
+```
+
+단순 버그 수정·소규모 리팩터링은 게이트 없이 TODO.md 1줄 처리로 충분하다.
+
 상세 규칙: `reports/planning/README.md`
 
 ## 📌 Project References

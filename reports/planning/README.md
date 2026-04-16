@@ -76,13 +76,32 @@ Q3. TODO.md Backlog에 이미 같은 항목이 있는가?
 - TODO.md: 상태 요약 1줄 + plan 파일 링크
 - plan 파일: 상세 범위, Task 목록, 검증 결과
 
+## SDD 게이트 — Status 워크플로우
+
+plan 파일의 `Status` 필드는 아래 순서로만 전진한다.
+
+```
+Draft → Approved → In Progress → Completed
+```
+
+| Status | 의미 | 구현 착수 가능 여부 |
+|--------|------|:------------------:|
+| Draft | 배경·범위·계약 작성 중 | ❌ 불가 |
+| Approved | 계약 섹션 완성 + AI 리드 확인 완료 | ✅ 가능 |
+| In Progress | 구현 진행 중 | ✅ 진행 중 |
+| Completed | 전체 Task [x] + QA 통과 | — archive 이동 |
+
+**규칙**: Status가 `Approved` 이상이 아니면 구현 Task에 착수할 수 없다.
+
 ## 라이프사이클
 
 ```
 TODO.md Backlog 등록
-  → plan 파일 생성 (다단계 작업만)
-  → 실행 중: plan 파일 Task 체크, TODO.md 상태 갱신
-  → 완료: TODO.md에 요약 1줄 + plan 파일 archive 이동
+  → plan 파일 생성 (다단계 작업만), Status: Draft
+  → 계약 섹션 작성 완료 → Status: Approved
+  → 구현 착수: 테스트 시나리오 failing test 먼저 커밋
+  → 실행 중: plan 파일 Task 체크, TODO.md 상태 갱신, Status: In Progress
+  → 완료: TODO.md에 요약 1줄 + plan 파일 archive 이동, Status: Completed
 ```
 
 ---
@@ -103,12 +122,12 @@ TODO.md Backlog 등록
 
 ```markdown
 > Owner: project
-> Status: Draft | Active | Completed
+> Status: Draft | Approved | In Progress | Completed
 > Last reviewed: YYYY-MM-DD
 
 # [주제] Plan
 
-- 상태: 계획 수립
+- 상태: Draft
 - 작성일: YYYY-MM-DD
 - TODO.md 연결: Active Tasks > [항목명]
 
@@ -119,11 +138,30 @@ TODO.md Backlog 등록
 - 포함: ...
 - 제외: ...
 
+## 계약 (Contract)
+> Status를 Approved로 올리기 전에 이 섹션을 완성해야 한다.
+
+### 변경 대상 파일
+- `src/path/to/file.ts`
+
+### 입출력 계약
+| 함수/API | 입력 타입 | 출력 타입 | 에러 케이스 |
+|----------|----------|----------|------------|
+| `functionName` | `InputType` | `OutputType` | `ErrorType` |
+
+### 테스트 시나리오 (구현 전 확정)
+- [ ] 시나리오 1: [정상 케이스] — 기대 결과: ...
+- [ ] 시나리오 2: [에러 케이스] — 기대 결과: ...
+
 ## Task 목록
+> 착수 전 Status가 Approved인지 확인한다.
+- [ ] Task 0 — failing test 커밋 (테스트 시나리오 기반)
 - [ ] Task 1 — 완료 기준: ...
 - [ ] Task 2 — 완료 기준: ...
 
 ## 완료 기준
+- [ ] 테스트 시나리오 전체 통과
+- [ ] type-check 통과
 - [ ] ...
 ```
 
@@ -133,4 +171,4 @@ TODO.md Backlog 등록
 - `docs/archived/`는 계획서 보관 위치로 사용하지 않음
 - 작업 회고는 `archive/YYYY-MM-DD-work-history.md` 형식
 
-_Last Updated: 2026-04-16_
+_Last Updated: 2026-04-16 (SDD 게이트 + Contract 템플릿 추가)_

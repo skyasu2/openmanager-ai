@@ -38,6 +38,25 @@
 2. TODO.md Recent Completed에 요약 1줄 추가
 3. plan 파일 → `reports/planning/archive/` 이동
 
+## SDD 게이트 (구현 착수 전 필수)
+
+plan 파일이 있는 작업은 아래 게이트를 통과해야 구현을 시작할 수 있다.
+
+```
+1. plan 파일 Status 확인
+   - Draft       → 계약 섹션(Contract) 먼저 완성 후 Approved로 변경
+   - Approved    → 구현 착수 가능
+   - plan 없음   → 단순 작업: TODO.md 1줄 / 복잡 작업: plan 파일 생성(Draft→Approved)
+
+2. Approved 확인 후 → 테스트 시나리오 failing test 먼저 커밋
+   커밋 메시지: test(spec): [기능명] add failing tests before implementation
+
+3. 그 다음 → 구현 커밋
+   커밋 메시지: feat: [기능명] implement to pass specs
+```
+
+**예외**: 단일 버그 수정·소규모 리팩터링은 게이트 없이 TODO.md 1줄 처리로 충분하다.
+
 ## 참조
 
 - 계획서 운영 전체 규칙: `reports/planning/README.md`
