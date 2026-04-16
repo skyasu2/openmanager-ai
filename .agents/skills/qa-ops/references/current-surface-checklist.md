@@ -114,34 +114,31 @@ not just the original baseline flow.
 
 ## Current Production Reference
 
-- Treat `QA-20260406-0246` as the current broad production reference for
-  `v8.10.9` until a newer release-facing run supersedes it.
+- Treat `QA-20260415-0291` as the current broad production reference for
+  `v8.11.12` until a newer broad or release-facing run supersedes it.
+- Latest targeted production refresh for the current live copy baseline:
+  - `QA-20260417-0298` (`v8.11.16`, landing/sidebar copy trim + AI sidebar verification)
+- Latest broad production attempt on the same live deployment:
+  - `QA-20260417-0299` (`v8.11.16`, `17/18` green, but repeated `next/font preload unused` warnings on `/dashboard` and `/dashboard/ai-assistant`, so it did **not** supersede the broad reference)
 - Reference source:
-  - `reports/qa/runs/2026/qa-run-QA-20260406-0246.json`
+  - `reports/qa/runs/2026/qa-run-QA-20260415-0291.json`
+  - `reports/qa/runs/2026/qa-run-QA-20260417-0298.json`
+  - `reports/qa/runs/2026/qa-run-QA-20260417-0299.json`
   - `reports/qa/qa-tracker.json`
   - `reports/qa/QA_STATUS.md`
-- Compare future broad/release-facing runs against this run instead of
-  paraphrasing from memory.
+- Compare future broad/release-facing runs against `QA-20260415-0291`
+  instead of paraphrasing from memory.
 - Previous comparable baseline:
-  - `QA-20260402-0213` (`v8.10.8`)
+  - `QA-20260406-0246` (`v8.10.9`)
 
-### QA-20260406-0246 Proven Surface
+### QA-20260415-0291 Proven Surface
 
-- landing render + `v8.10.9`
-- `Vibe Coding` modal 3 tabs:
-  - `현재 도구`
-  - `개발 환경 변화`
-  - `CI/CD`
-- `CI/CD` tab pipeline content aligned to:
-  - `로컬 훅 -> GitLab push -> validate -> deploy -> production`
-- modal close + focus return
-- `/login` minimal header:
-  - profile menu absent before auth
-- guest PIN login:
-  - `4231`
-  - login success -> landing redirect
+- landing render + version badge on `v8.11.12`
+- `/main` redirect to `/`
+- `/login` render with Google/GitHub/email/guest PIN entry
+- `/privacy` render with back-link to login
+- `404` route render
 - system start countdown:
-  - starts at `4초`
   - `/system-boot` observed
   - redirect to `/dashboard`
 - dashboard:
@@ -149,26 +146,32 @@ not just the original baseline flow.
   - `14` online
   - `1` warning
   - `0` risk
-  - resource alert top5 visible
-- AI sidebar open:
-  - engine status `Ready`
-- AI chat:
-  - sidebar prompt `CPU 사용률이 높은 서버를 찾아줘`
-  - response summary identifies `lb-haproxy-dc1-01` at `65%`
-- API health/version/system:
+  - `0` offline
+  - system resources `37 / 47 / 37`
+- active alerts modal render + `ESC` close
+- topology modal render (`15` nodes / `20` edges) + `ESC` close
+- dashboard warning CTA opens AI sidebar with prefilled prompt
+- AI sidebar first-hit response:
+  - grounded disk warning analysis for `storage-nfs-dc1-01`
+  - analysis basis detail preserved `traceId + tools + timeRange`
+- `/dashboard/ai-assistant` fullscreen workspace:
+  - restores the same conversation
+  - preserves analysis basis parity after sidebar handoff
+- API health/version:
   - `/api/health` `200`
-  - `/api/version` = `8.10.9`, `Next.js 16.1.6`, `production`
-  - `/api/system` `200`
+  - `/api/version` = `8.11.12`, `Next.js 16.1.6`, `production`
 - runtime cleanliness:
-  - browser console errors `0` during the tested landing/login/dashboard/sidebar flow
+  - browser console errors `0`
+  - browser console warnings `0`
 
 ### Reporting Rule For Similar Runs
 
 - If a later run covers the same release-facing broad surface, report:
-  - what remained green vs `QA-20260406-0246`
+  - what remained green vs `QA-20260415-0291`
   - what regressed
   - what was intentionally skipped
 - Avoid vague statements like `same as previous broad QA`.
 - Name the concrete delta, for example:
-  - `Vibe Coding modal still green vs QA-20260406-0246`
-  - `dashboard AI chat regressed from QA-20260406-0246 baseline`
+  - `landing/login/privacy/dashboard core remained green vs QA-20260415-0291`
+  - `dashboard AI chat regressed from QA-20260415-0291 baseline`
+  - `fullscreen/dashboard console cleanliness regressed from QA-20260415-0291 baseline due to repeated next/font preload warnings`

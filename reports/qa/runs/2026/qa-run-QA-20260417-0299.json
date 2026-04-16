@@ -1,0 +1,164 @@
+{
+  "runId": "QA-20260417-0299",
+  "recordedAt": "2026-04-16T15:32:08.661Z",
+  "recordedAtKst": "2026-04-17 00:32:08 KST",
+  "runTitle": "Production broad QA - 8.11.16 dashboard AI parity with font preload warning regression",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_8RCgJKU4HmRuGrJUaDBUgEQYFhom",
+    "deploymentUrl": "https://openmanager-vivd5t0u4-skyasus-projects.vercel.app",
+    "commitSha": "b1469ce441f25040727f8fb308acb12e9b1428b9"
+  },
+  "scope": "broad",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "modal-detail-pack"
+  ],
+  "coveredSurfaces": [
+    "landing render and version badge on production v8.11.16",
+    "/main redirects to / on production v8.11.16",
+    "/login render with Google/GitHub/email/guest PIN entry",
+    "/privacy render with back-link to login",
+    "404 route returns 404 page on production",
+    "/system-boot transitions to /dashboard",
+    "dashboard summary render with total 15 / online 14 / warning 1 / risk 0 / offline 0",
+    "dashboard system resource panel render with CPU 34 / Memory 49 / Disk 38",
+    "active alerts modal render and ESC close",
+    "topology modal render with 15 nodes / 20 edges and ESC close",
+    "dashboard warning CTA opens AI sidebar with prefilled prompt",
+    "AI sidebar first-hit response completes with grounded disk warning analysis for db-mysql-dc1-primary",
+    "AI sidebar analysis basis detail shows traceId + tools + timeRange",
+    "/dashboard/ai-assistant fullscreen workspace restores the same conversation",
+    "fullscreen analysis basis detail preserves the same traceId + tools + timeRange parity",
+    "/api/health 200 on production with database/cache/ai connected",
+    "/api/version 200 on production with version 8.11.16 / nextjs 16.1.6 / environment production"
+  ],
+  "skippedSurfaces": [
+    "/auth/error fallback route",
+    "/auth/success legacy callback route",
+    "server detail modal 3-tab switch",
+    "log explorer modal",
+    "Reporter generate/detail flow",
+    "Analyst advanced forecast and drilldown flow",
+    "feedback submission flow",
+    "security blocked-prompt regression pack",
+    "Cloud Run admin observability endpoints"
+  ],
+  "checks": {
+    "total": 18,
+    "passed": 17,
+    "failed": 1
+  },
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Core routes, dashboard modal pack, AI sidebar, fullscreen workspace, and API probes were validated in one production browser session.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The disk warning analysis returned grounded content and fullscreen preserved the same traceId, tool chain, and recent 1 hour time range after sidebar handoff.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "User-facing flows stayed green, but console cleanliness regressed with repeated font preload warnings on /dashboard and /dashboard/ai-assistant.",
+      "nextAction": "Deploy the root font preload adjustment and rerun the broad production browser pass."
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Production deployment dpl_8RCgJKU4HmRuGrJUaDBUgEQYFhom remained healthy, but route-wide root-layout font preload now leaks repeated warnings into the release-facing console baseline.",
+      "nextAction": "Ship the local preload=false patch in src/app/layout.tsx and verify the deployment on Vercel before promoting this run as the new broad reference."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli-unavailable + mcp-deployment-check",
+      "status": "skipped",
+      "result": "unknown",
+      "checkedAt": "",
+      "summary": "Local Vercel CLI usage lookup failed in this session, so fresh billing usage could not be confirmed here. Current production deployment readiness was confirmed via Vercel MCP, and the latest same-day successful usage check before QA-20260416-0297 remained normal.",
+      "evidence": "node scripts/check-vercel-usage.js (CLI unavailable in current environment); mcp__vercel__.getDeployments(app=openmanager-ai,target=production,limit=3)",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Production dashboard and AI sidebar response on v8.11.16",
+      "path": "reports/qa/evidence/qa-20260417-v81116-broad-dashboard-ai.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Production fullscreen AI workspace with preserved analysis basis detail on v8.11.16",
+      "path": "reports/qa/evidence/qa-20260417-v81116-broad-ai-workspace.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Production broad console log on v8.11.16",
+      "path": "reports/qa/evidence/qa-20260417-v81116-broad-console.txt"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "root-layout-font-preload-cleanup",
+      "title": "Suppress repeated root font preload warnings on dashboard and fullscreen AI routes",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Local patch added preload=false for Inter and Noto Sans KR in src/app/layout.tsx, but production rerun is still pending.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "404 route produced the expected 404 page; its expected missing-route resource error was excluded from the normal-flow console cleanliness baseline.",
+    "Guest login required the current PIN modal flow and accepted PIN 4231 successfully.",
+    "Dashboard snapshot during run: total 15, online 14, warning 1, risk 0, offline 0; system resources 34/49/38.",
+    "AI warning analysis for db-mysql-dc1-primary completed with a two-tool chain (이상 탐지, 근본 원인 분석).",
+    "Fullscreen workspace preserved traceId c51bf1168670ccdcf51baf08dc09959a and the same tool/timeRange metadata after sidebar handoff.",
+    "browser_console_messages reported 4 warnings and 0 errors during the dashboard/fullscreen path. All 4 warnings were repeated next/font preload notices for two woff2 assets on /dashboard and /dashboard/ai-assistant.",
+    "Local verification of the preload fix is currently blocked in this environment: next dev (Turbopack) panicked on a node_modules symlink root error, and the Webpack fallback stalled while compiling /login."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Deployment dpl_8RCgJKU4HmRuGrJUaDBUgEQYFhom",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/8RCgJKU4HmRuGrJUaDBUgEQYFhom"
+    }
+  ]
+}

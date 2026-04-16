@@ -1,14 +1,18 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-16 KST (AI Domain Boundary Phase 2 로컬 구현 완료)
+**Last Updated**: 2026-04-17 KST (broad production QA 회귀 확인, font preload fix local patch pending deploy)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
 ## Active Tasks
 
-| Task | Priority | Status | Notes |
-|------|----------|--------|-------|
-| AI Domain Boundary Phase 2 (분석 강도 모드) | Medium | implementation-complete | `analysisMode`를 `오토 / Thinking` 2모드로 UI/store/transport/backend heuristic/metadata 표시까지 연결 완료. 로컬 검증 통과, production QA/배포 대기. |
+- P1: root layout font preload warning 정리 후 broad production QA 재검증
+  - broad production run `QA-20260417-0299`에서 `landing/login/privacy/dashboard/AI/fullscreen/API`는 green이었지만, `/dashboard` + `/dashboard/ai-assistant` 경로에서 `next/font preload unused` warning 4건이 재현되어 broad reference 승격 보류
+  - local patch 준비: [layout.tsx](/mnt/d/dev/openmanager-ai/src/app/layout.tsx:16) 에 `Inter` / `Noto_Sans_KR` `preload: false`
+  - local 재검증은 환경 이슈로 보류:
+    - `next dev` Turbopack panic: `Symlink node_modules is invalid, it points out of the filesystem root`
+    - `npx next dev --webpack -p 3000` fallback은 `/login` 첫 compile이 약 `6.7min` 걸렸고 full reload warning까지 발생해, local browser QA source-of-truth로 쓰기엔 비효율적이어서 중단
+  - 다음 액션: deploy 후 production에서 broad console cleanliness 재확인
 
 ---
 
@@ -29,6 +33,12 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-17 #105)
+- [x] AI Domain Boundary Phase 2 production targeted QA + copy trim verification
+  - production deployment `dpl_8RCgJKU4HmRuGrJUaDBUgEQYFhom` / commit `b1469ce44` (`v8.11.16`) live 확인
+  - `QA-20260417-0298` 기록 (`10/10` pass): landing copy, system start → dashboard, AI sidebar welcome/placeholder, starter prompt 응답, analysis basis, `/api/version`, `/api/health`, console `0 error / 0 warning`
+  - 범위 밖 surface (`fullscreen`, `Reporter/Analyst`, `observability/security`)는 targeted run 특성상 의도적으로 제외
 
 ### Completed (2026-04-16 #104)
 - [x] 계획서 평가 및 개선 사이클

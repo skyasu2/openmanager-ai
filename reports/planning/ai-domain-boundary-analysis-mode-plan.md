@@ -1,12 +1,12 @@
 > Owner: project
 > Status: Active
 > Doc type: Plan
-> Last reviewed: 2026-04-16
+> Last reviewed: 2026-04-17
 > Tags: ai-assistant,domain-boundary,analysis-mode,web-search,general-queries
 
 # AI Domain Boundary & Analysis Mode Plan
 
-- 상태: **Active** — Phase 1 완료, Phase 2(분석 강도 모드) 구현 완료, Phase 3 QA/배포 대기
+- 상태: **Active** — Phase 1 완료, Phase 2(분석 강도 모드) 구현/배포/targeted production QA 완료. Phase 3 broad/reference QA는 `QA-20260417-0299`에서 font preload console warning 회귀를 발견했고, local fix deploy 후 재검증이 남음
 - 작성일: 2026-04-16
 - TODO.md 연결: Active Tasks > AI Domain Boundary Phase 2 (분석 강도 모드)
 - 목표: OpenManager AI를 `서버 운영/모니터링에 특화된 AI 어시스턴트`로 유지하되, 일반 질문도 `best-effort`로 다루는 현실적인 제품 정책과 UX를 정립한다.
@@ -127,7 +127,7 @@
 3. [x] `Web 검색` 라벨/설명 정리 (2026-04-16 이전 완료)
    - `ChatInputArea.tsx` 보조 카피 이미 `최신 정보 보강`으로 정리됨
 4. [x] 지원 범위 안내 문구 추가 (2026-04-16)
-   - `ChatInputArea.tsx` placeholder: `"서버 운영 질문을 입력하세요 (일반 질문도 best-effort 지원)"`
+   - 초기 placeholder는 `"서버 운영 질문을 입력하세요 (일반 질문도 best-effort 지원)"`로 반영했으나, 2026-04-17 production copy trim 이후 현재 문구는 `"서버 운영 질문을 입력하세요"`로 단순화됨
 5. [x] 첨부 기능 맥락 보강 (2026-04-16)
    - `ChatInputArea.tsx` 첨부 placeholder: `"이미지/파일 분석 (시각·문서 분석) — 질문을 입력하세요"`
 
@@ -162,14 +162,29 @@
   - `stream/v2 route` / `schemas` payload forwarding ✅
   - `AnalysisBasisBadge.test.tsx` mode 표시 ✅
 
+### Phase 2 production 검증
+
+- `QA-20260416-0297` ✅
+  - production `v8.11.15`에서 `오토 / Thinking` 모드 토글, queued progress path, analysis basis mode metadata 확인
+- `QA-20260417-0298` ✅
+  - production `v8.11.16`에서 trimmed landing/sidebar copy, starter prompt 응답, analysis basis summary, `/api/version`, `/api/health`, console cleanliness 확인
+- `QA-20260417-0299` ⚠️
+  - production `v8.11.16` broad/release-facing pass 시도에서 `landing/login/privacy/dashboard/AI/fullscreen/API`는 유지됐지만, `/dashboard` + `/dashboard/ai-assistant` 경로에 `next/font preload unused` warning 4건이 재현되어 broad reference 승격 보류
+  - local patch: [layout.tsx](/mnt/d/dev/openmanager-ai/src/app/layout.tsx:16) 에 `Inter`, `Noto_Sans_KR` `preload: false` 추가
+
 ### Phase 3 — 검증 및 문서화
 
 1. 정책별 QA pack 추가
-   - 지원 질문
-   - 제한 지원 질문
-   - 비지원 질문
+  - 지원 질문
+  - 제한 지원 질문
+  - 비지원 질문
 2. `AI 전체 페이지` QA에 analysis mode 케이스 추가
 3. public/product copy와 help text 동기화
+
+- 메모:
+  - Phase 2 자체는 production targeted QA까지 완료
+  - Phase 3 broad/release-facing reference refresh는 `QA-20260417-0299`에서 console cleanliness regression이 확인되어 아직 완료 아님
+  - current blocking item은 root layout font preload fix deploy 후 production broad rerun
 
 ## 6. 비용 영향 분석
 

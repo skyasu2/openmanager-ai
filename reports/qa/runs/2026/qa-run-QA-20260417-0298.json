@@ -1,0 +1,102 @@
+{
+  "runId": "QA-20260417-0298",
+  "recordedAt": "2026-04-16T15:01:19.807Z",
+  "recordedAtKst": "2026-04-17 00:01:19 KST",
+  "runTitle": "Production targeted QA - 8.11.16 copy trim and AI sidebar verification",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_8RCgJKU4HmRuGrJUaDBUgEQYFhom",
+    "deploymentUrl": "https://openmanager-vivd5t0u4-skyasus-projects.vercel.app",
+    "commitSha": "b1469ce441f25040727f8fb308acb12e9b1428b9"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/ landing render with version badge on production v8.11.16",
+    "/ system start countdown transitions to /dashboard on production v8.11.16",
+    "/dashboard summary render with total 15 / online 14 / warning 1 / risk 0 / offline 0",
+    "AI sidebar welcome copy on production v8.11.16",
+    "AI sidebar input placeholder and footer hint on production v8.11.16",
+    "AI sidebar starter prompt query completes on production v8.11.16",
+    "AI analysis basis summary shows tools + mode + period on production v8.11.16",
+    "/api/version 200 on production with version 8.11.16 / nextjs 16.1.6 / environment production",
+    "/api/health 200 on production with database/cache/ai connected",
+    "browser console error count 0 and warning count 0 during landing -> dashboard -> AI sidebar flow"
+  ],
+  "skippedSurfaces": [
+    "AI fullscreen workspace",
+    "Reporter generate/detail flow",
+    "Analyst advanced forecast and drilldown flow",
+    "modal-detail pack outside system-start -> dashboard -> AI sidebar path",
+    "secondary auth routes",
+    "observability/security pack"
+  ],
+  "checks": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli-unavailable + mcp-deployment-check",
+      "status": "skipped",
+      "result": "unknown",
+      "checkedAt": "",
+      "summary": "Local Vercel CLI usage lookup failed in this session, so fresh billing usage could not be confirmed here. Current production deployment readiness was confirmed via Vercel MCP, and the latest same-day successful usage check before QA-20260416-0297 remained normal.",
+      "evidence": "node scripts/check-vercel-usage.js (CLI unavailable in current environment); mcp__vercel__.getDeployments(app=openmanager-ai,target=production,limit=3)",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Production landing copy on v8.11.16",
+      "path": "reports/qa/evidence/qa-20260417-v81116-targeted-landing.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Production AI sidebar copy and response on v8.11.16",
+      "path": "reports/qa/evidence/qa-20260417-v81116-targeted-ai-sidebar.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Production targeted console log on v8.11.16",
+      "path": "reports/qa/evidence/qa-20260417-v81116-targeted-console.txt"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Landing body text on production v8.11.16 no longer contains the previous best-effort guidance copy.",
+    "AI sidebar welcome text reads 서버 운영 질문을 빠르게 분석하고 조치안까지 연결합니다 and the input placeholder reads 서버 운영 질문을 입력하세요.",
+    "Stored client preference kept response mode at Thinking during this session, and the starter prompt still completed successfully through the queued production path.",
+    "The returned summary reported 15 total servers, 14 normal, 1 warning, 0 critical, 0 offline; average CPU 38%, memory 44%, disk 38%.",
+    "Analysis basis summary exposed 도구: 서버 메트릭 조회 · 모드: Thinking · 기간: 최근 1시간.",
+    "Console capture reported Total messages: 0 (Errors: 0, Warnings: 0).",
+    "Production API probes after browser QA returned version 8.11.16 and health healthy with database/cache/ai connected."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Deployment dpl_8RCgJKU4HmRuGrJUaDBUgEQYFhom",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/8RCgJKU4HmRuGrJUaDBUgEQYFhom"
+    }
+  ]
+}

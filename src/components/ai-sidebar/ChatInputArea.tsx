@@ -284,7 +284,7 @@ export const ChatInputArea = memo(function ChatInputArea({
             onPaste={onPaste}
           >
             {/* + 버튼 (도구 popover 트리거) */}
-            <div className="relative flex items-center pl-2">
+            <div className="relative flex items-end pb-1.5 pl-2">
               <button
                 ref={toggleButtonRef}
                 type="button"
@@ -442,7 +442,7 @@ export const ChatInputArea = memo(function ChatInputArea({
                       ? '이미지/파일 분석 (시각·문서 분석) — 질문을 입력하세요'
                       : '서버 운영 질문을 입력하세요'
               }
-              className="flex-1 resize-none border-none bg-transparent px-2 py-3 pr-14 text-chat text-gray-900 placeholder:text-gray-400 focus:outline-hidden focus:ring-0"
+              className="flex-1 resize-none border-none bg-transparent px-2 py-3 text-chat text-gray-900 placeholder:text-gray-400 focus:outline-hidden focus:ring-0"
               minHeight={48}
               maxHeight={200}
               maxHeightVh={30}
@@ -451,7 +451,7 @@ export const ChatInputArea = memo(function ChatInputArea({
             />
 
             {/* 전송/중단 버튼 */}
-            <div className="absolute bottom-2 right-2 flex items-center gap-1">
+            <div className="flex shrink-0 items-end gap-1 pb-1.5 pr-2">
               {isGenerating && onStopGeneration && (
                 <button
                   type="button"

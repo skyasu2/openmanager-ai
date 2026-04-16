@@ -18,6 +18,9 @@ const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
   display: 'swap',
+  // Keep the self-hosted font, but skip route-wide preload to avoid repeated
+  // "preloaded but not used" warnings on dashboard and fullscreen AI routes.
+  preload: false,
 });
 
 const notoSansKR = Noto_Sans_KR({
@@ -25,6 +28,7 @@ const notoSansKR = Noto_Sans_KR({
   weight: ['400', '500', '600', '700'],
   variable: '--font-noto-sans-kr',
   display: 'swap',
+  preload: false,
 });
 
 // 🌐 SEO Configuration

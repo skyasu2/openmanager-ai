@@ -131,10 +131,10 @@ export const AutoResizeTextarea = memo(
       return () => window.removeEventListener('resize', handleResize);
     }, [autoResize]);
 
-    // value prop 변경 시 자동 리사이즈
+    // value prop 변경 시 자동 리사이즈 (전송 후 높이 초기화 포함)
     useEffect(() => {
       autoResize();
-    }, [autoResize]);
+    }, [autoResize, props.value]);
 
     const dynamicMaxHeight = calculateMaxHeight();
 
