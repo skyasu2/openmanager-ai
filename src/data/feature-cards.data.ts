@@ -125,11 +125,11 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
     icon: Zap,
     gradient: 'from-amber-600 via-orange-600 to-amber-700',
     detailedContent: {
-      overview: `이 프로젝트를 만들면서 정착한 개발 방식입니다. Claude Code·Codex CLI·Gemini CLI 같은 AI 개발 도구를 상황에 따라 활용해 서비스 구조와 배포 흐름을 함께 다듬었습니다. 실제 배포·CI/CD까지 이어지는 작업 과정을 기준으로 정리했으며, 전체 개발의 99%는 Claude Code가 주도했고 v8.10.x 마무리·배포 단계부터 Codex 비중이 높아졌습니다.`,
+      overview: `이 프로젝트를 만들면서 정착한 개발 방식입니다. Claude Code·Codex CLI·Gemini CLI 같은 AI 개발 도구를 상황에 따라 활용해 서비스 구조와 배포 흐름을 함께 다듬었습니다. 실제 배포·CI/CD까지 이어지는 작업 과정을 기준으로 정리했으며, 아키텍처 설계·구현은 Claude Code 중심으로 진행했고, 구현·리팩토링·테스트 단계에서 Codex와 역할을 나눴습니다.`,
       features: [
         '1️⃣ Stage 1 (Manual): GPT/Gemini 창에서 수동 코딩 → [Netlify 목업](https://openmanager-vibe-v2.netlify.app/) — 초기 프로토타이핑',
         '2️⃣ Stage 2 (Auto): Cursor의 등장, "IDE 자동 개발"의 시작 — GUI 기반 AI 코딩 도입',
-        '3️⃣ Stage 3 (Pivot): IDE는 보조(시각 분석)로, 메인은 WSL + Claude Code로 이동 — 전체 개발의 99% 담당',
+        '3️⃣ Stage 3 (Pivot): IDE는 보조(시각 분석)로, 메인은 WSL + Claude Code로 이동 — 아키텍처·구현 중심',
         '4️⃣ Stage 4 (Current): GitLab canonical 전환 + 로컬 Docker CI + Cloud Run AI Engine — 마무리·배포 단계에서 Codex 비중 증가',
         '📺 IDE Role Shift: Google Antigravity·VSCode 같은 IDE는 주 개발 환경보다 터미널 뷰어와 시각 보조 도구 역할에 가깝게 사용',
         '🐧 WSL Main Base: 상용 AI 개발 도구들이 실제로 돌아가는 본부 — 리눅스 환경에서 모든 CLI 도구 통합',

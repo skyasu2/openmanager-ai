@@ -10,7 +10,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       description:
         'Agent-first AI-powered IDE - AI 에이전트가 계획, 실행, 검증까지 자율 수행 (Google)',
       implementation:
-        'VS Code 포크 기반 IDE. 현재는 주 개발 환경이라기보다 터미널 뷰어와 시각 보조 도구에 가깝게 사용하며, Claude/Codex/Gemini CLI 실행을 보조',
+        'VS Code 포크 기반 IDE. 이 프로젝트에서는 CLI 도구(Claude Code / Codex / Gemini) 실행 환경으로 주로 활용하며, 프론트엔드 시각 확인과 터미널 분할에 사용',
       status: 'active',
       icon: '🌌',
       tags: ['Google', 'Agent-First', 'IDE'],
@@ -33,10 +33,9 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       category: 'ai',
       importance: 'critical',
       description:
-        'An agentic coding tool that lives in your terminal, understands your codebase (Anthropic) — 전체 개발의 99% 주도',
+        'An agentic coding tool that lives in your terminal, understands your codebase (Anthropic)',
       implementation:
-        '기획·아키텍처 설계부터 구현·리팩토링·배포까지 전체 개발 사이클을 단독 주도. MCP 서버로 외부 시스템 직접 제어. v8.10.x 이후에도 핵심 설계·리뷰 역할 유지',
-      version: 'claude-sonnet-4-6',
+        '기획·아키텍처 설계부터 구현·리팩토링·배포까지 전체 개발 사이클을 주도. MCP 서버로 외부 시스템 직접 제어. v8.10.x 이후에도 핵심 설계·리뷰 역할 유지',
       status: 'active',
       icon: '🤖',
       tags: ['Anthropic', 'Agentic', 'MCP'],
@@ -63,7 +62,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       description:
         'A lightweight coding agent that runs in your terminal (OpenAI)',
       implementation:
-        'Generate, edit, and run code using natural language. ChatGPT Plus/Pro 플랜으로 사용. v8.10.x 마무리·배포 단계부터 비중이 높아졌으며, bounded refactor와 테스트 보완, 배포 전 정리를 주로 담당. 주요 구현은 Claude Code가 99% 주도',
+        'Generate, edit, and run code using natural language. ChatGPT Plus/Pro 플랜으로 사용. v8.10.x 이후 구현·리팩토링·테스트 보완을 집중 담당. bounded refactor와 배포 전 정리를 주로 담당',
       version: 'v0.117.0',
       status: 'active',
       icon: '💎',
@@ -242,7 +241,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         name: 'Cursor AI (Auto Dev)',
         category: 'ai',
         importance: 'critical',
-        description: '2단계 - "자동 개발"의 시작',
+        description: '2단계 — AI 보조 코딩 도입 (Cursor)',
         implementation:
           'IDE 안에서 AI가 파일을 수정해주는 "Vibe Coding"의 탄생. 수동 복붙에서 벗어나 생산성이 비약적으로 향상된 시기',
         version: '0.42+',
@@ -350,10 +349,9 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         name: 'Multi-AI CLI (Manual Cross-Use)',
         category: 'ai',
         importance: 'critical',
-        description: 'Claude Code 메인 + 수동 교차 사용형 Multi-CLI 운영',
+        description: 'Claude Code 중심 + 수동 교차 사용형 Multi-CLI 운영',
         implementation:
-          'Claude Code(전체 개발 99% 주도), Codex(구현·리팩토링 및 테스트 보완), Gemini(리서치/분석)를 사용자가 수동 전환하며 교차 사용. 자동 라우팅보다는 사람 판단으로 필요한 CLI를 선택해 구현과 검토를 나누는 운영 방식',
-        version: '2026-04 운영 기준선',
+          'Claude Code(아키텍처·설계·구현 중심), Codex(구현·리팩토링 및 테스트 보완), Gemini(리서치/분석)를 사용자가 수동 전환하며 교차 사용. 자동 라우팅보다는 사람 판단으로 필요한 CLI를 선택해 구현과 검토를 나누는 운영 방식',
         status: 'active',
         icon: '🤝',
         tags: ['Multi-AI', 'Manual-Cross-Use', 'Codex', 'Gemini'],
