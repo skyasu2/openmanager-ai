@@ -440,7 +440,7 @@ export const ChatInputArea = memo(function ChatInputArea({
                       : '대답 중에도 편하게 입력하세요 (대기열에 추가됨)'
                     : attachments.length > 0
                       ? '이미지/파일 분석 (시각·문서 분석) — 질문을 입력하세요'
-                      : '서버 운영 질문을 입력하세요 (일반 질문도 best-effort 지원)'
+                      : '서버 운영 질문을 입력하세요'
               }
               className="flex-1 resize-none border-none bg-transparent px-2 py-3 pr-14 text-chat text-gray-900 placeholder:text-gray-400 focus:outline-hidden focus:ring-0"
               minHeight={48}
@@ -513,7 +513,7 @@ export const ChatInputArea = memo(function ChatInputArea({
                   {attachments.length}/3 파일
                 </span>
               )}
-              <span>서버 운영 중심 · 일반 질문은 best-effort</span>
+              <span>서버 운영 중심</span>
             </div>
             <span>Enter로 전송, Shift+Enter로 줄바꿈</span>
           </div>
