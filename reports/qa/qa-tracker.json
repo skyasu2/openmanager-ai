@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-16T12:02:50.961Z"
+    "updatedAt": "2026-04-16T13:53:18.702Z"
   },
   "sequence": {
-    "nextRunNumber": 297
+    "nextRunNumber": 298
   },
   "summary": {
-    "totalRecordedRuns": 294,
-    "totalRuns": 251,
+    "totalRecordedRuns": 295,
+    "totalRuns": 252,
     "excludedRuns": 43,
-    "totalChecks": 1954,
-    "totalPassed": 1878,
+    "totalChecks": 1962,
+    "totalPassed": 1886,
     "totalFailed": 70,
     "completionRate": 100,
-    "completedItems": 293,
+    "completedItems": 294,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 13,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260416-0296",
-    "lastRecordedAt": "2026-04-16T12:02:50.961Z",
-    "latestRecordedRunId": "QA-20260416-0296",
-    "latestRecordedAt": "2026-04-16T12:02:50.961Z"
+    "lastRunId": "QA-20260416-0297",
+    "lastRecordedAt": "2026-04-16T13:53:18.702Z",
+    "latestRecordedRunId": "QA-20260416-0297",
+    "latestRecordedAt": "2026-04-16T13:53:18.702Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -7059,6 +7059,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-16T00:12:50.093Z"
+    },
+    "ai-domain-boundary-phase2-analysis-mode": {
+      "id": "ai-domain-boundary-phase2-analysis-mode",
+      "title": "AI Domain Boundary Phase 2 analysis mode toggle (auto/thinking)",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260416-0297",
+      "firstSeenAt": "2026-04-16T13:53:18.702Z",
+      "lastSeenRunId": "QA-20260416-0297",
+      "lastSeenAt": "2026-04-16T13:53:18.702Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production v8.11.15 QA verified auto and Thinking modes on AI sidebar with analysis basis metadata.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-16T13:53:18.702Z"
     }
   },
   "runs": [
@@ -25979,6 +26003,84 @@
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260416-0297",
+      "recordedAt": "2026-04-16T13:53:18.702Z",
+      "recordedAtKst": "2026-04-16 22:53:18 KST",
+      "title": "Production QA - Analysis Mode Auto vs Thinking v8.11.15",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260416-0297.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "4237ce65d"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": ["ai-core", "dashboard-core"],
+      "coveredSurfaces": [
+        "/dashboard",
+        "AI sidebar response mode toggle on production 8.11.15",
+        "AI sidebar auto mode domain query path on production 8.11.15",
+        "AI sidebar thinking mode job-queue path on production 8.11.15",
+        "AI analysis basis mode metadata on production 8.11.15",
+        "Cloud Run revision ai-engine-00323-827 health check"
+      ],
+      "skippedSurfaces": [
+        "AI fullscreen workspace",
+        "Reporter/Analyst advanced surfaces",
+        "observability/security pack"
+      ],
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-16T22:45:55+09:00",
+          "summary": "Current billing period reviewed before production analysis-mode QA; effective 9.7924 USD, billed 0.0000 USD, no unexpected billed usage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Production auto mode domain query path v8.11.15",
+          "path": "reports/qa/evidence/qa-20260416-production-auto-mode-v81115.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Production thinking mode domain query path v8.11.15",
+          "path": "reports/qa/evidence/qa-20260416-production-thinking-mode-v81115.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Production analysis mode console log v8.11.15",
+          "path": "reports/qa/evidence/qa-20260416-production-analysis-mode-console-v81115.txt"
+        }
+      ],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0

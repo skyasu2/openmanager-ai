@@ -1,0 +1,94 @@
+{
+  "runId": "QA-20260416-0297",
+  "recordedAt": "2026-04-16T13:53:18.702Z",
+  "recordedAtKst": "2026-04-16 22:53:18 KST",
+  "runTitle": "Production QA - Analysis Mode Auto vs Thinking v8.11.15",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "4237ce65d"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core", "dashboard-core"],
+  "coveredSurfaces": [
+    "/dashboard",
+    "AI sidebar response mode toggle on production 8.11.15",
+    "AI sidebar auto mode domain query path on production 8.11.15",
+    "AI sidebar thinking mode job-queue path on production 8.11.15",
+    "AI analysis basis mode metadata on production 8.11.15",
+    "Cloud Run revision ai-engine-00323-827 health check"
+  ],
+  "skippedSurfaces": [
+    "AI fullscreen workspace",
+    "Reporter/Analyst advanced surfaces",
+    "observability/security pack"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-16T22:45:55+09:00",
+      "summary": "Current billing period reviewed before production analysis-mode QA; effective 9.7924 USD, billed 0.0000 USD, no unexpected billed usage spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Production auto mode domain query path v8.11.15",
+      "path": "reports/qa/evidence/qa-20260416-production-auto-mode-v81115.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Production thinking mode domain query path v8.11.15",
+      "path": "reports/qa/evidence/qa-20260416-production-thinking-mode-v81115.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Production analysis mode console log v8.11.15",
+      "path": "reports/qa/evidence/qa-20260416-production-analysis-mode-console-v81115.txt"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-domain-boundary-phase2-analysis-mode",
+      "title": "AI Domain Boundary Phase 2 analysis mode toggle (auto/thinking)",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production v8.11.15 QA verified auto and Thinking modes on AI sidebar with analysis basis metadata.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Auto mode kept streaming AI path and analysis basis exposed '모드: 오토'.",
+    "Thinking mode switched to queued progress path before completion and analysis basis exposed '모드: Thinking'.",
+    "Cloud Run /health returned version 8.11.15 during this QA window."
+  ],
+  "links": []
+}

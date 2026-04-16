@@ -1,32 +1,32 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-16 21:02:52 KST
+> Generated at: 2026-04-16 22:53:19 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 294 |
-| Total Runs (Counted) | 251 |
+| Total Recorded Runs | 295 |
+| Total Runs (Counted) | 252 |
 | Non-counted Runs | 43 |
-| Total Checks | 1954 |
-| Passed | 1878 |
+| Total Checks | 1962 |
+| Passed | 1886 |
 | Failed | 70 |
-| Completed Items | 293 |
+| Completed Items | 294 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 13 |
 | Expert Domains Tracked | 8 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260416-0296 (2026-04-16T12:02:50.961Z) |
-| Latest Recorded Run | QA-20260416-0296 (2026-04-16T12:02:50.961Z) |
+| Last Counted Run | QA-20260416-0297 (2026-04-16T13:53:18.702Z) |
+| Latest Recorded Run | QA-20260416-0297 (2026-04-16T13:53:18.702Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260416-0296 (2026-04-16T12:02:50.961Z)
+Latest run: QA-20260416-0297 (2026-04-16T13:53:18.702Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -36,17 +36,17 @@ Latest run: QA-20260416-0296 (2026-04-16T12:02:50.961Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed before production mixed query QA; effective 9.7924 USD, billed 0.0000 USD, no unexpected billed usage spike. |
+| vercel | cli | checked | normal | Current billing period reviewed before production analysis-mode QA; effective 9.7924 USD, billed 0.0000 USD, no unexpected billed usage spike. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: dpl_BetVxqXL1qtLy673944mUkUfSqMz / SHA e1f97f94
+- Deployment: SHA 4237ce65
 - Coverage Packs: ai-core, dashboard-core
-- Covered Surfaces: /dashboard, AI sidebar welcome and input copy on production 8.11.14, AI sidebar general-query best-effort path on production 8.11.14, AI sidebar domain-query realtime analysis path on production 8.11.14, AI analysis-basis detail panel on production 8.11.14, Cloud Run revision ai-engine-00322-xkf health check
-- Skipped Surfaces: AI fullscreen workspace, reporter/analyst advanced surfaces, observability/security pack
+- Covered Surfaces: /dashboard, AI sidebar response mode toggle on production 8.11.15, AI sidebar auto mode domain query path on production 8.11.15, AI sidebar thinking mode job-queue path on production 8.11.15, AI analysis basis mode metadata on production 8.11.15, Cloud Run revision ai-engine-00323-827 health check
+- Skipped Surfaces: AI fullscreen workspace, Reporter/Analyst advanced surfaces, observability/security pack
 
 ## Links (Latest Run)
 
@@ -58,10 +58,9 @@ Latest run: QA-20260416-0296 (2026-04-16T12:02:50.961Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Production general query best-effort path v8.11.14 | `reports/qa/evidence/qa-20260416-production-general-query-mixed-qa-v81114.png` | - |
-| playwright-screenshot | Production domain query runtime path v8.11.14 | `reports/qa/evidence/qa-20260416-production-domain-query-mixed-qa-v81114.png` | - |
-| playwright-screenshot | Production domain query analysis basis v8.11.14 | `reports/qa/evidence/qa-20260416-production-domain-query-analysis-basis-v81114.png` | - |
-| playwright-console | Production mixed-query console log v8.11.14 | `reports/qa/evidence/qa-20260416-production-mixed-query-console-v81114.txt` | - |
+| playwright-screenshot | Production auto mode domain query path v8.11.15 | `reports/qa/evidence/qa-20260416-production-auto-mode-v81115.png` | - |
+| playwright-screenshot | Production thinking mode domain query path v8.11.15 | `reports/qa/evidence/qa-20260416-production-thinking-mode-v81115.png` | - |
+| playwright-console | Production analysis mode console log v8.11.15 | `reports/qa/evidence/qa-20260416-production-analysis-mode-console-v81115.txt` | - |
 
 ## Expert Domain Open Gaps
 
@@ -127,6 +126,7 @@ Latest run: QA-20260416-0296 (2026-04-16T12:02:50.961Z)
 - ai-chat-response-quality-v880-recheck-20260309: AI Chat 응답 품질 및 권고 재검증 (completed 4회, last QA-20260309-0068)
 - ai-chat-sidebar-open: AI 사이드바 열기 (completed 1회, last QA-20260317-0114)
 - ai-code-gate-input-policy: AI Code Gate: Prompt 패턴 15개 방어 점검 (completed 2회, last QA-20260318-0125)
+- ai-domain-boundary-phase2-analysis-mode: AI Domain Boundary Phase 2 analysis mode toggle (auto/thinking) (completed 1회, last QA-20260416-0297)
 - ai-engine-status: AI 엔진 상태 표시 (completed 1회, last QA-20260317-0114)
 - ai-friendly-template-todo-marker: Template TODO marker 분리 (TEMPLATE_TODO 적용) (completed 1회, last QA-20260226-0006)
 - ai-math-tools: AI 계산 도구(수식/통계/용량) 셋업 완료 (completed 1회, last QA-20260228-0023)
@@ -403,6 +403,7 @@ Latest run: QA-20260416-0296 (2026-04-16T12:02:50.961Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260416-0297 | 2026-04-16T13:53:18.702Z | targeted | no | yes | Production QA - Analysis Mode Auto vs Thinking v8.11.15 | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260416-0296 | 2026-04-16T12:02:50.961Z | targeted | no | yes | Production mixed query QA after 8.11.14 frontend and ai-engine deploy | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260416-0295 | 2026-04-16T11:38:00.431Z | targeted | no | no | Production mixed runtime QA after manual Cloud Run deploy | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260416-0294 | 2026-04-16T00:26:05.077Z | targeted | yes | yes | Vercel production targeted QA - AI full-surface advanced flows on v8.11.13 | 7 | 0 | 0 | 0 | 0 | 0 |
@@ -422,4 +423,3 @@ Latest run: QA-20260416-0296 (2026-04-16T12:02:50.961Z)
 | QA-20260413-0280 | 2026-04-13T11:41:39.894Z | targeted | no | yes | GraphRAG variant direct supervisor recheck after ai-engine-00308 (RAG auto + advisor tool required) | 3 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260413-0279 | 2026-04-13T11:06:13.864Z | targeted | no | no | GraphRAG variant direct supervisor stability recheck after degraded-single enable | 5 | 0 | 1 | 0 | 0 | 0 |
 | QA-20260413-0278 | 2026-04-13T10:35:18.519Z | targeted | no | no | GraphRAG variant direct supervisor recheck after ai-engine-00305 deployment | 7 | 0 | 1 | 0 | 0 | 0 |
-| QA-20260413-0277 | 2026-04-13T09:10:29.270Z | targeted | no | no | GraphRAG traversal decision QA #3 (UI success vs direct supervisor failure split) | 8 | 0 | 1 | 0 | 0 | 0 |
