@@ -20,6 +20,7 @@ _없음 — 다음 작업은 Backlog에서 승격_
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| AI Domain Boundary & Analysis Mode | Medium | 계획서: [ai-domain-boundary-analysis-mode-plan.md](ai-domain-boundary-analysis-mode-plan.md). 오프도메인 질문 제한 정책, `기술 웹 검색` 역할 정리, `빠르게 / 표준 / 깊게` 분석 강도 설계. |
 | AI Response Visibility & Rate Limit (Phase 1~5) | Medium | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). handoff 가시성 UX, 429 UX, Job Queue agent path, limiter 정책 재조정. |
 | Storybook circular chunk warning 정리 | Low | non-blocking, stable 승격 후 재평가 |
 
