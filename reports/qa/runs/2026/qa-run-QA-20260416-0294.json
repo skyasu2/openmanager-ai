@@ -1,0 +1,118 @@
+{
+  "runId": "QA-20260416-0294",
+  "recordedAt": "2026-04-16T00:26:05.077Z",
+  "recordedAtKst": "2026-04-16 09:26:05 KST",
+  "runTitle": "Vercel production targeted QA - AI full-surface advanced flows on v8.11.13",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_3QFeewNZNo8PSs13n1cx5PL6kZN6",
+    "deploymentUrl": "https://openmanager-25adzsdzh-skyasus-projects.vercel.app",
+    "commitSha": "49032c37102e3b91b5d161c9d4d4b171c29b6ff8"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-advanced-surface"],
+  "coveredSurfaces": [
+    "production version route remains 8.11.13 during advanced AI validation",
+    "Reporter Agent first report generation from empty state",
+    "Reporter detail section render with anomaly list, recommended actions, and impacted servers",
+    "Analyst Agent full-system analysis completes for 15 servers",
+    "Analyst per-server drilldown opens prediction and AI insight sections",
+    "AI Chat feedback positive submission toggles response evaluation state and prevents duplicate submission",
+    "browser console error count 0 and warning count 0 during AI full-surface advanced flow"
+  ],
+  "skippedSurfaces": [
+    "broad route pack",
+    "secondary auth routes",
+    "Cloud Run admin observability endpoints",
+    "security blocked-prompt regression pack"
+  ],
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Reporter generation/detail, Analyst full analysis/drilldown, and in-message feedback submission all completed successfully on production v8.11.13.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The previously skipped AI advanced surfaces were exercised end-to-end in one production Playwright session with zero console errors or warnings.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-16T09:09:10+09:00",
+      "summary": "Current billing period reviewed before AI full-surface QA; effective 9.1391 USD, billed 0.0000 USD, no unexpected billed usage spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Production AI feedback flow after positive submission",
+      "path": "reports/qa/evidence/qa-20260416-production-ai-feedback-flow.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Production Reporter detail view",
+      "path": "reports/qa/evidence/qa-20260416-production-reporter-detail.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Production Analyst drilldown view",
+      "path": "reports/qa/evidence/qa-20260416-production-analyst-drilldown.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Production AI full-surface console log",
+      "path": "reports/qa/evidence/qa-20260416-production-ai-full-surface-console.txt"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Reporter Agent started from empty state and generated one incident report titled API 서버 CPU 과부하 경고.",
+    "Reporter detail rendered anomaly items, recommended actions, pattern summary, and impacted server list without requiring route navigation.",
+    "Analyst Agent full analysis completed for the entire 15-server system and rendered issue summary plus per-server cards.",
+    "A db-mysql-dc1-primary drilldown was expanded successfully and showed current state, one-hour predictions, and AI insight sections.",
+    "AI Chat positive feedback submission changed the response evaluation control state and prevented a second submission in the same message card.",
+    "browser_console_messages reported 0 errors and 0 warnings during the production advanced AI flow."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Deployment dpl_3QFeewNZNo8PSs13n1cx5PL6kZN6",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/3QFeewNZNo8PSs13n1cx5PL6kZN6"
+    }
+  ]
+}

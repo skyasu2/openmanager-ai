@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-16T00:12:50.093Z"
+    "updatedAt": "2026-04-16T00:26:05.077Z"
   },
   "sequence": {
-    "nextRunNumber": 294
+    "nextRunNumber": 295
   },
   "summary": {
-    "totalRecordedRuns": 291,
-    "totalRuns": 249,
+    "totalRecordedRuns": 292,
+    "totalRuns": 250,
     "excludedRuns": 42,
-    "totalChecks": 1939,
-    "totalPassed": 1863,
+    "totalChecks": 1946,
+    "totalPassed": 1870,
     "totalFailed": 70,
     "completionRate": 100,
     "completedItems": 293,
@@ -21,10 +21,10 @@
     "wontFixItems": 13,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260415-0291",
-    "lastRecordedAt": "2026-04-15T14:40:05.458Z",
-    "latestRecordedRunId": "QA-20260416-0293",
-    "latestRecordedAt": "2026-04-16T00:12:50.093Z"
+    "lastRunId": "QA-20260416-0294",
+    "lastRecordedAt": "2026-04-16T00:26:05.077Z",
+    "latestRecordedRunId": "QA-20260416-0294",
+    "latestRecordedAt": "2026-04-16T00:26:05.077Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -25709,6 +25709,119 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260416-0294",
+      "recordedAt": "2026-04-16T00:26:05.077Z",
+      "recordedAtKst": "2026-04-16 09:26:05 KST",
+      "title": "Vercel production targeted QA - AI full-surface advanced flows on v8.11.13",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260416-0294.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_3QFeewNZNo8PSs13n1cx5PL6kZN6",
+        "deploymentUrl": "https://openmanager-25adzsdzh-skyasus-projects.vercel.app",
+        "commitSha": "49032c37102e3b91b5d161c9d4d4b171c29b6ff8"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": ["ai-advanced-surface"],
+      "coveredSurfaces": [
+        "production version route remains 8.11.13 during advanced AI validation",
+        "Reporter Agent first report generation from empty state",
+        "Reporter detail section render with anomaly list, recommended actions, and impacted servers",
+        "Analyst Agent full-system analysis completes for 15 servers",
+        "Analyst per-server drilldown opens prediction and AI insight sections",
+        "AI Chat feedback positive submission toggles response evaluation state and prevents duplicate submission",
+        "browser console error count 0 and warning count 0 during AI full-surface advanced flow"
+      ],
+      "skippedSurfaces": [
+        "broad route pack",
+        "secondary auth routes",
+        "Cloud Run admin observability endpoints",
+        "security blocked-prompt regression pack"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Reporter generation/detail, Analyst full analysis/drilldown, and in-message feedback submission all completed successfully on production v8.11.13.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The previously skipped AI advanced surfaces were exercised end-to-end in one production Playwright session with zero console errors or warnings.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-16T09:09:10+09:00",
+          "summary": "Current billing period reviewed before AI full-surface QA; effective 9.1391 USD, billed 0.0000 USD, no unexpected billed usage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Production AI feedback flow after positive submission",
+          "path": "reports/qa/evidence/qa-20260416-production-ai-feedback-flow.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Production Reporter detail view",
+          "path": "reports/qa/evidence/qa-20260416-production-reporter-detail.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Production Analyst drilldown view",
+          "path": "reports/qa/evidence/qa-20260416-production-analyst-drilldown.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Production AI full-surface console log",
+          "path": "reports/qa/evidence/qa-20260416-production-ai-full-surface-console.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Deployment dpl_3QFeewNZNo8PSs13n1cx5PL6kZN6",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/3QFeewNZNo8PSs13n1cx5PL6kZN6"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -25717,16 +25830,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 136,
-      "appropriateCount": 127,
+      "seenCount": 137,
+      "appropriateCount": 128,
       "partialCount": 9,
       "inappropriateCount": 0,
       "improvementNeededCount": 19,
-      "lastRunId": "QA-20260416-0293",
-      "lastSeenAt": "2026-04-16T00:12:50.093Z",
+      "lastRunId": "QA-20260416-0294",
+      "lastSeenAt": "2026-04-16T00:26:05.077Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production v8.11.13 preserved the same handoff path, traceId, tool chain, engine label, and recent 1 hour time range after sidebar to fullscreen workspace navigation.",
+      "lastRationale": "Reporter generation/detail, Analyst full analysis/drilldown, and in-message feedback submission all completed successfully on production v8.11.13.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -25785,16 +25898,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 111,
-      "appropriateCount": 104,
+      "seenCount": 112,
+      "appropriateCount": 105,
       "partialCount": 7,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260416-0293",
-      "lastSeenAt": "2026-04-16T00:12:50.093Z",
+      "lastRunId": "QA-20260416-0294",
+      "lastSeenAt": "2026-04-16T00:26:05.077Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The production parity path was revalidated end-to-end with Playwright after deploy propagation, including guest entry, dashboard CTA, sidebar response, fullscreen transition, and console cleanliness.",
+      "lastRationale": "The previously skipped AI advanced surfaces were exercised end-to-end in one production Playwright session with zero console errors or warnings.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
