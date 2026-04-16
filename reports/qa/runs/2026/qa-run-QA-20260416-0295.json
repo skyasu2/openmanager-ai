@@ -1,0 +1,80 @@
+{
+  "runId": "QA-20260416-0295",
+  "recordedAt": "2026-04-16T11:38:00.431Z",
+  "recordedAtKst": "2026-04-16 20:38:00 KST",
+  "runTitle": "Production mixed runtime QA after manual Cloud Run deploy",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_3QFeewNZNo8PSs13n1cx5PL6kZN6",
+    "deploymentUrl": "https://openmanager-25adzsdzh-skyasus-projects.vercel.app",
+    "commitSha": "94405fc7edac114d9fcf11cb2e88b7ff763f9a17"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core", "dashboard-core"],
+  "coveredSurfaces": [
+    "/dashboard",
+    "AI sidebar general-query best-effort path on production",
+    "AI sidebar domain-query realtime analysis path on production",
+    "Cloud Run manual deploy revision ai-engine-00321-85d health check"
+  ],
+  "skippedSurfaces": [
+    "frontend copy/placeholder verification on production (latest frontend commit not deployed)",
+    "AI fullscreen workspace",
+    "reporter/analyst advanced surfaces",
+    "observability/security pack"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-16T20:32:43+09:00",
+      "summary": "Current billing period reviewed before mixed runtime QA; effective 9.7909 USD, billed 0.0000 USD, no unexpected billed usage spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Production domain query runtime path",
+      "path": "reports/qa/evidence/qa-20260416-production-domain-query-mixed-qa.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Production general query best-effort path",
+      "path": "reports/qa/evidence/qa-20260416-production-general-query-mixed-qa.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Production mixed-query console log",
+      "path": "reports/qa/evidence/qa-20260416-production-mixed-query-console.txt"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Cloud Run manual deploy completed: ai-engine-00321-85d serving 100% traffic with health 200.",
+    "Production frontend deployment remains dpl_3QFeewNZNo8PSs13n1cx5PL6kZN6 (created 2026-04-16 09:07 KST), so frontend copy changes from a9235088f are not yet visible on production.",
+    "General query '오늘 서울 날씨 알려줘' returned best-effort disclaimer and non-domain response path.",
+    "Domain query '지난 1시간 기준으로 이상 징후가 있었던 서버만 요약해줘' returned server realtime analysis with tool-grounded metadata."
+  ],
+  "links": []
+}

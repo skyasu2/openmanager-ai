@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-16T00:26:05.077Z"
+    "updatedAt": "2026-04-16T11:38:00.431Z"
   },
   "sequence": {
-    "nextRunNumber": 295
+    "nextRunNumber": 296
   },
   "summary": {
-    "totalRecordedRuns": 292,
+    "totalRecordedRuns": 293,
     "totalRuns": 250,
-    "excludedRuns": 42,
+    "excludedRuns": 43,
     "totalChecks": 1946,
     "totalPassed": 1870,
     "totalFailed": 70,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260416-0294",
     "lastRecordedAt": "2026-04-16T00:26:05.077Z",
-    "latestRecordedRunId": "QA-20260416-0294",
-    "latestRecordedAt": "2026-04-16T00:26:05.077Z"
+    "latestRecordedRunId": "QA-20260416-0295",
+    "latestRecordedAt": "2026-04-16T11:38:00.431Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -25817,6 +25817,83 @@
         }
       ],
       "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260416-0295",
+      "recordedAt": "2026-04-16T11:38:00.431Z",
+      "recordedAtKst": "2026-04-16 20:38:00 KST",
+      "title": "Production mixed runtime QA after manual Cloud Run deploy",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260416-0295.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_3QFeewNZNo8PSs13n1cx5PL6kZN6",
+        "deploymentUrl": "https://openmanager-25adzsdzh-skyasus-projects.vercel.app",
+        "commitSha": "94405fc7edac114d9fcf11cb2e88b7ff763f9a17"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": ["ai-core", "dashboard-core"],
+      "coveredSurfaces": [
+        "/dashboard",
+        "AI sidebar general-query best-effort path on production",
+        "AI sidebar domain-query realtime analysis path on production",
+        "Cloud Run manual deploy revision ai-engine-00321-85d health check"
+      ],
+      "skippedSurfaces": [
+        "frontend copy/placeholder verification on production (latest frontend commit not deployed)",
+        "AI fullscreen workspace",
+        "reporter/analyst advanced surfaces",
+        "observability/security pack"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-16T20:32:43+09:00",
+          "summary": "Current billing period reviewed before mixed runtime QA; effective 9.7909 USD, billed 0.0000 USD, no unexpected billed usage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Production domain query runtime path",
+          "path": "reports/qa/evidence/qa-20260416-production-domain-query-mixed-qa.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Production general query best-effort path",
+          "path": "reports/qa/evidence/qa-20260416-production-general-query-mixed-qa.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Production mixed-query console log",
+          "path": "reports/qa/evidence/qa-20260416-production-mixed-query-console.txt"
+        }
+      ],
+      "links": [],
+      "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
       "pendingCount": 0,

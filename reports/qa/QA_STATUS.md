@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-16 09:26:06 KST
+> Generated at: 2026-04-16 20:38:01 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 292 |
+| Total Recorded Runs | 293 |
 | Total Runs (Counted) | 250 |
-| Non-counted Runs | 42 |
+| Non-counted Runs | 43 |
 | Total Checks | 1946 |
 | Passed | 1870 |
 | Failed | 70 |
@@ -21,49 +21,46 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260416-0294 (2026-04-16T00:26:05.077Z) |
-| Latest Recorded Run | QA-20260416-0294 (2026-04-16T00:26:05.077Z) |
+| Latest Recorded Run | QA-20260416-0295 (2026-04-16T11:38:00.431Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260416-0294 (2026-04-16T00:26:05.077Z)
+Latest run: QA-20260416-0295 (2026-04-16T11:38:00.431Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed before AI full-surface QA; effective 9.1391 USD, billed 0.0000 USD, no unexpected billed usage spike. |
+| vercel | cli | checked | normal | Current billing period reviewed before mixed runtime QA; effective 9.7909 USD, billed 0.0000 USD, no unexpected billed usage spike. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
-- Counts Toward Summary: yes
-- Deployment: dpl_3QFeewNZNo8PSs13n1cx5PL6kZN6 / SHA 49032c37
-- Coverage Packs: ai-advanced-surface
-- Covered Surfaces: production version route remains 8.11.13 during advanced AI validation, Reporter Agent first report generation from empty state, Reporter detail section render with anomaly list, recommended actions, and impacted servers, Analyst Agent full-system analysis completes for 15 servers, Analyst per-server drilldown opens prediction and AI insight sections, AI Chat feedback positive submission toggles response evaluation state and prevents duplicate submission, browser console error count 0 and warning count 0 during AI full-surface advanced flow
-- Skipped Surfaces: broad route pack, secondary auth routes, Cloud Run admin observability endpoints, security blocked-prompt regression pack
+- Release-Facing: no
+- Counts Toward Summary: no
+- Deployment: dpl_3QFeewNZNo8PSs13n1cx5PL6kZN6 / SHA 94405fc7
+- Coverage Packs: ai-core, dashboard-core
+- Covered Surfaces: /dashboard, AI sidebar general-query best-effort path on production, AI sidebar domain-query realtime analysis path on production, Cloud Run manual deploy revision ai-engine-00321-85d health check
+- Skipped Surfaces: frontend copy/placeholder verification on production (latest frontend commit not deployed), AI fullscreen workspace, reporter/analyst advanced surfaces, observability/security pack
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Production | [Production](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Deployment dpl_3QFeewNZNo8PSs13n1cx5PL6kZN6 | [Deployment dpl_3QFeewNZNo8PSs13n1cx5PL6kZN6](https://vercel.com/skyasus-projects/openmanager-ai/3QFeewNZNo8PSs13n1cx5PL6kZN6) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Production AI feedback flow after positive submission | `reports/qa/evidence/qa-20260416-production-ai-feedback-flow.png` | - |
-| playwright-screenshot | Production Reporter detail view | `reports/qa/evidence/qa-20260416-production-reporter-detail.png` | - |
-| playwright-screenshot | Production Analyst drilldown view | `reports/qa/evidence/qa-20260416-production-analyst-drilldown.png` | - |
-| playwright-console | Production AI full-surface console log | `reports/qa/evidence/qa-20260416-production-ai-full-surface-console.txt` | - |
+| playwright-screenshot | Production domain query runtime path | `reports/qa/evidence/qa-20260416-production-domain-query-mixed-qa.png` | - |
+| playwright-screenshot | Production general query best-effort path | `reports/qa/evidence/qa-20260416-production-general-query-mixed-qa.png` | - |
+| playwright-console | Production mixed-query console log | `reports/qa/evidence/qa-20260416-production-mixed-query-console.txt` | - |
 
 ## Expert Domain Open Gaps
 
@@ -405,6 +402,7 @@ Latest run: QA-20260416-0294 (2026-04-16T00:26:05.077Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260416-0295 | 2026-04-16T11:38:00.431Z | targeted | no | no | Production mixed runtime QA after manual Cloud Run deploy | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260416-0294 | 2026-04-16T00:26:05.077Z | targeted | yes | yes | Vercel production targeted QA - AI full-surface advanced flows on v8.11.13 | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260416-0293 | 2026-04-16T00:12:50.093Z | targeted | yes | no | Vercel production targeted QA - fullscreen analysis basis parity after v8.11.13 deploy | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260416-0292 | 2026-04-15T23:53:23.445Z | targeted | no | no | Vercel preview targeted QA - fullscreen analysis basis parity after data-done toolsCalled fix | 7 | 1 | 0 | 0 | 0 | 0 |
@@ -424,4 +422,3 @@ Latest run: QA-20260416-0294 (2026-04-16T00:26:05.077Z)
 | QA-20260413-0278 | 2026-04-13T10:35:18.519Z | targeted | no | no | GraphRAG variant direct supervisor recheck after ai-engine-00305 deployment | 7 | 0 | 1 | 0 | 0 | 0 |
 | QA-20260413-0277 | 2026-04-13T09:10:29.270Z | targeted | no | no | GraphRAG traversal decision QA #3 (UI success vs direct supervisor failure split) | 8 | 0 | 1 | 0 | 0 | 0 |
 | QA-20260413-0276 | 2026-04-13T09:02:52.483Z | targeted | no | no | GraphRAG traversal decision QA #2 (duplicate invocation + latency + variant failure) | 9 | 0 | 1 | 0 | 0 | 0 |
-| QA-20260413-0275 | 2026-04-13T08:52:05.906Z | targeted | no | no | GraphRAG traversal decision QA #1 (topology + incident targeted) | 12 | 0 | 0 | 0 | 0 | 0 |
