@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.14](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.13...v8.11.14) (2026-04-16)
+
+
+### Features
+
+* **ai:** improve general-query boundaries and route docs ([a923508](https://gitlab.com/skyasu2/openmanager-ai/-/commit/a9235088fd91837679b861c77037b9d5ac6a97d7))
+
 ## [8.11.13](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.12...v8.11.13) (2026-04-15)
 
 
