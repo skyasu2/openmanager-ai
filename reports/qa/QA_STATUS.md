@@ -1,17 +1,17 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-16 20:38:01 KST
+> Generated at: 2026-04-16 21:02:52 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 293 |
-| Total Runs (Counted) | 250 |
+| Total Recorded Runs | 294 |
+| Total Runs (Counted) | 251 |
 | Non-counted Runs | 43 |
-| Total Checks | 1946 |
-| Passed | 1870 |
+| Total Checks | 1954 |
+| Passed | 1878 |
 | Failed | 70 |
 | Completed Items | 293 |
 | Pending Items | 0 |
@@ -20,13 +20,13 @@
 | Expert Domains Tracked | 8 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260416-0294 (2026-04-16T00:26:05.077Z) |
-| Latest Recorded Run | QA-20260416-0295 (2026-04-16T11:38:00.431Z) |
+| Last Counted Run | QA-20260416-0296 (2026-04-16T12:02:50.961Z) |
+| Latest Recorded Run | QA-20260416-0296 (2026-04-16T12:02:50.961Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260416-0295 (2026-04-16T11:38:00.431Z)
+Latest run: QA-20260416-0296 (2026-04-16T12:02:50.961Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -36,17 +36,17 @@ Latest run: QA-20260416-0295 (2026-04-16T11:38:00.431Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed before mixed runtime QA; effective 9.7909 USD, billed 0.0000 USD, no unexpected billed usage spike. |
+| vercel | cli | checked | normal | Current billing period reviewed before production mixed query QA; effective 9.7924 USD, billed 0.0000 USD, no unexpected billed usage spike. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: dpl_3QFeewNZNo8PSs13n1cx5PL6kZN6 / SHA 94405fc7
+- Counts Toward Summary: yes
+- Deployment: dpl_BetVxqXL1qtLy673944mUkUfSqMz / SHA e1f97f94
 - Coverage Packs: ai-core, dashboard-core
-- Covered Surfaces: /dashboard, AI sidebar general-query best-effort path on production, AI sidebar domain-query realtime analysis path on production, Cloud Run manual deploy revision ai-engine-00321-85d health check
-- Skipped Surfaces: frontend copy/placeholder verification on production (latest frontend commit not deployed), AI fullscreen workspace, reporter/analyst advanced surfaces, observability/security pack
+- Covered Surfaces: /dashboard, AI sidebar welcome and input copy on production 8.11.14, AI sidebar general-query best-effort path on production 8.11.14, AI sidebar domain-query realtime analysis path on production 8.11.14, AI analysis-basis detail panel on production 8.11.14, Cloud Run revision ai-engine-00322-xkf health check
+- Skipped Surfaces: AI fullscreen workspace, reporter/analyst advanced surfaces, observability/security pack
 
 ## Links (Latest Run)
 
@@ -58,9 +58,10 @@ Latest run: QA-20260416-0295 (2026-04-16T11:38:00.431Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Production domain query runtime path | `reports/qa/evidence/qa-20260416-production-domain-query-mixed-qa.png` | - |
-| playwright-screenshot | Production general query best-effort path | `reports/qa/evidence/qa-20260416-production-general-query-mixed-qa.png` | - |
-| playwright-console | Production mixed-query console log | `reports/qa/evidence/qa-20260416-production-mixed-query-console.txt` | - |
+| playwright-screenshot | Production general query best-effort path v8.11.14 | `reports/qa/evidence/qa-20260416-production-general-query-mixed-qa-v81114.png` | - |
+| playwright-screenshot | Production domain query runtime path v8.11.14 | `reports/qa/evidence/qa-20260416-production-domain-query-mixed-qa-v81114.png` | - |
+| playwright-screenshot | Production domain query analysis basis v8.11.14 | `reports/qa/evidence/qa-20260416-production-domain-query-analysis-basis-v81114.png` | - |
+| playwright-console | Production mixed-query console log v8.11.14 | `reports/qa/evidence/qa-20260416-production-mixed-query-console-v81114.txt` | - |
 
 ## Expert Domain Open Gaps
 
@@ -402,6 +403,7 @@ Latest run: QA-20260416-0295 (2026-04-16T11:38:00.431Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260416-0296 | 2026-04-16T12:02:50.961Z | targeted | no | yes | Production mixed query QA after 8.11.14 frontend and ai-engine deploy | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260416-0295 | 2026-04-16T11:38:00.431Z | targeted | no | no | Production mixed runtime QA after manual Cloud Run deploy | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260416-0294 | 2026-04-16T00:26:05.077Z | targeted | yes | yes | Vercel production targeted QA - AI full-surface advanced flows on v8.11.13 | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260416-0293 | 2026-04-16T00:12:50.093Z | targeted | yes | no | Vercel production targeted QA - fullscreen analysis basis parity after v8.11.13 deploy | 8 | 1 | 0 | 0 | 0 | 0 |
@@ -421,4 +423,3 @@ Latest run: QA-20260416-0295 (2026-04-16T11:38:00.431Z)
 | QA-20260413-0279 | 2026-04-13T11:06:13.864Z | targeted | no | no | GraphRAG variant direct supervisor stability recheck after degraded-single enable | 5 | 0 | 1 | 0 | 0 | 0 |
 | QA-20260413-0278 | 2026-04-13T10:35:18.519Z | targeted | no | no | GraphRAG variant direct supervisor recheck after ai-engine-00305 deployment | 7 | 0 | 1 | 0 | 0 | 0 |
 | QA-20260413-0277 | 2026-04-13T09:10:29.270Z | targeted | no | no | GraphRAG traversal decision QA #3 (UI success vs direct supervisor failure split) | 8 | 0 | 1 | 0 | 0 | 0 |
-| QA-20260413-0276 | 2026-04-13T09:02:52.483Z | targeted | no | no | GraphRAG traversal decision QA #2 (duplicate invocation + latency + variant failure) | 9 | 0 | 1 | 0 | 0 | 0 |

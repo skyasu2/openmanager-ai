@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-16T11:38:00.431Z"
+    "updatedAt": "2026-04-16T12:02:50.961Z"
   },
   "sequence": {
-    "nextRunNumber": 296
+    "nextRunNumber": 297
   },
   "summary": {
-    "totalRecordedRuns": 293,
-    "totalRuns": 250,
+    "totalRecordedRuns": 294,
+    "totalRuns": 251,
     "excludedRuns": 43,
-    "totalChecks": 1946,
-    "totalPassed": 1870,
+    "totalChecks": 1954,
+    "totalPassed": 1878,
     "totalFailed": 70,
     "completionRate": 100,
     "completedItems": 293,
@@ -21,10 +21,10 @@
     "wontFixItems": 13,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260416-0294",
-    "lastRecordedAt": "2026-04-16T00:26:05.077Z",
-    "latestRecordedRunId": "QA-20260416-0295",
-    "latestRecordedAt": "2026-04-16T11:38:00.431Z"
+    "lastRunId": "QA-20260416-0296",
+    "lastRecordedAt": "2026-04-16T12:02:50.961Z",
+    "latestRecordedRunId": "QA-20260416-0296",
+    "latestRecordedAt": "2026-04-16T12:02:50.961Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -25890,6 +25890,89 @@
           "type": "playwright-console",
           "label": "Production mixed-query console log",
           "path": "reports/qa/evidence/qa-20260416-production-mixed-query-console.txt"
+        }
+      ],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260416-0296",
+      "recordedAt": "2026-04-16T12:02:50.961Z",
+      "recordedAtKst": "2026-04-16 21:02:50 KST",
+      "title": "Production mixed query QA after 8.11.14 frontend and ai-engine deploy",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260416-0296.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_BetVxqXL1qtLy673944mUkUfSqMz",
+        "deploymentUrl": "https://openmanager-2pvt8hblu-skyasus-projects.vercel.app",
+        "commitSha": "e1f97f944"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": ["ai-core", "dashboard-core"],
+      "coveredSurfaces": [
+        "/dashboard",
+        "AI sidebar welcome and input copy on production 8.11.14",
+        "AI sidebar general-query best-effort path on production 8.11.14",
+        "AI sidebar domain-query realtime analysis path on production 8.11.14",
+        "AI analysis-basis detail panel on production 8.11.14",
+        "Cloud Run revision ai-engine-00322-xkf health check"
+      ],
+      "skippedSurfaces": [
+        "AI fullscreen workspace",
+        "reporter/analyst advanced surfaces",
+        "observability/security pack"
+      ],
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-16T21:01:30+09:00",
+          "summary": "Current billing period reviewed before production mixed query QA; effective 9.7924 USD, billed 0.0000 USD, no unexpected billed usage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Production general query best-effort path v8.11.14",
+          "path": "reports/qa/evidence/qa-20260416-production-general-query-mixed-qa-v81114.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Production domain query runtime path v8.11.14",
+          "path": "reports/qa/evidence/qa-20260416-production-domain-query-mixed-qa-v81114.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Production domain query analysis basis v8.11.14",
+          "path": "reports/qa/evidence/qa-20260416-production-domain-query-analysis-basis-v81114.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Production mixed-query console log v8.11.14",
+          "path": "reports/qa/evidence/qa-20260416-production-mixed-query-console-v81114.txt"
         }
       ],
       "links": [],
