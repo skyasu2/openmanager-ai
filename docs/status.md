@@ -421,7 +421,7 @@
   - 3-way Fallback: Cerebras → Groq → Mistral
 
 **AI CLI Tools** (2026-03 기준)
-- **Claude Code**: Opus 4.6 (Primary Development)
+- **Claude Code**: Sonnet 4.6 (Primary Development)
 - **Codex CLI**: `v0.117.0` (Finishing / QA Assist)
 - **Gemini CLI**: `v0.35.3` (Research / Analysis)
 
