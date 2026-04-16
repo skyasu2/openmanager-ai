@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.15](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.14...v8.11.15) (2026-04-16)
+
+
+### Features
+
+* **ai:** add auto and thinking analysis modes ([eed3c79](https://gitlab.com/skyasu2/openmanager-ai/-/commit/eed3c79a1f48d2f3854ea0aa7f1310d311c5005c))
+
 ## [8.11.14](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.13...v8.11.14) (2026-04-16)
 
 
