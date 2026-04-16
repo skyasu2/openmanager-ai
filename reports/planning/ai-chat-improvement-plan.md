@@ -1,8 +1,8 @@
 # AI 어시스턴트 채팅 기능 개선 계획서
 
 > Owner: project
-> Status: Active Supporting — Sprint 1+2 완료(2026-04-09). Sprint 3+ 미착수. 잔여 항목은 별도 계획서에서 우선순위 판단.
-> Doc type: How-to
+> Status: Active Supporting — Sprint 1~3 완료(2026-04-09). Sprint 4(4-A generateObject, 4-B per-step timeout) 미착수 — 장기 과제, 별도 plan 분리 예정.
+> Doc type: Plan
 > Last reviewed: 2026-04-16
 > Tags: ai-chat, improvement, planning, v8.12
 
@@ -17,11 +17,11 @@
 AISidebarV4
 ├─ useAIChatCore             /api/ai/supervisor        POST /api/ai/supervisor
 │  ├─ useHybridAIQuery  →   /stream/v2/route.ts   →   Multi-Agent Orchestrator
-│  ├─ useEnhancedChatMessages                          ├─ NLQ Agent (Groq)
-│  ├─ useDeferredMessageMetadata                       ├─ Analyst Agent (Groq)
-│  ├─ useChatQueue                                     ├─ Reporter Agent (Cerebras)
-│  └─ useQueryExecution                                ├─ Advisor Agent (Groq)
-│                                                      └─ Vision Agent (Gemini)
+│  ├─ useEnhancedChatMessages                          ├─ Text Agents (Groq→Cerebras→Mistral fallback)
+│  ├─ useDeferredMessageMetadata                       │  NLQ / Analyst / Reporter / Advisor
+│  ├─ useChatQueue                                     └─ Vision Agent (Gemini→OpenRouter fallback)
+│  └─ useQueryExecution
+│  (SSOT: agent-model-selectors.ts)
 └─ useAISidebarStore (Zustand)
 ```
 
@@ -371,7 +371,7 @@ generateText({
 ## 5. 제약 사항
 
 - **무료 티어**: Cloud Run 변경은 배포 비용 0 (코드 변경만)
-- **Provider 비용**: Anthropic 캐시 (4-B)는 Vision Agent 외 적용 범위 확인 후 진행
+- **Provider 비용**: Anthropic 캐시 (3-B)는 Vision Agent 외 적용 범위 확인 후 진행
 - **AI SDK 버전**: `experimental_throttle`, `status` 상태 머신은 Vercel AI SDK v6에서 지원 확인 필요
 - **하위 호환**: `isLoading` → `status` 전환 시 기존 컴포넌트 전수 확인 필요
 
@@ -396,5 +396,6 @@ generateText({
   - `npm run type-check` ✅
   - `npm run lint` ✅
   - `npx vitest run --config config/testing/vitest.config.main.ts src/hooks/ai/useEnhancedChatMessages.test.ts src/hooks/ai/core/useClarificationHandlers.test.ts src/components/ai-sidebar/ClarificationDialog.test.tsx src/hooks/ai/useAIChatCore.test.ts` ✅
+- 2026-04-16: Sprint 3 (3-A toolsCalled deferred metadata, 3-B Anthropic 캐시 정책 문서화) 완료. P1 버그 수정 및 v8.11.13 릴리즈. Production QA-20260416-0294 7/7 통과.
 
-_Last Updated: 2026-04-09 18:12 KST_
+_Last Updated: 2026-04-16_
