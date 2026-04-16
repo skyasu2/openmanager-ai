@@ -140,6 +140,66 @@ describe('useAISidebarStore', () => {
       expect(consumed).toBe('db-mysql-dc1-primary CPU 분석');
       expect(result.current.pendingPrefillMessage).toBeNull();
     });
+
+    it('queuePendingEntryState가 fullscreen handoff 상태를 저장해야 함', () => {
+      const { result } = renderHook(() => useAISidebarStore());
+
+      act(() => {
+        result.current.queuePendingEntryState({
+          draft: '현재 경고 서버 원인 분석',
+          selectedFunction: 'chat',
+          analysisMode: 'thinking',
+          target: 'fullscreen',
+        });
+      });
+
+      expect(result.current.pendingEntryState).toEqual({
+        draft: '현재 경고 서버 원인 분석',
+        selectedFunction: 'chat',
+        analysisMode: 'thinking',
+        target: 'fullscreen',
+      });
+      expect(result.current.pendingPrefillMessage).toBe(
+        '현재 경고 서버 원인 분석'
+      );
+    });
+
+    it('consumePendingEntryState는 target이 다르면 보류하고 맞는 surface에서만 소비해야 함', () => {
+      const { result } = renderHook(() => useAISidebarStore());
+
+      act(() => {
+        result.current.queuePendingEntryState({
+          draft: 'fullscreen으로 이어보기',
+          selectedFunction: 'chat',
+          target: 'fullscreen',
+        });
+      });
+
+      let ignoredEntry = null;
+      act(() => {
+        ignoredEntry = result.current.consumePendingEntryState('sidebar');
+      });
+
+      expect(ignoredEntry).toBeNull();
+      expect(result.current.pendingEntryState).toEqual({
+        draft: 'fullscreen으로 이어보기',
+        selectedFunction: 'chat',
+        target: 'fullscreen',
+      });
+
+      let consumedEntry = null;
+      act(() => {
+        consumedEntry = result.current.consumePendingEntryState('fullscreen');
+      });
+
+      expect(consumedEntry).toEqual({
+        draft: 'fullscreen으로 이어보기',
+        selectedFunction: 'chat',
+        target: 'fullscreen',
+      });
+      expect(result.current.pendingEntryState).toBeNull();
+      expect(result.current.pendingPrefillMessage).toBeNull();
+    });
   });
 
   describe('최소화', () => {

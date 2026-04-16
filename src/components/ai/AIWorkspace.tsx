@@ -26,7 +26,9 @@ import { EnhancedAIChat } from '@/components/ai-sidebar/EnhancedAIChat';
 import { AIErrorBoundary } from '@/components/error/AIErrorBoundary';
 import { APP_VERSION } from '@/config/app-meta';
 import { useAIChatCore } from '@/hooks/ai/useAIChatCore';
+import { useAIEntryController } from '@/hooks/ai/useAIEntryController';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
+import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import { RealTimeDisplay } from '../dashboard/RealTimeDisplay';
 import { OpenManagerLogo } from '../shared/OpenManagerLogo';
 import UnifiedProfileHeader from '../shared/UnifiedProfileHeader';
@@ -65,6 +67,7 @@ export default function AIWorkspace({
   const [selectedFunction, setSelectedFunction] =
     useState<AIAssistantFunction>('chat');
   const [isRightPanelOpen, setIsRightPanelOpen] = useState(true);
+  const { openFullscreen } = useAIEntryController();
 
   useEffect(() => {
     setIsMounted(true);
@@ -90,6 +93,24 @@ export default function AIWorkspace({
   const toggleRAG = useCallback(() => {
     setRagEnabled(!ragEnabled);
   }, [ragEnabled, setRagEnabled]);
+  const analysisMode = useAISidebarStore((s) => s.analysisMode);
+  const setAnalysisMode = useAISidebarStore((s) => s.setAnalysisMode);
+  const pendingEntryState = useAISidebarStore((s) => s.pendingEntryState);
+  const consumePendingEntryState = useAISidebarStore(
+    (s) => s.consumePendingEntryState
+  );
+  const pendingPrefillMessage = useAISidebarStore(
+    (s) => s.pendingPrefillMessage
+  );
+  const consumePendingPrefillMessage = useAISidebarStore(
+    (s) => s.consumePendingPrefillMessage
+  );
+  const selectAnalysisMode = useCallback(
+    (nextMode: AnalysisMode) => {
+      setAnalysisMode(nextMode);
+    },
+    [setAnalysisMode]
+  );
 
   // ============================================================================
   // 🎯 공통 AI 채팅 로직 (useAIChatCore 훅 사용)
@@ -142,6 +163,45 @@ export default function AIWorkspace({
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    if (!pendingEntryState) {
+      return;
+    }
+
+    const entry = consumePendingEntryState('fullscreen');
+    if (!entry) {
+      return;
+    }
+
+    setSelectedFunction(entry.selectedFunction ?? 'chat');
+
+    if (entry.analysisMode) {
+      setAnalysisMode(entry.analysisMode);
+    }
+
+    if (entry.draft) {
+      setInput(entry.draft);
+    }
+  }, [consumePendingEntryState, pendingEntryState, setAnalysisMode, setInput]);
+
+  useEffect(() => {
+    if (!pendingPrefillMessage) {
+      return;
+    }
+
+    setSelectedFunction('chat');
+    setInput(pendingPrefillMessage);
+    consumePendingPrefillMessage();
+  }, [consumePendingPrefillMessage, pendingPrefillMessage, setInput]);
+
+  const handleOpenFullscreen = useCallback(() => {
+    openFullscreen({
+      draft: input.trim().length > 0 ? input : undefined,
+      selectedFunction,
+      analysisMode,
+    });
+  }, [analysisMode, input, openFullscreen, selectedFunction]);
+
   // --- Render Logic ---
 
   // 🔒 Hydration 불일치 방지 (Zustand persist + 조건부 렌더링)
@@ -163,7 +223,7 @@ export default function AIWorkspace({
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => router.push('/dashboard/ai-assistant')}
+              onClick={handleOpenFullscreen}
               className="text-gray-500 hover:text-gray-900 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 rounded-md p-1"
               title="전체 화면으로 보기"
             >
@@ -218,6 +278,8 @@ export default function AIWorkspace({
               onToggleWebSearch={toggleWebSearch}
               ragEnabled={ragEnabled}
               onToggleRAG={toggleRAG}
+              analysisMode={analysisMode}
+              onSelectAnalysisMode={selectAnalysisMode}
               warmingUp={warmingUp}
               estimatedWaitSeconds={estimatedWaitSeconds}
               queuedQueries={queuedQueries}
@@ -513,6 +575,8 @@ export default function AIWorkspace({
                   onToggleWebSearch={toggleWebSearch}
                   ragEnabled={ragEnabled}
                   onToggleRAG={toggleRAG}
+                  analysisMode={analysisMode}
+                  onSelectAnalysisMode={selectAnalysisMode}
                   warmingUp={warmingUp}
                   estimatedWaitSeconds={estimatedWaitSeconds}
                   queuedQueries={queuedQueries}

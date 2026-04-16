@@ -10,6 +10,7 @@ import AIWorkspace from '@/components/ai/AIWorkspace';
 const mockEnhancedAIChat = vi.fn(() => (
   <div data-testid="enhanced-ai-chat">AI Chat</div>
 ));
+const mockConsumePendingEntryState = vi.fn(() => null);
 const mockConsumePendingPrefillMessage = vi.fn();
 
 let mockSidebarState: Record<string, unknown>;
@@ -159,6 +160,10 @@ describe('AIWorkspace', () => {
       isOpen: true,
       toggleSidebar: vi.fn(),
       setIsOpen: vi.fn(),
+      setOpen: vi.fn(),
+      queuePendingEntryState: vi.fn(),
+      pendingEntryState: null,
+      consumePendingEntryState: mockConsumePendingEntryState,
       pendingPrefillMessage: null,
       consumePendingPrefillMessage: mockConsumePendingPrefillMessage,
       messages: [],

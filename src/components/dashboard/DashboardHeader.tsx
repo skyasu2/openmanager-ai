@@ -93,11 +93,13 @@ const DashboardHeader = memo(function DashboardHeader({
       return;
     }
 
-    // 새로운 사이드바 토글
-    setSidebarOpen(!isSidebarOpen);
+    if (onToggleAgent) {
+      onToggleAgent();
+      return;
+    }
 
-    // 기존 호환성을 위한 콜백 호출
-    onToggleAgent?.();
+    // fallback: 기존 직접 토글 경로 유지
+    setSidebarOpen(!isSidebarOpen);
   };
 
   // 사용자 정보는 UnifiedProfileHeader에서 처리됨

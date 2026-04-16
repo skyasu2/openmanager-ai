@@ -16,6 +16,7 @@ import AIContentArea from '@/components/ai/AIContentArea';
 import { AIErrorBoundary } from '@/components/error/AIErrorBoundary';
 import { isGuestFullAccessEnabled } from '@/config/guestMode';
 import { useAIChatCore } from '@/hooks/ai/useAIChatCore';
+import { useAIEntryController } from '@/hooks/ai/useAIEntryController';
 import { useResizable } from '@/hooks/ui/useResizable';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { cn } from '@/lib/utils';
@@ -61,8 +62,14 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
   const pendingPrefillMessage = useAISidebarStore(
     (state) => state.pendingPrefillMessage
   );
+  const pendingEntryState = useAISidebarStore(
+    (state) => state.pendingEntryState
+  );
   const consumePendingPrefillMessage = useAISidebarStore(
     (state) => state.consumePendingPrefillMessage
+  );
+  const consumePendingEntryState = useAISidebarStore(
+    (state) => state.consumePendingEntryState
   );
   const webSearchEnabled = useAISidebarStore((state) => state.webSearchEnabled);
   const setWebSearchEnabled = useAISidebarStore(
@@ -72,6 +79,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
   const setRagEnabled = useAISidebarStore((state) => state.setRagEnabled);
   const analysisMode = useAISidebarStore((state) => state.analysisMode);
   const setAnalysisMode = useAISidebarStore((state) => state.setAnalysisMode);
+  const { openFullscreen } = useAIEntryController();
 
   const toggleWebSearch = useCallback(() => {
     setWebSearchEnabled(!webSearchEnabled);
@@ -192,14 +200,52 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
   }, [messageCount]);
 
   useEffect(() => {
-    if (!isOpen || !pendingPrefillMessage) {
+    if (!isOpen) {
+      return;
+    }
+
+    if (pendingEntryState) {
+      const entry = consumePendingEntryState('sidebar');
+      if (!entry) {
+        return;
+      }
+
+      setSelectedFunction(entry.selectedFunction ?? 'chat');
+
+      if (entry.analysisMode) {
+        setAnalysisMode(entry.analysisMode);
+      }
+
+      if (entry.draft) {
+        setInput(entry.draft);
+      }
+      return;
+    }
+
+    if (!pendingPrefillMessage) {
       return;
     }
 
     setSelectedFunction('chat');
     setInput(pendingPrefillMessage);
     consumePendingPrefillMessage();
-  }, [consumePendingPrefillMessage, isOpen, pendingPrefillMessage, setInput]);
+  }, [
+    consumePendingEntryState,
+    consumePendingPrefillMessage,
+    isOpen,
+    pendingEntryState,
+    pendingPrefillMessage,
+    setAnalysisMode,
+    setInput,
+  ]);
+
+  const handleOpenFullscreen = useCallback(() => {
+    openFullscreen({
+      draft: selectedFunction === 'chat' && input.trim() ? input : undefined,
+      selectedFunction,
+      analysisMode,
+    });
+  }, [analysisMode, input, openFullscreen, selectedFunction]);
 
   // ESC 키로 사이드바 닫기
   useEffect(() => {
@@ -305,6 +351,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
               <AIAssistantIconPanel
                 selectedFunction={selectedFunction}
                 onFunctionChange={setSelectedFunction}
+                onOpenFullscreen={handleOpenFullscreen}
                 isMobile={true}
               />
             </div>
@@ -378,6 +425,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
           <AIAssistantIconPanel
             selectedFunction={selectedFunction}
             onFunctionChange={setSelectedFunction}
+            onOpenFullscreen={handleOpenFullscreen}
             className="w-16 sm:w-20"
           />
         </div>

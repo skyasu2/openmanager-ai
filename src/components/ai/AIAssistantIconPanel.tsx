@@ -76,6 +76,7 @@ const AI_ASSISTANT_ICONS: AIAssistantIcon[] = [
 interface AIAssistantIconPanelProps {
   selectedFunction: AIAssistantFunction;
   onFunctionChange: (func: AIAssistantFunction) => void;
+  onOpenFullscreen?: () => void;
   className?: string;
   isMobile?: boolean;
 }
@@ -179,6 +180,7 @@ IconButton.displayName = 'IconButton';
 export default function AIAssistantIconPanel({
   selectedFunction,
   onFunctionChange,
+  onOpenFullscreen,
   className = '',
   isMobile = false,
 }: AIAssistantIconPanelProps) {
@@ -186,8 +188,11 @@ export default function AIAssistantIconPanel({
 
   // 🔧 P3: useCallback으로 네비게이션 핸들러 메모이제이션
   const handleFullscreen = useCallback(() => {
-    router.push('/dashboard/ai-assistant');
-  }, [router]);
+    onOpenFullscreen?.();
+    if (!onOpenFullscreen) {
+      router.push('/dashboard/ai-assistant');
+    }
+  }, [onOpenFullscreen, router]);
 
   if (isMobile) {
     return (

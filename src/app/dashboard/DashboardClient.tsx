@@ -18,6 +18,7 @@ import AuthLoadingUI from '@/components/shared/AuthLoadingUI';
 import UnauthorizedAccessUI from '@/components/shared/UnauthorizedAccessUI';
 import { NotificationToast } from '@/components/system/NotificationToast';
 import { isGuestFullAccessEnabled } from '@/config/guestMode';
+import { useAIEntryController } from '@/hooks/ai/useAIEntryController';
 import { useToast } from '@/hooks/use-toast';
 import { useAutoLogout } from '@/hooks/useAutoLogout';
 import { useServerDashboard } from '@/hooks/useServerDashboard';
@@ -31,7 +32,6 @@ import type {
 } from '@/lib/dashboard/server-data';
 import { cn } from '@/lib/utils';
 import { systemInactivityService } from '@/services/system/SystemInactivityService';
-import { useAISidebarStore } from '@/stores/useAISidebarStore';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import type { Server } from '@/types/server';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
@@ -87,15 +87,10 @@ function DashboardPageContent({
   // 🎯 AI 사이드바 상태 (중앙 관리)
   const {
     isOpen: isAgentOpen,
-    setOpen: setIsAgentOpen,
+    toggleSidebar,
+    closeSidebar,
     openWithPrefill,
-  } = useAISidebarStore(
-    useShallow((state) => ({
-      isOpen: state.isOpen,
-      setOpen: state.setOpen,
-      openWithPrefill: state.openWithPrefill,
-    }))
-  );
+  } = useAIEntryController();
   const [authLoading, setAuthLoading] = useState(() => {
     if (checkTestMode()) {
       return false;
@@ -282,12 +277,12 @@ function DashboardPageContent({
       void triggerAIWarmup('ai-sidebar-open');
     }
 
-    setIsAgentOpen(!isAgentOpen);
-  }, [permissions.canToggleAI, isAgentOpen, setIsAgentOpen]);
+    toggleSidebar();
+  }, [permissions.canToggleAI, isAgentOpen, toggleSidebar]);
 
   const closeAgent = useCallback(() => {
-    setIsAgentOpen(false);
-  }, [setIsAgentOpen]);
+    closeSidebar();
+  }, [closeSidebar]);
 
   // 🔄 세션 연장 처리
   const handleExtendSession = useCallback(() => {

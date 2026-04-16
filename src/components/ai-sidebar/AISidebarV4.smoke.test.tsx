@@ -9,6 +9,7 @@ import AISidebarV4 from '@/components/ai-sidebar/AISidebarV4';
 
 const mockOnClose = vi.fn();
 const mockPermissions = { canToggleAI: true };
+const mockOpenFullscreen = vi.fn();
 
 vi.mock('@/hooks/ai/useAIChatCore', () => ({
   useAIChatCore: vi.fn(() => ({
@@ -48,6 +49,12 @@ vi.mock('@/hooks/ui/useResizable', () => ({
   })),
 }));
 
+vi.mock('@/hooks/ai/useAIEntryController', () => ({
+  useAIEntryController: vi.fn(() => ({
+    openFullscreen: mockOpenFullscreen,
+  })),
+}));
+
 vi.mock('@/hooks/useUserPermissions', () => ({
   useUserPermissions: vi.fn(() => mockPermissions),
 }));
@@ -62,12 +69,22 @@ vi.mock('@/stores/useAISidebarStore', () => ({
       isOpen: true,
       toggleSidebar: vi.fn(),
       setIsOpen: vi.fn(),
+      setOpen: vi.fn(),
       sidebarWidth: 600,
       setSidebarWidth: vi.fn(),
+      pendingEntryState: null,
+      consumePendingEntryState: vi.fn(() => null),
+      queuePendingEntryState: vi.fn(),
+      pendingPrefillMessage: null,
+      consumePendingPrefillMessage: vi.fn(),
       messages: [],
       addMessage: vi.fn(),
       webSearchEnabled: false,
       setWebSearchEnabled: vi.fn(),
+      ragEnabled: false,
+      setRagEnabled: vi.fn(),
+      analysisMode: 'auto',
+      setAnalysisMode: vi.fn(),
     };
     return selector ? selector(state) : state;
   }),

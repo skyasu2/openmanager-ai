@@ -117,6 +117,17 @@ export interface ChatHookOptions {
   maxMessages?: number;
 }
 
+export type AIEntryTarget = 'sidebar' | 'fullscreen' | 'any';
+
+export type AIEntryFunction = 'chat' | 'auto-report' | 'intelligent-monitoring';
+
+export interface PendingAIEntryState {
+  draft?: string;
+  selectedFunction?: AIEntryFunction;
+  analysisMode?: AnalysisMode;
+  target?: AIEntryTarget;
+}
+
 // 🔧 타입 정의
 export interface PresetQuestion {
   id: string;
@@ -215,6 +226,8 @@ interface AISidebarState {
   sidebarWidth: number;
   /** 외부 UI 액션에서 주입하는 입력 초안 */
   pendingPrefillMessage: string | null;
+  /** surface 전환 또는 외부 진입 시 1회 소비할 상태 */
+  pendingEntryState: PendingAIEntryState | null;
 
   // 채팅 관련 상태
   messages: EnhancedChatMessage[];
@@ -241,6 +254,10 @@ interface AISidebarState {
   setOpen: (open: boolean) => void;
   openWithPrefill: (message: string) => void;
   consumePendingPrefillMessage: () => string | null;
+  queuePendingEntryState: (entry: PendingAIEntryState) => void;
+  consumePendingEntryState: (
+    target?: AIEntryTarget
+  ) => PendingAIEntryState | null;
   setMinimized: (minimized: boolean) => void;
   toggleSidebar: () => void;
   setSidebarWidth: (width: number) => void;
@@ -284,6 +301,7 @@ export const useAISidebarStore = create<AISidebarState>()(
         activeTab: 'chat',
         sidebarWidth: 600, // 기본 너비 600px
         pendingPrefillMessage: null,
+        pendingEntryState: null,
         webSearchEnabled: false,
         ragEnabled: false,
         analysisMode: 'auto',
@@ -310,12 +328,49 @@ export const useAISidebarStore = create<AISidebarState>()(
             isMinimized: false,
             activeTab: 'chat',
             pendingPrefillMessage: message,
+            pendingEntryState: {
+              draft: message,
+              selectedFunction: 'chat',
+              target: 'sidebar',
+            },
           }),
 
         consumePendingPrefillMessage: () => {
-          const message = get().pendingPrefillMessage;
-          set({ pendingPrefillMessage: null });
+          const { pendingPrefillMessage, pendingEntryState } = get();
+          const message = pendingEntryState?.draft ?? pendingPrefillMessage;
+          set({
+            pendingPrefillMessage: null,
+            pendingEntryState: null,
+          });
           return message;
+        },
+
+        queuePendingEntryState: (entry) =>
+          set({
+            pendingEntryState: entry,
+            pendingPrefillMessage: entry.draft ?? null,
+          }),
+
+        consumePendingEntryState: (target = 'any') => {
+          const entry = get().pendingEntryState;
+          if (!entry) {
+            return null;
+          }
+
+          const entryTarget = entry.target ?? 'any';
+          const shouldConsume =
+            target === 'any' || entryTarget === 'any' || entryTarget === target;
+
+          if (!shouldConsume) {
+            return null;
+          }
+
+          set({
+            pendingEntryState: null,
+            pendingPrefillMessage: null,
+          });
+
+          return entry;
         },
 
         setMinimized: (minimized) => set({ isMinimized: minimized }),
@@ -371,6 +426,7 @@ export const useAISidebarStore = create<AISidebarState>()(
             activeTab: 'chat',
             sidebarWidth: 600, // 기본 너비로 리셋
             pendingPrefillMessage: null,
+            pendingEntryState: null,
             webSearchEnabled: false,
             ragEnabled: false,
             analysisMode: 'auto',

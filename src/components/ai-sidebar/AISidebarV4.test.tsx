@@ -9,6 +9,7 @@ import AISidebarV4 from '@/components/ai-sidebar/AISidebarV4';
 
 const mockSetInput = vi.fn();
 const mockConsumePendingPrefillMessage = vi.fn();
+const mockOpenFullscreen = vi.fn();
 let mockPendingPrefillMessage: string | null = null;
 
 // Mock useAIChatCore
@@ -51,6 +52,12 @@ vi.mock('@/hooks/ui/useResizable', () => ({
   })),
 }));
 
+vi.mock('@/hooks/ai/useAIEntryController', () => ({
+  useAIEntryController: vi.fn(() => ({
+    openFullscreen: mockOpenFullscreen,
+  })),
+}));
+
 // Mock useUserPermissions
 const mockPermissions = { canToggleAI: true, canAccessAdmin: false };
 vi.mock('@/hooks/useUserPermissions', () => ({
@@ -69,8 +76,12 @@ vi.mock('@/stores/useAISidebarStore', () => ({
       isOpen: true,
       toggleSidebar: vi.fn(),
       setIsOpen: vi.fn(),
+      setOpen: vi.fn(),
       sidebarWidth: 600,
       setSidebarWidth: vi.fn(),
+      pendingEntryState: null,
+      consumePendingEntryState: vi.fn(() => null),
+      queuePendingEntryState: vi.fn(),
       pendingPrefillMessage: mockPendingPrefillMessage,
       consumePendingPrefillMessage: mockConsumePendingPrefillMessage,
       messages: [],
@@ -79,6 +90,8 @@ vi.mock('@/stores/useAISidebarStore', () => ({
       setWebSearchEnabled: vi.fn(),
       ragEnabled: false,
       setRagEnabled: vi.fn(),
+      analysisMode: 'auto',
+      setAnalysisMode: vi.fn(),
     };
     return selector ? selector(state) : state;
   }),
@@ -119,10 +132,12 @@ vi.mock('@/components/ai-sidebar/InlineAgentStatus', () => ({
 vi.mock('@/components/ai/AIAssistantIconPanel', () => ({
   default: ({
     onFunctionChange,
+    onOpenFullscreen,
   }: {
     onFunctionChange: (
       value: 'chat' | 'auto-report' | 'intelligent-monitoring'
     ) => void;
+    onOpenFullscreen?: () => void;
   }) => (
     <div data-testid="ai-icon-panel">
       <button type="button" onClick={() => onFunctionChange('chat')}>
@@ -136,6 +151,9 @@ vi.mock('@/components/ai/AIAssistantIconPanel', () => ({
         onClick={() => onFunctionChange('intelligent-monitoring')}
       >
         switch-analyst
+      </button>
+      <button type="button" onClick={onOpenFullscreen}>
+        open-fullscreen
       </button>
     </div>
   ),
@@ -239,6 +257,52 @@ describe('AISidebarV4', () => {
         'storage-nfs-dc1-01 서버의 디스크 사용률이 85%입니다.'
       );
       expect(mockConsumePendingPrefillMessage).toHaveBeenCalled();
+    });
+  });
+
+  it('passes draft and analysis mode into fullscreen handoff from chat view', async () => {
+    const { useAIChatCore } = await import('@/hooks/ai/useAIChatCore');
+
+    vi.mocked(useAIChatCore).mockReturnValue({
+      input: 'CPU 경고 서버 원인 분석',
+      setInput: mockSetInput,
+      messages: [],
+      isLoading: false,
+      hybridState: { progress: null, jobId: null },
+      currentMode: 'streaming',
+      streamStatus: undefined,
+      error: null,
+      clearError: vi.fn(),
+      sessionState: { messagesRemaining: 10, isLimited: false },
+      handleNewSession: vi.fn(),
+      handleFeedback: vi.fn(),
+      regenerateLastResponse: vi.fn(),
+      retryLastQuery: vi.fn(),
+      stop: vi.fn(),
+      cancel: vi.fn(),
+      handleSendInput: vi.fn(),
+      clarification: null,
+      selectClarification: vi.fn(),
+      submitCustomClarification: vi.fn(),
+      skipClarification: vi.fn(),
+      dismissClarification: vi.fn(),
+      currentAgentStatus: null,
+      currentHandoff: null,
+      warmingUp: false,
+      estimatedWaitSeconds: 0,
+      queuedQueries: [],
+      removeQueuedQuery: vi.fn(),
+    } as unknown as ReturnType<typeof useAIChatCore>);
+
+    render(<AISidebarV4 {...defaultProps} />);
+    fireEvent.click(
+      screen.getAllByRole('button', { name: 'open-fullscreen' })[0]
+    );
+
+    expect(mockOpenFullscreen).toHaveBeenCalledWith({
+      draft: 'CPU 경고 서버 원인 분석',
+      selectedFunction: 'chat',
+      analysisMode: 'auto',
     });
   });
 
