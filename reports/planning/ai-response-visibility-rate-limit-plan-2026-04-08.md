@@ -1,7 +1,7 @@
 # AI Response Visibility & Rate Limit Plan (2026-04-08)
 
-- 상태: 계획 수립
-- 작성일: 2026-04-08
+- 상태: 부분 완료 / Superseded — `ai-chat-improvement-plan.md` Sprint 1+2에서 핵심 항목 구현. 잔여(429 UX, handoff path 상세 노출)는 미착수.
+- 작성일: 2026-04-08 | 상태 갱신: 2026-04-16
 - 목표: AI 질의 과정의 가시성을 실제 실행 흐름과 맞추고, rate limit을 사용자에게 설명 가능한 제약으로 바꾼다.
 
 ## 배경

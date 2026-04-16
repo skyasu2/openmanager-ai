@@ -1,9 +1,9 @@
 # AI 어시스턴트 채팅 기능 개선 계획서
 
 > Owner: Claude (AI Lead)
-> Status: Active Canonical
+> Status: Active Supporting — Sprint 1+2 완료(2026-04-09). Sprint 3+ 미착수. 잔여 항목은 별도 계획서에서 우선순위 판단.
 > Doc type: How-to
-> Last reviewed: 2026-04-09
+> Last reviewed: 2026-04-16
 > Tags: ai-chat, improvement, planning, v8.12
 
 ---

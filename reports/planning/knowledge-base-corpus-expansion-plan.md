@@ -1,7 +1,7 @@
 # Knowledge Base Corpus Expansion Plan
 
-- 상태: targeted QA 5회 관찰(배포 후 재검증 포함), traversal 제거 보류(유지), direct supervisor 품질/지연 안정화(P1) 진행 중
-- 작성일: 2026-04-12
+- 상태: **종료** — graph traversal KEEP 결정 확정(2026-04-15 #93), direct supervisor P1 안정화 완료(#89~#91), extraction legacy 제거 완료(#85). 신규 작업 없음.
+- 작성일: 2026-04-12 | 상태 갱신: 2026-04-16
 - 목표: `knowledge_base`를 무작정 늘리거나 줄이지 않고, 현재 RAG governance 한도 안에서 corpus 품질을 유지하면서 실제 graph traversal 가치가 있는지 계측으로 판단한다.
 
 ## 배경

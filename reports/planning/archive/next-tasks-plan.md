@@ -1,9 +1,9 @@
 > Owner: AI Agent
-> Status: Active Canonical
+> Status: Historical
 > Doc type: How-to
-> Last reviewed: 2026-04-15
+> Last reviewed: 2026-04-16
 
-# [작업 계획서] Advisor Agent 품질·지연 개선 (2026-04-14) — **완료**
+# [작업 계획서] Advisor Agent 품질·지연 개선 (2026-04-14) — **완료 (전체 Task 1~6 종료)**
 
 ## 배경
 
@@ -193,10 +193,10 @@ production 로그에서 `toolsCalled=["searchKnowledgeBase","searchKnowledgeBase
 | 2 | **Task 2**: 프롬프트 포맷 강화 | ✅ 완료 | `aedbfbc91` (2026-04-14) |
 | 3 | **Task 3**: quality-retry 트리거 추가 | ✅ 완료 | `aedbfbc91` (2026-04-14) |
 | 4 | **Task 4**: Cloud Run 배포 + QA | ✅ 완료 | `ai-engine-00316-l67`, `QA-20260415-0283` |
-| 5 | **Task 5**: graph traversal 재평가 | P3, 보류 | |
-| 6 | **Task 6**: duplicate tool 제거 | P3, 보류 | |
+| 5 | **Task 5**: graph traversal 재평가 | ✅ 완료 | TODO.md `#93` (2026-04-15) — graph KEEP 결정 |
+| 6 | **Task 6**: duplicate tool 제거 | ✅ 완료 | TODO.md `#91` (2026-04-15) — supervisor-routing dedupe 적용 |
 
-**Task 1~4 완료**: 2026-04-15. 배포 후 probe 3/3 성공, qualityFlags=[], latencyTier=fast 확인.
+**전체 Task 완료**: Task 1~4 (2026-04-15), Task 5·6 (2026-04-15). 모든 항목 종료.
 
 ---
 
