@@ -121,6 +121,11 @@ export function connectAsyncQuerySSE(
         ragSources: resultData.ragSources,
         processingTimeMs: resultData.processingTimeMs,
         traceId: resultData.metadata?.traceId,
+        analysisMode:
+          resultData.metadata?.analysisMode === 'auto' ||
+          resultData.metadata?.analysisMode === 'thinking'
+            ? resultData.metadata.analysisMode
+            : undefined,
         handoffHistory: Array.isArray(resultData.metadata?.handoffs)
           ? resultData.metadata.handoffs
           : undefined,

@@ -14,11 +14,13 @@ export type { ImageAttachment, FileAttachment };
 // ============================================================================
 
 export type SupervisorMode = 'single' | 'multi' | 'auto';
+export type AnalysisMode = 'auto' | 'thinking';
 export type SupervisorModeSelectionSource =
   | 'explicit'
   | 'auto_complexity'
   | 'auto_default'
-  | 'single_disallowed_upgrade';
+  | 'single_disallowed_upgrade'
+  | 'analysis_mode_thinking';
 
 export interface SupervisorRequest {
   messages: Array<{ role: 'user' | 'assistant'; content: string }>;
@@ -52,6 +54,8 @@ export interface SupervisorRequest {
    * - false: Disable RAG tool (default)
    */
   enableRAG?: boolean;
+  /** 사용자 선택 분석 강도 모드 */
+  analysisMode?: AnalysisMode;
   /** Upstream trace ID (W3C traceparent에서 추출). Langfuse 연동에 사용. */
   traceId?: string;
   /** 클라이언트 디바이스 타입 (응답 길이/형식 최적화) */
@@ -89,6 +93,7 @@ export interface SupervisorResponse {
     resolvedMode?: Exclude<SupervisorMode, 'auto'>;
     modeSelectionSource?: SupervisorModeSelectionSource;
     autoSelectedByComplexity?: Exclude<SupervisorMode, 'auto'>;
+    analysisMode?: AnalysisMode;
     traceId?: string;
     handoffs?: Array<{ from: string; to: string; reason?: string }>;
     toolResultSummaries?: Array<{

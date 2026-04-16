@@ -6,6 +6,7 @@
  */
 
 import type { AIErrorDetails } from '@/lib/ai/error-details';
+import type { AnalysisMode } from '@/types/ai/analysis-mode';
 
 // ============================================
 // Job 상태 및 타입
@@ -38,7 +39,9 @@ export interface CreateJobRequest {
   options?: {
     priority?: JobPriority;
     sessionId?: string;
-    metadata?: Record<string, unknown>;
+    metadata?: Record<string, unknown> & {
+      analysisMode?: AnalysisMode;
+    };
   };
 }
 
@@ -111,6 +114,7 @@ export interface AIJob {
     factors: Record<string, unknown>;
     ownerKey: string;
     retryCount?: number;
+    analysisMode?: AnalysisMode;
   };
 }
 

@@ -22,6 +22,7 @@ import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { getRedisClient, redisGet, redisMGet, redisSet } from '@/lib/redis';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
+import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type {
   AIJob,
   CreateJobRequest,
@@ -107,6 +108,9 @@ async function handlePOST(request: NextRequest) {
         estimatedTime: complexity.estimatedTime,
         factors: complexity.factors,
         ownerKey,
+        ...(options?.metadata?.analysisMode && {
+          analysisMode: options.metadata.analysisMode as AnalysisMode,
+        }),
       },
     };
 
@@ -148,8 +152,15 @@ async function handlePOST(request: NextRequest) {
     after(async () => {
       const finalTriggerStatus =
         initialTriggerStatus === 'scheduled'
-          ? (await triggerWorker(jobId, query, jobType, options?.sessionId))
-              .status
+          ? (
+              await triggerWorker(
+                jobId,
+                query,
+                jobType,
+                options?.sessionId,
+                options?.metadata?.analysisMode as AnalysisMode | undefined
+              )
+            ).status
           : initialTriggerStatus;
 
       await logJobCreation(
@@ -294,7 +305,8 @@ async function triggerWorker(
   jobId: string,
   query: string,
   type: string,
-  sessionId?: string
+  sessionId?: string,
+  analysisMode?: AnalysisMode
 ): Promise<TriggerResult> {
   const cloudRunConfig = getRequiredCloudRunConfig();
 
@@ -320,6 +332,7 @@ async function triggerWorker(
         messages: [{ role: 'user', content: query }],
         sessionId,
         type,
+        ...(analysisMode && { analysisMode }),
       }),
     });
 

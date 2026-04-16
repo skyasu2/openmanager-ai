@@ -5,6 +5,7 @@ import {
   TRACEPARENT_HEADER,
 } from '@/config/ai-proxy.config';
 import { BREAKPOINTS } from '@/config/constants';
+import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import { consumeWarmupStartedAtForFirstQuery } from '@/utils/ai-warmup';
 
 function detectDeviceType(): 'mobile' | 'desktop' {
@@ -19,6 +20,7 @@ interface CreateHybridChatTransportParams {
   warmingUpRef: MutableRefObject<boolean>;
   webSearchEnabledRef: MutableRefObject<boolean | undefined>;
   ragEnabledRef: MutableRefObject<boolean | undefined>;
+  analysisModeRef: MutableRefObject<AnalysisMode | undefined>;
 }
 
 export function createHybridChatTransport(
@@ -31,6 +33,7 @@ export function createHybridChatTransport(
     warmingUpRef,
     webSearchEnabledRef,
     ragEnabledRef,
+    analysisModeRef,
   } = params;
 
   return new DefaultChatTransport({
@@ -56,6 +59,7 @@ export function createHybridChatTransport(
         ? false
         : webSearchEnabledRef.current,
       enableRAG: warmingUpRef.current ? false : ragEnabledRef.current,
+      analysisMode: analysisModeRef.current,
     }),
     prepareReconnectToStreamRequest: ({ id }) => ({
       api: `${apiEndpoint}?sessionId=${id}`,

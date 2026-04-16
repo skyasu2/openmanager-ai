@@ -28,6 +28,10 @@ import { ImagePreviewModal } from '@/components/ui/ImagePreviewModal';
 import type { FileAttachment } from '@/hooks/ai/useFileAttachments';
 import { formatFileSize } from '@/hooks/ai/useFileAttachments';
 import type { AIStreamStatus } from '@/hooks/ai/useHybridAIQuery';
+import {
+  ANALYSIS_MODE_LABELS,
+  type AnalysisMode,
+} from '@/types/ai/analysis-mode';
 import type { SessionState } from '@/types/session';
 
 interface ChatInputAreaProps {
@@ -57,6 +61,8 @@ interface ChatInputAreaProps {
   onToggleWebSearch?: () => void;
   ragEnabled?: boolean;
   onToggleRAG?: () => void;
+  analysisMode?: AnalysisMode;
+  onSelectAnalysisMode?: (mode: AnalysisMode) => void;
 }
 
 export const ChatInputArea = memo(function ChatInputArea({
@@ -86,6 +92,8 @@ export const ChatInputArea = memo(function ChatInputArea({
   onToggleWebSearch,
   ragEnabled,
   onToggleRAG,
+  analysisMode = 'auto',
+  onSelectAnalysisMode,
 }: ChatInputAreaProps) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const popoverRef = useRef<HTMLDivElement>(null);
@@ -102,6 +110,7 @@ export const ChatInputArea = memo(function ChatInputArea({
 
   // 활성화된 도구 수 (badge 표시용)
   const activeToolCount = (webSearchEnabled ? 1 : 0) + (ragEnabled ? 1 : 0);
+  const showAnalysisModeBadge = analysisMode !== 'auto';
 
   // 외부 클릭 시 popover 닫기
   useEffect(() => {
@@ -247,7 +256,7 @@ export const ChatInputArea = memo(function ChatInputArea({
           )}
 
           {/* 활성 도구 뱃지 (popover 밖에 표시) */}
-          {activeToolCount > 0 && (
+          {(activeToolCount > 0 || showAnalysisModeBadge) && (
             <div className="mb-2 flex flex-wrap gap-1.5">
               {ragEnabled && (
                 <span className="inline-flex items-center gap-1 rounded-full bg-purple-50 px-2.5 py-0.5 text-xs font-medium text-purple-700">
@@ -259,6 +268,11 @@ export const ChatInputArea = memo(function ChatInputArea({
                 <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700">
                   <Globe className="h-3 w-3" />
                   Web
+                </span>
+              )}
+              {showAnalysisModeBadge && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700">
+                  {ANALYSIS_MODE_LABELS[analysisMode]}
                 </span>
               )}
             </div>
@@ -277,7 +291,7 @@ export const ChatInputArea = memo(function ChatInputArea({
                 onClick={handleTogglePopover}
                 disabled={sessionState?.isLimitReached}
                 className={`flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg transition-all disabled:cursor-not-allowed disabled:opacity-40 ${
-                  isPopoverOpen || activeToolCount > 0
+                  isPopoverOpen || activeToolCount > 0 || showAnalysisModeBadge
                     ? 'bg-blue-500/10 text-blue-500'
                     : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'
                 }`}
@@ -355,6 +369,39 @@ export const ChatInputArea = memo(function ChatInputArea({
                         />
                       </div>
                     </button>
+                  )}
+
+                  {onSelectAnalysisMode && (
+                    <>
+                      <div className="my-1 border-t border-gray-100" />
+
+                      <div className="px-3 py-2">
+                        <div className="mb-2 text-xs font-medium text-gray-500">
+                          응답 모드
+                        </div>
+                        <div className="grid grid-cols-2 gap-1 rounded-lg bg-gray-100 p-1">
+                          {(['auto', 'thinking'] as AnalysisMode[]).map(
+                            (mode) => {
+                              const selected = analysisMode === mode;
+                              return (
+                                <button
+                                  key={mode}
+                                  type="button"
+                                  onClick={() => onSelectAnalysisMode(mode)}
+                                  className={`rounded-md px-2 py-1.5 text-xs font-medium transition-colors ${
+                                    selected
+                                      ? 'bg-white text-emerald-700 shadow-xs'
+                                      : 'text-gray-600 hover:bg-white/70'
+                                  }`}
+                                >
+                                  {ANALYSIS_MODE_LABELS[mode]}
+                                </button>
+                              );
+                            }
+                          )}
+                        </div>
+                      </div>
+                    </>
                   )}
 
                   {/* 구분선 */}

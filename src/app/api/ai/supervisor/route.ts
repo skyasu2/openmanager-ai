@@ -124,6 +124,7 @@ export const POST = withRateLimit(
           sessionId: bodySessionId,
           enableWebSearch,
           enableRAG,
+          analysisMode,
         } = parseResult.data;
 
         // 2. sessionId를 owner 스코프와 분리해 정규화
@@ -331,6 +332,7 @@ export const POST = withRateLimit(
             securityWarning: queryResult.ok ? queryResult.warning : undefined,
             enableWebSearch,
             enableRAG,
+            analysisMode,
             deviceType,
           };
 

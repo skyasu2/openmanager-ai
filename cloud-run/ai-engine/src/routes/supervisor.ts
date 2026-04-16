@@ -102,6 +102,7 @@ const streamRequestSchema = z.object({
     .optional(),
   enableWebSearch: z.union([z.boolean(), z.literal('auto')]).optional(),
   enableRAG: z.boolean().optional(),
+  analysisMode: z.enum(['auto', 'thinking']).optional(),
   deviceType: z.enum(['mobile', 'desktop']).optional(),
 });
 
@@ -126,7 +127,14 @@ supervisorRouter.post('/', async (c: Context) => {
       return handleValidationError(c, `Invalid request: ${errorDetails}`);
     }
 
-    const { messages, sessionId, enableWebSearch, enableRAG, deviceType } = parseResult.data;
+    const {
+      messages,
+      sessionId,
+      enableWebSearch,
+      enableRAG,
+      analysisMode,
+      deviceType,
+    } = parseResult.data;
 
     // 🎯 W3C Trace Context: traceparent 헤더에서 trace-id 추출
     const traceparent = c.req.header('traceparent');
@@ -180,6 +188,7 @@ supervisorRouter.post('/', async (c: Context) => {
       sessionId: sessionId || 'default',
       enableWebSearch,
       enableRAG,
+      analysisMode,
       images,
       files,
       traceId: upstreamTraceId,
@@ -260,7 +269,14 @@ supervisorRouter.post('/stream', async (c: Context) => {
       return handleValidationError(c, `Invalid request: ${errorDetails}`);
     }
 
-    const { messages, sessionId, enableWebSearch, enableRAG, deviceType } = parseResult.data;
+    const {
+      messages,
+      sessionId,
+      enableWebSearch,
+      enableRAG,
+      analysisMode,
+      deviceType,
+    } = parseResult.data;
 
     // 2. Get last user query for logging
     const lastMessage = messages[messages.length - 1];
@@ -301,6 +317,7 @@ supervisorRouter.post('/stream', async (c: Context) => {
           sessionId: sessionId || 'default',
           enableWebSearch,
           enableRAG,
+          analysisMode,
           images,
           files,
           traceId: streamUpstreamTraceId,
@@ -381,7 +398,14 @@ supervisorRouter.post('/stream/v2', async (c: Context) => {
       return handleValidationError(c, `Invalid request: ${errorDetails}`);
     }
 
-    const { messages, sessionId, enableWebSearch, enableRAG, deviceType } =
+    const {
+      messages,
+      sessionId,
+      enableWebSearch,
+      enableRAG,
+      analysisMode,
+      deviceType,
+    } =
       parseResult.data;
 
     // 2. Get last user query for logging
@@ -436,6 +460,7 @@ supervisorRouter.post('/stream/v2', async (c: Context) => {
       sessionId: sessionId || 'default',
       enableWebSearch,
       enableRAG,
+      analysisMode,
       images,
       files,
       traceId: v2UpstreamTraceId,

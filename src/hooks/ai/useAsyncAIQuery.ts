@@ -33,6 +33,7 @@ import {
 } from '@/lib/ai/error-details';
 import { logger } from '@/lib/logging';
 import { fetchWithRetry, RETRY_STANDARD } from '@/lib/utils/retry';
+import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import { createCSRFHeaders } from '@/utils/security/csrf-client';
 import {
   closeTrackedEventSource,
@@ -86,6 +87,7 @@ export interface AsyncQueryResult {
     preview?: string;
     status: 'completed' | 'failed';
   }>;
+  analysisMode?: AnalysisMode;
   /** Job ID (Stale Closure 방지용) */
   jobId?: string;
 }
@@ -203,7 +205,10 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
 
   // Send query
   const sendQuery = useCallback(
-    async (query: string): Promise<AsyncQueryResult> => {
+    async (
+      query: string,
+      requestOptions?: { analysisMode?: AnalysisMode }
+    ): Promise<AsyncQueryResult> => {
       // Cleanup previous state
       cleanup();
       jobIdRef.current = null;
@@ -274,7 +279,14 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
                 headers,
                 body: JSON.stringify({
                   query,
-                  options: { sessionId },
+                  options: {
+                    sessionId,
+                    metadata: {
+                      ...(requestOptions?.analysisMode && {
+                        analysisMode: requestOptions.analysisMode,
+                      }),
+                    },
+                  },
                 }),
                 signal, // 🎯 P1 Fix: Pass abort signal for cancellation
               },

@@ -8,6 +8,7 @@ import { logger } from '@/lib/logging';
 import type { StreamRagSource } from '../types/stream-rag.types';
 import {
   buildStructuredResponseView,
+  extractAnalysisModeFromDoneData,
   normalizeRagSources,
   type ResponseSourceData,
 } from './response-view-helpers';
@@ -239,9 +240,11 @@ export function handleStreamDataPart(
     const structuredView = buildStructuredResponseView(doneData);
     const traceId = extractTraceIdFromDoneData(doneData);
     const toolsCalled = normalizeToolNames(doneData?.toolsCalled);
+    const analysisMode = extractAnalysisModeFromDoneData(doneData);
     const nextMessageMetadata = {
       ...(traceId && { traceId }),
       ...(toolsCalled.length > 0 && { toolsCalled }),
+      ...(analysisMode && { analysisMode }),
       ...(structuredView && {
         assistantResponseView: structuredView,
       }),
@@ -251,6 +254,7 @@ export function handleStreamDataPart(
       structuredView ||
       traceId ||
       toolsCalled.length > 0 ||
+      analysisMode ||
       pendingToolResults.length > 0 ||
       Object.keys(pendingMessageMetadata).length > 0
     ) {

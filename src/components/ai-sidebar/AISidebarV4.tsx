@@ -20,6 +20,7 @@ import { useResizable } from '@/hooks/ui/useResizable';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { cn } from '@/lib/utils';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
+import type { AnalysisMode } from '@/types/ai/analysis-mode';
 // Types
 import type { AISidebarV3Props } from '@/types/ai-sidebar/ai-sidebar-types';
 import { AISidebarHeader } from './AISidebarHeader';
@@ -69,6 +70,8 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
   );
   const ragEnabled = useAISidebarStore((state) => state.ragEnabled);
   const setRagEnabled = useAISidebarStore((state) => state.setRagEnabled);
+  const analysisMode = useAISidebarStore((state) => state.analysisMode);
+  const setAnalysisMode = useAISidebarStore((state) => state.setAnalysisMode);
 
   const toggleWebSearch = useCallback(() => {
     setWebSearchEnabled(!webSearchEnabled);
@@ -77,6 +80,13 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
   const toggleRAG = useCallback(() => {
     setRagEnabled(!ragEnabled);
   }, [ragEnabled, setRagEnabled]);
+
+  const selectAnalysisMode = useCallback(
+    (mode: AnalysisMode) => {
+      setAnalysisMode(mode);
+    },
+    [setAnalysisMode]
+  );
 
   // 📐 드래그 리사이즈 훅
   const { width, isResizing, handleMouseDown, handleTouchStart } = useResizable(
@@ -280,6 +290,8 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
             onToggleWebSearch={toggleWebSearch}
             ragEnabled={ragEnabled}
             onToggleRAG={toggleRAG}
+            analysisMode={analysisMode}
+            onSelectAnalysisMode={selectAnalysisMode}
             warmingUp={warmingUp}
             estimatedWaitSeconds={estimatedWaitSeconds}
             queuedQueries={queuedQueries}

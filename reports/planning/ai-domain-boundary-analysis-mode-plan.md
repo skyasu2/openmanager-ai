@@ -6,9 +6,9 @@
 
 # AI Domain Boundary & Analysis Mode Plan
 
-- 상태: **Active** — Phase 1(오프도메인 best-effort 정책 / Web 검색 카피 / 첨부 힌트) 진행 중
+- 상태: **Active** — Phase 1 완료, Phase 2(분석 강도 모드) 구현 완료, Phase 3 QA/배포 대기
 - 작성일: 2026-04-16
-- TODO.md 연결: Backlog > AI Domain Boundary & Analysis Mode
+- TODO.md 연결: Active Tasks > AI Domain Boundary Phase 2 (분석 강도 모드)
 - 목표: OpenManager AI를 `서버 운영/모니터링에 특화된 AI 어시스턴트`로 유지하되, 일반 질문도 `best-effort`로 다루는 현실적인 제품 정책과 UX를 정립한다.
 
 ## 1. 배경
@@ -50,7 +50,7 @@
   - `ThinkingProcessVisualizer`
   - `AnalysisBasisBadge`
 - 현재 없는 것:
-  - `빠르게 / 표준 / 깊게` 같은 명시적 분석 강도 토글
+  - `오토 / Thinking` 같은 명시적 응답 모드 토글
   - reasoning budget 또는 multi-agent 강제 여부를 사용자에게 보여주는 모드 UI
 
 ## 3. 공식 베스트 프랙티스 기준
@@ -111,9 +111,8 @@
 
 | 모드 | 의도 | 권장 라우팅 |
 |------|------|-------------|
-| 빠르게 | 짧은 운영 요약, 즉시 판단 | `single-agent` 우선, tool 최소화, streaming 우선 |
-| 표준 | 현재 기본 운영 질문 | 현행 자동 라우팅 유지 |
-| 깊게 | RCA/리포트/비교 분석/교차 검증 | `multi-agent` 허용, RAG 기본 ON 고려, Job Queue 허용 |
+| 오토 | 현재 기본 운영 질문 | 현행 자동 라우팅 유지 |
+| Thinking | RCA/리포트/비교 분석/교차 검증 | 인프라 문맥에서 `multi-agent` 우선, Job Queue 더 적극 허용 |
 
 ## 5. 구현 전략
 
@@ -134,10 +133,34 @@
 
 ### Phase 2 — 분석 강도 모드 추가
 
-1. UI에 `빠르게 / 표준 / 깊게` 추가
-2. 프론트 transport payload에 `analysisMode` 전달
-3. 백엔드 `supervisor-mode` / `supervisor-routing`에 mode-aware heuristic 추가
-4. `AnalysisBasisBadge`에 선택 모드 표시
+1. [x] UI에 `오토 / Thinking` 추가 (2026-04-16)
+   - `ChatInputArea.tsx`: `+` popover 안에 segmented control 추가
+   - `AISidebarV4.tsx`, `EnhancedAIChat.tsx`, `useAISidebarStore.ts`: persistent state/setter 연결
+2. [x] 프론트 transport payload에 `analysisMode` 전달 (2026-04-16)
+   - `useAIChatCore.ts`, `useHybridAIQuery.ts`, `createHybridChatTransport.ts`
+   - async job queue 경로(`useAsyncAIQuery.ts`, `/api/ai/jobs`)까지 metadata 전달
+3. [x] 백엔드 `supervisor-mode` / `supervisor-routing`에 mode-aware heuristic 추가 (2026-04-16)
+   - `auto`: 현행 자동 라우팅 유지
+   - `thinking`: 인프라 문맥에서 `multi-agent` 우선
+4. [x] `AnalysisBasisBadge`에 선택 모드 표시 (2026-04-16)
+   - collapsed summary + expanded details에 analysis mode 노출
+
+### Phase 2 로컬 검증
+
+- root:
+  - `npm run type-check` ✅
+  - `npm run test:quick` ✅
+  - `npm run lint` ✅
+    - 기존 unrelated warning 1건 유지: `useChatHistory.ts` exhaustive-deps
+- ai-engine:
+  - `npm run type-check` ✅
+  - `npm run test` ✅ (`71 files / 764 tests`)
+- targeted:
+  - `ChatInputArea.test.tsx` analysis mode selector ✅
+  - `useQueryExecution.test.ts` thinking mode job-queue bias ✅
+  - `supervisor-mode.test.ts` thinking heuristic ✅
+  - `stream/v2 route` / `schemas` payload forwarding ✅
+  - `AnalysisBasisBadge.test.tsx` mode 표시 ✅
 
 ### Phase 3 — 검증 및 문서화
 
@@ -183,7 +206,7 @@
 - 도메인 지원/확장 지원/일반 질문 정책
 - 오프도메인 `best-effort` 응답 UX
 - `Web 검색` 역할 재정의
-- `빠르게 / 표준 / 깊게` 분석 강도 설계
+- `오토 / Thinking` 응답 모드 설계
 
 ### 제외
 
@@ -204,11 +227,11 @@
     - 지원 질문 정상 처리
     - 확장 지원 질문에서 웹 검색 근거 표시
     - 일반 질문에서 `best-effort + disclaimer` 동작 확인
-    - `빠르게 / 표준 / 깊게` 모드별 응답 경로 차이 확인
+    - `오토 / Thinking` 모드별 응답 경로 차이 확인
 
 ## 9. 종료 조건
 
 - 오프도메인 질문이 `best-effort` 정책대로 일관되게 처리된다.
 - `Web 검색`의 역할과 한계가 UI에서 이해 가능하다.
-- `빠르게 / 표준 / 깊게`가 UI/라우팅/분석 근거에 일관되게 반영된다.
+- `오토 / Thinking`이 UI/라우팅/분석 근거에 일관되게 반영된다.
 - 관련 QA pack이 pass 한다.

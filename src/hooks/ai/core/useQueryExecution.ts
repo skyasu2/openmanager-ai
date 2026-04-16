@@ -17,6 +17,7 @@ import {
   shouldForceJobQueue,
 } from '@/lib/ai/utils/query-complexity';
 import { logger } from '@/lib/logging';
+import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { HybridQueryState } from '../types/hybrid-query.types';
 import type { FileAttachment } from '../useFileAttachments';
 import {
@@ -31,7 +32,10 @@ import {
 type StateSetter = React.Dispatch<React.SetStateAction<HybridQueryState>>;
 
 interface AsyncQueryLike {
-  sendQuery: (query: string) => Promise<{ jobId?: string }>;
+  sendQuery: (
+    query: string,
+    options?: { analysisMode?: AnalysisMode }
+  ) => Promise<{ jobId?: string }>;
 }
 
 type SendMessageLike = (message: {
@@ -64,6 +68,7 @@ export interface QueryExecutionDeps {
     pendingQuery: MutableRefObject<string | null>;
     pendingAttachments: MutableRefObject<FileAttachment[] | null>;
   };
+  analysisMode?: AnalysisMode;
 }
 
 // ============================================================================
@@ -81,6 +86,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
     setState,
     chatStatus,
     refs,
+    analysisMode,
   } = deps;
 
   /**
@@ -133,15 +139,20 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
       });
       // 파일 첨부 시 Vision Agent가 필요하므로 스트리밍 모드 선호
       const hasAttachments = attachments && attachments.length > 0;
+      const modeAdjustedThreshold =
+        analysisMode === 'thinking'
+          ? Math.max(8, complexityThreshold - 8)
+          : complexityThreshold;
       const isComplex =
         !hasAttachments &&
-        (analysis.score > complexityThreshold || forceJobQueue.force);
+        (analysis.score > modeAdjustedThreshold || forceJobQueue.force);
 
       if (process.env.NODE_ENV === 'development') {
         logger.info(
           `[HybridAI] Query complexity: ${analysis.level} (score: ${analysis.score}), ` +
             `Force Job Queue: ${forceJobQueue.force}${forceJobQueue.matchedKeyword ? ` (keyword: "${forceJobQueue.matchedKeyword}")` : ''}, ` +
             `Attachments: ${hasAttachments ? attachments!.length : 0}, ` +
+            `AnalysisMode: ${analysisMode ?? 'auto'}, ` +
             `Mode: ${isComplex ? 'job-queue' : 'streaming'}`
         );
       }
@@ -215,7 +226,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
         }));
 
         asyncQuery
-          .sendQuery(trimmedQuery)
+          .sendQuery(trimmedQuery, { analysisMode })
           .then((result) => {
             setState((prev) => ({ ...prev, jobId: result.jobId ?? null }));
           })
@@ -271,7 +282,10 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
               'Content-Type': 'application/json',
               Accept: 'application/json',
             },
-            body: JSON.stringify({ messages: nextMessages }),
+            body: JSON.stringify({
+              messages: nextMessages,
+              analysisMode,
+            }),
           })
             .then(async (response) => {
               if (!response.ok) {
@@ -361,6 +375,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
       setState,
       chatStatus,
       refs,
+      analysisMode,
     ]
   );
 

@@ -114,6 +114,32 @@ describe('AnalysisBasisBadge', () => {
     ).toBeInTheDocument();
   });
 
+  it('shows selected analysis mode in collapsed summary and expanded details', () => {
+    render(
+      <AnalysisBasisBadge
+        basis={{
+          ...basis,
+          dataSource: '서버 실시간 데이터 분석',
+          analysisMode: 'thinking',
+          timeRange: '최근 1시간',
+        }}
+      />
+    );
+
+    expect(
+      screen.getByText(
+        '데이터: 서버 실시간 데이터 분석 · 모드: Thinking · 기간: 최근 1시간'
+      )
+    ).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole('button', { name: '분석 근거 상세 보기' })
+    );
+
+    expect(screen.getByText('분석 강도')).toBeInTheDocument();
+    expect(screen.getByText('Thinking')).toBeInTheDocument();
+  });
+
   it('renders supplemental parity details when provided', () => {
     render(
       <AnalysisBasisBadge

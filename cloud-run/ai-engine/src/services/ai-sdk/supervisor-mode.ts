@@ -13,6 +13,7 @@ export interface ResolvedSupervisorModeDecision {
   resolvedMode: ResolvedSupervisorMode;
   modeSelectionSource: SupervisorModeSelectionSource;
   autoSelectedByComplexity?: ResolvedSupervisorMode;
+  analysisMode?: SupervisorRequest['analysisMode'];
 }
 
 /**
@@ -26,7 +27,7 @@ export interface ResolvedSupervisorModeDecision {
  * @version 2.0.0
  */
 export function resolveSupervisorModeDecision(
-  request: Pick<SupervisorRequest, 'mode' | 'messages'>,
+  request: Pick<SupervisorRequest, 'mode' | 'messages' | 'analysisMode'>,
 ): ResolvedSupervisorModeDecision {
   const requestedMode = request.mode || 'auto';
   const singleAllowed = isSingleModeAllowed();
@@ -37,6 +38,7 @@ export function resolveSupervisorModeDecision(
       requestedMode,
       resolvedMode: 'multi',
       modeSelectionSource: 'explicit',
+      ...(request.analysisMode ? { analysisMode: request.analysisMode } : {}),
     };
   }
 
@@ -48,12 +50,16 @@ export function resolveSupervisorModeDecision(
         requestedMode,
         resolvedMode: 'multi',
         modeSelectionSource: 'single_disallowed_upgrade',
+        ...(request.analysisMode
+          ? { analysisMode: request.analysisMode }
+          : {}),
       };
     }
     return {
       requestedMode,
       resolvedMode: 'single',
       modeSelectionSource: 'explicit',
+      ...(request.analysisMode ? { analysisMode: request.analysisMode } : {}),
     };
   }
 
@@ -64,32 +70,44 @@ export function resolveSupervisorModeDecision(
       requestedMode,
       resolvedMode: 'multi',
       modeSelectionSource: 'auto_default',
+      ...(request.analysisMode ? { analysisMode: request.analysisMode } : {}),
     };
   }
 
-  const resolvedMode = selectExecutionMode(lastUserMessage.content) === 'multi' ? 'multi' : 'single';
+  const resolvedMode =
+    selectExecutionMode(lastUserMessage.content, request.analysisMode) ===
+    'multi'
+      ? 'multi'
+      : 'single';
+  const modeSelectionSource =
+    request.analysisMode === 'thinking' && resolvedMode === 'multi'
+      ? 'analysis_mode_thinking'
+      : 'auto_complexity';
 
   return {
     requestedMode,
     resolvedMode,
-    modeSelectionSource: 'auto_complexity',
+    modeSelectionSource,
     autoSelectedByComplexity: resolvedMode,
+    ...(request.analysisMode ? { analysisMode: request.analysisMode } : {}),
   };
 }
 
 export function resolveSupervisorMode(
-  request: Pick<SupervisorRequest, 'mode' | 'messages'>,
+  request: Pick<SupervisorRequest, 'mode' | 'messages' | 'analysisMode'>,
 ): ResolvedSupervisorMode {
   return resolveSupervisorModeDecision(request).resolvedMode;
 }
 
 export function buildSupervisorModeMetadata(
   decision: ResolvedSupervisorModeDecision,
+  analysisMode?: SupervisorRequest['analysisMode'],
 ): {
   requestedMode: SupervisorMode;
   resolvedMode: ResolvedSupervisorMode;
   modeSelectionSource: SupervisorModeSelectionSource;
   autoSelectedByComplexity?: ResolvedSupervisorMode;
+  analysisMode?: SupervisorRequest['analysisMode'];
 } {
   return {
     requestedMode: decision.requestedMode,
@@ -97,6 +115,9 @@ export function buildSupervisorModeMetadata(
     modeSelectionSource: decision.modeSelectionSource,
     ...(decision.autoSelectedByComplexity
       ? { autoSelectedByComplexity: decision.autoSelectedByComplexity }
+      : {}),
+    ...((analysisMode ?? decision.analysisMode)
+      ? { analysisMode: analysisMode ?? decision.analysisMode }
       : {}),
   };
 }

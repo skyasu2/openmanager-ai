@@ -1,12 +1,14 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-16 KST (#104 계획서 평가 및 개선 사이클 완료)
+**Last Updated**: 2026-04-16 KST (AI Domain Boundary Phase 2 로컬 구현 완료)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
 ## Active Tasks
 
-_없음_
+| Task | Priority | Status | Notes |
+|------|----------|--------|-------|
+| AI Domain Boundary Phase 2 (분석 강도 모드) | Medium | implementation-complete | `analysisMode`를 `오토 / Thinking` 2모드로 UI/store/transport/backend heuristic/metadata 표시까지 연결 완료. 로컬 검증 통과, production QA/배포 대기. |
 
 ---
 
@@ -20,7 +22,6 @@ _없음_
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| AI Domain Boundary Phase 2 (분석 강도 모드) | Medium | 계획서: [ai-domain-boundary-analysis-mode-plan.md](ai-domain-boundary-analysis-mode-plan.md). `빠르게/표준/깊게` UI + analysisMode payload + supervisor-mode heuristic. Phase 1 완료 후 착수. |
 | AI Chat Improvement Sprint 4 | Medium | 계획서: [ai-chat-improvement-plan.md](ai-chat-improvement-plan.md). `generateObject` NLQ 전환 + per-step timeout. `ai-stream-route-contract` Phase 1 완료 선행 조건 해소됨. |
 | AI Response Visibility & Rate Limit (Phase 1~5) | Medium | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). handoff 가시성 UX, 429 UX, Job Queue agent path, limiter 정책 재조정. |
 | Storybook circular chunk warning 정리 | Low | non-blocking, stable 승격 후 재평가 |

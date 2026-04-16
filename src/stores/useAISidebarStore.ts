@@ -14,6 +14,7 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import { useShallow } from 'zustand/react/shallow';
+import type { AnalysisMode } from '@/types/ai/analysis-mode';
 
 // AI Thinking Step 타입 import (ai-sidebar에서 제공)
 import type { AIThinkingStep } from '../types/ai-sidebar';
@@ -52,6 +53,8 @@ export interface AnalysisBasis {
     category?: string;
     url?: string;
   }>;
+  /** 사용자가 선택한 분석 강도 모드 */
+  analysisMode?: AnalysisMode;
 }
 
 export interface ToolResultSummary {
@@ -224,6 +227,9 @@ interface AISidebarState {
   // RAG (Knowledge Base) 토글
   ragEnabled: boolean;
 
+  // 분석 강도 모드
+  analysisMode: AnalysisMode;
+
   // 대화 복원 배너 닫힘 상태 (탭 전환 시 재노출 방지)
   restoreBannerDismissed: boolean;
 
@@ -240,6 +246,7 @@ interface AISidebarState {
   setSidebarWidth: (width: number) => void;
   setWebSearchEnabled: (enabled: boolean) => void;
   setRagEnabled: (enabled: boolean) => void;
+  setAnalysisMode: (mode: AnalysisMode) => void;
   dismissRestoreBanner: () => void;
   resetRestoreBanner: () => void;
   setActiveTab: (
@@ -279,6 +286,7 @@ export const useAISidebarStore = create<AISidebarState>()(
         pendingPrefillMessage: null,
         webSearchEnabled: false,
         ragEnabled: false,
+        analysisMode: 'auto',
         restoreBannerDismissed: false,
         functionTab: 'qa',
         selectedContext: 'basic',
@@ -319,6 +327,8 @@ export const useAISidebarStore = create<AISidebarState>()(
         setWebSearchEnabled: (enabled) => set({ webSearchEnabled: enabled }),
 
         setRagEnabled: (enabled) => set({ ragEnabled: enabled }),
+
+        setAnalysisMode: (mode) => set({ analysisMode: mode }),
 
         dismissRestoreBanner: () => set({ restoreBannerDismissed: true }),
         resetRestoreBanner: () => set({ restoreBannerDismissed: false }),
@@ -363,6 +373,7 @@ export const useAISidebarStore = create<AISidebarState>()(
             pendingPrefillMessage: null,
             webSearchEnabled: false,
             ragEnabled: false,
+            analysisMode: 'auto',
             restoreBannerDismissed: false,
             functionTab: 'qa',
             selectedContext: 'basic',
@@ -383,6 +394,7 @@ export const useAISidebarStore = create<AISidebarState>()(
           sidebarWidth: state.sidebarWidth, // 사이드바 너비 영속화
           webSearchEnabled: state.webSearchEnabled,
           ragEnabled: state.ragEnabled,
+          analysisMode: state.analysisMode,
           restoreBannerDismissed: state.restoreBannerDismissed,
           functionTab: state.functionTab,
           selectedContext: state.selectedContext,

@@ -220,6 +220,7 @@ export function useAIChatCore(
   // 웹 검색 / RAG 토글 상태 (Store에서 읽기)
   const webSearchEnabled = useAISidebarStore((s) => s.webSearchEnabled);
   const ragEnabled = useAISidebarStore((s) => s.ragEnabled);
+  const analysisMode = useAISidebarStore((s) => s.analysisMode);
   const persistedSidebarMessages = useAISidebarStore((s) => s.messages);
   const persistedSidebarSessionId = useAISidebarStore((s) => s.sessionId);
   const syncChatSnapshot = useAISidebarStore((s) => s.syncChatSnapshot);
@@ -304,6 +305,7 @@ export function useAIChatCore(
     sessionId,
     webSearchEnabled,
     ragEnabled,
+    analysisMode,
     ...hybridCallbacks,
   });
 

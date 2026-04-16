@@ -94,4 +94,20 @@ describe('resolveSupervisorMode', () => {
       }),
     ).toBe('multi');
   });
+
+  it('biases infra queries to multi in thinking mode', () => {
+    expect(
+      resolveSupervisorModeDecision({
+        mode: 'auto',
+        analysisMode: 'thinking',
+        messages: [{ role: 'user', content: 'CPU 알려줘' }],
+      }),
+    ).toEqual({
+      requestedMode: 'auto',
+      resolvedMode: 'multi',
+      modeSelectionSource: 'analysis_mode_thinking',
+      autoSelectedByComplexity: 'multi',
+      analysisMode: 'thinking',
+    });
+  });
 });

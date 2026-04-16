@@ -5,7 +5,7 @@
  */
 
 import type { ToolName } from '../../tools-ai-sdk';
-import type { SupervisorMode } from './supervisor-types';
+import type { AnalysisMode, SupervisorMode } from './supervisor-types';
 import { isTavilyAvailable } from '../../lib/tavily-hybrid-rag';
 import { logger } from '../../lib/logger';
 import {
@@ -190,9 +190,16 @@ export const RETRY_CONFIG = {
 // Mode Selection Logic
 // ============================================================================
 
-export function selectExecutionMode(query: string): SupervisorMode {
+export function selectExecutionMode(
+  query: string,
+  analysisMode?: AnalysisMode
+): SupervisorMode {
   const q = query.toLowerCase();
   const hasInfraContext = INFRA_CONTEXT_PATTERN.test(q);
+
+  if (analysisMode === 'thinking' && hasInfraContext) {
+    return 'multi';
+  }
 
   if (FORCE_KB_QUERY_PATTERN.test(q)) {
     return 'multi';

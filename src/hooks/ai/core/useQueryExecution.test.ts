@@ -137,4 +137,28 @@ describe('useQueryExecution', () => {
 
     expect(disclaimerUpdater).toBeDefined();
   });
+
+  it('thinking mode면 streaming 후보 쿼리도 job-queue로 더 적극적으로 보낸다', async () => {
+    process.env.NODE_ENV = 'production';
+    const deps = {
+      ...createDeps(),
+      complexityThreshold: 19,
+      analysisMode: 'thinking' as const,
+    };
+
+    const { result } = renderHook(() => useQueryExecution(deps));
+
+    act(() => {
+      result.current.executeQuery(
+        'db-mysql-dc1-primary 서버의 디스크 사용률이 81%입니다. 현재 원인과 우선 조치 방법을 분석해줘.'
+      );
+    });
+
+    await Promise.resolve();
+
+    expect(deps.asyncQuery.sendQuery).toHaveBeenCalledWith(
+      'db-mysql-dc1-primary 서버의 디스크 사용률이 81%입니다. 현재 원인과 우선 조치 방법을 분석해줘.',
+      { analysisMode: 'thinking' }
+    );
+  });
 });

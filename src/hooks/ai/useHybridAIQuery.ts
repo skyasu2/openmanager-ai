@@ -71,6 +71,7 @@ import {
   STREAM_ERROR_REGEX,
 } from '@/lib/ai/constants/stream-errors';
 import { inferAIErrorDetailsFromMessage } from '@/lib/ai/error-details';
+import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type {
   AIStreamStatus,
   HybridQueryState,
@@ -192,6 +193,7 @@ export function useHybridAIQuery(
     onData,
     webSearchEnabled,
     ragEnabled,
+    analysisMode,
   } = options;
   const traceIdRef = useRef<string>(generateTraceId());
   const observabilityConfig = getObservabilityConfig();
@@ -201,6 +203,9 @@ export function useHybridAIQuery(
     webSearchEnabled ?? undefined
   );
   const ragEnabledRef = useRef<boolean | undefined>(ragEnabled ?? undefined);
+  const analysisModeRef = useRef<AnalysisMode | undefined>(
+    analysisMode ?? undefined
+  );
   const warmingUpRef = useRef<boolean>(false);
   useEffect(() => {
     webSearchEnabledRef.current = webSearchEnabled ?? undefined;
@@ -208,6 +213,9 @@ export function useHybridAIQuery(
   useEffect(() => {
     ragEnabledRef.current = ragEnabled ?? undefined;
   }, [ragEnabled]);
+  useEffect(() => {
+    analysisModeRef.current = analysisMode ?? undefined;
+  }, [analysisMode]);
   const apiEndpoint = customEndpoint ?? '/api/ai/supervisor/stream/v2';
   const sessionIdRef = useRef<string>(
     initialSessionId || generateMessageId('session')
@@ -256,6 +264,7 @@ export function useHybridAIQuery(
         warmingUpRef,
         webSearchEnabledRef,
         ragEnabledRef,
+        analysisModeRef,
       }),
     [apiEndpoint, observabilityConfig.traceIdHeader]
   );
@@ -290,7 +299,9 @@ export function useHybridAIQuery(
           stopChatRef.current();
         },
         runJobQueueQuery: (query: string) => {
-          return asyncQueryRef.current.sendQuery(query);
+          return asyncQueryRef.current.sendQuery(query, {
+            analysisMode: analysisModeRef.current,
+          });
         },
       }),
     [
@@ -370,6 +381,9 @@ export function useHybridAIQuery(
                     result.toolsCalled.length > 0 && {
                       toolsCalled: result.toolsCalled,
                     }),
+                  ...(result.analysisMode && {
+                    analysisMode: result.analysisMode,
+                  }),
                   ...(result.handoffHistory &&
                     result.handoffHistory.length > 0 && {
                       handoffHistory: result.handoffHistory,
@@ -419,6 +433,7 @@ export function useHybridAIQuery(
       pendingQuery: pendingQueryRef,
       pendingAttachments: pendingAttachmentsRef,
     },
+    analysisMode,
   });
   executeQueryRef.current = executeQuery;
   const {

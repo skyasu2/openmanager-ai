@@ -15,6 +15,7 @@ import type {
   ResponseHandoff,
   ToolResultSummary,
 } from '@/stores/useAISidebarStore';
+import { ANALYSIS_MODE_LABELS } from '@/types/ai/analysis-mode';
 import type { AIThinkingStep } from '@/types/ai-sidebar/ai-sidebar-types';
 import { RenderMarkdownContent } from '@/utils/markdown-parser';
 
@@ -154,6 +155,9 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
   const collapsedSummaryParts = [
     analysisStepSummary,
     executionPath.length > 0 && toolCount > 0 ? `도구 ${toolCount}개` : null,
+    basis.analysisMode
+      ? `모드: ${ANALYSIS_MODE_LABELS[basis.analysisMode]}`
+      : null,
     basis.timeRange ? `기간: ${basis.timeRange}` : null,
   ].filter(Boolean);
   const collapsedSummary = collapsedSummaryParts.slice(0, 3).join(' · ');
@@ -351,6 +355,17 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
                   </div>
                 </div>
               )}
+            </div>
+          )}
+
+          {basis.analysisMode && (
+            <div className="rounded-md border border-slate-200 bg-white p-3">
+              <p className="mb-1 text-2xs font-medium uppercase tracking-wide text-slate-500">
+                분석 강도
+              </p>
+              <p className="text-xs text-slate-700">
+                {ANALYSIS_MODE_LABELS[basis.analysisMode]}
+              </p>
             </div>
           )}
 

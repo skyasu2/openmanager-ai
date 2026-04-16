@@ -207,6 +207,7 @@ export const POST = withRateLimit(
         sessionId: bodySessionId,
         enableWebSearch,
         enableRAG,
+        analysisMode,
       } = parseResult.data;
 
       // 2. Extract session ID
@@ -387,6 +388,7 @@ export const POST = withRateLimit(
                 deviceType,
                 enableWebSearch,
                 enableRAG,
+                analysisMode,
               }),
               signal: AbortSignal.timeout(timeoutMs),
             });

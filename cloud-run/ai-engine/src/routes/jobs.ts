@@ -43,6 +43,7 @@ import {
   resolveAgentStage,
 } from './jobs-route-helpers';
 import { executeSupervisorStream, logProviderStatus } from '../services/ai-sdk';
+import type { AnalysisMode } from '../services/ai-sdk/supervisor-types';
 
 // ============================================================================
 // Jobs Router
@@ -72,7 +73,7 @@ jobsRouter.post('/process', async (c: Context) => {
   const startTime = Date.now();
 
   try {
-    const { jobId, messages, sessionId } = await c.req.json();
+    const { jobId, messages, sessionId, analysisMode } = await c.req.json();
 
     // Validate request
     if (!jobId) {
@@ -126,6 +127,7 @@ jobsRouter.post('/process', async (c: Context) => {
       jobId,
       messages,
       sessionId,
+      analysisMode,
       startTime,
     });
 
@@ -147,11 +149,13 @@ async function processJobSynchronously({
   jobId,
   messages,
   sessionId,
+  analysisMode,
   startTime,
 }: {
   jobId: string;
   messages: Array<{ role: string; content: string }>;
   sessionId?: string;
+  analysisMode?: AnalysisMode;
   startTime: number;
 }): Promise<{ status: 'completed' | 'failed'; error?: string }> {
   const startedAt = new Date().toISOString();
@@ -213,6 +217,7 @@ async function processJobSynchronously({
         content: m.content,
       })),
       sessionId: sessionId || 'default',
+      analysisMode,
     })) {
       if (event.type === 'text_delta' && typeof event.data === 'string') {
         responseChunks.push(event.data);
@@ -389,6 +394,7 @@ async function processJobSynchronously({
       toolsCalled,
       ragSources,
       metadata: {
+        ...(analysisMode && { analysisMode }),
         ...(traceId && { traceId }),
         ...(handoffs.length > 0 && { handoffs }),
         ...(toolResultSummaries && toolResultSummaries.length > 0 && {

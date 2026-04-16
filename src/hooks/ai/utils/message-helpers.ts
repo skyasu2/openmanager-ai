@@ -16,6 +16,7 @@ import type {
   ResponseHandoff,
   ToolResultSummary,
 } from '@/stores/useAISidebarStore';
+import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { AIThinkingStep } from '@/types/ai-sidebar/ai-sidebar-types';
 
 type RagSource = {
@@ -30,6 +31,7 @@ type MessageMetadata = {
   traceId?: string;
   ragSources?: RagSource[];
   toolsCalled?: string[];
+  analysisMode?: AnalysisMode;
   assistantResponseView?: StructuredAssistantResponse;
   handoffHistory?: ResponseHandoff[];
   toolResultSummaries?: ToolResultSummary[];
@@ -636,6 +638,7 @@ export function transformUIMessageToEnhanced(
       toolsCalled: calledToolNames.length > 0 ? calledToolNames : undefined,
       timeRange: hasServerAnalysisEvidence ? '최근 1시간' : undefined,
       ragSources: hasRag ? ragSources : undefined,
+      analysisMode: metadata?.analysisMode,
     };
   }
 

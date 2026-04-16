@@ -207,6 +207,17 @@ describe('requestSchemaLoose (V2 Proxy)', () => {
       expect(result.data?.enableRAG).toBe(true);
     });
 
+    it('should accept analysisMode flag', () => {
+      const input = {
+        messages: [{ role: 'user', content: 'test' }],
+        analysisMode: 'thinking',
+      };
+
+      const result = requestSchemaLoose.safeParse(input);
+      expect(result.success).toBe(true);
+      expect(result.data?.analysisMode).toBe('thinking');
+    });
+
     it('should accept message with createdAt as string', () => {
       const input = {
         messages: [

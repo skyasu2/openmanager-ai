@@ -97,6 +97,7 @@ describe('ChatInputArea popover', () => {
         onClearFileErrors={vi.fn()}
         onPaste={vi.fn()}
         onToggleWebSearch={vi.fn()}
+        onSelectAnalysisMode={vi.fn()}
       />
     );
 
@@ -126,5 +127,40 @@ describe('ChatInputArea popover', () => {
 
     expect(screen.queryByText('Web 검색')).not.toBeInTheDocument();
     expect(toggle).toHaveFocus();
+  });
+
+  it('selects analysis mode from the popover', () => {
+    const onSelectAnalysisMode = vi.fn();
+
+    render(
+      <ChatInputArea
+        textareaRef={createRef<HTMLTextAreaElement>()}
+        fileInputRef={createRef<HTMLInputElement>()}
+        inputValue=""
+        setInputValue={vi.fn()}
+        isGenerating={false}
+        attachments={[]}
+        isDragging={false}
+        fileErrors={[]}
+        canAddMore={true}
+        previewImage={null}
+        dragHandlers={{}}
+        onSendWithAttachments={vi.fn()}
+        onOpenFileDialog={vi.fn()}
+        onFileSelect={vi.fn()}
+        onImageClick={vi.fn()}
+        onClosePreviewModal={vi.fn()}
+        onRemoveFile={vi.fn()}
+        onClearFileErrors={vi.fn()}
+        onPaste={vi.fn()}
+        onToggleWebSearch={vi.fn()}
+        onSelectAnalysisMode={onSelectAnalysisMode}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '도구 메뉴 열기' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Thinking' }));
+
+    expect(onSelectAnalysisMode).toHaveBeenCalledWith('thinking');
   });
 });

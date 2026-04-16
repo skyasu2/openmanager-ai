@@ -152,6 +152,7 @@ export const requestSchema = z.object({
   sessionId: SUPERVISOR_SESSION_ID_SCHEMA.optional(),
   enableWebSearch: z.boolean().optional(),
   enableRAG: z.boolean().optional(),
+  analysisMode: z.enum(['auto', 'thinking']).optional(),
 });
 
 /**
@@ -164,6 +165,7 @@ export const requestSchemaLoose = z.object({
   sessionId: SUPERVISOR_SESSION_ID_SCHEMA.optional(),
   enableWebSearch: z.boolean().optional(),
   enableRAG: z.boolean().optional(),
+  analysisMode: z.enum(['auto', 'thinking']).optional(),
 });
 
 // ============================================================================

@@ -24,6 +24,7 @@ import type { NormalizedMessage } from '@/lib/ai/utils/message-normalizer';
 import { proxyToCloudRun } from '@/lib/ai-proxy/proxy';
 import { logger } from '@/lib/logging';
 import { getTraceId } from '@/lib/tracing/async-context';
+import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import { cloudRunResponseSchema } from './schemas';
 
 interface CloudRunHandlerParams {
@@ -40,6 +41,7 @@ interface CloudRunHandlerParams {
   deviceType?: SupervisorDeviceType;
   enableWebSearch?: boolean;
   enableRAG?: boolean;
+  analysisMode?: AnalysisMode;
 }
 
 /**
@@ -61,6 +63,7 @@ export async function handleCloudRunStream(
     deviceType,
     enableWebSearch,
     enableRAG,
+    analysisMode,
   } = params;
 
   // 🎯 W3C Trace Context: traceId from AsyncLocalStorage + traceparent 생성
@@ -96,6 +99,7 @@ export async function handleCloudRunStream(
           deviceType,
           enableWebSearch,
           enableRAG,
+          analysisMode,
         },
         timeout: dynamicTimeout,
         endpoint: 'supervisor',
@@ -205,6 +209,7 @@ export async function handleCloudRunJson(
     deviceType,
     enableWebSearch,
     enableRAG,
+    analysisMode,
   } = params;
 
   // 🎯 W3C Trace Context: traceId from AsyncLocalStorage + traceparent 생성
@@ -240,6 +245,7 @@ export async function handleCloudRunJson(
           deviceType,
           enableWebSearch,
           enableRAG,
+          analysisMode,
         },
         timeout: dynamicTimeout,
         endpoint: 'supervisor',
