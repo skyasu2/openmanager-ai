@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-16 KST (계획서 정리 + P1 analysisBasis parity fix 완료)
+**Last Updated**: 2026-04-16 KST (계획서 archive 정리 + rate-limit plan Backlog 등록)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -24,6 +24,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| AI Response Visibility & Rate Limit (Phase 1~5) | Medium | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). handoff 가시성 UX, 429 UX, Job Queue agent path, limiter 정책 재조정. |
 | Storybook circular chunk warning 정리 | Low | non-blocking, stable 승격 후 재평가 |
 
 ---
@@ -36,6 +37,13 @@
   - 회귀 테스트 2케이스 추가 (deferred 경로 + pending 경로).
   - preview QA pass (sidebar→fullscreen parity 유지 확인).
   - v8.11.13 release + production QA-20260416-0294 pass (7/7, Reporter/Analyst/feedback).
+
+### Completed (2026-04-16 #102)
+- [x] 계획서 archive 정리 (2차)
+  - `completion-review.md`, `wbs.md`, `knowledge-base-corpus-expansion-plan.md`, `supabase-migration-ledger-repair-plan.md` → archive 이동.
+  - `ai-response-visibility-rate-limit-plan-2026-04-08.md`: 메타데이터 헤더 추가 + Backlog 등록.
+  - `knowledge-base-corpus-candidate-drafts.md`: Owner `platform-data` → `project` 수정.
+  - 잔여 활성 plan 파일: `vibe-coding-public-copy-plan.md`, `ai-chat-improvement-plan.md`, `ai-response-visibility-rate-limit-plan-2026-04-08.md`, `knowledge-base-corpus-candidate-drafts.md`.
 
 ### Completed (2026-04-16 #101)
 - [x] 계획서 디렉토리 정리 (이번 세션)

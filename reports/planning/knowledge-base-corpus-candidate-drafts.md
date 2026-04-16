@@ -1,7 +1,7 @@
 # Knowledge Base Corpus Candidate Drafts
 
 > Status: Draft
-> Owner: platform-data
+> Owner: project
 > Updated: 2026-04-12
 > Purpose: `knowledge_base` split-first 이후 후속 배치에서 사용할 `manual` / `imported` 후보 8개 초안
 
