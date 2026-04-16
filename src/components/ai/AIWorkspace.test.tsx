@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  */
 
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useState } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import AIWorkspace from '@/components/ai/AIWorkspace';
@@ -10,6 +10,7 @@ import AIWorkspace from '@/components/ai/AIWorkspace';
 const mockEnhancedAIChat = vi.fn(() => (
   <div data-testid="enhanced-ai-chat">AI Chat</div>
 ));
+const mockConsumePendingPrefillMessage = vi.fn();
 
 let mockSidebarState: Record<string, unknown>;
 
@@ -158,12 +159,16 @@ describe('AIWorkspace', () => {
       isOpen: true,
       toggleSidebar: vi.fn(),
       setIsOpen: vi.fn(),
+      pendingPrefillMessage: null,
+      consumePendingPrefillMessage: mockConsumePendingPrefillMessage,
       messages: [],
       addMessage: vi.fn(),
       webSearchEnabled: false,
       setWebSearchEnabled: vi.fn(),
       ragEnabled: false,
       setRagEnabled: vi.fn(),
+      analysisMode: 'auto',
+      setAnalysisMode: vi.fn(),
     };
   });
 
@@ -261,6 +266,7 @@ describe('AIWorkspace', () => {
       ...mockSidebarState,
       webSearchEnabled: true,
       ragEnabled: true,
+      analysisMode: 'thinking',
     };
 
     vi.mocked(useAIChatCore).mockReturnValue({
@@ -319,7 +325,64 @@ describe('AIWorkspace', () => {
     expect(lastCall?.estimatedWaitSeconds).toBe(30);
     expect(lastCall?.webSearchEnabled).toBe(true);
     expect(lastCall?.ragEnabled).toBe(true);
+    expect(lastCall?.analysisMode).toBe('thinking');
+    expect(lastCall?.onSelectAnalysisMode).toEqual(expect.any(Function));
     expect(lastCall?.queuedQueries).toEqual([{ id: 1, text: 'queued' }]);
+  });
+
+  it('consumes pending prefill message when fullscreen chat mounts', async () => {
+    const { useAIChatCore } = await import('@/hooks/ai/useAIChatCore');
+    const mockSetInput = vi.fn();
+
+    mockSidebarState = {
+      ...mockSidebarState,
+      pendingPrefillMessage: 'storage-nfs-dc1-01 디스크 원인 분석',
+    };
+
+    vi.mocked(useAIChatCore).mockReturnValue({
+      input: '',
+      setInput: mockSetInput,
+      messages: [],
+      isLoading: false,
+      hybridState: {
+        progress: null,
+        jobId: null,
+      },
+      currentMode: 'streaming',
+      error: null,
+      clearError: vi.fn(),
+      sessionState: {
+        messagesRemaining: 10,
+        isLimited: false,
+      },
+      handleNewSession: vi.fn(),
+      handleFeedback: vi.fn(),
+      regenerateLastResponse: vi.fn(),
+      retryLastQuery: vi.fn(),
+      stop: vi.fn(),
+      cancel: vi.fn(),
+      handleSendInput: vi.fn(),
+      clarification: null,
+      selectClarification: vi.fn(),
+      submitCustomClarification: vi.fn(),
+      skipClarification: vi.fn(),
+      dismissClarification: vi.fn(),
+      currentAgentStatus: null,
+      currentHandoff: null,
+      warmingUp: false,
+      estimatedWaitSeconds: 0,
+      queuedQueries: [],
+      removeQueuedQuery: vi.fn(),
+    } as unknown as ReturnType<typeof useAIChatCore>);
+
+    render(<AIWorkspace mode="fullscreen" />);
+
+    await waitFor(() => {
+      expect(mockSetInput).toHaveBeenCalledWith(
+        'storage-nfs-dc1-01 디스크 원인 분석'
+      );
+      expect(mockConsumePendingPrefillMessage).toHaveBeenCalled();
+    });
   });
 
   it('preserves fullscreen Analyst state when switching to chat and back', () => {
