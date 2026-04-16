@@ -1,16 +1,12 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-16 KST (계획서 archive 정리 + rate-limit plan Backlog 등록)
+**Last Updated**: 2026-04-16 KST (vibe-coding 공개 카피 정리 완료)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
 ## Active Tasks
 
-### vibe-coding-public-copy-plan (Draft)
-- [ ] 랜딩 `Vibe Coding` 모달 공개 카피 정리
-  - 계획서: [vibe-coding-public-copy-plan.md](vibe-coding-public-copy-plan.md)
-  - 목표: 모델 SKU 제거, 과장 기여율 문구 완화, 공식 제품 포지셔닝과 사용 맥락 분리
-  - 범위: `feature-cards.data.ts`, `vibe-coding.ts` 수정 + UI 검증
+_없음 — 다음 작업은 Backlog에서 승격_
 
 ---
 
@@ -37,6 +33,13 @@
   - 회귀 테스트 2케이스 추가 (deferred 경로 + pending 경로).
   - preview QA pass (sidebar→fullscreen parity 유지 확인).
   - v8.11.13 release + production QA-20260416-0294 pass (7/7, Reporter/Analyst/feedback).
+
+### Completed (2026-04-16 #103)
+- [x] Vibe Coding 공개 카피 정리
+  - `feature-cards.data.ts`, `vibe-coding.ts` 수정: 모델 SKU(`claude-sonnet-4-6`) 제거, `99% 주도` → 중립 문구, Google Antigravity implementation 사용 맥락 분리, Cursor stage label 완화.
+  - `docs/status.md`: Claude Code 모델 버전 `Opus 4.6` → `Sonnet 4.6` 수정.
+  - 타입 체크 ✅ / 정적 검증 ✅ (Playwright WSL2 네트워크 격리로 로컬 UI 직접 검증 불가 — 다음 배포 후 production 확인).
+  - 커밋: `8f9babff8`, `7ef048999`.
 
 ### Completed (2026-04-16 #102)
 - [x] 계획서 archive 정리 (2차)
