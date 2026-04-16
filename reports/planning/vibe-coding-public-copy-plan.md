@@ -1,4 +1,4 @@
-> Owner: AI Agent
+> Owner: project
 > Status: Draft
 > Doc type: Plan
 > Last reviewed: 2026-04-16

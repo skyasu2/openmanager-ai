@@ -1,4 +1,4 @@
-> Owner: AI Agent
+> Owner: project
 > Status: Historical
 > Doc type: How-to
 > Last reviewed: 2026-04-16

@@ -1,6 +1,6 @@
 # AI 어시스턴트 채팅 기능 개선 계획서
 
-> Owner: Claude (AI Lead)
+> Owner: project
 > Status: Active Supporting — Sprint 1+2 완료(2026-04-09). Sprint 3+ 미착수. 잔여 항목은 별도 계획서에서 우선순위 판단.
 > Doc type: How-to
 > Last reviewed: 2026-04-16
@@ -385,7 +385,7 @@ generateText({
 - 라우팅 신호: `cloud-run/ai-engine/src/services/ai-sdk/query-routing-signals.ts`
 - 응답 품질 정책: `cloud-run/ai-engine/src/services/ai-sdk/agents/response-quality.ts`
 
-## 7. 인수 진행 로그 (Codex)
+## 7. 실행 로그
 
 - 2026-04-09 16:47 KST: Sprint 1의 1-A / 1-B / 1-D / 2-A 구현 완료
 - 검증:
