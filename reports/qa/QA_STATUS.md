@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-16 08:53:24 KST
+> Generated at: 2026-04-16 09:12:50 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 290 |
+| Total Recorded Runs | 291 |
 | Total Runs (Counted) | 249 |
-| Non-counted Runs | 41 |
+| Non-counted Runs | 42 |
 | Total Checks | 1939 |
 | Passed | 1863 |
 | Failed | 70 |
@@ -21,12 +21,12 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260415-0291 (2026-04-15T14:40:05.458Z) |
-| Latest Recorded Run | QA-20260416-0292 (2026-04-15T23:53:23.445Z) |
+| Latest Recorded Run | QA-20260416-0293 (2026-04-16T00:12:50.093Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260416-0292 (2026-04-15T23:53:23.445Z)
+Latest run: QA-20260416-0293 (2026-04-16T00:12:50.093Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -37,31 +37,31 @@ Latest run: QA-20260416-0292 (2026-04-15T23:53:23.445Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed before preview QA; effective 9.1391 USD, billed 0.0000 USD, no unexpected billed usage spike. |
+| vercel | cli | checked | normal | Current billing period reviewed before production targeted QA; effective 9.1391 USD, billed 0.0000 USD, no unexpected billed usage spike. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
+- Release-Facing: yes
 - Counts Toward Summary: no
-- Deployment: dpl_348Uoi8vqHWxPNoCMfo1Gxa2fbuN / SHA ac18ca2f
+- Deployment: dpl_3QFeewNZNo8PSs13n1cx5PL6kZN6 / SHA 49032c37
 - Coverage Packs: ai-core, ai-advanced-surface
-- Covered Surfaces: preview guest login and system-boot to dashboard transition, dashboard warning CTA opens AI sidebar with prefilled prompt, AI sidebar response completes with analysis basis detail, sidebar analysis basis detail shows traceId + tools + timeRange after data-done toolsCalled fix, fullscreen AI workspace restores the same conversation from sidebar handoff, fullscreen analysis basis detail preserves traceId + tools + timeRange parity on commit ac18ca2f9, browser console error count 0 and warning count 0 during preview AI parity flow
-- Skipped Surfaces: production deployment verification, Reporter flow, Analyst forecast flow, feedback submission flow
+- Covered Surfaces: production version route returns 8.11.13, production guest landing render and system-boot to dashboard transition, dashboard warning CTA opens AI sidebar with prefilled prompt, AI sidebar response completes with analysis basis detail, sidebar analysis basis detail shows handoff path + traceId + tools + timeRange on production, fullscreen AI workspace restores the same conversation after sidebar handoff, fullscreen analysis basis detail preserves handoff path + traceId + tools + timeRange parity on production, browser console error count 0 and warning count 0 during production parity flow
+- Skipped Surfaces: broad production route pack, Reporter flow, Analyst advanced forecast flow, feedback submission flow
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Preview deployment | [Preview deployment](https://openmanager-8i3pryse2-skyasus-projects.vercel.app/) | - |
-| vercel-deployment | Deployment dpl_348Uoi8vqHWxPNoCMfo1Gxa2fbuN | [Deployment dpl_348Uoi8vqHWxPNoCMfo1Gxa2fbuN](https://vercel.com/skyasus-projects/openmanager-ai/348Uoi8vqHWxPNoCMfo1Gxa2fbuN) | - |
+| general | Production | [Production](https://openmanager-ai.vercel.app/) | - |
+| vercel-deployment | Deployment dpl_3QFeewNZNo8PSs13n1cx5PL6kZN6 | [Deployment dpl_3QFeewNZNo8PSs13n1cx5PL6kZN6](https://vercel.com/skyasus-projects/openmanager-ai/3QFeewNZNo8PSs13n1cx5PL6kZN6) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Preview fullscreen AI workspace with preserved analysis basis after toolsCalled fix | `reports/qa/evidence/qa-20260416-preview-ai-sidebar-fullscreen-toolscalled-parity.png` | - |
-| playwright-console | Preview AI parity console log after toolsCalled fix | `reports/qa/evidence/qa-20260416-preview-ai-sidebar-fullscreen-toolscalled-console.txt` | - |
+| playwright-screenshot | Production fullscreen AI workspace with preserved analysis basis after v8.11.13 deploy | `reports/qa/evidence/qa-20260416-production-ai-sidebar-fullscreen-toolscalled-parity.png` | - |
+| playwright-console | Production AI parity console log after v8.11.13 deploy | `reports/qa/evidence/qa-20260416-production-ai-sidebar-fullscreen-toolscalled-console.txt` | - |
 
 ## Expert Domain Open Gaps
 
@@ -148,7 +148,7 @@ Latest run: QA-20260416-0292 (2026-04-15T23:53:23.445Z)
 - ai-topology-duplicate-tool-invocation: Topology query duplicate searchKnowledgeBase invocation removed (completed 1회, last QA-20260415-0284)
 - ai-topology-variant-function-call-failure: Advisor Agent latency/format quality stabilization (Task 1-3) (completed 2회, last QA-20260415-0283)
 - ai-topology-variant-schema-validation-failure: searchKnowledgeBase boolean-string tool-call validation failure removed (completed 1회, last QA-20260413-0281)
-- ai-workspace-analysis-basis-hydration-drift: Fullscreen AI workspace should preserve tool-grounded analysis basis metadata (completed 2회, last QA-20260416-0292)
+- ai-workspace-analysis-basis-hydration-drift: Fullscreen AI workspace should preserve tool-grounded analysis basis metadata (completed 3회, last QA-20260416-0293)
 - ai-workspace-dom-test-runner-hang: AIWorkspace DOM test runner hang 정리 (completed 1회, last QA-20260318-0124)
 - ai-사이드바-열기닫기: AI 사이드바 열기/닫기 (completed 1회, last QA-20260317-0114)
 - ai-사이드바-토글-ai-엔진-ready-프리셋-5개-ai-기능-3개: AI 사이드바 토글 (AI 엔진 Ready, 프리셋 5개, AI 기능 3개) (completed 3회, last QA-20260302-0042)
@@ -403,6 +403,7 @@ Latest run: QA-20260416-0292 (2026-04-15T23:53:23.445Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260416-0293 | 2026-04-16T00:12:50.093Z | targeted | yes | no | Vercel production targeted QA - fullscreen analysis basis parity after v8.11.13 deploy | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260416-0292 | 2026-04-15T23:53:23.445Z | targeted | no | no | Vercel preview targeted QA - fullscreen analysis basis parity after data-done toolsCalled fix | 7 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260415-0291 | 2026-04-15T14:40:05.458Z | broad | yes | yes | Vercel broad QA - v8.11.12 production frontend and AI refresh | 18 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260415-0290 | 2026-04-15T14:18:02.870Z | targeted | yes | no | Vercel production targeted QA - fullscreen analysis basis parity after v8.11.12 deploy | 6 | 0 | 0 | 0 | 0 | 0 |
@@ -422,4 +423,3 @@ Latest run: QA-20260416-0292 (2026-04-15T23:53:23.445Z)
 | QA-20260413-0276 | 2026-04-13T09:02:52.483Z | targeted | no | no | GraphRAG traversal decision QA #2 (duplicate invocation + latency + variant failure) | 9 | 0 | 1 | 0 | 0 | 0 |
 | QA-20260413-0275 | 2026-04-13T08:52:05.906Z | targeted | no | no | GraphRAG traversal decision QA #1 (topology + incident targeted) | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260413-0274 | 2026-04-13T08:29:27.267Z | targeted | no | no | Vercel + Cloud Run targeted verification after GraphRAG telemetry rollout | 13 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260412-0273 | 2026-04-12T06:56:48.689Z | targeted | no | no | Local Next.js OAuth smoke - localhost and 127.0.0.1 loopback parity | 6 | 1 | 0 | 0 | 0 | 0 |

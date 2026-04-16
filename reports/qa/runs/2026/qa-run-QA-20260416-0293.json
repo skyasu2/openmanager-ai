@@ -1,0 +1,122 @@
+{
+  "runId": "QA-20260416-0293",
+  "recordedAt": "2026-04-16T00:12:50.093Z",
+  "recordedAtKst": "2026-04-16 09:12:50 KST",
+  "runTitle": "Vercel production targeted QA - fullscreen analysis basis parity after v8.11.13 deploy",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_3QFeewNZNo8PSs13n1cx5PL6kZN6",
+    "deploymentUrl": "https://openmanager-25adzsdzh-skyasus-projects.vercel.app",
+    "commitSha": "49032c37102e3b91b5d161c9d4d4b171c29b6ff8"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core", "ai-advanced-surface"],
+  "coveredSurfaces": [
+    "production version route returns 8.11.13",
+    "production guest landing render and system-boot to dashboard transition",
+    "dashboard warning CTA opens AI sidebar with prefilled prompt",
+    "AI sidebar response completes with analysis basis detail",
+    "sidebar analysis basis detail shows handoff path + traceId + tools + timeRange on production",
+    "fullscreen AI workspace restores the same conversation after sidebar handoff",
+    "fullscreen analysis basis detail preserves handoff path + traceId + tools + timeRange parity on production",
+    "browser console error count 0 and warning count 0 during production parity flow"
+  ],
+  "skippedSurfaces": [
+    "broad production route pack",
+    "Reporter flow",
+    "Analyst advanced forecast flow",
+    "feedback submission flow"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production v8.11.13 preserved the same handoff path, traceId, tool chain, engine label, and recent 1 hour time range after sidebar to fullscreen workspace navigation.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The production parity path was revalidated end-to-end with Playwright after deploy propagation, including guest entry, dashboard CTA, sidebar response, fullscreen transition, and console cleanliness.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-16T09:09:10+09:00",
+      "summary": "Current billing period reviewed before production targeted QA; effective 9.1391 USD, billed 0.0000 USD, no unexpected billed usage spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Production fullscreen AI workspace with preserved analysis basis after v8.11.13 deploy",
+      "path": "reports/qa/evidence/qa-20260416-production-ai-sidebar-fullscreen-toolscalled-parity.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Production AI parity console log after v8.11.13 deploy",
+      "path": "reports/qa/evidence/qa-20260416-production-ai-sidebar-fullscreen-toolscalled-console.txt"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-workspace-analysis-basis-hydration-drift",
+      "title": "Fullscreen AI workspace should preserve tool-grounded analysis basis metadata",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production v8.11.13 preserved handoff path 분석 조율 → 심층 분석, traceId fd25abef1110e8c7ab15190458e37f1f, tool chain 이상 탐지 + 근본 원인 분석, and 최근 1시간 period after sidebar to fullscreen navigation.",
+      "note": "Preview and production both pass after forwarding toolsCalled from data-done into deferred assistant metadata.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production /api/version returned version 8.11.13 before QA started.",
+    "Sidebar analysis basis detail showed handoff path 분석 조율 → 심층 분석, traceId fd25abef1110e8c7ab15190458e37f1f, tools 이상 탐지 and 근본 원인 분석, and period 최근 1시간.",
+    "Fullscreen workspace preserved the same handoff path, traceId, tool chain, engine label Streaming AI + RAG, and period after workspace navigation.",
+    "browser_console_messages reported 0 errors and 0 warnings for the production parity flow.",
+    "This run closes the remaining production verification for the toolsCalled forwarding fix introduced before v8.11.13 release."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Deployment dpl_3QFeewNZNo8PSs13n1cx5PL6kZN6",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/3QFeewNZNo8PSs13n1cx5PL6kZN6"
+    }
+  ]
+}
