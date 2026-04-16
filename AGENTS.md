@@ -73,10 +73,27 @@
 - **CI 스킵 fallback**: `vercel --prod` (소스 업로드). 로컬 `vercel build --prod`는 WSL2 `fonts.gstatic.com` 차단으로 실패 가능
 - 로컬 전체 검증 표준 경로는 `npm run ci:local:docker` (SSOT 유지, CI와 별개)입니다.
 
+## 2.7 작업 계획서 규칙 (Codex)
+
+작업 시작 전 반드시 아래 순서로 확인한다.
+
+1. `reports/planning/TODO.md` 읽기 — Active Task, Backlog, On Hold 파악
+2. `reports/planning/*.md` 목록 확인 — 관련 plan 파일 존재 여부
+3. 기존 파일 있으면 수정, 없으면 신규 조건 충족 시만 생성
+
+**신규 plan 파일 생성 금지 조건** (하나라도 해당하면 생성 안 함):
+- 기존 plan 파일과 주제가 70%+ 겹침 → 기존 파일 Task 항목 추가
+- TODO.md Backlog에 이미 동일 항목 존재 → 항목 승격만
+- 단일 버그 수정 / 소규모 리팩터링 → TODO.md 1줄로 충분
+
+**Owner 규칙**: plan 파일 `Owner` 필드는 항상 `project`. AI 이름 금지.
+
+상세 규칙: `reports/planning/README.md`
+
 ## 3) 공통 지식 및 유지보수 메모
 - **[필독] 프로젝트 3대 원칙 (Free Tier, 배포 환경 인지, OTel 데이터 SSOT)** 등 모든 AI 에이전트가 완벽히 숙지해야 할 핵심 규칙은 `docs/guides/ai/ai-standards.md` 파일에 정의되어 있습니다. 작업을 시작하기 전 해당 문서를 반드시 참조하세요.
 - 이 문서는 주로 "Codex 전용 실행 환경 및 MCP 설정" 등에 대한 규칙만 제한적으로 유지합니다.
 - 공통 정책이 변경되는 경우 이 파일이 아닌 `docs/guides/ai/ai-standards.md`를 갱신해야 합니다.
 
 ---
-_Last reviewed: 2026-04-08_
+_Last reviewed: 2026-04-16_
