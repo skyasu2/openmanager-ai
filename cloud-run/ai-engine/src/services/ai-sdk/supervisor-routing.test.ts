@@ -354,6 +354,22 @@ describe('createPrepareStep', () => {
     expect(result.toolChoice).toBe('auto');
   });
 
+  it('should keep off-domain general queries on finalAnswer-only path', async () => {
+    const prepare = createPrepareStep('오늘 운세 알려줘');
+    const result = await prepare({ stepNumber: 0 });
+    expect(result.activeTools).toEqual(['finalAnswer']);
+    expect(result.toolChoice).toBe('required');
+  });
+
+  it('should force searchWeb for realtime off-domain queries when web search is ON', async () => {
+    const prepare = createPrepareStep('오늘 서울 날씨 알려줘', {
+      enableWebSearch: true,
+    });
+    const result = await prepare({ stepNumber: 0 });
+    expect(result.activeTools).toEqual(['searchWeb', 'finalAnswer']);
+    expect(result.toolChoice).toEqual({ type: 'tool', toolName: 'searchWeb' });
+  });
+
   it('should inject searchWeb into RCA tools when web search is ON', async () => {
     const prepare = createPrepareStep('장애 원인 분석', { enableWebSearch: true });
     const result = await prepare({ stepNumber: 0 });
@@ -425,6 +441,8 @@ describe('shouldForceWebSearch', () => {
     expect(shouldForceWebSearch('공식 문서 확인')).toBe(true);
     expect(shouldForceWebSearch('2026 릴리스 노트')).toBe(true);
     expect(shouldForceWebSearch('documentation for nginx')).toBe(true);
+    expect(shouldForceWebSearch('오늘 서울 날씨 알려줘')).toBe(true);
+    expect(shouldForceWebSearch('환율 알려줘')).toBe(true);
   });
 
   it('should return false for internal monitoring queries', () => {

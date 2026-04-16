@@ -1,15 +1,15 @@
 > Owner: project
-> Status: Backlog
+> Status: Active
 > Doc type: Plan
 > Last reviewed: 2026-04-16
-> Tags: ai-assistant,domain-boundary,analysis-mode,web-search
+> Tags: ai-assistant,domain-boundary,analysis-mode,web-search,general-queries
 
 # AI Domain Boundary & Analysis Mode Plan
 
-- 상태: **Backlog** — 정책/UX 설계 완료 전까지 현행 라우팅 유지
+- 상태: **Active** — Phase 1(오프도메인 best-effort 정책 / Web 검색 카피 / 첨부 힌트) 진행 중
 - 작성일: 2026-04-16
 - TODO.md 연결: Backlog > AI Domain Boundary & Analysis Mode
-- 목표: OpenManager AI를 `서버 운영/모니터링 특화 어시스턴트`로 더 선명하게 정의하고, 지원 범위와 분석 강도를 사용자에게 설명 가능한 방식으로 노출한다.
+- 목표: OpenManager AI를 `서버 운영/모니터링에 특화된 AI 어시스턴트`로 유지하되, 일반 질문도 `best-effort`로 다루는 현실적인 제품 정책과 UX를 정립한다.
 
 ## 1. 배경
 
@@ -19,9 +19,9 @@
   - [ChatInputArea.tsx](/mnt/d/dev/openmanager-ai/src/components/ai-sidebar/ChatInputArea.tsx:252)
   - [web-search.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/tools-ai-sdk/reporter-tools/web-search.ts:83)
 - 이 상태는 기술적으로는 동작할 수 있지만, 제품 관점에서는 다음 문제가 있다.
-  - 도메인 밖 질문(`날씨`, `운세`, 일반 잡학`)에 대한 정책이 불명확하다.
+  - 도메인 밖 질문(`날씨`, `운세`, 일반 잡학`)에 대해 `답하는지 / 얼마나 자신 있게 답하는지 / 언제 웹 검색을 쓰는지` 정책이 불명확하다.
   - `thinking` 표시 UI는 있지만, 분석 강도를 사용자가 명시적으로 선택할 수 없다.
-  - `searchWeb`의 역할이 `기술/운영 최신 정보 검색`인지 `범용 웹 검색`인지 문서/UX에서 일관되지 않다.
+  - `searchWeb`의 역할이 `최신 정보 보강`인지 `범용 웹 검색`인지 문서/UX에서 일관되지 않다.
 
 ## 2. 현재 구현 요약
 
@@ -41,7 +41,7 @@
 - 기본적으로 범용 질문 전용 정책/거절 경로는 없다.
 - `Web 검색` 토글이 켜져 있어도, 강제 `searchWeb`는 `최신`, `CVE`, `공식 문서`, 연도 키워드 등이 있을 때만 활성화된다.
   - [supervisor-routing.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/services/ai-sdk/supervisor-routing.ts:298)
-- 결과적으로 오프도메인 질문은 `정식 지원`도 아니고 `하드 거절`도 아닌 애매한 상태다.
+- 결과적으로 오프도메인 질문은 `best-effort 응답`을 기대하게 만들지만, 실제 라우팅/설명 정책은 아직 정리돼 있지 않다.
 
 ### 2.3 분석 강도 UX
 
@@ -61,7 +61,7 @@
 - intended use와 limitations가 UI/동작 정책에 반영되어야 한다.
 - 정리:
   - OpenManager는 `운영 특화 AI`라는 intended use를 분명히 드러내야 한다.
-  - 도메인 밖 질문에는 범위 제한을 명시하는 편이 신뢰 측면에서 낫다.
+  - 일반 질문도 받을 수는 있지만, `도메인 외 답변은 정확도/최신성이 제한될 수 있음`을 명시하는 편이 신뢰 측면에서 낫다.
 - 참고:
   - https://pair.withgoogle.com/guidebook-v2/chapter/explainability-trust/
   - https://learn.microsoft.com/en-us/legal/cognitive-services/openai/transparency-note
@@ -71,7 +71,7 @@
 - 복잡한 에이전트 구조와 과도한 도구 수는 비용/지연/불확실성을 키운다.
 - 단순한 도구 세트와 선명한 역할 정의가 더 안정적으로 동작한다.
 - 정리:
-  - 범용 질문까지 억지로 같은 에이전트에 넣는 것보다 도메인 경계를 분명히 하는 편이 비용과 품질 모두 유리하다.
+  - 범용 질문을 받더라도 `최소 도구 경로(single-agent + finalAnswer / 필요시 searchWeb)`로 유지하는 편이 비용과 품질 모두 유리하다.
   - 분석 강도 제어는 `범용 추론 슬라이더`가 아니라 `도메인 내부 분석 강도 모드`로 설계하는 것이 적절하다.
 - 참고:
   - https://www.anthropic.com/research/building-effective-agents
@@ -94,10 +94,20 @@
 | 범주 | 예시 | 권장 동작 |
 |------|------|-----------|
 | 지원 | 장애 원인, 서버 상태, 리포트, 조치안, 로그, topology, 운영 지식 | 정상 처리 |
-| 제한 지원 | 최신 CVE, 기술 문서, 보안 공지, 운영 관련 외부 정보 | `기술 웹 검색` 기반 처리 |
-| 비지원 | 날씨, 운세, 일반 잡학, 생활형 상담 | 정중한 제한 응답 + 도메인 내 질문 유도 |
+| 확장 지원 | 최신 CVE, 기술 문서, 보안 공지, 운영 관련 외부 정보 | `searchWeb` 기반 처리, 출처 인용 |
+| 일반 질문 | 날씨, 일반 상식, 가벼운 생산성 질문 | `best-effort` 응답 + 도메인 특화 AI임을 짧게 고지 |
+| 오락/주관형 | 운세, 가벼운 추천, 캐주얼 질문 | 짧은 참고용 응답 + 확신형 표현 금지 |
 
-### 4.2 분석 강도
+### 4.2 오프도메인 응답 원칙
+
+- 완전 차단 대신 `best-effort`를 기본값으로 둔다.
+- 다만 다음 원칙을 지킨다.
+  - 오프도메인 질문에는 멀티에이전트/RAG/모니터링 도구를 붙이지 않는다.
+  - 최신성 의존 질문은 `searchWeb`가 있을 때만 강화한다.
+  - 응답 첫머리 또는 상단에 짧은 disclaimer를 둔다.
+  - 예: `참고: 저는 서버 모니터링 중심 AI라 일반 정보 답변은 정확도와 최신성이 제한될 수 있습니다.`
+
+### 4.3 분석 강도
 
 | 모드 | 의도 | 권장 라우팅 |
 |------|------|-------------|
@@ -107,17 +117,20 @@
 
 ## 5. 구현 전략
 
-### Phase 1 — 도메인 경계 명시 (우선)
+### Phase 1 — 도메인 정책 명시 (우선)
 
-1. 오프도메인 질문 감지 규칙 추가
-   - `날씨`, `운세`, 일반 생활형 패턴은 명시적 비지원 분기로 이동
-2. 제한 응답 UX 추가
-   - “이 제품은 서버 운영/모니터링 전용입니다.”
-   - “원하면 서버 상태, 장애 원인, 기술 문서 질문으로 바꿔 드리겠습니다.”
-3. `Web 검색` 라벨/설명 정리
-   - `기술 웹 검색` 또는 `운영/기술 최신 정보 검색`
-4. 지원 범위 안내 문구 추가
-   - 입력창 도움말 또는 welcome prompt에 명시
+1. [x] 오프도메인 질문 감지 규칙 추가 (2026-04-16)
+   - `query-classifier.ts`: `off-domain` intent + `isOffDomain` 플래그 추가
+   - 날씨·운세·맛집·주식 추천 등 생활형 패턴 감지 정규식 적용
+2. [x] 오프도메인 응답 UX (2026-04-16)
+   - `useQueryExecution.ts`: off-domain 감지 시 `warning` 상태에 disclaimer 주입
+   - 문구: `"참고: 저는 서버 운영·모니터링 중심 AI입니다. 일반 정보 답변은 정확도와 최신성이 제한될 수 있습니다."`
+3. [x] `Web 검색` 라벨/설명 정리 (2026-04-16 이전 완료)
+   - `ChatInputArea.tsx` 보조 카피 이미 `최신 정보 보강`으로 정리됨
+4. [x] 지원 범위 안내 문구 추가 (2026-04-16)
+   - `ChatInputArea.tsx` placeholder: `"서버 운영 질문을 입력하세요 (일반 질문도 best-effort 지원)"`
+5. [x] 첨부 기능 맥락 보강 (2026-04-16)
+   - `ChatInputArea.tsx` 첨부 placeholder: `"이미지/파일 분석 (시각·문서 분석) — 질문을 입력하세요"`
 
 ### Phase 2 — 분석 강도 모드 추가
 
@@ -147,34 +160,34 @@
 - 비용 영향:
   - **감소 또는 동일**
 
-### B안 — 범용 웹 모드 별도 추가
+### B안 — 일반 질문 best-effort + 도메인 우선 정책
 
 - 장점:
-  - 일반 질문 정식 수용 가능
+  - `AI 어시스턴트`로서의 기본 기대를 충족
+  - 도메인 질문에서의 강점을 유지하면서 일반 질문도 수용 가능
 - 단점:
-  - tool set, prompt, QA matrix, explainability UI가 별도 관리 대상이 됨
+  - 오프도메인 disclaimer, 라우팅, QA 기준이 추가로 필요
 - 비용 영향:
-  - **증가**
-  - 웹 검색 호출 증가
-  - 문서/QA/운영 복잡도 증가
+  - **소폭 증가 또는 동일**
+  - 단, 오프도메인 질문을 `single-agent + minimal tool path`로 제한하면 큰 비용 증가는 막을 수 있음
 
 ### 권장 결론
 
-- OpenManager에는 `A안 + 분석 강도 모드`가 맞다.
-- 범용 웹 assistant는 같은 제품 흐름에 섞지 않는 편이 낫다.
+- OpenManager에는 `B안 + 분석 강도 모드`가 맞다.
+- 범용 웹 assistant처럼 모든 질문을 깊게 처리하지는 않되, 일반 질문은 `best-effort`로 수용하고 도메인 질문에서 더 강하게 동작하도록 만든다.
 
 ## 7. 범위
 
 ### 포함
 
-- 도메인 지원/비지원 정책
-- 오프도메인 질문 제한 UX
+- 도메인 지원/확장 지원/일반 질문 정책
+- 오프도메인 `best-effort` 응답 UX
 - `Web 검색` 역할 재정의
 - `빠르게 / 표준 / 깊게` 분석 강도 설계
 
 ### 제외
 
-- 범용 `날씨/잡학` assistant 정식 구현
+- 범용 `날씨/잡학` assistant 전용 제품화
 - 별도 general-purpose web mode 구현
 - full spellcheck/autocorrect 파이프라인
 
@@ -189,13 +202,13 @@
   - Vercel + Playwright
   - 케이스:
     - 지원 질문 정상 처리
-    - 제한 지원 질문에서 `기술 웹 검색` 근거 표시
-    - 비지원 질문에서 정중한 제한 응답
+    - 확장 지원 질문에서 웹 검색 근거 표시
+    - 일반 질문에서 `best-effort + disclaimer` 동작 확인
     - `빠르게 / 표준 / 깊게` 모드별 응답 경로 차이 확인
 
 ## 9. 종료 조건
 
-- 오프도메인 질문이 정책대로 일관되게 제한된다.
-- `Web 검색`이 범용 검색이 아니라 기술/운영 최신 정보용으로 인지된다.
+- 오프도메인 질문이 `best-effort` 정책대로 일관되게 처리된다.
+- `Web 검색`의 역할과 한계가 UI에서 이해 가능하다.
 - `빠르게 / 표준 / 깊게`가 UI/라우팅/분석 근거에 일관되게 반영된다.
 - 관련 QA pack이 pass 한다.

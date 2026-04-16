@@ -5,6 +5,7 @@
 import type { UIMessage } from '@ai-sdk/react';
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import type { HybridQueryState } from '../types/hybrid-query.types';
 import type { QueryExecutionDeps } from './useQueryExecution';
 import { useQueryExecution } from './useQueryExecution';
 
@@ -93,5 +94,47 @@ describe('useQueryExecution', () => {
       text: 'db-mysql-dc1-primary 서버의 디스크 사용률이 81%입니다. 현재 원인과 우선 조치 방법을 분석해줘.',
     });
     expect(deps.asyncQuery.sendQuery).not.toHaveBeenCalled();
+  });
+
+  it('off-domain query면 best-effort disclaimer warning을 주입한다', async () => {
+    process.env.NODE_ENV = 'production';
+    const deps = createDeps();
+
+    const { result } = renderHook(() => useQueryExecution(deps));
+
+    act(() => {
+      result.current.executeQuery('오늘 서울 날씨 알려줘');
+    });
+
+    await Promise.resolve();
+    await Promise.resolve();
+
+    const updaterCalls = deps.setState.mock.calls
+      .map(([updater]) => updater)
+      .filter(
+        (updater): updater is (prev: HybridQueryState) => HybridQueryState =>
+          typeof updater === 'function'
+      );
+
+    const disclaimerUpdater = updaterCalls.find((updater) => {
+      const next = updater({
+        mode: 'streaming',
+        complexity: null,
+        progress: null,
+        jobId: null,
+        isLoading: false,
+        error: null,
+        errorDetails: null,
+        clarification: null,
+        warning: null,
+        processingTime: 0,
+        warmingUp: false,
+        estimatedWaitSeconds: 0,
+      });
+
+      return next.warning?.includes('서버 운영·모니터링 중심 AI');
+    });
+
+    expect(disclaimerUpdater).toBeDefined();
   });
 });

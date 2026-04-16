@@ -344,7 +344,7 @@ export const ChatInputArea = memo(function ChatInputArea({
                       <div className="flex-1 text-left">
                         <div className="font-medium">Web 검색</div>
                         <div className="text-xs text-gray-500">
-                          최신 정보 웹 검색
+                          최신 정보 보강
                         </div>
                       </div>
                       <div
@@ -371,7 +371,7 @@ export const ChatInputArea = memo(function ChatInputArea({
                     <div className="flex-1 text-left">
                       <div className="font-medium">파일 첨부</div>
                       <div className="text-xs text-gray-500">
-                        이미지, PDF, MD ({attachments.length}/3)
+                        이미지/PDF/MD 시각·문서 분석 ({attachments.length}/3)
                       </div>
                     </div>
                   </button>
@@ -392,8 +392,8 @@ export const ChatInputArea = memo(function ChatInputArea({
                       ? '요청 전송 중입니다... 잠시만 기다려주세요'
                       : '대답 중에도 편하게 입력하세요 (대기열에 추가됨)'
                     : attachments.length > 0
-                      ? '이미지/파일과 함께 질문하세요...'
-                      : '메시지를 입력하세요...'
+                      ? '이미지/파일 분석 (시각·문서 분석) — 질문을 입력하세요'
+                      : '서버 운영 질문을 입력하세요 (일반 질문도 best-effort 지원)'
               }
               className="flex-1 resize-none border-none bg-transparent px-2 py-3 pr-14 text-chat text-gray-900 placeholder:text-gray-400 focus:outline-hidden focus:ring-0"
               minHeight={48}
@@ -466,6 +466,7 @@ export const ChatInputArea = memo(function ChatInputArea({
                   {attachments.length}/3 파일
                 </span>
               )}
+              <span>서버 운영 중심 · 일반 질문은 best-effort</span>
             </div>
             <span>Enter로 전송, Shift+Enter로 줄바꿈</span>
           </div>

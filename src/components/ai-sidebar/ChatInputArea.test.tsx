@@ -107,6 +107,7 @@ describe('ChatInputArea popover', () => {
     fireEvent.click(toggle);
 
     expect(screen.getByText('Web 검색')).toBeInTheDocument();
+    expect(screen.getByText('최신 정보 보강')).toBeInTheDocument();
 
     fireEvent.touchStart(document.body);
 

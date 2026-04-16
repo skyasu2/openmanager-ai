@@ -84,6 +84,31 @@ describe('QueryClassifier', () => {
     });
   });
 
+  describe('off-domain intent', () => {
+    it.each([
+      '오늘 서울 날씨 알려줘',
+      '환율 알려줘',
+      '뉴스 요약해줘',
+      '번역해줘',
+      '일정 정리해줘',
+    ])('classifies "%s" as off-domain best-effort', async (query) => {
+      const result = await classifier.classify(query);
+      expect(result.intent).toBe('off-domain');
+      expect(result.isOffDomain).toBe(true);
+      expect(result.complexity).toBe(1);
+    });
+
+    it.each([
+      '서버 점검 일정 알려줘',
+      'Redis 공식 문서 번역해줘',
+      '인프라 아키텍처 일정 정리해줘',
+    ])('does not classify "%s" as off-domain when infra context exists', async (query) => {
+      const result = await classifier.classify(query);
+      expect(result.intent).not.toBe('off-domain');
+      expect(result.isOffDomain).not.toBe(true);
+    });
+  });
+
   describe('confidence boosters', () => {
     it('adds +10 for long queries (>50 chars)', async () => {
       const short = await classifier.classify('hello world');

@@ -1,12 +1,12 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-16 KST (vibe-coding 공개 카피 정리 완료)
+**Last Updated**: 2026-04-16 KST (#104 계획서 평가 및 개선 사이클 완료)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
 ## Active Tasks
 
-_없음 — 다음 작업은 Backlog에서 승격_
+_없음_
 
 ---
 
@@ -20,13 +20,22 @@ _없음 — 다음 작업은 Backlog에서 승격_
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| AI Domain Boundary & Analysis Mode | Medium | 계획서: [ai-domain-boundary-analysis-mode-plan.md](ai-domain-boundary-analysis-mode-plan.md). 오프도메인 질문 제한 정책, `기술 웹 검색` 역할 정리, `빠르게 / 표준 / 깊게` 분석 강도 설계. |
+| AI Domain Boundary Phase 2 (분석 강도 모드) | Medium | 계획서: [ai-domain-boundary-analysis-mode-plan.md](ai-domain-boundary-analysis-mode-plan.md). `빠르게/표준/깊게` UI + analysisMode payload + supervisor-mode heuristic. Phase 1 완료 후 착수. |
+| AI Chat Improvement Sprint 4 | Medium | 계획서: [ai-chat-improvement-plan.md](ai-chat-improvement-plan.md). `generateObject` NLQ 전환 + per-step timeout. `ai-stream-route-contract` Phase 1 완료 선행 조건 해소됨. |
 | AI Response Visibility & Rate Limit (Phase 1~5) | Medium | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). handoff 가시성 UX, 429 UX, Job Queue agent path, limiter 정책 재조정. |
 | Storybook circular chunk warning 정리 | Low | non-blocking, stable 승격 후 재평가 |
 
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-16 #104)
+- [x] 계획서 평가 및 개선 사이클
+  - **Stream Route Contract Phase 1**: `useHybridAIQuery.ts` JSDoc 교정 (threshold 45→실제값 19 맥락 명시), `frontend-backend-comparison.md` 복잡도 라우팅 표 수정
+  - **AI Domain Boundary Phase 1 완료**: `query-classifier.ts` `off-domain` intent + `isOffDomain` 플래그, `useQueryExecution.ts` 오프도메인 disclaimer warning 주입, `ChatInputArea.tsx` placeholder 도메인 안내 추가
+  - **NLP/아키텍처 문서 반영**: `ai-engine-architecture.md` "NLP 엔진: 자체 구현 없음" 사실 오류 수정, `frontend-backend-comparison.md §2.3-A` NLP 전처리 파이프라인 상세 추가
+  - **knowledge-base corpus drafts**: archive 이동 (실행 계획 없는 초안 모음)
+  - **Backlog 재정렬**: Domain Boundary Phase 2, Sprint 4 순서 명확화
 
 ### Completed (2026-04-16 #100)
 - [x] P1 `ai-workspace-analysis-basis-hydration-drift` 완전 종료

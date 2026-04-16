@@ -4,9 +4,10 @@
  * @description 쿼리 복잡도에 따라 자동으로 최적의 방식을 선택하는 하이브리드 AI 쿼리 훅
  *
  * 라우팅 전략:
- * - simple (score ≤ 20): useChat (빠른 스트리밍)
- * - moderate (20 < score ≤ 45): useChat (표준 스트리밍)
- * - complex/very_complex (score > 45): Job Queue (진행률 표시 + 타임아웃 회피)
+ * - 복잡도 점수(score)가 complexityThreshold(기본값: 19)를 초과하면 Job Queue, 이하면 Streaming
+ * - 레벨 라벨(simple ≤20 / moderate 21-45 / complex >45)은 복잡도 기술자일 뿐,
+ *   라우팅 기준값이 아님. 실제 전환 기준은 getComplexityThreshold() 반환값.
+ * - forceJobQueueKeywords(보고서·리포트·근본 원인 등) 매칭 시 점수 무관하게 Job Queue 강제
  *
  * Architecture (split into sub-hooks):
  * - core/useQueryExecution.ts: executeQuery + sendQuery routing

@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-04-14
+> Last reviewed: 2026-04-16
 > Canonical: docs/reference/architecture/ai/ai-engine-architecture.md
 > Tags: ai,architecture,multi-agent,cloud-run
 >
@@ -27,7 +27,7 @@ OpenManager AI의 AI Engine은 **Vercel AI SDK v6 계열** 기반 **multi-agent 
 
 | 구분 | 내용 |
 |------|------|
-| **NLP 엔진** | 자체 구현 없음 (외부 LLM API 사용) |
+| **NLP 전처리** | 규칙 기반 커스텀 파이프라인 (ML 라이브러리 미사용) — 쿼리 분류·복잡도 분석·명확화·텍스트 정제·Prompt Injection 방어 포함. 상세: [frontend-backend-comparison.md §2.3](./frontend-backend-comparison.md) |
 | **기반 모델** | Groq `llama-4-scout-17b-16e-instruct`, Cerebras `qwen-3-235b-a22b-instruct-2507`, Mistral `mistral-large-latest`, Gemini `gemini-2.5-flash-lite` |
 | **호스팅** | Cerebras, Groq, Mistral, Google AI (Gemini), OpenRouter 인프라 |
 | **비용** | 프로덕션 서비스는 무료 tier 한도 내 운영 |

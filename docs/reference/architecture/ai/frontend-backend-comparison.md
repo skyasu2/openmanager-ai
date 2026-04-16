@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-03-03
+> Last reviewed: 2026-04-16
 > Canonical: docs/reference/architecture/ai/frontend-backend-comparison.md
 > Tags: ai,frontend,backend,comparison
 
@@ -89,6 +89,56 @@ graph LR
 | Job Queue (복잡 쿼리) | useAsyncAIQuery SSE | generateText Job | 양쪽 완벽 |
 | Job 진행률 표시 | JobProgressIndicator | 단계별 progress 전송 | 양쪽 완벽 |
 | Clarification Dialog | ClarificationDialog | confidence < 0.6 감지 | 양쪽 완벽 |
+
+### 2.3-A NLP / 쿼리 전처리 파이프라인
+
+> 전통적 NLP 라이브러리(형태소 분석기, POS 태거 등) 없이, 서버 모니터링 도메인에 특화된 **규칙 기반 커스텀 파이프라인**으로 구성되어 있습니다. 실제 자연어 이해는 LLM이 담당하며, 전처리 계층은 라우팅 최적화와 보안을 담당합니다.
+
+#### Frontend 전처리 (Vercel 측)
+
+| 모듈 | 파일 | 기능 |
+|------|------|------|
+| 쿼리 분류기 | `src/lib/ai/query-classifier.ts` | 인텐트 분류 (`general\|monitoring\|analysis\|guide\|coding`), 신뢰도 0-100% 계산 |
+| 복잡도 분석기 | `src/lib/ai/utils/query-complexity.ts` | 4단계 분류 (`simple\|moderate\|complex\|very_complex`), 복잡도 점수 기반 Streaming/Job Queue 자동 전환 |
+| 명확화 생성기 | `src/lib/ai/clarification-generator.ts` | `confidence < 85% && complexity ≥ 2` 조건에서 서버 스코프·시간범위·메트릭 유형 중 부족한 항목 자동 감지 → 선택지 생성 |
+| 메시지 정규화 | `src/lib/ai/utils/message-normalizer.ts` | AI SDK v6 UIMessage ↔ Cloud Run 형식 변환, 멀티모달(이미지·파일) 추출 |
+| 컨텍스트 압축 | `src/lib/ai/utils/context-compressor.ts` | 4개 이상 메시지 시 자동 압축 (최근 3개 유지), 토큰 추정 (한국어 ~1.5자/토큰) |
+
+**복잡도 점수 주요 가중치**
+
+| 키워드 유형 | 가중치 |
+|------------|:------:|
+| 분석·패턴·비교 | +20 |
+| 예측·forecast | +25 |
+| 근본원인·왜·진단 | +30 |
+| 보고서·report | +20 |
+| 쿼리 길이 >200자 | +20 |
+
+> **라우팅 기준**: `score > complexityThreshold (default: 19)` → Job Queue / 이하 → Streaming.
+> 레벨 라벨(simple ≤20 / moderate 21-45 / complex >45)은 복잡도 기술자이며 라우팅 임계값이 아님.
+> `forceJobQueueKeywords`(보고서·리포트·근본 원인 등) 매칭 시 점수 무관하게 Job Queue 강제.
+
+#### Backend 전처리 (Cloud Run 측)
+
+| 모듈 | 파일 | 기능 |
+|------|------|------|
+| 텍스트 정제 | `cloud-run/ai-engine/src/lib/text-sanitizer.ts` | LLM 출력의 중국어→한국어 51개 매핑, 러시아어·베트남어·독일어·가타카나 제거, JSON 재귀 정제 |
+| Prompt Guard | `cloud-run/ai-engine/src/lib/prompt-guard.ts` | Prompt Injection 방어: 입력 18개 + 출력 10개 패턴 (`ignore previous instructions`, `jailbreak`, `DAN mode` 등) |
+| RAG 문서 정규화 | `cloud-run/ai-engine/src/lib/rag-merge-planner.ts` | 문서 필드 trim, TF-IDF + Cosine 유사도 기반 중복 병합 (임계값 0.6) |
+| RAG 재순위정렬 | `cloud-run/ai-engine/src/lib/reranker.ts` | Groq LLM 기반 관련성 재순위정렬 (Cerebras fallback), 타임아웃 8초 |
+| NLQ 명령어 | `cloud-run/ai-engine/src/services/ai-sdk/agents/config/instructions/nlq.ts` | 정량 기준 해석 ("높은"=70%+, "낮은"=30% 미만), 빈 결과 fallback chain (임계값 완화 → Top-N 대안) |
+
+#### 미구현 / 의도적 제외
+
+| 기능 | 상태 |
+|------|------|
+| Tokenization (형태소) | 미구현 — 정규식만 사용 |
+| Stemming / Lemmatization | 미구현 |
+| Named Entity Recognition | 패턴 매칭 수준 (NER 미사용) |
+| 다중 인텐트 분류 | 미구현 (단일 인텐트만) |
+| ML 기반 분류 모델 | 미구현 (규칙 기반만) |
+
+> **설계 근거**: 도메인이 서버 모니터링으로 한정되어 있어 ML 기반 분류 도입 대비 규칙 기반의 예측 가능성·디버깅 용이성이 더 높다고 판단. LLM이 실질적인 자연어 이해를 담당하므로 전통적 NLP 스택의 실효 이득이 낮음.
 
 ### 2.4 보안
 

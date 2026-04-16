@@ -101,7 +101,7 @@ export const WelcomePromptCards = memo(function WelcomePromptCards({
           무엇을 도와드릴까요?
         </h2>
         <p className="mt-2 text-sm text-gray-500">
-          서버 모니터링, 장애 분석, 성능 예측을 도와드립니다
+          서버 운영 질문에 가장 강하며, 일반 질문도 best-effort로 답변합니다
         </p>
       </div>
 
