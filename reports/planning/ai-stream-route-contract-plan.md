@@ -1,14 +1,14 @@
 > Owner: project
-> Status: Draft
+> Status: Approved
 > Doc type: Plan
 > Last reviewed: 2026-04-17
 > Tags: ai-assistant,streaming,cloud-run,vercel,route-contract,architecture
 
 # AI Stream Route Contract & Legacy Path Consolidation Plan
 
-- 상태: **Phase 1 완료 (2026-04-16), Phase 5 provider fallback visibility 완료 (2026-04-17), Phase 6 warning semantics alignment 완료 (2026-04-17), residual cleanup backlog**
+- 상태: **Phase 1 완료 (2026-04-16), Phase 5 provider fallback visibility 완료 (2026-04-17), Phase 6 warning semantics alignment 완료 (2026-04-17), Phase 7 legacy role-tagging slice Approved (2026-04-17)**
 - 작성일: 2026-04-16
-- TODO.md 연결: Backlog > `AI Stream Route Contract - residual cleanup`
+- TODO.md 연결: Active Tasks > `AI Stream Route Contract - legacy role-tagging`
 - 목표: Vercel API routes와 Cloud Run supervisor endpoints의 역할을 다시 명확히 정의하고, 현재 primary streaming path와 legacy plain/json path의 계약을 정리해 유지보수 복잡도와 stale 판단을 줄인다.
 
 ## 0. Best Practice Baseline
@@ -93,6 +93,13 @@
 - 반면 single-agent streaming warning은 supervisor threshold(`40s`) 기준으로 동작하므로, 두 경로는 같은 숫자를 공유하는 구조가 아니다.
 - 따라서 필요한 수정은 숫자 통일이 아니라, **각 경로가 자기 threshold를 payload/message에 정확히 반영하도록 만드는 것**이다.
 
+### 3.6 legacy path meaning is implicit, not explicit
+
+- `/api/ai/supervisor`는 제거 가능한 dead path가 아니라, 현재도 `local dev JSON fallback`, smoke/contract/integration 테스트, plain text/cache proxy 경로로 사용 중이다.
+- 하지만 응답 헤더와 일부 문서에는 이 경로가 여전히 primary SSE path처럼 읽히는 drift가 남아 있다.
+- 이 상태에서는 새 caller가 legacy path를 메인 경로로 오인해 붙을 가능성이 있다.
+- 따라서 지금 필요한 것은 삭제가 아니라, **legacy 역할을 기계적으로 식별 가능한 contract로 노출하는 것**이다.
+
 ## 4. 목표 상태
 
 ### A. primary path가 문서와 코드에서 모두 명확함
@@ -128,6 +135,12 @@
 - single-agent stream warning은 supervisor threshold를 따른다.
 - multi-agent stream warning은 orchestrator threshold를 따른다.
 - payload의 `threshold`와 사용자 메시지의 초 단위가 서로 일치한다.
+
+### F. legacy route가 스스로 primary가 아님을 드러냄
+
+- `/api/ai/supervisor` 응답은 machine-readable header로 자신이 legacy contract임을 명시한다.
+- 같은 응답에서 현재 primary route가 `/api/ai/supervisor/stream/v2`임을 힌트로 제공한다.
+- 문서도 `/api/ai/supervisor`를 primary SSE path로 더 이상 설명하지 않는다.
 
 ## 5. 구현 전략
 
@@ -180,33 +193,42 @@
 - multi-agent warning message가 `ORCHESTRATOR_CONFIG.warnThreshold` 초 단위를 사용
 - frontend `warning` 타입 주석에서 stale `25초` 문구 제거
 
+### Phase 7 — legacy role-tagging (Residual Slice, 2026-04-17)
+
+1. `/api/ai/supervisor` 응답에 legacy contract 식별 header를 추가한다.
+2. legacy route는 삭제하지 않고, 현재 primary route(`/stream/v2`)를 함께 명시한다.
+3. local dev fallback caller와 architecture docs 설명을 current reality에 맞게 정리한다.
+4. route deletion/deprecation enforcement는 이번 slice에 포함하지 않는다.
+
 ## 6. Contract
 
 ### Approved Slice
 
-- 범위: `cloud-run/ai-engine` multi-agent warning event semantics와 frontend warning type 주석만 다룬다.
+- 범위: `src/app/api/ai/supervisor` legacy route role-tagging과 관련 문서 drift만 다룬다.
 - 포함 파일:
-  - `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-agent-stream.ts`
-  - `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-agent-stream.test.ts`
-  - `src/hooks/ai/types/hybrid-query.types.ts`
+  - `src/app/api/ai/supervisor/**`
+  - `src/hooks/ai/core/useQueryExecution.ts`
+  - `docs/reference/architecture/ai/ai-engine-architecture.md`
+  - `docs/reference/architecture/system/system-architecture-current.md`
+  - 필요 시 `docs/reference/api/endpoints.md`
 - 제외:
-  - warning threshold 수치 재조정
-  - multi-agent TTFB per-provider 세분화
-  - final `done.metadata` schema 확장
-  - Vercel/frontend hydration 변경
+  - legacy route 삭제
+  - client endpoint migration
+  - `/api/ai/supervisor/stream` Cloud Run SSE endpoint 제거
+  - auth/rate-limit semantics 변경
 
 ### Behavioral Contract
 
-1. multi-agent `SLOW_PROCESSING` warning은 `threshold` 필드를 포함해야 한다.
-2. warning `message`는 실제 `ORCHESTRATOR_CONFIG.warnThreshold` 초 단위를 반영해야 한다.
-3. single-agent와 multi-agent가 다른 threshold를 쓰더라도, frontend 타입/주석은 이를 허용하는 일반 계약으로 유지한다.
-4. 이번 slice는 warning threshold 값 자체를 바꾸지 않는다.
+1. `/api/ai/supervisor` 응답은 `legacy-supervisor` contract를 식별할 수 있어야 한다.
+2. 같은 응답은 primary route가 `/api/ai/supervisor/stream/v2`임을 명시해야 한다.
+3. local dev fallback caller 설명은 “개발용 fallback”으로 제한되어야 한다.
+4. 문서는 `/api/ai/supervisor`를 primary SSE route로 설명하지 않아야 한다.
 
 ### Test Scenarios
 
-1. multi-agent stream warning이 `threshold`를 포함하는지
-2. warning message가 실제 orchestrator threshold 초 단위를 반영하는지
-3. 기존 warning event / done contract가 깨지지 않는지 회귀 확인
+1. legacy route helper/response가 legacy contract header를 넣는지
+2. primary route hint header가 `/api/ai/supervisor/stream/v2`인지
+3. 기존 응답 헤더를 깨지 않는지 회귀 확인
 
 ## 7. 개선 필요성 평가
 
@@ -234,6 +256,7 @@
 - complexity threshold 설명 correction
 - multi-agent provider retry visibility contract
 - warning payload/message semantics alignment
+- legacy route role-tagging
 
 ### 제외
 
@@ -243,6 +266,7 @@
 - reasoning/depth mode 구현
 - retry history를 최종 metadata에 영구 저장하는 구조 변경
 - warning threshold 값 변경
+- legacy route 제거
 
 ## 9. 검증 계획
 
@@ -258,10 +282,10 @@
 - 필요 시 후속 smoke
   - stream/v2 path 기준 계약 테스트 존재 여부 재검토
 - 잔여 slice 검증
-  - `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/agents/orchestrator-agent-stream.test.ts`
+  - `npx vitest run src/app/api/ai/supervisor/*.test.ts`
   - `npm run type-check`
-  - `cd cloud-run/ai-engine && npm run type-check`
-  - `cd cloud-run/ai-engine && npm run test`
+  - `npm run lint`
+  - `npm run test:quick`
 
 ## 10. 종료 조건
 
@@ -271,3 +295,4 @@
 - 아키텍처 평가 시 더 이상 `/api/ai/supervisor` legacy path를 현재 메인 경로로 오인하지 않는다.
 - multi-agent provider retry가 stream 중 즉시 관측 가능하다.
 - warning event payload/message가 실제 활성 경로 threshold와 일치한다.
+- `/api/ai/supervisor`가 legacy path라는 사실이 응답 contract와 문서에서 모두 명시된다.

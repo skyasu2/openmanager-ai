@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| 없음 | — | — | 다음 후보: `AI Response Visibility` 후속(`429 UX`, `Job Queue agent path`) 또는 `AI Stream Route Contract` residual cleanup(`legacy path`, `observability`) 재평가 |
+| P2: AI Stream Route Contract - legacy role-tagging | Medium | contract-approved | 계획서: [ai-stream-route-contract-plan.md](ai-stream-route-contract-plan.md). 목표: `/api/ai/supervisor`를 삭제하지 않고 legacy contract/header로 역할을 명시하고, primary route를 `/api/ai/supervisor/stream/v2`로 문서/코드에 고정. |
 
 ---
 
