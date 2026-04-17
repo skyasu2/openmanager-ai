@@ -23,6 +23,8 @@
 
 ## MCP 카탈로그 (프로젝트 공통)
 
+> 현재 상시 등록: 9개 / 온디맨드: 1개 (storybook)
+
 | MCP | 용도 | `.mcp.json` 상시 등록 | 비고 |
 |-----|------|:--------------------:|------|
 | **context7** | 라이브러리 공식 문서 검색 | ✅ | 공식 문서 우선 참조 |
@@ -34,7 +36,7 @@
 | **playwright** | 브라우저 자동화/E2E | ✅ | 로컬 QA |
 | **next-devtools** | Next.js 런타임 진단 | ✅ | Next.js 16+ dev server 필수 |
 | **github** | 저장소/PR/이슈 관리 | ✅ | GitHub MCP |
-| **lighthouse** | Core Web Vitals + 성능/접근성/SEO 감사 | ✅ | Lighthouse score 자동화와 함께 도입 |
+| **lighthouse** | Core Web Vitals + 성능/접근성/SEO 감사 | ❌ 제거 | `npm run lighthouse:*` CLI 스크립트로 대체 (`scripts/perf/`) |
 | **storybook** | 컴포넌트 문서/스토리 기반 작업 | ❌ 온디맨드 | `npx storybook dev` 실행 시에만 동작, 필요 시 수동 추가 |
 
 - Claude 기준 실제 구성: `.mcp.json` (gitignore, GitHub 노출 없음)
@@ -224,10 +226,6 @@ npm run mcp:playwright:mode:stdio
     "diagram-converter-mcp": {
       "command": "npx",
       "args": ["-y", "diagram-converter-mcp"]
-    },
-    "lighthouse": {
-      "command": "npx",
-      "args": ["-y", "lighthouse-mcp"]
     }
   }
 }
@@ -251,14 +249,12 @@ npm run mcp:playwright:mode:stdio
       "mcp__github__*",
       "mcp__sequential-thinking__*",
       "mcp__stitch__*",
-      "mcp__lighthouse__*"
     ]
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "vercel", "supabase-db", "context7", "diagram-converter-mcp",
-    "playwright", "next-devtools", "github", "sequential-thinking",
-    "stitch", "lighthouse"
+    "playwright", "next-devtools", "github", "sequential-thinking", "stitch"
   ]
 }
 ```
@@ -518,7 +514,7 @@ cat > .claude/settings.local.json << 'EOF'
   "enabledMcpjsonServers": [
     "vercel", "supabase-db", "context7",
     "playwright", "next-devtools", "github", "sequential-thinking",
-    "stitch", "diagram-converter-mcp", "lighthouse"
+    "stitch", "diagram-converter-mcp"
   ]
 }
 EOF

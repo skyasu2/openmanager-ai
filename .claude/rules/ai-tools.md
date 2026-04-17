@@ -13,7 +13,7 @@
 | `vercel` | 배포 상태 확인 | 중간 | ✅ |
 | `playwright` | E2E 테스트 | 중간 | ✅ |
 | `github` | 저장소/PR 관리 | 중간 | ✅ |
-| `lighthouse` | Core Web Vitals + Performance/A11y/SEO 감사 | 중간 | ✅ |
+| `lighthouse` | Core Web Vitals + Performance/A11y/SEO 감사 | — | ❌ 제거 (`npm run lighthouse:*` CLI로 대체) |
 | `storybook` | 컴포넌트 문서·스토리 자동 생성 (Storybook dev 서버 필수) | 온디맨드 | ❌ 수동 추가 |
 
 ## Skills
