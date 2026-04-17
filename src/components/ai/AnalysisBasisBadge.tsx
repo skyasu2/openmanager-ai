@@ -530,8 +530,12 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
       ? `모드: ${ANALYSIS_MODE_LABELS[basis.analysisMode]}`
       : null,
     basis.timeRange ? `기간: ${basis.timeRange}` : null,
+    handoffHistory && handoffHistory.length > 0
+      ? `handoff ${handoffHistory.length}회`
+      : null,
   ].filter(Boolean);
   const collapsedSummary = collapsedSummaryParts.slice(0, 3).join(' · ');
+  const collapsedTitle = collapsedSummaryParts.join(' · ');
 
   return (
     <div
@@ -558,7 +562,7 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
 
       {!isExpanded && collapsedSummary && (
         <div className="px-3 pb-2 text-xs text-gray-500">
-          <p className="truncate" title={collapsedSummary}>
+          <p className="truncate" title={collapsedTitle}>
             {collapsedSummary}
           </p>
         </div>
