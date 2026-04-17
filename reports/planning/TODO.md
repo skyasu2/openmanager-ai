@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| 없음 | — | — | 다음 후보: `AI Response Visibility` 후속(`429 UX`, `Job Queue agent path`) 또는 `AI Stream Route Contract` residual cleanup(`warning threshold`, `legacy path`, `observability`) 재평가 |
+| P2: AI Stream Route Contract - warning semantics alignment | Medium | contract-approved | 계획서: [ai-stream-route-contract-plan.md](ai-stream-route-contract-plan.md). 목표: multi-agent `SLOW_PROCESSING` payload/message를 실제 orchestrator threshold와 일치시키고, 프론트 타입 주석의 stale `25초` 문구 제거. |
 
 ---
 

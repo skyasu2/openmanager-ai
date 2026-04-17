@@ -1,14 +1,14 @@
 > Owner: project
-> Status: Draft
+> Status: Approved
 > Doc type: Plan
 > Last reviewed: 2026-04-17
 > Tags: ai-assistant,streaming,cloud-run,vercel,route-contract,architecture
 
 # AI Stream Route Contract & Legacy Path Consolidation Plan
 
-- 상태: **Phase 1 완료 (2026-04-16), Phase 5 provider fallback visibility 완료 (2026-04-17), residual cleanup backlog**
+- 상태: **Phase 1 완료 (2026-04-16), Phase 5 provider fallback visibility 완료 (2026-04-17), Phase 6 warning semantics slice Approved (2026-04-17)**
 - 작성일: 2026-04-16
-- TODO.md 연결: Backlog > `AI Stream Route Contract - residual cleanup`
+- TODO.md 연결: Active Tasks > `AI Stream Route Contract - warning semantics alignment`
 - 목표: Vercel API routes와 Cloud Run supervisor endpoints의 역할을 다시 명확히 정의하고, 현재 primary streaming path와 legacy plain/json path의 계약을 정리해 유지보수 복잡도와 stale 판단을 줄인다.
 
 ## 0. Best Practice Baseline
@@ -17,6 +17,7 @@
 - 따라서 provider retry, handoff 진행 중, fallback 전환 중 같은 **transient runtime state**는 `done.metadata`에 누적시키기보다 스트림 이벤트로 즉시 노출하는 쪽이 맞다.
 - 반대로 최종 provider/model/usage/ttfb 같은 값은 완료 시점 metadata에 남겨야 한다.
 - stream 경로의 timeout/abort는 SDK timeout과 상위 수동 guard가 모순 없이 맞물려야 하며, stale 설명은 코드와 같은 날짜에 정리해야 drift가 줄어든다.
+- `warning` 이벤트는 path-local threshold를 설명해야 하며, single-agent와 multi-agent가 다른 threshold를 쓰는 경우에도 payload/message는 실제 활성 경로 기준으로 일치해야 한다.
 
 ## 1. 배경
 
@@ -85,6 +86,13 @@
 - 그 결과 실제로는 provider fallback이 일어나도 사용자/운영자 화면에서는 단순 지연처럼 보인다.
 - 이 문제는 라우팅 계약이나 최종 metadata shape보다 먼저, **runtime state visibility 계약**으로 해결하는 편이 맞다.
 
+### 3.5 warning semantics drift
+
+- 현재 multi-agent warning 이벤트는 orchestrator threshold(`60s`)를 기준으로 발생하지만, 사용자 메시지는 여전히 `25초 초과`라고 고정되어 있다.
+- 프론트 타입 주석도 `25초 초과`로 적혀 있어, 실제 계약보다 오래된 값이 UI/문서에 남아 있다.
+- 반면 single-agent streaming warning은 supervisor threshold(`40s`) 기준으로 동작하므로, 두 경로는 같은 숫자를 공유하는 구조가 아니다.
+- 따라서 필요한 수정은 숫자 통일이 아니라, **각 경로가 자기 threshold를 payload/message에 정확히 반영하도록 만드는 것**이다.
+
 ## 4. 목표 상태
 
 ### A. primary path가 문서와 코드에서 모두 명확함
@@ -114,6 +122,12 @@
 - multi-agent provider retry도 single-agent와 동일하게 `agent_status`로 즉시 노출된다.
 - 이 이벤트는 최종 metadata를 오염시키지 않고, transient 상태만 전달한다.
 - retry 성공 후 최종 `done.metadata`는 기존과 동일한 안정 계약을 유지한다.
+
+### E. warning 이벤트가 실제 활성 경로를 정확히 설명함
+
+- single-agent stream warning은 supervisor threshold를 따른다.
+- multi-agent stream warning은 orchestrator threshold를 따른다.
+- payload의 `threshold`와 사용자 메시지의 초 단위가 서로 일치한다.
 
 ## 5. 구현 전략
 
@@ -154,32 +168,40 @@
 - empty response retry 직전 `agent_status` 노출
 - 일반 provider error retry 경로도 같은 패턴으로 정렬
 
+### Phase 6 — warning semantics alignment (Residual Slice, 2026-04-17)
+
+1. multi-agent `SLOW_PROCESSING` warning payload를 single-agent와 같은 shape로 정렬한다.
+2. warning message는 하드코딩된 `25초`가 아니라 실제 threshold를 사용한다.
+3. frontend type/comment도 path-local threshold semantics에 맞게 일반화한다.
+4. threshold 값 자체는 이번 slice에서 변경하지 않는다.
+
 ## 6. Contract
 
 ### Approved Slice
 
-- 범위: `cloud-run/ai-engine` multi-agent stream path의 provider retry visibility만 다룬다.
+- 범위: `cloud-run/ai-engine` multi-agent warning event semantics와 frontend warning type 주석만 다룬다.
 - 포함 파일:
   - `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-agent-stream.ts`
   - `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-agent-stream.test.ts`
+  - `src/hooks/ai/types/hybrid-query.types.ts`
 - 제외:
-  - warning threshold 재조정
+  - warning threshold 수치 재조정
   - multi-agent TTFB per-provider 세분화
   - final `done.metadata` schema 확장
   - Vercel/frontend hydration 변경
 
 ### Behavioral Contract
 
-1. 첫 provider가 빈 응답 또는 `No output generated`로 실패하고 다음 provider로 재시도할 때, 스트림은 재시도 전에 `agent_status` 이벤트를 방출해야 한다.
-2. `agent_status`는 transient visibility 용도이며, 기존 `done.metadata` shape를 변경하지 않는다.
-3. retry 후 다음 provider가 정상 응답하면 기존처럼 `text_delta`와 `done`이 이어져야 한다.
-4. 모든 provider가 실패하는 최종 fallback 경로는 이번 slice에서 의미를 바꾸지 않는다.
+1. multi-agent `SLOW_PROCESSING` warning은 `threshold` 필드를 포함해야 한다.
+2. warning `message`는 실제 `ORCHESTRATOR_CONFIG.warnThreshold` 초 단위를 반영해야 한다.
+3. single-agent와 multi-agent가 다른 threshold를 쓰더라도, frontend 타입/주석은 이를 허용하는 일반 계약으로 유지한다.
+4. 이번 slice는 warning threshold 값 자체를 바꾸지 않는다.
 
 ### Test Scenarios
 
-1. first provider `No output generated` -> `agent_status` -> second provider success
-2. first provider empty response -> `agent_status` -> second provider success
-3. 기존 `usage.totalTokens` 계약이 유지되는지 회귀 확인
+1. multi-agent stream warning이 `threshold`를 포함하는지
+2. warning message가 실제 orchestrator threshold 초 단위를 반영하는지
+3. 기존 warning event / done contract가 깨지지 않는지 회귀 확인
 
 ## 7. 개선 필요성 평가
 
@@ -206,6 +228,7 @@
 - route responsibility matrix
 - complexity threshold 설명 correction
 - multi-agent provider retry visibility contract
+- warning payload/message semantics alignment
 
 ### 제외
 
@@ -214,6 +237,7 @@
 - job queue policy redesign
 - reasoning/depth mode 구현
 - retry history를 최종 metadata에 영구 저장하는 구조 변경
+- warning threshold 값 변경
 
 ## 9. 검증 계획
 
@@ -230,6 +254,7 @@
   - stream/v2 path 기준 계약 테스트 존재 여부 재검토
 - 잔여 slice 검증
   - `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/agents/orchestrator-agent-stream.test.ts`
+  - `npm run type-check`
   - `cd cloud-run/ai-engine && npm run type-check`
   - `cd cloud-run/ai-engine && npm run test`
 
@@ -240,3 +265,4 @@
 - complexity threshold 설명이 current code와 일치한다.
 - 아키텍처 평가 시 더 이상 `/api/ai/supervisor` legacy path를 현재 메인 경로로 오인하지 않는다.
 - multi-agent provider retry가 stream 중 즉시 관측 가능하다.
+- warning event payload/message가 실제 활성 경로 threshold와 일치한다.
