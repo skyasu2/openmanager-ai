@@ -1,8 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { mockGenerateText, mockStreamText } = vi.hoisted(() => ({
+const {
+  mockGenerateText,
+  mockStreamText,
+  mockExecuteReporterWithPipeline,
+} = vi.hoisted(() => ({
   mockGenerateText: vi.fn(),
   mockStreamText: vi.fn(),
+  mockExecuteReporterWithPipeline: vi.fn(),
 }));
 
 vi.mock('ai', () => ({
@@ -54,7 +59,8 @@ vi.mock('./orchestrator-routing', () => ({
     },
   })),
   getAgentProviderOrder: vi.fn(() => ['cerebras', 'groq']),
-  executeReporterWithPipeline: vi.fn(),
+  executeReporterWithPipeline: (...args: unknown[]) =>
+    mockExecuteReporterWithPipeline(...args),
 }));
 
 vi.mock('./orchestrator-context', () => ({
@@ -184,6 +190,9 @@ describe('executeAgentStream', () => {
     const doneEvent = events.find((event) => event.type === 'done');
     expect(doneEvent).toBeDefined();
     expect((doneEvent?.data as { success: boolean }).success).toBe(true);
+    expect(
+      (doneEvent?.data as { usage: { totalTokens?: number } }).usage.totalTokens
+    ).toBe(15);
   });
 
   it('prefers deterministic summary over streamed model text for parity-sensitive prompts', async () => {
@@ -275,5 +284,63 @@ describe('executeAgentStream', () => {
     const doneEvent = events.find((event) => event.type === 'done');
     expect(doneEvent).toBeDefined();
     expect((doneEvent?.data as { success: boolean }).success).toBe(true);
+    expect(
+      (doneEvent?.data as { usage: { totalTokens?: number } }).usage.totalTokens
+    ).toBe(15);
+  });
+
+  it('preserves totalTokens when reporter pipeline returns a direct result', async () => {
+    mockExecuteReporterWithPipeline.mockResolvedValueOnce({
+      success: true,
+      response: '리포터 파이프라인 응답',
+      handoffs: [{ from: 'Orchestrator', to: 'Reporter Agent', reason: 'Routing' }],
+      finalAgent: 'Reporter Agent',
+      toolsCalled: ['buildIncidentTimeline'],
+      usage: {
+        promptTokens: 12,
+        completionTokens: 6,
+        totalTokens: 18,
+      },
+      metadata: {
+        provider: 'mock',
+        modelId: 'mock-reporter',
+        totalRounds: 1,
+        handoffCount: 1,
+        durationMs: 30,
+      },
+    });
+
+    const events: Array<{ type: string; data: unknown }> = [];
+    for await (const event of executeAgentStream(
+      '장애 보고서 만들어줘',
+      'Reporter Agent',
+      Date.now(),
+      'test-session',
+      true,
+      true
+    )) {
+      events.push(event);
+    }
+
+    const doneEvent = events.find((event) => event.type === 'done');
+    expect(doneEvent).toBeDefined();
+    expect(
+      (doneEvent?.data as { usage: { totalTokens?: number } }).usage.totalTokens
+    ).toBe(18);
+  });
+
+  it('preserves zero totalTokens when all providers end with no output fallback', async () => {
+    mockStreamText.mockImplementation(() => {
+      throw new Error('No output generated');
+    });
+
+    const events = await collectEvents('CPU 사용률 알려줘');
+    const doneEvent = events.find((event) => event.type === 'done');
+
+    expect(doneEvent).toBeDefined();
+    expect(
+      (doneEvent?.data as { usage: { totalTokens?: number } }).usage.totalTokens
+    ).toBe(0);
+    expect((doneEvent?.data as { success: boolean }).success).toBe(false);
   });
 });
