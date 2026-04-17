@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| P2: AI Stream Route Contract - multi-agent provider fallback visibility | Medium | contract-approved | 계획서: [ai-stream-route-contract-plan.md](ai-stream-route-contract-plan.md). residual slice only: multi-agent provider retry 상태를 `agent_status`로 즉시 노출, final metadata shape는 유지. |
+| 없음 | — | — | 다음 후보: `AI Response Visibility` 후속(`429 UX`, `Job Queue agent path`) 또는 `AI Stream Route Contract` residual cleanup(`warning threshold`, `legacy path`, `observability`) 재평가 |
 
 ---
 
@@ -24,13 +24,27 @@
 |------|----------|-------|
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
 | AI Response Visibility & Rate Limit (Phase 1~5) | Medium | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). handoff 가시성 UX, 429 UX, Job Queue agent path, limiter 정책 재조정. |
-| AI Stream Route Contract - residual cleanup | Medium | 계획서: [ai-stream-route-contract-plan.md](ai-stream-route-contract-plan.md). remaining slices after provider fallback visibility: warning threshold 정합성, legacy path 재평가, observability/caching 설명 정리. |
+| AI Stream Route Contract - residual cleanup | Medium | 계획서: [ai-stream-route-contract-plan.md](ai-stream-route-contract-plan.md). Phase 5 provider fallback visibility 완료. 남은 slices: warning threshold 정합성, legacy path 재평가, observability/caching 설명 정리. |
 | OTel 토폴로지 개선 (P1→P2→P3) | Medium | 계획서: [otel-topology-improvement-plan.md](otel-topology-improvement-plan.md). db-backup 스펙 현실화(즉시), Redis cross-AZ/NFS SPOF 시나리오 추가(단기), 서버 3대 추가(장기). |
 | Storybook circular chunk warning 정리 | Low | non-blocking, stable 승격 후 재평가 |
 
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-17 #111)
+- [x] AI Stream Route Contract - multi-agent provider fallback visibility 완료
+  - AI SDK best practice 기준으로 transient retry state는 final metadata가 아니라 stream `agent_status`로 즉시 노출하도록 정렬
+  - `executeAgentStream()`에서 다음 provider 재시도 직전에 상태 이벤트 추가:
+    - `No output generated`
+    - empty response
+    - generic provider error
+  - 기존 `done.metadata` / `usage.totalTokens` 계약은 유지
+  - TDD 커밋:
+    - `ca3944e3b` → `d06ef316e`
+  - 검증:
+    - targeted: `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/agents/orchestrator-agent-stream.test.ts`
+    - ai-engine gate: `cd cloud-run/ai-engine && npm run type-check && npm run test` (`74 files`, `781 tests`)
 
 ### Completed (2026-04-17 #110)
 - [x] AI Response Visibility - handoff persistence contract 완료

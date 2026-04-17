@@ -1,14 +1,14 @@
 > Owner: project
-> Status: Approved
+> Status: Draft
 > Doc type: Plan
 > Last reviewed: 2026-04-17
 > Tags: ai-assistant,streaming,cloud-run,vercel,route-contract,architecture
 
 # AI Stream Route Contract & Legacy Path Consolidation Plan
 
-- 상태: **Phase 1 완료 (2026-04-16), Residual Slice Approved (2026-04-17)**
+- 상태: **Phase 1 완료 (2026-04-16), Phase 5 provider fallback visibility 완료 (2026-04-17), residual cleanup backlog**
 - 작성일: 2026-04-16
-- TODO.md 연결: Active Tasks > `AI Stream Route Contract - multi-agent provider fallback visibility`
+- TODO.md 연결: Backlog > `AI Stream Route Contract - residual cleanup`
 - 목표: Vercel API routes와 Cloud Run supervisor endpoints의 역할을 다시 명확히 정의하고, 현재 primary streaming path와 legacy plain/json path의 계약을 정리해 유지보수 복잡도와 stale 판단을 줄인다.
 
 ## 0. Best Practice Baseline
@@ -142,12 +142,17 @@
 2. legacy plain route는 cache 중심
 3. 이 차이를 docs/status or architecture notes에 반영
 
-### Phase 5 — multi-agent provider fallback visibility (Residual Slice, 2026-04-17)
+### Phase 5 — multi-agent provider fallback visibility ✅ 완료 (2026-04-17)
 
-1. `executeAgentStream()` provider retry 분기에서 `agent_status` 이벤트를 표준화한다.
-2. 최종 `done.metadata`에는 transient retry 이력을 새로 밀어 넣지 않는다.
-3. 기존 single-agent fallback 문구와 톤을 맞추되, multi-agent agent label을 유지한다.
-4. provider retry contract를 failing test로 먼저 고정한다.
+1. [x] `executeAgentStream()` provider retry 분기에서 `agent_status` 이벤트를 표준화했다.
+2. [x] 최종 `done.metadata`에는 transient retry 이력을 새로 밀어 넣지 않았다.
+3. [x] 기존 single-agent fallback 문구와 톤을 맞추되, multi-agent agent label을 유지했다.
+4. [x] provider retry contract를 failing test로 먼저 고정했다.
+
+결과:
+- `No output generated` retry 직전 `agent_status` 노출
+- empty response retry 직전 `agent_status` 노출
+- 일반 provider error retry 경로도 같은 패턴으로 정렬
 
 ## 6. Contract
 
