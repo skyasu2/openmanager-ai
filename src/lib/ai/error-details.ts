@@ -198,17 +198,27 @@ export function buildRateLimitErrorDetails(
 ): AIRateLimitErrorDetails {
   const { body, headers, fallbackSource = 'unknown' } = options;
   const payload = isRecord(body) ? body : {};
+  const dailyRemaining = normalizeInteger(
+    headers?.get('X-RateLimit-Daily-Remaining')
+  );
+  const dailyResetAt = normalizeInteger(
+    headers?.get('X-RateLimit-Daily-Reset')
+  );
   const retryAfterSeconds =
     normalizeInteger(payload.retryAfterSeconds) ??
     normalizeInteger(payload.retryAfter) ??
     normalizeInteger(headers?.get('Retry-After'));
   const remaining =
     normalizeInteger(payload.remaining) ??
+    (dailyRemaining !== undefined ? dailyRemaining : undefined) ??
     normalizeInteger(headers?.get('X-RateLimit-Remaining'));
   const resetAt =
     normalizeInteger(payload.resetAt) ??
+    (dailyResetAt !== undefined ? dailyResetAt : undefined) ??
     normalizeInteger(headers?.get('X-RateLimit-Reset'));
-  const dailyLimitExceeded = payload.dailyLimitExceeded === true;
+  const dailyLimitExceeded =
+    payload.dailyLimitExceeded === true ||
+    (dailyRemaining !== undefined && dailyRemaining <= 0);
   const scope = isRateLimitScope(payload.scope)
     ? payload.scope
     : isRateLimitScope(payload.limitScope)
