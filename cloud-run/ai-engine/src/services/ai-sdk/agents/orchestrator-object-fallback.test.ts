@@ -183,6 +183,65 @@ describe('generateObjectWithFallback', () => {
     );
   });
 
+  it('should fall back to the next provider when text fallback fails with a provider error', async () => {
+    const primaryModel =
+      {} as Parameters<typeof mockGenerateObject>[0]['model'];
+    const fallbackModel =
+      {} as Parameters<typeof mockGenerateObject>[0]['model'];
+    const expected: TestSchema = {
+      selectedAgent: 'Reporter Agent',
+      confidence: 0.82,
+      reasoning: 'Recovered on fallback provider',
+    };
+
+    mockGenerateObject.mockImplementation(async ({ model }: { model: unknown }) => {
+      if (model === primaryModel) {
+        throw new Error('response format not supported');
+      }
+
+      return {
+        object: expected,
+        usage: { inputTokens: 90, outputTokens: 35, totalTokens: 125 },
+      };
+    });
+
+    mockGenerateText.mockImplementation(async ({ model }: { model: unknown }) => {
+      if (model === primaryModel) {
+        const error = new Error('rate limit exceeded');
+        (error as Error & { status?: number }).status = 429;
+        throw error;
+      }
+
+      return {
+        text: JSON.stringify(expected),
+        usage: { inputTokens: 110, outputTokens: 45, totalTokens: 155 },
+      };
+    });
+
+    mockSelectTextModel.mockReturnValue({
+      model: fallbackModel,
+      provider: 'mistral',
+      modelId: 'mistral-large-latest',
+    });
+
+    const result = await generateObjectWithFallback({
+      ...baseOptions,
+      model: primaryModel,
+    });
+
+    expect(result.object).toEqual(expected);
+    expect(mockSelectTextModel).toHaveBeenCalledWith(
+      'Orchestrator',
+      ['cerebras', 'mistral', 'groq'],
+      {
+        excludeProviders: ['cerebras'],
+        cbPrefix: 'orchestrator',
+        requiredCapabilities: { requireStructuredOutput: true },
+      }
+    );
+    expect(mockGenerateObject).toHaveBeenCalledTimes(2);
+  });
+
   it('should throw combined error when fallback text also fails parsing', async () => {
     const originalError = new Error('Schema output validation failed: bad data');
     mockGenerateObject.mockRejectedValue(originalError);
