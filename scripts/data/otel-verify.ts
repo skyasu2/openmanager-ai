@@ -41,6 +41,10 @@ type TimeSeries = {
   metrics: Record<string, number[][]>;
 };
 
+type ResourceCatalog = {
+  resources: Record<string, Record<string, string | number>>;
+};
+
 function main(): void {
   console.log('=== OTel Data Verification ===\n');
 
@@ -97,6 +101,56 @@ function main(): void {
     }
   }
   check('Timeseries network in [0, 125M]', tsNetworkOutOfRange === 0, `${tsNetworkOutOfRange} out of range`);
+
+  // ── 3b. Backup node realism ──
+  console.log('\n[3b] Backup node realism:');
+  const catalog: ResourceCatalog = JSON.parse(
+    fs.readFileSync(path.join(OTEL_DATA_DIR, 'resource-catalog.json'), 'utf-8')
+  );
+  const backup = catalog.resources['db-mysql-dc1-backup'] ?? {};
+  check('Backup CPU cores = 8', backup['host.cpu.count'] === 8);
+  check(
+    'Backup memory = 32GB',
+    backup['host.memory.size'] === 34_359_738_368
+  );
+  check(
+    'Backup purpose = cold-standby',
+    backup['server.purpose'] === 'cold-standby'
+  );
+  check(
+    'Backup notes mention daily snapshot',
+    String(backup['server.notes'] ?? '').includes('daily snapshot')
+  );
+
+  const hour23: HourlyFile = JSON.parse(
+    fs.readFileSync(path.join(HOURLY_DIR, 'hour-23.json'), 'utf-8')
+  );
+  const getBackupSeries = (metricName: string): number[] =>
+    hour23.slots
+      .map((slot) => {
+        const metric = slot.metrics.find((entry) => entry.name === metricName);
+        const point = metric?.dataPoints.find((dp) =>
+          String(dp.attributes['host.name'] ?? '').startsWith(
+            'db-mysql-dc1-backup.'
+          )
+        );
+        return point?.asDouble;
+      })
+      .filter((value): value is number => typeof value === 'number');
+
+  const backupCpuSeries = getBackupSeries('system.cpu.utilization');
+  const backupMemorySeries = getBackupSeries('system.memory.utilization');
+  const backupDiskSeries = getBackupSeries('system.filesystem.utilization');
+
+  check('Backup CPU hour-23 max <= 0.35', Math.max(...backupCpuSeries) <= 0.35);
+  check(
+    'Backup memory hour-23 max <= 0.45',
+    Math.max(...backupMemorySeries) <= 0.45
+  );
+  check(
+    'Backup disk hour-23 min >= 0.68',
+    Math.min(...backupDiskSeries) >= 0.68
+  );
 
   // ── 4. Cache OOM logs have redis-server (not java) ──
   console.log('\n[4] Cache OOM process name:');

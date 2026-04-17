@@ -133,9 +133,11 @@
       "cloud.region": "onprem-dc1",
       "cloud.availability_zone": "DC1-AZ3",
       "deployment.environment.name": "production",
-      "host.cpu.count": 16,
-      "host.memory.size": 68719476736,
-      "host.disk.size": 1073741824000
+      "host.cpu.count": 8,
+      "host.memory.size": 34359738368,
+      "host.disk.size": 1073741824000,
+      "server.purpose": "cold-standby",
+      "server.notes": "cold-standby / daily snapshot target"
     },
     "cache-redis-dc1-01": {
       "service.name": "openmanager-ai",

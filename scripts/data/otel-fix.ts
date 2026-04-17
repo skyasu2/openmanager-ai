@@ -181,7 +181,7 @@ const HOUR_SCENARIOS: Record<number, Record<string, ServerMetricOverride>> = {
   23: {
     'storage-nfs-dc1-01': { disk: 0.82, cpu: 0.65 },
     'storage-s3gw-dc1-01': { network: 0.68, disk: 0.72 },
-    'db-mysql-dc1-backup': { disk: 0.75, cpu: 0.60 },
+    'db-mysql-dc1-backup': { disk: 0.72, cpu: 0.28, memory: 0.36 },
   },
 };
 
