@@ -1,13 +1,13 @@
 > Owner: project
-> Status: Backlog — `handoff persistence contract`, `429 UX source-hardening`, `Job Queue agent-path`, `/api/ai/jobs` POST gateway limiter alignment, frontend AI gateway session-aware limiter identity, daily-limit semantics slice는 완료. Cloud Run 정책 재평가 잔여는 backlog 유지.
+> Status: Backlog — `handoff persistence contract`, `429 UX source-hardening`, `Job Queue agent-path`, `/api/ai/jobs` POST gateway limiter alignment, frontend AI gateway session-aware limiter identity, daily-limit semantics, Cloud Run forwarded identity slice는 완료. Cloud Run 정책 재평가 잔여는 backlog 유지.
 > Doc type: Plan
 > Last reviewed: 2026-04-17
 > Tags: ai,ux,rate-limit,visibility
 
 # AI Response Visibility & Rate Limit Plan (2026-04-08)
 
-- 상태: **Backlog (partial complete)** — AnalysisBasisBadge 중심 visibility 개선과 `handoff persistence contract`, `429 UX source-hardening`, `Job Queue agent-path`, `/api/ai/jobs` POST gateway limiter alignment, frontend AI gateway session-aware limiter identity, daily-limit semantics slice는 완료됐다. Cloud Run 정책 재평가 잔여는 backlog다.
-- 작성일: 2026-04-08 | 상태 갱신: 2026-04-17
+- 상태: **Backlog (partial complete)** — AnalysisBasisBadge 중심 visibility 개선과 `handoff persistence contract`, `429 UX source-hardening`, `Job Queue agent-path`, `/api/ai/jobs` POST gateway limiter alignment, frontend AI gateway session-aware limiter identity, daily-limit semantics, Cloud Run forwarded identity slice는 완료됐다. 남은 범위는 Cloud Run 정책 재평가다.
+- 작성일: 2026-04-08 | 상태 갱신: 2026-04-18
 - TODO.md 연결: Backlog > AI Response Visibility & Rate Limit
 - 목표: AI 질의 과정의 가시성을 실제 실행 흐름과 맞추고, rate limit을 사용자에게 설명 가능한 제약으로 바꾼다.
 
@@ -35,6 +35,23 @@
 ### 아직 남은 범위
 
 - Cloud Run limiter 정책을 사용자 체감 기준으로 다시 맞추는 작업
+
+### 이번 승인 slice (`2026-04-18`, 4차)
+
+- 목표: Cloud Run limiter가 shared `X-API-Key` 대신 forwarded end-user identity를 우선 사용하도록 바꿔, 모든 사용자가 하나의 service-secret bucket을 공유하는 문제를 해소한다.
+- 범위:
+  - frontend AI proxy가 `X-Rate-Limit-Identity`를 Cloud Run으로 전달
+  - Cloud Run rate limiter는 해당 header를 `X-API-Key`보다 우선 사용
+  - 적용 경로: primary `stream/v2`, `jobs/process`, legacy supervisor proxy
+  - rate-limit 수치 변경, daily limit 변경, Cloud Run jobs/supervisor 분당 정책 변경은 이번 slice 제외
+
+### 이번 slice 완료 결과 (`2026-04-18`, 4차)
+
+- frontend AI proxy는 이제 session-aware limiter identity를 `X-Rate-Limit-Identity` 헤더로 Cloud Run에 전달한다.
+- 적용 경로는 primary `stream/v2`, `jobs/process`, `jobs retry`, legacy supervisor proxy다.
+- Cloud Run limiter는 shared `X-API-Key`보다 forwarded end-user identity를 우선 사용한다.
+- 이로써 서비스 공용 secret 하나로 모든 사용자가 같은 Cloud Run limiter bucket을 공유하던 false sharing을 줄였다.
+- 이번 slice는 identity forwarding semantics만 다루며, Cloud Run jobs/supervisor 분당 수치 및 daily 정책 조정은 후속 backlog로 남긴다.
 
 ### 이번 승인 slice (`2026-04-18`, 3차)
 

@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (AI Response Visibility daily-limit semantics slice 완료)
+**Last Updated**: 2026-04-18 KST (AI Response Visibility Cloud Run forwarded identity slice 완료)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -23,7 +23,7 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
-| AI Response Visibility & Rate Limit (Phase 1~5) | Medium | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). handoff 가시성 UX, 429 UX, Job Queue agent path, limiter 정책 재조정. |
+| AI Response Visibility & Rate Limit (Phase 1~5) | Medium | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). handoff 가시성 UX, 429 UX, Job Queue agent path, limiter 정책 재조정. 남은 실질 backlog는 Cloud Run 정책 재평가. |
 | ~~AI Stream Route Contract - residual cleanup~~ | — | **완료** — archive 이동. |
 | OTel 토폴로지 개선 (P1→P2→P3) | Medium | 계획서: [otel-topology-improvement-plan.md](otel-topology-improvement-plan.md). db-backup 스펙 현실화(즉시), Redis cross-AZ/NFS SPOF 시나리오 추가(단기), 서버 3대 추가(장기). |
 | Storybook circular chunk warning 정리 | Low | non-blocking, stable 승격 후 재평가 |
@@ -31,6 +31,17 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-18 #120)
+- [x] AI Response Visibility - Cloud Run forwarded identity 완료
+  - frontend AI proxy가 session-aware limiter identity를 `X-Rate-Limit-Identity` 헤더로 Cloud Run에 전달하도록 정리
+  - 적용 경로: primary `stream/v2`, `jobs/process`, `jobs retry`, legacy supervisor proxy
+  - Cloud Run limiter가 shared `X-API-Key`보다 forwarded end-user identity를 우선 사용하도록 계약 고정
+  - 이로써 service secret 하나로 모든 사용자가 같은 Cloud Run limiter bucket을 공유하던 문제를 해소
+  - 검증:
+    - targeted: `npx vitest run src/app/api/ai/supervisor/stream/v2/route.test.ts src/app/api/ai/jobs/route.trigger.test.ts src/app/api/ai/supervisor/cloud-run-handler.test.ts`
+    - ai-engine targeted: `cd cloud-run/ai-engine && npx vitest run src/middleware/rate-limiter.test.ts`
+    - root/ai-engine gate: `npm run type-check && npm run lint && npm run test:quick && npm run test:contract && cd cloud-run/ai-engine && npm run type-check && npm run test`
 
 ### Completed (2026-04-18 #119)
 - [x] AI Response Visibility - daily-limit semantics 완료
