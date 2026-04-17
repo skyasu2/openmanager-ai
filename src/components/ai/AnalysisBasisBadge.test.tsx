@@ -2,8 +2,8 @@
  * @vitest-environment jsdom
  */
 
-import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AnalysisBasis } from '@/stores/useAISidebarStore';
 import { AnalysisBasisBadge } from './AnalysisBasisBadge';
 
@@ -14,6 +14,18 @@ vi.mock('@/utils/markdown-parser', () => ({
 }));
 
 describe('AnalysisBasisBadge', () => {
+  const writeText = vi.fn().mockResolvedValue(undefined);
+
+  beforeEach(() => {
+    writeText.mockClear();
+    Object.defineProperty(window.navigator, 'clipboard', {
+      configurable: true,
+      value: {
+        writeText,
+      },
+    });
+  });
+
   const basis: AnalysisBasis = {
     dataSource: 'RAG 지식베이스 검색 (2건)',
     engine: 'Cloud Run AI',
@@ -205,6 +217,7 @@ describe('AnalysisBasisBadge', () => {
     );
 
     expect(screen.getByText('응답 과정')).toBeInTheDocument();
+    expect(screen.getByText('handoff 협업 경로')).toBeInTheDocument();
     expect(screen.getByText('추적 가능 ID')).toBeInTheDocument();
     expect(screen.getByText('trace-1234567890abcdef')).toBeInTheDocument();
     expect(screen.getByText('실행 경로')).toBeInTheDocument();
@@ -217,5 +230,94 @@ describe('AnalysisBasisBadge', () => {
       0
     );
     expect(screen.getAllByText('서버 메트릭 조회').length).toBeGreaterThan(0);
+  });
+
+  it('marks fallback recovery and shows structured failure reason codes', () => {
+    render(
+      <AnalysisBasisBadge
+        basis={{
+          ...basis,
+          dataSource: 'cache-redis-dc1-01 이상 징후 분석',
+          toolsCalled: ['detectAnomalies', 'detectAnomaliesAllServers'],
+          timeRange: '최근 1시간',
+        }}
+        toolResultSummaries={[
+          {
+            toolName: 'detectAnomalies',
+            label: '이상 탐지',
+            summary: 'cache-redis-dc1-01:9100 서버를 찾을 수 없습니다.',
+            preview: '{"serverName":"cache-redis-dc1-01:9100"}',
+            status: 'failed',
+          },
+          {
+            toolName: 'detectAnomaliesAllServers',
+            label: '전체 서버 이상 탐지',
+            summary: '전체 서버 스캔으로 이상 징후 1건을 확인했습니다.',
+            status: 'completed',
+          },
+        ]}
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: '분석 근거 상세 보기' })
+    );
+
+    expect(screen.getByText('fallback 보정 경로')).toBeInTheDocument();
+    expect(screen.getByText('참조 서버')).toBeInTheDocument();
+    expect(screen.getByText('cache-redis-dc1-01')).toBeInTheDocument();
+    expect(screen.getByText('server-not-found')).toBeInTheDocument();
+    expect(screen.getByText('대상 서버 확인 실패')).toBeInTheDocument();
+  });
+
+  it('copies a structured debug bundle with normalized server references', async () => {
+    render(
+      <AnalysisBasisBadge
+        basis={{
+          ...basis,
+          dataSource: 'cache-redis-dc1-01 메트릭 분석',
+          analysisMode: 'thinking',
+          toolsCalled: ['detectAnomalies', 'detectAnomaliesAllServers'],
+          timeRange: '최근 1시간',
+          serverCount: 1,
+        }}
+        traceId="trace-debug-1234"
+        toolResultSummaries={[
+          {
+            toolName: 'detectAnomalies',
+            label: '이상 탐지',
+            summary: 'cache-redis-dc1-01:9100 서버를 찾을 수 없습니다.',
+            preview: '{"serverName":"cache-redis-dc1-01:9100"}',
+            status: 'failed',
+          },
+          {
+            toolName: 'detectAnomaliesAllServers',
+            label: '전체 서버 이상 탐지',
+            summary: '전체 서버 스캔으로 평균 64.9% → 82% 급증을 확인했습니다.',
+            status: 'completed',
+          },
+        ]}
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: '분석 근거 상세 보기' })
+    );
+    fireEvent.click(screen.getByRole('button', { name: '디버그 번들 복사' }));
+
+    await waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
+
+    const debugBundle = JSON.parse(writeText.mock.calls[0]?.[0] as string);
+    expect(debugBundle.route.kind).toBe('fallback-recovery');
+    expect(debugBundle.traceId).toBe('trace-debug-1234');
+    expect(debugBundle.referencedServers).toContain('cache-redis-dc1-01');
+    expect(debugBundle.failureReasons).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          code: 'server-not-found',
+          toolName: 'detectAnomalies',
+        }),
+      ])
+    );
   });
 });

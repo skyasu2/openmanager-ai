@@ -2,14 +2,16 @@
 
 import {
   BookOpen,
+  Check,
   ChevronDown,
   ChevronUp,
   Clock,
+  Copy,
   Cpu,
   Database,
   ExternalLink,
 } from 'lucide-react';
-import { type FC, useState } from 'react';
+import { type FC, useEffect, useMemo, useRef, useState } from 'react';
 import type {
   AnalysisBasis,
   ResponseHandoff,
@@ -93,6 +95,268 @@ const STEP_STATUS_LABELS: Record<string, string> = {
   failed: '실패',
 };
 
+interface ProcessRouteInfo {
+  kind:
+    | 'direct-response'
+    | 'direct-tool'
+    | 'handoff'
+    | 'fallback-recovery'
+    | 'thinking-only';
+  label: string;
+  description: string;
+  badgeClassName: string;
+}
+
+interface FailureReasonInfo {
+  code:
+    | 'server-not-found'
+    | 'tool-timeout'
+    | 'schema-validation'
+    | 'empty-data-window'
+    | 'fallback-triggered'
+    | 'tool-failed';
+  label: string;
+}
+
+const SERVER_REFERENCE_PATTERN = /\b[a-z]+(?:-[a-z0-9]+){2,}(?::\d+)?\b/gi;
+
+function normalizeServerReference(reference: string): string {
+  return reference.replace(/:\d+$/, '');
+}
+
+function extractReferencedServers(
+  parts: Array<string | null | undefined>
+): string[] {
+  const servers = new Set<string>();
+
+  for (const part of parts) {
+    if (!part) continue;
+
+    const matches = part.match(SERVER_REFERENCE_PATTERN) ?? [];
+    for (const match of matches) {
+      servers.add(normalizeServerReference(match));
+    }
+  }
+
+  return [...servers];
+}
+
+function classifyFailureReason(
+  summary: string,
+  preview?: string
+): FailureReasonInfo {
+  const text = `${summary}\n${preview ?? ''}`.toLowerCase();
+
+  if (
+    text.includes('찾을 수 없습니다') ||
+    text.includes('not found') ||
+    text.includes('unknown server')
+  ) {
+    return {
+      code: 'server-not-found',
+      label: '대상 서버 확인 실패',
+    };
+  }
+
+  if (
+    text.includes('timeout') ||
+    text.includes('timed out') ||
+    text.includes('시간 초과')
+  ) {
+    return {
+      code: 'tool-timeout',
+      label: '도구 시간 초과',
+    };
+  }
+
+  if (
+    text.includes('schema') ||
+    text.includes('validation') ||
+    text.includes('유효성') ||
+    text.includes('형식 오류')
+  ) {
+    return {
+      code: 'schema-validation',
+      label: '도구 응답 형식 오류',
+    };
+  }
+
+  if (
+    text.includes('데이터가 없') ||
+    text.includes('no data') ||
+    text.includes('empty result') ||
+    text.includes('빈 결과')
+  ) {
+    return {
+      code: 'empty-data-window',
+      label: '데이터 창 비어 있음',
+    };
+  }
+
+  if (
+    text.includes('fallback') ||
+    text.includes('전체 서버 스캔') ||
+    text.includes('대체 경로')
+  ) {
+    return {
+      code: 'fallback-triggered',
+      label: 'fallback 경로 전환',
+    };
+  }
+
+  return {
+    code: 'tool-failed',
+    label: '도구 실행 실패',
+  };
+}
+
+function inferProcessRoute(params: {
+  engine: string;
+  handoffHistory?: ResponseHandoff[];
+  toolResultSummaries?: ToolResultSummary[];
+  thinkingSteps?: AIThinkingStep[];
+  meaningfulTools?: string[];
+}): ProcessRouteInfo {
+  const {
+    engine,
+    handoffHistory,
+    toolResultSummaries,
+    thinkingSteps,
+    meaningfulTools,
+  } = params;
+
+  const hasHandoff = Boolean(handoffHistory && handoffHistory.length > 0);
+  const summaries = toolResultSummaries ?? [];
+  const failedCount = summaries.filter(
+    (summary) => summary.status === 'failed'
+  ).length;
+  const completedCount = summaries.filter(
+    (summary) => summary.status === 'completed'
+  ).length;
+  const toolNames = meaningfulTools ?? [];
+  const hasAllServerFallbackPair =
+    toolNames.some((tool) => tool.endsWith('AllServers')) &&
+    toolNames.some(
+      (tool) =>
+        !tool.endsWith('AllServers') && `${tool}AllServers` in TOOL_LABELS
+    );
+  const hasFallbackKeyword =
+    engine.toLowerCase().includes('fallback') ||
+    summaries.some((summary) =>
+      `${summary.summary}\n${summary.preview ?? ''}`
+        .toLowerCase()
+        .includes('fallback')
+    ) ||
+    summaries.some((summary) =>
+      `${summary.summary}\n${summary.preview ?? ''}`.includes('전체 서버 스캔')
+    );
+
+  if (
+    hasFallbackKeyword ||
+    (failedCount > 0 && completedCount > 0) ||
+    hasAllServerFallbackPair
+  ) {
+    return {
+      kind: 'fallback-recovery',
+      label: 'fallback 보정 경로',
+      description:
+        '직접 경로가 막히거나 부족해 전체 스캔 또는 대체 경로로 보정한 뒤 응답을 구성했습니다.',
+      badgeClassName: 'border border-amber-200 bg-amber-50 text-amber-700',
+    };
+  }
+
+  if (hasHandoff) {
+    return {
+      kind: 'handoff',
+      label: 'handoff 협업 경로',
+      description:
+        '복수 에이전트 handoff를 거쳐 역할을 나눠 응답을 구성했습니다.',
+      badgeClassName: 'border border-indigo-200 bg-indigo-50 text-indigo-700',
+    };
+  }
+
+  if (summaries.length > 0 || toolNames.length > 0) {
+    return {
+      kind: 'direct-tool',
+      label: '직접 도구 경로',
+      description: '대상 도구를 직접 실행해 응답을 구성했습니다.',
+      badgeClassName:
+        'border border-emerald-200 bg-emerald-50 text-emerald-700',
+    };
+  }
+
+  if (thinkingSteps && thinkingSteps.length > 0) {
+    return {
+      kind: 'thinking-only',
+      label: '단일 추론 경로',
+      description: '추론 단계만으로 응답을 구성했습니다.',
+      badgeClassName: 'border border-sky-200 bg-sky-50 text-sky-700',
+    };
+  }
+
+  return {
+    kind: 'direct-response',
+    label: '직접 응답 경로',
+    description: '추가 handoff나 fallback 없이 응답을 구성했습니다.',
+    badgeClassName: 'border border-slate-200 bg-slate-50 text-slate-700',
+  };
+}
+
+const CopyActionButton: FC<{
+  text: string;
+  label: string;
+  copiedLabel?: string;
+  className?: string;
+}> = ({ text, label, copiedLabel = '복사됨', className = '' }) => {
+  const [copied, setCopied] = useState(false);
+  const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (resetTimerRef.current) {
+        clearTimeout(resetTimerRef.current);
+      }
+    };
+  }, []);
+
+  const handleCopy = () => {
+    const clipboard = globalThis.navigator?.clipboard;
+    if (!clipboard?.writeText) return;
+
+    void clipboard
+      .writeText(text)
+      .then(() => {
+        setCopied(true);
+        if (resetTimerRef.current) {
+          clearTimeout(resetTimerRef.current);
+        }
+        resetTimerRef.current = setTimeout(() => {
+          setCopied(false);
+          resetTimerRef.current = null;
+        }, 1500);
+      })
+      .catch(() => {
+        // Clipboard access can fail on insecure/non-focused contexts.
+      });
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      className={`inline-flex items-center gap-1.5 rounded border border-slate-200 bg-white px-2 py-1 text-2xs font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-800 ${className}`}
+      aria-label={label}
+    >
+      {copied ? (
+        <Check className="h-3 w-3 text-green-500" />
+      ) : (
+        <Copy className="h-3 w-3" />
+      )}
+      <span>{copied ? copiedLabel : label}</span>
+    </button>
+  );
+};
+
 interface AnalysisBasisBadgeProps {
   basis: AnalysisBasis;
   details?: string | null;
@@ -134,6 +398,113 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
   const meaningfulTools = basis.toolsCalled?.filter((t) => t !== 'finalAnswer');
   const executionPath = buildExecutionPath(handoffHistory);
   const toolCount = toolResultSummaries?.length ?? meaningfulTools?.length ?? 0;
+  const failureReasons = useMemo(
+    () =>
+      (toolResultSummaries ?? [])
+        .filter((toolResult) => toolResult.status === 'failed')
+        .map((toolResult) => ({
+          toolName: toolResult.toolName,
+          reason: classifyFailureReason(toolResult.summary, toolResult.preview),
+        })),
+    [toolResultSummaries]
+  );
+  const processRoute = useMemo(
+    () =>
+      inferProcessRoute({
+        engine: basis.engine,
+        handoffHistory,
+        toolResultSummaries,
+        thinkingSteps,
+        meaningfulTools,
+      }),
+    [
+      basis.engine,
+      handoffHistory,
+      meaningfulTools,
+      thinkingSteps,
+      toolResultSummaries,
+    ]
+  );
+  const referencedServers = useMemo(
+    () =>
+      extractReferencedServers([
+        basis.dataSource,
+        details,
+        ...(toolResultSummaries ?? []).flatMap((toolResult) => [
+          toolResult.summary,
+          toolResult.preview,
+        ]),
+        ...(thinkingSteps ?? []).flatMap((step) => [
+          step.title,
+          step.description,
+          step.content,
+        ]),
+        ...(handoffHistory ?? []).map((handoff) => handoff.reason),
+      ]),
+    [
+      basis.dataSource,
+      details,
+      handoffHistory,
+      thinkingSteps,
+      toolResultSummaries,
+    ]
+  );
+  const debugBundle = useMemo(
+    () =>
+      JSON.stringify(
+        {
+          route: {
+            kind: processRoute.kind,
+            label: processRoute.label,
+          },
+          traceId: traceId ?? null,
+          analysisMode: basis.analysisMode ?? null,
+          engine: basis.engine,
+          dataSource: basis.dataSource,
+          timeRange: basis.timeRange ?? null,
+          serverCount: basis.serverCount ?? null,
+          referencedServers,
+          executionPath,
+          toolCalls:
+            (toolResultSummaries ?? meaningfulTools ?? []).map((tool) =>
+              typeof tool === 'string'
+                ? {
+                    toolName: tool,
+                    label: getToolLabel(tool),
+                    status: 'observed',
+                  }
+                : {
+                    toolName: tool.toolName,
+                    label: tool.label,
+                    status: tool.status,
+                    summary: tool.summary,
+                  }
+            ) ?? [],
+          failureReasons: failureReasons.map((failure) => ({
+            toolName: failure.toolName,
+            code: failure.reason.code,
+            label: failure.reason.label,
+          })),
+        },
+        null,
+        2
+      ),
+    [
+      basis.analysisMode,
+      basis.dataSource,
+      basis.engine,
+      basis.serverCount,
+      basis.timeRange,
+      executionPath,
+      failureReasons,
+      meaningfulTools,
+      processRoute.kind,
+      processRoute.label,
+      referencedServers,
+      toolResultSummaries,
+      traceId,
+    ]
+  );
   const hasProcessDetails =
     Boolean(traceId) ||
     Boolean(thinkingSteps && thinkingSteps.length > 0) ||
@@ -226,6 +597,47 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
                 </div>
               </div>
 
+              <div className="mb-3 rounded border border-slate-200 bg-slate-50 p-2.5">
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="text-2xs font-medium uppercase tracking-wide text-slate-500">
+                    처리 경로
+                  </p>
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-2xs font-medium ${processRoute.badgeClassName}`}
+                  >
+                    {processRoute.label}
+                  </span>
+                  {failureReasons.length > 0 && (
+                    <span className="rounded-full border border-rose-200 bg-rose-50 px-2 py-0.5 text-2xs font-medium text-rose-700">
+                      실패 {failureReasons.length}건
+                    </span>
+                  )}
+                  <CopyActionButton
+                    text={debugBundle}
+                    label="디버그 번들 복사"
+                    className="ml-auto"
+                  />
+                </div>
+                <p className="mt-2 text-xs leading-relaxed text-slate-600">
+                  {processRoute.description}
+                </p>
+                {referencedServers.length > 0 && (
+                  <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                    <span className="text-2xs font-medium uppercase tracking-wide text-slate-500">
+                      참조 서버
+                    </span>
+                    {referencedServers.map((server) => (
+                      <span
+                        key={server}
+                        className="rounded bg-white px-1.5 py-0.5 text-2xs text-slate-600"
+                      >
+                        {server}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               {executionPath.length > 0 && (
                 <div className="mb-3 rounded border border-slate-200 bg-slate-50 p-2">
                   <p className="mb-1 text-2xs font-medium uppercase tracking-wide text-slate-500">
@@ -309,6 +721,26 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
                         <p className="mt-1 text-xs leading-relaxed text-slate-600">
                           {toolResult.summary}
                         </p>
+                        {toolResult.status === 'failed' && (
+                          <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                            <span className="rounded bg-rose-100 px-1.5 py-0.5 text-2xs font-medium text-rose-700">
+                              {
+                                classifyFailureReason(
+                                  toolResult.summary,
+                                  toolResult.preview
+                                ).code
+                              }
+                            </span>
+                            <span className="text-2xs text-slate-600">
+                              {
+                                classifyFailureReason(
+                                  toolResult.summary,
+                                  toolResult.preview
+                                ).label
+                              }
+                            </span>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
