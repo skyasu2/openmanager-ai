@@ -356,18 +356,8 @@ export async function executeMultiAgent(
       contextSummary ? `${query}\n\n[세션 컨텍스트 요약]\n${contextSummary}` : query
     );
 
-    let timeoutId: NodeJS.Timeout | null = null;
-    let warnTimer: NodeJS.Timeout | null = null;
-
-    const timeoutPromise = new Promise<never>((_, reject) => {
-      timeoutId = setTimeout(() => {
-        reject(new Error(`Orchestrator timeout after ${ORCHESTRATOR_CONFIG.timeout}ms`));
-      }, ORCHESTRATOR_CONFIG.timeout);
-    });
-
-    warnTimer = setTimeout(() => {
-      logger.warn(`⚠️ [Orchestrator] Execution exceeding ${ORCHESTRATOR_CONFIG.warnThreshold}ms threshold`);
-    }, ORCHESTRATOR_CONFIG.warnThreshold);
+    const routingTimeout = TIMEOUT_CONFIG.orchestrator.routingDecision;
+    let routingTimeoutId: ReturnType<typeof setTimeout> | undefined;
 
     let routingDecision: RoutingDecision;
     try {
@@ -387,12 +377,62 @@ export async function executeMultiAgent(
             cbPrefix: 'orchestrator',
           },
         }),
-        timeoutPromise,
+        new Promise<never>((_, reject) => {
+          routingTimeoutId = setTimeout(() => {
+            reject(
+              new Error(`Routing decision timeout after ${routingTimeout}ms`)
+            );
+          }, routingTimeout);
+        }),
       ]);
       routingDecision = routingResult.object;
+    } catch (routingError) {
+      const errorMessage =
+        routingError instanceof Error ? routingError.message : String(routingError);
+      logger.warn(`[Orchestrator] LLM routing failed: ${errorMessage}`);
+
+      const suggestedAgent = preFilterResult.suggestedAgent;
+      if (
+        suggestedAgent &&
+        preFilterResult.confidence >= ORCHESTRATOR_CONFIG.fallbackRoutingConfidence
+      ) {
+        const fallbackResult = await executeForcedRouting(
+          query,
+          suggestedAgent,
+          startTime,
+          webSearchEnabled,
+          ragEnabled,
+          request.images,
+          request.files,
+          contextSummary,
+        );
+
+        if (fallbackResult) {
+          await saveAgentFindingsToContext(
+            request.sessionId,
+            suggestedAgent,
+            fallbackResult.response
+          );
+
+          const isTimeoutError = /timeout/i.test(errorMessage);
+          return finalizeMultiAgentResponse(trace, {
+            ...fallbackResult,
+            handoffs: [
+              {
+                from: 'Orchestrator',
+                to: suggestedAgent,
+                reason: isTimeoutError
+                  ? 'Fallback routing (routing timeout)'
+                  : 'Fallback routing (routing failure)',
+              },
+            ],
+          });
+        }
+      }
+
+      throw routingError;
     } finally {
-      if (timeoutId) clearTimeout(timeoutId);
-      if (warnTimer) clearTimeout(warnTimer);
+      if (routingTimeoutId !== undefined) clearTimeout(routingTimeoutId);
     }
 
     logger.debug(`[Orchestrator] LLM routing decision: ${routingDecision.selectedAgent} (confidence: ${routingDecision.confidence.toFixed(2)}, reason: ${routingDecision.reasoning})`);
