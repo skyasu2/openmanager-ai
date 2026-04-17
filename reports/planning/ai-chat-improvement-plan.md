@@ -1,7 +1,7 @@
 # AI 어시스턴트 채팅 기능 개선 계획서
 
 > Owner: project
-> Status: Draft — Sprint 1~3 완료(2026-04-09). Sprint 4(4-A generateObject, 4-B per-step timeout) 미착수. 착수 전 Contract 섹션 완성 후 Approved로 전환 필요.
+> Status: Approved — Sprint 1~3 완료(2026-04-09). Sprint 4는 2026-04-17 현재 코드 기준으로 범위를 재정렬했고, 다음 구현 단계는 `test(spec):` failing test 선행 커밋부터 시작.
 > Doc type: Plan
 > Last reviewed: 2026-04-16
 > Tags: ai-chat, improvement, planning, v8.12
@@ -266,51 +266,50 @@ const [expanded, setExpanded] = useState(false);
 
 ### Phase 4 — 아키텍처 개선 (장기, 5+ 일)
 
-#### 4-A. 일부 에이전트 `generateObject` 전환
+2026-04-17 기준으로 Phase 4 범위를 재점검했다.
 
-**현재 문제**: NLQ Agent가 자유 텍스트로 결과 생성 → 응답 형식 불일치 가능성
+- `useHybridAIQuery.ts`는 이미 `experimental_throttle: 50`과 `submitted/streaming/ready/error` 상태 정규화를 사용한다.
+- `BaseAgent`/`supervisor-*` 경로는 이미 `timeout.totalMs`와 `stepMs`를 전달하고, 스트리밍 경로는 `chunkMs`도 사용한다.
+- `generateObjectWithFallback`는 이미 오케스트레이터 라우팅과 task decomposition에 적용돼 있다.
 
-**개선 방향** (우선순위 높은 에이전트만):
-```typescript
-// NLQ Agent: 서버 목록 응답을 구조화
-const result = await generateObject({
-  model,
-  schema: z.object({
-    servers: z.array(z.object({
-      name: z.string(),
-      cpu: z.number(),
-      memory: z.number(),
-      status: z.enum(['normal', 'warning', 'critical']),
-    })),
-    summary: z.string(),
-    recommendation: z.string().optional(),
-  }),
-  prompt: buildNlqPrompt(query, context),
-});
-```
+따라서 Sprint 4의 실제 잔여 작업은 "신규 도입"이 아니라, 오케스트레이터 경로의 structured output/timeout 동작을 계약 수준으로 고정하고 회귀 테스트를 보강하는 일이다.
 
-**주의**: Groq API의 `generateObject` 지원 범위 확인 필요 (schema → JSON mode)
+#### 4-A. Orchestrator structured-output hardening
+
+**현재 상태**
+- `generateObjectWithFallback`는 이미 오케스트레이터 라우팅과 task decomposition에 적용되어 있다.
+- Provider access error 시 다음 provider로 fallback 하고, schema/JSON format error 시 text + JSON parse fallback 한다.
+- 하지만 이 경로가 routing timeout, provider fallback, schema fallback과 결합될 때의 상위 계약은 계획서 수준으로 고정되지 않았다.
+
+**변경 대상 후보**
+- `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-object-fallback.ts`
+- `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution.ts`
+- `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-decomposition.ts`
+- 관련 테스트: `orchestrator-object-fallback.test.ts`, `orchestrator.test.ts`, `orchestrator-decomposition.test.ts`
+
+**구현 목표**
+- structured output 실패가 발생해도 현재 fallback order를 깨지 않는다.
+- routing/decomposition이 schema fallback 이후에도 동일한 최소 필드를 보장한다.
+- fallback이 일어나도 trace, handoff, 최종 응답 contract는 유지한다.
 
 ---
 
-#### 4-B. Per-Step Timeout 세밀화
+#### 4-B. Orchestrator timeout contract 정리
 
-**파일**: `cloud-run/ai-engine/src/services/ai-sdk/agents/base-agent.ts`
+**현재 상태**
+- `BaseAgent`, `supervisor-single-agent`, `supervisor-stream`은 이미 `timeout.totalMs`, `stepMs`, `chunkMs`를 사용한다.
+- 남은 공백은 오케스트레이터의 라우팅/서브태스크 경로에서 `Promise.race + setTimeout`이 분산 구현되어 있고, fallback 의미가 테스트로 충분히 고정되지 않았다는 점이다.
 
-현재: 전체 요청 타임아웃만 존재 (60초)
-개선: AI SDK v5+ `timeout` 옵션 활용
+**변경 대상 후보**
+- `cloud-run/ai-engine/src/config/timeout-config.ts`
+- `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution.ts`
+- `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-decomposition.ts`
+- 관련 테스트: `orchestrator.test.ts`, `orchestrator-decomposition.test.ts`
 
-```typescript
-generateText({
-  model,
-  // ...
-  timeout: {
-    totalMs: 60_000,   // 전체 제한 유지
-    stepMs: 15_000,    // 각 tool call step 최대 15초
-    chunkMs: 5_000,    // 청크 간격 최대 5초 (네트워크 스톨 감지)
-  },
-});
-```
+**구현 목표**
+- routing decision timeout 시 stream path는 기존 `suggestedAgent` fallback contract를 유지한다.
+- subtask timeout 시 전체 multi-agent 응답을 불필요하게 실패시키지 않고, 성공한 subtask만으로 응답을 구성한다.
+- timeout 상수는 `TIMEOUT_CONFIG` 기준으로만 조정한다.
 
 ---
 
@@ -327,8 +326,8 @@ generateText({
 | 2-C | AI SDK Status Machine | P2 | 2h | 정확한 UX 상태 표시 |
 | 3-A | Langfuse 피드백 UI | P2 | 2h | 품질 개선 데이터 |
 | 3-C | Thinking Steps 토글 | P3 | 1h | 화면 복잡도 감소 |
-| 4-A | generateObject 전환 | P3 | 4h+ | 구조화 안정성 |
-| 4-B | Per-Step Timeout | P3 | 2h | 신뢰성 개선 |
+| 4-A | Structured-output hardening | P3 | 4h+ | 라우팅/분해 안정성 |
+| 4-B | Orchestrator timeout contract | P3 | 2h | fallback 신뢰성 개선 |
 
 ---
 
@@ -359,11 +358,11 @@ generateText({
 [x] QA-0265 + v8.11.8 태그 배포 — 6/6 pass, 2026-04-09
 ```
 
-### Sprint 4 (장기, 별도 계획 필요)
+### Sprint 4 (승인 완료, 구현 대기)
 
 ```
-[ ] 4-A: NLQ Agent generateObject 전환
-[ ] 4-B: Per-step timeout 세밀화
+[ ] 4-A: Orchestrator structured-output hardening (`generateObjectWithFallback` 경로 + 회귀 테스트)
+[ ] 4-B: Orchestrator timeout contract 정리 (routing/subtask fallback + 회귀 테스트)
 ```
 
 ---
@@ -402,11 +401,24 @@ generateText({
 
 ## 착수 조건 (SDD Gate)
 
-> Status를 `Approved`로 전환하려면 아래 항목을 완성한다.
+> `Approved` 근거. 다음 구현 단계는 failing test 선행 커밋부터 시작한다.
 
-- [ ] **변경 대상 파일 목록** 확정 (`useHybridAIQuery.ts`, AI Engine NLQ 라우트 등)
-- [ ] **입출력 계약** — `generateObject` 스키마, per-step timeout 기댓값 명시
-- [ ] **테스트 시나리오** — 최소 3개: NLQ 정상, timeout 발생, 잘못된 스키마 에러 케이스
-- [ ] `test(spec):` failing test 커밋 후 `feat: ...implement to pass specs` 커밋
+- [x] **변경 대상 파일 목록** 확정
+  - `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-object-fallback.ts`
+  - `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution.ts`
+  - `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-decomposition.ts`
+  - `cloud-run/ai-engine/src/config/timeout-config.ts` (상수/헬퍼 변경이 필요한 경우에만)
+  - 테스트: `orchestrator-object-fallback.test.ts`, `orchestrator.test.ts`, `orchestrator-decomposition.test.ts`
+- [x] **입출력 계약** 확정
+  - structured output provider fallback은 기존 provider order를 유지하고, schema/JSON fallback 이후에도 최소 필드(`selectedAgent`, `confidence`, `reasoning` 또는 decomposition schema)를 보장한다.
+  - routing timeout 시 stream path는 `suggestedAgent` fallback이 가능하면 계속 진행하고, 불가능하면 기존 error contract를 유지한다.
+  - subtask timeout 시 timed-out subtask는 `null` 처리하되, 성공한 subtask가 하나라도 있으면 unified response를 반환한다.
+- [x] **테스트 시나리오** 확정
+  - 시나리오 1: structured output provider fallback 후에도 routing schema가 유지된다.
+  - 시나리오 2: stream routing decision timeout 발생 시 `suggestedAgent` fallback으로 진행된다.
+  - 시나리오 3: parallel subtask 일부 timeout 시 성공한 subtask만으로 unified response가 생성된다.
+  - 시나리오 4: structured output + text fallback 모두 실패하면 기존 에러 surface를 유지한다.
+- [ ] `test(spec): ai chat sprint 4 add failing tests before implementation`
+- [ ] `feat: ai chat sprint 4 implement to pass specs`
 
 _Last Updated: 2026-04-17_

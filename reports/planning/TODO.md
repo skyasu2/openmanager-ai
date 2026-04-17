@@ -1,12 +1,14 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-17 KST (AI Surface Parity Refactor 완료, SDD 개선 적용)
+**Last Updated**: 2026-04-17 KST (AI Chat Improvement Sprint 4 승인, SDD 개선 적용)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
 ## Active Tasks
 
-_(없음)_
+| Task | Priority | Status | Notes |
+|------|----------|--------|-------|
+| P2: AI Chat Improvement Sprint 4 | Medium | contract-approved | 계획서: [ai-chat-improvement-plan.md](ai-chat-improvement-plan.md). Sprint 4 범위를 현재 구현 기준으로 재정렬했다. 다음 구현 단계는 `test(spec):` failing test 선행 커밋부터 시작. |
 
 ---
 
@@ -21,7 +23,6 @@ _(없음)_
 | Task | Priority | Notes |
 |------|----------|-------|
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
-| AI Chat Improvement Sprint 4 | Medium | 계획서: [ai-chat-improvement-plan.md](ai-chat-improvement-plan.md). `generateObject` NLQ 전환 + per-step timeout. `ai-stream-route-contract` Phase 1 완료 선행 조건 해소됨. |
 | AI Response Visibility & Rate Limit (Phase 1~5) | Medium | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). handoff 가시성 UX, 429 UX, Job Queue agent path, limiter 정책 재조정. |
 | OTel 토폴로지 개선 (P1→P2→P3) | Medium | 계획서: [otel-topology-improvement-plan.md](otel-topology-improvement-plan.md). db-backup 스펙 현실화(즉시), Redis cross-AZ/NFS SPOF 시나리오 추가(단기), 서버 3대 추가(장기). |
 | Storybook circular chunk warning 정리 | Low | non-blocking, stable 승격 후 재평가 |
