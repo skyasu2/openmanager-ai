@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-17 KST (AI Chat Improvement Sprint 4 승인, SDD 개선 적용)
+**Last Updated**: 2026-04-17 KST (AI Chat Improvement Sprint 4 완료 및 archive 반영)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| P2: AI Chat Improvement Sprint 4 | Medium | in-progress | 계획서: [ai-chat-improvement-plan.md](ai-chat-improvement-plan.md). Sprint 4의 structured-output hardening, routing timeout fallback, stream usage/failure contract는 반영 완료. 남은 구현 단계는 `subtask timeout contract`를 failing test 선행 커밋으로 고정하는 일이다. |
+| — | — | — | 현재 active task 없음. 다음 우선순위는 Backlog 재평가 후 선택. |
 
 ---
 
@@ -30,6 +30,23 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-17 #109)
+- [x] AI Chat Improvement Sprint 4 완료 및 계획서 archive 이동
+  - non-stream routing timeout 시 `suggestedAgent` fallback 유지
+  - structured-output provider fallback / invalid JSON fallback recovery 보강
+  - decomposition stream `usage.totalTokens`, `failedCount`, `failedAgents` 계약 고정
+  - sequential stream subtask timeout contract 완료: timeout된 subtask는 `null` 처리하고 partial success 유지, 전부 timeout 시 `ALL_SUBTASKS_FAILED`
+  - TDD 커밋:
+    - `94c62acfd` → `71b6b90d4`
+    - `f5df3bd3a` → `721b84bce`
+    - `083a23257` → `b442aac7c`
+    - `68250484f` → `b724c3412`
+    - `a7eb7c416` → `4c9cdb00c`
+    - `5cf4b1d80` → `9ccc20d38`
+    - `6f7e9156e` → `e25ba794e`
+  - 검증: `cd cloud-run/ai-engine && npm run type-check && npm run test` (`74 files`, `778 tests`)
+  - archive: `reports/planning/archive/ai-chat-improvement-plan.md`
 
 ### Completed (2026-04-17 #108)
 - [x] AI Assistant Surface Parity Refactor 완료 (Task 0~5 전체)

@@ -1,7 +1,7 @@
 # AI 어시스턴트 채팅 기능 개선 계획서
 
 > Owner: project
-> Status: In Progress — Sprint 1~3 완료(2026-04-09). Sprint 4는 2026-04-17 현재 structured-output hardening, routing timeout fallback, stream usage/failure contract까지 반영되었고, 남은 구현 단계는 `subtask timeout contract`를 failing test 선행 커밋으로 고정하는 일이다.
+> Status: Completed — Sprint 1~4 완료. Sprint 4의 structured-output hardening, routing timeout fallback, stream usage/failure contract, subtask timeout contract까지 모두 반영되었고 본 계획서는 archive 대상으로 전환한다.
 > Doc type: Plan
 > Last reviewed: 2026-04-17
 > Tags: ai-chat, improvement, planning, v8.12
@@ -358,13 +358,13 @@ const [expanded, setExpanded] = useState(false);
 [x] QA-0265 + v8.11.8 태그 배포 — 6/6 pass, 2026-04-09
 ```
 
-### Sprint 4 (진행 중)
+### Sprint 4 (완료)
 
 ```
 [x] 4-A: Orchestrator structured-output hardening (`generateObjectWithFallback` 경로 + 회귀 테스트)
 [x] 4-B-1: Orchestrator routing timeout fallback contract (`suggestedAgent` fallback + 회귀 테스트)
 [x] 4-B-2: Decomposition stream usage/failure metadata contract (`usage.totalTokens`, `failedCount`, `failedAgents`)
-[ ] 4-B-3: Subtask timeout contract 정리 (timeout된 subtask를 null 처리하고 partial success를 유지하는 회귀 테스트)
+[x] 4-B-3: Subtask timeout contract 정리 (timeout된 subtask를 null 처리하고 partial success를 유지하는 회귀 테스트)
 ```
 
 ---
@@ -416,12 +416,19 @@ const [expanded, setExpanded] = useState(false);
   - failing test: `5cf4b1d80` `test(spec): ai chat sprint 4 add failing decomposition failure contract tests`
   - 구현: `9ccc20d38` `fix(ai-engine): expose decomposition failure metadata`
   - 검증: `cd cloud-run/ai-engine && npm run type-check && npm run test`
+- 2026-04-17: Sprint 4 cycle 4 완료. sequential stream subtask timeout contract 보강.
+  - failing test: `6f7e9156e` `test(spec): ai chat sprint 4 add failing subtask timeout contract test`
+  - 구현: `e25ba794e` `feat: ai chat sprint 4 implement subtask timeout contract`
+  - 검증:
+    - `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/agents/orchestrator-decomposition.stream-contract.test.ts src/services/ai-sdk/agents/orchestrator-decomposition.test.ts src/services/ai-sdk/agents/orchestrator-execution.timeout.test.ts`
+    - `cd cloud-run/ai-engine && npm run type-check`
+    - `cd cloud-run/ai-engine && npm run test`
 
 ---
 
-## 착수 조건 (SDD Gate)
+## 완료 기록 (SDD Gate)
 
-> Sprint 4는 이미 `In Progress` 상태다. 남은 구현 단계(`4-B-3`)도 failing test 선행 커밋부터 시작한다.
+> Sprint 4의 마지막 slice(`4-B-3`)까지 failing test 선행 후 구현으로 마감했다.
 
 - [x] **변경 대상 파일 목록** 확정
   - `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-object-fallback.ts`
@@ -440,7 +447,7 @@ const [expanded, setExpanded] = useState(false);
   - 시나리오 4: structured output + text fallback 모두 실패하면 기존 에러 surface를 유지한다.
 - [x] `test(spec): ai chat sprint 4 add failing tests before implementation`
 - [x] `feat: ai chat sprint 4 implement to pass specs`
-- [ ] 다음 slice: `test(spec): ai chat sprint 4 add failing subtask timeout contract test`
-- [ ] 다음 slice: `feat: ai chat sprint 4 implement subtask timeout contract`
+- [x] 다음 slice: `test(spec): ai chat sprint 4 add failing subtask timeout contract test`
+- [x] 다음 slice: `feat: ai chat sprint 4 implement subtask timeout contract`
 
 _Last Updated: 2026-04-17_
