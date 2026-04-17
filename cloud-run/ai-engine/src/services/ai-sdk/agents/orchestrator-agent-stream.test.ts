@@ -98,6 +98,7 @@ vi.mock('./orchestrator-decomposition', () => ({
 }));
 
 import { executeAgentStream } from './orchestrator-agent-stream';
+import { ORCHESTRATOR_CONFIG } from './orchestrator-types';
 
 function createStreamResult(options: {
   chunks?: string[];
@@ -346,6 +347,38 @@ describe('executeAgentStream', () => {
 
     expect(textPayload).toContain('대체 모델 응답');
     expect(mockStreamText).toHaveBeenCalledTimes(2);
+  });
+
+  it('emits a threshold-aware slow processing warning for multi-agent streaming', async () => {
+    mockStreamText.mockReturnValue(
+      createStreamResult({
+        chunks: ['지연 응답'],
+        steps: [],
+      })
+    );
+
+    const events: Array<{ type: string; data: unknown }> = [];
+    const startTime =
+      Date.now() - ORCHESTRATOR_CONFIG.warnThreshold - 1_000;
+
+    for await (const event of executeAgentStream(
+      'CPU 사용률 알려줘',
+      'NLQ Agent',
+      startTime,
+      'test-session',
+      true,
+      true
+    )) {
+      events.push(event);
+    }
+
+    const warningEvent = events.find((event) => event.type === 'warning');
+    expect(warningEvent).toBeDefined();
+    expect(warningEvent?.data).toMatchObject({
+      code: 'SLOW_PROCESSING',
+      message: `처리 시간이 ${ORCHESTRATOR_CONFIG.warnThreshold / 1000}초를 초과했습니다.`,
+      threshold: ORCHESTRATOR_CONFIG.warnThreshold,
+    });
   });
 
   it('preserves totalTokens when reporter pipeline returns a direct result', async () => {
