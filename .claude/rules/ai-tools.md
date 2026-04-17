@@ -1,19 +1,20 @@
 # AI Tools Usage Rules
 
-## MCP Servers (10개)
+## MCP Servers (10개 상시 + 1개 온디맨드)
 
-| MCP | 용도 | 우선순위 |
-|-----|------|:-------:|
-| `context7` | 라이브러리 공식 문서 | 높음 |
-| `sequential-thinking` | 복잡한 리팩토링, 아키텍처 설계 | 높음 |
-| `storybook` | 컴포넌트 문서 조회·스토리 자동 생성 (Storybook dev 서버 필수) | 높음 |
-| `next-devtools` | Next.js 런타임 진단, 에러/라우트/로그 조회 (dev server 필수) | 중간 |
-| `stitch` | Google Stitch AI UI 디자인 | 중간 |
-| `supabase-db` | PostgreSQL 관리 (로컬 설치, "supabase" 이름 회피) | 중간 |
-| `vercel` | 배포 상태 확인 | 중간 |
-| `playwright` | E2E 테스트 | 중간 |
-| `github` | 저장소/PR 관리 | 중간 |
-| `lighthouse` | Core Web Vitals + Performance/A11y/SEO 감사 (무료) | 중간 |
+| MCP | 용도 | 우선순위 | `.mcp.json` |
+|-----|------|:-------:|:-----------:|
+| `context7` | 라이브러리 공식 문서 | 높음 | ✅ |
+| `sequential-thinking` | 복잡한 리팩토링, 아키텍처 설계 | 높음 | ✅ |
+| `diagram-converter-mcp` | Mermaid 다이어그램 렌더/검증 | 높음 | ✅ |
+| `next-devtools` | Next.js 런타임 진단, 에러/라우트/로그 조회 (dev server 필수) | 중간 | ✅ |
+| `stitch` | Google Stitch AI UI 디자인 | 중간 | ✅ |
+| `supabase-db` | PostgreSQL 관리 (로컬 설치, "supabase" 이름 회피) | 중간 | ✅ |
+| `vercel` | 배포 상태 확인 | 중간 | ✅ |
+| `playwright` | E2E 테스트 | 중간 | ✅ |
+| `github` | 저장소/PR 관리 | 중간 | ✅ |
+| `lighthouse` | Core Web Vitals + Performance/A11y/SEO 감사 | 중간 | ✅ |
+| `storybook` | 컴포넌트 문서·스토리 자동 생성 (Storybook dev 서버 필수) | 온디맨드 | ❌ 수동 추가 |
 
 ## Skills
 

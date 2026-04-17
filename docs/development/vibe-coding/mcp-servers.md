@@ -23,22 +23,23 @@
 
 ## MCP 카탈로그 (프로젝트 공통)
 
-| MCP | 용도 | 기본 활성 (Codex) | 비고 |
-|-----|------|:-----------------:|------|
+| MCP | 용도 | `.mcp.json` 상시 등록 | 비고 |
+|-----|------|:--------------------:|------|
 | **context7** | 라이브러리 공식 문서 검색 | ✅ | 공식 문서 우선 참조 |
-| **diagram-converter** | Mermaid 다이어그램 렌더/검증 | ✅ | 다이어그램 편집/검증 |
+| **diagram-converter-mcp** | Mermaid 다이어그램 렌더/검증 | ✅ | `.gemini/mcp.json`에는 `diagram-converter`로 중복 노출 (harmless) |
 | **sequential-thinking** | 복잡한 추론/설계 분해 | ✅ | 다단계 분석 |
-| **stitch** | UI 디자인 생성/변형 | ✅ | 선택적 UI 프로토타이핑/증분 개선 |
-| **supabase-db** | PostgreSQL 조회/SQL/마이그레이션 | ✅ | Supabase MCP |
+| **stitch** | UI 디자인 생성/변형 | ✅ | 명시적 UI 개선 요청 시 온디맨드 사용 |
+| **supabase-db** | PostgreSQL 조회/SQL/마이그레이션 | ✅ | 로컬 설치 (`~/.mcp-servers/supabase/`), "supabase" 이름 회피 |
 | **vercel** | 배포 상태/이벤트 확인 | ✅ | Vercel MCP |
 | **playwright** | 브라우저 자동화/E2E | ✅ | 로컬 QA |
-| **next-devtools** | Next.js 런타임 진단 | ✅ | Next.js 16+ |
+| **next-devtools** | Next.js 런타임 진단 | ✅ | Next.js 16+ dev server 필수 |
 | **github** | 저장소/PR/이슈 관리 | ✅ | GitHub MCP |
-| **storybook** | 컴포넌트 문서/스토리 기반 작업 | 선택 | Claude 전담 운영 시 사용 |
+| **lighthouse** | Core Web Vitals + 성능/접근성/SEO 감사 | ✅ | Lighthouse score 자동화와 함께 도입 |
+| **storybook** | 컴포넌트 문서/스토리 기반 작업 | ❌ 온디맨드 | `npx storybook dev` 실행 시에만 동작, 필요 시 수동 추가 |
 
-- Codex 기준 SSOT: `.codex/config.toml` (현재 기본 9개 활성, `storybook` 제외)
-- `stitch`는 현재 연동되어 있지만 기본 QA/배포 루프에서 상시 사용하는 도구는 아닙니다. 명시적인 UI 개선/프로토타이핑 요청이 있을 때만 사용하는 온디맨드 도구로 해석합니다.
-- Claude 기준 로컬 구성은 `.mcp.json`/`.claude/settings.local.json` 정책에 따릅니다.
+- Claude 기준 실제 구성: `.mcp.json` (gitignore, GitHub 노출 없음)
+- Codex 기준 SSOT: `.codex/config.toml`의 `[mcp_servers.*]`
+- `.gemini/mcp.json`에 `diagram-converter`(= `diagram-converter-mcp` 동일 패키지)가 별도 등록되어 있어 Claude 세션에서 중복 노출됨 — 기능 문제 없음
 
 ---
 
@@ -171,9 +172,9 @@ npm run mcp:playwright:mode:stdio
 
 ---
 
-## 현재 설정 백업 (2026-02-14 Updated)
+## 현재 설정 백업 (2026-04-17 Updated)
 
-### .mcp.json 구조
+### .mcp.json 구조 (10개 상시 등록)
 
 ```json
 {
@@ -182,9 +183,9 @@ npm run mcp:playwright:mode:stdio
       "command": "npx",
       "args": ["-y", "vercel-mcp", "VERCEL_API_KEY=<your-token>"]
     },
-    "supabase": {
-      "command": "npx",
-      "args": ["-y", "@supabase/mcp-server-supabase@latest"],
+    "supabase-db": {
+      "command": "node",
+      "args": ["/home/<user>/.mcp-servers/supabase/node_modules/@supabase/mcp-server-supabase/dist/transports/stdio.js"],
       "env": {
         "SUPABASE_ACCESS_TOKEN": "<your-token>"
       }
@@ -195,7 +196,7 @@ npm run mcp:playwright:mode:stdio
     },
     "playwright": {
       "command": "npx",
-      "args": ["-y", "@playwright/mcp"]
+      "args": ["-y", "@playwright/mcp", "--output-dir", ".playwright-mcp/screenshots"]
     },
     "next-devtools": {
       "command": "npx",
@@ -219,10 +220,21 @@ npm run mcp:playwright:mode:stdio
         "STITCH_USE_SYSTEM_GCLOUD": "1",
         "STITCH_PROJECT_ID": "<your-gcp-project-id>"
       }
+    },
+    "diagram-converter-mcp": {
+      "command": "npx",
+      "args": ["-y", "diagram-converter-mcp"]
+    },
+    "lighthouse": {
+      "command": "npx",
+      "args": ["-y", "lighthouse-mcp"]
     }
   }
 }
 ```
+
+> **주의**: `supabase-db`는 `"supabase"` 이름 사용 시 Claude Code 빌트인 OAuth 트리거됨 (claude-code#21368). 로컬 설치 필수.
+> `.mcp.json`은 `.gitignore` + `.github-export-ignore` 양쪽 등록으로 GitHub 노출 차단됨.
 
 ### .claude/settings.local.json 권한 설정
 
@@ -231,22 +243,22 @@ npm run mcp:playwright:mode:stdio
   "permissions": {
     "allow": [
       "mcp__context7__*",
-      "mcp__diagram-converter__*",
-      "mcp__supabase__*",
+      "mcp__diagram-converter-mcp__*",
+      "mcp__supabase-db__*",
       "mcp__vercel__*",
       "mcp__playwright__*",
       "mcp__next-devtools__*",
       "mcp__github__*",
       "mcp__sequential-thinking__*",
-      "mcp__stitch__*"
-      // optional: "mcp__storybook__*"
+      "mcp__stitch__*",
+      "mcp__lighthouse__*"
     ]
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
-    "vercel", "supabase", "context7", "diagram-converter",
-    "playwright", "next-devtools", "github", "sequential-thinking", "stitch"
-    // optional: "storybook"
+    "vercel", "supabase-db", "context7", "diagram-converter-mcp",
+    "playwright", "next-devtools", "github", "sequential-thinking",
+    "stitch", "lighthouse"
   ]
 }
 ```
@@ -331,11 +343,13 @@ Claude: [stitch로 UI 생성] → Figma로 복사 가능
 
 SQL 실행, 마이그레이션 관리, 테이블 조회.
 
+> **이름 주의**: `supabase-db` 사용. `supabase` 이름은 Claude Code 빌트인 OAuth 트리거함.
+
 **주요 도구**:
 ```bash
-mcp__supabase__execute_sql("SELECT * FROM servers LIMIT 10")
-mcp__supabase__list_tables()
-mcp__supabase__apply_migration("add_index", "CREATE INDEX...")
+mcp__supabase-db__execute_sql("SELECT * FROM servers LIMIT 10")
+mcp__supabase-db__list_tables()
+mcp__supabase-db__apply_migration("add_index", "CREATE INDEX...")
 ```
 
 ---
@@ -489,20 +503,22 @@ cat > .claude/settings.local.json << 'EOF'
   "permissions": {
     "allow": [
       "mcp__context7__*",
-      "mcp__supabase__*",
+      "mcp__supabase-db__*",
       "mcp__vercel__*",
       "mcp__playwright__*",
       "mcp__next-devtools__*",
       "mcp__github__*",
       "mcp__sequential-thinking__*",
       "mcp__stitch__*",
-      "mcp__storybook__*"
+      "mcp__diagram-converter-mcp__*",
+      "mcp__lighthouse__*"
     ]
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
-    "vercel", "supabase", "context7",
-    "playwright", "next-devtools", "github", "sequential-thinking", "stitch", "storybook"
+    "vercel", "supabase-db", "context7",
+    "playwright", "next-devtools", "github", "sequential-thinking",
+    "stitch", "diagram-converter-mcp", "lighthouse"
   ]
 }
 EOF
@@ -568,4 +584,4 @@ Claude: [context7, supabase 등 사용 가능 여부 표시]
 
 ---
 
-_Last Updated: 2026-02-19_
+_Last Updated: 2026-04-17 (lighthouse 추가, diagram-converter-mcp 이름 정정, supabase-db 명칭 통일, storybook 온디맨드 명시)_
