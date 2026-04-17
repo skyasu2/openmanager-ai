@@ -185,6 +185,10 @@ export default function AIWorkspace({
   }, [consumePendingEntryState, pendingEntryState, setAnalysisMode, setInput]);
 
   useEffect(() => {
+    if (pendingEntryState) {
+      return;
+    }
+
     if (!pendingPrefillMessage) {
       return;
     }
@@ -192,7 +196,12 @@ export default function AIWorkspace({
     setSelectedFunction('chat');
     setInput(pendingPrefillMessage);
     consumePendingPrefillMessage();
-  }, [consumePendingPrefillMessage, pendingPrefillMessage, setInput]);
+  }, [
+    consumePendingPrefillMessage,
+    pendingEntryState,
+    pendingPrefillMessage,
+    setInput,
+  ]);
 
   const handleOpenFullscreen = useCallback(() => {
     openFullscreen({

@@ -390,6 +390,68 @@ describe('AIWorkspace', () => {
     });
   });
 
+  it('does not consume sidebar-targeted prefill when fullscreen entry target mismatches', async () => {
+    const { useAIChatCore } = await import('@/hooks/ai/useAIChatCore');
+    const mockSetInput = vi.fn();
+
+    mockConsumePendingEntryState.mockReturnValueOnce(null);
+    mockSidebarState = {
+      ...mockSidebarState,
+      pendingEntryState: {
+        draft: 'sidebar에서만 열어야 하는 초안',
+        selectedFunction: 'chat',
+        target: 'sidebar',
+      },
+      pendingPrefillMessage: 'sidebar에서만 열어야 하는 초안',
+    };
+
+    vi.mocked(useAIChatCore).mockReturnValue({
+      input: '',
+      setInput: mockSetInput,
+      messages: [],
+      isLoading: false,
+      hybridState: {
+        progress: null,
+        jobId: null,
+      },
+      currentMode: 'streaming',
+      error: null,
+      clearError: vi.fn(),
+      sessionState: {
+        messagesRemaining: 10,
+        isLimited: false,
+      },
+      handleNewSession: vi.fn(),
+      handleFeedback: vi.fn(),
+      regenerateLastResponse: vi.fn(),
+      retryLastQuery: vi.fn(),
+      stop: vi.fn(),
+      cancel: vi.fn(),
+      handleSendInput: vi.fn(),
+      clarification: null,
+      selectClarification: vi.fn(),
+      submitCustomClarification: vi.fn(),
+      skipClarification: vi.fn(),
+      dismissClarification: vi.fn(),
+      currentAgentStatus: null,
+      currentHandoff: null,
+      warmingUp: false,
+      estimatedWaitSeconds: 0,
+      queuedQueries: [],
+      removeQueuedQuery: vi.fn(),
+    } as unknown as ReturnType<typeof useAIChatCore>);
+
+    render(<AIWorkspace mode="fullscreen" />);
+
+    await waitFor(() => {
+      expect(mockConsumePendingEntryState).toHaveBeenCalledWith('fullscreen');
+    });
+    expect(mockSetInput).not.toHaveBeenCalledWith(
+      'sidebar에서만 열어야 하는 초안'
+    );
+    expect(mockConsumePendingPrefillMessage).not.toHaveBeenCalled();
+  });
+
   it('preserves fullscreen Analyst state when switching to chat and back', () => {
     render(<AIWorkspace mode="fullscreen" />);
 
