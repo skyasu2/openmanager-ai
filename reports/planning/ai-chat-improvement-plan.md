@@ -1,9 +1,9 @@
 # AI 어시스턴트 채팅 기능 개선 계획서
 
 > Owner: project
-> Status: Approved — Sprint 1~3 완료(2026-04-09). Sprint 4는 2026-04-17 현재 코드 기준으로 범위를 재정렬했고, 다음 구현 단계는 `test(spec):` failing test 선행 커밋부터 시작.
+> Status: In Progress — Sprint 1~3 완료(2026-04-09). Sprint 4는 2026-04-17 현재 structured-output hardening, routing timeout fallback, stream usage/failure contract까지 반영되었고, 남은 구현 단계는 `subtask timeout contract`를 failing test 선행 커밋으로 고정하는 일이다.
 > Doc type: Plan
-> Last reviewed: 2026-04-16
+> Last reviewed: 2026-04-17
 > Tags: ai-chat, improvement, planning, v8.12
 
 ---
@@ -358,11 +358,13 @@ const [expanded, setExpanded] = useState(false);
 [x] QA-0265 + v8.11.8 태그 배포 — 6/6 pass, 2026-04-09
 ```
 
-### Sprint 4 (승인 완료, 구현 대기)
+### Sprint 4 (진행 중)
 
 ```
-[ ] 4-A: Orchestrator structured-output hardening (`generateObjectWithFallback` 경로 + 회귀 테스트)
-[ ] 4-B: Orchestrator timeout contract 정리 (routing/subtask fallback + 회귀 테스트)
+[x] 4-A: Orchestrator structured-output hardening (`generateObjectWithFallback` 경로 + 회귀 테스트)
+[x] 4-B-1: Orchestrator routing timeout fallback contract (`suggestedAgent` fallback + 회귀 테스트)
+[x] 4-B-2: Decomposition stream usage/failure metadata contract (`usage.totalTokens`, `failedCount`, `failedAgents`)
+[ ] 4-B-3: Subtask timeout contract 정리 (timeout된 subtask를 null 처리하고 partial success를 유지하는 회귀 테스트)
 ```
 
 ---
@@ -396,12 +398,30 @@ const [expanded, setExpanded] = useState(false);
   - `npm run lint` ✅
   - `npx vitest run --config config/testing/vitest.config.main.ts src/hooks/ai/useEnhancedChatMessages.test.ts src/hooks/ai/core/useClarificationHandlers.test.ts src/components/ai-sidebar/ClarificationDialog.test.tsx src/hooks/ai/useAIChatCore.test.ts` ✅
 - 2026-04-16: Sprint 3 (3-A toolsCalled deferred metadata, 3-B Anthropic 캐시 정책 문서화) 완료. P1 버그 수정 및 v8.11.13 릴리즈. Production QA-20260416-0294 7/7 통과.
+- 2026-04-17: Sprint 4 cycle 1 완료. non-stream routing timeout 시 `suggestedAgent` fallback 유지.
+  - failing test: `94c62acfd` `test(spec): ai chat sprint 4 add failing timeout fallback test`
+  - 구현: `71b6b90d4` `fix(ai-engine): fallback on orchestrator routing failure`
+  - 검증: `cd cloud-run/ai-engine && npm run type-check && npm run test`
+- 2026-04-17: Sprint 4 cycle 2 완료. structured-output provider fallback + invalid JSON fallback recovery 보강.
+  - failing test: `f5df3bd3a` `test(spec): ai chat sprint 4 add failing structured fallback test`
+  - 구현: `721b84bce` `fix(ai-engine): recover from text fallback provider errors`
+  - failing test: `083a23257` `test(spec): ai chat sprint 4 add invalid json fallback test`
+  - 구현: `b442aac7c` `fix(ai-engine): retry after invalid json fallback`
+  - 검증: `cd cloud-run/ai-engine && npm run type-check && npm run test`
+- 2026-04-17: Sprint 4 cycle 3 완료. decomposition/stream contract 보강.
+  - failing test: `68250484f` `test(spec): ai chat sprint 4 add failing decomposition stream contract test`
+  - 구현: `b724c3412` `fix(ai-engine): preserve total tokens in decomposition streams`
+  - failing test: `a7eb7c416` `test(spec): ai chat sprint 4 add failing stream usage contract tests`
+  - 구현: `4c9cdb00c` `fix(ai-engine): preserve total tokens in stream done events`
+  - failing test: `5cf4b1d80` `test(spec): ai chat sprint 4 add failing decomposition failure contract tests`
+  - 구현: `9ccc20d38` `fix(ai-engine): expose decomposition failure metadata`
+  - 검증: `cd cloud-run/ai-engine && npm run type-check && npm run test`
 
 ---
 
 ## 착수 조건 (SDD Gate)
 
-> `Approved` 근거. 다음 구현 단계는 failing test 선행 커밋부터 시작한다.
+> Sprint 4는 이미 `In Progress` 상태다. 남은 구현 단계(`4-B-3`)도 failing test 선행 커밋부터 시작한다.
 
 - [x] **변경 대상 파일 목록** 확정
   - `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-object-fallback.ts`
@@ -418,7 +438,9 @@ const [expanded, setExpanded] = useState(false);
   - 시나리오 2: stream routing decision timeout 발생 시 `suggestedAgent` fallback으로 진행된다.
   - 시나리오 3: parallel subtask 일부 timeout 시 성공한 subtask만으로 unified response가 생성된다.
   - 시나리오 4: structured output + text fallback 모두 실패하면 기존 에러 surface를 유지한다.
-- [ ] `test(spec): ai chat sprint 4 add failing tests before implementation`
-- [ ] `feat: ai chat sprint 4 implement to pass specs`
+- [x] `test(spec): ai chat sprint 4 add failing tests before implementation`
+- [x] `feat: ai chat sprint 4 implement to pass specs`
+- [ ] 다음 slice: `test(spec): ai chat sprint 4 add failing subtask timeout contract test`
+- [ ] 다음 slice: `feat: ai chat sprint 4 implement subtask timeout contract`
 
 _Last Updated: 2026-04-17_

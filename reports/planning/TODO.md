@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| P2: AI Chat Improvement Sprint 4 | Medium | contract-approved | 계획서: [ai-chat-improvement-plan.md](ai-chat-improvement-plan.md). Sprint 4 범위를 현재 구현 기준으로 재정렬했다. 다음 구현 단계는 `test(spec):` failing test 선행 커밋부터 시작. |
+| P2: AI Chat Improvement Sprint 4 | Medium | in-progress | 계획서: [ai-chat-improvement-plan.md](ai-chat-improvement-plan.md). Sprint 4의 structured-output hardening, routing timeout fallback, stream usage/failure contract는 반영 완료. 남은 구현 단계는 `subtask timeout contract`를 failing test 선행 커밋으로 고정하는 일이다. |
 
 ---
 
