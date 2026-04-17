@@ -90,6 +90,12 @@
 
 ### SDD 게이트 (구현 착수 전 필수)
 
+아래 작업에는 strict TDD/SDD를 적용한다.
+- 신규 기능
+- 대규모 리팩터링
+- 계약 변경
+  - 예: API shape, AI stream/tool schema, auth/session, monitoring pipeline, ai-engine tool/result schema
+
 plan 파일이 있는 작업은 아래 순서를 따른다.
 
 ```
@@ -104,7 +110,8 @@ plan 파일이 있는 작업은 아래 순서를 따른다.
    커밋 메시지: feat: [기능명] implement to pass specs
 ```
 
-단순 버그 수정·소규모 리팩터링은 게이트 없이 TODO.md 1줄 처리로 충분하다.
+단순 버그 수정·소규모 리팩터링·UI copy/docs 변경은 게이트 없이 TODO.md 1줄 처리로 충분하다.
+가능하면 회귀 테스트를 추가하되, 테스트 추가가 비현실적이면 작업 보고에 이유를 명시한다.
 
 상세 규칙: `reports/planning/README.md`
 

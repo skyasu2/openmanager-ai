@@ -97,7 +97,7 @@ Draft → Approved → In Progress → Completed
 
 ```
 TODO.md Backlog 등록
-  → plan 파일 생성 (다단계 작업만), Status: Draft
+  → plan 파일 생성 (신규 기능/대규모 리팩터링/계약 변경 등 다단계 작업), Status: Draft
   → 계약 섹션 작성 완료 → Status: Approved
   → 구현 착수: 테스트 시나리오 failing test 먼저 커밋
   → 실행 중: plan 파일 Task 체크, TODO.md 상태 갱신, Status: In Progress
@@ -110,11 +110,15 @@ TODO.md Backlog 등록
 
 | 상황 | plan 파일 필요 여부 |
 |------|-------------|
+| 신규 기능 | ✅ 필수 |
+| 대규모 리팩터링 | ✅ 필수 |
+| 계약 변경 (API/AI/auth/monitoring/ai-engine schema) | ✅ 필수 |
 | 아키텍처 변경 | ✅ 필수 |
 | 마이그레이션 | ✅ 필수 |
 | 다단계 기능 구현 (3 Task 이상) | ✅ 권장 |
 | 단일 버그 수정 | ❌ TODO.md 1줄로 처리 |
 | 소규모 리팩터링 | ❌ TODO.md 1줄로 처리 |
+| UI copy / 문서 전용 변경 | ❌ TODO.md 1줄로 처리 |
 
 파일명: `kebab-case-plan.md` (예: `ai-engine-refactor-plan.md`)
 
@@ -170,5 +174,8 @@ TODO.md Backlog 등록
 - API 키, 토큰, 시크릿 기록 금지
 - `docs/archived/`는 계획서 보관 위치로 사용하지 않음
 - 작업 회고는 `archive/YYYY-MM-DD-work-history.md` 형식
+- 단일 버그 수정·소규모 리팩터링은 strict TDD/SDD 대상이 아니다.
+- 단, 회귀 테스트를 쉽게 추가할 수 있는 경우에는 regression test를 우선한다.
+- 회귀 테스트 추가가 비현실적이면 작업 보고에 간단한 justification을 남긴다.
 
-_Last Updated: 2026-04-16 (SDD 게이트 + Contract 템플릿 추가)_
+_Last Updated: 2026-04-17 (strict TDD/SDD 적용 범위 명확화)_
