@@ -152,6 +152,72 @@ function main(): void {
     Math.min(...backupDiskSeries) >= 0.68
   );
 
+  // ── 3c. Redis cross-AZ latency scenario ──
+  console.log('\n[3c] Redis cross-AZ latency scenario:');
+  const responseTargets = [13, 14, 15];
+  let remoteAzLogCount = 0;
+  let redisLatencyHoursPassing = 0;
+
+  for (const hour of responseTargets) {
+    const hourly: HourlyFile = JSON.parse(
+      fs.readFileSync(
+        path.join(HOURLY_DIR, `hour-${String(hour).padStart(2, '0')}.json`),
+        'utf-8'
+      )
+    );
+
+    const responseSeries = hourly.slots
+      .map((slot) => {
+        const metric = slot.metrics.find(
+          (entry) => entry.name === 'http.server.request.duration'
+        );
+        const point = metric?.dataPoints.find((dp) =>
+          String(dp.attributes['host.name'] ?? '').startsWith(
+            'api-was-dc1-03.'
+          )
+        );
+        return point?.asDouble;
+      })
+      .filter((value): value is number => typeof value === 'number');
+
+    if (responseSeries.length === 6 && Math.max(...responseSeries) >= 0.35) {
+      redisLatencyHoursPassing++;
+    }
+
+    for (const slot of hourly.slots) {
+      for (const log of slot.logs) {
+        if (
+          (log.resource === 'api-was-dc1-03' ||
+            log.resource === 'cache-redis-dc1-01') &&
+          /remote az cache/i.test(log.body)
+        ) {
+          remoteAzLogCount++;
+        }
+      }
+    }
+  }
+
+  const apiWasIndex = ts.serverIds.indexOf('api-was-dc1-03');
+  const apiWasResponseSeries =
+    ts.metrics['http.server.request.duration']?.[apiWasIndex] ?? [];
+  const crossAzWindow = apiWasResponseSeries.slice(13 * 6, 16 * 6);
+
+  check(
+    'api-was-dc1-03 latency spikes across hours 13-15',
+    redisLatencyHoursPassing === 3,
+    `${redisLatencyHoursPassing}/3 hours`
+  );
+  check(
+    'Remote AZ cache cause logs recorded',
+    remoteAzLogCount >= 6,
+    `${remoteAzLogCount} logs`
+  );
+  check(
+    'Timeseries syncs cross-AZ latency spikes',
+    Math.max(...crossAzWindow) >= 0.35,
+    `${Math.max(...crossAzWindow).toFixed(3)} max`
+  );
+
   // ── 4. Cache OOM logs have redis-server (not java) ──
   console.log('\n[4] Cache OOM process name:');
   let javaOOMInCache = 0;

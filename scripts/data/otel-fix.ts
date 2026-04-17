@@ -95,6 +95,12 @@ type ServerMetricOverride = {
   network?: number; // 0-1 ratio (bytes 변환은 adjustMetricsForScenario에서)
 };
 
+const REDIS_CROSS_AZ_RESPONSE_SERIES: Record<number, number[]> = {
+  13: [0.31, 0.35, 0.39, 0.42, 0.38, 0.34],
+  14: [0.44, 0.48, 0.52, 0.56, 0.50, 0.46],
+  15: [0.36, 0.39, 0.41, 0.43, 0.40, 0.37],
+};
+
 // 5개 스토리의 시간별 메트릭 오버라이드
 // S1: 야간 배치→DB 연쇄(00-05), S2: 출근 피크→API 과부하(07-12)
 // S3: Redis 메모리 누수(13-18), S4: 네트워크/LB 포화(19-22), S5: 스토리지 백업(23)
@@ -376,6 +382,64 @@ function adjustMetricsForScenario(data: HourlyFile, hour: number): HourlyFile {
       }
     }
   }
+  return data;
+}
+
+function applyRedisCrossAzLatencyScenario(
+  data: HourlyFile,
+  hour: number
+): HourlyFile {
+  const responseSeries = REDIS_CROSS_AZ_RESPONSE_SERIES[hour];
+  if (!responseSeries) return data;
+
+  for (let slotIdx = 0; slotIdx < data.slots.length; slotIdx++) {
+    const slot = data.slots[slotIdx];
+    const responseTarget = responseSeries[slotIdx];
+    if (responseTarget === undefined) continue;
+
+    for (const metric of slot.metrics) {
+      if (metric.name !== 'http.server.request.duration') continue;
+      for (const dp of metric.dataPoints) {
+        const hostname = dp.attributes['host.name'] ?? '';
+        const serverId = hostname.split('.')[0];
+        if (serverId === 'api-was-dc1-03') {
+          dp.asDouble = responseTarget;
+        }
+      }
+    }
+
+    slot.logs = slot.logs.filter(
+      (log) =>
+        !(
+          (log.resource === 'api-was-dc1-03' ||
+            log.resource === 'cache-redis-dc1-01') &&
+          /remote az cache/i.test(log.body)
+        )
+    );
+
+    const baseTime = slot.startTimeUnixNano + 120_000_000_000; // +120s
+    const latencyMs = Math.round(responseTarget * 1000);
+
+    slot.logs.push(
+      {
+        timeUnixNano: Math.min(baseTime, slot.endTimeUnixNano - 2),
+        severityNumber: 13,
+        severityText: 'WARN',
+        body: `java[${3000 + hour * 100 + slotIdx}]: [WARN] Remote AZ cache access detected: cache-redis-dc1-01 (AZ1) latency ${latencyMs}ms`,
+        attributes: { 'log.source': 'java' },
+        resource: 'api-was-dc1-03',
+      },
+      {
+        timeUnixNano: Math.min(baseTime + 30_000_000_000, slot.endTimeUnixNano - 1),
+        severityNumber: 13,
+        severityText: 'WARN',
+        body: `redis-server[${5000 + hour * 100 + slotIdx}]: WARNING: Remote AZ cache client api-was-dc1-03 observed, round-trip ${latencyMs + 120}ms`,
+        attributes: { 'log.source': 'redis' },
+        resource: 'cache-redis-dc1-01',
+      }
+    );
+  }
+
   return data;
 }
 
@@ -917,10 +981,11 @@ function limitWatchdogDuplicates(data: HourlyFile): HourlyFile {
  */
 function syncTimeseriesFromHourlyFiles(data: TimeSeries): TimeSeries {
   const NETWORK_MAX_BYTES = 125_000_000;
-  const RATIO_METRICS = [
+  const DIRECT_COPY_METRICS = [
     'system.cpu.utilization',
     'system.memory.utilization',
     'system.filesystem.utilization',
+    'http.server.request.duration',
   ];
   const NETWORK_METRIC = 'system.network.io';
 
@@ -936,9 +1001,9 @@ function syncTimeseriesFromHourlyFiles(data: TimeSeries): TimeSeries {
       const tsIdx = hour * 6 + slotIdx;
 
       for (const metric of slot.metrics) {
-        const isRatio = RATIO_METRICS.includes(metric.name);
+        const isDirectCopy = DIRECT_COPY_METRICS.includes(metric.name);
         const isNetwork = metric.name === NETWORK_METRIC;
-        if (!isRatio && !isNetwork) continue;
+        if (!isDirectCopy && !isNetwork) continue;
 
         const tsSeries = data.metrics[metric.name];
         if (!tsSeries) continue;
@@ -954,8 +1019,8 @@ function syncTimeseriesFromHourlyFiles(data: TimeSeries): TimeSeries {
           const series = tsSeries[serverIdx];
           if (!series || tsIdx >= series.length) continue;
 
-          if (isRatio) {
-            // ratio 그대로 복사 (소수점 4자리)
+          if (isDirectCopy) {
+            // ratio 및 response duration은 그대로 복사 (소수점 4자리)
             series[tsIdx] = Math.round(dp.asDouble * 10000) / 10000;
           } else {
             // bytes → ratio 역변환
@@ -987,6 +1052,8 @@ function main(): void {
     data = fixStorageCacheNetwork(data);
     // ★ P1: 시나리오 메트릭 조정 (C2/I3 이후, 최종 메트릭 권한)
     data = adjustMetricsForScenario(data, hour);
+    // ★ P2-A: Redis cross-AZ latency 시나리오
+    data = applyRedisCrossAzLatencyScenario(data, hour);
     // W1: Log time distribution
     data = fixLogTimeDistribution(data);
     // W2: S3 Gateway logs

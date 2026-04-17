@@ -822,7 +822,7 @@
               }
             },
             {
-              "asDouble": 0.171,
+              "asDouble": 0.36,
               "attributes": {
                 "host.name": "api-was-dc1-03.openmanager.kr"
               }
@@ -1223,6 +1223,26 @@
             "log.source": "java"
           },
           "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771048920000000000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[4500]: [WARN] Remote AZ cache access detected: cache-redis-dc1-01 (AZ1) latency 360ms",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771048950000000000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "redis-server[6500]: WARNING: Remote AZ cache client api-was-dc1-03 observed, round-trip 480ms",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-01"
         }
       ]
     },
@@ -2042,7 +2062,7 @@
               }
             },
             {
-              "asDouble": 0.136,
+              "asDouble": 0.39,
               "attributes": {
                 "host.name": "api-was-dc1-03.openmanager.kr"
               }
@@ -2430,6 +2450,26 @@
             "log.source": "java"
           },
           "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771049520000000000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[4501]: [WARN] Remote AZ cache access detected: cache-redis-dc1-01 (AZ1) latency 390ms",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771049550000000000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "redis-server[6501]: WARNING: Remote AZ cache client api-was-dc1-03 observed, round-trip 510ms",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-01"
         }
       ]
     },
@@ -3249,7 +3289,7 @@
               }
             },
             {
-              "asDouble": 0.162,
+              "asDouble": 0.41,
               "attributes": {
                 "host.name": "api-was-dc1-03.openmanager.kr"
               }
@@ -3611,6 +3651,26 @@
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "lb-haproxy-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771050120000000000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[4502]: [WARN] Remote AZ cache access detected: cache-redis-dc1-01 (AZ1) latency 410ms",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771050150000000000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "redis-server[6502]: WARNING: Remote AZ cache client api-was-dc1-03 observed, round-trip 530ms",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-01"
         }
       ]
     },
@@ -4430,7 +4490,7 @@
               }
             },
             {
-              "asDouble": 0.179,
+              "asDouble": 0.43,
               "attributes": {
                 "host.name": "api-was-dc1-03.openmanager.kr"
               }
@@ -4792,6 +4852,26 @@
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "lb-haproxy-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771050720000000000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[4503]: [WARN] Remote AZ cache access detected: cache-redis-dc1-01 (AZ1) latency 430ms",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771050750000000000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "redis-server[6503]: WARNING: Remote AZ cache client api-was-dc1-03 observed, round-trip 550ms",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-01"
         }
       ]
     },
@@ -5611,7 +5691,7 @@
               }
             },
             {
-              "asDouble": 0.146,
+              "asDouble": 0.4,
               "attributes": {
                 "host.name": "api-was-dc1-03.openmanager.kr"
               }
@@ -5973,6 +6053,26 @@
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "lb-haproxy-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771051320000000000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[4504]: [WARN] Remote AZ cache access detected: cache-redis-dc1-01 (AZ1) latency 400ms",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771051350000000000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "redis-server[6504]: WARNING: Remote AZ cache client api-was-dc1-03 observed, round-trip 520ms",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-01"
         }
       ]
     },
@@ -6792,7 +6892,7 @@
               }
             },
             {
-              "asDouble": 0.143,
+              "asDouble": 0.37,
               "attributes": {
                 "host.name": "api-was-dc1-03.openmanager.kr"
               }
@@ -7115,6 +7215,26 @@
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "lb-haproxy-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771051920000000000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[4505]: [WARN] Remote AZ cache access detected: cache-redis-dc1-01 (AZ1) latency 370ms",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771051950000000000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "redis-server[6505]: WARNING: Remote AZ cache client api-was-dc1-03 observed, round-trip 490ms",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-01"
         }
       ]
     }
