@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (AI Response Visibility limiter alignment slice 완료)
+**Last Updated**: 2026-04-18 KST (AI Response Visibility session-aware limiter slice 완료)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| 없음 | — | — | 다음 후보: `AI Response Visibility` 후속(`limiter 정책 재정비` 잔여: daily/user-key/Cloud Run 정책) 또는 `OTel 토폴로지 개선` 재평가 |
+| 없음 | — | — | 다음 후보: `AI Response Visibility` 후속(`limiter 정책 재정비` 잔여: daily semantics / Cloud Run 정책) 또는 `OTel 토폴로지 개선` 재평가 |
 
 ---
 
@@ -31,6 +31,16 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-18 #118)
+- [x] AI Response Visibility - session-aware limiter identity 완료
+  - frontend AI gateway limiter identifier를 IP-only에서 session-aware identity로 보강
+  - 우선순위: `auth context user/key` → `guest session cookie` → `supabase auth cookie` → `API key/test secret` → `IP+UA fingerprint`
+  - In-Memory fallback과 Redis limiter가 같은 identity semantics를 사용하도록 공통 helper로 정리
+  - same-IP 환경에서도 guest session cookie가 다르면 서로 다른 limiter bucket을 사용한다는 계약 고정
+  - 검증:
+    - targeted: `npx vitest run src/lib/security/rate-limiter.runtime.test.ts src/lib/security/rate-limiter.test.ts`
+    - root gate: `npm run type-check && npm run lint && npm run test:quick && npm run test:contract`
 
 ### Completed (2026-04-18 #117)
 - [x] AI Response Visibility - limiter alignment (`/api/ai/jobs` POST) 완료
