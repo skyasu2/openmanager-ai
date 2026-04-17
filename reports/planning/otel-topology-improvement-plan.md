@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Approved (slice) — Phase 1 `db-mysql-dc1-backup` realism slice는 완료. 이번 승인 범위는 Phase 2-A `Redis cross-AZ latency`에 한정.
+> Status: Backlog — Phase 1 `db-mysql-dc1-backup` realism, Phase 2-A `Redis cross-AZ latency` slice는 완료. 남은 범위는 Phase 2-B NFS SPOF, Phase 3 서버 추가, 기존 verify baseline debt 정리.
 > Doc type: Reference
 > Last reviewed: 2026-04-17
 > Tags: otel-data, topology, infrastructure, data-quality
@@ -99,6 +99,16 @@ backup 전용으로 스펙 다운 (8c/32GB/1TB) + 역할 설명 명시.
   - `timeseries.json`의 같은 구간 response duration 동기화
   - `otel-fix.ts`, `otel-verify.ts`에 S6 계약 반영
   - NFS SPOF(S7), verify baseline debt 2건, 서버 수 증설은 이번 slice 제외
+
+### 이번 slice 완료 결과 (`2026-04-18`, Phase 2-A)
+
+- `hour-13~15`의 `api-was-dc1-03`는 cross-AZ cache latency를 반영한 response duration spike를 가진다.
+- `api-was-dc1-03`, `cache-redis-dc1-01` 로그에는 `remote AZ cache` 원인 문구가 기록된다.
+- `timeseries.json`도 같은 구간 response duration spike를 반영한다.
+- `otel-fix.ts`와 `otel-verify.ts`는 위 S6 계약을 재생성/검증한다.
+- 이번 slice 범위 밖의 기존 `data:verify` 실패 2건은 유지된다.
+  - storage network range
+  - ERROR 비율 하한
 
 ### Phase 1: db-backup 역할 명확화 (즉시)
 

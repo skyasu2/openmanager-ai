@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (OTel topology redis cross-AZ slice 승인)
+**Last Updated**: 2026-04-18 KST (OTel topology redis cross-AZ slice 완료)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| OTel topology improvement - Redis cross-AZ latency | Medium | approved | hour 13~15에 `api-was-dc1-03` remote-AZ cache latency 시나리오 추가. response spike + 원인 로그 + verify 계약 포함. |
+| 없음 | — | — | 다음 후보: `Cloud Run 정책` 재평가 또는 `OTel 토폴로지 개선` Phase 2-B NFS SPOF |
 
 ---
 
@@ -31,6 +31,17 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-18 #123)
+- [x] OTel topology improvement - Redis cross-AZ latency 완료
+  - `hour-13~15`에 `api-was-dc1-03` response duration spike 추가
+  - `api-was-dc1-03`, `cache-redis-dc1-01` 로그에 `remote AZ cache` 원인 문구 추가
+  - `timeseries.json`의 같은 구간 response duration 동기화
+  - `otel-fix.ts`, `otel-verify.ts`에 S6 계약 반영
+  - 검증:
+    - targeted: `npx vitest run tests/unit/otel-topology-redis-cross-az.contract.test.ts`
+    - targeted: `npm run data:verify` (신규 S6 항목 통과, 기존 baseline 실패 2건은 유지: storage network range, ERROR 비율)
+    - root gate: `npm run type-check && npm run lint && npm run test:quick`
 
 ### Completed (2026-04-18 #122)
 - [x] OTel topology improvement - backup realism 완료
