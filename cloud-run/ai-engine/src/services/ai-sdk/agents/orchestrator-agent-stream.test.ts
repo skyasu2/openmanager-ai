@@ -286,12 +286,66 @@ describe('executeAgentStream', () => {
     expect(textPayload).toContain('정상 응답');
     expect(mockStreamText).toHaveBeenCalledTimes(2);
 
+    const retryStatusEvent = events.find((event) => event.type === 'agent_status');
+    expect(retryStatusEvent).toBeDefined();
+    expect(retryStatusEvent?.data).toMatchObject({
+      agent: 'NLQ Agent',
+      status: 'processing',
+      message: 'cerebras 응답 없음, 대안 모델로 전환 중...',
+    });
+
     const doneEvent = events.find((event) => event.type === 'done');
     expect(doneEvent).toBeDefined();
     expect((doneEvent?.data as { success: boolean }).success).toBe(true);
     expect(
       (doneEvent?.data as { usage: { totalTokens?: number } }).usage.totalTokens
     ).toBe(15);
+  });
+
+  it('emits agent_status before retrying the next provider after an empty response', async () => {
+    mockStreamText.mockImplementation(
+      ({ model }: { model: { provider: string } }) => {
+        if (model.provider === 'cerebras') {
+          return createStreamResult({
+            chunks: ['   '],
+            steps: [],
+          });
+        }
+
+        return createStreamResult({
+          chunks: ['대체 모델 응답'],
+          steps: [
+            {
+              toolCalls: [{ toolName: 'finalAnswer' }],
+              toolResults: [
+                {
+                  toolName: 'finalAnswer',
+                  result: { answer: '대체 모델 응답' },
+                },
+              ],
+            },
+          ],
+        });
+      }
+    );
+
+    const events = await collectEvents('CPU 사용률 알려줘');
+    const retryStatusEvent = events.find((event) => event.type === 'agent_status');
+
+    expect(retryStatusEvent).toBeDefined();
+    expect(retryStatusEvent?.data).toMatchObject({
+      agent: 'NLQ Agent',
+      status: 'processing',
+      message: 'cerebras 응답 없음, 대안 모델로 전환 중...',
+    });
+
+    const textPayload = events
+      .filter((event) => event.type === 'text_delta')
+      .map((event) => String(event.data))
+      .join('');
+
+    expect(textPayload).toContain('대체 모델 응답');
+    expect(mockStreamText).toHaveBeenCalledTimes(2);
   });
 
   it('preserves totalTokens when reporter pipeline returns a direct result', async () => {
