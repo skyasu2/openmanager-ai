@@ -27,6 +27,7 @@ import {
 } from '../redis/rate-limiter';
 import { EdgeLogger } from '../runtime/edge-runtime-utils';
 import { InMemoryRateLimiter } from './in-memory-rate-limiter';
+import { getRateLimitIdentity } from './rate-limit-identity';
 import type { RateLimitConfig, RateLimitResult } from './rate-limiter-types';
 
 // ==============================================
@@ -59,7 +60,7 @@ class RateLimiter {
    * - 2차: In-Memory fallback (Redis 불가 시)
    */
   async checkLimit(request: NextRequest): Promise<RateLimitResult> {
-    const ip = this.getClientIP(request);
+    const identity = getRateLimitIdentity(request);
     const path = request.nextUrl.pathname;
 
     // 🚀 1차: Redis Rate Limit 시도 (고성능)
@@ -75,7 +76,7 @@ class RateLimiter {
 
       if (redisResult) {
         this.logger.info(
-          `[Rate Limit] Redis 사용 (latency: ${redisResult.latencyMs}ms, IP: ${ip})`
+          `[Rate Limit] Redis 사용 (latency: ${redisResult.latencyMs}ms, identity: ${identity})`
         );
         return {
           allowed: redisResult.allowed,
@@ -93,24 +94,9 @@ class RateLimiter {
 
     // 🛡️ 2차: In-Memory Fallback
     this.logger.warn(
-      `[Rate Limit] Redis 비활성화 - In-Memory Fallback 사용 (IP: ${ip}, Path: ${path})`
+      `[Rate Limit] Redis 비활성화 - In-Memory Fallback 사용 (identity: ${identity}, Path: ${path})`
     );
-    return this.checkInMemoryFallback(`${ip}:${path}`);
-  }
-
-  /**
-   * 🌐 클라이언트 IP 주소 추출
-   */
-  private getClientIP(request: NextRequest): string {
-    const vercelForwarded = request.headers.get('x-vercel-forwarded-for');
-    const forwarded = request.headers.get('x-forwarded-for');
-    const realIp = request.headers.get('x-real-ip');
-    return (
-      vercelForwarded?.split(',')[0] ??
-      forwarded?.split(',')[0] ??
-      realIp ??
-      'unknown'
-    );
+    return this.checkInMemoryFallback(`${identity}:${path}`);
   }
 
   /**
