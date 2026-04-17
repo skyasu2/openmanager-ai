@@ -320,4 +320,74 @@ describe('AnalysisBasisBadge', () => {
       ])
     );
   });
+
+  // ── Phase 2: handoff 우선 노출 (SDD failing specs) ──────────────────────────
+
+  it('shows handoff count in collapsed summary when handoffHistory is present', () => {
+    render(
+      <AnalysisBasisBadge
+        basis={{
+          ...basis,
+          toolsCalled: ['detectAnomalies'],
+          timeRange: '최근 1시간',
+        }}
+        handoffHistory={[
+          { from: 'supervisor', to: 'analyst' },
+          { from: 'analyst', to: 'reporter' },
+        ]}
+        toolResultSummaries={[
+          {
+            toolName: 'detectAnomalies',
+            label: '이상 탐지',
+            summary: '정상',
+            status: 'completed',
+          },
+        ]}
+      />
+    );
+
+    const summary = screen.getByTitle(/handoff 2회/);
+    expect(summary).toBeInTheDocument();
+  });
+
+  it('shows tool-centric summary when handoffHistory is empty', () => {
+    render(
+      <AnalysisBasisBadge
+        basis={{
+          ...basis,
+          toolsCalled: ['getServerMetrics'],
+          timeRange: '최근 1시간',
+        }}
+        handoffHistory={[]}
+        toolResultSummaries={[
+          {
+            toolName: 'getServerMetrics',
+            label: '서버 메트릭 조회',
+            summary: '정상',
+            status: 'completed',
+          },
+        ]}
+      />
+    );
+
+    const summary = screen.getByText(/도구:/);
+    expect(summary).toBeInTheDocument();
+    expect(screen.queryByText(/handoff/)).not.toBeInTheDocument();
+  });
+
+  it('renders gracefully when both handoffHistory and toolResultSummaries are absent', () => {
+    render(
+      <AnalysisBasisBadge
+        basis={{
+          dataSource: '서버 실시간 데이터 분석',
+          engine: 'Streaming AI',
+        }}
+      />
+    );
+
+    expect(
+      screen.getByRole('button', { name: '분석 근거 상세 보기' })
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/handoff/)).not.toBeInTheDocument();
+  });
 });
