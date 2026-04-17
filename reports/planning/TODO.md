@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-17 KST (AI Response Visibility handoff persistence slice 완료)
+**Last Updated**: 2026-04-17 KST (AI Stream Route Contract observability/caching slice 완료)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| 없음 | — | — | 다음 후보: `AI Response Visibility` 후속(`429 UX`, `Job Queue agent path`) 또는 `AI Stream Route Contract` residual cleanup(`observability/caching`) 재평가 |
+| 없음 | — | — | 다음 후보: `AI Response Visibility` 후속(`429 UX`, `Job Queue agent path`) 또는 `OTel 토폴로지 개선` 재평가 |
 
 ---
 
@@ -24,13 +24,25 @@
 |------|----------|-------|
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
 | AI Response Visibility & Rate Limit (Phase 1~5) | Medium | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). handoff 가시성 UX, 429 UX, Job Queue agent path, limiter 정책 재조정. |
-| AI Stream Route Contract - residual cleanup | Medium | 계획서: [ai-stream-route-contract-plan.md](ai-stream-route-contract-plan.md). Phase 5 provider fallback visibility, Phase 6 warning semantics alignment, Phase 7 legacy role-tagging 완료. 남은 slice: observability/caching 설명 정리. |
+| ~~AI Stream Route Contract - residual cleanup~~ | — | **완료** — archive 이동. |
 | OTel 토폴로지 개선 (P1→P2→P3) | Medium | 계획서: [otel-topology-improvement-plan.md](otel-topology-improvement-plan.md). db-backup 스펙 현실화(즉시), Redis cross-AZ/NFS SPOF 시나리오 추가(단기), 서버 3대 추가(장기). |
 | Storybook circular chunk warning 정리 | Low | non-blocking, stable 승격 후 재평가 |
 
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-17 #114)
+- [x] AI Stream Route Contract - observability/caching 설명 정리 완료 및 계획서 archive 이동
+  - primary request flow 문서를 `/api/ai/supervisor/stream/v2` 기준으로 정렬
+  - `/api/ai/supervisor`는 legacy JSON/text proxy + cache/plain callers 경로로만 설명되도록 정리
+  - legacy response cache와 v2 resumable stream state를 별도 caching semantics로 분리 설명
+  - observability 문서에서 `W3C Trace Context propagation`과 `full OTLP distributed tracing`을 구분
+  - stale timeout 설명(`Orchestrator 45s`)을 current config 기준으로 교정
+  - 계획서 archive: `reports/planning/archive/ai-stream-route-contract-plan.md`
+  - 검증:
+    - `npm run docs:lint:changed`
+    - `git diff --check`
 
 ### Completed (2026-04-17 #113)
 - [x] AI Stream Route Contract - legacy role-tagging 완료

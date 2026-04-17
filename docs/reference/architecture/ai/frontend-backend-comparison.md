@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-04-16
+> Last reviewed: 2026-04-17
 > Canonical: docs/reference/architecture/ai/frontend-backend-comparison.md
 > Tags: ai,frontend,backend,comparison
 
-**분석 일시**: 2026-03-03 (Diagram/metadata consistency refresh)
+**분석 일시**: 2026-04-17 (stream route / observability cleanup)
 **버전**: v8.0.0
 **아키텍처**: Vercel (Frontend) + Cloud Run (Backend AI Engine)
 
@@ -38,13 +38,13 @@ graph LR
         PreComp["Pre-computed 144슬롯"]
     end
 
-    Vercel -->|"proxy (X-API-Key)"| CloudRun
+    Vercel -->|"primary stream /api/ai/supervisor/stream/v2\nlegacy JSON/text /api/ai/supervisor"| CloudRun
 ```
 
 ### ASCII Fallback
 
 ```
-[사용자] → [Vercel/Next.js Frontend] ──proxy──→ [Cloud Run AI Engine]
+[사용자] → [Vercel/Next.js Frontend] ──primary stream v2──→ [Cloud Run AI Engine]
               │                                        │
          UI/UX Layer                            AI Processing Layer
          - AISidebarV4                          - Supervisor (듀얼모드)
@@ -52,6 +52,8 @@ graph LR
          - Hybrid Query Router                  - 7 Execution Agents
          - Security (52패턴 방어)               - Quad-Provider LLM
          - Resumable Stream                     - Pre-computed 144슬롯
+
+부가 경로: `/api/ai/supervisor`는 legacy JSON/text proxy이며 cache/plain callers와 local dev fallback을 담당합니다.
 ```
 
 > Source of truth (2026-03-03): `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (execution agents 7), `src/app/api/**/route.ts` (frontend API routes 28), `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')` (Cloud Run API mounts 9), `cloud-run/ai-engine/src/routes/*.ts` (route modules 10).
@@ -64,7 +66,7 @@ graph LR
 
 | 기능 | Frontend | Backend | 평가 |
 |------|:--------:|:-------:|:----:|
-| 메시지 송수신 | useAIChatCore (426줄) | Supervisor Route | 양쪽 완벽 |
+| 메시지 송수신 | useAIChatCore (426줄) | Supervisor Stream V2 + legacy JSON/text route | 양쪽 완벽 |
 | 스트리밍 응답 | UIMessageStream | AI SDK streamText | 양쪽 완벽 |
 | Resumable Stream | Upstash Redis List | appendResponseMessages | 양쪽 완벽 |
 | 세션 관리 | sessionId + localStorage | Redis 기반 | 양쪽 완벽 |
@@ -154,7 +156,7 @@ graph LR
 | 기능 | Frontend | Backend | 평가 |
 |------|:--------:|:-------:|:----:|
 | 서버 메트릭 데이터 | hourly-data SSOT | precomputed-state (853줄) | 상태 정합성 완벽 (online/warning/critical/offline) |
-| 캐시 전략 | **Memory + Redis 다층 캐시** (Chat History만 localStorage) | Upstash Redis + TTL | 양쪽 완벽 |
+| 캐시 전략 | legacy `/api/ai/supervisor` 응답 캐시 + `/stream/v2` resumable stream state (Chat History만 localStorage) | precomputed-state + Redis session/job state | 설명 분리 완료 |
 | 쿼리 정규화 | - | Cache Normalization | Backend 전담 |
 | 토큰 최적화 | - | 144슬롯 ~100토큰 압축 | Backend 전담 |
 
@@ -163,9 +165,11 @@ graph LR
 | 기능 | Frontend | Backend | 평가 |
 |------|:--------:|:-------:|:----:|
 | 사용자 피드백 | 좋아요/싫어요 + 텍스트 | Supabase 저장 | 양쪽 완벽 |
-| AI 추적 | - | Langfuse Tracing | Backend 전담 |
-| 에러 모니터링 | Sentry (AI context 태그 포함) | Pino 구조화 로깅 | 양쪽 완벽 |
+| AI 추적 | `traceparent`/timing header 전달 | Langfuse Tracing + Pino 상관관계 | 양쪽 완벽 |
+| 에러 모니터링 | Sentry (AI context 태그 포함) | Pino 구조화 로깅 + Cloud Logging | 양쪽 완벽 |
 | 비용 모니터링 | - | Free Tier 자동 차단 (90%) | Backend 전담 |
+
+> 관측 계약 메모: 현재 문서에서 말하는 OpenTelemetry는 `traceparent` 기반 W3C Trace Context 전파를 뜻합니다. OTLP exporter 기반 full distributed tracing/spans stitching까지 구현됐다고 가정하지 않습니다.
 
 ### 2.7 UI/UX 기능
 
@@ -192,7 +196,7 @@ graph LR
 | `src/stores/useAISidebarStore.ts` | Zustand 상태관리 | 551 | 17% |
 | `src/components/ai-sidebar/AISidebarV4.tsx` | 메인 사이드바 UI | 463 | 14% |
 | `src/hooks/ai/useAIChatCore.ts` | 공유 채팅 훅 | 426 | 13% |
-| `src/app/api/ai/supervisor/route.ts` | 프록시 엔드포인트 | 369 | 11% |
+| `src/app/api/ai/supervisor/route.ts` | legacy JSON/text 프록시 | 369 | 11% |
 
 ### Backend 핵심 파일
 

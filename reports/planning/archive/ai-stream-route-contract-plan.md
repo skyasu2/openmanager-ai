@@ -1,12 +1,12 @@
 > Owner: project
-> Status: Draft
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-04-17
 > Tags: ai-assistant,streaming,cloud-run,vercel,route-contract,architecture
 
 # AI Stream Route Contract & Legacy Path Consolidation Plan
 
-- 상태: **Phase 1 완료 (2026-04-16), Phase 5 provider fallback visibility 완료 (2026-04-17), Phase 6 warning semantics alignment 완료 (2026-04-17), Phase 7 legacy role-tagging 완료 (2026-04-17), residual cleanup backlog**
+- 상태: **Phase 1 완료 (2026-04-16), Phase 4 observability/caching 설명 정리 완료 (2026-04-17), Phase 5 provider fallback visibility 완료 (2026-04-17), Phase 6 warning semantics alignment 완료 (2026-04-17), Phase 7 legacy role-tagging 완료 (2026-04-17), plan complete**
 - 작성일: 2026-04-16
 - TODO.md 연결: Backlog > `AI Stream Route Contract - residual cleanup`
 - 목표: Vercel API routes와 Cloud Run supervisor endpoints의 역할을 다시 명확히 정의하고, 현재 primary streaming path와 legacy plain/json path의 계약을 정리해 유지보수 복잡도와 stale 판단을 줄인다.
@@ -163,11 +163,13 @@
 2. `/stream` legacy SSE consumer가 남아 있는지 확인
 3. 사용처가 사실상 없으면 deprecation 경고 또는 축소 계획 수립
 
-### Phase 4 — observability / caching 설명 정리
+### Phase 4 — observability / caching 설명 정리 ✅ 완료 (2026-04-17)
 
-1. v2는 resumable stream 중심
-2. legacy plain route는 cache 중심
-3. 이 차이를 docs/status or architecture notes에 반영
+1. [x] primary request flow를 `/api/ai/supervisor/stream/v2` 기준으로 문서화
+2. [x] legacy plain route를 response-cache/plain caller 경로로 제한 설명
+3. [x] legacy response cache와 v2 resumable stream state를 별도 caching semantics로 정리
+4. [x] `W3C Trace Context propagation`과 `full OTLP distributed tracing`을 분리해 기록
+5. [x] stale timeout 설명을 current config 기준으로 교정
 
 ### Phase 5 — multi-agent provider fallback visibility ✅ 완료 (2026-04-17)
 
@@ -208,33 +210,34 @@
 
 ## 6. Contract
 
-### Approved Slice
+### Approved Slice ✅ 완료 (2026-04-17)
 
-- 범위: `src/app/api/ai/supervisor` legacy route role-tagging과 관련 문서 drift만 다룬다.
+- 범위: observability/caching 설명 drift가 남은 문서만 정리한다.
 - 포함 파일:
-  - `src/app/api/ai/supervisor/**`
-  - `src/hooks/ai/core/useQueryExecution.ts`
+  - `docs/reference/architecture/ai/frontend-backend-comparison.md`
   - `docs/reference/architecture/ai/ai-engine-architecture.md`
-  - `docs/reference/architecture/system/system-architecture-current.md`
-  - 필요 시 `docs/reference/api/endpoints.md`
+  - 필요 시 `docs/status.md`
+  - `reports/planning/TODO.md`
 - 제외:
-  - legacy route 삭제
-  - client endpoint migration
-  - `/api/ai/supervisor/stream` Cloud Run SSE endpoint 제거
-  - auth/rate-limit semantics 변경
+  - runtime code 변경
+  - timeout 값 변경
+  - cache architecture redesign
+  - OTLP/OpenTelemetry 신규 구현
+  - legacy route 삭제 또는 caller migration
 
 ### Behavioral Contract
 
-1. `/api/ai/supervisor` 응답은 `legacy-supervisor` contract를 식별할 수 있어야 한다.
-2. 같은 응답은 primary route가 `/api/ai/supervisor/stream/v2`임을 명시해야 한다.
-3. local dev fallback caller 설명은 “개발용 fallback”으로 제한되어야 한다.
-4. 문서는 `/api/ai/supervisor`를 primary SSE route로 설명하지 않아야 한다.
+1. primary request flow는 `/api/ai/supervisor/stream/v2`를 기준으로 설명되어야 한다.
+2. `/api/ai/supervisor`는 legacy JSON/text proxy이자 response-cache/plain caller 경로로만 설명되어야 한다.
+3. v2 resumable stream state와 legacy response cache는 같은 caching layer로 묶어 설명하지 않아야 한다.
+4. observability 문서는 `W3C Trace Context propagation implemented`와 `full OTLP distributed tracing not implemented`를 혼동하지 않아야 한다.
+5. touched docs 안의 timeout/route 서술은 current code와 모순되지 않아야 한다.
 
 ### Test Scenarios
 
-1. legacy route helper/response가 legacy contract header를 넣는지
-2. primary route hint header가 `/api/ai/supervisor/stream/v2`인지
-3. 기존 응답 헤더를 깨지 않는지 회귀 확인
+1. touched docs 어디에도 browser primary flow가 `/api/ai/supervisor`로 적히지 않는지
+2. legacy response cache와 v2 resumable stream state가 별도 semantics로 서술되는지
+3. observability 설명이 `trace context propagation`과 `full distributed tracing`을 분리해서 쓰는지
 
 ## 7. 개선 필요성 평가
 
