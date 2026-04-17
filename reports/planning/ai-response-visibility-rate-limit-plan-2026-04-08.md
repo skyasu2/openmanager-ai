@@ -1,12 +1,12 @@
 > Owner: project
-> Status: Backlog — `handoff persistence contract`, `429 UX source-hardening`, `Job Queue agent-path`, `/api/ai/jobs` POST gateway limiter alignment, frontend AI gateway session-aware limiter identity, daily-limit semantics, Cloud Run forwarded identity slice는 완료. Cloud Run 정책 재평가 잔여는 backlog 유지.
+> Status: Backlog — `handoff persistence contract`, `429 UX source-hardening`, `Job Queue agent-path`, `/api/ai/jobs` POST gateway limiter alignment, frontend AI gateway session-aware limiter identity, daily-limit semantics, Cloud Run forwarded identity, retry limiter alignment slice는 완료. Cloud Run 정책 재평가 잔여는 backlog 유지.
 > Doc type: Plan
 > Last reviewed: 2026-04-17
 > Tags: ai,ux,rate-limit,visibility
 
 # AI Response Visibility & Rate Limit Plan (2026-04-08)
 
-- 상태: **Backlog (partial complete)** — AnalysisBasisBadge 중심 visibility 개선과 `handoff persistence contract`, `429 UX source-hardening`, `Job Queue agent-path`, `/api/ai/jobs` POST gateway limiter alignment, frontend AI gateway session-aware limiter identity, daily-limit semantics, Cloud Run forwarded identity slice는 완료됐다. 남은 범위는 Cloud Run 정책 재평가다.
+- 상태: **Backlog (partial complete)** — AnalysisBasisBadge 중심 visibility 개선과 `handoff persistence contract`, `429 UX source-hardening`, `Job Queue agent-path`, `/api/ai/jobs` POST gateway limiter alignment, frontend AI gateway session-aware limiter identity, daily-limit semantics, Cloud Run forwarded identity, retry limiter alignment slice는 완료됐다. 남은 범위는 Cloud Run 정책 재평가다.
 - 작성일: 2026-04-08 | 상태 갱신: 2026-04-18
 - TODO.md 연결: Backlog > AI Response Visibility & Rate Limit
 - 목표: AI 질의 과정의 가시성을 실제 실행 흐름과 맞추고, rate limit을 사용자에게 설명 가능한 제약으로 바꾼다.
@@ -52,6 +52,21 @@
 - Cloud Run limiter는 shared `X-API-Key`보다 forwarded end-user identity를 우선 사용한다.
 - 이로써 서비스 공용 secret 하나로 모든 사용자가 같은 Cloud Run limiter bucket을 공유하던 false sharing을 줄였다.
 - 이번 slice는 identity forwarding semantics만 다루며, Cloud Run jobs/supervisor 분당 수치 및 daily 정책 조정은 후속 backlog로 남긴다.
+
+### 이번 승인 slice (`2026-04-18`, 5차)
+
+- 목표: `/api/ai/jobs/[id]/retry`도 queue 생성과 동일한 Cloud Run `jobs/process` workload를 다시 트리거하므로, edge limiter를 `aiJobCreation(5/min)`에 정렬한다.
+- 범위:
+  - retry POST를 `aiJobCreation` limiter에 바인딩
+  - dynamic route에서도 `withRateLimit()`가 `params` 시그니처를 유지하도록 typing 보강
+  - Cloud Run 분당/일일 수치 자체 변경은 이번 slice 제외
+
+### 이번 slice 완료 결과 (`2026-04-18`, 5차)
+
+- `/api/ai/jobs/[id]/retry`는 이제 `aiJobCreation(5/min)` limiter를 사용한다.
+- queue 생성과 retry는 같은 upstream workload에 대해 같은 edge fail-fast semantics를 사용한다.
+- `withRateLimit()`는 dynamic route `params` 시그니처를 보존하도록 generic tuple typing이 보강됐다.
+- 이번 slice는 retry path drift만 닫았고, Cloud Run jobs/supervisor 정책 수치 재조정은 후속 backlog로 남긴다.
 
 ### 이번 승인 slice (`2026-04-18`, 3차)
 

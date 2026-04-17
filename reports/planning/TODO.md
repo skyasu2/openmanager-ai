@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (AI Response Visibility Cloud Run forwarded identity slice 완료)
+**Last Updated**: 2026-04-18 KST (AI Response Visibility retry limiter alignment slice 완료)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -31,6 +31,15 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-18 #121)
+- [x] AI Response Visibility - retry limiter alignment 완료
+  - `/api/ai/jobs/[id]/retry`를 `aiJobCreation(5/min)` limiter에 정렬
+  - queue 생성과 retry가 동일한 Cloud Run `jobs/process` workload를 호출할 때 같은 edge fail-fast semantics를 사용하도록 계약 고정
+  - `withRateLimit()`가 dynamic route `params` 시그니처를 보존하도록 generic tuple typing 보강
+  - 검증:
+    - targeted: `npx vitest run src/app/api/ai/jobs/[id]/retry/route.rate-limit-contract.test.ts src/app/api/ai/jobs/[id]/retry/route.test.ts src/app/api/ai/jobs/route.rate-limit-contract.test.ts src/lib/security/rate-limiter.test.ts`
+    - root gate: `npm run type-check && npm run lint && npm run test:quick && npm run test:contract`
 
 ### Completed (2026-04-18 #120)
 - [x] AI Response Visibility - Cloud Run forwarded identity 완료
