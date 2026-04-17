@@ -1,4 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi, afterEach } from 'vitest';
+import { TIMEOUT_CONFIG } from '../../../config/timeout-config';
 
 const {
   mockExecuteForcedRouting,
@@ -38,6 +39,10 @@ vi.mock('./orchestrator-routing', () => ({
 describe('orchestrator decomposition stream contract', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('includes totalTokens in parallel stream done usage', async () => {
@@ -285,6 +290,119 @@ describe('orchestrator decomposition stream contract', () => {
       completedCount: 1,
       failedCount: 1,
       failedAgents: ['Reporter Agent'],
+    });
+  });
+
+  it('continues sequential stream after a subtask timeout and preserves partial success', async () => {
+    vi.useFakeTimers();
+
+    const mod = await import('./orchestrator-decomposition');
+
+    mockExecuteForcedRouting
+      .mockImplementationOnce(() => new Promise(() => {}))
+      .mockResolvedValueOnce({
+        success: true,
+        response: 'Advisor response',
+        handoffs: [],
+        finalAgent: 'Advisor Agent',
+        toolsCalled: ['recommendCommands'],
+        usage: {
+          promptTokens: 7,
+          completionTokens: 3,
+          totalTokens: 10,
+        },
+        metadata: {
+          provider: 'mock',
+          modelId: 'mock-advisor',
+          totalRounds: 1,
+          handoffCount: 0,
+          durationMs: 22,
+        },
+      });
+
+    const eventsPromise = (async () => {
+      const events: Array<{ type: string; data: unknown }> = [];
+      for await (const event of mod.executeSequentialSubtasksStream(
+        [
+          { task: '장애 타임라인 작성', agent: 'Reporter Agent' },
+          { task: '후속 조치 제안', agent: 'Advisor Agent' },
+        ],
+        Date.now(),
+        true,
+        true,
+        'stream-contract-session'
+      )) {
+        events.push(event);
+      }
+      return events;
+    })();
+
+    await vi.advanceTimersByTimeAsync(TIMEOUT_CONFIG.subtask.hard + 1);
+
+    const events = await eventsPromise;
+    const doneEvent = events.find((event) => event.type === 'done');
+
+    expect(doneEvent).toBeDefined();
+    expect(
+      (doneEvent?.data as {
+        metadata: {
+          mode: string;
+          subtaskCount: number;
+          completedCount: number;
+          failedCount?: number;
+          failedAgents?: string[];
+        };
+      }).metadata
+    ).toMatchObject({
+      mode: 'sequential',
+      subtaskCount: 2,
+      completedCount: 1,
+      failedCount: 1,
+      failedAgents: ['Reporter Agent'],
+    });
+  });
+
+  it('emits ALL_SUBTASKS_FAILED when every sequential subtask times out', async () => {
+    vi.useFakeTimers();
+
+    const mod = await import('./orchestrator-decomposition');
+
+    mockExecuteForcedRouting
+      .mockImplementationOnce(() => new Promise(() => {}))
+      .mockImplementationOnce(() => new Promise(() => {}));
+
+    const eventsPromise = (async () => {
+      const events: Array<{ type: string; data: unknown }> = [];
+      for await (const event of mod.executeSequentialSubtasksStream(
+        [
+          { task: '장애 타임라인 작성', agent: 'Reporter Agent' },
+          { task: '후속 조치 제안', agent: 'Advisor Agent' },
+        ],
+        Date.now(),
+        true,
+        true,
+        'stream-contract-session'
+      )) {
+        events.push(event);
+      }
+      return events;
+    })();
+
+    await vi.advanceTimersByTimeAsync(TIMEOUT_CONFIG.subtask.hard * 2 + 1);
+
+    const events = await eventsPromise;
+    const errorEvent = events.find((event) => event.type === 'error');
+
+    expect(errorEvent).toBeDefined();
+    expect(errorEvent?.data).toMatchObject({
+      code: 'ALL_SUBTASKS_FAILED',
+      metadata: {
+        mode: 'sequential',
+        subtaskCount: 2,
+        completedCount: 0,
+        failedCount: 2,
+        failedAgents: ['Reporter Agent', 'Advisor Agent'],
+      },
     });
   });
 
