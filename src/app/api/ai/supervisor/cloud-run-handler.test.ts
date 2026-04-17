@@ -117,4 +117,19 @@ describe('legacy supervisor route contract headers', () => {
     );
     expect(response.headers.get('X-AI-Transport')).toBe('text');
   });
+
+  it('forwards rate-limit identity to Cloud Run proxy when provided', async () => {
+    await handleCloudRunJson({
+      ...defaultParams,
+      rateLimitIdentity: 'guest:abc123',
+    });
+
+    expect(mockProxyToCloudRun).toHaveBeenCalledWith(
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          'X-Rate-Limit-Identity': 'guest:abc123',
+        }),
+      })
+    );
+  });
 });

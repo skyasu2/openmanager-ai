@@ -363,6 +363,7 @@ describe('Supervisor Stream V2 Route', () => {
             'Content-Type': 'application/json',
             'X-Session-Id': 'session-1234',
             'X-Device-Type': 'mobile',
+            cookie: 'auth_session_id=guest-session-xyz',
           },
           body: JSON.stringify({
             messages: [{ role: 'user', content: '서버 상태 확인' }],
@@ -399,6 +400,11 @@ describe('Supervisor Stream V2 Route', () => {
         deviceType: 'mobile',
         enableWebSearch: true,
       });
+      expect(
+        (fetchOptions.headers as Record<string, string>)[
+          'X-Rate-Limit-Identity'
+        ]
+      ).toMatch(/^guest:/);
 
       expect(mockSaveActiveStreamId).toHaveBeenCalledWith(
         'session-1234',
