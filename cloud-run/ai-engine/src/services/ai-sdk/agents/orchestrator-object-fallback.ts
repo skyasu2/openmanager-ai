@@ -122,6 +122,25 @@ function shouldFallbackProvider(error: unknown): boolean {
   return false;
 }
 
+function shouldRetryAfterTextFallbackFailure(error: unknown): boolean {
+  if (shouldFallbackProvider(error)) {
+    return true;
+  }
+
+  if (error instanceof SyntaxError) {
+    return true;
+  }
+
+  if (error instanceof Error) {
+    return (
+      error.message.startsWith('Schema fallback failed:') ||
+      error.message === 'Empty model fallback response'
+    );
+  }
+
+  return false;
+}
+
 function normalizeModelText(raw: string): string {
   const trimmed = raw.trim();
   const fencedMatch = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/i);
@@ -263,7 +282,7 @@ export async function generateObjectWithFallback<T extends ZodTypeAny>(
           usage: coerceUsage(fallbackResult.usage as UsageLike),
         };
       } catch (parseError) {
-        if (shouldFallbackProvider(parseError)) {
+        if (shouldRetryAfterTextFallbackFailure(parseError)) {
           const nextModelResult = selectNextStructuredOutputProvider(
             options,
             attemptedProviders
