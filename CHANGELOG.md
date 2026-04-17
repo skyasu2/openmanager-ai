@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.18](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.17...v8.11.18) (2026-04-17)
+
+
+### Bug Fixes
+
+* **dashboard:** normalize active alert ai prefill context ([4617176](https://gitlab.com/skyasu2/openmanager-ai/-/commit/461717669e7267551ce7ace3dbcf1044aff694d1))
+
 ## [8.11.17](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.16...v8.11.17) (2026-04-17)
 
 
