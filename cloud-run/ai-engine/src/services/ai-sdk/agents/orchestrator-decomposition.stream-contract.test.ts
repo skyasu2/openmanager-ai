@@ -169,4 +169,212 @@ describe('orchestrator decomposition stream contract', () => {
       (doneEvent?.data as { usage: { totalTokens?: number } }).usage.totalTokens
     ).toBe(28);
   });
+
+  it('reports failedCount and failedAgents for partial parallel failures', async () => {
+    const mod = await import('./orchestrator-decomposition');
+
+    mockExecuteForcedRouting
+      .mockResolvedValueOnce({
+        success: true,
+        response: 'NLQ response',
+        handoffs: [],
+        finalAgent: 'NLQ Agent',
+        toolsCalled: ['getServerMetrics'],
+        usage: {
+          promptTokens: 10,
+          completionTokens: 4,
+          totalTokens: 14,
+        },
+        metadata: {
+          provider: 'mock',
+          modelId: 'mock-nlq',
+          totalRounds: 1,
+          handoffCount: 0,
+          durationMs: 20,
+        },
+      })
+      .mockResolvedValueOnce(null);
+
+    const events: Array<{ type: string; data: unknown }> = [];
+
+    for await (const event of mod.executeParallelSubtasksStream(
+      [
+        { task: '서버 상태 조회', agent: 'NLQ Agent' },
+        { task: '이상 징후 분석', agent: 'Analyst Agent' },
+      ],
+      Date.now(),
+      true,
+      true,
+      'stream-contract-session'
+    )) {
+      events.push(event);
+    }
+
+    const doneEvent = events.find((event) => event.type === 'done');
+    expect(doneEvent).toBeDefined();
+    expect(
+      (doneEvent?.data as {
+        metadata: {
+          subtaskCount: number;
+          completedCount: number;
+          failedCount?: number;
+          failedAgents?: string[];
+        };
+      }).metadata
+    ).toMatchObject({
+      subtaskCount: 2,
+      completedCount: 1,
+      failedCount: 1,
+      failedAgents: ['Analyst Agent'],
+    });
+  });
+
+  it('reports failedCount and failedAgents for partial sequential failures', async () => {
+    const mod = await import('./orchestrator-decomposition');
+
+    mockExecuteForcedRouting
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({
+        success: true,
+        response: 'Advisor response',
+        handoffs: [],
+        finalAgent: 'Advisor Agent',
+        toolsCalled: ['recommendCommands'],
+        usage: {
+          promptTokens: 7,
+          completionTokens: 3,
+          totalTokens: 10,
+        },
+        metadata: {
+          provider: 'mock',
+          modelId: 'mock-advisor',
+          totalRounds: 1,
+          handoffCount: 0,
+          durationMs: 22,
+        },
+      });
+
+    const events: Array<{ type: string; data: unknown }> = [];
+
+    for await (const event of mod.executeSequentialSubtasksStream(
+      [
+        { task: '장애 타임라인 작성', agent: 'Reporter Agent' },
+        { task: '후속 조치 제안', agent: 'Advisor Agent' },
+      ],
+      Date.now(),
+      true,
+      true,
+      'stream-contract-session'
+    )) {
+      events.push(event);
+    }
+
+    const doneEvent = events.find((event) => event.type === 'done');
+    expect(doneEvent).toBeDefined();
+    expect(
+      (doneEvent?.data as {
+        metadata: {
+          subtaskCount: number;
+          completedCount: number;
+          failedCount?: number;
+          failedAgents?: string[];
+        };
+      }).metadata
+    ).toMatchObject({
+      subtaskCount: 2,
+      completedCount: 1,
+      failedCount: 1,
+      failedAgents: ['Reporter Agent'],
+    });
+  });
+
+  it('emits structured metadata when all parallel subtasks fail', async () => {
+    const mod = await import('./orchestrator-decomposition');
+
+    mockExecuteForcedRouting.mockResolvedValueOnce(null).mockResolvedValueOnce(null);
+
+    const events: Array<{ type: string; data: unknown }> = [];
+
+    for await (const event of mod.executeParallelSubtasksStream(
+      [
+        { task: '서버 상태 조회', agent: 'NLQ Agent' },
+        { task: '이상 징후 분석', agent: 'Analyst Agent' },
+      ],
+      Date.now(),
+      true,
+      true,
+      'stream-contract-session'
+    )) {
+      events.push(event);
+    }
+
+    const errorEvent = events.find((event) => event.type === 'error');
+    expect(errorEvent).toBeDefined();
+    expect(
+      errorEvent?.data as {
+        code: string;
+        metadata?: {
+          mode?: string;
+          subtaskCount?: number;
+          completedCount?: number;
+          failedCount?: number;
+          failedAgents?: string[];
+        };
+      }
+    ).toMatchObject({
+      code: 'ALL_SUBTASKS_FAILED',
+      metadata: {
+        mode: 'parallel',
+        subtaskCount: 2,
+        completedCount: 0,
+        failedCount: 2,
+        failedAgents: ['NLQ Agent', 'Analyst Agent'],
+      },
+    });
+  });
+
+  it('emits structured metadata when all sequential subtasks fail', async () => {
+    const mod = await import('./orchestrator-decomposition');
+
+    mockExecuteForcedRouting.mockResolvedValueOnce(null).mockResolvedValueOnce(null);
+
+    const events: Array<{ type: string; data: unknown }> = [];
+
+    for await (const event of mod.executeSequentialSubtasksStream(
+      [
+        { task: '장애 타임라인 작성', agent: 'Reporter Agent' },
+        { task: '후속 조치 제안', agent: 'Advisor Agent' },
+      ],
+      Date.now(),
+      true,
+      true,
+      'stream-contract-session'
+    )) {
+      events.push(event);
+    }
+
+    const errorEvent = events.find((event) => event.type === 'error');
+    expect(errorEvent).toBeDefined();
+    expect(
+      errorEvent?.data as {
+        code: string;
+        metadata?: {
+          mode?: string;
+          subtaskCount?: number;
+          completedCount?: number;
+          failedCount?: number;
+          failedAgents?: string[];
+        };
+      }
+    ).toMatchObject({
+      code: 'ALL_SUBTASKS_FAILED',
+      metadata: {
+        mode: 'sequential',
+        subtaskCount: 2,
+        completedCount: 0,
+        failedCount: 2,
+        failedAgents: ['Reporter Agent', 'Advisor Agent'],
+      },
+    });
+  });
 });
