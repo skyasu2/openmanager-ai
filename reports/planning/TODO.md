@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (AI Response Visibility session-aware limiter slice 완료)
+**Last Updated**: 2026-04-18 KST (AI Response Visibility daily-limit semantics slice 완료)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| 없음 | — | — | 다음 후보: `AI Response Visibility` 후속(`limiter 정책 재정비` 잔여: daily semantics / Cloud Run 정책) 또는 `OTel 토폴로지 개선` 재평가 |
+| 없음 | — | — | 다음 후보: `AI Response Visibility` 후속(`Cloud Run 정책` 재평가) 또는 `OTel 토폴로지 개선` 재평가 |
 
 ---
 
@@ -31,6 +31,14 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-18 #119)
+- [x] AI Response Visibility - daily-limit semantics 완료
+  - `buildRateLimitErrorDetails()`가 `X-RateLimit-Daily-Remaining`, `X-RateLimit-Daily-Reset` 헤더만으로도 `daily` 초과를 복원하도록 보강
+  - body가 generic해도 `scope=daily`, `dailyLimitExceeded=true`, `resetAt=daily reset`을 표준 에러 모델로 유지
+  - 검증:
+    - targeted: `npx vitest run src/lib/ai/error-details.test.ts src/components/ai-sidebar/chat/ColdStartErrorBanner.test.tsx`
+    - root gate: `npm run type-check && npm run lint && npm run test:quick && npm run test:contract`
 
 ### Completed (2026-04-18 #118)
 - [x] AI Response Visibility - session-aware limiter identity 완료

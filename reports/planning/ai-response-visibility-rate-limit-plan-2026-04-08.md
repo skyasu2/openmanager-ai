@@ -1,12 +1,12 @@
 > Owner: project
-> Status: Backlog — `handoff persistence contract`, `429 UX source-hardening`, `Job Queue agent-path`, `/api/ai/jobs` POST gateway limiter alignment, frontend AI gateway session-aware limiter identity slice는 완료. limiter 정책 재정비 잔여는 backlog 유지.
+> Status: Backlog — `handoff persistence contract`, `429 UX source-hardening`, `Job Queue agent-path`, `/api/ai/jobs` POST gateway limiter alignment, frontend AI gateway session-aware limiter identity, daily-limit semantics slice는 완료. Cloud Run 정책 재평가 잔여는 backlog 유지.
 > Doc type: Plan
 > Last reviewed: 2026-04-17
 > Tags: ai,ux,rate-limit,visibility
 
 # AI Response Visibility & Rate Limit Plan (2026-04-08)
 
-- 상태: **Backlog (partial complete)** — AnalysisBasisBadge 중심 visibility 개선과 `handoff persistence contract`, `429 UX source-hardening`, `Job Queue agent-path`, `/api/ai/jobs` POST gateway limiter alignment, frontend AI gateway session-aware limiter identity slice는 완료됐다. limiter 정책 재정비 잔여 범위는 backlog다.
+- 상태: **Backlog (partial complete)** — AnalysisBasisBadge 중심 visibility 개선과 `handoff persistence contract`, `429 UX source-hardening`, `Job Queue agent-path`, `/api/ai/jobs` POST gateway limiter alignment, frontend AI gateway session-aware limiter identity, daily-limit semantics slice는 완료됐다. Cloud Run 정책 재평가 잔여는 backlog다.
 - 작성일: 2026-04-08 | 상태 갱신: 2026-04-17
 - TODO.md 연결: Backlog > AI Response Visibility & Rate Limit
 - 목표: AI 질의 과정의 가시성을 실제 실행 흐름과 맞추고, rate limit을 사용자에게 설명 가능한 제약으로 바꾼다.
@@ -34,7 +34,21 @@
 
 ### 아직 남은 범위
 
-- 프론트/Cloud Run limiter 정책의 잔여 범위(daily semantics / Cloud Run 정책)를 사용자 체감 기준으로 다시 맞추는 작업
+- Cloud Run limiter 정책을 사용자 체감 기준으로 다시 맞추는 작업
+
+### 이번 승인 slice (`2026-04-18`, 3차)
+
+- 목표: frontend 429 처리에서 response body가 비어 있거나 generic해도 `X-RateLimit-Daily-*` 헤더만으로 `daily` 초과를 정확히 복원한다.
+- 범위:
+  - `buildRateLimitErrorDetails()`의 daily header 해석 보강
+  - `daily` scope / `dailyLimitExceeded` / `resetAt` / `remaining` 복원 계약 테스트 추가
+  - 정책 수치 변경, Cloud Run limiter 변경, countdown UX 구조 변경은 이번 slice 제외
+
+### 이번 slice 완료 결과 (`2026-04-18`, 3차)
+
+- `buildRateLimitErrorDetails()`는 이제 `X-RateLimit-Daily-*` 헤더만으로도 `daily` 초과를 복원한다.
+- body가 generic하거나 빈 경우에도 `scope=daily`, `dailyLimitExceeded=true`, `resetAt=daily reset`이 유지된다.
+- 이번 slice는 frontend 표준 에러 모델 semantics만 다루며, Cloud Run 정책 변경은 후속 backlog로 남긴다.
 
 ### 이번 승인 slice (`2026-04-18`, 2차)
 
@@ -263,6 +277,7 @@
 - [ ] 프론트와 Cloud Run의 중첩 limit을 표로 정리하고, 실제 사용자 체감 기준으로 재설계한다.
 - [x] `/api/ai/jobs` POST gateway minute limit을 Cloud Run `/api/jobs*`와 정렬한다.
 - [x] frontend AI gateway limiter identity를 session-aware로 보강한다.
+- [x] frontend daily-limit error semantics를 daily headers 기준으로 복원한다.
 - [ ] 최소 검토 항목:
   - `/api/ai/supervisor/stream/v2`
   - `/api/ai/jobs`
