@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (OTel topology backup realism slice 완료)
+**Last Updated**: 2026-04-18 KST (OTel topology redis cross-AZ slice 승인)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| 없음 | — | — | 다음 후보: `Cloud Run 정책` 재평가 또는 `OTel 토폴로지 개선` Phase 2 취약점 시나리오 |
+| OTel topology improvement - Redis cross-AZ latency | Medium | approved | hour 13~15에 `api-was-dc1-03` remote-AZ cache latency 시나리오 추가. response spike + 원인 로그 + verify 계약 포함. |
 
 ---
 
