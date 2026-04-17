@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (OTel topology redis cross-AZ slice 완료)
+**Last Updated**: 2026-04-18 KST (OTel topology NFS SPOF slice 승인)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| 없음 | — | — | 다음 후보: `Cloud Run 정책` 재평가 또는 `OTel 토폴로지 개선` Phase 2-B NFS SPOF |
+| OTel topology improvement - NFS SPOF | Medium | approved | hour 02~04에 `storage-nfs-dc1-01` 단일 장애 징후 시나리오 추가. disk saturation + 원인 로그 + WAS latency cascade + timeseries sync. |
 
 ---
 
