@@ -11,7 +11,7 @@
     "totalComponentNodes": 149
   },
   "metrics": {
-    "componentSourceLines": 27508,
+    "componentSourceLines": 27390,
     "componentNodes": 142,
     "componentEdges": 132,
     "graphDensity": 0.006593,
