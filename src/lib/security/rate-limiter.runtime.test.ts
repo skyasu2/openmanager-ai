@@ -79,4 +79,33 @@ describe('rate-limiter runtime fallback', () => {
       expect.any(Error)
     );
   });
+
+  it('같은 IP라도 guest session cookie가 다르면 서로 다른 limiter bucket을 사용한다', async () => {
+    mockCheckRedisRateLimit.mockResolvedValue(null);
+
+    const { rateLimiters } = await import('./rate-limiter');
+    const firstRequest = new NextRequest('http://localhost/api/ai/jobs', {
+      headers: {
+        'x-forwarded-for': '203.0.113.50',
+        cookie: 'auth_session_id=guest-session-a',
+      },
+    });
+    const secondRequest = new NextRequest('http://localhost/api/ai/jobs', {
+      headers: {
+        'x-forwarded-for': '203.0.113.50',
+        cookie: 'auth_session_id=guest-session-b',
+      },
+    });
+
+    const firstResult = await rateLimiters.aiAnalysis.checkLimit(firstRequest);
+    const secondResult =
+      await rateLimiters.aiAnalysis.checkLimit(secondRequest);
+
+    expect(firstResult.allowed).toBe(true);
+    expect(secondResult.allowed).toBe(true);
+    expect(firstResult.remaining).toBe(9);
+    expect(secondResult.remaining).toBe(9);
+    expect(firstResult.daily?.remaining).toBe(99);
+    expect(secondResult.daily?.remaining).toBe(99);
+  });
 });
