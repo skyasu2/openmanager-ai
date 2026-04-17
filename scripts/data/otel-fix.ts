@@ -101,6 +101,42 @@ const REDIS_CROSS_AZ_RESPONSE_SERIES: Record<number, number[]> = {
   15: [0.36, 0.39, 0.41, 0.43, 0.40, 0.37],
 };
 
+const NFS_SPOF_STORAGE_SERIES: Record<
+  number,
+  { disk: number[]; cpu: number[] }
+> = {
+  2: {
+    disk: [0.78, 0.82, 0.86, 0.9, 0.93, 0.89],
+    cpu: [0.38, 0.44, 0.49, 0.54, 0.58, 0.52],
+  },
+  3: {
+    disk: [0.84, 0.88, 0.91, 0.94, 0.95, 0.92],
+    cpu: [0.46, 0.52, 0.57, 0.61, 0.63, 0.59],
+  },
+  4: {
+    disk: [0.8, 0.83, 0.85, 0.87, 0.84, 0.81],
+    cpu: [0.35, 0.41, 0.46, 0.5, 0.47, 0.43],
+  },
+};
+
+const NFS_SPOF_WAS_RESPONSE_SERIES: Record<number, Record<string, number[]>> = {
+  2: {
+    'api-was-dc1-01': [0.41, 0.45, 0.49, 0.53, 0.57, 0.54],
+    'api-was-dc1-02': [0.38, 0.42, 0.46, 0.5, 0.54, 0.51],
+    'api-was-dc1-03': [0.36, 0.4, 0.44, 0.47, 0.5, 0.48],
+  },
+  3: {
+    'api-was-dc1-01': [0.48, 0.52, 0.56, 0.6, 0.62, 0.58],
+    'api-was-dc1-02': [0.44, 0.48, 0.52, 0.56, 0.58, 0.54],
+    'api-was-dc1-03': [0.42, 0.46, 0.49, 0.52, 0.55, 0.51],
+  },
+  4: {
+    'api-was-dc1-01': [0.34, 0.37, 0.4, 0.43, 0.46, 0.42],
+    'api-was-dc1-02': [0.32, 0.35, 0.38, 0.4, 0.42, 0.39],
+    'api-was-dc1-03': [0.3, 0.33, 0.36, 0.38, 0.4, 0.37],
+  },
+};
+
 // 5개 스토리의 시간별 메트릭 오버라이드
 // S1: 야간 배치→DB 연쇄(00-05), S2: 출근 피크→API 과부하(07-12)
 // S3: Redis 메모리 누수(13-18), S4: 네트워크/LB 포화(19-22), S5: 스토리지 백업(23)
@@ -436,6 +472,93 @@ function applyRedisCrossAzLatencyScenario(
         body: `redis-server[${5000 + hour * 100 + slotIdx}]: WARNING: Remote AZ cache client api-was-dc1-03 observed, round-trip ${latencyMs + 120}ms`,
         attributes: { 'log.source': 'redis' },
         resource: 'cache-redis-dc1-01',
+      }
+    );
+  }
+
+  return data;
+}
+
+function applyNfsSpofScenario(data: HourlyFile, hour: number): HourlyFile {
+  const storageProfile = NFS_SPOF_STORAGE_SERIES[hour];
+  const responseProfiles = NFS_SPOF_WAS_RESPONSE_SERIES[hour];
+  if (!storageProfile || !responseProfiles) return data;
+
+  for (let slotIdx = 0; slotIdx < data.slots.length; slotIdx++) {
+    const slot = data.slots[slotIdx];
+    const targetDisk = storageProfile.disk[slotIdx];
+    const targetCpu = storageProfile.cpu[slotIdx];
+    if (targetDisk === undefined || targetCpu === undefined) continue;
+
+    for (const metric of slot.metrics) {
+      if (metric.name === 'system.filesystem.utilization') {
+        for (const dp of metric.dataPoints) {
+          const hostname = dp.attributes['host.name'] ?? '';
+          if (hostname.startsWith('storage-nfs-dc1-01.')) {
+            dp.asDouble = targetDisk;
+          }
+        }
+      }
+
+      if (metric.name === 'system.cpu.utilization') {
+        for (const dp of metric.dataPoints) {
+          const hostname = dp.attributes['host.name'] ?? '';
+          if (hostname.startsWith('storage-nfs-dc1-01.')) {
+            dp.asDouble = targetCpu;
+          }
+        }
+      }
+
+      if (metric.name === 'http.server.request.duration') {
+        for (const dp of metric.dataPoints) {
+          const hostname = dp.attributes['host.name'] ?? '';
+          const serverId = hostname.split('.')[0];
+          const targetResponse = responseProfiles[serverId]?.[slotIdx];
+          if (targetResponse !== undefined) {
+            dp.asDouble = targetResponse;
+          }
+        }
+      }
+    }
+
+    slot.logs = slot.logs.filter(
+      (log) =>
+        !(
+          (log.resource === 'storage-nfs-dc1-01' ||
+            log.resource.startsWith('api-was-dc1-')) &&
+          /nfs/i.test(log.body)
+        )
+    );
+
+    const baseTime = slot.startTimeUnixNano + 150_000_000_000;
+    slot.logs.push(
+      {
+        timeUnixNano: Math.min(baseTime, slot.endTimeUnixNano - 3),
+        severityNumber: 17,
+        severityText: 'ERROR',
+        body: `nfsd[${7000 + hour * 100 + slotIdx}]: ERROR: NFS SPOF symptom detected, write backlog ${Math.round(
+          targetDisk * 100
+        )}% on /data/shared`,
+        attributes: { 'log.source': 'nfsd' },
+        resource: 'storage-nfs-dc1-01',
+      },
+      {
+        timeUnixNano: Math.min(baseTime + 20_000_000_000, slot.endTimeUnixNano - 2),
+        severityNumber: 13,
+        severityText: 'WARN',
+        body: `java[${8000 + hour * 100 + slotIdx}]: [WARN] NFS mount latency on storage-nfs-dc1-01 caused request delay ${Math.round(
+          responseProfiles['api-was-dc1-01'][slotIdx] * 1000
+        )}ms`,
+        attributes: { 'log.source': 'java' },
+        resource: 'api-was-dc1-01',
+      },
+      {
+        timeUnixNano: Math.min(baseTime + 40_000_000_000, slot.endTimeUnixNano - 1),
+        severityNumber: 13,
+        severityText: 'WARN',
+        body: `java[${8100 + hour * 100 + slotIdx}]: [WARN] NFS storage bottleneck propagated to shared assets read path`,
+        attributes: { 'log.source': 'java' },
+        resource: 'api-was-dc1-02',
       }
     );
   }
@@ -1054,6 +1177,8 @@ function main(): void {
     data = adjustMetricsForScenario(data, hour);
     // ★ P2-A: Redis cross-AZ latency 시나리오
     data = applyRedisCrossAzLatencyScenario(data, hour);
+    // ★ P2-B: NFS SPOF 시나리오
+    data = applyNfsSpofScenario(data, hour);
     // W1: Log time distribution
     data = fixLogTimeDistribution(data);
     // W2: S3 Gateway logs

@@ -82,7 +82,7 @@
               }
             },
             {
-              "asDouble": 0.32,
+              "asDouble": 0.38,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -276,7 +276,7 @@
               }
             },
             {
-              "asDouble": 0.64,
+              "asDouble": 0.78,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -810,19 +810,19 @@
               }
             },
             {
-              "asDouble": 0.28,
+              "asDouble": 0.41,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.293,
+              "asDouble": 0.38,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.394,
+              "asDouble": 0.36,
               "attributes": {
                 "host.name": "api-was-dc1-03.openmanager.kr"
               }
@@ -1150,19 +1150,6 @@
           "resource": "db-mysql-dc1-primary"
         },
         {
-          "timeUnixNano": 1771002463499453400,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "systemd[1]: Started NFS server and services.",
-          "attributes": {
-            "log.source": "systemd",
-            "server.role": "storage",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
-          },
-          "resource": "storage-nfs-dc1-01"
-        },
-        {
           "timeUnixNano": 1771002489884435000,
           "severityNumber": 9,
           "severityText": "INFO",
@@ -1233,6 +1220,36 @@
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "lb-haproxy-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771002150000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "nfsd[7200]: ERROR: NFS SPOF symptom detected, write backlog 78% on /data/shared",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771002170000000000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[8200]: [WARN] NFS mount latency on storage-nfs-dc1-01 caused request delay 410ms",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771002190000000000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[8300]: [WARN] NFS storage bottleneck propagated to shared assets read path",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
         }
       ]
     },
@@ -1312,7 +1329,7 @@
               }
             },
             {
-              "asDouble": 0.27,
+              "asDouble": 0.44,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -1506,7 +1523,7 @@
               }
             },
             {
-              "asDouble": 0.64,
+              "asDouble": 0.82,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -2040,19 +2057,19 @@
               }
             },
             {
-              "asDouble": 0.384,
+              "asDouble": 0.45,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.284,
+              "asDouble": 0.42,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.288,
+              "asDouble": 0.4,
               "attributes": {
                 "host.name": "api-was-dc1-03.openmanager.kr"
               }
@@ -2424,6 +2441,36 @@
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "lb-haproxy-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771002750000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "nfsd[7201]: ERROR: NFS SPOF symptom detected, write backlog 82% on /data/shared",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771002770000000000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[8201]: [WARN] NFS mount latency on storage-nfs-dc1-01 caused request delay 450ms",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771002790000000000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[8301]: [WARN] NFS storage bottleneck propagated to shared assets read path",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
         }
       ]
     },
@@ -2503,7 +2550,7 @@
               }
             },
             {
-              "asDouble": 0.33,
+              "asDouble": 0.49,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -2697,7 +2744,7 @@
               }
             },
             {
-              "asDouble": 0.63,
+              "asDouble": 0.86,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -3231,19 +3278,19 @@
               }
             },
             {
-              "asDouble": 0.344,
+              "asDouble": 0.49,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.324,
+              "asDouble": 0.46,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.374,
+              "asDouble": 0.44,
               "attributes": {
                 "host.name": "api-was-dc1-03.openmanager.kr"
               }
@@ -3589,6 +3636,36 @@
             "log.source": "java"
           },
           "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771003350000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "nfsd[7202]: ERROR: NFS SPOF symptom detected, write backlog 86% on /data/shared",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771003370000000000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[8202]: [WARN] NFS mount latency on storage-nfs-dc1-01 caused request delay 490ms",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771003390000000000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[8302]: [WARN] NFS storage bottleneck propagated to shared assets read path",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
         }
       ]
     },
@@ -3668,7 +3745,7 @@
               }
             },
             {
-              "asDouble": 0.3,
+              "asDouble": 0.54,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -3862,7 +3939,7 @@
               }
             },
             {
-              "asDouble": 0.63,
+              "asDouble": 0.9,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -4396,19 +4473,19 @@
               }
             },
             {
-              "asDouble": 0.38,
+              "asDouble": 0.53,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.43,
+              "asDouble": 0.5,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.409,
+              "asDouble": 0.47,
               "attributes": {
                 "host.name": "api-was-dc1-03.openmanager.kr"
               }
@@ -4780,6 +4857,36 @@
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "lb-haproxy-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771003950000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "nfsd[7203]: ERROR: NFS SPOF symptom detected, write backlog 90% on /data/shared",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771003970000000000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[8203]: [WARN] NFS mount latency on storage-nfs-dc1-01 caused request delay 530ms",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771003990000000000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[8303]: [WARN] NFS storage bottleneck propagated to shared assets read path",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
         }
       ]
     },
@@ -4859,7 +4966,7 @@
               }
             },
             {
-              "asDouble": 0.3,
+              "asDouble": 0.58,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -5053,7 +5160,7 @@
               }
             },
             {
-              "asDouble": 0.64,
+              "asDouble": 0.93,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -5587,19 +5694,19 @@
               }
             },
             {
-              "asDouble": 0.459,
+              "asDouble": 0.57,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.465,
+              "asDouble": 0.54,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.384,
+              "asDouble": 0.5,
               "attributes": {
                 "host.name": "api-was-dc1-03.openmanager.kr"
               }
@@ -5958,6 +6065,36 @@
             "log.source": "mysqld"
           },
           "resource": "db-mysql-dc1-primary"
+        },
+        {
+          "timeUnixNano": 1771004550000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "nfsd[7204]: ERROR: NFS SPOF symptom detected, write backlog 93% on /data/shared",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771004570000000000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[8204]: [WARN] NFS mount latency on storage-nfs-dc1-01 caused request delay 570ms",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771004590000000000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[8304]: [WARN] NFS storage bottleneck propagated to shared assets read path",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
         }
       ]
     },
@@ -6037,7 +6174,7 @@
               }
             },
             {
-              "asDouble": 0.25,
+              "asDouble": 0.52,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -6231,7 +6368,7 @@
               }
             },
             {
-              "asDouble": 0.63,
+              "asDouble": 0.89,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -6765,19 +6902,19 @@
               }
             },
             {
-              "asDouble": 0.437,
+              "asDouble": 0.54,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.367,
+              "asDouble": 0.51,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.339,
+              "asDouble": 0.48,
               "attributes": {
                 "host.name": "api-was-dc1-03.openmanager.kr"
               }
@@ -7053,19 +7190,6 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771005493135368000,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "nfsd[4152]: NFS export /data/shared ready, 59 active clients",
-          "attributes": {
-            "log.source": "syslog",
-            "server.role": "storage",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
-          },
-          "resource": "storage-nfs-dc1-01"
-        },
-        {
           "timeUnixNano": 1771005498203220200,
           "severityNumber": 13,
           "severityText": "WARN",
@@ -7123,6 +7247,36 @@
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "lb-haproxy-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771005150000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "nfsd[7205]: ERROR: NFS SPOF symptom detected, write backlog 89% on /data/shared",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771005170000000000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[8205]: [WARN] NFS mount latency on storage-nfs-dc1-01 caused request delay 540ms",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771005190000000000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[8305]: [WARN] NFS storage bottleneck propagated to shared assets read path",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
         }
       ]
     }

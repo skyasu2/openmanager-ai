@@ -218,6 +218,94 @@ function main(): void {
     `${Math.max(...crossAzWindow).toFixed(3)} max`
   );
 
+  // ── 3d. NFS SPOF scenario ──
+  console.log('\n[3d] NFS SPOF scenario:');
+  let nfsHoursPassing = 0;
+  let nfsCauseLogCount = 0;
+
+  for (const hour of [2, 3, 4]) {
+    const hourly: HourlyFile = JSON.parse(
+      fs.readFileSync(
+        path.join(HOURLY_DIR, `hour-${String(hour).padStart(2, '0')}.json`),
+        'utf-8'
+      )
+    );
+
+    const diskSeries = hourly.slots
+      .map((slot) => {
+        const metric = slot.metrics.find(
+          (entry) => entry.name === 'system.filesystem.utilization'
+        );
+        const point = metric?.dataPoints.find((dp) =>
+          String(dp.attributes['host.name'] ?? '').startsWith(
+            'storage-nfs-dc1-01.'
+          )
+        );
+        return point?.asDouble;
+      })
+      .filter((value): value is number => typeof value === 'number');
+
+    const cpuSeries = hourly.slots
+      .map((slot) => {
+        const metric = slot.metrics.find(
+          (entry) => entry.name === 'system.cpu.utilization'
+        );
+        const point = metric?.dataPoints.find((dp) =>
+          String(dp.attributes['host.name'] ?? '').startsWith(
+            'storage-nfs-dc1-01.'
+          )
+        );
+        return point?.asDouble;
+      })
+      .filter((value): value is number => typeof value === 'number');
+
+    if (
+      diskSeries.length === 6 &&
+      cpuSeries.length === 6 &&
+      Math.max(...diskSeries) >= 0.82 &&
+      Math.max(...cpuSeries) >= 0.45
+    ) {
+      nfsHoursPassing++;
+    }
+
+    for (const slot of hourly.slots) {
+      for (const log of slot.logs) {
+        if (
+          (log.resource === 'storage-nfs-dc1-01' ||
+            log.resource.startsWith('api-was-dc1-')) &&
+          /nfs/i.test(log.body)
+        ) {
+          nfsCauseLogCount++;
+        }
+      }
+    }
+  }
+
+  const nfsResponseWindow = ['api-was-dc1-01', 'api-was-dc1-02', 'api-was-dc1-03']
+    .flatMap((serverId) => {
+      const idx = ts.serverIds.indexOf(serverId);
+      return ts.metrics['http.server.request.duration']?.[idx]?.slice(
+        2 * 6,
+        5 * 6
+      ) ?? [];
+    });
+
+  check(
+    'storage-nfs-dc1-01 saturation across hours 02-04',
+    nfsHoursPassing === 3,
+    `${nfsHoursPassing}/3 hours`
+  );
+  check(
+    'NFS SPOF cause logs recorded',
+    nfsCauseLogCount >= 9,
+    `${nfsCauseLogCount} logs`
+  );
+  check(
+    'Timeseries syncs NFS latency cascade',
+    Math.max(...nfsResponseWindow) >= 0.5,
+    `${Math.max(...nfsResponseWindow).toFixed(3)} max`
+  );
+
   // ── 4. Cache OOM logs have redis-server (not java) ──
   console.log('\n[4] Cache OOM process name:');
   let javaOOMInCache = 0;
