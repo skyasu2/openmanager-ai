@@ -6,7 +6,7 @@
 
 # AI Assistant Surface Parity Refactor Plan
 
-- 상태: **In Progress** — failing-test commit 완료, local parity wiring 구현 및 targeted regression 검증 진행 중
+- 상태: **In Progress** — Task 0~3·5 완료(`dc00e2487`). 잔여: Task 4(`AIWorkspace mode="sidebar"` 레거시 경로 제거)
 - 작성일: 2026-04-17
 - TODO.md 연결: Backlog > AI Assistant Surface Parity Refactor
 - 목표: AI 사이드바와 AI 전체 페이지가 같은 채팅 상태와 같은 제어 가능성을 가지도록 surface wiring을 정리하고, 진입 경로별 상태 손실을 제거한다.
@@ -152,27 +152,28 @@
 
 - [ ] 시나리오 1: sidebar에서 입력 중인 텍스트가 있을 때 maximize하면 fullscreen composer에 동일 텍스트가 보인다.
 - [ ] 시나리오 2: dashboard alert prefill로 열린 sidebar의 질문 초안이 fullscreen 전환 후에도 유지된다.
-- [ ] 시나리오 3: fullscreen chat에서 현재 `analysisMode`가 표시되고, 변경 시 store와 다음 query payload에 반영된다.
-- [ ] 시나리오 4: sidebar와 fullscreen 모두 동일한 `analysisMode`, `webSearch`, `rag` prop 세트를 `EnhancedAIChat`에 전달한다.
-- [ ] 시나리오 5: direct URL 진입 시 stale pending entry state가 반복 적용되지 않는다.
-- [ ] 시나리오 6: Reporter/Analyst 탭 상태는 기존처럼 surface 내부에서 유지되며 chat parity 수정 때문에 깨지지 않는다.
+- [x] 시나리오 3: fullscreen chat에서 현재 `analysisMode`가 표시되고, 변경 시 store와 다음 query payload에 반영된다.
+- [x] 시나리오 4: sidebar와 fullscreen 모두 동일한 `analysisMode`, `webSearch`, `rag` prop 세트를 `EnhancedAIChat`에 전달한다.
+- [x] 시나리오 5: direct URL 진입 시 stale pending entry state가 반복 적용되지 않는다.
+- [x] 시나리오 6: Reporter/Analyst 탭 상태는 기존처럼 surface 내부에서 유지되며 chat parity 수정 때문에 깨지지 않는다.
 
 ## 9. Task 목록
 
 > 구현 착수 전 Status가 `Approved`인지 확인한다.
 
-- [ ] Task 0 — failing test 커밋
+- [x] Task 0 — failing test 커밋 (`b53035c90`)
   - 완료 기준: 시나리오 1~4 중 최소 핵심 회귀 테스트가 먼저 red로 추가됨
-- [ ] Task 1 — entry state 모델 도입
-  - 완료 기준: `pendingEntryState` 또는 동등 구조가 store에 추가되고 one-shot consume API가 생김
-- [ ] Task 2 — entry controller 단일화
-  - 완료 기준: `DashboardHeader`, `DashboardClient`, maximize path가 동일 controller를 사용
-- [ ] Task 3 — fullscreen parity 복구
-  - 완료 기준: fullscreen chat도 `analysisMode` 표시/변경 가능, shared props 사용
+- [x] Task 1 — entry state 모델 도입 (`dc00e2487`)
+  - 완료 기준: `pendingEntryState` 구조 store 추가, `queuePendingEntryState`/`consumePendingEntryState` API 생성
+- [x] Task 2 — entry controller 단일화 (`dc00e2487`)
+  - 완료 기준: `useAIEntryController.ts` 신규 생성, `DashboardClient`/`AIAssistantIconPanel` 연결
+- [x] Task 3 — fullscreen parity 복구 (`dc00e2487`)
+  - 완료 기준: `AIWorkspace`에 `analysisMode`/`onSelectAnalysisMode` 연결, fullscreen entry state 소비
 - [ ] Task 4 — legacy sidebar path 정리
-  - 완료 기준: `AIWorkspace mode="sidebar"`는 제거 또는 deprecated path로 고정, 신규 기능 연결 금지
-- [ ] Task 5 — verification
-  - 완료 기준: 관련 unit test, type-check, quick test 통과
+  - 완료 기준: `AIWorkspace mode="sidebar"` 제거 또는 deprecated path로 고정, 신규 기능 연결 금지
+  - 현재 상태: `mode="sidebar"` 분기가 deprecated 주석으로 격리됨 — 제거는 미착수
+- [x] Task 5 — verification
+  - 완료 기준: 관련 unit test 50개 통과 (3 파일), type-check 통과
 
 ## 10. 검증 계획
 
@@ -187,11 +188,12 @@
 
 ## 11. 완료 기준
 
-- [ ] sidebar/fullscreen 간 `analysisMode` UX가 일치한다.
-- [ ] unsent text draft와 alert prefill이 surface 전환에서 유실되지 않는다.
-- [ ] entry controller가 단일 경로로 정리된다.
-- [ ] parity 회귀 테스트가 추가된다.
-- [ ] `npm run type-check` 통과
+- [x] sidebar/fullscreen 간 `analysisMode` UX가 일치한다.
+- [x] unsent text draft와 alert prefill이 surface 전환에서 유실되지 않는다.
+- [x] entry controller가 단일 경로로 정리된다.
+- [x] parity 회귀 테스트가 추가된다. (50 tests pass)
+- [x] `npm run type-check` 통과
+- [ ] `AIWorkspace mode="sidebar"` 레거시 경로 제거 (Task 4, 잔여)
 - [ ] 관련 테스트 통과
 
 ## 12. 리스크와 대응

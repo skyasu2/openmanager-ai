@@ -1,12 +1,14 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-17 KST (v8.11.19 production 배포 완료, active-alert :9100 fix targeted QA 통과)
+**Last Updated**: 2026-04-17 KST (SDD best-practice 개선 적용, surface parity Task 상태 동기화)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
 ## Active Tasks
 
-_(없음)_
+- AI Assistant Surface Parity Refactor — Task 4 잔여: `AIWorkspace mode="sidebar"` 레거시 경로 제거
+  - Task 0~3·5 완료(`dc00e2487`). 계획서: [ai-assistant-surface-parity-refactor-plan.md](ai-assistant-surface-parity-refactor-plan.md)
+  - 잔여 범위: `AIWorkspace.tsx:227` `mode === 'sidebar'` 분기 제거 + 관련 테스트 정리
 
 ---
 
@@ -20,7 +22,7 @@ _(없음)_
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| AI Assistant Surface Parity Refactor | Medium | 계획서: [ai-assistant-surface-parity-refactor-plan.md](ai-assistant-surface-parity-refactor-plan.md). sidebar/fullscreen `analysisMode` 가시성, draft/prefill handoff, entry controller, legacy `AIWorkspace mode="sidebar"` 정리. |
+| AI Assistant Surface Parity Refactor | Medium | **Active** — Task 4 잔여만 남음. 계획서: [ai-assistant-surface-parity-refactor-plan.md](ai-assistant-surface-parity-refactor-plan.md). |
 | AI Chat Improvement Sprint 4 | Medium | 계획서: [ai-chat-improvement-plan.md](ai-chat-improvement-plan.md). `generateObject` NLQ 전환 + per-step timeout. `ai-stream-route-contract` Phase 1 완료 선행 조건 해소됨. |
 | AI Response Visibility & Rate Limit (Phase 1~5) | Medium | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). handoff 가시성 UX, 429 UX, Job Queue agent path, limiter 정책 재조정. |
 | OTel 토폴로지 개선 (P1→P2→P3) | Medium | 계획서: [otel-topology-improvement-plan.md](otel-topology-improvement-plan.md). db-backup 스펙 현실화(즉시), Redis cross-AZ/NFS SPOF 시나리오 추가(단기), 서버 3대 추가(장기). |
