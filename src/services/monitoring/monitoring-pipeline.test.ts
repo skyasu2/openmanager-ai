@@ -185,7 +185,7 @@ describe('AlertManager', () => {
 
     const alert = alerts[0]!;
     expect(alert.serverId).toBeDefined();
-    expect(alert.instance).toContain(':9100');
+    expect(alert.instance).toBe(alert.serverId);
     expect(alert.labels).toHaveProperty('server_type');
     expect(alert.state).toBe('firing');
   });
