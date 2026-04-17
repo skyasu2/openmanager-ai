@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-16T15:32:08.661Z"
+    "updatedAt": "2026-04-17T04:06:23.738Z"
   },
   "sequence": {
-    "nextRunNumber": 300
+    "nextRunNumber": 301
   },
   "summary": {
-    "totalRecordedRuns": 297,
-    "totalRuns": 254,
+    "totalRecordedRuns": 298,
+    "totalRuns": 255,
     "excludedRuns": 43,
-    "totalChecks": 1990,
-    "totalPassed": 1913,
+    "totalChecks": 2008,
+    "totalPassed": 1931,
     "totalFailed": 71,
-    "completionRate": 99.66,
-    "completedItems": 294,
-    "pendingItems": 1,
+    "completionRate": 100,
+    "completedItems": 295,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 13,
     "expertDomainsTracked": 8,
-    "expertDomainsOpenGaps": 2,
-    "lastRunId": "QA-20260417-0299",
-    "lastRecordedAt": "2026-04-16T15:32:08.661Z",
-    "latestRecordedRunId": "QA-20260417-0299",
-    "latestRecordedAt": "2026-04-16T15:32:08.661Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260417-0300",
+    "lastRecordedAt": "2026-04-17T04:06:23.738Z",
+    "latestRecordedRunId": "QA-20260417-0300",
+    "latestRecordedAt": "2026-04-17T04:06:23.738Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -7088,25 +7088,25 @@
       "id": "root-layout-font-preload-cleanup",
       "title": "Suppress repeated root font preload warnings on dashboard and fullscreen AI routes",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260417-0299",
       "firstSeenAt": "2026-04-16T15:32:08.661Z",
-      "lastSeenRunId": "QA-20260417-0299",
-      "lastSeenAt": "2026-04-16T15:32:08.661Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260417-0300",
+      "lastSeenAt": "2026-04-17T04:06:23.738Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "",
+      "lastEvidence": "v8.11.17 production broad QA confirmed 0 console warnings after disabling root font preload in src/app/layout.tsx.",
       "lastNote": "Local patch added preload=false for Inter and Noto Sans KR in src/app/layout.tsx, but production rerun is still pending.",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-04-16T15:32:08.661Z"
+      "lastStatusChangeAt": "2026-04-17T04:06:23.738Z"
     }
   },
   "runs": [
@@ -26348,6 +26348,151 @@
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260417-0300",
+      "recordedAt": "2026-04-17T04:06:23.738Z",
+      "recordedAtKst": "2026-04-17 13:06:23 KST",
+      "title": "Production broad QA - 8.11.17 font preload cleanup verification",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260417-0300.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_sRuuaBX32ZL4rGggN552bJqcL2th",
+        "deploymentUrl": "https://openmanager-lbznulo4f-skyasus-projects.vercel.app",
+        "commitSha": "2adcefb0717a1453c17d46eaae45cdffc585c411"
+      },
+      "scope": "broad",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "modal-detail-pack"
+      ],
+      "coveredSurfaces": [
+        "landing render and version badge on production v8.11.17",
+        "/main redirects to / on production v8.11.17",
+        "/login render with Google/GitHub/email/guest PIN entry",
+        "/privacy render with back-link to login",
+        "404 route returns 404 page on production",
+        "/system-boot transitions to /dashboard",
+        "dashboard summary render with total 15 / online 14 / warning 1 / risk 0 / offline 0",
+        "dashboard system resource panel render with CPU 39 / Memory 47 / Disk 33",
+        "active alerts modal render and alert AI action opens sidebar with prefilled prompt",
+        "topology modal render with 15 nodes / 20 edges and ESC close",
+        "dashboard warning CTA opens AI sidebar with normalized prefilled prompt",
+        "AI sidebar follow-up response completes for api-was-dc1-01 CPU warning",
+        "AI sidebar analysis basis detail shows traceId 1c998d23b20212891cb9d3b1b8237f2a + tools + recent 1 hour time range",
+        "/dashboard/ai-assistant fullscreen workspace restores the carried conversation",
+        "fullscreen analysis basis detail preserves traceId 689bd70708380d052810ad6915fd0162 + tools + recent 1 hour time range parity",
+        "/api/health 200 on production with database/cache/ai connected",
+        "/api/version 200 on production with version 8.11.17 / nextjs 16.1.6 / environment production",
+        "console 0 error / 0 warning across dashboard, sidebar, fullscreen, and API checks after root font preload cleanup"
+      ],
+      "skippedSurfaces": [
+        "/auth/error fallback route",
+        "/auth/success legacy callback route",
+        "server detail modal 3-tab switch",
+        "log explorer modal",
+        "Reporter generate/detail flow",
+        "Analyst advanced forecast and drilldown flow",
+        "feedback submission flow",
+        "security blocked-prompt regression pack",
+        "Cloud Run admin observability endpoints"
+      ],
+      "checks": {
+        "total": 18,
+        "passed": 18,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Core routes, dashboard modal pack, AI sidebar, fullscreen workspace, and API probes were validated in one production browser session.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The warning-card AI path returned grounded CPU warning analysis, and the carried conversation preserved trace/tool/time-range parity after fullscreen handoff.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The repeated next/font preload warnings seen in QA-20260417-0299 no longer appeared on dashboard or fullscreen AI routes, and console remained clean across the release-facing pass.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production deployment dpl_sRuuaBX32ZL4rGggN552bJqcL2th stayed healthy, API health/version endpoints matched v8.11.17, and Vercel usage stayed within the expected budget envelope.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-17T13:04:55+09:00",
+          "summary": "Current billing period reviewed after production QA; effective usage 9.7924 USD, billed 0.0000 USD, chargeCount 9135. No unexpected usage spike was observed.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Production dashboard core surface on v8.11.17",
+          "path": "reports/qa/evidence/qa-20260417-v81117-broad-dashboard-ai.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Production fullscreen AI workspace with analysis basis detail on v8.11.17",
+          "path": "reports/qa/evidence/qa-20260417-v81117-broad-ai-workspace.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Production broad console log on v8.11.17",
+          "path": "reports/qa/evidence/qa-20260417-v81117-broad-console.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Deployment dpl_sRuuaBX32ZL4rGggN552bJqcL2th",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/sRuuaBX32ZL4rGggN552bJqcL2th"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -26356,16 +26501,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 138,
-      "appropriateCount": 129,
+      "seenCount": 139,
+      "appropriateCount": 130,
       "partialCount": 9,
       "inappropriateCount": 0,
       "improvementNeededCount": 19,
-      "lastRunId": "QA-20260417-0299",
-      "lastSeenAt": "2026-04-16T15:32:08.661Z",
+      "lastRunId": "QA-20260417-0300",
+      "lastSeenAt": "2026-04-17T04:06:23.738Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The disk warning analysis returned grounded content and fullscreen preserved the same traceId, tool chain, and recent 1 hour time range after sidebar handoff.",
+      "lastRationale": "The warning-card AI path returned grounded CPU warning analysis, and the carried conversation preserved trace/tool/time-range parity after fullscreen handoff.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -26373,17 +26518,17 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 81,
-      "appropriateCount": 55,
+      "seenCount": 82,
+      "appropriateCount": 56,
       "partialCount": 26,
       "inappropriateCount": 0,
       "improvementNeededCount": 27,
-      "lastRunId": "QA-20260417-0299",
-      "lastSeenAt": "2026-04-16T15:32:08.661Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "User-facing flows stayed green, but console cleanliness regressed with repeated font preload warnings on /dashboard and /dashboard/ai-assistant.",
-      "lastNextAction": "Deploy the root font preload adjustment and rerun the broad production browser pass."
+      "lastRunId": "QA-20260417-0300",
+      "lastSeenAt": "2026-04-17T04:06:23.738Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "The repeated next/font preload warnings seen in QA-20260417-0299 no longer appeared on dashboard or fullscreen AI routes, and console remained clean across the release-facing pass.",
+      "lastNextAction": ""
     },
     "ai-security-reliability": {
       "domainId": "ai-security-reliability",
@@ -26407,30 +26552,30 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 81,
-      "appropriateCount": 72,
+      "seenCount": 82,
+      "appropriateCount": 73,
       "partialCount": 9,
       "inappropriateCount": 0,
       "improvementNeededCount": 13,
-      "lastRunId": "QA-20260417-0299",
-      "lastSeenAt": "2026-04-16T15:32:08.661Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Production deployment dpl_8RCgJKU4HmRuGrJUaDBUgEQYFhom remained healthy, but route-wide root-layout font preload now leaks repeated warnings into the release-facing console baseline.",
-      "lastNextAction": "Ship the local preload=false patch in src/app/layout.tsx and verify the deployment on Vercel before promoting this run as the new broad reference."
+      "lastRunId": "QA-20260417-0300",
+      "lastSeenAt": "2026-04-17T04:06:23.738Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "Production deployment dpl_sRuuaBX32ZL4rGggN552bJqcL2th stayed healthy, API health/version endpoints matched v8.11.17, and Vercel usage stayed within the expected budget envelope.",
+      "lastNextAction": ""
     },
     "test-automation": {
       "domainId": "test-automation",
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 113,
-      "appropriateCount": 106,
+      "seenCount": 114,
+      "appropriateCount": 107,
       "partialCount": 7,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260417-0299",
-      "lastSeenAt": "2026-04-16T15:32:08.661Z",
+      "lastRunId": "QA-20260417-0300",
+      "lastSeenAt": "2026-04-17T04:06:23.738Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
       "lastRationale": "Core routes, dashboard modal pack, AI sidebar, fullscreen workspace, and API probes were validated in one production browser session.",

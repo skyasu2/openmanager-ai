@@ -1,0 +1,160 @@
+{
+  "runId": "QA-20260417-0300",
+  "recordedAt": "2026-04-17T04:06:23.738Z",
+  "recordedAtKst": "2026-04-17 13:06:23 KST",
+  "runTitle": "Production broad QA - 8.11.17 font preload cleanup verification",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_sRuuaBX32ZL4rGggN552bJqcL2th",
+    "deploymentUrl": "https://openmanager-lbznulo4f-skyasus-projects.vercel.app",
+    "commitSha": "2adcefb0717a1453c17d46eaae45cdffc585c411"
+  },
+  "scope": "broad",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "modal-detail-pack"
+  ],
+  "coveredSurfaces": [
+    "landing render and version badge on production v8.11.17",
+    "/main redirects to / on production v8.11.17",
+    "/login render with Google/GitHub/email/guest PIN entry",
+    "/privacy render with back-link to login",
+    "404 route returns 404 page on production",
+    "/system-boot transitions to /dashboard",
+    "dashboard summary render with total 15 / online 14 / warning 1 / risk 0 / offline 0",
+    "dashboard system resource panel render with CPU 39 / Memory 47 / Disk 33",
+    "active alerts modal render and alert AI action opens sidebar with prefilled prompt",
+    "topology modal render with 15 nodes / 20 edges and ESC close",
+    "dashboard warning CTA opens AI sidebar with normalized prefilled prompt",
+    "AI sidebar follow-up response completes for api-was-dc1-01 CPU warning",
+    "AI sidebar analysis basis detail shows traceId 1c998d23b20212891cb9d3b1b8237f2a + tools + recent 1 hour time range",
+    "/dashboard/ai-assistant fullscreen workspace restores the carried conversation",
+    "fullscreen analysis basis detail preserves traceId 689bd70708380d052810ad6915fd0162 + tools + recent 1 hour time range parity",
+    "/api/health 200 on production with database/cache/ai connected",
+    "/api/version 200 on production with version 8.11.17 / nextjs 16.1.6 / environment production",
+    "console 0 error / 0 warning across dashboard, sidebar, fullscreen, and API checks after root font preload cleanup"
+  ],
+  "skippedSurfaces": [
+    "/auth/error fallback route",
+    "/auth/success legacy callback route",
+    "server detail modal 3-tab switch",
+    "log explorer modal",
+    "Reporter generate/detail flow",
+    "Analyst advanced forecast and drilldown flow",
+    "feedback submission flow",
+    "security blocked-prompt regression pack",
+    "Cloud Run admin observability endpoints"
+  ],
+  "checks": {
+    "total": 18,
+    "passed": 18,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Core routes, dashboard modal pack, AI sidebar, fullscreen workspace, and API probes were validated in one production browser session.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The warning-card AI path returned grounded CPU warning analysis, and the carried conversation preserved trace/tool/time-range parity after fullscreen handoff.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The repeated next/font preload warnings seen in QA-20260417-0299 no longer appeared on dashboard or fullscreen AI routes, and console remained clean across the release-facing pass.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production deployment dpl_sRuuaBX32ZL4rGggN552bJqcL2th stayed healthy, API health/version endpoints matched v8.11.17, and Vercel usage stayed within the expected budget envelope.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-17T13:04:55+09:00",
+      "summary": "Current billing period reviewed after production QA; effective usage 9.7924 USD, billed 0.0000 USD, chargeCount 9135. No unexpected usage spike was observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Production dashboard core surface on v8.11.17",
+      "path": "reports/qa/evidence/qa-20260417-v81117-broad-dashboard-ai.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Production fullscreen AI workspace with analysis basis detail on v8.11.17",
+      "path": "reports/qa/evidence/qa-20260417-v81117-broad-ai-workspace.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Production broad console log on v8.11.17",
+      "path": "reports/qa/evidence/qa-20260417-v81117-broad-console.txt"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "root-layout-font-preload-cleanup",
+      "title": "Suppress repeated root font preload warnings on dashboard and fullscreen AI routes",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "v8.11.17 production broad QA confirmed 0 console warnings after disabling root font preload in src/app/layout.tsx.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "root-layout-font-preload-cleanup completed in production on v8.11.17; this run supersedes QA-20260417-0299 as the latest broad reference.",
+    "exploratory follow-up during this session found that the active-alert modal path still prefills host:port text while the warning-card CTA uses a normalized server name; a local normalization patch was prepared separately from this production QA record."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Deployment dpl_sRuuaBX32ZL4rGggN552bJqcL2th",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/sRuuaBX32ZL4rGggN552bJqcL2th"
+    }
+  ]
+}

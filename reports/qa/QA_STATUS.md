@@ -1,54 +1,54 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-17 00:32:09 KST
+> Generated at: 2026-04-17 13:06:25 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 297 |
-| Total Runs (Counted) | 254 |
+| Total Recorded Runs | 298 |
+| Total Runs (Counted) | 255 |
 | Non-counted Runs | 43 |
-| Total Checks | 1990 |
-| Passed | 1913 |
+| Total Checks | 2008 |
+| Passed | 1931 |
 | Failed | 71 |
-| Completed Items | 294 |
-| Pending Items | 1 |
+| Completed Items | 295 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 13 |
 | Expert Domains Tracked | 8 |
-| Expert Open Gaps | 2 |
-| Completion Rate | 99.66% |
-| Last Counted Run | QA-20260417-0299 (2026-04-16T15:32:08.661Z) |
-| Latest Recorded Run | QA-20260417-0299 (2026-04-16T15:32:08.661Z) |
+| Expert Open Gaps | 0 |
+| Completion Rate | 100% |
+| Last Counted Run | QA-20260417-0300 (2026-04-17T04:06:23.738Z) |
+| Latest Recorded Run | QA-20260417-0300 (2026-04-17T04:06:23.738Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260417-0299 (2026-04-16T15:32:08.661Z)
+Latest run: QA-20260417-0300 (2026-04-17T04:06:23.738Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | Test Automation Architect | appropriate | no | - |
 | AI Quality Assurance Specialist | appropriate | no | - |
-| IT Monitoring & Observability SME | partially-appropriate | yes | Deploy the root font preload adjustment and rerun the broad production browser pass. |
-| DevOps / SRE Engineer | partially-appropriate | yes | Ship the local preload=false patch in src/app/layout.tsx and verify the deployment on Vercel before promoting this run as the new broad reference. |
+| IT Monitoring & Observability SME | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli-unavailable + mcp-deployment-check | skipped | unknown | Local Vercel CLI usage lookup failed in this session, so fresh billing usage could not be confirmed here. Current production deployment readiness was confirmed via Vercel MCP, and the latest same-day successful usage check before QA-20260416-0297 remained normal. |
+| vercel | cli | checked | normal | Current billing period reviewed after production QA; effective usage 9.7924 USD, billed 0.0000 USD, chargeCount 9135. No unexpected usage spike was observed. |
 
 ## Coverage (Latest Run)
 
 - Scope: broad
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_8RCgJKU4HmRuGrJUaDBUgEQYFhom / SHA b1469ce4
+- Deployment: dpl_sRuuaBX32ZL4rGggN552bJqcL2th / SHA 2adcefb0
 - Coverage Packs: core-routes-smoke, dashboard-core, ai-core, modal-detail-pack
-- Covered Surfaces: landing render and version badge on production v8.11.16, /main redirects to / on production v8.11.16, /login render with Google/GitHub/email/guest PIN entry, /privacy render with back-link to login, 404 route returns 404 page on production, /system-boot transitions to /dashboard, dashboard summary render with total 15 / online 14 / warning 1 / risk 0 / offline 0, dashboard system resource panel render with CPU 34 / Memory 49 / Disk 38, active alerts modal render and ESC close, topology modal render with 15 nodes / 20 edges and ESC close, dashboard warning CTA opens AI sidebar with prefilled prompt, AI sidebar first-hit response completes with grounded disk warning analysis for db-mysql-dc1-primary, AI sidebar analysis basis detail shows traceId + tools + timeRange, /dashboard/ai-assistant fullscreen workspace restores the same conversation, fullscreen analysis basis detail preserves the same traceId + tools + timeRange parity, /api/health 200 on production with database/cache/ai connected, /api/version 200 on production with version 8.11.16 / nextjs 16.1.6 / environment production
+- Covered Surfaces: landing render and version badge on production v8.11.17, /main redirects to / on production v8.11.17, /login render with Google/GitHub/email/guest PIN entry, /privacy render with back-link to login, 404 route returns 404 page on production, /system-boot transitions to /dashboard, dashboard summary render with total 15 / online 14 / warning 1 / risk 0 / offline 0, dashboard system resource panel render with CPU 39 / Memory 47 / Disk 33, active alerts modal render and alert AI action opens sidebar with prefilled prompt, topology modal render with 15 nodes / 20 edges and ESC close, dashboard warning CTA opens AI sidebar with normalized prefilled prompt, AI sidebar follow-up response completes for api-was-dc1-01 CPU warning, AI sidebar analysis basis detail shows traceId 1c998d23b20212891cb9d3b1b8237f2a + tools + recent 1 hour time range, /dashboard/ai-assistant fullscreen workspace restores the carried conversation, fullscreen analysis basis detail preserves traceId 689bd70708380d052810ad6915fd0162 + tools + recent 1 hour time range parity, /api/health 200 on production with database/cache/ai connected, /api/version 200 on production with version 8.11.17 / nextjs 16.1.6 / environment production, console 0 error / 0 warning across dashboard, sidebar, fullscreen, and API checks after root font preload cleanup
 - Skipped Surfaces: /auth/error fallback route, /auth/success legacy callback route, server detail modal 3-tab switch, log explorer modal, Reporter generate/detail flow, Analyst advanced forecast and drilldown flow, feedback submission flow, security blocked-prompt regression pack, Cloud Run admin observability endpoints
 
 ## Links (Latest Run)
@@ -56,26 +56,23 @@ Latest run: QA-20260417-0299 (2026-04-16T15:32:08.661Z)
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | Production | [Production](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Deployment dpl_8RCgJKU4HmRuGrJUaDBUgEQYFhom | [Deployment dpl_8RCgJKU4HmRuGrJUaDBUgEQYFhom](https://vercel.com/skyasus-projects/openmanager-ai/8RCgJKU4HmRuGrJUaDBUgEQYFhom) | - |
+| vercel-deployment | Deployment dpl_sRuuaBX32ZL4rGggN552bJqcL2th | [Deployment dpl_sRuuaBX32ZL4rGggN552bJqcL2th](https://vercel.com/skyasus-projects/openmanager-ai/sRuuaBX32ZL4rGggN552bJqcL2th) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Production dashboard and AI sidebar response on v8.11.16 | `reports/qa/evidence/qa-20260417-v81116-broad-dashboard-ai.png` | - |
-| playwright-screenshot | Production fullscreen AI workspace with preserved analysis basis detail on v8.11.16 | `reports/qa/evidence/qa-20260417-v81116-broad-ai-workspace.png` | - |
-| playwright-console | Production broad console log on v8.11.16 | `reports/qa/evidence/qa-20260417-v81116-broad-console.txt` | - |
+| playwright-screenshot | Production dashboard core surface on v8.11.17 | `reports/qa/evidence/qa-20260417-v81117-broad-dashboard-ai.png` | - |
+| playwright-screenshot | Production fullscreen AI workspace with analysis basis detail on v8.11.17 | `reports/qa/evidence/qa-20260417-v81117-broad-ai-workspace.png` | - |
+| playwright-console | Production broad console log on v8.11.17 | `reports/qa/evidence/qa-20260417-v81117-broad-console.txt` | - |
 
 ## Expert Domain Open Gaps
 
-- observability-monitoring: IT Monitoring & Observability SME (last QA-20260417-0299)
-  next: Deploy the root font preload adjustment and rerun the broad production browser pass.
-- sre-devops: DevOps / SRE Engineer (last QA-20260417-0299)
-  next: Ship the local preload=false patch in src/app/layout.tsx and verify the deployment on Vercel before promoting this run as the new broad reference.
+- None
 
 ## Pending Improvements
 
-- [P1] root-layout-font-preload-cleanup: Suppress repeated root font preload warnings on dashboard and fullscreen AI routes (seen 1회, last QA-20260417-0299)
+- None
 
 ## Deferred Improvements
 
@@ -311,6 +308,7 @@ Latest run: QA-20260417-0299 (2026-04-16T15:32:08.661Z)
 - reporter-sidebar-state-retention-chat-switch: Reporter 생성 결과가 sidebar chat 전환 후 유지 (completed 3회, last QA-20260320-0138)
 - reporter-state-loss-on-tab-switch: Reporter 탭 전환 시 생성 결과 상태 유지 (completed 1회, last QA-20260315-0104)
 - reporter-state-retention-chat-switch: Reporter 생성 결과가 chat 전환 후 유지 (completed 1회, last QA-20260318-0126)
+- root-layout-font-preload-cleanup: Suppress repeated root font preload warnings on dashboard and fullscreen AI routes (completed 1회, last QA-20260417-0300)
 - security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (completed 4회, last QA-20260320-0138)
 - security-audit-logs-live-path-smoke: guest login route writes security_audit_logs on success (completed 1회, last QA-20260411-0271)
 - security-headers-coop: COOP 헤더 추가 (Cross-Origin-Opener-Policy: same-origin-allow-popups) (completed 1회, last QA-20260329-0194)
@@ -410,6 +408,7 @@ Latest run: QA-20260417-0299 (2026-04-16T15:32:08.661Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260417-0300 | 2026-04-17T04:06:23.738Z | broad | yes | yes | Production broad QA - 8.11.17 font preload cleanup verification | 18 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260417-0299 | 2026-04-16T15:32:08.661Z | broad | yes | yes | Production broad QA - 8.11.16 dashboard AI parity with font preload warning regression | 18 | 0 | 1 | 0 | 0 | 2 |
 | QA-20260417-0298 | 2026-04-16T15:01:19.807Z | targeted | no | yes | Production targeted QA - 8.11.16 copy trim and AI sidebar verification | 10 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260416-0297 | 2026-04-16T13:53:18.702Z | targeted | no | yes | Production QA - Analysis Mode Auto vs Thinking v8.11.15 | 8 | 1 | 0 | 0 | 0 | 0 |
@@ -429,4 +428,3 @@ Latest run: QA-20260417-0299 (2026-04-16T15:32:08.661Z)
 | QA-20260415-0283 | 2026-04-14T16:16:39.275Z | targeted | no | yes | Advisor quality improvement post-deploy QA (ai-engine-00316, Task 1~3 verification) | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260413-0282 | 2026-04-13T12:52:28.892Z | targeted | no | yes | GraphRAG variant closure QA after ai-engine-00312 (force-KB queries to multi deterministic path) | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260413-0281 | 2026-04-13T12:40:26.449Z | targeted | no | yes | GraphRAG variant stability recheck after ai-engine-00311 (boolean-string tool schema hotfix) | 8 | 1 | 1 | 0 | 0 | 1 |
-| QA-20260413-0280 | 2026-04-13T11:41:39.894Z | targeted | no | yes | GraphRAG variant direct supervisor recheck after ai-engine-00308 (RAG auto + advisor tool required) | 3 | 0 | 1 | 0 | 0 | 1 |
