@@ -1,0 +1,129 @@
+> Owner: project
+> Status: Draft
+> Doc type: Reference
+> Last reviewed: 2026-04-17
+> Tags: otel-data, topology, infrastructure, data-quality
+
+# OTel 토폴로지 개선 계획
+
+## 배경
+
+현재 `public/data/otel-data/` 사전 생성 데이터는 on-premise 1 DC / 3 AZ / 15대 구성을 표현하나,
+아래 분석에서 구조적 취약점 5가지가 확인됨. AI가 이 데이터를 기반으로 진단할 때
+"정상 운영 중"으로만 해석되는 문제를 해결하고, 실제 운영 환경 수준의 현실성을 높이는 것이 목표.
+
+## 현재 토폴로지
+
+```
+[Internet]
+    ↓
+[LB: HAProxy x2]  AZ1·AZ3          ← AZ2 없음
+    ↓
+[Web: Nginx x3]   AZ1·AZ2·AZ3
+    ↓
+[API: WAS x3]     AZ1·AZ2·AZ3
+    ↓         ↓          ↓
+[MySQL x3]  [Redis x2]  [Storage x2]
+AZ1/2/3    AZ1·AZ2     AZ1·AZ3     ← Redis AZ3 없음, Storage SPOF
+```
+
+## 발견된 문제점
+
+| # | 항목 | 심각도 | 내용 |
+|---|------|:------:|------|
+| P1 | LB AZ2 부재 | 중 | lb-haproxy-dc1-{01,03} → AZ2 미커버. AZ2 서버들이 cross-AZ LB 경유 |
+| P2 | Redis AZ3 부재 | 중 | cache-redis-dc1-{01,02}만 존재. AZ3 서버들 cross-AZ 캐시 접근 |
+| P3 | NFS SPOF | 높음 | storage-nfs-dc1-01이 AZ1 단독. 공유 파일시스템 단일 장애점 |
+| P4 | S3GW SPOF | 중 | storage-s3gw-dc1-01이 AZ3 단독. 객체 스토리지 게이트웨이 단일 장애점 |
+| P5 | db-backup 역할 모호 | 낮음 | primary와 동일 스펙(16c/64GB/1TB). backup인지 read-replica인지 불명확 |
+
+## 개선 방향
+
+### 옵션 A: 서버 추가로 AZ 균형 맞추기 (15→18대)
+
+서버 3대 추가:
+- `lb-haproxy-dc1-03` AZ2 추가 (AZ 균형)
+- `cache-redis-dc1-03` AZ3 추가 (Redis Sentinel 3노드 완성)
+- `storage-nfs-dc1-02` AZ2 추가 (NFS HA standby)
+
+**장점**: 실제 production HA 구성에 가장 가까움  
+**단점**: 데이터 생성 스크립트(otel-fix.ts) 및 resource-catalog 변경 범위 큼
+
+### 옵션 B: 시나리오 데이터로 취약점 표현 (현 15대 유지)
+
+서버 추가 없이, 기존 시나리오에 취약점 기반 장애 패턴을 추가:
+- AZ2가 LB 없이 응답 지연 증가하는 메트릭 패턴 추가
+- Redis cross-AZ 레이턴시 스파이크 로그 추가
+- NFS 단독 구성 경고 상태 시나리오 추가
+
+**장점**: 변경 범위 최소 (otel-fix.ts 시나리오만 수정)  
+**단점**: 구조적 취약점이 데이터에 숨겨져 있어 AI가 구성 자체를 진단하기 어려움
+
+### 옵션 C: db-backup 역할 명확화 (즉시 가능)
+
+`db-mysql-dc1-backup` → `db-mysql-dc1-replica2` 로 리네임하거나,
+backup 전용으로 스펙 다운 (8c/32GB/1TB) + 역할 설명 명시.
+
+**장점**: 즉시 적용 가능, 스펙 현실성 향상  
+**단점**: 서버 ID 변경 시 참조 파일 다수 수정 필요
+
+---
+
+## 작업 계획 (권장: B + C 우선, A는 장기)
+
+### Phase 1: db-backup 역할 명확화 (즉시)
+
+- [ ] `resource-catalog.json`에서 `db-mysql-dc1-backup` 스펙 조정
+  - `host.cpu.count`: 16 → 8
+  - `host.memory.size`: 64GB → 32GB
+  - `server.role` 설명 주석 추가: "cold standby / daily snapshot target"
+- [ ] `otel-fix.ts` S1 시나리오에서 backup 서버 메트릭 패턴 현실화
+  - CPU/메모리 사용률을 primary보다 낮게 (백업 배치 시간대만 스파이크)
+- [ ] `otel-verify.ts`에 backup 서버 메트릭 범위 검증 추가
+
+### Phase 2: 시나리오 취약점 표현 (단기)
+
+- [ ] **S6 추가**: Redis cross-AZ 레이턴시 시나리오 (AZ3 api-was가 AZ1 Redis 접근 시 응답 지연)
+  - `hour-13~15` 슬롯에 api-was-dc1-03의 응답시간 spike 추가
+  - Redis 관련 로그에 "connection to remote AZ cache" 경고 패턴 추가
+- [ ] **S7 추가**: NFS 단일 장애 징후 시나리오 (I/O wait 급증)
+  - `hour-02~04` 슬롯에 storage-nfs-dc1-01 disk I/O 포화 + 연쇄 WAS 응답 지연
+  - NFS 의존 서버들의 디스크 메트릭에 I/O wait 반영
+- [ ] `otel-verify.ts` 검증 항목 S6, S7 추가
+
+### Phase 3: 서버 추가 (장기, 필요 시)
+
+- [ ] `resource-catalog.json`에 3대 추가
+  - `lb-haproxy-dc1-03` (AZ2, 4c/8GB/50GB)
+  - `cache-redis-dc1-03` (AZ3, 4c/32GB/50GB)
+  - `storage-nfs-dc1-02` (AZ2, 4c/16GB/5TB, hot-standby)
+- [ ] `otel-fix.ts` 신규 서버 메트릭 데이터 생성 로직 추가
+- [ ] `timeseries.json` 재생성 (15→18 서버)
+- [ ] AI Engine `precomputed-state.ts` 서버 목록 갱신
+
+---
+
+## 영향 범위
+
+| 파일 | Phase 1 | Phase 2 | Phase 3 |
+|------|:-------:|:-------:|:-------:|
+| `public/data/otel-data/resource-catalog.json` | ✅ | — | ✅ |
+| `public/data/otel-data/hourly/*.json` | ✅ | ✅ | ✅ |
+| `public/data/otel-data/timeseries.json` | — | — | ✅ |
+| `scripts/data/otel-fix.ts` | ✅ | ✅ | ✅ |
+| `scripts/data/otel-verify.ts` | ✅ | ✅ | ✅ |
+| `cloud-run/ai-engine/src/data/precomputed-state.ts` | — | — | ✅ |
+| `src/config/server-registry.ts` | — | — | ✅ |
+
+---
+
+## 선행 조건
+
+- Phase 2 착수 전: Phase 1 완료 및 `npm run validate:all` 통과
+- Phase 3 착수 전: Phase 2 완료 + AI 진단 품질 검증 (새 시나리오로 AI가 구조적 취약점을 탐지하는지 확인)
+
+## 기대 효과
+
+- AI가 "AZ2에 LB 없음", "Redis cross-AZ 레이턴시" 등 구조적 취약점을 직접 진단 가능
+- 데모 시나리오의 현실성 향상 (단순 메트릭 임계값 초과 → 아키텍처 레벨 문제 진단)
+- otel-fix 시나리오가 8→9개로 확장되어 AI 학습 다양성 증가
