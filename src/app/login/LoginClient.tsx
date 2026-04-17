@@ -1,4 +1,18 @@
-/** Login Client: OAuth + 게스트 로그인 */
+/**
+ * Login Client: OAuth + 게스트 로그인
+ *
+ * [보안 경고 오탐 방지]
+ * Supabase Security Advisor가 "Leaked Password Protection Disabled" 경고를 표시하지만,
+ * 이 프로젝트는 이메일+비밀번호 로그인을 사용하지 않으므로 해당 경고는 오탐(false positive)이다.
+ *
+ * 실제 인증 방식:
+ *  - Google OAuth    → signInWithOAuthProvider('google')
+ *  - GitHub OAuth    → signInWithOAuthProvider('github')
+ *  - Email Magic Link → signInWithEmailMagicLink(email)  ← 비밀번호 없음
+ *  - Guest PIN       → /api/auth/guest-login (Supabase Auth 미사용, 자체 구현)
+ *
+ * 결론: 유출 비밀번호 체크 적용 대상 없음. Pro plan 업그레이드 불필요.
+ */
 
 'use client';
 

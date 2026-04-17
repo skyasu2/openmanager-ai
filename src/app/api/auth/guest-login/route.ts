@@ -1,3 +1,13 @@
+/**
+ * Guest PIN Login Route
+ *
+ * [보안 경고 오탐 방지]
+ * 이 라우트는 Supabase Auth를 전혀 사용하지 않는 자체 인증 구현이다.
+ * Supabase Security Advisor의 "Leaked Password Protection" 경고와 무관하다.
+ *
+ * 인증 흐름: GUEST_LOGIN_PIN(env) → timingSafeEqual 비교 → 자체 세션 쿠키 발급
+ * 보안 장치: CSRF 보호, Rate Limit, Redis 기반 실패 횟수/잠금, 국가 차단 정책
+ */
 import { createHash, randomUUID, timingSafeEqual } from 'node:crypto';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
