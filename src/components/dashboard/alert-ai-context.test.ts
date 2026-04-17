@@ -85,11 +85,43 @@ describe('alert-ai-context', () => {
     expect(ctx?.promptOverride).toBeUndefined();
   });
 
+  it('active alert는 instance의 포트 suffix를 제거해 prompt용 serverName을 정규화해야 한다', () => {
+    const ctx = toDashboardAlertContext({
+      serverId: 'api-was-dc1-01',
+      instance: 'api-was-dc1-01:9100',
+      metric: 'cpu_usage',
+      value: 81.2,
+    });
+
+    expect(ctx).toEqual({
+      serverId: 'api-was-dc1-01',
+      serverName: 'api-was-dc1-01',
+      metricLabel: 'CPU',
+      metricValue: 81,
+    });
+  });
+
+  it('serverId가 없으면 instance의 포트 suffix를 제거해야 한다', () => {
+    const ctx = toDashboardAlertContext({
+      serverId: '',
+      instance: 'server-1:9100',
+      metric: 'memory',
+      value: 63.4,
+    });
+
+    expect(ctx).toEqual({
+      serverId: '',
+      serverName: 'server-1',
+      metricLabel: 'MEM',
+      metricValue: 63,
+    });
+  });
+
   it('resolved alert는 재발 방지 promptOverride를 포함해야 한다', () => {
     expect(
       toDashboardAlertContext({
         serverId: 's1',
-        instance: 'server-1',
+        instance: 'server-1:9100',
         metric: 'disk',
         value: 91.4,
         state: 'resolved',
@@ -100,7 +132,9 @@ describe('alert-ai-context', () => {
         serverName: 'server-1',
         metricLabel: 'DISK',
         metricValue: 91,
-        promptOverride: expect.stringContaining('재발 방지'),
+        promptOverride: expect.stringContaining(
+          'server-1 서버에서 디스크 사용률'
+        ),
       })
     );
   });

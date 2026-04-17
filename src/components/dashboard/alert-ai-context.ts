@@ -12,6 +12,15 @@ export interface DashboardAlertContext {
   promptOverride?: string;
 }
 
+function normalizeAlertServerName(
+  instance: string,
+  serverId?: string | null
+): string {
+  const normalizedInstance = instance.replace(/:\d+$/, '');
+
+  return normalizedInstance || serverId || instance;
+}
+
 export function getDashboardAlertMetricLabel(
   metric: string
 ): DashboardAlertMetricLabel | null {
@@ -61,7 +70,7 @@ export function toDashboardAlertContext(
 
   const context: DashboardAlertContext = {
     serverId: alert.serverId,
-    serverName: alert.instance,
+    serverName: normalizeAlertServerName(alert.instance, alert.serverId),
     metricLabel,
     metricValue: Math.round(alert.value),
   };
@@ -73,7 +82,7 @@ export function toDashboardAlertContext(
         : metricLabel === 'MEM'
           ? '메모리'
           : '디스크';
-    context.promptOverride = `${alert.instance} 서버에서 ${metricKoreanLabel} 사용률이 ${Math.round(alert.value)}%까지 상승했다가 해소된 알림 이력이 있습니다. 발생 원인과 재발 방지 조치를 분석해줘.`;
+    context.promptOverride = `${context.serverName} 서버에서 ${metricKoreanLabel} 사용률이 ${Math.round(alert.value)}%까지 상승했다가 해소된 알림 이력이 있습니다. 발생 원인과 재발 방지 조치를 분석해줘.`;
   }
 
   return context;
