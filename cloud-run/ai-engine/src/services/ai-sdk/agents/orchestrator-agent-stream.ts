@@ -152,6 +152,15 @@ export async function* executeAgentStream(
     if (excludedProviders.includes(provider)) continue;
     logger.debug(`[Stream ${agentName}] Attempting ${provider}/${modelId}`);
 
+    const buildProviderRetryStatus = (message: string): StreamEvent => ({
+      type: 'agent_status',
+      data: {
+        agent: agentName,
+        status: 'processing',
+        message,
+      },
+    });
+
     let filteredTools = filterToolsByWebSearch(agentConfig.tools, webSearchEnabled);
     filteredTools = filterToolsByRAG(filteredTools, ragEnabled);
     const timeoutSpan = createTimeoutSpan(sessionId, `${agentName}_stream`, ORCHESTRATOR_CONFIG.timeout);
@@ -437,6 +446,9 @@ export async function* executeAgentStream(
         logger.warn(
           `[Stream ${agentName}] Empty response from ${provider}/${modelId}; trying next provider...`
         );
+        yield buildProviderRetryStatus(
+          `${provider} 응답 없음, 대안 모델로 전환 중...`
+        );
         continue providerLoop;
       }
 
@@ -503,6 +515,9 @@ export async function* executeAgentStream(
           logger.warn(
             `[Stream ${agentName}] No output from ${provider}/${modelId}, trying next provider...`
           );
+          yield buildProviderRetryStatus(
+            `${provider} 응답 없음, 대안 모델로 전환 중...`
+          );
           continue providerLoop;
         }
 
@@ -545,6 +560,11 @@ export async function* executeAgentStream(
       excludedProviders.push(provider);
       lastError = errorMessage;
       logger.warn(`[Stream ${agentName}] Provider ${provider} failed: ${errorMessage}, trying next...`);
+      if (attemptIndex < providerAttempts.length - 1) {
+        yield buildProviderRetryStatus(
+          `${provider} 오류 발생, 대안 모델로 전환 중...`
+        );
+      }
       continue; // Try next provider
     }
   }
