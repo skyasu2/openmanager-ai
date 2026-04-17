@@ -1,14 +1,14 @@
 > Owner: project
-> Status: Approved
+> Status: Draft
 > Doc type: Plan
 > Last reviewed: 2026-04-17
 > Tags: ai-assistant,streaming,cloud-run,vercel,route-contract,architecture
 
 # AI Stream Route Contract & Legacy Path Consolidation Plan
 
-- 상태: **Phase 1 완료 (2026-04-16), Phase 5 provider fallback visibility 완료 (2026-04-17), Phase 6 warning semantics slice Approved (2026-04-17)**
+- 상태: **Phase 1 완료 (2026-04-16), Phase 5 provider fallback visibility 완료 (2026-04-17), Phase 6 warning semantics alignment 완료 (2026-04-17), residual cleanup backlog**
 - 작성일: 2026-04-16
-- TODO.md 연결: Active Tasks > `AI Stream Route Contract - warning semantics alignment`
+- TODO.md 연결: Backlog > `AI Stream Route Contract - residual cleanup`
 - 목표: Vercel API routes와 Cloud Run supervisor endpoints의 역할을 다시 명확히 정의하고, 현재 primary streaming path와 legacy plain/json path의 계약을 정리해 유지보수 복잡도와 stale 판단을 줄인다.
 
 ## 0. Best Practice Baseline
@@ -168,12 +168,17 @@
 - empty response retry 직전 `agent_status` 노출
 - 일반 provider error retry 경로도 같은 패턴으로 정렬
 
-### Phase 6 — warning semantics alignment (Residual Slice, 2026-04-17)
+### Phase 6 — warning semantics alignment ✅ 완료 (2026-04-17)
 
-1. multi-agent `SLOW_PROCESSING` warning payload를 single-agent와 같은 shape로 정렬한다.
-2. warning message는 하드코딩된 `25초`가 아니라 실제 threshold를 사용한다.
-3. frontend type/comment도 path-local threshold semantics에 맞게 일반화한다.
-4. threshold 값 자체는 이번 slice에서 변경하지 않는다.
+1. [x] multi-agent `SLOW_PROCESSING` warning payload를 single-agent와 같은 shape로 정렬했다.
+2. [x] warning message는 하드코딩된 `25초`가 아니라 실제 threshold를 사용하도록 수정했다.
+3. [x] frontend type/comment도 path-local threshold semantics에 맞게 일반화했다.
+4. [x] threshold 값 자체는 변경하지 않았다.
+
+결과:
+- multi-agent warning payload에 `threshold` 포함
+- multi-agent warning message가 `ORCHESTRATOR_CONFIG.warnThreshold` 초 단위를 사용
+- frontend `warning` 타입 주석에서 stale `25초` 문구 제거
 
 ## 6. Contract
 

@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| P2: AI Stream Route Contract - warning semantics alignment | Medium | contract-approved | 계획서: [ai-stream-route-contract-plan.md](ai-stream-route-contract-plan.md). 목표: multi-agent `SLOW_PROCESSING` payload/message를 실제 orchestrator threshold와 일치시키고, 프론트 타입 주석의 stale `25초` 문구 제거. |
+| 없음 | — | — | 다음 후보: `AI Response Visibility` 후속(`429 UX`, `Job Queue agent path`) 또는 `AI Stream Route Contract` residual cleanup(`legacy path`, `observability`) 재평가 |
 
 ---
 
@@ -24,13 +24,25 @@
 |------|----------|-------|
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
 | AI Response Visibility & Rate Limit (Phase 1~5) | Medium | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). handoff 가시성 UX, 429 UX, Job Queue agent path, limiter 정책 재조정. |
-| AI Stream Route Contract - residual cleanup | Medium | 계획서: [ai-stream-route-contract-plan.md](ai-stream-route-contract-plan.md). Phase 5 provider fallback visibility 완료. 남은 slices: warning threshold 정합성, legacy path 재평가, observability/caching 설명 정리. |
+| AI Stream Route Contract - residual cleanup | Medium | 계획서: [ai-stream-route-contract-plan.md](ai-stream-route-contract-plan.md). Phase 5 provider fallback visibility, Phase 6 warning semantics alignment 완료. 남은 slices: legacy path 재평가, observability/caching 설명 정리. |
 | OTel 토폴로지 개선 (P1→P2→P3) | Medium | 계획서: [otel-topology-improvement-plan.md](otel-topology-improvement-plan.md). db-backup 스펙 현실화(즉시), Redis cross-AZ/NFS SPOF 시나리오 추가(단기), 서버 3대 추가(장기). |
 | Storybook circular chunk warning 정리 | Low | non-blocking, stable 승격 후 재평가 |
 
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-17 #112)
+- [x] AI Stream Route Contract - warning semantics alignment 완료
+  - multi-agent `SLOW_PROCESSING` warning payload를 single-agent와 같은 shape로 정렬 (`threshold` 포함)
+  - warning message를 stale `25초`에서 실제 orchestrator threshold 기반 문자열로 수정
+  - frontend warning 타입 주석을 path-local threshold semantics 기준으로 일반화
+  - TDD 커밋:
+    - `7fb0ad86a` → `7fc5c740a`
+  - 검증:
+    - targeted: `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/agents/orchestrator-agent-stream.test.ts`
+    - root gate: `npm run type-check && npm run lint && npm run test:quick && npm run test:contract`
+    - ai-engine gate: `cd cloud-run/ai-engine && npm run type-check && npm run test` (`74 files`, `782 tests`)
 
 ### Completed (2026-04-17 #111)
 - [x] AI Stream Route Contract - multi-agent provider fallback visibility 완료
