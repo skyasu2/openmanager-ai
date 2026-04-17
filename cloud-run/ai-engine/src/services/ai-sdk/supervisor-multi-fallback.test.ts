@@ -54,7 +54,7 @@ vi.mock('./model-provider', () => ({
 
 vi.mock('../../config/timeout-config', () => ({
   TIMEOUT_CONFIG: {
-    supervisor: { hard: 30_000, hardStreaming: 30_000, warning: 10_000 },
+    supervisor: { hard: 30_000, hardStreaming: 45_000, warning: 10_000 },
     agent: { hard: 15_000 },
     orchestrator: { hard: 30_000, warning: 10_000, routingDecision: 10_000 },
     subtask: { hard: 15_000 },
@@ -324,5 +324,29 @@ describe('supervisor degraded single fallback', () => {
     expect(events).toEqual([
       { type: 'error', data: { code: 'MODEL_UNAVAILABLE', error: 'Orchestrator not available' } },
     ]);
+  });
+
+  it('uses hardStreaming timeout for single-agent streaming path', async () => {
+    mockIsSingleModeAllowed.mockReturnValue(true);
+
+    const events = [];
+    for await (const event of executeSupervisorStream({
+      mode: 'multi',
+      messages: [{ role: 'user', content: 'degraded single timeout 테스트' }],
+      sessionId: 'session-single-stream-timeout',
+    })) {
+      events.push(event);
+    }
+
+    expect(events).toContainEqual({ type: 'text_delta', data: 'single fallback stream' });
+    expect(mockStreamText).toHaveBeenCalledWith(
+      expect.objectContaining({
+        timeout: expect.objectContaining({
+          totalMs: 45_000,
+          stepMs: 15_000,
+          chunkMs: 30_000,
+        }),
+      })
+    );
   });
 });

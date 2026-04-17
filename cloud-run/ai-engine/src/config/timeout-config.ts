@@ -57,7 +57,9 @@ export const CLOUD_RUN_CONSTRAINTS = {
  * Timeout configuration for each processing layer
  *
  * Architecture:
- *   Supervisor (50s) → Orchestrator (45s) → Agent (45s) → Subtask (30s) → Tool (25s)
+ *   Single non-stream: Supervisor (50s) → Agent (45s) → Tool (25s)
+ *   Single stream: Supervisor (120s hardStreaming) → Agent (45s) → Tool (25s)
+ *   Multi-agent: Orchestrator (90s) → Agent (45s) → Subtask (35s) → Tool (25s)
  *
  * Each layer has progressively shorter timeouts to allow:
  * - Parent to handle child timeouts gracefully

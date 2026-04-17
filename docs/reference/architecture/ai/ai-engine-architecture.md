@@ -70,6 +70,19 @@ OpenManager AI의 AI Engine은 **Vercel AI SDK v6 계열** 기반 **multi-agent 
 - Cloud Run request timeout: https://cloud.google.com/run/docs/configuring/request-timeout
 - BFF pattern (Microsoft Learn): https://learn.microsoft.com/en-us/azure/architecture/patterns/backends-for-frontends
 
+### 2.6. 라우팅 경로별 LLM 호출 수 vs Free Tier 소비
+
+Multi-agent 경로를 선택할수록 LLM 호출 횟수가 늘어 Free Tier 쿼터 소비가 증가합니다. Supervisor가 단순 질의의 과잉 라우팅을 방어하는 것은 응답 속도뿐만 아니라 **무료 API 한도 보존**이 직접적인 목적입니다.
+
+| 실행 경로 | LLM 호출 수 | 예상 토큰 소비 | Free Tier 압박 |
+|----------|:----------:|-------------|:----------:|
+| Single-Agent | 1회 | ~500–2,000 | 낮음 |
+| Multi-Agent (일반) | 2–3회 | ~1,500–5,000 | 중간 |
+| Reporter Pipeline | 4–5회 (Reporter + Eval + Optimize×2) | ~4,000–10,000 | 높음 |
+| RAG 포함 시 | +1회 (HyDE + Reranker) | +~1,000 | 추가 |
+
+**Supervisor가 과잉 라우팅을 방어해야 하는 이유**: Groq/Cerebras 무료 tier는 RPM·TPD 한도가 고정됩니다. Reporter Pipeline 1회 실행이 단순 조회 4–5회 분의 쿼터를 소모하므로, 복합 쿼리 여부를 정확히 판별해 라우팅하는 것이 **비용(API 한도) 방어의 핵심**입니다.
+
 ## 3. System Architecture
 
 ### Current Request Flow
@@ -365,9 +378,23 @@ for await (const event of streamAgent('analyst', '이상 탐지')) { ... }
 │  408/500 → 동일 provider 재시도 (2회)     │
 ├──────────────────────────────────────────┤
 │ Timeout 계층                              │
-│  Supervisor 50s → Orchestrator 45s → Agent 45s → Tool 25s │
+│  Single non-stream: Supervisor 50s → Agent 45s → Tool 25s │
+│  Single stream: Supervisor 120s → Agent 45s → Tool 25s    │
+│  Multi-agent: Orchestrator 90s → Agent 45s → Tool 25s     │
 └──────────────────────────────────────────┘
 ```
+
+### Fallback 발생 시 사용자 체감 지연 시나리오
+
+| 시나리오 | 예상 추가 지연 | 사용자 통보 (`agent_status`) |
+|---------|:-----------:|---------------------------|
+| Circuit Breaker OPEN (사전 차단) | ~0ms (즉시 전환) | `provider 일시 차단됨, 대안 모델로 전환 중...` |
+| 429 Rate Limit → 다음 provider | ~0–500ms | `provider 응답 없음, 대안 모델로 전환 중...` |
+| 타임아웃 후 fallback (408/500) | +2–10s (backoff) | `provider 오류 발생, 대안 모델로 전환 중...` |
+| 모든 provider 소진 | N/A | `error`: ALL_PROVIDERS_FAILED |
+
+> **가장 큰 지연 원인**: tool timeout(25s) 소진 후 provider 전환이 누적될 때 single stream은 최대 120s, multi-agent는 Orchestrator 90s 한도 안에서 지연이 커질 수 있습니다.
+> **완화책**: Circuit Breaker가 5회 실패 감지 시 OPEN 전환 → 이후 요청은 즉시 차단 후 전환하여 cascading 지연 차단
 
 ### Reporter Pipeline (Evaluator-Optimizer)
 
@@ -479,6 +506,9 @@ cloud-run/ai-engine/src/
 | 데이터 슬롯 | 144개 (24h x 6/hr, 10분 간격) |
 | 모니터링 서버 | 15개 (사전 생성 OTel 데이터) |
 | Cold Start | ~2-3초 (lazy loading + deferred init) |
+| TTFB 목표 (Single, Warm) | <2초 |
+| TTFB 목표 (Multi, Warm) | <5초 (Orchestrator 라우팅 포함) |
+| TTFB 목표 (Cold Start 포함) | Single <5초 / Multi <8초 |
 | 인프라 | Cloud Run 1vCPU / 512Mi (운영 기본값) |
 | AI SDK | Vercel AI SDK v6 계열 (`ai`, `@ai-sdk/react`) |
 

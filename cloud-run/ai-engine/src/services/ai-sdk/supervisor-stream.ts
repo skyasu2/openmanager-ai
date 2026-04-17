@@ -260,6 +260,14 @@ async function* streamSingleAgent(
       });
       excludedProviders.push(provider);
       if (!hasImages && attempt < MAX_PROVIDER_ATTEMPTS - 1) {
+        yield {
+          type: 'agent_status',
+          data: {
+            agent: 'Supervisor',
+            status: 'processing',
+            message: `${provider} 일시 차단됨, 대안 모델로 전환 중...`,
+          },
+        };
         continue providerLoop;
       }
       yield {
@@ -280,6 +288,7 @@ async function* streamSingleAgent(
     // --- 3. Stream Execution ---
     try {
       logger.info(`[SupervisorStream] Using ${provider}/${modelId}${attempt > 0 ? ` (retry #${attempt})` : ''}`);
+      const providerStartTime = Date.now();
 
       const trace = createSupervisorTrace({
         sessionId: request.sessionId,
@@ -306,7 +315,9 @@ async function* streamSingleAgent(
         temperature: 0.3,
         maxOutputTokens: 2048,
         timeout: {
-          totalMs: TIMEOUT_CONFIG.supervisor.hard,
+          totalMs:
+            TIMEOUT_CONFIG.supervisor.hardStreaming ??
+            TIMEOUT_CONFIG.supervisor.hard,
           stepMs: TIMEOUT_CONFIG.agent.hard,
           chunkMs: 30_000,
         },
@@ -355,9 +366,17 @@ async function* streamSingleAgent(
       const SINGLE_AGENT_HARD_TIMEOUT = TIMEOUT_CONFIG.supervisor.hardStreaming ?? TIMEOUT_CONFIG.supervisor.hard;
       const TIMEOUT_WARNING_THRESHOLD = TIMEOUT_CONFIG.supervisor.warning;
       let warningEmitted = false;
+      let firstChunkMs: number | null = null;
 
       for await (const textPart of result.textStream) {
         const elapsed = Date.now() - startTime;
+
+        if (firstChunkMs === null) {
+          firstChunkMs = Date.now() - providerStartTime;
+          logger.info(
+            `[SupervisorStream] TTFB: ${firstChunkMs}ms (${provider}/${modelId})`
+          );
+        }
 
         if (!warningEmitted && elapsed >= TIMEOUT_WARNING_THRESHOLD) {
           warningEmitted = true;
@@ -428,6 +447,12 @@ async function* streamSingleAgent(
                   const finalResult = trOutput as Record<string, unknown>;
                   if ('answer' in finalResult && typeof finalResult.answer === 'string' && finalResult.answer.trim().length > 0) {
                     fullText = finalResult.answer;
+                    if (firstChunkMs === null) {
+                      firstChunkMs = Date.now() - providerStartTime;
+                      logger.info(
+                        `[SupervisorStream] TTFB recovered via finalAnswer: ${firstChunkMs}ms (${provider}/${modelId})`
+                      );
+                    }
                     yield { type: 'text_delta', data: fullText };
                     logger.info('[SupervisorStream] Recovered response from finalAnswer tool result');
                   }
@@ -455,6 +480,14 @@ async function* streamSingleAgent(
           logger.warn(
             `⚠️ [SingleAgent] ${provider}/${modelId} failed without output (${failedError.message}), retrying with next provider...`
           );
+          yield {
+            type: 'agent_status',
+            data: {
+              agent: 'Supervisor',
+              status: 'processing',
+              message: `${provider} 응답 없음, 대안 모델로 전환 중...`,
+            },
+          };
           continue providerLoop;
         }
       }
@@ -538,6 +571,7 @@ async function* streamSingleAgent(
         toolsCalled,
         stepsExecuted: steps.length,
         durationMs,
+        ...(firstChunkMs !== null && { ttfbMs: firstChunkMs }),
         ...(capturedError && { error: capturedError.message }),
         ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
         ...buildDegradedMetadata(degradedFallbackContext, {}),
@@ -596,6 +630,14 @@ async function* streamSingleAgent(
       excludedProviders.push(provider);
       if (!hasImages && attempt < MAX_PROVIDER_ATTEMPTS - 1) {
         logger.warn(`⚠️ [SingleAgent] ${provider}/${modelId} threw error, trying next provider...`);
+        yield {
+          type: 'agent_status',
+          data: {
+            agent: 'Supervisor',
+            status: 'processing',
+            message: `${provider} 오류 발생, 대안 모델로 전환 중...`,
+          },
+        };
         continue providerLoop;
       }
 
