@@ -1,12 +1,12 @@
 > Owner: project
-> Status: Backlog — `429 UX source-hardening` slice는 완료. `Job Queue agent path`와 `limiter 정책 재정비`는 backlog 유지.
+> Status: Backlog — `handoff persistence contract`, `429 UX source-hardening`, `Job Queue agent-path` slice는 완료. `limiter 정책 재정비`는 backlog 유지.
 > Doc type: Plan
 > Last reviewed: 2026-04-17
 > Tags: ai,ux,rate-limit,visibility
 
 # AI Response Visibility & Rate Limit Plan (2026-04-08)
 
-- 상태: **Backlog (partial complete)** — AnalysisBasisBadge 중심 visibility 개선과 `handoff persistence contract`, `429 UX source-hardening` slice는 완료됐다. `Job Queue agent path`와 `limiter 정책 재정비`는 backlog다.
+- 상태: **Backlog (partial complete)** — AnalysisBasisBadge 중심 visibility 개선과 `handoff persistence contract`, `429 UX source-hardening`, `Job Queue agent-path` slice는 완료됐다. `limiter 정책 재정비`는 backlog다.
 - 작성일: 2026-04-08 | 상태 갱신: 2026-04-17
 - TODO.md 연결: Backlog > AI Response Visibility & Rate Limit
 - 목표: AI 질의 과정의 가시성을 실제 실행 흐름과 맞추고, rate limit을 사용자에게 설명 가능한 제약으로 바꾼다.
@@ -34,8 +34,6 @@
 
 ### 아직 남은 범위
 
-- Job Queue 진행률에 실제 agent path를 반영하는 작업
-- 429 응답을 레이어별 원인/재시도 시점 중심으로 설명하는 UX 정리
 - 프론트/Cloud Run limiter 정책을 사용자 체감 기준으로 다시 맞추는 작업
 
 ## 배경
@@ -70,11 +68,15 @@
 
 ### 3. Job Queue 진행률 표시
 
-- 비동기 복잡 질의는 고정 임계치 기반 4단계 UI를 사용한다.
+- 비동기 복잡 질의는 고정 임계치 기반 4단계 UI를 사용하지만, 실제 agent path metadata도 함께 노출한다.
   - [JobProgressIndicator.tsx](/mnt/d/dev/openmanager-ai/src/components/ai-sidebar/JobProgressIndicator.tsx:236)
   - [JobProgressIndicator.tsx](/mnt/d/dev/openmanager-ai/src/components/ai-sidebar/JobProgressIndicator.tsx:279)
-- 서버 SSE는 coarse stage를 보낼 수 있지만, 실제 멀티에이전트 handoff 경로는 Job Queue 진행률에 반영되지 않는다.
-  - [jobs/[id]/stream/route.ts](/mnt/d/dev/openmanager-ai/src/app/api/ai/jobs/[id]/stream/route.ts:177)
+- Cloud Run jobs route는 `agent_status`/`handoff`/`done.metadata.handoffs`를 기반으로 `executionPath`, `handoffFrom`, `handoffTo`, `handoffCount`, `stageDetail`을 기록한다.
+  - [jobs.ts](/mnt/d/dev/openmanager-ai/cloud-run/ai-engine/src/routes/jobs.ts:247)
+- Next job stream route는 위 metadata를 progress SSE에 그대로 실어 보낸다.
+  - [stream-helpers.ts](/mnt/d/dev/openmanager-ai/src/app/api/ai/jobs/[id]/stream/stream-helpers.ts:219)
+- `JobProgressIndicator`는 `경로`, `전달`, `handoff N회`, `stageDetail`을 렌더링한다.
+  - [JobProgressIndicator.tsx](/mnt/d/dev/openmanager-ai/src/components/ai-sidebar/JobProgressIndicator.tsx:272)
 
 ### 4. Rate Limit 구조
 
@@ -199,11 +201,18 @@
 
 ### Phase 3. Job Queue 경로 가시성 개선
 
-- [ ] Job Queue `progress` 이벤트에 실제 agent/handoff stage를 반영하는 서버 필드를 정의한다.
+- [x] Job Queue `progress` 이벤트에 실제 agent/handoff stage를 반영하는 서버 필드를 정의한다.
   - 예: `agent`, `handoffFrom`, `handoffTo`, `stageLabel`, `stageDetail`
-- [ ] `JobProgressIndicator`의 4단계 인디케이터는 유지하되, 하단 서브라인은 실제 agent path를 반영하도록 바꾼다.
+- [x] `JobProgressIndicator`의 4단계 인디케이터는 유지하되, 하단 서브라인은 실제 agent path를 반영하도록 바꾼다.
   - 예: `분석 조율 → 심층 분석 → 보고서 생성`
-- [ ] 현재의 퍼센트 기반 fixed threshold와 실제 event-based 상태를 함께 보여주는 혼합 모델로 정리한다.
+- [x] 현재의 퍼센트 기반 fixed threshold와 실제 event-based 상태를 함께 보여주는 혼합 모델로 정리한다.
+
+### Phase 3 완료 확인 (2026-04-17)
+
+- Cloud Run jobs route는 progress metadata에 `executionPath`, `handoffFrom`, `handoffTo`, `handoffCount`, `stageDetail`을 기록한다.
+- Next `/api/ai/jobs/[id]/stream` route는 위 metadata를 progress SSE event에 그대로 보존한다.
+- `JobProgressIndicator`는 해당 metadata를 `경로`, `전달`, `handoff N회`, `stageDetail`로 렌더링한다.
+- `asyncQuerySSE` regression test를 추가해 client progress callback passthrough를 고정했다.
 
 ### Phase 4. Rate Limit UX 개선
 
@@ -240,15 +249,14 @@
 
 ## 서버 변경이 필요한 후속 적용안
 
-1. Job Queue progress에 실제 agent/handoff 메타데이터 반영
-2. Cloud Run limiter와 Next limiter의 정책 일원화
-3. 사용자/session 기준 limit 키 재설계
+1. Cloud Run limiter와 Next limiter의 정책 일원화
+2. 사용자/session 기준 limit 키 재설계
 
 ## 완료 기준
 
 - [ ] 스트리밍 응답 후 `분석 근거` 패널에 handoff 개수와 실제 경로가 보인다.
 - [ ] handoff가 없을 때와 수집 실패일 때를 QA/테스트에서 구분할 수 있다.
-- [ ] Job Queue 진행률이 단순 퍼센트가 아니라 실제 agent path를 일부라도 보여준다.
+- [x] Job Queue 진행률이 단순 퍼센트가 아니라 실제 agent path를 일부라도 보여준다.
 - [ ] 429 발생 시 사용자에게 `원인`, `재시도 가능 시점`, `다음 행동`이 함께 보인다.
 - [ ] 관련 계약 테스트와 UI 테스트가 추가되어 회귀를 막는다.
 
@@ -257,7 +265,7 @@
 1. `AnalysisBasisBadge` 가시성 개선
 2. handoff persistence 계약 테스트 보강
 3. 429 UX 통합
-4. Job Queue progress event 확장
+4. limiter 정책 재조정
 5. limiter 정책 재조정
 
 ## 재착수 조건 (SDD Gate)

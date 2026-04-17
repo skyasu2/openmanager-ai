@@ -208,6 +208,29 @@ describe('connectAsyncQuerySSE', () => {
     expect(params.onProgress).toHaveBeenCalledWith(progressData);
   });
 
+  it('preserves job queue agent path metadata on progress events', () => {
+    const params = buildDefaultParams();
+
+    connectAsyncQuerySSE(params);
+
+    const es = getMock(params.eventSourceRef);
+    const progressData = {
+      stage: 'analyst',
+      progress: 62,
+      message: '심층 분석으로 전달 중...',
+      agent: 'analyst',
+      handoffFrom: 'supervisor',
+      handoffTo: 'analyst',
+      executionPath: ['supervisor', 'analyst', 'reporter'],
+      handoffCount: 2,
+      stageLabel: '심층 분석',
+      stageDetail: '분석 조율 → 심층 분석 → 보고서 생성',
+    };
+    es.emit('progress', JSON.stringify(progressData));
+
+    expect(params.onProgress).toHaveBeenCalledWith(progressData);
+  });
+
   it('calls onResult with parsed data when "result" event fires', () => {
     const params = buildDefaultParams();
     mocks.extractStreamError.mockReturnValue(null);

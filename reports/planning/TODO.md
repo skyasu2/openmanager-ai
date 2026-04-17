@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-17 KST (AI Response Visibility 429 UX source-hardening slice 완료)
+**Last Updated**: 2026-04-17 KST (AI Response Visibility Job Queue agent-path slice 정리 완료)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| 없음 | — | — | 다음 후보: `AI Response Visibility` 후속(`Job Queue agent path`, `limiter 정책 재정비`) 또는 `OTel 토폴로지 개선` 재평가 |
+| 없음 | — | — | 다음 후보: `AI Response Visibility` 후속(`limiter 정책 재정비`) 또는 `OTel 토폴로지 개선` 재평가 |
 
 ---
 
@@ -41,6 +41,14 @@
   - 검증:
     - targeted: `npx vitest run src/lib/ai/error-details.test.ts src/components/ai-sidebar/chat/ColdStartErrorBanner.test.tsx`
     - root gate: `npm run type-check && npm run lint && npm run test:quick && npm run test:contract`
+
+### Completed (2026-04-17 #116)
+- [x] AI Response Visibility - Job Queue agent-path slice 정리 완료
+  - Cloud Run jobs route가 `agent_status`/`handoff`/`done.metadata.handoffs`에서 `executionPath`, `handoffFrom`, `handoffTo`, `handoffCount`, `stageDetail`을 이미 수집·저장하고 있음을 재검증
+  - Next `/api/ai/jobs/[id]/stream` route가 위 metadata를 progress SSE로 보존하는 계약을 재확인
+  - `asyncQuerySSE` progress callback이 agent-path metadata를 그대로 전달하는 regression test 추가
+  - 검증:
+    - targeted: `npx vitest run src/hooks/ai/core/asyncQuerySSE.test.ts src/app/api/ai/jobs/[id]/stream/route.test.ts src/components/ai-sidebar/JobProgressIndicator.test.tsx`
 
 ### Completed (2026-04-17 #114)
 - [x] AI Stream Route Contract - observability/caching 설명 정리 완료 및 계획서 archive 이동
