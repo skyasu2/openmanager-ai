@@ -1,12 +1,12 @@
 > Owner: project
-> Status: Backlog — `handoff persistence contract` slice는 완료. 남은 범위는 `429 UX`, `Job Queue agent path`, `limiter 정책 재정비`.
+> Status: Approved — `429 UX source-hardening` slice 진행 중. `handoff persistence contract`는 완료, `Job Queue agent path`와 `limiter 정책 재정비`는 backlog 유지.
 > Doc type: Plan
 > Last reviewed: 2026-04-17
 > Tags: ai,ux,rate-limit,visibility
 
 # AI Response Visibility & Rate Limit Plan (2026-04-08)
 
-- 상태: **Backlog (partial complete)** — AnalysisBasisBadge 중심 visibility 개선과 `handoff persistence contract` slice는 완료됐다. 남은 범위는 `429 UX`, `Job Queue agent path`, `limiter 정책 재정비`다.
+- 상태: **Approved (partial complete)** — AnalysisBasisBadge 중심 visibility 개선과 `handoff persistence contract` slice는 완료됐다. 이번 승인 범위는 `429 UX source-hardening`이며, `Job Queue agent path`와 `limiter 정책 재정비`는 backlog다.
 - 작성일: 2026-04-08 | 상태 갱신: 2026-04-17
 - TODO.md 연결: Backlog > AI Response Visibility & Rate Limit
 - 목표: AI 질의 과정의 가시성을 실제 실행 흐름과 맞추고, rate limit을 사용자에게 설명 가능한 제약으로 바꾼다.
@@ -262,7 +262,7 @@
 
 ## 재착수 조건 (SDD Gate)
 
-> `handoff persistence contract` slice는 완료됐다. 재착수 시에는 후속 backlog를 새 slice로 좁혀 다시 Approved 상태를 만든다.
+> `handoff persistence contract` slice는 완료됐다. 이번 승인 slice는 `429 UX source-hardening`이며, 후속 backlog는 `Job Queue agent path`와 `limiter 정책 재정비`다.
 
 - [x] **남은 범위 재확정**
   - 이번 승인 slice: `handoff persistence` 진단/계약 테스트
@@ -283,6 +283,41 @@
   - local history 저장/복원 후에도 `handoffHistory: []`가 round-trip 된다.
 - [x] `test(spec): ai response visibility add failing handoff persistence tests`
 - [x] `feat|fix: ai response visibility implement handoff persistence contract`
+
+## 2026-04-17 승인 slice: 429 UX source-hardening
+
+### 목표
+
+- provider 이름이 포함된 429/쿼터 메시지를 `upstream-provider`로 안정 분류한다.
+- `ColdStartErrorBanner`가 `frontend-gateway` / `cloud-run-ai` / `upstream-provider` source를 user-facing title로 일관되게 반영하도록 계약을 고정한다.
+- countdown/retry UX는 기존 구조를 유지하고, source 판별/문구 drift만 해결한다.
+
+### 이번 slice 범위
+
+- 포함:
+  - `src/lib/ai/error-details.ts`
+  - `src/lib/ai/error-details.test.ts`
+  - `src/components/ai-sidebar/chat/ColdStartErrorBanner.test.tsx`
+- 제외:
+  - limiter 수치 변경
+  - retryAfter countdown 구조 변경
+  - Job Queue progress event 확장
+  - Cloud Run/Next rate limiter 정책 재설계
+
+### 입출력 계약
+
+- `Groq`, `Mistral`, `Cerebras`, `Gemini`, `OpenRouter` 등의 provider 이름이 포함된 rate-limit 메시지는 `upstream-provider`로 분류된다.
+- `ColdStartErrorBanner`는:
+  - `frontend-gateway` → `요청이 잠시 몰렸습니다`
+  - `cloud-run-ai` → `AI 엔진 요청이 잠시 몰렸습니다`
+  - `upstream-provider` → `AI 제공자 요청 제한이 발생했습니다`
+  를 title로 사용한다.
+
+### 테스트 시나리오
+
+1. provider 이름이 들어간 plain message가 `upstream-provider`로 추론된다.
+2. upstream-provider rate-limit details를 전달하면 배너 title이 `AI 제공자 요청 제한이 발생했습니다`로 렌더링된다.
+3. 기존 frontend-gateway countdown disable/enable 계약은 유지된다.
 
 ## 메모
 

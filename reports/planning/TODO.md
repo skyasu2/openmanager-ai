@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-17 KST (AI Stream Route Contract observability/caching slice 완료)
+**Last Updated**: 2026-04-17 KST (AI Response Visibility 429 UX source-hardening slice 승인)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| 없음 | — | — | 다음 후보: `AI Response Visibility` 후속(`429 UX`, `Job Queue agent path`) 또는 `OTel 토폴로지 개선` 재평가 |
+| AI Response Visibility - 429 UX source hardening | Medium | approved | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). provider 이름이 포함된 429 메시지를 `upstream-provider`로 안정 분류하고, 배너 title/countdown이 source와 일치하도록 계약 고정. |
 
 ---
 
