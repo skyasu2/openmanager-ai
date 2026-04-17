@@ -38,7 +38,7 @@ export interface HybridQueryState {
   errorDetails?: AIErrorDetails | null;
   /** 명확화 요청 (모호한 쿼리일 때) */
   clarification: ClarificationRequest | null;
-  /** 처리 지연 경고 메시지 (25초 초과 시) */
+  /** 처리 지연 경고 메시지 (활성 스트림 경로의 threshold 초과 시) */
   warning: string | null;
   /** 현재 처리 경과 시간 (ms) */
   processingTime: number;
@@ -59,7 +59,7 @@ export type StreamEventType =
   | 'step_finish'
   | 'handoff'
   | 'agent_status'
-  | 'warning' // 처리 지연 경고 (25초 초과 시) (2026-01-19)
+  | 'warning' // 처리 지연 경고 (활성 스트림 경로의 threshold 초과 시)
   | 'redirect' // Job Queue 리다이렉트 이벤트 (2026-01-18)
   | 'done'
   | 'error';

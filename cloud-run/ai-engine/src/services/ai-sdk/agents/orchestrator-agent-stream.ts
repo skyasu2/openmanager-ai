@@ -237,8 +237,9 @@ export async function* executeAgentStream(
             type: 'warning',
             data: {
               code: 'SLOW_PROCESSING',
-              message: '처리 시간이 25초를 초과했습니다.',
+              message: `처리 시간이 ${ORCHESTRATOR_CONFIG.warnThreshold / 1000}초를 초과했습니다.`,
               elapsed,
+              threshold: ORCHESTRATOR_CONFIG.warnThreshold,
             },
           };
 
