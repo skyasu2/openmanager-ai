@@ -1,39 +1,39 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-04-15 09:54:38 KST
+> Generated at: 2026-04-17 15:14:49 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 285 |
-| Counted Runs | 247 |
-| Total Checks | 1905 |
-| Total Passed | 1831 |
-| Total Failed | 68 |
-| Overall Pass Rate | 96.12% |
-| Latest Recorded Run | QA-20260415-0287 |
-| Last Counted Run | QA-20260415-0287 |
+| Recorded Runs | 300 |
+| Counted Runs | 256 |
+| Total Checks | 2012 |
+| Total Passed | 1935 |
+| Total Failed | 71 |
+| Overall Pass Rate | 96.17% |
+| Latest Recorded Run | QA-20260417-0302 |
+| Last Counted Run | QA-20260417-0302 |
 
 ## Warnings
 
-- [warning] gate-window-regression-open: Recent gate runs still show regressions. The last 5 gate runs include 1 regression run(s), but the current release-gate-only window is clean. This warning is currently driven by QA-20260407-0249 (broad) lingering in the rolling gate window. Next: Treat this as historical gate context, not an active release-gate failure. Keep broad/release-gate QA green; the warning will clear once enough clean gate runs replace the older regression in the rolling window.
+- [warning] gate-window-regression-open: Recent gate runs still show regressions. The last 5 gate runs include 2 regression run(s), but the current release-gate-only window is clean. This warning is currently driven by QA-20260415-0288 (broad), QA-20260417-0299 (broad) lingering in the rolling gate window. Next: Treat this as historical gate context, not an active release-gate failure. Keep broad/release-gate QA green; the warning will clear once enough clean gate runs replace the older regression in the rolling window.
 
 ## Rolling Windows
 
 | Window | Counted Runs | Checks | Pass Rate | Failed Runs | Failing Run Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| All Counted Runs | 247 | 1905 | 96.12% | 42 | 17% | 48 | 19.43% |
-| Last 30 Counted Runs | 30 | 283 | 98.59% | 2 | 6.67% | 3 | 10% |
-| Last 10 Counted Runs | 10 | 56 | 96.43% | 1 | 10% | 2 | 20% |
+| All Counted Runs | 256 | 2012 | 96.17% | 44 | 17.19% | 50 | 19.53% |
+| Last 30 Counted Runs | 30 | 287 | 97.56% | 4 | 13.33% | 5 | 16.67% |
+| Last 10 Counted Runs | 10 | 115 | 97.39% | 2 | 20% | 2 | 20% |
 
 ## Gate Run Windows
 
 | Window | Counted Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|
-| All Gate Runs | 19 | 251 | 97.61% | 3 | 15.79% |
-| Last 5 Gate Runs | 5 | 56 | 96.43% | 1 | 20% |
+| All Gate Runs | 23 | 321 | 97.2% | 5 | 21.74% |
+| Last 5 Gate Runs | 5 | 78 | 96.15% | 2 | 40% |
 
 ## Release-Gate Only Windows
 
@@ -47,8 +47,8 @@
 | Scope | Recorded Runs | Counted Runs |
 |---|---:|---:|
 | legacy | 137 | 137 |
-| targeted | 126 | 89 |
-| broad | 15 | 14 |
+| targeted | 137 | 94 |
+| broad | 19 | 18 |
 | release-gate | 5 | 5 |
 | smoke | 2 | 2 |
 
@@ -57,7 +57,7 @@
 | Priority | Total Items | Recurring Items | Recurrence Rate | Open Items | Open Recurring | Open Recurrence Rate | Completed | Wont-Fix |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | P0 | 42 | 7 | 16.67% | 0 | 0 | 0% | 42 | 0 |
-| P1 | 131 | 62 | 47.33% | 0 | 0 | 0% | 127 | 4 |
+| P1 | 135 | 65 | 48.15% | 0 | 0 | 0% | 131 | 4 |
 | P2 | 115 | 38 | 33.04% | 0 | 0 | 0% | 107 | 8 |
 | P3 | 17 | 11 | 64.71% | 0 | 0 | 0% | 16 | 1 |
 
@@ -65,25 +65,23 @@
 
 | Deployment ID | Target | Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate | Latest Run | Commit |
 |---|---|---:|---:|---:|---:|---:|---|---|
+| dpl_optoHir793ZW8PGSyP6Abghmedg1 | vercel-production | 1 | 4 | 100% | 0 | 0% | QA-20260417-0302 | d9e9f453 |
+| dpl_sRuuaBX32ZL4rGggN552bJqcL2th | vercel-production | 1 | 18 | 100% | 0 | 0% | QA-20260417-0300 | 2adcefb0 |
+| dpl_8RCgJKU4HmRuGrJUaDBUgEQYFhom | vercel-production | 2 | 28 | 96.43% | 1 | 50% | QA-20260417-0299 | b1469ce4 |
+| dpl_BetVxqXL1qtLy673944mUkUfSqMz | vercel-production | 1 | 8 | 100% | 0 | 0% | QA-20260416-0296 | e1f97f94 |
+| dpl_3QFeewNZNo8PSs13n1cx5PL6kZN6 | vercel-production | 1 | 7 | 100% | 0 | 0% | QA-20260416-0294 | 49032c37 |
+| dpl_8oAdopQezsQhTUtaSMnxpkNJhuF9 | vercel-production | 1 | 18 | 100% | 0 | 0% | QA-20260415-0291 | 80d53371 |
+| dpl_CtSR9Wk698mkgBjyjzLREtfNiC5s | vercel-production | 1 | 16 | 87.5% | 1 | 100% | QA-20260415-0288 | e506140c |
 | dpl_97A4qLDxVvCdunBXh93T87B4eSLQ | vercel-production | 1 | 8 | 100% | 0 | 0% | QA-20260415-0287 | 6e42f834 |
 | ai-engine-00317-sss | cloud-run-production | 2 | 7 | 100% | 0 | 0% | QA-20260415-0285 | 6e42f834 |
 | ai-engine-00316-l67 | cloud-run-production | 1 | 4 | 100% | 0 | 0% | QA-20260415-0283 | facd9340 |
 | dpl_GZc8iZVSUmgA1P2XoFpjRkxAzXnC | vercel-production | 1 | 10 | 100% | 0 | 0% | QA-20260412-0272 | 665d80cf |
 | q9sLLaw5dMDeDbCacX11sTe8fE1t | vercel-production | 1 | 3 | 100% | 0 | 0% | QA-20260409-0267 | 858a084b |
-| dpl_CAWchymB1KKe4ADsqMwLV6S9uigQ | vercel-production | 1 | 7 | 100% | 0 | 0% | QA-20260409-0264 | ca7f27ae |
-| dpl_FnzN8yJFRkS5TUkvQYWREJwtJGh2 | vercel-production | 1 | 14 | 100% | 0 | 0% | QA-20260409-0259 | 8ca2b7eb |
-| dpl_HsUxVfvpeXApZu25dEY4WNrQrcoy | vercel-production | 1 | 6 | 100% | 0 | 0% | QA-20260408-0250 | f515817d |
-| dpl_7YFJku7zmAYHWwhF6FrizaLfHkKE | vercel-production | 1 | 18 | 88.89% | 1 | 100% | QA-20260407-0249 | 8d537c7a |
-| dpl_EEf7zEdMXFGHWYqYSNMACmtXynQ8 | vercel-production | 1 | 13 | 100% | 0 | 0% | QA-20260406-0246 | 9e722456 |
-| dpl_H2A52Y1DvRKLATu7o1A8fb1WbAXf | vercel-production | 1 | 9 | 100% | 0 | 0% | QA-20260406-0244 | 40bd7093 |
-| dpl_2MuHQZg4ePQmikAr8MYk5rkWj1ic | vercel-production | 3 | 44 | 100% | 0 | 0% | QA-20260405-0238 | b15fd073 |
 
 ## Recent Daily Trend (KST)
 
 | Date | Runs | Checks | Pass Rate | Failed Runs | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-03-30 | 6 | 47 | 93.62% | 1 | 1 | 16.67% |
-| 2026-03-31 | 2 | 11 | 81.82% | 1 | 1 | 50% |
 | 2026-04-01 | 2 | 16 | 100% | 0 | 0 | 0% |
 | 2026-04-02 | 10 | 85 | 100% | 0 | 0 | 0% |
 | 2026-04-03 | 1 | 3 | 100% | 0 | 0 | 0% |
@@ -95,12 +93,16 @@
 | 2026-04-09 | 3 | 24 | 100% | 0 | 0 | 0% |
 | 2026-04-12 | 1 | 10 | 100% | 0 | 0 | 0% |
 | 2026-04-13 | 3 | 17 | 88.24% | 1 | 2 | 66.67% |
-| 2026-04-15 | 4 | 19 | 100% | 0 | 0 | 0% |
+| 2026-04-15 | 6 | 53 | 96.23% | 1 | 1 | 16.67% |
+| 2026-04-16 | 3 | 23 | 100% | 0 | 0 | 0% |
+| 2026-04-17 | 4 | 50 | 98% | 1 | 1 | 25% |
 
 ## Recent Regression Runs
 
 | Run ID | Time (UTC) | Scope | Failed Checks | Pending | Deferred | Wont-Fix | Title |
 |---|---|---|---:|---:|---:|---:|---|
+| QA-20260417-0299 | 2026-04-16T15:32:08.661Z | broad | 1 | 1 | 0 | 0 | Production broad QA - 8.11.16 dashboard AI parity with font preload warning regression |
+| QA-20260415-0288 | 2026-04-15T11:09:03.713Z | broad | 2 | 1 | 0 | 0 | Vercel broad QA - frontend and AI assistant evaluation on latest production |
 | QA-20260413-0281 | 2026-04-13T12:40:26.449Z | targeted | 2 | 1 | 0 | 0 | GraphRAG variant stability recheck after ai-engine-00311 (boolean-string tool schema hotfix) |
 | QA-20260413-0280 | 2026-04-13T11:41:39.894Z | targeted | 0 | 1 | 0 | 0 | GraphRAG variant direct supervisor recheck after ai-engine-00308 (RAG auto + advisor tool required) |
 | QA-20260407-0249 | 2026-04-07T11:55:13.126Z | broad | 2 | 2 | 0 | 0 | Playwright MCP Production QA - Frontend + AI Assistant v8.11.0 broad baseline refresh |
@@ -109,8 +111,6 @@
 | QA-20260331-0201 | 2026-03-31T11:58:25.987Z | targeted | 2 | 1 | 0 | 0 | Local dev Playwright QA - Vibe Coding modal CI/CD regression check |
 | QA-20260330-0195 | 2026-03-30T04:14:36.238Z | targeted | 3 | 0 | 0 | 3 | Landing Page Playwright Analysis - 4 Cards, Modal Content, Architecture, History |
 | QA-20260327-0193 | 2026-03-26T15:12:25.263Z | targeted | 1 | 0 | 0 | 1 | Vercel production targeted QA recheck after cloud-run pre-init logging fix |
-| QA-20260324-0179 | 2026-03-24T10:48:15.267Z | targeted | 1 | 0 | 0 | 0 | Vercel Preview QA - PR #200 blocked by preview SSO |
-| QA-20260324-0177 | 2026-03-24T07:57:28.735Z | targeted | 1 | 1 | 0 | 0 | Vercel Production QA - false realtime-analysis badge removed but parity mismatch remains |
 
 ## Recurring Open Items
 

@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-17T05:23:31.724Z"
+    "updatedAt": "2026-04-17T05:39:27.161Z"
   },
   "sequence": {
-    "nextRunNumber": 302
+    "nextRunNumber": 303
   },
   "summary": {
-    "totalRecordedRuns": 299,
-    "totalRuns": 255,
+    "totalRecordedRuns": 300,
+    "totalRuns": 256,
     "excludedRuns": 44,
-    "totalChecks": 2008,
-    "totalPassed": 1931,
+    "totalChecks": 2012,
+    "totalPassed": 1935,
     "totalFailed": 71,
-    "completionRate": 99.66,
-    "completedItems": 295,
-    "pendingItems": 1,
+    "completionRate": 100,
+    "completedItems": 296,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 13,
     "expertDomainsTracked": 8,
-    "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260417-0300",
-    "lastRecordedAt": "2026-04-17T04:06:23.738Z",
-    "latestRecordedRunId": "QA-20260417-0301",
-    "latestRecordedAt": "2026-04-17T05:23:31.724Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260417-0302",
+    "lastRecordedAt": "2026-04-17T05:39:27.161Z",
+    "latestRecordedRunId": "QA-20260417-0302",
+    "latestRecordedAt": "2026-04-17T05:39:27.161Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -7112,25 +7112,25 @@
       "id": "gitlab-tag-pipeline-v81119-release-blocked",
       "title": "Restore v8.11.19 semver tag deploy path before targeted production QA",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260417-0301",
       "firstSeenAt": "2026-04-17T05:23:31.724Z",
-      "lastSeenRunId": "QA-20260417-0301",
-      "lastSeenAt": "2026-04-17T05:23:31.724Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260417-0302",
+      "lastSeenAt": "2026-04-17T05:39:27.161Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
       "lastEvidence": "",
-      "lastNote": "v8.11.19 tag exists on gitlab, but production still aliases dpl_7g1jwikybsmVbh2u8SgHDoGhTfPr (8.11.18). Inspect or retry the GitLab tag pipeline before rerunning active-alert modal QA.",
-      "isBlocking": true,
+      "lastNote": "GitLab semver tag deploy recovered and production now serves v8.11.19; targeted active-alert QA passed without :9100 prompt leakage.",
+      "isBlocking": false,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-04-17T05:23:31.724Z"
+      "lastStatusChangeAt": "2026-04-17T05:39:27.161Z"
     }
   },
   "runs": [
@@ -26605,6 +26605,91 @@
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260417-0302",
+      "recordedAt": "2026-04-17T05:39:27.161Z",
+      "recordedAtKst": "2026-04-17 14:39:27 KST",
+      "title": "v8.11.19 active-alert :9100 fix targeted production QA",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260417-0302.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_optoHir793ZW8PGSyP6Abghmedg1",
+        "deploymentUrl": "https://openmanager-3nl6zit3b-skyasus-projects.vercel.app",
+        "commitSha": "d9e9f45377c439ddc3f7031ad23c8b991f3cd4ec"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": ["dashboard-core", "ai-core"],
+      "coveredSurfaces": [
+        "/dashboard (active alerts modal)",
+        "AI 사이드바 prefill handoff",
+        "detectAnomalies 도구 호출"
+      ],
+      "skippedSurfaces": [
+        "fullscreen AI",
+        "Reporter/Analyst direct",
+        "observability pack"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production now serves v8.11.19 and the active-alert targeted QA confirms the normalized direct detectAnomalies path works without :9100 prompt leakage.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-17T15:11:27+09:00",
+          "summary": "Targeted production follow-up after v8.11.19 deploy; effective 9.7924 USD, billed 0.0000 USD, no unexpected billed spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "v8.11.19 active-alert targeted pass evidence",
+          "path": "reports/qa/evidence/qa-20260417-v81119-active-alert-targeted-pass.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Production deployment dpl_optoHir793ZW8PGSyP6Abghmedg1",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/optoHir793ZW8PGSyP6Abghmedg1"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -26664,17 +26749,17 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 83,
-      "appropriateCount": 73,
+      "seenCount": 84,
+      "appropriateCount": 74,
       "partialCount": 10,
       "inappropriateCount": 0,
       "improvementNeededCount": 14,
-      "lastRunId": "QA-20260417-0301",
-      "lastSeenAt": "2026-04-17T05:23:31.724Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Release tag push succeeded, but production still points to the previous 8.11.18 Vercel deployment and no 8.11.19 deployment exists yet.",
-      "lastNextAction": "Inspect or retry the GitLab semver tag pipeline for v8.11.19, then rerun the active-alert targeted production QA pack."
+      "lastRunId": "QA-20260417-0302",
+      "lastSeenAt": "2026-04-17T05:39:27.161Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "Production now serves v8.11.19 and the active-alert targeted QA confirms the normalized direct detectAnomalies path works without :9100 prompt leakage.",
+      "lastNextAction": ""
     },
     "test-automation": {
       "domainId": "test-automation",

@@ -1,74 +1,73 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-17 14:23:32 KST
+> Generated at: 2026-04-17 15:14:49 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 299 |
-| Total Runs (Counted) | 255 |
+| Total Recorded Runs | 300 |
+| Total Runs (Counted) | 256 |
 | Non-counted Runs | 44 |
-| Total Checks | 2008 |
-| Passed | 1931 |
+| Total Checks | 2012 |
+| Passed | 1935 |
 | Failed | 71 |
-| Completed Items | 295 |
-| Pending Items | 1 |
+| Completed Items | 296 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 13 |
 | Expert Domains Tracked | 8 |
-| Expert Open Gaps | 1 |
-| Completion Rate | 99.66% |
-| Last Counted Run | QA-20260417-0300 (2026-04-17T04:06:23.738Z) |
-| Latest Recorded Run | QA-20260417-0301 (2026-04-17T05:23:31.724Z) |
+| Expert Open Gaps | 0 |
+| Completion Rate | 100% |
+| Last Counted Run | QA-20260417-0302 (2026-04-17T05:39:27.161Z) |
+| Latest Recorded Run | QA-20260417-0302 (2026-04-17T05:39:27.161Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260417-0301 (2026-04-17T05:23:31.724Z)
+Latest run: QA-20260417-0302 (2026-04-17T05:39:27.161Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| DevOps / SRE Engineer | partially-appropriate | yes | Inspect or retry the GitLab semver tag pipeline for v8.11.19, then rerun the active-alert targeted production QA pack. |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Release verification follow-up confirmed no unexpected billed usage spike while production remained on 8.11.18. |
+| vercel | cli | checked | normal | Targeted production follow-up after v8.11.19 deploy; effective 9.7924 USD, billed 0.0000 USD, no unexpected billed spike. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
-- Counts Toward Summary: no
-- Deployment: dpl_7g1jwikybsmVbh2u8SgHDoGhTfPr / SHA 167417d5
-- Coverage Packs: core-routes-smoke
-- Covered Surfaces: production deployment drift check for v8.11.19, /, /validation, /api/version, Vercel production deployment history
-- Skipped Surfaces: dashboard active alerts modal targeted recheck, AI sidebar prompt normalization runtime verification, fullscreen handoff verification, Cloud Run runtime QA
+- Release-Facing: no
+- Counts Toward Summary: yes
+- Deployment: dpl_optoHir793ZW8PGSyP6Abghmedg1 / SHA d9e9f453
+- Coverage Packs: dashboard-core, ai-core
+- Covered Surfaces: /dashboard (active alerts modal), AI 사이드바 prefill handoff, detectAnomalies 도구 호출
+- Skipped Surfaces: fullscreen AI, Reporter/Analyst direct, observability pack
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Active production deployment dpl_7g1jwikybsmVbh2u8SgHDoGhTfPr | [Active production deployment dpl_7g1jwikybsmVbh2u8SgHDoGhTfPr](https://vercel.com/skyasus-projects/openmanager-ai/7g1jwikybsmVbh2u8SgHDoGhTfPr) | - |
+| vercel-deployment | Production deployment dpl_optoHir793ZW8PGSyP6Abghmedg1 | [Production deployment dpl_optoHir793ZW8PGSyP6Abghmedg1](https://vercel.com/skyasus-projects/openmanager-ai/optoHir793ZW8PGSyP6Abghmedg1) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | v8.11.19 deploy verification blocked evidence | `reports/qa/evidence/qa-20260417-v81119-deploy-blocked.md` | - |
+| playwright-console | v8.11.19 active-alert targeted pass evidence | `reports/qa/evidence/qa-20260417-v81119-active-alert-targeted-pass.md` | - |
 
 ## Expert Domain Open Gaps
 
-- sre-devops: DevOps / SRE Engineer (last QA-20260417-0301)
-  next: Inspect or retry the GitLab semver tag pipeline for v8.11.19, then rerun the active-alert targeted production QA pack.
+- None
 
 ## Pending Improvements
 
-- [P1] gitlab-tag-pipeline-v81119-release-blocked: Restore v8.11.19 semver tag deploy path before targeted production QA (seen 1회, last QA-20260417-0301)
+- None
 
 ## Deferred Improvements
 
@@ -216,6 +215,7 @@ Latest run: QA-20260417-0301 (2026-04-17T05:23:31.724Z)
 - frontend-ai-data-parity-gate: 프론트엔드 표시 상태와 AI 분석 상태 동일 슬롯 참조 검증 (completed 2회, last QA-20260324-0178)
 - frontend-landing-v880: Landing page v8.8.0 정상 렌더링 (completed 2회, last QA-20260314-0097)
 - gitlab-tag-deploy-trace-v8113: GitLab tag deploy failure root cause analysis for v8.11.3 (completed 1회, last QA-20260408-0256)
+- gitlab-tag-pipeline-v81119-release-blocked: Restore v8.11.19 semver tag deploy path before targeted production QA (completed 1회, last QA-20260417-0302)
 - gitlab-tag-protected-variable-exposure-v8113: Fix GitLab protected variable exposure for semver tag deploy (completed 1회, last QA-20260409-0258)
 - graphrag-traversal-keep-decision: Graph traversal keep/remove re-evaluation closed with KEEP decision (completed 1회, last QA-20260415-0285)
 - guest-auth-proof-cookie: 게스트 PIN 로그인 후 auth_proof 쿠키 발급 정상 (completed 2회, last QA-20260314-0097)
@@ -404,6 +404,7 @@ Latest run: QA-20260417-0301 (2026-04-17T05:23:31.724Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260417-0302 | 2026-04-17T05:39:27.161Z | targeted | no | yes | v8.11.19 active-alert :9100 fix targeted production QA | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260417-0301 | 2026-04-17T05:23:31.724Z | targeted | yes | no | Production release verification blocked - v8.11.19 deploy not created | 4 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260417-0300 | 2026-04-17T04:06:23.738Z | broad | yes | yes | Production broad QA - 8.11.17 font preload cleanup verification | 18 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260417-0299 | 2026-04-16T15:32:08.661Z | broad | yes | yes | Production broad QA - 8.11.16 dashboard AI parity with font preload warning regression | 18 | 0 | 1 | 0 | 0 | 2 |
@@ -423,4 +424,3 @@ Latest run: QA-20260417-0301 (2026-04-17T05:23:31.724Z)
 | QA-20260415-0285 | 2026-04-14T17:11:51.995Z | targeted | no | yes | Graph traversal re-evaluation post-variant-fix QA (ai-engine-00317) | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260415-0284 | 2026-04-14T16:50:52.817Z | targeted | no | yes | Topology duplicate tool invocation post-deploy QA (ai-engine-00317) | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260415-0283 | 2026-04-14T16:16:39.275Z | targeted | no | yes | Advisor quality improvement post-deploy QA (ai-engine-00316, Task 1~3 verification) | 4 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260413-0282 | 2026-04-13T12:52:28.892Z | targeted | no | yes | GraphRAG variant closure QA after ai-engine-00312 (force-KB queries to multi deterministic path) | 6 | 1 | 0 | 0 | 0 | 0 |

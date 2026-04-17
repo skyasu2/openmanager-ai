@@ -1,21 +1,12 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-17 KST (v8.11.19 tag pushed, production still on 8.11.18, active-alert targeted recheck blocked on deploy)
+**Last Updated**: 2026-04-17 KST (v8.11.19 production 배포 완료, active-alert :9100 fix targeted QA 통과)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
 ## Active Tasks
 
-- P2: active alerts modal AI prefill server-name normalization deploy + targeted production recheck
-  - broad production run `QA-20260417-0300`으로 root font preload regression은 해소되어 broad reference가 복구됨
-  - exploratory follow-up에서 active alerts modal AI action은 아직 `api-was-dc1-01:9100` 형태의 host:port prompt를 넘기고, warning card CTA는 `api-was-dc1-01`로 정규화됨을 확인
-  - fix landed locally and on `main`: [alert-ai-context.ts](/mnt/d/dev/openmanager-ai/src/components/dashboard/alert-ai-context.ts:1) 에서 AI prompt용 `serverName`이 `instance`의 `:port` suffix를 제거하도록 정규화
-  - targeted 회귀 테스트 추가 및 pass:
-    - [alert-ai-context.test.ts](/mnt/d/dev/openmanager-ai/src/components/dashboard/alert-ai-context.test.ts:1)
-    - [DashboardContent.test.tsx](/mnt/d/dev/openmanager-ai/src/components/dashboard/DashboardContent.test.tsx:293)
-  - release `v8.11.19` tag pushed (`d9e9f4537`), but production verification still returns `8.11.18`
-  - Vercel latest production deployment remains `dpl_7g1jwikybsmVbh2u8SgHDoGhTfPr` (`8.11.18` / commit `167417d50`)
-  - 다음 액션: GitLab semver tag pipeline `v8.11.19` 상태를 확인/재시도한 뒤 active-alert modal → sidebar/fullscreen handoff targeted production 재확인
+_(없음)_
 
 ---
 
@@ -38,6 +29,15 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-17 #107)
+- [x] active-alert `:9100` 포트 오염 근본 원인 수정 + targeted production QA 완료 (`v8.11.19`)
+  - **근본 원인**: `AlertManager.ts`, `MetricsAggregator.ts`, `otel-log-views.ts` 3곳에서 `:9100` suffix 하드코딩 생성 → `instance: server.serverId` (포트 없음)로 전체 수정
+  - **AIDebugPanel** 293줄 → 75줄 단순화 (Start+Check 2버튼 → 단일 "상태 확인", Log Level 섹션 제거)
+  - `server-data-transformer.ts` dead code (`_targetToRawServerData`) 제거
+  - 회귀 테스트 갱신: `MetricsAggregator.test.ts`, `otel-log-views.test.ts`, `monitoring-pipeline.test.ts`
+  - production `v8.11.19` 배포 확인 + `QA-20260417-0302` 기록 (`4/4` pass)
+  - detectAnomalies 직접 성공 확인: 실제 데이터(평균 64.9%→82% 급증) 기반 응답, 신뢰도 95%
 
 ### Completed (2026-04-17 #106)
 - [x] root layout font preload warning cleanup broad production QA 완료

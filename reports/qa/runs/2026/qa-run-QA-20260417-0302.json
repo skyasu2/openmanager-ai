@@ -1,0 +1,101 @@
+{
+  "runId": "QA-20260417-0302",
+  "recordedAt": "2026-04-17T05:39:27.161Z",
+  "recordedAtKst": "2026-04-17 14:39:27 KST",
+  "runTitle": "v8.11.19 active-alert :9100 fix targeted production QA",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_optoHir793ZW8PGSyP6Abghmedg1",
+    "deploymentUrl": "https://openmanager-3nl6zit3b-skyasus-projects.vercel.app",
+    "commitSha": "d9e9f45377c439ddc3f7031ad23c8b991f3cd4ec"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/dashboard (active alerts modal)",
+    "AI 사이드바 prefill handoff",
+    "detectAnomalies 도구 호출"
+  ],
+  "skippedSurfaces": [
+    "fullscreen AI",
+    "Reporter/Analyst direct",
+    "observability pack"
+  ],
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production now serves v8.11.19 and the active-alert targeted QA confirms the normalized direct detectAnomalies path works without :9100 prompt leakage.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-17T15:11:27+09:00",
+      "summary": "Targeted production follow-up after v8.11.19 deploy; effective 9.7924 USD, billed 0.0000 USD, no unexpected billed spike.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "v8.11.19 active-alert targeted pass evidence",
+      "path": "reports/qa/evidence/qa-20260417-v81119-active-alert-targeted-pass.md"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "gitlab-tag-pipeline-v81119-release-blocked",
+      "title": "Restore v8.11.19 semver tag deploy path before targeted production QA",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "GitLab semver tag deploy recovered and production now serves v8.11.19; targeted active-alert QA passed without :9100 prompt leakage.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production alias now serves buildVersion 8.11.19.",
+    "Active Alerts modal and AI sidebar prefill no longer include :9100 in the targeted path.",
+    "detectAnomalies direct execution succeeded against the intended server without all-server fallback."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Production deployment dpl_optoHir793ZW8PGSyP6Abghmedg1",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/optoHir793ZW8PGSyP6Abghmedg1"
+    }
+  ]
+}
