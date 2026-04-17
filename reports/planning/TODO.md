@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (OTel topology NFS SPOF slice 승인)
+**Last Updated**: 2026-04-18 KST (OTel topology NFS SPOF slice 완료)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| OTel topology improvement - NFS SPOF | Medium | approved | hour 02~04에 `storage-nfs-dc1-01` 단일 장애 징후 시나리오 추가. disk saturation + 원인 로그 + WAS latency cascade + timeseries sync. |
+| *(none)* | — | — | 현재 활성 작업 없음 |
 
 ---
 
@@ -31,6 +31,17 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-18 #124)
+- [x] OTel topology improvement - NFS SPOF 완료
+  - `hour-02~04`에 `storage-nfs-dc1-01` disk/cpu saturation과 `api-was-*` response duration cascade 추가
+  - `storage-nfs-dc1-01`, `api-was-*` 로그에 NFS 병목 원인 문구 추가
+  - `timeseries.json`의 같은 구간 WAS response duration 동기화
+  - `otel-fix.ts`, `otel-verify.ts`에 S7 계약 반영
+  - 검증:
+    - targeted: `npx vitest run tests/unit/otel-topology-nfs-spof.contract.test.ts`
+    - targeted: `npm run data:verify` (신규 S7 항목 통과, 기존 baseline 실패 2건은 유지: storage network range, ERROR 비율)
+    - root gate: `npm run type-check && npm run lint && npm run test:quick`
 
 ### Completed (2026-04-18 #123)
 - [x] OTel topology improvement - Redis cross-AZ latency 완료

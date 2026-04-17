@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Approved (slice) — Phase 1 `db-mysql-dc1-backup` realism, Phase 2-A `Redis cross-AZ latency` slice는 완료. 이번 승인 범위는 Phase 2-B `NFS SPOF`에 한정.
+> Status: Backlog — Phase 1 `db-mysql-dc1-backup` realism, Phase 2-A `Redis cross-AZ latency`, Phase 2-B `NFS SPOF` slice는 완료. 장기 증설과 baseline debt 정리가 남음.
 > Doc type: Reference
 > Last reviewed: 2026-04-17
 > Tags: otel-data, topology, infrastructure, data-quality
@@ -120,25 +120,35 @@ backup 전용으로 스펙 다운 (8c/32GB/1TB) + 역할 설명 명시.
   - `otel-fix.ts`, `otel-verify.ts`에 S7 계약 반영
   - storage network baseline debt, ERROR 비율 하한, 서버 수 증설은 이번 slice 제외
 
+### 이번 slice 완료 결과 (`2026-04-18`, Phase 2-B)
+
+- `hour-02~04`의 `storage-nfs-dc1-01`은 disk/cpu saturation과 NFS SPOF 원인 로그를 가진다.
+- `api-was-dc1-01~03`은 같은 구간에 NFS 병목 전파를 반영한 response duration spike와 관련 로그를 가진다.
+- `timeseries.json`은 위 WAS latency spike를 같은 구간에 반영한다.
+- `otel-fix.ts`와 `otel-verify.ts`는 위 S7 계약을 재생성/검증한다.
+- 이번 slice 범위 밖의 기존 `data:verify` 실패 2건은 유지된다.
+  - storage network range
+  - ERROR 비율 하한
+
 ### Phase 1: db-backup 역할 명확화 (즉시)
 
-- [ ] `resource-catalog.json`에서 `db-mysql-dc1-backup` 스펙 조정
+- [x] `resource-catalog.json`에서 `db-mysql-dc1-backup` 스펙 조정
   - `host.cpu.count`: 16 → 8
   - `host.memory.size`: 64GB → 32GB
   - `server.role` 설명 주석 추가: "cold standby / daily snapshot target"
-- [ ] `otel-fix.ts` S1 시나리오에서 backup 서버 메트릭 패턴 현실화
+- [x] `otel-fix.ts` S1 시나리오에서 backup 서버 메트릭 패턴 현실화
   - CPU/메모리 사용률을 primary보다 낮게 (백업 배치 시간대만 스파이크)
-- [ ] `otel-verify.ts`에 backup 서버 메트릭 범위 검증 추가
+- [x] `otel-verify.ts`에 backup 서버 메트릭 범위 검증 추가
 
 ### Phase 2: 시나리오 취약점 표현 (단기)
 
-- [ ] **S6 추가**: Redis cross-AZ 레이턴시 시나리오 (AZ3 api-was가 AZ1 Redis 접근 시 응답 지연)
+- [x] **S6 추가**: Redis cross-AZ 레이턴시 시나리오 (AZ3 api-was가 AZ1 Redis 접근 시 응답 지연)
   - `hour-13~15` 슬롯에 api-was-dc1-03의 응답시간 spike 추가
   - Redis 관련 로그에 "connection to remote AZ cache" 경고 패턴 추가
-- [ ] **S7 추가**: NFS 단일 장애 징후 시나리오 (I/O wait 급증)
+- [x] **S7 추가**: NFS 단일 장애 징후 시나리오 (I/O wait 급증)
   - `hour-02~04` 슬롯에 storage-nfs-dc1-01 disk I/O 포화 + 연쇄 WAS 응답 지연
   - NFS 의존 서버들의 디스크 메트릭에 I/O wait 반영
-- [ ] `otel-verify.ts` 검증 항목 S6, S7 추가
+- [x] `otel-verify.ts` 검증 항목 S6, S7 추가
 
 ### Phase 3: 서버 추가 (장기, 필요 시)
 
