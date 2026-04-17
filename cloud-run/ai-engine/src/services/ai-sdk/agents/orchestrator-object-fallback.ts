@@ -144,6 +144,25 @@ function parseTextAsJson(raw: string): unknown {
   return JSON.parse(normalized);
 }
 
+function selectNextStructuredOutputProvider(
+  options: StructuredOutputFallbackOptions<ZodTypeAny>,
+  attemptedProviders: Set<ProviderName>
+) {
+  if (!options.providerFallback) {
+    return null;
+  }
+
+  return selectTextModel(
+    options.providerFallback.agentLabel,
+    options.providerFallback.providerOrder,
+    {
+      excludeProviders: Array.from(attemptedProviders),
+      cbPrefix: options.providerFallback.cbPrefix,
+      requiredCapabilities: { requireStructuredOutput: true },
+    }
+  );
+}
+
 export async function generateObjectWithFallback<T extends ZodTypeAny>(
   options: StructuredOutputFallbackOptions<T>
 ): Promise<StructuredOutputResult<Awaited<T['_output']>>> {
@@ -185,14 +204,9 @@ export async function generateObjectWithFallback<T extends ZodTypeAny>(
           throw error;
         }
 
-        const nextModelResult = selectTextModel(
-          options.providerFallback.agentLabel,
-          options.providerFallback.providerOrder,
-          {
-            excludeProviders: Array.from(attemptedProviders),
-            cbPrefix: options.providerFallback.cbPrefix,
-            requiredCapabilities: { requireStructuredOutput: true },
-          }
+        const nextModelResult = selectNextStructuredOutputProvider(
+          options,
+          attemptedProviders
         );
 
         if (!nextModelResult) {
@@ -224,14 +238,14 @@ export async function generateObjectWithFallback<T extends ZodTypeAny>(
         .filter(Boolean)
         .join('\n\n');
 
-      const fallbackResult = await generateText({
-        model: currentModel,
-        system: options.system,
-        prompt: fallbackPrompt,
-        temperature: options.temperature,
-      });
-
       try {
+        const fallbackResult = await generateText({
+          model: currentModel,
+          system: options.system,
+          prompt: fallbackPrompt,
+          temperature: options.temperature,
+        });
+
         const parsed = parseTextAsJson(
           typeof fallbackResult.text === 'string' ? fallbackResult.text : ''
         );
@@ -249,6 +263,26 @@ export async function generateObjectWithFallback<T extends ZodTypeAny>(
           usage: coerceUsage(fallbackResult.usage as UsageLike),
         };
       } catch (parseError) {
+        if (shouldFallbackProvider(parseError)) {
+          const nextModelResult = selectNextStructuredOutputProvider(
+            options,
+            attemptedProviders
+          );
+
+          if (nextModelResult) {
+            attemptedProviders.add(nextModelResult.provider as ProviderName);
+            logger.warn(
+              `[${options.operation}] Text fallback failed on ${currentProvider ?? 'unknown'}/${currentModelId ?? 'unknown'}, ` +
+                `falling back to ${nextModelResult.provider}/${nextModelResult.modelId}`
+            );
+
+            currentModel = nextModelResult.model;
+            currentProvider = nextModelResult.provider as ProviderName;
+            currentModelId = nextModelResult.modelId;
+            continue;
+          }
+        }
+
         const originalMessage = error instanceof Error ? error.message : String(error);
         const parseMessage =
           parseError instanceof Error ? parseError.message : String(parseError);
