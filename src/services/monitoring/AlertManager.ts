@@ -92,7 +92,7 @@ export class AlertManager {
             const alert: Alert = {
               id: alertId,
               serverId: server.serverId,
-              instance: `${server.serverId}:9100`,
+              instance: server.serverId,
               labels: {
                 server_type: server.serverType,
                 location: server.location,
