@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Approved (slice) — 이번 승인 범위는 Phase 1 중 `db-mysql-dc1-backup` realism 정렬에 한정.
+> Status: Backlog — Phase 1 `db-mysql-dc1-backup` realism slice는 완료. 남은 범위는 Phase 2 취약점 시나리오, Phase 3 서버 추가, 기존 verify baseline debt 정리.
 > Doc type: Reference
 > Last reviewed: 2026-04-17
 > Tags: otel-data, topology, infrastructure, data-quality
@@ -80,6 +80,15 @@ backup 전용으로 스펙 다운 (8c/32GB/1TB) + 역할 설명 명시.
   - `hour-23` backup 메트릭을 `disk 중심 spike + 낮은 cpu/memory` 패턴으로 조정
   - `scripts/data/otel-fix.ts`와 `scripts/data/otel-verify.ts`에 위 계약 반영
   - Redis cross-AZ / NFS SPOF 시나리오 추가, 서버 수 증설은 이번 slice 제외
+
+### 이번 slice 완료 결과 (`2026-04-18`, Phase 1-A)
+
+- `resource-catalog.json`의 `db-mysql-dc1-backup`은 이제 `8c / 32GB / 1TB` 스펙과 `cold-standby / daily snapshot target` 설명 메타데이터를 가진다.
+- `hour-23`와 `timeseries.json`의 backup 메트릭은 `disk-heavy / low-cpu / low-memory` 패턴으로 정렬됐다.
+- `scripts/data/otel-fix.ts`는 위 backup profile을 재생성할 수 있고, `scripts/data/otel-verify.ts`는 backup realism 계약을 검증한다.
+- 이번 slice 범위 밖의 기존 `data:verify` 실패 2건은 유지된다.
+  - storage network range
+  - ERROR 비율 하한
 
 ### Phase 1: db-backup 역할 명확화 (즉시)
 

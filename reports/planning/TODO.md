@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (OTel topology backup realism slice 승인)
+**Last Updated**: 2026-04-18 KST (OTel topology backup realism slice 완료)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| OTel topology improvement - backup realism | Medium | approved | `db-mysql-dc1-backup`을 cold-standby/daily snapshot target으로 명확화. 스펙 다운 + hour-23 메트릭 현실화 + verify 추가. |
+| 없음 | — | — | 다음 후보: `Cloud Run 정책` 재평가 또는 `OTel 토폴로지 개선` Phase 2 취약점 시나리오 |
 
 ---
 
@@ -31,6 +31,17 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-18 #122)
+- [x] OTel topology improvement - backup realism 완료
+  - `db-mysql-dc1-backup`을 `8c / 32GB / 1TB` backup 노드로 현실화
+  - `server.purpose=cold-standby`, `server.notes=daily snapshot target` 메타데이터 추가
+  - `hour-23` backup 메트릭을 `disk-heavy / low-cpu / low-memory` 패턴으로 조정하고 `timeseries.json`에도 동기화
+  - `otel-fix.ts` 시나리오와 `otel-verify.ts` backup realism 검증 항목 추가
+  - 검증:
+    - targeted: `npx vitest run tests/unit/otel-topology-backup.contract.test.ts`
+    - targeted: `npm run data:verify` (backup realism 항목 통과, 기존 baseline 실패 2건은 유지: storage network range, ERROR 비율)
+    - root gate: `npm run type-check && npm run lint && npm run test:quick`
 
 ### Completed (2026-04-18 #121)
 - [x] AI Response Visibility - retry limiter alignment 완료
