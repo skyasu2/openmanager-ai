@@ -20,6 +20,7 @@ vi.mock('next/server', async () => {
 
 vi.mock('@/lib/auth/api-auth', () => ({
   withAuth: (handler: unknown) => handler,
+  getAPIAuthContext: () => null,
 }));
 
 vi.mock('@/utils/security/csrf', () => ({
