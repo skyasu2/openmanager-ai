@@ -139,6 +139,47 @@ describe('useChatHistory', () => {
     expect(onMetadataRestore).not.toHaveBeenCalled();
   });
 
+  it('restores explicit empty handoff history from stored assistant metadata', () => {
+    localStorage.setItem(
+      CHAT_HISTORY_KEY,
+      JSON.stringify({
+        sessionId: 'session-empty-handoff',
+        messages: [
+          {
+            id: 'assistant-1',
+            role: 'assistant',
+            content: '직접 응답입니다.',
+            timestamp: '2026-04-17T10:00:05.000Z',
+            metadata: {
+              handoffHistory: [],
+            },
+          },
+        ],
+        lastUpdated: new Date().toISOString(),
+      })
+    );
+
+    const setMessages = vi.fn();
+    const onMetadataRestore = vi.fn();
+
+    renderHook(() =>
+      useChatHistory({
+        sessionId: 'session-current',
+        isMessagesEmpty: true,
+        enhancedMessages: [],
+        setMessages,
+        isLoading: false,
+        onMetadataRestore,
+      })
+    );
+
+    expect(onMetadataRestore).toHaveBeenCalledWith({
+      'assistant-1': {
+        handoffHistory: [],
+      },
+    });
+  });
+
   it('prefers richer seed messages from sidebar snapshot over local history', () => {
     localStorage.setItem(
       CHAT_HISTORY_KEY,

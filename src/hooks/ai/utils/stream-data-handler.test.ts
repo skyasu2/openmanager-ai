@@ -444,7 +444,7 @@ describe('handleStreamDataPart', () => {
       );
     });
 
-    it('should not persist assistant data when no structured view or tool data is available', () => {
+    it('should persist explicit empty handoff history when no handoff events occurred', () => {
       const part: StreamDataPart = {
         type: 'data-done',
         data: { ragSources: [] },
@@ -452,7 +452,12 @@ describe('handleStreamDataPart', () => {
 
       handleStreamDataPart(part, callbacks);
 
-      expect(callbacks.setDeferredAssistantMetadata).not.toHaveBeenCalled();
+      expect(callbacks.setDeferredAssistantMetadata).toHaveBeenCalledWith(
+        'msg-2',
+        {
+          handoffHistory: [],
+        }
+      );
       expect(callbacks.setDeferredAssistantToolResults).not.toHaveBeenCalled();
     });
 

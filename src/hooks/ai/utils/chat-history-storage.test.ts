@@ -199,6 +199,28 @@ describe('chat-history-storage', () => {
         },
       });
     });
+
+    it('persists explicit empty handoff history for assistant messages', () => {
+      const messages = [
+        {
+          ...makeMessage({
+            id: 'assistant-empty-handoff',
+            role: 'assistant',
+            content: '직접 응답',
+          }),
+          metadata: {
+            handoffHistory: [],
+          },
+        },
+      ];
+
+      saveChatHistory('s5', messages as never[]);
+
+      const stored = JSON.parse(localStorage.getItem(CHAT_HISTORY_KEY)!);
+      expect(stored.messages[0].metadata).toEqual({
+        handoffHistory: [],
+      });
+    });
   });
 
   // ── clearChatHistory ─────────────────────────────────────────────
