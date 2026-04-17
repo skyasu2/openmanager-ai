@@ -1,12 +1,12 @@
 > Owner: project
-> Status: Backlog — `handoff persistence contract`, `429 UX source-hardening`, `Job Queue agent-path` slice는 완료. `limiter 정책 재정비`는 backlog 유지.
+> Status: Backlog — `handoff persistence contract`, `429 UX source-hardening`, `Job Queue agent-path`, `/api/ai/jobs` POST gateway limiter alignment slice는 완료. limiter 정책 재정비 잔여는 backlog 유지.
 > Doc type: Plan
 > Last reviewed: 2026-04-17
 > Tags: ai,ux,rate-limit,visibility
 
 # AI Response Visibility & Rate Limit Plan (2026-04-08)
 
-- 상태: **Backlog (partial complete)** — AnalysisBasisBadge 중심 visibility 개선과 `handoff persistence contract`, `429 UX source-hardening`, `Job Queue agent-path` slice는 완료됐다. `limiter 정책 재정비`는 backlog다.
+- 상태: **Backlog (partial complete)** — AnalysisBasisBadge 중심 visibility 개선과 `handoff persistence contract`, `429 UX source-hardening`, `Job Queue agent-path`, `/api/ai/jobs` POST gateway limiter alignment slice는 완료됐다. limiter 정책 재정비의 잔여 범위는 backlog다.
 - 작성일: 2026-04-08 | 상태 갱신: 2026-04-17
 - TODO.md 연결: Backlog > AI Response Visibility & Rate Limit
 - 목표: AI 질의 과정의 가시성을 실제 실행 흐름과 맞추고, rate limit을 사용자에게 설명 가능한 제약으로 바꾼다.
@@ -34,7 +34,23 @@
 
 ### 아직 남은 범위
 
-- 프론트/Cloud Run limiter 정책을 사용자 체감 기준으로 다시 맞추는 작업
+- 프론트/Cloud Run limiter 정책의 잔여 범위(daily/user-key/Cloud Run 정책)를 사용자 체감 기준으로 다시 맞추는 작업
+
+### 이번 승인 slice (`2026-04-18`)
+
+- 목표: `/api/ai/jobs` POST 경로의 프론트 gateway minute limit을 Cloud Run `/api/jobs*` minute limit과 맞춰, 중첩 limiter로 인한 체감 한도 drift를 줄인다.
+- 범위:
+  - 프론트 전용 limiter를 `job creation` 경로에 분리
+  - `/api/ai/jobs` POST는 해당 limiter를 사용
+  - `/api/ai/supervisor/stream/v2` 및 기타 경로 정책은 이번 slice에서 변경하지 않음
+  - daily limit / 사용자 key 재설계 / Cloud Run 정책 변경은 backlog 유지
+
+### 이번 slice 완료 결과 (`2026-04-18`)
+
+- 프론트 gateway에 `aiJobCreation` limiter를 분리했다.
+- `/api/ai/jobs` POST는 기존 `aiAnalysis(10/min)` 대신 `aiJobCreation(5/min)`을 사용한다.
+- 이로써 job creation 경로는 Cloud Run `/api/jobs*` minute limit과 같은 수치에서 edge fail-fast 한다.
+- 이번 slice는 minute window 정렬만 다루며, daily limit / 사용자 key / Cloud Run 정책 변경은 후속 backlog로 남긴다.
 
 ## 배경
 
@@ -230,6 +246,7 @@
 ### Phase 5. Rate Limit 정책 재정비
 
 - [ ] 프론트와 Cloud Run의 중첩 limit을 표로 정리하고, 실제 사용자 체감 기준으로 재설계한다.
+- [x] `/api/ai/jobs` POST gateway minute limit을 Cloud Run `/api/jobs*`와 정렬한다.
 - [ ] 최소 검토 항목:
   - `/api/ai/supervisor/stream/v2`
   - `/api/ai/jobs`

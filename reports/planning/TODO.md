@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-17 KST (AI Response Visibility Job Queue agent-path slice 정리 완료)
+**Last Updated**: 2026-04-18 KST (AI Response Visibility limiter alignment slice 완료)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| 없음 | — | — | 다음 후보: `AI Response Visibility` 후속(`limiter 정책 재정비`) 또는 `OTel 토폴로지 개선` 재평가 |
+| 없음 | — | — | 다음 후보: `AI Response Visibility` 후속(`limiter 정책 재정비` 잔여: daily/user-key/Cloud Run 정책) 또는 `OTel 토폴로지 개선` 재평가 |
 
 ---
 
@@ -31,6 +31,17 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-18 #117)
+- [x] AI Response Visibility - limiter alignment (`/api/ai/jobs` POST) 완료
+  - 프론트 gateway에 `aiJobCreation` limiter 추가 (`5/min`, daily `100`)
+  - `/api/ai/jobs` POST가 기존 `aiAnalysis(10/min)` 대신 `aiJobCreation(5/min)`을 사용하도록 정렬
+  - Cloud Run `/api/jobs*`의 stricter minute window와 edge fail-fast 정책을 맞춰 중첩 limiter 체감 drift를 축소
+  - TDD 커밋:
+    - failing test: `/api/ai/jobs` POST가 `5/min` limiter를 바인딩해야 한다는 route contract 고정
+  - 검증:
+    - targeted: `npx vitest run src/app/api/ai/jobs/route.rate-limit-contract.test.ts src/lib/security/rate-limiter.test.ts src/app/api/ai/jobs/route.test.ts`
+    - root gate: `npm run type-check && npm run lint && npm run test:quick && npm run test:contract`
 
 ### Completed (2026-04-17 #115)
 - [x] AI Response Visibility - 429 UX source-hardening 완료
