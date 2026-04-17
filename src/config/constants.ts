@@ -234,10 +234,9 @@ export const OBSERVABILITY = {
   },
 } as const;
 
-// 🔌 MCP 서버 설정 (SSOT - registry-core.yaml 기준)
-// 참조: config/ai/registry-core.yaml mcp-servers.development
+// 🔌 Codex MCP 서버 설정 (SSOT - .codex/config.toml 기준)
 export const MCP_SERVERS = {
-  // 활성화된 MCP 서버 목록 (10/10, 2026-03-30 동기화)
+  // 활성화된 MCP 서버 목록 (9/9, 2026-04-17 동기화)
   ACTIVE: [
     'vercel', // 배포 관리
     'supabase', // DB 관리
@@ -247,8 +246,12 @@ export const MCP_SERVERS = {
     'github', // 저장소 관리
     'sequential-thinking', // 복잡한 추론
     'stitch', // Google Stitch AI UI Design (2026-01-27)
-    'storybook', // 컴포넌트 문서·스토리 조회 (2026-02-19)
-    'lighthouse', // Core Web Vitals + Performance/A11y/SEO (2026-03-30)
+    'diagram-converter', // Mermaid 렌더/검증 (2026-04-17)
+  ] as const,
+
+  // 온디맨드 MCP 서버 (상시 등록 아님)
+  ON_DEMAND: [
+    'storybook', // 컴포넌트 문서·스토리 조회 (Storybook dev 필요)
   ] as const,
 
   // 제거된 MCP 서버 (2026-02-14 업데이트)
@@ -261,10 +264,11 @@ export const MCP_SERVERS = {
     'brave-search', // built-in WebSearch로 대체
     'tavily', // built-in WebSearch로 대체
     'serena', // Claude Code built-in 도구(Read/Edit/Grep/Glob)로 대체
+    'lighthouse', // MCP 제거, CLI 스크립트(npm run lighthouse:*)로 유지
   ] as const,
 
   // 서버 수
-  TOTAL_ACTIVE: 10,
+  TOTAL_ACTIVE: 9,
 } as const;
 
 // MCP 서버 목록 타입 (타입 안전성)

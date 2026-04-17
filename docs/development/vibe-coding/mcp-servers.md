@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active Supporting
 > Doc type: Reference
-> Last reviewed: 2026-04-10
+> Last reviewed: 2026-04-17
 > Canonical: docs/development/vibe-coding/mcp-servers.md
 > Tags: vibe-coding,mcp,configuration
 
@@ -507,7 +507,6 @@ cat > .claude/settings.local.json << 'EOF'
       "mcp__sequential-thinking__*",
       "mcp__stitch__*",
       "mcp__diagram-converter-mcp__*",
-      "mcp__lighthouse__*"
     ]
   },
   "enableAllProjectMcpServers": true,
@@ -580,4 +579,4 @@ Claude: [context7, supabase 등 사용 가능 여부 표시]
 
 ---
 
-_Last Updated: 2026-04-17 (lighthouse 추가, diagram-converter-mcp 이름 정정, supabase-db 명칭 통일, storybook 온디맨드 명시)_
+_Last Updated: 2026-04-17 (lighthouse MCP 제거 반영, diagram-converter-mcp 이름 정정, supabase-db 명칭 통일, storybook 온디맨드 명시)_

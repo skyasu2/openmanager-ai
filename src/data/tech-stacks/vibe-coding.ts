@@ -22,7 +22,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       importance: 'high',
       description:
         'Anthropic의 Model Context Protocol. AI가 외부 도구, 데이터 소스, API에 표준화된 방식으로 접근하는 오픈 프로토콜. 다양한 MCP 서버로 AI 기능 확장',
-      implementation: `→ ${MCP_SERVERS.TOTAL_ACTIVE}개 서버 연동: vercel(배포), supabase(DB), context7(문서), playwright(E2E), next-devtools(Next.js진단), github(저장소), sequential-thinking(추론), stitch(UI디자인), storybook(컴포넌트문서), lighthouse(성능/A11y/SEO)`,
+      implementation: `→ ${MCP_SERVERS.TOTAL_ACTIVE}개 서버 상시 연동: vercel(배포), supabase(DB), context7(문서), playwright(E2E), next-devtools(Next.js진단), github(저장소), sequential-thinking(추론), stitch(UI디자인), diagram-converter(Mermaid). storybook은 온디맨드, Lighthouse는 CLI 스크립트로 사용`,
       status: 'active',
       icon: '🔌',
       tags: ['MCP', 'Protocol', '확장기능'],
