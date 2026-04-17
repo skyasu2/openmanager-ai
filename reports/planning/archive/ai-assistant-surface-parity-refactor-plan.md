@@ -1,12 +1,12 @@
 > Owner: project
-> Status: In Progress
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-04-17
 > Tags: ai-assistant,sidebar,fullscreen,analysis-mode,state-handoff,refactor
 
 # AI Assistant Surface Parity Refactor Plan
 
-- 상태: **In Progress** — Task 0~3·5 완료(`dc00e2487`). 잔여: Task 4(`AIWorkspace mode="sidebar"` 레거시 경로 제거)
+- 상태: **Completed** — 전체 Task 완료. Task 4: `ce0d3a659` (mode="sidebar" 제거, -131줄)
 - 작성일: 2026-04-17
 - TODO.md 연결: Backlog > AI Assistant Surface Parity Refactor
 - 목표: AI 사이드바와 AI 전체 페이지가 같은 채팅 상태와 같은 제어 가능성을 가지도록 surface wiring을 정리하고, 진입 경로별 상태 손실을 제거한다.
@@ -169,9 +169,8 @@
   - 완료 기준: `useAIEntryController.ts` 신규 생성, `DashboardClient`/`AIAssistantIconPanel` 연결
 - [x] Task 3 — fullscreen parity 복구 (`dc00e2487`)
   - 완료 기준: `AIWorkspace`에 `analysisMode`/`onSelectAnalysisMode` 연결, fullscreen entry state 소비
-- [ ] Task 4 — legacy sidebar path 정리
-  - 완료 기준: `AIWorkspace mode="sidebar"` 제거 또는 deprecated path로 고정, 신규 기능 연결 금지
-  - 현재 상태: `mode="sidebar"` 분기가 deprecated 주석으로 격리됨 — 제거는 미착수
+- [x] Task 4 — legacy sidebar path 정리 (`ce0d3a659`)
+  - 완료 기준: `AIWorkspace mode="sidebar"` 렌더 분기 완전 제거, props를 `mode?: never`로 봉인
 - [x] Task 5 — verification
   - 완료 기준: 관련 unit test 50개 통과 (3 파일), type-check 통과
 
@@ -193,7 +192,7 @@
 - [x] entry controller가 단일 경로로 정리된다.
 - [x] parity 회귀 테스트가 추가된다. (50 tests pass)
 - [x] `npm run type-check` 통과
-- [ ] `AIWorkspace mode="sidebar"` 레거시 경로 제거 (Task 4, 잔여)
+- [x] `AIWorkspace mode="sidebar"` 레거시 경로 제거 (`ce0d3a659`)
 - [ ] 관련 테스트 통과
 
 ## 12. 리스크와 대응
