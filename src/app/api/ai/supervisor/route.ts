@@ -4,7 +4,8 @@
  * @endpoint POST /api/ai/supervisor
  *
  * Architecture:
- * - Primary: Cloud Run ai-engine (Multi-Agent System)
+ * - Legacy support route: JSON/text proxy used by local dev fallback, smoke, cache/plain callers
+ * - Current primary streaming route: /api/ai/supervisor/stream/v2
  * - Fallback: Simple error response
  * - All AI processing handled by Cloud Run
  *
@@ -59,6 +60,7 @@ import {
   applySanitizedQueryToMessages,
   extractAndValidateQuery,
 } from './request-utils';
+import { applyLegacySupervisorRouteHeaders } from './route-contract';
 import { requestSchema } from './schemas';
 import { buildServerContextMessage } from './server-context';
 import { resolveScopedSessionIds } from './session-owner';
@@ -238,27 +240,33 @@ export const POST = withRateLimit(
             const wantsJsonOnly = acceptHeader === 'application/json';
 
             if (wantsJsonOnly) {
-              return NextResponse.json(
-                { ...cacheResult.data, _cached: true, traceId },
-                {
-                  headers: {
-                    'X-Session-Id': sessionId,
-                    'X-Cache': 'HIT',
-                    [observabilityConfig.traceIdHeader]: traceId,
-                  },
-                }
+              return applyLegacySupervisorRouteHeaders(
+                NextResponse.json(
+                  { ...cacheResult.data, _cached: true, traceId },
+                  {
+                    headers: {
+                      'X-Session-Id': sessionId,
+                      'X-Cache': 'HIT',
+                      [observabilityConfig.traceIdHeader]: traceId,
+                    },
+                  }
+                ),
+                'json'
               );
             }
-            return new NextResponse(cacheResult.data.response, {
-              headers: {
-                'Content-Type': 'text/plain; charset=utf-8',
-                'Cache-Control': 'no-cache',
-                'X-Session-Id': sessionId,
-                'X-Cache': 'HIT',
-                'X-Backend': 'cache',
-                [observabilityConfig.traceIdHeader]: traceId,
-              },
-            });
+            return applyLegacySupervisorRouteHeaders(
+              new NextResponse(cacheResult.data.response, {
+                headers: {
+                  'Content-Type': 'text/plain; charset=utf-8',
+                  'Cache-Control': 'no-cache',
+                  'X-Session-Id': sessionId,
+                  'X-Cache': 'HIT',
+                  'X-Backend': 'cache',
+                  [observabilityConfig.traceIdHeader]: traceId,
+                },
+              }),
+              'text'
+            );
           }
           logger.info(`📦 [Supervisor] Cache MISS`);
         } else {
@@ -359,16 +367,19 @@ export const POST = withRateLimit(
           query: userQuery,
         });
 
-        return NextResponse.json(
-          { ...fallback, sessionId, _backend: 'fallback', traceId },
-          {
-            headers: {
-              'Cache-Control': 'no-store, no-cache, must-revalidate',
-              'X-Session-Id': sessionId,
-              'Retry-After': '30',
-              [observabilityConfig.traceIdHeader]: traceId,
-            },
-          }
+        return applyLegacySupervisorRouteHeaders(
+          NextResponse.json(
+            { ...fallback, sessionId, _backend: 'fallback', traceId },
+            {
+              headers: {
+                'Cache-Control': 'no-store, no-cache, must-revalidate',
+                'X-Session-Id': sessionId,
+                'Retry-After': '30',
+                [observabilityConfig.traceIdHeader]: traceId,
+              },
+            }
+          ),
+          'json'
         );
       } catch (error) {
         return handleSupervisorError(error);

@@ -432,7 +432,7 @@ precomputed-state.ts → buildPrecomputedStates()
 
 | 엔드포인트 | 메서드 | 역할 |
 |-----------|--------|------|
-| `/api/ai/supervisor` | POST | 메인 AI 채팅 (SSE 스트리밍) |
+| `/api/ai/supervisor` | POST | 레거시 JSON/text 프록시 (local dev fallback, cache/plain callers, smoke/contract anchor) |
 | `/api/ai/embedding[/batch]` | POST | 텍스트 임베딩 (Mistral) |
 | `/api/ai/generate[/stream]` | POST | 독립 텍스트 생성 |
 | `/api/ai/graphrag` | POST | GraphRAG 지식 검색 |

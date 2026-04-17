@@ -63,7 +63,7 @@
 | `/api/ai/jobs/[id]` | `GET, DELETE` | `src/app/api/ai/jobs/[id]/route.ts` |
 | `/api/ai/jobs/[id]/stream` | `GET` | `src/app/api/ai/jobs/[id]/stream/route.ts` |
 | `/api/ai/status` | `GET, POST` | `src/app/api/ai/status/route.ts` |
-| `/api/ai/supervisor` | `POST` | `src/app/api/ai/supervisor/route.ts` |
+| `/api/ai/supervisor` | `POST` | `src/app/api/ai/supervisor/route.ts` - legacy JSON/text proxy |
 | `/api/ai/supervisor/stream/v2` | `GET, POST` | `src/app/api/ai/supervisor/stream/v2/route.ts` |
 | `/api/ai/wake-up` | `POST` | `src/app/api/ai/wake-up/route.ts` |
 

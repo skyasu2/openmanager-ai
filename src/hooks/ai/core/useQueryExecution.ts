@@ -265,6 +265,8 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
             window.location.hostname
           );
 
+        // Legacy `/api/ai/supervisor`는 제거 대상이 아니라 local dev JSON fallback용으로만 유지.
+        // Primary streaming contract는 `/api/ai/supervisor/stream/v2`.
         const shouldUseLocalDevLegacyFallback =
           process.env.NODE_ENV === 'development' &&
           isLocalDevelopmentHost &&

@@ -146,12 +146,12 @@ graph TB
 ```
 1. User → AI Sidebar → 질의 입력
 2. src/components/ai-sidebar/EnhancedAIChat.tsx
-3. useAIChatCore() → POST /api/ai/supervisor
-4. /api/ai/supervisor/route.ts:
+3. useHybridAIQuery() 기본 경로 → POST /api/ai/supervisor/stream/v2
+4. /api/ai/supervisor/stream/v2/route.ts:
    a. Auth 검증 (NextAuth session)
    b. Prompt injection guard
-   c. CLOUD_RUN_ENABLED 확인
-   d. Proxy → Cloud Run (X-API-Key header)
+   c. normalized message shaping + resumable stream 관리
+   d. Proxy → Cloud Run UIMessageStream v2 (X-API-Key header)
 5. Cloud Run:
    a. cloud-run/ai-engine/src/routes/supervisor.ts → 수신
    b. Supervisor: 질의 복잡도 판단 (Single vs Multi-agent)
@@ -160,11 +160,14 @@ graph TB
    e. finalAnswer tool 종료 신호로 응답 완료
 6. UIMessageStream → Vercel Proxy → Browser
 7. 스트리밍 응답 렌더링 (TypewriterMarkdown)
+
+> 참고: `/api/ai/supervisor`는 아직 삭제되지 않았지만, 현재는 local dev JSON fallback 및 plain/cache caller용 legacy proxy로 유지됩니다.
 ```
 
 **핵심 파일 경로**:
-- `src/hooks/ai/useAIChatCore.ts`
-- `src/app/api/ai/supervisor/route.ts`
+- `src/hooks/ai/useHybridAIQuery.ts`
+- `src/app/api/ai/supervisor/stream/v2/route.ts`
+- `src/app/api/ai/supervisor/route.ts` (legacy fallback)
 - `cloud-run/ai-engine/src/routes/supervisor.ts`
 - `cloud-run/ai-engine/src/services/ai-sdk/supervisor.ts`
 - `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator.ts`
