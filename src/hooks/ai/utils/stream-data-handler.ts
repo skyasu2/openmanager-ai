@@ -241,10 +241,16 @@ export function handleStreamDataPart(
     const traceId = extractTraceIdFromDoneData(doneData);
     const toolsCalled = normalizeToolNames(doneData?.toolsCalled);
     const analysisMode = extractAnalysisModeFromDoneData(doneData);
+    const normalizedHandoffHistory = normalizeHandoffHistory(
+      pendingMessageMetadata.handoffHistory
+    );
     const nextMessageMetadata = {
       ...(traceId && { traceId }),
       ...(toolsCalled.length > 0 && { toolsCalled }),
       ...(analysisMode && { analysisMode }),
+      ...(normalizedHandoffHistory && {
+        handoffHistory: normalizedHandoffHistory,
+      }),
       ...(structuredView && {
         assistantResponseView: structuredView,
       }),
@@ -255,6 +261,7 @@ export function handleStreamDataPart(
       traceId ||
       toolsCalled.length > 0 ||
       analysisMode ||
+      normalizedHandoffHistory !== undefined ||
       pendingToolResults.length > 0 ||
       Object.keys(pendingMessageMetadata).length > 0
     ) {

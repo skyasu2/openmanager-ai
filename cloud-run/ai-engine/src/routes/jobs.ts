@@ -396,7 +396,7 @@ async function processJobSynchronously({
       metadata: {
         ...(analysisMode && { analysisMode }),
         ...(traceId && { traceId }),
-        ...(handoffs.length > 0 && { handoffs }),
+        handoffs,
         ...(toolResultSummaries && toolResultSummaries.length > 0 && {
           toolResultSummaries,
         }),

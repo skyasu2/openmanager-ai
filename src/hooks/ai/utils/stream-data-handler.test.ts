@@ -483,6 +483,7 @@ describe('handleStreamDataPart', () => {
       expect(callbacks.setDeferredAssistantMetadata).not.toHaveBeenCalled();
       expect(callbacks.setPendingMessageMetadata).toHaveBeenCalledWith({
         toolsCalled: ['getServerMetrics'],
+        handoffHistory: [],
         assistantResponseView: {
           summary: '요약',
           details: null,
@@ -550,6 +551,7 @@ describe('handleStreamDataPart', () => {
       expect(callbacks.setPendingMessageMetadata).toHaveBeenCalledWith({
         traceId: 'trace-latest-assistant',
         toolsCalled: ['getServerMetrics'],
+        handoffHistory: [],
         assistantResponseView: {
           summary: '최신 응답 요약',
           details: null,

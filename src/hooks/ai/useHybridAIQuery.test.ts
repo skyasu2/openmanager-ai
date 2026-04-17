@@ -17,7 +17,11 @@ import {
   analyzeQueryComplexity,
   calculateDynamicTimeout,
 } from '@/lib/ai/utils/query-complexity';
-import { mergeFinishedAssistantIntoMessages } from './useHybridAIQuery';
+import type { AsyncQueryResult } from './useAsyncAIQuery';
+import {
+  buildAssistantMessageFromAsyncResult,
+  mergeFinishedAssistantIntoMessages,
+} from './useHybridAIQuery';
 
 describe('useHybridAIQuery - 쿼리 복잡도 기반 모드 선택', () => {
   describe('쿼리 복잡도 분류', () => {
@@ -298,6 +302,30 @@ describe('mergeFinishedAssistantIntoMessages', () => {
     expect((mergedMessages[0] as UIMessage).metadata).toMatchObject({
       traceId: 'fallback-trace-456',
       handoffHistory: [{ from: 'supervisor', to: 'reporter' }],
+    });
+  });
+});
+
+describe('buildAssistantMessageFromAsyncResult', () => {
+  it('preserves explicit empty handoff history from async job results', () => {
+    const result: AsyncQueryResult = {
+      success: true,
+      response: '직접 응답입니다.',
+      handoffHistory: [],
+    };
+
+    const message = buildAssistantMessageFromAsyncResult(
+      result,
+      () => 'assistant-job-1'
+    );
+
+    expect(message).toMatchObject({
+      id: 'assistant-job-1',
+      role: 'assistant',
+      content: '직접 응답입니다.',
+      metadata: {
+        handoffHistory: [],
+      },
     });
   });
 });

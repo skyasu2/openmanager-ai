@@ -150,6 +150,48 @@ describe('Jobs Routes', () => {
       );
     });
 
+    it('handoff가 없어도 빈 handoffs 배열을 metadata에 저장한다', async () => {
+      vi.mocked(executeSupervisorStream).mockImplementationOnce(async function* () {
+        yield { type: 'text_delta', data: '직접 응답' };
+        yield {
+          type: 'done',
+          data: {
+            success: true,
+            finalAgent: 'Analyst Agent',
+            toolsCalled: ['getServerMetrics'],
+            ragSources: [],
+            metadata: {
+              traceId: 'trace-job-empty-handoff',
+              handoffs: [],
+            },
+            usage: { promptTokens: 20, completionTokens: 10, totalTokens: 30 },
+          },
+        };
+      });
+
+      const res = await app.request('/jobs/process', {
+        method: 'POST',
+        body: JSON.stringify({
+          jobId: 'job-empty-handoff',
+          messages: [{ role: 'user', content: '직접 응답 테스트' }],
+          sessionId: 'session-empty-handoff',
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      expect(res.status).toBe(200);
+      expect(vi.mocked(storeJobResult)).toHaveBeenCalledWith(
+        'job-empty-handoff',
+        '직접 응답',
+        expect.objectContaining({
+          metadata: expect.objectContaining({
+            traceId: 'trace-job-empty-handoff',
+            handoffs: [],
+          }),
+        })
+      );
+    });
+
     it('jobId 누락 시 400을 반환한다', async () => {
       const res = await app.request('/jobs/process', {
         method: 'POST',

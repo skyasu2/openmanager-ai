@@ -114,12 +114,15 @@ export function saveChatHistory(
       .map((m) => {
         const metadata = m.metadata;
         const analysisBasis = m.metadata?.analysisBasis;
+        const hasExplicitHandoffHistory = Array.isArray(
+          metadata?.handoffHistory
+        );
         const storedMetadata: StoredMessageMetadata | undefined =
           metadata?.traceId ||
           analysisBasis?.toolsCalled ||
           analysisBasis?.ragSources ||
           metadata?.assistantResponseView ||
-          (metadata?.handoffHistory && metadata.handoffHistory.length > 0) ||
+          hasExplicitHandoffHistory ||
           (metadata?.toolResultSummaries &&
             metadata.toolResultSummaries.length > 0)
             ? {
@@ -133,10 +136,9 @@ export function saveChatHistory(
                 ...(metadata?.assistantResponseView && {
                   assistantResponseView: metadata.assistantResponseView,
                 }),
-                ...(metadata?.handoffHistory &&
-                  metadata.handoffHistory.length > 0 && {
-                    handoffHistory: metadata.handoffHistory,
-                  }),
+                ...(hasExplicitHandoffHistory && {
+                  handoffHistory: metadata.handoffHistory,
+                }),
                 ...(metadata?.toolResultSummaries &&
                   metadata.toolResultSummaries.length > 0 && {
                     toolResultSummaries: metadata.toolResultSummaries,

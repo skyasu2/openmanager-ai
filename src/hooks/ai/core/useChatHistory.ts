@@ -54,13 +54,14 @@ export function useChatHistory<TMessage extends RestoredMessage>({
   ): StoredMessageMetadata | undefined => {
     const metadata = message.metadata;
     const analysisBasis = metadata?.analysisBasis;
+    const hasExplicitHandoffHistory = Array.isArray(metadata?.handoffHistory);
 
     if (
       !metadata?.traceId &&
       !analysisBasis?.toolsCalled &&
       !analysisBasis?.ragSources &&
       !metadata?.assistantResponseView &&
-      !(metadata?.handoffHistory && metadata.handoffHistory.length > 0) &&
+      !hasExplicitHandoffHistory &&
       !(
         metadata?.toolResultSummaries && metadata.toolResultSummaries.length > 0
       )
@@ -79,10 +80,9 @@ export function useChatHistory<TMessage extends RestoredMessage>({
       ...(metadata?.assistantResponseView && {
         assistantResponseView: metadata.assistantResponseView,
       }),
-      ...(metadata?.handoffHistory &&
-        metadata.handoffHistory.length > 0 && {
-          handoffHistory: metadata.handoffHistory,
-        }),
+      ...(hasExplicitHandoffHistory && {
+        handoffHistory: metadata.handoffHistory,
+      }),
       ...(metadata?.toolResultSummaries &&
         metadata.toolResultSummaries.length > 0 && {
           toolResultSummaries: metadata.toolResultSummaries,

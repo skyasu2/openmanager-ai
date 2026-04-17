@@ -43,7 +43,7 @@ import { createHybridStreamCallbacks } from './core/createHybridStreamCallbacks'
 import { useClarificationHandlers } from './core/useClarificationHandlers';
 import { useQueryControls } from './core/useQueryControls';
 import { useQueryExecution } from './core/useQueryExecution';
-import { useAsyncAIQuery } from './useAsyncAIQuery';
+import { type AsyncQueryResult, useAsyncAIQuery } from './useAsyncAIQuery';
 import { generateMessageId } from './utils/hybrid-query-utils';
 
 export type {
@@ -102,6 +102,47 @@ function normalizeStreamStatus(status: string): AIStreamStatus {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
+}
+
+export function buildAssistantMessageFromAsyncResult(
+  result: AsyncQueryResult,
+  createMessageId: (prefix: string) => string = generateMessageId
+): UIMessage {
+  const response = result.response ?? '';
+  const hasExplicitHandoffHistory = Array.isArray(result.handoffHistory);
+  const metadata =
+    result.ragSources ||
+    result.traceId ||
+    (result.toolsCalled && result.toolsCalled.length > 0) ||
+    hasExplicitHandoffHistory ||
+    (result.toolResultSummaries && result.toolResultSummaries.length > 0)
+      ? {
+          ...(result.ragSources && { ragSources: result.ragSources }),
+          ...(result.traceId && { traceId: result.traceId }),
+          ...(result.toolsCalled &&
+            result.toolsCalled.length > 0 && {
+              toolsCalled: result.toolsCalled,
+            }),
+          ...(result.analysisMode && {
+            analysisMode: result.analysisMode,
+          }),
+          ...(hasExplicitHandoffHistory && {
+            handoffHistory: result.handoffHistory,
+          }),
+          ...(result.toolResultSummaries &&
+            result.toolResultSummaries.length > 0 && {
+              toolResultSummaries: result.toolResultSummaries,
+            }),
+        }
+      : undefined;
+
+  return {
+    id: createMessageId('assistant'),
+    role: 'assistant',
+    content: response,
+    parts: [{ type: 'text', text: response }],
+    ...(metadata && { metadata }),
+  } as UIMessage;
 }
 
 export function mergeFinishedAssistantIntoMessages(
@@ -360,41 +401,7 @@ export function useHybridAIQuery(
       onJobResult?.(result);
 
       if (result.success && result.response) {
-        // NOTE: normalizeAIResponse는 transformUIMessageToEnhanced에서
-        // 단일 지점으로 처리됨 (이중 호출 방지)
-        const messageWithRag = {
-          id: generateMessageId('assistant'),
-          role: 'assistant' as const,
-          content: result.response,
-          parts: [{ type: 'text' as const, text: result.response }],
-          metadata:
-            result.ragSources ||
-            result.traceId ||
-            (result.toolsCalled && result.toolsCalled.length > 0) ||
-            (result.handoffHistory && result.handoffHistory.length > 0) ||
-            (result.toolResultSummaries &&
-              result.toolResultSummaries.length > 0)
-              ? {
-                  ...(result.ragSources && { ragSources: result.ragSources }),
-                  ...(result.traceId && { traceId: result.traceId }),
-                  ...(result.toolsCalled &&
-                    result.toolsCalled.length > 0 && {
-                      toolsCalled: result.toolsCalled,
-                    }),
-                  ...(result.analysisMode && {
-                    analysisMode: result.analysisMode,
-                  }),
-                  ...(result.handoffHistory &&
-                    result.handoffHistory.length > 0 && {
-                      handoffHistory: result.handoffHistory,
-                    }),
-                  ...(result.toolResultSummaries &&
-                    result.toolResultSummaries.length > 0 && {
-                      toolResultSummaries: result.toolResultSummaries,
-                    }),
-                }
-              : undefined,
-        } as UIMessage;
+        const messageWithRag = buildAssistantMessageFromAsyncResult(result);
         setMessages((prev) => [...prev, messageWithRag]);
       }
     },
