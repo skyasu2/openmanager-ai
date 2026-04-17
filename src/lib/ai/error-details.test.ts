@@ -85,6 +85,35 @@ describe('error-details', () => {
     });
   });
 
+  it('reconstructs daily limit details from daily headers even when body is generic', () => {
+    const headers = new Headers({
+      'Retry-After': '3600',
+      'X-RateLimit-Remaining': '0',
+      'X-RateLimit-Reset': '111',
+      'X-RateLimit-Daily-Remaining': '0',
+      'X-RateLimit-Daily-Reset': '222',
+    });
+
+    const details = buildRateLimitErrorDetails({
+      body: {
+        error: 'Too Many Requests',
+        source: 'frontend-gateway',
+      },
+      headers,
+      fallbackSource: 'frontend-gateway',
+    });
+
+    expect(details).toMatchObject({
+      kind: 'rate-limit',
+      source: 'frontend-gateway',
+      scope: 'daily',
+      dailyLimitExceeded: true,
+      retryAfterSeconds: 3600,
+      remaining: 0,
+      resetAt: 222,
+    });
+  });
+
   it('returns readable labels', () => {
     expect(getRateLimitSourceLabel('frontend-gateway')).toBe(
       'frontend gateway'
