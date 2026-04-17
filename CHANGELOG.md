@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.17](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.16...v8.11.17) (2026-04-17)
+
+
+### Features
+
+* ai surface parity implement to pass specs ([dc00e24](https://gitlab.com/skyasu2/openmanager-ai/-/commit/dc00e248743574f1212aefa40b75b89f239ea5f8))
+
+
+### Bug Fixes
+
+* **ai-ui:** stabilize input layout and track prod QA regression ([b4ab2e7](https://gitlab.com/skyasu2/openmanager-ai/-/commit/b4ab2e7118cd8d284632e61e925f68b61b8ed0d1))
+* **ai:** avoid fullscreen sidebar-prefill leakage ([648ba00](https://gitlab.com/skyasu2/openmanager-ai/-/commit/648ba004e3d0ee56143f819bba6beea0a51912fa))
+
+
+### Tests
+
+* **spec:** ai surface parity add failing tests before implementation ([b53035c](https://gitlab.com/skyasu2/openmanager-ai/-/commit/b53035c901b23c9bf802ee17aaf39e68e0f9b15b))
+* **ui:** add AutoResizeTextarea height-reset regression tests ([c1c9ba7](https://gitlab.com/skyasu2/openmanager-ai/-/commit/c1c9ba776c9f2f779ee9a3dde563548edd77c236))
+
 ## [8.11.16](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.15...v8.11.16) (2026-04-16)
 
 ## [8.11.15](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.14...v8.11.15) (2026-04-16)
