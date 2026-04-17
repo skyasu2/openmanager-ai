@@ -380,6 +380,7 @@ export async function* executeParallelSubtasksStream(
       usage: {
         promptTokens: successfulResults.reduce((sum, r) => sum + (r.result!.usage?.promptTokens ?? 0), 0),
         completionTokens: successfulResults.reduce((sum, r) => sum + (r.result!.usage?.completionTokens ?? 0), 0),
+        totalTokens,
       },
       metadata: {
         provider: 'multi-agent',
@@ -471,6 +472,7 @@ export async function* executeSequentialSubtasksStream(
 
   const durationMs = Date.now() - startTime;
   const toolsCalled = [...new Set(successfulResults.flatMap(r => r.result.toolsCalled))];
+  const totalTokens = successfulResults.reduce((sum, r) => sum + (r.result.usage?.totalTokens ?? 0), 0);
 
   logger.info(`[SequentialStream] Completed ${successfulResults.length}/${subtasks.length} subtasks in ${durationMs}ms`);
 
@@ -488,6 +490,7 @@ export async function* executeSequentialSubtasksStream(
       usage: {
         promptTokens: successfulResults.reduce((sum, r) => sum + (r.result.usage?.promptTokens ?? 0), 0),
         completionTokens: successfulResults.reduce((sum, r) => sum + (r.result.usage?.completionTokens ?? 0), 0),
+        totalTokens,
       },
       metadata: {
         provider: 'multi-agent',
