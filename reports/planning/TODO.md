@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| P2: AI Stream Route Contract - legacy role-tagging | Medium | contract-approved | 계획서: [ai-stream-route-contract-plan.md](ai-stream-route-contract-plan.md). 목표: `/api/ai/supervisor`를 삭제하지 않고 legacy contract/header로 역할을 명시하고, primary route를 `/api/ai/supervisor/stream/v2`로 문서/코드에 고정. |
+| 없음 | — | — | 다음 후보: `AI Response Visibility` 후속(`429 UX`, `Job Queue agent path`) 또는 `AI Stream Route Contract` residual cleanup(`observability/caching`) 재평가 |
 
 ---
 
@@ -24,13 +24,28 @@
 |------|----------|-------|
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
 | AI Response Visibility & Rate Limit (Phase 1~5) | Medium | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). handoff 가시성 UX, 429 UX, Job Queue agent path, limiter 정책 재조정. |
-| AI Stream Route Contract - residual cleanup | Medium | 계획서: [ai-stream-route-contract-plan.md](ai-stream-route-contract-plan.md). Phase 5 provider fallback visibility, Phase 6 warning semantics alignment 완료. 남은 slices: legacy path 재평가, observability/caching 설명 정리. |
+| AI Stream Route Contract - residual cleanup | Medium | 계획서: [ai-stream-route-contract-plan.md](ai-stream-route-contract-plan.md). Phase 5 provider fallback visibility, Phase 6 warning semantics alignment, Phase 7 legacy role-tagging 완료. 남은 slice: observability/caching 설명 정리. |
 | OTel 토폴로지 개선 (P1→P2→P3) | Medium | 계획서: [otel-topology-improvement-plan.md](otel-topology-improvement-plan.md). db-backup 스펙 현실화(즉시), Redis cross-AZ/NFS SPOF 시나리오 추가(단기), 서버 3대 추가(장기). |
 | Storybook circular chunk warning 정리 | Low | non-blocking, stable 승격 후 재평가 |
 
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-17 #113)
+- [x] AI Stream Route Contract - legacy role-tagging 완료
+  - `/api/ai/supervisor`를 삭제하지 않고 legacy contract route로 명시
+  - 응답 헤더 추가:
+    - `X-AI-Route-Contract=legacy-supervisor`
+    - `X-AI-Primary-Route=/api/ai/supervisor/stream/v2`
+    - `X-AI-Transport=json|text`
+  - local dev fallback 주석과 architecture/API docs를 current reality 기준으로 정리
+  - TDD 커밋:
+    - `5843a8e4a` → `6e667682c`
+  - 검증:
+    - targeted: `npx vitest run src/app/api/ai/supervisor/cloud-run-handler.test.ts`
+    - root gate: `npm run type-check && npm run lint && npm run test:quick && npm run test:contract`
+    - docs: `npm run docs:lint:changed`
 
 ### Completed (2026-04-17 #112)
 - [x] AI Stream Route Contract - warning semantics alignment 완료

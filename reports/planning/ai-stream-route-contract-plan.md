@@ -1,14 +1,14 @@
 > Owner: project
-> Status: Approved
+> Status: Draft
 > Doc type: Plan
 > Last reviewed: 2026-04-17
 > Tags: ai-assistant,streaming,cloud-run,vercel,route-contract,architecture
 
 # AI Stream Route Contract & Legacy Path Consolidation Plan
 
-- 상태: **Phase 1 완료 (2026-04-16), Phase 5 provider fallback visibility 완료 (2026-04-17), Phase 6 warning semantics alignment 완료 (2026-04-17), Phase 7 legacy role-tagging slice Approved (2026-04-17)**
+- 상태: **Phase 1 완료 (2026-04-16), Phase 5 provider fallback visibility 완료 (2026-04-17), Phase 6 warning semantics alignment 완료 (2026-04-17), Phase 7 legacy role-tagging 완료 (2026-04-17), residual cleanup backlog**
 - 작성일: 2026-04-16
-- TODO.md 연결: Active Tasks > `AI Stream Route Contract - legacy role-tagging`
+- TODO.md 연결: Backlog > `AI Stream Route Contract - residual cleanup`
 - 목표: Vercel API routes와 Cloud Run supervisor endpoints의 역할을 다시 명확히 정의하고, 현재 primary streaming path와 legacy plain/json path의 계약을 정리해 유지보수 복잡도와 stale 판단을 줄인다.
 
 ## 0. Best Practice Baseline
@@ -193,12 +193,18 @@
 - multi-agent warning message가 `ORCHESTRATOR_CONFIG.warnThreshold` 초 단위를 사용
 - frontend `warning` 타입 주석에서 stale `25초` 문구 제거
 
-### Phase 7 — legacy role-tagging (Residual Slice, 2026-04-17)
+### Phase 7 — legacy role-tagging ✅ 완료 (2026-04-17)
 
-1. `/api/ai/supervisor` 응답에 legacy contract 식별 header를 추가한다.
-2. legacy route는 삭제하지 않고, 현재 primary route(`/stream/v2`)를 함께 명시한다.
-3. local dev fallback caller와 architecture docs 설명을 current reality에 맞게 정리한다.
-4. route deletion/deprecation enforcement는 이번 slice에 포함하지 않는다.
+1. [x] `/api/ai/supervisor` 응답에 legacy contract 식별 header를 추가했다.
+2. [x] legacy route는 삭제하지 않고, 현재 primary route(`/stream/v2`)를 함께 명시했다.
+3. [x] local dev fallback caller와 architecture docs 설명을 current reality에 맞게 정리했다.
+4. [x] route deletion/deprecation enforcement는 포함하지 않았다.
+
+결과:
+- legacy `/api/ai/supervisor` 응답에 `X-AI-Route-Contract=legacy-supervisor`
+- primary hint `X-AI-Primary-Route=/api/ai/supervisor/stream/v2`
+- transport 구분 `X-AI-Transport=json|text`
+- architecture/API docs에서 `/api/ai/supervisor`를 primary SSE path로 더 이상 설명하지 않음
 
 ## 6. Contract
 
