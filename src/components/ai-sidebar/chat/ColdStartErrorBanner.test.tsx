@@ -70,6 +70,24 @@ describe('ColdStartErrorBanner', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('shows upstream provider title when provider-named rate limit is inferred from plain error', () => {
+    vi.useFakeTimers();
+
+    render(
+      <ColdStartErrorBanner error="Groq 요청 제한으로 12초 후 다시 시도해주세요." />
+    );
+
+    expect(
+      screen.getByText('AI 제공자 요청 제한이 발생했습니다')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/차단 위치: upstream provider/)
+    ).toBeInTheDocument();
+
+    const retryButton = screen.getByRole('button', { name: '재시도' });
+    expect(retryButton).toBeDisabled();
+  });
+
   it('allows auth-related errors to be dismissed explicitly', () => {
     const onClearError = vi.fn();
 

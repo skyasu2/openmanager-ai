@@ -52,6 +52,18 @@ describe('error-details', () => {
     });
   });
 
+  it('infers upstream provider rate-limit source from provider-named message', () => {
+    const details = inferAIErrorDetailsFromMessage(
+      'Groq 요청 제한으로 12초 후 다시 시도해주세요.'
+    );
+
+    expect(details).toMatchObject({
+      kind: 'rate-limit',
+      source: 'upstream-provider',
+      retryAfterSeconds: 12,
+    });
+  });
+
   it('extracts structured rate-limit details from payload', () => {
     const details = extractAIErrorDetailsFromPayload({
       kind: 'rate-limit',
