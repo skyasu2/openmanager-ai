@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.19](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.18...v8.11.19) (2026-04-17)
+
+
+### Bug Fixes
+
+* **monitoring:** remove :9100 exporter port from alert instance field ([9fbe5e2](https://gitlab.com/skyasu2/openmanager-ai/-/commit/9fbe5e2d57b03fdcd26cea8321be78f013ad18f2))
+
+
+### Code Refactoring
+
+* **ai-sidebar:** simplify AIDebugPanel — remove Log Level, unify Start/Check ([61069e0](https://gitlab.com/skyasu2/openmanager-ai/-/commit/61069e01a8664bf0f5fd4c16542c97ceba565612))
+* **monitoring:** eliminate :9100 Prometheus port pattern from OTel stack ([22e33ba](https://gitlab.com/skyasu2/openmanager-ai/-/commit/22e33ba5da62304b4214f846c5ea0df122d339bc))
+
+
+### Tests
+
+* **monitoring:** align pipeline instance contract ([f224994](https://gitlab.com/skyasu2/openmanager-ai/-/commit/f224994cf6c4c6f1ab281ed6e559236b0da232b5))
+
 ## [8.11.18](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.17...v8.11.18) (2026-04-17)
 
 
