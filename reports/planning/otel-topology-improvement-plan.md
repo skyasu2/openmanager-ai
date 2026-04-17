@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Draft
+> Status: Approved (slice) — 이번 승인 범위는 Phase 1 중 `db-mysql-dc1-backup` realism 정렬에 한정.
 > Doc type: Reference
 > Last reviewed: 2026-04-17
 > Tags: otel-data, topology, infrastructure, data-quality
@@ -70,6 +70,16 @@ backup 전용으로 스펙 다운 (8c/32GB/1TB) + 역할 설명 명시.
 ---
 
 ## 작업 계획 (권장: B + C 우선, A는 장기)
+
+### 이번 승인 slice (`2026-04-18`, Phase 1-A)
+
+- 목표: `db-mysql-dc1-backup`을 primary와 동일 스펙의 애매한 노드가 아니라, `cold-standby / daily snapshot target` 성격의 백업 노드로 현실화한다.
+- 범위:
+  - `resource-catalog.json`에서 backup 서버 스펙을 `8c / 32GB / 1TB`로 조정
+  - backup 서버 설명용 메타데이터(`server.purpose`, `server.notes`) 추가
+  - `hour-23` backup 메트릭을 `disk 중심 spike + 낮은 cpu/memory` 패턴으로 조정
+  - `scripts/data/otel-fix.ts`와 `scripts/data/otel-verify.ts`에 위 계약 반영
+  - Redis cross-AZ / NFS SPOF 시나리오 추가, 서버 수 증설은 이번 slice 제외
 
 ### Phase 1: db-backup 역할 명확화 (즉시)
 

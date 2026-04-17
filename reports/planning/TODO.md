@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (AI Response Visibility retry limiter alignment slice 완료)
+**Last Updated**: 2026-04-18 KST (OTel topology backup realism slice 승인)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| 없음 | — | — | 다음 후보: `AI Response Visibility` 후속(`Cloud Run 정책` 재평가) 또는 `OTel 토폴로지 개선` 재평가 |
+| OTel topology improvement - backup realism | Medium | approved | `db-mysql-dc1-backup`을 cold-standby/daily snapshot target으로 명확화. 스펙 다운 + hour-23 메트릭 현실화 + verify 추가. |
 
 ---
 
