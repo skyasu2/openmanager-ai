@@ -201,7 +201,7 @@ async function handlePOST(request: NextRequest) {
 
 // Auth + Rate Limiting 적용
 export const POST = withRateLimit(
-  rateLimiters.aiAnalysis,
+  rateLimiters.aiJobCreation,
   withAuth(withCSRFProtection(handlePOST))
 );
 

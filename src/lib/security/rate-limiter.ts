@@ -169,6 +169,15 @@ export const rateLimiters = {
     windowMs: 60 * 1000,
     dailyLimit: 100,
   }),
+  /**
+   * Job creation should fail fast at the edge with the same minute window
+   * the upstream Cloud Run queue enforces, instead of drifting at 10/min.
+   */
+  aiJobCreation: new RateLimiter({
+    maxRequests: 5,
+    windowMs: 60 * 1000,
+    dailyLimit: 100,
+  }),
 };
 
 // ==============================================
