@@ -327,10 +327,25 @@ export async function* executeParallelSubtasksStream(
 
   const results = await Promise.all(subtaskPromises);
   const successfulResults = results.filter(r => r.result !== null);
+  const failedResults = results.filter(r => r.result === null);
+  const failedAgents = failedResults.map(r => r.subtask.agent);
 
   if (successfulResults.length === 0) {
     logger.error('[ParallelStream] All subtasks failed');
-    yield { type: 'error', data: { code: 'ALL_SUBTASKS_FAILED', error: '모든 서브태스크가 실패했습니다.' } };
+    yield {
+      type: 'error',
+      data: {
+        code: 'ALL_SUBTASKS_FAILED',
+        error: '모든 서브태스크가 실패했습니다.',
+        metadata: {
+          mode: 'parallel',
+          subtaskCount: subtasks.length,
+          completedCount: 0,
+          failedCount: failedResults.length,
+          failedAgents,
+        },
+      },
+    };
     return;
   }
 
@@ -385,9 +400,12 @@ export async function* executeParallelSubtasksStream(
       metadata: {
         provider: 'multi-agent',
         modelId: 'orchestrator-worker',
+        mode: 'parallel',
         durationMs,
         subtaskCount: subtasks.length,
         completedCount: successfulResults.length,
+        failedCount: failedResults.length,
+        failedAgents,
       },
     },
   };
@@ -421,6 +439,7 @@ export async function* executeSequentialSubtasksStream(
   };
 
   const successfulResults: Array<{ subtask: Subtask; result: MultiAgentResponse }> = [];
+  const failedAgents: string[] = [];
 
   for (let i = 0; i < subtasks.length; i++) {
     const subtask = subtasks[i];
@@ -448,6 +467,7 @@ export async function* executeSequentialSubtasksStream(
 
     if (!result) {
       logger.warn(`[SequentialStream] Subtask ${i + 1} failed: ${subtask.agent}`);
+      failedAgents.push(subtask.agent);
       continue;
     }
 
@@ -459,7 +479,20 @@ export async function* executeSequentialSubtasksStream(
   }
 
   if (successfulResults.length === 0) {
-    yield { type: 'error', data: { code: 'ALL_SUBTASKS_FAILED', error: '모든 순차 서브태스크가 실패했습니다.' } };
+    yield {
+      type: 'error',
+      data: {
+        code: 'ALL_SUBTASKS_FAILED',
+        error: '모든 순차 서브태스크가 실패했습니다.',
+        metadata: {
+          mode: 'sequential',
+          subtaskCount: subtasks.length,
+          completedCount: 0,
+          failedCount: failedAgents.length,
+          failedAgents,
+        },
+      },
+    };
     return;
   }
 
@@ -495,9 +528,12 @@ export async function* executeSequentialSubtasksStream(
       metadata: {
         provider: 'multi-agent',
         modelId: 'orchestrator-worker-sequential',
+        mode: 'sequential',
         durationMs,
         subtaskCount: subtasks.length,
         completedCount: successfulResults.length,
+        failedCount: failedAgents.length,
+        failedAgents,
       },
     },
   };
