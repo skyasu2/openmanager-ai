@@ -45,6 +45,61 @@ function isComplexQuery(query: string): boolean {
   return matchCount >= 2 || (matchCount >= 1 && query.length >= 20) || query.length > 100;
 }
 
+async function executeSubtaskWithTimeout(
+  subtask: Subtask,
+  index: number,
+  total: number,
+  startTime: number,
+  webSearchEnabled: boolean,
+  ragEnabled: boolean,
+  images: ImageAttachment[] | undefined,
+  files: FileAttachment[] | undefined,
+  logPrefix: string
+): Promise<MultiAgentResponse | null> {
+  const subtaskTimeoutMs = TIMEOUT_CONFIG.subtask.hard;
+
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  let isTimedOut = false;
+
+  const timeoutPromise = new Promise<null>((resolve) => {
+    timeoutId = setTimeout(() => {
+      isTimedOut = true;
+      logger.warn(
+        `[${logPrefix}] Subtask ${index + 1}/${total} timeout after ${subtaskTimeoutMs}ms\n` +
+          `   Agent: ${subtask.agent}\n` +
+          `   Task: "${subtask.task.substring(0, 80)}${subtask.task.length > 80 ? '...' : ''}"`
+      );
+      resolve(null);
+    }, subtaskTimeoutMs);
+  });
+
+  const executionPromise = executeForcedRouting(
+    subtask.task,
+    subtask.agent,
+    startTime,
+    webSearchEnabled,
+    ragEnabled,
+    images,
+    files
+  );
+
+  try {
+    const result = await Promise.race([executionPromise, timeoutPromise]);
+
+    if (timeoutId !== null && !isTimedOut) {
+      clearTimeout(timeoutId);
+    }
+
+    return result;
+  } catch (error) {
+    if (timeoutId !== null && !isTimedOut) {
+      clearTimeout(timeoutId);
+    }
+    logger.error(`[${logPrefix}] Subtask ${index + 1} error:`, error);
+    return null;
+  }
+}
+
 export async function decomposeTask(query: string): Promise<TaskDecomposition | null> {
   if (!isComplexQuery(query)) {
     logger.info('[Decompose] Query is simple, skipping decomposition');
@@ -150,51 +205,20 @@ export async function executeParallelSubtasks(
 ): Promise<MultiAgentResponse | null> {
   logger.info(`[Parallel] Executing ${subtasks.length} subtasks in parallel...`);
 
-  const SUBTASK_TIMEOUT_MS = TIMEOUT_CONFIG.subtask.hard;
-
   const subtaskPromises = subtasks.map(async (subtask, index) => {
     logger.info(`   [${index + 1}/${subtasks.length}] ${subtask.agent}: ${subtask.task.substring(0, 50)}...`);
-
-    let timeoutId: ReturnType<typeof setTimeout> | null = null;
-    let isTimedOut = false;
-
-    const timeoutPromise = new Promise<null>((resolve) => {
-      timeoutId = setTimeout(() => {
-        isTimedOut = true;
-        logger.warn(
-          `[Parallel] Subtask ${index + 1}/${subtasks.length} timeout after ${SUBTASK_TIMEOUT_MS}ms\n` +
-          `   Agent: ${subtask.agent}\n` +
-          `   Task: "${subtask.task.substring(0, 80)}${subtask.task.length > 80 ? '...' : ''}"`
-        );
-        resolve(null);
-      }, SUBTASK_TIMEOUT_MS);
-    });
-
-    const executionPromise = executeForcedRouting(
-      subtask.task,
-      subtask.agent,
+    const result = await executeSubtaskWithTimeout(
+      subtask,
+      index,
+      subtasks.length,
       startTime,
       webSearchEnabled,
       ragEnabled,
       images,
-      files
+      files,
+      'Parallel'
     );
-
-    try {
-      const result = await Promise.race([executionPromise, timeoutPromise]);
-
-      if (timeoutId !== null && !isTimedOut) {
-        clearTimeout(timeoutId);
-      }
-
-      return { subtask, result, index };
-    } catch (error) {
-      if (timeoutId !== null && !isTimedOut) {
-        clearTimeout(timeoutId);
-      }
-      logger.error(`[Parallel] Subtask ${index + 1} error:`, error);
-      return { subtask, result: null, index };
-    }
+    return { subtask, result, index };
   });
 
   const results = await Promise.all(subtaskPromises);
@@ -288,41 +312,20 @@ export async function* executeParallelSubtasksStream(
     },
   };
 
-  const SUBTASK_TIMEOUT_MS = TIMEOUT_CONFIG.subtask.hard;
-
   const subtaskPromises = subtasks.map(async (subtask, index) => {
     logger.info(`   [${index + 1}/${subtasks.length}] ${subtask.agent}: ${subtask.task.substring(0, 50)}...`);
-
-    let timeoutId: ReturnType<typeof setTimeout> | null = null;
-    let isTimedOut = false;
-
-    const timeoutPromise = new Promise<null>((resolve) => {
-      timeoutId = setTimeout(() => {
-        isTimedOut = true;
-        logger.warn(`[ParallelStream] Subtask ${index + 1} timeout after ${SUBTASK_TIMEOUT_MS}ms`);
-        resolve(null);
-      }, SUBTASK_TIMEOUT_MS);
-    });
-
-    const executionPromise = executeForcedRouting(
-      subtask.task,
-      subtask.agent,
+    const result = await executeSubtaskWithTimeout(
+      subtask,
+      index,
+      subtasks.length,
       startTime,
       webSearchEnabled,
       ragEnabled,
       images,
-      files
+      files,
+      'ParallelStream'
     );
-
-    try {
-      const result = await Promise.race([executionPromise, timeoutPromise]);
-      if (timeoutId !== null && !isTimedOut) clearTimeout(timeoutId);
-      return { subtask, result, index };
-    } catch (error) {
-      if (timeoutId !== null && !isTimedOut) clearTimeout(timeoutId);
-      logger.error(`[ParallelStream] Subtask ${index + 1} error:`, error);
-      return { subtask, result: null, index };
-    }
+    return { subtask, result, index };
   });
 
   const results = await Promise.all(subtaskPromises);
@@ -455,14 +458,16 @@ export async function* executeSequentialSubtasksStream(
       },
     };
 
-    const result = await executeForcedRouting(
-      subtask.task,
-      subtask.agent,
+    const result = await executeSubtaskWithTimeout(
+      subtask,
+      i,
+      subtasks.length,
       startTime,
       webSearchEnabled,
       ragEnabled,
       images,
-      files
+      files,
+      'SequentialStream'
     );
 
     if (!result) {
