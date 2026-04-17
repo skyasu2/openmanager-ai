@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-17 KST (AI Response Visibility 429 UX source-hardening slice 승인)
+**Last Updated**: 2026-04-17 KST (AI Response Visibility 429 UX source-hardening slice 완료)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI Response Visibility - 429 UX source hardening | Medium | approved | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). provider 이름이 포함된 429 메시지를 `upstream-provider`로 안정 분류하고, 배너 title/countdown이 source와 일치하도록 계약 고정. |
+| 없음 | — | — | 다음 후보: `AI Response Visibility` 후속(`Job Queue agent path`, `limiter 정책 재정비`) 또는 `OTel 토폴로지 개선` 재평가 |
 
 ---
 
@@ -31,6 +31,16 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-17 #115)
+- [x] AI Response Visibility - 429 UX source-hardening 완료
+  - provider 이름이 포함된 plain 429 메시지(`Groq`, `Mistral`, `Cerebras`, `Gemini`, `OpenRouter`)를 `upstream-provider`로 안정 분류
+  - `ColdStartErrorBanner`가 plain error만 받아도 upstream-provider title(`AI 제공자 요청 제한이 발생했습니다`)을 올바르게 렌더링하는 계약 고정
+  - TDD 커밋:
+    - `f2a040e3c` → implementation commit
+  - 검증:
+    - targeted: `npx vitest run src/lib/ai/error-details.test.ts src/components/ai-sidebar/chat/ColdStartErrorBanner.test.tsx`
+    - root gate: `npm run type-check && npm run lint && npm run test:quick && npm run test:contract`
 
 ### Completed (2026-04-17 #114)
 - [x] AI Stream Route Contract - observability/caching 설명 정리 완료 및 계획서 archive 이동

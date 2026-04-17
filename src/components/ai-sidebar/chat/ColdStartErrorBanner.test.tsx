@@ -72,9 +72,13 @@ describe('ColdStartErrorBanner', () => {
 
   it('shows upstream provider title when provider-named rate limit is inferred from plain error', () => {
     vi.useFakeTimers();
+    const onRetry = vi.fn();
 
     render(
-      <ColdStartErrorBanner error="Groq 요청 제한으로 12초 후 다시 시도해주세요." />
+      <ColdStartErrorBanner
+        error="Groq 요청 제한으로 12초 후 다시 시도해주세요."
+        onRetry={onRetry}
+      />
     );
 
     expect(

@@ -1,12 +1,12 @@
 > Owner: project
-> Status: Approved — `429 UX source-hardening` slice 진행 중. `handoff persistence contract`는 완료, `Job Queue agent path`와 `limiter 정책 재정비`는 backlog 유지.
+> Status: Backlog — `429 UX source-hardening` slice는 완료. `Job Queue agent path`와 `limiter 정책 재정비`는 backlog 유지.
 > Doc type: Plan
 > Last reviewed: 2026-04-17
 > Tags: ai,ux,rate-limit,visibility
 
 # AI Response Visibility & Rate Limit Plan (2026-04-08)
 
-- 상태: **Approved (partial complete)** — AnalysisBasisBadge 중심 visibility 개선과 `handoff persistence contract` slice는 완료됐다. 이번 승인 범위는 `429 UX source-hardening`이며, `Job Queue agent path`와 `limiter 정책 재정비`는 backlog다.
+- 상태: **Backlog (partial complete)** — AnalysisBasisBadge 중심 visibility 개선과 `handoff persistence contract`, `429 UX source-hardening` slice는 완료됐다. `Job Queue agent path`와 `limiter 정책 재정비`는 backlog다.
 - 작성일: 2026-04-08 | 상태 갱신: 2026-04-17
 - TODO.md 연결: Backlog > AI Response Visibility & Rate Limit
 - 목표: AI 질의 과정의 가시성을 실제 실행 흐름과 맞추고, rate limit을 사용자에게 설명 가능한 제약으로 바꾼다.
@@ -318,6 +318,12 @@
 1. provider 이름이 들어간 plain message가 `upstream-provider`로 추론된다.
 2. upstream-provider rate-limit details를 전달하면 배너 title이 `AI 제공자 요청 제한이 발생했습니다`로 렌더링된다.
 3. 기존 frontend-gateway countdown disable/enable 계약은 유지된다.
+
+### 완료 결과
+
+- `inferRateLimitSourceFromMessage()`가 실제 운영 provider 이름(`Groq`, `Mistral`, `Cerebras`, `Gemini`, `OpenRouter`)을 upstream provider로 분류한다.
+- `ColdStartErrorBanner`는 structured `errorDetails` 없이 plain error만 받아도 upstream-provider title을 올바르게 렌더링한다.
+- countdown/retry UX 구조 변경 없이 source/title drift만 해결했다.
 
 ## 메모
 
