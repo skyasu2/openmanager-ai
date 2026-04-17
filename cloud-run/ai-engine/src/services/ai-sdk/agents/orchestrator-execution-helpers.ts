@@ -98,7 +98,7 @@ export async function* streamFastPathResponse(
       success: true,
       finalAgent: 'Orchestrator (Fast Path)',
       toolsCalled: [],
-      usage: { promptTokens: 0, completionTokens: 0 },
+      usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
       metadata: { durationMs, provider: 'rule-based' },
     },
   };

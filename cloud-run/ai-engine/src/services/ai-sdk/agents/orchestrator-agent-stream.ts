@@ -90,6 +90,7 @@ export async function* executeAgentStream(
             usage: {
               promptTokens: pipelineResult.usage?.promptTokens ?? 0,
               completionTokens: pipelineResult.usage?.completionTokens ?? 0,
+              totalTokens: pipelineResult.usage?.totalTokens ?? 0,
             },
             metadata: { ...pipelineResult.metadata, durationMs },
           },
@@ -474,6 +475,7 @@ export async function* executeAgentStream(
           usage: {
             promptTokens: usage?.inputTokens ?? 0,
             completionTokens: usage?.outputTokens ?? 0,
+            totalTokens: usage?.totalTokens ?? 0,
           },
           metadata: {
             provider,
@@ -517,7 +519,7 @@ export async function* executeAgentStream(
             finalAgent: agentName,
             toolsCalled: [],
             handoffs: [],
-            usage: { promptTokens: 0, completionTokens: 0 },
+            usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
             metadata: {
               provider,
               modelId,

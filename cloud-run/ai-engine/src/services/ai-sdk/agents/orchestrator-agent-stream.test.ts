@@ -4,10 +4,12 @@ const {
   mockGenerateText,
   mockStreamText,
   mockExecuteReporterWithPipeline,
+  mockStreamTextInChunks,
 } = vi.hoisted(() => ({
   mockGenerateText: vi.fn(),
   mockStreamText: vi.fn(),
   mockExecuteReporterWithPipeline: vi.fn(),
+  mockStreamTextInChunks: vi.fn(),
 }));
 
 vi.mock('ai', () => ({
@@ -92,7 +94,7 @@ vi.mock('./response-quality', () => ({
 }));
 
 vi.mock('./orchestrator-decomposition', () => ({
-  streamTextInChunks: vi.fn(),
+  streamTextInChunks: (...args: unknown[]) => mockStreamTextInChunks(...args),
 }));
 
 import { executeAgentStream } from './orchestrator-agent-stream';
@@ -141,6 +143,9 @@ describe('executeAgentStream', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockGenerateText.mockResolvedValue({ text: '' });
+    mockStreamTextInChunks.mockImplementation(function* (text: string) {
+      yield { type: 'text_delta', data: text };
+    });
   });
 
   it('uses deterministic fallback for starter summary prompts without extra LLM summarization', async () => {
@@ -324,6 +329,7 @@ describe('executeAgentStream', () => {
 
     const doneEvent = events.find((event) => event.type === 'done');
     expect(doneEvent).toBeDefined();
+    expect(mockExecuteReporterWithPipeline).toHaveBeenCalledOnce();
     expect(
       (doneEvent?.data as { usage: { totalTokens?: number } }).usage.totalTokens
     ).toBe(18);
