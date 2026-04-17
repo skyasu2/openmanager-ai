@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-17 KST (v8.11.17 broad production QA green, active-alert prefill normalization local fix ready)
+**Last Updated**: 2026-04-17 KST (v8.11.19 tag pushed, production still on 8.11.18, active-alert targeted recheck blocked on deploy)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -9,11 +9,13 @@
 - P2: active alerts modal AI prefill server-name normalization deploy + targeted production recheck
   - broad production run `QA-20260417-0300`으로 root font preload regression은 해소되어 broad reference가 복구됨
   - exploratory follow-up에서 active alerts modal AI action은 아직 `api-was-dc1-01:9100` 형태의 host:port prompt를 넘기고, warning card CTA는 `api-was-dc1-01`로 정규화됨을 확인
-  - local patch 준비: [alert-ai-context.ts](/mnt/d/dev/openmanager-ai/src/components/dashboard/alert-ai-context.ts:1) 에서 AI prompt용 `serverName`이 `instance`의 `:port` suffix를 제거하도록 정규화
+  - fix landed locally and on `main`: [alert-ai-context.ts](/mnt/d/dev/openmanager-ai/src/components/dashboard/alert-ai-context.ts:1) 에서 AI prompt용 `serverName`이 `instance`의 `:port` suffix를 제거하도록 정규화
   - targeted 회귀 테스트 추가 및 pass:
     - [alert-ai-context.test.ts](/mnt/d/dev/openmanager-ai/src/components/dashboard/alert-ai-context.test.ts:1)
     - [DashboardContent.test.tsx](/mnt/d/dev/openmanager-ai/src/components/dashboard/DashboardContent.test.tsx:293)
-  - 다음 액션: canonical push 후 다음 patch deploy에서 active-alert modal → sidebar/fullscreen handoff만 targeted production 재확인
+  - release `v8.11.19` tag pushed (`d9e9f4537`), but production verification still returns `8.11.18`
+  - Vercel latest production deployment remains `dpl_7g1jwikybsmVbh2u8SgHDoGhTfPr` (`8.11.18` / commit `167417d50`)
+  - 다음 액션: GitLab semver tag pipeline `v8.11.19` 상태를 확인/재시도한 뒤 active-alert modal → sidebar/fullscreen handoff targeted production 재확인
 
 ---
 

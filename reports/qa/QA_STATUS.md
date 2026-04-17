@@ -1,78 +1,74 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-17 13:06:25 KST
+> Generated at: 2026-04-17 14:23:32 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 298 |
+| Total Recorded Runs | 299 |
 | Total Runs (Counted) | 255 |
-| Non-counted Runs | 43 |
+| Non-counted Runs | 44 |
 | Total Checks | 2008 |
 | Passed | 1931 |
 | Failed | 71 |
 | Completed Items | 295 |
-| Pending Items | 0 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 13 |
 | Expert Domains Tracked | 8 |
-| Expert Open Gaps | 0 |
-| Completion Rate | 100% |
+| Expert Open Gaps | 1 |
+| Completion Rate | 99.66% |
 | Last Counted Run | QA-20260417-0300 (2026-04-17T04:06:23.738Z) |
-| Latest Recorded Run | QA-20260417-0300 (2026-04-17T04:06:23.738Z) |
+| Latest Recorded Run | QA-20260417-0301 (2026-04-17T05:23:31.724Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260417-0300 (2026-04-17T04:06:23.738Z)
+Latest run: QA-20260417-0301 (2026-04-17T05:23:31.724Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| Test Automation Architect | appropriate | no | - |
-| AI Quality Assurance Specialist | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
+| DevOps / SRE Engineer | partially-appropriate | yes | Inspect or retry the GitLab semver tag pipeline for v8.11.19, then rerun the active-alert targeted production QA pack. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after production QA; effective usage 9.7924 USD, billed 0.0000 USD, chargeCount 9135. No unexpected usage spike was observed. |
+| vercel | cli | checked | normal | Release verification follow-up confirmed no unexpected billed usage spike while production remained on 8.11.18. |
 
 ## Coverage (Latest Run)
 
-- Scope: broad
+- Scope: targeted
 - Release-Facing: yes
-- Counts Toward Summary: yes
-- Deployment: dpl_sRuuaBX32ZL4rGggN552bJqcL2th / SHA 2adcefb0
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, modal-detail-pack
-- Covered Surfaces: landing render and version badge on production v8.11.17, /main redirects to / on production v8.11.17, /login render with Google/GitHub/email/guest PIN entry, /privacy render with back-link to login, 404 route returns 404 page on production, /system-boot transitions to /dashboard, dashboard summary render with total 15 / online 14 / warning 1 / risk 0 / offline 0, dashboard system resource panel render with CPU 39 / Memory 47 / Disk 33, active alerts modal render and alert AI action opens sidebar with prefilled prompt, topology modal render with 15 nodes / 20 edges and ESC close, dashboard warning CTA opens AI sidebar with normalized prefilled prompt, AI sidebar follow-up response completes for api-was-dc1-01 CPU warning, AI sidebar analysis basis detail shows traceId 1c998d23b20212891cb9d3b1b8237f2a + tools + recent 1 hour time range, /dashboard/ai-assistant fullscreen workspace restores the carried conversation, fullscreen analysis basis detail preserves traceId 689bd70708380d052810ad6915fd0162 + tools + recent 1 hour time range parity, /api/health 200 on production with database/cache/ai connected, /api/version 200 on production with version 8.11.17 / nextjs 16.1.6 / environment production, console 0 error / 0 warning across dashboard, sidebar, fullscreen, and API checks after root font preload cleanup
-- Skipped Surfaces: /auth/error fallback route, /auth/success legacy callback route, server detail modal 3-tab switch, log explorer modal, Reporter generate/detail flow, Analyst advanced forecast and drilldown flow, feedback submission flow, security blocked-prompt regression pack, Cloud Run admin observability endpoints
+- Counts Toward Summary: no
+- Deployment: dpl_7g1jwikybsmVbh2u8SgHDoGhTfPr / SHA 167417d5
+- Coverage Packs: core-routes-smoke
+- Covered Surfaces: production deployment drift check for v8.11.19, /, /validation, /api/version, Vercel production deployment history
+- Skipped Surfaces: dashboard active alerts modal targeted recheck, AI sidebar prompt normalization runtime verification, fullscreen handoff verification, Cloud Run runtime QA
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Production | [Production](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Deployment dpl_sRuuaBX32ZL4rGggN552bJqcL2th | [Deployment dpl_sRuuaBX32ZL4rGggN552bJqcL2th](https://vercel.com/skyasus-projects/openmanager-ai/sRuuaBX32ZL4rGggN552bJqcL2th) | - |
+| general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
+| vercel-deployment | Active production deployment dpl_7g1jwikybsmVbh2u8SgHDoGhTfPr | [Active production deployment dpl_7g1jwikybsmVbh2u8SgHDoGhTfPr](https://vercel.com/skyasus-projects/openmanager-ai/7g1jwikybsmVbh2u8SgHDoGhTfPr) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Production dashboard core surface on v8.11.17 | `reports/qa/evidence/qa-20260417-v81117-broad-dashboard-ai.png` | - |
-| playwright-screenshot | Production fullscreen AI workspace with analysis basis detail on v8.11.17 | `reports/qa/evidence/qa-20260417-v81117-broad-ai-workspace.png` | - |
-| playwright-console | Production broad console log on v8.11.17 | `reports/qa/evidence/qa-20260417-v81117-broad-console.txt` | - |
+| playwright-console | v8.11.19 deploy verification blocked evidence | `reports/qa/evidence/qa-20260417-v81119-deploy-blocked.md` | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- sre-devops: DevOps / SRE Engineer (last QA-20260417-0301)
+  next: Inspect or retry the GitLab semver tag pipeline for v8.11.19, then rerun the active-alert targeted production QA pack.
 
 ## Pending Improvements
 
-- None
+- [P1] gitlab-tag-pipeline-v81119-release-blocked: Restore v8.11.19 semver tag deploy path before targeted production QA (seen 1회, last QA-20260417-0301)
 
 ## Deferred Improvements
 
@@ -408,6 +404,7 @@ Latest run: QA-20260417-0300 (2026-04-17T04:06:23.738Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260417-0301 | 2026-04-17T05:23:31.724Z | targeted | yes | no | Production release verification blocked - v8.11.19 deploy not created | 4 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260417-0300 | 2026-04-17T04:06:23.738Z | broad | yes | yes | Production broad QA - 8.11.17 font preload cleanup verification | 18 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260417-0299 | 2026-04-16T15:32:08.661Z | broad | yes | yes | Production broad QA - 8.11.16 dashboard AI parity with font preload warning regression | 18 | 0 | 1 | 0 | 0 | 2 |
 | QA-20260417-0298 | 2026-04-16T15:01:19.807Z | targeted | no | yes | Production targeted QA - 8.11.16 copy trim and AI sidebar verification | 10 | 0 | 0 | 0 | 0 | 0 |
@@ -427,4 +424,3 @@ Latest run: QA-20260417-0300 (2026-04-17T04:06:23.738Z)
 | QA-20260415-0284 | 2026-04-14T16:50:52.817Z | targeted | no | yes | Topology duplicate tool invocation post-deploy QA (ai-engine-00317) | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260415-0283 | 2026-04-14T16:16:39.275Z | targeted | no | yes | Advisor quality improvement post-deploy QA (ai-engine-00316, Task 1~3 verification) | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260413-0282 | 2026-04-13T12:52:28.892Z | targeted | no | yes | GraphRAG variant closure QA after ai-engine-00312 (force-KB queries to multi deterministic path) | 6 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260413-0281 | 2026-04-13T12:40:26.449Z | targeted | no | yes | GraphRAG variant stability recheck after ai-engine-00311 (boolean-string tool schema hotfix) | 8 | 1 | 1 | 0 | 0 | 1 |

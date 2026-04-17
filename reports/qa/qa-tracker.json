@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-17T04:06:23.738Z"
+    "updatedAt": "2026-04-17T05:23:31.724Z"
   },
   "sequence": {
-    "nextRunNumber": 301
+    "nextRunNumber": 302
   },
   "summary": {
-    "totalRecordedRuns": 298,
+    "totalRecordedRuns": 299,
     "totalRuns": 255,
-    "excludedRuns": 43,
+    "excludedRuns": 44,
     "totalChecks": 2008,
     "totalPassed": 1931,
     "totalFailed": 71,
-    "completionRate": 100,
+    "completionRate": 99.66,
     "completedItems": 295,
-    "pendingItems": 0,
+    "pendingItems": 1,
     "deferredItems": 0,
     "wontFixItems": 13,
     "expertDomainsTracked": 8,
-    "expertDomainsOpenGaps": 0,
+    "expertDomainsOpenGaps": 1,
     "lastRunId": "QA-20260417-0300",
     "lastRecordedAt": "2026-04-17T04:06:23.738Z",
-    "latestRecordedRunId": "QA-20260417-0300",
-    "latestRecordedAt": "2026-04-17T04:06:23.738Z"
+    "latestRecordedRunId": "QA-20260417-0301",
+    "latestRecordedAt": "2026-04-17T05:23:31.724Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -7107,6 +7107,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-17T04:06:23.738Z"
+    },
+    "gitlab-tag-pipeline-v81119-release-blocked": {
+      "id": "gitlab-tag-pipeline-v81119-release-blocked",
+      "title": "Restore v8.11.19 semver tag deploy path before targeted production QA",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260417-0301",
+      "firstSeenAt": "2026-04-17T05:23:31.724Z",
+      "lastSeenRunId": "QA-20260417-0301",
+      "lastSeenAt": "2026-04-17T05:23:31.724Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "v8.11.19 tag exists on gitlab, but production still aliases dpl_7g1jwikybsmVbh2u8SgHDoGhTfPr (8.11.18). Inspect or retry the GitLab tag pipeline before rerunning active-alert modal QA.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-17T05:23:31.724Z"
     }
   },
   "runs": [
@@ -26493,6 +26517,94 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260417-0301",
+      "recordedAt": "2026-04-17T05:23:31.724Z",
+      "recordedAtKst": "2026-04-17 14:23:31 KST",
+      "title": "Production release verification blocked - v8.11.19 deploy not created",
+      "owner": "codex",
+      "source": "codex-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260417-0301.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_7g1jwikybsmVbh2u8SgHDoGhTfPr",
+        "deploymentUrl": "https://openmanager-8hf9l88i7-skyasus-projects.vercel.app",
+        "commitSha": "167417d50c14ec3ff25fe57714fd1611c7800ed6"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": false,
+      "coveragePacks": ["core-routes-smoke"],
+      "coveredSurfaces": [
+        "production deployment drift check for v8.11.19",
+        "/",
+        "/validation",
+        "/api/version",
+        "Vercel production deployment history"
+      ],
+      "skippedSurfaces": [
+        "dashboard active alerts modal targeted recheck",
+        "AI sidebar prompt normalization runtime verification",
+        "fullscreen handoff verification",
+        "Cloud Run runtime QA"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 2,
+        "failed": 2
+      },
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Release tag push succeeded, but production still points to the previous 8.11.18 Vercel deployment and no 8.11.19 deployment exists yet.",
+          "nextAction": "Inspect or retry the GitLab semver tag pipeline for v8.11.19, then rerun the active-alert targeted production QA pack."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-17T14:19:42+09:00",
+          "summary": "Release verification follow-up confirmed no unexpected billed usage spike while production remained on 8.11.18.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "v8.11.19 deploy verification blocked evidence",
+          "path": "reports/qa/evidence/qa-20260417-v81119-deploy-blocked.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Active production deployment dpl_7g1jwikybsmVbh2u8SgHDoGhTfPr",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/7g1jwikybsmVbh2u8SgHDoGhTfPr"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -26552,17 +26664,17 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 82,
+      "seenCount": 83,
       "appropriateCount": 73,
-      "partialCount": 9,
+      "partialCount": 10,
       "inappropriateCount": 0,
-      "improvementNeededCount": 13,
-      "lastRunId": "QA-20260417-0300",
-      "lastSeenAt": "2026-04-17T04:06:23.738Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "Production deployment dpl_sRuuaBX32ZL4rGggN552bJqcL2th stayed healthy, API health/version endpoints matched v8.11.17, and Vercel usage stayed within the expected budget envelope.",
-      "lastNextAction": ""
+      "improvementNeededCount": 14,
+      "lastRunId": "QA-20260417-0301",
+      "lastSeenAt": "2026-04-17T05:23:31.724Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "Release tag push succeeded, but production still points to the previous 8.11.18 Vercel deployment and no 8.11.19 deployment exists yet.",
+      "lastNextAction": "Inspect or retry the GitLab semver tag pipeline for v8.11.19, then rerun the active-alert targeted production QA pack."
     },
     "test-automation": {
       "domainId": "test-automation",
