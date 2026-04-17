@@ -13,7 +13,6 @@ import {
   ArrowLeftFromLine,
   Bot,
   FileText,
-  Maximize2,
   MessageSquare,
   Monitor,
   PanelRightClose,
@@ -26,29 +25,21 @@ import { EnhancedAIChat } from '@/components/ai-sidebar/EnhancedAIChat';
 import { AIErrorBoundary } from '@/components/error/AIErrorBoundary';
 import { APP_VERSION } from '@/config/app-meta';
 import { useAIChatCore } from '@/hooks/ai/useAIChatCore';
-import { useAIEntryController } from '@/hooks/ai/useAIEntryController';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import { RealTimeDisplay } from '../dashboard/RealTimeDisplay';
 import { OpenManagerLogo } from '../shared/OpenManagerLogo';
 import UnifiedProfileHeader from '../shared/UnifiedProfileHeader';
-import AIAssistantIconPanel, {
-  type AIAssistantFunction,
-} from './AIAssistantIconPanel';
+import type { AIAssistantFunction } from './AIAssistantIconPanel';
 import AIContentArea from './AIContentArea';
 import { AIWorkspaceMessage } from './AIWorkspaceMessage';
 import SystemContextPanel from './SystemContextPanel';
 
 // 🔧 공통 로직은 useAIChatCore 훅에서 관리
 
-/**
- * AIWorkspace Props
- * @property mode - 뷰 모드. 기본값은 fullscreen이며 sidebar는 레거시 스토리/테스트 호환 용도
- * @property onClose - 사이드바 모드일 때 닫기 함수
- */
 interface AIWorkspaceProps {
-  mode?: 'sidebar' | 'fullscreen';
-  onClose?: () => void;
+  /** @deprecated mode prop은 제거됨. AIWorkspace는 fullscreen 전용. sidebar는 AISidebarV4 사용. */
+  mode?: never;
 }
 
 /**
@@ -58,16 +49,12 @@ interface AIWorkspaceProps {
  * Sidebar 모드와 Fullscreen 모드를 모두 지원하며,
  * Chat, Auto Report, Intelligent Monitoring 기능을 포함합니다.
  */
-export default function AIWorkspace({
-  mode = 'fullscreen',
-  onClose,
-}: AIWorkspaceProps) {
+export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
   const [selectedFunction, setSelectedFunction] =
     useState<AIAssistantFunction>('chat');
   const [isRightPanelOpen, setIsRightPanelOpen] = useState(true);
-  const { openFullscreen } = useAIEntryController();
 
   useEffect(() => {
     setIsMounted(true);
@@ -203,14 +190,6 @@ export default function AIWorkspace({
     setInput,
   ]);
 
-  const handleOpenFullscreen = useCallback(() => {
-    openFullscreen({
-      draft: input.trim().length > 0 ? input : undefined,
-      selectedFunction,
-      analysisMode,
-    });
-  }, [analysisMode, input, openFullscreen, selectedFunction]);
-
   // --- Render Logic ---
 
   // 🔒 Hydration 불일치 방지 (Zustand persist + 조건부 렌더링)
@@ -222,108 +201,7 @@ export default function AIWorkspace({
     );
   }
 
-  // 📱 SIDEBAR LAYOUT (Mobile/Compact) - Only used if this component is used in sidebar mode (though AISidebarV4 is preferred)
-  // 🎨 화이트 모드 전환 (2025-12 업데이트)
-  if (mode === 'sidebar') {
-    return (
-      <div className="flex h-full flex-col bg-white">
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <span className="font-semibold text-gray-900">AI Assistant</span>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleOpenFullscreen}
-              className="text-gray-500 hover:text-gray-900 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 rounded-md p-1"
-              title="전체 화면으로 보기"
-            >
-              <Maximize2 className="h-5 w-5" />
-            </button>
-            {onClose && (
-              <button
-                type="button"
-                onClick={onClose}
-                className="text-gray-500 hover:text-gray-900 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 rounded-md p-1"
-                title="닫기"
-              >
-                <ArrowLeftFromLine className="h-5 w-5" />
-              </button>
-            )}
-          </div>
-        </div>
-        <div className="flex-1 overflow-hidden">
-          <Activity mode={selectedFunction === 'chat' ? 'visible' : 'hidden'}>
-            <EnhancedAIChat
-              autoReportTrigger={{ shouldGenerate: false }}
-              allMessages={enhancedMessages}
-              limitedMessages={enhancedMessages}
-              messagesEndRef={messagesEndRef}
-              MessageComponent={AIWorkspaceMessage}
-              inputValue={input}
-              setInputValue={setInput}
-              handleSendInput={handleSendInput}
-              sessionState={sessionState}
-              onNewSession={handleNewSession}
-              isGenerating={isLoading}
-              streamStatus={streamStatus}
-              regenerateResponse={regenerateLastResponse}
-              onStopGeneration={stop}
-              onFeedback={handleFeedback}
-              jobProgress={hybridState.progress}
-              jobId={hybridState.jobId}
-              onCancelJob={cancel}
-              queryMode={currentMode}
-              error={error}
-              errorDetails={hybridState.errorDetails}
-              onClearError={clearError}
-              onRetry={retryLastQuery}
-              clarification={clarification}
-              onSelectClarification={selectClarification}
-              onSubmitCustomClarification={submitCustomClarification}
-              onSkipClarification={skipClarification}
-              onDismissClarification={dismissClarification}
-              currentAgentStatus={currentAgentStatus}
-              currentHandoff={currentHandoff}
-              webSearchEnabled={webSearchEnabled}
-              onToggleWebSearch={toggleWebSearch}
-              ragEnabled={ragEnabled}
-              onToggleRAG={toggleRAG}
-              analysisMode={analysisMode}
-              onSelectAnalysisMode={selectAnalysisMode}
-              warmingUp={warmingUp}
-              estimatedWaitSeconds={estimatedWaitSeconds}
-              queuedQueries={queuedQueries}
-              removeQueuedQuery={removeQueuedQuery}
-            />
-          </Activity>
-          <Activity mode={selectedFunction !== 'chat' ? 'visible' : 'hidden'}>
-            <div className="flex h-full flex-col">
-              <div className="block shrink-0 sm:hidden">
-                <AIAssistantIconPanel
-                  selectedFunction={selectedFunction}
-                  onFunctionChange={handleFunctionSelect}
-                  isMobile={true}
-                />
-              </div>
-              <div className="flex-1 overflow-y-auto">
-                <AIContentArea selectedFunction={selectedFunction} />
-              </div>
-            </div>
-          </Activity>
-        </div>
-        {selectedFunction === 'chat' && (
-          <div className="shrink-0 border-t border-gray-200 bg-gray-50 p-2">
-            <AIAssistantIconPanel
-              selectedFunction={selectedFunction}
-              onFunctionChange={handleFunctionSelect}
-              isMobile
-            />
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // 🖥️ FULLSCREEN LAYOUT (Unified)
+  // 🖥️ FULLSCREEN LAYOUT
   // 🎨 화이트 모드 전환 (2025-12 업데이트)
   return (
     <div className="flex h-full w-full overflow-hidden bg-white text-gray-900">

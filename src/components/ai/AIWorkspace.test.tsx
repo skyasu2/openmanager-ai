@@ -199,15 +199,6 @@ describe('AIWorkspace', () => {
     expect(mockBack).toHaveBeenCalled();
   });
 
-  it('navigates to /dashboard/ai-assistant from sidebar fullscreen button', () => {
-    render(<AIWorkspace mode="sidebar" />);
-
-    const fullscreenButton = screen.getByTitle('전체 화면으로 보기');
-    fireEvent.click(fullscreenButton);
-
-    expect(mockPush).toHaveBeenCalledWith('/dashboard/ai-assistant');
-  });
-
   it('displays loading state correctly', async () => {
     const { useAIChatCore } = await import('@/hooks/ai/useAIChatCore');
 
