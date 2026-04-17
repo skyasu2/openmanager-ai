@@ -1,12 +1,12 @@
 > Owner: project
-> Status: Approved — Phase 1 residual 중 `handoff persistence contract` slice만 승인. 이번 범위는 `handoffHistory`의 `[]`/`undefined` semantics를 stream, job queue, history storage에서 고정하는 일로 한정한다.
+> Status: Backlog — `handoff persistence contract` slice는 완료. 남은 범위는 `429 UX`, `Job Queue agent path`, `limiter 정책 재정비`.
 > Doc type: Plan
 > Last reviewed: 2026-04-17
 > Tags: ai,ux,rate-limit,visibility
 
 # AI Response Visibility & Rate Limit Plan (2026-04-08)
 
-- 상태: **Approved (slice only)** — AnalysisBasisBadge 중심 visibility 개선은 별도 커밋으로 부분 완료됐다. 이번 승인 범위는 `handoff persistence contract`만 다루고, `429 UX`, `Job Queue agent path`, `limiter 정책 재정비`는 Backlog로 유지한다.
+- 상태: **Backlog (partial complete)** — AnalysisBasisBadge 중심 visibility 개선과 `handoff persistence contract` slice는 완료됐다. 남은 범위는 `429 UX`, `Job Queue agent path`, `limiter 정책 재정비`다.
 - 작성일: 2026-04-08 | 상태 갱신: 2026-04-17
 - TODO.md 연결: Backlog > AI Response Visibility & Rate Limit
 - 목표: AI 질의 과정의 가시성을 실제 실행 흐름과 맞추고, rate limit을 사용자에게 설명 가능한 제약으로 바꾼다.
@@ -23,10 +23,17 @@
   - `c37333231` `test(spec): analysis basis badge show handoff count in collapsed summary`
   - `2d8acf8f7` `feat: analysis basis badge implement to pass specs`
   - `89575812c` `feat(ai): strengthen analysis basis debug view`
+  - `2e00d4e42` `test(spec): ai response visibility add failing handoff persistence tests`
+
+### 이번 slice 완료 범위 (`handoff persistence contract`)
+
+- stream `data-done`는 handoff 이벤트가 하나도 없어도 assistant metadata에 `handoffHistory: []`를 남긴다.
+- job queue result metadata는 `handoffs: []`를 생략하지 않고 보존한다.
+- job queue 결과를 assistant message로 합칠 때 `handoffHistory: []`를 유지한다.
+- chat history save/restore round-trip 후에도 `handoffHistory: []`가 유지된다.
 
 ### 아직 남은 범위
 
-- `handoffHistory`가 assistant metadata에 남지 않는 케이스를 계약 수준으로 진단/구분하는 작업
 - Job Queue 진행률에 실제 agent path를 반영하는 작업
 - 429 응답을 레이어별 원인/재시도 시점 중심으로 설명하는 UX 정리
 - 프론트/Cloud Run limiter 정책을 사용자 체감 기준으로 다시 맞추는 작업
@@ -129,21 +136,21 @@
 3. rate limit은 이미 헤더/JSON 메타를 주지만, 사용자에게 레이어별 원인과 reset 정보를 명확히 설명하지 못한다.
 4. 프론트와 Cloud Run에 limiter가 중첩되어 있어, QA나 연속 질의에서 실제 허용량 체감이 예측보다 낮아질 수 있다.
 
-## 2026-04-17 승인 slice: handoff persistence contract
+## 2026-04-17 완료 slice: handoff persistence contract
 
 ### 목표
 
-- `handoff 있음` / `handoff 없음` / `미기록`을 구분할 수 있도록 `handoffHistory` semantics를 고정한다.
-- 이번 slice는 UI copy나 limiter 정책을 건드리지 않고 metadata persistence contract만 다룬다.
+- `handoff 있음` / `handoff 없음` / `미기록`을 구분할 수 있도록 `handoffHistory` semantics를 고정했다.
+- 이번 slice는 UI copy나 limiter 정책을 건드리지 않고 metadata persistence contract만 다뤘다.
 
 ### 이번 slice 범위
 
-- 포함:
+- 완료:
   - streaming `data-done` 경로에서 `handoffHistory: []` 보존
   - job queue result metadata에서 `handoffs: []` 보존
   - 프론트 assistant message metadata에서 `handoffHistory: []` 보존
   - chat history save/restore에서 `handoffHistory: []` round-trip 보존
-- 제외:
+- 후속 backlog:
   - `AnalysisBasisBadge` 문구/배지 추가 변경
   - Job Queue progress event 확장
   - 429 UX 및 limiter 정책
@@ -175,7 +182,7 @@
 
 ### Phase 1. 계약/가시성 진단 보강
 
-- [ ] 스트리밍 경로와 Job Queue 경로 각각에 대해 `handoffHistory`가 최종 assistant metadata에 남는지 계약 테스트를 보강한다.
+- [x] 스트리밍 경로와 Job Queue 경로 각각에 대해 `handoffHistory`가 최종 assistant metadata에 남는지 계약 테스트를 보강한다.
 - [ ] `AnalysisBasisBadge` expanded 상태에서 `handoffHistory`가 비어 있는 경우를 “handoff 없음”과 “handoff 수집 실패”로 구분할 수 있게 진단 포인트를 정의한다.
 - [ ] QA 템플릿에 아래 항목을 추가한다.
   - 첫 응답 collapsed summary에 handoff 개수 노출 여부
@@ -255,7 +262,7 @@
 
 ## 재착수 조건 (SDD Gate)
 
-> 이번 slice는 `Approved`다. failing test 선행 커밋 후 구현을 시작한다.
+> `handoff persistence contract` slice는 완료됐다. 재착수 시에는 후속 backlog를 새 slice로 좁혀 다시 Approved 상태를 만든다.
 
 - [x] **남은 범위 재확정**
   - 이번 승인 slice: `handoff persistence` 진단/계약 테스트
@@ -274,8 +281,8 @@
   - stream `data-done`가 handoff 이벤트 없이 종료돼도 assistant metadata에 `handoffHistory: []`가 남는다.
   - job queue result `metadata.handoffs: []`가 assistant message metadata에 `handoffHistory: []`로 유지된다.
   - local history 저장/복원 후에도 `handoffHistory: []`가 round-trip 된다.
-- [ ] `test(spec): ai response visibility add failing handoff persistence tests`
-- [ ] `feat|fix: ai response visibility implement handoff persistence contract`
+- [x] `test(spec): ai response visibility add failing handoff persistence tests`
+- [x] `feat|fix: ai response visibility implement handoff persistence contract`
 
 ## 메모
 

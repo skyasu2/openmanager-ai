@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-17 KST (AI Response Visibility handoff persistence slice 승인)
+**Last Updated**: 2026-04-17 KST (AI Response Visibility handoff persistence slice 완료)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| P2: AI Response Visibility - handoff persistence contract | Medium | contract-approved | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). 이번 slice는 `handoffHistory`의 `[]`/`undefined` semantics를 stream, job queue, history storage 전반에서 고정한다. 다음 구현 단계는 failing test 선행 커밋부터 시작. |
+| 없음 | — | — | 다음 후보: `AI Response Visibility` 후속(`429 UX`, `Job Queue agent path`) 또는 `OTel 토폴로지 개선` 재평가 |
 
 ---
 
@@ -30,6 +30,18 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-17 #110)
+- [x] AI Response Visibility - handoff persistence contract 완료
+  - `handoffHistory: []`를 stream `data-done`, job queue result metadata, assistant message hydration, chat history save/restore 전반에서 보존
+  - `handoff 있음` / `handoff 없음` / `legacy/미기록` semantics를 계약 수준으로 고정
+  - TDD 커밋:
+    - `2e00d4e42` → `d41bc0ee7`
+  - 검증:
+    - root targeted: `66/66` pass
+    - AI Engine targeted: `14/14` pass
+    - root gate: `npm run type-check && npm run lint && npm run test:quick && npm run test:contract`
+    - ai-engine gate: `npm run type-check && npm run test` (`74 files`, `779 tests`)
 
 ### Completed (2026-04-17 #109)
 - [x] AI Chat Improvement Sprint 4 완료 및 계획서 archive 이동
