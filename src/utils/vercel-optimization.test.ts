@@ -9,13 +9,24 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+vi.mock('@/lib/logging', () => ({
+  logger: {
+    debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    child: vi.fn(),
+  },
+}));
+
+import { VercelPerformanceTracker } from './vercel-optimization';
+
 // Store original env
 const originalEnv = { ...process.env };
 
 describe('Vercel Optimization Utilities', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.resetModules();
     // Reset env
     process.env = { ...originalEnv };
   });
@@ -29,12 +40,9 @@ describe('Vercel Optimization Utilities', () => {
   // VercelPerformanceTracker 테스트
   // ============================================================================
   describe('VercelPerformanceTracker', () => {
-    it('should track performance metrics', async () => {
+    it('should track performance metrics', () => {
       delete process.env.VERCEL; // Local environment
 
-      const { VercelPerformanceTracker } = await import(
-        './vercel-optimization'
-      );
       const tracker = new VercelPerformanceTracker();
 
       tracker.start('test-operation');
@@ -45,10 +53,7 @@ describe('Vercel Optimization Utilities', () => {
       expect(duration).toBeGreaterThanOrEqual(0);
     });
 
-    it('should return 0 for unknown labels', async () => {
-      const { VercelPerformanceTracker } = await import(
-        './vercel-optimization'
-      );
+    it('should return 0 for unknown labels', () => {
       const tracker = new VercelPerformanceTracker();
 
       const duration = tracker.end('unknown-label');
@@ -56,10 +61,7 @@ describe('Vercel Optimization Utilities', () => {
       expect(duration).toBe(0);
     });
 
-    it('should store metrics and return them', async () => {
-      const { VercelPerformanceTracker } = await import(
-        './vercel-optimization'
-      );
+    it('should store metrics and return them', () => {
       const tracker = new VercelPerformanceTracker();
 
       tracker.start('op1');
@@ -73,10 +75,7 @@ describe('Vercel Optimization Utilities', () => {
       expect(typeof metrics.op2).toBe('number');
     });
 
-    it('should clear metrics', async () => {
-      const { VercelPerformanceTracker } = await import(
-        './vercel-optimization'
-      );
+    it('should clear metrics', () => {
       const tracker = new VercelPerformanceTracker();
 
       tracker.start('test');

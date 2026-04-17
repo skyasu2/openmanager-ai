@@ -58,6 +58,18 @@ export default defineConfig({
     hookTimeout: 5000,
     pool: 'vmThreads',
     isolate: false,
+    deps: {
+      optimizer: {
+        // Coverage runs are node-only and do not need Vite pre-bundling.
+        // Disabling this avoids dep-scan churn over generated HTML artifacts.
+        client: {
+          enabled: false,
+        },
+        ssr: {
+          enabled: false,
+        },
+      },
+    },
   },
   resolve: {
     alias: testAliases,
