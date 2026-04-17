@@ -122,6 +122,15 @@ backup 전용으로 스펙 다운 (8c/32GB/1TB) + 역할 설명 명시.
 - Phase 2 착수 전: Phase 1 완료 및 `npm run validate:all` 통과
 - Phase 3 착수 전: Phase 2 완료 + AI 진단 품질 검증 (새 시나리오로 AI가 구조적 취약점을 탐지하는지 확인)
 
+## 착수 조건 (SDD Gate)
+
+> Status를 `Approved`로 전환하려면 아래 항목을 완성한다.
+
+- [ ] **Phase 착수 전 변경 대상 파일 목록** 확정 (Phase 1: resource-catalog.json, otel-fix.ts, otel-verify.ts)
+- [ ] **입출력 계약** — db-backup 스펙 수치 확정 (cpu: 8c, mem: 32GB), 시나리오 슬롯 확정
+- [ ] **테스트 시나리오** — `otel-verify.ts` 검증 추가 항목 목록화 (backup 메트릭 범위)
+- [ ] Phase 1 완료 후 `npm run validate:all` 통과 확인 후 Phase 2 착수
+
 ## 기대 효과
 
 - AI가 "AZ2에 LB 없음", "Redis cross-AZ 레이턴시" 등 구조적 취약점을 직접 진단 가능

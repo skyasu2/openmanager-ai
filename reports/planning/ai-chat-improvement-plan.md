@@ -1,7 +1,7 @@
 # AI 어시스턴트 채팅 기능 개선 계획서
 
 > Owner: project
-> Status: Active Supporting — Sprint 1~3 완료(2026-04-09). Sprint 4(4-A generateObject, 4-B per-step timeout) 미착수 — 장기 과제, 별도 plan 분리 예정.
+> Status: Draft — Sprint 1~3 완료(2026-04-09). Sprint 4(4-A generateObject, 4-B per-step timeout) 미착수. 착수 전 Contract 섹션 완성 후 Approved로 전환 필요.
 > Doc type: Plan
 > Last reviewed: 2026-04-16
 > Tags: ai-chat, improvement, planning, v8.12
@@ -398,4 +398,15 @@ generateText({
   - `npx vitest run --config config/testing/vitest.config.main.ts src/hooks/ai/useEnhancedChatMessages.test.ts src/hooks/ai/core/useClarificationHandlers.test.ts src/components/ai-sidebar/ClarificationDialog.test.tsx src/hooks/ai/useAIChatCore.test.ts` ✅
 - 2026-04-16: Sprint 3 (3-A toolsCalled deferred metadata, 3-B Anthropic 캐시 정책 문서화) 완료. P1 버그 수정 및 v8.11.13 릴리즈. Production QA-20260416-0294 7/7 통과.
 
-_Last Updated: 2026-04-16_
+---
+
+## 착수 조건 (SDD Gate)
+
+> Status를 `Approved`로 전환하려면 아래 항목을 완성한다.
+
+- [ ] **변경 대상 파일 목록** 확정 (`useHybridAIQuery.ts`, AI Engine NLQ 라우트 등)
+- [ ] **입출력 계약** — `generateObject` 스키마, per-step timeout 기댓값 명시
+- [ ] **테스트 시나리오** — 최소 3개: NLQ 정상, timeout 발생, 잘못된 스키마 에러 케이스
+- [ ] `test(spec):` failing test 커밋 후 `feat: ...implement to pass specs` 커밋
+
+_Last Updated: 2026-04-17_

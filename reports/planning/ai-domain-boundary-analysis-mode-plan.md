@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Active
+> Status: Draft — Phase 1·2 완료. Phase 3(broad QA reference refresh) 미착수. 착수 전 Contract 섹션 완성 후 Approved로 전환 필요.
 > Doc type: Plan
 > Last reviewed: 2026-04-17
 > Tags: ai-assistant,domain-boundary,analysis-mode,web-search,general-queries
@@ -243,6 +243,15 @@
     - 확장 지원 질문에서 웹 검색 근거 표시
     - 일반 질문에서 `best-effort + disclaimer` 동작 확인
     - `오토 / Thinking` 모드별 응답 경로 차이 확인
+
+## 8. 착수 조건 (SDD Gate — Phase 3)
+
+> Status를 `Approved`로 전환하려면 아래 항목을 완성한다.
+
+- [ ] **변경 대상 파일 목록** 확정 (Phase 3은 주로 QA 기록 + docs 갱신)
+- [ ] **테스트 시나리오** — broad QA pack 체크리스트 (도메인 경계 surface 포함)
+- [ ] `QA-20260417-0300` 이후 console cleanliness 재검증 결과 기록
+- [ ] `test(spec):` 커밋이 필요한 구현 변경이 있으면 선행 후 착수
 
 ## 9. 종료 조건
 

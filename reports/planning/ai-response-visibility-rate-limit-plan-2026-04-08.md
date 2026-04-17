@@ -1,7 +1,7 @@
 > Owner: project
-> Status: Active
+> Status: Draft — Phase 1~5 전체 미착수(Backlog). 착수 전 Contract 섹션 완성 후 Approved로 전환 필요.
 > Doc type: Plan
-> Last reviewed: 2026-04-16
+> Last reviewed: 2026-04-17
 > Tags: ai,ux,rate-limit,visibility
 
 # AI Response Visibility & Rate Limit Plan (2026-04-08)
@@ -211,6 +211,15 @@
 3. 429 UX 통합
 4. Job Queue progress event 확장
 5. limiter 정책 재조정
+
+## 착수 조건 (SDD Gate)
+
+> Status를 `Approved`로 전환하려면 아래 항목을 완성한다.
+
+- [ ] **변경 대상 파일 목록** 확정 (Phase 별 파일 분리: AnalysisBasisBadge, 429 handler, limiter)
+- [ ] **입출력 계약** — handoff count 타입, 429 응답 스키마, limiter 정책 수치
+- [ ] **테스트 시나리오** — 최소 3개: handoff 정상 표시, 429 UX, rate limit 경계값
+- [ ] `test(spec):` failing test 커밋 후 `feat: ...implement to pass specs` 커밋
 
 ## 메모
 
