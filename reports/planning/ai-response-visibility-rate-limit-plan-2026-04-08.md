@@ -1,15 +1,35 @@
 > Owner: project
-> Status: Draft — Phase 1~5 전체 미착수(Backlog). 착수 전 Contract 섹션 완성 후 Approved로 전환 필요.
+> Status: Draft — Backlog 유지. AnalysisBasisBadge visibility/debug view는 2026-04-17까지 부분 완료됐고, 남은 Phase 1/3/4/5는 scope refresh 후 Approved로 전환한다.
 > Doc type: Plan
 > Last reviewed: 2026-04-17
 > Tags: ai,ux,rate-limit,visibility
 
 # AI Response Visibility & Rate Limit Plan (2026-04-08)
 
-- 상태: **Backlog** — 핵심 스트리밍 계약(Sprint 1+2, `ai-chat-improvement-plan.md`)은 완료. 잔여 Phase 1~5(handoff 가시성 UX, 429 UX, Job Queue agent path, limiter 정책)는 미착수.
-- 작성일: 2026-04-08 | 상태 갱신: 2026-04-16
+- 상태: **Backlog** — AnalysisBasisBadge 중심 visibility 개선은 별도 커밋으로 부분 완료됐다. 남은 범위는 `handoff persistence 진단`, `429 UX`, `Job Queue agent path`, `limiter 정책 재정비`다.
+- 작성일: 2026-04-08 | 상태 갱신: 2026-04-17
 - TODO.md 연결: Backlog > AI Response Visibility & Rate Limit
 - 목표: AI 질의 과정의 가시성을 실제 실행 흐름과 맞추고, rate limit을 사용자에게 설명 가능한 제약으로 바꾼다.
+
+## 2026-04-17 상태 스냅샷
+
+### 이미 반영된 범위 (별도 구현 완료)
+
+- `AnalysisBasisBadge` collapsed summary가 `실행 경로` 중심으로 재구성됐다.
+  - handoff가 있으면 `경로: ... · handoff N회 · 도구 M개 · 기간: T`
+  - handoff가 없으면 `도구` 또는 `데이터/모드` 중심 fallback
+- expanded 패널은 `실행 경로`, `전달 이력`, `추적 가능 ID`, `도구 결과 요약`, `구조화된 실패 사유 코드`, `디버그 번들 복사`를 지원한다.
+- 관련 구현/테스트 이력:
+  - `c37333231` `test(spec): analysis basis badge show handoff count in collapsed summary`
+  - `2d8acf8f7` `feat: analysis basis badge implement to pass specs`
+  - `89575812c` `feat(ai): strengthen analysis basis debug view`
+
+### 아직 남은 범위
+
+- `handoffHistory`가 assistant metadata에 남지 않는 케이스를 계약 수준으로 진단/구분하는 작업
+- Job Queue 진행률에 실제 agent path를 반영하는 작업
+- 429 응답을 레이어별 원인/재시도 시점 중심으로 설명하는 UX 정리
+- 프론트/Cloud Run limiter 정책을 사용자 체감 기준으로 다시 맞추는 작업
 
 ## 배경
 
@@ -33,11 +53,13 @@
 
 ### 2. 응답 후 분석 근거 패널
 
-- `AnalysisBasisBadge`는 `handoffHistory`를 렌더링할 수 있지만, 상단 요약과 collapsed 상태에서는 handoff 수를 전면에 드러내지 않는다.
-  - [AnalysisBasisBadge.tsx](/mnt/d/dev/openmanager-ai/src/components/ai/AnalysisBasisBadge.tsx:102)
-  - [AnalysisBasisBadge.tsx](/mnt/d/dev/openmanager-ai/src/components/ai/AnalysisBasisBadge.tsx:160)
-- 현재 `응답 과정` 우측 배지는 `thinkingSteps` 단계 수와 `trace`만 강조한다.
-  - [AnalysisBasisBadge.tsx](/mnt/d/dev/openmanager-ai/src/components/ai/AnalysisBasisBadge.tsx:166)
+- `AnalysisBasisBadge`는 현재 `handoffHistory`, `toolResultSummaries`, `traceId`, `thinkingSteps`를 조합해 실행 경로를 우선 노출한다.
+  - collapsed summary는 handoff/path 기반 요약을 우선 사용한다.
+  - expanded 패널은 `handoff 협업 경로`, `fallback 보정 경로`, `추적 가능 ID`, `도구 결과 요약`, `디버그 번들 복사`를 제공한다.
+  - [AnalysisBasisBadge.tsx](/mnt/d/dev/openmanager-ai/src/components/ai/AnalysisBasisBadge.tsx:515)
+  - [AnalysisBasisBadge.tsx](/mnt/d/dev/openmanager-ai/src/components/ai/AnalysisBasisBadge.tsx:581)
+  - [AnalysisBasisBadge.tsx](/mnt/d/dev/openmanager-ai/src/components/ai/AnalysisBasisBadge.tsx:659)
+- 남은 갭은 `handoff 없음`과 `handoff 수집 실패`를 계약 수준으로 확정하지 못했다는 점이다.
 
 ### 3. Job Queue 진행률 표시
 
@@ -143,11 +165,11 @@
 
 ### Phase 2. 현재 방식에서 바로 가능한 프론트 개선
 
-- [ ] `AnalysisBasisBadge` collapsed summary를 `도구` 중심 문구에서 `실행 경로` 중심 문구로 바꾼다.
+- [x] `AnalysisBasisBadge` collapsed summary를 `도구` 중심 문구에서 `실행 경로` 중심 문구로 바꾼다.
   - 예: `경로: 분석 조율 → 심층 분석 · 도구 2개 · 기간: 최근 1시간`
-- [ ] `응답 과정` 헤더 배지에 `handoff N회`를 우선 노출하고, `thinkingSteps`는 보조 지표로 내린다.
-- [ ] `thinkingSteps`가 비어도 `handoffHistory`와 `toolResultSummaries`만으로 의미 있는 타임라인을 구성하도록 UI 조합 로직을 바꾼다.
-- [ ] trace id는 현재처럼 유지하되, `Langfuse` 설명보다 `추적 가능 ID` 의미를 우선 보여준다.
+- [x] `응답 과정` 헤더 배지에 `handoff N회`를 우선 노출하고, `thinkingSteps`는 보조 지표로 내린다.
+- [x] `thinkingSteps`가 비어도 `handoffHistory`와 `toolResultSummaries`만으로 의미 있는 타임라인/요약을 구성하도록 UI 조합 로직을 바꾼다.
+- [x] trace id는 현재처럼 유지하되, `Langfuse` 설명보다 `추적 가능 ID` 의미를 우선 보여준다.
 
 ### Phase 3. Job Queue 경로 가시성 개선
 
@@ -212,14 +234,25 @@
 4. Job Queue progress event 확장
 5. limiter 정책 재조정
 
-## 착수 조건 (SDD Gate)
+## 재착수 조건 (SDD Gate)
 
-> Status를 `Approved`로 전환하려면 아래 항목을 완성한다.
+> 이 계획은 현재 `Backlog`다. 다시 시작할 때는 남은 범위를 좁혀서 새 active slice만 Approved로 전환한다.
 
-- [ ] **변경 대상 파일 목록** 확정 (Phase 별 파일 분리: AnalysisBasisBadge, 429 handler, limiter)
-- [ ] **입출력 계약** — handoff count 타입, 429 응답 스키마, limiter 정책 수치
-- [ ] **테스트 시나리오** — 최소 3개: handoff 정상 표시, 429 UX, rate limit 경계값
-- [ ] `test(spec):` failing test 커밋 후 `feat: ...implement to pass specs` 커밋
+- [ ] **남은 범위 재확정**
+  - Phase 1 residual: `handoff persistence` 진단/계약 테스트
+  - Phase 3: Job Queue 실제 agent path 반영
+  - Phase 4: 429 UX 통합
+  - Phase 5: limiter 정책 재정비
+- [ ] **변경 대상 파일 확정**
+  - 프론트 경로: `src/hooks/ai/**`, `src/components/ai-sidebar/**`, `src/lib/ai/error-details.ts`
+  - 서버 경로: `src/app/api/ai/jobs/**`, `src/app/api/ai/supervisor/stream/v2/**`, 필요 시 `cloud-run/ai-engine/src/middleware/rate-limiter.ts`
+- [ ] **입출력 계약 확정**
+  - handoff metadata persistence 보장 범위
+  - 429 표준 에러 모델 (`retryAfter`, `remaining`, `dailyLimitExceeded`, source label)
+  - Job Queue progress event의 agent/handoff 필드
+- [ ] **failing test 선행 커밋 후 구현**
+  - `test(spec): ...`
+  - `feat|fix: ... implement to pass specs`
 
 ## 메모
 
