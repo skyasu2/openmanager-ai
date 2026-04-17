@@ -242,6 +242,49 @@ describe('generateObjectWithFallback', () => {
     expect(mockGenerateObject).toHaveBeenCalledTimes(2);
   });
 
+  it('should fall back to the next provider when schema fallback still returns invalid JSON', async () => {
+    const primaryModel =
+      {} as Parameters<typeof mockGenerateObject>[0]['model'];
+    const fallbackModel =
+      {} as Parameters<typeof mockGenerateObject>[0]['model'];
+    const expected: TestSchema = {
+      selectedAgent: 'Advisor Agent',
+      confidence: 0.77,
+      reasoning: 'Recovered on second provider after invalid JSON fallback',
+    };
+
+    mockGenerateObject.mockImplementation(async ({ model }: { model: unknown }) => {
+      if (model === primaryModel) {
+        throw new Error('response format not supported');
+      }
+
+      return {
+        object: expected,
+        usage: { inputTokens: 95, outputTokens: 30, totalTokens: 125 },
+      };
+    });
+
+    mockGenerateText.mockResolvedValue({
+      text: 'not valid json at all',
+      usage: { inputTokens: 80, outputTokens: 20, totalTokens: 100 },
+    });
+
+    mockSelectTextModel.mockReturnValue({
+      model: fallbackModel,
+      provider: 'mistral',
+      modelId: 'mistral-large-latest',
+    });
+
+    const result = await generateObjectWithFallback({
+      ...baseOptions,
+      model: primaryModel,
+    });
+
+    expect(result.object).toEqual(expected);
+    expect(mockGenerateObject).toHaveBeenCalledTimes(2);
+    expect(mockGenerateText).toHaveBeenCalledTimes(1);
+  });
+
   it('should throw combined error when fallback text also fails parsing', async () => {
     const originalError = new Error('Schema output validation failed: bad data');
     mockGenerateObject.mockRejectedValue(originalError);
