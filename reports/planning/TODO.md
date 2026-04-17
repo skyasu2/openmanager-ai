@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-17 KST (AI Chat Improvement Sprint 4 완료 및 archive 반영)
+**Last Updated**: 2026-04-17 KST (AI Response Visibility handoff persistence slice 승인)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| — | — | — | 현재 active task 없음. 다음 우선순위는 Backlog 재평가 후 선택. |
+| P2: AI Response Visibility - handoff persistence contract | Medium | contract-approved | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). 이번 slice는 `handoffHistory`의 `[]`/`undefined` semantics를 stream, job queue, history storage 전반에서 고정한다. 다음 구현 단계는 failing test 선행 커밋부터 시작. |
 
 ---
 

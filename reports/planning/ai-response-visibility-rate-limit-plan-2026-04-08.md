@@ -1,12 +1,12 @@
 > Owner: project
-> Status: Draft — Backlog 유지. AnalysisBasisBadge visibility/debug view는 2026-04-17까지 부분 완료됐고, 남은 Phase 1/3/4/5는 scope refresh 후 Approved로 전환한다.
+> Status: Approved — Phase 1 residual 중 `handoff persistence contract` slice만 승인. 이번 범위는 `handoffHistory`의 `[]`/`undefined` semantics를 stream, job queue, history storage에서 고정하는 일로 한정한다.
 > Doc type: Plan
 > Last reviewed: 2026-04-17
 > Tags: ai,ux,rate-limit,visibility
 
 # AI Response Visibility & Rate Limit Plan (2026-04-08)
 
-- 상태: **Backlog** — AnalysisBasisBadge 중심 visibility 개선은 별도 커밋으로 부분 완료됐다. 남은 범위는 `handoff persistence 진단`, `429 UX`, `Job Queue agent path`, `limiter 정책 재정비`다.
+- 상태: **Approved (slice only)** — AnalysisBasisBadge 중심 visibility 개선은 별도 커밋으로 부분 완료됐다. 이번 승인 범위는 `handoff persistence contract`만 다루고, `429 UX`, `Job Queue agent path`, `limiter 정책 재정비`는 Backlog로 유지한다.
 - 작성일: 2026-04-08 | 상태 갱신: 2026-04-17
 - TODO.md 연결: Backlog > AI Response Visibility & Rate Limit
 - 목표: AI 질의 과정의 가시성을 실제 실행 흐름과 맞추고, rate limit을 사용자에게 설명 가능한 제약으로 바꾼다.
@@ -129,6 +129,25 @@
 3. rate limit은 이미 헤더/JSON 메타를 주지만, 사용자에게 레이어별 원인과 reset 정보를 명확히 설명하지 못한다.
 4. 프론트와 Cloud Run에 limiter가 중첩되어 있어, QA나 연속 질의에서 실제 허용량 체감이 예측보다 낮아질 수 있다.
 
+## 2026-04-17 승인 slice: handoff persistence contract
+
+### 목표
+
+- `handoff 있음` / `handoff 없음` / `미기록`을 구분할 수 있도록 `handoffHistory` semantics를 고정한다.
+- 이번 slice는 UI copy나 limiter 정책을 건드리지 않고 metadata persistence contract만 다룬다.
+
+### 이번 slice 범위
+
+- 포함:
+  - streaming `data-done` 경로에서 `handoffHistory: []` 보존
+  - job queue result metadata에서 `handoffs: []` 보존
+  - 프론트 assistant message metadata에서 `handoffHistory: []` 보존
+  - chat history save/restore에서 `handoffHistory: []` round-trip 보존
+- 제외:
+  - `AnalysisBasisBadge` 문구/배지 추가 변경
+  - Job Queue progress event 확장
+  - 429 UX 및 limiter 정책
+
 ## 원칙
 
 - raw chain-of-thought는 노출하지 않는다.
@@ -236,23 +255,27 @@
 
 ## 재착수 조건 (SDD Gate)
 
-> 이 계획은 현재 `Backlog`다. 다시 시작할 때는 남은 범위를 좁혀서 새 active slice만 Approved로 전환한다.
+> 이번 slice는 `Approved`다. failing test 선행 커밋 후 구현을 시작한다.
 
-- [ ] **남은 범위 재확정**
-  - Phase 1 residual: `handoff persistence` 진단/계약 테스트
-  - Phase 3: Job Queue 실제 agent path 반영
-  - Phase 4: 429 UX 통합
-  - Phase 5: limiter 정책 재정비
-- [ ] **변경 대상 파일 확정**
-  - 프론트 경로: `src/hooks/ai/**`, `src/components/ai-sidebar/**`, `src/lib/ai/error-details.ts`
-  - 서버 경로: `src/app/api/ai/jobs/**`, `src/app/api/ai/supervisor/stream/v2/**`, 필요 시 `cloud-run/ai-engine/src/middleware/rate-limiter.ts`
-- [ ] **입출력 계약 확정**
-  - handoff metadata persistence 보장 범위
-  - 429 표준 에러 모델 (`retryAfter`, `remaining`, `dailyLimitExceeded`, source label)
-  - Job Queue progress event의 agent/handoff 필드
-- [ ] **failing test 선행 커밋 후 구현**
-  - `test(spec): ...`
-  - `feat|fix: ... implement to pass specs`
+- [x] **남은 범위 재확정**
+  - 이번 승인 slice: `handoff persistence` 진단/계약 테스트
+  - 후속 backlog: Phase 3 Job Queue 실제 agent path, Phase 4 429 UX, Phase 5 limiter 정책
+- [x] **변경 대상 파일 확정**
+  - 스트림 경로: `src/hooks/ai/utils/stream-data-handler.ts`
+  - job queue 경로: `cloud-run/ai-engine/src/routes/jobs.ts`, `src/hooks/ai/core/asyncQuerySSE.ts`, `src/hooks/ai/useHybridAIQuery.ts`
+  - history round-trip: `src/hooks/ai/core/useChatHistory.ts`, `src/hooks/ai/utils/chat-history-storage.ts`
+  - 테스트: `stream-data-handler.test.ts`, `useHybridAIQuery.test.ts`, `chat-history-storage.test.ts`, 필요 시 `useChatHistory.test.ts`
+- [x] **입출력 계약 확정**
+  - `handoffHistory.length > 0` → handoff 있음
+  - `handoffHistory = []` → handoff 없음
+  - `handoffHistory = undefined` → legacy message 또는 수집/전달 누락 가능성
+  - stream / job queue / history storage는 `[]`를 의미 있는 값으로 유지한다.
+- [x] **테스트 시나리오 확정**
+  - stream `data-done`가 handoff 이벤트 없이 종료돼도 assistant metadata에 `handoffHistory: []`가 남는다.
+  - job queue result `metadata.handoffs: []`가 assistant message metadata에 `handoffHistory: []`로 유지된다.
+  - local history 저장/복원 후에도 `handoffHistory: []`가 round-trip 된다.
+- [ ] `test(spec): ai response visibility add failing handoff persistence tests`
+- [ ] `feat|fix: ai response visibility implement handoff persistence contract`
 
 ## 메모
 
