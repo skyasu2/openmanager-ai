@@ -11,65 +11,13 @@
  * @see server-data-loader.ts - Main orchestration facade
  */
 
-import { getServerStatus } from '@/config/rules/loader';
-import { getServerIP } from '@/config/server-registry';
 import { getServicesForServer } from '@/config/server-services-map';
 import { percentToBytesPerSecond } from '@/services/metrics/metric-normalization';
 import type {
   EnhancedServerMetrics,
-  PrometheusTargetData,
   RawServerData,
 } from '@/services/server-data/server-data-types';
 import { formatBytes } from '@/utils/utils-functions';
-
-/**
- * PrometheusTargetData -> RawServerData 변환
- */
-function _targetToRawServerData(target: PrometheusTargetData): RawServerData {
-  const serverId = target.instance.replace(/:9100$/, '');
-  const cpu = target.metrics.node_cpu_utilization_ratio;
-  const memory = target.metrics.node_memory_utilization_ratio;
-  const disk = target.metrics.node_filesystem_utilization_ratio;
-  const network = target.metrics.node_network_utilization_ratio;
-
-  const status: RawServerData['status'] =
-    target.metrics.up === 0
-      ? 'offline'
-      : getServerStatus({ cpu, memory, disk, network });
-
-  return {
-    id: serverId,
-    name: target.labels.hostname.replace('.openmanager.kr', ''),
-    hostname: target.labels.hostname,
-    type: target.labels.server_type,
-    location: target.labels.datacenter,
-    environment: target.labels.environment,
-    status,
-    cpu,
-    memory,
-    disk,
-    network,
-    responseTime: target.metrics.http_server_request_duration_seconds * 1000,
-    uptime: Math.round(
-      Date.now() / 1000 - target.metrics.node_boot_time_seconds
-    ),
-    ip: getServerIP(serverId) ?? '',
-    os: `${target.labels.os} ${target.labels.os_version}`,
-    specs: {
-      cpu_cores: target.nodeInfo.cpu_cores,
-      memory_gb: Math.round(
-        target.nodeInfo.memory_total_bytes / (1024 * 1024 * 1024)
-      ),
-      disk_gb: Math.round(
-        target.nodeInfo.disk_total_bytes / (1024 * 1024 * 1024)
-      ),
-    },
-    services: [],
-    processes: target.metrics.node_procs_running,
-    load1: target.metrics.node_load1,
-    load5: target.metrics.node_load5,
-  };
-}
 
 // ── Network ratio by server type ──────────────────────────────────
 // Real-world traffic patterns: web servers receive more (client requests),

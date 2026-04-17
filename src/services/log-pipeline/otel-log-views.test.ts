@@ -86,9 +86,9 @@ describe('otelToLokiEntry', () => {
     expect(result.structuredMetadata?.trace_id).toMatch(/^[0-9a-f]{32}$/);
   });
 
-  it('sets instance as resource:9100', () => {
+  it('sets instance equal to resource (no :port suffix)', () => {
     const result = otelToLokiEntry(makeLog());
-    expect(result.structuredMetadata?.instance).toBe('web-nginx-kr-01:9100');
+    expect(result.structuredMetadata?.instance).toBe('web-nginx-kr-01');
   });
 });
 

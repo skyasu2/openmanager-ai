@@ -225,16 +225,16 @@ describe('MetricsAggregator', () => {
     expect(Number.isInteger(result.avgNetwork)).toBe(true);
   });
 
-  // 9. instance format is "{serverId}:9100"
-  it('formats instance as "{serverId}:9100"', () => {
+  // 9. instance equals serverId (no :port suffix)
+  it('sets instance equal to serverId', () => {
     const servers = [
       createServer({ serverId: 'web-prod-01', cpu: 90 }),
       createServer({ serverId: 'db-prod-02', cpu: 80 }),
     ];
     const result = aggregator.aggregate(servers);
 
-    expect(result.topCpu[0].instance).toBe('web-prod-01:9100');
-    expect(result.topCpu[1].instance).toBe('db-prod-02:9100');
-    expect(result.topMemory[0].instance).toBe('web-prod-01:9100');
+    expect(result.topCpu[0].instance).toBe('web-prod-01');
+    expect(result.topCpu[1].instance).toBe('db-prod-02');
+    expect(result.topMemory[0].instance).toBe('web-prod-01');
   });
 });
