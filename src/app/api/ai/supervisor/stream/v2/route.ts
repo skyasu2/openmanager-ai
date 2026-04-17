@@ -33,6 +33,10 @@ import {
 import { getRequiredCloudRunConfig } from '@/lib/ai-proxy/cloud-run-config';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
+import {
+  getRateLimitIdentity,
+  RATE_LIMIT_IDENTITY_HEADER,
+} from '@/lib/security/rate-limit-identity';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 import {
   applySanitizedQueryToMessages,
@@ -218,6 +222,7 @@ export const POST = withRateLimit(
       const deviceType = normalizeSupervisorDeviceType(
         req.headers.get('X-Device-Type')
       );
+      const rateLimitIdentity = getRateLimitIdentity(req);
       const warmupStartedAt = parseWarmupStartedAt(
         req.headers.get(AI_WARMUP_STARTED_AT_HEADER)
       );
@@ -381,6 +386,7 @@ export const POST = withRateLimit(
                 // NOTE: API secret in header is safe in transit (HTTPS) but may appear
                 // in Cloud Run access logs. Accept this trade-off for standard auth header usage.
                 'X-API-Key': cloudRunConfig.apiSecret,
+                [RATE_LIMIT_IDENTITY_HEADER]: rateLimitIdentity,
               },
               body: JSON.stringify({
                 messages: normalizedMessages,

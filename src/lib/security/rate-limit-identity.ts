@@ -3,6 +3,8 @@ import type { NextRequest } from 'next/server';
 import { getAPIAuthContext } from '@/lib/auth/api-auth';
 import { AUTH_SESSION_ID_KEY } from '@/lib/auth/guest-session-utils';
 
+export const RATE_LIMIT_IDENTITY_HEADER = 'X-Rate-Limit-Identity';
+
 function hashValue(value: string): string {
   return createHash('sha256').update(value).digest('hex').slice(0, 20);
 }

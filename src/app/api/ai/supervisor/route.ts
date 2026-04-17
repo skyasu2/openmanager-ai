@@ -51,6 +51,7 @@ import {
 import { isCloudRunEnabled } from '@/lib/ai-proxy/proxy';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
+import { getRateLimitIdentity } from '@/lib/security/rate-limit-identity';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 import { runWithTraceId } from '@/lib/tracing/async-context';
 import { isStatusQuery, shouldSkipCache } from './cache-utils';
@@ -328,6 +329,7 @@ export const POST = withRateLimit(
           const deviceType = normalizeSupervisorDeviceType(
             req.headers.get('X-Device-Type')
           );
+          const rateLimitIdentity = getRateLimitIdentity(req);
 
           const handlerParams = {
             messagesToSend,
@@ -342,6 +344,7 @@ export const POST = withRateLimit(
             enableRAG,
             analysisMode,
             deviceType,
+            rateLimitIdentity,
           };
 
           const response = wantsStream

@@ -15,6 +15,10 @@ import { getRequiredCloudRunConfig } from '@/lib/ai-proxy/cloud-run-config';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { redisGet, redisSet } from '@/lib/redis';
+import {
+  getRateLimitIdentity,
+  RATE_LIMIT_IDENTITY_HEADER,
+} from '@/lib/security/rate-limit-identity';
 import type { AIJob, TriggerStatus } from '@/types/ai-jobs';
 import { withCSRFProtection } from '@/utils/security/csrf';
 import { isJobOwnedByRequester } from '../../job-ownership';
@@ -92,7 +96,8 @@ export const POST = withAuth(
                 jobId,
                 job.query,
                 job.type,
-                job.sessionId ?? undefined
+                job.sessionId ?? undefined,
+                getRateLimitIdentity(request)
               )
             : initialTriggerStatus;
 
@@ -134,7 +139,8 @@ async function triggerWorkerRetry(
   jobId: string,
   query: string,
   type: string,
-  sessionId?: string
+  sessionId?: string,
+  rateLimitIdentity?: string
 ): Promise<TriggerStatus> {
   const cloudRunConfig = getRequiredCloudRunConfig();
 
@@ -153,6 +159,9 @@ async function triggerWorkerRetry(
       headers: {
         'Content-Type': 'application/json',
         'X-API-Key': cloudRunConfig.apiSecret,
+        ...(rateLimitIdentity
+          ? { [RATE_LIMIT_IDENTITY_HEADER]: rateLimitIdentity }
+          : {}),
       },
       body: JSON.stringify({
         jobId,

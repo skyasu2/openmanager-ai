@@ -23,6 +23,7 @@ import type { SupervisorDeviceType } from '@/lib/ai/supervisor/request-contracts
 import type { NormalizedMessage } from '@/lib/ai/utils/message-normalizer';
 import { proxyToCloudRun } from '@/lib/ai-proxy/proxy';
 import { logger } from '@/lib/logging';
+import { RATE_LIMIT_IDENTITY_HEADER } from '@/lib/security/rate-limit-identity';
 import { getTraceId } from '@/lib/tracing/async-context';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import { applyLegacySupervisorRouteHeaders } from './route-contract';
@@ -43,6 +44,7 @@ interface CloudRunHandlerParams {
   enableWebSearch?: boolean;
   enableRAG?: boolean;
   analysisMode?: AnalysisMode;
+  rateLimitIdentity?: string;
 }
 
 /**
@@ -65,6 +67,7 @@ export async function handleCloudRunStream(
     enableWebSearch,
     enableRAG,
     analysisMode,
+    rateLimitIdentity,
   } = params;
 
   // 🎯 W3C Trace Context: traceId from AsyncLocalStorage + traceparent 생성
@@ -108,8 +111,13 @@ export async function handleCloudRunStream(
           ? {
               [TRACEPARENT_HEADER]: traceparentValue,
               [observability.traceIdHeader]: traceId,
+              ...(rateLimitIdentity
+                ? { [RATE_LIMIT_IDENTITY_HEADER]: rateLimitIdentity }
+                : {}),
             }
-          : undefined,
+          : rateLimitIdentity
+            ? { [RATE_LIMIT_IDENTITY_HEADER]: rateLimitIdentity }
+            : undefined,
       });
 
       if (!proxyResult.success || !proxyResult.data) {
@@ -220,6 +228,7 @@ export async function handleCloudRunJson(
     enableWebSearch,
     enableRAG,
     analysisMode,
+    rateLimitIdentity,
   } = params;
 
   // 🎯 W3C Trace Context: traceId from AsyncLocalStorage + traceparent 생성
@@ -263,8 +272,13 @@ export async function handleCloudRunJson(
           ? {
               [TRACEPARENT_HEADER]: traceparentValue,
               [observability.traceIdHeader]: traceId,
+              ...(rateLimitIdentity
+                ? { [RATE_LIMIT_IDENTITY_HEADER]: rateLimitIdentity }
+                : {}),
             }
-          : undefined,
+          : rateLimitIdentity
+            ? { [RATE_LIMIT_IDENTITY_HEADER]: rateLimitIdentity }
+            : undefined,
       });
 
       if (!proxyResult.success || !proxyResult.data) {

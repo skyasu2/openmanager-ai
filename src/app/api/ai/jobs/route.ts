@@ -21,6 +21,10 @@ import { getRequiredCloudRunConfig } from '@/lib/ai-proxy/cloud-run-config';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { getRedisClient, redisGet, redisMGet, redisSet } from '@/lib/redis';
+import {
+  getRateLimitIdentity,
+  RATE_LIMIT_IDENTITY_HEADER,
+} from '@/lib/security/rate-limit-identity';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type {
@@ -158,7 +162,8 @@ async function handlePOST(request: NextRequest) {
                 query,
                 jobType,
                 options?.sessionId,
-                options?.metadata?.analysisMode as AnalysisMode | undefined
+                options?.metadata?.analysisMode as AnalysisMode | undefined,
+                getRateLimitIdentity(request)
               )
             ).status
           : initialTriggerStatus;
@@ -306,7 +311,8 @@ async function triggerWorker(
   query: string,
   type: string,
   sessionId?: string,
-  analysisMode?: AnalysisMode
+  analysisMode?: AnalysisMode,
+  rateLimitIdentity?: string
 ): Promise<TriggerResult> {
   const cloudRunConfig = getRequiredCloudRunConfig();
 
@@ -326,6 +332,9 @@ async function triggerWorker(
       headers: {
         'Content-Type': 'application/json',
         'X-API-Key': cloudRunConfig.apiSecret,
+        ...(rateLimitIdentity
+          ? { [RATE_LIMIT_IDENTITY_HEADER]: rateLimitIdentity }
+          : {}),
       },
       body: JSON.stringify({
         jobId,

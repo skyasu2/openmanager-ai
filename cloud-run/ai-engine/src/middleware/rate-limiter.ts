@@ -13,6 +13,8 @@ import type { Context, Next } from 'hono';
 import { getRedisClient } from '../lib/redis-client';
 import { logger } from '../lib/logger';
 
+export const RATE_LIMIT_IDENTITY_HEADER = 'X-Rate-Limit-Identity';
+
 // ============================================================================
 // 1. Types
 // ============================================================================
@@ -171,22 +173,33 @@ function resolveConfig(path: string): RateLimitConfig {
 
 /**
  * Extract client identifier from request
- * Priority: X-API-Key > X-Forwarded-For > remote address
+ * Priority: forwarded end-user identity > X-API-Key > X-Forwarded-For
  */
-function extractClientKey(c: Context): string {
-  const apiKey = c.req.header('X-API-Key');
+export function extractClientKeyFromHeaders(
+  getHeader: (name: string) => string | undefined
+): string {
+  const forwardedIdentity = getHeader(RATE_LIMIT_IDENTITY_HEADER);
+  if (forwardedIdentity) {
+    return `fwd:${forwardedIdentity}`;
+  }
+
+  const apiKey = getHeader('X-API-Key');
   if (apiKey) {
     const hash = createHash('sha256').update(apiKey).digest('hex').slice(0, 16);
     return `key:${hash}`;
   }
 
-  const forwarded = c.req.header('X-Forwarded-For');
+  const forwarded = getHeader('X-Forwarded-For');
   if (forwarded) {
     const clientIp = forwarded.split(',')[0]?.trim();
     if (clientIp) return `ip:${clientIp}`;
   }
 
   return 'ip:unknown';
+}
+
+function extractClientKey(c: Context): string {
+  return extractClientKeyFromHeaders((name) => c.req.header(name));
 }
 
 // ============================================================================
