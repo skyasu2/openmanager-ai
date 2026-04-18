@@ -1,12 +1,12 @@
 > Owner: project
-> Status: Backlog — `handoff persistence contract`, `429 UX source-hardening`, `Job Queue agent-path`, `/api/ai/jobs` POST gateway limiter alignment, frontend AI gateway session-aware limiter identity, daily-limit semantics, Cloud Run forwarded identity, retry limiter alignment, Cloud Run jobs read/write limiter split slice는 완료. Cloud Run daily/window 정책 재평가 잔여는 backlog 유지.
+> Status: Approved (slice) — `handoff persistence contract`, `429 UX source-hardening`, `Job Queue agent-path`, `/api/ai/jobs` POST gateway limiter alignment, frontend AI gateway session-aware limiter identity, daily-limit semantics, Cloud Run forwarded identity, retry limiter alignment, Cloud Run jobs read/write limiter split slice는 완료. 이번 승인 범위는 Cloud Run daily semantics alignment에 한정.
 > Doc type: Plan
 > Last reviewed: 2026-04-17
 > Tags: ai,ux,rate-limit,visibility
 
 # AI Response Visibility & Rate Limit Plan (2026-04-08)
 
-- 상태: **Backlog (partial complete)** — AnalysisBasisBadge 중심 visibility 개선과 `handoff persistence contract`, `429 UX source-hardening`, `Job Queue agent-path`, `/api/ai/jobs` POST gateway limiter alignment, frontend AI gateway session-aware limiter identity, daily-limit semantics, Cloud Run forwarded identity, retry limiter alignment, Cloud Run jobs read/write limiter split slice는 완료됐다. 남은 범위는 Cloud Run daily/window 정책 재평가다.
+- 상태: **Approved (slice)** — AnalysisBasisBadge 중심 visibility 개선과 `handoff persistence contract`, `429 UX source-hardening`, `Job Queue agent-path`, `/api/ai/jobs` POST gateway limiter alignment, frontend AI gateway session-aware limiter identity, daily-limit semantics, Cloud Run forwarded identity, retry limiter alignment, Cloud Run jobs read/write limiter split slice는 완료됐다. 이번 승인 범위는 Cloud Run daily semantics alignment이며, 그 이후 남은 범위는 Cloud Run window 수치 재평가다.
 - 작성일: 2026-04-08 | 상태 갱신: 2026-04-18
 - TODO.md 연결: Backlog > AI Response Visibility & Rate Limit
 - 목표: AI 질의 과정의 가시성을 실제 실행 흐름과 맞추고, rate limit을 사용자에게 설명 가능한 제약으로 바꾼다.
@@ -84,6 +84,16 @@
 - `GET /api/jobs/:id`, `GET /api/jobs/:id/progress`는 별도 read bucket으로 분리됐다.
 - 이로써 job status/progress polling이 queue creation/process minute limit을 잠식하던 정책 drift를 제거했다.
 - 이번 slice는 Cloud Run jobs read/write 분리만 다루며, Cloud Run daily/window 수치 재평가는 후속 backlog로 남긴다.
+
+### 이번 승인 slice (`2026-04-18`, Cloud Run daily semantics alignment)
+
+- 목표: Cloud Run `supervisor`와 `jobs/process` 경로도 frontend와 같은 `daily` semantics를 제공해, `source=cloud-run-ai` 429에서도 `limitScope=daily`와 `X-RateLimit-Daily-*`를 일관되게 노출한다.
+- 범위:
+  - Cloud Run rate limiter에 optional `dailyLimit`과 `daily` result support 추가
+  - `supervisor`, `jobs/process` write bucket에 `daily=100` 적용
+  - `jobs` polling read bucket은 daily 미적용 유지
+  - 429 payload에서 `limitScope=daily`, `dailyLimitExceeded=true`, daily headers 반환
+  - frontend limiter 수치, Cloud Run minute window 수치, `/api/jobs` read bucket 수치 변경은 이번 slice 제외
 
 ### 이번 승인 slice (`2026-04-18`, 3차)
 
