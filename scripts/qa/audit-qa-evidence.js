@@ -118,6 +118,39 @@ function summarizeReferencedPrefix(fileInfos, referencedPaths, prefix) {
   );
 }
 
+function summarizeReferencedRuns(fileInfos, artifactRefs, runTitleById, prefix) {
+  const sizeByPath = new Map(fileInfos.map((info) => [info.relativePath, info.size]));
+  const seenRunPathPairs = new Set();
+  const runSummaries = new Map();
+
+  for (const entry of artifactRefs) {
+    if (!entry.path.startsWith(prefix)) continue;
+    if (!sizeByPath.has(entry.path)) continue;
+
+    const dedupeKey = `${entry.runId}::${entry.path}`;
+    if (seenRunPathPairs.has(dedupeKey)) continue;
+    seenRunPathPairs.add(dedupeKey);
+
+    const current =
+      runSummaries.get(entry.runId) || {
+        runId: entry.runId,
+        title: runTitleById.get(entry.runId) || '',
+        count: 0,
+        bytes: 0,
+      };
+
+    current.count += 1;
+    current.bytes += sizeByPath.get(entry.path) || 0;
+    runSummaries.set(entry.runId, current);
+  }
+
+  return [...runSummaries.values()].sort((left, right) => {
+    if (right.bytes !== left.bytes) return right.bytes - left.bytes;
+    if (right.count !== left.count) return right.count - left.count;
+    return left.runId.localeCompare(right.runId);
+  });
+}
+
 function collectRunRecords() {
   return walkFiles(RUNS_ROOT)
     .filter((filePath) => /^qa-run-QA-.*\.json$/i.test(path.basename(filePath)))
@@ -202,6 +235,7 @@ function main() {
       .map((entry) => entry.path)
       .filter((entry) => entry.startsWith('reports/qa/evidence/'))
   );
+  const runTitleById = new Map(runs.map((run) => [run.runId, run.title || '']));
 
   const orphanEvidence = evidenceFiles.filter(
     (relativePath) => !referencedEvidence.has(relativePath)
@@ -247,6 +281,18 @@ function main() {
     referencedEvidence,
     'reports/qa/evidence/legacy/'
   );
+  const referencedLegacyRuns = summarizeReferencedRuns(
+    evidenceFileInfos,
+    artifactRefs,
+    runTitleById,
+    'reports/qa/evidence/legacy/'
+  );
+  const referencedLegacyRunsLimited = referencedLegacyRuns
+    .slice(0, STORAGE_DEFAULTS.topFiles)
+    .map((entry) => {
+      const titleSuffix = entry.title ? ` | ${entry.title}` : '';
+      return `${entry.runId} | ${entry.count} files | ${formatBytes(entry.bytes)}${titleSuffix}`;
+    });
 
   const budgetWarnings = [];
   if (qaSummary.bytes > STORAGE_DEFAULTS.qaWarnBytes) {
@@ -365,6 +411,13 @@ function main() {
   console.log('');
   console.log(
     formatList(
+      `Top ${STORAGE_DEFAULTS.topFiles} referenced legacy runs`,
+      referencedLegacyRunsLimited
+    )
+  );
+  console.log('');
+  console.log(
+    formatList(
       `Archive candidates (max ${STORAGE_DEFAULTS.maxArchiveCandidates} shown)`,
       archiveCandidatesLimited
     )
@@ -400,5 +453,6 @@ if (require.main === module) {
 
 module.exports = {
   summarizeReferencedPrefix,
+  summarizeReferencedRuns,
   formatBytes,
 };

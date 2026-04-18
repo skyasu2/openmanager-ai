@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (QA evidence audit legacy-reference 가시성 개선)
+**Last Updated**: 2026-04-18 KST (QA evidence audit legacy-run triage 가시성 개선)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -30,6 +30,15 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-18 #138)
+- [x] QA evidence audit legacy-run triage 가시성 개선
+  - `qa:evidence:audit`에 `Top referenced legacy runs` 섹션을 추가해 어떤 QA run 묶음이 가장 많은 tracker-referenced legacy proof를 보유하는지 바로 확인할 수 있게 정리
+  - 이 목록은 explicit override 검토용 수동 triage 출력이며, 자동 archive 후보가 아니라는 해석 규칙을 README에 명시
+  - 검증:
+    - `npx vitest run tests/unit/qa/qa-evidence-audit.test.ts`
+    - `npm run qa:evidence:audit`
+    - `npm run docs:lint:changed`
 
 ### Completed (2026-04-18 #137)
 - [x] QA evidence audit legacy-reference 가시성 개선
