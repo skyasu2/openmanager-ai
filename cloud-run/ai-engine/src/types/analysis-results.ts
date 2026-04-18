@@ -63,8 +63,8 @@ export interface ForecastBreachItem {
   serverName: string;
   metric: string;
   currentValue: number;
-  /** 1시간 선형 투영값 — 미래 예측이 아니라 현재 추세 외삽 */
-  projectedValue1h: number;
+  /** 30분 선형 투영값 — 미래 예측이 아니라 현재 추세 외삽 (backtest 최적 horizon) */
+  projectedValue30m: number;
   warningThreshold: number;
   riskLevel: 'medium' | 'high';
 }

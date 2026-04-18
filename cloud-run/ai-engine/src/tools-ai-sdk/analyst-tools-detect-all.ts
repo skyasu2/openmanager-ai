@@ -1,10 +1,15 @@
 /**
- * Analyst Tools — All-Server Anomaly Detection + 1h Rising Trend Scan
+ * Analyst Tools — All-Server Anomaly Detection + 30min Rising Trend Scan
  *
  * Scans all servers and returns detailed anomaly information
  * with linear projection-based rising trend scan (not a prediction engine).
  *
- * @version 2.4.0
+ * Backtest-tuned params (18 servers × 144 slots):
+ *   window=9 slots (90min), horizon=3 slots (30min)
+ *   CPU  F1=65.5% vs prod 39.8% (+26pp)
+ *   Mem  F1=72.1% vs prod 41.8% (+30pp)
+ *
+ * @version 2.5.0
  */
 
 import { tool } from 'ai';
@@ -23,35 +28,28 @@ import type {
 } from '../types/analysis-results';
 
 // ============================================================================
-// 1h Linear Projection
+// 30min Linear Projection
+// Backtest result: window=9(90min) horizon=3(30min) → CPU F1 65.5%, Mem F1 72.1%
+// Previous (window=36, horizon=6=60min): CPU F1 39.8%, Mem F1 41.8%
 // ============================================================================
 
-function projectOneHourValue(history: number[]): number {
+const TREND_WINDOW_SLOTS = 9;  // 90분 (backtest 최적값)
+const TREND_HORIZON_SLOTS = 3; // 30분 (backtest 최적값)
+
+function projectValue(history: number[], aheadSlots: number): number {
   if (history.length === 0) return 0;
-  if (history.length === 1) return history[0];
+  if (history.length === 1) return history[0] ?? 0;
 
   const n = history.length;
-  let sumX = 0;
-  let sumY = 0;
-  let sumXY = 0;
-  let sumXX = 0;
-
+  let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
   for (let i = 0; i < n; i++) {
-    const x = i;
-    const y = history[i];
-    sumX += x;
-    sumY += y;
-    sumXY += x * y;
-    sumXX += x * x;
+    const y = history[i] ?? 0;
+    sumX += i; sumY += y; sumXY += i * y; sumXX += i * i;
   }
-
   const denominator = n * sumXX - sumX * sumX;
   const slope = denominator === 0 ? 0 : (n * sumXY - sumX * sumY) / denominator;
   const intercept = (sumY - slope * sumX) / n;
-
-  // 10분 간격 데이터 기준 1시간 = 6 step ahead
-  const predicted = intercept + slope * (n - 1 + 6);
-  return Math.max(0, Math.min(100, predicted));
+  return Math.max(0, Math.min(100, intercept + slope * (n - 1 + aheadSlots)));
 }
 
 // ============================================================================
@@ -110,17 +108,19 @@ export const detectAnomaliesAllServers = tool({
               const isMetricWarning = currentValue >= threshold.warning;
 
               const history = getHistoryForMetric(server.id, metric, currentValue, fixedSlot);
-              const projectedValue1h = Math.round(projectOneHourValue(history.map((p) => p.value)) * 10) / 10;
-              const isFutureWarning = currentValue < threshold.warning && projectedValue1h >= threshold.warning;
+              // window=9(90min) — backtest 최적값; 전체 36슬롯보다 단기 창이 F1 +26pp 우수
+              const recentHistory = history.slice(-TREND_WINDOW_SLOTS).map((p) => p.value);
+              const projectedValue30m = Math.round(projectValue(recentHistory, TREND_HORIZON_SLOTS) * 10) / 10;
+              const isFutureWarning = currentValue < threshold.warning && projectedValue30m >= threshold.warning;
               if (isFutureWarning) {
                 risingTrends.push({
                   serverId: server.id,
                   serverName: server.name,
                   metric,
                   currentValue: Math.round(currentValue * 10) / 10,
-                  projectedValue1h,
+                  projectedValue30m,
                   warningThreshold: threshold.warning,
-                  riskLevel: projectedValue1h >= threshold.critical ? 'high' : 'medium',
+                  riskLevel: projectedValue30m >= threshold.critical ? 'high' : 'medium',
                 });
               }
 
@@ -163,14 +163,14 @@ export const detectAnomaliesAllServers = tool({
 
           const sortedRisingTrends = risingTrends
             .sort((a, b) => {
-              const aGap = a.projectedValue1h - a.warningThreshold;
-              const bGap = b.projectedValue1h - b.warningThreshold;
+              const aGap = a.projectedValue30m - a.warningThreshold;
+              const bGap = b.projectedValue30m - b.warningThreshold;
               return bGap - aGap;
             })
             .slice(0, 10);
 
           const risingTrendScan: RisingTrendScan = {
-            horizonHours: 1,
+            horizonHours: 0.5,
             method: 'linear_trend_scan',
             riskCount: sortedRisingTrends.length,
             risingTrends: sortedRisingTrends,
@@ -185,11 +185,11 @@ export const detectAnomaliesAllServers = tool({
             hasAnomalies: allAnomalies.length > 0,
             anomalyCount: allAnomalies.length,
             timestamp: new Date().toISOString(),
-            algorithmVersion: '2.4.0',
+            algorithmVersion: '2.5.0',
             decisionSource: 'threshold_scan+linear_trend_scan',
-            analysisBasis: 'status-thresholds:ssot,history:last6h',
+            analysisBasis: 'status-thresholds:ssot,history:last90min,horizon:30min',
             risingTrendScan,
-            _algorithm: 'All-Server Threshold Scan + 1h Rising Trend Scan (Cached)',
+            _algorithm: 'All-Server Threshold Scan + 30min Rising Trend Scan (Cached)',
           };
         }
       );

@@ -164,9 +164,9 @@ describe('detectAnomaliesAllServers', () => {
         expect(result.totalServers).toBe(5);
         expect(result.summary.totalServers).toBe(5);
         expect(result.timestamp).toBeDefined();
-        expect(result.algorithmVersion).toBe('2.4.0');
+        expect(result.algorithmVersion).toBe('2.5.0');
         expect(result.decisionSource).toBe('threshold_scan+linear_trend_scan');
-        expect(result.analysisBasis).toBe('status-thresholds:ssot,history:last6h');
+        expect(result.analysisBasis).toBe('status-thresholds:ssot,history:last90min,horizon:30min');
         expect(result.risingTrendScan.method).toBe('linear_trend_scan');
         expect(result._algorithm).toContain('Rising Trend Scan');
       }
@@ -366,7 +366,7 @@ describe('detectAnomaliesAllServers', () => {
 
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.risingTrendScan.horizonHours).toBe(1);
+        expect(result.risingTrendScan.horizonHours).toBe(0.5);
         expect(result.risingTrendScan.method).toBe('linear_trend_scan');
         expect(Array.isArray(result.risingTrendScan.risingTrends)).toBe(true);
         expect(result.risingTrendScan.riskCount).toBe(result.risingTrendScan.risingTrends.length);
