@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (OTel Phase 3-A AZ2 LB slice 승인)
+**Last Updated**: 2026-04-18 KST (OTel Phase 3-A AZ2 LB slice 완료)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| OTel topology improvement - Phase 3-A AZ2 LB | Medium | approved | `lb-haproxy-dc1-03`를 AZ2 inventory로 추가. 범위는 `resource-catalog`, `server-registry`, 24개 hourly, `timeseries`, `otel-fix`에 한정. Redis/NFS 추가 노드와 precomputed-state 재생성은 제외. |
+| *(none)* | — | — | 현재 활성 작업 없음 |
 
 ---
 
@@ -25,12 +25,22 @@
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
 | AI Response Visibility & Rate Limit (Phase 1~5) | Medium | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). handoff 가시성 UX, 429 UX, Job Queue agent path, limiter 정책 재조정. 남은 실질 backlog는 Cloud Run 정책 재평가. |
 | ~~AI Stream Route Contract - residual cleanup~~ | — | **완료** — archive 이동. |
-| OTel 토폴로지 개선 (Phase 3) | Medium | 계획서: [otel-topology-improvement-plan.md](otel-topology-improvement-plan.md). baseline debt 정리까지 완료. 현재는 Phase 3-A `lb-haproxy-dc1-03`만 active slice이며, 나머지 증설(`cache-redis-dc1-03`, `storage-nfs-dc1-02`)과 관련 state 확장은 backlog. |
+| OTel 토폴로지 개선 (Phase 3) | Medium | 계획서: [otel-topology-improvement-plan.md](otel-topology-improvement-plan.md). Phase 3-A `lb-haproxy-dc1-03` 완료. 남은 실질 backlog는 `cache-redis-dc1-03`, `storage-nfs-dc1-02`, 필요 시 precomputed-state 재생성. |
 | Storybook circular chunk warning 정리 | Low | non-blocking, stable 승격 후 재평가 |
 
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-18 #126)
+- [x] OTel topology improvement - Phase 3-A AZ2 LB 완료
+  - `lb-haproxy-dc1-03`를 `resource-catalog`, `server-registry`, 24개 hourly, `timeseries`에 추가
+  - `otel-fix.ts`에 AZ2 LB datapoint/timeseries 보정 helper 추가
+  - `otel-verify.ts`에 Phase 3-A inventory 검증 항목 추가
+  - 검증:
+    - targeted: `npx vitest run tests/unit/otel-topology-phase3-lb-az2.contract.test.ts tests/unit/otel-topology-baseline-debt.contract.test.ts tests/unit/otel-topology-backup.contract.test.ts tests/unit/otel-topology-redis-cross-az.contract.test.ts tests/unit/otel-topology-nfs-spof.contract.test.ts`
+    - targeted: `npm run data:verify` (`34 passed, 0 failed`)
+    - root gate: `npm run type-check && npm run lint && npm run test:quick`
 
 ### Completed (2026-04-18 #125)
 - [x] OTel topology improvement - baseline debt cleanup 완료

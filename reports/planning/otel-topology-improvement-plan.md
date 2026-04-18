@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Approved (slice) — Phase 1 `db-mysql-dc1-backup` realism, Phase 2-A `Redis cross-AZ latency`, Phase 2-B `NFS SPOF`, baseline debt cleanup slice는 완료. 이번 승인 범위는 Phase 3-A `lb-haproxy-dc1-03` 추가에 한정.
+> Status: Backlog — Phase 1 `db-mysql-dc1-backup` realism, Phase 2-A `Redis cross-AZ latency`, Phase 2-B `NFS SPOF`, baseline debt cleanup, Phase 3-A `lb-haproxy-dc1-03` slice는 완료. 남은 backlog는 `cache-redis-dc1-03`, `storage-nfs-dc1-02`, 필요 시 precomputed-state 재생성.
 > Doc type: Reference
 > Last reviewed: 2026-04-17
 > Tags: otel-data, topology, infrastructure, data-quality
@@ -187,6 +187,12 @@ backup 전용으로 스펙 다운 (8c/32GB/1TB) + 역할 설명 명시.
   - `otel-fix.ts`에 신규 LB datapoint 생성 helper 추가
   - `cache-redis-dc1-03`, `storage-nfs-dc1-02`, `precomputed-state` 재생성은 이번 slice 제외
 
+### 이번 slice 완료 결과 (`2026-04-18`, Phase 3-A)
+
+- `lb-haproxy-dc1-03`는 이제 `resource-catalog`, `server-registry`, 24개 hourly, `timeseries`에 모두 존재한다.
+- `otel-fix.ts`는 AZ2 LB datapoint와 timeseries row를 재생성할 수 있고, `otel-verify.ts`는 이 inventory 계약을 검증한다.
+- `data:verify`는 `34 passed, 0 failed`로 유지된다.
+- 남은 Phase 3 backlog는 `cache-redis-dc1-03`, `storage-nfs-dc1-02`, 필요 시 `precomputed-state` 재생성이다.
 
 ---
 
