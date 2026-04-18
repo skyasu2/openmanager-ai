@@ -149,10 +149,15 @@ const RATE_LIMIT_CONFIGS: Record<string, RateLimitConfig> = {
     windowMs: 60 * 1000, // 1분에 30회
     keyPrefix: 'rl:embedding',
   },
-  jobs: {
+  jobsWrite: {
     maxRequests: 5,
-    windowMs: 60 * 1000, // 1분에 5회
-    keyPrefix: 'rl:jobs',
+    windowMs: 60 * 1000, // 1분에 5회 (job creation / processing)
+    keyPrefix: 'rl:jobs:write',
+  },
+  jobsRead: {
+    maxRequests: 60,
+    windowMs: 60 * 1000, // 1분에 60회 (polling / status reads)
+    keyPrefix: 'rl:jobs:read',
   },
   default: {
     maxRequests: 30,
@@ -162,12 +167,17 @@ const RATE_LIMIT_CONFIGS: Record<string, RateLimitConfig> = {
 };
 
 /**
- * Resolve rate limit config from request path
+ * Resolve rate limit config from request path + method.
+ * Jobs processing is a strict write workload, while status/progress polling
+ * should not consume the same 5/min bucket.
  */
-function resolveConfig(path: string): RateLimitConfig {
+function resolveConfig(path: string, method: string): RateLimitConfig {
   if (path.includes('/supervisor')) return RATE_LIMIT_CONFIGS.supervisor;
   if (path.includes('/embedding')) return RATE_LIMIT_CONFIGS.embedding;
-  if (path.includes('/jobs')) return RATE_LIMIT_CONFIGS.jobs;
+  if (path.includes('/jobs/process') && method.toUpperCase() === 'POST') {
+    return RATE_LIMIT_CONFIGS.jobsWrite;
+  }
+  if (path.includes('/jobs')) return RATE_LIMIT_CONFIGS.jobsRead;
   return RATE_LIMIT_CONFIGS.default;
 }
 
@@ -220,7 +230,7 @@ export async function rateLimitMiddleware(
   next: Next
 ): Promise<Response | void> {
   const path = c.req.path;
-  const config = resolveConfig(path);
+  const config = resolveConfig(path, c.req.method);
   const clientKey = extractClientKey(c);
   const rateLimitKey = `${clientKey}:${path.split('/').slice(0, 4).join('/')}`;
 
