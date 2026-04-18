@@ -130,6 +130,115 @@ function dedupeToolNames(toolNames: string[]): string[] {
   return [...new Set(toolNames)];
 }
 
+function normalizePreviewForDetection(preview: string | undefined): string {
+  return preview?.replace(/\s+/g, '') ?? '';
+}
+
+function isCurrentMetricRankingOutput(output: unknown): boolean {
+  if (!isRecord(output)) return false;
+
+  if (output.responseKind === 'current_metric_ranking') {
+    return true;
+  }
+
+  const query = output.query;
+  if (!isRecord(query)) return false;
+
+  return (
+    query.timeRange === 'current' &&
+    query.aggregation === 'none' &&
+    typeof query.sortBy === 'string' &&
+    typeof query.limit === 'number' &&
+    query.limit > 0
+  );
+}
+
+function isCurrentMetricRankingSummary(
+  summary: ToolResultSummary | undefined
+): boolean {
+  if (!summary || summary.toolName !== 'getServerMetricsAdvanced') {
+    return false;
+  }
+
+  const preview = normalizePreviewForDetection(summary.preview);
+  return (
+    preview.includes('"responseKind":"current_metric_ranking"') ||
+    (preview.includes('"timeRange":"current"') &&
+      preview.includes('"aggregation":"none"') &&
+      preview.includes('"sortBy":"') &&
+      preview.includes('"limit":'))
+  );
+}
+
+function shouldPrioritizeMetricRankingPresentation(params: {
+  toolParts: ToolPartWithCallId[];
+  metadataToolResultSummaries?: ToolResultSummary[];
+}): boolean {
+  if (
+    params.toolParts.some(
+      (part) =>
+        part.type === 'tool-getServerMetricsAdvanced' &&
+        isCurrentMetricRankingOutput(extractToolOutput(part))
+    )
+  ) {
+    return true;
+  }
+
+  return (params.metadataToolResultSummaries ?? []).some(
+    isCurrentMetricRankingSummary
+  );
+}
+
+function getMetricRankingToolPriority(toolName: string): number {
+  if (toolName === 'getServerMetricsAdvanced') return 0;
+  if (toolName === 'filterServers') return 1;
+  return 2;
+}
+
+function reorderToolNamesForDisplay(
+  toolNames: string[],
+  prioritizeMetricRanking: boolean
+): string[] {
+  if (!prioritizeMetricRanking) {
+    return toolNames;
+  }
+
+  return [...toolNames].sort(
+    (left, right) =>
+      getMetricRankingToolPriority(left) - getMetricRankingToolPriority(right)
+  );
+}
+
+function reorderToolPartsForDisplay(
+  toolParts: ToolPartWithCallId[],
+  prioritizeMetricRanking: boolean
+): ToolPartWithCallId[] {
+  if (!prioritizeMetricRanking) {
+    return toolParts;
+  }
+
+  return [...toolParts].sort(
+    (left, right) =>
+      getMetricRankingToolPriority(left.type.slice(5)) -
+      getMetricRankingToolPriority(right.type.slice(5))
+  );
+}
+
+function reorderToolResultSummariesForDisplay(
+  summaries: ToolResultSummary[],
+  prioritizeMetricRanking: boolean
+): ToolResultSummary[] {
+  if (!prioritizeMetricRanking) {
+    return summaries;
+  }
+
+  return [...summaries].sort(
+    (left, right) =>
+      getMetricRankingToolPriority(left.toolName) -
+      getMetricRankingToolPriority(right.toolName)
+  );
+}
+
 function mergeMessageMetadata(
   base: MessageMetadata | undefined,
   deferred: Record<string, unknown> | undefined
@@ -511,16 +620,28 @@ export function transformUIMessageToEnhanced(
             )
         )
       : [];
+  const metadataToolResultSummaries =
+    metadata?.toolResultSummaries && metadata.toolResultSummaries.length > 0
+      ? metadata.toolResultSummaries
+      : undefined;
+  const prioritizeMetricRankingPresentation =
+    shouldPrioritizeMetricRankingPresentation({
+      toolParts: [...messageToolParts, ...deferredToolParts],
+      metadataToolResultSummaries,
+    });
 
   // Tool parts 추출 (null/undefined 방어 코드 추가)
-  const toolParts = [...messageToolParts, ...deferredToolParts];
+  const toolParts = reorderToolPartsForDisplay(
+    [...messageToolParts, ...deferredToolParts],
+    prioritizeMetricRankingPresentation
+  );
   const derivedToolResultSummaries = toolParts
     .map((toolPart) => buildToolResultSummary(toolPart))
     .filter((summary): summary is ToolResultSummary => summary !== null);
-  const toolResultSummaries =
-    metadata?.toolResultSummaries && metadata.toolResultSummaries.length > 0
-      ? metadata.toolResultSummaries
-      : derivedToolResultSummaries;
+  const toolResultSummaries = reorderToolResultSummariesForDisplay(
+    metadataToolResultSummaries ?? derivedToolResultSummaries,
+    prioritizeMetricRankingPresentation
+  );
 
   // ThinkingSteps 생성
   const thinkingSteps = toolParts.map((toolPart) => {
@@ -587,7 +708,10 @@ export function transformUIMessageToEnhanced(
     const isJobQueue = currentMode === 'job-queue';
 
     // 실제 호출된 도구 이름 추출
-    const metadataToolNames = normalizeToolNames(metadata?.toolsCalled);
+    const metadataToolNames = reorderToolNamesForDisplay(
+      normalizeToolNames(metadata?.toolsCalled),
+      prioritizeMetricRankingPresentation
+    );
     const calledToolNames = dedupeToolNames([
       ...metadataToolNames,
       ...toolParts.map((p) => p.type.slice(5)),

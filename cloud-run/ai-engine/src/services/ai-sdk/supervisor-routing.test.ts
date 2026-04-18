@@ -341,6 +341,19 @@ describe('createPrepareStep', () => {
     });
   });
 
+  it('should force getServerMetricsAdvanced for current memory usage ranking queries', async () => {
+    const prepare = createPrepareStep('현재 메모리 사용률 상위 3대 알려줘');
+    const result = await prepare({ stepNumber: 0 });
+    expect(result.activeTools).toEqual([
+      'getServerMetricsAdvanced',
+      'finalAnswer',
+    ]);
+    expect(result.toolChoice).toEqual({
+      type: 'tool',
+      toolName: 'getServerMetricsAdvanced',
+    });
+  });
+
   it('should finalize metric ranking queries after the forced advanced lookup step', async () => {
     const prepare = createPrepareStep('메모리 상위 3대 알려줘');
     const result = await prepare({ stepNumber: 1 });

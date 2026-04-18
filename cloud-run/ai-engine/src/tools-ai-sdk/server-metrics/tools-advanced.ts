@@ -263,6 +263,9 @@ export const getServerMetricsAdvanced = tool({
 
         return {
           success: true,
+          ...(isCurrentRankingQuery && {
+            responseKind: 'current_metric_ranking' as const,
+          }),
           answer: interpretation || `${timeRangeKr} 데이터 조회 완료`,
           globalSummary,
           serverCount: filteredResults.length,

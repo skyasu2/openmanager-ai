@@ -525,6 +525,60 @@ describe('transformMessages', () => {
     ]);
   });
 
+  it('prioritizes metric ranking tools over filterServers in analysis metadata', () => {
+    const messages = transformMessages(
+      [
+        createMessage({
+          id: 'u1',
+          role: 'user',
+          text: '현재 메모리 사용률 상위 3대 알려줘',
+        }),
+        createMessage({
+          id: 'a1',
+          role: 'assistant',
+          text: '상위 3대는 cache-redis-dc1-02, api-was-dc1-01, api-was-dc1-02 입니다.',
+          metadata: {
+            toolsCalled: ['filterServers', 'getServerMetricsAdvanced'],
+            toolResultSummaries: [
+              {
+                toolName: 'filterServers',
+                label: '서버 필터링',
+                summary: '조건에 맞는 서버 3대를 반환했습니다.',
+                preview: '{"summary":{"matched":3,"returned":3}}',
+                status: 'completed',
+              },
+              {
+                toolName: 'getServerMetricsAdvanced',
+                label: '서버 메트릭 상세 조회',
+                summary:
+                  '메모리 사용률 상위 3대는 1. cache-redis-dc1-02 72%, 2. api-was-dc1-01 71%, 3. api-was-dc1-02 70%입니다.',
+                preview:
+                  '{"responseKind":"current_metric_ranking","query":{"timeRange":"current","aggregation":"none","sortBy":"memory","limit":3}}',
+                status: 'completed',
+              },
+            ],
+          },
+        }),
+      ],
+      { isLoading: false, currentMode: 'job-queue' }
+    );
+
+    const assistant = messages.find((m) => m.id === 'a1');
+
+    expect(assistant?.metadata?.analysisBasis?.toolsCalled).toEqual([
+      'getServerMetricsAdvanced',
+      'filterServers',
+    ]);
+    expect(
+      assistant?.metadata?.toolResultSummaries?.map(
+        (summary) => summary.toolName
+      )
+    ).toEqual(['getServerMetricsAdvanced', 'filterServers']);
+    expect(assistant?.thinkingSteps?.[0]?.step).toBe(
+      'getServerMetricsAdvanced'
+    );
+  });
+
   it('does not promote finalAnswer-only tool output to server realtime analysis', () => {
     const messages = transformMessages(
       [
