@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Backlog — Phase 1 `db-mysql-dc1-backup` realism, Phase 2-A `Redis cross-AZ latency`, Phase 2-B `NFS SPOF`, baseline debt cleanup, Phase 3-A `lb-haproxy-dc1-03`, Phase 3-B `cache-redis-dc1-03` slice는 완료. 남은 실질 backlog는 `storage-nfs-dc1-02`와 필요 시 `precomputed-state` 재생성.
+> Status: Approved (slice) — Phase 1 `db-mysql-dc1-backup` realism, Phase 2-A `Redis cross-AZ latency`, Phase 2-B `NFS SPOF`, baseline debt cleanup, Phase 3-A `lb-haproxy-dc1-03`, Phase 3-B `cache-redis-dc1-03` slice는 완료. 이번 승인 범위는 Phase 3-C `storage-nfs-dc1-02` hot-standby 추가에 한정.
 > Doc type: Reference
 > Last reviewed: 2026-04-17
 > Tags: otel-data, topology, infrastructure, data-quality
@@ -9,7 +9,7 @@
 ## 배경
 
 현재 `public/data/otel-data/` 사전 생성 데이터는 on-premise 1 DC / 3 AZ / 17대 구성을 표현하며,
-아래 분석에서 남은 구조적 취약점은 storage hot-standby 부재 중심으로 정리된다. AI가 이 데이터를 기반으로 진단할 때
+아래 분석에서 남은 구조적 취약점은 storage hot-standby 부재와 precomputed-state inventory 갭 중심으로 정리된다. AI가 이 데이터를 기반으로 진단할 때
 "정상 운영 중"으로만 해석되는 문제를 해결하고, 실제 운영 환경 수준의 현실성을 높이는 것이 목표.
 
 ## 현재 토폴로지
@@ -44,7 +44,7 @@ AZ1/2/3    AZ1/2/3     AZ1·AZ3     ← Storage NFS standby 부재
 서버 1대 추가:
 - `storage-nfs-dc1-02` AZ2 추가 (NFS HA standby)
 
-**장점**: 남은 storage SPOF를 직접 해소  
+**장점**: storage inventory를 3AZ로 직접 완성  
 **단점**: `precomputed-state`까지 포함하면 변경 범위가 커짐
 
 ### 옵션 B: 시나리오 데이터로 취약점 표현 (현 15대 유지)
@@ -209,6 +209,17 @@ backup 전용으로 스펙 다운 (8c/32GB/1TB) + 역할 설명 명시.
 - `otel-fix.ts`는 AZ3 Redis datapoint와 timeseries row를 재생성할 수 있고, `otel-verify.ts`는 이 inventory 계약을 검증한다.
 - `data:verify`는 `39 passed, 0 failed`로 유지된다.
 - 남은 Phase 3 backlog는 `storage-nfs-dc1-02`, 필요 시 `precomputed-state` 재생성이다.
+
+### 이번 승인 slice (`2026-04-18`, Phase 3-C)
+
+- 목표: `storage-nfs-dc1-02`를 AZ2 hot-standby storage node로 추가해 남은 NFS SPOF를 inventory 차원에서 완화한다.
+- 범위:
+  - `resource-catalog.json`에 `storage-nfs-dc1-02` 추가 (`AZ2`, `4c/16GB/5TB`, `server.purpose=hot-standby`)
+  - `src/config/server-registry.ts`에 신규 NFS IP 추가
+  - 24개 hourly 파일에 신규 storage metric datapoint 추가
+  - `timeseries.json`에 신규 storage `serverId`와 144포인트 추가
+  - `otel-fix.ts`, `otel-verify.ts`에 신규 storage standby inventory helper/검증 추가
+- `precomputed-state` 재생성, topology scenario reinterpretation, S3 gateway 변경은 이번 slice 제외
 
 ---
 
