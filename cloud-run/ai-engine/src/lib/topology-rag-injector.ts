@@ -196,7 +196,7 @@ function buildTopologyDocuments(catalog: OTelResourceCatalog): TopologyDocument[
     `총 서버 수: ${serverIds.length}대. 역할 분포: ${formatCountMap(roleCounts)}.`,
     `역할별 서버 묶음: ${roleGroups}.`,
     '대표 트래픽 경로: loadbalancer -> web -> application -> database, cache/storage 연계.',
-    '운영 메모: 토폴로지 질문은 역할 흐름 기준으로 해석하고, 병목·경보는 getServerMetrics와 dashboard metric으로 다시 확인한다.',
+    '운영 메모: 토폴로지 질문은 역할 흐름 기준으로 해석하고, 병목·경보는 metrics/API로 재확인한다.',
   ].join('\n');
   const placementOpsContent = [
     `기준 시각: ${catalog.generatedAt}`,
