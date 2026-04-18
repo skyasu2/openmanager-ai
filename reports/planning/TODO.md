@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (AI Response Visibility write bucket 재평가 종료)
+**Last Updated**: 2026-04-18 KST (QA evidence 저장소 용량 tracking 갱신)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -16,7 +16,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-04-15 재검증 기준 `reports/qa=53.78MiB`, `reports/qa/evidence=49.26MiB / 194파일`. `npm run qa:evidence:audit` orphan/missing `0`. 새 evidence 누적 시점에만 재평가. |
+| P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-04-18 재검증 기준 `reports/qa=61.12MiB`, `reports/qa/evidence=56.45MiB / 233파일`. `npm run qa:evidence:audit` 결과 orphan/missing/archive candidate `0`, size warning만 남음. policy-protected evidence로 판단되어 cleanup은 보류하고 새 evidence 누적 시점에만 재평가. |
 
 ## Backlog
 
@@ -30,6 +30,14 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-18 #136)
+- [x] QA evidence 저장소 용량 tracking 갱신
+  - `npm run qa:evidence:audit` 기준 `reports/qa=61.12MiB`, `reports/qa/evidence=56.45MiB / 233파일`로 증가 상태를 재확인
+  - orphan durable evidence, missing artifact path, archive candidate가 모두 `0`이라 cleanup 대상은 없다고 판단
+  - `qa-evidence-size` 경고만 남아 있어 `reports/qa/README.md` 정책에 따라 policy-protected evidence backlog로 유지
+  - 검증:
+    - `npm run qa:evidence:audit`
 
 ### Completed (2026-04-18 #135)
 - [x] AI Response Visibility - write bucket 재평가 종료
