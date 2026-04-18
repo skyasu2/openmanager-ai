@@ -284,6 +284,44 @@ run_cleanup_revisions() {
   echo "   [revisions] ✅ cleanup summary: ${deleted_count} deleted, ${failed_count} failed"
 }
 
+ensure_latest_revision_traffic() {
+  local service_name="$1"
+  local region="$2"
+  local latest_ready_revision active_revision
+
+  echo "🔀 Ensuring 100% traffic routes to the latest ready revision..."
+  if ! gcloud run services update-traffic "$service_name" \
+    --platform managed \
+    --region "$region" \
+    --to-latest >/dev/null 2>&1; then
+    echo "   ❌ Failed to update traffic to latest revision"
+    return 1
+  fi
+
+  sleep 2
+
+  latest_ready_revision=$(gcloud run services describe "$service_name" \
+    --platform managed \
+    --region "$region" \
+    --format='value(status.latestReadyRevisionName)')
+  active_revision=$(gcloud run services describe "$service_name" \
+    --platform managed \
+    --region "$region" \
+    --format='value(status.traffic[0].revisionName)')
+
+  if [ -z "$latest_ready_revision" ] || [ -z "$active_revision" ]; then
+    echo "   ❌ Failed to resolve latest/active revision after traffic update"
+    return 1
+  fi
+
+  if [ "$active_revision" != "$latest_ready_revision" ]; then
+    echo "   ❌ Traffic is still pinned to ${active_revision} (latest ready: ${latest_ready_revision})"
+    return 1
+  fi
+
+  echo "   ✅ Traffic routed to latest revision: ${active_revision}"
+}
+
 assert_no_forbidden_args() {
   for arg in "$@"; do
     local_arg="${arg,,}"
@@ -489,6 +527,12 @@ if [ $? -eq 0 ]; then
     echo "✅ Deployment Successful!"
     echo "🌍 Service URL: $SERVICE_URL"
     echo "=============================================================================="
+
+    echo ""
+    if ! ensure_latest_revision_traffic "$SERVICE_NAME" "$REGION"; then
+      echo "❌ Deployment completed but latest revision is not serving traffic."
+      exit 1
+    fi
 
     # 3. Health Check
     echo ""
