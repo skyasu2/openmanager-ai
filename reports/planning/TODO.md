@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (QA evidence audit shared-legacy bundle 가시성 개선)
+**Last Updated**: 2026-04-18 KST (QA evidence audit unique-footprint 가시성 개선)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -30,6 +30,15 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-18 #140)
+- [x] QA evidence audit unique-footprint 가시성 개선
+  - `qa:evidence:audit`에 `Top unique legacy run footprints` 섹션을 추가해 각 run이 혼자 보유하는 legacy artifact의 실제 디스크 footprint를 바로 확인할 수 있게 정리
+  - `shared bundle`로 커 보여도 실제 절감 가능 용량은 작은 run을 구분할 수 있도록 README 해석 규칙을 보강
+  - 검증:
+    - `npx vitest run tests/unit/qa/qa-evidence-audit.test.ts`
+    - `npm run qa:evidence:audit`
+    - `npm run docs:lint:changed`
 
 ### Completed (2026-04-18 #139)
 - [x] QA evidence audit shared-legacy bundle 가시성 개선

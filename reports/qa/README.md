@@ -202,6 +202,7 @@ reports/qa/
 - 최신 audit 출력의 `referenced legacy evidence` 줄은 이 size warning 중 얼마가 `reports/qa/evidence/legacy/` 아래의 tracker-referenced proof인지 바로 보여줍니다.
 - `Top referenced legacy runs` 섹션은 explicit override를 검토할 때 어떤 run 묶음이 legacy proof를 가장 많이 보유하는지 보여주는 수동 triage용 목록입니다. 자동 archive 후보가 아닙니다.
 - `Top shared legacy run bundles` 섹션은 여러 run이 같은 legacy artifact를 공동 참조하는 개선 묶음을 보여줍니다. 이 목록은 “같은 proof를 재사용하는 run 관계”를 파악하기 위한 것이며, 역시 자동 archive 후보가 아닙니다.
+- `Top unique legacy run footprints` 섹션은 특정 run이 혼자서 보유하는 legacy artifact의 실제 디스크 footprint를 보여줍니다. explicit override를 검토할 때 이 값이 낮으면, 해당 run의 ref를 줄여도 저장소 절감 효과가 거의 없다는 뜻입니다.
 - policy-protected evidence는 예를 들어 single-artifact first-paint proof, release/counting run의 대표 login/dashboard/AI proof, modal/detail/history 검증의 유일 스크린샷, 또는 같은 개선 묶음 안에서 비교 기준이 되는 local-vs-prod screenshot입니다.
 - 이 상태에서 추가 용량 절감은 routine cleanup이 아니라 명시적 archival/retention override 결정입니다. 기본 운용에서는 backlog를 tracking-only로 유지하고, 새로운 evidence가 더 쌓일 때만 재평가합니다.
 - explicit override batch를 1회 수행한 뒤에도 `qa-evidence-size`만 남아 있다면, 같은 evidence 집합에 대해 반복 cleanup을 하지 않고 backlog 경고로 유지합니다.

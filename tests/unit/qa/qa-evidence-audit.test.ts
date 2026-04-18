@@ -10,6 +10,7 @@ const {
   summarizeReferencedPrefix,
   summarizeReferencedRuns,
   summarizeSharedReferencedRuns,
+  summarizeUniqueReferencedRuns,
   formatBytes,
 } = require('../../../scripts/qa/audit-qa-evidence.js');
 
@@ -187,6 +188,69 @@ describe('qa-evidence-audit', () => {
         count: 1,
         bytes: 4096,
         peerCount: 2,
+      },
+    ]);
+  });
+
+  it('groups unique legacy evidence by run and excludes shared paths', () => {
+    const fileInfos = [
+      {
+        relativePath: 'reports/qa/evidence/legacy/2026/a.png',
+        size: 1024,
+      },
+      {
+        relativePath: 'reports/qa/evidence/legacy/2026/b.png',
+        size: 4096,
+      },
+      {
+        relativePath: 'reports/qa/evidence/legacy/2026/c.png',
+        size: 2048,
+      },
+    ];
+
+    const artifactRefs = [
+      {
+        runId: 'QA-1',
+        path: 'reports/qa/evidence/legacy/2026/a.png',
+      },
+      {
+        runId: 'QA-1',
+        path: 'reports/qa/evidence/legacy/2026/b.png',
+      },
+      {
+        runId: 'QA-2',
+        path: 'reports/qa/evidence/legacy/2026/b.png',
+      },
+      {
+        runId: 'QA-2',
+        path: 'reports/qa/evidence/legacy/2026/c.png',
+      },
+    ];
+
+    const runTitleById = new Map([
+      ['QA-1', 'Primary release gate'],
+      ['QA-2', 'Targeted follow-up'],
+    ]);
+
+    expect(
+      summarizeUniqueReferencedRuns(
+        fileInfos,
+        artifactRefs,
+        runTitleById,
+        'reports/qa/evidence/legacy/'
+      )
+    ).toEqual([
+      {
+        runId: 'QA-2',
+        title: 'Targeted follow-up',
+        count: 1,
+        bytes: 2048,
+      },
+      {
+        runId: 'QA-1',
+        title: 'Primary release gate',
+        count: 1,
+        bytes: 1024,
       },
     ]);
   });
