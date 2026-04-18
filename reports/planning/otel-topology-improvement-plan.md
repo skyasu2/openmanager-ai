@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Backlog — Phase 1 `db-mysql-dc1-backup` realism, Phase 2-A `Redis cross-AZ latency`, Phase 2-B `NFS SPOF`, baseline debt cleanup, Phase 3-A `lb-haproxy-dc1-03`, Phase 3-B `cache-redis-dc1-03`, Phase 3-C `storage-nfs-dc1-02` slice는 완료. 남은 실질 backlog는 `precomputed-state` 재생성 정리다.
+> Status: Approved (slice) — Phase 1 `db-mysql-dc1-backup` realism, Phase 2-A `Redis cross-AZ latency`, Phase 2-B `NFS SPOF`, baseline debt cleanup, Phase 3-A `lb-haproxy-dc1-03`, Phase 3-B `cache-redis-dc1-03`, Phase 3-C `storage-nfs-dc1-02` slice는 완료. 이번 승인 범위는 AI Engine bundled `otel-data` sync와 `precomputed-states.json` 재생성에 한정.
 > Doc type: Reference
 > Last reviewed: 2026-04-17
 > Tags: otel-data, topology, infrastructure, data-quality
@@ -9,7 +9,7 @@
 ## 배경
 
 현재 `public/data/otel-data/` 사전 생성 데이터는 on-premise 1 DC / 3 AZ / 18대 구성을 표현하며,
-아래 분석에서 남은 구조적 취약점은 precomputed-state inventory 갭과 storage failover semantics 문서화 중심으로 정리된다. AI가 이 데이터를 기반으로 진단할 때
+남은 실질 과제는 root OTel SSOT와 AI Engine bundled `otel-data` / `precomputed-states.json` 사이의 inventory drift 정리다. AI가 이 데이터를 기반으로 진단할 때
 "정상 운영 중"으로만 해석되는 문제를 해결하고, 실제 운영 환경 수준의 현실성을 높이는 것이 목표.
 
 ## 현재 토폴로지
@@ -228,6 +228,15 @@ backup 전용으로 스펙 다운 (8c/32GB/1TB) + 역할 설명 명시.
 - `otel-fix.ts`는 AZ2 NFS standby datapoint와 timeseries row를 재생성할 수 있고, `otel-verify.ts`는 이 inventory 계약을 검증한다.
 - `data:verify`는 `45 passed, 0 failed`로 유지된다.
 - 남은 backlog는 `precomputed-state` 재생성 정리뿐이다.
+
+### 이번 승인 slice (`2026-04-18`, precomputed-state sync)
+
+- 목표: `cloud-run/ai-engine/data/otel-data`와 `precomputed-states.json`이 root `public/data/otel-data`의 18대 inventory를 반영하도록 정리한다.
+- 범위:
+  - bundled `cloud-run/ai-engine/data/otel-data/resource-catalog.json`과 `hourly/*.json`을 root OTel SSOT 기준으로 동기화
+  - `cloud-run/ai-engine/data/precomputed-states.json`을 18대 inventory로 재생성
+  - drift 방지용 계약 테스트 추가
+  - root `public/data/otel-data`나 topology 시나리오 자체는 이번 slice에서 변경하지 않음
 
 ---
 

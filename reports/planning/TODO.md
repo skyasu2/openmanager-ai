@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (OTel Phase 3-C AZ2 NFS standby slice 완료)
+**Last Updated**: 2026-04-18 KST (OTel precomputed-state sync slice 승인)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| — | — | — | 현재 활성 작업 없음 |
+| OTel topology improvement - precomputed-state sync | Medium | approved | `cloud-run/ai-engine/data/otel-data`를 root `public/data/otel-data` 기준으로 동기화하고 `precomputed-states.json`을 18대 inventory로 재생성한다. 범위는 bundled `otel-data` 사본, `precomputed-states.json`, 계약 테스트에 한정. |
 
 ---
 
@@ -25,7 +25,7 @@
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
 | AI Response Visibility & Rate Limit (Phase 1~5) | Medium | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). handoff 가시성 UX, 429 UX, Job Queue agent path, limiter 정책 재조정. 남은 실질 backlog는 Cloud Run 정책 재평가. |
 | ~~AI Stream Route Contract - residual cleanup~~ | — | **완료** — archive 이동. |
-| OTel 토폴로지 개선 (Phase 3) | Medium | 계획서: [otel-topology-improvement-plan.md](otel-topology-improvement-plan.md). Phase 3-A `lb-haproxy-dc1-03`, Phase 3-B `cache-redis-dc1-03`, Phase 3-C `storage-nfs-dc1-02` 완료. 남은 실질 backlog는 `precomputed-state` 재생성 정리뿐이다. |
+| OTel 토폴로지 개선 (Phase 3) | Medium | 계획서: [otel-topology-improvement-plan.md](otel-topology-improvement-plan.md). Phase 3-A `lb-haproxy-dc1-03`, Phase 3-B `cache-redis-dc1-03`, Phase 3-C `storage-nfs-dc1-02` 완료. 현재는 precomputed-state sync slice만 active이며, 완료 시 OTel plan은 archive 후보가 된다. |
 | Storybook circular chunk warning 정리 | Low | non-blocking, stable 승격 후 재평가 |
 
 ---
