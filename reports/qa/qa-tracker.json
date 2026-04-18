@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-18T12:30:51.893Z"
+    "updatedAt": "2026-04-18T13:41:54.126Z"
   },
   "sequence": {
-    "nextRunNumber": 305
+    "nextRunNumber": 306
   },
   "summary": {
-    "totalRecordedRuns": 302,
-    "totalRuns": 258,
+    "totalRecordedRuns": 303,
+    "totalRuns": 259,
     "excludedRuns": 44,
-    "totalChecks": 2039,
-    "totalPassed": 1961,
+    "totalChecks": 2043,
+    "totalPassed": 1965,
     "totalFailed": 72,
     "completionRate": 100,
-    "completedItems": 299,
+    "completedItems": 302,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 15,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260418-0304",
-    "lastRecordedAt": "2026-04-18T12:30:51.893Z",
-    "latestRecordedRunId": "QA-20260418-0304",
-    "latestRecordedAt": "2026-04-18T12:30:51.893Z"
+    "lastRunId": "QA-20260418-0305",
+    "lastRecordedAt": "2026-04-18T13:41:54.126Z",
+    "latestRecordedRunId": "QA-20260418-0305",
+    "latestRecordedAt": "2026-04-18T13:41:54.126Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -7259,6 +7259,78 @@
       "overengineeringScope": "",
       "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
       "lastStatusChangeAt": "2026-04-18T12:30:51.893Z"
+    },
+    "ai-ranking-memory-live-route": {
+      "id": "ai-ranking-memory-live-route",
+      "title": "Memory top-N ranking uses deterministic live metric path on production",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260418-0305",
+      "firstSeenAt": "2026-04-18T13:41:54.126Z",
+      "lastSeenRunId": "QA-20260418-0305",
+      "lastSeenAt": "2026-04-18T13:41:54.126Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production QA: 현재 메모리 사용률 상위 3대 알려줘 returned db-mysql-dc1-primary 71% > api-was-dc1-01 65% > api-was-dc1-02 59%, with analysis basis summary showing 서버 메트릭 상세 조회.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-18T13:41:54.126Z"
+    },
+    "ai-ranking-cpu-live-route": {
+      "id": "ai-ranking-cpu-live-route",
+      "title": "CPU highest-server query returns live top server on production",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260418-0305",
+      "firstSeenAt": "2026-04-18T13:41:54.126Z",
+      "lastSeenRunId": "QA-20260418-0305",
+      "lastSeenAt": "2026-04-18T13:41:54.126Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production QA: 현재 CPU가 가장 높은 서버 알려줘 returned lb-haproxy-dc1-01 CPU 75%, with analysis basis summary showing 서버 메트릭 상세 조회.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-18T13:41:54.126Z"
+    },
+    "cloud-run-latest-traffic-recovery": {
+      "id": "cloud-run-latest-traffic-recovery",
+      "title": "Cloud Run service traffic restored to latest revision",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260418-0305",
+      "firstSeenAt": "2026-04-18T13:41:54.126Z",
+      "lastSeenRunId": "QA-20260418-0305",
+      "lastSeenAt": "2026-04-18T13:41:54.126Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Service traffic spec/status now points 100% to LATEST (ai-engine-00333-gks), removing the stale ai-engine-00329-jvq pin that kept production on the previous ranking path.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-18T13:41:54.126Z"
     }
   },
   "runs": [
@@ -27520,6 +27592,92 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 1
+    },
+    {
+      "runId": "QA-20260418-0305",
+      "recordedAt": "2026-04-18T13:41:54.126Z",
+      "recordedAtKst": "2026-04-18 22:41:54 KST",
+      "title": "Vercel targeted QA - AI ranking route live recovery",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260418-0305.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "ai-engine-00333-gks",
+        "deploymentUrl": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+        "commitSha": "c96881eb8"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "Vercel production guest session -> dashboard -> AI sidebar flow",
+        "AI sidebar query: 현재 메모리 사용률 상위 3대 알려줘",
+        "AI sidebar query: 현재 CPU가 가장 높은 서버 알려줘",
+        "Ranking responses return live current-metric ordering on production",
+        "Analysis basis summary shows 서버 메트릭 상세 조회 for ranking queries"
+      ],
+      "skippedSurfaces": [
+        "fullscreen AI workspace",
+        "Reporter/Analyst advanced packs",
+        "broad route regression pack",
+        "mobile layout pack"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-18T22:37:10+09:00",
+          "summary": "Current billing period reviewed after production QA; effective usage 11.0956 USD, billed 0.0000 USD. No unexpected usage spike was observed.",
+          "evidence": "npm run check:usage:vercel",
+          "url": ""
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Ranking fix sidebar screenshot",
+          "path": "reports/qa/evidence/qa-20260418-ranking-fix-sidebar.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Ranking fix full-page screenshot",
+          "path": "reports/qa/evidence/qa-20260418-ranking-fix-full.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Ranking fix session console",
+          "path": "reports/qa/evidence/qa-20260418-ranking-fix-console.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 3,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
