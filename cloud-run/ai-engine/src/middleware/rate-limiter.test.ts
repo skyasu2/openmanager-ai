@@ -82,7 +82,7 @@ describe('cloud run jobs limiter policy', () => {
     });
 
     expect(res.status).toBe(200);
-    expect(res.headers.get('X-RateLimit-Limit')).toBe('60');
+    expect(res.headers.get('X-RateLimit-Limit')).toBe('120');
   });
 });
 
@@ -127,6 +127,23 @@ describe('cloud run daily semantics', () => {
 });
 
 describe('cloud run supervisor health limiter policy', () => {
+  it('advertises a looser 120/min health bucket', async () => {
+    const app = new Hono();
+    app.use('/api/*', rateLimitMiddleware);
+    app.get('/api/ai/supervisor/health', (c) => c.json({ ok: true }));
+
+    const res = await app.request('/api/ai/supervisor/health', {
+      method: 'GET',
+      headers: {
+        [RATE_LIMIT_IDENTITY_HEADER]: 'test:supervisor-health-window',
+        'X-API-Key': 'shared-service-secret',
+      },
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get('X-RateLimit-Limit')).toBe('120');
+  });
+
   it('does not let supervisor health checks consume the strict 10/min write bucket', async () => {
     const app = new Hono();
     app.use('/api/*', rateLimitMiddleware);
