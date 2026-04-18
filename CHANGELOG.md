@@ -2,6 +2,99 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.20](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.19...v8.11.20) (2026-04-18)
+
+
+### Features
+
+* ai chat sprint 4 implement subtask timeout contract ([e25ba79](https://gitlab.com/skyasu2/openmanager-ai/-/commit/e25ba794eba241e5109b3ae43323c45bcaccc0ba))
+* **ai-engine:** add multi-agent ttfb and align stream warning thresholds ([bcc3ec1](https://gitlab.com/skyasu2/openmanager-ai/-/commit/bcc3ec18f3e1018a93c1e2e7fde266d83f75b95d))
+* **ai:** strengthen analysis basis debug view ([8957581](https://gitlab.com/skyasu2/openmanager-ai/-/commit/89575812c5adec68e2d3ef7a5873280311fc5250))
+* analysis basis badge implement to pass specs ([2d8acf8](https://gitlab.com/skyasu2/openmanager-ai/-/commit/2d8acf8f705797733c1da0e752b989e0ca2418cc))
+* otel precomputed-state sync implement to pass specs ([3315652](https://gitlab.com/skyasu2/openmanager-ai/-/commit/33156526c3272b96a4f96c1079af083c22f40876))
+
+
+### Bug Fixes
+
+* **ai-engine:** add cloud run daily rate limit semantics ([dc0aedf](https://gitlab.com/skyasu2/openmanager-ai/-/commit/dc0aedf9cfb623507f57c2a00509ced8704ac302))
+* **ai-engine:** align cloud run read-only rate windows ([65ae269](https://gitlab.com/skyasu2/openmanager-ai/-/commit/65ae269d66768ad5570bba11986833e298872a5b))
+* **ai-engine:** align streaming timeout and fallback timing ([0f1072e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/0f1072e6f94d3d6c33bee4460c6c6a8d39aa5935))
+* **ai-engine:** align structured-output fallback controls ([1e6f22d](https://gitlab.com/skyasu2/openmanager-ai/-/commit/1e6f22d178ac15bd538f179f9a60b475abfdb07f))
+* **ai-engine:** emit multi-agent provider retry status ([d06ef31](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d06ef316ebb413ad8f3b15eecc77d8167201de7b))
+* **ai-engine:** expose decomposition failure metadata ([9ccc20d](https://gitlab.com/skyasu2/openmanager-ai/-/commit/9ccc20d3867f6c99c98a3c48da36190f80c7ccb0))
+* **ai-engine:** fallback on orchestrator routing failure ([71b6b90](https://gitlab.com/skyasu2/openmanager-ai/-/commit/71b6b90d4e0387d05e7c07c68163097c65c0624c))
+* **ai-engine:** preserve total tokens in decomposition streams ([b724c34](https://gitlab.com/skyasu2/openmanager-ai/-/commit/b724c3412895af52a4fe8b7ac4d02569d40e0149))
+* **ai-engine:** preserve total tokens in stream done events ([4c9cdb0](https://gitlab.com/skyasu2/openmanager-ai/-/commit/4c9cdb00cfed0670ed82712ccc767fd23278e066))
+* **ai-engine:** recover from text fallback provider errors ([721b84b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/721b84bceeba22131e500a0d8f6cfdd3d5797e35))
+* **ai-engine:** retry after invalid json fallback ([b442aac](https://gitlab.com/skyasu2/openmanager-ai/-/commit/b442aac7c7ef512637d77a6cefd62149c85552b5))
+* **ai-engine:** split cloud run jobs read and write limiters ([4fce8b4](https://gitlab.com/skyasu2/openmanager-ai/-/commit/4fce8b41a483ca28f84543e736f13125462405ac))
+* **ai-engine:** split cloud run supervisor health limiter ([30b02c7](https://gitlab.com/skyasu2/openmanager-ai/-/commit/30b02c7c43db933242e6933c1444befc322eeff1))
+* **ai:** align job creation gateway limiter ([027959f](https://gitlab.com/skyasu2/openmanager-ai/-/commit/027959ffd0614e4de34b87843e40da4488a4c756))
+* **ai:** align retry route with job creation limiter ([d10feab](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d10feab5e5ea8140dc9fcc5a8f88de6b5e1582ab))
+* **ai:** align slow-processing warning semantics ([7fc5c74](https://gitlab.com/skyasu2/openmanager-ai/-/commit/7fc5c740a095407b39efa67e14d8f7008c3dd3b7))
+* **ai:** forward session-aware identity to cloud run limiter ([947348b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/947348be5aa36c2f6cd902e8955d639e2900a7dd))
+* **ai:** harden rate-limit source inference ([550dcef](https://gitlab.com/skyasu2/openmanager-ai/-/commit/550dcef40573011e0358098ee72f855e8a33cee7))
+* **ai:** harden retry-after defenses and clean chat hooks ([777f729](https://gitlab.com/skyasu2/openmanager-ai/-/commit/777f729896858f7d2af7135fcdb5a03bba65b16b))
+* **ai:** make frontend rate limiter session-aware ([1440306](https://gitlab.com/skyasu2/openmanager-ai/-/commit/14403064a8d14f4b7abbcd6551eb91f78078c2c5))
+* **ai:** preserve daily limit semantics from headers ([bd07400](https://gitlab.com/skyasu2/openmanager-ai/-/commit/bd07400cbdf14fb025a912589ae11e03ff248246))
+* **ai:** preserve explicit no-handoff metadata ([d41bc0e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d41bc0ee7d83c507084e1c5b9ea5149d3ef4b9fb))
+* **ai:** tag legacy supervisor route contract ([6e66768](https://gitlab.com/skyasu2/openmanager-ai/-/commit/6e667682c662477d672dbef3b18bec779d0317cd))
+* **data:** add az2 load balancer otel inventory ([bc42221](https://gitlab.com/skyasu2/openmanager-ai/-/commit/bc42221b5b79689024861ae5dd63ce61e91007dd))
+* **data:** add az2 nfs standby otel inventory ([eef432b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/eef432bae37decb79c6b8e6974e31a2ba9dcdd03))
+* **data:** add az3 redis otel inventory ([b27782b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/b27782bc228abec3cdda86685072485ce1ebbe41))
+* **data:** add otel nfs-spof scenario ([11cef78](https://gitlab.com/skyasu2/openmanager-ai/-/commit/11cef786e5b27ead5c725a86b545622379aec49b))
+* **data:** add otel redis cross-az latency scenario ([ce5bd20](https://gitlab.com/skyasu2/openmanager-ai/-/commit/ce5bd207f2a22f2c5f97fc695c3223f2745fdeb1))
+* **data:** clear otel baseline verify debt ([12229bb](https://gitlab.com/skyasu2/openmanager-ai/-/commit/12229bb277981cf1ed57b95f37035a82fb2dc616))
+* **data:** make otel backup node realistic ([45fbbed](https://gitlab.com/skyasu2/openmanager-ai/-/commit/45fbbed5394c7665ada0a8bbae1ecccaa82d54e6))
+* **qa:** expose legacy evidence pressure in audit ([8be3a4c](https://gitlab.com/skyasu2/openmanager-ai/-/commit/8be3a4cf2b0815d44819200aa008cb36a6a28891))
+* **qa:** group legacy evidence pressure by run ([330d4a1](https://gitlab.com/skyasu2/openmanager-ai/-/commit/330d4a1058eb83ca1fbf69913fbdef063f79e279))
+* **qa:** surface shared legacy evidence bundles ([3114132](https://gitlab.com/skyasu2/openmanager-ai/-/commit/3114132e56205487738ca3fe7f798bb7e722eeaf))
+* **qa:** surface unique legacy evidence footprints ([412614b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/412614bccf65295630c2d72fa8924ddb25c19c93))
+
+
+### Code Refactoring
+
+* **ai:** remove legacy AIWorkspace mode="sidebar" path (Task 4) ([ce0d3a6](https://gitlab.com/skyasu2/openmanager-ai/-/commit/ce0d3a6594fcf8c69dcec6e4621a4f3e870c3cdd))
+
+
+### Tests
+
+* **ai-engine:** lock cloud run write bucket baseline ([e140cd4](https://gitlab.com/skyasu2/openmanager-ai/-/commit/e140cd44194105bba69b9895d8e0a6428bf25505))
+* **ai:** lock job queue agent-path progress contract ([7c8e659](https://gitlab.com/skyasu2/openmanager-ai/-/commit/7c8e659ea3fbf38641cbd2f5efea995d7d432fcf))
+* **qa:** record v8.11.19 active-alert targeted pass ([3402797](https://gitlab.com/skyasu2/openmanager-ai/-/commit/3402797ddb57443cb4b97b4628faafd192fe4972))
+* **qa:** record v8.11.19 deploy verification block ([47becca](https://gitlab.com/skyasu2/openmanager-ai/-/commit/47beccaeaaf35f37b9ea386c98dfd0e5e2a0745a))
+* **spec:** ai chat sprint 4 add failing decomposition failure contract tests ([5cf4b1d](https://gitlab.com/skyasu2/openmanager-ai/-/commit/5cf4b1d801689416210c699397c6c95d31d9a69c))
+* **spec:** ai chat sprint 4 add failing decomposition stream contract test ([6825048](https://gitlab.com/skyasu2/openmanager-ai/-/commit/68250484fb46cc43c3dd6069842ea6e6fc9b8825))
+* **spec:** ai chat sprint 4 add failing stream usage contract tests ([a7eb7c4](https://gitlab.com/skyasu2/openmanager-ai/-/commit/a7eb7c416e70e35a3939267da837cddbebc8b208))
+* **spec:** ai chat sprint 4 add failing structured fallback test ([f5df3bd](https://gitlab.com/skyasu2/openmanager-ai/-/commit/f5df3bd3ad2606da30bc59d338a16e32d21923bc))
+* **spec:** ai chat sprint 4 add failing subtask timeout contract test ([6f7e915](https://gitlab.com/skyasu2/openmanager-ai/-/commit/6f7e9156ec0b1a1cc1443b499b10bd21c0ed7245))
+* **spec:** ai chat sprint 4 add failing timeout fallback test ([94c62ac](https://gitlab.com/skyasu2/openmanager-ai/-/commit/94c62acfdd2e8e0df797ebe97894505ffecc7969))
+* **spec:** ai chat sprint 4 add invalid json fallback test ([083a232](https://gitlab.com/skyasu2/openmanager-ai/-/commit/083a2325739958363f7be7e099202d166ee182cb))
+* **spec:** ai response visibility add failing 429 source tests ([f2a040e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/f2a040e3cbc093e92fe362cf007fda17e3021e26))
+* **spec:** ai response visibility add failing cloud run daily semantics test ([b078308](https://gitlab.com/skyasu2/openmanager-ai/-/commit/b078308193f53b62c2c01c838d4c141830ea8f17))
+* **spec:** ai response visibility add failing cloud run identity tests ([dd84178](https://gitlab.com/skyasu2/openmanager-ai/-/commit/dd84178f997551ea24c2dfa18493a47d0ac26993))
+* **spec:** ai response visibility add failing cloud run jobs read/write limiter tests ([4f820c8](https://gitlab.com/skyasu2/openmanager-ai/-/commit/4f820c863ad5420948893685f7f9e685ecddf973))
+* **spec:** ai response visibility add failing daily limit header test ([f9768a2](https://gitlab.com/skyasu2/openmanager-ai/-/commit/f9768a2e937c5d3ecff4e26e46a747d051857e51))
+* **spec:** ai response visibility add failing handoff persistence tests ([2e00d4e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/2e00d4e4222337f08a9725a1d79fc9a5e348856a))
+* **spec:** ai response visibility add failing job limiter alignment test ([7bdecbc](https://gitlab.com/skyasu2/openmanager-ai/-/commit/7bdecbc7b098b9dcefbdc64d5d6a398ca3756f87))
+* **spec:** ai response visibility add failing read-only window tests ([05397d7](https://gitlab.com/skyasu2/openmanager-ai/-/commit/05397d7757c6f6d7640cb5986839498db52cb0ef))
+* **spec:** ai response visibility add failing retry limiter tests ([cc12231](https://gitlab.com/skyasu2/openmanager-ai/-/commit/cc122310e189303fc9e33096826be1218c74d8c8))
+* **spec:** ai response visibility add failing session-aware limiter test ([8541010](https://gitlab.com/skyasu2/openmanager-ai/-/commit/8541010eddd34c5c1afe35a0207fa737b01e3bbb))
+* **spec:** ai response visibility add failing supervisor health limiter test ([08012a7](https://gitlab.com/skyasu2/openmanager-ai/-/commit/08012a72349aeb0f41e8d6afebc6bbfacd17d688))
+* **spec:** ai stream contract add failing legacy route header test ([5843a8e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/5843a8e4a7f5a7a208bd162b0c79a02b21e00c60))
+* **spec:** ai stream contract add failing multi-agent retry status test ([ca3944e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/ca3944e3b9ce8c465fd0e7c400fa204b17da690d))
+* **spec:** ai stream contract add failing warning semantics test ([7fb0ad8](https://gitlab.com/skyasu2/openmanager-ai/-/commit/7fb0ad86a68d847f667eb51809d4368a674e293e))
+* **spec:** analysis basis badge show handoff count in collapsed summary ([c373332](https://gitlab.com/skyasu2/openmanager-ai/-/commit/c37333231809b8bb6f8bf87c83f4f3b840762b8c))
+* **spec:** otel topology add failing backup realism tests ([a3956b3](https://gitlab.com/skyasu2/openmanager-ai/-/commit/a3956b39bb3a90db68bc0a370b46410507492a27))
+* **spec:** otel topology add failing baseline debt tests ([9b366fe](https://gitlab.com/skyasu2/openmanager-ai/-/commit/9b366fee8a09929a725df25d3702bb24bd2a1ae2))
+* **spec:** otel topology add failing nfs-spof tests ([07684b1](https://gitlab.com/skyasu2/openmanager-ai/-/commit/07684b110123b6d09c8a132321b3821a487a8cb9))
+* **spec:** otel topology add failing phase3 az2 lb tests ([63c6170](https://gitlab.com/skyasu2/openmanager-ai/-/commit/63c6170e6b91f70faf9212d82de9b2abdf0dd14e))
+* **spec:** otel topology add failing phase3 az2 nfs standby tests ([e86124d](https://gitlab.com/skyasu2/openmanager-ai/-/commit/e86124dda52c5dcda8a9c83fa3011937c76ff3ba))
+* **spec:** otel topology add failing phase3 az3 redis tests ([e53b2b9](https://gitlab.com/skyasu2/openmanager-ai/-/commit/e53b2b91466541cde631a146a7b6edf0f4aaacd2))
+* **spec:** otel topology add failing precomputed-state sync tests ([7720c5b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/7720c5b8e8f2314e23e9b349e2273c0d715137c3))
+* **spec:** otel topology add failing redis cross-az tests ([ffc54f7](https://gitlab.com/skyasu2/openmanager-ai/-/commit/ffc54f7315f8de72cfd702b9a1bc8c387627edc4))
+* **vitest:** stabilize simple coverage run ([142eb3c](https://gitlab.com/skyasu2/openmanager-ai/-/commit/142eb3c777dc208b3fb90bfc3d552e91160c2e11))
+
 ## [8.11.19](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.18...v8.11.19) (2026-04-17)
 
 
