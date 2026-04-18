@@ -1,32 +1,32 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-18 21:30:53 KST
+> Generated at: 2026-04-18 22:41:55 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 302 |
-| Total Runs (Counted) | 258 |
+| Total Recorded Runs | 303 |
+| Total Runs (Counted) | 259 |
 | Non-counted Runs | 44 |
-| Total Checks | 2039 |
-| Passed | 1961 |
+| Total Checks | 2043 |
+| Passed | 1965 |
 | Failed | 72 |
-| Completed Items | 299 |
+| Completed Items | 302 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 15 |
 | Expert Domains Tracked | 8 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260418-0304 (2026-04-18T12:30:51.893Z) |
-| Latest Recorded Run | QA-20260418-0304 (2026-04-18T12:30:51.893Z) |
+| Last Counted Run | QA-20260418-0305 (2026-04-18T13:41:54.126Z) |
+| Latest Recorded Run | QA-20260418-0305 (2026-04-18T13:41:54.126Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260418-0304 (2026-04-18T12:30:51.893Z)
+Latest run: QA-20260418-0305 (2026-04-18T13:41:54.126Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -43,9 +43,9 @@ Latest run: QA-20260418-0304 (2026-04-18T12:30:51.893Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: ai-engine-00329-jvq / SHA 2cd5f40d
+- Deployment: ai-engine-00333-gks / SHA c96881eb
 - Coverage Packs: ai-core
-- Covered Surfaces: Vercel production guest session -> dashboard -> AI sidebar flow, AI sidebar query: 현재 CPU가 가장 높은 서버 알려줘, AI sidebar query: 현재 메모리 사용률 상위 3대 알려줘, CPU ranking response returns the top server with direct metric lookup metadata, Memory Top 3 response preserves descending order after ranking-answer fix
+- Covered Surfaces: Vercel production guest session -> dashboard -> AI sidebar flow, AI sidebar query: 현재 메모리 사용률 상위 3대 알려줘, AI sidebar query: 현재 CPU가 가장 높은 서버 알려줘, Ranking responses return live current-metric ordering on production, Analysis basis summary shows 서버 메트릭 상세 조회 for ranking queries
 - Skipped Surfaces: fullscreen AI workspace, Reporter/Analyst advanced packs, broad route regression pack, mobile layout pack
 
 ## Links (Latest Run)
@@ -58,9 +58,9 @@ Latest run: QA-20260418-0304 (2026-04-18T12:30:51.893Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | CPU ranking response on production | `reports/qa/evidence/qa-20260418-ranking-cpu-response.png` | - |
-| playwright-screenshot | Memory top-3 response on production | `reports/qa/evidence/qa-20260418-ranking-memory-response.png` | - |
-| playwright-console | Ranking hotfix session console | `reports/qa/evidence/qa-20260418-ranking-session-console.txt` | - |
+| playwright-screenshot | Ranking fix sidebar screenshot | `reports/qa/evidence/qa-20260418-ranking-fix-sidebar.png` | - |
+| playwright-screenshot | Ranking fix full-page screenshot | `reports/qa/evidence/qa-20260418-ranking-fix-full.png` | - |
+| playwright-console | Ranking fix session console | `reports/qa/evidence/qa-20260418-ranking-fix-console.txt` | - |
 
 ## Expert Domain Open Gaps
 
@@ -137,6 +137,8 @@ Latest run: QA-20260418-0304 (2026-04-18T12:30:51.893Z)
 - ai-math-tools: AI 계산 도구(수식/통계/용량) 셋업 완료 (completed 1회, last QA-20260228-0023)
 - ai-metric-ranking-answer-order: Ranking answers preserve descending order from tool output (completed 1회, last QA-20260418-0304)
 - ai-metric-ranking-cpu-route: Current metric ranking query routes to deterministic metric lookup (completed 1회, last QA-20260418-0304)
+- ai-ranking-cpu-live-route: CPU highest-server query returns live top server on production (completed 1회, last QA-20260418-0305)
+- ai-ranking-memory-live-route: Memory top-N ranking uses deterministic live metric path on production (completed 1회, last QA-20260418-0305)
 - ai-reporter-success: Reporter Agent 보고서 생성 성공 (completed 3회, last QA-20260315-0104)
 - ai-server-timing-hosting-path-diagnosed: Server-Timing production/local hosting path difference diagnosed (completed 1회, last QA-20260310-0081)
 - ai-sidebar-open: AI 사이드바 열기/닫기 (completed 1회, last QA-20260317-0114)
@@ -184,6 +186,7 @@ Latest run: QA-20260418-0304 (2026-04-18T12:30:51.893Z)
 - blocked-prompt-raw-json-exposure: 보안 차단 시 raw JSON 노출 제거 (completed 2회, last QA-20260318-0125)
 - blocked-prompt-ux-fixed-v880: Prompt injection 차단 UX 정제 검증 (completed 1회, last QA-20260308-0058)
 - blocked-prompt-ux-v880-quality-recheck: 보안 차단 UX 재검증 (completed 1회, last QA-20260308-0059)
+- cloud-run-latest-traffic-recovery: Cloud Run service traffic restored to latest revision (completed 1회, last QA-20260418-0305)
 - cloud-run-proxy-runtime-env-refresh: Cloud Run proxy runtime env refresh (completed 1회, last QA-20260325-0185)
 - cloud-run-readiness-guard: Cloud Run direct route readiness guard 공통화 (completed 1회, last QA-20260325-0184)
 - cloud-run-v892-manual-deploy: Cloud Run v8.9.2 manual deploy verification (completed 1회, last QA-20260317-0118)
@@ -412,6 +415,7 @@ Latest run: QA-20260418-0304 (2026-04-18T12:30:51.893Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260418-0305 | 2026-04-18T13:41:54.126Z | targeted | no | yes | Vercel targeted QA - AI ranking route live recovery | 4 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260418-0304 | 2026-04-18T12:30:51.893Z | targeted | no | yes | Vercel targeted QA - AI metric ranking hotfix | 5 | 2 | 0 | 0 | 1 | 0 |
 | QA-20260418-0303 | 2026-04-18T08:01:44.685Z | broad | yes | yes | Production broad QA - 8.11.20 AI hardening verification | 22 | 1 | 0 | 0 | 1 | 0 |
 | QA-20260417-0302 | 2026-04-17T05:39:27.161Z | targeted | no | yes | v8.11.19 active-alert :9100 fix targeted production QA | 4 | 1 | 0 | 0 | 0 | 0 |
@@ -431,4 +435,3 @@ Latest run: QA-20260418-0304 (2026-04-18T12:30:51.893Z)
 | QA-20260415-0288 | 2026-04-15T11:09:03.713Z | broad | yes | yes | Vercel broad QA - frontend and AI assistant evaluation on latest production | 16 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260415-0287 | 2026-04-15T00:53:57.310Z | release-gate | yes | yes | Production release-gate QA refresh after ai-engine-00317 stabilization | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260415-0286 | 2026-04-14T23:41:31.531Z | targeted | no | no | Mixed advisory residual follow-up QA (ai-engine-00317) | 3 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260415-0285 | 2026-04-14T17:11:51.995Z | targeted | no | yes | Graph traversal re-evaluation post-variant-fix QA (ai-engine-00317) | 4 | 1 | 0 | 0 | 0 | 0 |
