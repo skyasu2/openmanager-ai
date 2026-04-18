@@ -297,8 +297,8 @@ const RATE_LIMIT_CONFIGS: Record<string, RateLimitConfig> = {
     keyPrefix: 'rl:supervisor',
   },
   supervisorHealth: {
-    maxRequests: 60,
-    windowMs: 60 * 1000, // 1분에 60회 (health/read)
+    maxRequests: 120,
+    windowMs: 60 * 1000, // 1분에 120회 (health/read)
     keyPrefix: 'rl:supervisor:health',
   },
   embedding: {
@@ -313,8 +313,8 @@ const RATE_LIMIT_CONFIGS: Record<string, RateLimitConfig> = {
     keyPrefix: 'rl:jobs:write',
   },
   jobsRead: {
-    maxRequests: 60,
-    windowMs: 60 * 1000, // 1분에 60회 (polling / status reads)
+    maxRequests: 120,
+    windowMs: 60 * 1000, // 1분에 120회 (polling / status reads)
     keyPrefix: 'rl:jobs:read',
   },
   default: {
