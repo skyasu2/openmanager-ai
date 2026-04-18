@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Backlog — Phase 1 `db-mysql-dc1-backup` realism, Phase 2-A `Redis cross-AZ latency`, Phase 2-B `NFS SPOF` slice는 완료. 장기 증설과 baseline debt 정리가 남음.
+> Status: Approved (slice) — Phase 1 `db-mysql-dc1-backup` realism, Phase 2-A `Redis cross-AZ latency`, Phase 2-B `NFS SPOF` slice는 완료. 이번 승인 범위는 baseline debt cleanup에 한정.
 > Doc type: Reference
 > Last reviewed: 2026-04-17
 > Tags: otel-data, topology, infrastructure, data-quality
@@ -129,6 +129,15 @@ backup 전용으로 스펙 다운 (8c/32GB/1TB) + 역할 설명 명시.
 - 이번 slice 범위 밖의 기존 `data:verify` 실패 2건은 유지된다.
   - storage network range
   - ERROR 비율 하한
+
+### 이번 승인 slice (`2026-04-18`, baseline debt cleanup)
+
+- 목표: `data:verify`에 남아 있는 baseline debt 2건을 제거해 OTel 생성 데이터의 기본 검증을 모두 통과시킨다.
+- 범위:
+  - `hour-23`의 `storage-s3gw-dc1-01` network drift를 storage baseline 범위 안으로 조정
+  - severity baseline을 보강해 전체 로그에서 `ERROR > 3%` 계약을 복구
+  - `otel-fix.ts`, `otel-verify.ts`와 계약 테스트를 위 두 기준에 맞게 동기화
+  - 서버 수 증설(Phase 3), 새 토폴로지 시나리오 추가는 이번 slice 제외
 
 ### Phase 1: db-backup 역할 명확화 (즉시)
 

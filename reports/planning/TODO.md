@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (OTel topology NFS SPOF slice 완료)
+**Last Updated**: 2026-04-18 KST (OTel baseline debt cleanup slice 승인)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| *(none)* | — | — | 현재 활성 작업 없음 |
+| OTel topology improvement - baseline debt cleanup | Medium | approved | `data:verify` 잔여 2건 정리. `hour-23 storage-s3gw-dc1-01` network drift와 `ERROR > 3%` severity baseline 복구만 이번 slice 범위. |
 
 ---
 
