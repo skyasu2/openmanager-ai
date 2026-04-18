@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Backlog — Phase 1 `db-mysql-dc1-backup` realism, Phase 2-A `Redis cross-AZ latency`, Phase 2-B `NFS SPOF`, baseline debt cleanup slice는 완료. 장기 증설만 남음.
+> Status: Approved (slice) — Phase 1 `db-mysql-dc1-backup` realism, Phase 2-A `Redis cross-AZ latency`, Phase 2-B `NFS SPOF`, baseline debt cleanup slice는 완료. 이번 승인 범위는 Phase 3-A `lb-haproxy-dc1-03` 추가에 한정.
 > Doc type: Reference
 > Last reviewed: 2026-04-17
 > Tags: otel-data, topology, infrastructure, data-quality
@@ -175,6 +175,18 @@ backup 전용으로 스펙 다운 (8c/32GB/1TB) + 역할 설명 명시.
 - [ ] `otel-fix.ts` 신규 서버 메트릭 데이터 생성 로직 추가
 - [ ] `timeseries.json` 재생성 (15→18 서버)
 - [ ] AI Engine `precomputed-state.ts` 서버 목록 갱신
+
+### 이번 승인 slice (`2026-04-18`, Phase 3-A)
+
+- 목표: AZ2 load balancer 부재를 해소하기 위해 `lb-haproxy-dc1-03`를 inventory와 시계열 데이터에 추가한다.
+- 범위:
+  - `resource-catalog.json`에 `lb-haproxy-dc1-03` 추가 (`AZ2`, `4c/8GB/50GB`)
+  - `src/config/server-registry.ts`에 신규 LB IP 추가
+  - 24개 hourly 파일에 신규 LB metric datapoint 추가
+  - `timeseries.json`에 신규 LB `serverId`와 144포인트 추가
+  - `otel-fix.ts`에 신규 LB datapoint 생성 helper 추가
+  - `cache-redis-dc1-03`, `storage-nfs-dc1-02`, `precomputed-state` 재생성은 이번 slice 제외
+
 
 ---
 
