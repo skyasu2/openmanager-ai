@@ -153,7 +153,7 @@ export function AlertHistoryModal({
               onChange={(e) => handleKeywordChange(e.target.value)}
               placeholder="서버, 메트릭 검색"
               aria-label="알림 검색"
-              className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-xs text-gray-700 placeholder:text-gray-400 focus:border-blue-400 focus:outline-none sm:w-52 sm:py-1.5"
+              className="touch-text-safe-xs w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-gray-700 placeholder:text-gray-400 focus:border-blue-400 focus:outline-none sm:w-52 sm:py-1.5"
             />
 
             <div className="hidden h-4 w-px bg-gray-200 sm:block" />
@@ -203,7 +203,7 @@ export function AlertHistoryModal({
                 handleFilterChange(() => setServerId(e.target.value))
               }
               aria-label="서버 필터"
-              className="w-full rounded-md border border-gray-200 bg-white px-2 py-2 text-xs text-gray-700 focus:border-blue-400 focus:outline-none sm:w-auto sm:py-1"
+              className="touch-text-safe-xs w-full rounded-md border border-gray-200 bg-white px-2 py-2 text-gray-700 focus:border-blue-400 focus:outline-none sm:w-auto sm:py-1"
             >
               <option value="">전체 서버</option>
               {serverIds.map((id) => (

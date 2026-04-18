@@ -1047,6 +1047,22 @@ a {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* iPhone Safari auto-zoom 방지: 터치 환경에서는 입력 컨트롤을 16px 이상으로 유지 */
+.touch-text-safe-xs,
+.touch-text-safe-sm {
+  font-size: 1rem;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .touch-text-safe-xs {
+    font-size: 0.75rem;
+  }
+
+  .touch-text-safe-sm {
+    font-size: 0.875rem;
+  }
+}
+
 /* 🎨 접근성 개선 - 향상된 모션 감소 지원 */
 @media (prefers-reduced-motion: reduce) {
   /* 웨이브 파티클 애니메이션 완전 비활성화 */
