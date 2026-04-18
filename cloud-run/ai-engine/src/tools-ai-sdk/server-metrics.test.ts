@@ -154,7 +154,13 @@ vi.mock('../lib/cache-layer', () => ({
   })),
 }));
 
-import { getServerByGroup, getServerByGroupAdvanced, getServerMetrics, filterServers } from './server-metrics';
+import {
+  getServerByGroup,
+  getServerByGroupAdvanced,
+  getServerMetrics,
+  getServerMetricsAdvanced,
+  filterServers,
+} from './server-metrics';
 
 // ============================================================================
 // getServerByGroup Tests
@@ -402,6 +408,39 @@ describe('getServerMetrics', () => {
     expect(result.success).toBe(true);
     expect(result.servers).toHaveLength(1);
     expect(result.servers[0].id).toBe('db-mysql-dc1-01');
+  });
+});
+
+describe('getServerMetricsAdvanced', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should preserve descending ranking order in answer for current metric ranking queries', async () => {
+    const result = await getServerMetricsAdvanced.execute(
+      {
+        timeRange: 'current',
+        metric: 'memory',
+        aggregation: 'none',
+        sortBy: 'memory',
+        sortOrder: 'desc',
+        limit: 3,
+      },
+      {} as never
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.servers).toHaveLength(3);
+    expect(result.servers.map((server: { name: string }) => server.name)).toEqual([
+      'cache-redis-dc1-02',
+      'cache-redis-dc1-01',
+      'web-nginx-dc1-02',
+    ]);
+    expect(result.answer).toContain('메모리 사용률 상위 3대는');
+    expect(result.answer).toContain('1. cache-redis-dc1-02 88%');
+    expect(result.answer).toContain('2. cache-redis-dc1-01 85%');
+    expect(result.answer).toContain('3. web-nginx-dc1-02 82%');
+    expect(result.answer).toContain('순서를 바꾸지 말고 그대로 사용자에게 전달하세요.');
   });
 });
 

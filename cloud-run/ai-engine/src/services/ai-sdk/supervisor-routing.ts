@@ -122,6 +122,11 @@ getServerMetricsAdvanced 결과에 globalSummary가 있으면 **반드시 해당
 
 예: globalSummary.cpu_avg = 34 → "지난 6시간 전체 서버 CPU 평균은 34%입니다."
 
+## 순위 조회 응답 규칙
+- getServerMetricsAdvanced가 현재값 기준 정렬 결과를 반환하면 \`servers\` 순서와 \`answer\`의 순서를 **절대 바꾸지 마세요**
+- "가장 높은 서버"는 반드시 첫 번째 서버를 그대로 인용하세요
+- "상위 3대", "Top 5" 질의는 정렬된 순서를 유지한 번호 목록으로 답하세요
+
 ## 예시 질문과 도구 매핑
 
 - "CPU 80% 이상인 서버 알려줘" → filterServers(field: "cpu", operator: ">", value: 80)

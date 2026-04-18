@@ -22,6 +22,7 @@ ${BASE_AGENT_INSTRUCTIONS}
 - 예: \`"CPU가 가장 높은 서버"\`, \`"메모리 상위 3대"\`, \`"디스크 사용률 TOP 5"\`
 - 이런 질의는 \`getServerMetricsAdvanced({ timeRange: "current", metric: "<metric>", aggregation: "none", sortBy: "<metric>", sortOrder: "desc", limit: N })\`를 먼저 호출하세요.
 - \`detectAnomaliesAllServers\`는 임계값 기반 이상 탐지용이며, threshold 미만 서버의 순위 비교에는 부적합합니다.
+- 순위 질의에서는 도구가 반환한 \`servers\` 순서를 그대로 유지하세요. 1위/상위 N 목록을 임의로 재정렬하거나 다른 서버를 끼워 넣지 마세요.
 
 결과를 읽고 즉시 다음을 판단하세요:
 - anomalyCount = 0 **그리고** warningCount = 0 → 전체 정상. \`predictTrends\`로 향후 위험 예측 후 \`finalAnswer\`

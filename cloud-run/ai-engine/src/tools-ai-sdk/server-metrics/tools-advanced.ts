@@ -13,6 +13,21 @@ import {
   normalizeServerType,
 } from './data';
 
+function getMetricLabel(metric: 'cpu' | 'memory' | 'disk' | 'network' | 'all'): string {
+  switch (metric) {
+    case 'cpu':
+      return 'CPU 사용률';
+    case 'memory':
+      return '메모리 사용률';
+    case 'disk':
+      return '디스크 사용률';
+    case 'network':
+      return '네트워크 사용량';
+    default:
+      return '메트릭';
+  }
+}
+
 /**
  * Advanced Server Metrics Tool
  * Supports time range, filtering, aggregation
@@ -211,13 +226,40 @@ export const getServerMetricsAdvanced = tool({
           last24h: '지난 24시간',
         }[timeRange];
 
-        const interpretation = Object.keys(globalSummary).length > 0
-          ? `[응답 가이드] ${timeRangeKr} 전체 ${filteredResults.length}대 서버 집계: ` +
-            Object.entries(globalSummary)
-              .map(([k, v]) => `${k}=${v}%`)
+        const isCurrentRankingQuery =
+          timeRange === 'current' &&
+          aggregation === 'none' &&
+          !serverId &&
+          Boolean(sortBy) &&
+          Boolean(limit) &&
+          filteredResults.length > 0;
+
+        const rankingMetric: 'cpu' | 'memory' | 'disk' | 'network' | 'all' =
+          sortBy && sortBy !== 'name'
+            ? sortBy
+            : metric !== 'all'
+              ? metric
+              : 'cpu';
+
+        const rankingAnswer = isCurrentRankingQuery
+          ? `[응답 가이드] ${getMetricLabel(rankingMetric)} 상위 ${filteredResults.length}대는 ` +
+            filteredResults
+              .map((server, index) => {
+                const metricValue = server.metrics[rankingMetric] ?? 0;
+                return `${index + 1}. ${server.name} ${metricValue}%`;
+              })
               .join(', ') +
-            '. 이 값을 사용자에게 전달하세요.'
+            '입니다. 순서를 바꾸지 말고 그대로 사용자에게 전달하세요.'
           : null;
+
+        const interpretation = rankingAnswer ||
+          (Object.keys(globalSummary).length > 0
+            ? `[응답 가이드] ${timeRangeKr} 전체 ${filteredResults.length}대 서버 집계: ` +
+              Object.entries(globalSummary)
+                .map(([k, v]) => `${k}=${v}%`)
+                .join(', ') +
+              '. 이 값을 사용자에게 전달하세요.'
+            : null);
 
         return {
           success: true,

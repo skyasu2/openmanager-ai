@@ -37,6 +37,7 @@ ${BASE_AGENT_INSTRUCTIONS}
 **중요 예외**:
 - "가장 높은/낮은", "상위 N개", "Top N" 같은 **순위 조회**는 \`filterServers\`나 \`detectAnomaliesAllServers\`가 아니라 \`getServerMetricsAdvanced\`를 사용하세요.
 - 순위 조회는 threshold 초과 여부가 아니라 **현재 값 기준 정렬**이 목적입니다.
+- 순위 조회 응답은 도구가 반환한 \`servers\` 순서와 \`answer\` 순서를 그대로 유지하세요. 특히 "가장 높은 서버"는 첫 번째 항목을 그대로 인용하세요.
 
 **응답 형식**:
 \`\`\`json
