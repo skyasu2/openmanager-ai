@@ -62,7 +62,7 @@ OpenTelemetry는 이 프로젝트에서 **"빌드 타임 시맨틱 변환 도구
 
 | 항목 | 값 |
 |------|-----|
-| 서버 수 | 15대 |
+| 서버 수 | 16대 |
 | 시간 범위 | 24시간 (hour-00 ~ hour-23) |
 | 슬롯 간격 | 10분 (6 슬롯/시간, 144 슬롯/일) |
 | 메트릭 종류 | 9개 |
@@ -73,17 +73,18 @@ OpenTelemetry는 이 프로젝트에서 **"빌드 타임 시맨틱 변환 도구
 
 ```
 public/data/otel-data/
-├── resource-catalog.json    # 15대 서버 메타데이터 (OTel Resource Attributes)
-├── timeseries.json          # 24h 집계 시계열 (144 timestamps × 15 servers × 9 metrics)
+├── resource-catalog.json    # 16대 서버 메타데이터 (OTel Resource Attributes)
+├── timeseries.json          # 24h 집계 시계열 (144 timestamps × 16 servers × 9 metrics)
 └── hourly/
     └── hour-{00..23}.json   # 시간별 상세 (6 slots, metrics + logs)
 ```
 
-### 15대 서버 인벤토리
+### 16대 서버 인벤토리
 
 | Tier | Server ID | Role | AZ | CPU | Memory | Disk |
 |------|-----------|------|----|-----|--------|------|
 | LB | lb-haproxy-dc1-01 | loadbalancer | AZ1 | 4 | 8GB | 50GB |
+| LB | lb-haproxy-dc1-03 | loadbalancer | AZ2 | 4 | 8GB | 50GB |
 | LB | lb-haproxy-dc1-02 | loadbalancer | AZ3 | 4 | 8GB | 50GB |
 | Web | web-nginx-dc1-01 | web | AZ1 | 4 | 8GB | 100GB |
 | Web | web-nginx-dc1-02 | web | AZ2 | 4 | 8GB | 100GB |
@@ -93,7 +94,7 @@ public/data/otel-data/
 | API | api-was-dc1-03 | application | AZ3 | 8 | 16GB | 200GB |
 | DB | db-mysql-dc1-primary | database | AZ1 | 16 | 64GB | 1TB |
 | DB | db-mysql-dc1-replica | database | AZ2 | 16 | 64GB | 1TB |
-| DB | db-mysql-dc1-backup | database | AZ3 | 16 | 64GB | 1TB |
+| DB | db-mysql-dc1-backup | database | AZ3 | 8 | 32GB | 1TB |
 | Cache | cache-redis-dc1-01 | cache | AZ1 | 4 | 32GB | 50GB |
 | Cache | cache-redis-dc1-02 | cache | AZ2 | 4 | 32GB | 50GB |
 | Storage | storage-nfs-dc1-01 | storage | AZ1 | 4 | 16GB | 5TB |
@@ -102,11 +103,11 @@ public/data/otel-data/
 ### 서비스 토폴로지 (OnPrem DC1)
 
 ```
-LB(2) → Web(3) → API(3) → DB(MySQL 3) + Cache(Redis 2) → Storage(2)
+LB(3) → Web(3) → API(3) → DB(MySQL 3) + Cache(Redis 2) → Storage(2)
 
 ┌───────────── Load Balancer ──────────────┐
-│ HAProxy-01 (AZ1) ─── HAProxy-02 (AZ3)   │
-└──────┬──────────────────────┬────────────┘
+│ HAProxy-01(AZ1) HAProxy-03(AZ2) HAProxy-02(AZ3) │
+└──────┬──────────────────────┬───────────────────┘
        ▼                      ▼
 ┌───────────── Web Tier (Nginx) ───────────┐
 │ Nginx-01(AZ1)  Nginx-02(AZ2)  Nginx-03  │
