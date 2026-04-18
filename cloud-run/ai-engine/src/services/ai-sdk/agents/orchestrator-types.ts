@@ -100,6 +100,8 @@ export interface MultiAgentResponse {
     /** 실제 발생한 핸드오프 횟수 (2026-04-04 추가) */
     handoffCount: number;
     durationMs: number;
+    /** First text chunk latency from selected provider attempt */
+    ttfbMs?: number;
     traceId?: string;
     responseChars?: number;
     formatCompliance?: boolean;

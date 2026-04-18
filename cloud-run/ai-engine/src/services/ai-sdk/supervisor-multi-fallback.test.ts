@@ -54,7 +54,7 @@ vi.mock('./model-provider', () => ({
 
 vi.mock('../../config/timeout-config', () => ({
   TIMEOUT_CONFIG: {
-    supervisor: { hard: 30_000, hardStreaming: 45_000, warning: 10_000 },
+    supervisor: { hard: 30_000, hardStreaming: 45_000, warning: 10_000, warningStreaming: 30_000 },
     agent: { hard: 15_000 },
     orchestrator: { hard: 30_000, warning: 10_000, routingDecision: 10_000 },
     subtask: { hard: 15_000 },
@@ -348,5 +348,42 @@ describe('supervisor degraded single fallback', () => {
         }),
       })
     );
+  });
+
+  it('uses streaming warning threshold for single-agent streaming path', async () => {
+    mockIsSingleModeAllowed.mockReturnValue(true);
+    let nowMs = 1_000_000;
+    const nowSpy = vi.spyOn(Date, 'now').mockImplementation(() => nowMs);
+    mockStreamText.mockReturnValue({
+      textStream: (async function* () {
+        nowMs += 31_000;
+        yield 'single fallback stream';
+      })(),
+      steps: Promise.resolve([]),
+      usage: Promise.resolve({ inputTokens: 1, outputTokens: 2, totalTokens: 3 }),
+    });
+
+    const events = [];
+    try {
+      for await (const event of executeSupervisorStream({
+        mode: 'multi',
+        messages: [{ role: 'user', content: 'degraded single warning threshold 테스트' }],
+        sessionId: 'session-single-stream-warning-threshold',
+      })) {
+        events.push(event);
+      }
+    } finally {
+      nowSpy.mockRestore();
+    }
+
+    const warningEvent = events.find((event) => event.type === 'warning');
+    expect(warningEvent).toBeDefined();
+    expect(warningEvent).toMatchObject({
+      type: 'warning',
+      data: {
+        code: 'SLOW_PROCESSING',
+        threshold: 30_000,
+      },
+    });
   });
 });

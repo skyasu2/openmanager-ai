@@ -190,7 +190,7 @@ flowchart LR
 | **결정** | `single / multi / auto` 최종 실행 모드 | 어떤 에이전트, 어떤 provider, 어떤 fallback을 쓸지 |
 | **방법** | complexity + explicit mode gate + tool filtering | pre-filter + structured routing + fallback routing |
 | **실행** | `streamText()` 중심 실시간 스트리밍 | `generateObjectWithFallback`, `generateTextWithRetry`, `streamText` |
-| **타임아웃** | Supervisor 하드 50초 / warn 40초 | Orchestrator 하드 45초, 라우팅 10초, warn 30초 |
+| **타임아웃** | Supervisor 하드 50초/40초 warning, stream은 120초/96초 warning | Orchestrator 하드 90초, 라우팅 10초, warn 60초 |
 | **호출 시점** | 모든 쿼리 | multi-agent로 resolve된 요청에서만 |
 
 **분리 유지 근거**: 스트리밍 모델이 다르고, LLM 호출 그래프 분리, 각자 독립 테스트 가능.
@@ -509,6 +509,7 @@ cloud-run/ai-engine/src/
 | TTFB 목표 (Single, Warm) | <2초 |
 | TTFB 목표 (Multi, Warm) | <5초 (Orchestrator 라우팅 포함) |
 | TTFB 목표 (Cold Start 포함) | Single <5초 / Multi <8초 |
+| TTFB 계측 범위 | Single: `supervisor-stream.ts` / Multi: `orchestrator-agent-stream.ts` (`ttfbMs`) |
 | 인프라 | Cloud Run 1vCPU / 512Mi (운영 기본값) |
 | AI SDK | Vercel AI SDK v6 계열 (`ai`, `@ai-sdk/react`) |
 
@@ -600,7 +601,7 @@ cloud-run/ai-engine/src/
 | **3-Layer 라우팅** | 효율적 | Pre-filter confidence(0.5~0.92) 후 `forcedRoutingConfidence=0.85`, `fallbackRoutingConfidence=0.65`로 2단 fallback. 서버 모니터링 도메인에서 신호 보존이 높은 편 |
 | **ConfigBasedAgent + AgentFactory** | 올바른 패턴 | 서브클래스 폭발 방지, 단일 SSOT 설정. BaseAgent에 ConfigBasedAgent 하나만 구현 → 확장성 확보 |
 | **도구 할당** | 적절 | 에이전트별 도구 중복(findRootCause 등)은 Cross-cutting 용도로 정당. NLQ=조회, Analyst=분석으로 구분 |
-| **finalAnswer 패턴** | AI SDK v6 Best Practice | `stopWhen: [hasToolCall('finalAnswer'), stepCountIs(N)]` 적용. 빈 텍스트 시 toolResults 복구 로직 구현 |
+| **finalAnswer 패턴** | AI SDK v6 Best Practice | `stopWhen: [hasToolCall('finalAnswer'), stepCountIs(N)]` 적용. Multi-agent stream은 `N=10` 유지(복합 tool result 요약 fallback 안정성 우선), 빈 텍스트 시 toolResults 복구 로직 구현 |
 | **Cerebras 활용성** | 조건부 강함 | structured output에는 여전히 유효하지만, tool-calling 경로는 `CEREBRAS_TOOL_CALLING_ENABLED`와 capability gate에 종속됨 |
 | **AI SDK v6 구현 성숙도** | 높음 | Frontend는 `useChat`/`DefaultChatTransport`, 서버는 `createUIMessageStreamResponse`, `streamText`, `generateText`, `generateObjectWithFallback`를 조합함. SDK core abstraction을 우회하지 않으면서 커스텀 복원력 계층을 붙임 |
 | **업계 비교** | 실용적 수준 | AutoGen보다 구조적이고 LangGraph보다 가볍다. 서버 모니터링 도메인에 필요한 tool use와 fallback 제어를 현실적으로 구현 |
@@ -619,7 +620,7 @@ cloud-run/ai-engine/src/
 |------|------|------|
 | **3-Way Fallback** | 적절 | provider capability gate + circuit breaker + quota tracker + retry/fallback 순서가 명확함 |
 | **CB + Quota + Retry 레이어링** | 건전, CB 통합 완료 | `getAvailableProviders()`에서 CB `isAllowed()` 사전 체크 → OPEN 상태 provider 제외 |
-| **타임아웃 체계** | 양호 | Tool(25s)→Agent(45s), single non-stream은 Supervisor(50s), single stream은 Supervisor hardStreaming(120s), multi-agent는 Orchestrator(90s)로 분리되어 있음 |
+| **타임아웃 체계** | 양호 | Tool(25s)→Agent(45s), single non-stream은 Supervisor(50s/40s warning), single stream은 Supervisor hardStreaming(120s/96s warning), multi-agent는 Orchestrator(90s)로 분리되어 있음 |
 | **Vercel 플랜** | Pro (유일한 유료 예외) | `timeout-config.ts`에 Pro 60s 반영 완료 |
 | **Free Tier 현실성** | 충분 | 1vCPU/512Mi에서 경량 객체, I/O-bound LLM 호출. 병목은 provider RPM |
 | **Cold Start 최적화** | 잘 설계됨 | Lazy route loading + deferred service init + cpu-boost |

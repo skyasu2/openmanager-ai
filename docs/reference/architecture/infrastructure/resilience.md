@@ -197,9 +197,10 @@ Cloud Run AI Engine은 **계층적 타임아웃**으로 각 레벨에서 독립�
 ```
 Cloud Run (300s hard limit)
   └── Supervisor (50s hard / 45s soft / 40s warning)
-       └── Orchestrator (50s hard / 10s routing decision)
-            └── Agent (45s hard / 35s warning)
-                 └── Subtask (30s hard / 25s warning)
+       └── Supervisor Stream (120s hardStreaming / 96s warningStreaming)
+            └── Orchestrator (90s hard / 10s routing decision / 60s warning)
+                 └── Agent (45s hard / 35s warning)
+                      └── Subtask (35s hard / 28s warning)
                       └── Tool (25s hard / 5s retry / 20s warning)
 ```
 
@@ -208,10 +209,11 @@ Cloud Run (300s hard limit)
 | 레벨 | Hard Timeout | Warning | 비고 |
 |------|:-----------:|:-------:|------|
 | Cloud Run | 300s | - | 플랫폼 제한, 10s margin |
-| Supervisor | 50s | 40s | Soft 45s에서 정리 시작 |
-| Orchestrator | 50s | 30s | 라우팅 결정 10s |
+| Supervisor (non-stream) | 50s | 40s | Soft 45s에서 정리 시작 |
+| Supervisor (stream) | 120s | 96s | `hardStreaming` + `warningStreaming` |
+| Orchestrator | 90s | 60s | 라우팅 결정 10s |
 | Agent | 45s | 35s | maxSteps=7 |
-| Subtask | 30s | 25s | 개별 작업 단위 |
+| Subtask | 35s | 28s | 개별 작업 단위 |
 | Tool | 25s | 20s | 재시도 5s |
 | Reporter Pipeline | 45s | - | 이터레이션당 20s |
 

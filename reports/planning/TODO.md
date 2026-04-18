@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (QA evidence top-run manual triage 기록)
+**Last Updated**: 2026-04-18 KST (AI stream timeout/TTFB 후속 정리)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -22,6 +22,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| Multi-agent `finalAnswer` loop cap (`stepCountIs(10)`) 단순화 검토 | Medium | **tracking-only** — 현재는 tool-result 요약 fallback 안정성을 위해 유지. 품질/토큰 비용 지표를 1주 누적한 뒤 `8` 또는 `6`으로 축소 가능한지 재평가. |
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
 | ~~AI Response Visibility & Rate Limit (Phase 1~5)~~ | — | **완료** — write bucket 재평가 결과 `supervisor 10/min`, `jobs/process 5/min`, `daily 100` 유지 결정. 계획서는 구현/결정 로그로 유지. |
 | ~~AI Stream Route Contract - residual cleanup~~ | — | **완료** — archive 이동. |
@@ -30,6 +31,16 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-18 #142)
+- [x] AI stream timeout/TTFB 후속 정리
+  - Multi-agent 경로에 provider-attempt 기준 `ttfbMs` 계측을 추가하고 done metadata에 반영
+  - Single stream warning threshold를 `warningStreaming`으로 분리해 `hardStreaming(120s)` 스케일(`96s`)과 정렬
+  - `P2-8(stepCountIs(10))`은 기능 회귀를 막기 위해 즉시 축소 대신 backlog tracking-only로 전환
+  - 검증:
+    - `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/agents/orchestrator-agent-stream.test.ts src/services/ai-sdk/supervisor-multi-fallback.test.ts`
+    - `cd cloud-run/ai-engine && npm run type-check && npm run test`
+    - `npm run docs:lint:changed`
 
 ### Completed (2026-04-18 #141)
 - [x] QA evidence top-run manual triage 기록

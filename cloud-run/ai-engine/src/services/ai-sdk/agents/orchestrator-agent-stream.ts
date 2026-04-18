@@ -73,6 +73,7 @@ export async function* executeAgentStream(
     try {
       const pipelineResult = await executeReporterWithPipeline(query, startTime);
       if (pipelineResult) {
+        const reporterTtfbMs = Date.now() - startTime;
         logger.info(`[Stream Reporter] Pipeline succeeded, streaming result`);
         yield* streamTextInChunks(pipelineResult.response);
 
@@ -92,7 +93,7 @@ export async function* executeAgentStream(
               completionTokens: pipelineResult.usage?.completionTokens ?? 0,
               totalTokens: pipelineResult.usage?.totalTokens ?? 0,
             },
-            metadata: { ...pipelineResult.metadata, durationMs },
+            metadata: { ...pipelineResult.metadata, durationMs, ttfbMs: reporterTtfbMs },
           },
         };
         return;
@@ -165,6 +166,15 @@ export async function* executeAgentStream(
     filteredTools = filterToolsByRAG(filteredTools, ragEnabled);
     const timeoutSpan = createTimeoutSpan(sessionId, `${agentName}_stream`, ORCHESTRATOR_CONFIG.timeout);
     const abortController = new AbortController();
+    const providerStartTime = Date.now();
+    let firstChunkMs: number | null = null;
+    const markFirstChunk = (source: string) => {
+      if (firstChunkMs !== null) return;
+      firstChunkMs = Date.now() - providerStartTime;
+      logger.info(
+        `[Stream ${agentName}] TTFB: ${firstChunkMs}ms (${provider}/${modelId}, source=${source})`
+      );
+    };
 
     try {
       const promptWithContext = contextSummary
@@ -179,6 +189,8 @@ export async function* executeAgentStream(
           { role: 'user', content: userContent as UserContent },
         ],
         tools: filteredTools as Parameters<typeof generateText>[0]['tools'],
+        // Keep headroom for multi-step tool loops so deterministic/summarization fallbacks
+        // can recover useful output before forced termination.
         stopWhen: [hasToolCall('finalAnswer'), stepCountIs(10)],
         temperature: 0.4,
         maxOutputTokens: 2048,
@@ -259,6 +271,7 @@ export async function* executeAgentStream(
           }
           if (!preferDeterministicSummary) {
             textDelivered = true;
+            markFirstChunk('text_stream');
             yield { type: 'text_delta', data: sanitized };
           }
         }
@@ -326,6 +339,7 @@ export async function* executeAgentStream(
           textEmitted = true;
           textDelivered = true;
           fullResponseText += sanitized;
+          markFirstChunk('final_answer');
           yield { type: 'text_delta', data: sanitized };
         }
       }
@@ -340,6 +354,7 @@ export async function* executeAgentStream(
         textEmitted = true;
         textDelivered = true;
         fullResponseText = deterministicSummary;
+        markFirstChunk('deterministic_summary');
         yield { type: 'text_delta', data: deterministicSummary };
         logger.info(
           `[Stream ${agentName}] Deterministic summary ${preferDeterministicSummary ? 'override' : 'fallback'} succeeded (${deterministicSummary.length} chars)`
@@ -355,6 +370,7 @@ export async function* executeAgentStream(
           textEmitted = true;
           textDelivered = true;
           fullResponseText = stateSummary;
+          markFirstChunk('current_state_override');
           yield { type: 'text_delta', data: stateSummary };
           logger.info(
             `[Stream ${agentName}] Current-state deterministic summary override succeeded (${stateSummary.length} chars)`
@@ -370,6 +386,7 @@ export async function* executeAgentStream(
           textEmitted = true;
           textDelivered = true;
           fullResponseText = bufferedText;
+          markFirstChunk('buffered_text');
           yield { type: 'text_delta', data: bufferedText };
         }
       }
@@ -414,6 +431,7 @@ export async function* executeAgentStream(
             textEmitted = true;
             textDelivered = true;
             fullResponseText = summaryText;
+            markFirstChunk('summarization_fallback');
             yield { type: 'text_delta', data: summaryText };
             logger.info(`[Stream ${agentName}] Summarization fallback succeeded (${summaryText.length} chars)`);
           }
@@ -434,6 +452,7 @@ export async function* executeAgentStream(
           textEmitted = true;
           textDelivered = true;
           fullResponseText = stateSummary;
+          markFirstChunk('current_state_fallback');
           yield { type: 'text_delta', data: stateSummary };
           logger.info(
             `[Stream ${agentName}] Current-state deterministic fallback succeeded (${stateSummary.length} chars)`
@@ -462,6 +481,7 @@ export async function* executeAgentStream(
           type: 'warning',
           data: { code: 'EMPTY_RESPONSE', message: '모델이 빈 응답을 반환했습니다.' },
         };
+        markFirstChunk('empty_response_fallback');
         yield { type: 'text_delta', data: fallbackText };
         fullResponseText = fallbackText;
       }
@@ -498,6 +518,7 @@ export async function* executeAgentStream(
             formatCompliance: quality.formatCompliance,
             qualityFlags: quality.qualityFlags,
             latencyTier: quality.latencyTier,
+            ...(firstChunkMs !== null ? { ttfbMs: firstChunkMs } : {}),
           },
           ...(followUp && { suggestedFollowUp: followUp }),
         },
@@ -523,7 +544,9 @@ export async function* executeAgentStream(
         }
 
         logger.warn(`[Stream ${agentName}] No output from model (${provider}), providing fallback`);
-        yield { type: 'text_delta', data: '모델이 응답을 생성하지 못했습니다. 다시 시도해 주세요.' };
+        const noOutputFallback = '모델이 응답을 생성하지 못했습니다. 다시 시도해 주세요.';
+        markFirstChunk('no_output_fallback');
+        yield { type: 'text_delta', data: noOutputFallback };
         const quality = evaluateAgentResponseQuality(agentName, '모델이 응답을 생성하지 못했습니다. 다시 시도해 주세요.', {
           durationMs,
           fallbackReason: 'NO_OUTPUT',
@@ -544,6 +567,7 @@ export async function* executeAgentStream(
               formatCompliance: quality.formatCompliance,
               qualityFlags: quality.qualityFlags,
               latencyTier: quality.latencyTier,
+              ...(firstChunkMs !== null ? { ttfbMs: firstChunkMs } : {}),
             },
           },
         };

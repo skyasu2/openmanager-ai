@@ -199,6 +199,9 @@ describe('executeAgentStream', () => {
     expect(
       (doneEvent?.data as { usage: { totalTokens?: number } }).usage.totalTokens
     ).toBe(15);
+    expect(
+      (doneEvent?.data as { metadata: { ttfbMs?: number } }).metadata.ttfbMs
+    ).toBeTypeOf('number');
   });
 
   it('prefers deterministic summary over streamed model text for parity-sensitive prompts', async () => {
@@ -301,6 +304,9 @@ describe('executeAgentStream', () => {
     expect(
       (doneEvent?.data as { usage: { totalTokens?: number } }).usage.totalTokens
     ).toBe(15);
+    expect(
+      (doneEvent?.data as { metadata: { ttfbMs?: number } }).metadata.ttfbMs
+    ).toBeTypeOf('number');
   });
 
   it('emits agent_status before retrying the next provider after an empty response', async () => {
@@ -435,5 +441,8 @@ describe('executeAgentStream', () => {
       (doneEvent?.data as { usage: { totalTokens?: number } }).usage.totalTokens
     ).toBe(0);
     expect((doneEvent?.data as { success: boolean }).success).toBe(false);
+    expect(
+      (doneEvent?.data as { metadata: { ttfbMs?: number } }).metadata.ttfbMs
+    ).toBeTypeOf('number');
   });
 });

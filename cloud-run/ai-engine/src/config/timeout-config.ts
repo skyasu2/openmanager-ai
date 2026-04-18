@@ -77,8 +77,10 @@ export const TIMEOUT_CONFIG = {
     hard: 50_000,
     /** Hard timeout - streaming responses (Cloud Run 300s limit) */
     hardStreaming: 120_000,
-    /** Warning threshold - emit warning event */
+    /** Warning threshold - emit warning event (non-streaming) */
     warning: 40_000,
+    /** Warning threshold - streaming responses */
+    warningStreaming: 96_000,
     /** Soft timeout - start graceful degradation */
     soft: 45_000,
   },
