@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (QA evidence audit legacy-run triage 가시성 개선)
+**Last Updated**: 2026-04-18 KST (QA evidence audit shared-legacy bundle 가시성 개선)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -30,6 +30,15 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-18 #139)
+- [x] QA evidence audit shared-legacy bundle 가시성 개선
+  - `qa:evidence:audit`에 `Top shared legacy run bundles` 섹션을 추가해 여러 run이 같은 legacy artifact를 공동 참조하는 개선 묶음을 바로 확인할 수 있게 정리
+  - `QA-20260330-0197` / `0198`처럼 같은 proof를 재사용하는 run 관계를 manual override triage 대상으로 더 쉽게 식별하도록 README 해석 규칙을 보강
+  - 검증:
+    - `npx vitest run tests/unit/qa/qa-evidence-audit.test.ts`
+    - `npm run qa:evidence:audit`
+    - `npm run docs:lint:changed`
 
 ### Completed (2026-04-18 #138)
 - [x] QA evidence audit legacy-run triage 가시성 개선

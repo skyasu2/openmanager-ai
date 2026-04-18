@@ -9,6 +9,7 @@ const require = createRequire(import.meta.url);
 const {
   summarizeReferencedPrefix,
   summarizeReferencedRuns,
+  summarizeSharedReferencedRuns,
   formatBytes,
 } = require('../../../scripts/qa/audit-qa-evidence.js');
 
@@ -109,6 +110,83 @@ describe('qa-evidence-audit', () => {
         title: 'Targeted follow-up',
         count: 1,
         bytes: 2048,
+      },
+    ]);
+  });
+
+  it('groups shared legacy evidence by run and reports peer counts', () => {
+    const fileInfos = [
+      {
+        relativePath: 'reports/qa/evidence/legacy/2026/a.png',
+        size: 1024,
+      },
+      {
+        relativePath: 'reports/qa/evidence/legacy/2026/b.png',
+        size: 4096,
+      },
+      {
+        relativePath: 'reports/qa/evidence/legacy/2026/c.png',
+        size: 2048,
+      },
+    ];
+
+    const artifactRefs = [
+      {
+        runId: 'QA-1',
+        path: 'reports/qa/evidence/legacy/2026/a.png',
+      },
+      {
+        runId: 'QA-1',
+        path: 'reports/qa/evidence/legacy/2026/b.png',
+      },
+      {
+        runId: 'QA-2',
+        path: 'reports/qa/evidence/legacy/2026/b.png',
+      },
+      {
+        runId: 'QA-2',
+        path: 'reports/qa/evidence/legacy/2026/c.png',
+      },
+      {
+        runId: 'QA-3',
+        path: 'reports/qa/evidence/legacy/2026/b.png',
+      },
+    ];
+
+    const runTitleById = new Map([
+      ['QA-1', 'Primary release gate'],
+      ['QA-2', 'Targeted follow-up'],
+      ['QA-3', 'Post-merge parity'],
+    ]);
+
+    expect(
+      summarizeSharedReferencedRuns(
+        fileInfos,
+        artifactRefs,
+        runTitleById,
+        'reports/qa/evidence/legacy/'
+      )
+    ).toEqual([
+      {
+        runId: 'QA-1',
+        title: 'Primary release gate',
+        count: 1,
+        bytes: 4096,
+        peerCount: 2,
+      },
+      {
+        runId: 'QA-2',
+        title: 'Targeted follow-up',
+        count: 1,
+        bytes: 4096,
+        peerCount: 2,
+      },
+      {
+        runId: 'QA-3',
+        title: 'Post-merge parity',
+        count: 1,
+        bytes: 4096,
+        peerCount: 2,
       },
     ]);
   });
