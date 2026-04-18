@@ -307,6 +307,9 @@ const DIRECT_SERVER_ID_PATTERN =
   /\b(?:lb-haproxy|web-nginx|api-was|db-mysql|cache-redis|storage-(?:nfs|s3gw))-dc1-(?:\d{2}|primary|replica|backup)\b/i;
 const CURRENT_METRIC_VALUE_PATTERNS =
   /(사용률|몇\s*%|몇퍼센트|퍼센트|얼마|수치|값|상태|어때|어떻|알려|보여|확인|usage|percent|percentage|status)/i;
+const METRIC_RANKING_PATTERNS =
+  /(가장\s*(높|낮)|최고|최저|상위\s*\d+|하위\s*\d+|순위|top\s*\d+|highest|lowest|top|rank)/i;
+const RANKABLE_METRIC_PATTERNS = /(cpu|메모리|memory|디스크|disk|네트워크|network)/i;
 const NON_CURRENT_METRIC_PATTERNS =
   /(지난|최근|평균|최대|최소|합계|추세|트렌드|예측|비교|대비|변화|last1h|last6h|last24h|last\s+\d+\s*h|avg|max|min|trend|forecast|compare)/i;
 const BEST_EFFORT_GENERAL_PATTERNS =
@@ -343,6 +346,17 @@ function shouldForceRealtimeServerMetricTool(query: string): boolean {
   );
 }
 
+function shouldForceMetricRankingTool(query: string): boolean {
+  const q = query.toLowerCase();
+
+  return (
+    RANKABLE_METRIC_PATTERNS.test(q) &&
+    METRIC_RANKING_PATTERNS.test(q) &&
+    !NON_CURRENT_METRIC_PATTERNS.test(q) &&
+    !DIRECT_SERVER_ID_PATTERN.test(q)
+  );
+}
+
 function shouldForceKnowledgeBaseTool(query: string): boolean {
   return FORCE_KB_QUERY_PATTERN.test(query.toLowerCase());
 }
@@ -372,9 +386,30 @@ export function createPrepareStep(
     }
 
     const shouldForceRealtimeMetric = shouldForceRealtimeServerMetricTool(q);
+    const shouldForceMetricRanking = shouldForceMetricRankingTool(q);
     const shouldForceKnowledgeBase = ragEnabled && shouldForceKnowledgeBaseTool(q);
     const shouldForceWeb = webSearchEnabled && shouldForceWebSearch(q);
     const isGeneralBestEffort = isBestEffortGeneralQuery(q);
+
+    if (shouldForceMetricRanking) {
+      logger.debug(
+        '[PrepareStep] Metric ranking query detected, forcing getServerMetricsAdvanced'
+      );
+      if (stepNumber > 0) {
+        return {
+          activeTools: ['finalAnswer'] as ToolName[],
+          toolChoice: 'required' as const,
+        };
+      }
+
+      return {
+        activeTools: ['getServerMetricsAdvanced', 'finalAnswer'] as ToolName[],
+        toolChoice: {
+          type: 'tool',
+          toolName: 'getServerMetricsAdvanced',
+        } as const,
+      };
+    }
 
     if (shouldForceRealtimeMetric) {
       logger.debug('[PrepareStep] Direct realtime server metric query detected, forcing getServerMetrics');

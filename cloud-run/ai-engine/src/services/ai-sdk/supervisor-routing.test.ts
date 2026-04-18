@@ -331,6 +331,36 @@ describe('createPrepareStep', () => {
     });
   });
 
+  it('should force getServerMetricsAdvanced for current metric ranking queries', async () => {
+    const prepare = createPrepareStep('CPU가 가장 높은 서버 3대 알려줘');
+    const result = await prepare({ stepNumber: 0 });
+    expect(result.activeTools).toEqual(['getServerMetricsAdvanced', 'finalAnswer']);
+    expect(result.toolChoice).toEqual({
+      type: 'tool',
+      toolName: 'getServerMetricsAdvanced',
+    });
+  });
+
+  it('should finalize metric ranking queries after the forced advanced lookup step', async () => {
+    const prepare = createPrepareStep('메모리 상위 3대 알려줘');
+    const result = await prepare({ stepNumber: 1 });
+    expect(result.activeTools).toEqual(['finalAnswer']);
+    expect(result.toolChoice).toBe('required');
+  });
+
+  it('should not force ranking path for historical ranking queries', async () => {
+    const prepare = createPrepareStep('지난 6시간 CPU가 가장 높았던 서버 알려줘');
+    const result = await prepare({ stepNumber: 0 });
+    expect(result.activeTools).not.toEqual([
+      'getServerMetricsAdvanced',
+      'finalAnswer',
+    ]);
+    expect(result.toolChoice).not.toEqual({
+      type: 'tool',
+      toolName: 'getServerMetricsAdvanced',
+    });
+  });
+
   it('should inject searchWeb into pattern tools when enableWebSearch is true', async () => {
     const prepare = createPrepareStep('CPU 상태', { enableWebSearch: true });
     const result = await prepare({ stepNumber: 0 });

@@ -19,9 +19,7 @@ ${BASE_AGENT_INSTRUCTIONS}
 
 ### getServerMetrics() - 현재 상태 조회
 - "서버 상태 알려줘" → getServerMetrics()
-- "CPU 높은 서버" → filterServers({ field: "cpu", operator: ">", value: 70 })
-  - "높은" = 70% 이상, "낮은" = 30% 미만으로 해석
-  - 0건이면 임계값 완화(50%) 재시도 또는 getServerMetrics()로 상위 3개 제시
+- "cache-redis-dc1-01 메모리 몇 %야?" → getServerMetrics()
 
 ### getServerMetricsAdvanced() - 시간 범위 집계 ⭐
 **중요**: serverId 생략 시 전체 서버 데이터 + globalSummary(전체 평균/최대/최소) 반환
@@ -33,6 +31,12 @@ ${BASE_AGENT_INSTRUCTIONS}
 - "지난 6시간 CPU 평균" → getServerMetricsAdvanced({ timeRange: "last6h", metric: "cpu", aggregation: "avg" })
 - "1시간 메모리 최대" → getServerMetricsAdvanced({ timeRange: "last1h", metric: "memory", aggregation: "max" })
 - "전체 서버 평균" → getServerMetricsAdvanced({ timeRange: "last6h", metric: "all" })
+- "CPU가 가장 높은 서버" → getServerMetricsAdvanced({ timeRange: "current", metric: "cpu", aggregation: "none", sortBy: "cpu", sortOrder: "desc", limit: 3 })
+- "메모리 상위 3대" → getServerMetricsAdvanced({ timeRange: "current", metric: "memory", aggregation: "none", sortBy: "memory", sortOrder: "desc", limit: 3 })
+
+**중요 예외**:
+- "가장 높은/낮은", "상위 N개", "Top N" 같은 **순위 조회**는 \`filterServers\`나 \`detectAnomaliesAllServers\`가 아니라 \`getServerMetricsAdvanced\`를 사용하세요.
+- 순위 조회는 threshold 초과 여부가 아니라 **현재 값 기준 정렬**이 목적입니다.
 
 **응답 형식**:
 \`\`\`json
@@ -48,6 +52,7 @@ ${BASE_AGENT_INSTRUCTIONS}
 - "CPU 80% 이상" → filterServers({ field: "cpu", operator: ">", value: 80 })
 - "오프라인 서버" → filterServers({ field: "status", operator: "==", value: "offline" })
 - "네트워크 높은 서버" → filterServers({ field: "network", operator: ">", value: 70 })
+- "CPU 70% 이상인 서버"처럼 **임계값 조건 조회**에만 사용하세요.
 
 ### getServerByGroup() - 서버 그룹/타입 조회 ⭐ NEW
 **중요**: DB, 로드밸런서, 웹 서버 등 특정 유형 서버 조회 시 사용

@@ -18,6 +18,11 @@ ${BASE_AGENT_INSTRUCTIONS}
 ### Phase 1: 전체 현황 스캔
 **항상 \`detectAnomaliesAllServers(metricType: "all")\`로 시작하세요.** 이 1회 호출로 15대 전체의 이상 여부를 파악합니다.
 
+**예외: 사용자가 현재 메트릭 기준 순위/Top N을 직접 묻는 경우에는 위 규칙을 적용하지 마세요.**
+- 예: \`"CPU가 가장 높은 서버"\`, \`"메모리 상위 3대"\`, \`"디스크 사용률 TOP 5"\`
+- 이런 질의는 \`getServerMetricsAdvanced({ timeRange: "current", metric: "<metric>", aggregation: "none", sortBy: "<metric>", sortOrder: "desc", limit: N })\`를 먼저 호출하세요.
+- \`detectAnomaliesAllServers\`는 임계값 기반 이상 탐지용이며, threshold 미만 서버의 순위 비교에는 부적합합니다.
+
 결과를 읽고 즉시 다음을 판단하세요:
 - anomalyCount = 0 **그리고** warningCount = 0 → 전체 정상. \`predictTrends\`로 향후 위험 예측 후 \`finalAnswer\`
 - anomalyCount >= 1 또는 warningCount >= 1 → **이상 있음**. 반드시 해당 서버를 "주의" 또는 "위험"으로 보고하세요.
