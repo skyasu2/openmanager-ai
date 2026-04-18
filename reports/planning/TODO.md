@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (Cloud Run supervisor health limiter slice 완료)
+**Last Updated**: 2026-04-18 KST (Cloud Run read-only window slice 승인)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| — | — | none | 현재 active task 없음 |
+| AI Response Visibility - Cloud Run read-only window alignment | Medium | approved | Cloud Run read-only 경로(`GET /api/ai/supervisor/health`, `GET /api/jobs/:id*`)는 provider 비용을 직접 태우지 않으므로 `60/min`에서 `120/min`으로 완화해 false 429를 줄인다. `supervisor`/`jobs/process` write bucket은 유지한다. |
 
 ---
 
@@ -23,7 +23,7 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
-| AI Response Visibility & Rate Limit (Phase 1~5) | Medium | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). handoff 가시성 UX, 429 UX, Job Queue agent path, limiter 정책 재조정. Cloud Run supervisor health limiter split slice는 완료됐고, 남은 실질 backlog는 Cloud Run window 수치 재평가다. |
+| AI Response Visibility & Rate Limit (Phase 1~5) | Medium | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). handoff 가시성 UX, 429 UX, Job Queue agent path, limiter 정책 재조정. 현재는 Cloud Run read-only window alignment slice만 active이며, 이후 남은 실질 backlog는 write bucket 수치 재평가다. |
 | ~~AI Stream Route Contract - residual cleanup~~ | — | **완료** — archive 이동. |
 | ~~OTel 토폴로지 개선~~ | — | **완료** — archive 이동: [archive/otel-topology-improvement-plan.md](archive/otel-topology-improvement-plan.md). |
 | Storybook circular chunk warning 정리 | Low | non-blocking, stable 승격 후 재평가 |
