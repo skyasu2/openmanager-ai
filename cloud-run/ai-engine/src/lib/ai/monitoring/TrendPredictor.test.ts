@@ -18,12 +18,12 @@ describe('TrendPredictor.predictEnhanced', () => {
 
     const oneHour = predictor.predictEnhanced(
       historicalData,
-      'cpu',
+      'latency',
       1 * 60 * 60 * 1000
     );
     const threeHours = predictor.predictEnhanced(
       historicalData,
-      'cpu',
+      'latency',
       3 * 60 * 60 * 1000
     );
 
