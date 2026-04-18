@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Approved (slice) — Phase 1 `db-mysql-dc1-backup` realism, Phase 2-A `Redis cross-AZ latency`, Phase 2-B `NFS SPOF`, baseline debt cleanup, Phase 3-A `lb-haproxy-dc1-03`, Phase 3-B `cache-redis-dc1-03` slice는 완료. 이번 승인 범위는 Phase 3-C `storage-nfs-dc1-02` hot-standby 추가에 한정.
+> Status: Backlog — Phase 1 `db-mysql-dc1-backup` realism, Phase 2-A `Redis cross-AZ latency`, Phase 2-B `NFS SPOF`, baseline debt cleanup, Phase 3-A `lb-haproxy-dc1-03`, Phase 3-B `cache-redis-dc1-03`, Phase 3-C `storage-nfs-dc1-02` slice는 완료. 남은 실질 backlog는 `precomputed-state` 재생성 정리다.
 > Doc type: Reference
 > Last reviewed: 2026-04-17
 > Tags: otel-data, topology, infrastructure, data-quality
@@ -8,8 +8,8 @@
 
 ## 배경
 
-현재 `public/data/otel-data/` 사전 생성 데이터는 on-premise 1 DC / 3 AZ / 17대 구성을 표현하며,
-아래 분석에서 남은 구조적 취약점은 storage hot-standby 부재와 precomputed-state inventory 갭 중심으로 정리된다. AI가 이 데이터를 기반으로 진단할 때
+현재 `public/data/otel-data/` 사전 생성 데이터는 on-premise 1 DC / 3 AZ / 18대 구성을 표현하며,
+아래 분석에서 남은 구조적 취약점은 precomputed-state inventory 갭과 storage failover semantics 문서화 중심으로 정리된다. AI가 이 데이터를 기반으로 진단할 때
 "정상 운영 중"으로만 해석되는 문제를 해결하고, 실제 운영 환경 수준의 현실성을 높이는 것이 목표.
 
 ## 현재 토폴로지
@@ -23,8 +23,8 @@
     ↓
 [API: WAS x3]     AZ1·AZ2·AZ3
     ↓         ↓          ↓
-[MySQL x3]  [Redis x3]  [Storage x2]
-AZ1/2/3    AZ1/2/3     AZ1·AZ3     ← Storage NFS standby 부재
+[MySQL x3]  [Redis x3]  [Storage x3]
+AZ1/2/3    AZ1/2/3     AZ1/2/3     ← NFS active/standby + S3GW
 ```
 
 ## 발견된 문제점
@@ -33,7 +33,7 @@ AZ1/2/3    AZ1/2/3     AZ1·AZ3     ← Storage NFS standby 부재
 |---|------|:----:|------|
 | P1 | LB AZ2 부재 | 완료 | `lb-haproxy-dc1-03` 추가로 AZ1·AZ2·AZ3 분산 완료 |
 | P2 | Redis AZ3 부재 | 완료 | `cache-redis-dc1-03` 추가로 Redis 3노드 구성이 됨 |
-| P3 | NFS SPOF | 진행 중 | `storage-nfs-dc1-01`이 AZ1 단독. 공유 파일시스템 hot-standby 부재 |
+| P3 | NFS SPOF | 완료 | `storage-nfs-dc1-02` 추가로 NFS active/standby inventory 구성 완료 |
 | P4 | S3GW SPOF | 관찰 | `storage-s3gw-dc1-01`이 AZ3 단독. 객체 스토리지 게이트웨이 단일 노드 |
 | P5 | db-backup 역할 모호 | 완료 | `db-mysql-dc1-backup`을 cold-standby / daily snapshot target으로 현실화 |
 
@@ -220,6 +220,14 @@ backup 전용으로 스펙 다운 (8c/32GB/1TB) + 역할 설명 명시.
   - `timeseries.json`에 신규 storage `serverId`와 144포인트 추가
   - `otel-fix.ts`, `otel-verify.ts`에 신규 storage standby inventory helper/검증 추가
 - `precomputed-state` 재생성, topology scenario reinterpretation, S3 gateway 변경은 이번 slice 제외
+
+### 이번 slice 완료 결과 (`2026-04-18`, Phase 3-C)
+
+- `storage-nfs-dc1-02`는 이제 `resource-catalog`, `server-registry`, 24개 hourly, `timeseries`에 모두 존재한다.
+- `server.purpose=hot-standby`, `server.notes=nfs failover target` 메타데이터가 추가됐다.
+- `otel-fix.ts`는 AZ2 NFS standby datapoint와 timeseries row를 재생성할 수 있고, `otel-verify.ts`는 이 inventory 계약을 검증한다.
+- `data:verify`는 `45 passed, 0 failed`로 유지된다.
+- 남은 backlog는 `precomputed-state` 재생성 정리뿐이다.
 
 ---
 
