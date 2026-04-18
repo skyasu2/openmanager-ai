@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Backlog — Phase 1 `db-mysql-dc1-backup` realism, Phase 2-A `Redis cross-AZ latency`, Phase 2-B `NFS SPOF`, baseline debt cleanup, Phase 3-A `lb-haproxy-dc1-03` slice는 완료. 남은 backlog는 `cache-redis-dc1-03`, `storage-nfs-dc1-02`, 필요 시 precomputed-state 재생성.
+> Status: Approved (slice) — Phase 1 `db-mysql-dc1-backup` realism, Phase 2-A `Redis cross-AZ latency`, Phase 2-B `NFS SPOF`, baseline debt cleanup, Phase 3-A `lb-haproxy-dc1-03` slice는 완료. 이번 승인 범위는 Phase 3-B `cache-redis-dc1-03` 추가에 한정.
 > Doc type: Reference
 > Last reviewed: 2026-04-17
 > Tags: otel-data, topology, infrastructure, data-quality
@@ -8,8 +8,8 @@
 
 ## 배경
 
-현재 `public/data/otel-data/` 사전 생성 데이터는 on-premise 1 DC / 3 AZ / 15대 구성을 표현하나,
-아래 분석에서 구조적 취약점 5가지가 확인됨. AI가 이 데이터를 기반으로 진단할 때
+현재 `public/data/otel-data/` 사전 생성 데이터는 on-premise 1 DC / 3 AZ / 17대 구성을 표현하며,
+아래 분석에서 남은 구조적 취약점은 storage hot-standby 부재 중심으로 정리된다. AI가 이 데이터를 기반으로 진단할 때
 "정상 운영 중"으로만 해석되는 문제를 해결하고, 실제 운영 환경 수준의 현실성을 높이는 것이 목표.
 
 ## 현재 토폴로지
@@ -17,37 +17,35 @@
 ```
 [Internet]
     ↓
-[LB: HAProxy x2]  AZ1·AZ3          ← AZ2 없음
+[LB: HAProxy x3]  AZ1·AZ2·AZ3
     ↓
 [Web: Nginx x3]   AZ1·AZ2·AZ3
     ↓
 [API: WAS x3]     AZ1·AZ2·AZ3
     ↓         ↓          ↓
-[MySQL x3]  [Redis x2]  [Storage x2]
-AZ1/2/3    AZ1·AZ2     AZ1·AZ3     ← Redis AZ3 없음, Storage SPOF
+[MySQL x3]  [Redis x3]  [Storage x2]
+AZ1/2/3    AZ1/2/3     AZ1·AZ3     ← Storage NFS standby 부재
 ```
 
 ## 발견된 문제점
 
-| # | 항목 | 심각도 | 내용 |
-|---|------|:------:|------|
-| P1 | LB AZ2 부재 | 중 | lb-haproxy-dc1-{01,03} → AZ2 미커버. AZ2 서버들이 cross-AZ LB 경유 |
-| P2 | Redis AZ3 부재 | 중 | cache-redis-dc1-{01,02}만 존재. AZ3 서버들 cross-AZ 캐시 접근 |
-| P3 | NFS SPOF | 높음 | storage-nfs-dc1-01이 AZ1 단독. 공유 파일시스템 단일 장애점 |
-| P4 | S3GW SPOF | 중 | storage-s3gw-dc1-01이 AZ3 단독. 객체 스토리지 게이트웨이 단일 장애점 |
-| P5 | db-backup 역할 모호 | 낮음 | primary와 동일 스펙(16c/64GB/1TB). backup인지 read-replica인지 불명확 |
+| # | 항목 | 상태 | 내용 |
+|---|------|:----:|------|
+| P1 | LB AZ2 부재 | 완료 | `lb-haproxy-dc1-03` 추가로 AZ1·AZ2·AZ3 분산 완료 |
+| P2 | Redis AZ3 부재 | 완료 | `cache-redis-dc1-03` 추가로 Redis 3노드 구성이 됨 |
+| P3 | NFS SPOF | 진행 중 | `storage-nfs-dc1-01`이 AZ1 단독. 공유 파일시스템 hot-standby 부재 |
+| P4 | S3GW SPOF | 관찰 | `storage-s3gw-dc1-01`이 AZ3 단독. 객체 스토리지 게이트웨이 단일 노드 |
+| P5 | db-backup 역할 모호 | 완료 | `db-mysql-dc1-backup`을 cold-standby / daily snapshot target으로 현실화 |
 
 ## 개선 방향
 
-### 옵션 A: 서버 추가로 AZ 균형 맞추기 (15→18대)
+### 옵션 A: 서버 추가로 storage HA 완성 (17→18대)
 
-서버 3대 추가:
-- `lb-haproxy-dc1-03` AZ2 추가 (AZ 균형)
-- `cache-redis-dc1-03` AZ3 추가 (Redis Sentinel 3노드 완성)
+서버 1대 추가:
 - `storage-nfs-dc1-02` AZ2 추가 (NFS HA standby)
 
-**장점**: 실제 production HA 구성에 가장 가까움  
-**단점**: 데이터 생성 스크립트(otel-fix.ts) 및 resource-catalog 변경 범위 큼
+**장점**: 남은 storage SPOF를 직접 해소  
+**단점**: `precomputed-state`까지 포함하면 변경 범위가 커짐
 
 ### 옵션 B: 시나리오 데이터로 취약점 표현 (현 15대 유지)
 
@@ -193,6 +191,17 @@ backup 전용으로 스펙 다운 (8c/32GB/1TB) + 역할 설명 명시.
 - `otel-fix.ts`는 AZ2 LB datapoint와 timeseries row를 재생성할 수 있고, `otel-verify.ts`는 이 inventory 계약을 검증한다.
 - `data:verify`는 `34 passed, 0 failed`로 유지된다.
 - 남은 Phase 3 backlog는 `cache-redis-dc1-03`, `storage-nfs-dc1-02`, 필요 시 `precomputed-state` 재생성이다.
+
+### 이번 승인 slice (`2026-04-18`, Phase 3-B)
+
+- 목표: AZ3 Redis 부재를 해소하기 위해 `cache-redis-dc1-03`를 inventory와 시계열 데이터에 추가한다.
+- 범위:
+  - `resource-catalog.json`에 `cache-redis-dc1-03` 추가 (`AZ3`, `4c/32GB/50GB`)
+  - `src/config/server-registry.ts`에 신규 Redis IP 추가
+  - 24개 hourly 파일에 신규 Redis metric datapoint 추가
+  - `timeseries.json`에 신규 Redis `serverId`와 144포인트 추가
+  - `otel-fix.ts`, `otel-verify.ts`에 신규 Redis inventory helper/검증 추가
+  - `storage-nfs-dc1-02`, `precomputed-state` 재생성, cross-AZ 시나리오 재해석은 이번 slice 제외
 
 ---
 
