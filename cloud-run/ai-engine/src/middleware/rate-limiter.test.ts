@@ -125,3 +125,41 @@ describe('cloud run daily semantics', () => {
     expect(body.dailyLimitExceeded).toBe(true);
   });
 });
+
+describe('cloud run supervisor health limiter policy', () => {
+  it('does not let supervisor health checks consume the strict 10/min write bucket', async () => {
+    const app = new Hono();
+    app.use('/api/*', rateLimitMiddleware);
+    app.get('/api/ai/supervisor/health', (c) => c.json({ ok: true }));
+    app.post('/api/ai/supervisor/stream/v2', (c) => c.json({ ok: true }));
+
+    const headers = {
+      [RATE_LIMIT_IDENTITY_HEADER]: 'test:supervisor-health-split',
+      'X-API-Key': 'shared-service-secret',
+    };
+
+    for (let index = 0; index < 15; index += 1) {
+      const health = await app.request('/api/ai/supervisor/health', {
+        method: 'GET',
+        headers,
+      });
+      expect(health.status).toBe(200);
+    }
+
+    for (let index = 0; index < 10; index += 1) {
+      const write = await app.request('/api/ai/supervisor/stream/v2', {
+        method: 'POST',
+        headers,
+      });
+      expect(write.status).toBe(200);
+    }
+
+    const blocked = await app.request('/api/ai/supervisor/stream/v2', {
+      method: 'POST',
+      headers,
+    });
+
+    expect(blocked.status).toBe(429);
+    expect(blocked.headers.get('X-RateLimit-Limit')).toBe('10');
+  });
+});
