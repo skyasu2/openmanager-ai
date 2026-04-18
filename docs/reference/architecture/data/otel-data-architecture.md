@@ -62,7 +62,7 @@ OpenTelemetry는 이 프로젝트에서 **"빌드 타임 시맨틱 변환 도구
 
 | 항목 | 값 |
 |------|-----|
-| 서버 수 | 17대 |
+| 서버 수 | 18대 |
 | 시간 범위 | 24시간 (hour-00 ~ hour-23) |
 | 슬롯 간격 | 10분 (6 슬롯/시간, 144 슬롯/일) |
 | 메트릭 종류 | 9개 |
@@ -73,13 +73,13 @@ OpenTelemetry는 이 프로젝트에서 **"빌드 타임 시맨틱 변환 도구
 
 ```
 public/data/otel-data/
-├── resource-catalog.json    # 17대 서버 메타데이터 (OTel Resource Attributes)
-├── timeseries.json          # 24h 집계 시계열 (144 timestamps × 17 servers × 9 metrics)
+├── resource-catalog.json    # 18대 서버 메타데이터 (OTel Resource Attributes)
+├── timeseries.json          # 24h 집계 시계열 (144 timestamps × 18 servers × 9 metrics)
 └── hourly/
     └── hour-{00..23}.json   # 시간별 상세 (6 slots, metrics + logs)
 ```
 
-### 17대 서버 인벤토리
+### 18대 서버 인벤토리
 
 | Tier | Server ID | Role | AZ | CPU | Memory | Disk |
 |------|-----------|------|----|-----|--------|------|
@@ -99,12 +99,13 @@ public/data/otel-data/
 | Cache | cache-redis-dc1-02 | cache | AZ2 | 4 | 32GB | 50GB |
 | Cache | cache-redis-dc1-03 | cache | AZ3 | 4 | 32GB | 50GB |
 | Storage | storage-nfs-dc1-01 | storage | AZ1 | 4 | 16GB | 5TB |
+| Storage | storage-nfs-dc1-02 | storage | AZ2 | 4 | 16GB | 5TB |
 | Storage | storage-s3gw-dc1-01 | storage | AZ3 | 2 | 8GB | 200GB |
 
 ### 서비스 토폴로지 (OnPrem DC1)
 
 ```
-LB(3) → Web(3) → API(3) → DB(MySQL 3) + Cache(Redis 3) → Storage(2)
+LB(3) → Web(3) → API(3) → DB(MySQL 3) + Cache(Redis 3) → Storage(3)
 
 ┌───────────── Load Balancer ──────────────┐
 │ HAProxy-01(AZ1) HAProxy-03(AZ2) HAProxy-02(AZ3) │
@@ -119,7 +120,7 @@ LB(3) → Web(3) → API(3) → DB(MySQL 3) + Cache(Redis 3) → Storage(2)
 └──┬──────┬───────────┬───────┬────────────┘
    ▼      ▼           ▼       ▼
 ┌─ Data ──┐    ┌─ Cache ─┐  ┌─ Storage ──┐
-│ MySQL×3 │    │ Redis×3 │  │ NFS + S3GW │
+│ MySQL×3 │    │ Redis×3 │  │ NFS×2 + S3GW │
 │ P/R/S   │    │ M/R     │  │            │
 └─────────┘    └─────────┘  └────────────┘
 ```
