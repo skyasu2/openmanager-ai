@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (Cloud Run daily semantics slice 승인)
+**Last Updated**: 2026-04-18 KST (Cloud Run daily semantics slice 완료)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI Response Visibility - Cloud Run daily semantics alignment | Medium | approved | Cloud Run `supervisor`와 `jobs/process` 경로에 frontend와 같은 `daily=100` semantics를 추가하고, `X-RateLimit-Daily-*` 헤더와 `limitScope=daily` payload를 반환하도록 맞춘다. `jobs` polling read bucket은 daily 제외로 유지한다. |
+| — | — | none | 현재 active task 없음 |
 
 ---
 
@@ -23,7 +23,7 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
-| AI Response Visibility & Rate Limit (Phase 1~5) | Medium | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). handoff 가시성 UX, 429 UX, Job Queue agent path, limiter 정책 재조정. 현재는 Cloud Run daily semantics alignment slice만 active이며, 이후 남은 실질 backlog는 Cloud Run window 수치 재평가다. |
+| AI Response Visibility & Rate Limit (Phase 1~5) | Medium | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). handoff 가시성 UX, 429 UX, Job Queue agent path, limiter 정책 재조정. Cloud Run daily semantics alignment slice는 완료됐고, 남은 실질 backlog는 Cloud Run window 수치 재평가다. |
 | ~~AI Stream Route Contract - residual cleanup~~ | — | **완료** — archive 이동. |
 | ~~OTel 토폴로지 개선~~ | — | **완료** — archive 이동: [archive/otel-topology-improvement-plan.md](archive/otel-topology-improvement-plan.md). |
 | Storybook circular chunk warning 정리 | Low | non-blocking, stable 승격 후 재평가 |
@@ -31,6 +31,16 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-18 #131)
+- [x] AI Response Visibility - Cloud Run daily semantics alignment 완료
+  - Cloud Run `supervisor`와 `jobs/process` write bucket에 `daily=100` semantics 추가
+  - `X-RateLimit-Daily-*` 헤더와 `limitScope=daily`, `dailyLimitExceeded=true` payload를 Cloud Run 429에도 일관되게 제공
+  - `jobs` polling read bucket은 daily 제외로 유지
+  - 검증:
+    - targeted: `cd cloud-run/ai-engine && npx vitest run src/middleware/rate-limiter.test.ts src/routes/jobs.test.ts`
+    - ai-engine gate: `cd cloud-run/ai-engine && npm run type-check && npm run test`
+    - docs: `npm run docs:lint:changed`
 
 ### Completed (2026-04-18 #130)
 - [x] AI Response Visibility - Cloud Run jobs read/write limiter split 완료
