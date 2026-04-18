@@ -306,6 +306,49 @@ function main(): void {
     `${Math.max(...nfsResponseWindow).toFixed(3)} max`
   );
 
+  // ── 3e. Phase 3-A AZ2 LB inventory ──
+  console.log('\n[3e] Phase 3-A AZ2 load balancer inventory:');
+  const az2Lb = catalog.resources['lb-haproxy-dc1-03'] ?? {};
+  check(
+    'AZ2 LB catalog entry exists',
+    az2Lb['host.name'] === 'lb-haproxy-dc1-03.openmanager.kr'
+  );
+  check('AZ2 LB zone = DC1-AZ2', az2Lb['cloud.availability_zone'] === 'DC1-AZ2');
+
+  let az2LbMissingHours = 0;
+  for (let hour = 0; hour < 24; hour++) {
+    const hourly: HourlyFile = JSON.parse(
+      fs.readFileSync(
+        path.join(HOURLY_DIR, `hour-${String(hour).padStart(2, '0')}.json`),
+        'utf-8'
+      )
+    );
+    const cpuMetric = hourly.slots[0]?.metrics.find(
+      (entry) => entry.name === 'system.cpu.utilization'
+    );
+    const hasAz2Lb = cpuMetric?.dataPoints.some(
+      (dp) => dp.attributes['host.name'] === 'lb-haproxy-dc1-03.openmanager.kr'
+    );
+    if (!hasAz2Lb) {
+      az2LbMissingHours++;
+    }
+  }
+
+  check(
+    'AZ2 LB present in all hourly files',
+    az2LbMissingHours === 0,
+    `${az2LbMissingHours} missing hours`
+  );
+
+  const az2LbIndex = ts.serverIds.indexOf('lb-haproxy-dc1-03');
+  check('AZ2 LB present in timeseries serverIds', az2LbIndex >= 0);
+  check(
+    'AZ2 LB timeseries length matches timestamps',
+    az2LbIndex >= 0 &&
+      (ts.metrics['system.cpu.utilization']?.[az2LbIndex]?.length ?? 0) ===
+        ts.timestamps.length
+  );
+
   // ── 4. Cache OOM logs have redis-server (not java) ──
   console.log('\n[4] Cache OOM process name:');
   let javaOOMInCache = 0;

@@ -100,6 +100,12 @@
               }
             },
             {
+              "asDouble": 0.4841,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.34,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
@@ -197,6 +203,12 @@
               }
             },
             {
+              "asDouble": 0.3185,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.34,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
@@ -291,6 +303,12 @@
               "asDouble": 0.14,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.24,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
               }
             },
             {
@@ -393,6 +411,12 @@
             {
               "asDouble": 1250000,
               "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 1250000,
+              "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
             }
@@ -485,6 +509,12 @@
               "asDouble": 1.41,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 1.2207,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
               }
             },
             {
@@ -585,6 +615,12 @@
               }
             },
             {
+              "asDouble": 1.1067,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 1.1,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
@@ -679,6 +715,12 @@
               "asDouble": 113,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 121,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
               }
             },
             {
@@ -779,6 +821,12 @@
               }
             },
             {
+              "asDouble": 35051039,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 35043324,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
@@ -873,6 +921,12 @@
               "asDouble": 0.14,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.1292,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
               }
             },
             {
@@ -1435,6 +1489,12 @@
               }
             },
             {
+              "asDouble": 0.4794,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.34,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
@@ -1532,6 +1592,12 @@
               }
             },
             {
+              "asDouble": 0.3479,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.36,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
@@ -1626,6 +1692,12 @@
               "asDouble": 0.17,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.24,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
               }
             },
             {
@@ -1728,6 +1800,12 @@
             {
               "asDouble": 1250000,
               "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 1250000,
+              "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
             }
@@ -1820,6 +1898,12 @@
               "asDouble": 1.5,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 1.2825,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
               }
             },
             {
@@ -1920,6 +2004,12 @@
               }
             },
             {
+              "asDouble": 0.9737,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.92,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
@@ -2014,6 +2104,12 @@
               "asDouble": 123,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 128,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
               }
             },
             {
@@ -2114,6 +2210,12 @@
               }
             },
             {
+              "asDouble": 35049756,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 35027498,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
@@ -2208,6 +2310,12 @@
               "asDouble": 0.15,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.1548,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
               }
             },
             {
@@ -2653,6 +2761,12 @@
               }
             },
             {
+              "asDouble": 0.4935,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.37,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
@@ -2750,6 +2864,12 @@
               }
             },
             {
+              "asDouble": 0.3283,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.31,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
@@ -2844,6 +2964,12 @@
               "asDouble": 0.12,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.24,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
               }
             },
             {
@@ -2946,6 +3072,12 @@
             {
               "asDouble": 1250000,
               "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 1250000,
+              "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
             }
@@ -3038,6 +3170,12 @@
               "asDouble": 1.7,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 1.4487,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
               }
             },
             {
@@ -3138,6 +3276,12 @@
               }
             },
             {
+              "asDouble": 1.1542,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 1.04,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
@@ -3232,6 +3376,12 @@
               "asDouble": 144,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 138,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
               }
             },
             {
@@ -3332,6 +3482,12 @@
               }
             },
             {
+              "asDouble": 35064954,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 35068166,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
@@ -3426,6 +3582,12 @@
               "asDouble": 0.128,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.1183,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
               }
             },
             {
@@ -3923,6 +4085,12 @@
               }
             },
             {
+              "asDouble": 0.4841,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.33,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
@@ -4020,6 +4188,12 @@
               }
             },
             {
+              "asDouble": 0.3332,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.33,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
@@ -4114,6 +4288,12 @@
               "asDouble": 0.12,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.24,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
               }
             },
             {
@@ -4216,6 +4396,12 @@
             {
               "asDouble": 1250000,
               "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 1250000,
+              "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
             }
@@ -4308,6 +4494,12 @@
               "asDouble": 1.19,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 1.216,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
               }
             },
             {
@@ -4408,6 +4600,12 @@
               }
             },
             {
+              "asDouble": 1.007,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 1.03,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
@@ -4502,6 +4700,12 @@
               "asDouble": 121,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 119,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
               }
             },
             {
@@ -4602,6 +4806,12 @@
               }
             },
             {
+              "asDouble": 35052999,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 35053021,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
@@ -4696,6 +4906,12 @@
               "asDouble": 0.127,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.1306,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
               }
             },
             {
@@ -5154,6 +5370,12 @@
               }
             },
             {
+              "asDouble": 0.5358,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.42,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
@@ -5251,6 +5473,12 @@
               }
             },
             {
+              "asDouble": 0.3577,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.36,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
@@ -5345,6 +5573,12 @@
               "asDouble": 0.13,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.24,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
               }
             },
             {
@@ -5447,6 +5681,12 @@
             {
               "asDouble": 1250000,
               "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 1250000,
+              "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
             }
@@ -5539,6 +5779,12 @@
               "asDouble": 1.64,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 1.5485,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
               }
             },
             {
@@ -5639,6 +5885,12 @@
               }
             },
             {
+              "asDouble": 1.2825,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 1.34,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
@@ -5733,6 +5985,12 @@
               "asDouble": 141,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 121,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
               }
             },
             {
@@ -5833,6 +6091,12 @@
               }
             },
             {
+              "asDouble": 35072419,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 35051106,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
@@ -5927,6 +6191,12 @@
               "asDouble": 0.164,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.1359,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
               }
             },
             {
@@ -6385,6 +6655,12 @@
               }
             },
             {
+              "asDouble": 0.5264,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.4,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
@@ -6482,6 +6758,12 @@
               }
             },
             {
+              "asDouble": 0.3234,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.35,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
@@ -6576,6 +6858,12 @@
               "asDouble": 0.16,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.24,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
               }
             },
             {
@@ -6678,6 +6966,12 @@
             {
               "asDouble": 1250000,
               "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 1250000,
+              "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
             }
@@ -6770,6 +7064,12 @@
               "asDouble": 1.69,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 1.6768,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
               }
             },
             {
@@ -6870,6 +7170,12 @@
               }
             },
             {
+              "asDouble": 1.4535,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 1.65,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
@@ -6964,6 +7270,12 @@
               "asDouble": 139,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 141,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
               }
             },
             {
@@ -7064,6 +7376,12 @@
               }
             },
             {
+              "asDouble": 35076229,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 35069334,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
@@ -7158,6 +7476,12 @@
               "asDouble": 0.178,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.1686,
+              "attributes": {
+                "host.name": "lb-haproxy-dc1-03.openmanager.kr"
               }
             },
             {

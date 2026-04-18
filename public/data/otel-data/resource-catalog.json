@@ -214,6 +214,21 @@
       "host.memory.size": 8589934592,
       "host.disk.size": 53687091200
     },
+    "lb-haproxy-dc1-03": {
+      "service.name": "openmanager-ai",
+      "host.name": "lb-haproxy-dc1-03.openmanager.kr",
+      "host.id": "lb-haproxy-dc1-03",
+      "host.arch": "amd64",
+      "server.role": "loadbalancer",
+      "os.type": "linux",
+      "os.description": "ubuntu 22.04",
+      "cloud.region": "onprem-dc1",
+      "cloud.availability_zone": "DC1-AZ2",
+      "deployment.environment.name": "production",
+      "host.cpu.count": 4,
+      "host.memory.size": 8589934592,
+      "host.disk.size": 53687091200
+    },
     "lb-haproxy-dc1-02": {
       "service.name": "openmanager-ai",
       "host.name": "lb-haproxy-dc1-02.openmanager.kr",

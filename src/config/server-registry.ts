@@ -21,6 +21,7 @@ type ServerRegistryEntry = {
 const SERVER_REGISTRY: ServerRegistryEntry[] = [
   // DC1-AZ1/AZ2 subnet (10.100.1.0/24)
   { serverId: 'lb-haproxy-dc1-01', ip: '10.100.1.1' },
+  { serverId: 'lb-haproxy-dc1-03', ip: '10.100.1.2' },
   { serverId: 'web-nginx-dc1-01', ip: '10.100.1.11' },
   { serverId: 'web-nginx-dc1-02', ip: '10.100.1.12' },
   { serverId: 'api-was-dc1-01', ip: '10.100.1.21' },

@@ -240,6 +240,11 @@ const ERROR_BASELINE_HOUR_RESOURCES: Record<number, string> = {
   23: 'storage-s3gw-dc1-01',
 };
 
+const PHASE3_AZ2_LB = {
+  serverId: 'lb-haproxy-dc1-03',
+  hostname: 'lb-haproxy-dc1-03.openmanager.kr',
+};
+
 // 장애 서버 → cascade WARN을 받을 서버 (호출자/의존 서버)
 const CASCADE_MAP: Record<string, string[]> = {
   'db-mysql-dc1-primary': ['api-was-dc1-01', 'api-was-dc1-02', 'api-was-dc1-03'],
@@ -617,6 +622,118 @@ function applyErrorBaselineBoost(data: HourlyFile, hour: number): HourlyFile {
       resource,
     });
     slot.logs.sort((a, b) => a.timeUnixNano - b.timeUnixNano);
+  }
+
+  return data;
+}
+
+function derivePhase3Az2LbValue(
+  metricName: string,
+  primaryValue: number | undefined,
+  secondaryValue: number | undefined
+): number {
+  const existingValues = [primaryValue, secondaryValue].filter(
+    (value): value is number => typeof value === 'number'
+  );
+  const average =
+    existingValues.length > 0
+      ? existingValues.reduce((sum, value) => sum + value, 0) /
+        existingValues.length
+      : undefined;
+
+  switch (metricName) {
+    case 'system.cpu.utilization':
+      return Math.round(
+        Math.min(Math.max((average ?? 0.34) * 0.94, 0.18), 0.78) * 10000
+      ) / 10000;
+    case 'system.memory.utilization':
+      return Math.round(
+        Math.min(Math.max((average ?? 0.46) * 0.98, 0.28), 0.72) * 10000
+      ) / 10000;
+    case 'system.filesystem.utilization':
+      return Math.round(
+        Math.min(Math.max((average ?? 0.41) * 0.97, 0.24), 0.66) * 10000
+      ) / 10000;
+    case 'system.linux.cpu.load_1m':
+    case 'system.linux.cpu.load_5m':
+      return Math.round(
+        Math.min(Math.max((average ?? 1.08) * 0.95, 0.24), 2.4) * 10000
+      ) / 10000;
+    case 'http.server.request.duration':
+      return Math.round(
+        Math.min(Math.max((average ?? 0.165) * 0.95, 0.08), 0.42) * 10000
+      ) / 10000;
+    case 'system.network.io':
+      return Math.round(
+        Math.min(Math.max((average ?? 1_500_000) * 0.92, 1_250_000), 68_000_000)
+      );
+    case 'system.process.count':
+      return Math.round(Math.min(Math.max(average ?? 118, 96), 180));
+    case 'system.uptime':
+      return Math.round(average ?? 35_058_534);
+    default:
+      return Math.round((average ?? 0) * 10000) / 10000;
+  }
+}
+
+function ensurePhase3Az2LoadBalancer(data: HourlyFile): HourlyFile {
+  for (const slot of data.slots) {
+    for (const metric of slot.metrics) {
+      const alreadyExists = metric.dataPoints.some(
+        (point) => point.attributes['host.name'] === PHASE3_AZ2_LB.hostname
+      );
+      if (alreadyExists) continue;
+
+      const lb01Point = metric.dataPoints.find(
+        (point) =>
+          point.attributes['host.name'] === 'lb-haproxy-dc1-01.openmanager.kr'
+      );
+      const lb02Point = metric.dataPoints.find(
+        (point) =>
+          point.attributes['host.name'] === 'lb-haproxy-dc1-02.openmanager.kr'
+      );
+
+      const insertAt = Math.max(
+        metric.dataPoints.findIndex(
+          (point) =>
+            point.attributes['host.name'] === 'lb-haproxy-dc1-01.openmanager.kr'
+        ),
+        -1
+      );
+
+      const newPoint = {
+        asDouble: derivePhase3Az2LbValue(
+          metric.name,
+          lb01Point?.asDouble,
+          lb02Point?.asDouble
+        ),
+        attributes: { 'host.name': PHASE3_AZ2_LB.hostname },
+      };
+
+      if (insertAt >= 0) {
+        metric.dataPoints.splice(insertAt + 1, 0, newPoint);
+      } else {
+        metric.dataPoints.push(newPoint);
+      }
+    }
+  }
+
+  return data;
+}
+
+function ensurePhase3Az2LbTimeseries(data: TimeSeries): TimeSeries {
+  if (data.serverIds.includes(PHASE3_AZ2_LB.serverId)) {
+    return data;
+  }
+
+  const lb02Index = data.serverIds.indexOf('lb-haproxy-dc1-02');
+  const insertIndex = lb02Index >= 0 ? lb02Index : data.serverIds.length - 1;
+  data.serverIds.splice(insertIndex, 0, PHASE3_AZ2_LB.serverId);
+
+  for (const metricKey of Object.keys(data.metrics)) {
+    const metricSeries = data.metrics[metricKey] ?? [];
+    metricSeries.splice(insertIndex, 0, new Array(data.timestamps.length).fill(0));
+    data.metrics[metricKey] = metricSeries;
   }
 
   return data;
@@ -1253,6 +1370,8 @@ function main(): void {
     data = reconcileLogsWithMetrics(data, hour);
     // Baseline debt cleanup: ensure realistic error ratio without full-dataset churn
     data = applyErrorBaselineBoost(data, hour);
+    // Phase 3-A: ensure AZ2 load balancer inventory is present in hourly datasets
+    data = ensurePhase3Az2LoadBalancer(data);
     // L3: Watchdog dedup + S3GW cron cleanup
     data = limitWatchdogDuplicates(data);
     return data;
@@ -1264,6 +1383,7 @@ function main(): void {
   console.log('\n[Phase 2] Timeseries fixes...');
 
   // C4: Add missing metrics (uptime, process.count)
+  processTimeseries((data) => ensurePhase3Az2LbTimeseries(data));
   addMissingTimeseriesMetrics();
 
   // ★ Timeseries를 hourly 파일에서 직접 추출 (100% 정합성 보장)
