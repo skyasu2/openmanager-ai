@@ -61,7 +61,9 @@ REPOSITORY="cloud-run"
 # Free-tier runtime limits (non-negotiable)
 FREE_TIER_MIN_INSTANCES="0"
 FREE_TIER_MAX_INSTANCES="1"
-FREE_TIER_CONCURRENCY="80"
+# Keep per-instance parallelism conservative to reduce retry amplification and
+# provider burst load during sudden traffic spikes.
+FREE_TIER_CONCURRENCY="16"
 FREE_TIER_CPU="1"
 FREE_TIER_MEMORY="512Mi"
 FREE_TIER_TIMEOUT="300"

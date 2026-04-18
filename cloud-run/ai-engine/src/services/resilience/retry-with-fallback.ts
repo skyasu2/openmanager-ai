@@ -39,6 +39,12 @@ export interface RetryConfig {
   initialDelayMs: number;
   /** Maximum delay between retries */
   maxDelayMs: number;
+  /** Base delay before switching providers */
+  fallbackDelayMs: number;
+  /** Additional jitter (0..N ms) before switching providers */
+  fallbackJitterMs: number;
+  /** Process-wide retry/fallback budget per minute (anti-amplification guard) */
+  retryBudgetPerMinute: number;
   /** Timeout for each attempt in ms */
   timeoutMs: number;
 }
@@ -78,8 +84,15 @@ const DEFAULT_RETRY_CONFIG: RetryConfig = {
   maxRetries: 2,
   initialDelayMs: 500,
   maxDelayMs: 5000,
+  fallbackDelayMs: 150,
+  fallbackJitterMs: 250,
+  retryBudgetPerMinute: 120,
   timeoutMs: 60000,
 };
+
+const RETRY_BUDGET_WINDOW_MS = 60_000;
+let retryBudgetWindowStart = Date.now();
+let retryBudgetConsumed = 0;
 
 /**
  * Error codes that trigger fallback to next provider
@@ -170,6 +183,29 @@ function sleep(ms: number): Promise<void> {
 function getBackoffDelay(attempt: number, config: RetryConfig): number {
   const delay = config.initialDelayMs * Math.pow(2, attempt);
   return Math.min(delay, config.maxDelayMs);
+}
+
+function getFallbackDelay(config: RetryConfig): number {
+  const jitter = Math.floor(Math.random() * Math.max(0, config.fallbackJitterMs + 1));
+  return Math.max(0, config.fallbackDelayMs + jitter);
+}
+
+function consumeRetryBudget(config: RetryConfig, reason: string): boolean {
+  const now = Date.now();
+  if (now - retryBudgetWindowStart >= RETRY_BUDGET_WINDOW_MS) {
+    retryBudgetWindowStart = now;
+    retryBudgetConsumed = 0;
+  }
+
+  if (retryBudgetConsumed >= config.retryBudgetPerMinute) {
+    logger.warn(
+      `[RetryWithFallback] Retry budget exhausted (${retryBudgetConsumed}/${config.retryBudgetPerMinute}) reason=${reason}`
+    );
+    return false;
+  }
+
+  retryBudgetConsumed += 1;
+  return true;
 }
 
 /**
@@ -392,13 +428,35 @@ export async function generateTextWithRetry(
 
         // Check if should fallback to next provider
         if (shouldFallback(error)) {
-          logger.info(`[RetryWithFallback] Rate limit/unavailable, switching provider...`);
+          if (!consumeRetryBudget(fullConfig, `fallback:${provider}`)) {
+            return {
+              success: false,
+              provider,
+              modelId,
+              attempts,
+              totalDurationMs: Date.now() - startTime,
+              usedFallback: excludedProviders.length > 0,
+            };
+          }
+          const delay = getFallbackDelay(fullConfig);
+          logger.info(`[RetryWithFallback] Rate limit/unavailable, switching provider after ${delay}ms...`);
+          await sleep(delay);
           excludedProviders.push(provider);
           break; // Exit retry loop, try next provider
         }
 
         // Check if should retry same provider
         if (shouldRetry(error) && retryCount < fullConfig.maxRetries) {
+          if (!consumeRetryBudget(fullConfig, `retry:${provider}`)) {
+            return {
+              success: false,
+              provider,
+              modelId,
+              attempts,
+              totalDurationMs: Date.now() - startTime,
+              usedFallback: excludedProviders.length > 0,
+            };
+          }
           const delay = getBackoffDelay(retryCount, fullConfig);
           logger.info(`[RetryWithFallback] Retrying ${provider} in ${delay}ms...`);
           await sleep(delay);
@@ -407,7 +465,19 @@ export async function generateTextWithRetry(
         }
 
         // Non-retryable error - try next provider
-        logger.info(`[RetryWithFallback] Non-retryable error, trying next provider...`);
+        if (!consumeRetryBudget(fullConfig, `next-provider:${provider}`)) {
+          return {
+            success: false,
+            provider,
+            modelId,
+            attempts,
+            totalDurationMs: Date.now() - startTime,
+            usedFallback: excludedProviders.length > 0,
+          };
+        }
+        const delay = getFallbackDelay(fullConfig);
+        logger.info(`[RetryWithFallback] Non-retryable error, trying next provider after ${delay}ms...`);
+        await sleep(delay);
         excludedProviders.push(provider);
         break;
       }
@@ -461,3 +531,9 @@ export async function generateTextWithFallback(
 // ============================================================================
 
 export { DEFAULT_RETRY_CONFIG, FALLBACK_ERROR_CODES, RETRY_ERROR_CODES };
+
+// test-only helper
+export function __resetRetryBudgetForTests(): void {
+  retryBudgetWindowStart = Date.now();
+  retryBudgetConsumed = 0;
+}

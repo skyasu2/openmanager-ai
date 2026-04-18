@@ -11,9 +11,24 @@ import { useQueryExecution } from './useQueryExecution';
 
 describe('useQueryExecution', () => {
   const originalNodeEnv = process.env.NODE_ENV;
+  const createBaseState = (): HybridQueryState => ({
+    mode: 'streaming',
+    complexity: null,
+    progress: null,
+    jobId: null,
+    isLoading: false,
+    error: null,
+    errorDetails: null,
+    clarification: null,
+    warning: null,
+    processingTime: 0,
+    warmingUp: false,
+    estimatedWaitSeconds: 0,
+  });
 
   afterEach(() => {
     process.env.NODE_ENV = originalNodeEnv;
+    vi.useRealTimers();
   });
 
   function createDeps(): QueryExecutionDeps {
@@ -33,6 +48,7 @@ describe('useQueryExecution', () => {
         currentQuery: { current: null },
         pendingQuery: { current: null },
         pendingAttachments: { current: null },
+        rateLimitBlock: { current: null },
       },
     };
   }
@@ -160,5 +176,78 @@ describe('useQueryExecution', () => {
       'db-mysql-dc1-primary 서버의 디스크 사용률이 81%입니다. 현재 원인과 우선 조치 방법을 분석해줘.',
       { analysisMode: 'thinking' }
     );
+  });
+
+  it('active Retry-After cooldown이면 sendQuery를 fail-fast로 차단한다', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-04-18T12:00:00.000Z'));
+    process.env.NODE_ENV = 'production';
+    const deps = createDeps();
+    deps.refs.rateLimitBlock.current = {
+      details: {
+        kind: 'rate-limit',
+        message: '요청이 너무 많습니다. 5초 후 다시 시도해주세요.',
+        source: 'cloud-run-ai',
+        scope: 'minute',
+        retryAfterSeconds: 5,
+        remaining: 0,
+      },
+      untilMs: Date.now() + 5_000,
+    };
+
+    const { result } = renderHook(() => useQueryExecution(deps));
+
+    await act(async () => {
+      await result.current.sendQuery('서버 상태 알려줘');
+    });
+
+    expect(deps.sendMessage).not.toHaveBeenCalled();
+    expect(deps.asyncQuery.sendQuery).not.toHaveBeenCalled();
+
+    const updater = deps.setState.mock.calls.at(-1)?.[0];
+    expect(typeof updater).toBe('function');
+
+    const nextState = (updater as (prev: HybridQueryState) => HybridQueryState)(
+      createBaseState()
+    );
+    expect(nextState.error).toBe(
+      '요청이 너무 많습니다. 5초 후 다시 시도해주세요.'
+    );
+    expect(nextState.errorDetails).toMatchObject({
+      kind: 'rate-limit',
+      scope: 'minute',
+      retryAfterSeconds: 5,
+    });
+  });
+
+  it('만료된 Retry-After cooldown은 자동 해제하고 streaming 전송을 진행한다', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-04-18T12:00:00.000Z'));
+    process.env.NODE_ENV = 'production';
+    const deps = createDeps();
+    deps.refs.rateLimitBlock.current = {
+      details: {
+        kind: 'rate-limit',
+        message: '요청이 너무 많습니다. 1초 후 다시 시도해주세요.',
+        source: 'cloud-run-ai',
+        scope: 'minute',
+        retryAfterSeconds: 1,
+        remaining: 0,
+      },
+      untilMs: Date.now() - 1_000,
+    };
+
+    const { result } = renderHook(() => useQueryExecution(deps));
+
+    act(() => {
+      result.current.executeQuery('서버 상태 알려줘');
+    });
+
+    await Promise.resolve();
+
+    expect(deps.refs.rateLimitBlock.current).toBeNull();
+    expect(deps.sendMessage).toHaveBeenCalledWith({
+      text: '서버 상태 알려줘',
+    });
   });
 });

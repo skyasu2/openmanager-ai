@@ -70,7 +70,10 @@ import {
   STREAM_ERROR_MARKER,
   STREAM_ERROR_REGEX,
 } from '@/lib/ai/constants/stream-errors';
-import { inferAIErrorDetailsFromMessage } from '@/lib/ai/error-details';
+import {
+  type AIRateLimitErrorDetails,
+  inferAIErrorDetailsFromMessage,
+} from '@/lib/ai/error-details';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type {
   AIStreamStatus,
@@ -102,6 +105,31 @@ function normalizeStreamStatus(status: string): AIStreamStatus {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
+}
+
+function resolveRateLimitUntilMs(
+  details: AIRateLimitErrorDetails
+): number | null {
+  const now = Date.now();
+  const retryAfterMs =
+    typeof details.retryAfterSeconds === 'number' &&
+    details.retryAfterSeconds > 0
+      ? now + details.retryAfterSeconds * 1000
+      : null;
+  const resetAtMs =
+    typeof details.resetAt === 'number' && details.resetAt > 0
+      ? details.resetAt * 1000
+      : null;
+  const candidates = [retryAfterMs, resetAtMs].filter(
+    (value): value is number =>
+      typeof value === 'number' && Number.isFinite(value) && value > now
+  );
+
+  if (candidates.length === 0) {
+    return null;
+  }
+
+  return Math.max(...candidates);
 }
 
 export function buildAssistantMessageFromAsyncResult(
@@ -284,6 +312,10 @@ export function useHybridAIQuery(
   const pendingAttachmentsRef = useRef<FileAttachment[] | null>(null);
   const currentQueryRef = useRef<string | null>(null);
   const errorHandledRef = useRef<boolean>(false);
+  const rateLimitBlockRef = useRef<{
+    details: AIRateLimitErrorDetails;
+    untilMs: number;
+  } | null>(null);
   const redirectingRef = useRef<boolean>(false);
   const abortControllerRef = useRef<AbortController | null>(null);
   const retryTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -421,6 +453,21 @@ export function useHybridAIQuery(
     chatStatus === 'streaming' || chatStatus === 'submitted';
   const streamStatus = normalizeStreamStatus(chatStatus);
   const isLoading = state.isLoading || isChatLoading || asyncQuery.isLoading;
+  useEffect(() => {
+    if (state.errorDetails?.kind !== 'rate-limit') {
+      return;
+    }
+
+    const untilMs = resolveRateLimitUntilMs(state.errorDetails);
+    if (!untilMs) {
+      return;
+    }
+
+    rateLimitBlockRef.current = {
+      details: state.errorDetails,
+      untilMs,
+    };
+  }, [state.errorDetails]);
   const { executeQuery, sendQuery } = useQueryExecution({
     complexityThreshold,
     asyncQuery,
@@ -439,6 +486,7 @@ export function useHybridAIQuery(
       currentQuery: currentQueryRef,
       pendingQuery: pendingQueryRef,
       pendingAttachments: pendingAttachmentsRef,
+      rateLimitBlock: rateLimitBlockRef,
     },
     analysisMode,
   });

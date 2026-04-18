@@ -26,6 +26,8 @@ interface RateLimitConfig {
   windowMs: number;
   /** Optional daily request cap */
   dailyLimit?: number;
+  /** Optional in-flight concurrency cap per endpoint group */
+  maxInFlight?: number;
   /** Key prefix for Redis */
   keyPrefix: string;
 }
@@ -38,7 +40,7 @@ interface RateLimitResult {
     remaining: number;
     resetTime: number;
   };
-  limitScope?: 'minute' | 'daily';
+  limitScope?: 'minute' | 'daily' | 'concurrency';
 }
 
 // ============================================================================
@@ -56,6 +58,70 @@ const inMemoryStore = new Map<
 const MAX_STORE_SIZE = 1000;
 const REDIS_TIMEOUT_MS = 500;
 const DAILY_WINDOW_MS = 24 * 60 * 60 * 1000;
+const OVERLOAD_RETRY_AFTER_SECONDS = 2;
+const RETRY_AFTER_JITTER_MAX_SECONDS = 2;
+const inFlightStore = new Map<string, number>();
+const ATOMIC_RATE_LIMIT_SCRIPT = `
+local minute_key = KEYS[1]
+local daily_key = KEYS[2]
+
+local minute_limit = tonumber(ARGV[1])
+local minute_window_ms = tonumber(ARGV[2])
+local daily_limit = tonumber(ARGV[3])
+local daily_window_ms = tonumber(ARGV[4])
+
+local minute_count = tonumber(redis.call('GET', minute_key) or '0')
+local minute_ttl = tonumber(redis.call('PTTL', minute_key))
+if minute_ttl == nil or minute_ttl < 0 then
+  minute_ttl = minute_window_ms
+end
+
+local daily_count = 0
+local daily_ttl = daily_window_ms
+
+if daily_limit > 0 then
+  daily_count = tonumber(redis.call('GET', daily_key) or '0')
+  daily_ttl = tonumber(redis.call('PTTL', daily_key))
+  if daily_ttl == nil or daily_ttl < 0 then
+    daily_ttl = daily_window_ms
+  end
+end
+
+if minute_count >= minute_limit then
+  return {0, minute_count, minute_ttl, daily_count, daily_ttl, 1}
+end
+
+if daily_limit > 0 and daily_count >= daily_limit then
+  return {0, minute_count, daily_ttl, daily_count, daily_ttl, 2}
+end
+
+local next_minute_count = tonumber(redis.call('INCR', minute_key))
+if next_minute_count == 1 then
+  redis.call('PEXPIRE', minute_key, minute_window_ms)
+  minute_ttl = minute_window_ms
+else
+  minute_ttl = tonumber(redis.call('PTTL', minute_key))
+  if minute_ttl == nil or minute_ttl < 0 then
+    minute_ttl = minute_window_ms
+  end
+end
+
+local next_daily_count = daily_count
+if daily_limit > 0 then
+  next_daily_count = tonumber(redis.call('INCR', daily_key))
+  if next_daily_count == 1 then
+    redis.call('PEXPIRE', daily_key, daily_window_ms)
+    daily_ttl = daily_window_ms
+  else
+    daily_ttl = tonumber(redis.call('PTTL', daily_key))
+    if daily_ttl == nil or daily_ttl < 0 then
+      daily_ttl = daily_window_ms
+    end
+  end
+end
+
+return {1, next_minute_count, minute_ttl, next_daily_count, daily_ttl, 0}
+`;
 
 function cleanupInMemoryStore(): void {
   const now = Date.now();
@@ -74,6 +140,38 @@ function cleanupInMemoryStore(): void {
       inMemoryStore.delete(key);
     }
   }
+}
+
+function tryAcquireInFlight(bucket: string, maxInFlight: number): boolean {
+  const current = inFlightStore.get(bucket) ?? 0;
+  if (current >= maxInFlight) {
+    return false;
+  }
+  inFlightStore.set(bucket, current + 1);
+  return true;
+}
+
+function releaseInFlight(bucket: string): void {
+  const current = inFlightStore.get(bucket);
+  if (!current || current <= 1) {
+    inFlightStore.delete(bucket);
+    return;
+  }
+  inFlightStore.set(bucket, current - 1);
+}
+
+function withRetryAfterJitter(
+  baseSeconds: number,
+  scope: 'minute' | 'daily' | 'concurrency'
+): number {
+  const normalizedBase = Math.max(1, Math.ceil(baseSeconds));
+  if (scope === 'daily') {
+    return normalizedBase;
+  }
+  const jitter = Math.floor(
+    Math.random() * (RETRY_AFTER_JITTER_MAX_SECONDS + 1)
+  );
+  return normalizedBase + jitter;
 }
 
 async function checkInMemoryLimit(
@@ -198,89 +296,57 @@ async function checkRedisLimit(
   const dailyKey = `${config.keyPrefix}:daily:${key}`;
 
   try {
-    const currentMinuteCount = Number(
-      (await redis.get(minuteKey, { timeoutMs: REDIS_TIMEOUT_MS })) ?? 0
+    const evalResult = await redis.eval<unknown[]>(
+      ATOMIC_RATE_LIMIT_SCRIPT,
+      [minuteKey, dailyKey],
+      [
+        String(config.maxRequests),
+        String(config.windowMs),
+        String(config.dailyLimit ?? 0),
+        String(DAILY_WINDOW_MS),
+      ],
+      { timeoutMs: REDIS_TIMEOUT_MS }
     );
-    const minuteTtl = await redis.pttl(minuteKey, { timeoutMs: REDIS_TIMEOUT_MS });
 
-    let currentDailyCount = 0;
-    let dailyTtl = -1;
-
-    if (config.dailyLimit) {
-      currentDailyCount = Number(
-        (await redis.get(dailyKey, { timeoutMs: REDIS_TIMEOUT_MS })) ?? 0
-      );
-      dailyTtl = await redis.pttl(dailyKey, { timeoutMs: REDIS_TIMEOUT_MS });
+    if (!Array.isArray(evalResult) || evalResult.length < 6) {
+      throw new Error('invalid eval result shape');
     }
 
-    if (currentMinuteCount >= config.maxRequests) {
-      return {
-        allowed: false,
-        remaining: 0,
-        resetTime: minuteTtl > 0 ? now + minuteTtl : now + config.windowMs,
-        daily: config.dailyLimit
-          ? {
-              remaining: Math.max(0, config.dailyLimit - currentDailyCount),
-              resetTime:
-                dailyTtl > 0 ? now + dailyTtl : now + DAILY_WINDOW_MS,
-            }
-          : undefined,
-        limitScope: 'minute',
-      };
-    }
+    const allowed = Number(evalResult[0]) === 1;
+    const minuteCount = Math.max(0, Number(evalResult[1] ?? 0));
+    const minuteTtl = Math.max(0, Number(evalResult[2] ?? config.windowMs));
+    const dailyCount = Math.max(0, Number(evalResult[3] ?? 0));
+    const dailyTtl = Math.max(0, Number(evalResult[4] ?? DAILY_WINDOW_MS));
+    const limitScopeCode = Number(evalResult[5] ?? 0);
 
-    if (config.dailyLimit && currentDailyCount >= config.dailyLimit) {
-      return {
-        allowed: false,
-        remaining: 0,
-        resetTime: dailyTtl > 0 ? now + dailyTtl : now + DAILY_WINDOW_MS,
-        daily: {
-          remaining: 0,
-          resetTime: dailyTtl > 0 ? now + dailyTtl : now + DAILY_WINDOW_MS,
-        },
-        limitScope: 'daily',
-      };
-    }
-
-    const minuteCount = await redis.incr(minuteKey, { timeoutMs: REDIS_TIMEOUT_MS });
-    if (minuteCount === 1) {
-      await redis.pexpire(minuteKey, config.windowMs, {
-        timeoutMs: REDIS_TIMEOUT_MS,
-      });
-    }
-    const updatedMinuteTtl =
-      minuteTtl > 0 ? minuteTtl : config.windowMs;
-    const resetTime = now + updatedMinuteTtl;
-
-    let daily:
-      | {
-          remaining: number;
-          resetTime: number;
+    const daily = config.dailyLimit
+      ? {
+          remaining: Math.max(0, config.dailyLimit - dailyCount),
+          resetTime: now + dailyTtl,
         }
-      | undefined;
+      : undefined;
 
-    if (config.dailyLimit) {
-      const dailyCount = await redis.incr(dailyKey, { timeoutMs: REDIS_TIMEOUT_MS });
-      if (dailyCount === 1) {
-        await redis.pexpire(dailyKey, DAILY_WINDOW_MS, {
-          timeoutMs: REDIS_TIMEOUT_MS,
-        });
-      }
-      const updatedDailyTtl = dailyTtl > 0 ? dailyTtl : DAILY_WINDOW_MS;
-      daily = {
-        remaining: Math.max(0, config.dailyLimit - dailyCount),
-        resetTime: now + updatedDailyTtl,
+    if (!allowed) {
+      return {
+        allowed: false,
+        remaining: 0,
+        resetTime: now + (limitScopeCode === 2 ? dailyTtl : minuteTtl),
+        daily,
+        limitScope: limitScopeCode === 2 ? 'daily' : 'minute',
       };
     }
 
     return {
       allowed: true,
       remaining: Math.max(0, config.maxRequests - minuteCount),
-      resetTime,
+      resetTime: now + minuteTtl,
       daily,
     };
   } catch (error) {
-    logger.warn('[RateLimiter] Redis error, falling back to in-memory:', error);
+    logger.warn(
+      '[RateLimiter] Redis atomic check failed, falling back to in-memory:',
+      error
+    );
     return checkInMemoryLimit(namespacedKey, config);
   }
 }
@@ -294,6 +360,7 @@ const RATE_LIMIT_CONFIGS: Record<string, RateLimitConfig> = {
     maxRequests: 10,
     windowMs: 60 * 1000, // 1분에 10회
     dailyLimit: 100,
+    maxInFlight: 4,
     keyPrefix: 'rl:supervisor',
   },
   supervisorHealth: {
@@ -304,12 +371,14 @@ const RATE_LIMIT_CONFIGS: Record<string, RateLimitConfig> = {
   embedding: {
     maxRequests: 30,
     windowMs: 60 * 1000, // 1분에 30회
+    maxInFlight: 6,
     keyPrefix: 'rl:embedding',
   },
   jobsWrite: {
     maxRequests: 5,
     windowMs: 60 * 1000, // 1분에 5회 (job creation / processing)
     dailyLimit: 100,
+    maxInFlight: 2,
     keyPrefix: 'rl:jobs:write',
   },
   jobsRead: {
@@ -397,44 +466,88 @@ export async function rateLimitMiddleware(
   const config = resolveConfig(path, c.req.method);
   const clientKey = extractClientKey(c);
   const rateLimitKey = `${clientKey}:${path.split('/').slice(0, 4).join('/')}`;
+  const inFlightBucket = config.keyPrefix;
+  const maxInFlight = config.maxInFlight;
+  let inFlightAcquired = false;
 
-  const result = await checkRedisLimit(rateLimitKey, config);
+  if (maxInFlight && maxInFlight > 0) {
+    if (!tryAcquireInFlight(inFlightBucket, maxInFlight)) {
+      const retryAfter = withRetryAfterJitter(
+        OVERLOAD_RETRY_AFTER_SECONDS,
+        'concurrency'
+      );
+      c.header('Retry-After', String(retryAfter));
+      c.header('X-RateLimit-Overload', 'true');
+      c.header('X-RateLimit-InFlight-Limit', String(maxInFlight));
 
-  // Set rate limit headers on all responses
-  c.header('X-RateLimit-Limit', config.maxRequests.toString());
-  c.header('X-RateLimit-Remaining', result.remaining.toString());
-  c.header('X-RateLimit-Reset', result.resetTime.toString());
-  if (config.dailyLimit && result.daily) {
-    c.header('X-RateLimit-Daily-Limit', config.dailyLimit.toString());
-    c.header('X-RateLimit-Daily-Remaining', result.daily.remaining.toString());
-    c.header('X-RateLimit-Daily-Reset', result.daily.resetTime.toString());
+      logger.warn(
+        `[RateLimiter] In-flight overload: ${path} bucket=${inFlightBucket} maxInFlight=${maxInFlight}`
+      );
+
+      return c.json(
+        {
+          error: 'Too Many Requests',
+          message: '동시 처리 한도를 초과했습니다. 잠시 후 다시 시도해주세요.',
+          retryAfter,
+          source: 'cloud-run-ai',
+          limitScope: 'concurrency',
+          remaining: 0,
+          resetAt: Date.now() + retryAfter * 1000,
+          dailyLimitExceeded: false,
+        },
+        429
+      );
+    }
+
+    inFlightAcquired = true;
   }
 
-  if (!result.allowed) {
-    const retryAfter = Math.ceil((result.resetTime - Date.now()) / 1000);
-    c.header('Retry-After', retryAfter.toString());
-    const isDailyLimitExceeded = result.limitScope === 'daily';
+  try {
+    const result = await checkRedisLimit(rateLimitKey, config);
 
-    logger.warn(
-      `[RateLimiter] Rate limit exceeded: ${clientKey} on ${path} (${config.maxRequests}/${config.windowMs}ms)`
-    );
+    // Set rate limit headers on all responses
+    c.header('X-RateLimit-Limit', config.maxRequests.toString());
+    c.header('X-RateLimit-Remaining', result.remaining.toString());
+    c.header('X-RateLimit-Reset', result.resetTime.toString());
+    if (config.dailyLimit && result.daily) {
+      c.header('X-RateLimit-Daily-Limit', config.dailyLimit.toString());
+      c.header('X-RateLimit-Daily-Remaining', result.daily.remaining.toString());
+      c.header('X-RateLimit-Daily-Reset', result.daily.resetTime.toString());
+    }
 
-    return c.json(
-      {
-        error: 'Too Many Requests',
-        message: isDailyLimitExceeded
-          ? `일일 요청 제한(${config.dailyLimit ?? 100}회)을 초과했습니다. 내일 다시 시도해주세요.`
-          : '요청 제한을 초과했습니다. 잠시 후 다시 시도해주세요.',
-        retryAfter,
-        source: 'cloud-run-ai',
-        limitScope: isDailyLimitExceeded ? 'daily' : 'minute',
-        remaining: result.remaining,
-        resetAt: result.resetTime,
-        dailyLimitExceeded: isDailyLimitExceeded,
-      },
-      429
-    );
+    if (!result.allowed) {
+      const isDailyLimitExceeded = result.limitScope === 'daily';
+      const retryAfter = withRetryAfterJitter(
+        (result.resetTime - Date.now()) / 1000,
+        isDailyLimitExceeded ? 'daily' : 'minute'
+      );
+      c.header('Retry-After', retryAfter.toString());
+
+      logger.warn(
+        `[RateLimiter] Rate limit exceeded: ${clientKey} on ${path} (${config.maxRequests}/${config.windowMs}ms)`
+      );
+
+      return c.json(
+        {
+          error: 'Too Many Requests',
+          message: isDailyLimitExceeded
+            ? `일일 요청 제한(${config.dailyLimit ?? 100}회)을 초과했습니다. 내일 다시 시도해주세요.`
+            : '요청 제한을 초과했습니다. 잠시 후 다시 시도해주세요.',
+          retryAfter,
+          source: 'cloud-run-ai',
+          limitScope: isDailyLimitExceeded ? 'daily' : 'minute',
+          remaining: result.remaining,
+          resetAt: result.resetTime,
+          dailyLimitExceeded: isDailyLimitExceeded,
+        },
+        429
+      );
+    }
+
+    await next();
+  } finally {
+    if (inFlightAcquired) {
+      releaseInFlight(inFlightBucket);
+    }
   }
-
-  await next();
 }

@@ -3,9 +3,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const {
   mockExecuteForcedRouting,
   mockGenerateObjectWithFallback,
+  mockExecuteVisionOrFallback,
+  mockExecuteAgentStream,
 } = vi.hoisted(() => ({
   mockExecuteForcedRouting: vi.fn(),
   mockGenerateObjectWithFallback: vi.fn(),
+  mockExecuteVisionOrFallback: vi.fn(),
+  mockExecuteAgentStream: vi.fn(),
 }));
 
 vi.mock('./schemas', () => ({
@@ -87,7 +91,8 @@ vi.mock('../../../lib/logger', () => ({
 
 vi.mock('./orchestrator-execution-helpers', () => ({
   buildFastPathResponse: vi.fn(),
-  executeVisionOrFallback: vi.fn(),
+  executeVisionOrFallback: (...args: unknown[]) =>
+    mockExecuteVisionOrFallback(...args),
   getLastUserQuery: vi.fn((request: { messages?: Array<{ content?: string }> }) =>
     request.messages?.at(-1)?.content ?? null
   ),
@@ -103,7 +108,7 @@ vi.mock('./orchestrator-decomposition', () => ({
 }));
 
 vi.mock('./orchestrator-agent-stream', () => ({
-  executeAgentStream: vi.fn(),
+  executeAgentStream: (...args: unknown[]) => mockExecuteAgentStream(...args),
 }));
 
 vi.mock('./orchestrator-object-fallback', () => ({
@@ -124,10 +129,26 @@ vi.mock('../../observability/langfuse', () => ({
 }));
 
 import { executeMultiAgent } from './orchestrator-execution';
+import { executeMultiAgentStream } from './orchestrator-execution';
 
 describe('executeMultiAgent timeout contract', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockExecuteVisionOrFallback.mockReset();
+    mockExecuteAgentStream.mockImplementation(
+      async function* (_query: string, agentName: string) {
+        yield {
+          type: 'done',
+          data: {
+            success: true,
+            finalAgent: agentName,
+            toolsCalled: [],
+            usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+            metadata: { durationMs: 1 },
+          },
+        };
+      }
+    );
   });
 
   it('falls back to the suggested agent when non-stream routing times out', async () => {
@@ -182,5 +203,161 @@ describe('executeMultiAgent timeout contract', () => {
         },
       ]);
     }
+  });
+
+  it('uses vision fallback helper when timeout fallback target is Vision Agent', async () => {
+    const contextModule = await import('./orchestrator-context');
+    vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
+      shouldHandoff: true,
+      suggestedAgent: 'Vision Agent',
+      confidence: 0.7,
+    });
+
+    mockGenerateObjectWithFallback.mockRejectedValueOnce(
+      new Error('Routing decision timeout after 10000ms')
+    );
+    mockExecuteVisionOrFallback.mockResolvedValueOnce({
+      success: true,
+      response: 'Analyst fallback response',
+      handoffs: [],
+      finalAgent: 'Analyst Agent',
+      toolsCalled: [],
+      usage: {
+        promptTokens: 8,
+        completionTokens: 4,
+        totalTokens: 12,
+      },
+      metadata: {
+        provider: 'mock',
+        modelId: 'mock-analyst',
+        totalRounds: 1,
+        handoffCount: 0,
+        durationMs: 30,
+      },
+    });
+
+    const result = await executeMultiAgent({
+      messages: [{ role: 'user', content: '이 스크린샷 분석해줘' }],
+      sessionId: 'timeout-contract-vision-fallback',
+      images: [
+        {
+          mimeType: 'image/png',
+          data: 'base64data',
+        },
+      ],
+    });
+
+    expect(mockGenerateObjectWithFallback).toHaveBeenCalledOnce();
+    expect(mockExecuteVisionOrFallback).toHaveBeenCalledOnce();
+    expect(mockExecuteForcedRouting).not.toHaveBeenCalled();
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.finalAgent).toBe('Analyst Agent');
+      expect(result.handoffs).toEqual([
+        {
+          from: 'Orchestrator',
+          to: 'Analyst Agent',
+          reason: 'Fallback routing (routing timeout)',
+        },
+      ]);
+    }
+  });
+
+  it('routes Vision forced-stream fallback to Analyst Agent when vision provider is unavailable', async () => {
+    const contextModule = await import('./orchestrator-context');
+    const routingModule = await import('./orchestrator-routing');
+
+    vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
+      shouldHandoff: true,
+      suggestedAgent: 'Vision Agent',
+      confidence: 0.9,
+    });
+
+    vi.mocked(routingModule.getAgentConfig).mockImplementation((agentName: string) => {
+      if (agentName === 'Vision Agent') {
+        return { getModel: vi.fn(() => null) } as unknown as ReturnType<typeof routingModule.getAgentConfig>;
+      }
+      return { getModel: vi.fn(() => ({ modelId: 'analyst-model' })) } as unknown as ReturnType<typeof routingModule.getAgentConfig>;
+    });
+
+    const events: Array<{ type: string; data: unknown }> = [];
+    for await (const event of executeMultiAgentStream({
+      messages: [{ role: 'user', content: '첨부한 스크린샷 분석해줘' }],
+      sessionId: 'stream-vision-fallback-test',
+      images: [{ data: 'base64', mimeType: 'image/png' }],
+    })) {
+      events.push(event);
+    }
+
+    expect(mockExecuteAgentStream).toHaveBeenCalledTimes(1);
+    expect(mockExecuteAgentStream).toHaveBeenCalledWith(
+      '첨부한 스크린샷 분석해줘',
+      'Analyst Agent',
+      expect.any(Number),
+      'stream-vision-fallback-test',
+      true,
+      true,
+      [{ data: 'base64', mimeType: 'image/png' }],
+      undefined,
+      null
+    );
+
+    const fallbackStatus = events.find((event) => event.type === 'agent_status');
+    expect(fallbackStatus).toBeDefined();
+    expect((fallbackStatus?.data as { message?: string }).message).toContain(
+      'Vision Agent 사용 불가'
+    );
+  });
+
+  it('routes Vision timeout-stream fallback to Analyst Agent when vision provider is unavailable', async () => {
+    const contextModule = await import('./orchestrator-context');
+    const routingModule = await import('./orchestrator-routing');
+
+    vi.mocked(contextModule.preFilterQuery).mockReturnValueOnce({
+      shouldHandoff: true,
+      suggestedAgent: 'Vision Agent',
+      confidence: 0.7,
+    });
+
+    mockGenerateObjectWithFallback.mockRejectedValueOnce(
+      new Error('Routing decision timeout after 10000ms')
+    );
+
+    vi.mocked(routingModule.getAgentConfig).mockImplementation((agentName: string) => {
+      if (agentName === 'Vision Agent') {
+        return { getModel: vi.fn(() => null) } as unknown as ReturnType<typeof routingModule.getAgentConfig>;
+      }
+      return { getModel: vi.fn(() => ({ modelId: 'analyst-model' })) } as unknown as ReturnType<typeof routingModule.getAgentConfig>;
+    });
+
+    const events: Array<{ type: string; data: unknown }> = [];
+    for await (const event of executeMultiAgentStream({
+      messages: [{ role: 'user', content: '라우팅 타임아웃 시 Vision fallback 확인' }],
+      sessionId: 'stream-vision-timeout-fallback-test',
+      images: [{ data: 'base64', mimeType: 'image/png' }],
+    })) {
+      events.push(event);
+    }
+
+    expect(mockGenerateObjectWithFallback).toHaveBeenCalledTimes(1);
+    expect(mockExecuteAgentStream).toHaveBeenCalledTimes(1);
+    expect(mockExecuteAgentStream).toHaveBeenCalledWith(
+      '라우팅 타임아웃 시 Vision fallback 확인',
+      'Analyst Agent',
+      expect.any(Number),
+      'stream-vision-timeout-fallback-test',
+      true,
+      true,
+      [{ data: 'base64', mimeType: 'image/png' }],
+      undefined,
+      null
+    );
+
+    const statusMessages = events
+      .filter((event) => event.type === 'agent_status')
+      .map((event) => (event.data as { message?: string }).message ?? '');
+
+    expect(statusMessages.some((message) => message.includes('라우팅 타임아웃'))).toBe(true);
+    expect(statusMessages.some((message) => message.includes('Vision Agent 사용 불가'))).toBe(true);
   });
 });

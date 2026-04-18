@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { logger } from '@/lib/logging';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 import {
@@ -49,46 +49,48 @@ export function useChatHistory<TMessage extends RestoredMessage>({
 }: UseChatHistoryProps<TMessage>) {
   const isHistoryLoaded = useRef(false);
 
-  const buildMetadataFromEnhancedMessage = (
-    message: EnhancedChatMessage
-  ): StoredMessageMetadata | undefined => {
-    const metadata = message.metadata;
-    const analysisBasis = metadata?.analysisBasis;
-    const hasExplicitHandoffHistory = Array.isArray(metadata?.handoffHistory);
+  const buildMetadataFromEnhancedMessage = useCallback(
+    (message: EnhancedChatMessage): StoredMessageMetadata | undefined => {
+      const metadata = message.metadata;
+      const analysisBasis = metadata?.analysisBasis;
+      const hasExplicitHandoffHistory = Array.isArray(metadata?.handoffHistory);
 
-    if (
-      !metadata?.traceId &&
-      !analysisBasis?.toolsCalled &&
-      !analysisBasis?.ragSources &&
-      !metadata?.assistantResponseView &&
-      !hasExplicitHandoffHistory &&
-      !(
-        metadata?.toolResultSummaries && metadata.toolResultSummaries.length > 0
-      )
-    ) {
-      return undefined;
-    }
+      if (
+        !metadata?.traceId &&
+        !analysisBasis?.toolsCalled &&
+        !analysisBasis?.ragSources &&
+        !metadata?.assistantResponseView &&
+        !hasExplicitHandoffHistory &&
+        !(
+          metadata?.toolResultSummaries &&
+          metadata.toolResultSummaries.length > 0
+        )
+      ) {
+        return undefined;
+      }
 
-    return {
-      ...(metadata?.traceId && { traceId: metadata.traceId }),
-      ...(analysisBasis?.toolsCalled && {
-        toolsCalled: analysisBasis.toolsCalled,
-      }),
-      ...(analysisBasis?.ragSources && {
-        ragSources: analysisBasis.ragSources,
-      }),
-      ...(metadata?.assistantResponseView && {
-        assistantResponseView: metadata.assistantResponseView,
-      }),
-      ...(hasExplicitHandoffHistory && {
-        handoffHistory: metadata.handoffHistory,
-      }),
-      ...(metadata?.toolResultSummaries &&
-        metadata.toolResultSummaries.length > 0 && {
-          toolResultSummaries: metadata.toolResultSummaries,
+      return {
+        ...(metadata?.traceId && { traceId: metadata.traceId }),
+        ...(analysisBasis?.toolsCalled && {
+          toolsCalled: analysisBasis.toolsCalled,
         }),
-    };
-  };
+        ...(analysisBasis?.ragSources && {
+          ragSources: analysisBasis.ragSources,
+        }),
+        ...(metadata?.assistantResponseView && {
+          assistantResponseView: metadata.assistantResponseView,
+        }),
+        ...(hasExplicitHandoffHistory && {
+          handoffHistory: metadata.handoffHistory,
+        }),
+        ...(metadata?.toolResultSummaries &&
+          metadata.toolResultSummaries.length > 0 && {
+            toolResultSummaries: metadata.toolResultSummaries,
+          }),
+      };
+    },
+    []
+  );
 
   // 로컬 스토리지에서 히스토리 복원
   useEffect(() => {
@@ -147,6 +149,7 @@ export function useChatHistory<TMessage extends RestoredMessage>({
       );
     }
   }, [
+    buildMetadataFromEnhancedMessage,
     isMessagesEmpty,
     onMetadataRestore,
     onSessionRestore,

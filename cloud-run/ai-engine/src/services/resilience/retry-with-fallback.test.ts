@@ -48,11 +48,15 @@ vi.mock('./circuit-breaker', () => ({
   })),
 }));
 
-import { generateTextWithRetry } from './retry-with-fallback';
+import {
+  __resetRetryBudgetForTests,
+  generateTextWithRetry,
+} from './retry-with-fallback';
 
 describe('generateTextWithRetry', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    __resetRetryBudgetForTests();
     mockCheckProviderStatus.mockReturnValue({
       cerebras: true,
       groq: true,
@@ -129,6 +133,60 @@ describe('generateTextWithRetry', () => {
     expect(result.provider).toBe('groq');
     expect(result.attempts).toHaveLength(2);
     expect(result.attempts[0]?.error).toContain('tool-calling');
+    expect(mockGenerateText).toHaveBeenCalledTimes(1);
+  });
+
+  it('fails fast when retry budget blocks same-provider retries', async () => {
+    mockGenerateText.mockRejectedValue(new Error('Request timeout'));
+
+    const result = await generateTextWithRetry(
+      {
+        messages: [{ role: 'user', content: '재시도 예산 테스트' }],
+      },
+      ['groq'],
+      {
+        maxRetries: 2,
+        initialDelayMs: 0,
+        maxDelayMs: 0,
+        fallbackDelayMs: 0,
+        fallbackJitterMs: 0,
+        retryBudgetPerMinute: 0,
+        timeoutMs: 3000,
+      }
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.attempts).toHaveLength(1);
+    expect(result.attempts[0]?.provider).toBe('groq');
+    expect(mockGenerateText).toHaveBeenCalledTimes(1);
+  });
+
+  it('fails fast when retry budget blocks provider fallback', async () => {
+    mockGenerateText
+      .mockRejectedValueOnce(new Error('rate limit exceeded: 429'))
+      .mockResolvedValueOnce({
+        text: 'would have succeeded from fallback provider',
+        steps: [],
+        usage: { inputTokens: 1, outputTokens: 1, totalTokens: 2 },
+      });
+
+    const result = await generateTextWithRetry(
+      {
+        messages: [{ role: 'user', content: 'fallback 예산 테스트' }],
+      },
+      ['cerebras', 'groq'],
+      {
+        maxRetries: 0,
+        fallbackDelayMs: 0,
+        fallbackJitterMs: 0,
+        retryBudgetPerMinute: 0,
+        timeoutMs: 3000,
+      }
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.attempts).toHaveLength(1);
+    expect(result.attempts[0]?.provider).toBe('cerebras');
     expect(mockGenerateText).toHaveBeenCalledTimes(1);
   });
 });

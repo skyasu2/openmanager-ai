@@ -129,6 +129,22 @@ export class RedisClient {
     const result = await this.fetchRedis(['PTTL', key], options);
     return typeof result === 'number' ? result : Number(result ?? -1);
   }
+
+  static async eval<T = unknown>(
+    script: string,
+    keys: string[],
+    args: string[] = [],
+    options?: RedisCommandOptions
+  ): Promise<T | null> {
+    const command = [
+      'EVAL',
+      script,
+      keys.length.toString(),
+      ...keys,
+      ...args,
+    ];
+    return this.fetchRedis<T>(command, options);
+  }
 }
 
 export interface RedisCommandOptions {
@@ -156,6 +172,12 @@ export interface RedisLikeClient {
     options?: RedisCommandOptions
   ) => Promise<void>;
   pttl: (key: string, options?: RedisCommandOptions) => Promise<number>;
+  eval: <T = unknown>(
+    script: string,
+    keys: string[],
+    args?: string[],
+    options?: RedisCommandOptions
+  ) => Promise<T | null>;
 }
 
 export function getRedisClient(): RedisLikeClient | null {
@@ -169,6 +191,7 @@ export function getRedisClient(): RedisLikeClient | null {
     expire: RedisClient.expire.bind(RedisClient),
     pexpire: RedisClient.pexpire.bind(RedisClient),
     pttl: RedisClient.pttl.bind(RedisClient),
+    eval: RedisClient.eval.bind(RedisClient),
   };
 }
 

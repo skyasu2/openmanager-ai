@@ -42,7 +42,9 @@ export async function executeVisionOrFallback(
     return result;
   }
 
-  logger.warn('⚠️ [Vision] Gemini unavailable, falling back to Analyst Agent');
+  logger.warn(
+    '⚠️ [Vision] Vision providers unavailable (Gemini/OpenRouter), falling back to Analyst Agent'
+  );
   return executeForcedRouting(
     query,
     'Analyst Agent',

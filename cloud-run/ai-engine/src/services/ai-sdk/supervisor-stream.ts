@@ -44,6 +44,21 @@ import {
 } from './supervisor-stream-messages';
 import type { StreamEvent, SupervisorRequest } from './supervisor-types';
 
+const PROVIDER_FALLBACK_BASE_DELAY_MS = 150;
+const PROVIDER_FALLBACK_JITTER_MS = 250;
+
+async function waitBeforeProviderFallback(
+  provider: ProviderName,
+  reason: string
+): Promise<void> {
+  const jitter = Math.floor(Math.random() * (PROVIDER_FALLBACK_JITTER_MS + 1));
+  const delay = PROVIDER_FALLBACK_BASE_DELAY_MS + jitter;
+  logger.debug(
+    `[SupervisorStream] Provider fallback delay ${delay}ms (${provider}, reason=${reason})`
+  );
+  await new Promise((resolve) => setTimeout(resolve, delay));
+}
+
 export async function* executeSupervisorStream(
   request: SupervisorRequest
 ): AsyncGenerator<StreamEvent> {
@@ -268,6 +283,7 @@ async function* streamSingleAgent(
             message: `${provider} 일시 차단됨, 대안 모델로 전환 중...`,
           },
         };
+        await waitBeforeProviderFallback(provider, 'circuit_open');
         continue providerLoop;
       }
       yield {
@@ -493,6 +509,7 @@ async function* streamSingleAgent(
               message: `${provider} 응답 없음, 대안 모델로 전환 중...`,
             },
           };
+          await waitBeforeProviderFallback(provider, 'empty_output_with_error');
           continue providerLoop;
         }
       }
@@ -643,6 +660,7 @@ async function* streamSingleAgent(
             message: `${provider} 오류 발생, 대안 모델로 전환 중...`,
           },
         };
+        await waitBeforeProviderFallback(provider, 'provider_error');
         continue providerLoop;
       }
 

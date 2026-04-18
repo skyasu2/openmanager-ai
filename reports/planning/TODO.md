@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (AI stream timeout/TTFB 후속 정리)
+**Last Updated**: 2026-04-18 KST (Frontend lint dependency cleanup)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -31,6 +31,88 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-18 #149)
+- [x] Frontend lint dependency cleanup
+  - `AutoResizeTextarea`의 controlled value 리사이즈 effect를 `useLayoutEffect`로 정리해 value 변경 직후 높이 보정과 dependency contract를 일치시킴
+  - `useChatHistory`의 metadata builder를 `useCallback`으로 안정화하고 restore effect dependency에 명시해 stale closure 경고를 제거
+  - 검증:
+    - gate: `npm run test:quick`
+    - gate: `npm run type-check`
+    - gate: `npm run lint`
+
+### Completed (2026-04-18 #148)
+- [x] Client-side Retry-After enforcement
+  - `useHybridAIQuery`가 마지막 `rate-limit` error details의 `retryAfter/resetAt`을 메모리 ref로 유지하고, cooldown 만료 전에는 `sendQuery` / `executeQuery`를 fail-fast 차단
+  - UI dismiss, 동일 에러 문자열 재발, 수동 retry 경로에서도 서버가 준 cooldown을 우회하지 못하도록 정렬
+  - 만료된 cooldown ref는 자동 해제해 정상 스트리밍 재개를 허용
+  - 회귀 테스트 추가:
+    - active cooldown 시 `sendQuery` 차단
+    - expired cooldown 자동 해제 후 streaming 재개
+  - 검증:
+    - targeted: `npx vitest run src/hooks/ai/core/useQueryExecution.test.ts`
+    - gate: `npm run type-check && npm run lint && npm run test:quick`
+    - docs: `npm run docs:lint:changed`
+
+### Completed (2026-04-18 #147)
+- [x] Jittered Retry-After 정렬 (Cloud Run + frontend gateway)
+  - Cloud Run `rate-limiter`의 `minute` / `concurrency` 429 응답에 `+0~2s` jitter를 적용해 동시 재시도 파동을 완화
+  - `daily` 429는 사용자 안내 정확도를 위해 jitter 없이 정확한 reset 기준 유지
+  - frontend `withRateLimit`도 동일 규칙으로 맞춰 엣지/Cloud Run 429 계약을 정렬
+  - 회귀 테스트 추가:
+    - Cloud Run write minute bucket jitter 범위
+    - Cloud Run concurrency overload jitter 고정값
+    - Cloud Run daily 429 no-jitter
+    - frontend gateway minute 429 jitter / daily 429 no-jitter
+  - 검증:
+    - targeted: `cd cloud-run/ai-engine && npx vitest run src/middleware/rate-limiter.test.ts`
+    - targeted: `npx vitest run src/lib/security/rate-limiter.test.ts`
+    - gate: `cd cloud-run/ai-engine && npm run type-check && npm run test`
+    - gate: `npm run type-check && npm run test:quick`
+
+### Completed (2026-04-18 #146)
+- [x] Vision timeout-stream fallback parity 보강
+  - `executeMultiAgentStream`의 LLM routing timeout fallback 분기에서도 `resolveVisionFallbackAgent`를 적용해 Vision 미가용 시 `Analyst Agent`로 일관 degrade
+  - 기존 forced/LLM/fallback 분기와 동일한 `agent_status` 알림(`Vision Agent 사용 불가`)을 emit 하도록 정렬
+  - 회귀 테스트 1건 추가:
+    - routing timeout + suggested Vision + model unavailable 시 stream이 `Analyst Agent`로 라우팅되는지 검증
+  - 검증:
+    - targeted: `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/agents/orchestrator-execution.timeout.test.ts`
+    - gate: `cd cloud-run/ai-engine && npm run type-check && npm run test`
+
+### Completed (2026-04-18 #145)
+- [x] Retry amplification guard 추가 (process-wide retry budget)
+  - `retry-with-fallback`에 `retryBudgetPerMinute=120` 기본값을 추가해 provider 전환/추가 재시도의 분당 총량을 제한
+  - 예산 소진 시 fail-fast로 종료해 장애 시 retry storm(cascading failure) 증폭을 억제
+  - 회귀 테스트 2건 추가:
+    - same-provider retry budget 소진 시 재시도 차단
+    - provider fallback budget 소진 시 전환 차단
+  - 검증:
+    - targeted: `cd cloud-run/ai-engine && npx vitest run src/services/resilience/retry-with-fallback.test.ts`
+    - gate: `cd cloud-run/ai-engine && npm run type-check && npm run test`
+
+### Completed (2026-04-18 #144)
+- [x] Vision fallback routing consistency 보강 (OpenRouter 포함)
+  - `executeMultiAgent` fallback 경로에서 `suggestedAgent='Vision Agent'`일 때 `executeForcedRouting` 대신 `executeVisionOrFallback`을 사용하도록 정렬
+  - routing timeout / LLM inconclusive / selectedAgent handoff 메타데이터에서 실제 `finalAgent` 기준으로 저장/기록하도록 보정
+  - `executeMultiAgentStream`의 Vision 관련 3개 분기(강제 라우팅, LLM routing, fallback routing)를 공통 Vision availability 판정으로 통일하고, 미가용 시 `Analyst Agent`로 degrade
+  - Vision 미가용 로깅 문구를 `Gemini unavailable`에서 `Vision providers unavailable (Gemini/OpenRouter)`로 정정
+  - 검증:
+    - targeted: `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/agents/orchestrator-execution.timeout.test.ts src/services/ai-sdk/agents/orchestrator.test.ts`
+    - gate: `cd cloud-run/ai-engine && npm run type-check && npm run test`
+
+### Completed (2026-04-18 #143)
+- [x] AI surge-defense hardening (Cloud Run + provider fallback jitter)
+  - Cloud Run AI Engine `rate-limiter`에 endpoint group별 in-flight cap(load shedding) 추가
+    - `supervisor` max in-flight `4`
+    - `jobs/process` max in-flight `2`
+    - `embedding` max in-flight `6`
+  - 과부하 시 즉시 `429` + `Retry-After=2` + `limitScope=concurrency` 반환으로 provider burst 완화
+  - `retry-with-fallback`, `supervisor-stream`, `orchestrator-agent-stream` provider fallback 경로에 jitter delay를 추가해 동시 재시도 파동(thundering herd) 완화
+  - Cloud Run 배포 설정 동시성 `80 → 16` 하향(이미 워크트리 반영된 deploy/cloudbuild 변경 포함)
+  - 검증:
+    - targeted: `cd cloud-run/ai-engine && npx vitest run src/middleware/rate-limiter.test.ts src/services/resilience/retry-with-fallback.test.ts src/services/ai-sdk/agents/orchestrator-agent-stream.test.ts src/services/ai-sdk/supervisor-multi-fallback.test.ts`
+    - gate: `cd cloud-run/ai-engine && npm run type-check && npm run test`
 
 ### Completed (2026-04-18 #142)
 - [x] AI stream timeout/TTFB 후속 정리

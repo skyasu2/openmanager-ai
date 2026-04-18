@@ -11,6 +11,7 @@ import type { UIMessage } from '@ai-sdk/react';
 import type { MutableRefObject } from 'react';
 import { useCallback } from 'react';
 import { generateClarification } from '@/lib/ai/clarification-generator';
+import type { AIRateLimitErrorDetails } from '@/lib/ai/error-details';
 import { classifyQuery } from '@/lib/ai/query-classifier';
 import {
   analyzeQueryComplexity,
@@ -52,6 +53,26 @@ type SetMessagesLike = (
   updater: UIMessage[] | ((prev: UIMessage[]) => UIMessage[])
 ) => void;
 
+interface ActiveRateLimitBlock {
+  details: AIRateLimitErrorDetails;
+  untilMs: number;
+}
+
+function buildRateLimitCooldownMessage(
+  scope: AIRateLimitErrorDetails['scope'],
+  retryAfterSeconds?: number
+): string {
+  if (scope === 'daily') {
+    return '오늘 AI 요청 한도가 소진되었습니다. 내일 다시 시도해주세요.';
+  }
+
+  if (typeof retryAfterSeconds === 'number' && retryAfterSeconds > 0) {
+    return `요청이 너무 많습니다. ${retryAfterSeconds}초 후 다시 시도해주세요.`;
+  }
+
+  return '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.';
+}
+
 export interface QueryExecutionDeps {
   complexityThreshold: number;
   asyncQuery: AsyncQueryLike;
@@ -67,6 +88,7 @@ export interface QueryExecutionDeps {
     currentQuery: MutableRefObject<string | null>;
     pendingQuery: MutableRefObject<string | null>;
     pendingAttachments: MutableRefObject<FileAttachment[] | null>;
+    rateLimitBlock: MutableRefObject<ActiveRateLimitBlock | null>;
   };
   analysisMode?: AnalysisMode;
 }
@@ -88,6 +110,53 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
     refs,
     analysisMode,
   } = deps;
+
+  const getActiveRateLimitDetails =
+    useCallback((): AIRateLimitErrorDetails | null => {
+      const activeBlock = refs.rateLimitBlock.current;
+      if (!activeBlock) {
+        return null;
+      }
+
+      const now = Date.now();
+      if (activeBlock.untilMs <= now) {
+        refs.rateLimitBlock.current = null;
+        return null;
+      }
+
+      const retryAfterSeconds = Math.max(
+        1,
+        Math.ceil((activeBlock.untilMs - now) / 1000)
+      );
+      const resetAt = Math.ceil(activeBlock.untilMs / 1000);
+
+      return {
+        ...activeBlock.details,
+        retryAfterSeconds,
+        resetAt,
+        message: buildRateLimitCooldownMessage(
+          activeBlock.details.scope,
+          retryAfterSeconds
+        ),
+      };
+    }, [refs]);
+
+  const applyRateLimitCooldown = useCallback(
+    (details: AIRateLimitErrorDetails) => {
+      setState((prev) => ({
+        ...prev,
+        progress: null,
+        jobId: null,
+        isLoading: false,
+        error: details.message,
+        errorDetails: details,
+        clarification: null,
+        warmingUp: false,
+        estimatedWaitSeconds: 0,
+      }));
+    },
+    [setState]
+  );
 
   /**
    * 실제 쿼리 전송 로직 (명확화 완료 후 호출)
@@ -111,6 +180,15 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
         logger.warn(
           `[HybridAI] executeQuery blocked: chatStatus="${chatStatus}" (previous request still active)`
         );
+        return;
+      }
+
+      const activeRateLimitDetails = getActiveRateLimitDetails();
+      if (activeRateLimitDetails) {
+        logger.warn(
+          `[HybridAI] executeQuery blocked: active rate-limit cooldown (${activeRateLimitDetails.retryAfterSeconds ?? 0}s remaining)`
+        );
+        applyRateLimitCooldown(activeRateLimitDetails);
         return;
       }
 
@@ -370,7 +448,9 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
     [
       complexityThreshold,
       asyncQuery,
+      applyRateLimitCooldown,
       sendMessage,
+      getActiveRateLimitDetails,
       onBeforeStreamingSend,
       getMessages,
       setMessages,
@@ -387,6 +467,15 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
   const sendQuery = useCallback(
     async (query: string, attachments?: FileAttachment[]) => {
       if (!query.trim()) return;
+
+      const activeRateLimitDetails = getActiveRateLimitDetails();
+      if (activeRateLimitDetails) {
+        logger.warn(
+          `[HybridAI] sendQuery blocked: active rate-limit cooldown (${activeRateLimitDetails.retryAfterSeconds ?? 0}s remaining)`
+        );
+        applyRateLimitCooldown(activeRateLimitDetails);
+        return;
+      }
 
       // 원본 쿼리 및 첨부 파일 저장 (명확화 플로우에서 사용)
       refs.pendingQuery.current = query;
@@ -444,7 +533,13 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
         }));
       }
     },
-    [executeQuery, setState, refs]
+    [
+      applyRateLimitCooldown,
+      executeQuery,
+      getActiveRateLimitDetails,
+      setState,
+      refs,
+    ]
   );
 
   return { executeQuery, sendQuery };

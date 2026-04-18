@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-02-17
+> Last reviewed: 2026-04-18
 > Canonical: docs/reference/architecture/infrastructure/resilience.md
 > Tags: resilience,circuit-breaker,fallback,retry,error-handling
 >
@@ -154,11 +154,41 @@ const DEFAULT_RETRY_CONFIG = {
   maxRetries: 2,           // 프로바이더당 최대 2회 재시도
   initialDelayMs: 500,     // 첫 재시도 500ms 대기
   maxDelayMs: 5000,        // 최대 5초 대기
+  fallbackDelayMs: 150,    // provider 전환 전 기본 지연
+  fallbackJitterMs: 250,   // provider 전환 지터 (0~250ms)
+  retryBudgetPerMinute: 120, // process-wide retry/fallback budget (anti-amplification)
   timeoutMs: 60000,        // 프로바이더별 60초 타임아웃
 };
 ```
 
-**Exponential Backoff**: `delay = min(initialDelay * 2^attempt + jitter, maxDelay)`
+**Same-provider retry backoff**: `delay = min(initialDelay * 2^attempt, maxDelay)`  
+**Provider fallback delay**: `delay = fallbackDelayMs + random(0..fallbackJitterMs)` (thundering herd 완화)
+**Retry budget guard**: 분당 retry/fallback 총량을 제한해 장애 시 재시도 증폭(cascading retry storm) 방지
+
+### 트래픽 급증 방어 (2026-04-18 반영)
+
+Cloud Run AI Engine은 비용/가용성 보호를 위해 아래 3중 방어를 사용합니다.
+
+1. Cloud Run 런타임 상한
+   - `max-instances=1`
+   - `concurrency=16` (기존 80에서 하향)
+2. 분당/일일 rate limiting
+   - write/read endpoint별 버킷 분리 (`supervisor`, `jobs write/read`, `health`)
+3. Endpoint group별 in-flight cap (load shedding)
+   - `supervisor`: 4
+   - `jobs/process`: 2
+   - `embedding`: 6
+   - cap 초과 시 즉시 `429`, `Retry-After=2`, `limitScope=concurrency`
+4. Retry amplification guard
+   - `retry-with-fallback` process-wide retry budget: `120/min`
+   - 예산 소진 시 provider 전환/추가 재시도를 중단하고 fail-fast
+5. Jittered `Retry-After`
+   - `minute` / `concurrency` 429는 `+0~2s` jitter를 추가해 동시 재시도 파동을 완화
+   - `daily` 429는 사용자 안내 정확도를 위해 jitter 없이 정확한 reset 기준 유지
+6. Client-side `Retry-After` enforcement
+   - `useHybridAIQuery`가 마지막 `rate-limit` error details를 메모리 ref로 유지
+   - `sendQuery` / `executeQuery`는 cooldown 만료 전 fail-fast로 차단해 UI dismiss 또는 수동 retry가 서버 cooldown을 우회하지 못하게 함
+   - cooldown 만료 시 ref를 자동 제거해 정상 스트리밍/Job Queue 흐름으로 복귀
 
 ### 에러 분류
 

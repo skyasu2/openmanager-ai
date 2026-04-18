@@ -399,11 +399,10 @@ export function useAIChatCore(
     void triggerAIWarmup('ai-chat-core');
   }, []);
 
-  // 에러 동기화: hybridState.error가 변경될 때만 반영
+  // 에러 동기화: retry 경로가 로컬 에러를 먼저 지우지 않도록 정렬했으므로
+  // 메시지 변경 기준으로만 동기화한다.
   useEffect(() => {
-    if (hybridState.error) {
-      setError(hybridState.error);
-    }
+    setError(hybridState.error ?? null);
   }, [hybridState.error]);
 
   // 새 쿼리 시작 시 이전 스트림 RAG 출처를 초기화해 혼합 표시를 방지한다.
@@ -480,7 +479,6 @@ export function useAIChatCore(
    */
   const retryLastQuery = useCallback(() => {
     if (!lastQueryRef.current) return;
-    setError(null);
     // 🎯 Fix: 재시도 시 executeQuery 사용 (재분류/재명확화 건너뛰기)
     // Cold Start 타임아웃 → 자동 재시도 시 동일 쿼리에 대해 명확화가 재트리거되는 문제 방지
     executeQuery(

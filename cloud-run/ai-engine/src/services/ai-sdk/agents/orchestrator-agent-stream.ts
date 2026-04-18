@@ -26,6 +26,22 @@ import {
   isDeterministicSummaryQuery,
 } from './orchestrator-summary-fallback';
 
+const PROVIDER_FALLBACK_BASE_DELAY_MS = 120;
+const PROVIDER_FALLBACK_JITTER_MS = 280;
+
+async function waitBeforeProviderFallback(
+  agentName: string,
+  provider: string,
+  reason: string
+): Promise<void> {
+  const jitter = Math.floor(Math.random() * (PROVIDER_FALLBACK_JITTER_MS + 1));
+  const delay = PROVIDER_FALLBACK_BASE_DELAY_MS + jitter;
+  logger.debug(
+    `[Stream ${agentName}] Provider fallback delay ${delay}ms (${provider}, reason=${reason})`
+  );
+  await new Promise((resolve) => setTimeout(resolve, delay));
+}
+
 function getSuggestedFollowUp(agentName: string, responseText: string): string | null {
   if (agentName === 'Analyst Agent') {
     if (/이상|anomal|critical|경고|임계/i.test(responseText)) {
@@ -469,6 +485,11 @@ export async function* executeAgentStream(
         yield buildProviderRetryStatus(
           `${provider} 응답 없음, 대안 모델로 전환 중...`
         );
+        await waitBeforeProviderFallback(
+          agentName,
+          provider,
+          'empty_response'
+        );
         continue providerLoop;
       }
 
@@ -540,6 +561,11 @@ export async function* executeAgentStream(
           yield buildProviderRetryStatus(
             `${provider} 응답 없음, 대안 모델로 전환 중...`
           );
+          await waitBeforeProviderFallback(
+            agentName,
+            provider,
+            'no_output'
+          );
           continue providerLoop;
         }
 
@@ -588,6 +614,11 @@ export async function* executeAgentStream(
       if (attemptIndex < providerAttempts.length - 1) {
         yield buildProviderRetryStatus(
           `${provider} 오류 발생, 대안 모델로 전환 중...`
+        );
+        await waitBeforeProviderFallback(
+          agentName,
+          provider,
+          'provider_error'
         );
       }
       continue; // Try next provider

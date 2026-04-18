@@ -166,6 +166,22 @@ export const rateLimiters = {
   }),
 };
 
+const RETRY_AFTER_JITTER_MAX_SECONDS = 2;
+
+function withRetryAfterJitter(
+  baseSeconds: number,
+  scope: 'minute' | 'daily'
+): number {
+  const normalizedBase = Math.max(1, Math.ceil(baseSeconds));
+  if (scope === 'daily') {
+    return normalizedBase;
+  }
+  const jitter = Math.floor(
+    Math.random() * (RETRY_AFTER_JITTER_MAX_SECONDS + 1)
+  );
+  return normalizedBase + jitter;
+}
+
 // ==============================================
 // 🎯 Rate Limit Middleware
 // ==============================================
@@ -189,6 +205,10 @@ export function withRateLimit<TArgs extends unknown[]>(
 
     if (!result.allowed) {
       const isDailyLimitExceeded = result.daily && result.daily.remaining <= 0;
+      const retryAfter = withRetryAfterJitter(
+        (result.resetTime - Date.now()) / 1000,
+        isDailyLimitExceeded ? 'daily' : 'minute'
+      );
       const message = isDailyLimitExceeded
         ? `일일 요청 제한(${rateLimiter.config.dailyLimit ?? 100}회)을 초과했습니다. 내일 다시 시도해주세요.`
         : '요청 제한을 초과했습니다. 잠시 후 다시 시도해주세요.';
@@ -197,9 +217,7 @@ export function withRateLimit<TArgs extends unknown[]>(
         'X-RateLimit-Limit': rateLimiter.config.maxRequests.toString(),
         'X-RateLimit-Remaining': result.remaining.toString(),
         'X-RateLimit-Reset': result.resetTime.toString(),
-        'Retry-After': Math.ceil(
-          (result.resetTime - Date.now()) / 1000
-        ).toString(),
+        'Retry-After': retryAfter.toString(),
       };
 
       if (result.daily) {
@@ -217,7 +235,7 @@ export function withRateLimit<TArgs extends unknown[]>(
           message,
           source: 'frontend-gateway',
           limitScope: isDailyLimitExceeded ? 'daily' : 'minute',
-          retryAfter: Math.ceil((result.resetTime - Date.now()) / 1000),
+          retryAfter,
           remaining: result.remaining,
           resetAt: result.resetTime,
           dailyLimitExceeded: isDailyLimitExceeded,
