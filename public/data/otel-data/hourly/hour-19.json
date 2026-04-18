@@ -94,6 +94,12 @@
               }
             },
             {
+              "asDouble": 0.231,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.21,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -200,6 +206,12 @@
               "asDouble": 0.42,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.3555,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
               }
             },
             {
@@ -312,6 +324,12 @@
               }
             },
             {
+              "asDouble": 0.6138,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.57,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -418,6 +436,12 @@
               "asDouble": 28750000,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 25875000,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
               }
             },
             {
@@ -530,6 +554,12 @@
               }
             },
             {
+              "asDouble": 0.731,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.37,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -636,6 +666,12 @@
               "asDouble": 1.13,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.6063,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
               }
             },
             {
@@ -748,6 +784,12 @@
               }
             },
             {
+              "asDouble": 126,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 140,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -857,6 +899,12 @@
               }
             },
             {
+              "asDouble": 35088355,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 35090524,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -963,6 +1011,12 @@
               "asDouble": 0.124,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.1096,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
               }
             },
             {
@@ -1471,6 +1525,12 @@
               }
             },
             {
+              "asDouble": 0.189,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.18,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -1577,6 +1637,12 @@
               "asDouble": 0.38,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.315,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
               }
             },
             {
@@ -1689,6 +1755,12 @@
               }
             },
             {
+              "asDouble": 0.5841,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.55,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -1795,6 +1867,12 @@
               "asDouble": 30000000,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 23575000,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
               }
             },
             {
@@ -1907,6 +1985,12 @@
               }
             },
             {
+              "asDouble": 0.602,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.41,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -2013,6 +2097,12 @@
               "asDouble": 0.74,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.4687,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
               }
             },
             {
@@ -2127,6 +2217,12 @@
             {
               "asDouble": 109,
               "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 109,
+              "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
@@ -2231,6 +2327,12 @@
               "asDouble": 35107518,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 35086593,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
               }
             },
             {
@@ -2340,6 +2442,12 @@
               "asDouble": 0.153,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.1272,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
               }
             },
             {
@@ -2796,6 +2904,12 @@
               }
             },
             {
+              "asDouble": 0.1974,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.2,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -2902,6 +3016,12 @@
               "asDouble": 0.39,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.315,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
               }
             },
             {
@@ -3014,6 +3134,12 @@
               }
             },
             {
+              "asDouble": 0.594,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.56,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -3120,6 +3246,12 @@
               "asDouble": 30000000,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 27600000,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
               }
             },
             {
@@ -3232,6 +3364,12 @@
               }
             },
             {
+              "asDouble": 0.7353,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.42,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -3338,6 +3476,12 @@
               "asDouble": 1.12,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.645,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
               }
             },
             {
@@ -3450,6 +3594,12 @@
               }
             },
             {
+              "asDouble": 108,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 112,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -3559,6 +3709,12 @@
               }
             },
             {
+              "asDouble": 35071948,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 35072102,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -3665,6 +3821,12 @@
               "asDouble": 0.16,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.1434,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
               }
             },
             {
@@ -4095,6 +4257,12 @@
               }
             },
             {
+              "asDouble": 0.2184,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.19,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -4201,6 +4369,12 @@
               "asDouble": 0.42,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.333,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
               }
             },
             {
@@ -4313,6 +4487,12 @@
               }
             },
             {
+              "asDouble": 0.5742,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.52,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -4419,6 +4599,12 @@
               "asDouble": 27500000,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 31050000,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
               }
             },
             {
@@ -4531,6 +4717,12 @@
               }
             },
             {
+              "asDouble": 0.8084,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.38,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -4637,6 +4829,12 @@
               "asDouble": 1.28,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.6837,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
               }
             },
             {
@@ -4749,6 +4947,12 @@
               }
             },
             {
+              "asDouble": 138,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 141,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -4858,6 +5062,12 @@
               }
             },
             {
+              "asDouble": 35084609,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 35078576,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -4964,6 +5174,12 @@
               "asDouble": 0.169,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.1368,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
               }
             },
             {
@@ -5394,6 +5610,12 @@
               }
             },
             {
+              "asDouble": 0.1722,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.16,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -5500,6 +5722,12 @@
               "asDouble": 0.37,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.315,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
               }
             },
             {
@@ -5612,6 +5840,12 @@
               }
             },
             {
+              "asDouble": 0.5891,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.56,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -5718,6 +5952,12 @@
               "asDouble": 25000000,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 22425000,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
               }
             },
             {
@@ -5830,6 +6070,12 @@
               }
             },
             {
+              "asDouble": 0.5504,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.35,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -5936,6 +6182,12 @@
               "asDouble": 0.83,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.4773,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
               }
             },
             {
@@ -6048,6 +6300,12 @@
               }
             },
             {
+              "asDouble": 108,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 114,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -6157,6 +6415,12 @@
               }
             },
             {
+              "asDouble": 35102712,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 35106195,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -6263,6 +6527,12 @@
               "asDouble": 0.15,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.1276,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
               }
             },
             {
@@ -6654,6 +6924,12 @@
               }
             },
             {
+              "asDouble": 0.2142,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.2,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -6760,6 +7036,12 @@
               "asDouble": 0.41,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.333,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
               }
             },
             {
@@ -6872,6 +7154,12 @@
               }
             },
             {
+              "asDouble": 0.5791,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.53,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -6978,6 +7266,12 @@
               "asDouble": 28750000,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 28750000,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
               }
             },
             {
@@ -7090,6 +7384,12 @@
               }
             },
             {
+              "asDouble": 0.774,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.4,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -7196,6 +7496,12 @@
               "asDouble": 1.3,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.7009,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
               }
             },
             {
@@ -7308,6 +7614,12 @@
               }
             },
             {
+              "asDouble": 119,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 140,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -7417,6 +7729,12 @@
               }
             },
             {
+              "asDouble": 35080947,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 35102654,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
@@ -7523,6 +7841,12 @@
               "asDouble": 0.173,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.1404,
+              "attributes": {
+                "host.name": "storage-nfs-dc1-02.openmanager.kr"
               }
             },
             {

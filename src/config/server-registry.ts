@@ -31,6 +31,7 @@ const SERVER_REGISTRY: ServerRegistryEntry[] = [
   { serverId: 'cache-redis-dc1-01', ip: '10.100.1.41' },
   { serverId: 'cache-redis-dc1-02', ip: '10.100.1.42' },
   { serverId: 'storage-nfs-dc1-01', ip: '10.100.1.51' },
+  { serverId: 'storage-nfs-dc1-02', ip: '10.100.1.52' },
   // DC1-AZ3 subnet (10.100.2.0/24)
   { serverId: 'lb-haproxy-dc1-02', ip: '10.100.2.1' },
   { serverId: 'cache-redis-dc1-03', ip: '10.100.2.42' },

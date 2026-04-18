@@ -199,6 +199,23 @@
       "host.memory.size": 17179869184,
       "host.disk.size": 5368709120000
     },
+    "storage-nfs-dc1-02": {
+      "service.name": "openmanager-ai",
+      "host.name": "storage-nfs-dc1-02.openmanager.kr",
+      "host.id": "storage-nfs-dc1-02",
+      "host.arch": "amd64",
+      "server.role": "storage",
+      "server.purpose": "hot-standby",
+      "server.notes": "nfs failover target",
+      "os.type": "linux",
+      "os.description": "ubuntu 22.04",
+      "cloud.region": "onprem-dc1",
+      "cloud.availability_zone": "DC1-AZ2",
+      "deployment.environment.name": "production",
+      "host.cpu.count": 4,
+      "host.memory.size": 17179869184,
+      "host.disk.size": 5368709120000
+    },
     "storage-s3gw-dc1-01": {
       "service.name": "openmanager-ai",
       "host.name": "storage-s3gw-dc1-01.openmanager.kr",

@@ -395,6 +395,56 @@ function main(): void {
         ts.timestamps.length
   );
 
+  // ── 3g. Phase 3-C AZ2 NFS standby inventory ──
+  console.log('\n[3g] Phase 3-C AZ2 NFS standby inventory:');
+  const az2Nfs = catalog.resources['storage-nfs-dc1-02'] ?? {};
+  check(
+    'AZ2 NFS standby catalog entry exists',
+    az2Nfs['host.name'] === 'storage-nfs-dc1-02.openmanager.kr'
+  );
+  check(
+    'AZ2 NFS standby zone = DC1-AZ2',
+    az2Nfs['cloud.availability_zone'] === 'DC1-AZ2'
+  );
+  check(
+    'AZ2 NFS standby purpose = hot-standby',
+    az2Nfs['server.purpose'] === 'hot-standby'
+  );
+
+  let az2NfsMissingHours = 0;
+  for (let hour = 0; hour < 24; hour++) {
+    const hourly: HourlyFile = JSON.parse(
+      fs.readFileSync(
+        path.join(HOURLY_DIR, `hour-${String(hour).padStart(2, '0')}.json`),
+        'utf-8'
+      )
+    );
+    const fsMetric = hourly.slots[0]?.metrics.find(
+      (entry) => entry.name === 'system.filesystem.utilization'
+    );
+    const hasAz2Nfs = fsMetric?.dataPoints.some(
+      (dp) => dp.attributes['host.name'] === 'storage-nfs-dc1-02.openmanager.kr'
+    );
+    if (!hasAz2Nfs) {
+      az2NfsMissingHours++;
+    }
+  }
+
+  check(
+    'AZ2 NFS standby present in all hourly files',
+    az2NfsMissingHours === 0,
+    `${az2NfsMissingHours} missing hours`
+  );
+
+  const az2NfsIndex = ts.serverIds.indexOf('storage-nfs-dc1-02');
+  check('AZ2 NFS standby present in timeseries serverIds', az2NfsIndex >= 0);
+  check(
+    'AZ2 NFS standby timeseries length matches timestamps',
+    az2NfsIndex >= 0 &&
+      (ts.metrics['system.filesystem.utilization']?.[az2NfsIndex]?.length ?? 0) ===
+        ts.timestamps.length
+  );
+
   // ── 4. Cache OOM logs have redis-server (not java) ──
   console.log('\n[4] Cache OOM process name:');
   let javaOOMInCache = 0;
