@@ -19,6 +19,7 @@ vi.mock('./config/agent-model-selectors', () => ({
 }));
 
 import { generateObjectWithFallback } from './orchestrator-object-fallback';
+import { __resetProviderRetryBudgetForTests } from '../../resilience/provider-fallback-control';
 
 const testSchema = z.object({
   selectedAgent: z.string(),
@@ -47,6 +48,8 @@ const baseOptions = {
 describe('generateObjectWithFallback', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.useRealTimers();
+    __resetProviderRetryBudgetForTests();
     mockSelectTextModel.mockReset();
   });
 
@@ -300,13 +303,11 @@ describe('generateObjectWithFallback', () => {
   });
 
   it('should validate generateObject result against schema', async () => {
-    // generateObject returns an object that doesn't match schema
     mockGenerateObject.mockResolvedValue({
-      object: { selectedAgent: 'NLQ Agent' }, // missing confidence and reasoning
+      object: { selectedAgent: 'NLQ Agent' },
       usage: { inputTokens: 100, outputTokens: 50, totalTokens: 150 },
     });
 
-    // This triggers schema validation failure → schema error → text fallback
     const fallbackJson = JSON.stringify({
       selectedAgent: 'NLQ Agent',
       confidence: 0.9,
@@ -361,5 +362,123 @@ describe('generateObjectWithFallback', () => {
 
     const callArgs = mockGenerateText.mock.calls[0][0];
     expect(callArgs.prompt).toContain('에이전트는 5개입니다.');
+  });
+
+  it('waits before switching providers after structured-output provider failure', async () => {
+    vi.useFakeTimers();
+
+    mockGenerateObject
+      .mockRejectedValueOnce(new Error('rate limit exceeded: 429'))
+      .mockResolvedValueOnce({
+        object: {
+          selectedAgent: 'Analyst Agent',
+          confidence: 0.91,
+          reasoning: 'Fallback after provider delay',
+        },
+        usage: { inputTokens: 1, outputTokens: 1, totalTokens: 2 },
+      });
+
+    mockSelectTextModel.mockReturnValue({
+      model: { provider: 'groq' },
+      provider: 'groq',
+      modelId: 'groq-model',
+    });
+
+    const promise = generateObjectWithFallback({
+      ...baseOptions,
+      operation: 'routing-delay-test',
+      providerFallbackControl: {
+        fallbackDelayMs: 10,
+        fallbackJitterMs: 0,
+      },
+    });
+
+    await Promise.resolve();
+    expect(mockGenerateObject).toHaveBeenCalledTimes(1);
+
+    await vi.advanceTimersByTimeAsync(9);
+    expect(mockGenerateObject).toHaveBeenCalledTimes(1);
+
+    await vi.advanceTimersByTimeAsync(1);
+    await Promise.resolve();
+
+    const result = await promise;
+    expect(result.object.selectedAgent).toBe('Analyst Agent');
+    expect(mockGenerateObject).toHaveBeenCalledTimes(2);
+    expect(mockSelectTextModel).toHaveBeenCalledTimes(1);
+  });
+
+  it('fails fast when retry budget blocks structured-output provider fallback', async () => {
+    mockGenerateObject.mockRejectedValueOnce(new Error('rate limit exceeded: 429'));
+    mockSelectTextModel.mockReturnValue({
+      model: { provider: 'groq' },
+      provider: 'groq',
+      modelId: 'groq-model',
+    });
+
+    await expect(
+      generateObjectWithFallback({
+        ...baseOptions,
+        operation: 'routing-budget-test',
+        providerFallbackControl: {
+          fallbackDelayMs: 0,
+          fallbackJitterMs: 0,
+          retryBudgetPerMinute: 0,
+        },
+      })
+    ).rejects.toThrow('rate limit exceeded: 429');
+
+    expect(mockGenerateObject).toHaveBeenCalledTimes(1);
+    expect(mockSelectTextModel).toHaveBeenCalledTimes(1);
+  });
+
+  it('applies the same fallback delay when text fallback parsing fails', async () => {
+    vi.useFakeTimers();
+
+    const expected: TestSchema = {
+      selectedAgent: 'Reporter Agent',
+      confidence: 0.82,
+      reasoning: 'Recovered after delayed text fallback failure',
+    };
+
+    mockGenerateObject
+      .mockRejectedValueOnce(new Error('response format not supported'))
+      .mockResolvedValueOnce({
+        object: expected,
+        usage: { inputTokens: 1, outputTokens: 1, totalTokens: 2 },
+      });
+    mockGenerateText.mockResolvedValueOnce({
+      text: 'not-json',
+      usage: { inputTokens: 1, outputTokens: 1, totalTokens: 2 },
+    });
+    mockSelectTextModel.mockReturnValue({
+      model: { provider: 'groq' },
+      provider: 'groq',
+      modelId: 'groq-model',
+    });
+
+    const promise = generateObjectWithFallback({
+      ...baseOptions,
+      operation: 'routing-text-fallback-test',
+      providerFallbackControl: {
+        fallbackDelayMs: 15,
+        fallbackJitterMs: 0,
+      },
+    });
+
+    await Promise.resolve();
+    expect(mockGenerateObject).toHaveBeenCalledTimes(1);
+    expect(mockGenerateText).toHaveBeenCalledTimes(1);
+
+    await vi.advanceTimersByTimeAsync(14);
+    expect(mockGenerateObject).toHaveBeenCalledTimes(1);
+
+    await vi.advanceTimersByTimeAsync(1);
+    await Promise.resolve();
+
+    const result = await promise;
+    expect(result.object).toEqual(expected);
+    expect(mockGenerateObject).toHaveBeenCalledTimes(2);
+    expect(mockSelectTextModel).toHaveBeenCalledTimes(1);
   });
 });

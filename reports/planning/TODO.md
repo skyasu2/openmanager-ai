@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (Frontend lint dependency cleanup)
+**Last Updated**: 2026-04-18 KST (Structured-output fallback alignment)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -31,6 +31,20 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-18 #150)
+- [x] Structured-output fallback alignment
+  - `generateObjectWithFallback()`가 provider 전환 시 공통 retry budget / fallback jitter helper를 재사용하도록 정렬
+  - structured-output provider 실패와 text fallback parse 실패 모두 동일한 anti-amplification guard를 적용
+  - 기존 `retry-with-fallback`도 같은 shared helper를 쓰도록 정리해 budget state와 delay 계산을 일원화
+  - 회귀 테스트 추가:
+    - structured-output provider 실패 시 delay 후 fallback
+    - structured-output fallback budget 소진 시 fail-fast
+    - text fallback parse 실패 시 동일 delay 적용
+  - 검증:
+    - targeted: `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/agents/orchestrator-object-fallback.test.ts src/services/resilience/retry-with-fallback.test.ts`
+    - gate: `cd cloud-run/ai-engine && npm run type-check && npm run test`
+    - docs: `npm run docs:lint:changed`
 
 ### Completed (2026-04-18 #149)
 - [x] Frontend lint dependency cleanup

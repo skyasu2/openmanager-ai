@@ -3,6 +3,12 @@ import { type ZodTypeAny, type ZodError } from 'zod';
 import { logger } from '../../../lib/logger';
 import { selectTextModel, type TextProvider } from './config/agent-model-selectors';
 import type { ProviderName } from '../model-provider.types';
+import {
+  consumeProviderRetryBudget,
+  DEFAULT_PROVIDER_FALLBACK_CONTROL,
+  waitBeforeProviderFallback,
+  type ProviderFallbackControlConfig,
+} from '../../resilience/provider-fallback-control';
 
 interface StructuredOutputFallbackOptions<T extends ZodTypeAny> {
   model: Parameters<typeof generateObject>[0]['model'];
@@ -19,6 +25,7 @@ interface StructuredOutputFallbackOptions<T extends ZodTypeAny> {
     providerOrder: TextProvider[];
     cbPrefix?: string;
   };
+  providerFallbackControl?: Partial<ProviderFallbackControlConfig>;
 }
 
 interface StructuredOutputResult<T> {
@@ -182,6 +189,51 @@ function selectNextStructuredOutputProvider(
   );
 }
 
+async function prepareProviderFallback(
+  options: StructuredOutputFallbackOptions<ZodTypeAny>,
+  attemptedProviders: Set<ProviderName>,
+  currentProvider: ProviderName | undefined,
+  currentModelId: string | undefined,
+  reason: string
+) {
+  const nextModelResult = selectNextStructuredOutputProvider(
+    options,
+    attemptedProviders
+  );
+
+  if (!nextModelResult) {
+    return null;
+  }
+
+  const fallbackControl = {
+    ...DEFAULT_PROVIDER_FALLBACK_CONTROL,
+    ...options.providerFallbackControl,
+  };
+
+  if (
+    !consumeProviderRetryBudget(
+      fallbackControl,
+      `structured-output:${options.operation}:${reason}:${currentProvider ?? 'unknown'}`,
+      'StructuredOutputFallback'
+    )
+  ) {
+    return null;
+  }
+
+  const delay = await waitBeforeProviderFallback(
+    fallbackControl,
+    'StructuredOutputFallback',
+    `${options.operation} ${currentProvider ?? 'unknown'}/${currentModelId ?? 'unknown'} -> ${nextModelResult.provider}/${nextModelResult.modelId}, reason=${reason}`
+  );
+
+  attemptedProviders.add(nextModelResult.provider as ProviderName);
+  logger.warn(
+    `[${options.operation}] Structured output fallback to ${nextModelResult.provider}/${nextModelResult.modelId} after ${delay}ms`
+  );
+
+  return nextModelResult;
+}
+
 export async function generateObjectWithFallback<T extends ZodTypeAny>(
   options: StructuredOutputFallbackOptions<T>
 ): Promise<StructuredOutputResult<Awaited<T['_output']>>> {
@@ -223,20 +275,17 @@ export async function generateObjectWithFallback<T extends ZodTypeAny>(
           throw error;
         }
 
-        const nextModelResult = selectNextStructuredOutputProvider(
+        const nextModelResult = await prepareProviderFallback(
           options,
-          attemptedProviders
+          attemptedProviders,
+          currentProvider,
+          currentModelId,
+          'provider-error'
         );
 
         if (!nextModelResult) {
           throw error;
         }
-
-        attemptedProviders.add(nextModelResult.provider as ProviderName);
-        logger.warn(
-          `[${options.operation}] Structured output failed on ${currentProvider ?? 'unknown'}/${currentModelId ?? 'unknown'}, ` +
-            `falling back to ${nextModelResult.provider}/${nextModelResult.modelId}`
-        );
 
         currentModel = nextModelResult.model;
         currentProvider = nextModelResult.provider as ProviderName;
@@ -283,18 +332,15 @@ export async function generateObjectWithFallback<T extends ZodTypeAny>(
         };
       } catch (parseError) {
         if (shouldRetryAfterTextFallbackFailure(parseError)) {
-          const nextModelResult = selectNextStructuredOutputProvider(
+          const nextModelResult = await prepareProviderFallback(
             options,
-            attemptedProviders
+            attemptedProviders,
+            currentProvider,
+            currentModelId,
+            'text-fallback-failure'
           );
 
           if (nextModelResult) {
-            attemptedProviders.add(nextModelResult.provider as ProviderName);
-            logger.warn(
-              `[${options.operation}] Text fallback failed on ${currentProvider ?? 'unknown'}/${currentModelId ?? 'unknown'}, ` +
-                `falling back to ${nextModelResult.provider}/${nextModelResult.modelId}`
-            );
-
             currentModel = nextModelResult.model;
             currentProvider = nextModelResult.provider as ProviderName;
             currentModelId = nextModelResult.modelId;
