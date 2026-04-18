@@ -87,6 +87,33 @@ describe('cloud run jobs limiter policy', () => {
 });
 
 describe('cloud run daily semantics', () => {
+  it('keeps supervisor write traffic on the strict 10/min minute bucket', async () => {
+    const app = new Hono();
+    app.use('/api/*', rateLimitMiddleware);
+    app.post('/api/ai/supervisor/stream/v2', (c) => c.json({ ok: true }));
+
+    const headers = {
+      [RATE_LIMIT_IDENTITY_HEADER]: 'test:supervisor-minute-10',
+      'X-API-Key': 'shared-service-secret',
+    };
+
+    for (let index = 0; index < 10; index += 1) {
+      const res = await app.request('/api/ai/supervisor/stream/v2', {
+        method: 'POST',
+        headers,
+      });
+      expect(res.status).toBe(200);
+    }
+
+    const blocked = await app.request('/api/ai/supervisor/stream/v2', {
+      method: 'POST',
+      headers,
+    });
+
+    expect(blocked.status).toBe(429);
+    expect(blocked.headers.get('X-RateLimit-Limit')).toBe('10');
+  });
+
   it('blocks supervisor requests on the 101st request with daily metadata after minute windows reset', async () => {
     vi.useFakeTimers();
 
