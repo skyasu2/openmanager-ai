@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (Cloud Run read-only window slice 완료)
+**Last Updated**: 2026-04-18 KST (Storybook circular chunk warning backlog 정리)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -26,11 +26,18 @@
 | AI Response Visibility & Rate Limit (Phase 1~5) | Medium | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). handoff 가시성 UX, 429 UX, Job Queue agent path, limiter 정책 재조정. Cloud Run read-only window alignment slice는 완료됐고, 남은 실질 backlog는 write bucket 수치 재평가다. |
 | ~~AI Stream Route Contract - residual cleanup~~ | — | **완료** — archive 이동. |
 | ~~OTel 토폴로지 개선~~ | — | **완료** — archive 이동: [archive/otel-topology-improvement-plan.md](archive/otel-topology-improvement-plan.md). |
-| Storybook circular chunk warning 정리 | Low | non-blocking, stable 승격 후 재평가 |
 
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-18 #134)
+- [x] Storybook circular chunk warning backlog 정리
+  - `npm run storybook:build:ci` 재검증 결과 Storybook static build 성공
+  - circular chunk warning은 재현되지 않았고, `.storybook/main.ts`의 warning suppression/manual chunk 정리가 현재 상태와 일치함을 확인
+  - backlog 항목은 stale로 판단해 제거
+  - 검증:
+    - `npm run storybook:build:ci`
 
 ### Completed (2026-04-18 #133)
 - [x] AI Response Visibility - Cloud Run read-only window alignment 완료
