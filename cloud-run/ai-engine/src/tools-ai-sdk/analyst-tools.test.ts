@@ -164,11 +164,11 @@ describe('detectAnomaliesAllServers', () => {
         expect(result.totalServers).toBe(5);
         expect(result.summary.totalServers).toBe(5);
         expect(result.timestamp).toBeDefined();
-        expect(result.algorithmVersion).toBe('2.3.0');
-        expect(result.decisionSource).toBe('threshold_scan+linear_projection');
-        expect(result.confidenceBasis).toBe('status-thresholds:ssot,history:last6h');
-        expect(result.riskForecast.model).toBe('lightweight_linear_projection_v1');
-        expect(result._algorithm).toContain('Linear Projection');
+        expect(result.algorithmVersion).toBe('2.4.0');
+        expect(result.decisionSource).toBe('threshold_scan+linear_trend_scan');
+        expect(result.analysisBasis).toBe('status-thresholds:ssot,history:last6h');
+        expect(result.risingTrendScan.method).toBe('linear_trend_scan');
+        expect(result._algorithm).toContain('Rising Trend Scan');
       }
     });
 
@@ -329,8 +329,8 @@ describe('detectAnomaliesAllServers', () => {
         expect(result).toHaveProperty('timestamp');
         expect(result).toHaveProperty('algorithmVersion');
         expect(result).toHaveProperty('decisionSource');
-        expect(result).toHaveProperty('confidenceBasis');
-        expect(result).toHaveProperty('riskForecast');
+        expect(result).toHaveProperty('analysisBasis');
+        expect(result).toHaveProperty('risingTrendScan');
         expect(result).toHaveProperty('_algorithm');
       }
     });
@@ -366,10 +366,10 @@ describe('detectAnomaliesAllServers', () => {
 
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.riskForecast.horizonHours).toBe(1);
-        expect(result.riskForecast.model).toBe('lightweight_linear_projection_v1');
-        expect(Array.isArray(result.riskForecast.predictedBreaches)).toBe(true);
-        expect(result.riskForecast.breachCount).toBe(result.riskForecast.predictedBreaches.length);
+        expect(result.risingTrendScan.horizonHours).toBe(1);
+        expect(result.risingTrendScan.method).toBe('linear_trend_scan');
+        expect(Array.isArray(result.risingTrendScan.risingTrends)).toBe(true);
+        expect(result.risingTrendScan.riskCount).toBe(result.risingTrendScan.risingTrends.length);
       }
     });
   });
@@ -428,7 +428,7 @@ describe('detectAnomalies', () => {
       const cpu = result.results.cpu;
       expect(cpu).toBeDefined();
       expect(cpu.decisionSource).toBe('threshold');
-      expect(cpu.confidenceBasis).toContain('rule=threshold');
+      expect(cpu.analysisBasis).toContain('rule=threshold');
       expect(cpu.rationale).toBeInstanceOf(Array);
       expect(cpu.rationale.length).toBeGreaterThan(0);
       expect(result._algorithm).toBe('Threshold + Statistical + Enhanced Metrics');

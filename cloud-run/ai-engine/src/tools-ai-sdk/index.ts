@@ -47,7 +47,7 @@ export type {
   ServerAnomalyItem,
   AnomalyDetectionResult,
   ForecastBreachItem,
-  RiskForecast,
+  RisingTrendScan,
   ForecastResult,
 } from '../types/analysis-results';
 export type { AnomalyResultItem } from './analyst-tools-shared';

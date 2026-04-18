@@ -35,7 +35,7 @@ type DecisionSource = 'threshold' | 'statistical' | 'threshold+statistical';
 
 interface AnomalyDecisionMetadata {
   decisionSource: DecisionSource;
-  confidenceBasis: string;
+  analysisBasis: string;
   rationale: string[];
 }
 
@@ -57,7 +57,7 @@ function buildAnomalyDecisionMetadata(
   const thresholdExceeded = currentValue >= threshold.warning;
   const rationale: string[] = [];
   const roundedDeviation = Math.abs(detection.details.deviation);
-  const confidenceBasisParts = [
+  const analysisBasisParts = [
     `metric:${metric}`,
     `mean:${Math.round(detection.details.mean * 10) / 10}`,
     `stdWindowUpper:${Math.round(detection.details.upperThreshold * 10) / 10}`,
@@ -92,17 +92,17 @@ function buildAnomalyDecisionMetadata(
         ? 'statistical'
         : 'statistical';
 
-  const confidenceBasis = [
-    ...confidenceBasisParts,
+  const analysisBasis = [
+    ...analysisBasisParts,
     `rule=threshold-${thresholdExceeded ? 'break' : 'ok'}`,
-    `ruleConfidence=${Math.round(detection.confidence * 100)}%`,
+    `signalStrength=${Math.round(detection.confidence * 100)}%`,
     `source=${decisionSource}`,
     `detection.deviation=${roundedDeviation.toFixed(2)}`
   ].join(', ');
 
   return {
     decisionSource,
-    confidenceBasis,
+    analysisBasis,
     rationale,
   };
 }
@@ -227,10 +227,10 @@ export const detectAnomalies = tool({
             results[metric] = {
               isAnomaly,
               severity,
-              confidence: thresholdExceeded ? 0.95 : Math.round(detection.confidence * 100) / 100,
+              signalStrength: thresholdExceeded ? 0.95 : Math.round(detection.confidence * 100) / 100,
               currentValue,
               decisionSource: decisionMetadata.decisionSource,
-              confidenceBasis: decisionMetadata.confidenceBasis,
+              analysisBasis: decisionMetadata.analysisBasis,
               rationale: decisionMetadata.rationale,
               threshold: {
                 upper: threshold.warning,
@@ -254,10 +254,10 @@ export const detectAnomalies = tool({
                 results['network'] = {
                   isAnomaly: true,
                   severity: isNetCritical ? 'high' : 'medium',
-                  confidence: 0.9,
+                  signalStrength: 0.9,
                   currentValue: netValue,
                   decisionSource: 'threshold',
-                  confidenceBasis: `rule=network-threshold, value=${netValue}, warning=${netThreshold.warning}, critical=${netThreshold.critical}`,
+                  analysisBasis: `rule=network-threshold, value=${netValue}, warning=${netThreshold.warning}, critical=${netThreshold.critical}`,
                   rationale: [
                     `network-threshold-breach:${netValue}>=warning(${netThreshold.warning})`,
                     netValue >= netThreshold.critical
@@ -288,10 +288,10 @@ export const detectAnomalies = tool({
                 results['load_average'] = {
                   isAnomaly: true,
                   severity: isLoadCritical ? 'high' : 'medium',
-                  confidence: 0.85,
+                  signalStrength: 0.85,
                   currentValue: load1,
                   decisionSource: 'threshold',
-                  confidenceBasis: `rule=load-threshold, value=${load1}, warning=${loadWarning}, critical=${loadCritical}`,
+                  analysisBasis: `rule=load-threshold, value=${load1}, warning=${loadWarning}, critical=${loadCritical}`,
                   rationale: [
                     `load-warning:${load1}>=warning(${loadWarning})`,
                     isLoadCritical ? `load-critical:${load1}>=critical(${loadCritical})` : 'load-below-critical',

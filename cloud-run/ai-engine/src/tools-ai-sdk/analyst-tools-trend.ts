@@ -101,10 +101,10 @@ export const predictTrends = tool({
             results[metric] = {
               trend: prediction.trend,
               currentValue,
-              predictedValue: Math.round(clampedPrediction * 100) / 100,
+              projectedValue: Math.round(clampedPrediction * 100) / 100,
               changePercent:
                 Math.round(prediction.details.predictedChangePercent * 100) / 100,
-              confidence: Math.round(prediction.confidence * 100) / 100,
+              signalStrength: Math.round(prediction.confidence * 100) / 100,
               currentStatus: prediction.currentStatus,
               thresholdBreach: prediction.thresholdBreach,
               recovery: prediction.recovery,

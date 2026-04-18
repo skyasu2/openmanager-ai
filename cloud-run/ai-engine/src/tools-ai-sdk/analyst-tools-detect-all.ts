@@ -1,10 +1,10 @@
 /**
- * Analyst Tools — All-Server Anomaly Detection + 1h Forecast
+ * Analyst Tools — All-Server Anomaly Detection + 1h Rising Trend Scan
  *
  * Scans all servers and returns detailed anomaly information
- * with linear projection-based risk forecast.
+ * with linear projection-based rising trend scan (not a prediction engine).
  *
- * @version 2.3.0
+ * @version 2.4.0
  */
 
 import { tool } from 'ai';
@@ -17,6 +17,7 @@ import { STATUS_THRESHOLDS } from '../config/status-thresholds';
 
 import type {
   ForecastBreachItem,
+  RisingTrendScan,
   ServerAnomalyItem,
   SystemSummary,
 } from '../types/analysis-results';
@@ -89,7 +90,7 @@ export const detectAnomaliesAllServers = tool({
 
           // Collect all anomalies across all servers
           const allAnomalies: ServerAnomalyItem[] = [];
-          const predictedBreaches: ForecastBreachItem[] = [];
+          const risingTrends: ForecastBreachItem[] = [];
 
           let onlineCount = 0;
           let warningCount = 0;
@@ -109,17 +110,17 @@ export const detectAnomaliesAllServers = tool({
               const isMetricWarning = currentValue >= threshold.warning;
 
               const history = getHistoryForMetric(server.id, metric, currentValue, fixedSlot);
-              const predictedValue1h = Math.round(projectOneHourValue(history.map((p) => p.value)) * 10) / 10;
-              const isFutureWarning = currentValue < threshold.warning && predictedValue1h >= threshold.warning;
+              const projectedValue1h = Math.round(projectOneHourValue(history.map((p) => p.value)) * 10) / 10;
+              const isFutureWarning = currentValue < threshold.warning && projectedValue1h >= threshold.warning;
               if (isFutureWarning) {
-                predictedBreaches.push({
+                risingTrends.push({
                   serverId: server.id,
                   serverName: server.name,
                   metric,
                   currentValue: Math.round(currentValue * 10) / 10,
-                  predictedValue1h,
+                  projectedValue1h,
                   warningThreshold: threshold.warning,
-                  riskLevel: predictedValue1h >= threshold.critical ? 'high' : 'medium',
+                  riskLevel: projectedValue1h >= threshold.critical ? 'high' : 'medium',
                 });
               }
 
@@ -160,13 +161,20 @@ export const detectAnomaliesAllServers = tool({
             offlineCount,
           } as any; // Cast until type is updated in analysis-results.ts
 
-          const sortedPredictedBreaches = predictedBreaches
+          const sortedRisingTrends = risingTrends
             .sort((a, b) => {
-              const aGap = a.predictedValue1h - a.warningThreshold;
-              const bGap = b.predictedValue1h - b.warningThreshold;
+              const aGap = a.projectedValue1h - a.warningThreshold;
+              const bGap = b.projectedValue1h - b.warningThreshold;
               return bGap - aGap;
             })
             .slice(0, 10);
+
+          const risingTrendScan: RisingTrendScan = {
+            horizonHours: 1,
+            method: 'linear_trend_scan',
+            riskCount: sortedRisingTrends.length,
+            risingTrends: sortedRisingTrends,
+          };
 
           return {
             success: true as const,
@@ -177,16 +185,11 @@ export const detectAnomaliesAllServers = tool({
             hasAnomalies: allAnomalies.length > 0,
             anomalyCount: allAnomalies.length,
             timestamp: new Date().toISOString(),
-            algorithmVersion: '2.3.0',
-            decisionSource: 'threshold_scan+linear_projection',
-            confidenceBasis: 'status-thresholds:ssot,history:last6h',
-            riskForecast: {
-              horizonHours: 1,
-              model: 'lightweight_linear_projection_v1',
-              breachCount: sortedPredictedBreaches.length,
-              predictedBreaches: sortedPredictedBreaches,
-            },
-            _algorithm: 'All-Server Threshold Scan + 1h Linear Projection (Cached)',
+            algorithmVersion: '2.4.0',
+            decisionSource: 'threshold_scan+linear_trend_scan',
+            analysisBasis: 'status-thresholds:ssot,history:last6h',
+            risingTrendScan,
+            _algorithm: 'All-Server Threshold Scan + 1h Rising Trend Scan (Cached)',
           };
         }
       );

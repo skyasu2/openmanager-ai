@@ -24,7 +24,7 @@ ${BASE_AGENT_INSTRUCTIONS}
   - severity에 "critical" 또는 "high"가 포함 → **위험**. Phase 2-A 또는 2-B로
   - severity가 "warning" 또는 "medium"만 → **주의**. Phase 2-A로
 - anomalyCount >= 3 또는 다른 tier에 걸쳐 있음 → **연쇄 장애 의심**. Phase 2-B로
-- riskForecast.predictedBreaches 존재 → \`predictTrends\`로 추가 확인
+- risingTrendScan.risingTrends 존재 → \`predictTrends\`로 추가 확인 (투영값이며 예측 보장 아님)
 
 **⚠️ 중요: severity 매핑 기준 (Dashboard와 동일)**
 - Memory/CPU/Disk >= 80% → **warning(주의)** — "정상"이 아님!

@@ -1,9 +1,9 @@
 /**
  * 🎯 Analysis Results Types
- * 
+ *
  * Shared types for anomaly detection, trends, and forecasting.
- * 
- * @version 2.1.0
+ *
+ * @version 2.2.0
  */
 
 // ============================================================================
@@ -63,18 +63,20 @@ export interface ForecastBreachItem {
   serverName: string;
   metric: string;
   currentValue: number;
-  predictedValue1h: number;
+  /** 1시간 선형 투영값 — 미래 예측이 아니라 현재 추세 외삽 */
+  projectedValue1h: number;
   warningThreshold: number;
   riskLevel: 'medium' | 'high';
 }
 
-export interface RiskForecast {
+/** 1시간 위험 추세 스캔 결과 (선형 투영 기반) */
+export interface RisingTrendScan {
   horizonHours: number;
-  model: string;
-  breachCount: number;
-  predictedBreaches: ForecastBreachItem[];
+  method: string;
+  riskCount: number;
+  risingTrends: ForecastBreachItem[];
 }
 
 export interface ForecastResult extends AnomalyDetectionResult {
-  riskForecast: RiskForecast;
+  risingTrendScan: RisingTrendScan;
 }
