@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (Cloud Run read-only window slice 승인)
+**Last Updated**: 2026-04-18 KST (Cloud Run read-only window slice 완료)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI Response Visibility - Cloud Run read-only window alignment | Medium | approved | Cloud Run read-only 경로(`GET /api/ai/supervisor/health`, `GET /api/jobs/:id*`)는 provider 비용을 직접 태우지 않으므로 `60/min`에서 `120/min`으로 완화해 false 429를 줄인다. `supervisor`/`jobs/process` write bucket은 유지한다. |
+| — | — | none | 현재 active task 없음 |
 
 ---
 
@@ -23,7 +23,7 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
-| AI Response Visibility & Rate Limit (Phase 1~5) | Medium | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). handoff 가시성 UX, 429 UX, Job Queue agent path, limiter 정책 재조정. 현재는 Cloud Run read-only window alignment slice만 active이며, 이후 남은 실질 backlog는 write bucket 수치 재평가다. |
+| AI Response Visibility & Rate Limit (Phase 1~5) | Medium | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). handoff 가시성 UX, 429 UX, Job Queue agent path, limiter 정책 재조정. Cloud Run read-only window alignment slice는 완료됐고, 남은 실질 backlog는 write bucket 수치 재평가다. |
 | ~~AI Stream Route Contract - residual cleanup~~ | — | **완료** — archive 이동. |
 | ~~OTel 토폴로지 개선~~ | — | **완료** — archive 이동: [archive/otel-topology-improvement-plan.md](archive/otel-topology-improvement-plan.md). |
 | Storybook circular chunk warning 정리 | Low | non-blocking, stable 승격 후 재평가 |
@@ -31,6 +31,16 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-18 #133)
+- [x] AI Response Visibility - Cloud Run read-only window alignment 완료
+  - `GET /api/ai/supervisor/health`와 `GET /api/jobs/:id*` read-only bucket을 `60/min`에서 `120/min`으로 완화
+  - `supervisor` write `10/min`, `jobs/process` write `5/min`, daily `100` semantics는 유지
+  - read-only fallback/direct polling에서 minute window 경계 false 429를 줄이도록 `X-RateLimit-Limit` 계약을 상향 고정
+  - 검증:
+    - targeted: `cd cloud-run/ai-engine && npx vitest run src/middleware/rate-limiter.test.ts src/routes/jobs.test.ts`
+    - ai-engine gate: `cd cloud-run/ai-engine && npm run type-check && npm run test`
+    - docs: `npm run docs:lint:changed`
 
 ### Completed (2026-04-18 #132)
 - [x] AI Response Visibility - Cloud Run supervisor health limiter split 완료

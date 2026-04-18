@@ -1,12 +1,12 @@
 > Owner: project
-> Status: Approved (slice) — `handoff persistence contract`, `429 UX source-hardening`, `Job Queue agent-path`, `/api/ai/jobs` POST gateway limiter alignment, frontend AI gateway session-aware limiter identity, daily-limit semantics, Cloud Run forwarded identity, retry limiter alignment, Cloud Run jobs read/write limiter split, Cloud Run daily semantics alignment, Cloud Run supervisor health limiter split slice는 완료. 이번 승인 범위는 Cloud Run read-only window alignment에 한정.
+> Status: Backlog — `handoff persistence contract`, `429 UX source-hardening`, `Job Queue agent-path`, `/api/ai/jobs` POST gateway limiter alignment, frontend AI gateway session-aware limiter identity, daily-limit semantics, Cloud Run forwarded identity, retry limiter alignment, Cloud Run jobs read/write limiter split, Cloud Run daily semantics alignment, Cloud Run supervisor health limiter split, Cloud Run read-only window alignment slice는 완료. write bucket 수치 재평가 잔여는 backlog 유지.
 > Doc type: Plan
 > Last reviewed: 2026-04-17
 > Tags: ai,ux,rate-limit,visibility
 
 # AI Response Visibility & Rate Limit Plan (2026-04-08)
 
-- 상태: **Approved (slice)** — AnalysisBasisBadge 중심 visibility 개선과 `handoff persistence contract`, `429 UX source-hardening`, `Job Queue agent-path`, `/api/ai/jobs` POST gateway limiter alignment, frontend AI gateway session-aware limiter identity, daily-limit semantics, Cloud Run forwarded identity, retry limiter alignment, Cloud Run jobs read/write limiter split, Cloud Run daily semantics alignment, Cloud Run supervisor health limiter split slice는 완료됐다. 이번 승인 범위는 Cloud Run read-only window alignment이며, 그 이후 남은 범위는 write bucket 수치 재평가다.
+- 상태: **Backlog (partial complete)** — AnalysisBasisBadge 중심 visibility 개선과 `handoff persistence contract`, `429 UX source-hardening`, `Job Queue agent-path`, `/api/ai/jobs` POST gateway limiter alignment, frontend AI gateway session-aware limiter identity, daily-limit semantics, Cloud Run forwarded identity, retry limiter alignment, Cloud Run jobs read/write limiter split, Cloud Run daily semantics alignment, Cloud Run supervisor health limiter split, Cloud Run read-only window alignment slice는 완료됐다. 남은 범위는 write bucket 수치 재평가다.
 - 작성일: 2026-04-08 | 상태 갱신: 2026-04-18
 - TODO.md 연결: Backlog > AI Response Visibility & Rate Limit
 - 목표: AI 질의 과정의 가시성을 실제 실행 흐름과 맞추고, rate limit을 사용자에게 설명 가능한 제약으로 바꾼다.
@@ -123,9 +123,16 @@
 
 - 목표: provider 비용을 직접 태우지 않는 Cloud Run read-only 경로(`GET /api/ai/supervisor/health`, `GET /api/jobs/:id`, `GET /api/jobs/:id/progress`)의 minute window를 `60/min`에서 `120/min`으로 완화해 false 429를 줄인다.
 - 범위:
-  - `supervisorHealth`, `jobsRead` bucket만 `120/min`으로 상향
-  - `supervisor` write `10/min`, `jobs/process` write `5/min`, daily `100` semantics는 유지
-  - frontend limiter 수치, Cloud Run write bucket 수치, provider 호출 경로는 이번 slice 제외
+- `supervisorHealth`, `jobsRead` bucket만 `120/min`으로 상향
+- `supervisor` write `10/min`, `jobs/process` write `5/min`, daily `100` semantics는 유지
+- frontend limiter 수치, Cloud Run write bucket 수치, provider 호출 경로는 이번 slice 제외
+
+### 이번 slice 완료 결과 (`2026-04-18`, Cloud Run read-only window alignment)
+
+- `GET /api/ai/supervisor/health`와 `GET /api/jobs/:id`, `GET /api/jobs/:id/progress` read-only bucket은 이제 `120/min`을 사용한다.
+- provider 비용을 직접 태우는 `supervisor` write `10/min`, `jobs/process` write `5/min`, `daily=100` semantics는 그대로 유지된다.
+- read-only direct polling 및 health/smoke 경로가 `60/min` 경계에서 false 429를 내던 정책 drift를 줄였다.
+- 남은 backlog는 write bucket 수치 자체를 다시 평가하는 작업이다.
 
 ### 이번 승인 slice (`2026-04-18`, 3차)
 
