@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (OTel baseline debt cleanup slice 승인)
+**Last Updated**: 2026-04-18 KST (OTel baseline debt cleanup slice 완료)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| OTel topology improvement - baseline debt cleanup | Medium | approved | `data:verify` 잔여 2건 정리. `hour-23 storage-s3gw-dc1-01` network drift와 `ERROR > 3%` severity baseline 복구만 이번 slice 범위. |
+| *(none)* | — | — | 현재 활성 작업 없음 |
 
 ---
 
@@ -25,12 +25,22 @@
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
 | AI Response Visibility & Rate Limit (Phase 1~5) | Medium | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). handoff 가시성 UX, 429 UX, Job Queue agent path, limiter 정책 재조정. 남은 실질 backlog는 Cloud Run 정책 재평가. |
 | ~~AI Stream Route Contract - residual cleanup~~ | — | **완료** — archive 이동. |
-| OTel 토폴로지 개선 (P1→P2→P3) | Medium | 계획서: [otel-topology-improvement-plan.md](otel-topology-improvement-plan.md). db-backup 스펙 현실화(즉시), Redis cross-AZ/NFS SPOF 시나리오 추가(단기), 서버 3대 추가(장기). |
+| OTel 토폴로지 개선 (Phase 3) | Medium | 계획서: [otel-topology-improvement-plan.md](otel-topology-improvement-plan.md). baseline debt 정리까지 완료, 남은 실질 backlog는 서버 3대 추가와 관련 registry/state 확장. |
 | Storybook circular chunk warning 정리 | Low | non-blocking, stable 승격 후 재평가 |
 
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-18 #125)
+- [x] OTel topology improvement - baseline debt cleanup 완료
+  - `hour-23 storage-s3gw-dc1-01` network drift를 storage baseline 범위 안으로 조정
+  - anomaly-heavy 시간대에 deterministic extra error 로그를 추가해 `ERROR > 3%` severity baseline 복구
+  - `otel-fix.ts` generator와 baseline debt contract test를 위 기준에 맞게 동기화
+  - 검증:
+    - targeted: `npx vitest run tests/unit/otel-topology-baseline-debt.contract.test.ts tests/unit/otel-topology-backup.contract.test.ts tests/unit/otel-topology-redis-cross-az.contract.test.ts tests/unit/otel-topology-nfs-spof.contract.test.ts`
+    - targeted: `npm run data:verify` (`29 passed, 0 failed`)
+    - root gate: `npm run type-check && npm run lint && npm run test:quick`
 
 ### Completed (2026-04-18 #124)
 - [x] OTel topology improvement - NFS SPOF 완료
