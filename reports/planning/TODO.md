@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (OTel precomputed-state sync slice 승인)
+**Last Updated**: 2026-04-18 KST (OTel precomputed-state sync slice 완료)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| OTel topology improvement - precomputed-state sync | Medium | approved | `cloud-run/ai-engine/data/otel-data`를 root `public/data/otel-data` 기준으로 동기화하고 `precomputed-states.json`을 18대 inventory로 재생성한다. 범위는 bundled `otel-data` 사본, `precomputed-states.json`, 계약 테스트에 한정. |
+| — | — | none | 현재 active task 없음 |
 
 ---
 
@@ -25,12 +25,23 @@
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
 | AI Response Visibility & Rate Limit (Phase 1~5) | Medium | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). handoff 가시성 UX, 429 UX, Job Queue agent path, limiter 정책 재조정. 남은 실질 backlog는 Cloud Run 정책 재평가. |
 | ~~AI Stream Route Contract - residual cleanup~~ | — | **완료** — archive 이동. |
-| OTel 토폴로지 개선 (Phase 3) | Medium | 계획서: [otel-topology-improvement-plan.md](otel-topology-improvement-plan.md). Phase 3-A `lb-haproxy-dc1-03`, Phase 3-B `cache-redis-dc1-03`, Phase 3-C `storage-nfs-dc1-02` 완료. 현재는 precomputed-state sync slice만 active이며, 완료 시 OTel plan은 archive 후보가 된다. |
+| ~~OTel 토폴로지 개선~~ | — | **완료** — archive 이동: [archive/otel-topology-improvement-plan.md](archive/otel-topology-improvement-plan.md). |
 | Storybook circular chunk warning 정리 | Low | non-blocking, stable 승격 후 재평가 |
 
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-18 #129)
+- [x] OTel topology improvement - precomputed-state sync 완료 및 계획서 archive 이동
+  - AI Engine bundled `precomputed-states.json`을 18대 inventory 기준으로 재생성해 root OTel SSOT와 drift를 해소
+  - `tests/unit/otel-topology-precomputed-state-sync.contract.test.ts`로 AI Engine precomputed-state / bundled inventory 계약을 고정
+  - 18대 inventory 증가로 깨진 topology RAG governance chunk 예산을 짧은 운영 메모로 재조정
+  - 계획서 archive 이동: `reports/planning/archive/otel-topology-improvement-plan.md`
+  - 검증:
+    - targeted: `npx vitest run tests/unit/otel-topology-precomputed-state-sync.contract.test.ts`
+    - root gate: `npm run docs:lint:changed && npm run type-check && npm run lint && npm run test:quick`
+    - ai-engine gate: `cd cloud-run/ai-engine && npm run type-check && npm run test` (`75 files`, `783 tests`)
 
 ### Completed (2026-04-18 #128)
 - [x] OTel topology improvement - Phase 3-C AZ2 NFS standby 완료

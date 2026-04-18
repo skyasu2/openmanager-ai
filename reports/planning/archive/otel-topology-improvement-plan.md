@@ -1,7 +1,7 @@
 > Owner: project
-> Status: Approved (slice) — Phase 1 `db-mysql-dc1-backup` realism, Phase 2-A `Redis cross-AZ latency`, Phase 2-B `NFS SPOF`, baseline debt cleanup, Phase 3-A `lb-haproxy-dc1-03`, Phase 3-B `cache-redis-dc1-03`, Phase 3-C `storage-nfs-dc1-02` slice는 완료. 이번 승인 범위는 AI Engine bundled `otel-data` sync와 `precomputed-states.json` 재생성에 한정.
+> Status: Completed — Phase 1 `db-mysql-dc1-backup` realism, Phase 2-A `Redis cross-AZ latency`, Phase 2-B `NFS SPOF`, baseline debt cleanup, Phase 3-A `lb-haproxy-dc1-03`, Phase 3-B `cache-redis-dc1-03`, Phase 3-C `storage-nfs-dc1-02`, AI Engine bundled `otel-data` / `precomputed-states.json` sync까지 완료.
 > Doc type: Reference
-> Last reviewed: 2026-04-17
+> Last reviewed: 2026-04-18
 > Tags: otel-data, topology, infrastructure, data-quality
 
 # OTel 토폴로지 개선 계획
@@ -9,8 +9,7 @@
 ## 배경
 
 현재 `public/data/otel-data/` 사전 생성 데이터는 on-premise 1 DC / 3 AZ / 18대 구성을 표현하며,
-남은 실질 과제는 root OTel SSOT와 AI Engine bundled `otel-data` / `precomputed-states.json` 사이의 inventory drift 정리다. AI가 이 데이터를 기반으로 진단할 때
-"정상 운영 중"으로만 해석되는 문제를 해결하고, 실제 운영 환경 수준의 현실성을 높이는 것이 목표.
+AI Engine bundled `otel-data` / `precomputed-states.json`도 같은 inventory로 동기화됐다. 이 계획서의 목표였던 토폴로지 현실성 개선과 inventory drift 정리는 완료됐다.
 
 ## 현재 토폴로지
 
@@ -166,13 +165,13 @@ backup 전용으로 스펙 다운 (8c/32GB/1TB) + 역할 설명 명시.
 
 ### Phase 3: 서버 추가 (장기, 필요 시)
 
-- [ ] `resource-catalog.json`에 3대 추가
+- [x] `resource-catalog.json`에 3대 추가
   - `lb-haproxy-dc1-03` (AZ2, 4c/8GB/50GB)
   - `cache-redis-dc1-03` (AZ3, 4c/32GB/50GB)
   - `storage-nfs-dc1-02` (AZ2, 4c/16GB/5TB, hot-standby)
-- [ ] `otel-fix.ts` 신규 서버 메트릭 데이터 생성 로직 추가
-- [ ] `timeseries.json` 재생성 (15→18 서버)
-- [ ] AI Engine `precomputed-state.ts` 서버 목록 갱신
+- [x] `otel-fix.ts` 신규 서버 메트릭 데이터 생성 로직 추가
+- [x] `timeseries.json` 재생성 (15→18 서버)
+- [x] AI Engine bundled `precomputed-states.json` 18대 inventory 기준 재생성
 
 ### 이번 승인 slice (`2026-04-18`, Phase 3-A)
 
@@ -238,6 +237,13 @@ backup 전용으로 스펙 다운 (8c/32GB/1TB) + 역할 설명 명시.
   - drift 방지용 계약 테스트 추가
   - root `public/data/otel-data`나 topology 시나리오 자체는 이번 slice에서 변경하지 않음
 
+### 이번 slice 완료 결과 (`2026-04-18`, precomputed-state sync)
+
+- `cloud-run/ai-engine/data/precomputed-states.json`은 이제 144 슬롯 전체에서 18대 inventory를 반영한다.
+- AI Engine bundled topology data와 root OTel SSOT의 inventory drift는 계약 테스트로 고정됐다.
+- 18대 inventory 증가로 길어진 topology RAG 설명문은 governance chunk 예산을 넘지 않도록 짧은 운영 메모로 재조정됐다.
+- 이로써 OTel topology improvement plan의 실질 backlog는 종료됐다.
+
 ---
 
 ## 영향 범위
@@ -249,7 +255,8 @@ backup 전용으로 스펙 다운 (8c/32GB/1TB) + 역할 설명 명시.
 | `public/data/otel-data/timeseries.json` | — | — | ✅ |
 | `scripts/data/otel-fix.ts` | ✅ | ✅ | ✅ |
 | `scripts/data/otel-verify.ts` | ✅ | ✅ | ✅ |
-| `cloud-run/ai-engine/src/data/precomputed-state.ts` | — | — | ✅ |
+| `cloud-run/ai-engine/data/otel-data/*` | — | — | ✅ |
+| `cloud-run/ai-engine/data/precomputed-states.json` | — | — | ✅ |
 | `src/config/server-registry.ts` | — | — | ✅ |
 
 ---
