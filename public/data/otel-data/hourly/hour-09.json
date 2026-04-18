@@ -1150,6 +1150,16 @@
           "resource": "cache-redis-dc1-02"
         },
         {
+          "timeUnixNano": 1771027632000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[10200]: [ERROR] Request queue overflow on api-was-dc1-01, 42 requests rejected",
+          "attributes": {
+            "log.source": "app"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
           "timeUnixNano": 1771027646482505500,
           "severityNumber": 13,
           "severityText": "WARN",
@@ -2426,6 +2436,16 @@
           "resource": "storage-s3gw-dc1-01"
         },
         {
+          "timeUnixNano": 1771028232000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[10201]: [ERROR] Request queue overflow on api-was-dc1-01, 45 requests rejected",
+          "attributes": {
+            "log.source": "app"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
           "timeUnixNano": 1771028235064379400,
           "severityNumber": 9,
           "severityText": "INFO",
@@ -3636,6 +3656,16 @@
           "body": "java[6191]: [WARN] Thread pool nearing exhaustion: active 9395/200, queue depth 89",
           "attributes": {
             "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771028832000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[10202]: [ERROR] Request queue overflow on api-was-dc1-01, 48 requests rejected",
+          "attributes": {
+            "log.source": "app"
           },
           "resource": "api-was-dc1-01"
         },
@@ -4913,6 +4943,16 @@
           "resource": "storage-s3gw-dc1-01"
         },
         {
+          "timeUnixNano": 1771029432000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[10203]: [ERROR] Request queue overflow on api-was-dc1-01, 51 requests rejected",
+          "attributes": {
+            "log.source": "app"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
           "timeUnixNano": 1771029485788990700,
           "severityNumber": 9,
           "severityText": "INFO",
@@ -6127,6 +6167,16 @@
           "resource": "storage-s3gw-dc1-01"
         },
         {
+          "timeUnixNano": 1771030032000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[10204]: [ERROR] Request queue overflow on api-was-dc1-01, 54 requests rejected",
+          "attributes": {
+            "log.source": "app"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
           "timeUnixNano": 1771030050257621500,
           "severityNumber": 9,
           "severityText": "INFO",
@@ -7290,6 +7340,16 @@
             "log.source": "java"
           },
           "resource": "api-was-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771030632000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[10205]: [ERROR] Request queue overflow on api-was-dc1-01, 57 requests rejected",
+          "attributes": {
+            "log.source": "app"
+          },
+          "resource": "api-was-dc1-01"
         },
         {
           "timeUnixNano": 1771030638422070300,

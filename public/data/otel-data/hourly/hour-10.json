@@ -1203,6 +1203,16 @@
           "resource": "cache-redis-dc1-01"
         },
         {
+          "timeUnixNano": 1771031232000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[10300]: [ERROR] Request queue overflow on api-was-dc1-01, 42 requests rejected",
+          "attributes": {
+            "log.source": "app"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
           "timeUnixNano": 1771031248102792000,
           "severityNumber": 9,
           "severityText": "INFO",
@@ -2428,6 +2438,16 @@
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "cache-redis-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771031832000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[10301]: [ERROR] Request queue overflow on api-was-dc1-01, 45 requests rejected",
+          "attributes": {
+            "log.source": "app"
+          },
+          "resource": "api-was-dc1-01"
         },
         {
           "timeUnixNano": 1771031843938134800,
@@ -3700,6 +3720,16 @@
           "resource": "cache-redis-dc1-02"
         },
         {
+          "timeUnixNano": 1771032432000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[10302]: [ERROR] Request queue overflow on api-was-dc1-01, 48 requests rejected",
+          "attributes": {
+            "log.source": "app"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
           "timeUnixNano": 1771032444721534500,
           "severityNumber": 17,
           "severityText": "ERROR",
@@ -4909,6 +4939,16 @@
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "cache-redis-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771033032000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[10303]: [ERROR] Request queue overflow on api-was-dc1-01, 51 requests rejected",
+          "attributes": {
+            "log.source": "app"
+          },
+          "resource": "api-was-dc1-01"
         },
         {
           "timeUnixNano": 1771033047856021800,
@@ -6132,6 +6172,16 @@
           "resource": "cache-redis-dc1-02"
         },
         {
+          "timeUnixNano": 1771033632000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[10304]: [ERROR] Request queue overflow on api-was-dc1-01, 54 requests rejected",
+          "attributes": {
+            "log.source": "app"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
           "timeUnixNano": 1771033650722312200,
           "severityNumber": 13,
           "severityText": "WARN",
@@ -7345,6 +7395,16 @@
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "storage-nfs-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771034232000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[10305]: [ERROR] Request queue overflow on api-was-dc1-01, 57 requests rejected",
+          "attributes": {
+            "log.source": "app"
+          },
+          "resource": "api-was-dc1-01"
         },
         {
           "timeUnixNano": 1771034248873038300,

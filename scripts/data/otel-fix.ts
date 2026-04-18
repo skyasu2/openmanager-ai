@@ -222,9 +222,22 @@ const HOUR_SCENARIOS: Record<number, Record<string, ServerMetricOverride>> = {
   // === S5: 스토리지 백업 충돌 (23, S1과 시간적 연결) ===
   23: {
     'storage-nfs-dc1-01': { disk: 0.82, cpu: 0.65 },
-    'storage-s3gw-dc1-01': { network: 0.68, disk: 0.72 },
+    'storage-s3gw-dc1-01': { network: 0.34, disk: 0.72 },
     'db-mysql-dc1-backup': { disk: 0.72, cpu: 0.28, memory: 0.36 },
   },
+};
+
+const ERROR_BASELINE_HOUR_RESOURCES: Record<number, string> = {
+  2: 'storage-nfs-dc1-01',
+  3: 'storage-nfs-dc1-01',
+  4: 'storage-nfs-dc1-01',
+  9: 'api-was-dc1-01',
+  10: 'api-was-dc1-01',
+  16: 'cache-redis-dc1-01',
+  19: 'lb-haproxy-dc1-01',
+  20: 'lb-haproxy-dc1-01',
+  21: 'lb-haproxy-dc1-01',
+  23: 'storage-s3gw-dc1-01',
 };
 
 // 장애 서버 → cascade WARN을 받을 서버 (호출자/의존 서버)
@@ -561,6 +574,49 @@ function applyNfsSpofScenario(data: HourlyFile, hour: number): HourlyFile {
         resource: 'api-was-dc1-02',
       }
     );
+  }
+
+  return data;
+}
+
+function applyErrorBaselineBoost(data: HourlyFile, hour: number): HourlyFile {
+  const resource = ERROR_BASELINE_HOUR_RESOURCES[hour];
+  if (!resource) {
+    return data;
+  }
+
+  const category = getServerCategory(resource);
+
+  const buildBody = (slotIdx: number): string => {
+    if (resource === 'storage-nfs-dc1-01') {
+      return `nfsd[${9200 + hour * 100 + slotIdx}]: ERROR: Shared NFS backlog escalated to ${140 + slotIdx * 12} pending writes`;
+    }
+    if (resource === 'api-was-dc1-01') {
+      return `java[${9300 + hour * 100 + slotIdx}]: [ERROR] Request queue overflow on api-was-dc1-01, ${42 + slotIdx * 3} requests rejected`;
+    }
+    if (resource === 'cache-redis-dc1-01') {
+      return `redis-server[${9400 + hour * 100 + slotIdx}]: ERROR: BGSAVE failed under memory pressure, replica sync delayed ${8 + slotIdx}s`;
+    }
+    if (resource === 'lb-haproxy-dc1-01') {
+      return `haproxy[${9500 + hour * 100 + slotIdx}]: ERROR: Backend queue overflow on lb-haproxy-dc1-01, dropped ${24 + slotIdx * 4} requests`;
+    }
+    return `minio[${9600 + hour * 100 + slotIdx}]: ERROR: Multipart upload stalled on storage-s3gw-dc1-01 during backup window`;
+  };
+
+  for (let slotIdx = 0; slotIdx < data.slots.length; slotIdx++) {
+    const slot = data.slots[slotIdx];
+    const jitter = Math.floor(
+      (slot.endTimeUnixNano - slot.startTimeUnixNano) * 0.72
+    );
+    slot.logs.push({
+      timeUnixNano: slot.startTimeUnixNano + jitter,
+      severityNumber: 17,
+      severityText: 'ERROR',
+      body: buildBody(slotIdx),
+      attributes: { 'log.source': getLogSource(category) },
+      resource,
+    });
+    slot.logs.sort((a, b) => a.timeUnixNano - b.timeUnixNano);
   }
 
   return data;
@@ -1195,6 +1251,8 @@ function main(): void {
     data = fixRedisOOMSequence(data);
     // ★ P2: 메트릭-로그 일치 (L2 교체, 최종 로그 권한)
     data = reconcileLogsWithMetrics(data, hour);
+    // Baseline debt cleanup: ensure realistic error ratio without full-dataset churn
+    data = applyErrorBaselineBoost(data, hour);
     // L3: Watchdog dedup + S3GW cron cleanup
     data = limitWatchdogDuplicates(data);
     return data;

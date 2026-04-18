@@ -1163,6 +1163,16 @@
           "resource": "cache-redis-dc1-02"
         },
         {
+          "timeUnixNano": 1771052832000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "redis-server[11000]: ERROR: BGSAVE failed under memory pressure, replica sync delayed 8s",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-01"
+        },
+        {
           "timeUnixNano": 1771052841393542000,
           "severityNumber": 9,
           "severityText": "INFO",
@@ -2429,6 +2439,16 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
+          "timeUnixNano": 1771053432000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "redis-server[11001]: ERROR: BGSAVE failed under memory pressure, replica sync delayed 9s",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-01"
+        },
+        {
           "timeUnixNano": 1771053457633870600,
           "severityNumber": 9,
           "severityText": "INFO",
@@ -3672,6 +3692,16 @@
           "resource": "cache-redis-dc1-02"
         },
         {
+          "timeUnixNano": 1771054032000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "redis-server[11002]: ERROR: BGSAVE failed under memory pressure, replica sync delayed 10s",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-01"
+        },
+        {
           "timeUnixNano": 1771054041274294500,
           "severityNumber": 9,
           "severityText": "INFO",
@@ -4844,6 +4874,16 @@
           "severityNumber": 13,
           "severityText": "WARN",
           "body": "redis-server[4140]: WARNING: Memory usage 78% of maxmemory limit",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771054632000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "redis-server[11003]: ERROR: BGSAVE failed under memory pressure, replica sync delayed 11s",
           "attributes": {
             "log.source": "redis"
           },
@@ -6043,6 +6083,16 @@
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "storage-s3gw-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771055232000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "redis-server[11004]: ERROR: BGSAVE failed under memory pressure, replica sync delayed 12s",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-01"
         },
         {
           "timeUnixNano": 1771055238471638800,
@@ -7259,6 +7309,16 @@
             "server.role": "cache",
             "deployment.environment.name": "production",
             "cloud.availability_zone": "DC1-AZ1"
+          },
+          "resource": "cache-redis-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771055832000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "redis-server[11005]: ERROR: BGSAVE failed under memory pressure, replica sync delayed 13s",
+          "attributes": {
+            "log.source": "redis"
           },
           "resource": "cache-redis-dc1-01"
         },

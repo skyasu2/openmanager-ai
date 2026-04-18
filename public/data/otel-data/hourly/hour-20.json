@@ -1169,6 +1169,16 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
+          "timeUnixNano": 1771067232000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "haproxy[11500]: ERROR: Backend queue overflow on lb-haproxy-dc1-01, dropped 24 requests",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-01"
+        },
+        {
           "timeUnixNano": 1771067261151058400,
           "severityNumber": 13,
           "severityText": "WARN",
@@ -2355,6 +2365,16 @@
             "cloud.availability_zone": "DC1-AZ3"
           },
           "resource": "storage-s3gw-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771067832000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "haproxy[11501]: ERROR: Backend queue overflow on lb-haproxy-dc1-01, dropped 28 requests",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-01"
         },
         {
           "timeUnixNano": 1771067876263844000,
@@ -3561,6 +3581,16 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
+          "timeUnixNano": 1771068432000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "haproxy[11502]: ERROR: Backend queue overflow on lb-haproxy-dc1-01, dropped 32 requests",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-01"
+        },
+        {
           "timeUnixNano": 1771068442287489000,
           "severityNumber": 9,
           "severityText": "INFO",
@@ -4759,6 +4789,16 @@
             "cloud.availability_zone": "DC1-AZ2"
           },
           "resource": "cache-redis-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771069032000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "haproxy[11503]: ERROR: Backend queue overflow on lb-haproxy-dc1-01, dropped 36 requests",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-01"
         },
         {
           "timeUnixNano": 1771069035083348000,
@@ -5965,6 +6005,16 @@
           "resource": "storage-nfs-dc1-01"
         },
         {
+          "timeUnixNano": 1771069632000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "haproxy[11504]: ERROR: Backend queue overflow on lb-haproxy-dc1-01, dropped 40 requests",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-01"
+        },
+        {
           "timeUnixNano": 1771069647320643600,
           "severityNumber": 9,
           "severityText": "INFO",
@@ -7144,6 +7194,16 @@
             "cloud.availability_zone": "DC1-AZ1"
           },
           "resource": "storage-nfs-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771070232000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "haproxy[11505]: ERROR: Backend queue overflow on lb-haproxy-dc1-01, dropped 44 requests",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-01"
         },
         {
           "timeUnixNano": 1771070240624674600,
