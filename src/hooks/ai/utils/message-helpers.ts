@@ -10,6 +10,10 @@ import {
   extractTextFromUIMessage,
   normalizeAIResponse,
 } from '@/lib/ai/utils/message-normalizer';
+import {
+  getToolDescription,
+  getToolLabel,
+} from '@/lib/ai/utils/tool-presentation';
 import type {
   AnalysisBasis,
   EnhancedChatMessage,
@@ -32,6 +36,10 @@ type MessageMetadata = {
   ragSources?: RagSource[];
   toolsCalled?: string[];
   analysisMode?: AnalysisMode;
+  processingTime?: number;
+  latencyTier?: 'fast' | 'normal' | 'slow' | 'very_slow';
+  resolvedMode?: 'single' | 'multi';
+  modeSelectionSource?: string;
   assistantResponseView?: StructuredAssistantResponse;
   handoffHistory?: ResponseHandoff[];
   toolResultSummaries?: ToolResultSummary[];
@@ -95,29 +103,6 @@ const SERVER_ANALYSIS_TOOL_NAMES = new Set([
   'findRootCause',
   'buildIncidentTimeline',
 ]);
-
-const TOOL_LABELS: Record<string, string> = {
-  getServerMetrics: '서버 메트릭 조회',
-  getServerMetricsAdvanced: '서버 메트릭 상세 조회',
-  filterServers: '서버 필터링',
-  getServerByGroup: '서버 그룹 조회',
-  getServerLogs: '시스템 로그 조회',
-  findRootCause: '근본 원인 분석',
-  correlateMetrics: '메트릭 상관 분석',
-  buildIncidentTimeline: '인시던트 타임라인',
-  detectAnomalies: '이상 탐지',
-  detectAnomaliesAllServers: '전체 서버 이상 탐지',
-  predictTrends: '트렌드 예측',
-  analyzePattern: '패턴 분석',
-  searchKnowledgeBase: 'RAG 지식베이스 검색',
-  recommendCommands: 'CLI 명령어 추천',
-  searchWeb: '웹 검색',
-  finalAnswer: '최종 응답',
-};
-
-function getToolLabel(toolName: string): string {
-  return TOOL_LABELS[toolName] ?? toolName;
-}
 
 function getMessageMetadata(message: UIMessage): MessageMetadata | undefined {
   if (
@@ -209,6 +194,7 @@ function createThinkingStepsFromSummaries(
   return summaries.map((summary, index) => ({
     id: `summary-${summary.toolName}-${index}`,
     step: summary.toolName,
+    title: getToolLabel(summary.toolName),
     status: summary.status === 'failed' ? 'failed' : 'completed',
     description: summary.summary,
     timestamp: new Date(),
@@ -223,8 +209,11 @@ function createThinkingStepsFromToolNames(
   return toolNames.map((toolName, index) => ({
     id: `tool-name-${toolName}-${index}`,
     step: toolName,
+    title: getToolLabel(toolName),
     status: 'completed',
-    description: `${getToolLabel(toolName)} 실행을 완료했습니다.`,
+    description:
+      getToolDescription(toolName) ??
+      `${getToolLabel(toolName)} 실행을 완료했습니다.`,
     timestamp: new Date(),
   }));
 }
@@ -546,6 +535,7 @@ export function transformUIMessageToEnhanced(
     return {
       id: toolPart.toolCallId,
       step: toolName,
+      title: getToolLabel(toolName),
       status: hasError
         ? ('failed' as const)
         : isCompleted
@@ -556,7 +546,8 @@ export function transformUIMessageToEnhanced(
         : isCompleted
           ? (toolSummary?.summary ??
             `${getToolLabel(toolName)} 실행을 완료했습니다.`)
-          : `Executing ${toolName}...`,
+          : (getToolDescription(toolName) ??
+            `${getToolLabel(toolName)} 실행 중입니다.`),
       timestamp: new Date(),
     };
   });
@@ -659,6 +650,18 @@ export function transformUIMessageToEnhanced(
         ? {
             ...(analysisBasis && { analysisBasis }),
             ...(traceId && { traceId }),
+            ...(typeof metadata?.processingTime === 'number' && {
+              processingTime: metadata.processingTime,
+            }),
+            ...(metadata?.latencyTier && {
+              latencyTier: metadata.latencyTier,
+            }),
+            ...(metadata?.resolvedMode && {
+              resolvedMode: metadata.resolvedMode,
+            }),
+            ...(metadata?.modeSelectionSource && {
+              modeSelectionSource: metadata.modeSelectionSource,
+            }),
             ...(assistantResponseView && {
               assistantResponseView,
             }),

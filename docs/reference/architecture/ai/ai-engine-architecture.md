@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-04-16
+> Last reviewed: 2026-04-18
 > Canonical: docs/reference/architecture/ai/ai-engine-architecture.md
 > Tags: ai,architecture,multi-agent,cloud-run
 >
@@ -657,14 +657,89 @@ cloud-run/ai-engine/src/
 
 > Latency는 provider 정책, quota, attachment size, routing path에 따라 크게 변동하므로 이 문서에서는 절대 수치 대신 **현재 primary route**만 SSOT로 유지합니다.
 
-### Pending Improvements (P2)
+### Runtime Latency Snapshot (Observed Samples, 2026-04-18)
 
-- Supervisor/Orchestrator 타임아웃 정렬 점검
-- `console.log` → `logger.info` 통일 (orchestrator-routing.ts, reporter-pipeline.ts)
-- RAG cosine threshold 0.3 → 0.5 상향
-- Handoff Ring Buffer Redis 이관
-- 스트리밍 `fullStream` 전환 (tool_call 인터리빙)
-- 3-way fallback 모델 선택 공통 유틸 `resolveModelWithFallback()` 추출
+아래 수치는 **최근 production/Cloud Run QA 실측 표본**을 요약한 것이며, 장기 평균이나 SLO가 아닙니다. 사용자 체감과 운영 판단을 위해 유지하는 참고치입니다.
+
+| Surface / Path | Observed Samples | Sample Average | Interpretation |
+|------|------|------|------|
+| Multi topology probe (`resolvedMode=multi`) | `0.403s`, `0.595s` | `0.499s` | 매우 빠름. KB-direct + finalAnswer 수렴 경로 |
+| General topology / incident probe | `9.17s`, `5.12s`, `7.02s` | `7.10s` | 일반 multi 경로 기준 정상 범위 |
+| Mixed advisory probe | `12.91s`, `3.23s`, `29.26s` | `15.13s` | 편차 큼. Advisor/RAG/fallback 영향이 큼 |
+| Reporter Agent historical QA | `~1s`, `2.9s` | `~1.95s` | 빠름. 즉시 생성형 사용성 양호 |
+| Analyst Agent historical QA | `~18s`, `~25s` | `~21.5s` | 무거운 전체 분석 경로. 허용 가능하나 즉답형은 아님 |
+| Job queue chat E2E | `~8.0s` | `8.0s` | medium/job-queue 질의 기준 정상 범위 |
+| Analyst fan-out endpoint | `~5.2s` | `5.2s` | 전체 분석 endpoint 자체는 빠른 편 |
+| Vision Agent historical sample | `3.7s` | sample `1` | 최신 장기 표본 부족. 참고치로만 사용 |
+
+**Sample sources**
+- [QA-20260415-0284](../../../../reports/qa/runs/2026/qa-run-QA-20260415-0284.json)
+- [QA-20260415-0285](../../../../reports/qa/runs/2026/qa-run-QA-20260415-0285.json)
+- [QA-20260415-0286](../../../../reports/qa/runs/2026/qa-run-QA-20260415-0286.json)
+- [QA-20260309-0069](../../../../reports/qa/runs/2026/qa-run-QA-20260309-0069.json)
+- [QA-20260310-0088](../../../../reports/qa/runs/2026/qa-run-QA-20260310-0088.json)
+- [QA-20260310-0089](../../../../reports/qa/runs/2026/qa-run-QA-20260310-0089.json)
+
+**Current interpretation**
+- `NLQ / Reporter`는 사용성 기준으로 빠른 편이다.
+- `Analyst`는 기능상 무거워 `18~25s` 수준이 정상 범위에 가깝다.
+- 현재 tail latency의 중심 리스크는 `Advisor / Mistral` 계열이다.
+- `multi-agent` 자체가 느린 것이라기보다, 질문 성격과 specialist route에 따라 편차가 커진다.
+
+### Response Process UI: What It Can and Cannot Prove
+
+사용자가 보는 `AI 처리 과정`, `분석 근거`, `응답 과정`, `handoff path`, `traceId`, `도구 결과 요약` UI는 **정성 검증용**으로는 충분히 유용하지만, **정량 성능 검증의 SSOT는 아니다**.
+
+#### UI만으로 확인 가능한 것
+- 어떤 도구/에이전트가 사용되었는지
+- handoff가 있었는지
+- fallback 상태 메시지가 노출되었는지
+- fullscreen handoff 이후에도 동일한 `traceId / tool chain / timeRange`가 유지되는지
+- 개별 응답 기준 `processingTime`, `resolvedMode`, `latencyTier`, `modeSelectionSource`
+- 최근 개선한 가시성 기능이 실제 production UI에 반영되었는지
+
+#### UI만으로 확인하기 어려운 것
+- provider/model별 **실제 평균 응답속도**
+- provider retry / fallback depth와 재시도 횟수
+- request population 기준 `avg / p95 / p99`
+- 첫 청크 기준 `TTFB`의 장기 평균
+- 어느 provider가 **최종 성공 청크**를 반환했는지에 대한 확정 근거
+
+즉, UI는 `무슨 경로를 탔는가`를 보는 데는 강하지만, `얼마나 빨랐는가`를 체계적으로 증명하는 용도로는 불충분하다.
+
+#### 정량 검증에 필요한 근거
+- `ttfbMs` / `processingTimeMs` 메타데이터
+- Langfuse trace
+- Cloud Logging / access log
+- targeted Cloud Run probe 또는 production QA run JSON
+
+현재 코드에서는 single/multi stream 경로 모두 `ttfbMs` 계측을 포함한다.
+- Single: `supervisor-stream.ts`
+- Multi: `orchestrator-agent-stream.ts`
+
+운영 판단 원칙:
+- **사용자 경험 검증**: UI process view + Playwright QA
+- **성능/지연 검증**: trace/log/QA sample data
+- 둘을 함께 봐야 실제 상태를 오판하지 않는다.
+
+### Pending Improvements (Current Evidence-Driven Priorities)
+
+#### P1
+
+- **Latency rollup 부재 해소**: `ttfbMs`, `processingTimeMs`, `X-AI-Latency-Ms`는 이미 기록되지만, 운영자가 agent/provider별 `avg / p95`를 바로 읽는 집계 리포트는 아직 없다. 현재 평균 속도 평가는 QA 표본 수집에 의존한다.
+- **Advisor tail latency 축소**: 최근 표본에서 `3.23s ~ 29.26s`까지 편차가 컸고, historical QA와 정책 코멘트도 Advisor를 구조적으로 느린 경로로 취급한다. `Advisor / Mistral` 경로가 체감 지연의 중심 리스크다.
+
+#### P2
+
+- **Process UI detail 깊이 조정**: 현재 `분석 근거`와 `AI 처리 과정`은 `processingTime`, `resolvedMode`, `latencyTier`, `modeSelectionSource`까지는 노출한다. 다만 provider retry depth, fallback 횟수, handoff depth 같은 운영자 세부 지표는 아직 기본 UI에 직접 노출하지 않는다.
+- **`multi-agent` semantics 명확화**: 현재 `resolvedMode=multi`는 실제 deep multi-hop 협업이라기보다 orchestrator + specialist handoff까지 포함하는 개념이다. UI/문서에서 이 차이를 더 분명히 드러낼 필요가 있다.
+- **Vision 최신 표본 보강**: 현재 문서의 Vision 응답 속도는 sample `1`건 수준이라 장기 판단 근거로는 약하다.
+- **Supervisor/Orchestrator 타임아웃 정렬 점검**
+- **`console.log` → `logger.info` 통일** (`orchestrator-routing.ts`, `reporter-pipeline.ts`)
+- **RAG cosine threshold 0.3 → 0.5 상향**
+- **Handoff Ring Buffer Redis 이관**
+- **스트리밍 `fullStream` 전환** (tool_call 인터리빙)
+- **3-way fallback 모델 선택 공통 유틸 `resolveModelWithFallback()` 추출**
 
 ---
 

@@ -84,7 +84,7 @@ describe('AnalysisBasisBadge', () => {
 
     expect(
       screen.getByText(
-        '도구: 서버 필터링 · 서버 메트릭 조회 · 기간: 최근 1시간'
+        '도구: 대상 서버 추리기 · 서버 메트릭 조회 · 기간: 최근 1시간'
       )
     ).toBeInTheDocument();
     expect(screen.queryByText('응답 과정')).not.toBeInTheDocument();
@@ -150,6 +150,33 @@ describe('AnalysisBasisBadge', () => {
 
     expect(screen.getByText('분석 강도')).toBeInTheDocument();
     expect(screen.getByText('Thinking')).toBeInTheDocument();
+  });
+
+  it('shows runtime routing metadata in expanded details when provided', () => {
+    render(
+      <AnalysisBasisBadge
+        basis={{
+          ...basis,
+          dataSource: '서버 실시간 데이터 분석',
+        }}
+        processingTime={1987}
+        resolvedMode="multi"
+        modeSelectionSource="auto_complexity"
+        latencyTier="slow"
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: '분석 근거 상세 보기' })
+    );
+
+    expect(screen.getByText('실행 특성')).toBeInTheDocument();
+    expect(screen.getByText('1987ms')).toBeInTheDocument();
+    expect(screen.getByText('Multi 경로')).toBeInTheDocument();
+    expect(screen.getByText('지연 느림')).toBeInTheDocument();
+    expect(
+      screen.getByText('라우팅 근거: 복잡도 자동 판단')
+    ).toBeInTheDocument();
   });
 
   it('renders supplemental parity details when provided', () => {
@@ -226,10 +253,12 @@ describe('AnalysisBasisBadge', () => {
     expect(screen.getByText('도구 결과 요약')).toBeInTheDocument();
     expect(screen.getByText('2개 결과를 반환했습니다.')).toBeInTheDocument();
     expect(screen.getByText('단계별 처리 내역')).toBeInTheDocument();
-    expect(screen.getAllByText('RAG 지식베이스 검색').length).toBeGreaterThan(
+    expect(screen.getAllByText('내부 지식 검색').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('서버 메트릭 조회').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('searchKnowledgeBase').length).toBeGreaterThan(
       0
     );
-    expect(screen.getAllByText('서버 메트릭 조회').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('getServerMetrics').length).toBeGreaterThan(0);
   });
 
   it('marks fallback recovery and shows structured failure reason codes', () => {

@@ -9,6 +9,10 @@ import type { StreamRagSource } from '../types/stream-rag.types';
 import {
   buildStructuredResponseView,
   extractAnalysisModeFromDoneData,
+  extractLatencyTierFromDoneData,
+  extractModeSelectionSourceFromDoneData,
+  extractProcessingTimeFromDoneData,
+  extractResolvedModeFromDoneData,
   normalizeRagSources,
   type ResponseSourceData,
 } from './response-view-helpers';
@@ -241,11 +245,20 @@ export function handleStreamDataPart(
     const traceId = extractTraceIdFromDoneData(doneData);
     const toolsCalled = normalizeToolNames(doneData?.toolsCalled);
     const analysisMode = extractAnalysisModeFromDoneData(doneData);
+    const processingTime = extractProcessingTimeFromDoneData(doneData);
+    const latencyTier = extractLatencyTierFromDoneData(doneData);
+    const resolvedMode = extractResolvedModeFromDoneData(doneData);
+    const modeSelectionSource =
+      extractModeSelectionSourceFromDoneData(doneData);
     const normalizedHandoffHistory = normalizeHandoffHistory(
       pendingMessageMetadata.handoffHistory
     );
     const nextMessageMetadata = {
       ...(traceId && { traceId }),
+      ...(typeof processingTime === 'number' && { processingTime }),
+      ...(latencyTier && { latencyTier }),
+      ...(resolvedMode && { resolvedMode }),
+      ...(modeSelectionSource && { modeSelectionSource }),
       ...(toolsCalled.length > 0 && { toolsCalled }),
       ...(analysisMode && { analysisMode }),
       ...(normalizedHandoffHistory && {

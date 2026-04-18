@@ -141,12 +141,28 @@ export function buildAssistantMessageFromAsyncResult(
   const metadata =
     result.ragSources ||
     result.traceId ||
+    typeof result.processingTimeMs === 'number' ||
+    Boolean(result.latencyTier) ||
+    Boolean(result.resolvedMode) ||
+    Boolean(result.modeSelectionSource) ||
     (result.toolsCalled && result.toolsCalled.length > 0) ||
     hasExplicitHandoffHistory ||
     (result.toolResultSummaries && result.toolResultSummaries.length > 0)
       ? {
           ...(result.ragSources && { ragSources: result.ragSources }),
           ...(result.traceId && { traceId: result.traceId }),
+          ...(typeof result.processingTimeMs === 'number' && {
+            processingTime: result.processingTimeMs,
+          }),
+          ...(result.latencyTier && {
+            latencyTier: result.latencyTier,
+          }),
+          ...(result.resolvedMode && {
+            resolvedMode: result.resolvedMode,
+          }),
+          ...(result.modeSelectionSource && {
+            modeSelectionSource: result.modeSelectionSource,
+          }),
           ...(result.toolsCalled &&
             result.toolsCalled.length > 0 && {
               toolsCalled: result.toolsCalled,

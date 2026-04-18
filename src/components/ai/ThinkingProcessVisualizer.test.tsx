@@ -91,6 +91,33 @@ describe('🧠 ThinkingProcessVisualizer Component', () => {
       expect(screen.getByText('라우팅 결정')).toBeDefined();
       expect(screen.getByText('사용자 질문 의도 파악 완료')).toBeDefined();
     });
+
+    it('raw tool name 대신 쉬운 단계명과 기술명을 함께 표시한다', () => {
+      render(
+        <ThinkingProcessVisualizer
+          steps={[
+            {
+              id: 'step-tool-1',
+              step: 'detectAnomalies',
+              status: 'completed',
+            },
+          ]}
+        />
+      );
+
+      act(() => {
+        vi.runAllTimers();
+      });
+      expandPanel();
+
+      expect(screen.getByText('이상 징후 확인')).toBeDefined();
+      expect(screen.getByText('detectAnomalies')).toBeDefined();
+      expect(
+        screen.getByText(
+          '서버 상태가 평소 범위나 임계값에서 벗어났는지 확인합니다.'
+        )
+      ).toBeDefined();
+    });
   });
 
   describe('Status Styling', () => {

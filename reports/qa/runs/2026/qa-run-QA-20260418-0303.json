@@ -1,0 +1,194 @@
+{
+  "runId": "QA-20260418-0303",
+  "recordedAt": "2026-04-18T08:01:44.685Z",
+  "recordedAtKst": "2026-04-18 17:01:44 KST",
+  "runTitle": "Production broad QA - 8.11.20 AI hardening verification",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_8Th4eohuqf6tGKxqt1G4Vro6WRcr",
+    "deploymentUrl": "https://openmanager-9jy19sxz6-skyasus-projects.vercel.app",
+    "commitSha": "d83e0a6a859cc31ef9be8a3aa9e187ecf0b6a977"
+  },
+  "scope": "broad",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "modal-detail-pack",
+    "ai-advanced-surface"
+  ],
+  "coveredSurfaces": [
+    "landing render and version badge on production v8.11.20",
+    "/main redirects to / on production v8.11.20",
+    "/login render with Google/GitHub/email/guest entry",
+    "/privacy render with back-link to login",
+    "404 route returns expected 404 page on production",
+    "system start flow transitions to /dashboard",
+    "dashboard summary render with live totals and resource cards",
+    "active alerts modal render with critical/warning counts",
+    "active alert AI action opens sidebar with prefilled prompt",
+    "AI sidebar response completes for cache-redis-dc1-01 memory alert",
+    "AI sidebar surfaces routing-timeout fallback notice before successful Analyst recovery",
+    "AI sidebar analysis basis detail shows tools summary and recent 1 hour window",
+    "/dashboard/ai-assistant fullscreen workspace restores the carried conversation",
+    "fullscreen AI workspace exposes AI process with detectAnomalies/correlateMetrics/findRootCause steps",
+    "server detail modal supports 3-tab switch",
+    "server detail modal closes on ESC",
+    "Analyst 전체 분석 flow completes and renders issue/trend breakdown",
+    "/api/health 200 on production with database/cache/ai connected",
+    "/api/version 200 on production with version 8.11.20 / nextjs 16.1.6 / environment production",
+    "console 0 error / 0 warning across landing, dashboard, sidebar, fullscreen AI routes during normal flow",
+    "mobile dashboard at 390px has no horizontal overflow and keeps cards readable",
+    "mobile AI assistant at 390px has no horizontal overflow and keeps chat composer accessible"
+  ],
+  "skippedSurfaces": [
+    "/auth/error fallback route",
+    "/auth/success legacy callback route",
+    "topology modal detailed interaction",
+    "log explorer modal",
+    "Reporter generate/detail flow",
+    "feedback submission flow",
+    "security blocked-prompt regression pack",
+    "Cloud Run admin observability endpoints"
+  ],
+  "checks": {
+    "total": 22,
+    "passed": 22,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Core routes, dashboard, modal interactions, AI sidebar/fullscreen, analyst flow, and mobile responsive spot checks were validated in one production browser session.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The production AI path answered the active alert prompt, exposed fallback status to the user, and preserved the conversation plus process steps after fullscreen handoff.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The alert-driven workflow, analysis basis summary, and analyst issue drilldown all rendered without console noise on normal routes, confirming the release remains observable and operator-friendly.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production Vercel deployment dpl_8Th4eohuqf6tGKxqt1G4Vro6WRcr and Cloud Run ai-engine 8.11.20 both reported healthy while usage stayed within the expected budget envelope.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-18T16:58:44+09:00",
+      "summary": "Current billing period reviewed after production QA; effective usage 11.0956 USD, billed 0.0000 USD. No unexpected usage spike was observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Production dashboard landing surface on v8.11.20",
+      "path": "reports/qa/evidence/qa-20260418-dashboard-landing.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Production AI sidebar analysis on v8.11.20",
+      "path": "reports/qa/evidence/qa-20260418-ai-sidebar-analysis.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Production mobile dashboard on v8.11.20",
+      "path": "reports/qa/evidence/qa-20260418-mobile-dashboard.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Production mobile AI assistant on v8.11.20",
+      "path": "reports/qa/evidence/qa-20260418-mobile-ai-assistant.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Production dashboard console log on v8.11.20",
+      "path": "reports/qa/evidence/qa-20260418-dashboard-console.txt"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Production session console log on v8.11.20",
+      "path": "reports/qa/evidence/qa-20260418-session-console.txt"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-hardening-production-verification",
+      "title": "Verify production AI hardening release on v8.11.20",
+      "priority": "P0",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production broad QA confirmed healthy frontend/backend pair on v8.11.20, alert-driven AI response success, and visible routing-timeout fallback recovery in the shipped assistant UI.",
+      "note": "The observed fallback notice is expected recovery behavior, not a user-facing failure.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "mobile-header-density",
+      "title": "Review dashboard mobile header density around AI CTA and profile cluster",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "Current mobile header is functional and overflow-free, so visual retuning is optional rather than a release gate.",
+      "evidence": "390px dashboard screenshot shows no layout break, but the glowing AI CTA visually dominates the compact top bar.",
+      "note": "Consider reducing glow weight or spacing the CTA/profile controls on a later UI polish pass.",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    }
+  ],
+  "notes": [
+    "Normal production routes stayed console-clean; the only console error observed during the session came from the intentionally invalid 404 route and is not treated as a product regression.",
+    "The active-alert AI workflow exposed '라우팅 타임아웃, Analyst Agent로 전환...' before returning a grounded answer, which confirms the recent fallback-status visibility improvement is reflected in production.",
+    "Responsive spot checks at 390px confirmed no horizontal overflow on dashboard or AI assistant, and the mobile AI composer remained reachable without layout collapse."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Deployment dpl_8Th4eohuqf6tGKxqt1G4Vro6WRcr",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/8Th4eohuqf6tGKxqt1G4Vro6WRcr"
+    }
+  ]
+}

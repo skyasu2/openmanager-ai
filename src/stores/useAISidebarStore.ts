@@ -79,6 +79,9 @@ export interface ChatMessage {
   engine?: string;
   metadata?: {
     processingTime?: number;
+    latencyTier?: 'fast' | 'normal' | 'slow' | 'very_slow';
+    resolvedMode?: 'single' | 'multi';
+    modeSelectionSource?: string;
     confidence?: number;
     error?: string;
     /** Langfuse trace ID for feedback scoring */

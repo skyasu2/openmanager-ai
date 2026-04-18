@@ -22,6 +22,10 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| AI latency rollup 리포트 (`avg/p95` by agent/provider) | High | `ttfbMs`, `processingTimeMs`, `X-AI-Latency-Ms` 계측은 존재하지만 운영자가 최근 24h 기준 평균/95p를 바로 읽는 집계 레이어가 없음. 현재 속도 평가는 QA 표본 수집에 의존. |
+| Advisor tail latency 축소 | High | 최신 표본에서 `3.23s~29.26s`, historical QA에서는 `35~86s` class comment까지 남아 있음. Advisor/Mistral 경로가 현재 체감 지연의 중심 리스크. |
+| `multi-agent` semantics UI/문서 정렬 | Medium | 현재 `resolvedMode=multi`는 deep multi-hop만 의미하지 않고 orchestrator + specialist handoff도 포함한다. 사용자 기대와 운영 해석을 더 명확히 맞출 필요가 있음. |
+| Vision 최신 production latency 표본 보강 | Low | 현재 문서 기준 Vision 응답 속도는 sample `1` 수준이라 장기 판단 근거로는 약함. targeted QA 1회 이상 추가 필요. |
 | Multi-agent `finalAnswer` loop cap (`stepCountIs(10)`) 단순화 검토 | Medium | **tracking-only** — 현재는 tool-result 요약 fallback 안정성을 위해 유지. 품질/토큰 비용 지표를 1주 누적한 뒤 `8` 또는 `6`으로 축소 가능한지 재평가. |
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
 | ~~AI Response Visibility & Rate Limit (Phase 1~5)~~ | — | **완료** — write bucket 재평가 결과 `supervisor 10/min`, `jobs/process 5/min`, `daily 100` 유지 결정. 계획서는 구현/결정 로그로 유지. |

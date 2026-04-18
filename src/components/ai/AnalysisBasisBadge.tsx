@@ -12,6 +12,13 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { type FC, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  getThinkingStepPresentation,
+  getToolDescription,
+  getToolLabel,
+  getToolPresentation,
+  hasToolPresentation,
+} from '@/lib/ai/utils/tool-presentation';
 import type {
   AnalysisBasis,
   ResponseHandoff,
@@ -28,25 +35,6 @@ function extractDomain(url: string): string {
     return url;
   }
 }
-
-const TOOL_LABELS: Record<string, string> = {
-  getServerMetrics: '서버 메트릭 조회',
-  getServerMetricsAdvanced: '서버 메트릭 상세 조회',
-  filterServers: '서버 필터링',
-  getServerByGroup: '서버 그룹 조회',
-  getServerLogs: '시스템 로그 조회',
-  findRootCause: '근본 원인 분석',
-  correlateMetrics: '메트릭 상관 분석',
-  buildIncidentTimeline: '인시던트 타임라인',
-  detectAnomalies: '이상 탐지',
-  detectAnomaliesAllServers: '전체 서버 이상 탐지',
-  predictTrends: '트렌드 예측',
-  analyzePattern: '패턴 분석',
-  searchKnowledgeBase: 'RAG 지식베이스 검색',
-  recommendCommands: 'CLI 명령어 추천',
-  searchWeb: '웹 검색',
-  finalAnswer: '최종 응답',
-};
 
 // 내부 에이전트 기술명 → 사용자 친화적 역할명 (구현 세부사항 비공개)
 const AGENT_ROLE_LABELS: Record<string, string> = {
@@ -66,10 +54,6 @@ const AGENT_ROLE_LABELS: Record<string, string> = {
 
 function getAgentRoleLabel(name: string): string {
   return AGENT_ROLE_LABELS[name] ?? name;
-}
-
-function getToolLabel(toolName: string): string {
-  return TOOL_LABELS[toolName] ?? toolName;
 }
 
 function buildExecutionPath(handoffHistory?: ResponseHandoff[]): string[] {
@@ -93,6 +77,29 @@ const STEP_STATUS_LABELS: Record<string, string> = {
   processing: '처리 중',
   completed: '완료',
   failed: '실패',
+};
+
+const LATENCY_TIER_LABELS: Record<
+  'fast' | 'normal' | 'slow' | 'very_slow',
+  string
+> = {
+  fast: '빠름',
+  normal: '보통',
+  slow: '느림',
+  very_slow: '매우 느림',
+};
+
+const RESOLVED_MODE_LABELS: Record<'single' | 'multi', string> = {
+  single: 'Single',
+  multi: 'Multi',
+};
+
+const MODE_SELECTION_SOURCE_LABELS: Record<string, string> = {
+  explicit: '사용자 지정',
+  auto_complexity: '복잡도 자동 판단',
+  analysis_mode_thinking: 'Thinking 모드',
+  auto_default: '기본 자동 규칙',
+  single_disallowed_upgrade: '단일 금지 업그레이드',
 };
 
 interface ProcessRouteInfo {
@@ -238,7 +245,7 @@ function inferProcessRoute(params: {
     toolNames.some((tool) => tool.endsWith('AllServers')) &&
     toolNames.some(
       (tool) =>
-        !tool.endsWith('AllServers') && `${tool}AllServers` in TOOL_LABELS
+        !tool.endsWith('AllServers') && hasToolPresentation(`${tool}AllServers`)
     );
   const hasFallbackKeyword =
     engine.toLowerCase().includes('fallback') ||
@@ -362,6 +369,10 @@ interface AnalysisBasisBadgeProps {
   details?: string | null;
   thinkingSteps?: AIThinkingStep[];
   traceId?: string;
+  processingTime?: number;
+  latencyTier?: 'fast' | 'normal' | 'slow' | 'very_slow';
+  resolvedMode?: 'single' | 'multi';
+  modeSelectionSource?: string;
   handoffHistory?: ResponseHandoff[];
   toolResultSummaries?: ToolResultSummary[];
   className?: string;
@@ -381,6 +392,10 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
   details,
   thinkingSteps,
   traceId,
+  processingTime,
+  latencyTier,
+  resolvedMode,
+  modeSelectionSource,
   handoffHistory,
   toolResultSummaries,
   className = '',
@@ -475,7 +490,7 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
                   }
                 : {
                     toolName: tool.toolName,
-                    label: tool.label,
+                    label: getToolLabel(tool.toolName),
                     status: tool.status,
                     summary: tool.summary,
                   }
@@ -536,6 +551,14 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
   ].filter(Boolean);
   const collapsedSummary = collapsedSummaryParts.slice(0, 3).join(' · ');
   const collapsedTitle = collapsedSummaryParts.join(' · ');
+  const runtimeSummaryItems = [
+    typeof processingTime === 'number' ? `${processingTime}ms` : null,
+    resolvedMode ? `${RESOLVED_MODE_LABELS[resolvedMode]} 경로` : null,
+    latencyTier ? `지연 ${LATENCY_TIER_LABELS[latencyTier]}` : null,
+  ].filter(Boolean);
+  const modeSelectionLabel = modeSelectionSource
+    ? (MODE_SELECTION_SOURCE_LABELS[modeSelectionSource] ?? modeSelectionSource)
+    : null;
 
   return (
     <div
@@ -714,17 +737,50 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
                         key={`${toolResult.toolName}-${index}`}
                         className="rounded border border-slate-200 bg-slate-50 p-2"
                       >
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-xs font-medium text-slate-700">
-                            {toolResult.label}
-                          </span>
-                          <span className="rounded bg-white px-1.5 py-0.5 text-2xs text-slate-500">
-                            {toolResult.status === 'failed' ? '실패' : '완료'}
-                          </span>
-                        </div>
-                        <p className="mt-1 text-xs leading-relaxed text-slate-600">
-                          {toolResult.summary}
-                        </p>
+                        {(() => {
+                          const toolPresentation = getToolPresentation(
+                            toolResult.toolName
+                          );
+
+                          return (
+                            <>
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="min-w-0">
+                                  <div className="flex flex-wrap items-center gap-1.5">
+                                    <span
+                                      className="text-xs font-medium text-slate-700"
+                                      title={
+                                        toolPresentation.description ??
+                                        undefined
+                                      }
+                                    >
+                                      {toolPresentation.label}
+                                    </span>
+                                    {toolPresentation.technicalName && (
+                                      <span
+                                        className="rounded bg-white px-1.5 py-0.5 text-2xs text-slate-500"
+                                        title={
+                                          toolPresentation.description ??
+                                          `${toolPresentation.technicalName} 내부 도구명`
+                                        }
+                                      >
+                                        {toolPresentation.technicalName}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                                <span className="rounded bg-white px-1.5 py-0.5 text-2xs text-slate-500">
+                                  {toolResult.status === 'failed'
+                                    ? '실패'
+                                    : '완료'}
+                                </span>
+                              </div>
+                              <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                                {toolResult.summary}
+                              </p>
+                            </>
+                          );
+                        })()}
                         {toolResult.status === 'failed' && (
                           <div className="mt-2 flex flex-wrap items-center gap-1.5">
                             <span className="rounded bg-rose-100 px-1.5 py-0.5 text-2xs font-medium text-rose-700">
@@ -762,30 +818,60 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
                         key={step.id || `${step.step || 'step'}-${index}`}
                         className="rounded border border-slate-200 bg-slate-50 p-2"
                       >
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-xs font-medium text-slate-700">
-                            {getToolLabel(step.step ?? '') !== (step.step ?? '')
-                              ? getToolLabel(step.step ?? '')
-                              : step.title || `단계 ${index + 1}`}
-                          </span>
-                          <div className="flex items-center gap-1.5 text-2xs text-slate-500">
-                            {step.status && (
-                              <span className="rounded bg-white px-1.5 py-0.5">
-                                {STEP_STATUS_LABELS[step.status] ?? step.status}
-                              </span>
-                            )}
-                            {typeof step.duration === 'number' && (
-                              <span className="rounded bg-white px-1.5 py-0.5">
-                                {step.duration}ms
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        {step.description && (
-                          <p className="mt-1 text-xs leading-relaxed text-slate-600">
-                            {step.description}
-                          </p>
-                        )}
+                        {(() => {
+                          const stepPresentation =
+                            getThinkingStepPresentation(step);
+
+                          return (
+                            <>
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="min-w-0">
+                                  <div className="flex flex-wrap items-center gap-1.5">
+                                    <span
+                                      className="text-xs font-medium text-slate-700"
+                                      title={
+                                        stepPresentation.description ??
+                                        undefined
+                                      }
+                                    >
+                                      {stepPresentation.title ||
+                                        `단계 ${index + 1}`}
+                                    </span>
+                                    {stepPresentation.technicalName && (
+                                      <span
+                                        className="rounded bg-white px-1.5 py-0.5 text-2xs text-slate-500"
+                                        title={
+                                          stepPresentation.description ??
+                                          `${stepPresentation.technicalName} 내부 도구명`
+                                        }
+                                      >
+                                        {stepPresentation.technicalName}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-1.5 text-2xs text-slate-500">
+                                  {step.status && (
+                                    <span className="rounded bg-white px-1.5 py-0.5">
+                                      {STEP_STATUS_LABELS[step.status] ??
+                                        step.status}
+                                    </span>
+                                  )}
+                                  {typeof step.duration === 'number' && (
+                                    <span className="rounded bg-white px-1.5 py-0.5">
+                                      {step.duration}ms
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              {stepPresentation.description && (
+                                <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                                  {stepPresentation.description}
+                                </p>
+                              )}
+                            </>
+                          );
+                        })()}
                       </div>
                     ))}
                   </div>
@@ -802,6 +888,29 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
               <p className="text-xs text-slate-700">
                 {ANALYSIS_MODE_LABELS[basis.analysisMode]}
               </p>
+            </div>
+          )}
+
+          {runtimeSummaryItems.length > 0 && (
+            <div className="rounded-md border border-slate-200 bg-white p-3">
+              <p className="mb-1 text-2xs font-medium uppercase tracking-wide text-slate-500">
+                실행 특성
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {runtimeSummaryItems.map((item) => (
+                  <span
+                    key={item}
+                    className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-700"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+              {modeSelectionLabel && (
+                <p className="mt-2 text-xs text-slate-600">
+                  라우팅 근거: {modeSelectionLabel}
+                </p>
+              )}
             </div>
           )}
 
@@ -834,6 +943,7 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
                   <span
                     key={tool}
                     className="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 text-xs"
+                    title={getToolDescription(tool) ?? undefined}
                   >
                     {getToolLabel(tool)}
                   </span>

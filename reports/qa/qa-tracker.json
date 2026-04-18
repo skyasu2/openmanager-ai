@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-17T05:39:27.161Z"
+    "updatedAt": "2026-04-18T08:01:44.685Z"
   },
   "sequence": {
-    "nextRunNumber": 303
+    "nextRunNumber": 304
   },
   "summary": {
-    "totalRecordedRuns": 300,
-    "totalRuns": 256,
+    "totalRecordedRuns": 301,
+    "totalRuns": 257,
     "excludedRuns": 44,
-    "totalChecks": 2012,
-    "totalPassed": 1935,
+    "totalChecks": 2034,
+    "totalPassed": 1957,
     "totalFailed": 71,
     "completionRate": 100,
-    "completedItems": 296,
+    "completedItems": 297,
     "pendingItems": 0,
     "deferredItems": 0,
-    "wontFixItems": 13,
+    "wontFixItems": 14,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260417-0302",
-    "lastRecordedAt": "2026-04-17T05:39:27.161Z",
-    "latestRecordedRunId": "QA-20260417-0302",
-    "latestRecordedAt": "2026-04-17T05:39:27.161Z"
+    "lastRunId": "QA-20260418-0303",
+    "lastRecordedAt": "2026-04-18T08:01:44.685Z",
+    "latestRecordedRunId": "QA-20260418-0303",
+    "latestRecordedAt": "2026-04-18T08:01:44.685Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -4844,7 +4844,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["esc-모달-닫기"],
+      "aliases": [
+        "esc-모달-닫기"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: ESC 키로 모달 닫기 동작 확인",
       "lastNote": "",
@@ -4868,7 +4870,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["ai-chat-sidebar-open"],
+      "aliases": [
+        "ai-chat-sidebar-open"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: AI 어시스턴트 사이드바 열기/닫기 동작 확인",
       "lastNote": "",
@@ -4892,7 +4896,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["프로덕션-대시보드-렌더링"],
+      "aliases": [
+        "프로덕션-대시보드-렌더링"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: 대시보드 전체 정상 렌더링 확인",
       "lastNote": "",
@@ -4916,7 +4922,9 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0,
-      "aliases": ["서버-모달-3탭-전환"],
+      "aliases": [
+        "서버-모달-3탭-전환"
+      ],
       "owner": "",
       "lastEvidence": "Playwright MCP: 종합상황/성능분석/로그&네트워크 3탭 전환 동작 확인",
       "lastNote": "",
@@ -7131,6 +7139,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-17T05:39:27.161Z"
+    },
+    "ai-hardening-production-verification": {
+      "id": "ai-hardening-production-verification",
+      "title": "Verify production AI hardening release on v8.11.20",
+      "priority": "P0",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260418-0303",
+      "firstSeenAt": "2026-04-18T08:01:44.685Z",
+      "lastSeenRunId": "QA-20260418-0303",
+      "lastSeenAt": "2026-04-18T08:01:44.685Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production broad QA confirmed healthy frontend/backend pair on v8.11.20, alert-driven AI response success, and visible routing-timeout fallback recovery in the shipped assistant UI.",
+      "lastNote": "The observed fallback notice is expected recovery behavior, not a user-facing failure.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-18T08:01:44.685Z"
+    },
+    "mobile-header-density": {
+      "id": "mobile-header-density",
+      "title": "Review dashboard mobile header density around AI CTA and profile cluster",
+      "priority": "P2",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260418-0303",
+      "firstSeenAt": "2026-04-18T08:01:44.685Z",
+      "lastSeenRunId": "QA-20260418-0303",
+      "lastSeenAt": "2026-04-18T08:01:44.685Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "390px dashboard screenshot shows no layout break, but the glowing AI CTA visually dominates the compact top bar.",
+      "lastNote": "Consider reducing glow weight or spacing the CTA/profile controls on a later UI polish pass.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "Current mobile header is functional and overflow-free, so visual retuning is optional rather than a release gate.",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-04-18T08:01:44.685Z"
     }
   },
   "runs": [
@@ -13333,7 +13389,11 @@
         "deploymentUrl": "https://openmanager-5pkwdjybf-skyasus-projects.vercel.app",
         "commitSha": "cf0b1119a677a7e0cd5583dd3bdf1d3e5aa0e165"
       },
-      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"]
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ]
     },
     {
       "runId": "QA-20260321-0144",
@@ -13425,7 +13485,10 @@
         "deploymentUrl": "https://openmanager-q1hof1gwy-skyasus-projects.vercel.app",
         "commitSha": "818871b86bb4c0851c072a96b7c14632fb53cba1"
       },
-      "coveragePacks": ["ai-core", "ai-advanced-surface"]
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ]
     },
     {
       "runId": "QA-20260321-0145",
@@ -13492,7 +13555,9 @@
         "deploymentUrl": "https://openmanager-d0fn15lwl-skyasus-projects.vercel.app",
         "commitSha": "386aa7acd3ea86e8c1cc4ccba7555f99277e8d24"
       },
-      "coveragePacks": ["modal-detail-pack"]
+      "coveragePacks": [
+        "modal-detail-pack"
+      ]
     },
     {
       "runId": "QA-20260321-0146",
@@ -13514,7 +13579,10 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["dashboard-core", "modal-detail-pack"],
+      "coveragePacks": [
+        "dashboard-core",
+        "modal-detail-pack"
+      ],
       "coveredSurfaces": [
         "/login",
         "guest PIN login",
@@ -13596,7 +13664,10 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["ai-core", "ai-advanced-surface"],
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ],
       "coveredSurfaces": [
         "/login",
         "guest PIN login",
@@ -13676,7 +13747,10 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["ai-core", "ai-advanced-surface"],
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ],
       "coveredSurfaces": [
         "/login",
         "guest PIN login",
@@ -13756,7 +13830,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["ai-core"],
+      "coveragePacks": [
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/login",
         "guest PIN login",
@@ -13836,7 +13912,11 @@
       "scope": "targeted",
       "releaseFacing": false,
       "coveragePacks": [],
-      "coveredSurfaces": ["qa-scripts", "e2e-manual-workflow", "biome-lint"],
+      "coveredSurfaces": [
+        "qa-scripts",
+        "e2e-manual-workflow",
+        "biome-lint"
+      ],
       "skippedSurfaces": [],
       "checks": {
         "total": 3,
@@ -13893,7 +13973,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["observability-pack"],
+      "coveragePacks": [
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "dashboard server-status summary",
         "system resource panel (CPU/Memory/Disk)",
@@ -13956,7 +14038,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["observability-pack"],
+      "coveragePacks": [
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "Cloud Run /monitoring (authenticated direct run.app)",
         "Cloud Run /monitoring auth gate (403 without X-API-Key)",
@@ -14037,7 +14121,10 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["ai-core", "observability-pack"],
+      "coveragePacks": [
+        "ai-core",
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "guest PIN login",
         "system-boot -> /dashboard redirect",
@@ -14137,7 +14224,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["observability-pack"],
+      "coveragePacks": [
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "Cloud Run ai-engine revision rollout (ai-engine-00260-qn8, 100% traffic)",
         "Cloud Run /health after deploy",
@@ -14210,7 +14299,10 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["ai-core", "observability-pack"],
+      "coveragePacks": [
+        "ai-core",
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "guest PIN login",
         "system-boot -> /dashboard redirect",
@@ -14314,7 +14406,10 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["ai-core", "observability-pack"],
+      "coveragePacks": [
+        "ai-core",
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "guest PIN login",
         "system-boot -> /dashboard redirect",
@@ -14424,7 +14519,10 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/dashboard",
         "high-cpu dashboard card shows Warning instead of Stable",
@@ -14496,7 +14594,10 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["ai-core", "observability-pack"],
+      "coveragePacks": [
+        "ai-core",
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "guest PIN login",
         "system-boot -> /dashboard redirect",
@@ -14597,7 +14698,10 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["ai-core", "observability-pack"],
+      "coveragePacks": [
+        "ai-core",
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "guest PIN login",
         "system-boot -> /dashboard redirect",
@@ -14703,7 +14807,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["ai-core"],
+      "coveragePacks": [
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "feedback-trace-status contract (traceUrlStatus)",
         "Manual Feedback Trace Status CI job"
@@ -14764,7 +14870,10 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "dashboard dataSourceInfo label (Dataset v1.0.0 · catalog 2026-02-15 03:56Z)",
         "dashboard dataSlotInfo label (Synthetic OTel snapshot · 23:50 KST slot 143/143)",
@@ -14821,7 +14930,11 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["dashboard-core", "ai-core", "observability-pack"],
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core",
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "dashboard raw metric (db-mysql-dc1-primary DISK 80% Warning)",
         "dashboard dataSlotInfo label (Synthetic OTel snapshot · 00:30 KST slot 3/143)",
@@ -14892,7 +15005,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["dashboard-core"],
+      "coveragePacks": [
+        "dashboard-core"
+      ],
       "coveredSurfaces": [
         "server card metric label: CPU / MEM / Disk (no overlap)",
         "db-mysql-dc1-primary: CPU56% MEM69% Disk83%",
@@ -14943,7 +15058,11 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["dashboard-core", "ai-core", "observability-pack"],
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core",
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "dashboard raw metric (db-mysql-dc1-primary DISK 83% Warning)",
         "dashboard dataSlotInfo label (Synthetic OTel snapshot · 01:50 KST slot 11/143)",
@@ -14998,7 +15117,10 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/dashboard",
         "warning/critical server card AI badges",
@@ -15068,7 +15190,11 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["dashboard-core", "ai-core", "modal-detail-pack"],
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core",
+        "modal-detail-pack"
+      ],
       "coveredSurfaces": [
         "/dashboard",
         "active alerts modal",
@@ -15138,7 +15264,11 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["dashboard-core", "ai-core", "modal-detail-pack"],
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core",
+        "modal-detail-pack"
+      ],
       "coveredSurfaces": [
         "/dashboard",
         "alert history modal",
@@ -15208,7 +15338,10 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["core-routes-smoke", "modal-detail-pack"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "modal-detail-pack"
+      ],
       "coveredSurfaces": [
         "/validation",
         "validation evidence badges",
@@ -15284,7 +15417,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["modal-detail-pack"],
+      "coveragePacks": [
+        "modal-detail-pack"
+      ],
       "coveredSurfaces": [
         "alert history resolved promptOverride contract",
         "dashboard alert ai context helper"
@@ -15329,7 +15464,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["core-routes-smoke"],
+      "coveragePacks": [
+        "core-routes-smoke"
+      ],
       "coveredSurfaces": [
         "/validation",
         "validation evidence badges",
@@ -15405,7 +15542,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["core-routes-smoke"],
+      "coveragePacks": [
+        "core-routes-smoke"
+      ],
       "coveredSurfaces": [
         "/validation",
         "validation hero copy simplification",
@@ -15481,7 +15620,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["core-routes-smoke"],
+      "coveragePacks": [
+        "core-routes-smoke"
+      ],
       "coveredSurfaces": [
         "validation stale banner visible path (mocked aged snapshot)",
         "ValidationEvidencePage stale warning text",
@@ -15527,7 +15668,10 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/dashboard",
         "dashboard slot label global 0-143 scale",
@@ -15600,7 +15744,10 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/dashboard",
         "/api/health?service=parity",
@@ -15673,7 +15820,10 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/dashboard",
         "production deploy readiness for deferred parity metadata fix",
@@ -15747,7 +15897,10 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/dashboard",
         "production deploy readiness for analysis detail patch",
@@ -15821,7 +15974,10 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/dashboard",
         "production deploy readiness for false realtime-analysis fix",
@@ -15895,7 +16051,10 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/dashboard",
         "production deploy readiness for dashboard snapshot label pin",
@@ -15970,7 +16129,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["ai-core"],
+      "coveragePacks": [
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "PR #200 preview deployment readiness",
         "preview deployment access policy redirect to Vercel login"
@@ -16049,7 +16210,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["ai-core"],
+      "coveragePacks": [
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "PR #200 preview /dashboard access",
         "AI sidebar 신규 질의",
@@ -16127,7 +16290,10 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["ai-core", "dashboard-core"],
+      "coveragePacks": [
+        "ai-core",
+        "dashboard-core"
+      ],
       "coveredSurfaces": [
         "main production /dashboard access",
         "AI sidebar 신규 질의",
@@ -16204,7 +16370,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["ai-core"],
+      "coveragePacks": [
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "AI sidebar 신규 질의",
         "deferred metadata 배지 보존",
@@ -16246,7 +16414,10 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["security-pack", "observability-pack"],
+      "coveragePacks": [
+        "security-pack",
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "/api/health Supabase session probe timeout handling",
         "/api/database Supabase session probe timeout handling",
@@ -16294,7 +16465,11 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["security-pack", "ai-core", "observability-pack"],
+      "coveragePacks": [
+        "security-pack",
+        "ai-core",
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "/api/ai/supervisor/stream/v2 sessionId/deviceType/config guard",
         "/api/ai/jobs initial trigger readiness",
@@ -16344,7 +16519,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["ai-core"],
+      "coveragePacks": [
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "src/lib/ai-proxy/proxy.ts runtime env refresh",
         "src/lib/ai-proxy/proxy.test.ts env drift regression coverage",
@@ -16391,7 +16568,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["observability-pack"],
+      "coveragePacks": [
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "scripts/dev/vitest-main-wrapper.js zero-test DOM related output filtering",
         "src/test/config/vitest-main-wrapper.test.ts regression coverage",
@@ -16438,7 +16617,11 @@
       },
       "scope": "broad",
       "releaseFacing": true,
-      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/ landing render",
         "/main redirect to /",
@@ -16553,7 +16736,11 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/ landing render on latest promoted deploy",
         "/system-boot -> /dashboard redirect",
@@ -16784,7 +16971,11 @@
       },
       "scope": "broad",
       "releaseFacing": true,
-      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/",
         "/dashboard",
@@ -16797,7 +16988,12 @@
         "AI 자동장애 보고서 (Reporter Agent)",
         "서버 모니터링 (15개 서버)"
       ],
-      "skippedSurfaces": ["토폴로지 맵", "로그 검색", "이력", "설정 페이지"],
+      "skippedSurfaces": [
+        "토폴로지 맵",
+        "로그 검색",
+        "이력",
+        "설정 페이지"
+      ],
       "checks": {
         "total": 15,
         "passed": 13,
@@ -16868,7 +17064,11 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/ landing render with v8.10.0 badge on latest promoted deployment",
         "/api/health 200 healthy and version 8.10.0",
@@ -17184,7 +17384,11 @@
       },
       "scope": "targeted",
       "releaseFacing": true,
-      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/api/version",
         "/api/health",
@@ -17272,7 +17476,10 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["core-routes-smoke", "modal-detail-pack"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "modal-detail-pack"
+      ],
       "coveredSurfaces": [
         "/",
         "landing hero and CTA render",
@@ -17369,7 +17576,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["modal-detail-pack"],
+      "coveragePacks": [
+        "modal-detail-pack"
+      ],
       "coveredSurfaces": [
         "/",
         "Vibe Coding modal current tools view",
@@ -17430,7 +17639,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["core-routes-smoke"],
+      "coveragePacks": [
+        "core-routes-smoke"
+      ],
       "coveredSurfaces": [
         "/",
         "landing hero copy",
@@ -17544,7 +17755,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["core-routes-smoke"],
+      "coveragePacks": [
+        "core-routes-smoke"
+      ],
       "coveredSurfaces": [
         "/",
         "landing hero",
@@ -17657,7 +17870,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["core-routes-smoke"],
+      "coveragePacks": [
+        "core-routes-smoke"
+      ],
       "coveredSurfaces": [
         "/",
         "landing hero and system start preview",
@@ -17751,7 +17966,10 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["core-routes-smoke", "modal-detail-pack"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "modal-detail-pack"
+      ],
       "coveredSurfaces": [
         "/",
         "landing feature cards",
@@ -17836,7 +18054,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["modal-detail-pack"],
+      "coveragePacks": [
+        "modal-detail-pack"
+      ],
       "coveredSurfaces": [
         "/",
         "Vibe Coding modal open",
@@ -17898,7 +18118,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["modal-detail-pack"],
+      "coveragePacks": [
+        "modal-detail-pack"
+      ],
       "coveredSurfaces": [
         "/",
         "Vibe Coding modal open",
@@ -17961,7 +18183,10 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["core-routes-smoke", "modal-detail-pack"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "modal-detail-pack"
+      ],
       "coveredSurfaces": [
         "/ landing render",
         "/ landing header login CTA",
@@ -18024,7 +18249,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["core-routes-smoke"],
+      "coveragePacks": [
+        "core-routes-smoke"
+      ],
       "coveredSurfaces": [
         "/login header minimal layout",
         "/login auth option surface",
@@ -18077,7 +18304,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["core-routes-smoke"],
+      "coveragePacks": [
+        "core-routes-smoke"
+      ],
       "coveredSurfaces": [
         "/ landing render on production",
         "/main legacy redirect to /",
@@ -18152,7 +18381,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["core-routes-smoke"],
+      "coveragePacks": [
+        "core-routes-smoke"
+      ],
       "coveredSurfaces": [
         "/ initial landing bootstrap frame",
         "/ settled landing render",
@@ -18206,7 +18437,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["core-routes-smoke"],
+      "coveragePacks": [
+        "core-routes-smoke"
+      ],
       "coveredSurfaces": [
         "/ landing first paint on production",
         "landing bootstrap auth copy hidden",
@@ -18274,7 +18507,11 @@
       },
       "scope": "broad",
       "releaseFacing": true,
-      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/ landing render with guest session",
         "landing feature card modal open and ESC close",
@@ -18421,7 +18658,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["modal-detail-pack"],
+      "coveragePacks": [
+        "modal-detail-pack"
+      ],
       "coveredSurfaces": [
         "/ landing render after auth bootstrap on local dev",
         "landing tech-stack modal open",
@@ -18490,7 +18729,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["modal-detail-pack"],
+      "coveragePacks": [
+        "modal-detail-pack"
+      ],
       "coveredSurfaces": [
         "/ production landing render after auth bootstrap",
         "production tech-stack modal open",
@@ -18662,7 +18903,11 @@
       },
       "scope": "broad",
       "releaseFacing": true,
-      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/",
         "/login",
@@ -18819,7 +19064,9 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["core-routes-smoke"],
+      "coveragePacks": [
+        "core-routes-smoke"
+      ],
       "coveredSurfaces": [
         "/validation",
         "validation evidence snapshot summary (2026-04-02 / 212 runs / 1578 checks / 273 completed)",
@@ -18886,8 +19133,15 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["core-routes-smoke"],
-      "coveredSurfaces": ["/validation", "/", "/api/health", "/api/version"],
+      "coveragePacks": [
+        "core-routes-smoke"
+      ],
+      "coveredSurfaces": [
+        "/validation",
+        "/",
+        "/api/health",
+        "/api/version"
+      ],
       "skippedSurfaces": [
         "/login",
         "/system-boot",
@@ -18945,8 +19199,14 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["core-routes-smoke"],
-      "coveredSurfaces": ["/validation", "/api/health", "/api/version"],
+      "coveragePacks": [
+        "core-routes-smoke"
+      ],
+      "coveredSurfaces": [
+        "/validation",
+        "/api/health",
+        "/api/version"
+      ],
       "skippedSurfaces": [
         "/",
         "/login",
@@ -19005,7 +19265,10 @@
       },
       "scope": "targeted",
       "releaseFacing": true,
-      "coveragePacks": ["core-routes-smoke", "modal-detail-pack"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "modal-detail-pack"
+      ],
       "coveredSurfaces": [
         "/ (auth loading copy 숨김 확인)",
         "💬 AI 어시스턴트 모달 (아키텍처 토글 양방향)",
@@ -19079,8 +19342,14 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["core-routes-smoke"],
-      "coveredSurfaces": ["/validation", "/api/health", "/api/version"],
+      "coveragePacks": [
+        "core-routes-smoke"
+      ],
+      "coveredSurfaces": [
+        "/validation",
+        "/api/health",
+        "/api/version"
+      ],
       "skippedSurfaces": [
         "/",
         "/login",
@@ -19139,8 +19408,14 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["core-routes-smoke"],
-      "coveredSurfaces": ["/validation", "/api/health", "/api/version"],
+      "coveragePacks": [
+        "core-routes-smoke"
+      ],
+      "coveredSurfaces": [
+        "/validation",
+        "/api/health",
+        "/api/version"
+      ],
       "skippedSurfaces": [
         "/",
         "/login",
@@ -19199,8 +19474,14 @@
       },
       "scope": "targeted",
       "releaseFacing": false,
-      "coveragePacks": ["core-routes-smoke"],
-      "coveredSurfaces": ["/validation", "/api/health", "/api/version"],
+      "coveragePacks": [
+        "core-routes-smoke"
+      ],
+      "coveredSurfaces": [
+        "/validation",
+        "/api/health",
+        "/api/version"
+      ],
       "skippedSurfaces": [
         "/",
         "/login",
@@ -19249,8 +19530,14 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": true,
-      "coveragePacks": ["core-routes-smoke"],
-      "coveredSurfaces": ["/", "/validation", "/api/version"],
+      "coveragePacks": [
+        "core-routes-smoke"
+      ],
+      "coveredSurfaces": [
+        "/",
+        "/validation",
+        "/api/version"
+      ],
       "skippedSurfaces": [
         "/login",
         "/system-boot",
@@ -19430,7 +19717,11 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": true,
-      "coveragePacks": ["dashboard-core", "ai-core", "observability-pack"],
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core",
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "/login",
         "/system-boot",
@@ -19542,7 +19833,10 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": true,
-      "coveragePacks": ["dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/login",
         "/system-boot",
@@ -19650,7 +19944,11 @@
       "scope": "broad",
       "releaseFacing": true,
       "countsTowardSummary": true,
-      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/",
         "/login",
@@ -19794,7 +20092,11 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": true,
-      "coveragePacks": ["dashboard-core", "ai-core", "core-routes-smoke"],
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core",
+        "core-routes-smoke"
+      ],
       "coveredSurfaces": [
         "/login",
         "guest PIN login (4231)",
@@ -19912,7 +20214,11 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": true,
-      "coveragePacks": ["dashboard-core", "ai-core", "core-routes-smoke"],
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core",
+        "core-routes-smoke"
+      ],
       "coveredSurfaces": [
         "/login",
         "guest PIN login (4231)",
@@ -20191,7 +20497,11 @@
       "scope": "release-gate",
       "releaseFacing": true,
       "countsTowardSummary": true,
-      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/ landing render",
         "/login route render",
@@ -20340,7 +20650,10 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": true,
-      "coveragePacks": ["core-routes-smoke", "observability-pack"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "Vercel production deployment state READY",
         "deployment commit parity (1ce348df5)",
@@ -20432,7 +20745,10 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": true,
-      "coveragePacks": ["core-routes-smoke", "observability-pack"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "Vercel production deployment READY",
         "deployment commit parity (98d6c0be3)",
@@ -20525,7 +20841,10 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": true,
-      "coveragePacks": ["core-routes-smoke", "observability-pack"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "Vercel production deployment READY",
         "deployment commit parity (b4bd537a7)",
@@ -20618,7 +20937,10 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": true,
-      "coveragePacks": ["core-routes-smoke", "observability-pack"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "pre-commit baseline deployment snapshot",
         "post-deploy smoke GET /",
@@ -21006,7 +21328,10 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": false,
-      "coveragePacks": ["core-routes-smoke", "observability-pack"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "latest Vercel production deployment metadata (READY/PROMOTED)",
         "/ landing render (console error 0)",
@@ -21177,7 +21502,9 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": false,
-      "coveragePacks": ["ai-core"],
+      "coveragePacks": [
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "Vercel production deployment c772507f6 promoted",
         "dashboard AI sidebar opens on production",
@@ -21248,7 +21575,9 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": false,
-      "coveragePacks": ["ai-core"],
+      "coveragePacks": [
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "Vercel production deployment a52918f6f promoted",
         "dashboard AI sidebar opens on production",
@@ -21319,7 +21648,9 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": false,
-      "coveragePacks": ["ai-core"],
+      "coveragePacks": [
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "Vercel production deployment 0a6cc4bc7 promoted",
         "dashboard AI sidebar opens on production",
@@ -21390,11 +21721,15 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": false,
-      "coveragePacks": ["ai-core"],
+      "coveragePacks": [
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "qa tracker improvement closeout after production verification"
       ],
-      "skippedSurfaces": ["broad release-gate pack"],
+      "skippedSurfaces": [
+        "broad release-gate pack"
+      ],
       "checks": {
         "total": 1,
         "passed": 1,
@@ -21438,7 +21773,10 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": false,
-      "coveragePacks": ["core-routes-smoke", "dashboard-core"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core"
+      ],
       "coveredSurfaces": [
         "latest production deployment 40bd7093 promoted on Vercel",
         "/main redirects to /",
@@ -21514,7 +21852,9 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": true,
-      "coveragePacks": ["ai-core"],
+      "coveragePacks": [
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "latest production deployment 40bd7093 / dpl_H2A52Y1DvRKLATu7o1A8fb1WbAXf still live on Vercel",
         "/dashboard AI assistant sidebar opens with engine Ready",
@@ -21612,7 +21952,11 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": false,
-      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "latest production deployment 9e722456 / dpl_EEf7zEdMXFGHWYqYSNMACmtXynQ8 live on Vercel",
         "landing render with v8.10.9 badge and console errors 0",
@@ -21701,7 +22045,11 @@
       "scope": "broad",
       "releaseFacing": true,
       "countsTowardSummary": true,
-      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "landing render + v8.10.9 badge",
         "Vibe Coding modal tabs: 현재 도구 / 개발 환경 변화 / CI/CD",
@@ -21814,7 +22162,11 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": false,
-      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "latest production deployment c3d8c6a8 / dpl_C26umTtKeFhwLwRTWWdsksaCtNiw live on Vercel",
         "landing render with v8.10.10 badge and guest session ready",
@@ -21902,7 +22254,11 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": false,
-      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "landing render with v8.10.10 badge",
         "system start countdown reaches /system-boot and redirects to /dashboard",
@@ -21989,7 +22345,11 @@
       "scope": "broad",
       "releaseFacing": true,
       "countsTowardSummary": true,
-      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "landing render with v8.11.0 badge after settle",
         "404 route renders product fallback page with v8.11.0 footer",
@@ -22123,7 +22483,11 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": true,
-      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "landing bootstrap copy hidden on first settled render (visible text absent, aria-only status)",
         "system start countdown redirects to /dashboard on production",
@@ -22219,7 +22583,9 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": true,
-      "coveragePacks": ["ai-core"],
+      "coveragePacks": [
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/",
         "/system-boot",
@@ -22228,7 +22594,10 @@
         "alert-prefill",
         "ai-streaming-response"
       ],
-      "skippedSurfaces": ["login", "observability pack"],
+      "skippedSurfaces": [
+        "login",
+        "observability pack"
+      ],
       "checks": {
         "total": 6,
         "passed": 6,
@@ -22307,7 +22676,9 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": true,
-      "coveragePacks": ["ai-core"],
+      "coveragePacks": [
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/",
         "/dashboard",
@@ -22316,7 +22687,10 @@
         "ai-streaming-response",
         "analysis-basis-panel"
       ],
-      "skippedSurfaces": ["login", "observability pack"],
+      "skippedSurfaces": [
+        "login",
+        "observability pack"
+      ],
       "checks": {
         "total": 7,
         "passed": 7,
@@ -22385,7 +22759,9 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": true,
-      "coveragePacks": ["ai-core"],
+      "coveragePacks": [
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/",
         "/system-boot",
@@ -22395,7 +22771,10 @@
         "ai-streaming-response",
         "analysis-basis-panel"
       ],
-      "skippedSurfaces": ["login", "observability pack"],
+      "skippedSurfaces": [
+        "login",
+        "observability pack"
+      ],
       "checks": {
         "total": 7,
         "passed": 7,
@@ -22459,14 +22838,21 @@
       "scope": "targeted",
       "releaseFacing": true,
       "countsTowardSummary": false,
-      "coveragePacks": ["core-routes-smoke", "observability-pack"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "/",
         "/validation",
         "/api/version",
         "release publish verification"
       ],
-      "skippedSurfaces": ["dashboard", "ai-sidebar", "Cloud Run runtime QA"],
+      "skippedSurfaces": [
+        "dashboard",
+        "ai-sidebar",
+        "Cloud Run runtime QA"
+      ],
       "checks": {
         "total": 3,
         "passed": 2,
@@ -22541,14 +22927,21 @@
       "scope": "targeted",
       "releaseFacing": true,
       "countsTowardSummary": false,
-      "coveragePacks": ["core-routes-smoke", "observability-pack"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "/",
         "/validation",
         "/api/version",
         "tag deploy preflight"
       ],
-      "skippedSurfaces": ["dashboard", "ai-sidebar", "Cloud Run runtime QA"],
+      "skippedSurfaces": [
+        "dashboard",
+        "ai-sidebar",
+        "Cloud Run runtime QA"
+      ],
       "checks": {
         "total": 3,
         "passed": 2,
@@ -22623,8 +23016,14 @@
       "scope": "targeted",
       "releaseFacing": true,
       "countsTowardSummary": false,
-      "coveragePacks": ["core-routes-smoke", "observability-pack"],
-      "coveredSurfaces": ["qa-tracker", "v8.11.3 deploy root cause tracking"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "qa-tracker",
+        "v8.11.3 deploy root cause tracking"
+      ],
       "skippedSurfaces": [
         "frontend runtime",
         "dashboard",
@@ -22705,7 +23104,10 @@
       "scope": "targeted",
       "releaseFacing": true,
       "countsTowardSummary": false,
-      "coveragePacks": ["core-routes-smoke", "observability-pack"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "/",
         "/validation",
@@ -22792,7 +23194,10 @@
       "scope": "targeted",
       "releaseFacing": true,
       "countsTowardSummary": false,
-      "coveragePacks": ["core-routes-smoke", "observability-pack"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "/",
         "/validation",
@@ -22878,7 +23283,11 @@
       "scope": "broad",
       "releaseFacing": true,
       "countsTowardSummary": true,
-      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "landing render + v8.11.4 badge",
         "/main -> / redirect",
@@ -23137,7 +23546,10 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": false,
-      "coveragePacks": ["dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/dashboard status cards (15/14/1/0)",
         "AI sidebar Ready state",
@@ -23234,7 +23646,10 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": false,
-      "coveragePacks": ["dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/dashboard counters (15/14/1/0)",
         "AI sidebar ready state",
@@ -23332,7 +23747,11 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": false,
-      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/",
         "/main",
@@ -23429,7 +23848,11 @@
       "scope": "targeted",
       "releaseFacing": true,
       "countsTowardSummary": true,
-      "coveragePacks": ["ai-core", "dashboard-core", "core-routes-smoke"],
+      "coveragePacks": [
+        "ai-core",
+        "dashboard-core",
+        "core-routes-smoke"
+      ],
       "checks": {
         "total": 7,
         "passed": 7,
@@ -23493,7 +23916,10 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": false,
-      "coveragePacks": ["ai-core", "dashboard-core"],
+      "coveragePacks": [
+        "ai-core",
+        "dashboard-core"
+      ],
       "coveredSurfaces": [
         "/dashboard",
         "/dashboard/ai-assistant",
@@ -23594,7 +24020,11 @@
       "scope": "broad",
       "releaseFacing": true,
       "countsTowardSummary": true,
-      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/",
         "/validation",
@@ -23679,7 +24109,11 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": false,
-      "coveragePacks": ["dashboard-core", "ai-core", "modal-detail-pack"],
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core",
+        "modal-detail-pack"
+      ],
       "coveredSurfaces": [
         "/login guest login",
         "/system-boot to /dashboard redirect",
@@ -23755,7 +24189,10 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": false,
-      "coveragePacks": ["core-routes-smoke", "security-pack"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "security-pack"
+      ],
       "coveredSurfaces": [
         "/api/csrf-token",
         "/api/auth/guest-login",
@@ -23907,7 +24344,11 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": true,
-      "coveragePacks": ["core-routes-smoke", "dashboard-core", "security-pack"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "security-pack"
+      ],
       "coveredSurfaces": [
         "/",
         "/login",
@@ -24013,7 +24454,9 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": false,
-      "coveragePacks": ["core-routes-smoke"],
+      "coveragePacks": [
+        "core-routes-smoke"
+      ],
       "coveredSurfaces": [
         "/login on localhost:3000",
         "/login on 127.0.0.1:3000",
@@ -24063,7 +24506,11 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": false,
-      "coveragePacks": ["core-routes-smoke", "ai-core", "observability-pack"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "ai-core",
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "/login render on Vercel production",
         "guest PIN login via production UI",
@@ -24153,7 +24600,11 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": false,
-      "coveragePacks": ["core-routes-smoke", "ai-core", "observability-pack"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "ai-core",
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "/login render on Vercel production",
         "guest session system-start to /dashboard",
@@ -24248,7 +24699,10 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": false,
-      "coveragePacks": ["ai-core", "observability-pack"],
+      "coveragePacks": [
+        "ai-core",
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "Cloud Run /api/ai/supervisor topology repeat probe #1",
         "Cloud Run /api/ai/supervisor topology repeat probe #2",
@@ -24339,7 +24793,11 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": false,
-      "coveragePacks": ["core-routes-smoke", "ai-core", "observability-pack"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "ai-core",
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "AI sidebar variant topology query render on Vercel production UI",
         "analysis-basis panel tool/handoff summary visibility for variant query",
@@ -24442,7 +24900,10 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": false,
-      "coveragePacks": ["ai-core", "observability-pack"],
+      "coveragePacks": [
+        "ai-core",
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "Cloud Run ai-engine deployment (revision ai-engine-00305-5b4)",
         "Cloud Run /health after deployment",
@@ -24526,7 +24987,10 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": false,
-      "coveragePacks": ["ai-core", "observability-pack"],
+      "coveragePacks": [
+        "ai-core",
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "Cloud Run env update (ALLOW_DEGRADED_SINGLE=true) and revision ai-engine-00307-zwt",
         "Cloud Run /health after env update",
@@ -24842,7 +25306,9 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": true,
-      "coveragePacks": ["ai-core"],
+      "coveragePacks": [
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "Cloud Run deploy ai-engine-00317-sss health check (HTTP 200)",
         "Cloud Run /api/ai/supervisor topology probe #1 (toolsCalled searchKnowledgeBase + finalAnswer)",
@@ -24899,7 +25365,10 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": true,
-      "coveragePacks": ["ai-core", "observability-pack"],
+      "coveragePacks": [
+        "ai-core",
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "Cloud Run /health",
         "Cloud Run /api/ai/supervisor topology probe (graph source retained)",
@@ -24958,7 +25427,10 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": false,
-      "coveragePacks": ["ai-core", "observability-pack"],
+      "coveragePacks": [
+        "ai-core",
+        "observability-pack"
+      ],
       "coveredSurfaces": [
         "Cloud Run /api/ai/supervisor mixed advisory probe #1 (OOM triage)",
         "Cloud Run /api/ai/supervisor mixed advisory probe #2 (CPU+memory triage)",
@@ -25015,7 +25487,11 @@
       "scope": "release-gate",
       "releaseFacing": true,
       "countsTowardSummary": true,
-      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "landing settled render on production",
         "system start redirect to /dashboard",
@@ -25268,7 +25744,10 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": false,
-      "coveragePacks": ["ai-core", "ai-advanced-surface"],
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ],
       "coveredSurfaces": [
         "preview login with guest mode",
         "system-boot to dashboard transition on preview",
@@ -25354,7 +25833,10 @@
       "scope": "targeted",
       "releaseFacing": true,
       "countsTowardSummary": false,
-      "coveragePacks": ["ai-core", "ai-advanced-surface"],
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ],
       "coveredSurfaces": [
         "production landing version badge on v8.11.12",
         "system-boot to dashboard transition on production",
@@ -25596,7 +26078,10 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": false,
-      "coveragePacks": ["ai-core", "ai-advanced-surface"],
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ],
       "coveredSurfaces": [
         "preview guest login and system-boot to dashboard transition",
         "dashboard warning CTA opens AI sidebar with prefilled prompt",
@@ -25699,7 +26184,10 @@
       "scope": "targeted",
       "releaseFacing": true,
       "countsTowardSummary": false,
-      "coveragePacks": ["ai-core", "ai-advanced-surface"],
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ],
       "coveredSurfaces": [
         "production version route returns 8.11.13",
         "production guest landing render and system-boot to dashboard transition",
@@ -25803,7 +26291,9 @@
       "scope": "targeted",
       "releaseFacing": true,
       "countsTowardSummary": true,
-      "coveragePacks": ["ai-advanced-surface"],
+      "coveragePacks": [
+        "ai-advanced-surface"
+      ],
       "coveredSurfaces": [
         "production version route remains 8.11.13 during advanced AI validation",
         "Reporter Agent first report generation from empty state",
@@ -25916,7 +26406,10 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": false,
-      "coveragePacks": ["ai-core", "dashboard-core"],
+      "coveragePacks": [
+        "ai-core",
+        "dashboard-core"
+      ],
       "coveredSurfaces": [
         "/dashboard",
         "AI sidebar general-query best-effort path on production",
@@ -25993,7 +26486,10 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": true,
-      "coveragePacks": ["ai-core", "dashboard-core"],
+      "coveragePacks": [
+        "ai-core",
+        "dashboard-core"
+      ],
       "coveredSurfaces": [
         "/dashboard",
         "AI sidebar welcome and input copy on production 8.11.14",
@@ -26076,7 +26572,10 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": true,
-      "coveragePacks": ["ai-core", "dashboard-core"],
+      "coveragePacks": [
+        "ai-core",
+        "dashboard-core"
+      ],
       "coveredSurfaces": [
         "/dashboard",
         "AI sidebar response mode toggle on production 8.11.15",
@@ -26154,7 +26653,11 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": true,
-      "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/ landing render with version badge on production v8.11.16",
         "/ system start countdown transitions to /dashboard on production v8.11.16",
@@ -26539,7 +27042,9 @@
       "scope": "targeted",
       "releaseFacing": true,
       "countsTowardSummary": false,
-      "coveragePacks": ["core-routes-smoke"],
+      "coveragePacks": [
+        "core-routes-smoke"
+      ],
       "coveredSurfaces": [
         "production deployment drift check for v8.11.19",
         "/",
@@ -26627,7 +27132,10 @@
       "scope": "targeted",
       "releaseFacing": false,
       "countsTowardSummary": true,
-      "coveragePacks": ["dashboard-core", "ai-core"],
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core"
+      ],
       "coveredSurfaces": [
         "/dashboard (active alerts modal)",
         "AI 사이드바 prefill handoff",
@@ -26690,6 +27198,170 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260418-0303",
+      "recordedAt": "2026-04-18T08:01:44.685Z",
+      "recordedAtKst": "2026-04-18 17:01:44 KST",
+      "title": "Production broad QA - 8.11.20 AI hardening verification",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260418-0303.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_8Th4eohuqf6tGKxqt1G4Vro6WRcr",
+        "deploymentUrl": "https://openmanager-9jy19sxz6-skyasus-projects.vercel.app",
+        "commitSha": "d83e0a6a859cc31ef9be8a3aa9e187ecf0b6a977"
+      },
+      "scope": "broad",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "modal-detail-pack",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "landing render and version badge on production v8.11.20",
+        "/main redirects to / on production v8.11.20",
+        "/login render with Google/GitHub/email/guest entry",
+        "/privacy render with back-link to login",
+        "404 route returns expected 404 page on production",
+        "system start flow transitions to /dashboard",
+        "dashboard summary render with live totals and resource cards",
+        "active alerts modal render with critical/warning counts",
+        "active alert AI action opens sidebar with prefilled prompt",
+        "AI sidebar response completes for cache-redis-dc1-01 memory alert",
+        "AI sidebar surfaces routing-timeout fallback notice before successful Analyst recovery",
+        "AI sidebar analysis basis detail shows tools summary and recent 1 hour window",
+        "/dashboard/ai-assistant fullscreen workspace restores the carried conversation",
+        "fullscreen AI workspace exposes AI process with detectAnomalies/correlateMetrics/findRootCause steps",
+        "server detail modal supports 3-tab switch",
+        "server detail modal closes on ESC",
+        "Analyst 전체 분석 flow completes and renders issue/trend breakdown",
+        "/api/health 200 on production with database/cache/ai connected",
+        "/api/version 200 on production with version 8.11.20 / nextjs 16.1.6 / environment production",
+        "console 0 error / 0 warning across landing, dashboard, sidebar, fullscreen AI routes during normal flow",
+        "mobile dashboard at 390px has no horizontal overflow and keeps cards readable",
+        "mobile AI assistant at 390px has no horizontal overflow and keeps chat composer accessible"
+      ],
+      "skippedSurfaces": [
+        "/auth/error fallback route",
+        "/auth/success legacy callback route",
+        "topology modal detailed interaction",
+        "log explorer modal",
+        "Reporter generate/detail flow",
+        "feedback submission flow",
+        "security blocked-prompt regression pack",
+        "Cloud Run admin observability endpoints"
+      ],
+      "checks": {
+        "total": 22,
+        "passed": 22,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Core routes, dashboard, modal interactions, AI sidebar/fullscreen, analyst flow, and mobile responsive spot checks were validated in one production browser session.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The production AI path answered the active alert prompt, exposed fallback status to the user, and preserved the conversation plus process steps after fullscreen handoff.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The alert-driven workflow, analysis basis summary, and analyst issue drilldown all rendered without console noise on normal routes, confirming the release remains observable and operator-friendly.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production Vercel deployment dpl_8Th4eohuqf6tGKxqt1G4Vro6WRcr and Cloud Run ai-engine 8.11.20 both reported healthy while usage stayed within the expected budget envelope.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-18T16:58:44+09:00",
+          "summary": "Current billing period reviewed after production QA; effective usage 11.0956 USD, billed 0.0000 USD. No unexpected usage spike was observed.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Production dashboard landing surface on v8.11.20",
+          "path": "reports/qa/evidence/qa-20260418-dashboard-landing.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Production AI sidebar analysis on v8.11.20",
+          "path": "reports/qa/evidence/qa-20260418-ai-sidebar-analysis.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Production mobile dashboard on v8.11.20",
+          "path": "reports/qa/evidence/qa-20260418-mobile-dashboard.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Production mobile AI assistant on v8.11.20",
+          "path": "reports/qa/evidence/qa-20260418-mobile-ai-assistant.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Production dashboard console log on v8.11.20",
+          "path": "reports/qa/evidence/qa-20260418-dashboard-console.txt"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Production session console log on v8.11.20",
+          "path": "reports/qa/evidence/qa-20260418-session-console.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Deployment dpl_8Th4eohuqf6tGKxqt1G4Vro6WRcr",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/8Th4eohuqf6tGKxqt1G4Vro6WRcr"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1
     }
   ],
   "experts": {
@@ -26698,16 +27370,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 139,
-      "appropriateCount": 130,
+      "seenCount": 140,
+      "appropriateCount": 131,
       "partialCount": 9,
       "inappropriateCount": 0,
       "improvementNeededCount": 19,
-      "lastRunId": "QA-20260417-0300",
-      "lastSeenAt": "2026-04-17T04:06:23.738Z",
+      "lastRunId": "QA-20260418-0303",
+      "lastSeenAt": "2026-04-18T08:01:44.685Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The warning-card AI path returned grounded CPU warning analysis, and the carried conversation preserved trace/tool/time-range parity after fullscreen handoff.",
+      "lastRationale": "The production AI path answered the active alert prompt, exposed fallback status to the user, and preserved the conversation plus process steps after fullscreen handoff.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -26715,16 +27387,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 82,
-      "appropriateCount": 56,
+      "seenCount": 83,
+      "appropriateCount": 57,
       "partialCount": 26,
       "inappropriateCount": 0,
       "improvementNeededCount": 27,
-      "lastRunId": "QA-20260417-0300",
-      "lastSeenAt": "2026-04-17T04:06:23.738Z",
+      "lastRunId": "QA-20260418-0303",
+      "lastSeenAt": "2026-04-18T08:01:44.685Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The repeated next/font preload warnings seen in QA-20260417-0299 no longer appeared on dashboard or fullscreen AI routes, and console remained clean across the release-facing pass.",
+      "lastRationale": "The alert-driven workflow, analysis basis summary, and analyst issue drilldown all rendered without console noise on normal routes, confirming the release remains observable and operator-friendly.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -26749,16 +27421,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 84,
-      "appropriateCount": 74,
+      "seenCount": 85,
+      "appropriateCount": 75,
       "partialCount": 10,
       "inappropriateCount": 0,
       "improvementNeededCount": 14,
-      "lastRunId": "QA-20260417-0302",
-      "lastSeenAt": "2026-04-17T05:39:27.161Z",
+      "lastRunId": "QA-20260418-0303",
+      "lastSeenAt": "2026-04-18T08:01:44.685Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production now serves v8.11.19 and the active-alert targeted QA confirms the normalized direct detectAnomalies path works without :9100 prompt leakage.",
+      "lastRationale": "Production Vercel deployment dpl_8Th4eohuqf6tGKxqt1G4Vro6WRcr and Cloud Run ai-engine 8.11.20 both reported healthy while usage stayed within the expected budget envelope.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -26766,16 +27438,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 114,
-      "appropriateCount": 107,
+      "seenCount": 115,
+      "appropriateCount": 108,
       "partialCount": 7,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260417-0300",
-      "lastSeenAt": "2026-04-17T04:06:23.738Z",
+      "lastRunId": "QA-20260418-0303",
+      "lastSeenAt": "2026-04-18T08:01:44.685Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Core routes, dashboard modal pack, AI sidebar, fullscreen workspace, and API probes were validated in one production browser session.",
+      "lastRationale": "Core routes, dashboard, modal interactions, AI sidebar/fullscreen, analyst flow, and mobile responsive spot checks were validated in one production browser session.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

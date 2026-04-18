@@ -247,6 +247,9 @@ describe('connectAsyncQuerySSE', () => {
       processingTimeMs: 1200,
       metadata: {
         traceId: 'trace-abc',
+        resolvedMode: 'multi',
+        modeSelectionSource: 'auto_complexity',
+        latencyTier: 'slow',
         handoffs: [{ from: 'supervisor', to: 'analyst', reason: 'deep dive' }],
         toolResultSummaries: [
           {
@@ -268,6 +271,9 @@ describe('connectAsyncQuerySSE', () => {
       toolResults: [],
       ragSources: [],
       processingTimeMs: 1200,
+      latencyTier: 'slow',
+      resolvedMode: 'multi',
+      modeSelectionSource: 'auto_complexity',
       traceId: 'trace-abc',
       handoffHistory: [
         { from: 'supervisor', to: 'analyst', reason: 'deep dive' },

@@ -328,6 +328,29 @@ describe('buildAssistantMessageFromAsyncResult', () => {
       },
     });
   });
+
+  it('includes runtime metadata for operator-facing UI', () => {
+    const result: AsyncQueryResult = {
+      success: true,
+      response: '분석 완료',
+      processingTimeMs: 1987,
+      latencyTier: 'slow',
+      resolvedMode: 'multi',
+      modeSelectionSource: 'auto_complexity',
+    };
+
+    const message = buildAssistantMessageFromAsyncResult(
+      result,
+      () => 'assistant-job-2'
+    );
+
+    expect(message.metadata).toMatchObject({
+      processingTime: 1987,
+      latencyTier: 'slow',
+      resolvedMode: 'multi',
+      modeSelectionSource: 'auto_complexity',
+    });
+  });
 });
 
 // ============================================================================

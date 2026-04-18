@@ -88,16 +88,13 @@ subagents:
 # 3. MCP Servers (개발 vs 프로덕션 구분)
 # ============================================================================
 mcp-servers:
-  # 개발 환경 (Claude Code에서 사용) - 10/10 연결
+  # 개발 환경 (Claude Code에서 사용) - 7/10 연결
   development:
     - vercel              # @vercel/mcp, 배포 관리 (무제한)
     - supabase            # @supabase/mcp-server-supabase, DB 관리 (무제한)
-    - context7            # @upstash/context7-mcp, 라이브러리 문서 (무제한)
-    - stitch              # @_davideast/stitch-mcp, Google Stitch AI UI 디자인 (350/월)
     - playwright          # @playwright/mcp, E2E 테스트 자동화 (무제한)
     - next-devtools       # next-devtools-mcp, Next.js 런타임 진단/오류 조회 (무제한)
     - github              # @modelcontextprotocol/server-github, 저장소 관리 (무제한)
-    - sequential-thinking # @modelcontextprotocol/server-sequential-thinking, 복잡한 추론 (무제한)
     - storybook           # @storybook/addon-mcp, 컴포넌트 문서/스토리 조회 (Storybook dev 필수)
     - diagram-converter   # Mermaid 다이어그램 렌더링/내보내기 (무제한)
 
@@ -105,7 +102,10 @@ mcp-servers:
   production:
     - supabase        # AI SDK 에이전트가 DB 조회에 사용 (유일한 프로덕션 MCP)
 
-  removed:  # 2026-02-14 업데이트
+  removed:  # 2026-04-18 업데이트
+    - context7        # 활용도 저하로 제거됨
+    - stitch          # 명시적 UI 개선 시에만 수동 구동
+    - sequential-thinking # 활용도 저하로 제거됨
     - filesystem      # Claude Code 내장 도구와 100% 중복
     - memory          # Claude Code auto-memory로 대체
     - time            # 사용 빈도 낮음, 대안 존재
@@ -116,7 +116,7 @@ mcp-servers:
     - serena          # Claude Code built-in 도구로 대체 (29개 deferred 도구 오버헤드)
 
 # 환경 구분:
-#   - Development: Claude Code 작업 시 10개 MCP 사용
+#   - Development: Claude Code 작업 시 7개 MCP 사용
 #   - Production: Cloud Run AI 엔진에서 Supabase MCP만 사용
 # 상세 정보: .mcp.json 참조
 

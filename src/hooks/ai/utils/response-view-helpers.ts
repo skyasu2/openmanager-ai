@@ -17,7 +17,24 @@ export type ResponseSourceData = {
   toolsCalled?: unknown;
   /** 사용자 선택 분석 모드 */
   analysisMode?: unknown;
+  processingTime?: unknown;
+  durationMs?: unknown;
+  latencyTier?: unknown;
+  resolvedMode?: unknown;
+  modeSelectionSource?: unknown;
 };
+
+function getNestedMetadataValue(
+  doneData: ResponseSourceData | undefined,
+  key: string
+): unknown {
+  if (!doneData) return undefined;
+  const metadata = doneData.metadata;
+  if (metadata && typeof metadata === 'object' && key in metadata) {
+    return (metadata as Record<string, unknown>)[key];
+  }
+  return undefined;
+}
 
 export function normalizeRagSources(
   sources: unknown
@@ -64,6 +81,86 @@ export function extractAnalysisModeFromDoneData(
     const nestedValue = (metadata as { analysisMode?: unknown }).analysisMode;
     if (nestedValue === 'auto' || nestedValue === 'thinking') {
       return nestedValue;
+    }
+  }
+
+  return undefined;
+}
+
+export function extractProcessingTimeFromDoneData(
+  doneData: ResponseSourceData | undefined
+): number | undefined {
+  if (!doneData) return undefined;
+
+  const directValue =
+    typeof doneData.processingTime === 'number'
+      ? doneData.processingTime
+      : typeof doneData.durationMs === 'number'
+        ? doneData.durationMs
+        : undefined;
+
+  if (typeof directValue === 'number' && Number.isFinite(directValue)) {
+    return Math.max(0, Math.round(directValue));
+  }
+
+  const nestedDuration = getNestedMetadataValue(doneData, 'durationMs');
+  if (typeof nestedDuration === 'number' && Number.isFinite(nestedDuration)) {
+    return Math.max(0, Math.round(nestedDuration));
+  }
+
+  return undefined;
+}
+
+export function extractLatencyTierFromDoneData(
+  doneData: ResponseSourceData | undefined
+): 'fast' | 'normal' | 'slow' | 'very_slow' | undefined {
+  const candidates = [
+    doneData?.latencyTier,
+    getNestedMetadataValue(doneData, 'latencyTier'),
+  ];
+
+  for (const value of candidates) {
+    if (
+      value === 'fast' ||
+      value === 'normal' ||
+      value === 'slow' ||
+      value === 'very_slow'
+    ) {
+      return value;
+    }
+  }
+
+  return undefined;
+}
+
+export function extractResolvedModeFromDoneData(
+  doneData: ResponseSourceData | undefined
+): 'single' | 'multi' | undefined {
+  const candidates = [
+    doneData?.resolvedMode,
+    getNestedMetadataValue(doneData, 'resolvedMode'),
+  ];
+
+  for (const value of candidates) {
+    if (value === 'single' || value === 'multi') {
+      return value;
+    }
+  }
+
+  return undefined;
+}
+
+export function extractModeSelectionSourceFromDoneData(
+  doneData: ResponseSourceData | undefined
+): string | undefined {
+  const candidates = [
+    doneData?.modeSelectionSource,
+    getNestedMetadataValue(doneData, 'modeSelectionSource'),
+  ];
+
+  for (const value of candidates) {
+    if (typeof value === 'string' && value.trim().length > 0) {
+      return value;
     }
   }
 

@@ -120,6 +120,10 @@ describe('MessageDetailSheet', () => {
       isStreaming: false,
       metadata: {
         traceId: 'trace-123',
+        processingTime: 1987,
+        latencyTier: 'slow',
+        resolvedMode: 'multi',
+        modeSelectionSource: 'auto_complexity',
         analysisBasis: {
           engine: 'ai-engine',
           dataSource: 'otel',
@@ -136,6 +140,15 @@ describe('MessageDetailSheet', () => {
       />
     );
 
+    expect(screen.getByText('처리 시간')).toBeInTheDocument();
+    expect(screen.getByText('1987ms')).toBeInTheDocument();
+    expect(screen.getByText('라우팅')).toBeInTheDocument();
+    expect(screen.getByText('Multi')).toBeInTheDocument();
+    expect(screen.getByText('지연 등급')).toBeInTheDocument();
+    expect(screen.getByText('느림')).toBeInTheDocument();
+    expect(screen.getByText('선택 근거')).toBeInTheDocument();
+    expect(screen.getByText('복잡도 자동 판단')).toBeInTheDocument();
+
     fireEvent.click(screen.getByRole('button', { name: '복사' }));
     await act(async () => {
       await Promise.resolve();
@@ -144,5 +157,36 @@ describe('MessageDetailSheet', () => {
     unmount();
 
     expect(clearTimeoutSpy).toHaveBeenCalled();
+  });
+
+  it('도구 실행 결과에서 쉬운 라벨과 기술명을 함께 보여준다', () => {
+    const message: EnhancedChatMessage = {
+      id: 'assistant-4',
+      role: 'assistant',
+      content: '응답',
+      timestamp: new Date('2026-04-10T17:30:00.000Z'),
+      isStreaming: false,
+      metadata: {
+        toolResultSummaries: [
+          {
+            toolName: 'searchKnowledgeBase',
+            label: 'RAG 지식베이스 검색',
+            summary: '관련 문서 2건을 찾았습니다.',
+            status: 'completed',
+          },
+        ],
+      },
+    };
+
+    render(
+      <MessageDetailSheet
+        open={true}
+        onOpenChange={() => {}}
+        message={message}
+      />
+    );
+
+    expect(screen.getByText('내부 지식 검색')).toBeInTheDocument();
+    expect(screen.getByText('searchKnowledgeBase')).toBeInTheDocument();
   });
 });

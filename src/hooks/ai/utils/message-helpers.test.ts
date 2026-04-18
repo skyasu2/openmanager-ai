@@ -198,8 +198,10 @@ describe('transformMessages', () => {
     const assistant = messages.find((m) => m.id === 'a1');
     expect(assistant?.thinkingSteps).toHaveLength(2);
     expect(assistant?.thinkingSteps?.[0]?.step).toBe('getServerMetrics');
+    expect(assistant?.thinkingSteps?.[0]?.title).toBe('서버 메트릭 조회');
     expect(assistant?.thinkingSteps?.[0]?.status).toBe('completed');
     expect(assistant?.thinkingSteps?.[1]?.step).toBe('detectAnomalies');
+    expect(assistant?.thinkingSteps?.[1]?.title).toBe('이상 징후 확인');
   });
 
   it('derives thinkingSteps from metadata.toolsCalled when summaries and tool parts are missing', () => {
@@ -223,8 +225,12 @@ describe('transformMessages', () => {
     expect(assistant?.thinkingSteps?.[0]?.step).toBe(
       'detectAnomaliesAllServers'
     );
+    expect(assistant?.thinkingSteps?.[0]?.title).toBe(
+      '전체 서버 이상 징후 확인'
+    );
     expect(assistant?.thinkingSteps?.[0]?.status).toBe('completed');
     expect(assistant?.thinkingSteps?.[1]?.step).toBe('predictTrends');
+    expect(assistant?.thinkingSteps?.[1]?.title).toBe('단기 위험 추세 계산');
   });
 
   it('derives job-queue analysis basis from metadata toolsCalled', () => {

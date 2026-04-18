@@ -72,6 +72,9 @@ export interface AsyncQueryResult {
     category?: string;
   }>;
   processingTimeMs?: number;
+  latencyTier?: 'fast' | 'normal' | 'slow' | 'very_slow';
+  resolvedMode?: 'single' | 'multi';
+  modeSelectionSource?: string;
   error?: string;
   /** Langfuse trace ID for feedback scoring */
   traceId?: string;

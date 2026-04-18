@@ -120,6 +120,22 @@ export function connectAsyncQuerySSE(
         toolResults: resultData.toolResults,
         ragSources: resultData.ragSources,
         processingTimeMs: resultData.processingTimeMs,
+        latencyTier:
+          resultData.metadata?.latencyTier === 'fast' ||
+          resultData.metadata?.latencyTier === 'normal' ||
+          resultData.metadata?.latencyTier === 'slow' ||
+          resultData.metadata?.latencyTier === 'very_slow'
+            ? resultData.metadata.latencyTier
+            : undefined,
+        resolvedMode:
+          resultData.metadata?.resolvedMode === 'single' ||
+          resultData.metadata?.resolvedMode === 'multi'
+            ? resultData.metadata.resolvedMode
+            : undefined,
+        modeSelectionSource:
+          typeof resultData.metadata?.modeSelectionSource === 'string'
+            ? resultData.metadata.modeSelectionSource
+            : undefined,
         traceId: resultData.metadata?.traceId,
         analysisMode:
           resultData.metadata?.analysisMode === 'auto' ||
