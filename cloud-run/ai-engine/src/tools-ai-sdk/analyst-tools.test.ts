@@ -412,7 +412,128 @@ describe('detectAnomaliesAllServers', () => {
   });
 });
 
-// ============================================================================ 
+// ============================================================================
+// External Data Source Tests
+// ============================================================================
+
+describe('detectAnomaliesAllServers with externalServers', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should use externalServers when provided, ignoring precomputed data', async () => {
+    const externalServers = [
+      {
+        id: 'real-server-01',
+        name: 'Real Server 01',
+        type: 'web',
+        status: 'critical' as const,
+        cpu: 92,
+        memory: 85,
+        disk: 40,
+        network: 60,
+      },
+    ];
+
+    const result = await detectAnomaliesAllServers.execute(
+      { metricType: 'all', externalServers },
+      {} as never
+    );
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      // 외부 서버 1개만 스캔
+      expect(result.totalServers).toBe(1);
+      // cpu=92 >= critical threshold, memory=85 >= warning threshold → anomalies
+      expect(result.hasAnomalies).toBe(true);
+      expect(result.affectedServers).toContain('real-server-01');
+      // precomputed mock 서버들은 포함되지 않아야 함
+      expect(result.affectedServers).not.toContain('web-nginx-dc1-01');
+    }
+  });
+
+  it('should use history from externalServers for rising trend scan', async () => {
+    // cpu가 현재 65 (warning 미달)이지만 히스토리가 급상승 추세
+    const risingHistory = [50, 52, 54, 56, 58, 60, 62, 64, 65]; // 9슬롯, 상승 추세
+    const externalServers = [
+      {
+        id: 'trending-server',
+        name: 'Trending Server',
+        type: 'app',
+        status: 'online' as const,
+        cpu: 65,
+        memory: 50,
+        disk: 30,
+        network: 20,
+        history: { cpu: risingHistory },
+      },
+    ];
+
+    const result = await detectAnomaliesAllServers.execute(
+      { metricType: 'cpu', externalServers },
+      {} as never
+    );
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      // cpu 65는 threshold 미달 → 즉각 anomaly 없음
+      expect(result.anomalies.length).toBe(0);
+      // 하지만 risingTrendScan에서 상승 추세 감지 가능
+      expect(result.risingTrendScan).toBeDefined();
+      expect(Array.isArray(result.risingTrendScan.risingTrends)).toBe(true);
+    }
+  });
+
+  it('should detect anomalies in externalServers with no history (current-value fallback)', async () => {
+    const externalServers = [
+      {
+        id: 'no-history-server',
+        name: 'No History Server',
+        type: 'db',
+        status: 'warning' as const,
+        cpu: 82, // >= 80 warning threshold
+        memory: 60,
+        disk: 30,
+        network: 10,
+        // history 없음 → 현재값으로 폴백
+      },
+    ];
+
+    const result = await detectAnomaliesAllServers.execute(
+      { metricType: 'cpu', externalServers },
+      {} as never
+    );
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.anomalies.length).toBeGreaterThan(0);
+      expect(result.anomalies[0].server_id).toBe('no-history-server');
+      expect(result.anomalies[0].severity).toBe('warning');
+    }
+  });
+
+  it('should count server statuses from externalServers correctly', async () => {
+    const externalServers = [
+      { id: 's1', name: 'S1', type: 'web', status: 'online' as const, cpu: 30, memory: 40, disk: 20, network: 10 },
+      { id: 's2', name: 'S2', type: 'web', status: 'critical' as const, cpu: 91, memory: 91, disk: 20, network: 10 },
+      { id: 's3', name: 'S3', type: 'db', status: 'offline' as const, cpu: 0, memory: 0, disk: 0, network: 0 },
+    ];
+
+    const result = await detectAnomaliesAllServers.execute(
+      { metricType: 'all', externalServers },
+      {} as never
+    );
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.totalServers).toBe(3);
+      expect(result.summary.criticalCount).toBe(1);
+      expect(result.summary.onlineCount).toBe(1);
+    }
+  });
+});
+
+// ============================================================================
 // detectAnomalies Tests (single-server explainability)
 // ============================================================================
 

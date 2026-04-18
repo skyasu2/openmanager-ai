@@ -2,6 +2,10 @@ import { getStateBySlot } from '../data/precomputed-state';
 import type { BaselineDriftResult, MetricDataPoint } from '../lib/ai/monitoring/SimpleAnomalyDetector';
 import type { TrendDataPoint } from '../lib/ai/monitoring/TrendPredictor';
 
+/** 외부 데이터 소스에서 제공하는 서버별 메트릭 히스토리 (10분 간격, 최근순) */
+export type ExternalMetricHistory = Record<string, Record<string, number[]>>;
+// 구조: { [serverId]: { cpu: number[], memory: number[], disk: number[] } }
+
 export interface AnomalyResultItem {
   isAnomaly: boolean;
   severity: string;
@@ -41,15 +45,36 @@ export function getCurrentSlotIndex(): number {
   return Math.floor(kstMinutes / 10);
 }
 
+/**
+ * 서버 메트릭 히스토리 조회.
+ *
+ * 우선순위:
+ * 1. externalHistory가 제공되면 해당 값 사용 (실서버/외부 데이터 소스)
+ * 2. precomputed-state 144슬롯 순환 버퍼 폴백 (합성 OTel 데이터)
+ *
+ * @param externalHistory - 외부에서 주입하는 히스토리. 없으면 precomputed 폴백.
+ */
 export function getHistoryForMetric(
   serverId: string,
   metric: string,
   currentValue: number,
-  fixedSlot?: number
+  fixedSlot?: number,
+  externalHistory?: ExternalMetricHistory
 ): MetricDataPoint[] {
-  const currentSlot = fixedSlot ?? getCurrentSlotIndex();
   const now = Date.now();
   const baseTime = now - (now % (10 * 60 * 1000));
+
+  // 외부 히스토리가 있으면 그것을 사용
+  if (externalHistory?.[serverId]?.[metric]) {
+    const values = externalHistory[serverId][metric];
+    return values.map((value, idx) => ({
+      timestamp: baseTime - (values.length - 1 - idx) * 600000,
+      value,
+    }));
+  }
+
+  // 폴백: precomputed 144슬롯 순환 버퍼
+  const currentSlot = fixedSlot ?? getCurrentSlotIndex();
   const points: MetricDataPoint[] = [];
 
   for (let i = 35; i >= 0; i--) {

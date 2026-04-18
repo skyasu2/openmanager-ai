@@ -17,8 +17,26 @@ import { z } from 'zod';
 
 import { getCurrentState } from '../data/precomputed-state';
 import { getDataCache } from '../lib/cache-layer';
-import { getCurrentSlotIndex, getHistoryForMetric } from './analyst-tools-shared';
+import { getCurrentSlotIndex, getHistoryForMetric, type ExternalMetricHistory } from './analyst-tools-shared';
 import { STATUS_THRESHOLDS } from '../config/status-thresholds';
+
+/** 외부 데이터 소스에서 주입하는 서버 스냅샷 */
+const ExternalServerSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  type: z.string().optional().default('unknown'),
+  status: z.enum(['online', 'warning', 'critical', 'offline']).default('online'),
+  cpu: z.number().min(0).max(100),
+  memory: z.number().min(0).max(100),
+  disk: z.number().min(0).max(100),
+  network: z.number().min(0).max(100).optional().default(0),
+  /** 메트릭별 히스토리 (10분 간격, 오래된 순). 없으면 현재값으로 폴백. */
+  history: z.object({
+    cpu: z.array(z.number()).optional(),
+    memory: z.array(z.number()).optional(),
+    disk: z.array(z.number()).optional(),
+  }).optional(),
+});
 
 import type {
   ForecastBreachItem,
@@ -64,21 +82,54 @@ export const detectAnomaliesAllServers = tool({
       .enum(['cpu', 'memory', 'disk', 'all'])
       .default('all')
       .describe('분석할 메트릭 타입'),
+    /**
+     * 외부 서버 데이터 주입 (선택).
+     * 제공 시 precomputed OTel 데이터 대신 이 데이터를 사용합니다.
+     * 실서버 메트릭, API 응답, 테스트 픽스처 등 모든 데이터 소스 지원.
+     */
+    externalServers: z
+      .array(ExternalServerSchema)
+      .optional()
+      .describe('외부 서버 스냅샷 배열. 제공 시 precomputed 데이터 대신 사용.'),
   }),
   execute: async ({
     metricType,
+    externalServers,
   }: {
     metricType: 'cpu' | 'memory' | 'disk' | 'all';
+    externalServers?: Array<{
+      id: string; name: string; type: string; status: string;
+      cpu: number; memory: number; disk: number; network: number;
+      history?: { cpu?: number[]; memory?: number[]; disk?: number[] };
+    }>;
   }) => {
     try {
       const cache = getDataCache();
+      // 외부 데이터 사용 시 캐시 키에 포함하여 독립적으로 캐싱
+      const cacheKey = externalServers ? `${metricType}:external` : metricType;
 
       return await cache.getAnalysis(
         'anomaly-all',
-        { metricType },
+        { metricType: cacheKey },
         async () => {
-          const state = getCurrentState();
-          const allServers = state.servers;
+          // 외부 데이터가 있으면 그것을 사용, 없으면 precomputed OTel 데이터 사용
+          const allServers = externalServers ?? getCurrentState().servers;
+
+          // 외부 히스토리를 ExternalMetricHistory 맵으로 변환
+          const externalHistory: ExternalMetricHistory | undefined = externalServers
+            ? Object.fromEntries(
+                externalServers
+                  .filter((s) => s.history)
+                  .map((s) => [
+                    s.id,
+                    {
+                      ...(s.history?.cpu ? { cpu: s.history.cpu } : {}),
+                      ...(s.history?.memory ? { memory: s.history.memory } : {}),
+                      ...(s.history?.disk ? { disk: s.history.disk } : {}),
+                    },
+                  ])
+              )
+            : undefined;
 
           const metrics = ['cpu', 'memory', 'disk'] as const;
           const targetMetrics =
@@ -107,7 +158,7 @@ export const detectAnomaliesAllServers = tool({
               const isMetricCritical = currentValue >= threshold.critical;
               const isMetricWarning = currentValue >= threshold.warning;
 
-              const history = getHistoryForMetric(server.id, metric, currentValue, fixedSlot);
+              const history = getHistoryForMetric(server.id, metric, currentValue, fixedSlot, externalHistory);
               // window=9(90min) — backtest 최적값; 전체 36슬롯보다 단기 창이 F1 +26pp 우수
               const recentHistory = history.slice(-TREND_WINDOW_SLOTS).map((p) => p.value);
               const projectedValue30m = Math.round(projectValue(recentHistory, TREND_HORIZON_SLOTS) * 10) / 10;
