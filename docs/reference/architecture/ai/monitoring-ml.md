@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-02-24
+> Last reviewed: 2026-04-18
 > Canonical: docs/reference/architecture/ai/monitoring-ml.md
 > Tags: monitoring,ml,anomaly-detection,trend-prediction,architecture
 
@@ -92,6 +92,23 @@ cloud-run/ai-engine/src/lib/ai/monitoring/
   - `confidenceBasis`: 규칙/통계 신뢰 근거 문자열
   - `rationale`: `string[]` 근거 토큰
 - `detectAnomaliesAllServers`는 임계치 기반 스캔 + 1시간 선형 예측 경로를 유지하여 비용/지연 우선 정책을 보존합니다.
+- 베이스라인 표류(Baseline Drift) 감지는 최근 6시간 데이터를 전/후반부로 나눠 평균 차이가 일정 시그마를 넘으면 표류로 분류합니다.
+- `DecisionSource` 및 `AnalysisBasis` 메타데이터를 통해 임계값 초과/통계 이탈 근거를 구조화해 반환합니다.
+
+## 추세 예측 구현 메모
+
+- 선형 회귀와 결정계수(`R^2`)를 함께 사용해 예측 방향성과 신뢰도를 계산합니다.
+- CPU/Memory/Disk 같은 백분율 메트릭에는 포화 모델(Damped Overshoot)을 적용해 100%를 비현실적으로 초과하는 예측을 완화합니다.
+- 임계값 도달 ETA뿐 아니라, 장애 상태에서 우하향 추세인 경우 정상 복귀 ETA도 계산합니다.
+
+## 비교 요약
+
+| 비교 항목 | 기본 Cloud 알람 | OpenManager AI 현재 구현 | 엔터프라이즈 모니터링 (ML 적용) |
+| :--- | :--- | :--- | :--- |
+| 탐지 방식 | 정적 임계값 (예: > 80%) | 정적 임계값 + 통계적 동적 밴드 + Drift 감지 | 딥러닝(LSTM, Prophet), 계절성 반영 |
+| 추세 예측 | 미지원 | 선형 회귀 + 포화 감속 방어 로직 + ETA 계산 | 다항 회귀, 비선형 시계열 예측 |
+| 설명 가능성 | 낮음 | 높음 (근거 토큰, decisionSource 명시) | 보통 (블랙박스 모델인 경우 해석 난해) |
+| 연산 비용 | 매우 낮음 | 매우 낮음 (경량 TypeScript, 추가 API 호출 없음) | 매우 높음 (별도 AI 서버 필요) |
 
 ## 향후 재도입(오픈소스 ML) 트리거
 
