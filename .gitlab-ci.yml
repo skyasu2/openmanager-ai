@@ -91,6 +91,9 @@ workflow:
   rules:
     # semver 태그 push → deploy 파이프라인 (validate + deploy + smoke)
     - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/'
+    # 운영 관측/수동 점검 파이프라인은 변경 감지와 무관하게 생성 허용
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+    - if: '$CI_PIPELINE_SOURCE == "web"'
     # MR / branch push → validate 전용 파이프라인
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes: *pipeline_relevant_changes
@@ -187,6 +190,15 @@ stages:
   rules:
     - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/'
       when: on_success
+    - when: never
+
+.artifact_registry_cleanup_observe_rule: &artifact_registry_cleanup_observe_rule
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: on_success
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: manual
+      allow_failure: true
     - when: never
 
 .ai_engine_npm_cache: &ai_engine_npm_cache
@@ -341,4 +353,26 @@ post_deploy_smoke:
     - npm run test:vercel:post-deploy:smoke -- --url=https://openmanager-ai.vercel.app --expected-version="${CI_COMMIT_TAG#v}"
     - echo "✅ post-deploy smoke 통과"
   timeout: 5 minutes
+  interruptible: true
+
+observe_artifact_registry_cleanup:
+  stage: smoke
+  tags:
+    - wsl2-docker
+  <<: *artifact_registry_cleanup_observe_rule
+  before_script: *gcp_ci_auth
+  script:
+    - echo "▶ Artifact Registry cleanup recheck..."
+    - mkdir -p tmp/ci
+    - bash cloud-run/ai-engine/scripts/check-artifact-registry-cleanup.sh | tee tmp/ci/artifact-registry-cleanup-recheck.txt
+    - echo "✅ Artifact Registry cleanup recheck 완료"
+  artifacts:
+    name: "artifact-registry-cleanup-${CI_PIPELINE_ID}"
+    when: always
+    expire_in: 14 days
+    paths:
+      - tmp/ci/artifact-registry-cleanup-recheck.txt
+  after_script:
+    - rm -f gcp-key.json
+  timeout: 10 minutes
   interruptible: true

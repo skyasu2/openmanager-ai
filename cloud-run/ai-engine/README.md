@@ -27,10 +27,48 @@ npm run test:all
 # 권장: 운영 배포 스크립트(Cloud Build 원격 빌드 + Free Tier 가드레일)
 bash deploy.sh
 
+# Artifact Registry cleanup 재점검
+# 7일 보존 임계 + cleanup background job 반영 후 용량/삭제 로그 점검
+bash scripts/check-artifact-registry-cleanup.sh
+
+# GitLab CI 수동/스케줄 재점검
+# job: observe_artifact_registry_cleanup
+# 권장: 2026-04-22 이후 daily 10:00 KST schedule 또는 필요 시 Run pipeline(web)에서 manual 실행
+
 # 실험용/임시 목적만: 로컬 소스로 직접 배포
 # (운영 반영에는 권장하지 않음)
 gcloud run deploy ai-engine --source . --region asia-northeast1
 ```
+
+### Artifact Registry Cleanup Recheck Timing
+
+- 기준 날짜 계산:
+  - 현재 대용량 blob 누적의 가장 이른 관측일: `2026-04-14`
+  - cleanup delete 조건: `olderThan=7 days`
+  - earliest threshold day: `2026-04-21`
+  - Google cleanup background job 반영 여유: 약 `1 day`
+  - 권장 재점검일: `2026-04-22` 이후
+- 예시:
+  - `2026-04-18 KST`에 보면 `2026-04-22`는 `4일` 뒤였다.
+  - `2026-04-19 KST`인 지금 보면 `2026-04-22`는 `3일` 남은 상태가 맞다.
+- 확인 방법:
+  - 로컬: `bash scripts/check-artifact-registry-cleanup.sh`
+  - GitLab CI: `observe_artifact_registry_cleanup`
+  - GitLab schedule 권장:
+    - branch: `main`
+    - cadence: daily
+    - start: `2026-04-22` 이후
+    - 권장 시각: `10:00 KST` 전후
+    - UI path: `GitLab > Build > Pipeline schedules > New schedule`
+    - description 예시: `Artifact Registry cleanup recheck`
+    - timezone이 `Asia/Seoul`이면 `0 10 * * *`
+    - timezone이 `UTC`면 `0 1 * * *`로 `10:00 KST`에 해당
+    - target branch: `main`
+    - variable 추가는 불필요
+  - GitLab CI 결과 파일: `tmp/ci/artifact-registry-cleanup-recheck.txt` artifact
+- 기대 신호:
+  - `Cleanup Delete Logs`에 Artifact Registry service account 기반 `DeleteVersion` 또는 `BatchDeleteVersions`
+  - `Files By Day`에서 `2026-04-14` bucket 감소 시작
 
 ## Architecture (v8.0.0)
 
