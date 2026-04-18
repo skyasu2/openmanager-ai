@@ -1,0 +1,128 @@
+{
+  "runId": "QA-20260418-0304",
+  "recordedAt": "2026-04-18T12:30:51.893Z",
+  "recordedAtKst": "2026-04-18 21:30:51 KST",
+  "runTitle": "Vercel targeted QA - AI metric ranking hotfix",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "ai-engine-00329-jvq",
+    "deploymentUrl": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+    "commitSha": "2cd5f40d0"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "Vercel production guest session -> dashboard -> AI sidebar flow",
+    "AI sidebar query: 현재 CPU가 가장 높은 서버 알려줘",
+    "AI sidebar query: 현재 메모리 사용률 상위 3대 알려줘",
+    "CPU ranking response returns the top server with direct metric lookup metadata",
+    "Memory Top 3 response preserves descending order after ranking-answer fix"
+  ],
+  "skippedSurfaces": [
+    "fullscreen AI workspace",
+    "Reporter/Analyst advanced packs",
+    "broad route regression pack",
+    "mobile layout pack"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 4,
+    "failed": 1
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-18T21:04:00+09:00",
+      "summary": "Current billing period reviewed after production QA; effective usage 11.0956 USD, billed 0.0000 USD. No unexpected usage spike was observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": ""
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "CPU ranking response on production",
+      "path": "reports/qa/evidence/qa-20260418-ranking-cpu-response.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Memory top-3 response on production",
+      "path": "reports/qa/evidence/qa-20260418-ranking-memory-response.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Ranking hotfix session console",
+      "path": "reports/qa/evidence/qa-20260418-ranking-session-console.txt"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-metric-ranking-cpu-route",
+      "title": "Current metric ranking query routes to deterministic metric lookup",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production QA: '현재 CPU가 가장 높은 서버 알려줘' returned lb-haproxy-dc1-01 85% with analysis basis showing direct metric lookup.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-metric-ranking-answer-order",
+      "title": "Ranking answers preserve descending order from tool output",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production QA: '현재 메모리 사용률 상위 3대 알려줘' returned 72% -> 71% -> 70% in descending order.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "ai-metric-ranking-memory-path-metadata",
+      "title": "Memory top-N query should expose deterministic metric-ranking path instead of filter fallback metadata",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Production QA still showed '도구: 서버 필터링' in analysis basis for the memory top-3 query, even though the returned ranking order was correct.",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    }
+  ],
+  "notes": [
+    "CPU ranking query was rechecked after ai-engine redeploy and returned lb-haproxy-dc1-01 as the highest CPU server.",
+    "Memory top-3 query returned descending values (72%, 71%, 70%) on production after the ranking-answer fix.",
+    "Console log remained clean during the targeted Vercel AI sidebar session (0 errors / 0 warnings).",
+    "The memory top-3 response path still surfaced filterServers-style metadata in the analysis basis; treat this as a non-blocking follow-up rather than a user-facing correctness failure."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

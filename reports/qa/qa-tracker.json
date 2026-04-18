@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-18T08:01:44.685Z"
+    "updatedAt": "2026-04-18T12:30:51.893Z"
   },
   "sequence": {
-    "nextRunNumber": 304
+    "nextRunNumber": 305
   },
   "summary": {
-    "totalRecordedRuns": 301,
-    "totalRuns": 257,
+    "totalRecordedRuns": 302,
+    "totalRuns": 258,
     "excludedRuns": 44,
-    "totalChecks": 2034,
-    "totalPassed": 1957,
-    "totalFailed": 71,
+    "totalChecks": 2039,
+    "totalPassed": 1961,
+    "totalFailed": 72,
     "completionRate": 100,
-    "completedItems": 297,
+    "completedItems": 299,
     "pendingItems": 0,
     "deferredItems": 0,
-    "wontFixItems": 14,
+    "wontFixItems": 15,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260418-0303",
-    "lastRecordedAt": "2026-04-18T08:01:44.685Z",
-    "latestRecordedRunId": "QA-20260418-0303",
-    "latestRecordedAt": "2026-04-18T08:01:44.685Z"
+    "lastRunId": "QA-20260418-0304",
+    "lastRecordedAt": "2026-04-18T12:30:51.893Z",
+    "latestRecordedRunId": "QA-20260418-0304",
+    "latestRecordedAt": "2026-04-18T12:30:51.893Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -7187,6 +7187,78 @@
       "overengineeringScope": "Current mobile header is functional and overflow-free, so visual retuning is optional rather than a release gate.",
       "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
       "lastStatusChangeAt": "2026-04-18T08:01:44.685Z"
+    },
+    "ai-metric-ranking-cpu-route": {
+      "id": "ai-metric-ranking-cpu-route",
+      "title": "Current metric ranking query routes to deterministic metric lookup",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260418-0304",
+      "firstSeenAt": "2026-04-18T12:30:51.893Z",
+      "lastSeenRunId": "QA-20260418-0304",
+      "lastSeenAt": "2026-04-18T12:30:51.893Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production QA: '현재 CPU가 가장 높은 서버 알려줘' returned lb-haproxy-dc1-01 85% with analysis basis showing direct metric lookup.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-18T12:30:51.893Z"
+    },
+    "ai-metric-ranking-answer-order": {
+      "id": "ai-metric-ranking-answer-order",
+      "title": "Ranking answers preserve descending order from tool output",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260418-0304",
+      "firstSeenAt": "2026-04-18T12:30:51.893Z",
+      "lastSeenRunId": "QA-20260418-0304",
+      "lastSeenAt": "2026-04-18T12:30:51.893Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production QA: '현재 메모리 사용률 상위 3대 알려줘' returned 72% -> 71% -> 70% in descending order.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-18T12:30:51.893Z"
+    },
+    "ai-metric-ranking-memory-path-metadata": {
+      "id": "ai-metric-ranking-memory-path-metadata",
+      "title": "Memory top-N query should expose deterministic metric-ranking path instead of filter fallback metadata",
+      "priority": "P2",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260418-0304",
+      "firstSeenAt": "2026-04-18T12:30:51.893Z",
+      "lastSeenRunId": "QA-20260418-0304",
+      "lastSeenAt": "2026-04-18T12:30:51.893Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "Production QA still showed '도구: 서버 필터링' in analysis basis for the memory top-3 query, even though the returned ranking order was correct.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-04-18T12:30:51.893Z"
     }
   },
   "runs": [
@@ -27359,6 +27431,92 @@
       "expertCount": 4,
       "expertNeedsImprovementCount": 0,
       "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1
+    },
+    {
+      "runId": "QA-20260418-0304",
+      "recordedAt": "2026-04-18T12:30:51.893Z",
+      "recordedAtKst": "2026-04-18 21:30:51 KST",
+      "title": "Vercel targeted QA - AI metric ranking hotfix",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260418-0304.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "ai-engine-00329-jvq",
+        "deploymentUrl": "https://ai-engine-jdhrhws7ia-an.a.run.app",
+        "commitSha": "2cd5f40d0"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "Vercel production guest session -> dashboard -> AI sidebar flow",
+        "AI sidebar query: 현재 CPU가 가장 높은 서버 알려줘",
+        "AI sidebar query: 현재 메모리 사용률 상위 3대 알려줘",
+        "CPU ranking response returns the top server with direct metric lookup metadata",
+        "Memory Top 3 response preserves descending order after ranking-answer fix"
+      ],
+      "skippedSurfaces": [
+        "fullscreen AI workspace",
+        "Reporter/Analyst advanced packs",
+        "broad route regression pack",
+        "mobile layout pack"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 4,
+        "failed": 1
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-18T21:04:00+09:00",
+          "summary": "Current billing period reviewed after production QA; effective usage 11.0956 USD, billed 0.0000 USD. No unexpected usage spike was observed.",
+          "evidence": "npm run check:usage:vercel",
+          "url": ""
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "CPU ranking response on production",
+          "path": "reports/qa/evidence/qa-20260418-ranking-cpu-response.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Memory top-3 response on production",
+          "path": "reports/qa/evidence/qa-20260418-ranking-memory-response.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Ranking hotfix session console",
+          "path": "reports/qa/evidence/qa-20260418-ranking-session-console.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 1

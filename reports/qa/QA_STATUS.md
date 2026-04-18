@@ -1,39 +1,36 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-18 17:01:46 KST
+> Generated at: 2026-04-18 21:30:53 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 301 |
-| Total Runs (Counted) | 257 |
+| Total Recorded Runs | 302 |
+| Total Runs (Counted) | 258 |
 | Non-counted Runs | 44 |
-| Total Checks | 2034 |
-| Passed | 1957 |
-| Failed | 71 |
-| Completed Items | 297 |
+| Total Checks | 2039 |
+| Passed | 1961 |
+| Failed | 72 |
+| Completed Items | 299 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 14 |
+| Wont-Fix Items | 15 |
 | Expert Domains Tracked | 8 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260418-0303 (2026-04-18T08:01:44.685Z) |
-| Latest Recorded Run | QA-20260418-0303 (2026-04-18T08:01:44.685Z) |
+| Last Counted Run | QA-20260418-0304 (2026-04-18T12:30:51.893Z) |
+| Latest Recorded Run | QA-20260418-0304 (2026-04-18T12:30:51.893Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260418-0303 (2026-04-18T08:01:44.685Z)
+Latest run: QA-20260418-0304 (2026-04-18T12:30:51.893Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| Test Automation Architect | appropriate | no | - |
-| AI Quality Assurance Specialist | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
@@ -43,31 +40,27 @@ Latest run: QA-20260418-0303 (2026-04-18T08:01:44.685Z)
 
 ## Coverage (Latest Run)
 
-- Scope: broad
-- Release-Facing: yes
+- Scope: targeted
+- Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: dpl_8Th4eohuqf6tGKxqt1G4Vro6WRcr / SHA d83e0a6a
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, modal-detail-pack, ai-advanced-surface
-- Covered Surfaces: landing render and version badge on production v8.11.20, /main redirects to / on production v8.11.20, /login render with Google/GitHub/email/guest entry, /privacy render with back-link to login, 404 route returns expected 404 page on production, system start flow transitions to /dashboard, dashboard summary render with live totals and resource cards, active alerts modal render with critical/warning counts, active alert AI action opens sidebar with prefilled prompt, AI sidebar response completes for cache-redis-dc1-01 memory alert, AI sidebar surfaces routing-timeout fallback notice before successful Analyst recovery, AI sidebar analysis basis detail shows tools summary and recent 1 hour window, /dashboard/ai-assistant fullscreen workspace restores the carried conversation, fullscreen AI workspace exposes AI process with detectAnomalies/correlateMetrics/findRootCause steps, server detail modal supports 3-tab switch, server detail modal closes on ESC, Analyst 전체 분석 flow completes and renders issue/trend breakdown, /api/health 200 on production with database/cache/ai connected, /api/version 200 on production with version 8.11.20 / nextjs 16.1.6 / environment production, console 0 error / 0 warning across landing, dashboard, sidebar, fullscreen AI routes during normal flow, mobile dashboard at 390px has no horizontal overflow and keeps cards readable, mobile AI assistant at 390px has no horizontal overflow and keeps chat composer accessible
-- Skipped Surfaces: /auth/error fallback route, /auth/success legacy callback route, topology modal detailed interaction, log explorer modal, Reporter generate/detail flow, feedback submission flow, security blocked-prompt regression pack, Cloud Run admin observability endpoints
+- Deployment: ai-engine-00329-jvq / SHA 2cd5f40d
+- Coverage Packs: ai-core
+- Covered Surfaces: Vercel production guest session -> dashboard -> AI sidebar flow, AI sidebar query: 현재 CPU가 가장 높은 서버 알려줘, AI sidebar query: 현재 메모리 사용률 상위 3대 알려줘, CPU ranking response returns the top server with direct metric lookup metadata, Memory Top 3 response preserves descending order after ranking-answer fix
+- Skipped Surfaces: fullscreen AI workspace, Reporter/Analyst advanced packs, broad route regression pack, mobile layout pack
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | Production | [Production](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Deployment dpl_8Th4eohuqf6tGKxqt1G4Vro6WRcr | [Deployment dpl_8Th4eohuqf6tGKxqt1G4Vro6WRcr](https://vercel.com/skyasus-projects/openmanager-ai/8Th4eohuqf6tGKxqt1G4Vro6WRcr) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Production dashboard landing surface on v8.11.20 | `reports/qa/evidence/qa-20260418-dashboard-landing.png` | - |
-| playwright-screenshot | Production AI sidebar analysis on v8.11.20 | `reports/qa/evidence/qa-20260418-ai-sidebar-analysis.png` | - |
-| playwright-screenshot | Production mobile dashboard on v8.11.20 | `reports/qa/evidence/qa-20260418-mobile-dashboard.png` | - |
-| playwright-screenshot | Production mobile AI assistant on v8.11.20 | `reports/qa/evidence/qa-20260418-mobile-ai-assistant.png` | - |
-| playwright-console | Production dashboard console log on v8.11.20 | `reports/qa/evidence/qa-20260418-dashboard-console.txt` | - |
-| playwright-console | Production session console log on v8.11.20 | `reports/qa/evidence/qa-20260418-session-console.txt` | - |
+| playwright-screenshot | CPU ranking response on production | `reports/qa/evidence/qa-20260418-ranking-cpu-response.png` | - |
+| playwright-screenshot | Memory top-3 response on production | `reports/qa/evidence/qa-20260418-ranking-memory-response.png` | - |
+| playwright-console | Ranking hotfix session console | `reports/qa/evidence/qa-20260418-ranking-session-console.txt` | - |
 
 ## Expert Domain Open Gaps
 
@@ -93,6 +86,8 @@ Latest run: QA-20260418-0303 (2026-04-18T08:01:44.685Z)
 - [P2] ai-agent-type-metadata: AI Chat 에이전트 타입 메타데이터 표시 개선 (seen 1회, last QA-20260326-0190)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] ai-cold-start-latency: Cloud Run cold start 레이턴시 최적화 (seen 2회, last QA-20260327-0193)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P2] ai-metric-ranking-memory-path-metadata: Memory top-N query should expose deterministic metric-ranking path instead of filter fallback metadata (seen 1회, last QA-20260418-0304)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] analyst-drilldown: Analyst 서버별 드릴다운 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
@@ -140,6 +135,8 @@ Latest run: QA-20260418-0303 (2026-04-18T08:01:44.685Z)
 - ai-friendly-template-todo-marker: Template TODO marker 분리 (TEMPLATE_TODO 적용) (completed 1회, last QA-20260226-0006)
 - ai-hardening-production-verification: Verify production AI hardening release on v8.11.20 (completed 1회, last QA-20260418-0303)
 - ai-math-tools: AI 계산 도구(수식/통계/용량) 셋업 완료 (completed 1회, last QA-20260228-0023)
+- ai-metric-ranking-answer-order: Ranking answers preserve descending order from tool output (completed 1회, last QA-20260418-0304)
+- ai-metric-ranking-cpu-route: Current metric ranking query routes to deterministic metric lookup (completed 1회, last QA-20260418-0304)
 - ai-reporter-success: Reporter Agent 보고서 생성 성공 (completed 3회, last QA-20260315-0104)
 - ai-server-timing-hosting-path-diagnosed: Server-Timing production/local hosting path difference diagnosed (completed 1회, last QA-20260310-0081)
 - ai-sidebar-open: AI 사이드바 열기/닫기 (completed 1회, last QA-20260317-0114)
@@ -415,6 +412,7 @@ Latest run: QA-20260418-0303 (2026-04-18T08:01:44.685Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260418-0304 | 2026-04-18T12:30:51.893Z | targeted | no | yes | Vercel targeted QA - AI metric ranking hotfix | 5 | 2 | 0 | 0 | 1 | 0 |
 | QA-20260418-0303 | 2026-04-18T08:01:44.685Z | broad | yes | yes | Production broad QA - 8.11.20 AI hardening verification | 22 | 1 | 0 | 0 | 1 | 0 |
 | QA-20260417-0302 | 2026-04-17T05:39:27.161Z | targeted | no | yes | v8.11.19 active-alert :9100 fix targeted production QA | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260417-0301 | 2026-04-17T05:23:31.724Z | targeted | yes | no | Production release verification blocked - v8.11.19 deploy not created | 4 | 0 | 1 | 0 | 0 | 1 |
@@ -434,4 +432,3 @@ Latest run: QA-20260418-0303 (2026-04-18T08:01:44.685Z)
 | QA-20260415-0287 | 2026-04-15T00:53:57.310Z | release-gate | yes | yes | Production release-gate QA refresh after ai-engine-00317 stabilization | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260415-0286 | 2026-04-14T23:41:31.531Z | targeted | no | no | Mixed advisory residual follow-up QA (ai-engine-00317) | 3 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260415-0285 | 2026-04-14T17:11:51.995Z | targeted | no | yes | Graph traversal re-evaluation post-variant-fix QA (ai-engine-00317) | 4 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260415-0284 | 2026-04-14T16:50:52.817Z | targeted | no | yes | Topology duplicate tool invocation post-deploy QA (ai-engine-00317) | 3 | 1 | 0 | 0 | 0 | 0 |
