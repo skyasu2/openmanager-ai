@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (QA evidence 저장소 용량 tracking 갱신)
+**Last Updated**: 2026-04-18 KST (QA evidence audit legacy-reference 가시성 개선)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -30,6 +30,15 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-18 #137)
+- [x] QA evidence audit legacy-reference 가시성 개선
+  - `qa:evidence:audit` 출력에 `referenced legacy evidence` 개수/용량을 추가해 size warning 중 실제 tracker-referenced legacy proof 비중을 바로 확인할 수 있게 정리
+  - helper를 분리해 unit test로 고정하고, README에 새 출력의 해석 규칙을 추가
+  - 검증:
+    - `npx vitest run tests/unit/qa/qa-evidence-audit.test.ts`
+    - `npm run qa:evidence:audit`
+    - `npm run docs:lint:changed`
 
 ### Completed (2026-04-18 #136)
 - [x] QA evidence 저장소 용량 tracking 갱신

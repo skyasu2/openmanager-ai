@@ -105,6 +105,19 @@ function formatBudgetLine(label, bytes, warnBytes) {
   return `${status} ${label}: ${formatBytes(bytes)} (warn ${formatBytes(warnBytes)})`;
 }
 
+function summarizeReferencedPrefix(fileInfos, referencedPaths, prefix) {
+  return fileInfos.reduce(
+    (acc, info) => {
+      if (!info.relativePath.startsWith(prefix)) return acc;
+      if (!referencedPaths.has(info.relativePath)) return acc;
+      acc.count += 1;
+      acc.bytes += info.size;
+      return acc;
+    },
+    { count: 0, bytes: 0 }
+  );
+}
+
 function collectRunRecords() {
   return walkFiles(RUNS_ROOT)
     .filter((filePath) => /^qa-run-QA-.*\.json$/i.test(path.basename(filePath)))
@@ -229,6 +242,11 @@ function main() {
   const qaSummary = summarizeSize(qaFileInfos);
   const runSummary = summarizeSize(runFileInfos);
   const evidenceSummary = summarizeSize(evidenceFileInfos);
+  const referencedLegacyEvidenceSummary = summarizeReferencedPrefix(
+    evidenceFileInfos,
+    referencedEvidence,
+    'reports/qa/evidence/legacy/'
+  );
 
   const budgetWarnings = [];
   if (qaSummary.bytes > STORAGE_DEFAULTS.qaWarnBytes) {
@@ -304,6 +322,9 @@ function main() {
     `- qa/evidence size: ${formatBytes(evidenceSummary.bytes)} (${evidenceSummary.count} files)`
   );
   console.log(
+    `- referenced legacy evidence: ${referencedLegacyEvidenceSummary.count} (${formatBytes(referencedLegacyEvidenceSummary.bytes)})`
+  );
+  console.log(
     `- files >= ${formatBytes(STORAGE_DEFAULTS.largeFileWarnBytes)}: ${largeFilesOverWarn.length}`
   );
   console.log(
@@ -373,4 +394,11 @@ function main() {
   }
 }
 
-main();
+if (require.main === module) {
+  main();
+}
+
+module.exports = {
+  summarizeReferencedPrefix,
+  formatBytes,
+};
