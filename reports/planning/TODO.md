@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (QA evidence audit unique-footprint 가시성 개선)
+**Last Updated**: 2026-04-18 KST (QA evidence top-run manual triage 기록)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -16,7 +16,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-04-18 재검증 기준 `reports/qa=61.12MiB`, `reports/qa/evidence=56.45MiB / 233파일`. `npm run qa:evidence:audit` 결과 orphan/missing/archive candidate `0`, size warning만 남음. policy-protected evidence로 판단되어 cleanup은 보류하고 새 evidence 누적 시점에만 재평가. |
+| P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-04-18 재검증 기준 `reports/qa=61.12MiB`, `reports/qa/evidence=56.45MiB / 233파일`. `npm run qa:evidence:audit` 결과 orphan/missing/archive candidate `0`, size warning만 남음. top-run triage 결과 `QA-20260330-0197/0198`는 unique footprint가 각 `1MiB` 미만인 low-yield shared bundle, `QA-20260404-0228`은 `3.35MiB`의 고유 modal/detail proof로 확인되어 explicit override batch는 열지 않음. 새 evidence 누적 시점에만 재평가. |
 
 ## Backlog
 
@@ -30,6 +30,17 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-18 #141)
+- [x] QA evidence top-run manual triage 기록
+  - `QA-20260330-0197` / `0198` run pair는 shared legacy bundle은 크지만 unique footprint가 각각 `890.36KiB`, `870.54KiB`로 낮아 ref 정리만으로는 저장소 절감 효과가 작다고 판단
+  - `QA-20260404-0228`은 `3.35MiB` unique footprint이지만 active alerts, topology, server detail tabs, log explorer, analyst/reporter, full-screen AI, 404, console까지 모두 고유 surface proof라 duplicate landing cleanup 규칙에 해당하지 않음
+  - 결과적으로 현재 top offenders 중 explicit override batch를 바로 열 안전한 후보는 없다고 판단하고 backlog를 tracking-only로 유지
+  - 검증:
+    - `sed -n '1,180p' reports/qa/runs/2026/qa-run-QA-20260330-0197.json`
+    - `sed -n '1,180p' reports/qa/runs/2026/qa-run-QA-20260330-0198.json`
+    - `sed -n '1,220p' reports/qa/runs/2026/qa-run-QA-20260404-0228.json`
+    - `du -h reports/qa/evidence/legacy/2026/qa-20260330-0197-* reports/qa/evidence/legacy/2026/qa-20260330-0198-*`
 
 ### Completed (2026-04-18 #140)
 - [x] QA evidence audit unique-footprint 가시성 개선
