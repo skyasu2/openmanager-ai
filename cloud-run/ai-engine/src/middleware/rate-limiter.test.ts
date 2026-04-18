@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('../lib/redis-client', () => ({
   getRedisClient: () => null,
@@ -9,6 +9,10 @@ import {
   RATE_LIMIT_IDENTITY_HEADER,
   rateLimitMiddleware,
 } from './rate-limiter';
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 describe('cloud run rate limiter identity', () => {
   it('prefers forwarded end-user identity over shared API key', () => {
@@ -79,5 +83,45 @@ describe('cloud run jobs limiter policy', () => {
 
     expect(res.status).toBe(200);
     expect(res.headers.get('X-RateLimit-Limit')).toBe('60');
+  });
+});
+
+describe('cloud run daily semantics', () => {
+  it('blocks supervisor requests on the 101st request with daily metadata after minute windows reset', async () => {
+    vi.useFakeTimers();
+
+    const app = new Hono();
+    app.use('/api/*', rateLimitMiddleware);
+    app.post('/api/ai/supervisor/stream/v2', (c) => c.json({ ok: true }));
+
+    const headers = {
+      [RATE_LIMIT_IDENTITY_HEADER]: 'test:supervisor-daily-101',
+      'X-API-Key': 'shared-service-secret',
+    };
+
+    for (let batch = 0; batch < 10; batch += 1) {
+      for (let index = 0; index < 10; index += 1) {
+        const res = await app.request('/api/ai/supervisor/stream/v2', {
+          method: 'POST',
+          headers,
+        });
+        expect(res.status).toBe(200);
+      }
+
+      vi.advanceTimersByTime(60_001);
+    }
+
+    const blocked = await app.request('/api/ai/supervisor/stream/v2', {
+      method: 'POST',
+      headers,
+    });
+
+    expect(blocked.status).toBe(429);
+    expect(blocked.headers.get('X-RateLimit-Daily-Limit')).toBe('100');
+    expect(blocked.headers.get('X-RateLimit-Daily-Remaining')).toBe('0');
+
+    const body = await blocked.json();
+    expect(body.limitScope).toBe('daily');
+    expect(body.dailyLimitExceeded).toBe(true);
   });
 });
