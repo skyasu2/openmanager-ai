@@ -24,6 +24,8 @@ interface RateLimitConfig {
   maxRequests: number;
   /** Window duration in milliseconds */
   windowMs: number;
+  /** Optional daily request cap */
+  dailyLimit?: number;
   /** Key prefix for Redis */
   keyPrefix: string;
 }
@@ -32,6 +34,11 @@ interface RateLimitResult {
   allowed: boolean;
   remaining: number;
   resetTime: number;
+  daily?: {
+    remaining: number;
+    resetTime: number;
+  };
+  limitScope?: 'minute' | 'daily';
 }
 
 // ============================================================================
@@ -42,14 +49,18 @@ interface RateLimitResult {
  * Simple in-memory sliding window counter
  * Cloud Run Free Tier: Map size capped at 1000 entries to stay within 512Mi
  */
-const inMemoryStore = new Map<string, { count: number; resetAt: number }>();
+const inMemoryStore = new Map<
+  string,
+  { count: number; resetAt: number; dailyCount: number; dailyResetAt: number }
+>();
 const MAX_STORE_SIZE = 1000;
 const REDIS_TIMEOUT_MS = 500;
+const DAILY_WINDOW_MS = 24 * 60 * 60 * 1000;
 
 function cleanupInMemoryStore(): void {
   const now = Date.now();
   for (const [key, entry] of inMemoryStore) {
-    if (entry.resetAt <= now) {
+    if (entry.resetAt <= now && entry.dailyResetAt <= now) {
       inMemoryStore.delete(key);
     }
   }
@@ -76,20 +87,95 @@ async function checkInMemoryLimit(
 
   if (!entry || entry.resetAt <= now) {
     // New window
-    inMemoryStore.set(key, { count: 1, resetAt: now + config.windowMs });
+    const nextEntry = {
+      count: 0,
+      resetAt: now + config.windowMs,
+      dailyCount: entry?.dailyCount ?? 0,
+      dailyResetAt: entry?.dailyResetAt ?? now + DAILY_WINDOW_MS,
+    };
+    if (nextEntry.dailyResetAt <= now) {
+      nextEntry.dailyCount = 0;
+      nextEntry.dailyResetAt = now + DAILY_WINDOW_MS;
+    }
+    inMemoryStore.set(key, nextEntry);
+
+    if (config.dailyLimit && nextEntry.dailyCount >= config.dailyLimit) {
+      return {
+        allowed: false,
+        remaining: 0,
+        resetTime: nextEntry.dailyResetAt,
+        daily: {
+          remaining: 0,
+          resetTime: nextEntry.dailyResetAt,
+        },
+        limitScope: 'daily',
+      };
+    }
+
+    nextEntry.count += 1;
+    if (config.dailyLimit) {
+      nextEntry.dailyCount += 1;
+    }
     return {
       allowed: true,
-      remaining: config.maxRequests - 1,
-      resetTime: now + config.windowMs,
+      remaining: config.maxRequests - nextEntry.count,
+      resetTime: nextEntry.resetAt,
+      daily: config.dailyLimit
+        ? {
+            remaining: Math.max(0, config.dailyLimit - nextEntry.dailyCount),
+            resetTime: nextEntry.dailyResetAt,
+          }
+        : undefined,
+    };
+  }
+
+  if (entry.dailyResetAt <= now) {
+    entry.dailyCount = 0;
+    entry.dailyResetAt = now + DAILY_WINDOW_MS;
+  }
+
+  if (entry.count >= config.maxRequests) {
+    return {
+      allowed: false,
+      remaining: 0,
+      resetTime: entry.resetAt,
+      daily: config.dailyLimit
+        ? {
+            remaining: Math.max(0, config.dailyLimit - entry.dailyCount),
+            resetTime: entry.dailyResetAt,
+          }
+        : undefined,
+      limitScope: 'minute',
+    };
+  }
+
+  if (config.dailyLimit && entry.dailyCount >= config.dailyLimit) {
+    return {
+      allowed: false,
+      remaining: 0,
+      resetTime: entry.dailyResetAt,
+      daily: {
+        remaining: 0,
+        resetTime: entry.dailyResetAt,
+      },
+      limitScope: 'daily',
     };
   }
 
   entry.count += 1;
-  const allowed = entry.count <= config.maxRequests;
+  if (config.dailyLimit) {
+    entry.dailyCount += 1;
+  }
   return {
-    allowed,
+    allowed: true,
     remaining: Math.max(0, config.maxRequests - entry.count),
     resetTime: entry.resetAt,
+    daily: config.dailyLimit
+      ? {
+          remaining: Math.max(0, config.dailyLimit - entry.dailyCount),
+          resetTime: entry.dailyResetAt,
+        }
+      : undefined,
   };
 }
 
@@ -107,26 +193,90 @@ async function checkRedisLimit(
   }
 
   const now = Date.now();
-  const redisKey = `${config.keyPrefix}:${key}`;
+  const minuteKey = `${config.keyPrefix}:${key}`;
+  const dailyKey = `${config.keyPrefix}:daily:${key}`;
 
   try {
-    // Sliding window: increment counter with expiry
-    const count = await redis.incr(redisKey, { timeoutMs: REDIS_TIMEOUT_MS });
+    const currentMinuteCount = Number(
+      (await redis.get(minuteKey, { timeoutMs: REDIS_TIMEOUT_MS })) ?? 0
+    );
+    const minuteTtl = await redis.pttl(minuteKey, { timeoutMs: REDIS_TIMEOUT_MS });
 
-    if (count === 1) {
-      // First request in window: set expiry
-      await redis.pexpire(redisKey, config.windowMs, {
+    let currentDailyCount = 0;
+    let dailyTtl = -1;
+
+    if (config.dailyLimit) {
+      currentDailyCount = Number(
+        (await redis.get(dailyKey, { timeoutMs: REDIS_TIMEOUT_MS })) ?? 0
+      );
+      dailyTtl = await redis.pttl(dailyKey, { timeoutMs: REDIS_TIMEOUT_MS });
+    }
+
+    if (currentMinuteCount >= config.maxRequests) {
+      return {
+        allowed: false,
+        remaining: 0,
+        resetTime: minuteTtl > 0 ? now + minuteTtl : now + config.windowMs,
+        daily: config.dailyLimit
+          ? {
+              remaining: Math.max(0, config.dailyLimit - currentDailyCount),
+              resetTime:
+                dailyTtl > 0 ? now + dailyTtl : now + DAILY_WINDOW_MS,
+            }
+          : undefined,
+        limitScope: 'minute',
+      };
+    }
+
+    if (config.dailyLimit && currentDailyCount >= config.dailyLimit) {
+      return {
+        allowed: false,
+        remaining: 0,
+        resetTime: dailyTtl > 0 ? now + dailyTtl : now + DAILY_WINDOW_MS,
+        daily: {
+          remaining: 0,
+          resetTime: dailyTtl > 0 ? now + dailyTtl : now + DAILY_WINDOW_MS,
+        },
+        limitScope: 'daily',
+      };
+    }
+
+    const minuteCount = await redis.incr(minuteKey, { timeoutMs: REDIS_TIMEOUT_MS });
+    if (minuteCount === 1) {
+      await redis.pexpire(minuteKey, config.windowMs, {
         timeoutMs: REDIS_TIMEOUT_MS,
       });
     }
+    const updatedMinuteTtl =
+      minuteTtl > 0 ? minuteTtl : config.windowMs;
+    const resetTime = now + updatedMinuteTtl;
 
-    const ttl = await redis.pttl(redisKey, { timeoutMs: REDIS_TIMEOUT_MS });
-    const resetTime = ttl > 0 ? now + ttl : now + config.windowMs;
+    let daily:
+      | {
+          remaining: number;
+          resetTime: number;
+        }
+      | undefined;
+
+    if (config.dailyLimit) {
+      const dailyCount = await redis.incr(dailyKey, { timeoutMs: REDIS_TIMEOUT_MS });
+      if (dailyCount === 1) {
+        await redis.pexpire(dailyKey, DAILY_WINDOW_MS, {
+          timeoutMs: REDIS_TIMEOUT_MS,
+        });
+      }
+      const updatedDailyTtl = dailyTtl > 0 ? dailyTtl : DAILY_WINDOW_MS;
+      daily = {
+        remaining: Math.max(0, config.dailyLimit - dailyCount),
+        resetTime: now + updatedDailyTtl,
+      };
+    }
 
     return {
-      allowed: count <= config.maxRequests,
-      remaining: Math.max(0, config.maxRequests - count),
+      allowed: true,
+      remaining: Math.max(0, config.maxRequests - minuteCount),
       resetTime,
+      daily,
     };
   } catch (error) {
     logger.warn('[RateLimiter] Redis error, falling back to in-memory:', error);
@@ -142,6 +292,7 @@ const RATE_LIMIT_CONFIGS: Record<string, RateLimitConfig> = {
   supervisor: {
     maxRequests: 10,
     windowMs: 60 * 1000, // 1분에 10회
+    dailyLimit: 100,
     keyPrefix: 'rl:supervisor',
   },
   embedding: {
@@ -152,6 +303,7 @@ const RATE_LIMIT_CONFIGS: Record<string, RateLimitConfig> = {
   jobsWrite: {
     maxRequests: 5,
     windowMs: 60 * 1000, // 1분에 5회 (job creation / processing)
+    dailyLimit: 100,
     keyPrefix: 'rl:jobs:write',
   },
   jobsRead: {
@@ -240,10 +392,16 @@ export async function rateLimitMiddleware(
   c.header('X-RateLimit-Limit', config.maxRequests.toString());
   c.header('X-RateLimit-Remaining', result.remaining.toString());
   c.header('X-RateLimit-Reset', result.resetTime.toString());
+  if (config.dailyLimit && result.daily) {
+    c.header('X-RateLimit-Daily-Limit', config.dailyLimit.toString());
+    c.header('X-RateLimit-Daily-Remaining', result.daily.remaining.toString());
+    c.header('X-RateLimit-Daily-Reset', result.daily.resetTime.toString());
+  }
 
   if (!result.allowed) {
     const retryAfter = Math.ceil((result.resetTime - Date.now()) / 1000);
     c.header('Retry-After', retryAfter.toString());
+    const isDailyLimitExceeded = result.limitScope === 'daily';
 
     logger.warn(
       `[RateLimiter] Rate limit exceeded: ${clientKey} on ${path} (${config.maxRequests}/${config.windowMs}ms)`
@@ -252,12 +410,15 @@ export async function rateLimitMiddleware(
     return c.json(
       {
         error: 'Too Many Requests',
-        message: '요청 제한을 초과했습니다. 잠시 후 다시 시도해주세요.',
+        message: isDailyLimitExceeded
+          ? `일일 요청 제한(${config.dailyLimit ?? 100}회)을 초과했습니다. 내일 다시 시도해주세요.`
+          : '요청 제한을 초과했습니다. 잠시 후 다시 시도해주세요.',
         retryAfter,
         source: 'cloud-run-ai',
-        limitScope: 'minute',
+        limitScope: isDailyLimitExceeded ? 'daily' : 'minute',
         remaining: result.remaining,
         resetAt: result.resetTime,
+        dailyLimitExceeded: isDailyLimitExceeded,
       },
       429
     );
