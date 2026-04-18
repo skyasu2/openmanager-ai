@@ -24,6 +24,8 @@
     "test:vision": "LOG_LEVEL=error vitest run --silent=passed-only src/services/ai-sdk/agents/vision-agent.test.ts src/services/ai-sdk/agents/config/agent-configs.vision-fallback.test.ts",
     "test:watch": "vitest",
     "docker:preflight": "bash scripts/docker-preflight.sh",
+    "backtest": "tsx scripts/backtest-trend-projection.ts",
+    "backtest:json": "tsx scripts/backtest-trend-projection.ts --json",
     "rag:analyze": "tsx scripts/analyze-rag-distribution.ts",
     "rag:analyze:graphrag": "tsx scripts/analyze-graphrag-coverage.ts",
     "rag:merge:plan": "tsx scripts/rag-merge-plan.ts",
