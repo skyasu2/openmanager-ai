@@ -187,9 +187,10 @@ async function checkRedisLimit(
   key: string,
   config: RateLimitConfig
 ): Promise<RateLimitResult> {
+  const namespacedKey = `${config.keyPrefix}:${key}`;
   const redis = getRedisClient();
   if (!redis) {
-    return checkInMemoryLimit(key, config);
+    return checkInMemoryLimit(namespacedKey, config);
   }
 
   const now = Date.now();
@@ -280,7 +281,7 @@ async function checkRedisLimit(
     };
   } catch (error) {
     logger.warn('[RateLimiter] Redis error, falling back to in-memory:', error);
-    return checkInMemoryLimit(key, config);
+    return checkInMemoryLimit(namespacedKey, config);
   }
 }
 
@@ -294,6 +295,11 @@ const RATE_LIMIT_CONFIGS: Record<string, RateLimitConfig> = {
     windowMs: 60 * 1000, // 1분에 10회
     dailyLimit: 100,
     keyPrefix: 'rl:supervisor',
+  },
+  supervisorHealth: {
+    maxRequests: 60,
+    windowMs: 60 * 1000, // 1분에 60회 (health/read)
+    keyPrefix: 'rl:supervisor:health',
   },
   embedding: {
     maxRequests: 30,
@@ -324,6 +330,12 @@ const RATE_LIMIT_CONFIGS: Record<string, RateLimitConfig> = {
  * should not consume the same 5/min bucket.
  */
 function resolveConfig(path: string, method: string): RateLimitConfig {
+  if (
+    path.includes('/supervisor/health') &&
+    method.toUpperCase() === 'GET'
+  ) {
+    return RATE_LIMIT_CONFIGS.supervisorHealth;
+  }
   if (path.includes('/supervisor')) return RATE_LIMIT_CONFIGS.supervisor;
   if (path.includes('/embedding')) return RATE_LIMIT_CONFIGS.embedding;
   if (path.includes('/jobs/process') && method.toUpperCase() === 'POST') {
