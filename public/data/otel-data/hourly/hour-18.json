@@ -82,6 +82,12 @@
               }
             },
             {
+              "asDouble": 0.196,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.25,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -182,6 +188,12 @@
               "asDouble": 0.52,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.6767,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
               }
             },
             {
@@ -288,6 +300,12 @@
               }
             },
             {
+              "asDouble": 0.26,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.66,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -388,6 +406,12 @@
               "asDouble": 45000000,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 43650000,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
               }
             },
             {
@@ -494,6 +518,12 @@
               }
             },
             {
+              "asDouble": 0.8181,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 1.01,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -594,6 +624,12 @@
               "asDouble": 0.73,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.7121,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
               }
             },
             {
@@ -700,6 +736,12 @@
               }
             },
             {
+              "asDouble": 128,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 107,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -803,6 +845,12 @@
               }
             },
             {
+              "asDouble": 35103310,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 35123958,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -903,6 +951,12 @@
               "asDouble": 0.024,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.08,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
               }
             },
             {
@@ -1421,6 +1475,12 @@
               }
             },
             {
+              "asDouble": 0.2303,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.34,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -1521,6 +1581,12 @@
               "asDouble": 0.71,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.7626,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
               }
             },
             {
@@ -1627,6 +1693,12 @@
               }
             },
             {
+              "asDouble": 0.26,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.65,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -1727,6 +1799,12 @@
               "asDouble": 46250000,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 50925000,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
               }
             },
             {
@@ -1833,6 +1911,12 @@
               }
             },
             {
+              "asDouble": 0.9747,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 1.33,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -1933,6 +2017,12 @@
               "asDouble": 0.73,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.813,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
               }
             },
             {
@@ -2039,6 +2129,12 @@
               }
             },
             {
+              "asDouble": 130,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 136,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -2142,6 +2238,12 @@
               }
             },
             {
+              "asDouble": 35090349,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 35116864,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -2242,6 +2344,12 @@
               "asDouble": 0.017,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.08,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
               }
             },
             {
@@ -2656,6 +2764,12 @@
               }
             },
             {
+              "asDouble": 0.2009,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.32,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -2756,6 +2870,12 @@
               "asDouble": 0.71,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.7626,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
               }
             },
             {
@@ -2862,6 +2982,12 @@
               }
             },
             {
+              "asDouble": 0.26,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.65,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -2962,6 +3088,12 @@
               "asDouble": 56250000,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 52137500,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
               }
             },
             {
@@ -3068,6 +3200,12 @@
               }
             },
             {
+              "asDouble": 0.7474,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 1.26,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -3168,6 +3306,12 @@
               "asDouble": 0.62,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.606,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
               }
             },
             {
@@ -3274,6 +3418,12 @@
               }
             },
             {
+              "asDouble": 118,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 108,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -3377,6 +3527,12 @@
               }
             },
             {
+              "asDouble": 35102636,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 35102176,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -3477,6 +3633,12 @@
               "asDouble": 0.023,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.08,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
               }
             },
             {
@@ -3891,6 +4053,12 @@
               }
             },
             {
+              "asDouble": 0.2254,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.29,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -3991,6 +4159,12 @@
               "asDouble": 0.72,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.7676,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
               }
             },
             {
@@ -4097,6 +4271,12 @@
               }
             },
             {
+              "asDouble": 0.26,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.64,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -4197,6 +4377,12 @@
               "asDouble": 45000000,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 49106250,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
               }
             },
             {
@@ -4303,6 +4489,12 @@
               }
             },
             {
+              "asDouble": 0.9696,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 1.36,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -4403,6 +4595,12 @@
               "asDouble": 1.04,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.8434,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
               }
             },
             {
@@ -4509,6 +4707,12 @@
               }
             },
             {
+              "asDouble": 117,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 102,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -4612,6 +4816,12 @@
               }
             },
             {
+              "asDouble": 35101384,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 35054803,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -4712,6 +4922,12 @@
               "asDouble": 0.02,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.08,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
               }
             },
             {
@@ -5126,6 +5342,12 @@
               }
             },
             {
+              "asDouble": 0.2254,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.31,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -5226,6 +5448,12 @@
               "asDouble": 0.44,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.6363,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
               }
             },
             {
@@ -5332,6 +5560,12 @@
               }
             },
             {
+              "asDouble": 0.26,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.65,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -5432,6 +5666,12 @@
               "asDouble": 55000000,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 49106250,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
               }
             },
             {
@@ -5538,6 +5778,12 @@
               }
             },
             {
+              "asDouble": 0.9797,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 1.37,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -5638,6 +5884,12 @@
               "asDouble": 0.96,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.8484,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
               }
             },
             {
@@ -5744,6 +5996,12 @@
               }
             },
             {
+              "asDouble": 134,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 120,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -5847,6 +6105,12 @@
               }
             },
             {
+              "asDouble": 35090946,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 35115172,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -5947,6 +6211,12 @@
               "asDouble": 0.017,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.08,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
               }
             },
             {
@@ -6322,6 +6592,12 @@
               }
             },
             {
+              "asDouble": 0.2009,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.27,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -6422,6 +6698,12 @@
               "asDouble": 0.72,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.7727,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
               }
             },
             {
@@ -6528,6 +6810,12 @@
               }
             },
             {
+              "asDouble": 0.26,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.65,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -6628,6 +6916,12 @@
               "asDouble": 48750000,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 53956250,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
               }
             },
             {
@@ -6734,6 +7028,12 @@
               }
             },
             {
+              "asDouble": 0.7827,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 0.91,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -6834,6 +7134,12 @@
               "asDouble": 0.61,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.6414,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
               }
             },
             {
@@ -6940,6 +7246,12 @@
               }
             },
             {
+              "asDouble": 122,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 111,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -7043,6 +7355,12 @@
               }
             },
             {
+              "asDouble": 35101821,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
+              }
+            },
+            {
               "asDouble": 35070582,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
@@ -7143,6 +7461,12 @@
               "asDouble": 0.021,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
+              }
+            },
+            {
+              "asDouble": 0.08,
+              "attributes": {
+                "host.name": "cache-redis-dc1-03.openmanager.kr"
               }
             },
             {

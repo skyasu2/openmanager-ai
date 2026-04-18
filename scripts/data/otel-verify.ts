@@ -349,6 +349,52 @@ function main(): void {
         ts.timestamps.length
   );
 
+  // ── 3f. Phase 3-B AZ3 Redis inventory ──
+  console.log('\n[3f] Phase 3-B AZ3 Redis inventory:');
+  const az3Redis = catalog.resources['cache-redis-dc1-03'] ?? {};
+  check(
+    'AZ3 Redis catalog entry exists',
+    az3Redis['host.name'] === 'cache-redis-dc1-03.openmanager.kr'
+  );
+  check(
+    'AZ3 Redis zone = DC1-AZ3',
+    az3Redis['cloud.availability_zone'] === 'DC1-AZ3'
+  );
+
+  let az3RedisMissingHours = 0;
+  for (let hour = 0; hour < 24; hour++) {
+    const hourly: HourlyFile = JSON.parse(
+      fs.readFileSync(
+        path.join(HOURLY_DIR, `hour-${String(hour).padStart(2, '0')}.json`),
+        'utf-8'
+      )
+    );
+    const memoryMetric = hourly.slots[0]?.metrics.find(
+      (entry) => entry.name === 'system.memory.utilization'
+    );
+    const hasAz3Redis = memoryMetric?.dataPoints.some(
+      (dp) => dp.attributes['host.name'] === 'cache-redis-dc1-03.openmanager.kr'
+    );
+    if (!hasAz3Redis) {
+      az3RedisMissingHours++;
+    }
+  }
+
+  check(
+    'AZ3 Redis present in all hourly files',
+    az3RedisMissingHours === 0,
+    `${az3RedisMissingHours} missing hours`
+  );
+
+  const az3RedisIndex = ts.serverIds.indexOf('cache-redis-dc1-03');
+  check('AZ3 Redis present in timeseries serverIds', az3RedisIndex >= 0);
+  check(
+    'AZ3 Redis timeseries length matches timestamps',
+    az3RedisIndex >= 0 &&
+      (ts.metrics['system.memory.utilization']?.[az3RedisIndex]?.length ?? 0) ===
+        ts.timestamps.length
+  );
+
   // ── 4. Cache OOM logs have redis-server (not java) ──
   console.log('\n[4] Cache OOM process name:');
   let javaOOMInCache = 0;

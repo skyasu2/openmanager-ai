@@ -169,6 +169,21 @@
       "host.memory.size": 34359738368,
       "host.disk.size": 53687091200
     },
+    "cache-redis-dc1-03": {
+      "service.name": "openmanager-ai",
+      "host.name": "cache-redis-dc1-03.openmanager.kr",
+      "host.id": "cache-redis-dc1-03",
+      "host.arch": "amd64",
+      "server.role": "cache",
+      "os.type": "linux",
+      "os.description": "ubuntu 22.04",
+      "cloud.region": "onprem-dc1",
+      "cloud.availability_zone": "DC1-AZ3",
+      "deployment.environment.name": "production",
+      "host.cpu.count": 4,
+      "host.memory.size": 34359738368,
+      "host.disk.size": 53687091200
+    },
     "storage-nfs-dc1-01": {
       "service.name": "openmanager-ai",
       "host.name": "storage-nfs-dc1-01.openmanager.kr",
