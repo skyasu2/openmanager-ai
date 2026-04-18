@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (Structured-output fallback alignment)
+**Last Updated**: 2026-04-18 KST (AnalysisBasisBadge 탭 UX 계획서 추가)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| — | — | none | 현재 active task 없음 |
+| AnalysisBasisBadge 탭 UX 리팩토링 | Medium | Approved → Codex 위임 | [계획서](analysis-basis-badge-tab-ux-plan.md) |
 
 ---
 
@@ -35,6 +35,16 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-18 #152)
+- [x] All-server anomaly external cache key isolation
+  - `detectAnomaliesAllServers`가 external payload를 generic `metricType:external`로만 캐싱하던 경로를 payload fingerprint 기반으로 분리
+  - 서로 다른 외부 서버셋/히스토리 입력이 같은 분석 캐시를 재사용하지 않도록 보정
+  - 회귀 테스트 추가:
+    - 동일 metricType + 상이한 external server payload 두 개가 서로 다른 `externalCacheFingerprint`를 쓰는지 검증
+  - 검증:
+    - targeted: `cd cloud-run/ai-engine && npx vitest run src/tools-ai-sdk/analyst-tools.test.ts`
+    - gate: `cd cloud-run/ai-engine && npm run type-check && npm run test`
 
 ### Completed (2026-04-18 #151)
 - [x] Analyst trend/anomaly generic-input refinement

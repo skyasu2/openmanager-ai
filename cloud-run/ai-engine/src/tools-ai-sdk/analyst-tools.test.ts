@@ -321,6 +321,59 @@ describe('detectAnomaliesAllServers', () => {
         expect.any(Function)
       );
     });
+
+    it('should separate cache params for different external server payloads', async () => {
+      const externalServersA = [
+        {
+          id: 'external-a',
+          name: 'External A',
+          type: 'web',
+          status: 'online' as const,
+          cpu: 30,
+          memory: 40,
+          disk: 20,
+          network: 10,
+          history: { cpu: [20, 25, 30] },
+        },
+      ];
+      const externalServersB = [
+        {
+          id: 'external-b',
+          name: 'External B',
+          type: 'web',
+          status: 'warning' as const,
+          cpu: 75,
+          memory: 82,
+          disk: 20,
+          network: 10,
+          history: { cpu: [55, 65, 75] },
+        },
+      ];
+
+      await detectAnomaliesAllServers.execute(
+        { metricType: 'cpu', externalServers: externalServersA },
+        {} as never
+      );
+      await detectAnomaliesAllServers.execute(
+        { metricType: 'cpu', externalServers: externalServersB },
+        {} as never
+      );
+
+      const firstParams = mockGetAnalysis.mock.calls[0]?.[1] as
+        | { metricType: string; externalCacheFingerprint?: string }
+        | undefined;
+      const secondParams = mockGetAnalysis.mock.calls[1]?.[1] as
+        | { metricType: string; externalCacheFingerprint?: string }
+        | undefined;
+
+      expect(firstParams?.metricType).toBe('cpu');
+      expect(secondParams?.metricType).toBe('cpu');
+      expect(firstParams?.externalCacheFingerprint).toBeDefined();
+      expect(secondParams?.externalCacheFingerprint).toBeDefined();
+      expect(firstParams?.externalCacheFingerprint).not.toBe(
+        secondParams?.externalCacheFingerprint
+      );
+    });
   });
 
   describe('Response Structure', () => {

@@ -12,6 +12,7 @@
  * @version 2.5.0
  */
 
+import { createHash } from 'crypto';
 import { tool } from 'ai';
 import { z } from 'zod';
 
@@ -53,6 +54,41 @@ import type {
 
 const TREND_WINDOW_SLOTS = 9;  // 90분 (backtest 최적값)
 const TREND_HORIZON_SLOTS = 3; // 30분 (backtest 최적값)
+
+function buildExternalServersCacheFingerprint(
+  externalServers: Array<{
+    id: string;
+    name: string;
+    type: string;
+    status: string;
+    cpu: number;
+    memory: number;
+    disk: number;
+    network: number;
+    history?: { cpu?: number[]; memory?: number[]; disk?: number[] };
+  }>
+): string {
+  const normalized = externalServers.map((server) => ({
+    id: server.id,
+    name: server.name,
+    type: server.type,
+    status: server.status,
+    cpu: server.cpu,
+    memory: server.memory,
+    disk: server.disk,
+    network: server.network,
+    history: {
+      ...(server.history?.cpu ? { cpu: [...server.history.cpu] } : {}),
+      ...(server.history?.memory ? { memory: [...server.history.memory] } : {}),
+      ...(server.history?.disk ? { disk: [...server.history.disk] } : {}),
+    },
+  }));
+
+  return createHash('sha256')
+    .update(JSON.stringify(normalized))
+    .digest('hex')
+    .slice(0, 16);
+}
 
 function projectValue(history: number[], aheadSlots: number): number {
   if (history.length === 0) return 0;
@@ -105,12 +141,16 @@ export const detectAnomaliesAllServers = tool({
   }) => {
     try {
       const cache = getDataCache();
-      // 외부 데이터 사용 시 캐시 키에 포함하여 독립적으로 캐싱
-      const cacheKey = externalServers ? `${metricType}:external` : metricType;
+      const externalCacheFingerprint = externalServers
+        ? buildExternalServersCacheFingerprint(externalServers)
+        : undefined;
 
       return await cache.getAnalysis(
         'anomaly-all',
-        { metricType: cacheKey },
+        {
+          metricType,
+          ...(externalCacheFingerprint && { externalCacheFingerprint }),
+        },
         async () => {
           // 외부 데이터가 있으면 그것을 사용, 없으면 precomputed OTel 데이터 사용
           const allServers = externalServers ?? getCurrentState().servers;
