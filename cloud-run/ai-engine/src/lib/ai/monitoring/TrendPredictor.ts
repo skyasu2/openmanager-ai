@@ -22,6 +22,7 @@
  */
 
 import {
+  MAX_PREDICTION_HORIZON,
   type EnhancedTrendPrediction,
   type MetricThresholds,
   type TrendDataPoint,
@@ -205,14 +206,24 @@ export class TrendPredictor {
    *
    * @param historicalData - 과거 데이터 포인트 배열
    * @param metricName - 메트릭 이름 (cpu, memory, disk, network)
+   * @param predictionHorizon - 기준 추세 계산 및 경보 ETA를 볼 시간 범위 (기본 1시간)
    * @returns 향상된 예측 결과
    */
   public predictEnhanced(
     historicalData: TrendDataPoint[],
-    metricName: string = 'cpu'
+    metricName: string = 'cpu',
+    predictionHorizon: number = 3600000
   ): EnhancedTrendPrediction {
+    const normalizedPredictionHorizon = Math.max(
+      0,
+      Math.min(predictionHorizon, MAX_PREDICTION_HORIZON)
+    ) || 3600000;
+
     // 1. 기본 예측 실행
-    const basePrediction = this.predictTrend(historicalData);
+    const basePrediction = this.predictTrend(
+      historicalData,
+      normalizedPredictionHorizon
+    );
     const currentValue = basePrediction.details.currentValue;
     const slope = basePrediction.details.slope;
 
@@ -262,7 +273,8 @@ export class TrendPredictor {
       currentValue,
       slope,
       thresholds,
-      currentStatus
+      currentStatus,
+      normalizedPredictionHorizon
     );
 
     // 5. 정상 복귀 예측 (Datadog Recovery Forecast 스타일)
@@ -270,7 +282,8 @@ export class TrendPredictor {
       currentValue,
       slope,
       thresholds,
-      currentStatus
+      currentStatus,
+      normalizedPredictionHorizon
     );
 
     return {
@@ -285,12 +298,17 @@ export class TrendPredictor {
    * 🆕 배치 향상된 예측
    */
   public predictEnhancedBatch(
-    metricsData: Record<string, TrendDataPoint[]>
+    metricsData: Record<string, TrendDataPoint[]>,
+    predictionHorizon?: number
   ): Record<string, EnhancedTrendPrediction> {
     const results: Record<string, EnhancedTrendPrediction> = {};
 
     for (const [metricName, data] of Object.entries(metricsData)) {
-      results[metricName] = this.predictEnhanced(data, metricName);
+      results[metricName] = this.predictEnhanced(
+        data,
+        metricName,
+        predictionHorizon
+      );
     }
 
     return results;

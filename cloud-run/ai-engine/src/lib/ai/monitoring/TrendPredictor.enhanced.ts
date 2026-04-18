@@ -18,7 +18,8 @@ export function predictThresholdBreach(
   currentValue: number,
   slope: number,
   thresholds: MetricThresholds,
-  currentStatus: 'online' | 'warning' | 'critical'
+  currentStatus: 'online' | 'warning' | 'critical',
+  maxPredictionHorizonMs: number = MAX_PREDICTION_HORIZON
 ): ThresholdBreachPrediction {
   if (currentStatus === 'critical') {
     return {
@@ -50,7 +51,7 @@ export function predictThresholdBreach(
     const timeSeconds = (thresholds.warning - currentValue) / slope;
     const timeMs = timeSeconds * 1000;
 
-    if (timeMs > 0 && timeMs <= MAX_PREDICTION_HORIZON) {
+    if (timeMs > 0 && timeMs <= maxPredictionHorizonMs) {
       timeToWarning = timeMs;
       willBreachWarning = true;
     }
@@ -63,7 +64,7 @@ export function predictThresholdBreach(
     const timeSeconds = (thresholds.critical - currentValue) / slope;
     const timeMs = timeSeconds * 1000;
 
-    if (timeMs > 0 && timeMs <= MAX_PREDICTION_HORIZON) {
+    if (timeMs > 0 && timeMs <= maxPredictionHorizonMs) {
       timeToCritical = timeMs;
       willBreachCritical = true;
     }
@@ -90,7 +91,8 @@ export function predictRecovery(
   currentValue: number,
   slope: number,
   thresholds: MetricThresholds,
-  currentStatus: 'online' | 'warning' | 'critical'
+  currentStatus: 'online' | 'warning' | 'critical',
+  maxPredictionHorizonMs: number = MAX_PREDICTION_HORIZON
 ): RecoveryPrediction {
   if (currentStatus === 'online') {
     return {
@@ -114,7 +116,7 @@ export function predictRecovery(
   const timeSeconds = (thresholds.recovery - currentValue) / slope;
   const timeMs = timeSeconds * 1000;
 
-  if (timeMs > 0 && timeMs <= MAX_PREDICTION_HORIZON) {
+  if (timeMs > 0 && timeMs <= maxPredictionHorizonMs) {
     return {
       willRecover: true,
       timeToRecovery: timeMs,

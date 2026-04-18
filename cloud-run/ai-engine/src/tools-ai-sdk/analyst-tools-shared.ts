@@ -22,7 +22,7 @@ export interface AnomalyResultItem {
 export interface TrendResultItem {
   trend: string;
   currentValue: number;
-  /** 1시간 선형 투영값 */
+  /** 선택한 시간 범위 기준 선형 투영값 */
   projectedValue: number;
   changePercent: number;
   /** 추세 강도 (0–1): R² 기반 모델 적합도 */

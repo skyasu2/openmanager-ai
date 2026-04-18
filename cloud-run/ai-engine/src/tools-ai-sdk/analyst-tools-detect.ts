@@ -27,6 +27,12 @@ import {
 } from './analyst-tools-shared';
 import { STATUS_THRESHOLDS } from '../config/status-thresholds';
 
+const SingleServerHistorySchema = z.object({
+  cpu: z.array(z.number()).optional(),
+  memory: z.array(z.number()).optional(),
+  disk: z.array(z.number()).optional(),
+});
+
 // ============================================================================
 // Decision Metadata (Explainability)
 // ============================================================================
@@ -135,11 +141,15 @@ export const detectAnomalies = tool({
       })
       .optional()
       .describe('현재 서버 메트릭 (실시간 데이터 주입용)'),
+    history: SingleServerHistorySchema
+      .optional()
+      .describe('메트릭별 히스토리 (10분 간격, 오래된 순). 없으면 synthetic OTel 히스토리 사용'),
   }),
   execute: async ({
     serverId,
     metricType,
     currentMetrics,
+    history,
   }: {
     serverId?: string;
     metricType: 'cpu' | 'memory' | 'disk' | 'all';
@@ -152,13 +162,18 @@ export const detectAnomalies = tool({
       load5?: number;
       cpuCores?: number;
     };
+    history?: {
+      cpu?: number[];
+      memory?: number[];
+      disk?: number[];
+    };
   }) => {
     try {
       const cache = getDataCache();
 
       return await cache.getAnalysis(
         'anomaly',
-        { serverId: serverId || 'first', metricType, currentMetrics },
+        { serverId: serverId || 'first', metricType, currentMetrics, history },
         async () => {
           const state = getCurrentState();
           const server: ServerSnapshot | undefined = serverId
@@ -176,6 +191,11 @@ export const detectAnomalies = tool({
 
           // Merge currentMetrics with server snapshot if provided
           const analyzedServer = { ...server, ...currentMetrics };
+          const externalHistory = history
+            ? {
+                [analyzedServer.id]: history,
+              }
+            : undefined;
 
           // Basic metrics to scan
           const metrics = ['cpu', 'memory', 'disk'] as const;
@@ -191,7 +211,13 @@ export const detectAnomalies = tool({
           // 1. Basic Metrics Analysis (CPU, Memory, Disk)
           for (const metric of targetMetrics) {
             const currentValue = analyzedServer[metric as keyof typeof analyzedServer] as number;
-            const history = getHistoryForMetric(analyzedServer.id, metric, currentValue, fixedSlot);
+            const history = getHistoryForMetric(
+              analyzedServer.id,
+              metric,
+              currentValue,
+              fixedSlot,
+              externalHistory
+            );
             const threshold = STATUS_THRESHOLDS[metric as keyof typeof STATUS_THRESHOLDS];
 
             // Statistical detection

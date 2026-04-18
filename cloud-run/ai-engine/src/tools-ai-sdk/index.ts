@@ -248,7 +248,7 @@ export const toolDescriptions: Record<string, string> = {
   findRootCause: '근본 원인 분석 (RCA)',
   detectAnomalies: '이상치 탐지 (통계: 2σ)',
   detectAnomaliesAllServers: '전체 서버 이상치 스캔 (장애보고서용)',
-  predictTrends: '트렌드 예측',
+  predictTrends: '단기 위험 추세 계산',
   analyzePattern: '패턴 분석',
   searchKnowledgeBase: '과거 장애 이력 및 해결 방법 검색 (GraphRAG)',
   recommendCommands: 'CLI 명령어 추천',

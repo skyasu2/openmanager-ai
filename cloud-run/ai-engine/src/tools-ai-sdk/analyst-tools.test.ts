@@ -9,6 +9,47 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+const mockDetectAnomaly = vi.fn(() => ({
+  isAnomaly: false,
+  severity: 'low',
+  confidence: 0.5,
+  details: {
+    lowerThreshold: 0,
+    upperThreshold: 100,
+    mean: 50,
+    stdDev: 12,
+    deviation: 0.1,
+  },
+}));
+
+const mockDetectBaselineDrift = vi.fn(() => ({
+  hasDrift: false,
+  direction: 'stable',
+  magnitude: 0,
+  magnitudeSigma: 0,
+  confidence: 0,
+}));
+
+const mockPredictEnhanced = vi.fn(() => ({
+  trend: 'stable',
+  prediction: 50,
+  confidence: 0.8,
+  currentStatus: 'online',
+  thresholdBreach: {
+    willBreachWarning: false,
+    timeToWarning: null,
+    willBreachCritical: false,
+    timeToCritical: null,
+    humanReadable: '',
+  },
+  recovery: {
+    willRecover: false,
+    timeToRecovery: null,
+    humanReadable: null,
+  },
+  details: { predictedChangePercent: 0, currentValue: 50, slope: 0, intercept: 0, r2: 0, predictedChange: 0 },
+}));
+
 // Mock precomputed-state
 const mockServers = [
   {
@@ -97,54 +138,19 @@ vi.mock('../lib/cache-layer', () => ({
 // Mock AI modules (not used in detectAnomaliesAllServers but imported)
 vi.mock('../lib/ai/monitoring/SimpleAnomalyDetector', () => ({
   getAnomalyDetector: vi.fn(() => ({
-    detectAnomaly: vi.fn(() => ({
-      isAnomaly: false,
-      severity: 'low',
-      confidence: 0.5,
-      details: {
-        lowerThreshold: 0,
-        upperThreshold: 100,
-        mean: 50,
-        stdDev: 12,
-        deviation: 0.1,
-      },
-    })),
-    detectBaselineDrift: vi.fn(() => ({
-      hasDrift: false,
-      direction: 'stable',
-      magnitude: 0,
-      magnitudeSigma: 0,
-      confidence: 0,
-    })),
+    detectAnomaly: mockDetectAnomaly,
+    detectBaselineDrift: mockDetectBaselineDrift,
   })),
 }));
 
 vi.mock('../lib/ai/monitoring/TrendPredictor', () => ({
   getTrendPredictor: vi.fn(() => ({
     predict: vi.fn(),
-    predictEnhanced: vi.fn(() => ({
-      trend: 'stable',
-      prediction: 50,
-      confidence: 0.8,
-      currentStatus: 'online',
-      thresholdBreach: {
-        willBreachWarning: false,
-        timeToWarning: null,
-        willBreachCritical: false,
-        timeToCritical: null,
-        humanReadable: '',
-      },
-      recovery: {
-        willRecover: false,
-        timeToRecovery: null,
-        humanReadable: null,
-      },
-      details: { predictedChangePercent: 0 },
-    })),
+    predictEnhanced: mockPredictEnhanced,
   })),
 }));
 
-import { detectAnomalies, detectAnomaliesAllServers } from './analyst-tools';
+import { detectAnomalies, detectAnomaliesAllServers, predictTrends } from './analyst-tools';
 
 // ============================================================================
 // detectAnomaliesAllServers Tests
@@ -153,6 +159,9 @@ import { detectAnomalies, detectAnomaliesAllServers } from './analyst-tools';
 describe('detectAnomaliesAllServers', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockDetectAnomaly.mockClear();
+    mockDetectBaselineDrift.mockClear();
+    mockPredictEnhanced.mockClear();
   });
 
   describe('Basic Functionality', () => {
@@ -538,6 +547,12 @@ describe('detectAnomaliesAllServers with externalServers', () => {
 // ============================================================================
 
 describe('detectAnomalies', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockDetectAnomaly.mockClear();
+    mockDetectBaselineDrift.mockClear();
+  });
+
   it('should include anomaly decision metadata for explainability', async () => {
     const result = await detectAnomalies.execute(
       { serverId: 'db-mysql-dc1-01', metricType: 'cpu' },
@@ -570,5 +585,76 @@ describe('detectAnomalies', () => {
       expect(cpu.thresholdExceeded).toBe(true);
       expect(cpu.severity).toBe('high');
     }
+  });
+
+  it('should use injected history for single-server anomaly analysis', async () => {
+    await detectAnomalies.execute(
+      {
+        serverId: 'web-nginx-dc1-01',
+        metricType: 'cpu',
+        currentMetrics: { cpu: 88 },
+        history: { cpu: [10, 20, 30, 40] },
+      },
+      {} as never
+    );
+
+    expect(mockDetectAnomaly).toHaveBeenCalled();
+    expect(mockDetectAnomaly).toHaveBeenCalledWith(
+      88,
+      expect.arrayContaining([
+        expect.objectContaining({ value: 10 }),
+        expect.objectContaining({ value: 20 }),
+        expect.objectContaining({ value: 30 }),
+        expect.objectContaining({ value: 40 }),
+      ])
+    );
+  });
+});
+
+describe('predictTrends', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockPredictEnhanced.mockClear();
+  });
+
+  it('should pass predictionHours to enhanced predictor as horizon ms', async () => {
+    await predictTrends.execute(
+      {
+        serverId: 'web-nginx-dc1-01',
+        metricType: 'cpu',
+        predictionHours: 3,
+      },
+      {} as never
+    );
+
+    expect(mockPredictEnhanced).toHaveBeenCalledWith(
+      expect.any(Array),
+      'cpu',
+      3 * 60 * 60 * 1000
+    );
+  });
+
+  it('should use injected history and current metrics for single-server trend analysis', async () => {
+    await predictTrends.execute(
+      {
+        serverId: 'web-nginx-dc1-01',
+        metricType: 'cpu',
+        predictionHours: 2,
+        currentMetrics: { cpu: 88 },
+        history: { cpu: [15, 25, 35, 45] },
+      },
+      {} as never
+    );
+
+    expect(mockPredictEnhanced).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({ value: 15 }),
+        expect.objectContaining({ value: 25 }),
+        expect.objectContaining({ value: 35 }),
+        expect.objectContaining({ value: 45 }),
+      ]),
+      'cpu',
+      2 * 60 * 60 * 1000
+    );
   });
 });

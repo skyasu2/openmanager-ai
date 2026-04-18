@@ -36,6 +36,18 @@
 
 ## Recent Completed
 
+### Completed (2026-04-18 #151)
+- [x] Analyst trend/anomaly generic-input refinement
+  - `predictTrends`가 `predictionHours`를 실제 horizon(ms)로 반영하도록 `TrendPredictor.predictEnhanced()` 경로를 정렬
+  - single-server `detectAnomalies` / `predictTrends`가 `history`와 `currentMetrics` 주입을 받아 synthetic OTel 외 입력에도 같은 계산 원리를 재사용할 수 있게 보강
+  - `predictTrends` 설명/에러 문구와 내부 tool label을 `트렌드 예측`보다 낮은 의미의 `단기 위험 추세`로 정리
+  - 회귀 테스트 추가:
+    - tool 레벨: injected history 사용, horizon 전달
+    - predictor 레벨: horizon 변경 시 projected value/threshold breach 결과 차이 검증
+  - 검증:
+    - targeted: `cd cloud-run/ai-engine && npx vitest run src/tools-ai-sdk/analyst-tools.test.ts src/lib/ai/monitoring/TrendPredictor.test.ts`
+    - gate: `cd cloud-run/ai-engine && npm run type-check && npm run test`
+
 ### Completed (2026-04-18 #150)
 - [x] Structured-output fallback alignment
   - `generateObjectWithFallback()`가 provider 전환 시 공통 retry budget / fallback jitter helper를 재사용하도록 정렬
