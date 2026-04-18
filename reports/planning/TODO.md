@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (Storybook circular chunk warning backlog 정리)
+**Last Updated**: 2026-04-18 KST (AI Response Visibility write bucket 재평가 종료)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -23,13 +23,23 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
-| AI Response Visibility & Rate Limit (Phase 1~5) | Medium | 계획서: [ai-response-visibility-rate-limit-plan-2026-04-08.md](ai-response-visibility-rate-limit-plan-2026-04-08.md). handoff 가시성 UX, 429 UX, Job Queue agent path, limiter 정책 재조정. Cloud Run read-only window alignment slice는 완료됐고, 남은 실질 backlog는 write bucket 수치 재평가다. |
+| ~~AI Response Visibility & Rate Limit (Phase 1~5)~~ | — | **완료** — write bucket 재평가 결과 `supervisor 10/min`, `jobs/process 5/min`, `daily 100` 유지 결정. 계획서는 구현/결정 로그로 유지. |
 | ~~AI Stream Route Contract - residual cleanup~~ | — | **완료** — archive 이동. |
 | ~~OTel 토폴로지 개선~~ | — | **완료** — archive 이동: [archive/otel-topology-improvement-plan.md](archive/otel-topology-improvement-plan.md). |
 
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-18 #135)
+- [x] AI Response Visibility - write bucket 재평가 종료
+  - frontend와 Cloud Run write 경로는 이미 `supervisor 10/min`, `jobs/process 5/min`, `daily 100`으로 정렬돼 있음을 재확인
+  - provider 비용을 직접 태우지 않는 read-only 경로는 이미 `120/min`으로 분리됐고, write bucket 추가 완화 근거는 없다고 판단
+  - `supervisor` write minute bucket을 `10/min`으로 고정하는 회귀 테스트 추가
+  - 검증:
+    - targeted: `cd cloud-run/ai-engine && npx vitest run src/middleware/rate-limiter.test.ts src/routes/jobs.test.ts`
+    - ai-engine gate: `cd cloud-run/ai-engine && npm run type-check && npm run test`
+    - docs: `npm run docs:lint:changed`
 
 ### Completed (2026-04-18 #134)
 - [x] Storybook circular chunk warning backlog 정리
