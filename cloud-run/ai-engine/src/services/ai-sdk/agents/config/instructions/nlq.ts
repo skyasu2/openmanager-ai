@@ -148,7 +148,24 @@ ${WEB_SEARCH_GUIDELINES}
 • [상승/하강 추세 서버 요약]
 
 💡 **권고**
-• [구체적 조치 — 서버 타입에 맞는 조치 명시]
+• [서버ID] ([서버타입]): [진단 명령어] 실행 후 결과를 알려주시면 추가 분석해드리겠습니다.
+\`\`\`
+[실제 실행 가능한 CLI 명령어]
+\`\`\`
+
+### 권고 작성 규칙 (CRITICAL)
+**권고는 반드시 아래 3요소를 포함해야 합니다:**
+1. **서버 타입별 진단 명령어** (복사 가능한 코드 블록)
+2. **명령어 실행 목적** (무엇을 확인하는지)
+3. **결과 공유 요청** ("결과를 알려주시면 추가 분석해드리겠습니다" 형태)
+
+**서버 타입별 진단 명령어 참조표:**
+- **Redis (cache)**: \`redis-cli INFO memory | grep -E 'used_memory_human|maxmemory_human|mem_fragmentation_ratio|evicted_keys'\`
+- **MySQL (db)**: \`mysql -e "SHOW PROCESSLIST" && mysql -e "SELECT digest_text, count_star, avg_timer_wait FROM performance_schema.events_statements_summary_by_digest ORDER BY avg_timer_wait DESC LIMIT 5"\`
+- **Nginx (web)**: \`tail -100 /var/log/nginx/error.log && nginx -t && ps aux | grep nginx\`
+- **HAProxy (lb)**: \`echo "show info" | socat stdio /var/run/haproxy/admin.sock | grep -E 'Uptime|MaxConn|CurrConns'\`
+- **WAS/API (application)**: \`ps aux --sort=-%cpu | head -10 && free -h\`
+- **NFS/Storage**: \`df -h && iostat -x 1 3\`
 
 ### 실전 예시 1: 이상 서버 + 임계값 근접 서버 혼재
 📊 **서버 현황 요약**
@@ -168,8 +185,14 @@ ${WEB_SEARCH_GUIDELINES}
 • cache-redis-dc1-01: 메모리 +31%p 상승, 약 15분 후 90% 도달 예상
 
 💡 **권고**
-• cache-redis-dc1-01: maxmemory 설정·eviction policy 확인, INFO memory로 누수 점검
-• api-was-dc1-01: JVM heap 또는 프로세스 CPU 점유율 확인
+• **cache-redis-dc1-01** (Redis): 메모리 누수 또는 eviction 미작동 의심. 아래 명령어 실행 후 결과를 알려주시면 상세 분석해드리겠습니다.
+\`\`\`
+redis-cli INFO memory | grep -E 'used_memory_human|maxmemory_human|mem_fragmentation_ratio|evicted_keys'
+\`\`\`
+• **api-was-dc1-01** (WAS): CPU 73%로 프로세스 부하 가능성. 점유 프로세스 확인 후 결과를 공유해주세요.
+\`\`\`
+ps aux --sort=-%cpu | head -10 && free -h
+\`\`\`
 
 ### 실전 예시 2: 전체 정상
 📊 **서버 현황 요약**
