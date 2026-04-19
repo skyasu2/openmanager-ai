@@ -350,6 +350,194 @@ describe('AnalysisBasisBadge', () => {
     );
   });
 
+  it('defaults to the process tab and hides technical trace details until detail is selected', () => {
+    render(
+      <AnalysisBasisBadge
+        basis={{
+          ...basis,
+          dataSource: '서버 실시간 데이터 분석',
+          toolsCalled: ['searchKnowledgeBase', 'getServerMetrics'],
+        }}
+        traceId="trace-process-tab-1234"
+        processingTime={1280}
+        resolvedMode="multi"
+        latencyTier="slow"
+        handoffHistory={[
+          {
+            from: 'supervisor',
+            to: 'analyst',
+            reason: '이상 징후 원인 분석',
+          },
+        ]}
+        toolResultSummaries={[
+          {
+            toolName: 'searchKnowledgeBase',
+            label: 'RAG 지식베이스 검색',
+            summary: '2개 결과를 반환했습니다.',
+            status: 'completed',
+          },
+        ]}
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: '분석 근거 상세 보기' })
+    );
+
+    expect(
+      screen.getByRole('tab', { name: '과정', selected: true })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('tab', { name: '상세', selected: false })
+    ).toBeInTheDocument();
+    expect(screen.getByText('응답 과정')).toBeInTheDocument();
+    expect(screen.getByText('실행 특성')).toBeInTheDocument();
+    expect(
+      screen.queryByText('trace-process-tab-1234')
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('searchKnowledgeBase')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: '디버그 번들 복사' })
+    ).not.toBeInTheDocument();
+  });
+
+  it('reveals technical detail content only after switching to the detail tab', () => {
+    render(
+      <AnalysisBasisBadge
+        basis={{
+          ...basis,
+          toolsCalled: ['searchKnowledgeBase', 'getServerMetrics'],
+        }}
+        traceId="trace-detail-tab-1234"
+        processingTime={1987}
+        resolvedMode="multi"
+        latencyTier="slow"
+        handoffHistory={[
+          {
+            from: 'supervisor',
+            to: 'reporter',
+            reason: '운영 요약 생성을 위해 reporter로 전달',
+          },
+        ]}
+        toolResultSummaries={[
+          {
+            toolName: 'searchKnowledgeBase',
+            label: 'RAG 지식베이스 검색',
+            summary: '2개 결과를 반환했습니다.',
+            preview: '{"results":[{"title":"Redis OOM incident"}]}',
+            status: 'completed',
+          },
+        ]}
+        thinkingSteps={[
+          {
+            id: 'step-1',
+            step: 'getServerMetrics',
+            status: 'completed',
+            description: '실시간 메트릭을 확인했습니다.',
+            duration: 90,
+          },
+        ]}
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: '분석 근거 상세 보기' })
+    );
+    fireEvent.click(screen.getByRole('tab', { name: '상세' }));
+
+    expect(
+      screen.getByRole('tab', { name: '상세', selected: true })
+    ).toBeInTheDocument();
+    expect(screen.getByText('추적 가능 ID')).toBeInTheDocument();
+    expect(screen.getByText('trace-detail-tab-1234')).toBeInTheDocument();
+    expect(screen.getByText('실행 경로')).toBeInTheDocument();
+    expect(screen.getByText('searchKnowledgeBase')).toBeInTheDocument();
+    expect(screen.getByText('getServerMetrics')).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: '디버그 번들 복사' })
+    ).toBeInTheDocument();
+    expect(screen.getByText('1987ms')).toBeInTheDocument();
+  });
+
+  it('hides technical details again when returning to the process tab', () => {
+    render(
+      <AnalysisBasisBadge
+        basis={{
+          ...basis,
+          toolsCalled: ['searchKnowledgeBase'],
+        }}
+        traceId="trace-return-process-1234"
+        toolResultSummaries={[
+          {
+            toolName: 'searchKnowledgeBase',
+            label: 'RAG 지식베이스 검색',
+            summary: '2개 결과를 반환했습니다.',
+            status: 'completed',
+          },
+        ]}
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: '분석 근거 상세 보기' })
+    );
+    fireEvent.click(screen.getByRole('tab', { name: '상세' }));
+    expect(screen.getByText('trace-return-process-1234')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('tab', { name: '과정' }));
+
+    expect(
+      screen.getByRole('tab', { name: '과정', selected: true })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText('trace-return-process-1234')
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('searchKnowledgeBase')).not.toBeInTheDocument();
+  });
+
+  it('shows an empty-state message in the detail tab when technical metadata is absent', () => {
+    render(
+      <AnalysisBasisBadge
+        basis={{
+          ...basis,
+          dataSource: '서버 실시간 데이터 분석',
+        }}
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: '분석 근거 상세 보기' })
+    );
+    fireEvent.click(screen.getByRole('tab', { name: '상세' }));
+
+    expect(screen.getByText('기술 정보 없음')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        '이번 응답에는 추가 추적 정보나 상세 실행 이력이 없습니다.'
+      )
+    ).toBeInTheDocument();
+  });
+
+  it('keeps a stable tab panel container for layout consistency', () => {
+    render(
+      <AnalysisBasisBadge
+        basis={{
+          ...basis,
+          toolsCalled: ['searchKnowledgeBase'],
+        }}
+        traceId="trace-stable-panel-1234"
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: '분석 근거 상세 보기' })
+    );
+
+    expect(screen.getByTestId('analysis-basis-tab-panel')).toHaveClass(
+      'min-h-[18rem]'
+    );
+  });
+
   // ── Phase 2: handoff 우선 노출 (SDD failing specs) ──────────────────────────
 
   it('shows handoff count in collapsed summary when handoffHistory is present', () => {
