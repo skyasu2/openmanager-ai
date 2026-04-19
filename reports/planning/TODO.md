@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-19 KST (OTel simulation v2 Phase C MVP 완료)
+**Last Updated**: 2026-04-19 KST (AnalysisBasisBadge 탭 UX 완료)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,6 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AnalysisBasisBadge 탭 UX 리팩토링 | Medium | Approved → Codex 위임 | [계획서](analysis-basis-badge-tab-ux-plan.md) |
 
 ---
 
@@ -35,6 +34,18 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-19 #155)
+- [x] AnalysisBasisBadge 탭 UX 리팩토링
+  - `AnalysisBasisBadge` 확장 패널에 `과정 / 상세` 탭을 추가하고, 사용자 요약과 기술 상세를 분리
+  - `[과정]` 탭에서는 technicalName과 디버그 복사 버튼을 숨기고, `[상세]` 탭에서만 trace/debug/raw path를 노출
+  - 탭 패널에 `min-h-[18rem]`을 적용해 전환 시 높이 흔들림을 줄임
+  - 검증:
+    - `npx vitest run src/components/ai/AnalysisBasisBadge.test.tsx`
+    - `npm run stitch:check`
+    - `npm run type-check`
+    - `npm run lint`
+    - `npm run test:quick`
 
 ### Completed (2026-04-19 #154)
 - [x] OTel 데이터 시뮬레이션 고도화 v2 Phase C MVP

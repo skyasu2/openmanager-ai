@@ -82,13 +82,13 @@
 
 ## Task 목록
 
-- [ ] `test(spec)`: AnalysisBasisBadge 탭 전환 failing tests 작성
-- [ ] `feat`: AnalysisBasisBadge에 탭 상태 및 탭 헤더 UI 추가
-- [ ] `feat`: [과정] 탭 콘텐츠 — technicalName 배지 제거, 사용자 친화적 항목만 유지
-- [ ] `feat`: [상세] 탭 콘텐츠 — traceId, handoffHistory, executionPath, 디버그 번들 이동
-- [ ] `fix`: 탭 전환 시 높이 안정성 확보 (min-height 또는 공통 높이 고정)
-- [ ] `test`: 테스트 통과 확인 + 기존 테스트 회귀 없음 확인
-- [ ] `chore`: TODO.md 완료 기록
+- [x] `test(spec)`: AnalysisBasisBadge 탭 전환 failing tests 작성
+- [x] `feat`: AnalysisBasisBadge에 탭 상태 및 탭 헤더 UI 추가
+- [x] `feat`: [과정] 탭 콘텐츠 — technicalName 배지 제거, 사용자 친화적 항목만 유지
+- [x] `feat`: [상세] 탭 콘텐츠 — traceId, handoffHistory, executionPath, 디버그 번들 이동
+- [x] `fix`: 탭 전환 시 높이 안정성 확보 (min-height 또는 공통 높이 고정)
+- [x] `test`: 테스트 통과 확인 + 기존 테스트 회귀 없음 확인
+- [x] `chore`: TODO.md 완료 기록
 
 ---
 

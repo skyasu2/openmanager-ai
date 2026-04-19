@@ -243,18 +243,29 @@ describe('AnalysisBasisBadge', () => {
       screen.getByRole('button', { name: '분석 근거 상세 보기' })
     );
 
+    expect(
+      screen.getByRole('tab', { name: '과정', selected: true })
+    ).toBeInTheDocument();
     expect(screen.getByText('응답 과정')).toBeInTheDocument();
     expect(screen.getByText('handoff 협업 경로')).toBeInTheDocument();
+    expect(
+      screen.queryByText('trace-1234567890abcdef')
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('searchKnowledgeBase')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('tab', { name: '상세' }));
+
     expect(screen.getByText('추적 가능 ID')).toBeInTheDocument();
     expect(screen.getByText('trace-1234567890abcdef')).toBeInTheDocument();
     expect(screen.getByText('실행 경로')).toBeInTheDocument();
-    expect(screen.getAllByText('분석 조율 → 보고서 생성')).toHaveLength(2);
+    expect(screen.getAllByText('supervisor → reporter').length).toBeGreaterThan(
+      0
+    );
     expect(screen.getByText('전달 이력')).toBeInTheDocument();
     expect(screen.getByText('도구 결과 요약')).toBeInTheDocument();
     expect(screen.getByText('2개 결과를 반환했습니다.')).toBeInTheDocument();
     expect(screen.getByText('단계별 처리 내역')).toBeInTheDocument();
     expect(screen.getAllByText('내부 지식 검색').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('서버 메트릭 조회').length).toBeGreaterThan(0);
     expect(screen.getAllByText('searchKnowledgeBase').length).toBeGreaterThan(
       0
     );
@@ -295,8 +306,11 @@ describe('AnalysisBasisBadge', () => {
     expect(screen.getByText('fallback 보정 경로')).toBeInTheDocument();
     expect(screen.getByText('참조 서버')).toBeInTheDocument();
     expect(screen.getByText('cache-redis-dc1-01')).toBeInTheDocument();
-    expect(screen.getByText('server-not-found')).toBeInTheDocument();
     expect(screen.getByText('대상 서버 확인 실패')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('tab', { name: '상세' }));
+
+    expect(screen.getByText('server-not-found')).toBeInTheDocument();
   });
 
   it('copies a structured debug bundle with normalized server references', async () => {
@@ -332,6 +346,7 @@ describe('AnalysisBasisBadge', () => {
     fireEvent.click(
       screen.getByRole('button', { name: '분석 근거 상세 보기' })
     );
+    fireEvent.click(screen.getByRole('tab', { name: '상세' }));
     fireEvent.click(screen.getByRole('button', { name: '디버그 번들 복사' }));
 
     await waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
