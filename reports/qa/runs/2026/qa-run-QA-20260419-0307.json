@@ -1,0 +1,64 @@
+{
+  "runId": "QA-20260419-0307",
+  "recordedAt": "2026-04-19T01:24:01.619Z",
+  "recordedAtKst": "2026-04-19 10:24:01 KST",
+  "runTitle": "Local targeted QA - Analyst NaN prediction fallback fix",
+  "owner": "codex",
+  "source": "local-dev",
+  "environment": {
+    "target": "local-dev",
+    "url": "",
+    "frontend": "Local",
+    "backend": "N/A",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "608600abe"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "TrendCard predictedValue fallback",
+    "TrendCard changePercent fallback",
+    "SystemSummarySection prediction fallback",
+    "analysis trend formatting regression tests"
+  ],
+  "skippedSurfaces": [
+    "Vercel production recheck",
+    "Playwright broad route sweep",
+    "Vision Agent"
+  ],
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "analyst-nan-prediction-bug",
+      "title": "Analyst 상승 추세 예측값 NaN% 표시",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "TrendCard/SystemSummarySection에 NaN 가드와 '--' fallback 추가, TrendFormatting.test.tsx + ServerResultCard.test.tsx 통과",
+      "note": "로컬 targeted verification 기준 완료. Vercel production 재검증은 다음 broad QA에서 확인",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "UI fallback contract: invalid predictedValue/changePercent must not render NaN%",
+    "verified by local test gate: vitest targeted, type-check, lint, test:quick"
+  ],
+  "links": []
+}

@@ -1,0 +1,226 @@
+{
+  "runId": "QA-20260419-0306",
+  "recordedAt": "2026-04-19T00:41:30.083Z",
+  "recordedAtKst": "2026-04-19 09:41:30 KST",
+  "runTitle": "Vercel broad QA - v8.11.20 frontend + AI assistant full evaluation",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "n/a-vercel-mcp-token-expired",
+    "deploymentUrl": "",
+    "commitSha": "608600abe"
+  },
+  "scope": "broad",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/",
+    "/system-boot",
+    "/dashboard",
+    "AI sidebar NLQ",
+    "분석근거 배지",
+    "/dashboard/ai-assistant",
+    "Reporter Agent",
+    "Analyst Agent"
+  ],
+  "skippedSurfaces": ["Vision Agent", "login flow"],
+  "checks": {
+    "total": 12,
+    "passed": 11,
+    "failed": 0
+  },
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "NLQ 정확도, 분석근거 parity, 3대 에이전트 정상 동작 검증 완료.",
+      "nextAction": "analyst-nan-prediction-bug P2 fix 검토"
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "health-api",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-19T08:37:00+09:00",
+      "summary": "/api/health 정상. version 8.11.20, DB 16ms, cache 14ms, ai 14ms.",
+      "evidence": "curl https://openmanager-ai.vercel.app/api/health",
+      "url": ""
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "landing-page-render",
+      "title": "랜딩 페이지 정상 렌더링 v8.11.20",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "system-boot-sequence",
+      "title": "시스템 부트 시퀀스 완료",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-render",
+      "title": "대시보드 18서버 17온라인 1경고",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "health-api",
+      "title": "/api/health DB/cache/ai connected",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-sidebar-toggle",
+      "title": "AI 사이드바 AI Engine Ready",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "originalId": "ai-sidebar-open",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-chat-nlq-cpu-top3",
+      "title": "NLQ CPU 상위3대 정확",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "analysis-basis-badge-sidebar",
+      "title": "분석근거 배지 사이드바 정상",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "fullscreen-parity",
+      "title": "전체화면 전환 parity",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "analysis-basis-badge-fullscreen",
+      "title": "분석근거 배지 전체화면 parity",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "reporter-agent-generate",
+      "title": "Reporter Agent 보고서 생성 신뢰도 80%",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "analyst-agent-full-analysis",
+      "title": "Analyst 18서버 분석 16정상 2주의",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "analyst-nan-prediction-bug",
+      "title": "Analyst 상승 추세 예측값 NaN% 표시",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    }
+  ],
+  "notes": [],
+  "links": []
+}
