@@ -1,6 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
+import {
+  applyScenarioJitter,
+  gaussianJitter,
+} from '../../scripts/data/otel-fix.helpers';
 
 type LogEntry = {
   severityText: string;
@@ -54,6 +58,14 @@ function getMetricValue(
     String(dp.attributes['host.name'] ?? '').startsWith(`${resource}.`)
   );
   return point?.asDouble;
+}
+
+function createSeededRng(seed: number): () => number {
+  let state = seed >>> 0;
+  return () => {
+    state = (state * 1664525 + 1013904223) >>> 0;
+    return (state + 1) / 4294967297;
+  };
 }
 
 describe('OTel simulation v2 Phase B contract', () => {
@@ -181,5 +193,37 @@ describe('OTel simulation v2 Phase B contract', () => {
     }
 
     expect(matchingLogs.length).toBeGreaterThan(0);
+  });
+});
+
+describe('OTel simulation v2 Phase A contract', () => {
+  it('gaussianJitter stays centered and keeps roughly 95 percent of samples within 2σ', () => {
+    const rng = createSeededRng(20260419);
+    const samples = Array.from({ length: 1000 }, () =>
+      gaussianJitter(0, 0.015, rng)
+    );
+    const mean =
+      samples.reduce((sum, value) => sum + value, 0) / samples.length;
+    const withinTwoSigma = samples.filter(
+      (value) => Math.abs(value) <= 0.03
+    ).length;
+
+    expect(Math.abs(mean)).toBeLessThan(0.002);
+    expect(withinTwoSigma / samples.length).toBeGreaterThanOrEqual(0.94);
+  });
+
+  it('applyScenarioJitter keeps scenario values within [0.01, 0.99]', () => {
+    const rng = createSeededRng(20260420);
+    const samples = Array.from({ length: 600 }, (_, index) =>
+      applyScenarioJitter(
+        index % 2 === 0 ? 0.92 : 0.14,
+        (((index % 6) - 2.5) / 6) * 0.04,
+        'cpu',
+        rng
+      )
+    );
+
+    expect(Math.min(...samples)).toBeGreaterThanOrEqual(0.01);
+    expect(Math.max(...samples)).toBeLessThanOrEqual(0.99);
   });
 });
