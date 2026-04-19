@@ -1,0 +1,103 @@
+{
+  "runId": "QA-20260419-0310",
+  "recordedAt": "2026-04-19T07:07:40.561Z",
+  "recordedAtKst": "2026-04-19 16:07:40 KST",
+  "runTitle": "Vercel production verification QA - 8.11.23 live smoke recheck",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_JAFCywvdMLnVLVRLW6x3KaLuRi8u",
+    "deploymentUrl": "https://openmanager-fut2es2l3-skyasus-projects.vercel.app",
+    "commitSha": "74bb7960a4736fa996fecb2b7f8837471234d6bf"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/ landing render with version badge v8.11.23",
+    "/api/version returns 8.11.23",
+    "/api/health healthy with version 8.11.23",
+    "system start CTA redirect to /dashboard",
+    "dashboard render (18 total / 17 online / 1 risk / 0 warning / 0 offline)",
+    "AI sidebar open with AI Engine Ready",
+    "AI starter prompt send and response for server status summary",
+    "analysis basis process tab default render in sidebar",
+    "analysis basis detail tab render with trace id and debug bundle CTA",
+    "browser console warnings/errors captured during verification pass"
+  ],
+  "skippedSurfaces": [
+    "/login and /privacy route sweep",
+    "404 route validation",
+    "topology and server-detail modal pack",
+    "fullscreen AI workspace handoff",
+    "reporter/analyst agent flows",
+    "mobile viewport QA"
+  ],
+  "checks": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "npm run check:usage:vercel",
+      "status": "failed",
+      "result": "unknown",
+      "checkedAt": "2026-04-19T16:06:21+09:00",
+      "summary": "Verification run attempted npm run check:usage:vercel, but the command did not complete in-session. Reused the same-day broad production baseline QA-20260419-0309 for billing context; that checked run reported effective 11.0956 USD, billed 0.0000 USD, no unexpected usage spike.",
+      "evidence": "same-day reference: QA-20260419-0309",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Verification landing v8.11.23",
+      "path": "reports/qa/evidence/qa-20260419-verification-landing-v823.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Verification dashboard v8.11.23",
+      "path": "reports/qa/evidence/qa-20260419-verification-dashboard-v823.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Verification analysis basis sidebar detail tab",
+      "path": "reports/qa/evidence/qa-20260419-verification-analysis-basis-v823.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Verification console capture",
+      "path": "reports/qa/evidence/qa-20260419-verification-console.txt"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This run is a non-counted verification pass executed after the same deployment had already been covered by broad production QA.",
+    "Live API endpoints and Vercel deployment metadata converged on deployment dpl_JAFCywvdMLnVLVRLW6x3KaLuRi8u / commit 74bb7960a4736fa996fecb2b7f8837471234d6bf.",
+    "The dashboard risk distribution changed from the earlier broad run window because the synthetic slot advanced from slot 94 to slot 96 during re-verification."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel deployment inspector",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/JAFCywvdMLnVLVRLW6x3KaLuRi8u"
+    },
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}
