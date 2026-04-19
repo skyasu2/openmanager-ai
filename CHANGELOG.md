@@ -2,6 +2,44 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.21](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.20...v8.11.21) (2026-04-19)
+
+
+### Features
+
+* **ai-engine:** add trend projection backtest script (local/CI only) ([20d7131](https://gitlab.com/skyasu2/openmanager-ai/-/commit/20d7131e24f4cbfc7695d0e75b0d5c5a500cc8dd))
+* **ai-engine:** support external data source in detectAnomaliesAllServers ([a9145a7](https://gitlab.com/skyasu2/openmanager-ai/-/commit/a9145a74a513de5bd3d40d737fa62a6a3d2524c1))
+* **project:** improve AI process visibility and refresh QA/MCP records ([92d3f49](https://gitlab.com/skyasu2/openmanager-ai/-/commit/92d3f493de0d06953fc1d638a9eb0cd8838da562))
+
+
+### Bug Fixes
+
+* **ai-engine:** isolate external anomaly cache keys ([dc37807](https://gitlab.com/skyasu2/openmanager-ai/-/commit/dc37807b53fd7169b6870c51f56c5a505243bd47))
+* **ai-engine:** preserve ranking answer order ([2cd5f40](https://gitlab.com/skyasu2/openmanager-ai/-/commit/2cd5f40d0184344e06be88b3d8ac14f6f9ed6f51))
+* **ai-engine:** refine analyst trend inputs ([ebddc88](https://gitlab.com/skyasu2/openmanager-ai/-/commit/ebddc880920cd029ac779a684c516ae19615047f))
+* **ai-engine:** route metric ranking queries deterministically ([bfa7245](https://gitlab.com/skyasu2/openmanager-ai/-/commit/bfa724509512dd33b52d00ea72f5289e2463e2aa))
+* **ai:** guard NaN trend prediction labels ([ee78708](https://gitlab.com/skyasu2/openmanager-ai/-/commit/ee7870883b9333dbfb1e3e9ac635998e2eec1eee))
+* **ai:** prioritize metric ranking process metadata ([c96881e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/c96881eb8feb568d9e873b7fadcef73e0f6a7fe5))
+* **deploy:** force latest Cloud Run traffic ([7b97c6a](https://gitlab.com/skyasu2/openmanager-ai/-/commit/7b97c6af28d166445ffbefcf1a5c6c6455b5e1ea))
+* **ui:** prevent iOS input auto zoom ([76d72e2](https://gitlab.com/skyasu2/openmanager-ai/-/commit/76d72e20888438d0be53acd9202dfbcf6c23019d))
+
+
+### Performance Improvements
+
+* **ai-engine:** tune trend scan to window=9/horizon=3 via backtest (v2.5.0) ([6e9329b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/6e9329b74e178411d57f5b8cd543bd7367bbb1f7))
+
+
+### Code Refactoring
+
+* **ai-engine:** reframe prediction as rising trend scan ([e6b76ec](https://gitlab.com/skyasu2/openmanager-ai/-/commit/e6b76ec3ab4a6d6a0a603cd5685ef48d93c527ca))
+
+
+### Tests
+
+* **ai-engine:** stabilize trend predictor horizon assertion ([608600a](https://gitlab.com/skyasu2/openmanager-ai/-/commit/608600abee6bd5a3b4009b3f11b9380d7071a4eb))
+* **qa:** record ranking hotfix verification ([b0115fe](https://gitlab.com/skyasu2/openmanager-ai/-/commit/b0115fe22ec9e0356845a1b3f508355bddd1e82d))
+* **qa:** record ranking route live recovery ([89b5e56](https://gitlab.com/skyasu2/openmanager-ai/-/commit/89b5e56bf3d450d5a544593d737dbee186f32574))
+
 ## [8.11.20](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.19...v8.11.20) (2026-04-18)
 
 
