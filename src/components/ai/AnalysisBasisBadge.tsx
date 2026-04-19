@@ -11,7 +11,15 @@ import {
   Database,
   ExternalLink,
 } from 'lucide-react';
-import { type FC, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  type FC,
+  type KeyboardEvent,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   getThinkingStepPresentation,
   getToolDescription,
@@ -421,6 +429,13 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<AnalysisBasisTab>('process');
+  const tabIdBase = useId();
+  const processTabId = `${tabIdBase}-process-tab`;
+  const detailTabId = `${tabIdBase}-detail-tab`;
+  const processPanelId = `${tabIdBase}-process-panel`;
+  const detailPanelId = `${tabIdBase}-detail-panel`;
+  const processTabRef = useRef<HTMLButtonElement | null>(null);
+  const detailTabRef = useRef<HTMLButtonElement | null>(null);
 
   const getEngineColor = (engine: string) => {
     if (engine.includes('Cloud Run')) return 'text-green-600';
@@ -592,6 +607,41 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
         ? 'bg-slate-900 text-white'
         : 'bg-white text-slate-600 hover:bg-slate-100'
     }`;
+  const activateTab = (tab: AnalysisBasisTab) => {
+    setActiveTab(tab);
+    if (tab === 'process') {
+      processTabRef.current?.focus();
+      return;
+    }
+    detailTabRef.current?.focus();
+  };
+  const handleTabKeyDown = (
+    event: KeyboardEvent<HTMLButtonElement>,
+    tab: AnalysisBasisTab
+  ) => {
+    switch (event.key) {
+      case 'ArrowRight':
+      case 'ArrowDown':
+        event.preventDefault();
+        activateTab(tab === 'process' ? 'detail' : 'process');
+        break;
+      case 'ArrowLeft':
+      case 'ArrowUp':
+        event.preventDefault();
+        activateTab(tab === 'process' ? 'detail' : 'process');
+        break;
+      case 'Home':
+        event.preventDefault();
+        activateTab('process');
+        break;
+      case 'End':
+        event.preventDefault();
+        activateTab('detail');
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <div
@@ -643,20 +693,30 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
                 className="inline-flex rounded-full bg-slate-100 p-1"
               >
                 <button
+                  id={processTabId}
+                  ref={processTabRef}
                   type="button"
                   role="tab"
+                  aria-controls={processPanelId}
                   aria-selected={activeTab === 'process'}
+                  tabIndex={activeTab === 'process' ? 0 : -1}
                   className={tabButtonClassName('process')}
                   onClick={() => setActiveTab('process')}
+                  onKeyDown={(event) => handleTabKeyDown(event, 'process')}
                 >
                   과정
                 </button>
                 <button
+                  id={detailTabId}
+                  ref={detailTabRef}
                   type="button"
                   role="tab"
+                  aria-controls={detailPanelId}
                   aria-selected={activeTab === 'detail'}
+                  tabIndex={activeTab === 'detail' ? 0 : -1}
                   className={tabButtonClassName('detail')}
                   onClick={() => setActiveTab('detail')}
+                  onKeyDown={(event) => handleTabKeyDown(event, 'detail')}
                 >
                   상세
                 </button>
@@ -665,399 +725,414 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
 
             <div
               data-testid="analysis-basis-tab-panel"
-              className="min-h-[18rem] space-y-3"
+              className="min-h-[18rem]"
             >
-              {activeTab === 'process' ? (
-                <>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-slate-700">
-                      응답 과정
-                    </span>
-                    <div className="flex items-center gap-1.5 text-2xs text-slate-500">
-                      {handoffHistory && handoffHistory.length > 0 && (
-                        <span className="rounded bg-slate-100 px-1.5 py-0.5">
-                          handoff {handoffHistory.length}회
-                        </span>
-                      )}
-                      {toolCount > 0 && (
-                        <span className="rounded bg-slate-100 px-1.5 py-0.5">
-                          도구 {toolCount}개
-                        </span>
-                      )}
-                      {traceId && (
-                        <span className="rounded bg-slate-100 px-1.5 py-0.5">
-                          추적 ID
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="rounded border border-slate-200 bg-slate-50 p-2.5">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className="text-2xs font-medium uppercase tracking-wide text-slate-500">
-                        처리 경로
-                      </p>
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-2xs font-medium ${processRoute.badgeClassName}`}
-                      >
-                        {processRoute.label}
+              <div
+                id={processPanelId}
+                role="tabpanel"
+                aria-labelledby={processTabId}
+                hidden={activeTab !== 'process'}
+                className={activeTab === 'process' ? 'space-y-3' : 'hidden'}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-slate-700">
+                    응답 과정
+                  </span>
+                  <div className="flex items-center gap-1.5 text-2xs text-slate-500">
+                    {handoffHistory && handoffHistory.length > 0 && (
+                      <span className="rounded bg-slate-100 px-1.5 py-0.5">
+                        handoff {handoffHistory.length}회
                       </span>
-                      {failureReasons.length > 0 && (
-                        <span className="rounded-full border border-rose-200 bg-rose-50 px-2 py-0.5 text-2xs font-medium text-rose-700">
-                          실패 {failureReasons.length}건
-                        </span>
-                      )}
-                    </div>
-                    <p className="mt-2 text-xs leading-relaxed text-slate-600">
-                      {processRoute.description}
-                    </p>
-                    {referencedServers.length > 0 && (
-                      <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                        <span className="text-2xs font-medium uppercase tracking-wide text-slate-500">
-                          참조 서버
-                        </span>
-                        {referencedServers.map((server) => (
-                          <span
-                            key={server}
-                            className="rounded bg-white px-1.5 py-0.5 text-2xs text-slate-600"
-                          >
-                            {server}
-                          </span>
-                        ))}
-                      </div>
+                    )}
+                    {toolCount > 0 && (
+                      <span className="rounded bg-slate-100 px-1.5 py-0.5">
+                        도구 {toolCount}개
+                      </span>
+                    )}
+                    {traceId && (
+                      <span className="rounded bg-slate-100 px-1.5 py-0.5">
+                        추적 ID
+                      </span>
                     )}
                   </div>
+                </div>
 
-                  {executionPath.length > 0 && (
-                    <div className="rounded border border-slate-200 bg-slate-50 p-2">
-                      <p className="mb-1 text-2xs font-medium uppercase tracking-wide text-slate-500">
-                        실행 경로
-                      </p>
-                      <p className="text-xs leading-relaxed text-slate-700">
-                        {executionPath.join(' → ')}
-                      </p>
-                    </div>
-                  )}
-
-                  {toolResultSummaries && toolResultSummaries.length > 0 && (
-                    <div className="space-y-2">
-                      <p className="text-2xs font-medium uppercase tracking-wide text-slate-500">
-                        도구 결과 요약
-                      </p>
-                      <div className="space-y-2">
-                        {toolResultSummaries.map((toolResult, index) => {
-                          const toolPresentation = getToolPresentation(
-                            toolResult.toolName
-                          );
-                          const failureReason = classifyFailureReason(
-                            toolResult.summary,
-                            toolResult.preview
-                          );
-
-                          return (
-                            <div
-                              key={`${toolResult.toolName}-${index}`}
-                              className="rounded border border-slate-200 bg-slate-50 p-2"
-                            >
-                              <div className="flex items-center justify-between gap-2">
-                                <span
-                                  className="text-xs font-medium text-slate-700"
-                                  title={
-                                    toolPresentation.description ?? undefined
-                                  }
-                                >
-                                  {toolPresentation.label}
-                                </span>
-                                <span className="rounded bg-white px-1.5 py-0.5 text-2xs text-slate-500">
-                                  {toolResult.status === 'failed'
-                                    ? '실패'
-                                    : '완료'}
-                                </span>
-                              </div>
-                              <p className="mt-1 text-xs leading-relaxed text-slate-600">
-                                {toolResult.summary}
-                              </p>
-                              {toolResult.status === 'failed' && (
-                                <p className="mt-2 text-2xs text-rose-700">
-                                  {failureReason.label}
-                                </p>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  {runtimeSummaryItems.length > 0 && (
-                    <div className="rounded border border-slate-200 bg-slate-50 p-2">
-                      <p className="mb-1 text-2xs font-medium uppercase tracking-wide text-slate-500">
-                        실행 특성
-                      </p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {runtimeSummaryItems.map((item) => (
-                          <span
-                            key={item}
-                            className="rounded bg-white px-1.5 py-0.5 text-xs text-slate-700"
-                          >
-                            {item}
-                          </span>
-                        ))}
-                      </div>
-                      {modeSelectionLabel && (
-                        <p className="mt-2 text-xs text-slate-600">
-                          라우팅 근거: {modeSelectionLabel}
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </>
-              ) : hasTechnicalDetails ? (
-                <>
-                  <div className="flex items-center justify-between rounded border border-slate-200 bg-slate-50 p-2.5">
-                    <div>
-                      <p className="text-2xs font-medium uppercase tracking-wide text-slate-500">
-                        기술 상세
-                      </p>
-                      <p className="mt-1 text-xs text-slate-600">
-                        추적 ID, raw 경로, 내부 도구명, 디버그 번들을 확인할 수
-                        있습니다.
-                      </p>
-                    </div>
-                    <CopyActionButton
-                      text={debugBundle}
-                      label="디버그 번들 복사"
-                    />
+                <div className="rounded border border-slate-200 bg-slate-50 p-2.5">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="text-2xs font-medium uppercase tracking-wide text-slate-500">
+                      처리 경로
+                    </p>
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-2xs font-medium ${processRoute.badgeClassName}`}
+                    >
+                      {processRoute.label}
+                    </span>
+                    {failureReasons.length > 0 && (
+                      <span className="rounded-full border border-rose-200 bg-rose-50 px-2 py-0.5 text-2xs font-medium text-rose-700">
+                        실패 {failureReasons.length}건
+                      </span>
+                    )}
                   </div>
-
-                  {traceId && (
-                    <div className="rounded border border-slate-200 bg-slate-50 p-2">
-                      <p className="mb-1 text-2xs font-medium uppercase tracking-wide text-slate-500">
-                        추적 가능 ID
-                      </p>
-                      <code className="block break-all font-mono text-[11px] text-slate-700">
-                        {traceId}
-                      </code>
+                  <p className="mt-2 text-xs leading-relaxed text-slate-600">
+                    {processRoute.description}
+                  </p>
+                  {referencedServers.length > 0 && (
+                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                      <span className="text-2xs font-medium uppercase tracking-wide text-slate-500">
+                        참조 서버
+                      </span>
+                      {referencedServers.map((server) => (
+                        <span
+                          key={server}
+                          className="rounded bg-white px-1.5 py-0.5 text-2xs text-slate-600"
+                        >
+                          {server}
+                        </span>
+                      ))}
                     </div>
                   )}
+                </div>
 
-                  {technicalExecutionPath.length > 0 && (
-                    <div className="rounded border border-slate-200 bg-slate-50 p-2">
-                      <p className="mb-1 text-2xs font-medium uppercase tracking-wide text-slate-500">
-                        실행 경로
-                      </p>
-                      <p className="text-xs leading-relaxed text-slate-700">
-                        {technicalExecutionPath.join(' → ')}
-                      </p>
-                    </div>
-                  )}
+                {executionPath.length > 0 && (
+                  <div className="rounded border border-slate-200 bg-slate-50 p-2">
+                    <p className="mb-1 text-2xs font-medium uppercase tracking-wide text-slate-500">
+                      실행 경로
+                    </p>
+                    <p className="text-xs leading-relaxed text-slate-700">
+                      {executionPath.join(' → ')}
+                    </p>
+                  </div>
+                )}
 
-                  {handoffHistory && handoffHistory.length > 0 && (
+                {toolResultSummaries && toolResultSummaries.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-2xs font-medium uppercase tracking-wide text-slate-500">
+                      도구 결과 요약
+                    </p>
                     <div className="space-y-2">
-                      <p className="text-2xs font-medium uppercase tracking-wide text-slate-500">
-                        전달 이력
-                      </p>
-                      <div className="space-y-2">
-                        {handoffHistory.map((handoff, index) => (
+                      {toolResultSummaries.map((toolResult, index) => {
+                        const toolPresentation = getToolPresentation(
+                          toolResult.toolName
+                        );
+                        const failureReason = classifyFailureReason(
+                          toolResult.summary,
+                          toolResult.preview
+                        );
+
+                        return (
                           <div
-                            key={`${handoff.from}-${handoff.to}-${index}`}
+                            key={`${toolResult.toolName}-${index}`}
                             className="rounded border border-slate-200 bg-slate-50 p-2"
                           >
                             <div className="flex items-center justify-between gap-2">
-                              <span className="text-xs font-medium text-slate-700">
-                                {handoff.from} → {handoff.to}
+                              <span
+                                className="text-xs font-medium text-slate-700"
+                                title={
+                                  toolPresentation.description ?? undefined
+                                }
+                              >
+                                {toolPresentation.label}
                               </span>
                               <span className="rounded bg-white px-1.5 py-0.5 text-2xs text-slate-500">
-                                {index + 1}단계
+                                {toolResult.status === 'failed'
+                                  ? '실패'
+                                  : '완료'}
                               </span>
                             </div>
-                            <p className="mt-1 text-2xs text-slate-500">
-                              {getAgentRoleLabel(handoff.from)} →{' '}
-                              {getAgentRoleLabel(handoff.to)}
+                            <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                              {toolResult.summary}
                             </p>
-                            {handoff.reason && (
-                              <p className="mt-1 text-xs leading-relaxed text-slate-600">
-                                {handoff.reason}
+                            {toolResult.status === 'failed' && (
+                              <p className="mt-2 text-2xs text-rose-700">
+                                {failureReason.label}
                               </p>
                             )}
                           </div>
-                        ))}
-                      </div>
+                        );
+                      })}
                     </div>
-                  )}
+                  </div>
+                )}
 
-                  {toolResultSummaries && toolResultSummaries.length > 0 && (
-                    <div className="space-y-2">
-                      <p className="text-2xs font-medium uppercase tracking-wide text-slate-500">
-                        도구 결과 요약
+                {runtimeSummaryItems.length > 0 && (
+                  <div className="rounded border border-slate-200 bg-slate-50 p-2">
+                    <p className="mb-1 text-2xs font-medium uppercase tracking-wide text-slate-500">
+                      실행 특성
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {runtimeSummaryItems.map((item) => (
+                        <span
+                          key={item}
+                          className="rounded bg-white px-1.5 py-0.5 text-xs text-slate-700"
+                        >
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                    {modeSelectionLabel && (
+                      <p className="mt-2 text-xs text-slate-600">
+                        라우팅 근거: {modeSelectionLabel}
                       </p>
-                      <div className="space-y-2">
-                        {toolResultSummaries.map((toolResult, index) => {
-                          const toolPresentation = getToolPresentation(
-                            toolResult.toolName
-                          );
-                          const failureReason = classifyFailureReason(
-                            toolResult.summary,
-                            toolResult.preview
-                          );
+                    )}
+                  </div>
+                )}
+              </div>
 
-                          return (
+              <div
+                id={detailPanelId}
+                role="tabpanel"
+                aria-labelledby={detailTabId}
+                hidden={activeTab !== 'detail'}
+                className={activeTab === 'detail' ? 'space-y-3' : 'hidden'}
+              >
+                {hasTechnicalDetails ? (
+                  <>
+                    <div className="flex items-center justify-between rounded border border-slate-200 bg-slate-50 p-2.5">
+                      <div>
+                        <p className="text-2xs font-medium uppercase tracking-wide text-slate-500">
+                          기술 상세
+                        </p>
+                        <p className="mt-1 text-xs text-slate-600">
+                          추적 ID, raw 경로, 내부 도구명, 디버그 번들을 확인할
+                          수 있습니다.
+                        </p>
+                      </div>
+                      <CopyActionButton
+                        text={debugBundle}
+                        label="디버그 번들 복사"
+                      />
+                    </div>
+
+                    {traceId && (
+                      <div className="rounded border border-slate-200 bg-slate-50 p-2">
+                        <p className="mb-1 text-2xs font-medium uppercase tracking-wide text-slate-500">
+                          추적 가능 ID
+                        </p>
+                        <code className="block break-all font-mono text-[11px] text-slate-700">
+                          {traceId}
+                        </code>
+                      </div>
+                    )}
+
+                    {technicalExecutionPath.length > 0 && (
+                      <div className="rounded border border-slate-200 bg-slate-50 p-2">
+                        <p className="mb-1 text-2xs font-medium uppercase tracking-wide text-slate-500">
+                          실행 경로
+                        </p>
+                        <p className="text-xs leading-relaxed text-slate-700">
+                          {technicalExecutionPath.join(' → ')}
+                        </p>
+                      </div>
+                    )}
+
+                    {handoffHistory && handoffHistory.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-2xs font-medium uppercase tracking-wide text-slate-500">
+                          전달 이력
+                        </p>
+                        <div className="space-y-2">
+                          {handoffHistory.map((handoff, index) => (
                             <div
-                              key={`${toolResult.toolName}-${index}`}
+                              key={`${handoff.from}-${handoff.to}-${index}`}
                               className="rounded border border-slate-200 bg-slate-50 p-2"
                             >
                               <div className="flex items-center justify-between gap-2">
-                                <div className="min-w-0">
-                                  <div className="flex flex-wrap items-center gap-1.5">
-                                    <span
-                                      className="text-xs font-medium text-slate-700"
-                                      title={
-                                        toolPresentation.description ??
-                                        undefined
-                                      }
-                                    >
-                                      {toolPresentation.label}
-                                    </span>
-                                    <span
-                                      className="rounded bg-white px-1.5 py-0.5 text-2xs text-slate-500"
-                                      title={`${toolResult.toolName} 내부 도구명`}
-                                    >
-                                      {toolResult.toolName}
-                                    </span>
-                                  </div>
-                                </div>
+                                <span className="text-xs font-medium text-slate-700">
+                                  {handoff.from} → {handoff.to}
+                                </span>
                                 <span className="rounded bg-white px-1.5 py-0.5 text-2xs text-slate-500">
-                                  {toolResult.status === 'failed'
-                                    ? '실패'
-                                    : '완료'}
+                                  {index + 1}단계
                                 </span>
                               </div>
-                              <p className="mt-1 text-xs leading-relaxed text-slate-600">
-                                {toolResult.summary}
+                              <p className="mt-1 text-2xs text-slate-500">
+                                {getAgentRoleLabel(handoff.from)} →{' '}
+                                {getAgentRoleLabel(handoff.to)}
                               </p>
-                              {toolResult.status === 'failed' && (
-                                <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                                  <span className="rounded bg-rose-100 px-1.5 py-0.5 text-2xs font-medium text-rose-700">
-                                    {failureReason.code}
-                                  </span>
-                                  <span className="text-2xs text-slate-600">
-                                    {failureReason.label}
-                                  </span>
-                                </div>
+                              {handoff.reason && (
+                                <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                                  {handoff.reason}
+                                </p>
                               )}
                             </div>
-                          );
-                        })}
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
-                  {thinkingSteps && thinkingSteps.length > 0 && (
-                    <div className="space-y-2">
-                      <p className="text-2xs font-medium uppercase tracking-wide text-slate-500">
-                        단계별 처리 내역
-                      </p>
+                    {toolResultSummaries && toolResultSummaries.length > 0 && (
                       <div className="space-y-2">
-                        {thinkingSteps.map((step, index) => (
-                          <div
-                            key={step.id || `${step.step || 'step'}-${index}`}
-                            className="rounded border border-slate-200 bg-slate-50 p-2"
-                          >
-                            {(() => {
-                              const stepPresentation =
-                                getThinkingStepPresentation(step);
+                        <p className="text-2xs font-medium uppercase tracking-wide text-slate-500">
+                          도구 결과 요약
+                        </p>
+                        <div className="space-y-2">
+                          {toolResultSummaries.map((toolResult, index) => {
+                            const toolPresentation = getToolPresentation(
+                              toolResult.toolName
+                            );
+                            const failureReason = classifyFailureReason(
+                              toolResult.summary,
+                              toolResult.preview
+                            );
 
-                              return (
-                                <>
-                                  <div className="flex items-center justify-between gap-2">
-                                    <div className="min-w-0">
-                                      <div className="flex flex-wrap items-center gap-1.5">
-                                        <span
-                                          className="text-xs font-medium text-slate-700"
-                                          title={
-                                            stepPresentation.description ??
-                                            undefined
-                                          }
-                                        >
-                                          {stepPresentation.title ||
-                                            `단계 ${index + 1}`}
-                                        </span>
-                                        {stepPresentation.technicalName && (
+                            return (
+                              <div
+                                key={`${toolResult.toolName}-${index}`}
+                                className="rounded border border-slate-200 bg-slate-50 p-2"
+                              >
+                                <div className="flex items-center justify-between gap-2">
+                                  <div className="min-w-0">
+                                    <div className="flex flex-wrap items-center gap-1.5">
+                                      <span
+                                        className="text-xs font-medium text-slate-700"
+                                        title={
+                                          toolPresentation.description ??
+                                          undefined
+                                        }
+                                      >
+                                        {toolPresentation.label}
+                                      </span>
+                                      <span
+                                        className="rounded bg-white px-1.5 py-0.5 text-2xs text-slate-500"
+                                        title={`${toolResult.toolName} 내부 도구명`}
+                                      >
+                                        {toolResult.toolName}
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <span className="rounded bg-white px-1.5 py-0.5 text-2xs text-slate-500">
+                                    {toolResult.status === 'failed'
+                                      ? '실패'
+                                      : '완료'}
+                                  </span>
+                                </div>
+                                <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                                  {toolResult.summary}
+                                </p>
+                                {toolResult.status === 'failed' && (
+                                  <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                                    <span className="rounded bg-rose-100 px-1.5 py-0.5 text-2xs font-medium text-rose-700">
+                                      {failureReason.code}
+                                    </span>
+                                    <span className="text-2xs text-slate-600">
+                                      {failureReason.label}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {thinkingSteps && thinkingSteps.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-2xs font-medium uppercase tracking-wide text-slate-500">
+                          단계별 처리 내역
+                        </p>
+                        <div className="space-y-2">
+                          {thinkingSteps.map((step, index) => (
+                            <div
+                              key={step.id || `${step.step || 'step'}-${index}`}
+                              className="rounded border border-slate-200 bg-slate-50 p-2"
+                            >
+                              {(() => {
+                                const stepPresentation =
+                                  getThinkingStepPresentation(step);
+
+                                return (
+                                  <>
+                                    <div className="flex items-center justify-between gap-2">
+                                      <div className="min-w-0">
+                                        <div className="flex flex-wrap items-center gap-1.5">
                                           <span
-                                            className="rounded bg-white px-1.5 py-0.5 text-2xs text-slate-500"
+                                            className="text-xs font-medium text-slate-700"
                                             title={
                                               stepPresentation.description ??
-                                              `${stepPresentation.technicalName} 내부 도구명`
+                                              undefined
                                             }
                                           >
-                                            {stepPresentation.technicalName}
+                                            {stepPresentation.title ||
+                                              `단계 ${index + 1}`}
+                                          </span>
+                                          {stepPresentation.technicalName && (
+                                            <span
+                                              className="rounded bg-white px-1.5 py-0.5 text-2xs text-slate-500"
+                                              title={
+                                                stepPresentation.description ??
+                                                `${stepPresentation.technicalName} 내부 도구명`
+                                              }
+                                            >
+                                              {stepPresentation.technicalName}
+                                            </span>
+                                          )}
+                                        </div>
+                                      </div>
+                                      <div className="flex items-center gap-1.5 text-2xs text-slate-500">
+                                        {step.status && (
+                                          <span className="rounded bg-white px-1.5 py-0.5">
+                                            {STEP_STATUS_LABELS[step.status] ??
+                                              step.status}
+                                          </span>
+                                        )}
+                                        {typeof step.duration === 'number' && (
+                                          <span className="rounded bg-white px-1.5 py-0.5">
+                                            {step.duration}ms
                                           </span>
                                         )}
                                       </div>
                                     </div>
-                                    <div className="flex items-center gap-1.5 text-2xs text-slate-500">
-                                      {step.status && (
-                                        <span className="rounded bg-white px-1.5 py-0.5">
-                                          {STEP_STATUS_LABELS[step.status] ??
-                                            step.status}
-                                        </span>
-                                      )}
-                                      {typeof step.duration === 'number' && (
-                                        <span className="rounded bg-white px-1.5 py-0.5">
-                                          {step.duration}ms
-                                        </span>
-                                      )}
-                                    </div>
-                                  </div>
-                                  {stepPresentation.description && (
-                                    <p className="mt-1 text-xs leading-relaxed text-slate-600">
-                                      {stepPresentation.description}
-                                    </p>
-                                  )}
-                                </>
-                              );
-                            })()}
-                          </div>
-                        ))}
+                                    {stepPresentation.description && (
+                                      <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                                        {stepPresentation.description}
+                                      </p>
+                                    )}
+                                  </>
+                                );
+                              })()}
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
-                  {runtimeSummaryItems.length > 0 && (
-                    <div className="rounded border border-slate-200 bg-slate-50 p-2">
-                      <p className="mb-1 text-2xs font-medium uppercase tracking-wide text-slate-500">
-                        실행 특성
-                      </p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {runtimeSummaryItems.map((item) => (
-                          <span
-                            key={item}
-                            className="rounded bg-white px-1.5 py-0.5 text-xs text-slate-700"
-                          >
-                            {item}
-                          </span>
-                        ))}
-                      </div>
-                      {modeSelectionLabel && (
-                        <p className="mt-2 text-xs text-slate-600">
-                          라우팅 근거: {modeSelectionLabel}
+                    {runtimeSummaryItems.length > 0 && (
+                      <div className="rounded border border-slate-200 bg-slate-50 p-2">
+                        <p className="mb-1 text-2xs font-medium uppercase tracking-wide text-slate-500">
+                          실행 특성
                         </p>
-                      )}
+                        <div className="flex flex-wrap gap-1.5">
+                          {runtimeSummaryItems.map((item) => (
+                            <span
+                              key={item}
+                              className="rounded bg-white px-1.5 py-0.5 text-xs text-slate-700"
+                            >
+                              {item}
+                            </span>
+                          ))}
+                        </div>
+                        {modeSelectionLabel && (
+                          <p className="mt-2 text-xs text-slate-600">
+                            라우팅 근거: {modeSelectionLabel}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="flex min-h-[14rem] items-center justify-center rounded border border-dashed border-slate-200 bg-slate-50 p-4 text-center">
+                    <div>
+                      <p className="text-sm font-medium text-slate-700">
+                        기술 정보 없음
+                      </p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        이번 응답에는 추가 추적 정보나 상세 실행 이력이
+                        없습니다.
+                      </p>
                     </div>
-                  )}
-                </>
-              ) : (
-                <div className="flex min-h-[14rem] items-center justify-center rounded border border-dashed border-slate-200 bg-slate-50 p-4 text-center">
-                  <div>
-                    <p className="text-sm font-medium text-slate-700">
-                      기술 정보 없음
-                    </p>
-                    <p className="mt-1 text-xs text-slate-500">
-                      이번 응답에는 추가 추적 정보나 상세 실행 이력이 없습니다.
-                    </p>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
 

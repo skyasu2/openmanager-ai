@@ -11,10 +11,6 @@ vi.mock('@/components/ai/MessageActions', () => ({
   MessageActions: () => <div data-testid="message-actions" />,
 }));
 
-vi.mock('@/components/ai/AnalysisBasisBadge', () => ({
-  AnalysisBasisBadge: () => null,
-}));
-
 vi.mock('@/components/ai/WebSourceCards', () => ({
   WebSourceCards: () => null,
 }));
@@ -155,5 +151,51 @@ describe('SidebarMessage detail expand', () => {
       screen.getByTestId('message-detail-expand-button')
     ).toBeInTheDocument();
     expect(screen.queryByTestId('message-actions')).not.toBeInTheDocument();
+  });
+
+  it('renders the real analysis basis tabs for assistant messages with analysis metadata', () => {
+    render(
+      <MessageComponent
+        message={{
+          id: 'assistant-4',
+          role: 'assistant',
+          content: 'CPU 이상 징후를 분석했습니다.',
+          timestamp: new Date('2026-04-19T05:20:00.000Z'),
+          isStreaming: false,
+          metadata: {
+            traceId: 'trace-sidebar-integration-1234',
+            analysisBasis: {
+              dataSource: '서버 실시간 데이터 분석',
+              engine: 'Cloud Run AI',
+              toolsCalled: ['searchKnowledgeBase', 'getServerMetrics'],
+            },
+            handoffHistory: [{ from: 'supervisor', to: 'reporter' }],
+            toolResultSummaries: [
+              {
+                toolName: 'searchKnowledgeBase',
+                label: 'RAG 지식베이스 검색',
+                summary: '2개 결과를 반환했습니다.',
+                status: 'completed',
+              },
+            ],
+          },
+        }}
+        isLastMessage={true}
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: '분석 근거 상세 보기' })
+    );
+
+    expect(
+      screen.getByRole('tab', { name: '과정', selected: true })
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('tab', { name: '상세' }));
+
+    expect(
+      screen.getByText('trace-sidebar-integration-1234')
+    ).toBeInTheDocument();
   });
 });

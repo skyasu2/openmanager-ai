@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  */
 
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 import { AIWorkspaceMessage } from './AIWorkspaceMessage';
@@ -25,8 +25,10 @@ vi.mock('./ThinkingProcessVisualizer', () => ({
   ThinkingProcessVisualizer: () => <div data-testid="thinking-visualizer" />,
 }));
 
-vi.mock('@/components/ai/AnalysisBasisBadge', () => ({
-  AnalysisBasisBadge: () => null,
+vi.mock('@/utils/markdown-parser', () => ({
+  RenderMarkdownContent: ({ content }: { content: string }) => (
+    <div>{content}</div>
+  ),
 }));
 
 vi.mock('@/components/ai/MessageDetailSheet', () => ({
@@ -108,5 +110,54 @@ describe('AIWorkspaceMessage detail affordance', () => {
 
     expect(screen.queryByTestId('thinking-visualizer')).not.toBeInTheDocument();
     expect(container).toBeEmptyDOMElement();
+  });
+
+  it('renders the real analysis basis tabs in the workspace assistant surface', () => {
+    const message: EnhancedChatMessage = {
+      id: 'assistant-3',
+      role: 'assistant',
+      content: '캐시 서버 상태를 요약했습니다.',
+      timestamp: new Date('2026-04-10T17:15:00.000Z'),
+      isStreaming: false,
+      metadata: {
+        traceId: 'trace-workspace-integration-1234',
+        processingTime: 1280,
+        latencyTier: 'slow',
+        resolvedMode: 'multi',
+        analysisBasis: {
+          dataSource: '서버 실시간 데이터 분석',
+          engine: 'Cloud Run AI',
+          toolsCalled: ['searchKnowledgeBase', 'getServerMetrics'],
+        },
+        handoffHistory: [{ from: 'supervisor', to: 'analyst' }],
+        toolResultSummaries: [
+          {
+            toolName: 'getServerMetrics',
+            label: '서버 메트릭 조회',
+            summary: '현재 CPU와 메모리를 확인했습니다.',
+            status: 'completed',
+          },
+        ],
+      },
+    };
+
+    render(<AIWorkspaceMessage message={message} isLastMessage={true} />);
+
+    fireEvent.click(
+      screen.getByRole('button', { name: '분석 근거 상세 보기' })
+    );
+
+    expect(
+      screen.getByRole('tab', { name: '과정', selected: true })
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('tab', { name: '상세' }));
+
+    expect(
+      screen.getByText('trace-workspace-integration-1234')
+    ).toBeInTheDocument();
+    expect(
+      within(screen.getByRole('tabpanel', { name: '상세' })).getByText('1280ms')
+    ).toBeInTheDocument();
   });
 });

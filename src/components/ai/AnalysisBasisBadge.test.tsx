@@ -2,7 +2,13 @@
  * @vitest-environment jsdom
  */
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AnalysisBasis } from '@/stores/useAISidebarStore';
 import { AnalysisBasisBadge } from './AnalysisBasisBadge';
@@ -170,12 +176,14 @@ describe('AnalysisBasisBadge', () => {
       screen.getByRole('button', { name: '분석 근거 상세 보기' })
     );
 
-    expect(screen.getByText('실행 특성')).toBeInTheDocument();
-    expect(screen.getByText('1987ms')).toBeInTheDocument();
-    expect(screen.getByText('Multi 경로')).toBeInTheDocument();
-    expect(screen.getByText('지연 느림')).toBeInTheDocument();
+    const processPanel = screen.getByRole('tabpanel', { name: '과정' });
+
+    expect(within(processPanel).getByText('실행 특성')).toBeInTheDocument();
+    expect(within(processPanel).getByText('1987ms')).toBeInTheDocument();
+    expect(within(processPanel).getByText('Multi 경로')).toBeInTheDocument();
+    expect(within(processPanel).getByText('지연 느림')).toBeInTheDocument();
     expect(
-      screen.getByText('라우팅 근거: 복잡도 자동 판단')
+      within(processPanel).getByText('라우팅 근거: 복잡도 자동 판단')
     ).toBeInTheDocument();
   });
 
@@ -246,30 +254,46 @@ describe('AnalysisBasisBadge', () => {
     expect(
       screen.getByRole('tab', { name: '과정', selected: true })
     ).toBeInTheDocument();
-    expect(screen.getByText('응답 과정')).toBeInTheDocument();
-    expect(screen.getByText('handoff 협업 경로')).toBeInTheDocument();
+    const processPanel = screen.getByRole('tabpanel', { name: '과정' });
+    expect(within(processPanel).getByText('응답 과정')).toBeInTheDocument();
     expect(
-      screen.queryByText('trace-1234567890abcdef')
+      within(processPanel).getByText('handoff 협업 경로')
+    ).toBeInTheDocument();
+    expect(
+      within(processPanel).queryByText('trace-1234567890abcdef')
     ).not.toBeInTheDocument();
-    expect(screen.queryByText('searchKnowledgeBase')).not.toBeInTheDocument();
+    expect(
+      within(processPanel).queryByText('searchKnowledgeBase')
+    ).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('tab', { name: '상세' }));
 
-    expect(screen.getByText('추적 가능 ID')).toBeInTheDocument();
-    expect(screen.getByText('trace-1234567890abcdef')).toBeInTheDocument();
-    expect(screen.getByText('실행 경로')).toBeInTheDocument();
-    expect(screen.getAllByText('supervisor → reporter').length).toBeGreaterThan(
-      0
-    );
-    expect(screen.getByText('전달 이력')).toBeInTheDocument();
-    expect(screen.getByText('도구 결과 요약')).toBeInTheDocument();
-    expect(screen.getByText('2개 결과를 반환했습니다.')).toBeInTheDocument();
-    expect(screen.getByText('단계별 처리 내역')).toBeInTheDocument();
-    expect(screen.getAllByText('내부 지식 검색').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('searchKnowledgeBase').length).toBeGreaterThan(
-      0
-    );
-    expect(screen.getAllByText('getServerMetrics').length).toBeGreaterThan(0);
+    const detailPanel = screen.getByRole('tabpanel', { name: '상세' });
+    expect(within(detailPanel).getByText('추적 가능 ID')).toBeInTheDocument();
+    expect(
+      within(detailPanel).getByText('trace-1234567890abcdef')
+    ).toBeInTheDocument();
+    expect(within(detailPanel).getByText('실행 경로')).toBeInTheDocument();
+    expect(
+      within(detailPanel).getAllByText('supervisor → reporter').length
+    ).toBeGreaterThan(0);
+    expect(within(detailPanel).getByText('전달 이력')).toBeInTheDocument();
+    expect(within(detailPanel).getByText('도구 결과 요약')).toBeInTheDocument();
+    expect(
+      within(detailPanel).getByText('2개 결과를 반환했습니다.')
+    ).toBeInTheDocument();
+    expect(
+      within(detailPanel).getByText('단계별 처리 내역')
+    ).toBeInTheDocument();
+    expect(
+      within(detailPanel).getAllByText('내부 지식 검색').length
+    ).toBeGreaterThan(0);
+    expect(
+      within(detailPanel).getAllByText('searchKnowledgeBase').length
+    ).toBeGreaterThan(0);
+    expect(
+      within(detailPanel).getAllByText('getServerMetrics').length
+    ).toBeGreaterThan(0);
   });
 
   it('marks fallback recovery and shows structured failure reason codes', () => {
@@ -303,14 +327,25 @@ describe('AnalysisBasisBadge', () => {
       screen.getByRole('button', { name: '분석 근거 상세 보기' })
     );
 
-    expect(screen.getByText('fallback 보정 경로')).toBeInTheDocument();
-    expect(screen.getByText('참조 서버')).toBeInTheDocument();
-    expect(screen.getByText('cache-redis-dc1-01')).toBeInTheDocument();
-    expect(screen.getByText('대상 서버 확인 실패')).toBeInTheDocument();
+    const processPanel = screen.getByRole('tabpanel', { name: '과정' });
+    expect(
+      within(processPanel).getByText('fallback 보정 경로')
+    ).toBeInTheDocument();
+    expect(within(processPanel).getByText('참조 서버')).toBeInTheDocument();
+    expect(
+      within(processPanel).getByText('cache-redis-dc1-01')
+    ).toBeInTheDocument();
+    expect(
+      within(processPanel).getByText('대상 서버 확인 실패')
+    ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('tab', { name: '상세' }));
 
-    expect(screen.getByText('server-not-found')).toBeInTheDocument();
+    expect(
+      within(screen.getByRole('tabpanel', { name: '상세' })).getByText(
+        'server-not-found'
+      )
+    ).toBeInTheDocument();
   });
 
   it('copies a structured debug bundle with normalized server references', async () => {
@@ -405,14 +440,17 @@ describe('AnalysisBasisBadge', () => {
     expect(
       screen.getByRole('tab', { name: '상세', selected: false })
     ).toBeInTheDocument();
-    expect(screen.getByText('응답 과정')).toBeInTheDocument();
-    expect(screen.getByText('실행 특성')).toBeInTheDocument();
+    const processPanel = screen.getByRole('tabpanel', { name: '과정' });
+    expect(within(processPanel).getByText('응답 과정')).toBeInTheDocument();
+    expect(within(processPanel).getByText('실행 특성')).toBeInTheDocument();
     expect(
-      screen.queryByText('trace-process-tab-1234')
+      within(processPanel).queryByText('trace-process-tab-1234')
     ).not.toBeInTheDocument();
-    expect(screen.queryByText('searchKnowledgeBase')).not.toBeInTheDocument();
     expect(
-      screen.queryByRole('button', { name: '디버그 번들 복사' })
+      within(processPanel).queryByText('searchKnowledgeBase')
+    ).not.toBeInTheDocument();
+    expect(
+      within(processPanel).queryByRole('button', { name: '디버그 번들 복사' })
     ).not.toBeInTheDocument();
   });
 
@@ -463,15 +501,22 @@ describe('AnalysisBasisBadge', () => {
     expect(
       screen.getByRole('tab', { name: '상세', selected: true })
     ).toBeInTheDocument();
-    expect(screen.getByText('추적 가능 ID')).toBeInTheDocument();
-    expect(screen.getByText('trace-detail-tab-1234')).toBeInTheDocument();
-    expect(screen.getByText('실행 경로')).toBeInTheDocument();
-    expect(screen.getByText('searchKnowledgeBase')).toBeInTheDocument();
-    expect(screen.getByText('getServerMetrics')).toBeInTheDocument();
+    const detailPanel = screen.getByRole('tabpanel', { name: '상세' });
+    expect(within(detailPanel).getByText('추적 가능 ID')).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: '디버그 번들 복사' })
+      within(detailPanel).getByText('trace-detail-tab-1234')
     ).toBeInTheDocument();
-    expect(screen.getByText('1987ms')).toBeInTheDocument();
+    expect(within(detailPanel).getByText('실행 경로')).toBeInTheDocument();
+    expect(
+      within(detailPanel).getByText('searchKnowledgeBase')
+    ).toBeInTheDocument();
+    expect(
+      within(detailPanel).getByText('getServerMetrics')
+    ).toBeInTheDocument();
+    expect(
+      within(detailPanel).getByRole('button', { name: '디버그 번들 복사' })
+    ).toBeInTheDocument();
+    expect(within(detailPanel).getByText('1987ms')).toBeInTheDocument();
   });
 
   it('hides technical details again when returning to the process tab', () => {
@@ -497,17 +542,24 @@ describe('AnalysisBasisBadge', () => {
       screen.getByRole('button', { name: '분석 근거 상세 보기' })
     );
     fireEvent.click(screen.getByRole('tab', { name: '상세' }));
-    expect(screen.getByText('trace-return-process-1234')).toBeInTheDocument();
+    expect(
+      within(screen.getByRole('tabpanel', { name: '상세' })).getByText(
+        'trace-return-process-1234'
+      )
+    ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('tab', { name: '과정' }));
 
     expect(
       screen.getByRole('tab', { name: '과정', selected: true })
     ).toBeInTheDocument();
+    const processPanel = screen.getByRole('tabpanel', { name: '과정' });
     expect(
-      screen.queryByText('trace-return-process-1234')
+      within(processPanel).queryByText('trace-return-process-1234')
     ).not.toBeInTheDocument();
-    expect(screen.queryByText('searchKnowledgeBase')).not.toBeInTheDocument();
+    expect(
+      within(processPanel).queryByText('searchKnowledgeBase')
+    ).not.toBeInTheDocument();
   });
 
   it('shows an empty-state message in the detail tab when technical metadata is absent', () => {
@@ -551,6 +603,66 @@ describe('AnalysisBasisBadge', () => {
     expect(screen.getByTestId('analysis-basis-tab-panel')).toHaveClass(
       'min-h-[18rem]'
     );
+  });
+
+  it('links tabs and tabpanels with ARIA metadata', () => {
+    render(
+      <AnalysisBasisBadge
+        basis={{
+          ...basis,
+          toolsCalled: ['searchKnowledgeBase'],
+        }}
+        traceId="trace-aria-contract-1234"
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: '분석 근거 상세 보기' })
+    );
+
+    const processTab = screen.getByRole('tab', {
+      name: '과정',
+      selected: true,
+    });
+    const detailTab = screen.getByRole('tab', {
+      name: '상세',
+      selected: false,
+    });
+    const processPanel = screen.getByRole('tabpanel', { name: '과정' });
+
+    expect(processTab).toHaveAttribute('aria-controls', processPanel.id);
+    expect(processPanel).toHaveAttribute('aria-labelledby', processTab.id);
+    expect(detailTab).toHaveAttribute('aria-controls');
+    expect(processTab).toHaveAttribute('tabindex', '0');
+    expect(detailTab).toHaveAttribute('tabindex', '-1');
+  });
+
+  it('supports keyboard tab navigation between process and detail views', () => {
+    render(
+      <AnalysisBasisBadge
+        basis={{
+          ...basis,
+          toolsCalled: ['searchKnowledgeBase'],
+        }}
+        traceId="trace-keyboard-nav-1234"
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: '분석 근거 상세 보기' })
+    );
+
+    const processTab = screen.getByRole('tab', {
+      name: '과정',
+      selected: true,
+    });
+    fireEvent.keyDown(processTab, { key: 'ArrowRight' });
+
+    expect(
+      screen.getByRole('tab', { name: '상세', selected: true })
+    ).toBeInTheDocument();
+    expect(screen.getByRole('tabpanel', { name: '상세' })).toBeInTheDocument();
+    expect(screen.getByText('trace-keyboard-nav-1234')).toBeInTheDocument();
   });
 
   // ── Phase 2: handoff 우선 노출 (SDD failing specs) ──────────────────────────
