@@ -472,26 +472,28 @@ const nextConfig = {
   },
 };
 
-export default withSentryConfig(
-  withBundleAnalyzer(nextConfig),
-  {
-    // 🎯 무료 티어: 소스맵 업로드 비활성화
-    silent: true,
-    org: 'om-4g',
-    project: 'javascript-nextjs',
+// dev 모드에서 Sentry 빌드 플러그인 생략 (컴파일 속도 대폭 개선)
+// Sentry는 production에서만 필요 (소스맵, 에러 트래킹)
+const baseConfig = withBundleAnalyzer(nextConfig);
 
-    // 🎯 무료 티어: 소스맵 업로드 완전 비활성화
-    sourcemaps: {
-      disable: true,
-    },
-  },
-  {
-    // 🎯 무료 티어 최적화 설정
-    widenClientFileUpload: false, // 소스맵 업로드 비활성화
-    transpileClientSDK: false, // 번들 사이즈 최적화
-    tunnelRoute: '/api/sentry-tunnel', // ad-blocker 우회 (수동 API route 사용)
-    hideSourceMaps: true, // 클라이언트 소스맵 숨김
-    disableLogger: true, // 로거 트리쉐이킹
-    automaticVercelMonitors: false, // Cron 모니터링 비활성화 (무료 제한)
-  }
-);
+export default process.env.NODE_ENV === 'development'
+  ? baseConfig
+  : withSentryConfig(
+      baseConfig,
+      {
+        // 🎯 무료 티어: 소스맵 업로드 비활성화
+        silent: true,
+        org: 'om-4g',
+        project: 'javascript-nextjs',
+        sourcemaps: { disable: true },
+      },
+      {
+        // 🎯 무료 티어 최적화 설정
+        widenClientFileUpload: false,
+        transpileClientSDK: false,
+        tunnelRoute: '/api/sentry-tunnel',
+        hideSourceMaps: true,
+        disableLogger: true,
+        automaticVercelMonitors: false,
+      }
+    );
