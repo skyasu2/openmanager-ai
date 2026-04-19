@@ -40,12 +40,12 @@
 
 Phase B와 독립적으로 병행 가능.
 
-- [ ] A-1: `adjustMetricsForScenario()`에 Box-Muller 정규분포 jitter 적용
+- [x] A-1: `adjustMetricsForScenario()`에 Box-Muller 정규분포 jitter 적용
   - 현재: `(Math.random() - 0.5) * 0.03`
   - 개선: `gaussianJitter(mean=0, stddev=0.015)` — 외부 패키지 불필요
   - 고부하 구간(cpu>0.8)은 stddev 축소(`0.008`)로 포화 구간 안정화
-- [ ] A-2: `otel-verify.ts` 검증 항목 — jitter 결과값이 [0.01, 0.99] 범위 유지
-- [ ] A-3: contract test — `gaussianJitter` unit test (1000회 샘플 평균 ≈ 0, 95%가 ±2σ 이내)
+- [x] A-2: `otel-verify.ts` 검증 항목 — jitter 결과값이 [0.01, 0.99] 범위 유지
+- [x] A-3: contract test — `gaussianJitter` unit test (1000회 샘플 평균 ≈ 0, 95%가 ±2σ 이내)
 
 ### Phase C — 마르코프 상태 전이 (3순위, 난이도: ★★★)
 

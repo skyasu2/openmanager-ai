@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-19 KST (OTel simulation v2 Phase B 완료 + Phase A test(spec) 착수)
+**Last Updated**: 2026-04-19 KST (OTel simulation v2 Phase A/B 완료)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -9,7 +9,7 @@
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
 | AnalysisBasisBadge 탭 UX 리팩토링 | Medium | Approved → Codex 위임 | [계획서](analysis-basis-badge-tab-ux-plan.md) |
-| OTel 데이터 시뮬레이션 고도화 v2 | Medium | Approved → Phase A test(spec) | [계획서](otel-data-simulation-v2-plan.md) |
+| OTel 데이터 시뮬레이션 고도화 v2 | Medium | Approved → Phase A/B 완료 | [계획서](otel-data-simulation-v2-plan.md) |
 
 ---
 

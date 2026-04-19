@@ -34,7 +34,7 @@
               }
             },
             {
-              "asDouble": 0.83,
+              "asDouble": 0.82,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
@@ -149,7 +149,7 @@
               }
             },
             {
-              "asDouble": 0.72,
+              "asDouble": 0.7,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
@@ -1151,7 +1151,7 @@
           "timeUnixNano": 1771023600000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[1742]: GC scan completed, heap occupancy 72%, reclaimed 120MB",
+          "body": "java[1742]: GC scan completed, heap occupancy 70%, reclaimed 118MB",
           "attributes": {
             "log.source": "java"
           },
@@ -1198,24 +1198,14 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771023823763840000,
+          "timeUnixNano": 1771023677732909800,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[8979]: *6535 upstream prematurely closed connection while reading response header",
+          "body": "nginx[4104]: *2146 upstream prematurely closed connection while reading response header",
           "attributes": {
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771023825553166800,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[4633]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-02"
         },
         {
           "timeUnixNano": 1771023828000389000,
@@ -1271,7 +1261,7 @@
           "timeUnixNano": 1771023828003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 56, fd usage 64%",
+          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 56, fd usage 63%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -1368,14 +1358,34 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771023893539183600,
+          "timeUnixNano": 1771023836529578800,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[5719]: [WARN] Thread pool nearing exhaustion: active 3152/200, queue depth 91",
+          "body": "nginx[5593]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771023901801573600,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[7384]: [WARN] Slow transaction: /api/servers took 1828ms (threshold: 500ms)",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771023904491235000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[5741]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-02"
         },
         {
           "timeUnixNano": 1771024044000389000,
@@ -1431,7 +1441,7 @@
           "timeUnixNano": 1771024044003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[1731]: request queue depth 20, p95 267ms, cpu 83%",
+          "body": "java[1731]: request queue depth 19, p95 267ms, cpu 82%",
           "attributes": {
             "log.source": "java"
           },
@@ -1528,20 +1538,10 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771024071887211000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[6582]: *5642 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-01"
-        },
-        {
           "timeUnixNano": 1771024140002465300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[7314]: WARNING: warning pressure summary cpu=83% mem=72% disk=34% net=0%",
+          "body": "java[7314]: WARNING: warning pressure summary cpu=82% mem=70% disk=34% net=0%",
           "attributes": {
             "log.source": "java"
           },
@@ -1583,7 +1583,7 @@
               }
             },
             {
-              "asDouble": 0.71,
+              "asDouble": 0.73,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -1692,7 +1692,7 @@
               }
             },
             {
-              "asDouble": 0.7,
+              "asDouble": 0.66,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
@@ -2694,7 +2694,7 @@
           "timeUnixNano": 1771024200000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 48, fd usage 63%",
+          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 48, fd usage 62%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -2704,7 +2704,7 @@
           "timeUnixNano": 1771024200000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[1749]: request queue depth 13, p95 250ms, cpu 71%",
+          "body": "java[1749]: request queue depth 15, p95 250ms, cpu 73%",
           "attributes": {
             "log.source": "java"
           },
@@ -2741,14 +2741,24 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771024314099128600,
+          "timeUnixNano": 1771024295012672300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[2354]: *227 upstream prematurely closed connection while reading response header",
+          "body": "nginx[8131]: *7461 upstream prematurely closed connection while reading response header",
           "attributes": {
             "log.source": "nginx"
           },
-          "resource": "web-nginx-dc1-02"
+          "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771024373431573800,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[6048]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
         },
         {
           "timeUnixNano": 1771024428000389000,
@@ -2901,36 +2911,6 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771024463185131500,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[7519]: [WARN] Thread pool nearing exhaustion: active 6562/200, queue depth 108",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771024465486059500,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[6661]: *7854 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771024632282512400,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[6086]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-03"
-        },
-        {
           "timeUnixNano": 1771024644000389000,
           "severityNumber": 9,
           "severityText": "INFO",
@@ -2984,7 +2964,7 @@
           "timeUnixNano": 1771024644003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[1759]: GC scan completed, heap occupancy 70%, reclaimed 125MB",
+          "body": "java[1759]: GC scan completed, heap occupancy 66%, reclaimed 121MB",
           "attributes": {
             "log.source": "java"
           },
@@ -2994,7 +2974,7 @@
           "timeUnixNano": 1771024644003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 56, fd usage 52%",
+          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 56, fd usage 53%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -3084,11 +3064,31 @@
           "timeUnixNano": 1771024740002465300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[7343]: WARNING: warning pressure summary cpu=82% mem=70% disk=33% net=1%",
+          "body": "java[7343]: WARNING: warning pressure summary cpu=82% mem=66% disk=33% net=1%",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771024762363929600,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[6281]: [WARN] Thread pool nearing exhaustion: active 7586/200, queue depth 153",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771024772918700300,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[5367]: *3435 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-02"
         }
       ]
     },
@@ -3126,7 +3126,7 @@
               }
             },
             {
-              "asDouble": 0.73,
+              "asDouble": 0.67,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -3235,7 +3235,7 @@
               }
             },
             {
-              "asDouble": 0.73,
+              "asDouble": 0.71,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
@@ -4284,24 +4284,34 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771024953038716000,
+          "timeUnixNano": 1771024838718235100,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[2670]: [WARN] Slow transaction: /api/servers took 2473ms (threshold: 500ms)",
+          "body": "nginx[6078]: *3043 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771024932724300500,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[8635]: [WARN] Thread pool nearing exhaustion: active 3693/200, queue depth 160",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771025006647362300,
+          "timeUnixNano": 1771025020000916500,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[6400]: *9112 upstream prematurely closed connection while reading response header",
+          "body": "nginx[4668]: *4740 upstream prematurely closed connection while reading response header",
           "attributes": {
             "log.source": "nginx"
           },
-          "resource": "web-nginx-dc1-03"
+          "resource": "web-nginx-dc1-01"
         },
         {
           "timeUnixNano": 1771025028000389000,
@@ -4357,7 +4367,7 @@
           "timeUnixNano": 1771025028003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[1776]: GC scan completed, heap occupancy 73%, reclaimed 135MB",
+          "body": "java[1776]: GC scan completed, heap occupancy 71%, reclaimed 133MB",
           "attributes": {
             "log.source": "java"
           },
@@ -4367,7 +4377,7 @@
           "timeUnixNano": 1771025028003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 48, fd usage 54%",
+          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 48, fd usage 51%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -4454,20 +4464,10 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771025080019808300,
+          "timeUnixNano": 1771025170665959200,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[8771]: *2830 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771025086638752300,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[2584]: *7799 upstream prematurely closed connection while reading response header",
+          "body": "nginx[3198]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
             "log.source": "nginx"
           },
@@ -4537,7 +4537,7 @@
           "timeUnixNano": 1771025244003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[1766]: request queue depth 16, p95 270ms, cpu 73%",
+          "body": "java[1766]: request queue depth 10, p95 270ms, cpu 67%",
           "attributes": {
             "log.source": "java"
           },
@@ -4627,7 +4627,7 @@
           "timeUnixNano": 1771025340002465300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[7372]: WARNING: warning pressure summary cpu=84% mem=73% disk=33% net=0%",
+          "body": "java[7372]: WARNING: warning pressure summary cpu=84% mem=71% disk=33% net=0%",
           "attributes": {
             "log.source": "java"
           },
@@ -4663,7 +4663,7 @@
               }
             },
             {
-              "asDouble": 0.85,
+              "asDouble": 0.84,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
@@ -4778,7 +4778,7 @@
               }
             },
             {
-              "asDouble": 0.74,
+              "asDouble": 0.73,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
@@ -5780,7 +5780,7 @@
           "timeUnixNano": 1771025400000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[1793]: GC scan completed, heap occupancy 74%, reclaimed 143MB",
+          "body": "java[1793]: GC scan completed, heap occupancy 73%, reclaimed 142MB",
           "attributes": {
             "log.source": "java"
           },
@@ -5827,14 +5827,24 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771025414334662000,
+          "timeUnixNano": 1771025517607465500,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[1848]: [WARN] Thread pool nearing exhaustion: active 553/200, queue depth 147",
+          "body": "nginx[9369]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
-            "log.source": "java"
+            "log.source": "nginx"
           },
-          "resource": "api-was-dc1-01"
+          "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771025594158765300,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[4977]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-01"
         },
         {
           "timeUnixNano": 1771025628000389000,
@@ -5890,7 +5900,7 @@
           "timeUnixNano": 1771025628003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 80, fd usage 65%",
+          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 80, fd usage 64%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -5987,14 +5997,24 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771025766876182300,
+          "timeUnixNano": 1771025751675815700,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[3293]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "body": "java[2733]: [WARN] Thread pool nearing exhaustion: active 8680/200, queue depth 68",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771025751951498200,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[2569]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
             "log.source": "nginx"
           },
-          "resource": "web-nginx-dc1-01"
+          "resource": "web-nginx-dc1-03"
         },
         {
           "timeUnixNano": 1771025844000389000,
@@ -6050,7 +6070,7 @@
           "timeUnixNano": 1771025844003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[1782]: request queue depth 18, p95 218ms, cpu 85%",
+          "body": "java[1782]: request queue depth 17, p95 218ms, cpu 84%",
           "attributes": {
             "log.source": "java"
           },
@@ -6147,34 +6167,14 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771025850620497400,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[8401]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-03"
-        },
-        {
           "timeUnixNano": 1771025940002465300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[7401]: WARNING: warning pressure summary cpu=85% mem=74% disk=36% net=1%",
+          "body": "java[7401]: WARNING: warning pressure summary cpu=84% mem=73% disk=36% net=1%",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771025951574886400,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[8342]: *5431 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-02"
         }
       ]
     },
@@ -6212,7 +6212,7 @@
               }
             },
             {
-              "asDouble": 0.72,
+              "asDouble": 0.75,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -6321,7 +6321,7 @@
               }
             },
             {
-              "asDouble": 0.72,
+              "asDouble": 0.74,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
@@ -7323,7 +7323,7 @@
           "timeUnixNano": 1771026000000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 72, fd usage 65%",
+          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 72, fd usage 66%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -7333,7 +7333,7 @@
           "timeUnixNano": 1771026000000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[1800]: request queue depth 17, p95 137ms, cpu 72%",
+          "body": "java[1800]: request queue depth 20, p95 137ms, cpu 75%",
           "attributes": {
             "log.source": "java"
           },
@@ -7370,24 +7370,44 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771026038597338000,
+          "timeUnixNano": 1771026030375714800,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[1570]: *5356 upstream prematurely closed connection while reading response header",
+          "body": "nginx[8328]: *8306 upstream prematurely closed connection while reading response header",
           "attributes": {
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771026136295363800,
+          "timeUnixNano": 1771026106816569000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[2563]: *8301 upstream prematurely closed connection while reading response header",
+          "body": "nginx[5830]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771026198718980000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[2706]: *4780 upstream prematurely closed connection while reading response header",
           "attributes": {
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771026205326526000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[3249]: [WARN] Slow transaction: /api/servers took 418ms (threshold: 500ms)",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
         },
         {
           "timeUnixNano": 1771026228000389000,
@@ -7540,26 +7560,6 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771026355133664000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[4903]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771026383857425200,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[9718]: [WARN] Slow transaction: /api/servers took 870ms (threshold: 500ms)",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
           "timeUnixNano": 1771026444000389000,
           "severityNumber": 9,
           "severityText": "INFO",
@@ -7613,7 +7613,7 @@
           "timeUnixNano": 1771026444003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[1810]: GC scan completed, heap occupancy 72%, reclaimed 148MB",
+          "body": "java[1810]: GC scan completed, heap occupancy 74%, reclaimed 150MB",
           "attributes": {
             "log.source": "java"
           },
@@ -7623,7 +7623,7 @@
           "timeUnixNano": 1771026444003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 80, fd usage 53%",
+          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 80, fd usage 55%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -7713,7 +7713,7 @@
           "timeUnixNano": 1771026540002465300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[7430]: WARNING: warning pressure summary cpu=86% mem=72% disk=33% net=0%",
+          "body": "java[7430]: WARNING: warning pressure summary cpu=86% mem=74% disk=33% net=0%",
           "attributes": {
             "log.source": "java"
           },
@@ -7749,13 +7749,13 @@
               }
             },
             {
-              "asDouble": 0.86,
+              "asDouble": 0.85,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.75,
+              "asDouble": 0.74,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -7864,7 +7864,7 @@
               }
             },
             {
-              "asDouble": 0.73,
+              "asDouble": 0.72,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
@@ -8866,7 +8866,7 @@
           "timeUnixNano": 1771026600000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[1816]: request queue depth 21, p95 169ms, cpu 86%",
+          "body": "java[1816]: request queue depth 20, p95 169ms, cpu 85%",
           "attributes": {
             "log.source": "java"
           },
@@ -8913,14 +8913,14 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771026690440474600,
+          "timeUnixNano": 1771026764651597800,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[5486]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "body": "nginx[7192]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
             "log.source": "nginx"
           },
-          "resource": "web-nginx-dc1-01"
+          "resource": "web-nginx-dc1-03"
         },
         {
           "timeUnixNano": 1771026828000389000,
@@ -8976,7 +8976,7 @@
           "timeUnixNano": 1771026828003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[1827]: GC scan completed, heap occupancy 73%, reclaimed 156MB",
+          "body": "java[1827]: GC scan completed, heap occupancy 72%, reclaimed 155MB",
           "attributes": {
             "log.source": "java"
           },
@@ -9073,34 +9073,24 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771026859326081500,
+          "timeUnixNano": 1771026923946042400,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[9471]: [WARN] Slow transaction: /api/servers took 1455ms (threshold: 500ms)",
+          "body": "java[4508]: [WARN] Slow transaction: /api/servers took 1356ms (threshold: 500ms)",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771026986665378800,
+          "timeUnixNano": 1771027009034099200,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[3661]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "body": "nginx[1460]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
             "log.source": "nginx"
           },
-          "resource": "web-nginx-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771027021109266700,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[8640]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-03"
+          "resource": "web-nginx-dc1-01"
         },
         {
           "timeUnixNano": 1771027044000389000,
@@ -9156,7 +9146,7 @@
           "timeUnixNano": 1771027044003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 64, fd usage 66%",
+          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 64, fd usage 65%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -9166,7 +9156,7 @@
           "timeUnixNano": 1771027044003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[1817]: request queue depth 21, p95 157ms, cpu 75%",
+          "body": "java[1817]: request queue depth 20, p95 157ms, cpu 74%",
           "attributes": {
             "log.source": "java"
           },
@@ -9253,10 +9243,20 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
+          "timeUnixNano": 1771027115708930800,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[1404]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-02"
+        },
+        {
           "timeUnixNano": 1771027140002465300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[7459]: WARNING: warning pressure summary cpu=86% mem=73% disk=32% net=1%",
+          "body": "java[7459]: WARNING: warning pressure summary cpu=85% mem=72% disk=32% net=1%",
           "attributes": {
             "log.source": "java"
           },

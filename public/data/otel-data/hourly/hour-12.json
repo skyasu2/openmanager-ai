@@ -34,7 +34,7 @@
               }
             },
             {
-              "asDouble": 0.8,
+              "asDouble": 0.81,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
@@ -185,7 +185,7 @@
               }
             },
             {
-              "asDouble": 0.68,
+              "asDouble": 0.66,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
@@ -1081,7 +1081,7 @@
           "timeUnixNano": 1771038000000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7385]: cache hit ratio: 54% over last 60s",
+          "body": "redis-server[7385]: cache hit ratio: 55% over last 60s",
           "attributes": {
             "log.source": "redis"
           },
@@ -1198,14 +1198,14 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771038024970444800,
+          "timeUnixNano": 1771038182013745000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[3924]: [WARN] Slow transaction: /api/servers took 1705ms (threshold: 500ms)",
+          "body": "nginx[1553]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
-            "log.source": "java"
+            "log.source": "nginx"
           },
-          "resource": "api-was-dc1-01"
+          "resource": "web-nginx-dc1-01"
         },
         {
           "timeUnixNano": 1771038228000389000,
@@ -1261,7 +1261,7 @@
           "timeUnixNano": 1771038228003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 56, fd usage 61%",
+          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 56, fd usage 62%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -1311,7 +1311,7 @@
           "timeUnixNano": 1771038228004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7390]: evicted keys 194, fragmentation 128%",
+          "body": "redis-server[7390]: evicted keys 158, fragmentation 128%",
           "attributes": {
             "log.source": "redis"
           },
@@ -1358,30 +1358,20 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771038297994075600,
+          "timeUnixNano": 1771038266365388000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[5385]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "body": "nginx[7452]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771038318585171200,
+          "timeUnixNano": 1771038377814637000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[1039]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771038412656726300,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[5633]: *4847 upstream prematurely closed connection while reading response header",
+          "body": "nginx[6625]: *3228 upstream prematurely closed connection while reading response header",
           "attributes": {
             "log.source": "nginx"
           },
@@ -1441,7 +1431,7 @@
           "timeUnixNano": 1771038444003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2139]: request queue depth 13, p95 387ms, cpu 80%",
+          "body": "java[2139]: request queue depth 14, p95 387ms, cpu 81%",
           "attributes": {
             "log.source": "java"
           },
@@ -1491,7 +1481,7 @@
           "timeUnixNano": 1771038444004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 68% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 66% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -1541,7 +1531,17 @@
           "timeUnixNano": 1771038540002465300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[8010]: WARNING: warning pressure summary cpu=80% mem=69% disk=34% net=1%",
+          "body": "java[8010]: WARNING: warning pressure summary cpu=81% mem=69% disk=34% net=1%",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771038540423926000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[9987]: [WARN] Slow transaction: /api/servers took 1654ms (threshold: 500ms)",
           "attributes": {
             "log.source": "java"
           },
@@ -2741,36 +2741,6 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771038729550429200,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[5811]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771038751769610800,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[9159]: *9768 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771038803467494100,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[7219]: [WARN] Thread pool nearing exhaustion: active 1911/200, queue depth 184",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
           "timeUnixNano": 1771038828000389000,
           "severityNumber": 9,
           "severityText": "INFO",
@@ -2919,6 +2889,26 @@
             "log.source": "mysqld"
           },
           "resource": "db-mysql-dc1-replica"
+        },
+        {
+          "timeUnixNano": 1771038988437907500,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[7417]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771039004133579800,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[9832]: [WARN] Thread pool nearing exhaustion: active 4589/200, queue depth 114",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
         },
         {
           "timeUnixNano": 1771039044000389000,
@@ -3071,14 +3061,24 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771039111545299500,
+          "timeUnixNano": 1771039045995576300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[6715]: *6573 upstream prematurely closed connection while reading response header",
+          "body": "nginx[5075]: *9399 upstream prematurely closed connection while reading response header",
           "attributes": {
             "log.source": "nginx"
           },
-          "resource": "web-nginx-dc1-03"
+          "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771039112950132500,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[9780]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-02"
         },
         {
           "timeUnixNano": 1771039140002465300,
@@ -3120,7 +3120,7 @@
               }
             },
             {
-              "asDouble": 0.82,
+              "asDouble": 0.8,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
@@ -3271,7 +3271,7 @@
               }
             },
             {
-              "asDouble": 0.68,
+              "asDouble": 0.66,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
@@ -4167,7 +4167,7 @@
           "timeUnixNano": 1771039200000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 68% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 66% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -4237,7 +4237,7 @@
           "timeUnixNano": 1771039200000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2173]: request queue depth 17, p95 388ms, cpu 82%",
+          "body": "java[2173]: request queue depth 15, p95 388ms, cpu 80%",
           "attributes": {
             "log.source": "java"
           },
@@ -4284,20 +4284,10 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771039289688336600,
+          "timeUnixNano": 1771039350554692900,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[7833]: [WARN] Thread pool nearing exhaustion: active 864/200, queue depth 179",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771039399807654700,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[5732]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "body": "nginx[6867]: *7066 upstream prematurely closed connection while reading response header",
           "attributes": {
             "log.source": "nginx"
           },
@@ -4407,7 +4397,7 @@
           "timeUnixNano": 1771039428004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7419]: cache hit ratio: 46% over last 60s",
+          "body": "redis-server[7419]: cache hit ratio: 47% over last 60s",
           "attributes": {
             "log.source": "redis"
           },
@@ -4452,6 +4442,36 @@
             "log.source": "mysqld"
           },
           "resource": "db-mysql-dc1-replica"
+        },
+        {
+          "timeUnixNano": 1771039465430585000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[1335]: [WARN] Thread pool nearing exhaustion: active 202/200, queue depth 97",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771039520534052000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[5596]: *310 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771039525105124900,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[1385]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-01"
         },
         {
           "timeUnixNano": 1771039644000389000,
@@ -4507,7 +4527,7 @@
           "timeUnixNano": 1771039644003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 88, fd usage 63%",
+          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 88, fd usage 62%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -4557,7 +4577,7 @@
           "timeUnixNano": 1771039644004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7424]: evicted keys 208, fragmentation 132%",
+          "body": "redis-server[7424]: evicted keys 172, fragmentation 132%",
           "attributes": {
             "log.source": "redis"
           },
@@ -4607,31 +4627,11 @@
           "timeUnixNano": 1771039740002465300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[8068]: WARNING: warning pressure summary cpu=82% mem=70% disk=34% net=1%",
+          "body": "java[8068]: WARNING: warning pressure summary cpu=80% mem=70% disk=34% net=1%",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771039740364410600,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[1534]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771039754279309000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[4416]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-01"
         }
       ]
     },
@@ -4814,7 +4814,7 @@
               }
             },
             {
-              "asDouble": 0.68,
+              "asDouble": 0.69,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
@@ -5710,7 +5710,7 @@
           "timeUnixNano": 1771039800000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7436]: cache hit ratio: 55% over last 60s",
+          "body": "redis-server[7436]: cache hit ratio: 54% over last 60s",
           "attributes": {
             "log.source": "redis"
           },
@@ -5827,34 +5827,14 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771039817329545500,
+          "timeUnixNano": 1771039961893170700,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[5327]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771039825278156000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[1096]: [WARN] Thread pool nearing exhaustion: active 9164/200, queue depth 187",
+          "body": "java[4675]: [WARN] Slow transaction: /api/servers took 1159ms (threshold: 500ms)",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771039837146546700,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[3324]: *1445 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-01"
         },
         {
           "timeUnixNano": 1771040028000389000,
@@ -5960,7 +5940,7 @@
           "timeUnixNano": 1771040028004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7441]: evicted keys 180, fragmentation 134%",
+          "body": "redis-server[7441]: evicted keys 198, fragmentation 135%",
           "attributes": {
             "log.source": "redis"
           },
@@ -6007,7 +5987,27 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771040132258802200,
+          "timeUnixNano": 1771040045901231400,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[5379]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771040141598564000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[8516]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771040155046433800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Main process exited, code=killed, status=9/KILL",
@@ -6017,7 +6017,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771040143292682800,
+          "timeUnixNano": 1771040165173467400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Scheduled restart job, restart counter is at 1.",
@@ -6027,7 +6027,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771040152654936300,
+          "timeUnixNano": 1771040174623393000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[4162]: Server initialized, ready to accept connections on port 6379",
@@ -6037,7 +6037,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771040165562450200,
+          "timeUnixNano": 1771040186583218000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Main process exited, code=killed, status=9/KILL",
@@ -6047,7 +6047,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771040174326540500,
+          "timeUnixNano": 1771040197989401000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Scheduled restart job, restart counter is at 1.",
@@ -6057,7 +6057,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771040185206050300,
+          "timeUnixNano": 1771040206590283300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[5466]: Server initialized, ready to accept connections on port 6379",
@@ -6065,6 +6065,16 @@
             "log.source": "redis"
           },
           "resource": "cache-redis-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771040221539416300,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[3239]: *4028 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-01"
         },
         {
           "timeUnixNano": 1771040244000389000,
@@ -6170,7 +6180,7 @@
           "timeUnixNano": 1771040244004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 68% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 69% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -6225,16 +6235,6 @@
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771040343800528600,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[6804]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-02"
         }
       ]
     },
@@ -6266,7 +6266,7 @@
               }
             },
             {
-              "asDouble": 0.83,
+              "asDouble": 0.82,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
@@ -6417,7 +6417,7 @@
               }
             },
             {
-              "asDouble": 0.7,
+              "asDouble": 0.71,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
@@ -7313,7 +7313,7 @@
           "timeUnixNano": 1771040400000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7458]: evicted keys 223, fragmentation 129%",
+          "body": "redis-server[7458]: evicted keys 241, fragmentation 129%",
           "attributes": {
             "log.source": "redis"
           },
@@ -7430,14 +7430,34 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771040614558242300,
+          "timeUnixNano": 1771040400406646500,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[5760]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "body": "nginx[6854]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
             "log.source": "nginx"
           },
-          "resource": "web-nginx-dc1-01"
+          "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771040458963914000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[2995]: [WARN] Slow transaction: /api/servers took 2295ms (threshold: 500ms)",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771040537198969000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[4314]: *7981 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
         },
         {
           "timeUnixNano": 1771040628000389000,
@@ -7493,7 +7513,7 @@
           "timeUnixNano": 1771040628003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2207]: request queue depth 20, p95 402ms, cpu 83%",
+          "body": "java[2207]: request queue depth 19, p95 402ms, cpu 82%",
           "attributes": {
             "log.source": "java"
           },
@@ -7543,7 +7563,7 @@
           "timeUnixNano": 1771040628004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 70% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 71% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -7590,17 +7610,7 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771040718667071700,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[3034]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771040742218313700,
+          "timeUnixNano": 1771040742241309400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Main process exited, code=killed, status=9/KILL",
@@ -7610,7 +7620,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771040754187683300,
+          "timeUnixNano": 1771040753842908400,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Scheduled restart job, restart counter is at 1.",
@@ -7620,7 +7630,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771040764567152400,
+          "timeUnixNano": 1771040763404602000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[4229]: Server initialized, ready to accept connections on port 6379",
@@ -7630,7 +7640,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771040774272562400,
+          "timeUnixNano": 1771040775979598800,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Main process exited, code=killed, status=9/KILL",
@@ -7640,7 +7650,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771040785085212000,
+          "timeUnixNano": 1771040785594164500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Scheduled restart job, restart counter is at 1.",
@@ -7650,7 +7660,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771040797213273900,
+          "timeUnixNano": 1771040797500330200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[4139]: Server initialized, ready to accept connections on port 6379",
@@ -7658,16 +7668,6 @@
             "log.source": "redis"
           },
           "resource": "cache-redis-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771040798393971000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[5328]: *2377 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-02"
         },
         {
           "timeUnixNano": 1771040844000389000,
@@ -7820,24 +7820,24 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771040896623804000,
+          "timeUnixNano": 1771040940002465300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[9971]: [WARN] Thread pool nearing exhaustion: active 9258/200, queue depth 95",
+          "body": "java[8126]: WARNING: warning pressure summary cpu=82% mem=43% disk=35% net=0%",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771040940002465300,
+          "timeUnixNano": 1771040966918502000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[8126]: WARNING: warning pressure summary cpu=83% mem=43% disk=35% net=0%",
+          "body": "nginx[9782]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
-            "log.source": "java"
+            "log.source": "nginx"
           },
-          "resource": "api-was-dc1-01"
+          "resource": "web-nginx-dc1-01"
         }
       ]
     },
@@ -7869,7 +7869,7 @@
               }
             },
             {
-              "asDouble": 0.83,
+              "asDouble": 0.84,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
@@ -8020,7 +8020,7 @@
               }
             },
             {
-              "asDouble": 0.7,
+              "asDouble": 0.68,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
@@ -8916,7 +8916,7 @@
           "timeUnixNano": 1771041000000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 70% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 68% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -8986,7 +8986,7 @@
           "timeUnixNano": 1771041000000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2224]: request queue depth 14, p95 494ms, cpu 83%",
+          "body": "java[2224]: request queue depth 15, p95 494ms, cpu 84%",
           "attributes": {
             "log.source": "java"
           },
@@ -9031,26 +9031,6 @@
             "log.source": "mysqld"
           },
           "resource": "db-mysql-dc1-replica"
-        },
-        {
-          "timeUnixNano": 1771041064943688400,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[9936]: [WARN] Slow transaction: /api/servers took 2988ms (threshold: 500ms)",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771041117601521700,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[8481]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-01"
         },
         {
           "timeUnixNano": 1771041228000389000,
@@ -9156,7 +9136,7 @@
           "timeUnixNano": 1771041228004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7470]: cache hit ratio: 44% over last 60s",
+          "body": "redis-server[7470]: cache hit ratio: 46% over last 60s",
           "attributes": {
             "log.source": "redis"
           },
@@ -9203,17 +9183,17 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771041296558208800,
+          "timeUnixNano": 1771041342335168300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[8479]: *1089 upstream prematurely closed connection while reading response header",
+          "body": "nginx[3650]: *8220 upstream prematurely closed connection while reading response header",
           "attributes": {
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771041353308990700,
+          "timeUnixNano": 1771041353897044000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Main process exited, code=killed, status=9/KILL",
@@ -9223,7 +9203,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771041364055212300,
+          "timeUnixNano": 1771041364903150600,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Scheduled restart job, restart counter is at 1.",
@@ -9233,7 +9213,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771041375349161700,
+          "timeUnixNano": 1771041373852185300,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[5920]: Server initialized, ready to accept connections on port 6379",
@@ -9243,7 +9223,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771041384857620500,
+          "timeUnixNano": 1771041385845428000,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Main process exited, code=killed, status=9/KILL",
@@ -9253,7 +9233,17 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771041396554462200,
+          "timeUnixNano": 1771041386655840300,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[4807]: [WARN] Thread pool nearing exhaustion: active 2969/200, queue depth 67",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771041395434389500,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "systemd[1]: redis-server.service: Scheduled restart job, restart counter is at 1.",
@@ -9263,7 +9253,7 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771041406995771600,
+          "timeUnixNano": 1771041407153481200,
           "severityNumber": 9,
           "severityText": "INFO",
           "body": "redis-server[3261]: Server initialized, ready to accept connections on port 6379",
@@ -9376,7 +9366,7 @@
           "timeUnixNano": 1771041444004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7475]: evicted keys 230, fragmentation 131%",
+          "body": "redis-server[7475]: evicted keys 194, fragmentation 130%",
           "attributes": {
             "log.source": "redis"
           },
@@ -9423,24 +9413,34 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771041536219180000,
+          "timeUnixNano": 1771041503660604200,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[1742]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "body": "nginx[2072]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
             "log.source": "nginx"
           },
-          "resource": "web-nginx-dc1-02"
+          "resource": "web-nginx-dc1-01"
         },
         {
           "timeUnixNano": 1771041540002465300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[8155]: WARNING: warning pressure summary cpu=83% mem=57% disk=35% net=1%",
+          "body": "java[8155]: WARNING: warning pressure summary cpu=84% mem=57% disk=35% net=1%",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771041576329320000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[3884]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-02"
         }
       ]
     }

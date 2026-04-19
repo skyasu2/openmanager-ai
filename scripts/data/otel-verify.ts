@@ -603,6 +603,33 @@ function main(): void {
   check('Core resources have >= 3 INFO logs per slot', infoFloorViolations === 0, `${infoFloorViolations} missing`);
   check('Core resources stay within <= 15 total logs per slot', slotUpperBoundViolations === 0, `${slotUpperBoundViolations} over`);
 
+  // ── 9b. Phase A jitter bounds ──
+  console.log('\n[9b] Phase A jitter bounds:');
+  let jitterBoundsViolations = 0;
+  const boundedMetricNames = new Set([
+    'system.cpu.utilization',
+    'system.memory.utilization',
+    'system.filesystem.utilization',
+  ]);
+
+  for (let h = 0; h < 24; h++) {
+    const filename = `hour-${String(h).padStart(2, '0')}.json`;
+    const data: HourlyFile = JSON.parse(fs.readFileSync(path.join(HOURLY_DIR, filename), 'utf-8'));
+
+    for (const slot of data.slots) {
+      for (const metric of slot.metrics) {
+        if (!boundedMetricNames.has(metric.name)) continue;
+        for (const dp of metric.dataPoints) {
+          if (dp.asDouble < 0.01 || dp.asDouble > 0.99) {
+            jitterBoundsViolations++;
+          }
+        }
+      }
+    }
+  }
+
+  check('Scenario jitter keeps utilization metrics within [0.01, 0.99]', jitterBoundsViolations === 0, `${jitterBoundsViolations} out of range`);
+
   // ── 10. Severity distribution ──
   console.log('\n[10] Severity distribution:');
   let totalInfo = 0;

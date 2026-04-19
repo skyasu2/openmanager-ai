@@ -52,7 +52,7 @@
               }
             },
             {
-              "asDouble": 0.6,
+              "asDouble": 0.61,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -167,7 +167,7 @@
               }
             },
             {
-              "asDouble": 0.72,
+              "asDouble": 0.7,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -282,7 +282,7 @@
               }
             },
             {
-              "asDouble": 0.82,
+              "asDouble": 0.8,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -1161,7 +1161,7 @@
           "timeUnixNano": 1770998400000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[5010]: InnoDB buffer pool hit ratio: 79%",
+          "body": "mysqld[5010]: InnoDB buffer pool hit ratio: 80%",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -1198,24 +1198,14 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1770998408924517600,
+          "timeUnixNano": 1770998521488448300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[4469]: [WARN] Slow transaction: downstream dependency response 1471ms (threshold: 500ms)",
+          "body": "java[5362]: [WARN] HikariPool - Connection to backend timed out after 2687ms",
           "attributes": {
             "log.source": "java"
           },
-          "resource": "api-was-dc1-02"
-        },
-        {
-          "timeUnixNano": 1770998501602250000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "mysqld[9293]: [Warning] Disk I/O stalling: fsync took 838ms for file ./ibdata1",
-          "attributes": {
-            "log.source": "mysqld"
-          },
-          "resource": "db-mysql-dc1-primary"
+          "resource": "api-was-dc1-01"
         },
         {
           "timeUnixNano": 1770998628000389000,
@@ -1301,7 +1291,7 @@
           "timeUnixNano": 1770998628003618800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[5003]: slow query detected: 1022ms on reporting.job_runs",
+          "body": "mysqld[5003]: slow query detected: 1015ms on reporting.job_runs",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -1366,6 +1356,26 @@
             "log.source": "mysqld"
           },
           "resource": "db-mysql-dc1-replica"
+        },
+        {
+          "timeUnixNano": 1770998715987977700,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[5428]: [WARN] HikariPool - Connection to backend timed out after 2499ms",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1770998771649327900,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[4565]: [WARN] Slow transaction: downstream dependency response 1871ms (threshold: 500ms)",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
         },
         {
           "timeUnixNano": 1770998844000389000,
@@ -1451,7 +1461,7 @@
           "timeUnixNano": 1770998844003618800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[5006]: replication lag: 612ms on channel dc1-replica",
+          "body": "mysqld[5006]: replication lag: 598ms on channel dc1-replica",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -1518,30 +1528,20 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1770998892600511200,
+          "timeUnixNano": 1770998848021697300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[3140]: [WARN] Slow transaction: downstream dependency response 1177ms (threshold: 500ms)",
+          "body": "mysqld[8308]: [Warning] Disk I/O stalling: fsync took 3159ms for file ./ibdata1",
           "attributes": {
-            "log.source": "java"
+            "log.source": "mysqld"
           },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1770998917417654000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[7700]: [WARN] HikariPool - Connection to backend timed out after 800ms",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-03"
+          "resource": "db-mysql-dc1-primary"
         },
         {
           "timeUnixNano": 1770998940007619800,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "mysqld[3082]: WARNING: warning pressure summary cpu=60% mem=72% disk=82% net=0%",
+          "body": "mysqld[3082]: WARNING: warning pressure summary cpu=61% mem=70% disk=80% net=0%",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -1825,7 +1825,7 @@
               }
             },
             {
-              "asDouble": 0.82,
+              "asDouble": 0.81,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -2704,7 +2704,7 @@
           "timeUnixNano": 1770999000000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[5020]: slow query detected: 1062ms on reporting.job_runs",
+          "body": "mysqld[5020]: slow query detected: 1056ms on reporting.job_runs",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -2741,14 +2741,34 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1770999137166227000,
+          "timeUnixNano": 1770999050513835300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[2503]: [WARN] HikariPool - Connection to backend timed out after 1955ms",
+          "body": "java[8527]: [WARN] Slow transaction: downstream dependency response 2708ms (threshold: 500ms)",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1770999089776308000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[8424]: [WARN] Slow transaction: downstream dependency response 1272ms (threshold: 500ms)",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1770999110501821200,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[6947]: [WARN] Slow transaction: downstream dependency response 2069ms (threshold: 500ms)",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
         },
         {
           "timeUnixNano": 1770999228000389000,
@@ -2834,7 +2854,7 @@
           "timeUnixNano": 1770999228003618800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[5023]: replication lag: 638ms on channel dc1-replica",
+          "body": "mysqld[5023]: replication lag: 633ms on channel dc1-replica",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -2901,10 +2921,10 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1770999268982468400,
+          "timeUnixNano": 1770999329605320700,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "mysqld[9219]: [Warning] Disk I/O stalling: fsync took 2098ms for file ./ibdata1",
+          "body": "mysqld[2762]: [Warning] Disk usage at 78%, approaching critical threshold",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -3061,34 +3081,14 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1770999458145794300,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[9412]: [WARN] Slow transaction: downstream dependency response 2506ms (threshold: 500ms)",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-03"
-        },
-        {
           "timeUnixNano": 1770999540007619800,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "mysqld[3111]: WARNING: warning pressure summary cpu=61% mem=71% disk=82% net=0%",
+          "body": "mysqld[3111]: WARNING: warning pressure summary cpu=61% mem=71% disk=81% net=0%",
           "attributes": {
             "log.source": "mysqld"
           },
           "resource": "db-mysql-dc1-primary"
-        },
-        {
-          "timeUnixNano": 1770999573316941800,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[1472]: [WARN] HikariPool - Connection to backend timed out after 2198ms",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-02"
         }
       ]
     },
@@ -3253,7 +3253,7 @@
               }
             },
             {
-              "asDouble": 0.7,
+              "asDouble": 0.73,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -3368,7 +3368,7 @@
               }
             },
             {
-              "asDouble": 0.8,
+              "asDouble": 0.82,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -4247,7 +4247,7 @@
           "timeUnixNano": 1770999600000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[5040]: replication lag: 654ms on channel dc1-replica",
+          "body": "mysqld[5040]: replication lag: 670ms on channel dc1-replica",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -4282,16 +4282,6 @@
             "log.source": "redis"
           },
           "resource": "cache-redis-dc1-02"
-        },
-        {
-          "timeUnixNano": 1770999800058659300,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "mysqld[2119]: [Warning] Disk I/O stalling: fsync took 1237ms for file ./ibdata1",
-          "attributes": {
-            "log.source": "mysqld"
-          },
-          "resource": "db-mysql-dc1-primary"
         },
         {
           "timeUnixNano": 1770999828000389000,
@@ -4377,7 +4367,7 @@
           "timeUnixNano": 1770999828003618800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[5044]: InnoDB buffer pool hit ratio: 80%",
+          "body": "mysqld[5044]: InnoDB buffer pool hit ratio: 79%",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -4444,14 +4434,24 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1770999880777728000,
+          "timeUnixNano": 1770999911427853800,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[8624]: [WARN] HikariPool - Connection to backend timed out after 339ms",
+          "body": "mysqld[7310]: [Warning] Disk I/O stalling: fsync took 3106ms for file ./ibdata1",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-primary"
+        },
+        {
+          "timeUnixNano": 1771000023503617300,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[8181]: [WARN] Slow transaction: downstream dependency response 2817ms (threshold: 500ms)",
           "attributes": {
             "log.source": "java"
           },
-          "resource": "api-was-dc1-02"
+          "resource": "api-was-dc1-03"
         },
         {
           "timeUnixNano": 1771000044000389000,
@@ -4537,7 +4537,7 @@
           "timeUnixNano": 1771000044003618800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[5037]: slow query detected: 945ms on reporting.job_runs",
+          "body": "mysqld[5037]: slow query detected: 957ms on reporting.job_runs",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -4604,10 +4604,20 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771000070579935000,
+          "timeUnixNano": 1771000068224676000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[7138]: [WARN] Slow transaction: downstream dependency response 2400ms (threshold: 500ms)",
+          "body": "java[1233]: [WARN] HikariPool - Connection to backend timed out after 2479ms",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771000092379350300,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[9167]: [WARN] HikariPool - Connection to backend timed out after 1777ms",
           "attributes": {
             "log.source": "java"
           },
@@ -4617,21 +4627,11 @@
           "timeUnixNano": 1771000140007619800,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "mysqld[3140]: WARNING: warning pressure summary cpu=61% mem=70% disk=80% net=0%",
+          "body": "mysqld[3140]: WARNING: warning pressure summary cpu=61% mem=73% disk=82% net=0%",
           "attributes": {
             "log.source": "mysqld"
           },
           "resource": "db-mysql-dc1-primary"
-        },
-        {
-          "timeUnixNano": 1771000181807168500,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[2548]: [WARN] HikariPool - Connection to backend timed out after 2579ms",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-03"
         }
       ]
     },
@@ -4681,7 +4681,7 @@
               }
             },
             {
-              "asDouble": 0.64,
+              "asDouble": 0.63,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -4911,7 +4911,7 @@
               }
             },
             {
-              "asDouble": 0.82,
+              "asDouble": 0.81,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -5827,14 +5827,24 @@
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771000311100078600,
+          "timeUnixNano": 1771000297193995500,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[1184]: [WARN] Slow transaction: downstream dependency response 2665ms (threshold: 500ms)",
+          "body": "java[9065]: [WARN] Slow transaction: downstream dependency response 1637ms (threshold: 500ms)",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771000406035819300,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[9201]: [WARN] Slow transaction: downstream dependency response 1466ms (threshold: 500ms)",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
         },
         {
           "timeUnixNano": 1771000428000389000,
@@ -5920,7 +5930,7 @@
           "timeUnixNano": 1771000428003618800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[5054]: slow query detected: 1007ms on reporting.job_runs",
+          "body": "mysqld[5054]: slow query detected: 996ms on reporting.job_runs",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -5987,34 +5997,24 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771000436844268000,
+          "timeUnixNano": 1771000486074819300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "mysqld[5918]: [Warning] Disk usage at 90%, approaching critical threshold",
-          "attributes": {
-            "log.source": "mysqld"
-          },
-          "resource": "db-mysql-dc1-primary"
-        },
-        {
-          "timeUnixNano": 1771000557672177400,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[1983]: [WARN] Slow transaction: downstream dependency response 2129ms (threshold: 500ms)",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771000629305000700,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[2632]: [WARN] Slow transaction: downstream dependency response 2440ms (threshold: 500ms)",
+          "body": "java[5092]: [WARN] Slow transaction: downstream dependency response 376ms (threshold: 500ms)",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771000633523306500,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "mysqld[8318]: [Warning] Disk I/O stalling: fsync took 530ms for file ./ibdata1",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-primary"
         },
         {
           "timeUnixNano": 1771000644000389000,
@@ -6100,7 +6100,7 @@
           "timeUnixNano": 1771000644003618800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[5057]: replication lag: 698ms on channel dc1-replica",
+          "body": "mysqld[5057]: replication lag: 693ms on channel dc1-replica",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -6170,7 +6170,7 @@
           "timeUnixNano": 1771000740007619800,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "mysqld[3169]: WARNING: warning pressure summary cpu=64% mem=73% disk=82% net=0%",
+          "body": "mysqld[3169]: WARNING: warning pressure summary cpu=63% mem=73% disk=81% net=0%",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -6224,7 +6224,7 @@
               }
             },
             {
-              "asDouble": 0.64,
+              "asDouble": 0.63,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -6339,7 +6339,7 @@
               }
             },
             {
-              "asDouble": 0.72,
+              "asDouble": 0.73,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -6454,7 +6454,7 @@
               }
             },
             {
-              "asDouble": 0.83,
+              "asDouble": 0.81,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -7333,7 +7333,7 @@
           "timeUnixNano": 1771000800000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[5071]: slow query detected: 1048ms on reporting.job_runs",
+          "body": "mysqld[5071]: slow query detected: 1031ms on reporting.job_runs",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -7368,26 +7368,6 @@
             "log.source": "systemd"
           },
           "resource": "cache-redis-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771000875639619600,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[5349]: [WARN] HikariPool - Connection to backend timed out after 1534ms",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771001000027205000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[7616]: [WARN] Slow transaction: downstream dependency response 3122ms (threshold: 500ms)",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-01"
         },
         {
           "timeUnixNano": 1771001028000389000,
@@ -7473,7 +7453,7 @@
           "timeUnixNano": 1771001028003618800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[5074]: replication lag: 589ms on channel dc1-replica",
+          "body": "mysqld[5074]: replication lag: 581ms on channel dc1-replica",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -7540,24 +7520,34 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771001109752920000,
+          "timeUnixNano": 1771001038502704600,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[4728]: [WARN] HikariPool - Connection to backend timed out after 1531ms",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771001219017410600,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "mysqld[9660]: [Warning] Disk I/O stalling: fsync took 3072ms for file ./ibdata1",
+          "body": "mysqld[8861]: [Warning] Disk usage at 79%, approaching critical threshold",
           "attributes": {
             "log.source": "mysqld"
           },
           "resource": "db-mysql-dc1-primary"
+        },
+        {
+          "timeUnixNano": 1771001046924551700,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[3650]: [WARN] Slow transaction: downstream dependency response 271ms (threshold: 500ms)",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771001076091223000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[5887]: [WARN] HikariPool - Connection to backend timed out after 2644ms",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
         },
         {
           "timeUnixNano": 1771001244000389000,
@@ -7713,11 +7703,21 @@
           "timeUnixNano": 1771001340007619800,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "mysqld[3198]: WARNING: warning pressure summary cpu=64% mem=72% disk=83% net=0%",
+          "body": "mysqld[3198]: WARNING: warning pressure summary cpu=63% mem=73% disk=81% net=0%",
           "attributes": {
             "log.source": "mysqld"
           },
           "resource": "db-mysql-dc1-primary"
+        },
+        {
+          "timeUnixNano": 1771001358697961000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[6510]: [WARN] HikariPool - Connection to backend timed out after 1093ms",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
         }
       ]
     },
@@ -7767,7 +7767,7 @@
               }
             },
             {
-              "asDouble": 0.63,
+              "asDouble": 0.67,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -8913,6 +8913,36 @@
           "resource": "cache-redis-dc1-02"
         },
         {
+          "timeUnixNano": 1771001416551833300,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[1687]: [WARN] HikariPool - Connection to backend timed out after 3116ms",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771001619841138400,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[9249]: [WARN] Slow transaction: downstream dependency response 3153ms (threshold: 500ms)",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771001623481039400,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "mysqld[7036]: [Warning] Disk I/O stalling: fsync took 666ms for file ./ibdata1",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-primary"
+        },
+        {
           "timeUnixNano": 1771001628000389000,
           "severityNumber": 9,
           "severityText": "INFO",
@@ -9063,34 +9093,14 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771001663549322500,
+          "timeUnixNano": 1771001652817606700,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "mysqld[8577]: [Warning] Disk usage at 94%, approaching critical threshold",
-          "attributes": {
-            "log.source": "mysqld"
-          },
-          "resource": "db-mysql-dc1-primary"
-        },
-        {
-          "timeUnixNano": 1771001792310178300,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[5614]: [WARN] HikariPool - Connection to backend timed out after 1738ms",
+          "body": "java[7766]: [WARN] Slow transaction: downstream dependency response 1327ms (threshold: 500ms)",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771001842111546000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[5352]: [WARN] Slow transaction: downstream dependency response 2664ms (threshold: 500ms)",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-01"
         },
         {
           "timeUnixNano": 1771001844000389000,
@@ -9176,7 +9186,7 @@
           "timeUnixNano": 1771001844003618800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[5088]: slow query detected: 1084ms on reporting.job_runs",
+          "body": "mysqld[5088]: slow query detected: 1104ms on reporting.job_runs",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -9243,20 +9253,10 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771001901632189200,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[3196]: [WARN] HikariPool - Connection to backend timed out after 2758ms",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-02"
-        },
-        {
           "timeUnixNano": 1771001940007619800,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "mysqld[3227]: WARNING: warning pressure summary cpu=63% mem=73% disk=84% net=0%",
+          "body": "mysqld[3227]: WARNING: warning pressure summary cpu=67% mem=73% disk=84% net=0%",
           "attributes": {
             "log.source": "mysqld"
           },

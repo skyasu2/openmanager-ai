@@ -185,13 +185,13 @@
               }
             },
             {
-              "asDouble": 0.83,
+              "asDouble": 0.81,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.69,
+              "asDouble": 0.7,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -1081,7 +1081,7 @@
           "timeUnixNano": 1771048800000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7691]: cache hit ratio: 46% over last 60s",
+          "body": "redis-server[7691]: cache hit ratio: 47% over last 60s",
           "attributes": {
             "log.source": "redis"
           },
@@ -1091,7 +1091,7 @@
           "timeUnixNano": 1771048800000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7697]: evicted keys 198, fragmentation 133%",
+          "body": "redis-server[7697]: evicted keys 216, fragmentation 133%",
           "attributes": {
             "log.source": "redis"
           },
@@ -1198,34 +1198,14 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771048831119287600,
+          "timeUnixNano": 1771048936085668000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[3425]: [WARN] Slow transaction: downstream dependency response 1282ms (threshold: 500ms)",
+          "body": "redis-server[8340]: WARNING: Eviction rate increasing, 6753 keys evicted in last 60s",
           "attributes": {
-            "log.source": "java"
+            "log.source": "redis"
           },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771048875023707100,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[8042]: [WARN] Slow transaction: downstream dependency response 2474ms (threshold: 500ms)",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771048913908661000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[9215]: [WARN] HikariPool - Connection to backend timed out after 2509ms",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-02"
+          "resource": "cache-redis-dc1-01"
         },
         {
           "timeUnixNano": 1771049028000389000,
@@ -1331,7 +1311,7 @@
           "timeUnixNano": 1771049028004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7696]: evicted keys 450, fragmentation 137%",
+          "body": "redis-server[7696]: evicted keys 414, fragmentation 136%",
           "attributes": {
             "log.source": "redis"
           },
@@ -1341,7 +1321,7 @@
           "timeUnixNano": 1771049028004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 69% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 70% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -1378,14 +1358,34 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771049053162616000,
+          "timeUnixNano": 1771049042503249000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "redis-server[2921]: WARNING: Memory usage 81% of maxmemory limit",
+          "body": "java[4554]: [WARN] HikariPool - Connection to backend timed out after 2610ms",
           "attributes": {
-            "log.source": "redis"
+            "log.source": "java"
           },
-          "resource": "cache-redis-dc1-01"
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771049106929361200,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[6148]: [WARN] Slow transaction: downstream dependency response 2124ms (threshold: 500ms)",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771049111170911700,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[8708]: [WARN] Slow transaction: downstream dependency response 1713ms (threshold: 500ms)",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
         },
         {
           "timeUnixNano": 1771049244000389000,
@@ -1491,7 +1491,7 @@
           "timeUnixNano": 1771049244004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 83% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 81% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -1501,7 +1501,7 @@
           "timeUnixNano": 1771049244004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7692]: cache hit ratio: 53% over last 60s",
+          "body": "redis-server[7692]: cache hit ratio: 52% over last 60s",
           "attributes": {
             "log.source": "redis"
           },
@@ -1541,14 +1541,14 @@
           "timeUnixNano": 1771049340009812700,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "redis-server[4778]: WARNING: warning pressure summary cpu=24% mem=83% disk=21% net=35%",
+          "body": "redis-server[4778]: WARNING: warning pressure summary cpu=24% mem=81% disk=21% net=35%",
           "attributes": {
             "log.source": "redis"
           },
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771049377394425600,
+          "timeUnixNano": 1771049377693767700,
           "severityNumber": 13,
           "severityText": "WARN",
           "body": "java[4500]: [WARN] Remote AZ cache access detected: cache-redis-dc1-01 (AZ1) latency 360ms",
@@ -1558,7 +1558,7 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1771049388543347700,
+          "timeUnixNano": 1771049389631427000,
           "severityNumber": 13,
           "severityText": "WARN",
           "body": "redis-server[6500]: WARNING: Remote AZ cache client api-was-dc1-03 observed, round-trip 480ms",
@@ -1748,13 +1748,13 @@
               }
             },
             {
-              "asDouble": 0.81,
+              "asDouble": 0.84,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.71,
+              "asDouble": 0.7,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -2644,7 +2644,7 @@
           "timeUnixNano": 1771049400000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7713]: evicted keys 421, fragmentation 138%",
+          "body": "redis-server[7713]: evicted keys 475, fragmentation 139%",
           "attributes": {
             "log.source": "redis"
           },
@@ -2654,7 +2654,7 @@
           "timeUnixNano": 1771049400000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 71% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 70% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -2761,16 +2761,6 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771049607820312600,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[5331]: [WARN] HikariPool - Connection to backend timed out after 1364ms",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
           "timeUnixNano": 1771049628000389000,
           "severityNumber": 9,
           "severityText": "INFO",
@@ -2874,7 +2864,7 @@
           "timeUnixNano": 1771049628004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 81% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 84% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -2884,7 +2874,7 @@
           "timeUnixNano": 1771049628004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7709]: cache hit ratio: 48% over last 60s",
+          "body": "redis-server[7709]: cache hit ratio: 49% over last 60s",
           "attributes": {
             "log.source": "redis"
           },
@@ -2921,24 +2911,14 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771049696743283700,
+          "timeUnixNano": 1771049665705810400,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[9471]: [WARN] Slow transaction: downstream dependency response 1032ms (threshold: 500ms)",
+          "body": "java[3295]: [WARN] HikariPool - Connection to backend timed out after 3058ms",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771049696768643300,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "redis-server[9370]: WARNING: Memory usage 80% of maxmemory limit",
-          "attributes": {
-            "log.source": "redis"
-          },
-          "resource": "cache-redis-dc1-01"
         },
         {
           "timeUnixNano": 1771049844000389000,
@@ -3044,7 +3024,7 @@
           "timeUnixNano": 1771049844004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7708]: cache hit ratio: 43% over last 60s",
+          "body": "redis-server[7708]: cache hit ratio: 42% over last 60s",
           "attributes": {
             "log.source": "redis"
           },
@@ -3054,7 +3034,7 @@
           "timeUnixNano": 1771049844004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7714]: evicted keys 241, fragmentation 135%",
+          "body": "redis-server[7714]: evicted keys 223, fragmentation 135%",
           "attributes": {
             "log.source": "redis"
           },
@@ -3091,17 +3071,27 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
+          "timeUnixNano": 1771049880783174400,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[3220]: [WARN] HikariPool - Connection to backend timed out after 979ms",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
           "timeUnixNano": 1771049940009812700,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "redis-server[4807]: WARNING: warning pressure summary cpu=26% mem=81% disk=19% net=38%",
+          "body": "redis-server[4807]: WARNING: warning pressure summary cpu=26% mem=84% disk=19% net=38%",
           "attributes": {
             "log.source": "redis"
           },
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771049978292200700,
+          "timeUnixNano": 1771049977686566400,
           "severityNumber": 13,
           "severityText": "WARN",
           "body": "java[4501]: [WARN] Remote AZ cache access detected: cache-redis-dc1-01 (AZ1) latency 390ms",
@@ -3111,7 +3101,17 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1771049986919531000,
+          "timeUnixNano": 1771049988459172400,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "redis-server[5208]: WARNING: Memory usage 85% of maxmemory limit",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771049989639690200,
           "severityNumber": 13,
           "severityText": "WARN",
           "body": "redis-server[6501]: WARNING: Remote AZ cache client api-was-dc1-03 observed, round-trip 510ms",
@@ -3121,10 +3121,10 @@
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771049994569125400,
+          "timeUnixNano": 1771049990998527000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[2055]: [WARN] HikariPool - Connection to backend timed out after 2725ms",
+          "body": "java[6746]: [WARN] Slow transaction: downstream dependency response 1509ms (threshold: 500ms)",
           "attributes": {
             "log.source": "java"
           },
@@ -3311,13 +3311,13 @@
               }
             },
             {
-              "asDouble": 0.84,
+              "asDouble": 0.81,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.71,
+              "asDouble": 0.72,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -4207,7 +4207,7 @@
           "timeUnixNano": 1771050000000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 84% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 81% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -4217,7 +4217,7 @@
           "timeUnixNano": 1771050000000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7726]: cache hit ratio: 45% over last 60s",
+          "body": "redis-server[7726]: cache hit ratio: 44% over last 60s",
           "attributes": {
             "log.source": "redis"
           },
@@ -4322,6 +4322,26 @@
             "log.source": "mysqld"
           },
           "resource": "db-mysql-dc1-replica"
+        },
+        {
+          "timeUnixNano": 1771050023239736300,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[3297]: [WARN] Slow transaction: downstream dependency response 1615ms (threshold: 500ms)",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771050131280340500,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "redis-server[8738]: WARNING: Eviction rate increasing, 4781 keys evicted in last 60s",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-01"
         },
         {
           "timeUnixNano": 1771050228000389000,
@@ -4437,7 +4457,7 @@
           "timeUnixNano": 1771050228004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7731]: evicted keys 248, fragmentation 129%",
+          "body": "redis-server[7731]: evicted keys 266, fragmentation 130%",
           "attributes": {
             "log.source": "redis"
           },
@@ -4474,20 +4494,10 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771050309258747600,
+          "timeUnixNano": 1771050423072828000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "redis-server[2515]: WARNING: Eviction rate increasing, 7654 keys evicted in last 60s",
-          "attributes": {
-            "log.source": "redis"
-          },
-          "resource": "cache-redis-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771050320783938000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[8765]: [WARN] HikariPool - Connection to backend timed out after 2111ms",
+          "body": "java[7600]: [WARN] Slow transaction: downstream dependency response 259ms (threshold: 500ms)",
           "attributes": {
             "log.source": "java"
           },
@@ -4597,7 +4607,7 @@
           "timeUnixNano": 1771050444004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7730]: evicted keys 482, fragmentation 133%",
+          "body": "redis-server[7730]: evicted keys 428, fragmentation 132%",
           "attributes": {
             "log.source": "redis"
           },
@@ -4607,7 +4617,7 @@
           "timeUnixNano": 1771050444004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 71% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 72% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -4644,37 +4654,27 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771050447306380300,
+          "timeUnixNano": 1771050473312918500,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[2731]: [WARN] Slow transaction: downstream dependency response 435ms (threshold: 500ms)",
+          "body": "java[7310]: [WARN] HikariPool - Connection to backend timed out after 1688ms",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1771050470734261800,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[8594]: [WARN] Slow transaction: downstream dependency response 2699ms (threshold: 500ms)",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-02"
-        },
-        {
           "timeUnixNano": 1771050540009812700,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "redis-server[4836]: WARNING: warning pressure summary cpu=25% mem=84% disk=19% net=45%",
+          "body": "redis-server[4836]: WARNING: warning pressure summary cpu=25% mem=81% disk=19% net=45%",
           "attributes": {
             "log.source": "redis"
           },
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771050575684208000,
+          "timeUnixNano": 1771050576401488600,
           "severityNumber": 13,
           "severityText": "WARN",
           "body": "java[4502]: [WARN] Remote AZ cache access detected: cache-redis-dc1-01 (AZ1) latency 410ms",
@@ -4684,7 +4684,7 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1771050587225659000,
+          "timeUnixNano": 1771050589141218600,
           "severityNumber": 13,
           "severityText": "WARN",
           "body": "redis-server[6502]: WARNING: Remote AZ cache client api-was-dc1-03 observed, round-trip 530ms",
@@ -4874,13 +4874,13 @@
               }
             },
             {
-              "asDouble": 0.84,
+              "asDouble": 0.81,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.73,
+              "asDouble": 0.72,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -5770,7 +5770,7 @@
           "timeUnixNano": 1771050600000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7742]: cache hit ratio: 45% over last 60s",
+          "body": "redis-server[7742]: cache hit ratio: 46% over last 60s",
           "attributes": {
             "log.source": "redis"
           },
@@ -5780,7 +5780,7 @@
           "timeUnixNano": 1771050600000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7748]: evicted keys 291, fragmentation 132%",
+          "body": "redis-server[7748]: evicted keys 273, fragmentation 132%",
           "attributes": {
             "log.source": "redis"
           },
@@ -5887,6 +5887,26 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
+          "timeUnixNano": 1771050663944878600,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "redis-server[2760]: WARNING: Eviction rate increasing, 1341 keys evicted in last 60s",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771050672383760000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[3530]: [WARN] HikariPool - Connection to backend timed out after 744ms",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
           "timeUnixNano": 1771050828000389000,
           "severityNumber": 9,
           "severityText": "INFO",
@@ -5990,7 +6010,7 @@
           "timeUnixNano": 1771050828004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7747]: evicted keys 489, fragmentation 135%",
+          "body": "redis-server[7747]: evicted keys 435, fragmentation 134%",
           "attributes": {
             "log.source": "redis"
           },
@@ -6000,7 +6020,7 @@
           "timeUnixNano": 1771050828004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 73% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 72% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -6037,14 +6057,24 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771050938898252300,
+          "timeUnixNano": 1771050835980914700,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "redis-server[5782]: WARNING: Eviction rate increasing, 5063 keys evicted in last 60s",
+          "body": "java[9376]: [WARN] Slow transaction: downstream dependency response 465ms (threshold: 500ms)",
           "attributes": {
-            "log.source": "redis"
+            "log.source": "java"
           },
-          "resource": "cache-redis-dc1-01"
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771050932611745800,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[5888]: [WARN] Slow transaction: downstream dependency response 2083ms (threshold: 500ms)",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
         },
         {
           "timeUnixNano": 1771051044000389000,
@@ -6150,7 +6180,7 @@
           "timeUnixNano": 1771051044004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 84% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 81% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -6160,7 +6190,7 @@
           "timeUnixNano": 1771051044004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7743]: cache hit ratio: 50% over last 60s",
+          "body": "redis-server[7743]: cache hit ratio: 51% over last 60s",
           "attributes": {
             "log.source": "redis"
           },
@@ -6197,47 +6227,17 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771051062339255300,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[1305]: [WARN] Slow transaction: downstream dependency response 2036ms (threshold: 500ms)",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-02"
-        },
-        {
           "timeUnixNano": 1771051140009812700,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "redis-server[4865]: WARNING: warning pressure summary cpu=25% mem=84% disk=18% net=43%",
+          "body": "redis-server[4865]: WARNING: warning pressure summary cpu=25% mem=81% disk=18% net=43%",
           "attributes": {
             "log.source": "redis"
           },
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771051144810121200,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[8864]: [WARN] HikariPool - Connection to backend timed out after 2743ms",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771051172367389200,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[8999]: [WARN] Slow transaction: downstream dependency response 2899ms (threshold: 500ms)",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771051175578524700,
+          "timeUnixNano": 1771051175979220700,
           "severityNumber": 13,
           "severityText": "WARN",
           "body": "java[4503]: [WARN] Remote AZ cache access detected: cache-redis-dc1-01 (AZ1) latency 430ms",
@@ -6247,7 +6247,7 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1771051188655102700,
+          "timeUnixNano": 1771051187569116700,
           "severityNumber": 13,
           "severityText": "WARN",
           "body": "redis-server[6503]: WARNING: Remote AZ cache client api-was-dc1-03 observed, round-trip 550ms",
@@ -6437,13 +6437,13 @@
               }
             },
             {
-              "asDouble": 0.83,
+              "asDouble": 0.85,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.74,
+              "asDouble": 0.72,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -7333,7 +7333,7 @@
           "timeUnixNano": 1771051200000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7764]: evicted keys 478, fragmentation 137%",
+          "body": "redis-server[7764]: evicted keys 514, fragmentation 138%",
           "attributes": {
             "log.source": "redis"
           },
@@ -7343,7 +7343,7 @@
           "timeUnixNano": 1771051200000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 74% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 72% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -7450,14 +7450,24 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771051230807811000,
+          "timeUnixNano": 1771051209287712000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "redis-server[3957]: WARNING: Memory usage 78% of maxmemory limit",
+          "body": "java[8977]: [WARN] HikariPool - Connection to backend timed out after 2878ms",
           "attributes": {
-            "log.source": "redis"
+            "log.source": "java"
           },
-          "resource": "cache-redis-dc1-01"
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771051258503899100,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[6277]: [WARN] HikariPool - Connection to backend timed out after 2259ms",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
         },
         {
           "timeUnixNano": 1771051428000389000,
@@ -7563,7 +7573,7 @@
           "timeUnixNano": 1771051428004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 83% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 85% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -7573,7 +7583,7 @@
           "timeUnixNano": 1771051428004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7760]: cache hit ratio: 47% over last 60s",
+          "body": "redis-server[7760]: cache hit ratio: 49% over last 60s",
           "attributes": {
             "log.source": "redis"
           },
@@ -7608,16 +7618,6 @@
             "log.source": "mysqld"
           },
           "resource": "db-mysql-dc1-replica"
-        },
-        {
-          "timeUnixNano": 1771051436319972400,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[5267]: [WARN] Slow transaction: downstream dependency response 2983ms (threshold: 500ms)",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-01"
         },
         {
           "timeUnixNano": 1771051644000389000,
@@ -7733,7 +7733,7 @@
           "timeUnixNano": 1771051644004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7765]: evicted keys 316, fragmentation 134%",
+          "body": "redis-server[7765]: evicted keys 280, fragmentation 134%",
           "attributes": {
             "log.source": "redis"
           },
@@ -7770,27 +7770,37 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771051738431313400,
+          "timeUnixNano": 1771051655270190300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[1326]: [WARN] Slow transaction: downstream dependency response 376ms (threshold: 500ms)",
+          "body": "java[5409]: [WARN] Slow transaction: downstream dependency response 1536ms (threshold: 500ms)",
           "attributes": {
             "log.source": "java"
           },
-          "resource": "api-was-dc1-02"
+          "resource": "api-was-dc1-01"
         },
         {
           "timeUnixNano": 1771051740009812700,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "redis-server[4894]: WARNING: warning pressure summary cpu=20% mem=83% disk=19% net=37%",
+          "body": "redis-server[4894]: WARNING: warning pressure summary cpu=20% mem=85% disk=19% net=37%",
           "attributes": {
             "log.source": "redis"
           },
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771051777821960200,
+          "timeUnixNano": 1771051773340911900,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "redis-server[3543]: WARNING: Memory usage 89% of maxmemory limit",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771051778269370600,
           "severityNumber": 13,
           "severityText": "WARN",
           "body": "java[4504]: [WARN] Remote AZ cache access detected: cache-redis-dc1-01 (AZ1) latency 400ms",
@@ -7800,7 +7810,7 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1771051788428060000,
+          "timeUnixNano": 1771051789283706000,
           "severityNumber": 13,
           "severityText": "WARN",
           "body": "redis-server[6504]: WARNING: Remote AZ cache client api-was-dc1-03 observed, round-trip 520ms",
@@ -7808,16 +7818,6 @@
             "log.source": "redis"
           },
           "resource": "cache-redis-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771051794096810200,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[8318]: [WARN] Slow transaction: downstream dependency response 2324ms (threshold: 500ms)",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-03"
         }
       ]
     },
@@ -8000,13 +8000,13 @@
               }
             },
             {
-              "asDouble": 0.85,
+              "asDouble": 0.83,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.73,
+              "asDouble": 0.76,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -8896,7 +8896,7 @@
           "timeUnixNano": 1771051800000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 85% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 83% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -8906,7 +8906,7 @@
           "timeUnixNano": 1771051800000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7777]: cache hit ratio: 44% over last 60s",
+          "body": "redis-server[7777]: cache hit ratio: 42% over last 60s",
           "attributes": {
             "log.source": "redis"
           },
@@ -9013,34 +9013,14 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771051908721420300,
+          "timeUnixNano": 1771051849290283300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[8844]: [WARN] HikariPool - Connection to backend timed out after 2298ms",
+          "body": "redis-server[2628]: WARNING: Eviction rate increasing, 6277 keys evicted in last 60s",
           "attributes": {
-            "log.source": "java"
+            "log.source": "redis"
           },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771051937606220500,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[5638]: [WARN] Slow transaction: downstream dependency response 535ms (threshold: 500ms)",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771051939000043500,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[9547]: [WARN] Slow transaction: downstream dependency response 2272ms (threshold: 500ms)",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-03"
+          "resource": "cache-redis-dc1-01"
         },
         {
           "timeUnixNano": 1771052028000389000,
@@ -9156,7 +9136,7 @@
           "timeUnixNano": 1771052028004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7782]: evicted keys 270, fragmentation 136%",
+          "body": "redis-server[7782]: evicted keys 324, fragmentation 137%",
           "attributes": {
             "log.source": "redis"
           },
@@ -9191,6 +9171,26 @@
             "log.source": "mysqld"
           },
           "resource": "db-mysql-dc1-replica"
+        },
+        {
+          "timeUnixNano": 1771052220225013200,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[3099]: [WARN] Slow transaction: downstream dependency response 767ms (threshold: 500ms)",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771052223267846700,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[2087]: [WARN] Slow transaction: downstream dependency response 1553ms (threshold: 500ms)",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
         },
         {
           "timeUnixNano": 1771052244000389000,
@@ -9296,7 +9296,7 @@
           "timeUnixNano": 1771052244004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7781]: evicted keys 486, fragmentation 140%",
+          "body": "redis-server[7781]: evicted keys 450, fragmentation 139%",
           "attributes": {
             "log.source": "redis"
           },
@@ -9306,7 +9306,7 @@
           "timeUnixNano": 1771052244004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 73% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 76% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -9343,27 +9343,27 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771052254438655000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "redis-server[8546]: WARNING: Eviction rate increasing, 7596 keys evicted in last 60s",
-          "attributes": {
-            "log.source": "redis"
-          },
-          "resource": "cache-redis-dc1-01"
-        },
-        {
           "timeUnixNano": 1771052340009812700,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "redis-server[4923]: WARNING: warning pressure summary cpu=23% mem=85% disk=21% net=37%",
+          "body": "redis-server[4923]: WARNING: warning pressure summary cpu=23% mem=83% disk=21% net=37%",
           "attributes": {
             "log.source": "redis"
           },
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771052377221550800,
+          "timeUnixNano": 1771052343590391600,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[6491]: [WARN] HikariPool - Connection to backend timed out after 2686ms",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771052376354895000,
           "severityNumber": 13,
           "severityText": "WARN",
           "body": "java[4505]: [WARN] Remote AZ cache access detected: cache-redis-dc1-01 (AZ1) latency 370ms",
@@ -9373,7 +9373,7 @@
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1771052389152707300,
+          "timeUnixNano": 1771052390030462200,
           "severityNumber": 13,
           "severityText": "WARN",
           "body": "redis-server[6505]: WARNING: Remote AZ cache client api-was-dc1-03 observed, round-trip 490ms",

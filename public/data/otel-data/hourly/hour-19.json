@@ -106,7 +106,7 @@
               }
             },
             {
-              "asDouble": 0.61,
+              "asDouble": 0.6,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -451,7 +451,7 @@
               }
             },
             {
-              "asDouble": 89436797,
+              "asDouble": 89609930,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -1171,7 +1171,7 @@
           "timeUnixNano": 1771063200000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2693]: frontend openmanager_fe sessions=746, retries=26, cpu=61%",
+          "body": "haproxy[2693]: frontend openmanager_fe sessions=742, retries=26, cpu=60%",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -1198,14 +1198,24 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771063356066631400,
+          "timeUnixNano": 1771063227578083800,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[1793]: *1589 upstream prematurely closed connection while reading response header",
+          "body": "nginx[3789]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771063239529090600,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "haproxy[3746]: WARNING: Connection table 83% full (conntrack saturation)",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-01"
         },
         {
           "timeUnixNano": 1771063428000389000,
@@ -1358,24 +1368,14 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771063431350189000,
+          "timeUnixNano": 1771063449388057300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[7327]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "body": "nginx[4235]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771063535271537000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[3344]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-03"
         },
         {
           "timeUnixNano": 1771063632000000000,
@@ -1538,24 +1538,24 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771063693863106000,
+          "timeUnixNano": 1771063740002128000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "haproxy[6864]: WARNING: Connection table 79% full (conntrack saturation)",
+          "body": "haproxy[6068]: WARNING: warning pressure summary cpu=60% mem=33% disk=15% net=72%",
           "attributes": {
             "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771063740002128000,
+          "timeUnixNano": 1771063768696413200,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "haproxy[6068]: WARNING: warning pressure summary cpu=61% mem=33% disk=15% net=72%",
+          "body": "nginx[1045]: *9696 upstream prematurely closed connection while reading response header",
           "attributes": {
-            "log.source": "haproxy"
+            "log.source": "nginx"
           },
-          "resource": "lb-haproxy-dc1-01"
+          "resource": "web-nginx-dc1-03"
         }
       ]
     },
@@ -2004,7 +2004,7 @@
               }
             },
             {
-              "asDouble": 88454965,
+              "asDouble": 87585340,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -2751,6 +2751,26 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
+          "timeUnixNano": 1771063831611805400,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "haproxy[2063]: WARNING: Connection table 81% full (conntrack saturation)",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771063998735373600,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[7233]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-02"
+        },
+        {
           "timeUnixNano": 1771064028000389000,
           "severityNumber": 9,
           "severityText": "INFO",
@@ -2874,7 +2894,7 @@
           "timeUnixNano": 1771064028006860500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 83%",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 82%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -2901,30 +2921,10 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771064030391017000,
+          "timeUnixNano": 1771064084439162600,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[9480]: *1702 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771064072407106300,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[4455]: *3527 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771064151265181200,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[8864]: *4781 upstream prematurely closed connection while reading response header",
+          "body": "nginx[5507]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
             "log.source": "nginx"
           },
@@ -3064,7 +3064,7 @@
           "timeUnixNano": 1771064244006860500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2710]: frontend openmanager_fe sessions=750, retries=22, cpu=60%",
+          "body": "haproxy[2710]: frontend openmanager_fe sessions=747, retries=22, cpu=60%",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -3091,20 +3091,20 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771064290113905000,
+          "timeUnixNano": 1771064332640094700,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "haproxy[9770]: WARNING: SYN cookie activation detected, possible SYN flood",
+          "body": "nginx[6551]: *3194 upstream prematurely closed connection while reading response header",
           "attributes": {
-            "log.source": "haproxy"
+            "log.source": "nginx"
           },
-          "resource": "lb-haproxy-dc1-01"
+          "resource": "web-nginx-dc1-01"
         },
         {
           "timeUnixNano": 1771064340002128000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "haproxy[6097]: WARNING: warning pressure summary cpu=60% mem=36% disk=13% net=71%",
+          "body": "haproxy[6097]: WARNING: warning pressure summary cpu=60% mem=36% disk=13% net=70%",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -3212,7 +3212,7 @@
               }
             },
             {
-              "asDouble": 0.62,
+              "asDouble": 0.63,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -3557,7 +3557,7 @@
               }
             },
             {
-              "asDouble": 88000564,
+              "asDouble": 88231336,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -4277,7 +4277,7 @@
           "timeUnixNano": 1771064400000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 82%",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 83%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -4304,10 +4304,20 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771064574213367000,
+          "timeUnixNano": 1771064406943114000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[7294]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "body": "nginx[6046]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771064507104041000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[9152]: *9982 upstream prematurely closed connection while reading response header",
           "attributes": {
             "log.source": "nginx"
           },
@@ -4437,7 +4447,7 @@
           "timeUnixNano": 1771064628006860500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2727]: frontend openmanager_fe sessions=766, retries=23, cpu=62%",
+          "body": "haproxy[2727]: frontend openmanager_fe sessions=773, retries=23, cpu=63%",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -4464,10 +4474,10 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771064689570020400,
+          "timeUnixNano": 1771064719432100900,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "haproxy[4509]: WARNING: Connection table 86% full (conntrack saturation)",
+          "body": "haproxy[9629]: WARNING: SYN cookie activation detected, possible SYN flood",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -4634,30 +4644,20 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771064868075811300,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[4248]: *4540 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-02"
-        },
-        {
           "timeUnixNano": 1771064940002128000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "haproxy[6126]: WARNING: warning pressure summary cpu=62% mem=36% disk=13% net=70%",
+          "body": "haproxy[6126]: WARNING: warning pressure summary cpu=63% mem=36% disk=13% net=71%",
           "attributes": {
             "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771064953023419600,
+          "timeUnixNano": 1771064962106203400,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[8720]: *1564 upstream prematurely closed connection while reading response header",
+          "body": "nginx[8333]: *9170 upstream prematurely closed connection while reading response header",
           "attributes": {
             "log.source": "nginx"
           },
@@ -4765,7 +4765,7 @@
               }
             },
             {
-              "asDouble": 0.62,
+              "asDouble": 0.61,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -5110,7 +5110,7 @@
               }
             },
             {
-              "asDouble": 89340679,
+              "asDouble": 87509800,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -5830,7 +5830,7 @@
           "timeUnixNano": 1771065000000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2744]: frontend openmanager_fe sessions=681, retries=24, cpu=62%",
+          "body": "haproxy[2744]: frontend openmanager_fe sessions=674, retries=24, cpu=61%",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -5855,6 +5855,26 @@
             "log.source": "mysqld"
           },
           "resource": "db-mysql-dc1-replica"
+        },
+        {
+          "timeUnixNano": 1771065037610419000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[8335]: *4149 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771065180442686200,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[3904]: *1339 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-02"
         },
         {
           "timeUnixNano": 1771065228000389000,
@@ -6007,14 +6027,14 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771065343143164700,
+          "timeUnixNano": 1771065324231931100,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[6413]: *6604 upstream prematurely closed connection while reading response header",
+          "body": "nginx[1843]: *4150 upstream prematurely closed connection while reading response header",
           "attributes": {
             "log.source": "nginx"
           },
-          "resource": "web-nginx-dc1-03"
+          "resource": "web-nginx-dc1-01"
         },
         {
           "timeUnixNano": 1771065432000000000,
@@ -6150,7 +6170,7 @@
           "timeUnixNano": 1771065444006860800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 83%",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 82%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -6177,40 +6197,20 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771065476373641500,
+          "timeUnixNano": 1771065540002128000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[7870]: *5250 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771065514743148000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "haproxy[1375]: WARNING: Connection table 76% full (conntrack saturation)",
+          "body": "haproxy[6155]: WARNING: warning pressure summary cpu=61% mem=35% disk=15% net=70%",
           "attributes": {
             "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771065537965227800,
+          "timeUnixNano": 1771065582634371800,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[6769]: *9026 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771065540002128000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "haproxy[6155]: WARNING: warning pressure summary cpu=62% mem=35% disk=15% net=71%",
+          "body": "haproxy[3719]: WARNING: Connection table 81% full (conntrack saturation)",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -6318,7 +6318,7 @@
               }
             },
             {
-              "asDouble": 0.63,
+              "asDouble": 0.62,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -6663,7 +6663,7 @@
               }
             },
             {
-              "asDouble": 91266285,
+              "asDouble": 89711448,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -7383,7 +7383,7 @@
           "timeUnixNano": 1771065600000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2774]: health checks passed for 18/18 backends, queue=26",
+          "body": "haproxy[2774]: health checks passed for 18/18 backends, queue=25",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -7410,24 +7410,14 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771065686668210700,
+          "timeUnixNano": 1771065679752907800,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "haproxy[3156]: WARNING: Connection table 79% full (conntrack saturation)",
-          "attributes": {
-            "log.source": "haproxy"
-          },
-          "resource": "lb-haproxy-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771065817741301000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[7435]: *122 upstream prematurely closed connection while reading response header",
+          "body": "nginx[4931]: *8424 upstream prematurely closed connection while reading response header",
           "attributes": {
             "log.source": "nginx"
           },
-          "resource": "web-nginx-dc1-02"
+          "resource": "web-nginx-dc1-03"
         },
         {
           "timeUnixNano": 1771065828000389000,
@@ -7553,7 +7543,7 @@
           "timeUnixNano": 1771065828006860800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 85%",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 84%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -7713,7 +7703,7 @@
           "timeUnixNano": 1771066044006860800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2761]: frontend openmanager_fe sessions=702, retries=26, cpu=63%",
+          "body": "haproxy[2761]: frontend openmanager_fe sessions=695, retries=25, cpu=62%",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -7740,10 +7730,30 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771066111991667200,
+          "timeUnixNano": 1771066053966677800,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[2327]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "body": "nginx[9780]: *4726 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771066063100079400,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "haproxy[6406]: WARNING: Connection table 87% full (conntrack saturation)",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771066129446749200,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[5498]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
             "log.source": "nginx"
           },
@@ -7753,21 +7763,11 @@
           "timeUnixNano": 1771066140002128000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "haproxy[6184]: WARNING: warning pressure summary cpu=63% mem=32% disk=15% net=73%",
+          "body": "haproxy[6184]: WARNING: warning pressure summary cpu=62% mem=32% disk=15% net=72%",
           "attributes": {
             "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771066171842586000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[5102]: *8817 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-03"
         }
       ]
     },
@@ -8216,7 +8216,7 @@
               }
             },
             {
-              "asDouble": 90807267,
+              "asDouble": 89090888,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -8936,7 +8936,7 @@
           "timeUnixNano": 1771066200000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 85%",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 83%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -8963,24 +8963,44 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771066308790061600,
+          "timeUnixNano": 1771066288619559400,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "haproxy[8531]: WARNING: Connection table 93% full (conntrack saturation)",
+          "body": "nginx[6962]: *4095 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771066362634962400,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[8768]: *7126 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771066382786878500,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "haproxy[7917]: WARNING: Connection table 86% full (conntrack saturation)",
           "attributes": {
             "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771066386687327700,
+          "timeUnixNano": 1771066401691352300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[5188]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "body": "nginx[8008]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
             "log.source": "nginx"
           },
-          "resource": "web-nginx-dc1-02"
+          "resource": "web-nginx-dc1-01"
         },
         {
           "timeUnixNano": 1771066428000389000,
@@ -9106,7 +9126,7 @@
           "timeUnixNano": 1771066428006860800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2778]: frontend openmanager_fe sessions=717, retries=27, cpu=64%",
+          "body": "haproxy[2778]: frontend openmanager_fe sessions=711, retries=27, cpu=64%",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -9133,16 +9153,6 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771066439636027600,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[7456]: *9752 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-03"
-        },
-        {
           "timeUnixNano": 1771066632000000000,
           "severityNumber": 17,
           "severityText": "ERROR",
@@ -9151,16 +9161,6 @@
             "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771066635571233000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[8959]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-01"
         },
         {
           "timeUnixNano": 1771066644000389000,
@@ -9316,7 +9316,7 @@
           "timeUnixNano": 1771066740002128000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "haproxy[6213]: WARNING: warning pressure summary cpu=64% mem=32% disk=13% net=73%",
+          "body": "haproxy[6213]: WARNING: warning pressure summary cpu=64% mem=32% disk=13% net=71%",
           "attributes": {
             "log.source": "haproxy"
           },

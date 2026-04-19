@@ -10,6 +10,7 @@
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { applyScenarioJitter } from './otel-fix.helpers';
 
 // ============================================================================
 // Paths
@@ -409,18 +410,7 @@ function adjustMetricsForScenario(data: HourlyFile, hour: number): HourlyFile {
         if (scenario?.[serverId]?.[metricKey] !== undefined) {
           // 시나리오 서버: 목표값 + 슬롯 내 점진 변화 + jitter
           const target = scenario[serverId][metricKey] as number;
-          const jitter = (Math.random() - 0.5) * 0.03;
-          let value = Math.max(0.01, Math.min(0.99, target + slotOffset + jitter));
-
-          // jitter가 의도한 건강 카테고리를 바꾸지 않도록 clamp
-          const th = THRESHOLDS[metricKey];
-          if (th) {
-            if (target >= th.critical && value < th.critical) {
-              value = th.critical + Math.random() * 0.02;
-            } else if (target >= th.warning && target < th.critical && value < th.warning) {
-              value = th.warning + Math.random() * 0.02;
-            }
-          }
+          const value = applyScenarioJitter(target, slotOffset, metricKey);
 
           if (metricKey === 'network') {
             dp.asDouble = Math.round(value * 125_000_000);

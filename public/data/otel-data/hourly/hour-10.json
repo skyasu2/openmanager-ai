@@ -34,7 +34,7 @@
               }
             },
             {
-              "asDouble": 0.91,
+              "asDouble": 0.92,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
@@ -167,7 +167,7 @@
               }
             },
             {
-              "asDouble": 0.77,
+              "asDouble": 0.78,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -1198,30 +1198,40 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771030815213493800,
+          "timeUnixNano": 1771030827384480000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[9766]: [WARN] Slow transaction: /api/servers took 1914ms (threshold: 500ms)",
+          "body": "java[2995]: [WARN] Slow transaction: /api/servers took 2930ms (threshold: 500ms)",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771030838089109500,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[1781]: [ERROR] RejectedExecutionException: Thread pool exhausted, 2110 tasks rejected",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771030836041682000,
+          "timeUnixNano": 1771030877550691300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[2696]: *5384 upstream prematurely closed connection while reading response header",
+          "body": "nginx[8736]: *3533 upstream prematurely closed connection while reading response header",
           "attributes": {
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771030968568937500,
+          "timeUnixNano": 1771030918847155700,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[2352]: *4432 upstream prematurely closed connection while reading response header",
+          "body": "nginx[8160]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
             "log.source": "nginx"
           },
@@ -1281,7 +1291,7 @@
           "timeUnixNano": 1771031028003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 56, fd usage 71%",
+          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 56, fd usage 72%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -1378,30 +1388,30 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771031068963666000,
-          "severityNumber": 17,
-          "severityText": "ERROR",
-          "body": "java[6835]: [ERROR] java.lang.OutOfMemoryError: Java heap space (used 83%)",
+          "timeUnixNano": 1771031041455463200,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[1236]: [WARN] Thread pool nearing exhaustion: active 7846/200, queue depth 186",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771031076356070400,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[8065]: [WARN] Slow transaction: /api/servers took 1438ms (threshold: 500ms)",
+          "timeUnixNano": 1771031131299553800,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[2714]: [ERROR] java.lang.OutOfMemoryError: Java heap space (used 90%)",
           "attributes": {
             "log.source": "java"
           },
-          "resource": "api-was-dc1-02"
+          "resource": "api-was-dc1-01"
         },
         {
           "timeUnixNano": 1771031148002041900,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7658]: ERROR: cpu saturation summary cpu=91% mem=84% disk=32% net=1%",
+          "body": "java[7658]: ERROR: cpu saturation summary cpu=92% mem=84% disk=32% net=1%",
           "attributes": {
             "log.source": "java"
           },
@@ -1411,27 +1421,7 @@
           "timeUnixNano": 1771031148008624000,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7661]: ERROR: memory saturation summary cpu=91% mem=84% disk=32% net=1%",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771031190700357400,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[8752]: *2655 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771031222295901700,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[8613]: [WARN] Heap memory usage 83%, approaching GC pressure zone",
+          "body": "java[7661]: ERROR: memory saturation summary cpu=92% mem=84% disk=32% net=1%",
           "attributes": {
             "log.source": "java"
           },
@@ -1501,7 +1491,7 @@
           "timeUnixNano": 1771031244003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[1935]: request queue depth 15, p95 133ms, cpu 91%",
+          "body": "java[1935]: request queue depth 16, p95 133ms, cpu 92%",
           "attributes": {
             "log.source": "java"
           },
@@ -1531,7 +1521,7 @@
           "timeUnixNano": 1771031244003618800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[5924]: replication lag: 414ms on channel dc1-replica",
+          "body": "mysqld[5924]: replication lag: 416ms on channel dc1-replica",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -1598,20 +1588,10 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771031296823321300,
-          "severityNumber": 17,
-          "severityText": "ERROR",
-          "body": "java[7098]: [ERROR] RejectedExecutionException: Thread pool exhausted, 1783 tasks rejected",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
           "timeUnixNano": 1771031304008341000,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7663]: ERROR: critical saturation summary cpu=91% mem=84% disk=32% net=1%",
+          "body": "java[7663]: ERROR: critical saturation summary cpu=92% mem=84% disk=32% net=1%",
           "attributes": {
             "log.source": "java"
           },
@@ -1631,7 +1611,17 @@
           "timeUnixNano": 1771031364008140500,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7672]: ERROR: critical-followup saturation summary cpu=91% mem=84% disk=32% net=1%",
+          "body": "java[7672]: ERROR: critical-followup saturation summary cpu=92% mem=84% disk=32% net=1%",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771031376403679700,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[6485]: [WARN] GC overhead: ParNew pause 1367ms, old gen usage 81%",
           "attributes": {
             "log.source": "java"
           },
@@ -1641,11 +1631,21 @@
           "timeUnixNano": 1771031382003867000,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7669]: ERROR: critical-retry saturation summary cpu=91% mem=84% disk=32% net=1%",
+          "body": "java[7669]: ERROR: critical-retry saturation summary cpu=92% mem=84% disk=32% net=1%",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771031382465412900,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[8463]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
         }
       ]
     },
@@ -1677,13 +1677,13 @@
               }
             },
             {
-              "asDouble": 0.92,
+              "asDouble": 0.91,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.86,
+              "asDouble": 0.87,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -1695,7 +1695,7 @@
               }
             },
             {
-              "asDouble": 0.75,
+              "asDouble": 0.71,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -1749,7 +1749,7 @@
               }
             },
             {
-              "asDouble": 0.7,
+              "asDouble": 0.68,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -1792,7 +1792,7 @@
               }
             },
             {
-              "asDouble": 0.84,
+              "asDouble": 0.85,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
@@ -1810,7 +1810,7 @@
               }
             },
             {
-              "asDouble": 0.77,
+              "asDouble": 0.75,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -2794,7 +2794,7 @@
           "timeUnixNano": 1771031400000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 48, fd usage 72%",
+          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 48, fd usage 71%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -2804,7 +2804,7 @@
           "timeUnixNano": 1771031400000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[1953]: request queue depth 22, p95 150ms, cpu 86%",
+          "body": "java[1953]: request queue depth 23, p95 150ms, cpu 87%",
           "attributes": {
             "log.source": "java"
           },
@@ -2824,7 +2824,7 @@
           "timeUnixNano": 1771031400000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[5938]: slow query detected: 852ms on reporting.job_runs",
+          "body": "mysqld[5938]: slow query detected: 832ms on reporting.job_runs",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -2841,60 +2841,40 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771031484197181700,
+          "timeUnixNano": 1771031423256959000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[7051]: [ERROR] RejectedExecutionException: Thread pool exhausted, 8364 tasks rejected",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771031471972618800,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[6470]: *6739 upstream prematurely closed connection while reading response header",
+          "body": "nginx[9501]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771031521349255400,
+          "timeUnixNano": 1771031477197616600,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[1338]: [WARN] Slow transaction: /api/servers took 1462ms (threshold: 500ms)",
+          "body": "java[8528]: [WARN] GC overhead: ParNew pause 742ms, old gen usage 77%",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771031528979397000,
+          "timeUnixNano": 1771031591423198700,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[1967]: [WARN] Thread pool nearing exhaustion: active 1636/200, queue depth 105",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771031592946762800,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[8813]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771031599794484500,
-          "severityNumber": 17,
-          "severityText": "ERROR",
-          "body": "java[6966]: [ERROR] java.lang.OutOfMemoryError: Java heap space (used 86%)",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771031619389255200,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[4721]: [WARN] GC overhead: ParNew pause 2740ms, old gen usage 80%",
+          "body": "java[7953]: [WARN] Slow transaction: /api/servers took 214ms (threshold: 500ms)",
           "attributes": {
             "log.source": "java"
           },
@@ -2954,7 +2934,7 @@
           "timeUnixNano": 1771031628003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[1952]: request queue depth 17, p95 165ms, cpu 92%",
+          "body": "java[1952]: request queue depth 16, p95 165ms, cpu 91%",
           "attributes": {
             "log.source": "java"
           },
@@ -2984,7 +2964,7 @@
           "timeUnixNano": 1771031628003618800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[5941]: replication lag: 447ms on channel dc1-replica",
+          "body": "mysqld[5941]: replication lag: 443ms on channel dc1-replica",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -3051,30 +3031,20 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771031656036296400,
+          "timeUnixNano": 1771031689628191700,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[3104]: [ERROR] RejectedExecutionException: Thread pool exhausted, 9267 tasks rejected",
+          "body": "java[9771]: [ERROR] java.lang.OutOfMemoryError: Java heap space (used 80%)",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771031715824260600,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[5805]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-02"
-        },
-        {
           "timeUnixNano": 1771031748002041900,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7687]: ERROR: cpu saturation summary cpu=92% mem=84% disk=35% net=1%",
+          "body": "java[7687]: ERROR: cpu saturation summary cpu=91% mem=85% disk=35% net=1%",
           "attributes": {
             "log.source": "java"
           },
@@ -3084,7 +3054,7 @@
           "timeUnixNano": 1771031748008624000,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7690]: ERROR: memory saturation summary cpu=92% mem=84% disk=35% net=1%",
+          "body": "java[7690]: ERROR: memory saturation summary cpu=91% mem=85% disk=35% net=1%",
           "attributes": {
             "log.source": "java"
           },
@@ -3154,7 +3124,7 @@
           "timeUnixNano": 1771031844003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[1963]: GC scan completed, heap occupancy 84%, reclaimed 223MB",
+          "body": "java[1963]: GC scan completed, heap occupancy 85%, reclaimed 224MB",
           "attributes": {
             "log.source": "java"
           },
@@ -3184,7 +3154,7 @@
           "timeUnixNano": 1771031844003618800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[5945]: InnoDB buffer pool hit ratio: 81%",
+          "body": "mysqld[5945]: InnoDB buffer pool hit ratio: 82%",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -3224,7 +3194,7 @@
           "timeUnixNano": 1771031844006860500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[1792]: frontend openmanager_fe sessions=580, retries=13, cpu=70%",
+          "body": "haproxy[1792]: frontend openmanager_fe sessions=572, retries=13, cpu=68%",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -3254,37 +3224,67 @@
           "timeUnixNano": 1771031904008341000,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7692]: ERROR: critical saturation summary cpu=92% mem=84% disk=35% net=1%",
+          "body": "java[7692]: ERROR: critical saturation summary cpu=91% mem=85% disk=35% net=1%",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
         },
         {
+          "timeUnixNano": 1771031929528976400,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[5893]: *1749 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-02"
+        },
+        {
           "timeUnixNano": 1771031940006906600,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[7692]: WARNING: warning pressure summary cpu=86% mem=54% disk=31% net=1%",
+          "body": "java[7692]: WARNING: warning pressure summary cpu=87% mem=54% disk=31% net=1%",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-02"
         },
         {
+          "timeUnixNano": 1771031948936182500,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[9496]: *2304 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
+        },
+        {
           "timeUnixNano": 1771031964008140500,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7701]: ERROR: critical-followup saturation summary cpu=92% mem=84% disk=35% net=1%",
+          "body": "java[7701]: ERROR: critical-followup saturation summary cpu=91% mem=85% disk=35% net=1%",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
         },
         {
+          "timeUnixNano": 1771031972531336000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[8120]: [WARN] Slow transaction: /api/servers took 2181ms (threshold: 500ms)",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
+        },
+        {
           "timeUnixNano": 1771031982003867000,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7698]: ERROR: critical-retry saturation summary cpu=92% mem=84% disk=35% net=1%",
+          "body": "java[7698]: ERROR: critical-retry saturation summary cpu=91% mem=85% disk=35% net=1%",
           "attributes": {
             "log.source": "java"
           },
@@ -3326,7 +3326,7 @@
               }
             },
             {
-              "asDouble": 0.88,
+              "asDouble": 0.87,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -3338,7 +3338,7 @@
               }
             },
             {
-              "asDouble": 0.76,
+              "asDouble": 0.75,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -3392,7 +3392,7 @@
               }
             },
             {
-              "asDouble": 0.71,
+              "asDouble": 0.68,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -3435,7 +3435,7 @@
               }
             },
             {
-              "asDouble": 0.84,
+              "asDouble": 0.86,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
@@ -4484,24 +4484,64 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771032032518996500,
-          "severityNumber": 17,
-          "severityText": "ERROR",
-          "body": "java[8033]: [ERROR] java.lang.OutOfMemoryError: Java heap space (used 75%)",
+          "timeUnixNano": 1771032016301401000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[7982]: [WARN] Thread pool nearing exhaustion: active 1262/200, queue depth 138",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771032161985883600,
+          "timeUnixNano": 1771032095599069400,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[8257]: *6503 upstream prematurely closed connection while reading response header",
+          "body": "nginx[6144]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771032159896741600,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[6308]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771032185842403800,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[9010]: [ERROR] RejectedExecutionException: Thread pool exhausted, 3451 tasks rejected",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771032187833137200,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[7579]: *3502 upstream prematurely closed connection while reading response header",
           "attributes": {
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771032214657512400,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[9212]: [ERROR] java.lang.OutOfMemoryError: Java heap space (used 87%)",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
         },
         {
           "timeUnixNano": 1771032228000389000,
@@ -4557,7 +4597,7 @@
           "timeUnixNano": 1771032228003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[1980]: GC scan completed, heap occupancy 84%, reclaimed 230MB",
+          "body": "java[1980]: GC scan completed, heap occupancy 86%, reclaimed 232MB",
           "attributes": {
             "log.source": "java"
           },
@@ -4567,7 +4607,7 @@
           "timeUnixNano": 1771032228003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 48, fd usage 61%",
+          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 48, fd usage 60%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -4627,7 +4667,7 @@
           "timeUnixNano": 1771032228006860500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[1809]: frontend openmanager_fe sessions=595, retries=14, cpu=71%",
+          "body": "haproxy[1809]: frontend openmanager_fe sessions=583, retries=14, cpu=68%",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -4654,40 +4694,10 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771032234579350000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[9555]: [WARN] Thread pool nearing exhaustion: active 4209/200, queue depth 140",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771032286183759000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[3620]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771032338499212800,
-          "severityNumber": 17,
-          "severityText": "ERROR",
-          "body": "java[3080]: [ERROR] RejectedExecutionException: Thread pool exhausted, 3892 tasks rejected",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
           "timeUnixNano": 1771032348002041900,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7716]: ERROR: cpu saturation summary cpu=92% mem=84% disk=34% net=0%",
+          "body": "java[7716]: ERROR: cpu saturation summary cpu=92% mem=86% disk=34% net=0%",
           "attributes": {
             "log.source": "java"
           },
@@ -4697,7 +4707,7 @@
           "timeUnixNano": 1771032348008624000,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7719]: ERROR: memory saturation summary cpu=92% mem=84% disk=34% net=0%",
+          "body": "java[7719]: ERROR: memory saturation summary cpu=92% mem=86% disk=34% net=0%",
           "attributes": {
             "log.source": "java"
           },
@@ -4714,10 +4724,10 @@
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771032442216106500,
+          "timeUnixNano": 1771032443072821200,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[2691]: [WARN] Thread pool nearing exhaustion: active 4595/200, queue depth 191",
+          "body": "java[8197]: [WARN] Heap memory usage 82%, approaching GC pressure zone",
           "attributes": {
             "log.source": "java"
           },
@@ -4787,7 +4797,7 @@
           "timeUnixNano": 1771032444003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[1970]: request queue depth 14, p95 172ms, cpu 88%",
+          "body": "java[1970]: request queue depth 24, p95 172ms, cpu 87%",
           "attributes": {
             "log.source": "java"
           },
@@ -4807,7 +4817,7 @@
           "timeUnixNano": 1771032444003618800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[5955]: slow query detected: 862ms on reporting.job_runs",
+          "body": "mysqld[5955]: slow query detected: 857ms on reporting.job_runs",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -4874,20 +4884,10 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771032459675783000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[6453]: *587 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-02"
-        },
-        {
           "timeUnixNano": 1771032504008341000,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7721]: ERROR: critical saturation summary cpu=92% mem=84% disk=34% net=0%",
+          "body": "java[7721]: ERROR: critical saturation summary cpu=92% mem=86% disk=34% net=0%",
           "attributes": {
             "log.source": "java"
           },
@@ -4897,27 +4897,27 @@
           "timeUnixNano": 1771032540006906600,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[7721]: WARNING: warning pressure summary cpu=88% mem=50% disk=32% net=1%",
+          "body": "java[7721]: WARNING: warning pressure summary cpu=87% mem=50% disk=32% net=1%",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1771032558074908200,
+          "timeUnixNano": 1771032555065378600,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[2987]: [WARN] GC overhead: ParNew pause 240ms, old gen usage 90%",
+          "body": "java[4352]: [WARN] Slow transaction: /api/servers took 1023ms (threshold: 500ms)",
           "attributes": {
             "log.source": "java"
           },
-          "resource": "api-was-dc1-01"
+          "resource": "api-was-dc1-02"
         },
         {
           "timeUnixNano": 1771032564008140500,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7730]: ERROR: critical-followup saturation summary cpu=92% mem=84% disk=34% net=0%",
+          "body": "java[7730]: ERROR: critical-followup saturation summary cpu=92% mem=86% disk=34% net=0%",
           "attributes": {
             "log.source": "java"
           },
@@ -4927,7 +4927,7 @@
           "timeUnixNano": 1771032582003867000,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7727]: ERROR: critical-retry saturation summary cpu=92% mem=84% disk=34% net=0%",
+          "body": "java[7727]: ERROR: critical-retry saturation summary cpu=92% mem=86% disk=34% net=0%",
           "attributes": {
             "log.source": "java"
           },
@@ -4963,13 +4963,13 @@
               }
             },
             {
-              "asDouble": 0.95,
+              "asDouble": 0.92,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.89,
+              "asDouble": 0.88,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -5035,7 +5035,7 @@
               }
             },
             {
-              "asDouble": 0.7,
+              "asDouble": 0.72,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -5078,7 +5078,7 @@
               }
             },
             {
-              "asDouble": 0.87,
+              "asDouble": 0.86,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
@@ -6060,7 +6060,7 @@
           "timeUnixNano": 1771032600000000500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[1826]: frontend openmanager_fe sessions=503, retries=15, cpu=70%",
+          "body": "haproxy[1826]: frontend openmanager_fe sessions=511, retries=15, cpu=72%",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -6080,7 +6080,7 @@
           "timeUnixNano": 1771032600000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[1997]: GC scan completed, heap occupancy 87%, reclaimed 240MB",
+          "body": "java[1997]: GC scan completed, heap occupancy 86%, reclaimed 239MB",
           "attributes": {
             "log.source": "java"
           },
@@ -6090,7 +6090,7 @@
           "timeUnixNano": 1771032600000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 88, fd usage 63%",
+          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 88, fd usage 62%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -6127,14 +6127,14 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771032779474600700,
+          "timeUnixNano": 1771032796465421600,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[2682]: [WARN] Thread pool nearing exhaustion: active 4510/200, queue depth 129",
+          "body": "nginx[6823]: *9642 upstream prematurely closed connection while reading response header",
           "attributes": {
-            "log.source": "java"
+            "log.source": "nginx"
           },
-          "resource": "api-was-dc1-02"
+          "resource": "web-nginx-dc1-01"
         },
         {
           "timeUnixNano": 1771032828000389000,
@@ -6190,7 +6190,7 @@
           "timeUnixNano": 1771032828003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 80, fd usage 74%",
+          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 80, fd usage 72%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -6200,7 +6200,7 @@
           "timeUnixNano": 1771032828003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[1987]: request queue depth 9, p95 147ms, cpu 89%",
+          "body": "java[1987]: request queue depth 8, p95 147ms, cpu 88%",
           "attributes": {
             "log.source": "java"
           },
@@ -6287,10 +6287,30 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771032905920787700,
+          "timeUnixNano": 1771032829477172700,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[8418]: [WARN] Thread pool nearing exhaustion: active 2804/200, queue depth 147",
+          "body": "java[1744]: [WARN] Thread pool nearing exhaustion: active 3639/200, queue depth 148",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771032871840987000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[9789]: [ERROR] java.lang.OutOfMemoryError: Java heap space (used 84%)",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771032927209322200,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[5841]: [WARN] Heap memory usage 85%, approaching GC pressure zone",
           "attributes": {
             "log.source": "java"
           },
@@ -6300,7 +6320,7 @@
           "timeUnixNano": 1771032948002041900,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7745]: ERROR: cpu saturation summary cpu=95% mem=87% disk=34% net=0%",
+          "body": "java[7745]: ERROR: cpu saturation summary cpu=92% mem=86% disk=34% net=0%",
           "attributes": {
             "log.source": "java"
           },
@@ -6310,31 +6330,21 @@
           "timeUnixNano": 1771032948008624000,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7748]: ERROR: memory saturation summary cpu=95% mem=87% disk=34% net=0%",
+          "body": "java[7748]: ERROR: memory saturation summary cpu=92% mem=86% disk=34% net=0%",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771032957248758800,
+          "timeUnixNano": 1771032965607940600,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[2339]: [WARN] GC overhead: ParNew pause 935ms, old gen usage 80%",
+          "body": "nginx[1976]: *9397 upstream prematurely closed connection while reading response header",
           "attributes": {
-            "log.source": "java"
+            "log.source": "nginx"
           },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771033029079514600,
-          "severityNumber": 17,
-          "severityText": "ERROR",
-          "body": "java[9965]: [ERROR] java.lang.OutOfMemoryError: Java heap space (used 84%)",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-01"
+          "resource": "web-nginx-dc1-03"
         },
         {
           "timeUnixNano": 1771033032000000000,
@@ -6400,7 +6410,7 @@
           "timeUnixNano": 1771033044003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[1986]: request queue depth 15, p95 149ms, cpu 95%",
+          "body": "java[1986]: request queue depth 12, p95 149ms, cpu 92%",
           "attributes": {
             "log.source": "java"
           },
@@ -6497,20 +6507,20 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771033089978763500,
+          "timeUnixNano": 1771033072989848800,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[2655]: *9615 upstream prematurely closed connection while reading response header",
+          "body": "java[5622]: [WARN] Slow transaction: /api/servers took 520ms (threshold: 500ms)",
           "attributes": {
-            "log.source": "nginx"
+            "log.source": "java"
           },
-          "resource": "web-nginx-dc1-03"
+          "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1771033099265551000,
+          "timeUnixNano": 1771033098505246200,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[1924]: [ERROR] RejectedExecutionException: Thread pool exhausted, 865 tasks rejected",
+          "body": "java[1220]: [ERROR] RejectedExecutionException: Thread pool exhausted, 5013 tasks rejected",
           "attributes": {
             "log.source": "java"
           },
@@ -6520,57 +6530,47 @@
           "timeUnixNano": 1771033104008341000,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7750]: ERROR: critical saturation summary cpu=95% mem=87% disk=34% net=0%",
+          "body": "java[7750]: ERROR: critical saturation summary cpu=92% mem=86% disk=34% net=0%",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771033106855356000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[4224]: *1662 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-02"
-        },
-        {
           "timeUnixNano": 1771033140006906600,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[7750]: WARNING: warning pressure summary cpu=89% mem=55% disk=34% net=0%",
+          "body": "java[7750]: WARNING: warning pressure summary cpu=88% mem=55% disk=34% net=0%",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1771033141964427000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[5329]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-01"
-        },
-        {
           "timeUnixNano": 1771033164008140500,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7759]: ERROR: critical-followup saturation summary cpu=95% mem=87% disk=34% net=0%",
+          "body": "java[7759]: ERROR: critical-followup saturation summary cpu=92% mem=86% disk=34% net=0%",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
         },
         {
+          "timeUnixNano": 1771033180180508000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[6041]: *8387 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-02"
+        },
+        {
           "timeUnixNano": 1771033182003867000,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7756]: ERROR: critical-retry saturation summary cpu=95% mem=87% disk=34% net=0%",
+          "body": "java[7756]: ERROR: critical-retry saturation summary cpu=92% mem=86% disk=34% net=0%",
           "attributes": {
             "log.source": "java"
           },
@@ -6606,7 +6606,7 @@
               }
             },
             {
-              "asDouble": 0.93,
+              "asDouble": 0.94,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
@@ -6678,7 +6678,7 @@
               }
             },
             {
-              "asDouble": 0.7,
+              "asDouble": 0.71,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -6721,7 +6721,7 @@
               }
             },
             {
-              "asDouble": 0.88,
+              "asDouble": 0.89,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
@@ -6739,7 +6739,7 @@
               }
             },
             {
-              "asDouble": 0.78,
+              "asDouble": 0.79,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -7723,7 +7723,7 @@
           "timeUnixNano": 1771033200000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 72, fd usage 73%",
+          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 72, fd usage 74%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -7770,64 +7770,34 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771033210273420500,
+          "timeUnixNano": 1771033212891211300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[5636]: [WARN] GC overhead: ParNew pause 327ms, old gen usage 76%",
+          "body": "java[5013]: [WARN] GC overhead: ParNew pause 2295ms, old gen usage 79%",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771033230993963000,
+          "timeUnixNano": 1771033244692905000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[6715]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "body": "nginx[5351]: *5305 upstream prematurely closed connection while reading response header",
           "attributes": {
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771033240916290600,
+          "timeUnixNano": 1771033295925210400,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[9606]: [WARN] Thread pool nearing exhaustion: active 6222/200, queue depth 82",
+          "body": "nginx[8029]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
-            "log.source": "java"
+            "log.source": "nginx"
           },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771033258133178400,
-          "severityNumber": 17,
-          "severityText": "ERROR",
-          "body": "java[8748]: [ERROR] RejectedExecutionException: Thread pool exhausted, 4283 tasks rejected",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771033355985135900,
-          "severityNumber": 17,
-          "severityText": "ERROR",
-          "body": "java[1451]: [ERROR] java.lang.OutOfMemoryError: Java heap space (used 79%)",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771033387171081200,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[1069]: [WARN] Thread pool nearing exhaustion: active 2928/200, queue depth 89",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-02"
+          "resource": "web-nginx-dc1-01"
         },
         {
           "timeUnixNano": 1771033428000389000,
@@ -7883,7 +7853,7 @@
           "timeUnixNano": 1771033428003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2003]: request queue depth 14, p95 177ms, cpu 93%",
+          "body": "java[2003]: request queue depth 15, p95 177ms, cpu 94%",
           "attributes": {
             "log.source": "java"
           },
@@ -7913,7 +7883,7 @@
           "timeUnixNano": 1771033428003618800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[5992]: replication lag: 513ms on channel dc1-replica",
+          "body": "mysqld[5992]: replication lag: 515ms on channel dc1-replica",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -7980,10 +7950,40 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
+          "timeUnixNano": 1771033463813909200,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[1984]: *5579 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771033504618572800,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[6367]: [ERROR] java.lang.OutOfMemoryError: Java heap space (used 84%)",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771033509047538700,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[5815]: [ERROR] RejectedExecutionException: Thread pool exhausted, 3445 tasks rejected",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
           "timeUnixNano": 1771033548002041900,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7774]: ERROR: cpu saturation summary cpu=93% mem=88% disk=36% net=0%",
+          "body": "java[7774]: ERROR: cpu saturation summary cpu=94% mem=89% disk=36% net=0%",
           "attributes": {
             "log.source": "java"
           },
@@ -7993,31 +7993,21 @@
           "timeUnixNano": 1771033548008624000,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7777]: ERROR: memory saturation summary cpu=93% mem=88% disk=36% net=0%",
+          "body": "java[7777]: ERROR: memory saturation summary cpu=94% mem=89% disk=36% net=0%",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771033618360200400,
+          "timeUnixNano": 1771033558009941200,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[5315]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "body": "java[8323]: [WARN] Thread pool nearing exhaustion: active 3253/200, queue depth 74",
           "attributes": {
-            "log.source": "nginx"
+            "log.source": "java"
           },
-          "resource": "web-nginx-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771033619056333600,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[1487]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-02"
+          "resource": "api-was-dc1-02"
         },
         {
           "timeUnixNano": 1771033632000000000,
@@ -8083,7 +8073,7 @@
           "timeUnixNano": 1771033644003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2014]: GC scan completed, heap occupancy 88%, reclaimed 248MB",
+          "body": "java[2014]: GC scan completed, heap occupancy 89%, reclaimed 249MB",
           "attributes": {
             "log.source": "java"
           },
@@ -8113,7 +8103,7 @@
           "timeUnixNano": 1771033644003618800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[5996]: InnoDB buffer pool hit ratio: 82%",
+          "body": "mysqld[5996]: InnoDB buffer pool hit ratio: 81%",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -8153,7 +8143,7 @@
           "timeUnixNano": 1771033644006860500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[1843]: frontend openmanager_fe sessions=514, retries=16, cpu=70%",
+          "body": "haproxy[1843]: frontend openmanager_fe sessions=518, retries=16, cpu=71%",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -8183,7 +8173,7 @@
           "timeUnixNano": 1771033704008341000,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7779]: ERROR: critical saturation summary cpu=93% mem=88% disk=36% net=0%",
+          "body": "java[7779]: ERROR: critical saturation summary cpu=94% mem=89% disk=36% net=0%",
           "attributes": {
             "log.source": "java"
           },
@@ -8203,7 +8193,7 @@
           "timeUnixNano": 1771033764008140500,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7788]: ERROR: critical-followup saturation summary cpu=93% mem=88% disk=36% net=0%",
+          "body": "java[7788]: ERROR: critical-followup saturation summary cpu=94% mem=89% disk=36% net=0%",
           "attributes": {
             "log.source": "java"
           },
@@ -8213,7 +8203,17 @@
           "timeUnixNano": 1771033782003867000,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7785]: ERROR: critical-retry saturation summary cpu=93% mem=88% disk=36% net=0%",
+          "body": "java[7785]: ERROR: critical-retry saturation summary cpu=94% mem=89% disk=36% net=0%",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771033798475117600,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[2678]: [WARN] Thread pool nearing exhaustion: active 2490/200, queue depth 64",
           "attributes": {
             "log.source": "java"
           },
@@ -8249,13 +8249,13 @@
               }
             },
             {
-              "asDouble": 0.96,
+              "asDouble": 0.93,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.89,
+              "asDouble": 0.9,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -8267,7 +8267,7 @@
               }
             },
             {
-              "asDouble": 0.76,
+              "asDouble": 0.73,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -8364,7 +8364,7 @@
               }
             },
             {
-              "asDouble": 0.87,
+              "asDouble": 0.86,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
@@ -9366,7 +9366,7 @@
           "timeUnixNano": 1771033800000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2020]: request queue depth 18, p95 159ms, cpu 96%",
+          "body": "java[2020]: request queue depth 15, p95 159ms, cpu 93%",
           "attributes": {
             "log.source": "java"
           },
@@ -9413,44 +9413,54 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771033818095766800,
+          "timeUnixNano": 1771033850185560800,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[4817]: [WARN] Thread pool nearing exhaustion: active 7892/200, queue depth 187",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771033827507607300,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[5918]: [WARN] Heap memory usage 86%, approaching GC pressure zone",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771033894760694800,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[5768]: *1906 upstream prematurely closed connection while reading response header",
+          "body": "nginx[3008]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771034022436345900,
+          "timeUnixNano": 1771033863378746000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[2907]: [WARN] Slow transaction: downstream dependency response 647ms (threshold: 500ms)",
+          "body": "java[7370]: [WARN] Slow transaction: downstream dependency response 356ms (threshold: 500ms)",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771033929531681000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[9212]: [WARN] Slow transaction: /api/servers took 480ms (threshold: 500ms)",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771033936705246000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[5811]: *1341 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771034013970019000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[5756]: [ERROR] RejectedExecutionException: Thread pool exhausted, 6648 tasks rejected",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
         },
         {
           "timeUnixNano": 1771034028000389000,
@@ -9506,7 +9516,7 @@
           "timeUnixNano": 1771034028003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2031]: GC scan completed, heap occupancy 87%, reclaimed 254MB",
+          "body": "java[2031]: GC scan completed, heap occupancy 86%, reclaimed 253MB",
           "attributes": {
             "log.source": "java"
           },
@@ -9516,7 +9526,7 @@
           "timeUnixNano": 1771034028003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 72, fd usage 61%",
+          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 72, fd usage 62%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -9603,40 +9613,50 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771034064499150600,
-          "severityNumber": 17,
-          "severityText": "ERROR",
-          "body": "java[2991]: [ERROR] java.lang.OutOfMemoryError: Java heap space (used 87%)",
+          "timeUnixNano": 1771034070317118000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[2397]: [WARN] Heap memory usage 76%, approaching GC pressure zone",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771034073004542200,
+          "timeUnixNano": 1771034087156101000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[8362]: [WARN] Thread pool nearing exhaustion: active 8788/200, queue depth 157",
+          "body": "mysqld[5975]: [Warning] InnoDB: Buffer pool usage 77% of allocated 64GB",
           "attributes": {
-            "log.source": "java"
+            "log.source": "mysqld"
           },
-          "resource": "api-was-dc1-01"
+          "resource": "db-mysql-dc1-primary"
         },
         {
-          "timeUnixNano": 1771034097653223200,
+          "timeUnixNano": 1771034118381527600,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[4338]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "body": "nginx[2394]: *4764 upstream prematurely closed connection while reading response header",
           "attributes": {
             "log.source": "nginx"
           },
-          "resource": "web-nginx-dc1-01"
+          "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771034148000057900,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[7804]: ERROR: cpu saturation summary cpu=90% mem=50% disk=35% net=0%",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
         },
         {
           "timeUnixNano": 1771034148002041900,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7803]: ERROR: cpu saturation summary cpu=96% mem=87% disk=36% net=1%",
+          "body": "java[7803]: ERROR: cpu saturation summary cpu=93% mem=86% disk=36% net=1%",
           "attributes": {
             "log.source": "java"
           },
@@ -9646,17 +9666,7 @@
           "timeUnixNano": 1771034148008624000,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7806]: ERROR: memory saturation summary cpu=96% mem=87% disk=36% net=1%",
-          "attributes": {
-            "log.source": "java"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771034148276502300,
-          "severityNumber": 17,
-          "severityText": "ERROR",
-          "body": "java[4084]: [ERROR] RejectedExecutionException: Thread pool exhausted, 3286 tasks rejected",
+          "body": "java[7806]: ERROR: memory saturation summary cpu=93% mem=86% disk=36% net=1%",
           "attributes": {
             "log.source": "java"
           },
@@ -9671,16 +9681,6 @@
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771034236971739100,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "mysqld[1005]: [Warning] InnoDB: Buffer pool usage 82% of allocated 64GB",
-          "attributes": {
-            "log.source": "mysqld"
-          },
-          "resource": "db-mysql-dc1-primary"
         },
         {
           "timeUnixNano": 1771034244000389000,
@@ -9736,7 +9736,7 @@
           "timeUnixNano": 1771034244003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 64, fd usage 75%",
+          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 64, fd usage 73%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -9746,7 +9746,7 @@
           "timeUnixNano": 1771034244003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2021]: request queue depth 11, p95 156ms, cpu 89%",
+          "body": "java[2021]: request queue depth 12, p95 156ms, cpu 90%",
           "attributes": {
             "log.source": "java"
           },
@@ -9766,7 +9766,7 @@
           "timeUnixNano": 1771034244003618800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[6006]: slow query detected: 845ms on reporting.job_runs",
+          "body": "mysqld[6006]: slow query detected: 830ms on reporting.job_runs",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -9833,60 +9833,100 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771034304008341000,
-          "severityNumber": 17,
-          "severityText": "ERROR",
-          "body": "java[7808]: ERROR: critical saturation summary cpu=96% mem=87% disk=36% net=1%",
+          "timeUnixNano": 1771034256441533400,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "java[7055]: [WARN] Thread pool nearing exhaustion: active 4101/200, queue depth 153",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771034340006906600,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "java[7808]: WARNING: warning pressure summary cpu=89% mem=50% disk=35% net=0%",
+          "timeUnixNano": 1771034304007806700,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[7809]: ERROR: critical saturation summary cpu=90% mem=50% disk=35% net=0%",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1771034340007619800,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "mysqld[4793]: WARNING: warning pressure summary cpu=76% mem=80% disk=45% net=0%",
-          "attributes": {
-            "log.source": "mysqld"
-          },
-          "resource": "db-mysql-dc1-primary"
-        },
-        {
-          "timeUnixNano": 1771034343469993500,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[2497]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771034364008140500,
+          "timeUnixNano": 1771034304008341000,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7817]: ERROR: critical-followup saturation summary cpu=96% mem=87% disk=36% net=1%",
+          "body": "java[7808]: ERROR: critical saturation summary cpu=93% mem=86% disk=36% net=1%",
           "attributes": {
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
         },
         {
+          "timeUnixNano": 1771034340007619800,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "mysqld[4793]: WARNING: warning pressure summary cpu=73% mem=80% disk=45% net=0%",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-primary"
+        },
+        {
+          "timeUnixNano": 1771034355099110100,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[3216]: [ERROR] java.lang.OutOfMemoryError: Java heap space (used 92%)",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771034364005898500,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[7818]: ERROR: critical-followup saturation summary cpu=90% mem=50% disk=35% net=0%",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771034364008140500,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[7817]: ERROR: critical-followup saturation summary cpu=93% mem=86% disk=36% net=1%",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771034382000778000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[7815]: ERROR: critical-retry saturation summary cpu=90% mem=50% disk=35% net=0%",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
+        },
+        {
           "timeUnixNano": 1771034382003867000,
           "severityNumber": 17,
           "severityText": "ERROR",
-          "body": "java[7814]: ERROR: critical-retry saturation summary cpu=96% mem=87% disk=36% net=1%",
+          "body": "java[7814]: ERROR: critical-retry saturation summary cpu=93% mem=86% disk=36% net=1%",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771034388213850400,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "java[9941]: [ERROR] RejectedExecutionException: Thread pool exhausted, 2799 tasks rejected",
           "attributes": {
             "log.source": "java"
           },
