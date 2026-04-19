@@ -60,6 +60,73 @@ function getMetricValue(
   return point?.asDouble;
 }
 
+type ContinuityState = 'normal' | 'recovery' | 'degraded' | 'critical';
+
+const CONTINUITY_METRICS = [
+  'system.cpu.utilization',
+  'system.memory.utilization',
+  'system.filesystem.utilization',
+  'system.network.io',
+] as const;
+
+function getMetricRatio(
+  slot: Slot,
+  metricName: (typeof CONTINUITY_METRICS)[number],
+  resource: string
+): number {
+  const value = getMetricValue(slot, metricName, resource);
+  if (typeof value !== 'number') return 0;
+  return metricName === 'system.network.io' ? value / 125_000_000 : value;
+}
+
+function getMaxMetricDelta(
+  previous: Slot,
+  current: Slot,
+  resource: string
+): number {
+  return Math.max(
+    ...CONTINUITY_METRICS.map((metricName) =>
+      Math.abs(
+        getMetricRatio(previous, metricName, resource) -
+          getMetricRatio(current, metricName, resource)
+      )
+    )
+  );
+}
+
+function classifyContinuityState(
+  slot: Slot,
+  resource: string
+): ContinuityState {
+  const maxRatio = Math.max(
+    ...CONTINUITY_METRICS.map((metricName) =>
+      getMetricRatio(slot, metricName, resource)
+    )
+  );
+
+  if (maxRatio >= 0.9) return 'critical';
+  if (maxRatio >= 0.75) return 'degraded';
+  if (maxRatio >= 0.6) return 'recovery';
+  return 'normal';
+}
+
+function flattenResourceSeries(resource: string): Array<{
+  hour: number;
+  slotIndex: number;
+  slot: Slot;
+}> {
+  const series: Array<{ hour: number; slotIndex: number; slot: Slot }> = [];
+
+  for (let hour = 0; hour < 24; hour++) {
+    const data = loadHour(hour);
+    data.slots.forEach((slot, slotIndex) => {
+      series.push({ hour, slotIndex, slot });
+    });
+  }
+
+  return series;
+}
+
 function createSeededRng(seed: number): () => number {
   let state = seed >>> 0;
   return () => {
@@ -225,5 +292,88 @@ describe('OTel simulation v2 Phase A contract', () => {
 
     expect(Math.min(...samples)).toBeGreaterThanOrEqual(0.01);
     expect(Math.max(...samples)).toBeLessThanOrEqual(0.99);
+  });
+});
+
+describe('OTel simulation v2 Phase C contract', () => {
+  it('keeps a recovery bridge after the cache critical window instead of resetting straight to normal', () => {
+    const hour18 = loadHour(18);
+    const hour19 = loadHour(19);
+
+    const preBoundaryState = classifyContinuityState(
+      hour18.slots[5],
+      'cache-redis-dc1-01'
+    );
+    const nextBoundaryState = classifyContinuityState(
+      hour19.slots[0],
+      'cache-redis-dc1-01'
+    );
+
+    expect(preBoundaryState).toBe('degraded');
+    expect(nextBoundaryState).toBe('recovery');
+  });
+
+  it('keeps bounded adjacent drift for representative scenario servers', () => {
+    const representatives = ['db-mysql-dc1-primary', 'cache-redis-dc1-01'];
+    const violations: Array<{
+      resource: string;
+      from: string;
+      to: string;
+      diff: number;
+    }> = [];
+
+    for (const resource of representatives) {
+      const series = flattenResourceSeries(resource);
+
+      for (let index = 0; index < series.length - 1; index++) {
+        const diff = getMaxMetricDelta(
+          series[index].slot,
+          series[index + 1].slot,
+          resource
+        );
+
+        if (diff > 0.24) {
+          violations.push({
+            resource,
+            from: `h${series[index].hour}s${series[index].slotIndex}`,
+            to: `h${series[index + 1].hour}s${series[index + 1].slotIndex}`,
+            diff: Number(diff.toFixed(3)),
+          });
+        }
+      }
+    }
+
+    expect(violations).toEqual([]);
+  });
+
+  it('keeps hour-boundary carry-over bounded for representative scenario servers', () => {
+    const representatives = ['db-mysql-dc1-primary', 'cache-redis-dc1-01'];
+    const violations: Array<{
+      resource: string;
+      boundary: string;
+      diff: number;
+    }> = [];
+
+    for (const resource of representatives) {
+      for (let hour = 0; hour < 23; hour++) {
+        const current = loadHour(hour);
+        const next = loadHour(hour + 1);
+        const diff = getMaxMetricDelta(
+          current.slots[5],
+          next.slots[0],
+          resource
+        );
+
+        if (diff > 0.24) {
+          violations.push({
+            resource,
+            boundary: `${hour}->${hour + 1}`,
+            diff: Number(diff.toFixed(3)),
+          });
+        }
+      }
+    }
+
+    expect(violations).toEqual([]);
   });
 });

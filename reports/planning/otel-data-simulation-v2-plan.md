@@ -47,14 +47,43 @@ Phase B와 독립적으로 병행 가능.
 - [x] A-2: `otel-verify.ts` 검증 항목 — jitter 결과값이 [0.01, 0.99] 범위 유지
 - [x] A-3: contract test — `gaussianJitter` unit test (1000회 샘플 평균 ≈ 0, 95%가 ±2σ 이내)
 
-### Phase C — 마르코프 상태 전이 (3순위, 난이도: ★★★)
+### Phase C — 상태 전이 MVP (3순위, 난이도: ★★☆)
 
-> Phase A·B 완료 후 착수 여부 재평가. 현재는 설계 메모 수준.
+> Phase A·B가 닫혔으므로 다음 착수 후보. 다만 전체 Markov/chaos 범위로 바로 가지 않고 `scenario server continuity`만 먼저 구현한다.
 
-- [ ] C-1: 서버별 상태 컨텍스트 타입 `ServerSimState` 정의, `adjustMetricsForScenario` 시그니처 변경
-- [ ] C-2: 시나리오별 전이 확률 테이블 (S1: `normal→degraded(40%)→critical(20%)→recovery(40%)`)
-- [ ] C-3: 카오스 이벤트 — 5% 확률 spike 삽입 (복구 로그와 함께)
-- [ ] C-4: `timeseries.json` 동기화 검증
+#### Phase C MVP 범위
+
+- 시나리오에 명시된 서버만 대상
+- 상태 집합: `normal | degraded | critical | recovery`
+- 목표: 슬롯별 값이 독립 난수처럼 튀지 않고, 인접 슬롯/인접 시간대에서 자연스럽게 이어지도록 보정
+- 구현 위치: `adjustMetricsForScenario()` 내부 또는 인접 helper로 한정
+
+#### Phase C MVP 비범위
+
+- 전 서버(global) Markov 체인
+- 5% chaos spike 삽입
+- 로그 생성기 전면 재작성
+- 새로운 OTLP 입력 포맷 도입
+
+- [ ] C-1: `ServerSimState` / `TransitionProfile` 타입 정의
+  - 상태별 기대 metric multiplier와 다음 상태 후보만 정의
+  - helper 파일 분리 가능, 런타임 의존성 추가 금지
+- [ ] C-2: 시나리오 서버 전용 상태 전이 테이블 정의
+  - 예: S1 DB primary = `normal → degraded → critical → recovery`
+  - 예: S3 Redis = `degraded ↔ critical` 중심
+- [ ] C-3: 인접 슬롯 continuity 적용
+  - 현재 슬롯 값은 `scenario target + jitter`가 아니라 `previous state output + bounded drift` 기반으로 계산
+  - hour 경계는 `이전 hour 마지막 슬롯 state`를 carry-over 해서 연결
+- [ ] C-4: contract test
+  - 인접 슬롯 간 급격한 역전 금지 (`critical → normal` 즉시 점프 금지)
+  - 대표 시나리오 2개 이상에서 `degraded` 또는 `recovery` 구간이 실제 관측돼야 함
+- [ ] C-5: `timeseries.json` 및 `otel-verify.ts` 검증 유지
+  - 기존 bounds/severity/network 검증을 깨지 않음
+
+#### Phase C+ 메모
+
+- chaos spike는 Phase C MVP 후 별도 sub-phase로 분리
+- 전 서버 상태 전이는 Phase C 효과가 충분한지 본 뒤 재평가
 
 ### Phase D — OTel Replayer (백로그, OTLP 소스 확보 시)
 
@@ -82,6 +111,12 @@ test(spec): otel-simulation-v2 add failing tests before implementation
 
 1. **A-gaussian-balance**: `gaussianJitter(0, 0.015)` 1000회 → 평균 절댓값 < 0.002
 2. **A-bounds**: jitter 적용 후 모든 메트릭 값이 [0.01, 0.99] 유지
+
+### Phase C failing test 시나리오
+
+1. **C-transition-path**: `cache-redis-dc1-01`는 critical/degraded 구간 이후 첫 post-incident 슬롯이 `normal`로 즉시 복귀하지 않고 `recovery` bridge를 거친다
+2. **C-no-hard-reset**: 대표 시나리오 서버(`db-mysql-dc1-primary`, `cache-redis-dc1-01`)의 전체 24h 인접 슬롯 max metric delta가 `0.24`를 넘지 않는다
+3. **C-carry-over**: 동일 대표 서버의 모든 hour 경계(`slot 5 -> next hour slot 0`) max metric delta가 `0.24`를 넘지 않는다
 
 ### 비용 영향
 
