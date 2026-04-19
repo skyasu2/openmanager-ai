@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-19 16:07:59 KST
+> Generated at: 2026-04-19 16:35:13 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 308 |
+| Total Recorded Runs | 309 |
 | Total Runs (Counted) | 261 |
-| Non-counted Runs | 47 |
+| Non-counted Runs | 48 |
 | Total Checks | 2072 |
 | Passed | 1993 |
 | Failed | 72 |
@@ -21,48 +21,43 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260419-0309 (2026-04-19T06:56:36.060Z) |
-| Latest Recorded Run | QA-20260419-0310 (2026-04-19T07:07:40.561Z) |
+| Latest Recorded Run | QA-20260419-0311 (2026-04-19T07:35:12.563Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260419-0310 (2026-04-19T07:07:40.561Z)
+Latest run: QA-20260419-0311 (2026-04-19T07:35:12.563Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | appropriate | no | NaN% wont-fix 항목 OTel Phase C 이후 미재현 확인됨 — 상태 재평가 필요 |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | npm run check:usage:vercel | failed | unknown | Verification run attempted npm run check:usage:vercel, but the command did not complete in-session. Reused the same-day broad production baseline QA-20260419-0309 for billing context; that checked run reported effective 11.0956 USD, billed 0.0000 USD, no unexpected usage spike. |
+| vercel | cli | checked | normal | QA-20260419-0309 동일 배포 기준 effective 11.0956 USD / billed 0.0 USD, no spike. |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: dpl_JAFCywvdMLnVLVRLW6x3KaLuRi8u / SHA 74bb7960
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: / landing render with version badge v8.11.23, /api/version returns 8.11.23, /api/health healthy with version 8.11.23, system start CTA redirect to /dashboard, dashboard render (18 total / 17 online / 1 risk / 0 warning / 0 offline), AI sidebar open with AI Engine Ready, AI starter prompt send and response for server status summary, analysis basis process tab default render in sidebar, analysis basis detail tab render with trace id and debug bundle CTA, browser console warnings/errors captured during verification pass
-- Skipped Surfaces: /login and /privacy route sweep, 404 route validation, topology and server-detail modal pack, fullscreen AI workspace handoff, reporter/analyst agent flows, mobile viewport QA
+- Deployment: dpl_JAFCywvdMLnVLVRLW6x3KaLuRi8u / SHA 27233e3a
+- Covered Surfaces: /api/version, /api/health, /dashboard, AI 사이드바, AI Chat 응답, 분석 근거 과정/상세 탭(사이드바), Analyst 전체 분석, 전체화면 전환, 분석 근거 과정/상세 탭(전체화면), Reporter 보고서 생성, 브라우저 콘솔
+- Skipped Surfaces: /login, /privacy, 404, topology modal, mobile
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Vercel deployment inspector | [Vercel deployment inspector](https://vercel.com/skyasus-projects/openmanager-ai/JAFCywvdMLnVLVRLW6x3KaLuRi8u) | - |
-| general | Vercel production | [Vercel production](https://openmanager-ai.vercel.app/) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Verification landing v8.11.23 | `reports/qa/evidence/qa-20260419-verification-landing-v823.png` | - |
-| playwright-screenshot | Verification dashboard v8.11.23 | `reports/qa/evidence/qa-20260419-verification-dashboard-v823.png` | - |
-| playwright-screenshot | Verification analysis basis sidebar detail tab | `reports/qa/evidence/qa-20260419-verification-analysis-basis-v823.png` | - |
-| playwright-console | Verification console capture | `reports/qa/evidence/qa-20260419-verification-console.txt` | - |
+| playwright-screenshot | Reporter fullscreen | `reports/qa/evidence/qa-20260419-reporter-fullscreen.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -428,6 +423,7 @@ Latest run: QA-20260419-0310 (2026-04-19T07:07:40.561Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260419-0311 | 2026-04-19T07:35:12.563Z | targeted | no | no | v8.11.23 broad targeted QA — fullscreen/Reporter/Analyst parity | 13 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260419-0310 | 2026-04-19T07:07:40.561Z | targeted | no | no | Vercel production verification QA - 8.11.23 live smoke recheck | 10 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260419-0309 | 2026-04-19T06:56:36.060Z | broad | yes | yes | Vercel Production Broad QA - 8.11.23 core routes, dashboard modal pack, and AI parity | 17 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260419-0308 | 2026-04-19T06:38:28.981Z | targeted | no | no | Vercel Playwright QA - AI analysis basis tabs on production 8.11.23 | 11 | 1 | 0 | 0 | 0 | 0 |
@@ -447,4 +443,3 @@ Latest run: QA-20260419-0310 (2026-04-19T07:07:40.561Z)
 | QA-20260416-0294 | 2026-04-16T00:26:05.077Z | targeted | yes | yes | Vercel production targeted QA - AI full-surface advanced flows on v8.11.13 | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260416-0293 | 2026-04-16T00:12:50.093Z | targeted | yes | no | Vercel production targeted QA - fullscreen analysis basis parity after v8.11.13 deploy | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260416-0292 | 2026-04-15T23:53:23.445Z | targeted | no | no | Vercel preview targeted QA - fullscreen analysis basis parity after data-done toolsCalled fix | 7 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260415-0291 | 2026-04-15T14:40:05.458Z | broad | yes | yes | Vercel broad QA - v8.11.12 production frontend and AI refresh | 18 | 0 | 0 | 0 | 0 | 0 |

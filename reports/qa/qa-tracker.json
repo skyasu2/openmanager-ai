@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-19T07:07:40.561Z"
+    "updatedAt": "2026-04-19T07:35:12.563Z"
   },
   "sequence": {
-    "nextRunNumber": 311
+    "nextRunNumber": 312
   },
   "summary": {
-    "totalRecordedRuns": 308,
+    "totalRecordedRuns": 309,
     "totalRuns": 261,
-    "excludedRuns": 47,
+    "excludedRuns": 48,
     "totalChecks": 2072,
     "totalPassed": 1993,
     "totalFailed": 72,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260419-0309",
     "lastRecordedAt": "2026-04-19T06:56:36.060Z",
-    "latestRecordedRunId": "QA-20260419-0310",
-    "latestRecordedAt": "2026-04-19T07:07:40.561Z"
+    "latestRecordedRunId": "QA-20260419-0311",
+    "latestRecordedAt": "2026-04-19T07:35:12.563Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -28419,6 +28419,90 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260419-0311",
+      "recordedAt": "2026-04-19T07:35:12.563Z",
+      "recordedAtKst": "2026-04-19 16:35:12 KST",
+      "title": "v8.11.23 broad targeted QA — fullscreen/Reporter/Analyst parity",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260419-0311.json",
+      "environment": {
+        "target": "vercel",
+        "url": "",
+        "frontend": "",
+        "backend": "",
+        "branch": "main",
+        "deploymentId": "dpl_JAFCywvdMLnVLVRLW6x3KaLuRi8u",
+        "deploymentUrl": "",
+        "commitSha": "27233e3a6f08b043110f3807a63fcf1186369b62"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [],
+      "coveredSurfaces": [
+        "/api/version",
+        "/api/health",
+        "/dashboard",
+        "AI 사이드바",
+        "AI Chat 응답",
+        "분석 근거 과정/상세 탭(사이드바)",
+        "Analyst 전체 분석",
+        "전체화면 전환",
+        "분석 근거 과정/상세 탭(전체화면)",
+        "Reporter 보고서 생성",
+        "브라우저 콘솔"
+      ],
+      "skippedSurfaces": [
+        "/login",
+        "/privacy",
+        "404",
+        "topology modal",
+        "mobile"
+      ],
+      "checks": {
+        "total": 13,
+        "passed": 13,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "분석 근거 탭 UX parity(사이드바↔전체화면), Analyst/Reporter 표면 검증 포함",
+          "nextAction": "NaN% wont-fix 항목 OTel Phase C 이후 미재현 확인됨 — 상태 재평가 필요"
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-19T16:27:00+09:00",
+          "summary": "QA-20260419-0309 동일 배포 기준 effective 11.0956 USD / billed 0.0 USD, no spike.",
+          "evidence": "QA-20260419-0309 참조",
+          "url": ""
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Reporter fullscreen",
+          "path": "reports/qa/evidence/qa-20260419-reporter-fullscreen.png"
+        }
+      ],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -28427,17 +28511,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 142,
-      "appropriateCount": 133,
+      "seenCount": 143,
+      "appropriateCount": 134,
       "partialCount": 9,
       "inappropriateCount": 0,
       "improvementNeededCount": 19,
-      "lastRunId": "QA-20260419-0309",
-      "lastSeenAt": "2026-04-19T06:56:36.060Z",
+      "lastRunId": "QA-20260419-0311",
+      "lastSeenAt": "2026-04-19T07:35:12.563Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Vercel production에서 AI sidebar와 fullscreen analysis basis parity를 포함한 핵심 AI surface를 검증했습니다.",
-      "lastNextAction": ""
+      "lastRationale": "분석 근거 탭 UX parity(사이드바↔전체화면), Analyst/Reporter 표면 검증 포함",
+      "lastNextAction": "NaN% wont-fix 항목 OTel Phase C 이후 미재현 확인됨 — 상태 재평가 필요"
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
