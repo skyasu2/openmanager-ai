@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.22](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.21...v8.11.22) (2026-04-19)
+
+
+### Features
+
+* implement analysis basis badge tab ux ([18fd23c](https://gitlab.com/skyasu2/openmanager-ai/-/commit/18fd23c1ce39452958a2db93197d41f1549741f0))
+* otel-simulation-v2 implement background noise logs ([6070efe](https://gitlab.com/skyasu2/openmanager-ai/-/commit/6070efe6475d8c6eadac45ec552ee85b5a346ac7))
+* otel-simulation-v2 implement gaussian jitter ([867f852](https://gitlab.com/skyasu2/openmanager-ai/-/commit/867f852ea1cce733bd05991c8348ad3ce0c0cb5f))
+* otel-simulation-v2 implement phase c continuity ([c9e1aa4](https://gitlab.com/skyasu2/openmanager-ai/-/commit/c9e1aa49d7d88ded04f040cae64fcef430f4dd25))
+
+
+### Tests
+
+* **spec:** analysis-basis-badge add tab ux contracts ([b0b42f4](https://gitlab.com/skyasu2/openmanager-ai/-/commit/b0b42f4b50415c632e78d145fc12ff7d23a396cd))
+* **spec:** otel-simulation-v2 add failing tests before implementation ([d95abf9](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d95abf9945036e2922605e0dfbbba289157de1e3))
+* **spec:** otel-simulation-v2 add gaussian jitter coverage ([14f761e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/14f761ec058c0ea22b241b1510cd8b741d9a79fe))
+* **spec:** otel-simulation-v2 add phase c continuity contracts ([0be13bc](https://gitlab.com/skyasu2/openmanager-ai/-/commit/0be13bc58f1915bd4297347084a24e2008886a86))
+
 ## [8.11.21](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.20...v8.11.21) (2026-04-19)
 
 
