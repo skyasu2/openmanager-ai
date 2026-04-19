@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-19T06:38:28.981Z"
+    "updatedAt": "2026-04-19T06:56:36.060Z"
   },
   "sequence": {
-    "nextRunNumber": 309
+    "nextRunNumber": 310
   },
   "summary": {
-    "totalRecordedRuns": 306,
-    "totalRuns": 260,
+    "totalRecordedRuns": 307,
+    "totalRuns": 261,
     "excludedRuns": 46,
-    "totalChecks": 2055,
-    "totalPassed": 1976,
+    "totalChecks": 2072,
+    "totalPassed": 1993,
     "totalFailed": 72,
     "completionRate": 100,
-    "completedItems": 312,
+    "completedItems": 313,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 15,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260419-0306",
-    "lastRecordedAt": "2026-04-19T00:41:30.083Z",
-    "latestRecordedRunId": "QA-20260419-0308",
-    "latestRecordedAt": "2026-04-19T06:38:28.981Z"
+    "lastRunId": "QA-20260419-0309",
+    "lastRecordedAt": "2026-04-19T06:56:36.060Z",
+    "latestRecordedRunId": "QA-20260419-0309",
+    "latestRecordedAt": "2026-04-19T06:56:36.060Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -7574,6 +7574,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-19T06:38:28.981Z"
+    },
+    "analysis-basis-badge-tab-ux-broad-v823": {
+      "id": "analysis-basis-badge-tab-ux-broad-v823",
+      "title": "Production 8.11.23 broad QA confirms analysis basis tabs across sidebar and fullscreen surfaces",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260419-0309",
+      "firstSeenAt": "2026-04-19T06:56:36.060Z",
+      "lastSeenRunId": "QA-20260419-0309",
+      "lastSeenAt": "2026-04-19T06:56:36.060Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Broad production QA on deployment dpl_JAFCywvdMLnVLVRLW6x3KaLuRi8u",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-19T06:56:36.060Z"
     }
   },
   "runs": [
@@ -28130,41 +28154,201 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260419-0309",
+      "recordedAt": "2026-04-19T06:56:36.060Z",
+      "recordedAtKst": "2026-04-19 15:56:36 KST",
+      "title": "Vercel Production Broad QA - 8.11.23 core routes, dashboard modal pack, and AI parity",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260419-0309.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_JAFCywvdMLnVLVRLW6x3KaLuRi8u",
+        "deploymentUrl": "https://openmanager-fut2es2l3-skyasus-projects.vercel.app",
+        "commitSha": "74bb7960a4736fa996fecb2b7f8837471234d6bf"
+      },
+      "scope": "broad",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "/ landing render and version badge v8.11.23",
+        "/login render with Google/GitHub/email/guest entry",
+        "/privacy render with back-link to login",
+        "404 route render for /definitely-missing-route",
+        "/api/version returns 8.11.23",
+        "/api/health healthy with version 8.11.23",
+        "/system-boot equivalent user flow via system start CTA redirect to /dashboard",
+        "dashboard render (18 total / 17 online / 1 warning / 0 risk / 0 offline)",
+        "active alerts modal render and ESC close",
+        "topology modal render (15 nodes / 20 edges) and ESC close",
+        "server detail modal open for cache-redis-dc1-01",
+        "server detail 3-tab switch (종합 상황 / 성능 분석 / 로그 & 네트워크) and ESC close",
+        "AI sidebar open with AI Engine Ready",
+        "AI starter prompt send and streaming response for server status summary",
+        "fullscreen AI workspace route handoff preserves conversation",
+        "fullscreen analysis basis process/detail tabs with trace/debug detail",
+        "browser console warnings/errors 0 on validated live surfaces"
+      ],
+      "skippedSurfaces": [
+        "reporter agent flow",
+        "analyst agent full-analysis flow",
+        "Cloud Run admin observability routes (/monitoring, /monitoring/traces)",
+        "mobile viewport QA",
+        "security prompt-injection pack"
+      ],
+      "checks": {
+        "total": 17,
+        "passed": 17,
+        "failed": 0
+      },
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel production에서 AI sidebar와 fullscreen analysis basis parity를 포함한 핵심 AI surface를 검증했습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Dashboard status/resource/topology/alert modal과 health/version API를 현재 production deployment 기준으로 검증했습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "이번 broad run 범위에서 prompt-security pack은 제외했지만, validated live surfaces에서는 console/runtime regression이 보이지 않았습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Deployed commit 74bb7960와 Vercel production deployment dpl_JAFCywvdMLnVLVRLW6x3KaLuRi8u 기준으로 broad surface를 확인했습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP로 route, modal, AI conversation, fullscreen handoff까지 broad regression path를 재현했습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Synthetic OTel snapshot label, dashboard totals, AI summary output이 같은 live data surface 기준으로 일관되게 보였습니다.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "npm run check:usage:vercel",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-19T15:47:25+09:00",
+          "summary": "Current billing period reviewed after production QA; effective 11.0956 USD, billed 0.0000 USD, no unexpected usage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Landing v8.11.23",
+          "path": "reports/qa/evidence/qa-20260419-broad-landing-v823.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Dashboard summary v8.11.23",
+          "path": "reports/qa/evidence/qa-20260419-broad-dashboard-v823.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Server detail modal 3-tab pack",
+          "path": "reports/qa/evidence/qa-20260419-broad-server-modal-v823.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI sidebar response",
+          "path": "reports/qa/evidence/qa-20260419-broad-ai-sidebar-v823.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel deployment inspector",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/JAFCywvdMLnVLVRLW6x3KaLuRi8u"
+        },
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 6,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
     "ai-quality-assurance": {
       "domainId": "ai-quality-assurance",
-      "domainName": "AI Quality Assurance",
+      "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 141,
-      "appropriateCount": 132,
+      "seenCount": 142,
+      "appropriateCount": 133,
       "partialCount": 9,
       "inappropriateCount": 0,
       "improvementNeededCount": 19,
-      "lastRunId": "QA-20260419-0306",
-      "lastSeenAt": "2026-04-19T00:41:30.083Z",
+      "lastRunId": "QA-20260419-0309",
+      "lastSeenAt": "2026-04-19T06:56:36.060Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "NLQ 정확도, 분석근거 parity, 3대 에이전트 정상 동작 검증 완료.",
-      "lastNextAction": "analyst-nan-prediction-bug P2 fix 검토"
+      "lastRationale": "Vercel production에서 AI sidebar와 fullscreen analysis basis parity를 포함한 핵심 AI surface를 검증했습니다.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 83,
-      "appropriateCount": 57,
+      "seenCount": 84,
+      "appropriateCount": 58,
       "partialCount": 26,
       "inappropriateCount": 0,
       "improvementNeededCount": 27,
-      "lastRunId": "QA-20260418-0303",
-      "lastSeenAt": "2026-04-18T08:01:44.685Z",
+      "lastRunId": "QA-20260419-0309",
+      "lastSeenAt": "2026-04-19T06:56:36.060Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The alert-driven workflow, analysis basis summary, and analyst issue drilldown all rendered without console noise on normal routes, confirming the release remains observable and operator-friendly.",
+      "lastRationale": "Dashboard status/resource/topology/alert modal과 health/version API를 현재 production deployment 기준으로 검증했습니다.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -28172,16 +28356,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 45,
-      "appropriateCount": 32,
+      "seenCount": 46,
+      "appropriateCount": 33,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260402-0208",
-      "lastSeenAt": "2026-04-02T01:45:03.294Z",
-      "lastFit": "partially-appropriate",
+      "lastRunId": "QA-20260419-0309",
+      "lastSeenAt": "2026-04-19T06:56:36.060Z",
+      "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "인증·세션·스트리밍 경로는 정상이나 prompt/security regression pack은 이번 broad run 범위 밖입니다.",
+      "lastRationale": "이번 broad run 범위에서 prompt-security pack은 제외했지만, validated live surfaces에서는 console/runtime regression이 보이지 않았습니다.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -28189,16 +28373,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 85,
-      "appropriateCount": 75,
+      "seenCount": 86,
+      "appropriateCount": 76,
       "partialCount": 10,
       "inappropriateCount": 0,
       "improvementNeededCount": 14,
-      "lastRunId": "QA-20260418-0303",
-      "lastSeenAt": "2026-04-18T08:01:44.685Z",
+      "lastRunId": "QA-20260419-0309",
+      "lastSeenAt": "2026-04-19T06:56:36.060Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production Vercel deployment dpl_8Th4eohuqf6tGKxqt1G4Vro6WRcr and Cloud Run ai-engine 8.11.20 both reported healthy while usage stayed within the expected budget envelope.",
+      "lastRationale": "Deployed commit 74bb7960와 Vercel production deployment dpl_JAFCywvdMLnVLVRLW6x3KaLuRi8u 기준으로 broad surface를 확인했습니다.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -28206,16 +28390,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 115,
-      "appropriateCount": 108,
+      "seenCount": 116,
+      "appropriateCount": 109,
       "partialCount": 7,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260418-0303",
-      "lastSeenAt": "2026-04-18T08:01:44.685Z",
+      "lastRunId": "QA-20260419-0309",
+      "lastSeenAt": "2026-04-19T06:56:36.060Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Core routes, dashboard, modal interactions, AI sidebar/fullscreen, analyst flow, and mobile responsive spot checks were validated in one production browser session.",
+      "lastRationale": "Playwright MCP로 route, modal, AI conversation, fullscreen handoff까지 broad regression path를 재현했습니다.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -28223,16 +28407,16 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 29,
-      "appropriateCount": 16,
+      "seenCount": 30,
+      "appropriateCount": 17,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 13,
-      "lastRunId": "QA-20260402-0208",
-      "lastSeenAt": "2026-04-02T01:45:03.294Z",
+      "lastRunId": "QA-20260419-0309",
+      "lastSeenAt": "2026-04-19T06:56:36.060Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Dashboard raw metrics와 AI 요약이 같은 slot 기준으로 일관되게 나타나 현재 broad 릴리즈 범위에서 데이터 품질 이상은 보이지 않았습니다.",
+      "lastRationale": "Synthetic OTel snapshot label, dashboard totals, AI summary output이 같은 live data surface 기준으로 일관되게 보였습니다.",
       "lastNextAction": ""
     },
     "infra-reliability": {

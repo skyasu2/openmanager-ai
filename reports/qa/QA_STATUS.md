@@ -1,36 +1,41 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-19 15:38:51 KST
+> Generated at: 2026-04-19 15:56:54 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 306 |
-| Total Runs (Counted) | 260 |
+| Total Recorded Runs | 307 |
+| Total Runs (Counted) | 261 |
 | Non-counted Runs | 46 |
-| Total Checks | 2055 |
-| Passed | 1976 |
+| Total Checks | 2072 |
+| Passed | 1993 |
 | Failed | 72 |
-| Completed Items | 312 |
+| Completed Items | 313 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 15 |
 | Expert Domains Tracked | 8 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260419-0306 (2026-04-19T00:41:30.083Z) |
-| Latest Recorded Run | QA-20260419-0308 (2026-04-19T06:38:28.981Z) |
+| Last Counted Run | QA-20260419-0309 (2026-04-19T06:56:36.060Z) |
+| Latest Recorded Run | QA-20260419-0309 (2026-04-19T06:56:36.060Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260419-0308 (2026-04-19T06:38:28.981Z)
+Latest run: QA-20260419-0309 (2026-04-19T06:56:36.060Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
+| AI Security & Reliability Architect | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
+| Data Quality & Metrics Analyst | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
@@ -40,13 +45,13 @@ Latest run: QA-20260419-0308 (2026-04-19T06:38:28.981Z)
 
 ## Coverage (Latest Run)
 
-- Scope: targeted
-- Release-Facing: no
-- Counts Toward Summary: no
+- Scope: broad
+- Release-Facing: yes
+- Counts Toward Summary: yes
 - Deployment: dpl_JAFCywvdMLnVLVRLW6x3KaLuRi8u / SHA 74bb7960
-- Coverage Packs: ai-core
-- Covered Surfaces: landing render with version badge v8.11.23, system start CTA redirect to /dashboard, dashboard render (18 total / 17 online / 1 warning / 0 risk / 0 offline), AI sidebar open and engine ready, starter prompt send and streaming response for server status summary, sidebar analysis basis process tab default render, sidebar analysis basis detail tab render (trace id, internal tool name, debug bundle CTA), fullscreen AI workspace conversation retention from sidebar, fullscreen analysis basis process/detail tab parity, /api/version returns 8.11.23, /api/health healthy with version 8.11.23 and browser console errors 0
-- Skipped Surfaces: broad route sweep (/login, /privacy, /404), reporter and analyst agents, server detail modal and topology modal, Cloud Run admin observability routes, mobile viewport QA
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
+- Covered Surfaces: / landing render and version badge v8.11.23, /login render with Google/GitHub/email/guest entry, /privacy render with back-link to login, 404 route render for /definitely-missing-route, /api/version returns 8.11.23, /api/health healthy with version 8.11.23, /system-boot equivalent user flow via system start CTA redirect to /dashboard, dashboard render (18 total / 17 online / 1 warning / 0 risk / 0 offline), active alerts modal render and ESC close, topology modal render (15 nodes / 20 edges) and ESC close, server detail modal open for cache-redis-dc1-01, server detail 3-tab switch (종합 상황 / 성능 분석 / 로그 & 네트워크) and ESC close, AI sidebar open with AI Engine Ready, AI starter prompt send and streaming response for server status summary, fullscreen AI workspace route handoff preserves conversation, fullscreen analysis basis process/detail tabs with trace/debug detail, browser console warnings/errors 0 on validated live surfaces
+- Skipped Surfaces: reporter agent flow, analyst agent full-analysis flow, Cloud Run admin observability routes (/monitoring, /monitoring/traces), mobile viewport QA, security prompt-injection pack
 
 ## Links (Latest Run)
 
@@ -59,7 +64,10 @@ Latest run: QA-20260419-0308 (2026-04-19T06:38:28.981Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-screenshot | Landing v8.11.23 | `reports/qa/evidence/qa-20260419-broad-landing-v823.png` | - |
+| playwright-screenshot | Dashboard summary v8.11.23 | `reports/qa/evidence/qa-20260419-broad-dashboard-v823.png` | - |
+| playwright-screenshot | Server detail modal 3-tab pack | `reports/qa/evidence/qa-20260419-broad-server-modal-v823.png` | - |
+| playwright-screenshot | AI sidebar response | `reports/qa/evidence/qa-20260419-broad-ai-sidebar-v823.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -167,6 +175,7 @@ Latest run: QA-20260419-0308 (2026-04-19T06:38:28.981Z)
 - analysis-basis-badge-label: AnalysisBasisBadge.tsx: collapsed 표시 '도구:' → '분석 단계:' Progressive Disclosure 개선 (completed 1회, last QA-20260408-0252)
 - analysis-basis-badge-sidebar: 분석근거 배지 사이드바 정상 (completed 1회, last QA-20260419-0306)
 - analysis-basis-badge-tab-ux: Analysis basis badge process/detail tabs render consistently in sidebar and fullscreen on production (completed 1회, last QA-20260419-0308)
+- analysis-basis-badge-tab-ux-broad-v823: Production 8.11.23 broad QA confirms analysis basis tabs across sidebar and fullscreen surfaces (completed 1회, last QA-20260419-0309)
 - analyst-agent-full-analysis: Analyst 18서버 분석 16정상 2주의 (completed 1회, last QA-20260419-0306)
 - analyst-agent-pass: Analyst Agent 전체 분석 정상 (completed 1회, last QA-20260326-0190)
 - analyst-full-analysis: Analyst 전체 분석 (completed 1회, last QA-20260317-0114)
@@ -424,6 +433,7 @@ Latest run: QA-20260419-0308 (2026-04-19T06:38:28.981Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260419-0309 | 2026-04-19T06:56:36.060Z | broad | yes | yes | Vercel Production Broad QA - 8.11.23 core routes, dashboard modal pack, and AI parity | 17 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260419-0308 | 2026-04-19T06:38:28.981Z | targeted | no | no | Vercel Playwright QA - AI analysis basis tabs on production 8.11.23 | 11 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260419-0307 | 2026-04-19T01:24:01.619Z | targeted | no | no | Local targeted QA - Analyst NaN prediction fallback fix | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260419-0306 | 2026-04-19T00:41:30.083Z | broad | no | yes | Vercel broad QA - v8.11.20 frontend + AI assistant full evaluation | 12 | 11 | 0 | 0 | 1 | 0 |
@@ -443,4 +453,3 @@ Latest run: QA-20260419-0308 (2026-04-19T06:38:28.981Z)
 | QA-20260416-0292 | 2026-04-15T23:53:23.445Z | targeted | no | no | Vercel preview targeted QA - fullscreen analysis basis parity after data-done toolsCalled fix | 7 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260415-0291 | 2026-04-15T14:40:05.458Z | broad | yes | yes | Vercel broad QA - v8.11.12 production frontend and AI refresh | 18 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260415-0290 | 2026-04-15T14:18:02.870Z | targeted | yes | no | Vercel production targeted QA - fullscreen analysis basis parity after v8.11.12 deploy | 6 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260415-0289 | 2026-04-15T13:37:22.863Z | targeted | no | no | Vercel preview targeted QA - fullscreen analysis basis parity after hydration fix | 6 | 1 | 0 | 0 | 0 | 0 |
