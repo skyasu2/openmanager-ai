@@ -1,16 +1,16 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-19T07:07:59.528Z",
-  "generatedAtKst": "2026-04-19 16:07:59 KST",
-  "trackerUpdatedAt": "2026-04-19T07:07:40.561Z",
+  "generatedAt": "2026-04-19T07:40:44.157Z",
+  "generatedAtKst": "2026-04-19 16:40:44 KST",
+  "trackerUpdatedAt": "2026-04-19T07:35:12.563Z",
   "totals": {
-    "recordedRuns": 308,
+    "recordedRuns": 309,
     "countedRuns": 261,
     "totalChecks": 2072,
     "totalPassed": 1993,
     "totalFailed": 72,
     "overallPassRatePct": 96.19,
-    "latestRecordedRunId": "QA-20260419-0310",
+    "latestRecordedRunId": "QA-20260419-0311",
     "lastCountedRunId": "QA-20260419-0309"
   },
   "windows": [
@@ -221,7 +221,7 @@
   "scopeDistribution": [
     {
       "scope": "targeted",
-      "totalRuns": 142,
+      "totalRuns": 143,
       "countedRuns": 96
     },
     {

@@ -1,7 +1,7 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-19 16:35:13 KST
+> Generated at: 2026-04-19 16:40:43 KST
 
 ## Summary
 
@@ -30,7 +30,7 @@ Latest run: QA-20260419-0311 (2026-04-19T07:35:12.563Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | NaN% wont-fix 항목 OTel Phase C 이후 미재현 확인됨 — 상태 재평가 필요 |
+| AI Quality Assurance Specialist | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
@@ -43,7 +43,7 @@ Latest run: QA-20260419-0311 (2026-04-19T07:35:12.563Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: dpl_JAFCywvdMLnVLVRLW6x3KaLuRi8u / SHA 27233e3a
+- Deployment: dpl_JAFCywvdMLnVLVRLW6x3KaLuRi8u / SHA 74bb7960
 - Covered Surfaces: /api/version, /api/health, /dashboard, AI 사이드바, AI Chat 응답, 분석 근거 과정/상세 탭(사이드바), Analyst 전체 분석, 전체화면 전환, 분석 근거 과정/상세 탭(전체화면), Reporter 보고서 생성, 브라우저 콘솔
 - Skipped Surfaces: /login, /privacy, 404, topology modal, mobile
 

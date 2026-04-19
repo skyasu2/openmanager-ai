@@ -1,19 +1,19 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-04-19 16:07:59 KST
+> Generated at: 2026-04-19 16:40:44 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 308 |
+| Recorded Runs | 309 |
 | Counted Runs | 261 |
 | Total Checks | 2072 |
 | Total Passed | 1993 |
 | Total Failed | 72 |
 | Overall Pass Rate | 96.19% |
-| Latest Recorded Run | QA-20260419-0310 |
+| Latest Recorded Run | QA-20260419-0311 |
 | Last Counted Run | QA-20260419-0309 |
 
 ## Warnings
@@ -46,7 +46,7 @@
 
 | Scope | Recorded Runs | Counted Runs |
 |---|---:|---:|
-| targeted | 142 | 96 |
+| targeted | 143 | 96 |
 | legacy | 137 | 137 |
 | broad | 22 | 21 |
 | release-gate | 5 | 5 |

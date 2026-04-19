@@ -28429,14 +28429,14 @@
       "source": "playwright-mcp",
       "file": "reports/qa/runs/2026/qa-run-QA-20260419-0311.json",
       "environment": {
-        "target": "vercel",
-        "url": "",
-        "frontend": "",
-        "backend": "",
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
         "branch": "main",
         "deploymentId": "dpl_JAFCywvdMLnVLVRLW6x3KaLuRi8u",
-        "deploymentUrl": "",
-        "commitSha": "27233e3a6f08b043110f3807a63fcf1186369b62"
+        "deploymentUrl": "https://openmanager-fut2es2l3-skyasus-projects.vercel.app",
+        "commitSha": "74bb7960a4736fa996fecb2b7f8837471234d6bf"
       },
       "scope": "targeted",
       "releaseFacing": false,
@@ -28474,7 +28474,7 @@
           "fit": "appropriate",
           "improvementNeeded": false,
           "rationale": "분석 근거 탭 UX parity(사이드바↔전체화면), Analyst/Reporter 표면 검증 포함",
-          "nextAction": "NaN% wont-fix 항목 OTel Phase C 이후 미재현 확인됨 — 상태 재평가 필요"
+          "nextAction": ""
         }
       ],
       "usageChecks": [
@@ -28521,7 +28521,7 @@
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
       "lastRationale": "분석 근거 탭 UX parity(사이드바↔전체화면), Analyst/Reporter 표면 검증 포함",
-      "lastNextAction": "NaN% wont-fix 항목 OTel Phase C 이후 미재현 확인됨 — 상태 재평가 필요"
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
