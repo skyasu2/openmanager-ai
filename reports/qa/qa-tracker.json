@@ -2,20 +2,20 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-19T01:24:01.619Z"
+    "updatedAt": "2026-04-19T06:38:28.981Z"
   },
   "sequence": {
-    "nextRunNumber": 308
+    "nextRunNumber": 309
   },
   "summary": {
-    "totalRecordedRuns": 305,
+    "totalRecordedRuns": 306,
     "totalRuns": 260,
-    "excludedRuns": 45,
+    "excludedRuns": 46,
     "totalChecks": 2055,
     "totalPassed": 1976,
     "totalFailed": 72,
     "completionRate": 100,
-    "completedItems": 311,
+    "completedItems": 312,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 15,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260419-0306",
     "lastRecordedAt": "2026-04-19T00:41:30.083Z",
-    "latestRecordedRunId": "QA-20260419-0307",
-    "latestRecordedAt": "2026-04-19T01:24:01.619Z"
+    "latestRecordedRunId": "QA-20260419-0308",
+    "latestRecordedAt": "2026-04-19T06:38:28.981Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -7550,6 +7550,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-19T01:24:01.619Z"
+    },
+    "analysis-basis-badge-tab-ux": {
+      "id": "analysis-basis-badge-tab-ux",
+      "title": "Analysis basis badge process/detail tabs render consistently in sidebar and fullscreen on production",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260419-0308",
+      "firstSeenAt": "2026-04-19T06:38:28.981Z",
+      "lastSeenRunId": "QA-20260419-0308",
+      "lastSeenAt": "2026-04-19T06:38:28.981Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Vercel production 8.11.23 targeted QA",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-19T06:38:28.981Z"
     }
   },
   "runs": [
@@ -28018,6 +28042,88 @@
       "usageChecks": [],
       "artifacts": [],
       "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260419-0308",
+      "recordedAt": "2026-04-19T06:38:28.981Z",
+      "recordedAtKst": "2026-04-19 15:38:28 KST",
+      "title": "Vercel Playwright QA - AI analysis basis tabs on production 8.11.23",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260419-0308.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_JAFCywvdMLnVLVRLW6x3KaLuRi8u",
+        "deploymentUrl": "https://openmanager-fut2es2l3-skyasus-projects.vercel.app",
+        "commitSha": "74bb7960a4736fa996fecb2b7f8837471234d6bf"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "landing render with version badge v8.11.23",
+        "system start CTA redirect to /dashboard",
+        "dashboard render (18 total / 17 online / 1 warning / 0 risk / 0 offline)",
+        "AI sidebar open and engine ready",
+        "starter prompt send and streaming response for server status summary",
+        "sidebar analysis basis process tab default render",
+        "sidebar analysis basis detail tab render (trace id, internal tool name, debug bundle CTA)",
+        "fullscreen AI workspace conversation retention from sidebar",
+        "fullscreen analysis basis process/detail tab parity",
+        "/api/version returns 8.11.23",
+        "/api/health healthy with version 8.11.23 and browser console errors 0"
+      ],
+      "skippedSurfaces": [
+        "broad route sweep (/login, /privacy, /404)",
+        "reporter and analyst agents",
+        "server detail modal and topology modal",
+        "Cloud Run admin observability routes",
+        "mobile viewport QA"
+      ],
+      "checks": {
+        "total": 11,
+        "passed": 11,
+        "failed": 0
+      },
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "npm run check:usage:vercel",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-19T15:34:00+09:00",
+          "summary": "Current billing period reviewed after production QA; effective 11.0956 USD, billed 0.0000 USD, no unexpected usage spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel deployment inspector",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/JAFCywvdMLnVLVRLW6x3KaLuRi8u"
+        },
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 1,
