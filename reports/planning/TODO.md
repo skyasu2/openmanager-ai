@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-19 KST (OTel simulation v2 Phase C test(spec) 추가)
+**Last Updated**: 2026-04-19 KST (OTel simulation v2 Phase C MVP 완료)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -9,7 +9,6 @@
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
 | AnalysisBasisBadge 탭 UX 리팩토링 | Medium | Approved → Codex 위임 | [계획서](analysis-basis-badge-tab-ux-plan.md) |
-| OTel 데이터 시뮬레이션 고도화 v2 | Medium | Approved → Phase C test(spec) 추가 | [계획서](otel-data-simulation-v2-plan.md) |
 
 ---
 
@@ -36,6 +35,16 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-19 #154)
+- [x] OTel 데이터 시뮬레이션 고도화 v2 Phase C MVP
+  - `scripts/data/otel-fix.ts`에 scenario server 전용 `ServerSimState` / `TransitionProfile` 기반 continuity 적용
+  - 대표 시나리오 서버(`db-mysql-dc1-primary`, `cache-redis-dc1-01`)의 recovery bridge / adjacent drift / hour carry-over 계약 추가
+  - generated data를 재생성하고 topology contract + `otel-verify` 기준으로 회귀 확인
+  - 검증:
+    - `node_modules/.bin/jiti scripts/data/otel-fix.ts`
+    - `npx vitest run tests/unit/otel-simulation-v2.test.ts tests/unit/otel-topology-redis-cross-az.contract.test.ts tests/unit/otel-topology-nfs-spof.contract.test.ts`
+    - `node scripts/data/otel-verify.ts`
 
 ### Completed (2026-04-19 #153)
 - [x] AI Engine validate CI 회귀 복구

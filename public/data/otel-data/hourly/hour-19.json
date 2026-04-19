@@ -34,13 +34,13 @@
               }
             },
             {
-              "asDouble": 0.43,
+              "asDouble": 0.35,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.45,
+              "asDouble": 0.39,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -52,7 +52,7 @@
               }
             },
             {
-              "asDouble": 0.59,
+              "asDouble": 0.4,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -64,19 +64,19 @@
               }
             },
             {
-              "asDouble": 0.18,
+              "asDouble": 0.19,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.2,
+              "asDouble": 0.61,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.23,
+              "asDouble": 0.21,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -88,7 +88,7 @@
               }
             },
             {
-              "asDouble": 0.34,
+              "asDouble": 0.24,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -100,13 +100,13 @@
               }
             },
             {
-              "asDouble": 0.21,
+              "asDouble": 0.27,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.6,
+              "asDouble": 0.42,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -118,7 +118,7 @@
               }
             },
             {
-              "asDouble": 0.38,
+              "asDouble": 0.23,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -149,7 +149,7 @@
               }
             },
             {
-              "asDouble": 0.55,
+              "asDouble": 0.53,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
@@ -167,7 +167,7 @@
               }
             },
             {
-              "asDouble": 0.68,
+              "asDouble": 0.59,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -179,19 +179,19 @@
               }
             },
             {
-              "asDouble": 0.41,
+              "asDouble": 0.33,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.48,
+              "asDouble": 0.69,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.68,
+              "asDouble": 0.44,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -203,7 +203,7 @@
               }
             },
             {
-              "asDouble": 0.42,
+              "asDouble": 0.43,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -215,13 +215,13 @@
               }
             },
             {
-              "asDouble": 0.37,
+              "asDouble": 0.42,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.33,
+              "asDouble": 0.37,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -233,7 +233,7 @@
               }
             },
             {
-              "asDouble": 0.34,
+              "asDouble": 0.36,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -264,13 +264,13 @@
               }
             },
             {
-              "asDouble": 0.36,
+              "asDouble": 0.27,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.32,
+              "asDouble": 0.28,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -282,7 +282,7 @@
               }
             },
             {
-              "asDouble": 0.45,
+              "asDouble": 0.61,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -294,19 +294,19 @@
               }
             },
             {
-              "asDouble": 0.38,
+              "asDouble": 0.68,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.17,
+              "asDouble": 0.24,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.16,
+              "asDouble": 0.21,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -318,7 +318,7 @@
               }
             },
             {
-              "asDouble": 0.67,
+              "asDouble": 0.52,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -330,13 +330,13 @@
               }
             },
             {
-              "asDouble": 0.57,
+              "asDouble": 0.51,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.15,
+              "asDouble": 0.23,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -348,7 +348,7 @@
               }
             },
             {
-              "asDouble": 0.12,
+              "asDouble": 0.22,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -379,13 +379,13 @@
               }
             },
             {
-              "asDouble": 0,
+              "asDouble": 26668286,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0,
+              "asDouble": 29372662,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -397,7 +397,7 @@
               }
             },
             {
-              "asDouble": 0,
+              "asDouble": 28100246,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -409,19 +409,19 @@
               }
             },
             {
-              "asDouble": 0,
+              "asDouble": 20087284,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
             },
             {
-              "asDouble": 62500000,
+              "asDouble": 43175223,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 56250000,
+              "asDouble": 41499654,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -433,7 +433,7 @@
               }
             },
             {
-              "asDouble": 28750000,
+              "asDouble": 28554433,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -445,13 +445,13 @@
               }
             },
             {
-              "asDouble": 27500000,
+              "asDouble": 29622608,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 89609930,
+              "asDouble": 88484284,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -463,7 +463,7 @@
               }
             },
             {
-              "asDouble": 1250000,
+              "asDouble": 54169700,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -1081,7 +1081,7 @@
           "timeUnixNano": 1771063200000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[8099]: cache hit ratio: 64% over last 60s",
+          "body": "redis-server[8099]: cache hit ratio: 54% over last 60s",
           "attributes": {
             "log.source": "redis"
           },
@@ -1091,7 +1091,7 @@
           "timeUnixNano": 1771063200000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[8105]: evicted keys 208, fragmentation 132%",
+          "body": "redis-server[8105]: evicted keys 0, fragmentation 125%",
           "attributes": {
             "log.source": "redis"
           },
@@ -1101,7 +1101,7 @@
           "timeUnixNano": 1771063200000000300,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "minio[4169]: S3 Gateway ready, 17 buckets loaded, disk 57%",
+          "body": "minio[4169]: S3 Gateway ready, 17 buckets loaded, disk 51%",
           "attributes": {
             "log.source": "minio"
           },
@@ -1111,7 +1111,7 @@
           "timeUnixNano": 1771063200000000500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[3568]: InnoDB buffer pool hit ratio: 89%",
+          "body": "mysqld[3568]: InnoDB buffer pool hit ratio: 88%",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -1121,7 +1121,7 @@
           "timeUnixNano": 1771063200000000500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "nfsd[4450]: export /data/shared latency 138ms, disk 67%",
+          "body": "nfsd[4450]: export /data/shared latency 117ms, disk 52%",
           "attributes": {
             "log.source": "nfsd"
           },
@@ -1131,7 +1131,7 @@
           "timeUnixNano": 1771063200000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2864]: GC scan completed, heap occupancy 55%, reclaimed 181MB",
+          "body": "java[2864]: GC scan completed, heap occupancy 53%, reclaimed 179MB",
           "attributes": {
             "log.source": "java"
           },
@@ -1141,7 +1141,7 @@
           "timeUnixNano": 1771063200000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 64, fd usage 38%",
+          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 64, fd usage 35%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -1161,7 +1161,7 @@
           "timeUnixNano": 1771063200000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[6846]: InnoDB buffer pool hit ratio: 83%",
+          "body": "mysqld[6846]: InnoDB buffer pool hit ratio: 84%",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -1171,7 +1171,7 @@
           "timeUnixNano": 1771063200000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2693]: frontend openmanager_fe sessions=742, retries=26, cpu=60%",
+          "body": "haproxy[2693]: frontend openmanager_fe sessions=667, retries=23, cpu=42%",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -1181,7 +1181,7 @@
           "timeUnixNano": 1771063200000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2707]: health checks passed for 15/18 backends, queue=11",
+          "body": "haproxy[2707]: health checks passed for 15/18 backends, queue=15",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -1198,20 +1198,10 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771063227578083800,
+          "timeUnixNano": 1771063284380375000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[3789]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771063239529090600,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "haproxy[3746]: WARNING: Connection table 83% full (conntrack saturation)",
+          "body": "haproxy[3400]: WARNING: Connection table 88% full (conntrack saturation)",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -1251,7 +1241,7 @@
           "timeUnixNano": 1771063428001166600,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[3561]: slow query detected: 548ms on reporting.job_runs",
+          "body": "mysqld[3561]: slow query detected: 733ms on reporting.job_runs",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -1271,7 +1261,7 @@
           "timeUnixNano": 1771063428003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 56, fd usage 37%",
+          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 56, fd usage 33%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -1281,7 +1271,7 @@
           "timeUnixNano": 1771063428003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2854]: request queue depth 11, p95 175ms, cpu 45%",
+          "body": "java[2854]: request queue depth 16, p95 175ms, cpu 39%",
           "attributes": {
             "log.source": "java"
           },
@@ -1301,7 +1291,7 @@
           "timeUnixNano": 1771063428003618800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[6839]: slow query detected: 795ms on reporting.job_runs",
+          "body": "mysqld[6839]: slow query detected: 796ms on reporting.job_runs",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -1311,7 +1301,7 @@
           "timeUnixNano": 1771063428003797200,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "minio[4174]: object lifecycle scan checkpoint 689, network 22%",
+          "body": "minio[4174]: object lifecycle scan checkpoint 689, network 24%",
           "attributes": {
             "log.source": "minio"
           },
@@ -1321,7 +1311,7 @@
           "timeUnixNano": 1771063428004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[8104]: evicted keys 0, fragmentation 126%",
+          "body": "redis-server[8104]: evicted keys 226, fragmentation 133%",
           "attributes": {
             "log.source": "redis"
           },
@@ -1331,7 +1321,7 @@
           "timeUnixNano": 1771063428004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 68% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 44% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -1341,7 +1331,7 @@
           "timeUnixNano": 1771063428006860500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2706]: health checks passed for 18/18 backends, queue=26",
+          "body": "haproxy[2706]: health checks passed for 18/18 backends, queue=23",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -1351,7 +1341,7 @@
           "timeUnixNano": 1771063428006860500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 18%",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 55%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -1368,14 +1358,34 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771063449388057300,
+          "timeUnixNano": 1771063511736102100,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[4235]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "body": "nginx[8612]: *2246 upstream prematurely closed connection while reading response header",
           "attributes": {
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771063547381272600,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[6797]: *5858 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771063623869638100,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[9343]: *6581 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
         },
         {
           "timeUnixNano": 1771063632000000000,
@@ -1421,7 +1431,7 @@
           "timeUnixNano": 1771063644001166600,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[3564]: replication lag: 414ms on channel dc1-replica",
+          "body": "mysqld[3564]: replication lag: 548ms on channel dc1-replica",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -1441,7 +1451,7 @@
           "timeUnixNano": 1771063644003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2853]: request queue depth 20, p95 156ms, cpu 43%",
+          "body": "java[2853]: request queue depth 12, p95 156ms, cpu 35%",
           "attributes": {
             "log.source": "java"
           },
@@ -1471,7 +1481,7 @@
           "timeUnixNano": 1771063644003618800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[6842]: replication lag: 503ms on channel dc1-replica",
+          "body": "mysqld[6842]: replication lag: 565ms on channel dc1-replica",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -1491,7 +1501,7 @@
           "timeUnixNano": 1771063644004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 48% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 69% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -1501,7 +1511,7 @@
           "timeUnixNano": 1771063644004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[8100]: cache hit ratio: 53% over last 60s",
+          "body": "redis-server[8100]: cache hit ratio: 68% over last 60s",
           "attributes": {
             "log.source": "redis"
           },
@@ -1511,7 +1521,7 @@
           "timeUnixNano": 1771063644006860500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 84%",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 83%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -1521,7 +1531,7 @@
           "timeUnixNano": 1771063644006860500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2694]: frontend openmanager_fe sessions=441, retries=11, cpu=38%",
+          "body": "haproxy[2694]: frontend openmanager_fe sessions=507, retries=15, cpu=23%",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -1541,21 +1551,11 @@
           "timeUnixNano": 1771063740002128000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "haproxy[6068]: WARNING: warning pressure summary cpu=60% mem=33% disk=15% net=72%",
+          "body": "haproxy[6068]: WARNING: warning pressure summary cpu=42% mem=37% disk=23% net=71%",
           "attributes": {
             "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771063768696413200,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[1045]: *9696 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-03"
         }
       ]
     },
@@ -1587,13 +1587,13 @@
               }
             },
             {
-              "asDouble": 0.4,
+              "asDouble": 0.37,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.39,
+              "asDouble": 0.38,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -1605,7 +1605,7 @@
               }
             },
             {
-              "asDouble": 0.54,
+              "asDouble": 0.4,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -1617,13 +1617,13 @@
               }
             },
             {
-              "asDouble": 0.18,
+              "asDouble": 0.17,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.21,
+              "asDouble": 0.51,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
@@ -1641,7 +1641,7 @@
               }
             },
             {
-              "asDouble": 0.27,
+              "asDouble": 0.25,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -1653,13 +1653,13 @@
               }
             },
             {
-              "asDouble": 0.18,
+              "asDouble": 0.24,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.6,
+              "asDouble": 0.54,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -1671,7 +1671,7 @@
               }
             },
             {
-              "asDouble": 0.41,
+              "asDouble": 0.27,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -1702,13 +1702,13 @@
               }
             },
             {
-              "asDouble": 0.58,
+              "asDouble": 0.53,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.48,
+              "asDouble": 0.56,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -1720,7 +1720,7 @@
               }
             },
             {
-              "asDouble": 0.7,
+              "asDouble": 0.57,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -1732,19 +1732,19 @@
               }
             },
             {
-              "asDouble": 0.43,
+              "asDouble": 0.33,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.71,
+              "asDouble": 0.59,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.51,
+              "asDouble": 0.46,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -1756,7 +1756,7 @@
               }
             },
             {
-              "asDouble": 0.38,
+              "asDouble": 0.43,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -1768,13 +1768,13 @@
               }
             },
             {
-              "asDouble": 0.32,
+              "asDouble": 0.43,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.36,
+              "asDouble": 0.39,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -1786,7 +1786,7 @@
               }
             },
             {
-              "asDouble": 0.32,
+              "asDouble": 0.35,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -1817,13 +1817,13 @@
               }
             },
             {
-              "asDouble": 0.32,
+              "asDouble": 0.29,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.33,
+              "asDouble": 0.29,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -1835,7 +1835,7 @@
               }
             },
             {
-              "asDouble": 0.45,
+              "asDouble": 0.62,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -1847,19 +1847,19 @@
               }
             },
             {
-              "asDouble": 0.4,
+              "asDouble": 0.69,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.21,
+              "asDouble": 0.22,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.17,
+              "asDouble": 0.21,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -1871,7 +1871,7 @@
               }
             },
             {
-              "asDouble": 0.63,
+              "asDouble": 0.48,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -1883,13 +1883,13 @@
               }
             },
             {
-              "asDouble": 0.55,
+              "asDouble": 0.51,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.13,
+              "asDouble": 0.24,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -1901,7 +1901,7 @@
               }
             },
             {
-              "asDouble": 0.16,
+              "asDouble": 0.22,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -1932,13 +1932,13 @@
               }
             },
             {
-              "asDouble": 1250000,
+              "asDouble": 25011337,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0,
+              "asDouble": 27028134,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -1950,7 +1950,7 @@
               }
             },
             {
-              "asDouble": 0,
+              "asDouble": 32287290,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -1962,19 +1962,19 @@
               }
             },
             {
-              "asDouble": 0,
+              "asDouble": 24072012,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
             },
             {
-              "asDouble": 40000000,
+              "asDouble": 47190847,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 55000000,
+              "asDouble": 40884550,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -1986,7 +1986,7 @@
               }
             },
             {
-              "asDouble": 30000000,
+              "asDouble": 29117153,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -1998,13 +1998,13 @@
               }
             },
             {
-              "asDouble": 21250000,
+              "asDouble": 28518640,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 87585340,
+              "asDouble": 88004065,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -2016,7 +2016,7 @@
               }
             },
             {
-              "asDouble": 1250000,
+              "asDouble": 58469192,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -2634,7 +2634,7 @@
           "timeUnixNano": 1771063800000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[8121]: evicted keys 234, fragmentation 135%",
+          "body": "redis-server[8121]: evicted keys 18, fragmentation 132%",
           "attributes": {
             "log.source": "redis"
           },
@@ -2644,7 +2644,7 @@
           "timeUnixNano": 1771063800000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 51% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 46% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -2654,7 +2654,7 @@
           "timeUnixNano": 1771063800000000300,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "minio[4191]: object lifecycle scan checkpoint 706, network 17%",
+          "body": "minio[4191]: object lifecycle scan checkpoint 706, network 23%",
           "attributes": {
             "log.source": "minio"
           },
@@ -2664,7 +2664,7 @@
           "timeUnixNano": 1771063800000000500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[3578]: slow query detected: 595ms on reporting.job_runs",
+          "body": "mysqld[3578]: slow query detected: 764ms on reporting.job_runs",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -2684,7 +2684,7 @@
           "timeUnixNano": 1771063800000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 48, fd usage 37%",
+          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 48, fd usage 34%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -2694,7 +2694,7 @@
           "timeUnixNano": 1771063800000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2871]: request queue depth 17, p95 138ms, cpu 39%",
+          "body": "java[2871]: request queue depth 16, p95 138ms, cpu 38%",
           "attributes": {
             "log.source": "java"
           },
@@ -2714,7 +2714,7 @@
           "timeUnixNano": 1771063800000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[6856]: slow query detected: 805ms on reporting.job_runs",
+          "body": "mysqld[6856]: slow query detected: 837ms on reporting.job_runs",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -2724,7 +2724,7 @@
           "timeUnixNano": 1771063800000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2723]: health checks passed for 16/18 backends, queue=22",
+          "body": "haproxy[2723]: health checks passed for 16/18 backends, queue=21",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -2734,7 +2734,7 @@
           "timeUnixNano": 1771063800000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 18%",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 59%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -2751,24 +2751,34 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771063831611805400,
+          "timeUnixNano": 1771063802011997400,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "haproxy[2063]: WARNING: Connection table 81% full (conntrack saturation)",
+          "body": "nginx[3212]: *4177 upstream prematurely closed connection while reading response header",
           "attributes": {
-            "log.source": "haproxy"
+            "log.source": "nginx"
           },
-          "resource": "lb-haproxy-dc1-01"
+          "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771063998735373600,
+          "timeUnixNano": 1771063832220062700,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[7233]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "body": "nginx[4845]: *431 upstream prematurely closed connection while reading response header",
           "attributes": {
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771063945274871000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "haproxy[9413]: WARNING: Connection table 85% full (conntrack saturation)",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-01"
         },
         {
           "timeUnixNano": 1771064028000389000,
@@ -2804,7 +2814,7 @@
           "timeUnixNano": 1771064028001166600,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[3581]: replication lag: 316ms on channel dc1-replica",
+          "body": "mysqld[3581]: replication lag: 441ms on channel dc1-replica",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -2814,7 +2824,7 @@
           "timeUnixNano": 1771064028002285300,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: storage scrub heartbeat ok, network 24%",
+          "body": "systemd[1]: storage scrub heartbeat ok, network 23%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -2824,7 +2834,7 @@
           "timeUnixNano": 1771064028003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2870]: request queue depth 18, p95 169ms, cpu 40%",
+          "body": "java[2870]: request queue depth 15, p95 169ms, cpu 37%",
           "attributes": {
             "log.source": "java"
           },
@@ -2834,7 +2844,7 @@
           "timeUnixNano": 1771064028003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2882]: GC scan completed, heap occupancy 48%, reclaimed 181MB",
+          "body": "java[2882]: GC scan completed, heap occupancy 56%, reclaimed 189MB",
           "attributes": {
             "log.source": "java"
           },
@@ -2854,7 +2864,7 @@
           "timeUnixNano": 1771064028003618800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[6859]: replication lag: 395ms on channel dc1-replica",
+          "body": "mysqld[6859]: replication lag: 454ms on channel dc1-replica",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -2874,7 +2884,7 @@
           "timeUnixNano": 1771064028004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 71% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 59% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -2884,7 +2894,7 @@
           "timeUnixNano": 1771064028004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[8117]: cache hit ratio: 59% over last 60s",
+          "body": "redis-server[8117]: cache hit ratio: 63% over last 60s",
           "attributes": {
             "log.source": "redis"
           },
@@ -2904,7 +2914,7 @@
           "timeUnixNano": 1771064028006860500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2711]: frontend openmanager_fe sessions=464, retries=7, cpu=41%",
+          "body": "haproxy[2711]: frontend openmanager_fe sessions=546, retries=12, cpu=27%",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -2919,16 +2929,6 @@
             "log.source": "mysqld"
           },
           "resource": "db-mysql-dc1-replica"
-        },
-        {
-          "timeUnixNano": 1771064084439162600,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[5507]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-03"
         },
         {
           "timeUnixNano": 1771064232000000000,
@@ -2984,7 +2984,7 @@
           "timeUnixNano": 1771064244002285300,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "nfsd[4467]: export /data/shared latency 141ms, disk 63%",
+          "body": "nfsd[4467]: export /data/shared latency 119ms, disk 48%",
           "attributes": {
             "log.source": "nfsd"
           },
@@ -2994,7 +2994,7 @@
           "timeUnixNano": 1771064244003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2881]: GC scan completed, heap occupancy 58%, reclaimed 191MB",
+          "body": "java[2881]: GC scan completed, heap occupancy 53%, reclaimed 186MB",
           "attributes": {
             "log.source": "java"
           },
@@ -3004,7 +3004,7 @@
           "timeUnixNano": 1771064244003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 56, fd usage 33%",
+          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 56, fd usage 35%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -3024,7 +3024,7 @@
           "timeUnixNano": 1771064244003618800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[6863]: InnoDB buffer pool hit ratio: 83%",
+          "body": "mysqld[6863]: InnoDB buffer pool hit ratio: 84%",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -3034,7 +3034,7 @@
           "timeUnixNano": 1771064244003797200,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "minio[4186]: S3 Gateway ready, 10 buckets loaded, disk 55%",
+          "body": "minio[4186]: S3 Gateway ready, 10 buckets loaded, disk 51%",
           "attributes": {
             "log.source": "minio"
           },
@@ -3044,7 +3044,7 @@
           "timeUnixNano": 1771064244004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[8116]: cache hit ratio: 49% over last 60s",
+          "body": "redis-server[8116]: cache hit ratio: 55% over last 60s",
           "attributes": {
             "log.source": "redis"
           },
@@ -3054,7 +3054,7 @@
           "timeUnixNano": 1771064244004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[8122]: evicted keys 0, fragmentation 129%",
+          "body": "redis-server[8122]: evicted keys 0, fragmentation 128%",
           "attributes": {
             "log.source": "redis"
           },
@@ -3064,7 +3064,7 @@
           "timeUnixNano": 1771064244006860500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2710]: frontend openmanager_fe sessions=747, retries=22, cpu=60%",
+          "body": "haproxy[2710]: frontend openmanager_fe sessions=723, retries=21, cpu=54%",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -3074,7 +3074,7 @@
           "timeUnixNano": 1771064244006860500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2724]: health checks passed for 17/18 backends, queue=7",
+          "body": "haproxy[2724]: health checks passed for 17/18 backends, queue=12",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -3091,24 +3091,24 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771064332640094700,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[6551]: *3194 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-01"
-        },
-        {
           "timeUnixNano": 1771064340002128000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "haproxy[6097]: WARNING: warning pressure summary cpu=60% mem=36% disk=13% net=70%",
+          "body": "haproxy[6097]: WARNING: warning pressure summary cpu=54% mem=39% disk=24% net=70%",
           "attributes": {
             "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771064396478301400,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[4534]: *9773 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-01"
         }
       ]
     },
@@ -3140,13 +3140,13 @@
               }
             },
             {
-              "asDouble": 0.49,
+              "asDouble": 0.36,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.45,
+              "asDouble": 0.37,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -3158,7 +3158,7 @@
               }
             },
             {
-              "asDouble": 0.57,
+              "asDouble": 0.43,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -3170,19 +3170,19 @@
               }
             },
             {
-              "asDouble": 0.21,
+              "asDouble": 0.18,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.27,
+              "asDouble": 0.41,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.19,
+              "asDouble": 0.23,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -3194,7 +3194,7 @@
               }
             },
             {
-              "asDouble": 0.27,
+              "asDouble": 0.23,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -3206,13 +3206,13 @@
               }
             },
             {
-              "asDouble": 0.2,
+              "asDouble": 0.24,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.63,
+              "asDouble": 0.62,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -3224,7 +3224,7 @@
               }
             },
             {
-              "asDouble": 0.41,
+              "asDouble": 0.28,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -3255,13 +3255,13 @@
               }
             },
             {
-              "asDouble": 0.56,
+              "asDouble": 0.59,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.48,
+              "asDouble": 0.57,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -3273,7 +3273,7 @@
               }
             },
             {
-              "asDouble": 0.66,
+              "asDouble": 0.56,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -3285,19 +3285,19 @@
               }
             },
             {
-              "asDouble": 0.46,
+              "asDouble": 0.32,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.43,
+              "asDouble": 0.49,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.68,
+              "asDouble": 0.45,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -3309,7 +3309,7 @@
               }
             },
             {
-              "asDouble": 0.39,
+              "asDouble": 0.41,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -3321,7 +3321,7 @@
               }
             },
             {
-              "asDouble": 0.31,
+              "asDouble": 0.46,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
@@ -3339,7 +3339,7 @@
               }
             },
             {
-              "asDouble": 0.29,
+              "asDouble": 0.36,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -3370,13 +3370,13 @@
               }
             },
             {
-              "asDouble": 0.37,
+              "asDouble": 0.3,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.35,
+              "asDouble": 0.33,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -3388,7 +3388,7 @@
               }
             },
             {
-              "asDouble": 0.43,
+              "asDouble": 0.66,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -3400,19 +3400,19 @@
               }
             },
             {
-              "asDouble": 0.4,
+              "asDouble": 0.72,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.2,
+              "asDouble": 0.23,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.19,
+              "asDouble": 0.23,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -3424,7 +3424,7 @@
               }
             },
             {
-              "asDouble": 0.64,
+              "asDouble": 0.5,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -3436,13 +3436,13 @@
               }
             },
             {
-              "asDouble": 0.56,
+              "asDouble": 0.53,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.13,
+              "asDouble": 0.24,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -3454,7 +3454,7 @@
               }
             },
             {
-              "asDouble": 0.12,
+              "asDouble": 0.24,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -3485,13 +3485,13 @@
               }
             },
             {
-              "asDouble": 0,
+              "asDouble": 29568400,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0,
+              "asDouble": 29708837,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -3503,7 +3503,7 @@
               }
             },
             {
-              "asDouble": 0,
+              "asDouble": 29424059,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -3515,19 +3515,19 @@
               }
             },
             {
-              "asDouble": 0,
+              "asDouble": 24507544,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
             },
             {
-              "asDouble": 48750000,
+              "asDouble": 42872379,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 56250000,
+              "asDouble": 47028415,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -3539,7 +3539,7 @@
               }
             },
             {
-              "asDouble": 30000000,
+              "asDouble": 29775004,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -3551,13 +3551,13 @@
               }
             },
             {
-              "asDouble": 30000000,
+              "asDouble": 26764601,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 88231336,
+              "asDouble": 88779815,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -3569,7 +3569,7 @@
               }
             },
             {
-              "asDouble": 1250000,
+              "asDouble": 58761936,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -4187,7 +4187,7 @@
           "timeUnixNano": 1771064400000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 43% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 49% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -4197,7 +4197,7 @@
           "timeUnixNano": 1771064400000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[8134]: cache hit ratio: 45% over last 60s",
+          "body": "redis-server[8134]: cache hit ratio: 59% over last 60s",
           "attributes": {
             "log.source": "redis"
           },
@@ -4217,7 +4217,7 @@
           "timeUnixNano": 1771064400000000500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[3598]: replication lag: 350ms on channel dc1-replica",
+          "body": "mysqld[3598]: replication lag: 482ms on channel dc1-replica",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -4237,7 +4237,7 @@
           "timeUnixNano": 1771064400000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2887]: request queue depth 17, p95 175ms, cpu 49%",
+          "body": "java[2887]: request queue depth 15, p95 175ms, cpu 36%",
           "attributes": {
             "log.source": "java"
           },
@@ -4247,7 +4247,7 @@
           "timeUnixNano": 1771064400000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2899]: GC scan completed, heap occupancy 48%, reclaimed 188MB",
+          "body": "java[2899]: GC scan completed, heap occupancy 57%, reclaimed 197MB",
           "attributes": {
             "log.source": "java"
           },
@@ -4267,7 +4267,7 @@
           "timeUnixNano": 1771064400000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[6876]: replication lag: 405ms on channel dc1-replica",
+          "body": "mysqld[6876]: replication lag: 500ms on channel dc1-replica",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -4287,7 +4287,7 @@
           "timeUnixNano": 1771064400000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2728]: frontend openmanager_fe sessions=475, retries=8, cpu=41%",
+          "body": "haproxy[2728]: frontend openmanager_fe sessions=561, retries=14, cpu=28%",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -4304,20 +4304,20 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771064406943114000,
+          "timeUnixNano": 1771064490335510800,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[6046]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "body": "nginx[7372]: *692 upstream prematurely closed connection while reading response header",
           "attributes": {
             "log.source": "nginx"
           },
-          "resource": "web-nginx-dc1-02"
+          "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771064507104041000,
+          "timeUnixNano": 1771064575738790000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[9152]: *9982 upstream prematurely closed connection while reading response header",
+          "body": "nginx[8811]: *7276 upstream prematurely closed connection while reading response header",
           "attributes": {
             "log.source": "nginx"
           },
@@ -4357,7 +4357,7 @@
           "timeUnixNano": 1771064628001166600,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[3602]: InnoDB buffer pool hit ratio: 88%",
+          "body": "mysqld[3602]: InnoDB buffer pool hit ratio: 87%",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -4367,7 +4367,7 @@
           "timeUnixNano": 1771064628002285300,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "nfsd[4484]: export /data/shared latency 118ms, disk 64%",
+          "body": "nfsd[4484]: export /data/shared latency 99ms, disk 50%",
           "attributes": {
             "log.source": "nfsd"
           },
@@ -4377,7 +4377,7 @@
           "timeUnixNano": 1771064628003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2898]: GC scan completed, heap occupancy 56%, reclaimed 196MB",
+          "body": "java[2898]: GC scan completed, heap occupancy 59%, reclaimed 199MB",
           "attributes": {
             "log.source": "java"
           },
@@ -4387,7 +4387,7 @@
           "timeUnixNano": 1771064628003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 48, fd usage 37%",
+          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 48, fd usage 35%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -4417,7 +4417,7 @@
           "timeUnixNano": 1771064628003797200,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "minio[4203]: S3 Gateway ready, 27 buckets loaded, disk 56%",
+          "body": "minio[4203]: S3 Gateway ready, 27 buckets loaded, disk 53%",
           "attributes": {
             "log.source": "minio"
           },
@@ -4427,7 +4427,7 @@
           "timeUnixNano": 1771064628004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[8133]: cache hit ratio: 60% over last 60s",
+          "body": "redis-server[8133]: cache hit ratio: 57% over last 60s",
           "attributes": {
             "log.source": "redis"
           },
@@ -4437,7 +4437,7 @@
           "timeUnixNano": 1771064628004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[8139]: evicted keys 187, fragmentation 128%",
+          "body": "redis-server[8139]: evicted keys 0, fragmentation 122%",
           "attributes": {
             "log.source": "redis"
           },
@@ -4447,7 +4447,7 @@
           "timeUnixNano": 1771064628006860500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2727]: frontend openmanager_fe sessions=773, retries=23, cpu=63%",
+          "body": "haproxy[2727]: frontend openmanager_fe sessions=769, retries=23, cpu=62%",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -4457,7 +4457,7 @@
           "timeUnixNano": 1771064628006860800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2741]: health checks passed for 15/18 backends, queue=8",
+          "body": "haproxy[2741]: health checks passed for 15/18 backends, queue=14",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -4474,14 +4474,14 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771064719432100900,
+          "timeUnixNano": 1771064810924596200,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "haproxy[9629]: WARNING: SYN cookie activation detected, possible SYN flood",
+          "body": "nginx[1893]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
-            "log.source": "haproxy"
+            "log.source": "nginx"
           },
-          "resource": "lb-haproxy-dc1-01"
+          "resource": "web-nginx-dc1-02"
         },
         {
           "timeUnixNano": 1771064832000000000,
@@ -4527,7 +4527,7 @@
           "timeUnixNano": 1771064844001166600,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[3595]: slow query detected: 505ms on reporting.job_runs",
+          "body": "mysqld[3595]: slow query detected: 682ms on reporting.job_runs",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -4547,7 +4547,7 @@
           "timeUnixNano": 1771064844003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 88, fd usage 41%",
+          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 88, fd usage 35%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -4557,7 +4557,7 @@
           "timeUnixNano": 1771064844003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2888]: request queue depth 13, p95 123ms, cpu 45%",
+          "body": "java[2888]: request queue depth 16, p95 123ms, cpu 37%",
           "attributes": {
             "log.source": "java"
           },
@@ -4577,7 +4577,7 @@
           "timeUnixNano": 1771064844003618800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[6873]: slow query detected: 703ms on reporting.job_runs",
+          "body": "mysqld[6873]: slow query detected: 771ms on reporting.job_runs",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -4587,7 +4587,7 @@
           "timeUnixNano": 1771064844003797200,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "minio[4208]: object lifecycle scan checkpoint 223, network 24%",
+          "body": "minio[4208]: object lifecycle scan checkpoint 223, network 21%",
           "attributes": {
             "log.source": "minio"
           },
@@ -4597,7 +4597,7 @@
           "timeUnixNano": 1771064844004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[8138]: evicted keys 0, fragmentation 121%",
+          "body": "redis-server[8138]: evicted keys 0, fragmentation 123%",
           "attributes": {
             "log.source": "redis"
           },
@@ -4607,7 +4607,7 @@
           "timeUnixNano": 1771064844004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 68% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 45% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -4627,7 +4627,7 @@
           "timeUnixNano": 1771064844006860800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 18%",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 59%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -4644,24 +4644,24 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771064940002128000,
+          "timeUnixNano": 1771064849152796200,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "haproxy[6126]: WARNING: warning pressure summary cpu=63% mem=36% disk=13% net=71%",
+          "body": "haproxy[4641]: WARNING: SYN cookie activation detected, possible SYN flood",
           "attributes": {
             "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771064962106203400,
+          "timeUnixNano": 1771064940002128000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[8333]: *9170 upstream prematurely closed connection while reading response header",
+          "body": "haproxy[6126]: WARNING: warning pressure summary cpu=62% mem=36% disk=24% net=71%",
           "attributes": {
-            "log.source": "nginx"
+            "log.source": "haproxy"
           },
-          "resource": "web-nginx-dc1-03"
+          "resource": "lb-haproxy-dc1-01"
         }
       ]
     },
@@ -4693,13 +4693,13 @@
               }
             },
             {
-              "asDouble": 0.4,
+              "asDouble": 0.39,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.44,
+              "asDouble": 0.37,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -4711,7 +4711,7 @@
               }
             },
             {
-              "asDouble": 0.53,
+              "asDouble": 0.42,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -4723,19 +4723,19 @@
               }
             },
             {
-              "asDouble": 0.15,
+              "asDouble": 0.19,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.21,
+              "asDouble": 0.31,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.19,
+              "asDouble": 0.22,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -4747,7 +4747,7 @@
               }
             },
             {
-              "asDouble": 0.33,
+              "asDouble": 0.27,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -4759,13 +4759,13 @@
               }
             },
             {
-              "asDouble": 0.19,
+              "asDouble": 0.24,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.61,
+              "asDouble": 0.63,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -4777,7 +4777,7 @@
               }
             },
             {
-              "asDouble": 0.35,
+              "asDouble": 0.29,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -4808,13 +4808,13 @@
               }
             },
             {
-              "asDouble": 0.53,
+              "asDouble": 0.56,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.49,
+              "asDouble": 0.57,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -4826,7 +4826,7 @@
               }
             },
             {
-              "asDouble": 0.67,
+              "asDouble": 0.59,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -4838,19 +4838,19 @@
               }
             },
             {
-              "asDouble": 0.45,
+              "asDouble": 0.34,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.41,
+              "asDouble": 0.47,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.69,
+              "asDouble": 0.48,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -4874,13 +4874,13 @@
               }
             },
             {
-              "asDouble": 0.32,
+              "asDouble": 0.44,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.35,
+              "asDouble": 0.37,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -4892,7 +4892,7 @@
               }
             },
             {
-              "asDouble": 0.35,
+              "asDouble": 0.39,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -4929,7 +4929,7 @@
               }
             },
             {
-              "asDouble": 0.34,
+              "asDouble": 0.32,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -4941,7 +4941,7 @@
               }
             },
             {
-              "asDouble": 0.47,
+              "asDouble": 0.63,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -4953,19 +4953,19 @@
               }
             },
             {
-              "asDouble": 0.38,
+              "asDouble": 0.7,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.19,
+              "asDouble": 0.24,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.17,
+              "asDouble": 0.24,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -4977,7 +4977,7 @@
               }
             },
             {
-              "asDouble": 0.64,
+              "asDouble": 0.52,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -4989,13 +4989,13 @@
               }
             },
             {
-              "asDouble": 0.52,
+              "asDouble": 0.51,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.15,
+              "asDouble": 0.25,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -5007,7 +5007,7 @@
               }
             },
             {
-              "asDouble": 0.15,
+              "asDouble": 0.24,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -5038,13 +5038,13 @@
               }
             },
             {
-              "asDouble": 1250000,
+              "asDouble": 26022137,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0,
+              "asDouble": 28239454,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -5056,7 +5056,7 @@
               }
             },
             {
-              "asDouble": 0,
+              "asDouble": 27243557,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -5068,19 +5068,19 @@
               }
             },
             {
-              "asDouble": 0,
+              "asDouble": 21909970,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
             },
             {
-              "asDouble": 51250000,
+              "asDouble": 46297822,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 52500000,
+              "asDouble": 42505670,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -5092,7 +5092,7 @@
               }
             },
             {
-              "asDouble": 27500000,
+              "asDouble": 34132771,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -5104,13 +5104,13 @@
               }
             },
             {
-              "asDouble": 40000000,
+              "asDouble": 29480262,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 87509800,
+              "asDouble": 90734589,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -5122,7 +5122,7 @@
               }
             },
             {
-              "asDouble": 1250000,
+              "asDouble": 58585157,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -5740,7 +5740,7 @@
           "timeUnixNano": 1771065000000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[8150]: cache hit ratio: 69% over last 60s",
+          "body": "redis-server[8150]: cache hit ratio: 66% over last 60s",
           "attributes": {
             "log.source": "redis"
           },
@@ -5750,7 +5750,7 @@
           "timeUnixNano": 1771065000000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[8156]: evicted keys 212, fragmentation 131%",
+          "body": "redis-server[8156]: evicted keys 0, fragmentation 124%",
           "attributes": {
             "log.source": "redis"
           },
@@ -5760,7 +5760,7 @@
           "timeUnixNano": 1771065000000000300,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "minio[4220]: S3 Gateway ready, 20 buckets loaded, disk 52%",
+          "body": "minio[4220]: S3 Gateway ready, 20 buckets loaded, disk 51%",
           "attributes": {
             "log.source": "minio"
           },
@@ -5770,7 +5770,7 @@
           "timeUnixNano": 1771065000000000500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[3619]: InnoDB buffer pool hit ratio: 88%",
+          "body": "mysqld[3619]: InnoDB buffer pool hit ratio: 87%",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -5780,7 +5780,7 @@
           "timeUnixNano": 1771065000000000500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "nfsd[4501]: export /data/shared latency 125ms, disk 64%",
+          "body": "nfsd[4501]: export /data/shared latency 112ms, disk 52%",
           "attributes": {
             "log.source": "nfsd"
           },
@@ -5790,7 +5790,7 @@
           "timeUnixNano": 1771065000000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2915]: GC scan completed, heap occupancy 53%, reclaimed 200MB",
+          "body": "java[2915]: GC scan completed, heap occupancy 56%, reclaimed 203MB",
           "attributes": {
             "log.source": "java"
           },
@@ -5800,7 +5800,7 @@
           "timeUnixNano": 1771065000000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 88, fd usage 36%",
+          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 88, fd usage 35%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -5830,7 +5830,7 @@
           "timeUnixNano": 1771065000000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2744]: frontend openmanager_fe sessions=674, retries=24, cpu=61%",
+          "body": "haproxy[2744]: frontend openmanager_fe sessions=691, retries=25, cpu=63%",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -5840,7 +5840,7 @@
           "timeUnixNano": 1771065000000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2758]: health checks passed for 17/18 backends, queue=8",
+          "body": "haproxy[2758]: health checks passed for 17/18 backends, queue=15",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -5857,24 +5857,24 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771065037610419000,
+          "timeUnixNano": 1771065166025901300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[8335]: *4149 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771065180442686200,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[3904]: *1339 upstream prematurely closed connection while reading response header",
+          "body": "nginx[2517]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771065176991552300,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "haproxy[1189]: WARNING: SYN cookie activation detected, possible SYN flood",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-01"
         },
         {
           "timeUnixNano": 1771065228000389000,
@@ -5910,7 +5910,7 @@
           "timeUnixNano": 1771065228001166600,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[3612]: slow query detected: 498ms on reporting.job_runs",
+          "body": "mysqld[3612]: slow query detected: 710ms on reporting.job_runs",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -5940,7 +5940,7 @@
           "timeUnixNano": 1771065228003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2905]: request queue depth 13, p95 175ms, cpu 44%",
+          "body": "java[2905]: request queue depth 17, p95 175ms, cpu 37%",
           "attributes": {
             "log.source": "java"
           },
@@ -5960,7 +5960,7 @@
           "timeUnixNano": 1771065228003618800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[6890]: slow query detected: 742ms on reporting.job_runs",
+          "body": "mysqld[6890]: slow query detected: 783ms on reporting.job_runs",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -5970,7 +5970,7 @@
           "timeUnixNano": 1771065228003797200,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "minio[4225]: object lifecycle scan checkpoint 240, network 32%",
+          "body": "minio[4225]: object lifecycle scan checkpoint 240, network 24%",
           "attributes": {
             "log.source": "minio"
           },
@@ -5980,7 +5980,7 @@
           "timeUnixNano": 1771065228004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[8155]: evicted keys 0, fragmentation 122%",
+          "body": "redis-server[8155]: evicted keys 0, fragmentation 124%",
           "attributes": {
             "log.source": "redis"
           },
@@ -5990,7 +5990,7 @@
           "timeUnixNano": 1771065228004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 69% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 48% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -6000,7 +6000,7 @@
           "timeUnixNano": 1771065228006860800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2757]: health checks passed for 16/18 backends, queue=24",
+          "body": "haproxy[2757]: health checks passed for 16/18 backends, queue=25",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -6010,7 +6010,7 @@
           "timeUnixNano": 1771065228006860800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 18%",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 59%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -6027,14 +6027,24 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771065324231931100,
+          "timeUnixNano": 1771065378458767600,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[1843]: *4150 upstream prematurely closed connection while reading response header",
+          "body": "nginx[8290]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771065414760060200,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[7219]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
         },
         {
           "timeUnixNano": 1771065432000000000,
@@ -6080,7 +6090,7 @@
           "timeUnixNano": 1771065444001166600,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[3615]: replication lag: 366ms on channel dc1-replica",
+          "body": "mysqld[3615]: replication lag: 504ms on channel dc1-replica",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -6090,7 +6100,7 @@
           "timeUnixNano": 1771065444002285300,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: storage scrub heartbeat ok, network 22%",
+          "body": "systemd[1]: storage scrub heartbeat ok, network 27%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -6100,7 +6110,7 @@
           "timeUnixNano": 1771065444003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2904]: request queue depth 20, p95 136ms, cpu 40%",
+          "body": "java[2904]: request queue depth 19, p95 136ms, cpu 39%",
           "attributes": {
             "log.source": "java"
           },
@@ -6110,7 +6120,7 @@
           "timeUnixNano": 1771065444003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2916]: GC scan completed, heap occupancy 49%, reclaimed 196MB",
+          "body": "java[2916]: GC scan completed, heap occupancy 57%, reclaimed 204MB",
           "attributes": {
             "log.source": "java"
           },
@@ -6130,7 +6140,7 @@
           "timeUnixNano": 1771065444003618800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[6893]: replication lag: 455ms on channel dc1-replica",
+          "body": "mysqld[6893]: replication lag: 519ms on channel dc1-replica",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -6150,7 +6160,7 @@
           "timeUnixNano": 1771065444004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 41% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 47% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -6160,7 +6170,7 @@
           "timeUnixNano": 1771065444004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[8151]: cache hit ratio: 53% over last 60s",
+          "body": "redis-server[8151]: cache hit ratio: 66% over last 60s",
           "attributes": {
             "log.source": "redis"
           },
@@ -6170,7 +6180,7 @@
           "timeUnixNano": 1771065444006860800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 82%",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 85%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -6180,7 +6190,7 @@
           "timeUnixNano": 1771065444006860800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2745]: frontend openmanager_fe sessions=363, retries=8, cpu=35%",
+          "body": "haproxy[2745]: frontend openmanager_fe sessions=477, retries=15, cpu=29%",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -6200,17 +6210,7 @@
           "timeUnixNano": 1771065540002128000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "haproxy[6155]: WARNING: warning pressure summary cpu=61% mem=35% disk=15% net=70%",
-          "attributes": {
-            "log.source": "haproxy"
-          },
-          "resource": "lb-haproxy-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771065582634371800,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "haproxy[3719]: WARNING: Connection table 81% full (conntrack saturation)",
+          "body": "haproxy[6155]: WARNING: warning pressure summary cpu=63% mem=37% disk=25% net=73%",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -6246,13 +6246,13 @@
               }
             },
             {
-              "asDouble": 0.48,
+              "asDouble": 0.39,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.46,
+              "asDouble": 0.39,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -6264,7 +6264,7 @@
               }
             },
             {
-              "asDouble": 0.54,
+              "asDouble": 0.44,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -6276,19 +6276,19 @@
               }
             },
             {
-              "asDouble": 0.18,
+              "asDouble": 0.19,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.2,
+              "asDouble": 0.24,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.2,
+              "asDouble": 0.21,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -6300,7 +6300,7 @@
               }
             },
             {
-              "asDouble": 0.25,
+              "asDouble": 0.27,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -6312,13 +6312,13 @@
               }
             },
             {
-              "asDouble": 0.16,
+              "asDouble": 0.27,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.62,
+              "asDouble": 0.64,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -6330,7 +6330,7 @@
               }
             },
             {
-              "asDouble": 0.35,
+              "asDouble": 0.29,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -6361,13 +6361,13 @@
               }
             },
             {
-              "asDouble": 0.58,
+              "asDouble": 0.56,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.49,
+              "asDouble": 0.57,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -6379,7 +6379,7 @@
               }
             },
             {
-              "asDouble": 0.67,
+              "asDouble": 0.6,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -6391,7 +6391,7 @@
               }
             },
             {
-              "asDouble": 0.41,
+              "asDouble": 0.34,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
@@ -6403,7 +6403,7 @@
               }
             },
             {
-              "asDouble": 0.51,
+              "asDouble": 0.47,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -6415,7 +6415,7 @@
               }
             },
             {
-              "asDouble": 0.37,
+              "asDouble": 0.45,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -6427,13 +6427,13 @@
               }
             },
             {
-              "asDouble": 0.33,
+              "asDouble": 0.45,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.32,
+              "asDouble": 0.39,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -6445,7 +6445,7 @@
               }
             },
             {
-              "asDouble": 0.35,
+              "asDouble": 0.38,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -6476,13 +6476,13 @@
               }
             },
             {
-              "asDouble": 0.36,
+              "asDouble": 0.32,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.35,
+              "asDouble": 0.33,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -6494,7 +6494,7 @@
               }
             },
             {
-              "asDouble": 0.45,
+              "asDouble": 0.62,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -6506,19 +6506,19 @@
               }
             },
             {
-              "asDouble": 0.4,
+              "asDouble": 0.72,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.18,
+              "asDouble": 0.24,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.2,
+              "asDouble": 0.25,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -6530,7 +6530,7 @@
               }
             },
             {
-              "asDouble": 0.63,
+              "asDouble": 0.53,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -6542,13 +6542,13 @@
               }
             },
             {
-              "asDouble": 0.56,
+              "asDouble": 0.54,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.15,
+              "asDouble": 0.26,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -6560,7 +6560,7 @@
               }
             },
             {
-              "asDouble": 0.16,
+              "asDouble": 0.23,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -6591,13 +6591,13 @@
               }
             },
             {
-              "asDouble": 0,
+              "asDouble": 29770661,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0,
+              "asDouble": 32222391,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -6609,7 +6609,7 @@
               }
             },
             {
-              "asDouble": 0,
+              "asDouble": 30031807,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -6621,19 +6621,19 @@
               }
             },
             {
-              "asDouble": 0,
+              "asDouble": 22552065,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
             },
             {
-              "asDouble": 42500000,
+              "asDouble": 43812888,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 42500000,
+              "asDouble": 44740938,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -6645,7 +6645,7 @@
               }
             },
             {
-              "asDouble": 25000000,
+              "asDouble": 32862015,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -6657,13 +6657,13 @@
               }
             },
             {
-              "asDouble": 23750000,
+              "asDouble": 31556948,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 89711448,
+              "asDouble": 90753370,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -6675,7 +6675,7 @@
               }
             },
             {
-              "asDouble": 1250000,
+              "asDouble": 60233246,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -7303,7 +7303,7 @@
           "timeUnixNano": 1771065600000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 51% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 47% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -7313,7 +7313,7 @@
           "timeUnixNano": 1771065600000000300,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "minio[4242]: object lifecycle scan checkpoint 257, network 19%",
+          "body": "minio[4242]: object lifecycle scan checkpoint 257, network 25%",
           "attributes": {
             "log.source": "minio"
           },
@@ -7323,7 +7323,7 @@
           "timeUnixNano": 1771065600000000500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[3629]: slow query detected: 560ms on reporting.job_runs",
+          "body": "mysqld[3629]: slow query detected: 757ms on reporting.job_runs",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -7343,7 +7343,7 @@
           "timeUnixNano": 1771065600000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 72, fd usage 41%",
+          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 72, fd usage 35%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -7353,7 +7353,7 @@
           "timeUnixNano": 1771065600000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2922]: request queue depth 16, p95 179ms, cpu 46%",
+          "body": "java[2922]: request queue depth 20, p95 179ms, cpu 39%",
           "attributes": {
             "log.source": "java"
           },
@@ -7373,7 +7373,7 @@
           "timeUnixNano": 1771065600000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[6907]: slow query detected: 770ms on reporting.job_runs",
+          "body": "mysqld[6907]: slow query detected: 822ms on reporting.job_runs",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -7383,7 +7383,7 @@
           "timeUnixNano": 1771065600000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2774]: health checks passed for 18/18 backends, queue=25",
+          "body": "haproxy[2774]: health checks passed for 18/18 backends, queue=26",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -7393,7 +7393,7 @@
           "timeUnixNano": 1771065600000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 18%",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 60%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -7410,10 +7410,10 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771065679752907800,
+          "timeUnixNano": 1771065813272465200,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[4931]: *8424 upstream prematurely closed connection while reading response header",
+          "body": "nginx[2105]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
             "log.source": "nginx"
           },
@@ -7453,7 +7453,7 @@
           "timeUnixNano": 1771065828001166600,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[3632]: replication lag: 396ms on channel dc1-replica",
+          "body": "mysqld[3632]: replication lag: 542ms on channel dc1-replica",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -7463,7 +7463,7 @@
           "timeUnixNano": 1771065828002285300,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: storage scrub heartbeat ok, network 20%",
+          "body": "systemd[1]: storage scrub heartbeat ok, network 26%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -7473,7 +7473,7 @@
           "timeUnixNano": 1771065828003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2921]: request queue depth 18, p95 137ms, cpu 48%",
+          "body": "java[2921]: request queue depth 20, p95 137ms, cpu 39%",
           "attributes": {
             "log.source": "java"
           },
@@ -7483,7 +7483,7 @@
           "timeUnixNano": 1771065828003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2933]: GC scan completed, heap occupancy 49%, reclaimed 203MB",
+          "body": "java[2933]: GC scan completed, heap occupancy 57%, reclaimed 211MB",
           "attributes": {
             "log.source": "java"
           },
@@ -7503,7 +7503,7 @@
           "timeUnixNano": 1771065828003618800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[6910]: replication lag: 473ms on channel dc1-replica",
+          "body": "mysqld[6910]: replication lag: 544ms on channel dc1-replica",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -7533,7 +7533,7 @@
           "timeUnixNano": 1771065828004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[8168]: cache hit ratio: 60% over last 60s",
+          "body": "redis-server[8168]: cache hit ratio: 62% over last 60s",
           "attributes": {
             "log.source": "redis"
           },
@@ -7543,7 +7543,7 @@
           "timeUnixNano": 1771065828006860800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 84%",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 85%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -7553,7 +7553,7 @@
           "timeUnixNano": 1771065828006860800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2762]: frontend openmanager_fe sessions=374, retries=9, cpu=35%",
+          "body": "haproxy[2762]: frontend openmanager_fe sessions=491, retries=16, cpu=29%",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -7568,6 +7568,16 @@
             "log.source": "mysqld"
           },
           "resource": "db-mysql-dc1-replica"
+        },
+        {
+          "timeUnixNano": 1771065921626815200,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[9912]: *4665 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-02"
         },
         {
           "timeUnixNano": 1771066032000000000,
@@ -7613,7 +7623,7 @@
           "timeUnixNano": 1771066044001166600,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[3636]: InnoDB buffer pool hit ratio: 88%",
+          "body": "mysqld[3636]: InnoDB buffer pool hit ratio: 87%",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -7623,7 +7633,7 @@
           "timeUnixNano": 1771066044002285300,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "nfsd[4518]: export /data/shared latency 130ms, disk 63%",
+          "body": "nfsd[4518]: export /data/shared latency 120ms, disk 53%",
           "attributes": {
             "log.source": "nfsd"
           },
@@ -7633,7 +7643,7 @@
           "timeUnixNano": 1771066044003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2932]: GC scan completed, heap occupancy 58%, reclaimed 212MB",
+          "body": "java[2932]: GC scan completed, heap occupancy 56%, reclaimed 210MB",
           "attributes": {
             "log.source": "java"
           },
@@ -7643,7 +7653,7 @@
           "timeUnixNano": 1771066044003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 80, fd usage 38%",
+          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 80, fd usage 36%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -7673,7 +7683,7 @@
           "timeUnixNano": 1771066044003797200,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "minio[4237]: S3 Gateway ready, 13 buckets loaded, disk 56%",
+          "body": "minio[4237]: S3 Gateway ready, 13 buckets loaded, disk 54%",
           "attributes": {
             "log.source": "minio"
           },
@@ -7693,7 +7703,7 @@
           "timeUnixNano": 1771066044004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[8173]: evicted keys 0, fragmentation 127%",
+          "body": "redis-server[8173]: evicted keys 0, fragmentation 126%",
           "attributes": {
             "log.source": "redis"
           },
@@ -7703,7 +7713,7 @@
           "timeUnixNano": 1771066044006860800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2761]: frontend openmanager_fe sessions=695, retries=25, cpu=62%",
+          "body": "haproxy[2761]: frontend openmanager_fe sessions=706, retries=26, cpu=64%",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -7713,7 +7723,7 @@
           "timeUnixNano": 1771066044006860800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2775]: health checks passed for 15/18 backends, queue=9",
+          "body": "haproxy[2775]: health checks passed for 15/18 backends, queue=16",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -7730,44 +7740,34 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771066053966677800,
+          "timeUnixNano": 1771066140002128000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[9780]: *4726 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771066063100079400,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "haproxy[6406]: WARNING: Connection table 87% full (conntrack saturation)",
+          "body": "haproxy[6184]: WARNING: warning pressure summary cpu=64% mem=39% disk=26% net=73%",
           "attributes": {
             "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771066129446749200,
+          "timeUnixNano": 1771066144675885000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[5498]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "body": "haproxy[1656]: WARNING: SYN cookie activation detected, possible SYN flood",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771066148730152700,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[7200]: *9378 upstream prematurely closed connection while reading response header",
           "attributes": {
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771066140002128000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "haproxy[6184]: WARNING: warning pressure summary cpu=62% mem=32% disk=15% net=72%",
-          "attributes": {
-            "log.source": "haproxy"
-          },
-          "resource": "lb-haproxy-dc1-01"
         }
       ]
     },
@@ -7799,13 +7799,13 @@
               }
             },
             {
-              "asDouble": 0.41,
+              "asDouble": 0.38,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.37,
+              "asDouble": 0.4,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -7817,7 +7817,7 @@
               }
             },
             {
-              "asDouble": 0.52,
+              "asDouble": 0.44,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -7829,19 +7829,19 @@
               }
             },
             {
-              "asDouble": 0.15,
+              "asDouble": 0.21,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.22,
+              "asDouble": 0.23,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.26,
+              "asDouble": 0.24,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -7853,7 +7853,7 @@
               }
             },
             {
-              "asDouble": 0.31,
+              "asDouble": 0.3,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -7865,13 +7865,13 @@
               }
             },
             {
-              "asDouble": 0.2,
+              "asDouble": 0.28,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.64,
+              "asDouble": 0.65,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -7883,7 +7883,7 @@
               }
             },
             {
-              "asDouble": 0.42,
+              "asDouble": 0.31,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -7914,13 +7914,13 @@
               }
             },
             {
-              "asDouble": 0.51,
+              "asDouble": 0.6,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.53,
+              "asDouble": 0.58,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -7932,7 +7932,7 @@
               }
             },
             {
-              "asDouble": 0.67,
+              "asDouble": 0.59,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -7944,19 +7944,19 @@
               }
             },
             {
-              "asDouble": 0.42,
+              "asDouble": 0.38,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.54,
+              "asDouble": 0.51,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.46,
+              "asDouble": 0.48,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -7968,7 +7968,7 @@
               }
             },
             {
-              "asDouble": 0.41,
+              "asDouble": 0.45,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -7980,13 +7980,13 @@
               }
             },
             {
-              "asDouble": 0.33,
+              "asDouble": 0.45,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.32,
+              "asDouble": 0.4,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -7998,7 +7998,7 @@
               }
             },
             {
-              "asDouble": 0.34,
+              "asDouble": 0.41,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -8029,13 +8029,13 @@
               }
             },
             {
-              "asDouble": 0.36,
+              "asDouble": 0.31,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.31,
+              "asDouble": 0.33,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -8047,7 +8047,7 @@
               }
             },
             {
-              "asDouble": 0.47,
+              "asDouble": 0.66,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -8059,19 +8059,19 @@
               }
             },
             {
-              "asDouble": 0.4,
+              "asDouble": 0.72,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.21,
+              "asDouble": 0.23,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.18,
+              "asDouble": 0.23,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -8083,7 +8083,7 @@
               }
             },
             {
-              "asDouble": 0.64,
+              "asDouble": 0.55,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -8095,13 +8095,13 @@
               }
             },
             {
-              "asDouble": 0.53,
+              "asDouble": 0.52,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0.13,
+              "asDouble": 0.26,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -8113,7 +8113,7 @@
               }
             },
             {
-              "asDouble": 0.16,
+              "asDouble": 0.25,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -8144,13 +8144,13 @@
               }
             },
             {
-              "asDouble": 1250000,
+              "asDouble": 34142001,
               "attributes": {
                 "host.name": "api-was-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 0,
+              "asDouble": 30295641,
               "attributes": {
                 "host.name": "api-was-dc1-02.openmanager.kr"
               }
@@ -8162,7 +8162,7 @@
               }
             },
             {
-              "asDouble": 0,
+              "asDouble": 30718796,
               "attributes": {
                 "host.name": "db-mysql-dc1-primary.openmanager.kr"
               }
@@ -8174,19 +8174,19 @@
               }
             },
             {
-              "asDouble": 0,
+              "asDouble": 25092667,
               "attributes": {
                 "host.name": "db-mysql-dc1-backup.openmanager.kr"
               }
             },
             {
-              "asDouble": 41250000,
+              "asDouble": 50928742,
               "attributes": {
                 "host.name": "cache-redis-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 53750000,
+              "asDouble": 48352927,
               "attributes": {
                 "host.name": "cache-redis-dc1-02.openmanager.kr"
               }
@@ -8198,7 +8198,7 @@
               }
             },
             {
-              "asDouble": 28750000,
+              "asDouble": 35474997,
               "attributes": {
                 "host.name": "storage-nfs-dc1-01.openmanager.kr"
               }
@@ -8210,13 +8210,13 @@
               }
             },
             {
-              "asDouble": 33750000,
+              "asDouble": 33780036,
               "attributes": {
                 "host.name": "storage-s3gw-dc1-01.openmanager.kr"
               }
             },
             {
-              "asDouble": 89090888,
+              "asDouble": 89979922,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -8228,7 +8228,7 @@
               }
             },
             {
-              "asDouble": 1250000,
+              "asDouble": 57545151,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-02.openmanager.kr"
               }
@@ -8846,7 +8846,7 @@
           "timeUnixNano": 1771066200000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 54% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 51% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -8856,7 +8856,7 @@
           "timeUnixNano": 1771066200000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[8185]: cache hit ratio: 58% over last 60s",
+          "body": "redis-server[8185]: cache hit ratio: 57% over last 60s",
           "attributes": {
             "log.source": "redis"
           },
@@ -8876,7 +8876,7 @@
           "timeUnixNano": 1771066200000000500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[3649]: replication lag: 426ms on channel dc1-replica",
+          "body": "mysqld[3649]: replication lag: 578ms on channel dc1-replica",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -8886,7 +8886,7 @@
           "timeUnixNano": 1771066200000000500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: storage scrub heartbeat ok, network 23%",
+          "body": "systemd[1]: storage scrub heartbeat ok, network 28%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -8896,7 +8896,7 @@
           "timeUnixNano": 1771066200000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2938]: request queue depth 16, p95 151ms, cpu 41%",
+          "body": "java[2938]: request queue depth 13, p95 151ms, cpu 38%",
           "attributes": {
             "log.source": "java"
           },
@@ -8906,7 +8906,7 @@
           "timeUnixNano": 1771066200000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2950]: GC scan completed, heap occupancy 53%, reclaimed 214MB",
+          "body": "java[2950]: GC scan completed, heap occupancy 58%, reclaimed 219MB",
           "attributes": {
             "log.source": "java"
           },
@@ -8926,7 +8926,7 @@
           "timeUnixNano": 1771066200000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[6927]: replication lag: 511ms on channel dc1-replica",
+          "body": "mysqld[6927]: replication lag: 590ms on channel dc1-replica",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -8936,7 +8936,7 @@
           "timeUnixNano": 1771066200000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 83%",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 84%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -8946,7 +8946,7 @@
           "timeUnixNano": 1771066200000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2779]: frontend openmanager_fe sessions=413, retries=11, cpu=42%",
+          "body": "haproxy[2779]: frontend openmanager_fe sessions=504, retries=17, cpu=31%",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -8963,44 +8963,24 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
-          "timeUnixNano": 1771066288619559400,
+          "timeUnixNano": 1771066327330553000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[6962]: *4095 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771066362634962400,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[8768]: *7126 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771066382786878500,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "haproxy[7917]: WARNING: Connection table 86% full (conntrack saturation)",
-          "attributes": {
-            "log.source": "haproxy"
-          },
-          "resource": "lb-haproxy-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771066401691352300,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[8008]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "body": "nginx[9437]: *888 upstream prematurely closed connection while reading response header",
           "attributes": {
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771066392240797400,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "haproxy[1885]: WARNING: Connection table 91% full (conntrack saturation)",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-01"
         },
         {
           "timeUnixNano": 1771066428000389000,
@@ -9036,7 +9016,7 @@
           "timeUnixNano": 1771066428001166600,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[3653]: InnoDB buffer pool hit ratio: 88%",
+          "body": "mysqld[3653]: InnoDB buffer pool hit ratio: 86%",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -9046,7 +9026,7 @@
           "timeUnixNano": 1771066428002285300,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "nfsd[4535]: export /data/shared latency 142ms, disk 64%",
+          "body": "nfsd[4535]: export /data/shared latency 133ms, disk 55%",
           "attributes": {
             "log.source": "nfsd"
           },
@@ -9056,7 +9036,7 @@
           "timeUnixNano": 1771066428003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2949]: GC scan completed, heap occupancy 51%, reclaimed 212MB",
+          "body": "java[2949]: GC scan completed, heap occupancy 60%, reclaimed 221MB",
           "attributes": {
             "log.source": "java"
           },
@@ -9066,7 +9046,7 @@
           "timeUnixNano": 1771066428003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 72, fd usage 34%",
+          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 72, fd usage 37%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -9096,7 +9076,7 @@
           "timeUnixNano": 1771066428003797200,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "minio[4254]: S3 Gateway ready, 30 buckets loaded, disk 53%",
+          "body": "minio[4254]: S3 Gateway ready, 30 buckets loaded, disk 52%",
           "attributes": {
             "log.source": "minio"
           },
@@ -9106,7 +9086,7 @@
           "timeUnixNano": 1771066428004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[8184]: cache hit ratio: 54% over last 60s",
+          "body": "redis-server[8184]: cache hit ratio: 55% over last 60s",
           "attributes": {
             "log.source": "redis"
           },
@@ -9126,7 +9106,7 @@
           "timeUnixNano": 1771066428006860800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2778]: frontend openmanager_fe sessions=711, retries=27, cpu=64%",
+          "body": "haproxy[2778]: frontend openmanager_fe sessions=718, retries=27, cpu=65%",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -9136,7 +9116,7 @@
           "timeUnixNano": 1771066428006860800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[2792]: health checks passed for 17/18 backends, queue=11",
+          "body": "haproxy[2792]: health checks passed for 17/18 backends, queue=17",
           "attributes": {
             "log.source": "haproxy"
           },
@@ -9151,6 +9131,16 @@
             "log.source": "mysqld"
           },
           "resource": "db-mysql-dc1-replica"
+        },
+        {
+          "timeUnixNano": 1771066436703155000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[5332]: *9449 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
         },
         {
           "timeUnixNano": 1771066632000000000,
@@ -9196,7 +9186,7 @@
           "timeUnixNano": 1771066644001166600,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[3646]: slow query detected: 580ms on reporting.job_runs",
+          "body": "mysqld[3646]: slow query detected: 802ms on reporting.job_runs",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -9216,7 +9206,7 @@
           "timeUnixNano": 1771066644003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 64, fd usage 35%",
+          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 64, fd usage 36%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -9226,7 +9216,7 @@
           "timeUnixNano": 1771066644003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2939]: request queue depth 12, p95 145ms, cpu 37%",
+          "body": "java[2939]: request queue depth 15, p95 145ms, cpu 40%",
           "attributes": {
             "log.source": "java"
           },
@@ -9246,7 +9236,7 @@
           "timeUnixNano": 1771066644003618800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[6924]: slow query detected: 807ms on reporting.job_runs",
+          "body": "mysqld[6924]: slow query detected: 881ms on reporting.job_runs",
           "attributes": {
             "log.source": "mysqld"
           },
@@ -9266,7 +9256,7 @@
           "timeUnixNano": 1771066644004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[8189]: evicted keys 0, fragmentation 130%",
+          "body": "redis-server[8189]: evicted keys 0, fragmentation 129%",
           "attributes": {
             "log.source": "redis"
           },
@@ -9276,7 +9266,7 @@
           "timeUnixNano": 1771066644004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis persistence check ok, used memory 46% of maxmemory",
+          "body": "systemd[1]: redis persistence check ok, used memory 48% of maxmemory",
           "attributes": {
             "log.source": "systemd"
           },
@@ -9296,7 +9286,7 @@
           "timeUnixNano": 1771066644006860800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 18%",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 58%",
           "attributes": {
             "log.source": "systemd"
           },
@@ -9313,10 +9303,20 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
+          "timeUnixNano": 1771066654648620300,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[1339]: *1688 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-02"
+        },
+        {
           "timeUnixNano": 1771066740002128000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "haproxy[6213]: WARNING: warning pressure summary cpu=64% mem=32% disk=13% net=71%",
+          "body": "haproxy[6213]: WARNING: warning pressure summary cpu=65% mem=40% disk=26% net=72%",
           "attributes": {
             "log.source": "haproxy"
           },

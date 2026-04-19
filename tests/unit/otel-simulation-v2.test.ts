@@ -110,7 +110,7 @@ function classifyContinuityState(
   return 'normal';
 }
 
-function flattenResourceSeries(resource: string): Array<{
+function flattenResourceSeries(): Array<{
   hour: number;
   slotIndex: number;
   slot: Slot;
@@ -323,7 +323,7 @@ describe('OTel simulation v2 Phase C contract', () => {
     }> = [];
 
     for (const resource of representatives) {
-      const series = flattenResourceSeries(resource);
+      const series = flattenResourceSeries();
 
       for (let index = 0; index < series.length - 1; index++) {
         const diff = getMaxMetricDelta(

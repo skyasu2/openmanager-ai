@@ -65,19 +65,19 @@ Phase B와 독립적으로 병행 가능.
 - 로그 생성기 전면 재작성
 - 새로운 OTLP 입력 포맷 도입
 
-- [ ] C-1: `ServerSimState` / `TransitionProfile` 타입 정의
+- [x] C-1: `ServerSimState` / `TransitionProfile` 타입 정의
   - 상태별 기대 metric multiplier와 다음 상태 후보만 정의
   - helper 파일 분리 가능, 런타임 의존성 추가 금지
-- [ ] C-2: 시나리오 서버 전용 상태 전이 테이블 정의
+- [x] C-2: 시나리오 서버 전용 상태 전이 테이블 정의
   - 예: S1 DB primary = `normal → degraded → critical → recovery`
   - 예: S3 Redis = `degraded ↔ critical` 중심
-- [ ] C-3: 인접 슬롯 continuity 적용
+- [x] C-3: 인접 슬롯 continuity 적용
   - 현재 슬롯 값은 `scenario target + jitter`가 아니라 `previous state output + bounded drift` 기반으로 계산
   - hour 경계는 `이전 hour 마지막 슬롯 state`를 carry-over 해서 연결
-- [ ] C-4: contract test
+- [x] C-4: contract test
   - 인접 슬롯 간 급격한 역전 금지 (`critical → normal` 즉시 점프 금지)
   - 대표 시나리오 2개 이상에서 `degraded` 또는 `recovery` 구간이 실제 관측돼야 함
-- [ ] C-5: `timeseries.json` 및 `otel-verify.ts` 검증 유지
+- [x] C-5: `timeseries.json` 및 `otel-verify.ts` 검증 유지
   - 기존 bounds/severity/network 검증을 깨지 않음
 
 #### Phase C+ 메모

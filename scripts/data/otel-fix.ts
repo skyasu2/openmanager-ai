@@ -10,7 +10,10 @@
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { applyScenarioJitter } from './otel-fix.helpers';
+import {
+  applyScenarioJitter,
+  type ScenarioMetricKey,
+} from './otel-fix.helpers';
 
 // ============================================================================
 // Paths
@@ -228,6 +231,179 @@ const HOUR_SCENARIOS: Record<number, Record<string, ServerMetricOverride>> = {
   },
 };
 
+type ScenarioPhase = 'normal' | 'recovery' | 'degraded' | 'critical';
+
+type TransitionProfile = {
+  maxStep: number;
+  nextStates: ScenarioPhase[];
+};
+
+type ServerSimState = {
+  phase: ScenarioPhase;
+  metrics: Partial<Record<ScenarioMetricKey, number>>;
+};
+
+const PHASE_C_MIN_RATIO = 0.01;
+const PHASE_C_MAX_RATIO = 0.99;
+const PHASE_C_RECOVERY_FLOOR = 0.6;
+
+const SCENARIO_TRACKED_SERVERS = new Set(
+  Object.values(HOUR_SCENARIOS).flatMap((hourScenario) =>
+    Object.keys(hourScenario)
+  )
+);
+
+const PHASE_C_BASELINE_TARGETS: Record<
+  string,
+  Record<ScenarioMetricKey, number>
+> = {
+  web: { cpu: 0.24, memory: 0.42, disk: 0.27, network: 0.22 },
+  api: { cpu: 0.38, memory: 0.56, disk: 0.31, network: 0.24 },
+  db: { cpu: 0.42, memory: 0.58, disk: 0.62, network: 0.24 },
+  cache: { cpu: 0.22, memory: 0.46, disk: 0.24, network: 0.36 },
+  lb: { cpu: 0.28, memory: 0.38, disk: 0.24, network: 0.46 },
+  storage: { cpu: 0.26, memory: 0.44, disk: 0.52, network: 0.24 },
+};
+
+const PHASE_C_SERVER_BASELINE_OVERRIDES: Record<
+  string,
+  Partial<Record<ScenarioMetricKey, number>>
+> = {
+  'db-mysql-dc1-backup': {
+    cpu: 0.18,
+    memory: 0.34,
+    disk: 0.7,
+    network: 0.18,
+  },
+};
+
+const PHASE_C_TRANSITION_PROFILES: Record<ScenarioPhase, TransitionProfile> = {
+  normal: { maxStep: 0.1, nextStates: ['normal', 'recovery'] },
+  recovery: {
+    maxStep: 0.12,
+    nextStates: ['normal', 'recovery', 'degraded'],
+  },
+  degraded: {
+    maxStep: 0.14,
+    nextStates: ['recovery', 'degraded', 'critical'],
+  },
+  critical: { maxStep: 0.16, nextStates: ['degraded', 'critical'] },
+};
+
+const phaseCServerStates = new Map<string, ServerSimState>();
+
+function normalizeScenarioMetricValue(
+  metricKey: ScenarioMetricKey,
+  value: number
+): number {
+  return metricKey === 'network' ? value / 125_000_000 : value;
+}
+
+function serializeScenarioMetricValue(
+  metricKey: ScenarioMetricKey,
+  value: number
+): number {
+  return metricKey === 'network'
+    ? Math.round(value * 125_000_000)
+    : Math.round(value * 100) / 100;
+}
+
+function deriveScenarioPhaseFromValue(
+  metricKey: ScenarioMetricKey,
+  value: number
+): ScenarioPhase {
+  const critical = metricKey === 'network' ? 0.85 : 0.9;
+  const warning = metricKey === 'network' ? 0.7 : 0.8;
+
+  if (value >= critical) return 'critical';
+  if (value >= warning) return 'degraded';
+  if (value >= PHASE_C_RECOVERY_FLOOR) return 'recovery';
+  return 'normal';
+}
+
+function deriveScenarioPhaseFromMetrics(
+  metrics: Partial<Record<ScenarioMetricKey, number>>
+): ScenarioPhase {
+  const values = Object.values(metrics).filter(
+    (value): value is number => typeof value === 'number'
+  );
+  const peak = values.length > 0 ? Math.max(...values) : 0;
+
+  if (peak >= 0.9) return 'critical';
+  if (peak >= 0.8) return 'degraded';
+  if (peak >= PHASE_C_RECOVERY_FLOOR) return 'recovery';
+  return 'normal';
+}
+
+function getPhaseCBaselineTarget(
+  serverId: string,
+  metricKey: ScenarioMetricKey
+): number {
+  const serverBaseline = PHASE_C_SERVER_BASELINE_OVERRIDES[serverId];
+  if (serverBaseline?.[metricKey] !== undefined) {
+    return serverBaseline[metricKey] as number;
+  }
+
+  const category = getServerCategory(serverId);
+  const baseline =
+    PHASE_C_BASELINE_TARGETS[category] ?? PHASE_C_BASELINE_TARGETS.web;
+  return baseline[metricKey];
+}
+
+function getPhaseCTransitionProfile(
+  previousPhase: ScenarioPhase,
+  targetPhase: ScenarioPhase
+): TransitionProfile {
+  if (
+    (previousPhase === 'critical' || previousPhase === 'degraded') &&
+    targetPhase === 'normal'
+  ) {
+    return PHASE_C_TRANSITION_PROFILES.recovery;
+  }
+
+  return PHASE_C_TRANSITION_PROFILES[targetPhase];
+}
+
+function moveTowardTarget(
+  previousValue: number,
+  targetValue: number,
+  maxStep: number
+): number {
+  if (Math.abs(targetValue - previousValue) <= maxStep) {
+    return targetValue;
+  }
+
+  return previousValue + Math.sign(targetValue - previousValue) * maxStep;
+}
+
+function applyPhaseCContinuity(
+  previousValue: number,
+  targetValue: number,
+  metricKey: ScenarioMetricKey,
+  slotOffset: number,
+  previousPhase: ScenarioPhase
+): number {
+  const jitteredTarget = applyScenarioJitter(targetValue, slotOffset, metricKey);
+  const targetPhase = deriveScenarioPhaseFromValue(metricKey, targetValue);
+  const profile = getPhaseCTransitionProfile(previousPhase, targetPhase);
+  let nextValue = moveTowardTarget(
+    previousValue,
+    jitteredTarget,
+    profile.maxStep
+  );
+
+  if (
+    (previousPhase === 'critical' || previousPhase === 'degraded') &&
+    targetPhase === 'normal' &&
+    previousValue >= PHASE_C_RECOVERY_FLOOR &&
+    nextValue < PHASE_C_RECOVERY_FLOOR
+  ) {
+    nextValue = PHASE_C_RECOVERY_FLOOR + Math.random() * 0.02;
+  }
+
+  return clampNumber(nextValue, PHASE_C_MIN_RATIO, PHASE_C_MAX_RATIO);
+}
+
 const ERROR_BASELINE_HOUR_RESOURCES: Record<number, string> = {
   2: 'storage-nfs-dc1-01',
   3: 'storage-nfs-dc1-01',
@@ -398,6 +574,7 @@ function adjustMetricsForScenario(data: HourlyFile, hour: number): HourlyFile {
   for (let slotIdx = 0; slotIdx < data.slots.length; slotIdx++) {
     const slot = data.slots[slotIdx];
     const slotOffset = (slotIdx - 2.5) / 6 * 0.04; // -0.017 ~ +0.017 점진 변화
+    const touchedScenarioServers = new Set<string>();
 
     for (const metric of slot.metrics) {
       const metricKey = metricNameToKey(metric.name);
@@ -406,23 +583,32 @@ function adjustMetricsForScenario(data: HourlyFile, hour: number): HourlyFile {
       for (const dp of metric.dataPoints) {
         const hostname = dp.attributes['host.name'] ?? '';
         const serverId = hostname.split('.')[0];
+        const currentRatio = normalizeScenarioMetricValue(metricKey, dp.asDouble);
 
-        if (scenario?.[serverId]?.[metricKey] !== undefined) {
-          // 시나리오 서버: 목표값 + 슬롯 내 점진 변화 + jitter
-          const target = scenario[serverId][metricKey] as number;
-          const value = applyScenarioJitter(target, slotOffset, metricKey);
+        if (SCENARIO_TRACKED_SERVERS.has(serverId)) {
+          const serverState = phaseCServerStates.get(serverId) ?? {
+            phase: deriveScenarioPhaseFromValue(metricKey, currentRatio),
+            metrics: {},
+          };
+          const target =
+            scenario?.[serverId]?.[metricKey] ??
+            getPhaseCBaselineTarget(serverId, metricKey);
+          const previousValue = serverState.metrics[metricKey] ?? currentRatio;
+          const nextValue = applyPhaseCContinuity(
+            previousValue,
+            target,
+            metricKey,
+            slotOffset,
+            serverState.phase
+          );
 
-          if (metricKey === 'network') {
-            dp.asDouble = Math.round(value * 125_000_000);
-          } else {
-            dp.asDouble = Math.round(value * 100) / 100;
-          }
+          serverState.metrics[metricKey] = nextValue;
+          phaseCServerStates.set(serverId, serverState);
+          touchedScenarioServers.add(serverId);
+          dp.asDouble = serializeScenarioMetricValue(metricKey, nextValue);
         } else {
           // 비시나리오 서버: 건강 범위 보장 (warning 미만)
           const maxHealthy = metricKey === 'network' ? 0.60 : 0.72;
-          const currentRatio = metricKey === 'network'
-            ? dp.asDouble / 125_000_000
-            : dp.asDouble;
 
           if (currentRatio > maxHealthy) {
             const healthyValue = 0.35 + Math.random() * 0.25;
@@ -447,6 +633,13 @@ function adjustMetricsForScenario(data: HourlyFile, hour: number): HourlyFile {
           }
         }
       }
+    }
+
+    for (const serverId of touchedScenarioServers) {
+      const serverState = phaseCServerStates.get(serverId);
+      if (!serverState) continue;
+      serverState.phase = deriveScenarioPhaseFromMetrics(serverState.metrics);
+      phaseCServerStates.set(serverId, serverState);
     }
   }
   return data;
@@ -1406,6 +1599,65 @@ function shouldPreserveScenarioLog(log: LogEntry): boolean {
   return /remote az cache|nfs/i.test(log.body);
 }
 
+function trimSlotLogsPerResource(slot: Slot, maxPerResource: number): void {
+  const logsByResource = new Map<string, LogEntry[]>();
+
+  for (const log of slot.logs) {
+    const bucket = logsByResource.get(log.resource) ?? [];
+    bucket.push(log);
+    logsByResource.set(log.resource, bucket);
+  }
+
+  const trimmedLogs: LogEntry[] = [];
+
+  for (const resourceLogs of logsByResource.values()) {
+    if (resourceLogs.length <= maxPerResource) {
+      trimmedLogs.push(...resourceLogs);
+      continue;
+    }
+
+    const retained = [...resourceLogs];
+
+    while (retained.length > maxPerResource) {
+      const infoCount = retained.filter(
+        (log) => log.severityText === 'INFO'
+      ).length;
+
+      let removeIndex = retained.findIndex((log) =>
+        /pressure summary/i.test(log.body)
+      );
+
+      if (removeIndex === -1) {
+        removeIndex = retained.findIndex(
+          (log) =>
+            log.severityText === 'WARN' && !shouldPreserveScenarioLog(log)
+        );
+      }
+
+      if (removeIndex === -1 && infoCount > 3) {
+        removeIndex = retained.findIndex((log) => log.severityText === 'INFO');
+      }
+
+      if (removeIndex === -1) {
+        removeIndex = retained.findIndex(
+          (log) =>
+            log.severityText !== 'ERROR' && !shouldPreserveScenarioLog(log)
+        );
+      }
+
+      if (removeIndex === -1) {
+        break;
+      }
+
+      retained.splice(removeIndex, 1);
+    }
+
+    trimmedLogs.push(...retained);
+  }
+
+  slot.logs = trimmedLogs.sort((a, b) => a.timeUnixNano - b.timeUnixNano);
+}
+
 type PhaseBInfoTemplate = {
   source: string;
   body: string;
@@ -1826,6 +2078,7 @@ function reconcileLogsWithMetrics(data: HourlyFile, hour: number): HourlyFile {
     // 7. 새 로그 추가 + 시간순 정렬
     slot.logs.push(...newLogs);
     slot.logs.sort((a, b) => a.timeUnixNano - b.timeUnixNano);
+    trimSlotLogsPerResource(slot, 15);
   }
   return data;
 }
@@ -1937,6 +2190,7 @@ function main(): void {
 
   // Phase 1: Hourly data fixes
   console.log('[Phase 1] Hourly JSON fixes...');
+  phaseCServerStates.clear();
 
   processAllHourlyFiles((data, hour) => {
     // C2: Network ratio → bytes
