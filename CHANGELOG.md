@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.23](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.22...v8.11.23) (2026-04-19)
+
+
+### Bug Fixes
+
+* **ai:** harden analysis basis tab accessibility ([de85b6b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/de85b6b77c8bf4b9dba7c88d24aa3d5601e670d7))
+
 ## [8.11.22](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.21...v8.11.22) (2026-04-19)
 
 
