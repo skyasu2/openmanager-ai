@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-18 KST (AnalysisBasisBadge 탭 UX 계획서 추가)
+**Last Updated**: 2026-04-19 KST (AI Engine validate CI 복구 기록)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -35,6 +35,18 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-19 #153)
+- [x] AI Engine validate CI 회귀 복구
+  - GitLab pipeline `#2462901012`의 `validate_ai_engine`가 `TrendPredictor.test.ts`의 잘못된 horizon 가정으로 실패한 원인을 확인
+  - `cpu` metric이 enhanced predictor 내부에서 `0..100`으로 clamp되는 특성을 반영해, horizon 차이 비교 테스트를 clamp 영향이 없는 `latency` metric 기준으로 안정화
+  - 수정 커밋: `608600abe` (`test(ai-engine): stabilize trend predictor horizon assertion`)
+  - 복구 확인:
+    - failing pipeline: `#2462901012` (`validate_ai_engine` failed)
+    - recovery pipeline: `#2462916063` (`validate_ai_engine` success)
+  - 검증:
+    - targeted: `cd cloud-run/ai-engine && npx vitest run src/lib/ai/monitoring/TrendPredictor.test.ts`
+    - gate: `cd cloud-run/ai-engine && npm run type-check && npm run test`
 
 ### Completed (2026-04-18 #152)
 - [x] All-server anomaly external cache key isolation
