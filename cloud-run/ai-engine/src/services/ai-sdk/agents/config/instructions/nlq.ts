@@ -115,7 +115,7 @@ ${WEB_SEARCH_GUIDELINES}
 3. globalSummary가 있으면 해당 값을 인용하여 답변
 4. 숫자는 소수점 1자리까지
 5. 이상 상태 발견 시 경고 표시
-6. 단순 조회 질의는 4-8줄 이내로 간결하게 작성
+6. 단순 조회 질의는 4-8줄 이내로 간결하게 작성 (단, nearThresholdServers가 있으면 줄 제한 예외 — 전부 표시)
 7. 요약/핵심 요청이 아닌 경우에도 마지막 줄에 "권고" 1개를 포함
 
 ## 서버 현황 응답 필수 포맷 (MANDATORY) 📝
@@ -124,9 +124,10 @@ ${WEB_SEARCH_GUIDELINES}
 
 ### 필수 포함 항목 (Missing = 응답 불합격)
 1. **전체 현황 한줄 요약** (총 대수, 상태별 분류, 평균 메트릭)
-2. **이상 서버 상세** (서버 ID + 문제 메트릭 + 수치 필수, warning/critical만)
-3. **추세 정보** (dailyTrend avg 대비 현재값 비교, 10%↑ = Rising, 10%↓ = Falling)
-4. **권고 사항** (최소 1개, actionable한 조치)
+2. **이상 서버 상세** (서버 ID + 문제 메트릭 + 수치 필수, warning/critical/offline)
+3. **임계값 근접 서버** (nearThresholdServers 배열 존재 시 필수 — online이지만 CPU/MEM/Disk 60%+ 서버 전체 나열)
+4. **추세 정보** (dailyTrend avg 대비 현재값 비교, 10%↑ = Rising, 10%↓ = Falling)
+5. **권고 사항** (최소 1개, actionable한 조치 — 이상/근접 서버 기준 구체적으로)
 
 ### 응답 포맷 템플릿
 📊 **서버 현황 요약**
@@ -136,33 +137,39 @@ ${WEB_SEARCH_GUIDELINES}
 ⛔ **오프라인 서버** (있을 경우)
 • [서버ID]: 서버 다운 ([원인])
 
-⚠️ **주의 서버**
+⚠️ **주의 서버** (warning/critical)
 • [서버ID]: [메트릭] [수치]% ([추세] ↑/↓)
+
+🔶 **임계값 근접** (online이지만 60%+, nearThresholdServers 기준)
+• [서버ID]: [메트릭] [수치]%
+(nearThresholdServers가 비어있으면 이 섹션 생략)
 
 📈 **추세**
 • [상승/하강 추세 서버 요약]
 
 💡 **권고**
-• [구체적 조치]
+• [구체적 조치 — 서버 타입에 맞는 조치 명시]
 
-### 실전 예시 1: 이상 서버 있음 (오프라인 포함)
+### 실전 예시 1: 이상 서버 + 임계값 근접 서버 혼재
 📊 **서버 현황 요약**
-• 전체 15대: 정상 11대, 경고 2대, 비상 1대, 오프라인 1대
-• 평균 CPU: 38.4%, 메모리: 53.9%, 디스크: 37.5%
-
-⛔ **오프라인 서버**
-• api-was-dc1-01: 서버 다운 (JVM OOM crash)
+• 전체 18대: 정상 17대, 경고 1대, 비상 0대, 오프라인 0대
+• 평균 CPU: 35%, 메모리: 46%, 디스크: 37%
 
 ⚠️ **주의 서버**
-• cache-redis-dc1-01: 메모리 74% (상승 추세 ↑)
-• db-mysql-dc1-01: CPU 61% (warning)
+• cache-redis-dc1-01: 메모리 88% (상승 추세 ↑, 평균 57% → 현재 88%)
+
+🔶 **임계값 근접**
+• api-was-dc1-01: CPU 73%
+• db-mysql-dc1-backup: Disk 70%
+• cache-redis-dc1-03: 메모리 69%
+• db-mysql-dc1-replica: 메모리 62%
 
 📈 **추세**
-• lb-haproxy-dc1-01: CPU 상승 추세 (avg 31% → 현재 39%) ↑
+• cache-redis-dc1-01: 메모리 +31%p 상승, 약 15분 후 90% 도달 예상
 
 💡 **권고**
-• cache-redis-dc1-01: eviction 정책/maxmemory 설정 확인 권장
-• db-mysql-dc1-01: slow query 점검 필요
+• cache-redis-dc1-01: maxmemory 설정·eviction policy 확인, INFO memory로 누수 점검
+• api-was-dc1-01: JVM heap 또는 프로세스 CPU 점유율 확인
 
 ### 실전 예시 2: 전체 정상
 📊 **서버 현황 요약**

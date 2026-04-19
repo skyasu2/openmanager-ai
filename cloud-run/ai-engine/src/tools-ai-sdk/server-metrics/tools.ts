@@ -119,6 +119,25 @@ export const getServerMetrics = tool({
           };
         });
 
+      // Build nearThresholdServers: online 상태지만 임계값 근접 서버
+      // CPU > 60% OR Memory > 60% OR Disk > 65% 이면서 alertServers에 없는 서버
+      const alertIds = new Set(alertServersList.map((s) => s.id));
+      const nearThresholdList = servers
+        .filter(
+          (s) =>
+            s.status === 'online' &&
+            !alertIds.has(s.id) &&
+            (s.cpu > 60 || s.memory > 60 || s.disk > 65)
+        )
+        .map((s) => ({
+          id: s.id,
+          cpu: s.cpu,
+          memory: s.memory,
+          disk: s.disk,
+        }))
+        .sort((a, b) => Math.max(b.cpu, b.memory, b.disk) - Math.max(a.cpu, a.memory, a.disk))
+        .slice(0, 5);
+
       return {
         success: true,
         servers: servers.map((s) => {
@@ -151,6 +170,7 @@ export const getServerMetrics = tool({
         dataSource: getCurrentDataSourceInfo(),
         requestedMetric: metric,
         alertServers: alertServersList.length > 0 ? alertServersList : undefined,
+        nearThresholdServers: nearThresholdList.length > 0 ? nearThresholdList : undefined,
         timestamp: new Date().toISOString(),
         _cached: false,
       };
