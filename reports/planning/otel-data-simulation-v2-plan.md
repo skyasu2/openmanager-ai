@@ -26,15 +26,15 @@
 
 **구조 변경 없이 `reconcileLogsWithMetrics()` 확장만으로 적용 가능.**
 
-- [ ] B-1: 서버 타입별 INFO 템플릿 풀 정의
+- [x] B-1: 서버 타입별 INFO 템플릿 풀 정의
   - `db`: `slow query detected: {n}ms`, `replication lag: {n}ms`, `connection pool: {n}/{max} active`
   - `api`: `{method} {path} {status} {n}ms`, `cache hit ratio: {n}%`, `health check passed [latency={n}ms]`
   - `cache`: `eviction policy triggered: {n} keys removed`, `GC pause: {n}ms`, `memory fragmentation ratio: {n}`
   - `lb`: `upstream {server} health check ok [rtt={n}ms]`, `active connections: {n}`, `request routing: {backend}`
   - `storage`: `disk usage report: {n}% of {capacity}`, `scheduled job completed: {job} in {n}ms`, `config reload: no changes detected`
-- [ ] B-2: 슬롯당 INFO 3~7개 랜덤 선택, 파라미터는 해당 슬롯 메트릭 범위 기반 치환
-- [ ] B-3: `otel-verify.ts`에 per-slot 최소 INFO 3개, 최대 로그 상한 추가
-- [ ] B-4: contract test — 동일 메시지 연속 3개 없음, 타입별 템플릿 실제 포함 여부
+- [x] B-2: 슬롯당 INFO 3~7개 랜덤 선택, 파라미터는 해당 슬롯 메트릭 범위 기반 치환
+- [x] B-3: `otel-verify.ts`에 per-slot 최소 INFO 3개, 최대 로그 상한 추가
+- [x] B-4: contract test — 동일 메시지 연속 3개 없음, 타입별 템플릿 실제 포함 여부
 
 ### Phase A — 가우시안 jitter (2순위, 난이도: ★★☆)
 

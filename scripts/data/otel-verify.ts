@@ -560,6 +560,49 @@ function main(): void {
   check('Storage network in [0.14, 0.36] (±0.01 margin)', storageOutOfRange === 0, `${storageOutOfRange} out of range`);
   check('Cache network in [0.29, 0.51] (±0.01 margin)', cacheOutOfRange === 0, `${cacheOutOfRange} out of range`);
 
+  // ── 9a. Phase B INFO density / slot upper bound ──
+  console.log('\n[9a] Phase B INFO density / slot upper bound:');
+  const backgroundInfoExcluded = new Set([
+    'lb-haproxy-dc1-03',
+    'cache-redis-dc1-03',
+    'storage-nfs-dc1-02',
+  ]);
+  let infoFloorViolations = 0;
+  let slotUpperBoundViolations = 0;
+
+  for (let h = 0; h < 24; h++) {
+    const filename = `hour-${String(h).padStart(2, '0')}.json`;
+    const data: HourlyFile = JSON.parse(fs.readFileSync(path.join(HOURLY_DIR, filename), 'utf-8'));
+
+    for (const slot of data.slots) {
+      const metricResources = new Set<string>();
+      for (const metric of slot.metrics) {
+        for (const dp of metric.dataPoints) {
+          const sid = (dp.attributes['host.name'] ?? '').split('.')[0];
+          if (!sid || backgroundInfoExcluded.has(sid)) continue;
+          metricResources.add(sid);
+        }
+      }
+
+      const infoCounts = new Map<string, number>();
+      const totalCounts = new Map<string, number>();
+      for (const log of slot.logs) {
+        totalCounts.set(log.resource, (totalCounts.get(log.resource) ?? 0) + 1);
+        if (log.severityText === 'INFO') {
+          infoCounts.set(log.resource, (infoCounts.get(log.resource) ?? 0) + 1);
+        }
+      }
+
+      for (const sid of metricResources) {
+        if ((infoCounts.get(sid) ?? 0) < 3) infoFloorViolations++;
+        if ((totalCounts.get(sid) ?? 0) > 15) slotUpperBoundViolations++;
+      }
+    }
+  }
+
+  check('Core resources have >= 3 INFO logs per slot', infoFloorViolations === 0, `${infoFloorViolations} missing`);
+  check('Core resources stay within <= 15 total logs per slot', slotUpperBoundViolations === 0, `${slotUpperBoundViolations} over`);
+
   // ── 10. Severity distribution ──
   console.log('\n[10] Severity distribution:');
   let totalInfo = 0;

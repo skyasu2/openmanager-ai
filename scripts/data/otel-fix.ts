@@ -443,6 +443,19 @@ function adjustMetricsForScenario(data: HourlyFile, hour: number): HourlyFile {
             }
           }
         }
+
+        if (metricKey === 'network') {
+          const currentRatio = dp.asDouble / 125_000_000;
+          if (serverId.startsWith('storage-')) {
+            dp.asDouble = Math.round(
+              clampNumber(currentRatio, 0.15, 0.35) * 125_000_000
+            );
+          } else if (serverId.startsWith('cache-')) {
+            dp.asDouble = Math.round(
+              clampNumber(currentRatio, 0.30, 0.50) * 125_000_000
+            );
+          }
+        }
       }
     }
   }
@@ -1352,11 +1365,301 @@ const THRESHOLDS: Record<string, { warning: number; critical: number }> = {
   network: { warning: 0.70, critical: 0.85 },
 };
 
-function reconcileLogsWithMetrics(data: HourlyFile, _hour: number): HourlyFile {
-  for (const slot of data.slots) {
+const SLOT_INFO_ROTATION = [0.04, 0.38, 0.74] as const;
+const BACKGROUND_INFO_EXCLUDED_RESOURCES = new Set([
+  PHASE3_AZ2_LB.serverId,
+  PHASE3_AZ3_REDIS.serverId,
+  PHASE3_AZ2_NFS.serverId,
+]);
+
+function clampNumber(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max);
+}
+
+function roundPercent(value: number | undefined, fallback: number): number {
+  return Math.round(clampNumber(value ?? fallback, 0, 0.99) * 100);
+}
+
+function stableHash(value: string): number {
+  let hash = 0;
+  for (let i = 0; i < value.length; i++) {
+    hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
+  }
+  return hash;
+}
+
+function buildSlotTime(
+  slot: Slot,
+  ratio: number,
+  offsetNano: number
+): number {
+  const span = Math.max(slot.endTimeUnixNano - slot.startTimeUnixNano - 2, 3);
+  const target = slot.startTimeUnixNano + Math.floor(span * ratio) + offsetNano;
+  return Math.min(Math.max(target, slot.startTimeUnixNano + 1), slot.endTimeUnixNano - 1);
+}
+
+function rotateTemplates<T>(templates: T[], seed: number): T[] {
+  if (templates.length === 0) return templates;
+  const rotation = seed % templates.length;
+  return templates.map((_, index) => templates[(index + rotation) % templates.length]);
+}
+
+function shouldPreserveInfoLog(log: LogEntry): boolean {
+  return (
+    log.body.includes('Main process exited') ||
+    log.body.includes('Scheduled restart job') ||
+    log.body.includes('ready to accept connections')
+  );
+}
+
+function shouldPreserveScenarioLog(log: LogEntry): boolean {
+  return /remote az cache|nfs/i.test(log.body);
+}
+
+type PhaseBInfoTemplate = {
+  source: string;
+  body: string;
+};
+
+function getPrimaryLogSource(resource: string): string {
+  const category = getServerCategory(resource);
+  if (category === 'storage') {
+    return resource.includes('s3gw') ? 'minio' : 'nfsd';
+  }
+  if (category === 'cache') return 'redis';
+  return getLogSource(category);
+}
+
+function buildHealthSummaryLog(
+  slot: Slot,
+  resource: string,
+  metrics: Record<string, number>,
+  absoluteSlot: number,
+  severity: 'WARN' | 'ERROR',
+  label: string,
+  ratio: number
+): LogEntry {
+  const source = getPrimaryLogSource(resource);
+  const cpuPct = roundPercent(metrics.cpu, 0.32);
+  const memoryPct = roundPercent(metrics.memory, 0.4);
+  const diskPct = roundPercent(metrics.disk, 0.34);
+  const networkPct = roundPercent(metrics.network, 0.22);
+  const pid = 2200 + ((stableHash(resource) + absoluteSlot * 29 + label.length) % 6000);
+  const prefix = source === 'redis' ? 'redis-server' : source;
+  const body =
+    severity === 'ERROR'
+      ? `${prefix}[${pid}]: ERROR: ${label} saturation summary cpu=${cpuPct}% mem=${memoryPct}% disk=${diskPct}% net=${networkPct}%`
+      : `${prefix}[${pid}]: WARNING: ${label} pressure summary cpu=${cpuPct}% mem=${memoryPct}% disk=${diskPct}% net=${networkPct}%`;
+
+  return {
+    timeUnixNano: buildSlotTime(slot, ratio, stableHash(`${resource}:${label}:${severity}`) % 10_000_000),
+    severityNumber: severity === 'ERROR' ? 17 : 13,
+    severityText: severity,
+    body,
+    attributes: { 'log.source': source },
+    resource,
+  };
+}
+
+function buildBackgroundInfoTemplates(
+  resource: string,
+  metrics: Record<string, number>,
+  absoluteSlot: number
+): PhaseBInfoTemplate[] {
+  const category = getServerCategory(resource);
+  const seed = stableHash(resource) + absoluteSlot * 17;
+  const pid = 1200 + (seed % 7000);
+  const cpuPct = roundPercent(metrics.cpu, 0.32);
+  const memoryPct = roundPercent(metrics.memory, 0.4);
+  const diskPct = roundPercent(metrics.disk, 0.34);
+  const networkPct = roundPercent(metrics.network, 0.22);
+  const responseMs = Math.round(
+    clampNumber((metrics.response ?? 0.12) * 1000, 20, 2200)
+  );
+  const workerCount = 6 + (seed % 6);
+  const restartCount = seed % 3;
+  const queueDepth = 8 + (cpuPct % 11) + (absoluteSlot % 7);
+  const gcReclaimedMb = 96 + ((memoryPct + absoluteSlot * 7) % 384);
+  const slowQueryMs = Math.round(
+    clampNumber(160 + cpuPct * 5 + diskPct * 6 + (absoluteSlot % 4) * 35, 120, 2600)
+  );
+  const replicationLagMs = Math.round(
+    clampNumber(30 + memoryPct * 2 + diskPct * 5 + (absoluteSlot % 5) * 28, 12, 1800)
+  );
+  const cacheHitRatio = Math.round(
+    clampNumber(96 - memoryPct * 0.55 - networkPct * 0.12 - (absoluteSlot % 3) * 4, 42, 96)
+  );
+  const evictedKeys = Math.max(0, Math.round((memoryPct - 58) * 18 + (absoluteSlot % 5) * 7));
+  const fragmentPct = Math.round(clampNumber(108 + memoryPct * 0.3 + (absoluteSlot % 4) * 2, 105, 152));
+  const frontendSessions = 220 + cpuPct * 4 + networkPct * 3 + (absoluteSlot % 9) * 11;
+  const healthyBackends = 15 + ((seed + absoluteSlot) % 4);
+  const queueSize = Math.max(1, Math.round((cpuPct + networkPct) / 6) + (absoluteSlot % 5));
+  const conntrackUsage = Math.round(clampNumber(networkPct + 12, 18, 96));
+  const exportAwaitMs = Math.round(
+    clampNumber(12 + diskPct * 1.4 + networkPct * 0.7 + (absoluteSlot % 4) * 8, 8, 420)
+  );
+  const verifyFiles = 120 + (seed % 700);
+  const bucketCount = 8 + (seed % 24);
+
+  switch (category) {
+    case 'db':
+      return [
+        {
+          source: 'mysqld',
+          body: `mysqld[${pid}]: slow query detected: ${slowQueryMs}ms on reporting.job_runs`,
+        },
+        {
+          source: 'mysqld',
+          body: `mysqld[${pid + 3}]: replication lag: ${replicationLagMs}ms on channel dc1-replica`,
+        },
+        {
+          source: 'mysqld',
+          body: `mysqld[${pid + 7}]: InnoDB buffer pool hit ratio: ${Math.round(
+            clampNumber(99 - memoryPct * 0.18 - diskPct * 0.08, 78, 99)
+          )}%`,
+        },
+      ];
+    case 'cache':
+      return [
+        {
+          source: 'redis',
+          body: `redis-server[${pid}]: cache hit ratio: ${cacheHitRatio}% over last 60s`,
+        },
+        {
+          source: 'redis',
+          body: `redis-server[${pid + 5}]: evicted keys ${evictedKeys}, fragmentation ${fragmentPct}%`,
+        },
+        {
+          source: 'systemd',
+          body: `systemd[1]: redis persistence check ok, used memory ${memoryPct}% of maxmemory`,
+        },
+      ];
+    case 'api':
+      return [
+        {
+          source: 'java',
+          body: `java[${pid}]: request queue depth ${queueDepth}, p95 ${responseMs}ms, cpu ${cpuPct}%`,
+        },
+        {
+          source: 'java',
+          body: `java[${pid + 11}]: GC scan completed, heap occupancy ${memoryPct}%, reclaimed ${gcReclaimedMb}MB`,
+        },
+        {
+          source: 'systemd',
+          body: `systemd[1]: ${resource}.service heartbeat ok, worker threads ${workerCount * 8}, fd usage ${Math.round(
+            clampNumber(cpuPct * 0.55 + memoryPct * 0.25, 18, 92)
+          )}%`,
+        },
+      ];
+    case 'lb':
+      return [
+        {
+          source: 'haproxy',
+          body: `haproxy[${pid}]: frontend openmanager_fe sessions=${frontendSessions}, retries=${queueSize}, cpu=${cpuPct}%`,
+        },
+        {
+          source: 'haproxy',
+          body: `haproxy[${pid + 13}]: health checks passed for ${healthyBackends}/18 backends, queue=${queueSize}`,
+        },
+        {
+          source: 'systemd',
+          body: `systemd[1]: haproxy runtime socket poll ok, conntrack usage ${conntrackUsage}%`,
+        },
+      ];
+    case 'storage':
+      if (resource.includes('s3gw')) {
+        return [
+          {
+            source: 'minio',
+            body: `minio[${pid}]: S3 Gateway ready, ${bucketCount} buckets loaded, disk ${diskPct}%`,
+          },
+          {
+            source: 'minio',
+            body: `minio[${pid + 5}]: object lifecycle scan checkpoint ${220 + (seed % 500)}, network ${networkPct}%`,
+          },
+          {
+            source: 'systemd',
+            body: `systemd[1]: minio.service heartbeat ok, active connections ${12 + (seed % 18)}`,
+          },
+        ];
+      }
+      return [
+        {
+          source: 'nfsd',
+          body: `nfsd[${pid}]: export /data/shared latency ${exportAwaitMs}ms, disk ${diskPct}%`,
+        },
+        {
+          source: 'rsync',
+          body: `rsync[${pid + 7}]: incremental verify completed, changed files ${verifyFiles}`,
+        },
+        {
+          source: 'systemd',
+          body: `systemd[1]: storage scrub heartbeat ok, network ${networkPct}%`,
+        },
+      ];
+    case 'web':
+    default:
+      return [
+        {
+          source: 'nginx',
+          body: `nginx[${pid}]: 10.0.0.${11 + (seed % 30)} - - "GET /health HTTP/1.1" 200 15 "-" "kube-probe/1.29" workers=${workerCount}`,
+        },
+        {
+          source: 'systemd',
+          body: `systemd[1]: nginx reload check passed, active workers ${workerCount}, memory ${memoryPct}%`,
+        },
+        {
+          source: 'docker',
+          body: `dockerd[${pid + 9}]: container ${resource.substring(0, 12)} health=healthy restart_count=${restartCount}, network ${networkPct}%`,
+        },
+      ];
+  }
+}
+
+function buildBackgroundInfoLogs(
+  slot: Slot,
+  resource: string,
+  metrics: Record<string, number>,
+  absoluteSlot: number
+): LogEntry[] {
+  const seed = stableHash(resource) + absoluteSlot;
+  const templates = rotateTemplates(
+    buildBackgroundInfoTemplates(resource, metrics, absoluteSlot),
+    seed
+  );
+
+  return templates.map((template, index) => {
+    const baseRatio = SLOT_INFO_ROTATION[index] ?? 0.8;
+    const offset = index === 0 ? seed % 1000 : seed % 10_000_000;
+    return {
+      timeUnixNano:
+        index === 0
+          ? Math.min(slot.startTimeUnixNano + 1 + offset, slot.endTimeUnixNano - 1)
+          : buildSlotTime(slot, baseRatio, offset),
+      severityNumber: 9,
+      severityText: 'INFO',
+      body: template.body,
+      attributes: { 'log.source': template.source },
+      resource,
+    };
+  });
+}
+
+function reconcileLogsWithMetrics(data: HourlyFile, hour: number): HourlyFile {
+  for (const [slotIdx, slot] of data.slots.entries()) {
+    const absoluteSlot = hour * 6 + slotIdx;
     // 1. 슬롯별 서버 메트릭 추출
     const serverMetrics: Record<string, Record<string, number>> = {};
     for (const metric of slot.metrics) {
+      if (metric.name === 'http.server.request.duration') {
+        for (const dp of metric.dataPoints) {
+          const hostname = dp.attributes['host.name'] ?? '';
+          const serverId = hostname.split('.')[0];
+          if (!serverMetrics[serverId]) serverMetrics[serverId] = {};
+          serverMetrics[serverId].response = dp.asDouble;
+        }
+        continue;
+      }
       const metricKey = metricNameToKey(metric.name);
       if (!metricKey) continue;
       for (const dp of metric.dataPoints) {
@@ -1388,14 +1691,24 @@ function reconcileLogsWithMetrics(data: HourlyFile, _hour: number): HourlyFile {
       serverHealth[sid] = { status, highMetrics };
     }
 
-    // 3. 기존 WARN/ERROR 로그 제거 (INFO만 유지)
-    slot.logs = slot.logs.filter(log =>
-      log.severityText !== 'WARN' && log.severityText !== 'ERROR'
-    );
+    // 3. 시나리오 원인 로그와 Redis restart sequence만 보존하고 나머지는 재생성
+    slot.logs = slot.logs.filter((log) => {
+      if (log.severityText === 'INFO') return shouldPreserveInfoLog(log);
+      if (log.severityText === 'WARN' || log.severityText === 'ERROR') {
+        return shouldPreserveScenarioLog(log);
+      }
+      return false;
+    });
 
     const newLogs: LogEntry[] = [];
 
-    // 4. 메트릭 기반 WARN/ERROR 로그 생성
+    // 4. 슬롯별 background INFO 로그 생성 (서버당 3개, 순환 패턴으로 3-slot 반복 방지)
+    for (const [sid, metrics] of Object.entries(serverMetrics)) {
+      if (BACKGROUND_INFO_EXCLUDED_RESOURCES.has(sid)) continue;
+      newLogs.push(...buildBackgroundInfoLogs(slot, sid, metrics, absoluteSlot));
+    }
+
+    // 5. 메트릭 기반 WARN/ERROR 로그 생성
     for (const [sid, health] of Object.entries(serverHealth)) {
       if (health.status === 'healthy') continue;
       const cat = getServerCategory(sid);
@@ -1416,6 +1729,17 @@ function reconcileLogsWithMetrics(data: HourlyFile, _hour: number): HourlyFile {
               resource: sid,
             });
           }
+          newLogs.push(
+            buildHealthSummaryLog(
+              slot,
+              sid,
+              serverMetrics[sid] ?? {},
+              absoluteSlot,
+              'ERROR',
+              metricKey,
+              0.58
+            )
+          );
         }
         // Warning/Critical → WARN
         const warnTpls = METRIC_WARN_TEMPLATES[cat]?.[metricKey] ?? [];
@@ -1432,9 +1756,53 @@ function reconcileLogsWithMetrics(data: HourlyFile, _hour: number): HourlyFile {
           });
         }
       }
+
+      if (health.status === 'critical') {
+        newLogs.push(
+          buildHealthSummaryLog(
+            slot,
+            sid,
+            serverMetrics[sid] ?? {},
+            absoluteSlot,
+            'ERROR',
+            'critical',
+            0.84
+          ),
+          buildHealthSummaryLog(
+            slot,
+            sid,
+            serverMetrics[sid] ?? {},
+            absoluteSlot,
+            'ERROR',
+            'critical-followup',
+            0.94
+          ),
+          buildHealthSummaryLog(
+            slot,
+            sid,
+            serverMetrics[sid] ?? {},
+            absoluteSlot,
+            'ERROR',
+            'critical-retry',
+            0.97
+          )
+        );
+      } else {
+        newLogs.push(
+          buildHealthSummaryLog(
+            slot,
+            sid,
+            serverMetrics[sid] ?? {},
+            absoluteSlot,
+            'WARN',
+            health.status,
+            0.9
+          )
+        );
+      }
     }
 
-    // 5. 토폴로지 연쇄 로그 (장애 서버의 의존 서버에 cascade WARN)
+    // 6. 토폴로지 연쇄 로그 (장애 서버의 의존 서버에 cascade WARN)
     const cascadeTargets = new Set<string>();
     for (const [sid, health] of Object.entries(serverHealth)) {
       if (health.status === 'healthy') continue;
@@ -1465,7 +1833,7 @@ function reconcileLogsWithMetrics(data: HourlyFile, _hour: number): HourlyFile {
       });
     }
 
-    // 6. 새 로그 추가 + 시간순 정렬
+    // 7. 새 로그 추가 + 시간순 정렬
     slot.logs.push(...newLogs);
     slot.logs.sort((a, b) => a.timeUnixNano - b.timeUnixNano);
   }

@@ -106,7 +106,7 @@
               }
             },
             {
-              "asDouble": 0.71,
+              "asDouble": 0.72,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -451,7 +451,7 @@
               }
             },
             {
-              "asDouble": 89970065,
+              "asDouble": 90156985,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -1051,284 +1051,321 @@
           "timeUnixNano": 1771066800000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "nginx[5949]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
+          "body": "systemd[1]: nginx reload check passed, active workers 10, memory 45%",
           "attributes": {
-            "log.source": "nginx",
-            "server.role": "web",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "systemd"
           },
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771066818356364800,
+          "timeUnixNano": 1771066800000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: Started Daily apt download activities.",
+          "body": "dockerd[1250]: container web-nginx-dc health=healthy restart_count=2, network 1%",
           "attributes": {
-            "log.source": "systemd",
-            "server.role": "web",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
-          },
-          "resource": "web-nginx-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771066840256773400,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "systemd[1]: Started Daily apt download activities.",
-          "attributes": {
-            "log.source": "systemd",
-            "server.role": "web",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
+            "log.source": "docker"
           },
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771066859437732400,
+          "timeUnixNano": 1771066800000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "CRON[1412]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
+          "body": "nginx[1242]: 10.0.0.23 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.29\" workers=6",
           "attributes": {
-            "log.source": "systemd",
-            "server.role": "web",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
-          },
-          "resource": "web-nginx-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771066876221352700,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "CRON[2520]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
-          "attributes": {
-            "log.source": "systemd",
-            "server.role": "web",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771066896468798700,
+          "timeUnixNano": 1771066800000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "nginx[7592]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
+          "body": "redis-server[1201]: cache hit ratio: 53% over last 60s",
           "attributes": {
-            "log.source": "nginx",
-            "server.role": "web",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "redis"
           },
-          "resource": "web-nginx-dc1-03"
+          "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771066915319900200,
+          "timeUnixNano": 1771066800000000000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[1207]: evicted keys 0, fragmentation 125%",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771066800000000300,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "minio[4271]: S3 Gateway ready, 23 buckets loaded, disk 55%",
+          "attributes": {
+            "log.source": "minio"
+          },
+          "resource": "storage-s3gw-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771066800000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[3670]: InnoDB buffer pool hit ratio: 88%",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-backup"
+        },
+        {
+          "timeUnixNano": 1771066800000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nfsd[4552]: export /data/shared latency 114ms, disk 65%",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771066800000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[2966]: GC scan completed, heap occupancy 52%, reclaimed 220MB",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771066800000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 64, fd usage 38%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "api-was-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771066800000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[2957]: request queue depth 18, p95 143ms, cpu 20%",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771066800000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[6948]: InnoDB buffer pool hit ratio: 83%",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-primary"
+        },
+        {
+          "timeUnixNano": 1771066800000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[2795]: frontend openmanager_fe sessions=757, retries=24, cpu=72%",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771066800000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[2809]: health checks passed for 15/18 backends, queue=6",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771066800000001000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[4102]: replication lag: 362ms on channel dc1-replica",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-replica"
+        },
+        {
+          "timeUnixNano": 1771066865233761500,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[6483]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "body": "haproxy[6547]: WARNING: SYN cookie activation detected, possible SYN flood",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771067028000389000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "dockerd[1249]: container web-nginx-dc health=healthy restart_count=1, network 1%",
+          "attributes": {
+            "log.source": "docker"
+          },
+          "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771067028000389000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nginx[1241]: 10.0.0.22 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.29\" workers=11",
           "attributes": {
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771066915350946800,
+          "timeUnixNano": 1771067028000389000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "dockerd[3407]: Container health status: healthy (exit code 0)",
+          "body": "systemd[1]: nginx reload check passed, active workers 6, memory 36%",
           "attributes": {
-            "log.source": "docker",
-            "server.role": "application",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "systemd"
           },
-          "resource": "api-was-dc1-01"
+          "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771066933500500200,
+          "timeUnixNano": 1771067028001166600,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: Started Application Service (api-was).",
+          "body": "mysqld[3663]: slow query detected: 532ms on reporting.job_runs",
           "attributes": {
-            "log.source": "systemd",
-            "server.role": "application",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771066953343007700,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "dockerd[1617]: Container health status: healthy (exit code 0)",
-          "attributes": {
-            "log.source": "docker",
-            "server.role": "application",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
-          },
-          "resource": "api-was-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771066973472539000,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "systemd[1]: Started Application Service (api-was).",
-          "attributes": {
-            "log.source": "systemd",
-            "server.role": "application",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
-          },
-          "resource": "api-was-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771067033705662200,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "java[2178]: [GC (Allocation Failure) ParNew: 212875K->19494K(205958K), 0.042 secs]",
-          "attributes": {
-            "log.source": "syslog",
-            "server.role": "application",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
-          },
-          "resource": "api-was-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771067053849069000,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "dockerd[6570]: Container health status: healthy (exit code 0)",
-          "attributes": {
-            "log.source": "docker",
-            "server.role": "application",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
-          },
-          "resource": "api-was-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771067068222155500,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "systemd[1]: Started MySQL Community Server.",
-          "attributes": {
-            "log.source": "systemd",
-            "server.role": "database",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
-          },
-          "resource": "db-mysql-dc1-primary"
-        },
-        {
-          "timeUnixNano": 1771067092420784600,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "systemd[1]: Started MySQL Community Server.",
-          "attributes": {
-            "log.source": "systemd",
-            "server.role": "database",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
-          },
-          "resource": "db-mysql-dc1-replica"
-        },
-        {
-          "timeUnixNano": 1771067112254681000,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "mysqld[8317]: InnoDB: Buffer pool(s) load completed at 2026-02-14T11:00:00",
-          "attributes": {
-            "log.source": "syslog",
-            "server.role": "database",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
-          },
-          "resource": "db-mysql-dc1-replica"
-        },
-        {
-          "timeUnixNano": 1771067126186429000,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "CRON[7403]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
-          "attributes": {
-            "log.source": "cron",
-            "server.role": "database",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "mysqld"
           },
           "resource": "db-mysql-dc1-backup"
         },
         {
-          "timeUnixNano": 1771067149909129200,
+          "timeUnixNano": 1771067028002285300,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[4116]: Background AOF rewrite finished successfully",
+          "body": "rsync[4559]: incremental verify completed, changed files 672",
           "attributes": {
-            "log.source": "redis",
-            "server.role": "cache",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "rsync"
+          },
+          "resource": "storage-nfs-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771067028003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 56, fd usage 39%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771067028003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[2956]: request queue depth 10, p95 160ms, cpu 45%",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771067028003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[2968]: GC scan completed, heap occupancy 36%, reclaimed 204MB",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771067028003618800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[6941]: slow query detected: 721ms on reporting.job_runs",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-primary"
+        },
+        {
+          "timeUnixNano": 1771067028003797200,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "minio[4276]: object lifecycle scan checkpoint 291, network 24%",
+          "attributes": {
+            "log.source": "minio"
+          },
+          "resource": "storage-s3gw-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771067028004344000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[1206]: evicted keys 234, fragmentation 129%",
+          "attributes": {
+            "log.source": "redis"
           },
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771067170505915600,
+          "timeUnixNano": 1771067028004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[8853]: DB saved on disk (RDB snapshot)",
+          "body": "systemd[1]: redis persistence check ok, used memory 56% of maxmemory",
           "attributes": {
-            "log.source": "redis",
-            "server.role": "cache",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
-          },
-          "resource": "cache-redis-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771067186531885800,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "systemd[1]: redis-server.service: Watchdog timestamp updated.",
-          "attributes": {
-            "log.source": "systemd",
-            "server.role": "cache",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
+            "log.source": "systemd"
           },
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771067203980294400,
+          "timeUnixNano": 1771067028006860800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: Started NFS server and services.",
+          "body": "haproxy[2808]: health checks passed for 18/18 backends, queue=24",
           "attributes": {
-            "log.source": "systemd",
-            "server.role": "storage",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "haproxy"
           },
-          "resource": "storage-nfs-dc1-01"
+          "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771067228271922000,
+          "timeUnixNano": 1771067028006860800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "nfsd[9145]: NFS export /data/shared ready, 32 active clients",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 18%",
           "attributes": {
-            "log.source": "syslog",
-            "server.role": "storage",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "systemd"
           },
-          "resource": "storage-nfs-dc1-01"
+          "resource": "lb-haproxy-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771067028007922000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[4106]: InnoDB buffer pool hit ratio: 85%",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-replica"
+        },
+        {
+          "timeUnixNano": 1771067225510507500,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[9642]: *4450 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
         },
         {
           "timeUnixNano": 1771067232000000000,
@@ -1341,112 +1378,184 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771067261151058400,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[9269]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "timeUnixNano": 1771067244000389000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nginx[1240]: 10.0.0.21 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.29\" workers=10",
           "attributes": {
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771067285035546000,
+          "timeUnixNano": 1771067244000389000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "minio[3362]: Healthcheck passed, 6 active connections",
+          "body": "systemd[1]: nginx reload check passed, active workers 11, memory 42%",
           "attributes": {
-            "log.source": "minio",
-            "server.role": "storage",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "systemd"
+          },
+          "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771067244000389000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "dockerd[1251]: container web-nginx-dc health=healthy restart_count=0, network 0%",
+          "attributes": {
+            "log.source": "docker"
+          },
+          "resource": "web-nginx-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771067244001166600,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[3666]: replication lag: 322ms on channel dc1-replica",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-backup"
+        },
+        {
+          "timeUnixNano": 1771067244002285300,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: storage scrub heartbeat ok, network 16%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "storage-nfs-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771067244003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[2955]: request queue depth 13, p95 162ms, cpu 48%",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771067244003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[2967]: GC scan completed, heap occupancy 54%, reclaimed 222MB",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771067244003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: api-was-dc1-03.service heartbeat ok, worker threads 72, fd usage 20%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771067244003618800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[6944]: replication lag: 396ms on channel dc1-replica",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-primary"
+        },
+        {
+          "timeUnixNano": 1771067244003797200,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: minio.service heartbeat ok, active connections 15",
+          "attributes": {
+            "log.source": "systemd"
           },
           "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1771067285079813400,
+          "timeUnixNano": 1771067244004344000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: redis persistence check ok, used memory 71% of maxmemory",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "cache-redis-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771067244004344000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[1202]: cache hit ratio: 60% over last 60s",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771067244006860800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 84%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771067244006860800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[2796]: frontend openmanager_fe sessions=396, retries=6, cpu=35%",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771067244007922000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[4099]: slow query detected: 612ms on reporting.job_runs",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-replica"
+        },
+        {
+          "timeUnixNano": 1771067340002128000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "haproxy[8118]: WARNING: SYN cookie activation detected, possible SYN flood",
+          "body": "haproxy[6242]: WARNING: warning pressure summary cpu=72% mem=35% disk=14% net=72%",
           "attributes": {
             "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771067303359043300,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "systemd[1]: Started MinIO S3 Gateway service.",
-          "attributes": {
-            "log.source": "systemd",
-            "server.role": "storage",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
-          },
-          "resource": "storage-s3gw-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771067320308843300,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "haproxy[2322]: Health check OK for backend api_servers/server1 (HTTP 200)",
-          "attributes": {
-            "log.source": "haproxy",
-            "server.role": "loadbalancer",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
-          },
-          "resource": "lb-haproxy-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771067342644475100,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "systemd[1]: haproxy.service: Watchdog timestamp updated.",
-          "attributes": {
-            "log.source": "systemd",
-            "server.role": "loadbalancer",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
-          },
-          "resource": "lb-haproxy-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771067345901346300,
+          "timeUnixNano": 1771067346654449700,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[2670]: *896 upstream prematurely closed connection while reading response header",
+          "body": "nginx[1408]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
             "log.source": "nginx"
           },
-          "resource": "web-nginx-dc1-03"
+          "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771067363036365600,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "haproxy[6381]: Proxy api_frontend started (FD 101)",
+          "timeUnixNano": 1771067357709941500,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[9712]: *3620 upstream prematurely closed connection while reading response header",
           "attributes": {
-            "log.source": "haproxy",
-            "server.role": "loadbalancer",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "nginx"
           },
-          "resource": "lb-haproxy-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771067378645824300,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "haproxy[8603]: Health check OK for backend api_servers/server1 (HTTP 200)",
-          "attributes": {
-            "log.source": "haproxy",
-            "server.role": "loadbalancer",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
-          },
-          "resource": "lb-haproxy-dc1-02"
+          "resource": "web-nginx-dc1-02"
         }
       ]
     },
@@ -1550,7 +1659,7 @@
               }
             },
             {
-              "asDouble": 0.7,
+              "asDouble": 0.71,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -1895,7 +2004,7 @@
               }
             },
             {
-              "asDouble": 91840091,
+              "asDouble": 91074166,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -2495,200 +2604,321 @@
           "timeUnixNano": 1771067400000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "nginx[4131]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
+          "body": "dockerd[1266]: container web-nginx-dc health=healthy restart_count=0, network 1%",
           "attributes": {
-            "log.source": "nginx",
-            "server.role": "web",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "docker"
           },
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771067431625117700,
+          "timeUnixNano": 1771067400000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "nginx[8994]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
-          "attributes": {
-            "log.source": "nginx",
-            "server.role": "web",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
-          },
-          "resource": "web-nginx-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771067446407013000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[5277]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771067456001566500,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "CRON[9763]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
-          "attributes": {
-            "log.source": "systemd",
-            "server.role": "web",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
-          },
-          "resource": "web-nginx-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771067488281361700,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "nginx[7420]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
-          "attributes": {
-            "log.source": "nginx",
-            "server.role": "web",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
-          },
-          "resource": "web-nginx-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771067547342331600,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "dockerd[5788]: Container health status: healthy (exit code 0)",
-          "attributes": {
-            "log.source": "docker",
-            "server.role": "application",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771067579194275800,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "java[5092]: [GC (Allocation Failure) ParNew: 156694K->13955K(84650K), 0.081 secs]",
-          "attributes": {
-            "log.source": "syslog",
-            "server.role": "application",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771067606415988700,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "dockerd[5668]: Container health status: healthy (exit code 0)",
-          "attributes": {
-            "log.source": "docker",
-            "server.role": "application",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
-          },
-          "resource": "api-was-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771067664255608000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[1606]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "body": "nginx[1258]: 10.0.0.39 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.29\" workers=10",
           "attributes": {
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771067668621506800,
+          "timeUnixNano": 1771067400000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: Started MySQL Community Server.",
+          "body": "systemd[1]: nginx reload check passed, active workers 11, memory 36%",
           "attributes": {
-            "log.source": "systemd",
-            "server.role": "database",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "systemd"
           },
-          "resource": "db-mysql-dc1-backup"
+          "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771067700282026500,
+          "timeUnixNano": 1771067400000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[4605]: DB saved on disk (RDB snapshot)",
+          "body": "redis-server[1223]: evicted keys 0, fragmentation 126%",
           "attributes": {
-            "log.source": "redis",
-            "server.role": "cache",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "redis"
           },
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771067729815291000,
+          "timeUnixNano": 1771067400000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[3691]: Background AOF rewrite finished successfully",
+          "body": "systemd[1]: redis persistence check ok, used memory 68% of maxmemory",
           "attributes": {
-            "log.source": "redis",
-            "server.role": "cache",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
+            "log.source": "systemd"
           },
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771067764173006600,
+          "timeUnixNano": 1771067400000000300,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "CRON[5151]: (root) CMD (/usr/local/bin/check-raid-status.sh)",
+          "body": "minio[4293]: object lifecycle scan checkpoint 308, network 22%",
           "attributes": {
-            "log.source": "cron",
-            "server.role": "storage",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "minio"
+          },
+          "resource": "storage-s3gw-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771067400000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[3680]: slow query detected: 528ms on reporting.job_runs",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-backup"
+        },
+        {
+          "timeUnixNano": 1771067400000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "rsync[4576]: incremental verify completed, changed files 689",
+          "attributes": {
+            "log.source": "rsync"
           },
           "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1771067764816684800,
+          "timeUnixNano": 1771067400000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 48, fd usage 40%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771067400000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[2973]: request queue depth 19, p95 140ms, cpu 42%",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771067400000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[2985]: GC scan completed, heap occupancy 36%, reclaimed 211MB",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771067400000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[6958]: slow query detected: 755ms on reporting.job_runs",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-primary"
+        },
+        {
+          "timeUnixNano": 1771067400000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[2825]: health checks passed for 16/18 backends, queue=25",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771067400000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 18%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "lb-haproxy-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771067400000001000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[4123]: InnoDB buffer pool hit ratio: 84%",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-replica"
+        },
+        {
+          "timeUnixNano": 1771067412030142500,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[8989]: *5091 upstream prematurely closed connection while reading response header",
+          "body": "nginx[8482]: *860 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771067536207270000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "haproxy[6818]: WARNING: SYN cookie activation detected, possible SYN flood",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771067628000389000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nginx[1257]: 10.0.0.38 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.29\" workers=9",
           "attributes": {
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771067793616759800,
+          "timeUnixNano": 1771067628000389000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "nfsd[5067]: NFS export /data/shared ready, 50 active clients",
+          "body": "systemd[1]: nginx reload check passed, active workers 10, memory 43%",
           "attributes": {
-            "log.source": "syslog",
-            "server.role": "storage",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "systemd"
+          },
+          "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771067628000389000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "dockerd[1268]: container web-nginx-dc health=healthy restart_count=2, network 0%",
+          "attributes": {
+            "log.source": "docker"
+          },
+          "resource": "web-nginx-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771067628001166600,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[3683]: replication lag: 334ms on channel dc1-replica",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-backup"
+        },
+        {
+          "timeUnixNano": 1771067628002285300,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: storage scrub heartbeat ok, network 31%",
+          "attributes": {
+            "log.source": "systemd"
           },
           "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1771067821421633800,
+          "timeUnixNano": 1771067628003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "minio[4728]: Healthcheck passed, 10 active connections",
+          "body": "java[2972]: request queue depth 15, p95 170ms, cpu 49%",
           "attributes": {
-            "log.source": "minio",
-            "server.role": "storage",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771067628003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[2984]: GC scan completed, heap occupancy 55%, reclaimed 230MB",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771067628003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: api-was-dc1-03.service heartbeat ok, worker threads 64, fd usage 20%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771067628003618800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[6961]: replication lag: 397ms on channel dc1-replica",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-primary"
+        },
+        {
+          "timeUnixNano": 1771067628003797200,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: minio.service heartbeat ok, active connections 14",
+          "attributes": {
+            "log.source": "systemd"
           },
           "resource": "storage-s3gw-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771067628004344000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: redis persistence check ok, used memory 54% of maxmemory",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "cache-redis-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771067628004344000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[1219]: cache hit ratio: 49% over last 60s",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771067628006860800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 85%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771067628006860800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[2813]: frontend openmanager_fe sessions=431, retries=8, cpu=41%",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771067628007922000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[4116]: slow query detected: 622ms on reporting.job_runs",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-replica"
         },
         {
           "timeUnixNano": 1771067832000000000,
@@ -2701,53 +2931,184 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771067876263844000,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "haproxy[8259]: Proxy api_frontend started (FD 105)",
-          "attributes": {
-            "log.source": "haproxy",
-            "server.role": "loadbalancer",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
-          },
-          "resource": "lb-haproxy-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771067939648183800,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "haproxy[5583]: Proxy api_frontend started (FD 33)",
-          "attributes": {
-            "log.source": "haproxy",
-            "server.role": "loadbalancer",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
-          },
-          "resource": "lb-haproxy-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771067961544465700,
+          "timeUnixNano": 1771067841390984700,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "haproxy[5432]: WARNING: SYN cookie activation detected, possible SYN flood",
+          "body": "nginx[2863]: *7102 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771067844000389000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: nginx reload check passed, active workers 9, memory 45%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771067844000389000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "dockerd[1267]: container web-nginx-dc health=healthy restart_count=1, network 1%",
+          "attributes": {
+            "log.source": "docker"
+          },
+          "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771067844000389000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nginx[1259]: 10.0.0.40 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.29\" workers=11",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771067844001166600,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[3687]: InnoDB buffer pool hit ratio: 88%",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-backup"
+        },
+        {
+          "timeUnixNano": 1771067844002285300,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nfsd[4569]: export /data/shared latency 131ms, disk 64%",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771067844003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[2983]: GC scan completed, heap occupancy 52%, reclaimed 227MB",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771067844003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 56, fd usage 37%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "api-was-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771067844003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[2974]: request queue depth 19, p95 178ms, cpu 20%",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771067844003618800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[6965]: InnoDB buffer pool hit ratio: 85%",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-primary"
+        },
+        {
+          "timeUnixNano": 1771067844003797200,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "minio[4288]: S3 Gateway ready, 16 buckets loaded, disk 53%",
+          "attributes": {
+            "log.source": "minio"
+          },
+          "resource": "storage-s3gw-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771067844004344000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[1218]: cache hit ratio: 58% over last 60s",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771067844004344000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[1224]: evicted keys 187, fragmentation 130%",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771067844006860800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[2812]: frontend openmanager_fe sessions=767, retries=25, cpu=71%",
           "attributes": {
             "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771067966887996700,
+          "timeUnixNano": 1771067844006860800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: haproxy.service: Watchdog timestamp updated.",
+          "body": "haproxy[2826]: health checks passed for 17/18 backends, queue=8",
           "attributes": {
-            "log.source": "systemd",
-            "server.role": "loadbalancer",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771067844007922000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[4119]: replication lag: 392ms on channel dc1-replica",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-replica"
+        },
+        {
+          "timeUnixNano": 1771067868721007400,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[3845]: *3272 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771067940002128000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "haproxy[6271]: WARNING: warning pressure summary cpu=71% mem=38% disk=14% net=73%",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-01"
         }
       ]
     },
@@ -3196,7 +3557,7 @@
               }
             },
             {
-              "asDouble": 93276686,
+              "asDouble": 90227464,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -3793,278 +4154,334 @@
       ],
       "logs": [
         {
-          "timeUnixNano": 1771068002348805600,
+          "timeUnixNano": 1771068000000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "nginx[1748]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
+          "body": "nginx[1274]: 10.0.0.25 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.29\" workers=8",
           "attributes": {
-            "log.source": "nginx",
-            "server.role": "web",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771068021773361700,
+          "timeUnixNano": 1771068000000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "nginx[9740]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
+          "body": "systemd[1]: nginx reload check passed, active workers 9, memory 38%",
           "attributes": {
-            "log.source": "nginx",
-            "server.role": "web",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
+            "log.source": "systemd"
           },
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771068034804568000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[3915]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771068045987360800,
+          "timeUnixNano": 1771068000000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "CRON[2377]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
+          "body": "dockerd[1285]: container web-nginx-dc health=healthy restart_count=1, network 0%",
           "attributes": {
-            "log.source": "systemd",
-            "server.role": "web",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
-          },
-          "resource": "web-nginx-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771068057593295000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[4537]: *6986 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
+            "log.source": "docker"
           },
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771068064683969800,
+          "timeUnixNano": 1771068000000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "nginx[1116]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
+          "body": "systemd[1]: redis persistence check ok, used memory 55% of maxmemory",
           "attributes": {
-            "log.source": "nginx",
-            "server.role": "web",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "systemd"
           },
-          "resource": "web-nginx-dc1-03"
+          "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771068071044522500,
+          "timeUnixNano": 1771068000000000000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[1236]: cache hit ratio: 45% over last 60s",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771068000000000300,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: minio.service heartbeat ok, active connections 13",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "storage-s3gw-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771068000000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[3700]: replication lag: 375ms on channel dc1-replica",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-backup"
+        },
+        {
+          "timeUnixNano": 1771068000000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: storage scrub heartbeat ok, network 29%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "storage-nfs-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771068000000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[2989]: request queue depth 20, p95 152ms, cpu 42%",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771068000000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[3001]: GC scan completed, heap occupancy 53%, reclaimed 235MB",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771068000000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: api-was-dc1-03.service heartbeat ok, worker threads 56, fd usage 26%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771068000000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[6978]: replication lag: 405ms on channel dc1-replica",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-primary"
+        },
+        {
+          "timeUnixNano": 1771068000000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 84%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771068000000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[2830]: frontend openmanager_fe sessions=422, retries=8, cpu=36%",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771068000000001000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[4133]: slow query detected: 702ms on reporting.job_runs",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-replica"
+        },
+        {
+          "timeUnixNano": 1771068066431504600,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "haproxy[1305]: WARNING: SYN cookie activation detected, possible SYN flood",
+          "body": "haproxy[7532]: WARNING: SYN cookie activation detected, possible SYN flood",
           "attributes": {
             "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771068086137675500,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "CRON[7335]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
+          "timeUnixNano": 1771068159672823800,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[7006]: *3019 upstream prematurely closed connection while reading response header",
           "attributes": {
-            "log.source": "systemd",
-            "server.role": "web",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771068108220047600,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "java[1237]: [GC (Allocation Failure) ParNew: 156039K->16493K(149753K), 0.088 secs]",
-          "attributes": {
-            "log.source": "syslog",
-            "server.role": "application",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771068130329757400,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "dockerd[1965]: Container health status: healthy (exit code 0)",
-          "attributes": {
-            "log.source": "docker",
-            "server.role": "application",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771068179259169500,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "java[2433]: [GC (Allocation Failure) ParNew: 174910K->24007K(138996K), 0.063 secs]",
-          "attributes": {
-            "log.source": "syslog",
-            "server.role": "application",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
-          },
-          "resource": "api-was-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771068203095480300,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "dockerd[3995]: Container health status: healthy (exit code 0)",
-          "attributes": {
-            "log.source": "docker",
-            "server.role": "application",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
-          },
-          "resource": "api-was-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771068223708452000,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "java[9911]: [GC (Allocation Failure) ParNew: 159524K->17397K(164223K), 0.071 secs]",
-          "attributes": {
-            "log.source": "syslog",
-            "server.role": "application",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
-          },
-          "resource": "api-was-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771068244654049000,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "CRON[3472]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
-          "attributes": {
-            "log.source": "cron",
-            "server.role": "database",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
-          },
-          "resource": "db-mysql-dc1-primary"
-        },
-        {
-          "timeUnixNano": 1771068269064733200,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "mysqld[7317]: InnoDB: Buffer pool(s) load completed at 2026-02-14T11:20:00",
-          "attributes": {
-            "log.source": "syslog",
-            "server.role": "database",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
-          },
-          "resource": "db-mysql-dc1-replica"
-        },
-        {
-          "timeUnixNano": 1771068288391045600,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "CRON[2088]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
-          "attributes": {
-            "log.source": "cron",
-            "server.role": "database",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
-          },
-          "resource": "db-mysql-dc1-backup"
-        },
-        {
-          "timeUnixNano": 1771068307320323300,
+          "timeUnixNano": 1771068163953562400,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[4272]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "body": "nginx[1566]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771068312554370000,
+          "timeUnixNano": 1771068228000389000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[7329]: InnoDB: Buffer pool(s) load completed at 2026-02-14T11:20:00",
+          "body": "systemd[1]: nginx reload check passed, active workers 8, memory 44%",
           "attributes": {
-            "log.source": "syslog",
-            "server.role": "database",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "systemd"
+          },
+          "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771068228000389000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "dockerd[1284]: container web-nginx-dc health=healthy restart_count=0, network 1%",
+          "attributes": {
+            "log.source": "docker"
+          },
+          "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771068228000389000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nginx[1276]: 10.0.0.27 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.29\" workers=10",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771068228001166600,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[3704]: InnoDB buffer pool hit ratio: 88%",
+          "attributes": {
+            "log.source": "mysqld"
           },
           "resource": "db-mysql-dc1-backup"
         },
         {
-          "timeUnixNano": 1771068358414239200,
+          "timeUnixNano": 1771068228002285300,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[9394]: DB saved on disk (RDB snapshot)",
+          "body": "nfsd[4586]: export /data/shared latency 138ms, disk 64%",
           "attributes": {
-            "log.source": "redis",
-            "server.role": "cache",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771068228003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[3000]: GC scan completed, heap occupancy 54%, reclaimed 236MB",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771068228003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 48, fd usage 37%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "api-was-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771068228003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[2991]: request queue depth 18, p95 174ms, cpu 29%",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771068228003618800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[6982]: InnoDB buffer pool hit ratio: 87%",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-primary"
+        },
+        {
+          "timeUnixNano": 1771068228003797200,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "minio[4305]: S3 Gateway ready, 9 buckets loaded, disk 55%",
+          "attributes": {
+            "log.source": "minio"
+          },
+          "resource": "storage-s3gw-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771068228004344000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[1235]: cache hit ratio: 53% over last 60s",
+          "attributes": {
+            "log.source": "redis"
           },
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771068375713596200,
+          "timeUnixNano": 1771068228004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis-server.service: Watchdog timestamp updated.",
+          "body": "redis-server[1241]: evicted keys 248, fragmentation 133%",
           "attributes": {
-            "log.source": "systemd",
-            "server.role": "cache",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
-          },
-          "resource": "cache-redis-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771068397283589600,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "systemd[1]: redis-server.service: Watchdog timestamp updated.",
-          "attributes": {
-            "log.source": "systemd",
-            "server.role": "cache",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
+            "log.source": "redis"
           },
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771068419372065000,
+          "timeUnixNano": 1771068228006860800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "CRON[3019]: (root) CMD (/usr/local/bin/check-raid-status.sh)",
+          "body": "haproxy[2829]: frontend openmanager_fe sessions=779, retries=26, cpu=72%",
           "attributes": {
-            "log.source": "cron",
-            "server.role": "storage",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "haproxy"
           },
-          "resource": "storage-nfs-dc1-01"
+          "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771068228006860800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[2843]: health checks passed for 15/18 backends, queue=8",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771068228007922000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[4136]: replication lag: 418ms on channel dc1-replica",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-replica"
         },
         {
           "timeUnixNano": 1771068432000000000,
@@ -4077,69 +4494,174 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771068442287489000,
+          "timeUnixNano": 1771068444000389000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "nfsd[4203]: NFS export /data/shared ready, 50 active clients",
+          "body": "dockerd[1283]: container web-nginx-dc health=healthy restart_count=2, network 1%",
           "attributes": {
-            "log.source": "syslog",
-            "server.role": "storage",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "docker"
+          },
+          "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771068444000389000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nginx[1275]: 10.0.0.26 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.29\" workers=9",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771068444000389000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: nginx reload check passed, active workers 10, memory 32%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "web-nginx-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771068444001166600,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[3697]: slow query detected: 586ms on reporting.job_runs",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-backup"
+        },
+        {
+          "timeUnixNano": 1771068444002285300,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "rsync[4593]: incremental verify completed, changed files 706",
+          "attributes": {
+            "log.source": "rsync"
           },
           "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1771068468100374300,
+          "timeUnixNano": 1771068444003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "minio[2912]: Healthcheck passed, 9 active connections",
+          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 88, fd usage 37%",
           "attributes": {
-            "log.source": "minio",
-            "server.role": "storage",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "systemd"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771068444003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[2990]: request queue depth 21, p95 160ms, cpu 43%",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771068444003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[3002]: GC scan completed, heap occupancy 42%, reclaimed 224MB",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771068444003618800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[6975]: slow query detected: 785ms on reporting.job_runs",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-primary"
+        },
+        {
+          "timeUnixNano": 1771068444003797200,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "minio[4310]: object lifecycle scan checkpoint 325, network 30%",
+          "attributes": {
+            "log.source": "minio"
           },
           "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1771068488853253000,
+          "timeUnixNano": 1771068444004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: haproxy.service: Watchdog timestamp updated.",
+          "body": "redis-server[1240]: evicted keys 0, fragmentation 129%",
           "attributes": {
-            "log.source": "systemd",
-            "server.role": "loadbalancer",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771068444004344000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: redis persistence check ok, used memory 71% of maxmemory",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "cache-redis-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771068444006860800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[2842]: health checks passed for 18/18 backends, queue=26",
+          "attributes": {
+            "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771068533822021600,
+          "timeUnixNano": 1771068444006860800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: haproxy.service: Watchdog timestamp updated.",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 18%",
           "attributes": {
-            "log.source": "systemd",
-            "server.role": "loadbalancer",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "systemd"
           },
           "resource": "lb-haproxy-dc1-02"
         },
         {
-          "timeUnixNano": 1771068554088902000,
+          "timeUnixNano": 1771068444007922000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[5572]: Health check OK for backend api_servers/server1 (HTTP 200)",
+          "body": "mysqld[4140]: InnoDB buffer pool hit ratio: 85%",
           "attributes": {
-            "log.source": "haproxy",
-            "server.role": "loadbalancer",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "mysqld"
           },
-          "resource": "lb-haproxy-dc1-02"
+          "resource": "db-mysql-dc1-replica"
+        },
+        {
+          "timeUnixNano": 1771068489545451000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[8589]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771068540002128000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "haproxy[6300]: WARNING: warning pressure summary cpu=72% mem=37% disk=15% net=72%",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-01"
         }
       ]
     },
@@ -4588,7 +5110,7 @@
               }
             },
             {
-              "asDouble": 92903814,
+              "asDouble": 93340356,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -5185,258 +5707,334 @@
       ],
       "logs": [
         {
-          "timeUnixNano": 1771068602945741600,
+          "timeUnixNano": 1771068600000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "CRON[8052]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
+          "body": "systemd[1]: nginx reload check passed, active workers 7, memory 47%",
           "attributes": {
-            "log.source": "systemd",
-            "server.role": "web",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "systemd"
           },
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771068622897281500,
+          "timeUnixNano": 1771068600000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "nginx[3556]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
+          "body": "dockerd[1301]: container web-nginx-dc health=healthy restart_count=2, network 1%",
           "attributes": {
-            "log.source": "nginx",
-            "server.role": "web",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
-          },
-          "resource": "web-nginx-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771068640913505000,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "CRON[7378]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
-          "attributes": {
-            "log.source": "systemd",
-            "server.role": "web",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
+            "log.source": "docker"
           },
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771068663895437300,
+          "timeUnixNano": 1771068600000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "nginx[8369]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
-          "attributes": {
-            "log.source": "nginx",
-            "server.role": "web",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
-          },
-          "resource": "web-nginx-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771068684260852700,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "CRON[1519]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
-          "attributes": {
-            "log.source": "systemd",
-            "server.role": "web",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
-          },
-          "resource": "web-nginx-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771068705856694800,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "systemd[1]: Started Daily apt download activities.",
-          "attributes": {
-            "log.source": "systemd",
-            "server.role": "web",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
-          },
-          "resource": "web-nginx-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771068730827499500,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "dockerd[7522]: Container health status: healthy (exit code 0)",
-          "attributes": {
-            "log.source": "docker",
-            "server.role": "application",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771068752645685200,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "java[1265]: [GC (Allocation Failure) ParNew: 144893K->13134K(178687K), 0.090 secs]",
-          "attributes": {
-            "log.source": "syslog",
-            "server.role": "application",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
-          },
-          "resource": "api-was-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771068774176815600,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "java[9820]: [GC (Allocation Failure) ParNew: 218881K->31280K(139605K), 0.072 secs]",
-          "attributes": {
-            "log.source": "syslog",
-            "server.role": "application",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
-          },
-          "resource": "api-was-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771068785549675800,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[4934]: *6835 upstream prematurely closed connection while reading response header",
+          "body": "nginx[1293]: 10.0.0.14 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.29\" workers=9",
           "attributes": {
             "log.source": "nginx"
           },
-          "resource": "web-nginx-dc1-01"
+          "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771068794890940700,
+          "timeUnixNano": 1771068600000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: Started Application Service (api-was).",
+          "body": "redis-server[1252]: cache hit ratio: 65% over last 60s",
           "attributes": {
-            "log.source": "systemd",
-            "server.role": "application",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "redis"
           },
-          "resource": "api-was-dc1-03"
+          "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771068838430092300,
+          "timeUnixNano": 1771068600000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[6289]: [GC (Allocation Failure) ParNew: 136192K->12255K(106203K), 0.028 secs]",
+          "body": "redis-server[1258]: evicted keys 201, fragmentation 134%",
           "attributes": {
-            "log.source": "syslog",
-            "server.role": "application",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "redis"
           },
-          "resource": "api-was-dc1-03"
+          "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771068856895904500,
+          "timeUnixNano": 1771068600000000300,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "CRON[5404]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
+          "body": "minio[4322]: S3 Gateway ready, 26 buckets loaded, disk 52%",
           "attributes": {
-            "log.source": "cron",
-            "server.role": "database",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "minio"
           },
-          "resource": "db-mysql-dc1-primary"
+          "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1771068900674738000,
+          "timeUnixNano": 1771068600000000500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "CRON[4483]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
+          "body": "mysqld[3721]: InnoDB buffer pool hit ratio: 88%",
           "attributes": {
-            "log.source": "cron",
-            "server.role": "database",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
-          },
-          "resource": "db-mysql-dc1-replica"
-        },
-        {
-          "timeUnixNano": 1771068922871321000,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "mysqld[2591]: InnoDB: Buffer pool(s) load completed at 2026-02-14T11:30:00",
-          "attributes": {
-            "log.source": "syslog",
-            "server.role": "database",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "mysqld"
           },
           "resource": "db-mysql-dc1-backup"
         },
         {
-          "timeUnixNano": 1771068944149271300,
+          "timeUnixNano": 1771068600000000500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[6628]: Background AOF rewrite finished successfully",
+          "body": "nfsd[4603]: export /data/shared latency 152ms, disk 66%",
           "attributes": {
-            "log.source": "redis",
-            "server.role": "cache",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "nfsd"
           },
-          "resource": "cache-redis-dc1-01"
+          "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1771068985571317500,
+          "timeUnixNano": 1771068600000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7749]: DB saved on disk (RDB snapshot)",
+          "body": "java[3017]: GC scan completed, heap occupancy 65%, reclaimed 254MB",
           "attributes": {
-            "log.source": "redis",
-            "server.role": "cache",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "java"
           },
-          "resource": "cache-redis-dc1-01"
+          "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771068991460768300,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "haproxy[6005]: WARNING: Connection table 92% full (conntrack saturation)",
+          "timeUnixNano": 1771068600000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 88, fd usage 52%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "api-was-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771068600000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[3008]: request queue depth 14, p95 289ms, cpu 24%",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771068600000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[6999]: InnoDB buffer pool hit ratio: 83%",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-primary"
+        },
+        {
+          "timeUnixNano": 1771068600000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[2846]: frontend openmanager_fe sessions=803, retries=28, cpu=73%",
           "attributes": {
             "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771069005285443600,
+          "timeUnixNano": 1771068600000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[7409]: DB saved on disk (RDB snapshot)",
+          "body": "haproxy[2860]: health checks passed for 17/18 backends, queue=9",
           "attributes": {
-            "log.source": "redis",
-            "server.role": "cache",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771068600000001000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[4153]: replication lag: 446ms on channel dc1-replica",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-replica"
+        },
+        {
+          "timeUnixNano": 1771068728765267500,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[7854]: *2886 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771068739353768000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[9911]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771068828000389000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "dockerd[1300]: container web-nginx-dc health=healthy restart_count=1, network 1%",
+          "attributes": {
+            "log.source": "docker"
+          },
+          "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771068828000389000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nginx[1292]: 10.0.0.13 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.29\" workers=8",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771068828000389000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: nginx reload check passed, active workers 9, memory 37%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "web-nginx-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771068828001166600,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[3714]: slow query detected: 606ms on reporting.job_runs",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-backup"
+        },
+        {
+          "timeUnixNano": 1771068828002285300,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "rsync[4610]: incremental verify completed, changed files 723",
+          "attributes": {
+            "log.source": "rsync"
+          },
+          "resource": "storage-nfs-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771068828003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 80, fd usage 50%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771068828003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[3007]: request queue depth 22, p95 258ms, cpu 65%",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771068828003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[3019]: GC scan completed, heap occupancy 37%, reclaimed 226MB",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771068828003618800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[6992]: slow query detected: 796ms on reporting.job_runs",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-primary"
+        },
+        {
+          "timeUnixNano": 1771068828003797200,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "minio[4327]: object lifecycle scan checkpoint 342, network 23%",
+          "attributes": {
+            "log.source": "minio"
+          },
+          "resource": "storage-s3gw-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771068828004344000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[1257]: evicted keys 0, fragmentation 128%",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771068828004344000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: redis persistence check ok, used memory 68% of maxmemory",
+          "attributes": {
+            "log.source": "systemd"
           },
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771069027943128000,
+          "timeUnixNano": 1771068828006860800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis-server.service: Watchdog timestamp updated.",
+          "body": "haproxy[2859]: health checks passed for 16/18 backends, queue=28",
           "attributes": {
-            "log.source": "systemd",
-            "server.role": "cache",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
+            "log.source": "haproxy"
           },
-          "resource": "cache-redis-dc1-02"
+          "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771068828006860800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 18%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "lb-haproxy-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771068828007922000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[4157]: InnoDB buffer pool hit ratio: 85%",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-replica"
+        },
+        {
+          "timeUnixNano": 1771068998181102800,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[4677]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
         },
         {
           "timeUnixNano": 1771069032000000000,
@@ -5449,102 +6047,174 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771069035083348000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[6736]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "timeUnixNano": 1771069044000389000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nginx[1291]: 10.0.0.12 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.29\" workers=7",
           "attributes": {
             "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771069044000389000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: nginx reload check passed, active workers 8, memory 38%",
+          "attributes": {
+            "log.source": "systemd"
           },
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771069051777659000,
+          "timeUnixNano": 1771069044000389000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "CRON[9647]: (root) CMD (/usr/local/bin/check-raid-status.sh)",
+          "body": "dockerd[1302]: container web-nginx-dc health=healthy restart_count=0, network 0%",
           "attributes": {
-            "log.source": "cron",
-            "server.role": "storage",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
-          },
-          "resource": "storage-nfs-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771069095657740000,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "minio[4644]: S3 Gateway ready, 10 buckets loaded",
-          "attributes": {
-            "log.source": "minio",
-            "server.role": "storage",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
-          },
-          "resource": "storage-s3gw-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771069109701780000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[8902]: *7129 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
+            "log.source": "docker"
           },
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771069116316896000,
+          "timeUnixNano": 1771069044001166600,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: haproxy.service: Watchdog timestamp updated.",
+          "body": "mysqld[3717]: replication lag: 409ms on channel dc1-replica",
           "attributes": {
-            "log.source": "systemd",
-            "server.role": "loadbalancer",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-backup"
+        },
+        {
+          "timeUnixNano": 1771069044002285300,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: storage scrub heartbeat ok, network 33%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "storage-nfs-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771069044003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[3006]: request queue depth 19, p95 316ms, cpu 62%",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771069044003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[3018]: GC scan completed, heap occupancy 65%, reclaimed 254MB",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771069044003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: api-was-dc1-03.service heartbeat ok, worker threads 48, fd usage 22%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771069044003618800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[6995]: replication lag: 480ms on channel dc1-replica",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-primary"
+        },
+        {
+          "timeUnixNano": 1771069044003797200,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: minio.service heartbeat ok, active connections 12",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "storage-s3gw-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771069044004344000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: redis persistence check ok, used memory 46% of maxmemory",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "cache-redis-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771069044004344000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[1253]: cache hit ratio: 54% over last 60s",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771069044006860800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 87%",
+          "attributes": {
+            "log.source": "systemd"
           },
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771069136319417000,
+          "timeUnixNano": 1771069044006860800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[6394]: Health check OK for backend api_servers/server1 (HTTP 200)",
+          "body": "haproxy[2847]: frontend openmanager_fe sessions=421, retries=9, cpu=33%",
           "attributes": {
-            "log.source": "haproxy",
-            "server.role": "loadbalancer",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771069044007922000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[4150]: slow query detected: 707ms on reporting.job_runs",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-replica"
+        },
+        {
+          "timeUnixNano": 1771069092441043700,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "haproxy[8465]: WARNING: Connection table 75% full (conntrack saturation)",
+          "attributes": {
+            "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771069158172006100,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "haproxy[8165]: Health check OK for backend api_servers/server1 (HTTP 200)",
+          "timeUnixNano": 1771069140002128000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "haproxy[6329]: WARNING: warning pressure summary cpu=73% mem=32% disk=15% net=75%",
           "attributes": {
-            "log.source": "haproxy",
-            "server.role": "loadbalancer",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "haproxy"
           },
-          "resource": "lb-haproxy-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771069178857788700,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "systemd[1]: haproxy.service: Watchdog timestamp updated.",
-          "attributes": {
-            "log.source": "systemd",
-            "server.role": "loadbalancer",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
-          },
-          "resource": "lb-haproxy-dc1-02"
+          "resource": "lb-haproxy-dc1-01"
         }
       ]
     },
@@ -5648,7 +6318,7 @@
               }
             },
             {
-              "asDouble": 0.73,
+              "asDouble": 0.74,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -5993,7 +6663,7 @@
               }
             },
             {
-              "asDouble": 94227108,
+              "asDouble": 95614320,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -6590,229 +7260,324 @@
       ],
       "logs": [
         {
-          "timeUnixNano": 1771069202389689000,
+          "timeUnixNano": 1771069200000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "CRON[8848]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
+          "body": "dockerd[1317]: container web-nginx-dc health=healthy restart_count=0, network 1%",
           "attributes": {
-            "log.source": "systemd",
-            "server.role": "web",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "docker"
           },
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771069215259399700,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[5328]: *4905 upstream prematurely closed connection while reading response header",
+          "timeUnixNano": 1771069200000000000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nginx[1309]: 10.0.0.30 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.29\" workers=7",
           "attributes": {
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771069221552519400,
+          "timeUnixNano": 1771069200000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "CRON[6682]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
+          "body": "systemd[1]: nginx reload check passed, active workers 8, memory 33%",
           "attributes": {
-            "log.source": "systemd",
-            "server.role": "web",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
-          },
-          "resource": "web-nginx-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771069224400865300,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[4438]: *2256 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
+            "log.source": "systemd"
           },
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771069253644382000,
+          "timeUnixNano": 1771069200000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "CRON[8584]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
+          "body": "redis-server[1274]: evicted keys 0, fragmentation 119%",
           "attributes": {
-            "log.source": "systemd",
-            "server.role": "web",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "redis"
           },
-          "resource": "web-nginx-dc1-03"
+          "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771069272168741400,
+          "timeUnixNano": 1771069200000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[2108]: [GC (Allocation Failure) ParNew: 119585K->12704K(114739K), 0.082 secs]",
+          "body": "systemd[1]: redis persistence check ok, used memory 71% of maxmemory",
           "attributes": {
-            "log.source": "syslog",
-            "server.role": "application",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "systemd"
+          },
+          "resource": "cache-redis-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771069200000000300,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "minio[4344]: object lifecycle scan checkpoint 359, network 19%",
+          "attributes": {
+            "log.source": "minio"
+          },
+          "resource": "storage-s3gw-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771069200000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[3731]: slow query detected: 514ms on reporting.job_runs",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-backup"
+        },
+        {
+          "timeUnixNano": 1771069200000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "rsync[4627]: incremental verify completed, changed files 740",
+          "attributes": {
+            "log.source": "rsync"
+          },
+          "resource": "storage-nfs-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771069200000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 72, fd usage 52%",
+          "attributes": {
+            "log.source": "systemd"
           },
           "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771069297061053400,
+          "timeUnixNano": 1771069200000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "dockerd[2289]: Container health status: healthy (exit code 0)",
+          "body": "java[3024]: request queue depth 22, p95 221ms, cpu 64%",
           "attributes": {
-            "log.source": "docker",
-            "server.role": "application",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
+            "log.source": "java"
           },
           "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1771069315891751200,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "haproxy[9338]: WARNING: SYN cookie activation detected, possible SYN flood",
+          "timeUnixNano": 1771069200000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[3036]: GC scan completed, heap occupancy 36%, reclaimed 232MB",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771069200000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[7009]: slow query detected: 692ms on reporting.job_runs",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-primary"
+        },
+        {
+          "timeUnixNano": 1771069200000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[2876]: health checks passed for 18/18 backends, queue=29",
           "attributes": {
             "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771069322663758600,
+          "timeUnixNano": 1771069200000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[9591]: [GC (Allocation Failure) ParNew: 129103K->14576K(175546K), 0.091 secs]",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 18%",
           "attributes": {
-            "log.source": "syslog",
-            "server.role": "application",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
+            "log.source": "systemd"
+          },
+          "resource": "lb-haproxy-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771069200000001000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[4174]: InnoDB buffer pool hit ratio: 85%",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-replica"
+        },
+        {
+          "timeUnixNano": 1771069201636802600,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[7957]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771069428000389000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nginx[1308]: 10.0.0.29 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.29\" workers=6",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771069428000389000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: nginx reload check passed, active workers 7, memory 41%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771069428000389000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "dockerd[1319]: container web-nginx-dc health=healthy restart_count=2, network 0%",
+          "attributes": {
+            "log.source": "docker"
+          },
+          "resource": "web-nginx-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771069428001166600,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[3734]: replication lag: 433ms on channel dc1-replica",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-backup"
+        },
+        {
+          "timeUnixNano": 1771069428002285300,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: storage scrub heartbeat ok, network 18%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "storage-nfs-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771069428003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[3023]: request queue depth 22, p95 312ms, cpu 64%",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771069428003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[3035]: GC scan completed, heap occupancy 62%, reclaimed 258MB",
+          "attributes": {
+            "log.source": "java"
           },
           "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1771069349038697500,
+          "timeUnixNano": 1771069428003245800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "dockerd[5276]: Container health status: healthy (exit code 0)",
+          "body": "systemd[1]: api-was-dc1-03.service heartbeat ok, worker threads 88, fd usage 23%",
           "attributes": {
-            "log.source": "docker",
-            "server.role": "application",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "systemd"
           },
           "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1771069399414351600,
+          "timeUnixNano": 1771069428003618800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "CRON[8105]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
+          "body": "mysqld[7012]: replication lag: 496ms on channel dc1-replica",
           "attributes": {
-            "log.source": "cron",
-            "server.role": "database",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "mysqld"
           },
           "resource": "db-mysql-dc1-primary"
         },
         {
-          "timeUnixNano": 1771069447119049200,
+          "timeUnixNano": 1771069428003797200,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "mysqld[3945]: InnoDB: Buffer pool(s) load completed at 2026-02-14T11:40:00",
+          "body": "systemd[1]: minio.service heartbeat ok, active connections 29",
           "attributes": {
-            "log.source": "syslog",
-            "server.role": "database",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
+            "log.source": "systemd"
           },
-          "resource": "db-mysql-dc1-replica"
+          "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1771069475602773800,
+          "timeUnixNano": 1771069428004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "CRON[5116]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
+          "body": "systemd[1]: redis persistence check ok, used memory 36% of maxmemory",
           "attributes": {
-            "log.source": "cron",
-            "server.role": "database",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
-          },
-          "resource": "db-mysql-dc1-replica"
-        },
-        {
-          "timeUnixNano": 1771069496589841700,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "redis-server[6482]: DB saved on disk (RDB snapshot)",
-          "attributes": {
-            "log.source": "redis",
-            "server.role": "cache",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "systemd"
           },
           "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771069526733701400,
+          "timeUnixNano": 1771069428004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[6164]: Background AOF rewrite finished successfully",
+          "body": "redis-server[1270]: cache hit ratio: 48% over last 60s",
           "attributes": {
-            "log.source": "redis",
-            "server.role": "cache",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
-          },
-          "resource": "cache-redis-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771069551358927000,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "redis-server[2916]: DB saved on disk (RDB snapshot)",
-          "attributes": {
-            "log.source": "redis",
-            "server.role": "cache",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
+            "log.source": "redis"
           },
           "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771069575127845400,
+          "timeUnixNano": 1771069428006860800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis-server.service: Watchdog timestamp updated.",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 88%",
           "attributes": {
-            "log.source": "systemd",
-            "server.role": "cache",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
+            "log.source": "systemd"
           },
-          "resource": "cache-redis-dc1-02"
+          "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771069628088946400,
+          "timeUnixNano": 1771069428006860800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "nfsd[8904]: NFS export /data/shared ready, 25 active clients",
+          "body": "haproxy[2864]: frontend openmanager_fe sessions=452, retries=11, cpu=38%",
           "attributes": {
-            "log.source": "syslog",
-            "server.role": "storage",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "haproxy"
           },
-          "resource": "storage-nfs-dc1-01"
+          "resource": "lb-haproxy-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771069428007922000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[4167]: slow query detected: 614ms on reporting.job_runs",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-replica"
+        },
+        {
+          "timeUnixNano": 1771069491125511000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[6459]: *4315 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
         },
         {
           "timeUnixNano": 1771069632000000000,
@@ -6825,79 +7590,184 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771069647320643600,
+          "timeUnixNano": 1771069644000389000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "minio[6539]: S3 Gateway ready, 24 buckets loaded",
+          "body": "systemd[1]: nginx reload check passed, active workers 6, memory 44%",
           "attributes": {
-            "log.source": "minio",
-            "server.role": "storage",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
-          },
-          "resource": "storage-s3gw-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771069678723658200,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "minio[2744]: Healthcheck passed, 10 active connections",
-          "attributes": {
-            "log.source": "minio",
-            "server.role": "storage",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
-          },
-          "resource": "storage-s3gw-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771069724028299500,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "haproxy[4968]: Proxy api_frontend started (FD 18)",
-          "attributes": {
-            "log.source": "haproxy",
-            "server.role": "loadbalancer",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
-          },
-          "resource": "lb-haproxy-dc1-01"
-        },
-        {
-          "timeUnixNano": 1771069744522110000,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[2245]: *3500 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
+            "log.source": "systemd"
           },
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771069753234676500,
+          "timeUnixNano": 1771069644000389000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[4844]: Health check OK for backend api_servers/server1 (HTTP 200)",
+          "body": "dockerd[1318]: container web-nginx-dc health=healthy restart_count=1, network 1%",
           "attributes": {
-            "log.source": "haproxy",
-            "server.role": "loadbalancer",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "docker"
+          },
+          "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771069644000389000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nginx[1310]: 10.0.0.31 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.29\" workers=8",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771069644001166600,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[3738]: InnoDB buffer pool hit ratio: 87%",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-backup"
+        },
+        {
+          "timeUnixNano": 1771069644002285300,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nfsd[4620]: export /data/shared latency 114ms, disk 64%",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771069644003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[3034]: GC scan completed, heap occupancy 69%, reclaimed 265MB",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771069644003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 80, fd usage 51%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "api-was-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771069644003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[3025]: request queue depth 17, p95 225ms, cpu 26%",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771069644003618800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[7016]: InnoDB buffer pool hit ratio: 83%",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-primary"
+        },
+        {
+          "timeUnixNano": 1771069644003797200,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "minio[4339]: S3 Gateway ready, 19 buckets loaded, disk 53%",
+          "attributes": {
+            "log.source": "minio"
+          },
+          "resource": "storage-s3gw-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771069644004344000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[1269]: cache hit ratio: 68% over last 60s",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771069644004344000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[1275]: evicted keys 262, fragmentation 129%",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771069644006860800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[2863]: frontend openmanager_fe sessions=821, retries=29, cpu=74%",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771069644006860800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[2877]: health checks passed for 15/18 backends, queue=11",
+          "attributes": {
+            "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-02"
         },
         {
-          "timeUnixNano": 1771069777754770400,
+          "timeUnixNano": 1771069644007922000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: haproxy.service: Watchdog timestamp updated.",
+          "body": "mysqld[4170]: replication lag: 453ms on channel dc1-replica",
           "attributes": {
-            "log.source": "systemd",
-            "server.role": "loadbalancer",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "mysqld"
           },
-          "resource": "lb-haproxy-dc1-02"
+          "resource": "db-mysql-dc1-replica"
+        },
+        {
+          "timeUnixNano": 1771069693520313600,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[8107]: *2645 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771069740002128000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "haproxy[6358]: WARNING: warning pressure summary cpu=74% mem=36% disk=16% net=76%",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771069779693280000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "haproxy[8858]: WARNING: Connection table 84% full (conntrack saturation)",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-01"
         }
       ]
     },
@@ -7346,7 +8216,7 @@
               }
             },
             {
-              "asDouble": 96105634,
+              "asDouble": 93543505,
               "attributes": {
                 "host.name": "lb-haproxy-dc1-01.openmanager.kr"
               }
@@ -7943,229 +8813,324 @@
       ],
       "logs": [
         {
-          "timeUnixNano": 1771069800083181800,
+          "timeUnixNano": 1771069800000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "nginx[1826]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
+          "body": "nginx[1325]: 10.0.0.16 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.29\" workers=11",
           "attributes": {
-            "log.source": "nginx",
-            "server.role": "web",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771069826300384500,
+          "timeUnixNano": 1771069800000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "nginx[9757]: 10.0.0.1 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.28\"",
+          "body": "systemd[1]: nginx reload check passed, active workers 6, memory 39%",
           "attributes": {
-            "log.source": "nginx",
-            "server.role": "web",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
+            "log.source": "systemd"
           },
           "resource": "web-nginx-dc1-02"
         },
         {
-          "timeUnixNano": 1771069852337694000,
+          "timeUnixNano": 1771069800000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "CRON[6581]: (root) CMD (/usr/lib/apt/apt.systemd.daily install)",
+          "body": "dockerd[1336]: container web-nginx-dc health=healthy restart_count=1, network 0%",
           "attributes": {
-            "log.source": "systemd",
-            "server.role": "web",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "docker"
           },
           "resource": "web-nginx-dc1-03"
         },
         {
-          "timeUnixNano": 1771069879019140600,
+          "timeUnixNano": 1771069800000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "dockerd[3629]: Container health status: healthy (exit code 0)",
+          "body": "systemd[1]: redis persistence check ok, used memory 39% of maxmemory",
           "attributes": {
-            "log.source": "docker",
-            "server.role": "application",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "systemd"
           },
-          "resource": "api-was-dc1-01"
+          "resource": "cache-redis-dc1-01"
         },
         {
-          "timeUnixNano": 1771069908112252000,
+          "timeUnixNano": 1771069800000000000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "dockerd[1670]: Container health status: healthy (exit code 0)",
+          "body": "redis-server[1287]: cache hit ratio: 44% over last 60s",
           "attributes": {
-            "log.source": "docker",
-            "server.role": "application",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
+            "log.source": "redis"
           },
-          "resource": "api-was-dc1-02"
+          "resource": "cache-redis-dc1-02"
         },
         {
-          "timeUnixNano": 1771069929784092000,
+          "timeUnixNano": 1771069800000000300,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "java[9151]: [GC (Allocation Failure) ParNew: 117183K->17120K(138662K), 0.072 secs]",
+          "body": "systemd[1]: minio.service heartbeat ok, active connections 28",
           "attributes": {
-            "log.source": "syslog",
-            "server.role": "application",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "systemd"
           },
-          "resource": "api-was-dc1-03"
+          "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1771069975174278400,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[2126]: *4607 upstream prematurely closed connection while reading response header",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-02"
-        },
-        {
-          "timeUnixNano": 1771069986181476900,
+          "timeUnixNano": 1771069800000000500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "dockerd[8894]: Container health status: healthy (exit code 0)",
+          "body": "mysqld[3751]: replication lag: 302ms on channel dc1-replica",
           "attributes": {
-            "log.source": "docker",
-            "server.role": "application",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
-          },
-          "resource": "api-was-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771069990835494100,
-          "severityNumber": 13,
-          "severityText": "WARN",
-          "body": "nginx[4234]: upstream timed out (110: Connection timed out) while connecting to upstream",
-          "attributes": {
-            "log.source": "nginx"
-          },
-          "resource": "web-nginx-dc1-03"
-        },
-        {
-          "timeUnixNano": 1771070005213876000,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "mysqld[1152]: InnoDB: Buffer pool(s) load completed at 2026-02-14T11:50:00",
-          "attributes": {
-            "log.source": "syslog",
-            "server.role": "database",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
-          },
-          "resource": "db-mysql-dc1-replica"
-        },
-        {
-          "timeUnixNano": 1771070034506458000,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "CRON[1296]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
-          "attributes": {
-            "log.source": "cron",
-            "server.role": "database",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
-          },
-          "resource": "db-mysql-dc1-replica"
-        },
-        {
-          "timeUnixNano": 1771070060163123700,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "CRON[2090]: (mysql) CMD (/usr/bin/mysqladmin --defaults-file=/etc/mysql/debian.cnf ping)",
-          "attributes": {
-            "log.source": "cron",
-            "server.role": "database",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "mysqld"
           },
           "resource": "db-mysql-dc1-backup"
         },
         {
-          "timeUnixNano": 1771070088946108700,
+          "timeUnixNano": 1771069800000000500,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[8677]: DB saved on disk (RDB snapshot)",
+          "body": "systemd[1]: storage scrub heartbeat ok, network 17%",
           "attributes": {
-            "log.source": "redis",
-            "server.role": "cache",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "systemd"
           },
-          "resource": "cache-redis-dc1-01"
+          "resource": "storage-nfs-dc1-01"
         },
         {
-          "timeUnixNano": 1771070112627777800,
+          "timeUnixNano": 1771069800000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[4087]: Background AOF rewrite finished successfully",
+          "body": "java[3040]: request queue depth 24, p95 239ms, cpu 65%",
           "attributes": {
-            "log.source": "redis",
-            "server.role": "cache",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "java"
           },
-          "resource": "cache-redis-dc1-01"
+          "resource": "api-was-dc1-01"
         },
         {
-          "timeUnixNano": 1771070136890727400,
+          "timeUnixNano": 1771069800000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "redis-server[2207]: Background AOF rewrite finished successfully",
+          "body": "java[3052]: GC scan completed, heap occupancy 63%, reclaimed 266MB",
           "attributes": {
-            "log.source": "redis",
-            "server.role": "cache",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
+            "log.source": "java"
           },
-          "resource": "cache-redis-dc1-02"
+          "resource": "api-was-dc1-02"
         },
         {
-          "timeUnixNano": 1771070191840796700,
+          "timeUnixNano": 1771069800000000800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "systemd[1]: redis-server.service: Watchdog timestamp updated.",
+          "body": "systemd[1]: api-was-dc1-03.service heartbeat ok, worker threads 80, fd usage 24%",
           "attributes": {
-            "log.source": "systemd",
-            "server.role": "cache",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ2"
+            "log.source": "systemd"
           },
-          "resource": "cache-redis-dc1-02"
+          "resource": "api-was-dc1-03"
         },
         {
-          "timeUnixNano": 1771070207447744800,
+          "timeUnixNano": 1771069800000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[7029]: replication lag: 381ms on channel dc1-replica",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-primary"
+        },
+        {
+          "timeUnixNano": 1771069800000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 87%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771069800000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[2881]: frontend openmanager_fe sessions=447, retries=6, cpu=34%",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771069800000001000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[4184]: slow query detected: 641ms on reporting.job_runs",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-replica"
+        },
+        {
+          "timeUnixNano": 1771069909350352400,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "haproxy[6624]: WARNING: SYN cookie activation detected, possible SYN flood",
+          "body": "nginx[8241]: *573 upstream prematurely closed connection while reading response header",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771069936804997000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "nginx[3486]: upstream timed out (110: Connection timed out) while connecting to upstream",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771070028000389000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: nginx reload check passed, active workers 11, memory 45%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771070028000389000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "dockerd[1335]: container web-nginx-dc health=healthy restart_count=0, network 1%",
+          "attributes": {
+            "log.source": "docker"
+          },
+          "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771070028000389000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nginx[1327]: 10.0.0.18 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.29\" workers=7",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771070028001166600,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[3755]: InnoDB buffer pool hit ratio: 89%",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-backup"
+        },
+        {
+          "timeUnixNano": 1771070028002285300,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nfsd[4637]: export /data/shared latency 119ms, disk 62%",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771070028003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[3051]: GC scan completed, heap occupancy 69%, reclaimed 272MB",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771070028003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: api-was-dc1-02.service heartbeat ok, worker threads 72, fd usage 49%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "api-was-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771070028003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[3042]: request queue depth 16, p95 272ms, cpu 24%",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771070028003618800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[7033]: InnoDB buffer pool hit ratio: 85%",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-primary"
+        },
+        {
+          "timeUnixNano": 1771070028003797200,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "minio[4356]: S3 Gateway ready, 12 buckets loaded, disk 55%",
+          "attributes": {
+            "log.source": "minio"
+          },
+          "resource": "storage-s3gw-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771070028004344000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[1286]: cache hit ratio: 62% over last 60s",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771070028004344000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[1292]: evicted keys 198, fragmentation 131%",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771070028006860800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[2880]: frontend openmanager_fe sessions=829, retries=25, cpu=74%",
           "attributes": {
             "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771070220914870300,
+          "timeUnixNano": 1771070028006860800,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "CRON[8639]: (root) CMD (/usr/local/bin/check-raid-status.sh)",
+          "body": "haproxy[2894]: health checks passed for 17/18 backends, queue=6",
           "attributes": {
-            "log.source": "cron",
-            "server.role": "storage",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "haproxy"
           },
-          "resource": "storage-nfs-dc1-01"
+          "resource": "lb-haproxy-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771070028007922000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[4187]: replication lag: 353ms on channel dc1-replica",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-replica"
         },
         {
           "timeUnixNano": 1771070232000000000,
@@ -8178,66 +9143,184 @@
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771070240624674600,
+          "timeUnixNano": 1771070244000389000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "minio[2338]: Healthcheck passed, 12 active connections",
+          "body": "dockerd[1334]: container web-nginx-dc health=healthy restart_count=2, network 1%",
           "attributes": {
-            "log.source": "minio",
-            "server.role": "storage",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "docker"
+          },
+          "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771070244000389000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nginx[1326]: 10.0.0.17 - - \"GET /health HTTP/1.1\" 200 15 \"-\" \"kube-probe/1.29\" workers=6",
+          "attributes": {
+            "log.source": "nginx"
+          },
+          "resource": "web-nginx-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771070244000389000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: nginx reload check passed, active workers 7, memory 36%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "web-nginx-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771070244001166600,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[3748]: slow query detected: 508ms on reporting.job_runs",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-backup"
+        },
+        {
+          "timeUnixNano": 1771070244002285300,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "rsync[4644]: incremental verify completed, changed files 757",
+          "attributes": {
+            "log.source": "rsync"
+          },
+          "resource": "storage-nfs-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771070244003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: api-was-dc1-01.service heartbeat ok, worker threads 64, fd usage 53%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771070244003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[3041]: request queue depth 20, p95 221ms, cpu 61%",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771070244003245800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "java[3053]: GC scan completed, heap occupancy 42%, reclaimed 245MB",
+          "attributes": {
+            "log.source": "java"
+          },
+          "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771070244003618800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[7026]: slow query detected: 762ms on reporting.job_runs",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-primary"
+        },
+        {
+          "timeUnixNano": 1771070244003797200,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "minio[4361]: object lifecycle scan checkpoint 376, network 19%",
+          "attributes": {
+            "log.source": "minio"
           },
           "resource": "storage-s3gw-dc1-01"
         },
         {
-          "timeUnixNano": 1771070296591777300,
+          "timeUnixNano": 1771070244004344000,
           "severityNumber": 9,
           "severityText": "INFO",
-          "body": "haproxy[6930]: Health check OK for backend api_servers/server1 (HTTP 200)",
+          "body": "redis-server[1291]: evicted keys 0, fragmentation 122%",
           "attributes": {
-            "log.source": "haproxy",
-            "server.role": "loadbalancer",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ1"
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771070244004344000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: redis persistence check ok, used memory 69% of maxmemory",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "cache-redis-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771070244006860800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[2893]: health checks passed for 16/18 backends, queue=25",
+          "attributes": {
+            "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771070313078105000,
+          "timeUnixNano": 1771070244006860800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 18%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "lb-haproxy-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771070244007922000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "mysqld[4191]: InnoDB buffer pool hit ratio: 85%",
+          "attributes": {
+            "log.source": "mysqld"
+          },
+          "resource": "db-mysql-dc1-replica"
+        },
+        {
+          "timeUnixNano": 1771070296917176300,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "nginx[4254]: *8531 upstream prematurely closed connection while reading response header",
+          "body": "nginx[9232]: upstream timed out (110: Connection timed out) while connecting to upstream",
           "attributes": {
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-01"
         },
         {
-          "timeUnixNano": 1771070320911314200,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "haproxy[6391]: Health check OK for backend api_servers/server1 (HTTP 200)",
+          "timeUnixNano": 1771070340002128000,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "haproxy[6387]: WARNING: warning pressure summary cpu=74% mem=34% disk=15% net=75%",
           "attributes": {
-            "log.source": "haproxy",
-            "server.role": "loadbalancer",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "haproxy"
           },
-          "resource": "lb-haproxy-dc1-02"
+          "resource": "lb-haproxy-dc1-01"
         },
         {
-          "timeUnixNano": 1771070348922786000,
-          "severityNumber": 9,
-          "severityText": "INFO",
-          "body": "haproxy[1808]: Proxy api_frontend started (FD 49)",
+          "timeUnixNano": 1771070371822964200,
+          "severityNumber": 13,
+          "severityText": "WARN",
+          "body": "haproxy[6710]: WARNING: Connection table 84% full (conntrack saturation)",
           "attributes": {
-            "log.source": "haproxy",
-            "server.role": "loadbalancer",
-            "deployment.environment.name": "production",
-            "cloud.availability_zone": "DC1-AZ3"
+            "log.source": "haproxy"
           },
-          "resource": "lb-haproxy-dc1-02"
+          "resource": "lb-haproxy-dc1-01"
         }
       ]
     }
