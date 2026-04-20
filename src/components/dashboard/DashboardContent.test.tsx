@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  */
 
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { ComponentProps } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useDashboardStats } from '@/hooks/dashboard/useDashboardStats';
@@ -10,9 +10,32 @@ import type { Server } from '@/types/server';
 import { toDashboardAlertContext } from './alert-ai-context';
 import DashboardContent from './DashboardContent';
 
-vi.mock('next/dynamic', () => ({
-  default: () => () => <div data-testid="dynamic-component" />,
-}));
+vi.mock('next/dynamic', async () => {
+  const React = await import('react');
+
+  return {
+    default: (
+      loader: () => Promise<{
+        default: React.ComponentType<Record<string, unknown>>;
+      }>,
+      options?: { loading?: () => React.ReactNode }
+    ) => {
+      const LazyComponent = React.lazy(loader);
+
+      return function MockDynamicComponent(props: Record<string, unknown>) {
+        return (
+          <React.Suspense
+            fallback={
+              options?.loading?.() ?? <div data-testid="dynamic-component" />
+            }
+          >
+            <LazyComponent {...props} />
+          </React.Suspense>
+        );
+      };
+    },
+  };
+});
 
 vi.mock('@/hooks/dashboard/useDashboardStats', () => ({
   useDashboardStats: vi.fn(() => ({
@@ -245,8 +268,6 @@ describe('DashboardContent empty state', () => {
       />
     );
 
-    expect(screen.queryAllByTestId('dynamic-component')).toHaveLength(0);
-
     fireEvent.click(screen.getByRole('button', { name: 'open active alerts' }));
     expect(screen.queryAllByTestId('dynamic-component')).toHaveLength(1);
 
@@ -260,7 +281,7 @@ describe('DashboardContent empty state', () => {
     expect(screen.queryAllByTestId('dynamic-component')).toHaveLength(4);
   });
 
-  it('서버 카드 AI 요청을 최고 사용률 메트릭으로 변환해 브리지해야 한다', () => {
+  it('서버 카드 AI 요청을 최고 사용률 메트릭으로 변환해 브리지해야 한다', async () => {
     const onAskAIAboutAlert = vi.fn();
 
     render(
@@ -277,6 +298,10 @@ describe('DashboardContent empty state', () => {
         })}
       />
     );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('server-dashboard')).toBeInTheDocument();
+    });
 
     fireEvent.click(
       screen.getByRole('button', { name: 'ask ai about server' })

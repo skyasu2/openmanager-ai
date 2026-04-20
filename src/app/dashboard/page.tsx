@@ -9,17 +9,43 @@
  */
 
 import type { Metadata } from 'next';
+import dynamic from 'next/dynamic';
 import { connection } from 'next/server';
-import { getOTelDashboardData } from '@/lib/dashboard/server-data';
-import DashboardClient from './DashboardClient';
+import DashboardDevBootstrap from './DashboardDevBootstrap';
+import DashboardLoading from './loading';
+
+type DashboardPageProps = {
+  searchParams: Promise<{
+    serverId?: string | string[] | undefined;
+  }>;
+};
+
+const DashboardClient = dynamic(() => import('./DashboardClient'), {
+  loading: () => <DashboardLoading />,
+  ssr: process.env.NODE_ENV !== 'development',
+});
 
 export const metadata: Metadata = {
   title: 'Dashboard',
   description: '서버 모니터링 대시보드 - 실시간 메트릭, 알림, 서버 상태 현황',
 };
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: DashboardPageProps) {
+  const resolvedSearchParams = await searchParams;
+  const initialFocusServerId = Array.isArray(resolvedSearchParams.serverId)
+    ? (resolvedSearchParams.serverId[0] ?? null)
+    : (resolvedSearchParams.serverId ?? null);
+
+  if (process.env.NODE_ENV === 'development') {
+    return (
+      <DashboardDevBootstrap initialFocusServerId={initialFocusServerId} />
+    );
+  }
+
   await connection();
+  const { getOTelDashboardData } = await import('@/lib/dashboard/server-data');
   const { servers, stats, timeInfo, dataSourceInfo } =
     await getOTelDashboardData();
 
@@ -29,6 +55,7 @@ export default async function DashboardPage() {
       initialStats={stats}
       initialTimeInfo={timeInfo}
       initialDataSourceInfo={dataSourceInfo}
+      initialFocusServerId={initialFocusServerId}
     />
   );
 }
