@@ -106,7 +106,7 @@ describe('shouldRetryForQuality', () => {
   });
 
   describe('Advisor MISSING_COMMAND_BLOCK retry', () => {
-    it('retries Advisor response with MISSING_COMMAND_BLOCK when format compliance fails', () => {
+    it('does not retry slow Advisor response when only command block formatting is missing', () => {
       const result = createResponseFixture({
         response: '문제 원인을 분석했습니다. CPU 과부하가 의심됩니다. 해결을 위해 조치가 필요합니다.',
         toolsCalled: ['searchKnowledgeBase'],
@@ -116,6 +116,42 @@ describe('shouldRetryForQuality', () => {
           stepsExecuted: 2,
           durationMs: 35_000,
           qualityFlags: ['MISSING_COMMAND_BLOCK', 'LATENCY_SLOW'],
+          formatCompliance: false,
+          finalAgent: 'Advisor Agent',
+        },
+      });
+
+      expect(shouldRetryForQuality(result, 'advisor')).toBe(false);
+    });
+
+    it('does not retry very slow Advisor response when only command block formatting is missing', () => {
+      const result = createResponseFixture({
+        response: '원인은 커널 대기열 증가로 보입니다. 문제 해결을 위해 조치가 필요하며 현재 상황은 더 지켜봐야 합니다.',
+        toolsCalled: ['searchKnowledgeBase'],
+        metadata: {
+          provider: 'mistral',
+          modelId: 'mistral-small',
+          stepsExecuted: 2,
+          durationMs: 55_000,
+          qualityFlags: ['MISSING_COMMAND_BLOCK', 'LATENCY_VERY_SLOW'],
+          formatCompliance: false,
+          finalAgent: 'Advisor Agent',
+        },
+      });
+
+      expect(shouldRetryForQuality(result, 'advisor')).toBe(false);
+    });
+
+    it('retries Advisor response with MISSING_COMMAND_BLOCK when format compliance fails and latency is not yet slow', () => {
+      const result = createResponseFixture({
+        response: '문제 원인을 분석했습니다. CPU 과부하가 의심됩니다. 해결을 위해 조치가 필요합니다.',
+        toolsCalled: ['searchKnowledgeBase'],
+        metadata: {
+          provider: 'mistral',
+          modelId: 'mistral-small',
+          stepsExecuted: 2,
+          durationMs: 9_000,
+          qualityFlags: ['MISSING_COMMAND_BLOCK'],
           formatCompliance: false,
           finalAgent: 'Advisor Agent',
         },

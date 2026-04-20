@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-21 KST (security-ui-fix 완료 반영)
+**Last Updated**: 2026-04-21 KST (advisor-tail-latency 완료 반영)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| 없음 | — | — | 최근 active plan(`security-ui-fix`)까지 완료. 다음 우선순위는 backlog에서 선택 |
+| 없음 | — | — | 최근 active plan(`advisor-tail-latency`)까지 완료. 다음 우선순위는 backlog에서 선택 |
 
 ---
 
@@ -22,7 +22,6 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| Advisor tail latency 축소 | High | 최신 표본에서 `3.23s~29.26s`, historical QA에서는 `35~86s` class comment까지 남아 있음. Advisor/Mistral 경로가 현재 체감 지연의 중심 리스크. |
 | `multi-agent` semantics UI/문서 정렬 | Medium | 현재 `resolvedMode=multi`는 deep multi-hop만 의미하지 않고 orchestrator + specialist handoff도 포함한다. 사용자 기대와 운영 해석을 더 명확히 맞출 필요가 있음. |
 | Vision 최신 production latency 표본 보강 | Low | 현재 문서 기준 Vision 응답 속도는 sample `1` 수준이라 장기 판단 근거로는 약함. targeted QA 1회 이상 추가 필요. |
 | Multi-agent `finalAnswer` loop cap (`stepCountIs(10)`) 단순화 검토 | Medium | **tracking-only** — 현재는 tool-result 요약 fallback 안정성을 위해 유지. 품질/토큰 비용 지표를 1주 누적한 뒤 `8` 또는 `6`으로 축소 가능한지 재평가. |
@@ -34,6 +33,16 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-21 #161)
+- [x] Advisor tail latency 축소
+  - Advisor Agent가 `MISSING_COMMAND_BLOCK`만 이유로 재시도하던 경로에 latency guard를 추가해, 이미 `LATENCY_SLOW`/`LATENCY_VERY_SLOW`인 응답은 추가 provider retry를 수행하지 않도록 조정
+  - hard failure retry(`EMPTY_RESPONSE`, `NO_OUTPUT`, meaningful content가 없는 `TOO_SHORT`)는 기존 동작 유지
+  - 상세 계획/계약: [archive/advisor-tail-latency-plan.md](archive/advisor-tail-latency-plan.md)
+  - 검증:
+    - `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/supervisor-quality-retry.test.ts src/services/ai-sdk/agents/response-quality.test.ts`
+    - `cd cloud-run/ai-engine && npm run type-check`
+    - `cd cloud-run/ai-engine && npm run test`
 
 ### Completed (2026-04-21 #160)
 - [x] 보안 P2 하드닝 2건 마감

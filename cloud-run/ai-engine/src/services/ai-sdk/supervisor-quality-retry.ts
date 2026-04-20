@@ -7,6 +7,7 @@ const QUALITY_RETRY_FLAGS = new Set(['EMPTY_RESPONSE', 'NO_OUTPUT']);
 // MISSING_COMMAND_BLOCK means the LLM returned prose-only — a retry with prompt reinforcement
 // has a reasonable chance of producing the required backtick code block.
 const ADVISOR_FORMAT_RETRY_FLAGS = new Set(['MISSING_COMMAND_BLOCK']);
+const ADVISOR_FORMAT_RETRY_SUPPRESS_FLAGS = new Set(['LATENCY_SLOW', 'LATENCY_VERY_SLOW']);
 
 /**
  * Decide whether single-agent execution should retry with a different provider
@@ -52,6 +53,7 @@ export function shouldRetryForQuality(
     result.metadata.finalAgent === 'Advisor Agent' &&
     result.metadata.formatCompliance === false &&
     flags.some((flag) => ADVISOR_FORMAT_RETRY_FLAGS.has(flag)) &&
+    !flags.some((flag) => ADVISOR_FORMAT_RETRY_SUPPRESS_FLAGS.has(flag)) &&
     result.response.trim().length > 0
   ) {
     return true;
