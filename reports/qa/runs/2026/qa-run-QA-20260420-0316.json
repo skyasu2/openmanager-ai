@@ -1,0 +1,65 @@
+{
+  "runId": "QA-20260420-0316",
+  "recordedAt": "2026-04-20T04:07:14.690Z",
+  "recordedAtKst": "2026-04-20 13:07:14 KST",
+  "runTitle": "Local dev dashboard runtime verification after QueryProvider devtools hydration fix",
+  "owner": "codex",
+  "source": "local-dev",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://127.0.0.1:3000",
+    "frontend": "Next.js dev",
+    "backend": "local dev",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "cc40aa0ef743b250c3948c1809f9e17c3df00627"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["dashboard-core", "modal-detail-pack"],
+  "coveredSurfaces": [
+    "/dashboard?serverId=web-nginx-dc1-01",
+    "server detail modal auto-focus",
+    "React Query Devtools hydration boundary"
+  ],
+  "skippedSurfaces": [
+    "AI sidebar",
+    "production deploy",
+    "Reporter entrypoint click flow"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "query-provider-devtools-hydration-fix",
+      "title": "React Query Devtools hydration mismatch removal",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "QueryProvider devtools client-only mount gating + local dev browser recheck",
+      "note": "get_errors returned no runtime errors after dev server restart and browser reload.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Cold compile for /dashboard still took about 101s on first request after server restart.",
+    "After compile completion and browser reload, Next MCP reported no runtime errors in the active session.",
+    "serverId query-focus still opened the target server modal and preserved the expected detail tabs."
+  ],
+  "links": []
+}

@@ -1,0 +1,92 @@
+{
+  "runId": "QA-20260420-0318",
+  "recordedAt": "2026-04-20T05:17:00.396Z",
+  "recordedAtKst": "2026-04-20 14:17:00 KST",
+  "runTitle": "Local dev turbopack trace - dashboard lazy shell/server section follow-up",
+  "owner": "codex",
+  "source": "local-dev-readiness",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://127.0.0.1:44665",
+    "frontend": "Next.js Turbopack dev",
+    "backend": "local",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "cc40aa0ef743b250c3948c1809f9e17c3df00627"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["dashboard-core"],
+  "coveredSurfaces": [
+    "/dashboard",
+    "next dev turbopack trace",
+    "dashboard cold compile path"
+  ],
+  "skippedSurfaces": [
+    "production deployment",
+    "playwright browser walkthrough",
+    "broad route smoke"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "dashboard-client-lazy-shell-split",
+      "title": "Split DashboardClient into auth wrapper and lazy interactive shell",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "src/app/dashboard/DashboardClient.tsx",
+      "note": "DashboardClient now keeps auth/hydration gating in the entry chunk and loads DashboardInteractiveShell with client-only dynamic import.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-content-lazy-server-section",
+      "title": "Lazy load ServerDashboard from DashboardContent",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "src/components/dashboard/DashboardContent.tsx",
+      "note": "ServerDashboard moved behind a client-only dynamic boundary so dashboard summary/system overview can render before the heavy card and modal graph loads.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "root-shell-startup-trace",
+      "title": "Trace instrumentation/layout/provider compile bottleneck",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": ".next/dev/trace-turbopack",
+      "note": "After the lazy shell and ServerDashboard section split, /dashboard cold trace is still 133s total (http 200), so the main dev bottleneck remains unresolved outside the moved dashboard subtree.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Type-check, lint, test:quick, and targeted vitest suites all passed after the dashboard lazy-loading refactor.",
+    "The follow-up turbopack trace finished in 133s total with trace file size about 171.8MB, effectively unchanged from the prior 134s run.",
+    "Current evidence suggests the remaining dev cold-start bottleneck is not materially reduced by moving DashboardClient and ServerDashboard behind client-only dynamic boundaries."
+  ],
+  "links": []
+}

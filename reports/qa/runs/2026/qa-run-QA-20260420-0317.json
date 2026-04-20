@@ -1,0 +1,92 @@
+{
+  "runId": "QA-20260420-0317",
+  "recordedAt": "2026-04-20T04:33:26.822Z",
+  "recordedAtKst": "2026-04-20 13:33:26 KST",
+  "runTitle": "Local dev turbopack trace - dashboard cold compile follow-up",
+  "owner": "codex",
+  "source": "local-dev-readiness",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://127.0.0.1:45395",
+    "frontend": "Next.js Turbopack dev",
+    "backend": "local",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "cc40aa0ef743b250c3948c1809f9e17c3df00627"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["dashboard-core"],
+  "coveredSurfaces": [
+    "/dashboard",
+    "next dev turbopack trace",
+    "dashboard cold compile path"
+  ],
+  "skippedSurfaces": [
+    "production deployment",
+    "playwright browser walkthrough",
+    "broad route smoke"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 3,
+    "failed": 2
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "dashboard-dev-defer-heavy-subtree",
+      "title": "Defer DashboardContent subtree during dev bootstrap",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "src/app/dashboard/DashboardClient.tsx",
+      "note": "DashboardHeader/DashboardContent switched to client-only dynamic loading and DashboardContent render is deferred by one frame in development.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-page-dev-server-data-import-split",
+      "title": "Avoid server-data graph import on dashboard dev path",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "src/app/dashboard/page.tsx",
+      "note": "getOTelDashboardData moved into the production-only branch so dev bootstrap no longer statically imports the OTel server-data loader.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "root-shell-startup-trace",
+      "title": "Trace instrumentation/layout/provider compile bottleneck",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": ".next/dev/trace-turbopack",
+      "note": "With curl timeout raised to 120s, turbopack trace still reports /dashboard first response only at 134s total (~37s ready + ~97s dashboard response), so the main bottleneck remains unresolved.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Trace run after both dashboard deferral and page import split completed with total readiness 134s (http 200) and trace file size about 180MB.",
+    "The first dashboard response remains in the ~95-100s class after the server becomes ready, so the primary bottleneck is still inside the late dashboard compile path rather than the simple page-level server-data import.",
+    "WSL2/NTFS local dev cold compile remains the highest operator risk in the tested scope."
+  ],
+  "links": []
+}
