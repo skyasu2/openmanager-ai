@@ -93,9 +93,24 @@ export default function ServerDashboard({
   const [selectedServer, setSelectedServer] = useState<Server | null>(null);
   const consumedInitialFocusServerIdRef = useRef<string | null>(null);
 
-  const handleServerSelect = useCallback((server: Server) => {
-    setSelectedServer(server);
-  }, []);
+  const handleServerSelect = useCallback(
+    (server: Server) => {
+      // allServers(폴링 데이터)에는 structuredLogs가 없으므로
+      // SSR initial servers에서 merge한다.
+      if (!server.structuredLogs) {
+        const ssrServer = servers.find((s) => s.id === server.id);
+        if (ssrServer?.structuredLogs) {
+          setSelectedServer({
+            ...server,
+            structuredLogs: ssrServer.structuredLogs,
+          });
+          return;
+        }
+      }
+      setSelectedServer(server);
+    },
+    [servers]
+  );
 
   const handleModalClose = useCallback(() => {
     setSelectedServer(null);

@@ -170,33 +170,27 @@ export const NetworkTab: FC<NetworkTabProps> = ({ server, realtimeData }) => {
           </h4>
           <div
             className={`rounded-full px-3 py-1 ${
-              server.status === 'online'
-                ? 'bg-linear-to-r from-green-100 to-emerald-100'
-                : server.status === 'warning'
+              latestNetwork >= networkThreshold.critical
+                ? 'bg-linear-to-r from-red-100 to-rose-100'
+                : latestNetwork >= networkThreshold.warning
                   ? 'bg-linear-to-r from-yellow-100 to-amber-100'
-                  : server.status === 'critical'
-                    ? 'bg-linear-to-r from-red-100 to-rose-100'
-                    : 'bg-linear-to-r from-gray-100 to-slate-100'
+                  : 'bg-linear-to-r from-green-100 to-emerald-100'
             }`}
           >
             <span
               className={`text-xs font-medium ${
-                server.status === 'online'
-                  ? 'text-green-700'
-                  : server.status === 'warning'
+                latestNetwork >= networkThreshold.critical
+                  ? 'text-red-700'
+                  : latestNetwork >= networkThreshold.warning
                     ? 'text-yellow-700'
-                    : server.status === 'critical'
-                      ? 'text-red-700'
-                      : 'text-gray-700'
+                    : 'text-green-700'
               }`}
             >
-              {server.status === 'online'
-                ? '연결됨'
-                : server.status === 'warning'
+              {latestNetwork >= networkThreshold.critical
+                ? '장애'
+                : latestNetwork >= networkThreshold.warning
                   ? '불안정'
-                  : server.status === 'critical'
-                    ? '장애'
-                    : '오프라인'}
+                  : '연결됨'}
             </span>
           </div>
         </div>

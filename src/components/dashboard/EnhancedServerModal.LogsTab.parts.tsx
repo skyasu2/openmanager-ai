@@ -146,13 +146,11 @@ export function LegacyLogView({
         ) : (
           <EmptyState
             icon={activeView === 'syslog' ? 'log' : 'check'}
-            title={
-              activeView === 'syslog' ? 'No logs available' : 'No system alerts'
-            }
+            title={activeView === 'syslog' ? '로그 없음' : '시스템 알림 없음'}
             description={
               activeView === 'syslog'
-                ? 'No OTel structured logs found for this server in the current time slot'
-                : 'All system metrics are within normal range'
+                ? '이 시간대에 기록된 로그가 없습니다'
+                : '모든 시스템 메트릭이 정상 범위 내에 있습니다'
             }
           />
         )}
