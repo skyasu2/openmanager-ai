@@ -11,12 +11,12 @@
     "totalComponentNodes": 149
   },
   "metrics": {
-    "componentSourceLines": 27878,
+    "componentSourceLines": 27818,
     "componentNodes": 142,
-    "componentEdges": 132,
-    "graphDensity": 0.006593,
-    "aliasEdges": 46,
-    "relativeEdges": 86,
+    "componentEdges": 124,
+    "graphDensity": 0.006193,
+    "aliasEdges": 41,
+    "relativeEdges": 83,
     "isolatedComponents": 30,
     "sccCycleGroups": 0,
     "largestCycleSize": 0
@@ -24,7 +24,7 @@
   "topInDegree": [
     {
       "component": "ui/dialog",
-      "inDegree": 6
+      "inDegree": 5
     },
     {
       "component": "ai/analysis/constants",
@@ -32,10 +32,6 @@
     },
     {
       "component": "ai/AIAssistantIconPanel",
-      "inDegree": 3
-    },
-    {
-      "component": "ai/MarkdownRenderer",
       "inDegree": 3
     },
     {
@@ -67,6 +63,10 @@
       "inDegree": 2
     },
     {
+      "component": "ai/MarkdownRenderer",
+      "inDegree": 2
+    },
+    {
       "component": "ai/MessageActions",
       "inDegree": 2
     }
@@ -90,18 +90,6 @@
     },
     {
       "component": "ai/AIWorkspaceMessage",
-      "outDegree": 6
-    },
-    {
-      "component": "dashboard/DashboardHeader",
-      "outDegree": 6
-    },
-    {
-      "component": "ai-sidebar/SidebarMessage",
-      "outDegree": 5
-    },
-    {
-      "component": "dashboard/ServerDashboard",
       "outDegree": 5
     },
     {
@@ -109,15 +97,27 @@
       "outDegree": 5
     },
     {
+      "component": "ai-sidebar/SidebarMessage",
+      "outDegree": 4
+    },
+    {
       "component": "ai/analysis/ServerResultCard",
       "outDegree": 4
     },
     {
-      "component": "ai/MessageDetailSheet",
-      "outDegree": 3
+      "component": "dashboard/DashboardHeader",
+      "outDegree": 4
+    },
+    {
+      "component": "dashboard/ServerDashboard",
+      "outDegree": 4
     },
     {
       "component": "dashboard/alert-history/AlertHistoryModal",
+      "outDegree": 3
+    },
+    {
+      "component": "dashboard/ImprovedServerCard",
       "outDegree": 3
     }
   ],
@@ -125,12 +125,12 @@
     {
       "fromDomain": "ai",
       "toDomain": "ai",
-      "count": 31
+      "count": 29
     },
     {
       "fromDomain": "dashboard",
       "toDomain": "dashboard",
-      "count": 29
+      "count": 26
     },
     {
       "fromDomain": "ai-sidebar",
@@ -145,7 +145,7 @@
     {
       "fromDomain": "ai-sidebar",
       "toDomain": "ai",
-      "count": 9
+      "count": 8
     },
     {
       "fromDomain": "dashboard",
@@ -155,7 +155,7 @@
     {
       "fromDomain": "dashboard",
       "toDomain": "shared",
-      "count": 5
+      "count": 4
     },
     {
       "fromDomain": "ai-sidebar",
@@ -210,11 +210,6 @@
     {
       "fromDomain": "ai",
       "toDomain": "error",
-      "count": 1
-    },
-    {
-      "fromDomain": "ai",
-      "toDomain": "ui",
       "count": 1
     },
     {
