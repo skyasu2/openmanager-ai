@@ -124,10 +124,10 @@ const CodeBlock = memo(function CodeBlock({
         </button>
       </div>
       {/* 코드 내용 */}
-      <pre className="overflow-x-auto p-4 text-sm">
+      <pre className="overflow-x-hidden whitespace-pre-wrap break-words p-4 text-sm">
         <code
           ref={codeRef}
-          className={`${className || ''} text-gray-100 font-mono leading-relaxed`}
+          className={`${className || ''} whitespace-pre-wrap break-words text-gray-100 font-mono leading-relaxed [overflow-wrap:anywhere]`}
         >
           {children}
         </code>
@@ -147,7 +147,7 @@ export const MarkdownRenderer = memo(function MarkdownRenderer({
   className = '',
 }: MarkdownRendererProps) {
   return (
-    <div className={`markdown-content ${className}`}>
+    <div className={`markdown-content min-w-0 ${className}`}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeHighlight]} // Syntax Highlighting 추가

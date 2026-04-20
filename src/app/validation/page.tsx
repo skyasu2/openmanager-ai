@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import '../landing-effects.css';
 import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
 import {
   QA_EVIDENCE_ANCHORS,

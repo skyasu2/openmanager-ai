@@ -1,17 +1,32 @@
 'use client';
 
 // 사용자 정보 관련 import는 UnifiedProfileHeader에서 처리됨
+import dynamic from 'next/dynamic';
 import React, { memo, useState } from 'react';
 import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
-import UnifiedProfileHeader from '@/components/shared/UnifiedProfileHeader';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
 import debug from '@/utils/debug';
 import { AIAssistantButton } from './AIAssistantButton';
-import { AILoginRequiredModal } from './AILoginRequiredModal';
 import { RealTimeDisplay } from './RealTimeDisplay';
 import { SessionCountdown } from './SessionCountdown';
+
+const UnifiedProfileHeader = dynamic(
+  () => import('@/components/shared/UnifiedProfileHeader'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-10 w-28 animate-pulse rounded-full bg-gray-200" />
+    ),
+  }
+);
+
+const AILoginRequiredModal = dynamic(
+  () =>
+    import('./AILoginRequiredModal').then((mod) => mod.AILoginRequiredModal),
+  { ssr: false, loading: () => null }
+);
 
 /**
  * 대시보드 헤더 컴포넌트 Props

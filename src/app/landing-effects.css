@@ -1,0 +1,125 @@
+/* Landing and auth surfaces share these animated helpers. */
+
+.wave-particles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(103, 80, 164, 0.18) 0%,
+      rgba(121, 134, 203, 0.12) 40%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse at 80% 20%,
+      rgba(156, 39, 176, 0.15) 0%,
+      transparent 60%
+    );
+  animation: wave-drift 40s ease-in-out infinite;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+@keyframes wave-drift {
+  0%,
+  100% {
+    transform: translateX(0%) translateY(0%) scale(1);
+  }
+
+  25% {
+    transform: translateX(2%) translateY(-1.5%) scale(1.02);
+  }
+
+  50% {
+    transform: translateX(-2%) translateY(1.8%) scale(0.98);
+  }
+
+  75% {
+    transform: translateX(1.5%) translateY(-0.8%) scale(1.01);
+  }
+}
+
+.finger-pointer-primary {
+  animation: finger-bounce-primary 2s ease-in-out infinite;
+}
+
+.finger-pointer-dashboard {
+  animation: finger-bounce-dashboard 2s ease-in-out infinite;
+}
+
+.finger-pointer-ai {
+  position: absolute;
+  top: 50%;
+  right: -25px;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  animation: finger-bounce-ai 2s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 40;
+}
+
+@keyframes finger-bounce-primary {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes finger-bounce-dashboard {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes finger-bounce-ai {
+  0%,
+  100% {
+    transform: translateY(-50%) translateX(0);
+  }
+
+  50% {
+    transform: translateY(-50%) translateX(-5px);
+  }
+}
+
+@media (max-width: 768px) {
+  .wave-particles {
+    background:
+      radial-gradient(
+        ellipse at center,
+        rgba(103, 80, 164, 0.12) 0%,
+        transparent 70%
+      ),
+      radial-gradient(
+        ellipse at 80% 20%,
+        rgba(156, 39, 176, 0.08) 0%,
+        transparent 70%
+      );
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wave-particles,
+  .finger-pointer-primary,
+  .finger-pointer-dashboard,
+  .finger-pointer-ai {
+    animation: none;
+  }
+
+  .wave-particles {
+    opacity: 0.5;
+  }
+}

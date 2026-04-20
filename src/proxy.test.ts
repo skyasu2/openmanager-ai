@@ -151,12 +151,26 @@ describe('proxy', () => {
   });
 
   it('개발 바이패스가 켜져 있으면 보호 경로도 updateSession으로 우회한다', async () => {
+    process.env.NODE_ENV = 'development';
     process.env.NEXT_PUBLIC_DEV_BYPASS_AUTH = 'true';
     const request = new NextRequest('https://openmanager.test/dashboard');
 
-    await proxy(request);
+    const response = await proxy(request);
 
-    expect(mockUpdateSession).toHaveBeenCalledWith(request);
+    expect(response.status).toBe(200);
+    expect(mockUpdateSession).not.toHaveBeenCalled();
     expect(mockUpdateSessionWithAuth).not.toHaveBeenCalled();
+  });
+
+  it('개발 모드에서도 명시적으로 false면 실제 auth proxy를 사용한다', async () => {
+    process.env.NODE_ENV = 'development';
+    process.env.OPENMANAGER_DEV_AUTH_PROXY_BYPASS = 'false';
+
+    const request = new NextRequest('https://openmanager.test/dashboard');
+    const response = await proxy(request);
+
+    expect(response.status).toBe(307);
+    expect(mockUpdateSession).not.toHaveBeenCalled();
+    expect(mockUpdateSessionWithAuth).toHaveBeenCalledTimes(1);
   });
 });

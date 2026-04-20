@@ -15,11 +15,6 @@ vi.mock('@/components/ai/WebSourceCards', () => ({
   WebSourceCards: () => null,
 }));
 
-vi.mock('@/components/ai/MessageDetailSheet', () => ({
-  MessageDetailSheet: ({ open }: { open: boolean }) =>
-    open ? <div data-testid="message-detail-sheet" /> : null,
-}));
-
 vi.mock('@/utils/markdown-parser', () => ({
   RenderMarkdownContent: ({ content }: { content: string }) => (
     <div>{content}</div>
@@ -63,7 +58,7 @@ function createMetadataOnlyAssistantMessage(): EnhancedChatMessage {
 }
 
 describe('SidebarMessage detail expand', () => {
-  it('hides detailed analysis until the toggle is clicked', () => {
+  it('renders detailed analysis inline when analysis metadata is absent', () => {
     render(
       <MessageComponent
         message={createAssistantMessage()}
@@ -73,29 +68,14 @@ describe('SidebarMessage detail expand', () => {
 
     expect(screen.getByText('핵심 요약')).toBeInTheDocument();
     expect(screen.getByText('핵심 요약 문장')).toBeInTheDocument();
-    expect(screen.queryByText('상세 분석 첫 줄')).not.toBeInTheDocument();
-    expect(
-      screen.getByTestId('message-detail-expand-button')
-    ).toBeInTheDocument();
-
-    const toggleButton = screen.getByRole('button', {
-      name: /상세 분석 보기/i,
-    });
-    expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
-
-    fireEvent.click(toggleButton);
-
-    expect(toggleButton).toHaveAttribute('aria-expanded', 'true');
     expect(screen.getByText(/상세 분석 첫 줄/)).toBeInTheDocument();
     expect(screen.getByText(/상세 분석 둘째 줄/)).toBeInTheDocument();
-
-    fireEvent.click(toggleButton);
-
-    expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
-    expect(screen.queryByText(/상세 분석 첫 줄/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: /상세 분석 보기/i })
+    ).not.toBeInTheDocument();
   });
 
-  it('shows the detail dialog trigger even without analysisBasis metadata', () => {
+  it('does not render a separate detail modal trigger anymore', () => {
     render(
       <MessageComponent
         message={createAssistantMessage()}
@@ -103,12 +83,12 @@ describe('SidebarMessage detail expand', () => {
       />
     );
 
-    fireEvent.click(screen.getByTestId('message-detail-expand-button'));
-
-    expect(screen.getByTestId('message-detail-sheet')).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('message-detail-expand-button')
+    ).not.toBeInTheDocument();
   });
 
-  it('shows the detail dialog trigger for metadata-only assistant messages without rendering content actions', () => {
+  it('keeps metadata-only assistant messages free of content actions', () => {
     render(
       <MessageComponent
         message={createMetadataOnlyAssistantMessage()}
@@ -116,17 +96,10 @@ describe('SidebarMessage detail expand', () => {
       />
     );
 
-    expect(
-      screen.getByTestId('message-detail-expand-button')
-    ).toBeInTheDocument();
     expect(screen.queryByTestId('message-actions')).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByTestId('message-detail-expand-button'));
-
-    expect(screen.getByTestId('message-detail-sheet')).toBeInTheDocument();
   });
 
-  it('keeps the detail dialog trigger when only structured response metadata exists', () => {
+  it('keeps structured-response-only assistant messages free of content actions', () => {
     render(
       <MessageComponent
         message={{
@@ -147,10 +120,10 @@ describe('SidebarMessage detail expand', () => {
       />
     );
 
-    expect(
-      screen.getByTestId('message-detail-expand-button')
-    ).toBeInTheDocument();
     expect(screen.queryByTestId('message-actions')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: /상세 분석 보기/i })
+    ).not.toBeInTheDocument();
   });
 
   it('renders the real analysis basis tabs for assistant messages with analysis metadata', () => {
@@ -189,13 +162,54 @@ describe('SidebarMessage detail expand', () => {
     );
 
     expect(
-      screen.getByRole('tab', { name: '과정', selected: true })
+      screen.getByRole('tab', { name: '과정 보기', selected: true })
     ).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('tab', { name: '상세' }));
+    fireEvent.click(screen.getByRole('tab', { name: '디버그 보기' }));
 
     expect(
       screen.getByText('trace-sidebar-integration-1234')
     ).toBeInTheDocument();
+  });
+
+  it('moves parity metadata into the debug tab when analysis metadata exists', () => {
+    render(
+      <MessageComponent
+        message={{
+          id: 'assistant-5',
+          role: 'assistant',
+          content: '메트릭 parity를 확인했습니다.',
+          timestamp: new Date('2026-04-19T05:20:00.000Z'),
+          isStreaming: false,
+          metadata: {
+            analysisBasis: {
+              dataSource: '서버 실시간 데이터 분석',
+              engine: 'Cloud Run AI',
+            },
+            assistantResponseView: {
+              summary: '메트릭 parity를 확인했습니다.',
+              details:
+                '일반 설명 문단\n\n### Parity Metadata Contract\n```json\n{ "dataSlot": { "slotIndex": 105 } }\n```',
+              shouldCollapse: true,
+            },
+          },
+        }}
+        isLastMessage={true}
+      />
+    );
+
+    expect(
+      screen.queryByText('Parity Metadata Contract')
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole('button', { name: '분석 근거 상세 보기' })
+    );
+
+    expect(screen.getByText('일반 설명 문단')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('tab', { name: '디버그 보기' }));
+
+    expect(screen.getByText(/Parity Metadata Contract/)).toBeInTheDocument();
   });
 });

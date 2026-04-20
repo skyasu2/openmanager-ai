@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   createAssistantResponseView,
   resolveAssistantResponseView,
+  splitAssistantResponseDetails,
 } from './assistant-response-view';
 
 describe('createAssistantResponseView', () => {
@@ -94,5 +95,18 @@ ${'y'.repeat(700)}`;
     expect(view.summary).toBe('객체 기반 요약');
     expect(view.details).toBe('객체 상세');
     expect(view.shouldCollapse).toBe(true);
+  });
+
+  it('Parity Metadata Contract를 process/debug 섹션으로 분리한다', () => {
+    const sections = splitAssistantResponseDetails(`일반 설명 문단
+
+### Parity Metadata Contract
+\`\`\`json
+{ "dataSlot": { "slotIndex": 88 } }
+\`\`\``);
+
+    expect(sections.processDetails).toBe('일반 설명 문단');
+    expect(sections.debugDetails).toContain('Parity Metadata Contract');
+    expect(sections.debugDetails).toContain('"slotIndex": 88');
   });
 });

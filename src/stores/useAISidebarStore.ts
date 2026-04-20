@@ -302,7 +302,7 @@ export const useAISidebarStore = create<AISidebarState>()(
         isOpen: false,
         isMinimized: false,
         activeTab: 'chat',
-        sidebarWidth: 600, // 기본 너비 600px
+        sidebarWidth: 680, // 기본 너비 680px
         pendingPrefillMessage: null,
         pendingEntryState: null,
         webSearchEnabled: false,
@@ -427,7 +427,7 @@ export const useAISidebarStore = create<AISidebarState>()(
             isOpen: false,
             isMinimized: false,
             activeTab: 'chat',
-            sidebarWidth: 600, // 기본 너비로 리셋
+            sidebarWidth: 680, // 기본 너비로 리셋
             pendingPrefillMessage: null,
             pendingEntryState: null,
             webSearchEnabled: false,

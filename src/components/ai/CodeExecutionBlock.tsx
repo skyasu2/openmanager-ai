@@ -195,8 +195,10 @@ export const CodeExecutionBlock = memo(function CodeExecutionBlock({
       </div>
 
       {/* Code Content */}
-      <pre className="overflow-x-auto p-4 text-sm">
-        <code className="text-gray-100">{code}</code>
+      <pre className="overflow-x-hidden whitespace-pre-wrap break-words p-4 text-sm">
+        <code className="whitespace-pre-wrap break-words text-gray-100 [overflow-wrap:anywhere]">
+          {code}
+        </code>
       </pre>
 
       {/* Execution Result */}

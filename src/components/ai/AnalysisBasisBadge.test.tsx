@@ -176,7 +176,7 @@ describe('AnalysisBasisBadge', () => {
       screen.getByRole('button', { name: '분석 근거 상세 보기' })
     );
 
-    const processPanel = screen.getByRole('tabpanel', { name: '과정' });
+    const processPanel = screen.getByRole('tabpanel', { name: '과정 보기' });
 
     expect(within(processPanel).getByText('실행 특성')).toBeInTheDocument();
     expect(within(processPanel).getByText('1987ms')).toBeInTheDocument();
@@ -187,11 +187,12 @@ describe('AnalysisBasisBadge', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders supplemental parity details when provided', () => {
+  it('renders user-facing details in process view and parity metadata in debug view', () => {
     render(
       <AnalysisBasisBadge
         basis={basis}
-        details={`### Parity Metadata Contract\n\`\`\`json\n{ "dataSlot": { "slotIndex": 88 } }\n\`\`\``}
+        details="사용자에게 보여줄 상세 설명"
+        debugDetails={`### Parity Metadata Contract\n\`\`\`json\n{ "dataSlot": { "slotIndex": 88 } }\n\`\`\``}
       />
     );
 
@@ -199,9 +200,25 @@ describe('AnalysisBasisBadge', () => {
       screen.getByRole('button', { name: '분석 근거 상세 보기' })
     );
 
-    expect(screen.getByText('추가 메타데이터')).toBeInTheDocument();
-    expect(screen.getByText(/Parity Metadata Contract/)).toBeInTheDocument();
-    expect(screen.getByText(/slotIndex/)).toBeInTheDocument();
+    const processPanel = screen.getByRole('tabpanel', { name: '과정 보기' });
+    expect(within(processPanel).getByText('상세 분석')).toBeInTheDocument();
+    expect(
+      within(processPanel).getByText('사용자에게 보여줄 상세 설명')
+    ).toBeInTheDocument();
+    expect(
+      within(processPanel).queryByText(/Parity Metadata Contract/)
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('tab', { name: '디버그 보기' }));
+
+    const detailPanel = screen.getByRole('tabpanel', { name: '디버그 보기' });
+    expect(
+      within(detailPanel).getByText('추가 메타데이터')
+    ).toBeInTheDocument();
+    expect(
+      within(detailPanel).getByText(/Parity Metadata Contract/)
+    ).toBeInTheDocument();
+    expect(within(detailPanel).getByText(/slotIndex/)).toBeInTheDocument();
   });
 
   it('renders detailed response process when expanded', () => {
@@ -252,9 +269,9 @@ describe('AnalysisBasisBadge', () => {
     );
 
     expect(
-      screen.getByRole('tab', { name: '과정', selected: true })
+      screen.getByRole('tab', { name: '과정 보기', selected: true })
     ).toBeInTheDocument();
-    const processPanel = screen.getByRole('tabpanel', { name: '과정' });
+    const processPanel = screen.getByRole('tabpanel', { name: '과정 보기' });
     expect(within(processPanel).getByText('응답 과정')).toBeInTheDocument();
     expect(
       within(processPanel).getByText('handoff 협업 경로')
@@ -266,9 +283,9 @@ describe('AnalysisBasisBadge', () => {
       within(processPanel).queryByText('searchKnowledgeBase')
     ).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('tab', { name: '상세' }));
+    fireEvent.click(screen.getByRole('tab', { name: '디버그 보기' }));
 
-    const detailPanel = screen.getByRole('tabpanel', { name: '상세' });
+    const detailPanel = screen.getByRole('tabpanel', { name: '디버그 보기' });
     expect(within(detailPanel).getByText('추적 가능 ID')).toBeInTheDocument();
     expect(
       within(detailPanel).getByText('trace-1234567890abcdef')
@@ -327,7 +344,7 @@ describe('AnalysisBasisBadge', () => {
       screen.getByRole('button', { name: '분석 근거 상세 보기' })
     );
 
-    const processPanel = screen.getByRole('tabpanel', { name: '과정' });
+    const processPanel = screen.getByRole('tabpanel', { name: '과정 보기' });
     expect(
       within(processPanel).getByText('fallback 보정 경로')
     ).toBeInTheDocument();
@@ -339,10 +356,10 @@ describe('AnalysisBasisBadge', () => {
       within(processPanel).getByText('대상 서버 확인 실패')
     ).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('tab', { name: '상세' }));
+    fireEvent.click(screen.getByRole('tab', { name: '디버그 보기' }));
 
     expect(
-      within(screen.getByRole('tabpanel', { name: '상세' })).getByText(
+      within(screen.getByRole('tabpanel', { name: '디버그 보기' })).getByText(
         'server-not-found'
       )
     ).toBeInTheDocument();
@@ -381,7 +398,7 @@ describe('AnalysisBasisBadge', () => {
     fireEvent.click(
       screen.getByRole('button', { name: '분석 근거 상세 보기' })
     );
-    fireEvent.click(screen.getByRole('tab', { name: '상세' }));
+    fireEvent.click(screen.getByRole('tab', { name: '디버그 보기' }));
     fireEvent.click(screen.getByRole('button', { name: '디버그 번들 복사' }));
 
     await waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
@@ -435,12 +452,12 @@ describe('AnalysisBasisBadge', () => {
     );
 
     expect(
-      screen.getByRole('tab', { name: '과정', selected: true })
+      screen.getByRole('tab', { name: '과정 보기', selected: true })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('tab', { name: '상세', selected: false })
+      screen.getByRole('tab', { name: '디버그 보기', selected: false })
     ).toBeInTheDocument();
-    const processPanel = screen.getByRole('tabpanel', { name: '과정' });
+    const processPanel = screen.getByRole('tabpanel', { name: '과정 보기' });
     expect(within(processPanel).getByText('응답 과정')).toBeInTheDocument();
     expect(within(processPanel).getByText('실행 특성')).toBeInTheDocument();
     expect(
@@ -496,12 +513,12 @@ describe('AnalysisBasisBadge', () => {
     fireEvent.click(
       screen.getByRole('button', { name: '분석 근거 상세 보기' })
     );
-    fireEvent.click(screen.getByRole('tab', { name: '상세' }));
+    fireEvent.click(screen.getByRole('tab', { name: '디버그 보기' }));
 
     expect(
-      screen.getByRole('tab', { name: '상세', selected: true })
+      screen.getByRole('tab', { name: '디버그 보기', selected: true })
     ).toBeInTheDocument();
-    const detailPanel = screen.getByRole('tabpanel', { name: '상세' });
+    const detailPanel = screen.getByRole('tabpanel', { name: '디버그 보기' });
     expect(within(detailPanel).getByText('추적 가능 ID')).toBeInTheDocument();
     expect(
       within(detailPanel).getByText('trace-detail-tab-1234')
@@ -541,19 +558,19 @@ describe('AnalysisBasisBadge', () => {
     fireEvent.click(
       screen.getByRole('button', { name: '분석 근거 상세 보기' })
     );
-    fireEvent.click(screen.getByRole('tab', { name: '상세' }));
+    fireEvent.click(screen.getByRole('tab', { name: '디버그 보기' }));
     expect(
-      within(screen.getByRole('tabpanel', { name: '상세' })).getByText(
+      within(screen.getByRole('tabpanel', { name: '디버그 보기' })).getByText(
         'trace-return-process-1234'
       )
     ).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('tab', { name: '과정' }));
+    fireEvent.click(screen.getByRole('tab', { name: '과정 보기' }));
 
     expect(
-      screen.getByRole('tab', { name: '과정', selected: true })
+      screen.getByRole('tab', { name: '과정 보기', selected: true })
     ).toBeInTheDocument();
-    const processPanel = screen.getByRole('tabpanel', { name: '과정' });
+    const processPanel = screen.getByRole('tabpanel', { name: '과정 보기' });
     expect(
       within(processPanel).queryByText('trace-return-process-1234')
     ).not.toBeInTheDocument();
@@ -575,7 +592,7 @@ describe('AnalysisBasisBadge', () => {
     fireEvent.click(
       screen.getByRole('button', { name: '분석 근거 상세 보기' })
     );
-    fireEvent.click(screen.getByRole('tab', { name: '상세' }));
+    fireEvent.click(screen.getByRole('tab', { name: '디버그 보기' }));
 
     expect(screen.getByText('기술 정보 없음')).toBeInTheDocument();
     expect(
@@ -621,14 +638,14 @@ describe('AnalysisBasisBadge', () => {
     );
 
     const processTab = screen.getByRole('tab', {
-      name: '과정',
+      name: '과정 보기',
       selected: true,
     });
     const detailTab = screen.getByRole('tab', {
-      name: '상세',
+      name: '디버그 보기',
       selected: false,
     });
-    const processPanel = screen.getByRole('tabpanel', { name: '과정' });
+    const processPanel = screen.getByRole('tabpanel', { name: '과정 보기' });
 
     expect(processTab).toHaveAttribute('aria-controls', processPanel.id);
     expect(processPanel).toHaveAttribute('aria-labelledby', processTab.id);
@@ -653,15 +670,17 @@ describe('AnalysisBasisBadge', () => {
     );
 
     const processTab = screen.getByRole('tab', {
-      name: '과정',
+      name: '과정 보기',
       selected: true,
     });
     fireEvent.keyDown(processTab, { key: 'ArrowRight' });
 
     expect(
-      screen.getByRole('tab', { name: '상세', selected: true })
+      screen.getByRole('tab', { name: '디버그 보기', selected: true })
     ).toBeInTheDocument();
-    expect(screen.getByRole('tabpanel', { name: '상세' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('tabpanel', { name: '디버그 보기' })
+    ).toBeInTheDocument();
     expect(screen.getByText('trace-keyboard-nav-1234')).toBeInTheDocument();
   });
 

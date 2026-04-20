@@ -42,9 +42,9 @@ describe('useAISidebarStore', () => {
       expect(result.current.activeTab).toBe('chat');
     });
 
-    it('sidebarWidth가 600이어야 함', () => {
+    it('sidebarWidth가 680이어야 함', () => {
       const { result } = renderHook(() => useAISidebarStore());
-      expect(result.current.sidebarWidth).toBe(600);
+      expect(result.current.sidebarWidth).toBe(680);
     });
 
     it('sessionId가 존재해야 함', () => {

@@ -22,11 +22,17 @@ vi.mock('@/components/ai/AnalysisBasisBadge', () => ({
   AnalysisBasisBadge: ({
     basis,
     details,
+    debugDetails,
   }: {
     basis: { dataSource: string; ragUsed?: boolean };
     details?: string | null;
+    debugDetails?: string | null;
   }) => (
-    <div data-testid="analysis-basis-badge" data-details={details ?? ''}>
+    <div
+      data-testid="analysis-basis-badge"
+      data-details={details ?? ''}
+      data-debug-details={debugDetails ?? ''}
+    >
       <span>{basis.dataSource}</span>
       {basis.ragUsed ? <span>RAG</span> : null}
     </div>
@@ -149,9 +155,12 @@ describe('SidebarMessage RAG badge smoke integration', () => {
 
     const badge = screen.getByTestId('analysis-basis-badge');
     expect(badge).toHaveTextContent('서버 실시간 데이터 분석');
-    expect(badge.getAttribute('data-details')).toContain(
+    expect(badge.getAttribute('data-details')).toBe('');
+    expect(badge.getAttribute('data-debug-details')).toContain(
       'Parity Metadata Contract'
     );
-    expect(badge.getAttribute('data-details')).toContain('"slotIndex": 88');
+    expect(badge.getAttribute('data-debug-details')).toContain(
+      '"slotIndex": 88'
+    );
   });
 });

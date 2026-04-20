@@ -392,6 +392,7 @@ const CopyActionButton: FC<{
 interface AnalysisBasisBadgeProps {
   basis: AnalysisBasis;
   details?: string | null;
+  debugDetails?: string | null;
   thinkingSteps?: AIThinkingStep[];
   traceId?: string;
   processingTime?: number;
@@ -417,6 +418,7 @@ type AnalysisBasisTab = 'process' | 'detail';
 export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
   basis,
   details,
+  debugDetails,
   thinkingSteps,
   traceId,
   processingTime,
@@ -484,6 +486,7 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
       extractReferencedServers([
         basis.dataSource,
         details,
+        debugDetails,
         ...(toolResultSummaries ?? []).flatMap((toolResult) => [
           toolResult.summary,
           toolResult.preview,
@@ -498,6 +501,7 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
     [
       basis.dataSource,
       details,
+      debugDetails,
       handoffHistory,
       thinkingSteps,
       toolResultSummaries,
@@ -600,7 +604,8 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
     Boolean(toolResultSummaries && toolResultSummaries.length > 0) ||
     technicalExecutionPath.length > 0 ||
     runtimeSummaryItems.length > 0 ||
-    Boolean(modeSelectionLabel);
+    Boolean(modeSelectionLabel) ||
+    Boolean(debugDetails);
   const tabButtonClassName = (tab: AnalysisBasisTab) =>
     `rounded-full px-3 py-1 text-xs font-medium transition-colors ${
       activeTab === tab
@@ -645,13 +650,13 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
 
   return (
     <div
-      className={`mt-2 rounded-lg border border-gray-200 bg-gray-50 text-sm ${className}`}
+      className={`mt-2 min-w-0 overflow-hidden rounded-lg border border-slate-200 bg-white text-sm shadow-xs ${className}`}
     >
       {/* 헤더 (클릭으로 토글) */}
       <button
         type="button"
         onClick={() => setIsExpanded(!isExpanded)}
-        className="flex w-full items-center justify-between px-3 py-2 text-left hover:bg-gray-100 transition-colors rounded-lg"
+        className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left transition-colors hover:bg-slate-50"
         aria-expanded={isExpanded}
         aria-label="분석 근거 상세 보기"
       >
@@ -676,20 +681,20 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
 
       {/* 상세 정보 (확장 시) */}
       {isExpanded && (
-        <div className="px-3 pb-3 pt-1 space-y-2 border-t border-gray-200">
+        <div className="min-w-0 space-y-2 border-t border-gray-200 px-3 pb-3 pt-1">
           <div className="rounded-md border border-slate-200 bg-white p-3">
             <div className="mb-3 flex items-center justify-between gap-3">
               <div>
                 <p className="text-xs font-semibold text-slate-700">
-                  분석 과정
+                  분석 보기
                 </p>
                 <p className="text-2xs text-slate-500">
-                  사용자 요약과 기술 상세를 같은 카드 안에서 전환합니다.
+                  일반 사용자용 과정 보기와 디버그 보기를 전환합니다.
                 </p>
               </div>
               <div
                 role="tablist"
-                aria-label="분석 근거 보기 방식"
+                aria-label="과정 및 디버그 보기 전환"
                 className="inline-flex rounded-full bg-slate-100 p-1"
               >
                 <button
@@ -704,7 +709,7 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
                   onClick={() => setActiveTab('process')}
                   onKeyDown={(event) => handleTabKeyDown(event, 'process')}
                 >
-                  과정
+                  과정 보기
                 </button>
                 <button
                   id={detailTabId}
@@ -718,7 +723,7 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
                   onClick={() => setActiveTab('detail')}
                   onKeyDown={(event) => handleTabKeyDown(event, 'detail')}
                 >
-                  상세
+                  디버그 보기
                 </button>
               </div>
             </div>
@@ -876,6 +881,61 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
                     )}
                   </div>
                 )}
+
+                {details && (
+                  <div className="rounded border border-slate-200 bg-slate-50 p-2">
+                    <p className="mb-1 text-2xs font-medium uppercase tracking-wide text-slate-500">
+                      상세 분석
+                    </p>
+                    <div className="overflow-hidden rounded-md border border-slate-200 bg-white p-2">
+                      <RenderMarkdownContent
+                        content={details}
+                        className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {thinkingSteps && thinkingSteps.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-2xs font-medium uppercase tracking-wide text-slate-500">
+                      처리 단계 요약
+                    </p>
+                    <div className="space-y-2">
+                      {thinkingSteps.map((step, index) => {
+                        const stepPresentation =
+                          getThinkingStepPresentation(step);
+                        const summaryText =
+                          step.description ||
+                          step.content ||
+                          stepPresentation.description ||
+                          '응답 구성에 필요한 단계를 수행했습니다.';
+
+                        return (
+                          <div
+                            key={step.id || `${step.step || 'step'}-${index}`}
+                            className="rounded border border-slate-200 bg-slate-50 p-2"
+                          >
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="text-xs font-medium text-slate-700">
+                                {stepPresentation.title || `단계 ${index + 1}`}
+                              </span>
+                              {step.status && (
+                                <span className="rounded bg-white px-1.5 py-0.5 text-2xs text-slate-500">
+                                  {STEP_STATUS_LABELS[step.status] ??
+                                    step.status}
+                                </span>
+                              )}
+                            </div>
+                            <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                              {summaryText}
+                            </p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div
@@ -890,7 +950,7 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
                     <div className="flex items-center justify-between rounded border border-slate-200 bg-slate-50 p-2.5">
                       <div>
                         <p className="text-2xs font-medium uppercase tracking-wide text-slate-500">
-                          기술 상세
+                          디버그 보기
                         </p>
                         <p className="mt-1 text-xs text-slate-600">
                           추적 ID, raw 경로, 내부 도구명, 디버그 번들을 확인할
@@ -911,6 +971,20 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
                         <code className="block break-all font-mono text-[11px] text-slate-700">
                           {traceId}
                         </code>
+                      </div>
+                    )}
+
+                    {debugDetails && (
+                      <div className="rounded border border-slate-200 bg-slate-50 p-2">
+                        <p className="mb-1 text-2xs font-medium uppercase tracking-wide text-slate-500">
+                          추가 메타데이터
+                        </p>
+                        <div className="overflow-hidden rounded-md border border-slate-200 bg-white p-2">
+                          <RenderMarkdownContent
+                            content={debugDetails}
+                            className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
+                          />
+                        </div>
                       </div>
                     )}
 
@@ -1199,23 +1273,6 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
             <div className="flex items-center gap-2">
               <span className="ml-5 text-gray-500">분석 서버:</span>
               <span className="text-gray-700">{basis.serverCount}개</span>
-            </div>
-          )}
-
-          {details && (
-            <div className="mt-2 border-t border-gray-200 pt-2">
-              <div className="mb-1.5 flex items-center gap-2">
-                <Database className="h-3.5 w-3.5 text-gray-400" />
-                <span className="text-gray-600 font-medium text-xs">
-                  추가 메타데이터
-                </span>
-              </div>
-              <div className="ml-5 rounded-md border border-slate-200 bg-white p-2">
-                <RenderMarkdownContent
-                  content={details}
-                  className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
-                />
-              </div>
             </div>
           )}
 

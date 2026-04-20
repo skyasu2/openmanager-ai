@@ -31,7 +31,6 @@
  */
 
 import type { NextRequest } from 'next/server';
-import { logger } from '@/lib/logging';
 
 /**
  * 쿠키 값을 타입 안전하게 추출
@@ -81,7 +80,7 @@ export function getCookieValue(
 
   // 런타임 검증 (방어적 프로그래밍)
   if (typeof cookie !== 'object' || typeof cookie.value !== 'string') {
-    logger.warn(
+    console.warn(
       `[safe-cookie-utils] Unexpected cookie format for "${name}":`,
       cookie
     );

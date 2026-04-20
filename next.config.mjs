@@ -35,6 +35,9 @@ const withBundleAnalyzer = (() => {
   }
 })();
 
+const enableDevTurbopackFileSystemCache =
+  process.env.OPENMANAGER_TURBOPACK_FS_CACHE_DEV === 'true';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   cacheComponents: true,
@@ -77,10 +80,9 @@ const nextConfig = {
     serverMinification: true,
     optimizeCss: false, // critters 의존성 문제로 비활성화
     // Next.js 15에서 runtime, swcMinify 제거됨 - 기본 제공
-    // WSL2 NTFS 환경에서 Turbopack dev 캐시 손상 방지
-    // 프로젝트가 /mnt/d/ (Windows NTFS)에 있어 SIGKILL 시 .next/dev/ manifest 손상
-    // 16.2.0 stable 출시 후 true로 되돌려 재테스트 예정
-    turbopackFileSystemCacheForDev: false,
+    // 기본값은 false로 유지하되, Linux FS/안정 환경에서는 env로 opt-in 가능하게 둔다.
+    // 예: OPENMANAGER_TURBOPACK_FS_CACHE_DEV=true npm run dev
+    turbopackFileSystemCacheForDev: enableDevTurbopackFileSystemCache,
   },
 
   // 🚀 이미지 최적화 설정 (무료 티어 친화적 + 성능 우선)

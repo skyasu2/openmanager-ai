@@ -36,9 +36,9 @@ import { MessageComponent } from './SidebarMessage';
 // - 메시지 변환
 
 // 📐 리사이즈 상수
-const SIDEBAR_MIN_WIDTH = 400;
-const SIDEBAR_MAX_WIDTH = 900;
-const SIDEBAR_DEFAULT_WIDTH = 600;
+const SIDEBAR_MIN_WIDTH = 440;
+const SIDEBAR_MAX_WIDTH = 960;
+const SIDEBAR_DEFAULT_WIDTH = 680;
 const MOBILE_BREAKPOINT = 768; // md breakpoint
 
 // 🔒 완전 Client-Only AI 사이드바 컴포넌트 (V4 - useAIChatCore 통합)

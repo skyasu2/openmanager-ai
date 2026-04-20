@@ -7,9 +7,31 @@
 
 import { type NextRequest, NextResponse } from 'next/server';
 
+function readBooleanEnv(value: string | undefined): boolean | undefined {
+  if (value === undefined) return undefined;
+  if (value === 'true') return true;
+  if (value === 'false') return false;
+  return undefined;
+}
+
+function shouldBypassAuthProxyInDev(): boolean {
+  if (process.env.CI) return false;
+
+  const explicitOverride =
+    readBooleanEnv(process.env.OPENMANAGER_DEV_AUTH_PROXY_BYPASS) ??
+    readBooleanEnv(process.env.NEXT_PUBLIC_DEV_BYPASS_AUTH);
+
+  if (explicitOverride !== undefined) {
+    return explicitOverride;
+  }
+
+  return process.env.NODE_ENV === 'development';
+}
+
 export async function proxy(request: NextRequest): Promise<NextResponse> {
-  // 로컬 dev에서는 auth 체크 생략 (컴파일 의존성 최소화)
-  if (process.env.NODE_ENV === 'development' && !process.env.CI) {
+  // 로컬 dev에서는 기본적으로 auth proxy를 생략해 compile graph를 줄인다.
+  // 필요 시 OPENMANAGER_DEV_AUTH_PROXY_BYPASS=false 로 실제 auth proxy를 강제한다.
+  if (shouldBypassAuthProxyInDev()) {
     return NextResponse.next();
   }
 

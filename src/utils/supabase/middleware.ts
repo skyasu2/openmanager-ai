@@ -1,7 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import type { SupabaseClient, User } from '@supabase/supabase-js';
 import { type NextRequest, NextResponse } from 'next/server';
-import { logger } from '@/lib/logging';
 import {
   getSupabaseServerPublishableKey,
   getSupabaseServerUrl,
@@ -23,6 +22,14 @@ interface SessionUpdateResult {
   response: NextResponse;
   user: User | null;
   error: string | null;
+}
+
+function middlewareInfo(message: string, ...args: unknown[]): void {
+  console.info(message, ...args);
+}
+
+function middlewareWarn(message: string, ...args: unknown[]): void {
+  console.warn(message, ...args);
 }
 
 function getSupabaseUrl(): string {
@@ -137,11 +144,11 @@ export async function updateSessionWithAuth(
   } = await (supabase as SupabaseClient).auth.getUser();
 
   if (user) {
-    logger.info('✅ updateSession: 사용자 확인됨', 'userId:', user.id);
+    middlewareInfo('✅ updateSession: 사용자 확인됨', 'userId:', user.id);
   } else {
     const errorMessage = error?.message ?? null;
     if (errorMessage && errorMessage !== 'Auth session missing!') {
-      logger.warn('⚠️ updateSession: 사용자 검증 실패', errorMessage);
+      middlewareWarn('⚠️ updateSession: 사용자 검증 실패', errorMessage);
     }
   }
 
