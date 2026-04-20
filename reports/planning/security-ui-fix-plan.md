@@ -68,17 +68,17 @@ Playwright QA 및 코드 분석으로 발견된 보안 취약점, 모달 버그,
 
 **재현**: 알림(1) 버튼 클릭 → 모달 제목 "Active Alerts", 닫기 "Close", 배지 "WARNING", 경과 "elapsed" 영어 표시
 
-- [ ] 모달 제목: `"Active Alerts"` → `"활성 알림"`
-- [ ] 닫기 버튼: `"Close"` → `"닫기"`
-- [ ] 심각도 배지: `"WARNING"` → `"경고"`, `"CRITICAL"` → `"위험"`
-- [ ] 경과 시간: `"20m elapsed"` → `"20분 경과"`
+- [x] 모달 제목: `"Active Alerts"` → `"활성 알림"`
+- [x] 심각도 배지: `"WARNING"` → `"경고"`, `"CRITICAL"` → `"위험"`
+- [x] 경과 시간: `"20m elapsed"` → `"20분 경과"`
+- [x] 푸터 통계: `Total/Critical/Warning` → `전체/위험/경고`
 
 ### 3-2: 성능 분석 탭 "일시정지" 버튼 스타일 격 낮추기
 
 **재현**: 서버 상세 모달 → 성능 분석 탭 → 빨간색 primary 스타일 "일시정지" 버튼이 메인 차트보다 시선 집중
 
-- [ ] 버튼 variant: `destructive` / `primary` → `outline` 또는 `ghost`
-- [ ] 일시정지 상태일 때만 강조색(amber) 표시, 기본은 neutral
+- [x] 버튼 variant: 빨간 그라디언트 → outline (border + white bg)
+- [x] 일시정지 시 neutral gray, 시작하기 시 emerald outline
 
 ### 3-3: 대시보드 상태 헤더 버튼 그룹 UX 개선
 
