@@ -8,6 +8,8 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
+| Reporter 고도화 (로그타임라인/연관서버/Postmortem) | High | Approved | [reporter-enhancement-plan.md](reporter-enhancement-plan.md) — Codex 위임 예정 |
+| 보안·모달·UI UX 개선 (auth/rate-limit/버그/한국어) | High | Approved | [security-ui-fix-plan.md](security-ui-fix-plan.md) — Codex 위임 예정 |
 
 ---
 
@@ -21,7 +23,6 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| AI latency rollup 리포트 (`avg/p95` by agent/provider) | High | `ttfbMs`, `processingTimeMs`, `X-AI-Latency-Ms` 계측은 존재하지만 운영자가 최근 24h 기준 평균/95p를 바로 읽는 집계 레이어가 없음. 현재 속도 평가는 QA 표본 수집에 의존. |
 | Advisor tail latency 축소 | High | 최신 표본에서 `3.23s~29.26s`, historical QA에서는 `35~86s` class comment까지 남아 있음. Advisor/Mistral 경로가 현재 체감 지연의 중심 리스크. |
 | `multi-agent` semantics UI/문서 정렬 | Medium | 현재 `resolvedMode=multi`는 deep multi-hop만 의미하지 않고 orchestrator + specialist handoff도 포함한다. 사용자 기대와 운영 해석을 더 명확히 맞출 필요가 있음. |
 | Vision 최신 production latency 표본 보강 | Low | 현재 문서 기준 Vision 응답 속도는 sample `1` 수준이라 장기 판단 근거로는 약함. targeted QA 1회 이상 추가 필요. |
@@ -34,6 +35,16 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-19 #156)
+- [x] AI latency rollup 리포트 (`avg/p95` by agent/provider`)
+  - `qa:record` 입력에 `aiLatencyObservations` structured schema를 추가하고 run JSON / tracker `runs[]`에 보존
+  - `QA_STATUS.md`, `QA_TRENDS.md`, `latest-qa-trends.json`에 최신 recorded run 기준 최근 24h `agent/provider`별 `avg/p95` latency rollup 섹션 추가
+  - `qa:status` CLI 요약에 latency rollup sample/bucket/runs 카운트를 노출
+  - 검증:
+    - `npx vitest run tests/unit/qa/qa-trends.test.ts tests/unit/qa/qa-scripts.test.ts`
+    - `node scripts/qa/print-qa-status.js --write`
+    - `npm run docs:lint:changed`
 
 ### Completed (2026-04-19 #155)
 - [x] AnalysisBasisBadge 탭 UX 리팩토링
