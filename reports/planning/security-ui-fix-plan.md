@@ -26,17 +26,17 @@ Playwright QA 및 코드 분석으로 발견된 보안 취약점, 모달 버그,
 
 ### 1-1: `/api/system` GET 인증 미적용
 
-- [ ] `src/app/api/system/route.ts:121` GET 핸들러에 `withAuth` 미들웨어 추가
-- [ ] 기존 POST 핸들러와 동일한 인증 패턴 적용
-- [ ] 테스트: 미인증 GET 요청 → 401 반환 확인
+- [x] `src/app/api/system/route.ts:121` GET 핸들러에 `withAuth` 미들웨어 추가
+- [x] 기존 POST 핸들러와 동일한 인증 패턴 적용
+- [x] 테스트: 미인증 GET 요청 → 401 반환 확인
 
 ### 1-2: Rate Limiting 미적용 공개 엔드포인트
 
-- [ ] `src/app/api/web-vitals/route.ts` POST — rate limiter 적용 (10req/min per IP)
-- [ ] `src/app/api/security/csp-report/route.ts` POST — rate limiter 적용 (20req/min per IP)
-- [ ] `src/app/api/csrf-token/route.ts` GET — rate limiter 적용 (30req/min per IP)
-- [ ] 기존 `src/lib/rate-limit.ts` (또는 동등 유틸) 재사용 — 새 의존성 추가 금지
-- [ ] 테스트: 초과 요청 시 429 반환 확인
+- [x] `src/app/api/web-vitals/route.ts` POST — rate limiter 적용 (10req/min per IP)
+- [x] `src/app/api/security/csp-report/route.ts` POST — rate limiter 적용 (20req/min per IP)
+- [x] `src/app/api/csrf-token/route.ts` GET — rate limiter 적용 (30req/min per IP)
+- [x] 기존 `src/lib/security/rate-limiter.ts` 재사용 — 새 의존성 추가 금지
+- [x] 테스트: 초과 요청 시 429 반환 확인
 
 ---
 
@@ -48,17 +48,17 @@ Playwright QA 및 코드 분석으로 발견된 보안 취약점, 모달 버그,
 
 **원인 추정**: 현재 시간 슬롯 기준으로 hourly JSON을 조회할 때 서버 ID 매핑 또는 슬롯 계산이 잘못됨
 
-- [ ] 로그 조회 로직 확인: 어느 hour JSON에서 어떤 서버 ID로 logs[] 추출하는지 추적
-- [ ] `public/data/otel-data/hourly/hour-XX.json` logs 배열 구조와 서버 ID 매핑 검증
-- [ ] 버그 수정: 현재 슬롯 기준 logs[] 정상 표시
-- [ ] 빈 로그인 경우 "이 시간대에 기록된 로그가 없습니다" 한국어 메시지로 변경
+- [x] 로그 조회 로직 확인: 어느 hour JSON에서 어떤 서버 ID로 logs[] 추출하는지 추적
+- [x] `public/data/otel-data/hourly/hour-XX.json` logs 배열 구조와 서버 ID 매핑 검증
+- [x] 버그 수정: 폴링 allServers에 structuredLogs 누락 시 SSR servers에서 merge
+- [x] 빈 로그인 경우 "이 시간대에 기록된 로그가 없습니다" 한국어 메시지로 변경
 
 ### 2-2: "연결 정보" 상태 불일치 — "불안정" vs 네트워크 상태 "양호"
 
 **재현**: 로그 & 네트워크 탭 → 하단 "연결 정보" 섹션이 "불안정" / 상단 "네트워크 상태" 섹션이 "양호"
 
-- [ ] 두 섹션이 참조하는 데이터 소스 동일화 또는 로직 통일
-- [ ] "연결 정보" 상태값 계산 기준을 네트워크 사용률과 일치시킴
+- [x] 두 섹션이 참조하는 데이터 소스 동일화 또는 로직 통일
+- [x] "연결 정보" 상태값 계산 기준을 네트워크 사용률 threshold로 일치시킴
 
 ---
 
