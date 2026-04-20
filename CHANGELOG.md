@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.24](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.23...v8.11.24) (2026-04-20)
+
+
+### Features
+
+* **reporter:** enrich incident report context ([33d2535](https://gitlab.com/skyasu2/openmanager-ai/-/commit/33d2535438d977728c3fa87d60d330cc9629aec4))
+* **reporter:** reporter/dashboard UI refactor and AI sidebar parity ([359fbc1](https://gitlab.com/skyasu2/openmanager-ai/-/commit/359fbc108a18d666f65d8b45fd3229255604e64f))
+
+
+### Bug Fixes
+
+* **dashboard:** lazy-load shell and stabilize hydration ([bfe4f67](https://gitlab.com/skyasu2/openmanager-ai/-/commit/bfe4f67d745d8da842f3fe11e3599f7c46c575ca))
+* **dev:** speed up dev server by removing Sentry from dev compile path ([cc40aa0](https://gitlab.com/skyasu2/openmanager-ai/-/commit/cc40aa0ef743b250c3948c1809f9e17c3df00627))
+* **nlq:** add diagnostic CLI commands to recommendation section ([8ba0ed0](https://gitlab.com/skyasu2/openmanager-ai/-/commit/8ba0ed08f360a90fc38f70f24530eb5edc31de85))
+* **nlq:** expose nearThresholdServers and expand mandatory summary format ([80043f6](https://gitlab.com/skyasu2/openmanager-ai/-/commit/80043f649725009af94c706e1cb528509d7977ce))
+* **proxy:** add missing proxy-auth.ts to resolve CI TypeScript error ([7abeeef](https://gitlab.com/skyasu2/openmanager-ai/-/commit/7abeeefc0d7583864d5830cb5e84509e818bc367))
+
+
+### Tests
+
+* **qa:** correct QA-20260419-0311 metadata ([b63c0f7](https://gitlab.com/skyasu2/openmanager-ai/-/commit/b63c0f75f37607b4cf8d000de782878d07689eec))
+* **qa:** record broad production verification for 8.11.23 ([82b14e6](https://gitlab.com/skyasu2/openmanager-ai/-/commit/82b14e69b94487e1f49eb4476797f6f5b9d0b580))
+* **qa:** record local dashboard follow-up runs ([b746707](https://gitlab.com/skyasu2/openmanager-ai/-/commit/b74670703a261c6aeac040d947f3e42480c5061a))
+* **qa:** record production analysis basis tab verification ([a2b9066](https://gitlab.com/skyasu2/openmanager-ai/-/commit/a2b90668474819a51d07808e5b1e860d9cf7b478))
+* **qa:** record QA-20260419-0310 targeted v8.11.23 verification ([27233e3](https://gitlab.com/skyasu2/openmanager-ai/-/commit/27233e3a6f08b043110f3807a63fcf1186369b62))
+* **qa:** record QA-20260419-0311 fullscreen/Reporter/Analyst parity ([799463c](https://gitlab.com/skyasu2/openmanager-ai/-/commit/799463cbc0088bb20937b554b712b41090a23c71))
+
 ## [8.11.23](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.22...v8.11.23) (2026-04-19)
 
 
