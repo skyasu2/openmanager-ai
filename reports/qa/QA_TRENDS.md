@@ -1,7 +1,7 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-04-19 16:40:44 KST
+> Generated at: 2026-04-19 17:14:13 KST
 
 ## Summary
 
@@ -15,6 +15,16 @@
 | Overall Pass Rate | 96.19% |
 | Latest Recorded Run | QA-20260419-0311 |
 | Last Counted Run | QA-20260419-0309 |
+
+## AI Latency Rollup (Last 24h)
+
+- Window: 2026-04-18T07:35:12.563Z -> 2026-04-19T07:35:12.563Z (24h)
+- Runs with observations: 0 recorded / 0 counted
+- Samples: 0
+
+| Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---|
+| - | - | 0 | - | - | - | - | - | - | - |
 
 ## Warnings
 

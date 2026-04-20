@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-19T07:40:44.157Z",
-  "generatedAtKst": "2026-04-19 16:40:44 KST",
+  "generatedAt": "2026-04-19T08:14:13.318Z",
+  "generatedAtKst": "2026-04-19 17:14:13 KST",
   "trackerUpdatedAt": "2026-04-19T07:35:12.563Z",
   "totals": {
     "recordedRuns": 309,
@@ -925,6 +925,15 @@
         "lastResolvedRunId": null
       }
     ]
+  },
+  "aiLatencyRollup24h": {
+    "windowHours": 24,
+    "windowStart": "2026-04-18T07:35:12.563Z",
+    "windowEnd": "2026-04-19T07:35:12.563Z",
+    "recordedRunCount": 0,
+    "countedRunCount": 0,
+    "sampleCount": 0,
+    "buckets": []
   },
   "warnings": [
     {

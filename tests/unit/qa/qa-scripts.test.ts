@@ -766,6 +766,118 @@ describe('QA scripts', () => {
     expect(statusMarkdown).toContain(evidencePath);
   });
 
+  it('records structured AI latency observations and shows a 24h rollup in qa:status', () => {
+    const tempDir = createTempWorkspace();
+    initGitRepo(tempDir);
+    const inputPath = writeInputFile(
+      tempDir,
+      createValidPayload({
+        aiLatencyObservations: [
+          {
+            surface: 'sidebar analyst',
+            agent: 'Analyst Agent',
+            provider: 'mistral',
+            latencyMs: 6123,
+            ttfbMs: 1444,
+            processingTimeMs: 5001,
+          },
+          {
+            surface: 'reporter panel',
+            agent: 'Reporter Agent',
+            provider: 'groq',
+            latencyMs: 933,
+            ttfbMs: 211,
+            processingTimeMs: 722,
+          },
+        ],
+      })
+    );
+
+    const recordResult = runNodeScript(
+      RECORD_QA_RUN_SCRIPT,
+      ['--input', inputPath],
+      {
+        cwd: tempDir,
+        env: {
+          VERCEL_DEPLOYMENT_ID: 'dpl_latency123',
+          VERCEL_GIT_COMMIT_SHA: 'abcdefabcdefabcdefabcdefabcdefabcdefabcd',
+          VERCEL_GIT_COMMIT_REF: 'main',
+          VERCEL_TARGET_ENV: 'production',
+          VERCEL_PROJECT_PRODUCTION_URL: 'openmanager-ai.vercel.app',
+        },
+      }
+    );
+
+    expect(recordResult.status).toBe(0);
+
+    const runFilePath = findGeneratedRunFile(tempDir);
+    const runRecord = JSON.parse(readFileSync(runFilePath, 'utf8'));
+    expect(runRecord.aiLatencyObservations).toHaveLength(2);
+    expect(runRecord.aiLatencyObservations[0]).toMatchObject({
+      agent: 'Analyst Agent',
+      provider: 'mistral',
+      latencyMs: 6123,
+      ttfbMs: 1444,
+      processingTimeMs: 5001,
+    });
+
+    const trackerPath = join(tempDir, 'reports', 'qa', 'qa-tracker.json');
+    const tracker = JSON.parse(readFileSync(trackerPath, 'utf8'));
+    expect(tracker.runs[0].aiLatencyObservations).toHaveLength(2);
+
+    const statusResult = runNodeScript(PRINT_QA_STATUS_SCRIPT, [], {
+      cwd: tempDir,
+    });
+
+    expect(statusResult.status).toBe(0);
+    expectOutputContainsIfCaptured(
+      statusResult.stdout,
+      '- latency rollup (24h): samples=2, buckets=2, runs=1/1'
+    );
+
+    const statusPath = join(tempDir, 'reports', 'qa', 'QA_STATUS.md');
+    const statusMarkdown = readFileSync(statusPath, 'utf8');
+    expect(statusMarkdown).toContain('## AI Latency Rollup (Last 24h)');
+    expect(statusMarkdown).toContain(
+      '| Analyst Agent | mistral | 1 | 6123ms | 6123ms |'
+    );
+    expect(statusMarkdown).toContain(
+      '| Reporter Agent | groq | 1 | 933ms | 933ms |'
+    );
+  });
+
+  it('rejects malformed AI latency observations', () => {
+    const tempDir = createTempWorkspace();
+    initGitRepo(tempDir);
+    const inputPath = writeInputFile(
+      tempDir,
+      createValidPayload({
+        aiLatencyObservations: [
+          {
+            surface: 'sidebar analyst',
+            agent: 'Analyst Agent',
+            provider: 'mistral',
+            latencyMs: -1,
+          },
+        ],
+      })
+    );
+
+    const recordResult = runNodeScript(
+      RECORD_QA_RUN_SCRIPT,
+      ['--input', inputPath],
+      {
+        cwd: tempDir,
+      }
+    );
+
+    expect(recordResult.status).toBe(1);
+    expectOutputContainsIfCaptured(
+      `${recordResult.stdout}${recordResult.stderr}`,
+      'aiLatencyObservations[0].latencyMs는 0 이상의 숫자여야 합니다.'
+    );
+  });
+
   it('rejects ephemeral local artifact paths for release-facing runs', () => {
     const tempDir = createTempWorkspace();
     initGitRepo(tempDir);

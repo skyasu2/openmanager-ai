@@ -1,0 +1,57 @@
+{
+  "runId": "QA-20260420-0315",
+  "recordedAt": "2026-04-20T00:37:53.308Z",
+  "recordedAtKst": "2026-04-20 09:37:53 KST",
+  "runTitle": "Local dev runtime verification after CSS/client-boundary split",
+  "owner": "codex",
+  "source": "local-dev",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://127.0.0.1:3000",
+    "frontend": "Next.js dev",
+    "backend": "local dev",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "cc40aa0ef743b250c3948c1809f9e17c3df00627"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke"],
+  "coveredSurfaces": ["/", "/dashboard", "/api/version", "/api/system"],
+  "skippedSurfaces": ["AI sidebar", "production deploy", "browser visual QA"],
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "dev-runtime-css-split",
+      "title": "Landing CSS and home route compile split",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Cold compile for / remains slow in WSL2 /mnt/d but now completes successfully.",
+    "Warm checks passed: HEAD / 200, HEAD /dashboard 200, HEAD /api/system 200, HEAD /api/version 200.",
+    "TypeScript compile passed after the route/CSS split."
+  ],
+  "links": []
+}

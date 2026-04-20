@@ -21,6 +21,22 @@ function percentage(numerator, denominator) {
   return Number(((numerator / denominator) * 100).toFixed(2));
 }
 
+function average(values) {
+  if (!Array.isArray(values) || values.length === 0) return null;
+  const total = values.reduce((sum, value) => sum + safeNumber(value), 0);
+  return Math.round(total / values.length);
+}
+
+function percentile(values, percentileValue) {
+  if (!Array.isArray(values) || values.length === 0) return null;
+  const sorted = [...values].map(safeNumber).sort((a, b) => a - b);
+  const index = Math.min(
+    sorted.length - 1,
+    Math.floor((percentileValue / 100) * sorted.length)
+  );
+  return sorted[index];
+}
+
 function cloneTrackerForRepair(tracker) {
   return {
     ...(tracker || {}),
@@ -74,6 +90,10 @@ function getRunWontFixCount(run) {
 
 function getRunDeploymentId(run) {
   return String(run?.environment?.deploymentId || '').trim();
+}
+
+function getRunLatencyObservations(run) {
+  return Array.isArray(run?.aiLatencyObservations) ? run.aiLatencyObservations : [];
 }
 
 function isGateRun(run) {
@@ -257,6 +277,120 @@ function buildRecentRegressionRuns(runs, limit = 10) {
         wontFixCount: getRunWontFixCount(run),
       };
     });
+}
+
+function buildAiLatencyRollup(runs, { windowHours = 24 } = {}) {
+  const latestRecordedRun = runs[runs.length - 1] || null;
+  const latestRecordedAt = latestRecordedRun?.recordedAt || null;
+  const latestRecordedTime = latestRecordedAt
+    ? new Date(latestRecordedAt).getTime()
+    : Number.NaN;
+
+  if (!Number.isFinite(latestRecordedTime)) {
+    return {
+      windowHours,
+      windowStart: null,
+      windowEnd: latestRecordedAt,
+      recordedRunCount: 0,
+      countedRunCount: 0,
+      sampleCount: 0,
+      buckets: [],
+    };
+  }
+
+  const windowStartTime = latestRecordedTime - windowHours * 60 * 60 * 1000;
+  const recentRuns = runs.filter((run) => {
+    const recordedAt = run?.recordedAt ? new Date(run.recordedAt).getTime() : Number.NaN;
+    return (
+      Number.isFinite(recordedAt) &&
+      recordedAt >= windowStartTime &&
+      recordedAt <= latestRecordedTime
+    );
+  });
+  const recentRunsWithObservations = recentRuns.filter(
+    (run) => getRunLatencyObservations(run).length > 0
+  );
+  const buckets = new Map();
+
+  for (const run of recentRunsWithObservations) {
+    const runId = run?.runId || null;
+    const recordedAt = run?.recordedAt || null;
+    const counted = isCountedRun(run);
+
+    for (const observation of getRunLatencyObservations(run)) {
+      const key = `${observation.agent}::${observation.provider}`;
+      const current =
+        buckets.get(key) || {
+          agent: observation.agent,
+          provider: observation.provider,
+          latencies: [],
+          ttfbValues: [],
+          processingValues: [],
+          runIds: new Set(),
+          countedRunIds: new Set(),
+          latestRunId: runId,
+          latestRecordedAt: recordedAt,
+        };
+
+      current.latencies.push(safeNumber(observation.latencyMs));
+      if (observation.ttfbMs != null) {
+        current.ttfbValues.push(safeNumber(observation.ttfbMs));
+      }
+      if (observation.processingTimeMs != null) {
+        current.processingValues.push(safeNumber(observation.processingTimeMs));
+      }
+
+      if (runId) {
+        current.runIds.add(runId);
+        if (counted) {
+          current.countedRunIds.add(runId);
+        }
+      }
+
+      if ((recordedAt || '') >= (current.latestRecordedAt || '')) {
+        current.latestRecordedAt = recordedAt;
+        current.latestRunId = runId;
+      }
+
+      buckets.set(key, current);
+    }
+  }
+
+  const bucketEntries = [...buckets.values()]
+    .map((bucket) => ({
+      agent: bucket.agent,
+      provider: bucket.provider,
+      sampleCount: bucket.latencies.length,
+      runCount: bucket.runIds.size,
+      countedRunCount: bucket.countedRunIds.size,
+      avgLatencyMs: average(bucket.latencies),
+      p95LatencyMs: percentile(bucket.latencies, 95),
+      avgTtfbMs: average(bucket.ttfbValues),
+      p95TtfbMs: percentile(bucket.ttfbValues, 95),
+      avgProcessingTimeMs: average(bucket.processingValues),
+      p95ProcessingTimeMs: percentile(bucket.processingValues, 95),
+      latestRunId: bucket.latestRunId,
+      latestRecordedAt: bucket.latestRecordedAt,
+    }))
+    .sort((a, b) => {
+      if (b.p95LatencyMs === a.p95LatencyMs) {
+        if (b.avgLatencyMs === a.avgLatencyMs) {
+          return `${a.agent}:${a.provider}`.localeCompare(`${b.agent}:${b.provider}`);
+        }
+        return safeNumber(b.avgLatencyMs) - safeNumber(a.avgLatencyMs);
+      }
+      return safeNumber(b.p95LatencyMs) - safeNumber(a.p95LatencyMs);
+    });
+
+  return {
+    windowHours,
+    windowStart: new Date(windowStartTime).toISOString(),
+    windowEnd: new Date(latestRecordedTime).toISOString(),
+    recordedRunCount: recentRunsWithObservations.length,
+    countedRunCount: recentRunsWithObservations.filter(isCountedRun).length,
+    sampleCount: bucketEntries.reduce((sum, bucket) => sum + bucket.sampleCount, 0),
+    buckets: bucketEntries,
+  };
 }
 
 function buildRecurringItems(trackerItems, {
@@ -526,6 +660,7 @@ function buildQaTrendSnapshot(tracker) {
     recentDailyTrend: buildRecentDailyTrend(runs),
     recentRegressionRuns: buildRecentRegressionRuns(runs),
     recurringItems: buildRecurringItems(normalizedTracker.items),
+    aiLatencyRollup24h: buildAiLatencyRollup(runs),
   };
 
   snapshot.warnings = buildTrendWarnings(snapshot);
@@ -535,6 +670,16 @@ function buildQaTrendSnapshot(tracker) {
 
 function qaTrendsMarkdown(snapshot) {
   const lines = [];
+  const aiLatencyRollup = snapshot.aiLatencyRollup24h || {
+    windowHours: 24,
+    windowStart: null,
+    windowEnd: null,
+    recordedRunCount: 0,
+    countedRunCount: 0,
+    sampleCount: 0,
+    buckets: [],
+  };
+  const formatLatencyValue = (value) => (value != null ? `${value}ms` : '-');
 
   lines.push('# QA Trends Dashboard');
   lines.push('');
@@ -555,6 +700,30 @@ function qaTrendsMarkdown(snapshot) {
     `| Latest Recorded Run | ${snapshot.totals.latestRecordedRunId || '-'} |`
   );
   lines.push(`| Last Counted Run | ${snapshot.totals.lastCountedRunId || '-'} |`);
+  lines.push('');
+  lines.push('## AI Latency Rollup (Last 24h)');
+  lines.push('');
+  if (aiLatencyRollup.windowStart && aiLatencyRollup.windowEnd) {
+    lines.push(
+      `- Window: ${aiLatencyRollup.windowStart} -> ${aiLatencyRollup.windowEnd} (${aiLatencyRollup.windowHours}h)`
+    );
+  }
+  lines.push(
+    `- Runs with observations: ${aiLatencyRollup.recordedRunCount} recorded / ${aiLatencyRollup.countedRunCount} counted`
+  );
+  lines.push(`- Samples: ${aiLatencyRollup.sampleCount}`);
+  lines.push('');
+  lines.push('| Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |');
+  lines.push('|---|---|---:|---:|---:|---:|---:|---:|---:|---|');
+  if (aiLatencyRollup.buckets.length === 0) {
+    lines.push('| - | - | 0 | - | - | - | - | - | - | - |');
+  } else {
+    for (const bucket of aiLatencyRollup.buckets) {
+      lines.push(
+        `| ${bucket.agent} | ${bucket.provider} | ${bucket.sampleCount} | ${formatLatencyValue(bucket.avgLatencyMs)} | ${formatLatencyValue(bucket.p95LatencyMs)} | ${formatLatencyValue(bucket.avgTtfbMs)} | ${formatLatencyValue(bucket.p95TtfbMs)} | ${formatLatencyValue(bucket.avgProcessingTimeMs)} | ${formatLatencyValue(bucket.p95ProcessingTimeMs)} | ${bucket.latestRunId || '-'} |`
+      );
+    }
+  }
   lines.push('');
   lines.push('## Warnings');
   lines.push('');
@@ -738,6 +907,7 @@ module.exports = {
   buildTrendWarnings,
   buildScopeDistribution,
   buildWindowSummaries,
+  buildAiLatencyRollup,
   cloneTrackerForRepair,
   getRunChecks,
   getRunDeploymentId,

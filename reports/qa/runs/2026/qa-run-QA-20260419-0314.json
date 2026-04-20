@@ -1,0 +1,78 @@
+{
+  "runId": "QA-20260419-0314",
+  "recordedAt": "2026-04-19T14:46:29.143Z",
+  "recordedAtKst": "2026-04-19 23:46:29 KST",
+  "runTitle": "Local dev runtime triage - root app shell compile bottleneck",
+  "owner": "codex",
+  "source": "local-dev-readiness",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://127.0.0.1:45921",
+    "frontend": "Next.js Turbopack dev",
+    "backend": "local",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "8ba0ed08f360a90fc38f70f24530eb5edc31de85"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [],
+  "coveredSurfaces": [
+    "/dashboard",
+    "next dev turbopack readiness",
+    "root layout/provider/bootstrap compile path"
+  ],
+  "skippedSurfaces": [
+    "production deployment",
+    "broad route smoke",
+    "playwright browser walkthrough"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 2,
+    "failed": 3
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "root-client-runtime-split",
+      "title": "Non-critical root client runtime modules split behind dynamic wrapper",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "src/app/RootClientRuntime.tsx + src/app/layout.tsx",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "root-shell-startup-trace",
+      "title": "Trace instrumentation/layout/provider compile bottleneck",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Repeated probes still show Ready ~138s then /dashboard compile timeout in local dev.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Repeated webpack/turbopack probes show local dev startup dominated by instrumentation + shared app shell compile before route response.",
+    "Dashboard-specific lazy loading and dev bootstrap changes did not materially change /dashboard timeout behavior."
+  ],
+  "links": []
+}

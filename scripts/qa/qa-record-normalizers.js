@@ -284,9 +284,68 @@ function normalizeUsageCheck(rawItem, index) {
   };
 }
 
+function normalizeLatencyMetric(value, fieldName) {
+  const numericValue = Number(value);
+  if (!Number.isFinite(numericValue) || numericValue < 0) {
+    throw new Error(`${fieldName}는 0 이상의 숫자여야 합니다.`);
+  }
+  return Math.round(numericValue);
+}
+
+function normalizeLatencyObservation(rawItem, index) {
+  if (!rawItem || typeof rawItem !== 'object') {
+    throw new Error(`aiLatencyObservations[${index}] 항목이 비어있거나 객체가 아닙니다.`);
+  }
+
+  const surface = String(rawItem.surface || '').trim();
+  if (!surface) {
+    throw new Error(`aiLatencyObservations[${index}].surface가 필요합니다.`);
+  }
+
+  const agent = String(rawItem.agent || '').trim();
+  if (!agent) {
+    throw new Error(`aiLatencyObservations[${index}].agent가 필요합니다.`);
+  }
+
+  const provider = String(rawItem.provider || '').trim().toLowerCase();
+  if (!provider) {
+    throw new Error(`aiLatencyObservations[${index}].provider가 필요합니다.`);
+  }
+
+  return {
+    surface,
+    agent,
+    provider,
+    ...(rawItem.model ? { model: String(rawItem.model).trim() } : {}),
+    ...(rawItem.route ? { route: String(rawItem.route).trim() } : {}),
+    ...(rawItem.source ? { source: String(rawItem.source).trim() } : {}),
+    latencyMs: normalizeLatencyMetric(
+      rawItem.latencyMs,
+      `aiLatencyObservations[${index}].latencyMs`
+    ),
+    ...(rawItem.ttfbMs != null
+      ? {
+          ttfbMs: normalizeLatencyMetric(
+            rawItem.ttfbMs,
+            `aiLatencyObservations[${index}].ttfbMs`
+          ),
+        }
+      : {}),
+    ...(rawItem.processingTimeMs != null
+      ? {
+          processingTimeMs: normalizeLatencyMetric(
+            rawItem.processingTimeMs,
+            `aiLatencyObservations[${index}].processingTimeMs`
+          ),
+        }
+      : {}),
+  };
+}
+
 module.exports = {
   normalizeDodChecks,
   normalizeExpertAssessment,
+  normalizeLatencyObservation,
   normalizeItem,
   normalizePendingPolicy,
   normalizeUsageCheck,

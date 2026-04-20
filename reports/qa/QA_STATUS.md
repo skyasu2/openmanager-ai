@@ -1,63 +1,75 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-19 16:40:43 KST
+> Generated at: 2026-04-20 14:49:05 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 309 |
-| Total Runs (Counted) | 261 |
-| Non-counted Runs | 48 |
-| Total Checks | 2072 |
-| Passed | 1993 |
+| Total Recorded Runs | 318 |
+| Total Runs (Counted) | 263 |
+| Non-counted Runs | 55 |
+| Total Checks | 2082 |
+| Passed | 2003 |
 | Failed | 72 |
-| Completed Items | 313 |
-| Pending Items | 0 |
+| Completed Items | 320 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 15 |
 | Expert Domains Tracked | 8 |
 | Expert Open Gaps | 0 |
-| Completion Rate | 100% |
-| Last Counted Run | QA-20260419-0309 (2026-04-19T06:56:36.060Z) |
-| Latest Recorded Run | QA-20260419-0311 (2026-04-19T07:35:12.563Z) |
+| Completion Rate | 99.69% |
+| Last Counted Run | QA-20260420-0316 (2026-04-20T04:07:14.690Z) |
+| Latest Recorded Run | QA-20260420-0320 (2026-04-20T05:49:05.588Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260419-0311 (2026-04-19T07:35:12.563Z)
+Latest run: QA-20260420-0320 (2026-04-20T05:49:05.588Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | QA-20260419-0309 동일 배포 기준 effective 11.0956 USD / billed 0.0 USD, no spike. |
+| vercel | cli | checked | normal | Current billing period reviewed after preview verification; effective 12.3711 USD, billed 0 USD, no unexpected billed usage surfaced. |
+
+## AI Latency Rollup (Last 24h)
+
+- Window: 2026-04-19T05:49:05.588Z -> 2026-04-20T05:49:05.588Z (24h)
+- Runs with observations: 0 recorded / 0 counted
+- Samples: 0
+
+| Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---|
+| - | - | 0 | - | - | - | - | - | - | - |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: dpl_JAFCywvdMLnVLVRLW6x3KaLuRi8u / SHA 74bb7960
-- Covered Surfaces: /api/version, /api/health, /dashboard, AI 사이드바, AI Chat 응답, 분석 근거 과정/상세 탭(사이드바), Analyst 전체 분석, 전체화면 전환, 분석 근거 과정/상세 탭(전체화면), Reporter 보고서 생성, 브라우저 콘솔
-- Skipped Surfaces: /login, /privacy, 404, topology modal, mobile
+- Deployment: dpl_348Uoi8vqHWxPNoCMfo1Gxa2fbuN / SHA ac18ca2f
+- Coverage Packs: core-routes-smoke, dashboard-core
+- Covered Surfaces: preview protected dashboard entry with automation bypass, preview login page guest CTA, guest login to dashboard on preview, dashboard route /dashboard?serverId=web-nginx-dc1-01 after guest login
+- Skipped Surfaces: Reporter flow, AI surfaces, production deployment verification
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | Preview deployment | [Preview deployment](https://openmanager-8i3pryse2-skyasus-projects.vercel.app/) | - |
+| vercel-deployment | Deployment dpl_348Uoi8vqHWxPNoCMfo1Gxa2fbuN | [Deployment dpl_348Uoi8vqHWxPNoCMfo1Gxa2fbuN](https://vercel.com/skyasus-projects/openmanager-ai/348Uoi8vqHWxPNoCMfo1Gxa2fbuN) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Reporter fullscreen | `reports/qa/evidence/qa-20260419-reporter-fullscreen.png` | - |
+| playwright-screenshot | Preview dashboard after guest login with missing serverId autofocus modal | `tmp/playwright/manual-vercel/preview-dashboard-server-focus-success.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -65,7 +77,7 @@ Latest run: QA-20260419-0311 (2026-04-19T07:35:12.563Z)
 
 ## Pending Improvements
 
-- None
+- [P1] root-shell-startup-trace: Trace instrumentation/layout/provider compile bottleneck (seen 3회, last QA-20260420-0318)
 
 ## Deferred Improvements
 
@@ -199,17 +211,22 @@ Latest run: QA-20260419-0311 (2026-04-19T07:35:12.563Z)
 - cve-brace-expansion: brace-expansion CVE GHSA-f886-m6hf-6m8v 패치 (completed 1회, last QA-20260329-0194)
 - dashboard-15-servers: 대시보드 15대 서버 모니터링 정상 (completed 2회, last QA-20260314-0097)
 - dashboard-active-alerts: 활성 알림 모달 (completed 1회, last QA-20260317-0114)
+- dashboard-client-lazy-shell-split: Split DashboardClient into auth wrapper and lazy interactive shell (completed 1회, last QA-20260420-0318)
+- dashboard-content-lazy-server-section: Lazy load ServerDashboard from DashboardContent (completed 1회, last QA-20260420-0318)
+- dashboard-dev-defer-heavy-subtree: Defer DashboardContent subtree during dev bootstrap (completed 1회, last QA-20260420-0317)
 - dashboard-health-badge-warning-consistency: 고부하 카드가 Stable 대신 Warning으로 정렬됨 (completed 1회, last QA-20260322-0157)
 - dashboard-health-v879: 프로덕션 대시보드 및 Health API 검증 (completed 1회, last QA-20260306-0052)
 - dashboard-health-v880: 프로덕션 대시보드 및 Health API 검증 (completed 1회, last QA-20260308-0056)
 - dashboard-health-v880-quality-recheck: 프로덕션 대시보드/Health API 품질 재검증 (completed 1회, last QA-20260308-0059)
 - dashboard-health-v880-recheck: 프로덕션 대시보드 및 Health API 재검증 (completed 5회, last QA-20260309-0068)
+- dashboard-page-dev-server-data-import-split: Avoid server-data graph import on dashboard dev path (completed 1회, last QA-20260420-0317)
 - dashboard-render: 대시보드 18서버 17온라인 1경고 (completed 1회, last QA-20260419-0306)
 - dashboard-resources: 시스템 리소스 개요 (completed 1회, last QA-20260317-0114)
 - dashboard-server-card-selector-stabilization: 서버 카드 선택자 및 빈 상태 처리 안정화 (completed 2회, last QA-20260302-0039)
 - dashboard-server-cards: 대시보드 서버 카드 및 메트릭 (completed 2회, last QA-20260302-0038)
 - dashboard-status-filter: 상태 필터 토글 (completed 1회, last QA-20260317-0114)
 - dashboard-topology-map: 토폴로지 맵 모달 (completed 1회, last QA-20260317-0114)
+- dev-runtime-css-split: Landing CSS and home route compile split (completed 1회, last QA-20260420-0315)
 - dom-related-depscan-noise-suppression: Suppress benign zero-test DOM related dep-scan noise (completed 1회, last QA-20260325-0186)
 - e2e-ai-chat-production-selector-alignment: AI Chat/Sidebar E2E selectors aligned with production DOM (completed 1회, last QA-20260310-0073)
 - e2e-testid-production-fix: E2E 테스트 data-testid 의존성 제거 (completed 1회, last QA-20260310-0076)
@@ -302,6 +319,7 @@ Latest run: QA-20260419-0311 (2026-04-19T07:35:12.563Z)
 - qa-doc-roadmap-current-status-alignment: QA DoD 로드맵 현재 상태 정합성 갱신 (completed 1회, last QA-20260309-0067)
 - qa-expert-domain-tracking: QA 런에서 전문가 영역 적합성 추적 체계 도입 (completed 1회, last QA-20260226-0003)
 - qa-final-report-historical-positioning: v8.7.1 최종 QA 리포트의 historical 성격 명시 (completed 1회, last QA-20260309-0067)
+- query-provider-devtools-hydration-fix: React Query Devtools hydration mismatch removal (completed 1회, last QA-20260420-0316)
 - rag-engine-doc-link-repair: RAG, Vercel fair-use 문서 링크 경로 갱신 (completed 1회, last QA-20260228-0026)
 - rag-smoke-coverage: Redis+Supabase RAG 경로 스모크 강화 (completed 2회, last QA-20260302-0039)
 - readme-qa-evidence-sync-20260325: README QA evidence snapshot sync (completed 1회, last QA-20260325-0185)
@@ -322,6 +340,7 @@ Latest run: QA-20260419-0311 (2026-04-19T07:35:12.563Z)
 - reporter-sidebar-state-retention-chat-switch: Reporter 생성 결과가 sidebar chat 전환 후 유지 (completed 3회, last QA-20260320-0138)
 - reporter-state-loss-on-tab-switch: Reporter 탭 전환 시 생성 결과 상태 유지 (completed 1회, last QA-20260315-0104)
 - reporter-state-retention-chat-switch: Reporter 생성 결과가 chat 전환 후 유지 (completed 1회, last QA-20260318-0126)
+- root-client-runtime-split: Non-critical root client runtime modules split behind dynamic wrapper (completed 1회, last QA-20260419-0314)
 - root-layout-font-preload-cleanup: Suppress repeated root font preload warnings on dashboard and fullscreen AI routes (completed 1회, last QA-20260417-0300)
 - security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (completed 4회, last QA-20260320-0138)
 - security-audit-logs-live-path-smoke: guest login route writes security_audit_logs on success (completed 1회, last QA-20260411-0271)
@@ -423,6 +442,15 @@ Latest run: QA-20260419-0311 (2026-04-19T07:35:12.563Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260420-0320 | 2026-04-20T05:49:05.588Z | targeted | no | no | Vercel preview targeted QA - dashboard serverId autofocus after guest login | 6 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260420-0319 | 2026-04-20T05:46:13.205Z | targeted | no | no | Vercel preview targeted QA - reporter/dashboard follow-up branch verification | 5 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260420-0318 | 2026-04-20T05:17:00.396Z | targeted | no | no | Local dev turbopack trace - dashboard lazy shell/server section follow-up | 5 | 2 | 1 | 0 | 0 | 0 |
+| QA-20260420-0317 | 2026-04-20T04:33:26.822Z | targeted | no | no | Local dev turbopack trace - dashboard cold compile follow-up | 5 | 2 | 1 | 0 | 0 | 0 |
+| QA-20260420-0316 | 2026-04-20T04:07:14.690Z | targeted | no | yes | Local dev dashboard runtime verification after QueryProvider devtools hydration fix | 6 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260420-0315 | 2026-04-20T00:37:53.308Z | targeted | no | yes | Local dev runtime verification after CSS/client-boundary split | 4 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260419-0314 | 2026-04-19T14:46:29.143Z | targeted | no | no | Local dev runtime triage - root app shell compile bottleneck | 5 | 1 | 1 | 0 | 0 | 0 |
+| QA-20260419-0313 | 2026-04-19T12:51:44.394Z | targeted | no | no | Local dev runtime verification - dashboard compile timeout | 4 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260419-0312 | 2026-04-19T09:51:17.294Z | targeted | no | no | Local QA - AI Sidebar visual verification blocked by dev server timeout | 4 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260419-0311 | 2026-04-19T07:35:12.563Z | targeted | no | no | v8.11.23 broad targeted QA — fullscreen/Reporter/Analyst parity | 13 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260419-0310 | 2026-04-19T07:07:40.561Z | targeted | no | no | Vercel production verification QA - 8.11.23 live smoke recheck | 10 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260419-0309 | 2026-04-19T06:56:36.060Z | broad | yes | yes | Vercel Production Broad QA - 8.11.23 core routes, dashboard modal pack, and AI parity | 17 | 1 | 0 | 0 | 0 | 0 |
@@ -434,12 +462,3 @@ Latest run: QA-20260419-0311 (2026-04-19T07:35:12.563Z)
 | QA-20260418-0303 | 2026-04-18T08:01:44.685Z | broad | yes | yes | Production broad QA - 8.11.20 AI hardening verification | 22 | 1 | 0 | 0 | 1 | 0 |
 | QA-20260417-0302 | 2026-04-17T05:39:27.161Z | targeted | no | yes | v8.11.19 active-alert :9100 fix targeted production QA | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260417-0301 | 2026-04-17T05:23:31.724Z | targeted | yes | no | Production release verification blocked - v8.11.19 deploy not created | 4 | 0 | 1 | 0 | 0 | 1 |
-| QA-20260417-0300 | 2026-04-17T04:06:23.738Z | broad | yes | yes | Production broad QA - 8.11.17 font preload cleanup verification | 18 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260417-0299 | 2026-04-16T15:32:08.661Z | broad | yes | yes | Production broad QA - 8.11.16 dashboard AI parity with font preload warning regression | 18 | 0 | 1 | 0 | 0 | 2 |
-| QA-20260417-0298 | 2026-04-16T15:01:19.807Z | targeted | no | yes | Production targeted QA - 8.11.16 copy trim and AI sidebar verification | 10 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260416-0297 | 2026-04-16T13:53:18.702Z | targeted | no | yes | Production QA - Analysis Mode Auto vs Thinking v8.11.15 | 8 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260416-0296 | 2026-04-16T12:02:50.961Z | targeted | no | yes | Production mixed query QA after 8.11.14 frontend and ai-engine deploy | 8 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260416-0295 | 2026-04-16T11:38:00.431Z | targeted | no | no | Production mixed runtime QA after manual Cloud Run deploy | 6 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260416-0294 | 2026-04-16T00:26:05.077Z | targeted | yes | yes | Vercel production targeted QA - AI full-surface advanced flows on v8.11.13 | 7 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260416-0293 | 2026-04-16T00:12:50.093Z | targeted | yes | no | Vercel production targeted QA - fullscreen analysis basis parity after v8.11.13 deploy | 8 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260416-0292 | 2026-04-15T23:53:23.445Z | targeted | no | no | Vercel preview targeted QA - fullscreen analysis basis parity after data-done toolsCalled fix | 7 | 1 | 0 | 0 | 0 | 0 |

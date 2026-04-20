@@ -25,6 +25,11 @@ reports/qa/
 - `cp reports/qa/templates/qa-run-input.example.json /tmp/qa-run-input.json`
 - `scope`, `releaseFacing`, `coveragePacks`, `coveredSurfaces`, `skippedSurfaces`를 현재 QA 범위에 맞게 채운다.
 - Playwright/CI 증거가 있으면 `artifacts`에 `trace/report/screenshot/video`를 구조화해 남긴다.
+- AI latency 실측을 확보한 run이면 `aiLatencyObservations`에 구조화해 남긴다.
+  - 최소 필드: `surface`, `agent`, `provider`, `latencyMs`
+  - 선택 필드: `model`, `route`, `source`, `ttfbMs`, `processingTimeMs`
+  - 예: `X-AI-Latency-Ms`, `processingTimeMs`, stream `ttfbMs`, job payload latency
+  - `qa:status` / `qa:trends`는 최신 recorded run 시각을 anchor로 최근 24시간 observation을 `agent/provider` 기준 `avg/p95`로 집계한다.
 - `reports/qa/**/*.md` 변경은 `npm run docs:lint:changed` 검증 범위에 포함된다. QA 운영 문서를 바꿨다면 push 전에 함께 확인한다.
 - 증거 분류 기준:
   - `reports/qa/evidence/...`: run JSON `artifacts[].path`에 직접 연결되는 durable evidence만 둔다.
@@ -113,6 +118,11 @@ reports/qa/
   - Vercel Production의 `broad`/`release-gate` 또는 `releaseFacing: true` run이면 `platform: "vercel"` 항목이 최소 1건 필수
   - `status`는 수집 상태를 의미합니다: `checked` | `skipped` | `failed`
   - `result`는 비용/사용량 판정 결과를 의미합니다: `normal` | `concern` | `unknown`
+- `aiLatencyObservations`는 AI 응답 시간 샘플을 구조화하는 필드입니다.
+  - 목적: `QA_STATUS.md`, `QA_TRENDS.md`, `latest-qa-trends.json`에서 최근 24h `agent/provider` 기준 `avg/p95`를 바로 읽기 위한 입력
+  - 최소 필드: `surface`, `agent`, `provider`, `latencyMs`
+  - 선택 필드: `model`, `route`, `source`, `ttfbMs`, `processingTimeMs`
+  - 숫자 필드는 모두 0 이상이어야 하며, run의 `recordedAt`이 observation window anchor로 사용됩니다.
 - `scope`는 QA 범위를 의미합니다: `smoke` | `targeted` | `broad` | `release-gate`
 - `releaseFacing`은 이 run이 실제 릴리즈 게이트 성격인지 명시합니다.
 - `coveragePacks`는 표준화된 커버 묶음입니다.

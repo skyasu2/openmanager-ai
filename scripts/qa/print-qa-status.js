@@ -151,6 +151,11 @@ function run() {
       `- latest covered/skipped surfaces: ${(latestRun.coveredSurfaces || []).length}/${(latestRun.skippedSurfaces || []).length}`
     );
   }
+  if ((trendSnapshot.aiLatencyRollup24h?.sampleCount || 0) > 0) {
+    console.log(
+      `- latency rollup (24h): samples=${trendSnapshot.aiLatencyRollup24h.sampleCount}, buckets=${trendSnapshot.aiLatencyRollup24h.buckets.length}, runs=${trendSnapshot.aiLatencyRollup24h.recordedRunCount}/${trendSnapshot.aiLatencyRollup24h.countedRunCount}`
+    );
+  }
   const statusFileRelativePath = path.relative(process.cwd(), STATUS_PATH);
   if (shouldWrite) {
     console.log(`- dashboard synced: ${statusFileRelativePath}`);

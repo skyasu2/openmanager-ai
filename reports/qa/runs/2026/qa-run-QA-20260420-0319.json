@@ -1,0 +1,81 @@
+{
+  "runId": "QA-20260420-0319",
+  "recordedAt": "2026-04-20T05:46:13.205Z",
+  "recordedAtKst": "2026-04-20 14:46:13 KST",
+  "runTitle": "Vercel preview targeted QA - reporter/dashboard follow-up branch verification",
+  "owner": "codex",
+  "source": "playwright-cli",
+  "environment": {
+    "target": "vercel-preview",
+    "url": "https://openmanager-8i3pryse2-skyasus-projects.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_348Uoi8vqHWxPNoCMfo1Gxa2fbuN",
+    "deploymentUrl": "https://openmanager-8i3pryse2-skyasus-projects.vercel.app",
+    "commitSha": "ac18ca2f99e4ade8fcad2e0646e6d20cffd23de3"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core"],
+  "coveredSurfaces": [
+    "preview landing route via Vercel protection bypass",
+    "preview /dashboard?serverId=web-nginx-dc1-01 route reachability",
+    "preview login redirect behavior for protected dashboard route"
+  ],
+  "skippedSurfaces": [
+    "guest login flow on preview",
+    "dashboard modal auto-focus verification on preview",
+    "Reporter flow",
+    "AI surfaces"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 3,
+    "failed": 2
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-20T05:42:44.820Z",
+      "summary": "Current billing period reviewed after preview verification; effective 12.3711 USD, billed 0 USD, no unexpected billed usage surfaced.",
+      "evidence": "npm run check:usage:vercel",
+      "url": ""
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Preview dashboard redirect state",
+      "path": "tmp/playwright/manual-vercel/preview-dashboard-server-focus.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Vercel preview returned HTTP 200 on / with x-vercel-protection-bypass header applied.",
+    "Navigating to /dashboard?serverId=web-nginx-dc1-01 returned HTTP 200 but redirected to /login?redirectTo=%2Fdashboard, so dashboard/modal assertions could not run.",
+    "Preview login page did not expose a guest-mode CTA, which blocked remote verification of the serverId modal auto-focus flow.",
+    "Deployment metadata reported gitCommitRef=main and gitCommitSha=ac18ca2f99e4ade8fcad2e0646e6d20cffd23de3, while the local branch under test was feat/reporter-dashboard-followups at 75ed79dffa785fcfd18567aa715644da650c9045."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Preview deployment",
+      "url": "https://openmanager-8i3pryse2-skyasus-projects.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Deployment dpl_348Uoi8vqHWxPNoCMfo1Gxa2fbuN",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/348Uoi8vqHWxPNoCMfo1Gxa2fbuN"
+    }
+  ]
+}

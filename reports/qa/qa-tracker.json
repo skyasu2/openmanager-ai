@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-19T07:35:12.563Z"
+    "updatedAt": "2026-04-20T05:49:05.588Z"
   },
   "sequence": {
-    "nextRunNumber": 312
+    "nextRunNumber": 321
   },
   "summary": {
-    "totalRecordedRuns": 309,
-    "totalRuns": 261,
-    "excludedRuns": 48,
-    "totalChecks": 2072,
-    "totalPassed": 1993,
+    "totalRecordedRuns": 318,
+    "totalRuns": 263,
+    "excludedRuns": 55,
+    "totalChecks": 2082,
+    "totalPassed": 2003,
     "totalFailed": 72,
-    "completionRate": 100,
-    "completedItems": 313,
-    "pendingItems": 0,
+    "completionRate": 99.69,
+    "completedItems": 320,
+    "pendingItems": 1,
     "deferredItems": 0,
     "wontFixItems": 15,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260419-0309",
-    "lastRecordedAt": "2026-04-19T06:56:36.060Z",
-    "latestRecordedRunId": "QA-20260419-0311",
-    "latestRecordedAt": "2026-04-19T07:35:12.563Z"
+    "lastRunId": "QA-20260420-0316",
+    "lastRecordedAt": "2026-04-20T04:07:14.690Z",
+    "latestRecordedRunId": "QA-20260420-0320",
+    "latestRecordedAt": "2026-04-20T05:49:05.588Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -7598,6 +7598,198 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-19T06:56:36.060Z"
+    },
+    "root-client-runtime-split": {
+      "id": "root-client-runtime-split",
+      "title": "Non-critical root client runtime modules split behind dynamic wrapper",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260419-0314",
+      "firstSeenAt": "2026-04-19T14:46:29.143Z",
+      "lastSeenRunId": "QA-20260419-0314",
+      "lastSeenAt": "2026-04-19T14:46:29.143Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "src/app/RootClientRuntime.tsx + src/app/layout.tsx",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-19T14:46:29.143Z"
+    },
+    "root-shell-startup-trace": {
+      "id": "root-shell-startup-trace",
+      "title": "Trace instrumentation/layout/provider compile bottleneck",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260419-0314",
+      "firstSeenAt": "2026-04-19T14:46:29.143Z",
+      "lastSeenRunId": "QA-20260420-0318",
+      "lastSeenAt": "2026-04-20T05:17:00.396Z",
+      "seenCount": 3,
+      "completedCount": 0,
+      "pendingCount": 3,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": ".next/dev/trace-turbopack",
+      "lastNote": "After the lazy shell and ServerDashboard section split, /dashboard cold trace is still 133s total (http 200), so the main dev bottleneck remains unresolved outside the moved dashboard subtree.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-20T05:17:00.396Z"
+    },
+    "dev-runtime-css-split": {
+      "id": "dev-runtime-css-split",
+      "title": "Landing CSS and home route compile split",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260420-0315",
+      "firstSeenAt": "2026-04-20T00:37:53.308Z",
+      "lastSeenRunId": "QA-20260420-0315",
+      "lastSeenAt": "2026-04-20T00:37:53.308Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-20T00:37:53.308Z"
+    },
+    "query-provider-devtools-hydration-fix": {
+      "id": "query-provider-devtools-hydration-fix",
+      "title": "React Query Devtools hydration mismatch removal",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260420-0316",
+      "firstSeenAt": "2026-04-20T04:07:14.690Z",
+      "lastSeenRunId": "QA-20260420-0316",
+      "lastSeenAt": "2026-04-20T04:07:14.690Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "QueryProvider devtools client-only mount gating + local dev browser recheck",
+      "lastNote": "get_errors returned no runtime errors after dev server restart and browser reload.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-20T04:07:14.690Z"
+    },
+    "dashboard-dev-defer-heavy-subtree": {
+      "id": "dashboard-dev-defer-heavy-subtree",
+      "title": "Defer DashboardContent subtree during dev bootstrap",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260420-0317",
+      "firstSeenAt": "2026-04-20T04:33:26.822Z",
+      "lastSeenRunId": "QA-20260420-0317",
+      "lastSeenAt": "2026-04-20T04:33:26.822Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "src/app/dashboard/DashboardClient.tsx",
+      "lastNote": "DashboardHeader/DashboardContent switched to client-only dynamic loading and DashboardContent render is deferred by one frame in development.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-20T04:33:26.822Z"
+    },
+    "dashboard-page-dev-server-data-import-split": {
+      "id": "dashboard-page-dev-server-data-import-split",
+      "title": "Avoid server-data graph import on dashboard dev path",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260420-0317",
+      "firstSeenAt": "2026-04-20T04:33:26.822Z",
+      "lastSeenRunId": "QA-20260420-0317",
+      "lastSeenAt": "2026-04-20T04:33:26.822Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "src/app/dashboard/page.tsx",
+      "lastNote": "getOTelDashboardData moved into the production-only branch so dev bootstrap no longer statically imports the OTel server-data loader.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-20T04:33:26.822Z"
+    },
+    "dashboard-client-lazy-shell-split": {
+      "id": "dashboard-client-lazy-shell-split",
+      "title": "Split DashboardClient into auth wrapper and lazy interactive shell",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260420-0318",
+      "firstSeenAt": "2026-04-20T05:17:00.396Z",
+      "lastSeenRunId": "QA-20260420-0318",
+      "lastSeenAt": "2026-04-20T05:17:00.396Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "src/app/dashboard/DashboardClient.tsx",
+      "lastNote": "DashboardClient now keeps auth/hydration gating in the entry chunk and loads DashboardInteractiveShell with client-only dynamic import.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-20T05:17:00.396Z"
+    },
+    "dashboard-content-lazy-server-section": {
+      "id": "dashboard-content-lazy-server-section",
+      "title": "Lazy load ServerDashboard from DashboardContent",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260420-0318",
+      "firstSeenAt": "2026-04-20T05:17:00.396Z",
+      "lastSeenRunId": "QA-20260420-0318",
+      "lastSeenAt": "2026-04-20T05:17:00.396Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "src/components/dashboard/DashboardContent.tsx",
+      "lastNote": "ServerDashboard moved behind a client-only dynamic boundary so dashboard summary/system overview can render before the heavy card and modal graph loads.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-20T05:17:00.396Z"
     }
   },
   "runs": [
@@ -28498,6 +28690,522 @@
       ],
       "links": [],
       "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260419-0312",
+      "recordedAt": "2026-04-19T09:51:17.294Z",
+      "recordedAtKst": "2026-04-19 18:51:17 KST",
+      "title": "Local QA - AI Sidebar visual verification blocked by dev server timeout",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260419-0312.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://127.0.0.1:3000",
+        "frontend": "Next.js dev server",
+        "backend": "local-dev",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "8ba0ed08f360a90fc38f70f24530eb5edc31de85"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "local dev server boot attempt",
+        "AI sidebar visual verification attempt",
+        "analysis basis process/debug split regression check"
+      ],
+      "skippedSurfaces": [
+        "/dashboard live render",
+        "AI sidebar live open/close interaction",
+        "horizontal-scroll visual confirmation in browser"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 1,
+        "failed": 3
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260419-0313",
+      "recordedAt": "2026-04-19T12:51:44.394Z",
+      "recordedAtKst": "2026-04-19 21:51:44 KST",
+      "title": "Local dev runtime verification - dashboard compile timeout",
+      "owner": "codex",
+      "source": "local-dev-playwright",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260419-0313.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://127.0.0.1:3001",
+        "frontend": "Next.js webpack dev",
+        "backend": "local",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "8ba0ed08f360a90fc38f70f24530eb5edc31de85"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [],
+      "coveredSurfaces": [
+        "/dashboard",
+        "next dev webpack runtime",
+        "browser navigation"
+      ],
+      "skippedSurfaces": [
+        "production deployment",
+        "broad route smoke"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 2,
+        "failed": 2
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260419-0314",
+      "recordedAt": "2026-04-19T14:46:29.143Z",
+      "recordedAtKst": "2026-04-19 23:46:29 KST",
+      "title": "Local dev runtime triage - root app shell compile bottleneck",
+      "owner": "codex",
+      "source": "local-dev-readiness",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260419-0314.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://127.0.0.1:45921",
+        "frontend": "Next.js Turbopack dev",
+        "backend": "local",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "8ba0ed08f360a90fc38f70f24530eb5edc31de85"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [],
+      "coveredSurfaces": [
+        "/dashboard",
+        "next dev turbopack readiness",
+        "root layout/provider/bootstrap compile path"
+      ],
+      "skippedSurfaces": [
+        "production deployment",
+        "broad route smoke",
+        "playwright browser walkthrough"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 2,
+        "failed": 3
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260420-0315",
+      "recordedAt": "2026-04-20T00:37:53.308Z",
+      "recordedAtKst": "2026-04-20 09:37:53 KST",
+      "title": "Local dev runtime verification after CSS/client-boundary split",
+      "owner": "codex",
+      "source": "local-dev",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260420-0315.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://127.0.0.1:3000",
+        "frontend": "Next.js dev",
+        "backend": "local dev",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "cc40aa0ef743b250c3948c1809f9e17c3df00627"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke"
+      ],
+      "coveredSurfaces": [
+        "/",
+        "/dashboard",
+        "/api/version",
+        "/api/system"
+      ],
+      "skippedSurfaces": [
+        "AI sidebar",
+        "production deploy",
+        "browser visual QA"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260420-0316",
+      "recordedAt": "2026-04-20T04:07:14.690Z",
+      "recordedAtKst": "2026-04-20 13:07:14 KST",
+      "title": "Local dev dashboard runtime verification after QueryProvider devtools hydration fix",
+      "owner": "codex",
+      "source": "local-dev",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260420-0316.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://127.0.0.1:3000",
+        "frontend": "Next.js dev",
+        "backend": "local dev",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "cc40aa0ef743b250c3948c1809f9e17c3df00627"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "dashboard-core",
+        "modal-detail-pack"
+      ],
+      "coveredSurfaces": [
+        "/dashboard?serverId=web-nginx-dc1-01",
+        "server detail modal auto-focus",
+        "React Query Devtools hydration boundary"
+      ],
+      "skippedSurfaces": [
+        "AI sidebar",
+        "production deploy",
+        "Reporter entrypoint click flow"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260420-0317",
+      "recordedAt": "2026-04-20T04:33:26.822Z",
+      "recordedAtKst": "2026-04-20 13:33:26 KST",
+      "title": "Local dev turbopack trace - dashboard cold compile follow-up",
+      "owner": "codex",
+      "source": "local-dev-readiness",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260420-0317.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://127.0.0.1:45395",
+        "frontend": "Next.js Turbopack dev",
+        "backend": "local",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "cc40aa0ef743b250c3948c1809f9e17c3df00627"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "dashboard-core"
+      ],
+      "coveredSurfaces": [
+        "/dashboard",
+        "next dev turbopack trace",
+        "dashboard cold compile path"
+      ],
+      "skippedSurfaces": [
+        "production deployment",
+        "playwright browser walkthrough",
+        "broad route smoke"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 3,
+        "failed": 2
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260420-0318",
+      "recordedAt": "2026-04-20T05:17:00.396Z",
+      "recordedAtKst": "2026-04-20 14:17:00 KST",
+      "title": "Local dev turbopack trace - dashboard lazy shell/server section follow-up",
+      "owner": "codex",
+      "source": "local-dev-readiness",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260420-0318.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://127.0.0.1:44665",
+        "frontend": "Next.js Turbopack dev",
+        "backend": "local",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "cc40aa0ef743b250c3948c1809f9e17c3df00627"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "dashboard-core"
+      ],
+      "coveredSurfaces": [
+        "/dashboard",
+        "next dev turbopack trace",
+        "dashboard cold compile path"
+      ],
+      "skippedSurfaces": [
+        "production deployment",
+        "playwright browser walkthrough",
+        "broad route smoke"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260420-0319",
+      "recordedAt": "2026-04-20T05:46:13.205Z",
+      "recordedAtKst": "2026-04-20 14:46:13 KST",
+      "title": "Vercel preview targeted QA - reporter/dashboard follow-up branch verification",
+      "owner": "codex",
+      "source": "playwright-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260420-0319.json",
+      "environment": {
+        "target": "vercel-preview",
+        "url": "https://openmanager-8i3pryse2-skyasus-projects.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_348Uoi8vqHWxPNoCMfo1Gxa2fbuN",
+        "deploymentUrl": "https://openmanager-8i3pryse2-skyasus-projects.vercel.app",
+        "commitSha": "ac18ca2f99e4ade8fcad2e0646e6d20cffd23de3"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core"
+      ],
+      "coveredSurfaces": [
+        "preview landing route via Vercel protection bypass",
+        "preview /dashboard?serverId=web-nginx-dc1-01 route reachability",
+        "preview login redirect behavior for protected dashboard route"
+      ],
+      "skippedSurfaces": [
+        "guest login flow on preview",
+        "dashboard modal auto-focus verification on preview",
+        "Reporter flow",
+        "AI surfaces"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 3,
+        "failed": 2
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-20T05:42:44.820Z",
+          "summary": "Current billing period reviewed after preview verification; effective 12.3711 USD, billed 0 USD, no unexpected billed usage surfaced.",
+          "evidence": "npm run check:usage:vercel",
+          "url": ""
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Preview dashboard redirect state",
+          "path": "tmp/playwright/manual-vercel/preview-dashboard-server-focus.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Preview deployment",
+          "url": "https://openmanager-8i3pryse2-skyasus-projects.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Deployment dpl_348Uoi8vqHWxPNoCMfo1Gxa2fbuN",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/348Uoi8vqHWxPNoCMfo1Gxa2fbuN"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260420-0320",
+      "recordedAt": "2026-04-20T05:49:05.588Z",
+      "recordedAtKst": "2026-04-20 14:49:05 KST",
+      "title": "Vercel preview targeted QA - dashboard serverId autofocus after guest login",
+      "owner": "codex",
+      "source": "playwright-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260420-0320.json",
+      "environment": {
+        "target": "vercel-preview",
+        "url": "https://openmanager-8i3pryse2-skyasus-projects.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_348Uoi8vqHWxPNoCMfo1Gxa2fbuN",
+        "deploymentUrl": "https://openmanager-8i3pryse2-skyasus-projects.vercel.app",
+        "commitSha": "ac18ca2f99e4ade8fcad2e0646e6d20cffd23de3"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core"
+      ],
+      "coveredSurfaces": [
+        "preview protected dashboard entry with automation bypass",
+        "preview login page guest CTA",
+        "guest login to dashboard on preview",
+        "dashboard route /dashboard?serverId=web-nginx-dc1-01 after guest login"
+      ],
+      "skippedSurfaces": [
+        "Reporter flow",
+        "AI surfaces",
+        "production deployment verification"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 4,
+        "failed": 2
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-20T05:42:44.820Z",
+          "summary": "Current billing period reviewed after preview verification; effective 12.3711 USD, billed 0 USD, no unexpected billed usage surfaced.",
+          "evidence": "npm run check:usage:vercel",
+          "url": ""
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Preview dashboard after guest login with missing serverId autofocus modal",
+          "path": "tmp/playwright/manual-vercel/preview-dashboard-server-focus-success.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Preview deployment",
+          "url": "https://openmanager-8i3pryse2-skyasus-projects.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Deployment dpl_348Uoi8vqHWxPNoCMfo1Gxa2fbuN",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/348Uoi8vqHWxPNoCMfo1Gxa2fbuN"
+        }
+      ],
+      "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
       "pendingCount": 0,

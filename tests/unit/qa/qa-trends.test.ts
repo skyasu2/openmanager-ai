@@ -289,6 +289,136 @@ describe('qa-trends', () => {
     );
   });
 
+  it('builds a 24h AI latency rollup by agent/provider and renders it in markdown', () => {
+    const snapshot = buildQaTrendSnapshot({
+      summary: {},
+      items: {},
+      experts: {},
+      runs: [
+        {
+          runId: 'QA-20260417-0200',
+          recordedAt: '2026-04-17T02:00:00.000Z',
+          scope: 'broad',
+          checks: { total: 3, passed: 3, failed: 0 },
+          pendingCount: 0,
+          aiLatencyObservations: [
+            {
+              surface: 'sidebar analyst',
+              agent: 'Analyst Agent',
+              provider: 'mistral',
+              latencyMs: 12000,
+              ttfbMs: 1800,
+              processingTimeMs: 10200,
+            },
+          ],
+        },
+        {
+          runId: 'QA-20260418-0300',
+          recordedAt: '2026-04-18T05:00:00.000Z',
+          scope: 'broad',
+          checks: { total: 4, passed: 4, failed: 0 },
+          pendingCount: 0,
+          aiLatencyObservations: [
+            {
+              surface: 'sidebar analyst',
+              agent: 'Analyst Agent',
+              provider: 'mistral',
+              latencyMs: 3000,
+              ttfbMs: 900,
+              processingTimeMs: 2400,
+            },
+            {
+              surface: 'fullscreen analyst',
+              agent: 'Analyst Agent',
+              provider: 'mistral',
+              latencyMs: 9000,
+              ttfbMs: 1500,
+              processingTimeMs: 8200,
+            },
+          ],
+        },
+        {
+          runId: 'QA-20260419-0300',
+          recordedAt: '2026-04-19T04:00:00.000Z',
+          scope: 'targeted',
+          checks: { total: 2, passed: 2, failed: 0 },
+          pendingCount: 0,
+          countsTowardSummary: false,
+          aiLatencyObservations: [
+            {
+              surface: 'sidebar analyst',
+              agent: 'Analyst Agent',
+              provider: 'mistral',
+              latencyMs: 6000,
+              ttfbMs: 1200,
+              processingTimeMs: 5200,
+            },
+            {
+              surface: 'reporter sheet',
+              agent: 'Reporter Agent',
+              provider: 'groq',
+              latencyMs: 900,
+              ttfbMs: 200,
+              processingTimeMs: 700,
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(snapshot.aiLatencyRollup24h).toMatchObject({
+      windowHours: 24,
+      recordedRunCount: 2,
+      countedRunCount: 1,
+      sampleCount: 4,
+    });
+    expect(snapshot.aiLatencyRollup24h.windowStart).toBe(
+      '2026-04-18T04:00:00.000Z'
+    );
+    expect(snapshot.aiLatencyRollup24h.windowEnd).toBe(
+      '2026-04-19T04:00:00.000Z'
+    );
+    expect(snapshot.aiLatencyRollup24h.buckets).toEqual([
+      {
+        agent: 'Analyst Agent',
+        provider: 'mistral',
+        sampleCount: 3,
+        runCount: 2,
+        countedRunCount: 1,
+        avgLatencyMs: 6000,
+        p95LatencyMs: 9000,
+        avgTtfbMs: 1200,
+        p95TtfbMs: 1500,
+        avgProcessingTimeMs: 5267,
+        p95ProcessingTimeMs: 8200,
+        latestRunId: 'QA-20260419-0300',
+        latestRecordedAt: '2026-04-19T04:00:00.000Z',
+      },
+      {
+        agent: 'Reporter Agent',
+        provider: 'groq',
+        sampleCount: 1,
+        runCount: 1,
+        countedRunCount: 0,
+        avgLatencyMs: 900,
+        p95LatencyMs: 900,
+        avgTtfbMs: 200,
+        p95TtfbMs: 200,
+        avgProcessingTimeMs: 700,
+        p95ProcessingTimeMs: 700,
+        latestRunId: 'QA-20260419-0300',
+        latestRecordedAt: '2026-04-19T04:00:00.000Z',
+      },
+    ]);
+
+    const markdown = qaTrendsMarkdown(snapshot);
+    expect(markdown).toContain('## AI Latency Rollup (Last 24h)');
+    expect(markdown).toContain(
+      '| Analyst Agent | mistral | 3 | 6000ms | 9000ms |'
+    );
+    expect(markdown).toContain('| Reporter Agent | groq | 1 | 900ms | 900ms |');
+  });
+
   it('writes markdown and json artifacts for the current tracker snapshot', () => {
     const tempDir = createTempDir();
     const trackerPath = join(tempDir, 'qa-tracker.json');

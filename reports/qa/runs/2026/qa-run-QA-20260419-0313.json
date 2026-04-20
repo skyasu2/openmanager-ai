@@ -1,0 +1,43 @@
+{
+  "runId": "QA-20260419-0313",
+  "recordedAt": "2026-04-19T12:51:44.394Z",
+  "recordedAtKst": "2026-04-19 21:51:44 KST",
+  "runTitle": "Local dev runtime verification - dashboard compile timeout",
+  "owner": "codex",
+  "source": "local-dev-playwright",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://127.0.0.1:3001",
+    "frontend": "Next.js webpack dev",
+    "backend": "local",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "8ba0ed08f360a90fc38f70f24530eb5edc31de85"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [],
+  "coveredSurfaces": [
+    "/dashboard",
+    "next dev webpack runtime",
+    "browser navigation"
+  ],
+  "skippedSurfaces": ["production deployment", "broad route smoke"],
+  "checks": {
+    "total": 4,
+    "passed": 2,
+    "failed": 2
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}

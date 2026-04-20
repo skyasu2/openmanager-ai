@@ -1,8 +1,23 @@
 const { nowInSeoulText } = require('./qa-time-utils');
+const { buildQaTrendSnapshot } = require('./qa-trends');
+
+function formatLatencyValue(value) {
+  return value != null ? `${value}ms` : '-';
+}
 
 function statusMarkdown(tracker) {
   const lines = [];
   const generatedAt = nowInSeoulText(new Date());
+  const trendSnapshot = buildQaTrendSnapshot(tracker);
+  const aiLatencyRollup = trendSnapshot.aiLatencyRollup24h || {
+    windowHours: 24,
+    windowStart: null,
+    windowEnd: null,
+    recordedRunCount: 0,
+    countedRunCount: 0,
+    sampleCount: 0,
+    buckets: [],
+  };
   const itemList = Object.values(tracker.items);
   const completed = itemList
     .filter((item) => item.status === 'completed')
@@ -103,6 +118,30 @@ function statusMarkdown(tracker) {
     for (const usageCheck of latestRunUsageChecks) {
       lines.push(
         `| ${usageCheck.platform} | ${usageCheck.method} | ${usageCheck.status} | ${usageCheck.result || 'unknown'} | ${usageCheck.summary || '-'} |`
+      );
+    }
+  }
+  lines.push('');
+  lines.push('## AI Latency Rollup (Last 24h)');
+  lines.push('');
+  if (aiLatencyRollup.windowStart && aiLatencyRollup.windowEnd) {
+    lines.push(
+      `- Window: ${aiLatencyRollup.windowStart} -> ${aiLatencyRollup.windowEnd} (${aiLatencyRollup.windowHours}h)`
+    );
+  }
+  lines.push(
+    `- Runs with observations: ${aiLatencyRollup.recordedRunCount} recorded / ${aiLatencyRollup.countedRunCount} counted`
+  );
+  lines.push(`- Samples: ${aiLatencyRollup.sampleCount}`);
+  lines.push('');
+  lines.push('| Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |');
+  lines.push('|---|---|---:|---:|---:|---:|---:|---:|---:|---|');
+  if (aiLatencyRollup.buckets.length === 0) {
+    lines.push('| - | - | 0 | - | - | - | - | - | - | - |');
+  } else {
+    for (const bucket of aiLatencyRollup.buckets) {
+      lines.push(
+        `| ${bucket.agent} | ${bucket.provider} | ${bucket.sampleCount} | ${formatLatencyValue(bucket.avgLatencyMs)} | ${formatLatencyValue(bucket.p95LatencyMs)} | ${formatLatencyValue(bucket.avgTtfbMs)} | ${formatLatencyValue(bucket.p95TtfbMs)} | ${formatLatencyValue(bucket.avgProcessingTimeMs)} | ${formatLatencyValue(bucket.p95ProcessingTimeMs)} | ${bucket.latestRunId || '-'} |`
       );
     }
   }

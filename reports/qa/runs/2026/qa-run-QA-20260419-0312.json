@@ -1,0 +1,53 @@
+{
+  "runId": "QA-20260419-0312",
+  "recordedAt": "2026-04-19T09:51:17.294Z",
+  "recordedAtKst": "2026-04-19 18:51:17 KST",
+  "runTitle": "Local QA - AI Sidebar visual verification blocked by dev server timeout",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://127.0.0.1:3000",
+    "frontend": "Next.js dev server",
+    "backend": "local-dev",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "8ba0ed08f360a90fc38f70f24530eb5edc31de85"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "local dev server boot attempt",
+    "AI sidebar visual verification attempt",
+    "analysis basis process/debug split regression check"
+  ],
+  "skippedSurfaces": [
+    "/dashboard live render",
+    "AI sidebar live open/close interaction",
+    "horizontal-scroll visual confirmation in browser"
+  ],
+  "checks": {
+    "total": 4,
+    "passed": 1,
+    "failed": 3
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "2026-04-19 KST local visual verification attempted after AnalysisBasisBadge/sidebar overflow fix.",
+    "`npm run dev` failed immediately on Turbopack with: Symlink node_modules is invalid, it points out of the filesystem root.",
+    "`npx next dev --webpack -H 0.0.0.0 -p 3000` reached Ready state, but `curl -I http://127.0.0.1:3000/dashboard` timed out after 20s with 0 bytes received.",
+    "Playwright browser navigation to /dashboard timed out repeatedly (60s default, 180s direct goto) before DOMContentLoaded, so browser-level visual confirmation could not be completed.",
+    "Code/test-level verification for the UI change passed separately in this turn."
+  ],
+  "links": []
+}

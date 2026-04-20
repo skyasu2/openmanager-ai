@@ -14,6 +14,7 @@ const {
 const {
   normalizeDodChecks,
   normalizeExpertAssessment,
+  normalizeLatencyObservation,
   normalizeItem,
   normalizePendingPolicy,
   normalizeUsageCheck,
@@ -1310,6 +1311,12 @@ function run() {
   const usageChecks = usageChecksRaw.map((item, index) =>
     normalizeUsageCheck(item, index)
   );
+  const aiLatencyObservationsRaw = Array.isArray(payload.aiLatencyObservations)
+    ? payload.aiLatencyObservations
+    : [];
+  const aiLatencyObservations = aiLatencyObservationsRaw.map((item, index) =>
+    normalizeLatencyObservation(item, index)
+  );
   // Warn when targeted scope is combined with releaseFacing=true.
   // Such a run will pass validation gates but will NOT be promoted to the
   // public snapshot baseline (build-validation-evidence.js enforces this).
@@ -1458,6 +1465,7 @@ function run() {
       passed,
       failed,
     },
+    aiLatencyObservations,
     expertAssessments,
     usageChecks,
     artifacts,
@@ -1490,6 +1498,7 @@ function run() {
     coveredSurfaces,
     skippedSurfaces,
     expertAssessments,
+    aiLatencyObservations,
     usageChecks,
     artifacts,
     artifactDebt,
