@@ -7,35 +7,39 @@
 
 import { type NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logging';
+import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 import { setupCSRFProtection } from '@/utils/security/csrf';
 
-export function GET(_request: NextRequest) {
-  try {
-    const response = NextResponse.json({
-      success: true,
-      message: 'CSRF token issued',
-    });
+export const GET = withRateLimit(
+  rateLimiters.monitoring,
+  async (_request: NextRequest) => {
+    try {
+      const response = NextResponse.json({
+        success: true,
+        message: 'CSRF token issued',
+      });
 
-    // CSRF 토큰 생성 및 쿠키 설정
-    const token = setupCSRFProtection(response);
+      // CSRF 토큰 생성 및 쿠키 설정
+      const token = setupCSRFProtection(response);
 
-    logger.info(
-      '✅ [CSRF API] 토큰 발급 완료:',
-      `${token.substring(0, 10)}...`
-    );
+      logger.info(
+        '✅ [CSRF API] 토큰 발급 완료:',
+        `${token.substring(0, 10)}...`
+      );
 
-    return response;
-  } catch (error) {
-    logger.error('❌ [CSRF API] 토큰 발급 실패:', error);
+      return response;
+    } catch (error) {
+      logger.error('❌ [CSRF API] 토큰 발급 실패:', error);
 
-    return NextResponse.json(
-      {
-        success: false,
-        message: 'Failed to issue CSRF token',
-      },
-      { status: 500 }
-    );
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Failed to issue CSRF token',
+        },
+        { status: 500 }
+      );
+    }
   }
-}
+);
 
 // MIGRATED: Removed export const runtime = 'edge';

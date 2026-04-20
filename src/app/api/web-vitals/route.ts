@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { logger } from '@/lib/logging';
+import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 
 const metricNameSchema = z.enum(['CLS', 'INP', 'LCP', 'FCP', 'TTFB']);
 const metricRatingSchema = z.enum(['good', 'needs-improvement', 'poor']);
@@ -100,55 +101,58 @@ function analyzeWebVitals(metrics: WebVitalMetric[]) {
   };
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const parsed = webVitalsPayloadSchema.safeParse(body);
+export const POST = withRateLimit(
+  rateLimiters.dataGenerator,
+  async (request: NextRequest) => {
+    try {
+      const body = await request.json();
+      const parsed = webVitalsPayloadSchema.safeParse(body);
 
-    if (!parsed.success) {
+      if (!parsed.success) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Invalid web vitals payload',
+            details: parsed.error.flatten(),
+          },
+          { status: 400 }
+        );
+      }
+
+      const payload = parsed.data;
+      const analysis = analyzeWebVitals(payload.metrics);
+
+      logger.info('[web-vitals] field metrics received', {
+        url: payload.url,
+        hostname: payload.hostname,
+        appVersion: payload.appVersion,
+        deviceType: payload.deviceType,
+        sessionId: payload.sessionId,
+        metricCount: payload.metrics.length,
+        overall: analysis.overall,
+        score: analysis.score,
+        metrics: payload.metrics.map((metric) => ({
+          name: metric.name,
+          value: metric.value,
+          rating: metric.rating,
+        })),
+      });
+
+      return NextResponse.json({
+        success: true,
+        data: {
+          analysis,
+        },
+      });
+    } catch (error) {
+      logger.error('[web-vitals] failed to process request', error);
       return NextResponse.json(
         {
           success: false,
-          error: 'Invalid web vitals payload',
-          details: parsed.error.flatten(),
+          error: 'Failed to process web vitals payload',
         },
-        { status: 400 }
+        { status: 500 }
       );
     }
-
-    const payload = parsed.data;
-    const analysis = analyzeWebVitals(payload.metrics);
-
-    logger.info('[web-vitals] field metrics received', {
-      url: payload.url,
-      hostname: payload.hostname,
-      appVersion: payload.appVersion,
-      deviceType: payload.deviceType,
-      sessionId: payload.sessionId,
-      metricCount: payload.metrics.length,
-      overall: analysis.overall,
-      score: analysis.score,
-      metrics: payload.metrics.map((metric) => ({
-        name: metric.name,
-        value: metric.value,
-        rating: metric.rating,
-      })),
-    });
-
-    return NextResponse.json({
-      success: true,
-      data: {
-        analysis,
-      },
-    });
-  } catch (error) {
-    logger.error('[web-vitals] failed to process request', error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Failed to process web vitals payload',
-      },
-      { status: 500 }
-    );
   }
-}
+);
