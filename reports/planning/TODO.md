@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-21 KST (production Vision latency 표본 보강 완료 반영)
+**Last Updated**: 2026-04-21 KST (multi-agent finalAnswer loop cap 단순화 완료 반영)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -22,7 +22,6 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| Multi-agent `finalAnswer` loop cap (`stepCountIs(10)`) 단순화 검토 | Medium | **tracking-only** — 현재는 tool-result 요약 fallback 안정성을 위해 유지. 품질/토큰 비용 지표를 1주 누적한 뒤 `8` 또는 `6`으로 축소 가능한지 재평가. |
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
 | ~~AI Response Visibility & Rate Limit (Phase 1~5)~~ | — | **완료** — write bucket 재평가 결과 `supervisor 10/min`, `jobs/process 5/min`, `daily 100` 유지 결정. 계획서는 구현/결정 로그로 유지. |
 | ~~AI Stream Route Contract - residual cleanup~~ | — | **완료** — archive 이동. |
@@ -31,6 +30,14 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-21 #164)
+- [x] Multi-agent `finalAnswer` loop cap 단순화
+  - `orchestrator-agent-stream`도 `getAgentMaxSteps()`를 공유하도록 바꿔, multi-agent 기본 cap은 `7`로 낮추고 복합 tool workflow가 잦은 Analyst/Reporter만 `10`을 유지
+  - routing/stream 테스트에 max step 회귀 검증을 추가하고, 아키텍처/상태 문서의 `finalAnswer` 설명을 실제 동작 기준으로 갱신
+  - 검증:
+    - `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/agents/orchestrator-routing.test.ts src/services/ai-sdk/agents/orchestrator-agent-stream.test.ts`
+    - `cd cloud-run/ai-engine && npm run type-check`
 
 ### Completed (2026-04-21 #163)
 - [x] Vision 최신 production latency 표본 보강

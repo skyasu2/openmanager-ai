@@ -1,5 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+const { mockStepCountIs } = vi.hoisted(() => ({
+  mockStepCountIs: vi.fn(() => () => false),
+}));
+
 const {
   mockGenerateTextWithRetry,
   mockSearchKnowledgeBaseExecute,
@@ -11,7 +15,7 @@ const {
 vi.mock('ai', () => ({
   generateText: vi.fn(),
   hasToolCall: vi.fn(() => () => false),
-  stepCountIs: vi.fn(() => () => false),
+  stepCountIs: mockStepCountIs,
 }));
 
 vi.mock('../../resilience/retry-with-fallback', () => ({
@@ -129,6 +133,7 @@ vi.mock('../../../lib/logger', () => ({
 import {
   ORCHESTRATOR_PROVIDER_ORDER,
   executeForcedRouting,
+  getAgentMaxSteps,
   getAgentProviderOrder,
 } from './orchestrator-routing';
 
@@ -168,7 +173,16 @@ function createRetryResult(options: {
 describe('executeForcedRouting', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockStepCountIs.mockClear();
     mockSearchKnowledgeBaseExecute.mockResolvedValue(undefined);
+  });
+
+  it('returns expanded max steps only for Analyst/Reporter agents', () => {
+    expect(getAgentMaxSteps('NLQ Agent')).toBe(7);
+    expect(getAgentMaxSteps('Advisor Agent')).toBe(7);
+    expect(getAgentMaxSteps('Vision Agent')).toBe(7);
+    expect(getAgentMaxSteps('Analyst Agent')).toBe(10);
+    expect(getAgentMaxSteps('Reporter Agent')).toBe(10);
   });
 
   it('uses deterministic fallback for empty NLQ summary responses without a second retry call', async () => {
@@ -215,6 +229,7 @@ describe('executeForcedRouting', () => {
     expect(result?.response).toContain('📊 **서버 현황 요약**');
     expect(result?.response).toContain('api-01');
     expect(mockGenerateTextWithRetry).toHaveBeenCalledTimes(1);
+    expect(mockStepCountIs).toHaveBeenCalledWith(7);
   });
 
   it('overrides generated summary text with deterministic summary for parity-sensitive prompts', async () => {

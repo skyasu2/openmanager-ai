@@ -601,7 +601,7 @@ cloud-run/ai-engine/src/
 | **3-Layer 라우팅** | 효율적 | Pre-filter confidence(0.5~0.92) 후 `forcedRoutingConfidence=0.85`, `fallbackRoutingConfidence=0.65`로 2단 fallback. 서버 모니터링 도메인에서 신호 보존이 높은 편 |
 | **ConfigBasedAgent + AgentFactory** | 올바른 패턴 | 서브클래스 폭발 방지, 단일 SSOT 설정. BaseAgent에 ConfigBasedAgent 하나만 구현 → 확장성 확보 |
 | **도구 할당** | 적절 | 에이전트별 도구 중복(findRootCause 등)은 Cross-cutting 용도로 정당. NLQ=조회, Analyst=분석으로 구분 |
-| **finalAnswer 패턴** | AI SDK v6 Best Practice | `stopWhen: [hasToolCall('finalAnswer'), stepCountIs(N)]` 적용. Multi-agent stream은 `N=10` 유지(복합 tool result 요약 fallback 안정성 우선), 빈 텍스트 시 toolResults 복구 로직 구현 |
+| **finalAnswer 패턴** | AI SDK v6 Best Practice | `stopWhen: [hasToolCall('finalAnswer'), stepCountIs(N)]` 적용. 기본 multi-agent cap은 `7`, 복합 tool workflow가 잦은 Analyst/Reporter만 `10` 유지. 빈 텍스트 시 toolResults 복구 로직 구현 |
 | **Cerebras 활용성** | 조건부 강함 | structured output에는 여전히 유효하지만, tool-calling 경로는 `CEREBRAS_TOOL_CALLING_ENABLED`와 capability gate에 종속됨 |
 | **AI SDK v6 구현 성숙도** | 높음 | Frontend는 `useChat`/`DefaultChatTransport`, 서버는 `createUIMessageStreamResponse`, `streamText`, `generateText`, `generateObjectWithFallback`를 조합함. SDK core abstraction을 우회하지 않으면서 커스텀 복원력 계층을 붙임 |
 | **업계 비교** | 실용적 수준 | AutoGen보다 구조적이고 LangGraph보다 가볍다. 서버 모니터링 도메인에 필요한 tool use와 fallback 제어를 현실적으로 구현 |

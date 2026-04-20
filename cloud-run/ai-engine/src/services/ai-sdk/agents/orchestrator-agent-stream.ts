@@ -13,7 +13,12 @@ import { createTimeoutSpan, logTimeoutEvent } from '../../observability/langfuse
 import { getCircuitBreaker } from '../../resilience/circuit-breaker';
 import type { StreamEvent } from '../supervisor';
 import type { FileAttachment, ImageAttachment } from './base-agent';
-import { getAgentConfig, getAgentProviderOrder, executeReporterWithPipeline } from './orchestrator-routing';
+import {
+  getAgentConfig,
+  getAgentProviderOrder,
+  getAgentMaxSteps,
+  executeReporterWithPipeline,
+} from './orchestrator-routing';
 import { saveAgentFindingsToContext } from './orchestrator-context';
 import { selectTextModel, type TextProvider, type ModelResult } from './config/agent-model-selectors';
 import { ORCHESTRATOR_CONFIG } from './orchestrator-types';
@@ -198,6 +203,7 @@ export async function* executeAgentStream(
         : query;
       const userContent = buildMultimodalContent(promptWithContext, images, files);
 
+      const agentMaxSteps = getAgentMaxSteps(agentName);
       const streamResult = streamText({
         model,
         messages: [
@@ -205,9 +211,9 @@ export async function* executeAgentStream(
           { role: 'user', content: userContent as UserContent },
         ],
         tools: filteredTools as Parameters<typeof generateText>[0]['tools'],
-        // Keep headroom for multi-step tool loops so deterministic/summarization fallbacks
-        // can recover useful output before forced termination.
-        stopWhen: [hasToolCall('finalAnswer'), stepCountIs(10)],
+        // Keep extra headroom only for multi-tool Analyst/Reporter paths.
+        // Other agents use the tighter default cap to reduce unnecessary loops.
+        stopWhen: [hasToolCall('finalAnswer'), stepCountIs(agentMaxSteps)],
         temperature: 0.4,
         maxOutputTokens: 2048,
         timeout: {

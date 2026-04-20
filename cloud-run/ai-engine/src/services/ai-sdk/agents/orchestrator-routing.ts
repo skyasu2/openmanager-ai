@@ -110,7 +110,7 @@ export function getAgentProviderOrder(agentName: string): ProviderName[] {
  * - Analyst: detectAnomaliesAllServers + searchKnowledgeBase + findRootCause + finalAnswer
  * - Reporter: buildIncidentTimeline + findRootCause + correlateMetrics + finalAnswer
  */
-function getAgentMaxSteps(agentName: string): number {
+export function getAgentMaxSteps(agentName: string): number {
   switch (agentName) {
     case 'Analyst Agent':
     case 'Reporter Agent':

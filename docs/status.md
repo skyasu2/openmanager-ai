@@ -400,7 +400,7 @@
 - **SDK**: Vercel AI SDK `ai 6.0.156` / `@ai-sdk/react 3.0.140`
 - **Current Compatibility**: root와 `cloud-run/ai-engine` 모두 `ai ^6.0.156` 정렬 상태이며, 과거 `ai@latest`/Vitest resolver 충돌 가설은 현재 재현되지 않음
 - **Native Patterns** (v6.1.0):
-  - `finalAnswer` 도구: `stopWhen: [hasToolCall('finalAnswer'), stepCountIs(5)]`
+  - `finalAnswer` 도구: `stopWhen` 기반 종료 (single-agent `5`, multi-agent 기본 `7`, Analyst/Reporter `10`)
   - `UIMessageStream`: 네이티브 스트리밍 프로토콜
   - `Resumable Stream v2`: 서버 측 Redis wrapper + reconnect 경로 준비, auto-resume 기본 비활성
   - `prepareStep`: 에이전트 라우팅 순서 최적화

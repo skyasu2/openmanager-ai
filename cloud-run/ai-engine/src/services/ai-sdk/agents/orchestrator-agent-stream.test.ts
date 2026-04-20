@@ -2,11 +2,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const {
   mockGenerateText,
+  mockStepCountIs,
   mockStreamText,
   mockExecuteReporterWithPipeline,
   mockStreamTextInChunks,
 } = vi.hoisted(() => ({
   mockGenerateText: vi.fn(),
+  mockStepCountIs: vi.fn(() => () => false),
   mockStreamText: vi.fn(),
   mockExecuteReporterWithPipeline: vi.fn(),
   mockStreamTextInChunks: vi.fn(),
@@ -16,7 +18,7 @@ vi.mock('ai', () => ({
   generateText: mockGenerateText,
   streamText: mockStreamText,
   hasToolCall: vi.fn(() => () => false),
-  stepCountIs: vi.fn(() => () => false),
+  stepCountIs: mockStepCountIs,
 }));
 
 vi.mock('../../../lib/ai-sdk-utils', () => ({
@@ -61,6 +63,9 @@ vi.mock('./orchestrator-routing', () => ({
     },
   })),
   getAgentProviderOrder: vi.fn(() => ['cerebras', 'groq']),
+  getAgentMaxSteps: vi.fn((agentName: string) =>
+    agentName === 'Analyst Agent' || agentName === 'Reporter Agent' ? 10 : 7
+  ),
   executeReporterWithPipeline: (...args: unknown[]) =>
     mockExecuteReporterWithPipeline(...args),
 }));
@@ -143,6 +148,7 @@ async function collectEvents(query: string) {
 describe('executeAgentStream', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockStepCountIs.mockClear();
     mockGenerateText.mockResolvedValue({ text: '' });
     mockStreamTextInChunks.mockImplementation(function* (text: string) {
       yield { type: 'text_delta', data: text };
@@ -202,6 +208,30 @@ describe('executeAgentStream', () => {
     expect(
       (doneEvent?.data as { metadata: { ttfbMs?: number } }).metadata.ttfbMs
     ).toBeTypeOf('number');
+    expect(mockStepCountIs).toHaveBeenCalledWith(7);
+  });
+
+  it('keeps expanded stream max steps for Analyst Agent multi-tool workflows', async () => {
+    mockStreamText.mockReturnValue(
+      createStreamResult({
+        chunks: ['분석 결과'],
+      })
+    );
+
+    const events: Array<{ type: string; data: unknown }> = [];
+    for await (const event of executeAgentStream(
+      '이상 원인을 분석해줘',
+      'Analyst Agent',
+      Date.now(),
+      'test-session',
+      true,
+      true
+    )) {
+      events.push(event);
+    }
+
+    expect(events.some((event) => event.type === 'done')).toBe(true);
+    expect(mockStepCountIs).toHaveBeenCalledWith(10);
   });
 
   it('prefers deterministic summary over streamed model text for parity-sensitive prompts', async () => {
