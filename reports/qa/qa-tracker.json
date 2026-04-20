@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-20T09:31:14.956Z"
+    "updatedAt": "2026-04-20T23:00:26.579Z"
   },
   "sequence": {
-    "nextRunNumber": 322
+    "nextRunNumber": 323
   },
   "summary": {
-    "totalRecordedRuns": 319,
+    "totalRecordedRuns": 320,
     "totalRuns": 263,
-    "excludedRuns": 56,
+    "excludedRuns": 57,
     "totalChecks": 2082,
     "totalPassed": 2003,
     "totalFailed": 72,
     "completionRate": 99.69,
-    "completedItems": 320,
+    "completedItems": 321,
     "pendingItems": 1,
     "deferredItems": 0,
-    "wontFixItems": 15,
+    "wontFixItems": 17,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260420-0316",
     "lastRecordedAt": "2026-04-20T04:07:14.690Z",
-    "latestRecordedRunId": "QA-20260420-0321",
-    "latestRecordedAt": "2026-04-20T09:31:14.956Z"
+    "latestRecordedRunId": "QA-20260421-0322",
+    "latestRecordedAt": "2026-04-20T23:00:26.579Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -7790,6 +7790,78 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-20T05:17:00.396Z"
+    },
+    "vision-production-latency-sample-refresh": {
+      "id": "vision-production-latency-sample-refresh",
+      "title": "Vision 최신 production latency 표본 보강",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260421-0322",
+      "firstSeenAt": "2026-04-20T23:00:26.579Z",
+      "lastSeenRunId": "QA-20260421-0322",
+      "lastSeenAt": "2026-04-20T23:00:26.579Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production guest session bootstrap 후 AI Assistant Vision synthetic screenshot 분석 성공, AnalysisBasis latency 12723ms 표본 확보",
+      "lastNote": "targeted QA 런으로 production Vision latency sample 1건을 추가 확보",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-20T23:00:26.579Z"
+    },
+    "production-login-console-init-error": {
+      "id": "production-login-console-init-error",
+      "title": "production login/assistant chunk init console error triage",
+      "priority": "P2",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260421-0322",
+      "firstSeenAt": "2026-04-20T23:00:26.579Z",
+      "lastSeenRunId": "QA-20260421-0322",
+      "lastSeenAt": "2026-04-20T23:00:26.579Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "production /login 및 /dashboard/ai-assistant 렌더 중 TypeError: Cannot read properties of undefined (reading 'init') 콘솔 에러가 관측됨",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-04-20T23:00:26.579Z"
+    },
+    "vision-legacy-json-route-fallback": {
+      "id": "vision-legacy-json-route-fallback",
+      "title": "legacy JSON supervisor image path fallback 원인 확인",
+      "priority": "P2",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260421-0322",
+      "firstSeenAt": "2026-04-20T23:00:26.579Z",
+      "lastSeenRunId": "QA-20260421-0322",
+      "lastSeenAt": "2026-04-20T23:00:26.579Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "동일 guest session에서 /api/ai/supervisor 이미지 POST는 200이지만 fallback 텍스트와 missing latency headers를 반환해 운영 경로와의 차이 확인 필요",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-04-20T23:00:26.579Z"
     }
   },
   "runs": [
@@ -29292,6 +29364,99 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260421-0322",
+      "recordedAt": "2026-04-20T23:00:26.579Z",
+      "recordedAtKst": "2026-04-21 08:00:26 KST",
+      "title": "Production targeted QA - Vision latency sample refresh on AI Assistant",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260421-0322.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_3cutqnX7vMtm5qAuxzgnAnVULEmk",
+        "deploymentUrl": "https://openmanager-8eq06k24y-skyasus-projects.vercel.app",
+        "commitSha": "06e47ff88829010d7faeb7c9f44adf62022cb752"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "production guest login via CSRF-backed guest-login API",
+        "production /dashboard/ai-assistant render after guest session bootstrap",
+        "AI Assistant starter card visibility for 시각 분석",
+        "hidden file input attachment flow with synthetic PNG evidence",
+        "Vision response generation on production AI Assistant",
+        "AnalysisBasis latency metadata capture from production Vision response"
+      ],
+      "skippedSurfaces": [
+        "broad core-route sweep",
+        "Reporter flow",
+        "dashboard serverId autofocus modal verification"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 5,
+        "failed": 2
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "Production AI Assistant Vision synthetic screenshot prompt",
+          "agent": "Vision Agent",
+          "provider": "unknown",
+          "route": "/dashboard/ai-assistant (streaming UI path)",
+          "source": "Playwright MCP browser probe + AnalysisBasis metadata",
+          "latencyMs": 12723,
+          "processingTimeMs": 12723
+        }
+      ],
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-21T07:59:46+09:00",
+          "summary": "vercel usage --format json --non-interactive succeeded; current period effective usage 13.0408 USD, billed 0.0000 USD, no unexpected spike observed.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Production AI Assistant Vision response with latency metadata",
+          "path": "reports/qa/evidence/qa-20260421-prod-vision-ai-assistant.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production app",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Deployment dpl_3cutqnX7vMtm5qAuxzgnAnVULEmk",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/3cutqnX7vMtm5qAuxzgnAnVULEmk"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 2
     }
   ],
   "experts": {

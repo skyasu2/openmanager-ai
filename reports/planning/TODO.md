@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-21 KST (multi-agent semantics 정렬 완료 반영)
+**Last Updated**: 2026-04-21 KST (production Vision latency 표본 보강 완료 반영)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -22,7 +22,6 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| Vision 최신 production latency 표본 보강 | Low | 현재 문서 기준 Vision 응답 속도는 sample `1` 수준이라 장기 판단 근거로는 약함. targeted QA 1회 이상 추가 필요. |
 | Multi-agent `finalAnswer` loop cap (`stepCountIs(10)`) 단순화 검토 | Medium | **tracking-only** — 현재는 tool-result 요약 fallback 안정성을 위해 유지. 품질/토큰 비용 지표를 1주 누적한 뒤 `8` 또는 `6`으로 축소 가능한지 재평가. |
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
 | ~~AI Response Visibility & Rate Limit (Phase 1~5)~~ | — | **완료** — write bucket 재평가 결과 `supervisor 10/min`, `jobs/process 5/min`, `daily 100` 유지 결정. 계획서는 구현/결정 로그로 유지. |
@@ -32,6 +31,16 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-21 #163)
+- [x] Vision 최신 production latency 표본 보강
+  - production `v8.11.24`에서 guest session bootstrap 후 `/dashboard/ai-assistant` Vision 경로를 targeted QA로 재검증하고, synthetic screenshot prompt 기준 `12723ms` latency sample 1건을 추가 확보
+  - `qa:record` / `qa:status -- --write`로 `QA-20260421-0322` 런, `QA_STATUS.md`, `QA_TRENDS.md`, `latest-qa-trends.json`을 갱신
+  - direct legacy JSON `/api/ai/supervisor` 이미지 경로는 fallback 응답을 반환해 이번 표본에서는 제외했고, production login/assistant chunk `init` console error는 non-blocking 관찰사항으로만 기록
+  - 검증:
+    - `npm run check:usage:vercel`
+    - `npm run qa:record -- --input /tmp/qa-run-input-20260421-vision.json`
+    - `npm run qa:status -- --write`
 
 ### Completed (2026-04-21 #162)
 - [x] `multi-agent` semantics UI/문서 정렬

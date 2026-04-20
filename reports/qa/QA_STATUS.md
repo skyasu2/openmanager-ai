@@ -1,32 +1,32 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-20 18:31:15 KST
+> Generated at: 2026-04-21 08:00:47 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 319 |
+| Total Recorded Runs | 320 |
 | Total Runs (Counted) | 263 |
-| Non-counted Runs | 56 |
+| Non-counted Runs | 57 |
 | Total Checks | 2082 |
 | Passed | 2003 |
 | Failed | 72 |
-| Completed Items | 320 |
+| Completed Items | 321 |
 | Pending Items | 1 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 15 |
+| Wont-Fix Items | 17 |
 | Expert Domains Tracked | 8 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 99.69% |
 | Last Counted Run | QA-20260420-0316 (2026-04-20T04:07:14.690Z) |
-| Latest Recorded Run | QA-20260420-0321 (2026-04-20T09:31:14.956Z) |
+| Latest Recorded Run | QA-20260421-0322 (2026-04-20T23:00:26.579Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260420-0321 (2026-04-20T09:31:14.956Z)
+Latest run: QA-20260421-0322 (2026-04-20T23:00:26.579Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -36,17 +36,17 @@ Latest run: QA-20260420-0321 (2026-04-20T09:31:14.956Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | failed | unknown | Local Vercel CLI usage query failed during post-deploy QA; manual dashboard confirmation is required. |
+| vercel | cli | checked | normal | vercel usage --format json --non-interactive succeeded; current period effective usage 13.0408 USD, billed 0.0000 USD, no unexpected spike observed. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-19T09:31:14.956Z -> 2026-04-20T09:31:14.956Z (24h)
-- Runs with observations: 0 recorded / 0 counted
-- Samples: 0
+- Window: 2026-04-19T23:00:26.579Z -> 2026-04-20T23:00:26.579Z (24h)
+- Runs with observations: 1 recorded / 0 counted
+- Samples: 1
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| - | - | 0 | - | - | - | - | - | - | - |
+| Vision Agent | unknown | 1 | 12723ms | 12723ms | - | - | 12723ms | 12723ms | QA-20260421-0322 |
 
 ## Coverage (Latest Run)
 
@@ -54,9 +54,9 @@ Latest run: QA-20260420-0321 (2026-04-20T09:31:14.956Z)
 - Release-Facing: no
 - Counts Toward Summary: no
 - Deployment: dpl_3cutqnX7vMtm5qAuxzgnAnVULEmk / SHA 06e47ff8
-- Coverage Packs: core-routes-smoke, dashboard-core
-- Covered Surfaces: production deploy version check on /api/version, production route smoke for / and /validation, production login page render on v8.11.24, production guest CTA visibility on login page
-- Skipped Surfaces: dashboard serverId autofocus modal verification, Reporter flow, AI surfaces
+- Coverage Packs: ai-core, ai-advanced-surface
+- Covered Surfaces: production guest login via CSRF-backed guest-login API, production /dashboard/ai-assistant render after guest session bootstrap, AI Assistant starter card visibility for 시각 분석, hidden file input attachment flow with synthetic PNG evidence, Vision response generation on production AI Assistant, AnalysisBasis latency metadata capture from production Vision response
+- Skipped Surfaces: broad core-route sweep, Reporter flow, dashboard serverId autofocus modal verification
 
 ## Links (Latest Run)
 
@@ -69,7 +69,7 @@ Latest run: QA-20260420-0321 (2026-04-20T09:31:14.956Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Production login page after guest CTA no-op probe | `reports/qa/evidence/qa-20260420-prod-dashboard-server-focus.png` | - |
+| playwright-screenshot | Production AI Assistant Vision response with latency metadata | `reports/qa/evidence/qa-20260421-prod-vision-ai-assistant.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -110,8 +110,12 @@ Latest run: QA-20260420-0321 (2026-04-20T09:31:14.956Z)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] mobile-header-density: Review dashboard mobile header density around AI CTA and profile cluster (seen 1회, last QA-20260418-0303)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P2] production-login-console-init-error: production login/assistant chunk init console error triage (seen 1회, last QA-20260421-0322)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] streaming-ai-fallback-cold-start: Streaming AI fallback에서 Cloud Run 콜드스타트 시 프리셋 질문 실패 (seen 1회, last QA-20260310-0090)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (요청자 표시(isBlocking=true)로 즉시 개선 필요)
+- [P2] vision-legacy-json-route-fallback: legacy JSON supervisor image path fallback 원인 확인 (seen 1회, last QA-20260421-0322)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P3] ai-provider-copy-policy-drift: Frontend AI provider and architecture copy must reflect current routing policy (seen 1회, last QA-20260404-0222)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 
@@ -391,6 +395,7 @@ Latest run: QA-20260420-0321 (2026-04-20T09:31:14.956Z)
 - vibe-cicd-modal-local-dev-stale-view: 로컬 dev Vibe Coding 모달 stale view 해소 (completed 1회, last QA-20260331-0202)
 - vibe-hybrid-delivery-wording: Vibe Coding 모달의 배포 설명을 하이브리드 전달 구조 기준으로 정정 (completed 1회, last QA-20260330-0200)
 - vibe-qa-modal-replaced-with-cicd: Vibe Coding 모달의 QA 탭을 CI/CD 구조 설명으로 교체 (completed 1회, last QA-20260330-0200)
+- vision-production-latency-sample-refresh: Vision 최신 production latency 표본 보강 (completed 1회, last QA-20260421-0322)
 - vitals-log-suppression: Web Vitals 통합 테스트 로그 억제 옵션 추가 (completed 1회, last QA-20260228-0028)
 - 게스트-pin-로그인-후-시스템-시작-버튼-노출: 게스트 PIN 로그인 후 시스템 시작 버튼 노출 (completed 1회, last QA-20260227-0010)
 - 계약-테스트-20-tests-pass: 계약 테스트 20 tests PASS (completed 1회, last QA-20260301-0032)
@@ -442,6 +447,7 @@ Latest run: QA-20260420-0321 (2026-04-20T09:31:14.956Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260421-0322 | 2026-04-20T23:00:26.579Z | targeted | no | no | Production targeted QA - Vision latency sample refresh on AI Assistant | 7 | 1 | 0 | 0 | 2 | 0 |
 | QA-20260420-0321 | 2026-04-20T09:31:14.956Z | targeted | no | no | Production targeted QA - v8.11.24 post-deploy smoke and guest-login probe | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260420-0320 | 2026-04-20T05:49:05.588Z | targeted | no | no | Vercel preview targeted QA - dashboard serverId autofocus after guest login | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260420-0319 | 2026-04-20T05:46:13.205Z | targeted | no | no | Vercel preview targeted QA - reporter/dashboard follow-up branch verification | 5 | 0 | 0 | 0 | 0 | 0 |
@@ -461,4 +467,3 @@ Latest run: QA-20260420-0321 (2026-04-20T09:31:14.956Z)
 | QA-20260418-0305 | 2026-04-18T13:41:54.126Z | targeted | no | yes | Vercel targeted QA - AI ranking route live recovery | 4 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260418-0304 | 2026-04-18T12:30:51.893Z | targeted | no | yes | Vercel targeted QA - AI metric ranking hotfix | 5 | 2 | 0 | 0 | 1 | 0 |
 | QA-20260418-0303 | 2026-04-18T08:01:44.685Z | broad | yes | yes | Production broad QA - 8.11.20 AI hardening verification | 22 | 1 | 0 | 0 | 1 | 0 |
-| QA-20260417-0302 | 2026-04-17T05:39:27.161Z | targeted | no | yes | v8.11.19 active-alert :9100 fix targeted production QA | 4 | 1 | 0 | 0 | 0 | 0 |

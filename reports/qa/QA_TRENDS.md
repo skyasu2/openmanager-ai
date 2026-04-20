@@ -1,30 +1,30 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-04-19 17:14:13 KST
+> Generated at: 2026-04-21 08:00:47 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 309 |
-| Counted Runs | 261 |
-| Total Checks | 2072 |
-| Total Passed | 1993 |
+| Recorded Runs | 320 |
+| Counted Runs | 263 |
+| Total Checks | 2082 |
+| Total Passed | 2003 |
 | Total Failed | 72 |
-| Overall Pass Rate | 96.19% |
-| Latest Recorded Run | QA-20260419-0311 |
-| Last Counted Run | QA-20260419-0309 |
+| Overall Pass Rate | 96.21% |
+| Latest Recorded Run | QA-20260421-0322 |
+| Last Counted Run | QA-20260420-0316 |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-18T07:35:12.563Z -> 2026-04-19T07:35:12.563Z (24h)
-- Runs with observations: 0 recorded / 0 counted
-- Samples: 0
+- Window: 2026-04-19T23:00:26.579Z -> 2026-04-20T23:00:26.579Z (24h)
+- Runs with observations: 1 recorded / 0 counted
+- Samples: 1
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| - | - | 0 | - | - | - | - | - | - | - |
+| Vision Agent | unknown | 1 | 12723ms | 12723ms | - | - | 12723ms | 12723ms | QA-20260421-0322 |
 
 ## Warnings
 
@@ -34,9 +34,9 @@
 
 | Window | Counted Runs | Checks | Pass Rate | Failed Runs | Failing Run Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| All Counted Runs | 261 | 2072 | 96.19% | 45 | 17.24% | 51 | 19.54% |
-| Last 30 Counted Runs | 30 | 281 | 96.8% | 5 | 16.67% | 6 | 20% |
-| Last 10 Counted Runs | 10 | 118 | 97.46% | 2 | 20% | 2 | 20% |
+| All Counted Runs | 263 | 2082 | 96.21% | 45 | 17.11% | 51 | 19.39% |
+| Last 30 Counted Runs | 30 | 267 | 97.38% | 4 | 13.33% | 5 | 16.67% |
+| Last 10 Counted Runs | 10 | 110 | 97.27% | 2 | 20% | 2 | 20% |
 
 ## Gate Run Windows
 
@@ -56,7 +56,7 @@
 
 | Scope | Recorded Runs | Counted Runs |
 |---|---:|---:|
-| targeted | 143 | 96 |
+| targeted | 154 | 98 |
 | legacy | 137 | 137 |
 | broad | 22 | 21 |
 | release-gate | 5 | 5 |
@@ -67,8 +67,8 @@
 | Priority | Total Items | Recurring Items | Recurrence Rate | Open Items | Open Recurring | Open Recurrence Rate | Completed | Wont-Fix |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | P0 | 43 | 7 | 16.28% | 0 | 0 | 0% | 43 | 0 |
-| P1 | 140 | 63 | 45% | 0 | 0 | 0% | 136 | 4 |
-| P2 | 128 | 42 | 32.81% | 0 | 0 | 0% | 118 | 10 |
+| P1 | 142 | 64 | 45.07% | 1 | 1 | 100% | 137 | 4 |
+| P2 | 137 | 42 | 30.66% | 0 | 0 | 0% | 125 | 12 |
 | P3 | 17 | 11 | 64.71% | 0 | 0 | 0% | 16 | 1 |
 
 ## Deployment Regression Correlation
@@ -92,7 +92,6 @@
 
 | Date | Runs | Checks | Pass Rate | Failed Runs | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-04-03 | 1 | 3 | 100% | 0 | 0 | 0% |
 | 2026-04-04 | 8 | 106 | 98.11% | 2 | 2 | 25% |
 | 2026-04-05 | 7 | 72 | 100% | 0 | 0 | 0% |
 | 2026-04-06 | 2 | 22 | 100% | 0 | 0 | 0% |
@@ -106,6 +105,7 @@
 | 2026-04-17 | 4 | 50 | 98% | 1 | 1 | 25% |
 | 2026-04-18 | 3 | 31 | 96.77% | 1 | 1 | 33.33% |
 | 2026-04-19 | 2 | 29 | 96.55% | 0 | 0 | 0% |
+| 2026-04-20 | 2 | 10 | 100% | 0 | 0 | 0% |
 
 ## Recent Regression Runs
 
@@ -126,6 +126,7 @@
 
 | ID | Priority | Status | Seen | Last Seen Run | Title |
 |---|---|---|---:|---|---|
+| root-shell-startup-trace | P1 | pending | 3 | QA-20260420-0318 | Trace instrumentation/layout/provider compile bottleneck |
 | feature-dod-tsc-zero-error | P2 | wont-fix | 9 | QA-20260307-0053 | tsc --noEmit 0 에러 |
 | feature-dod-unit-tests | P2 | wont-fix | 9 | QA-20260307-0053 | 단위 테스트 158개 통과 |
 | obs-fp-fn-weekly-report | P1 | wont-fix | 3 | QA-20260227-0013 | 오탐/미탐 주간 리포트 자동 생성 |

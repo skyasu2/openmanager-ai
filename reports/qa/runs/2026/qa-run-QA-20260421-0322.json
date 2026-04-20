@@ -1,0 +1,135 @@
+{
+  "runId": "QA-20260421-0322",
+  "recordedAt": "2026-04-20T23:00:26.579Z",
+  "recordedAtKst": "2026-04-21 08:00:26 KST",
+  "runTitle": "Production targeted QA - Vision latency sample refresh on AI Assistant",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_3cutqnX7vMtm5qAuxzgnAnVULEmk",
+    "deploymentUrl": "https://openmanager-8eq06k24y-skyasus-projects.vercel.app",
+    "commitSha": "06e47ff88829010d7faeb7c9f44adf62022cb752"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core", "ai-advanced-surface"],
+  "coveredSurfaces": [
+    "production guest login via CSRF-backed guest-login API",
+    "production /dashboard/ai-assistant render after guest session bootstrap",
+    "AI Assistant starter card visibility for 시각 분석",
+    "hidden file input attachment flow with synthetic PNG evidence",
+    "Vision response generation on production AI Assistant",
+    "AnalysisBasis latency metadata capture from production Vision response"
+  ],
+  "skippedSurfaces": [
+    "broad core-route sweep",
+    "Reporter flow",
+    "dashboard serverId autofocus modal verification"
+  ],
+  "checks": {
+    "total": 7,
+    "passed": 5,
+    "failed": 2
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Production AI Assistant Vision synthetic screenshot prompt",
+      "agent": "Vision Agent",
+      "provider": "unknown",
+      "route": "/dashboard/ai-assistant (streaming UI path)",
+      "source": "Playwright MCP browser probe + AnalysisBasis metadata",
+      "latencyMs": 12723,
+      "processingTimeMs": 12723
+    }
+  ],
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-21T07:59:46+09:00",
+      "summary": "vercel usage --format json --non-interactive succeeded; current period effective usage 13.0408 USD, billed 0.0000 USD, no unexpected spike observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Production AI Assistant Vision response with latency metadata",
+      "path": "reports/qa/evidence/qa-20260421-prod-vision-ai-assistant.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "vision-production-latency-sample-refresh",
+      "title": "Vision 최신 production latency 표본 보강",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production guest session bootstrap 후 AI Assistant Vision synthetic screenshot 분석 성공, AnalysisBasis latency 12723ms 표본 확보",
+      "note": "targeted QA 런으로 production Vision latency sample 1건을 추가 확보",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "production-login-console-init-error",
+      "title": "production login/assistant chunk init console error triage",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "production /login 및 /dashboard/ai-assistant 렌더 중 TypeError: Cannot read properties of undefined (reading 'init') 콘솔 에러가 관측됨",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    },
+    {
+      "id": "vision-legacy-json-route-fallback",
+      "title": "legacy JSON supervisor image path fallback 원인 확인",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "동일 guest session에서 /api/ai/supervisor 이미지 POST는 200이지만 fallback 텍스트와 missing latency headers를 반환해 운영 경로와의 차이 확인 필요",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    }
+  ],
+  "notes": [
+    "Production guest login UI 입력은 headless 제어가 불안정해, 실제 CSRF token fetch + /api/auth/guest-login 호출로 guest session을 수립한 뒤 localStorage auth state를 동기화했다.",
+    "AI Assistant page에서 hidden file input에 synthetic PNG를 주입해 Vision prompt를 전송했고, UI 응답은 dashboard-like screenshot에 대해 CPU 92%, Disk 81%, 14 online, 1 warning을 근거로 요약/조치안을 반환했다.",
+    "AnalysisBasis panel 기준 processing time chip은 12723ms, latency label은 지연 보통, execution path는 직접 응답 경로로 표시됐다.",
+    "동일 세션에서 legacy JSON /api/ai/supervisor 이미지 POST는 200 OK지만 fallback 응답과 missing latency/provider headers를 반환해, 이번 표본은 streaming UI path 기준으로만 채택했다.",
+    "Production console에서는 login/assistant 경로 공통으로 TypeError: Cannot read properties of undefined (reading 'init') chunk error가 관측됐지만, 이번 Vision 응답 자체는 성공했다."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production app",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Deployment dpl_3cutqnX7vMtm5qAuxzgnAnVULEmk",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/3cutqnX7vMtm5qAuxzgnAnVULEmk"
+    }
+  ]
+}
