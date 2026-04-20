@@ -115,8 +115,14 @@ const LATENCY_TIER_LABELS: Record<
 };
 
 const RESOLVED_MODE_LABELS: Record<'single' | 'multi', string> = {
-  single: 'Single',
-  multi: 'Multi',
+  single: '단일 응답',
+  multi: '오케스트레이션 협업',
+};
+
+const RESOLVED_MODE_DESCRIPTION_LABELS: Record<'single' | 'multi', string> = {
+  single: '한 응답 경로에서 바로 답변을 구성했습니다.',
+  multi:
+    '조율기가 specialist와 도구 경로를 묶어 답변을 구성했습니다. deep multi-hop만 뜻하지 않습니다.',
 };
 
 const MODE_SELECTION_SOURCE_LABELS: Record<string, string> = {
@@ -597,6 +603,9 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
   const modeSelectionLabel = modeSelectionSource
     ? (MODE_SELECTION_SOURCE_LABELS[modeSelectionSource] ?? modeSelectionSource)
     : null;
+  const resolvedModeDescription = resolvedMode
+    ? RESOLVED_MODE_DESCRIPTION_LABELS[resolvedMode]
+    : null;
   const hasTechnicalDetails =
     Boolean(traceId) ||
     Boolean(thinkingSteps && thinkingSteps.length > 0) ||
@@ -877,6 +886,11 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
                     {modeSelectionLabel && (
                       <p className="mt-2 text-xs text-slate-600">
                         라우팅 근거: {modeSelectionLabel}
+                      </p>
+                    )}
+                    {resolvedModeDescription && (
+                      <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                        {resolvedModeDescription}
                       </p>
                     )}
                   </div>
@@ -1188,6 +1202,11 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
                         {modeSelectionLabel && (
                           <p className="mt-2 text-xs text-slate-600">
                             라우팅 근거: {modeSelectionLabel}
+                          </p>
+                        )}
+                        {resolvedModeDescription && (
+                          <p className="mt-1 text-xs leading-relaxed text-slate-600">
+                            {resolvedModeDescription}
                           </p>
                         )}
                       </div>

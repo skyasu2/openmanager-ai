@@ -180,10 +180,46 @@ describe('AnalysisBasisBadge', () => {
 
     expect(within(processPanel).getByText('실행 특성')).toBeInTheDocument();
     expect(within(processPanel).getByText('1987ms')).toBeInTheDocument();
-    expect(within(processPanel).getByText('Multi 경로')).toBeInTheDocument();
+    expect(
+      within(processPanel).getByText('오케스트레이션 협업 경로')
+    ).toBeInTheDocument();
     expect(within(processPanel).getByText('지연 느림')).toBeInTheDocument();
     expect(
       within(processPanel).getByText('라우팅 근거: 복잡도 자동 판단')
+    ).toBeInTheDocument();
+    expect(
+      within(processPanel).getByText(
+        '조율기가 specialist와 도구 경로를 묶어 답변을 구성했습니다. deep multi-hop만 뜻하지 않습니다.'
+      )
+    ).toBeInTheDocument();
+  });
+
+  it('keeps single mode semantics explicit in runtime metadata', () => {
+    render(
+      <AnalysisBasisBadge
+        basis={{
+          ...basis,
+          dataSource: '단일 서버 상태 조회',
+        }}
+        processingTime={742}
+        resolvedMode="single"
+        modeSelectionSource="explicit"
+        latencyTier="normal"
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: '분석 근거 상세 보기' })
+    );
+
+    const processPanel = screen.getByRole('tabpanel', { name: '과정 보기' });
+    expect(
+      within(processPanel).getByText('단일 응답 경로')
+    ).toBeInTheDocument();
+    expect(
+      within(processPanel).getByText(
+        '한 응답 경로에서 바로 답변을 구성했습니다.'
+      )
     ).toBeInTheDocument();
   });
 

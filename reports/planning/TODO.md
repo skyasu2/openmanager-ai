@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-21 KST (advisor-tail-latency 완료 반영)
+**Last Updated**: 2026-04-21 KST (multi-agent semantics 정렬 완료 반영)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| 없음 | — | — | 최근 active plan(`advisor-tail-latency`)까지 완료. 다음 우선순위는 backlog에서 선택 |
+| 없음 | — | — | 최근 active plan(`multi-agent-semantics`)까지 완료. 다음 우선순위는 backlog에서 선택 |
 
 ---
 
@@ -22,7 +22,6 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| `multi-agent` semantics UI/문서 정렬 | Medium | 현재 `resolvedMode=multi`는 deep multi-hop만 의미하지 않고 orchestrator + specialist handoff도 포함한다. 사용자 기대와 운영 해석을 더 명확히 맞출 필요가 있음. |
 | Vision 최신 production latency 표본 보강 | Low | 현재 문서 기준 Vision 응답 속도는 sample `1` 수준이라 장기 판단 근거로는 약함. targeted QA 1회 이상 추가 필요. |
 | Multi-agent `finalAnswer` loop cap (`stepCountIs(10)`) 단순화 검토 | Medium | **tracking-only** — 현재는 tool-result 요약 fallback 안정성을 위해 유지. 품질/토큰 비용 지표를 1주 누적한 뒤 `8` 또는 `6`으로 축소 가능한지 재평가. |
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
@@ -33,6 +32,17 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-21 #162)
+- [x] `multi-agent` semantics UI/문서 정렬
+  - `resolvedMode=multi`를 UI에서 `오케스트레이션 협업 경로`로 표시하고, orchestrator + specialist/tool handoff를 포함하는 의미를 설명 텍스트로 고정
+  - 아키텍처 문서에서도 같은 해석 기준을 추가하고, 이미 완료된 pending 항목(`Advisor tail latency`, `multi-agent semantics`)을 정리
+  - 상세 계획/계약: [archive/multi-agent-semantics-plan.md](archive/multi-agent-semantics-plan.md)
+  - 검증:
+    - `npx vitest run src/components/ai/AnalysisBasisBadge.test.tsx`
+    - `npm run type-check`
+    - `npm run lint`
+    - `npm run test:quick`
 
 ### Completed (2026-04-21 #161)
 - [x] Advisor tail latency 축소

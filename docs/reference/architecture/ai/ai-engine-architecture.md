@@ -713,6 +713,11 @@ cloud-run/ai-engine/src/
 - Cloud Logging / access log
 - targeted Cloud Run probe 또는 production QA run JSON
 
+#### `resolvedMode` UI 해석 기준
+- `resolvedMode=single`: UI에서 `단일 응답 경로`로 표시한다.
+- `resolvedMode=multi`: UI에서 `오케스트레이션 협업 경로`로 표시한다.
+- 여기서 `multi`는 deep multi-hop만 의미하지 않는다. orchestrator가 specialist/tool 경로를 조율한 단일 handoff 응답도 포함한다.
+
 현재 코드에서는 single/multi stream 경로 모두 `ttfbMs` 계측을 포함한다.
 - Single: `supervisor-stream.ts`
 - Multi: `orchestrator-agent-stream.ts`
@@ -727,12 +732,10 @@ cloud-run/ai-engine/src/
 #### P1
 
 - **Latency rollup 부재 해소**: `ttfbMs`, `processingTimeMs`, `X-AI-Latency-Ms`는 이미 기록되지만, 운영자가 agent/provider별 `avg / p95`를 바로 읽는 집계 리포트는 아직 없다. 현재 평균 속도 평가는 QA 표본 수집에 의존한다.
-- **Advisor tail latency 축소**: 최근 표본에서 `3.23s ~ 29.26s`까지 편차가 컸고, historical QA와 정책 코멘트도 Advisor를 구조적으로 느린 경로로 취급한다. `Advisor / Mistral` 경로가 체감 지연의 중심 리스크다.
 
 #### P2
 
 - **Process UI detail 깊이 조정**: 현재 `분석 근거`와 `AI 처리 과정`은 `processingTime`, `resolvedMode`, `latencyTier`, `modeSelectionSource`까지는 노출한다. 다만 provider retry depth, fallback 횟수, handoff depth 같은 운영자 세부 지표는 아직 기본 UI에 직접 노출하지 않는다.
-- **`multi-agent` semantics 명확화**: 현재 `resolvedMode=multi`는 실제 deep multi-hop 협업이라기보다 orchestrator + specialist handoff까지 포함하는 개념이다. UI/문서에서 이 차이를 더 분명히 드러낼 필요가 있다.
 - **Vision 최신 표본 보강**: 현재 문서의 Vision 응답 속도는 sample `1`건 수준이라 장기 판단 근거로는 약하다.
 - **Supervisor/Orchestrator 타임아웃 정렬 점검**
 - **`console.log` → `logger.info` 통일** (`orchestrator-routing.ts`, `reporter-pipeline.ts`)
