@@ -1,7 +1,7 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Plan
-> Last reviewed: 2026-04-19
+> Last reviewed: 2026-04-21
 > Tags: security,ui,ux,modal,bugfix
 
 # 보안·모달·UI UX 개선 계획서
@@ -16,7 +16,7 @@ Playwright QA 및 코드 분석으로 발견된 보안 취약점, 모달 버그,
 | 구분 | 건수 | 출처 |
 |------|:----:|------|
 | 보안 (P1) | 2건 | 코드 분석 |
-| 보안 (P2) | 2건 | 코드 분석 |
+| 보안 (P2) | 2건 | 코드 분석 → 구현 완료 |
 | 모달 버그 | 2건 | Playwright QA 직접 관찰 |
 | UI/UX 개선 | 4건 | Playwright QA 직접 관찰 |
 
@@ -84,15 +84,33 @@ Playwright QA 및 코드 분석으로 발견된 보안 취약점, 모달 버그,
 
 **재현**: 상태 헤더에 "알림(1) + 이력 + 로그" 3개 버튼이 독립적으로 나열 → 과도한 클릭 타깃
 
-- [ ] 3개 버튼을 하나의 `ButtonGroup` 컴포넌트로 묶기 (시각적 구분선만 적용)
-- [ ] 레이블 없이 아이콘+카운트만으로 충분한 경우 label 숨김 처리(모바일 고려)
+- [x] 3개 버튼을 하나의 semantic action group으로 묶기 (시각적 구분선만 적용)
+- [x] 레이블 없이 아이콘+카운트만으로 충분한 경우 label 숨김 처리(모바일 고려)
 
 ### 3-4: 서버 카드 IP 주소 표시 위치 이동
 
 **재현**: 서버 카드 하단에 `10.100.x.x` 내부 IP 직접 노출 → 카드가 복잡해 보임
 
-- [ ] 카드 본문: IP 제거, AZ/위치 정보만 유지
-- [ ] 서버 상세 모달 "종합 상황" → 시스템 정보 섹션에만 IP 표시 (현재도 있음)
+- [x] 카드 본문: IP 제거, AZ/위치 정보만 유지
+- [x] 서버 상세 모달 "종합 상황" → 시스템 정보 섹션에만 IP 표시 (현재도 있음)
+
+---
+
+## Phase 4 — 보안 P2 하드닝 (난이도: ★☆☆)
+
+### 4-1: Guest login caller-controlled sessionId 재사용 제거
+
+**코드 근거**: `src/app/api/auth/guest-login/route.ts`가 요청 body의 `sessionId`를 그대로 `issuedSessionId`로 채택해 `auth_session_id` 쿠키와 `guest_auth_proof`에 재사용하던 경로
+
+- [x] 서버가 항상 새 guest session ID를 발급하고, 클라이언트 제공 `sessionId`는 PIN 시도 식별자 namespace로만 사용
+- [x] 테스트: 성공 응답의 `sessionId`와 `Set-Cookie`가 caller-provided ID를 그대로 재사용하지 않음을 확인
+
+### 4-2: `/api/ai/wake-up` 익명 warmup trigger 차단
+
+**코드 근거**: `src/app/api/ai/wake-up/route.ts` POST가 인증 경계 없이 공개돼 Cloud Run warmup/cost surface를 익명 호출자가 직접 자극할 수 있던 경로
+
+- [x] `withAuth`를 적용해 guest/supabase/api-key 인증 문맥 안에서만 warmup 허용
+- [x] 테스트: production auth 경로에서 미인증 요청 `401`, 인증된 요청은 기존 handler로 진입 가능함을 확인
 
 ---
 
@@ -114,6 +132,8 @@ Playwright QA 및 코드 분석으로 발견된 보안 취약점, 모달 버그,
 3. **S3-logs**: 서버 상세 모달 "로그 & 네트워크" 탭에서 logs[] 있는 서버 기준 최소 1개 로그 항목 표시
 4. **S4-i18n**: Active Alerts 모달에 영어 텍스트 "Active Alerts", "Close", "elapsed" 미노출
 5. **S5-network-consistency**: "연결 정보" 상태와 "네트워크 상태" 섹션이 동일 데이터 소스 참조
+6. **S6-session-fixation**: `POST /api/auth/guest-login` 성공 시 응답 `sessionId`와 `auth_session_id` 쿠키가 요청 body `sessionId`를 그대로 재사용하지 않음
+7. **S7-wakeup-auth**: production auth 경로에서 미인증 `POST /api/ai/wake-up` → `401`, 인증 사용자 요청은 기존 warmup handler로 진입
 
 ### 비용 영향
 
@@ -145,6 +165,6 @@ npm run test:contract
 
 ## 착수 게이트
 
-1. Status: `Approved` ✅
-2. `test(spec): security-ui-fix add failing tests before implementation` 먼저 커밋
-3. 구현 커밋: `fix: security-ui-fix implement auth/rate-limit/modal-bugs/ux`
+## 완료 메모
+
+본 계획 범위는 Phase 1~4까지 모두 반영 완료되었다. 후속 작업은 이 계획서 연장이 아니라 별도 backlog(`Advisor tail latency`, multi-agent semantics 정렬 등)에서 선택한다.

@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-19 KST (AnalysisBasisBadge 탭 UX 완료)
+**Last Updated**: 2026-04-21 KST (security-ui-fix 완료 반영)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,8 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| Reporter 고도화 (로그타임라인/연관서버/Postmortem) | High | Approved | [reporter-enhancement-plan.md](reporter-enhancement-plan.md) — Codex 위임 예정 |
-| 보안·모달·UI UX 개선 (auth/rate-limit/버그/한국어) | High | Approved | [security-ui-fix-plan.md](security-ui-fix-plan.md) — Codex 위임 예정 |
+| 없음 | — | — | 최근 active plan(`security-ui-fix`)까지 완료. 다음 우선순위는 backlog에서 선택 |
 
 ---
 
@@ -35,6 +34,49 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-21 #160)
+- [x] 보안 P2 하드닝 2건 마감
+  - `guest-login`이 클라이언트 제공 `sessionId`를 그대로 세션 쿠키/증명에 재사용하던 경로를 제거하고, 서버 발급 랜덤 ID만 사용하도록 보정
+  - `wake-up` 엔드포인트를 `withAuth` 경계 안으로 이동해 익명 warmup trigger를 차단
+  - 검증:
+    - `npx vitest run src/app/api/auth/guest-login/route.test.ts src/app/api/ai/wake-up/route.auth.test.ts`
+
+### Completed (2026-04-20 #159)
+- [x] 서버 카드 IP 주소 표시 위치 이동
+  - 카드 hover 상세에서 내부 IP 표시를 제거하고, 서버 상세 모달의 시스템 정보/IP 섹션만 canonical 노출 지점으로 유지
+  - 카드 정보는 OS, Uptime, 위치 중심으로 정리해 시각적 잡음을 줄임
+  - 검증:
+    - `npx vitest run src/components/dashboard/DashboardSummary.test.tsx src/components/dashboard/ImprovedServerCard.test.tsx`
+    - `npm run stitch:check`
+    - `npm run type-check`
+    - `npm run lint`
+    - `npm run test:quick`
+
+### Completed (2026-04-20 #158)
+- [x] 대시보드 상태 헤더 버튼 그룹 UX 개선
+  - 상태 헤더의 `알림 / 이력 / 로그` 액션을 하나의 semantic group으로 묶고, 개별 버튼 경계를 divider로 정리
+  - 모바일에서는 레이블을 숨기고 아이콘과 카운트만 유지해 클릭 타깃은 그대로 두되 시각적 복잡도는 낮춤
+  - 검증:
+    - `npx vitest run src/components/dashboard/DashboardSummary.test.tsx`
+    - `npm run stitch:check`
+    - `npm run type-check`
+    - `npm run lint`
+    - `npm run test:quick`
+
+### Completed (2026-04-20 #157)
+- [x] Reporter 고도화 (로그 타임라인 / 연관 서버 / Postmortem)
+  - Reporter 카드에 `LogTimeline`, `연관 서버`, `Postmortem` 섹션을 연결하고 다운로드 포맷을 `incident-YYYYMMDD-HHMMSS.*` 규칙으로 정렬
+  - AI Engine incident report 계약에 `affectedServers` 상세 배열과 `postmortem` 출력을 반영
+  - `/dashboard?serverId=...` 경유로 연관 서버 클릭 시 해당 서버 상세 모달 자동 포커스를 연결
+  - 검증:
+    - `npx vitest run src/components/ai/pages/AutoReportPage.test.tsx src/components/ai/pages/auto-report/LogTimeline.test.tsx src/components/ai/pages/auto-report/formatters.test.ts`
+    - `cd cloud-run/ai-engine && npx vitest run src/routes/analytics-report-utils.test.ts src/routes/analytics.test.ts`
+    - `npm run type-check`
+    - `npm run lint`
+    - `npm run test:quick`
+    - `npm run test:contract`
+    - `cd cloud-run/ai-engine && npm run type-check`
 
 ### Completed (2026-04-19 #156)
 - [x] AI latency rollup 리포트 (`avg/p95` by agent/provider`)
