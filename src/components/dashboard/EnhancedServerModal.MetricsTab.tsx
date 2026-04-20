@@ -142,10 +142,10 @@ export const MetricsTab: FC<MetricsTabProps> = ({
             <button
               type="button"
               onClick={onToggleRealtime}
-              className={`flex items-center gap-2 rounded-xl px-5 py-2.5 font-semibold shadow-lg transition-all hover:scale-105 active:scale-95 ${
+              className={`flex items-center gap-2 rounded-xl border px-5 py-2.5 font-semibold transition-all hover:scale-105 active:scale-95 ${
                 isRealtime
-                  ? 'bg-linear-to-r from-red-500 to-pink-500 text-white hover:from-red-600 hover:to-pink-600'
-                  : 'bg-linear-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600'
+                  ? 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50'
+                  : 'border-emerald-300 bg-white text-emerald-700 hover:bg-emerald-50'
               }`}
             >
               {isRealtime ? (
