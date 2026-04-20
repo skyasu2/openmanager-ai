@@ -182,6 +182,50 @@ function StatusCard({
   );
 }
 
+function StatusHeaderActionGroup({ children }: { children: React.ReactNode }) {
+  return (
+    <fieldset className="ml-0 inline-flex flex-wrap items-stretch overflow-hidden rounded-xl border border-white/80 bg-white/90 shadow-xs ring-1 ring-slate-200/70 backdrop-blur-sm divide-x divide-slate-200/80 sm:ml-1 sm:flex-nowrap">
+      <legend className="sr-only">상태 헤더 도구</legend>
+      {children}
+    </fieldset>
+  );
+}
+
+function StatusHeaderActionButton({
+  onClick,
+  ariaLabel,
+  title,
+  accentClassName,
+  icon,
+  label,
+  badge,
+}: {
+  onClick: () => void;
+  ariaLabel: string;
+  title?: string;
+  accentClassName: string;
+  icon: React.ReactNode;
+  label: string;
+  badge?: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={ariaLabel}
+      title={title}
+      className={cn(
+        'relative flex h-12 min-w-12 items-center justify-center gap-1.5 bg-transparent px-2.5 text-xs font-semibold text-gray-600 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-slate-300/70 sm:px-3 cursor-pointer',
+        accentClassName
+      )}
+    >
+      {icon}
+      <span className="hidden md:inline">{label}</span>
+      {badge}
+    </button>
+  );
+}
+
 export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
   function DashboardSummary({
     stats,
@@ -353,49 +397,44 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
               </div>
 
               {/* 액션 버튼 그룹 */}
-              <div className="ml-0 sm:ml-1 flex flex-wrap items-center gap-1.5 sm:flex-nowrap">
-                {/* Active Alerts 버튼 */}
+              <StatusHeaderActionGroup>
                 {onOpenActiveAlerts && (
-                  <button
-                    type="button"
+                  <StatusHeaderActionButton
                     onClick={onOpenActiveAlerts}
-                    aria-label="활성 알림 보기"
-                    className="relative flex h-12 min-w-12 items-center gap-1.5 rounded-lg border border-rose-100/80 bg-white/90 px-2.5 sm:px-3 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300/60 cursor-pointer"
-                  >
-                    <AlertTriangle size={14} />
-                    <span className="hidden sm:inline">알림</span>
-                    {activeAlertsCount > 0 && (
-                      <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-bold text-white leading-none">
-                        {activeAlertsCount}
-                      </span>
-                    )}
-                  </button>
+                    ariaLabel="활성 알림 보기"
+                    accentClassName="hover:bg-rose-50 hover:text-rose-600"
+                    icon={<AlertTriangle size={14} />}
+                    label="알림"
+                    badge={
+                      activeAlertsCount > 0 ? (
+                        <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-bold text-white leading-none">
+                          {activeAlertsCount}
+                        </span>
+                      ) : undefined
+                    }
+                  />
                 )}
                 {onOpenAlertHistory && (
-                  <button
-                    type="button"
+                  <StatusHeaderActionButton
                     onClick={onOpenAlertHistory}
-                    aria-label="알림 이력 보기"
-                    className="flex h-12 min-w-12 items-center gap-1.5 rounded-lg border border-amber-100/80 bg-white/90 px-2.5 sm:px-3 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-amber-200 hover:bg-amber-50 hover:text-amber-600 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/60 cursor-pointer"
+                    ariaLabel="알림 이력 보기"
                     title="알림 이력"
-                  >
-                    <Bell size={16} />
-                    <span className="hidden sm:inline">이력</span>
-                  </button>
+                    accentClassName="hover:bg-amber-50 hover:text-amber-600"
+                    icon={<Bell size={16} />}
+                    label="이력"
+                  />
                 )}
                 {onOpenLogExplorer && (
-                  <button
-                    type="button"
+                  <StatusHeaderActionButton
                     onClick={onOpenLogExplorer}
-                    aria-label="로그 검색 보기"
-                    className="flex h-12 min-w-12 items-center gap-1.5 rounded-lg border border-blue-100/80 bg-white/90 px-2.5 sm:px-3 text-xs font-semibold text-gray-600 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300/60 cursor-pointer"
+                    ariaLabel="로그 검색 보기"
                     title="로그 검색"
-                  >
-                    <FileSearch size={16} />
-                    <span className="hidden sm:inline">로그</span>
-                  </button>
+                    accentClassName="hover:bg-blue-50 hover:text-blue-600"
+                    icon={<FileSearch size={16} />}
+                    label="로그"
+                  />
                 )}
-              </div>
+              </StatusHeaderActionGroup>
             </div>
 
             {/* 오른쪽: 위험/경고 카운트 */}

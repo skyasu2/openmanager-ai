@@ -340,6 +340,18 @@ describe('ImprovedServerCard - User Event 테스트', () => {
       expect(screen.getAllByText('Linux')).toHaveLength(2);
       expect(screen.queryByText(/^linux$/)).not.toBeInTheDocument();
     });
+
+    it('서버 카드 상세에는 IP 주소를 노출하지 않는다', () => {
+      const { container } = render(
+        <ImprovedServerCard server={mockServer} onClick={mockOnClick} />
+      );
+
+      const card = getCardContainer(container);
+      fireEvent.mouseEnter(card);
+
+      expect(screen.queryByText(/^IP$/)).not.toBeInTheDocument();
+      expect(screen.queryByText('192.168.1.100')).not.toBeInTheDocument();
+    });
   });
 
   describe('상태별 스타일', () => {

@@ -1,11 +1,4 @@
-import {
-  ChevronDown,
-  ChevronUp,
-  Clock,
-  Globe,
-  MapPin,
-  Zap,
-} from 'lucide-react';
+import { ChevronDown, ChevronUp, Clock, Globe, MapPin } from 'lucide-react';
 import React, {
   type FC,
   memo,
@@ -439,7 +432,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
             <SecondaryMetrics server={safeServer} compact={isCompactVariant} />
           )}
 
-          {/* Tertiary Details (OS, Uptime, IP) */}
+          {/* Tertiary Details (OS, Uptime) */}
           <div
             className={`space-y-2 overflow-hidden transition-all duration-500 ${showTertiaryInfo ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
           >
@@ -453,11 +446,6 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
                 icon={<Clock className="h-3 w-3" />}
                 label="Uptime"
                 value={formatUptime(safeServer.uptime)}
-              />
-              <DetailRow
-                icon={<Zap className="h-3 w-3" />}
-                label="IP"
-                value={safeServer.ip}
               />
             </div>
           </div>

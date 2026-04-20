@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  */
 
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { DashboardSummary } from './DashboardSummary';
 import type { DashboardStats } from './types/dashboard.types';
@@ -130,6 +130,62 @@ describe('DashboardSummary status filter cards', () => {
     expect(alertHistoryButton).toHaveClass('min-w-12');
     expect(logSearchButton).toHaveClass('h-12');
     expect(logSearchButton).toHaveClass('min-w-12');
+  });
+
+  it('상태 헤더 액션을 하나의 버튼 그룹으로 묶는다', () => {
+    render(
+      <DashboardSummary
+        stats={mockStats}
+        onOpenActiveAlerts={vi.fn()}
+        onOpenAlertHistory={vi.fn()}
+        onOpenLogExplorer={vi.fn()}
+      />
+    );
+
+    const group = screen.getByRole('group', { name: '상태 헤더 도구' });
+
+    expect(group).toHaveClass('divide-x');
+    expect(
+      within(group).getByRole('button', { name: '활성 알림 보기' })
+    ).toBeInTheDocument();
+    expect(
+      within(group).getByRole('button', { name: '알림 이력 보기' })
+    ).toBeInTheDocument();
+    expect(
+      within(group).getByRole('button', { name: '로그 검색 보기' })
+    ).toBeInTheDocument();
+  });
+
+  it('모바일 기준 액션 버튼 레이블을 숨기는 클래스를 유지한다', () => {
+    render(
+      <DashboardSummary
+        stats={mockStats}
+        onOpenActiveAlerts={vi.fn()}
+        onOpenAlertHistory={vi.fn()}
+        onOpenLogExplorer={vi.fn()}
+      />
+    );
+
+    expect(
+      within(screen.getByRole('button', { name: '활성 알림 보기' })).getByText(
+        '알림'
+      )
+    ).toHaveClass('hidden');
+    expect(
+      within(screen.getByRole('button', { name: '활성 알림 보기' })).getByText(
+        '알림'
+      )
+    ).toHaveClass('md:inline');
+    expect(
+      within(screen.getByRole('button', { name: '알림 이력 보기' })).getByText(
+        '이력'
+      )
+    ).toHaveClass('hidden');
+    expect(
+      within(screen.getByRole('button', { name: '로그 검색 보기' })).getByText(
+        '로그'
+      )
+    ).toHaveClass('hidden');
   });
 
   it('시스템 상태 카드에 오프라인 카운트를 표시한다', () => {
