@@ -19,10 +19,11 @@ export const IncidentReportRequestSchema = z
 export type IncidentReportRequest = z.infer<typeof IncidentReportRequestSchema>;
 
 interface AffectedServer {
-  serverId: string;
-  hostname?: string;
-  status: string;
-  metrics?: { cpu?: number; memory?: number; disk?: number };
+  id: string;
+  name: string;
+  severity?: string;
+  metric?: string;
+  value?: number;
 }
 
 interface Anomaly {
@@ -35,17 +36,25 @@ interface Anomaly {
 }
 
 interface RootCauseAnalysis {
-  summary: string;
-  confidence: number;
-  causes: Array<{ description: string; probability: number }>;
+  primary_cause?: string;
+  summary?: string;
+  confidence?: number;
+  causes?: Array<{ description: string; probability: number }>;
   evidence?: string[];
 }
 
 interface Recommendation {
   action: string;
-  priority: 'immediate' | 'short-term' | 'long-term';
+  priority:
+    | 'high'
+    | 'medium'
+    | 'low'
+    | 'immediate'
+    | 'short-term'
+    | 'long-term';
   description?: string;
   estimatedImpact?: string;
+  expected_impact?: string;
 }
 
 interface TimelineEvent {
@@ -60,13 +69,25 @@ export interface IncidentReport {
   title: string;
   severity: string;
   created_at: string;
-  affected_servers?: AffectedServer[];
+  affected_servers?: string[];
+  affectedServers?: AffectedServer[];
   anomalies?: Anomaly[];
   root_cause_analysis?: RootCauseAnalysis;
   recommendations?: Recommendation[];
   timeline?: TimelineEvent[];
   pattern?: string;
-  system_summary?: string | null;
+  postmortem?: {
+    timeline: string[];
+    hypotheses: string[];
+    prevention: string[];
+  };
+  system_summary?: {
+    total_servers?: number;
+    healthy_servers?: number;
+    online_servers?: number;
+    warning_servers?: number;
+    critical_servers?: number;
+  } | null;
   [key: string]: unknown;
 }
 

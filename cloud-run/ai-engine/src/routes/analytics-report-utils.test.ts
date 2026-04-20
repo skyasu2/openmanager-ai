@@ -98,6 +98,10 @@ describe('extractToolBasedData', () => {
     expect(result.timeline).toHaveLength(2);
     expect(result.timeline[0].event).toBe('CPU spike');
     expect(result.timeline[1].event).toBe('Recovery');
+    expect(result.postmortem.timeline).toEqual([
+      '00:00 - CPU spike',
+      '00:05 - Recovery',
+    ]);
   });
 
   it('serverId가 제공되면 affected_servers에 포함된다', () => {
@@ -132,6 +136,50 @@ describe('extractToolBasedData', () => {
 
     expect(result.severity).toBe('warning');
   });
+
+  it('동일 시간대 이상 서버를 related server summary로 구성한다', () => {
+    const anomalyData = {
+      anomalies: [
+        {
+          server_id: 'web-01',
+          server_name: 'web-server-01',
+          metric: 'cpu',
+          value: 95,
+          severity: 'critical',
+        },
+        {
+          server_id: 'db-01',
+          server_name: 'db-server-01',
+          metric: 'memory',
+          value: 87,
+          severity: 'warning',
+        },
+      ],
+      affectedServers: ['web-01', 'db-01'],
+      hasAnomalies: true,
+      anomalyCount: 2,
+      summary: { totalServers: 10, onlineCount: 8, warningCount: 1, criticalCount: 1 },
+    };
+
+    const result = extractToolBasedData(anomalyData, null, null);
+
+    expect(result.affectedServers).toEqual([
+      {
+        id: 'web-01',
+        name: 'web-server-01',
+        severity: 'critical',
+        metric: 'cpu',
+        value: 95,
+      },
+      {
+        id: 'db-01',
+        name: 'db-server-01',
+        severity: 'warning',
+        metric: 'memory',
+        value: 87,
+      },
+    ]);
+  });
 });
 
 describe('parseAgentJsonResponse', () => {
@@ -144,7 +192,7 @@ describe('parseAgentJsonResponse', () => {
   };
 
   it('유효한 JSON을 파싱한다', () => {
-    const text = '```json\n{"title":"CPU 과부하","severity":"critical","description":"설명","affected_servers":["web-01"],"root_cause":"과부하","recommendations":[{"action":"스케일업","priority":"high","expected_impact":"해소"}],"pattern":"스파이크"}\n```';
+    const text = '```json\n{"title":"CPU 과부하","severity":"critical","description":"설명","affected_servers":["web-01"],"affectedServers":[{"id":"db-01","name":"db-primary","severity":"warning","metric":"memory","value":82}],"root_cause":"과부하","recommendations":[{"action":"스케일업","priority":"high","expected_impact":"해소"}],"pattern":"스파이크","postmortem":{"timeline":["10:00 - CPU spike"],"hypotheses":["트래픽 급증"],"prevention":["오토스케일 정책 점검"]}}\n```';
 
     const result = parseAgentJsonResponse(text, fallback);
 
@@ -152,6 +200,16 @@ describe('parseAgentJsonResponse', () => {
     expect(result.severity).toBe('critical');
     expect(result.root_cause).toBe('과부하');
     expect(result.recommendations[0].action).toBe('스케일업');
+    expect(result.affectedServers).toEqual([
+      {
+        id: 'db-01',
+        name: 'db-primary',
+        severity: 'warning',
+        metric: 'memory',
+        value: 82,
+      },
+    ]);
+    expect(result.postmortem.timeline).toEqual(['10:00 - CPU spike']);
   });
 
   it('코드블록 없는 JSON도 파싱한다', () => {

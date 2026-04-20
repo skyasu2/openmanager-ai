@@ -272,6 +272,7 @@ ${metricsContext}
 ## 현재 수집된 데이터
 - 이상 감지: ${JSON.stringify(anomalyData).slice(0, 500)}
 - 트렌드: ${JSON.stringify(trendData).slice(0, 300)}
+- 타임라인: ${JSON.stringify(timelineData).slice(0, 300)}
 
 ## 중요: 반드시 아래 JSON 형식으로만 응답하세요
 
@@ -281,11 +282,19 @@ ${metricsContext}
   "severity": "critical|high|medium|low 중 하나",
   "description": "현재 상황에 대한 상세 설명 (2-3문장)",
   "affected_servers": ["서버ID1", "서버ID2"],
+  "affectedServers": [
+    {"id": "server-01", "name": "api-server-01", "severity": "critical", "metric": "cpu", "value": 95}
+  ],
   "root_cause": "근본 원인 분석 결과",
   "recommendations": [
     {"action": "조치 내용", "priority": "high|medium|low", "expected_impact": "예상 효과"}
   ],
-  "pattern": "감지된 패턴 설명"
+  "pattern": "감지된 패턴 설명",
+  "postmortem": {
+    "timeline": ["10:00 - 최초 이상 감지"],
+    "hypotheses": ["주요 원인 가설"],
+    "prevention": ["재발 방지 액션"]
+  }
 }
 \`\`\`
 
@@ -336,6 +345,9 @@ ${metricsContext}
       affected_servers: agentReport.affected_servers.length > 0
         ? agentReport.affected_servers
         : toolBasedData.affected_servers,
+      affectedServers: agentReport.affectedServers.length > 0
+        ? agentReport.affectedServers
+        : toolBasedData.affectedServers,
       anomalies: toolBasedData.anomalies, // From tool
       system_summary: toolBasedData.system_summary, // From tool
       timeline: toolBasedData.timeline, // From tool
@@ -347,6 +359,7 @@ ${metricsContext}
         ? agentReport.recommendations
         : toolBasedData.recommendations,
       pattern: agentReport.pattern || toolBasedData.pattern,
+      postmortem: agentReport.postmortem,
       created_at: new Date().toISOString(),
       _agentResponse: sanitizedText,
       _source: 'Reporter Agent + Tool Data (Hybrid)',

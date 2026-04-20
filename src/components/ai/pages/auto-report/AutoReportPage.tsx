@@ -45,6 +45,50 @@ let reportsCache: IncidentReport[] = [];
 
 type TabType = 'generate' | 'history';
 
+function normalizeRecommendations(
+  recommendations: unknown
+): IncidentReport['recommendations'] {
+  if (!Array.isArray(recommendations)) return [];
+
+  return recommendations.map((recommendation) => {
+    const item = recommendation as {
+      action?: string;
+      priority?: string;
+      expected_impact?: string;
+    };
+
+    return {
+      action: item.action || '추가 조치 필요',
+      priority: item.priority || 'medium',
+      expected_impact: item.expected_impact || '영향 감소',
+    };
+  });
+}
+
+function normalizeRelatedServers(report: Record<string, unknown>) {
+  if (!Array.isArray(report.affectedServers)) return [];
+
+  return report.affectedServers
+    .filter(
+      (
+        server
+      ): server is {
+        id?: string;
+        name?: string;
+        severity?: string;
+        metric?: string;
+        value?: number;
+      } => typeof server === 'object' && server !== null
+    )
+    .map((server) => ({
+      id: server.id || server.name || 'unknown-server',
+      name: server.name || server.id || 'unknown-server',
+      severity: server.severity || 'info',
+      metric: server.metric,
+      value: server.value,
+    }));
+}
+
 export default function AutoReportPage() {
   // Tab state
   const [activeTab, setActiveTab] = useState<TabType>('generate');
@@ -135,7 +179,10 @@ export default function AutoReportPage() {
         const systemSummary = apiSystemSummary
           ? {
               totalServers: apiSystemSummary.total_servers ?? metrics.length,
-              healthyServers: apiSystemSummary.healthy_servers ?? 0,
+              healthyServers:
+                apiSystemSummary.healthy_servers ??
+                apiSystemSummary.online_servers ??
+                0,
               warningServers: apiSystemSummary.warning_servers ?? 0,
               criticalServers: apiSystemSummary.critical_servers ?? 0,
             }
@@ -221,17 +268,23 @@ export default function AutoReportPage() {
           title: data.report.title,
           severity: mapSeverity(data.report.severity),
           timestamp: new Date(data.report.created_at),
-          affectedServers: data.report.affected_servers || [],
+          affectedServers:
+            data.report.affected_servers ||
+            normalizeRelatedServers(data.report).map((server) => server.id),
+          relatedServers: normalizeRelatedServers(data.report),
           description:
             data.report.root_cause_analysis?.primary_cause ||
             data.report.description ||
             '새로운 이상 징후가 감지되었습니다.',
           status: 'active',
           pattern: data.report.pattern,
-          recommendations: data.report.recommendations,
+          recommendations: normalizeRecommendations(
+            data.report.recommendations
+          ),
           systemSummary,
           anomalies,
           timeline: data.report.timeline,
+          postmortem: data.report.postmortem,
         };
 
         setReports((prev) => [newReport, ...prev]);

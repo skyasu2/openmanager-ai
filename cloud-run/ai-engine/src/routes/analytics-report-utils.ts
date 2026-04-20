@@ -7,6 +7,13 @@ interface ToolBasedData {
   severity: string;
   description: string;
   affected_servers: string[];
+  affectedServers: Array<{
+    id: string;
+    name: string;
+    severity: string;
+    metric?: string;
+    value?: number;
+  }>;
   anomalies: Array<{
     server_id: string;
     server_name: string;
@@ -27,6 +34,11 @@ interface ToolBasedData {
     expected_impact: string;
   }>;
   pattern: string;
+  postmortem: {
+    timeline: string[];
+    hypotheses: string[];
+    prevention: string[];
+  };
 }
 
 /**
@@ -89,6 +101,29 @@ export function extractToolBasedData(
     }
   }
 
+  const relatedServers = new Map<
+    string,
+    {
+      id: string;
+      name: string;
+      severity: string;
+      metric?: string;
+      value?: number;
+    }
+  >();
+
+  for (const anomaly of anomalies) {
+    if (!relatedServers.has(anomaly.server_id)) {
+      relatedServers.set(anomaly.server_id, {
+        id: anomaly.server_id,
+        name: anomaly.server_name || anomaly.server_id,
+        severity: anomaly.severity,
+        metric: anomaly.metric,
+        value: anomaly.value,
+      });
+    }
+  }
+
   let severity = 'info';
   if (systemSummary.critical_servers > 0 || anomalies.some((a) => a.severity === 'critical')) {
     severity = 'critical';
@@ -130,17 +165,57 @@ export function extractToolBasedData(
     ? `총 ${systemSummary.total_servers}대 서버 중 ${anomalyCount}건의 이상 징후가 감지되었습니다.`
     : `총 ${systemSummary.total_servers}대 서버가 정상 상태입니다.`;
 
+  const postmortemTimeline = timeline.map((entry) => {
+    const date = new Date(entry.timestamp);
+    const hours = String(date.getUTCHours()).padStart(2, '0');
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+    return `${hours}:${minutes} - ${entry.event}`;
+  });
+
+  const postmortemHypotheses: string[] = [];
+  if (anomalies.some((anomaly) => anomaly.metric.toLowerCase() === 'cpu')) {
+    postmortemHypotheses.push('CPU 부하 상승이 1차 원인일 가능성이 높습니다.');
+  }
+  if (trend?.summary?.hasRisingTrends) {
+    postmortemHypotheses.push('상승 추세가 유지되어 단일 스파이크보다 지속 부하 가능성이 있습니다.');
+  }
+  if (postmortemHypotheses.length === 0) {
+    postmortemHypotheses.push('수집된 이상 징후를 기준으로 추가 원인 분석이 필요합니다.');
+  }
+
+  const postmortemPrevention =
+    recommendations.length > 0
+      ? recommendations.map((recommendation) => recommendation.action)
+      : ['모니터링 임계값과 알림 정책을 재검토합니다.'];
+
   return {
     id,
     title,
     severity,
     description,
     affected_servers: serverId ? [serverId] : affectedServerIds,
+    affectedServers:
+      relatedServers.size > 0
+        ? Array.from(relatedServers.values())
+        : (serverId
+            ? [
+                {
+                  id: serverId,
+                  name: serverId,
+                  severity,
+                },
+              ]
+            : []),
     anomalies,
     system_summary: systemSummary,
     timeline,
     recommendations,
     pattern: hasAnomalies ? '이상 패턴 감지됨' : '정상 패턴',
+    postmortem: {
+      timeline: postmortemTimeline,
+      hypotheses: postmortemHypotheses,
+      prevention: postmortemPrevention,
+    },
   };
 }
 
@@ -151,16 +226,24 @@ export function parseAgentJsonResponse(
   text: string,
   fallback: Pick<
     ToolBasedData,
-    'title' | 'severity' | 'affected_servers' | 'recommendations' | 'pattern'
+    | 'title'
+    | 'severity'
+    | 'affected_servers'
+    | 'affectedServers'
+    | 'recommendations'
+    | 'pattern'
+    | 'postmortem'
   >
 ): {
   title: string;
   severity: string;
   description: string;
   affected_servers: string[];
+  affectedServers: ToolBasedData['affectedServers'];
   root_cause: string;
   recommendations: Array<{ action: string; priority: string; expected_impact: string }>;
   pattern: string;
+  postmortem: ToolBasedData['postmortem'];
 } {
   const jsonMatch =
     text.match(/```json\s*([\s\S]*?)\s*```/) || text.match(/\{[\s\S]*\}/);
@@ -177,11 +260,21 @@ export function parseAgentJsonResponse(
         affected_servers: Array.isArray(parsed.affected_servers)
           ? parsed.affected_servers
           : fallback.affected_servers,
+        affectedServers: Array.isArray(parsed.affectedServers)
+          ? parsed.affectedServers
+          : fallback.affectedServers,
         root_cause: parsed.root_cause || '',
         recommendations: Array.isArray(parsed.recommendations)
           ? parsed.recommendations
           : fallback.recommendations,
         pattern: parsed.pattern || fallback.pattern,
+        postmortem:
+          parsed.postmortem &&
+          Array.isArray(parsed.postmortem.timeline) &&
+          Array.isArray(parsed.postmortem.hypotheses) &&
+          Array.isArray(parsed.postmortem.prevention)
+            ? parsed.postmortem
+            : fallback.postmortem,
       };
     } catch {
       logger.warn('[Incident Report] JSON parse failed, using regex extraction');
@@ -193,8 +286,10 @@ export function parseAgentJsonResponse(
     severity: fallback.severity,
     description: '',
     affected_servers: fallback.affected_servers,
+    affectedServers: fallback.affectedServers,
     root_cause: '',
     recommendations: fallback.recommendations,
     pattern: fallback.pattern,
+    postmortem: fallback.postmortem,
   };
 }
