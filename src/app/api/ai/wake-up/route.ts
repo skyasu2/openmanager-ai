@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { getRequiredCloudRunConfig } from '@/lib/ai-proxy/cloud-run-config';
+import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { rateLimiters } from '@/lib/security/rate-limiter';
 
@@ -7,7 +8,7 @@ import { rateLimiters } from '@/lib/security/rate-limiter';
 export const maxDuration = 30; // cold start 포함 15초 + 여유
 const AI_WARMUP_SOURCE_HEADER = 'x-ai-warmup-source';
 
-export async function POST(request: NextRequest) {
+async function postHandler(request: NextRequest) {
   const warmupSource =
     request.headers.get(AI_WARMUP_SOURCE_HEADER) || 'unknown';
   const warmupStartedAt = Date.now();
@@ -98,3 +99,5 @@ export async function POST(request: NextRequest) {
     });
   }
 }
+
+export const POST = withAuth(postHandler);

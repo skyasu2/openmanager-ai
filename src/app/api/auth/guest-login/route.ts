@@ -278,10 +278,10 @@ async function handlePOST(request: NextRequest): Promise<NextResponse> {
     typeof sessionId === 'string' ? sessionId.trim() : '';
   const pinAttemptSessionId =
     normalizedSessionId.length > 0 ? normalizedSessionId : undefined;
-  const issuedSessionId =
-    normalizedSessionId.length >= 8 && normalizedSessionId.length <= 255
-      ? normalizedSessionId
-      : randomUUID();
+  // Always issue a fresh server-side guest session ID to avoid caller-controlled
+  // session fixation while still allowing the client-provided ID to namespace
+  // PIN throttling state.
+  const issuedSessionId = randomUUID();
   const guestFullAccessEnabled = isGuestFullAccessEnabledServer();
   const configuredPin = process.env.GUEST_LOGIN_PIN?.trim() || '';
   const pinAttemptIdentity = buildPinAttemptIdentity(

@@ -184,10 +184,39 @@ describe('POST /api/auth/guest-login', () => {
 
     expect(response.status).toBe(200);
     expect(body.success).toBe(true);
-    expect(body.sessionId).toBe('guest-session-2');
+    expect(body.sessionId).not.toBe('guest-session-2');
+    expect(typeof body.sessionId).toBe('string');
+    expect(body.sessionId.length).toBeGreaterThanOrEqual(32);
     expect(setCookieHeader).toContain('auth_session_id=');
+    expect(setCookieHeader).toContain(`auth_session_id=${body.sessionId}`);
     expect(setCookieHeader).toContain('guest_auth_proof=');
     expect(mockRecordLoginEvent).toHaveBeenCalledTimes(1);
+  });
+
+  it('클라이언트가 보낸 sessionId를 그대로 세션 쿠키로 재사용하지 않는다', async () => {
+    const request = new NextRequest(
+      'https://openmanager.test/api/auth/guest-login',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          sessionId: 'attacker-controlled-session-id',
+          guestUserId: 'guest-user-fixation',
+          guestPin: '1234',
+        }),
+        headers: createCSRFHeaders(),
+      }
+    );
+
+    const response = await POST(request);
+    const body = await response.json();
+    const setCookieHeader = response.headers.get('set-cookie') || '';
+
+    expect(response.status).toBe(200);
+    expect(body.sessionId).not.toBe('attacker-controlled-session-id');
+    expect(setCookieHeader).not.toContain(
+      'auth_session_id=attacker-controlled-session-id'
+    );
+    expect(setCookieHeader).toContain(`auth_session_id=${body.sessionId}`);
   });
 
   it('게스트 풀 액세스 활성화 시 PIN 없이도 성공한다', async () => {
