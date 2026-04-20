@@ -1,0 +1,82 @@
+{
+  "runId": "QA-20260420-0321",
+  "recordedAt": "2026-04-20T09:31:14.956Z",
+  "recordedAtKst": "2026-04-20 18:31:14 KST",
+  "runTitle": "Production targeted QA - v8.11.24 post-deploy smoke and guest-login probe",
+  "owner": "codex",
+  "source": "playwright-cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_3cutqnX7vMtm5qAuxzgnAnVULEmk",
+    "deploymentUrl": "https://openmanager-8eq06k24y-skyasus-projects.vercel.app",
+    "commitSha": "06e47ff88829010d7faeb7c9f44adf62022cb752"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core"],
+  "coveredSurfaces": [
+    "production deploy version check on /api/version",
+    "production route smoke for / and /validation",
+    "production login page render on v8.11.24",
+    "production guest CTA visibility on login page"
+  ],
+  "skippedSurfaces": [
+    "dashboard serverId autofocus modal verification",
+    "Reporter flow",
+    "AI surfaces"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 4,
+    "failed": 2
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "failed",
+      "result": "unknown",
+      "checkedAt": "",
+      "summary": "Local Vercel CLI usage query failed during post-deploy QA; manual dashboard confirmation is required.",
+      "evidence": "timeout 30s npm run check:usage:vercel",
+      "url": ""
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Production login page after guest CTA no-op probe",
+      "path": "reports/qa/evidence/qa-20260420-prod-dashboard-server-focus.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Vercel production deployment dpl_3cutqnX7vMtm5qAuxzgnAnVULEmk for chore(release): 8.11.24 was READY and promoted before QA started.",
+    "Post-deploy smoke passed on attempt 1/9 for /, /validation, and /api/version with expected version 8.11.24.",
+    "Headless browser probe rendered the production login page and exposed the guest CTA, but clicking the CTA did not emit any /api or /auth requests and the page remained on /login?redirectTo=%2Fdashboard.",
+    "Because guest login did not establish a session in the probe, /dashboard?serverId=web-nginx-dc1-01 redirected back to login and the dashboard autofocus modal could not be verified in production.",
+    "This run should be treated as deployment smoke plus interaction probe, not as complete release-surface signoff for the guest-login/dashboard flow."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production app",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Deployment dpl_3cutqnX7vMtm5qAuxzgnAnVULEmk",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/3cutqnX7vMtm5qAuxzgnAnVULEmk"
+    }
+  ]
+}

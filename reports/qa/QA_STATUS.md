@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-20 14:49:05 KST
+> Generated at: 2026-04-20 18:31:15 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 318 |
+| Total Recorded Runs | 319 |
 | Total Runs (Counted) | 263 |
-| Non-counted Runs | 55 |
+| Non-counted Runs | 56 |
 | Total Checks | 2082 |
 | Passed | 2003 |
 | Failed | 72 |
@@ -21,12 +21,12 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 99.69% |
 | Last Counted Run | QA-20260420-0316 (2026-04-20T04:07:14.690Z) |
-| Latest Recorded Run | QA-20260420-0320 (2026-04-20T05:49:05.588Z) |
+| Latest Recorded Run | QA-20260420-0321 (2026-04-20T09:31:14.956Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260420-0320 (2026-04-20T05:49:05.588Z)
+Latest run: QA-20260420-0321 (2026-04-20T09:31:14.956Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -36,11 +36,11 @@ Latest run: QA-20260420-0320 (2026-04-20T05:49:05.588Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed after preview verification; effective 12.3711 USD, billed 0 USD, no unexpected billed usage surfaced. |
+| vercel | cli | failed | unknown | Local Vercel CLI usage query failed during post-deploy QA; manual dashboard confirmation is required. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-19T05:49:05.588Z -> 2026-04-20T05:49:05.588Z (24h)
+- Window: 2026-04-19T09:31:14.956Z -> 2026-04-20T09:31:14.956Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 
@@ -53,23 +53,23 @@ Latest run: QA-20260420-0320 (2026-04-20T05:49:05.588Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: dpl_348Uoi8vqHWxPNoCMfo1Gxa2fbuN / SHA ac18ca2f
+- Deployment: dpl_3cutqnX7vMtm5qAuxzgnAnVULEmk / SHA 06e47ff8
 - Coverage Packs: core-routes-smoke, dashboard-core
-- Covered Surfaces: preview protected dashboard entry with automation bypass, preview login page guest CTA, guest login to dashboard on preview, dashboard route /dashboard?serverId=web-nginx-dc1-01 after guest login
-- Skipped Surfaces: Reporter flow, AI surfaces, production deployment verification
+- Covered Surfaces: production deploy version check on /api/version, production route smoke for / and /validation, production login page render on v8.11.24, production guest CTA visibility on login page
+- Skipped Surfaces: dashboard serverId autofocus modal verification, Reporter flow, AI surfaces
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Preview deployment | [Preview deployment](https://openmanager-8i3pryse2-skyasus-projects.vercel.app/) | - |
-| vercel-deployment | Deployment dpl_348Uoi8vqHWxPNoCMfo1Gxa2fbuN | [Deployment dpl_348Uoi8vqHWxPNoCMfo1Gxa2fbuN](https://vercel.com/skyasus-projects/openmanager-ai/348Uoi8vqHWxPNoCMfo1Gxa2fbuN) | - |
+| general | Production app | [Production app](https://openmanager-ai.vercel.app/) | - |
+| vercel-deployment | Deployment dpl_3cutqnX7vMtm5qAuxzgnAnVULEmk | [Deployment dpl_3cutqnX7vMtm5qAuxzgnAnVULEmk](https://vercel.com/skyasus-projects/openmanager-ai/3cutqnX7vMtm5qAuxzgnAnVULEmk) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Preview dashboard after guest login with missing serverId autofocus modal | `tmp/playwright/manual-vercel/preview-dashboard-server-focus-success.png` | - |
+| playwright-screenshot | Production login page after guest CTA no-op probe | `reports/qa/evidence/qa-20260420-prod-dashboard-server-focus.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -442,6 +442,7 @@ Latest run: QA-20260420-0320 (2026-04-20T05:49:05.588Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260420-0321 | 2026-04-20T09:31:14.956Z | targeted | no | no | Production targeted QA - v8.11.24 post-deploy smoke and guest-login probe | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260420-0320 | 2026-04-20T05:49:05.588Z | targeted | no | no | Vercel preview targeted QA - dashboard serverId autofocus after guest login | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260420-0319 | 2026-04-20T05:46:13.205Z | targeted | no | no | Vercel preview targeted QA - reporter/dashboard follow-up branch verification | 5 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260420-0318 | 2026-04-20T05:17:00.396Z | targeted | no | no | Local dev turbopack trace - dashboard lazy shell/server section follow-up | 5 | 2 | 1 | 0 | 0 | 0 |
@@ -461,4 +462,3 @@ Latest run: QA-20260420-0320 (2026-04-20T05:49:05.588Z)
 | QA-20260418-0304 | 2026-04-18T12:30:51.893Z | targeted | no | yes | Vercel targeted QA - AI metric ranking hotfix | 5 | 2 | 0 | 0 | 1 | 0 |
 | QA-20260418-0303 | 2026-04-18T08:01:44.685Z | broad | yes | yes | Production broad QA - 8.11.20 AI hardening verification | 22 | 1 | 0 | 0 | 1 | 0 |
 | QA-20260417-0302 | 2026-04-17T05:39:27.161Z | targeted | no | yes | v8.11.19 active-alert :9100 fix targeted production QA | 4 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260417-0301 | 2026-04-17T05:23:31.724Z | targeted | yes | no | Production release verification blocked - v8.11.19 deploy not created | 4 | 0 | 1 | 0 | 0 | 1 |
