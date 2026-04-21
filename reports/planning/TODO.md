@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-21 KST (ai-domain-boundary Phase 3 broad QA 결과 및 plan archive 정리 반영)
+**Last Updated**: 2026-04-21 KST (ai-domain-boundary Phase 3 broad reference refresh 완료 반영)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI Domain Boundary Phase 3 broad reference refresh | High | In Progress | `QA-20260421-0323`에서 지원/일반 질문 경계와 analysis mode UX는 확인됐지만, production chunk init console error와 off-domain relative-date stale answer 때문에 broad reference 승격이 막힘. plan: `ai-domain-boundary-analysis-mode-plan.md` |
+| - | - | - | 현재 active task 없음 |
 
 ---
 
@@ -31,6 +31,17 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-21 #166)
+- [x] AI Domain Boundary Phase 3 broad reference refresh 완료
+  - production `v8.11.25` (`dpl_643GY6xfecoQXhCqzRUnE4TNajmF`)에서 broad rerun `QA-20260421-0324`를 기록하고, `production-console-init-cleanliness`와 `off-domain-relative-date-grounding` blocker 2건을 완료 처리
+  - landing/privacy/login/dashboard/ai-assistant core route에서는 더 이상 production chunk init TypeError가 재현되지 않았고, `서울 오늘 날씨 알려줘` off-domain 질의도 disclaimer를 유지하면서 stale `2023년` absolute date를 누출하지 않음
+  - 상세 계획/계약: [archive/ai-domain-boundary-analysis-mode-plan.md](archive/ai-domain-boundary-analysis-mode-plan.md)
+  - 검증:
+    - `npm run check:usage:vercel`
+    - `npm run qa:record -- --input /tmp/qa-run-input-20260421-domain-boundary-v81125.json`
+    - `npm run qa:status -- --write`
+    - `npm run qa:evidence:audit`
 
 ### Completed (2026-04-21 #165)
 - [x] 완료된 plan root/archive 정리

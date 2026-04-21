@@ -1,0 +1,7 @@
+Production broad rerun console summary for v8.11.25 (deployment dpl_643GY6xfecoQXhCqzRUnE4TNajmF)
+- landing (/): 0 console errors
+- privacy (/privacy): 0 console errors
+- login (/login): 0 console errors
+- dashboard (/dashboard?serverId=web-nginx-dc1-01): 0 console errors
+- ai assistant (/dashboard/ai-assistant): 0 console errors
+- note: /not-found-qa-check emits the expected browser resource-load 404 console entry and is excluded from chunk-init cleanliness judgment

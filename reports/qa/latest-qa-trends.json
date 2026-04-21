@@ -1,31 +1,31 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-21T00:49:42.777Z",
-  "generatedAtKst": "2026-04-21 09:49:42 KST",
-  "trackerUpdatedAt": "2026-04-21T00:49:41.064Z",
+  "generatedAt": "2026-04-21T01:36:17.429Z",
+  "generatedAtKst": "2026-04-21 10:36:17 KST",
+  "trackerUpdatedAt": "2026-04-21T01:36:15.864Z",
   "totals": {
-    "recordedRuns": 321,
-    "countedRuns": 264,
-    "totalChecks": 2097,
-    "totalPassed": 2016,
+    "recordedRuns": 322,
+    "countedRuns": 265,
+    "totalChecks": 2107,
+    "totalPassed": 2026,
     "totalFailed": 74,
-    "overallPassRatePct": 96.14,
-    "latestRecordedRunId": "QA-20260421-0323",
-    "lastCountedRunId": "QA-20260421-0323"
+    "overallPassRatePct": 96.16,
+    "latestRecordedRunId": "QA-20260421-0324",
+    "lastCountedRunId": "QA-20260421-0324"
   },
   "windows": [
     {
       "label": "All Counted Runs",
-      "recordedRuns": 264,
-      "countedRuns": 264,
-      "totalChecks": 2097,
-      "totalPassed": 2016,
+      "recordedRuns": 265,
+      "countedRuns": 265,
+      "totalChecks": 2107,
+      "totalPassed": 2026,
       "totalFailed": 74,
-      "passRatePct": 96.14,
+      "passRatePct": 96.16,
       "failingRunCount": 46,
-      "failingRunRatePct": 17.42,
+      "failingRunRatePct": 17.36,
       "regressionRunCount": 52,
-      "regressionRunRatePct": 19.7,
+      "regressionRunRatePct": 19.62,
       "pendingRunCount": 40,
       "releaseFacingRuns": 32
     },
@@ -33,10 +33,10 @@
       "label": "Last 30 Counted Runs",
       "recordedRuns": 30,
       "countedRuns": 30,
-      "totalChecks": 276,
-      "totalPassed": 267,
+      "totalChecks": 279,
+      "totalPassed": 270,
       "totalFailed": 8,
-      "passRatePct": 96.74,
+      "passRatePct": 96.77,
       "failingRunCount": 5,
       "failingRunRatePct": 16.67,
       "regressionRunCount": 6,
@@ -48,31 +48,31 @@
       "label": "Last 10 Counted Runs",
       "recordedRuns": 10,
       "countedRuns": 10,
-      "totalChecks": 107,
-      "totalPassed": 103,
+      "totalChecks": 99,
+      "totalPassed": 95,
       "totalFailed": 3,
-      "passRatePct": 96.26,
+      "passRatePct": 95.96,
       "failingRunCount": 2,
       "failingRunRatePct": 20,
       "regressionRunCount": 2,
       "regressionRunRatePct": 20,
       "pendingRunCount": 1,
-      "releaseFacingRuns": 3
+      "releaseFacingRuns": 2
     }
   ],
   "gateWindows": [
     {
       "label": "All Gate Runs",
-      "recordedRuns": 27,
-      "countedRuns": 27,
-      "totalChecks": 387,
-      "totalPassed": 375,
+      "recordedRuns": 28,
+      "countedRuns": 28,
+      "totalChecks": 397,
+      "totalPassed": 385,
       "totalFailed": 9,
-      "passRatePct": 96.9,
+      "passRatePct": 96.98,
       "failingRunCount": 6,
-      "failingRunRatePct": 22.22,
+      "failingRunRatePct": 21.43,
       "regressionRunCount": 6,
-      "regressionRunRatePct": 22.22,
+      "regressionRunRatePct": 21.43,
       "pendingRunCount": 6,
       "releaseFacingRuns": 24
     },
@@ -80,28 +80,19 @@
       "label": "Last 5 Gate Runs",
       "recordedRuns": 5,
       "countedRuns": 5,
-      "totalChecks": 84,
-      "totalPassed": 81,
+      "totalChecks": 76,
+      "totalPassed": 73,
       "totalFailed": 2,
-      "passRatePct": 96.43,
+      "passRatePct": 96.05,
       "failingRunCount": 1,
       "failingRunRatePct": 20,
       "regressionRunCount": 1,
       "regressionRunRatePct": 20,
       "pendingRunCount": 1,
-      "releaseFacingRuns": 3
+      "releaseFacingRuns": 2
     }
   ],
   "recentGateRuns": [
-    {
-      "runId": "QA-20260417-0300",
-      "scope": "broad",
-      "releaseFacing": true,
-      "title": "Production broad QA - 8.11.17 font preload cleanup verification",
-      "failedChecks": 0,
-      "pendingCount": 0,
-      "deferredCount": 0
-    },
     {
       "runId": "QA-20260418-0303",
       "scope": "broad",
@@ -136,6 +127,15 @@
       "title": "Production broad QA - AI domain boundary Phase 3 reference refresh blocked by console/date regressions",
       "failedChecks": 2,
       "pendingCount": 2,
+      "deferredCount": 0
+    },
+    {
+      "runId": "QA-20260421-0324",
+      "scope": "broad",
+      "releaseFacing": false,
+      "title": "Production broad QA - AI domain boundary Phase 3 reference refreshed on v8.11.25",
+      "failedChecks": 0,
+      "pendingCount": 0,
       "deferredCount": 0
     }
   ],
@@ -231,8 +231,8 @@
     },
     {
       "scope": "broad",
-      "totalRuns": 23,
-      "countedRuns": 22
+      "totalRuns": 24,
+      "countedRuns": 23
     },
     {
       "scope": "release-gate",
@@ -260,13 +260,13 @@
     {
       "priority": "P1",
       "totalItems": 144,
-      "recurringItems": 64,
-      "openItems": 3,
+      "recurringItems": 66,
+      "openItems": 1,
       "openRecurringItems": 1,
-      "completedItems": 137,
+      "completedItems": 139,
       "wontFixItems": 4,
-      "recurrenceRatePct": 44.44,
-      "openRecurrenceRatePct": 33.33
+      "recurrenceRatePct": 45.83,
+      "openRecurrenceRatePct": 100
     },
     {
       "priority": "P2",
@@ -292,6 +292,20 @@
     }
   ],
   "deploymentCorrelation": [
+    {
+      "deploymentId": "dpl_643GY6xfecoQXhCqzRUnE4TNajmF",
+      "target": "vercel-production",
+      "commitSha": "538282c1c781fcd9482e88b155d43f3d0f7a1152",
+      "runCount": 1,
+      "totalChecks": 10,
+      "totalFailed": 0,
+      "regressionRuns": 0,
+      "failingRuns": 0,
+      "latestRecordedAt": "2026-04-21T01:36:15.864Z",
+      "latestRunId": "QA-20260421-0324",
+      "passRatePct": 100,
+      "regressionRunRatePct": 0
+    },
     {
       "deploymentId": "dpl_3cutqnX7vMtm5qAuxzgnAnVULEmk",
       "target": "vercel-production",
@@ -445,20 +459,6 @@
       "latestRunId": "QA-20260416-0294",
       "passRatePct": 100,
       "regressionRunRatePct": 0
-    },
-    {
-      "deploymentId": "dpl_8oAdopQezsQhTUtaSMnxpkNJhuF9",
-      "target": "vercel-production",
-      "commitSha": "80d53371ceb582616b73801b21eb51b66c010f0c",
-      "runCount": 1,
-      "totalChecks": 18,
-      "totalFailed": 0,
-      "regressionRuns": 0,
-      "failingRuns": 0,
-      "latestRecordedAt": "2026-04-15T14:40:05.458Z",
-      "latestRunId": "QA-20260415-0291",
-      "passRatePct": 100,
-      "regressionRunRatePct": 0
     }
   ],
   "recentDailyTrend": [
@@ -607,14 +607,14 @@
     },
     {
       "date": "2026-04-21",
-      "runCount": 1,
-      "totalChecks": 15,
-      "totalPassed": 13,
+      "runCount": 2,
+      "totalChecks": 25,
+      "totalPassed": 23,
       "totalFailed": 2,
       "failingRuns": 1,
       "regressionRuns": 1,
-      "passRatePct": 86.67,
-      "regressionRunRatePct": 100
+      "passRatePct": 92,
+      "regressionRunRatePct": 50
     }
   ],
   "recentRegressionRuns": [
@@ -729,26 +729,6 @@
         "seenCount": 3,
         "completedCount": 0,
         "lastSeenRunId": "QA-20260420-0318",
-        "lastResolvedRunId": null
-      },
-      {
-        "id": "off-domain-relative-date-grounding",
-        "title": "Stop stale absolute dates in off-domain relative-date answers",
-        "status": "pending",
-        "priority": "P1",
-        "seenCount": 1,
-        "completedCount": 0,
-        "lastSeenRunId": "QA-20260421-0323",
-        "lastResolvedRunId": null
-      },
-      {
-        "id": "production-console-init-cleanliness",
-        "title": "Clear repeated production chunk init console error across core routes",
-        "status": "pending",
-        "priority": "P1",
-        "seenCount": 1,
-        "completedCount": 0,
-        "lastSeenRunId": "QA-20260421-0323",
         "lastResolvedRunId": null
       }
     ],
@@ -959,8 +939,8 @@
   },
   "aiLatencyRollup24h": {
     "windowHours": 24,
-    "windowStart": "2026-04-20T00:49:41.064Z",
-    "windowEnd": "2026-04-21T00:49:41.064Z",
+    "windowStart": "2026-04-20T01:36:15.864Z",
+    "windowEnd": "2026-04-21T01:36:15.864Z",
     "recordedRunCount": 1,
     "countedRunCount": 0,
     "sampleCount": 1,

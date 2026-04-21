@@ -1,49 +1,49 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-21 09:49:42 KST
+> Generated at: 2026-04-21 10:36:17 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 321 |
-| Total Runs (Counted) | 264 |
+| Total Recorded Runs | 322 |
+| Total Runs (Counted) | 265 |
 | Non-counted Runs | 57 |
-| Total Checks | 2097 |
-| Passed | 2016 |
+| Total Checks | 2107 |
+| Passed | 2026 |
 | Failed | 74 |
-| Completed Items | 321 |
-| Pending Items | 3 |
+| Completed Items | 323 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 17 |
 | Expert Domains Tracked | 8 |
-| Expert Open Gaps | 2 |
-| Completion Rate | 99.07% |
-| Last Counted Run | QA-20260421-0323 (2026-04-21T00:49:41.064Z) |
-| Latest Recorded Run | QA-20260421-0323 (2026-04-21T00:49:41.064Z) |
+| Expert Open Gaps | 0 |
+| Completion Rate | 99.69% |
+| Last Counted Run | QA-20260421-0324 (2026-04-21T01:36:15.864Z) |
+| Latest Recorded Run | QA-20260421-0324 (2026-04-21T01:36:15.864Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260421-0323 (2026-04-21T00:49:41.064Z)
+Latest run: QA-20260421-0324 (2026-04-21T01:36:15.864Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | Test Automation Architect | appropriate | no | - |
-| AI Quality Assurance Specialist | partially-appropriate | yes | Prevent relative-date prompts like 오늘 from surfacing stale cached dates on off-domain web-backed answers. |
-| IT Monitoring & Observability SME | partially-appropriate | yes | Identify and remove the production _next chunk init error before promoting this run as the new broad reference. |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | vercel usage --format json --non-interactive succeeded; current period effective usage 13.0408 USD, billed 0.0000 USD, no unexpected spike observed. |
+| vercel | cli | checked | normal | vercel usage --format json --non-interactive succeeded after production broad rerun; no unexpected usage spike observed. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-20T00:49:41.064Z -> 2026-04-21T00:49:41.064Z (24h)
+- Window: 2026-04-20T01:36:15.864Z -> 2026-04-21T01:36:15.864Z (24h)
 - Runs with observations: 1 recorded / 0 counted
 - Samples: 1
 
@@ -56,36 +56,31 @@ Latest run: QA-20260421-0323 (2026-04-21T00:49:41.064Z)
 - Scope: broad
 - Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: dpl_3cutqnX7vMtm5qAuxzgnAnVULEmk / SHA 06e47ff8
+- Deployment: dpl_643GY6xfecoQXhCqzRUnE4TNajmF / SHA 538282c1
 - Coverage Packs: core-routes-smoke, dashboard-core, ai-core, ai-advanced-surface
-- Covered Surfaces: landing render with version badge on production v8.11.24, /main redirect to / on production v8.11.24, /login render with guest PIN entry and privacy link, /privacy render with back-link to login, 404 route render on production, guest PIN login and system-start countdown to /dashboard, dashboard summary render with total 18 / online 16 / warning 1 / risk 1 / offline 0, server detail modal auto-focus via serverId query and 3-tab switch (종합 상황 / 성능 분석 / 로그 & 네트워크), AI fullscreen workspace render on production v8.11.24, AI response mode toggle visibility (오토 / Thinking), supported domain query in Thinking mode returns grounded summary without disclaimer, general off-domain weather query returns disclaimer and web-backed analysis basis in Auto mode, entertainment off-domain query returns disclaimer and general-response analysis basis in Auto mode, /api/version 200 on production with version 8.11.24 / nextjs 16.1.6 / environment production, /api/health 200 on production with database/cache/ai connected
-- Skipped Surfaces: OAuth login buttons, active alerts/topology modal pack, AI sidebar open/close on dashboard shell, Reporter generate/detail flow, Analyst advanced forecast and drilldown flow, Cloud Run admin observability endpoints, security blocked-prompt regression pack
+- Covered Surfaces: landing render with version badge on production v8.11.25, /main redirect to / on production v8.11.25, /login render with guest CTA and privacy link, /privacy render with back-link to login, dashboard render with serverId modal auto-focus and 3-tab switch (종합 상황 / 성능 분석 / 로그 & 네트워크), AI fullscreen workspace render on production v8.11.25, off-domain weather query returns disclaimer without stale 2023 date and grounds to current KST date context, core route console cleanliness no longer reproduces production chunk init TypeError, /api/version 200 on production with version 8.11.25 / nextjs 16.1.6 / environment production, /api/health 200 on production with database/cache/ai connected
+- Skipped Surfaces: OAuth login buttons, active alerts/topology modal pack, Reporter generate/detail flow, Analyst advanced forecast and drilldown flow, security blocked-prompt regression pack
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | Production app | [Production app](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Deployment dpl_3cutqnX7vMtm5qAuxzgnAnVULEmk | [Deployment dpl_3cutqnX7vMtm5qAuxzgnAnVULEmk](https://vercel.com/skyasus-projects/openmanager-ai/3cutqnX7vMtm5qAuxzgnAnVULEmk) | - |
+| vercel-deployment | Deployment dpl_643GY6xfecoQXhCqzRUnE4TNajmF | [Deployment dpl_643GY6xfecoQXhCqzRUnE4TNajmF](https://vercel.com/skyasus-projects/openmanager-ai/643GY6xfecoQXhCqzRUnE4TNajmF) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Production AI workspace broad domain-boundary snapshot on v8.11.24 | `reports/qa/evidence/qa-20260421-v81124-broad-ai-domain-boundary.png` | - |
-| playwright-console | Production broad console snapshot on v8.11.24 | `reports/qa/evidence/qa-20260421-v81124-broad-console.txt` | - |
+| playwright-screenshot | Production AI workspace broad domain-boundary snapshot on v8.11.25 | `reports/qa/evidence/qa-20260421-v81125-broad-ai-domain-boundary.png` | - |
+| playwright-console | Production broad console summary on v8.11.25 | `reports/qa/evidence/qa-20260421-v81125-broad-console.txt` | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260421-0323)
-  next: Prevent relative-date prompts like 오늘 from surfacing stale cached dates on off-domain web-backed answers.
-- observability-monitoring: IT Monitoring & Observability SME (last QA-20260421-0323)
-  next: Identify and remove the production _next chunk init error before promoting this run as the new broad reference.
+- None
 
 ## Pending Improvements
 
-- [P1] off-domain-relative-date-grounding: Stop stale absolute dates in off-domain relative-date answers (seen 1회, last QA-20260421-0323)
-- [P1] production-console-init-cleanliness: Clear repeated production chunk init console error across core routes (seen 1회, last QA-20260421-0323)
 - [P1] root-shell-startup-trace: Trace instrumentation/layout/provider compile bottleneck (seen 3회, last QA-20260420-0318)
 
 ## Deferred Improvements
@@ -306,6 +301,7 @@ Latest run: QA-20260421-0323 (2026-04-21T00:49:41.064Z)
 - multi-agent-tool-result-bubble-up: orchestrator-agent-stream.ts: tool_result yield 누락으로 분석 근거 영역 비어있던 문제 수정 (completed 1회, last QA-20260408-0252)
 - negative-feedback-trace-preserved: Negative feedback traceId preserved through feedback submission (completed 1회, last QA-20260322-0155)
 - next-dev-allowed-origins-loopback-parity: 127.0.0.1 dev-origin parity for OAuth smoke (completed 1회, last QA-20260412-0273)
+- off-domain-relative-date-grounding: Stop stale absolute dates in off-domain relative-date answers (completed 1회, last QA-20260421-0324)
 - otel-데이터-무결성-24x15-완전: OTel 데이터 무결성 24x15 완전 (completed 1회, last QA-20260301-0032)
 - performance-bundle-excellent: 번들 성능 우수 (completed 1회, last QA-20260314-0096)
 - planning-backlog-clear: planning TODO 잔여 항목 정리 (completed 1회, last QA-20260226-0006)
@@ -325,6 +321,7 @@ Latest run: QA-20260421-0323 (2026-04-21T00:49:41.064Z)
 - prod-security-block-ko-20260313: Production AI Chat blocks Korean system prompt exposure request (completed 1회, last QA-20260313-0095)
 - prod-security-block-no-raw-json-20260313: Blocked prompt UX hides raw JSON and security error internals (completed 1회, last QA-20260313-0095)
 - prod-stream-v2-smoke-20260313: Production stream/v2 smoke returns 200 event-stream with cloud-run source (completed 1회, last QA-20260313-0094)
+- production-console-init-cleanliness: Clear repeated production chunk init console error across core routes (completed 1회, last QA-20260421-0324)
 - production-dashboard-render: 프로덕션 대시보드 렌더링 (completed 1회, last QA-20260317-0114)
 - production-smoke-console-401-cleanliness: Production smoke console 401 resource noise 정리 (completed 3회, last QA-20260320-0140)
 - profile-menu: 프로필 메뉴 드롭다운 (completed 1회, last QA-20260317-0114)
@@ -456,6 +453,7 @@ Latest run: QA-20260421-0323 (2026-04-21T00:49:41.064Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260421-0324 | 2026-04-21T01:36:15.864Z | broad | no | yes | Production broad QA - AI domain boundary Phase 3 reference refreshed on v8.11.25 | 10 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260421-0323 | 2026-04-21T00:49:41.064Z | broad | no | yes | Production broad QA - AI domain boundary Phase 3 reference refresh blocked by console/date regressions | 15 | 0 | 2 | 0 | 0 | 2 |
 | QA-20260421-0322 | 2026-04-20T23:00:26.579Z | targeted | no | no | Production targeted QA - Vision latency sample refresh on AI Assistant | 7 | 1 | 0 | 0 | 2 | 0 |
 | QA-20260420-0321 | 2026-04-20T09:31:14.956Z | targeted | no | no | Production targeted QA - v8.11.24 post-deploy smoke and guest-login probe | 6 | 0 | 0 | 0 | 0 | 0 |
@@ -475,4 +473,3 @@ Latest run: QA-20260421-0323 (2026-04-21T00:49:41.064Z)
 | QA-20260419-0307 | 2026-04-19T01:24:01.619Z | targeted | no | no | Local targeted QA - Analyst NaN prediction fallback fix | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260419-0306 | 2026-04-19T00:41:30.083Z | broad | no | yes | Vercel broad QA - v8.11.20 frontend + AI assistant full evaluation | 12 | 11 | 0 | 0 | 1 | 0 |
 | QA-20260418-0305 | 2026-04-18T13:41:54.126Z | targeted | no | yes | Vercel targeted QA - AI ranking route live recovery | 4 | 3 | 0 | 0 | 0 | 0 |
-| QA-20260418-0304 | 2026-04-18T12:30:51.893Z | targeted | no | yes | Vercel targeted QA - AI metric ranking hotfix | 5 | 2 | 0 | 0 | 1 | 0 |
