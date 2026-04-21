@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active Supporting
 > Doc type: Reference
-> Last reviewed: 2026-04-17
+> Last reviewed: 2026-04-21
 > Canonical: docs/development/vibe-coding/mcp-servers.md
 > Tags: vibe-coding,mcp,configuration
 
@@ -23,7 +23,7 @@
 
 ## MCP 카탈로그 (프로젝트 공통)
 
-> 현재 상시 등록: 6개 / 온디맨드: 1개 (storybook)
+> 현재 상시 등록: 7개 / 온디맨드: 1개 (storybook)
 
 | MCP | 용도 | `.mcp.json` 상시 등록 | 비고 |
 |-----|------|:--------------------:|------|
@@ -32,11 +32,12 @@
 | **vercel** | 배포 상태/이벤트 확인 | ✅ | Vercel MCP |
 | **playwright** | 브라우저 자동화/E2E | ✅ | 로컬 QA |
 | **next-devtools** | Next.js 런타임 진단 | ✅ | Next.js 16+ dev server 필수 |
+| **chrome-devtools** | CDP 기반 성능/네트워크/메모리/Lighthouse 진단 | ✅ | Playwright와 역할 분리 (진단 전용) |
 | **github** | 저장소/PR/이슈 관리 | ✅ | GitHub MCP |
 | **context7** | 라이브러리 공식 문서 검색 | ❌ 제거 | 활용도 저하로 제거됨 |
 | **sequential-thinking** | 복잡한 추론/설계 분해 | ❌ 제거 | 활용도 저하로 제거됨 |
 | **stitch** | UI 디자인 생성/변형 | ❌ 제거 | 명시적 UI 개선 요청 시에만 수동 구동, 상시에서 제외 |
-| **lighthouse** | Core Web Vitals + 성능/접근성/SEO 감사 | ❌ 제거 | `npm run lighthouse:*` CLI 스크립트로 대체 (`scripts/perf/`) |
+| **lighthouse** | Core Web Vitals + 성능/접근성/SEO 감사 | ❌ 제거 | `chrome-devtools`의 `lighthouse_audit`로 대체, 반복 측정은 `npm run lighthouse:*` CLI 사용 |
 | **storybook** | 컴포넌트 문서/스토리 기반 작업 | ❌ 온디맨드 | `npx storybook dev` 실행 시에만 동작, 필요 시 수동 추가 |
 
 - Claude 기준 실제 구성: `.mcp.json` (gitignore, GitHub 노출 없음)
@@ -90,7 +91,7 @@
   - 빠른 설정 점검만 필요하면 `bash scripts/mcp/mcp-health-check-codex.sh --no-live-probe`
 - 실제 동작 검증은 서버별 도구 1회 이상 호출로 확인합니다.
 
-### 현재 Codex MCP 구성 요약 (2026-04-18)
+### 현재 Codex MCP 구성 요약 (2026-04-21)
 
 | Server ID | 실행 방식(요약) | Timeout (startup/tool) | 적용 목적 |
 |---|---|---:|---|
@@ -98,6 +99,7 @@
 | `diagram-converter` | `npx -y diagram-converter-mcp@0.2.6` | `120/180` | Mermaid 렌더/검증 |
 | `playwright` | `npx -y @playwright/mcp --output-dir tmp/playwright/mcp/screenshots` | `60/180` | 브라우저 자동화 QA |
 | `next-devtools` | `npx -y next-devtools-mcp@latest` | `75/120` | Next.js 런타임 진단 |
+| `chrome-devtools` | `npx -y chrome-devtools-mcp@latest --isolated` | `90/180` | 성능/네트워크/메모리/Lighthouse 진단 |
 | `github` | `npx -y @modelcontextprotocol/server-github` | `120/120` | PR/Issue/파일 조회 |
 | `vercel` | `bash -lc npx -y vercel-mcp ...` | `180/120` | 배포 상태/로그 확인 |
 
@@ -156,6 +158,65 @@ npm run mcp:playwright:windows:enable
 npm run mcp:playwright:mode:stdio
 ```
 
+### Chrome DevTools MCP (현재 의도된 동작 기준)
+
+- 목적: **CDP(Chrome DevTools Protocol) 기반 진단 전용**
+- Playwright와의 분담:
+  - Playwright MCP: 사용자 플로우/E2E 자동화
+  - Chrome DevTools MCP: 성능/CWV/메모리/네트워크/Lighthouse 분석
+
+**대표 도구 카테고리 (2026-04-21 실사용 기준, 29개 노출)**:
+
+- 브라우저 자동화: `click`, `fill`, `navigate`, `type` 등 (Playwright와 중복, Playwright 우선)
+- 성능 프로파일링: `performance_start_trace`, `performance_stop_trace`, `performance_analyze_insight` (고유)
+- 메모리 분석: `take_memory_snapshot` (고유)
+- Lighthouse 감사: `lighthouse_audit` (고유, legacy lighthouse MCP 대체)
+- 네트워크 검사: `list_network_requests`, `get_network_request` (Playwright 대비 상세)
+- 콘솔 검사: `list_console_messages`, `get_console_message` (유사)
+- 디바이스 에뮬레이션: `emulate` (중복)
+
+**운영 기준**:
+
+- 기능 회귀/E2E: Playwright MCP 우선
+- CLS/LCP/TTFB trace 진단: Chrome DevTools MCP 우선
+- Accessibility/Best Practices/SEO 점수 감사: Chrome DevTools MCP (`lighthouse_audit`)
+- 메모리 누수/스냅샷 분석: Chrome DevTools MCP (`take_memory_snapshot`)
+
+**베스트 프랙티스 워크플로우 (2026-04-21 실사용 검증)**:
+
+```
+1. navigate_page(url)       # 이동
+2. take_snapshot()          # a11y 트리 조회 — 스크린샷 대신 기본값 (uid 기반, 토큰 10배 효율)
+3. click(uid)               # 스냅샷에서 얻은 uid로 클릭 (CSS 셀렉터보다 안정적)
+4. wait_for(["텍스트"])      # 비동기 상태 전환 감지
+5. take_screenshot()        # 시각 확인이 꼭 필요할 때만 사용
+```
+
+**headed 모드 (브라우저 창 표시)**:
+
+현재 Claude `.mcp.json`은 `--headless` 모드. Codex는 `--isolated`(headed)로 실행 중.
+
+| 모드 | args | 브라우저 창 | 용도 |
+|------|------|:---------:|------|
+| headless (기본) | `--isolated --headless` | ❌ | CI/자동화/headless 진단 |
+| headed | `--isolated` | ✅ | 시각 디버깅, 로그인 확인 |
+| 기존 세션 연결 | `--browser-url http://127.0.0.1:9222` | ✅ | 인증된 세션 재사용 |
+
+headed 모드로 전환: `.mcp.json`에서 `--headless` 제거 → Claude Code 재시작
+
+기존 Chrome 세션(로그인 상태) 재사용:
+```bash
+# 1. Chrome을 remote debugging 포트로 실행 (원하는 프로필/세션으로 로그인 가능)
+/usr/bin/google-chrome --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-debug-session
+
+# 2. .mcp.json chrome-devtools args 변경
+# "args": ["-y", "chrome-devtools-mcp@latest", "--browser-url", "http://127.0.0.1:9222"]
+
+# 3. Claude Code 재시작
+```
+
+WSL2 전제조건: `DISPLAY=:0` ✅, `/usr/bin/google-chrome` ✅, X11/WSLg 활성 ✅
+
 ### 다른 MCP 목록과 적용 방법 (Codex 기준)
 
 | MCP | 언제 쓰는가 | 최소 적용 순서(예시) |
@@ -163,14 +224,15 @@ npm run mcp:playwright:mode:stdio
 | `supabase-db` | 프로젝트/테이블 점검, SQL 실행 | `list_projects` → `list_tables` → 필요 시 `execute_sql` |
 | `vercel` | 최신 배포/이벤트 확인 | `getDeployments` → `getDeployment` |
 | `next-devtools` | Next.js 런타임 에러/라우트 진단 | `nextjs_index` → `nextjs_call(get_errors|get_routes)` |
+| `chrome-devtools` | 성능/메모리/네트워크 진단 및 Lighthouse 감사 | `new_page` → `performance_start_trace` → `performance_analyze_insight` / `lighthouse_audit` |
 | `github` | PR/이슈/파일 조회 및 자동화 | `list_pull_requests` 또는 `get_file_contents` |
 | `playwright` | 실제 사용자 플로우 QA | `browser_navigate` → `browser_snapshot` → 상호작용 도구 |
 
 ---
 
-## 현재 설정 백업 (2026-04-18 Updated)
+## 현재 설정 백업 (2026-04-21 Updated)
 
-### .mcp.json 구조 (6개 상시 등록)
+### .mcp.json 구조 (7개 상시 등록)
 
 ```json
 {
@@ -188,7 +250,11 @@ npm run mcp:playwright:mode:stdio
     },
     "playwright": {
       "command": "npx",
-      "args": ["-y", "@playwright/mcp", "--output-dir", ".playwright-mcp/screenshots"]
+      "args": ["-y", "@playwright/mcp", "--output-dir", "tmp/playwright/mcp/screenshots"]
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@latest", "--isolated"]
     },
     "next-devtools": {
       "command": "npx",
@@ -223,13 +289,14 @@ npm run mcp:playwright:mode:stdio
       "mcp__vercel__*",
       "mcp__playwright__*",
       "mcp__next-devtools__*",
+      "mcp__chrome-devtools__*",
       "mcp__github__*"
     ]
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "vercel", "supabase-db", "diagram-converter-mcp",
-    "playwright", "next-devtools", "github"
+    "playwright", "next-devtools", "chrome-devtools", "github"
   ]
 }
 ```
@@ -411,22 +478,19 @@ cat > .claude/settings.local.json << 'EOF'
 {
   "permissions": {
     "allow": [
-      "mcp__context7__*",
+      "mcp__diagram-converter-mcp__*",
       "mcp__supabase-db__*",
       "mcp__vercel__*",
       "mcp__playwright__*",
       "mcp__next-devtools__*",
-      "mcp__github__*",
-      "mcp__sequential-thinking__*",
-      "mcp__stitch__*",
-      "mcp__diagram-converter-mcp__*",
+      "mcp__chrome-devtools__*",
+      "mcp__github__*"
     ]
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
-    "vercel", "supabase-db", "context7",
-    "playwright", "next-devtools", "github", "sequential-thinking",
-    "stitch", "diagram-converter-mcp"
+    "vercel", "supabase-db", "diagram-converter-mcp",
+    "playwright", "next-devtools", "chrome-devtools", "github"
   ]
 }
 EOF
@@ -445,7 +509,7 @@ EOF
 Claude Code 실행 후:
 ```
 You: "MCP 서버 상태 확인해줘"
-Claude: [context7, supabase 등 사용 가능 여부 표시]
+Claude: [playwright, chrome-devtools, supabase-db 등 사용 가능 여부 표시]
 ```
 
 ---
@@ -492,4 +556,4 @@ Claude: [context7, supabase 등 사용 가능 여부 표시]
 
 ---
 
-_Last Updated: 2026-04-17 (lighthouse MCP 제거 반영, diagram-converter-mcp 이름 정정, supabase-db 명칭 통일, storybook 온디맨드 명시)_
+_Last Updated: 2026-04-21 (chrome-devtools MCP 역할/카탈로그/설정 예시 반영, Playwright 분담 기준 갱신)_

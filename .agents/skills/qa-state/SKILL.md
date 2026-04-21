@@ -23,8 +23,9 @@ version: v2.0.0
 1. **환경 결정**: 
    - AI 엔진/API 연동 검증: **Vercel Preview/Production** 권장.
    - UI/레이아웃/단순 로직: **로컬 개발 서버(3004/3005)** 권장.
-2. **시나리오 수행**: Playwright MCP를 사용하여 랜딩 → 로그인 → 대시보드 → 모달(바이브 코딩 포함) 순으로 검증합니다.
-3. **Data Parity 체크**: AI 응답 시 `GET /api/health?service=parity`의 슬롯 인덱스와 AI 도구 호출의 인덱스가 일치하는지 대조합니다.
+2. **시나리오 수행 (기능/E2E)**: Playwright MCP를 사용하여 랜딩 → 로그인 → 대시보드 → 모달(바이브 코딩 포함) 순으로 검증합니다.
+3. **상태 진단 (성능/메모리/네트워크)**: 성능 저하나 에러 발생 시 **Chrome DevTools MCP**를 사용하여 트레이스(Performance), Lighthouse 감사, 네트워크 병목, 메모리 누수 등의 근본 원인을 파악합니다.
+4. **Data Parity 체크**: AI 응답 시 `GET /api/health?service=parity`의 슬롯 인덱스와 AI 도구 호출의 인덱스가 일치하는지 대조합니다.
 
 ### 3단계: 결과 기록 및 보고 (Reporting)
 1. **자동 기록**: QA 완료 후 반드시 `npm run qa:record -- --input <json>`을 호출하여 `reports/qa`에 누적합니다.

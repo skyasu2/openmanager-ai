@@ -4,17 +4,60 @@
 
 | MCP | 용도 | 우선순위 | `.mcp.json` |
 |-----|------|:-------:|:-----------:|
-| `context7` | 라이브러리 공식 문서 | 높음 | ✅ |
-| `sequential-thinking` | 복잡한 리팩토링, 아키텍처 설계 | 높음 | ✅ |
 | `diagram-converter-mcp` | Mermaid 다이어그램 렌더/검증 | 높음 | ✅ |
+| `chrome-devtools` | CDP 성능 트레이스/CWV/메모리/Lighthouse/네트워크 진단 | 높음 | ✅ |
 | `next-devtools` | Next.js 런타임 진단, 에러/라우트/로그 조회 (dev server 필수) | 중간 | ✅ |
-| `stitch` | Google Stitch AI UI 디자인 | 중간 | ✅ |
 | `supabase-db` | PostgreSQL 관리 (로컬 설치, "supabase" 이름 회피) | 중간 | ✅ |
 | `vercel` | 배포 상태 확인 | 중간 | ✅ |
-| `playwright` | E2E 테스트 | 중간 | ✅ |
+| `playwright` | E2E 테스트 (사용자 플로우/인터랙션) | 중간 | ✅ |
 | `github` | 저장소/PR 관리 | 중간 | ✅ |
-| `lighthouse` | Core Web Vitals + Performance/A11y/SEO 감사 | — | ❌ 제거 (`npm run lighthouse:*` CLI로 대체) |
+| `context7` | 라이브러리 공식 문서 | — | ❌ 제거 (활용도 저하) |
+| `sequential-thinking` | 복잡한 추론 분해 | — | ❌ 제거 (활용도 저하) |
+| `stitch` | Google Stitch AI UI 디자인 | — | ❌ 제거 (온디맨드만 사용) |
+| `lighthouse` | Core Web Vitals + Performance/A11y/SEO 감사 | — | ❌ 제거 (`chrome-devtools` lighthouse_audit으로 대체) |
 | `storybook` | 컴포넌트 문서·스토리 자동 생성 (Storybook dev 서버 필수) | 온디맨드 | ❌ 수동 추가 |
+
+### chrome-devtools vs playwright 역할 분담
+
+| 목적 | 선택 MCP | 이유 |
+|------|---------|------|
+| E2E 테스트/사용자 플로우 | `playwright` | 기능 풍부, 안정적 |
+| CWV 성능 측정 (LCP/CLS/FCP) | `chrome-devtools` | CDP 네이티브 `performance_*` |
+| Lighthouse 감사 (A11y/SEO/BP) | `chrome-devtools` | `lighthouse_audit` 내장 |
+| 메모리 누수 분석 | `chrome-devtools` | `take_memory_snapshot` |
+| 네트워크/콘솔 상세 검사 | `chrome-devtools` | reqid 기반 상세 조회 |
+| 인터랙션 (click/fill) | `playwright` 우선 | `chrome-devtools`와 중복이나 playwright 우선 |
+
+### chrome-devtools 베스트 프랙티스 워크플로우
+
+```
+1. navigate_page(url)            # 이동
+2. take_snapshot()               # a11y 트리 조회 (스크린샷보다 10배 효율)
+3. click(uid) / fill(uid)        # uid 기반 인터랙션 (CSS 셀렉터보다 안정적)
+4. wait_for(["텍스트"])           # 상태 전환 감지
+5. take_screenshot()             # 시각 확인이 꼭 필요할 때만
+```
+
+### chrome-devtools headed 모드 (브라우저 창 표시)
+
+**현재 Claude 설정**: `--isolated --headless` (헤드리스)
+**Codex 설정**: `--isolated` (headed, 브라우저 창 표시됨)
+
+headed 모드로 전환하려면 `.mcp.json`에서 `--headless` 제거 후 Claude Code 재시작:
+```json
+"args": ["-y", "chrome-devtools-mcp@latest", "--isolated"]
+```
+
+기존 Chrome 세션(로그인 상태) 재사용하려면 `--browser-url` 사용:
+```json
+"args": ["-y", "chrome-devtools-mcp@latest", "--browser-url", "http://127.0.0.1:9222"]
+```
+```bash
+# 먼저 Chrome을 remote debugging 포트로 실행 (원하는 프로필로 로그인 가능)
+/usr/bin/google-chrome --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-debug-session
+```
+
+WSL2 전제조건 (이미 충족): `DISPLAY=:0` ✅, `/usr/bin/google-chrome` ✅
 
 ## Skills
 

@@ -27,7 +27,8 @@ Final QA operation workflow with cumulative tracking.
 - Treat `production-qa-2026-02-25.md` as a historical baseline/reference, not the only coverage source.
 
 2. Decide target environment.
-- Default: **Vercel + Playwright MCP** (`https://openmanager-ai.vercel.app`)
+- Default: **Vercel + Playwright MCP** (`https://openmanager-ai.vercel.app`) for functional QA and E2E flows.
+- Diagnostics: Use **Chrome DevTools MCP** for performance (LCP, CLS, Core Web Vitals), Lighthouse audits, memory leaks, and deep network inspection.
 - Use local dev server QA only when AI-path validation is unnecessary (UI/copy/layout/basic auth flow).
 - Use Cloud Run endpoint checks when the scope is observability, monitoring, trace propagation, or Langfuse runtime proof.
 

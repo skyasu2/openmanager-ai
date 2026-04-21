@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-04-13
+> Last reviewed: 2026-04-21
 > Canonical: docs/development/dev-tools.md
 > Tags: tooling,nodejs,biome
 
@@ -263,6 +263,9 @@ LOCAL_SMOKE_READY_TIMEOUT_S=90 bash scripts/dev/local-api-smoke.sh
 이 메모는 로컬 dev 서버의 관찰 결과를 기록한 것이며, Vercel production 동작을 대체하지 않습니다.
 
 ### Lighthouse (성능 점수 자동 측정)
+
+- 대화형 단건 진단은 `chrome-devtools MCP`의 `lighthouse_audit`를 우선 사용합니다.
+- 반복 측정/배치 리포트는 아래 CLI 스크립트를 사용합니다.
 
 ```bash
 npm run lighthouse:local   # 로컬 빌드/서버 기동 후 mobile+desktop 점수 자동 측정

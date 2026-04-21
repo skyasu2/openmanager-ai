@@ -4,9 +4,9 @@
 > Owner: documentation
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-04-13
+> Last reviewed: 2026-04-21
 > Canonical: docs/guides/testing/e2e-testing-guide.md
-> Tags: testing,e2e,playwright,playwright-mcp,vercel-qa
+> Tags: testing,e2e,playwright,playwright-mcp,chrome-devtools-mcp,vercel-qa
 
 ---
 
@@ -143,17 +143,17 @@ npx playwright show-trace tmp/playwright/e2e/test-results/**/trace.zip
 
 ## QA 경로 선택 기준
 
-### CLI Playwright vs Playwright MCP
+### CLI Playwright vs Playwright MCP vs Chrome DevTools MCP
 
-| 항목 | CLI Playwright (`npm run test:e2e`) | Playwright MCP (`mcp__playwright__*`) |
-|------|-----------------------------------|------------------------------------|
-| 실행 주체 | 자동화 스크립트 (CI/스케줄) | AI Agent (Claude/Codex, 대화형) |
-| 적합 용도 | 회귀 방지, CI 게이트 | 기능 탐색, 신규 화면 검증, 릴리즈 전 수동 QA |
-| 코드 필요 | `.spec.ts` 파일 작성 필요 | 불필요 (AI가 즉시 실행) |
-| 결과 형식 | JUnit XML, HTML 리포트 | 스크린샷 + 텍스트 스냅샷 |
-| 반복 실행 | 빠름 (병렬 처리) | 느림 (순차, 대화형) |
-| AI 비결정 응답 | 취약 (exact match 금지 원칙) | 강함 (눈으로 확인 또는 flexible assertion) |
-| 접근 대상 | 로컬 dev 서버 또는 Vercel (설정 필요) | 로컬 dev 서버 또는 Vercel URL 직접 |
+| 항목 | CLI Playwright (`npm run test:e2e`) | Playwright MCP (`mcp__playwright__*`) | Chrome DevTools MCP (`mcp__chrome-devtools__*`) |
+|------|-----------------------------------|------------------------------------|-----------------------------------------------|
+| 실행 주체 | 자동화 스크립트 (CI/스케줄) | AI Agent (Claude/Codex, 대화형) | AI Agent (Codex/Claude, 대화형) |
+| 적합 용도 | 회귀 방지, CI 게이트 | 기능 탐색, 신규 화면 검증, 릴리즈 전 수동 QA | 성능/CWV/메모리/네트워크/Lighthouse 진단 |
+| 코드 필요 | `.spec.ts` 파일 작성 필요 | 불필요 (AI가 즉시 실행) | 불필요 (AI가 즉시 실행) |
+| 결과 형식 | JUnit XML, HTML 리포트 | 스크린샷 + 텍스트 스냅샷 | Trace/insight + 네트워크/콘솔/감사 결과 |
+| 반복 실행 | 빠름 (병렬 처리) | 느림 (순차, 대화형) | 중간 (진단 단위 실행) |
+| AI 비결정 응답 | 취약 (exact match 금지 원칙) | 강함 (눈으로 확인 또는 flexible assertion) | 응답 품질보다 브라우저 진단 지표 확인에 강함 |
+| 접근 대상 | 로컬 dev 서버 또는 Vercel (설정 필요) | 로컬 dev 서버 또는 Vercel URL 직접 | 로컬 dev 서버 또는 Vercel URL 직접 |
 
 ### 대상 환경 선택
 
@@ -161,6 +161,8 @@ npx playwright show-trace tmp/playwright/e2e/test-results/**/trace.zip
 |------|----------|
 | UI/레이아웃/일반 흐름 확인 | 로컬 dev 서버 (`http://localhost:3000`) |
 | AI 기능 (Cloud Run 연동) 확인 | Vercel Production (`https://openmanager-ai.vercel.app`) |
+| Lighthouse/CWV/CLS 원인 분석 | Vercel Production + Chrome DevTools MCP |
+| 메모리 누수/네트워크 상세 원인 분석 | 로컬 또는 Vercel + Chrome DevTools MCP |
 | 인증 흐름 검증 | 로컬 dev 서버 (Supabase local 또는 staging) |
 | 릴리즈 전 전체 검증 | Vercel Production |
 | 빠른 회귀 확인 (5분) | 로컬 dev 서버 |
@@ -237,6 +239,30 @@ browser_snapshot: 상태 변화 확인
 - Vercel bypass 헤더 불필요
 - AI 기능 제외 테스트에 적합 (Cloud Run 없이도 UI 확인 가능)
 - Hot reload로 즉각 반영 확인 가능
+
+---
+
+### C. Chrome DevTools MCP 진단 QA (성능/감사 전용)
+
+**언제 쓰는가**
+
+- Playwright로 기능은 정상인데 성능 점수(CLS/LCP)나 Best Practices 점수가 낮을 때
+- 콘솔 에러, 네트워크 실패, 비합성(non-composited) 애니메이션 같은 원인 분석이 필요할 때
+- legacy `lighthouse` MCP 없이 Lighthouse 점수를 대화형으로 확인할 때
+
+**대표 흐름**
+
+1. `new_page`로 대상 URL 진입
+2. `lighthouse_audit` 실행 (desktop/mobile preset 선택)
+3. 필요 시 `performance_start_trace` → 사용자 상호작용 → `performance_stop_trace` → `performance_analyze_insight`
+4. `get_network_request` / `list_console_messages`로 점수 저하 원인 교차 확인
+5. 메모리 이슈 의심 시 `take_memory_snapshot` 실행
+
+**운영 규칙**
+
+- 기능 회귀 판정은 Playwright 기준을 우선한다.
+- Chrome DevTools MCP 결과는 "진단 근거"로 사용한다.
+- 반복/배치 점수 추적은 기존 `npm run lighthouse:*` CLI 스크립트를 유지한다.
 
 ---
 
