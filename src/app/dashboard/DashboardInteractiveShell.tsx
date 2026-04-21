@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
-import { Suspense, useCallback, useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import type { DashboardAlertContext } from '@/components/dashboard/alert-ai-context';
 import { useAIEntryController } from '@/hooks/ai/useAIEntryController';
@@ -22,6 +22,36 @@ import {
   AnimatedAISidebar,
   ContentLoadingSkeleton,
 } from './dashboard-client-helpers';
+
+const DASHBOARD_DEV_EFFECT_GUARD_KEY =
+  '__openmanagerDashboardInteractiveShellDevEffects__';
+
+type DashboardDevEffectKey =
+  | 'dashboard-init-log'
+  | 'dashboard-warmup'
+  | 'dashboard-metrics-preload'
+  | 'dashboard-auto-start';
+
+function consumeDashboardDevEffect(key: DashboardDevEffectKey): boolean {
+  if (process.env.NODE_ENV !== 'development' || typeof window === 'undefined') {
+    return true;
+  }
+
+  const guardStore = ((
+    window as typeof window & {
+      [DASHBOARD_DEV_EFFECT_GUARD_KEY]?: Partial<
+        Record<DashboardDevEffectKey, boolean>
+      >;
+    }
+  )[DASHBOARD_DEV_EFFECT_GUARD_KEY] ??= {});
+
+  if (guardStore[key]) {
+    return false;
+  }
+
+  guardStore[key] = true;
+  return true;
+}
 
 const DashboardHeader = dynamic(
   () => import('@/components/dashboard/DashboardHeader'),
@@ -84,6 +114,10 @@ export default function DashboardInteractiveShell({
   isGuestFullAccess,
 }: DashboardInteractiveShellProps) {
   const router = useRouter();
+  const hasLoggedDashboardInitRef = useRef(false);
+  const hasTriggeredDashboardWarmupRef = useRef(false);
+  const hasPreloadedMetricsRef = useRef(false);
+  const hasAutoStartedSystemRef = useRef(false);
   const [deferDashboardContent, setDeferDashboardContent] = useState(
     process.env.NODE_ENV === 'development'
   );
@@ -173,11 +207,35 @@ export default function DashboardInteractiveShell({
   }, [deferDashboardContent]);
 
   useEffect(() => {
+    if (
+      hasLoggedDashboardInitRef.current ||
+      !consumeDashboardDevEffect('dashboard-init-log')
+    ) {
+      return;
+    }
+    hasLoggedDashboardInitRef.current = true;
     debug.log('🎯 대시보드 초기화 - Supabase hourly_server_states 테이블 사용');
   }, []);
 
   useEffect(() => {
+    if (
+      hasTriggeredDashboardWarmupRef.current ||
+      !consumeDashboardDevEffect('dashboard-warmup')
+    ) {
+      return;
+    }
+    hasTriggeredDashboardWarmupRef.current = true;
     void triggerAIWarmup('dashboard-mount');
+  }, []);
+
+  useEffect(() => {
+    if (
+      hasPreloadedMetricsRef.current ||
+      !consumeDashboardDevEffect('dashboard-metrics-preload')
+    ) {
+      return;
+    }
+    hasPreloadedMetricsRef.current = true;
 
     const loadInitialMetrics = async () => {
       try {
@@ -195,10 +253,16 @@ export default function DashboardInteractiveShell({
   }, []);
 
   useEffect(() => {
-    if (!isSystemStarted) {
-      debug.log('🚀 시스템이 종료된 상태입니다. 자동으로 시작합니다.');
-      startSystem();
+    if (
+      isSystemStarted ||
+      hasAutoStartedSystemRef.current ||
+      !consumeDashboardDevEffect('dashboard-auto-start')
+    ) {
+      return;
     }
+    hasAutoStartedSystemRef.current = true;
+    debug.log('🚀 시스템이 종료된 상태입니다. 자동으로 시작합니다.');
+    startSystem();
   }, [isSystemStarted, startSystem]);
 
   const toggleAgent = useCallback(() => {
