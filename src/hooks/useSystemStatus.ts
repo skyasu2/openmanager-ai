@@ -52,6 +52,10 @@ export interface UseSystemStatusReturn {
   startSystem: () => Promise<void>;
 }
 
+export interface UseSystemStatusOptions {
+  enabled?: boolean;
+}
+
 type SystemStatusSnapshot = {
   status: SystemStatus | null;
   isLoading: boolean;
@@ -94,6 +98,11 @@ const systemStatusStore: SystemStatusStore = {
 
 const getStoreSnapshot = () => systemStatusStore.snapshot;
 const getServerSnapshot = () => initialSystemStatusSnapshot;
+const disabledSystemStatusSnapshot: SystemStatusSnapshot = {
+  status: null,
+  isLoading: false,
+  error: null,
+};
 
 const notifySubscribers = () => {
   for (const callback of systemStatusStore.subscribers) {
@@ -268,19 +277,42 @@ const subscribeToStore = (callback: () => void) => {
   };
 };
 
-export function useSystemStatus(): UseSystemStatusReturn {
+export function useSystemStatus(
+  options: UseSystemStatusOptions = {}
+): UseSystemStatusReturn {
+  const { enabled = true } = options;
+  const subscribe = useCallback(
+    (callback: () => void) => {
+      if (!enabled) {
+        return () => {};
+      }
+      return subscribeToStore(callback);
+    },
+    [enabled]
+  );
+  const getSnapshot = useCallback(
+    () => (enabled ? getStoreSnapshot() : disabledSystemStatusSnapshot),
+    [enabled]
+  );
+  const getServerSnapshotForMode = useCallback(
+    () => (enabled ? getServerSnapshot() : disabledSystemStatusSnapshot),
+    [enabled]
+  );
   const snapshot = useSyncExternalStore(
-    subscribeToStore,
-    getStoreSnapshot,
-    getServerSnapshot
+    subscribe,
+    getSnapshot,
+    getServerSnapshotForMode
   );
 
   const refresh = useCallback(async () => {
+    if (!enabled) return;
     updateSnapshot({ isLoading: true });
     await performFetch({ force: true });
-  }, []);
+  }, [enabled]);
 
   const startSystem = useCallback(async () => {
+    if (!enabled) return;
+
     // Guard against concurrent calls (e.g. double-click)
     if (systemStatusStore.snapshot.isLoading) return;
 
@@ -304,7 +336,7 @@ export function useSystemStatus(): UseSystemStatusReturn {
       updateSnapshot({ error: errorMessage, isLoading: false });
       logger.error('시스템 시작 실패:', err);
     }
-  }, []);
+  }, [enabled]);
 
   return {
     status: snapshot.status,

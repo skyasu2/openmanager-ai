@@ -56,6 +56,28 @@ afterEach(() => {
 });
 
 describe('useSystemStatus', () => {
+  describe('enabled 옵션', () => {
+    it('enabled=false면 초기 fetch를 보내지 않고 idle snapshot을 반환한다', () => {
+      const { result } = renderHook(() => useSystemStatus({ enabled: false }));
+
+      expect(fetchSpy).not.toHaveBeenCalled();
+      expect(result.current.status).toBeNull();
+      expect(result.current.isLoading).toBe(false);
+      expect(result.current.error).toBeNull();
+    });
+
+    it('enabled=false면 refresh/startSystem 호출도 네트워크 요청을 보내지 않는다', async () => {
+      const { result } = renderHook(() => useSystemStatus({ enabled: false }));
+
+      await act(async () => {
+        await result.current.refresh();
+        await result.current.startSystem();
+      });
+
+      expect(fetchSpy).not.toHaveBeenCalled();
+    });
+  });
+
   describe('초기 상태', () => {
     it('초기에는 isLoading=true, status=null을 반환한다', async () => {
       fetchSpy.mockResolvedValueOnce(okResponse(makeStatus()));

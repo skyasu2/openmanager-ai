@@ -121,20 +121,19 @@ a {
 }
 
 @keyframes gradient-diagonal {
-  0% {
-    background-position: 0% 0%;
+  0%,
+  100% {
+    opacity: 1;
   }
   50% {
-    background-position: 100% 100%;
-  }
-  100% {
-    background-position: 0% 0%;
+    opacity: 0.88;
   }
 }
 
 .animate-gradient-diagonal {
-  background-size: 300% 300%;
+  display: inline-block;
   animation: gradient-diagonal 6s ease-in-out infinite;
+  will-change: opacity;
 }
 
 /* Removed unused keyframes: fade-in-delay, spin-slow, progress-bar */
@@ -188,7 +187,8 @@ a {
 /* 접근성: 모션 감소 선호 사용자 */
 @media (prefers-reduced-motion: reduce) {
   .bg-ai-card-gradient,
-  .bg-vibe-card-gradient {
+  .bg-vibe-card-gradient,
+  .animate-gradient-diagonal {
     animation: none;
     will-change: auto;
   }

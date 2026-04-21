@@ -57,6 +57,7 @@ const FeatureCardItem = memo(
       () => getIconAnimationClass(card),
       [card, getIconAnimationClass]
     );
+    const titleId = `feature-card-title-${card.id}`;
 
     return (
       <button
@@ -124,11 +125,13 @@ const FeatureCardItem = memo(
           {/* 모든 카드들의 통일된 컨텐츠 */}
           <div className="relative z-10">
             <h2
+              id={titleId}
               className={`mb-2 text-lg font-semibold leading-snug transition-colors ${cardStyles.title}`}
             >
               {card.title}
             </h2>
             <p
+              aria-hidden="true"
               className={`text-sm leading-relaxed transition-colors ${cardStyles.description}`}
             >
               {card.description}

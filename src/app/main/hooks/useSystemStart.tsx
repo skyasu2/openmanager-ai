@@ -70,7 +70,7 @@ export function useSystemStart(options: UseSystemStartOptions) {
     status: multiUserStatus,
     isLoading: statusLoading,
     startSystem: startMultiUserSystem,
-  } = useSystemStatus();
+  } = useSystemStatus({ enabled: isAuthenticated });
 
   const [systemStartCountdown, setSystemStartCountdown] = useState(0);
   const [isSystemStarting, setIsSystemStarting] = useState(false);

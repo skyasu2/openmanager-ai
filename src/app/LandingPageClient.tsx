@@ -10,72 +10,22 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { MainPageErrorBoundary } from '@/app/main/components';
+import {
+  DashboardSection,
+  GuestRestrictionModal,
+  MainPageErrorBoundary,
+  SystemStartSection,
+} from '@/app/main/components';
 import { useLandingPageState } from '@/app/main/hooks';
 import AuthLoadingUI from '@/components/shared/AuthLoadingUI';
+import { OpenManagerLogo } from '@/components/shared/OpenManagerLogo';
+import UnifiedProfileHeader from '@/components/shared/UnifiedProfileHeader';
 import { APP_VERSION } from '@/config/app-meta';
 import {
   AI_TEXT_GRADIENT_ANIMATED_STYLE,
   PAGE_BACKGROUNDS,
 } from '@/styles/design-constants';
 import { envLabel } from '@/utils/vercel-env-utils';
-
-const HeaderSkeleton = () => (
-  <div className="flex min-h-10 min-w-[13rem] animate-pulse items-center gap-3">
-    <div className="h-10 w-10 rounded-lg bg-white/10" />
-    <div className="space-y-2">
-      <div className="h-4 w-28 rounded bg-white/10" />
-      <div className="h-3 w-20 rounded bg-white/5" />
-    </div>
-  </div>
-);
-
-const HeaderMenuSkeleton = () => (
-  <div className="h-10 w-24 animate-pulse rounded-full bg-white/10" />
-);
-
-const SectionSkeleton = () => (
-  <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8">
-    <div className="mx-auto h-28 max-w-3xl animate-pulse rounded-2xl bg-white/10" />
-  </div>
-);
-
-const OpenManagerLogo = dynamic(
-  () =>
-    import('@/components/shared/OpenManagerLogo').then(
-      (mod) => mod.OpenManagerLogo
-    ),
-  { ssr: false, loading: () => <HeaderSkeleton /> }
-);
-
-const UnifiedProfileHeader = dynamic(
-  () => import('@/components/shared/UnifiedProfileHeader'),
-  { ssr: false, loading: () => <HeaderMenuSkeleton /> }
-);
-
-const DashboardSection = dynamic(
-  () =>
-    import('@/app/main/components/DashboardSection').then(
-      (mod) => mod.DashboardSection
-    ),
-  { ssr: false, loading: () => <SectionSkeleton /> }
-);
-
-const SystemStartSection = dynamic(
-  () =>
-    import('@/app/main/components/SystemStartSection').then(
-      (mod) => mod.SystemStartSection
-    ),
-  { ssr: false, loading: () => <SectionSkeleton /> }
-);
-
-const GuestRestrictionModal = dynamic(
-  () =>
-    import('@/app/main/components/GuestRestrictionModal').then(
-      (mod) => mod.GuestRestrictionModal
-    ),
-  { ssr: false, loading: () => null }
-);
 
 const FeatureCardsGridSkeleton = () => (
   <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-4">
@@ -135,7 +85,7 @@ function Home() {
     >
       <div className="wave-particles" />
 
-      <header className="relative z-50 flex items-center justify-between p-4 sm:p-6">
+      <header className="relative z-50 flex min-h-[72px] items-center justify-between p-4 sm:min-h-[88px] sm:p-6">
         <OpenManagerLogo
           variant="dark"
           href="/"
@@ -168,7 +118,7 @@ function Home() {
           </p>
         </div>
 
-        <div className="mb-12">
+        <div className="mb-12 min-h-[30rem] sm:min-h-[26rem]">
           {shouldShowSystemStart ? (
             <SystemStartSection
               isMounted={isMounted}

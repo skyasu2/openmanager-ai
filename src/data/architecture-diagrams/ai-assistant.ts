@@ -93,7 +93,7 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
         {
           id: 'graphrag',
           label: 'GraphRAG',
-          sublabel: 'LlamaIndex + pgVector',
+          sublabel: 'Custom Graph + pgVector',
           type: 'secondary',
           icon: '🦙',
         },

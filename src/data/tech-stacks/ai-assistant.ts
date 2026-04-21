@@ -90,18 +90,18 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     type: 'commercial',
   },
   {
-    name: 'GraphRAG (LlamaIndex.TS)',
+    name: '커스텀 GraphRAG',
     category: 'ai',
     importance: 'high',
     description:
       '벡터 검색과 관계 기반 탐색을 함께 쓰는 검색 계층. 개념 간 연결을 따라가며 더 정확한 컨텍스트를 제공하도록 구성',
     implementation:
-      'LlamaIndex.TS + Mistral AI로 triplet을 추출하고, Supabase pgVector와 결합해 관계 탐색형 검색 흐름을 구성',
-    version: 'LlamaIndex.TS',
+      '커스텀 triplet 추출 파이프라인 + Mistral AI로 관계 탐색형 검색 흐름을 구성하고, Supabase pgVector와 결합해 컨텍스트 품질을 강화',
+    version: 'In-house',
     status: 'active',
     icon: '🦙',
-    tags: ['LlamaIndex.TS', 'Hybrid Search', 'Knowledge Graph'],
-    type: 'opensource',
+    tags: ['GraphRAG', 'Hybrid Search', 'Knowledge Graph'],
+    type: 'custom',
   },
   // ========== ML Engine ==========
   {

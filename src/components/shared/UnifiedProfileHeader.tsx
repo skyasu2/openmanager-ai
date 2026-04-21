@@ -46,7 +46,9 @@ export default function UnifiedProfileHeader({
     setIsHydrated(true);
   }, []);
 
-  const { status: systemStatus } = useSystemStatus();
+  const { status: systemStatus } = useSystemStatus({
+    enabled: !isAuthResolving && status === 'authenticated',
+  });
   // 🎯 Zustand selector 패턴 사용 - 불필요한 리렌더 방지
   const isSystemStarted = useUnifiedAdminStore(
     (state) => state.isSystemStarted
