@@ -6,6 +6,7 @@
 
 import type { ToolName } from '../../tools-ai-sdk';
 import type { AnalysisMode, SupervisorMode } from './supervisor-types';
+import { getKSTDateTime } from '../../data/precomputed-state';
 import { isTavilyAvailable } from '../../lib/tavily-hybrid-rag';
 import { logger } from '../../lib/logger';
 import {
@@ -37,7 +38,8 @@ function getDeviceGuideline(deviceType?: string): string {
 }
 
 export function createSystemPrompt(deviceType?: string): string {
-  return SYSTEM_PROMPT_BASE + getDeviceGuideline(deviceType);
+  const { date } = getKSTDateTime();
+  return `현재 날짜: ${date} (KST)\n\n` + SYSTEM_PROMPT_BASE + getDeviceGuideline(deviceType);
 }
 
 const SYSTEM_PROMPT_BASE = `당신은 서버 모니터링 AI 어시스턴트입니다.

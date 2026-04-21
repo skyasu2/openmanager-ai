@@ -25,6 +25,7 @@ import {
 } from './orchestrator-types';
 import { resolveRAGSetting, resolveWebSearchSetting } from './orchestrator-web-search';
 import { preFilterQuery, saveAgentFindingsToContext } from './orchestrator-context';
+import { getKSTDateTime } from '../../../data/precomputed-state';
 
 import {
   getOrchestratorModel,
@@ -386,7 +387,7 @@ export async function executeMultiAgent(
         generateObjectWithFallback({
           model,
           schema: routingSchema,
-          system: ORCHESTRATOR_INSTRUCTIONS,
+          system: `현재 날짜: ${getKSTDateTime().date} (KST)\n\n${ORCHESTRATOR_INSTRUCTIONS}`,
           prompt: routingPrompt,
           temperature: 0.1,
           operation: 'orchestrator-routing',
@@ -718,7 +719,7 @@ export async function* executeMultiAgentStream(
         generateObjectWithFallback({
           model,
           schema: routingSchema,
-          system: ORCHESTRATOR_INSTRUCTIONS,
+          system: `현재 날짜: ${getKSTDateTime().date} (KST)\n\n${ORCHESTRATOR_INSTRUCTIONS}`,
           prompt: routingPrompt,
           temperature: 0.1,
           operation: 'orchestrator-routing',

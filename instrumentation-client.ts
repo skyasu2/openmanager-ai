@@ -10,20 +10,18 @@
 
 // dev에서는 Sentry 초기화 건너뜀 (번들에 @sentry/nextjs 포함 방지)
 if (process.env.NODE_ENV === 'production') {
-  void import('@sentry/nextjs').then(
-    ({ default: Sentry, makeFetchTransport }) => {
-      Sentry.init({
-        dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
-        tunnel: '/api/sentry-tunnel',
-        transport: makeFetchTransport,
-        transportOptions: { fetchOptions: { keepalive: true } },
-        integrations: [],
-        tracesSampleRate: 0.05,
-        replaysSessionSampleRate: 0,
-        replaysOnErrorSampleRate: 0,
-        enabled: true,
-        debug: false,
-      });
-    }
-  );
+  void import('@sentry/nextjs').then(({ init, makeFetchTransport }) => {
+    init({
+      dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+      tunnel: '/api/sentry-tunnel',
+      transport: makeFetchTransport,
+      transportOptions: { fetchOptions: { keepalive: true } },
+      integrations: [],
+      tracesSampleRate: 0.05,
+      replaysSessionSampleRate: 0,
+      replaysOnErrorSampleRate: 0,
+      enabled: true,
+      debug: false,
+    });
+  });
 }
