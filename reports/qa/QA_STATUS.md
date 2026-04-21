@@ -1,17 +1,17 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-21 10:36:17 KST
+> Generated at: 2026-04-21 20:33:30 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 322 |
-| Total Runs (Counted) | 265 |
+| Total Recorded Runs | 323 |
+| Total Runs (Counted) | 266 |
 | Non-counted Runs | 57 |
-| Total Checks | 2107 |
-| Passed | 2026 |
+| Total Checks | 2122 |
+| Passed | 2041 |
 | Failed | 74 |
 | Completed Items | 323 |
 | Pending Items | 1 |
@@ -20,30 +20,27 @@
 | Expert Domains Tracked | 8 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 99.69% |
-| Last Counted Run | QA-20260421-0324 (2026-04-21T01:36:15.864Z) |
-| Latest Recorded Run | QA-20260421-0324 (2026-04-21T01:36:15.864Z) |
+| Last Counted Run | QA-20260421-0325 (2026-04-21T11:33:29.560Z) |
+| Latest Recorded Run | QA-20260421-0325 (2026-04-21T11:33:29.560Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260421-0324 (2026-04-21T01:36:15.864Z)
+Latest run: QA-20260421-0325 (2026-04-21T11:33:29.560Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| Test Automation Architect | appropriate | no | - |
-| AI Quality Assurance Specialist | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | vercel usage --format json --non-interactive succeeded after production broad rerun; no unexpected usage spike observed. |
+| vercel | cli | checked | normal | vercel usage --format json --non-interactive succeeded; effective usage observed with billed amount 0.0000 USD and no unexpected spike. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-20T01:36:15.864Z -> 2026-04-21T01:36:15.864Z (24h)
+- Window: 2026-04-20T11:33:29.560Z -> 2026-04-21T11:33:29.560Z (24h)
 - Runs with observations: 1 recorded / 0 counted
 - Samples: 1
 
@@ -53,27 +50,26 @@ Latest run: QA-20260421-0324 (2026-04-21T01:36:15.864Z)
 
 ## Coverage (Latest Run)
 
-- Scope: broad
+- Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: dpl_643GY6xfecoQXhCqzRUnE4TNajmF / SHA 538282c1
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, ai-advanced-surface
-- Covered Surfaces: landing render with version badge on production v8.11.25, /main redirect to / on production v8.11.25, /login render with guest CTA and privacy link, /privacy render with back-link to login, dashboard render with serverId modal auto-focus and 3-tab switch (종합 상황 / 성능 분석 / 로그 & 네트워크), AI fullscreen workspace render on production v8.11.25, off-domain weather query returns disclaimer without stale 2023 date and grounds to current KST date context, core route console cleanliness no longer reproduces production chunk init TypeError, /api/version 200 on production with version 8.11.25 / nextjs 16.1.6 / environment production, /api/health 200 on production with database/cache/ai connected
-- Skipped Surfaces: OAuth login buttons, active alerts/topology modal pack, Reporter generate/detail flow, Analyst advanced forecast and drilldown flow, security blocked-prompt regression pack
+- Deployment: SHA 1c65ef43
+- Coverage Packs: dashboard-core, modal-detail-pack
+- Covered Surfaces: / landing render, landing feature modal (AI 어시스턴트) open/close, system start flow /system-boot -> /dashboard, dashboard active alerts modal open/close, dashboard alert history modal open/close, dashboard topology modal open/close, server detail modal open + tabs (종합 상황/성능 분석/로그 & 네트워크) + close
+- Skipped Surfaces: /login route, /privacy route, AI sidebar chat streaming, reporter/analyst action flows, observability/security pack
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Production app | [Production app](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Deployment dpl_643GY6xfecoQXhCqzRUnE4TNajmF | [Deployment dpl_643GY6xfecoQXhCqzRUnE4TNajmF](https://vercel.com/skyasus-projects/openmanager-ai/643GY6xfecoQXhCqzRUnE4TNajmF) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Production AI workspace broad domain-boundary snapshot on v8.11.25 | `reports/qa/evidence/qa-20260421-v81125-broad-ai-domain-boundary.png` | - |
-| playwright-console | Production broad console summary on v8.11.25 | `reports/qa/evidence/qa-20260421-v81125-broad-console.txt` | - |
+| playwright-screenshot | Dashboard server detail modal logs tab | `reports/qa/evidence/qa-20260421-dashboard-server-modal-log-tab.png` | - |
+| playwright-screenshot | Landing AI assistant feature modal | `reports/qa/evidence/qa-20260421-landing-ai-assistant-modal.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -453,6 +449,7 @@ Latest run: QA-20260421-0324 (2026-04-21T01:36:15.864Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260421-0325 | 2026-04-21T11:33:29.560Z | targeted | no | yes | Vercel Playwright targeted browser QA - landing/dashboard modal coverage | 15 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260421-0324 | 2026-04-21T01:36:15.864Z | broad | no | yes | Production broad QA - AI domain boundary Phase 3 reference refreshed on v8.11.25 | 10 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260421-0323 | 2026-04-21T00:49:41.064Z | broad | no | yes | Production broad QA - AI domain boundary Phase 3 reference refresh blocked by console/date regressions | 15 | 0 | 2 | 0 | 0 | 2 |
 | QA-20260421-0322 | 2026-04-20T23:00:26.579Z | targeted | no | no | Production targeted QA - Vision latency sample refresh on AI Assistant | 7 | 1 | 0 | 0 | 2 | 0 |
@@ -472,4 +469,3 @@ Latest run: QA-20260421-0324 (2026-04-21T01:36:15.864Z)
 | QA-20260419-0308 | 2026-04-19T06:38:28.981Z | targeted | no | no | Vercel Playwright QA - AI analysis basis tabs on production 8.11.23 | 11 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260419-0307 | 2026-04-19T01:24:01.619Z | targeted | no | no | Local targeted QA - Analyst NaN prediction fallback fix | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260419-0306 | 2026-04-19T00:41:30.083Z | broad | no | yes | Vercel broad QA - v8.11.20 frontend + AI assistant full evaluation | 12 | 11 | 0 | 0 | 1 | 0 |
-| QA-20260418-0305 | 2026-04-18T13:41:54.126Z | targeted | no | yes | Vercel targeted QA - AI ranking route live recovery | 4 | 3 | 0 | 0 | 0 | 0 |

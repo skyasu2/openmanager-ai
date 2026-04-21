@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-21T01:36:15.864Z"
+    "updatedAt": "2026-04-21T11:33:29.560Z"
   },
   "sequence": {
-    "nextRunNumber": 325
+    "nextRunNumber": 326
   },
   "summary": {
-    "totalRecordedRuns": 322,
-    "totalRuns": 265,
+    "totalRecordedRuns": 323,
+    "totalRuns": 266,
     "excludedRuns": 57,
-    "totalChecks": 2107,
-    "totalPassed": 2026,
+    "totalChecks": 2122,
+    "totalPassed": 2041,
     "totalFailed": 74,
     "completionRate": 99.69,
     "completedItems": 323,
@@ -21,10 +21,10 @@
     "wontFixItems": 17,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260421-0324",
-    "lastRecordedAt": "2026-04-21T01:36:15.864Z",
-    "latestRecordedRunId": "QA-20260421-0324",
-    "latestRecordedAt": "2026-04-21T01:36:15.864Z"
+    "lastRunId": "QA-20260421-0325",
+    "lastRecordedAt": "2026-04-21T11:33:29.560Z",
+    "latestRecordedRunId": "QA-20260421-0325",
+    "latestRecordedAt": "2026-04-21T11:33:29.560Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -29767,6 +29767,86 @@
       "expertCount": 4,
       "expertNeedsImprovementCount": 0,
       "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260421-0325",
+      "recordedAt": "2026-04-21T11:33:29.560Z",
+      "recordedAtKst": "2026-04-21 20:33:29 KST",
+      "title": "Vercel Playwright targeted browser QA - landing/dashboard modal coverage",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260421-0325.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "1c65ef4351f51e970f11fb0420e6137930c45041"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "dashboard-core",
+        "modal-detail-pack"
+      ],
+      "coveredSurfaces": [
+        "/ landing render",
+        "landing feature modal (AI 어시스턴트) open/close",
+        "system start flow /system-boot -> /dashboard",
+        "dashboard active alerts modal open/close",
+        "dashboard alert history modal open/close",
+        "dashboard topology modal open/close",
+        "server detail modal open + tabs (종합 상황/성능 분석/로그 & 네트워크) + close"
+      ],
+      "skippedSurfaces": [
+        "/login route",
+        "/privacy route",
+        "AI sidebar chat streaming",
+        "reporter/analyst action flows",
+        "observability/security pack"
+      ],
+      "checks": {
+        "total": 15,
+        "passed": 15,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-21T20:32:58+09:00",
+          "summary": "vercel usage --format json --non-interactive succeeded; effective usage observed with billed amount 0.0000 USD and no unexpected spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Dashboard server detail modal logs tab",
+          "path": "reports/qa/evidence/qa-20260421-dashboard-server-modal-log-tab.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Landing AI assistant feature modal",
+          "path": "reports/qa/evidence/qa-20260421-landing-ai-assistant-modal.png"
+        }
+      ],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
