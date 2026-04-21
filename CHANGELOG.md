@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.25](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.24...v8.11.25) (2026-04-21)
+
+
+### Bug Fixes
+
+* **ai-engine:** reduce advisor tail retry latency ([511dea8](https://gitlab.com/skyasu2/openmanager-ai/-/commit/511dea82df8d529f587a24300eb8d4ab1eff629b))
+* **ai-engine:** simplify multi-agent finalAnswer caps ([2ea9754](https://gitlab.com/skyasu2/openmanager-ai/-/commit/2ea9754d1a522503143d9acba48b7f09165718bc))
+* **auth:** harden guest login and wake-up route ([7d02781](https://gitlab.com/skyasu2/openmanager-ai/-/commit/7d02781c1aa152386322016864499b4128db39ce))
+* **dashboard:** fix modal log missing and network status inconsistency ([00b5087](https://gitlab.com/skyasu2/openmanager-ai/-/commit/00b50876a824fc59c8f3682e6fd988c8c59743b5))
+* **dashboard:** group summary actions and hide card IP ([bef17c2](https://gitlab.com/skyasu2/openmanager-ai/-/commit/bef17c2690aa925d90fa2684caaf4af90fe4e742))
+* **security:** add auth to GET /api/system and rate limit public endpoints ([4e7cc7e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/4e7cc7ef9ab365834a71614c835216f08d7deec9))
+* **sentry,ai:** fix Sentry init TypeError and inject current date into system prompt ([2e5687d](https://gitlab.com/skyasu2/openmanager-ai/-/commit/2e5687d65352f93cae6e753f4c51755df44065d7))
+* **ui:** clarify multi-agent mode semantics ([be72506](https://gitlab.com/skyasu2/openmanager-ai/-/commit/be725069054780609d65c129f5dca6ae68fbe951))
+* **ui:** localize ActiveAlertsModal to Korean and soften pause button style ([1de7655](https://gitlab.com/skyasu2/openmanager-ai/-/commit/1de7655a8cd3d56ea89f89f7d1f30489bf1ce091))
+
+
+### Tests
+
+* **qa:** record production vision latency sample ([2dd87f2](https://gitlab.com/skyasu2/openmanager-ai/-/commit/2dd87f2bb1c6e98abd499a1a3578fbdaaab987a3))
+* **qa:** record v8.11.24 production post-deploy probe ([a4a6620](https://gitlab.com/skyasu2/openmanager-ai/-/commit/a4a6620a7a2a7e26d092e233263b8dc3431df20d))
+
 ## [8.11.24](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.23...v8.11.24) (2026-04-20)
 
 
