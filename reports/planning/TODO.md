@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-22 KST (chrome-devtools 개선 계획 archive 완료)
+**Last Updated**: 2026-04-22 KST (line-guard hotspot refactor 계획 추가)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -22,6 +22,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| line-guard hotspot refactor | High | `npm run ci:local:docker`의 `line-guard` fail(800+ lines) 복구 작업. 상세: [line-guard-hotspots-refactor-plan.md](line-guard-hotspots-refactor-plan.md) |
 | root-shell-startup-trace | Medium | `QA-20260420-0318` 기준 pending. release blocker는 아니지만 dev 생산성 이슈로 계속 추적. |
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
 | ~~AI Response Visibility & Rate Limit (Phase 1~5)~~ | — | **완료** — archive 이동. write bucket 재평가 결과 `supervisor 10/min`, `jobs/process 5/min`, `daily 100` 유지 결정 로그는 archived plan에 유지. |
