@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-21 KST (ai-domain-boundary Phase 3 broad reference refresh 완료 반영)
+**Last Updated**: 2026-04-22 KST (chrome-devtools 개선 계획 archive 완료)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| - | - | - | 현재 active task 없음 |
+| (없음) | - | - | 현재 Active Task 없음 |
 
 ---
 
@@ -31,6 +31,16 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-22 #167)
+- [x] chrome-devtools 테스트 기반 개선 계획 마감 및 archive 이동
+  - CLS/a11y/API/UI 개선 항목과 headed trace 검증을 완료하고 plan `Status`를 `Completed`로 전환
+  - desktop/mobile trace 결과를 계획서에 반영: desktop `CLS 0.08`, mobile `CLS 0.07`, console error `0`
+  - 상세 계획/계약: [archive/chrome-devtools-improvements-plan.md](archive/chrome-devtools-improvements-plan.md)
+  - 검증:
+    - `npm run type-check` (85.7s, pass)
+    - `npm run lint` (pass, `qa-tracker.json` maxSize info 1건)
+    - `new_page("https://openmanager-ai.vercel.app")` + `take_screenshot` (`/tmp/openmanager-vercel-headed-check.png`)
 
 ### Completed (2026-04-21 #166)
 - [x] AI Domain Boundary Phase 3 broad reference refresh 완료
