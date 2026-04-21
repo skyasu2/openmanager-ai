@@ -1,0 +1,167 @@
+{
+  "runId": "QA-20260421-0323",
+  "recordedAt": "2026-04-21T00:49:41.064Z",
+  "recordedAtKst": "2026-04-21 09:49:41 KST",
+  "runTitle": "Production broad QA - AI domain boundary Phase 3 reference refresh blocked by console/date regressions",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_3cutqnX7vMtm5qAuxzgnAnVULEmk",
+    "deploymentUrl": "https://openmanager-8eq06k24y-skyasus-projects.vercel.app",
+    "commitSha": "06e47ff88829010d7faeb7c9f44adf62022cb752"
+  },
+  "scope": "broad",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "ai-advanced-surface"
+  ],
+  "coveredSurfaces": [
+    "landing render with version badge on production v8.11.24",
+    "/main redirect to / on production v8.11.24",
+    "/login render with guest PIN entry and privacy link",
+    "/privacy render with back-link to login",
+    "404 route render on production",
+    "guest PIN login and system-start countdown to /dashboard",
+    "dashboard summary render with total 18 / online 16 / warning 1 / risk 1 / offline 0",
+    "server detail modal auto-focus via serverId query and 3-tab switch (종합 상황 / 성능 분석 / 로그 & 네트워크)",
+    "AI fullscreen workspace render on production v8.11.24",
+    "AI response mode toggle visibility (오토 / Thinking)",
+    "supported domain query in Thinking mode returns grounded summary without disclaimer",
+    "general off-domain weather query returns disclaimer and web-backed analysis basis in Auto mode",
+    "entertainment off-domain query returns disclaimer and general-response analysis basis in Auto mode",
+    "/api/version 200 on production with version 8.11.24 / nextjs 16.1.6 / environment production",
+    "/api/health 200 on production with database/cache/ai connected"
+  ],
+  "skippedSurfaces": [
+    "OAuth login buttons",
+    "active alerts/topology modal pack",
+    "AI sidebar open/close on dashboard shell",
+    "Reporter generate/detail flow",
+    "Analyst advanced forecast and drilldown flow",
+    "Cloud Run admin observability endpoints",
+    "security blocked-prompt regression pack"
+  ],
+  "checks": {
+    "total": 15,
+    "passed": 13,
+    "failed": 2
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Core routes, guest session bootstrap, dashboard modal tabs, and AI domain-boundary conversations were validated in one production browser session.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Domain boundary policy itself worked, but the weather query answered a 2026-04-21 production prompt with a stale absolute date (2023-11-02), so off-domain freshness grounding is still unreliable.",
+      "nextAction": "Prevent relative-date prompts like 오늘 from surfacing stale cached dates on off-domain web-backed answers."
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "The previous next/font preload warning regression is gone, but a new repeated production chunk init TypeError now appears across landing/login/privacy/dashboard/ai routes, so console cleanliness is still not broad-reference clean.",
+      "nextAction": "Identify and remove the production _next chunk init error before promoting this run as the new broad reference."
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Deployment dpl_3cutqnX7vMtm5qAuxzgnAnVULEmk remained READY and /api/health + /api/version stayed healthy on production v8.11.24.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-21T09:48:16+09:00",
+      "summary": "vercel usage --format json --non-interactive succeeded; current period effective usage 13.0408 USD, billed 0.0000 USD, no unexpected spike observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Production AI workspace broad domain-boundary snapshot on v8.11.24",
+      "path": "reports/qa/evidence/qa-20260421-v81124-broad-ai-domain-boundary.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Production broad console snapshot on v8.11.24",
+      "path": "reports/qa/evidence/qa-20260421-v81124-broad-console.txt"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "production-console-init-cleanliness",
+      "title": "Clear repeated production chunk init console error across core routes",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Broad reference refresh is blocked because landing/login/privacy/dashboard/ai-assistant all surface TypeError: Cannot read properties of undefined (reading 'init') from the same production chunk.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    },
+    {
+      "id": "off-domain-relative-date-grounding",
+      "title": "Stop stale absolute dates in off-domain relative-date answers",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "The production weather query 서울 오늘 날씨 알려줘 returned disclaimer + web-backed path, but still stated 2023년 11월 2일 on a 2026-04-21 run.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Compared with QA-20260415-0291, landing/login/privacy/dashboard core stayed functionally green and the previous next/font preload warning regression no longer reproduced.",
+    "Guest PIN login worked through the production modal flow with PIN 4231, and system start redirected to /dashboard successfully.",
+    "Dashboard broad core snapshot during the run: total 18, online 16, warning 1, risk 1, offline 0; system resources 46/51/39.",
+    "AI domain boundary policy behaved as intended at the UX level: supported domain query in Thinking mode stayed grounded without disclaimer, while weather and 운세 prompts showed the general-information disclaimer in Auto mode.",
+    "The broad run cannot supersede QA-20260415-0291 as the current production broad reference because console cleanliness regressed with a repeated production chunk init TypeError and the weather answer leaked a stale absolute date."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production app",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Deployment dpl_3cutqnX7vMtm5qAuxzgnAnVULEmk",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/3cutqnX7vMtm5qAuxzgnAnVULEmk"
+    }
+  ]
+}

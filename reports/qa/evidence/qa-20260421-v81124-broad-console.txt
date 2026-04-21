@@ -1,0 +1,4 @@
+Total messages: 1 (Errors: 1, Warnings: 0)
+
+TypeError: Cannot read properties of undefined (reading 'init')
+    at https://openmanager-ai.vercel.app/_next/static/chunks/e3464f930cc0a77e.js:1:3538

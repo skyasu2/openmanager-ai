@@ -1,36 +1,39 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-21 08:00:47 KST
+> Generated at: 2026-04-21 09:49:42 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 320 |
-| Total Runs (Counted) | 263 |
+| Total Recorded Runs | 321 |
+| Total Runs (Counted) | 264 |
 | Non-counted Runs | 57 |
-| Total Checks | 2082 |
-| Passed | 2003 |
-| Failed | 72 |
+| Total Checks | 2097 |
+| Passed | 2016 |
+| Failed | 74 |
 | Completed Items | 321 |
-| Pending Items | 1 |
+| Pending Items | 3 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 17 |
 | Expert Domains Tracked | 8 |
-| Expert Open Gaps | 0 |
-| Completion Rate | 99.69% |
-| Last Counted Run | QA-20260420-0316 (2026-04-20T04:07:14.690Z) |
-| Latest Recorded Run | QA-20260421-0322 (2026-04-20T23:00:26.579Z) |
+| Expert Open Gaps | 2 |
+| Completion Rate | 99.07% |
+| Last Counted Run | QA-20260421-0323 (2026-04-21T00:49:41.064Z) |
+| Latest Recorded Run | QA-20260421-0323 (2026-04-21T00:49:41.064Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260421-0322 (2026-04-20T23:00:26.579Z)
+Latest run: QA-20260421-0323 (2026-04-21T00:49:41.064Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| Test Automation Architect | appropriate | no | - |
+| AI Quality Assurance Specialist | partially-appropriate | yes | Prevent relative-date prompts like 오늘 from surfacing stale cached dates on off-domain web-backed answers. |
+| IT Monitoring & Observability SME | partially-appropriate | yes | Identify and remove the production _next chunk init error before promoting this run as the new broad reference. |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
@@ -40,7 +43,7 @@ Latest run: QA-20260421-0322 (2026-04-20T23:00:26.579Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-19T23:00:26.579Z -> 2026-04-20T23:00:26.579Z (24h)
+- Window: 2026-04-20T00:49:41.064Z -> 2026-04-21T00:49:41.064Z (24h)
 - Runs with observations: 1 recorded / 0 counted
 - Samples: 1
 
@@ -50,13 +53,13 @@ Latest run: QA-20260421-0322 (2026-04-20T23:00:26.579Z)
 
 ## Coverage (Latest Run)
 
-- Scope: targeted
+- Scope: broad
 - Release-Facing: no
-- Counts Toward Summary: no
+- Counts Toward Summary: yes
 - Deployment: dpl_3cutqnX7vMtm5qAuxzgnAnVULEmk / SHA 06e47ff8
-- Coverage Packs: ai-core, ai-advanced-surface
-- Covered Surfaces: production guest login via CSRF-backed guest-login API, production /dashboard/ai-assistant render after guest session bootstrap, AI Assistant starter card visibility for 시각 분석, hidden file input attachment flow with synthetic PNG evidence, Vision response generation on production AI Assistant, AnalysisBasis latency metadata capture from production Vision response
-- Skipped Surfaces: broad core-route sweep, Reporter flow, dashboard serverId autofocus modal verification
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, ai-advanced-surface
+- Covered Surfaces: landing render with version badge on production v8.11.24, /main redirect to / on production v8.11.24, /login render with guest PIN entry and privacy link, /privacy render with back-link to login, 404 route render on production, guest PIN login and system-start countdown to /dashboard, dashboard summary render with total 18 / online 16 / warning 1 / risk 1 / offline 0, server detail modal auto-focus via serverId query and 3-tab switch (종합 상황 / 성능 분석 / 로그 & 네트워크), AI fullscreen workspace render on production v8.11.24, AI response mode toggle visibility (오토 / Thinking), supported domain query in Thinking mode returns grounded summary without disclaimer, general off-domain weather query returns disclaimer and web-backed analysis basis in Auto mode, entertainment off-domain query returns disclaimer and general-response analysis basis in Auto mode, /api/version 200 on production with version 8.11.24 / nextjs 16.1.6 / environment production, /api/health 200 on production with database/cache/ai connected
+- Skipped Surfaces: OAuth login buttons, active alerts/topology modal pack, AI sidebar open/close on dashboard shell, Reporter generate/detail flow, Analyst advanced forecast and drilldown flow, Cloud Run admin observability endpoints, security blocked-prompt regression pack
 
 ## Links (Latest Run)
 
@@ -69,14 +72,20 @@ Latest run: QA-20260421-0322 (2026-04-20T23:00:26.579Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Production AI Assistant Vision response with latency metadata | `reports/qa/evidence/qa-20260421-prod-vision-ai-assistant.png` | - |
+| playwright-screenshot | Production AI workspace broad domain-boundary snapshot on v8.11.24 | `reports/qa/evidence/qa-20260421-v81124-broad-ai-domain-boundary.png` | - |
+| playwright-console | Production broad console snapshot on v8.11.24 | `reports/qa/evidence/qa-20260421-v81124-broad-console.txt` | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260421-0323)
+  next: Prevent relative-date prompts like 오늘 from surfacing stale cached dates on off-domain web-backed answers.
+- observability-monitoring: IT Monitoring & Observability SME (last QA-20260421-0323)
+  next: Identify and remove the production _next chunk init error before promoting this run as the new broad reference.
 
 ## Pending Improvements
 
+- [P1] off-domain-relative-date-grounding: Stop stale absolute dates in off-domain relative-date answers (seen 1회, last QA-20260421-0323)
+- [P1] production-console-init-cleanliness: Clear repeated production chunk init console error across core routes (seen 1회, last QA-20260421-0323)
 - [P1] root-shell-startup-trace: Trace instrumentation/layout/provider compile bottleneck (seen 3회, last QA-20260420-0318)
 
 ## Deferred Improvements
@@ -447,6 +456,7 @@ Latest run: QA-20260421-0322 (2026-04-20T23:00:26.579Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260421-0323 | 2026-04-21T00:49:41.064Z | broad | no | yes | Production broad QA - AI domain boundary Phase 3 reference refresh blocked by console/date regressions | 15 | 0 | 2 | 0 | 0 | 2 |
 | QA-20260421-0322 | 2026-04-20T23:00:26.579Z | targeted | no | no | Production targeted QA - Vision latency sample refresh on AI Assistant | 7 | 1 | 0 | 0 | 2 | 0 |
 | QA-20260420-0321 | 2026-04-20T09:31:14.956Z | targeted | no | no | Production targeted QA - v8.11.24 post-deploy smoke and guest-login probe | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260420-0320 | 2026-04-20T05:49:05.588Z | targeted | no | no | Vercel preview targeted QA - dashboard serverId autofocus after guest login | 6 | 0 | 0 | 0 | 0 | 0 |
@@ -466,4 +476,3 @@ Latest run: QA-20260421-0322 (2026-04-20T23:00:26.579Z)
 | QA-20260419-0306 | 2026-04-19T00:41:30.083Z | broad | no | yes | Vercel broad QA - v8.11.20 frontend + AI assistant full evaluation | 12 | 11 | 0 | 0 | 1 | 0 |
 | QA-20260418-0305 | 2026-04-18T13:41:54.126Z | targeted | no | yes | Vercel targeted QA - AI ranking route live recovery | 4 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260418-0304 | 2026-04-18T12:30:51.893Z | targeted | no | yes | Vercel targeted QA - AI metric ranking hotfix | 5 | 2 | 0 | 0 | 1 | 0 |
-| QA-20260418-0303 | 2026-04-18T08:01:44.685Z | broad | yes | yes | Production broad QA - 8.11.20 AI hardening verification | 22 | 1 | 0 | 0 | 1 | 0 |

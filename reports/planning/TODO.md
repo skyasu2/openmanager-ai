@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-21 KST (multi-agent finalAnswer loop cap 단순화 완료 반영)
+**Last Updated**: 2026-04-21 KST (ai-domain-boundary Phase 3 broad QA 결과 및 plan archive 정리 반영)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| 없음 | — | — | 최근 active plan(`multi-agent-semantics`)까지 완료. 다음 우선순위는 backlog에서 선택 |
+| AI Domain Boundary Phase 3 broad reference refresh | High | In Progress | `QA-20260421-0323`에서 지원/일반 질문 경계와 analysis mode UX는 확인됐지만, production chunk init console error와 off-domain relative-date stale answer 때문에 broad reference 승격이 막힘. plan: `ai-domain-boundary-analysis-mode-plan.md` |
 
 ---
 
@@ -22,14 +22,22 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| root-shell-startup-trace | Medium | `QA-20260420-0318` 기준 pending. release blocker는 아니지만 dev 생산성 이슈로 계속 추적. |
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
-| ~~AI Response Visibility & Rate Limit (Phase 1~5)~~ | — | **완료** — write bucket 재평가 결과 `supervisor 10/min`, `jobs/process 5/min`, `daily 100` 유지 결정. 계획서는 구현/결정 로그로 유지. |
+| ~~AI Response Visibility & Rate Limit (Phase 1~5)~~ | — | **완료** — archive 이동. write bucket 재평가 결과 `supervisor 10/min`, `jobs/process 5/min`, `daily 100` 유지 결정 로그는 archived plan에 유지. |
 | ~~AI Stream Route Contract - residual cleanup~~ | — | **완료** — archive 이동. |
 | ~~OTel 토폴로지 개선~~ | — | **완료** — archive 이동: [archive/otel-topology-improvement-plan.md](archive/otel-topology-improvement-plan.md). |
 
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-21 #165)
+- [x] 완료된 plan root/archive 정리
+  - root `reports/planning/`에 남아 있던 완료 plan 6개를 `archive/`로 이동해 active surface를 `ai-domain-boundary` 1개로 축소
+  - `otel-data-simulation-v2`, `analysis-basis-badge-tab-ux`는 실제 완료 상태에 맞춰 metadata를 보정한 뒤 archive로 이동
+  - 검증:
+    - `npm run docs:budget`
 
 ### Completed (2026-04-21 #164)
 - [x] Multi-agent `finalAnswer` loop cap 단순화

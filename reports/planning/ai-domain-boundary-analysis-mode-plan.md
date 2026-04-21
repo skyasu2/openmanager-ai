@@ -1,14 +1,14 @@
 > Owner: project
-> Status: Draft — Phase 1·2 완료. Phase 3(broad QA reference refresh) 미착수. 착수 전 Contract 섹션 완성 후 Approved로 전환 필요.
+> Status: Approved — Phase 1·2 완료. Phase 3 broad QA(`QA-20260421-0323`)까지 실행했지만, production chunk init console error와 off-domain relative-date stale answer 때문에 broad reference 승격은 아직 보류.
 > Doc type: Plan
 > Last reviewed: 2026-04-17
 > Tags: ai-assistant,domain-boundary,analysis-mode,web-search,general-queries
 
 # AI Domain Boundary & Analysis Mode Plan
 
-- 상태: **Active** — Phase 1 완료, Phase 2(분석 강도 모드) 구현/배포/targeted production QA 완료. Phase 3 broad/reference QA는 `QA-20260417-0299`에서 font preload console warning 회귀를 발견했고, local fix deploy 후 재검증이 남음
+- 상태: **Active** — Phase 1 완료, Phase 2(분석 강도 모드) 구현/배포/targeted production QA 완료. Phase 3 broad/reference QA는 `QA-20260421-0323`까지 실행됐지만, production chunk init console error와 off-domain weather relative-date stale answer 때문에 broad reference 승격이 보류됨
 - 작성일: 2026-04-16
-- TODO.md 연결: Active Tasks > AI Domain Boundary Phase 2 (분석 강도 모드)
+- TODO.md 연결: Active Tasks > AI Domain Boundary Phase 3 broad reference refresh
 - 목표: OpenManager AI를 `서버 운영/모니터링에 특화된 AI 어시스턴트`로 유지하되, 일반 질문도 `best-effort`로 다루는 현실적인 제품 정책과 UX를 정립한다.
 
 ## 1. 배경
@@ -171,6 +171,11 @@
 - `QA-20260417-0299` ⚠️
   - production `v8.11.16` broad/release-facing pass 시도에서 `landing/login/privacy/dashboard/AI/fullscreen/API`는 유지됐지만, `/dashboard` + `/dashboard/ai-assistant` 경로에 `next/font preload unused` warning 4건이 재현되어 broad reference 승격 보류
   - local patch: [layout.tsx](/mnt/d/dev/openmanager-ai/src/app/layout.tsx:16) 에 `Inter`, `Noto_Sans_KR` `preload: false` 추가
+- `QA-20260421-0323` ⚠️
+  - production `v8.11.24` broad rerun에서 font preload warning은 재현되지 않았고, 지원 질문 / off-domain 질문 disclaimer / `오토·Thinking` 모드 토글은 모두 확인됨
+  - 하지만 broad reference 승격을 막는 신규 blocker 2건이 확인됨:
+    - `landing/login/privacy/dashboard/ai-assistant` 전반에 공통으로 나타나는 `TypeError: Cannot read properties of undefined (reading 'init')` console error
+    - `서울 오늘 날씨 알려줘` 질의가 `2026-04-21` 실행에서 `2023년 11월 2일` 같은 stale absolute date를 응답에 포함한 off-domain freshness grounding 오류
 
 ### Phase 3 — 검증 및 문서화
 
@@ -183,8 +188,10 @@
 
 - 메모:
   - Phase 2 자체는 production targeted QA까지 완료
-  - Phase 3 broad/release-facing reference refresh는 `QA-20260417-0299`에서 console cleanliness regression이 확인되어 아직 완료 아님
-  - current blocking item은 root layout font preload fix deploy 후 production broad rerun
+  - Phase 3 broad/reference rerun(`QA-20260421-0323`)까지 완료했지만, broad reference 승격은 아직 완료 아님
+  - current blocking items:
+    - `production-console-init-cleanliness`
+    - `off-domain-relative-date-grounding`
 
 ## 6. 비용 영향 분석
 
@@ -244,14 +251,28 @@
     - 일반 질문에서 `best-effort + disclaimer` 동작 확인
     - `오토 / Thinking` 모드별 응답 경로 차이 확인
 
-## 8. 착수 조건 (SDD Gate — Phase 3)
+## 8. Contract (Phase 3)
 
-> Status를 `Approved`로 전환하려면 아래 항목을 완성한다.
+> Phase 3는 QA/문서 중심 작업이라 선행 `test(spec)` 커밋 없이 진행했다. 아래 계약은 broad rerun 전에 확정했고, 현재는 모두 충족됐다.
 
-- [ ] **변경 대상 파일 목록** 확정 (Phase 3은 주로 QA 기록 + docs 갱신)
-- [ ] **테스트 시나리오** — broad QA pack 체크리스트 (도메인 경계 surface 포함)
-- [ ] `QA-20260417-0300` 이후 console cleanliness 재검증 결과 기록
-- [ ] `test(spec):` 커밋이 필요한 구현 변경이 있으면 선행 후 착수
+- [x] **변경 대상 파일 목록** 확정
+  - `reports/qa/runs/2026/qa-run-QA-20260421-0323.json`
+  - `reports/qa/QA_STATUS.md`
+  - `reports/qa/QA_TRENDS.md`
+  - `reports/qa/latest-qa-trends.json`
+  - `reports/qa/evidence/qa-20260421-v81124-broad-ai-domain-boundary.png`
+  - `reports/qa/evidence/qa-20260421-v81124-broad-console.txt`
+  - `reports/planning/ai-domain-boundary-analysis-mode-plan.md`
+  - `reports/planning/TODO.md`
+- [x] **테스트 시나리오** 확정
+  - core routes: `/`, `/main`, `/login`, `/privacy`, `404`, `/api/health`, `/api/version`
+  - dashboard core: guest PIN login, system-start countdown, dashboard summary, `serverId` modal 3-tab switch
+  - ai/domain boundary: fullscreen AI workspace, `오토 / Thinking`, 지원 질문 1건, 일반 질문 1건, 오락형 질문 1건
+- [x] `QA-20260417-0300` 이후 console cleanliness 재검증 결과 기록
+  - `QA-20260421-0323`에서 font preload warning은 해소 확인
+  - 단, production chunk init error가 새 blocker로 확인됨
+- [x] `test(spec):` 선행 커밋 필요 여부 판단
+  - 없음. 이번 단계는 구현 변경이 아니라 broad QA reference refresh와 상태 문서화 범위
 
 ## 9. 종료 조건
 

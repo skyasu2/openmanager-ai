@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-04-19
 > Tags: otel,simulation,data,scripts
