@@ -1,30 +1,30 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-04-21 10:36:17 KST
+> Generated at: 2026-04-22 14:58:04 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 322 |
-| Counted Runs | 265 |
-| Total Checks | 2107 |
-| Total Passed | 2026 |
+| Recorded Runs | 324 |
+| Counted Runs | 266 |
+| Total Checks | 2122 |
+| Total Passed | 2041 |
 | Total Failed | 74 |
-| Overall Pass Rate | 96.16% |
-| Latest Recorded Run | QA-20260421-0324 |
-| Last Counted Run | QA-20260421-0324 |
+| Overall Pass Rate | 96.18% |
+| Latest Recorded Run | QA-20260422-0326 |
+| Last Counted Run | QA-20260421-0325 |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-20T01:36:15.864Z -> 2026-04-21T01:36:15.864Z (24h)
-- Runs with observations: 1 recorded / 0 counted
-- Samples: 1
+- Window: 2026-04-21T05:58:01.586Z -> 2026-04-22T05:58:01.586Z (24h)
+- Runs with observations: 0 recorded / 0 counted
+- Samples: 0
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Vision Agent | unknown | 1 | 12723ms | 12723ms | - | - | 12723ms | 12723ms | QA-20260421-0322 |
+| - | - | 0 | - | - | - | - | - | - | - |
 
 ## Warnings
 
@@ -34,9 +34,9 @@
 
 | Window | Counted Runs | Checks | Pass Rate | Failed Runs | Failing Run Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| All Counted Runs | 265 | 2107 | 96.16% | 46 | 17.36% | 52 | 19.62% |
-| Last 30 Counted Runs | 30 | 279 | 96.77% | 5 | 16.67% | 6 | 20% |
-| Last 10 Counted Runs | 10 | 99 | 95.96% | 2 | 20% | 2 | 20% |
+| All Counted Runs | 266 | 2122 | 96.18% | 46 | 17.29% | 52 | 19.55% |
+| Last 30 Counted Runs | 30 | 287 | 96.86% | 5 | 16.67% | 6 | 20% |
+| Last 10 Counted Runs | 10 | 110 | 96.36% | 2 | 20% | 2 | 20% |
 
 ## Gate Run Windows
 
@@ -56,7 +56,7 @@
 
 | Scope | Recorded Runs | Counted Runs |
 |---|---:|---:|
-| targeted | 154 | 98 |
+| targeted | 156 | 99 |
 | legacy | 137 | 137 |
 | broad | 24 | 23 |
 | release-gate | 5 | 5 |
@@ -68,7 +68,7 @@
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | P0 | 43 | 7 | 16.28% | 0 | 0 | 0% | 43 | 0 |
 | P1 | 144 | 66 | 45.83% | 1 | 1 | 100% | 139 | 4 |
-| P2 | 137 | 42 | 30.66% | 0 | 0 | 0% | 125 | 12 |
+| P2 | 139 | 42 | 30.22% | 0 | 0 | 0% | 127 | 12 |
 | P3 | 17 | 11 | 64.71% | 0 | 0 | 0% | 16 | 1 |
 
 ## Deployment Regression Correlation
@@ -105,7 +105,7 @@
 | 2026-04-18 | 3 | 31 | 96.77% | 1 | 1 | 33.33% |
 | 2026-04-19 | 2 | 29 | 96.55% | 0 | 0 | 0% |
 | 2026-04-20 | 2 | 10 | 100% | 0 | 0 | 0% |
-| 2026-04-21 | 2 | 25 | 92% | 1 | 1 | 50% |
+| 2026-04-21 | 3 | 40 | 95% | 1 | 1 | 33.33% |
 
 ## Recent Regression Runs
 
@@ -126,7 +126,7 @@
 
 | ID | Priority | Status | Seen | Last Seen Run | Title |
 |---|---|---|---:|---|---|
-| root-shell-startup-trace | P1 | pending | 3 | QA-20260420-0318 | Trace instrumentation/layout/provider compile bottleneck |
+| root-shell-startup-trace | P1 | pending | 4 | QA-20260422-0326 | Trace instrumentation/layout/provider compile bottleneck |
 | feature-dod-tsc-zero-error | P2 | wont-fix | 9 | QA-20260307-0053 | tsc --noEmit 0 에러 |
 | feature-dod-unit-tests | P2 | wont-fix | 9 | QA-20260307-0053 | 단위 테스트 158개 통과 |
 | obs-fp-fn-weekly-report | P1 | wont-fix | 3 | QA-20260227-0013 | 오탐/미탐 주간 리포트 자동 생성 |

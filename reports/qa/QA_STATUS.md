@@ -1,19 +1,19 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-21 20:33:30 KST
+> Generated at: 2026-04-22 14:58:04 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 323 |
+| Total Recorded Runs | 324 |
 | Total Runs (Counted) | 266 |
-| Non-counted Runs | 57 |
+| Non-counted Runs | 58 |
 | Total Checks | 2122 |
 | Passed | 2041 |
 | Failed | 74 |
-| Completed Items | 323 |
+| Completed Items | 325 |
 | Pending Items | 1 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 17 |
@@ -21,12 +21,12 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 99.69% |
 | Last Counted Run | QA-20260421-0325 (2026-04-21T11:33:29.560Z) |
-| Latest Recorded Run | QA-20260421-0325 (2026-04-21T11:33:29.560Z) |
+| Latest Recorded Run | QA-20260422-0326 (2026-04-22T05:58:01.586Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260421-0325 (2026-04-21T11:33:29.560Z)
+Latest run: QA-20260422-0326 (2026-04-22T05:58:01.586Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -36,27 +36,27 @@ Latest run: QA-20260421-0325 (2026-04-21T11:33:29.560Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | vercel usage --format json --non-interactive succeeded; effective usage observed with billed amount 0.0000 USD and no unexpected spike. |
+| - | - | - | - | - |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-20T11:33:29.560Z -> 2026-04-21T11:33:29.560Z (24h)
-- Runs with observations: 1 recorded / 0 counted
-- Samples: 1
+- Window: 2026-04-21T05:58:01.586Z -> 2026-04-22T05:58:01.586Z (24h)
+- Runs with observations: 0 recorded / 0 counted
+- Samples: 0
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Vision Agent | unknown | 1 | 12723ms | 12723ms | - | - | 12723ms | 12723ms | QA-20260421-0322 |
+| - | - | 0 | - | - | - | - | - | - | - |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: no
-- Counts Toward Summary: yes
-- Deployment: SHA 1c65ef43
-- Coverage Packs: dashboard-core, modal-detail-pack
-- Covered Surfaces: / landing render, landing feature modal (AI 어시스턴트) open/close, system start flow /system-boot -> /dashboard, dashboard active alerts modal open/close, dashboard alert history modal open/close, dashboard topology modal open/close, server detail modal open + tabs (종합 상황/성능 분석/로그 & 네트워크) + close
-- Skipped Surfaces: /login route, /privacy route, AI sidebar chat streaming, reporter/analyst action flows, observability/security pack
+- Counts Toward Summary: no
+- Deployment: SHA 196ca397
+- Coverage Packs: dashboard-core
+- Covered Surfaces: /dashboard, next dev turbopack trace, root layout/provider/instrumentation cold compile path
+- Skipped Surfaces: production deployment, playwright browser walkthrough, broad route smoke
 
 ## Links (Latest Run)
 
@@ -68,8 +68,7 @@ Latest run: QA-20260421-0325 (2026-04-21T11:33:29.560Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Dashboard server detail modal logs tab | `reports/qa/evidence/qa-20260421-dashboard-server-modal-log-tab.png` | - |
-| playwright-screenshot | Landing AI assistant feature modal | `reports/qa/evidence/qa-20260421-landing-ai-assistant-modal.png` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -77,7 +76,7 @@ Latest run: QA-20260421-0325 (2026-04-21T11:33:29.560Z)
 
 ## Pending Improvements
 
-- [P1] root-shell-startup-trace: Trace instrumentation/layout/provider compile bottleneck (seen 3회, last QA-20260420-0318)
+- [P1] root-shell-startup-trace: Trace instrumentation/layout/provider compile bottleneck (seen 4회, last QA-20260422-0326)
 
 ## Deferred Improvements
 
@@ -346,7 +345,9 @@ Latest run: QA-20260421-0325 (2026-04-21T11:33:29.560Z)
 - reporter-sidebar-state-retention-chat-switch: Reporter 생성 결과가 sidebar chat 전환 후 유지 (completed 3회, last QA-20260320-0138)
 - reporter-state-loss-on-tab-switch: Reporter 탭 전환 시 생성 결과 상태 유지 (completed 1회, last QA-20260315-0104)
 - reporter-state-retention-chat-switch: Reporter 생성 결과가 chat 전환 후 유지 (completed 1회, last QA-20260318-0126)
+- root-client-provider-prune: Remove unused root AccessibilityProvider wrapper (completed 1회, last QA-20260422-0326)
 - root-client-runtime-split: Non-critical root client runtime modules split behind dynamic wrapper (completed 1회, last QA-20260419-0314)
+- root-dev-instrumentation-noop: Skip dev env import in instrumentation register() (completed 1회, last QA-20260422-0326)
 - root-layout-font-preload-cleanup: Suppress repeated root font preload warnings on dashboard and fullscreen AI routes (completed 1회, last QA-20260417-0300)
 - security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (completed 4회, last QA-20260320-0138)
 - security-audit-logs-live-path-smoke: guest login route writes security_audit_logs on success (completed 1회, last QA-20260411-0271)
@@ -449,6 +450,7 @@ Latest run: QA-20260421-0325 (2026-04-21T11:33:29.560Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260422-0326 | 2026-04-22T05:58:01.586Z | targeted | no | no | Local dev turbopack trace - root provider and instrumentation follow-up | 4 | 2 | 1 | 0 | 0 | 0 |
 | QA-20260421-0325 | 2026-04-21T11:33:29.560Z | targeted | no | yes | Vercel Playwright targeted browser QA - landing/dashboard modal coverage | 15 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260421-0324 | 2026-04-21T01:36:15.864Z | broad | no | yes | Production broad QA - AI domain boundary Phase 3 reference refreshed on v8.11.25 | 10 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260421-0323 | 2026-04-21T00:49:41.064Z | broad | no | yes | Production broad QA - AI domain boundary Phase 3 reference refresh blocked by console/date regressions | 15 | 0 | 2 | 0 | 0 | 2 |
@@ -468,4 +470,3 @@ Latest run: QA-20260421-0325 (2026-04-21T11:33:29.560Z)
 | QA-20260419-0309 | 2026-04-19T06:56:36.060Z | broad | yes | yes | Vercel Production Broad QA - 8.11.23 core routes, dashboard modal pack, and AI parity | 17 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260419-0308 | 2026-04-19T06:38:28.981Z | targeted | no | no | Vercel Playwright QA - AI analysis basis tabs on production 8.11.23 | 11 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260419-0307 | 2026-04-19T01:24:01.619Z | targeted | no | no | Local targeted QA - Analyst NaN prediction fallback fix | 4 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260419-0306 | 2026-04-19T00:41:30.083Z | broad | no | yes | Vercel broad QA - v8.11.20 frontend + AI assistant full evaluation | 12 | 11 | 0 | 0 | 1 | 0 |

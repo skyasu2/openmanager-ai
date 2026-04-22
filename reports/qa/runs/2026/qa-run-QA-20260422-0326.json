@@ -1,0 +1,93 @@
+{
+  "runId": "QA-20260422-0326",
+  "recordedAt": "2026-04-22T05:58:01.586Z",
+  "recordedAtKst": "2026-04-22 14:58:01 KST",
+  "runTitle": "Local dev turbopack trace - root provider and instrumentation follow-up",
+  "owner": "codex",
+  "source": "local-dev-readiness",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://127.0.0.1:45949",
+    "frontend": "Next.js Turbopack dev",
+    "backend": "local",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "196ca397b41fb90b02aeeb6c4ae71e50b4a18523"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["dashboard-core"],
+  "coveredSurfaces": [
+    "/dashboard",
+    "next dev turbopack trace",
+    "root layout/provider/instrumentation cold compile path"
+  ],
+  "skippedSurfaces": [
+    "production deployment",
+    "playwright browser walkthrough",
+    "broad route smoke"
+  ],
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "root-client-provider-prune",
+      "title": "Remove unused root AccessibilityProvider wrapper",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "src/components/providers/ClientProviders.tsx",
+      "note": "ClientProviders now mounts only SupabaseAuthProvider and QueryProvider because AccessibilityProvider had no consumers in src/.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "root-dev-instrumentation-noop",
+      "title": "Skip dev env import in instrumentation register()",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "instrumentation.ts",
+      "note": "Development startup instrumentation now returns before importing src/env so local dev cold boot avoids env parsing on the root path.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "root-shell-startup-trace",
+      "title": "Trace instrumentation/layout/provider compile bottleneck",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": ".next/dev/trace-turbopack",
+      "note": "Clean sibling worktree rerun still finished at 139s total (provider-only rerun 142s, historical baseline 133-134s), so root dev cold compile remains unresolved despite provider/instrumentation trimming.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Root startup follow-up changes passed npm run type-check, npm run lint, and npm run test:quick before trace rerun.",
+    "Clean sibling worktree trace with provider+instrumentation updates finished in 139s total with trace file size about 166.9MB.",
+    "A provider-only rerun in the same isolated setup measured 142s with trace size about 172.2MB, so the added instrumentation noop improved the local rerun slightly but not enough to change the overall bottleneck class.",
+    "next internal trace crashed in this environment with a permission error after opening the trace server, so only wall-clock and trace-size evidence were captured this turn."
+  ],
+  "links": []
+}

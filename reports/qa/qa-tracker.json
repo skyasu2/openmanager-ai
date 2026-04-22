@@ -2,20 +2,20 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-21T11:33:29.560Z"
+    "updatedAt": "2026-04-22T05:58:01.586Z"
   },
   "sequence": {
-    "nextRunNumber": 326
+    "nextRunNumber": 327
   },
   "summary": {
-    "totalRecordedRuns": 323,
+    "totalRecordedRuns": 324,
     "totalRuns": 266,
-    "excludedRuns": 57,
+    "excludedRuns": 58,
     "totalChecks": 2122,
     "totalPassed": 2041,
     "totalFailed": 74,
     "completionRate": 99.69,
-    "completedItems": 323,
+    "completedItems": 325,
     "pendingItems": 1,
     "deferredItems": 0,
     "wontFixItems": 17,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260421-0325",
     "lastRecordedAt": "2026-04-21T11:33:29.560Z",
-    "latestRecordedRunId": "QA-20260421-0325",
-    "latestRecordedAt": "2026-04-21T11:33:29.560Z"
+    "latestRecordedRunId": "QA-20260422-0326",
+    "latestRecordedAt": "2026-04-22T05:58:01.586Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -7630,22 +7630,22 @@
       "status": "pending",
       "firstSeenRunId": "QA-20260419-0314",
       "firstSeenAt": "2026-04-19T14:46:29.143Z",
-      "lastSeenRunId": "QA-20260420-0318",
-      "lastSeenAt": "2026-04-20T05:17:00.396Z",
-      "seenCount": 3,
+      "lastSeenRunId": "QA-20260422-0326",
+      "lastSeenAt": "2026-04-22T05:58:01.586Z",
+      "seenCount": 4,
       "completedCount": 0,
-      "pendingCount": 3,
+      "pendingCount": 4,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
       "lastEvidence": ".next/dev/trace-turbopack",
-      "lastNote": "After the lazy shell and ServerDashboard section split, /dashboard cold trace is still 133s total (http 200), so the main dev bottleneck remains unresolved outside the moved dashboard subtree.",
+      "lastNote": "Clean sibling worktree rerun still finished at 139s total (provider-only rerun 142s, historical baseline 133-134s), so root dev cold compile remains unresolved despite provider/instrumentation trimming.",
       "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-04-20T05:17:00.396Z"
+      "lastStatusChangeAt": "2026-04-22T05:58:01.586Z"
     },
     "dev-runtime-css-split": {
       "id": "dev-runtime-css-split",
@@ -7910,6 +7910,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-21T01:36:15.864Z"
+    },
+    "root-client-provider-prune": {
+      "id": "root-client-provider-prune",
+      "title": "Remove unused root AccessibilityProvider wrapper",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260422-0326",
+      "firstSeenAt": "2026-04-22T05:58:01.586Z",
+      "lastSeenRunId": "QA-20260422-0326",
+      "lastSeenAt": "2026-04-22T05:58:01.586Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "src/components/providers/ClientProviders.tsx",
+      "lastNote": "ClientProviders now mounts only SupabaseAuthProvider and QueryProvider because AccessibilityProvider had no consumers in src/.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-22T05:58:01.586Z"
+    },
+    "root-dev-instrumentation-noop": {
+      "id": "root-dev-instrumentation-noop",
+      "title": "Skip dev env import in instrumentation register()",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260422-0326",
+      "firstSeenAt": "2026-04-22T05:58:01.586Z",
+      "lastSeenRunId": "QA-20260422-0326",
+      "lastSeenAt": "2026-04-22T05:58:01.586Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "instrumentation.ts",
+      "lastNote": "Development startup instrumentation now returns before importing src/env so local dev cold boot avoids env parsing on the root path.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-22T05:58:01.586Z"
     }
   },
   "runs": [
@@ -29848,6 +29896,57 @@
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
       "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260422-0326",
+      "recordedAt": "2026-04-22T05:58:01.586Z",
+      "recordedAtKst": "2026-04-22 14:58:01 KST",
+      "title": "Local dev turbopack trace - root provider and instrumentation follow-up",
+      "owner": "codex",
+      "source": "local-dev-readiness",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260422-0326.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://127.0.0.1:45949",
+        "frontend": "Next.js Turbopack dev",
+        "backend": "local",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "196ca397b41fb90b02aeeb6c4ae71e50b4a18523"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "dashboard-core"
+      ],
+      "coveredSurfaces": [
+        "/dashboard",
+        "next dev turbopack trace",
+        "root layout/provider/instrumentation cold compile path"
+      ],
+      "skippedSurfaces": [
+        "production deployment",
+        "playwright browser walkthrough",
+        "broad route smoke"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0
     }

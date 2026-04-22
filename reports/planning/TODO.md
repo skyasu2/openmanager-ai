@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-22 KST (GitLab CI green 확인, `root-shell-startup-trace` active 승격)
+**Last Updated**: 2026-04-22 KST (`root-shell-startup-trace` rerun recorded, `QA-20260422-0326`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| root-shell-startup-trace | Medium | in-progress | `QA-20260420-0318` 기준 pending이던 root shell/dev compile 병목을 다시 추적 중. 이번 턴에서 root `ClientProviders`에서 실제 consumer가 없는 `AccessibilityProvider` wrapper를 제거했고, `npm run type-check`, `npm run lint`, `npm run test:quick`는 통과했다. 다만 동일 기준 Turbopack trace 재측정은 현재 워크트리의 다른 `next dev` 인스턴스가 `.next/dev/lock`을 점유 중이라 완료하지 못했다. dedicated trace window에서 재측정 필요. |
+| root-shell-startup-trace | Medium | in-progress | 최신 local-dev rerun `QA-20260422-0326` 기준 sibling worktree Turbopack trace가 `139s` / `166.9MB`로 다시 측정됐다. `AccessibilityProvider` 제거만 반영한 rerun은 `142s`였고, provider + dev instrumentation no-op 조합으로 소폭 개선되었지만 기존 `133~134s` 급 병목을 해소하진 못했다. `npm run type-check`, `npm run lint`, `npm run test:quick`는 통과. 다음 단계는 trace viewer 권한 이슈를 피하면서 root layout/provider compile hotspot을 더 세분화하는 것이다. |
 
 ---
 
