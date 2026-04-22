@@ -1,32 +1,32 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-22 14:58:04 KST
+> Generated at: 2026-04-22 18:03:50 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 324 |
+| Total Recorded Runs | 327 |
 | Total Runs (Counted) | 266 |
-| Non-counted Runs | 58 |
+| Non-counted Runs | 61 |
 | Total Checks | 2122 |
 | Passed | 2041 |
 | Failed | 74 |
-| Completed Items | 325 |
-| Pending Items | 1 |
+| Completed Items | 328 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 17 |
 | Expert Domains Tracked | 8 |
 | Expert Open Gaps | 0 |
-| Completion Rate | 99.69% |
+| Completion Rate | 100% |
 | Last Counted Run | QA-20260421-0325 (2026-04-21T11:33:29.560Z) |
-| Latest Recorded Run | QA-20260422-0326 (2026-04-22T05:58:01.586Z) |
+| Latest Recorded Run | QA-20260422-0329 (2026-04-22T09:03:48.553Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260422-0326 (2026-04-22T05:58:01.586Z)
+Latest run: QA-20260422-0329 (2026-04-22T09:03:48.553Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -40,7 +40,7 @@ Latest run: QA-20260422-0326 (2026-04-22T05:58:01.586Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-21T05:58:01.586Z -> 2026-04-22T05:58:01.586Z (24h)
+- Window: 2026-04-21T09:03:48.553Z -> 2026-04-22T09:03:48.553Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 
@@ -53,9 +53,9 @@ Latest run: QA-20260422-0326 (2026-04-22T05:58:01.586Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: SHA 196ca397
+- Deployment: SHA ec98eba4
 - Coverage Packs: dashboard-core
-- Covered Surfaces: /dashboard, next dev turbopack trace, root layout/provider/instrumentation cold compile path
+- Covered Surfaces: /, /dashboard, next dev turbopack trace, tailwind source detection
 - Skipped Surfaces: production deployment, playwright browser walkthrough, broad route smoke
 
 ## Links (Latest Run)
@@ -76,7 +76,7 @@ Latest run: QA-20260422-0326 (2026-04-22T05:58:01.586Z)
 
 ## Pending Improvements
 
-- [P1] root-shell-startup-trace: Trace instrumentation/layout/provider compile bottleneck (seen 4회, last QA-20260422-0326)
+- None
 
 ## Deferred Improvements
 
@@ -345,10 +345,13 @@ Latest run: QA-20260422-0326 (2026-04-22T05:58:01.586Z)
 - reporter-sidebar-state-retention-chat-switch: Reporter 생성 결과가 sidebar chat 전환 후 유지 (completed 3회, last QA-20260320-0138)
 - reporter-state-loss-on-tab-switch: Reporter 탭 전환 시 생성 결과 상태 유지 (completed 1회, last QA-20260315-0104)
 - reporter-state-retention-chat-switch: Reporter 생성 결과가 chat 전환 후 유지 (completed 1회, last QA-20260318-0126)
+- root-auth-session-lazy-imports: Defer auth/session/store heavy imports on the root path (completed 2회, last QA-20260422-0329)
 - root-client-provider-prune: Remove unused root AccessibilityProvider wrapper (completed 1회, last QA-20260422-0326)
 - root-client-runtime-split: Non-critical root client runtime modules split behind dynamic wrapper (completed 1회, last QA-20260419-0314)
 - root-dev-instrumentation-noop: Skip dev env import in instrumentation register() (completed 1회, last QA-20260422-0326)
+- root-global-effects-prune: Trim root global-effects.css and inline unused design-system helpers (completed 1회, last QA-20260422-0327)
 - root-layout-font-preload-cleanup: Suppress repeated root font preload warnings on dashboard and fullscreen AI routes (completed 1회, last QA-20260417-0300)
+- root-shell-startup-trace: Limit Tailwind source scanning to actual app code (completed 1회, last QA-20260422-0329)
 - security-attack-regression-pack: 보안 공격 시나리오 회귀팩 구축 (completed 4회, last QA-20260320-0138)
 - security-audit-logs-live-path-smoke: guest login route writes security_audit_logs on success (completed 1회, last QA-20260411-0271)
 - security-headers-coop: COOP 헤더 추가 (Cross-Origin-Opener-Policy: same-origin-allow-popups) (completed 1회, last QA-20260329-0194)
@@ -450,6 +453,9 @@ Latest run: QA-20260422-0326 (2026-04-22T05:58:01.586Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260422-0329 | 2026-04-22T09:03:48.553Z | targeted | no | no | Local dev turbopack trace - Tailwind source scope fix | 4 | 2 | 0 | 0 | 0 | 0 |
+| QA-20260422-0328 | 2026-04-22T08:08:13.838Z | targeted | no | no | Local dev turbopack trace - auth/session lazy import follow-up | 4 | 1 | 1 | 0 | 0 | 0 |
+| QA-20260422-0327 | 2026-04-22T07:28:23.686Z | targeted | no | no | Local dev turbopack trace - root CSS trim follow-up | 6 | 1 | 1 | 0 | 0 | 0 |
 | QA-20260422-0326 | 2026-04-22T05:58:01.586Z | targeted | no | no | Local dev turbopack trace - root provider and instrumentation follow-up | 4 | 2 | 1 | 0 | 0 | 0 |
 | QA-20260421-0325 | 2026-04-21T11:33:29.560Z | targeted | no | yes | Vercel Playwright targeted browser QA - landing/dashboard modal coverage | 15 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260421-0324 | 2026-04-21T01:36:15.864Z | broad | no | yes | Production broad QA - AI domain boundary Phase 3 reference refreshed on v8.11.25 | 10 | 2 | 0 | 0 | 0 | 0 |
@@ -467,6 +473,3 @@ Latest run: QA-20260422-0326 (2026-04-22T05:58:01.586Z)
 | QA-20260419-0312 | 2026-04-19T09:51:17.294Z | targeted | no | no | Local QA - AI Sidebar visual verification blocked by dev server timeout | 4 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260419-0311 | 2026-04-19T07:35:12.563Z | targeted | no | no | v8.11.23 broad targeted QA — fullscreen/Reporter/Analyst parity | 13 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260419-0310 | 2026-04-19T07:07:40.561Z | targeted | no | no | Vercel production verification QA - 8.11.23 live smoke recheck | 10 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260419-0309 | 2026-04-19T06:56:36.060Z | broad | yes | yes | Vercel Production Broad QA - 8.11.23 core routes, dashboard modal pack, and AI parity | 17 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260419-0308 | 2026-04-19T06:38:28.981Z | targeted | no | no | Vercel Playwright QA - AI analysis basis tabs on production 8.11.23 | 11 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260419-0307 | 2026-04-19T01:24:01.619Z | targeted | no | no | Local targeted QA - Analyst NaN prediction fallback fix | 4 | 1 | 0 | 0 | 0 | 0 |

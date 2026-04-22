@@ -1,0 +1,84 @@
+{
+  "runId": "QA-20260422-0327",
+  "recordedAt": "2026-04-22T07:28:23.686Z",
+  "recordedAtKst": "2026-04-22 16:28:23 KST",
+  "runTitle": "Local dev turbopack trace - root CSS trim follow-up",
+  "owner": "codex",
+  "source": "local-dev-readiness",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://127.0.0.1:44925",
+    "frontend": "Next.js Turbopack dev",
+    "backend": "local",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "ec98eba41"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["dashboard-core"],
+  "coveredSurfaces": [
+    "/api/version",
+    "/",
+    "/dashboard",
+    "next dev turbopack trace",
+    "root css + shared route compile cold path"
+  ],
+  "skippedSurfaces": [
+    "production deployment",
+    "playwright browser walkthrough",
+    "broad route smoke"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "root-global-effects-prune",
+      "title": "Trim root global-effects.css and inline unused design-system helpers",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "src/app/global-effects.css",
+      "note": "global-effects.css was reduced from 646 lines to 185 lines by removing unused design-system utility blocks and dead animation helpers; button/badge/card/input now carry their own Tailwind styling instead of depending on root-only tokens.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "root-shell-startup-trace",
+      "title": "Trace shared route compile bottleneck after root CSS trim",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": ".next/dev/trace-turbopack",
+      "note": "Cold /api/version improved slightly to 78s (~11.5MB trace), and timeout logs showed Next dev reported Ready in 61.8s before route compilation, down from the previous 69.3s signal. Total cold responses for / and /dashboard still completed only at 197s and 196s with large traces (~119.8MB and ~165.5MB), so the remaining bottleneck is now the shared route compile/import graph rather than the removed root CSS block.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This follow-up passed npm run type-check, npm run lint, and npm run test:quick before the new trace rerun.",
+    "Cold local-dev reruns used rm -rf .next before each trace collection to isolate startup and route compile cost.",
+    "The /api/version cold rerun completed in 78s with trace size 11,515,400 bytes.",
+    "The / cold rerun completed in 197s with trace size 119,832,551 bytes.",
+    "The /dashboard cold rerun completed in 196s with trace size 165,532,331 bytes.",
+    "Repeated timeout runs against / showed the server reached Ready in 61.8s and then stalled on route compilation, so the next target should be shared import-graph trimming across landing and dashboard paths."
+  ],
+  "links": []
+}

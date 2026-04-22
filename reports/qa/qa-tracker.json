@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-22T05:58:01.586Z"
+    "updatedAt": "2026-04-22T09:03:48.553Z"
   },
   "sequence": {
-    "nextRunNumber": 327
+    "nextRunNumber": 330
   },
   "summary": {
-    "totalRecordedRuns": 324,
+    "totalRecordedRuns": 327,
     "totalRuns": 266,
-    "excludedRuns": 58,
+    "excludedRuns": 61,
     "totalChecks": 2122,
     "totalPassed": 2041,
     "totalFailed": 74,
-    "completionRate": 99.69,
-    "completedItems": 325,
-    "pendingItems": 1,
+    "completionRate": 100,
+    "completedItems": 328,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 17,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260421-0325",
     "lastRecordedAt": "2026-04-21T11:33:29.560Z",
-    "latestRecordedRunId": "QA-20260422-0326",
-    "latestRecordedAt": "2026-04-22T05:58:01.586Z"
+    "latestRecordedRunId": "QA-20260422-0329",
+    "latestRecordedAt": "2026-04-22T09:03:48.553Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -7625,27 +7625,27 @@
     },
     "root-shell-startup-trace": {
       "id": "root-shell-startup-trace",
-      "title": "Trace instrumentation/layout/provider compile bottleneck",
+      "title": "Limit Tailwind source scanning to actual app code",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260419-0314",
       "firstSeenAt": "2026-04-19T14:46:29.143Z",
-      "lastSeenRunId": "QA-20260422-0326",
-      "lastSeenAt": "2026-04-22T05:58:01.586Z",
-      "seenCount": 4,
-      "completedCount": 0,
-      "pendingCount": 4,
+      "lastSeenRunId": "QA-20260422-0329",
+      "lastSeenAt": "2026-04-22T09:03:48.553Z",
+      "seenCount": 7,
+      "completedCount": 1,
+      "pendingCount": 6,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": ".next/dev/trace-turbopack",
-      "lastNote": "Clean sibling worktree rerun still finished at 139s total (provider-only rerun 142s, historical baseline 133-134s), so root dev cold compile remains unresolved despite provider/instrumentation trimming.",
+      "lastEvidence": "src/app/globals.css",
+      "lastNote": "Changed Tailwind v4 from automatic source detection to source(none) with explicit src code directories only. This removed non-app text assets from CSS scanning and collapsed cold dev route compile from about 196-198s to 17-18s.",
       "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-04-22T05:58:01.586Z"
+      "lastStatusChangeAt": "2026-04-22T09:03:48.553Z"
     },
     "dev-runtime-css-split": {
       "id": "dev-runtime-css-split",
@@ -7958,6 +7958,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-22T05:58:01.586Z"
+    },
+    "root-global-effects-prune": {
+      "id": "root-global-effects-prune",
+      "title": "Trim root global-effects.css and inline unused design-system helpers",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260422-0327",
+      "firstSeenAt": "2026-04-22T07:28:23.686Z",
+      "lastSeenRunId": "QA-20260422-0327",
+      "lastSeenAt": "2026-04-22T07:28:23.686Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "src/app/global-effects.css",
+      "lastNote": "global-effects.css was reduced from 646 lines to 185 lines by removing unused design-system utility blocks and dead animation helpers; button/badge/card/input now carry their own Tailwind styling instead of depending on root-only tokens.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-22T07:28:23.686Z"
+    },
+    "root-auth-session-lazy-imports": {
+      "id": "root-auth-session-lazy-imports",
+      "title": "Defer auth/session/store heavy imports on the root path",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260422-0328",
+      "firstSeenAt": "2026-04-22T08:08:13.838Z",
+      "lastSeenRunId": "QA-20260422-0329",
+      "lastSeenAt": "2026-04-22T09:03:48.553Z",
+      "seenCount": 2,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "src/hooks/useInitialAuth.ts, src/hooks/useAuth.ts, src/hooks/useSupabaseSession.ts, src/stores/useUnifiedAdminStore.ts",
+      "lastNote": "Async boundaries for auth-state-manager, supabase client, and browser notification service improved the startup probe before the Tailwind fix and remain as secondary startup cleanup.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-22T09:03:48.553Z"
     }
   },
   "runs": [
@@ -29947,6 +29995,164 @@
       "expertNeedsImprovementCount": 0,
       "completedCount": 2,
       "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260422-0327",
+      "recordedAt": "2026-04-22T07:28:23.686Z",
+      "recordedAtKst": "2026-04-22 16:28:23 KST",
+      "title": "Local dev turbopack trace - root CSS trim follow-up",
+      "owner": "codex",
+      "source": "local-dev-readiness",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260422-0327.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://127.0.0.1:44925",
+        "frontend": "Next.js Turbopack dev",
+        "backend": "local",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "ec98eba41"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "dashboard-core"
+      ],
+      "coveredSurfaces": [
+        "/api/version",
+        "/",
+        "/dashboard",
+        "next dev turbopack trace",
+        "root css + shared route compile cold path"
+      ],
+      "skippedSurfaces": [
+        "production deployment",
+        "playwright browser walkthrough",
+        "broad route smoke"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260422-0328",
+      "recordedAt": "2026-04-22T08:08:13.838Z",
+      "recordedAtKst": "2026-04-22 17:08:13 KST",
+      "title": "Local dev turbopack trace - auth/session lazy import follow-up",
+      "owner": "codex",
+      "source": "local-dev-readiness",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260422-0328.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://127.0.0.1:45445",
+        "frontend": "Next.js Turbopack dev",
+        "backend": "local",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "ec98eba41"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "dashboard-core"
+      ],
+      "coveredSurfaces": [
+        "/api/version",
+        "/",
+        "/dashboard",
+        "next dev turbopack trace",
+        "auth/session/store lazy import cold path"
+      ],
+      "skippedSurfaces": [
+        "production deployment",
+        "playwright browser walkthrough",
+        "broad route smoke"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260422-0329",
+      "recordedAt": "2026-04-22T09:03:48.553Z",
+      "recordedAtKst": "2026-04-22 18:03:48 KST",
+      "title": "Local dev turbopack trace - Tailwind source scope fix",
+      "owner": "codex",
+      "source": "local-dev-readiness",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260422-0329.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://127.0.0.1:45957",
+        "frontend": "Next.js Turbopack dev",
+        "backend": "local",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "ec98eba41"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "dashboard-core"
+      ],
+      "coveredSurfaces": [
+        "/",
+        "/dashboard",
+        "next dev turbopack trace",
+        "tailwind source detection"
+      ],
+      "skippedSurfaces": [
+        "production deployment",
+        "playwright browser walkthrough",
+        "broad route smoke"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
     }

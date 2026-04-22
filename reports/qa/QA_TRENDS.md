@@ -1,24 +1,24 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-04-22 14:58:04 KST
+> Generated at: 2026-04-22 18:03:51 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 324 |
+| Recorded Runs | 327 |
 | Counted Runs | 266 |
 | Total Checks | 2122 |
 | Total Passed | 2041 |
 | Total Failed | 74 |
 | Overall Pass Rate | 96.18% |
-| Latest Recorded Run | QA-20260422-0326 |
+| Latest Recorded Run | QA-20260422-0329 |
 | Last Counted Run | QA-20260421-0325 |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-21T05:58:01.586Z -> 2026-04-22T05:58:01.586Z (24h)
+- Window: 2026-04-21T09:03:48.553Z -> 2026-04-22T09:03:48.553Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 
@@ -56,7 +56,7 @@
 
 | Scope | Recorded Runs | Counted Runs |
 |---|---:|---:|
-| targeted | 156 | 99 |
+| targeted | 159 | 99 |
 | legacy | 137 | 137 |
 | broad | 24 | 23 |
 | release-gate | 5 | 5 |
@@ -67,8 +67,8 @@
 | Priority | Total Items | Recurring Items | Recurrence Rate | Open Items | Open Recurring | Open Recurrence Rate | Completed | Wont-Fix |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | P0 | 43 | 7 | 16.28% | 0 | 0 | 0% | 43 | 0 |
-| P1 | 144 | 66 | 45.83% | 1 | 1 | 100% | 139 | 4 |
-| P2 | 139 | 42 | 30.22% | 0 | 0 | 0% | 127 | 12 |
+| P1 | 144 | 66 | 45.83% | 0 | 0 | 0% | 140 | 4 |
+| P2 | 141 | 43 | 30.5% | 0 | 0 | 0% | 129 | 12 |
 | P3 | 17 | 11 | 64.71% | 0 | 0 | 0% | 16 | 1 |
 
 ## Deployment Regression Correlation
@@ -126,7 +126,6 @@
 
 | ID | Priority | Status | Seen | Last Seen Run | Title |
 |---|---|---|---:|---|---|
-| root-shell-startup-trace | P1 | pending | 4 | QA-20260422-0326 | Trace instrumentation/layout/provider compile bottleneck |
 | feature-dod-tsc-zero-error | P2 | wont-fix | 9 | QA-20260307-0053 | tsc --noEmit 0 에러 |
 | feature-dod-unit-tests | P2 | wont-fix | 9 | QA-20260307-0053 | 단위 테스트 158개 통과 |
 | obs-fp-fn-weekly-report | P1 | wont-fix | 3 | QA-20260227-0013 | 오탐/미탐 주간 리포트 자동 생성 |

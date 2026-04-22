@@ -1,0 +1,80 @@
+{
+  "runId": "QA-20260422-0329",
+  "recordedAt": "2026-04-22T09:03:48.553Z",
+  "recordedAtKst": "2026-04-22 18:03:48 KST",
+  "runTitle": "Local dev turbopack trace - Tailwind source scope fix",
+  "owner": "codex",
+  "source": "local-dev-readiness",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://127.0.0.1:45957",
+    "frontend": "Next.js Turbopack dev",
+    "backend": "local",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "ec98eba41"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["dashboard-core"],
+  "coveredSurfaces": [
+    "/",
+    "/dashboard",
+    "next dev turbopack trace",
+    "tailwind source detection"
+  ],
+  "skippedSurfaces": [
+    "production deployment",
+    "playwright browser walkthrough",
+    "broad route smoke"
+  ],
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "root-shell-startup-trace",
+      "title": "Limit Tailwind source scanning to actual app code",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "src/app/globals.css",
+      "note": "Changed Tailwind v4 from automatic source detection to source(none) with explicit src code directories only. This removed non-app text assets from CSS scanning and collapsed cold dev route compile from about 196-198s to 17-18s.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "root-auth-session-lazy-imports",
+      "title": "Defer auth/session/store heavy imports on the root path",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "src/hooks/useInitialAuth.ts, src/hooks/useAuth.ts, src/hooks/useSupabaseSession.ts, src/stores/useUnifiedAdminStore.ts",
+      "note": "Async boundaries for auth-state-manager, supabase client, and browser notification service improved the startup probe before the Tailwind fix and remain as secondary startup cleanup.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This completion run passed npm run type-check and npm run lint after the Tailwind source scope change.",
+    "Cold / completed in 18s with trace size 106,834,861 bytes.",
+    "Cold /dashboard completed in 17s with trace size 164,997,221 bytes.",
+    "Compared with QA-20260422-0328, the shared route compile bottleneck is no longer in the same severity class, so root-shell-startup-trace can be closed."
+  ],
+  "links": []
+}

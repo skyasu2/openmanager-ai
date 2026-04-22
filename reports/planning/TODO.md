@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-22 KST (`root-shell-startup-trace` rerun recorded, `QA-20260422-0326`)
+**Last Updated**: 2026-04-22 KST (`root-shell-startup-trace` completed, `QA-20260422-0329`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| root-shell-startup-trace | Medium | in-progress | 최신 local-dev rerun `QA-20260422-0326` 기준 sibling worktree Turbopack trace가 `139s` / `166.9MB`로 다시 측정됐다. `AccessibilityProvider` 제거만 반영한 rerun은 `142s`였고, provider + dev instrumentation no-op 조합으로 소폭 개선되었지만 기존 `133~134s` 급 병목을 해소하진 못했다. `npm run type-check`, `npm run lint`, `npm run test:quick`는 통과. 다음 단계는 trace viewer 권한 이슈를 피하면서 root layout/provider compile hotspot을 더 세분화하는 것이다. |
+| - | - | - | 현재 활성 작업 없음 |
 
 ---
 
@@ -30,6 +30,19 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-22 #170)
+- [x] root-shell-startup-trace 해결
+  - root CSS, auth/session lazy import, 그리고 Tailwind source scope를 단계적으로 좁혀 local dev Turbopack cold compile 병목을 해소
+  - 최종 원인은 `src/app/globals.css`의 Tailwind v4 automatic source detection이었고, `source(none)` + explicit `src` code directories로 전환 후 cold route compile이 `/` `198s -> 18s`, `/dashboard` `196s -> 17s`로 감소
+  - 보조 개선으로 `useInitialAuth`, `useAuth`, `useSupabaseSession`, `useUnifiedAdminStore`에서 auth/session/browser-notification import를 async boundary 뒤로 옮겨 `/api/version` cold startup도 `78s -> 49s`로 감소
+  - 검증:
+    - `npm run type-check`
+    - `npm run lint`
+    - `rm -rf .next && NEXT_DEV_TRACE_CURL_TIMEOUT_S=180 bash scripts/dev/collect-next-dev-trace.sh --path=/ --timeout=240`
+    - `rm -rf .next && NEXT_DEV_TRACE_CURL_TIMEOUT_S=180 bash scripts/dev/collect-next-dev-trace.sh --path=/dashboard --timeout=240`
+    - `npm run qa:record -- --input /tmp/qa-run-input-root-shell-20260422-1738.json`
+    - `npm run qa:status -- --write`
 
 ### Completed (2026-04-22 #169)
 - [x] CI node/dom suite stabilization 완료

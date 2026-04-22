@@ -1,0 +1,83 @@
+{
+  "runId": "QA-20260422-0328",
+  "recordedAt": "2026-04-22T08:08:13.838Z",
+  "recordedAtKst": "2026-04-22 17:08:13 KST",
+  "runTitle": "Local dev turbopack trace - auth/session lazy import follow-up",
+  "owner": "codex",
+  "source": "local-dev-readiness",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://127.0.0.1:45445",
+    "frontend": "Next.js Turbopack dev",
+    "backend": "local",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "ec98eba41"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["dashboard-core"],
+  "coveredSurfaces": [
+    "/api/version",
+    "/",
+    "/dashboard",
+    "next dev turbopack trace",
+    "auth/session/store lazy import cold path"
+  ],
+  "skippedSurfaces": [
+    "production deployment",
+    "playwright browser walkthrough",
+    "broad route smoke"
+  ],
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "root-auth-session-lazy-imports",
+      "title": "Defer auth/session/store heavy imports on the root path",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "src/hooks/useInitialAuth.ts, src/hooks/useAuth.ts, src/hooks/useSupabaseSession.ts, src/stores/useUnifiedAdminStore.ts",
+      "note": "Moved auth-state-manager, supabase client, and browser notification service imports behind async boundaries so the initial dev startup path does not eagerly pull those modules.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "root-shell-startup-trace",
+      "title": "Trace shared route compile bottleneck after auth/session lazy imports",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": ".next/dev/trace-turbopack",
+      "note": "Cold /api/version improved from 78s to 49s while keeping a similar 11.5MB trace, which confirms the root startup path got lighter. Total cold route responses still stayed flat at / 198s (~107.9MB trace) and /dashboard 196s (~166.0MB trace), so the main blocker remains shared route compilation after startup rather than the auth/session/store modules that were deferred.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This follow-up passed npm run type-check after the lazy-import refactor.",
+    "Cold /api/version completed in 49s with trace size 11,494,640 bytes.",
+    "Cold / completed in 198s with trace size 107,940,262 bytes.",
+    "Cold /dashboard completed in 196s with trace size 166,016,313 bytes.",
+    "Compared with QA-20260422-0327, the startup probe improved materially but full route compile did not, so the next target should be route-level shared compile internals rather than more root bootstrap trimming."
+  ],
+  "links": []
+}

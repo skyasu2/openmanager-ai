@@ -1,16 +1,16 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-22T05:58:04.848Z",
-  "generatedAtKst": "2026-04-22 14:58:04 KST",
-  "trackerUpdatedAt": "2026-04-22T05:58:01.586Z",
+  "generatedAt": "2026-04-22T09:03:51.044Z",
+  "generatedAtKst": "2026-04-22 18:03:51 KST",
+  "trackerUpdatedAt": "2026-04-22T09:03:48.553Z",
   "totals": {
-    "recordedRuns": 324,
+    "recordedRuns": 327,
     "countedRuns": 266,
     "totalChecks": 2122,
     "totalPassed": 2041,
     "totalFailed": 74,
     "overallPassRatePct": 96.18,
-    "latestRecordedRunId": "QA-20260422-0326",
+    "latestRecordedRunId": "QA-20260422-0329",
     "lastCountedRunId": "QA-20260421-0325"
   },
   "windows": [
@@ -221,7 +221,7 @@
   "scopeDistribution": [
     {
       "scope": "targeted",
-      "totalRuns": 156,
+      "totalRuns": 159,
       "countedRuns": 99
     },
     {
@@ -261,22 +261,22 @@
       "priority": "P1",
       "totalItems": 144,
       "recurringItems": 66,
-      "openItems": 1,
-      "openRecurringItems": 1,
-      "completedItems": 139,
+      "openItems": 0,
+      "openRecurringItems": 0,
+      "completedItems": 140,
       "wontFixItems": 4,
       "recurrenceRatePct": 45.83,
-      "openRecurrenceRatePct": 100
+      "openRecurrenceRatePct": 0
     },
     {
       "priority": "P2",
-      "totalItems": 139,
-      "recurringItems": 42,
+      "totalItems": 141,
+      "recurringItems": 43,
       "openItems": 0,
       "openRecurringItems": 0,
-      "completedItems": 127,
+      "completedItems": 129,
       "wontFixItems": 12,
-      "recurrenceRatePct": 30.22,
+      "recurrenceRatePct": 30.5,
       "openRecurrenceRatePct": 0
     },
     {
@@ -720,18 +720,7 @@
     }
   ],
   "recurringItems": {
-    "open": [
-      {
-        "id": "root-shell-startup-trace",
-        "title": "Trace instrumentation/layout/provider compile bottleneck",
-        "status": "pending",
-        "priority": "P1",
-        "seenCount": 4,
-        "completedCount": 0,
-        "lastSeenRunId": "QA-20260422-0326",
-        "lastResolvedRunId": null
-      }
-    ],
+    "open": [],
     "wontFix": [
       {
         "id": "feature-dod-tsc-zero-error",
@@ -939,8 +928,8 @@
   },
   "aiLatencyRollup24h": {
     "windowHours": 24,
-    "windowStart": "2026-04-21T05:58:01.586Z",
-    "windowEnd": "2026-04-22T05:58:01.586Z",
+    "windowStart": "2026-04-21T09:03:48.553Z",
+    "windowEnd": "2026-04-22T09:03:48.553Z",
     "recordedRunCount": 0,
     "countedRunCount": 0,
     "sampleCount": 0,
