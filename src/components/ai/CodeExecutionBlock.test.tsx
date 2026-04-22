@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  */
 
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { CodeExecutionBlock } from './CodeExecutionBlock';
 
@@ -50,8 +50,10 @@ describe('CodeExecutionBlock', () => {
       <CodeExecutionBlock code={'print("hello")'} language="python" />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: '복사' }));
-    await vi.runAllTicks();
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: '복사' }));
+      await vi.runAllTicks();
+    });
 
     unmount();
 

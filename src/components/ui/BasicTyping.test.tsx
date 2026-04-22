@@ -3,15 +3,23 @@
  */
 
 import { render } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import BasicTyping from './BasicTyping';
 
 describe('BasicTyping', () => {
   it('빈 문자열이어도 invalid steps(0) 애니메이션을 만들지 않아야 한다', () => {
-    const { container } = render(<BasicTyping text="" showCursor={false} />);
-    const styleTag = container.querySelector('style');
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined);
 
-    expect(styleTag?.textContent).toContain('steps(1, end)');
-    expect(styleTag?.textContent).not.toContain('steps(0, end)');
+    try {
+      const { container } = render(<BasicTyping text="" showCursor={false} />);
+      const styleTag = container.querySelector('style');
+
+      expect(styleTag?.textContent).toContain('steps(1, end)');
+      expect(styleTag?.textContent).not.toContain('steps(0, end)');
+    } finally {
+      consoleErrorSpy.mockRestore();
+    }
   });
 });

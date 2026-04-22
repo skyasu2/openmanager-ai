@@ -15,23 +15,47 @@ vi.mock('next/dynamic', async () => {
 
   return {
     default: (
-      loader: () => Promise<{
-        default: React.ComponentType<Record<string, unknown>>;
-      }>,
+      loader: () =>
+        | Promise<{
+            default?: React.ComponentType<Record<string, unknown>>;
+          }>
+        | Promise<React.ComponentType<Record<string, unknown>>>,
       options?: { loading?: () => React.ReactNode }
     ) => {
-      const LazyComponent = React.lazy(loader);
-
       return function MockDynamicComponent(props: Record<string, unknown>) {
-        return (
-          <React.Suspense
-            fallback={
-              options?.loading?.() ?? <div data-testid="dynamic-component" />
+        const [LoadedComponent, setLoadedComponent] =
+          React.useState<React.ComponentType<Record<string, unknown>> | null>(
+            null
+          );
+
+        React.useEffect(() => {
+          let isMounted = true;
+
+          void loader().then((loadedModuleOrComponent) => {
+            if (!isMounted) {
+              return;
             }
-          >
-            <LazyComponent {...props} />
-          </React.Suspense>
-        );
+
+            const resolvedComponent =
+              typeof loadedModuleOrComponent === 'function'
+                ? loadedModuleOrComponent
+                : (loadedModuleOrComponent.default ?? null);
+
+            setLoadedComponent(() => resolvedComponent);
+          });
+
+          return () => {
+            isMounted = false;
+          };
+        }, []);
+
+        if (!LoadedComponent) {
+          return (
+            options?.loading?.() ?? <div data-testid="dynamic-component" />
+          );
+        }
+
+        return <LoadedComponent {...props} />;
       };
     },
   };
@@ -255,7 +279,7 @@ describe('DashboardContent empty state', () => {
     });
   });
 
-  it('요약 액션 콜백을 각 모달 open 상태로 연결한다', () => {
+  it('요약 액션 콜백을 각 모달 open 상태로 연결한다', async () => {
     render(
       <DashboardContent
         {...createProps({
@@ -269,16 +293,20 @@ describe('DashboardContent empty state', () => {
     );
 
     fireEvent.click(screen.getByRole('button', { name: 'open active alerts' }));
-    expect(screen.queryAllByTestId('dynamic-component')).toHaveLength(1);
+    expect(
+      await screen.findByTestId('active-alerts-modal')
+    ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'open alert history' }));
-    expect(screen.queryAllByTestId('dynamic-component')).toHaveLength(2);
+    expect(
+      await screen.findByTestId('alert-history-modal')
+    ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'open log explorer' }));
-    expect(screen.queryAllByTestId('dynamic-component')).toHaveLength(3);
+    expect(await screen.findByTestId('log-explorer-modal')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'open topology' }));
-    expect(screen.queryAllByTestId('dynamic-component')).toHaveLength(4);
+    expect(await screen.findByTestId('topology-modal')).toBeInTheDocument();
   });
 
   it('서버 카드 AI 요청을 최고 사용률 메트릭으로 변환해 브리지해야 한다', async () => {

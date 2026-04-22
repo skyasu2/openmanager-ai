@@ -27,7 +27,9 @@ describe('StreamingWarmupIndicator', () => {
 
     expect(screen.getByText('2초')).toBeInTheDocument();
 
-    rerender(<StreamingWarmupIndicator estimatedWaitSeconds={10} />);
+    act(() => {
+      rerender(<StreamingWarmupIndicator estimatedWaitSeconds={10} />);
+    });
 
     expect(screen.getByText('0초')).toBeInTheDocument();
 
