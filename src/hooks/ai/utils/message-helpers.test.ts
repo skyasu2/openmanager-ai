@@ -525,6 +525,48 @@ describe('transformMessages', () => {
     ]);
   });
 
+  it('derives failed tool summaries from tool parts when metadata summaries are absent', () => {
+    const messages = transformMessages(
+      [
+        createMessage({ id: 'u1', role: 'user', text: '근본 원인 찾아줘' }),
+        createMessage({
+          id: 'a1',
+          role: 'assistant',
+          text: '분석 중 오류가 발생했습니다.',
+          parts: [
+            {
+              type: 'text',
+              text: '분석 중 오류가 발생했습니다.',
+            },
+            {
+              type: 'tool-findRootCause',
+              toolCallId: 'tool-root-cause-1',
+              state: 'output-error',
+              errorText: 'dependency timeout',
+            },
+          ],
+        }),
+      ],
+      { isLoading: false, currentMode: 'streaming' }
+    );
+
+    const assistant = messages.find((m) => m.id === 'a1');
+
+    expect(assistant?.metadata?.toolResultSummaries).toEqual([
+      {
+        toolName: 'findRootCause',
+        label: '원인 추정',
+        summary: 'dependency timeout',
+        preview: undefined,
+        status: 'failed',
+      },
+    ]);
+    expect(assistant?.thinkingSteps?.[0]?.status).toBe('failed');
+    expect(assistant?.thinkingSteps?.[0]?.description).toContain(
+      'dependency timeout'
+    );
+  });
+
   it('prioritizes metric ranking tools over filterServers in analysis metadata', () => {
     const messages = transformMessages(
       [

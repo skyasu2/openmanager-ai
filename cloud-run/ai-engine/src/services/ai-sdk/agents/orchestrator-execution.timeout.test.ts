@@ -89,16 +89,23 @@ vi.mock('../../../lib/logger', () => ({
   },
 }));
 
-vi.mock('./orchestrator-execution-helpers', () => ({
-  buildFastPathResponse: vi.fn(),
-  executeVisionOrFallback: (...args: unknown[]) =>
-    mockExecuteVisionOrFallback(...args),
-  getLastUserQuery: vi.fn((request: { messages?: Array<{ content?: string }> }) =>
-    request.messages?.at(-1)?.content ?? null
-  ),
-  mapOrchestratorErrorCode: vi.fn(() => 'ORCHESTRATOR_TIMEOUT'),
-  streamFastPathResponse: vi.fn(),
-}));
+vi.mock('./orchestrator-execution-helpers', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('./orchestrator-execution-helpers')>();
+
+  return {
+    ...actual,
+    buildFastPathResponse: vi.fn(),
+    executeVisionOrFallback: (...args: unknown[]) =>
+      mockExecuteVisionOrFallback(...args),
+    getLastUserQuery: vi.fn(
+      (request: { messages?: Array<{ content?: string }> }) =>
+        request.messages?.at(-1)?.content ?? null
+    ),
+    mapOrchestratorErrorCode: vi.fn(() => 'ORCHESTRATOR_TIMEOUT'),
+    streamFastPathResponse: vi.fn(),
+  };
+});
 
 vi.mock('./orchestrator-decomposition', () => ({
   decomposeTask: vi.fn(async () => null),
