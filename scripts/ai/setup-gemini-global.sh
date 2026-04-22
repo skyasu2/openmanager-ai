@@ -35,6 +35,10 @@ with open(settings_path) as f:
     settings = json.load(f)
 
 settings["mcpServers"] = {
+    "diagram-converter-mcp": {
+        "command": "npx",
+        "args": ["-y", "diagram-converter-mcp@latest"]
+    },
     "supabase-db": {
         "command": "node",
         "args": ["/home/sky-note/.mcp-servers/supabase/node_modules/@supabase/mcp-server-supabase/dist/transports/stdio.js"],

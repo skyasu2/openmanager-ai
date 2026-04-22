@@ -4,6 +4,10 @@
     "previewFeatures": true
   },
   "mcpServers": {
+    "diagram-converter-mcp": {
+      "command": "npx",
+      "args": ["-y", "diagram-converter-mcp@latest"]
+    },
     "supabase-db": {
       "command": "node",
       "args": [
