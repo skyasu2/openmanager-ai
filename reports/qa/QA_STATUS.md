@@ -1,17 +1,17 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-23 00:25:26 KST
+> Generated at: 2026-04-23 00:53:27 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 331 |
-| Total Runs (Counted) | 267 |
+| Total Recorded Runs | 332 |
+| Total Runs (Counted) | 268 |
 | Non-counted Runs | 64 |
-| Total Checks | 2137 |
-| Passed | 2055 |
+| Total Checks | 2152 |
+| Passed | 2070 |
 | Failed | 75 |
 | Completed Items | 329 |
 | Pending Items | 0 |
@@ -20,42 +20,45 @@
 | Expert Domains Tracked | 8 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260422-0330 (2026-04-22T14:14:24.057Z) |
-| Latest Recorded Run | QA-20260423-0333 (2026-04-22T15:25:24.516Z) |
+| Last Counted Run | QA-20260423-0334 (2026-04-22T15:53:14.284Z) |
+| Latest Recorded Run | QA-20260423-0334 (2026-04-22T15:53:14.284Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260423-0333 (2026-04-22T15:25:24.516Z)
+Latest run: QA-20260423-0334 (2026-04-22T15:53:14.284Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
+| AI Quality Assurance Specialist | appropriate | no | - |
 | IT Monitoring & Observability SME | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | vercel usage --format json --non-interactive reviewed before broad production QA; effective usage was 14.3807 USD while billed amount remained 0.0000 USD. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-21T15:25:24.516Z -> 2026-04-22T15:25:24.516Z (24h)
-- Runs with observations: 0 recorded / 0 counted
-- Samples: 0
+- Window: 2026-04-21T15:53:14.284Z -> 2026-04-22T15:53:14.284Z (24h)
+- Runs with observations: 1 recorded / 1 counted
+- Samples: 1
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| - | - | 0 | - | - | - | - | - | - | - |
+| AI Chat | streaming-ai | 1 | 2950ms | 2950ms | - | - | 2950ms | 2950ms | QA-20260423-0334 |
 
 ## Coverage (Latest Run)
 
-- Scope: targeted
-- Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: SHA 644af633
-- Covered Surfaces: tracker expert gap sync, worker fallback production recheck propagation
-- Skipped Surfaces: additional browser walkthrough, broad route smoke, AI streaming, observability/security pack
+- Scope: broad
+- Release-Facing: yes
+- Counts Toward Summary: yes
+- Deployment: dpl_HUrc3CAatRmgXyihV3V44t7zuFpS / SHA 644af633
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
+- Covered Surfaces: / landing render + version badge, /main redirect to /, /login render + auth entry points + privacy link, /privacy render + login back-link, 404 route render, /api/health 200 + healthy services, /api/version 200 + version metadata, /system-boot -> /dashboard redirect, dashboard render + resource summary, server detail modal open + 3-tab switch + close, AI sidebar open + starter prompt fill, AI starter prompt send + streaming answer + latency chip, AI streaming fetch resource proof (/api/ai/supervisor/stream/v2), /dashboard/ai-assistant fullscreen workspace retention, fullscreen -> dashboard return path + console cleanliness
+- Skipped Surfaces: observability/security pack, Cloud Run admin /monitoring and /monitoring/traces, /auth/error and /auth/success secondary routes, feedback flow, Reporter/Analyst advanced surfaces, X-AI-* response header capture
 
 ## Links (Latest Run)
 
@@ -67,7 +70,11 @@ Latest run: QA-20260423-0333 (2026-04-22T15:25:24.516Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-screenshot | Broad QA landing page | `reports/qa/evidence/qa-20260423-broad-landing.png` | - |
+| playwright-screenshot | Broad QA dashboard | `reports/qa/evidence/qa-20260423-broad-dashboard.png` | - |
+| playwright-screenshot | Broad QA AI sidebar response | `reports/qa/evidence/qa-20260423-broad-ai-sidebar.png` | - |
+| playwright-screenshot | Broad QA AI workspace | `reports/qa/evidence/qa-20260423-broad-ai-workspace.png` | - |
+| playwright-console | Broad QA console summary | `reports/qa/evidence/qa-20260423-broad-console.log` | - |
 
 ## Expert Domain Open Gaps
 
@@ -453,6 +460,7 @@ Latest run: QA-20260423-0333 (2026-04-22T15:25:24.516Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260423-0334 | 2026-04-22T15:53:14.284Z | broad | yes | yes | Vercel Playwright broad QA - v8.11.26 release baseline refresh | 15 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260423-0333 | 2026-04-22T15:25:24.516Z | targeted | no | no | QA sync - observability gap cleared after worker fallback production recheck | 0 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260423-0332 | 2026-04-22T15:20:28.286Z | targeted | no | no | Vercel targeted QA - AI workspace dashboard return worker fallback resolved | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260422-0331 | 2026-04-22T14:47:29.748Z | targeted | no | no | Local dev browser verification - AI workspace dashboard return worker fallback | 6 | 0 | 0 | 0 | 0 | 0 |
@@ -472,4 +480,3 @@ Latest run: QA-20260423-0333 (2026-04-22T15:25:24.516Z)
 | QA-20260420-0317 | 2026-04-20T04:33:26.822Z | targeted | no | no | Local dev turbopack trace - dashboard cold compile follow-up | 5 | 2 | 1 | 0 | 0 | 0 |
 | QA-20260420-0316 | 2026-04-20T04:07:14.690Z | targeted | no | yes | Local dev dashboard runtime verification after QueryProvider devtools hydration fix | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260420-0315 | 2026-04-20T00:37:53.308Z | targeted | no | yes | Local dev runtime verification after CSS/client-boundary split | 4 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260419-0314 | 2026-04-19T14:46:29.143Z | targeted | no | no | Local dev runtime triage - root app shell compile bottleneck | 5 | 1 | 1 | 0 | 0 | 0 |

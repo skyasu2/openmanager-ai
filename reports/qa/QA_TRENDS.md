@@ -1,30 +1,30 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-04-23 00:25:26 KST
+> Generated at: 2026-04-23 00:53:27 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 331 |
-| Counted Runs | 267 |
-| Total Checks | 2137 |
-| Total Passed | 2055 |
+| Recorded Runs | 332 |
+| Counted Runs | 268 |
+| Total Checks | 2152 |
+| Total Passed | 2070 |
 | Total Failed | 75 |
-| Overall Pass Rate | 96.16% |
-| Latest Recorded Run | QA-20260423-0333 |
-| Last Counted Run | QA-20260422-0330 |
+| Overall Pass Rate | 96.19% |
+| Latest Recorded Run | QA-20260423-0334 |
+| Last Counted Run | QA-20260423-0334 |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-21T15:25:24.516Z -> 2026-04-22T15:25:24.516Z (24h)
-- Runs with observations: 0 recorded / 0 counted
-- Samples: 0
+- Window: 2026-04-21T15:53:14.284Z -> 2026-04-22T15:53:14.284Z (24h)
+- Runs with observations: 1 recorded / 1 counted
+- Samples: 1
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| - | - | 0 | - | - | - | - | - | - | - |
+| AI Chat | streaming-ai | 1 | 2950ms | 2950ms | - | - | 2950ms | 2950ms | QA-20260423-0334 |
 
 ## Warnings
 
@@ -34,16 +34,16 @@
 
 | Window | Counted Runs | Checks | Pass Rate | Failed Runs | Failing Run Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| All Counted Runs | 267 | 2137 | 96.16% | 47 | 17.6% | 53 | 19.85% |
-| Last 30 Counted Runs | 30 | 288 | 96.53% | 6 | 20% | 7 | 23.33% |
-| Last 10 Counted Runs | 10 | 103 | 95.15% | 3 | 30% | 3 | 30% |
+| All Counted Runs | 268 | 2152 | 96.19% | 47 | 17.54% | 53 | 19.78% |
+| Last 30 Counted Runs | 30 | 296 | 96.62% | 6 | 20% | 7 | 23.33% |
+| Last 10 Counted Runs | 10 | 113 | 96.46% | 2 | 20% | 2 | 20% |
 
 ## Gate Run Windows
 
 | Window | Counted Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|
-| All Gate Runs | 29 | 412 | 96.84% | 7 | 24.14% |
-| Last 5 Gate Runs | 5 | 69 | 94.2% | 2 | 40% |
+| All Gate Runs | 30 | 427 | 96.96% | 7 | 23.33% |
+| Last 5 Gate Runs | 5 | 72 | 95.83% | 2 | 40% |
 
 ## Release-Gate Only Windows
 
@@ -58,7 +58,7 @@
 |---|---:|---:|
 | targeted | 162 | 99 |
 | legacy | 137 | 137 |
-| broad | 25 | 24 |
+| broad | 26 | 25 |
 | release-gate | 5 | 5 |
 | smoke | 2 | 2 |
 
@@ -75,6 +75,7 @@
 
 | Deployment ID | Target | Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate | Latest Run | Commit |
 |---|---|---:|---:|---:|---:|---:|---|---|
+| dpl_HUrc3CAatRmgXyihV3V44t7zuFpS | vercel-production | 1 | 15 | 100% | 0 | 0% | QA-20260423-0334 | 644af633 |
 | dpl_643GY6xfecoQXhCqzRUnE4TNajmF | vercel-production | 2 | 25 | 96% | 1 | 50% | QA-20260422-0330 | 538282c1 |
 | dpl_3cutqnX7vMtm5qAuxzgnAnVULEmk | vercel-production | 1 | 15 | 86.67% | 1 | 100% | QA-20260421-0323 | 06e47ff8 |
 | dpl_JAFCywvdMLnVLVRLW6x3KaLuRi8u | vercel-production | 1 | 17 | 100% | 0 | 0% | QA-20260419-0309 | 74bb7960 |
@@ -86,13 +87,11 @@
 | dpl_sRuuaBX32ZL4rGggN552bJqcL2th | vercel-production | 1 | 18 | 100% | 0 | 0% | QA-20260417-0300 | 2adcefb0 |
 | dpl_8RCgJKU4HmRuGrJUaDBUgEQYFhom | vercel-production | 2 | 28 | 96.43% | 1 | 50% | QA-20260417-0299 | b1469ce4 |
 | dpl_BetVxqXL1qtLy673944mUkUfSqMz | vercel-production | 1 | 8 | 100% | 0 | 0% | QA-20260416-0296 | e1f97f94 |
-| dpl_3QFeewNZNo8PSs13n1cx5PL6kZN6 | vercel-production | 1 | 7 | 100% | 0 | 0% | QA-20260416-0294 | 49032c37 |
 
 ## Recent Daily Trend (KST)
 
 | Date | Runs | Checks | Pass Rate | Failed Runs | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-04-06 | 2 | 22 | 100% | 0 | 0 | 0% |
 | 2026-04-07 | 1 | 18 | 88.89% | 1 | 1 | 100% |
 | 2026-04-08 | 4 | 26 | 100% | 0 | 0 | 0% |
 | 2026-04-09 | 3 | 24 | 100% | 0 | 0 | 0% |
@@ -106,6 +105,7 @@
 | 2026-04-20 | 2 | 10 | 100% | 0 | 0 | 0% |
 | 2026-04-21 | 3 | 40 | 95% | 1 | 1 | 33.33% |
 | 2026-04-22 | 1 | 15 | 93.33% | 1 | 1 | 100% |
+| 2026-04-23 | 1 | 15 | 100% | 0 | 0 | 0% |
 
 ## Recent Regression Runs
 

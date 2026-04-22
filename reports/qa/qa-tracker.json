@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-22T15:25:24.516Z"
+    "updatedAt": "2026-04-22T15:53:14.284Z"
   },
   "sequence": {
-    "nextRunNumber": 334
+    "nextRunNumber": 335
   },
   "summary": {
-    "totalRecordedRuns": 331,
-    "totalRuns": 267,
+    "totalRecordedRuns": 332,
+    "totalRuns": 268,
     "excludedRuns": 64,
-    "totalChecks": 2137,
-    "totalPassed": 2055,
+    "totalChecks": 2152,
+    "totalPassed": 2070,
     "totalFailed": 75,
     "completionRate": 100,
     "completedItems": 329,
@@ -21,10 +21,10 @@
     "wontFixItems": 17,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260422-0330",
-    "lastRecordedAt": "2026-04-22T14:14:24.057Z",
-    "latestRecordedRunId": "QA-20260423-0333",
-    "latestRecordedAt": "2026-04-22T15:25:24.516Z"
+    "lastRunId": "QA-20260423-0334",
+    "lastRecordedAt": "2026-04-22T15:53:14.284Z",
+    "latestRecordedRunId": "QA-20260423-0334",
+    "latestRecordedAt": "2026-04-22T15:53:14.284Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -30471,6 +30471,147 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260423-0334",
+      "recordedAt": "2026-04-22T15:53:14.284Z",
+      "recordedAtKst": "2026-04-23 00:53:14 KST",
+      "title": "Vercel Playwright broad QA - v8.11.26 release baseline refresh",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260423-0334.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_HUrc3CAatRmgXyihV3V44t7zuFpS",
+        "deploymentUrl": "https://openmanager-pamkpiphh-skyasus-projects.vercel.app",
+        "commitSha": "644af633956b673bef4aad27b9962dc97cab1ad6"
+      },
+      "scope": "broad",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "/ landing render + version badge",
+        "/main redirect to /",
+        "/login render + auth entry points + privacy link",
+        "/privacy render + login back-link",
+        "404 route render",
+        "/api/health 200 + healthy services",
+        "/api/version 200 + version metadata",
+        "/system-boot -> /dashboard redirect",
+        "dashboard render + resource summary",
+        "server detail modal open + 3-tab switch + close",
+        "AI sidebar open + starter prompt fill",
+        "AI starter prompt send + streaming answer + latency chip",
+        "AI streaming fetch resource proof (/api/ai/supervisor/stream/v2)",
+        "/dashboard/ai-assistant fullscreen workspace retention",
+        "fullscreen -> dashboard return path + console cleanliness"
+      ],
+      "skippedSurfaces": [
+        "observability/security pack",
+        "Cloud Run admin /monitoring and /monitoring/traces",
+        "/auth/error and /auth/success secondary routes",
+        "feedback flow",
+        "Reporter/Analyst advanced surfaces",
+        "X-AI-* response header capture"
+      ],
+      "checks": {
+        "total": 15,
+        "passed": 15,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI sidebar summary",
+          "agent": "AI Chat",
+          "provider": "streaming-ai",
+          "model": "production-visible latency chip",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "sidebar latency chip + browser performance resource entry",
+          "latencyMs": 2950,
+          "processingTimeMs": 2950
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "AI sidebar와 fullscreen workspace에서 실제 production 응답을 재검증했고 이전 worker fallback regression도 재현되지 않았습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "핵심 dashboard 및 AI workspace 복귀 경로에서 console error 0을 확인했고 streaming fetch resource도 browser performance entry로 확인했습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP로 core routes, dashboard modal tabs, AI sidebar, fullscreen retention을 실제 브라우저에서 broad coverage로 기록했습니다.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-23T00:52:17+09:00",
+          "summary": "vercel usage --format json --non-interactive reviewed before broad production QA; effective usage was 14.3807 USD while billed amount remained 0.0000 USD.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Broad QA landing page",
+          "path": "reports/qa/evidence/qa-20260423-broad-landing.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Broad QA dashboard",
+          "path": "reports/qa/evidence/qa-20260423-broad-dashboard.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Broad QA AI sidebar response",
+          "path": "reports/qa/evidence/qa-20260423-broad-ai-sidebar.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Broad QA AI workspace",
+          "path": "reports/qa/evidence/qa-20260423-broad-ai-workspace.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Broad QA console summary",
+          "path": "reports/qa/evidence/qa-20260423-broad-console.log"
+        }
+      ],
+      "links": [],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -30479,16 +30620,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 146,
-      "appropriateCount": 136,
+      "seenCount": 147,
+      "appropriateCount": 137,
       "partialCount": 10,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260422-0330",
-      "lastSeenAt": "2026-04-22T14:14:24.057Z",
+      "lastRunId": "QA-20260423-0334",
+      "lastSeenAt": "2026-04-22T15:53:14.284Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "대표 AI surface(sidebar/fullscreen)와 실제 응답 경로를 production에서 재검증했습니다.",
+      "lastRationale": "AI sidebar와 fullscreen workspace에서 실제 production 응답을 재검증했고 이전 worker fallback regression도 재현되지 않았습니다.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -30496,16 +30637,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 88,
-      "appropriateCount": 60,
+      "seenCount": 89,
+      "appropriateCount": 61,
       "partialCount": 28,
       "inappropriateCount": 0,
       "improvementNeededCount": 29,
-      "lastRunId": "QA-20260423-0333",
-      "lastSeenAt": "2026-04-22T15:25:24.516Z",
+      "lastRunId": "QA-20260423-0334",
+      "lastSeenAt": "2026-04-22T15:53:14.284Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The previously open AI workspace -> dashboard worker fallback console regression was rechecked on production v8.11.26 and no longer reproduces.",
+      "lastRationale": "핵심 dashboard 및 AI workspace 복귀 경로에서 console error 0을 확인했고 streaming fetch resource도 browser performance entry로 확인했습니다.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -30547,16 +30688,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 119,
-      "appropriateCount": 112,
+      "seenCount": 120,
+      "appropriateCount": 113,
       "partialCount": 7,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260422-0330",
-      "lastSeenAt": "2026-04-22T14:14:24.057Z",
+      "lastRunId": "QA-20260423-0334",
+      "lastSeenAt": "2026-04-22T15:53:14.284Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP로 broad route, modal, AI workspace 흐름을 실제 브라우저에서 검증했습니다.",
+      "lastRationale": "Playwright MCP로 core routes, dashboard modal tabs, AI sidebar, fullscreen retention을 실제 브라우저에서 broad coverage로 기록했습니다.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

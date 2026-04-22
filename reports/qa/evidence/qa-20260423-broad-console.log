@@ -1,0 +1,16 @@
+QA-20260423-0334 production broad console summary
+
+landing /
+- console messages: 0 errors, 0 warnings
+
+404 /does-not-exist
+- expected browser console entry observed: failed resource load for synthetic missing route
+- treated as non-blocking route-miss noise, not app runtime regression
+
+/dashboard/ai-assistant -> /dashboard return
+- console messages after return: 0 errors, 0 warnings
+- previous worker fallback error did not reproduce on v8.11.26
+
+AI streaming surface
+- performance resource entries included /api/ai/supervisor/stream/v2 fetch
+- sidebar response rendered with visible latency chip: 2950ms

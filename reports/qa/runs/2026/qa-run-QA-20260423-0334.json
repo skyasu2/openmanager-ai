@@ -1,0 +1,141 @@
+{
+  "runId": "QA-20260423-0334",
+  "recordedAt": "2026-04-22T15:53:14.284Z",
+  "recordedAtKst": "2026-04-23 00:53:14 KST",
+  "runTitle": "Vercel Playwright broad QA - v8.11.26 release baseline refresh",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_HUrc3CAatRmgXyihV3V44t7zuFpS",
+    "deploymentUrl": "https://openmanager-pamkpiphh-skyasus-projects.vercel.app",
+    "commitSha": "644af633956b673bef4aad27b9962dc97cab1ad6"
+  },
+  "scope": "broad",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/ landing render + version badge",
+    "/main redirect to /",
+    "/login render + auth entry points + privacy link",
+    "/privacy render + login back-link",
+    "404 route render",
+    "/api/health 200 + healthy services",
+    "/api/version 200 + version metadata",
+    "/system-boot -> /dashboard redirect",
+    "dashboard render + resource summary",
+    "server detail modal open + 3-tab switch + close",
+    "AI sidebar open + starter prompt fill",
+    "AI starter prompt send + streaming answer + latency chip",
+    "AI streaming fetch resource proof (/api/ai/supervisor/stream/v2)",
+    "/dashboard/ai-assistant fullscreen workspace retention",
+    "fullscreen -> dashboard return path + console cleanliness"
+  ],
+  "skippedSurfaces": [
+    "observability/security pack",
+    "Cloud Run admin /monitoring and /monitoring/traces",
+    "/auth/error and /auth/success secondary routes",
+    "feedback flow",
+    "Reporter/Analyst advanced surfaces",
+    "X-AI-* response header capture"
+  ],
+  "checks": {
+    "total": 15,
+    "passed": 15,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI sidebar summary",
+      "agent": "AI Chat",
+      "provider": "streaming-ai",
+      "model": "production-visible latency chip",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "sidebar latency chip + browser performance resource entry",
+      "latencyMs": 2950,
+      "processingTimeMs": 2950
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "AI sidebar와 fullscreen workspace에서 실제 production 응답을 재검증했고 이전 worker fallback regression도 재현되지 않았습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "핵심 dashboard 및 AI workspace 복귀 경로에서 console error 0을 확인했고 streaming fetch resource도 browser performance entry로 확인했습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP로 core routes, dashboard modal tabs, AI sidebar, fullscreen retention을 실제 브라우저에서 broad coverage로 기록했습니다.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-23T00:52:17+09:00",
+      "summary": "vercel usage --format json --non-interactive reviewed before broad production QA; effective usage was 14.3807 USD while billed amount remained 0.0000 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Broad QA landing page",
+      "path": "reports/qa/evidence/qa-20260423-broad-landing.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Broad QA dashboard",
+      "path": "reports/qa/evidence/qa-20260423-broad-dashboard.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Broad QA AI sidebar response",
+      "path": "reports/qa/evidence/qa-20260423-broad-ai-sidebar.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Broad QA AI workspace",
+      "path": "reports/qa/evidence/qa-20260423-broad-ai-workspace.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Broad QA console summary",
+      "path": "reports/qa/evidence/qa-20260423-broad-console.log"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This run supersedes QA-20260402-0213 as the current broad production reference for the tested core/dashboard/AI surface.",
+    "Deployment proof was taken from Vercel inspect: production deployment dpl_HUrc3CAatRmgXyihV3V44t7zuFpS is Ready and serves v8.11.26.",
+    "environment.commitSha uses the deployed release commit 644af633956b673bef4aad27b9962dc97cab1ad6 (tag v8.11.26), not the later QA-doc-only commits on main.",
+    "404 emitted the expected failed-resource console entry for the synthetic missing route and was treated as non-blocking route-miss noise.",
+    "AI sidebar response showed visible latency 2950ms and a browser performance resource entry for /api/ai/supervisor/stream/v2."
+  ],
+  "links": []
+}
