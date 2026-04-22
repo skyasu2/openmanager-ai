@@ -3,6 +3,7 @@
  */
 
 import { render, screen, waitFor } from '@testing-library/react';
+import React from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 describe('DashboardClient interactive shell loading', () => {
@@ -15,15 +16,17 @@ describe('DashboardClient interactive shell loading', () => {
   });
 
   it('loads the interactive dashboard shell as a client-only dynamic component', async () => {
+    vi.resetModules();
+
     const dynamicMock = vi.fn(
       () =>
         function MockDashboardInteractiveShell(props: {
           initialFocusServerId?: string | null;
         }) {
-          return (
-            <div data-testid="dashboard-interactive-shell">
-              {props.initialFocusServerId}
-            </div>
+          return React.createElement(
+            'div',
+            { 'data-testid': 'dashboard-interactive-shell' },
+            props.initialFocusServerId
           );
         }
     );
@@ -61,7 +64,7 @@ describe('DashboardClient interactive shell loading', () => {
 
     const { default: DashboardClient } = await import('./DashboardClient');
 
-    render(<DashboardClient />);
+    render(React.createElement(DashboardClient));
 
     await waitFor(() => {
       expect(

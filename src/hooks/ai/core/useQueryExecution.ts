@@ -204,17 +204,25 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
       const analysis = analyzeQueryComplexity(trimmedQuery);
       const forceJobQueue = shouldForceJobQueue(trimmedQuery);
 
-      // 오프도메인 감지: best-effort 모드로 처리하되 warning으로 disclaimer 표시
-      void classifyQuery(trimmedQuery).then((classification) => {
-        if (classification.isOffDomain) {
+      // 오프도메인 감지: best-effort 모드로 처리하되 실패 시 요청 자체는 막지 않는다.
+      void Promise.resolve()
+        .then(() => classifyQuery(trimmedQuery))
+        .then((classification) => {
+          if (!classification?.isOffDomain) return;
+
           setState((prev) => ({
             ...prev,
             warning:
               prev.warning ??
               '참고: 저는 서버 운영·모니터링 중심 AI입니다. 일반 정보 답변은 정확도와 최신성이 제한될 수 있습니다.',
           }));
-        }
-      });
+        })
+        .catch((error) => {
+          logger.warn(
+            '[HybridAI] Query classification failed, continuing without off-domain disclaimer',
+            error
+          );
+        });
       // 파일 첨부 시 Vision Agent가 필요하므로 스트리밍 모드 선호
       const hasAttachments = attachments && attachments.length > 0;
       const modeAdjustedThreshold =
@@ -303,8 +311,11 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
           estimatedWaitSeconds: 0,
         }));
 
-        asyncQuery
-          .sendQuery(trimmedQuery, { analysisMode })
+        const jobQueueRequest = analysisMode
+          ? asyncQuery.sendQuery(trimmedQuery, { analysisMode })
+          : asyncQuery.sendQuery(trimmedQuery);
+
+        jobQueueRequest
           .then((result) => {
             setState((prev) => ({ ...prev, jobId: result.jobId ?? null }));
           })

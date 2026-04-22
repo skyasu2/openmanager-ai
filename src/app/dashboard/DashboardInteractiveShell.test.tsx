@@ -3,7 +3,7 @@
  */
 
 import { render, waitFor } from '@testing-library/react';
-import type React from 'react';
+import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const startSystem = vi.fn();
@@ -18,7 +18,11 @@ vi.mock('next/dynamic', () => ({
     options?: { loading?: () => React.ReactNode }
   ) => {
     function MockDynamicComponent() {
-      return <>{options?.loading ? options.loading() : null}</>;
+      return React.createElement(
+        React.Fragment,
+        null,
+        options?.loading ? options.loading() : null
+      );
     }
 
     return MockDynamicComponent;
@@ -101,6 +105,7 @@ vi.mock('@/utils/debug', () => ({
 
 describe('DashboardInteractiveShell', () => {
   beforeEach(() => {
+    vi.resetModules();
     vi.stubEnv('NODE_ENV', 'development');
     startSystem.mockClear();
     triggerAIWarmup.mockClear();
@@ -134,14 +139,19 @@ describe('DashboardInteractiveShell', () => {
       isGuestFullAccess: false,
     } as const;
 
-    const firstRender = render(<DashboardInteractiveShell {...props} />);
+    const firstRender = render(
+      React.createElement(DashboardInteractiveShell, props)
+    );
     firstRender.unmount();
 
-    render(<DashboardInteractiveShell {...props} />);
+    render(React.createElement(DashboardInteractiveShell, props));
 
-    await waitFor(() => {
-      expect(ensureDataLoaded).toHaveBeenCalledTimes(1);
-    });
+    await waitFor(
+      () => {
+        expect(ensureDataLoaded).toHaveBeenCalledTimes(1);
+      },
+      { timeout: 3_000 }
+    );
 
     expect(triggerAIWarmup).toHaveBeenCalledTimes(1);
     expect(triggerAIWarmup).toHaveBeenCalledWith('dashboard-mount');

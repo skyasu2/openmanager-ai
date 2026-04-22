@@ -3,8 +3,8 @@
  */
 
 import { render, waitFor } from '@testing-library/react';
+import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import AuthSuccessPage from './page';
 
 const replaceMock = vi.fn();
 const getUserMock = vi.fn();
@@ -41,6 +41,7 @@ vi.mock('@/utils/debug', () => ({
 
 describe('AuthSuccessPage', () => {
   beforeEach(() => {
+    vi.resetModules();
     currentSearchParams = new URLSearchParams();
     replaceMock.mockReset();
     getUserMock.mockReset();
@@ -50,10 +51,11 @@ describe('AuthSuccessPage', () => {
   });
 
   it('레거시 code 콜백 위임 시 저장된 redirect 경로를 next로 승계해야 한다', async () => {
+    const { default: AuthSuccessPage } = await import('./page');
     currentSearchParams = new URLSearchParams('code=test-code');
     sessionStorage.setItem('auth_redirect_to', '/dashboard?tab=ai#section-1');
 
-    render(<AuthSuccessPage />);
+    render(React.createElement(AuthSuccessPage));
 
     await waitFor(() => {
       expect(replaceMock).toHaveBeenCalledWith(
@@ -66,10 +68,11 @@ describe('AuthSuccessPage', () => {
   });
 
   it('허용되지 않는 redirect는 레거시 code 콜백 위임 시 next로 넘기지 않아야 한다', async () => {
+    const { default: AuthSuccessPage } = await import('./page');
     currentSearchParams = new URLSearchParams('code=test-code');
     sessionStorage.setItem('auth_redirect_to', 'https://evil.example/phish');
 
-    render(<AuthSuccessPage />);
+    render(React.createElement(AuthSuccessPage));
 
     await waitFor(() => {
       expect(replaceMock).toHaveBeenCalledWith('/auth/callback?code=test-code');

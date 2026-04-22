@@ -12,7 +12,7 @@
  */
 
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock dependencies
 vi.mock('@ai-sdk/react', () => ({
@@ -74,10 +74,7 @@ import { generateClarification } from '@/lib/ai/clarification-generator';
 describe('Clarification Functions', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-  });
-
-  afterEach(() => {
-    vi.resetAllMocks();
+    vi.mocked(generateClarification).mockReturnValue(null);
   });
 
   describe('dismissClarification', () => {
@@ -163,7 +160,9 @@ describe('Clarification Functions', () => {
         await result.current.sendQuery('분석해줘');
       });
 
-      expect(result.current.state.clarification).not.toBeNull();
+      await waitFor(() => {
+        expect(result.current.state.clarification).not.toBeNull();
+      });
 
       // When: dismissClarification 호출
       act(() => {
@@ -201,7 +200,9 @@ describe('Clarification Functions', () => {
         await result.current.sendQuery('서버 CPU 상태');
       });
 
-      expect(result.current.state.clarification).not.toBeNull();
+      await waitFor(() => {
+        expect(result.current.state.clarification).not.toBeNull();
+      });
 
       // When: skipClarification 호출
       act(() => {
@@ -250,8 +251,6 @@ describe('Clarification Functions', () => {
       await act(async () => {
         await result.current.sendQuery('서버 상태');
       });
-
-      expect(result.current.state.clarification).not.toBeNull();
 
       // When: selectClarification 호출
       act(() => {

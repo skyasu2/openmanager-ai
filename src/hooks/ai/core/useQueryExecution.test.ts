@@ -3,7 +3,7 @@
  */
 
 import type { UIMessage } from '@ai-sdk/react';
-import { act, renderHook } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { HybridQueryState } from '../types/hybrid-query.types';
 import type { QueryExecutionDeps } from './useQueryExecution';
@@ -122,36 +122,35 @@ describe('useQueryExecution', () => {
       result.current.executeQuery('오늘 서울 날씨 알려줘');
     });
 
-    await Promise.resolve();
-    await Promise.resolve();
+    await waitFor(() => {
+      const updaterCalls = deps.setState.mock.calls
+        .map(([updater]) => updater)
+        .filter(
+          (updater): updater is (prev: HybridQueryState) => HybridQueryState =>
+            typeof updater === 'function'
+        );
 
-    const updaterCalls = deps.setState.mock.calls
-      .map(([updater]) => updater)
-      .filter(
-        (updater): updater is (prev: HybridQueryState) => HybridQueryState =>
-          typeof updater === 'function'
-      );
+      const disclaimerUpdater = updaterCalls.find((updater) => {
+        const next = updater({
+          mode: 'streaming',
+          complexity: null,
+          progress: null,
+          jobId: null,
+          isLoading: false,
+          error: null,
+          errorDetails: null,
+          clarification: null,
+          warning: null,
+          processingTime: 0,
+          warmingUp: false,
+          estimatedWaitSeconds: 0,
+        });
 
-    const disclaimerUpdater = updaterCalls.find((updater) => {
-      const next = updater({
-        mode: 'streaming',
-        complexity: null,
-        progress: null,
-        jobId: null,
-        isLoading: false,
-        error: null,
-        errorDetails: null,
-        clarification: null,
-        warning: null,
-        processingTime: 0,
-        warmingUp: false,
-        estimatedWaitSeconds: 0,
+        return next.warning?.includes('서버 운영·모니터링 중심 AI');
       });
 
-      return next.warning?.includes('서버 운영·모니터링 중심 AI');
+      expect(disclaimerUpdater).toBeDefined();
     });
-
-    expect(disclaimerUpdater).toBeDefined();
   });
 
   it('thinking mode면 streaming 후보 쿼리도 job-queue로 더 적극적으로 보낸다', async () => {

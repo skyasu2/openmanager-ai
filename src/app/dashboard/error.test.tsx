@@ -3,8 +3,8 @@
  */
 
 import { fireEvent, render, screen } from '@testing-library/react';
+import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import DashboardError from './error';
 
 const replaceMock = vi.fn();
 
@@ -26,12 +26,17 @@ vi.mock('@/lib/logging', () => ({
 
 describe('DashboardError', () => {
   beforeEach(() => {
+    vi.resetModules();
     replaceMock.mockReset();
   });
 
-  it('navigates home with client-side routing', () => {
+  it('navigates home with client-side routing', async () => {
+    const { default: DashboardError } = await import('./error');
     render(
-      <DashboardError error={new Error('network timeout')} reset={vi.fn()} />
+      React.createElement(DashboardError, {
+        error: new Error('network timeout'),
+        reset: vi.fn(),
+      })
     );
 
     fireEvent.click(screen.getByRole('button', { name: '홈으로 돌아가기' }));
@@ -39,9 +44,13 @@ describe('DashboardError', () => {
     expect(replaceMock).toHaveBeenCalledWith('/');
   });
 
-  it('navigates to safe mode with client-side routing', () => {
+  it('navigates to safe mode with client-side routing', async () => {
+    const { default: DashboardError } = await import('./error');
     render(
-      <DashboardError error={new Error('permission denied')} reset={vi.fn()} />
+      React.createElement(DashboardError, {
+        error: new Error('permission denied'),
+        reset: vi.fn(),
+      })
     );
 
     fireEvent.click(screen.getByRole('button', { name: '안전 모드로 접속' }));
@@ -51,11 +60,15 @@ describe('DashboardError', () => {
     );
   });
 
-  it('keeps the retry action wired to reset', () => {
+  it('keeps the retry action wired to reset', async () => {
+    const { default: DashboardError } = await import('./error');
     const resetMock = vi.fn();
 
     render(
-      <DashboardError error={new Error('fetch failed')} reset={resetMock} />
+      React.createElement(DashboardError, {
+        error: new Error('fetch failed'),
+        reset: resetMock,
+      })
     );
 
     fireEvent.click(screen.getByRole('button', { name: '다시 시도' }));

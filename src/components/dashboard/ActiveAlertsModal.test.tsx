@@ -73,7 +73,7 @@ describe('ActiveAlertsModal', () => {
     expect(screen.getByText('Network I/O = 82.0%')).toBeInTheDocument();
   });
 
-  it('60초 미만 활성 알림은 0m elapsed 대신 just now로 표시해야 한다', () => {
+  it('60초 미만 활성 알림은 0분 경과 대신 방금 전으로 표시해야 한다', () => {
     render(
       <ActiveAlertsModal
         open
@@ -87,7 +87,7 @@ describe('ActiveAlertsModal', () => {
       />
     );
 
-    expect(screen.getByText('just now')).toBeInTheDocument();
-    expect(screen.queryByText('0m elapsed')).not.toBeInTheDocument();
+    expect(screen.getByText('방금 전')).toBeInTheDocument();
+    expect(screen.queryByText('0분 경과')).not.toBeInTheDocument();
   });
 });
