@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Sync .agents/skills/ → ~/.codex/skills/
-# Codex CLI scans ~/.codex/skills/ — it does NOT read .agents/skills/ directly.
-# Run this after adding or updating any skill in .agents/skills/.
+# Mirror repo-local .agents/skills/ → ~/.codex/skills/
+# Codex 공개 문서 기준 repo-local .agents/skills/ discovery는 별도로 지원된다.
+# 이 스크립트는 user-scope ~/.codex/skills/ mirror를 유지하려는 경우에만 사용한다.
 set -euo pipefail
 
 AGENTS_SKILLS="$(cd "$(dirname "$0")/../.." && pwd)/.agents/skills"

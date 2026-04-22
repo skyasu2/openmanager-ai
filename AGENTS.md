@@ -1,6 +1,6 @@
 # AGENTS.md - OpenManager Codex 실행 규칙
 
-<!-- Version: 6.1.2 -->
+<!-- Version: 6.1.3 -->
 **이 문서는 OpenManager AI 프로젝트 내에서 Codex 에이전트 전용 실행 규칙만 정의합니다.**
 
 ## 1) 정책 참조 구조 (SSOT)
@@ -29,17 +29,22 @@
 
 | 경로 | 역할 | AI |
 |------|------|-----|
-| `.agents/skills/` | Codex staging (`SKILL.md` + `agents/openai.yaml` + `references/`) → `npm run skills:sync:codex` → `~/.codex/skills/` | Codex CLI만 |
-| `.gemini/skills/` | `.claude/skills/` symlinks — Gemini CLI가 이 경로를 스캔 | Gemini만 |
-| `.claude/skills/` | Claude/Gemini 공용 (`allowed-tools`, `disable-model-invocation` 등 포함) | Claude Code + Gemini |
-| `~/.codex/skills/` | Codex 로컬 런타임 복사본 (git ignore) | Codex CLI만 |
+| `.agents/skills/` | Codex repo-local canonical path (`SKILL.md` + `agents/openai.yaml` + `references/`) | Codex CLI |
+| `.gemini/skills/` | Gemini project path - 이 저장소에서는 `.claude/skills/` symlink view | Gemini CLI |
+| `.claude/skills/` | Claude project path + Gemini shared source라는 프로젝트 규칙 (`allowed-tools`, `disable-model-invocation` 등 포함) | Claude Code + Gemini |
+| `~/.codex/skills/` | Codex user-scope installed skills / 로컬 mirror (git ignore) | Codex CLI |
 
-> **Gemini 스킬 동작**: Gemini CLI는 `.gemini/skills/`를 스캔합니다. 각 항목은 `.claude/skills/`를 가리키는 symlink입니다.
+> **Codex 스킬 동작**: 최신 공개 문서 기준 Codex는 repo `.agents/skills/`를 직접 발견합니다.
+> 이 저장소의 `npm run skills:sync:codex`는 `~/.codex/skills/` user-scope mirror를 갱신하는 보조 경로입니다.
+>
+> **Gemini 스킬 동작**: Gemini CLI는 `.gemini/skills/`를 스캔합니다.
+> 이 저장소에서는 `.claude/skills/`를 가리키는 symlink로 Claude/Gemini 스킬 본문을 공유합니다.
 
 **동기화 규칙:**
 - 스킬 추가/수정 시 → `.claude/skills/` 수정 (Claude + Gemini 공용)
-- Codex 반영: `.agents/skills/` 별도 수정 후 `npm run skills:sync:codex`
 - Gemini 반영: `.gemini/skills/`에 symlink 추가 (`ln -sf ../../.claude/skills/<name> .gemini/skills/<name>`)
+- Codex 반영: `.agents/skills/` 별도 수정
+- 선택 사항: `npm run skills:sync:codex`로 `~/.codex/skills/` mirror 갱신
 
 ### 2.3 MCP 운영 규칙 (Codex)
 - MCP 서버 목록 SSOT는 `.codex/config.toml`의 `[mcp_servers.*]`입니다.
@@ -133,4 +138,4 @@ plan 파일이 있는 작업은 아래 순서를 따른다.
 - 공통 정책이 변경되는 경우 이 파일이 아닌 `docs/guides/ai/ai-standards.md`를 갱신해야 합니다.
 
 ---
-_Last reviewed: 2026-04-16_
+_Last reviewed: 2026-04-23_
