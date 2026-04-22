@@ -91,7 +91,14 @@ Never assume `github-public/main` or `origin/main` is the canonical branch. Alwa
 - GitHub public remote push is only for explicit public snapshot sync via `npm run sync:github`.
 - Never force-push the public snapshot from the canonical private worktree.
 
-5. Create PR when requested.
+5. Verify the pushed SHA's GitLab pipeline when the task targets `gitlab`.
+- Preferred SSOT command: `npm run gitlab:pipeline:head -- --wait`
+- The script checks the current `HEAD` SHA and falls back to `.env.local` `GITLAB_TOKEN` when `glab` is unavailable.
+- If the script reports `status=not_created`, say explicitly that GitLab did not create a pipeline for that SHA (for example because CI skip rules matched).
+- If no token is available, say explicitly that remote pipeline status could not be auto-verified.
+- Final delivery message must include `pipeline id/status/url` when verification was possible.
+
+6. Create PR when requested.
 - Canonical/private work: only use a GitLab Merge Request when the user explicitly wants PR flow or when risky changes benefit from branch isolation.
 - GitHub MCP (`create_pull_request`) is not part of the routine delivery path for this repo. Use it only when the task explicitly targets the public snapshot repository itself.
 - CLI fallback: `gh pr create` only when the task explicitly targets GitHub and MCP is unavailable.
@@ -101,7 +108,7 @@ Never assume `github-public/main` or `origin/main` is the canonical branch. Alwa
 
 1. Validate locally (`pre-push`, targeted tests, or `npm run ci:local:docker` as needed).
 2. Push canonical change: `git push gitlab main`
-3. Treat GitLab CI status as the deployment authority; inspect the current `.gitlab-ci.yml` pipeline rather than relying on stale memory.
+3. Treat GitLab CI status as the deployment authority; verify the pushed `HEAD` with `npm run gitlab:pipeline:head -- --wait` rather than relying on stale memory.
 4. If a release/tag was created: `git push gitlab --follow-tags`
 5. Refresh public code repo only when needed: `npm run sync:github`
 6. Do not treat GitHub as deployment status, release authority, or issue tracker.
@@ -109,6 +116,7 @@ Never assume `github-public/main` or `origin/main` is the canonical branch. Alwa
 7. Verify remote state.
 - `git fetch gitlab`
 - `git status -sb`
+- Report GitLab pipeline `id/status/url` when the check was possible.
 - If PR created, report URL and check status.
 
 ### Workflow C: Commit → Push → PR (one-shot)

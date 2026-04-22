@@ -77,6 +77,7 @@
 - Codex는 push/fetch/rebase 전에 항상 `git remote -v`를 확인하고, 기본 push 대상은 `gitlab` 으로 선택합니다.
 - GitHub 공개 스냅샷 동기화는 `npm run sync:github` 으로만 수행합니다 (`scripts/sync/github-sync.sh`, 포함 목록: `.github-export-include`, 안전 제외 목록: `.github-export-ignore`). `git push origin` 또는 `git push github-public` 직접 실행 금지.
 - GitLab CI는 **활성** 상태입니다. 현재 `.gitlab-ci.yml`은 `validate(frontend + ai-engine) → deploy(frontend) → deploy_ai_engine(cloud-run) → smoke(frontend)` 다단계 파이프라인으로 동작합니다. docs/reports 전용 push는 CI 스킵(분 예산 보존).
+- `git push gitlab ...` 이후에는 `GITLAB_TOKEN`(env 또는 `.env.local`)이 있으면 `npm run gitlab:pipeline:head -- --wait`로 pushed `HEAD` pipeline을 확인하고, final 답변에 `pipeline id/status/url`를 반드시 보고합니다.
 - **배포 권한은 GitLab CI가 보유**합니다. Frontend는 `deploy` job에서 `vercel build --prod` 후 `vercel deploy --prebuilt --prod`, AI Engine은 `deploy_ai_engine` job에서 `cloud-run/ai-engine/deploy.sh`를 통해 Cloud Run production 배포를 수행합니다. validate 실패 시 각 배포가 차단됩니다.
 - **배포 전 runner 상태 확인**: `bash scripts/ci/runner-health-check.sh`
   - `exit 0` → 정상, 태그 push로 CI 경유 배포
