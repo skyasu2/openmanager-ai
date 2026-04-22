@@ -29,16 +29,17 @@
 
 | 경로 | 역할 | AI |
 |------|------|-----|
-| `.agents/skills/` | **Cross-AI SSOT** (agentskills.io 표준, `name`+`description` frontmatter만) | Codex + **Gemini 직접 스캔** |
+| `.agents/skills/` | **Cross-AI SSOT** (agentskills.io 표준, `name`+`description` frontmatter만) | Codex |
+| `.gemini/skills/` | `.agents/skills/` symlinks — Gemini CLI가 이 경로를 스캔 | Gemini만 |
 | `.claude/skills/` | Claude 전용 (`allowed-tools`, `disable-model-invocation` 추가) | Claude Code만 |
 | `~/.codex/skills/` | Codex 로컬 런타임 복사본 (git ignore) | Codex CLI만 |
 
-> **Gemini 스킬 동작**: Gemini CLI는 workspace 내 모든 `SKILL.md`를 자동 스캔하므로 `.agents/skills/`를 별도 링크 없이 직접 인식합니다. `gemini skills list`로 확인 가능.
+> **Gemini 스킬 동작**: Gemini CLI는 `.gemini/skills/`를 스캔합니다. 각 항목은 `.agents/skills/`를 가리키는 symlink입니다. `.agents/skills/` 전체 스캔은 지원되지 않습니다.
 
 **동기화 규칙:**
 - 스킬 추가/수정 시 → `.agents/skills/` 먼저 수정
 - Codex 반영: `npm run skills:sync:codex`
-- Gemini 반영: 자동 (workspace 스캔)
+- Gemini 반영: `.gemini/skills/`에 symlink 추가 (`ln -sf ../../.agents/skills/<name> .gemini/skills/<name>`)
 - Claude 반영: `.claude/skills/`에 동일 스킬이 있으면 함께 수정 (Claude 전용 필드 유지)
 
 ### 2.3 MCP 운영 규칙 (Codex)

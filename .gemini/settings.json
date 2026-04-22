@@ -1,0 +1,56 @@
+{
+  "projectId": "openmanager-ai",
+  "general": {
+    "previewFeatures": true
+  },
+  "mcpServers": {
+    "supabase-db": {
+      "command": "node",
+      "args": [
+        "/home/sky-note/.mcp-servers/supabase/node_modules/@supabase/mcp-server-supabase/dist/transports/stdio.js"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "${SUPABASE_ACCESS_TOKEN}"
+      }
+    },
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp",
+        "--user-data-dir",
+        ".playwright-mcp/codex-profile",
+        "--output-dir",
+        ".playwright-mcp/screenshots"
+      ],
+      "env": {
+        "DISPLAY": ":0"
+      }
+    },
+    "next-devtools": {
+      "command": "npx",
+      "args": ["-y", "next-devtools-mcp@latest"]
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@latest", "--isolated", "--headless"],
+      "env": {
+        "DISPLAY": ":0"
+      }
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    },
+    "vercel": {
+      "command": "bash",
+      "args": ["-lc", "npx -y vercel-mcp \"VERCEL_API_KEY=$VERCEL_API_KEY\""],
+      "env": {
+        "VERCEL_API_KEY": "${VERCEL_API_KEY}"
+      }
+    }
+  }
+}
