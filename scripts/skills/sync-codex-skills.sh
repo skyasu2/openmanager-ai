@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Sync .agents/skills/ → ~/.codex/skills/
-# Run after adding or updating any skill in .agents/skills/
+# Codex CLI scans ~/.codex/skills/ — it does NOT read .agents/skills/ directly.
+# Run this after adding or updating any skill in .agents/skills/.
 set -euo pipefail
 
 AGENTS_SKILLS="$(cd "$(dirname "$0")/../.." && pwd)/.agents/skills"

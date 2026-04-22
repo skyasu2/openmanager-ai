@@ -29,7 +29,7 @@
 
 | 경로 | 역할 | AI |
 |------|------|-----|
-| `.agents/skills/` | Codex 전용 (agentskills.io 표준, `name`+`description` frontmatter만) | Codex CLI만 |
+| `.agents/skills/` | Codex staging (`SKILL.md` + `agents/openai.yaml` + `references/`) → `npm run skills:sync:codex` → `~/.codex/skills/` | Codex CLI만 |
 | `.gemini/skills/` | `.claude/skills/` symlinks — Gemini CLI가 이 경로를 스캔 | Gemini만 |
 | `.claude/skills/` | Claude/Gemini 공용 (`allowed-tools`, `disable-model-invocation` 등 포함) | Claude Code + Gemini |
 | `~/.codex/skills/` | Codex 로컬 런타임 복사본 (git ignore) | Codex CLI만 |
