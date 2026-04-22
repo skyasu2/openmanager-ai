@@ -51,6 +51,7 @@
 - **GitLab CI는 활성** 상태이며 `.gitlab-ci.yml` validate → deploy 파이프라인이 코드 변경 push 시 실행됩니다. docs/reports 전용 push는 CI를 스킵합니다.
 - **로컬 전체 검증 기본값**은 여전히 `npm run ci:local:docker` / `npm run ci:local:docker:full` 입니다. broad/release 변경에서 GitLab CI와 별도로 사용합니다.
 - 따라서 Gemini는 push/fetch/rebase 전에 항상 `git remote -v`를 확인하고, 기본 push 대상은 `gitlab` 으로 선택해야 합니다.
+- `GITLAB_TOKEN`이 환경변수 또는 `.env.local`에 있으면 `git push gitlab ...` 직후 `npm run gitlab:pipeline:head -- --wait`로 pushed SHA의 GitLab pipeline을 확인하고, 최종 보고에 `pipeline id/status/url`를 포함합니다. `status=not_created`면 해당 SHA에 pipeline이 생성되지 않았음을 명시합니다.
 
 ## ✅ QA Operation Protocol (Final Gate)
 - QA 기준선 문서: `reports/qa/production-qa-2026-02-25.md`

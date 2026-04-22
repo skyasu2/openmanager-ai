@@ -27,6 +27,7 @@
   - `vercel build --prod` 로컬 빌드는 WSL2에서 `fonts.gstatic.com` 차단으로 실패 가능
 - **로컬 CI 표준 경로**: `npm run ci:local:docker` / `npm run ci:local:docker:full` (SSOT 유지)
 - **기본 원칙**: `origin/main`을 canonical branch로 가정하지 말고, push/fetch 전 `git remote -v` 확인 후 기본 대상은 `gitlab`
+- **Push 후 확인 규칙**: `GITLAB_TOKEN`이 환경변수 또는 `.env.local`에 있으면 `git push gitlab ...` 직후 `npm run gitlab:pipeline:head -- --wait`를 실행하고, 최종 보고에 `pipeline id/status/url`를 반드시 포함합니다. `status=not_created`면 해당 SHA에 pipeline이 생성되지 않았음을 명시합니다.
 
 ## Quick Commands
 ```bash
@@ -34,6 +35,7 @@ npm run dev:network         # 개발 서버 (0.0.0.0:3000)
 npm run validate:all        # TypeScript + Lint + Test
 npm run ci:local:docker     # 외부 CI 최소화 로컬 Docker 검증
 npm run ci:local:docker:full # AI Engine preflight 포함 로컬 Docker 검증
+npm run gitlab:pipeline:head -- --wait # pushed HEAD 기준 GitLab pipeline 확인
 npm run test:quick          # 최소 테스트
 npm run type-check          # TypeScript 검사
 npm run qa:status           # 누적 QA 상태 요약
