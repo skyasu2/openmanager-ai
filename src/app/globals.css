@@ -1,5 +1,23 @@
-/* Tailwind v4: src 디렉토리 명시적 스캔 */
-@import 'tailwindcss';
+/* Tailwind v4: 자동 source 탐색을 끄고 앱 코드 디렉토리만 명시 스캔 */
+@import 'tailwindcss' source(none);
+
+@source '../actions';
+@source '../app';
+@source '../components';
+@source '../config';
+@source '../constants';
+@source '../context';
+@source '../data';
+@source '../database';
+@source '../hooks';
+@source '../lib';
+@source '../schemas';
+@source '../services';
+@source '../stores';
+@source '../styles';
+@source '../types';
+@source '../utils';
+@source '../validators';
 
 @plugin 'tailwindcss-animate';
 
@@ -340,4 +358,3 @@
     padding: env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);
   }
 }
-

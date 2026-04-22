@@ -100,8 +100,8 @@ describe('useSession', () => {
     const { result } = renderHook(() => useSession());
 
     await waitFor(() => expect(result.current.status).toBe('unauthenticated'));
-    expect(mocks.logger.warn).toHaveBeenCalledWith(
-      '⚠️ Supabase 세션 리스너 초기화 실패:',
+    expect(mocks.logger.error).toHaveBeenCalledWith(
+      '세션 확인 오류:',
       expect.any(Error)
     );
   });

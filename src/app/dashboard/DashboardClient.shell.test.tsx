@@ -15,19 +15,20 @@ describe('DashboardClient interactive shell loading', () => {
       'test_mode=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
   });
 
-  it('loads the interactive dashboard shell as a client-only dynamic component', async () => {
+  it('loads the dashboard runtime as a client-only dynamic component', async () => {
     vi.resetModules();
+    const runtimeRenderSpy = vi.fn();
 
     const dynamicMock = vi.fn(
       () =>
         function MockDashboardInteractiveShell(props: {
           initialFocusServerId?: string | null;
         }) {
-          return React.createElement(
-            'div',
-            { 'data-testid': 'dashboard-interactive-shell' },
-            props.initialFocusServerId
-          );
+          runtimeRenderSpy(props);
+          return React.createElement('div', {
+            'data-testid': 'dashboard-interactive-shell',
+            'data-initial-focus-server-id': props.initialFocusServerId ?? '',
+          });
         }
     );
 
@@ -60,11 +61,13 @@ describe('DashboardClient interactive shell loading', () => {
       isGuestFullAccessEnabled: () => true,
     }));
 
-    document.cookie = 'test_mode=enabled; path=/';
-
     const { default: DashboardClient } = await import('./DashboardClient');
 
-    render(React.createElement(DashboardClient));
+    render(
+      React.createElement(DashboardClient, {
+        initialFocusServerId: 'seed-server-01',
+      })
+    );
 
     await waitFor(() => {
       expect(
@@ -72,7 +75,15 @@ describe('DashboardClient interactive shell loading', () => {
       ).toBeInTheDocument();
     });
 
-    expect(screen.getByText('web-nginx-dc1-01')).toBeInTheDocument();
+    expect(runtimeRenderSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        initialFocusServerId: 'seed-server-01',
+      })
+    );
+    expect(screen.getByTestId('dashboard-interactive-shell')).toHaveAttribute(
+      'data-initial-focus-server-id',
+      'seed-server-01'
+    );
     expect(dynamicMock).toHaveBeenCalled();
     expect(
       dynamicMock.mock.calls.some(([, options]) => options?.ssr === false)

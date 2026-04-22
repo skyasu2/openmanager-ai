@@ -5,7 +5,6 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { authStateManager } from '@/lib/auth/auth-state-manager';
 import type { AuthUser } from '@/lib/auth/auth-state-manager-types';
 import {
   AUTH_SESSION_ID_KEY,
@@ -53,8 +52,6 @@ export function useAuth(): UseAuthResult {
   const [isLoading, setIsLoading] = useState(true);
   const [sessionId, setSessionId] = useState<string | null>(null);
 
-  // AuthStateManager 싱글톤 사용
-
   // 로그인 함수 (게스트 모드만 지원)
   const login = async (): Promise<{ success: boolean; error?: string }> => {
     try {
@@ -69,6 +66,9 @@ export function useAuth(): UseAuthResult {
       };
 
       // AuthStateManager를 통한 게스트 인증 설정
+      const { authStateManager } = await import(
+        '@/lib/auth/auth-state-manager'
+      );
       await authStateManager.setGuestAuth(guestUser);
 
       // 세션 ID 가져오기 (safe access)
@@ -91,6 +91,9 @@ export function useAuth(): UseAuthResult {
   const logout = async (): Promise<void> => {
     try {
       if (sessionId) {
+        const { authStateManager } = await import(
+          '@/lib/auth/auth-state-manager'
+        );
         await authStateManager.clearAllAuthData();
       }
 
@@ -132,6 +135,9 @@ export function useAuth(): UseAuthResult {
       }
 
       // 세션 유효성 확인 (getAuthState가 만료/무효 세션을 내부적으로 검증)
+      const { authStateManager } = await import(
+        '@/lib/auth/auth-state-manager'
+      );
       const currentState = await authStateManager.getAuthState();
 
       if (currentState.isAuthenticated) {

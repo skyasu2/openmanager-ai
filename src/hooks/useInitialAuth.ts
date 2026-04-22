@@ -3,7 +3,6 @@
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { isVercel } from '@/env-client';
-import { getAuthState } from '@/lib/auth/auth-state-manager';
 import type { AuthUser } from '@/lib/auth/auth-state-manager-types';
 import { logger } from '@/lib/logging';
 
@@ -69,7 +68,10 @@ export function useInitialAuth() {
         setTimeout(() => resolve(null), AUTH_TIMEOUT_MS)
       );
 
-      const authState = await Promise.race([getAuthState(), timeoutPromise]);
+      const authStateRequest = import('@/lib/auth/auth-state-manager').then(
+        ({ getAuthState }) => getAuthState()
+      );
+      const authState = await Promise.race([authStateRequest, timeoutPromise]);
 
       // 타임아웃 발생 시 비인증 상태로 페이지 표시
       if (!authState) {
