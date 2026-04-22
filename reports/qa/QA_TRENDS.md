@@ -1,24 +1,24 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-04-23 00:03:05 KST
+> Generated at: 2026-04-23 00:20:29 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 329 |
+| Recorded Runs | 330 |
 | Counted Runs | 267 |
 | Total Checks | 2137 |
 | Total Passed | 2055 |
 | Total Failed | 75 |
 | Overall Pass Rate | 96.16% |
-| Latest Recorded Run | QA-20260422-0331 |
+| Latest Recorded Run | QA-20260423-0332 |
 | Last Counted Run | QA-20260422-0330 |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-21T14:47:29.748Z -> 2026-04-22T14:47:29.748Z (24h)
+- Window: 2026-04-21T15:20:28.286Z -> 2026-04-22T15:20:28.286Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 
@@ -56,7 +56,7 @@
 
 | Scope | Recorded Runs | Counted Runs |
 |---|---:|---:|
-| targeted | 160 | 99 |
+| targeted | 161 | 99 |
 | legacy | 137 | 137 |
 | broad | 25 | 24 |
 | release-gate | 5 | 5 |
@@ -68,7 +68,7 @@
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | P0 | 43 | 7 | 16.28% | 0 | 0 | 0% | 43 | 0 |
 | P1 | 144 | 66 | 45.83% | 0 | 0 | 0% | 140 | 4 |
-| P2 | 142 | 43 | 30.28% | 1 | 0 | 0% | 129 | 12 |
+| P2 | 142 | 44 | 30.99% | 0 | 0 | 0% | 130 | 12 |
 | P3 | 17 | 11 | 64.71% | 0 | 0 | 0% | 16 | 1 |
 
 ## Deployment Regression Correlation
@@ -126,7 +126,6 @@
 
 | ID | Priority | Status | Seen | Last Seen Run | Title |
 |---|---|---|---:|---|---|
-| dashboard-worker-console-error-on-ai-workspace-return | P2 | pending | 1 | QA-20260422-0330 | Dashboard logs Web Worker fallback error after returning from fullscreen AI workspace |
 | feature-dod-tsc-zero-error | P2 | wont-fix | 9 | QA-20260307-0053 | tsc --noEmit 0 에러 |
 | feature-dod-unit-tests | P2 | wont-fix | 9 | QA-20260307-0053 | 단위 테스트 158개 통과 |
 | obs-fp-fn-weekly-report | P1 | wont-fix | 3 | QA-20260227-0013 | 오탐/미탐 주간 리포트 자동 생성 |

@@ -1,0 +1,78 @@
+{
+  "runId": "QA-20260423-0332",
+  "recordedAt": "2026-04-22T15:20:28.286Z",
+  "recordedAtKst": "2026-04-23 00:20:28 KST",
+  "runTitle": "Vercel targeted QA - AI workspace dashboard return worker fallback resolved",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "644af633956b673bef4aad27b9962dc97cab1ad6"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [],
+  "coveredSurfaces": [
+    "/dashboard/ai-assistant",
+    "/dashboard",
+    "AI workspace -> dashboard return path",
+    "production console cleanliness"
+  ],
+  "skippedSurfaces": [
+    "broad route smoke",
+    "AI sidebar streaming",
+    "observability/security pack",
+    "Cloud Run admin routes"
+  ],
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-22T15:18:44.786Z",
+      "summary": "Current billing period reviewed before production targeted recheck; billed usage remains 0.0000 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "dashboard-worker-console-error-on-ai-workspace-return",
+      "title": "Dashboard logs Web Worker fallback error after returning from fullscreen AI workspace",
+      "priority": "P2",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "production targeted recheck on v8.11.26",
+      "note": "After deploying v8.11.26, the production path `/dashboard/ai-assistant -> /dashboard` completed with console error count 0. Only preload warnings remained, and the previous `Worker terminated` -> `Worker 계산 실패, Fallback 사용` error no longer reproduced.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production `/api/version` matched v8.11.26 before the targeted recheck was recorded.",
+    "Playwright MCP showed console errors 0 while returning from AI workspace to dashboard.",
+    "Residual browser noise was limited to CSS preload warnings, not application runtime errors."
+  ],
+  "links": []
+}

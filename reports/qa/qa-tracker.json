@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-22T14:47:29.748Z"
+    "updatedAt": "2026-04-22T15:20:28.286Z"
   },
   "sequence": {
-    "nextRunNumber": 332
+    "nextRunNumber": 333
   },
   "summary": {
-    "totalRecordedRuns": 329,
+    "totalRecordedRuns": 330,
     "totalRuns": 267,
-    "excludedRuns": 62,
+    "excludedRuns": 63,
     "totalChecks": 2137,
     "totalPassed": 2055,
     "totalFailed": 75,
-    "completionRate": 99.7,
-    "completedItems": 328,
-    "pendingItems": 1,
+    "completionRate": 100,
+    "completedItems": 329,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 17,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 1,
     "lastRunId": "QA-20260422-0330",
     "lastRecordedAt": "2026-04-22T14:14:24.057Z",
-    "latestRecordedRunId": "QA-20260422-0331",
-    "latestRecordedAt": "2026-04-22T14:47:29.748Z"
+    "latestRecordedRunId": "QA-20260423-0332",
+    "latestRecordedAt": "2026-04-22T15:20:28.286Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -8011,25 +8011,25 @@
       "id": "dashboard-worker-console-error-on-ai-workspace-return",
       "title": "Dashboard logs Web Worker fallback error after returning from fullscreen AI workspace",
       "priority": "P2",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260422-0330",
       "firstSeenAt": "2026-04-22T14:14:24.057Z",
-      "lastSeenRunId": "QA-20260422-0330",
-      "lastSeenAt": "2026-04-22T14:14:24.057Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260423-0332",
+      "lastSeenAt": "2026-04-22T15:20:28.286Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "reports/qa/evidence/qa-20260422-broad-console.log",
-      "lastNote": "Production broad QA reproduced `Worker terminated` -> `Worker 계산 실패, Fallback 사용` console error while navigating `/dashboard/ai-assistant` back to `/dashboard`. UI recovered via fallback, but production console cleanliness regressed on a core route handoff.",
+      "lastEvidence": "production targeted recheck on v8.11.26",
+      "lastNote": "After deploying v8.11.26, the production path `/dashboard/ai-assistant -> /dashboard` completed with console error count 0. Only preload warnings remained, and the previous `Worker terminated` -> `Worker 계산 실패, Fallback 사용` error no longer reproduced.",
       "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-04-22T14:14:24.057Z"
+      "lastStatusChangeAt": "2026-04-22T15:20:28.286Z"
     }
   },
   "runs": [
@@ -30348,6 +30348,68 @@
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260423-0332",
+      "recordedAt": "2026-04-22T15:20:28.286Z",
+      "recordedAtKst": "2026-04-23 00:20:28 KST",
+      "title": "Vercel targeted QA - AI workspace dashboard return worker fallback resolved",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260423-0332.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "644af633956b673bef4aad27b9962dc97cab1ad6"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [],
+      "coveredSurfaces": [
+        "/dashboard/ai-assistant",
+        "/dashboard",
+        "AI workspace -> dashboard return path",
+        "production console cleanliness"
+      ],
+      "skippedSurfaces": [
+        "broad route smoke",
+        "AI sidebar streaming",
+        "observability/security pack",
+        "Cloud Run admin routes"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-22T15:18:44.786Z",
+          "summary": "Current billing period reviewed before production targeted recheck; billed usage remains 0.0000 USD.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0

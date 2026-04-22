@@ -1,16 +1,16 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-22T15:03:05.715Z",
-  "generatedAtKst": "2026-04-23 00:03:05 KST",
-  "trackerUpdatedAt": "2026-04-22T14:47:29.748Z",
+  "generatedAt": "2026-04-22T15:20:29.926Z",
+  "generatedAtKst": "2026-04-23 00:20:29 KST",
+  "trackerUpdatedAt": "2026-04-22T15:20:28.286Z",
   "totals": {
-    "recordedRuns": 329,
+    "recordedRuns": 330,
     "countedRuns": 267,
     "totalChecks": 2137,
     "totalPassed": 2055,
     "totalFailed": 75,
     "overallPassRatePct": 96.16,
-    "latestRecordedRunId": "QA-20260422-0331",
+    "latestRecordedRunId": "QA-20260423-0332",
     "lastCountedRunId": "QA-20260422-0330"
   },
   "windows": [
@@ -221,7 +221,7 @@
   "scopeDistribution": [
     {
       "scope": "targeted",
-      "totalRuns": 160,
+      "totalRuns": 161,
       "countedRuns": 99
     },
     {
@@ -271,12 +271,12 @@
     {
       "priority": "P2",
       "totalItems": 142,
-      "recurringItems": 43,
-      "openItems": 1,
+      "recurringItems": 44,
+      "openItems": 0,
       "openRecurringItems": 0,
-      "completedItems": 129,
+      "completedItems": 130,
       "wontFixItems": 12,
-      "recurrenceRatePct": 30.28,
+      "recurrenceRatePct": 30.99,
       "openRecurrenceRatePct": 0
     },
     {
@@ -720,18 +720,7 @@
     }
   ],
   "recurringItems": {
-    "open": [
-      {
-        "id": "dashboard-worker-console-error-on-ai-workspace-return",
-        "title": "Dashboard logs Web Worker fallback error after returning from fullscreen AI workspace",
-        "status": "pending",
-        "priority": "P2",
-        "seenCount": 1,
-        "completedCount": 0,
-        "lastSeenRunId": "QA-20260422-0330",
-        "lastResolvedRunId": null
-      }
-    ],
+    "open": [],
     "wontFix": [
       {
         "id": "feature-dod-tsc-zero-error",
@@ -939,8 +928,8 @@
   },
   "aiLatencyRollup24h": {
     "windowHours": 24,
-    "windowStart": "2026-04-21T14:47:29.748Z",
-    "windowEnd": "2026-04-22T14:47:29.748Z",
+    "windowStart": "2026-04-21T15:20:28.286Z",
+    "windowEnd": "2026-04-22T15:20:28.286Z",
     "recordedRunCount": 0,
     "countedRunCount": 0,
     "sampleCount": 0,
