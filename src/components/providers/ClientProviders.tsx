@@ -8,8 +8,6 @@
 'use client';
 
 import type { ReactNode } from 'react';
-// 🚀 Vercel 호환 접근성 Provider 추가
-import { AccessibilityProvider } from '@/context/AccessibilityProvider';
 import QueryProvider from './QueryProvider';
 import SupabaseAuthProvider from './SupabaseAuthProvider';
 
@@ -25,16 +23,13 @@ interface ClientProvidersProps {
  * 모든 클라이언트 사이드 상태 관리 Provider들을 여기서 통합 관리합니다.
  *
  * Provider 계층 구조:
- * 1. AccessibilityProvider (WCAG 2.1 호환, SSR 안전)
- * 2. SupabaseAuthProvider (Supabase Auth 세션 관리)
- * 3. QueryProvider (TanStack Query)
+ * 1. SupabaseAuthProvider (Supabase Auth 세션 관리)
+ * 2. QueryProvider (TanStack Query)
  */
 export function ClientProviders({ children }: ClientProvidersProps) {
   return (
-    <AccessibilityProvider>
-      <SupabaseAuthProvider>
-        <QueryProvider>{children}</QueryProvider>
-      </SupabaseAuthProvider>
-    </AccessibilityProvider>
+    <SupabaseAuthProvider>
+      <QueryProvider>{children}</QueryProvider>
+    </SupabaseAuthProvider>
   );
 }

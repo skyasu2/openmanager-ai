@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-22 KST (`ci:local:docker` green 복구, CI stabilization 완료)
+**Last Updated**: 2026-04-22 KST (GitLab CI green 확인, `root-shell-startup-trace` active 승격)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| — | — | none | 현재 active task 없음. backlog 관찰 항목만 유지. |
+| root-shell-startup-trace | Medium | in-progress | `QA-20260420-0318` 기준 pending이던 root shell/dev compile 병목을 다시 추적 중. 이번 턴에서 root `ClientProviders`에서 실제 consumer가 없는 `AccessibilityProvider` wrapper를 제거했고, `npm run type-check`, `npm run lint`, `npm run test:quick`는 통과했다. 다만 동일 기준 Turbopack trace 재측정은 현재 워크트리의 다른 `next dev` 인스턴스가 `.next/dev/lock`을 점유 중이라 완료하지 못했다. dedicated trace window에서 재측정 필요. |
 
 ---
 
@@ -22,7 +22,6 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| root-shell-startup-trace | Medium | `QA-20260420-0318` 기준 pending. release blocker는 아니지만 dev 생산성 이슈로 계속 추적. |
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
 | ~~AI Response Visibility & Rate Limit (Phase 1~5)~~ | — | **완료** — archive 이동. write bucket 재평가 결과 `supervisor 10/min`, `jobs/process 5/min`, `daily 100` 유지 결정 로그는 archived plan에 유지. |
 | ~~AI Stream Route Contract - residual cleanup~~ | — | **완료** — archive 이동. |

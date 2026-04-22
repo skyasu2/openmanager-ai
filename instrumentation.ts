@@ -10,16 +10,9 @@
  */
 
 export async function register() {
-  // dev 모드에서는 Sentry/OTel 초기화를 완전히 건너뜀 (Turbopack 컴파일 속도 향상)
+  // dev 모드에서는 startup instrumentation을 완전히 건너뜀.
+  // env 파싱도 root cold compile 경로에 포함되므로 local dev startup에는 비용만 추가한다.
   if (process.env.NODE_ENV !== 'production') {
-    // 환경변수 검증만 실행 (가벼운 작업)
-    if (process.env.NEXT_RUNTIME === 'nodejs') {
-      try {
-        await import('./src/env');
-      } catch {
-        // dev에서는 환경변수 누락 시 경고만
-      }
-    }
     return;
   }
 
