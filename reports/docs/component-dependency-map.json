@@ -6,17 +6,17 @@
     "excludedRouteLocalNodes": "src/app/**/components/**/*.tsx (counted in inventory, excluded from graph)"
   },
   "inventory": {
-    "sharedComponentNodes": 142,
+    "sharedComponentNodes": 145,
     "routeLocalComponentNodes": 7,
-    "totalComponentNodes": 149
+    "totalComponentNodes": 152
   },
   "metrics": {
-    "componentSourceLines": 27868,
-    "componentNodes": 142,
-    "componentEdges": 124,
-    "graphDensity": 0.006193,
+    "componentSourceLines": 27612,
+    "componentNodes": 145,
+    "componentEdges": 127,
+    "graphDensity": 0.006082,
     "aliasEdges": 41,
-    "relativeEdges": 83,
+    "relativeEdges": 86,
     "isolatedComponents": 30,
     "sccCycleGroups": 0,
     "largestCycleSize": 0
@@ -113,11 +113,11 @@
       "outDegree": 4
     },
     {
-      "component": "dashboard/alert-history/AlertHistoryModal",
+      "component": "ai/AnalysisBasisBadge",
       "outDegree": 3
     },
     {
-      "component": "dashboard/ImprovedServerCard",
+      "component": "dashboard/alert-history/AlertHistoryModal",
       "outDegree": 3
     }
   ],
@@ -125,7 +125,7 @@
     {
       "fromDomain": "ai",
       "toDomain": "ai",
-      "count": 29
+      "count": 32
     },
     {
       "fromDomain": "dashboard",
