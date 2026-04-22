@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-22T16:04:43.748Z"
+    "updatedAt": "2026-04-22T16:17:11.229Z"
   },
   "sequence": {
-    "nextRunNumber": 336
+    "nextRunNumber": 337
   },
   "summary": {
-    "totalRecordedRuns": 333,
-    "totalRuns": 269,
+    "totalRecordedRuns": 334,
+    "totalRuns": 270,
     "excludedRuns": 64,
-    "totalChecks": 2159,
-    "totalPassed": 2077,
+    "totalChecks": 2166,
+    "totalPassed": 2084,
     "totalFailed": 75,
     "completionRate": 100,
     "completedItems": 329,
@@ -21,10 +21,10 @@
     "wontFixItems": 17,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260423-0335",
-    "lastRecordedAt": "2026-04-22T16:04:43.748Z",
-    "latestRecordedRunId": "QA-20260423-0335",
-    "latestRecordedAt": "2026-04-22T16:04:43.748Z"
+    "lastRunId": "QA-20260423-0336",
+    "lastRecordedAt": "2026-04-22T16:17:11.229Z",
+    "latestRecordedRunId": "QA-20260423-0336",
+    "latestRecordedAt": "2026-04-22T16:17:11.229Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -30743,6 +30743,121 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260423-0336",
+      "recordedAt": "2026-04-22T16:17:11.229Z",
+      "recordedAtKst": "2026-04-23 01:17:11 KST",
+      "title": "Vercel complementary release-gate QA - advanced AI surfaces after v8.11.26 release",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260423-0336.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_HUrc3CAatRmgXyihV3V44t7zuFpS",
+        "deploymentUrl": "https://openmanager-pamkpiphh-skyasus-projects.vercel.app",
+        "commitSha": "644af633956b673bef4aad27b9962dc97cab1ad6"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "AI Chat positive feedback submission locks response evaluation controls",
+        "/api/ai/feedback request observed from browser performance entries",
+        "Reporter Agent first report generation from empty state",
+        "Reporter detail view renders anomaly, related server, recommendation, pattern, and postmortem sections",
+        "Analyst Agent full-system analysis completes for 18 servers",
+        "Analyst result surface renders current state, one-hour prediction, and AI insight sections",
+        "browser console error count 0 with preload-only warnings during advanced AI flow"
+      ],
+      "skippedSurfaces": [
+        "broad route pack",
+        "secondary auth routes",
+        "Cloud Run admin /monitoring",
+        "Cloud Run admin /monitoring/traces",
+        "blocked prompt/security regression pack",
+        "dashboard modal-detail pack"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The previously skipped advanced AI paths were exercised end-to-end on the promoted production deployment, including feedback submission, Reporter detail rendering, and Analyst drilldown results.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The browser session stayed free of runtime console errors during the advanced AI walkthrough; residual browser noise was limited to duplicate CSS preload warnings.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "This complementary run filled the remaining advanced AI coverage gap without re-running already covered auth or broad route scenarios.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-23T01:16:13+09:00",
+          "summary": "vercel usage --format json --non-interactive reviewed before complementary advanced AI release-gate QA; effective usage was 14.3807 USD while billed amount remained 0.0000 USD.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Advanced AI feedback flow after positive submission",
+          "path": "reports/qa/evidence/qa-20260423-advanced-feedback.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Advanced Reporter detail view",
+          "path": "reports/qa/evidence/qa-20260423-advanced-reporter-detail.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Advanced Analyst drilldown view",
+          "path": "reports/qa/evidence/qa-20260423-advanced-analyst-drilldown.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Advanced AI production console summary",
+          "path": "reports/qa/evidence/qa-20260423-advanced-ai-console.log"
+        }
+      ],
+      "links": [],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -30751,16 +30866,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 148,
-      "appropriateCount": 138,
+      "seenCount": 149,
+      "appropriateCount": 139,
       "partialCount": 10,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260423-0335",
-      "lastSeenAt": "2026-04-22T16:04:43.748Z",
+      "lastRunId": "QA-20260423-0336",
+      "lastSeenAt": "2026-04-22T16:17:11.229Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Secondary auth fallback routes and a real authenticated streaming request were validated against the same promoted production deployment.",
+      "lastRationale": "The previously skipped advanced AI paths were exercised end-to-end on the promoted production deployment, including feedback submission, Reporter detail rendering, and Analyst drilldown results.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -30768,16 +30883,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 90,
-      "appropriateCount": 62,
+      "seenCount": 91,
+      "appropriateCount": 63,
       "partialCount": 28,
       "inappropriateCount": 0,
       "improvementNeededCount": 29,
-      "lastRunId": "QA-20260423-0335",
-      "lastSeenAt": "2026-04-22T16:04:43.748Z",
+      "lastRunId": "QA-20260423-0336",
+      "lastSeenAt": "2026-04-22T16:17:11.229Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production timing SSOT was confirmed through X-AI-Latency-Ms=188 and X-AI-Source=cloud-run on the authenticated stream route.",
+      "lastRationale": "The browser session stayed free of runtime console errors during the advanced AI walkthrough; residual browser noise was limited to duplicate CSS preload warnings.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -30819,16 +30934,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 121,
-      "appropriateCount": 114,
+      "seenCount": 122,
+      "appropriateCount": 115,
       "partialCount": 7,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260423-0335",
-      "lastSeenAt": "2026-04-22T16:04:43.748Z",
+      "lastRunId": "QA-20260423-0336",
+      "lastSeenAt": "2026-04-22T16:17:11.229Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "This complementary run extends the release evidence without duplicating the prior broad baseline, focusing only on previously skipped auth/header surfaces.",
+      "lastRationale": "This complementary run filled the remaining advanced AI coverage gap without re-running already covered auth or broad route scenarios.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

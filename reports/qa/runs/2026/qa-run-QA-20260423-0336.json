@@ -1,0 +1,117 @@
+{
+  "runId": "QA-20260423-0336",
+  "recordedAt": "2026-04-22T16:17:11.229Z",
+  "recordedAtKst": "2026-04-23 01:17:11 KST",
+  "runTitle": "Vercel complementary release-gate QA - advanced AI surfaces after v8.11.26 release",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_HUrc3CAatRmgXyihV3V44t7zuFpS",
+    "deploymentUrl": "https://openmanager-pamkpiphh-skyasus-projects.vercel.app",
+    "commitSha": "644af633956b673bef4aad27b9962dc97cab1ad6"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-advanced-surface"],
+  "coveredSurfaces": [
+    "AI Chat positive feedback submission locks response evaluation controls",
+    "/api/ai/feedback request observed from browser performance entries",
+    "Reporter Agent first report generation from empty state",
+    "Reporter detail view renders anomaly, related server, recommendation, pattern, and postmortem sections",
+    "Analyst Agent full-system analysis completes for 18 servers",
+    "Analyst result surface renders current state, one-hour prediction, and AI insight sections",
+    "browser console error count 0 with preload-only warnings during advanced AI flow"
+  ],
+  "skippedSurfaces": [
+    "broad route pack",
+    "secondary auth routes",
+    "Cloud Run admin /monitoring",
+    "Cloud Run admin /monitoring/traces",
+    "blocked prompt/security regression pack",
+    "dashboard modal-detail pack"
+  ],
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The previously skipped advanced AI paths were exercised end-to-end on the promoted production deployment, including feedback submission, Reporter detail rendering, and Analyst drilldown results.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The browser session stayed free of runtime console errors during the advanced AI walkthrough; residual browser noise was limited to duplicate CSS preload warnings.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "This complementary run filled the remaining advanced AI coverage gap without re-running already covered auth or broad route scenarios.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-23T01:16:13+09:00",
+      "summary": "vercel usage --format json --non-interactive reviewed before complementary advanced AI release-gate QA; effective usage was 14.3807 USD while billed amount remained 0.0000 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Advanced AI feedback flow after positive submission",
+      "path": "reports/qa/evidence/qa-20260423-advanced-feedback.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Advanced Reporter detail view",
+      "path": "reports/qa/evidence/qa-20260423-advanced-reporter-detail.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Advanced Analyst drilldown view",
+      "path": "reports/qa/evidence/qa-20260423-advanced-analyst-drilldown.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Advanced AI production console summary",
+      "path": "reports/qa/evidence/qa-20260423-advanced-ai-console.log"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "The AI Chat positive feedback control submitted successfully, disabled both feedback buttons, and produced a browser resource entry for /api/ai/feedback (duration 1991ms, transfer size 597).",
+    "Reporter Agent started from empty state and generated one incident report titled 디스크 사용량 경고: 데이터베이스 서버 과부하 before rendering the full detail view.",
+    "Reporter detail rendered 감지된 이상 항목, 연관 서버, 권장 조치, 감지된 패턴, Postmortem, and 로그 타임라인 보기 without route navigation.",
+    "Analyst Agent full-system analysis completed for 18 servers and rendered server-level detail cards with 현재 상태, 1시간 후 예측, and AI 인사이트 sections.",
+    "Browser console messages ended with 0 errors and 10 warnings; all warnings were duplicate CSS preload notices for /_next/static/chunks/13c1ca927ab84bf9.css, not runtime failures."
+  ],
+  "links": []
+}

@@ -1,0 +1,40 @@
+QA-20260423-0336 advanced AI production walkthrough summary
+
+Target: https://openmanager-ai.vercel.app/dashboard/ai-assistant
+Deployment: dpl_HUrc3CAatRmgXyihV3V44t7zuFpS
+Commit: 644af633956b673bef4aad27b9962dc97cab1ad6
+
+Feedback flow
+- Positive feedback button was submitted from AI Chat.
+- After submission, both feedback buttons became disabled, preventing duplicate submission in the same message card.
+- Browser performance entries recorded a request to https://openmanager-ai.vercel.app/api/ai/feedback
+  durationMs=1991
+  transferSize=597
+
+Reporter flow
+- Reporter Agent started from empty state and generated a report titled: 디스크 사용량 경고: 데이터베이스 서버 과부하
+- Reporter detail view rendered the expected sections:
+  감지된 이상 항목
+  연관 서버
+  권장 조치
+  감지된 패턴
+  Postmortem
+  로그 타임라인 보기
+
+Analyst flow
+- Analyst Agent full-system analysis completed successfully for 18 servers.
+- Drilldown/results surface rendered the expected sections:
+  서버별 상세 분석 (18개)
+  현재 상태
+  1시간 후 예측
+  AI 인사이트
+- Expanded issue examples visible in the result surface included:
+  cache-redis-dc1-03
+  db-mysql-dc1-primary
+
+Browser console summary
+- Errors: 0
+- Warnings: 10
+- Warning class: duplicate CSS preload warning only
+- Representative warning:
+  The resource https://openmanager-ai.vercel.app/_next/static/chunks/13c1ca927ab84bf9.css was preloaded using link preload but not used within a few seconds from the window's load event.

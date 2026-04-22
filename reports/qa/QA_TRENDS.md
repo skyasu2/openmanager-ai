@@ -1,24 +1,24 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-04-23 01:04:55 KST
+> Generated at: 2026-04-23 01:17:21 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 333 |
-| Counted Runs | 269 |
-| Total Checks | 2159 |
-| Total Passed | 2077 |
+| Recorded Runs | 334 |
+| Counted Runs | 270 |
+| Total Checks | 2166 |
+| Total Passed | 2084 |
 | Total Failed | 75 |
-| Overall Pass Rate | 96.2% |
-| Latest Recorded Run | QA-20260423-0335 |
-| Last Counted Run | QA-20260423-0335 |
+| Overall Pass Rate | 96.21% |
+| Latest Recorded Run | QA-20260423-0336 |
+| Last Counted Run | QA-20260423-0336 |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-21T16:04:43.748Z -> 2026-04-22T16:04:43.748Z (24h)
+- Window: 2026-04-21T16:17:11.229Z -> 2026-04-22T16:17:11.229Z (24h)
 - Runs with observations: 2 recorded / 2 counted
 - Samples: 2
 
@@ -35,9 +35,9 @@
 
 | Window | Counted Runs | Checks | Pass Rate | Failed Runs | Failing Run Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| All Counted Runs | 269 | 2159 | 96.2% | 47 | 17.47% | 53 | 19.7% |
-| Last 30 Counted Runs | 30 | 300 | 96.67% | 6 | 20% | 7 | 23.33% |
-| Last 10 Counted Runs | 10 | 116 | 96.55% | 2 | 20% | 2 | 20% |
+| All Counted Runs | 270 | 2166 | 96.21% | 47 | 17.41% | 53 | 19.63% |
+| Last 30 Counted Runs | 30 | 297 | 96.63% | 6 | 20% | 7 | 23.33% |
+| Last 10 Counted Runs | 10 | 111 | 97.3% | 2 | 20% | 2 | 20% |
 
 ## Gate Run Windows
 
@@ -57,7 +57,7 @@
 
 | Scope | Recorded Runs | Counted Runs |
 |---|---:|---:|
-| targeted | 162 | 99 |
+| targeted | 163 | 100 |
 | legacy | 137 | 137 |
 | broad | 26 | 25 |
 | release-gate | 6 | 6 |
@@ -76,7 +76,7 @@
 
 | Deployment ID | Target | Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate | Latest Run | Commit |
 |---|---|---:|---:|---:|---:|---:|---|---|
-| dpl_HUrc3CAatRmgXyihV3V44t7zuFpS | vercel-production | 2 | 22 | 100% | 0 | 0% | QA-20260423-0335 | 644af633 |
+| dpl_HUrc3CAatRmgXyihV3V44t7zuFpS | vercel-production | 3 | 29 | 100% | 0 | 0% | QA-20260423-0336 | 644af633 |
 | dpl_643GY6xfecoQXhCqzRUnE4TNajmF | vercel-production | 2 | 25 | 96% | 1 | 50% | QA-20260422-0330 | 538282c1 |
 | dpl_3cutqnX7vMtm5qAuxzgnAnVULEmk | vercel-production | 1 | 15 | 86.67% | 1 | 100% | QA-20260421-0323 | 06e47ff8 |
 | dpl_JAFCywvdMLnVLVRLW6x3KaLuRi8u | vercel-production | 1 | 17 | 100% | 0 | 0% | QA-20260419-0309 | 74bb7960 |
@@ -106,7 +106,7 @@
 | 2026-04-20 | 2 | 10 | 100% | 0 | 0 | 0% |
 | 2026-04-21 | 3 | 40 | 95% | 1 | 1 | 33.33% |
 | 2026-04-22 | 1 | 15 | 93.33% | 1 | 1 | 100% |
-| 2026-04-23 | 2 | 22 | 100% | 0 | 0 | 0% |
+| 2026-04-23 | 3 | 29 | 100% | 0 | 0 | 0% |
 
 ## Recent Regression Runs
 
