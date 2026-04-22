@@ -4,13 +4,17 @@
 
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { EnhancedServerData } from '@/types/dashboard/server-dashboard.types';
 import { useWorkerStats } from './useWorkerStats';
 
+const loggerMock = vi.hoisted(() => ({
+  debug: vi.fn(),
+  error: vi.fn(),
+  info: vi.fn(),
+}));
+
 vi.mock('@/lib/logging', () => ({
-  logger: {
-    error: vi.fn(),
-    info: vi.fn(),
-  },
+  logger: loggerMock,
 }));
 
 class MockWorker {
@@ -23,6 +27,7 @@ class MockWorker {
 describe('useWorkerStats', () => {
   beforeEach(() => {
     vi.stubGlobal('Worker', MockWorker as unknown as typeof Worker);
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
@@ -60,5 +65,39 @@ describe('useWorkerStats', () => {
     unmount();
 
     await expect(pendingPromise).rejects.toThrow('Worker terminated');
+  });
+
+  it('unmount로 worker가 종료되면 stats 계산은 fallback으로 복구하고 error 로그를 남기지 않는다', async () => {
+    const { result, unmount } = renderHook(() => useWorkerStats());
+    const servers: EnhancedServerData[] = [
+      {
+        id: 'server-1',
+        name: 'server-1',
+        status: 'online',
+        cpu: 20,
+        memory: 40,
+        uptime: 120,
+        type: 'web',
+      },
+    ];
+
+    let pendingPromise!: Promise<unknown>;
+    act(() => {
+      pendingPromise = result.current.calculateStats(servers);
+    });
+
+    unmount();
+
+    await expect(pendingPromise).resolves.toMatchObject({
+      total: 1,
+      online: 1,
+      averageCpu: 20,
+      averageMemory: 40,
+    });
+    expect(loggerMock.error).not.toHaveBeenCalled();
+    expect(loggerMock.debug).toHaveBeenCalledWith(
+      'ℹ️ Worker lifecycle interruption during stats calculation, using sync fallback:',
+      'Worker terminated'
+    );
   });
 });

@@ -1,24 +1,24 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-04-22 18:03:51 KST
+> Generated at: 2026-04-23 00:03:05 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 327 |
-| Counted Runs | 266 |
-| Total Checks | 2122 |
-| Total Passed | 2041 |
-| Total Failed | 74 |
-| Overall Pass Rate | 96.18% |
-| Latest Recorded Run | QA-20260422-0329 |
-| Last Counted Run | QA-20260421-0325 |
+| Recorded Runs | 329 |
+| Counted Runs | 267 |
+| Total Checks | 2137 |
+| Total Passed | 2055 |
+| Total Failed | 75 |
+| Overall Pass Rate | 96.16% |
+| Latest Recorded Run | QA-20260422-0331 |
+| Last Counted Run | QA-20260422-0330 |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-21T09:03:48.553Z -> 2026-04-22T09:03:48.553Z (24h)
+- Window: 2026-04-21T14:47:29.748Z -> 2026-04-22T14:47:29.748Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 
@@ -28,22 +28,22 @@
 
 ## Warnings
 
-- [warning] gate-window-regression-open: Recent gate runs still show regressions. The last 5 gate runs include 1 regression run(s), but the current release-gate-only window is clean. This warning is currently driven by QA-20260421-0323 (broad, non-release-facing) lingering in the rolling gate window. Next: Treat this as historical gate context, not an active release-gate failure. Keep broad/release-gate QA green; the warning will clear once enough clean gate runs replace the older regression in the rolling window.
+- [warning] gate-window-regression-open: Recent gate runs still show regressions. The last 5 gate runs include 2 regression run(s), but the current release-gate-only window is clean. This warning is currently driven by QA-20260421-0323 (broad, non-release-facing), QA-20260422-0330 (broad, non-release-facing) lingering in the rolling gate window. Next: Treat this as historical gate context, not an active release-gate failure. Keep broad/release-gate QA green; the warning will clear once enough clean gate runs replace the older regression in the rolling window.
 
 ## Rolling Windows
 
 | Window | Counted Runs | Checks | Pass Rate | Failed Runs | Failing Run Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| All Counted Runs | 266 | 2122 | 96.18% | 46 | 17.29% | 52 | 19.55% |
-| Last 30 Counted Runs | 30 | 287 | 96.86% | 5 | 16.67% | 6 | 20% |
-| Last 10 Counted Runs | 10 | 110 | 96.36% | 2 | 20% | 2 | 20% |
+| All Counted Runs | 267 | 2137 | 96.16% | 47 | 17.6% | 53 | 19.85% |
+| Last 30 Counted Runs | 30 | 288 | 96.53% | 6 | 20% | 7 | 23.33% |
+| Last 10 Counted Runs | 10 | 103 | 95.15% | 3 | 30% | 3 | 30% |
 
 ## Gate Run Windows
 
 | Window | Counted Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|
-| All Gate Runs | 28 | 397 | 96.98% | 6 | 21.43% |
-| Last 5 Gate Runs | 5 | 76 | 96.05% | 1 | 20% |
+| All Gate Runs | 29 | 412 | 96.84% | 7 | 24.14% |
+| Last 5 Gate Runs | 5 | 69 | 94.2% | 2 | 40% |
 
 ## Release-Gate Only Windows
 
@@ -56,9 +56,9 @@
 
 | Scope | Recorded Runs | Counted Runs |
 |---|---:|---:|
-| targeted | 159 | 99 |
+| targeted | 160 | 99 |
 | legacy | 137 | 137 |
-| broad | 24 | 23 |
+| broad | 25 | 24 |
 | release-gate | 5 | 5 |
 | smoke | 2 | 2 |
 
@@ -68,14 +68,14 @@
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | P0 | 43 | 7 | 16.28% | 0 | 0 | 0% | 43 | 0 |
 | P1 | 144 | 66 | 45.83% | 0 | 0 | 0% | 140 | 4 |
-| P2 | 141 | 43 | 30.5% | 0 | 0 | 0% | 129 | 12 |
+| P2 | 142 | 43 | 30.28% | 1 | 0 | 0% | 129 | 12 |
 | P3 | 17 | 11 | 64.71% | 0 | 0 | 0% | 16 | 1 |
 
 ## Deployment Regression Correlation
 
 | Deployment ID | Target | Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate | Latest Run | Commit |
 |---|---|---:|---:|---:|---:|---:|---|---|
-| dpl_643GY6xfecoQXhCqzRUnE4TNajmF | vercel-production | 1 | 10 | 100% | 0 | 0% | QA-20260421-0324 | 538282c1 |
+| dpl_643GY6xfecoQXhCqzRUnE4TNajmF | vercel-production | 2 | 25 | 96% | 1 | 50% | QA-20260422-0330 | 538282c1 |
 | dpl_3cutqnX7vMtm5qAuxzgnAnVULEmk | vercel-production | 1 | 15 | 86.67% | 1 | 100% | QA-20260421-0323 | 06e47ff8 |
 | dpl_JAFCywvdMLnVLVRLW6x3KaLuRi8u | vercel-production | 1 | 17 | 100% | 0 | 0% | QA-20260419-0309 | 74bb7960 |
 | n/a-vercel-mcp-token-expired | vercel-production | 1 | 12 | 100% | 0 | 0% | QA-20260419-0306 | 608600ab |
@@ -92,7 +92,6 @@
 
 | Date | Runs | Checks | Pass Rate | Failed Runs | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-04-05 | 7 | 72 | 100% | 0 | 0 | 0% |
 | 2026-04-06 | 2 | 22 | 100% | 0 | 0 | 0% |
 | 2026-04-07 | 1 | 18 | 88.89% | 1 | 1 | 100% |
 | 2026-04-08 | 4 | 26 | 100% | 0 | 0 | 0% |
@@ -106,11 +105,13 @@
 | 2026-04-19 | 2 | 29 | 96.55% | 0 | 0 | 0% |
 | 2026-04-20 | 2 | 10 | 100% | 0 | 0 | 0% |
 | 2026-04-21 | 3 | 40 | 95% | 1 | 1 | 33.33% |
+| 2026-04-22 | 1 | 15 | 93.33% | 1 | 1 | 100% |
 
 ## Recent Regression Runs
 
 | Run ID | Time (UTC) | Scope | Failed Checks | Pending | Deferred | Wont-Fix | Title |
 |---|---|---|---:|---:|---:|---:|---|
+| QA-20260422-0330 | 2026-04-22T14:14:24.057Z | broad | 1 | 1 | 0 | 0 | Vercel Playwright broad QA - core routes, dashboard, AI workspace recheck |
 | QA-20260421-0323 | 2026-04-21T00:49:41.064Z | broad | 2 | 2 | 0 | 0 | Production broad QA - AI domain boundary Phase 3 reference refresh blocked by console/date regressions |
 | QA-20260418-0304 | 2026-04-18T12:30:51.893Z | targeted | 1 | 0 | 0 | 1 | Vercel targeted QA - AI metric ranking hotfix |
 | QA-20260417-0299 | 2026-04-16T15:32:08.661Z | broad | 1 | 1 | 0 | 0 | Production broad QA - 8.11.16 dashboard AI parity with font preload warning regression |
@@ -120,12 +121,12 @@
 | QA-20260407-0249 | 2026-04-07T11:55:13.126Z | broad | 2 | 2 | 0 | 0 | Playwright MCP Production QA - Frontend + AI Assistant v8.11.0 broad baseline refresh |
 | QA-20260404-0223 | 2026-04-04T11:06:01.219Z | targeted | 1 | 1 | 0 | 0 | Vercel Playwright QA - dashboard/AI parity rerun after ai-engine parity patch |
 | QA-20260404-0222 | 2026-04-04T09:17:33.588Z | broad | 1 | 1 | 0 | 1 | Vercel Playwright QA - dashboard, AI assistant, and monitoring parity check |
-| QA-20260331-0201 | 2026-03-31T11:58:25.987Z | targeted | 2 | 1 | 0 | 0 | Local dev Playwright QA - Vibe Coding modal CI/CD regression check |
 
 ## Recurring Open Items
 
 | ID | Priority | Status | Seen | Last Seen Run | Title |
 |---|---|---|---:|---|---|
+| dashboard-worker-console-error-on-ai-workspace-return | P2 | pending | 1 | QA-20260422-0330 | Dashboard logs Web Worker fallback error after returning from fullscreen AI workspace |
 | feature-dod-tsc-zero-error | P2 | wont-fix | 9 | QA-20260307-0053 | tsc --noEmit 0 에러 |
 | feature-dod-unit-tests | P2 | wont-fix | 9 | QA-20260307-0053 | 단위 테스트 158개 통과 |
 | obs-fp-fn-weekly-report | P1 | wont-fix | 3 | QA-20260227-0013 | 오탐/미탐 주간 리포트 자동 생성 |

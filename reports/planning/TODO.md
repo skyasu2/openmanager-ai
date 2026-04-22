@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-22 KST (`root-shell-startup-trace` completed, `QA-20260422-0329`)
+**Last Updated**: 2026-04-23 KST (`dashboard-worker-console-fallback` validated locally, `QA-20260422-0331`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -30,6 +30,19 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-23 #171)
+- [x] dashboard-worker-console-fallback 로컬 회귀 검증
+  - `/dashboard/ai-assistant -> /dashboard` 복귀 경로에서 worker lifecycle 종료가 production-style console error로 승격되지 않도록 `useWorkerStats` fallback logging을 정리
+  - unmount 중 stats 계산이 fallback으로 복구되고 `error` 대신 `debug`만 남기는 회귀 테스트를 추가
+  - local Next.js MCP + browser automation 기준 동일 경로 재현 시 runtime error `0`, console error `0` 확인
+  - 검증:
+    - `npx vitest run src/hooks/useWorkerStats.test.ts src/hooks/dashboard/useServerStats.test.ts`
+    - `npm run test:quick`
+    - `npm run type-check`
+    - `npm run lint`
+    - `npm run qa:record -- --input /tmp/qa-run-input-20260422-local-worker-fallback.json`
+    - `npm run qa:status -- --write`
 
 ### Completed (2026-04-22 #170)
 - [x] root-shell-startup-trace 해결

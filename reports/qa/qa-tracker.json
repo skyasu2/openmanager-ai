@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-22T09:03:48.553Z"
+    "updatedAt": "2026-04-22T14:47:29.748Z"
   },
   "sequence": {
-    "nextRunNumber": 330
+    "nextRunNumber": 332
   },
   "summary": {
-    "totalRecordedRuns": 327,
-    "totalRuns": 266,
-    "excludedRuns": 61,
-    "totalChecks": 2122,
-    "totalPassed": 2041,
-    "totalFailed": 74,
-    "completionRate": 100,
+    "totalRecordedRuns": 329,
+    "totalRuns": 267,
+    "excludedRuns": 62,
+    "totalChecks": 2137,
+    "totalPassed": 2055,
+    "totalFailed": 75,
+    "completionRate": 99.7,
     "completedItems": 328,
-    "pendingItems": 0,
+    "pendingItems": 1,
     "deferredItems": 0,
     "wontFixItems": 17,
     "expertDomainsTracked": 8,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260421-0325",
-    "lastRecordedAt": "2026-04-21T11:33:29.560Z",
-    "latestRecordedRunId": "QA-20260422-0329",
-    "latestRecordedAt": "2026-04-22T09:03:48.553Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260422-0330",
+    "lastRecordedAt": "2026-04-22T14:14:24.057Z",
+    "latestRecordedRunId": "QA-20260422-0331",
+    "latestRecordedAt": "2026-04-22T14:47:29.748Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -8006,6 +8006,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-22T09:03:48.553Z"
+    },
+    "dashboard-worker-console-error-on-ai-workspace-return": {
+      "id": "dashboard-worker-console-error-on-ai-workspace-return",
+      "title": "Dashboard logs Web Worker fallback error after returning from fullscreen AI workspace",
+      "priority": "P2",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260422-0330",
+      "firstSeenAt": "2026-04-22T14:14:24.057Z",
+      "lastSeenRunId": "QA-20260422-0330",
+      "lastSeenAt": "2026-04-22T14:14:24.057Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "reports/qa/evidence/qa-20260422-broad-console.log",
+      "lastNote": "Production broad QA reproduced `Worker terminated` -> `Worker 계산 실패, Fallback 사용` console error while navigating `/dashboard/ai-assistant` back to `/dashboard`. UI recovered via fallback, but production console cleanliness regressed on a core route handoff.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-22T14:14:24.057Z"
     }
   },
   "runs": [
@@ -30155,6 +30179,178 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260422-0330",
+      "recordedAt": "2026-04-22T14:14:24.057Z",
+      "recordedAtKst": "2026-04-22 23:14:24 KST",
+      "title": "Vercel Playwright broad QA - core routes, dashboard, AI workspace recheck",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260422-0330.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_643GY6xfecoQXhCqzRUnE4TNajmF",
+        "deploymentUrl": "https://openmanager-1a6wet3vr-skyasus-projects.vercel.app",
+        "commitSha": "538282c1c781fcd9482e88b155d43f3d0f7a1152"
+      },
+      "scope": "broad",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "/ landing render + version badge",
+        "/main redirect to /",
+        "/login render",
+        "/privacy render + back-link",
+        "404 route render",
+        "/api/health 200",
+        "/api/version 200 + version metadata",
+        "/system-boot -> /dashboard",
+        "dashboard render + resource summary",
+        "server detail modal open + 3-tab switch + close",
+        "AI sidebar open",
+        "AI starter prompt send + streaming answer",
+        "/dashboard/ai-assistant fullscreen workspace retention",
+        "fullscreen -> dashboard return path"
+      ],
+      "skippedSurfaces": [
+        "observability/security pack",
+        "Cloud Run admin /monitoring and /monitoring/traces",
+        "X-AI-* timing header proof"
+      ],
+      "checks": {
+        "total": 15,
+        "passed": 14,
+        "failed": 1
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "대표 AI surface(sidebar/fullscreen)와 실제 응답 경로를 production에서 재검증했습니다.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "핵심 route는 동작하지만 fullscreen AI workspace에서 dashboard로 복귀할 때 worker termination fallback console error가 남아 있습니다.",
+          "nextAction": "AI workspace -> dashboard 복귀 시 Web Worker lifecycle를 점검하고 production console cleanliness를 broad baseline 수준으로 복구"
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP로 broad route, modal, AI workspace 흐름을 실제 브라우저에서 검증했습니다.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-22T23:13:07+09:00",
+          "summary": "vercel usage --format json --non-interactive succeeded; current billing period effective usage was 14.3807 USD while billed amount stayed 0.0000 USD, with no unexpected spend spike.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Broad QA landing page",
+          "path": "reports/qa/evidence/qa-20260422-broad-landing.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Broad QA dashboard",
+          "path": "reports/qa/evidence/qa-20260422-broad-dashboard.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Broad QA AI workspace",
+          "path": "reports/qa/evidence/qa-20260422-broad-ai-workspace.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Broad QA production console log",
+          "path": "reports/qa/evidence/qa-20260422-broad-console.log"
+        }
+      ],
+      "links": [],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260422-0331",
+      "recordedAt": "2026-04-22T14:47:29.748Z",
+      "recordedAtKst": "2026-04-22 23:47:29 KST",
+      "title": "Local dev browser verification - AI workspace dashboard return worker fallback",
+      "owner": "codex",
+      "source": "next-devtools-browser-eval",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260422-0331.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://localhost:3000",
+        "frontend": "Next.js Turbopack dev",
+        "backend": "local + configured upstreams",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "4429f7bc9783"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [],
+      "coveredSurfaces": [
+        "/dashboard",
+        "/dashboard/ai-assistant",
+        "AI workspace -> dashboard return path",
+        "worker fallback console cleanliness"
+      ],
+      "skippedSurfaces": [
+        "production deployment",
+        "broad route smoke",
+        "AI streaming answer",
+        "Vercel usage check"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -30163,16 +30359,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 145,
-      "appropriateCount": 135,
+      "seenCount": 146,
+      "appropriateCount": 136,
       "partialCount": 10,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260421-0324",
-      "lastSeenAt": "2026-04-21T01:36:15.864Z",
+      "lastRunId": "QA-20260422-0330",
+      "lastSeenAt": "2026-04-22T14:14:24.057Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The off-domain weather query preserved disclaimer behavior while removing the stale 2023 absolute date regression on production v8.11.25.",
+      "lastRationale": "대표 AI surface(sidebar/fullscreen)와 실제 응답 경로를 production에서 재검증했습니다.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -30180,17 +30376,17 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 86,
+      "seenCount": 87,
       "appropriateCount": 59,
-      "partialCount": 27,
+      "partialCount": 28,
       "inappropriateCount": 0,
-      "improvementNeededCount": 28,
-      "lastRunId": "QA-20260421-0324",
-      "lastSeenAt": "2026-04-21T01:36:15.864Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "The repeated production chunk init TypeError no longer reproduced across the verified core routes on deployment dpl_643GY6xfecoQXhCqzRUnE4TNajmF.",
-      "lastNextAction": ""
+      "improvementNeededCount": 29,
+      "lastRunId": "QA-20260422-0330",
+      "lastSeenAt": "2026-04-22T14:14:24.057Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "핵심 route는 동작하지만 fullscreen AI workspace에서 dashboard로 복귀할 때 worker termination fallback console error가 남아 있습니다.",
+      "lastNextAction": "AI workspace -> dashboard 복귀 시 Web Worker lifecycle를 점검하고 production console cleanliness를 broad baseline 수준으로 복구"
     },
     "ai-security-reliability": {
       "domainId": "ai-security-reliability",
@@ -30231,16 +30427,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 118,
-      "appropriateCount": 111,
+      "seenCount": 119,
+      "appropriateCount": 112,
       "partialCount": 7,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260421-0324",
-      "lastSeenAt": "2026-04-21T01:36:15.864Z",
+      "lastRunId": "QA-20260422-0330",
+      "lastSeenAt": "2026-04-22T14:14:24.057Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Core routes, dashboard modal auto-focus, AI off-domain fallback, and production API health/version were validated together after deploy.",
+      "lastRationale": "Playwright MCP로 broad route, modal, AI workspace 흐름을 실제 브라우저에서 검증했습니다.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

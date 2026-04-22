@@ -1,0 +1,12 @@
+[     338ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://openmanager-ai.vercel.app/does-not-exist-qa-check:0
+[  113506ms] [ERROR] ❌ Worker 계산 실패, Fallback 사용: Error: Worker terminated
+    at https://openmanager-ai.vercel.app/_next/static/chunks/0f536e0e68916ad1.js:1:15628
+    at Map.forEach (<anonymous>)
+    at https://openmanager-ai.vercel.app/_next/static/chunks/0f536e0e68916ad1.js:1:15570
+    at https://openmanager-ai.vercel.app/_next/static/chunks/0f536e0e68916ad1.js:1:18419
+    at ig (https://openmanager-ai.vercel.app/_next/static/chunks/94cf455bd88fee1d.js:1:101306)
+    at ub (https://openmanager-ai.vercel.app/_next/static/chunks/94cf455bd88fee1d.js:1:129156)
+    at uv (https://openmanager-ai.vercel.app/_next/static/chunks/94cf455bd88fee1d.js:1:128419)
+    at uy (https://openmanager-ai.vercel.app/_next/static/chunks/94cf455bd88fee1d.js:1:128551)
+    at uv (https://openmanager-ai.vercel.app/_next/static/chunks/94cf455bd88fee1d.js:1:128481)
+    at uy (https://openmanager-ai.vercel.app/_next/static/chunks/94cf455bd88fee1d.js:1:129069) @ https://openmanager-ai.vercel.app/_next/static/chunks/7d2b2267421ce9f3.js:0

@@ -1,107 +1,98 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-22T09:03:51.044Z",
-  "generatedAtKst": "2026-04-22 18:03:51 KST",
-  "trackerUpdatedAt": "2026-04-22T09:03:48.553Z",
+  "generatedAt": "2026-04-22T15:03:05.715Z",
+  "generatedAtKst": "2026-04-23 00:03:05 KST",
+  "trackerUpdatedAt": "2026-04-22T14:47:29.748Z",
   "totals": {
-    "recordedRuns": 327,
-    "countedRuns": 266,
-    "totalChecks": 2122,
-    "totalPassed": 2041,
-    "totalFailed": 74,
-    "overallPassRatePct": 96.18,
-    "latestRecordedRunId": "QA-20260422-0329",
-    "lastCountedRunId": "QA-20260421-0325"
+    "recordedRuns": 329,
+    "countedRuns": 267,
+    "totalChecks": 2137,
+    "totalPassed": 2055,
+    "totalFailed": 75,
+    "overallPassRatePct": 96.16,
+    "latestRecordedRunId": "QA-20260422-0331",
+    "lastCountedRunId": "QA-20260422-0330"
   },
   "windows": [
     {
       "label": "All Counted Runs",
-      "recordedRuns": 266,
-      "countedRuns": 266,
-      "totalChecks": 2122,
-      "totalPassed": 2041,
-      "totalFailed": 74,
-      "passRatePct": 96.18,
-      "failingRunCount": 46,
-      "failingRunRatePct": 17.29,
-      "regressionRunCount": 52,
-      "regressionRunRatePct": 19.55,
-      "pendingRunCount": 40,
+      "recordedRuns": 267,
+      "countedRuns": 267,
+      "totalChecks": 2137,
+      "totalPassed": 2055,
+      "totalFailed": 75,
+      "passRatePct": 96.16,
+      "failingRunCount": 47,
+      "failingRunRatePct": 17.6,
+      "regressionRunCount": 53,
+      "regressionRunRatePct": 19.85,
+      "pendingRunCount": 41,
       "releaseFacingRuns": 32
     },
     {
       "label": "Last 30 Counted Runs",
       "recordedRuns": 30,
       "countedRuns": 30,
-      "totalChecks": 287,
+      "totalChecks": 288,
       "totalPassed": 278,
-      "totalFailed": 8,
-      "passRatePct": 96.86,
-      "failingRunCount": 5,
-      "failingRunRatePct": 16.67,
-      "regressionRunCount": 6,
-      "regressionRunRatePct": 20,
-      "pendingRunCount": 5,
-      "releaseFacingRuns": 11
+      "totalFailed": 9,
+      "passRatePct": 96.53,
+      "failingRunCount": 6,
+      "failingRunRatePct": 20,
+      "regressionRunCount": 7,
+      "regressionRunRatePct": 23.33,
+      "pendingRunCount": 6,
+      "releaseFacingRuns": 10
     },
     {
       "label": "Last 10 Counted Runs",
       "recordedRuns": 10,
       "countedRuns": 10,
-      "totalChecks": 110,
-      "totalPassed": 106,
-      "totalFailed": 3,
-      "passRatePct": 96.36,
-      "failingRunCount": 2,
-      "failingRunRatePct": 20,
-      "regressionRunCount": 2,
-      "regressionRunRatePct": 20,
-      "pendingRunCount": 1,
-      "releaseFacingRuns": 2
+      "totalChecks": 103,
+      "totalPassed": 98,
+      "totalFailed": 4,
+      "passRatePct": 95.15,
+      "failingRunCount": 3,
+      "failingRunRatePct": 30,
+      "regressionRunCount": 3,
+      "regressionRunRatePct": 30,
+      "pendingRunCount": 2,
+      "releaseFacingRuns": 1
     }
   ],
   "gateWindows": [
     {
       "label": "All Gate Runs",
-      "recordedRuns": 28,
-      "countedRuns": 28,
-      "totalChecks": 397,
-      "totalPassed": 385,
-      "totalFailed": 9,
-      "passRatePct": 96.98,
-      "failingRunCount": 6,
-      "failingRunRatePct": 21.43,
-      "regressionRunCount": 6,
-      "regressionRunRatePct": 21.43,
-      "pendingRunCount": 6,
+      "recordedRuns": 29,
+      "countedRuns": 29,
+      "totalChecks": 412,
+      "totalPassed": 399,
+      "totalFailed": 10,
+      "passRatePct": 96.84,
+      "failingRunCount": 7,
+      "failingRunRatePct": 24.14,
+      "regressionRunCount": 7,
+      "regressionRunRatePct": 24.14,
+      "pendingRunCount": 7,
       "releaseFacingRuns": 24
     },
     {
       "label": "Last 5 Gate Runs",
       "recordedRuns": 5,
       "countedRuns": 5,
-      "totalChecks": 76,
-      "totalPassed": 73,
-      "totalFailed": 2,
-      "passRatePct": 96.05,
-      "failingRunCount": 1,
-      "failingRunRatePct": 20,
-      "regressionRunCount": 1,
-      "regressionRunRatePct": 20,
-      "pendingRunCount": 1,
-      "releaseFacingRuns": 2
+      "totalChecks": 69,
+      "totalPassed": 65,
+      "totalFailed": 3,
+      "passRatePct": 94.2,
+      "failingRunCount": 2,
+      "failingRunRatePct": 40,
+      "regressionRunCount": 2,
+      "regressionRunRatePct": 40,
+      "pendingRunCount": 2,
+      "releaseFacingRuns": 1
     }
   ],
   "recentGateRuns": [
-    {
-      "runId": "QA-20260418-0303",
-      "scope": "broad",
-      "releaseFacing": true,
-      "title": "Production broad QA - 8.11.20 AI hardening verification",
-      "failedChecks": 0,
-      "pendingCount": 0,
-      "deferredCount": 0
-    },
     {
       "runId": "QA-20260419-0306",
       "scope": "broad",
@@ -136,6 +127,15 @@
       "title": "Production broad QA - AI domain boundary Phase 3 reference refreshed on v8.11.25",
       "failedChecks": 0,
       "pendingCount": 0,
+      "deferredCount": 0
+    },
+    {
+      "runId": "QA-20260422-0330",
+      "scope": "broad",
+      "releaseFacing": false,
+      "title": "Vercel Playwright broad QA - core routes, dashboard, AI workspace recheck",
+      "failedChecks": 1,
+      "pendingCount": 1,
       "deferredCount": 0
     }
   ],
@@ -221,7 +221,7 @@
   "scopeDistribution": [
     {
       "scope": "targeted",
-      "totalRuns": 159,
+      "totalRuns": 160,
       "countedRuns": 99
     },
     {
@@ -231,8 +231,8 @@
     },
     {
       "scope": "broad",
-      "totalRuns": 24,
-      "countedRuns": 23
+      "totalRuns": 25,
+      "countedRuns": 24
     },
     {
       "scope": "release-gate",
@@ -270,13 +270,13 @@
     },
     {
       "priority": "P2",
-      "totalItems": 141,
+      "totalItems": 142,
       "recurringItems": 43,
-      "openItems": 0,
+      "openItems": 1,
       "openRecurringItems": 0,
       "completedItems": 129,
       "wontFixItems": 12,
-      "recurrenceRatePct": 30.5,
+      "recurrenceRatePct": 30.28,
       "openRecurrenceRatePct": 0
     },
     {
@@ -296,15 +296,15 @@
       "deploymentId": "dpl_643GY6xfecoQXhCqzRUnE4TNajmF",
       "target": "vercel-production",
       "commitSha": "538282c1c781fcd9482e88b155d43f3d0f7a1152",
-      "runCount": 1,
-      "totalChecks": 10,
-      "totalFailed": 0,
-      "regressionRuns": 0,
-      "failingRuns": 0,
-      "latestRecordedAt": "2026-04-21T01:36:15.864Z",
-      "latestRunId": "QA-20260421-0324",
-      "passRatePct": 100,
-      "regressionRunRatePct": 0
+      "runCount": 2,
+      "totalChecks": 25,
+      "totalFailed": 1,
+      "regressionRuns": 1,
+      "failingRuns": 1,
+      "latestRecordedAt": "2026-04-22T14:14:24.057Z",
+      "latestRunId": "QA-20260422-0330",
+      "passRatePct": 96,
+      "regressionRunRatePct": 50
     },
     {
       "deploymentId": "dpl_3cutqnX7vMtm5qAuxzgnAnVULEmk",
@@ -463,17 +463,6 @@
   ],
   "recentDailyTrend": [
     {
-      "date": "2026-04-05",
-      "runCount": 7,
-      "totalChecks": 72,
-      "totalPassed": 72,
-      "totalFailed": 0,
-      "failingRuns": 0,
-      "regressionRuns": 0,
-      "passRatePct": 100,
-      "regressionRunRatePct": 0
-    },
-    {
       "date": "2026-04-06",
       "runCount": 2,
       "totalChecks": 22,
@@ -615,9 +604,30 @@
       "regressionRuns": 1,
       "passRatePct": 95,
       "regressionRunRatePct": 33.33
+    },
+    {
+      "date": "2026-04-22",
+      "runCount": 1,
+      "totalChecks": 15,
+      "totalPassed": 14,
+      "totalFailed": 1,
+      "failingRuns": 1,
+      "regressionRuns": 1,
+      "passRatePct": 93.33,
+      "regressionRunRatePct": 100
     }
   ],
   "recentRegressionRuns": [
+    {
+      "runId": "QA-20260422-0330",
+      "recordedAt": "2026-04-22T14:14:24.057Z",
+      "scope": "broad",
+      "title": "Vercel Playwright broad QA - core routes, dashboard, AI workspace recheck",
+      "failedChecks": 1,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
     {
       "runId": "QA-20260421-0323",
       "recordedAt": "2026-04-21T00:49:41.064Z",
@@ -707,20 +717,21 @@
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 1
-    },
-    {
-      "runId": "QA-20260331-0201",
-      "recordedAt": "2026-03-31T11:58:25.987Z",
-      "scope": "targeted",
-      "title": "Local dev Playwright QA - Vibe Coding modal CI/CD regression check",
-      "failedChecks": 2,
-      "pendingCount": 1,
-      "deferredCount": 0,
-      "wontFixCount": 0
     }
   ],
   "recurringItems": {
-    "open": [],
+    "open": [
+      {
+        "id": "dashboard-worker-console-error-on-ai-workspace-return",
+        "title": "Dashboard logs Web Worker fallback error after returning from fullscreen AI workspace",
+        "status": "pending",
+        "priority": "P2",
+        "seenCount": 1,
+        "completedCount": 0,
+        "lastSeenRunId": "QA-20260422-0330",
+        "lastResolvedRunId": null
+      }
+    ],
     "wontFix": [
       {
         "id": "feature-dod-tsc-zero-error",
@@ -928,8 +939,8 @@
   },
   "aiLatencyRollup24h": {
     "windowHours": 24,
-    "windowStart": "2026-04-21T09:03:48.553Z",
-    "windowEnd": "2026-04-22T09:03:48.553Z",
+    "windowStart": "2026-04-21T14:47:29.748Z",
+    "windowEnd": "2026-04-22T14:47:29.748Z",
     "recordedRunCount": 0,
     "countedRunCount": 0,
     "sampleCount": 0,
@@ -940,7 +951,7 @@
       "code": "gate-window-regression-open",
       "severity": "warning",
       "headline": "Recent gate runs still show regressions",
-      "detail": "The last 5 gate runs include 1 regression run(s), but the current release-gate-only window is clean. This warning is currently driven by QA-20260421-0323 (broad, non-release-facing) lingering in the rolling gate window.",
+      "detail": "The last 5 gate runs include 2 regression run(s), but the current release-gate-only window is clean. This warning is currently driven by QA-20260421-0323 (broad, non-release-facing), QA-20260422-0330 (broad, non-release-facing) lingering in the rolling gate window.",
       "recommendedAction": "Treat this as historical gate context, not an active release-gate failure. Keep broad/release-gate QA green; the warning will clear once enough clean gate runs replace the older regression in the rolling window."
     }
   ]

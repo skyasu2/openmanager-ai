@@ -67,6 +67,25 @@ import { logger } from '@/lib/logging';
 type WorkerErrorCallback = (error: Error) => void;
 type WorkerTimeout = ReturnType<typeof setTimeout>;
 
+const EXPECTED_WORKER_LIFECYCLE_MESSAGES = new Set([
+  'Worker terminated',
+  'Worker restarted',
+  'Worker not available',
+  'Worker not initialized',
+]);
+
+function getWorkerErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return String(error);
+}
+
+function isExpectedWorkerLifecycleError(error: unknown): boolean {
+  return EXPECTED_WORKER_LIFECYCLE_MESSAGES.has(getWorkerErrorMessage(error));
+}
+
 /**
  * 🔧 Web Worker 관리 Hook
  */
@@ -199,7 +218,10 @@ export const useWorkerStats = () => {
   const calculateStats = useCallback(
     async (servers: EnhancedServerData[]): Promise<ServerStats> => {
       if (!workerRef.current) {
-        throw new Error('Worker not available');
+        logger.debug(
+          'ℹ️ Worker unavailable before stats calculation, using sync fallback'
+        );
+        return calculateServerStatsFallback(servers);
       }
 
       try {
@@ -215,7 +237,14 @@ export const useWorkerStats = () => {
 
         return result;
       } catch (error) {
-        logger.error('❌ Worker 계산 실패, Fallback 사용:', error);
+        if (isExpectedWorkerLifecycleError(error)) {
+          logger.debug(
+            'ℹ️ Worker lifecycle interruption during stats calculation, using sync fallback:',
+            getWorkerErrorMessage(error)
+          );
+        } else {
+          logger.error('❌ Worker 계산 실패, Fallback 사용:', error);
+        }
         return calculateServerStatsFallback(servers);
       }
     },

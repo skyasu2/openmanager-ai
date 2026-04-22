@@ -1,0 +1,53 @@
+{
+  "runId": "QA-20260422-0331",
+  "recordedAt": "2026-04-22T14:47:29.748Z",
+  "recordedAtKst": "2026-04-22 23:47:29 KST",
+  "runTitle": "Local dev browser verification - AI workspace dashboard return worker fallback",
+  "owner": "codex",
+  "source": "next-devtools-browser-eval",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://localhost:3000",
+    "frontend": "Next.js Turbopack dev",
+    "backend": "local + configured upstreams",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "4429f7bc9783"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [],
+  "coveredSurfaces": [
+    "/dashboard",
+    "/dashboard/ai-assistant",
+    "AI workspace -> dashboard return path",
+    "worker fallback console cleanliness"
+  ],
+  "skippedSurfaces": [
+    "production deployment",
+    "broad route smoke",
+    "AI streaming answer",
+    "Vercel usage check"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Reproduced the previously failing /dashboard/ai-assistant -> /dashboard handoff locally after the worker fallback logging change.",
+    "Next.js MCP get_errors reported no runtime errors after returning to /dashboard.",
+    "Browser automation reported console error count 0 for the validated path. Remaining console output was render-performance warnings only."
+  ],
+  "links": []
+}
