@@ -1,30 +1,31 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-04-23 00:53:27 KST
+> Generated at: 2026-04-23 01:04:55 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 332 |
-| Counted Runs | 268 |
-| Total Checks | 2152 |
-| Total Passed | 2070 |
+| Recorded Runs | 333 |
+| Counted Runs | 269 |
+| Total Checks | 2159 |
+| Total Passed | 2077 |
 | Total Failed | 75 |
-| Overall Pass Rate | 96.19% |
-| Latest Recorded Run | QA-20260423-0334 |
-| Last Counted Run | QA-20260423-0334 |
+| Overall Pass Rate | 96.2% |
+| Latest Recorded Run | QA-20260423-0335 |
+| Last Counted Run | QA-20260423-0335 |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-21T15:53:14.284Z -> 2026-04-22T15:53:14.284Z (24h)
-- Runs with observations: 1 recorded / 1 counted
-- Samples: 1
+- Window: 2026-04-21T16:04:43.748Z -> 2026-04-22T16:04:43.748Z (24h)
+- Runs with observations: 2 recorded / 2 counted
+- Samples: 2
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | AI Chat | streaming-ai | 1 | 2950ms | 2950ms | - | - | 2950ms | 2950ms | QA-20260423-0334 |
+| AI Chat | cloud-run | 1 | 188ms | 188ms | - | - | - | - | QA-20260423-0335 |
 
 ## Warnings
 
@@ -34,23 +35,23 @@
 
 | Window | Counted Runs | Checks | Pass Rate | Failed Runs | Failing Run Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| All Counted Runs | 268 | 2152 | 96.19% | 47 | 17.54% | 53 | 19.78% |
-| Last 30 Counted Runs | 30 | 296 | 96.62% | 6 | 20% | 7 | 23.33% |
-| Last 10 Counted Runs | 10 | 113 | 96.46% | 2 | 20% | 2 | 20% |
+| All Counted Runs | 269 | 2159 | 96.2% | 47 | 17.47% | 53 | 19.7% |
+| Last 30 Counted Runs | 30 | 300 | 96.67% | 6 | 20% | 7 | 23.33% |
+| Last 10 Counted Runs | 10 | 116 | 96.55% | 2 | 20% | 2 | 20% |
 
 ## Gate Run Windows
 
 | Window | Counted Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|
-| All Gate Runs | 30 | 427 | 96.96% | 7 | 23.33% |
-| Last 5 Gate Runs | 5 | 72 | 95.83% | 2 | 40% |
+| All Gate Runs | 31 | 434 | 97% | 7 | 22.58% |
+| Last 5 Gate Runs | 5 | 62 | 95.16% | 2 | 40% |
 
 ## Release-Gate Only Windows
 
 | Window | Counted Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|
-| All Release-Gate Runs | 5 | 69 | 100% | 0 | 0% |
-| Last 5 Release-Gate Runs | 5 | 69 | 100% | 0 | 0% |
+| All Release-Gate Runs | 6 | 76 | 100% | 0 | 0% |
+| Last 5 Release-Gate Runs | 5 | 59 | 100% | 0 | 0% |
 
 ## Scope Distribution
 
@@ -59,7 +60,7 @@
 | targeted | 162 | 99 |
 | legacy | 137 | 137 |
 | broad | 26 | 25 |
-| release-gate | 5 | 5 |
+| release-gate | 6 | 6 |
 | smoke | 2 | 2 |
 
 ## Priority Recurrence
@@ -75,7 +76,7 @@
 
 | Deployment ID | Target | Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate | Latest Run | Commit |
 |---|---|---:|---:|---:|---:|---:|---|---|
-| dpl_HUrc3CAatRmgXyihV3V44t7zuFpS | vercel-production | 1 | 15 | 100% | 0 | 0% | QA-20260423-0334 | 644af633 |
+| dpl_HUrc3CAatRmgXyihV3V44t7zuFpS | vercel-production | 2 | 22 | 100% | 0 | 0% | QA-20260423-0335 | 644af633 |
 | dpl_643GY6xfecoQXhCqzRUnE4TNajmF | vercel-production | 2 | 25 | 96% | 1 | 50% | QA-20260422-0330 | 538282c1 |
 | dpl_3cutqnX7vMtm5qAuxzgnAnVULEmk | vercel-production | 1 | 15 | 86.67% | 1 | 100% | QA-20260421-0323 | 06e47ff8 |
 | dpl_JAFCywvdMLnVLVRLW6x3KaLuRi8u | vercel-production | 1 | 17 | 100% | 0 | 0% | QA-20260419-0309 | 74bb7960 |
@@ -105,7 +106,7 @@
 | 2026-04-20 | 2 | 10 | 100% | 0 | 0 | 0% |
 | 2026-04-21 | 3 | 40 | 95% | 1 | 1 | 33.33% |
 | 2026-04-22 | 1 | 15 | 93.33% | 1 | 1 | 100% |
-| 2026-04-23 | 1 | 15 | 100% | 0 | 0 | 0% |
+| 2026-04-23 | 2 | 22 | 100% | 0 | 0 | 0% |
 
 ## Recent Regression Runs
 

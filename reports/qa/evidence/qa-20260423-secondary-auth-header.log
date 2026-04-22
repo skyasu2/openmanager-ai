@@ -1,0 +1,24 @@
+QA-20260423-0335 secondary routes + streaming header proof summary
+
+/auth/error?error=OAuthCallback
+- rendered expected fallback copy: 로그인 실패 / OAuth 콜백 처리 중 오류가 발생했습니다.
+- visible recovery actions: 다시 시도 / 로그인 페이지로 / 게스트 모드로 시작하기
+- console messages: 0 errors, 0 warnings
+
+/auth/success
+- unauthenticated clean session redirected to /login?error=no_user
+- resulting login page console messages: 0 errors, 0 warnings
+
+authenticated browser-session AI stream proof
+- browser-session fetch POST /api/ai/supervisor/stream/v2 returned 200
+- content-type: text/event-stream
+- X-Stream-Protocol: ui-message-stream
+- X-AI-Latency-Ms: 188
+- X-AI-Source: cloud-run
+- X-AI-Mode: streaming
+- preview confirmed SSE payload with data-start, data-mode, data-tool-call, data-tool-result
+
+dashboard access after guest auth
+- /dashboard rendered successfully in same browser session
+- console errors: 0
+- console warnings: 2 preload warnings for _next/static/chunks/13c1ca927ab84bf9.css only

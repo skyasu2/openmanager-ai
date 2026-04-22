@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-22T15:53:14.284Z"
+    "updatedAt": "2026-04-22T16:04:43.748Z"
   },
   "sequence": {
-    "nextRunNumber": 335
+    "nextRunNumber": 336
   },
   "summary": {
-    "totalRecordedRuns": 332,
-    "totalRuns": 268,
+    "totalRecordedRuns": 333,
+    "totalRuns": 269,
     "excludedRuns": 64,
-    "totalChecks": 2152,
-    "totalPassed": 2070,
+    "totalChecks": 2159,
+    "totalPassed": 2077,
     "totalFailed": 75,
     "completionRate": 100,
     "completedItems": 329,
@@ -21,10 +21,10 @@
     "wontFixItems": 17,
     "expertDomainsTracked": 8,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260423-0334",
-    "lastRecordedAt": "2026-04-22T15:53:14.284Z",
-    "latestRecordedRunId": "QA-20260423-0334",
-    "latestRecordedAt": "2026-04-22T15:53:14.284Z"
+    "lastRunId": "QA-20260423-0335",
+    "lastRecordedAt": "2026-04-22T16:04:43.748Z",
+    "latestRecordedRunId": "QA-20260423-0335",
+    "latestRecordedAt": "2026-04-22T16:04:43.748Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -30612,6 +30612,137 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260423-0335",
+      "recordedAt": "2026-04-22T16:04:43.748Z",
+      "recordedAtKst": "2026-04-23 01:04:43 KST",
+      "title": "Vercel complementary release-gate QA - auth fallback routes and streaming header proof",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260423-0335.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_HUrc3CAatRmgXyihV3V44t7zuFpS",
+        "deploymentUrl": "https://openmanager-pamkpiphh-skyasus-projects.vercel.app",
+        "commitSha": "644af633956b673bef4aad27b9962dc97cab1ad6"
+      },
+      "scope": "release-gate",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "/auth/error render + fallback actions",
+        "/auth/error console cleanliness",
+        "/auth/success unauthenticated handoff -> /login?error=no_user",
+        "/auth/success/login console cleanliness",
+        "browser-session guest auth establishment",
+        "authenticated /api/ai/supervisor/stream/v2 POST returns 200 SSE",
+        "X-AI-Latency-Ms header proof on stream route (188ms)",
+        "X-Stream-Protocol ui-message-stream header proof",
+        "same-session /dashboard access after guest auth"
+      ],
+      "skippedSurfaces": [
+        "feedback flow",
+        "Reporter advanced surface",
+        "Analyst advanced surface",
+        "Cloud Run admin /monitoring",
+        "Cloud Run admin /monitoring/traces",
+        "blocked prompt/security regression pack",
+        "dashboard modal-detail pack"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "browser-session stream header proof",
+          "agent": "AI Chat",
+          "provider": "cloud-run",
+          "model": "streaming route header sample",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "authenticated browser fetch response headers",
+          "latencyMs": 188
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Secondary auth fallback routes and a real authenticated streaming request were validated against the same promoted production deployment.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production timing SSOT was confirmed through X-AI-Latency-Ms=188 and X-AI-Source=cloud-run on the authenticated stream route.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "This complementary run extends the release evidence without duplicating the prior broad baseline, focusing only on previously skipped auth/header surfaces.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-23T01:02:12+09:00",
+          "summary": "vercel usage --format json --non-interactive reviewed before complementary release-gate QA; effective usage was 14.3807 USD while billed amount remained 0.0000 USD.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Auth error fallback page",
+          "path": "reports/qa/evidence/qa-20260423-secondary-auth-error.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Auth success no-user handoff",
+          "path": "reports/qa/evidence/qa-20260423-secondary-auth-success-login.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Dashboard after guest auth",
+          "path": "reports/qa/evidence/qa-20260423-secondary-guest-dashboard.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Secondary route and header proof summary",
+          "path": "reports/qa/evidence/qa-20260423-secondary-auth-header.log"
+        }
+      ],
+      "links": [],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -30620,16 +30751,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 147,
-      "appropriateCount": 137,
+      "seenCount": 148,
+      "appropriateCount": 138,
       "partialCount": 10,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260423-0334",
-      "lastSeenAt": "2026-04-22T15:53:14.284Z",
+      "lastRunId": "QA-20260423-0335",
+      "lastSeenAt": "2026-04-22T16:04:43.748Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "AI sidebar와 fullscreen workspace에서 실제 production 응답을 재검증했고 이전 worker fallback regression도 재현되지 않았습니다.",
+      "lastRationale": "Secondary auth fallback routes and a real authenticated streaming request were validated against the same promoted production deployment.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -30637,16 +30768,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 89,
-      "appropriateCount": 61,
+      "seenCount": 90,
+      "appropriateCount": 62,
       "partialCount": 28,
       "inappropriateCount": 0,
       "improvementNeededCount": 29,
-      "lastRunId": "QA-20260423-0334",
-      "lastSeenAt": "2026-04-22T15:53:14.284Z",
+      "lastRunId": "QA-20260423-0335",
+      "lastSeenAt": "2026-04-22T16:04:43.748Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "핵심 dashboard 및 AI workspace 복귀 경로에서 console error 0을 확인했고 streaming fetch resource도 browser performance entry로 확인했습니다.",
+      "lastRationale": "Production timing SSOT was confirmed through X-AI-Latency-Ms=188 and X-AI-Source=cloud-run on the authenticated stream route.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -30688,16 +30819,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 120,
-      "appropriateCount": 113,
+      "seenCount": 121,
+      "appropriateCount": 114,
       "partialCount": 7,
       "inappropriateCount": 0,
       "improvementNeededCount": 9,
-      "lastRunId": "QA-20260423-0334",
-      "lastSeenAt": "2026-04-22T15:53:14.284Z",
+      "lastRunId": "QA-20260423-0335",
+      "lastSeenAt": "2026-04-22T16:04:43.748Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP로 core routes, dashboard modal tabs, AI sidebar, fullscreen retention을 실제 브라우저에서 broad coverage로 기록했습니다.",
+      "lastRationale": "This complementary run extends the release evidence without duplicating the prior broad baseline, focusing only on previously skipped auth/header surfaces.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

@@ -1,17 +1,17 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-23 00:53:27 KST
+> Generated at: 2026-04-23 01:04:55 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 332 |
-| Total Runs (Counted) | 268 |
+| Total Recorded Runs | 333 |
+| Total Runs (Counted) | 269 |
 | Non-counted Runs | 64 |
-| Total Checks | 2152 |
-| Passed | 2070 |
+| Total Checks | 2159 |
+| Passed | 2077 |
 | Failed | 75 |
 | Completed Items | 329 |
 | Pending Items | 0 |
@@ -20,13 +20,13 @@
 | Expert Domains Tracked | 8 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260423-0334 (2026-04-22T15:53:14.284Z) |
-| Latest Recorded Run | QA-20260423-0334 (2026-04-22T15:53:14.284Z) |
+| Last Counted Run | QA-20260423-0335 (2026-04-22T16:04:43.748Z) |
+| Latest Recorded Run | QA-20260423-0335 (2026-04-22T16:04:43.748Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260423-0334 (2026-04-22T15:53:14.284Z)
+Latest run: QA-20260423-0335 (2026-04-22T16:04:43.748Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -38,27 +38,28 @@ Latest run: QA-20260423-0334 (2026-04-22T15:53:14.284Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | vercel usage --format json --non-interactive reviewed before broad production QA; effective usage was 14.3807 USD while billed amount remained 0.0000 USD. |
+| vercel | cli | checked | normal | vercel usage --format json --non-interactive reviewed before complementary release-gate QA; effective usage was 14.3807 USD while billed amount remained 0.0000 USD. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-21T15:53:14.284Z -> 2026-04-22T15:53:14.284Z (24h)
-- Runs with observations: 1 recorded / 1 counted
-- Samples: 1
+- Window: 2026-04-21T16:04:43.748Z -> 2026-04-22T16:04:43.748Z (24h)
+- Runs with observations: 2 recorded / 2 counted
+- Samples: 2
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | AI Chat | streaming-ai | 1 | 2950ms | 2950ms | - | - | 2950ms | 2950ms | QA-20260423-0334 |
+| AI Chat | cloud-run | 1 | 188ms | 188ms | - | - | - | - | QA-20260423-0335 |
 
 ## Coverage (Latest Run)
 
-- Scope: broad
+- Scope: release-gate
 - Release-Facing: yes
 - Counts Toward Summary: yes
 - Deployment: dpl_HUrc3CAatRmgXyihV3V44t7zuFpS / SHA 644af633
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: / landing render + version badge, /main redirect to /, /login render + auth entry points + privacy link, /privacy render + login back-link, 404 route render, /api/health 200 + healthy services, /api/version 200 + version metadata, /system-boot -> /dashboard redirect, dashboard render + resource summary, server detail modal open + 3-tab switch + close, AI sidebar open + starter prompt fill, AI starter prompt send + streaming answer + latency chip, AI streaming fetch resource proof (/api/ai/supervisor/stream/v2), /dashboard/ai-assistant fullscreen workspace retention, fullscreen -> dashboard return path + console cleanliness
-- Skipped Surfaces: observability/security pack, Cloud Run admin /monitoring and /monitoring/traces, /auth/error and /auth/success secondary routes, feedback flow, Reporter/Analyst advanced surfaces, X-AI-* response header capture
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, observability-pack
+- Covered Surfaces: /auth/error render + fallback actions, /auth/error console cleanliness, /auth/success unauthenticated handoff -> /login?error=no_user, /auth/success/login console cleanliness, browser-session guest auth establishment, authenticated /api/ai/supervisor/stream/v2 POST returns 200 SSE, X-AI-Latency-Ms header proof on stream route (188ms), X-Stream-Protocol ui-message-stream header proof, same-session /dashboard access after guest auth
+- Skipped Surfaces: feedback flow, Reporter advanced surface, Analyst advanced surface, Cloud Run admin /monitoring, Cloud Run admin /monitoring/traces, blocked prompt/security regression pack, dashboard modal-detail pack
 
 ## Links (Latest Run)
 
@@ -70,11 +71,10 @@ Latest run: QA-20260423-0334 (2026-04-22T15:53:14.284Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Broad QA landing page | `reports/qa/evidence/qa-20260423-broad-landing.png` | - |
-| playwright-screenshot | Broad QA dashboard | `reports/qa/evidence/qa-20260423-broad-dashboard.png` | - |
-| playwright-screenshot | Broad QA AI sidebar response | `reports/qa/evidence/qa-20260423-broad-ai-sidebar.png` | - |
-| playwright-screenshot | Broad QA AI workspace | `reports/qa/evidence/qa-20260423-broad-ai-workspace.png` | - |
-| playwright-console | Broad QA console summary | `reports/qa/evidence/qa-20260423-broad-console.log` | - |
+| playwright-screenshot | Auth error fallback page | `reports/qa/evidence/qa-20260423-secondary-auth-error.png` | - |
+| playwright-screenshot | Auth success no-user handoff | `reports/qa/evidence/qa-20260423-secondary-auth-success-login.png` | - |
+| playwright-screenshot | Dashboard after guest auth | `reports/qa/evidence/qa-20260423-secondary-guest-dashboard.png` | - |
+| playwright-console | Secondary route and header proof summary | `reports/qa/evidence/qa-20260423-secondary-auth-header.log` | - |
 
 ## Expert Domain Open Gaps
 
@@ -460,6 +460,7 @@ Latest run: QA-20260423-0334 (2026-04-22T15:53:14.284Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260423-0335 | 2026-04-22T16:04:43.748Z | release-gate | yes | yes | Vercel complementary release-gate QA - auth fallback routes and streaming header proof | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260423-0334 | 2026-04-22T15:53:14.284Z | broad | yes | yes | Vercel Playwright broad QA - v8.11.26 release baseline refresh | 15 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260423-0333 | 2026-04-22T15:25:24.516Z | targeted | no | no | QA sync - observability gap cleared after worker fallback production recheck | 0 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260423-0332 | 2026-04-22T15:20:28.286Z | targeted | no | no | Vercel targeted QA - AI workspace dashboard return worker fallback resolved | 4 | 1 | 0 | 0 | 0 | 0 |
@@ -479,4 +480,3 @@ Latest run: QA-20260423-0334 (2026-04-22T15:53:14.284Z)
 | QA-20260420-0318 | 2026-04-20T05:17:00.396Z | targeted | no | no | Local dev turbopack trace - dashboard lazy shell/server section follow-up | 5 | 2 | 1 | 0 | 0 | 0 |
 | QA-20260420-0317 | 2026-04-20T04:33:26.822Z | targeted | no | no | Local dev turbopack trace - dashboard cold compile follow-up | 5 | 2 | 1 | 0 | 0 | 0 |
 | QA-20260420-0316 | 2026-04-20T04:07:14.690Z | targeted | no | yes | Local dev dashboard runtime verification after QueryProvider devtools hydration fix | 6 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260420-0315 | 2026-04-20T00:37:53.308Z | targeted | no | yes | Local dev runtime verification after CSS/client-boundary split | 4 | 1 | 0 | 0 | 0 | 0 |

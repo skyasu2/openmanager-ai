@@ -1,42 +1,42 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-22T15:53:27.883Z",
-  "generatedAtKst": "2026-04-23 00:53:27 KST",
-  "trackerUpdatedAt": "2026-04-22T15:53:14.284Z",
+  "generatedAt": "2026-04-22T16:04:55.732Z",
+  "generatedAtKst": "2026-04-23 01:04:55 KST",
+  "trackerUpdatedAt": "2026-04-22T16:04:43.748Z",
   "totals": {
-    "recordedRuns": 332,
-    "countedRuns": 268,
-    "totalChecks": 2152,
-    "totalPassed": 2070,
+    "recordedRuns": 333,
+    "countedRuns": 269,
+    "totalChecks": 2159,
+    "totalPassed": 2077,
     "totalFailed": 75,
-    "overallPassRatePct": 96.19,
-    "latestRecordedRunId": "QA-20260423-0334",
-    "lastCountedRunId": "QA-20260423-0334"
+    "overallPassRatePct": 96.2,
+    "latestRecordedRunId": "QA-20260423-0335",
+    "lastCountedRunId": "QA-20260423-0335"
   },
   "windows": [
     {
       "label": "All Counted Runs",
-      "recordedRuns": 268,
-      "countedRuns": 268,
-      "totalChecks": 2152,
-      "totalPassed": 2070,
+      "recordedRuns": 269,
+      "countedRuns": 269,
+      "totalChecks": 2159,
+      "totalPassed": 2077,
       "totalFailed": 75,
-      "passRatePct": 96.19,
+      "passRatePct": 96.2,
       "failingRunCount": 47,
-      "failingRunRatePct": 17.54,
+      "failingRunRatePct": 17.47,
       "regressionRunCount": 53,
-      "regressionRunRatePct": 19.78,
+      "regressionRunRatePct": 19.7,
       "pendingRunCount": 41,
-      "releaseFacingRuns": 33
+      "releaseFacingRuns": 34
     },
     {
       "label": "Last 30 Counted Runs",
       "recordedRuns": 30,
       "countedRuns": 30,
-      "totalChecks": 296,
-      "totalPassed": 286,
+      "totalChecks": 300,
+      "totalPassed": 290,
       "totalFailed": 9,
-      "passRatePct": 96.62,
+      "passRatePct": 96.67,
       "failingRunCount": 6,
       "failingRunRatePct": 20,
       "regressionRunCount": 7,
@@ -48,42 +48,42 @@
       "label": "Last 10 Counted Runs",
       "recordedRuns": 10,
       "countedRuns": 10,
-      "totalChecks": 113,
-      "totalPassed": 109,
+      "totalChecks": 116,
+      "totalPassed": 112,
       "totalFailed": 3,
-      "passRatePct": 96.46,
+      "passRatePct": 96.55,
       "failingRunCount": 2,
       "failingRunRatePct": 20,
       "regressionRunCount": 2,
       "regressionRunRatePct": 20,
       "pendingRunCount": 2,
-      "releaseFacingRuns": 2
+      "releaseFacingRuns": 3
     }
   ],
   "gateWindows": [
     {
       "label": "All Gate Runs",
-      "recordedRuns": 30,
-      "countedRuns": 30,
-      "totalChecks": 427,
-      "totalPassed": 414,
+      "recordedRuns": 31,
+      "countedRuns": 31,
+      "totalChecks": 434,
+      "totalPassed": 421,
       "totalFailed": 10,
-      "passRatePct": 96.96,
+      "passRatePct": 97,
       "failingRunCount": 7,
-      "failingRunRatePct": 23.33,
+      "failingRunRatePct": 22.58,
       "regressionRunCount": 7,
-      "regressionRunRatePct": 23.33,
+      "regressionRunRatePct": 22.58,
       "pendingRunCount": 7,
-      "releaseFacingRuns": 25
+      "releaseFacingRuns": 26
     },
     {
       "label": "Last 5 Gate Runs",
       "recordedRuns": 5,
       "countedRuns": 5,
-      "totalChecks": 72,
-      "totalPassed": 69,
+      "totalChecks": 62,
+      "totalPassed": 59,
       "totalFailed": 3,
-      "passRatePct": 95.83,
+      "passRatePct": 95.16,
       "failingRunCount": 2,
       "failingRunRatePct": 40,
       "regressionRunCount": 2,
@@ -93,15 +93,6 @@
     }
   ],
   "recentGateRuns": [
-    {
-      "runId": "QA-20260419-0309",
-      "scope": "broad",
-      "releaseFacing": true,
-      "title": "Vercel Production Broad QA - 8.11.23 core routes, dashboard modal pack, and AI parity",
-      "failedChecks": 0,
-      "pendingCount": 0,
-      "deferredCount": 0
-    },
     {
       "runId": "QA-20260421-0323",
       "scope": "broad",
@@ -137,15 +128,24 @@
       "failedChecks": 0,
       "pendingCount": 0,
       "deferredCount": 0
+    },
+    {
+      "runId": "QA-20260423-0335",
+      "scope": "release-gate",
+      "releaseFacing": true,
+      "title": "Vercel complementary release-gate QA - auth fallback routes and streaming header proof",
+      "failedChecks": 0,
+      "pendingCount": 0,
+      "deferredCount": 0
     }
   ],
   "releaseGateWindows": [
     {
       "label": "All Release-Gate Runs",
-      "recordedRuns": 5,
-      "countedRuns": 5,
-      "totalChecks": 69,
-      "totalPassed": 69,
+      "recordedRuns": 6,
+      "countedRuns": 6,
+      "totalChecks": 76,
+      "totalPassed": 76,
       "totalFailed": 0,
       "passRatePct": 100,
       "failingRunCount": 0,
@@ -153,14 +153,14 @@
       "regressionRunCount": 0,
       "regressionRunRatePct": 0,
       "pendingRunCount": 0,
-      "releaseFacingRuns": 5
+      "releaseFacingRuns": 6
     },
     {
       "label": "Last 5 Release-Gate Runs",
       "recordedRuns": 5,
       "countedRuns": 5,
-      "totalChecks": 69,
-      "totalPassed": 69,
+      "totalChecks": 59,
+      "totalPassed": 59,
       "totalFailed": 0,
       "passRatePct": 100,
       "failingRunCount": 0,
@@ -172,15 +172,6 @@
     }
   ],
   "recentReleaseGateRuns": [
-    {
-      "runId": "QA-20260404-0229",
-      "scope": "release-gate",
-      "releaseFacing": true,
-      "title": "Vercel Production Broad Release-Gate QA - core routes + dashboard + AI stream parity",
-      "failedChecks": 0,
-      "pendingCount": 0,
-      "deferredCount": 0
-    },
     {
       "runId": "QA-20260405-0235",
       "scope": "release-gate",
@@ -216,6 +207,15 @@
       "failedChecks": 0,
       "pendingCount": 0,
       "deferredCount": 0
+    },
+    {
+      "runId": "QA-20260423-0335",
+      "scope": "release-gate",
+      "releaseFacing": true,
+      "title": "Vercel complementary release-gate QA - auth fallback routes and streaming header proof",
+      "failedChecks": 0,
+      "pendingCount": 0,
+      "deferredCount": 0
     }
   ],
   "scopeDistribution": [
@@ -236,8 +236,8 @@
     },
     {
       "scope": "release-gate",
-      "totalRuns": 5,
-      "countedRuns": 5
+      "totalRuns": 6,
+      "countedRuns": 6
     },
     {
       "scope": "smoke",
@@ -296,13 +296,13 @@
       "deploymentId": "dpl_HUrc3CAatRmgXyihV3V44t7zuFpS",
       "target": "vercel-production",
       "commitSha": "644af633956b673bef4aad27b9962dc97cab1ad6",
-      "runCount": 1,
-      "totalChecks": 15,
+      "runCount": 2,
+      "totalChecks": 22,
       "totalFailed": 0,
       "regressionRuns": 0,
       "failingRuns": 0,
-      "latestRecordedAt": "2026-04-22T15:53:14.284Z",
-      "latestRunId": "QA-20260423-0334",
+      "latestRecordedAt": "2026-04-22T16:04:43.748Z",
+      "latestRunId": "QA-20260423-0335",
       "passRatePct": 100,
       "regressionRunRatePct": 0
     },
@@ -607,9 +607,9 @@
     },
     {
       "date": "2026-04-23",
-      "runCount": 1,
-      "totalChecks": 15,
-      "totalPassed": 15,
+      "runCount": 2,
+      "totalChecks": 22,
+      "totalPassed": 22,
       "totalFailed": 0,
       "failingRuns": 0,
       "regressionRuns": 0,
@@ -928,11 +928,11 @@
   },
   "aiLatencyRollup24h": {
     "windowHours": 24,
-    "windowStart": "2026-04-21T15:53:14.284Z",
-    "windowEnd": "2026-04-22T15:53:14.284Z",
-    "recordedRunCount": 1,
-    "countedRunCount": 1,
-    "sampleCount": 1,
+    "windowStart": "2026-04-21T16:04:43.748Z",
+    "windowEnd": "2026-04-22T16:04:43.748Z",
+    "recordedRunCount": 2,
+    "countedRunCount": 2,
+    "sampleCount": 2,
     "buckets": [
       {
         "agent": "AI Chat",
@@ -948,6 +948,21 @@
         "p95ProcessingTimeMs": 2950,
         "latestRunId": "QA-20260423-0334",
         "latestRecordedAt": "2026-04-22T15:53:14.284Z"
+      },
+      {
+        "agent": "AI Chat",
+        "provider": "cloud-run",
+        "sampleCount": 1,
+        "runCount": 1,
+        "countedRunCount": 1,
+        "avgLatencyMs": 188,
+        "p95LatencyMs": 188,
+        "avgTtfbMs": null,
+        "p95TtfbMs": null,
+        "avgProcessingTimeMs": null,
+        "p95ProcessingTimeMs": null,
+        "latestRunId": "QA-20260423-0335",
+        "latestRecordedAt": "2026-04-22T16:04:43.748Z"
       }
     ]
   },
