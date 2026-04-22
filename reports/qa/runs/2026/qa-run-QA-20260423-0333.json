@@ -1,0 +1,59 @@
+{
+  "runId": "QA-20260423-0333",
+  "recordedAt": "2026-04-22T15:25:24.516Z",
+  "recordedAtKst": "2026-04-23 00:25:24 KST",
+  "runTitle": "QA sync - observability gap cleared after worker fallback production recheck",
+  "owner": "codex",
+  "source": "qa-status-sync",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "644af633956b673bef4aad27b9962dc97cab1ad6"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": [],
+  "coveredSurfaces": [
+    "tracker expert gap sync",
+    "worker fallback production recheck propagation"
+  ],
+  "skippedSurfaces": [
+    "additional browser walkthrough",
+    "broad route smoke",
+    "AI streaming",
+    "observability/security pack"
+  ],
+  "checks": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The previously open AI workspace -> dashboard worker fallback console regression was rechecked on production v8.11.26 and no longer reproduces.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This non-counted sync run updates the expert-domain status after QA-20260423-0332 closed the worker fallback console regression.",
+    "No new product-surface checks were added beyond the already recorded production targeted recheck."
+  ],
+  "links": []
+}

@@ -1,16 +1,16 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-22T15:20:29.926Z",
-  "generatedAtKst": "2026-04-23 00:20:29 KST",
-  "trackerUpdatedAt": "2026-04-22T15:20:28.286Z",
+  "generatedAt": "2026-04-22T15:25:26.396Z",
+  "generatedAtKst": "2026-04-23 00:25:26 KST",
+  "trackerUpdatedAt": "2026-04-22T15:25:24.516Z",
   "totals": {
-    "recordedRuns": 330,
+    "recordedRuns": 331,
     "countedRuns": 267,
     "totalChecks": 2137,
     "totalPassed": 2055,
     "totalFailed": 75,
     "overallPassRatePct": 96.16,
-    "latestRecordedRunId": "QA-20260423-0332",
+    "latestRecordedRunId": "QA-20260423-0333",
     "lastCountedRunId": "QA-20260422-0330"
   },
   "windows": [
@@ -221,7 +221,7 @@
   "scopeDistribution": [
     {
       "scope": "targeted",
-      "totalRuns": 161,
+      "totalRuns": 162,
       "countedRuns": 99
     },
     {
@@ -928,8 +928,8 @@
   },
   "aiLatencyRollup24h": {
     "windowHours": 24,
-    "windowStart": "2026-04-21T15:20:28.286Z",
-    "windowEnd": "2026-04-22T15:20:28.286Z",
+    "windowStart": "2026-04-21T15:25:24.516Z",
+    "windowEnd": "2026-04-22T15:25:24.516Z",
     "recordedRunCount": 0,
     "countedRunCount": 0,
     "sampleCount": 0,

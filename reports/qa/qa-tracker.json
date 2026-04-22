@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-22T15:20:28.286Z"
+    "updatedAt": "2026-04-22T15:25:24.516Z"
   },
   "sequence": {
-    "nextRunNumber": 333
+    "nextRunNumber": 334
   },
   "summary": {
-    "totalRecordedRuns": 330,
+    "totalRecordedRuns": 331,
     "totalRuns": 267,
-    "excludedRuns": 63,
+    "excludedRuns": 64,
     "totalChecks": 2137,
     "totalPassed": 2055,
     "totalFailed": 75,
@@ -20,11 +20,11 @@
     "deferredItems": 0,
     "wontFixItems": 17,
     "expertDomainsTracked": 8,
-    "expertDomainsOpenGaps": 1,
+    "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260422-0330",
     "lastRecordedAt": "2026-04-22T14:14:24.057Z",
-    "latestRecordedRunId": "QA-20260423-0332",
-    "latestRecordedAt": "2026-04-22T15:20:28.286Z"
+    "latestRecordedRunId": "QA-20260423-0333",
+    "latestRecordedAt": "2026-04-22T15:25:24.516Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -30413,6 +30413,64 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260423-0333",
+      "recordedAt": "2026-04-22T15:25:24.516Z",
+      "recordedAtKst": "2026-04-23 00:25:24 KST",
+      "title": "QA sync - observability gap cleared after worker fallback production recheck",
+      "owner": "codex",
+      "source": "qa-status-sync",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260423-0333.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "644af633956b673bef4aad27b9962dc97cab1ad6"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [],
+      "coveredSurfaces": [
+        "tracker expert gap sync",
+        "worker fallback production recheck propagation"
+      ],
+      "skippedSurfaces": [
+        "additional browser walkthrough",
+        "broad route smoke",
+        "AI streaming",
+        "observability/security pack"
+      ],
+      "checks": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The previously open AI workspace -> dashboard worker fallback console regression was rechecked on production v8.11.26 and no longer reproduces.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -30438,17 +30496,17 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 87,
-      "appropriateCount": 59,
+      "seenCount": 88,
+      "appropriateCount": 60,
       "partialCount": 28,
       "inappropriateCount": 0,
       "improvementNeededCount": 29,
-      "lastRunId": "QA-20260422-0330",
-      "lastSeenAt": "2026-04-22T14:14:24.057Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "핵심 route는 동작하지만 fullscreen AI workspace에서 dashboard로 복귀할 때 worker termination fallback console error가 남아 있습니다.",
-      "lastNextAction": "AI workspace -> dashboard 복귀 시 Web Worker lifecycle를 점검하고 production console cleanliness를 broad baseline 수준으로 복구"
+      "lastRunId": "QA-20260423-0333",
+      "lastSeenAt": "2026-04-22T15:25:24.516Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "The previously open AI workspace -> dashboard worker fallback console regression was rechecked on production v8.11.26 and no longer reproduces.",
+      "lastNextAction": ""
     },
     "ai-security-reliability": {
       "domainId": "ai-security-reliability",

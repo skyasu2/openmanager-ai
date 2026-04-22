@@ -1,24 +1,24 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-04-23 00:20:29 KST
+> Generated at: 2026-04-23 00:25:26 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 330 |
+| Recorded Runs | 331 |
 | Counted Runs | 267 |
 | Total Checks | 2137 |
 | Total Passed | 2055 |
 | Total Failed | 75 |
 | Overall Pass Rate | 96.16% |
-| Latest Recorded Run | QA-20260423-0332 |
+| Latest Recorded Run | QA-20260423-0333 |
 | Last Counted Run | QA-20260422-0330 |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-21T15:20:28.286Z -> 2026-04-22T15:20:28.286Z (24h)
+- Window: 2026-04-21T15:25:24.516Z -> 2026-04-22T15:25:24.516Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 
@@ -56,7 +56,7 @@
 
 | Scope | Recorded Runs | Counted Runs |
 |---|---:|---:|
-| targeted | 161 | 99 |
+| targeted | 162 | 99 |
 | legacy | 137 | 137 |
 | broad | 25 | 24 |
 | release-gate | 5 | 5 |

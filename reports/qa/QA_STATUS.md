@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-23 00:20:29 KST
+> Generated at: 2026-04-23 00:25:26 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 330 |
+| Total Recorded Runs | 331 |
 | Total Runs (Counted) | 267 |
-| Non-counted Runs | 63 |
+| Non-counted Runs | 64 |
 | Total Checks | 2137 |
 | Passed | 2055 |
 | Failed | 75 |
@@ -18,29 +18,29 @@
 | Deferred Items | 0 |
 | Wont-Fix Items | 17 |
 | Expert Domains Tracked | 8 |
-| Expert Open Gaps | 1 |
+| Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260422-0330 (2026-04-22T14:14:24.057Z) |
-| Latest Recorded Run | QA-20260423-0332 (2026-04-22T15:20:28.286Z) |
+| Latest Recorded Run | QA-20260423-0333 (2026-04-22T15:25:24.516Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260423-0332 (2026-04-22T15:20:28.286Z)
+Latest run: QA-20260423-0333 (2026-04-22T15:25:24.516Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period reviewed before production targeted recheck; billed usage remains 0.0000 USD. |
+| - | - | - | - | - |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-21T15:20:28.286Z -> 2026-04-22T15:20:28.286Z (24h)
+- Window: 2026-04-21T15:25:24.516Z -> 2026-04-22T15:25:24.516Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 
@@ -54,8 +54,8 @@ Latest run: QA-20260423-0332 (2026-04-22T15:20:28.286Z)
 - Release-Facing: no
 - Counts Toward Summary: no
 - Deployment: SHA 644af633
-- Covered Surfaces: /dashboard/ai-assistant, /dashboard, AI workspace -> dashboard return path, production console cleanliness
-- Skipped Surfaces: broad route smoke, AI sidebar streaming, observability/security pack, Cloud Run admin routes
+- Covered Surfaces: tracker expert gap sync, worker fallback production recheck propagation
+- Skipped Surfaces: additional browser walkthrough, broad route smoke, AI streaming, observability/security pack
 
 ## Links (Latest Run)
 
@@ -71,8 +71,7 @@ Latest run: QA-20260423-0332 (2026-04-22T15:20:28.286Z)
 
 ## Expert Domain Open Gaps
 
-- observability-monitoring: IT Monitoring & Observability SME (last QA-20260422-0330)
-  next: AI workspace -> dashboard 복귀 시 Web Worker lifecycle를 점검하고 production console cleanliness를 broad baseline 수준으로 복구
+- None
 
 ## Pending Improvements
 
@@ -454,6 +453,7 @@ Latest run: QA-20260423-0332 (2026-04-22T15:20:28.286Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260423-0333 | 2026-04-22T15:25:24.516Z | targeted | no | no | QA sync - observability gap cleared after worker fallback production recheck | 0 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260423-0332 | 2026-04-22T15:20:28.286Z | targeted | no | no | Vercel targeted QA - AI workspace dashboard return worker fallback resolved | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260422-0331 | 2026-04-22T14:47:29.748Z | targeted | no | no | Local dev browser verification - AI workspace dashboard return worker fallback | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260422-0330 | 2026-04-22T14:14:24.057Z | broad | no | yes | Vercel Playwright broad QA - core routes, dashboard, AI workspace recheck | 15 | 0 | 1 | 0 | 0 | 1 |
@@ -473,4 +473,3 @@ Latest run: QA-20260423-0332 (2026-04-22T15:20:28.286Z)
 | QA-20260420-0316 | 2026-04-20T04:07:14.690Z | targeted | no | yes | Local dev dashboard runtime verification after QueryProvider devtools hydration fix | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260420-0315 | 2026-04-20T00:37:53.308Z | targeted | no | yes | Local dev runtime verification after CSS/client-boundary split | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260419-0314 | 2026-04-19T14:46:29.143Z | targeted | no | no | Local dev runtime triage - root app shell compile bottleneck | 5 | 1 | 1 | 0 | 0 | 0 |
-| QA-20260419-0313 | 2026-04-19T12:51:44.394Z | targeted | no | no | Local dev runtime verification - dashboard compile timeout | 4 | 0 | 0 | 0 | 0 | 0 |
