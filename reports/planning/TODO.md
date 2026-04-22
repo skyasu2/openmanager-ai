@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-22 KST (line-guard hotspot refactor 계획 추가)
+**Last Updated**: 2026-04-22 KST (`ci:local:docker` green 복구, CI stabilization 완료)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| (없음) | - | - | 현재 Active Task 없음 |
+| — | — | none | 현재 active task 없음. backlog 관찰 항목만 유지. |
 
 ---
 
@@ -22,7 +22,6 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| line-guard hotspot refactor | High | `npm run ci:local:docker`의 `line-guard` fail(800+ lines) 복구 작업. 상세: [line-guard-hotspots-refactor-plan.md](line-guard-hotspots-refactor-plan.md) |
 | root-shell-startup-trace | Medium | `QA-20260420-0318` 기준 pending. release blocker는 아니지만 dev 생산성 이슈로 계속 추적. |
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
 | ~~AI Response Visibility & Rate Limit (Phase 1~5)~~ | — | **완료** — archive 이동. write bucket 재평가 결과 `supervisor 10/min`, `jobs/process 5/min`, `daily 100` 유지 결정 로그는 archived plan에 유지. |
@@ -32,6 +31,32 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-22 #169)
+- [x] CI node/dom suite stabilization 완료
+  - root `test:node` / `test:dom` full-suite에서만 재현되던 dashboard/auth/global-error 계열 불안정 테스트를 mock/cache/timing 계약 기준으로 정리
+  - clarification/off-domain loading 관련 follow-up까지 포함해 `npm run ci:local:docker` 전체 green 복구
+  - 상세 계획/계약: [archive/ci-node-dom-suite-stabilization-plan.md](archive/ci-node-dom-suite-stabilization-plan.md)
+  - 검증:
+    - `bash scripts/dev/biome-wrapper.sh check src/hooks/ai/core/useQueryExecution.ts tests/ai-sidebar/useHybridAIQuery.clarification.test.ts src/components/dashboard/ActiveAlertsModal.test.tsx src/components/shared/AuthLoadingUI.tsx`
+    - `node scripts/dev/vitest-main-wrapper.js run --config config/testing/vitest.config.dom.ts tests/ai-sidebar/useHybridAIQuery.clarification.test.ts`
+    - `node scripts/dev/vitest-main-wrapper.js run --config config/testing/vitest.config.dom.ts`
+    - `npm run ci:local:docker`
+
+### Completed (2026-04-22 #168)
+- [x] line-guard hotspot fail 3건 해소 및 CI 게이트 복구
+  - `message-helpers`, `AnalysisBasisBadge`, `orchestrator-execution`를 helper/subcomponent 단위로 분해해 fail threshold `800+`를 모두 제거
+  - 최종 `npm run line-guard` 결과는 warning `25`, fail `0`
+  - 상세 계획/계약: [archive/line-guard-hotspots-refactor-plan.md](archive/line-guard-hotspots-refactor-plan.md)
+  - 검증:
+    - `npx vitest run src/hooks/ai/utils/message-helpers.test.ts`
+    - `npx vitest run src/components/ai/AnalysisBasisBadge.test.tsx`
+    - `npm run type-check`
+    - `npm run lint`
+    - `npm run test:quick`
+    - `npm run line-guard`
+    - `cd cloud-run/ai-engine && npm run type-check`
+    - `cd cloud-run/ai-engine && npm test`
 
 ### Completed (2026-04-22 #167)
 - [x] chrome-devtools 테스트 기반 개선 계획 마감 및 archive 이동
@@ -142,7 +167,6 @@
     - `npm run test:quick`
     - `npm run test:contract`
     - `cd cloud-run/ai-engine && npm run type-check`
-
 ### Completed (2026-04-19 #156)
 - [x] AI latency rollup 리포트 (`avg/p95` by agent/provider`)
   - `qa:record` 입력에 `aiLatencyObservations` structured schema를 추가하고 run JSON / tracker `runs[]`에 보존
