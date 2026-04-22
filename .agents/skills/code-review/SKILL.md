@@ -1,8 +1,6 @@
 ---
 name: code-review
 description: Perform Agile 6-perspective severity-first code review for OpenManager changes with evidence-based findings, regression risk checks, and clear go/no-go reporting. Use when the user asks for a review, risk analysis, merge readiness, or bug/regression hunting.
-version: v1.0.0
-user-invocable: true
 ---
 
 # OpenManager Code Review

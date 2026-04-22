@@ -1,7 +1,6 @@
 ---
 name: qa-state
 description: 통합 QA 및 상태 분석 스킬. 최근 QA/런타임 상태를 분석하고, Vercel/로컬 환경에서 QA를 실행하여 결과를 reports/qa에 누적 기록합니다.
-version: v2.0.0
 ---
 
 # OpenManager QA & State (통합)

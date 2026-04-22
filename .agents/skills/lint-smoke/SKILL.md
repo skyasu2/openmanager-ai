@@ -1,8 +1,6 @@
 ---
 name: lint-smoke
 description: Run fast OpenManager quality checks before commit or push. Use when the user asks for lint/type/test smoke validation, pre-commit checks, or quick confidence on changed frontend/backend code.
-version: v1.1.0
-user-invocable: true
 ---
 
 # OpenManager Lint Smoke
@@ -60,7 +58,3 @@ Lint Smoke Summary
 
 - `references/commands.md`
 - `references/decision-rules.md`
-
-## Changelog
-
-- 2026-03-19: v1.0.0 - version/user-invocable 메타 추가, step 4 실패 조치 구체화

@@ -25,10 +25,20 @@
 - 하위 디렉토리 지침이 상위 지침보다 우선합니다.
 - 지침 체인은 실행 시작 시점에 구성되므로 지침 파일 수정 후 세션 재시작으로 반영 확인합니다.
 
-### 2.2.1 Codex 스킬 위치 규칙
-- 저장소에 공유되는 Codex 스킬의 정본 위치는 `.agents/skills/` 입니다.
-- `.codex/` 는 로컬 런타임/세션 자산이므로 git ignore 대상이며, 팀 공용 스킬 SSOT로 취급하지 않습니다.
-- 스킬을 개선하거나 추가할 때는 먼저 `.agents/skills/` 를 수정하고, 필요할 때만 로컬 `.codex/skills/` 사본을 맞춥니다.
+### 2.2.1 스킬 위치 규칙 (3-AI 아키텍처)
+
+| 경로 | 역할 | AI |
+|------|------|-----|
+| `.agents/skills/` | **Cross-AI SSOT** (agentskills.io 표준, `name`+`description` frontmatter만) | Codex + Gemini 공유 |
+| `.claude/skills/` | Claude 전용 (`allowed-tools`, `disable-model-invocation` 추가) | Claude Code만 |
+| `.gemini/skills/` | `.agents/skills/` symlink (Gemini workspace tier) | Gemini CLI만 |
+| `~/.codex/skills/` | Codex 로컬 런타임 복사본 (git ignore) | Codex CLI만 |
+
+**동기화 규칙:**
+- 스킬 추가/수정 시 → `.agents/skills/` 먼저 수정
+- Codex 반영: `npm run skills:sync:codex`
+- Gemini 반영: `.gemini/skills/` symlink 자동 반영 (`.agents/skills/` 변경 즉시 적용)
+- Claude 반영: `.claude/skills/`에 동일 스킬이 있으면 함께 수정 (Claude 전용 필드 유지)
 
 ### 2.3 MCP 운영 규칙 (Codex)
 - MCP 서버 목록 SSOT는 `.codex/config.toml`의 `[mcp_servers.*]`입니다.

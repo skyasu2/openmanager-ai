@@ -59,19 +59,23 @@ headed 모드로 전환하려면 `.mcp.json`에서 `--headless` 제거 후 Claud
 
 WSL2 전제조건 (이미 충족): `DISPLAY=:0` ✅, `/usr/bin/google-chrome` ✅
 
-## Skills
+## Skills (3-AI 아키텍처)
 
-| Skill | 설명 |
-|-------|------|
-| `git-workflow` | GitLab canonical push + GitHub sync 워크플로우 (v2: GitLab 우선) |
-| `clean_gone` | 원격에서 삭제된 로컬 [gone] 브랜치 정리 (dry-run 후 삭제, worktree 포함) |
-| `cloud-run` | Cloud Run 배포 + GCP 비용 점검 |
-| `lint-smoke` | Lint + 타입 + 테스트 스모크 체크 (node suite 포함) |
-| `code-review` | 6관점 심각도 우선 코드 리뷰 (go/conditional/no-go 판정) |
-| `doc-management` | 문서 현황 점검, 예산 관리 |
-| `qa-ops` | Vercel + Playwright MCP 기반 최종 QA 및 누적 기록 (scope 승격 규칙 포함) |
-| `state-triage` | QA/런타임/AI provider 상태 기반 원인 분석과 다음 단계 결정 |
-| `env-sync` | Vercel/Cloud Run 환경변수 drift 진단 및 동기화 (AI provider 키 포함) |
+> **스킬 SSOT**: `.agents/skills/` (agentskills.io 오픈 표준, Codex + Gemini 공유)
+> Claude 전용 확장: `.claude/skills/` | Gemini: `.gemini/skills/` (symlink) | Codex: `npm run skills:sync:codex`
+
+| Skill | 설명 | Claude | Codex/Gemini |
+|-------|------|:------:|:------------:|
+| `git-workflow` | GitLab canonical push + GitHub sync (GitLab 우선) | ✅ | ✅ |
+| `clean_gone` | [gone] 브랜치 정리 (dry-run → 삭제, worktree 포함) | ✅ | — |
+| `cloud-run` | Cloud Run 배포 + GCP 비용 점검 | ✅ | ✅ |
+| `lint-smoke` | Lint + 타입 + 테스트 스모크 체크 | ✅ | ✅ |
+| `code-review` | 6관점 심각도 우선 리뷰 (go/conditional/no-go) | ✅ | ✅ |
+| `doc-management` | 문서 현황 점검, 예산 관리 | ✅ | ✅ |
+| `qa-ops` | Vercel + Playwright MCP 최종 QA 및 누적 기록 | ✅ | ✅ |
+| `qa-state` | 상태 진단 + QA 실행 + 기록 통합 워크플로우 | ✅ | ✅ |
+| `state-triage` | QA/런타임/AI provider 원인 분석 + 다음 단계 | ✅ | ✅ |
+| `env-sync` | Vercel/Cloud Run env drift 진단 + 동기화 | ✅ | ✅ |
 
 > Built-in skills: `frontend-design` (UI 생성)
 

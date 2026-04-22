@@ -1,8 +1,6 @@
 ---
 name: stitch-incremental
 description: Use Stitch for incremental UI improvement and rapid prototyping on an already implemented OpenManager frontend. Trigger when the user asks to improve/add UI while preserving existing component boundaries, data flow, API contracts, and state architecture (TanStack Query + Zustand).
-version: v1.0.0
-user-invocable: true
 ---
 
 # OpenManager Stitch Incremental

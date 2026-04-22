@@ -1,8 +1,6 @@
 ---
 name: state-triage
 description: Analyze current OpenManager QA, runtime, deployment, and AI-path state; identify the primary symptom, root cause, free-tier fit, and next action. Use when the user asks what is broken now, why a recent Vercel or Cloud Run QA failed, whether the issue can be fixed within free-tier rules, how recent runs compare, or what step to take next after QA.
-version: v1.1.0
-user-invocable: true
 ---
 
 # OpenManager State Triage

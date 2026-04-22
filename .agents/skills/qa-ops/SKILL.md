@@ -1,8 +1,6 @@
 ---
 name: qa-ops
 description: Execute final QA for OpenManager with Vercel+Playwright MCP by default, switch to local dev QA when AI validation is unnecessary, and record every run into reports/qa tracker.
-version: v1.1.0
-user-invocable: true
 ---
 
 # OpenManager QA Ops

@@ -71,6 +71,7 @@
     "deploy:smart": "bash scripts/deploy/deploy-with-runner-fallback.sh",
     "sync:github": "bash scripts/sync/github-sync.sh",
     "sync:github:dry-run": "bash scripts/sync/github-sync.sh --dry-run",
+    "skills:sync:codex": "bash scripts/skills/sync-codex-skills.sh",
     "git:rename-public-remote": "bash scripts/git/rename-public-remote.sh",
     "gitlab:protection:check": "node scripts/gitlab/check-main-protection.mjs",
     "gitlab:deploy:check": "node scripts/gitlab/check-main-protection.mjs",

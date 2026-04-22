@@ -1,8 +1,6 @@
 ---
 name: env-sync
 description: Diagnose and fix OpenManager environment drift across .env.local, Vercel preview/production, and server-side fallbacks. Use when health checks fail after deploy, preview and production behave differently, auth or Supabase envs are missing, or the user asks to sync, verify, or harden runtime environment variables.
-version: v1.0.0
-user-invocable: true
 ---
 
 # OpenManager Env Sync

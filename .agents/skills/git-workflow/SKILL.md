@@ -1,8 +1,6 @@
 ---
 name: git-workflow
 description: Safe git commit, push, and PR workflow for OpenManager with conventional commits, non-destructive rules, and MCP-first PR creation. Use when user asks to commit, push, open PR, or sync branch.
-version: v1.3.0
-user-invocable: true
 ---
 
 # OpenManager Git Workflow

@@ -1,8 +1,6 @@
 ---
 name: doc-management
 description: Check documentation budget, detect duplicates, and suggest merges/archives. Use when creating or reviewing docs.
-version: v1.0.0
-user-invocable: true
 ---
 
 # OpenManager Doc Management
