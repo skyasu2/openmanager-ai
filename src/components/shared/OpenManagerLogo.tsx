@@ -22,6 +22,8 @@ interface OpenManagerLogoProps {
   className?: string;
   /** 클릭 시 이동할 경로 (기본: /) */
   href?: string;
+  /** Link prefetch 여부 (기본: false, 로고는 저우선 탐색 링크로 취급) */
+  prefetch?: boolean;
   /** 로고 제목 태그 (접근성/문서 구조 제어용) */
   titleAs?: 'h1' | 'p' | 'span';
 }
@@ -38,6 +40,7 @@ export const OpenManagerLogo: React.FC<OpenManagerLogoProps> = ({
   showSubtitle = true,
   className = '',
   href,
+  prefetch = false,
   titleAs = 'h1',
 }) => {
   const { aiAgent, isSystemStarted } = useUnifiedAdminStore(
@@ -99,7 +102,11 @@ export const OpenManagerLogo: React.FC<OpenManagerLogoProps> = ({
   // href가 제공되면 Link로 래핑, 아니면 그대로 반환
   if (href) {
     return (
-      <Link href={href} className="transition-opacity hover:opacity-80">
+      <Link
+        href={href}
+        prefetch={prefetch}
+        className="transition-opacity hover:opacity-80"
+      >
         {content}
       </Link>
     );
