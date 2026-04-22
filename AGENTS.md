@@ -29,15 +29,16 @@
 
 | 경로 | 역할 | AI |
 |------|------|-----|
-| `.agents/skills/` | **Cross-AI SSOT** (agentskills.io 표준, `name`+`description` frontmatter만) | Codex + Gemini 공유 |
+| `.agents/skills/` | **Cross-AI SSOT** (agentskills.io 표준, `name`+`description` frontmatter만) | Codex + **Gemini 직접 스캔** |
 | `.claude/skills/` | Claude 전용 (`allowed-tools`, `disable-model-invocation` 추가) | Claude Code만 |
-| `.gemini/skills/` | `.agents/skills/` symlink (Gemini workspace tier) | Gemini CLI만 |
 | `~/.codex/skills/` | Codex 로컬 런타임 복사본 (git ignore) | Codex CLI만 |
+
+> **Gemini 스킬 동작**: Gemini CLI는 workspace 내 모든 `SKILL.md`를 자동 스캔하므로 `.agents/skills/`를 별도 링크 없이 직접 인식합니다. `gemini skills list`로 확인 가능.
 
 **동기화 규칙:**
 - 스킬 추가/수정 시 → `.agents/skills/` 먼저 수정
 - Codex 반영: `npm run skills:sync:codex`
-- Gemini 반영: `.gemini/skills/` symlink 자동 반영 (`.agents/skills/` 변경 즉시 적용)
+- Gemini 반영: 자동 (workspace 스캔)
 - Claude 반영: `.claude/skills/`에 동일 스킬이 있으면 함께 수정 (Claude 전용 필드 유지)
 
 ### 2.3 MCP 운영 규칙 (Codex)
