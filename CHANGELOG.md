@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.26](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.25...v8.11.26) (2026-04-22)
+
+
+### Bug Fixes
+
+* **dashboard:** dedupe dev bootstrap side effects ([2579a01](https://gitlab.com/skyasu2/openmanager-ai/-/commit/2579a01a0e75ef717c85f072b8fdcd951d4e34ed))
+* **dashboard:** downgrade expected worker fallback noise ([c421e35](https://gitlab.com/skyasu2/openmanager-ai/-/commit/c421e35da618c18608f8ce090c782ad69918c085))
+* **dev:** trim root startup compile graph ([5a56b25](https://gitlab.com/skyasu2/openmanager-ai/-/commit/5a56b25e417f87b01c29c8f4e3701eac06f7da99))
+* **landing:** stabilize cls and gate system status fetch ([29b9d1e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/29b9d1ee715125eec7778cff9324caac447fe593))
+* **skills:** remove redundant gemini symlinks, use direct workspace scan ([ff2ee95](https://gitlab.com/skyasu2/openmanager-ai/-/commit/ff2ee95c910f4d538cde507b143074e8f4bb4ae6))
+
+
+### Performance Improvements
+
+* **dev:** trim root startup path ([837903d](https://gitlab.com/skyasu2/openmanager-ai/-/commit/837903dfad6847d0a6e41198aee41c074e0974d7))
+
+
+### Code Refactoring
+
+* **codebase:** break up line-guard hotspots ([f433d0f](https://gitlab.com/skyasu2/openmanager-ai/-/commit/f433d0f75b5d9651f45b21865ab538ec6f5d7b5f))
+
+
+### Tests
+
+* **ci:** stabilize node and dom suites ([800bc43](https://gitlab.com/skyasu2/openmanager-ai/-/commit/800bc43f7f784bb8def8bd103f02a82d5c5ab6e0))
+* **dom:** stabilize warning-only component suites ([47da84e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/47da84e4ba8aecf6888b13c935a2a98596720333))
+* **qa:** record root startup trace improvement ([8431a75](https://gitlab.com/skyasu2/openmanager-ai/-/commit/8431a75adb870bd5675cd26adb2221672842671f))
+* **qa:** record root startup trace rerun ([a796a0e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/a796a0ee7a4d80cc028b06e16fda7c7f45c37e1b))
+* **qa:** record targeted vercel modal coverage run ([01fb856](https://gitlab.com/skyasu2/openmanager-ai/-/commit/01fb856730ee9ac03a2a90cbe54430de7ee5e521))
+
 ## [8.11.25](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.24...v8.11.25) (2026-04-21)
 
 
