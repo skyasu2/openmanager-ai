@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-23T15:15:14.762Z"
+    "updatedAt": "2026-04-23T16:21:52.417Z"
   },
   "sequence": {
-    "nextRunNumber": 341
+    "nextRunNumber": 342
   },
   "summary": {
-    "totalRecordedRuns": 338,
-    "totalRuns": 274,
+    "totalRecordedRuns": 339,
+    "totalRuns": 275,
     "excludedRuns": 64,
-    "totalChecks": 2226,
-    "totalPassed": 2140,
+    "totalChecks": 2231,
+    "totalPassed": 2145,
     "totalFailed": 79,
-    "completionRate": 99.7,
-    "completedItems": 331,
-    "pendingItems": 1,
+    "completionRate": 100,
+    "completedItems": 332,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 17,
     "expertDomainsTracked": 9,
     "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260424-0340",
-    "lastRecordedAt": "2026-04-23T15:15:14.762Z",
-    "latestRecordedRunId": "QA-20260424-0340",
-    "latestRecordedAt": "2026-04-23T15:15:14.762Z"
+    "lastRunId": "QA-20260424-0341",
+    "lastRecordedAt": "2026-04-23T16:21:52.417Z",
+    "latestRecordedRunId": "QA-20260424-0341",
+    "latestRecordedAt": "2026-04-23T16:21:52.417Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -8083,27 +8083,27 @@
     },
     "landing-profile-label-content-name-mismatch": {
       "id": "landing-profile-label-content-name-mismatch",
-      "title": "Landing profile button accessible name should satisfy label-in-name audit",
+      "title": "Landing profile button accessible name now satisfies label-in-name audit",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260424-0340",
       "firstSeenAt": "2026-04-23T15:15:14.762Z",
-      "lastSeenRunId": "QA-20260424-0340",
-      "lastSeenAt": "2026-04-23T15:15:14.762Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260424-0341",
+      "lastSeenAt": "2026-04-23T16:21:52.417Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "",
+      "lastEvidence": "reports/qa/evidence/qa-20260424-v81132-lighthouse-summary.txt",
       "lastNote": "Lighthouse flagged #profile-menu-button with label-content-name-mismatch on production v8.11.28; local fix is prepared but not yet deployed in this run.",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-04-23T15:15:14.762Z"
+      "lastStatusChangeAt": "2026-04-23T16:21:52.417Z"
     }
   },
   "runs": [
@@ -31563,6 +31563,137 @@
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260424-0341",
+      "recordedAt": "2026-04-23T16:21:52.417Z",
+      "recordedAtKst": "2026-04-24 01:21:52 KST",
+      "title": "Production landing accessibility recheck on v8.11.32 after decorative profile affordance fix",
+      "owner": "codex",
+      "source": "chrome-devtools-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260424-0341.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_Ab1ZA6FUYvA4LE67mWidSFvPvYP2",
+        "deploymentUrl": "https://openmanager-q87lt2d2i-skyasus-projects.vercel.app",
+        "commitSha": "41ae15999d7ae943a2e154bb67612a10e3fdf266"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "/ landing render on production with version badge v8.11.32",
+        "Landing profile button accessible name recheck: GU 게스트 사용자 게스트 로그인",
+        "Chrome DevTools Lighthouse navigation audit 47 pass / 0 fail",
+        "Chrome DevTools console error/warn/issue scan: none",
+        "Chrome DevTools document/xhr/fetch network scan: root and /api/system all 200"
+      ],
+      "skippedSurfaces": [
+        "Broader dashboard/AI workflow replay",
+        "Playwright browser_eval direct automation recheck (MCP start returned Connection closed in this session)"
+      ],
+      "checks": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "accessibility-ux",
+          "domainName": "Accessibility / UX QA",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Landing profile button accessible name now matches the visible identity label and Lighthouse no longer reports label-content-name-mismatch.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Console remained clean and root/api.system traffic stayed 200 during the targeted production recheck.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Chrome DevTools MCP completed the authoritative verification, but next_devtools browser_eval could not start a fresh Playwright session in this turn.",
+          "nextAction": "Stabilize Playwright MCP start path so targeted rechecks can use live browser automation without fallback notes."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-24T01:18:15+09:00",
+          "summary": "vercel usage --format json --non-interactive reviewed after production recheck; effective usage remained 15.0518 USD while billed amount remained 0.0000 USD.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "v8.11.32 accessibility recheck summary",
+          "path": "reports/qa/evidence/qa-20260424-v81132-accessibility-recheck.txt"
+        },
+        {
+          "type": "playwright-console",
+          "label": "v8.11.32 browser console summary",
+          "path": "reports/qa/evidence/qa-20260424-v81132-browser-console.txt"
+        },
+        {
+          "type": "playwright-network",
+          "label": "v8.11.32 browser network summary",
+          "path": "reports/qa/evidence/qa-20260424-v81132-browser-network.txt"
+        },
+        {
+          "type": "playwright-console",
+          "label": "v8.11.32 lighthouse summary",
+          "path": "reports/qa/evidence/qa-20260424-v81132-lighthouse-summary.txt"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "v8.11.32 landing screenshot",
+          "path": "reports/qa/evidence/qa-20260424-v81132-landing.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "v8.11.32 landing snapshot",
+          "path": "reports/qa/evidence/qa-20260424-v81132-landing-snapshot.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production root",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/Ab1ZA6FUYvA4LE67mWidSFvPvYP2"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -31588,16 +31719,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 95,
-      "appropriateCount": 67,
+      "seenCount": 96,
+      "appropriateCount": 68,
       "partialCount": 28,
       "inappropriateCount": 0,
       "improvementNeededCount": 29,
-      "lastRunId": "QA-20260424-0340",
-      "lastSeenAt": "2026-04-23T15:15:14.762Z",
+      "lastRunId": "QA-20260424-0341",
+      "lastSeenAt": "2026-04-23T16:21:52.417Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Browser console stayed clean, core AI endpoints returned 200s, and landing Lighthouse scores remained 100/100/100 aside from one accessibility rule finding on the profile button label-in-name check.",
+      "lastRationale": "Console remained clean and root/api.system traffic stayed 200 during the targeted production recheck.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -31639,17 +31770,17 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 125,
+      "seenCount": 126,
       "appropriateCount": 118,
-      "partialCount": 7,
+      "partialCount": 8,
       "inappropriateCount": 0,
-      "improvementNeededCount": 9,
-      "lastRunId": "QA-20260424-0340",
-      "lastSeenAt": "2026-04-23T15:15:14.762Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP and Chrome DevTools MCP together covered route smoke, modal/detail flows, and accessibility/perimeter diagnostics in one broad run.",
-      "lastNextAction": ""
+      "improvementNeededCount": 10,
+      "lastRunId": "QA-20260424-0341",
+      "lastSeenAt": "2026-04-23T16:21:52.417Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "Chrome DevTools MCP completed the authoritative verification, but next_devtools browser_eval could not start a fresh Playwright session in this turn.",
+      "lastNextAction": "Stabilize Playwright MCP start path so targeted rechecks can use live browser automation without fallback notes."
     },
     "data-metrics-quality": {
       "domainId": "data-metrics-quality",
@@ -31707,17 +31838,17 @@
       "domainName": "Accessibility / UX QA",
       "firstSeenRunId": "QA-20260423-0337",
       "firstSeenAt": "2026-04-23T09:08:17.769Z",
-      "seenCount": 2,
-      "appropriateCount": 0,
+      "seenCount": 3,
+      "appropriateCount": 1,
       "partialCount": 2,
       "inappropriateCount": 0,
       "improvementNeededCount": 2,
-      "lastRunId": "QA-20260424-0340",
-      "lastSeenAt": "2026-04-23T15:15:14.762Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Chrome DevTools Lighthouse still flags label-content-name-mismatch on the landing profile button because the visible identity text does not align with the computed accessible name order expected by axe.",
-      "lastNextAction": "Reorder the landing/dashboard profile button accessible name so the visible identity text leads the computed name, then rerun production broad QA."
+      "lastRunId": "QA-20260424-0341",
+      "lastSeenAt": "2026-04-23T16:21:52.417Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "Landing profile button accessible name now matches the visible identity label and Lighthouse no longer reports label-content-name-mismatch.",
+      "lastNextAction": ""
     }
   }
 }

@@ -1,31 +1,30 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-04-24 00:16:25 KST
+> Generated at: 2026-04-24 01:22:05 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 338 |
-| Counted Runs | 274 |
-| Total Checks | 2226 |
-| Total Passed | 2140 |
+| Recorded Runs | 339 |
+| Counted Runs | 275 |
+| Total Checks | 2231 |
+| Total Passed | 2145 |
 | Total Failed | 79 |
-| Overall Pass Rate | 96.14% |
-| Latest Recorded Run | QA-20260424-0340 |
-| Last Counted Run | QA-20260424-0340 |
+| Overall Pass Rate | 96.15% |
+| Latest Recorded Run | QA-20260424-0341 |
+| Last Counted Run | QA-20260424-0341 |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-22T15:15:14.762Z -> 2026-04-23T15:15:14.762Z (24h)
-- Runs with observations: 5 recorded / 5 counted
-- Samples: 7
+- Window: 2026-04-22T16:21:52.417Z -> 2026-04-23T16:21:52.417Z (24h)
+- Runs with observations: 3 recorded / 3 counted
+- Samples: 5
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| AI Chat | cloud-run | 6 | 1942ms | 9495ms | 471ms | 675ms | 8370ms | 19421ms | QA-20260423-0339 |
-| AI Chat | streaming-ai | 1 | 2950ms | 2950ms | - | - | 2950ms | 2950ms | QA-20260423-0334 |
+| AI Chat | cloud-run | 5 | 2293ms | 9495ms | 471ms | 675ms | 8370ms | 19421ms | QA-20260423-0339 |
 
 ## Warnings
 
@@ -35,9 +34,9 @@
 
 | Window | Counted Runs | Checks | Pass Rate | Failed Runs | Failing Run Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| All Counted Runs | 274 | 2226 | 96.14% | 50 | 18.25% | 56 | 20.44% |
-| Last 30 Counted Runs | 30 | 336 | 96.43% | 8 | 26.67% | 8 | 26.67% |
-| Last 10 Counted Runs | 10 | 129 | 96.12% | 4 | 40% | 4 | 40% |
+| All Counted Runs | 275 | 2231 | 96.15% | 50 | 18.18% | 56 | 20.36% |
+| Last 30 Counted Runs | 30 | 338 | 96.45% | 8 | 26.67% | 8 | 26.67% |
+| Last 10 Counted Runs | 10 | 124 | 95.97% | 4 | 40% | 4 | 40% |
 
 ## Gate Run Windows
 
@@ -57,7 +56,7 @@
 
 | Scope | Recorded Runs | Counted Runs |
 |---|---:|---:|
-| targeted | 166 | 103 |
+| targeted | 167 | 104 |
 | legacy | 137 | 137 |
 | broad | 27 | 26 |
 | release-gate | 6 | 6 |
@@ -68,7 +67,7 @@
 | Priority | Total Items | Recurring Items | Recurrence Rate | Open Items | Open Recurring | Open Recurrence Rate | Completed | Wont-Fix |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | P0 | 43 | 7 | 16.28% | 0 | 0 | 0% | 43 | 0 |
-| P1 | 147 | 68 | 46.26% | 1 | 0 | 0% | 142 | 4 |
+| P1 | 147 | 69 | 46.94% | 0 | 0 | 0% | 143 | 4 |
 | P2 | 143 | 45 | 31.47% | 0 | 0 | 0% | 131 | 12 |
 | P3 | 16 | 10 | 62.5% | 0 | 0 | 0% | 15 | 1 |
 
@@ -76,6 +75,7 @@
 
 | Deployment ID | Target | Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate | Latest Run | Commit |
 |---|---|---:|---:|---:|---:|---:|---|---|
+| dpl_Ab1ZA6FUYvA4LE67mWidSFvPvYP2 | vercel-production | 1 | 5 | 100% | 0 | 0% | QA-20260424-0341 | 41ae1599 |
 | dpl_6JWVZRTK1zxcqikx2S9Y9uafiUDq | vercel-production | 2 | 34 | 97.06% | 1 | 50% | QA-20260424-0340 | 088eaf3f |
 | dpl_HUrc3CAatRmgXyihV3V44t7zuFpS | vercel-production | 5 | 55 | 94.55% | 2 | 40% | QA-20260423-0338 | 644af633 |
 | dpl_643GY6xfecoQXhCqzRUnE4TNajmF | vercel-production | 2 | 25 | 96% | 1 | 50% | QA-20260422-0330 | 538282c1 |
@@ -87,7 +87,6 @@
 | dpl_8Th4eohuqf6tGKxqt1G4Vro6WRcr | vercel-production | 1 | 22 | 100% | 0 | 0% | QA-20260418-0303 | d83e0a6a |
 | dpl_optoHir793ZW8PGSyP6Abghmedg1 | vercel-production | 1 | 4 | 100% | 0 | 0% | QA-20260417-0302 | d9e9f453 |
 | dpl_sRuuaBX32ZL4rGggN552bJqcL2th | vercel-production | 1 | 18 | 100% | 0 | 0% | QA-20260417-0300 | 2adcefb0 |
-| dpl_8RCgJKU4HmRuGrJUaDBUgEQYFhom | vercel-production | 2 | 28 | 96.43% | 1 | 50% | QA-20260417-0299 | b1469ce4 |
 
 ## Recent Daily Trend (KST)
 
@@ -106,7 +105,7 @@
 | 2026-04-21 | 3 | 40 | 95% | 1 | 1 | 33.33% |
 | 2026-04-22 | 1 | 15 | 93.33% | 1 | 1 | 100% |
 | 2026-04-23 | 6 | 65 | 95.38% | 2 | 2 | 33.33% |
-| 2026-04-24 | 1 | 24 | 95.83% | 1 | 1 | 100% |
+| 2026-04-24 | 2 | 29 | 96.55% | 1 | 1 | 50% |
 
 ## Recent Regression Runs
 
@@ -127,7 +126,6 @@
 
 | ID | Priority | Status | Seen | Last Seen Run | Title |
 |---|---|---|---:|---|---|
-| landing-profile-label-content-name-mismatch | P1 | pending | 1 | QA-20260424-0340 | Landing profile button accessible name should satisfy label-in-name audit |
 | feature-dod-tsc-zero-error | P2 | wont-fix | 9 | QA-20260307-0053 | tsc --noEmit 0 에러 |
 | feature-dod-unit-tests | P2 | wont-fix | 9 | QA-20260307-0053 | 단위 테스트 158개 통과 |
 | obs-fp-fn-weekly-report | P1 | wont-fix | 3 | QA-20260227-0013 | 오탐/미탐 주간 리포트 자동 생성 |

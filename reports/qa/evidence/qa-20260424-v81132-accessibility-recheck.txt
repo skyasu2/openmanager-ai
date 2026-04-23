@@ -1,0 +1,28 @@
+Production accessibility recheck on v8.11.32
+URL: https://openmanager-ai.vercel.app/
+Date: 2026-04-24 KST
+
+Chrome DevTools Lighthouse:
+- accessibility: 100
+- best-practices: 100
+- seo: 100
+- passed audits: 47
+- failed audits: 0
+- report path: /tmp/chrome-lighthouse-openmanager-20260424-v81132/report.json
+
+Chrome DevTools snapshot assertions:
+- profile button accessible name: GU 게스트 사용자 게스트 로그인
+- landing version badge: 8.11.32
+
+Chrome DevTools console:
+- no error/warn/issue messages found
+
+Chrome DevTools network:
+- GET / 200
+- HEAD /api/system 200
+- GET /api/system 200
+- no failed document/xhr/fetch requests observed during recheck
+
+Playwright MCP note:
+- next_devtools browser_eval start returned MCP error -32000 (Connection closed)
+- chrome_devtools MCP was used as the authoritative browser recheck path for this targeted fix verification

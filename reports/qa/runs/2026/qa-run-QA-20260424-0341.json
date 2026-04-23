@@ -1,0 +1,144 @@
+{
+  "runId": "QA-20260424-0341",
+  "recordedAt": "2026-04-23T16:21:52.417Z",
+  "recordedAtKst": "2026-04-24 01:21:52 KST",
+  "runTitle": "Production landing accessibility recheck on v8.11.32 after decorative profile affordance fix",
+  "owner": "codex",
+  "source": "chrome-devtools-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_Ab1ZA6FUYvA4LE67mWidSFvPvYP2",
+    "deploymentUrl": "https://openmanager-q87lt2d2i-skyasus-projects.vercel.app",
+    "commitSha": "41ae15999d7ae943a2e154bb67612a10e3fdf266"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "observability-pack"],
+  "coveredSurfaces": [
+    "/ landing render on production with version badge v8.11.32",
+    "Landing profile button accessible name recheck: GU 게스트 사용자 게스트 로그인",
+    "Chrome DevTools Lighthouse navigation audit 47 pass / 0 fail",
+    "Chrome DevTools console error/warn/issue scan: none",
+    "Chrome DevTools document/xhr/fetch network scan: root and /api/system all 200"
+  ],
+  "skippedSurfaces": [
+    "Broader dashboard/AI workflow replay",
+    "Playwright browser_eval direct automation recheck (MCP start returned Connection closed in this session)"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "accessibility-ux",
+      "domainName": "Accessibility / UX QA",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Landing profile button accessible name now matches the visible identity label and Lighthouse no longer reports label-content-name-mismatch.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Console remained clean and root/api.system traffic stayed 200 during the targeted production recheck.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Chrome DevTools MCP completed the authoritative verification, but next_devtools browser_eval could not start a fresh Playwright session in this turn.",
+      "nextAction": "Stabilize Playwright MCP start path so targeted rechecks can use live browser automation without fallback notes."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-24T01:18:15+09:00",
+      "summary": "vercel usage --format json --non-interactive reviewed after production recheck; effective usage remained 15.0518 USD while billed amount remained 0.0000 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "v8.11.32 accessibility recheck summary",
+      "path": "reports/qa/evidence/qa-20260424-v81132-accessibility-recheck.txt"
+    },
+    {
+      "type": "playwright-console",
+      "label": "v8.11.32 browser console summary",
+      "path": "reports/qa/evidence/qa-20260424-v81132-browser-console.txt"
+    },
+    {
+      "type": "playwright-network",
+      "label": "v8.11.32 browser network summary",
+      "path": "reports/qa/evidence/qa-20260424-v81132-browser-network.txt"
+    },
+    {
+      "type": "playwright-console",
+      "label": "v8.11.32 lighthouse summary",
+      "path": "reports/qa/evidence/qa-20260424-v81132-lighthouse-summary.txt"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "v8.11.32 landing screenshot",
+      "path": "reports/qa/evidence/qa-20260424-v81132-landing.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "v8.11.32 landing snapshot",
+      "path": "reports/qa/evidence/qa-20260424-v81132-landing-snapshot.txt"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "landing-profile-label-content-name-mismatch",
+      "title": "Landing profile button accessible name now satisfies label-in-name audit",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "reports/qa/evidence/qa-20260424-v81132-lighthouse-summary.txt",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This targeted run closes the blocking accessibility issue discovered in QA-20260424-0340.",
+    "Chrome DevTools MCP was used as the authoritative browser check because next_devtools browser_eval start returned MCP error -32000 (Connection closed) during this turn.",
+    "The broad regression surface from QA-20260424-0340 was not replayed here; this run is narrowly scoped to the landing accessibility blocker and deployment sanity checks."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production root",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/Ab1ZA6FUYvA4LE67mWidSFvPvYP2"
+    }
+  ]
+}

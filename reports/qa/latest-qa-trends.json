@@ -1,63 +1,63 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-23T15:16:25.033Z",
-  "generatedAtKst": "2026-04-24 00:16:25 KST",
-  "trackerUpdatedAt": "2026-04-23T15:15:14.762Z",
+  "generatedAt": "2026-04-23T16:22:05.780Z",
+  "generatedAtKst": "2026-04-24 01:22:05 KST",
+  "trackerUpdatedAt": "2026-04-23T16:21:52.417Z",
   "totals": {
-    "recordedRuns": 338,
-    "countedRuns": 274,
-    "totalChecks": 2226,
-    "totalPassed": 2140,
+    "recordedRuns": 339,
+    "countedRuns": 275,
+    "totalChecks": 2231,
+    "totalPassed": 2145,
     "totalFailed": 79,
-    "overallPassRatePct": 96.14,
-    "latestRecordedRunId": "QA-20260424-0340",
-    "lastCountedRunId": "QA-20260424-0340"
+    "overallPassRatePct": 96.15,
+    "latestRecordedRunId": "QA-20260424-0341",
+    "lastCountedRunId": "QA-20260424-0341"
   },
   "windows": [
     {
       "label": "All Counted Runs",
-      "recordedRuns": 274,
-      "countedRuns": 274,
-      "totalChecks": 2226,
-      "totalPassed": 2140,
+      "recordedRuns": 275,
+      "countedRuns": 275,
+      "totalChecks": 2231,
+      "totalPassed": 2145,
       "totalFailed": 79,
-      "passRatePct": 96.14,
+      "passRatePct": 96.15,
       "failingRunCount": 50,
-      "failingRunRatePct": 18.25,
+      "failingRunRatePct": 18.18,
       "regressionRunCount": 56,
-      "regressionRunRatePct": 20.44,
+      "regressionRunRatePct": 20.36,
       "pendingRunCount": 44,
-      "releaseFacingRuns": 39
+      "releaseFacingRuns": 40
     },
     {
       "label": "Last 30 Counted Runs",
       "recordedRuns": 30,
       "countedRuns": 30,
-      "totalChecks": 336,
-      "totalPassed": 324,
+      "totalChecks": 338,
+      "totalPassed": 326,
       "totalFailed": 11,
-      "passRatePct": 96.43,
+      "passRatePct": 96.45,
       "failingRunCount": 8,
       "failingRunRatePct": 26.67,
       "regressionRunCount": 8,
       "regressionRunRatePct": 26.67,
       "pendingRunCount": 7,
-      "releaseFacingRuns": 15
+      "releaseFacingRuns": 16
     },
     {
       "label": "Last 10 Counted Runs",
       "recordedRuns": 10,
       "countedRuns": 10,
-      "totalChecks": 129,
-      "totalPassed": 124,
+      "totalChecks": 124,
+      "totalPassed": 119,
       "totalFailed": 5,
-      "passRatePct": 96.12,
+      "passRatePct": 95.97,
       "failingRunCount": 4,
       "failingRunRatePct": 40,
       "regressionRunCount": 4,
       "regressionRunRatePct": 40,
       "pendingRunCount": 4,
-      "releaseFacingRuns": 7
+      "releaseFacingRuns": 8
     }
   ],
   "gateWindows": [
@@ -221,8 +221,8 @@
   "scopeDistribution": [
     {
       "scope": "targeted",
-      "totalRuns": 166,
-      "countedRuns": 103
+      "totalRuns": 167,
+      "countedRuns": 104
     },
     {
       "scope": "legacy",
@@ -260,12 +260,12 @@
     {
       "priority": "P1",
       "totalItems": 147,
-      "recurringItems": 68,
-      "openItems": 1,
+      "recurringItems": 69,
+      "openItems": 0,
       "openRecurringItems": 0,
-      "completedItems": 142,
+      "completedItems": 143,
       "wontFixItems": 4,
-      "recurrenceRatePct": 46.26,
+      "recurrenceRatePct": 46.94,
       "openRecurrenceRatePct": 0
     },
     {
@@ -292,6 +292,20 @@
     }
   ],
   "deploymentCorrelation": [
+    {
+      "deploymentId": "dpl_Ab1ZA6FUYvA4LE67mWidSFvPvYP2",
+      "target": "vercel-production",
+      "commitSha": "41ae15999d7ae943a2e154bb67612a10e3fdf266",
+      "runCount": 1,
+      "totalChecks": 5,
+      "totalFailed": 0,
+      "regressionRuns": 0,
+      "failingRuns": 0,
+      "latestRecordedAt": "2026-04-23T16:21:52.417Z",
+      "latestRunId": "QA-20260424-0341",
+      "passRatePct": 100,
+      "regressionRunRatePct": 0
+    },
     {
       "deploymentId": "dpl_6JWVZRTK1zxcqikx2S9Y9uafiUDq",
       "target": "vercel-production",
@@ -445,20 +459,6 @@
       "latestRunId": "QA-20260417-0300",
       "passRatePct": 100,
       "regressionRunRatePct": 0
-    },
-    {
-      "deploymentId": "dpl_8RCgJKU4HmRuGrJUaDBUgEQYFhom",
-      "target": "vercel-production",
-      "commitSha": "b1469ce441f25040727f8fb308acb12e9b1428b9",
-      "runCount": 2,
-      "totalChecks": 28,
-      "totalFailed": 1,
-      "regressionRuns": 1,
-      "failingRuns": 1,
-      "latestRecordedAt": "2026-04-16T15:32:08.661Z",
-      "latestRunId": "QA-20260417-0299",
-      "passRatePct": 96.43,
-      "regressionRunRatePct": 50
     }
   ],
   "recentDailyTrend": [
@@ -607,14 +607,14 @@
     },
     {
       "date": "2026-04-24",
-      "runCount": 1,
-      "totalChecks": 24,
-      "totalPassed": 23,
+      "runCount": 2,
+      "totalChecks": 29,
+      "totalPassed": 28,
       "totalFailed": 1,
       "failingRuns": 1,
       "regressionRuns": 1,
-      "passRatePct": 95.83,
-      "regressionRunRatePct": 100
+      "passRatePct": 96.55,
+      "regressionRunRatePct": 50
     }
   ],
   "recentRegressionRuns": [
@@ -720,18 +720,7 @@
     }
   ],
   "recurringItems": {
-    "open": [
-      {
-        "id": "landing-profile-label-content-name-mismatch",
-        "title": "Landing profile button accessible name should satisfy label-in-name audit",
-        "status": "pending",
-        "priority": "P1",
-        "seenCount": 1,
-        "completedCount": 0,
-        "lastSeenRunId": "QA-20260424-0340",
-        "lastResolvedRunId": null
-      }
-    ],
+    "open": [],
     "wontFix": [
       {
         "id": "feature-dod-tsc-zero-error",
@@ -939,19 +928,19 @@
   },
   "aiLatencyRollup24h": {
     "windowHours": 24,
-    "windowStart": "2026-04-22T15:15:14.762Z",
-    "windowEnd": "2026-04-23T15:15:14.762Z",
-    "recordedRunCount": 5,
-    "countedRunCount": 5,
-    "sampleCount": 7,
+    "windowStart": "2026-04-22T16:21:52.417Z",
+    "windowEnd": "2026-04-23T16:21:52.417Z",
+    "recordedRunCount": 3,
+    "countedRunCount": 3,
+    "sampleCount": 5,
     "buckets": [
       {
         "agent": "AI Chat",
         "provider": "cloud-run",
-        "sampleCount": 6,
-        "runCount": 4,
-        "countedRunCount": 4,
-        "avgLatencyMs": 1942,
+        "sampleCount": 5,
+        "runCount": 3,
+        "countedRunCount": 3,
+        "avgLatencyMs": 2293,
         "p95LatencyMs": 9495,
         "avgTtfbMs": 471,
         "p95TtfbMs": 675,
@@ -959,21 +948,6 @@
         "p95ProcessingTimeMs": 19421,
         "latestRunId": "QA-20260423-0339",
         "latestRecordedAt": "2026-04-23T14:30:01.154Z"
-      },
-      {
-        "agent": "AI Chat",
-        "provider": "streaming-ai",
-        "sampleCount": 1,
-        "runCount": 1,
-        "countedRunCount": 1,
-        "avgLatencyMs": 2950,
-        "p95LatencyMs": 2950,
-        "avgTtfbMs": null,
-        "p95TtfbMs": null,
-        "avgProcessingTimeMs": 2950,
-        "p95ProcessingTimeMs": 2950,
-        "latestRunId": "QA-20260423-0334",
-        "latestRecordedAt": "2026-04-22T15:53:14.284Z"
       }
     ]
   },

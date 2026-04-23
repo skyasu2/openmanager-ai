@@ -1,0 +1,9 @@
+Chrome DevTools network recheck on production v8.11.32
+URL: https://openmanager-ai.vercel.app/
+reqid=447 GET / 200
+reqid=484 HEAD /api/system 200
+reqid=485 GET /api/system 200
+reqid=489 GET /api/system 200
+reqid=490 GET / 200
+reqid=527 HEAD /api/system 200
+reqid=528 GET /api/system 200

@@ -1,0 +1,3 @@
+Chrome DevTools console recheck on production v8.11.32
+URL: https://openmanager-ai.vercel.app/
+Result: no error/warn/issue messages found

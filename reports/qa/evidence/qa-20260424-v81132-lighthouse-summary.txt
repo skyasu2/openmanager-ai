@@ -1,0 +1,8 @@
+Chrome DevTools Lighthouse navigation recheck on production v8.11.32
+URL: https://openmanager-ai.vercel.app/
+Accessibility: 100
+Best Practices: 100
+SEO: 100
+Passed audits: 47
+Failed audits: 0
+Report path: /tmp/chrome-lighthouse-openmanager-20260424-v81132/report.json
