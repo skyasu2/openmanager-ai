@@ -1,0 +1,180 @@
+{
+  "runId": "QA-20260424-0342",
+  "recordedAt": "2026-04-23T17:35:02.039Z",
+  "recordedAtKst": "2026-04-24 02:35:02 KST",
+  "runTitle": "Vercel broad production Playwright rerun on v8.11.32 after release-gate test harness fixes",
+  "owner": "codex",
+  "source": "playwright-cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_Ab1ZA6FUYvA4LE67mWidSFvPvYP2",
+    "deploymentUrl": "https://openmanager-q87lt2d2i-skyasus-projects.vercel.app",
+    "commitSha": "41ae15999d7ae943a2e154bb67612a10e3fdf266"
+  },
+  "scope": "broad",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "modal-detail-pack",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "/ landing render and keyboard/axe accessibility pack",
+    "/login entry paths and guest/OAuth affordances",
+    "/dashboard guest access, profile menu, AI sidebar/chat, alerts/logs modals, server cards, and system resources",
+    "/system-boot routes and core system APIs",
+    "Dashboard AI chat starter-prompt and direct-input flows on production",
+    "Production guest flow recheck with direct dashboard fallback",
+    "Fatal browser console smoke check included in smoke.spec.ts",
+    "System start KPI probe: 3/3 success with avg 665ms"
+  ],
+  "skippedSurfaces": [
+    "next_devtools browser_eval direct MCP automation start path (returned Connection closed earlier in this turn)",
+    "Chrome DevTools Lighthouse/console/network re-audit was not repeated in this broad rerun",
+    "Fullscreen AI workspace, Reporter Agent, Analyst Agent advanced production flows"
+  ],
+  "checks": {
+    "total": 53,
+    "passed": 53,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production AI sidebar and chat flows passed after helper stabilization, so the release-gate failures were test-harness regressions rather than AI product regressions.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Broad production rerun kept smoke/API/system-boot coverage green and the built-in console smoke check passed.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Release-gate coverage is green again, but direct Playwright MCP session start still failed earlier in the turn and required CLI fallback.",
+      "nextAction": "Stabilize next_devtools browser_eval start so production QA can return to full MCP-first execution without fallback notes."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-24T02:32:47+09:00",
+      "summary": "vercel usage --format json --non-interactive reviewed after the broad rerun; effective usage remained 15.0518 USD while billed amount remained 0.0000 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "v8.11.32 broad Playwright rerun summary",
+      "path": "reports/qa/evidence/qa-20260424-v81132-broad-playwright-summary.txt"
+    },
+    {
+      "type": "playwright-console",
+      "label": "v8.11.32 broad Playwright rerun log",
+      "path": "reports/qa/evidence/qa-20260424-v81132-broad-playwright-rerun-2.txt"
+    },
+    {
+      "type": "playwright-console",
+      "label": "v8.11.32 AI sidebar targeted rerun log",
+      "path": "reports/qa/evidence/qa-20260424-v81132-ai-sidebar-rerun.txt"
+    },
+    {
+      "type": "playwright-console",
+      "label": "v8.11.32 alerts and logs targeted rerun log",
+      "path": "reports/qa/evidence/qa-20260424-v81132-alerts-logs-rerun.txt"
+    },
+    {
+      "type": "playwright-console",
+      "label": "v8.11.32 guest flow targeted rerun log",
+      "path": "reports/qa/evidence/qa-20260424-v81132-guest-rerun.txt"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "e2e-dashboard-ready-networkidle-flake",
+      "title": "Production dashboard navigation helper now waits for visible dashboard markers instead of hard-failing on networkidle",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "reports/qa/evidence/qa-20260424-v81132-ai-sidebar-rerun.txt",
+      "note": "Resolved the AI sidebar flake that previously failed before sidebar assertions could start.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "e2e-alerts-logs-label-drift",
+      "title": "Alerts/logs Playwright expectations aligned with current production modal headings and labels",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "reports/qa/evidence/qa-20260424-v81132-alerts-logs-rerun.txt",
+      "note": "Resolved stale English/Korean label assumptions and case-sensitive log-level assertions.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "e2e-guest-dashboard-fallback",
+      "title": "Guest flow Playwright coverage now falls back to direct dashboard navigation in production and avoids landing-card selector drift",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "reports/qa/evidence/qa-20260424-v81132-guest-rerun.txt",
+      "note": "Resolved the release-gate failure where the guest AI toggle test captured the landing marketing card instead of the dashboard sidebar trigger.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Initial broad replay in this turn surfaced stale test-harness assumptions rather than product regressions: strict networkidle waits, outdated modal label expectations, and guest-flow selector drift.",
+    "After patching the Playwright helper/spec layer, targeted reruns passed AI sidebar 4/4, alerts/logs 6/6, and guest flow 3/3 before the final broad rerun passed 53/53.",
+    "This run supersedes the earlier failing broad attempt from the same turn and restores a green broad release-gate reference on production v8.11.32."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production AI assistant",
+      "url": "https://openmanager-ai.vercel.app/dashboard/ai-assistant"
+    },
+    {
+      "type": "general",
+      "label": "Production root",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/Ab1ZA6FUYvA4LE67mWidSFvPvYP2"
+    }
+  ]
+}

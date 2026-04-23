@@ -1,0 +1,17 @@
+◇ injecting env (4) from .env.e2e // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+◇ injecting env (0) from .env.e2e // tip: ◈ secrets for agents [www.dotenvx.com]
+✅ [E2E] Environment loaded, starting tests...
+
+Running 4 tests using 1 worker
+
+
+
+
+
+[1A[2K◇ injecting env (0) from .env.e2e // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+
+[1A[2K[1/4] [chromium] › tests/e2e/dashboard-ai-sidebar.spec.ts:27:7 › 대시보드 AI 사이드바 테스트 › AI 사이드바 열기
+[1A[2K[2/4] [chromium] › tests/e2e/dashboard-ai-sidebar.spec.ts:34:7 › 대시보드 AI 사이드바 테스트 › AI 메시지 입력 필드 확인
+[1A[2K[3/4] [chromium] › tests/e2e/dashboard-ai-sidebar.spec.ts:46:7 › 대시보드 AI 사이드바 테스트 › AI 스타터 프롬프트 카드가 입력창에 반영된다
+[1A[2K[4/4] [chromium] › tests/e2e/dashboard-ai-sidebar.spec.ts:104:7 › 대시보드 AI 사이드바 테스트 › AI 사이드바 닫기 (ESC)
+[1A[2K  4 passed (2.2m)

@@ -15,6 +15,15 @@ const ALERT_HISTORY_BUTTON = 'button[aria-label="알림 이력 보기"]';
 const LOG_EXPLORER_BUTTON = 'button[aria-label="로그 검색 보기"]';
 const ACTIVE_ALERTS_BUTTON = 'button[aria-label="활성 알림 보기"]';
 
+function dialogWithHeading(
+  page: import('@playwright/test').Page,
+  heading: RegExp
+) {
+  return page.locator('[role="dialog"]').filter({
+    has: page.getByText(heading).first(),
+  });
+}
+
 test.describe('📢 알람 기능 QA', () => {
   test.beforeEach(async ({ page }) => {
     await navigateToDashboard(page);
@@ -33,17 +42,20 @@ test.describe('📢 알람 기능 QA', () => {
     await expect(button).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
     await button.click();
 
-    const modal = page.locator('[role="dialog"], [aria-modal="true"]').first();
+    const modal = dialogWithHeading(
+      page,
+      /^(활성 알림|Active Alerts)$/
+    ).first();
     await expect(modal).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
 
-    // 헤더: "Active Alerts"
-    await expect(modal.getByText('Active Alerts')).toBeVisible({
+    // 헤더
+    await expect(modal.getByText(/^(활성 알림|Active Alerts)$/)).toBeVisible({
       timeout: TIMEOUTS.DOM_UPDATE,
     });
 
-    // 본문: severity 배지(CRITICAL/WARNING) 또는 빈 상태
+    // 본문: severity 배지(위험/경고) 또는 빈 상태
     const hasAlerts = await modal
-      .locator('text=/CRITICAL|WARNING/i')
+      .locator('text=/위험|경고|CRITICAL|WARNING/i')
       .first()
       .isVisible({ timeout: TIMEOUTS.DOM_UPDATE })
       .catch(() => false);
@@ -54,11 +66,11 @@ test.describe('📢 알람 기능 QA', () => {
       });
     }
 
-    // 푸터 StatCell: Total, Critical, Warning
-    for (const label of ['Total', 'Critical', 'Warning']) {
-      await expect(
-        modal.getByText(label, { exact: false }).first()
-      ).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
+    // 푸터 StatCell: 전체, 위험, 경고
+    for (const label of [/^전체$/i, /^위험$/i, /^경고$/i]) {
+      await expect(modal.getByText(label).first()).toBeVisible({
+        timeout: TIMEOUTS.DOM_UPDATE,
+      });
     }
 
     // ESC 닫기
@@ -73,7 +85,7 @@ test.describe('📢 알람 기능 QA', () => {
   }) => {
     await page.locator(ALERT_HISTORY_BUTTON).first().click();
 
-    const modal = page.locator('[role="dialog"]').first();
+    const modal = dialogWithHeading(page, /^Alert History$/).first();
     await expect(modal).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
 
     // 헤더
@@ -142,7 +154,7 @@ test.describe('📢 알람 기능 QA', () => {
   test('Alert History: Anchor, 통계, 알림 항목, 닫기', async ({ page }) => {
     await page.locator(ALERT_HISTORY_BUTTON).first().click();
 
-    const modal = page.locator('[role="dialog"]').first();
+    const modal = dialogWithHeading(page, /^Alert History$/).first();
     await expect(modal).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
 
     // Realtime Anchor 배지
@@ -152,15 +164,15 @@ test.describe('📢 알람 기능 QA', () => {
 
     // Stats Footer: Total, Critical, Warning, Firing, Avg Resolution
     for (const label of [
-      'Total',
-      'Critical',
-      'Warning',
-      'Firing',
-      'Avg Resolution',
+      /^Total$/i,
+      /^Critical$/i,
+      /^Warning$/i,
+      /^Firing$/i,
+      /^Avg Res(\.|olution)?$/i,
     ]) {
-      await expect(
-        modal.getByText(label, { exact: false }).first()
-      ).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
+      await expect(modal.getByText(label).first()).toBeVisible({
+        timeout: TIMEOUTS.DOM_UPDATE,
+      });
     }
 
     // 알림 항목 필수 정보 확인
@@ -213,7 +225,7 @@ test.describe('🔍 로그 탐색기 QA', () => {
     await expect(button).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
     await button.click();
 
-    const modal = page.locator('[role="dialog"]').first();
+    const modal = dialogWithHeading(page, /^로그 탐색기$/).first();
     await expect(modal).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
 
     // 헤더: "로그 탐색기"
@@ -242,7 +254,7 @@ test.describe('🔍 로그 탐색기 QA', () => {
   test('로그 탐색기: 드롭다운 필터, 터미널 UI, Anchor', async ({ page }) => {
     await page.locator(LOG_EXPLORER_BUTTON).first().click();
 
-    const modal = page.locator('[role="dialog"]').first();
+    const modal = dialogWithHeading(page, /^로그 탐색기$/).first();
     await expect(modal).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
 
     // 소스 필터 드롭다운
@@ -294,7 +306,7 @@ test.describe('🔍 로그 탐색기 QA', () => {
   }) => {
     await page.locator(LOG_EXPLORER_BUTTON).first().click();
 
-    const modal = page.locator('[role="dialog"]').first();
+    const modal = dialogWithHeading(page, /^로그 탐색기$/).first();
     await expect(modal).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
 
     // Stats Footer: 전체, 정보, 경고, 오류
@@ -317,9 +329,9 @@ test.describe('🔍 로그 탐색기 QA', () => {
     if (hasLogs) {
       const firstLog = logItems.first();
 
-      // 레벨 배지 (INFO/WARN/ERROR)
+      // 레벨 배지 (info/warn/error)
       await expect(
-        firstLog.locator('text=/INFO|WARN|ERROR/').first()
+        firstLog.locator('text=/info|warn|error/i').first()
       ).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
 
       // 서버 ID 배지

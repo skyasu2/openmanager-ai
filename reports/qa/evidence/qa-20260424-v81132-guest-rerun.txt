@@ -1,0 +1,26 @@
+◇ injecting env (4) from .env.e2e // tip: ◈ encrypted .env [www.dotenvx.com]
+◇ injecting env (0) from .env.e2e // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+✅ [E2E] Environment loaded, starting tests...
+
+Running 3 tests using 1 worker
+
+
+
+
+
+[1A[2K◇ injecting env (0) from .env.e2e // tip: ⌘ enable debugging { debug: true }
+
+[1A[2K[1/3] [chromium] › tests/e2e/guest.spec.ts:103:7 › 🧭 게스트 대시보드 핵심 플로우 › 시스템 시작 없이도 게스트가 대시보드에 접근할 수 있다
+[1A[2K[chromium] › tests/e2e/guest.spec.ts:103:7 › 🧭 게스트 대시보드 핵심 플로우 › 시스템 시작 없이도 게스트가 대시보드에 접근할 수 있다
+✅ 게스트 로그인 완료
+
+[1A[2Kℹ️ 환경 설정에 따라 시스템 시작 단계는 건너뜁니다.
+
+[1A[2K📊 대시보드 서버 카드 수: 4
+
+[1A[2K[2/3] [chromium] › tests/e2e/guest.spec.ts:205:7 › 🧭 게스트 대시보드 핵심 플로우 › 프로필 드롭다운에는 관리자 관련 항목이 없어야 한다
+[1A[2K[3/3] [chromium] › tests/e2e/guest.spec.ts:239:7 › 🧭 게스트 대시보드 핵심 플로우 › AI 토글 버튼으로 사이드바를 열 수 있다
+[1A[2K[chromium] › tests/e2e/guest.spec.ts:239:7 › 🧭 게스트 대시보드 핵심 플로우 › AI 토글 버튼으로 사이드바를 열 수 있다
+✅ AI 사이드바 토글 및 렌더링 확인
+
+[1A[2K  3 passed (1.1m)

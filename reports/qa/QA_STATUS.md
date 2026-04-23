@@ -1,48 +1,48 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-24 01:22:05 KST
+> Generated at: 2026-04-24 02:35:13 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 339 |
-| Total Runs (Counted) | 275 |
+| Total Recorded Runs | 340 |
+| Total Runs (Counted) | 276 |
 | Non-counted Runs | 64 |
-| Total Checks | 2231 |
-| Passed | 2145 |
+| Total Checks | 2284 |
+| Passed | 2198 |
 | Failed | 79 |
-| Completed Items | 332 |
+| Completed Items | 335 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 17 |
 | Expert Domains Tracked | 9 |
 | Expert Open Gaps | 1 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260424-0341 (2026-04-23T16:21:52.417Z) |
-| Latest Recorded Run | QA-20260424-0341 (2026-04-23T16:21:52.417Z) |
+| Last Counted Run | QA-20260424-0342 (2026-04-23T17:35:02.039Z) |
+| Latest Recorded Run | QA-20260424-0342 (2026-04-23T17:35:02.039Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260424-0341 (2026-04-23T16:21:52.417Z)
+Latest run: QA-20260424-0342 (2026-04-23T17:35:02.039Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| Accessibility / UX QA | appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
 | IT Monitoring & Observability SME | appropriate | no | - |
-| Test Automation Architect | partially-appropriate | yes | Stabilize Playwright MCP start path so targeted rechecks can use live browser automation without fallback notes. |
+| Test Automation Architect | partially-appropriate | yes | Stabilize next_devtools browser_eval start so production QA can return to full MCP-first execution without fallback notes. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | vercel usage --format json --non-interactive reviewed after production recheck; effective usage remained 15.0518 USD while billed amount remained 0.0000 USD. |
+| vercel | cli | checked | normal | vercel usage --format json --non-interactive reviewed after the broad rerun; effective usage remained 15.0518 USD while billed amount remained 0.0000 USD. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-22T16:21:52.417Z -> 2026-04-23T16:21:52.417Z (24h)
+- Window: 2026-04-22T17:35:02.039Z -> 2026-04-23T17:35:02.039Z (24h)
 - Runs with observations: 3 recorded / 3 counted
 - Samples: 5
 
@@ -52,18 +52,19 @@ Latest run: QA-20260424-0341 (2026-04-23T16:21:52.417Z)
 
 ## Coverage (Latest Run)
 
-- Scope: targeted
+- Scope: broad
 - Release-Facing: yes
 - Counts Toward Summary: yes
 - Deployment: dpl_Ab1ZA6FUYvA4LE67mWidSFvPvYP2 / SHA 41ae1599
-- Coverage Packs: core-routes-smoke, observability-pack
-- Covered Surfaces: / landing render on production with version badge v8.11.32, Landing profile button accessible name recheck: GU 게스트 사용자 게스트 로그인, Chrome DevTools Lighthouse navigation audit 47 pass / 0 fail, Chrome DevTools console error/warn/issue scan: none, Chrome DevTools document/xhr/fetch network scan: root and /api/system all 200
-- Skipped Surfaces: Broader dashboard/AI workflow replay, Playwright browser_eval direct automation recheck (MCP start returned Connection closed in this session)
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, modal-detail-pack, observability-pack
+- Covered Surfaces: / landing render and keyboard/axe accessibility pack, /login entry paths and guest/OAuth affordances, /dashboard guest access, profile menu, AI sidebar/chat, alerts/logs modals, server cards, and system resources, /system-boot routes and core system APIs, Dashboard AI chat starter-prompt and direct-input flows on production, Production guest flow recheck with direct dashboard fallback, Fatal browser console smoke check included in smoke.spec.ts, System start KPI probe: 3/3 success with avg 665ms
+- Skipped Surfaces: next_devtools browser_eval direct MCP automation start path (returned Connection closed earlier in this turn), Chrome DevTools Lighthouse/console/network re-audit was not repeated in this broad rerun, Fullscreen AI workspace, Reporter Agent, Analyst Agent advanced production flows
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
+| general | Production AI assistant | [Production AI assistant](https://openmanager-ai.vercel.app/dashboard/ai-assistant) | - |
 | general | Production root | [Production root](https://openmanager-ai.vercel.app/) | - |
 | vercel-deployment | Vercel production deployment | [Vercel production deployment](https://vercel.com/skyasus-projects/openmanager-ai/Ab1ZA6FUYvA4LE67mWidSFvPvYP2) | - |
 
@@ -71,17 +72,16 @@ Latest run: QA-20260424-0341 (2026-04-23T16:21:52.417Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | v8.11.32 accessibility recheck summary | `reports/qa/evidence/qa-20260424-v81132-accessibility-recheck.txt` | - |
-| playwright-console | v8.11.32 browser console summary | `reports/qa/evidence/qa-20260424-v81132-browser-console.txt` | - |
-| playwright-network | v8.11.32 browser network summary | `reports/qa/evidence/qa-20260424-v81132-browser-network.txt` | - |
-| playwright-console | v8.11.32 lighthouse summary | `reports/qa/evidence/qa-20260424-v81132-lighthouse-summary.txt` | - |
-| playwright-screenshot | v8.11.32 landing screenshot | `reports/qa/evidence/qa-20260424-v81132-landing.png` | - |
-| playwright-screenshot | v8.11.32 landing snapshot | `reports/qa/evidence/qa-20260424-v81132-landing-snapshot.txt` | - |
+| playwright-console | v8.11.32 broad Playwright rerun summary | `reports/qa/evidence/qa-20260424-v81132-broad-playwright-summary.txt` | - |
+| playwright-console | v8.11.32 broad Playwright rerun log | `reports/qa/evidence/qa-20260424-v81132-broad-playwright-rerun-2.txt` | - |
+| playwright-console | v8.11.32 AI sidebar targeted rerun log | `reports/qa/evidence/qa-20260424-v81132-ai-sidebar-rerun.txt` | - |
+| playwright-console | v8.11.32 alerts and logs targeted rerun log | `reports/qa/evidence/qa-20260424-v81132-alerts-logs-rerun.txt` | - |
+| playwright-console | v8.11.32 guest flow targeted rerun log | `reports/qa/evidence/qa-20260424-v81132-guest-rerun.txt` | - |
 
 ## Expert Domain Open Gaps
 
-- test-automation: Test Automation Architect (last QA-20260424-0341)
-  next: Stabilize Playwright MCP start path so targeted rechecks can use live browser automation without fallback notes.
+- test-automation: Test Automation Architect (last QA-20260424-0342)
+  next: Stabilize next_devtools browser_eval start so production QA can return to full MCP-first execution without fallback notes.
 
 ## Pending Improvements
 
@@ -244,6 +244,9 @@ Latest run: QA-20260424-0341 (2026-04-23T16:21:52.417Z)
 - dev-runtime-css-split: Landing CSS and home route compile split (completed 1회, last QA-20260420-0315)
 - dom-related-depscan-noise-suppression: Suppress benign zero-test DOM related dep-scan noise (completed 1회, last QA-20260325-0186)
 - e2e-ai-chat-production-selector-alignment: AI Chat/Sidebar E2E selectors aligned with production DOM (completed 1회, last QA-20260310-0073)
+- e2e-alerts-logs-label-drift: Alerts/logs Playwright expectations aligned with current production modal headings and labels (completed 1회, last QA-20260424-0342)
+- e2e-dashboard-ready-networkidle-flake: Production dashboard navigation helper now waits for visible dashboard markers instead of hard-failing on networkidle (completed 1회, last QA-20260424-0342)
+- e2e-guest-dashboard-fallback: Guest flow Playwright coverage now falls back to direct dashboard navigation in production and avoids landing-card selector drift (completed 1회, last QA-20260424-0342)
 - e2e-testid-production-fix: E2E 테스트 data-testid 의존성 제거 (completed 1회, last QA-20260310-0076)
 - esc-모달-닫기: ESC 모달 닫기 (completed 1회, last QA-20260317-0114)
 - feature-card-modal: 피처카드 모달 (completed 1회, last QA-20260301-0035)
@@ -466,6 +469,7 @@ Latest run: QA-20260424-0341 (2026-04-23T16:21:52.417Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260424-0342 | 2026-04-23T17:35:02.039Z | broad | yes | yes | Vercel broad production Playwright rerun on v8.11.32 after release-gate test harness fixes | 53 | 3 | 0 | 0 | 0 | 1 |
 | QA-20260424-0341 | 2026-04-23T16:21:52.417Z | targeted | yes | yes | Production landing accessibility recheck on v8.11.32 after decorative profile affordance fix | 5 | 1 | 0 | 0 | 0 | 1 |
 | QA-20260424-0340 | 2026-04-23T15:15:14.762Z | broad | yes | yes | Vercel broad production QA on v8.11.28 before landing profile label-in-name patch | 24 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260423-0339 | 2026-04-23T14:30:01.154Z | targeted | yes | yes | Vercel AI Assistant quality recheck after deterministic operator answer fix | 10 | 3 | 0 | 0 | 0 | 0 |
@@ -485,4 +489,3 @@ Latest run: QA-20260424-0341 (2026-04-23T16:21:52.417Z)
 | QA-20260421-0325 | 2026-04-21T11:33:29.560Z | targeted | no | yes | Vercel Playwright targeted browser QA - landing/dashboard modal coverage | 15 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260421-0324 | 2026-04-21T01:36:15.864Z | broad | no | yes | Production broad QA - AI domain boundary Phase 3 reference refreshed on v8.11.25 | 10 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260421-0323 | 2026-04-21T00:49:41.064Z | broad | no | yes | Production broad QA - AI domain boundary Phase 3 reference refresh blocked by console/date regressions | 15 | 0 | 2 | 0 | 0 | 2 |
-| QA-20260421-0322 | 2026-04-20T23:00:26.579Z | targeted | no | no | Production targeted QA - Vision latency sample refresh on AI Assistant | 7 | 1 | 0 | 0 | 2 | 0 |

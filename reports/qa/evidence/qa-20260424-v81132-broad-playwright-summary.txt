@@ -1,0 +1,25 @@
+Production broad Playwright rerun summary
+Date: 2026-04-24 KST
+Target: https://openmanager-ai.vercel.app
+Version: 8.11.32
+Deployment: dpl_Ab1ZA6FUYvA4LE67mWidSFvPvYP2
+Commit: 41ae15999d7ae943a2e154bb67612a10e3fdf266
+
+Result
+- Broad production Playwright rerun: 53 passed / 0 failed (10.8m)
+- Targeted rerun: AI sidebar 4 passed / 0 failed
+- Targeted rerun: alerts/logs 6 passed / 0 failed
+- Targeted rerun: guest flow 3 passed / 0 failed
+- Root quick smoke: 8 files / 163 tests passed
+- Root type-check: passed
+- Root lint: passed with existing qa-tracker.json size info only
+- Vercel usage check: effective 15.0518 USD / billed 0.0000 USD
+
+Fixes validated by this rerun
+- navigateToDashboard no longer hard-fails on production networkidle before dashboard markers are visible
+- alerts/logs modal assertions now match current production title/label variants
+- guest flow now resolves to dashboard reliably instead of capturing the landing AI marketing card
+
+Notes
+- Early in this turn, next_devtools browser_eval start returned MCP error -32000 (Connection closed).
+- Because of that, authoritative release-gate evidence for this run comes from Playwright CLI against Vercel production.

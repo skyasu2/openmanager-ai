@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-23T16:21:52.417Z"
+    "updatedAt": "2026-04-23T17:35:02.039Z"
   },
   "sequence": {
-    "nextRunNumber": 342
+    "nextRunNumber": 343
   },
   "summary": {
-    "totalRecordedRuns": 339,
-    "totalRuns": 275,
+    "totalRecordedRuns": 340,
+    "totalRuns": 276,
     "excludedRuns": 64,
-    "totalChecks": 2231,
-    "totalPassed": 2145,
+    "totalChecks": 2284,
+    "totalPassed": 2198,
     "totalFailed": 79,
     "completionRate": 100,
-    "completedItems": 332,
+    "completedItems": 335,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 17,
     "expertDomainsTracked": 9,
     "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260424-0341",
-    "lastRecordedAt": "2026-04-23T16:21:52.417Z",
-    "latestRecordedRunId": "QA-20260424-0341",
-    "latestRecordedAt": "2026-04-23T16:21:52.417Z"
+    "lastRunId": "QA-20260424-0342",
+    "lastRecordedAt": "2026-04-23T17:35:02.039Z",
+    "latestRecordedRunId": "QA-20260424-0342",
+    "latestRecordedAt": "2026-04-23T17:35:02.039Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -8104,6 +8104,78 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-23T16:21:52.417Z"
+    },
+    "e2e-dashboard-ready-networkidle-flake": {
+      "id": "e2e-dashboard-ready-networkidle-flake",
+      "title": "Production dashboard navigation helper now waits for visible dashboard markers instead of hard-failing on networkidle",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260424-0342",
+      "firstSeenAt": "2026-04-23T17:35:02.039Z",
+      "lastSeenRunId": "QA-20260424-0342",
+      "lastSeenAt": "2026-04-23T17:35:02.039Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "reports/qa/evidence/qa-20260424-v81132-ai-sidebar-rerun.txt",
+      "lastNote": "Resolved the AI sidebar flake that previously failed before sidebar assertions could start.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-23T17:35:02.039Z"
+    },
+    "e2e-alerts-logs-label-drift": {
+      "id": "e2e-alerts-logs-label-drift",
+      "title": "Alerts/logs Playwright expectations aligned with current production modal headings and labels",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260424-0342",
+      "firstSeenAt": "2026-04-23T17:35:02.039Z",
+      "lastSeenRunId": "QA-20260424-0342",
+      "lastSeenAt": "2026-04-23T17:35:02.039Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "reports/qa/evidence/qa-20260424-v81132-alerts-logs-rerun.txt",
+      "lastNote": "Resolved stale English/Korean label assumptions and case-sensitive log-level assertions.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-23T17:35:02.039Z"
+    },
+    "e2e-guest-dashboard-fallback": {
+      "id": "e2e-guest-dashboard-fallback",
+      "title": "Guest flow Playwright coverage now falls back to direct dashboard navigation in production and avoids landing-card selector drift",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260424-0342",
+      "firstSeenAt": "2026-04-23T17:35:02.039Z",
+      "lastSeenRunId": "QA-20260424-0342",
+      "lastSeenAt": "2026-04-23T17:35:02.039Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "reports/qa/evidence/qa-20260424-v81132-guest-rerun.txt",
+      "lastNote": "Resolved the release-gate failure where the guest AI toggle test captured the landing marketing card instead of the dashboard sidebar trigger.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-23T17:35:02.039Z"
     }
   },
   "runs": [
@@ -31694,6 +31766,144 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260424-0342",
+      "recordedAt": "2026-04-23T17:35:02.039Z",
+      "recordedAtKst": "2026-04-24 02:35:02 KST",
+      "title": "Vercel broad production Playwright rerun on v8.11.32 after release-gate test harness fixes",
+      "owner": "codex",
+      "source": "playwright-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260424-0342.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_Ab1ZA6FUYvA4LE67mWidSFvPvYP2",
+        "deploymentUrl": "https://openmanager-q87lt2d2i-skyasus-projects.vercel.app",
+        "commitSha": "41ae15999d7ae943a2e154bb67612a10e3fdf266"
+      },
+      "scope": "broad",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "modal-detail-pack",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "/ landing render and keyboard/axe accessibility pack",
+        "/login entry paths and guest/OAuth affordances",
+        "/dashboard guest access, profile menu, AI sidebar/chat, alerts/logs modals, server cards, and system resources",
+        "/system-boot routes and core system APIs",
+        "Dashboard AI chat starter-prompt and direct-input flows on production",
+        "Production guest flow recheck with direct dashboard fallback",
+        "Fatal browser console smoke check included in smoke.spec.ts",
+        "System start KPI probe: 3/3 success with avg 665ms"
+      ],
+      "skippedSurfaces": [
+        "next_devtools browser_eval direct MCP automation start path (returned Connection closed earlier in this turn)",
+        "Chrome DevTools Lighthouse/console/network re-audit was not repeated in this broad rerun",
+        "Fullscreen AI workspace, Reporter Agent, Analyst Agent advanced production flows"
+      ],
+      "checks": {
+        "total": 53,
+        "passed": 53,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production AI sidebar and chat flows passed after helper stabilization, so the release-gate failures were test-harness regressions rather than AI product regressions.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Broad production rerun kept smoke/API/system-boot coverage green and the built-in console smoke check passed.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Release-gate coverage is green again, but direct Playwright MCP session start still failed earlier in the turn and required CLI fallback.",
+          "nextAction": "Stabilize next_devtools browser_eval start so production QA can return to full MCP-first execution without fallback notes."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-24T02:32:47+09:00",
+          "summary": "vercel usage --format json --non-interactive reviewed after the broad rerun; effective usage remained 15.0518 USD while billed amount remained 0.0000 USD.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "v8.11.32 broad Playwright rerun summary",
+          "path": "reports/qa/evidence/qa-20260424-v81132-broad-playwright-summary.txt"
+        },
+        {
+          "type": "playwright-console",
+          "label": "v8.11.32 broad Playwright rerun log",
+          "path": "reports/qa/evidence/qa-20260424-v81132-broad-playwright-rerun-2.txt"
+        },
+        {
+          "type": "playwright-console",
+          "label": "v8.11.32 AI sidebar targeted rerun log",
+          "path": "reports/qa/evidence/qa-20260424-v81132-ai-sidebar-rerun.txt"
+        },
+        {
+          "type": "playwright-console",
+          "label": "v8.11.32 alerts and logs targeted rerun log",
+          "path": "reports/qa/evidence/qa-20260424-v81132-alerts-logs-rerun.txt"
+        },
+        {
+          "type": "playwright-console",
+          "label": "v8.11.32 guest flow targeted rerun log",
+          "path": "reports/qa/evidence/qa-20260424-v81132-guest-rerun.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production AI assistant",
+          "url": "https://openmanager-ai.vercel.app/dashboard/ai-assistant"
+        },
+        {
+          "type": "general",
+          "label": "Production root",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/Ab1ZA6FUYvA4LE67mWidSFvPvYP2"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 3,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -31702,16 +31912,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 153,
-      "appropriateCount": 142,
+      "seenCount": 154,
+      "appropriateCount": 143,
       "partialCount": 11,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260424-0340",
-      "lastSeenAt": "2026-04-23T15:15:14.762Z",
+      "lastRunId": "QA-20260424-0342",
+      "lastSeenAt": "2026-04-23T17:35:02.039Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Representative AI Chat, Reporter, Analyst, and feedback surfaces all executed successfully on production v8.11.28.",
+      "lastRationale": "Production AI sidebar and chat flows passed after helper stabilization, so the release-gate failures were test-harness regressions rather than AI product regressions.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -31719,16 +31929,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 96,
-      "appropriateCount": 68,
+      "seenCount": 97,
+      "appropriateCount": 69,
       "partialCount": 28,
       "inappropriateCount": 0,
       "improvementNeededCount": 29,
-      "lastRunId": "QA-20260424-0341",
-      "lastSeenAt": "2026-04-23T16:21:52.417Z",
+      "lastRunId": "QA-20260424-0342",
+      "lastSeenAt": "2026-04-23T17:35:02.039Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Console remained clean and root/api.system traffic stayed 200 during the targeted production recheck.",
+      "lastRationale": "Broad production rerun kept smoke/API/system-boot coverage green and the built-in console smoke check passed.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -31770,17 +31980,17 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 126,
+      "seenCount": 127,
       "appropriateCount": 118,
-      "partialCount": 8,
+      "partialCount": 9,
       "inappropriateCount": 0,
-      "improvementNeededCount": 10,
-      "lastRunId": "QA-20260424-0341",
-      "lastSeenAt": "2026-04-23T16:21:52.417Z",
+      "improvementNeededCount": 11,
+      "lastRunId": "QA-20260424-0342",
+      "lastSeenAt": "2026-04-23T17:35:02.039Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "Chrome DevTools MCP completed the authoritative verification, but next_devtools browser_eval could not start a fresh Playwright session in this turn.",
-      "lastNextAction": "Stabilize Playwright MCP start path so targeted rechecks can use live browser automation without fallback notes."
+      "lastRationale": "Release-gate coverage is green again, but direct Playwright MCP session start still failed earlier in the turn and required CLI fallback.",
+      "lastNextAction": "Stabilize next_devtools browser_eval start so production QA can return to full MCP-first execution without fallback notes."
     },
     "data-metrics-quality": {
       "domainId": "data-metrics-quality",

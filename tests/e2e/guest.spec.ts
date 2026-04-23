@@ -18,6 +18,49 @@ const shouldClickSystemStart =
   forceSystemStart || (!skipSystemStart && env.isLocal);
 const PROFILE_TRIGGER_SELECTOR =
   '[data-testid="profile-dropdown-trigger"], #profile-menu-button, button[aria-label*="프로필 메뉴"], button:has-text("게스트")';
+const DASHBOARD_READY_SELECTORS = [
+  '[data-testid="dashboard-total-card"]',
+  '[data-testid="dashboard-status-grid"]',
+  '[data-testid="dashboard-system-status-card"]',
+  'button[aria-label="활성 알림 보기"]',
+  'button[aria-label="알림 이력 보기"]',
+  'button[aria-label="로그 검색 보기"]',
+];
+const APP_SHELL_SELECTORS = [
+  PROFILE_TRIGGER_SELECTOR,
+  'button[aria-label="AI 어시스턴트 열기"]',
+  'button[aria-label="AI 어시스턴트 닫기"]',
+];
+
+async function isAnySelectorVisible(
+  page: Page,
+  selectors: string[],
+  maxWaitMs: number
+): Promise<boolean> {
+  const deadline = Date.now() + maxWaitMs;
+
+  while (Date.now() <= deadline) {
+    for (const selector of selectors) {
+      const candidate = page.locator(selector).first();
+      const remainingMs = Math.max(1, deadline - Date.now());
+      const probeTimeout = Math.min(500, remainingMs);
+      const isVisible = await candidate
+        .isVisible({ timeout: probeTimeout })
+        .catch(() => false);
+      if (isVisible) {
+        return true;
+      }
+    }
+
+    const remainingMs = deadline - Date.now();
+    if (remainingMs <= 0) {
+      break;
+    }
+    await page.waitForTimeout(Math.min(250, remainingMs));
+  }
+
+  return false;
+}
 
 const attemptStartSystemIfNeeded = async (page: Page) => {
   const isOnDashboard = /\/(dashboard|main)/.test(page.url());
@@ -38,6 +81,16 @@ const attemptStartSystemIfNeeded = async (page: Page) => {
     });
     return;
   }
+
+  // 프로덕션/skip-system-start 환경에서는 시작 버튼이 없을 수 있으므로
+  // 대시보드로 직접 이동해 후속 검증을 계속한다.
+  await page.goto('/dashboard', {
+    waitUntil: 'domcontentloaded',
+    timeout: TIMEOUTS.NETWORK_REQUEST,
+  });
+  await page.waitForURL(/\/(dashboard|main)/, {
+    timeout: TIMEOUTS.NETWORK_REQUEST,
+  });
 };
 
 test.describe('🧭 게스트 대시보드 핵심 플로우', () => {
@@ -86,26 +139,18 @@ test.describe('🧭 게스트 대시보드 핵심 플로우', () => {
       timeout: TIMEOUTS.DASHBOARD_LOAD,
     });
 
-    // Local 환경에서는 인증 체크 오버레이가 잠시 유지될 수 있어, 대시보드 텍스트 대신
-    // "대시보드 핵심 지표 또는 인증된 앱 셸(프로필/AI 토글)" 중 하나를 성공 신호로 본다.
-    const dashboardIndicator = page
-      .locator('text=시스템 상태')
-      .or(page.locator('text=전체'))
-      .or(page.locator('text=온라인'))
-      .or(page.locator('[class*="DashboardSummary"]'))
-      .first();
-    const appShellIndicator = page
-      .locator(PROFILE_TRIGGER_SELECTOR)
-      .or(page.locator('button[aria-label*="AI"]'))
-      .first();
+    // Local/production 공통으로, 대시보드 핵심 카드 또는 인증된 앱 셸(프로필/AI 토글)을
+    // 성공 신호로 본다. 로컬 인증 체크 오버레이는 보조 fallback만 허용한다.
     const authCheckingOverlay = page
       .locator('text=권한을 확인하고 있습니다')
       .first();
     let authOverlayFallbackActive = false;
 
-    const dashboardVisible = await dashboardIndicator
-      .isVisible({ timeout: TIMEOUTS.DASHBOARD_LOAD })
-      .catch(() => false);
+    const dashboardVisible = await isAnySelectorVisible(
+      page,
+      DASHBOARD_READY_SELECTORS,
+      TIMEOUTS.DASHBOARD_LOAD
+    );
     if (!dashboardVisible) {
       const loginHeadingVisible = await page
         .getByRole('heading', { name: /로그인/i })
@@ -113,14 +158,20 @@ test.describe('🧭 게스트 대시보드 핵심 플로우', () => {
         .catch(() => false);
       expect(loginHeadingVisible).toBeFalsy();
 
-      const shellVisible = await appShellIndicator
-        .isVisible({ timeout: TIMEOUTS.DASHBOARD_LOAD })
+      const shellVisible = await isAnySelectorVisible(
+        page,
+        APP_SHELL_SELECTORS,
+        TIMEOUTS.DASHBOARD_LOAD
+      );
+      const isAuthChecking = await authCheckingOverlay
+        .isVisible({ timeout: TIMEOUTS.NETWORK_REQUEST })
         .catch(() => false);
-      if (!shellVisible) {
-        const isAuthChecking = await authCheckingOverlay
-          .isVisible({ timeout: TIMEOUTS.NETWORK_REQUEST })
-          .catch(() => false);
-        expect(isAuthChecking).toBeTruthy();
+
+      if (!shellVisible && !isAuthChecking) {
+        expect(shellVisible || isAuthChecking).toBeTruthy();
+      }
+
+      if (isAuthChecking) {
         console.log('ℹ️ 로컬 인증 체크 오버레이 상태를 확인했습니다.');
         authOverlayFallbackActive = true;
       }

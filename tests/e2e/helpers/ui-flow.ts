@@ -14,9 +14,41 @@ import { TIMEOUTS } from './timeouts';
 const DASHBOARD_ROUTE_REGEX = /\/(dashboard|main)(\/|\?|$)/;
 const PROFILE_TRIGGER_SELECTOR =
   '[data-testid="profile-dropdown-trigger"], #profile-menu-button, button[aria-label*="프로필 메뉴"]';
+const DASHBOARD_READY_SELECTOR = [
+  '[data-testid="dashboard-total-card"]',
+  '[data-testid="dashboard-status-grid"]',
+  '[data-testid="dashboard-system-status-card"]',
+  'button[aria-label="AI 어시스턴트 열기"]',
+  'button[aria-label="AI 어시스턴트 닫기"]',
+].join(', ');
 
 function profileTriggerLocator(page: Page) {
   return page.locator(PROFILE_TRIGGER_SELECTOR);
+}
+
+async function waitForOptionalNetworkIdle(
+  page: Page,
+  timeout: number
+): Promise<void> {
+  await page
+    .waitForLoadState('networkidle', { timeout })
+    .catch(() => undefined);
+}
+
+async function waitForDashboardReady(page: Page): Promise<void> {
+  await page.waitForURL(DASHBOARD_ROUTE_REGEX, {
+    timeout: TIMEOUTS.DASHBOARD_LOAD,
+  });
+  await page
+    .waitForLoadState('domcontentloaded', {
+      timeout: TIMEOUTS.DASHBOARD_LOAD,
+    })
+    .catch(() => undefined);
+  await page.locator(DASHBOARD_READY_SELECTOR).first().waitFor({
+    state: 'visible',
+    timeout: TIMEOUTS.DASHBOARD_LOAD,
+  });
+  await waitForOptionalNetworkIdle(page, 5000);
 }
 
 /**
@@ -34,9 +66,12 @@ export async function openProfileDropdown(page: Page): Promise<void> {
   await page.waitForURL(DASHBOARD_ROUTE_REGEX, {
     timeout: TIMEOUTS.DASHBOARD_LOAD,
   });
-  await page.waitForLoadState('networkidle', {
-    timeout: TIMEOUTS.DASHBOARD_LOAD,
-  });
+  await page
+    .waitForLoadState('domcontentloaded', {
+      timeout: TIMEOUTS.DASHBOARD_LOAD,
+    })
+    .catch(() => undefined);
+  await waitForOptionalNetworkIdle(page, 5000);
 
   const trigger = profileTriggerLocator(page);
 
@@ -82,7 +117,10 @@ export async function navigateToDashboard(
         await skipIfSecurityCheckpoint(page);
       }
 
-      await page.waitForLoadState('networkidle', { timeout: 15000 });
+      await page
+        .waitForLoadState('domcontentloaded', { timeout: TIMEOUTS.PAGE_LOAD })
+        .catch(() => undefined);
+      await waitForOptionalNetworkIdle(page, 5000);
 
       if (isLocalEnvironment()) {
         // 로컬: 시스템 시작 버튼 → system-boot → dashboard 흐름
@@ -116,7 +154,7 @@ export async function navigateToDashboard(
         await skipIfSecurityCheckpoint(page);
       }
 
-      await page.waitForLoadState('networkidle', { timeout: 15000 });
+      await waitForDashboardReady(page);
       return; // 성공
     } catch (error) {
       if (attempt === maxRetries) {
