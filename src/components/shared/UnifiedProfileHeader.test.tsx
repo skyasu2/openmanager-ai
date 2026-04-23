@@ -128,7 +128,7 @@ describe('UnifiedProfileHeader', () => {
     const trigger = await screen.findByTestId('profile-dropdown-trigger');
 
     expect(trigger.getAttribute('aria-label')).toBe(
-      '프로필 메뉴, GU, 게스트 사용자, 게스트 로그인'
+      'GU, 게스트 사용자, 게스트 로그인, 프로필 메뉴'
     );
   });
 });

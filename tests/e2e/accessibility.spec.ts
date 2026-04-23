@@ -5,7 +5,7 @@ import { ensureVercelBypassCookie } from './helpers/security';
 import { TIMEOUTS } from './helpers/timeouts';
 
 const PROFILE_TRIGGER_SELECTOR =
-  '[data-testid="profile-dropdown-trigger"], #profile-menu-button, button[aria-label^="프로필 메뉴"]';
+  '[data-testid="profile-dropdown-trigger"], #profile-menu-button, button[aria-label*="프로필 메뉴"]';
 
 /**
  * @axe-core/playwright 공식 API로 WCAG 2.1 AA 검증을 실행하는 헬퍼.

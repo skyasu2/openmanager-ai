@@ -17,7 +17,7 @@ const headlessMode =
 const shouldClickSystemStart =
   forceSystemStart || (!skipSystemStart && env.isLocal);
 const PROFILE_TRIGGER_SELECTOR =
-  '[data-testid="profile-dropdown-trigger"], #profile-menu-button, button[aria-label^="프로필 메뉴"], button:has-text("게스트")';
+  '[data-testid="profile-dropdown-trigger"], #profile-menu-button, button[aria-label*="프로필 메뉴"], button:has-text("게스트")';
 
 const attemptStartSystemIfNeeded = async (page: Page) => {
   const isOnDashboard = /\/(dashboard|main)/.test(page.url());

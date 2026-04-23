@@ -234,7 +234,7 @@ export default function UnifiedProfileHeader({
   const loginStateLabel = getLoginStateLabel();
   const profileButtonLabel = isAuthResolving
     ? '프로필 메뉴, 권한 확인 중'
-    : `프로필 메뉴, ${getAvatarText()}, ${userName}, ${loginStateLabel}`;
+    : `${getAvatarText()}, ${userName}, ${loginStateLabel}, 프로필 메뉴`;
 
   if (!isHydrated) {
     return (
