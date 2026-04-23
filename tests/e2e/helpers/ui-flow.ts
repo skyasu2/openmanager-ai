@@ -14,9 +14,7 @@ import { TIMEOUTS } from './timeouts';
 const DASHBOARD_ROUTE_REGEX = /\/(dashboard|main)(\/|\?|$)/;
 
 function profileTriggerLocator(page: Page) {
-  return page.locator(
-    '[data-testid="profile-dropdown-trigger"], [aria-label="프로필 메뉴"]'
-  );
+  return page.locator('[data-testid="profile-dropdown-trigger"]');
 }
 
 /**

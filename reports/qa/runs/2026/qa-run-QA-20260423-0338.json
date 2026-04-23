@@ -1,0 +1,179 @@
+{
+  "runId": "QA-20260423-0338",
+  "recordedAt": "2026-04-23T13:13:07.550Z",
+  "recordedAtKst": "2026-04-23 22:13:07 KST",
+  "runTitle": "Vercel AI Assistant quality evaluation - feature surface, streaming, and answer quality",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_HUrc3CAatRmgXyihV3V44t7zuFpS",
+    "deploymentUrl": "https://openmanager-pamkpiphh-skyasus-projects.vercel.app",
+    "commitSha": "644af633956b673bef4aad27b9962dc97cab1ad6"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core", "ai-advanced-surface", "observability-pack"],
+  "coveredSurfaces": [
+    "/dashboard/ai-assistant renders AI Workspace",
+    "AI feature navigation exposes AI Chat, Reporter Agent, and Analyst Agent",
+    "Starter prompts render for server status, incident analysis, prediction, report generation, and vision analysis",
+    "System Context provider routing renders Groq, Cerebras, Mistral, and Gemini configured states",
+    "System Context AI Engine resolves Online in production",
+    "Authenticated stream prompt 1 returns 200 SSE with tool-call/tool-result/text events",
+    "Prompt 1 answer grounds total server counts: 18 total, 17 normal, 1 warning, 0 emergency/offline",
+    "Prompt 1 answer identifies a specific high-attention server and metric trend",
+    "Authenticated stream prompt 2 returns 200 SSE with CPU ranking answer",
+    "Prompt 2 answer ranks top CPU servers with current percentages",
+    "X-AI timing headers present on both prompts (192ms and 143ms)",
+    "Browser console during AI evaluation had 0 errors; only repeated CSS preload warnings"
+  ],
+  "skippedSurfaces": [
+    "Vision image upload path",
+    "Reporter full report generation rerun",
+    "Analyst full-system generation rerun",
+    "Feedback submission flow",
+    "Cloud Run admin /monitoring and /monitoring/traces direct run.app checks",
+    "Profile menu accessibility fix verification on Vercel because the local code change is not deployed yet"
+  ],
+  "checks": {
+    "total": 12,
+    "passed": 10,
+    "failed": 2
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI Assistant answer quality prompt 1",
+      "agent": "AI Chat",
+      "provider": "cloud-run",
+      "model": "production streaming route",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "authenticated browser stream headers and full SSE read",
+      "latencyMs": 192,
+      "ttfbMs": 487,
+      "processingTimeMs": 3155
+    },
+    {
+      "surface": "AI Assistant CPU ranking prompt 2",
+      "agent": "AI Chat",
+      "provider": "cloud-run",
+      "model": "production streaming route",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "authenticated browser stream headers and full SSE read",
+      "latencyMs": 143,
+      "ttfbMs": 252,
+      "processingTimeMs": 19421
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "AI Assistant is functional, streams with tool evidence, and returns grounded operational summaries. However, prompt 1 requested two immediate actions and received one combined recommendation, and prompt 2 drifted from CPU-specific diagnosis into memory/resource-upgrade guidance.",
+      "nextAction": "Tune answer-quality instructions so enumerated user requirements are satisfied exactly and CPU recommendations stay metric-specific."
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Both production stream requests exposed X-AI timing headers, Cloud Run source, ui-message-stream protocol, and observable event phases including tool-call/tool-result/text events.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The evaluation used a bounded production Playwright MCP flow with two real prompts, durable evidence, and explicit skipped surfaces to avoid unnecessary provider calls.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "The AI answer included resource upgrade language for a CPU ranking prompt. For this project, first-line recommendations should prefer investigation, process isolation, load distribution, caching, or config tuning before scale-up language.",
+      "nextAction": "Adjust production AI guidance to avoid premature resource-upgrade recommendations."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-23T22:10:54+09:00",
+      "summary": "vercel usage --format json --non-interactive reviewed before AI quality QA record; effective usage was 15.0518 USD while billed amount remained 0.0000 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "AI Assistant quality evaluation details",
+      "path": "reports/qa/evidence/qa-20260423-ai-assistant-quality-eval.txt"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Playwright AI workspace screenshot",
+      "path": "reports/qa/evidence/qa-20260423-ai-quality-workspace.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "ai-answer-enumerated-requirements",
+      "title": "AI 답변이 사용자가 요청한 항목 개수를 정확히 충족하도록 보강",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Prompt 1 requested 즉시 조치 2개 but production answer returned one combined recommendation. Release-blocking 아님; answer quality tracking item.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-recommendation-free-tier-fit",
+      "title": "AI 운영 권고에서 리소스 업그레이드보다 조사/캐시/분산 조치를 우선",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Prompt 2 CPU ranking answer included memory check/resource upgrade language. Recommendations should stay metric-specific and free-tier aligned. Release-blocking 아님; answer quality tracking item.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Overall AI quality score: 4/5. Functional availability 5/5, streaming observability 5/5, tool grounding 4/5, instruction following 3/5, operational actionability 4/5, free-tier fit 3/5.",
+    "Profile menu accessibility improvement was implemented and locally validated with unit/type/lint/test:quick, but not verified on Vercel production because deployment was not performed in this turn.",
+    "Console warnings were repeated next/static CSS preload warnings only; browser console errors were 0 during AI evaluation."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production AI workspace",
+      "url": "https://openmanager-ai.vercel.app/dashboard/ai-assistant"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/HUrc3CAatRmgXyihV3V44t7zuFpS"
+    }
+  ]
+}

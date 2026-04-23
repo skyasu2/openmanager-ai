@@ -60,7 +60,7 @@ test.describe('♿ 접근성 (Accessibility) 검증', () => {
     await guestLogin(page);
 
     const profileButton = page
-      .locator('button[aria-label="프로필 메뉴"]')
+      .locator('[data-testid="profile-dropdown-trigger"]')
       .first();
     await expect(profileButton).toBeVisible({
       timeout: TIMEOUTS.DASHBOARD_LOAD,
@@ -163,7 +163,7 @@ test.describe('♿ 접근성 (Accessibility) 검증', () => {
     await guestLogin(page);
 
     const profileButton = page
-      .locator('button[aria-label="프로필 메뉴"]')
+      .locator('[data-testid="profile-dropdown-trigger"]')
       .first();
     await expect(profileButton).toBeVisible({
       timeout: TIMEOUTS.DASHBOARD_LOAD,
@@ -296,7 +296,7 @@ test.describe('♿ axe-core WCAG 2.1 AA 자동 검증', () => {
     await guestLogin(page);
 
     const profileButton = page
-      .locator('button[aria-label="프로필 메뉴"]')
+      .locator('[data-testid="profile-dropdown-trigger"]')
       .first();
     await expect(profileButton).toBeVisible({
       timeout: TIMEOUTS.DASHBOARD_LOAD,

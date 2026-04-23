@@ -1,0 +1,85 @@
+AI Assistant production quality evaluation - 2026-04-23 KST
+Target: https://openmanager-ai.vercel.app/dashboard/ai-assistant
+Deployment: dpl_HUrc3CAatRmgXyihV3V44t7zuFpS
+Version: v8.11.26
+Method: Playwright MCP browser session + authenticated POST /api/ai/supervisor/stream/v2
+
+UI/function surface
+- /dashboard/ai-assistant rendered AI Workspace.
+- Left navigation exposed AI Chat (NLQ Agent), 장애 보고서 (Reporter Agent), 이상감지/예측 (Analyst Agent).
+- Starter prompts rendered: 서버 상태 확인, 장애 분석, 성능 예측, 보고서 생성, 시각 분석.
+- System Context rendered provider routing: Groq primary text, Cerebras secondary fallback, Mistral last-resort fallback, Gemini vision primary.
+- AI Engine status in System Context resolved Online.
+- Browser console during AI evaluation: errors 0, warnings 4. Warnings were repeated unused CSS preload warnings for _next/static/chunks/13c1ca927ab84bf9.css.
+
+Prompt 1
+Prompt: 현재 전체 서버 상태를 운영자에게 보고하듯 요약해줘. 반드시 총 서버 수, 정상/경고/위험 수, 가장 주의할 서버 1대와 즉시 조치 2개를 포함해줘.
+Response metadata:
+- status: 200
+- content-type: text/event-stream
+- first chunk: 487ms
+- total elapsed: 3155ms
+- X-AI-Latency-Ms: 192
+- X-AI-Mode: streaming
+- X-AI-Source: cloud-run
+- X-Stream-Protocol: ui-message-stream
+- event types: data-start, data-mode, data-tool-call, data-tool-result, text-start, text-delta, text-end, data-done
+Answer excerpt:
+📊 서버 현황 요약
+• 전체 18대: 정상 17대, 경고 1대, 비상 0대, 오프라인 0대
+• 평균 CPU: 36%, 메모리: 44%, 디스크: 35%
+
+⚠️ 주의 서버
+• lb-haproxy-dc1-01: CPU 74% (상승 추세 ↑)
+
+📈 추세
+• lb-haproxy-dc1-01: CPU 평균 40% → 현재 74% (+34%p, 상승 추세 ↑)
+
+💡 권고
+• lb-haproxy-dc1-01: 상위 프로세스와 예약 작업을 확인하고, 10분 이상 같은 추세가 이어지면 요청 분산을 검토하세요.
+Evaluation:
+- Grounding: pass. Used tool-backed current server counts and specific server metric.
+- Structure: pass. Operator-style summary was concise.
+- Completeness: partial. The prompt required two immediate actions, but answer provided one combined recommendation bullet.
+- Operational usefulness: pass with minor gap. Recommendation is actionable but could split into two explicit steps.
+
+Prompt 2
+Prompt: CPU 사용률이 가장 높은 서버 3대를 현재 수치와 함께 순서대로 알려주고, 운영자가 바로 확인할 항목을 서버별로 1개씩 제안해줘.
+Response metadata:
+- status: 200
+- content-type: text/event-stream
+- first chunk: 252ms
+- total elapsed: 19421ms
+- X-AI-Latency-Ms: 143
+- X-AI-Mode: streaming
+- X-AI-Source: cloud-run
+- X-Stream-Protocol: ui-message-stream
+- event types: data-start, data-mode, data-agent-status, text-start, text-delta, data-tool-call, data-tool-result, text-end, data-done
+Answer excerpt:
+📊 CPU 사용률 상위 3대 서버
+1. lb-haproxy-dc1-01: 74%
+2. api-was-dc1-01: 66%
+3. api-was-dc1-02: 62%
+
+권고 included:
+- lb-haproxy-dc1-01: check HAProxy traffic/load distribution.
+- api-was-dc1-01: check API request load, add instances or strengthen caching if needed.
+- api-was-dc1-02: check process list, then check memory and consider resource upgrade.
+Evaluation:
+- Grounding: pass. Ranked servers and CPU percentages were coherent with tool-grounded response.
+- Structure: pass. Ordered list and per-server checks were readable.
+- Operational usefulness: partial. Per-server checks are actionable, but api-was-dc1-02 drifts from CPU-specific diagnosis into memory check/resource upgrade.
+- Free-tier/operations fit: partial. Resource upgrade should not be the first recommendation; cache/process/traffic analysis should be preferred.
+
+Overall quality score
+- Functional availability: 5/5
+- Streaming observability: 5/5
+- Tool grounding: 4/5
+- Instruction following: 3/5
+- Operational actionability: 4/5
+- Cost/free-tier fit of recommendations: 3/5
+- Overall: 4/5, release-usable with targeted prompt/answer-quality refinement recommended.
+
+Recommended follow-up
+- Add or tune answer-quality instruction/check so enumerated user requirements are satisfied exactly, especially requested counts like "조치 2개".
+- Bias operational recommendations toward investigation, load balancing, caching, and process-level checks before resource upgrade language.

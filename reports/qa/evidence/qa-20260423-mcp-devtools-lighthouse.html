@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QA-20260423 Chrome DevTools Lighthouse Summary</title>
+    <style>
+      body {
+        margin: 2rem;
+        color: #172033;
+        background: #f8fafc;
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        line-height: 1.6;
+      }
+      main {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 2rem;
+        border: 1px solid #d8e0ec;
+        border-radius: 20px;
+        background: #fff;
+        box-shadow: 0 20px 60px rgb(15 23 42 / 8%);
+      }
+      code {
+        padding: 0.1rem 0.3rem;
+        border-radius: 6px;
+        background: #eef2ff;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        padding: 0.75rem;
+        border-bottom: 1px solid #e5e7eb;
+        text-align: left;
+      }
+      th {
+        color: #475569;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Chrome DevTools Lighthouse Summary</h1>
+      <p>
+        Target: <code>https://openmanager-ai.vercel.app/</code><br />
+        Run: <code>QA-20260423-0337</code><br />
+        Deployment: <code>dpl_HUrc3CAatRmgXyihV3V44t7zuFpS</code><br />
+        Captured: 2026-04-23 KST via Chrome DevTools MCP
+      </p>
+      <h2>Category Scores</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Accessibility</td>
+            <td>100</td>
+          </tr>
+          <tr>
+            <td>Best Practices</td>
+            <td>100</td>
+          </tr>
+          <tr>
+            <td>SEO</td>
+            <td>100</td>
+          </tr>
+        </tbody>
+      </table>
+      <h2>Audit Summary</h2>
+      <ul>
+        <li>Passed audits: 46</li>
+        <li>Failed audits: 1</li>
+        <li>Failed audit: <code>label-content-name-mismatch</code></li>
+      </ul>
+      <h2>Failed Audit Detail</h2>
+      <p>
+        The profile menu button visible text was
+        <code>GU 게스트 사용자 게스트 로그인</code>, while the accessible name
+        was <code>프로필 메뉴</code>. The follow-up implementation updates the
+        accessible name to include the visible avatar, user name, and login
+        state.
+      </p>
+    </main>
+  </body>
+</html>

@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  */
 
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import UnifiedProfileHeader from './UnifiedProfileHeader';
 
@@ -106,5 +106,29 @@ describe('UnifiedProfileHeader', () => {
     render(<UnifiedProfileHeader />);
 
     expect(mocks.useSystemStatus).toHaveBeenCalledWith({ enabled: true });
+  });
+
+  it('프로필 메뉴 접근성 이름에 visible user state를 포함한다', async () => {
+    mocks.useProfileAuth.mockReturnValue({
+      userInfo: {
+        id: 'guest-1',
+        name: '게스트 사용자',
+        email: 'guest@test.local',
+      },
+      userType: 'guest',
+      status: 'authenticated',
+      isLoading: false,
+      handleLogout: vi.fn(),
+      navigateToLogin: vi.fn(),
+      navigateToDashboard: vi.fn(),
+    });
+
+    render(<UnifiedProfileHeader />);
+
+    const trigger = await screen.findByTestId('profile-dropdown-trigger');
+
+    expect(trigger.getAttribute('aria-label')).toBe(
+      '프로필 메뉴, GU, 게스트 사용자, 게스트 로그인'
+    );
   });
 });

@@ -1,0 +1,172 @@
+{
+  "runId": "QA-20260423-0337",
+  "recordedAt": "2026-04-23T09:08:17.769Z",
+  "recordedAtKst": "2026-04-23 18:08:17 KST",
+  "runTitle": "Vercel MCP targeted QA - Playwright and Chrome DevTools production refresh",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_HUrc3CAatRmgXyihV3V44t7zuFpS",
+    "deploymentUrl": "https://openmanager-pamkpiphh-skyasus-projects.vercel.app",
+    "commitSha": "644af633956b673bef4aad27b9962dc97cab1ad6"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "Vercel production deployment READY via Vercel MCP (dpl_HUrc3CAatRmgXyihV3V44t7zuFpS)",
+    "/ landing render + version badge v8.11.26",
+    "/login render + OAuth/email/guest entry + privacy link",
+    "/privacy render + login back-link",
+    "/api/health 200 healthy services from browser context",
+    "/api/version 200 production metadata from browser context",
+    "/system-boot redirects to /dashboard",
+    "/dashboard authenticated guest render with 18 total, 17 online, 1 warning, 0 risk, 0 offline",
+    "/dashboard/ai-assistant fullscreen workspace render + System Context panel",
+    "authenticated Playwright console cleanliness: errors 0, warnings 0",
+    "authenticated POST /api/ai/supervisor/stream/v2 returns 200 SSE",
+    "X-AI-Latency-Ms header proof on stream route (227ms)",
+    "X-Stream-Protocol ui-message-stream header proof",
+    "Chrome DevTools performance trace on landing: LCP 1029ms, CLS 0.13, TTFB 10ms",
+    "Chrome DevTools Lighthouse desktop navigation: Accessibility 100, Best Practices 100, SEO 100"
+  ],
+  "skippedSurfaces": [
+    "modal-detail pack server modal 3-tab interaction (covered by QA-20260423-0334)",
+    "Reporter/Analyst advanced generation surfaces (covered by QA-20260423-0336)",
+    "security prompt regression pack",
+    "Cloud Run admin /monitoring and /monitoring/traces direct run.app checks",
+    "full AI response body quality scoring beyond first SSE header/chunk proof"
+  ],
+  "checks": {
+    "total": 14,
+    "passed": 13,
+    "failed": 1
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "browser-session stream header proof",
+      "agent": "AI Chat",
+      "provider": "cloud-run",
+      "model": "streaming route header sample",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "authenticated browser fetch response headers + first SSE chunk",
+      "latencyMs": 227,
+      "ttfbMs": 675
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "A real authenticated production stream route request returned 200 SSE with X-AI-Latency-Ms=227 and ui-message-stream protocol proof while avoiding repeated full LLM body generation.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel-side health/version, browser network, X-AI timing header, Chrome DevTools LCP/CLS/TTFB, and Lighthouse evidence were captured for the promoted production deployment.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The run combined Playwright MCP route rendering, browser-context API checks, stream header verification, durable screenshots, and Chrome DevTools diagnostics without duplicating already-covered advanced AI packs.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "accessibility-ux",
+      "domainName": "Accessibility / UX QA",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Chrome DevTools Lighthouse kept the Accessibility category at 100 but failed label-content-name-mismatch for the profile menu button because visible user-state text is not included in the accessible name.",
+      "nextAction": "When next touching the header/profile menu, align the profile menu accessible name with the visible guest/user-state label."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-23T18:07:13+09:00",
+      "summary": "vercel usage --format json --non-interactive reviewed before QA record; effective usage was 15.0518 USD while billed amount remained 0.0000 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Chrome DevTools landing screenshot",
+      "path": "reports/qa/evidence/qa-20260423-mcp-devtools-landing.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Playwright dashboard screenshot",
+      "path": "reports/qa/evidence/qa-20260423-mcp-playwright-dashboard.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Playwright AI workspace screenshot",
+      "path": "reports/qa/evidence/qa-20260423-mcp-playwright-ai-workspace.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "MCP console network and header summary",
+      "path": "reports/qa/evidence/qa-20260423-mcp-console-network.txt"
+    },
+    {
+      "type": "playwright-report",
+      "label": "Chrome DevTools Lighthouse HTML report",
+      "path": "reports/qa/evidence/qa-20260423-mcp-devtools-lighthouse.html"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "profile-menu",
+      "title": "프로필 메뉴 접근성 이름에 visible user state 포함",
+      "priority": "P2",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "현재 aria-label은 컨트롤 목적을 전달하고 Lighthouse category score는 100이므로 릴리즈 차단이 아닌 tracking-only 접근성 개선으로 관리한다.",
+      "evidence": "",
+      "note": "release-blocking 아님. Chrome DevTools Lighthouse label-content-name-mismatch: button aria-label='프로필 메뉴' while visible text is 'GU 게스트 사용자 게스트 로그인'.",
+      "owner": "",
+      "originalId": "profile-menu-accessible-name-parity",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Chrome DevTools preserved console showed one unauthenticated landing HEAD /api/system 401 resource error before guest auth; this matches existing WONT-FIX item landing-console-api-system-unauthorized and was not reproduced in the authenticated Playwright route console.",
+    "Lighthouse failed audit: label-content-name-mismatch on #profile-menu-button. Category score remained Accessibility 100.",
+    "Chrome DevTools raw performance trace and Lighthouse JSON were kept in /tmp to avoid adding large unreferenced durable evidence files; the durable tracker evidence is the summary log plus HTML report."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/HUrc3CAatRmgXyihV3V44t7zuFpS"
+    }
+  ]
+}

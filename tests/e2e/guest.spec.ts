@@ -93,7 +93,7 @@ test.describe('🧭 게스트 대시보드 핵심 플로우', () => {
       .or(page.locator('[class*="DashboardSummary"]'))
       .first();
     const appShellIndicator = page
-      .locator('button[aria-label="프로필 메뉴"]')
+      .locator('[data-testid="profile-dropdown-trigger"]')
       .or(page.locator('button:has-text("게스트")'))
       .or(page.locator('button[aria-label*="AI"]'))
       .first();
@@ -156,7 +156,9 @@ test.describe('🧭 게스트 대시보드 핵심 플로우', () => {
     await guestLogin(page, { landingPath });
 
     const profileButton = page
-      .locator('button[aria-label="프로필 메뉴"], button:has-text("게스트")')
+      .locator(
+        '[data-testid="profile-dropdown-trigger"], button:has-text("게스트")'
+      )
       .first();
     await profileButton.waitFor({ state: 'visible' });
     await profileButton.click();

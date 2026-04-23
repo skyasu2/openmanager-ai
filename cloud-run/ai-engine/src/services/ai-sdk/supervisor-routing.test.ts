@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
+  createSystemPrompt,
   createPrepareStep,
   getIntentCategory,
   selectExecutionMode,
@@ -10,6 +11,16 @@ import {
 vi.mock('../../lib/tavily-hybrid-rag', () => ({
   isTavilyAvailable: vi.fn(() => true),
 }));
+
+describe('createSystemPrompt', () => {
+  it('should include answer quality rules for exact counts and free-tier aligned recommendations', () => {
+    const prompt = createSystemPrompt('desktop');
+
+    expect(prompt).toContain('정확히 그 개수만큼');
+    expect(prompt).toContain('리소스 증설/업그레이드는 마지막 수단');
+    expect(prompt).toContain('CPU 질의에는 CPU 원인 확인과 부하 분산 조치');
+  });
+});
 
 // ============================================================================
 // selectExecutionMode

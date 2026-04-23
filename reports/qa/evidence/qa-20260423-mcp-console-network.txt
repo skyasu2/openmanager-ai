@@ -1,0 +1,35 @@
+Vercel production MCP QA summary - 2026-04-23 KST
+Target: https://openmanager-ai.vercel.app
+Deployment: dpl_HUrc3CAatRmgXyihV3V44t7zuFpS
+Commit: 644af633956b673bef4aad27b9962dc97cab1ad6
+Version: v8.11.26
+
+Playwright MCP checks
+- Landing rendered: OpenManager AI, v8.11.26, feature cards visible.
+- /login rendered: Google, GitHub, email, guest PIN entry, privacy link visible.
+- /privacy rendered: policy content and login back-link visible.
+- /system-boot redirected to /dashboard.
+- /dashboard rendered authenticated guest session: 18 total, 17 online, 1 warning, 0 risk, 0 offline; resource summary CPU 35%, Memory 48%, Disk 39%.
+- /dashboard/ai-assistant rendered AI Workspace with AI Chat, Reporter, Analyst entries and System Context panel.
+- Browser console after authenticated Playwright route/AI workspace checks: errors 0, warnings 0.
+- Playwright non-static network requests included /api/health?service=ai 200, /api/database 200, /api/monitoring/report 200, OTel hourly data 200, /api/ai/wake-up 200. Earlier aborted /api/system entries were followed by /api/system 200.
+
+API checks from browser context
+- /api/health: 200 healthy; database connected latency 4ms, cache connected latency 2ms, ai connected latency 2ms; version 8.11.26.
+- /api/version: 200; version 8.11.26, Next.js 16.1.6, environment production.
+
+AI streaming header proof
+- POST /api/ai/supervisor/stream/v2 from authenticated browser session returned 200 text/event-stream.
+- X-AI-Latency-Ms: 227
+- X-AI-Source: cloud-run
+- X-AI-Mode: streaming
+- X-AI-Cache-Status: BYPASS
+- X-Stream-Protocol: ui-message-stream
+- First chunk observed at 675ms and contained data-start/data-mode SSE events.
+
+Chrome DevTools MCP checks
+- Landing accessibility snapshot rendered public unauthenticated state and version 8.11.26.
+- Chrome DevTools performance trace on landing: LCP 1029ms, CLS 0.13, TTFB 10ms, no CPU/network throttling.
+- Lighthouse desktop navigation audit on landing: Accessibility 100, Best Practices 100, SEO 100; passed 46, failed 1.
+- Chrome DevTools network observed /api/csrf-token 200, /api/auth/guest-login 200, /dashboard document 200, /api/monitoring/report 200, /api/ai/wake-up 200, OTel hourly data 200, /api/system 200, /api/health?service=ai 200, /api/database 200.
+- Chrome DevTools preserved console showed one unauthenticated landing HEAD /api/system 401 resource error before guest auth. This matches existing tracker WONT-FIX item landing-console-api-system-unauthorized and was not reproduced in the authenticated Playwright route console.

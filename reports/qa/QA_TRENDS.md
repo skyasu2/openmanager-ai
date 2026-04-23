@@ -1,31 +1,31 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-04-23 01:17:21 KST
+> Generated at: 2026-04-23 22:13:28 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 334 |
-| Counted Runs | 270 |
-| Total Checks | 2166 |
-| Total Passed | 2084 |
-| Total Failed | 75 |
-| Overall Pass Rate | 96.21% |
-| Latest Recorded Run | QA-20260423-0336 |
-| Last Counted Run | QA-20260423-0336 |
+| Recorded Runs | 336 |
+| Counted Runs | 272 |
+| Total Checks | 2192 |
+| Total Passed | 2107 |
+| Total Failed | 78 |
+| Overall Pass Rate | 96.12% |
+| Latest Recorded Run | QA-20260423-0338 |
+| Last Counted Run | QA-20260423-0338 |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-21T16:17:11.229Z -> 2026-04-22T16:17:11.229Z (24h)
-- Runs with observations: 2 recorded / 2 counted
-- Samples: 2
+- Window: 2026-04-22T13:13:07.550Z -> 2026-04-23T13:13:07.550Z (24h)
+- Runs with observations: 4 recorded / 4 counted
+- Samples: 5
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | AI Chat | streaming-ai | 1 | 2950ms | 2950ms | - | - | 2950ms | 2950ms | QA-20260423-0334 |
-| AI Chat | cloud-run | 1 | 188ms | 188ms | - | - | - | - | QA-20260423-0335 |
+| AI Chat | cloud-run | 4 | 188ms | 227ms | 471ms | 675ms | 11288ms | 19421ms | QA-20260423-0338 |
 
 ## Warnings
 
@@ -35,9 +35,9 @@
 
 | Window | Counted Runs | Checks | Pass Rate | Failed Runs | Failing Run Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| All Counted Runs | 270 | 2166 | 96.21% | 47 | 17.41% | 53 | 19.63% |
-| Last 30 Counted Runs | 30 | 297 | 96.63% | 6 | 20% | 7 | 23.33% |
-| Last 10 Counted Runs | 10 | 111 | 97.3% | 2 | 20% | 2 | 20% |
+| All Counted Runs | 272 | 2192 | 96.12% | 49 | 18.01% | 55 | 20.22% |
+| Last 30 Counted Runs | 30 | 312 | 96.47% | 7 | 23.33% | 7 | 23.33% |
+| Last 10 Counted Runs | 10 | 116 | 94.83% | 4 | 40% | 4 | 40% |
 
 ## Gate Run Windows
 
@@ -57,7 +57,7 @@
 
 | Scope | Recorded Runs | Counted Runs |
 |---|---:|---:|
-| targeted | 163 | 100 |
+| targeted | 165 | 102 |
 | legacy | 137 | 137 |
 | broad | 26 | 25 |
 | release-gate | 6 | 6 |
@@ -68,15 +68,15 @@
 | Priority | Total Items | Recurring Items | Recurrence Rate | Open Items | Open Recurring | Open Recurrence Rate | Completed | Wont-Fix |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | P0 | 43 | 7 | 16.28% | 0 | 0 | 0% | 43 | 0 |
-| P1 | 144 | 66 | 45.83% | 0 | 0 | 0% | 140 | 4 |
-| P2 | 142 | 44 | 30.99% | 0 | 0 | 0% | 130 | 12 |
-| P3 | 17 | 11 | 64.71% | 0 | 0 | 0% | 16 | 1 |
+| P1 | 146 | 66 | 45.21% | 2 | 0 | 0% | 140 | 4 |
+| P2 | 143 | 45 | 31.47% | 1 | 1 | 100% | 130 | 12 |
+| P3 | 16 | 10 | 62.5% | 0 | 0 | 0% | 15 | 1 |
 
 ## Deployment Regression Correlation
 
 | Deployment ID | Target | Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate | Latest Run | Commit |
 |---|---|---:|---:|---:|---:|---:|---|---|
-| dpl_HUrc3CAatRmgXyihV3V44t7zuFpS | vercel-production | 3 | 29 | 100% | 0 | 0% | QA-20260423-0336 | 644af633 |
+| dpl_HUrc3CAatRmgXyihV3V44t7zuFpS | vercel-production | 5 | 55 | 94.55% | 2 | 40% | QA-20260423-0338 | 644af633 |
 | dpl_643GY6xfecoQXhCqzRUnE4TNajmF | vercel-production | 2 | 25 | 96% | 1 | 50% | QA-20260422-0330 | 538282c1 |
 | dpl_3cutqnX7vMtm5qAuxzgnAnVULEmk | vercel-production | 1 | 15 | 86.67% | 1 | 100% | QA-20260421-0323 | 06e47ff8 |
 | dpl_JAFCywvdMLnVLVRLW6x3KaLuRi8u | vercel-production | 1 | 17 | 100% | 0 | 0% | QA-20260419-0309 | 74bb7960 |
@@ -106,12 +106,14 @@
 | 2026-04-20 | 2 | 10 | 100% | 0 | 0 | 0% |
 | 2026-04-21 | 3 | 40 | 95% | 1 | 1 | 33.33% |
 | 2026-04-22 | 1 | 15 | 93.33% | 1 | 1 | 100% |
-| 2026-04-23 | 3 | 29 | 100% | 0 | 0 | 0% |
+| 2026-04-23 | 5 | 55 | 94.55% | 2 | 2 | 40% |
 
 ## Recent Regression Runs
 
 | Run ID | Time (UTC) | Scope | Failed Checks | Pending | Deferred | Wont-Fix | Title |
 |---|---|---|---:|---:|---:|---:|---|
+| QA-20260423-0338 | 2026-04-23T13:13:07.550Z | targeted | 2 | 2 | 0 | 0 | Vercel AI Assistant quality evaluation - feature surface, streaming, and answer quality |
+| QA-20260423-0337 | 2026-04-23T09:08:17.769Z | targeted | 1 | 1 | 0 | 0 | Vercel MCP targeted QA - Playwright and Chrome DevTools production refresh |
 | QA-20260422-0330 | 2026-04-22T14:14:24.057Z | broad | 1 | 1 | 0 | 0 | Vercel Playwright broad QA - core routes, dashboard, AI workspace recheck |
 | QA-20260421-0323 | 2026-04-21T00:49:41.064Z | broad | 2 | 2 | 0 | 0 | Production broad QA - AI domain boundary Phase 3 reference refresh blocked by console/date regressions |
 | QA-20260418-0304 | 2026-04-18T12:30:51.893Z | targeted | 1 | 0 | 0 | 1 | Vercel targeted QA - AI metric ranking hotfix |
@@ -120,13 +122,14 @@
 | QA-20260413-0281 | 2026-04-13T12:40:26.449Z | targeted | 2 | 1 | 0 | 0 | GraphRAG variant stability recheck after ai-engine-00311 (boolean-string tool schema hotfix) |
 | QA-20260413-0280 | 2026-04-13T11:41:39.894Z | targeted | 0 | 1 | 0 | 0 | GraphRAG variant direct supervisor recheck after ai-engine-00308 (RAG auto + advisor tool required) |
 | QA-20260407-0249 | 2026-04-07T11:55:13.126Z | broad | 2 | 2 | 0 | 0 | Playwright MCP Production QA - Frontend + AI Assistant v8.11.0 broad baseline refresh |
-| QA-20260404-0223 | 2026-04-04T11:06:01.219Z | targeted | 1 | 1 | 0 | 0 | Vercel Playwright QA - dashboard/AI parity rerun after ai-engine parity patch |
-| QA-20260404-0222 | 2026-04-04T09:17:33.588Z | broad | 1 | 1 | 0 | 1 | Vercel Playwright QA - dashboard, AI assistant, and monitoring parity check |
 
 ## Recurring Open Items
 
 | ID | Priority | Status | Seen | Last Seen Run | Title |
 |---|---|---|---:|---|---|
+| profile-menu | P2 | pending | 3 | QA-20260423-0337 | 프로필 메뉴 접근성 이름에 visible user state 포함 |
+| ai-answer-enumerated-requirements | P1 | pending | 1 | QA-20260423-0338 | AI 답변이 사용자가 요청한 항목 개수를 정확히 충족하도록 보강 |
+| ai-recommendation-free-tier-fit | P1 | pending | 1 | QA-20260423-0338 | AI 운영 권고에서 리소스 업그레이드보다 조사/캐시/분산 조치를 우선 |
 | feature-dod-tsc-zero-error | P2 | wont-fix | 9 | QA-20260307-0053 | tsc --noEmit 0 에러 |
 | feature-dod-unit-tests | P2 | wont-fix | 9 | QA-20260307-0053 | 단위 테스트 158개 통과 |
 | obs-fp-fn-weekly-report | P1 | wont-fix | 3 | QA-20260227-0013 | 오탐/미탐 주간 리포트 자동 생성 |
