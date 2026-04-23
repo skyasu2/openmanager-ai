@@ -142,13 +142,13 @@ bash scripts/mcp/mcp-health-check-codex.sh --probe supabase-db
 bash scripts/mcp/mcp-health-check-codex.sh --no-live-probe --json
 bash scripts/mcp/mcp-health-report-codex.sh --no-live-probe
 bash scripts/mcp/mcp-health-report-codex.sh --no-live-probe --allow-missing-codex --summary-file "$GITHUB_STEP_SUMMARY"
-# GitHub Actions workflow_dispatch에서 run_codex_live_probe=true면 stitch live probe 실행
+# GitHub Actions workflow_dispatch에서 run_codex_live_probe=true면 supabase-db live probe 실행
 
 # JSON report에는 probeTargets / liveProbes metadata 포함
 # - probeTargets: command, args, configuredTimeoutSec, timeoutSec, callTool, selected
 # - liveProbes: 실행 결과(status/detail) + probe metadata + stage(readiness/tool-call/full/preflight)
 # - summary-file 사용 시 비정상 live probe는 GitHub job summary의 Live Probe Issues 섹션에 표시
-# - GitHub Actions artifact는 JSON + *-codex.log + stitch-startup-*.log 패턴을 함께 업로드
+# - GitHub Actions artifact는 JSON + *-codex.log 패턴을 함께 업로드
 
 # Storybook CI 빌드(비대화형, 타임아웃)
 npm run storybook:build:ci

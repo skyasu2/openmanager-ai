@@ -26,7 +26,7 @@ DEFAULT_LIVE_PROBE_TIMEOUT_SEC=45
 LIVE_PROBE_TIMEOUT_SEC="${MCP_LIVE_PROBE_TIMEOUT_SEC:-}"
 RUN_LIVE_PROBE=1
 SELECTED_PROBES=()
-AVAILABLE_LIVE_PROBE_SERVERS=("supabase-db" "stitch")
+AVAILABLE_LIVE_PROBE_SERVERS=("supabase-db")
 OUTPUT_FORMAT="text"
 JSON_STATE_DIR=""
 SERVER_STATUS_FILE=""
@@ -278,7 +278,7 @@ emit_json() {
   JSON_LIVE_PROBE_TIMEOUT_SEC="$LIVE_PROBE_TIMEOUT_SEC" \
   JSON_DEFAULT_LIVE_PROBE_TIMEOUT_SEC="$DEFAULT_LIVE_PROBE_TIMEOUT_SEC" \
   JSON_AVAILABLE_LIVE_PROBE_SERVERS="$(IFS=,; printf '%s' "${AVAILABLE_LIVE_PROBE_SERVERS[*]}")" \
-  JSON_PROBE_CALL_TOOLS='{"supabase-db":"list_projects","stitch":"list_projects"}' \
+  JSON_PROBE_CALL_TOOLS='{"supabase-db":"list_projects"}' \
   JSON_TOTAL_SERVERS="${#EXPECTED_SERVERS[@]}" \
   JSON_SUCCESS_COUNT="$SUCCESS_COUNT" \
   JSON_FAIL_COUNT="$FAIL_COUNT" \
@@ -909,54 +909,6 @@ else
     fi
   fi
 
-  if should_probe_server "stitch"; then
-    STITCH_PROJECT_ID=$(get_server_env_value "stitch" "STITCH_PROJECT_ID")
-    STITCH_USE_SYSTEM_GCLOUD=$(get_server_env_value "stitch" "STITCH_USE_SYSTEM_GCLOUD")
-    STITCH_COMMAND="$(get_server_command "stitch")"
-    STITCH_ARGS_JSON="$(get_server_args_json "stitch")"
-    STITCH_TIMEOUT_SEC="$(get_server_probe_timeout_sec "stitch")"
-    STITCH_READINESS_LOG_PATH="$LOG_DIR/stitch-startup-readiness-latest.log"
-    STITCH_TOOL_CALL_LOG_PATH="$LOG_DIR/stitch-startup-tool-call-latest.log"
-    if [ -z "$STITCH_PROJECT_ID" ] || [ -z "$STITCH_USE_SYSTEM_GCLOUD" ]; then
-      echo -e "${YELLOW}WARN${NC} stitch: live probe skipped (stitch env missing)"
-      echo "WARN stitch: live probe skipped (stitch env missing)" >> "$LOG_FILE"
-      record_live_probe_status "stitch" "preflight" "skip" "skipped (stitch env missing)"
-      LIVE_PROBE_SKIP_COUNT=$((LIVE_PROBE_SKIP_COUNT + 1))
-    elif [ -z "$STITCH_COMMAND" ] || [ -z "$STITCH_ARGS_JSON" ]; then
-      echo -e "${YELLOW}WARN${NC} stitch: live probe skipped (launch config missing)"
-      echo "WARN stitch: live probe skipped (launch config missing)" >> "$LOG_FILE"
-      record_live_probe_status "stitch" "preflight" "skip" "skipped (launch config missing)"
-      LIVE_PROBE_SKIP_COUNT=$((LIVE_PROBE_SKIP_COUNT + 1))
-    else
-      if ! run_live_probe \
-        "stitch" \
-        "readiness" \
-        "$STITCH_COMMAND" \
-        "$STITCH_ARGS_JSON" \
-        "" \
-        "$STITCH_TIMEOUT_SEC" \
-        "$STITCH_READINESS_LOG_PATH" \
-        "STITCH_PROJECT_ID=$STITCH_PROJECT_ID" \
-        "STITCH_USE_SYSTEM_GCLOUD=$STITCH_USE_SYSTEM_GCLOUD" \
-        "OPENMANAGER_STITCH_STARTUP_LOG=$STITCH_READINESS_LOG_PATH" \
-        "CLOUDSDK_CONFIG=${CLOUDSDK_CONFIG:-$HOME/.config/gcloud}"; then
-        LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
-      elif ! run_live_probe \
-        "stitch" \
-        "tool-call" \
-        "$STITCH_COMMAND" \
-        "$STITCH_ARGS_JSON" \
-        "list_projects" \
-        "$STITCH_TIMEOUT_SEC" \
-        "$STITCH_TOOL_CALL_LOG_PATH" \
-        "STITCH_PROJECT_ID=$STITCH_PROJECT_ID" \
-        "STITCH_USE_SYSTEM_GCLOUD=$STITCH_USE_SYSTEM_GCLOUD" \
-        "OPENMANAGER_STITCH_STARTUP_LOG=$STITCH_TOOL_CALL_LOG_PATH" \
-        "CLOUDSDK_CONFIG=${CLOUDSDK_CONFIG:-$HOME/.config/gcloud}"; then
-        LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
-      fi
-    fi
-  fi
 fi
 
 TOTAL_SERVERS=${#EXPECTED_SERVERS[@]}

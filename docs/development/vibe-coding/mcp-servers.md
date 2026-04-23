@@ -119,14 +119,14 @@ bash scripts/mcp/mcp-health-report-codex.sh --no-live-probe
 bash scripts/mcp/mcp-health-report-codex.sh --no-live-probe --allow-missing-codex --summary-file reports/mcp/mcp-health-summary.md
 ```
 1. 서버별 최소 1회 도구 호출로 실동작을 확인합니다.
-1. historical/manual GitHub Actions를 정말 써야 할 때만 `run_codex_live_probe=true`로 `stitch` live probe를 non-blocking 관찰용으로 켤 수 있습니다.
+1. historical/manual GitHub Actions를 정말 써야 할 때만 `run_codex_live_probe=true`로 `supabase-db` live probe를 non-blocking 관찰용으로 켤 수 있습니다.
 
 - `--json` 출력은 `probeTargets`와 `liveProbes`를 함께 제공합니다.
 - `probeTargets`에는 config 기준 `command`, `args`, `configuredTimeoutSec`, 실제 적용 `timeoutSec`, `callTool`, `selected`가 포함됩니다.
 - `liveProbes`에는 실행 결과(`status`, `detail`)와 해당 probe metadata가 병합되어 들어갑니다.
 - `liveProbes[*].stage`로 readiness / tool-call / full / preflight 단계를 구분할 수 있습니다.
 - `mcp-health-report-codex.sh --summary-file ...`는 비정상 `liveProbes`를 `Live Probe Issues` 섹션으로 요약해 로컬 Markdown summary나 historical GitHub Actions job summary에 기록할 수 있습니다.
-- CI artifact는 `codex-health-latest.json`뿐 아니라 daily `*-codex.log`와 `stitch-startup-*.log`까지 함께 업로드합니다.
+- CI artifact는 `codex-health-latest.json`과 daily `*-codex.log`를 함께 업로드합니다.
 
 ### GitHub MCP 토큰 자동 동기화 (2026-02-17)
 
