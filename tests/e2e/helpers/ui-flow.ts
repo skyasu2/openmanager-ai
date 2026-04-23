@@ -12,15 +12,17 @@ import { skipIfSecurityCheckpoint } from './security';
 import { TIMEOUTS } from './timeouts';
 
 const DASHBOARD_ROUTE_REGEX = /\/(dashboard|main)(\/|\?|$)/;
+const PROFILE_TRIGGER_SELECTOR =
+  '[data-testid="profile-dropdown-trigger"], #profile-menu-button, button[aria-label^="프로필 메뉴"]';
 
 function profileTriggerLocator(page: Page) {
-  return page.locator('[data-testid="profile-dropdown-trigger"]');
+  return page.locator(PROFILE_TRIGGER_SELECTOR);
 }
 
 /**
  * 프로필 드롭다운 열기
  *
- * @description data-testid 기반 안정적 셀렉터로 프로필 버튼 클릭
+ * @description production에서 data-testid가 제거될 수 있어 id/aria fallback으로 프로필 버튼 클릭
  * @param page Playwright Page 객체
  * @throws 프로필 버튼을 찾을 수 없거나 클릭할 수 없는 경우
  *

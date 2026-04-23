@@ -4,6 +4,9 @@ import { guestLogin, resetGuestState } from './helpers/guest';
 import { ensureVercelBypassCookie } from './helpers/security';
 import { TIMEOUTS } from './helpers/timeouts';
 
+const PROFILE_TRIGGER_SELECTOR =
+  '[data-testid="profile-dropdown-trigger"], #profile-menu-button, button[aria-label^="프로필 메뉴"]';
+
 /**
  * @axe-core/playwright 공식 API로 WCAG 2.1 AA 검증을 실행하는 헬퍼.
  */
@@ -59,9 +62,7 @@ test.describe('♿ 접근성 (Accessibility) 검증', () => {
   test('ARIA 라벨 및 역할 검증', async ({ page }) => {
     await guestLogin(page);
 
-    const profileButton = page
-      .locator('[data-testid="profile-dropdown-trigger"]')
-      .first();
+    const profileButton = page.locator(PROFILE_TRIGGER_SELECTOR).first();
     await expect(profileButton).toBeVisible({
       timeout: TIMEOUTS.DASHBOARD_LOAD,
     });
@@ -162,9 +163,7 @@ test.describe('♿ 접근성 (Accessibility) 검증', () => {
   test('스크린 리더 호환성 (대시보드 헤딩 및 랜드마크)', async ({ page }) => {
     await guestLogin(page);
 
-    const profileButton = page
-      .locator('[data-testid="profile-dropdown-trigger"]')
-      .first();
+    const profileButton = page.locator(PROFILE_TRIGGER_SELECTOR).first();
     await expect(profileButton).toBeVisible({
       timeout: TIMEOUTS.DASHBOARD_LOAD,
     });
@@ -295,9 +294,7 @@ test.describe('♿ axe-core WCAG 2.1 AA 자동 검증', () => {
   test('대시보드 WCAG 2.1 AA 위반 0건', async ({ page }) => {
     await guestLogin(page);
 
-    const profileButton = page
-      .locator('[data-testid="profile-dropdown-trigger"]')
-      .first();
+    const profileButton = page.locator(PROFILE_TRIGGER_SELECTOR).first();
     await expect(profileButton).toBeVisible({
       timeout: TIMEOUTS.DASHBOARD_LOAD,
     });

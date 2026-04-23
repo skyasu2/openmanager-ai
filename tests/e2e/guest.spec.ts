@@ -16,6 +16,8 @@ const headlessMode =
   process.env.CI === 'true' || process.env.PLAYWRIGHT_HEADLESS === 'true';
 const shouldClickSystemStart =
   forceSystemStart || (!skipSystemStart && env.isLocal);
+const PROFILE_TRIGGER_SELECTOR =
+  '[data-testid="profile-dropdown-trigger"], #profile-menu-button, button[aria-label^="프로필 메뉴"], button:has-text("게스트")';
 
 const attemptStartSystemIfNeeded = async (page: Page) => {
   const isOnDashboard = /\/(dashboard|main)/.test(page.url());
@@ -93,8 +95,7 @@ test.describe('🧭 게스트 대시보드 핵심 플로우', () => {
       .or(page.locator('[class*="DashboardSummary"]'))
       .first();
     const appShellIndicator = page
-      .locator('[data-testid="profile-dropdown-trigger"]')
-      .or(page.locator('button:has-text("게스트")'))
+      .locator(PROFILE_TRIGGER_SELECTOR)
       .or(page.locator('button[aria-label*="AI"]'))
       .first();
     const authCheckingOverlay = page
@@ -155,11 +156,7 @@ test.describe('🧭 게스트 대시보드 핵심 플로우', () => {
   }) => {
     await guestLogin(page, { landingPath });
 
-    const profileButton = page
-      .locator(
-        '[data-testid="profile-dropdown-trigger"], button:has-text("게스트")'
-      )
-      .first();
+    const profileButton = page.locator(PROFILE_TRIGGER_SELECTOR).first();
     await profileButton.waitFor({ state: 'visible' });
     await profileButton.click();
 
