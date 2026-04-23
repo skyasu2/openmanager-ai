@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.30](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.29...v8.11.30) (2026-04-23)
+
+
+### Bug Fixes
+
+* **accessibility:** remove punctuation from profile label ([ed1d884](https://gitlab.com/skyasu2/openmanager-ai/-/commit/ed1d884c8381846abd259cafa8bb0bde3f6d78d9))
+
 ## [8.11.29](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.28...v8.11.29) (2026-04-23)
 
 
