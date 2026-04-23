@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.31](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.30...v8.11.31) (2026-04-23)
+
+
+### Bug Fixes
+
+* **accessibility:** match profile button visible label ([0a7ee37](https://gitlab.com/skyasu2/openmanager-ai/-/commit/0a7ee3708727b40d1333086bde91d18bb2735ee9))
+
 ## [8.11.30](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.29...v8.11.30) (2026-04-23)
 
 
