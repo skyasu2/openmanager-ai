@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.29](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.28...v8.11.29) (2026-04-23)
+
+
+### Bug Fixes
+
+* **accessibility:** align profile button label in name ([6bbd7be](https://gitlab.com/skyasu2/openmanager-ai/-/commit/6bbd7bebee96b5d1922120ee07556d082108341c))
+
+
+### Tests
+
+* **qa:** record v8.11.28 ai quality recheck ([e179567](https://gitlab.com/skyasu2/openmanager-ai/-/commit/e17956779a4dc0eb66da78ee03a8727a2e1423fe))
+* **qa:** record v8.11.28 broad accessibility regression ([b3234d8](https://gitlab.com/skyasu2/openmanager-ai/-/commit/b3234d841ab1d42d215fc6231fc9892f06fd8805))
+
 ## [8.11.28](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.27...v8.11.28) (2026-04-23)
 
 
