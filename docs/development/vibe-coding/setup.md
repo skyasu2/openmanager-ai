@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active Supporting
 > Doc type: Tutorial
-> Last reviewed: 2026-03-29
+> Last reviewed: 2026-04-23
 > Canonical: docs/development/vibe-coding/setup.md
 > Tags: vibe-coding,setup,mcp
 
@@ -97,6 +97,9 @@ claude             # 대화형 모드 시작
 ### 구성 기준
 
 - Codex SSOT: `.codex/config.toml`의 `[mcp_servers.*]`
+- Codex runtime: 직접 `codex`보다 `bash scripts/mcp/codex-local.sh ...` 경로를 우선 사용
+- Codex auth/env: GitHub/Supabase 토큰은 `.codex/config.toml`에 직접 넣지 않고 런타임에 shell env 또는 `.env.local`에서 주입
+- Codex config 선택: `scripts/mcp/resolve-runtime-env.sh`가 기본적으로 project `/.codex`를 home `~/.codex`보다 우선
 - Claude 로컬: `.mcp.json` + `.claude/settings.local.json`
 - 수치(서버 개수) 대신 SSOT 기준으로 확인: `bash scripts/mcp/codex-local.sh mcp list`
 
@@ -127,6 +130,10 @@ codex
 
 ```bash
 codex --version
+
+# 프로젝트 기준 MCP 확인
+bash scripts/mcp/codex-local.sh mcp list
+bash scripts/mcp/mcp-health-check-codex.sh --no-live-probe
 ```
 
 ---
@@ -230,8 +237,9 @@ Claude: [context7, supabase, next-devtools 등 사용 가능 여부 표시]
 증상: "MCP server not available"
 해결:
 1. 의존성 설치: npm install / pip install uvx
-2. 환경변수 확인: echo $SUPABASE_ACCESS_TOKEN
-3. 로그 확인: claude --debug
+2. shell env 또는 `.env.local`에 필요한 토큰이 있는지 확인
+3. Codex는 `bash scripts/mcp/codex-local.sh mcp list`로 project config 기준 상태 확인
+4. 로그 확인: claude --debug
 ```
 
 ### WSL 브라우저 연동
