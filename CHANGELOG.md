@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.28](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.27...v8.11.28) (2026-04-23)
+
+
+### Bug Fixes
+
+* **ai:** enforce deterministic operator answers ([4201a28](https://gitlab.com/skyasu2/openmanager-ai/-/commit/4201a2844909b234ff7e7eccee3ae1cf9796b65f))
+
+
+### Tests
+
+* **e2e:** harden profile selector for production ([52983a2](https://gitlab.com/skyasu2/openmanager-ai/-/commit/52983a24afda70f287bd6c253f0595a8aba86190))
+
 ## [8.11.27](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.26...v8.11.27) (2026-04-23)
 
 
