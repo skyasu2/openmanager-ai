@@ -56,12 +56,12 @@ repo-local path + optional user mirror로 운영합니다.
 | `code-review` | `agents/openai.yaml`, `references/` | |
 | `doc-management` | `agents/openai.yaml`, `references/` | |
 | `env-sync` | `agents/openai.yaml` | |
+| `git-clean-gone` | `agents/openai.yaml`, `references/` | `[gone]` 브랜치 정리 |
 | `git-workflow` | `agents/openai.yaml`, `references/` | |
 | `lint-smoke` | `agents/openai.yaml`, `references/` | |
 | `qa-ops` | `agents/openai.yaml`, `references/` | |
 | `qa-state` | — | |
 | `state-triage` | `agents/openai.yaml` | |
-| `stitch-incremental` | `agents/openai.yaml`, `references/` | 온디맨드만, 상시 워크플로우 아님 |
 
 ### Built-in (Claude Code 내장)
 
@@ -95,7 +95,10 @@ repo-local path + optional user mirror로 운영합니다.
 │   ├── SKILL.md
 │   ├── agents/openai.yaml      # Codex/OpenAI 전용 메타데이터
 │   └── references/             # 스킬 참조 문서
-├── stitch-incremental/         # Codex 전용 (Claude/Gemini 없음)
+├── git-clean-gone/
+│   ├── SKILL.md
+│   ├── agents/openai.yaml
+│   └── references/
 └── ...
 
 ~/.codex/skills/                # Codex user-scope mirror / installed skills
@@ -143,7 +146,7 @@ Codex 스킬 본문의 핵심 trigger 메타데이터는 `SKILL.md`의 `name` +
 - 스킬 canonical path: Claude는 `.claude/skills/`, Gemini는 `.gemini/skills/`, Codex는 `.agents/skills/`
 - `.gemini/skills/`는 이 저장소에서 `.claude/skills/`를 공유하기 위한 symlink adapter
 - `npm run skills:sync:codex`는 `~/.codex/skills/` mirror 유지용 보조 작업이며, repo-local discovery의 필수 전제는 아님
-- `stitch-incremental`은 Codex 전용 온디맨드 스킬 (상시 워크플로우 아님)
+- Codex skill surface는 `.agents/skills/` 실디렉터리를 기준으로 판단하고, mirror `~/.codex/skills/`는 동기화 결과물로만 본다
 - 스킬 정책 변경 시 `.claude/skills/`와 `.agents/skills/` 양쪽 모두 업데이트
 
 ## 관련 문서

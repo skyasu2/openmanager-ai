@@ -45,7 +45,7 @@
 - Gemini 반영: `.gemini/skills/`에 symlink 추가 (`ln -sf ../../.claude/skills/<name> .gemini/skills/<name>`)
 - Codex 반영: `.agents/skills/` 별도 수정
 - 선택 사항: `npm run skills:sync:codex`로 `~/.codex/skills/` mirror 갱신
-- 스킬 표면은 AI별로 완전히 동일할 필요가 없습니다. `git-clean-gone`은 Claude 전용 (Codex는 미포함).
+- 스킬 표면은 AI별로 완전히 동일할 필요가 없습니다. Codex 기준 실제 스킬 집합은 repo `.agents/skills/`를 우선하며, `~/.codex/skills/`는 선택적 mirror로만 해석합니다.
 
 ### 2.3 MCP 운영 규칙 (Codex)
 - MCP 서버 목록 SSOT는 `.codex/config.toml`의 `[mcp_servers.*]`입니다.

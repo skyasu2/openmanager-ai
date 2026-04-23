@@ -52,15 +52,15 @@ choose_codex_home_from_mode() {
         return 0
       fi
 
-      if can_write_dir "$HOME_CODEX_HOME" && require_config_file "$HOME_CODEX_HOME"; then
-        CODEX_HOME="$HOME_CODEX_HOME"
-        OPENMANAGER_CODEX_HOME_SOURCE="home"
+      if can_write_dir "$PROJECT_CODEX_HOME" && require_config_file "$PROJECT_CODEX_HOME"; then
+        CODEX_HOME="$PROJECT_CODEX_HOME"
+        OPENMANAGER_CODEX_HOME_SOURCE="project-auto"
         return 0
       fi
 
-      if can_write_dir "$PROJECT_CODEX_HOME" && require_config_file "$PROJECT_CODEX_HOME"; then
-        CODEX_HOME="$PROJECT_CODEX_HOME"
-        OPENMANAGER_CODEX_HOME_SOURCE="project-fallback"
+      if can_write_dir "$HOME_CODEX_HOME" && require_config_file "$HOME_CODEX_HOME"; then
+        CODEX_HOME="$HOME_CODEX_HOME"
+        OPENMANAGER_CODEX_HOME_SOURCE="home"
         return 0
       fi
       ;;
