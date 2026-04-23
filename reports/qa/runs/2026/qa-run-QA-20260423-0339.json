@@ -1,0 +1,190 @@
+{
+  "runId": "QA-20260423-0339",
+  "recordedAt": "2026-04-23T14:30:01.154Z",
+  "recordedAtKst": "2026-04-23 23:30:01 KST",
+  "runTitle": "Vercel AI Assistant quality recheck after deterministic operator answer fix",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_6JWVZRTK1zxcqikx2S9Y9uafiUDq",
+    "deploymentUrl": "https://openmanager-8fhkbvphn-skyasus-projects.vercel.app",
+    "commitSha": "088eaf3f72c7110aaa892607db5e2c09236d08b4"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core", "ai-advanced-surface", "observability-pack"],
+  "coveredSurfaces": [
+    "/dashboard/ai-assistant renders AI Workspace on production v8.11.28",
+    "Header profile menu accessible name includes visible guest identity and login state",
+    "System Context panel resolves AI Engine Online and Environment Production",
+    "Prompt 1 answer includes total server count and normal/warning/risk counts",
+    "Prompt 1 answer identifies exactly one highest-attention server with metric trend",
+    "Prompt 1 answer includes two immediate actions for the identified server",
+    "Prompt 2 answer returns CPU Top 3 ranking with current percentages in order",
+    "Prompt 2 answer returns one operator check item per ranked server",
+    "Production browser console shows 0 errors and 0 warnings",
+    "Production AI network capture shows wake-up 200, health 200, jobs 201, supervisor stream 200"
+  ],
+  "skippedSurfaces": [
+    "landing/login/privacy broad route pack",
+    "Reporter Agent full report generation rerun",
+    "Analyst Agent full-system generation rerun",
+    "Vision image upload path",
+    "Feedback submission flow",
+    "Cloud Run admin /monitoring and /monitoring/traces direct run.app checks"
+  ],
+  "checks": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI Assistant prompt 1 deterministic summary",
+      "agent": "AI Chat",
+      "provider": "cloud-run",
+      "model": "production streaming route",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "AI assistant UI latency badge",
+      "latencyMs": 1409,
+      "processingTimeMs": 1409
+    },
+    {
+      "surface": "AI Assistant prompt 2 deterministic CPU top3",
+      "agent": "AI Chat",
+      "provider": "cloud-run",
+      "model": "production streaming route",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "AI assistant UI latency badge",
+      "latencyMs": 9495,
+      "processingTimeMs": 9495
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The production AI Assistant now satisfies the previously failing operator prompts with exact counts, one attention server, two immediate actions, and one check item per ranked server.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "System Context reports AI Engine Online, browser network captured production wake-up/health/stream endpoints, and browser console stayed clean during the targeted run.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The new operator guidance prioritizes direct investigation items aligned with CPU/disk symptoms instead of premature resource-upgrade language, which fits the project's free-tier operating rules.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-23T23:28:51+09:00",
+      "summary": "vercel usage --format json --non-interactive reviewed before v8.11.28 AI quality recheck; effective usage was 15.0518 USD while billed amount remained 0.0000 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "v8.11.28 browser console summary",
+      "path": "reports/qa/evidence/qa-20260423-v81128-browser-console.txt"
+    },
+    {
+      "type": "playwright-network",
+      "label": "v8.11.28 browser network summary",
+      "path": "reports/qa/evidence/qa-20260423-v81128-browser-network.txt"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "v8.11.28 AI Assistant quality screenshot",
+      "path": "reports/qa/evidence/qa-20260423-v81128-ai-assistant.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "v8.11.28 AI quality evaluation note",
+      "path": "reports/qa/evidence/qa-20260423-v81128-ai-quality-eval.txt"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "profile-menu",
+      "title": "프로필 메뉴 접근성 이름에 visible user state 포함",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production v8.11.28 header button renders '프로필 메뉴, GU, 게스트 사용자, 게스트 로그인'.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-answer-enumerated-requirements",
+      "title": "AI 답변이 사용자가 요청한 항목 개수를 정확히 충족하도록 보강",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Prompt 1 now returns counts, one attention server, and two immediate actions in production v8.11.28.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-recommendation-free-tier-fit",
+      "title": "AI 운영 권고에서 리소스 업그레이드보다 조사/캐시/분산 조치를 우선",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Prompt 2 now returns symptom-specific operator checks for each ranked server without resource-upgrade language.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "The first prompt now routes through a deterministic operator summary path; the rendered UI shows two numbered actions even when the raw text copy omits markdown numbering markers.",
+    "The second prompt now returns exactly three ranked servers and exactly three server-specific follow-up checks on production v8.11.28.",
+    "GitLab tag deploy pipeline 2474844035 and main validate pipeline 2474844092 both completed successfully for commit 088eaf3f72c7110aaa892607db5e2c09236d08b4."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production AI workspace",
+      "url": "https://openmanager-ai.vercel.app/dashboard/ai-assistant"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/6JWVZRTK1zxcqikx2S9Y9uafiUDq"
+    }
+  ]
+}

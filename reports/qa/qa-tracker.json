@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-23T13:13:07.550Z"
+    "updatedAt": "2026-04-23T14:30:01.154Z"
   },
   "sequence": {
-    "nextRunNumber": 339
+    "nextRunNumber": 340
   },
   "summary": {
-    "totalRecordedRuns": 336,
-    "totalRuns": 272,
+    "totalRecordedRuns": 337,
+    "totalRuns": 273,
     "excludedRuns": 64,
-    "totalChecks": 2192,
-    "totalPassed": 2107,
+    "totalChecks": 2202,
+    "totalPassed": 2117,
     "totalFailed": 78,
-    "completionRate": 99.09,
-    "completedItems": 328,
-    "pendingItems": 3,
+    "completionRate": 100,
+    "completedItems": 331,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 17,
     "expertDomainsTracked": 9,
-    "expertDomainsOpenGaps": 3,
-    "lastRunId": "QA-20260423-0338",
-    "lastRecordedAt": "2026-04-23T13:13:07.550Z",
-    "latestRecordedRunId": "QA-20260423-0338",
-    "latestRecordedAt": "2026-04-23T13:13:07.550Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260423-0339",
+    "lastRecordedAt": "2026-04-23T14:30:01.154Z",
+    "latestRecordedRunId": "QA-20260423-0339",
+    "latestRecordedAt": "2026-04-23T14:30:01.154Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -1416,23 +1416,23 @@
       "id": "profile-menu",
       "title": "프로필 메뉴 접근성 이름에 visible user state 포함",
       "priority": "P2",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260301-0031",
       "firstSeenAt": "2026-03-01T01:08:05.088Z",
-      "lastSeenRunId": "QA-20260423-0337",
-      "lastSeenAt": "2026-04-23T09:08:17.769Z",
-      "seenCount": 3,
-      "completedCount": 1,
+      "lastSeenRunId": "QA-20260423-0339",
+      "lastSeenAt": "2026-04-23T14:30:01.154Z",
+      "seenCount": 4,
+      "completedCount": 2,
       "pendingCount": 1,
       "wontFixCount": 1,
       "owner": "",
-      "lastEvidence": "Playwright MCP: 게스트 정보/세션 타이머/메뉴/v8.9.1 확인",
+      "lastEvidence": "Production v8.11.28 header button renders '프로필 메뉴, GU, 게스트 사용자, 게스트 로그인'.",
       "lastNote": "release-blocking 아님. Chrome DevTools Lighthouse label-content-name-mismatch: button aria-label='프로필 메뉴' while visible text is 'GU 게스트 사용자 게스트 로그인'.",
-      "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlocking": false,
+      "isBlockingExplicit": false,
       "overengineeringScope": "현재 aria-label은 컨트롤 목적을 전달하고 Lighthouse category score는 100이므로 릴리즈 차단이 아닌 tracking-only 접근성 개선으로 관리한다.",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-04-23T09:08:17.769Z",
+      "lastStatusChangeAt": "2026-04-23T14:30:01.154Z",
       "aliases": [
         "profile-menu-accessible-name-parity"
       ],
@@ -8037,49 +8037,49 @@
       "id": "ai-answer-enumerated-requirements",
       "title": "AI 답변이 사용자가 요청한 항목 개수를 정확히 충족하도록 보강",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260423-0338",
       "firstSeenAt": "2026-04-23T13:13:07.550Z",
-      "lastSeenRunId": "QA-20260423-0338",
-      "lastSeenAt": "2026-04-23T13:13:07.550Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260423-0339",
+      "lastSeenAt": "2026-04-23T14:30:01.154Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "",
+      "lastEvidence": "Prompt 1 now returns counts, one attention server, and two immediate actions in production v8.11.28.",
       "lastNote": "Prompt 1 requested 즉시 조치 2개 but production answer returned one combined recommendation. Release-blocking 아님; answer quality tracking item.",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-04-23T13:13:07.550Z"
+      "lastStatusChangeAt": "2026-04-23T14:30:01.154Z"
     },
     "ai-recommendation-free-tier-fit": {
       "id": "ai-recommendation-free-tier-fit",
       "title": "AI 운영 권고에서 리소스 업그레이드보다 조사/캐시/분산 조치를 우선",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260423-0338",
       "firstSeenAt": "2026-04-23T13:13:07.550Z",
-      "lastSeenRunId": "QA-20260423-0338",
-      "lastSeenAt": "2026-04-23T13:13:07.550Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260423-0339",
+      "lastSeenAt": "2026-04-23T14:30:01.154Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "",
+      "lastEvidence": "Prompt 2 now returns symptom-specific operator checks for each ranked server without resource-upgrade language.",
       "lastNote": "Prompt 2 CPU ranking answer included memory check/resource upgrade language. Recommendations should stay metric-specific and free-tier aligned. Release-blocking 아님; answer quality tracking item.",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-04-23T13:13:07.550Z"
+      "lastStatusChangeAt": "2026-04-23T14:30:01.154Z"
     }
   },
   "runs": [
@@ -31221,6 +31221,158 @@
       "pendingCount": 2,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260423-0339",
+      "recordedAt": "2026-04-23T14:30:01.154Z",
+      "recordedAtKst": "2026-04-23 23:30:01 KST",
+      "title": "Vercel AI Assistant quality recheck after deterministic operator answer fix",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260423-0339.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_6JWVZRTK1zxcqikx2S9Y9uafiUDq",
+        "deploymentUrl": "https://openmanager-8fhkbvphn-skyasus-projects.vercel.app",
+        "commitSha": "088eaf3f72c7110aaa892607db5e2c09236d08b4"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "/dashboard/ai-assistant renders AI Workspace on production v8.11.28",
+        "Header profile menu accessible name includes visible guest identity and login state",
+        "System Context panel resolves AI Engine Online and Environment Production",
+        "Prompt 1 answer includes total server count and normal/warning/risk counts",
+        "Prompt 1 answer identifies exactly one highest-attention server with metric trend",
+        "Prompt 1 answer includes two immediate actions for the identified server",
+        "Prompt 2 answer returns CPU Top 3 ranking with current percentages in order",
+        "Prompt 2 answer returns one operator check item per ranked server",
+        "Production browser console shows 0 errors and 0 warnings",
+        "Production AI network capture shows wake-up 200, health 200, jobs 201, supervisor stream 200"
+      ],
+      "skippedSurfaces": [
+        "landing/login/privacy broad route pack",
+        "Reporter Agent full report generation rerun",
+        "Analyst Agent full-system generation rerun",
+        "Vision image upload path",
+        "Feedback submission flow",
+        "Cloud Run admin /monitoring and /monitoring/traces direct run.app checks"
+      ],
+      "checks": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI Assistant prompt 1 deterministic summary",
+          "agent": "AI Chat",
+          "provider": "cloud-run",
+          "model": "production streaming route",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "AI assistant UI latency badge",
+          "latencyMs": 1409,
+          "processingTimeMs": 1409
+        },
+        {
+          "surface": "AI Assistant prompt 2 deterministic CPU top3",
+          "agent": "AI Chat",
+          "provider": "cloud-run",
+          "model": "production streaming route",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "AI assistant UI latency badge",
+          "latencyMs": 9495,
+          "processingTimeMs": 9495
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The production AI Assistant now satisfies the previously failing operator prompts with exact counts, one attention server, two immediate actions, and one check item per ranked server.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "System Context reports AI Engine Online, browser network captured production wake-up/health/stream endpoints, and browser console stayed clean during the targeted run.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The new operator guidance prioritizes direct investigation items aligned with CPU/disk symptoms instead of premature resource-upgrade language, which fits the project's free-tier operating rules.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-23T23:28:51+09:00",
+          "summary": "vercel usage --format json --non-interactive reviewed before v8.11.28 AI quality recheck; effective usage was 15.0518 USD while billed amount remained 0.0000 USD.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "v8.11.28 browser console summary",
+          "path": "reports/qa/evidence/qa-20260423-v81128-browser-console.txt"
+        },
+        {
+          "type": "playwright-network",
+          "label": "v8.11.28 browser network summary",
+          "path": "reports/qa/evidence/qa-20260423-v81128-browser-network.txt"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "v8.11.28 AI Assistant quality screenshot",
+          "path": "reports/qa/evidence/qa-20260423-v81128-ai-assistant.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "v8.11.28 AI quality evaluation note",
+          "path": "reports/qa/evidence/qa-20260423-v81128-ai-quality-eval.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production AI workspace",
+          "url": "https://openmanager-ai.vercel.app/dashboard/ai-assistant"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/6JWVZRTK1zxcqikx2S9Y9uafiUDq"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 3,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -31229,33 +31381,33 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 151,
-      "appropriateCount": 140,
+      "seenCount": 152,
+      "appropriateCount": 141,
       "partialCount": 11,
       "inappropriateCount": 0,
       "improvementNeededCount": 21,
-      "lastRunId": "QA-20260423-0338",
-      "lastSeenAt": "2026-04-23T13:13:07.550Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "AI Assistant is functional, streams with tool evidence, and returns grounded operational summaries. However, prompt 1 requested two immediate actions and received one combined recommendation, and prompt 2 drifted from CPU-specific diagnosis into memory/resource-upgrade guidance.",
-      "lastNextAction": "Tune answer-quality instructions so enumerated user requirements are satisfied exactly and CPU recommendations stay metric-specific."
+      "lastRunId": "QA-20260423-0339",
+      "lastSeenAt": "2026-04-23T14:30:01.154Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "The production AI Assistant now satisfies the previously failing operator prompts with exact counts, one attention server, two immediate actions, and one check item per ranked server.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 93,
-      "appropriateCount": 65,
+      "seenCount": 94,
+      "appropriateCount": 66,
       "partialCount": 28,
       "inappropriateCount": 0,
       "improvementNeededCount": 29,
-      "lastRunId": "QA-20260423-0338",
-      "lastSeenAt": "2026-04-23T13:13:07.550Z",
+      "lastRunId": "QA-20260423-0339",
+      "lastSeenAt": "2026-04-23T14:30:01.154Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Both production stream requests exposed X-AI timing headers, Cloud Run source, ui-message-stream protocol, and observable event phases including tool-call/tool-result/text events.",
+      "lastRationale": "System Context reports AI Engine Online, browser network captured production wake-up/health/stream endpoints, and browser console stayed clean during the targeted run.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -31280,17 +31432,17 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 89,
-      "appropriateCount": 78,
+      "seenCount": 90,
+      "appropriateCount": 79,
       "partialCount": 11,
       "inappropriateCount": 0,
       "improvementNeededCount": 15,
-      "lastRunId": "QA-20260423-0338",
-      "lastSeenAt": "2026-04-23T13:13:07.550Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "The AI answer included resource upgrade language for a CPU ranking prompt. For this project, first-line recommendations should prefer investigation, process isolation, load distribution, caching, or config tuning before scale-up language.",
-      "lastNextAction": "Adjust production AI guidance to avoid premature resource-upgrade recommendations."
+      "lastRunId": "QA-20260423-0339",
+      "lastSeenAt": "2026-04-23T14:30:01.154Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "The new operator guidance prioritizes direct investigation items aligned with CPU/disk symptoms instead of premature resource-upgrade language, which fits the project's free-tier operating rules.",
+      "lastNextAction": ""
     },
     "test-automation": {
       "domainId": "test-automation",

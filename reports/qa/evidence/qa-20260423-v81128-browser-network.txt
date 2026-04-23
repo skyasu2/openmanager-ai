@@ -1,0 +1,4 @@
+[POST] https://openmanager-ai.vercel.app/api/ai/wake-up => [200] 
+[GET] https://openmanager-ai.vercel.app/api/health?service=ai => [200] 
+[POST] https://openmanager-ai.vercel.app/api/ai/jobs => [201] 
+[POST] https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2 => [200] 

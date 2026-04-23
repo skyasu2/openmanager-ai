@@ -1,95 +1,90 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-23 22:13:28 KST
+> Generated at: 2026-04-23 23:30:12 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 336 |
-| Total Runs (Counted) | 272 |
+| Total Recorded Runs | 337 |
+| Total Runs (Counted) | 273 |
 | Non-counted Runs | 64 |
-| Total Checks | 2192 |
-| Passed | 2107 |
+| Total Checks | 2202 |
+| Passed | 2117 |
 | Failed | 78 |
-| Completed Items | 328 |
-| Pending Items | 3 |
+| Completed Items | 331 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 17 |
 | Expert Domains Tracked | 9 |
-| Expert Open Gaps | 3 |
-| Completion Rate | 99.09% |
-| Last Counted Run | QA-20260423-0338 (2026-04-23T13:13:07.550Z) |
-| Latest Recorded Run | QA-20260423-0338 (2026-04-23T13:13:07.550Z) |
+| Expert Open Gaps | 1 |
+| Completion Rate | 100% |
+| Last Counted Run | QA-20260423-0339 (2026-04-23T14:30:01.154Z) |
+| Latest Recorded Run | QA-20260423-0339 (2026-04-23T14:30:01.154Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260423-0338 (2026-04-23T13:13:07.550Z)
+Latest run: QA-20260423-0339 (2026-04-23T14:30:01.154Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | partially-appropriate | yes | Tune answer-quality instructions so enumerated user requirements are satisfied exactly and CPU recommendations stay metric-specific. |
+| AI Quality Assurance Specialist | appropriate | no | - |
 | IT Monitoring & Observability SME | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
-| DevOps / SRE Engineer | partially-appropriate | yes | Adjust production AI guidance to avoid premature resource-upgrade recommendations. |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | vercel usage --format json --non-interactive reviewed before AI quality QA record; effective usage was 15.0518 USD while billed amount remained 0.0000 USD. |
+| vercel | cli | checked | normal | vercel usage --format json --non-interactive reviewed before v8.11.28 AI quality recheck; effective usage was 15.0518 USD while billed amount remained 0.0000 USD. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-22T13:13:07.550Z -> 2026-04-23T13:13:07.550Z (24h)
-- Runs with observations: 4 recorded / 4 counted
-- Samples: 5
+- Window: 2026-04-22T14:30:01.154Z -> 2026-04-23T14:30:01.154Z (24h)
+- Runs with observations: 5 recorded / 5 counted
+- Samples: 7
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
+| AI Chat | cloud-run | 6 | 1942ms | 9495ms | 471ms | 675ms | 8370ms | 19421ms | QA-20260423-0339 |
 | AI Chat | streaming-ai | 1 | 2950ms | 2950ms | - | - | 2950ms | 2950ms | QA-20260423-0334 |
-| AI Chat | cloud-run | 4 | 188ms | 227ms | 471ms | 675ms | 11288ms | 19421ms | QA-20260423-0338 |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_HUrc3CAatRmgXyihV3V44t7zuFpS / SHA 644af633
+- Deployment: dpl_6JWVZRTK1zxcqikx2S9Y9uafiUDq / SHA 088eaf3f
 - Coverage Packs: ai-core, ai-advanced-surface, observability-pack
-- Covered Surfaces: /dashboard/ai-assistant renders AI Workspace, AI feature navigation exposes AI Chat, Reporter Agent, and Analyst Agent, Starter prompts render for server status, incident analysis, prediction, report generation, and vision analysis, System Context provider routing renders Groq, Cerebras, Mistral, and Gemini configured states, System Context AI Engine resolves Online in production, Authenticated stream prompt 1 returns 200 SSE with tool-call/tool-result/text events, Prompt 1 answer grounds total server counts: 18 total, 17 normal, 1 warning, 0 emergency/offline, Prompt 1 answer identifies a specific high-attention server and metric trend, Authenticated stream prompt 2 returns 200 SSE with CPU ranking answer, Prompt 2 answer ranks top CPU servers with current percentages, X-AI timing headers present on both prompts (192ms and 143ms), Browser console during AI evaluation had 0 errors; only repeated CSS preload warnings
-- Skipped Surfaces: Vision image upload path, Reporter full report generation rerun, Analyst full-system generation rerun, Feedback submission flow, Cloud Run admin /monitoring and /monitoring/traces direct run.app checks, Profile menu accessibility fix verification on Vercel because the local code change is not deployed yet
+- Covered Surfaces: /dashboard/ai-assistant renders AI Workspace on production v8.11.28, Header profile menu accessible name includes visible guest identity and login state, System Context panel resolves AI Engine Online and Environment Production, Prompt 1 answer includes total server count and normal/warning/risk counts, Prompt 1 answer identifies exactly one highest-attention server with metric trend, Prompt 1 answer includes two immediate actions for the identified server, Prompt 2 answer returns CPU Top 3 ranking with current percentages in order, Prompt 2 answer returns one operator check item per ranked server, Production browser console shows 0 errors and 0 warnings, Production AI network capture shows wake-up 200, health 200, jobs 201, supervisor stream 200
+- Skipped Surfaces: landing/login/privacy broad route pack, Reporter Agent full report generation rerun, Analyst Agent full-system generation rerun, Vision image upload path, Feedback submission flow, Cloud Run admin /monitoring and /monitoring/traces direct run.app checks
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | Production AI workspace | [Production AI workspace](https://openmanager-ai.vercel.app/dashboard/ai-assistant) | - |
-| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://vercel.com/skyasus-projects/openmanager-ai/HUrc3CAatRmgXyihV3V44t7zuFpS) | - |
+| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://vercel.com/skyasus-projects/openmanager-ai/6JWVZRTK1zxcqikx2S9Y9uafiUDq) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | AI Assistant quality evaluation details | `reports/qa/evidence/qa-20260423-ai-assistant-quality-eval.txt` | - |
-| playwright-screenshot | Playwright AI workspace screenshot | `reports/qa/evidence/qa-20260423-ai-quality-workspace.png` | - |
+| playwright-console | v8.11.28 browser console summary | `reports/qa/evidence/qa-20260423-v81128-browser-console.txt` | - |
+| playwright-network | v8.11.28 browser network summary | `reports/qa/evidence/qa-20260423-v81128-browser-network.txt` | - |
+| playwright-screenshot | v8.11.28 AI Assistant quality screenshot | `reports/qa/evidence/qa-20260423-v81128-ai-assistant.png` | - |
+| playwright-console | v8.11.28 AI quality evaluation note | `reports/qa/evidence/qa-20260423-v81128-ai-quality-eval.txt` | - |
 
 ## Expert Domain Open Gaps
 
 - accessibility-ux: Accessibility / UX QA (last QA-20260423-0337)
   next: When next touching the header/profile menu, align the profile menu accessible name with the visible guest/user-state label.
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260423-0338)
-  next: Tune answer-quality instructions so enumerated user requirements are satisfied exactly and CPU recommendations stay metric-specific.
-- sre-devops: DevOps / SRE Engineer (last QA-20260423-0338)
-  next: Adjust production AI guidance to avoid premature resource-upgrade recommendations.
 
 ## Pending Improvements
 
-- [P1] ai-answer-enumerated-requirements: AI 답변이 사용자가 요청한 항목 개수를 정확히 충족하도록 보강 (seen 1회, last QA-20260423-0338)
-- [P1] ai-recommendation-free-tier-fit: AI 운영 권고에서 리소스 업그레이드보다 조사/캐시/분산 조치를 우선 (seen 1회, last QA-20260423-0338)
-- [P2] profile-menu: 프로필 메뉴 접근성 이름에 visible user state 포함 (seen 3회, last QA-20260423-0337)
+- None
 
 ## Deferred Improvements
 
@@ -136,6 +131,7 @@ Latest run: QA-20260423-0338 (2026-04-23T13:13:07.550Z)
 - active-alerts-modal-ai-prefill: 활성 알림 모달에서 AI 사이드바 컨텍스트 자동 주입 (completed 1회, last QA-20260323-0166)
 - admin-log-level-admin-auth: 관리자 로그레벨 API 관리자 권한 강제 (completed 1회, last QA-20260325-0183)
 - ai-analyst-success: Analyst Agent 이상감지/예측 성공 (completed 2회, last QA-20260314-0097)
+- ai-answer-enumerated-requirements: AI 답변이 사용자가 요청한 항목 개수를 정확히 충족하도록 보강 (completed 1회, last QA-20260423-0339)
 - ai-assistant-fullscreen-query-path: AI 전체 화면 핵심 서버 상태 요약 질의 검증 (completed 1회, last QA-20260318-0123)
 - ai-assistant-fullscreen-tools-parity: AI 전체 화면 도구 메뉴 parity 검증 (completed 1회, last QA-20260318-0123)
 - ai-chat-cloud-run-500: AI Chat Cloud Run 자유입력 응답 - 최종 성공 확인 (completed 1회, last QA-20260310-0089)
@@ -165,6 +161,7 @@ Latest run: QA-20260423-0338 (2026-04-23T13:13:07.550Z)
 - ai-metric-ranking-cpu-route: Current metric ranking query routes to deterministic metric lookup (completed 1회, last QA-20260418-0304)
 - ai-ranking-cpu-live-route: CPU highest-server query returns live top server on production (completed 1회, last QA-20260418-0305)
 - ai-ranking-memory-live-route: Memory top-N ranking uses deterministic live metric path on production (completed 1회, last QA-20260418-0305)
+- ai-recommendation-free-tier-fit: AI 운영 권고에서 리소스 업그레이드보다 조사/캐시/분산 조치를 우선 (completed 1회, last QA-20260423-0339)
 - ai-reporter-success: Reporter Agent 보고서 생성 성공 (completed 3회, last QA-20260315-0104)
 - ai-server-timing-hosting-path-diagnosed: Server-Timing production/local hosting path difference diagnosed (completed 1회, last QA-20260310-0081)
 - ai-sidebar-open: AI 사이드바 열기/닫기 (completed 1회, last QA-20260317-0114)
@@ -333,6 +330,7 @@ Latest run: QA-20260423-0338 (2026-04-23T13:13:07.550Z)
 - production-console-init-cleanliness: Clear repeated production chunk init console error across core routes (completed 1회, last QA-20260421-0324)
 - production-dashboard-render: 프로덕션 대시보드 렌더링 (completed 1회, last QA-20260317-0114)
 - production-smoke-console-401-cleanliness: Production smoke console 401 resource noise 정리 (completed 3회, last QA-20260320-0140)
+- profile-menu: 프로필 메뉴 접근성 이름에 visible user state 포함 (completed 2회, last QA-20260423-0339)
 - prompt-injection-block-smoke-v880: Prompt injection 차단 스모크 검증 (completed 1회, last QA-20260308-0056)
 - qa-doc-roadmap-current-status-alignment: QA DoD 로드맵 현재 상태 정합성 갱신 (completed 1회, last QA-20260309-0067)
 - qa-expert-domain-tracking: QA 런에서 전문가 영역 적합성 추적 체계 도입 (completed 1회, last QA-20260226-0003)
@@ -466,6 +464,7 @@ Latest run: QA-20260423-0338 (2026-04-23T13:13:07.550Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260423-0339 | 2026-04-23T14:30:01.154Z | targeted | yes | yes | Vercel AI Assistant quality recheck after deterministic operator answer fix | 10 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260423-0338 | 2026-04-23T13:13:07.550Z | targeted | yes | yes | Vercel AI Assistant quality evaluation - feature surface, streaming, and answer quality | 12 | 0 | 2 | 0 | 0 | 2 |
 | QA-20260423-0337 | 2026-04-23T09:08:17.769Z | targeted | yes | yes | Vercel MCP targeted QA - Playwright and Chrome DevTools production refresh | 14 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260423-0336 | 2026-04-22T16:17:11.229Z | targeted | yes | yes | Vercel complementary release-gate QA - advanced AI surfaces after v8.11.26 release | 7 | 0 | 0 | 0 | 0 | 0 |
@@ -485,4 +484,3 @@ Latest run: QA-20260423-0338 (2026-04-23T13:13:07.550Z)
 | QA-20260421-0322 | 2026-04-20T23:00:26.579Z | targeted | no | no | Production targeted QA - Vision latency sample refresh on AI Assistant | 7 | 1 | 0 | 0 | 2 | 0 |
 | QA-20260420-0321 | 2026-04-20T09:31:14.956Z | targeted | no | no | Production targeted QA - v8.11.24 post-deploy smoke and guest-login probe | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260420-0320 | 2026-04-20T05:49:05.588Z | targeted | no | no | Vercel preview targeted QA - dashboard serverId autofocus after guest login | 6 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260420-0319 | 2026-04-20T05:46:13.205Z | targeted | no | no | Vercel preview targeted QA - reporter/dashboard follow-up branch verification | 5 | 0 | 0 | 0 | 0 | 0 |

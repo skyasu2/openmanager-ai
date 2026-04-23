@@ -1,63 +1,63 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-23T13:13:28.895Z",
-  "generatedAtKst": "2026-04-23 22:13:28 KST",
-  "trackerUpdatedAt": "2026-04-23T13:13:07.550Z",
+  "generatedAt": "2026-04-23T14:30:12.228Z",
+  "generatedAtKst": "2026-04-23 23:30:12 KST",
+  "trackerUpdatedAt": "2026-04-23T14:30:01.154Z",
   "totals": {
-    "recordedRuns": 336,
-    "countedRuns": 272,
-    "totalChecks": 2192,
-    "totalPassed": 2107,
+    "recordedRuns": 337,
+    "countedRuns": 273,
+    "totalChecks": 2202,
+    "totalPassed": 2117,
     "totalFailed": 78,
-    "overallPassRatePct": 96.12,
-    "latestRecordedRunId": "QA-20260423-0338",
-    "lastCountedRunId": "QA-20260423-0338"
+    "overallPassRatePct": 96.14,
+    "latestRecordedRunId": "QA-20260423-0339",
+    "lastCountedRunId": "QA-20260423-0339"
   },
   "windows": [
     {
       "label": "All Counted Runs",
-      "recordedRuns": 272,
-      "countedRuns": 272,
-      "totalChecks": 2192,
-      "totalPassed": 2107,
+      "recordedRuns": 273,
+      "countedRuns": 273,
+      "totalChecks": 2202,
+      "totalPassed": 2117,
       "totalFailed": 78,
-      "passRatePct": 96.12,
+      "passRatePct": 96.14,
       "failingRunCount": 49,
-      "failingRunRatePct": 18.01,
+      "failingRunRatePct": 17.95,
       "regressionRunCount": 55,
-      "regressionRunRatePct": 20.22,
+      "regressionRunRatePct": 20.15,
       "pendingRunCount": 43,
-      "releaseFacingRuns": 37
+      "releaseFacingRuns": 38
     },
     {
       "label": "Last 30 Counted Runs",
       "recordedRuns": 30,
       "countedRuns": 30,
-      "totalChecks": 312,
-      "totalPassed": 301,
+      "totalChecks": 316,
+      "totalPassed": 305,
       "totalFailed": 10,
-      "passRatePct": 96.47,
+      "passRatePct": 96.52,
       "failingRunCount": 7,
       "failingRunRatePct": 23.33,
       "regressionRunCount": 7,
       "regressionRunRatePct": 23.33,
       "pendingRunCount": 6,
-      "releaseFacingRuns": 13
+      "releaseFacingRuns": 14
     },
     {
       "label": "Last 10 Counted Runs",
       "recordedRuns": 10,
       "countedRuns": 10,
-      "totalChecks": 116,
-      "totalPassed": 110,
+      "totalChecks": 120,
+      "totalPassed": 114,
       "totalFailed": 6,
-      "passRatePct": 94.83,
+      "passRatePct": 95,
       "failingRunCount": 4,
       "failingRunRatePct": 40,
       "regressionRunCount": 4,
       "regressionRunRatePct": 40,
       "pendingRunCount": 4,
-      "releaseFacingRuns": 5
+      "releaseFacingRuns": 6
     }
   ],
   "gateWindows": [
@@ -221,8 +221,8 @@
   "scopeDistribution": [
     {
       "scope": "targeted",
-      "totalRuns": 165,
-      "countedRuns": 102
+      "totalRuns": 166,
+      "countedRuns": 103
     },
     {
       "scope": "legacy",
@@ -260,24 +260,24 @@
     {
       "priority": "P1",
       "totalItems": 146,
-      "recurringItems": 66,
-      "openItems": 2,
+      "recurringItems": 68,
+      "openItems": 0,
       "openRecurringItems": 0,
-      "completedItems": 140,
+      "completedItems": 142,
       "wontFixItems": 4,
-      "recurrenceRatePct": 45.21,
+      "recurrenceRatePct": 46.58,
       "openRecurrenceRatePct": 0
     },
     {
       "priority": "P2",
       "totalItems": 143,
       "recurringItems": 45,
-      "openItems": 1,
-      "openRecurringItems": 1,
-      "completedItems": 130,
+      "openItems": 0,
+      "openRecurringItems": 0,
+      "completedItems": 131,
       "wontFixItems": 12,
       "recurrenceRatePct": 31.47,
-      "openRecurrenceRatePct": 100
+      "openRecurrenceRatePct": 0
     },
     {
       "priority": "P3",
@@ -292,6 +292,20 @@
     }
   ],
   "deploymentCorrelation": [
+    {
+      "deploymentId": "dpl_6JWVZRTK1zxcqikx2S9Y9uafiUDq",
+      "target": "vercel-production",
+      "commitSha": "088eaf3f72c7110aaa892607db5e2c09236d08b4",
+      "runCount": 1,
+      "totalChecks": 10,
+      "totalFailed": 0,
+      "regressionRuns": 0,
+      "failingRuns": 0,
+      "latestRecordedAt": "2026-04-23T14:30:01.154Z",
+      "latestRunId": "QA-20260423-0339",
+      "passRatePct": 100,
+      "regressionRunRatePct": 0
+    },
     {
       "deploymentId": "dpl_HUrc3CAatRmgXyihV3V44t7zuFpS",
       "target": "vercel-production",
@@ -445,20 +459,6 @@
       "latestRunId": "QA-20260417-0299",
       "passRatePct": 96.43,
       "regressionRunRatePct": 50
-    },
-    {
-      "deploymentId": "dpl_BetVxqXL1qtLy673944mUkUfSqMz",
-      "target": "vercel-production",
-      "commitSha": "e1f97f944",
-      "runCount": 1,
-      "totalChecks": 8,
-      "totalFailed": 0,
-      "regressionRuns": 0,
-      "failingRuns": 0,
-      "latestRecordedAt": "2026-04-16T12:02:50.961Z",
-      "latestRunId": "QA-20260416-0296",
-      "passRatePct": 100,
-      "regressionRunRatePct": 0
     }
   ],
   "recentDailyTrend": [
@@ -607,14 +607,14 @@
     },
     {
       "date": "2026-04-23",
-      "runCount": 5,
-      "totalChecks": 55,
-      "totalPassed": 52,
+      "runCount": 6,
+      "totalChecks": 65,
+      "totalPassed": 62,
       "totalFailed": 3,
       "failingRuns": 2,
       "regressionRuns": 2,
-      "passRatePct": 94.55,
-      "regressionRunRatePct": 40
+      "passRatePct": 95.38,
+      "regressionRunRatePct": 33.33
     }
   ],
   "recentRegressionRuns": [
@@ -720,38 +720,7 @@
     }
   ],
   "recurringItems": {
-    "open": [
-      {
-        "id": "profile-menu",
-        "title": "프로필 메뉴 접근성 이름에 visible user state 포함",
-        "status": "pending",
-        "priority": "P2",
-        "seenCount": 3,
-        "completedCount": 1,
-        "lastSeenRunId": "QA-20260423-0337",
-        "lastResolvedRunId": null
-      },
-      {
-        "id": "ai-answer-enumerated-requirements",
-        "title": "AI 답변이 사용자가 요청한 항목 개수를 정확히 충족하도록 보강",
-        "status": "pending",
-        "priority": "P1",
-        "seenCount": 1,
-        "completedCount": 0,
-        "lastSeenRunId": "QA-20260423-0338",
-        "lastResolvedRunId": null
-      },
-      {
-        "id": "ai-recommendation-free-tier-fit",
-        "title": "AI 운영 권고에서 리소스 업그레이드보다 조사/캐시/분산 조치를 우선",
-        "status": "pending",
-        "priority": "P1",
-        "seenCount": 1,
-        "completedCount": 0,
-        "lastSeenRunId": "QA-20260423-0338",
-        "lastResolvedRunId": null
-      }
-    ],
+    "open": [],
     "wontFix": [
       {
         "id": "feature-dod-tsc-zero-error",
@@ -959,12 +928,27 @@
   },
   "aiLatencyRollup24h": {
     "windowHours": 24,
-    "windowStart": "2026-04-22T13:13:07.550Z",
-    "windowEnd": "2026-04-23T13:13:07.550Z",
-    "recordedRunCount": 4,
-    "countedRunCount": 4,
-    "sampleCount": 5,
+    "windowStart": "2026-04-22T14:30:01.154Z",
+    "windowEnd": "2026-04-23T14:30:01.154Z",
+    "recordedRunCount": 5,
+    "countedRunCount": 5,
+    "sampleCount": 7,
     "buckets": [
+      {
+        "agent": "AI Chat",
+        "provider": "cloud-run",
+        "sampleCount": 6,
+        "runCount": 4,
+        "countedRunCount": 4,
+        "avgLatencyMs": 1942,
+        "p95LatencyMs": 9495,
+        "avgTtfbMs": 471,
+        "p95TtfbMs": 675,
+        "avgProcessingTimeMs": 8370,
+        "p95ProcessingTimeMs": 19421,
+        "latestRunId": "QA-20260423-0339",
+        "latestRecordedAt": "2026-04-23T14:30:01.154Z"
+      },
       {
         "agent": "AI Chat",
         "provider": "streaming-ai",
@@ -979,21 +963,6 @@
         "p95ProcessingTimeMs": 2950,
         "latestRunId": "QA-20260423-0334",
         "latestRecordedAt": "2026-04-22T15:53:14.284Z"
-      },
-      {
-        "agent": "AI Chat",
-        "provider": "cloud-run",
-        "sampleCount": 4,
-        "runCount": 3,
-        "countedRunCount": 3,
-        "avgLatencyMs": 188,
-        "p95LatencyMs": 227,
-        "avgTtfbMs": 471,
-        "p95TtfbMs": 675,
-        "avgProcessingTimeMs": 11288,
-        "p95ProcessingTimeMs": 19421,
-        "latestRunId": "QA-20260423-0338",
-        "latestRecordedAt": "2026-04-23T13:13:07.550Z"
       }
     ]
   },
