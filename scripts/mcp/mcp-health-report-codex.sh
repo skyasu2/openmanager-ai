@@ -219,7 +219,10 @@ const status = skipped
       ? 'warn'
       : 'fail';
 const liveProbeIssues = Array.isArray(report.liveProbes)
-  ? report.liveProbes.filter((probe) => probe?.status && probe.status !== 'ok')
+  ? report.liveProbes.filter((probe) => probe?.status && probe.status !== 'ok' && probe.status !== 'skip')
+  : [];
+const liveProbeSkips = Array.isArray(report.liveProbes)
+  ? report.liveProbes.filter((probe) => probe?.status === 'skip')
   : [];
 const explicitWarnings = Array.isArray(report.warnings) ? report.warnings : [];
 
@@ -228,7 +231,7 @@ const lines = [
   `- Status: ${status}`,
   `- Servers: ${report.summary?.successCount ?? 0}/${report.summary?.totalServers ?? 0}`,
   report.options?.runLiveProbe
-    ? `- Live probe failures: ${report.summary?.liveProbeFailCount ?? 0}`
+    ? `- Live probe failures: ${report.summary?.liveProbeFailCount ?? 0}, skips: ${report.summary?.liveProbeSkipCount ?? 0}`
     : '- Live probe: skipped',
   Array.isArray(report.probeTargets) && report.probeTargets.length > 0
     ? `- Probe targets: ${report.probeTargets.map((target) => `${target.server} (${target.timeoutSec}s)`).join(', ')}`
@@ -248,6 +251,16 @@ if (liveProbeIssues.length > 0) {
   lines.push('');
   lines.push('### Live Probe Issues');
   for (const probe of liveProbeIssues) {
+    const stage = probe?.stage ? `/${probe.stage}` : '';
+    const detail = probe?.detail || 'unknown';
+    lines.push(`- ${probe?.server || 'unknown'}${stage}: ${detail}`);
+  }
+}
+
+if (liveProbeSkips.length > 0) {
+  lines.push('');
+  lines.push('### Live Probe Skips');
+  for (const probe of liveProbeSkips) {
     const stage = probe?.stage ? `/${probe.stage}` : '';
     const detail = probe?.detail || 'unknown';
     lines.push(`- ${probe?.server || 'unknown'}${stage}: ${detail}`);

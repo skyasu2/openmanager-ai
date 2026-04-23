@@ -38,6 +38,7 @@ TODAY_CALLS=""
 SUCCESS_COUNT=0
 FAIL_COUNT=0
 LIVE_PROBE_FAIL_COUNT=0
+LIVE_PROBE_SKIP_COUNT=0
 PERMISSION_WARNING_COUNT=0
 
 print_usage() {
@@ -283,6 +284,7 @@ emit_json() {
   JSON_FAIL_COUNT="$FAIL_COUNT" \
   JSON_SUCCESS_RATE="${SUCCESS_RATE:-0}" \
   JSON_LIVE_PROBE_FAIL_COUNT="$LIVE_PROBE_FAIL_COUNT" \
+  JSON_LIVE_PROBE_SKIP_COUNT="$LIVE_PROBE_SKIP_COUNT" \
   JSON_PERMISSION_WARNING_COUNT="$PERMISSION_WARNING_COUNT" \
   JSON_TODAY_CALLS="$TODAY_CALLS" \
   JSON_LAST_ERROR="$LAST_ERROR" \
@@ -445,6 +447,7 @@ const payload = {
     failCount: Number(process.env.JSON_FAIL_COUNT || '0'),
     successRate: Number(process.env.JSON_SUCCESS_RATE || '0'),
     liveProbeFailCount: Number(process.env.JSON_LIVE_PROBE_FAIL_COUNT || '0'),
+    liveProbeSkipCount: Number(process.env.JSON_LIVE_PROBE_SKIP_COUNT || '0'),
     permissionWarningCount: Number(process.env.JSON_PERMISSION_WARNING_COUNT || '0'),
     todayMcpCalls: Number.isNaN(todayCalls) ? null : todayCalls,
   },
@@ -884,13 +887,13 @@ else
     if [ -z "$SUPABASE_TOKEN" ]; then
       echo -e "${YELLOW}WARN${NC} supabase-db: live probe skipped (SUPABASE_ACCESS_TOKEN missing)"
       echo "WARN supabase-db: live probe skipped (SUPABASE_ACCESS_TOKEN missing)" >> "$LOG_FILE"
-      record_live_probe_status "supabase-db" "preflight" "warn" "skipped (SUPABASE_ACCESS_TOKEN missing)"
-      LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
+      record_live_probe_status "supabase-db" "preflight" "skip" "skipped (SUPABASE_ACCESS_TOKEN missing)"
+      LIVE_PROBE_SKIP_COUNT=$((LIVE_PROBE_SKIP_COUNT + 1))
     elif [ -z "$SUPABASE_COMMAND" ] || [ -z "$SUPABASE_ARGS_JSON" ]; then
       echo -e "${YELLOW}WARN${NC} supabase-db: live probe skipped (launch config missing)"
       echo "WARN supabase-db: live probe skipped (launch config missing)" >> "$LOG_FILE"
-      record_live_probe_status "supabase-db" "preflight" "warn" "skipped (launch config missing)"
-      LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
+      record_live_probe_status "supabase-db" "preflight" "skip" "skipped (launch config missing)"
+      LIVE_PROBE_SKIP_COUNT=$((LIVE_PROBE_SKIP_COUNT + 1))
     else
       if ! run_live_probe \
         "supabase-db" \
@@ -917,13 +920,13 @@ else
     if [ -z "$STITCH_PROJECT_ID" ] || [ -z "$STITCH_USE_SYSTEM_GCLOUD" ]; then
       echo -e "${YELLOW}WARN${NC} stitch: live probe skipped (stitch env missing)"
       echo "WARN stitch: live probe skipped (stitch env missing)" >> "$LOG_FILE"
-      record_live_probe_status "stitch" "preflight" "warn" "skipped (stitch env missing)"
-      LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
+      record_live_probe_status "stitch" "preflight" "skip" "skipped (stitch env missing)"
+      LIVE_PROBE_SKIP_COUNT=$((LIVE_PROBE_SKIP_COUNT + 1))
     elif [ -z "$STITCH_COMMAND" ] || [ -z "$STITCH_ARGS_JSON" ]; then
       echo -e "${YELLOW}WARN${NC} stitch: live probe skipped (launch config missing)"
       echo "WARN stitch: live probe skipped (launch config missing)" >> "$LOG_FILE"
-      record_live_probe_status "stitch" "preflight" "warn" "skipped (launch config missing)"
-      LIVE_PROBE_FAIL_COUNT=$((LIVE_PROBE_FAIL_COUNT + 1))
+      record_live_probe_status "stitch" "preflight" "skip" "skipped (launch config missing)"
+      LIVE_PROBE_SKIP_COUNT=$((LIVE_PROBE_SKIP_COUNT + 1))
     else
       if ! run_live_probe \
         "stitch" \
@@ -966,6 +969,7 @@ echo "  - 실패: ${FAIL_COUNT}/${TOTAL_SERVERS}"
 echo "  - 성공률: ${SUCCESS_RATE}%"
 if [ "$RUN_LIVE_PROBE" -eq 1 ]; then
   echo "  - 실동작 프로브 실패: ${LIVE_PROBE_FAIL_COUNT}"
+  echo "  - 실동작 프로브 skip: ${LIVE_PROBE_SKIP_COUNT}"
 else
   echo "  - 실동작 프로브: skipped"
 fi
@@ -981,6 +985,7 @@ fi
   echo "  - 성공률: ${SUCCESS_RATE}%"
   if [ "$RUN_LIVE_PROBE" -eq 1 ]; then
     echo "  - 실동작 프로브 실패: ${LIVE_PROBE_FAIL_COUNT}"
+    echo "  - 실동작 프로브 skip: ${LIVE_PROBE_SKIP_COUNT}"
   else
     echo "  - 실동작 프로브: skipped"
   fi
