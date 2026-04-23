@@ -1,24 +1,24 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-04-23 23:30:12 KST
+> Generated at: 2026-04-24 00:16:25 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 337 |
-| Counted Runs | 273 |
-| Total Checks | 2202 |
-| Total Passed | 2117 |
-| Total Failed | 78 |
+| Recorded Runs | 338 |
+| Counted Runs | 274 |
+| Total Checks | 2226 |
+| Total Passed | 2140 |
+| Total Failed | 79 |
 | Overall Pass Rate | 96.14% |
-| Latest Recorded Run | QA-20260423-0339 |
-| Last Counted Run | QA-20260423-0339 |
+| Latest Recorded Run | QA-20260424-0340 |
+| Last Counted Run | QA-20260424-0340 |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-22T14:30:01.154Z -> 2026-04-23T14:30:01.154Z (24h)
+- Window: 2026-04-22T15:15:14.762Z -> 2026-04-23T15:15:14.762Z (24h)
 - Runs with observations: 5 recorded / 5 counted
 - Samples: 7
 
@@ -29,22 +29,22 @@
 
 ## Warnings
 
-- [warning] gate-window-regression-open: Recent gate runs still show regressions. The last 5 gate runs include 2 regression run(s), but the current release-gate-only window is clean. This warning is currently driven by QA-20260421-0323 (broad, non-release-facing), QA-20260422-0330 (broad, non-release-facing) lingering in the rolling gate window. Next: Treat this as historical gate context, not an active release-gate failure. Keep broad/release-gate QA green; the warning will clear once enough clean gate runs replace the older regression in the rolling window.
+- [warning] gate-window-regression-open: Recent gate runs still show regressions. The last 5 gate runs include 2 regression run(s), but the current release-gate-only window is clean. This warning is currently driven by QA-20260422-0330 (broad, non-release-facing), QA-20260424-0340 (broad) lingering in the rolling gate window. Next: Treat this as historical gate context, not an active release-gate failure. Keep broad/release-gate QA green; the warning will clear once enough clean gate runs replace the older regression in the rolling window.
 
 ## Rolling Windows
 
 | Window | Counted Runs | Checks | Pass Rate | Failed Runs | Failing Run Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| All Counted Runs | 273 | 2202 | 96.14% | 49 | 17.95% | 55 | 20.15% |
-| Last 30 Counted Runs | 30 | 316 | 96.52% | 7 | 23.33% | 7 | 23.33% |
-| Last 10 Counted Runs | 10 | 120 | 95% | 4 | 40% | 4 | 40% |
+| All Counted Runs | 274 | 2226 | 96.14% | 50 | 18.25% | 56 | 20.44% |
+| Last 30 Counted Runs | 30 | 336 | 96.43% | 8 | 26.67% | 8 | 26.67% |
+| Last 10 Counted Runs | 10 | 129 | 96.12% | 4 | 40% | 4 | 40% |
 
 ## Gate Run Windows
 
 | Window | Counted Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|
-| All Gate Runs | 31 | 434 | 97% | 7 | 22.58% |
-| Last 5 Gate Runs | 5 | 62 | 95.16% | 2 | 40% |
+| All Gate Runs | 32 | 458 | 96.94% | 8 | 25% |
+| Last 5 Gate Runs | 5 | 71 | 97.18% | 2 | 40% |
 
 ## Release-Gate Only Windows
 
@@ -59,7 +59,7 @@
 |---|---:|---:|
 | targeted | 166 | 103 |
 | legacy | 137 | 137 |
-| broad | 26 | 25 |
+| broad | 27 | 26 |
 | release-gate | 6 | 6 |
 | smoke | 2 | 2 |
 
@@ -68,7 +68,7 @@
 | Priority | Total Items | Recurring Items | Recurrence Rate | Open Items | Open Recurring | Open Recurrence Rate | Completed | Wont-Fix |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | P0 | 43 | 7 | 16.28% | 0 | 0 | 0% | 43 | 0 |
-| P1 | 146 | 68 | 46.58% | 0 | 0 | 0% | 142 | 4 |
+| P1 | 147 | 68 | 46.26% | 1 | 0 | 0% | 142 | 4 |
 | P2 | 143 | 45 | 31.47% | 0 | 0 | 0% | 131 | 12 |
 | P3 | 16 | 10 | 62.5% | 0 | 0 | 0% | 15 | 1 |
 
@@ -76,7 +76,7 @@
 
 | Deployment ID | Target | Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate | Latest Run | Commit |
 |---|---|---:|---:|---:|---:|---:|---|---|
-| dpl_6JWVZRTK1zxcqikx2S9Y9uafiUDq | vercel-production | 1 | 10 | 100% | 0 | 0% | QA-20260423-0339 | 088eaf3f |
+| dpl_6JWVZRTK1zxcqikx2S9Y9uafiUDq | vercel-production | 2 | 34 | 97.06% | 1 | 50% | QA-20260424-0340 | 088eaf3f |
 | dpl_HUrc3CAatRmgXyihV3V44t7zuFpS | vercel-production | 5 | 55 | 94.55% | 2 | 40% | QA-20260423-0338 | 644af633 |
 | dpl_643GY6xfecoQXhCqzRUnE4TNajmF | vercel-production | 2 | 25 | 96% | 1 | 50% | QA-20260422-0330 | 538282c1 |
 | dpl_3cutqnX7vMtm5qAuxzgnAnVULEmk | vercel-production | 1 | 15 | 86.67% | 1 | 100% | QA-20260421-0323 | 06e47ff8 |
@@ -93,7 +93,6 @@
 
 | Date | Runs | Checks | Pass Rate | Failed Runs | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-04-07 | 1 | 18 | 88.89% | 1 | 1 | 100% |
 | 2026-04-08 | 4 | 26 | 100% | 0 | 0 | 0% |
 | 2026-04-09 | 3 | 24 | 100% | 0 | 0 | 0% |
 | 2026-04-12 | 1 | 10 | 100% | 0 | 0 | 0% |
@@ -107,11 +106,13 @@
 | 2026-04-21 | 3 | 40 | 95% | 1 | 1 | 33.33% |
 | 2026-04-22 | 1 | 15 | 93.33% | 1 | 1 | 100% |
 | 2026-04-23 | 6 | 65 | 95.38% | 2 | 2 | 33.33% |
+| 2026-04-24 | 1 | 24 | 95.83% | 1 | 1 | 100% |
 
 ## Recent Regression Runs
 
 | Run ID | Time (UTC) | Scope | Failed Checks | Pending | Deferred | Wont-Fix | Title |
 |---|---|---|---:|---:|---:|---:|---|
+| QA-20260424-0340 | 2026-04-23T15:15:14.762Z | broad | 1 | 1 | 0 | 0 | Vercel broad production QA on v8.11.28 before landing profile label-in-name patch |
 | QA-20260423-0338 | 2026-04-23T13:13:07.550Z | targeted | 2 | 2 | 0 | 0 | Vercel AI Assistant quality evaluation - feature surface, streaming, and answer quality |
 | QA-20260423-0337 | 2026-04-23T09:08:17.769Z | targeted | 1 | 1 | 0 | 0 | Vercel MCP targeted QA - Playwright and Chrome DevTools production refresh |
 | QA-20260422-0330 | 2026-04-22T14:14:24.057Z | broad | 1 | 1 | 0 | 0 | Vercel Playwright broad QA - core routes, dashboard, AI workspace recheck |
@@ -121,12 +122,12 @@
 | QA-20260415-0288 | 2026-04-15T11:09:03.713Z | broad | 2 | 1 | 0 | 0 | Vercel broad QA - frontend and AI assistant evaluation on latest production |
 | QA-20260413-0281 | 2026-04-13T12:40:26.449Z | targeted | 2 | 1 | 0 | 0 | GraphRAG variant stability recheck after ai-engine-00311 (boolean-string tool schema hotfix) |
 | QA-20260413-0280 | 2026-04-13T11:41:39.894Z | targeted | 0 | 1 | 0 | 0 | GraphRAG variant direct supervisor recheck after ai-engine-00308 (RAG auto + advisor tool required) |
-| QA-20260407-0249 | 2026-04-07T11:55:13.126Z | broad | 2 | 2 | 0 | 0 | Playwright MCP Production QA - Frontend + AI Assistant v8.11.0 broad baseline refresh |
 
 ## Recurring Open Items
 
 | ID | Priority | Status | Seen | Last Seen Run | Title |
 |---|---|---|---:|---|---|
+| landing-profile-label-content-name-mismatch | P1 | pending | 1 | QA-20260424-0340 | Landing profile button accessible name should satisfy label-in-name audit |
 | feature-dod-tsc-zero-error | P2 | wont-fix | 9 | QA-20260307-0053 | tsc --noEmit 0 에러 |
 | feature-dod-unit-tests | P2 | wont-fix | 9 | QA-20260307-0053 | 단위 테스트 158개 통과 |
 | obs-fp-fn-weekly-report | P1 | wont-fix | 3 | QA-20260227-0013 | 오탐/미탐 주간 리포트 자동 생성 |

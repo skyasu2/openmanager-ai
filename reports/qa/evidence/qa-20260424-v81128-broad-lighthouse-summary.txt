@@ -1,0 +1,11 @@
+Chrome DevTools Lighthouse snapshot on production landing (`https://openmanager-ai.vercel.app/`).
+- Device: desktop
+- Mode: snapshot
+- Accessibility: 100
+- Best Practices: 100
+- SEO: 100
+- Failed audits: 1
+- Failed audit id: label-content-name-mismatch
+- Failing selector: header.relative > nav.flex > div.relative > button#profile-menu-button
+- Observed issue: visible label text (`GU / 게스트 사용자 / 게스트 로그인`) does not match the computed accessible name ordering expected by axe/Lighthouse.
+- Note: manual DOM inspection confirmed the latest production button aria-label is `프로필 메뉴, GU, 게스트 사용자, 게스트 로그인`, but Lighthouse still flags the control under WCAG 2.5.3 label-in-name semantics.

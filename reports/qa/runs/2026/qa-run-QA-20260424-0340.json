@@ -1,0 +1,182 @@
+{
+  "runId": "QA-20260424-0340",
+  "recordedAt": "2026-04-23T15:15:14.762Z",
+  "recordedAtKst": "2026-04-24 00:15:14 KST",
+  "runTitle": "Vercel broad production QA on v8.11.28 before landing profile label-in-name patch",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_6JWVZRTK1zxcqikx2S9Y9uafiUDq",
+    "deploymentUrl": "https://openmanager-8fhkbvphn-skyasus-projects.vercel.app",
+    "commitSha": "088eaf3f72c7110aaa892607db5e2c09236d08b4"
+  },
+  "scope": "broad",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "ai-advanced-surface",
+    "modal-detail-pack",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "/ landing render with guest profile state and version badge v8.11.28",
+    "/main redirect to /",
+    "/login OAuth/email/guest entry points and privacy link",
+    "/privacy render with back-link",
+    "404 route render",
+    "/api/health healthy response",
+    "/api/version production metadata response",
+    "/system-boot to /dashboard redirect",
+    "Dashboard counts 18/17/1/0 and system resources 34/46/42",
+    "Active alerts modal render and Escape close",
+    "Topology modal render with 15 nodes and 20 edges",
+    "Server detail modal 3-tab switch and Escape close",
+    "Log explorer modal render with filters and log list",
+    "Profile menu guest accessible name and no admin-only item",
+    "AI sidebar starter prompts, input, and right-panel feature menu",
+    "AI Chat summary response with analysis basis metadata",
+    "Fullscreen /dashboard/ai-assistant workspace and System Context render",
+    "Reporter empty-state to report generation and detail view",
+    "Analyst full-system analysis render for 18 servers",
+    "Feedback submission network 200",
+    "Playwright console capture 0 errors / 0 warnings",
+    "Chrome DevTools landing console 0 errors / 0 warnings / 0 issues"
+  ],
+  "skippedSurfaces": [
+    "Prompt-injection blocked-input regression replay (MCP browser safety layer refused adversarial override text automation)",
+    "Direct Cloud Run admin /monitoring and /monitoring/traces checks",
+    "Direct X-AI response header proof capture"
+  ],
+  "checks": {
+    "total": 24,
+    "passed": 23,
+    "failed": 1
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Representative AI Chat, Reporter, Analyst, and feedback surfaces all executed successfully on production v8.11.28.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Browser console stayed clean, core AI endpoints returned 200s, and landing Lighthouse scores remained 100/100/100 aside from one accessibility rule finding on the profile button label-in-name check.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "accessibility-ux",
+      "domainName": "Accessibility / UX QA",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Chrome DevTools Lighthouse still flags label-content-name-mismatch on the landing profile button because the visible identity text does not align with the computed accessible name order expected by axe.",
+      "nextAction": "Reorder the landing/dashboard profile button accessible name so the visible identity text leads the computed name, then rerun production broad QA."
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP and Chrome DevTools MCP together covered route smoke, modal/detail flows, and accessibility/perimeter diagnostics in one broad run.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-24T00:08:00+09:00",
+      "summary": "vercel usage --format json --non-interactive reviewed during production broad QA; effective usage remained 15.0518 USD while billed amount remained 0.0000 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "v8.11.28 broad browser console summary",
+      "path": "reports/qa/evidence/qa-20260424-v81128-broad-browser-console.txt"
+    },
+    {
+      "type": "playwright-network",
+      "label": "v8.11.28 broad browser network summary",
+      "path": "reports/qa/evidence/qa-20260424-v81128-broad-browser-network.txt"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "v8.11.28 broad AI workspace screenshot",
+      "path": "reports/qa/evidence/qa-20260424-v81128-broad-ai-workspace.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "v8.11.28 broad AI workspace screenshot via Chrome DevTools",
+      "path": "reports/qa/evidence/qa-20260424-v81128-broad-ai-workspace-devtools.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "v8.11.28 broad evaluation note",
+      "path": "reports/qa/evidence/qa-20260424-v81128-broad-eval.txt"
+    },
+    {
+      "type": "playwright-console",
+      "label": "v8.11.28 broad lighthouse summary",
+      "path": "reports/qa/evidence/qa-20260424-v81128-broad-lighthouse-summary.txt"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "landing-profile-label-content-name-mismatch",
+      "title": "Landing profile button accessible name should satisfy label-in-name audit",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Lighthouse flagged #profile-menu-button with label-content-name-mismatch on production v8.11.28; local fix is prepared but not yet deployed in this run.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Transient /api/system net::ERR_ABORTED entries were observed during route transitions, but the same surface later completed /api/system 200 and no runtime console errors followed.",
+    "404 route emitted the expected document-level failed-resource entry rather than an application runtime error.",
+    "This run does not supersede the broad green reference because of the landing profile button accessibility finding."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production AI workspace",
+      "url": "https://openmanager-ai.vercel.app/dashboard/ai-assistant"
+    },
+    {
+      "type": "general",
+      "label": "Production root",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/6JWVZRTK1zxcqikx2S9Y9uafiUDq"
+    }
+  ]
+}

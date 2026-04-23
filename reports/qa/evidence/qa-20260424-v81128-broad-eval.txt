@@ -1,0 +1,37 @@
+Production broad QA on v8.11.28 (`dpl_6JWVZRTK1zxcqikx2S9Y9uafiUDq`).
+
+Pass coverage:
+- `/` landing rendered with guest profile state and version badge `v8.11.28`.
+- `/main` redirected to `/`.
+- `/login` rendered Google/GitHub/email/guest login paths and privacy link.
+- `/privacy` rendered with back-link to `/login`.
+- 404 route rendered correctly.
+- `/api/health` returned healthy database/cache/ai statuses.
+- `/api/version` returned `8.11.28`, `Next.js 16.1.6`, `production`.
+- `/system-boot` redirected into `/dashboard`.
+- Dashboard rendered `18 total / 17 online / 1 warning / 0 risk / 0 offline` with system resources `34 / 46 / 42`.
+- Active alerts modal opened and closed with Escape.
+- Topology modal rendered `15 nodes / 20 edges`.
+- Server detail modal rendered all 3 tabs (`종합 상황`, `성능 분석`, `로그 & 네트워크`) and closed with Escape.
+- Log explorer modal rendered with filters and `7860` logs.
+- Profile menu rendered guest identity and contained no admin-only menu item.
+- AI sidebar rendered starter prompts, input, right-panel AI feature menu.
+- AI Chat answered the server summary prompt with grounded totals and analysis basis metadata.
+- Fullscreen `/dashboard/ai-assistant` rendered provider routing, system status, and quick commands.
+- Reporter generated a report, exposed detail view, and network capture showed `/api/ai/incident-report 200`.
+- Analyst full-system analysis completed and rendered `16 normal / 2 warning / 0 risk` across `18` servers.
+- Feedback action produced `/api/ai/feedback 200` in network capture.
+- Playwright console capture recorded `0 errors / 0 warnings`.
+
+Non-blocking observations:
+- Playwright network capture showed two transient `/api/system` `net::ERR_ABORTED` entries during route transitions, followed by a successful `/api/system 200`.
+- 404 route emitted the expected browser-level failed resource entry for the document request, not an application runtime error.
+
+Failing item:
+- Chrome DevTools Lighthouse flagged `label-content-name-mismatch` on the landing profile button (`#profile-menu-button`).
+- This prevented v8.11.28 broad QA from superseding the previous broad green reference.
+
+Skipped in this run:
+- Prompt-injection blocked-input regression was not replayed because the MCP browser safety layer refused to automate adversarial override text.
+- Direct Cloud Run admin `/monitoring` and `/monitoring/traces` checks were not included.
+- Direct `X-AI-*` response header proof was not captured in this broad run.
