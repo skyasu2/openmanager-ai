@@ -315,7 +315,7 @@ describe('executeForcedRouting', () => {
       );
 
     const result = await executeForcedRouting(
-      'CPU 높은 서버 찾아줘',
+      '최근 에러 로그 보여줘',
       'NLQ Agent',
       Date.now()
     );

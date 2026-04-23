@@ -44,12 +44,17 @@ import {
 
 const SUMMARY_QUERY_PATTERN =
   /(서버|인프라|시스템|server|system|monitoring).*(요약|현황|상태|간단히|핵심|summary|overview|tldr)|((모든|전체|all).*(서버|server))/i;
+const CPU_RANKING_QUERY_PATTERN =
+  /(cpu|CPU|씨피유).*(높|상위|top|TOP|가장|순서|랭킹|ranking)|(높|상위|top|TOP|가장).*(cpu|CPU|씨피유)/i;
 
 export function isDeterministicSummaryQuery(
   query: string,
   agentName: string
 ): boolean {
-  return agentName === 'NLQ Agent' && SUMMARY_QUERY_PATTERN.test(query);
+  return (
+    agentName === 'NLQ Agent' &&
+    (SUMMARY_QUERY_PATTERN.test(query) || CPU_RANKING_QUERY_PATTERN.test(query))
+  );
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -97,6 +102,43 @@ function roundPercent(value: number | null): string {
   return value === null ? 'N/A' : `${Math.round(value)}%`;
 }
 
+function extractRequestedServerCount(query: string, fallback = 3): number {
+  const patterns = [
+    /(?:상위|top)\s*(\d{1,2})/i,
+    /(\d{1,2})\s*대/,
+  ];
+
+  for (const pattern of patterns) {
+    const match = query.match(pattern);
+    if (!match) continue;
+    const parsed = Number(match[1]);
+    if (Number.isInteger(parsed) && parsed > 0) {
+      return Math.min(parsed, 10);
+    }
+  }
+
+  return fallback;
+}
+
+function extractRequestedActionCount(query: string): number | null {
+  const patterns = [
+    /(?:즉시\s*)?(?:조치|권고|확인\s*항목|확인할\s*항목)\s*(\d{1,2})\s*개/,
+    /(\d{1,2})\s*개\s*(?:즉시\s*)?(?:조치|권고|확인\s*항목|확인할\s*항목)/,
+    /서버별로\s*(\d{1,2})\s*개/,
+  ];
+
+  for (const pattern of patterns) {
+    const match = query.match(pattern);
+    if (!match) continue;
+    const parsed = Number(match[1]);
+    if (Number.isInteger(parsed) && parsed > 0) {
+      return Math.min(parsed, 10);
+    }
+  }
+
+  return null;
+}
+
 function average(values: Array<number | null>): number | null {
   const validValues = values.filter((value): value is number => value !== null);
   if (validValues.length === 0) return null;
@@ -124,6 +166,21 @@ function deriveAlertServers(payload: MetricsToolPayload): AlertServerSnapshot[] 
         disk: toNumber(server.dailyTrend?.disk?.avg ?? null) ?? undefined,
       },
     }));
+}
+
+function toAlertSnapshot(server: ServerSnapshot): AlertServerSnapshot {
+  return {
+    id: server.id,
+    status: server.status,
+    cpu: server.cpu,
+    memory: server.memory,
+    disk: server.disk,
+    dailyAvg: {
+      cpu: toNumber(server.dailyTrend?.cpu?.avg ?? null) ?? undefined,
+      memory: toNumber(server.dailyTrend?.memory?.avg ?? null) ?? undefined,
+      disk: toNumber(server.dailyTrend?.disk?.avg ?? null) ?? undefined,
+    },
+  };
 }
 
 function getDominantMetric(alertServer: AlertServerSnapshot): {
@@ -189,7 +246,99 @@ function formatTrendLabel(trendLabel: string): string {
   return '안정 추세 →';
 }
 
-function buildRecommendation(alertServers: AlertServerSnapshot[]): string {
+function getAttentionServer(payload: MetricsToolPayload): AlertServerSnapshot | null {
+  const alertServers = deriveAlertServers(payload);
+  const activeAlerts = alertServers.filter((server) => server.status !== 'offline');
+  if (activeAlerts.length > 0) {
+    return [...activeAlerts].sort((left, right) => {
+      const leftPriority =
+        left.status === 'critical' ? 0 : left.status === 'warning' ? 1 : 2;
+      const rightPriority =
+        right.status === 'critical' ? 0 : right.status === 'warning' ? 1 : 2;
+      if (leftPriority !== rightPriority) return leftPriority - rightPriority;
+      return (
+        (getDominantMetric(right).metricValue ?? 0) -
+        (getDominantMetric(left).metricValue ?? 0)
+      );
+    })[0];
+  }
+
+  const topServer = [...payload.servers]
+    .filter((server) => server.status !== 'offline')
+    .sort((left, right) => {
+      const leftMetric = Math.max(
+        toNumber(left.cpu) ?? 0,
+        toNumber(left.memory) ?? 0,
+        toNumber(left.disk) ?? 0
+      );
+      const rightMetric = Math.max(
+        toNumber(right.cpu) ?? 0,
+        toNumber(right.memory) ?? 0,
+        toNumber(right.disk) ?? 0
+      );
+      return rightMetric - leftMetric;
+    })[0];
+
+  return topServer ? toAlertSnapshot(topServer) : null;
+}
+
+function buildActionItems(
+  alertServers: AlertServerSnapshot[],
+  payload: MetricsToolPayload,
+  query: string
+): string | null {
+  const requestedCount = extractRequestedActionCount(query);
+  if (!requestedCount) {
+    return null;
+  }
+
+  const attentionServer = getAttentionServer(payload);
+  if (!attentionServer) {
+    return null;
+  }
+
+  const dominantMetric = getDominantMetric(attentionServer);
+  const actionPool =
+    dominantMetric.metricLabel === 'CPU'
+      ? [
+          `${attentionServer.id}: 상위 프로세스와 스레드/worker 점유율을 확인하세요.`,
+          `${attentionServer.id}: 최근 배포, 배치 작업, 트래픽 분산 편차를 함께 확인하세요.`,
+          `${attentionServer.id}: 같은 추세가 10분 이상 지속되면 LB 분산 정책과 캐시/쿼리 설정을 조정하세요.`,
+        ]
+      : dominantMetric.metricLabel === '메모리'
+        ? [
+            `${attentionServer.id}: 메모리 상위 프로세스와 OOM/GC 로그를 확인하세요.`,
+            `${attentionServer.id}: cache eviction, 세션 증가, 누수 가능성을 우선 점검하세요.`,
+            `${attentionServer.id}: 최근 배포 후 heap/connection 증가 추세를 비교하세요.`,
+          ]
+        : dominantMetric.metricLabel === '디스크'
+          ? [
+              `${attentionServer.id}: 로그 적체와 임시 파일 증가 경로를 확인하세요.`,
+              `${attentionServer.id}: 백업 산출물과 회전 정책이 정상 동작하는지 점검하세요.`,
+              `${attentionServer.id}: 대용량 파일 생성 프로세스와 보존 기간 설정을 확인하세요.`,
+            ]
+          : [
+              `${attentionServer.id}: 헬스체크, 최근 배포 이력, 애플리케이션 로그를 확인하세요.`,
+              `${attentionServer.id}: 알림 발생 시각 전후의 트래픽과 배치 작업을 비교하세요.`,
+              `${attentionServer.id}: 동일 증상이 지속되면 관련 인스턴스를 분산 또는 격리하세요.`,
+            ];
+
+  return actionPool
+    .slice(0, requestedCount)
+    .map((action, index) => `${index + 1}. ${action}`)
+    .join('\n');
+}
+
+function buildRecommendation(
+  alertServers: AlertServerSnapshot[],
+  payload: MetricsToolPayload,
+  query: string
+): string {
+  const requestedActions = buildActionItems(alertServers, payload, query);
+  if (requestedActions) {
+    return requestedActions;
+  }
+
   const primaryAlert = alertServers.find((server) => server.status !== 'offline');
 
   if (alertServers.some((server) => server.status === 'offline')) {
@@ -276,6 +425,17 @@ function buildTrendSummary(alertServers: AlertServerSnapshot[]): string {
 }
 
 function buildSummaryFromPayload(payload: MetricsToolPayload): string {
+  return buildSummaryFromPayloadForQuery('', payload);
+}
+
+function shouldIncludeAttentionServer(query: string): boolean {
+  return /(가장|최우선|주의).*(서버|1대)|주의할\s*서버/i.test(query);
+}
+
+function buildSummaryFromPayloadForQuery(
+  query: string,
+  payload: MetricsToolPayload
+): string {
   const totalServers = payload.servers.length;
   const onlineCount = payload.servers.filter(
     (server) => server.status === 'online'
@@ -324,7 +484,7 @@ function buildSummaryFromPayload(payload: MetricsToolPayload): string {
 
   const lines = [
     '📊 **서버 현황 요약**',
-    `• 전체 ${totalServers}대: 정상 ${onlineCount}대, 경고 ${warningCount}대, 비상 ${criticalCount}대, 오프라인 ${offlineCount}대`,
+    `• 전체 ${totalServers}대: 정상 ${onlineCount}대, 경고 ${warningCount}대, 위험 ${criticalCount}대, 오프라인 ${offlineCount}대`,
     `• 평균 CPU: ${roundPercent(averageCpu)}, 메모리: ${roundPercent(averageMemory)}, 디스크: ${roundPercent(averageDisk)}`,
   ];
 
@@ -338,6 +498,15 @@ function buildSummaryFromPayload(payload: MetricsToolPayload): string {
   lines.push('', '⚠️ **주의 서버**');
   if (activeAlerts.length === 0) {
     lines.push('• 현재 warning/critical 서버는 없습니다.');
+    if (shouldIncludeAttentionServer(query)) {
+      const attentionServer = getAttentionServer(payload);
+      if (attentionServer) {
+        const dominantMetric = getDominantMetric(attentionServer);
+        lines.push(
+          `• 관찰 우선: ${attentionServer.id}: ${dominantMetric.metricLabel} ${roundPercent(dominantMetric.metricValue)} (현재 최고 리소스)`
+        );
+      }
+    }
   } else {
     for (const alertServer of activeAlerts) {
       const dominantMetric = getDominantMetric(alertServer);
@@ -348,9 +517,59 @@ function buildSummaryFromPayload(payload: MetricsToolPayload): string {
   }
 
   lines.push('', '📈 **추세**', buildTrendSummary(alertServers), '', '💡 **권고**');
-  lines.push(buildRecommendation(alertServers));
+  lines.push(buildRecommendation(alertServers, payload, query));
 
   return lines.join('\n');
+}
+
+function buildCpuCheckItem(server: ServerSnapshot): string {
+  if (server.id.includes('lb-')) {
+    return 'HAProxy worker CPU, active connection, backend 분산 편차를 확인하세요.';
+  }
+  if (server.id.includes('api-') || server.id.includes('was-')) {
+    return '상위 프로세스와 최근 배포/배치 작업의 CPU 증가 여부를 확인하세요.';
+  }
+  if (server.id.includes('db-')) {
+    return '슬로우 쿼리, connection 수, 백그라운드 job CPU 점유를 확인하세요.';
+  }
+  if (server.id.includes('storage-')) {
+    return 'NFS/스토리지 프로세스의 iowait 동반 여부와 클라이언트 요청 급증을 확인하세요.';
+  }
+  if (server.id.includes('cache-')) {
+    return 'Redis command 폭증, eviction, persistence 작업 여부를 확인하세요.';
+  }
+  return '상위 프로세스, 예약 작업, 최근 배포 전후 CPU 변화를 확인하세요.';
+}
+
+function buildCpuRankingFromPayload(query: string, payload: MetricsToolPayload): string {
+  const requestedCount = extractRequestedServerCount(query, 3);
+  const topServers = [...payload.servers]
+    .filter((server) => server.status !== 'offline')
+    .sort((left, right) => (toNumber(right.cpu) ?? -1) - (toNumber(left.cpu) ?? -1))
+    .slice(0, requestedCount);
+
+  const lines = [`📊 **CPU 사용률 상위 ${requestedCount}대**`];
+  topServers.forEach((server, index) => {
+    lines.push(`${index + 1}. ${server.id}: CPU ${roundPercent(toNumber(server.cpu))}`);
+  });
+
+  lines.push('', '💡 **서버별 확인 항목**');
+  topServers.forEach((server, index) => {
+    lines.push(`${index + 1}. ${server.id}: ${buildCpuCheckItem(server)}`);
+  });
+
+  return lines.join('\n');
+}
+
+function buildDeterministicAnswerFromPayload(
+  query: string,
+  payload: MetricsToolPayload
+): string {
+  if (CPU_RANKING_QUERY_PATTERN.test(query)) {
+    return buildCpuRankingFromPayload(query, payload);
+  }
+
+  return buildSummaryFromPayloadForQuery(query, payload);
 }
 
 function buildSummaryPayloadFromCurrentState(): MetricsToolPayload | null {
@@ -457,7 +676,7 @@ export function buildDeterministicSummaryFallback(
     return null;
   }
 
-  return buildSummaryFromPayload(payload);
+  return buildDeterministicAnswerFromPayload(query, payload);
 }
 
 // Final fallback for summary prompts when model emits no text and skips all tool calls.
@@ -474,5 +693,5 @@ export function buildDeterministicSummaryFromCurrentState(
     return null;
   }
 
-  return buildSummaryFromPayload(payload);
+  return buildDeterministicAnswerFromPayload(query, payload);
 }
