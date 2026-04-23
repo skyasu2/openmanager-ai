@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.27](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.26...v8.11.27) (2026-04-23)
+
+
+### Bug Fixes
+
+* **ai:** address assistant qa findings ([4e086e3](https://gitlab.com/skyasu2/openmanager-ai/-/commit/4e086e39c1cab2a91fd5d4f0e6eebc58f732bffd))
+* **codex:** harden local mcp runtime and skill sync ([3a367ad](https://gitlab.com/skyasu2/openmanager-ai/-/commit/3a367addfeb93f0b9a334250d8075c9f5acf2e13))
+* **gemini:** configure global ~/.gemini/ so CLI works from any directory ([5c1cb6f](https://gitlab.com/skyasu2/openmanager-ai/-/commit/5c1cb6fe8eb8ac733ffc16e3b395a8a85416d9b0))
+* **mcp:** add diagram-converter-mcp to gemini, move codex mcp to project-level ([2d2b6d1](https://gitlab.com/skyasu2/openmanager-ai/-/commit/2d2b6d19396cfbf5ca227bacb5e6c3a1693d0cc5))
+* **mcp:** remove stitch from codex live probe flow ([371d3ee](https://gitlab.com/skyasu2/openmanager-ai/-/commit/371d3ee6aa0aa3973fb1665712e1f09dcb78f91c))
+* **shared:** disable low-value logo prefetch ([2f41c36](https://gitlab.com/skyasu2/openmanager-ai/-/commit/2f41c36e7a93167738d3fae76afc844881592db0))
+* **skills:** point gemini symlinks to .claude/skills, not .agents/skills ([2424970](https://gitlab.com/skyasu2/openmanager-ai/-/commit/2424970d361014aa52c2763dd70f94b00af8414e))
+* **skills:** restore gemini skills symlinks and fix gitignore ([cf323e0](https://gitlab.com/skyasu2/openmanager-ai/-/commit/cf323e00f6be579d4860ae02573c772c48364c91))
+
+
+### Tests
+
+* **qa:** add advanced ai release evidence ([f361be0](https://gitlab.com/skyasu2/openmanager-ai/-/commit/f361be074deedabd9387110b751f356f8cbe0c0f))
+* **qa:** add auth fallback release-gate evidence ([ba73d94](https://gitlab.com/skyasu2/openmanager-ai/-/commit/ba73d942dc5884adabab647539924dca5e043e95))
+* **qa:** close worker fallback production recheck ([7f4b24a](https://gitlab.com/skyasu2/openmanager-ai/-/commit/7f4b24ab5af79e3857c3ad3a852f28a328f6677d))
+* **qa:** refresh v8.11.26 broad production baseline ([9128e01](https://gitlab.com/skyasu2/openmanager-ai/-/commit/9128e01abb45584e20301119c87f2c2aa4bad491))
+* **qa:** sync observability gap after worker fix ([be53bf8](https://gitlab.com/skyasu2/openmanager-ai/-/commit/be53bf853478fca3f298ba6ef92468487b1bb5b0))
+
 ## [8.11.26](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.25...v8.11.26) (2026-04-22)
 
 
