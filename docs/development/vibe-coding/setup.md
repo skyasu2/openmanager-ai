@@ -97,6 +97,7 @@ claude             # 대화형 모드 시작
 ### 구성 기준
 
 - Codex SSOT: `.codex/config.toml`의 `[mcp_servers.*]`
+- Codex bootstrap: `npm run mcp:setup:codex`로 tracked template 기반 project config를 재생성 가능
 - Codex runtime: 직접 `codex`보다 `bash scripts/mcp/codex-local.sh ...` 경로를 우선 사용
 - Codex auth/env: GitHub/Supabase 토큰은 `.codex/config.toml`에 직접 넣지 않고 런타임에 shell env 또는 `.env.local`에서 주입
 - Codex config 선택: `scripts/mcp/resolve-runtime-env.sh`가 기본적으로 project `/.codex`를 home `~/.codex`보다 우선
@@ -129,6 +130,9 @@ codex
 ### 확인
 
 ```bash
+# project .codex/config.toml bootstrap
+npm run mcp:setup:codex
+
 codex --version
 
 # 프로젝트 기준 MCP 확인

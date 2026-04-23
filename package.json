@@ -121,6 +121,8 @@
     "mcp:doctor:codex": "bash scripts/mcp/resolve-runtime-env.sh --print && bash scripts/mcp/mcp-health-check-codex.sh",
     "mcp:env:codex": "bash scripts/mcp/resolve-runtime-env.sh --print",
     "mcp:health:codex": "bash scripts/mcp/mcp-health-check-codex.sh",
+    "mcp:setup:codex": "bash scripts/mcp/setup-codex-project-config.sh",
+    "mcp:setup:codex:dry-run": "bash scripts/mcp/setup-codex-project-config.sh --dry-run",
     "mcp:playwright:mode:stdio": "bash scripts/mcp/set-playwright-mcp-mode.sh --mode stdio",
     "mcp:playwright:mode:windows": "bash scripts/mcp/set-playwright-mcp-mode.sh --mode windows-http --port 8931",
     "mcp:playwright:windows:enable": "bash scripts/mcp/enable-playwright-headed-windows.sh --port 8931 --browser msedge",
