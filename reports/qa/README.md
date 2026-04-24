@@ -191,6 +191,9 @@ reports/qa/
   - 이 예외를 사용할 때는 `note`에 `release-blocking 아님` 또는 `tracking-only`를 명시해 실제 릴리즈 차단 여부를 분리해 적는다
   - 과도 항목은 템플릿의 `overengineeringScope`에 근거를 남겨 다음 런에서도 의도 추적 가능
   - 예외적으로 개선 우선순위가 높다고 판단되면 `isBlocking: true`로 명시
+- WONT-FIX reason category:
+  - `qa:status`와 `QA_STATUS.md`는 WONT-FIX 항목을 `Policy Missing`, `Platform Constraint`, `Free Tier Tradeoff`, `Historical Obsolete`, `Portfolio Deferral`, `Accepted Debt`로 분류해 표시합니다.
+  - `Policy Missing`은 명시적 수용 근거가 없는 항목이므로 다음 QA 정리 시 우선 재검토합니다.
 - `QA_STATUS.md`는 `qa:record` 실행 시 자동 재생성됩니다.
 - `qa:status`는 기본적으로 `qa-tracker.json`만 읽는 read-only 요약 명령입니다.
 - 대시보드를 수동으로 다시 맞출 때만 `npm run qa:status:sync` 또는 `npm run qa:status -- --write`를 사용합니다.

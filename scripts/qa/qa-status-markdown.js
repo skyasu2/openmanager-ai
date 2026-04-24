@@ -1,5 +1,9 @@
 const { nowInSeoulText } = require('./qa-time-utils');
 const { buildQaTrendSnapshot } = require('./qa-trends');
+const {
+  formatWontFixCategorySummary,
+  groupWontFixItemsByCategory,
+} = require('./qa-wont-fix-classification');
 
 function formatLatencyValue(value) {
   return value != null ? `${value}ms` : '-';
@@ -275,12 +279,26 @@ function statusMarkdown(tracker) {
   if (wontFix.length === 0) {
     lines.push('- None');
   } else {
-    for (const item of wontFix) {
-      lines.push(
-        `- [${item.priority}] ${item.id}: ${item.title} (seen ${item.seenCount}회, last ${item.lastSeenRunId})`
-      );
-      if (item.lastPolicyNote) {
-        lines.push(`  - note: ${item.lastPolicyNote}`);
+    const wontFixGroups = groupWontFixItemsByCategory(wontFix);
+    lines.push(
+      `- Reason categories: ${formatWontFixCategorySummary(wontFixGroups)}`
+    );
+    lines.push('');
+    for (const [groupIndex, group] of wontFixGroups.entries()) {
+      lines.push(`### ${group.label}`);
+      lines.push('');
+      lines.push(`_${group.description}_`);
+      lines.push('');
+      for (const item of group.items) {
+        lines.push(
+          `- [${item.priority}] ${item.id}: ${item.title} (seen ${item.seenCount}회, last ${item.lastSeenRunId})`
+        );
+        if (item.lastPolicyNote) {
+          lines.push(`  - note: ${item.lastPolicyNote}`);
+        }
+      }
+      if (groupIndex < wontFixGroups.length - 1) {
+        lines.push('');
       }
     }
   }

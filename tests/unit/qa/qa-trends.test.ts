@@ -236,6 +236,64 @@ describe('qa-trends', () => {
     );
   });
 
+  it('renders wont-fix improvements by reason category in status markdown', () => {
+    const markdown = statusMarkdown({
+      summary: {
+        totalRecordedRuns: 0,
+        totalRuns: 0,
+        excludedRuns: 0,
+        totalChecks: 0,
+        totalPassed: 0,
+        totalFailed: 0,
+        completedItems: 0,
+        pendingItems: 0,
+        deferredItems: 0,
+        wontFixItems: 3,
+        completionRate: 100,
+      },
+      runs: [],
+      experts: {},
+      items: {
+        'obs-fp-fn-weekly-report': {
+          id: 'obs-fp-fn-weekly-report',
+          title: '오탐/미탐 주간 리포트 자동 생성',
+          status: 'wont-fix',
+          priority: 'P1',
+          seenCount: 3,
+          lastSeenRunId: 'QA-20260227-0013',
+        },
+        'ai-server-timing-header-production': {
+          id: 'ai-server-timing-header-production',
+          title: 'Server-Timing header visibility in production',
+          status: 'wont-fix',
+          priority: 'P1',
+          seenCount: 2,
+          lastSeenRunId: 'QA-20260310-0081',
+          lastPolicyNote: '플랫폼 제약으로 인한 비차단 항목',
+        },
+        'mobile-header-density': {
+          id: 'mobile-header-density',
+          title: 'Review dashboard mobile header density',
+          status: 'wont-fix',
+          priority: 'P2',
+          seenCount: 1,
+          lastSeenRunId: 'QA-20260418-0303',
+          lastPolicyNote: '포트폴리오 운영성 우선 규칙: 비차단 항목',
+        },
+      },
+    });
+
+    expect(markdown).toContain(
+      'Reason categories: Policy Missing 1, Platform Constraint 1, Portfolio Deferral 1'
+    );
+    expect(markdown).toContain('### Policy Missing');
+    expect(markdown).toContain('- [P1] obs-fp-fn-weekly-report');
+    expect(markdown).toContain('### Platform Constraint');
+    expect(markdown).toContain('- [P1] ai-server-timing-header-production');
+    expect(markdown).toContain('### Portfolio Deferral');
+    expect(markdown).toContain('- [P2] mobile-header-density');
+  });
+
   it('explains when gate regression warning is driven by an older broad run while release-gate stays clean', () => {
     const snapshot = buildQaTrendSnapshot({
       summary: {},

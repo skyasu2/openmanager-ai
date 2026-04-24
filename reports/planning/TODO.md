@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-24 KST (`QA residual risk improvement completed`)
+**Last Updated**: 2026-04-24 KST (`WONT-FIX reason categories added`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -30,6 +30,14 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-24 #174)
+- [x] QA WONT-FIX reason category 출력 개선
+  - `qa:status`와 `QA_STATUS.md`에서 WONT-FIX 항목을 `Policy Missing`, `Platform Constraint`, `Free Tier Tradeoff`, `Historical Obsolete`, `Portfolio Deferral`, `Accepted Debt`로 분류해 표시
+  - P1 WONT-FIX 항목이 실제 release blocker처럼 보이는 혼동을 줄이고, 명시적 수용 근거가 없는 `Policy Missing` 항목을 재검토 대상으로 드러냄
+  - 검증:
+    - `npx vitest run tests/unit/qa/qa-wont-fix-classification.test.ts tests/unit/qa/qa-trends.test.ts tests/unit/qa/qa-scripts.test.ts`
+    - `npm run qa:status -- --write`
 
 ### Completed (2026-04-24 #173)
 - [x] QA residual risk improvement 완료

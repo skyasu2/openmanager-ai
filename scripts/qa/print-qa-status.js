@@ -11,6 +11,9 @@ const {
 } = require('./qa-trends');
 const { writeValidationEvidenceSnapshot } = require('./build-validation-evidence');
 const { statusMarkdown } = require('./qa-status-markdown');
+const {
+  groupWontFixItemsByCategory,
+} = require('./qa-wont-fix-classification');
 
 const TRACKER_PATH = path.resolve(process.cwd(), 'reports/qa/qa-tracker.json');
 const STATUS_PATH = path.resolve(process.cwd(), 'reports/qa/QA_STATUS.md');
@@ -234,11 +237,15 @@ function run() {
 
   if (wontFix.length > 0) {
     console.log('\nWont-Fix Improvements');
-    for (const item of wontFix.sort((a, b) => a.id.localeCompare(b.id))) {
-      const policy = item.lastPolicyNote ? ` - ${item.lastPolicyNote}` : '';
-      console.log(
-        `- [${item.priority || 'P2'}] ${item.id}: ${item.title} (last ${item.lastSeenRunId})${policy}`
-      );
+    for (const group of groupWontFixItemsByCategory(wontFix)) {
+      console.log(`\n${group.label} (${group.items.length})`);
+      console.log(`  reason: ${group.description}`);
+      for (const item of group.items) {
+        const policy = item.lastPolicyNote ? ` - ${item.lastPolicyNote}` : '';
+        console.log(
+          `- [${item.priority || 'P2'}] ${item.id}: ${item.title} (last ${item.lastSeenRunId})${policy}`
+        );
+      }
     }
   }
 

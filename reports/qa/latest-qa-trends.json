@@ -1,31 +1,31 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-24T10:49:54.459Z",
-  "generatedAtKst": "2026-04-24 19:49:54 KST",
-  "trackerUpdatedAt": "2026-04-24T09:40:49.104Z",
+  "generatedAt": "2026-04-24T12:07:21.176Z",
+  "generatedAtKst": "2026-04-24 21:07:21 KST",
+  "trackerUpdatedAt": "2026-04-24T10:55:21.196Z",
   "totals": {
-    "recordedRuns": 345,
-    "countedRuns": 280,
-    "totalChecks": 2333,
-    "totalPassed": 2247,
+    "recordedRuns": 346,
+    "countedRuns": 281,
+    "totalChecks": 2335,
+    "totalPassed": 2249,
     "totalFailed": 79,
-    "overallPassRatePct": 96.31,
-    "latestRecordedRunId": "QA-20260424-0347",
-    "lastCountedRunId": "QA-20260424-0346"
+    "overallPassRatePct": 96.32,
+    "latestRecordedRunId": "QA-20260424-0348",
+    "lastCountedRunId": "QA-20260424-0348"
   },
   "windows": [
     {
       "label": "All Counted Runs",
-      "recordedRuns": 280,
-      "countedRuns": 280,
-      "totalChecks": 2333,
-      "totalPassed": 2247,
+      "recordedRuns": 281,
+      "countedRuns": 281,
+      "totalChecks": 2335,
+      "totalPassed": 2249,
       "totalFailed": 79,
-      "passRatePct": 96.31,
+      "passRatePct": 96.32,
       "failingRunCount": 50,
-      "failingRunRatePct": 17.86,
+      "failingRunRatePct": 17.79,
       "regressionRunCount": 56,
-      "regressionRunRatePct": 20,
+      "regressionRunRatePct": 19.93,
       "pendingRunCount": 44,
       "releaseFacingRuns": 43
     },
@@ -33,10 +33,10 @@
       "label": "Last 30 Counted Runs",
       "recordedRuns": 30,
       "countedRuns": 30,
-      "totalChecks": 387,
-      "totalPassed": 377,
+      "totalChecks": 381,
+      "totalPassed": 371,
       "totalFailed": 9,
-      "passRatePct": 97.42,
+      "passRatePct": 97.38,
       "failingRunCount": 7,
       "failingRunRatePct": 23.33,
       "regressionRunCount": 7,
@@ -48,16 +48,16 @@
       "label": "Last 10 Counted Runs",
       "recordedRuns": 10,
       "countedRuns": 10,
-      "totalChecks": 167,
-      "totalPassed": 163,
-      "totalFailed": 4,
-      "passRatePct": 97.6,
-      "failingRunCount": 3,
-      "failingRunRatePct": 30,
-      "regressionRunCount": 3,
-      "regressionRunRatePct": 30,
-      "pendingRunCount": 3,
-      "releaseFacingRuns": 8
+      "totalChecks": 155,
+      "totalPassed": 152,
+      "totalFailed": 3,
+      "passRatePct": 98.06,
+      "failingRunCount": 2,
+      "failingRunRatePct": 20,
+      "regressionRunCount": 2,
+      "regressionRunRatePct": 20,
+      "pendingRunCount": 2,
+      "releaseFacingRuns": 7
     }
   ],
   "gateWindows": [
@@ -221,8 +221,8 @@
   "scopeDistribution": [
     {
       "scope": "targeted",
-      "totalRuns": 171,
-      "countedRuns": 107
+      "totalRuns": 172,
+      "countedRuns": 108
     },
     {
       "scope": "legacy",
@@ -270,13 +270,13 @@
     },
     {
       "priority": "P2",
-      "totalItems": 144,
+      "totalItems": 145,
       "recurringItems": 45,
       "openItems": 0,
       "openRecurringItems": 0,
-      "completedItems": 132,
+      "completedItems": 133,
       "wontFixItems": 12,
-      "recurrenceRatePct": 31.25,
+      "recurrenceRatePct": 31.03,
       "openRecurrenceRatePct": 0
     },
     {
@@ -296,13 +296,13 @@
       "deploymentId": "dpl_Ab1ZA6FUYvA4LE67mWidSFvPvYP2",
       "target": "vercel-production",
       "commitSha": "31431aceae26d0c3dec65570a634005bdcd52c0f",
-      "runCount": 6,
-      "totalChecks": 107,
+      "runCount": 7,
+      "totalChecks": 109,
       "totalFailed": 0,
       "regressionRuns": 0,
       "failingRuns": 0,
-      "latestRecordedAt": "2026-04-24T09:25:23.818Z",
-      "latestRunId": "QA-20260424-0346",
+      "latestRecordedAt": "2026-04-24T10:55:21.196Z",
+      "latestRunId": "QA-20260424-0348",
       "passRatePct": 100,
       "regressionRunRatePct": 0
     },
@@ -607,14 +607,14 @@
     },
     {
       "date": "2026-04-24",
-      "runCount": 7,
-      "totalChecks": 131,
-      "totalPassed": 130,
+      "runCount": 8,
+      "totalChecks": 133,
+      "totalPassed": 132,
       "totalFailed": 1,
       "failingRuns": 1,
       "regressionRuns": 1,
-      "passRatePct": 99.24,
-      "regressionRunRatePct": 14.29
+      "passRatePct": 99.25,
+      "regressionRunRatePct": 12.5
     }
   ],
   "recentRegressionRuns": [
@@ -928,8 +928,8 @@
   },
   "aiLatencyRollup24h": {
     "windowHours": 24,
-    "windowStart": "2026-04-23T09:40:49.104Z",
-    "windowEnd": "2026-04-24T09:40:49.104Z",
+    "windowStart": "2026-04-23T10:55:21.196Z",
+    "windowEnd": "2026-04-24T10:55:21.196Z",
     "recordedRunCount": 3,
     "countedRunCount": 3,
     "sampleCount": 5,
