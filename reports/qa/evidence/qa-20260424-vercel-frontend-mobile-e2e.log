@@ -1,0 +1,16 @@
+◇ injecting env (3) from .env.e2e // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+✅ [E2E] Environment loaded, starting tests...
+
+Running 2 tests using 1 worker
+
+[1A[2K(node:246173) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:246173) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[1/2] [mobile-chromium] › tests/e2e/mobile-responsive.spec.ts:50:7 › 모바일 반응형 대시보드 › 가로 스크롤 없이 서버 카드가 렌더링된다
+[1A[2K[2/2] [mobile-chromium] › tests/e2e/mobile-responsive.spec.ts:65:7 › 모바일 반응형 대시보드 › 모바일에서도 서버 카드 상세 모달을 열 수 있다
+[1A[2K  2 passed (1.0m)

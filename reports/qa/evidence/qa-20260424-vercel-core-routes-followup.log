@@ -1,0 +1,45 @@
+{
+  "checkedAt": "2026-04-24T09:39:41.372Z",
+  "target": "https://openmanager-ai.vercel.app",
+  "result": "passed-with-known-console-warning",
+  "checks": [
+    {
+      "surface": "/",
+      "status": "passed",
+      "httpStatus": 200
+    },
+    {
+      "surface": "/login",
+      "status": "passed",
+      "httpStatus": 200
+    },
+    {
+      "surface": "/qa-non-existent-route-404",
+      "status": "passed",
+      "httpStatus": 404
+    },
+    {
+      "surface": "/api/health",
+      "status": "passed",
+      "httpStatus": 200,
+      "bodyPreview": "{\"success\":true,\"data\":{\"status\":\"healthy\",\"services\":{\"database\":{\"status\":\"connected\",\"lastCheck\":\"2026-04-24T09:38:39.642Z\",\"latency\":1},\"cache\":{\"status\":\"connected\",\"lastCheck"
+    },
+    {
+      "surface": "/api/version",
+      "status": "passed",
+      "httpStatus": 200,
+      "bodyPreview": "{\"version\":\"8.11.32\",\"buildVersion\":\"8.11.32\",\"nextjs\":\"16.1.6\",\"environment\":\"production\",\"timestamp\":\"2026-04-24T09:39:45.196Z\"}"
+    }
+  ],
+  "consoleCleanliness": {
+    "actionableErrorsOrWarnings": [],
+    "knownAcceptedErrorsOrWarnings": [
+      {
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 401 ()",
+        "url": "https://openmanager-ai.vercel.app/"
+      }
+    ],
+    "knownPolicyItem": "landing-console-api-system-unauthorized"
+  }
+}

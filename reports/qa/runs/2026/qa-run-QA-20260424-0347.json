@@ -1,0 +1,86 @@
+{
+  "runId": "QA-20260424-0347",
+  "recordedAt": "2026-04-24T09:40:49.104Z",
+  "recordedAtKst": "2026-04-24 18:40:49 KST",
+  "runTitle": "Vercel core routes follow-up for frontend UIUX QA review",
+  "owner": "codex",
+  "source": "playwright-core-routes-followup",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_Ab1ZA6FUYvA4LE67mWidSFvPvYP2",
+    "deploymentUrl": "https://openmanager-q87lt2d2i-skyasus-projects.vercel.app",
+    "commitSha": "31431aceae26d0c3dec65570a634005bdcd52c0f"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["core-routes-smoke"],
+  "coveredSurfaces": [
+    "/",
+    "/login",
+    "404",
+    "/api/health",
+    "/api/version",
+    "production console actionable error/warning review"
+  ],
+  "skippedSurfaces": [
+    "dashboard modal pack already covered by QA-20260424-0346",
+    "AI sidebar already covered by QA-20260424-0346",
+    "known accepted unauthenticated /api/system 401 console item"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-console",
+      "label": "Core routes follow-up route and console log",
+      "path": "reports/qa/evidence/qa-20260424-vercel-core-routes-followup.log"
+    },
+    {
+      "type": "playwright-report",
+      "label": "Frontend UIUX QA summary with follow-up note",
+      "path": "reports/qa/evidence/qa-20260424-vercel-frontend-uiux-summary.md"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "qa-0346-core-routes-proof-gap",
+      "title": "QA-20260424-0346 core-routes-smoke evidence gap closed with follow-up route/API smoke",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "reports/qa/evidence/qa-20260424-vercel-core-routes-followup.log",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Follow-up run was created during review to close the broad/core-routes-smoke proof gap in QA-20260424-0346.",
+    "Route/API checks passed for /, /login, 404, /api/health, and /api/version.",
+    "Actionable console errors/warnings were 0 after excluding the existing accepted policy item landing-console-api-system-unauthorized (/api/system 401 in unauthenticated landing state).",
+    "countsTowardSummary=false because this is corrective evidence for an already counted broad UIUX QA run, not a separate product coverage refresh."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

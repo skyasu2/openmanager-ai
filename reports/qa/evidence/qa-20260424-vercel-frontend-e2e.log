@@ -1,0 +1,33 @@
+◇ injecting env (3) from .env.e2e // tip: ◈ secrets for agents [www.dotenvx.com]
+✅ [E2E] Environment loaded, starting tests...
+
+Running 18 tests using 1 worker
+
+[1A[2K(node:245066) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K(node:245066) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1A[2K[1/18] [chromium] › tests/e2e/dashboard-ai-sidebar.spec.ts:27:7 › 대시보드 AI 사이드바 테스트 › AI 사이드바 열기
+[1A[2K[2/18] [chromium] › tests/e2e/dashboard-ai-sidebar.spec.ts:34:7 › 대시보드 AI 사이드바 테스트 › AI 메시지 입력 필드 확인
+[1A[2K[3/18] [chromium] › tests/e2e/dashboard-ai-sidebar.spec.ts:46:7 › 대시보드 AI 사이드바 테스트 › AI 스타터 프롬프트 카드가 입력창에 반영된다
+[1A[2K[4/18] [chromium] › tests/e2e/dashboard-ai-sidebar.spec.ts:104:7 › 대시보드 AI 사이드바 테스트 › AI 사이드바 닫기 (ESC)
+[1A[2K[5/18] [chromium] › tests/e2e/dashboard-alerts-logs.spec.ts:37:7 › 📢 알람 기능 QA › Active Alerts: 모달 열기, 헤더, 컨텐츠, 푸터 통계, 닫기
+[1A[2K[6/18] [chromium] › tests/e2e/dashboard-alerts-logs.spec.ts:83:7 › 📢 알람 기능 QA › Alert History: 필터 (Severity, State, 시간, 서버)
+[1A[2K[7/18] [chromium] › tests/e2e/dashboard-alerts-logs.spec.ts:154:7 › 📢 알람 기능 QA › Alert History: Anchor, 통계, 알림 항목, 닫기
+[1A[2K[8/18] [chromium] › tests/e2e/dashboard-alerts-logs.spec.ts:223:7 › 🔍 로그 탐색기 QA › 로그 탐색기: 열기, 헤더, 키워드 검색, 레벨 필터
+[1A[2K[9/18] [chromium] › tests/e2e/dashboard-alerts-logs.spec.ts:254:7 › 🔍 로그 탐색기 QA › 로그 탐색기: 드롭다운 필터, 터미널 UI, Anchor
+[1A[2K[10/18] [chromium] › tests/e2e/dashboard-alerts-logs.spec.ts:304:7 › 🔍 로그 탐색기 QA › 로그 탐색기: 통계, 로그 항목, 더 보기, 복합 필터, 닫기
+[1A[2K[11/18] [chromium] › tests/e2e/dashboard-server-cards.spec.ts:52:7 › 대시보드 서버 카드 테스트 › 서버 카드 렌더링 확인
+[1A[2K[12/18] [chromium] › tests/e2e/dashboard-server-cards.spec.ts:63:7 › 대시보드 서버 카드 테스트 › 서버 카드 메트릭 표시 확인
+[1A[2K[13/18] [chromium] › tests/e2e/dashboard-server-cards.spec.ts:76:7 › 대시보드 서버 카드 테스트 › 서버 카드 클릭 → 모달 열기
+[1A[2K[14/18] [chromium] › tests/e2e/dashboard-server-cards.spec.ts:90:7 › 대시보드 서버 카드 테스트 › 서버 모달 닫기 (ESC 키)
+[1A[2K[15/18] [chromium] › tests/e2e/dashboard-server-cards.spec.ts:108:7 › 대시보드 서버 카드 테스트 › 서버 모달 탭 전환 확인
+[1A[2K[16/18] [chromium] › tests/e2e/dashboard-server-cards.spec.ts:130:7 › 대시보드 서버 카드 테스트 › 성능 분석 탭의 주요 버튼/컨트롤이 동작한다
+[1A[2K[17/18] [chromium] › tests/e2e/mobile-responsive.spec.ts:50:7 › 모바일 반응형 대시보드 › 가로 스크롤 없이 서버 카드가 렌더링된다
+[1A[2K[18/18] [chromium] › tests/e2e/mobile-responsive.spec.ts:65:7 › 모바일 반응형 대시보드 › 모바일에서도 서버 카드 상세 모달을 열 수 있다
+[1A[2K  2 skipped
+  16 passed (7.3m)

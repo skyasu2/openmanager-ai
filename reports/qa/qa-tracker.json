@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-24T08:04:28.389Z"
+    "updatedAt": "2026-04-24T09:40:49.104Z"
   },
   "sequence": {
-    "nextRunNumber": 346
+    "nextRunNumber": 348
   },
   "summary": {
-    "totalRecordedRuns": 343,
-    "totalRuns": 279,
-    "excludedRuns": 64,
-    "totalChecks": 2302,
-    "totalPassed": 2216,
+    "totalRecordedRuns": 345,
+    "totalRuns": 280,
+    "excludedRuns": 65,
+    "totalChecks": 2333,
+    "totalPassed": 2247,
     "totalFailed": 79,
     "completionRate": 100,
-    "completedItems": 337,
+    "completedItems": 338,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 17,
-    "expertDomainsTracked": 9,
+    "expertDomainsTracked": 10,
     "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260424-0345",
-    "lastRecordedAt": "2026-04-24T08:04:28.389Z",
-    "latestRecordedRunId": "QA-20260424-0345",
-    "latestRecordedAt": "2026-04-24T08:04:28.389Z"
+    "lastRunId": "QA-20260424-0346",
+    "lastRecordedAt": "2026-04-24T09:25:23.818Z",
+    "latestRecordedRunId": "QA-20260424-0347",
+    "latestRecordedAt": "2026-04-24T09:40:49.104Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -8224,6 +8224,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-24T08:04:28.389Z"
+    },
+    "qa-0346-core-routes-proof-gap": {
+      "id": "qa-0346-core-routes-proof-gap",
+      "title": "QA-20260424-0346 core-routes-smoke evidence gap closed with follow-up route/API smoke",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260424-0347",
+      "firstSeenAt": "2026-04-24T09:40:49.104Z",
+      "lastSeenRunId": "QA-20260424-0347",
+      "lastSeenAt": "2026-04-24T09:40:49.104Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "reports/qa/evidence/qa-20260424-vercel-core-routes-followup.log",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-24T09:40:49.104Z"
     }
   },
   "runs": [
@@ -32279,6 +32303,268 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260424-0346",
+      "recordedAt": "2026-04-24T09:25:23.818Z",
+      "recordedAtKst": "2026-04-24 18:25:23 KST",
+      "title": "Vercel Playwright QA - Frontend Buttons Modals UIUX Sweep",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260424-0346.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_Ab1ZA6FUYvA4LE67mWidSFvPvYP2",
+        "deploymentUrl": "https://openmanager-q87lt2d2i-skyasus-projects.vercel.app",
+        "commitSha": "31431aceae26d0c3dec65570a634005bdcd52c0f"
+      },
+      "scope": "broad",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "modal-detail-pack"
+      ],
+      "coveredSurfaces": [
+        "/",
+        "/system-boot",
+        "/dashboard",
+        "landing feature card modal",
+        "dashboard status buttons",
+        "active alerts modal",
+        "alert history modal",
+        "log explorer modal",
+        "topology modal",
+        "server detail modal tabs",
+        "AI assistant sidebar",
+        "guest profile menu",
+        "server pagination/more button",
+        "mobile dashboard responsive layout"
+      ],
+      "skippedSurfaces": [
+        "real LLM prompt submission",
+        "advanced AI reporter/analyst generation",
+        "OAuth provider end-to-end login",
+        "security-pack",
+        "observability-pack"
+      ],
+      "checks": {
+        "total": 31,
+        "passed": 31,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP manual coverage plus Vercel Playwright E2E covered dashboard buttons, modal flows, AI sidebar surface, and mobile responsiveness with no failed checks.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "frontend-ux-accessibility",
+          "domainName": "Frontend UX & Accessibility Reviewer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Checked accessible button/dialog names, modal close behavior, desktop visual hierarchy, and mobile interaction. Only low-priority mobile header density polish was observed, not a release blocker.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel deployment is READY, production URL is reachable, usage guard passed, and QA load was run with a single worker to reduce production impact.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": false,
+          "rationale": "AI sidebar readiness, starter prompts, input visibility, and open/close behavior were covered. Real LLM response quality was intentionally skipped for this frontend UI/UX sweep and remains covered by separate AI parity checks.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Dashboard metrics and synthetic OTel slot/source labels rendered, but this frontend UI/UX sweep did not validate AI response metric provenance against dashboard slot metadata.",
+          "nextAction": "If future QA requires slot provenance, add data-slot/source metadata to AI response evidence and compare with dashboard snapshot slot."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-24T18:11:04+09:00",
+          "summary": "npm run check:usage:vercel passed before broad frontend QA; current billing period effective=15.7313 USD, billed=0.0000 USD, chargeCount=14007.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "QA evidence summary",
+          "path": "reports/qa/evidence/qa-20260424-vercel-frontend-uiux-summary.md"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Desktop Playwright E2E log",
+          "path": "reports/qa/evidence/qa-20260424-vercel-frontend-e2e.log"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Mobile Playwright E2E log",
+          "path": "reports/qa/evidence/qa-20260424-vercel-frontend-mobile-e2e.log"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Landing page",
+          "path": "reports/qa/evidence/qa-20260424-vercel-frontend-landing.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Feature modal",
+          "path": "reports/qa/evidence/qa-20260424-vercel-frontend-feature-modal.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Dashboard",
+          "path": "reports/qa/evidence/qa-20260424-vercel-frontend-dashboard.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Active alerts modal",
+          "path": "reports/qa/evidence/qa-20260424-vercel-frontend-alert-modal.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Log explorer modal",
+          "path": "reports/qa/evidence/qa-20260424-vercel-frontend-log-modal.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Topology modal",
+          "path": "reports/qa/evidence/qa-20260424-vercel-frontend-topology-modal.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Server detail modal",
+          "path": "reports/qa/evidence/qa-20260424-vercel-frontend-server-modal.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI assistant sidebar",
+          "path": "reports/qa/evidence/qa-20260424-vercel-frontend-ai-sidebar.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Mobile dashboard",
+          "path": "reports/qa/evidence/qa-20260424-vercel-frontend-mobile-dashboard.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel deployment URL",
+          "url": "https://openmanager-q87lt2d2i-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 5,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260424-0347",
+      "recordedAt": "2026-04-24T09:40:49.104Z",
+      "recordedAtKst": "2026-04-24 18:40:49 KST",
+      "title": "Vercel core routes follow-up for frontend UIUX QA review",
+      "owner": "codex",
+      "source": "playwright-core-routes-followup",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260424-0347.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_Ab1ZA6FUYvA4LE67mWidSFvPvYP2",
+        "deploymentUrl": "https://openmanager-q87lt2d2i-skyasus-projects.vercel.app",
+        "commitSha": "31431aceae26d0c3dec65570a634005bdcd52c0f"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "core-routes-smoke"
+      ],
+      "coveredSurfaces": [
+        "/",
+        "/login",
+        "404",
+        "/api/health",
+        "/api/version",
+        "production console actionable error/warning review"
+      ],
+      "skippedSurfaces": [
+        "dashboard modal pack already covered by QA-20260424-0346",
+        "AI sidebar already covered by QA-20260424-0346",
+        "known accepted unauthenticated /api/system 401 console item"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-console",
+          "label": "Core routes follow-up route and console log",
+          "path": "reports/qa/evidence/qa-20260424-vercel-core-routes-followup.log"
+        },
+        {
+          "type": "playwright-report",
+          "label": "Frontend UIUX QA summary with follow-up note",
+          "path": "reports/qa/evidence/qa-20260424-vercel-frontend-uiux-summary.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -32287,16 +32573,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 157,
+      "seenCount": 158,
       "appropriateCount": 145,
-      "partialCount": 12,
+      "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260424-0345",
-      "lastSeenAt": "2026-04-24T08:04:28.389Z",
-      "lastFit": "appropriate",
+      "lastRunId": "QA-20260424-0346",
+      "lastSeenAt": "2026-04-24T09:25:23.818Z",
+      "lastFit": "partially-appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Final Vercel production Playwright run passed starter prompt and direct query parity assertions after dynamic total and label-boundary matcher hardening.",
+      "lastRationale": "AI sidebar readiness, starter prompts, input visibility, and open/close behavior were covered. Real LLM response quality was intentionally skipped for this frontend UI/UX sweep and remains covered by separate AI parity checks.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -32338,16 +32624,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 91,
-      "appropriateCount": 80,
+      "seenCount": 92,
+      "appropriateCount": 81,
       "partialCount": 11,
       "inappropriateCount": 0,
       "improvementNeededCount": 15,
-      "lastRunId": "QA-20260424-0343",
-      "lastSeenAt": "2026-04-24T07:15:56.760Z",
+      "lastRunId": "QA-20260424-0346",
+      "lastSeenAt": "2026-04-24T09:25:23.818Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Vercel production usage remained billed at 0.0000 USD and health endpoints returned healthy/connected state.",
+      "lastRationale": "Vercel deployment is READY, production URL is reachable, usage guard passed, and QA load was run with a single worker to reduce production impact.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -32355,16 +32641,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 128,
-      "appropriateCount": 119,
+      "seenCount": 129,
+      "appropriateCount": 120,
       "partialCount": 9,
       "inappropriateCount": 0,
       "improvementNeededCount": 11,
-      "lastRunId": "QA-20260424-0343",
-      "lastSeenAt": "2026-04-24T07:15:56.760Z",
+      "lastRunId": "QA-20260424-0346",
+      "lastSeenAt": "2026-04-24T09:25:23.818Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP completed UI login, dashboard, AI sidebar, prompt, console, network, and screenshot capture without CLI fallback.",
+      "lastRationale": "Playwright MCP manual coverage plus Vercel Playwright E2E covered dashboard buttons, modal flows, AI sidebar surface, and mobile responsiveness with no failed checks.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -32372,17 +32658,17 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 33,
+      "seenCount": 34,
       "appropriateCount": 17,
-      "partialCount": 16,
+      "partialCount": 17,
       "inappropriateCount": 0,
-      "improvementNeededCount": 16,
-      "lastRunId": "QA-20260424-0345",
-      "lastSeenAt": "2026-04-24T08:04:28.389Z",
+      "improvementNeededCount": 17,
+      "lastRunId": "QA-20260424-0346",
+      "lastSeenAt": "2026-04-24T09:25:23.818Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "Count-level dashboard/AI parity is guarded, but response-level data-slot/source metadata is not yet captured in the AI answer contract.",
-      "lastNextAction": "If future QA requires slot provenance, add data-slot/source metadata to AI response evidence and compare it with the dashboard snapshot slot."
+      "lastRationale": "Dashboard metrics and synthetic OTel slot/source labels rendered, but this frontend UI/UX sweep did not validate AI response metric provenance against dashboard slot metadata.",
+      "lastNextAction": "If future QA requires slot provenance, add data-slot/source metadata to AI response evidence and compare with dashboard snapshot slot."
     },
     "infra-reliability": {
       "domainId": "infra-reliability",
@@ -32433,6 +32719,23 @@
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
       "lastRationale": "Landing profile button accessible name now matches the visible identity label and Lighthouse no longer reports label-content-name-mismatch.",
+      "lastNextAction": ""
+    },
+    "frontend-ux-accessibility": {
+      "domainId": "frontend-ux-accessibility",
+      "domainName": "Frontend UX & Accessibility Reviewer",
+      "firstSeenRunId": "QA-20260424-0346",
+      "firstSeenAt": "2026-04-24T09:25:23.818Z",
+      "seenCount": 1,
+      "appropriateCount": 1,
+      "partialCount": 0,
+      "inappropriateCount": 0,
+      "improvementNeededCount": 0,
+      "lastRunId": "QA-20260424-0346",
+      "lastSeenAt": "2026-04-24T09:25:23.818Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "Checked accessible button/dialog names, modal close behavior, desktop visual hierarchy, and mobile interaction. Only low-priority mobile header density polish was observed, not a release blocker.",
       "lastNextAction": ""
     }
   }
