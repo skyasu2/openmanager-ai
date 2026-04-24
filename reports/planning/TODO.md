@@ -16,7 +16,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-04-18 재검증 기준 `reports/qa=61.12MiB`, `reports/qa/evidence=56.45MiB / 233파일`. `npm run qa:evidence:audit` 결과 orphan/missing/archive candidate `0`, size warning만 남음. top-run triage 결과 `QA-20260330-0197/0198`는 unique footprint가 각 `1MiB` 미만인 low-yield shared bundle, `QA-20260404-0228`은 `3.35MiB`의 고유 modal/detail proof로 확인되어 explicit override batch는 열지 않음. 새 evidence 누적 시점에만 재평가. |
+| P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-04-24 재검증 기준 `reports/qa=77.87MiB`, `reports/qa/evidence=72.80MiB / 332파일`. `npm run qa:evidence:audit` 결과 missing/recent artifact debt/archive candidate `0`, orphan durable evidence `6개 / 1.01MiB`, size warning만 남음. orphan 제거만으로는 warning 해소 효과가 낮고 top referenced legacy evidence는 modal/detail/landing proof 가치가 있어 explicit cleanup batch는 열지 않음. 새 evidence 누적 시점에만 재평가. |
 
 ## Backlog
 
