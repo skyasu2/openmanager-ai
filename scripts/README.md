@@ -28,6 +28,7 @@ scripts/
 │   └── typecheck-changed.sh   # 변경 감지 기반 증분 project 타입체크
 ├── docs/              # 문서 품질 관리
 │   ├── check-docs.sh          # 문서 품질 점검
+│   ├── check-ai-docs-consistency.js
 │   ├── doc-budget-report.js   # 문서 예산 리포트
 │   ├── check-internal-links.js
 │   ├── generate-inventory.js
@@ -119,6 +120,9 @@ ENCRYPTION_KEY='long-random-passphrase' GITHUB_PAT=ghp_xxx \
 # 문서 품질 점검 + 예산 리포트
 bash scripts/docs/check-docs.sh
 node scripts/docs/doc-budget-report.js
+
+# AI 운영 문서(MCP/Skills stale guidance) 정합성 검사
+npm run docs:ai-consistency
 ```
 
 ### 환경변수

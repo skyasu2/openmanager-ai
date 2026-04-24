@@ -17,23 +17,27 @@ Enforce Doc Budget Policy to prevent document sprawl.
    - Compare against budget: **80 max total**
    - `find docs/ -name "*.md" -not -path "*/archived/*" | sed 's|docs/||' | cut -d'/' -f1 | sort | uniq -c | sort -rn`
 
-2. Check per-directory budgets.
+2. Check AI operating documentation drift.
+   - Preferred: `npm run docs:ai-consistency`
+   - This catches stale MCP/Skills guidance outside the active `docs/` budget surface, including `AGENTS.md`, `GEMINI.md`, `.claude/rules/*.md`, and vibe-coding AI docs.
+
+3. Check per-directory budgets.
    - reference/architecture/*: 28 | development/*: 28 (includes vibe-coding/*) | guides/*: 14
    - troubleshooting/*: 7 | root: 5
    - Flag any directory over budget
 
-3. Detect duplicate candidates.
+4. Detect duplicate candidates.
    - Search similar filename prefixes:
      - `find docs -name "*.md" -not -path "*/archived/*" | xargs -n1 basename | sed 's/-[^-]*\\.md$//' | sort | uniq -c | sort -rn | head -20`
    - Search likely duplicate topic groups:
      - `find docs -name "*.md" -not -path "*/archived/*" | rg '(otel-|prometheus-|data-|architecture-|guide)'`
    - Prefer merge plan over creating a new file
 
-4. Detect stale documents (90+ days without modification).
+5. Detect stale documents (90+ days without modification).
    - `find docs/ -name "*.md" -not -path "*/archived/*" -mtime +90`
    - Suggest moving to `docs/archived/`
 
-5. Detect missing metadata with phased enforcement.
+6. Detect missing metadata with phased enforcement.
    - Required metadata (changed docs hard gate):
      - `Owner`
      - `Status`
@@ -47,12 +51,12 @@ Enforce Doc Budget Policy to prevent document sprawl.
    - Suggested check:
      - `git diff --name-only -- docs | rg '\\.md$'`
 
-6. Before creating any new document:
+7. Before creating any new document:
    - Search for existing docs covering the same topic
    - Prefer merging into existing doc over creating new file
    - If budget is full, archive or merge first
 
-7. Output summary report.
+8. Output summary report.
    - Include machine-readable lines:
      - `PASS|WARN|FAIL <rule_id> file=<path> action_hint="<hint>"`
 

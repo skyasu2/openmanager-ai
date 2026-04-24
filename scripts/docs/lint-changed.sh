@@ -10,7 +10,7 @@ TMP_FILE="$(mktemp)"
   git diff --name-only --diff-filter=ACMR
   git diff --name-only --cached --diff-filter=ACMR
   git ls-files --others --exclude-standard
-} | grep -E '^(docs|reports/qa)/.*\.md$' | sort -u > "$TMP_FILE" || true
+} | grep -E '^(docs|reports/qa)/.*\.md$|^(AGENTS|CLAUDE|GEMINI|README)\.md$|^scripts/README\.md$|^\.claude/rules/.*\.md$|^\.(agents|claude)/skills/.*/SKILL\.md$' | sort -u > "$TMP_FILE" || true
 
 if [[ ! -s "$TMP_FILE" ]]; then
   echo "No changed docs markdown files."

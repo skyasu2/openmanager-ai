@@ -71,6 +71,7 @@
 
 - `npm run docs:check`: 품질 점검 + 예산 리포트 생성
 - `npm run docs:budget:strict`: 변경 문서 메타데이터 누락/예산 초과 시 실패
+- `npm run docs:ai-consistency`: AI 운영 문서의 MCP/Skills stale guidance 차단
 - CI는 `DOCS_DIFF_RANGE`로 PR/Push 기준 변경 파일 집합을 전달한다.
 - 예산 리포트는 `PASS|WARN|FAIL`, `rule_id`, `file`, `action_hint`를 출력한다.
 

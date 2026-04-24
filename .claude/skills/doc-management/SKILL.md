@@ -1,7 +1,7 @@
 ---
 name: doc-management
 description: 문서 현황 점검, 예산 초과 감지, 병합/아카이브 제안. Triggers on /doc-management or 문서 정리/관리 요청.
-version: v1.3.0
+version: v1.3.2
 user-invocable: true
 allowed-tools: Bash, Read, Grep, Glob, Edit, Write
 disable-model-invocation: true
@@ -25,6 +25,9 @@ disable-model-invocation: true
 ```bash
 # 권장: 통합 리포트 실행
 npm run docs:budget
+
+# AI 운영 문서 drift 검사
+npm run docs:ai-consistency
 
 # 활성 문서 수 (한도: 80)
 ACTIVE=$(find docs/ -name "*.md" -not -path "*/archived/*" | wc -l)
@@ -89,6 +92,7 @@ find docs/ -name "*.md" -not -path "*/archived/*" -mtime +90
 
 - 활성 문서 수가 80개 한도 이내
 - 이번 작업에서 변경한 문서는 Owner / Status / Doc type / Last reviewed 메타데이터 100% 충족
+- AI 운영 문서는 `docs:ai-consistency` 통과
 - 기존 레거시 문서는 누락 리포트 생성 후 점진 보강
 - 각 디렉토리 README.md에 모든 문서가 링크됨
 - 90일 이상 stale 문서 0개
@@ -101,6 +105,7 @@ find docs/ -name "*.md" -not -path "*/archived/*" -mtime +90
 
 ## Changelog
 
+- 2026-04-24: v1.3.2 - AI 운영 문서 MCP/Skills drift 검사 추가
 - 2026-04-13: v1.3.1 - 문서 한도 80/28/28/14/7로 SSOT 재동기화
 - 2026-03-25: v1.3.0 - 문서 한도 55→60, 디렉토리별 예산 documentation.md SSOT 동기화
 - 2026-02-14: v1.2.0 - metadata 스키마를 Owner/Last reviewed 기준으로 확장, strict gate 기준 문구 동기화

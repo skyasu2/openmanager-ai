@@ -39,9 +39,10 @@
       }
     },
     "doc-management": {
-      "purpose": "Control documentation sprawl with budget, metadata, duplicate, and stale-doc checks.",
+      "purpose": "Control documentation sprawl with budget, metadata, duplicate, stale-doc, and AI operating-doc drift checks.",
       "invariants": [
         "Run docs budget checks before creating or broadening docs.",
+        "Run AI operating-doc consistency checks when MCP, skills, or agent guidance changes.",
         "Prefer merging existing docs over adding new active docs.",
         "Changed docs must include required metadata."
       ],

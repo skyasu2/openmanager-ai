@@ -115,6 +115,28 @@ describe('docs lint changed script', () => {
     expect(loggedArgs).toContain('reports/qa/README.md');
   });
 
+  it('lints AI operating markdown outside docs as active docs', () => {
+    const tempDir = createTempDir();
+    initGitRepo(tempDir);
+    const callLog = join(tempDir, 'npx-call.log');
+    const fakeBinDir = createFakeNpx(tempDir);
+    writeWorkspaceFile(tempDir, '.claude/rules/ai-tools.md', '# AI Tools\n');
+
+    const result = runDocsLintChanged(tempDir, {
+      NPX_CALL_LOG: callLog,
+      PATH: `${fakeBinDir}:${process.env.PATH || ''}`,
+    });
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('Linting changed active docs (1)...');
+    expect(result.stdout).toContain('Changed docs lint passed.');
+
+    const loggedArgs = readFileSync(callLog, 'utf8');
+    expect(loggedArgs).toContain('markdownlint-cli2');
+    expect(loggedArgs).toContain('active.markdownlint-cli2.jsonc');
+    expect(loggedArgs).toContain('.claude/rules/ai-tools.md');
+  });
+
   it('lints production qa baseline markdown as historical docs', () => {
     const tempDir = createTempDir();
     initGitRepo(tempDir);

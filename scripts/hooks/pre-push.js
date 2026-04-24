@@ -230,6 +230,46 @@ function getChangedFilesForPush(prePushUpdates = []) {
 
 // ─── Docs-only path ──────────────────────────────────────────────────────
 
+const AI_DOCS_CONSISTENCY_PATTERNS = [
+  /^(AGENTS|CLAUDE|GEMINI)\.md$/,
+  /^\.mcp\.json$/,
+  /^\.gemini\/settings\.json$/,
+  /^\.claude\/rules\/.*\.md$/,
+  /^config\/ai\/skill-baselines\.json$/,
+  /^config\/templates\/codex\.config\.toml\.template$/,
+  /^docs\/guides\/ai\//,
+  /^docs\/development\/vibe-coding\//,
+  /^scripts\/README\.md$/,
+  /^scripts\/docs\/check-ai-docs-consistency\.js$/,
+  /^\.(agents|claude)\/skills\/.*\/SKILL\.md$/,
+];
+
+function shouldRunAiDocsConsistency(changedFilesResult) {
+  if (!changedFilesResult.isKnown) return false;
+  return changedFilesResult.files.some((filePath) =>
+    AI_DOCS_CONSISTENCY_PATTERNS.some((pattern) => pattern.test(filePath))
+  );
+}
+
+function runAiDocsConsistencyGuard(changedFilesResult) {
+  if (!shouldRunAiDocsConsistency(changedFilesResult)) {
+    console.log('⚪ AI docs consistency skipped (not-relevant)');
+    return { ok: true };
+  }
+
+  console.log('🧭 AI docs consistency check...');
+  const success = runNpm(['run', 'docs:ai-consistency']);
+  if (!success) {
+    console.log('❌ AI docs consistency check failed - push blocked');
+    console.log('');
+    console.log('💡 Fix: npm run docs:ai-consistency');
+    return { ok: false, reason: 'ai-docs-consistency-failed' };
+  }
+
+  console.log('✅ AI docs consistency check passed');
+  return { ok: true };
+}
+
 function runDocsArtifactValidation(changedFilesResult) {
   validationMode = 'docs-artifacts';
   testStatus = 'skipped-docs-only';
@@ -693,6 +733,7 @@ function main() {
     checkCloudBuildFreeTierGuard(changedFilesResult, cwd, FORCE_CLOUD_BUILD_GUARD)
   );
   exitIfGuardFailed(runRootArtifactAuditGuard());
+  exitIfGuardFailed(runAiDocsConsistencyGuard(changedFilesResult));
 
   if (docsOnlyPush) {
     exitIfGuardFailed(runDocsArtifactValidation(changedFilesResult));

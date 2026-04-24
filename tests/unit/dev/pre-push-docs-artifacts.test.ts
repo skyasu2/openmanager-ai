@@ -30,6 +30,8 @@ afterEach(() => {
 describe('pre-push docs artifacts helpers', () => {
   it('recognizes markdown and docs/reports JSON artifacts only', () => {
     expect(isLightweightArtifactFile('docs/guide.md')).toBe(true);
+    expect(isLightweightArtifactFile('.claude/rules/ai-tools.md')).toBe(true);
+    expect(isLightweightArtifactFile('AGENTS.md')).toBe(true);
     expect(isLightweightArtifactFile('reports/planning/status.json')).toBe(
       true
     );

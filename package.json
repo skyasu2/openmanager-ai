@@ -62,6 +62,7 @@
     "docs:check:fix": "bash scripts/docs/check-docs.sh --fix",
     "docs:check:wsl": "bash scripts/wsl/docs-management-check.sh",
     "docs:check:wsl:strict": "bash scripts/wsl/docs-management-check.sh --strict",
+    "docs:ai-consistency": "node scripts/docs/check-ai-docs-consistency.js",
     "docs:components:map": "node scripts/docs/generate-component-dependency-map.js",
     "docs:components:verify": "bash scripts/docs/verify-component-dependency-map.sh",
     "docs:inventory": "node scripts/docs/generate-inventory.js",
