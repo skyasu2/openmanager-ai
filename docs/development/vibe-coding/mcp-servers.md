@@ -4,564 +4,242 @@
 > Owner: dev-experience
 > Status: Active Supporting
 > Doc type: Reference
-> Last reviewed: 2026-04-21
+> Last reviewed: 2026-04-24
 > Canonical: docs/development/vibe-coding/mcp-servers.md
 > Tags: vibe-coding,mcp,configuration
 
 ## 개요
 
-**MCP (Model Context Protocol)**는 AI 에이전트에 외부 도구와 데이터를 연결하는 프로토콜입니다.
+**MCP (Model Context Protocol)**는 AI 에이전트에 외부 도구와 데이터를 연결하는 프로토콜입니다. OpenManager는 Codex, Claude Code, Gemini CLI가 같은 7개 project MCP 구성을 공유하되, 각 도구의 native config 형식은 유지합니다.
 
-```
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│ Claude Code │ ←→  │ MCP Server  │ ←→  │ External    │
-│             │     │             │     │ Service     │
-└─────────────┘     └─────────────┘     └─────────────┘
-```
+## 현재 MCP 카탈로그
 
----
+> 현재 상시 등록: 7개 / 온디맨드: Storybook 1개
 
-## MCP 카탈로그 (프로젝트 공통)
+| MCP | 용도 | Claude `.mcp.json` | Gemini `.gemini/settings.json` | Codex `.codex/config.toml` |
+|-----|------|:------------------:|:------------------------------:|:--------------------------:|
+| `diagram-converter-mcp` / `diagram-converter` | Mermaid 렌더/검증 | ✅ | ✅ | ✅ |
+| `supabase-db` | Supabase PostgreSQL 조회/SQL/마이그레이션 | ✅ | ✅ | ✅ |
+| `vercel` | Vercel 배포/이벤트 조회 | ✅ | ✅ | ✅ |
+| `playwright` | 브라우저 자동화/E2E | ✅ | ✅ | ✅ |
+| `next-devtools` | Next.js dev runtime 진단 | ✅ | ✅ | ✅ |
+| `chrome-devtools` | CDP 성능/네트워크/메모리/Lighthouse 진단 | ✅ | ✅ | ✅ |
+| `github` | GitHub repo/PR/issue 조회 | ✅ | ✅ | ✅ |
+| `storybook` | Storybook MCP | 온디맨드 | 온디맨드 | 온디맨드 |
 
-> 현재 상시 등록: 7개 / 온디맨드: 1개 (storybook)
-
-| MCP | 용도 | `.mcp.json` 상시 등록 | 비고 |
-|-----|------|:--------------------:|------|
-| **diagram-converter-mcp** | Mermaid 다이어그램 렌더/검증 | ✅ | `.gemini/mcp.json`에는 `diagram-converter`로 중복 노출 (harmless) |
-| **supabase-db** | PostgreSQL 조회/SQL/마이그레이션 | ✅ | 로컬 설치 (`~/.mcp-servers/supabase/`), "supabase" 이름 회피 |
-| **vercel** | 배포 상태/이벤트 확인 | ✅ | Vercel MCP |
-| **playwright** | 브라우저 자동화/E2E | ✅ | 로컬 QA |
-| **next-devtools** | Next.js 런타임 진단 | ✅ | Next.js 16+ dev server 필수 |
-| **chrome-devtools** | CDP 기반 성능/네트워크/메모리/Lighthouse 진단 | ✅ | Playwright와 역할 분리 (진단 전용) |
-| **github** | 저장소/PR/이슈 관리 | ✅ | GitHub MCP |
-| **context7** | 라이브러리 공식 문서 검색 | ❌ 제거 | 활용도 저하로 제거됨 |
-| **sequential-thinking** | 복잡한 추론/설계 분해 | ❌ 제거 | 활용도 저하로 제거됨 |
-| **stitch** | UI 디자인 생성/변형 | ❌ 제거 | 명시적 UI 개선 요청 시에만 수동 구동, 상시에서 제외 |
-| **lighthouse** | Core Web Vitals + 성능/접근성/SEO 감사 | ❌ 제거 | `chrome-devtools`의 `lighthouse_audit`로 대체, 반복 측정은 `npm run lighthouse:*` CLI 사용 |
-| **storybook** | 컴포넌트 문서/스토리 기반 작업 | ❌ 온디맨드 | `npx storybook dev` 실행 시에만 동작, 필요 시 수동 추가 |
-
-- Claude 기준 실제 구성: `.mcp.json` (gitignore, GitHub 노출 없음)
-- Codex 기준 SSOT: `.codex/config.toml`의 `[mcp_servers.*]`
-- `.gemini/mcp.json`에 `diagram-converter`(= `diagram-converter-mcp` 동일 패키지)가 별도 등록되어 있어 Claude 세션에서 중복 노출됨 — 기능 문제 없음
-
----
+제거된 상시 MCP: `context7`, `sequential-thinking`, standalone `lighthouse`, `stitch`. 필요 시 명시 요청 또는 전용 스크립트로만 사용합니다.
 
 ## 설정 파일 구조
 
-### 파일 위치 및 우선순위
+| 파일 | 대상 | Git 추적 | 역할 |
+|------|------|:--------:|------|
+| `.mcp.json` | Claude Code | ✅ | project-scoped MCP server 목록. 시크릿은 placeholder/env/wrapper로 주입 |
+| `.gemini/settings.json` | Gemini CLI | ✅ | project-scoped MCP server 목록과 allowed server list |
+| `.codex/config.toml` | Codex CLI | ❌ | local runtime config. tracked template에서 생성 |
+| `config/templates/codex.config.toml.template` | Codex bootstrap | ✅ | `.codex/config.toml` 생성 기준 |
+| `.claude/settings.local.json` | Claude Code | ❌ | 로컬 권한/활성화 설정 |
+| `.env.local` | 모든 로컬 도구 | ❌ | 실제 토큰/환경변수 |
 
-```
-~/.claude/settings.json           # 글로벌 설정 (모든 프로젝트)
-.claude/settings.json             # 프로젝트 공용 설정 (Git 추적)
-.claude/settings.local.json       # 프로젝트 로컬 설정 (Git 제외) ← 권한
-.mcp.json                         # MCP 서버 실제 구성 (Git 제외) ← 토큰
-```
+원칙:
 
-| 파일 | 용도 | Git 추적 |
-|------|------|:--------:|
-| `.claude/settings.json` | Hooks, 출력 스타일 | ✅ |
-| `.claude/settings.local.json` | 권한, MCP 활성화 목록 | ❌ |
-| `.mcp.json` | MCP 서버 실제 토큰/경로 | ❌ |
+- MCP 설정 파일에는 실제 토큰을 커밋하지 않습니다.
+- `.mcp.json`은 더 이상 gitignored secret 파일이 아닙니다. repo 공유 가능한 project config입니다.
+- Vercel token은 `scripts/mcp/start-vercel-mcp.sh`가 `.env.local` 또는 shell env에서 읽어 실행 시점에만 전달합니다.
+- Supabase token은 `scripts/mcp/run-with-project-env.sh`가 안전한 dotenv parser로 주입합니다.
+- GitHub MCP는 공식 HTTP endpoint `https://api.githubcopilot.com/mcp/`와 `GITHUB_PERSONAL_ACCESS_TOKEN` env placeholder를 사용합니다.
 
-### 현재 적용된 설정 방식
+## MCP launcher 표준
 
-**Pragmatic 방식** (현재 프로젝트):
-- `.mcp.json` 파일에 직접 토큰 저장
-- `.gitignore`로 파일 보호
-- 장점: 한눈에 설정 파악, WSL 환경변수 문제 해결
-- 단점: 파일 유출 시 보안 위험
+Node 기반 MCP 서버는 user-scope cache를 우선 사용하고, 없으면 pinned `npx`로 fallback합니다.
 
-**Best Practice** (참고용):
-- 환경변수로 토큰 분리
-- `claude mcp add` CLI 사용
-- 장점: 보안성, 이식성
-- 단점: 설정 복잡, WSL 환경변수 누락 이슈
-
----
-
-## Codex MCP 설정법 (프로젝트 SSOT)
-
-### 적용 원칙
-
-- Codex MCP 서버 목록의 단일 기준(SSOT)은 `.codex/config.toml`의 `[mcp_servers.*]`입니다.
-- 하드코딩 목록 대신 설정 파일에서 서버 목록을 파싱합니다.
-- 설정 변경 후 최소 점검:
-  - `bash scripts/mcp/codex-local.sh mcp list`
-  - `bash scripts/mcp/mcp-health-check-codex.sh`
-  - 빠른 설정 점검만 필요하면 `bash scripts/mcp/mcp-health-check-codex.sh --no-live-probe`
-- 실제 동작 검증은 서버별 도구 1회 이상 호출로 확인합니다.
-
-### 현재 Codex MCP 구성 요약 (2026-04-21)
-
-| Server ID | 실행 방식(요약) | Timeout (startup/tool) | 적용 목적 |
-|---|---|---:|---|
-| `supabase-db` | `node .../mcp-server-supabase/dist/transports/stdio.js` | `30/120` | DB 조회/SQL/마이그레이션 |
-| `diagram-converter` | `npx -y diagram-converter-mcp@0.2.6` | `120/180` | Mermaid 렌더/검증 |
-| `playwright` | `npx -y @playwright/mcp --output-dir tmp/playwright/mcp/screenshots` | `60/180` | 브라우저 자동화 QA |
-| `next-devtools` | `npx -y next-devtools-mcp@latest` | `75/120` | Next.js 런타임 진단 (`WSL/Windows`는 env 보강 필요) |
-| `chrome-devtools` | `npx -y chrome-devtools-mcp@latest --isolated` | `90/180` | 성능/네트워크/메모리/Lighthouse 진단 |
-| `github` | `npx -y @modelcontextprotocol/server-github` | `120/120` | PR/Issue/파일 조회 |
-| `vercel` | `bash -lc npx -y vercel-mcp ...` | `180/120` | 배포 상태/로그 확인 |
-
-### Codex에 MCP 추가/수정하는 방법
-
-1. `.codex/config.toml`의 `[mcp_servers.<name>]` 블록을 추가/수정합니다.
-1. 민감값은 평문 노출 금지 원칙으로 관리하고, 문서/리뷰/로그에는 반드시 마스킹합니다.
-1. 변경 후 Codex 세션을 재시작합니다.
-1. `next-devtools`를 `WSL/Windows`에서 쓸 때는 package README 기준으로 `SystemRoot`, `PROGRAMFILES` env를 같이 설정합니다.
-1. 상태 점검:
 ```bash
+# pinned package cache 설치/갱신
+bash scripts/mcp/install-node-mcp-cache.sh
+
+# allowlist 기반 launcher
+bash scripts/mcp/start-node-mcp-package.sh <package> <version> <bin-path>
+
+# Supabase 전용 launcher: 기존 dedicated install 우선, 없으면 pinned cache/fallback
+bash scripts/mcp/run-with-project-env.sh bash scripts/mcp/start-supabase-mcp.sh
+
+# Vercel 전용 launcher: VERCEL_API_KEY를 config에 직접 쓰지 않음
+bash scripts/mcp/start-vercel-mcp.sh
+```
+
+허용된 pinned MCP package tuple은 [start-node-mcp-package.sh](../../../scripts/mcp/start-node-mcp-package.sh)에 정의합니다.
+
+## Codex MCP 설정법
+
+Codex MCP 서버 목록의 단일 기준은 `.codex/config.toml`의 `[mcp_servers.*]`입니다. 해당 파일은 local runtime 파일이므로 tracked template에서 생성합니다.
+
+```bash
+# project Codex config 생성/검증
+bash scripts/mcp/setup-codex-project-config.sh --dry-run
+bash scripts/mcp/setup-codex-project-config.sh
+
+# project-scoped Codex wrapper
 bash scripts/mcp/codex-local.sh mcp list
+
+# health check
 bash scripts/mcp/mcp-health-check-codex.sh
 bash scripts/mcp/mcp-health-check-codex.sh --no-live-probe
 bash scripts/mcp/mcp-health-check-codex.sh --probe supabase-db
-bash scripts/mcp/mcp-health-check-codex.sh --no-live-probe --json
-bash scripts/mcp/mcp-health-report-codex.sh --no-live-probe
-bash scripts/mcp/mcp-health-report-codex.sh --no-live-probe --allow-missing-codex --summary-file reports/mcp/mcp-health-summary.md
 ```
-1. 서버별 최소 1회 도구 호출로 실동작을 확인합니다.
-1. historical/manual GitHub Actions를 정말 써야 할 때만 `run_codex_live_probe=true`로 `supabase-db` live probe를 non-blocking 관찰용으로 켤 수 있습니다.
 
-- `--json` 출력은 `probeTargets`와 `liveProbes`를 함께 제공합니다.
-- `probeTargets`에는 config 기준 `command`, `args`, `configuredTimeoutSec`, 실제 적용 `timeoutSec`, `callTool`, `selected`가 포함됩니다.
-- `liveProbes`에는 실행 결과(`status`, `detail`)와 해당 probe metadata가 병합되어 들어갑니다.
-- `liveProbes[*].stage`로 readiness / tool-call / full / preflight 단계를 구분할 수 있습니다.
-- `mcp-health-report-codex.sh --summary-file ...`는 비정상 `liveProbes`를 `Live Probe Issues` 섹션으로 요약해 로컬 Markdown summary나 historical GitHub Actions job summary에 기록할 수 있습니다.
-- CI artifact는 `codex-health-latest.json`과 daily `*-codex.log`를 함께 업로드합니다.
+현재 Codex 요약:
 
-### GitHub MCP 토큰 자동 동기화 (2026-02-17)
+| Server ID | 실행 방식 | Timeout | 비고 |
+|---|---|---:|---|
+| `supabase-db` | `run-with-project-env.sh` → `start-supabase-mcp.sh` | `30/120` | `SUPABASE_ACCESS_TOKEN` runtime 주입 |
+| `diagram-converter` | `start-node-mcp-package.sh diagram-converter-mcp 0.2.11 dist/index.js` | `120/180` | pinned |
+| `playwright` | `start-node-mcp-package.sh @playwright/mcp 0.0.70 cli.js` | `60/180` | `DISPLAY=:0` |
+| `next-devtools` | `start-node-mcp-package.sh next-devtools-mcp 0.3.10 dist/index.js` | `75/120` | Windows env 보강 |
+| `chrome-devtools` | `start-node-mcp-package.sh chrome-devtools-mcp 0.23.0 ... --isolated` | `90/180` | `DISPLAY=:0` |
+| `github` | HTTP MCP endpoint | `120/120` | bearer token env placeholder |
+| `vercel` | `start-vercel-mcp.sh` | `180/120` | read-only deployment tools만 활성화 |
 
-- `scripts/mcp/codex-local.sh`와 `scripts/mcp/mcp-health-check-codex.sh`는 실행 전에 `scripts/mcp/sync-github-mcp-auth.sh`를 자동 호출합니다.
-- 동기화 대상: `.env.local`의 `GITHUB_PERSONAL_ACCESS_TOKEN` (없으면 `GITHUB_TOKEN`) → `.codex/config.toml`의 `[mcp_servers.github.env]`.
-- 토큰이 이미 같으면 파일을 변경하지 않습니다.
-- `.env.local` 또는 토큰이 없으면 경고만 출력하고 기존 설정으로 계속 진행합니다.
-- 필요 시 수동 실행:
+## Claude Code MCP 설정법
+
+Claude Code는 tracked `.mcp.json`을 사용합니다. 현재 `.mcp.json`에는 7개 project MCP가 정의되어 있고, 실제 시크릿은 shell env 또는 `.env.local`에서 주입됩니다.
+
+확인:
 
 ```bash
-bash scripts/mcp/sync-github-mcp-auth.sh
+claude mcp list
 ```
 
-### Playwright MCP (현재 의도된 동작 기준)
+기대 상태:
 
-- 기본 모드: `stdio` (Codex에서 직접 실행)
-- 현재 설정 핵심:
-  - `--output-dir tmp/playwright/mcp/screenshots`
-  - `DISPLAY=:0` (WSL GUI 브라우저 표시 환경)
-- 이유:
-  - MCP 스크린샷은 재생성 가능한 임시 산출물이므로 루트가 아니라 `tmp/` 아래에 둡니다.
-  - durable QA evidence가 필요하면 `reports/qa/evidence/`로 별도 승격합니다.
-- Windows Headed 모드가 필요하면:
+- project MCP 7개: `Connected`
+- Claude.ai 개인 Google Calendar/Drive/Gmail connector: 인증하지 않았다면 `Needs authentication` 가능. 프로젝트 MCP 문제는 아닙니다.
+
+권한은 `.claude/settings.local.json`에서 관리합니다. 이 파일은 로컬 전용이며 커밋하지 않습니다.
+
+## Gemini MCP 설정법
+
+Gemini CLI는 tracked `.gemini/settings.json`을 사용합니다. user-scope `~/.gemini/settings.json`에는 OpenManager project MCP를 두지 않습니다.
+
+확인:
+
 ```bash
-npm run mcp:playwright:windows:enable
-```
-- 다시 기본 stdio로 복구:
-```bash
-npm run mcp:playwright:mode:stdio
+gemini mcp list
 ```
 
-### Chrome DevTools MCP (현재 의도된 동작 기준)
+현재 구조:
 
-- 목적: **CDP(Chrome DevTools Protocol) 기반 진단 전용**
-- Playwright와의 분담:
-  - Playwright MCP: 사용자 플로우/E2E 자동화
-  - Chrome DevTools MCP: 성능/CWV/메모리/네트워크/Lighthouse 분석
+- `.gemini/settings.json`: project MCP 7개와 allowed list
+- `~/.gemini/settings.json`: auth/ui/model 같은 user preference만 유지
+- `.gemini/skills`: Gemini-only skill overlay만 허용. MCP 설정용으로 사용하지 않음
 
-**대표 도구 카테고리 (2026-04-21 실사용 기준, 29개 노출)**:
+## 주요 도구 사용 기준
 
-- 브라우저 자동화: `click`, `fill`, `navigate`, `type` 등 (Playwright와 중복, Playwright 우선)
-- 성능 프로파일링: `performance_start_trace`, `performance_stop_trace`, `performance_analyze_insight` (고유)
-- 메모리 분석: `take_memory_snapshot` (고유)
-- Lighthouse 감사: `lighthouse_audit` (고유, legacy lighthouse MCP 대체)
-- 네트워크 검사: `list_network_requests`, `get_network_request` (Playwright 대비 상세)
-- 콘솔 검사: `list_console_messages`, `get_console_message` (유사)
-- 디바이스 에뮬레이션: `emulate` (중복)
-
-**운영 기준**:
-
-- 기능 회귀/E2E: Playwright MCP 우선
-- CLS/LCP/TTFB trace 진단: Chrome DevTools MCP 우선
-- Accessibility/Best Practices/SEO 점수 감사: Chrome DevTools MCP (`lighthouse_audit`)
-- 메모리 누수/스냅샷 분석: Chrome DevTools MCP (`take_memory_snapshot`)
-
-**베스트 프랙티스 워크플로우 (2026-04-21 실사용 검증)**:
-
-```
-1. navigate_page(url)       # 이동
-2. take_snapshot()          # a11y 트리 조회 — 스크린샷 대신 기본값 (uid 기반, 토큰 10배 효율)
-3. click(uid)               # 스냅샷에서 얻은 uid로 클릭 (CSS 셀렉터보다 안정적)
-4. wait_for(["텍스트"])      # 비동기 상태 전환 감지
-5. take_screenshot()        # 시각 확인이 꼭 필요할 때만 사용
-```
-
-**headed 모드 (브라우저 창 표시)**:
-
-현재 Claude `.mcp.json`은 `--headless` 모드. Codex는 `--isolated`(headed)로 실행 중.
-
-| 모드 | args | 브라우저 창 | 용도 |
-|------|------|:---------:|------|
-| headless (기본) | `--isolated --headless` | ❌ | CI/자동화/headless 진단 |
-| headed | `--isolated` | ✅ | 시각 디버깅, 로그인 확인 |
-| 기존 세션 연결 | `--browser-url http://127.0.0.1:9222` | ✅ | 인증된 세션 재사용 |
-
-headed 모드로 전환: `.mcp.json`에서 `--headless` 제거 → Claude Code 재시작
-
-기존 Chrome 세션(로그인 상태) 재사용:
-```bash
-# 1. Chrome을 remote debugging 포트로 실행 (원하는 프로필/세션으로 로그인 가능)
-/usr/bin/google-chrome --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-debug-session
-
-# 2. .mcp.json chrome-devtools args 변경
-# "args": ["-y", "chrome-devtools-mcp@latest", "--browser-url", "http://127.0.0.1:9222"]
-
-# 3. Claude Code 재시작
-```
-
-WSL2 전제조건: `DISPLAY=:0` ✅, `/usr/bin/google-chrome` ✅, X11/WSLg 활성 ✅
-
-### 다른 MCP 목록과 적용 방법 (Codex 기준)
-
-| MCP | 언제 쓰는가 | 최소 적용 순서(예시) |
+| MCP | 언제 쓰는가 | 최소 적용 순서 |
 |---|---|---|
 | `supabase-db` | 프로젝트/테이블 점검, SQL 실행 | `list_projects` → `list_tables` → 필요 시 `execute_sql` |
 | `vercel` | 최신 배포/이벤트 확인 | `getDeployments` → `getDeployment` |
 | `next-devtools` | Next.js 런타임 에러/라우트 진단 | `nextjs_index` → `nextjs_call(get_errors|get_routes)` |
-| `chrome-devtools` | 성능/메모리/네트워크 진단 및 Lighthouse 감사 | `new_page` → `performance_start_trace` → `performance_analyze_insight` / `lighthouse_audit` |
-| `github` | PR/이슈/파일 조회 및 자동화 | `list_pull_requests` 또는 `get_file_contents` |
+| `chrome-devtools` | 성능/메모리/네트워크/Lighthouse 진단 | `new_page` → trace/Lighthouse/snapshot |
+| `github` | PR/이슈/파일 조회 | list/read 중심, public snapshot push 경로 아님 |
 | `playwright` | 실제 사용자 플로우 QA | `browser_navigate` → `browser_snapshot` → 상호작용 도구 |
+| `diagram-converter` | Mermaid 렌더/검증 | `mermaid_render` |
 
----
+## Playwright MCP
 
-## 현재 설정 백업 (2026-04-21 Updated)
+- 기본 모드: stdio
+- 스크린샷 출력: `tmp/playwright/mcp/screenshots` 또는 `.playwright-mcp/screenshots`
+- durable QA evidence가 필요하면 `reports/qa/evidence/`로 별도 승격합니다.
+- Windows headed fallback이 필요하면 `npm run mcp:playwright:windows:enable`을 사용하고, 복구는 `npm run mcp:playwright:mode:stdio`를 사용합니다.
 
-### .mcp.json 구조 (7개 상시 등록)
+## Chrome DevTools MCP
 
-```json
-{
-  "mcpServers": {
-    "vercel": {
-      "command": "npx",
-      "args": ["-y", "vercel-mcp", "VERCEL_API_KEY=<your-token>"]
-    },
-    "supabase-db": {
-      "command": "node",
-      "args": ["/home/<user>/.mcp-servers/supabase/node_modules/@supabase/mcp-server-supabase/dist/transports/stdio.js"],
-      "env": {
-        "SUPABASE_ACCESS_TOKEN": "<your-token>"
-      }
-    },
-    "playwright": {
-      "command": "npx",
-      "args": ["-y", "@playwright/mcp", "--output-dir", "tmp/playwright/mcp/screenshots"]
-    },
-    "chrome-devtools": {
-      "command": "npx",
-      "args": ["-y", "chrome-devtools-mcp@latest", "--isolated"]
-    },
-    "next-devtools": {
-      "command": "npx",
-      "args": ["-y", "next-devtools-mcp@latest"],
-      "env": {
-        "SystemRoot": "C:\\Windows",
-        "PROGRAMFILES": "C:\\Program Files"
-      }
-    },
-    "github": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "<your-token>"
-      }
-    },
-    "diagram-converter-mcp": {
-      "command": "npx",
-      "args": ["-y", "diagram-converter-mcp"]
-    }
-  }
-}
+역할 분담:
+
+- Playwright MCP: 사용자 플로우/E2E 자동화
+- Chrome DevTools MCP: 성능/CWV/메모리/네트워크/Lighthouse 진단
+
+운영 기준:
+
+- 기능 회귀/E2E: Playwright MCP 우선
+- CLS/LCP/TTFB trace 진단: Chrome DevTools MCP 우선
+- Accessibility/Best Practices/SEO 점수 감사: `lighthouse_audit`
+- 메모리 누수/스냅샷 분석: `take_memory_snapshot`
+
+headed 모드:
+
+- Claude `.mcp.json`: `chrome-devtools-mcp ... --isolated`
+- Gemini `.gemini/settings.json`: `--isolated --headless`
+- Codex `.codex/config.toml`: `--isolated`
+
+기존 Chrome 세션을 재사용해야 할 때만 `--browser-url http://127.0.0.1:9222` 방식으로 임시 변경합니다. 변경 후에는 원래 config로 되돌립니다.
+
+## Next DevTools MCP
+
+Next.js dev server runtime 진단에 사용합니다.
+
+대표 흐름:
+
+```text
+nextjs_index
+nextjs_call(port=<dev-port>, toolName="get_errors")
+nextjs_call(port=<dev-port>, toolName="get_routes")
 ```
 
-> **주의**: `supabase-db`는 `"supabase"` 이름 사용 시 Claude Code 빌트인 OAuth 트리거됨 (claude-code#21368). 로컬 설치 필수.
-> `.mcp.json`은 `.gitignore` + `.github-export-ignore` 양쪽 등록으로 GitHub 노출 차단됨.
+주의:
 
-### .claude/settings.local.json 권한 설정
+- `get_errors`, `get_page_metadata`는 브라우저가 해당 페이지에 접속해야 유효합니다.
+- `nextjs_index` auto-discovery가 실패하면 dev server 실제 포트를 명시합니다.
+- `browser_eval`이 session start에서 실패하면 browser automation은 direct Playwright MCP로 전환하고 `nextjs_call`만 사용합니다.
 
-```json
-{
-  "permissions": {
-    "allow": [
-      "mcp__diagram-converter-mcp__*",
-      "mcp__supabase-db__*",
-      "mcp__vercel__*",
-      "mcp__playwright__*",
-      "mcp__next-devtools__*",
-      "mcp__chrome-devtools__*",
-      "mcp__github__*"
-    ]
-  },
-  "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": [
-    "vercel", "supabase-db", "diagram-converter-mcp",
-    "playwright", "next-devtools", "chrome-devtools", "github"
-  ]
-}
+## Storybook MCP
+
+Storybook MCP는 상시 등록하지 않습니다.
+
+운영 원칙:
+
+- Storybook 작업 전 dev server(`http://127.0.0.1:6006`)를 먼저 실행합니다.
+- `.storybook/main.ts`의 `@storybook/addon-mcp` 설정을 유지합니다.
+- 상태 점검 기본 지표는 `npm run storybook:build` 성공 여부입니다.
+
+```bash
+npm run storybook
+npm run storybook:build
+curl -I http://127.0.0.1:6006
 ```
-
----
 
 ## 토큰 발급 URL
 
 | 서비스 | 발급 URL | 필요 권한 |
 |--------|---------|----------|
-| **Vercel** | https://vercel.com/account/tokens | - |
-| **Supabase** | https://supabase.com/dashboard/account/tokens | - |
-| **GitHub** | https://github.com/settings/tokens | `repo`, `read:org` |
-
----
-
-## 각 서버별 상세
-
-### Supabase (데이터베이스) - 우선순위: 중간
-
-SQL 실행, 마이그레이션 관리, 테이블 조회.
-
-> **이름 주의**: `supabase-db` 사용. `supabase` 이름은 Claude Code 빌트인 OAuth 트리거함.
-
-**주요 도구**:
-```bash
-mcp__supabase-db__execute_sql("SELECT * FROM servers LIMIT 10")
-mcp__supabase-db__list_tables()
-mcp__supabase-db__apply_migration("add_index", "CREATE INDEX...")
-```
-
----
-
-### Vercel (배포) - 우선순위: 중간
-
-배포 상태 확인, 프로젝트 관리, 로그 조회.
-
-**주요 도구**:
-```bash
-mcp__vercel__getDeployments()
-mcp__vercel__getDeployment("deployment-id")
-```
-
----
-
-### Playwright (E2E) - 우선순위: 중간
-
-브라우저 자동화, 스크린샷 캡처, 테스트 실행.
-
-**주요 도구**:
-```bash
-mcp__playwright__browser_navigate("http://localhost:3000")
-mcp__playwright__browser_snapshot()      # 접근성 트리
-mcp__playwright__browser_click("Login button", "ref123")
-mcp__playwright__browser_take_screenshot()
-```
-
-**WSL + Windows GUI 모드 (브라우저 창 표시)**:
-```bash
-# 1) Codex Playwright MCP를 HTTP 모드로 전환 + Windows MCP 서버 실행
-npm run mcp:playwright:windows:enable
-
-# 2) Codex 세션 재시작 후 확인
-bash scripts/mcp/codex-local.sh mcp list
-```
-
-복구(기본 stdio 모드):
-```bash
-npm run mcp:playwright:mode:stdio
-```
-
----
-
-### Next DevTools (Next.js 런타임 진단) - 우선순위: 중간
-
-Vercel 공식 MCP. Next.js 16+ 내장 `/_next/mcp` 엔드포인트와 통신하여 런타임 진단 제공.
-
-**외부 도구 (7개)**:
-
-| 도구 | Dev Server 필요 | 용도 |
-|------|:---:|------|
-| `init` | - | 세션 초기화 |
-| `nextjs_docs` | - | Next.js 문서 검색 |
-| `nextjs_index` | Y | dev server 탐색, 런타임 도구 목록 |
-| `nextjs_call` | Y | 런타임 도구 실행 (아래 참조) |
-| `upgrade_nextjs_16` | - | 업그레이드 가이드 + codemod |
-| `enable_cache_components` | - | Cache Components 설정 |
-| `browser_eval` | - | Playwright 래핑 (**playwright MCP와 중복, 실패 시 direct Playwright fallback**) |
-
-**런타임 도구 (`nextjs_call`로 호출, 6개)**:
-
-| 도구 | 브라우저 세션 필요 | 기능 |
-|------|:---:|------|
-| `get_errors` | Y | 빌드/런타임/타입 에러 실시간 조회 |
-| `get_project_metadata` | - | 프로젝트 경로, dev server URL |
-| `get_routes` | - | 전체 App Router 라우트 목록 |
-| `get_logs` | - | dev server 로그 파일 경로 |
-| `get_page_metadata` | Y | 현재 페이지 구성 파일 (layout, error, page 등) |
-| `get_server_action_by_id` | - | Server Action ID → 소스 파일/함수명 역추적 |
-
-**고유 가치**: `nextjs_index` + `nextjs_call` 런타임 진단만 다른 MCP로 대체 불가
-
-**사용 예시**:
-```bash
-# 1. dev server 실행 중 에러 확인
-nextjs_index → nextjs_call(port=3000, toolName="get_errors")
-
-# 2. 라우트 구조 파악
-nextjs_call(port=3000, toolName="get_routes")
-
-# 3. 브라우저 의존 도구는 Playwright로 페이지 먼저 열기
-playwright__browser_navigate("http://localhost:3000/dashboard")
-→ nextjs_call(port=3000, toolName="get_page_metadata")
-```
-
-**주의사항**:
-- `get_errors`, `get_page_metadata`는 브라우저가 해당 페이지에 접속해야 동작
-- `get_logs`는 경로만 반환 → 파일을 직접 읽어야 함
-- dev server 시작에 ~100초 소요 (WSL 환경)
-- `WSL/Windows`에서는 `next-devtools-mcp`가 `SystemRoot`, `PROGRAMFILES` env 없이 `browser_eval start` 단계에서 세션을 닫을 수 있음
-- `nextjs_index` auto-discovery가 실패하면 dev server 실제 포트를 명시해 재시도: `nextjs_index(port=3000)`
-- `browser_eval(action=\"start\")`가 `Connection closed`를 반환하면 browser automation은 direct Playwright MCP로 전환하고, `nextjs_call`만 런타임 진단에 사용
-
----
-
-### GitHub (저장소) - 우선순위: 중간
-
-PR 생성/관리, 이슈 관리, 파일 조회.
-
-**주요 도구**:
-```bash
-mcp__github__create_pull_request(...)
-mcp__github__list_issues("owner", "repo")
-mcp__github__list_pull_requests("owner", "repo")
-mcp__github__get_file_contents("owner", "repo", "path")
-```
-
----
-
-### Storybook (컴포넌트 문서/미리보기) - 우선순위: 중간
-
-스토리북 운영은 **Claude Code 전담**으로 관리합니다.
-
-Codex/Gemini에서 Storybook 작업이 필요하면 `agent-bridge.sh --to claude`로 위임합니다.
-
-**운영 원칙**:
-- Storybook MCP 사용 전 dev server(`http://127.0.0.1:6006`)를 먼저 실행
-- `.storybook/main.ts`에 `@storybook/addon-mcp` 설정을 유지
-- 상태 점검 기본 지표는 `storybook:build` 성공 여부
-- `--smoke-test`는 Storybook `10.2.x`에서 포트 관련 오류가 발생할 수 있어 보조 지표로 사용
-
-**권장 명령**:
-```bash
-# 1) dev server 실행 (Claude Code 운영)
-npm run storybook
-
-# 2) 정적 빌드 검증 (CI/문서화 기준)
-npm run storybook:build
-
-# 3) dev server 응답 확인 (실행 중일 때)
-curl -I http://127.0.0.1:6006
-```
-
-**브리지 호출 예시**:
-```bash
-bash scripts/ai/agent-bridge.sh --to claude --mode query "스토리북 실행 후 상태 확인 및 기본 스토리 점검"
-```
-
----
-
-## 신규 설정 가이드
-
-### 1. .mcp.json 생성
-
-프로젝트 루트에 `.mcp.json` 파일 생성 후 위의 설정 백업 내용을 복사하고 토큰 입력.
-
-### 2. .claude/settings.local.json 생성
-
-```bash
-mkdir -p .claude
-cat > .claude/settings.local.json << 'EOF'
-{
-  "permissions": {
-    "allow": [
-      "mcp__diagram-converter-mcp__*",
-      "mcp__supabase-db__*",
-      "mcp__vercel__*",
-      "mcp__playwright__*",
-      "mcp__next-devtools__*",
-      "mcp__chrome-devtools__*",
-      "mcp__github__*"
-    ]
-  },
-  "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": [
-    "vercel", "supabase-db", "diagram-converter-mcp",
-    "playwright", "next-devtools", "chrome-devtools", "github"
-  ]
-}
-EOF
-```
-
-### 3. .gitignore 확인
-
-```gitignore
-.mcp.json
-.mcp.json.backup*
-.claude/settings.local.json
-```
-
-### 4. 확인
-
-Claude Code 실행 후:
-```
-You: "MCP 서버 상태 확인해줘"
-Claude: [playwright, chrome-devtools, supabase-db 등 사용 가능 여부 표시]
-```
-
----
+| Vercel | https://vercel.com/account/tokens | deployment read |
+| Supabase | https://supabase.com/dashboard/account/tokens | project/database 작업 범위 |
+| GitHub | https://github.com/settings/tokens | repo/read 중심 |
 
 ## 트러블슈팅
 
 ### MCP 서버 연결 실패
 
-```
-증상: "MCP server not available"
-해결:
-1. .mcp.json 파일 존재 및 JSON 구문 확인
-2. 토큰 값 확인
-3. 의존성 설치: npm install
-4. claude --debug로 로그 확인
-```
+1. JSON/TOML 구문 확인: `python3 -m json.tool .mcp.json`, `python3 -m json.tool .gemini/settings.json`
+2. launcher 문법 확인: `bash -n scripts/mcp/start-*.sh scripts/mcp/run-with-project-env.sh`
+3. Codex: `bash scripts/mcp/codex-local.sh mcp list`
+4. Claude: `claude mcp list`
+5. Gemini: `gemini mcp list`
+6. Supabase live probe: `bash scripts/mcp/mcp-health-check-codex.sh --probe supabase-db`
 
-### WSL 환경변수 누락
+### 토큰 누락
 
-```
-증상: 환경변수 기반 설정 동작 안 함
-해결:
-1. .mcp.json에 직접 토큰 입력 (Pragmatic 방식)
-2. 또는 .bashrc에 export 추가 후 source ~/.bashrc
-```
+- `.mcp.json`에 토큰을 직접 쓰지 않습니다.
+- `.env.local` 또는 shell env에 `SUPABASE_ACCESS_TOKEN`, `VERCEL_API_KEY`, `GITHUB_PERSONAL_ACCESS_TOKEN`이 있는지 확인합니다.
+- 로그/문서/리뷰에는 실제 토큰 값을 출력하지 않습니다.
 
-### 느린 응답
+### 느린 시작
 
-```
-증상: MCP 호출이 10초 이상
-해결:
-1. 쿼리 범위 축소
-2. 불필요한 MCP 비활성화 (enabledMcpjsonServers 수정)
-```
-
----
+- `bash scripts/mcp/install-node-mcp-cache.sh`로 pinned MCP package cache를 갱신합니다.
+- cache audit은 앱 dependency audit과 분리해서 봅니다. MCP cache는 로컬 개발 도구 실행면입니다.
+- 특정 MCP만 느리면 해당 server launcher를 직접 실행해 startup 오류를 분리합니다.
 
 ## 관련 문서
 
-- [Claude Code](./claude-code.md)
-- [AI 도구 설치](./setup.md) - Claude Code, Codex, Gemini 설치
 - [Skills](./skills.md)
-- [워크플로우](./workflows.md)
-
----
-
-_Last Updated: 2026-04-21 (chrome-devtools MCP 역할/카탈로그/설정 예시 반영, Playwright 분담 기준 갱신)_
+- [AI 도구들](./multi-agent-tools.md)
+- [설치 가이드](./setup.md)
+- [AI Skill 운영 표준](../../guides/ai/skill-standards.md)

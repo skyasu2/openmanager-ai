@@ -3,112 +3,70 @@
 > Owner: dev-experience
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-04-23
+> Last reviewed: 2026-04-24
 > Canonical: docs/development/vibe-coding/skills.md
 > Tags: vibe-coding,skills,automation
 
 ## Skills란?
 
-Skills는 각 AI CLI가 재사용 가능한 워크플로우를 실행하는 자동화 레이어입니다.
-기본 형식은 `SKILL.md` 기반 Agent Skills 패턴을 따르며, 각 AI는 자신만의
-공식 스캔 경로를 가집니다. 이 저장소는 Claude/Gemini는 symlink로, Codex는
-repo-local path + optional user mirror로 운영합니다.
+Skills는 각 AI CLI가 재사용 가능한 워크플로우를 실행하는 자동화 레이어입니다. 기본 형식은 `SKILL.md` 기반 Agent Skills 패턴을 따르며, 이 저장소는 각 도구의 native discovery 경로를 유지하면서 공통 기준은 별도 baseline으로 관리합니다.
 
-## 경로별 역할 (실제 동작 기준)
+공통 운영 기준은 [AI Skill 운영 표준](../../guides/ai/skill-standards.md)과 `config/ai/skill-baselines.json`이 담당합니다.
+
+## 경로별 역할
 
 | 경로 | 스캔 주체 | 역할 | 형식 |
 |------|-----------|------|------|
-| `.claude/skills/` | Claude Code | Claude canonical path + Gemini shared source라는 프로젝트 규칙 | `SKILL.md` (rich frontmatter) |
-| `.gemini/skills/` | Gemini CLI | Gemini project path, 이 저장소에서는 `.claude/skills/` symlink 모음 | symlink |
-| `.agents/skills/` | Codex CLI | Codex repo-local canonical path | `SKILL.md` + `agents/openai.yaml` + `references/` |
-| `~/.codex/skills/` | Codex CLI | Codex user-scope installed skills / local mirror (git ignore) | 로컬 복사본 |
+| `.agents/skills/` | Codex CLI, Gemini CLI | Codex 공식 repo-local 경로이자 Gemini가 우선 발견하는 공통 adapter | `SKILL.md` + `agents/openai.yaml` + `references/` |
+| `.claude/skills/` | Claude Code | Claude native project skill 경로 | `SKILL.md` + Claude 전용 frontmatter |
+| `.gemini/skills/` | Gemini CLI | Gemini-only overlay. `.agents/skills`와 같은 이름 금지 | `SKILL.md` |
+| `~/.codex/skills/` | Codex CLI | 선택적 user-scope mirror | 로컬 복사본 |
+| `config/ai/skill-baselines.json` | 모든 AI | skill별 purpose, invariant, adapter 경로 SSOT | JSON |
 
-> **Codex 공식 경로**: 최신 공개 문서 기준 Codex는 repo `.agents/skills/`를
-> 직접 발견합니다.
->
-> **Codex mirror**: 이 저장소의 `npm run skills:sync:codex`는 `.agents/skills/`
-> 를 `~/.codex/skills/`로 복사해 user-scope mirror를 유지하는 보조 작업입니다.
-
-> **Gemini symlink 추가**: `ln -sf ../../.claude/skills/<name> .gemini/skills/<name>`
+> Gemini CLI는 workspace tier에서 `.agents/skills`와 `.gemini/skills`를 모두 발견하며, 같은 이름이면 `.agents/skills`가 우선합니다. 따라서 이 저장소에서는 Gemini 공통 skill을 `.agents/skills`에서 사용하고, `.gemini/skills`는 Gemini 전용 추가 skill에만 씁니다.
 
 ## 현재 등록된 Skills
 
-### Claude + Gemini 공용 (`.claude/skills/`)
+현재 공통 baseline에 등록된 스킬은 10개입니다.
 
-| Skill | Claude 명령어 | 설명 |
-|-------|--------------|------|
-| `git-workflow` | `/commit`, `/commit-push-pr` | GitLab canonical push + GitHub sync |
-| `git-clean-gone` | `/clean_gone` | `[gone]` 브랜치 정리 (worktree 포함) |
-| `cloud-run` | `/cloud-run` | Cloud Run 배포 + GCP 비용 점검 |
-| `lint-smoke` | `/lint-smoke` | Lint + 타입 + 테스트 스모크 검증 |
-| `code-review` | `/code-review` | 6관점 심각도 우선 리뷰 (go/conditional/no-go) |
-| `doc-management` | `/doc-management` | 문서 예산 점검, 중복/stale 감지 |
-| `qa-ops` | `/qa-ops` | Vercel + Playwright MCP 최종 QA 및 누적 기록 |
-| `qa-state` | `/qa-state` | 상태 진단 + QA 실행 + 기록 통합 워크플로우 |
-| `state-triage` | `/state-triage` | QA/런타임/AI provider 원인 분석 + 다음 단계 |
-| `env-sync` | `/env-sync` | Vercel/Cloud Run env drift 진단 + 동기화 |
-
-### Codex 전용 (`.agents/skills/` repo-local canonical)
-
-| Skill | 추가 파일 | 비고 |
-|-------|-----------|------|
-| `cloud-run` | `agents/openai.yaml`, `references/` | Claude 버전과 별도 유지 |
-| `code-review` | `agents/openai.yaml`, `references/` | |
-| `doc-management` | `agents/openai.yaml`, `references/` | |
-| `env-sync` | `agents/openai.yaml` | |
-| `git-clean-gone` | `agents/openai.yaml`, `references/` | `[gone]` 브랜치 정리 |
-| `git-workflow` | `agents/openai.yaml`, `references/` | |
-| `lint-smoke` | `agents/openai.yaml`, `references/` | |
-| `qa-ops` | `agents/openai.yaml`, `references/` | |
-| `qa-state` | — | |
-| `state-triage` | `agents/openai.yaml` | |
-
-### Built-in (Claude Code 내장)
-
-| Skill | 명령어 | 설명 |
-|-------|--------|------|
-| `review` | `/review` | PR 기반 코드 리뷰 |
-| `frontend-design` | 자동 트리거 | UI 컴포넌트/페이지 생성 |
+| Skill | 목적 | Codex/Gemini adapter | Claude adapter |
+|-------|------|:-------------------:|:--------------:|
+| `cloud-run` | Cloud Run 배포, 비용, rollback 검증 | ✅ | ✅ |
+| `code-review` | 6관점 severity-first 코드 리뷰 | ✅ | ✅ |
+| `doc-management` | 문서 예산, 중복, stale, metadata 점검 | ✅ | ✅ |
+| `env-sync` | `.env.local`, Vercel, Supabase, Cloud Run env drift 진단 | ✅ | ✅ |
+| `git-clean-gone` | `[gone]` 브랜치 안전 정리 | ✅ | ✅ |
+| `git-workflow` | GitLab canonical commit/push/CI 확인 | ✅ | ✅ |
+| `lint-smoke` | 빠른 테스트/타입/린트 검증 | ✅ | ✅ |
+| `qa-ops` | Vercel/로컬 QA 실행 및 누적 기록 | ✅ | ✅ |
+| `qa-state` | 상태 진단 + QA 실행 + 결과 기록 통합 | ✅ | ✅ |
+| `state-triage` | QA/런타임/배포/AI-path 상태 원인 분석 | ✅ | ✅ |
 
 ## 파일 구조
 
 ```text
-.claude/skills/                 # Claude canonical path + Gemini shared source
-├── cloud-run/SKILL.md
-├── code-review/SKILL.md
-├── doc-management/SKILL.md
-├── env-sync/SKILL.md
-├── git-clean-gone/SKILL.md
-├── git-workflow/SKILL.md
-├── lint-smoke/SKILL.md
-├── qa-ops/SKILL.md
-├── qa-state/SKILL.md
-└── state-triage/SKILL.md
-
-.gemini/skills/                 # Gemini CLI project path (symlink view)
-├── cloud-run -> ../../.claude/skills/cloud-run
-├── git-clean-gone -> ../../.claude/skills/git-clean-gone
-└── ...
-
-.agents/skills/                 # Codex repo-local canonical path
+.agents/skills/                 # Codex/Gemini common adapter
 ├── cloud-run/
 │   ├── SKILL.md
-│   ├── agents/openai.yaml      # Codex/OpenAI 전용 메타데이터
-│   └── references/             # 스킬 참조 문서
-├── git-clean-gone/
-│   ├── SKILL.md
-│   ├── agents/openai.yaml
+│   ├── agents/openai.yaml      # Codex/OpenAI UI metadata
 │   └── references/
 └── ...
 
-~/.codex/skills/                # Codex user-scope mirror / installed skills
-└── ...                         # 필요 시 npm run skills:sync:codex 로 mirror 갱신
+.claude/skills/                 # Claude native adapter
+├── cloud-run/SKILL.md
+└── ...
+
+.gemini/skills/                 # Gemini-only overlay only
+└── gemini-*/SKILL.md           # .agents/skills와 같은 이름 금지
+
+~/.codex/skills/                # Optional Codex user-scope mirror
+└── ...                         # npm run skills:sync:codex 결과
 ```
 
-## SKILL.md frontmatter 형식 비교
+## SKILL.md frontmatter 비교
 
 ```yaml
-# .claude/skills/ 형식 (Claude + Gemini)
+# .claude/skills/<name>/SKILL.md
 ---
 name: git-workflow
 description: ...
@@ -118,39 +76,60 @@ allowed-tools: Bash, Read, Grep, Edit
 disable-model-invocation: true
 ---
 
-# .agents/skills/ 형식 (Codex)
+# .agents/skills/<name>/SKILL.md
 ---
 name: git-workflow
 description: ...
 ---
 ```
 
-이 저장소는 Claude 확장 frontmatter를 `.claude/skills/`에 유지하고, Codex용 UI
-메타데이터는 `.agents/skills/<name>/agents/openai.yaml`에 분리해 관리합니다.
-Codex 스킬 본문의 핵심 trigger 메타데이터는 `SKILL.md`의 `name` +
-`description`입니다.
+Claude adapter는 Claude Code 전용 권한/호출 제어를 유지합니다. Codex/Gemini 공통 adapter는 `name`과 `description`을 핵심 trigger metadata로 유지하고, Codex UI metadata는 `agents/openai.yaml`에 분리합니다.
 
-## 동기화 규칙
+## 수정 규칙
 
 | 작업 | 절차 |
 |------|------|
-| Claude/Gemini 스킬 추가/수정 | `.claude/skills/<name>/SKILL.md` 수정 → `.gemini/skills/`에 symlink 추가 |
-| Codex 스킬 추가/수정 | `.agents/skills/<name>/` 수정 |
-| Codex mirror 갱신 | 선택 시 `npm run skills:sync:codex` |
-| Gemini symlink 추가 | `ln -sf ../../.claude/skills/<name> .gemini/skills/<name>` |
-| Codex repo 경로 확인 | `ls .agents/skills/` |
-| Codex mirror 확인 | `ls ~/.codex/skills/` |
+| 공통 동작 변경 | `config/ai/skill-baselines.json` 먼저 수정 |
+| Codex/Gemini 공통 skill 수정 | `.agents/skills/<name>/SKILL.md` 수정 |
+| Claude 전용 skill 수정 | `.claude/skills/<name>/SKILL.md` 수정 |
+| Gemini-only skill 추가 | `.gemini/skills/gemini-<name>/SKILL.md` 추가 |
+| Codex user mirror 갱신 | 선택 시 `npm run skills:sync:codex` |
+| drift 검사 | `npm run skills:check` |
+
+모든 native `SKILL.md`는 `docs/guides/ai/skill-standards.md`와 `config/ai/skill-baselines.json`을 참조해야 합니다.
+
+## 검증
+
+```bash
+# baseline, adapter path, reference, Gemini overlay 충돌 확인
+npm run skills:check
+
+# Codex user-scope mirror 갱신이 필요한 경우
+npm run skills:sync:codex
+
+# Gemini 실제 discovery 확인
+ gemini skills list
+```
+
+`skills:check`는 다음을 hard gate로 검사합니다.
+
+- baseline에 정의된 adapter 파일 존재
+- `SKILL.md`의 `description` field 존재
+- 각 adapter의 baseline 참조 문구 존재
+- `.gemini/skills`에 `.agents/skills`와 같은 이름의 overlay 없음
+- `.gemini/skills`가 git ignore로 차단되지 않음
 
 ## 운영 원칙
 
-- 스킬 canonical path: Claude는 `.claude/skills/`, Gemini는 `.gemini/skills/`, Codex는 `.agents/skills/`
-- `.gemini/skills/`는 이 저장소에서 `.claude/skills/`를 공유하기 위한 symlink adapter
-- `npm run skills:sync:codex`는 `~/.codex/skills/` mirror 유지용 보조 작업이며, repo-local discovery의 필수 전제는 아님
-- Codex skill surface는 `.agents/skills/` 실디렉터리를 기준으로 판단하고, mirror `~/.codex/skills/`는 동기화 결과물로만 본다
-- 스킬 정책 변경 시 `.claude/skills/`와 `.agents/skills/` 양쪽 모두 업데이트
+- 공통 기준은 baseline JSON에 둡니다.
+- AI별 실행 차이는 native adapter에 둡니다.
+- symlink로 Claude/Gemini/Codex skill을 공유하지 않습니다.
+- `.gemini/skills`는 Gemini-only 추가 skill만 허용합니다.
+- `version` field는 현재 hard gate가 아닙니다. Claude adapter에서는 권장하고, Codex/Gemini common adapter에서는 선택입니다.
 
 ## 관련 문서
 
+- [AI Skill 운영 표준](../../guides/ai/skill-standards.md)
 - [MCP 서버](./mcp-servers.md)
 - [개발 워크플로우](./workflows.md)
 - [개발 환경 허브](../README.md)

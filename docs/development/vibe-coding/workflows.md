@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-03-29
+> Last reviewed: 2026-04-24
 > Canonical: docs/development/vibe-coding/workflows.md
 > Tags: vibe-coding,workflow,development
 
@@ -136,7 +136,7 @@ Done ✅
 ```
 Day 1:
   - 요구사항 정리
-  - 아키텍처 설계 (sequential-thinking)
+  - 아키텍처 설계 (Codex/Gemini 교차 검토 또는 state-triage/code-review)
   - 기본 구조 커밋
 
 Day 2-3:

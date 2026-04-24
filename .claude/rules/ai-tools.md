@@ -40,17 +40,18 @@
 
 ### chrome-devtools headed 모드 (브라우저 창 표시)
 
-**현재 Claude 설정**: `--isolated --headless` (헤드리스)
-**Codex 설정**: `--isolated` (headed, 브라우저 창 표시됨)
+**현재 Claude 설정**: `--isolated` (headed)
+**Gemini 설정**: `--isolated --headless`
+**Codex 설정**: `--isolated`
 
-headed 모드로 전환하려면 `.mcp.json`에서 `--headless` 제거 후 Claude Code 재시작:
+headed 모드 예시:
 ```json
-"args": ["-y", "chrome-devtools-mcp@latest", "--isolated"]
+"args": ["scripts/mcp/start-node-mcp-package.sh", "chrome-devtools-mcp", "0.23.0", "build/src/bin/chrome-devtools-mcp.js", "--isolated"]
 ```
 
 기존 Chrome 세션(로그인 상태) 재사용하려면 `--browser-url` 사용:
 ```json
-"args": ["-y", "chrome-devtools-mcp@latest", "--browser-url", "http://127.0.0.1:9222"]
+"args": ["scripts/mcp/start-node-mcp-package.sh", "chrome-devtools-mcp", "0.23.0", "build/src/bin/chrome-devtools-mcp.js", "--browser-url", "http://127.0.0.1:9222"]
 ```
 ```bash
 # 먼저 Chrome을 remote debugging 포트로 실행 (원하는 프로필로 로그인 가능)
@@ -214,7 +215,7 @@ Have them challenge each other's findings. Read-only — no file edits.
 ```
 
 - Bash: 와일드카드 패턴 사용 (`npm:*`, `git:*`)
-- MCP: 서버별 와일드카드 (`mcp__context7__*`)
+- MCP: 서버별 와일드카드 (`mcp__supabase-db__*`, `mcp__playwright__*`)
 - API Key: 환경변수 사용, 하드코딩 금지
 
 ---

@@ -4,7 +4,7 @@
 > Owner: documentation
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-04-21
+> Last reviewed: 2026-04-24
 > Canonical: docs/guides/testing/e2e-testing-guide.md
 > Tags: testing,e2e,playwright,playwright-mcp,chrome-devtools-mcp,vercel-qa
 
@@ -320,4 +320,4 @@ MCP로 Vercel Production smoke 체크리스트 추가 실행 권장.
 
 - [Test Strategy Guide](./test-strategy.md)
 - [Playwright Config](../../../playwright.config.ts)
-- [QA Ops Skill](.claude/skills/qa-ops/SKILL.md) — AI agent 내부 QA 워크플로우
+- [QA Ops Skill](../../../.agents/skills/qa-ops/SKILL.md) — AI agent 내부 QA 워크플로우

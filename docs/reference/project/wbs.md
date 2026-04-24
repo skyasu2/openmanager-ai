@@ -3,11 +3,11 @@
 > Owner: project-lead
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-02-22
+> Last reviewed: 2026-04-24
 > Tags: wbs,deliverable,completion,modules
 
 **목적**: 모듈(Deliverable) 기반 WBS. 100% Rule 적용 — 모든 프로덕션 산출물 포착.
-**회고형 WBS**: `reports/planning/wbs.md` (Phase 기반, 병행 유지)
+**회고형 WBS**: `reports/planning/archive/wbs.md` (Phase 기반, 병행 유지)
 
 ---
 
@@ -166,9 +166,9 @@
 | 4 | RAG 임베딩 품질 개선 | AI Engine | P4 | 설명 대체 |
 | 5 | PR용 `test:e2e:critical` 자동 게이트 분리 적용 | Documentation & Testing | P3 | +1.0%p |
 
-> 상세 회고형 분석: [`reports/planning/wbs.md`](../../../reports/planning/wbs.md)
-> 검수 확인서: [`reports/planning/completion-review.md`](../../../reports/planning/completion-review.md)
+> 상세 회고형 분석: [`reports/planning/archive/wbs.md`](../../../reports/planning/archive/wbs.md)
+> 검수 확인서: [`reports/planning/archive/completion-review.md`](../../../reports/planning/archive/completion-review.md)
 
 ---
 
-_Last Updated: 2026-02-22_
+_Last Updated: 2026-04-24_

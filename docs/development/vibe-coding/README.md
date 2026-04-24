@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active Canonical
 > Doc type: Overview
-> Last reviewed: 2026-04-12
+> Last reviewed: 2026-04-24
 > Canonical: docs/development/vibe-coding/README.md
 > Tags: vibe-coding,ai-workflow
 
@@ -33,12 +33,12 @@
 │                          ↓                              │
 │  ┌──────────────────────────────────────────────────┐  │
 │  │              MCP Servers (SSOT 기반)              │  │
-│  │  context7 | supabase | playwright | next-devtools │  │
+│  │  supabase-db | vercel | playwright | next-devtools│  │
 │  └──────────────────────────────────────────────────┘  │
 │                          ↓                              │
 │  ┌──────────────────────────────────────────────────┐  │
-│  │              Skills (에이전트별)                  │  │
-│  │  commit | review | lint-smoke | security | ...   │  │
+│  │              Skills (baseline + adapter)          │  │
+│  │  git-workflow | code-review | lint-smoke | qa-ops │  │
 │  └──────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────┘
 ```

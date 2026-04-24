@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active Supporting
 > Doc type: Tutorial
-> Last reviewed: 2026-04-23
+> Last reviewed: 2026-04-24
 > Canonical: docs/development/vibe-coding/setup.md
 > Tags: vibe-coding,setup,mcp
 
@@ -90,7 +90,7 @@ claude             # 대화형 모드 시작
 
 ### 빠른 설정
 
-1. **`.mcp.json` 생성**: [MCP 서버 가이드](./mcp-servers.md)의 설정 백업 섹션 참조
+1. **`.mcp.json` 확인**: repo에 추적되는 project MCP 설정을 확인하고, 실제 토큰은 `.env.local` 또는 shell env에 둡니다.
 
 2. **권한 설정**: `.claude/settings.local.json` 생성
 
@@ -217,7 +217,7 @@ gemini
 Claude Code 내에서:
 ```
 You: "MCP 서버 상태 확인해줘"
-Claude: [context7, supabase, next-devtools 등 사용 가능 여부 표시]
+Claude: [supabase-db, vercel, playwright, next-devtools 등 사용 가능 여부 표시]
 ```
 
 ---
