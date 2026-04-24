@@ -86,6 +86,10 @@ startup_timeout_sec = 75
 tool_timeout_sec = 120
 required = false
 
+[mcp_servers.next-devtools.env]
+SystemRoot = "C:\\Windows"
+PROGRAMFILES = "C:\\Program Files"
+
 [mcp_servers.next-devtools.tools.init]
 approval_mode = "approve"
 

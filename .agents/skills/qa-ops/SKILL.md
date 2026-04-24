@@ -29,6 +29,9 @@ Final QA operation workflow with cumulative tracking.
 - Diagnostics: Use **Chrome DevTools MCP** for performance (LCP, CLS, Core Web Vitals), Lighthouse audits, memory leaks, and deep network inspection.
 - Use local dev server QA only when AI-path validation is unnecessary (UI/copy/layout/basic auth flow).
 - Use Cloud Run endpoint checks when the scope is observability, monitoring, trace propagation, or Langfuse runtime proof.
+- If local Next.js runtime diagnostics are needed, use `nextjs_index` first and retry with explicit `port` when auto-discovery fails.
+- If `next-devtools.browser_eval` fails to start with `Connection closed` or a similar session-start error, switch browser automation to direct Playwright MCP and keep `nextjs_call` for runtime diagnostics only.
+- When this fallback is used in release-facing QA, state it explicitly in the evidence/report so the automation gap stays visible.
 
 3. Select the QA pack from the current product surface.
 - Core route pack:
