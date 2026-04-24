@@ -35,10 +35,13 @@
   - scripts/git/**/*
   - scripts/gitlab/**/*
   - scripts/hooks/**/*
+  - scripts/qa/**/*
   - scripts/release/**/*
   - scripts/sync/**/*
   - scripts/test/**/*
   - scripts/ci/ai-engine-post-deploy-smoke.sh
+  - tests/**/*
+  - playwright.config*.ts
   - .gitlab-ci.yml
 
 .frontend_validate_paths: &frontend_validate_paths
@@ -58,9 +61,12 @@
   - scripts/git/**/*
   - scripts/gitlab/**/*
   - scripts/hooks/**/*
+  - scripts/qa/**/*
   - scripts/release/**/*
   - scripts/sync/**/*
   - scripts/test/**/*
+  - tests/**/*
+  - playwright.config*.ts
   - .gitlab-ci.yml
 
 .frontend_deploy_paths: &frontend_deploy_paths
