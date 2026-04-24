@@ -1,0 +1,71 @@
+{
+  "mcpServers": {
+    "vercel": {
+      "command": "bash",
+      "args": ["scripts/mcp/start-vercel-mcp.sh"]
+    },
+    "supabase-db": {
+      "command": "bash",
+      "args": [
+        "scripts/mcp/run-with-project-env.sh",
+        "bash",
+        "scripts/mcp/start-supabase-mcp.sh"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "${SUPABASE_ACCESS_TOKEN}"
+      }
+    },
+    "playwright": {
+      "command": "bash",
+      "args": [
+        "scripts/mcp/start-node-mcp-package.sh",
+        "@playwright/mcp",
+        "0.0.70",
+        "cli.js",
+        "--output-dir",
+        ".playwright-mcp/screenshots"
+      ]
+    },
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    },
+    "next-devtools": {
+      "command": "bash",
+      "args": [
+        "scripts/mcp/start-node-mcp-package.sh",
+        "next-devtools-mcp",
+        "0.3.10",
+        "dist/index.js"
+      ]
+    },
+    "chrome-devtools": {
+      "command": "bash",
+      "args": [
+        "scripts/mcp/start-node-mcp-package.sh",
+        "chrome-devtools-mcp",
+        "0.23.0",
+        "build/src/bin/chrome-devtools-mcp.js",
+        "--isolated"
+      ],
+      "env": {
+        "DISPLAY": ":0"
+      }
+    },
+    "diagram-converter-mcp": {
+      "command": "bash",
+      "args": [
+        "scripts/mcp/start-node-mcp-package.sh",
+        "diagram-converter-mcp",
+        "0.2.11",
+        "dist/index.js"
+      ],
+      "env": {
+        "DIAGRAM_MCP_AUTO_UPDATE": "false"
+      }
+    }
+  }
+}

@@ -1,15 +1,15 @@
 model = "gpt-5.3-codex"
 personality = "pragmatic"
 model_reasoning_effort = "high"
-sandbox = "danger-full-access"
-ask_for_approval = "never"
+sandbox = "workspace-write"
+ask_for_approval = "on-request"
 
 [projects."__REPO_ROOT__"]
 trust_level = "trusted"
 
 [mcp_servers.supabase-db]
 command = "bash"
-args = ["__REPO_ROOT__/scripts/mcp/run-with-project-env.sh", "node", "__HOME__/.mcp-servers/supabase/node_modules/@supabase/mcp-server-supabase/dist/transports/stdio.js"]
+args = ["__REPO_ROOT__/scripts/mcp/run-with-project-env.sh", "bash", "__REPO_ROOT__/scripts/mcp/start-supabase-mcp.sh"]
 startup_timeout_sec = 30
 tool_timeout_sec = 120
 required = false
@@ -24,8 +24,8 @@ approval_mode = "approve"
 approval_mode = "approve"
 
 [mcp_servers.diagram-converter]
-command = "npx"
-args = ["-y", "diagram-converter-mcp@0.2.6"]
+command = "bash"
+args = ["__REPO_ROOT__/scripts/mcp/start-node-mcp-package.sh", "diagram-converter-mcp", "0.2.11", "dist/index.js"]
 startup_timeout_sec = 120
 tool_timeout_sec = 180
 required = false
@@ -37,8 +37,8 @@ approval_mode = "approve"
 approval_mode = "approve"
 
 [mcp_servers.playwright]
-command = "npx"
-args = ["-y", "@playwright/mcp", "--output-dir", "tmp/playwright/mcp/screenshots"]
+command = "bash"
+args = ["__REPO_ROOT__/scripts/mcp/start-node-mcp-package.sh", "@playwright/mcp", "0.0.70", "cli.js", "--output-dir", "tmp/playwright/mcp/screenshots"]
 startup_timeout_sec = 60
 tool_timeout_sec = 180
 required = false
@@ -80,8 +80,8 @@ approval_mode = "approve"
 approval_mode = "approve"
 
 [mcp_servers.next-devtools]
-command = "npx"
-args = ["-y", "next-devtools-mcp@latest"]
+command = "bash"
+args = ["__REPO_ROOT__/scripts/mcp/start-node-mcp-package.sh", "next-devtools-mcp", "0.3.10", "dist/index.js"]
 startup_timeout_sec = 75
 tool_timeout_sec = 120
 required = false
@@ -106,8 +106,8 @@ approval_mode = "approve"
 approval_mode = "approve"
 
 [mcp_servers.chrome-devtools]
-command = "npx"
-args = ["-y", "chrome-devtools-mcp@latest", "--isolated"]
+command = "bash"
+args = ["__REPO_ROOT__/scripts/mcp/start-node-mcp-package.sh", "chrome-devtools-mcp", "0.23.0", "build/src/bin/chrome-devtools-mcp.js", "--isolated"]
 startup_timeout_sec = 90
 tool_timeout_sec = 180
 required = false
@@ -142,25 +142,26 @@ approval_mode = "approve"
 [mcp_servers.chrome-devtools.tools.click]
 approval_mode = "approve"
 
+[mcp_servers.chrome-devtools.tools.evaluate_script]
+approval_mode = "approve"
+
+[mcp_servers.chrome-devtools.tools.navigate_page]
+approval_mode = "approve"
+
 [mcp_servers.github]
-command = "bash"
-args = ["__REPO_ROOT__/scripts/mcp/run-with-project-env.sh", "npx", "-y", "@modelcontextprotocol/server-github"]
+url = "https://api.githubcopilot.com/mcp/"
+bearer_token_env_var = "GITHUB_PERSONAL_ACCESS_TOKEN"
 startup_timeout_sec = 120
 tool_timeout_sec = 120
 required = false
 
-[mcp_servers.github.env]
-GITHUB_PERSONAL_ACCESS_TOKEN = "__OPENMANAGER_RUNTIME_ENV__"
-
-[mcp_servers.github.tools.search_users]
-approval_mode = "approve"
-
 [mcp_servers.vercel]
 command = "bash"
-args = ["-lc", "set -a; source __REPO_ROOT__/.env.local >/dev/null 2>&1; set +a; npx -y vercel-mcp \"VERCEL_API_KEY=$VERCEL_API_KEY\""]
+args = ["__REPO_ROOT__/scripts/mcp/start-vercel-mcp.sh"]
 startup_timeout_sec = 180
 tool_timeout_sec = 120
 required = false
+enabled_tools = ["getDeployments", "getDeployment", "getDeploymentEvents"]
 
 [mcp_servers.vercel.tools.getDeployments]
 approval_mode = "approve"

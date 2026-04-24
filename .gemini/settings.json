@@ -3,58 +3,101 @@
   "general": {
     "previewFeatures": true
   },
+  "mcp": {
+    "allowed": [
+      "diagram-converter-mcp",
+      "supabase-db",
+      "playwright",
+      "next-devtools",
+      "chrome-devtools",
+      "github",
+      "vercel"
+    ]
+  },
   "mcpServers": {
     "diagram-converter-mcp": {
-      "command": "npx",
-      "args": ["-y", "diagram-converter-mcp@latest"]
+      "command": "bash",
+      "args": [
+        "scripts/mcp/start-node-mcp-package.sh",
+        "diagram-converter-mcp",
+        "0.2.11",
+        "dist/index.js"
+      ],
+      "env": {
+        "DIAGRAM_MCP_AUTO_UPDATE": "false"
+      },
+      "timeout": 120000
     },
     "supabase-db": {
-      "command": "node",
+      "command": "bash",
       "args": [
-        "/home/sky-note/.mcp-servers/supabase/node_modules/@supabase/mcp-server-supabase/dist/transports/stdio.js"
+        "scripts/mcp/run-with-project-env.sh",
+        "bash",
+        "scripts/mcp/start-supabase-mcp.sh"
       ],
       "env": {
         "SUPABASE_ACCESS_TOKEN": "${SUPABASE_ACCESS_TOKEN}"
-      }
+      },
+      "timeout": 120000
     },
     "playwright": {
-      "command": "npx",
+      "command": "bash",
       "args": [
-        "-y",
+        "scripts/mcp/start-node-mcp-package.sh",
         "@playwright/mcp",
+        "0.0.70",
+        "cli.js",
         "--user-data-dir",
-        ".playwright-mcp/codex-profile",
+        ".playwright-mcp/gemini-profile",
         "--output-dir",
         ".playwright-mcp/screenshots"
       ],
       "env": {
         "DISPLAY": ":0"
-      }
+      },
+      "timeout": 120000
     },
     "next-devtools": {
-      "command": "npx",
-      "args": ["-y", "next-devtools-mcp@latest"]
+      "command": "bash",
+      "args": [
+        "scripts/mcp/start-node-mcp-package.sh",
+        "next-devtools-mcp",
+        "0.3.10",
+        "dist/index.js"
+      ],
+      "timeout": 120000
     },
     "chrome-devtools": {
-      "command": "npx",
-      "args": ["-y", "chrome-devtools-mcp@latest", "--isolated", "--headless"],
+      "command": "bash",
+      "args": [
+        "scripts/mcp/start-node-mcp-package.sh",
+        "chrome-devtools-mcp",
+        "0.23.0",
+        "build/src/bin/chrome-devtools-mcp.js",
+        "--isolated",
+        "--headless"
+      ],
       "env": {
         "DISPLAY": ":0"
-      }
+      },
+      "timeout": 120000
     },
     "github": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
-      }
+      "httpUrl": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      },
+      "timeout": 120000
     },
     "vercel": {
       "command": "bash",
-      "args": ["-lc", "npx -y vercel-mcp \"VERCEL_API_KEY=$VERCEL_API_KEY\""],
-      "env": {
-        "VERCEL_API_KEY": "${VERCEL_API_KEY}"
-      }
+      "args": ["scripts/mcp/start-vercel-mcp.sh"],
+      "includeTools": [
+        "getDeployments",
+        "getDeployment",
+        "getDeploymentEvents"
+      ],
+      "timeout": 120000
     }
   }
 }

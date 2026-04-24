@@ -206,8 +206,10 @@ next-env.d.ts
 # cursor IDE configuration (contains sensitive data)
 .cursor/
 
-# 🔐 MCP 민감한 정보 포함 파일들 (GitHub 완전 차단)
-.mcp.json
+# 🔐 MCP 설정
+# Claude Code의 project-scoped .mcp.json은 공식 공유 설정 파일로 사용하되,
+# 시크릿은 env/wrapper로만 주입한다. 백업/로컬 변형은 계속 차단.
+!.mcp.json
 .mcp.json.backup*
 *.mcp.json.backup
 .claude/mcp.json

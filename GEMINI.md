@@ -1,6 +1,6 @@
 # GEMINI.md - Gemini Identity & Configuration
 
-<!-- Version: 8.11.13 | Last reviewed: 2026-04-16 -->
+<!-- Version: 8.11.14 | Last reviewed: 2026-04-24 -->
 **This file defines the core identity and principles for the Gemini Agent within the OpenManager AI project.**
 
 # 🚨 CRITICAL INSTRUCTION
@@ -75,9 +75,9 @@
 
 ## 🧰 Project Custom Skills (v2.0 Optimized)
 
-Gemini CLI는 `.gemini/skills/` 를 스캔합니다. 각 항목은 `.claude/skills/`를 가리키는 symlink로, Claude와 동일한 스킬 셋을 공유합니다.
+Gemini CLI는 workspace skills를 `.agents/skills/` 또는 `.gemini/skills/`에서 발견합니다. 이 저장소는 중복 discovery 경고를 피하기 위해 `.agents/skills/`를 canonical workspace skill 경로로 사용합니다. `.gemini/skills/` symlink는 legacy 호환 검증이 필요한 경우에만 임시로 사용합니다.
 
-등록된 스킬 셋 (`.gemini/skills/` 기준):
+등록된 스킬 셋 (`.agents/skills/` 기준):
 - `qa-state` - 원인 분석, 런타임 진단(MCP), QA 실행 및 결과 누적 기록 통합.
 - `git-workflow` - 사전 품질 검증(`lint-smoke` 포함) 후 GitLab/GitHub 안전 커밋/푸시.
 - `doc-management` - 문서 예산(`npm run docs:budget`) 기반 현황 점검 및 중복 제거.
@@ -222,4 +222,4 @@ plan 파일이 있는 작업은 아래 순서를 따른다.
 
 ---
 
-_Gemini Agent Configuration for OpenManager AI v8.11.13 | Last reviewed: 2026-04-16_
+_Gemini Agent Configuration for OpenManager AI v8.11.14 | Last reviewed: 2026-04-24_

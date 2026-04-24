@@ -4,14 +4,14 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  bash scripts/ai/agent-bridge.sh --to <claude|codex> [options] [prompt...]
+  bash scripts/ai/agent-bridge.sh --to <claude|codex|gemini> [options] [prompt...]
 
 Description:
-  One-shot bridge to call Claude Code or Codex CLI from the same WSL shell.
+  One-shot bridge to call Claude Code, Codex CLI, or Gemini CLI from the same WSL shell.
   Prevents recursive bridge loops by default.
 
 Options:
-  --to <target>           Required. claude | codex
+  --to <target>           Required. claude | codex | gemini
   --cwd <dir>             Optional working directory (default: current dir)
   --model <name>          Optional model override for target CLI
   --mode <type>           query | analysis | doc (default: query)
@@ -38,6 +38,7 @@ Prompt input:
 Examples:
   bash scripts/ai/agent-bridge.sh --to claude "현재 브랜치 요약해줘"
   echo "type error 원인 찾아줘" | bash scripts/ai/agent-bridge.sh --to codex
+  bash scripts/ai/agent-bridge.sh --to gemini --mode analysis "리스크를 점검해줘"
 EOF
 }
 
@@ -107,6 +108,7 @@ detect_agent_from_process_tree() {
     case "$cmd" in
       *claude*) echo "claude"; return 0 ;;
       *codex*)  echo "codex";  return 0 ;;
+      *gemini*) echo "gemini"; return 0 ;;
     esac
     pid="$ppid"
   done
@@ -301,13 +303,13 @@ if [ -z "$TARGET" ]; then
   exit 2
 fi
 
-if [ "$TARGET" != "claude" ] && [ "$TARGET" != "codex" ]; then
-  echo "ERROR: invalid --to target: $TARGET (allowed: claude|codex)" >&2
+if [ "$TARGET" != "claude" ] && [ "$TARGET" != "codex" ] && [ "$TARGET" != "gemini" ]; then
+  echo "ERROR: invalid --to target: $TARGET (allowed: claude|codex|gemini)" >&2
   exit 2
 fi
 
-if [ -n "$FROM_AGENT" ] && [ "$FROM_AGENT" != "claude" ] && [ "$FROM_AGENT" != "codex" ]; then
-  echo "ERROR: invalid --from: $FROM_AGENT (allowed: claude|codex)" >&2
+if [ -n "$FROM_AGENT" ] && [ "$FROM_AGENT" != "claude" ] && [ "$FROM_AGENT" != "codex" ] && [ "$FROM_AGENT" != "gemini" ]; then
+  echo "ERROR: invalid --from: $FROM_AGENT (allowed: claude|codex|gemini)" >&2
   exit 2
 fi
 
@@ -557,6 +559,23 @@ run_codex() {
   cat "$log_file"
 }
 
+run_gemini() {
+  if ! command -v gemini >/dev/null 2>&1; then
+    echo "ERROR: gemini command not found." >&2
+    return 127
+  fi
+
+  local cmd=(gemini --prompt "$PROMPT" --output-format text)
+  if [ -n "$MODEL" ]; then
+    cmd+=(--model "$MODEL")
+  fi
+
+  (
+    cd "$CWD"
+    run_with_timeout "${cmd[@]}"
+  )
+}
+
 
 START_TIME="$(date +%s)"
 EXIT_CODE=0
@@ -567,6 +586,7 @@ set +e
 case "$TARGET" in
   claude)  run_claude >"$OUTPUT_FILE" || EXIT_CODE=$? ;;
   codex)   run_codex  >"$OUTPUT_FILE" || EXIT_CODE=$? ;;
+  gemini)  run_gemini >"$OUTPUT_FILE" || EXIT_CODE=$? ;;
 esac
 set -e
 

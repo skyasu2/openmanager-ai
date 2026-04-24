@@ -3,7 +3,7 @@
 > Owner: team
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-04-10
+> Last reviewed: 2026-04-24
 
 프로젝트 자동화 및 유틸리티 스크립트 모음.
 
@@ -15,7 +15,7 @@
 ```
 scripts/
 ├── ai/                # AI 에이전트 도구
-│   ├── agent-bridge.sh        # Claude ↔ Codex 브릿지
+│   ├── agent-bridge.sh        # Claude/Codex/Gemini 브릿지
 │   └── health/                # AI 도구 상태 체크
 ├── data/              # 데이터 파이프라인 엔트리포인트
 │   ├── otel-fix.ts            # OTel 데이터 보정
@@ -47,8 +47,12 @@ scripts/
 ├── mcp/               # MCP 서버 관련
 │   ├── codex-local.sh         # 프로젝트 스코프 Codex 래퍼
 │   ├── count-codex-mcp-usage.sh
+│   ├── install-node-mcp-cache.sh
 │   ├── mcp-health-check-codex.sh
-│   └── resolve-runtime-env.sh
+│   ├── resolve-runtime-env.sh
+│   ├── start-node-mcp-package.sh
+│   ├── start-supabase-mcp.sh
+│   └── start-vercel-mcp.sh
 ├── stitch/            # Stitch MCP 검증
 │   └── validate-stitch-registry.js
 ├── test/              # 테스트 헬퍼
@@ -62,8 +66,9 @@ scripts/
 ### AI 에이전트 브릿지
 
 ```bash
-# Claude → Codex 프롬프트 전달
+# Claude/Codex/Gemini 프롬프트 전달
 bash scripts/ai/agent-bridge.sh --to codex "프롬프트"
+bash scripts/ai/agent-bridge.sh --to gemini --mode analysis "리스크 점검"
 ```
 
 ### 개발 워크플로우
@@ -137,6 +142,11 @@ OPENMANAGER_STORYBOOK_MCP_MODE=auto bash scripts/mcp/codex-local.sh
 
 # MCP 상태 점검
 bash scripts/mcp/mcp-health-check-codex.sh
+
+# pinned npm MCP package 실행: user-scope cache 우선, 없으면 npx fallback
+bash scripts/mcp/install-node-mcp-cache.sh
+bash scripts/mcp/start-node-mcp-package.sh <package> <version> <bin-path>
+bash scripts/mcp/run-with-project-env.sh bash scripts/mcp/start-supabase-mcp.sh
 bash scripts/mcp/mcp-health-check-codex.sh --no-live-probe
 bash scripts/mcp/mcp-health-check-codex.sh --probe supabase-db
 bash scripts/mcp/mcp-health-check-codex.sh --no-live-probe --json
