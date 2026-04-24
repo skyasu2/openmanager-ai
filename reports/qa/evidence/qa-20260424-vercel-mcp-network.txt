@@ -1,0 +1,13 @@
+[GET] https://openmanager-ai.vercel.app/workers/serverStatsWorker.js
+[GET] https://openmanager-ai.vercel.app/api/monitoring/report => [200]
+[GET] https://openmanager-ai.vercel.app/data/otel-data/hourly/hour-16.json => [200]
+[GET] https://openmanager-ai.vercel.app/data/otel-data/timeseries.json => [200]
+[GET] https://openmanager-ai.vercel.app/api/system => [FAILED] net::ERR_ABORTED
+[GET] https://openmanager-ai.vercel.app/api/system => [FAILED] net::ERR_ABORTED
+[GET] https://openmanager-ai.vercel.app/api/system => [200]
+[GET] https://openmanager-ai.vercel.app/api/health?service=ai => [200]
+[GET] https://openmanager-ai.vercel.app/api/database => [200]
+[GET] https://openmanager-ai.vercel.app/api/health?service=ai => [200]
+[POST] https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2 => [200]
+[GET] https://openmanager-ai.vercel.app/api/monitoring/report => [200]
+[POST] https://openmanager-ai.vercel.app/dashboard => [200]

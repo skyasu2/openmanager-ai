@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-23T17:35:02.039Z"
+    "updatedAt": "2026-04-24T08:04:28.389Z"
   },
   "sequence": {
-    "nextRunNumber": 343
+    "nextRunNumber": 346
   },
   "summary": {
-    "totalRecordedRuns": 340,
-    "totalRuns": 276,
+    "totalRecordedRuns": 343,
+    "totalRuns": 279,
     "excludedRuns": 64,
-    "totalChecks": 2284,
-    "totalPassed": 2198,
+    "totalChecks": 2302,
+    "totalPassed": 2216,
     "totalFailed": 79,
     "completionRate": 100,
-    "completedItems": 335,
+    "completedItems": 337,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 17,
     "expertDomainsTracked": 9,
     "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260424-0342",
-    "lastRecordedAt": "2026-04-23T17:35:02.039Z",
-    "latestRecordedRunId": "QA-20260424-0342",
-    "latestRecordedAt": "2026-04-23T17:35:02.039Z"
+    "lastRunId": "QA-20260424-0345",
+    "lastRecordedAt": "2026-04-24T08:04:28.389Z",
+    "latestRecordedRunId": "QA-20260424-0345",
+    "latestRecordedAt": "2026-04-24T08:04:28.389Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -8176,6 +8176,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-23T17:35:02.039Z"
+    },
+    "ai-starter-summary-parity-guard": {
+      "id": "ai-starter-summary-parity-guard",
+      "title": "AI starter/direct dashboard count parity E2E guard",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260424-0344",
+      "firstSeenAt": "2026-04-24T07:55:51.473Z",
+      "lastSeenRunId": "QA-20260424-0344",
+      "lastSeenAt": "2026-04-24T07:55:51.473Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "PLAYWRIGHT_SKIP_SERVER=1 PLAYWRIGHT_BASE_URL=https://openmanager-ai.vercel.app PLAYWRIGHT_GUEST_PIN=4231 PLAYWRIGHT_HEADLESS=true PLAYWRIGHT_HTML_REPORT=0 PLAYWRIGHT_WORKERS=1 npx playwright test tests/e2e/dashboard-ai-chat.spec.ts --config playwright.config.ts -> 2 passed",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-24T07:55:51.473Z"
+    },
+    "ai-starter-summary-parity-guard-final-hardening": {
+      "id": "ai-starter-summary-parity-guard-final-hardening",
+      "title": "AI parity guard dynamic total and label-boundary hardening",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260424-0345",
+      "firstSeenAt": "2026-04-24T08:04:28.389Z",
+      "lastSeenRunId": "QA-20260424-0345",
+      "lastSeenAt": "2026-04-24T08:04:28.389Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "PLAYWRIGHT_SKIP_SERVER=1 PLAYWRIGHT_BASE_URL=https://openmanager-ai.vercel.app PLAYWRIGHT_GUEST_PIN=4231 PLAYWRIGHT_HEADLESS=true PLAYWRIGHT_HTML_REPORT=0 PLAYWRIGHT_WORKERS=1 npx playwright test tests/e2e/dashboard-ai-chat.spec.ts --config playwright.config.ts -> 2 passed",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-24T08:04:28.389Z"
     }
   },
   "runs": [
@@ -31904,6 +31952,333 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260424-0343",
+      "recordedAt": "2026-04-24T07:15:56.760Z",
+      "recordedAtKst": "2026-04-24 16:15:56 KST",
+      "title": "Vercel MCP QA - Frontend, AI Assistant, and Performance targeted validation",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260424-0343.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_Ab1ZA6FUYvA4LE67mWidSFvPvYP2",
+        "deploymentUrl": "https://openmanager-q87lt2d2i-skyasus-projects.vercel.app",
+        "commitSha": "41ae15999d7ae943a2e154bb67612a10e3fdf266"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "/ landing render with Chrome DevTools console/network/performance trace",
+        "/login OAuth/email/guest affordances and guest PIN modal via Playwright MCP",
+        "/privacy policy route render",
+        "/dashboard guest-authenticated dashboard render with server status/resource cards",
+        "Dashboard AI sidebar open, AI engine Ready indicator, clarification flow, and explicit current-state response",
+        "Browser-side API checks: /api/health, /api/health?service=ai, /api/version",
+        "Chrome DevTools Lighthouse desktop navigation: accessibility, best practices, SEO",
+        "Vercel usage check after production QA"
+      ],
+      "skippedSurfaces": [
+        "Reporter Agent and Analyst Agent advanced generation flows",
+        "Mobile viewport QA",
+        "Cloud Run admin /monitoring direct run.app endpoints",
+        "Authenticated OAuth provider completion beyond provider entry button visibility"
+      ],
+      "checks": {
+        "total": 14,
+        "passed": 14,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI Assistant explicit dashboard-state summary",
+          "agent": "AI Chat",
+          "provider": "cloud-run",
+          "model": "production streaming route",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "AI assistant UI latency badge + resource timing",
+          "latencyMs": 2058,
+          "processingTimeMs": 2058
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Explicit current-state AI query matched dashboard counts and critical server, but the sidebar starter summary initially displayed an older/alternate warning-vs-critical summary before the explicit query corrected it.",
+          "nextAction": "Add a targeted parity assertion for the AI sidebar starter summary against the current dashboard slot before treating starter summaries as release-gate evidence."
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Dashboard status, resource alert list, API health, AI health, monitoring report fetches, and version checks were visible and healthy on Vercel production.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Guest authentication was exercised through the real UI path, mutating auth bypass was not used, and the AI request completed through the production stream endpoint without console errors.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel production usage remained billed at 0.0000 USD and health endpoints returned healthy/connected state.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP completed UI login, dashboard, AI sidebar, prompt, console, network, and screenshot capture without CLI fallback.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Dashboard and explicit AI answer aligned for the current query, but the starter summary mismatch indicates starter-response data-slot parity needs a deterministic regression check.",
+          "nextAction": "Track starter summary data-slot/source metadata and compare it with dashboard slot 96/143 in future QA."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-24T16:12:36+09:00",
+          "summary": "npm run check:usage:vercel passed after production MCP QA; effective usage 15.7310 USD, billed amount 0.0000 USD, chargeCount 14007.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "Vercel MCP QA summary",
+          "path": "reports/qa/evidence/qa-20260424-vercel-mcp-summary.md"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Dashboard AI assistant explicit response",
+          "path": "reports/qa/evidence/qa-20260424-vercel-mcp-ai-assistant.png"
+        },
+        {
+          "type": "playwright-console",
+          "label": "Playwright dashboard console after AI flow",
+          "path": "reports/qa/evidence/qa-20260424-vercel-mcp-console.txt"
+        },
+        {
+          "type": "playwright-network",
+          "label": "Playwright dashboard network after AI flow",
+          "path": "reports/qa/evidence/qa-20260424-vercel-mcp-network.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production AI assistant",
+          "url": "https://openmanager-ai.vercel.app/dashboard/ai-assistant"
+        },
+        {
+          "type": "general",
+          "label": "Production dashboard",
+          "url": "https://openmanager-ai.vercel.app/dashboard"
+        },
+        {
+          "type": "general",
+          "label": "Production root",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/Ab1ZA6FUYvA4LE67mWidSFvPvYP2"
+        }
+      ],
+      "expertCount": 6,
+      "expertNeedsImprovementCount": 2,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260424-0344",
+      "recordedAt": "2026-04-24T07:55:51.473Z",
+      "recordedAtKst": "2026-04-24 16:55:51 KST",
+      "title": "Production Playwright E2E - AI starter/direct dashboard parity guard",
+      "owner": "codex",
+      "source": "playwright-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260424-0344.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_Ab1ZA6FUYvA4LE67mWidSFvPvYP2",
+        "deploymentUrl": "https://openmanager-q87lt2d2i-skyasus-projects.vercel.app",
+        "commitSha": "41ae15999d7ae943a2e154bb67612a10e3fdf266"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "/dashboard guest-authenticated dashboard status snapshot parsing",
+        "AI sidebar starter prompt current dashboard count parity assertion",
+        "AI sidebar direct current-state query dashboard count parity assertion",
+        "New conversation text isolation from restored AI chat history"
+      ],
+      "skippedSurfaces": [
+        "Reporter Agent and Analyst Agent advanced generation flows",
+        "Mobile viewport QA",
+        "Cloud Run admin /monitoring direct run.app endpoints",
+        "OAuth provider completion beyond guest test path"
+      ],
+      "checks": {
+        "total": 2,
+        "passed": 2,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel production Playwright run passed starter prompt and direct query parity assertions against the current dashboard status snapshot.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Count-level dashboard/AI parity is now guarded, but response-level data-slot/source metadata is not yet captured in the AI answer contract.",
+          "nextAction": "If future QA requires slot provenance, add data-slot/source metadata to AI response evidence and compare it with the dashboard snapshot slot."
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "Production AI parity guard CLI summary",
+          "path": "reports/qa/evidence/qa-20260424-ai-parity-guard-cli.md"
+        }
+      ],
+      "links": [],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260424-0345",
+      "recordedAt": "2026-04-24T08:04:28.389Z",
+      "recordedAtKst": "2026-04-24 17:04:28 KST",
+      "title": "Production Playwright E2E - AI parity guard final review validation",
+      "owner": "codex",
+      "source": "playwright-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260424-0345.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_Ab1ZA6FUYvA4LE67mWidSFvPvYP2",
+        "deploymentUrl": "https://openmanager-q87lt2d2i-skyasus-projects.vercel.app",
+        "commitSha": "41ae15999d7ae943a2e154bb67612a10e3fdf266"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "/dashboard guest-authenticated dashboard status snapshot parsing",
+        "AI sidebar starter prompt current dashboard count parity assertion",
+        "AI sidebar direct current-state query dashboard count parity assertion",
+        "Dynamic total response detection and exact-count label-boundary matcher behavior"
+      ],
+      "skippedSurfaces": [
+        "Reporter Agent and Analyst Agent advanced generation flows",
+        "Mobile viewport QA",
+        "Cloud Run admin /monitoring direct run.app endpoints",
+        "OAuth provider completion beyond guest test path"
+      ],
+      "checks": {
+        "total": 2,
+        "passed": 2,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Final Vercel production Playwright run passed starter prompt and direct query parity assertions after dynamic total and label-boundary matcher hardening.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Count-level dashboard/AI parity is guarded, but response-level data-slot/source metadata is not yet captured in the AI answer contract.",
+          "nextAction": "If future QA requires slot provenance, add data-slot/source metadata to AI response evidence and compare it with the dashboard snapshot slot."
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "Production AI parity guard final CLI summary",
+          "path": "reports/qa/evidence/qa-20260424-ai-parity-guard-final-cli.md"
+        }
+      ],
+      "links": [],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -31912,16 +32287,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 154,
-      "appropriateCount": 143,
-      "partialCount": 11,
+      "seenCount": 157,
+      "appropriateCount": 145,
+      "partialCount": 12,
       "inappropriateCount": 0,
-      "improvementNeededCount": 21,
-      "lastRunId": "QA-20260424-0342",
-      "lastSeenAt": "2026-04-23T17:35:02.039Z",
+      "improvementNeededCount": 22,
+      "lastRunId": "QA-20260424-0345",
+      "lastSeenAt": "2026-04-24T08:04:28.389Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production AI sidebar and chat flows passed after helper stabilization, so the release-gate failures were test-harness regressions rather than AI product regressions.",
+      "lastRationale": "Final Vercel production Playwright run passed starter prompt and direct query parity assertions after dynamic total and label-boundary matcher hardening.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -31929,16 +32304,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 97,
-      "appropriateCount": 69,
+      "seenCount": 98,
+      "appropriateCount": 70,
       "partialCount": 28,
       "inappropriateCount": 0,
       "improvementNeededCount": 29,
-      "lastRunId": "QA-20260424-0342",
-      "lastSeenAt": "2026-04-23T17:35:02.039Z",
+      "lastRunId": "QA-20260424-0343",
+      "lastSeenAt": "2026-04-24T07:15:56.760Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Broad production rerun kept smoke/API/system-boot coverage green and the built-in console smoke check passed.",
+      "lastRationale": "Dashboard status, resource alert list, API health, AI health, monitoring report fetches, and version checks were visible and healthy on Vercel production.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -31946,16 +32321,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 46,
-      "appropriateCount": 33,
+      "seenCount": 47,
+      "appropriateCount": 34,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260419-0309",
-      "lastSeenAt": "2026-04-19T06:56:36.060Z",
+      "lastRunId": "QA-20260424-0343",
+      "lastSeenAt": "2026-04-24T07:15:56.760Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "이번 broad run 범위에서 prompt-security pack은 제외했지만, validated live surfaces에서는 console/runtime regression이 보이지 않았습니다.",
+      "lastRationale": "Guest authentication was exercised through the real UI path, mutating auth bypass was not used, and the AI request completed through the production stream endpoint without console errors.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -31963,16 +32338,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 90,
-      "appropriateCount": 79,
+      "seenCount": 91,
+      "appropriateCount": 80,
       "partialCount": 11,
       "inappropriateCount": 0,
       "improvementNeededCount": 15,
-      "lastRunId": "QA-20260423-0339",
-      "lastSeenAt": "2026-04-23T14:30:01.154Z",
+      "lastRunId": "QA-20260424-0343",
+      "lastSeenAt": "2026-04-24T07:15:56.760Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The new operator guidance prioritizes direct investigation items aligned with CPU/disk symptoms instead of premature resource-upgrade language, which fits the project's free-tier operating rules.",
+      "lastRationale": "Vercel production usage remained billed at 0.0000 USD and health endpoints returned healthy/connected state.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -31980,34 +32355,34 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 127,
-      "appropriateCount": 118,
+      "seenCount": 128,
+      "appropriateCount": 119,
       "partialCount": 9,
       "inappropriateCount": 0,
       "improvementNeededCount": 11,
-      "lastRunId": "QA-20260424-0342",
-      "lastSeenAt": "2026-04-23T17:35:02.039Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Release-gate coverage is green again, but direct Playwright MCP session start still failed earlier in the turn and required CLI fallback.",
-      "lastNextAction": "Stabilize next_devtools browser_eval start so production QA can return to full MCP-first execution without fallback notes."
+      "lastRunId": "QA-20260424-0343",
+      "lastSeenAt": "2026-04-24T07:15:56.760Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "Playwright MCP completed UI login, dashboard, AI sidebar, prompt, console, network, and screenshot capture without CLI fallback.",
+      "lastNextAction": ""
     },
     "data-metrics-quality": {
       "domainId": "data-metrics-quality",
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 30,
+      "seenCount": 33,
       "appropriateCount": 17,
-      "partialCount": 13,
+      "partialCount": 16,
       "inappropriateCount": 0,
-      "improvementNeededCount": 13,
-      "lastRunId": "QA-20260419-0309",
-      "lastSeenAt": "2026-04-19T06:56:36.060Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "Synthetic OTel snapshot label, dashboard totals, AI summary output이 같은 live data surface 기준으로 일관되게 보였습니다.",
-      "lastNextAction": ""
+      "improvementNeededCount": 16,
+      "lastRunId": "QA-20260424-0345",
+      "lastSeenAt": "2026-04-24T08:04:28.389Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "Count-level dashboard/AI parity is guarded, but response-level data-slot/source metadata is not yet captured in the AI answer contract.",
+      "lastNextAction": "If future QA requires slot provenance, add data-slot/source metadata to AI response evidence and compare it with the dashboard snapshot slot."
     },
     "infra-reliability": {
       "domainId": "infra-reliability",

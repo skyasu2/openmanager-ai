@@ -9,6 +9,12 @@
  */
 
 import { expect, test } from '@playwright/test';
+import {
+  doesAiTextMatchDashboardStatus,
+  formatDashboardStatusSnapshot,
+  getNewConversationText,
+  readDashboardStatusSnapshot,
+} from './helpers/dashboard-ai-parity';
 import { openAiSidebar, resetGuestState } from './helpers/guest';
 import { TIMEOUTS } from './helpers/timeouts';
 import {
@@ -39,7 +45,7 @@ async function submitMessage(
 async function waitForAiResponse(
   sidebar: import('@playwright/test').Locator,
   page: import('@playwright/test').Page
-) {
+): Promise<string> {
   const conversationLog = sidebar.getByRole('log', { name: 'AI 대화 메시지' });
   const previousText =
     (await conversationLog.textContent().catch(() => '')) ?? '';
@@ -53,25 +59,29 @@ async function waitForAiResponse(
       async () => {
         const text =
           (await conversationLog.textContent().catch(() => '')) ?? '';
-        const normalizedText = text.trim();
+        const newConversationText = getNewConversationText(previousText, text);
+        const normalizedText = newConversationText.trim();
         if (
           !normalizedText ||
-          normalizedText.length <= previousText.trim().length ||
           normalizedText.includes('응답을 생성하지 못했습니다')
         ) {
-          return false;
+          return '';
         }
 
-        return (
+        const hasAiResponse =
           normalizedText.includes('Streaming AI') ||
           normalizedText.includes('Job Queue AI') ||
           normalizedText.includes('서버 현황 요약') ||
-          normalizedText.includes('전체 15대')
-        );
+          /전체\s*\d+\s*대/.test(normalizedText);
+
+        return hasAiResponse ? normalizedText : '';
       },
       { timeout: TIMEOUTS.AI_RESPONSE }
     )
-    .toBe(true);
+    .not.toBe('');
+
+  const finalText = (await conversationLog.textContent().catch(() => '')) ?? '';
+  return getNewConversationText(previousText, finalText);
 }
 
 test.describe('AI 채팅 E2E 테스트', () => {
@@ -89,6 +99,7 @@ test.describe('AI 채팅 E2E 테스트', () => {
   test('스타터 프롬프트 클릭 → 메시지 전송 → AI 응답 수신', async ({
     page,
   }) => {
+    const dashboardSnapshot = await readDashboardStatusSnapshot(page);
     const sidebar = await openAiSidebar(page, {
       waitTimeout: TIMEOUTS.COMPLEX_INTERACTION,
     });
@@ -113,10 +124,17 @@ test.describe('AI 채팅 E2E 테스트', () => {
     await submitMessage(page, input);
 
     // AI 응답 대기
-    await waitForAiResponse(sidebar, page);
+    const aiResponseText = await waitForAiResponse(sidebar, page);
+    expect(
+      doesAiTextMatchDashboardStatus(aiResponseText, dashboardSnapshot),
+      `Starter AI response must match dashboard status counts (${formatDashboardStatusSnapshot(
+        dashboardSnapshot
+      )}). response=${aiResponseText.slice(0, 500)}`
+    ).toBe(true);
   });
 
   test('직접 메시지 입력 → 전송 → AI 응답 수신', async ({ page }) => {
+    const dashboardSnapshot = await readDashboardStatusSnapshot(page);
     const sidebar = await openAiSidebar(page, {
       waitTimeout: TIMEOUTS.COMPLEX_INTERACTION,
     });
@@ -132,6 +150,12 @@ test.describe('AI 채팅 E2E 테스트', () => {
     await submitMessage(page, input);
 
     // AI 응답 대기
-    await waitForAiResponse(sidebar, page);
+    const aiResponseText = await waitForAiResponse(sidebar, page);
+    expect(
+      doesAiTextMatchDashboardStatus(aiResponseText, dashboardSnapshot),
+      `AI response must match dashboard status counts (${formatDashboardStatusSnapshot(
+        dashboardSnapshot
+      )}). response=${aiResponseText.slice(0, 500)}`
+    ).toBe(true);
   });
 });

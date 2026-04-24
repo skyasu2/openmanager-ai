@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-23 KST (`dashboard-worker-console-fallback` validated locally, `QA-20260422-0331`)
+**Last Updated**: 2026-04-24 KST (`AI starter summary parity guard` completed)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -30,6 +30,23 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-24 #172)
+- [x] AI starter summary parity guard 완료
+  - Vercel MCP QA `QA-20260424-0343`에서 관찰된 starter/복원 메시지와 현재 dashboard count 불일치 가능성을 E2E guard로 보강
+  - `dashboard-ai-chat.spec.ts` starter prompt 및 직접 질의 플로우가 AI 응답 수신만 확인하지 않고, 방금 생성된 응답의 `전체/정상(온라인)/경고/위험/오프라인` count가 dashboard snapshot과 일치하는지 검증하도록 개선
+  - 상세 계획/계약: [archive/ai-starter-summary-parity-guard-plan.md](archive/ai-starter-summary-parity-guard-plan.md)
+  - 검증:
+    - `npx vitest run tests/unit/playwright/dashboard-ai-parity.test.ts`
+    - `npm run type-check`
+    - `npm run lint`
+    - `npm run docs:lint:changed`
+    - `npm run docs:budget`
+    - `npm run docs:ai-consistency`
+    - `PLAYWRIGHT_SKIP_SERVER=1 PLAYWRIGHT_BASE_URL=https://openmanager-ai.vercel.app PLAYWRIGHT_GUEST_PIN=4231 PLAYWRIGHT_HEADLESS=true PLAYWRIGHT_HTML_REPORT=0 PLAYWRIGHT_WORKERS=1 npx playwright test tests/e2e/dashboard-ai-chat.spec.ts --config playwright.config.ts`
+    - `npm run qa:record -- --input /tmp/qa-run-input-20260424-ai-parity-guard.json` → `QA-20260424-0344`
+    - `npm run qa:record -- --input /tmp/qa-run-input-20260424-ai-parity-guard-final.json` → `QA-20260424-0345`
+    - `npm run qa:evidence:audit`
 
 ### Completed (2026-04-23 #171)
 - [x] dashboard-worker-console-fallback 로컬 회귀 검증

@@ -1,0 +1,86 @@
+{
+  "runId": "QA-20260424-0344",
+  "recordedAt": "2026-04-24T07:55:51.473Z",
+  "recordedAtKst": "2026-04-24 16:55:51 KST",
+  "runTitle": "Production Playwright E2E - AI starter/direct dashboard parity guard",
+  "owner": "codex",
+  "source": "playwright-cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_Ab1ZA6FUYvA4LE67mWidSFvPvYP2",
+    "deploymentUrl": "https://openmanager-q87lt2d2i-skyasus-projects.vercel.app",
+    "commitSha": "41ae15999d7ae943a2e154bb67612a10e3fdf266"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/dashboard guest-authenticated dashboard status snapshot parsing",
+    "AI sidebar starter prompt current dashboard count parity assertion",
+    "AI sidebar direct current-state query dashboard count parity assertion",
+    "New conversation text isolation from restored AI chat history"
+  ],
+  "skippedSurfaces": [
+    "Reporter Agent and Analyst Agent advanced generation flows",
+    "Mobile viewport QA",
+    "Cloud Run admin /monitoring direct run.app endpoints",
+    "OAuth provider completion beyond guest test path"
+  ],
+  "checks": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel production Playwright run passed starter prompt and direct query parity assertions against the current dashboard status snapshot.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Count-level dashboard/AI parity is now guarded, but response-level data-slot/source metadata is not yet captured in the AI answer contract.",
+      "nextAction": "If future QA requires slot provenance, add data-slot/source metadata to AI response evidence and compare it with the dashboard snapshot slot."
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "Production AI parity guard CLI summary",
+      "path": "reports/qa/evidence/qa-20260424-ai-parity-guard-cli.md"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-starter-summary-parity-guard",
+      "title": "AI starter/direct dashboard count parity E2E guard",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "PLAYWRIGHT_SKIP_SERVER=1 PLAYWRIGHT_BASE_URL=https://openmanager-ai.vercel.app PLAYWRIGHT_GUEST_PIN=4231 PLAYWRIGHT_HEADLESS=true PLAYWRIGHT_HTML_REPORT=0 PLAYWRIGHT_WORKERS=1 npx playwright test tests/e2e/dashboard-ai-chat.spec.ts --config playwright.config.ts -> 2 passed",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}

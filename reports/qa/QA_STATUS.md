@@ -1,87 +1,80 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-24 02:35:13 KST
+> Generated at: 2026-04-24 17:04:28 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 340 |
-| Total Runs (Counted) | 276 |
+| Total Recorded Runs | 343 |
+| Total Runs (Counted) | 279 |
 | Non-counted Runs | 64 |
-| Total Checks | 2284 |
-| Passed | 2198 |
+| Total Checks | 2302 |
+| Passed | 2216 |
 | Failed | 79 |
-| Completed Items | 335 |
+| Completed Items | 337 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 17 |
 | Expert Domains Tracked | 9 |
 | Expert Open Gaps | 1 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260424-0342 (2026-04-23T17:35:02.039Z) |
-| Latest Recorded Run | QA-20260424-0342 (2026-04-23T17:35:02.039Z) |
+| Last Counted Run | QA-20260424-0345 (2026-04-24T08:04:28.389Z) |
+| Latest Recorded Run | QA-20260424-0345 (2026-04-24T08:04:28.389Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260424-0342 (2026-04-23T17:35:02.039Z)
+Latest run: QA-20260424-0345 (2026-04-24T08:04:28.389Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
-| Test Automation Architect | partially-appropriate | yes | Stabilize next_devtools browser_eval start so production QA can return to full MCP-first execution without fallback notes. |
+| Data Quality & Metrics Analyst | partially-appropriate | yes | If future QA requires slot provenance, add data-slot/source metadata to AI response evidence and compare it with the dashboard snapshot slot. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | vercel usage --format json --non-interactive reviewed after the broad rerun; effective usage remained 15.0518 USD while billed amount remained 0.0000 USD. |
+| - | - | - | - | - |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-22T17:35:02.039Z -> 2026-04-23T17:35:02.039Z (24h)
-- Runs with observations: 3 recorded / 3 counted
-- Samples: 5
+- Window: 2026-04-23T08:04:28.389Z -> 2026-04-24T08:04:28.389Z (24h)
+- Runs with observations: 4 recorded / 4 counted
+- Samples: 6
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| AI Chat | cloud-run | 5 | 2293ms | 9495ms | 471ms | 675ms | 8370ms | 19421ms | QA-20260423-0339 |
+| AI Chat | cloud-run | 6 | 2254ms | 9495ms | 471ms | 675ms | 7108ms | 19421ms | QA-20260424-0343 |
 
 ## Coverage (Latest Run)
 
-- Scope: broad
-- Release-Facing: yes
+- Scope: targeted
+- Release-Facing: no
 - Counts Toward Summary: yes
 - Deployment: dpl_Ab1ZA6FUYvA4LE67mWidSFvPvYP2 / SHA 41ae1599
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, modal-detail-pack, observability-pack
-- Covered Surfaces: / landing render and keyboard/axe accessibility pack, /login entry paths and guest/OAuth affordances, /dashboard guest access, profile menu, AI sidebar/chat, alerts/logs modals, server cards, and system resources, /system-boot routes and core system APIs, Dashboard AI chat starter-prompt and direct-input flows on production, Production guest flow recheck with direct dashboard fallback, Fatal browser console smoke check included in smoke.spec.ts, System start KPI probe: 3/3 success with avg 665ms
-- Skipped Surfaces: next_devtools browser_eval direct MCP automation start path (returned Connection closed earlier in this turn), Chrome DevTools Lighthouse/console/network re-audit was not repeated in this broad rerun, Fullscreen AI workspace, Reporter Agent, Analyst Agent advanced production flows
+- Coverage Packs: dashboard-core, ai-core
+- Covered Surfaces: /dashboard guest-authenticated dashboard status snapshot parsing, AI sidebar starter prompt current dashboard count parity assertion, AI sidebar direct current-state query dashboard count parity assertion, Dynamic total response detection and exact-count label-boundary matcher behavior
+- Skipped Surfaces: Reporter Agent and Analyst Agent advanced generation flows, Mobile viewport QA, Cloud Run admin /monitoring direct run.app endpoints, OAuth provider completion beyond guest test path
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Production AI assistant | [Production AI assistant](https://openmanager-ai.vercel.app/dashboard/ai-assistant) | - |
-| general | Production root | [Production root](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://vercel.com/skyasus-projects/openmanager-ai/Ab1ZA6FUYvA4LE67mWidSFvPvYP2) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | v8.11.32 broad Playwright rerun summary | `reports/qa/evidence/qa-20260424-v81132-broad-playwright-summary.txt` | - |
-| playwright-console | v8.11.32 broad Playwright rerun log | `reports/qa/evidence/qa-20260424-v81132-broad-playwright-rerun-2.txt` | - |
-| playwright-console | v8.11.32 AI sidebar targeted rerun log | `reports/qa/evidence/qa-20260424-v81132-ai-sidebar-rerun.txt` | - |
-| playwright-console | v8.11.32 alerts and logs targeted rerun log | `reports/qa/evidence/qa-20260424-v81132-alerts-logs-rerun.txt` | - |
-| playwright-console | v8.11.32 guest flow targeted rerun log | `reports/qa/evidence/qa-20260424-v81132-guest-rerun.txt` | - |
+| playwright-report | Production AI parity guard final CLI summary | `reports/qa/evidence/qa-20260424-ai-parity-guard-final-cli.md` | - |
 
 ## Expert Domain Open Gaps
 
-- test-automation: Test Automation Architect (last QA-20260424-0342)
-  next: Stabilize next_devtools browser_eval start so production QA can return to full MCP-first execution without fallback notes.
+- data-metrics-quality: Data Quality & Metrics Analyst (last QA-20260424-0345)
+  next: If future QA requires slot provenance, add data-slot/source metadata to AI response evidence and compare it with the dashboard snapshot slot.
 
 ## Pending Improvements
 
@@ -171,6 +164,8 @@ Latest run: QA-20260424-0342 (2026-04-23T17:35:02.039Z)
 - ai-sidebar-starters: AI 스타터 프롬프트 5개 (completed 1회, last QA-20260317-0114)
 - ai-sidebar-toggle: AI 사이드바 AI Engine Ready (completed 2회, last QA-20260419-0306)
 - ai-sidebar-tools-menu: AI 도구 메뉴 (completed 1회, last QA-20260317-0114)
+- ai-starter-summary-parity-guard: AI starter/direct dashboard count parity E2E guard (completed 1회, last QA-20260424-0344)
+- ai-starter-summary-parity-guard-final-hardening: AI parity guard dynamic total and label-boundary hardening (completed 1회, last QA-20260424-0345)
 - ai-stream-timing-x-headers-production: AI Chat streaming route exposes X-AI timing headers on production (completed 1회, last QA-20260310-0080)
 - ai-summary-chat-streaming-path: AI summary chat query uses streaming path on production (completed 2회, last QA-20260310-0080)
 - ai-summary-dashboard-parity-regression: AI assistant summary must match dashboard and OTel-derived system counts (completed 1회, last QA-20260404-0224)
@@ -469,6 +464,9 @@ Latest run: QA-20260424-0342 (2026-04-23T17:35:02.039Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260424-0345 | 2026-04-24T08:04:28.389Z | targeted | no | yes | Production Playwright E2E - AI parity guard final review validation | 2 | 1 | 0 | 0 | 0 | 1 |
+| QA-20260424-0344 | 2026-04-24T07:55:51.473Z | targeted | no | yes | Production Playwright E2E - AI starter/direct dashboard parity guard | 2 | 1 | 0 | 0 | 0 | 1 |
+| QA-20260424-0343 | 2026-04-24T07:15:56.760Z | targeted | yes | yes | Vercel MCP QA - Frontend, AI Assistant, and Performance targeted validation | 14 | 0 | 0 | 0 | 0 | 2 |
 | QA-20260424-0342 | 2026-04-23T17:35:02.039Z | broad | yes | yes | Vercel broad production Playwright rerun on v8.11.32 after release-gate test harness fixes | 53 | 3 | 0 | 0 | 0 | 1 |
 | QA-20260424-0341 | 2026-04-23T16:21:52.417Z | targeted | yes | yes | Production landing accessibility recheck on v8.11.32 after decorative profile affordance fix | 5 | 1 | 0 | 0 | 0 | 1 |
 | QA-20260424-0340 | 2026-04-23T15:15:14.762Z | broad | yes | yes | Vercel broad production QA on v8.11.28 before landing profile label-in-name patch | 24 | 0 | 1 | 0 | 0 | 1 |
@@ -486,6 +484,3 @@ Latest run: QA-20260424-0342 (2026-04-23T17:35:02.039Z)
 | QA-20260422-0328 | 2026-04-22T08:08:13.838Z | targeted | no | no | Local dev turbopack trace - auth/session lazy import follow-up | 4 | 1 | 1 | 0 | 0 | 0 |
 | QA-20260422-0327 | 2026-04-22T07:28:23.686Z | targeted | no | no | Local dev turbopack trace - root CSS trim follow-up | 6 | 1 | 1 | 0 | 0 | 0 |
 | QA-20260422-0326 | 2026-04-22T05:58:01.586Z | targeted | no | no | Local dev turbopack trace - root provider and instrumentation follow-up | 4 | 2 | 1 | 0 | 0 | 0 |
-| QA-20260421-0325 | 2026-04-21T11:33:29.560Z | targeted | no | yes | Vercel Playwright targeted browser QA - landing/dashboard modal coverage | 15 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260421-0324 | 2026-04-21T01:36:15.864Z | broad | no | yes | Production broad QA - AI domain boundary Phase 3 reference refreshed on v8.11.25 | 10 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260421-0323 | 2026-04-21T00:49:41.064Z | broad | no | yes | Production broad QA - AI domain boundary Phase 3 reference refresh blocked by console/date regressions | 15 | 0 | 2 | 0 | 0 | 2 |

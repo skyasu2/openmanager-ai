@@ -1,0 +1,177 @@
+{
+  "runId": "QA-20260424-0343",
+  "recordedAt": "2026-04-24T07:15:56.760Z",
+  "recordedAtKst": "2026-04-24 16:15:56 KST",
+  "runTitle": "Vercel MCP QA - Frontend, AI Assistant, and Performance targeted validation",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_Ab1ZA6FUYvA4LE67mWidSFvPvYP2",
+    "deploymentUrl": "https://openmanager-q87lt2d2i-skyasus-projects.vercel.app",
+    "commitSha": "41ae15999d7ae943a2e154bb67612a10e3fdf266"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "/ landing render with Chrome DevTools console/network/performance trace",
+    "/login OAuth/email/guest affordances and guest PIN modal via Playwright MCP",
+    "/privacy policy route render",
+    "/dashboard guest-authenticated dashboard render with server status/resource cards",
+    "Dashboard AI sidebar open, AI engine Ready indicator, clarification flow, and explicit current-state response",
+    "Browser-side API checks: /api/health, /api/health?service=ai, /api/version",
+    "Chrome DevTools Lighthouse desktop navigation: accessibility, best practices, SEO",
+    "Vercel usage check after production QA"
+  ],
+  "skippedSurfaces": [
+    "Reporter Agent and Analyst Agent advanced generation flows",
+    "Mobile viewport QA",
+    "Cloud Run admin /monitoring direct run.app endpoints",
+    "Authenticated OAuth provider completion beyond provider entry button visibility"
+  ],
+  "checks": {
+    "total": 14,
+    "passed": 14,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI Assistant explicit dashboard-state summary",
+      "agent": "AI Chat",
+      "provider": "cloud-run",
+      "model": "production streaming route",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "AI assistant UI latency badge + resource timing",
+      "latencyMs": 2058,
+      "processingTimeMs": 2058
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Explicit current-state AI query matched dashboard counts and critical server, but the sidebar starter summary initially displayed an older/alternate warning-vs-critical summary before the explicit query corrected it.",
+      "nextAction": "Add a targeted parity assertion for the AI sidebar starter summary against the current dashboard slot before treating starter summaries as release-gate evidence."
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Dashboard status, resource alert list, API health, AI health, monitoring report fetches, and version checks were visible and healthy on Vercel production.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Guest authentication was exercised through the real UI path, mutating auth bypass was not used, and the AI request completed through the production stream endpoint without console errors.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel production usage remained billed at 0.0000 USD and health endpoints returned healthy/connected state.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP completed UI login, dashboard, AI sidebar, prompt, console, network, and screenshot capture without CLI fallback.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Dashboard and explicit AI answer aligned for the current query, but the starter summary mismatch indicates starter-response data-slot parity needs a deterministic regression check.",
+      "nextAction": "Track starter summary data-slot/source metadata and compare it with dashboard slot 96/143 in future QA."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-24T16:12:36+09:00",
+      "summary": "npm run check:usage:vercel passed after production MCP QA; effective usage 15.7310 USD, billed amount 0.0000 USD, chargeCount 14007.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "Vercel MCP QA summary",
+      "path": "reports/qa/evidence/qa-20260424-vercel-mcp-summary.md"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Dashboard AI assistant explicit response",
+      "path": "reports/qa/evidence/qa-20260424-vercel-mcp-ai-assistant.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Playwright dashboard console after AI flow",
+      "path": "reports/qa/evidence/qa-20260424-vercel-mcp-console.txt"
+    },
+    {
+      "type": "playwright-network",
+      "label": "Playwright dashboard network after AI flow",
+      "path": "reports/qa/evidence/qa-20260424-vercel-mcp-network.txt"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Chrome DevTools Lighthouse desktop navigation on /: accessibility 100, best-practices 96, SEO 100; only failed audit was console error from known unauthenticated landing /api/system 401.",
+    "Chrome DevTools performance trace on /: LCP 995ms, TTFB 9ms, CLS 0.05, landing DOM 169 elements.",
+    "Playwright dashboard route after guest UI auth: DOMContentLoaded 549ms, load 606ms, FCP 448ms; dashboard + AI sidebar DOM 2289 elements.",
+    "Known nonblocking landing HEAD /api/system 401 remains visible in Chrome DevTools and is not treated as a new release blocker.",
+    "Playwright dashboard console after AI flow reported 0 errors and 0 warnings."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production AI assistant",
+      "url": "https://openmanager-ai.vercel.app/dashboard/ai-assistant"
+    },
+    {
+      "type": "general",
+      "label": "Production dashboard",
+      "url": "https://openmanager-ai.vercel.app/dashboard"
+    },
+    {
+      "type": "general",
+      "label": "Production root",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/Ab1ZA6FUYvA4LE67mWidSFvPvYP2"
+    }
+  ]
+}
