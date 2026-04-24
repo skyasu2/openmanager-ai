@@ -15,6 +15,8 @@ const STORAGE_DEFAULTS = {
   runsWarnBytes: toBytesFromEnv('QA_AUDIT_RUNS_WARN_MB', 70),
   evidenceWarnBytes: toBytesFromEnv('QA_AUDIT_EVIDENCE_WARN_MB', 40),
   largeFileWarnBytes: toBytesFromEnv('QA_AUDIT_LARGE_FILE_MB', 8),
+  runArtifactWarnBytes: toBytesFromEnv('QA_AUDIT_RUN_ARTIFACT_WARN_MB', 4),
+  artifactFileWarnBytes: toBytesFromEnv('QA_AUDIT_ARTIFACT_FILE_WARN_MB', 1.5),
   archiveAgeDays: toPositiveNumberFromEnv('QA_AUDIT_ARCHIVE_AGE_DAYS', 21),
   topFiles: toPositiveNumberFromEnv('QA_AUDIT_TOP_FILES', 10),
   maxArchiveCandidates: toPositiveNumberFromEnv('QA_AUDIT_MAX_ARCHIVE_CANDIDATES', 20),
@@ -258,6 +260,58 @@ function summarizeUniqueReferencedRuns(fileInfos, artifactRefs, runTitleById, pr
   });
 }
 
+function summarizeRunArtifactSizes(
+  fileInfos,
+  artifactRefs,
+  runTitleById,
+  {
+    runWarnBytes = STORAGE_DEFAULTS.runArtifactWarnBytes,
+    fileWarnBytes = STORAGE_DEFAULTS.artifactFileWarnBytes,
+  } = {}
+) {
+  const sizeByPath = new Map(fileInfos.map((info) => [info.relativePath, info.size]));
+  const seenRunPathPairs = new Set();
+  const runSummaries = new Map();
+
+  for (const entry of artifactRefs) {
+    if (!sizeByPath.has(entry.path)) continue;
+
+    const dedupeKey = `${entry.runId}::${entry.path}`;
+    if (seenRunPathPairs.has(dedupeKey)) continue;
+    seenRunPathPairs.add(dedupeKey);
+
+    const size = sizeByPath.get(entry.path) || 0;
+    const current =
+      runSummaries.get(entry.runId) || {
+        runId: entry.runId,
+        title: runTitleById.get(entry.runId) || '',
+        count: 0,
+        bytes: 0,
+        largestFileBytes: 0,
+        oversizedFileCount: 0,
+      };
+
+    current.count += 1;
+    current.bytes += size;
+    current.largestFileBytes = Math.max(current.largestFileBytes, size);
+    if (size > fileWarnBytes) {
+      current.oversizedFileCount += 1;
+    }
+    runSummaries.set(entry.runId, current);
+  }
+
+  return [...runSummaries.values()]
+    .map((entry) => ({
+      ...entry,
+      exceedsRunBudget: entry.bytes > runWarnBytes,
+    }))
+    .sort((left, right) => {
+      if (right.bytes !== left.bytes) return right.bytes - left.bytes;
+      if (right.count !== left.count) return right.count - left.count;
+      return left.runId.localeCompare(right.runId);
+    });
+}
+
 function collectRunRecords() {
   return walkFiles(RUNS_ROOT)
     .filter((filePath) => /^qa-run-QA-.*\.json$/i.test(path.basename(filePath)))
@@ -406,6 +460,40 @@ function main() {
     runTitleById,
     'reports/qa/evidence/legacy/'
   );
+  const runArtifactSizes = summarizeRunArtifactSizes(
+    evidenceFileInfos,
+    artifactRefs,
+    runTitleById
+  );
+  const runArtifactSizesLimited = runArtifactSizes
+    .slice(0, STORAGE_DEFAULTS.topFiles)
+    .map((entry) => {
+      const titleSuffix = entry.title ? ` | ${entry.title}` : '';
+      const flags = [];
+      if (entry.exceedsRunBudget) flags.push('run-budget');
+      if (entry.oversizedFileCount > 0) {
+        flags.push(`${entry.oversizedFileCount} oversized file(s)`);
+      }
+      const flagSuffix = flags.length > 0 ? ` | WARN ${flags.join(', ')}` : '';
+      return `${entry.runId} | ${entry.count} files | ${formatBytes(entry.bytes)} | largest=${formatBytes(entry.largestFileBytes)}${flagSuffix}${titleSuffix}`;
+    });
+  const runArtifactBudgetWarnings = runArtifactSizes
+    .filter((entry) => entry.exceedsRunBudget || entry.oversizedFileCount > 0)
+    .map((entry) => {
+      const warnings = [];
+      if (entry.exceedsRunBudget) {
+        warnings.push(
+          `run ${formatBytes(entry.bytes)} > ${formatBytes(STORAGE_DEFAULTS.runArtifactWarnBytes)}`
+        );
+      }
+      if (entry.oversizedFileCount > 0) {
+        warnings.push(
+          `${entry.oversizedFileCount} file(s) > ${formatBytes(STORAGE_DEFAULTS.artifactFileWarnBytes)}`
+        );
+      }
+      const titleSuffix = entry.title ? ` | ${entry.title}` : '';
+      return `${entry.runId} | ${warnings.join(', ')}${titleSuffix}`;
+    });
   const referencedLegacyRunsLimited = referencedLegacyRuns
     .slice(0, STORAGE_DEFAULTS.topFiles)
     .map((entry) => {
@@ -535,6 +623,20 @@ function main() {
   console.log('');
   console.log(
     formatList(
+      'Run artifact soft budget warnings',
+      runArtifactBudgetWarnings.length > 0 ? runArtifactBudgetWarnings : []
+    )
+  );
+  console.log('');
+  console.log(
+    formatList(
+      `Top ${STORAGE_DEFAULTS.topFiles} run artifact footprints`,
+      runArtifactSizesLimited
+    )
+  );
+  console.log('');
+  console.log(
+    formatList(
       `Top ${STORAGE_DEFAULTS.topFiles} largest QA files`,
       topLargeFiles.map(formatSizePathEntry)
     )
@@ -601,5 +703,6 @@ module.exports = {
   summarizeReferencedRuns,
   summarizeSharedReferencedRuns,
   summarizeUniqueReferencedRuns,
+  summarizeRunArtifactSizes,
   formatBytes,
 };

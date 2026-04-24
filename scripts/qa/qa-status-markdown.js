@@ -5,6 +5,21 @@ function formatLatencyValue(value) {
   return value != null ? `${value}ms` : '-';
 }
 
+function pushWarningSection(lines, title, warnings) {
+  lines.push(`## ${title}`);
+  lines.push('');
+  if (!Array.isArray(warnings) || warnings.length === 0) {
+    lines.push('- None');
+  } else {
+    for (const warning of warnings) {
+      lines.push(
+        `- [${warning.severity}] ${warning.code}: ${warning.headline}. ${warning.detail} Next: ${warning.recommendedAction}`
+      );
+    }
+  }
+  lines.push('');
+}
+
 function statusMarkdown(tracker) {
   const lines = [];
   const generatedAt = nowInSeoulText(new Date());
@@ -90,6 +105,16 @@ function statusMarkdown(tracker) {
   );
   lines.push('| Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |');
   lines.push('');
+  pushWarningSection(
+    lines,
+    'Active Gate Warnings',
+    trendSnapshot.activeGateWarnings || []
+  );
+  pushWarningSection(
+    lines,
+    'Historical Trend Warnings',
+    trendSnapshot.historicalTrendWarnings || []
+  );
   lines.push('## Expert Domain Assessment (Latest Run)');
   lines.push('');
   lines.push(

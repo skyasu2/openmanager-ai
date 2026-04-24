@@ -175,9 +175,24 @@ function run() {
     }
   }
 
-  if (Array.isArray(trendSnapshot.warnings) && trendSnapshot.warnings.length > 0) {
+  const warningSections = [
+    ['Active Gate Warnings', trendSnapshot.activeGateWarnings || []],
+    ['Historical Trend Warnings', trendSnapshot.historicalTrendWarnings || []],
+  ];
+  const hasTrendWarnings = warningSections.some(
+    ([, warnings]) => Array.isArray(warnings) && warnings.length > 0
+  );
+  if (hasTrendWarnings) {
     console.log('\nTrend Warnings');
-    for (const warning of trendSnapshot.warnings) {
+  }
+  for (const [sectionTitle, warnings] of warningSections) {
+    if (!hasTrendWarnings) continue;
+    console.log(`\n${sectionTitle}`);
+    if (!Array.isArray(warnings) || warnings.length === 0) {
+      console.log('- None');
+      continue;
+    }
+    for (const warning of warnings) {
       console.log(
         `- [${warning.severity}] ${warning.code}: ${warning.headline}`
       );

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   doesAiTextMatchDashboardStatus,
+  formatDashboardStatusSnapshot,
   getNewConversationText,
   parseDashboardStatusSnapshot,
 } from '../../e2e/helpers/dashboard-ai-parity';
@@ -11,7 +12,7 @@ describe('dashboard AI parity helpers', () => {
       '전체 18 Synthetic OTel snapshot · 16:00 KST 온라인 17 경고 0 위험 1 오프라인 0 상태 문제 발생'
     );
 
-    expect(snapshot).toEqual({
+    expect(snapshot).toMatchObject({
       total: 18,
       online: 17,
       warning: 0,
@@ -29,6 +30,36 @@ describe('dashboard AI parity helpers', () => {
       dataSource: 'Synthetic OTel snapshot',
       dataSlot: '16:00 KST',
     });
+  });
+
+  it('keeps snapshot metadata empty when source and slot text are absent', () => {
+    const snapshot = parseDashboardStatusSnapshot(
+      '전체 18 온라인 17 경고 0 위험 1 오프라인 0 상태 문제 발생'
+    );
+
+    expect(snapshot).toEqual({
+      total: 18,
+      online: 17,
+      warning: 0,
+      critical: 1,
+      offline: 0,
+    });
+  });
+
+  it('formats source and slot metadata for parity assertion evidence', () => {
+    expect(
+      formatDashboardStatusSnapshot({
+        total: 18,
+        online: 17,
+        warning: 0,
+        critical: 1,
+        offline: 0,
+        dataSource: 'Synthetic OTel snapshot',
+        dataSlot: '16:00 KST',
+      })
+    ).toBe(
+      'total=18, online=17, warning=0, critical=1, offline=0, source=Synthetic OTel snapshot, slot=16:00 KST'
+    );
   });
 
   it('matches AI text that uses 정상 for dashboard online count', () => {

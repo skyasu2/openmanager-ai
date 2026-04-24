@@ -6,6 +6,8 @@ export interface DashboardStatusSnapshot {
   warning: number;
   critical: number;
   offline: number;
+  dataSource?: string;
+  dataSlot?: string;
 }
 
 function compactWhitespace(value: string): string {
@@ -44,6 +46,24 @@ export function parseDashboardStatusSnapshot(
     warning: warning as number,
     critical: critical as number,
     offline: offline as number,
+    ...parseDashboardSnapshotMetadata(normalized),
+  };
+}
+
+function parseDashboardSnapshotMetadata(
+  normalizedText: string
+): Pick<DashboardStatusSnapshot, 'dataSource' | 'dataSlot'> {
+  const metadataMatch =
+    /(?:전체\s*\d+|[0-9]+\s*개\s*서버)\s+(.+?)\s+온라인\s*\d+/.exec(
+      normalizedText
+    );
+  const rawMetadata = metadataMatch?.[1]?.trim();
+  if (!rawMetadata) return {};
+
+  const [source, slot] = rawMetadata.split('·').map((part) => part.trim());
+  return {
+    ...(source ? { dataSource: source } : {}),
+    ...(slot ? { dataSlot: slot } : {}),
   };
 }
 
@@ -74,13 +94,20 @@ export function doesAiTextMatchDashboardStatus(
 export function formatDashboardStatusSnapshot(
   snapshot: DashboardStatusSnapshot
 ): string {
-  return [
+  const parts = [
     `total=${snapshot.total}`,
     `online=${snapshot.online}`,
     `warning=${snapshot.warning}`,
     `critical=${snapshot.critical}`,
     `offline=${snapshot.offline}`,
-  ].join(', ');
+  ];
+  if (snapshot.dataSource) {
+    parts.push(`source=${snapshot.dataSource}`);
+  }
+  if (snapshot.dataSlot) {
+    parts.push(`slot=${snapshot.dataSlot}`);
+  }
+  return parts.join(', ');
 }
 
 export function getNewConversationText(

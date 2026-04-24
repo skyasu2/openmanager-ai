@@ -200,8 +200,13 @@ reports/qa/
   - run JSON이 참조하지만 실제 파일이 없는 artifact path
   - counted run인데 artifacts가 비어 있는 historical debt warning
   - QA 저장소 용량 예산(`reports/qa`, `reports/qa/runs`, `reports/qa/evidence`)
+  - run별 durable artifact footprint와 soft budget 초과 여부
   - 대용량 파일(top N) 및 오래된 unreferenced run asset 아카이브 후보
   - 단, `artifactDebt.status="acknowledged"`가 붙은 run은 별도 acknowledged debt로 분리 집계합니다.
+- 신규 evidence capture budget:
+  - 기본 후보는 run당 durable artifact `4MiB`, 단일 artifact `1.5MiB`입니다.
+  - broad QA는 full-page screenshot을 기본값으로 사용하지 않고, landing/dashboard/modal 대표 컷과 text log를 우선합니다.
+  - run-level budget 초과는 즉시 실패가 아니라 soft warning입니다. release/counting 증거 보존 가치를 먼저 판단하고, 반복 초과 시 capture 범위를 줄입니다.
 - storage cleanup 보관 정책:
   - `countsTowardSummary=true` 또는 `releaseFacing=true` run이라도, 7일 이상 지난 뒤 같은 run 안에 `dashboard`, `AI`, `login`, `404`, `validation`, `console/network` 같은 차별화 증거가 이미 남아 있으면 중복 `landing` screenshot은 정리할 수 있습니다.
   - non-release targeted run에서도 같은 run 또는 같은 개선 묶음의 후속 run에 대표 `landing` screenshot이 이미 남아 있고, modal/UX 분석/console 같은 차별화 증거가 유지된다면 2장째 이후의 `landing` screenshot은 정리할 수 있습니다.

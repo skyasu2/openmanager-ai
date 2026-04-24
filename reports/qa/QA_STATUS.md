@@ -1,46 +1,55 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-24 18:40:48 KST
+> Generated at: 2026-04-24 19:55:21 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 345 |
-| Total Runs (Counted) | 280 |
+| Total Recorded Runs | 346 |
+| Total Runs (Counted) | 281 |
 | Non-counted Runs | 65 |
-| Total Checks | 2333 |
-| Passed | 2247 |
+| Total Checks | 2335 |
+| Passed | 2249 |
 | Failed | 79 |
-| Completed Items | 338 |
+| Completed Items | 339 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 17 |
 | Expert Domains Tracked | 10 |
-| Expert Open Gaps | 1 |
+| Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260424-0346 (2026-04-24T09:25:23.818Z) |
-| Latest Recorded Run | QA-20260424-0347 (2026-04-24T09:40:49.104Z) |
+| Last Counted Run | QA-20260424-0348 (2026-04-24T10:55:21.196Z) |
+| Latest Recorded Run | QA-20260424-0348 (2026-04-24T10:55:21.196Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
+
+## Active Gate Warnings
+
+- None
+
+## Historical Trend Warnings
+
+- [warning] gate-window-regression-open: Recent gate runs still show regressions. The last 5 gate runs include 1 regression run(s), but the current release-gate-only window is clean. This warning is currently driven by QA-20260424-0340 (broad) lingering in the rolling gate window. Next: Treat this as historical gate context, not an active release-gate failure. Keep broad/release-gate QA green; the warning will clear once enough clean gate runs replace the older regression in the rolling window.
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260424-0347 (2026-04-24T09:40:49.104Z)
+Latest run: QA-20260424-0348 (2026-04-24T10:55:21.196Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| Data Quality & Metrics Analyst | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | npm run check:usage:vercel passed before targeted AI slot provenance QA; current billing period effective=15.7313 USD, billed=0.0000 USD, chargeCount=14007. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-23T09:40:49.104Z -> 2026-04-24T09:40:49.104Z (24h)
+- Window: 2026-04-23T10:55:21.196Z -> 2026-04-24T10:55:21.196Z (24h)
 - Runs with observations: 3 recorded / 3 counted
 - Samples: 5
 
@@ -52,29 +61,28 @@ Latest run: QA-20260424-0347 (2026-04-24T09:40:49.104Z)
 
 - Scope: targeted
 - Release-Facing: no
-- Counts Toward Summary: no
+- Counts Toward Summary: yes
 - Deployment: dpl_Ab1ZA6FUYvA4LE67mWidSFvPvYP2 / SHA 31431ace
-- Coverage Packs: core-routes-smoke
-- Covered Surfaces: /, /login, 404, /api/health, /api/version, production console actionable error/warning review
-- Skipped Surfaces: dashboard modal pack already covered by QA-20260424-0346, AI sidebar already covered by QA-20260424-0346, known accepted unauthenticated /api/system 401 console item
+- Coverage Packs: dashboard-core, ai-core
+- Covered Surfaces: /dashboard guest-authenticated dashboard status snapshot parsing, AI sidebar starter prompt dashboard count parity assertion, AI sidebar direct current-state query dashboard count parity assertion, Dashboard snapshot dataSource/dataSlot QA evidence path
+- Skipped Surfaces: Broad frontend UI/UX modal sweep already covered by QA-20260424-0346, Core route console follow-up already covered by QA-20260424-0347, Reporter Agent and Analyst Agent advanced generation flows, OAuth provider end-to-end login
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | Vercel production URL | [Vercel production URL](https://openmanager-ai.vercel.app/) | - |
+| vercel-deployment | Vercel deployment URL | [Vercel deployment URL](https://openmanager-q87lt2d2i-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-console | Core routes follow-up route and console log | `reports/qa/evidence/qa-20260424-vercel-core-routes-followup.log` | - |
-| playwright-report | Frontend UIUX QA summary with follow-up note | `reports/qa/evidence/qa-20260424-vercel-frontend-uiux-summary.md` | - |
+| playwright-report | Production AI slot provenance CLI summary | `reports/qa/evidence/qa-20260424-ai-slot-provenance-cli.md` | - |
 
 ## Expert Domain Open Gaps
 
-- data-metrics-quality: Data Quality & Metrics Analyst (last QA-20260424-0346)
-  next: If future QA requires slot provenance, add data-slot/source metadata to AI response evidence and compare with dashboard snapshot slot.
+- None
 
 ## Pending Improvements
 
@@ -236,6 +244,7 @@ Latest run: QA-20260424-0347 (2026-04-24T09:40:49.104Z)
 - dashboard-status-filter: 상태 필터 토글 (completed 1회, last QA-20260317-0114)
 - dashboard-topology-map: 토폴로지 맵 모달 (completed 1회, last QA-20260317-0114)
 - dashboard-worker-console-error-on-ai-workspace-return: Dashboard logs Web Worker fallback error after returning from fullscreen AI workspace (completed 1회, last QA-20260423-0332)
+- data-metrics-quality-slot-provenance: AI parity QA evidence includes dashboard snapshot slot/source metadata (completed 1회, last QA-20260424-0348)
 - dev-runtime-css-split: Landing CSS and home route compile split (completed 1회, last QA-20260420-0315)
 - dom-related-depscan-noise-suppression: Suppress benign zero-test DOM related dep-scan noise (completed 1회, last QA-20260325-0186)
 - e2e-ai-chat-production-selector-alignment: AI Chat/Sidebar E2E selectors aligned with production DOM (completed 1회, last QA-20260310-0073)
@@ -465,6 +474,7 @@ Latest run: QA-20260424-0347 (2026-04-24T09:40:49.104Z)
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260424-0348 | 2026-04-24T10:55:21.196Z | targeted | no | yes | Production Playwright E2E - AI slot provenance parity validation | 2 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260424-0347 | 2026-04-24T09:40:49.104Z | targeted | no | no | Vercel core routes follow-up for frontend UIUX QA review | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260424-0346 | 2026-04-24T09:25:23.818Z | broad | yes | yes | Vercel Playwright QA - Frontend Buttons Modals UIUX Sweep | 31 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260424-0345 | 2026-04-24T08:04:28.389Z | targeted | no | yes | Production Playwright E2E - AI parity guard final review validation | 2 | 1 | 0 | 0 | 0 | 1 |
@@ -484,4 +494,3 @@ Latest run: QA-20260424-0347 (2026-04-24T09:40:49.104Z)
 | QA-20260422-0331 | 2026-04-22T14:47:29.748Z | targeted | no | no | Local dev browser verification - AI workspace dashboard return worker fallback | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260422-0330 | 2026-04-22T14:14:24.057Z | broad | no | yes | Vercel Playwright broad QA - core routes, dashboard, AI workspace recheck | 15 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260422-0329 | 2026-04-22T09:03:48.553Z | targeted | no | no | Local dev turbopack trace - Tailwind source scope fix | 4 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260422-0328 | 2026-04-22T08:08:13.838Z | targeted | no | no | Local dev turbopack trace - auth/session lazy import follow-up | 4 | 1 | 1 | 0 | 0 | 0 |

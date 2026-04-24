@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-24 KST (`QA residual risk improvement plan review reflected)
+**Last Updated**: 2026-04-24 KST (`QA residual risk improvement completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| QA residual risk improvement | P2 | In Progress | Claude Code 검토 반영 완료. 잔여 구현 Task 1~5 대기. 상세 계획: [qa-residual-risk-improvement-plan.md](qa-residual-risk-improvement-plan.md) |
+| _None_ | — | — | 현재 진행 중인 상세 계획 없음 |
 
 ---
 
@@ -16,7 +16,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-04-24 재검증 기준 `reports/qa=77.87MiB`, `reports/qa/evidence=72.80MiB / 332파일`. `npm run qa:evidence:audit` 결과 missing/recent artifact debt/archive candidate `0`, orphan durable evidence `6개 / 1.01MiB`, size warning만 남음. orphan 제거만으로는 warning 해소 효과가 낮고 top referenced legacy evidence는 modal/detail/landing proof 가치가 있어 explicit cleanup batch는 열지 않음. 새 evidence 누적 시점에만 재평가. |
+| P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-04-24 재검증 기준 `reports/qa=77.89MiB`, `reports/qa/evidence=72.80MiB / 333파일`. `npm run qa:evidence:audit` 결과 missing/recent artifact debt/archive candidate `0`, orphan durable evidence `6개 / 1.01MiB`, size warning만 남음. run-level soft budget warning은 `QA-20260330-0197`, `QA-20260330-0198` 2건으로 구조화됨. orphan 제거만으로는 warning 해소 효과가 낮고 top referenced legacy evidence는 modal/detail/landing proof 가치가 있어 explicit cleanup batch는 열지 않음. 새 evidence 누적 시점에만 재평가. |
 
 ## Backlog
 
@@ -30,6 +30,24 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-24 #173)
+- [x] QA residual risk improvement 완료
+  - `data-metrics-quality` 잔여 gap을 dashboard snapshot `dataSource`/`dataSlot` provenance evidence와 targeted production AI parity QA로 정리
+  - `qa:evidence:audit`에 run-level artifact footprint summary와 run/file soft budget warning을 추가해 신규 evidence 비대화 감시 가능
+  - `qa:status`/trend 출력에서 Active Gate Warnings와 Historical Trend Warnings를 분리해 `gate-window-regression-open`을 현재 release blocker로 오해하지 않도록 개선
+  - 상세 계획/계약: [archive/qa-residual-risk-improvement-plan.md](archive/qa-residual-risk-improvement-plan.md)
+  - 검증:
+    - `npx vitest run tests/unit/playwright/dashboard-ai-parity.test.ts tests/unit/qa/qa-evidence-audit.test.ts tests/unit/qa/qa-trends.test.ts`
+    - `npx vitest run tests/unit/playwright/dashboard-ai-parity.test.ts tests/unit/qa/qa-evidence-audit.test.ts tests/unit/qa/qa-trends.test.ts tests/unit/qa/qa-scripts.test.ts`
+    - `npm run test:quick`
+    - `npm run type-check`
+    - `npm run lint`
+    - `npm run check:usage:vercel`
+    - `PLAYWRIGHT_SKIP_SERVER=1 PLAYWRIGHT_BASE_URL=https://openmanager-ai.vercel.app PLAYWRIGHT_GUEST_PIN=4231 PLAYWRIGHT_HEADLESS=true PLAYWRIGHT_HTML_REPORT=0 PLAYWRIGHT_WORKERS=1 npx playwright test tests/e2e/dashboard-ai-chat.spec.ts --config playwright.config.ts`
+    - `npm run qa:record -- --input /tmp/qa-run-input-20260424-ai-slot-provenance.json` → `QA-20260424-0348`
+    - `npm run qa:evidence:audit`
+    - `npm run qa:status`
 
 ### Completed (2026-04-24 #172)
 - [x] AI starter summary parity guard 완료

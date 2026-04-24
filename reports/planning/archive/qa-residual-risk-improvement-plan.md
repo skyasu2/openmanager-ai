@@ -1,13 +1,13 @@
 > Owner: project
-> Status: In Progress
+> Status: Completed
 > Last reviewed: 2026-04-24
 
 # QA Residual Risk Improvement Plan
 
-- 상태: In Progress
+- 상태: Completed
 - 작성일: 2026-04-24
-- TODO.md 연결: Active Tasks > QA residual risk improvement
-- 검토 상태: Claude Code 검토 반영 완료. 잔여 구현 Task는 failing test 우선.
+- TODO.md 연결: Recent Completed > #173 QA residual risk improvement
+- 검토 상태: Claude Code 검토 반영, 구현, targeted production QA, 최종 검증 완료.
 
 ## 목표
 
@@ -48,6 +48,7 @@ Claude Code 검토 결과는 대체로 수용하되, 기존 커밋의 범위를 
 - `31431acea` — dashboard AI count parity helper, unit test, E2E guard 추가.
 - `QA-20260424-0344` / `QA-20260424-0345` — production AI parity targeted QA 기록.
 - `QA-20260424-0346` / `QA-20260424-0347` — frontend UI/UX sweep 및 core route follow-up QA 기록.
+- `QA-20260424-0348` — AI slot/source provenance targeted QA 기록, expert open-gaps `0` 확인.
 
 ## 범위
 
@@ -107,13 +108,13 @@ Claude Code 검토 결과는 대체로 수용하되, 기존 커밋의 범위를 
 
 ### 테스트 시나리오 (구현 전 확정)
 
-- [ ] 시나리오 1: dashboard text에 `Synthetic OTel snapshot · 16:00 KST`가 있으면 snapshot metadata에 `16:00 KST`가 보존된다.
-- [ ] 시나리오 2: dashboard text에 slot/source 문구가 없어도 기존 count parity 테스트는 깨지지 않는다.
-- [ ] 시나리오 3: AI parity E2E 실패 메시지 또는 evidence에는 dashboard counts와 slot/source가 함께 남는다.
-- [ ] 시나리오 4: QA audit는 최근 run별 artifact size를 출력하고, 단일 run budget 초과 시 soft warning을 표시한다.
-- [ ] 시나리오 5: QA audit strict mode의 기존 missing/orphan/archive candidate 판정은 변경되지 않는다.
-- [ ] 시나리오 6: trend snapshot에서 현재 release-gate-only window가 clean이면 historical rolling warning은 active blocker로 분류되지 않는다.
-- [ ] 시나리오 7: `qa:status` 출력은 historical warning을 별도 섹션으로 보여준다.
+- [x] 시나리오 1: dashboard text에 `Synthetic OTel snapshot · 16:00 KST`가 있으면 snapshot metadata에 `16:00 KST`가 보존된다.
+- [x] 시나리오 2: dashboard text에 slot/source 문구가 없어도 기존 count parity 테스트는 깨지지 않는다.
+- [x] 시나리오 3: AI parity E2E 실패 메시지 또는 evidence에는 dashboard counts와 slot/source가 함께 남는다.
+- [x] 시나리오 4: QA audit는 최근 run별 artifact size를 출력하고, 단일 run budget 초과 시 soft warning을 표시한다.
+- [x] 시나리오 5: QA audit strict mode의 기존 missing/orphan/archive candidate 판정은 변경되지 않는다.
+- [x] 시나리오 6: trend snapshot에서 현재 release-gate-only window가 clean이면 historical rolling warning은 active blocker로 분류되지 않는다.
+- [x] 시나리오 7: `qa:status` 출력은 historical warning을 별도 섹션으로 보여준다.
 
 ## Task 목록
 
@@ -121,42 +122,48 @@ Claude Code 검토 결과는 대체로 수용하되, 기존 커밋의 범위를 
 
 - [x] Task 0 — 다른 AI 검토 반영: Claude Code 검토 결과를 범위/계약/제외 항목에 반영.
 - [x] Task 1 — 잔여 failing test 커밋: dashboard slot metadata, audit size summary, trend warning classification 테스트를 먼저 추가. 현재 구현 전 실패 확인 완료.
-- [ ] Task 2 — data provenance 보완: AI parity helper와 E2E evidence에 dashboard snapshot slot/source를 포함. 기존 count parity는 `31431acea`에서 완료.
-- [ ] Task 3 — evidence budget visibility 구현: `qa:evidence:audit`에 run-level 또는 recent-run artifact size summary와 soft warning 추가.
-- [ ] Task 4 — trend warning 분리 구현: active release blocker와 historical rolling warning 출력 구조 분리.
-- [ ] Task 5 — 문서 갱신: `reports/qa/README.md`에 신규 evidence capture budget과 full-page screenshot 제한 기준 추가.
+- [x] Task 2 — data provenance 보완: AI parity helper와 E2E evidence에 dashboard snapshot slot/source를 포함. 기존 count parity는 `31431acea`에서 완료.
+- [x] Task 3 — evidence budget visibility 구현: `qa:evidence:audit`에 run-level 또는 recent-run artifact size summary와 soft warning 추가.
+- [x] Task 4 — trend warning 분리 구현: active release blocker와 historical rolling warning 출력 구조 분리.
+- [x] Task 5 — 문서 갱신: `reports/qa/README.md`에 신규 evidence capture budget과 full-page screenshot 제한 기준 추가.
 - [x] Task 6 — targeted QA 기반 확인: `QA-20260424-0344` / `QA-20260424-0345` production AI parity QA 기록 확인. 잔여 구현 후 필요 시 추가 targeted QA 1회만 수행.
-- [ ] Task 7 — 최종 리뷰/커밋/푸시: 검증 결과와 잔여 리스크를 plan/TODO에 반영.
+- [x] Task 7 — 최종 리뷰/커밋/푸시: 검증 결과와 잔여 리스크를 plan/TODO에 반영.
 
 ## 완료 기준
 
-- [ ] `data-metrics-quality` open gap이 새 QA run에서 completed 또는 non-blocking tracked 상태로 명확히 정리된다.
-- [ ] `npm run qa:evidence:audit`가 최근 run evidence size를 사람이 판단 가능한 형태로 출력한다.
-- [ ] `npm run qa:status`에서 historical rolling warning과 active release blocker가 구분된다.
-- [ ] 신규 evidence 생성 정책이 `reports/qa/README.md`에 반영된다.
-- [ ] targeted live AI QA는 broad QA와 분리되어 기록된다.
-- [ ] 기존 QA tracker/evidence audit의 missing durable artifact path는 `0`을 유지한다.
-- [ ] `npm run type-check`, `npm run lint`, 관련 unit test, `npm run qa:evidence:audit`, `npm run qa:status`가 통과한다.
+- [x] `data-metrics-quality` open gap이 새 QA run에서 completed 또는 non-blocking tracked 상태로 명확히 정리된다.
+- [x] `npm run qa:evidence:audit`가 최근 run evidence size를 사람이 판단 가능한 형태로 출력한다.
+- [x] `npm run qa:status`에서 historical rolling warning과 active release blocker가 구분된다.
+- [x] 신규 evidence 생성 정책이 `reports/qa/README.md`에 반영된다.
+- [x] targeted live AI QA는 broad QA와 분리되어 기록된다.
+- [x] 기존 QA tracker/evidence audit의 missing durable artifact path는 `0`을 유지한다.
+- [x] `npm run type-check`, `npm run lint`, 관련 unit test, `npm run qa:evidence:audit`, `npm run qa:status`가 통과한다.
 
-## 검증 명령 후보
+## 최종 검증 결과
 
-구현 후 최소 검증 후보는 아래다.
+아래 검증을 통과했다.
 
 ```bash
-npx vitest run tests/unit/playwright/dashboard-ai-parity.test.ts
-npm run qa:evidence:audit
-npm run qa:status
-npm run docs:lint:changed
+npx vitest run tests/unit/playwright/dashboard-ai-parity.test.ts tests/unit/qa/qa-evidence-audit.test.ts tests/unit/qa/qa-trends.test.ts
+npx vitest run tests/unit/playwright/dashboard-ai-parity.test.ts tests/unit/qa/qa-evidence-audit.test.ts tests/unit/qa/qa-trends.test.ts tests/unit/qa/qa-scripts.test.ts
+npm run test:quick
 npm run type-check
 npm run lint
-```
-
-실 LLM targeted QA는 비용 보호 후 별도로 1회만 실행한다.
-
-```bash
+npm run qa:evidence:audit
+npm run qa:status
+npm run qa:status -- --write
+npx markdownlint-cli2 reports/planning/qa-residual-risk-improvement-plan.md reports/planning/TODO.md reports/qa/README.md reports/qa/QA_STATUS.md reports/qa/QA_TRENDS.md
 npm run check:usage:vercel
 PLAYWRIGHT_SKIP_SERVER=1 PLAYWRIGHT_BASE_URL=https://openmanager-ai.vercel.app PLAYWRIGHT_GUEST_PIN=4231 PLAYWRIGHT_HEADLESS=true PLAYWRIGHT_HTML_REPORT=0 PLAYWRIGHT_WORKERS=1 npx playwright test tests/e2e/dashboard-ai-chat.spec.ts --config playwright.config.ts
+npm run qa:record -- --input /tmp/qa-run-input-20260424-ai-slot-provenance.json
 ```
+
+최종 QA 기록:
+
+- `QA-20260424-0348`: targeted, release-facing `false`, countsTowardSummary `true`, checks `2/2` pass.
+- `data-metrics-quality`: latest expert assessment `appropriate`, improvementNeeded `false`.
+- `npm run qa:status`: expert open-gaps `0`, active gate warnings `None`.
+- `npm run qa:evidence:audit`: missing durable artifact paths `0`, run-level soft budget visibility 출력 확인.
 
 ## 다른 AI 검토 결론
 

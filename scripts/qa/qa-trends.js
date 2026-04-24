@@ -546,6 +546,7 @@ function buildTrendWarnings(snapshot) {
     warnings.push({
       code: 'release-gate-missing',
       severity: 'critical',
+      classification: 'active',
       headline: 'Release-gate counted runs are missing',
       detail:
         'No counted release-gate runs are recorded, so release readiness lacks a dedicated QA baseline.',
@@ -556,6 +557,7 @@ function buildTrendWarnings(snapshot) {
     warnings.push({
       code: 'release-gate-sample-too-small',
       severity: 'warning',
+      classification: 'active',
       headline: 'Release-gate history is too small',
       detail: `Only ${allReleaseGateWindow.countedRuns} counted release-gate run(s) are available.`,
       recommendedAction:
@@ -567,6 +569,7 @@ function buildTrendWarnings(snapshot) {
     warnings.push({
       code: 'release-gate-regression-open',
       severity: 'critical',
+      classification: 'active',
       headline: 'Release-gate regressions are still open',
       detail: `The recent release-gate window contains ${recentReleaseGateWindow.regressionRunCount} regression run(s).`,
       recommendedAction:
@@ -592,6 +595,7 @@ function buildTrendWarnings(snapshot) {
     warnings.push({
       code: 'gate-window-regression-open',
       severity: 'warning',
+      classification: releaseGateWindowClean ? 'historical' : 'active',
       headline: 'Recent gate runs still show regressions',
       detail: releaseGateWindowClean
         ? `The last 5 gate runs include ${recentGateWindow.regressionRunCount} regression run(s), but the current release-gate-only window is clean. This warning is currently driven by ${regressionRunSummary || 'an earlier broad gate run'} lingering in the rolling gate window.`
@@ -606,6 +610,7 @@ function buildTrendWarnings(snapshot) {
     warnings.push({
       code: 'gate-pass-rate-low',
       severity: 'warning',
+      classification: 'active',
       headline: 'Gate pass rate is below the expected floor',
       detail: `All gate runs currently show a ${allGateWindow.passRatePct}% pass rate.`,
       recommendedAction:
@@ -664,6 +669,12 @@ function buildQaTrendSnapshot(tracker) {
   };
 
   snapshot.warnings = buildTrendWarnings(snapshot);
+  snapshot.activeGateWarnings = snapshot.warnings.filter(
+    (warning) => warning.classification !== 'historical'
+  );
+  snapshot.historicalTrendWarnings = snapshot.warnings.filter(
+    (warning) => warning.classification === 'historical'
+  );
 
   return snapshot;
 }

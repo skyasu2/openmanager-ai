@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-24T09:40:49.104Z"
+    "updatedAt": "2026-04-24T10:55:21.196Z"
   },
   "sequence": {
-    "nextRunNumber": 348
+    "nextRunNumber": 349
   },
   "summary": {
-    "totalRecordedRuns": 345,
-    "totalRuns": 280,
+    "totalRecordedRuns": 346,
+    "totalRuns": 281,
     "excludedRuns": 65,
-    "totalChecks": 2333,
-    "totalPassed": 2247,
+    "totalChecks": 2335,
+    "totalPassed": 2249,
     "totalFailed": 79,
     "completionRate": 100,
-    "completedItems": 338,
+    "completedItems": 339,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 17,
     "expertDomainsTracked": 10,
-    "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260424-0346",
-    "lastRecordedAt": "2026-04-24T09:25:23.818Z",
-    "latestRecordedRunId": "QA-20260424-0347",
-    "latestRecordedAt": "2026-04-24T09:40:49.104Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260424-0348",
+    "lastRecordedAt": "2026-04-24T10:55:21.196Z",
+    "latestRecordedRunId": "QA-20260424-0348",
+    "latestRecordedAt": "2026-04-24T10:55:21.196Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -8248,6 +8248,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-24T09:40:49.104Z"
+    },
+    "data-metrics-quality-slot-provenance": {
+      "id": "data-metrics-quality-slot-provenance",
+      "title": "AI parity QA evidence includes dashboard snapshot slot/source metadata",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260424-0348",
+      "firstSeenAt": "2026-04-24T10:55:21.196Z",
+      "lastSeenRunId": "QA-20260424-0348",
+      "lastSeenAt": "2026-04-24T10:55:21.196Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "reports/qa/evidence/qa-20260424-ai-slot-provenance-cli.md",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-24T10:55:21.196Z"
     }
   },
   "runs": [
@@ -32565,6 +32589,105 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260424-0348",
+      "recordedAt": "2026-04-24T10:55:21.196Z",
+      "recordedAtKst": "2026-04-24 19:55:21 KST",
+      "title": "Production Playwright E2E - AI slot provenance parity validation",
+      "owner": "codex",
+      "source": "playwright-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260424-0348.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_Ab1ZA6FUYvA4LE67mWidSFvPvYP2",
+        "deploymentUrl": "https://openmanager-q87lt2d2i-skyasus-projects.vercel.app",
+        "commitSha": "31431aceae26d0c3dec65570a634005bdcd52c0f"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "/dashboard guest-authenticated dashboard status snapshot parsing",
+        "AI sidebar starter prompt dashboard count parity assertion",
+        "AI sidebar direct current-state query dashboard count parity assertion",
+        "Dashboard snapshot dataSource/dataSlot QA evidence path"
+      ],
+      "skippedSurfaces": [
+        "Broad frontend UI/UX modal sweep already covered by QA-20260424-0346",
+        "Core route console follow-up already covered by QA-20260424-0347",
+        "Reporter Agent and Analyst Agent advanced generation flows",
+        "OAuth provider end-to-end login"
+      ],
+      "checks": {
+        "total": 2,
+        "passed": 2,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel production Playwright run passed starter and direct prompt AI parity assertions against the current dashboard status snapshot.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Dashboard status parsing now preserves source/slot metadata, and the targeted production AI parity run validates AI response counts against the captured dashboard snapshot path.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-24T19:53:45+09:00",
+          "summary": "npm run check:usage:vercel passed before targeted AI slot provenance QA; current billing period effective=15.7313 USD, billed=0.0000 USD, chargeCount=14007.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "Production AI slot provenance CLI summary",
+          "path": "reports/qa/evidence/qa-20260424-ai-slot-provenance-cli.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel deployment URL",
+          "url": "https://openmanager-q87lt2d2i-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -32573,16 +32696,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 158,
-      "appropriateCount": 145,
+      "seenCount": 159,
+      "appropriateCount": 146,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260424-0346",
-      "lastSeenAt": "2026-04-24T09:25:23.818Z",
-      "lastFit": "partially-appropriate",
+      "lastRunId": "QA-20260424-0348",
+      "lastSeenAt": "2026-04-24T10:55:21.196Z",
+      "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "AI sidebar readiness, starter prompts, input visibility, and open/close behavior were covered. Real LLM response quality was intentionally skipped for this frontend UI/UX sweep and remains covered by separate AI parity checks.",
+      "lastRationale": "Vercel production Playwright run passed starter and direct prompt AI parity assertions against the current dashboard status snapshot.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -32658,17 +32781,17 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 34,
-      "appropriateCount": 17,
+      "seenCount": 35,
+      "appropriateCount": 18,
       "partialCount": 17,
       "inappropriateCount": 0,
       "improvementNeededCount": 17,
-      "lastRunId": "QA-20260424-0346",
-      "lastSeenAt": "2026-04-24T09:25:23.818Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Dashboard metrics and synthetic OTel slot/source labels rendered, but this frontend UI/UX sweep did not validate AI response metric provenance against dashboard slot metadata.",
-      "lastNextAction": "If future QA requires slot provenance, add data-slot/source metadata to AI response evidence and compare with dashboard snapshot slot."
+      "lastRunId": "QA-20260424-0348",
+      "lastSeenAt": "2026-04-24T10:55:21.196Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "Dashboard status parsing now preserves source/slot metadata, and the targeted production AI parity run validates AI response counts against the captured dashboard snapshot path.",
+      "lastNextAction": ""
     },
     "infra-reliability": {
       "domainId": "infra-reliability",
