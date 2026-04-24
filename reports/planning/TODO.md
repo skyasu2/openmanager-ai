@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-24 KST (`AI starter summary parity guard` completed)
+**Last Updated**: 2026-04-24 KST (`QA residual risk improvement plan review reflected)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| - | - | - | 현재 활성 작업 없음 |
+| QA residual risk improvement | P2 | In Progress | Claude Code 검토 반영 완료. 잔여 구현 Task 1~5 대기. 상세 계획: [qa-residual-risk-improvement-plan.md](qa-residual-risk-improvement-plan.md) |
 
 ---
 
