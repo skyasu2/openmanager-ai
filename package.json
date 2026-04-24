@@ -174,6 +174,7 @@
     "security:audit": "npm audit --audit-level=moderate && claude /security-review && node scripts/env/check-hardcoded-secrets.js",
     "setup:gemini:global": "bash scripts/ai/setup-gemini-global.sh",
     "skills:sync:codex": "bash scripts/skills/sync-codex-skills.sh",
+    "skills:check": "node scripts/skills/check-skills-drift.mjs",
     "start": "next start",
     "start:prod": "NODE_ENV=production next start",
     "stitch:check": "node scripts/stitch/validate-stitch-registry.js",

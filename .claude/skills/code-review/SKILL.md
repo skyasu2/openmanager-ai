@@ -9,6 +9,8 @@ disable-model-invocation: true
 
 # Code Review
 
+> Common baseline: before editing this skill, review `docs/guides/ai/skill-standards.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
+
 6개 관점으로 실제 결함과 릴리즈 리스크를 우선 발굴합니다.
 
 ## Trigger Keywords

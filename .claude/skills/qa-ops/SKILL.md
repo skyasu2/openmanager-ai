@@ -9,6 +9,8 @@ disable-model-invocation: true
 
 # QA Ops
 
+> Common baseline: before editing this skill, review `docs/guides/ai/skill-standards.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
+
 최종 QA를 표준 절차로 수행하고 결과를 누적 추적합니다.
 
 ## Use with other skills

@@ -5,6 +5,8 @@ description: Analyze current OpenManager QA, runtime, deployment, and AI-path st
 
 # OpenManager State Triage
 
+> Common baseline: before editing this skill, review `docs/guides/ai/skill-standards.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
+
 Turn recent evidence into a concrete next step before editing code or rerunning broad QA.
 
 ## Execute this workflow

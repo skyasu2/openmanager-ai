@@ -9,6 +9,8 @@ disable-model-invocation: true
 
 # 문서 관리 스킬
 
+> Common baseline: before editing this skill, review `docs/guides/ai/skill-standards.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
+
 문서 수량 예산(Doc Budget Policy)에 따른 현황 점검 및 정리 도구.
 
 ## Trigger Keywords

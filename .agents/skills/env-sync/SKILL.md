@@ -5,6 +5,8 @@ description: Diagnose and fix OpenManager environment drift across .env.local, V
 
 # OpenManager Env Sync
 
+> Common baseline: before editing this skill, review `docs/guides/ai/skill-standards.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
+
 Resolve runtime env drift before changing product code.
 
 ## Execute this workflow

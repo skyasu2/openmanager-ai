@@ -1,0 +1,147 @@
+{
+  "version": 1,
+  "lastReviewed": "2026-04-24",
+  "policy": {
+    "standardsDoc": "docs/guides/ai/skill-standards.md",
+    "geminiSameNameOverlay": "forbidden",
+    "nativeAdapters": {
+      "codex": ".agents/skills",
+      "claude": ".claude/skills",
+      "gemini": ".agents/skills",
+      "geminiOverlay": ".gemini/skills"
+    }
+  },
+  "skills": {
+    "cloud-run": {
+      "purpose": "Deploy and verify the Cloud Run ai-engine within OpenManager free-tier and rollback constraints.",
+      "invariants": [
+        "Check cost and free-tier guardrails before deploy.",
+        "Verify Docker, type-check, service health, and rollback path.",
+        "Do not suggest higher-cost Cloud Build or Cloud Run machine settings."
+      ],
+      "adapters": {
+        "codex": ".agents/skills/cloud-run/SKILL.md",
+        "claude": ".claude/skills/cloud-run/SKILL.md",
+        "gemini": ".agents/skills/cloud-run/SKILL.md"
+      }
+    },
+    "code-review": {
+      "purpose": "Review OpenManager changes with severity-first findings and evidence-backed go/no-go judgment.",
+      "invariants": [
+        "Findings come before summary.",
+        "Use correctness, readability, design, performance, security, and test coverage perspectives when relevant.",
+        "Do not claim safety without command evidence or an explicit testing gap."
+      ],
+      "adapters": {
+        "codex": ".agents/skills/code-review/SKILL.md",
+        "claude": ".claude/skills/code-review/SKILL.md",
+        "gemini": ".agents/skills/code-review/SKILL.md"
+      }
+    },
+    "doc-management": {
+      "purpose": "Control documentation sprawl with budget, metadata, duplicate, and stale-doc checks.",
+      "invariants": [
+        "Run docs budget checks before creating or broadening docs.",
+        "Prefer merging existing docs over adding new active docs.",
+        "Changed docs must include required metadata."
+      ],
+      "adapters": {
+        "codex": ".agents/skills/doc-management/SKILL.md",
+        "claude": ".claude/skills/doc-management/SKILL.md",
+        "gemini": ".agents/skills/doc-management/SKILL.md"
+      }
+    },
+    "env-sync": {
+      "purpose": "Diagnose and fix environment drift across local, Vercel, Supabase, and Cloud Run boundaries.",
+      "invariants": [
+        "Confirm the symptom is actually environment drift before changing code.",
+        "Use project sync scripts over ad hoc CLI updates.",
+        "Do not expose secret values in output or committed files."
+      ],
+      "adapters": {
+        "codex": ".agents/skills/env-sync/SKILL.md",
+        "claude": ".claude/skills/env-sync/SKILL.md",
+        "gemini": ".agents/skills/env-sync/SKILL.md"
+      }
+    },
+    "git-clean-gone": {
+      "purpose": "Remove local branches whose upstream is gone, handling worktree-attached branches safely.",
+      "invariants": [
+        "Fetch and prune before deciding what is gone.",
+        "Never remove a worktree or branch without showing the candidate list.",
+        "Avoid destructive cleanup outside gone branch scope."
+      ],
+      "adapters": {
+        "codex": ".agents/skills/git-clean-gone/SKILL.md",
+        "claude": ".claude/skills/git-clean-gone/SKILL.md",
+        "gemini": ".agents/skills/git-clean-gone/SKILL.md"
+      },
+      "legacyNames": ["clean_gone"]
+    },
+    "git-workflow": {
+      "purpose": "Commit, push, and PR safely using OpenManager canonical GitLab topology and conventional commits.",
+      "invariants": [
+        "Inspect remotes before push or fetch.",
+        "Default push target is gitlab, not GitHub public snapshot.",
+        "Do not stage or revert unrelated user changes."
+      ],
+      "adapters": {
+        "codex": ".agents/skills/git-workflow/SKILL.md",
+        "claude": ".claude/skills/git-workflow/SKILL.md",
+        "gemini": ".agents/skills/git-workflow/SKILL.md"
+      }
+    },
+    "lint-smoke": {
+      "purpose": "Run fast local quality checks and report pass/fail evidence for changed OpenManager code.",
+      "invariants": [
+        "Use scope to choose lightweight versus full smoke checks.",
+        "Run contract tests when API, auth, environment, or runtime contracts change.",
+        "Report skipped checks with a concrete reason."
+      ],
+      "adapters": {
+        "codex": ".agents/skills/lint-smoke/SKILL.md",
+        "claude": ".claude/skills/lint-smoke/SKILL.md",
+        "gemini": ".agents/skills/lint-smoke/SKILL.md"
+      }
+    },
+    "qa-ops": {
+      "purpose": "Execute final QA with the right target environment and record every run into the QA tracker.",
+      "invariants": [
+        "Use Vercel plus Playwright MCP by default for release-facing QA.",
+        "Switch to local dev only when AI-path validation is unnecessary.",
+        "Record QA evidence through qa:record and status commands."
+      ],
+      "adapters": {
+        "codex": ".agents/skills/qa-ops/SKILL.md",
+        "claude": ".claude/skills/qa-ops/SKILL.md",
+        "gemini": ".agents/skills/qa-ops/SKILL.md"
+      }
+    },
+    "qa-state": {
+      "purpose": "Combine current-state triage, QA execution, and QA tracker reporting into one workflow.",
+      "invariants": [
+        "Start from current QA status and tracker evidence.",
+        "Classify state before rerunning broad QA.",
+        "Record outcomes and recommend the smallest next action."
+      ],
+      "adapters": {
+        "codex": ".agents/skills/qa-state/SKILL.md",
+        "claude": ".claude/skills/qa-state/SKILL.md",
+        "gemini": ".agents/skills/qa-state/SKILL.md"
+      }
+    },
+    "state-triage": {
+      "purpose": "Analyze current QA, runtime, deployment, and AI-path evidence to choose the next action.",
+      "invariants": [
+        "Load current policy and recent evidence before proposing fixes.",
+        "Classify the failure type before editing code.",
+        "Prefer the smallest code path or config path that explains the symptom."
+      ],
+      "adapters": {
+        "codex": ".agents/skills/state-triage/SKILL.md",
+        "claude": ".claude/skills/state-triage/SKILL.md",
+        "gemini": ".agents/skills/state-triage/SKILL.md"
+      }
+    }
+  }
+}

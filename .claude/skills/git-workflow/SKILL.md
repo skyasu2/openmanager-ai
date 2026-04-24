@@ -9,6 +9,8 @@ disable-model-invocation: true
 
 # Git Workflow
 
+> Common baseline: before editing this skill, review `docs/guides/ai/skill-standards.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
+
 Git 커밋, 푸시, PR 생성을 안전한 절차로 수행합니다.
 
 **Remote 우선순위**: `gitlab` = canonical (배포 권위), `origin` = GitHub code-only snapshot

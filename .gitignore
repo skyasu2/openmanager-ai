@@ -158,11 +158,13 @@ combined.log
 ai-combined.log
 # Codex CLI runtime (secrets, sessions, snapshots, tmp)
 .codex/
-# Gemini CLI runtime (auth, history, state, skills symlinks)
+# Gemini CLI runtime (auth, history, state)
 .gemini/state.json
 .gemini/history/
 .gemini/tmp/
-.gemini/skills/
+# Gemini-only project skills are trackable overlays.
+!.gemini/skills/
+!.gemini/skills/**
 # temporary files
 *~
 *.tmp

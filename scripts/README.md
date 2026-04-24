@@ -164,6 +164,16 @@ bash scripts/mcp/mcp-health-report-codex.sh --no-live-probe --allow-missing-code
 npm run storybook:build:ci
 ```
 
+### Skill 도구
+
+```bash
+# 공통 baseline과 native adapter drift 검사
+npm run skills:check
+
+# Codex user-scope mirror 갱신이 필요한 경우
+npm run skills:sync:codex
+```
+
 ### 데이터 파이프라인
 
 ```bash

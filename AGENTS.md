@@ -29,23 +29,26 @@
 
 | 경로 | 역할 | AI |
 |------|------|-----|
-| `.agents/skills/` | repo-local canonical path (`SKILL.md` + `agents/openai.yaml` + `references/`). Codex와 Gemini가 모두 발견하며, Gemini에서는 `.gemini/skills/`보다 우선 | Codex CLI + Gemini CLI |
-| `.gemini/skills/` | Gemini legacy workspace path. 이 저장소에서는 중복 discovery 방지를 위해 기본 사용하지 않음 | Gemini CLI |
-| `.claude/skills/` | Claude project path + Gemini/Codex 변환 원본이라는 프로젝트 규칙 (`allowed-tools`, `disable-model-invocation` 등 포함) | Claude Code source |
+| `.agents/skills/` | repo-local canonical path (`SKILL.md` + `agents/openai.yaml` + `references/`). Codex 공식 경로이며 Gemini에서도 같은 tier의 `.gemini/skills/`보다 우선 | Codex CLI + Gemini CLI |
+| `.gemini/skills/` | Gemini-only overlay path. `.agents/skills/`와 같은 이름의 skill 생성 금지 | Gemini CLI |
+| `.claude/skills/` | Claude project path. `allowed-tools`, `disable-model-invocation` 등 Claude 전용 frontmatter 유지 | Claude Code |
 | `~/.codex/skills/` | Codex user-scope installed skills / 로컬 mirror (git ignore) | Codex CLI |
+| `config/ai/skill-baselines.json` | skill별 공통 기준, 불변조건, native adapter 경로 | All AI |
 
 > **Codex 스킬 동작**: 최신 공개 문서 기준 Codex는 repo `.agents/skills/`를 직접 발견합니다.
 > 이 저장소의 `npm run skills:sync:codex`는 `~/.codex/skills/` user-scope mirror를 갱신하는 보조 경로입니다.
 >
 > **Gemini 스킬 동작**: 최신 Gemini CLI는 `.agents/skills/`와 `.gemini/skills/`를 모두 스캔하며 같은 workspace tier에서는 `.agents/skills/`를 우선합니다.
-> 이 저장소에서는 Gemini도 `.agents/skills/`를 직접 사용하고, `.gemini/skills/` symlink는 legacy 호환 외에는 만들지 않습니다.
+> 이 저장소에서는 Gemini가 `.agents/skills/`를 공통 adapter로 사용하고, `.gemini/skills/`는 Gemini-only 추가 skill에만 사용합니다.
 
 **동기화 규칙:**
-- 스킬 추가/수정 시 → `.claude/skills/` 수정 (Claude 원본)
-- Codex/Gemini 반영: `.agents/skills/` 별도 수정 또는 동기화
-- Gemini legacy 반영: 기본 생성 금지. 호환성 검증이 필요한 경우에만 `.gemini/skills/` symlink를 임시 생성하고 작업 후 제거
+- 공통 동작 변경 시 → `config/ai/skill-baselines.json` 먼저 수정
+- Codex/Gemini 공통 adapter 반영 → `.agents/skills/<skill>/`
+- Claude 전용 adapter 반영 → `.claude/skills/<skill>/`
+- Gemini-only 추가 skill → `.gemini/skills/gemini-<name>/` 사용, `.agents/skills`와 같은 이름 금지
+- 변경 후 → `npm run skills:check`
 - 선택 사항: `npm run skills:sync:codex`로 `~/.codex/skills/` mirror 갱신
-- 스킬 표면은 AI별로 완전히 동일할 필요가 없습니다. Codex 기준 실제 스킬 집합은 repo `.agents/skills/`를 우선하며, `~/.codex/skills/`는 선택적 mirror로만 해석합니다.
+- 상세 기준: `docs/guides/ai/skill-standards.md`
 
 ### 2.3 MCP 운영 규칙 (Codex)
 - MCP 서버 목록 SSOT는 `.codex/config.toml`의 `[mcp_servers.*]`입니다.

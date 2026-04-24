@@ -9,6 +9,8 @@ disable-model-invocation: true
 
 # Cloud Run
 
+> Common baseline: before editing this skill, review `docs/guides/ai/skill-standards.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
+
 Cloud Run 배포와 GCP 비용 점검을 수행합니다.
 
 ## Trigger Keywords

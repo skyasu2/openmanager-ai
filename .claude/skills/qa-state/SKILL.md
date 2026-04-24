@@ -9,6 +9,8 @@ disable-model-invocation: true
 
 # QA State (통합)
 
+> Common baseline: before editing this skill, review `docs/guides/ai/skill-standards.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
+
 상태 진단 → QA 실행 → 기록을 한 번에 수행합니다. `state-triage` 후 `qa-ops`를 바로 이어야 할 때 사용하세요.
 
 ## Trigger Keywords

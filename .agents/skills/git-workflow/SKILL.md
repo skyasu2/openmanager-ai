@@ -5,6 +5,8 @@ description: Safe git commit, push, and PR workflow for OpenManager with convent
 
 # OpenManager Git Workflow
 
+> Common baseline: before editing this skill, review `docs/guides/ai/skill-standards.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
+
 Use a deterministic commit/push/PR flow with safety checks.
 
 ## Current topology (2026-04-03)

@@ -9,6 +9,8 @@ disable-model-invocation: true
 
 # Clean Gone Branches
 
+> Common baseline: before editing this skill, review `docs/guides/ai/skill-standards.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
+
 원격에서 삭제된 로컬 브랜치를 정리합니다. worktree에 연결된 브랜치는 worktree를 먼저 정리해야 합니다.
 
 ## Trigger Keywords
