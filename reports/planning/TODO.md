@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-24 KST (`WONT-FIX reason categories added`)
+**Last Updated**: 2026-04-24 KST (`WONT-FIX policy missing resolved`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -30,6 +30,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-24 #175)
+- [x] QA WONT-FIX Policy Missing 정리
+  - `obs-fp-fn-weekly-report`에 명시적 WONT-FIX 수용 근거를 추가해 `Policy Missing` 1건을 `Portfolio Deferral`로 재분류
+  - `qa:status` 기준 WONT-FIX reason category에서 `Policy Missing`이 더 이상 출력되지 않음을 확인
+  - 검증:
+    - `npm run qa:status -- --write`
 
 ### Completed (2026-04-24 #174)
 - [x] QA WONT-FIX reason category 출력 개선

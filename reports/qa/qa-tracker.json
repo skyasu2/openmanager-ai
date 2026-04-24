@@ -145,7 +145,8 @@
       "owner": "",
       "lastEvidence": "",
       "lastNote": "운영 프로세스 항목 — 프로덕트 QA 범위 외. 실운영 환경에서만 의미 있는 기능으로 데모/포트폴리오 프로젝트에서 제외 (v8.7.8 종합 점검)",
-      "lastStatusChangeAt": "2026-03-04T02:00:00.000Z"
+      "lastStatusChangeAt": "2026-03-04T02:00:00.000Z",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 실운영 오탐/미탐 주간 자동 리포트는 데모/포트폴리오 범위 밖의 운영 프로세스 자동화이므로 WONT-FIX 유지"
     },
     "security-attack-regression-pack": {
       "id": "security-attack-regression-pack",
