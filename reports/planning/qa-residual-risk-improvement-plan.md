@@ -120,7 +120,7 @@ Claude Code 검토 결과는 대체로 수용하되, 기존 커밋의 범위를 
 잔여 구현은 테스트 시나리오 기반 failing test를 먼저 추가한다.
 
 - [x] Task 0 — 다른 AI 검토 반영: Claude Code 검토 결과를 범위/계약/제외 항목에 반영.
-- [ ] Task 1 — 잔여 failing test 커밋: dashboard slot metadata, audit size summary, trend warning classification 테스트를 먼저 추가.
+- [x] Task 1 — 잔여 failing test 커밋: dashboard slot metadata, audit size summary, trend warning classification 테스트를 먼저 추가. 현재 구현 전 실패 확인 완료.
 - [ ] Task 2 — data provenance 보완: AI parity helper와 E2E evidence에 dashboard snapshot slot/source를 포함. 기존 count parity는 `31431acea`에서 완료.
 - [ ] Task 3 — evidence budget visibility 구현: `qa:evidence:audit`에 run-level 또는 recent-run artifact size summary와 soft warning 추가.
 - [ ] Task 4 — trend warning 분리 구현: active release blocker와 historical rolling warning 출력 구조 분리.

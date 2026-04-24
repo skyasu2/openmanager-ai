@@ -20,6 +20,17 @@ describe('dashboard AI parity helpers', () => {
     });
   });
 
+  it('preserves dashboard snapshot source and slot metadata when present', () => {
+    const snapshot = parseDashboardStatusSnapshot(
+      '전체 18 Synthetic OTel snapshot · 16:00 KST 온라인 17 경고 0 위험 1 오프라인 0 상태 문제 발생'
+    );
+
+    expect(snapshot).toMatchObject({
+      dataSource: 'Synthetic OTel snapshot',
+      dataSlot: '16:00 KST',
+    });
+  });
+
   it('matches AI text that uses 정상 for dashboard online count', () => {
     expect(
       doesAiTextMatchDashboardStatus(

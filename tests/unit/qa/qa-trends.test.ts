@@ -14,6 +14,7 @@ const {
   qaTrendsMarkdown,
   writeQaTrendArtifacts,
 } = require('../../../scripts/qa/qa-trends.js');
+const { statusMarkdown } = require('../../../scripts/qa/qa-status-markdown.js');
 
 const tempDirs: string[] = [];
 
@@ -287,6 +288,96 @@ describe('qa-trends', () => {
         }),
       ])
     );
+  });
+
+  it('classifies historical gate warnings separately from active release blockers', () => {
+    const snapshot = buildQaTrendSnapshot({
+      summary: {},
+      items: {},
+      experts: {},
+      runs: [
+        {
+          runId: 'QA-20260404-0222',
+          recordedAt: '2026-04-04T09:17:33.588Z',
+          scope: 'broad',
+          checks: { total: 13, passed: 12, failed: 1 },
+          pendingCount: 1,
+          releaseFacing: false,
+        },
+        {
+          runId: 'QA-20260404-0229',
+          recordedAt: '2026-04-04T14:29:25.205Z',
+          scope: 'release-gate',
+          checks: { total: 17, passed: 17, failed: 0 },
+          pendingCount: 0,
+          releaseFacing: true,
+        },
+        {
+          runId: 'QA-20260405-0235',
+          recordedAt: '2026-04-05T05:28:30.284Z',
+          scope: 'release-gate',
+          checks: { total: 17, passed: 17, failed: 0 },
+          pendingCount: 0,
+          releaseFacing: true,
+        },
+        {
+          runId: 'QA-20260405-0236',
+          recordedAt: '2026-04-05T05:47:50.876Z',
+          scope: 'release-gate',
+          checks: { total: 12, passed: 12, failed: 0 },
+          pendingCount: 0,
+          releaseFacing: true,
+        },
+      ],
+    });
+
+    expect(snapshot.activeGateWarnings).toEqual([]);
+    expect(snapshot.historicalTrendWarnings).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          code: 'gate-window-regression-open',
+          classification: 'historical',
+        }),
+      ])
+    );
+  });
+
+  it('renders active and historical warning sections in QA status markdown', () => {
+    const markdown = statusMarkdown({
+      summary: {},
+      items: {},
+      experts: {},
+      runs: [
+        {
+          runId: 'QA-20260404-0222',
+          recordedAt: '2026-04-04T09:17:33.588Z',
+          scope: 'broad',
+          checks: { total: 13, passed: 12, failed: 1 },
+          pendingCount: 1,
+          releaseFacing: false,
+        },
+        {
+          runId: 'QA-20260405-0235',
+          recordedAt: '2026-04-05T05:28:30.284Z',
+          scope: 'release-gate',
+          checks: { total: 17, passed: 17, failed: 0 },
+          pendingCount: 0,
+          releaseFacing: true,
+        },
+        {
+          runId: 'QA-20260405-0236',
+          recordedAt: '2026-04-05T05:47:50.876Z',
+          scope: 'release-gate',
+          checks: { total: 12, passed: 12, failed: 0 },
+          pendingCount: 0,
+          releaseFacing: true,
+        },
+      ],
+    });
+
+    expect(markdown).toContain('## Active Gate Warnings');
+    expect(markdown).toContain('## Historical Trend Warnings');
+    expect(markdown).toContain('gate-window-regression-open');
   });
 
   it('builds a 24h AI latency rollup by agent/provider and renders it in markdown', () => {

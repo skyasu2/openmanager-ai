@@ -11,6 +11,7 @@ const {
   summarizeReferencedRuns,
   summarizeSharedReferencedRuns,
   summarizeUniqueReferencedRuns,
+  summarizeRunArtifactSizes,
   formatBytes,
 } = require('../../../scripts/qa/audit-qa-evidence.js');
 
@@ -251,6 +252,68 @@ describe('qa-evidence-audit', () => {
         title: 'Primary release gate',
         count: 1,
         bytes: 1024,
+      },
+    ]);
+  });
+
+  it('summarizes run-level artifact sizes and flags soft budget overages', () => {
+    const mib = 1024 * 1024;
+    const fileInfos = [
+      {
+        relativePath: 'reports/qa/evidence/qa-20260424-dashboard.png',
+        size: 3 * mib,
+      },
+      {
+        relativePath: 'reports/qa/evidence/qa-20260424-modal.png',
+        size: 2 * mib,
+      },
+      {
+        relativePath: 'reports/qa/evidence/qa-20260424-console.log',
+        size: 512,
+      },
+    ];
+    const artifactRefs = [
+      {
+        runId: 'QA-20260424-0346',
+        path: 'reports/qa/evidence/qa-20260424-dashboard.png',
+      },
+      {
+        runId: 'QA-20260424-0346',
+        path: 'reports/qa/evidence/qa-20260424-modal.png',
+      },
+      {
+        runId: 'QA-20260424-0347',
+        path: 'reports/qa/evidence/qa-20260424-console.log',
+      },
+    ];
+    const runTitleById = new Map([
+      ['QA-20260424-0346', 'Broad UIUX sweep'],
+      ['QA-20260424-0347', 'Core route follow-up'],
+    ]);
+
+    expect(
+      summarizeRunArtifactSizes(fileInfos, artifactRefs, runTitleById, {
+        runWarnBytes: 4 * mib,
+        fileWarnBytes: 1.5 * mib,
+      })
+    ).toEqual([
+      {
+        runId: 'QA-20260424-0346',
+        title: 'Broad UIUX sweep',
+        count: 2,
+        bytes: 5 * mib,
+        largestFileBytes: 3 * mib,
+        exceedsRunBudget: true,
+        oversizedFileCount: 2,
+      },
+      {
+        runId: 'QA-20260424-0347',
+        title: 'Core route follow-up',
+        count: 1,
+        bytes: 512,
+        largestFileBytes: 512,
+        exceedsRunBudget: false,
+        oversizedFileCount: 0,
       },
     ]);
   });
