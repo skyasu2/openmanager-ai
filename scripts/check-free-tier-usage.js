@@ -7,7 +7,8 @@ const REGION = process.env.CLOUD_RUN_REGION || 'asia-northeast1';
 
 const EXPECTED = {
   maxScale: 1,
-  concurrency: 80,
+  // Must match cloud-run/ai-engine/deploy.sh FREE_TIER_CONCURRENCY.
+  concurrency: 16,
   cpu: '1',
   memory: '512Mi',
   timeoutSeconds: 300,

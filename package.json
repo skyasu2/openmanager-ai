@@ -184,6 +184,7 @@
     "storybook:build:ci": "bash scripts/storybook/build-ci.sh",
     "storybook:smoke": "bash scripts/storybook/smoke.sh",
     "supabase:check:db-auth": "node scripts/env/check-supabase-db-password.js",
+    "supabase:rag:smoke": "node scripts/test/supabase-rag-rpc-smoke.mjs",
     "sync:github": "bash scripts/sync/github-sync.sh",
     "sync:github:dry-run": "bash scripts/sync/github-sync.sh --dry-run",
     "test": "npm run test:node && npm run test:dom",

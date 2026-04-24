@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-24 KST (`WONT-FIX policy missing resolved`)
+**Last Updated**: 2026-04-24 KST (`Supabase RAG search_path repair completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| _None_ | — | — | 현재 진행 중인 상세 계획 없음 |
+| AI sidebar tool/UX simplification | High | Draft | RAG/Web/Thinking 계약 일관성, sidebar 기능 밀도, fullscreen 중복 배선 정리 계획. 상세: [ai-sidebar-tool-ux-simplification-plan.md](ai-sidebar-tool-ux-simplification-plan.md) |
 
 ---
 
@@ -30,6 +30,20 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-24 #176)
+- [x] Supabase RAG extension search_path repair 완료
+  - remote `20260416225546_move_extensions_to_extensions_schema`와 local migration timestamp 불일치를 정렬
+  - `vector`/`pg_trgm` extension 이동 후 RAG/vector RPC가 `extensions` schema를 찾지 못하던 `42883` 오류를 `search_path` repair migration으로 해소
+  - 수동 검증용 `npm run supabase:rag:smoke` 추가
+  - 상세 계획/계약: [archive/supabase-rag-extension-search-path-plan.md](archive/supabase-rag-extension-search-path-plan.md)
+  - 검증:
+    - `supabase db push --dry-run`
+    - `supabase db push --yes`
+    - `npm run supabase:rag:smoke`
+    - `supabase db lint --linked`
+    - `supabase migration list`
+    - production `/api/health`, `/api/database`
 
 ### Completed (2026-04-24 #175)
 - [x] QA WONT-FIX Policy Missing 정리

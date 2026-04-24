@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD033 -->
+
 # OpenManager AI v8
 
 > **AI-Native Server Monitoring Platform**
@@ -201,8 +203,8 @@ graph TD
 
 Job Queue SSE 폴링은 Redis 명령어 예산 보호를 위해 기본값을 아래로 사용합니다.
 
-- `AI_JOB_STREAM_POLL_INTERVAL_MS=200`
-- `AI_JOB_STREAM_QUEUED_POLL_INTERVAL_MS=1000`
+- `AI_JOB_STREAM_POLL_INTERVAL_MS=1000`
+- `AI_JOB_STREAM_QUEUED_POLL_INTERVAL_MS=2000`
 
 ---
 

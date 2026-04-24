@@ -201,6 +201,8 @@ curl -X POST https://openmanager-ai.vercel.app/api/auth/guest-login \
 | `UPSTASH_REDIS_WRITE_TIMEOUT_MS` | write 경로 타임아웃 (ms) | `1200` |
 | `UPSTASH_REDIS_SCAN_TIMEOUT_MS` | scan 경로 타임아웃 (ms) | `1500` |
 | `UPSTASH_REDIS_BATCH_TIMEOUT_MS` | batch delete/read 경로 타임아웃 (ms) | `1500` |
+| `AI_JOB_STREAM_POLL_INTERVAL_MS` | 진행 중인 Job SSE Redis polling 간격 (ms) | `1000` |
+| `AI_JOB_STREAM_QUEUED_POLL_INTERVAL_MS` | queued/pending Job SSE Redis polling 간격 (ms) | `2000` |
 
 > Redis 환경변수가 없으면 InMemory 캐시로 자동 폴백됩니다.
 > Redis timeout 값이 없거나 잘못된 값이면 경로별 기본 bucket 값으로 자동 폴백됩니다.
