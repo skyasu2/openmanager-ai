@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-const fs = require('node:fs');
-const path = require('node:path');
+import fs from 'node:fs';
+import path from 'node:path';
 
 const docsRoot = process.argv[2] || 'docs';
 
-function walk(dir) {
-  const out = [];
+function walk(dir: string): string[] {
+  const out: string[] = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
@@ -18,8 +18,8 @@ function walk(dir) {
   return out;
 }
 
-function resolveLink(filePath, link) {
-  let target = link.split('#')[0].trim();
+function resolveLink(filePath: string, link: string): string | null {
+  let target = (link.split('#')[0] ?? '').trim();
   if (!target) {
     return null;
   }
@@ -36,14 +36,14 @@ function resolveLink(filePath, link) {
 }
 
 const markdownFiles = walk(docsRoot);
-const missing = [];
+const missing: string[] = [];
 
 for (const filePath of markdownFiles) {
   const content = fs.readFileSync(filePath, 'utf8');
   const matches = content.matchAll(/\[[^\]]*\]\(([^)]+)\)/g);
 
   for (const match of matches) {
-    const rawLink = match[1].trim();
+    const rawLink = (match[1] ?? '').trim();
 
     if (
       !rawLink ||

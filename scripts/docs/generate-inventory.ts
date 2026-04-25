@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
-const fs = require('node:fs');
-const path = require('node:path');
+import fs from 'node:fs';
+import path from 'node:path';
 
 const docsRoot = 'docs';
 const outputPath = 'reports/docs/docs-inventory.md';
 const DOC_TIME_ZONE = 'Asia/Seoul';
 
-function formatSeoulDate(date) {
+function formatSeoulDate(date: Date): string {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: DOC_TIME_ZONE,
     year: 'numeric',
@@ -15,7 +15,7 @@ function formatSeoulDate(date) {
     day: '2-digit',
   }).formatToParts(date);
 
-  const parsed = {};
+  const parsed: Record<string, string> = {};
   for (const part of parts) {
     if (part.type === 'literal') continue;
     parsed[part.type] = part.value;
@@ -24,8 +24,8 @@ function formatSeoulDate(date) {
   return `${parsed.year}-${parsed.month}-${parsed.day}`;
 }
 
-function walk(dir) {
-  const out = [];
+function walk(dir: string): string[] {
+  const out: string[] = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
@@ -40,10 +40,10 @@ function walk(dir) {
 const allFiles = walk(docsRoot);
 const mdFiles = allFiles.filter((file) => file.endsWith('.md'));
 
-const byTopDir = new Map();
+const byTopDir = new Map<string, number>();
 for (const file of mdFiles) {
   const relative = file.replace(/^docs\//, '');
-  const top = relative.includes('/') ? relative.split('/')[0] : relative;
+  const top = relative.includes('/') ? (relative.split('/')[0] ?? relative) : relative;
   byTopDir.set(top, (byTopDir.get(top) || 0) + 1);
 }
 

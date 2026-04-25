@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const fs = require('node:fs');
-const path = require('node:path');
+import fs from 'node:fs';
+import path from 'node:path';
 
 const TIME_ZONE = 'Asia/Seoul';
 const OUTPUT_PATH = 'docs/reference/architecture/system/component-dependency-map.md';
@@ -12,7 +12,31 @@ const TOP_SCC_LIMIT = 10;
 const SKIP_DIR_NAMES = new Set(['.git', 'node_modules', '.next', 'coverage', 'dist']);
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
-function formatDate(date) {
+interface DomainEdgeRow {
+  fromDomain: string;
+  toDomain: string;
+  count: number;
+}
+
+interface ComponentGraph {
+  edges: [string, string][];
+  inDegree: Map<string, number>;
+  outDegree: Map<string, number>;
+  aliasEdgeCount: number;
+  relativeEdgeCount: number;
+}
+
+interface DomainStats {
+  domainNodes: Map<string, number>;
+  domainEdgeRows: DomainEdgeRow[];
+}
+
+interface SccResult {
+  groups: string[][];
+  cycleGroups: string[][];
+}
+
+function formatDate(date: Date): string {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: TIME_ZONE,
     year: 'numeric',
@@ -20,7 +44,7 @@ function formatDate(date) {
     day: '2-digit',
   }).formatToParts(date);
 
-  const parsed = {};
+  const parsed: Record<string, string> = {};
   for (const part of parts) {
     if (part.type === 'literal') continue;
     parsed[part.type] = part.value;
@@ -29,17 +53,17 @@ function formatDate(date) {
   return `${parsed.year}-${parsed.month}-${parsed.day}`;
 }
 
-function normalizePosix(input) {
+function normalizePosix(input: string): string {
   return input.replace(/\\/g, '/');
 }
 
-function walkFiles(rootDir) {
-  const out = [];
-  const stack = [rootDir];
+function walkFiles(rootDir: string): string[] {
+  const out: string[] = [];
+  const stack: string[] = [rootDir];
   const root = path.resolve(rootDir);
 
   while (stack.length > 0) {
-    const current = stack.pop();
+    const current = stack.pop()!;
     const entries = fs.readdirSync(current, { withFileTypes: true });
 
     for (const entry of entries) {
@@ -60,28 +84,26 @@ function walkFiles(rootDir) {
   return out;
 }
 
-function countLines(filePath) {
+function countLines(filePath: string): number {
   const text = fs.readFileSync(filePath, 'utf8');
   if (text.length === 0) return 0;
   return text.split('\n').length;
 }
 
-function resolveGeneratedDate() {
+function resolveGeneratedDate(): string {
   const envDate = (process.env.DOCS_COMPONENT_MAP_DATE || '').trim();
   if (ISO_DATE_RE.test(envDate)) return envDate;
 
   if (fs.existsSync(OUTPUT_PATH)) {
     const content = fs.readFileSync(OUTPUT_PATH, 'utf8');
     const match = content.match(/^\> Last reviewed:\s*(\d{4}-\d{2}-\d{2})\s*$/m);
-    if (match && ISO_DATE_RE.test(match[1])) {
-      return match[1];
-    }
+    if (match?.[1] && ISO_DATE_RE.test(match[1])) return match[1];
   }
 
   return formatDate(new Date());
 }
 
-function isComponentFile(file) {
+function isComponentFile(file: string): boolean {
   return (
     file.startsWith('src/components/') &&
     file.endsWith('.tsx') &&
@@ -90,7 +112,7 @@ function isComponentFile(file) {
   );
 }
 
-function isAppLocalComponentFile(file) {
+function isAppLocalComponentFile(file: string): boolean {
   return (
     file.startsWith('src/app/') &&
     file.includes('/components/') &&
@@ -100,7 +122,7 @@ function isAppLocalComponentFile(file) {
   );
 }
 
-function resolveWithCandidates(basePath, componentSet) {
+function resolveWithCandidates(basePath: string, componentSet: Set<string>): string | null {
   const candidates = [
     basePath,
     `${basePath}.tsx`,
@@ -120,7 +142,7 @@ function resolveWithCandidates(basePath, componentSet) {
   return null;
 }
 
-function resolveComponentImport(fromFile, specifier, componentSet) {
+function resolveComponentImport(fromFile: string, specifier: string, componentSet: Set<string>): string | null {
   if (specifier.startsWith('@/components/')) {
     const base = `src/components/${specifier.slice('@/components/'.length)}`;
     return resolveWithCandidates(base, componentSet);
@@ -135,9 +157,9 @@ function resolveComponentImport(fromFile, specifier, componentSet) {
   return null;
 }
 
-function parseImportSpecifiers(source) {
-  const specs = [];
-  const seen = new Set();
+function parseImportSpecifiers(source: string): string[] {
+  const specs: string[] = [];
+  const seen = new Set<string>();
 
   const patterns = [
     /\bimport\s+(?:type\s+)?[\s\S]*?\sfrom\s+['"]([^'"\n]+)['"]/g,
@@ -147,7 +169,7 @@ function parseImportSpecifiers(source) {
 
   for (const regex of patterns) {
     regex.lastIndex = 0;
-    let match;
+    let match: RegExpExecArray | null;
     while ((match = regex.exec(source)) !== null) {
       const spec = match[1];
       if (!spec || seen.has(spec)) continue;
@@ -159,34 +181,33 @@ function parseImportSpecifiers(source) {
   return specs;
 }
 
-function domainOf(file) {
+function domainOf(file: string): string {
   const relative = file.replace(/^src\/components\//, '');
   const index = relative.indexOf('/');
   if (index === -1) return '(root)';
   return relative.slice(0, index);
 }
 
-function componentLabel(file) {
+function componentLabel(file: string): string {
   return file.replace(/^src\/components\//, '').replace(/\.tsx$/, '');
 }
 
-function appLocalComponentLabel(file) {
+function appLocalComponentLabel(file: string): string {
   return file.replace(/^src\/app\//, '').replace(/\.tsx$/, '');
 }
 
-function appLocalComponentArea(file) {
+function appLocalComponentArea(file: string): string {
   const relative = file.replace(/^src\/app\//, '');
   const componentsIndex = relative.indexOf('/components/');
   if (componentsIndex === -1) return '(unknown)';
-
   return relative.slice(0, componentsIndex) || '(root)';
 }
 
-function buildComponentGraph(componentFiles) {
+function buildComponentGraph(componentFiles: string[]): ComponentGraph {
   const componentSet = new Set(componentFiles);
-  const inDegree = new Map();
-  const outDegree = new Map();
-  const edges = [];
+  const inDegree = new Map<string, number>();
+  const outDegree = new Map<string, number>();
+  const edges: [string, string][] = [];
 
   for (const file of componentFiles) {
     inDegree.set(file, 0);
@@ -200,7 +221,7 @@ function buildComponentGraph(componentFiles) {
     const fullPath = path.join(process.cwd(), file);
     const source = fs.readFileSync(fullPath, 'utf8');
     const specs = parseImportSpecifiers(source);
-    const localTargets = new Set();
+    const localTargets = new Set<string>();
 
     for (const spec of specs) {
       const target = resolveComponentImport(file, spec, componentSet);
@@ -217,18 +238,12 @@ function buildComponentGraph(componentFiles) {
     }
   }
 
-  return {
-    edges,
-    inDegree,
-    outDegree,
-    aliasEdgeCount,
-    relativeEdgeCount,
-  };
+  return { edges, inDegree, outDegree, aliasEdgeCount, relativeEdgeCount };
 }
 
-function buildDomainStats(componentFiles, edges) {
-  const domainNodes = new Map();
-  const domainEdges = new Map();
+function buildDomainStats(componentFiles: string[], edges: [string, string][]): DomainStats {
+  const domainNodes = new Map<string, number>();
+  const domainEdges = new Map<string, number>();
 
   for (const file of componentFiles) {
     const domain = domainOf(file);
@@ -242,37 +257,41 @@ function buildDomainStats(componentFiles, edges) {
     domainEdges.set(key, (domainEdges.get(key) || 0) + 1);
   }
 
-  const domainEdgeRows = Array.from(domainEdges.entries())
+  const domainEdgeRows: DomainEdgeRow[] = Array.from(domainEdges.entries())
     .map(([key, count]) => {
-      const [fromDomain, toDomain] = key.split('=>');
+      const sepIdx = key.indexOf('=>');
+      const fromDomain = key.slice(0, sepIdx);
+      const toDomain = key.slice(sepIdx + 2);
       return { fromDomain, toDomain, count };
     })
-    .sort((a, b) => b.count - a.count || a.fromDomain.localeCompare(b.fromDomain) || a.toDomain.localeCompare(b.toDomain));
+    .sort(
+      (a, b) =>
+        b.count - a.count ||
+        a.fromDomain.localeCompare(b.fromDomain) ||
+        a.toDomain.localeCompare(b.toDomain)
+    );
 
-  return {
-    domainNodes,
-    domainEdgeRows,
-  };
+  return { domainNodes, domainEdgeRows };
 }
 
-function topEntries(map, limit) {
-  return Array.from(map.entries()).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, limit);
+function topEntries(map: Map<string, number>, limit: number): [string, number][] {
+  return Array.from(map.entries())
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, limit);
 }
 
-function buildDomainMermaid(domainNodes, domainEdgeRows) {
+function buildDomainMermaid(domainNodes: Map<string, number>, domainEdgeRows: DomainEdgeRow[]): string {
   const sortedDomains = Array.from(domainNodes.entries()).sort((a, b) => a[0].localeCompare(b[0]));
-  const idMap = new Map();
+  const idMap = new Map<string, string>();
 
   let out = 'flowchart LR\n';
   sortedDomains.forEach(([domain, count], index) => {
     const id = `d${index}`;
     idMap.set(domain, id);
-    const label = `${domain} (${count})`;
-    out += `  ${id}["${label}"]\n`;
+    out += `  ${id}["${domain} (${count})"]\n`;
   });
 
-  const selectedEdges = domainEdgeRows.slice(0, TOP_DOMAIN_EDGE_LIMIT);
-  for (const row of selectedEdges) {
+  for (const row of domainEdgeRows.slice(0, TOP_DOMAIN_EDGE_LIMIT)) {
     const fromId = idMap.get(row.fromDomain);
     const toId = idMap.get(row.toDomain);
     if (!fromId || !toId) continue;
@@ -282,7 +301,7 @@ function buildDomainMermaid(domainNodes, domainEdgeRows) {
   return out;
 }
 
-function markdownTable(rows, headers) {
+function markdownTable(rows: string[][], headers: string[]): string {
   let out = `| ${headers.join(' | ')} |\n`;
   out += `| ${headers.map(() => '---').join(' | ')} |\n`;
   for (const row of rows) {
@@ -291,52 +310,48 @@ function markdownTable(rows, headers) {
   return out;
 }
 
-function toPercent(value) {
+function toPercent(value: number): string {
   return `${(value * 100).toFixed(2)}%`;
 }
 
-function detectStronglyConnectedComponents(nodes, edges) {
-  const adjacency = new Map();
-  const selfLoops = new Set();
+function detectSCC(nodes: string[], edges: [string, string][]): SccResult {
+  const adjacency = new Map<string, string[]>();
+  const selfLoops = new Set<string>();
 
-  for (const node of nodes) {
-    adjacency.set(node, []);
-  }
-
+  for (const node of nodes) adjacency.set(node, []);
   for (const [from, to] of edges) {
     if (!adjacency.has(from)) adjacency.set(from, []);
-    adjacency.get(from).push(to);
+    adjacency.get(from)!.push(to);
     if (from === to) selfLoops.add(from);
   }
 
   let index = 0;
-  const stack = [];
-  const onStack = new Set();
-  const indices = new Map();
-  const lowLinks = new Map();
-  const groups = [];
+  const stack: string[] = [];
+  const onStack = new Set<string>();
+  const indices = new Map<string, number>();
+  const lowLinks = new Map<string, number>();
+  const groups: string[][] = [];
 
-  function strongConnect(v) {
+  function strongConnect(v: string): void {
     indices.set(v, index);
     lowLinks.set(v, index);
     index += 1;
     stack.push(v);
     onStack.add(v);
 
-    const neighbors = adjacency.get(v) || [];
-    for (const w of neighbors) {
+    for (const w of adjacency.get(v) ?? []) {
       if (!indices.has(w)) {
         strongConnect(w);
-        lowLinks.set(v, Math.min(lowLinks.get(v), lowLinks.get(w)));
+        lowLinks.set(v, Math.min(lowLinks.get(v)!, lowLinks.get(w)!));
       } else if (onStack.has(w)) {
-        lowLinks.set(v, Math.min(lowLinks.get(v), indices.get(w)));
+        lowLinks.set(v, Math.min(lowLinks.get(v)!, indices.get(w)!));
       }
     }
 
     if (lowLinks.get(v) === indices.get(v)) {
-      const component = [];
+      const component: string[] = [];
       while (stack.length > 0) {
-        const w = stack.pop();
+        const w = stack.pop()!;
         onStack.delete(w);
         component.push(w);
         if (w === v) break;
@@ -350,41 +365,35 @@ function detectStronglyConnectedComponents(nodes, edges) {
   }
 
   const cycleGroups = groups
-    .filter((group) => group.length > 1 || (group.length === 1 && selfLoops.has(group[0])))
-    .sort((a, b) => b.length - a.length || a[0].localeCompare(b[0]));
+    .filter((g) => g.length > 1 || (g.length === 1 && selfLoops.has(g[0] ?? '')))
+    .sort((a, b) => b.length - a.length || (a[0] ?? '').localeCompare(b[0] ?? ''));
 
-  return {
-    groups,
-    cycleGroups,
-  };
+  return { groups, cycleGroups };
 }
 
-function main() {
+function main(): void {
   const generatedDate = resolveGeneratedDate();
   const trackedFiles = walkFiles('.');
 
   const componentFiles = trackedFiles.filter(isComponentFile).sort((a, b) => a.localeCompare(b));
-  const appLocalComponentFiles = trackedFiles
-    .filter(isAppLocalComponentFile)
-    .sort((a, b) => a.localeCompare(b));
-  let componentSourceLines = 0;
-  for (const file of componentFiles) {
-    componentSourceLines += countLines(file);
-  }
+  const appLocalComponentFiles = trackedFiles.filter(isAppLocalComponentFile).sort((a, b) => a.localeCompare(b));
 
-  const appLocalAreaRows = Array.from(
+  let componentSourceLines = 0;
+  for (const file of componentFiles) componentSourceLines += countLines(file);
+
+  const appLocalAreaRows: [string, string][] = Array.from(
     appLocalComponentFiles.reduce((acc, file) => {
       const area = appLocalComponentArea(file);
       acc.set(area, (acc.get(area) || 0) + 1);
       return acc;
-    }, new Map()),
+    }, new Map<string, number>()),
   )
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
     .map(([area, count]) => [area, String(count)]);
 
   const graph = buildComponentGraph(componentFiles);
   const domainStats = buildDomainStats(componentFiles, graph.edges);
-  const scc = detectStronglyConnectedComponents(componentFiles, graph.edges);
+  const scc = detectSCC(componentFiles, graph.edges);
 
   const isolatedComponents = componentFiles.filter(
     (file) => (graph.inDegree.get(file) || 0) === 0 && (graph.outDegree.get(file) || 0) === 0,
@@ -392,10 +401,9 @@ function main() {
 
   const topIn = topEntries(graph.inDegree, TOP_NODE_LIMIT);
   const topOut = topEntries(graph.outDegree, TOP_NODE_LIMIT);
-
   const densityBase = componentFiles.length * Math.max(componentFiles.length - 1, 1);
   const density = densityBase === 0 ? 0 : graph.edges.length / densityBase;
-  const largestCycleSize = scc.cycleGroups.length > 0 ? scc.cycleGroups[0].length : 0;
+  const largestCycleSize = scc.cycleGroups.length > 0 ? (scc.cycleGroups[0]?.length ?? 0) : 0;
 
   const domainNodeRows = Array.from(domainStats.domainNodes.entries())
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
@@ -410,18 +418,10 @@ function main() {
   const topCycleRows = scc.cycleGroups.slice(0, TOP_SCC_LIMIT).map((group, index) => [
     `C${index + 1}`,
     String(group.length),
-    group
-      .slice(0, 5)
-      .map((node) => componentLabel(node))
-      .join(', '),
+    group.slice(0, 5).map((node) => componentLabel(node)).join(', '),
   ]);
-
   const sampleOut = topOut.slice(0, 8).map(([file]) => {
-    const deps = graph.edges
-      .filter(([from]) => from === file)
-      .slice(0, 6)
-      .map(([, to]) => componentLabel(to));
-
+    const deps = graph.edges.filter(([from]) => from === file).slice(0, 6).map(([, to]) => componentLabel(to));
     return `${componentLabel(file)} -> ${deps.length > 0 ? deps.join(', ') : '(none)'}`;
   });
 
@@ -439,16 +439,13 @@ function main() {
   doc += '>\n';
   doc += `> Auto-generated: ${generatedDate} (KST)\n`;
   doc += '> Generation command: `npm run docs:components:map`\n\n';
-
   doc += '## Decision\n\n';
   doc += '- 문서 카테고리는 재편하지 않고 기존 `docs/reference/architecture/system`에 **추가**했습니다.\n';
   doc += '- 이유: 기존 IA를 보존하면서도 의존도 맵을 운영 문서로 바로 연결할 수 있기 때문입니다.\n\n';
-
   doc += '## Scope\n\n';
   doc += '- 대상 노드: `src/components/**/*.tsx` (단, `*.test.tsx`, `*.stories.tsx` 제외)\n';
   doc += '- 대상 엣지: 정적 `import`/`export ... from` 중 내부 컴포넌트로 해석되는 참조\n';
   doc += '- 제외: 런타임 동적 import, Next route(`src/app`) 전용 컴포넌트, 외부 패키지 의존성\n\n';
-
   doc += '## Inventory Coverage\n\n';
   doc += markdownTable(
     [
@@ -459,7 +456,6 @@ function main() {
     ['Inventory Slice', 'Count'],
   );
   doc += '\n';
-
   doc += '## App Route-Local Component Distribution\n\n';
   if (appLocalAreaRows.length === 0) {
     doc += '- No route-local component files detected under `src/app/**/components`.\n\n';
@@ -467,12 +463,9 @@ function main() {
     doc += markdownTable(appLocalAreaRows, ['App Area', 'Node Count']);
     doc += '\n';
     doc += 'Route-local component files:\n\n';
-    for (const file of appLocalComponentFiles) {
-      doc += `- \`${appLocalComponentLabel(file)}\`\n`;
-    }
+    for (const file of appLocalComponentFiles) doc += `- \`${appLocalComponentLabel(file)}\`\n`;
     doc += '\n';
   }
-
   doc += '## Snapshot Metrics\n\n';
   doc += markdownTable(
     [
@@ -489,28 +482,21 @@ function main() {
     ['Metric', 'Value'],
   );
   doc += '\n';
-
-  doc += '## Domain-Level Mermaid\n\n';
-  doc += '```mermaid\n';
-  doc += `${mermaid}`;
+  doc += '## Domain-Level Mermaid\n\n```mermaid\n';
+  doc += mermaid;
   doc += '```\n\n';
-
   doc += '## Domain Node Distribution\n\n';
   doc += markdownTable(domainNodeRows, ['Domain', 'Node Count']);
   doc += '\n';
-
   doc += `## Top Domain Edges (Top ${TOP_DOMAIN_EDGE_LIMIT})\n\n`;
   doc += markdownTable(domainEdgeRows, ['From', 'To', 'Edge Count']);
   doc += '\n';
-
   doc += `## Top Component Hubs by In-Degree (Top ${TOP_NODE_LIMIT})\n\n`;
   doc += markdownTable(topInRows, ['Component', 'In-Degree']);
   doc += '\n';
-
   doc += `## Top Component Hubs by Out-Degree (Top ${TOP_NODE_LIMIT})\n\n`;
   doc += markdownTable(topOutRows, ['Component', 'Out-Degree']);
   doc += '\n';
-
   doc += `## Cycle Risk (SCC Top ${TOP_SCC_LIMIT})\n\n`;
   if (topCycleRows.length === 0) {
     doc += '- No strongly connected component cycle groups detected.\n\n';
@@ -518,15 +504,9 @@ function main() {
     doc += markdownTable(topCycleRows, ['Cycle Group', 'Size', 'Sample Components']);
     doc += '\n';
   }
-
-  doc += '## ASCII Quick View\n\n';
-  doc += '```text\n';
-  doc += '[Top Outgoing Dependency Samples]\n';
-  for (const line of sampleOut) {
-    doc += `${line}\n`;
-  }
+  doc += '## ASCII Quick View\n\n```text\n[Top Outgoing Dependency Samples]\n';
+  for (const line of sampleOut) doc += `${line}\n`;
   doc += '```\n\n';
-
   doc += '## Update Rule\n\n';
   doc += '1. 구조 변경 후 `npm run docs:components:map` 실행\n';
   doc += '2. 문서 변경과 코드 변경을 같은 PR에서 검토\n';
@@ -543,8 +523,7 @@ function main() {
         scope: {
           nodes: 'src/components/**/*.tsx (excluding test/stories)',
           edges: 'static import/export-from resolved inside src/components',
-          excludedRouteLocalNodes:
-            'src/app/**/components/**/*.tsx (counted in inventory, excluded from graph)',
+          excludedRouteLocalNodes: 'src/app/**/components/**/*.tsx',
         },
         inventory: {
           sharedComponentNodes: componentFiles.length,
@@ -565,10 +544,7 @@ function main() {
         topInDegree: topIn.map(([file, count]) => ({ component: componentLabel(file), inDegree: count })),
         topOutDegree: topOut.map(([file, count]) => ({ component: componentLabel(file), outDegree: count })),
         topDomainEdges: domainStats.domainEdgeRows.slice(0, TOP_DOMAIN_EDGE_LIMIT),
-        appRouteLocalDistribution: appLocalAreaRows.map(([area, count]) => ({
-          area,
-          count: Number(count),
-        })),
+        appRouteLocalDistribution: appLocalAreaRows.map(([area, count]) => ({ area, count: Number(count) })),
         appRouteLocalFiles: appLocalComponentFiles.map((file) => appLocalComponentLabel(file)),
         topCycles: scc.cycleGroups.slice(0, TOP_SCC_LIMIT).map((group, idx) => ({
           id: `C${idx + 1}`,
