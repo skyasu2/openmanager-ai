@@ -22,6 +22,8 @@
 | Gemini-only overlay | `.gemini/skills/` | Gemini 전용 추가 skill만 허용. `.agents/skills`와 같은 이름 금지 |
 | 공통 기준 | `config/ai/skill-baselines.json` | skill별 공통 의도, 핵심 불변조건, native adapter 경로 |
 
+Codex는 OpenManager 공통 skill adapter를 `.agents/skills`에서 직접 사용합니다. `~/.codex/skills`나 `.codex/skills`에 같은 이름의 OpenManager skill 복사본을 두지 않습니다.
+
 Gemini CLI 공식 자료는 `SKILL.md` format과 project/user/extension tier를 전제로 합니다. OpenManager에서는 이를 프로젝트 표준에 맞춰 해석해, 공통 skill adapter는 `.agents/skills`에 두고 `.gemini/skills`는 Gemini-only overlay로만 사용합니다. Gemini extension은 외부 배포 단위가 필요할 때 검토하며, 공통 skill의 기본 배포 경로로 쓰지 않습니다.
 
 ## 수정 규칙
@@ -32,7 +34,7 @@ Gemini CLI 공식 자료는 `SKILL.md` format과 project/user/extension tier를 
 4. Claude 전용 invocation, `allowed-tools`, subagent, shell execution 규칙은 `.claude/skills/<skill>/SKILL.md`에 반영합니다.
 5. Gemini 전용 skill이 필요하면 `.gemini/skills/gemini-<name>/SKILL.md`처럼 `.agents/skills`와 충돌하지 않는 이름을 사용합니다.
 6. `.gemini/skills/<same-name>`은 만들지 않습니다. Gemini CLI가 같은 tier에서 `.agents/skills`를 우선하므로 shadowed copy가 됩니다.
-7. 스킬 변경 후 `npm run skills:check`를 실행해 baseline 참조, 경로, 중복 overlay를 검증합니다.
+7. 스킬 변경 후 `npm run skills:check`를 실행해 baseline 참조, 경로, user-scope/project-local 중복을 검증합니다.
 
 ## Baseline과 Adapter의 책임 분리
 
@@ -61,7 +63,7 @@ npm run skills:check
 
 - baseline에 정의된 skill이 `.agents/skills`와 `.claude/skills`에 존재해야 합니다.
 - 각 `SKILL.md`는 이 문서와 baseline 파일을 참조해야 합니다.
-- `.gemini/skills`에는 `.agents/skills`와 같은 이름의 skill이 없어야 합니다.
+- `~/.codex/skills`, `.codex/skills`, `.gemini/skills`에는 `.agents/skills`와 같은 이름의 skill이 없어야 합니다.
 - baseline에 없는 native skill은 명시적으로 추가하거나 제거해야 합니다.
 
 ## 외부 도구 사용 기준

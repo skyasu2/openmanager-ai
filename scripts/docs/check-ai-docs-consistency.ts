@@ -118,6 +118,20 @@ const RULES: Rule[] = [
     allowPattern: /(?:두지 않습니다|없음|격리|전용|금지|충돌 경고|shadowed)/i,
   },
   {
+    id: 'AI-DOCS-CODEX-SKILL-SCOPE-001',
+    description: 'OpenManager common skills must not be documented as mirrored into Codex user scope',
+    pattern:
+      /(?:(?:~\/\.codex\/skills|CODEX_HOME\/skills).*(?:OpenManager|공통|프로젝트 맞춤형|qa-state|lint-smoke|git-workflow).*(?:mirror|미러|복원|복구|복사|동기화|sync|이동|가져|넣)|(?:OpenManager|공통|프로젝트 맞춤형|qa-state|lint-smoke|git-workflow).*(?:~\/\.codex\/skills|CODEX_HOME\/skills).*(?:mirror|미러|복원|복구|복사|동기화|sync|이동|가져|넣))/i,
+    allowPattern: /(?:두지 않습니다|만들지 않습니다|없음|격리|전용|금지|충돌 경고|shadowed|not sync|does not mirror)/i,
+  },
+  {
+    id: 'AI-DOCS-CODEX-MCP-SCOPE-001',
+    description: 'OpenManager Codex MCP must be documented as project .codex/config.toml, not global ~/.codex/config.toml',
+    pattern:
+      /(?:(?:~\/\.codex\/config\.toml|user-scope|전역).*(?:OpenManager MCP|mcp_servers|MCP).*(?:복구|추가|저장|병합\(|병합하여|병합합니다|넣)|(?:OpenManager MCP|mcp_servers|MCP).*(?:~\/\.codex\/config\.toml|user-scope|전역).*(?:복구|추가|저장|병합\(|병합하여|병합합니다|넣))/i,
+    allowPattern: /(?:추가하지 않습니다|두지 않습니다|없음|격리|전용|금지|project \.codex\/config\.toml)/i,
+  },
+  {
     id: 'AI-DOCS-TOKEN-EXAMPLE-001',
     description: 'AI docs must not include realistic token examples',
     pattern:

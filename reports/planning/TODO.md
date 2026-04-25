@@ -31,6 +31,19 @@
 
 ## Recent Completed
 
+### Completed (2026-04-25 #177)
+- [x] Codex MCP token backup hardening 및 검색 MCP 도입 기준 정리
+  - `.codex/config.toml.bak.*`에 남아 있던 legacy MCP token 값을 local redaction 처리
+  - `setup-codex-project-config.sh`가 timestamp backup을 생성할 때 GitHub/Supabase/Tavily/Brave/Vercel 계열 secret pattern을 redaction하도록 개선
+  - `codex:check`에 local Codex TOML secret pattern 검사를 추가해 재발을 차단
+  - Tavily/Brave Search MCP는 Codex 내장 웹 검색으로 충분한 일반 리서치에는 상시 등록하지 않고, 교차 에이전트 재현성·extract/crawl·JSON 검색 계약이 필요할 때만 온디맨드 검토하도록 문서화
+  - 검증:
+    - `npm run codex:check`
+    - `bash scripts/mcp/mcp-health-check-codex.sh --no-live-probe`
+    - `npm run docs:ai-consistency`
+    - `npm run docs:budget`
+    - `npm run docs:lint:changed`
+
 ### Completed (2026-04-24 #176)
 - [x] Supabase RAG extension search_path repair 완료
   - remote `20260416225546_move_extensions_to_extensions_schema`와 local migration timestamp 불일치를 정렬

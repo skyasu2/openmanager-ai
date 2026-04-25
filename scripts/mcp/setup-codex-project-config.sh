@@ -9,7 +9,7 @@ Usage:
 What it does:
   1) Renders the tracked Codex project config template
   2) Replaces __REPO_ROOT__ / __HOME__ placeholders
-  3) Writes .codex/config.toml with a timestamped backup when the file already exists
+  3) Writes .codex/config.toml with a redacted timestamped backup when the file already exists
 EOF
 }
 
@@ -45,6 +45,26 @@ if [[ ! -f "$TEMPLATE_FILE" ]]; then
   exit 2
 fi
 
+write_redacted_backup() {
+  local src="$1"
+  local dst="$2"
+
+  awk '
+    {
+      line = $0
+      if (line ~ /^[[:space:]]*(GITHUB_PERSONAL_ACCESS_TOKEN|GITHUB_TOKEN|TAVILY_API_KEY|BRAVE_API_KEY|SUPABASE_ACCESS_TOKEN|VERCEL_API_KEY)[[:space:]]*=/) {
+        sub(/=.*/, "= \"__REDACTED_LOCAL_BACKUP__\"", line)
+      }
+      gsub(/tavilyApiKey=[^"&[:space:]]+/, "tavilyApiKey=__REDACTED_LOCAL_BACKUP__", line)
+      gsub(/ghp_[[:alnum:]_]+/, "__REDACTED_GITHUB_TOKEN__", line)
+      gsub(/github_pat_[[:alnum:]_]+/, "__REDACTED_GITHUB_TOKEN__", line)
+      gsub(/tvly-[[:alnum:]_-]+/, "__REDACTED_TAVILY_TOKEN__", line)
+      gsub(/sbp_[[:alnum:]_]+/, "__REDACTED_SUPABASE_TOKEN__", line)
+      print line
+    }
+  ' "$src" > "$dst"
+}
+
 mkdir -p "$(dirname "$CONFIG_FILE")"
 
 rendered_file="$(mktemp)"
@@ -78,7 +98,7 @@ fi
 
 if [[ -f "$CONFIG_FILE" ]]; then
   backup_file="${CONFIG_FILE}.bak.$(date +%Y%m%d-%H%M%S)"
-  cp "$CONFIG_FILE" "$backup_file"
+  write_redacted_backup "$CONFIG_FILE" "$backup_file"
   echo "Backup: $backup_file"
 fi
 

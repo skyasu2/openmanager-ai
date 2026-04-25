@@ -10,6 +10,7 @@ const legacyGeminiSyncScriptPath = path.join(
   root,
   'scripts/skills/sync-gemini-skills.sh'
 );
+const codexSyncScriptPath = path.join(root, 'scripts/skills/sync-codex-skills.sh');
 interface PackageJson {
   scripts?: Record<string, string>;
 }
@@ -66,6 +67,17 @@ function userGeminiSkills(): string[] {
     .sort();
 }
 
+function userCodexSkills(): string[] {
+  const home = process.env.HOME;
+  if (!home) return [];
+  const base = path.join(home, '.codex/skills');
+  if (!fs.existsSync(base)) return [];
+  return (fs.readdirSync(base, { withFileTypes: true }) as DirectoryEntry[])
+    .filter((entry) => entry.isDirectory() && hasSkillMd(path.join(base, entry.name)))
+    .map((entry) => entry.name)
+    .sort();
+}
+
 function parseFrontmatter(content: string): Frontmatter {
   if (!content.startsWith('---\n')) return {};
   const end = content.indexOf('\n---', 4);
@@ -100,6 +112,17 @@ if (fs.existsSync(legacyGeminiSyncScriptPath)) {
   );
 }
 
+if (fs.existsSync(codexSyncScriptPath)) {
+  const codexSyncScript = fs.readFileSync(codexSyncScriptPath, 'utf8') as string;
+  if (
+    /(?:CODEX_SKILLS|MANAGED_SKILLS_FILE)=["']?\$HOME\/\.codex\/skills/.test(
+      codexSyncScript
+    )
+  ) {
+    fail('scripts/skills/sync-codex-skills.sh must not sync OpenManager skills into Codex user scope');
+  }
+}
+
 if (fs.existsSync(packagePath)) {
   const packageJson = readJson<PackageJson>(packagePath);
   const scripts = packageJson.scripts || {};
@@ -117,6 +140,13 @@ if (fs.existsSync(packagePath)) {
     ) {
       fail(`package.json ${name} must not sync OpenManager skills into Gemini user scope`);
     }
+
+    if (
+      typeof command === 'string' &&
+      /(?:~\/\.codex\/skills|\$HOME\/\.codex\/skills)/.test(command)
+    ) {
+      fail(`package.json ${name} must not sync OpenManager skills into Codex user scope`);
+    }
   }
 }
 
@@ -129,8 +159,10 @@ if (!fs.existsSync(baselinePath)) {
 
   const agentsSkills = skillDirs('.agents/skills');
   const claudeSkills = skillDirs('.claude/skills');
+  const codexProjectLocalSkills = skillDirs('.codex/skills');
   const geminiOverlaySkills = skillDirs('.gemini/skills');
   const geminiUserSkills = userGeminiSkills();
+  const codexUserSkills = userCodexSkills();
   const geminiOverlayIgnoreCheck = spawnSync(
     'git',
     ['check-ignore', '--quiet', '--', '.gemini/skills/gemini-example/SKILL.md'],
@@ -189,6 +221,18 @@ if (!fs.existsSync(baselinePath)) {
       fail(`.gemini/skills/${overlay}: same-name overlay is shadowed by .agents/skills/${overlay}`);
     } else {
       warn(`.gemini/skills/${overlay}: Gemini-only overlay present`);
+    }
+  }
+
+  for (const codexProjectLocalSkill of codexProjectLocalSkills) {
+    if (agentsSkills.includes(codexProjectLocalSkill)) {
+      fail(`.codex/skills/${codexProjectLocalSkill}: duplicate local Codex skill is shadowed by .agents/skills/${codexProjectLocalSkill}; run scripts/ai/setup-codex-project-scope.sh`);
+    }
+  }
+
+  for (const userSkill of codexUserSkills) {
+    if (agentsSkills.includes(userSkill)) {
+      fail(`~/.codex/skills/${userSkill}: user-scope OpenManager skill copy is shadowed by .agents/skills/${userSkill}; run scripts/ai/setup-codex-project-scope.sh`);
     }
   }
 

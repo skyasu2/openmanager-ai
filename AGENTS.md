@@ -32,11 +32,10 @@
 | `.agents/skills/` | repo-local canonical path (`SKILL.md` + `agents/openai.yaml` + `references/`). Codex 공식 경로이며 Gemini에서도 같은 tier의 `.gemini/skills/`보다 우선 | Codex CLI + Gemini CLI |
 | `.gemini/skills/` | Gemini-only overlay path. `.agents/skills/`와 같은 이름의 skill 생성 금지 | Gemini CLI |
 | `.claude/skills/` | Claude project path. `allowed-tools`, `disable-model-invocation` 등 Claude 전용 frontmatter 유지 | Claude Code |
-| `~/.codex/skills/` | Codex user-scope installed skills / 로컬 mirror (git ignore) | Codex CLI |
 | `config/ai/skill-baselines.json` | skill별 공통 기준, 불변조건, native adapter 경로 | All AI |
 
 > **Codex 스킬 동작**: 최신 공개 문서 기준 Codex는 repo `.agents/skills/`를 직접 발견합니다.
-> 이 저장소의 `npm run skills:sync:codex`는 `~/.codex/skills/` user-scope mirror를 갱신하는 보조 경로입니다.
+> OpenManager 공통 skill은 `.agents/skills/`에만 두며, `~/.codex/skills/` 또는 `.codex/skills/`에 같은 이름의 복사본을 만들지 않습니다.
 >
 > **Gemini 스킬 동작**: 최신 Gemini CLI는 `.agents/skills/`와 `.gemini/skills/`를 모두 스캔하며 같은 workspace tier에서는 `.agents/skills/`를 우선합니다.
 > 이 저장소에서는 Gemini가 `.agents/skills/`를 공통 adapter로 사용하고, `.gemini/skills/`는 Gemini-only 추가 skill에만 사용합니다.
@@ -47,7 +46,6 @@
 - Claude 전용 adapter 반영 → `.claude/skills/<skill>/`
 - Gemini-only 추가 skill → `.gemini/skills/gemini-<name>/` 사용, `.agents/skills`와 같은 이름 금지
 - 변경 후 → `npm run skills:check`
-- 선택 사항: `npm run skills:sync:codex`로 `~/.codex/skills/` mirror 갱신
 - 상세 기준: `docs/guides/ai/skill-standards.md`
 
 ### 2.3 MCP 운영 규칙 (Codex)
@@ -142,4 +140,4 @@ plan 파일이 있는 작업은 아래 순서를 따른다.
 - 공통 정책이 변경되는 경우 이 파일이 아닌 `docs/guides/ai/ai-standards.md`를 갱신해야 합니다.
 
 ---
-_Last reviewed: 2026-04-24_
+_Last reviewed: 2026-04-25_

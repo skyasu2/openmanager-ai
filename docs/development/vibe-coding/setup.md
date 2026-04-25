@@ -101,6 +101,7 @@ claude             # 대화형 모드 시작
 - Codex runtime: 직접 `codex`보다 `bash scripts/mcp/codex-local.sh ...` 경로를 우선 사용
 - Codex auth/env: GitHub/Supabase 토큰은 `.codex/config.toml`에 직접 넣지 않고 런타임에 shell env 또는 `.env.local`에서 주입
 - Codex config 선택: `scripts/mcp/resolve-runtime-env.sh`가 기본적으로 project `/.codex`를 home `~/.codex`보다 우선
+- Codex scope: OpenManager MCP는 project `.codex/config.toml`, 공통 skill은 `.agents/skills`만 사용합니다. `~/.codex/skills`와 `.codex/skills`에 OpenManager 공통 skill 복사본을 두지 않습니다.
 - Gemini runtime: MCP discovery가 필요하면 `GEMINI_CLI_TRUST_WORKSPACE=true GEMINI_CLI_NO_RELAUNCH=true gemini ...` 또는 `bash scripts/mcp/run-with-project-env.sh gemini ...` 경로를 사용. 핵심은 workspace trust와 no-relaunch를 명시하는 것입니다.
 - Gemini scope: 공식 `gemini mcp add` 기본 scope는 `project`입니다. OpenManager 전용 MCP는 tracked `.gemini/settings.json`에서 관리하고, user settings는 개인 preference 영역으로 유지합니다.
 - Claude 로컬: `.mcp.json` + `.claude/settings.local.json`
@@ -140,6 +141,7 @@ codex --version
 # 프로젝트 기준 MCP 확인
 bash scripts/mcp/codex-local.sh mcp list
 bash scripts/mcp/mcp-health-check-codex.sh --no-live-probe
+npm run codex:check
 GEMINI_CLI_TRUST_WORKSPACE=true GEMINI_CLI_NO_RELAUNCH=true gemini mcp list --debug
 npm run skills:check
 ```

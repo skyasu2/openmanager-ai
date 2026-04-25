@@ -174,7 +174,7 @@ npm run storybook:build:ci
 # 공통 baseline과 native adapter drift 검사
 npm run skills:check
 
-# Codex user-scope mirror 갱신이 필요한 경우
+# Codex는 .agents/skills를 직접 사용하므로 user-scope mirror를 만들지 않음
 npm run skills:sync:codex
 ```
 

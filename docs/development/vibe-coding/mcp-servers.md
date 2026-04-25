@@ -29,6 +29,22 @@
 
 제거된 상시 MCP: `context7`, `sequential-thinking`, standalone `lighthouse`, `stitch`. 필요 시 명시 요청 또는 전용 스크립트로만 사용합니다.
 
+## 검색 MCP 도입 기준
+
+`tavily`, `brave-search` 같은 외부 검색 MCP는 현재 상시 등록하지 않습니다. Codex 세션의 내장 웹 검색으로 최신 문서 확인, 출처 비교, 링크 기반 분석이 충분하고, 별도 MCP를 추가하면 API key 관리, 사용량 quota, startup surface가 늘어납니다.
+
+도입 후보가 되는 경우:
+
+- Claude/Gemini/Codex가 같은 검색 도구를 공유해야 하는 교차 에이전트 재현성이 필요함
+- 단순 검색이 아니라 다중 URL extract/crawl, 도메인 필터, 검색 결과 JSON 계약이 작업 산출물에 직접 필요함
+- 특정 QA/리서치 자동화에서 검색 호출량과 비용 한도를 명확히 통제할 수 있음
+
+도입하지 않는 경우:
+
+- 일반적인 최신 문서 확인, 공식 문서 인용, 제품/가격 비교 정도의 일회성 리서치
+- Codex 웹 검색 결과로 충분히 출처 검증이 되는 분석
+- 별도 API key를 `.env.local`에 추가해야 하지만 운영상 반복 사용 근거가 약한 경우
+
 ## 설정 파일 구조
 
 | 파일 | 대상 | Git 추적 | 역할 |
@@ -76,6 +92,7 @@ Codex MCP 서버 목록의 단일 기준은 `.codex/config.toml`의 `[mcp_server
 # project Codex config 생성/검증
 bash scripts/mcp/setup-codex-project-config.sh --dry-run
 bash scripts/mcp/setup-codex-project-config.sh
+npm run codex:check
 
 # project-scoped Codex wrapper
 bash scripts/mcp/codex-local.sh mcp list
@@ -85,6 +102,8 @@ bash scripts/mcp/mcp-health-check-codex.sh
 bash scripts/mcp/mcp-health-check-codex.sh --no-live-probe
 bash scripts/mcp/mcp-health-check-codex.sh --probe supabase-db
 ```
+
+Codex MCP는 project `.codex/config.toml`만 OpenManager 서버 목록을 보유합니다. `~/.codex/config.toml`은 개인 model/ui/project trust 같은 user preference만 유지하고, OpenManager `mcp_servers` 블록을 추가하지 않습니다. 중복이 남아 있으면 `bash scripts/ai/setup-codex-project-scope.sh`로 백업 격리 후 `npm run codex:check`를 실행합니다.
 
 현재 Codex 요약:
 

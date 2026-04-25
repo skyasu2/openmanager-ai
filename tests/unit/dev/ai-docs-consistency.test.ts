@@ -148,4 +148,34 @@ describe('AI docs consistency check', () => {
       ])
     );
   });
+
+  it('flags mirroring OpenManager common skills into Codex user scope', () => {
+    const findings = checkContent(
+      'docs/development/vibe-coding/skills.md',
+      'qa-state, lint-smoke, git-workflow 같은 공통 스킬을 ~/.codex/skills 로 동기화합니다.'
+    );
+
+    expect(findings).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          ruleId: 'AI-DOCS-CODEX-SKILL-SCOPE-001',
+        }),
+      ])
+    );
+  });
+
+  it('flags restoring OpenManager Codex MCP into global config', () => {
+    const findings = checkContent(
+      'docs/development/vibe-coding/mcp-servers.md',
+      'OpenManager MCP 복구: ~/.codex/config.toml에 mcp_servers 블록을 추가합니다.'
+    );
+
+    expect(findings).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          ruleId: 'AI-DOCS-CODEX-MCP-SCOPE-001',
+        }),
+      ])
+    );
+  });
 });
