@@ -31,7 +31,7 @@ scripts/
 │   ├── check-ai-docs-consistency.ts
 │   ├── doc-budget-report.js   # 문서 예산 리포트
 │   ├── check-internal-links.js
-│   ├── generate-inventory.js
+│   ├── generate-inventory.ts
 │   └── lint-changed.sh
 ├── env/               # 환경변수 & 보안
 │   ├── check-env.ts           # 환경변수 검증

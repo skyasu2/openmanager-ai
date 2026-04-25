@@ -79,7 +79,7 @@ npm run docs:ai-consistency
 npm run docs:budget
 
 # 문서 인벤토리 갱신 (reports/docs/docs-inventory.md)
-node scripts/docs/generate-inventory.js
+npm run docs:inventory
 
 # 컴포넌트 의존도 맵 갱신 (markdown + json)
 npm run docs:components:map

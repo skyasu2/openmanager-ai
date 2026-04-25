@@ -32,7 +32,7 @@
 | 공개 스크립트 필터 | `scripts/sync/filter-public-scripts.js` | public package.json 스크립트 최소화에 재사용 가능 |
 | Renovate 실행 래퍼 | `scripts/renovate/run-self-hosted.sh` | self-hosted dependency automation baseline |
 | Renovate 설정 검증 | `scripts/renovate/check-config.sh` | config validation을 런타임과 같은 경로로 고정 |
-| 문서 점검 스크립트 | `scripts/docs/check-docs.sh`, `scripts/docs/generate-inventory.js` | docs-as-code 운영 baseline |
+| 문서 점검 스크립트 | `scripts/docs/check-docs.sh`, `scripts/docs/generate-inventory.ts` | docs-as-code 운영 baseline |
 
 ### B. 부분 수정 후 재사용 가능
 
@@ -107,7 +107,7 @@ scripts/dev/typecheck-changed.sh
 scripts/dev/typecheck-scope.js
 scripts/ci/local-docker-ci.sh
 scripts/docs/check-docs.sh
-scripts/docs/generate-inventory.js
+scripts/docs/generate-inventory.ts
 docs/development/README.md
 docs/development/ci-cd.md
 docs/development/environment-variables.md

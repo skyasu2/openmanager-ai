@@ -4,7 +4,7 @@ set -euo pipefail
 DOC_PATH="docs/reference/architecture/system/component-dependency-map.md"
 JSON_PATH="reports/docs/component-dependency-map.json"
 
-node scripts/docs/generate-component-dependency-map.js >/dev/null
+npm run --silent docs:components:map >/dev/null
 
 if [[ ! -f "$DOC_PATH" ]]; then
   echo "ERROR: Missing generated file: $DOC_PATH"

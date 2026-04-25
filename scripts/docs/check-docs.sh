@@ -131,12 +131,12 @@ echo -e "  📄 총 문서 수: ${GREEN}${TOTAL_DOCS}${NC}개"
 echo -e "  📝 총 라인 수: ${GREEN}${TOTAL_LINES}${NC}줄"
 echo -e "  📏 400줄 초과 문서: ${YELLOW}${LARGE_DOCS}${NC}개"
 
-node scripts/docs/generate-inventory.js >/dev/null
+npm run --silent docs:inventory >/dev/null
 echo -e "  📦 인벤토리 갱신: ${GREEN}reports/docs/docs-inventory.md${NC}"
 
 # 7. 컴포넌트 의존도 맵 갱신
 echo -e "\n${YELLOW}[7/7] 컴포넌트 의존도 맵 갱신${NC}"
-if node scripts/docs/generate-component-dependency-map.js >/dev/null 2>&1; then
+if npm run --silent docs:components:map >/dev/null 2>&1; then
   echo -e "  🗺️  의존도 맵 갱신: ${GREEN}docs/reference/architecture/system/component-dependency-map.md${NC}"
   echo -e "  📊 기계판독 리포트: ${GREEN}reports/docs/component-dependency-map.json${NC}"
 else

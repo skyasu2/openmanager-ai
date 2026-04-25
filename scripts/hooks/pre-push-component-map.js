@@ -4,7 +4,7 @@ const COMPONENT_SOURCE_PREFIX = 'src/components/';
 const APP_COMPONENT_SEGMENT = '/components/';
 const COMPONENT_MAP_DOC = 'docs/reference/architecture/system/component-dependency-map.md';
 const COMPONENT_MAP_JSON = 'reports/docs/component-dependency-map.json';
-const COMPONENT_MAP_GENERATOR = 'scripts/docs/generate-component-dependency-map.js';
+const COMPONENT_MAP_GENERATOR = 'scripts/docs/generate-component-dependency-map.ts';
 const COMPONENT_MAP_VERIFIER = 'scripts/docs/verify-component-dependency-map.sh';
 
 function normalize(filePath) {
