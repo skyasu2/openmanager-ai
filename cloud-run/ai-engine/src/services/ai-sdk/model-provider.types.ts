@@ -1,10 +1,9 @@
-export type ProviderName = 'cerebras' | 'groq' | 'mistral' | 'gemini' | 'openrouter' | 'sambanova';
+export type ProviderName = 'cerebras' | 'groq' | 'mistral' | 'gemini' | 'openrouter';
 
 export interface ProviderStatus {
   cerebras: boolean;
   groq: boolean;
   mistral: boolean;
-  sambanova: boolean;
   gemini: boolean;
   openrouter: boolean;
 }

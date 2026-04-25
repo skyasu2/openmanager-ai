@@ -52,7 +52,7 @@ export interface AIProvidersConfig {
   tavilyBackup?: string; // Failover key
   gemini?: string; // Vision Agent - Gemini 2.5 Flash-Lite
   openrouter?: string; // Fallback Vision
-  sambanova?: string; // SambaNova Cloud - text fallback (20M TPD free)
+  sambanova?: string; // SambaNova Cloud - text fallback (Free: 200K TPD; Developer: 20M TPD account-wide)
 }
 
 /**
@@ -300,7 +300,8 @@ export const DEPRECATED_CEREBRAS_QWEN_MODEL_ID = 'qwen-3-235b-a22b-instruct-2507
 export const CEREBRAS_QWEN_DEPRECATION_DATE = '2026-05-27';
 export const DEFAULT_CEREBRAS_MODEL = 'gpt-oss-120b';
 const DEFAULT_GROQ_MODEL = 'meta-llama/llama-4-scout-17b-16e-instruct';
-// SambaNova Cloud — OpenAI-compatible. Free tier: 20 RPM, 20M TPD, tool calling ✅
+// SambaNova Cloud — OpenAI-compatible. Free tier: 20 RPM, 20 RPD, 200K TPD.
+// Developer tier has higher request limits and 20M account-wide TPD.
 // @see https://docs.sambanova.ai/docs/en/models/rate-limits
 const DEFAULT_SAMBANOVA_MODEL = 'Meta-Llama-3.3-70B-Instruct';
 export const SAMBANOVA_BASE_URL = 'https://api.sambanova.ai/v1';
@@ -373,7 +374,7 @@ export function getGeminiApiKey(): string | null {
 }
 
 /**
- * Get SambaNova API Key (text fallback, 20M TPD free)
+ * Get SambaNova API Key (text fallback; Free tier: 200K TPD)
  * Uses AI_PROVIDERS_CONFIG or falls back to individual env var
  * @see https://docs.sambanova.ai/docs/en/models/rate-limits
  * @added 2026-04-25
@@ -386,7 +387,7 @@ export function getSambaNovaApiKey(): string | null {
 
 /**
  * Get SambaNova model ID.
- * Default: Meta-Llama-3.3-70B-Instruct (tool calling ✅, 20 RPM free)
+ * Default: Meta-Llama-3.3-70B-Instruct (tool calling ✅, 20 RPM / 20 RPD free)
  */
 export function getSambaNovaModelId(): string {
   return process.env.SAMBANOVA_MODEL_ID || DEFAULT_SAMBANOVA_MODEL;

@@ -5,7 +5,6 @@ import {
   getCerebrasModelId,
   getGroqModelId,
   getOpenRouterVisionModelId,
-  getSambaNovaModelId,
 } from '../../lib/config-parser';
 import type { ProviderName } from './model-provider.types';
 
@@ -97,9 +96,9 @@ export function getRuntimeProviderModelMetadata(): ProviderModelMetadata[] {
       provider: 'groq',
       role: 'primary tool-calling text path',
       modelId: getGroqModelId(),
-      lifecycle: 'production',
-      productionModel: true,
-      preview: false,
+      lifecycle: 'preview',
+      productionModel: false,
+      preview: true,
       deprecated: false,
       contextWindowTokens: 131072,
       freeTierLimitSummary: '30 RPM / 30K TPM / 1K RPD / 500K TPD',
@@ -150,21 +149,6 @@ export function getRuntimeProviderModelMetadata(): ProviderModelMetadata[] {
       sourceUrls: [
         'https://openrouter.ai/docs/api/reference/limits',
         'https://openrouter.ai/pricing',
-      ],
-    },
-    {
-      provider: 'sambanova',
-      role: 'secondary text fallback (Groq → Cerebras → SambaNova → Mistral)',
-      modelId: getSambaNovaModelId(),
-      lifecycle: 'production',
-      productionModel: true,
-      preview: false,
-      deprecated: false,
-      contextWindowTokens: 131072,
-      freeTierLimitSummary: '20 RPM / 20M TPD (free tier, no credit card)',
-      sourceUrls: [
-        'https://docs.sambanova.ai/docs/en/models/rate-limits',
-        'https://cloud.sambanova.ai/plans',
       ],
     },
   ];

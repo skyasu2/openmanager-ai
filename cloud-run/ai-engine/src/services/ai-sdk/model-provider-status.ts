@@ -4,7 +4,6 @@ import {
   getGroqApiKey,
   getMistralApiKey,
   getOpenRouterApiKey,
-  getSambaNovaApiKey,
 } from '../../lib/config-parser';
 import { logger } from '../../lib/logger';
 import type { ProviderName, ProviderStatus } from './model-provider.types';
@@ -17,7 +16,6 @@ const providerToggleState: Record<ProviderName, boolean> = {
   cerebras: true,
   groq: true,
   mistral: true,
-  sambanova: true,
   gemini: true,
   openrouter: true,
 };
@@ -65,7 +63,6 @@ export function checkProviderStatus(): ProviderStatus {
     cerebras: !!getCerebrasApiKey() && isProviderEnabled('cerebras'),
     groq: !!getGroqApiKey() && isProviderEnabled('groq'),
     mistral: !!getMistralApiKey() && isProviderEnabled('mistral'),
-    sambanova: !!getSambaNovaApiKey() && isProviderEnabled('sambanova'),
     gemini: !!getGeminiApiKey() && isProviderEnabled('gemini'),
     openrouter: !!getOpenRouterApiKey() && isProviderEnabled('openrouter'),
   };

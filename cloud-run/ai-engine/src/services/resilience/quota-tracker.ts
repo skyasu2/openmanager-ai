@@ -19,7 +19,7 @@ import { logger } from '../../lib/logger';
 // ============================================================================
 
 /** LLM Provider 이름 (모델 선택용) */
-export type LLMProviderName = 'cerebras' | 'groq' | 'mistral' | 'sambanova' | 'gemini';
+export type LLMProviderName = 'cerebras' | 'groq' | 'mistral' | 'gemini';
 
 /** 전체 Provider 이름 (LLM + 외부 API) */
 export type ProviderName = LLMProviderName | 'tavily';
@@ -52,7 +52,7 @@ export interface QuotaStatus {
 }
 
 // ============================================================================
-// Provider Quota 설정 (2026-03-06 기준)
+// Provider Quota 설정 (Free-tier production guard 기준)
 // ============================================================================
 
 export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {
@@ -107,19 +107,6 @@ export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {
     requestsPerMinute: 15,
     tokensPerMinute: 250_000,
     requestsPerDay: 1_000,
-  },
-  /**
-   * SambaNova Cloud (text fallback, Llama 3.3 70B)
-   * @see https://docs.sambanova.ai/docs/en/models/rate-limits
-   * @added 2026-04-25
-   *
-   * Free Tier: 20 RPM, 20M TPD — no credit card required
-   */
-  sambanova: {
-    dailyTokenLimit: 20_000_000,
-    requestsPerMinute: 20,
-    tokensPerMinute: 60_000,
-    requestsPerDay: 20_000,
   },
   /**
    * Tavily Web Search API
@@ -377,7 +364,6 @@ export async function getQuotaSummary(): Promise<{
     'cerebras',
     'groq',
     'mistral',
-    'sambanova',
     'gemini',
     'tavily',
   ];

@@ -4,7 +4,7 @@ import {
 } from '../../lib/config-parser';
 import type { ModelCapabilities, ProviderName } from './model-provider.types';
 
-export type TextProviderName = Extract<ProviderName, 'cerebras' | 'groq' | 'mistral' | 'sambanova'>;
+export type TextProviderName = Extract<ProviderName, 'cerebras' | 'groq' | 'mistral'>;
 
 export interface ModelCapabilityRequirements {
   requireToolCalling?: boolean;
@@ -48,14 +48,6 @@ export function getProviderCapabilities(provider: ProviderName): ModelCapabiliti
         supportsToolCalling: isOpenRouterVisionToolCallingEnabled(),
         supportsStructuredOutput: true,
         supportsVision: true,
-        supportsLongContext: true,
-      };
-    case 'sambanova':
-      return {
-        // OpenAI-compatible; Llama 3.3 70B tool calling ✅ (function calling spec 지원)
-        supportsToolCalling: true,
-        supportsStructuredOutput: true,
-        supportsVision: false,
         supportsLongContext: true,
       };
   }

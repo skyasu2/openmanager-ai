@@ -46,15 +46,6 @@ export const AI_PROVIDERS: AIProviderConfig[] = [
     dailyTokenLimit: '1M tokens/day',
   },
   {
-    name: 'SambaNova',
-    role: 'Secondary text fallback (20M TPD)',
-    model: 'Meta-Llama-3.3-70B-Instruct',
-    description:
-      'OpenAI-compatible fallback with generous free tier (20M tokens/day). Activates when Groq/Cerebras are unavailable.',
-    color: 'bg-orange-500',
-    dailyTokenLimit: '20M tokens/day',
-  },
-  {
     name: 'Mistral',
     role: 'Last-resort text fallback',
     model: 'mistral-large-latest',

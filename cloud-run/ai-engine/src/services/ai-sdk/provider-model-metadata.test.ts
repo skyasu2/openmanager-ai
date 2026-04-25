@@ -60,19 +60,13 @@ describe('provider model metadata', () => {
       'mistral',
       'gemini',
       'openrouter',
-      'sambanova',
     ]);
     expect(getDeprecatedRuntimeProviderModels(metadata)).toEqual([]);
     expect(metadata.find((entry) => entry.provider === 'groq')).toMatchObject({
       modelId: 'meta-llama/llama-4-scout-17b-16e-instruct',
-      lifecycle: 'production',
-      productionModel: true,
-      preview: false,
-    });
-    expect(metadata.find((entry) => entry.provider === 'sambanova')).toMatchObject({
-      modelId: 'Meta-Llama-3.3-70B-Instruct',
-      lifecycle: 'production',
-      productionModel: true,
+      lifecycle: 'preview',
+      productionModel: false,
+      preview: true,
     });
     expect(metadata.find((entry) => entry.provider === 'gemini')).toMatchObject({
       modelId: 'gemini-2.5-flash-lite',

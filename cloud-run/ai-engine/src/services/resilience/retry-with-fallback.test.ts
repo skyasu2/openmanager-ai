@@ -56,6 +56,7 @@ import {
 describe('generateTextWithRetry', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockGenerateText.mockReset();
     __resetRetryBudgetForTests();
     mockCheckProviderStatus.mockReturnValue({
       cerebras: true,
@@ -188,5 +189,40 @@ describe('generateTextWithRetry', () => {
     expect(result.attempts).toHaveLength(1);
     expect(result.attempts[0]?.provider).toBe('cerebras');
     expect(mockGenerateText).toHaveBeenCalledTimes(1);
+  });
+
+  it('falls back to Mistral as last resort after Groq and Cerebras fail', async () => {
+    mockGenerateText
+      .mockRejectedValueOnce(new Error('rate limit exceeded: 429'))
+      .mockRejectedValueOnce(new Error('service unavailable: 503'))
+      .mockResolvedValueOnce({
+        text: 'ok from mistral',
+        steps: [],
+        usage: { inputTokens: 4, outputTokens: 3, totalTokens: 7 },
+      });
+
+    const result = await generateTextWithRetry(
+      {
+        messages: [{ role: 'user', content: 'fallback chain smoke' }],
+      },
+      undefined,
+      {
+        maxRetries: 0,
+        fallbackDelayMs: 0,
+        fallbackJitterMs: 0,
+        retryBudgetPerMinute: 10,
+        timeoutMs: 3000,
+      }
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.provider).toBe('mistral');
+    expect(result.usedFallback).toBe(true);
+    expect(result.attempts.map((attempt) => attempt.provider)).toEqual([
+      'groq',
+      'cerebras',
+      'mistral',
+    ]);
+    expect(mockGetMistralModel).toHaveBeenCalledWith('mistral-large-latest');
   });
 });

@@ -3,7 +3,6 @@ import {
   getCerebrasModelId,
   getGroqModelId,
   getOpenRouterVisionModelId,
-  getSambaNovaModelId,
 } from '../../../../lib/config-parser';
 import { logger } from '../../../../lib/logger';
 import { getCircuitBreaker } from '../../../resilience/circuit-breaker';
@@ -20,7 +19,6 @@ import {
   getGroqModel,
   getMistralModel,
   getOpenRouterVisionModel,
-  getSambaNovaModel,
 } from '../../model-provider';
 import type { ModelCapabilities, ProviderName } from '../../model-provider.types';
 
@@ -35,36 +33,30 @@ export interface ModelResult {
 // Text Provider → Model SSOT
 // ============================================================================
 
-export type TextProvider = 'cerebras' | 'groq' | 'mistral' | 'sambanova';
+export type TextProvider = 'cerebras' | 'groq' | 'mistral';
 
-const TEXT_PROVIDER_MODELS: Record<TextProvider, { 
-  factory: (id: string) => LanguageModel; 
+const TEXT_PROVIDER_MODELS: Record<TextProvider, {
+  factory: (id: string) => LanguageModel;
   modelId: () => string;
   capabilities: ModelCapabilities | (() => ModelCapabilities);
 }> = {
-  // Cerebras GPT-OSS production candidate - structured-output primary, tool loop opt-in.
-  cerebras: { 
-    factory: getCerebrasModel, 
+  // Cerebras GPT-OSS 120b - 14.4K RPD / 1M TPD, structured-output primary, tool calling opt-in.
+  cerebras: {
+    factory: getCerebrasModel,
     modelId: () => getCerebrasModelId(),
     capabilities: () => getTextProviderCapabilities('cerebras')
   },
-  // Llama 4 Scout (17B Preview) - 500K TPD, 30K TPM, 131K ctx, tool calling ✅.
-  groq: { 
-    factory: getGroqModel, 
+  // Groq Llama 4 Scout (17B Preview) - 1K RPD / 500K TPD, 131K ctx, tool calling ✅.
+  groq: {
+    factory: getGroqModel,
     modelId: () => getGroqModelId(),
     capabilities: () => getTextProviderCapabilities('groq')
   },
-  // Mistral Large - Frontier급 성능, free tier quota 낮음 (~2 RPM)
+  // Mistral Large - Frontier급 성능, free tier ~2 RPM / 500 RPD. Last resort.
   mistral: {
     factory: getMistralModel,
     modelId: () => 'mistral-large-latest',
     capabilities: () => getTextProviderCapabilities('mistral')
-  },
-  // SambaNova Cloud — OpenAI-compatible, Llama 3.3 70B, tool calling ✅, 20M TPD free
-  sambanova: {
-    factory: getSambaNovaModel,
-    modelId: () => getSambaNovaModelId(),
-    capabilities: () => getTextProviderCapabilities('sambanova'),
   },
 };
 
@@ -164,7 +156,7 @@ export function selectTextModel(
  * NLQ model: Groq(llama-4-scout) → Cerebras(gpt-oss-120b) → SambaNova(Llama-3.3-70B) → Mistral
  */
 export function getNlqModel(): ModelResult | null {
-  return selectTextModel('NLQ Agent', ['groq', 'cerebras', 'sambanova', 'mistral'], {
+  return selectTextModel('NLQ Agent', ['groq', 'cerebras', 'mistral'], {
     requiredCapabilities: { requireToolCalling: true },
   });
 }
@@ -173,7 +165,7 @@ export function getNlqModel(): ModelResult | null {
  * Analyst model: Groq(llama-4-scout) → Cerebras(gpt-oss-120b) → SambaNova(Llama-3.3-70B) → Mistral
  */
 export function getAnalystModel(): ModelResult | null {
-  return selectTextModel('Analyst Agent', ['groq', 'cerebras', 'sambanova', 'mistral'], {
+  return selectTextModel('Analyst Agent', ['groq', 'cerebras', 'mistral'], {
     requiredCapabilities: { requireToolCalling: true },
   });
 }
@@ -182,17 +174,17 @@ export function getAnalystModel(): ModelResult | null {
  * Reporter model: Groq(llama-4-scout) → Cerebras(gpt-oss-120b) → SambaNova(Llama-3.3-70B) → Mistral
  */
 export function getReporterModel(): ModelResult | null {
-  return selectTextModel('Reporter Agent', ['groq', 'cerebras', 'sambanova', 'mistral'], {
+  return selectTextModel('Reporter Agent', ['groq', 'cerebras', 'mistral'], {
     requiredCapabilities: { requireToolCalling: true },
   });
 }
 
 /**
  * Advisor model: Groq(llama-4-scout) → Cerebras(gpt-oss-120b) → SambaNova(Llama-3.3-70B) → Mistral
- * SambaNova 20M TPD가 Mistral ~2 RPM보다 훨씬 넉넉하므로 Mistral 전에 배치.
+ * SambaNova는 tool-calling text fallback으로 Mistral 전에 배치하되 free-tier guard를 적용한다.
  */
 export function getAdvisorModel(): ModelResult | null {
-  return selectTextModel('Advisor Agent', ['groq', 'cerebras', 'sambanova', 'mistral'], {
+  return selectTextModel('Advisor Agent', ['groq', 'cerebras', 'mistral'], {
     requiredCapabilities: { requireToolCalling: true },
   });
 }
