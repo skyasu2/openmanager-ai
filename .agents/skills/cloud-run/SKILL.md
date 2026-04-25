@@ -8,10 +8,16 @@ description: Deploy ai-engine to Cloud Run, check GCP cost risk, and verify CLI 
 > Common baseline: before editing this skill, review `docs/guides/ai/skill-standards.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
 
 Deploy, cost-check, and CLI-access verification for Cloud Run ai-engine.
+Production deployment authority is GitLab CI. Direct `cloud-run/ai-engine/deploy.sh` is a fallback for explicit manual deploys, runner outage, or emergency recovery.
 
 ## Execute this workflow
 
 ### Workflow A: Deploy
+
+1. Choose the deploy path.
+- Default production path: committed change -> `$git-workflow` -> `git push gitlab ...` -> GitLab CI `deploy_ai_engine`.
+- Before CI deploy, check runner availability: `bash scripts/ci/runner-health-check.sh`.
+- Direct manual deploy is allowed only when the user explicitly asks for it, the runner is unavailable, or emergency recovery is needed. Report that the CI gate was skipped.
 
 1. Run preflight checks.
 - `git status --short`
@@ -22,25 +28,28 @@ Deploy, cost-check, and CLI-access verification for Cloud Run ai-engine.
   - WSL: `docker ps`
   - If WSL socket unavailable, fallback: `cmd.exe /c docker ps`
 
-2. Build local Docker image before deploy.
+1. Build local Docker image before deploy.
 - `cd cloud-run/ai-engine && npm run docker:preflight`
 - Build-only mode: `cd cloud-run/ai-engine && SKIP_RUN=true npm run docker:preflight`
 - If build fails, stop deployment and fix root cause first.
 
-3. Enforce free-tier guard rules before deploy.
+1. Enforce free-tier guard rules before deploy.
 - `rg -n "machineType|--machine-type|E2_HIGHCPU_8|N1_HIGHCPU_8" cloud-run/ai-engine/deploy.sh cloud-run/ai-engine/cloudbuild.yaml`
 - If custom machine settings are present, stop and fix before deployment.
 
-4. Deploy.
-- `cd cloud-run/ai-engine && bash deploy.sh`
+1. Deploy.
+- CI path: use `$git-workflow` to push the committed `HEAD`, then verify `npm run gitlab:pipeline:head -- --wait`. For a production release, push the prepared semver tag with `git push gitlab --follow-tags`.
+- Manual fallback only: `cd cloud-run/ai-engine && bash deploy.sh`.
 
-5. Verify service health.
+1. Verify service health.
 - `SERVICE_URL=$(gcloud run services describe ai-engine --region asia-northeast1 --format 'value(status.url)')`
 - `curl -s "${SERVICE_URL}/health"`
 - `curl -s "${SERVICE_URL}/monitoring"` (인증 없으면 401/403 예상)
 - If API key is available: `curl -s -H "Authorization: Bearer ${CLOUD_RUN_API_KEY}" "${SERVICE_URL}/monitoring"`
 
-6. Report result.
+1. Report result.
+- deploy path: `gitlab-ci` or `manual-fallback`
+- pipeline id/status/url when CI verification was possible
 - project id, deployed service URL, health check result
 - local docker prebuild result, guard check result
 - monitoring endpoint auth status (unauth expected / auth validated)
@@ -52,23 +61,23 @@ Deploy, cost-check, and CLI-access verification for Cloud Run ai-engine.
 - `gcloud auth list`
 - `gcloud config get-value project`
 
-2. Inspect recent Cloud Build machine settings.
+1. Inspect recent Cloud Build machine settings.
 - `gcloud builds list --limit=30 --format="table(id.slice(0:8),status,createTime.date(),options.machineType)"`
 - Flag any explicit machine type other than default.
 
-3. Detect paid-machine signatures.
+1. Detect paid-machine signatures.
 - `gcloud builds list --limit=200 --format=json > /tmp/gcp-builds.json`
 - Parse for `E2_HIGHCPU_8`, `N1_HIGHCPU_8`, or non-empty `options.machineType`.
 
-4. Inspect Cloud Run live limits.
+1. Inspect Cloud Run live limits.
 - `gcloud run services describe ai-engine --region asia-northeast1 --format="value(spec.template.spec.containers[0].resources.limits)"`
 - Check CPU/memory against expected baseline (1 CPU, 512Mi).
 
-5. Classify status.
+1. Classify status.
 - `FREE_TIER_OK`: no paid-machine usage, runtime within bounds.
 - `COST_WARNING`: paid-machine traces or oversized runtime limits.
 
-6. Report with concrete actions.
+1. Report with concrete actions.
 - commands to remediate, whether deployment should be blocked.
 
 ### Workflow C: CLI Access Check
@@ -76,11 +85,11 @@ Deploy, cost-check, and CLI-access verification for Cloud Run ai-engine.
 1. Verify CLI binaries exist.
 - `gcloud --version`, `vercel --version`, `supabase --version`, `docker --version`
 
-2. Verify auth source.
+1. Verify auth source.
 - Read `.codex/config.toml` MCP env sections.
 - Confirm required keys/paths exist.
 
-3. Run connectivity checks.
+1. Run connectivity checks.
 - GCP:
   - `gcloud auth list`
   - `gcloud config get-value project`
@@ -92,7 +101,7 @@ Deploy, cost-check, and CLI-access verification for Cloud Run ai-engine.
 - Supabase: `supabase projects list`
 - Docker daemon: `docker ps`
 
-4. Report with action items.
+1. Report with action items.
 - installation: ok/fail, auth source: ok/missing, live access: ok/fail
 
 ## Failure handling
@@ -101,6 +110,7 @@ Deploy, cost-check, and CLI-access verification for Cloud Run ai-engine.
 - If local Docker build fails with lock mismatch: sync lockfile and retry.
 - If sandbox blocks DNS/network/auth (`NameResolutionError`, `EAI_AGAIN`), rerun with escalated permissions.
 - If deploy succeeds but health fails, wait 10-20s and retry once.
+- If runner health fails and manual fallback is used, state explicitly that the CI gate was skipped.
 - If service regression is confirmed, follow `references/rollback.md`.
 - If CLI commands fail due to project not set, stop and request selection.
 
@@ -109,10 +119,12 @@ Deploy, cost-check, and CLI-access verification for Cloud Run ai-engine.
 ### Deploy
 ```text
 Cloud Run Deploy Results
+- deploy path: gitlab-ci | manual-fallback
 - project: <id>
 - service URL: <url>
 - health: ok|fail
 - monitoring: ok|fail
+- pipeline: <id/status/url | not_checked | skipped>
 - cost guard: pass|warn
 - rollback: gcloud run services update-traffic ...
 ```

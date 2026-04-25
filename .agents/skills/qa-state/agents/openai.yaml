@@ -1,0 +1,4 @@
+interface:
+  display_name: "OpenManager QA State"
+  short_description: "Triage state, then run QA only when needed"
+  default_prompt: "Use $openmanager-qa-state to analyze current OpenManager state, decide whether QA should run, and record QA through the tracker when needed."

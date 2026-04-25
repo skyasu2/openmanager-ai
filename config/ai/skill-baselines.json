@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastReviewed": "2026-04-24",
+  "lastReviewed": "2026-04-25",
   "policy": {
     "standardsDoc": "docs/guides/ai/skill-standards.md",
     "geminiSameNameOverlay": "forbidden",
@@ -16,6 +16,7 @@
       "purpose": "Deploy and verify the Cloud Run ai-engine within OpenManager free-tier and rollback constraints.",
       "invariants": [
         "Check cost and free-tier guardrails before deploy.",
+        "Prefer GitLab CI deploy_ai_engine as the production deploy authority; direct Cloud Run deploy is an explicit fallback.",
         "Verify Docker, type-check, service health, and rollback path.",
         "Do not suggest higher-cost Cloud Build or Cloud Run machine settings."
       ],
@@ -57,6 +58,7 @@
       "invariants": [
         "Confirm the symptom is actually environment drift before changing code.",
         "Use project sync scripts over ad hoc CLI updates.",
+        "Resolve Cloud Run service URLs from CLOUD_RUN_AI_URL or gcloud instead of hardcoding a live URL.",
         "Do not expose secret values in output or committed files."
       ],
       "adapters": {
@@ -84,6 +86,7 @@
       "invariants": [
         "Inspect remotes before push or fetch.",
         "Default push target is gitlab, not GitHub public snapshot.",
+        "After gitlab push, verify the pushed HEAD pipeline when GitLab token access is available.",
         "Do not stage or revert unrelated user changes."
       ],
       "adapters": {
@@ -119,11 +122,11 @@
       }
     },
     "qa-state": {
-      "purpose": "Combine current-state triage, QA execution, and QA tracker reporting into one workflow.",
+      "purpose": "Thin wrapper that sequences state-triage before qa-ops when a request needs both current-state analysis and QA recording.",
       "invariants": [
-        "Start from current QA status and tracker evidence.",
-        "Classify state before rerunning broad QA.",
-        "Record outcomes and recommend the smallest next action."
+        "Do not duplicate detailed state-triage or qa-ops procedures.",
+        "Run state-triage first and only continue to qa-ops when QA is the selected next action.",
+        "Record QA outcomes through qa-ops and recommend the smallest next action."
       ],
       "adapters": {
         "codex": ".agents/skills/qa-state/SKILL.md",

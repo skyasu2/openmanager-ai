@@ -1,7 +1,7 @@
 ---
 name: git-workflow
 description: Git commit, push, PR creation with conventional commits and safety rules. GitLab is canonical; GitHub is a code-only public snapshot updated via sync:github.
-version: v2.0.0
+version: v2.1.0
 user-invocable: true
 allowed-tools: Bash, Read, Grep, Edit
 disable-model-invocation: true
@@ -28,22 +28,22 @@ Git 커밋, 푸시, PR 생성을 안전한 절차로 수행합니다.
 - `git diff --cached --stat`
 - staged 변경이 없으면 중단하고 파일 지정 요청
 
-2. 커밋 범위 검증.
+1. 커밋 범위 검증.
 - 요청 범위 외 파일이 staged 되어 있으면 분리 권고
 - 코드 변경이면 최소 `npm run test:quick` 또는 대상 검증 결과 확인
 
-3. 리뷰 요청 여부 확인.
+1. 리뷰 요청 여부 확인.
 - 사용자가 리뷰를 요청했으면 `code-review` 스킬 기준으로 findings 반영 후 커밋
 
-4. 커밋 메시지 생성.
+1. 커밋 메시지 생성.
 - Conventional Commit 사용: `feat|fix|refactor|docs|chore|test`
 - 형식: `<type>(scope): <summary>`
 - 한 줄 요약으로 충분; body는 비자명한 변경에만
 
-5. 커밋 실행.
+1. 커밋 실행.
 - `git commit -m "<message>"`
 
-6. 결과 보고.
+1. 결과 보고.
 - 커밋 해시, 메시지, 변경 파일 수
 
 ## Workflow B: Push
@@ -52,31 +52,38 @@ Git 커밋, 푸시, PR 생성을 안전한 절차로 수행합니다.
 - `git remote -v` — `gitlab`이 canonical인지 검증
 - `git branch --show-current`
 
-2. 배포 범위 확인.
+1. 배포 범위 확인.
 - `git log --oneline --decorate -n 5`
 - 코드 변경 시 `npm run test:quick` 또는 대상 검증 수행
 
-3. 리뷰 요청/고위험 변경 확인.
+1. 리뷰 요청/고위험 변경 확인.
 - 고위험 변경이면 `code-review` 스킬 findings 요약 포함
 
-4. GitLab push (canonical — 배포 트리거).
+1. GitLab push (canonical).
 - 기본: `git push gitlab main`
 - 새 브랜치: `git push -u gitlab <branch>`
-- GitLab CI validate → deploy 자동 실행됨
+- branch/main은 validate, semver tag는 deploy/deploy_ai_engine/smoke 파이프라인의 권위 경로
 
-5. GitHub 동기화 (선택, 코드 변경 후).
+1. pushed HEAD의 GitLab pipeline 확인.
+- 기본 명령: `npm run gitlab:pipeline:head -- --wait`
+- `GITLAB_TOKEN`이 환경변수 또는 `.env.local`에 있으면 해당 스크립트가 pushed `HEAD` 기준 pipeline을 확인
+- `status=not_created`면 docs/reports 전용 변경처럼 pipeline이 생성되지 않았음을 명시
+- token이 없으면 자동 확인 불가를 명시
+- 최종 보고에는 가능하면 `pipeline id/status/url` 포함
+
+1. GitHub 동기화 (선택, 코드 변경 후).
 - `npm run sync:github` — code-only 스냅샷, 배포 권위 없음
 - docs·reports 전용 push는 sync:github 생략 가능
 
-6. 원격 상태 확인.
+1. 원격 상태 확인.
 - `git fetch gitlab`
 - `git status -sb`
 
 ## Workflow C: Commit → Push (일괄)
 
 1. Workflow A (Commit) 실행
-2. Workflow B (Push) 실행
-3. 통합 결과 보고
+1. Workflow B (Push) 실행
+1. 통합 결과 보고
 
 ## GitLab MR (선택)
 
@@ -104,7 +111,7 @@ Git Workflow Results
 - branch: <name>
 - commit: <hash> <message>
 - pushed commits: <count>
-- ci: GitLab CI triggered | skipped
+- ci: <pipeline id/status/url | not_created | not_verified>
 - status: success | failed
 ```
 
@@ -115,5 +122,6 @@ Git Workflow Results
 
 ## Changelog
 
+- 2026-04-25: v2.1.0 - push 후 pushed HEAD GitLab pipeline 확인 및 deploy_ai_engine 권위 경로 반영
 - 2026-02-17: v1.0.0 - commit-commands + github-deploy 병합 통합
 - 2026-04-03: v2.0.0 - GitLab canonical 명확화, GitHub MCP 도구 제거, sync:github 흐름 추가

@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-25 KST (`docs JS/TS and deployment topology refresh`)
+**Last Updated**: 2026-04-25 KST (`qa-state thin wrapper green`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI sidebar tool/UX simplification | High | Draft | RAG/Web/Thinking 계약 일관성, provider model drift guard, sidebar 기능 밀도, fullscreen 중복 배선 정리 계획. 상세: [ai-sidebar-tool-ux-simplification-plan.md](ai-sidebar-tool-ux-simplification-plan.md) |
+| AI sidebar tool/UX simplification | High | Approved | RAG/Web/Thinking 계약 일관성, used tool evidence badge green, tool copy clarification green, async job tool option propagation green, provider model drift guard green, Cerebras Qwen deprecation 대응 일부 완료, sidebar 기능 밀도, fullscreen 중복 배선 정리 계획. 상세: [ai-sidebar-tool-ux-simplification-plan.md](ai-sidebar-tool-ux-simplification-plan.md) |
 
 ---
 
@@ -30,6 +30,31 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-25 #180)
+- [x] `qa-state` skill 중복 축소
+  - `.agents/skills/qa-state`와 `.claude/skills/qa-state`를 `state-triage` → `qa-ops` 순서만 조율하는 thin wrapper로 정리
+  - 상세 triage/QA 실행 규칙은 각각 `state-triage`, `qa-ops`에 남기고 `qa-state`의 중복 절차를 제거
+  - `.agents/skills/qa-state/agents/openai.yaml`을 추가해 Codex/Gemini UI metadata 누락을 보강
+  - `config/ai/skill-baselines.json`의 `qa-state` purpose/invariant를 wrapper 역할에 맞게 갱신
+  - 검증:
+    - `npm run qa:status`
+    - `npm run skills:check`
+    - `npm run docs:ai-consistency`
+    - `npx markdownlint-cli2 ".agents/skills/qa-state/SKILL.md" ".agents/skills/qa-state/agents/openai.yaml" ".claude/skills/qa-state/SKILL.md" "config/ai/skill-baselines.json" "reports/planning/TODO.md"`
+    - `git diff --check`
+
+### Completed (2026-04-25 #179)
+- [x] AI skill system P1 drift 정리
+  - `cloud-run` skill에 GitLab CI `deploy_ai_engine` production deploy authority와 runner health/pipeline 확인 흐름 반영
+  - Claude `state-triage`, `env-sync`, `qa-state`의 hardcoded Cloud Run URL을 `CLOUD_RUN_AI_URL`/`gcloud` 조회 기준으로 제거
+  - Claude `git-workflow` push 단계에 pushed `HEAD` GitLab pipeline 확인과 `id/status/url` 보고 규칙 추가
+  - `config/ai/skill-baselines.json`에 CI deploy authority, dynamic Cloud Run URL, push 후 pipeline verification invariant 반영
+  - 검증:
+    - `npm run skills:check`
+    - `npm run docs:ai-consistency`
+    - `npx markdownlint-cli2 ".agents/skills/cloud-run/SKILL.md" ".agents/skills/git-workflow/SKILL.md" ".claude/skills/cloud-run/SKILL.md" ".claude/skills/git-workflow/SKILL.md" ".claude/skills/state-triage/SKILL.md" ".claude/skills/env-sync/SKILL.md" ".claude/skills/qa-state/SKILL.md" "reports/planning/TODO.md"`
+    - hardcoded Cloud Run URL/stale provider assertion grep
 
 ### Completed (2026-04-25 #178)
 - [x] JS/TS 사용 기준 및 배포/개발 철학 문서 정렬

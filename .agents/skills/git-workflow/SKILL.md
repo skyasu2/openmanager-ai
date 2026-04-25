@@ -15,13 +15,14 @@ Use a deterministic commit/push/PR flow with safety checks.
 - `github-public` remote: preferred public GitHub code-only snapshot with minimal public-only history
 - `origin` remote: legacy fallback for the public GitHub snapshot
 - Vercel frontend deploy source: `gitlab` `main`
-- GitLab CI policy: active split-runner delivery
+- GitLab CI policy: active branch/main validate plus semver tag deploy/deploy_ai_engine/smoke delivery
 - Exact job names/rules live in `.gitlab-ci.yml`; do not hardcode them in a commit message or review unless you re-read that file first.
 - Current stable shape:
   - canonical validation runs on self-hosted `wsl2-docker`
   - frontend production deploy runs on GitLab.com shared runner via `vercel build --prod` + `vercel deploy --prebuilt --prod`
   - production deploy uses serialized execution (`resource_group: production`)
-  - post-deploy smoke and ai-engine validation/deploy paths may evolve independently
+  - AI Engine production deploy runs in the `deploy_ai_engine` job through `cloud-run/ai-engine/deploy.sh`
+  - post-deploy smoke validates frontend and AI Engine health
 - GitHub public repo: no releases/tags, issues/wiki/projects disabled, not a deployment control plane
 
 Never assume `github-public/main` or `origin/main` is the canonical branch. Always inspect `git remote -v` before any push/fetch/rebase.
@@ -35,7 +36,7 @@ Never assume `github-public/main` or `origin/main` is the canonical branch. Alwa
 - `git diff --cached --stat`
 - If no staged changes, stop and ask for file selection.
 
-2. Validate remote topology first.
+1. Validate remote topology first.
 - `git remote -v`
 - Confirm `gitlab` exists and remains the canonical push target for private development work.
 - Only validate GitHub auth when the user explicitly wants GitHub public sync or GitHub PR work.
@@ -43,11 +44,11 @@ Never assume `github-public/main` or `origin/main` is the canonical branch. Alwa
 - `env -u GITHUB_PERSONAL_ACCESS_TOKEN gh api user -q .login`
 - If a GitHub remote is HTTPS, switch that remote to SSH.
 
-3. Stage only requested files.
+1. Stage only requested files.
 - Use explicit `git add <file...>`.
 - Avoid broad staging when scope is unclear.
 
-4. Verify before commit.
+1. Verify before commit.
 - Run `npm run test:quick` when code changed.
 - Run `npm run test:contract` when the change can alter request/response behavior:
   - `src/app/api/**`
@@ -57,11 +58,11 @@ Never assume `github-public/main` or `origin/main` is the canonical branch. Alwa
 - Run targeted checks for changed areas when needed.
 - If user asked for "review", run `$code-review` first and resolve/acknowledge findings before commit.
 
-5. Create conventional commit.
+1. Create conventional commit.
 - Format: `<type>(scope): <summary>`
 - Common types: `feat`, `fix`, `refactor`, `docs`, `chore`
 
-6. Report commit result.
+1. Report commit result.
 - Commit hash, branch, message, changed file count.
 
 ### Workflow B: Push & PR
@@ -74,33 +75,33 @@ Never assume `github-public/main` or `origin/main` is the canonical branch. Alwa
 - `env -u GITHUB_PERSONAL_ACCESS_TOKEN gh auth status -h github.com`
 - `env -u GITHUB_PERSONAL_ACCESS_TOKEN gh api user -q .login`
 
-2. Inspect current branch and diff scope.
+1. Inspect current branch and diff scope.
 - `git status --short`
 - `git branch --show-current`
 - `git log --oneline --decorate -n 5`
 
-3. Verify commit readiness.
+1. Verify commit readiness.
 - Ensure intended files only.
 - If code changed, run `npm run test:quick` or targeted checks.
 - Add `npm run test:contract` when API, auth, env, proxy, or deploy-facing behavior changed.
 - Prefer local Docker CI when changes are broad or deployment-sensitive: `npm run ci:local:docker`
 - For high-risk changes or explicit review requests, run `$code-review` and include key findings/residual risks in PR body.
 
-4. Push safely.
+1. Push safely.
 - Single-maintainer default canonical flow: `git push gitlab main`
 - Canonical/private branch flow when the work is risky or the user wants review isolation: `git push gitlab <branch>`
 - If upstream missing on GitLab: `git push -u gitlab <branch>`
 - GitHub public remote push is only for explicit public snapshot sync via `npm run sync:github`.
 - Never force-push the public snapshot from the canonical private worktree.
 
-5. Verify the pushed SHA's GitLab pipeline when the task targets `gitlab`.
+1. Verify the pushed SHA's GitLab pipeline when the task targets `gitlab`.
 - Preferred SSOT command: `npm run gitlab:pipeline:head -- --wait`
 - The script checks the current `HEAD` SHA and falls back to `.env.local` `GITLAB_TOKEN` when `glab` is unavailable.
 - If the script reports `status=not_created`, say explicitly that GitLab did not create a pipeline for that SHA (for example because CI skip rules matched).
 - If no token is available, say explicitly that remote pipeline status could not be auto-verified.
 - Final delivery message must include `pipeline id/status/url` when verification was possible.
 
-6. Create PR when requested.
+1. Create PR when requested.
 - Canonical/private work: only use a GitLab Merge Request when the user explicitly wants PR flow or when risky changes benefit from branch isolation.
 - GitHub MCP (`create_pull_request`) is not part of the routine delivery path for this repo. Use it only when the task explicitly targets the public snapshot repository itself.
 - CLI fallback: `gh pr create` only when the task explicitly targets GitHub and MCP is unavailable.
@@ -109,13 +110,13 @@ Never assume `github-public/main` or `origin/main` is the canonical branch. Alwa
 ### Workflow D: Canonical deploy + public refresh
 
 1. Validate locally (`pre-push`, targeted tests, or `npm run ci:local:docker` as needed).
-2. Push canonical change: `git push gitlab main`
-3. Treat GitLab CI status as the deployment authority; verify the pushed `HEAD` with `npm run gitlab:pipeline:head -- --wait` rather than relying on stale memory.
-4. If a release/tag was created: `git push gitlab --follow-tags`
-5. Refresh public code repo only when needed: `npm run sync:github`
-6. Do not treat GitHub as deployment status, release authority, or issue tracker.
+1. Push canonical change: `git push gitlab main`
+1. Treat GitLab CI status as the deployment authority; verify the pushed `HEAD` with `npm run gitlab:pipeline:head -- --wait` rather than relying on stale memory.
+1. If a release/tag was created: `git push gitlab --follow-tags`
+1. Refresh public code repo only when needed: `npm run sync:github`
+1. Do not treat GitHub as deployment status, release authority, or issue tracker.
 
-7. Verify remote state.
+1. Verify remote state.
 - `git fetch gitlab`
 - `git status -sb`
 - Report GitLab pipeline `id/status/url` when the check was possible.
@@ -124,8 +125,8 @@ Never assume `github-public/main` or `origin/main` is the canonical branch. Alwa
 ### Workflow C: Commit → Push → PR (one-shot)
 
 1. Execute Workflow A (Commit).
-2. Execute Workflow B (Push & PR).
-3. Report combined results.
+1. Execute Workflow B (Push & PR).
+1. Report combined results.
 
 ## Safety rules
 
