@@ -35,8 +35,14 @@ type StateSetter = React.Dispatch<React.SetStateAction<HybridQueryState>>;
 interface AsyncQueryLike {
   sendQuery: (
     query: string,
-    options?: { analysisMode?: AnalysisMode }
+    options?: AsyncJobRequestOptions
   ) => Promise<{ jobId?: string }>;
+}
+
+interface AsyncJobRequestOptions {
+  analysisMode?: AnalysisMode;
+  enableRAG?: boolean;
+  enableWebSearch?: boolean;
 }
 
 type SendMessageLike = (message: {
@@ -91,6 +97,8 @@ export interface QueryExecutionDeps {
     rateLimitBlock: MutableRefObject<ActiveRateLimitBlock | null>;
   };
   analysisMode?: AnalysisMode;
+  ragEnabled?: boolean;
+  webSearchEnabled?: boolean;
 }
 
 // ============================================================================
@@ -109,6 +117,8 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
     chatStatus,
     refs,
     analysisMode,
+    ragEnabled,
+    webSearchEnabled,
   } = deps;
 
   const getActiveRateLimitDetails =
@@ -311,9 +321,17 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
           estimatedWaitSeconds: 0,
         }));
 
-        const jobQueueRequest = analysisMode
-          ? asyncQuery.sendQuery(trimmedQuery, { analysisMode })
-          : asyncQuery.sendQuery(trimmedQuery);
+        const jobQueueOptions: AsyncJobRequestOptions = {
+          ...(analysisMode && { analysisMode }),
+          ...(typeof ragEnabled === 'boolean' && { enableRAG: ragEnabled }),
+          ...(typeof webSearchEnabled === 'boolean' && {
+            enableWebSearch: webSearchEnabled,
+          }),
+        };
+        const jobQueueRequest =
+          Object.keys(jobQueueOptions).length > 0
+            ? asyncQuery.sendQuery(trimmedQuery, jobQueueOptions)
+            : asyncQuery.sendQuery(trimmedQuery);
 
         jobQueueRequest
           .then((result) => {
@@ -376,6 +394,8 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
             body: JSON.stringify({
               messages: nextMessages,
               analysisMode,
+              enableWebSearch: webSearchEnabled,
+              enableRAG: ragEnabled,
             }),
           })
             .then(async (response) => {
@@ -469,6 +489,8 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
       chatStatus,
       refs,
       analysisMode,
+      ragEnabled,
+      webSearchEnabled,
     ]
   );
 

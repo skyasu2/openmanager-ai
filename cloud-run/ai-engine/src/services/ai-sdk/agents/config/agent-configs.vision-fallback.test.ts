@@ -57,7 +57,7 @@ vi.mock('../../../../lib/logger', () => ({
 }));
 
 vi.mock('../../../../lib/config-parser', () => ({
-  getOpenRouterVisionModelId: vi.fn(() => 'nvidia/nemotron-nano-12b-v2-vl:free'),
+  getOpenRouterVisionModelId: vi.fn(() => 'google/gemma-3-27b-it:free'),
   isOpenRouterVisionToolCallingEnabled: vi.fn(() => false),
   isCerebrasToolCallingEnabled: vi.fn(() => true),
 }));
@@ -118,19 +118,19 @@ describe('agent-configs vision fallback', () => {
       throw new Error('gemini unavailable');
     });
     vi.mocked(getOpenRouterVisionModelId).mockReturnValue(
-      'nvidia/nemotron-nano-12b-v2-vl:free'
+      'google/gemma-3-27b-it:free'
     );
     vi.mocked(getOpenRouterVisionModel).mockReturnValue(
-      createMockLanguageModel('nvidia/nemotron-nano-12b-v2-vl:free') as never
+      createMockLanguageModel('google/gemma-3-27b-it:free') as never
     );
 
     const model = visionConfig.getModel();
 
     expect(model).not.toBeNull();
     expect(model?.provider).toBe('openrouter');
-    expect(model?.modelId).toBe('nvidia/nemotron-nano-12b-v2-vl:free');
+    expect(model?.modelId).toBe('google/gemma-3-27b-it:free');
     expect(getOpenRouterVisionModel).toHaveBeenCalledWith(
-      'nvidia/nemotron-nano-12b-v2-vl:free'
+      'google/gemma-3-27b-it:free'
     );
   });
 
@@ -143,10 +143,10 @@ describe('agent-configs vision fallback', () => {
       openrouter: true,
     });
     vi.mocked(getOpenRouterVisionModelId).mockReturnValue(
-      'nvidia/nemotron-nano-12b-v2-vl:free'
+      'google/gemma-3-27b-it:free'
     );
     vi.mocked(getOpenRouterVisionModel).mockReturnValue(
-      createMockLanguageModel('nvidia/nemotron-nano-12b-v2-vl:free') as never
+      createMockLanguageModel('google/gemma-3-27b-it:free') as never
     );
 
     const model = visionConfig.getModel();
@@ -178,7 +178,7 @@ describe('agent-configs vision fallback', () => {
       openrouter: true,
     });
     vi.mocked(getOpenRouterVisionModelId).mockReturnValue(
-      'nvidia/nemotron-nano-12b-v2-vl:free'
+      'google/gemma-3-27b-it:free'
     );
     vi.mocked(getOpenRouterVisionModel).mockImplementation(() => {
       throw new Error('openrouter init failed');

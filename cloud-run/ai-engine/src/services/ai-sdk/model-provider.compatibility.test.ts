@@ -68,16 +68,16 @@ vi.mock('@ai-sdk/openai', () => ({
 
 vi.mock('../../lib/config-parser', () => ({
   getCerebrasApiKey: vi.fn(() => 'test-cerebras-key'),
-  getCerebrasModelId: vi.fn(() => 'qwen-3-235b-a22b-instruct-2507'),
+  getCerebrasModelId: vi.fn(() => 'gpt-oss-120b'),
   getMistralApiKey: vi.fn(() => 'test-mistral-key'),
   getGroqApiKey: vi.fn(() => 'test-groq-key'),
   getGroqModelId: vi.fn(() => 'meta-llama/llama-4-scout-17b-16e-instruct'),
   getGeminiApiKey: vi.fn(() => 'test-gemini-key'),
   getOpenRouterApiKey: vi.fn(() => 'test-openrouter-key'),
   getUpstashConfig: vi.fn(() => null),
-  getOpenRouterVisionModelId: vi.fn(() => 'nvidia/nemotron-nano-12b-v2-vl:free'),
+  getOpenRouterVisionModelId: vi.fn(() => 'google/gemma-3-27b-it:free'),
   getOpenRouterVisionFallbackModelIds: vi.fn(() => [
-    'mistralai/mistral-small-3.1-24b-instruct:free',
+    'google/gemma-3-12b-it:free',
     'google/gemma-3-4b-it:free',
   ]),
   isCerebrasToolCallingEnabled: vi.fn(() => true),
@@ -107,11 +107,11 @@ describe('model-provider compatibility (SDK upgrades)', () => {
 
   it('creates all provider models with LanguageModel shape', () => {
     const models = [
-      getCerebrasModel('qwen-3-235b-a22b-instruct-2507'),
+      getCerebrasModel('gpt-oss-120b'),
       getGroqModel('meta-llama/llama-4-scout-17b-16e-instruct'),
       getMistralModel('mistral-large-latest'),
-      getGeminiFlashLiteModel('gemini-2.5-flash'),
-      getOpenRouterVisionModel('nvidia/nemotron-nano-12b-v2-vl:free'),
+      getGeminiFlashLiteModel('gemini-2.5-flash-lite'),
+      getOpenRouterVisionModel('google/gemma-3-27b-it:free'),
     ];
 
     for (const model of models) {
@@ -134,11 +134,11 @@ describe('model-provider compatibility (SDK upgrades)', () => {
     const vision = getVisionAgentModel();
     expect(vision).not.toBeNull();
     expect(vision?.provider).toBe('openrouter');
-    expect(vision?.modelId).toBe('nvidia/nemotron-nano-12b-v2-vl:free');
+    expect(vision?.modelId).toBe('google/gemma-3-27b-it:free');
   });
 
   it('configures OpenRouter provider with recommended headers and request patching', () => {
-    getOpenRouterVisionModel('nvidia/nemotron-nano-12b-v2-vl:free');
+    getOpenRouterVisionModel('google/gemma-3-27b-it:free');
 
     expect(createOpenAI).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -153,7 +153,7 @@ describe('model-provider compatibility (SDK upgrades)', () => {
   });
 
   it('injects OpenRouter models fallback chain for vision requests', async () => {
-    getOpenRouterVisionModel('nvidia/nemotron-nano-12b-v2-vl:free');
+    getOpenRouterVisionModel('google/gemma-3-27b-it:free');
 
     const openrouterOptions = vi.mocked(createOpenAI).mock.calls.at(-1)?.[0];
     expect(openrouterOptions).toBeDefined();
@@ -166,7 +166,7 @@ describe('model-provider compatibility (SDK upgrades)', () => {
     await openrouterOptions?.fetch?.('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       body: JSON.stringify({
-        model: 'nvidia/nemotron-nano-12b-v2-vl:free',
+        model: 'google/gemma-3-27b-it:free',
         messages: [{ role: 'user', content: 'ping' }],
       }),
     });
@@ -181,8 +181,8 @@ describe('model-provider compatibility (SDK upgrades)', () => {
     expect(payload.provider.allow_fallbacks).toBe(true);
     expect(payload.provider.require_parameters).toBe(true);
     expect(payload.models).toEqual([
-      'nvidia/nemotron-nano-12b-v2-vl:free',
-      'mistralai/mistral-small-3.1-24b-instruct:free',
+      'google/gemma-3-27b-it:free',
+      'google/gemma-3-12b-it:free',
       'google/gemma-3-4b-it:free',
     ]);
 

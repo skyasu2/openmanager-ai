@@ -43,13 +43,47 @@ import {
   resolveAgentStage,
 } from './jobs-route-helpers';
 import { executeSupervisorStream, logProviderStatus } from '../services/ai-sdk';
-import type { AnalysisMode } from '../services/ai-sdk/supervisor-types';
+import type {
+  AnalysisMode,
+  SupervisorRequest,
+} from '../services/ai-sdk/supervisor-types';
 
 // ============================================================================
 // Jobs Router
 // ============================================================================
 
 export const jobsRouter = new Hono();
+
+type JobProcessToolOptions = Pick<
+  SupervisorRequest,
+  'analysisMode' | 'enableRAG' | 'enableWebSearch'
+>;
+
+function isAnalysisMode(value: unknown): value is AnalysisMode {
+  return value === 'auto' || value === 'thinking';
+}
+
+function isWebSearchOption(
+  value: unknown
+): value is SupervisorRequest['enableWebSearch'] {
+  return value === true || value === false || value === 'auto';
+}
+
+function extractJobProcessToolOptions(
+  payload: Record<string, unknown>
+): JobProcessToolOptions {
+  return {
+    ...(isAnalysisMode(payload.analysisMode) && {
+      analysisMode: payload.analysisMode,
+    }),
+    ...(typeof payload.enableRAG === 'boolean' && {
+      enableRAG: payload.enableRAG,
+    }),
+    ...(isWebSearchOption(payload.enableWebSearch) && {
+      enableWebSearch: payload.enableWebSearch,
+    }),
+  };
+}
 
 /**
  * POST /api/jobs/process
@@ -73,7 +107,19 @@ jobsRouter.post('/process', async (c: Context) => {
   const startTime = Date.now();
 
   try {
-    const { jobId, messages, sessionId, analysisMode } = await c.req.json();
+    const {
+      jobId,
+      messages,
+      sessionId,
+      analysisMode,
+      enableRAG,
+      enableWebSearch,
+    } = await c.req.json();
+    const toolOptions = extractJobProcessToolOptions({
+      analysisMode,
+      enableRAG,
+      enableWebSearch,
+    });
 
     // Validate request
     if (!jobId) {
@@ -127,7 +173,7 @@ jobsRouter.post('/process', async (c: Context) => {
       jobId,
       messages,
       sessionId,
-      analysisMode,
+      ...toolOptions,
       startTime,
     });
 
@@ -150,12 +196,16 @@ async function processJobSynchronously({
   messages,
   sessionId,
   analysisMode,
+  enableRAG,
+  enableWebSearch,
   startTime,
 }: {
   jobId: string;
   messages: Array<{ role: string; content: string }>;
   sessionId?: string;
   analysisMode?: AnalysisMode;
+  enableRAG?: SupervisorRequest['enableRAG'];
+  enableWebSearch?: SupervisorRequest['enableWebSearch'];
   startTime: number;
 }): Promise<{ status: 'completed' | 'failed'; error?: string }> {
   const startedAt = new Date().toISOString();
@@ -218,6 +268,8 @@ async function processJobSynchronously({
       })),
       sessionId: sessionId || 'default',
       analysisMode,
+      enableRAG,
+      enableWebSearch,
     })) {
       if (event.type === 'text_delta' && typeof event.data === 'string') {
         responseChunks.push(event.data);
@@ -395,6 +447,8 @@ async function processJobSynchronously({
       ragSources,
       metadata: {
         ...(analysisMode && { analysisMode }),
+        ...(typeof enableRAG === 'boolean' && { enableRAG }),
+        ...(enableWebSearch !== undefined && { enableWebSearch }),
         ...(traceId && { traceId }),
         handoffs,
         ...(toolResultSummaries && toolResultSummaries.length > 0 && {

@@ -4,7 +4,7 @@
  * Specializes in anomaly detection, trend prediction, and pattern analysis.
  * Provides deep insights into system behavior.
  *
- * Model: Groq llama-3.3-70b (primary) / Cerebras (fallback) / Mistral
+ * Model: Groq llama-4-scout (primary) / Cerebras gpt-oss-120b (fallback) / Mistral
  *
  * @version 4.0.0 - Migrated to BaseAgent pattern
  * @created 2025-12-01

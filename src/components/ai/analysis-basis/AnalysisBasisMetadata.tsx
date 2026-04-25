@@ -16,6 +16,16 @@ export function AnalysisBasisMetadata({
   basis,
   meaningfulTools,
 }: AnalysisBasisMetadataProps) {
+  const ragSources = basis.ragSources ?? [];
+  const hasRagEvidence = ragSources.some(
+    (source) => source.sourceType !== 'web'
+  );
+  const hasWebEvidence = ragSources.some(
+    (source) => source.sourceType === 'web'
+  );
+  const hasLegacyRagEvidence =
+    Boolean(basis.ragUsed) && !hasRagEvidence && !hasWebEvidence;
+
   return (
     <>
       {basis.analysisMode && (
@@ -39,9 +49,14 @@ export function AnalysisBasisMetadata({
         <Cpu className="h-3.5 w-3.5 text-gray-400" />
         <span className="text-gray-500">엔진:</span>
         <span className={getEngineColor(basis.engine)}>{basis.engine}</span>
-        {basis.ragUsed && (
+        {(hasRagEvidence || hasLegacyRagEvidence) && (
           <span className="rounded-full bg-purple-100 px-1.5 py-0.5 text-xs text-purple-600">
-            RAG
+            RAG 사용됨
+          </span>
+        )}
+        {hasWebEvidence && (
+          <span className="rounded-full bg-sky-100 px-1.5 py-0.5 text-xs text-sky-700">
+            Web 사용됨
           </span>
         )}
       </div>
@@ -79,7 +94,7 @@ export function AnalysisBasisMetadata({
         </div>
       )}
 
-      {basis.ragSources && basis.ragSources.length > 0 && (
+      {ragSources.length > 0 && (
         <div className="mt-2 border-t border-gray-200 pt-2">
           <div className="mb-1.5 flex items-center gap-2">
             <BookOpen className="h-3.5 w-3.5 text-purple-500" />
@@ -88,7 +103,7 @@ export function AnalysisBasisMetadata({
             </span>
           </div>
           <div className="ml-5 space-y-1">
-            {basis.ragSources.map((source, idx) => (
+            {ragSources.map((source, idx) => (
               <div key={idx} className="flex items-center gap-2 text-xs">
                 <span className="shrink-0 text-gray-400">[{idx + 1}]</span>
                 {source.url ? (

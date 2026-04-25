@@ -50,7 +50,7 @@ export interface AIProvidersConfig {
   cerebras: string;
   tavily: string;
   tavilyBackup?: string; // Failover key
-  gemini?: string; // Vision Agent - Gemini 2.5 Flash
+  gemini?: string; // Vision Agent - Gemini 2.5 Flash-Lite
   openrouter?: string; // Fallback Vision
 }
 
@@ -286,8 +286,8 @@ export function getMistralConfig(): MistralConfig | null {
  * Get Cerebras API Key (secondary provider - fast inference)
  * Uses AI_PROVIDERS_CONFIG or falls back to individual env var
  * @see https://inference-docs.cerebras.ai
- * Note: qwen-3-235b-a22b-instruct-2507 is Preview status (not for production)
- *       Context: 65K tokens (free tier) / 131K (paid)
+ * Default model is the production Cerebras GPT-OSS candidate. The previous
+ * qwen-3-235b-a22b-instruct-2507 default is Preview and deprecated on 2026-05-27.
  */
 export function getCerebrasApiKey(): string | null {
   const providersConfig = getAIProvidersConfig();
@@ -295,7 +295,9 @@ export function getCerebrasApiKey(): string | null {
   return process.env.CEREBRAS_API_KEY || null;
 }
 
-const DEFAULT_CEREBRAS_MODEL = 'qwen-3-235b-a22b-instruct-2507';
+export const DEPRECATED_CEREBRAS_QWEN_MODEL_ID = 'qwen-3-235b-a22b-instruct-2507';
+export const CEREBRAS_QWEN_DEPRECATION_DATE = '2026-05-27';
+export const DEFAULT_CEREBRAS_MODEL = 'gpt-oss-120b';
 const DEFAULT_GROQ_MODEL = 'meta-llama/llama-4-scout-17b-16e-instruct';
 
 /**
@@ -318,7 +320,7 @@ export function isCerebrasToolCallingEnabled(): boolean {
 
 /**
  * Get default Groq text model id.
- * Default: llama-4-scout-17b (500K TPD, 512K ctx, tool calling ✅)
+ * Default: llama-4-scout-17b (500K TPD, 131K ctx, tool calling ✅)
  * @see https://console.groq.com/docs/rate-limits
  */
 export function getGroqModelId(): string {
@@ -351,8 +353,8 @@ export function getTavilyApiKeyBackup(): string | null {
  * Uses AI_PROVIDERS_CONFIG or falls back to individual env var
  *
  * Free Tier Limits (2026-04):
- * - 500 RPD (requests per day)
- * - 10 RPM (requests per minute)
+ * - 1,000 RPD (requests per day)
+ * - 15 RPM (requests per minute)
  * - 250K TPM (tokens per minute)
  * - 1M context window
  *
@@ -376,7 +378,7 @@ export function getOpenRouterApiKey(): string | null {
 
 /**
  * Get OpenRouter Vision Model ID
- * Default: nvidia/nemotron-nano-12b-v2-vl:free
+ * Default: google/gemma-3-27b-it:free
  */
 export function getOpenRouterVisionModelId(): string {
   return process.env.OPENROUTER_MODEL_VISION || DEFAULT_OPENROUTER_VISION_MODEL;

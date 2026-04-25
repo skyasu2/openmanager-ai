@@ -16,7 +16,7 @@ vi.mock('../model-provider', () => ({
     mistral: true,
     gemini: true,
   })),
-  getCerebrasModel: vi.fn(() => ({ modelId: 'llama-3.3-70b' })),
+  getCerebrasModel: vi.fn(() => ({ modelId: 'gpt-oss-120b' })),
   getGroqModel: vi.fn(() => ({ modelId: 'meta-llama/llama-4-scout-17b-16e-instruct' })),
   getMistralModel: vi.fn(() => ({ modelId: 'mistral-large-3-25-12' })),
   getGeminiFlashLiteModel: vi.fn(() => ({ modelId: 'gemini-2.5-flash-lite' })),

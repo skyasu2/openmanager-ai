@@ -56,6 +56,38 @@ const JOB_LIST_TTL_SECONDS = 3600;
 /** Progress TTL (10분) */
 const PROGRESS_TTL_SECONDS = 600;
 
+type JobRequestMetadata = NonNullable<
+  NonNullable<CreateJobRequest['options']>['metadata']
+>;
+
+interface JobToolOptions {
+  analysisMode?: AnalysisMode;
+  enableRAG?: boolean;
+  enableWebSearch?: boolean;
+}
+
+function isAnalysisMode(value: unknown): value is AnalysisMode {
+  return value === 'auto' || value === 'thinking';
+}
+
+function extractJobToolOptions(metadata?: JobRequestMetadata): JobToolOptions {
+  const analysisMode = metadata?.analysisMode;
+  const enableRAG = metadata?.enableRAG;
+  const enableWebSearch = metadata?.enableWebSearch;
+
+  return {
+    ...(isAnalysisMode(analysisMode) && {
+      analysisMode,
+    }),
+    ...(typeof enableRAG === 'boolean' && {
+      enableRAG,
+    }),
+    ...(typeof enableWebSearch === 'boolean' && {
+      enableWebSearch,
+    }),
+  };
+}
+
 // ============================================
 // POST /api/ai/jobs - Job 생성 (Rate Limited)
 // ============================================
@@ -88,6 +120,7 @@ async function handlePOST(request: NextRequest) {
 
     // Job 타입 자동 추론
     const jobType = body.type || inferJobType(query);
+    const toolOptions = extractJobToolOptions(options?.metadata);
 
     // Job ID 생성
     const jobId = randomUUID();
@@ -112,9 +145,7 @@ async function handlePOST(request: NextRequest) {
         estimatedTime: complexity.estimatedTime,
         factors: complexity.factors,
         ownerKey,
-        ...(options?.metadata?.analysisMode && {
-          analysisMode: options.metadata.analysisMode as AnalysisMode,
-        }),
+        ...toolOptions,
       },
     };
 
@@ -162,7 +193,7 @@ async function handlePOST(request: NextRequest) {
                 query,
                 jobType,
                 options?.sessionId,
-                options?.metadata?.analysisMode as AnalysisMode | undefined,
+                toolOptions,
                 getRateLimitIdentity(request)
               )
             ).status
@@ -311,7 +342,7 @@ async function triggerWorker(
   query: string,
   type: string,
   sessionId?: string,
-  analysisMode?: AnalysisMode,
+  toolOptions: JobToolOptions = {},
   rateLimitIdentity?: string
 ): Promise<TriggerResult> {
   const cloudRunConfig = getRequiredCloudRunConfig();
@@ -341,7 +372,7 @@ async function triggerWorker(
         messages: [{ role: 'user', content: query }],
         sessionId,
         type,
-        ...(analysisMode && { analysisMode }),
+        ...toolOptions,
       }),
     });
 

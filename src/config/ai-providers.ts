@@ -38,10 +38,10 @@ export const AI_PROVIDERS: AIProviderConfig[] = [
   },
   {
     name: 'Cerebras',
-    role: 'Secondary text fallback',
-    model: 'qwen-3-235b-a22b-instruct-2507',
+    role: 'Structured routing + secondary text fallback',
+    model: 'gpt-oss-120b',
     description:
-      'Secondary fallback for text agents when Groq is unavailable or a selector prefers Cerebras capabilities',
+      'Production model candidate for structured routing and opt-in text fallback when Groq is unavailable or a selector prefers Cerebras capabilities',
     color: 'bg-blue-500',
     dailyTokenLimit: '1M tokens/day',
   },

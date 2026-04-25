@@ -239,7 +239,7 @@ npm run data:precomputed:build # Cloud Run precomputed states 재생성
 
 | Agent | Provider (Primary) | Role | 라우팅 |
 |-------|-------------------|------|--------|
-| **Orchestrator** | Cerebras (`CEREBRAS_MODEL_ID`, default `qwen-3-235b-a22b-instruct-2507`) | Intent 분류, Agent 핸드오프 | 진입점 |
+| **Orchestrator** | Cerebras (`CEREBRAS_MODEL_ID`, default `gpt-oss-120b`) | Intent 분류, Agent 핸드오프 | 진입점 |
 | **NLQ** | Groq (`meta-llama/llama-4-scout-17b-16e-instruct`) | 서버 메트릭 조회 (단순+복합) | 외부 |
 | **Analyst** | Groq (`meta-llama/llama-4-scout-17b-16e-instruct`) | 이상 감지, 추세 예측 | 외부 |
 | **Reporter** | Groq (`meta-llama/llama-4-scout-17b-16e-instruct`) | 장애 보고서, 타임라인 | 외부 |

@@ -40,6 +40,9 @@ export interface JobResult {
     category?: string;
   }>;
   metadata?: {
+    analysisMode?: 'auto' | 'thinking';
+    enableRAG?: boolean;
+    enableWebSearch?: boolean | 'auto';
     traceId?: string;
     handoffs?: Array<{ from: string; to: string; reason?: string }>;
     toolResultSummaries?: Array<{

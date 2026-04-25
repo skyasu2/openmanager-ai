@@ -259,15 +259,21 @@ export const ChatInputArea = memo(function ChatInputArea({
           {(activeToolCount > 0 || showAnalysisModeBadge) && (
             <div className="mb-2 flex flex-wrap gap-1.5">
               {ragEnabled && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-purple-50 px-2.5 py-0.5 text-xs font-medium text-purple-700">
+                <span
+                  className="inline-flex items-center gap-1 rounded-full bg-purple-50 px-2.5 py-0.5 text-xs font-medium text-purple-700"
+                  title="내부 운영 지식과 장애 이력 검색을 허용합니다. 실제 사용 여부는 답변 근거에서 확인하세요."
+                >
                   <BookOpen className="h-3 w-3" />
-                  RAG
+                  RAG 허용
                 </span>
               )}
               {webSearchEnabled && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700">
+                <span
+                  className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700"
+                  title="최신 외부 정보 확인을 허용합니다. 실제 사용 여부는 답변 근거에서 확인하세요."
+                >
                   <Globe className="h-3 w-3" />
-                  Web
+                  Web 허용
                 </span>
               )}
               {showAnalysisModeBadge && (
@@ -328,7 +334,7 @@ export const ChatInputArea = memo(function ChatInputArea({
                       <div className="flex-1 text-left">
                         <div className="font-medium">RAG 검색</div>
                         <div className="text-xs text-gray-500">
-                          과거 장애 이력 검색
+                          내부 운영 지식/장애 이력
                         </div>
                       </div>
                       <div
@@ -358,7 +364,7 @@ export const ChatInputArea = memo(function ChatInputArea({
                       <div className="flex-1 text-left">
                         <div className="font-medium">Web 검색</div>
                         <div className="text-xs text-gray-500">
-                          최신 정보 보강
+                          최신 외부 정보 확인
                         </div>
                       </div>
                       <div
@@ -400,6 +406,10 @@ export const ChatInputArea = memo(function ChatInputArea({
                             }
                           )}
                         </div>
+                        <p className="mt-2 text-xs leading-relaxed text-gray-500">
+                          심층 분석은 숨겨진 모델 추론이 아니라 더 긴
+                          분석/라우팅 경로입니다.
+                        </p>
                       </div>
                     </>
                   )}

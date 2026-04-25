@@ -7,11 +7,11 @@
  *
  * Model: Gemini Flash (Primary) + OpenRouter (Fallback)
  *
- * Primary: Gemini 2.5 Flash
+ * Primary: Gemini 2.5 Flash-Lite
  * - 1M token context
  *
- * Fallback: OpenRouter (nvidia/nemotron-nano-12b-v2-vl:free)
- * - Used when Gemini quota exceeded (500 RPD)
+ * Fallback: OpenRouter (google/gemma-3-27b-it:free)
+ * - Used when Gemini quota exceeded (1,000 RPD)
  * - Basic vision capabilities maintained
  *
  * Graceful Degradation: When both unavailable, Vision features are disabled

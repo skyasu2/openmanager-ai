@@ -118,6 +118,12 @@ export interface UseAsyncAIQueryOptions {
   onError?: (error: string, details?: AIErrorDetails | null) => void;
 }
 
+export interface AsyncQueryRequestOptions {
+  analysisMode?: AnalysisMode;
+  enableRAG?: boolean;
+  enableWebSearch?: boolean;
+}
+
 // ============================================================================
 // Hook Implementation
 // ============================================================================
@@ -210,7 +216,7 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
   const sendQuery = useCallback(
     async (
       query: string,
-      requestOptions?: { analysisMode?: AnalysisMode }
+      requestOptions?: AsyncQueryRequestOptions
     ): Promise<AsyncQueryResult> => {
       // Cleanup previous state
       cleanup();
@@ -287,6 +293,13 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
                     metadata: {
                       ...(requestOptions?.analysisMode && {
                         analysisMode: requestOptions.analysisMode,
+                      }),
+                      ...(typeof requestOptions?.enableRAG === 'boolean' && {
+                        enableRAG: requestOptions.enableRAG,
+                      }),
+                      ...(typeof requestOptions?.enableWebSearch ===
+                        'boolean' && {
+                        enableWebSearch: requestOptions.enableWebSearch,
                       }),
                     },
                   },

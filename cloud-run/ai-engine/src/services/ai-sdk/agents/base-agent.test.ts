@@ -20,7 +20,7 @@ vi.mock('../model-provider', () => ({
     mistral: true,
     gemini: true,
   })),
-  getCerebrasModel: vi.fn(() => ({ modelId: 'llama-3.3-70b' })),
+  getCerebrasModel: vi.fn(() => ({ modelId: 'gpt-oss-120b' })),
   getGroqModel: vi.fn(() => ({ modelId: 'meta-llama/llama-4-scout-17b-16e-instruct' })),
   getMistralModel: vi.fn(() => ({ modelId: 'mistral-large-3-25-12' })),
   getGeminiFlashLiteModel: vi.fn(() => ({ modelId: 'gemini-2.5-flash-lite' })),
@@ -331,9 +331,9 @@ describe('BaseAgent', { timeout: 60000 }, () => {
 
       const mockConfig = createMockConfig({
         getModel: () => ({
-          model: { modelId: 'nvidia/nemotron-nano-12b-v2-vl:free' },
+          model: { modelId: 'google/gemma-3-27b-it:free' },
           provider: 'openrouter',
-          modelId: 'nvidia/nemotron-nano-12b-v2-vl:free',
+          modelId: 'google/gemma-3-27b-it:free',
         }),
       });
 
@@ -370,9 +370,9 @@ describe('BaseAgent', { timeout: 60000 }, () => {
 
       const mockConfig = createMockConfig({
         getModel: () => ({
-          model: { modelId: 'nvidia/nemotron-nano-12b-v2-vl:free' },
+          model: { modelId: 'google/gemma-3-27b-it:free' },
           provider: 'openrouter',
-          modelId: 'nvidia/nemotron-nano-12b-v2-vl:free',
+          modelId: 'google/gemma-3-27b-it:free',
         }),
       });
 

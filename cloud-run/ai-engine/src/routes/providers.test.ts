@@ -8,8 +8,12 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { Hono } from 'hono';
 
 vi.mock('../lib/config-parser', () => ({
-  getCerebrasModelId: vi.fn(() => 'qwen-3-235b-a22b-instruct-2507'),
+  CEREBRAS_QWEN_DEPRECATION_DATE: '2026-05-27',
+  DEFAULT_CEREBRAS_MODEL: 'gpt-oss-120b',
+  DEPRECATED_CEREBRAS_QWEN_MODEL_ID: 'qwen-3-235b-a22b-instruct-2507',
+  getCerebrasModelId: vi.fn(() => 'gpt-oss-120b'),
   getGroqModelId: vi.fn(() => 'meta-llama/llama-4-scout-17b-16e-instruct'),
+  getOpenRouterVisionModelId: vi.fn(() => 'google/gemma-3-27b-it:free'),
   isCerebrasToolCallingEnabled: vi.fn(() => false),
 }));
 
@@ -52,7 +56,9 @@ describe('Provider Routes', () => {
       expect(json.toggle).toEqual({ cerebras: true, groq: true, mistral: true });
       expect(json.available).toBeDefined();
       expect(json.info).toBeDefined();
-      expect(json.info.cerebras.model).toBe('qwen-3-235b-a22b-instruct-2507');
+      expect(json.modelDrift).toEqual([]);
+      expect(json.modelMetadata).toHaveLength(5);
+      expect(json.info.cerebras.model).toBe('gpt-oss-120b');
       expect(json.info.cerebras.toolCallingEnabled).toBe(false);
       expect(json.info.groq.model).toBe('meta-llama/llama-4-scout-17b-16e-instruct');
       expect(json.info.groq.role).toContain('Reporter');

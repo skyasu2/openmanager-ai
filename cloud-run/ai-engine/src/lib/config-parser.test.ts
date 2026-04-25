@@ -177,10 +177,10 @@ describe('Config Parser', () => {
   });
 
   describe('getCerebrasModelId', () => {
-    it('should use the verified default model when env is missing', () => {
+    it('should use the production default model candidate when env is missing', () => {
       delete process.env.CEREBRAS_MODEL_ID;
 
-      expect(getCerebrasModelId()).toBe('qwen-3-235b-a22b-instruct-2507');
+      expect(getCerebrasModelId()).toBe('gpt-oss-120b');
     });
 
     it('should use CEREBRAS_MODEL_ID when configured', () => {

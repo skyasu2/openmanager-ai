@@ -47,6 +47,13 @@ export const MessageComponent = memo<{
     return resolveAssistantResponseView(message.content, message.metadata);
   }, [message.content, message.metadata, message.isStreaming, message.role]);
   const analysisBasis = message.metadata?.analysisBasis ?? null;
+  const analysisSources = analysisBasis?.ragSources ?? [];
+  const hasRagEvidence = analysisSources.some(
+    (source) => source.sourceType !== 'web'
+  );
+  const hasWebEvidence = analysisSources.some(
+    (source) => source.sourceType === 'web'
+  );
   const assistantResponseDetails = useMemo(
     () => splitAssistantResponseDetails(assistantResponseView?.details ?? null),
     [assistantResponseView?.details]
@@ -203,12 +210,16 @@ export const MessageComponent = memo<{
                   <span>{analysisBasis.engine}</span>
                   <span className="text-slate-300">&middot;</span>
                   <span>{analysisBasis.dataSource}</span>
-                  {analysisBasis.ragSources &&
-                    analysisBasis.ragSources.length > 0 && (
-                      <span className="rounded bg-indigo-50 px-1.5 py-0.5 text-xs font-medium text-indigo-600">
-                        RAG
-                      </span>
-                    )}
+                  {hasRagEvidence && (
+                    <span className="rounded bg-indigo-50 px-1.5 py-0.5 text-xs font-medium text-indigo-600">
+                      RAG 사용됨
+                    </span>
+                  )}
+                  {hasWebEvidence && (
+                    <span className="rounded bg-blue-50 px-1.5 py-0.5 text-xs font-medium text-blue-600">
+                      Web 사용됨
+                    </span>
+                  )}
                 </div>
                 {/* 웹 출처 카드 + 분석 근거 뱃지 */}
                 <WebSourceCards

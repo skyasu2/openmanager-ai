@@ -40,13 +40,13 @@ const TEXT_PROVIDER_MODELS: Record<TextProvider, {
   modelId: () => string;
   capabilities: ModelCapabilities | (() => ModelCapabilities);
 }> = {
-  // Qwen 3 (235B Preview) - 1M TPD, 1,400 tok/s, tool calling ✅ (Cerebras 상시 적용)
+  // Cerebras GPT-OSS production candidate - structured-output primary, tool loop opt-in.
   cerebras: { 
     factory: getCerebrasModel, 
     modelId: () => getCerebrasModelId(),
     capabilities: () => getTextProviderCapabilities('cerebras')
   },
-  // Llama 4 Scout (17B) - 500K TPD, 30K TPM, 512K ctx, tool calling ✅ (2026-04-03 교체)
+  // Llama 4 Scout (17B Preview) - 500K TPD, 30K TPM, 131K ctx, tool calling ✅.
   groq: { 
     factory: getGroqModel, 
     modelId: () => getGroqModelId(),
@@ -153,7 +153,7 @@ export function selectTextModel(
 // ============================================================================
 
 /**
- * NLQ model: Groq(llama-4-scout) → Cerebras(qwen-3, Preview) → Mistral
+ * NLQ model: Groq(llama-4-scout) → Cerebras(gpt-oss-120b) → Mistral
  */
 export function getNlqModel(): ModelResult | null {
   return selectTextModel('NLQ Agent', ['groq', 'cerebras', 'mistral'], {
@@ -162,7 +162,7 @@ export function getNlqModel(): ModelResult | null {
 }
 
 /**
- * Analyst model: Groq(llama-4-scout) → Cerebras(qwen-3, Preview) → Mistral
+ * Analyst model: Groq(llama-4-scout) → Cerebras(gpt-oss-120b) → Mistral
  */
 export function getAnalystModel(): ModelResult | null {
   return selectTextModel('Analyst Agent', ['groq', 'cerebras', 'mistral'], {
@@ -171,7 +171,7 @@ export function getAnalystModel(): ModelResult | null {
 }
 
 /**
- * Reporter model: Groq(llama-4-scout) → Cerebras(qwen-3, Preview) → Mistral
+ * Reporter model: Groq(llama-4-scout) → Cerebras(gpt-oss-120b) → Mistral
  */
 export function getReporterModel(): ModelResult | null {
   return selectTextModel('Reporter Agent', ['groq', 'cerebras', 'mistral'], {
@@ -180,7 +180,7 @@ export function getReporterModel(): ModelResult | null {
 }
 
 /**
- * Advisor model: Groq(llama-4-scout) → Cerebras(qwen-3, Preview) → Mistral
+ * Advisor model: Groq(llama-4-scout) → Cerebras(gpt-oss-120b) → Mistral
  * Mistral free tier is ~2 RPM, placing it last avoids rate-limit delays.
  */
 export function getAdvisorModel(): ModelResult | null {

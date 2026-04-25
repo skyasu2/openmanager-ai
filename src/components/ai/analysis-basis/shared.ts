@@ -102,7 +102,7 @@ const RESOLVED_MODE_DESCRIPTION_LABELS: Record<ResolvedMode, string> = {
 const MODE_SELECTION_SOURCE_LABELS: Record<string, string> = {
   explicit: '사용자 지정',
   auto_complexity: '복잡도 자동 판단',
-  analysis_mode_thinking: 'Thinking 모드',
+  analysis_mode_thinking: '심층 분석 모드',
   auto_default: '기본 자동 규칙',
   single_disallowed_upgrade: '단일 금지 업그레이드',
 };

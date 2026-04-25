@@ -3,7 +3,7 @@
   "scope": {
     "nodes": "src/components/**/*.tsx (excluding test/stories)",
     "edges": "static import/export-from resolved inside src/components",
-    "excludedRouteLocalNodes": "src/app/**/components/**/*.tsx (counted in inventory, excluded from graph)"
+    "excludedRouteLocalNodes": "src/app/**/components/**/*.tsx"
   },
   "inventory": {
     "sharedComponentNodes": 145,

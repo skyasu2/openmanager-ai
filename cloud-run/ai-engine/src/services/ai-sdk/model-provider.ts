@@ -2,8 +2,8 @@
  * AI SDK Model Provider
  *
  * Vercel AI SDK 6 based model provider with quad-provider architecture:
- * - Primary: Groq (llama-4-scout-17b, 500K TPD, 512K ctx, tool calling ✅)
- * - Secondary: Cerebras (qwen-3-235b, Preview, 1M TPD, 1,400 tok/s, structured-output ✅ / tool loop opt-in)
+ * - Primary: Groq (llama-4-scout-17b, 500K TPD, 131K ctx, tool calling ✅)
+ * - Secondary: Cerebras (gpt-oss-120b, production candidate, structured-output ✅ / tool loop opt-in)
  * - Last Resort: Mistral (mistral-large-latest, Frontier, ~2 RPM free tier)
  * - Vision: Gemini 2.5 Flash-Lite (1M context, 1K RPD, no thinking tokens)
  *
@@ -93,7 +93,7 @@ export function getSupervisorModel(excludeProviders: ProviderName[] = []): {
 
 /**
  * Get verifier model with 3-way fallback + CB check
- * Groq(llama-4-scout) → Cerebras(qwen-3, Preview) → Mistral
+ * Groq(llama-4-scout) → Cerebras(gpt-oss-120b) → Mistral
  */
 export function getVerifierModel(): {
   model: LanguageModel;
@@ -117,7 +117,7 @@ export { getAdvisorModel } from './agents/config/agent-model-selectors';
  *       This function is a low-level utility for direct model access.
  *
  * Primary: Gemini 2.5 Flash-Lite (1M context, 1K RPD, no thinking tokens)
- * Fallback: OpenRouter (nvidia/nemotron-nano-12b-v2-vl:free)
+ * Fallback: OpenRouter (google/gemma-3-27b-it:free)
  *
  * @returns Model info or null (graceful degradation)
  * @updated 2026-02-15 - Added OpenRouter request best-practice defaults
@@ -279,7 +279,7 @@ export async function getSupervisorModelWithQuota(
   const status = checkProviderStatus();
   const excluded = new Set(excludeProviders);
 
-  // Provider 우선순위 (Groq llama-4-scout primary > Cerebras qwen-3 Preview > Mistral)
+  // Provider priority: Groq text primary > Cerebras structured/text fallback > Mistral.
   const preferredOrder: QuotaProviderName[] = ['groq', 'cerebras', 'mistral'];
   const availableOrder = preferredOrder.filter(
     (p) => status[p] && !excluded.has(p)

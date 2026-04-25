@@ -128,13 +128,13 @@ const result = await executeWithCircuitBreakerAndFallback(
 Cloud Run AI Engine은 LLM 호출 시 **자동 프로바이더 전환**을 수행합니다.
 
 ```
-요청 → Cerebras (llama-3.3-70b)
+요청 → Groq (llama-4-scout)
          │  429/500 에러
          ▼
-       Groq (llama-3.3-70b-versatile)
+       Cerebras (gpt-oss-120b)
          │  429/500 에러
          ▼
-       Mistral (mistral-small-2506)
+       Mistral (mistral-large-latest)
          │  실패
          ▼
        ❌ 최종 실패 (모든 프로바이더 소진)
@@ -142,9 +142,9 @@ Cloud Run AI Engine은 LLM 호출 시 **자동 프로바이더 전환**을 수�
 
 | 프로바이더 | 모델 | 역할 | 특징 |
 |-----------|------|------|------|
-| **Cerebras** | llama-3.3-70b | Primary | 가장 빠른 추론 속도 |
-| **Groq** | llama-3.3-70b-versatile | Secondary | 높은 가용성 |
-| **Mistral** | mistral-small-2506 | Tertiary | 안정적 폴백 |
+| **Groq** | llama-4-scout | Primary | tool-calling 중심 텍스트 경로 |
+| **Cerebras** | gpt-oss-120b | Secondary | structured routing + opt-in text fallback |
+| **Mistral** | mistral-large-latest | Tertiary | 안정적 폴백 |
 
 ### Retry 전략
 
@@ -212,10 +212,10 @@ Cloud Run AI Engine은 비용/가용성 보호를 위해 아래 3중 방어를 �
 이미지 분석(Vision)은 별도의 fallback chain을 가집니다:
 
 ```
-Vision 요청 → Gemini (gemini-2.0-flash)
+Vision 요청 → Gemini (gemini-2.5-flash-lite)
                 │  실패
                 ▼
-              OpenRouter (nvidia/nemotron-nano-12b-v2-vl)
+              OpenRouter (google/gemma-3-27b-it:free)
                 │  실패
                 ▼
               Analyst Agent (텍스트 기반 분석으로 대체)

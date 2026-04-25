@@ -57,12 +57,12 @@ export interface QuotaStatus {
 
 export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {
   /**
-   * Cerebras Free Tier (current default: qwen-3-235b-a22b-instruct-2507)
+   * Cerebras Free Tier (current default candidate: gpt-oss-120b)
    * @see https://inference-docs.cerebras.ai/support/rate-limits
    * @updated 2026-04-03
    *
    * - 1M TPD, 60K TPM, 30 RPM, 14.4K RPD
-   * - Context: 8,192 tokens (Free Tier 제한)
+   * - Context/capability lives in provider-model-metadata; this tracker only enforces usage quotas.
    */
   cerebras: {
     dailyTokenLimit: 1_000_000,
@@ -73,10 +73,10 @@ export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {
   /**
    * Groq Free Tier (meta-llama/llama-4-scout-17b-16e-instruct)
    * @see https://console.groq.com/docs/rate-limits
-   * @updated 2026-04-03 - llama-3.3-70b(100K TPD/12K TPM) → llama-4-scout(500K TPD/30K TPM)
+   * @updated 2026-04-25 - Scout limit metadata refreshed against Groq docs
    *
    * - 500K TPD, 30K TPM, 30 RPM, 1K RPD
-   * - Context: 512K tokens
+   * - Context: 131K tokens
    */
   groq: {
     dailyTokenLimit: 500_000,

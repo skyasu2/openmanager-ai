@@ -108,7 +108,7 @@ describe('ChatInputArea popover', () => {
     fireEvent.click(toggle);
 
     expect(screen.getByText('Web 검색')).toBeInTheDocument();
-    expect(screen.getByText('최신 정보 보강')).toBeInTheDocument();
+    expect(screen.getByText('최신 외부 정보 확인')).toBeInTheDocument();
 
     fireEvent.touchStart(document.body);
 
@@ -129,7 +129,42 @@ describe('ChatInputArea popover', () => {
     expect(toggle).toHaveFocus();
   });
 
-  it('selects analysis mode from the popover', () => {
+  it('labels active input badges as allowed tools rather than used tools', () => {
+    render(
+      <ChatInputArea
+        textareaRef={createRef<HTMLTextAreaElement>()}
+        fileInputRef={createRef<HTMLInputElement>()}
+        inputValue=""
+        setInputValue={vi.fn()}
+        isGenerating={false}
+        attachments={[]}
+        isDragging={false}
+        fileErrors={[]}
+        canAddMore={true}
+        previewImage={null}
+        dragHandlers={{}}
+        onSendWithAttachments={vi.fn()}
+        onOpenFileDialog={vi.fn()}
+        onFileSelect={vi.fn()}
+        onImageClick={vi.fn()}
+        onClosePreviewModal={vi.fn()}
+        onRemoveFile={vi.fn()}
+        onClearFileErrors={vi.fn()}
+        onPaste={vi.fn()}
+        ragEnabled={true}
+        onToggleRAG={vi.fn()}
+        webSearchEnabled={true}
+        onToggleWebSearch={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText('RAG 허용')).toBeInTheDocument();
+    expect(screen.getByText('Web 허용')).toBeInTheDocument();
+    expect(screen.queryByText('RAG 사용됨')).not.toBeInTheDocument();
+    expect(screen.queryByText('Web 사용됨')).not.toBeInTheDocument();
+  });
+
+  it('shows analysis mode as app-level deep analysis, not provider-native Thinking', () => {
     const onSelectAnalysisMode = vi.fn();
 
     render(
@@ -159,7 +194,16 @@ describe('ChatInputArea popover', () => {
     );
 
     fireEvent.click(screen.getByRole('button', { name: '도구 메뉴 열기' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Thinking' }));
+
+    expect(screen.queryByRole('button', { name: 'Thinking' })).toBeNull();
+    expect(
+      screen.getByRole('button', { name: '심층 분석' })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/숨겨진 모델 추론이 아니라 더 긴 분석/)
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '심층 분석' }));
 
     expect(onSelectAnalysisMode).toHaveBeenCalledWith('thinking');
   });

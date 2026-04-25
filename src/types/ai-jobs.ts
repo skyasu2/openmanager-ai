@@ -41,6 +41,8 @@ export interface CreateJobRequest {
     sessionId?: string;
     metadata?: Record<string, unknown> & {
       analysisMode?: AnalysisMode;
+      enableRAG?: boolean;
+      enableWebSearch?: boolean;
     };
   };
 }
@@ -115,6 +117,8 @@ export interface AIJob {
     ownerKey: string;
     retryCount?: number;
     analysisMode?: AnalysisMode;
+    enableRAG?: boolean;
+    enableWebSearch?: boolean;
   };
 }
 

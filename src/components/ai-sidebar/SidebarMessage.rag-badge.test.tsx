@@ -7,6 +7,7 @@ import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { MessageComponent } from '@/components/ai-sidebar/SidebarMessage';
 import { transformMessages } from '@/hooks/ai/utils/message-helpers';
+import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 
 vi.mock('@/components/ai/MessageActions', () => ({
   MessageActions: () => null,
@@ -99,6 +100,41 @@ describe('SidebarMessage RAG badge smoke integration', () => {
     const badge = screen.getByTestId('analysis-basis-badge');
     expect(badge).toHaveTextContent('RAG 지식베이스 검색 (1건)');
     expect(badge).toHaveTextContent('RAG');
+    expect(screen.getByText('RAG 사용됨')).toBeInTheDocument();
+    expect(screen.queryByText('RAG 허용')).not.toBeInTheDocument();
+  });
+
+  it('labels web source usage as used, not merely enabled', () => {
+    const assistantMessage: EnhancedChatMessage = {
+      id: 'a-web',
+      role: 'assistant',
+      content: '최신 외부 문서를 참고했습니다.',
+      timestamp: new Date('2026-04-25T00:00:00.000Z'),
+      metadata: {
+        analysisBasis: {
+          dataSource: '웹 검색 (1건)',
+          engine: 'Streaming AI',
+          ragSources: [
+            {
+              title: 'Kubernetes resource management',
+              similarity: 1,
+              sourceType: 'web',
+              url: 'https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/',
+            },
+          ],
+        },
+      },
+    };
+
+    render(
+      <MessageComponent message={assistantMessage} isLastMessage={true} />
+    );
+
+    expect(screen.getByText('Web 사용됨')).toBeInTheDocument();
+    expect(screen.queryByText('Web 허용')).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: '참고 출처 1건' })
+    ).toBeInTheDocument();
   });
 
   it('renders parity metadata inside the analysis basis panel for short streaming answers', () => {

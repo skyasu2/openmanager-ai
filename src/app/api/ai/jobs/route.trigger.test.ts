@@ -155,4 +155,63 @@ describe('POST /api/ai/jobs trigger readiness', () => {
       ).headers['X-Rate-Limit-Identity']
     ).toMatch(/^guest:/);
   });
+
+  it('Cloud Run worker trigger forwards RAG, Web Search, and analysis mode options', async () => {
+    process.env.CLOUD_RUN_ENABLED = 'true';
+
+    const { POST } = await importRoute();
+    const request = new NextRequest('http://localhost/api/ai/jobs', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        cookie: 'auth_session_id=guest-session-xyz',
+      },
+      body: JSON.stringify({
+        query: 'server health',
+        options: {
+          sessionId: 'session-1234',
+          metadata: {
+            analysisMode: 'thinking',
+            enableRAG: true,
+            enableWebSearch: true,
+          },
+        },
+      }),
+    });
+
+    const response = await POST(request);
+    const scheduled = mockAfter.mock.calls[0]?.[0] as
+      | (() => Promise<void>)
+      | undefined;
+    await scheduled?.();
+
+    expect(response.status).toBe(201);
+    const savedJob = mockRedisSet.mock.calls.find(
+      ([key]) =>
+        typeof key === 'string' &&
+        key.startsWith('job:') &&
+        !key.startsWith('job:progress:') &&
+        !key.startsWith('job:list:') &&
+        !key.startsWith('job:trigger:')
+    )?.[1] as { metadata?: Record<string, unknown> } | undefined;
+    expect(savedJob?.metadata).toMatchObject({
+      analysisMode: 'thinking',
+      enableRAG: true,
+      enableWebSearch: true,
+    });
+
+    const workerBody = JSON.parse(
+      (
+        mockFetch.mock.calls[0]?.[1] as {
+          body: string;
+        }
+      ).body
+    ) as Record<string, unknown>;
+    expect(workerBody).toMatchObject({
+      sessionId: 'session-1234',
+      analysisMode: 'thinking',
+      enableRAG: true,
+      enableWebSearch: true,
+    });
+  });
 });

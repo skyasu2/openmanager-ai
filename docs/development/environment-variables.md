@@ -252,7 +252,7 @@ Cloud Run은 **GCP Secret Manager**에 JSON 형태로 시크릿을 저장하고,
 ```bash
 # AI Providers
 CEREBRAS_API_KEY=csk-xxx  # Orchestrator structured routing / opt-in text fallback
-CEREBRAS_MODEL_ID=qwen-3-235b-a22b-instruct-2507  # 기본값. 계정 접근 가능 모델로 override 가능
+CEREBRAS_MODEL_ID=gpt-oss-120b  # 기본 production 후보. 계정 접근 가능 모델로 override 가능
 CEREBRAS_TOOL_CALLING_ENABLED=false  # 기본값 false. preview 모델 tool loop opt-in 시에만 true
 GROQ_API_KEY=gsk_xxx     # Supervisor/NLQ/Analyst/Reporter 주력
 MISTRAL_API_KEY=xxx      # Advisor 주력 + text fallback

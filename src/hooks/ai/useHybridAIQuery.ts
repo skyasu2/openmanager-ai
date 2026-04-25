@@ -505,6 +505,8 @@ export function useHybridAIQuery(
       rateLimitBlock: rateLimitBlockRef,
     },
     analysisMode,
+    ragEnabled,
+    webSearchEnabled,
   });
   executeQueryRef.current = executeQuery;
   const {

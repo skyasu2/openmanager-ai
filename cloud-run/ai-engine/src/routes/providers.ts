@@ -20,6 +20,10 @@ import {
   checkProviderStatus,
   type ProviderName,
 } from '../services/ai-sdk/model-provider';
+import {
+  getDeprecatedRuntimeProviderModels,
+  getRuntimeProviderModelMetadata,
+} from '../services/ai-sdk/provider-model-metadata';
 import { jsonSuccess, handleValidationError } from '../lib/error-handler';
 
 export const providersRouter = new Hono();
@@ -30,10 +34,13 @@ export const providersRouter = new Hono();
 providersRouter.get('/', (c: Context) => {
   const toggleState = getProviderToggleState();
   const availableStatus = checkProviderStatus();
+  const modelMetadata = getRuntimeProviderModelMetadata();
 
   return jsonSuccess(c, {
     toggle: toggleState,
     available: availableStatus,
+    modelMetadata,
+    modelDrift: getDeprecatedRuntimeProviderModels(modelMetadata),
     info: {
       cerebras: {
         role: 'Primary (Orchestrator structured routing) + opt-in text fallback',

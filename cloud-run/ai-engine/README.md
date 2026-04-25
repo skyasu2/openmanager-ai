@@ -163,14 +163,11 @@ if (isVisionQuery(query)) {
 
 | Agent | Primary | Fallback Chain | Free Tier |
 |-------|---------|---------------|-----------|
-| Supervisor | Cerebras `qwen-3-235b-a22b-instruct-2507` (default) | → Groq → Mistral | 1M TPD, 60K TPM |
-| NLQ Agent | Cerebras `qwen-3-235b-a22b-instruct-2507` (default) | → Groq → Mistral | 1M TPD, 60K TPM |
-| Verifier | Cerebras `qwen-3-235b-a22b-instruct-2507` (default) | → Groq → Mistral | 1M TPD, 60K TPM |
-| Orchestrator | Groq `llama-3.3-70b-versatile` | → Cerebras → Mistral | 100K TPD, 12K TPM |
-| Analyst Agent | Groq `llama-3.3-70b-versatile` | → Cerebras → Mistral | 100K TPD, 12K TPM |
-| Reporter Agent | Groq `llama-3.3-70b-versatile` | → Cerebras → Mistral | 100K TPD, 12K TPM |
-| **Advisor Agent** | **Mistral `mistral-large-latest`** | **→ Cerebras → Groq** | **500K TPM, 1B/month** |
-| **Vision Agent** | **Gemini `2.5-flash`** | **→ OpenRouter** | **Free tier available** |
+| Supervisor/Verifier | Groq `meta-llama/llama-4-scout-17b-16e-instruct` | → Cerebras → Mistral | 30 RPM, 30K TPM, 1K RPD, 500K TPD |
+| NLQ/Analyst/Reporter | Groq `meta-llama/llama-4-scout-17b-16e-instruct` | → Cerebras → Mistral | 30 RPM, 30K TPM, 1K RPD, 500K TPD |
+| Orchestrator | Cerebras `gpt-oss-120b` (`CEREBRAS_MODEL_ID`) | → Groq → Mistral | Free-tier constrained; quota guarded |
+| **Advisor Agent** | **Groq `meta-llama/llama-4-scout-17b-16e-instruct`** | **→ Cerebras → Mistral** | **30 RPM, 30K TPM, 1K RPD, 500K TPD** |
+| **Vision Agent** | **Gemini `gemini-2.5-flash-lite`** | **→ OpenRouter Gemma fallback** | **15 RPM, 1K RPD** |
 | RAG Embedding | Mistral `mistral-embed` | — (local fallback) | 500K TPM |
 
 ### Agent Usage by Feature

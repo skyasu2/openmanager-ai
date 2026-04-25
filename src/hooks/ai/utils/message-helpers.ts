@@ -246,6 +246,9 @@ export function transformUIMessageToEnhanced(
 
     const webSources = ragSources?.filter((s) => s.sourceType === 'web') ?? [];
     const hasWebSearch = webSources.length > 0;
+    const hasKnowledgeSearch = Boolean(
+      ragSources?.some((s) => s.sourceType !== 'web')
+    );
 
     // dataSource 결정: 실제 도구 호출 기반 + 토글 상태 반영
     let dataSource: string;
@@ -264,7 +267,7 @@ export function transformUIMessageToEnhanced(
     analysisBasis = {
       dataSource,
       engine: isJobQueue ? 'Cloud Run AI' : 'Streaming AI',
-      ragUsed: hasRag || hasServerAnalysisEvidence || hasWebSearch,
+      ragUsed: hasKnowledgeSearch,
       toolsCalled: calledToolNames.length > 0 ? calledToolNames : undefined,
       timeRange: hasServerAnalysisEvidence ? '최근 1시간' : undefined,
       ragSources: hasRag ? ragSources : undefined,

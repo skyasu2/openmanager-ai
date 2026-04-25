@@ -78,6 +78,7 @@ describe('transformMessages', () => {
     expect(assistant?.metadata?.analysisBasis?.dataSource).toContain(
       'RAG 지식베이스 검색'
     );
+    expect(assistant?.metadata?.analysisBasis?.ragUsed).toBe(true);
   });
 
   it('uses streamRagSources fallback for the last assistant message', () => {
@@ -113,6 +114,7 @@ describe('transformMessages', () => {
       streamRagSources
     );
     expect(assistant?.metadata?.analysisBasis?.dataSource).toContain('웹 검색');
+    expect(assistant?.metadata?.analysisBasis?.ragUsed).toBe(false);
   });
 
   it('applies streamRagSources only to last message', () => {

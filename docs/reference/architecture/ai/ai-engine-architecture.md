@@ -28,7 +28,7 @@ OpenManager AI의 AI Engine은 **Vercel AI SDK v6 계열** 기반 **multi-agent 
 | 구분 | 내용 |
 |------|------|
 | **NLP 전처리** | 규칙 기반 커스텀 파이프라인 (ML 라이브러리 미사용) — 쿼리 분류·복잡도 분석·명확화·텍스트 정제·Prompt Injection 방어 포함. 상세: [frontend-backend-comparison.md §2.3](./frontend-backend-comparison.md) |
-| **기반 모델** | Groq `llama-4-scout-17b-16e-instruct`, Cerebras `qwen-3-235b-a22b-instruct-2507`, Mistral `mistral-large-latest`, Gemini `gemini-2.5-flash-lite` |
+| **기반 모델** | Groq `llama-4-scout-17b-16e-instruct`, Cerebras `gpt-oss-120b`, Mistral `mistral-large-latest`, Gemini `gemini-2.5-flash-lite` |
 | **호스팅** | Cerebras, Groq, Mistral, Google AI (Gemini), OpenRouter 인프라 |
 | **비용** | 프로덕션 서비스는 무료 tier 한도 내 운영 |
 
@@ -202,7 +202,7 @@ flowchart LR
 | Provider | Primary 에이전트 | 모델 | 운영 메모 |
 |----------|----------------|------|-----------|
 | **Groq** | Supervisor, NLQ, Analyst, Reporter, Verifier | `meta-llama/llama-4-scout-17b-16e-instruct` | 현재 tool-calling 중심 텍스트 경로의 primary |
-| **Cerebras** | Orchestrator structured routing, opt-in text fallback | `qwen-3-235b-a22b-instruct-2507` | Preview 모델. structured-output primary, tool loop는 기본 비활성 + env opt-in |
+| **Cerebras** | Orchestrator structured routing, opt-in text fallback | `gpt-oss-120b` | Production 모델 후보. structured-output primary, tool loop는 기본 비활성 + env opt-in |
 | **Mistral** | Advisor + RAG Embedding | `mistral-large-latest` / `mistral-embed` | Advisor primary. structured output fallback에도 사용 |
 | **Gemini** | Vision primary | `gemini-2.5-flash-lite` | Flash 대비 thinking token 소모 없음. Vision 기본 경로 |
 | **OpenRouter** | Vision fallback | `google/gemma-3-27b-it:free` → `gemma-3-12b-it:free` → `gemma-3-4b-it:free` | Vision fallback 전용. free-tier 모델 특성상 tool-calling은 기본 비활성 |
@@ -543,7 +543,7 @@ cloud-run/ai-engine/src/
 <details>
 <summary>v8.5.0 (2026-02-27) - Orchestrator/Analyst Model Redistribution + RAG Toggle</summary>
 
-- **Groq `json_schema` 에러 해결**: Orchestrator `generateObject()` 호출 시 Groq `llama-3.3-70b-versatile`가 `json_schema` 미지원 → 모델 우선순위를 `['cerebras', 'mistral', 'groq']`로 재배치
+- **Groq `json_schema` 에러 해결**: Orchestrator `generateObject()` 호출 시 당시 Groq 모델의 `json_schema` 미지원 → 모델 우선순위를 `['cerebras', 'mistral', 'groq']`로 재배치
 - **Analyst Primary 변경**: Groq → Cerebras (`gpt-oss-120b`) 전환. Cerebras가 4개 에이전트(Supervisor, NLQ, Analyst, Orchestrator) Primary 담당
 - **RAG 토글 구현**: `createPrepareStep` + `filterToolsByRAG`로 `enableRAG=false` 시 `searchKnowledgeBase` 도구 필터링
 - **Math Tools 통합**: 수식 계산/통계/용량 예측 3종 도구 추가 (intent 기반 라우팅, 항상 활성)
@@ -651,7 +651,7 @@ cloud-run/ai-engine/src/
 | Reporter | Groq `llama-4-scout-17b-16e-instruct` | Reporter pipeline + tool path | 12 | score ≥ 0.75 |
 | Advisor | Mistral `mistral-large-latest` | tool-calling text path | 4 | — |
 | Vision | Gemini `gemini-2.5-flash-lite` | multimodal primary + OpenRouter fallback | 2 | — |
-| Orchestrator | Cerebras `qwen-3-235b-a22b-instruct-2507` | structured output routing | — | — |
+| Orchestrator | Cerebras `gpt-oss-120b` | structured output routing | — | — |
 | Evaluator | 결정론적 (LLM 없음) | pipeline internal | 3 | — |
 | Optimizer | 결정론적 (LLM 없음) | pipeline internal | 3 | — |
 

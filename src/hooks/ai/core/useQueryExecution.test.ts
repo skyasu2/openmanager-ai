@@ -177,6 +177,39 @@ describe('useQueryExecution', () => {
     );
   });
 
+  it('job-queue 요청에 RAG/Web/analysisMode 옵션을 함께 전달한다', async () => {
+    process.env.NODE_ENV = 'production';
+    const deps = {
+      ...createDeps(),
+      complexityThreshold: 19,
+      analysisMode: 'thinking' as const,
+      ragEnabled: true,
+      webSearchEnabled: true,
+    } as QueryExecutionDeps & {
+      ragEnabled: boolean;
+      webSearchEnabled: boolean;
+    };
+
+    const { result } = renderHook(() => useQueryExecution(deps));
+
+    act(() => {
+      result.current.executeQuery(
+        'db-mysql-dc1-primary 서버의 디스크 사용률이 81%입니다. 현재 원인과 우선 조치 방법을 분석해줘.'
+      );
+    });
+
+    await Promise.resolve();
+
+    expect(deps.asyncQuery.sendQuery).toHaveBeenCalledWith(
+      'db-mysql-dc1-primary 서버의 디스크 사용률이 81%입니다. 현재 원인과 우선 조치 방법을 분석해줘.',
+      {
+        analysisMode: 'thinking',
+        enableRAG: true,
+        enableWebSearch: true,
+      }
+    );
+  });
+
   it('active Retry-After cooldown이면 sendQuery를 fail-fast로 차단한다', async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-04-18T12:00:00.000Z'));

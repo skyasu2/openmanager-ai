@@ -64,7 +64,8 @@ describe('AnalysisBasisBadge', () => {
 
     expect(screen.getByText('RAG 참조 문서')).toBeInTheDocument();
     expect(screen.getByText('Cloud Run AI')).toBeInTheDocument();
-    expect(screen.getByText('RAG')).toBeInTheDocument();
+    expect(screen.getByText('RAG 사용됨')).toBeInTheDocument();
+    expect(screen.getByText('Web 사용됨')).toBeInTheDocument();
     expect(screen.getByText('Redis OOM incident')).toBeInTheDocument();
     expect(screen.getByText('91%')).toBeInTheDocument();
 
@@ -74,6 +75,33 @@ describe('AnalysisBasisBadge', () => {
       'https://redis.io/docs/latest/operate/oss_and_stack/management/'
     );
     expect(screen.getByText('redis.io')).toBeInTheDocument();
+  });
+
+  it('does not label web-only sources as RAG in expanded metadata', () => {
+    render(
+      <AnalysisBasisBadge
+        basis={{
+          dataSource: '웹 검색 (1건)',
+          engine: 'Streaming AI',
+          ragUsed: false,
+          ragSources: [
+            {
+              title: 'Redis memory tuning',
+              similarity: 0.88,
+              sourceType: 'web',
+              url: 'https://redis.io/docs/latest/operate/oss_and_stack/management/',
+            },
+          ],
+        }}
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: '분석 근거 상세 보기' })
+    );
+
+    expect(screen.getByText('Web 사용됨')).toBeInTheDocument();
+    expect(screen.queryByText('RAG 사용됨')).not.toBeInTheDocument();
   });
 
   it('renders a concise collapsed summary before expansion', () => {
@@ -146,7 +174,7 @@ describe('AnalysisBasisBadge', () => {
 
     expect(
       screen.getByText(
-        '데이터: 서버 실시간 데이터 분석 · 모드: Thinking · 기간: 최근 1시간'
+        '데이터: 서버 실시간 데이터 분석 · 모드: 심층 분석 · 기간: 최근 1시간'
       )
     ).toBeInTheDocument();
 
@@ -155,7 +183,7 @@ describe('AnalysisBasisBadge', () => {
     );
 
     expect(screen.getByText('분석 강도')).toBeInTheDocument();
-    expect(screen.getByText('Thinking')).toBeInTheDocument();
+    expect(screen.getByText('심층 분석')).toBeInTheDocument();
   });
 
   it('shows runtime routing metadata in expanded details when provided', () => {
