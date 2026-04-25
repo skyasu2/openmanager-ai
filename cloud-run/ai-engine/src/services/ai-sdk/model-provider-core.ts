@@ -14,6 +14,9 @@ import {
   getOpenRouterApiKey,
   getOpenRouterVisionFallbackModelIds,
   getOpenRouterVisionModelId,
+  getSambaNovaApiKey,
+  getSambaNovaModelId,
+  SAMBANOVA_BASE_URL,
 } from '../../lib/config-parser';
 
 // P-1: Lazy singleton — 동일 프로세스 내 provider 재생성 방지
@@ -21,6 +24,7 @@ let _cerebras: ReturnType<typeof createCerebras> | null = null;
 let _groq: ReturnType<typeof createGroq> | null = null;
 let _mistral: ReturnType<typeof createMistral> | null = null;
 let _gemini: ReturnType<typeof createGoogleGenerativeAI> | null = null;
+let _sambanova: ReturnType<typeof createOpenAI> | null = null;
 
 function getCerebrasProvider() {
   if (_cerebras) return _cerebras;
@@ -92,6 +96,18 @@ function patchOpenRouterRequestInit(init?: RequestInit): RequestInit | undefined
   } catch {
     return init;
   }
+}
+
+function getSambaNovaProvider() {
+  if (_sambanova) return _sambanova;
+  const apiKey = getSambaNovaApiKey();
+  if (!apiKey) throw new Error('SAMBANOVA_API_KEY not configured');
+  _sambanova = createOpenAI({
+    baseURL: SAMBANOVA_BASE_URL,
+    apiKey,
+    name: 'sambanova',
+  });
+  return _sambanova;
 }
 
 let _openrouter: ReturnType<typeof createOpenAI> | null = null;
@@ -174,4 +190,11 @@ export function getOpenRouterVisionModel(modelId?: string): LanguageModel {
   const openrouter = getOpenRouterProvider();
   const model = modelId || getOpenRouterVisionModelId();
   return asLanguageModel(openrouter(model));
+}
+
+export function getSambaNovaModel(
+  modelId: string = getSambaNovaModelId()
+): LanguageModel {
+  const sambanova = getSambaNovaProvider();
+  return asLanguageModel(sambanova(modelId));
 }

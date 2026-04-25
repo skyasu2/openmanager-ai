@@ -3,6 +3,7 @@ import {
   getCerebrasModelId,
   getGroqModelId,
   getOpenRouterVisionModelId,
+  getSambaNovaModelId,
 } from '../../../../lib/config-parser';
 import { logger } from '../../../../lib/logger';
 import { getCircuitBreaker } from '../../../resilience/circuit-breaker';
@@ -19,6 +20,7 @@ import {
   getGroqModel,
   getMistralModel,
   getOpenRouterVisionModel,
+  getSambaNovaModel,
 } from '../../model-provider';
 import type { ModelCapabilities, ProviderName } from '../../model-provider.types';
 
@@ -33,7 +35,7 @@ export interface ModelResult {
 // Text Provider → Model SSOT
 // ============================================================================
 
-export type TextProvider = 'cerebras' | 'groq' | 'mistral';
+export type TextProvider = 'cerebras' | 'groq' | 'mistral' | 'sambanova';
 
 const TEXT_PROVIDER_MODELS: Record<TextProvider, { 
   factory: (id: string) => LanguageModel; 
@@ -53,10 +55,16 @@ const TEXT_PROVIDER_MODELS: Record<TextProvider, {
     capabilities: () => getTextProviderCapabilities('groq')
   },
   // Mistral Large - Frontier급 성능, free tier quota 낮음 (~2 RPM)
-  mistral: { 
-    factory: getMistralModel, 
+  mistral: {
+    factory: getMistralModel,
     modelId: () => 'mistral-large-latest',
     capabilities: () => getTextProviderCapabilities('mistral')
+  },
+  // SambaNova Cloud — OpenAI-compatible, Llama 3.3 70B, tool calling ✅, 20M TPD free
+  sambanova: {
+    factory: getSambaNovaModel,
+    modelId: () => getSambaNovaModelId(),
+    capabilities: () => getTextProviderCapabilities('sambanova'),
   },
 };
 
@@ -153,38 +161,38 @@ export function selectTextModel(
 // ============================================================================
 
 /**
- * NLQ model: Groq(llama-4-scout) → Cerebras(gpt-oss-120b) → Mistral
+ * NLQ model: Groq(llama-4-scout) → Cerebras(gpt-oss-120b) → SambaNova(Llama-3.3-70B) → Mistral
  */
 export function getNlqModel(): ModelResult | null {
-  return selectTextModel('NLQ Agent', ['groq', 'cerebras', 'mistral'], {
+  return selectTextModel('NLQ Agent', ['groq', 'cerebras', 'sambanova', 'mistral'], {
     requiredCapabilities: { requireToolCalling: true },
   });
 }
 
 /**
- * Analyst model: Groq(llama-4-scout) → Cerebras(gpt-oss-120b) → Mistral
+ * Analyst model: Groq(llama-4-scout) → Cerebras(gpt-oss-120b) → SambaNova(Llama-3.3-70B) → Mistral
  */
 export function getAnalystModel(): ModelResult | null {
-  return selectTextModel('Analyst Agent', ['groq', 'cerebras', 'mistral'], {
+  return selectTextModel('Analyst Agent', ['groq', 'cerebras', 'sambanova', 'mistral'], {
     requiredCapabilities: { requireToolCalling: true },
   });
 }
 
 /**
- * Reporter model: Groq(llama-4-scout) → Cerebras(gpt-oss-120b) → Mistral
+ * Reporter model: Groq(llama-4-scout) → Cerebras(gpt-oss-120b) → SambaNova(Llama-3.3-70B) → Mistral
  */
 export function getReporterModel(): ModelResult | null {
-  return selectTextModel('Reporter Agent', ['groq', 'cerebras', 'mistral'], {
+  return selectTextModel('Reporter Agent', ['groq', 'cerebras', 'sambanova', 'mistral'], {
     requiredCapabilities: { requireToolCalling: true },
   });
 }
 
 /**
- * Advisor model: Groq(llama-4-scout) → Cerebras(gpt-oss-120b) → Mistral
- * Mistral free tier is ~2 RPM, placing it last avoids rate-limit delays.
+ * Advisor model: Groq(llama-4-scout) → Cerebras(gpt-oss-120b) → SambaNova(Llama-3.3-70B) → Mistral
+ * SambaNova 20M TPD가 Mistral ~2 RPM보다 훨씬 넉넉하므로 Mistral 전에 배치.
  */
 export function getAdvisorModel(): ModelResult | null {
-  return selectTextModel('Advisor Agent', ['groq', 'cerebras', 'mistral'], {
+  return selectTextModel('Advisor Agent', ['groq', 'cerebras', 'sambanova', 'mistral'], {
     requiredCapabilities: { requireToolCalling: true },
   });
 }

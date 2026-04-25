@@ -20,6 +20,7 @@ import {
   getCerebrasModelId,
   getGroqModelId,
   getOpenRouterVisionModelId,
+  getSambaNovaModelId,
 } from '../../lib/config-parser';
 import {
   type LLMProviderName as QuotaProviderName,
@@ -34,6 +35,7 @@ import {
   getGroqModel,
   getMistralModel,
   getOpenRouterVisionModel,
+  getSambaNovaModel as _getSambaNovaModel,
 } from './model-provider-core';
 import {
   checkProviderStatus,
@@ -54,6 +56,7 @@ export {
   getGroqModel,
   getMistralModel,
   getOpenRouterVisionModel,
+  getSambaNovaModel,
 } from './model-provider-core';
 export {
   checkProviderStatus,
@@ -81,7 +84,7 @@ export function getSupervisorModel(excludeProviders: ProviderName[] = []): {
   provider: ProviderName;
   modelId: string;
 } {
-  const result = selectTextModel('Supervisor', ['groq', 'cerebras', 'mistral'], {
+  const result = selectTextModel('Supervisor', ['groq', 'cerebras', 'sambanova', 'mistral'], {
     throwOnEmpty: true,
     excludeProviders,
     cbPrefix: 'supervisor',
@@ -92,15 +95,15 @@ export function getSupervisorModel(excludeProviders: ProviderName[] = []): {
 }
 
 /**
- * Get verifier model with 3-way fallback + CB check
- * Groq(llama-4-scout) → Cerebras(gpt-oss-120b) → Mistral
+ * Get verifier model with 4-way fallback + CB check
+ * Groq(llama-4-scout) → Cerebras(gpt-oss-120b) → SambaNova(Llama-3.3-70B) → Mistral
  */
 export function getVerifierModel(): {
   model: LanguageModel;
   provider: ProviderName;
   modelId: string;
 } {
-  const result = selectTextModel('Verifier', ['groq', 'cerebras', 'mistral'], {
+  const result = selectTextModel('Verifier', ['groq', 'cerebras', 'sambanova', 'mistral'], {
     throwOnEmpty: true,
     requiredCapabilities: { requireToolCalling: true },
   });
@@ -194,6 +197,9 @@ export async function testProviderHealth(
       case 'mistral':
         getMistralModel();
         break;
+      case 'sambanova':
+        _getSambaNovaModel();
+        break;
       case 'gemini':
         getGeminiFlashLiteModel();
         break;
@@ -232,6 +238,9 @@ export async function checkAllProvidersHealth(): Promise<ProviderHealth[]> {
   if (status.mistral) {
     results.push(await testProviderHealth('mistral'));
   }
+  if (status.sambanova) {
+    results.push(await testProviderHealth('sambanova'));
+  }
   if (status.gemini) {
     results.push(await testProviderHealth('gemini'));
   }
@@ -251,6 +260,7 @@ export function logProviderStatus(): void {
     Cerebras: status.cerebras ? 'ok' : 'off',
     Groq: status.groq ? 'ok' : 'off',
     Mistral: status.mistral ? 'ok' : 'off',
+    SambaNova: status.sambanova ? 'ok' : 'off',
     Gemini: status.gemini ? 'ok (Vision)' : 'off',
     OpenRouter: status.openrouter ? 'ok (Vision Fallback)' : 'off',
   }, '[Provider Status]');
@@ -280,7 +290,7 @@ export async function getSupervisorModelWithQuota(
   const excluded = new Set(excludeProviders);
 
   // Provider priority: Groq text primary > Cerebras structured/text fallback > Mistral.
-  const preferredOrder: QuotaProviderName[] = ['groq', 'cerebras', 'mistral'];
+  const preferredOrder: QuotaProviderName[] = ['groq', 'cerebras', 'sambanova', 'mistral'];
   const availableOrder = preferredOrder.filter(
     (p) => status[p] && !excluded.has(p)
   );
@@ -312,6 +322,15 @@ export async function getSupervisorModelWithQuota(
           model: getGroqModel(groqModelId),
           provider: 'groq',
           modelId: groqModelId,
+          isPreemptiveFallback,
+        };
+      }
+      case 'sambanova': {
+        const sambaModelId = getSambaNovaModelId();
+        return {
+          model: _getSambaNovaModel(sambaModelId),
+          provider: 'sambanova',
+          modelId: sambaModelId,
           isPreemptiveFallback,
         };
       }

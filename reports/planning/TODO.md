@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-25 KST (`qa-state thin wrapper green`)
+**Last Updated**: 2026-04-25 KST (`SambaNova provider 추가 + Groq lifecycle fix green`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI sidebar tool/UX simplification | High | Approved | RAG/Web/Thinking 계약 일관성, used tool evidence badge green, tool copy clarification green, async job tool option propagation green, provider model drift guard green, Cerebras Qwen deprecation 대응 일부 완료, sidebar 기능 밀도, fullscreen 중복 배선 정리 계획. 상세: [ai-sidebar-tool-ux-simplification-plan.md](ai-sidebar-tool-ux-simplification-plan.md) |
+| AI sidebar tool/UX simplification | High | Approved | RAG/Web/Thinking 계약 일관성, used tool evidence badge green, tool copy clarification green, async job tool option propagation green, provider model drift guard green, Cerebras Qwen deprecation 대응 일부 완료, icon rail 장식 신호 축소 green, sidebar 기능 밀도, fullscreen 중복 배선 정리 계획. 상세: [ai-sidebar-tool-ux-simplification-plan.md](ai-sidebar-tool-ux-simplification-plan.md) |
 
 ---
 
@@ -30,6 +30,38 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-25 #181)
+- [x] AI sidebar icon rail 시각 신호 단순화
+  - `AIAssistantIconPanel`의 선택 상태를 gradient/color rail에서 단색 border 기반 navigation state로 단순화
+  - 기능 tooltip의 emoji와 실제 상태처럼 보이는 `AI 활성` pulse 표시를 제거
+  - icon-only 기능 버튼과 fullscreen 버튼에 `aria-label`/`aria-pressed`를 추가해 접근성 보강
+  - 단독 panel 테스트를 추가해 장식 pulse 제거, tooltip copy, 기능 전환/fullscreen handoff를 고정
+  - 검증:
+    - `npx vitest run src/components/ai/AIAssistantIconPanel.test.tsx src/components/ai-sidebar/AISidebarV4.test.tsx src/components/ai/AIWorkspace.test.tsx`
+    - `npm run type-check`
+    - `npm run lint:changed`
+    - `bash scripts/dev/biome-wrapper.sh check src/components/ai/AIAssistantIconPanel.tsx src/components/ai/AIAssistantIconPanel.test.tsx`
+
+### Completed (2026-04-25 #181)
+- [x] SambaNova provider 추가 + Groq lifecycle metadata fix
+  - Fallback chain: Groq → Cerebras → **SambaNova**(Llama-3.3-70B, 20M TPD) → Mistral
+  - `config-parser.ts`: `getSambaNovaApiKey()`, `getSambaNovaModelId()`, `SAMBANOVA_BASE_URL` 추가
+  - `model-provider.types.ts`: `ProviderName`/`ProviderStatus`에 `sambanova` 추가
+  - `model-provider-core.ts`: `getSambaNovaModel()` lazy singleton 구현 (createOpenAI + SambaNova base URL)
+  - `model-provider-status.ts`: sambanova 상태 체크 추가
+  - `provider-capabilities.ts`: sambanova capabilities (`supportsToolCalling: true`) + `TextProviderName` 확장
+  - `provider-model-metadata.ts`: Groq `lifecycle: 'preview'` → `'production'` 수정, sambanova 메타데이터 추가
+  - `agent-model-selectors.ts`: 모든 에이전트(NLQ/Analyst/Reporter/Advisor/Supervisor/Verifier) 4-way fallback으로 전환
+  - `quota-tracker.ts`: `LLMProviderName`에 sambanova 추가, quota 설정 (20 RPM / 20M TPD)
+  - `.env.example`, `.env`, `.env.local`: `SAMBANOVA_API_KEY`, `SAMBANOVA_MODEL_ID` 추가
+  - `src/config/ai-providers.ts`: UI에 SambaNova 표시 추가
+  - `provider-model-metadata.test.ts`: sambanova/Groq lifecycle 기대값 갱신
+  - 검증:
+    - `npx tsc --noEmit -p cloud-run/ai-engine/tsconfig.json` ✅
+    - `npm run type-check` ✅
+    - `npx vitest run tests/unit/dev/ai-provider-model-drift.test.ts` ✅
+    - `provider-model-metadata.test.ts` ✅
 
 ### Completed (2026-04-25 #180)
 - [x] `qa-state` skill 중복 축소
