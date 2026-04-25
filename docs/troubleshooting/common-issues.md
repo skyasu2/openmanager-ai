@@ -2,10 +2,10 @@
 
 > 자주 발생하는 빌드/API/CI 문제의 증상별 해결 가이드
 > Owner: documentation
-> Last verified against code: 2026-04-09
+> Last verified against code: 2026-04-25
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-04-09
+> Last reviewed: 2026-04-25
 > Canonical: docs/troubleshooting/common-issues.md
 > Tags: troubleshooting,issues,debugging
 
@@ -245,7 +245,7 @@ git remote set-url origin git@github.com:`owner`/`repo`.git
 export ENCRYPTION_KEY='long-random-passphrase'
 
 # 2) PAT 저장
-GITHUB_PAT=ghp_xxx node scripts/test/github-auth-helper.cjs setup
+GITHUB_PAT=ghp_placeholder node scripts/test/github-auth-helper.cjs setup
 
 # 3) push 시에도 같은 ENCRYPTION_KEY 필요
 node scripts/test/github-auth-helper.cjs push main

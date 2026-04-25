@@ -1,9 +1,9 @@
-# OpenManager AI v8.1.0 - Software Requirements Specification
+# OpenManager AI v8.11.32 - Software Requirements Specification
 
 > Owner: project-lead
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-04-02
+> Last reviewed: 2026-04-25
 > Tags: requirements,srs,functional,non-functional
 
 **기반**: IEEE 830 / ISO/IEC/IEEE 29148 경량 버전
@@ -16,7 +16,7 @@
 | 제약 | 내용 |
 |------|------|
 | 목적 | 개인 포트폴리오 + 바이브 코딩 학습 |
-| 운영 비용 | ₩0 (배포된 실 서비스 기준. 단, 개발/설계 시 활용하는 AI 코딩 도구 비용은 별도) |
+| 운영 비용 | Vercel Pro 고정비를 제외한 가변 운영비 ₩0. 개발/설계 시 활용하는 AI 코딩 도구 비용은 별도 |
 | 개발 인력 | 1인 |
 | 데이터 | 시뮬레이션 (Korean DC 15대 가상 서버) |
 | 핵심 가치 | "대화로 서버를 모니터링한다" |
@@ -39,7 +39,7 @@
 |------|------|
 | 설명 | 사용자 자연어 질문 → 메트릭 조회 → AI 분석 응답 |
 | 수용 기준 | 한국어/영어 질문 처리, 서버명 인식, 메트릭 기반 응답 생성 |
-| 구현 | `src/hooks/ai/useAIChatCore.ts`, `cloud-run/ai-engine/src/agents/` |
+| 구현 | `src/hooks/ai/useAIChatCore.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/` |
 
 ### FR-003: 장애 근본 원인 분석 (RCA)
 
@@ -87,7 +87,7 @@
 |------|------|
 | 설명 | AI 기반 장애 보고서 자동 생성 + 품질 평가 |
 | 수용 기준 | Supabase 영속 저장, Evaluator+Optimizer 에이전트 평가 |
-| 구현 | `src/app/api/ai/incident-report/`, `cloud-run/ai-engine/src/agents/` |
+| 구현 | `src/app/api/ai/incident-report/`, `cloud-run/ai-engine/src/services/ai-sdk/agents/` |
 
 ### FR-009: 웹 검색 통합
 
@@ -196,13 +196,13 @@
 | 요구사항 | 핵심 구현 파일 |
 |----------|--------------|
 | FR-001 | `src/components/dashboard/`, `src/services/metrics/MetricsProvider.ts` |
-| FR-002 | `src/hooks/ai/useAIChatCore.ts`, `cloud-run/ai-engine/src/agents/` |
+| FR-002 | `src/hooks/ai/useAIChatCore.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/` |
 | FR-003 | `cloud-run/ai-engine/src/tools-ai-sdk/analyst-tools/` |
 | FR-004 | `cloud-run/ai-engine/src/tools-ai-sdk/reporter-tools/knowledge.ts` |
 | FR-005 | `src/lib/auth/`, `src/app/api/auth/` |
 | FR-006 | `src/app/api/ai/supervisor/stream/v2/` |
 | FR-007 | `src/config/rules/system-rules.json`, `src/config/rules/loader.ts` |
-| FR-008 | `src/app/api/ai/incident-report/`, `cloud-run/ai-engine/src/agents/` |
+| FR-008 | `src/app/api/ai/incident-report/`, `cloud-run/ai-engine/src/services/ai-sdk/agents/` |
 | FR-009 | `src/stores/useAISidebarStore.ts` |
 | FR-010 | `src/components/dashboard/ImprovedServerCard.tsx` |
 | NFR-001 | `cloud-run/ai-engine/src/services/resilience/` |

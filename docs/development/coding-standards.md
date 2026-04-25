@@ -4,9 +4,9 @@
 > Owner: engineering
 > Status: Active
 > Doc type: Standard
-> Last reviewed: 2026-02-17
+> Last reviewed: 2026-04-25
 > Canonical: docs/development/coding-standards.md
-> Tags: coding,standards,typescript
+> Tags: coding,standards,typescript,javascript
 
 ## 개요
 
@@ -139,6 +139,34 @@ if (isServerData(response)) {
   console.log(response.name);  // 타입 안전
 }
 ```
+
+### JavaScript 예외 사용 기준
+
+프로덕션 앱/AI Engine 로직의 기본 언어는 TypeScript입니다. `src/**`,
+`cloud-run/ai-engine/src/**`, 계약 테스트, 공유 도메인 로직은 타입 경계를 먼저
+정의하고 `.ts`/`.tsx`로 구현합니다.
+
+JavaScript 계열(`.js`, `.cjs`, `.mjs`)은 아래처럼 **Node가 바로 실행해야 하는
+운영/도구 경계**에서만 허용합니다.
+
+| 허용 위치 | 이유 | 예시 |
+|---|---|---|
+| Git hook / bootstrap wrapper | TypeScript toolchain 준비 전에도 실행되어야 함 | `scripts/hooks/pre-commit.js`, `scripts/dev/tsc-wrapper.js` |
+| 문서/QA/CI 단순 파일 처리 | Node 표준 API만 쓰는 짧은 자동화가 더 안정적 | `scripts/docs/doc-budget-report.js`, `scripts/qa/record-qa-run.js` |
+| ESM/CJS 모드가 도구 계약인 파일 | 호출자가 `.mjs`/`.cjs`를 기대함 | `next.config.mjs`, `scripts/test/*.mjs`, `*.cjs` |
+| 브라우저/worker 또는 생성 산출물 | Next/TS 빌드 경계 밖에서 로드됨 | `public/mockServiceWorker.js`, `public/workers/serverStatsWorker.js` |
+| 외부 공개 snapshot 필터/릴리즈 보조 | repo 구조를 조작하는 최소 의존 스크립트 | `scripts/sync/*.js`, `scripts/release/*.js` |
+
+판단 규칙:
+
+1. 앱 기능, API shape, AI stream/tool schema, auth/session, monitoring pipeline에 닿으면 TypeScript를 사용합니다.
+2. Node가 `npm install`/`ts-node`/`tsx` 준비 전에 실행해야 하면 JavaScript를 허용합니다.
+3. 새 스크립트가 프로젝트 타입이나 내부 모듈을 많이 import하면 `.ts` + `tsx`/`ts-node`가 기본입니다.
+4. 기존 `.js`를 무리하게 `.ts`로 바꾸지 않습니다. hook, CI, QA 기록처럼 실패 비용이 큰 자동화는 실행 안정성이 우선입니다.
+5. JavaScript 파일도 작은 함수, 명확한 에러, 테스트 가능한 입출력, secret redaction 원칙을 지켜야 합니다.
+
+2026-04-25 기준 Git 추적 파일은 TypeScript 계열이 1,379개, JavaScript 계열이 68개입니다.
+즉 JavaScript는 주력 구현 언어가 아니라 **운영 자동화와 도구 호환 경계**에 남아 있는 보조 선택입니다.
 
 ---
 

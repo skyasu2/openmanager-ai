@@ -2,10 +2,10 @@
 
 > Vercel + Cloud Run 하이브리드 시스템 구조의 기준 문서
 > Owner: platform-architecture
-> Last verified against code: 2026-04-04
+> Last verified against code: 2026-04-25
 > Status: Active Canonical (hybrid-split.md 통합됨)
 > Doc type: Explanation
-> Last reviewed: 2026-04-04
+> Last reviewed: 2026-04-25
 > Canonical: docs/reference/architecture/system/system-architecture-current.md
 > Tags: system,architecture,hybrid,cloud-run,vercel
 
@@ -13,13 +13,13 @@
 
 ## 1. Overview
 
-**OpenManager AI v8.5.0**은 AI Native Server Monitoring Platform으로, Vercel(Frontend/BFF)과 Cloud Run(AI Engine)의 **Hybrid Architecture**로 운영됩니다.
+**OpenManager AI v8.11.32 기준** AI Native Server Monitoring Platform으로, Vercel(Frontend/BFF)과 Cloud Run(AI Engine)의 **Hybrid Architecture**로 운영됩니다.
 
 | 항목 | 수치 |
 |------|------|
-| UI 컴포넌트 | ~100+ `.tsx` |
+| React/TSX surface | 353 tracked `.tsx` files under `src/` |
 | Custom Hooks | ~35+ |
-| API Routes | 29 (`src/app/api/**/route.ts`, 테스트 라우트 포함) |
+| API Routes | 31 (`src/app/api/**/route.ts`, `route.tsx` 포함) |
 | AI 실행 컴포넌트 | 8 (실행 에이전트 7 + Orchestrator 1) |
 | Zustand Stores | 2 |
 | 모니터링 서버 | 15 (OnPrem DC1, synthetic) |
@@ -38,8 +38,8 @@ graph TB
     end
 
     subgraph Vercel["Vercel (Frontend & BFF)"]
-        NextJS["Next.js 16.1.x<br/>App Router"]
-        API["API Routes (29)<br/>(/src/app/api/**/route.ts)"]
+        NextJS["Next.js 16.1.6<br/>App Router"]
+        API["API Routes (31)<br/>(/src/app/api/**/route.ts*)"]
         MP["MetricsProvider<br/>(Singleton)"]
         Providers["TanStack Query +<br/>Zustand Stores"]
     end
@@ -89,7 +89,7 @@ graph TB
                              │ HTTP / UIMessageStream
                              ▼
 ┌──────────────────────────────────────────────────────────────────────┐
-│  Vercel (Next.js 16.1.x, App Router)                                 │
+│  Vercel (Next.js 16.1.6, App Router)                                  │
 │  ┌─────────────┐  ┌──────────────────┐  ┌─────────────────────────┐ │
 │  │ API Routes   │  │ MetricsProvider  │  │ Auth (NextAuth/Supabase)│ │
 │  │ (29 routes)  │  │ (OTel→hourly)    │  │ Rate Limiter, CSRF     │ │
@@ -114,7 +114,7 @@ graph TB
    └──────────────┘      └──────────────┘       └──────────────────┘
 ```
 
-> Source of truth (2026-03-03): `src/app/api/**/route.ts` (29), `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')` (Cloud Run API mounts 9), `cloud-run/ai-engine/src/routes/*.ts` (route modules 10), `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (7 execution agents).
+> Source of truth (2026-04-25): `src/app/api/**/route.ts(x)` (31), `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')` (Cloud Run API mounts 9), `cloud-run/ai-engine/src/routes/*.ts` (13 non-test route/helper modules), `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (7 execution agents + internal deterministic Evaluator/Optimizer configs).
 
 ---
 
@@ -366,7 +366,7 @@ Client                     Vercel                     Cloud Run
 
 | 컴포넌트 | 플랫폼 | 플랜 | 비용 |
 |---------|--------|------|------|
-| **Frontend/BFF** | Vercel | Hobby(개인/비상업) 또는 Pro(팀/상업) | Hobby: $0 / Pro: $20/seat + usage |
+| **Frontend/BFF** | Vercel | Pro (허용된 유일한 유료 예외, Free 수준 사용량 유지) | $20/seat + usage |
 | **AI Engine** | Cloud Run (gen2) | Free Tier | $0 |
 | **Database** | Supabase | Free Tier | $0 |
 | **Cache** | Upstash Redis | Free Tier | $0 |
@@ -410,14 +410,16 @@ Reference (checked: 2026-02-20):
 | `server-detail` | `/api/servers/[id]` | 30초 |
 | `monitoring-report` | `/api/monitoring/report` | 60초 |
 
-### Client State (Zustand 4 Stores)
+### Client State (Zustand Stores)
 
 | Store | 파일 | 용도 |
 |-------|------|------|
 | `useAISidebarStore` | `src/stores/useAISidebarStore.ts` | AI 사이드바 열림/닫힘, 모드 |
-| `useDashboardToggleStore` | `src/stores/useDashboardToggleStore.ts` | 대시보드 패널 토글 |
 | `useUnifiedAdminStore` | `src/stores/useUnifiedAdminStore.ts` | 관리자 통합 상태 |
-| `auth-store` | `src/stores/auth-store.ts` | 인증 상태 |
+
+대시보드 토글과 인증 상태는 현재 별도 Zustand store 파일이 아니라 관련 hook/context와
+서버 세션 경계에서 관리합니다. `src/stores/`에 OpenManager 전역 Zustand store로 남아
+있는 파일은 위 2개가 기준입니다.
 
 ### AI Chat State
 

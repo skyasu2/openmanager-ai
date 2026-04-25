@@ -1,9 +1,9 @@
-# OpenManager AI v8.1.0 - Definition of Done
+# OpenManager AI v8.11.32 - Definition of Done
 
 > Owner: project-lead
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-04-02
+> Last reviewed: 2026-04-25
 > Tags: dod,checklist,quality,release
 
 **성격**: Living Document — 프로젝트 진화에 따라 갱신.
@@ -76,7 +76,7 @@
 문서 추가/수정 시 필수:
 
 - [ ] 메타데이터 포함 (Owner, Status, Doc type, Last reviewed)
-- [ ] 활성 문서 55개 이내 (`docs/archived/` 제외)
+- [ ] 활성 문서 80개 이내 (`docs/archived/` 제외, 세부 예산은 `npm run docs:budget` 기준)
 - [ ] Diataxis 유형 라벨 (Tutorial, How-to, Reference, Explanation)
 - [ ] 병합 > 기존 확장 > 신규 생성 (우선순위)
 - [ ] 90일 미갱신 문서는 아카이브 후보

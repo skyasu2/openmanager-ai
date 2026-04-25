@@ -4,12 +4,12 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-04-17
+> Last reviewed: 2026-04-25
 > Canonical: docs/reference/architecture/ai/frontend-backend-comparison.md
 > Tags: ai,frontend,backend,comparison
 
-**분석 일시**: 2026-04-17 (stream route / observability cleanup)
-**버전**: v8.0.0
+**분석 일시**: 2026-04-25 (route count / deployment topology refresh)
+**버전**: v8.11.32
 **아키텍처**: Vercel (Frontend) + Cloud Run (Backend AI Engine)
 
 ---
@@ -56,7 +56,7 @@ graph LR
 부가 경로: `/api/ai/supervisor`는 legacy JSON/text proxy이며 cache/plain callers와 local dev fallback을 담당합니다.
 ```
 
-> Source of truth (2026-03-03): `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (execution agents 7), `src/app/api/**/route.ts` (frontend API routes 28), `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')` (Cloud Run API mounts 9), `cloud-run/ai-engine/src/routes/*.ts` (route modules 10).
+> Source of truth (2026-04-25): `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (execution agents 7 + internal deterministic Evaluator/Optimizer configs), `src/app/api/**/route.ts(x)` (frontend API routes 31), `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')` (Cloud Run API mounts 9), `cloud-run/ai-engine/src/routes/*.ts` (13 non-test route/helper modules).
 
 ---
 

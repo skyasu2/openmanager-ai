@@ -2,10 +2,10 @@
 
 > 코드베이스 현재 폴더 구조와 책임 범위를 정리한 레퍼런스
 > Owner: platform-architecture
-> Last verified against code: 2026-03-03
+> Last verified against code: 2026-04-25
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-03-25
+> Last reviewed: 2026-04-25
 > Canonical: docs/reference/architecture/folder-structure.md
 > Tags: architecture,folder-structure,reference
 
@@ -55,10 +55,10 @@ src/app/api/
 ├── metrics/
 ├── monitoring/
 ├── security/
-└── ... (총 29 route.ts)
+└── ... (총 31 route.ts/route.tsx)
 ```
 
-> Source of truth (2026-03-03): `src/app/api/**/route.ts` (29).
+> Source of truth (2026-04-25): `src/app/api/**/route.ts(x)` (31).
 
 상세 엔드포인트 목록은 [API Endpoints](../api/endpoints.md)를 참고합니다.
 
@@ -79,7 +79,7 @@ cloud-run/ai-engine/
 └── tsconfig.json
 ```
 
-> Source of truth (2026-03-03): `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')` (API mounts 9), `cloud-run/ai-engine/src/routes/*.ts` (route modules 10).
+> Source of truth (2026-04-25): `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')` (API mounts 9), `cloud-run/ai-engine/src/routes/*.ts` (13 non-test route/helper modules).
 
 ## Documentation (`docs/`)
 

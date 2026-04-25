@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-24 KST (`AI sidebar/provider drift plan updated`)
+**Last Updated**: 2026-04-25 KST (`docs JS/TS and deployment topology refresh`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -30,6 +30,18 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-25 #178)
+- [x] JS/TS 사용 기준 및 배포/개발 철학 문서 정렬
+  - TypeScript 기본 원칙과 JavaScript 예외 사용 기준을 `coding-standards`와 `scripts/README`에 명시
+  - GitLab CI semver tag deploy, Vercel Git Integration 해제, GitHub public snapshot 역할을 주요 운영 문서에 재정렬
+  - route count, Zustand store count, RAG/data source path, active doc budget 같은 stale 문서 값을 현재 코드 기준으로 갱신
+  - 의도치 않게 시작된 Vercel deployment `dpl_ASxmWrWVRV8RsxHe5dF8BxmkPorM`은 즉시 제거 완료
+  - 검증:
+    - `npm run docs:lint:changed`
+    - `npm run docs:budget`
+    - `npm run docs:ai-consistency`
+    - `npm run docs:links:internal`
 
 ### Completed (2026-04-25 #177)
 - [x] Codex MCP token backup hardening 및 검색 MCP 도입 기준 정리

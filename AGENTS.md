@@ -78,12 +78,13 @@
   - 증거 무결성 감사: `npm run qa:evidence:audit` (고아 파일·누락 참조·부채 런 탐지)
 
 ### 2.6 저장소/배포 토폴로지 (Codex)
-- **정본 개발 저장소는 `gitlab` remote** 입니다. 전체 이력/테스트/문서/QA 자산을 유지하며, Vercel Frontend Git 배포 소스도 GitLab `main` 입니다.
+- **정본 개발 저장소는 `gitlab` remote** 입니다. 전체 이력/테스트/문서/QA 자산을 유지합니다.
+- **Vercel Git Integration은 해제되어 있으며**, Frontend production 배포 권한은 GitLab CI semver tag `deploy` job이 보유합니다.
 - **GitHub public remote의 기본 이름은 `github-public`** 입니다. 공개용 frontend-focused snapshot 으로만 취급하며, Vercel에 노출되는 프론트엔드/공개 자산만 공유합니다. `origin`은 legacy fallback 으로만 허용합니다.
 - private canonical repo와 GitHub public snapshot은 히스토리가 다를 수 있으므로 `github-public/main` 또는 `origin/main`을 기준 브랜치처럼 다루지 않습니다.
 - Codex는 push/fetch/rebase 전에 항상 `git remote -v`를 확인하고, 기본 push 대상은 `gitlab` 으로 선택합니다.
 - GitHub 공개 스냅샷 동기화는 `npm run sync:github` 으로만 수행합니다 (`scripts/sync/github-sync.sh`, 포함 목록: `.github-export-include`, 안전 제외 목록: `.github-export-ignore`). `git push origin` 또는 `git push github-public` 직접 실행 금지.
-- GitLab CI는 **활성** 상태입니다. 현재 `.gitlab-ci.yml`은 `validate(frontend + ai-engine) → deploy(frontend) → deploy_ai_engine(cloud-run) → smoke(frontend)` 다단계 파이프라인으로 동작합니다. docs/reports 전용 push는 CI 스킵(분 예산 보존).
+- GitLab CI는 **활성** 상태입니다. 현재 `.gitlab-ci.yml`은 branch/main `validate(frontend + ai-engine)`와 semver tag `deploy(frontend) → deploy_ai_engine(cloud-run) → smoke(frontend/ai-engine)` 파이프라인으로 동작합니다. docs/reports 전용 push는 CI 스킵(분 예산 보존).
 - `git push gitlab ...` 이후에는 `GITLAB_TOKEN`(env 또는 `.env.local`)이 있으면 `npm run gitlab:pipeline:head -- --wait`로 pushed `HEAD` pipeline을 확인하고, final 답변에 `pipeline id/status/url`를 반드시 보고합니다.
 - **배포 권한은 GitLab CI가 보유**합니다. Frontend는 `deploy` job에서 `vercel build --prod` 후 `vercel deploy --prebuilt --prod`, AI Engine은 `deploy_ai_engine` job에서 `cloud-run/ai-engine/deploy.sh`를 통해 Cloud Run production 배포를 수행합니다. validate 실패 시 각 배포가 차단됩니다.
 - **배포 전 runner 상태 확인**: `bash scripts/ci/runner-health-check.sh`

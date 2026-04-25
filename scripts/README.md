@@ -38,13 +38,10 @@ scripts/
 │   ├── check-hardcoded-secrets.js
 │   ├── precommit-check-secrets.cjs
 │   └── sync-vercel.sh         # Vercel 환경변수 동기화
-├── generators/        # 데이터 생성기
-│   ├── generate-hourly-failure-scenarios.ts
-│   └── generate-server-data.ts
+├── git/               # remote topology / canonical routing 점검
 ├── hooks/             # Git hooks
 │   ├── post-commit.js
-│   ├── pre-push.js
-│   └── validate-parallel.js   # 수동 병렬 검증 유틸(현재 pre-push 기본 경로 미사용)
+│   └── pre-push.js
 ├── mcp/               # MCP 서버 관련
 │   ├── codex-local.sh         # 프로젝트 스코프 Codex 래퍼
 │   ├── count-codex-mcp-usage.sh
@@ -63,6 +60,17 @@ scripts/
 ```
 
 ## 주요 스크립트
+
+### JavaScript 스크립트를 유지하는 이유
+
+프로덕션 앱과 AI Engine 로직은 TypeScript가 기본입니다. `scripts/`의 `.js`/`.cjs`/`.mjs`
+파일은 대부분 Git hook, CI/QA 기록, 문서 예산, release/sync 보조처럼 Node가 바로
+실행해야 하는 운영 자동화입니다.
+
+- Git hook과 bootstrap wrapper는 `ts-node`/`tsx` 준비 전에도 동작해야 하므로 `.js`를 유지합니다.
+- `.cjs`/`.mjs`는 호출 도구의 CommonJS/ESM 계약이 명확할 때만 사용합니다.
+- 프로젝트 타입이나 내부 모듈을 많이 import하는 새 자동화는 `.ts` + `tsx`/`ts-node`를 우선합니다.
+- 재생성 가능한 `tmp/`, `.next/`, `node_modules/`의 JavaScript는 관리 대상 통계에서 제외합니다.
 
 ### AI 에이전트 브릿지
 
@@ -97,7 +105,7 @@ git push gitlab --follow-tags
 npm run sync:github
 
 # GitHub PAT helper 사용 시 ENCRYPTION_KEY 필수
-ENCRYPTION_KEY='long-random-passphrase' GITHUB_PAT=ghp_xxx \
+ENCRYPTION_KEY='long-random-passphrase' GITHUB_PAT=ghp_placeholder \
   node scripts/test/github-auth-helper.cjs setup
 ```
 
@@ -186,18 +194,15 @@ npm run data:fix
 npm run data:verify
 npm run data:precomputed:build
 
-# 레거시 생성기 실행 (명시적 허용 필요)
-ALLOW_LEGACY_HOURLY_DATA=true npx tsx scripts/generators/generate-hourly-failure-scenarios.ts
-ALLOW_LEGACY_PUBLIC_SERVER_DATA=true npx tsx scripts/generators/generate-server-data.ts
 ```
 
 - `scripts/grafana/otlp-export.ts`의 기본 출력 경로는 `tmp/grafana/otlp-export`입니다.
 - Grafana/OTLP 변환 결과처럼 재생성 가능한 로컬 산출물은 `scripts/` 아래에 보관하지 않습니다.
 - 2026-04-10에 수동 login/OAuth/token/validation helper 5개를 제거했습니다. 자동 실행 경로에 붙지 않은 manual helper는 `scripts/`에 유지하지 않습니다.
 - 같은 날 수동 SQL, 정적 Grafana dashboard asset, WSL 복구 스크립트 7개를 [legacy-scripts/2026-04-10](../reports/history/legacy-scripts/2026-04-10/README.md)로 archive했습니다.
-- 같은 날 `pipeline-helpers.ts`와 `scripts/data/otel/*` helper 3개도 호출점 부재와 깨진 `./types` import를 근거로 제거했습니다.
+- 같은 날 legacy generator, `pipeline-helpers.ts`, `scripts/data/otel/*` helper도 호출점 부재와 깨진 import를 근거로 제거했습니다.
 - 현재 기준으로 `scripts/` audit의 unreferenced 후보는 `0`개입니다.
 
 ---
 
-_Last reviewed: 2026-04-10_
+_Last reviewed: 2026-04-25_

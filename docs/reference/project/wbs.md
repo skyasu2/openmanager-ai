@@ -1,4 +1,4 @@
-# OpenManager AI v8.1.0 - Work Breakdown Structure (모듈 기반)
+# OpenManager AI v8.11.32 - Work Breakdown Structure (모듈 기반)
 
 > Owner: project-lead
 > Status: Active Canonical
@@ -35,7 +35,7 @@
 | F2 | 핵심 페이지 3개 | Playwright smoke 통과 | Pass | Pass | Done |
 | F3 | AI Sidebar V4 | 스트리밍+RAG+명확화+Job Queue+리사이즈 | 5/5 | 5/5 | Done |
 | F4 | AI 전체화면 | 채팅+AutoReport+Monitoring | 3/3 | 3/3 | Done |
-| F5 | 상태관리 Zustand | persist+devtools+useShallow | 4/4 스토어 | 4/4 | Done |
+| F5 | 상태관리 Zustand | persist+devtools+useShallow | 2/2 전역 스토어 | 2/2 | Done |
 | F6 | 반응형 레이아웃 | 데스크탑+태블릿+모바일 깨짐 | 0건 | 0건 | Done |
 | F7 | 에러 바운더리 | 글로벌 에러 UI + Sentry | 적용 | 적용 | Done |
 | F8 | OAuth 인증 플로우 | 로그인→대시보드→로그아웃 | 정상 | 정상 | Done |
