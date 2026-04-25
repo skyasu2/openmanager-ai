@@ -149,6 +149,8 @@ approval_mode = "approve"
 approval_mode = "approve"
 
 [mcp_servers.github]
+# HTTP MCP bearer token is resolved from the Codex process environment.
+# Use scripts/mcp/codex-local.sh so .env.local can be loaded without writing secrets here.
 url = "https://api.githubcopilot.com/mcp/"
 bearer_token_env_var = "GITHUB_PERSONAL_ACCESS_TOKEN"
 startup_timeout_sec = 120

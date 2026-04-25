@@ -3,7 +3,7 @@
 > Owner: team
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-04-24
+> Last reviewed: 2026-04-25
 
 프로젝트 자동화 및 유틸리티 스크립트 모음.
 
@@ -28,7 +28,7 @@ scripts/
 │   └── typecheck-changed.sh   # 변경 감지 기반 증분 project 타입체크
 ├── docs/              # 문서 품질 관리
 │   ├── check-docs.sh          # 문서 품질 점검
-│   ├── check-ai-docs-consistency.js
+│   ├── check-ai-docs-consistency.ts
 │   ├── doc-budget-report.js   # 문서 예산 리포트
 │   ├── check-internal-links.js
 │   ├── generate-inventory.js

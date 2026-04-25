@@ -113,6 +113,19 @@ get_storybook_mode() {
   esac
 }
 
+get_github_mode() {
+  local mode="${OPENMANAGER_GITHUB_MCP_MODE:-auto}"
+  mode="$(printf '%s' "$mode" | tr '[:upper:]' '[:lower:]')"
+  case "$mode" in
+    on|off|auto)
+      printf '%s\n' "$mode"
+      ;;
+    *)
+      printf 'auto\n'
+      ;;
+  esac
+}
+
 read_storybook_url() {
   local config_file="$1"
   local url=""
@@ -191,6 +204,48 @@ adjust_expected_servers_for_storybook_mode() {
 
   echo "  - Storybook MCP expected list excluded (mode: $mode)"
   echo "  - Storybook MCP expected list excluded (mode: $mode)" >> "$LOG_FILE"
+}
+
+github_mcp_token_available() {
+  [ -n "${GITHUB_PERSONAL_ACCESS_TOKEN:-}" ]
+}
+
+adjust_expected_servers_for_github_mode() {
+  local mode=""
+  local include_github=1
+  local server=""
+  local filtered=()
+
+  mode="$(get_github_mode)"
+  case "$mode" in
+    on)
+      include_github=1
+      ;;
+    off)
+      include_github=0
+      ;;
+    auto)
+      if github_mcp_token_available; then
+        include_github=1
+      else
+        include_github=0
+      fi
+      ;;
+  esac
+
+  if [ "$include_github" -eq 1 ]; then
+    return 0
+  fi
+
+  for server in "${EXPECTED_SERVERS[@]}"; do
+    if [ "$server" != "github" ]; then
+      filtered+=("$server")
+    fi
+  done
+  EXPECTED_SERVERS=("${filtered[@]}")
+
+  echo "  - GitHub MCP expected list excluded (mode: $mode)"
+  echo "  - GitHub MCP expected list excluded (mode: $mode)" >> "$LOG_FILE"
 }
 
 array_contains() {
@@ -552,8 +607,11 @@ export OPENMANAGER_CODEX_HOME_MODE
 # shellcheck source=/dev/null
 source "$RUNTIME_ENV_RESOLVER"
 
-if [ -x "$GITHUB_MCP_AUTH_SYNC" ]; then
-  CODEX_HOME="$REPO_ROOT/.codex" "$GITHUB_MCP_AUTH_SYNC" || true
+if [ -f "$GITHUB_MCP_AUTH_SYNC" ]; then
+  set +e
+  # shellcheck source=/dev/null
+  source "$GITHUB_MCP_AUTH_SYNC" --export-env
+  set -euo pipefail
 fi
 
 load_expected_servers() {
@@ -788,6 +846,7 @@ NODE
 
 load_expected_servers
 adjust_expected_servers_for_storybook_mode
+adjust_expected_servers_for_github_mode
 validate_selected_probes
 
 echo -e "${BLUE}Runtime Paths${NC}"

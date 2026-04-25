@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 
 const {
   checkContent,
-} = require('../../../scripts/docs/check-ai-docs-consistency');
+} = require('../../../scripts/docs/check-ai-docs-consistency.ts');
 
 describe('AI docs consistency check', () => {
   it('flags legacy .mcp.json token-bearing guidance without printing secrets', () => {
@@ -54,6 +54,96 @@ describe('AI docs consistency check', () => {
       expect.arrayContaining([
         expect.objectContaining({
           ruleId: 'AI-DOCS-SKILL-SYMLINK-001',
+        }),
+      ])
+    );
+  });
+
+  it('flags direct Gemini MCP status guidance that bypasses the project launcher', () => {
+    const findings = checkContent(
+      'docs/development/vibe-coding/mcp-servers.md',
+      'Gemini MCP 확인: gemini mcp list'
+    );
+
+    expect(findings).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          ruleId: 'AI-DOCS-GEMINI-MCP-STATUS-001',
+        }),
+      ])
+    );
+  });
+
+  it('allows Gemini MCP status guidance when trust and no-relaunch are explicit', () => {
+    const findings = checkContent(
+      'docs/development/vibe-coding/mcp-servers.md',
+      'Gemini MCP 확인: GEMINI_CLI_TRUST_WORKSPACE=true GEMINI_CLI_NO_RELAUNCH=true gemini mcp list --debug'
+    );
+
+    expect(findings).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          ruleId: 'AI-DOCS-GEMINI-MCP-STATUS-001',
+        }),
+      ])
+    );
+  });
+
+  it('flags guidance that restores OpenManager MCP into Gemini global settings', () => {
+    const findings = checkContent(
+      'docs/development/vibe-coding/mcp-servers.md',
+      'OpenManager MCP 복구: ~/.gemini/settings.json에 mcpServers 블록을 추가합니다.'
+    );
+
+    expect(findings).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          ruleId: 'AI-DOCS-GEMINI-MCP-SCOPE-001',
+        }),
+      ])
+    );
+  });
+
+  it('flags legacy mcp_project_settings global merge guidance', () => {
+    const findings = checkContent(
+      'docs/development/vibe-coding/mcp-servers.md',
+      '~/mcp_project_settings.json 내용을 ~/.gemini/settings.json 전역 설정에 병합하여 저장합니다.'
+    );
+
+    expect(findings).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          ruleId: 'AI-DOCS-GEMINI-MCP-LEGACY-FILE-001',
+        }),
+      ])
+    );
+  });
+
+  it('flags direct Gemini skills discovery guidance that is unreliable in headless mode', () => {
+    const findings = checkContent(
+      'docs/development/vibe-coding/skills.md',
+      'Gemini skills 확인: gemini skills list'
+    );
+
+    expect(findings).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          ruleId: 'AI-DOCS-GEMINI-SKILLS-LIST-001',
+        }),
+      ])
+    );
+  });
+
+  it('flags copying OpenManager common skills into Gemini overlay or user scope', () => {
+    const findings = checkContent(
+      'docs/development/vibe-coding/skills.md',
+      'qa-state, lint-smoke, git-workflow 같은 프로젝트 맞춤형 스킬을 .gemini/skills 위치로 이동합니다.'
+    );
+
+    expect(findings).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          ruleId: 'AI-DOCS-GEMINI-SKILL-SCOPE-001',
         }),
       ])
     );

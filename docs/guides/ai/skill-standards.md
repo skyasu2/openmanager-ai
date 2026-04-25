@@ -4,7 +4,7 @@
 > Owner: project
 > Status: Active Canonical
 > Doc type: Guide
-> Last reviewed: 2026-04-24
+> Last reviewed: 2026-04-25
 > Canonical: docs/guides/ai/skill-standards.md
 > Tags: ai,skills,codex,claude,gemini
 
@@ -21,6 +21,8 @@
 | Gemini CLI | `.agents/skills/` | 현재 Gemini workspace discovery에서 `.gemini/skills`보다 우선하는 공통 agent skill 경로 |
 | Gemini-only overlay | `.gemini/skills/` | Gemini 전용 추가 skill만 허용. `.agents/skills`와 같은 이름 금지 |
 | 공통 기준 | `config/ai/skill-baselines.json` | skill별 공통 의도, 핵심 불변조건, native adapter 경로 |
+
+Gemini CLI 공식 자료는 `SKILL.md` format과 project/user/extension tier를 전제로 합니다. OpenManager에서는 이를 프로젝트 표준에 맞춰 해석해, 공통 skill adapter는 `.agents/skills`에 두고 `.gemini/skills`는 Gemini-only overlay로만 사용합니다. Gemini extension은 외부 배포 단위가 필요할 때 검토하며, 공통 skill의 기본 배포 경로로 쓰지 않습니다.
 
 ## 수정 규칙
 

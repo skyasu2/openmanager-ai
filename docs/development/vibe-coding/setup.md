@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active Supporting
 > Doc type: Tutorial
-> Last reviewed: 2026-04-24
+> Last reviewed: 2026-04-25
 > Canonical: docs/development/vibe-coding/setup.md
 > Tags: vibe-coding,setup,mcp
 
@@ -101,6 +101,8 @@ claude             # 대화형 모드 시작
 - Codex runtime: 직접 `codex`보다 `bash scripts/mcp/codex-local.sh ...` 경로를 우선 사용
 - Codex auth/env: GitHub/Supabase 토큰은 `.codex/config.toml`에 직접 넣지 않고 런타임에 shell env 또는 `.env.local`에서 주입
 - Codex config 선택: `scripts/mcp/resolve-runtime-env.sh`가 기본적으로 project `/.codex`를 home `~/.codex`보다 우선
+- Gemini runtime: MCP discovery가 필요하면 `GEMINI_CLI_TRUST_WORKSPACE=true GEMINI_CLI_NO_RELAUNCH=true gemini ...` 또는 `bash scripts/mcp/run-with-project-env.sh gemini ...` 경로를 사용. 핵심은 workspace trust와 no-relaunch를 명시하는 것입니다.
+- Gemini scope: 공식 `gemini mcp add` 기본 scope는 `project`입니다. OpenManager 전용 MCP는 tracked `.gemini/settings.json`에서 관리하고, user settings는 개인 preference 영역으로 유지합니다.
 - Claude 로컬: `.mcp.json` + `.claude/settings.local.json`
 - 수치(서버 개수) 대신 SSOT 기준으로 확인: `bash scripts/mcp/codex-local.sh mcp list`
 
@@ -138,6 +140,8 @@ codex --version
 # 프로젝트 기준 MCP 확인
 bash scripts/mcp/codex-local.sh mcp list
 bash scripts/mcp/mcp-health-check-codex.sh --no-live-probe
+GEMINI_CLI_TRUST_WORKSPACE=true GEMINI_CLI_NO_RELAUNCH=true gemini mcp list --debug
+npm run skills:check
 ```
 
 ---

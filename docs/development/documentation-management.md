@@ -3,7 +3,7 @@
 > Owner: docs-platform
 > Status: Active Canonical
 > Doc type: Explanation
-> Last reviewed: 2026-04-24
+> Last reviewed: 2026-04-25
 > Canonical: docs/development/documentation-management.md
 > Tags: docs-governance,diataxis,docs-as-code
 
@@ -15,7 +15,7 @@
 2. 에이전트 정책 요약: `AGENTS.md`
 3. Codex skill: `.agents/skills/doc-management/SKILL.md`
 4. Claude skill: `.claude/skills/doc-management/SKILL.md`
-5. 자동 점검: `scripts/docs/check-docs.sh`, `scripts/docs/doc-budget-report.js`, `scripts/docs/check-ai-docs-consistency.js`
+5. 자동 점검: `scripts/docs/check-docs.sh`, `scripts/docs/doc-budget-report.js`, `scripts/docs/check-ai-docs-consistency.ts`
 6. WSL 전용 점검 래퍼: `scripts/wsl/docs-management-check.sh`
 7. 자동 생성 인벤토리: `reports/docs/docs-inventory.md`
 8. 자동 생성 컴포넌트 맵: `docs/reference/architecture/system/component-dependency-map.md`, `reports/docs/component-dependency-map.json`

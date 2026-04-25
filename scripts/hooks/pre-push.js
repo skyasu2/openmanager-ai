@@ -240,7 +240,7 @@ const AI_DOCS_CONSISTENCY_PATTERNS = [
   /^docs\/guides\/ai\//,
   /^docs\/development\/vibe-coding\//,
   /^scripts\/README\.md$/,
-  /^scripts\/docs\/check-ai-docs-consistency\.js$/,
+  /^scripts\/docs\/check-ai-docs-consistency\.ts$/,
   /^\.(agents|claude)\/skills\/.*\/SKILL\.md$/,
 ];
 

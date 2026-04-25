@@ -7,7 +7,7 @@ GITHUB_MCP_AUTH_SYNC="$REPO_ROOT/scripts/mcp/sync-github-mcp-auth.sh"
 ORIGINAL_CONFIG_FILE=""
 BACKUP_CONFIG_FILE=""
 FILTERED_CONFIG_FILE=""
-STORYBOOK_CONFIG_MUTATED=0
+EFFECTIVE_CONFIG_MUTATED=0
 
 # OPENMANAGER_STORYBOOK_MCP_MODE:
 # - on: 항상 포함
@@ -25,10 +25,24 @@ get_storybook_mode() {
   esac
 }
 
-has_storybook_server_section() {
+get_github_mode() {
+  local mode="${OPENMANAGER_GITHUB_MCP_MODE:-auto}"
+  mode="$(printf '%s' "$mode" | tr '[:upper:]' '[:lower:]')"
+  case "$mode" in
+    on|off|auto)
+      printf '%s\n' "$mode"
+      ;;
+    *)
+      printf 'auto\n'
+      ;;
+  esac
+}
+
+has_mcp_server_section() {
   local config_file="$1"
-  awk '
-    /^\[mcp_servers\.storybook\]$/ {
+  local server="$2"
+  awk -v section="[mcp_servers.${server}]" '
+    $0 == section {
       found = 1
     }
     END {
@@ -80,11 +94,27 @@ is_storybook_reachable() {
   return 1
 }
 
-filter_storybook_section() {
+github_mcp_token_available() {
+  [ -n "${GITHUB_PERSONAL_ACCESS_TOKEN:-}" ]
+}
+
+filter_mcp_server_sections() {
   local src="$1"
   local dst="$2"
-  awk '
-    /^\[mcp_servers\.storybook(\.env)?\]$/ {
+  shift 2
+  awk -v excluded_servers="$*" '
+    function is_excluded_section(line,    i, count, servers, section, prefix) {
+      count = split(excluded_servers, servers, " ")
+      for (i = 1; i <= count; i++) {
+        section = "[mcp_servers." servers[i] "]"
+        prefix = "[mcp_servers." servers[i] "."
+        if (line == section || index(line, prefix) == 1) {
+          return 1
+        }
+      }
+      return 0
+    }
+    /^\[mcp_servers\./ && is_excluded_section($0) {
       skip = 1
       next
     }
@@ -102,30 +132,58 @@ prepare_effective_codex_config() {
   local storybook_mode=""
   local storybook_url=""
   local include_storybook="1"
+  local github_mode=""
+  local include_github="1"
+  local excluded_servers=()
 
-  if ! has_storybook_server_section "$config_file"; then
-    return 0
+  if has_mcp_server_section "$config_file" "storybook"; then
+    storybook_mode="$(get_storybook_mode)"
+    case "$storybook_mode" in
+      on)
+        include_storybook="1"
+        ;;
+      off)
+        include_storybook="0"
+        ;;
+      auto)
+        storybook_url="$(read_storybook_url "$config_file")"
+        if is_storybook_reachable "$storybook_url"; then
+          include_storybook="1"
+        else
+          include_storybook="0"
+        fi
+        ;;
+    esac
+
+    if [ "$include_storybook" = "0" ]; then
+      excluded_servers+=("storybook")
+    fi
   fi
 
-  storybook_mode="$(get_storybook_mode)"
-  case "$storybook_mode" in
-    on)
-      include_storybook="1"
-      ;;
-    off)
-      include_storybook="0"
-      ;;
-    auto)
-      storybook_url="$(read_storybook_url "$config_file")"
-      if is_storybook_reachable "$storybook_url"; then
-        include_storybook="1"
-      else
-        include_storybook="0"
-      fi
-      ;;
-  esac
+  if has_mcp_server_section "$config_file" "github"; then
+    github_mode="$(get_github_mode)"
+    case "$github_mode" in
+      on)
+        include_github="1"
+        ;;
+      off)
+        include_github="0"
+        ;;
+      auto)
+        if github_mcp_token_available; then
+          include_github="1"
+        else
+          include_github="0"
+        fi
+        ;;
+    esac
 
-  if [ "$include_storybook" = "1" ]; then
+    if [ "$include_github" = "0" ]; then
+      excluded_servers+=("github")
+    fi
+  fi
+
+  if [ "${#excluded_servers[@]}" -eq 0 ]; then
     return 0
   fi
 
@@ -134,14 +192,14 @@ prepare_effective_codex_config() {
   FILTERED_CONFIG_FILE="$(mktemp "${TMPDIR:-/tmp}/openmanager-codex-config.filtered.XXXXXX")"
 
   cp "$ORIGINAL_CONFIG_FILE" "$BACKUP_CONFIG_FILE"
-  filter_storybook_section "$ORIGINAL_CONFIG_FILE" "$FILTERED_CONFIG_FILE"
+  filter_mcp_server_sections "$ORIGINAL_CONFIG_FILE" "$FILTERED_CONFIG_FILE" "${excluded_servers[@]}"
   cp "$FILTERED_CONFIG_FILE" "$ORIGINAL_CONFIG_FILE"
 
-  STORYBOOK_CONFIG_MUTATED=1
+  EFFECTIVE_CONFIG_MUTATED=1
 }
 
-cleanup_storybook_config_override() {
-  if [ "$STORYBOOK_CONFIG_MUTATED" -eq 1 ] && [ -n "$BACKUP_CONFIG_FILE" ] && [ -f "$BACKUP_CONFIG_FILE" ] && [ -n "$ORIGINAL_CONFIG_FILE" ]; then
+cleanup_effective_config_override() {
+  if [ "$EFFECTIVE_CONFIG_MUTATED" -eq 1 ] && [ -n "$BACKUP_CONFIG_FILE" ] && [ -f "$BACKUP_CONFIG_FILE" ] && [ -n "$ORIGINAL_CONFIG_FILE" ]; then
     cp "$BACKUP_CONFIG_FILE" "$ORIGINAL_CONFIG_FILE" || true
   fi
 
@@ -171,11 +229,12 @@ if [ ! -f "$CODEX_HOME/config.toml" ]; then
   exit 2
 fi
 
-if [ -x "$GITHUB_MCP_AUTH_SYNC" ]; then
-  "$GITHUB_MCP_AUTH_SYNC" || true
+if [ -f "$GITHUB_MCP_AUTH_SYNC" ]; then
+  # shellcheck source=/dev/null
+  source "$GITHUB_MCP_AUTH_SYNC" --export-env || true
 fi
 
-trap cleanup_storybook_config_override EXIT INT TERM
+trap cleanup_effective_config_override EXIT INT TERM
 prepare_effective_codex_config
 
 set +e

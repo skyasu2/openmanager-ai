@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active Supporting
 > Doc type: Reference
-> Last reviewed: 2026-04-24
+> Last reviewed: 2026-04-25
 > Canonical: docs/development/vibe-coding/mcp-servers.md
 > Tags: vibe-coding,mcp,configuration
 
@@ -46,7 +46,7 @@
 - `.mcp.json`은 더 이상 gitignored secret 파일이 아닙니다. repo 공유 가능한 project config입니다.
 - Vercel token은 `scripts/mcp/start-vercel-mcp.sh`가 `.env.local` 또는 shell env에서 읽어 실행 시점에만 전달합니다.
 - Supabase token은 `scripts/mcp/run-with-project-env.sh`가 안전한 dotenv parser로 주입합니다.
-- GitHub MCP는 공식 HTTP endpoint `https://api.githubcopilot.com/mcp/`와 `GITHUB_PERSONAL_ACCESS_TOKEN` env placeholder를 사용합니다.
+- GitHub MCP는 공식 HTTP endpoint `https://api.githubcopilot.com/mcp/`와 `GITHUB_PERSONAL_ACCESS_TOKEN` env placeholder를 사용합니다. Codex는 HTTP MCP에 wrapper를 붙일 수 없으므로 `scripts/mcp/codex-local.sh`가 `.env.local` 또는 shell env의 GitHub token을 Codex 프로세스 env로 주입합니다.
 
 ## MCP launcher 표준
 
@@ -95,7 +95,7 @@ bash scripts/mcp/mcp-health-check-codex.sh --probe supabase-db
 | `playwright` | `start-node-mcp-package.sh @playwright/mcp 0.0.70 cli.js` | `60/180` | `DISPLAY=:0` |
 | `next-devtools` | `start-node-mcp-package.sh next-devtools-mcp 0.3.10 dist/index.js` | `75/120` | Windows env 보강 |
 | `chrome-devtools` | `start-node-mcp-package.sh chrome-devtools-mcp 0.23.0 ... --isolated` | `90/180` | `DISPLAY=:0` |
-| `github` | HTTP MCP endpoint | `120/120` | bearer token env placeholder |
+| `github` | HTTP MCP endpoint | `120/120` | `codex-local.sh`가 `GITHUB_PERSONAL_ACCESS_TOKEN` runtime 주입, token 없으면 auto mode에서 제외 |
 | `vercel` | `start-vercel-mcp.sh` | `180/120` | read-only deployment tools만 활성화 |
 
 ## Claude Code MCP 설정법
@@ -117,19 +117,39 @@ claude mcp list
 
 ## Gemini MCP 설정법
 
-Gemini CLI는 tracked `.gemini/settings.json`을 사용합니다. user-scope `~/.gemini/settings.json`에는 OpenManager project MCP를 두지 않습니다.
+Gemini CLI는 user-scope `~/.gemini/settings.json`과 tracked `.gemini/settings.json`을 모두 읽을 수 있습니다. OpenManager MCP는 repo-local `.gemini/settings.json`을 정본으로 두며, user-scope `~/.gemini/settings.json`에 OpenManager MCP를 병합하지 않습니다.
+
+공식 문서 기준과 OpenManager 적용 판단:
+
+| 공식 기준 | OpenManager 판단 |
+|---|---|
+| [Gemini CLI configuration](https://google-gemini.github.io/gemini-cli/docs/get-started/configuration.html)은 user settings가 모든 세션에 적용되고, project settings가 해당 project에서 user settings보다 우선한다고 설명합니다. | OpenManager 전용 MCP는 project scope가 맞습니다. 전역 user settings에는 개인 auth/ui/model preference만 둡니다. |
+| [Gemini MCP add command](https://google-gemini.github.io/gemini-cli/docs/tools/mcp-server.html#adding-a-server-gemini-mcp-add)의 기본 scope는 `project`입니다. | 수동 추가가 필요한 경우도 기본값을 따라 project `.gemini/settings.json` 기준으로 처리합니다. |
+| `mcpServers`는 `command`, `url`, `httpUrl`, `env`, `cwd`, `timeout`, `trust`, `includeTools`, `excludeTools`를 지원합니다. settings 문자열의 `$VAR_NAME` 또는 `${VAR_NAME}`은 로드 시 env로 해석됩니다. | 토큰은 settings에 실값으로 쓰지 않고 env placeholder 또는 launcher runtime env로 주입합니다. |
+| [Gemini CLI extensions](https://google-gemini.github.io/gemini-cli/docs/extensions/)도 `mcpServers`를 제공할 수 있지만, 같은 이름이면 `settings.json`의 서버가 우선합니다. | OpenManager 7개 MCP는 extension이 아니라 project settings에서 관리합니다. extension은 배포 가능한 독립 패키지가 필요할 때만 검토합니다. |
 
 확인:
 
 ```bash
-gemini mcp list
+npm run gemini:check
+bash scripts/mcp/run-with-project-env.sh gemini mcp list --debug
 ```
 
 현재 구조:
 
 - `.gemini/settings.json`: project MCP 7개와 allowed list
-- `~/.gemini/settings.json`: auth/ui/model 같은 user preference만 유지
+- `~/.gemini/settings.json`: auth/ui/model 같은 Gemini user preference만 유지합니다. OpenManager MCP 7개는 이 파일에 두지 않습니다.
+- `~/mcp_project_settings.json`: legacy 임시 파일입니다. 이 파일을 `~/.gemini/settings.json`에 병합하지 않습니다. 남아 있으면 `bash scripts/ai/setup-gemini-global.sh`가 백업 위치로 격리합니다.
 - `.gemini/skills`: Gemini-only skill overlay만 허용. MCP 설정용으로 사용하지 않음
+- GitHub HTTP MCP는 token env와 workspace trust가 필요합니다. `GEMINI_CLI_TRUST_WORKSPACE=true GEMINI_CLI_NO_RELAUNCH=true gemini mcp list --debug` 또는 project launcher `bash scripts/mcp/run-with-project-env.sh gemini ...`처럼 trust/no-relaunch 조건을 명시합니다. 직접 MCP 상태 하위명령은 headless trust/relaunch 차이로 `Disconnected`를 오판할 수 있습니다.
+
+정리/검증:
+
+```bash
+OPENMANAGER_SKIP_MCP_CACHE_INSTALL=true bash scripts/ai/setup-gemini-global.sh
+npm run gemini:check
+GEMINI_CLI_TRUST_WORKSPACE=true GEMINI_CLI_NO_RELAUNCH=true gemini mcp list --debug
+```
 
 ## 주요 도구 사용 기준
 
@@ -222,13 +242,15 @@ curl -I http://127.0.0.1:6006
 2. launcher 문법 확인: `bash -n scripts/mcp/start-*.sh scripts/mcp/run-with-project-env.sh`
 3. Codex: `bash scripts/mcp/codex-local.sh mcp list`
 4. Claude: `claude mcp list`
-5. Gemini: `gemini mcp list`
+5. Gemini: `GEMINI_CLI_TRUST_WORKSPACE=true GEMINI_CLI_NO_RELAUNCH=true gemini mcp list --debug`
 6. Supabase live probe: `bash scripts/mcp/mcp-health-check-codex.sh --probe supabase-db`
 
 ### 토큰 누락
 
 - `.mcp.json`에 토큰을 직접 쓰지 않습니다.
 - `.env.local` 또는 shell env에 `SUPABASE_ACCESS_TOKEN`, `VERCEL_API_KEY`, `GITHUB_PERSONAL_ACCESS_TOKEN`이 있는지 확인합니다.
+- Codex GitHub MCP는 직접 `codex` 대신 `bash scripts/mcp/codex-local.sh ...`로 시작해야 `.env.local`의 GitHub token이 HTTP MCP bearer env로 주입됩니다.
+- GitHub token이 없을 때 GitHub MCP만 제외하려면 기본값인 `OPENMANAGER_GITHUB_MCP_MODE=auto`를 유지합니다. 강제로 끄려면 `OPENMANAGER_GITHUB_MCP_MODE=off`, 누락을 실패로 드러내려면 `OPENMANAGER_GITHUB_MCP_MODE=on`을 사용합니다.
 - 로그/문서/리뷰에는 실제 토큰 값을 출력하지 않습니다.
 
 ### 느린 시작

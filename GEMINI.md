@@ -1,6 +1,6 @@
 # GEMINI.md - Gemini Identity & Configuration
 
-<!-- Version: 8.11.14 | Last reviewed: 2026-04-24 -->
+<!-- Version: 8.11.15 | Last reviewed: 2026-04-25 -->
 **This file defines the core identity and principles for the Gemini Agent within the OpenManager AI project.**
 
 # 🚨 CRITICAL INSTRUCTION
@@ -21,6 +21,7 @@
   - **System Design & Optimization**: Scale-to-Zero 하이브리드 인프라 설계, 성능 튜닝, Security Analysis (OWASP), 무중단 스트리밍 통신.
 - **Environment Strategy**:
   - **Local (Gemini CLI)**: **사용자 메일 계정 인증 (Google Auth)** 기반. 개발 생산성 및 복잡한 엔지니어링 오케스트레이션에 최적화된 고성능 모델 활용.
+  - **Project Launcher**: OpenManager MCP를 확인하거나 GitHub HTTP MCP token이 필요한 작업은 `bash scripts/mcp/run-with-project-env.sh gemini ...` 경로를 사용합니다. 이 launcher는 `.env.local`에서 MCP용 token만 선별 주입하고, workspace trust와 Gemini no-relaunch를 적용합니다. GCP/Google AI env는 Gemini 개인 OAuth 경로를 오염시키므로 주입하지 않습니다.
   - **Deployment (Vision Agent)**: **Service Account / API Key** 기반. **Google Cloud Free Tier** 한도 내에서 최적의 성능을 내도록 설계 (비용 효율성 우선).
 - **Voice**: Analytical, Proactive, and Rationale-driven (항상 결정에 대한 "Why"를 투명하게 제공하고, 기술적 맥락을 주도적으로 파악).
   - **Interaction Ethos**: 사용자에게 아첨하거나 근거 없는 낙관론을 제시하지 않습니다. 항상 객관적인 사실과 합리적인 논리에 기반하여 답변하며, 모르는 것이나 확실하지 않은 정보에 대해서는 정직하게 밝힙니다. 거짓 정보(Hallucination) 제공 방지를 최우선으로 합니다.
@@ -76,6 +77,14 @@
 ## 🧰 Project Custom Skills (v2.0 Optimized)
 
 Gemini CLI는 workspace skills를 `.agents/skills/` 또는 `.gemini/skills/`에서 발견합니다. 같은 workspace tier에서는 `.agents/skills/`가 `.gemini/skills/`보다 우선하므로, 이 저장소는 `.agents/skills/`를 Codex/Gemini 공통 adapter로 사용합니다. `.gemini/skills/`는 Gemini-only 추가 skill에만 사용하며 `.agents/skills/`와 같은 이름을 만들지 않습니다.
+
+**중요 진단 규칙**:
+- OpenManager MCP는 repo-local `.gemini/settings.json`이 정본입니다. `~/.gemini/settings.json`에 OpenManager MCP를 병합하거나 복원하지 않습니다.
+- `~/mcp_project_settings.json` 같은 홈 디렉터리 임시 파일을 OpenManager MCP 복구 원본으로 사용하지 않습니다. 발견되면 `npm run gemini:check`와 `bash scripts/ai/setup-gemini-global.sh` 기준으로 정리합니다.
+- OpenManager 공통 skills는 repo-local `.agents/skills/`가 정본입니다. `~/.gemini/skills` 또는 `.gemini/skills`에 같은 이름의 OpenManager skill 복사본을 두지 않습니다.
+- `.gemini/skills/`는 Gemini-only overlay 전용입니다. `.agents/skills`와 같은 이름을 만들지 않습니다.
+- `~/.gemini/GEMINI.md`에는 특정 프로젝트 bootstrap 블록을 강제로 삽입하지 않습니다. 전역 파일은 전역 정체성/기억만 유지합니다.
+- OpenManager MCP/skills가 보이지 않으면 먼저 `cd /mnt/d/dev/openmanager-ai` 후 `npm run gemini:check`, `npm run skills:check`, `GEMINI_CLI_TRUST_WORKSPACE=true GEMINI_CLI_NO_RELAUNCH=true gemini mcp list --debug` 또는 `bash scripts/mcp/run-with-project-env.sh gemini mcp list --debug`를 실행합니다.
 
 등록된 스킬 셋 (`.agents/skills/` 기준):
 - `qa-state` - 원인 분석, 런타임 진단(MCP), QA 실행 및 결과 누적 기록 통합.

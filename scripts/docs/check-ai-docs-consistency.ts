@@ -1,11 +1,29 @@
-'use strict';
-
 const fs = require('node:fs');
 const path = require('node:path');
 
 const root = process.cwd();
 
-const TARGET_PATHS = [
+interface Rule {
+  id: string;
+  description: string;
+  pattern: RegExp;
+  allowPattern?: RegExp;
+}
+
+interface Finding {
+  ruleId: string;
+  file: string;
+  line: number;
+  description: string;
+}
+
+interface CheckResult {
+  ok: boolean;
+  files: string[];
+  findings: Finding[];
+}
+
+const TARGET_PATHS: string[] = [
   'AGENTS.md',
   'CLAUDE.md',
   'GEMINI.md',
@@ -20,9 +38,9 @@ const TARGET_PATHS = [
   'scripts/README.md',
 ];
 
-const SCANNED_EXTENSIONS = new Set(['.md', '.json', '.toml']);
+const SCANNED_EXTENSIONS = new Set<string>(['.md', '.json', '.toml']);
 
-const RULES = [
+const RULES: Rule[] = [
   {
     id: 'AI-DOCS-MCP-SECRET-001',
     description: '.mcp.json must not be documented as a token-bearing gitignored file',
@@ -67,6 +85,39 @@ const RULES = [
     pattern: /mcp__(?:context7|sequential-thinking)__/i,
   },
   {
+    id: 'AI-DOCS-GEMINI-MCP-STATUS-001',
+    description: 'Gemini MCP status docs must use the project env launcher, not direct Gemini or npm wrappers',
+    pattern:
+      /(?:^|[^\w/-])(?:gemini\s+mcp\s+list|npm\s+run\s+mcp:status:gemini)\b/i,
+    allowPattern:
+      /(?:scripts\/mcp\/run-with-project-env\.sh\s+gemini\s+mcp\s+list|GEMINI_CLI_TRUST_WORKSPACE=true\s+GEMINI_CLI_NO_RELAUNCH=true\s+gemini\s+mcp\s+list)\b/i,
+  },
+  {
+    id: 'AI-DOCS-GEMINI-MCP-SCOPE-001',
+    description: 'OpenManager Gemini MCP must not be documented as restored or merged into ~/.gemini/settings.json',
+    pattern:
+      /(?:(?:~\/\.gemini\/settings\.json|user-scope|전역).*(?:OpenManager MCP|mcpServers|MCP).*(?:복구|추가|저장|병합\(|병합하여|병합합니다|넣)|(?:OpenManager MCP|mcpServers|MCP).*(?:~\/\.gemini\/settings\.json|user-scope|전역).*(?:복구|추가|저장|병합\(|병합하여|병합합니다|넣))/i,
+  },
+  {
+    id: 'AI-DOCS-GEMINI-MCP-LEGACY-FILE-001',
+    description: '~/mcp_project_settings.json must not be documented as a restore source for Gemini global MCP',
+    pattern:
+      /mcp_project_settings\.json.*(?:~\/\.gemini\/settings\.json|전역|global).*(?:복구|추가|저장|병합\(|병합하여|병합합니다|넣)/i,
+  },
+  {
+    id: 'AI-DOCS-GEMINI-SKILLS-LIST-001',
+    description: 'Gemini skills health docs must use npm run skills:check, not headless Gemini skills list',
+    pattern:
+      /(?:^|[^\w/-])(?:gemini\s+skills\s+list|npm\s+run\s+skills:list:gemini)\b/i,
+  },
+  {
+    id: 'AI-DOCS-GEMINI-SKILL-SCOPE-001',
+    description: 'OpenManager common skills must not be documented as copied into Gemini overlay or user-scope skills',
+    pattern:
+      /(?:(?:~\/\.gemini\/skills|\.gemini\/skills).*(?:OpenManager|공통|프로젝트 맞춤형|qa-state|lint-smoke|git-workflow).*(?:복원|복구|복사|이동|가져|넣)|(?:OpenManager|공통|프로젝트 맞춤형|qa-state|lint-smoke|git-workflow).*(?:~\/\.gemini\/skills|\.gemini\/skills).*(?:복원|복구|복사|이동|가져|넣))/i,
+    allowPattern: /(?:두지 않습니다|없음|격리|전용|금지|충돌 경고|shadowed)/i,
+  },
+  {
     id: 'AI-DOCS-TOKEN-EXAMPLE-001',
     description: 'AI docs must not include realistic token examples',
     pattern:
@@ -74,15 +125,15 @@ const RULES = [
   },
 ];
 
-function toPosix(relativePath) {
+function toPosix(relativePath: string): string {
   return relativePath.split(path.sep).join('/');
 }
 
-function shouldScanFile(filePath) {
+function shouldScanFile(filePath: string): boolean {
   return SCANNED_EXTENSIONS.has(path.extname(filePath));
 }
 
-function walk(targetPath) {
+function walk(targetPath: string): string[] {
   const absolutePath = path.join(root, targetPath);
   if (!fs.existsSync(absolutePath)) return [];
 
@@ -93,8 +144,8 @@ function walk(targetPath) {
 
   if (!stat.isDirectory()) return [];
 
-  const results = [];
-  const stack = [absolutePath];
+  const results: string[] = [];
+  const stack: string[] = [absolutePath];
   while (stack.length > 0) {
     const current = stack.pop();
     for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
@@ -114,17 +165,20 @@ function walk(targetPath) {
   return results;
 }
 
-function collectTargetFiles() {
+function collectTargetFiles(): string[] {
   return [...new Set(TARGET_PATHS.flatMap((targetPath) => walk(targetPath)))].sort();
 }
 
-function checkContent(filePath, content) {
-  const findings = [];
+function checkContent(filePath: string, content: string): Finding[] {
+  const findings: Finding[] = [];
   const lines = content.split(/\r?\n/);
 
   lines.forEach((line, index) => {
     for (const rule of RULES) {
-      if (rule.pattern.test(line)) {
+      if (
+        rule.pattern.test(line) &&
+        !(rule.allowPattern && rule.allowPattern.test(line))
+      ) {
         findings.push({
           ruleId: rule.id,
           file: filePath,
@@ -138,7 +192,7 @@ function checkContent(filePath, content) {
   return findings;
 }
 
-function runConsistencyCheck() {
+function runConsistencyCheck(): CheckResult {
   const files = collectTargetFiles();
   const findings = files.flatMap((filePath) =>
     checkContent(filePath, fs.readFileSync(path.join(root, filePath), 'utf8'))

@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-24 KST (`Supabase RAG search_path repair completed`)
+**Last Updated**: 2026-04-24 KST (`AI sidebar/provider drift plan updated`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI sidebar tool/UX simplification | High | Draft | RAG/Web/Thinking 계약 일관성, sidebar 기능 밀도, fullscreen 중복 배선 정리 계획. 상세: [ai-sidebar-tool-ux-simplification-plan.md](ai-sidebar-tool-ux-simplification-plan.md) |
+| AI sidebar tool/UX simplification | High | Draft | RAG/Web/Thinking 계약 일관성, provider model drift guard, sidebar 기능 밀도, fullscreen 중복 배선 정리 계획. 상세: [ai-sidebar-tool-ux-simplification-plan.md](ai-sidebar-tool-ux-simplification-plan.md) |
 
 ---
 

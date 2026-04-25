@@ -86,7 +86,7 @@ fi
 
 # 3. AI 운영 문서 정합성 검사
 echo -e "\n${YELLOW}[3/7] AI 운영 문서 정합성 검사${NC}"
-if node scripts/docs/check-ai-docs-consistency.js 2>&1 | tee "$REPORTS_DIR/ai-docs-consistency.log"; then
+if npm run --silent docs:ai-consistency 2>&1 | tee "$REPORTS_DIR/ai-docs-consistency.log"; then
   echo -e "${GREEN}✅ AI 운영 문서 정합성 검사 통과${NC}"
 else
   echo -e "${RED}❌ AI 운영 문서 정합성 검사 실패${NC}"
