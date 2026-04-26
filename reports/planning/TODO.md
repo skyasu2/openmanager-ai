@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-26 KST (`Frontend retrieval status contract added`)
+**Last Updated**: 2026-04-26 KST (`Retrieval validation completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -23,7 +23,7 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
-| AI assistant retrieval and multi-agent runtime refactor | High | **Approved / Task 2·3·4·5·5A·6·6A 완료 / Task 7 대기** — Cloud Run `cloud-run/ai-engine` backend 제약을 전제로, Cerebras Qwen primary 경로 + `llama3.1-8b` intra-fallback/model-aware quota, Retrieval contract 타입, 18대 서버 topology contract, Knowledge Retrieval Lite service, `searchKnowledgeBase` Lite adapter, custom GraphRAG runtime 제거, agent별 provider/tool/evidence budget SSOT, provider model policy SSOT, frontend retrieval status contract, legacy compatibility boundary registry를 반영했다. 다음 단계는 active docs/data의 GraphRAG/Mistral RAG stale 표현을 Knowledge Retrieval Lite 중심으로 정리하는 것이다. Mistral은 text fallback으로 유지하되 RAG runtime 의존은 제거했다. 상세: [ai-assistant-retrieval-multi-agent-refactor-plan.md](ai-assistant-retrieval-multi-agent-refactor-plan.md) |
+| AI assistant retrieval and multi-agent runtime refactor | High | **Approved / Task 2·3·4·5·5A·6·6A·7·7B·8 완료** — Cloud Run `cloud-run/ai-engine` backend 제약을 전제로, Cerebras Qwen primary 경로 + `llama3.1-8b` intra-fallback/model-aware quota, Retrieval contract 타입, 18대 서버 topology contract, Knowledge Retrieval Lite service, `searchKnowledgeBase` Lite adapter, custom GraphRAG runtime 제거, agent별 provider/tool/evidence budget SSOT, provider model policy SSOT, frontend retrieval status contract, legacy compatibility boundary registry, active docs/data stale 정리, deterministic query fallback과 검증 기록을 반영했다. Mistral은 text fallback으로 유지하되 RAG runtime 의존은 제거했다. 잔여 후보는 Qwen forced tool-call final text fallback, topology/RAG boundary guard, stale docs 재도입 방지 자동 guard다. 상세: [ai-assistant-retrieval-multi-agent-refactor-plan.md](ai-assistant-retrieval-multi-agent-refactor-plan.md) |
 | ~~AI Response Visibility & Rate Limit (Phase 1~5)~~ | — | **완료** — archive 이동. write bucket 재평가 결과 `supervisor 10/min`, `jobs/process 5/min`, `daily 100` 유지 결정 로그는 archived plan에 유지. |
 | ~~AI Stream Route Contract - residual cleanup~~ | — | **완료** — archive 이동. |
 | ~~OTel 토폴로지 개선~~ | — | **완료** — archive 이동: [archive/otel-topology-improvement-plan.md](archive/otel-topology-improvement-plan.md). |
@@ -31,6 +31,27 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-26 #194)
+- [x] AI retrieval refactor Task 8 deterministic validation 완료
+  - root `npm run test:quick`, `npm run type-check`, `npm run lint`, `npm run test:contract` 통과
+  - Cloud Run AI Engine `npm run type-check`, `npm run test` 통과 (`83 files / 864 tests`)
+  - `npm run docs:lint:changed`, `npm run docs:budget`, targeted markdownlint, `git diff --check` 통과
+  - UI/production behavior 직접 변경이 아니라 Cloud Run retrieval + docs 정리이므로 Vercel/Playwright QA는 실행하지 않음
+
+### Completed (2026-04-26 #193)
+- [x] Knowledge Retrieval Lite deterministic query fallback 보강
+  - exact BM25 검색이 0건일 때만 Redis memory, DB connection, Nginx/gateway, CPU high-load 계열 후보 쿼리를 순차 재시도
+  - PostgreSQL `plainto_tsquery`의 AND 동작 때문에 동의어를 한 쿼리에 덧붙이지 않고 fallback query 후보로 분리
+  - fallback으로 선택된 evidence에는 `query-fallback:<candidate>` reason을 남겨 왜 해당 문서가 선택됐는지 추적 가능
+  - 외부 embedding, LLM rerank/query expansion, Tavily fallback 없이 Supabase text RPC만 사용
+
+### Completed (2026-04-26 #192)
+- [x] AI retrieval stale docs/data 정리
+  - `ai-engine-architecture`, `rag-knowledge-engine`, `dev-tools`, `system-architecture-current`, `free-tier-optimization`, `wbs`의 active GraphRAG/Mistral RAG 설명을 Knowledge Retrieval Lite 기준으로 갱신
+  - `/api/ai/graphrag/*`를 runtime 검색 API가 아닌 legacy 410 shim으로 명시하고 실제 검색 검증 경로를 `/api/ai/supervisor` + `enableRAG: true` + `searchKnowledgeBase`로 정리
+  - provider 문서화를 Cerebras Qwen primary, `llama3.1-8b` intra-fallback, Mistral text last-resort fallback 기준으로 맞춤
+  - 15대 topology 잔여 표현을 18대 synthetic topology 기준으로 정리
 
 ### Completed (2026-04-26 #191)
 - [x] AI retrieval legacy compatibility boundary 정리

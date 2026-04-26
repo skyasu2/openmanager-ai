@@ -110,6 +110,63 @@ describe('retrieveKnowledgeEvidence', () => {
     });
   });
 
+  it('falls back to deterministic domain query candidates when exact BM25 search is empty', async () => {
+    const rpc = vi
+      .fn()
+      .mockResolvedValueOnce({ data: [], error: null })
+      .mockResolvedValueOnce({
+        data: [
+          {
+            id: 'kb-redis-memory',
+            title: 'Redis memory pressure runbook',
+            content: 'Redis cache memory pressure and eviction response guide',
+            category: 'troubleshooting',
+            tags: ['redis', 'cache', 'memory'],
+            text_rank: 0.51,
+            metadata: { docType: 'runbook', serverRole: 'cache' },
+          },
+        ],
+        error: null,
+      });
+
+    const result = await retrieveKnowledgeEvidence(
+      { query: '레디스 메모리 부족 원인 알려줘', limit: 3 },
+      { client: createClient(rpc) }
+    );
+
+    expect(rpc).toHaveBeenNthCalledWith(1, 'search_knowledge_text', {
+      p_query_text: '레디스 메모리 부족 원인 알려줘',
+      p_max_results: 10,
+      p_filter_category: null,
+    });
+    expect(rpc).toHaveBeenNthCalledWith(2, 'search_knowledge_text', {
+      p_query_text: 'redis memory',
+      p_max_results: 10,
+      p_filter_category: null,
+    });
+    expect(result).toMatchObject({
+      success: true,
+      _source: 'Knowledge Retrieval Lite',
+      totalFound: 1,
+      metadata: {
+        retrievalEnabled: true,
+        retrievalUsed: true,
+        retrievalMode: 'lite',
+        evidenceCount: 1,
+        webUsed: false,
+      },
+    });
+    expect(result.evidenceCards[0]).toMatchObject({
+      id: 'kb-redis-memory',
+      title: 'Redis memory pressure runbook',
+      sourceType: 'runbook',
+      category: 'troubleshooting',
+    });
+    expect(result.evidenceCards[0]?.reason).toContain(
+      'query-fallback:redis memory'
+    );
+  });
+
   it('returns unavailable metadata instead of falling back to external AI providers', async () => {
     const rpc = vi.fn().mockResolvedValue({
       data: null,

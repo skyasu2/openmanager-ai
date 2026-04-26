@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-04-21
+> Last reviewed: 2026-04-26
 > Canonical: docs/development/dev-tools.md
 > Tags: tooling,nodejs,biome
 
@@ -493,7 +493,7 @@ AI_ENGINE_URL="${CLOUD_RUN_AI_URL:-https://ai-engine-490817238363.asia-northeast
 # 헬스 체크 (인증 불필요)
 curl -s "${AI_ENGINE_URL}/health" | jq .
 
-# GraphRAG 통계 조회
+# legacy graph runtime 410 shim 확인
 curl -s \
   -H "x-api-key: ${CLOUD_RUN_API_SECRET}" \
   "${AI_ENGINE_URL}/api/ai/graphrag/stats" | jq .
@@ -511,10 +511,12 @@ curl -s \
 | 엔드포인트 | 인증 | 용도 |
 |------------|:----:|------|
 | `GET /health` | 없음 | 서비스 상태 + provider 활성 여부 |
-| `GET /api/ai/graphrag/stats` | 필요 | RAG corpus 현황 |
-| `GET /api/ai/graphrag/related/:id` | 필요 | 문서 관계 탐색 |
 | `POST /api/ai/supervisor` | 필요 | AI 응답 end-to-end 테스트 |
-| `POST /api/ai/graphrag/extract` | 필요 | **410 반환** — 비활성화됨 |
+| `GET /api/ai/graphrag/stats` | 필요 | **410 반환** — legacy graph runtime shim, replacement: Knowledge Retrieval Lite |
+| `GET /api/ai/graphrag/related/:id` | 필요 | **410 반환** — legacy graph runtime shim, replacement: `searchKnowledgeBase` |
+| `POST /api/ai/graphrag/extract` | 필요 | **410 반환** — legacy graph runtime shim, replacement: `searchKnowledgeBase` |
+
+> 현재 내부 지식 검색은 `/api/ai/supervisor` 요청에서 `enableRAG: true`와 `searchKnowledgeBase` 도구를 통해 검증합니다. `/api/ai/graphrag/*`는 런타임 검색 API가 아니라 제거된 graph runtime의 명시적 호환 경계입니다.
 
 ### Claude Code / Codex에서 활용
 

@@ -3,7 +3,7 @@
 > Owner: project-lead
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-04-24
+> Last reviewed: 2026-04-26
 > Tags: wbs,deliverable,completion,modules
 
 **목적**: 모듈(Deliverable) 기반 WBS. 100% Rule 적용 — 모든 프로덕션 산출물 포착.
@@ -74,7 +74,7 @@
 | E4 | Vision Fallback | Gemini→OpenRouter→Analyst | 3/3 | 3/3 | Done |
 | E5 | 보안 4종 | timing-safe, SHA-256, Prompt Guard, CORS | 4/4 | 4/4 | Done |
 | E6 | Graceful Shutdown | SIGTERM→30s→강제 종료 | 적용 | 적용 | Done |
-| E7 | RAG/Knowledge | pgvector+Mistral+승인 기반 주입 | 구현 | 구현 | Done |
+| E7 | RAG/Knowledge | Knowledge Retrieval Lite(BM25 + metadata boost) + EvidenceCard 주입 | 구현 | 구현 | Done |
 | E8 | Langfuse 관찰성 | 10% 샘플링 + 쿼터 자동 보호 | 적용 | 적용 | Done |
 | E9 | 배포 가드레일 | deploy.sh Free Tier 검증 | 3단계 | 3단계 | Done |
 | E10 | 단위 테스트 | circuit-breaker+quota-tracker 테스트 | 47개 | 47+ | Done |

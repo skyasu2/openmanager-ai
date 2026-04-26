@@ -1,16 +1,16 @@
-# RAG & Knowledge Engine Architecture
+# Knowledge Retrieval Lite Architecture
 
-> OpenManager RAG 검색/재정렬/그래프 확장 아키텍처 레퍼런스
+> OpenManager 내부 지식 검색 및 EvidenceCard 아키텍처 레퍼런스
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-04-25
+> Last reviewed: 2026-04-26
 > Canonical: docs/reference/architecture/ai/rag-knowledge-engine.md
 > Tags: ai,rag,knowledge-engine,architecture
 >
-> **v1.2.1** | Updated 2026-04-25
+> **v1.3.0** | Updated 2026-04-26
 >
-> 검색 증강 생성(RAG) 및 지식 엔진 아키텍처 상세 문서입니다.
+> 검색 증강 생성(RAG) 및 내부 지식 검색 아키텍처 상세 문서입니다.
 
 **관련 문서**: [AI Engine Architecture](./ai-engine-architecture.md)
 
@@ -18,7 +18,11 @@
 
 ## Overview
 
-OpenManager AI의 RAG(Retrieval-Augmented Generation) 시스템은 **Hybrid GraphSearch** 기술을 기반으로 내부 지식과 외부 정보를 결합하여 고정밀 답변을 생성합니다.
+OpenManager AI의 RAG(Retrieval-Augmented Generation) 시스템은 **Knowledge Retrieval Lite** 기반입니다. 목적은 운영 매뉴얼, 사용 가이드, 서버 역할/토폴로지, 장애 이력, 장애 대응 절차를 LLM 컨텍스트에 주입하는 것입니다.
+
+현재 런타임은 무료 티어와 Cloud Run request path 제약을 우선합니다. 따라서 RAG 내부에서 외부 embedding, graph expansion, query-expansion LLM, reranking LLM, 자동 web-search fallback을 호출하지 않습니다. 외부 웹 검색은 별도 `searchWeb` 도구와 quota 정책으로 분리합니다.
+
+즉, retrieval 단계는 deterministic search/metadata boost이고, LLM은 최종 agent 답변 생성 단계에서 `EvidenceCard[]`를 참고할 때만 사용됩니다.
 
 ## RAG Corpus Governance (2026-02-23)
 
@@ -74,18 +78,17 @@ OpenManager AI의 RAG(Retrieval-Augmented Generation) 시스템은 **Hybrid Grap
 - Google Vertex AI RAG Engine: 검색 품질을 위한 인덱싱/임베딩/구조화 워크플로 강조  
   https://cloud.google.com/vertex-ai/generative-ai/docs/rag-overview
 
-위 외부 가이드는 방향성 근거이며, OpenManager의 최종 기준값은 운영 데이터(`rag:analyze`, `rag:eval:*`)로 주기 재보정합니다.
+위 외부 가이드는 방향성 근거이며, OpenManager의 최종 기준값은 deterministic test, `supabase:rag:smoke`, production telemetry로 주기 재보정합니다.
 
 ### Key Technologies
 
 | 기술 | 역할 | 구현체 |
 |------|------|--------|
-| **HyDE Expansion** | 쿼리 확장 (가설적 문서) | Mistral Small |
-| **Vector Search** | 의미 기반 유사도 검색 | Mistral Embeddings (1024d) + Supabase pgvector |
-| **BM25 Search** | 키워드 매칭 검색 | PostgreSQL tsvector |
-| **Graph Traversal** | 관계성 기반 컨텍스트 확장 | LlamaIndex + Supabase (Graph) |
-| **LLM Reranker** | 검색 결과 재정렬 | Mistral Small |
-| **Web Search** | 최신 외부 정보 검색 | Tavily API |
+| **Retrieval Policy** | RAG on/off, feature 상태, suppressed reason 결정 | `retrieval-contract.ts`, supervisor/orchestrator routing |
+| **BM25 Text Search** | 내부 지식 키워드 검색 | Supabase RPC `search_knowledge_text` |
+| **Metadata Boost** | 서버 역할, AZ, severity, category, tag 기반 재정렬 | `knowledge-retrieval-lite.ts` |
+| **EvidenceCard** | frontend/backend 공통 evidence 계약 | `retrieval-contract.ts` |
+| **Legacy Boundary** | `/api/ai/graphrag/*`, `useGraphRAG` 호환 경계 | `legacy-contracts.ts`, `routes/graphrag.ts` |
 
 ---
 
@@ -95,32 +98,14 @@ OpenManager AI의 RAG(Retrieval-Augmented Generation) 시스템은 **Hybrid Grap
 
 ```mermaid
 graph TD
-    Query["User Query"] --> HyDE{"HyDE 적용?"}
-
-    HyDE -->|"< 30자, 모호한 쿼리"| Expand["HyDE Expansion<br/>(Mistral Small)"]
-    HyDE -->|"상세한 쿼리"| Direct["Original Query"]
-
-    Expand --> Embedding["Mistral Embedding (1024d)"]
-    Direct --> Embedding
-
-    subgraph "Hybrid Search Engine"
-        Embedding --> Vector["Vector Search<br/>(Cosine, weight: 0.5)"]
-        Query --> BM25["BM25 Text Search<br/>(tsvector, weight: 0.3)"]
-        Vector --> Graph["Graph Traversal<br/>(2-hop, weight: 0.2)"]
-    end
-
-    Vector --> Merger["Result Merger"]
-    BM25 --> Merger
-    Graph --> Merger
-
-    Merger --> Reranker["LLM Reranker<br/>(Mistral Small)"]
-
-    Reranker --> WebCheck{"KB 결과 충분?"}
-    WebCheck -->|"< 2개 or 점수 < 0.4"| Tavily["Tavily Web Search"]
-    WebCheck -->|"충분"| Final["Final Context"]
-    Tavily --> Final
-
-    Final --> LLM["LLM Generation"]
+    Query["User Query"] --> Policy{"Retrieval policy"}
+    Policy -->|"RAG off / suppressed"| NoRetrieval["No retrieval context"]
+    Policy -->|"RAG on"| RPC["Supabase RPC<br/>search_knowledge_text"]
+    RPC --> Normalize["Normalize rows"]
+    Normalize --> Boost["Metadata boost<br/>category/tag/server role/severity"]
+    Boost --> Evidence["EvidenceCard[]<br/>retrieval metadata"]
+    Evidence --> Agent["Agent generation"]
+    NoRetrieval --> Agent
 ```
 
 ### ASCII Fallback
@@ -129,187 +114,118 @@ graph TD
 User Query
      │
      ▼
-┌──────────────────┐     ┌──────────────────────────────────────┐
-│  HyDE 적용?      │     │  Hybrid Search Engine                │
-│  < 30자, 모호     ├──►  │                                      │
-│  → HyDE Expansion │     │  ┌────────────┐  ┌──────────────┐  │
-│  → Mistral Small  │     │  │ Vector     │  │ BM25 Text    │  │
-│  상세 → Original  │     │  │ (cos, 0.5) │  │ (tsvector,   │  │
-└──────────────────┘     │  └─────┬──────┘  │  0.3)        │  │
-                          │        │         └──────┬───────┘  │
-                          │        ▼                │          │
-                          │  ┌────────────┐         │          │
-                          │  │ Graph (2-  │         │          │
-                          │  │ hop, 0.2)  │         │          │
-                          │  └─────┬──────┘         │          │
-                          └────────┼────────────────┼──────────┘
-                                   ▼                ▼
-                          ┌──────────────────────────────┐
-                          │  Result Merger + LLM Reranker │
-                          │  (Mistral Small)              │
-                          └──────────────┬───────────────┘
-                                         │
-                            ┌────────────┼────────────┐
-                            ▼                         ▼
-                    KB 결과 충분?               Tavily Web Search
-                    (>= 2개, 점수 >= 0.4)      (외부 보강)
-                            │                         │
-                            └────────────┬────────────┘
-                                         ▼
-                                  Final Context → LLM
+┌────────────────────┐
+│ Retrieval policy   │
+│ enableRAG / tool   │
+│ budget / category  │
+└─────────┬──────────┘
+          │ RAG on
+          ▼
+┌─────────────────────────────────────────────┐
+│ Supabase search_knowledge_text RPC          │
+│ PostgreSQL full-text/BM25-style ranking     │
+└─────────┬───────────────────────────────────┘
+          ▼
+┌─────────────────────────────────────────────┐
+│ Metadata boost                              │
+│ category, tags, server role, severity       │
+└─────────┬───────────────────────────────────┘
+          ▼
+┌─────────────────────────────────────────────┐
+│ EvidenceCard[] + retrieval metadata         │
+│ used / suppressed / unavailable / count     │
+└─────────┬───────────────────────────────────┘
+          ▼
+    Agent context
 ```
 
-> Source of truth (2026-04-25): `cloud-run/ai-engine/src/lib/query-expansion.ts`, `cloud-run/ai-engine/src/lib/hybrid-text-search.ts`, `cloud-run/ai-engine/src/lib/tavily-hybrid-rag.ts`, `cloud-run/ai-engine/src/lib/graphrag-service.ts`, `cloud-run/ai-engine/src/lib/rag-doc-policy.ts`.
+> Source of truth (2026-04-26): `cloud-run/ai-engine/src/lib/knowledge-retrieval-lite.ts`, `cloud-run/ai-engine/src/lib/retrieval-contract.ts`, `cloud-run/ai-engine/src/tools-ai-sdk/reporter-tools/knowledge-search-tool.ts`, `cloud-run/ai-engine/src/lib/legacy-contracts.ts`, `cloud-run/ai-engine/src/lib/rag-doc-policy.ts`.
 
 ### Data Flow
 
-1. **Query Analysis**: 쿼리의 의도와 복잡도를 분석하여 검색 전략 수립
-2. **HyDE Expansion**: 짧거나 모호한 쿼리를 가설적 답변으로 확장
-3. **Hybrid Retrieval**:
-   - **Vector**: 의미적으로 유사한 문서 검색 (e.g., "CPU 부하 원인")
-   - **BM25**: 정확한 키워드 매칭 (e.g., "Error code 503")
-   - **Graph**: 연관된 지식 노드 탐색 (e.g., 503 에러 -> WAS 서버 -> 연결 풀 설정)
-4. **LLM Reranking**: 검색 결과를 쿼리 관련성 기준으로 재정렬
-5. **Web Augmentation**: 내부 지식이 부족하거나 최신 정보가 필요한 경우 Tavily 검색 수행
-6. **Context Construction**: 수집된 정보를 관련성 점수로 정렬하여 LLM 컨텍스트 구성
+1. **Retrieval Decision**: `enableRAG`, active tool allowlist, query intent, feature budget으로 retrieval 실행 여부를 결정
+2. **Text Retrieval**: `search_knowledge_text` RPC로 내부 지식 문서 검색
+3. **Metadata Boost**: category/tag/server role/severity/runbook metadata로 evidence 순서 보정
+4. **Evidence Contract**: `EvidenceCard[]`와 `RetrievalMetadata`를 backend response와 frontend state에 보존
+5. **Agent Context Injection**: 허용된 에이전트가 evidence를 참고하되, evidence가 없거나 unavailable이면 명시 metadata를 반환
 
 ---
 
 ## Components
 
-### 1. HyDE Query Expansion (`query-expansion.ts`)
+### 1. Retrieval Contract (`retrieval-contract.ts`)
 
-짧거나 모호한 쿼리를 가설적 답변으로 확장하여 검색 품질을 향상시킵니다.
+frontend/backend가 공유하는 evidence 계약입니다.
 
-| 설정 | 값 | 설명 |
-|------|-----|------|
-| **트리거 조건** | `query.length < 30` | 짧은 쿼리에만 적용 |
-| **제외 조건** | 서버명 포함 시 | 이미 구체적인 쿼리 |
-| **모델** | Mistral Small | 빠른 응답 (150 토큰 제한) |
-| **타임아웃** | 5초 | 지연 시 원본 쿼리 사용 |
+| 필드 | 역할 |
+|------|------|
+| `EvidenceCard` | title, content, category, score, source metadata를 가진 evidence 단위 |
+| `RetrievalMetadata` | `enabled`, `used`, `mode`, `suppressedReason`, `evidenceCount`, `webUsed` 상태 |
+| `RetrievalMode` | 기본값은 `lite`; legacy graph mode는 active runtime이 아님 |
 
-```typescript
-// 예시
-"CPU 높음" → "서버의 CPU 사용률이 높은 경우, 프로세스 과부하,
-              메모리 부족으로 인한 스왑, 또는 비효율적인 쿼리가
-              원인일 수 있습니다..."
-```
+### 2. Knowledge Retrieval Lite (`knowledge-retrieval-lite.ts`)
 
-### 2. Hybrid Search Engine (`hybrid-text-search.ts`)
+Supabase RPC `search_knowledge_text` 결과를 받아 category/tag/server metadata로 재정렬합니다.
 
-PostgreSQL RPC를 활용하여 Vector, Text, Graph 검색을 단일 쿼리로 수행합니다.
+| 단계 | 설명 |
+|------|------|
+| Query normalize | 빈 문자열/과도한 길이를 방어하고 검색어를 정규화 |
+| Text search | `search_knowledge_text` RPC 호출 |
+| Metadata boost | 운영 도메인 metadata가 query/context와 맞으면 score 보정 |
+| Result cap | evidence budget에 맞춰 상위 결과만 반환 |
+| Unavailable fallback | Supabase/RPC 오류 시 `retrievalUsed=false`, `suppressedReason=unavailable`로 명시 |
 
-| 검색 타입 | 가중치 | 역할 |
-|----------|:------:|------|
-| **Vector Search** | 0.5 | 의미적 유사성 (Cosine) |
-| **BM25 Text** | 0.3 | 키워드 정확성 |
-| **Graph Traversal** | 0.2 | 연관 지식 확장 (2-hop) |
+### 3. Tool Adapter (`knowledge-search-tool.ts`)
 
-```sql
--- hybrid_search_with_text RPC 호출
-SELECT * FROM hybrid_search_with_text(
-  p_query_embedding := embedding,  -- vector(1024)
-  p_query_text := 'CPU 사용률 높음',
-  p_vector_weight := 0.5,
-  p_text_weight := 0.3,
-  p_graph_weight := 0.2
-);
-```
-
-### 3. LLM Reranker (`reranker.ts`)
-
-Mistral AI를 사용하여 검색 결과를 쿼리 관련성 기준으로 재정렬합니다.
-
-| 설정 | 값 | 설명 |
-|------|-----|------|
-| **최대 리랭킹 문서** | 10개 | 비용 효율성 |
-| **Top-K 반환** | 5개 | 최종 결과 수 |
-| **최소 점수** | 0.3 | 임계값 미만 필터링 |
-| **타임아웃** | 8초 | 지연 시 원본 순서 유지 |
+`searchKnowledgeBase` 이름은 frontend/tool-call 호환성을 위해 유지합니다. 내부 구현은 Lite retrieval만 호출합니다.
 
 ```typescript
-// 리랭킹 프롬프트
-"Query: CPU 사용률이 높은 원인은?
-Documents: [0] 메모리 최적화... [1] CPU 병목 현상...
-Rate relevance (0-1) for each document."
+// 개념 흐름
+async execute({ query, category }) {
+  const evidence = await retrieveKnowledgeEvidence({ query, category });
+  return {
+    evidenceCards: evidence.cards,
+    metadata: evidence.metadata,
+  };
+}
 ```
 
-### 4. Knowledge Graph (`llamaindex-rag-service.ts`)
+Legacy boolean input인 `useGraphRAG`, `fastMode`, `includeWebSearch`는 호환 입력으로만 유지됩니다. Lite retrieval에서는 graph traversal이나 web fallback을 호출하지 않습니다.
 
-LlamaIndex.TS를 사용하여 비정형 텍스트에서 지식 삼항(Subject-Predicate-Object)을 추출해 그래프를 구축합니다.
+### 4. Legacy Boundary (`legacy-contracts.ts`)
 
-- **Extraction**: Mistral AI (Small) 모델 사용
-- **Storage**: Supabase `knowledge_relationships` 테이블
-- **Traversal**: 재귀적 SQL 쿼리로 2-hop까지 연관 노드 탐색
+Graph runtime 제거 후에도 기존 client가 갑자기 404를 받지 않도록 명시적인 410 경계를 유지합니다.
 
-### 5. Tavily Web Search (`tavily-hybrid-rag.ts`)
-
-내부 지식의 한계를 보완하기 위한 외부 검색 모듈입니다.
-
-| 설정 | 값 | 설명 |
-|------|-----|------|
-| **트리거 조건 1** | KB 결과 < 2개 | 결과 부족 |
-| **트리거 조건 2** | 평균 점수 < 0.4 | 낮은 신뢰도 |
-| **최대 웹 결과** | 3개 | 컨텍스트 크기 제한 |
-| **타임아웃** | 8초 | 지연 시 KB 결과만 사용 |
-
-**신뢰 도메인 필터**:
-- DevOps: `kubernetes.io`, `docs.docker.com`, `prometheus.io`
-- Cloud: `docs.aws.com`, `cloud.google.com`, `learn.microsoft.com`
-- Database: `postgresql.org`, `redis.io`
-
-### 6. Incident Injector (`incident-rag-injector.ts`)
-
-운영 중 생성된 인시던트 보고서를 지식 자산화하는 자동 파이프라인입니다.
-
-- **Trigger**: 인시던트 보고서 승인 시
-- **Processing**:
-  1. 제목, 원인, 해결책 구조화
-  2. Mistral Embedding 생성
-  3. Knowledge Base 적재 (중복 방지 포함)
+| Legacy surface | 현재 동작 | Replacement |
+|----------------|-----------|-------------|
+| `POST /api/ai/graphrag/extract` | 410 Gone | `searchKnowledgeBase` |
+| `GET /api/ai/graphrag/stats` | 410 Gone | Knowledge Retrieval Lite telemetry |
+| `GET /api/ai/graphrag/related/:nodeId` | 410 Gone | `searchKnowledgeBase` |
+| `searchKnowledgeBase.useGraphRAG` | compat-only input | Knowledge Retrieval Lite |
 
 ---
 
 ## Integration Point
 
-### reporter-tools.ts
-
-모든 RAG 컴포넌트가 통합되는 진입점입니다.
+### reporter-tools / agent runtime
 
 ```typescript
-// searchKnowledgeBase 도구 내부 흐름
-async execute({ query, category, includeWebSearch }) {
-  // 1. HyDE 확장 (조건부)
-  if (shouldUseHyDE(query)) {
-    searchQuery = await expandQueryWithHyDE(query);
-  }
-
-  // 2. 임베딩 생성
-  const embedding = await embedText(searchQuery);
-
-  // 3. 하이브리드 검색
-  const results = await hybridGraphSearch(embedding, { query, useBM25: true });
-
-  // 4. LLM 리랭킹
-  if (isRerankerAvailable()) {
-    results = await rerankDocuments(query, results);
-  }
-
-  // 5. Tavily 웹 검색 (조건부)
-  if (includeWebSearch && isTavilyAvailable()) {
-    results = await enhanceWithWebSearch(query, results);
-  }
-
-  return results;
+if (enableRAG && activeTools.includes('searchKnowledgeBase')) {
+  toolChoice = shouldForceKnowledgeLookup(query)
+    ? { type: 'tool', toolName: 'searchKnowledgeBase' }
+    : 'auto';
 }
 ```
+
+에이전트는 `agent-runtime-policy.ts`의 tool allowlist와 evidence budget을 따릅니다. Vision path는 RAG와 결합하지 않고 Gemini/OpenRouter path를 유지합니다.
 
 ---
 
 ## Data Schema
 
 ### `knowledge_base`
-지식 원문 및 임베딩 저장
+
+지식 원문 및 검색 metadata 저장
 
 ```sql
 CREATE TABLE knowledge_base (
@@ -317,38 +233,27 @@ CREATE TABLE knowledge_base (
   title text NOT NULL,
   content text NOT NULL,
   metadata jsonb DEFAULT '{}',
-  embedding vector(1024),        -- Mistral embeddings
-  search_vector tsvector,        -- BM25 인덱스
+  search_vector tsvector,
   category text,
   tags text[],
   created_at timestamptz DEFAULT now()
 );
 
--- 인덱스
-CREATE INDEX idx_kb_embedding ON knowledge_base
-  USING ivfflat (embedding vector_cosine_ops);
 CREATE INDEX idx_kb_search_vector ON knowledge_base
   USING gin (search_vector);
 ```
 
-### `knowledge_relationships`
-지식 간 연결 그래프
+### `search_knowledge_text`
 
 ```sql
-CREATE TABLE knowledge_relationships (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  head uuid REFERENCES knowledge_base(id) ON DELETE CASCADE,
-  tail uuid REFERENCES knowledge_base(id) ON DELETE CASCADE,
-  relation_type text NOT NULL,   -- predicate (e.g., "causes", "resolves")
-  description text,
-  weight float DEFAULT 1.0,
-  created_at timestamptz DEFAULT now()
+SELECT * FROM search_knowledge_text(
+  p_query := 'Redis 메모리 부족',
+  p_category := 'runbook',
+  p_limit := 5
 );
-
--- 그래프 탐색 최적화
-CREATE INDEX idx_kr_head ON knowledge_relationships(head);
-CREATE INDEX idx_kr_tail ON knowledge_relationships(tail);
 ```
+
+`knowledge_relationships` 및 pgvector 관련 migration은 historical schema로 남을 수 있지만, 현재 Knowledge Retrieval Lite request path의 필수 dependency가 아닙니다.
 
 ---
 
@@ -356,11 +261,11 @@ CREATE INDEX idx_kr_tail ON knowledge_relationships(tail);
 
 | 단계 | 예상 지연 | 비고 |
 |------|:--------:|------|
-| HyDE Expansion | +100-200ms | Mistral Small 호출 |
-| Hybrid Search | ~50ms | PostgreSQL RPC |
-| LLM Reranking | +200-500ms | 문서 수에 비례 |
-| Tavily Search | +500-1000ms | 외부 API 호출 |
-| **총합** | 1-2초 | 모든 단계 포함 시 |
+| Retrieval policy | <10ms | request-local 결정 |
+| Text search RPC | ~50-150ms | Supabase 상태에 의존 |
+| Metadata boost | <10ms | in-process 계산 |
+| Evidence mapping | <10ms | `EvidenceCard[]` 변환 |
+| **총합** | ~70-200ms | 외부 LLM/embedding 호출 없음 |
 
 ---
 
@@ -368,6 +273,7 @@ CREATE INDEX idx_kr_tail ON knowledge_relationships(tail);
 
 | 버전 | 날짜 | 변경 내용 |
 |------|------|----------|
+| v1.3.0 | 2026-04-26 | Knowledge Retrieval Lite 기준으로 legacy graph runtime, external embedding, query-expansion/rerank/web fallback 설명 제거 |
 | v1.2.0 | 2026-02-23 | RAG corpus 운영 제약(문서 수/길이/카테고리 비중) 및 Best Practice 참조 추가 |
-| v1.1.0 | 2026-01-26 | HyDE, Reranker, Tavily 상세 추가 |
+| v1.1.0 | 2026-01-26 | query expansion, reranking, web augmentation 상세 추가 |
 | v1.0.0 | 2026-01-26 | 초기 문서 작성 |

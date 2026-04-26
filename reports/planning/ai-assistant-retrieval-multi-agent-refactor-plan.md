@@ -496,6 +496,7 @@ interface ProviderModelPolicy {
 - [x] RAG off: `searchKnowledgeBase` 또는 retrieval tool이 active tools에서 제거된다.
 - [x] RAG on: Knowledge Retrieval Lite는 실행되지만 `mistral-embed`를 호출하지 않는다.
 - [x] RAG on: `traverse_knowledge_graph` RPC를 호출하지 않는다.
+- [x] RAG on: exact BM25 결과가 0건이면 외부 LLM 없이 deterministic domain query fallback을 시도한다.
 - [x] topology/direct KB path: `useGraphRAG: true` 없이 deterministic evidence response를 만든다.
 - [x] Web on: Tavily는 Web policy 경로에서만 호출되고 RAG 내부 fallback으로 호출되지 않는다.
 - [x] Web off: retrieval 결과 부족 시에도 Tavily를 호출하지 않는다.
@@ -556,10 +557,15 @@ interface ProviderModelPolicy {
 - [x] Task 6A - legacy compatibility boundary registry 정리
   - 완료 기준: GraphRAG 제거 후 남겨야 하는 legacy 호환 지점은 contract registry로 격리하고, active runtime에 `useGraphRAG`나 `GRAPH_RAG_TELEMETRY_SAMPLE_RATE`가 재침투하지 않도록 guard한다.
   - 완료 기록(2026-04-26): `legacy-contracts.ts`를 추가해 `/api/ai/graphrag/*` gone shim, `searchKnowledgeBase.useGraphRAG` compat-only 입력, `ragSources` migration bridge를 SSOT로 등록했다. `/graphrag/*` 410 payload와 `useGraphRAG` schema 설명은 contract를 참조하고, `knowledge-runtime-cleanup.test.ts`가 허용 경계 밖의 legacy token 재도입을 차단한다.
-- [ ] Task 7 - docs/data stale 표현 정리
+- [x] Task 7 - docs/data stale 표현 정리
   - 완료 기준: GraphRAG/Mistral RAG 중심 표현이 Knowledge Retrieval Lite 중심으로 바뀐다.
-- [ ] Task 8 - 검증 및 QA 기록
+  - 완료 기록(2026-04-26): active architecture/dev/project docs의 GraphRAG, Mistral RAG embedding, gpt-oss target, 15대 topology stale 표현을 Knowledge Retrieval Lite, Cerebras Qwen/llama fallback, 18대 synthetic topology 기준으로 정리했다. `/api/ai/graphrag/*`는 runtime 검색 API가 아니라 legacy 410 shim으로 문서화했다.
+- [x] Task 7B - deterministic retrieval query fallback 보강
+  - 완료 기준: BM25 exact query가 0건일 때만 운영 도메인 동의어 후보를 순차 시도하고, 외부 embedding/LLM/web fallback은 호출하지 않는다.
+  - 완료 기록(2026-04-26): Redis memory, DB connection, Nginx/gateway, CPU high-load 계열 query fallback을 추가했다. PostgreSQL `plainto_tsquery`가 다단어를 AND로 처리하는 특성을 고려해 동의어를 한 쿼리에 합치지 않고 0건일 때만 후보 쿼리로 재시도한다.
+- [x] Task 8 - 검증 및 QA 기록
   - 완료 기준: deterministic tests, Cloud Run ai-engine type-check, root type-check, lint, changed docs checks를 통과하고 필요 시 1회 targeted QA만 기록한다.
+  - 완료 기록(2026-04-26): root `test:quick`, `type-check`, `lint`, `test:contract`, Cloud Run AI Engine `type-check`, full `npm run test` (`83 files / 864 tests`), changed docs lint, docs budget, `git diff --check`를 통과했다. UI/production behavior 직접 변경이 아니라 Cloud Run retrieval + docs 정리이므로 Vercel/Playwright QA는 실행하지 않았다.
 
 ## 완료 기준
 
@@ -571,7 +577,7 @@ interface ProviderModelPolicy {
 - [x] provider/model drift guard 통과
 - [x] Cerebras Qwen primary / llama3.1-8b intra-fallback model-aware quota/deprecation guard 통과
 - [ ] Qwen tool-call final text fallback 또는 재합성 계약 테스트 통과
-- [ ] docs/data stale reference guard 통과
+- [x] docs/data stale reference guard 통과
 - [x] `git diff --check` 통과
 - [x] 변경이 AI/API 계약을 포함하므로 `npm run test:contract` 또는 해당 계약 테스트 subset 통과
 - [x] production 외부 LLM/API 반복 호출 없이 검증 완료
@@ -601,7 +607,7 @@ interface ProviderModelPolicy {
 4. graph runtime path를 제거한다.
 5. multi-agent policy SSOT를 도입한다.
 6. frontend status/evidence contract를 반영한다.
-7. docs/data의 GraphRAG/Mistral RAG stale 표현을 Knowledge Retrieval Lite 기준으로 정리한다.
+7. docs/data의 GraphRAG/Mistral RAG stale 표현을 Knowledge Retrieval Lite 기준으로 정리한다. (완료)
 8. targeted verification을 수행한다.
 
 ## 현재 결론
@@ -612,4 +618,4 @@ interface ProviderModelPolicy {
 
 Provider 측면에서는 Qwen을 Cerebras primary로 설정하고 `llama3.1-8b`를 intra-Cerebras fallback으로 둔다. `gpt-oss-120b`는 무료 티어 모델 목록에 없으므로 제외한다. deprecation(2026-05-27) 대비 model-aware quota guard, deprecation guard, tool-loop final text guard를 구현한다.
 
-Task 2 착수 전에는 18대 서버 컨셉을 먼저 고정한다. 현재 inventory는 3-AZ 계층형 부하 전파 관측 데이터셋이며, 서버 수/role/AZ/topology edge는 RAG가 아니라 resource catalog와 topology lookup이 정본이다. RAG는 운영 매뉴얼, 사용 가이드, 장애 이력, 대응 런북을 보강하는 계층으로 제한한다.
+현재 inventory는 3-AZ 계층형 부하 전파 관측 데이터셋이며, 서버 수/role/AZ/topology edge는 RAG가 아니라 resource catalog와 topology lookup이 정본이다. RAG는 운영 매뉴얼, 사용 가이드, 장애 이력, 대응 런북을 보강하는 계층으로 제한한다. Task 8 deterministic 검증은 완료했다. 잔여 후보는 Qwen forced tool-call final text fallback, topology/RAG boundary guard, stale docs 재도입 방지 자동 guard다.

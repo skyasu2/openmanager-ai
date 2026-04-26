@@ -2,10 +2,10 @@
 
 > Vercel + Cloud Run 하이브리드 시스템 구조의 기준 문서
 > Owner: platform-architecture
-> Last verified against code: 2026-04-25
+> Last verified against code: 2026-04-26
 > Status: Active Canonical (hybrid-split.md 통합됨)
 > Doc type: Explanation
-> Last reviewed: 2026-04-25
+> Last reviewed: 2026-04-26
 > Canonical: docs/reference/architecture/system/system-architecture-current.md
 > Tags: system,architecture,hybrid,cloud-run,vercel
 
@@ -22,7 +22,7 @@
 | API Routes | 31 (`src/app/api/**/route.ts`, `route.tsx` 포함) |
 | AI 실행 컴포넌트 | 8 (실행 에이전트 7 + Orchestrator 1) |
 | Zustand Stores | 2 |
-| 모니터링 서버 | 15 (OnPrem DC1, synthetic) |
+| 모니터링 서버 | 18 (role별 3대, AZ별 6대 synthetic topology) |
 | 데이터 소스 | `public/data/otel-data` 비동기 로딩 우선 + Cloud Run 호환 폴백 (`otel-processed`) |
 
 ---
@@ -239,11 +239,11 @@ npm run data:precomputed:build # Cloud Run precomputed states 재생성
 
 | Agent | Provider (Primary) | Role | 라우팅 |
 |-------|-------------------|------|--------|
-| **Orchestrator** | Cerebras (`CEREBRAS_MODEL_ID`, default `llama3.1-8b`, `gpt-oss-120b` target after entitlement smoke) | Intent 분류, Agent 핸드오프 | 진입점 |
+| **Orchestrator** | Cerebras (`qwen-3-235b-a22b-instruct-2507`, fallback: `llama3.1-8b`) | Intent 분류, Agent 핸드오프 | 진입점 |
 | **NLQ** | Groq (`meta-llama/llama-4-scout-17b-16e-instruct`) | 서버 메트릭 조회 (단순+복합) | 외부 |
 | **Analyst** | Groq (`meta-llama/llama-4-scout-17b-16e-instruct`) | 이상 감지, 추세 예측 | 외부 |
 | **Reporter** | Groq (`meta-llama/llama-4-scout-17b-16e-instruct`) | 장애 보고서, 타임라인 | 외부 |
-| **Advisor** | Mistral (`mistral-large-latest`) | 트러블슈팅, GraphRAG 검색 | 외부 |
+| **Advisor** | Groq primary (fallback: Cerebras → Mistral) | 트러블슈팅, 명령 추천, Knowledge Retrieval Lite 보강 | 외부 |
 | **Vision** | Gemini 2.5 Flash-Lite (fallback: OpenRouter vision 모델) | 스크린샷/로그 분석, 웹 검색 | 외부 |
 | **Evaluator** | Deterministic quality gate | 보고서 품질 평가 (내부) | 내부 |
 | **Optimizer** | Deterministic rewrite stage | 보고서 품질 개선 (내부) | 내부 |

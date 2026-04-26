@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-04-18
+> Last reviewed: 2026-04-26
 > Canonical: docs/reference/architecture/ai/ai-engine-architecture.md
 > Tags: ai,architecture,multi-agent,cloud-run
 >
-> **v8.10.8** | Updated 2026-04-04
+> **v8.10.9** | Updated 2026-04-26
 > (ai-model-policy.md 내용 통합됨, 2026-02-14)
 
 ## 1. Overview
@@ -28,7 +28,7 @@ OpenManager AI의 AI Engine은 **Vercel AI SDK v6 계열** 기반 **multi-agent 
 | 구분 | 내용 |
 |------|------|
 | **NLP 전처리** | 규칙 기반 커스텀 파이프라인 (ML 라이브러리 미사용) — 쿼리 분류·복잡도 분석·명확화·텍스트 정제·Prompt Injection 방어 포함. 상세: [frontend-backend-comparison.md §2.3](./frontend-backend-comparison.md) |
-| **기반 모델** | Groq `llama-4-scout-17b-16e-instruct`, Cerebras `gpt-oss-120b`, Mistral `mistral-large-latest`, Gemini `gemini-2.5-flash-lite` |
+| **기반 모델** | Groq `llama-4-scout-17b-16e-instruct`, Cerebras `qwen-3-235b-a22b-instruct-2507` + `llama3.1-8b` intra-fallback, Mistral `mistral-large-latest`, Gemini `gemini-2.5-flash-lite` |
 | **호스팅** | Cerebras, Groq, Mistral, Google AI (Gemini), OpenRouter 인프라 |
 | **비용** | 프로덕션 서비스는 무료 tier 한도 내 운영 |
 
@@ -79,7 +79,7 @@ Multi-agent 경로를 선택할수록 LLM 호출 횟수가 늘어 Free Tier 쿼�
 | Single-Agent | 1회 | ~500–2,000 | 낮음 |
 | Multi-Agent (일반) | 2–3회 | ~1,500–5,000 | 중간 |
 | Reporter Pipeline | 4–5회 (Reporter + Eval + Optimize×2) | ~4,000–10,000 | 높음 |
-| RAG 포함 시 | +1회 (HyDE + Reranker) | +~1,000 | 추가 |
+| RAG 포함 시 | +0회 (Knowledge Retrieval Lite) | EvidenceCard 텍스트만 추가 | 낮음 |
 
 **Supervisor가 과잉 라우팅을 방어해야 하는 이유**: Groq/Cerebras 무료 tier는 RPM·TPD 한도가 고정됩니다. Reporter Pipeline 1회 실행이 단순 조회 4–5회 분의 쿼터를 소모하므로, 복합 쿼리 여부를 정확히 판별해 라우팅하는 것이 **비용(API 한도) 방어의 핵심**입니다.
 
@@ -98,8 +98,8 @@ flowchart TB
         Single["Single path\nstreamText + prepareStep + stopWhen"]
         Multi["Multi path\nexecuteMultiAgent / executeMultiAgentStream"]
         Prefilter["preFilterQuery()\nfast path / forced routing / LLM routing"]
-        Route["generateObjectWithFallback\nCerebras → Mistral → Groq\n(requireStructuredOutput)"]
-        Agent["Agent execution\nGroq/Mistral default tool path\nstreamText or generateTextWithRetry\n(requireToolCalling)"]
+        Route["generateObjectWithFallback\nCerebras → Groq → Mistral\n(requireStructuredOutput)"]
+        Agent["Agent execution\nGroq → Cerebras → Mistral\nstreamText or generateTextWithRetry\n(requireToolCalling)"]
         Context["save findings + getContextSummary()"]
         Stream["UIMessageStream\ntext-delta / handoff / data-mode / agent_status"]
         Trace["Langfuse + Pino\nmode audit / handoffCount / scores"]
@@ -174,8 +174,8 @@ flowchart LR
 │  └────────────────────────────────────────────────────────┘ │
 │           │              │              │                     │
 │     ┌─────┴─────┐  ┌────┴────┐  ┌─────┴──────┐             │
-│     │ OTel Data │  │ GraphRAG│  │   Redis    │             │
-│     │ (144 슬롯) │  │ pgVector│  │  (Upstash) │             │
+│     │ OTel Data │  │Knowledge│  │   Redis    │             │
+│     │ (18 hosts)│  │ Lite KB │  │  (Upstash) │             │
 │     └───────────┘  └─────────┘  └────────────┘             │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -201,27 +201,27 @@ flowchart LR
 
 | Provider | Primary 에이전트 | 모델 | 운영 메모 |
 |----------|----------------|------|-----------|
-| **Groq** | Supervisor, NLQ, Analyst, Reporter, Verifier | `meta-llama/llama-4-scout-17b-16e-instruct` | 현재 tool-calling 중심 텍스트 경로의 primary |
-| **Cerebras** | Orchestrator structured routing, opt-in text fallback | `gpt-oss-120b` | Production 모델 후보. structured-output primary, tool loop는 기본 비활성 + env opt-in |
-| **Mistral** | Advisor + RAG Embedding | `mistral-large-latest` / `mistral-embed` | Advisor primary. structured output fallback에도 사용 |
+| **Groq** | Supervisor, NLQ, Analyst, Reporter, Advisor, Verifier | `meta-llama/llama-4-scout-17b-16e-instruct` | tool-calling 중심 텍스트 경로의 primary |
+| **Cerebras** | Orchestrator structured routing, text fallback | `qwen-3-235b-a22b-instruct-2507` → `llama3.1-8b` | Qwen primary, 8B는 intra-provider fallback. `gpt-oss-120b`는 현재 계정 free-tier runtime 후보에서 제외 |
+| **Mistral** | Text last-resort fallback | `mistral-large-latest` | 저RPM 병목 때문에 마지막 fallback으로만 사용. RAG runtime/embedding에는 사용하지 않음 |
 | **Gemini** | Vision primary | `gemini-2.5-flash-lite` | Flash 대비 thinking token 소모 없음. Vision 기본 경로 |
 | **OpenRouter** | Vision fallback | `google/gemma-3-27b-it:free` → `gemma-3-12b-it:free` → `gemma-3-4b-it:free` | Vision fallback 전용. free-tier 모델 특성상 tool-calling은 기본 비활성 |
 
 ### Fallback 체인
 
-Structured routing은 3-way fallback을 유지하고, tool-loop 경로는 기본 2-way(`Groq → Mistral`)이며 필요할 때만 Cerebras를 opt-in으로 복귀시킵니다.
+Structured routing은 Orchestrator 정책(`Cerebras → Groq → Mistral`)을 따르고, 일반 텍스트 에이전트는 공통 정책(`Groq → Cerebras → Mistral`)을 따릅니다. Cerebras 내부에서는 Qwen을 먼저 시도하고, 초기화/쿼터/권한 문제가 있으면 `llama3.1-8b`로 intra-provider fallback합니다.
 
 | Agent | Primary | → 2nd | → 3rd (Last Resort) |
 |-------|---------|-------|---------------------|
 | Supervisor | Groq | Cerebras | Mistral |
+| Orchestrator | Cerebras | Groq | Mistral |
 | NLQ | Groq | Cerebras | Mistral |
 | Analyst | Groq | Cerebras | Mistral |
 | Reporter | Groq | Cerebras | Mistral |
 | Advisor | Groq | Cerebras | Mistral |
 | Vision | Gemini | OpenRouter | — |
-| RAG Embedding | Mistral (`mistral-embed`) | local fallback (SHA256) | — |
 
-> SSOT: `agent-model-selectors.ts` — 모든 텍스트 에이전트가 동일한 `['groq', 'cerebras', 'mistral']` fallback chain 공유.
+> SSOT: `agent-runtime-policy.ts`, `agent-model-selectors.ts` — 텍스트 에이전트는 동일한 `['groq', 'cerebras', 'mistral']` chain을 공유하고 Orchestrator만 structured routing 우선순위를 별도로 갖습니다.
 
 ### Cerebras Tool-Calling 변화 대응
 
@@ -330,7 +330,7 @@ for await (const event of streamAgent('analyst', '이상 탐지')) { ... }
 | **Analyst (4)** | detectAnomalies[AllServers] | Analyst | 2sigma 이상 탐지 |
 | | predictTrends | Analyst | 선형 회귀 예측 |
 | | analyzePattern | Analyst | 시계열 패턴 분석 |
-| **Knowledge (3)** | searchKnowledgeBase | Reporter/Advisor | GraphRAG 벡터+그래프 검색 |
+| **Knowledge (3)** | searchKnowledgeBase | Reporter/Advisor | Knowledge Retrieval Lite 내부 지식 검색 (BM25 + metadata boost) |
 | | recommendCommands | Reporter/Advisor | CLI 추천 |
 | | searchWeb | NLQ/Reporter/Advisor | 외부 실시간 웹 검색 |
 | **Math (3)** | evaluateMathExpression | NLQ/Analyst | 수식 계산 (사칙연산/함수), 퍼센트 지원 |
@@ -423,26 +423,32 @@ precomputed-state.ts → buildPrecomputedStates()
 ### RAG Pipeline
 
 ```
-쿼리 → HyDE 확장 (Cerebras) → Mistral Embedding (1024d)
-     → Supabase pgvector 검색 → LLM Reranker (Cerebras)
-     → 상위 문서 반환
+쿼리
+  → retrieval policy
+  → Supabase search_knowledge_text RPC
+  → BM25/text score + category/tag/metadata boost
+  → EvidenceCard[] + retrieval metadata 반환
 ```
 
-## 9. API Endpoints (9개)
+이 경로는 Cloud Run request path에서 외부 embedding, graph traversal, LLM reranking, 자동 web-search fallback을 호출하지 않습니다. 외부 웹 검색은 `searchWeb` 도구가 별도 feature flag와 quota 정책으로 처리합니다.
+
+## 9. API Endpoints
 
 | 엔드포인트 | 메서드 | 역할 |
 |-----------|--------|------|
 | `/api/ai/supervisor` | POST | 레거시 JSON/text 프록시 (local dev fallback, cache/plain callers, smoke/contract anchor) |
-| `/api/ai/embedding[/batch]` | POST | 텍스트 임베딩 (Mistral) |
+| `/api/ai/embedding[/batch]` | POST | legacy embedding 호환 경계. 기본 Knowledge Retrieval Lite request path에서는 사용하지 않음 |
 | `/api/ai/generate[/stream]` | POST | 독립 텍스트 생성 |
-| `/api/ai/graphrag` | POST | GraphRAG 지식 검색 |
+| `/api/ai/graphrag/extract` | POST | legacy graph runtime 410 shim. replacement: `searchKnowledgeBase` |
+| `/api/ai/graphrag/stats` | GET | legacy graph runtime 410 shim. replacement: `Knowledge Retrieval Lite` |
+| `/api/ai/graphrag/related/:nodeId` | GET | legacy graph runtime 410 shim. replacement: `searchKnowledgeBase` |
 | `/api/ai/approval` | POST | 의사결정 승인 워크플로우 |
 | `/api/ai/feedback` | POST | 유저 피드백 수집 |
 | `/api/ai/providers` | GET | Provider 상태 + 쿼타 |
 | `/api/ai` | GET | 사용량 분석 |
 | `/api/jobs` | POST | 비동기 Job 관리 |
 
-> Source of truth (2026-03-04): `cloud-run/ai-engine/src/server.ts`의 `app.route('/api/...')` mount 9개.
+> Source of truth (2026-04-26): `cloud-run/ai-engine/src/server.ts`, `cloud-run/ai-engine/src/routes/graphrag.ts`, `cloud-run/ai-engine/src/lib/legacy-contracts.ts`.
 
 ## 10. Observability
 
@@ -486,11 +492,12 @@ cloud-run/ai-engine/src/
 │       └── langfuse.ts                # Langfuse 파사드 (trace/score/usage)
 ├── tools-ai-sdk/                      # 30개 도구 정의
 ├── lib/
-│   ├── embedding.ts                   # Mistral Embedding (1024d, 3h 캐시)
-│   ├── mistral-provider.ts            # Mistral Singleton (임베딩 전용)
-│   ├── query-expansion.ts             # HyDE 쿼리 확장 (Cerebras)
-│   ├── reranker.ts                    # LLM Reranker (Cerebras)
-│   └── llamaindex-rag-service.ts      # RAG 오케스트레이션
+│   ├── knowledge-retrieval-lite.ts    # active 내부 지식 검색 (BM25 + metadata boost)
+│   ├── retrieval-contract.ts          # EvidenceCard/RetrievalMetadata SSOT
+│   ├── legacy-contracts.ts            # legacy graph runtime 410/useGraphRAG 경계
+│   ├── rag-doc-policy.ts              # knowledge_base corpus 길이/카테고리 정책
+│   ├── embedding.ts                   # legacy embedding helper (Lite path 기본 미사용)
+│   └── hybrid-text-search.ts          # legacy/helper text search wrapper
 └── data/
     └── precomputed-state.ts           # 144 슬롯 사전 계산
 ```
@@ -557,7 +564,7 @@ cloud-run/ai-engine/src/
 - **Mistral → Advisor Primary** (mistral-large-latest, Frontier model)
 - **3-way fallback 전면 적용**: 모든 에이전트 (Cerebras ↔ Groq ↔ Mistral)
 - **@llamaindex 의존성 전면 제거**: AI SDK `generateText` + Cerebras로 대체
-- **RAG LLM 추론 Cerebras 이관**: HyDE, Reranker, Triplet, Generate
+- **당시 GraphRAG 보조 단계 이관**: query expansion, rerank, triplet/generate 보조 경로를 Cerebras로 옮겼던 이력. 현재 Knowledge Retrieval Lite request path에서는 별도 RAG 보조 LLM 호출을 사용하지 않음
 - **Mistral RPM 실측 테스트 완료**: 60+ embed/min, 15+ chat/min
 </details>
 

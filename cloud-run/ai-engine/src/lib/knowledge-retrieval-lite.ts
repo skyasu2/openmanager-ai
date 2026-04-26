@@ -35,6 +35,40 @@ type KnowledgeTextRow = Record<string, unknown>;
 
 const DEFAULT_LIMIT = 5;
 const MAX_LIMIT = 10;
+const MAX_QUERY_CANDIDATES = 4;
+
+const DOMAIN_QUERY_FALLBACKS = [
+  {
+    signals: [
+      /redis|레디스|cache|캐시/i,
+      /oom|out\s*of\s*memory|memory|메모리|부족/i,
+    ],
+    candidates: ['redis memory', 'redis oom', 'cache memory', '레디스 메모리'],
+  },
+  {
+    signals: [
+      /postgres|postgresql|database|\bdb\b|디비|데이터베이스/i,
+      /connection|pool|timeout|접속|연결|타임아웃/i,
+    ],
+    candidates: [
+      'database connection',
+      'postgres connection pool',
+      'db timeout',
+      '데이터베이스 연결',
+    ],
+  },
+  {
+    signals: [
+      /nginx|엔진엑스|gateway|proxy|\blb\b|load\s*balancer|로드밸런서/i,
+      /5xx|503|502|timeout|connection|타임아웃|연결/i,
+    ],
+    candidates: ['nginx gateway', 'http 5xx', 'gateway timeout', '엔진엑스 장애'],
+  },
+  {
+    signals: [/cpu|processor|프로세스|부하|load/i, /high|spike|높|과부하|지연/i],
+    candidates: ['cpu high load', 'cpu spike', '프로세스 부하'],
+  },
+] as const;
 
 export async function retrieveKnowledgeEvidence(
   input: KnowledgeRetrievalLiteInput,
@@ -42,22 +76,18 @@ export async function retrieveKnowledgeEvidence(
 ): Promise<KnowledgeRetrievalLiteResult> {
   const limit = normalizeLimit(input.limit);
 
-  if (!deps.client) {
+  const client = deps.client;
+  if (!client) {
     return unavailableResult('Supabase client unavailable');
   }
 
   try {
-    const { data, error } = await deps.client.rpc('search_knowledge_text', {
-      p_query_text: input.query,
-      p_max_results: Math.max(limit * 2, 10),
-      p_filter_category: input.category ?? null,
-    });
+    const { rows, searchQuery } = await searchKnowledgeRows(
+      input,
+      { client },
+      limit
+    );
 
-    if (error) {
-      return unavailableResult(getErrorMessage(error));
-    }
-
-    const rows = Array.isArray(data) ? (data as KnowledgeTextRow[]) : [];
     if (rows.length === 0) {
       return {
         success: true,
@@ -76,7 +106,7 @@ export async function retrieveKnowledgeEvidence(
     }
 
     const evidenceCards = rows
-      .map((row) => mapTextRowToEvidenceCard(row, input))
+      .map((row) => mapTextRowToEvidenceCard(row, input, searchQuery))
       .sort((a, b) => b.score - a.score)
       .slice(0, limit);
 
@@ -98,9 +128,39 @@ export async function retrieveKnowledgeEvidence(
   }
 }
 
+async function searchKnowledgeRows(
+  input: KnowledgeRetrievalLiteInput,
+  deps: Required<Pick<KnowledgeRetrievalLiteDependencies, 'client'>>,
+  limit: number
+): Promise<{ rows: KnowledgeTextRow[]; searchQuery: string }> {
+  const queryCandidates = buildSearchQueryCandidates(input.query);
+  let lastSearchQuery = queryCandidates[0] ?? input.query;
+
+  for (const searchQuery of queryCandidates) {
+    lastSearchQuery = searchQuery;
+    const { data, error } = await deps.client.rpc('search_knowledge_text', {
+      p_query_text: searchQuery,
+      p_max_results: Math.max(limit * 2, 10),
+      p_filter_category: input.category ?? null,
+    });
+
+    if (error) {
+      throw new Error(getErrorMessage(error));
+    }
+
+    const rows = Array.isArray(data) ? (data as KnowledgeTextRow[]) : [];
+    if (rows.length > 0) {
+      return { rows, searchQuery };
+    }
+  }
+
+  return { rows: [], searchQuery: lastSearchQuery };
+}
+
 function mapTextRowToEvidenceCard(
   row: KnowledgeTextRow,
-  input: KnowledgeRetrievalLiteInput
+  input: KnowledgeRetrievalLiteInput,
+  searchQuery: string
 ): EvidenceCard {
   const metadata = getObject(row.metadata);
   const category = readString(row.category) ?? 'knowledge';
@@ -110,6 +170,9 @@ function mapTextRowToEvidenceCard(
   const score = clampScore(baseScore + boost);
   const reason = [
     `bm25-text-rank:${baseScore.toFixed(3)}`,
+    isFallbackQuery(input.query, searchQuery)
+      ? `query-fallback:${searchQuery}`
+      : null,
     reasons.length > 0 ? `metadata-boost:${reasons.join(',')}` : null,
   ]
     .filter(Boolean)
@@ -187,6 +250,46 @@ function calculateMetadataBoost(
   }
 
   return { boost: Math.min(boost, 0.35), reasons };
+}
+
+function buildSearchQueryCandidates(query: string): string[] {
+  const primaryQuery = normalizeQueryWhitespace(query);
+  const normalizedForMatch = primaryQuery.toLowerCase();
+  const candidates = [primaryQuery];
+
+  for (const fallback of DOMAIN_QUERY_FALLBACKS) {
+    if (fallback.signals.every((signal) => signal.test(normalizedForMatch))) {
+      candidates.push(...fallback.candidates);
+    }
+  }
+
+  return dedupeQueries(candidates).slice(0, MAX_QUERY_CANDIDATES);
+}
+
+function dedupeQueries(queries: readonly string[]): string[] {
+  const seen = new Set<string>();
+  const deduped: string[] = [];
+
+  for (const query of queries) {
+    const normalized = normalizeQueryWhitespace(query);
+    const key = normalized.toLowerCase();
+    if (!normalized || seen.has(key)) continue;
+    seen.add(key);
+    deduped.push(normalized);
+  }
+
+  return deduped;
+}
+
+function normalizeQueryWhitespace(value: string): string {
+  return value.trim().replace(/\s+/g, ' ');
+}
+
+function isFallbackQuery(originalQuery: string, searchQuery: string): boolean {
+  return (
+    normalizeQueryWhitespace(originalQuery).toLowerCase() !==
+    normalizeQueryWhitespace(searchQuery).toLowerCase()
+  );
 }
 
 function unavailableResult(error: string): KnowledgeRetrievalLiteResult {

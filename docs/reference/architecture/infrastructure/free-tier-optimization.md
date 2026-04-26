@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-03-30
+> Last reviewed: 2026-04-26
 > Canonical: docs/reference/architecture/infrastructure/free-tier-optimization.md
 > Tags: free-tier,cost,performance,web-vitals,optimization
 >
-> **프로젝트 버전**: v8.10.8 | **Updated**: 2026-03-30
+> **프로젝트 버전**: v8.11.32 | **Updated**: 2026-04-26
 
 ## 개요
 
@@ -217,9 +217,10 @@ await pipeline.exec();
 
 | 우선순위 | 프로바이더 | 무료 한도 | Agent 역할 | 위험도 |
 |---------|-----------|---------|-----------|--------|
-| 1 | **Groq** | 100K TPD, 12K TPM | Supervisor·NLQ·Analyst·Reporter·Advisor (Primary) | ⚠️ 분당 30 요청 상한 |
-| 2 | **Cerebras** | 1M TPD, 3,000 tok/s | 위 전체 에이전트 2nd fallback | ⚠️ 트래픽 많으면 소진 |
-| 3 | **Mistral** | Tier 0: 1 RPS, 40K~500K TPM | 위 전체 에이전트 3rd fallback + RAG Embedding | ✅ 여유 있음 |
+| 1 | **Groq** | 1K RPD, 500K TPD, 30K TPM, 30 RPM | Supervisor·NLQ·Analyst·Reporter·Advisor (Primary) | ⚠️ 일/분 한도 동시 관리 필요 |
+| 2 | **Cerebras Qwen** | 14.4K RPD, 1M TPD, 30K TPM, 5 RPM | Orchestrator primary + text 2nd fallback | ⚠️ 2026-05-27 deprecation 대응 필요 |
+| 2a | **Cerebras llama3.1-8b** | 14.4K RPD, 1M TPD, 60K TPM, 30 RPM | Cerebras intra-provider fallback | ⚠️ 8K context / 성능 낮음 |
+| 3 | **Mistral** | 약 500 RPD, 2 RPM, 30K TPM | 위 전체 에이전트 text last-resort fallback | ⚠️ 저RPM 병목. RAG runtime/embedding에는 사용하지 않음 |
 | Vision 1 | **Google Gemini Flash** | 1,000 RPD, 250K TPM | Vision Agent | ⚠️ 일 1,000회 |
 | Vision 2 | **OpenRouter Free** | 무료 모델 제공 | Vision Fallback | ✅ 응답 느림 |
 
