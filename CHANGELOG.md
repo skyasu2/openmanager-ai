@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.36](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.35...v8.11.36) (2026-04-26)
+
+
+### Bug Fixes
+
+* **ai-engine:** invalidate resource catalog cache by source ([58cb3f7](https://gitlab.com/skyasu2/openmanager-ai/-/commit/58cb3f74660cbdf9e1715486e78356a2a86e8ccc))
+
+
+### Tests
+
+* **cloud:** isolate live cloud contract suite ([c186dd5](https://gitlab.com/skyasu2/openmanager-ai/-/commit/c186dd543281c12a4f4bac050a0431a0107a85fc))
+* **qa:** record v8.11.35 sidebar release smoke ([cb744ad](https://gitlab.com/skyasu2/openmanager-ai/-/commit/cb744ad6d7826ba0a8298fd35e8e2274eebac032))
+
 ## [8.11.35](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.34...v8.11.35) (2026-04-26)
 
 
