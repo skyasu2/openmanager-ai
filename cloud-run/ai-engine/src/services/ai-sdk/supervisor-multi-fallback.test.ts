@@ -227,6 +227,70 @@ describe('supervisor degraded single fallback', () => {
     expect(mockGenerateText).toHaveBeenCalledTimes(1);
   });
 
+  it('propagates multi-agent retrieval metadata and evidence cards', async () => {
+    mockExecuteMultiAgent.mockResolvedValueOnce({
+      success: true,
+      response: '토폴로지 요약',
+      handoffs: [{ from: 'Orchestrator', to: 'Advisor Agent', reason: 'Forced routing' }],
+      finalAgent: 'Advisor Agent',
+      toolsCalled: ['searchKnowledgeBase', 'finalAnswer'],
+      ragSources: [
+        {
+          title: '현재 인프라 역할/트래픽 토폴로지 스냅샷',
+          similarity: 0.91,
+          sourceType: 'knowledge',
+          category: 'architecture',
+        },
+      ],
+      evidenceCards: [
+        {
+          id: 'kb-1',
+          title: '현재 인프라 역할/트래픽 토폴로지 스냅샷',
+          summary: '총 18대 서버 기준 토폴로지 근거',
+          sourceType: 'knowledge',
+          score: 0.91,
+          category: 'architecture',
+        },
+      ],
+      usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+      metadata: {
+        provider: 'deterministic',
+        modelId: 'knowledge-search-direct',
+        totalRounds: 1,
+        handoffCount: 1,
+        durationMs: 10,
+        retrieval: {
+          retrievalEnabled: true,
+          retrievalUsed: true,
+          retrievalMode: 'lite',
+          evidenceCount: 1,
+          webUsed: false,
+        },
+      },
+    });
+
+    const result = await executeSupervisor({
+      mode: 'multi',
+      messages: [{ role: 'user', content: '현재 인프라 토폴로지 알려줘' }],
+      sessionId: 'session-retrieval-propagation',
+      enableRAG: true,
+    });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.evidenceCards).toHaveLength(1);
+      expect(result.metadata.retrieval).toEqual(
+        expect.objectContaining({
+          retrievalEnabled: true,
+          retrievalUsed: true,
+          retrievalMode: 'lite',
+          evidenceCount: 1,
+        })
+      );
+    }
+    expect(mockGenerateText).not.toHaveBeenCalled();
+  });
+
   it('falls back to single-agent when multi-agent returns UNKNOWN_ERROR and degraded single is allowed', async () => {
     mockIsSingleModeAllowed.mockReturnValue(true);
     mockExecuteMultiAgent.mockResolvedValue({

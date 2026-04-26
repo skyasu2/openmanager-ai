@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-26 KST (`Retrieval SQL contract applied`)
+**Last Updated**: 2026-04-26 KST (`Supervisor retrieval smoke follow-up`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -31,6 +31,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-26 #198)
+- [x] Cloud Run supervisor Knowledge Retrieval Lite smoke 후속 수정
+  - 실환경 `enableRAG=true`, `enableWebSearch=false` topology 질의로 deterministic `searchKnowledgeBase` direct path가 동작함을 확인
+  - direct KB 응답의 legacy `vector/graph` 근거 문구를 Knowledge Retrieval Lite 기준의 `운영 지식/장애 이력/런북/웹` 문구로 교체
+  - multi-agent 결과의 `evidenceCards`와 `metadata.retrieval`이 supervisor JSON 응답까지 전달되도록 propagation 보강
+  - 회귀 테스트: direct KB path의 GraphRAG 용어 재출현 방지, evidence card/retrieval metadata propagation 추가
 
 ### Completed (2026-04-26 #197)
 - [x] Supabase remote Knowledge Retrieval Lite RPC contract 적용

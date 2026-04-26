@@ -229,6 +229,7 @@ supervisorRouter.post('/', async (c: Context) => {
       response: sanitizedResponse,
       toolsCalled: result.toolsCalled,
       ragSources: result.ragSources,
+      evidenceCards: result.evidenceCards,
       usage: result.usage,
       metadata: result.metadata,
     });

@@ -47,6 +47,13 @@ import {
   isDeterministicSummaryQuery,
 } from './orchestrator-summary-fallback';
 import { logger } from '../../../lib/logger';
+import {
+  createRetrievalMetadata,
+  legacyRagSourcesToEvidenceCards,
+  type EvidenceCard,
+  type EvidenceSourceType,
+  type RetrievalMetadata,
+} from '../../../lib/retrieval-contract';
 export { recordHandoff, getRecentHandoffs } from './orchestrator-handoff';
 export { executeReporterWithPipeline } from './orchestrator-reporter-pipeline';
 
@@ -99,6 +106,7 @@ export const getAgentProviderOrder = getRuntimeAgentProviderOrder;
 export const getAgentMaxSteps = getRuntimeAgentMaxSteps;
 
 interface DirectKnowledgeResultItem {
+  id?: string;
   title: string;
   content: string;
   similarity: number;
@@ -111,6 +119,8 @@ interface DirectKnowledgeSearchResult {
   success: boolean;
   results: DirectKnowledgeResultItem[];
   totalFound: number;
+  evidenceCards: EvidenceCard[];
+  retrieval?: RetrievalMetadata;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -126,13 +136,14 @@ function asDirectKnowledgeResultItem(value: unknown): DirectKnowledgeResultItem 
   const title = typeof value.title === 'string' ? value.title : '';
   const content = typeof value.content === 'string' ? value.content : '';
   const similarity = toNumber(value.similarity) ?? 0;
-  const sourceType = typeof value.sourceType === 'string' ? value.sourceType : 'vector';
+  const sourceType = typeof value.sourceType === 'string' ? value.sourceType : 'knowledge';
 
   if (!title || !content) {
     return null;
   }
 
   return {
+    ...(typeof value.id === 'string' && { id: value.id }),
     title,
     content,
     similarity,
@@ -140,6 +151,67 @@ function asDirectKnowledgeResultItem(value: unknown): DirectKnowledgeResultItem 
     category: typeof value.category === 'string' ? value.category : undefined,
     url: typeof value.url === 'string' ? value.url : undefined,
   };
+}
+
+function asEvidenceSourceType(value: unknown): EvidenceSourceType {
+  return value === 'incident' ||
+    value === 'runbook' ||
+    value === 'web' ||
+    value === 'knowledge'
+    ? value
+    : 'knowledge';
+}
+
+function asEvidenceCard(value: unknown): EvidenceCard | null {
+  if (!isRecord(value)) return null;
+
+  const title = typeof value.title === 'string' ? value.title : '';
+  const summary = typeof value.summary === 'string' ? value.summary : '';
+  const score = toNumber(value.score) ?? 0;
+
+  if (!title || !summary) {
+    return null;
+  }
+
+  return {
+    id: typeof value.id === 'string' ? value.id : `evidence-${title}`,
+    title,
+    summary,
+    sourceType: asEvidenceSourceType(value.sourceType),
+    score: Math.min(1, Math.max(0, score)),
+    ...(typeof value.category === 'string' && { category: value.category }),
+    ...(typeof value.reason === 'string' && { reason: value.reason }),
+    ...(typeof value.url === 'string' && { url: value.url }),
+  };
+}
+
+function asRetrievalMetadata(value: unknown): RetrievalMetadata | undefined {
+  if (!isRecord(value)) return undefined;
+
+  return createRetrievalMetadata({
+    retrievalEnabled: value.retrievalEnabled === true,
+    retrievalUsed:
+      typeof value.retrievalUsed === 'boolean'
+        ? value.retrievalUsed
+        : undefined,
+    retrievalMode:
+      value.retrievalMode === 'off' ||
+      value.retrievalMode === 'lite' ||
+      value.retrievalMode === 'text-only' ||
+      value.retrievalMode === 'cosine-neighbor'
+        ? value.retrievalMode
+        : 'lite',
+    evidenceCount: toNumber(value.evidenceCount) ?? 0,
+    webUsed: value.webUsed === true,
+    suppressedReason:
+      value.suppressedReason === 'disabled' ||
+      value.suppressedReason === 'not_needed' ||
+      value.suppressedReason === 'no_results' ||
+      value.suppressedReason === 'budget_guard' ||
+      value.suppressedReason === 'unavailable'
+        ? value.suppressedReason
+        : undefined,
+  });
 }
 
 function toProviderAttemptTelemetry(
@@ -214,6 +286,12 @@ function asDirectKnowledgeSearchResult(value: unknown): DirectKnowledgeSearchRes
     success: true,
     results,
     totalFound: toNumber(value.totalFound) ?? results.length,
+    evidenceCards: Array.isArray(value.evidenceCards)
+      ? value.evidenceCards
+          .map(asEvidenceCard)
+          .filter((item): item is EvidenceCard => item !== null)
+      : [],
+    retrieval: asRetrievalMetadata(value.retrieval),
   };
 }
 
@@ -233,8 +311,9 @@ function buildTopologyDirectKnowledgeResponse(
 ): string {
   const topResults = results.slice(0, 3);
   const sourceSummary = {
-    vector: results.filter((item) => item.sourceType === 'vector').length,
-    graph: results.filter((item) => item.sourceType === 'graph').length,
+    knowledge: results.filter((item) => item.sourceType === 'knowledge').length,
+    incident: results.filter((item) => item.sourceType === 'incident').length,
+    runbook: results.filter((item) => item.sourceType === 'runbook').length,
     web: results.filter((item) => item.sourceType === 'web').length,
   };
   const serverCountHint = extractServerCountHint(results);
@@ -245,7 +324,7 @@ function buildTopologyDirectKnowledgeResponse(
   return [
     '### 인프라 토폴로지 요약',
     `- 질의: ${query}`,
-    `- 근거 문서: ${results.length}건 (vector ${sourceSummary.vector}, graph ${sourceSummary.graph}, web ${sourceSummary.web})`,
+    `- 근거 문서: ${results.length}건 (운영 지식 ${sourceSummary.knowledge}, 장애 이력 ${sourceSummary.incident}, 런북 ${sourceSummary.runbook}, 웹 ${sourceSummary.web})`,
     serverCountHint !== null
       ? `- 확인된 서버 규모 힌트: 총 ${serverCountHint}대`
       : '- 서버 규모는 KB 문서 기준으로 파악되며, 실시간 수치는 별도 조회가 필요합니다.',
@@ -326,6 +405,29 @@ export async function executeForcedRouting(
             0,
             evidenceBudget
           );
+          const directEvidenceCards =
+            parsedDirectResult.evidenceCards.length > 0
+              ? parsedDirectResult.evidenceCards.slice(0, evidenceBudget)
+              : legacyRagSourcesToEvidenceCards(
+                  directEvidence.map((item) => ({
+                    title: item.title,
+                    similarity: item.similarity,
+                    sourceType: item.sourceType,
+                    category: item.category,
+                    url: item.url,
+                  }))
+                );
+          const directRetrieval = createRetrievalMetadata({
+            retrievalEnabled: true,
+            retrievalUsed: directEvidenceCards.length > 0,
+            retrievalMode: parsedDirectResult.retrieval?.retrievalMode ?? 'lite',
+            evidenceCount: directEvidenceCards.length,
+            webUsed: directEvidence.some((item) => item.sourceType === 'web'),
+            suppressedReason:
+              directEvidenceCards.length > 0
+                ? undefined
+                : parsedDirectResult.retrieval?.suppressedReason ?? 'no_results',
+          });
           const durationMs = Date.now() - startTime;
           const response = sanitizeChineseCharacters(
             buildTopologyDirectKnowledgeResponse(query, directEvidence)
@@ -346,6 +448,7 @@ export async function executeForcedRouting(
               category: item.category,
               url: item.url,
             })),
+            evidenceCards: directEvidenceCards,
             handoffs: [{
               from: 'Orchestrator',
               to: suggestedAgentName,
@@ -368,6 +471,7 @@ export async function executeForcedRouting(
               formatCompliance: quality.formatCompliance,
               qualityFlags: quality.qualityFlags,
               latencyTier: quality.latencyTier,
+              retrieval: directRetrieval,
             },
           };
         }

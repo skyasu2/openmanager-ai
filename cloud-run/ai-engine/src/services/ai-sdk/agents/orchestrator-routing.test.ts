@@ -491,7 +491,7 @@ describe('executeForcedRouting', () => {
           title: '현재 인프라 역할/트래픽 토폴로지 스냅샷',
           content: '총 18대 서버 기준으로 LB->WEB->APP->DB 경로를 사용합니다.',
           similarity: 0.91,
-          sourceType: 'vector',
+          sourceType: 'knowledge',
           category: 'architecture',
         },
         {
@@ -499,10 +499,27 @@ describe('executeForcedRouting', () => {
           title: '현재 인프라 배치/운영 검증 스냅샷',
           content: '운영 구간에서 트래픽 분산과 장애 대응 절차를 정의합니다.',
           similarity: 0.83,
-          sourceType: 'graph',
+          sourceType: 'runbook',
           category: 'architecture',
         },
       ],
+      evidenceCards: [
+        {
+          id: 'kb-1',
+          title: '현재 인프라 역할/트래픽 토폴로지 스냅샷',
+          summary: '총 18대 서버 기준으로 LB->WEB->APP->DB 경로를 사용합니다.',
+          sourceType: 'knowledge',
+          score: 0.91,
+          category: 'architecture',
+        },
+      ],
+      retrieval: {
+        retrievalEnabled: true,
+        retrievalUsed: true,
+        retrievalMode: 'lite',
+        evidenceCount: 2,
+        webUsed: false,
+      },
     });
 
     const result = await executeForcedRouting(
@@ -518,6 +535,18 @@ describe('executeForcedRouting', () => {
     expect(result?.toolsCalled).toEqual(['searchKnowledgeBase', 'finalAnswer']);
     expect(result?.response).toContain('해결/권장 조치');
     expect(result?.response).toContain('`getServerMetrics`');
+    expect(result?.response).toContain('운영 지식');
+    expect(result?.response).not.toContain('vector');
+    expect(result?.response).not.toContain('graph');
+    expect(result?.evidenceCards).toHaveLength(1);
+    expect(result?.metadata.retrieval).toEqual(
+      expect.objectContaining({
+        retrievalEnabled: true,
+        retrievalUsed: true,
+        retrievalMode: 'lite',
+        evidenceCount: 1,
+      })
+    );
     expect(mockGenerateTextWithRetry).not.toHaveBeenCalled();
     expect(mockSearchKnowledgeBaseExecute).toHaveBeenCalled();
     const kbArgs = mockSearchKnowledgeBaseExecute.mock.calls[0]?.[0];

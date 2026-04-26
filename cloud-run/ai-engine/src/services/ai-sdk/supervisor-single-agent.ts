@@ -257,6 +257,7 @@ async function executeMultiAgentMode(
       toolsCalled: multiResult.toolsCalled,
       toolResults: [],
       ragSources: multiResult.ragSources,
+      evidenceCards: multiResult.evidenceCards,
       usage: multiResult.usage,
       metadata: {
         provider: multiResult.metadata.provider,
@@ -272,6 +273,7 @@ async function executeMultiAgentMode(
         ...buildSupervisorModeMetadata(modeDecision),
         handoffs: multiResult.handoffs,
         finalAgent: multiResult.finalAgent,
+        retrieval: multiResult.metadata.retrieval,
       },
     };
 
