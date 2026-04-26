@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.34](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.33...v8.11.34) (2026-04-26)
+
+
+### Bug Fixes
+
+* **ai:** propagate forced retrieval evidence ([98a79c9](https://gitlab.com/skyasu2/openmanager-ai/-/commit/98a79c94b16dacce061409a95d2dc9333abf8436))
+
 ## [8.11.33](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.32...v8.11.33) (2026-04-26)
 
 
