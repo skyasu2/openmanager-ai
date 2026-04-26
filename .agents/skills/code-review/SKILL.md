@@ -14,11 +14,12 @@ Run practical code reviews from 6 perspectives that surface real defects and rel
 | # | Perspective | Key Checks |
 |---|------------|------------|
 | 1 | **Correctness** | Requirements met, logic flaws, regression, state races, missing null/error paths |
-| 2 | **Readability** | Naming, structure, unnecessary complexity, misleading abstractions |
-| 3 | **Design** | SRP, DRY, appropriate abstraction level, hidden coupling |
-| 4 | **Performance** | Time/space complexity, unnecessary computation, payload bloat, expensive defaults |
-| 5 | **Security** | OWASP Top 10, auth gaps, privilege scope, secret leakage, unsafe trust boundaries |
-| 6 | **Test Coverage** | Coverage gaps, edge cases, test quality, critical branches without tests |
+| 2 | **Readability** | Naming, structure, misleading abstractions, why-comments present |
+| 3 | **Complexity** | Understandable in 60s, no AI-generated unnecessary layers, no function >40 lines without reason, no nesting >3 levels |
+| 4 | **Design** | SRP, DRY, appropriate abstraction level, hidden coupling |
+| 5 | **Performance** | Time/space complexity, unnecessary computation, payload bloat, expensive defaults |
+| 6 | **Security** | OWASP Top 10, auth gaps, privilege scope, secret leakage, unsafe trust boundaries |
+| 7 | **Test Coverage** | Coverage gaps, edge cases, test quality, critical branches without tests |
 
 ## Execute this workflow
 
@@ -27,28 +28,29 @@ Run practical code reviews from 6 perspectives that surface real defects and rel
 - `git diff --name-only`
 - If scope is large, focus on files touched in this task and any directly coupled files.
 
-2. Collect execution evidence.
+1. Collect execution evidence.
 - Run targeted tests for changed area first.
 - If core behavior changed and no targeted tests exist, run at least one broader safety check (`npm run test:quick` or equivalent).
 - Do not claim "safe" without command evidence or a clear reason why tests could not run.
 
-3. Apply scope-adaptive perspectives.
-- **Code changes**: apply all 6 perspectives.
+1. Apply scope-adaptive perspectives.
+- **Code changes**: apply all 7 perspectives.
 - **Config/doc changes**: focus on Correctness + Readability + Design; apply Security/Performance only when relevant.
 - Record each finding with its perspective label.
 
-4. Assign severity for each finding.
+1. Assign severity for each finding.
 - `P0` Release blocker: exploitable security issue, data loss/corruption, hard outage.
 - `P1` High risk: likely user-facing breakage/regression in normal use.
 - `P2` Medium risk: edge-case failure, degraded UX, operational friction.
 - `P3` Low risk: clarity/test debt/non-blocking improvements.
 - Escalation rule: if impact uncertain but blast radius broad, classify one level higher.
+- **Vibe coding rule**: Security and Correctness findings are auto-escalated one level higher (AI-generated code carries ~2.7× XSS risk and ~1.75× logic error rate).
 
-5. Report findings first, with proof.
+1. Report findings first, with proof.
 - For each finding include: severity, perspective, file path + line, user impact, and minimal fix direction.
 - If no findings, state that explicitly and list residual risks/test gaps.
 
-6. Decide release readiness.
+1. Decide release readiness.
 - `go`: no P0/P1 and no unbounded unknowns.
 - `conditional`: only P2/P3 with clear follow-up.
 - `no-go`: any P0/P1 unresolved or critical test evidence missing.
@@ -66,6 +68,7 @@ Code Review Findings
 Perspective Summary
 - Correctness: <count> findings
 - Readability: <count> findings
+- Complexity: <count> findings
 - Design: <count> findings
 - Performance: <count> findings
 - Security: <count> findings

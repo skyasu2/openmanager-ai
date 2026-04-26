@@ -30,8 +30,9 @@
       "purpose": "Review OpenManager changes with severity-first findings and evidence-backed go/no-go judgment.",
       "invariants": [
         "Findings come before summary.",
-        "Use correctness, readability, design, performance, security, and test coverage perspectives when relevant.",
-        "Do not claim safety without command evidence or an explicit testing gap."
+        "Use correctness, readability, complexity, design, performance, security, and test coverage perspectives when relevant.",
+        "Do not claim safety without command evidence or an explicit testing gap.",
+        "Security and Correctness findings are auto-escalated one level due to vibe coding (AI-generated code only)."
       ],
       "adapters": {
         "codex": ".agents/skills/code-review/SKILL.md",

@@ -11,8 +11,14 @@
 ### 2. Readability
 - Names clearly describe purpose.
 - Code structure follows the flow of logic.
-- No unnecessary complexity or indirection.
 - Comments explain "why", not "what".
+
+### 2a. Complexity (vibe coding focus)
+- A reviewer unfamiliar with this code can understand it within 60 seconds.
+- No abstraction layers that exist only because AI generated them.
+- No function longer than ~40 lines without a clear reason.
+- No nested conditionals deeper than 3 levels.
+- If it feels complex, it is — simplify before merging.
 
 ### 3. Design
 - Single Responsibility Principle respected.
