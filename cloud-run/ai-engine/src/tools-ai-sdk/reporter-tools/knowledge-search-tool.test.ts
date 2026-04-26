@@ -2,14 +2,20 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const {
   mockGetSupabaseClient,
+  mockRetrieveKnowledgeEvidence,
   mockEmbedText,
   mockSearchWithEmbedding,
   mockHybridGraphSearch,
+  mockEnhanceWithWebSearch,
+  mockIsTavilyAvailable,
 } = vi.hoisted(() => ({
   mockGetSupabaseClient: vi.fn(),
+  mockRetrieveKnowledgeEvidence: vi.fn(),
   mockEmbedText: vi.fn(),
   mockSearchWithEmbedding: vi.fn(),
   mockHybridGraphSearch: vi.fn(),
+  mockEnhanceWithWebSearch: vi.fn(),
+  mockIsTavilyAvailable: vi.fn(() => true),
 }));
 
 vi.mock('./knowledge-client', () => ({
@@ -21,13 +27,17 @@ vi.mock('../../lib/embedding', () => ({
   searchWithEmbedding: mockSearchWithEmbedding,
 }));
 
+vi.mock('../../lib/knowledge-retrieval-lite', () => ({
+  retrieveKnowledgeEvidence: mockRetrieveKnowledgeEvidence,
+}));
+
 vi.mock('../../lib/graphrag-service', () => ({
   hybridGraphSearch: mockHybridGraphSearch,
 }));
 
 vi.mock('../../lib/tavily-hybrid-rag', () => ({
-  enhanceWithWebSearch: vi.fn(),
-  isTavilyAvailable: vi.fn(() => false),
+  enhanceWithWebSearch: mockEnhanceWithWebSearch,
+  isTavilyAvailable: mockIsTavilyAvailable,
 }));
 
 vi.mock('../../lib/reranker', () => ({
@@ -82,7 +92,9 @@ describe('searchKnowledgeBase', () => {
   it('returns graceful fallback when Supabase client is unavailable', async () => {
     mockGetSupabaseClient.mockResolvedValue(null);
 
-    const result = await searchKnowledgeBase.execute({ query: 'Redis OOM 조치 방법' });
+    const result = await searchKnowledgeBase.execute({
+      query: 'Redis OOM 조치 방법',
+    });
 
     expect(result).toMatchObject({
       success: false,
@@ -95,56 +107,97 @@ describe('searchKnowledgeBase', () => {
     expect(mockHybridGraphSearch).not.toHaveBeenCalled();
   });
 
-  it('returns success result from GraphRAG path', async () => {
+  it('returns success result from Knowledge Retrieval Lite without embedding, graph, or web fallback', async () => {
     mockGetSupabaseClient.mockResolvedValue({} as never);
-    mockEmbedText.mockResolvedValue([0.1, 0.2, 0.3]);
-    mockHybridGraphSearch.mockResolvedValue([
-      {
-        id: 'kb-1',
-        title: 'Redis OOM 대응 가이드',
-        content: '메모리 사용률 임계치 초과 시 ...',
-        score: 0.93,
-        sourceType: 'vector',
-        hopDistance: 0,
-        category: 'incident',
+    mockRetrieveKnowledgeEvidence.mockResolvedValue({
+      success: true,
+      _source: 'Knowledge Retrieval Lite',
+      totalFound: 2,
+      metadata: {
+        retrievalEnabled: true,
+        retrievalUsed: true,
+        retrievalMode: 'lite',
+        evidenceCount: 2,
+        webUsed: false,
       },
-      {
-        id: 'kb-2',
-        title: 'Redis 캐시 정책',
-        content: 'eviction-policy 설정 확인',
-        score: 0.88,
-        sourceType: 'graph',
-        hopDistance: 1,
-        category: 'troubleshooting',
-      },
-    ]);
+      evidenceCards: [
+        {
+          id: 'kb-1',
+          title: 'Redis OOM 대응 가이드',
+          summary: '메모리 사용률 임계치 초과 시 ...',
+          score: 0.93,
+          sourceType: 'runbook',
+          category: 'incident',
+        },
+        {
+          id: 'kb-2',
+          title: 'Redis 캐시 정책',
+          summary: 'eviction-policy 설정 확인',
+          score: 0.88,
+          sourceType: 'knowledge',
+          category: 'troubleshooting',
+        },
+      ],
+    });
 
     const result = await searchKnowledgeBase.execute({
       query: 'Redis OOM 원인 분석',
       category: 'incident',
+      useGraphRAG: true,
+      includeWebSearch: true,
     });
 
     expect(result).toMatchObject({
       success: true,
-      _source: 'GraphRAG Hybrid (Vector + Graph)',
+      _source: 'Knowledge Retrieval Lite',
+      retrieval: {
+        retrievalEnabled: true,
+        retrievalUsed: true,
+        retrievalMode: 'lite',
+        evidenceCount: 2,
+        webUsed: false,
+      },
+      webSearchTriggered: false,
     });
     expect(result.totalFound).toBe(2);
     expect(result.results).toHaveLength(2);
     expect(result.results[0]).toMatchObject({
       id: 'kb-1',
       title: 'Redis OOM 대응 가이드',
-      sourceType: 'vector',
+      sourceType: 'runbook',
       category: 'incident',
     });
+    expect(mockRetrieveKnowledgeEvidence).toHaveBeenCalledWith(
+      {
+        query: 'Redis OOM 원인 분석',
+        category: 'incident',
+        severity: undefined,
+        limit: 5,
+      },
+      { client: {} }
+    );
+    expect(mockEmbedText).not.toHaveBeenCalled();
+    expect(mockHybridGraphSearch).not.toHaveBeenCalled();
+    expect(mockSearchWithEmbedding).not.toHaveBeenCalled();
+    expect(mockEnhanceWithWebSearch).not.toHaveBeenCalled();
   });
 
-  it('returns error fallback when vector search fails', async () => {
+  it('returns error fallback when Knowledge Retrieval Lite is unavailable', async () => {
     mockGetSupabaseClient.mockResolvedValue({} as never);
-    mockEmbedText.mockResolvedValue([0.5, 0.2, 0.1]);
-    mockSearchWithEmbedding.mockResolvedValue({
+    mockRetrieveKnowledgeEvidence.mockResolvedValue({
       success: false,
-      results: [],
-      error: 'vector search unavailable',
+      _source: 'Knowledge Retrieval Lite (Unavailable)',
+      evidenceCards: [],
+      totalFound: 0,
+      metadata: {
+        retrievalEnabled: true,
+        retrievalUsed: false,
+        retrievalMode: 'lite',
+        suppressedReason: 'unavailable',
+        evidenceCount: 0,
+        webUsed: false,
+      },
+      error: 'text search unavailable',
     });
 
     const result = await searchKnowledgeBase.execute({
@@ -154,27 +207,48 @@ describe('searchKnowledgeBase', () => {
 
     expect(result).toMatchObject({
       success: false,
-      _source: 'Error Fallback',
+      _source: 'Knowledge Retrieval Lite (Unavailable)',
       totalFound: 0,
       results: [],
+      retrieval: {
+        retrievalEnabled: true,
+        retrievalUsed: false,
+        retrievalMode: 'lite',
+        suppressedReason: 'unavailable',
+      },
     });
-    expect(result.systemMessage).toContain('지식 베이스 검색 중 오류가 발생했습니다');
+    expect(result.systemMessage).toContain(
+      '지식 베이스 검색 중 오류가 발생했습니다'
+    );
+    expect(mockEmbedText).not.toHaveBeenCalled();
+    expect(mockHybridGraphSearch).not.toHaveBeenCalled();
+    expect(mockSearchWithEmbedding).not.toHaveBeenCalled();
   });
 
   it('reuses cached result for duplicate KB searches', async () => {
     mockGetSupabaseClient.mockResolvedValue({} as never);
-    mockEmbedText.mockResolvedValue([0.1, 0.2, 0.3]);
-    mockHybridGraphSearch.mockResolvedValue([
-      {
-        id: 'kb-1',
-        title: '현재 인프라 역할/트래픽 토폴로지 스냅샷',
-        content: 'APP, DB, CACHE 트래픽 구조 설명',
-        score: 0.91,
-        sourceType: 'vector',
-        hopDistance: 0,
-        category: 'architecture',
+    mockRetrieveKnowledgeEvidence.mockResolvedValue({
+      success: true,
+      _source: 'Knowledge Retrieval Lite',
+      totalFound: 1,
+      metadata: {
+        retrievalEnabled: true,
+        retrievalUsed: true,
+        retrievalMode: 'lite',
+        evidenceCount: 1,
+        webUsed: false,
       },
-    ]);
+      evidenceCards: [
+        {
+          id: 'kb-1',
+          title: '현재 인프라 역할/트래픽 토폴로지 스냅샷',
+          summary: 'APP, DB, CACHE 트래픽 구조 설명',
+          score: 0.91,
+          sourceType: 'knowledge',
+          category: 'architecture',
+        },
+      ],
+    });
 
     const first = await searchKnowledgeBase.execute({
       query: '현재 인프라 토폴로지 알려줘',
@@ -186,11 +260,12 @@ describe('searchKnowledgeBase', () => {
     });
 
     expect(first).toEqual(second);
-    expect(mockEmbedText).toHaveBeenCalledTimes(1);
-    expect(mockHybridGraphSearch).toHaveBeenCalledTimes(1);
+    expect(mockRetrieveKnowledgeEvidence).toHaveBeenCalledTimes(1);
+    expect(mockEmbedText).not.toHaveBeenCalled();
+    expect(mockHybridGraphSearch).not.toHaveBeenCalled();
   });
 
-  it('emits sampled structured telemetry for production GraphRAG usage', async () => {
+  it('emits sampled structured telemetry for production Knowledge Retrieval Lite usage', async () => {
     const previousNodeEnv = process.env.NODE_ENV;
     const previousSampleRate = process.env.GRAPH_RAG_TELEMETRY_SAMPLE_RATE;
     process.env.NODE_ENV = 'production';
@@ -198,27 +273,36 @@ describe('searchKnowledgeBase', () => {
     vi.spyOn(Math, 'random').mockReturnValue(0);
 
     mockGetSupabaseClient.mockResolvedValue({} as never);
-    mockEmbedText.mockResolvedValue([0.1, 0.2, 0.3]);
-    mockHybridGraphSearch.mockResolvedValue([
-      {
-        id: 'kb-1',
-        title: 'Redis OOM 대응 가이드',
-        content: '메모리 사용률 임계치 초과 시 ...',
-        score: 0.93,
-        sourceType: 'vector',
-        hopDistance: 0,
-        category: 'incident',
+    mockRetrieveKnowledgeEvidence.mockResolvedValue({
+      success: true,
+      _source: 'Knowledge Retrieval Lite',
+      totalFound: 2,
+      metadata: {
+        retrievalEnabled: true,
+        retrievalUsed: true,
+        retrievalMode: 'lite',
+        evidenceCount: 2,
+        webUsed: false,
       },
-      {
-        id: 'kb-2',
-        title: 'Redis 캐시 정책',
-        content: 'eviction-policy 설정 확인',
-        score: 0.88,
-        sourceType: 'graph',
-        hopDistance: 1,
-        category: 'troubleshooting',
-      },
-    ]);
+      evidenceCards: [
+        {
+          id: 'kb-1',
+          title: 'Redis OOM 대응 가이드',
+          summary: '메모리 사용률 임계치 초과 시 ...',
+          score: 0.93,
+          sourceType: 'runbook',
+          category: 'incident',
+        },
+        {
+          id: 'kb-2',
+          title: 'Redis 캐시 정책',
+          summary: 'eviction-policy 설정 확인',
+          score: 0.88,
+          sourceType: 'knowledge',
+          category: 'troubleshooting',
+        },
+      ],
+    });
 
     await searchKnowledgeBase.execute({
       query: 'Redis OOM 원인 분석',
@@ -227,15 +311,16 @@ describe('searchKnowledgeBase', () => {
 
     expect(logger.warn).toHaveBeenCalledWith(
       expect.objectContaining({
-        event: 'graph_rag_search',
+        event: 'knowledge_retrieval_lite_search',
         component: 'reporter_tools',
         queryCategory: 'incident',
         cacheHit: false,
         success: true,
-        vectorResults: 1,
-        graphResults: 1,
+        retrievalMode: 'lite',
+        evidenceCount: 2,
+        webUsed: false,
       }),
-      '[Reporter Tools] GraphRAG telemetry',
+      '[Reporter Tools] Knowledge Retrieval Lite telemetry'
     );
 
     vi.restoreAllMocks();
