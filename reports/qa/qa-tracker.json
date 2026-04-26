@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-24T10:55:21.196Z"
+    "updatedAt": "2026-04-26T15:45:57.159Z"
   },
   "sequence": {
-    "nextRunNumber": 349
+    "nextRunNumber": 350
   },
   "summary": {
-    "totalRecordedRuns": 346,
-    "totalRuns": 281,
+    "totalRecordedRuns": 347,
+    "totalRuns": 282,
     "excludedRuns": 65,
-    "totalChecks": 2335,
-    "totalPassed": 2249,
+    "totalChecks": 2341,
+    "totalPassed": 2255,
     "totalFailed": 79,
     "completionRate": 100,
-    "completedItems": 339,
+    "completedItems": 340,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 17,
     "expertDomainsTracked": 10,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260424-0348",
-    "lastRecordedAt": "2026-04-24T10:55:21.196Z",
-    "latestRecordedRunId": "QA-20260424-0348",
-    "latestRecordedAt": "2026-04-24T10:55:21.196Z"
+    "lastRunId": "QA-20260427-0349",
+    "lastRecordedAt": "2026-04-26T15:45:57.159Z",
+    "latestRecordedRunId": "QA-20260427-0349",
+    "latestRecordedAt": "2026-04-26T15:45:57.159Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -8273,6 +8273,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-24T10:55:21.196Z"
+    },
+    "ai-sidebar-tool-ux-release-smoke-v81135": {
+      "id": "ai-sidebar-tool-ux-release-smoke-v81135",
+      "title": "AI sidebar tool/UX simplification v8.11.35 release smoke",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260427-0349",
+      "firstSeenAt": "2026-04-26T15:45:57.159Z",
+      "lastSeenRunId": "QA-20260427-0349",
+      "lastSeenAt": "2026-04-26T15:45:57.159Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production targeted smoke verified RAG/Web/심층 분석 badges, 18-server AI answer, and fullscreen handoff after v8.11.35 deployment.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-26T15:45:57.159Z"
     }
   },
   "runs": [
@@ -32689,6 +32713,145 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260427-0349",
+      "recordedAt": "2026-04-26T15:45:57.159Z",
+      "recordedAtKst": "2026-04-27 00:45:57 KST",
+      "title": "v8.11.35 AI Sidebar Tool UX Release Smoke",
+      "owner": "codex",
+      "source": "playwright-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260427-0349.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "J53YviW4J7jFfetXp4Su7JDLUaQG",
+        "deploymentUrl": "https://openmanager-q28kqr1ff-skyasus-projects.vercel.app",
+        "commitSha": "955bda49f26c49f107ac2d72023bc0099c2414b8"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "Vercel production /api/version returns 8.11.35",
+        "/login guest PIN flow reaches authenticated dashboard",
+        "/dashboard AI sidebar open on production",
+        "AI sidebar tool menu: RAG/Web/심층 분석 enabled badges",
+        "AI sidebar representative query after clarification returns 18-server operational summary",
+        "AI sidebar analysis basis shows server metrics tool and deep analysis mode",
+        "AI fullscreen handoff reaches /dashboard/ai-assistant and preserves conversation/tool badges",
+        "browser console errors/warnings: 0/0"
+      ],
+      "skippedSurfaces": [
+        "Broad landing/login/privacy/modal sweep intentionally skipped; latest broad baseline remains QA-20260415-0291",
+        "Reporter and Analyst advanced generation flows not in this targeted sidebar smoke",
+        "Cloud Run admin monitoring/traces not in this Vercel UI smoke; GitLab post_deploy_ai_engine_smoke passed separately",
+        "OAuth provider end-to-end login skipped; guest login was sufficient for sidebar smoke"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI sidebar release smoke query",
+          "agent": "AI Chat",
+          "provider": "cloud-run",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Playwright stopwatch; UI response badge showed 1871ms",
+          "latencyMs": 5092,
+          "processingTimeMs": 1871
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Release smoke covered AI sidebar tool option contract, clarification handling, operational answer quality, and analysis basis visibility on production.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright production automation produced durable summary and screenshot evidence for the targeted release scope.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab semver tag pipeline completed frontend deploy, AI Engine deploy, and post-deploy smoke jobs successfully before QA recording.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "AI answer used the current 18-server topology and surfaced 17 normal / 1 warning / 0 critical / 0 offline, matching the current contract shape.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-27T00:29:06+09:00",
+          "summary": "npm run check:usage:vercel passed after v8.11.35 deployment; current billing period effective=17.0653 USD, billed=0.0000 USD, chargeCount=15225.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "AI sidebar release smoke summary",
+          "path": "reports/qa/evidence/qa-20260427-ai-sidebar-release-smoke.md"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI fullscreen handoff after sidebar tool smoke",
+          "path": "reports/qa/evidence/qa-20260427-ai-sidebar-release-smoke.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.35 pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2480658654"
+        },
+        {
+          "type": "general",
+          "label": "Vercel production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel deployment URL",
+          "url": "https://openmanager-q28kqr1ff-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -32697,16 +32860,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 159,
-      "appropriateCount": 146,
+      "seenCount": 160,
+      "appropriateCount": 147,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 22,
-      "lastRunId": "QA-20260424-0348",
-      "lastSeenAt": "2026-04-24T10:55:21.196Z",
+      "lastRunId": "QA-20260427-0349",
+      "lastSeenAt": "2026-04-26T15:45:57.159Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Vercel production Playwright run passed starter and direct prompt AI parity assertions against the current dashboard status snapshot.",
+      "lastRationale": "Release smoke covered AI sidebar tool option contract, clarification handling, operational answer quality, and analysis basis visibility on production.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -32748,16 +32911,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 92,
-      "appropriateCount": 81,
+      "seenCount": 93,
+      "appropriateCount": 82,
       "partialCount": 11,
       "inappropriateCount": 0,
       "improvementNeededCount": 15,
-      "lastRunId": "QA-20260424-0346",
-      "lastSeenAt": "2026-04-24T09:25:23.818Z",
+      "lastRunId": "QA-20260427-0349",
+      "lastSeenAt": "2026-04-26T15:45:57.159Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Vercel deployment is READY, production URL is reachable, usage guard passed, and QA load was run with a single worker to reduce production impact.",
+      "lastRationale": "GitLab semver tag pipeline completed frontend deploy, AI Engine deploy, and post-deploy smoke jobs successfully before QA recording.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -32765,16 +32928,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 129,
-      "appropriateCount": 120,
+      "seenCount": 130,
+      "appropriateCount": 121,
       "partialCount": 9,
       "inappropriateCount": 0,
       "improvementNeededCount": 11,
-      "lastRunId": "QA-20260424-0346",
-      "lastSeenAt": "2026-04-24T09:25:23.818Z",
+      "lastRunId": "QA-20260427-0349",
+      "lastSeenAt": "2026-04-26T15:45:57.159Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP manual coverage plus Vercel Playwright E2E covered dashboard buttons, modal flows, AI sidebar surface, and mobile responsiveness with no failed checks.",
+      "lastRationale": "Playwright production automation produced durable summary and screenshot evidence for the targeted release scope.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -32782,16 +32945,16 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 35,
-      "appropriateCount": 18,
+      "seenCount": 36,
+      "appropriateCount": 19,
       "partialCount": 17,
       "inappropriateCount": 0,
       "improvementNeededCount": 17,
-      "lastRunId": "QA-20260424-0348",
-      "lastSeenAt": "2026-04-24T10:55:21.196Z",
+      "lastRunId": "QA-20260427-0349",
+      "lastSeenAt": "2026-04-26T15:45:57.159Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Dashboard status parsing now preserves source/slot metadata, and the targeted production AI parity run validates AI response counts against the captured dashboard snapshot path.",
+      "lastRationale": "AI answer used the current 18-server topology and surfaced 17 normal / 1 warning / 0 critical / 0 offline, matching the current contract shape.",
       "lastNextAction": ""
     },
     "infra-reliability": {

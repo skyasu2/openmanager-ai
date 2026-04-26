@@ -1,6 +1,6 @@
 > Owner: project
-> Status: Approved
-> Last reviewed: 2026-04-26
+> Status: Completed
+> Last reviewed: 2026-04-27
 
 # AI Sidebar Tool and UX Simplification Plan
 
@@ -326,6 +326,12 @@ refactor: extract shared ai chat surface contract
 2026-04-26 추가 리뷰 후속:
 - `useAIChatSurface`의 Web/RAG 토글을 함수형 store update로 바꿔 연속 클릭 race 가능성을 줄였다.
 - `AISidebarV4` 모바일 기능 전환은 chat/non-chat 공통 상단 영역에 고정하고, 콘텐츠 영역은 `min-h-0 flex-1`로 분리해 입력창과 높이 충돌하지 않도록 했다.
+
+2026-04-27 release QA:
+- `v8.11.35` semver tag pipeline으로 Frontend와 AI Engine production deploy를 완료했다.
+- GitLab pipeline `2480658654`는 `deploy`, `deploy_ai_engine`, `post_deploy_smoke`, `post_deploy_ai_engine_smoke` 모두 성공했다.
+- Vercel production targeted smoke `QA-20260427-0349`로 AI sidebar RAG/Web/심층 분석 badge, 18대 서버 기준 답변, analysis basis, fullscreen handoff를 확인했다.
+- Vercel usage check는 billed `$0.0000`으로 정상이며, QA evidence audit는 missing artifact `0`을 유지했다.
 
 ## 8. 완료 조건
 

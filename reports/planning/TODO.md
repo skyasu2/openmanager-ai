@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-26 KST (`Post-review AI contract hardening`)
+**Last Updated**: 2026-04-27 KST (`AI sidebar tool/UX release QA complete`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI sidebar tool/UX simplification | High | release-qa-pending | RAG/Web/Thinking 계약 일관성, used/suppressed/unavailable 상태 분리, provider model drift guard, Cerebras Qwen deprecation/context guard, icon rail 장식 신호 축소, mobile chat-first 기능 전환, fullscreen 중복 배선 정리 완료. 남은 것은 다음 release/tag 배포 후 Vercel 단일 smoke 및 QA tracker 기록이다. 상세: [ai-sidebar-tool-ux-simplification-plan.md](ai-sidebar-tool-ux-simplification-plan.md) |
+| _None_ | — | — | Active 작업 없음. 최신 완료: v8.11.35 release/tag 배포 및 AI sidebar targeted production QA `QA-20260427-0349`. |
 
 ---
 
@@ -31,6 +31,22 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-27 #203)
+- [x] AI sidebar tool/UX simplification release QA 완료
+  - `v8.11.35` patch release commit/tag를 생성하고 GitLab canonical remote에 push
+  - protected semver tag pipeline이 `wsl2-docker` runner를 사용할 수 있도록 runner `access_level=ref_protected`로 정렬
+  - GitLab tag pipeline `2480658654` 성공 확인: `deploy`, `deploy_ai_engine`, `post_deploy_smoke`, `post_deploy_ai_engine_smoke` 모두 통과
+  - Vercel production `/api/version`이 `8.11.35`를 반환하는 것을 release smoke에서 확인
+  - Production Playwright targeted smoke `QA-20260427-0349` 기록:
+    - guest login → dashboard
+    - AI sidebar open
+    - RAG/Web/심층 분석 enabled badges
+    - 18대 서버 기준 AI 답변
+    - analysis basis 및 fullscreen handoff 보존
+  - Vercel usage check: effective `$17.0653`, billed `$0.0000`, unexpected billed usage 없음
+  - QA tracker: completed `340`, pending `0`, active gate warning 없음
+  - Evidence audit: missing artifact `0`, recent counted run artifact warning `0`, 기존 storage size warning만 유지
 
 ### Completed (2026-04-26 #202)
 - [x] Post-review AI contract hardening

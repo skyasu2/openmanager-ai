@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-24 21:31:35 KST
+> Generated at: 2026-04-27 00:45:57 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 346 |
-| Total Runs (Counted) | 281 |
+| Total Recorded Runs | 347 |
+| Total Runs (Counted) | 282 |
 | Non-counted Runs | 65 |
-| Total Checks | 2335 |
-| Passed | 2249 |
+| Total Checks | 2341 |
+| Passed | 2255 |
 | Failed | 79 |
-| Completed Items | 339 |
+| Completed Items | 340 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 17 |
 | Expert Domains Tracked | 10 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260424-0348 (2026-04-24T10:55:21.196Z) |
-| Latest Recorded Run | QA-20260424-0348 (2026-04-24T10:55:21.196Z) |
+| Last Counted Run | QA-20260427-0349 (2026-04-26T15:45:57.159Z) |
+| Latest Recorded Run | QA-20260427-0349 (2026-04-26T15:45:57.159Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,51 +34,55 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260424-0348 (2026-04-24T10:55:21.196Z)
+Latest run: QA-20260427-0349 (2026-04-26T15:45:57.159Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 | Data Quality & Metrics Analyst | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | npm run check:usage:vercel passed before targeted AI slot provenance QA; current billing period effective=15.7313 USD, billed=0.0000 USD, chargeCount=14007. |
+| vercel | cli | checked | normal | npm run check:usage:vercel passed after v8.11.35 deployment; current billing period effective=17.0653 USD, billed=0.0000 USD, chargeCount=15225. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-23T10:55:21.196Z -> 2026-04-24T10:55:21.196Z (24h)
-- Runs with observations: 3 recorded / 3 counted
-- Samples: 5
+- Window: 2026-04-25T15:45:57.159Z -> 2026-04-26T15:45:57.159Z (24h)
+- Runs with observations: 1 recorded / 1 counted
+- Samples: 1
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| AI Chat | cloud-run | 5 | 2659ms | 9495ms | 370ms | 487ms | 7108ms | 19421ms | QA-20260424-0343 |
+| AI Chat | cloud-run | 1 | 5092ms | 5092ms | - | - | 1871ms | 1871ms | QA-20260427-0349 |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
+- Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_Ab1ZA6FUYvA4LE67mWidSFvPvYP2 / SHA 31431ace
+- Deployment: J53YviW4J7jFfetXp4Su7JDLUaQG / SHA 955bda49
 - Coverage Packs: dashboard-core, ai-core
-- Covered Surfaces: /dashboard guest-authenticated dashboard status snapshot parsing, AI sidebar starter prompt dashboard count parity assertion, AI sidebar direct current-state query dashboard count parity assertion, Dashboard snapshot dataSource/dataSlot QA evidence path
-- Skipped Surfaces: Broad frontend UI/UX modal sweep already covered by QA-20260424-0346, Core route console follow-up already covered by QA-20260424-0347, Reporter Agent and Analyst Agent advanced generation flows, OAuth provider end-to-end login
+- Covered Surfaces: Vercel production /api/version returns 8.11.35, /login guest PIN flow reaches authenticated dashboard, /dashboard AI sidebar open on production, AI sidebar tool menu: RAG/Web/심층 분석 enabled badges, AI sidebar representative query after clarification returns 18-server operational summary, AI sidebar analysis basis shows server metrics tool and deep analysis mode, AI fullscreen handoff reaches /dashboard/ai-assistant and preserves conversation/tool badges, browser console errors/warnings: 0/0
+- Skipped Surfaces: Broad landing/login/privacy/modal sweep intentionally skipped; latest broad baseline remains QA-20260415-0291, Reporter and Analyst advanced generation flows not in this targeted sidebar smoke, Cloud Run admin monitoring/traces not in this Vercel UI smoke; GitLab post_deploy_ai_engine_smoke passed separately, OAuth provider end-to-end login skipped; guest login was sufficient for sidebar smoke
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
+| general | GitLab v8.11.35 pipeline | [GitLab v8.11.35 pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2480658654) | - |
 | general | Vercel production URL | [Vercel production URL](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Vercel deployment URL | [Vercel deployment URL](https://openmanager-q87lt2d2i-skyasus-projects.vercel.app/) | - |
+| vercel-deployment | Vercel deployment URL | [Vercel deployment URL](https://openmanager-q28kqr1ff-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-report | Production AI slot provenance CLI summary | `reports/qa/evidence/qa-20260424-ai-slot-provenance-cli.md` | - |
+| playwright-report | AI sidebar release smoke summary | `reports/qa/evidence/qa-20260427-ai-sidebar-release-smoke.md` | - |
+| playwright-screenshot | AI fullscreen handoff after sidebar tool smoke | `reports/qa/evidence/qa-20260427-ai-sidebar-release-smoke.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -193,6 +197,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-sidebar-right-panel: AI 우측 패널 기능 메뉴 (completed 1회, last QA-20260317-0114)
 - ai-sidebar-starters: AI 스타터 프롬프트 5개 (completed 1회, last QA-20260317-0114)
 - ai-sidebar-toggle: AI 사이드바 AI Engine Ready (completed 2회, last QA-20260419-0306)
+- ai-sidebar-tool-ux-release-smoke-v81135: AI sidebar tool/UX simplification v8.11.35 release smoke (completed 1회, last QA-20260427-0349)
 - ai-sidebar-tools-menu: AI 도구 메뉴 (completed 1회, last QA-20260317-0114)
 - ai-starter-summary-parity-guard: AI starter/direct dashboard count parity E2E guard (completed 1회, last QA-20260424-0344)
 - ai-starter-summary-parity-guard-final-hardening: AI parity guard dynamic total and label-boundary hardening (completed 1회, last QA-20260424-0345)
@@ -496,6 +501,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260427-0349 | 2026-04-26T15:45:57.159Z | targeted | yes | yes | v8.11.35 AI Sidebar Tool UX Release Smoke | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260424-0348 | 2026-04-24T10:55:21.196Z | targeted | no | yes | Production Playwright E2E - AI slot provenance parity validation | 2 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260424-0347 | 2026-04-24T09:40:49.104Z | targeted | no | no | Vercel core routes follow-up for frontend UIUX QA review | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260424-0346 | 2026-04-24T09:25:23.818Z | broad | yes | yes | Vercel Playwright QA - Frontend Buttons Modals UIUX Sweep | 31 | 0 | 0 | 0 | 0 | 1 |
@@ -515,4 +521,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260423-0332 | 2026-04-22T15:20:28.286Z | targeted | no | no | Vercel targeted QA - AI workspace dashboard return worker fallback resolved | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260422-0331 | 2026-04-22T14:47:29.748Z | targeted | no | no | Local dev browser verification - AI workspace dashboard return worker fallback | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260422-0330 | 2026-04-22T14:14:24.057Z | broad | no | yes | Vercel Playwright broad QA - core routes, dashboard, AI workspace recheck | 15 | 0 | 1 | 0 | 0 | 1 |
-| QA-20260422-0329 | 2026-04-22T09:03:48.553Z | targeted | no | no | Local dev turbopack trace - Tailwind source scope fix | 4 | 2 | 0 | 0 | 0 | 0 |
