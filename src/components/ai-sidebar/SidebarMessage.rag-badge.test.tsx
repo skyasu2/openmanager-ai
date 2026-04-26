@@ -137,6 +137,38 @@ describe('SidebarMessage RAG badge smoke integration', () => {
     ).toBeInTheDocument();
   });
 
+  it('renders allowed and suppressed feature states without claiming usage', () => {
+    const assistantMessage: EnhancedChatMessage = {
+      id: 'a-status',
+      role: 'assistant',
+      content: '현재 답변은 실시간 데이터만으로 충분합니다.',
+      timestamp: new Date('2026-04-25T00:00:00.000Z'),
+      metadata: {
+        analysisBasis: {
+          dataSource: '일반 대화 응답 (RAG 활성)',
+          engine: 'Streaming AI',
+          ragUsed: false,
+          analysisMode: 'thinking',
+          featureStatus: {
+            rag: { status: 'suppressed', reason: 'not_needed' },
+            web: { status: 'enabled' },
+            thinking: { status: 'enabled', reason: 'routing_mode' },
+          },
+        },
+      },
+    };
+
+    render(
+      <MessageComponent message={assistantMessage} isLastMessage={true} />
+    );
+
+    expect(screen.getByText('RAG 생략됨')).toBeInTheDocument();
+    expect(screen.getByText('Web 허용')).toBeInTheDocument();
+    expect(screen.getByText('심층 분석 요청됨')).toBeInTheDocument();
+    expect(screen.queryByText('RAG 사용됨')).not.toBeInTheDocument();
+    expect(screen.queryByText('Web 사용됨')).not.toBeInTheDocument();
+  });
+
   it('renders parity metadata inside the analysis basis panel for short streaming answers', () => {
     const messages = transformMessages(
       [

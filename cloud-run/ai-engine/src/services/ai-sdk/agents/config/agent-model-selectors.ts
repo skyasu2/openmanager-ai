@@ -22,6 +22,7 @@ import {
 } from '../../model-provider-core';
 import { checkProviderStatus } from '../../model-provider-status';
 import type { ModelCapabilities, ProviderName } from '../../model-provider.types';
+import { getAgentProviderOrder } from './agent-runtime-policy';
 
 export interface ModelResult {
   model: LanguageModel;
@@ -171,7 +172,7 @@ export function selectTextModel(
  * NLQ model: Groq(llama-4-scout) → Cerebras(Qwen→llama3.1-8b) → Mistral
  */
 export function getNlqModel(): ModelResult | null {
-  return selectTextModel('NLQ Agent', ['groq', 'cerebras', 'mistral'], {
+  return selectTextModel('NLQ Agent', getAgentProviderOrder('NLQ Agent'), {
     requiredCapabilities: { requireToolCalling: true },
   });
 }
@@ -180,7 +181,7 @@ export function getNlqModel(): ModelResult | null {
  * Analyst model: Groq(llama-4-scout) → Cerebras(Qwen→llama3.1-8b) → Mistral
  */
 export function getAnalystModel(): ModelResult | null {
-  return selectTextModel('Analyst Agent', ['groq', 'cerebras', 'mistral'], {
+  return selectTextModel('Analyst Agent', getAgentProviderOrder('Analyst Agent'), {
     requiredCapabilities: { requireToolCalling: true },
   });
 }
@@ -189,7 +190,7 @@ export function getAnalystModel(): ModelResult | null {
  * Reporter model: Groq(llama-4-scout) → Cerebras(Qwen→llama3.1-8b) → Mistral
  */
 export function getReporterModel(): ModelResult | null {
-  return selectTextModel('Reporter Agent', ['groq', 'cerebras', 'mistral'], {
+  return selectTextModel('Reporter Agent', getAgentProviderOrder('Reporter Agent'), {
     requiredCapabilities: { requireToolCalling: true },
   });
 }
@@ -198,7 +199,7 @@ export function getReporterModel(): ModelResult | null {
  * Advisor model: Groq(llama-4-scout) → Cerebras(Qwen→llama3.1-8b) → Mistral
  */
 export function getAdvisorModel(): ModelResult | null {
-  return selectTextModel('Advisor Agent', ['groq', 'cerebras', 'mistral'], {
+  return selectTextModel('Advisor Agent', getAgentProviderOrder('Advisor Agent'), {
     requiredCapabilities: { requireToolCalling: true },
   });
 }

@@ -9,6 +9,10 @@ import type {
   ToolResultSummary,
 } from '@/stores/useAISidebarStore';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
+import type {
+  AnalysisFeatureStatus,
+  RetrievalMetadata,
+} from '@/types/ai/retrieval-status';
 import type { AIThinkingStep } from '@/types/ai-sidebar/ai-sidebar-types';
 
 export type RagSource = {
@@ -22,6 +26,10 @@ export type RagSource = {
 export type MessageMetadata = {
   traceId?: string;
   ragSources?: RagSource[];
+  retrieval?: RetrievalMetadata;
+  featureStatus?: AnalysisFeatureStatus;
+  enableRAG?: boolean;
+  enableWebSearch?: boolean | 'auto';
   toolsCalled?: string[];
   analysisMode?: AnalysisMode;
   processingTime?: number;
@@ -275,7 +283,7 @@ export function isToolPartWithCallId(
   );
 }
 
-function extractToolOutput(toolPart: ToolPartWithCallId): unknown {
+export function extractToolOutput(toolPart: ToolPartWithCallId): unknown {
   return toolPart.output ?? toolPart.result;
 }
 

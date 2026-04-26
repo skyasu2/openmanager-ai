@@ -34,6 +34,16 @@ describe('provider model metadata', () => {
     expect(metadata.deprecationDate).toBe(CEREBRAS_QWEN_DEPRECATION_DATE);
     expect(metadata.recommendedReplacement).toBe(CEREBRAS_LLAMA_FALLBACK_MODEL_ID);
     expect(metadata.contextWindowTokens).toBe(65_536);
+    expect(metadata.enabled).toBe(true);
+    expect(metadata.toolCallingEnabled).toBe(true);
+    expect(metadata.structuredOutputEnabled).toBe(true);
+    expect(metadata.smokeStatus).toBe('green');
+    expect(metadata.quota).toMatchObject({
+      requestsPerMinute: 5,
+      tokensPerMinute: 30_000,
+      requestsPerDay: 14_400,
+      tokensPerDay: 1_000_000,
+    });
   });
 
   it('keeps llama3.1-8b as intra-Cerebras fallback metadata only', () => {
@@ -48,15 +58,21 @@ describe('provider model metadata', () => {
       preview: false,
       deprecated: false,
       deprecationDate: CEREBRAS_QWEN_DEPRECATION_DATE,
+      enabled: true,
+      smokeStatus: 'green',
     });
+    expect(metadata.quota.requestsPerMinute).toBe(30);
+    expect(metadata.quota.tokensPerMinute).toBe(60_000);
   });
 
   it('marks GPT-OSS as excluded from free-tier runtime candidates', () => {
     const metadata = getCerebrasModelMetadata(CEREBRAS_GPT_OSS_MODEL_ID);
 
     expect(metadata.role).toContain('excluded');
-    expect(metadata.lifecycle).toBe('custom');
+    expect(metadata.lifecycle).toBe('production');
     expect(metadata.productionModel).toBe(false);
+    expect(metadata.enabled).toBe(false);
+    expect(metadata.smokeStatus).toBe('red');
     expect(metadata.freeTierLimitSummary).toContain('not in free-tier runtime');
   });
 
@@ -67,6 +83,7 @@ describe('provider model metadata', () => {
 
     expect(metadata.map((entry) => entry.provider)).toEqual([
       'groq',
+      'cerebras',
       'cerebras',
       'mistral',
       'gemini',
@@ -79,12 +96,23 @@ describe('provider model metadata', () => {
       productionModel: false,
       preview: true,
     });
-    expect(metadata.find((entry) => entry.provider === 'cerebras')).toMatchObject({
+    expect(
+      metadata.find((entry) => entry.modelId === CEREBRAS_QWEN_MODEL_ID)
+    ).toMatchObject({
       modelId: CEREBRAS_QWEN_MODEL_ID,
       lifecycle: 'preview',
       productionModel: false,
       preview: true,
+      smokeStatus: 'green',
       recommendedReplacement: CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
+    });
+    expect(
+      metadata.find((entry) => entry.modelId === CEREBRAS_LLAMA_FALLBACK_MODEL_ID)
+    ).toMatchObject({
+      modelId: CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
+      role: 'intra-Cerebras fallback',
+      lifecycle: 'production',
+      smokeStatus: 'green',
     });
     expect(metadata.find((entry) => entry.provider === 'gemini')).toMatchObject({
       modelId: 'gemini-2.5-flash-lite',

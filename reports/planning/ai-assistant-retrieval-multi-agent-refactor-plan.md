@@ -493,20 +493,20 @@ interface ProviderModelPolicy {
 
 ### 테스트 시나리오
 
-- [ ] RAG off: `searchKnowledgeBase` 또는 retrieval tool이 active tools에서 제거된다.
+- [x] RAG off: `searchKnowledgeBase` 또는 retrieval tool이 active tools에서 제거된다.
 - [x] RAG on: Knowledge Retrieval Lite는 실행되지만 `mistral-embed`를 호출하지 않는다.
 - [x] RAG on: `traverse_knowledge_graph` RPC를 호출하지 않는다.
 - [x] topology/direct KB path: `useGraphRAG: true` 없이 deterministic evidence response를 만든다.
 - [x] Web on: Tavily는 Web policy 경로에서만 호출되고 RAG 내부 fallback으로 호출되지 않는다.
 - [x] Web off: retrieval 결과 부족 시에도 Tavily를 호출하지 않는다.
-- [ ] 심층 분석: `analysisMode='thinking'`은 deep routing metadata를 남기지만 provider-native reasoning으로 표시하지 않는다.
-- [ ] frontend badge: RAG 허용과 RAG 사용됨을 구분한다.
+- [x] 심층 분석: `analysisMode='thinking'`은 deep routing metadata를 남기지만 provider-native reasoning으로 표시하지 않는다.
+- [x] frontend badge: RAG 허용과 RAG 사용됨을 구분한다.
 - [x] response metadata: `retrievalEnabled`, `retrievalUsed`, `retrievalMode`, `suppressedReason`, `evidenceCount`를 포함한다.
-- [ ] provider chain: Mistral은 text fallback으로 남고 RAG provider로 표시되지 않는다.
-- [ ] Cerebras Qwen: direct text, structured output, forced tool call smoke 결과를 근거로 model metadata가 green으로 표시된다.
-- [ ] Cerebras fallback: Qwen quota/circuit/deprecation block 시 `llama3.1-8b`로 fallback하고, `llama3.1-8b`도 실패하면 기존 provider chain으로 이동한다.
-- [ ] Cerebras quota: Qwen은 provider 공통 `30 RPM / 60K TPM`이 아니라 계정 Limits 기준 보수값으로 pre-emptive fallback 된다.
-- [ ] Cerebras deprecation: 2026-05-27 이후 Qwen/`llama3.1-8b`가 기본 runtime model로 선택되지 않는 guard test가 있다.
+- [x] provider chain: Mistral은 text fallback으로 남고 RAG provider로 표시되지 않는다.
+- [x] Cerebras Qwen: direct text, structured output, forced tool call smoke 결과를 근거로 model metadata가 green으로 표시된다.
+- [x] Cerebras fallback: Qwen quota/circuit/deprecation block 시 `llama3.1-8b`로 fallback하고, `llama3.1-8b`도 실패하면 기존 provider chain으로 이동한다.
+- [x] Cerebras quota: Qwen은 provider 공통 `30 RPM / 60K TPM`이 아니라 계정 Limits 기준 보수값으로 pre-emptive fallback 된다.
+- [x] Cerebras deprecation: 2026-05-27 이후 Qwen/`llama3.1-8b`가 기본 runtime model로 선택되지 않는 guard test가 있다.
 - [ ] Tool loop: Qwen forced tool call 뒤 final text 공백이면 deterministic summary/finalAnswer 재합성 또는 provider fallback이 동작한다.
 - [x] Cloud Run contract: retrieval 기본 경로가 runtime embedding/graph traversal/background worker를 요구하지 않는다.
 - [x] Cloud Run contract: 구현이나 문서가 Cloud Run 스펙 증설, min instances, paid always-on worker를 전제로 하지 않는다.
@@ -544,12 +544,18 @@ interface ProviderModelPolicy {
 - [x] Task 4 - `searchKnowledgeBase`를 retrieval lite adapter로 교체
   - 완료 기준: tool 이름 호환은 유지하되 내부 구현은 `retrieveKnowledgeEvidence`를 사용한다.
   - 완료 기록(2026-04-26): `searchKnowledgeBase` tool은 이름과 legacy boolean input 호환을 유지하면서 내부 GraphRAG/vector/Tavily fallback 경로를 제거하고 `retrieveKnowledgeEvidence` adapter로 교체했다. `useGraphRAG`, `fastMode`, `includeWebSearch`는 호환 입력으로만 유지하며 Lite retrieval에서는 graph/web fallback을 호출하지 않는다.
-- [ ] Task 5 - multi-agent runtime policy SSOT 도입
+- [x] Task 5 - multi-agent runtime policy SSOT 도입
   - 완료 기준: agent별 provider order, maxSteps, tool allowlist, evidence budget이 한 곳에서 관리된다.
-- [ ] Task 5A - provider model policy SSOT 도입
+  - 완료 기록(2026-04-26): `agent-runtime-policy.ts`를 추가해 text agent provider order, Orchestrator structured-output order, Vision native provider order, agent별 `maxSteps`, evidence budget, tool allowlist를 SSOT로 고정했다. `AGENT_CONFIGS`, agent model selectors, orchestrator forced routing/direct KB evidence cap이 이 정책을 참조하도록 정리했고, Mistral은 text fallback으로만 남도록 회귀 테스트를 추가했다.
+- [x] Task 5A - provider model policy SSOT 도입
   - 완료 기준: Cerebras Qwen/8B의 role, lifecycle, quota, deprecation, smoke status가 한 곳에서 관리된다.
-- [ ] Task 6 - frontend status contract 정리
+  - 완료 기록(2026-04-26): `provider-model-policy.ts`를 추가해 Cerebras Qwen primary, `llama3.1-8b` intra-provider fallback, GPT-OSS free-tier 제외, account Limits quota, deprecation block date, smoke status/evidence를 SSOT로 고정했다. `config-parser`는 상수 re-export만 유지하고, `provider-model-metadata`와 `quota-tracker`는 policy를 참조하도록 정리했다. provider route와 frontend tech stack의 Mistral/RAG stale 설명도 text fallback 기준으로 갱신했다.
+- [x] Task 6 - frontend status contract 정리
   - 완료 기준: UI가 `enabled`, `used`, `suppressed`, `unavailable`을 구분한다.
+  - 완료 기록(2026-04-26): frontend `retrieval-status` 타입/파생 유틸을 추가하고 `AnalysisBasis`에 `retrieval`/`featureStatus`를 보존했다. streaming done, async job result, chat history restore 경로에서 retrieval metadata를 유지하며 `RAG/Web/심층 분석` 뱃지가 `허용`, `사용됨`, `생략됨`, `사용 불가`를 구분하도록 정리했다. Cloud Run jobs 저장 경로도 `metadata.retrieval`을 보존한다.
+- [x] Task 6A - legacy compatibility boundary registry 정리
+  - 완료 기준: GraphRAG 제거 후 남겨야 하는 legacy 호환 지점은 contract registry로 격리하고, active runtime에 `useGraphRAG`나 `GRAPH_RAG_TELEMETRY_SAMPLE_RATE`가 재침투하지 않도록 guard한다.
+  - 완료 기록(2026-04-26): `legacy-contracts.ts`를 추가해 `/api/ai/graphrag/*` gone shim, `searchKnowledgeBase.useGraphRAG` compat-only 입력, `ragSources` migration bridge를 SSOT로 등록했다. `/graphrag/*` 410 payload와 `useGraphRAG` schema 설명은 contract를 참조하고, `knowledge-runtime-cleanup.test.ts`가 허용 경계 밖의 legacy token 재도입을 차단한다.
 - [ ] Task 7 - docs/data stale 표현 정리
   - 완료 기준: GraphRAG/Mistral RAG 중심 표현이 Knowledge Retrieval Lite 중심으로 바뀐다.
 - [ ] Task 8 - 검증 및 QA 기록
@@ -560,9 +566,10 @@ interface ProviderModelPolicy {
 - [x] `cloud-run/ai-engine` type-check 통과
 - [x] root type-check 통과
 - [x] retrieval 관련 unit/contract tests 통과
-- [ ] frontend RAG/Web/analysis mode status tests 통과
-- [ ] provider/model drift guard 통과
-- [ ] Cerebras Qwen primary / llama3.1-8b intra-fallback model-aware quota/deprecation guard 통과
+- [x] frontend RAG/Web/analysis mode status tests 통과
+- [x] legacy compatibility registry 및 active runtime guard 통과
+- [x] provider/model drift guard 통과
+- [x] Cerebras Qwen primary / llama3.1-8b intra-fallback model-aware quota/deprecation guard 통과
 - [ ] Qwen tool-call final text fallback 또는 재합성 계약 테스트 통과
 - [ ] docs/data stale reference guard 통과
 - [x] `git diff --check` 통과

@@ -15,10 +15,14 @@ import { getRedisClient } from '../../lib/redis-client';
 import { logger } from '../../lib/logger';
 import {
   getCerebrasFallbackModelIds,
-  CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
-  CEREBRAS_QWEN_MODEL_ID,
   getCerebrasModelId,
 } from '../../lib/config-parser';
+import {
+  CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
+  CEREBRAS_QWEN_MODEL_ID,
+  getCerebrasModelPolicy,
+  type CerebrasRuntimeModelId,
+} from '../ai-sdk/provider-model-policy';
 
 // ============================================================================
 // Types
@@ -37,9 +41,7 @@ export interface ProviderQuota {
   requestsPerDay?: number;
 }
 
-export type CerebrasQuotaModelId =
-  | typeof CEREBRAS_QWEN_MODEL_ID
-  | typeof CEREBRAS_LLAMA_FALLBACK_MODEL_ID;
+export type CerebrasQuotaModelId = CerebrasRuntimeModelId;
 
 export interface ProviderUsage {
   dailyTokens: number;
@@ -65,22 +67,22 @@ export interface QuotaStatus {
 // Provider Quota 설정 (Free-tier production guard 기준)
 // ============================================================================
 
+function quotaFromModelPolicy(modelId: CerebrasQuotaModelId): ProviderQuota {
+  const quota = getCerebrasModelPolicy(modelId).quota;
+  return {
+    dailyTokenLimit: quota.tokensPerDay,
+    requestsPerMinute: quota.requestsPerMinute,
+    tokensPerMinute: quota.tokensPerMinute,
+    requestsPerDay: quota.requestsPerDay,
+  };
+}
+
 export const CEREBRAS_MODEL_QUOTAS: Record<CerebrasQuotaModelId, ProviderQuota> = {
   /**
    * Account Limits screen 기준. 공식 Free tier 표보다 계정별 제한을 우선한다.
    */
-  [CEREBRAS_QWEN_MODEL_ID]: {
-    dailyTokenLimit: 1_000_000,
-    requestsPerMinute: 5,
-    tokensPerMinute: 30_000,
-    requestsPerDay: 14_400,
-  },
-  [CEREBRAS_LLAMA_FALLBACK_MODEL_ID]: {
-    dailyTokenLimit: 1_000_000,
-    requestsPerMinute: 30,
-    tokensPerMinute: 60_000,
-    requestsPerDay: 14_400,
-  },
+  [CEREBRAS_QWEN_MODEL_ID]: quotaFromModelPolicy(CEREBRAS_QWEN_MODEL_ID),
+  [CEREBRAS_LLAMA_FALLBACK_MODEL_ID]: quotaFromModelPolicy(CEREBRAS_LLAMA_FALLBACK_MODEL_ID),
 };
 
 export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {

@@ -15,6 +15,10 @@ import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import { useShallow } from 'zustand/react/shallow';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
+import type {
+  AnalysisFeatureStatus,
+  RetrievalMetadata,
+} from '@/types/ai/retrieval-status';
 
 // AI Thinking Step 타입 import (ai-sidebar에서 제공)
 import type { AIThinkingStep } from '../types/ai-sidebar';
@@ -53,6 +57,10 @@ export interface AnalysisBasis {
     category?: string;
     url?: string;
   }>;
+  /** Retrieval execution contract from Cloud Run AI Engine */
+  retrieval?: RetrievalMetadata;
+  /** UI-facing status split: enabled vs used vs suppressed vs unavailable */
+  featureStatus?: AnalysisFeatureStatus;
   /** 사용자가 선택한 분석 강도 모드 */
   analysisMode?: AnalysisMode;
 }

@@ -10,6 +10,10 @@ import {
   normalizeAIResponse,
 } from '@/lib/ai/utils/message-normalizer';
 import {
+  buildAnalysisFeatureStatus,
+  normalizeRetrievalMetadata,
+} from '@/lib/ai/utils/retrieval-status';
+import {
   getToolDescription,
   getToolLabel,
 } from '@/lib/ai/utils/tool-presentation';
@@ -22,6 +26,7 @@ import type { AIThinkingStep } from '@/types/ai-sidebar/ai-sidebar-types';
 import type {
   DeferredToolResult,
   RagSource,
+  ToolPartWithCallId,
 } from './message-transform-internals';
 import {
   buildParityAwareAssistantResponseView,
@@ -30,6 +35,7 @@ import {
   createThinkingStepsFromSummaries,
   createThinkingStepsFromToolNames,
   dedupeToolNames,
+  extractToolOutput,
   getCompletedToolNames,
   getMessageMetadata,
   isServerAnalysisToolName,
@@ -41,6 +47,19 @@ import {
   reorderToolResultSummariesForDisplay,
   shouldPrioritizeMetricRankingPresentation,
 } from './message-transform-internals';
+
+function findRetrievalMetadataFromToolParts(toolParts: ToolPartWithCallId[]) {
+  for (const toolPart of toolParts) {
+    if (toolPart.type !== 'tool-searchKnowledgeBase') continue;
+    const output = extractToolOutput(toolPart);
+    if (!output || typeof output !== 'object') continue;
+    const retrieval = normalizeRetrievalMetadata(
+      (output as Record<string, unknown>).retrieval
+    );
+    if (retrieval) return retrieval;
+  }
+  return undefined;
+}
 
 // ============================================================================
 // ThinkingSteps 변환
@@ -110,6 +129,7 @@ export function transformUIMessageToEnhanced(
     traceIdByMessageId,
     streamRagSources,
     ragEnabled,
+    webSearchEnabled,
   } = options;
   const rawText = extractTextFromUIMessage(message);
   // 단일 정규화 지점: Cloud Run Agent가 { answer, confidence } JSON을 반환할 때
@@ -249,6 +269,28 @@ export function transformUIMessageToEnhanced(
     const hasKnowledgeSearch = Boolean(
       ragSources?.some((s) => s.sourceType !== 'web')
     );
+    const retrieval =
+      normalizeRetrievalMetadata(metadata?.retrieval) ??
+      findRetrievalMetadataFromToolParts(toolParts);
+    const effectiveRagEnabled =
+      typeof metadata?.enableRAG === 'boolean'
+        ? metadata.enableRAG
+        : ragEnabled;
+    const effectiveWebSearchEnabled =
+      metadata?.enableWebSearch !== undefined
+        ? metadata.enableWebSearch
+        : webSearchEnabled;
+    const featureStatus =
+      metadata?.featureStatus ??
+      buildAnalysisFeatureStatus({
+        retrieval,
+        ragEnabled: effectiveRagEnabled,
+        webSearchEnabled: effectiveWebSearchEnabled,
+        hasKnowledgeEvidence: hasKnowledgeSearch,
+        hasWebEvidence: hasWebSearch,
+        analysisMode: metadata?.analysisMode,
+      });
+    const retrievalIndicatesKnowledgeUse = Boolean(retrieval?.retrievalUsed);
 
     // dataSource 결정: 실제 도구 호출 기반 + 토글 상태 반영
     let dataSource: string;
@@ -256,9 +298,11 @@ export function transformUIMessageToEnhanced(
       dataSource = `웹 검색 (${webSources.length}건)`;
     } else if (hasRag) {
       dataSource = `RAG 지식베이스 검색 (${ragSources.length}건)`;
+    } else if (retrievalIndicatesKnowledgeUse) {
+      dataSource = `RAG 지식베이스 검색 (${retrieval?.evidenceCount ?? 0}건)`;
     } else if (hasServerAnalysisEvidence) {
       dataSource = '서버 실시간 데이터 분석';
-    } else if (ragEnabled) {
+    } else if (effectiveRagEnabled) {
       dataSource = '일반 대화 응답 (RAG 활성)';
     } else {
       dataSource = '일반 대화 응답';
@@ -267,10 +311,12 @@ export function transformUIMessageToEnhanced(
     analysisBasis = {
       dataSource,
       engine: isJobQueue ? 'Cloud Run AI' : 'Streaming AI',
-      ragUsed: hasKnowledgeSearch,
+      ragUsed: hasKnowledgeSearch || retrievalIndicatesKnowledgeUse,
       toolsCalled: calledToolNames.length > 0 ? calledToolNames : undefined,
       timeRange: hasServerAnalysisEvidence ? '최근 1시간' : undefined,
       ragSources: hasRag ? ragSources : undefined,
+      ...(retrieval && { retrieval }),
+      featureStatus,
       analysisMode: metadata?.analysisMode,
     };
   }

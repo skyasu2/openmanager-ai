@@ -6,6 +6,11 @@
 
 import { logger } from '@/lib/logging';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
+import type { AnalysisMode } from '@/types/ai/analysis-mode';
+import type {
+  AnalysisFeatureStatus,
+  RetrievalMetadata,
+} from '@/types/ai/retrieval-status';
 
 // ============================================================================
 // Constants
@@ -21,6 +26,9 @@ const HISTORY_EXPIRY_HOURS = 24;
 
 export interface StoredMessageMetadata {
   traceId?: string;
+  retrieval?: RetrievalMetadata;
+  featureStatus?: AnalysisFeatureStatus;
+  analysisMode?: AnalysisMode;
   toolsCalled?: string[];
   ragSources?: Array<{
     title: string;
@@ -119,6 +127,9 @@ export function saveChatHistory(
         );
         const storedMetadata: StoredMessageMetadata | undefined =
           metadata?.traceId ||
+          analysisBasis?.retrieval ||
+          analysisBasis?.featureStatus ||
+          analysisBasis?.analysisMode ||
           analysisBasis?.toolsCalled ||
           analysisBasis?.ragSources ||
           metadata?.assistantResponseView ||
@@ -127,6 +138,15 @@ export function saveChatHistory(
             metadata.toolResultSummaries.length > 0)
             ? {
                 ...(metadata?.traceId && { traceId: metadata.traceId }),
+                ...(analysisBasis?.retrieval && {
+                  retrieval: analysisBasis.retrieval,
+                }),
+                ...(analysisBasis?.featureStatus && {
+                  featureStatus: analysisBasis.featureStatus,
+                }),
+                ...(analysisBasis?.analysisMode && {
+                  analysisMode: analysisBasis.analysisMode,
+                }),
                 ...(analysisBasis?.toolsCalled && {
                   toolsCalled: analysisBasis.toolsCalled,
                 }),

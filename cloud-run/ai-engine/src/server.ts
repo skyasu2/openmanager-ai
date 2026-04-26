@@ -288,7 +288,8 @@ registerRoutes().catch((err) => {
   logger.error({ err }, 'Failed to register API routes');
 });
 
-// Periodic incident -> RAG backfill (lightweight, free-tier conscious)
+// Optional Knowledge Retrieval corpus sync. Disabled by default to keep the
+// Cloud Run request path stateless and free-tier friendly.
 setupIncidentRagBackfill();
 setupTopologyRagBackfill();
 

@@ -7,10 +7,10 @@
  * - Orchestrator: Rule-based + LLM routing using generateText
  *
  * Agents:
- * - NLQ Agent (Cerebras): Natural language query processing + summaries
- * - Analyst Agent (Cerebras text model): Anomaly detection, trend prediction
- * - Reporter Agent (Groq): Incident reports, timelines
- * - Advisor Agent (Mistral): Troubleshooting guides, RAG search
+ * - NLQ Agent (Groq -> Cerebras -> Mistral): Natural language query processing + summaries
+ * - Analyst Agent (Groq -> Cerebras -> Mistral): Anomaly detection, trend prediction
+ * - Reporter Agent (Groq -> Cerebras -> Mistral): Incident reports, timelines
+ * - Advisor Agent (Groq -> Cerebras -> Mistral): Troubleshooting guides, Knowledge Retrieval Lite
  * - Vision Agent (Gemini): Screenshot/image analysis
  * - Evaluator Agent: Report quality evaluation (internal)
  * - Optimizer Agent: Report quality improvement (internal)

@@ -11,6 +11,7 @@
 
 import { getRedisClient, redisGet, redisSet, redisDel } from './redis-client';
 import { logger } from './logger';
+import type { RetrievalMetadata } from './retrieval-contract';
 
 // ============================================================================
 // Types
@@ -43,6 +44,7 @@ export interface JobResult {
     analysisMode?: 'auto' | 'thinking';
     enableRAG?: boolean;
     enableWebSearch?: boolean | 'auto';
+    retrieval?: RetrievalMetadata;
     traceId?: string;
     handoffs?: Array<{ from: string; to: string; reason?: string }>;
     toolResultSummaries?: Array<{

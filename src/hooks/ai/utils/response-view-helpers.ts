@@ -1,5 +1,7 @@
 import type { StructuredAssistantResponse } from '@/lib/ai/utils/assistant-response-view';
 import { resolveAssistantResponseView } from '@/lib/ai/utils/assistant-response-view';
+import { normalizeRetrievalMetadata } from '@/lib/ai/utils/retrieval-status';
+import type { RetrievalMetadata } from '@/types/ai/retrieval-status';
 import type { StreamRagSource } from '../types/stream-rag.types';
 
 export type ResponseSourceData = {
@@ -165,4 +167,19 @@ export function extractModeSelectionSourceFromDoneData(
   }
 
   return undefined;
+}
+
+export function extractRetrievalMetadataFromDoneData(
+  doneData: ResponseSourceData | undefined
+): RetrievalMetadata | undefined {
+  if (!doneData) return undefined;
+
+  const direct = normalizeRetrievalMetadata(
+    (doneData as Record<string, unknown>).retrieval
+  );
+  if (direct) return direct;
+
+  return normalizeRetrievalMetadata(
+    getNestedMetadataValue(doneData, 'retrieval')
+  );
 }

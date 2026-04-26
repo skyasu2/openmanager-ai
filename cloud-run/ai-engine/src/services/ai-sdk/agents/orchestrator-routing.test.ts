@@ -54,6 +54,18 @@ vi.mock('./config', () => ({
       getModel: vi.fn(() => ({ provider: 'cerebras' })),
     },
   },
+  getAgentEvidenceBudget: vi.fn((agentName: string) =>
+    agentName === 'Reporter Agent' ? 6 : agentName === 'Advisor Agent' ? 5 : 3
+  ),
+  getAgentMaxSteps: vi.fn((agentName: string) =>
+    agentName === 'Analyst Agent' || agentName === 'Reporter Agent'
+      ? 10
+      : agentName === 'Vision Agent'
+        ? 5
+        : 7
+  ),
+  getAgentProviderOrder: vi.fn(() => ['groq', 'cerebras', 'mistral']),
+  getOrchestratorProviderOrder: vi.fn(() => ['cerebras', 'groq', 'mistral']),
   getAgentConfig: (name: string) =>
     name === 'NLQ Agent'
       ? {
@@ -189,7 +201,7 @@ describe('executeForcedRouting', () => {
   it('returns expanded max steps only for Analyst/Reporter agents', () => {
     expect(getAgentMaxSteps('NLQ Agent')).toBe(7);
     expect(getAgentMaxSteps('Advisor Agent')).toBe(7);
-    expect(getAgentMaxSteps('Vision Agent')).toBe(7);
+    expect(getAgentMaxSteps('Vision Agent')).toBe(5);
     expect(getAgentMaxSteps('Analyst Agent')).toBe(10);
     expect(getAgentMaxSteps('Reporter Agent')).toBe(10);
   });
@@ -507,9 +519,9 @@ describe('executeForcedRouting', () => {
     expect(result?.response).toContain('해결/권장 조치');
     expect(result?.response).toContain('`getServerMetrics`');
     expect(mockGenerateTextWithRetry).not.toHaveBeenCalled();
-    expect(mockSearchKnowledgeBaseExecute).toHaveBeenCalledWith(
-      expect.not.objectContaining({ useGraphRAG: true })
-    );
+    expect(mockSearchKnowledgeBaseExecute).toHaveBeenCalled();
+    const kbArgs = mockSearchKnowledgeBaseExecute.mock.calls[0]?.[0];
+    expect(kbArgs).not.toHaveProperty('useGraphRAG');
   });
 });
 

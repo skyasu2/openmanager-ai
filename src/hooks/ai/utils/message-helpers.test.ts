@@ -18,6 +18,22 @@ function createMessage(params: {
   metadata?: {
     traceId?: string;
     ragSources?: RagSource[];
+    retrieval?: {
+      retrievalEnabled: boolean;
+      retrievalUsed: boolean;
+      retrievalMode: 'off' | 'lite' | 'text-only' | 'cosine-neighbor';
+      suppressedReason?:
+        | 'disabled'
+        | 'not_needed'
+        | 'no_results'
+        | 'budget_guard'
+        | 'unavailable';
+      evidenceCount: number;
+      webUsed: boolean;
+    };
+    enableRAG?: boolean;
+    enableWebSearch?: boolean | 'auto';
+    analysisMode?: 'auto' | 'thinking';
     toolsCalled?: string[];
     handoffHistory?: Array<{
       from: string;
@@ -115,6 +131,114 @@ describe('transformMessages', () => {
     );
     expect(assistant?.metadata?.analysisBasis?.dataSource).toContain('웹 검색');
     expect(assistant?.metadata?.analysisBasis?.ragUsed).toBe(false);
+  });
+
+  it('keeps retrieval enabled separate from actual RAG usage', () => {
+    const messages = transformMessages(
+      [
+        createMessage({
+          id: 'u1',
+          role: 'user',
+          text: 'runbook이 필요하면 참고해서 알려줘',
+        }),
+        createMessage({
+          id: 'a1',
+          role: 'assistant',
+          text: '현재 답변은 실시간 메트릭만으로 충분합니다.',
+          metadata: {
+            enableRAG: true,
+            enableWebSearch: true,
+            analysisMode: 'thinking',
+            retrieval: {
+              retrievalEnabled: true,
+              retrievalUsed: false,
+              retrievalMode: 'lite',
+              suppressedReason: 'not_needed',
+              evidenceCount: 0,
+              webUsed: false,
+            },
+          },
+        }),
+      ],
+      {
+        isLoading: false,
+        currentMode: 'streaming',
+        ragEnabled: true,
+        webSearchEnabled: true,
+      }
+    );
+
+    const assistant = messages.find((m) => m.id === 'a1');
+
+    expect(assistant?.metadata?.analysisBasis?.ragUsed).toBe(false);
+    expect(assistant?.metadata?.analysisBasis?.retrieval).toEqual({
+      retrievalEnabled: true,
+      retrievalUsed: false,
+      retrievalMode: 'lite',
+      suppressedReason: 'not_needed',
+      evidenceCount: 0,
+      webUsed: false,
+    });
+    expect(assistant?.metadata?.analysisBasis?.featureStatus).toEqual({
+      rag: { status: 'suppressed', reason: 'not_needed' },
+      web: { status: 'enabled' },
+      thinking: { status: 'enabled', reason: 'routing_mode' },
+    });
+  });
+
+  it('derives retrieval status from deferred knowledge tool results', () => {
+    const messages = transformMessages(
+      [
+        createMessage({
+          id: 'u1',
+          role: 'user',
+          text: 'runbook 찾아줘',
+        }),
+        createMessage({
+          id: 'a1',
+          role: 'assistant',
+          text: '지식 베이스가 일시적으로 비어 있어 기본 지식으로 답변합니다.',
+        }),
+      ],
+      {
+        isLoading: false,
+        currentMode: 'streaming',
+        deferredToolResultsByMessageId: {
+          a1: [
+            {
+              toolName: 'searchKnowledgeBase',
+              result: {
+                success: false,
+                results: [],
+                retrieval: {
+                  retrievalEnabled: true,
+                  retrievalUsed: false,
+                  retrievalMode: 'lite',
+                  suppressedReason: 'unavailable',
+                  evidenceCount: 0,
+                  webUsed: false,
+                },
+              },
+            },
+          ],
+        },
+      }
+    );
+
+    const assistant = messages.find((m) => m.id === 'a1');
+
+    expect(assistant?.metadata?.analysisBasis?.retrieval).toEqual({
+      retrievalEnabled: true,
+      retrievalUsed: false,
+      retrievalMode: 'lite',
+      suppressedReason: 'unavailable',
+      evidenceCount: 0,
+      webUsed: false,
+    });
+    expect(assistant?.metadata?.analysisBasis?.featureStatus?.rag).toEqual({
+      status: 'unavailable',
+      reason: 'unavailable',
+    });
   });
 
   it('applies streamRagSources only to last message', () => {

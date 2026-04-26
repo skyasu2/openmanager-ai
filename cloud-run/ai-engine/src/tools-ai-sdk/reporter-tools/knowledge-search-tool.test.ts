@@ -73,12 +73,12 @@ describe('searchKnowledgeBase', () => {
 
     const parsed = inputSchema.parse({
       query: '현재 인프라 아키텍처 요약',
-      useGraphRAG: 'false',
+      useGraphRAG: 'true',
       fastMode: 'true',
       includeWebSearch: 'false',
     });
 
-    expect(parsed.useGraphRAG).toBe(false);
+    expect(parsed.useGraphRAG).toBe(true);
     expect(parsed.fastMode).toBe(true);
     expect(parsed.includeWebSearch).toBe(false);
   });
@@ -217,7 +217,6 @@ describe('searchKnowledgeBase', () => {
 
     const result = await searchKnowledgeBase.execute({
       query: 'redis 설정 확인',
-      useGraphRAG: false,
     });
 
     expect(result).toMatchObject({
@@ -240,7 +239,6 @@ describe('searchKnowledgeBase', () => {
 
     const recovered = await searchKnowledgeBase.execute({
       query: 'redis 설정 확인',
-      useGraphRAG: false,
     });
     expect(recovered).toMatchObject({
       success: true,
@@ -291,9 +289,10 @@ describe('searchKnowledgeBase', () => {
 
   it('emits sampled structured telemetry for production Knowledge Retrieval Lite usage', async () => {
     const previousNodeEnv = process.env.NODE_ENV;
-    const previousSampleRate = process.env.GRAPH_RAG_TELEMETRY_SAMPLE_RATE;
+    const previousSampleRate =
+      process.env.KNOWLEDGE_RETRIEVAL_TELEMETRY_SAMPLE_RATE;
     process.env.NODE_ENV = 'production';
-    process.env.GRAPH_RAG_TELEMETRY_SAMPLE_RATE = '1';
+    process.env.KNOWLEDGE_RETRIEVAL_TELEMETRY_SAMPLE_RATE = '1';
     vi.spyOn(Math, 'random').mockReturnValue(0);
 
     mockGetSupabaseClient.mockResolvedValue({} as never);
@@ -350,9 +349,10 @@ describe('searchKnowledgeBase', () => {
     vi.restoreAllMocks();
     process.env.NODE_ENV = previousNodeEnv;
     if (previousSampleRate === undefined) {
-      delete process.env.GRAPH_RAG_TELEMETRY_SAMPLE_RATE;
+      delete process.env.KNOWLEDGE_RETRIEVAL_TELEMETRY_SAMPLE_RATE;
     } else {
-      process.env.GRAPH_RAG_TELEMETRY_SAMPLE_RATE = previousSampleRate;
+      process.env.KNOWLEDGE_RETRIEVAL_TELEMETRY_SAMPLE_RATE =
+        previousSampleRate;
     }
   });
 });

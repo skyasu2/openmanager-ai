@@ -3,13 +3,16 @@ import { logger } from './lib/logger';
 
 export function setupIncidentRagBackfill(): void {
   const enableIncidentRagBackfill =
-    process.env.ENABLE_INCIDENT_RAG_BACKFILL !== 'false';
+    process.env.ENABLE_INCIDENT_RAG_BACKFILL === 'true';
   const incidentRagBackfillMinutes = Math.max(
     5,
     Number.parseInt(process.env.INCIDENT_RAG_BACKFILL_MINUTES || '30', 10) || 30
   );
 
   if (!enableIncidentRagBackfill) {
+    logger.info(
+      'Incident knowledge sync disabled; set ENABLE_INCIDENT_RAG_BACKFILL=true to enable'
+    );
     return;
   }
 
@@ -29,11 +32,11 @@ export function setupIncidentRagBackfill(): void {
             failed: result.failed,
             errors: result.errors.slice(0, 3),
           },
-          'Incident RAG backfill run'
+          'Incident knowledge sync run'
         );
       }
     } catch (error) {
-      logger.warn({ error }, 'Incident RAG backfill failed');
+      logger.warn({ error }, 'Incident knowledge sync failed');
     } finally {
       backfillInFlight = false;
     }
@@ -56,6 +59,6 @@ export function setupIncidentRagBackfill(): void {
 
   logger.info(
     { incidentRagBackfillMinutes },
-    'Incident RAG periodic backfill enabled'
+    'Incident knowledge periodic sync enabled'
   );
 }

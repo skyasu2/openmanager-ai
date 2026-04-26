@@ -61,7 +61,17 @@ vi.mock('../services/ai-sdk', () => ({
           stepsExecuted: 2,
           durationMs: 500,
           traceId: 'trace-job-123',
-          handoffs: [{ from: 'supervisor', to: 'analyst', reason: 'trend analysis' }],
+          retrieval: {
+            retrievalEnabled: true,
+            retrievalUsed: false,
+            retrievalMode: 'lite',
+            suppressedReason: 'no_results',
+            evidenceCount: 0,
+            webUsed: false,
+          },
+          handoffs: [
+            { from: 'supervisor', to: 'analyst', reason: 'trend analysis' },
+          ],
           toolResultSummaries: [
             {
               toolName: 'detectAnomalies',
@@ -130,6 +140,14 @@ describe('Jobs Routes', () => {
           ],
           metadata: expect.objectContaining({
             traceId: 'trace-job-123',
+            retrieval: {
+              retrievalEnabled: true,
+              retrievalUsed: false,
+              retrievalMode: 'lite',
+              suppressedReason: 'no_results',
+              evidenceCount: 0,
+              webUsed: false,
+            },
             handoffs: [
               {
                 from: 'supervisor',

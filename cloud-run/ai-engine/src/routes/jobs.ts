@@ -20,6 +20,13 @@ import { getPublicErrorResponse, handleApiError } from '../lib/error-handler';
 import { logger } from '../lib/logger';
 import { logAPIKeyStatus, validateAPIKeys } from '../lib/model-config';
 import {
+  RETRIEVAL_MODES,
+  RETRIEVAL_SUPPRESSED_REASONS,
+  type RetrievalMetadata,
+  type RetrievalMode,
+  type RetrievalSuppressedReason,
+} from '../lib/retrieval-contract';
+import {
   markJobProcessing,
   storeJobResult,
   storeJobError,
@@ -59,6 +66,11 @@ type JobProcessToolOptions = Pick<
   'analysisMode' | 'enableRAG' | 'enableWebSearch'
 >;
 
+const RETRIEVAL_MODE_SET = new Set<string>(RETRIEVAL_MODES);
+const RETRIEVAL_SUPPRESSED_REASON_SET = new Set<string>(
+  RETRIEVAL_SUPPRESSED_REASONS
+);
+
 function isAnalysisMode(value: unknown): value is AnalysisMode {
   return value === 'auto' || value === 'thinking';
 }
@@ -67,6 +79,36 @@ function isWebSearchOption(
   value: unknown
 ): value is SupervisorRequest['enableWebSearch'] {
   return value === true || value === false || value === 'auto';
+}
+
+function parseRetrievalMetadata(value: unknown): RetrievalMetadata | undefined {
+  if (!isRecord(value)) return undefined;
+  if (
+    typeof value.retrievalEnabled !== 'boolean' ||
+    typeof value.retrievalUsed !== 'boolean' ||
+    typeof value.retrievalMode !== 'string' ||
+    !RETRIEVAL_MODE_SET.has(value.retrievalMode) ||
+    typeof value.evidenceCount !== 'number' ||
+    !Number.isFinite(value.evidenceCount) ||
+    typeof value.webUsed !== 'boolean'
+  ) {
+    return undefined;
+  }
+
+  const suppressedReason =
+    typeof value.suppressedReason === 'string' &&
+    RETRIEVAL_SUPPRESSED_REASON_SET.has(value.suppressedReason)
+      ? (value.suppressedReason as RetrievalSuppressedReason)
+      : undefined;
+
+  return {
+    retrievalEnabled: value.retrievalEnabled,
+    retrievalUsed: value.retrievalUsed,
+    retrievalMode: value.retrievalMode as RetrievalMode,
+    ...(suppressedReason && { suppressedReason }),
+    evidenceCount: Math.max(0, Math.floor(value.evidenceCount)),
+    webUsed: value.webUsed,
+  };
 }
 
 function extractJobProcessToolOptions(
@@ -250,6 +292,7 @@ async function processJobSynchronously({
     }> = [];
     let finalAgent: string | undefined;
     let traceId: string | undefined;
+    let retrieval: RetrievalMetadata | undefined;
     let toolResultSummaries:
       | Array<{
           toolName: string;
@@ -405,6 +448,7 @@ async function processJobSynchronously({
         }
 
         traceId = getStringValue(metadata.traceId) ?? traceId;
+        retrieval = parseRetrievalMetadata(metadata.retrieval) ?? retrieval;
         toolResultSummaries = Array.isArray(metadata.toolResultSummaries)
           ? (metadata.toolResultSummaries as typeof toolResultSummaries)
           : toolResultSummaries;
@@ -449,6 +493,7 @@ async function processJobSynchronously({
         ...(analysisMode && { analysisMode }),
         ...(typeof enableRAG === 'boolean' && { enableRAG }),
         ...(enableWebSearch !== undefined && { enableWebSearch }),
+        ...(retrieval && { retrieval }),
         ...(traceId && { traceId }),
         handoffs,
         ...(toolResultSummaries && toolResultSummaries.length > 0 && {

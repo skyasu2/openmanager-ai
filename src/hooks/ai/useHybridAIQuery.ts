@@ -145,11 +145,14 @@ export function buildAssistantMessageFromAsyncResult(
     Boolean(result.latencyTier) ||
     Boolean(result.resolvedMode) ||
     Boolean(result.modeSelectionSource) ||
+    Boolean(result.retrieval) ||
+    Boolean(result.analysisMode) ||
     (result.toolsCalled && result.toolsCalled.length > 0) ||
     hasExplicitHandoffHistory ||
     (result.toolResultSummaries && result.toolResultSummaries.length > 0)
       ? {
           ...(result.ragSources && { ragSources: result.ragSources }),
+          ...(result.retrieval && { retrieval: result.retrieval }),
           ...(result.traceId && { traceId: result.traceId }),
           ...(typeof result.processingTimeMs === 'number' && {
             processingTime: result.processingTimeMs,

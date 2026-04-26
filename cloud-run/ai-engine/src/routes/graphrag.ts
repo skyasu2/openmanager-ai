@@ -1,19 +1,20 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
+import {
+  buildGraphRuntimeGonePayload,
+  GRAPH_RUNTIME_GONE_STATUS,
+  type GraphRuntimeReplacement,
+} from '../lib/legacy-contracts';
 
 export const graphragRouter = new Hono();
 
-function graphRuntimeGone(c: Context, replacement = 'searchKnowledgeBase') {
+function graphRuntimeGone(
+  c: Context,
+  replacement?: GraphRuntimeReplacement
+) {
   return c.json(
-    {
-      error: 'gone',
-      message:
-        'Legacy graph retrieval runtime was removed. Use Knowledge Retrieval Lite instead.',
-      replacement,
-      retrievalMode: 'lite',
-      deprecated: true,
-    },
-    410
+    buildGraphRuntimeGonePayload(replacement),
+    GRAPH_RUNTIME_GONE_STATUS
   );
 }
 

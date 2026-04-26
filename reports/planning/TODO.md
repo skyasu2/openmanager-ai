@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-26 KST (`Custom GraphRAG runtime removed`)
+**Last Updated**: 2026-04-26 KST (`Frontend retrieval status contract added`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -23,7 +23,7 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
-| AI assistant retrieval and multi-agent runtime refactor | High | **Approved / Task 2·3·4 완료 / Task 5 대기** — Cloud Run `cloud-run/ai-engine` backend 제약을 전제로, Cerebras Qwen primary 경로 + `llama3.1-8b` intra-fallback/model-aware quota, Retrieval contract 타입, 18대 서버 topology contract, Knowledge Retrieval Lite service, `searchKnowledgeBase` Lite adapter, custom GraphRAG runtime 제거를 반영했다. 다음 단계는 agent별 provider/tool/evidence budget을 SSOT로 묶는 multi-agent runtime policy 정리다. Mistral은 text fallback으로 유지하되 RAG runtime 의존은 제거했다. 상세: [ai-assistant-retrieval-multi-agent-refactor-plan.md](ai-assistant-retrieval-multi-agent-refactor-plan.md) |
+| AI assistant retrieval and multi-agent runtime refactor | High | **Approved / Task 2·3·4·5·5A·6·6A 완료 / Task 7 대기** — Cloud Run `cloud-run/ai-engine` backend 제약을 전제로, Cerebras Qwen primary 경로 + `llama3.1-8b` intra-fallback/model-aware quota, Retrieval contract 타입, 18대 서버 topology contract, Knowledge Retrieval Lite service, `searchKnowledgeBase` Lite adapter, custom GraphRAG runtime 제거, agent별 provider/tool/evidence budget SSOT, provider model policy SSOT, frontend retrieval status contract, legacy compatibility boundary registry를 반영했다. 다음 단계는 active docs/data의 GraphRAG/Mistral RAG stale 표현을 Knowledge Retrieval Lite 중심으로 정리하는 것이다. Mistral은 text fallback으로 유지하되 RAG runtime 의존은 제거했다. 상세: [ai-assistant-retrieval-multi-agent-refactor-plan.md](ai-assistant-retrieval-multi-agent-refactor-plan.md) |
 | ~~AI Response Visibility & Rate Limit (Phase 1~5)~~ | — | **완료** — archive 이동. write bucket 재평가 결과 `supervisor 10/min`, `jobs/process 5/min`, `daily 100` 유지 결정 로그는 archived plan에 유지. |
 | ~~AI Stream Route Contract - residual cleanup~~ | — | **완료** — archive 이동. |
 | ~~OTel 토폴로지 개선~~ | — | **완료** — archive 이동: [archive/otel-topology-improvement-plan.md](archive/otel-topology-improvement-plan.md). |
@@ -31,6 +31,36 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-26 #191)
+- [x] AI retrieval legacy compatibility boundary 정리
+  - `legacy-contracts` SSOT를 추가해 `/api/ai/graphrag/*` gone shim, `searchKnowledgeBase.useGraphRAG` compat-only 입력, `ragSources` migration bridge 상태를 한 곳에 등록
+  - `/graphrag/*` 410 응답과 `useGraphRAG` schema 설명이 legacy contract를 참조하도록 정리
+  - active runtime에서 `useGraphRAG`와 `GRAPH_RAG_TELEMETRY_SAMPLE_RATE`가 허용 경계 밖으로 재침투하지 못하도록 cleanup guard 테스트 추가
+
+### Completed (2026-04-26 #190)
+- [x] frontend retrieval status contract 도입
+  - `retrieval-status` 타입/유틸을 추가해 RAG/Web/심층 분석 상태를 `enabled`, `used`, `suppressed`, `unavailable`, `disabled`로 분리
+  - `AnalysisBasis`에 `retrieval`과 `featureStatus`를 보존하고 message transform이 metadata 또는 `searchKnowledgeBase` tool result에서 retrieval 상태를 파생
+  - streaming done, async job result, chat history restore 경로에서 retrieval metadata를 유지하도록 frontend pipeline을 보강
+  - Cloud Run jobs 저장 metadata에도 `retrieval`을 보존해 async job SSE가 frontend status contract를 받을 수 있게 정리
+  - `AnalysisBasisBadge`와 `SidebarMessage`가 `RAG 허용`, `RAG 사용됨`, `RAG 생략됨`, `RAG 사용 불가` 및 Web/심층 분석 상태를 구분 표시
+
+### Completed (2026-04-26 #189)
+- [x] provider model policy SSOT 도입
+  - `provider-model-policy.ts`를 추가해 Cerebras Qwen/8B/GPT-OSS model role, lifecycle, quota, deprecation, smoke status를 한 곳에서 관리
+  - Qwen은 primary, `llama3.1-8b`는 intra-Cerebras fallback, GPT-OSS는 free-tier 제외 모델로 계약 고정
+  - `provider-model-metadata`와 `quota-tracker`가 policy SSOT를 참조하도록 정리해 quota/metadata drift를 줄임
+  - `providers` route와 AI tech stack의 Mistral 설명을 RAG/embedding 담당이 아닌 text last-resort fallback 기준으로 갱신
+  - 삭제 파일이 섞인 refactor 중에도 provider model drift guard가 missing tracked file에서 실패하지 않도록 보강
+
+### Completed (2026-04-26 #188)
+- [x] multi-agent runtime policy SSOT 도입
+  - `agent-runtime-policy.ts`를 추가해 agent별 provider order, maxSteps, evidence budget, tool allowlist를 한 곳에서 관리
+  - `AGENT_CONFIGS`의 tool map을 runtime policy allowlist에서 생성하도록 정리해 agent config와 정책 drift를 차단
+  - text agent는 `Groq -> Cerebras -> Mistral`, Orchestrator는 `Cerebras -> Groq -> Mistral`, Vision은 `Gemini -> OpenRouter` 계약을 테스트로 고정
+  - topology direct KB path는 Knowledge Retrieval Lite 인자를 사용하고 `useGraphRAG`를 재도입하지 않도록 회귀 assertion 보강
+  - Mistral은 text last-resort fallback으로만 유지하고 RAG provider 설명/주석에서 제거
 
 ### Completed (2026-04-26 #187)
 - [x] custom GraphRAG runtime 제거

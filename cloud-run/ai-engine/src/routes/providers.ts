@@ -48,7 +48,7 @@ providersRouter.get('/', (c: Context) => {
         toolCallingEnabled: isCerebrasToolCallingEnabled(),
       },
       groq: { role: 'Primary (Supervisor/Verifier/NLQ/Analyst/Reporter) + text fallback', model: getGroqModelId() },
-      mistral: { role: 'Primary (Advisor) + RAG Embedding + Last-Resort Fallback', model: 'mistral-large-latest / mistral-embed' },
+      mistral: { role: 'Last-resort text fallback', model: 'mistral-large-latest' },
     },
   });
 });

@@ -8,7 +8,6 @@
  */
 
 import { generateText, hasToolCall, stepCountIs } from 'ai';
-import type { ProviderName } from '../model-provider';
 import {
   generateTextWithRetry,
   type ProviderAttempt,
@@ -17,7 +16,11 @@ import { sanitizeChineseCharacters } from '../../../lib/text-sanitizer';
 import { extractToolResultOutput } from '../../../lib/ai-sdk-utils';
 import {
   AGENT_NAMES,
+  getAgentEvidenceBudget,
+  getAgentMaxSteps as getRuntimeAgentMaxSteps,
   getAgentConfig as getNamedAgentConfig,
+  getAgentProviderOrder as getRuntimeAgentProviderOrder,
+  getOrchestratorProviderOrder,
   type AgentConfig,
 } from './config';
 import {
@@ -51,11 +54,8 @@ export { executeReporterWithPipeline } from './orchestrator-reporter-pipeline';
 // Orchestrator Model (3-way fallback)
 // ============================================================================
 
-export const ORCHESTRATOR_PROVIDER_ORDER: TextProvider[] = [
-  'cerebras',
-  'groq',
-  'mistral',
-];
+export const ORCHESTRATOR_PROVIDER_ORDER: TextProvider[] =
+  getOrchestratorProviderOrder();
 
 function buildContextAwarePrompt(query: string, contextSummary?: string | null): string {
   if (!contextSummary) {
@@ -95,37 +95,8 @@ export function getAgentConfig(name: string): AgentConfig | null {
   return getNamedAgentConfig(name) ?? null;
 }
 
-export function getAgentProviderOrder(agentName: string): ProviderName[] {
-  switch (agentName) {
-    case 'NLQ Agent':
-      return ['groq', 'cerebras', 'mistral'];
-    case 'Advisor Agent':
-      return ['groq', 'cerebras', 'mistral'];
-    case 'Analyst Agent':
-      return ['groq', 'cerebras', 'mistral'];
-    case 'Reporter Agent':
-      return ['groq', 'cerebras', 'mistral'];
-    default:
-      return ['groq', 'cerebras', 'mistral'];
-  }
-}
-
-/**
- * Per-agent maxSteps configuration
- *
- * Analyst/Reporter need more steps for multi-tool workflows:
- * - Analyst: detectAnomaliesAllServers + searchKnowledgeBase + findRootCause + finalAnswer
- * - Reporter: buildIncidentTimeline + findRootCause + correlateMetrics + finalAnswer
- */
-export function getAgentMaxSteps(agentName: string): number {
-  switch (agentName) {
-    case 'Analyst Agent':
-    case 'Reporter Agent':
-      return 10;
-    default:
-      return 7;
-  }
-}
+export const getAgentProviderOrder = getRuntimeAgentProviderOrder;
+export const getAgentMaxSteps = getRuntimeAgentMaxSteps;
 
 interface DirectKnowledgeResultItem {
   title: string;
@@ -322,6 +293,7 @@ export async function executeForcedRouting(
   }
 
   const providerOrder = getAgentProviderOrder(suggestedAgentName);
+  const evidenceBudget = getAgentEvidenceBudget(suggestedAgentName);
   logger.info(`[Forced Routing] Using retry with fallback: [${providerOrder.join(' → ')}]`);
 
   let filteredTools = filterToolsByWebSearch(agentConfig.tools, webSearchEnabled);
@@ -350,20 +322,24 @@ export async function executeForcedRouting(
         const parsedDirectResult = asDirectKnowledgeSearchResult(directSearchResult);
 
         if (parsedDirectResult && parsedDirectResult.results.length > 0) {
+          const directEvidence = parsedDirectResult.results.slice(
+            0,
+            evidenceBudget
+          );
           const durationMs = Date.now() - startTime;
           const response = sanitizeChineseCharacters(
-            buildTopologyDirectKnowledgeResponse(query, parsedDirectResult.results)
+            buildTopologyDirectKnowledgeResponse(query, directEvidence)
           );
           const quality = evaluateAgentResponseQuality('Advisor Agent', response, { durationMs });
 
           logger.info(
-            `[Forced Routing] Topology direct KB path succeeded in ${durationMs}ms (${parsedDirectResult.results.length} docs)`
+            `[Forced Routing] Topology direct KB path succeeded in ${durationMs}ms (${directEvidence.length} docs)`
           );
 
           return {
             success: true,
             response,
-            ragSources: parsedDirectResult.results.map((item) => ({
+            ragSources: directEvidence.map((item) => ({
               title: item.title,
               similarity: item.similarity,
               sourceType: item.sourceType,
@@ -454,6 +430,11 @@ export async function executeForcedRouting(
       category?: string;
       url?: string;
     }> = [];
+    const pushRagSource = (source: (typeof ragSources)[number]) => {
+      if (ragSources.length < evidenceBudget) {
+        ragSources.push(source);
+      }
+    };
 
     for (const step of result.steps) {
       for (const toolCall of step.toolCalls) {
@@ -476,7 +457,7 @@ export async function executeForcedRouting(
             const similarCases = (kbResult.similarCases ?? kbResult.results) as Array<Record<string, unknown>> | undefined;
             if (Array.isArray(similarCases)) {
               for (const doc of similarCases) {
-                ragSources.push({
+                pushRagSource({
                   title: String(doc.title ?? doc.name ?? 'Unknown'),
                   similarity: Number(doc.similarity ?? doc.score ?? 0),
                   sourceType: String(doc.sourceType ?? doc.type ?? 'vector'),
@@ -491,7 +472,7 @@ export async function executeForcedRouting(
             const webResults = webResult.results as Array<Record<string, unknown>> | undefined;
             if (Array.isArray(webResults)) {
               for (const doc of webResults) {
-                ragSources.push({
+                pushRagSource({
                   title: String(doc.title ?? 'Web Result'),
                   similarity: Number(doc.score ?? 0),
                   sourceType: 'web',
@@ -680,7 +661,7 @@ export async function executeWithAgentFactory(
     const result = await agent.run(query, {
       webSearchEnabled,
       ragEnabled,
-      maxSteps: 10,
+      maxSteps: getAgentMaxSteps(agentName),
       timeoutMs: TIMEOUT_CONFIG.agent.hard,
       images,
       files,

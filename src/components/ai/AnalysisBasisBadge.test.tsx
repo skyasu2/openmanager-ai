@@ -186,6 +186,44 @@ describe('AnalysisBasisBadge', () => {
     expect(screen.getByText('심층 분석')).toBeInTheDocument();
   });
 
+  it('distinguishes enabled, used, suppressed, and unavailable feature states', () => {
+    render(
+      <AnalysisBasisBadge
+        basis={{
+          dataSource: '일반 대화 응답 (RAG 활성)',
+          engine: 'Streaming AI',
+          ragUsed: false,
+          analysisMode: 'thinking',
+          retrieval: {
+            retrievalEnabled: true,
+            retrievalUsed: false,
+            retrievalMode: 'lite',
+            suppressedReason: 'no_results',
+            evidenceCount: 0,
+            webUsed: false,
+          },
+          featureStatus: {
+            rag: { status: 'suppressed', reason: 'no_results' },
+            web: { status: 'enabled' },
+            thinking: { status: 'enabled', reason: 'routing_mode' },
+          },
+        }}
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: '분석 근거 상세 보기' })
+    );
+
+    expect(screen.getByText('RAG 생략됨')).toBeInTheDocument();
+    expect(screen.getByText('Web 허용')).toBeInTheDocument();
+    expect(screen.getByText('심층 분석 요청됨')).toBeInTheDocument();
+    expect(screen.queryByText('RAG 사용됨')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('provider-native reasoning')
+    ).not.toBeInTheDocument();
+  });
+
   it('shows runtime routing metadata in expanded details when provided', () => {
     render(
       <AnalysisBasisBadge

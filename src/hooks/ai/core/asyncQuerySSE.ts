@@ -5,6 +5,7 @@ import {
   extractAIErrorDetailsFromPayload,
   inferAIErrorDetailsFromMessage,
 } from '@/lib/ai/error-details';
+import { normalizeRetrievalMetadata } from '@/lib/ai/utils/retrieval-status';
 import { logger } from '@/lib/logging';
 import { calculateBackoff } from '@/lib/utils/retry';
 import type { AsyncQueryProgress, AsyncQueryResult } from '../useAsyncAIQuery';
@@ -137,6 +138,7 @@ export function connectAsyncQuerySSE(
             ? resultData.metadata.modeSelectionSource
             : undefined,
         traceId: resultData.metadata?.traceId,
+        retrieval: normalizeRetrievalMetadata(resultData.metadata?.retrieval),
         analysisMode:
           resultData.metadata?.analysisMode === 'auto' ||
           resultData.metadata?.analysisMode === 'thinking'

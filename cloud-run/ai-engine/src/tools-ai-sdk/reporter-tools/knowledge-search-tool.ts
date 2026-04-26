@@ -5,6 +5,7 @@ import {
   retrieveKnowledgeEvidence,
   type KnowledgeRetrievalLiteResult,
 } from '../../lib/knowledge-retrieval-lite';
+import { LEGACY_CONTRACTS } from '../../lib/legacy-contracts';
 import { logger } from '../../lib/logger';
 import type {
   EvidenceCard,
@@ -18,7 +19,7 @@ const KNOWLEDGE_SEARCH_CACHE_TTL_MS = 30_000;
 const DEFAULT_PRODUCTION_RETRIEVAL_TELEMETRY_SAMPLE_RATE = 0.1;
 const DEFAULT_KNOWLEDGE_RETRIEVAL_LIMIT = 5;
 
-type KnowledgeSearchInput = {
+type KnowledgeSearchRuntimeInput = {
   query: string;
   category?:
     | 'troubleshooting'
@@ -29,9 +30,12 @@ type KnowledgeSearchInput = {
     | 'command'
     | 'architecture';
   severity?: ToolSeverityFilter;
-  useGraphRAG?: boolean;
   fastMode?: boolean;
   includeWebSearch?: boolean;
+};
+
+type KnowledgeSearchToolInput = KnowledgeSearchRuntimeInput & {
+  useGraphRAG?: boolean;
 };
 
 type KnowledgeSearchResult = {
@@ -64,9 +68,7 @@ function buildQueryFingerprint(query: string): string {
 }
 
 function getKnowledgeRetrievalTelemetrySampleRate(): number {
-  const raw =
-    process.env.KNOWLEDGE_RETRIEVAL_TELEMETRY_SAMPLE_RATE ??
-    process.env.GRAPH_RAG_TELEMETRY_SAMPLE_RATE;
+  const raw = process.env.KNOWLEDGE_RETRIEVAL_TELEMETRY_SAMPLE_RATE;
   if (!raw) {
     return process.env.NODE_ENV === 'production'
       ? DEFAULT_PRODUCTION_RETRIEVAL_TELEMETRY_SAMPLE_RATE
@@ -89,8 +91,8 @@ function shouldEmitKnowledgeRetrievalTelemetry(): boolean {
 
 function emitKnowledgeRetrievalTelemetry(
   input: Pick<
-    KnowledgeSearchInput,
-    'query' | 'category' | 'useGraphRAG' | 'fastMode' | 'includeWebSearch'
+    KnowledgeSearchRuntimeInput,
+    'query' | 'category' | 'fastMode' | 'includeWebSearch'
   >,
   result: KnowledgeSearchResult,
   options: { cacheHit: boolean }
@@ -104,7 +106,6 @@ function emitKnowledgeRetrievalTelemetry(
     component: 'reporter_tools',
     queryFingerprint: buildQueryFingerprint(input.query),
     queryCategory: input.category ?? 'all',
-    legacyUseGraphRAG: input.useGraphRAG ?? false,
     fastMode: input.fastMode ?? true,
     includeWebSearch: input.includeWebSearch ?? false,
     cacheHit: options.cacheHit,
@@ -125,7 +126,9 @@ function emitKnowledgeRetrievalTelemetry(
   logger.info(payload, '[Reporter Tools] Knowledge Retrieval Lite telemetry');
 }
 
-function buildKnowledgeSearchCacheKey(input: KnowledgeSearchInput): string {
+function buildKnowledgeSearchCacheKey(
+  input: Pick<KnowledgeSearchRuntimeInput, 'query' | 'category' | 'severity'>
+): string {
   return JSON.stringify({
     query: normalizeSearchQuery(input.query),
     category: input.category ?? null,
@@ -223,9 +226,7 @@ export const searchKnowledgeBase = tool({
     useGraphRAG: booleanToolFlagSchema
       .optional()
       .default(false)
-      .describe(
-        'Deprecated compatibility flag. Lite retrieval ignores graph traversal.'
-      ),
+      .describe(LEGACY_CONTRACTS.searchKnowledgeBaseUseGraphRAG.description),
     fastMode: booleanToolFlagSchema
       .optional()
       .default(true)
@@ -243,10 +244,9 @@ export const searchKnowledgeBase = tool({
     query,
     category,
     severity,
-    useGraphRAG = false,
     fastMode = true,
     includeWebSearch = false,
-  }: KnowledgeSearchInput) => {
+  }: KnowledgeSearchToolInput) => {
     const cacheKey = buildKnowledgeSearchCacheKey({
       query,
       category,
@@ -260,7 +260,7 @@ export const searchKnowledgeBase = tool({
       );
       return cached.then((result) => {
         emitKnowledgeRetrievalTelemetry(
-          { query, category, useGraphRAG, fastMode, includeWebSearch },
+          { query, category, fastMode, includeWebSearch },
           result,
           { cacheHit: true }
         );
@@ -270,7 +270,7 @@ export const searchKnowledgeBase = tool({
 
     const executionPromise = (async (): Promise<KnowledgeSearchResult> => {
       logger.info(
-        `[Reporter Tools] Knowledge Retrieval Lite search: ${query} (category: ${category ?? 'all'}, graph flag ignored: ${useGraphRAG})`
+        `[Reporter Tools] Knowledge Retrieval Lite search: ${query} (category: ${category ?? 'all'})`
       );
 
       const supabase = await getSupabaseClient();
@@ -305,7 +305,7 @@ export const searchKnowledgeBase = tool({
           const response = buildUnavailableResult(retrievalResult);
           knowledgeSearchCache.delete(cacheKey);
           emitKnowledgeRetrievalTelemetry(
-            { query, category, useGraphRAG, fastMode, includeWebSearch },
+            { query, category, fastMode, includeWebSearch },
             response,
             { cacheHit: false }
           );
@@ -337,7 +337,7 @@ export const searchKnowledgeBase = tool({
         };
 
         emitKnowledgeRetrievalTelemetry(
-          { query, category, useGraphRAG, fastMode, includeWebSearch },
+          { query, category, fastMode, includeWebSearch },
           response,
           { cacheHit: false }
         );
@@ -357,7 +357,7 @@ export const searchKnowledgeBase = tool({
             '사용자에게 "지식 베이스 검색 중 오류가 발생하여 내재된 기본 지식으로 답변을 제공합니다"라고 알리고, 본래 보유한 기술적 지식 기반으로 구체적인 답변이나 팁을 제공하세요.',
         };
         emitKnowledgeRetrievalTelemetry(
-          { query, category, useGraphRAG, fastMode, includeWebSearch },
+          { query, category, fastMode, includeWebSearch },
           response,
           { cacheHit: false }
         );

@@ -41,6 +41,10 @@ import {
   EVALUATOR_AGENT_INSTRUCTIONS,
   OPTIMIZER_AGENT_INSTRUCTIONS,
 } from './agent-pipeline-instructions';
+import {
+  getAgentToolAllowlist,
+  type AgentToolName,
+} from './agent-runtime-policy';
 
 // Tools (AI SDK tools)
 import {
@@ -76,6 +80,32 @@ import {
   // Vision tools (Gemini Flash-Lite)
   analyzeScreenshot,
 } from '../../../../tools-ai-sdk';
+
+const AGENT_TOOL_REGISTRY: Record<AgentToolName, ToolsMap[string]> = {
+  getServerMetrics,
+  getServerMetricsAdvanced,
+  filterServers,
+  getServerByGroup,
+  getServerByGroupAdvanced,
+  detectAnomalies,
+  detectAnomaliesAllServers,
+  predictTrends,
+  analyzePattern,
+  correlateMetrics,
+  findRootCause,
+  buildIncidentTimeline,
+  searchKnowledgeBase,
+  recommendCommands,
+  searchWeb,
+  evaluateIncidentReport,
+  validateReportStructure,
+  scoreRootCauseConfidence,
+  refineRootCauseAnalysis,
+  enhanceSuggestedActions,
+  extendServerCorrelation,
+  finalAnswer,
+  analyzeScreenshot,
+};
 
 // ============================================================================
 // Type Definitions
@@ -115,6 +145,15 @@ export const AGENT_NAMES = [
 
 export type AgentName = (typeof AGENT_NAMES)[number];
 
+function buildAgentTools(agentName: AgentName): ToolsMap {
+  return Object.fromEntries(
+    getAgentToolAllowlist(agentName).map((toolName) => [
+      toolName,
+      AGENT_TOOL_REGISTRY[toolName],
+    ])
+  ) as ToolsMap;
+}
+
 export const AGENT_CONFIGS: Record<AgentName, AgentConfig> = {
   'NLQ Agent': {
     name: 'NLQ Agent',
@@ -122,16 +161,7 @@ export const AGENT_CONFIGS: Record<AgentName, AgentConfig> = {
       '서버 상태 조회, CPU/메모리/디스크 메트릭 질의, 시간 범위 집계(지난 N시간 평균/최대), 서버 목록 확인 및 필터링, 상태 요약, 웹 검색을 처리합니다.',
     getModel: getNlqModel,
     instructions: NLQ_INSTRUCTIONS,
-    tools: {
-      getServerMetrics,
-      getServerMetricsAdvanced,
-      filterServers,
-      getServerByGroup,
-      getServerByGroupAdvanced,
-      searchKnowledgeBase, // RAG: 트러블슈팅/장애 관련 지식 검색
-      searchWeb,
-      finalAnswer, // AI SDK v6 Best Practice: graceful loop termination
-    },
+    tools: buildAgentTools('NLQ Agent'),
     matchPatterns: [
       // Korean keywords
       '서버',
@@ -187,18 +217,7 @@ export const AGENT_CONFIGS: Record<AgentName, AgentConfig> = {
       '이상 탐지, 트렌드 예측, 패턴 분석, 근본 원인 분석(RCA), 상관관계 분석을 수행합니다. "왜?", "이상 있어?", "예측해줘" 질문에 적합합니다.',
     getModel: getAnalystModel,
     instructions: ANALYST_INSTRUCTIONS,
-    tools: {
-      getServerMetrics,
-      getServerMetricsAdvanced,
-      detectAnomalies,
-      detectAnomaliesAllServers, // 전체 서버 이상치 스캔 (1회 호출로 15대 분석)
-      predictTrends,
-      analyzePattern,
-      correlateMetrics,
-      findRootCause,
-      searchKnowledgeBase, // RAG: 과거 유사 장애 사례 조회
-      finalAnswer, // AI SDK v6 Best Practice: graceful loop termination
-    },
+    tools: buildAgentTools('Analyst Agent'),
     matchPatterns: [
       // Anomaly keywords
       '이상',
@@ -229,17 +248,7 @@ export const AGENT_CONFIGS: Record<AgentName, AgentConfig> = {
       '장애 보고서 생성, 인시던트 타임라인 구성, 영향도 분석 보고서를 작성합니다. "보고서 만들어줘", "장애 정리" 요청에 적합합니다.',
     getModel: getReporterModel,
     instructions: REPORTER_INSTRUCTIONS,
-    tools: {
-      getServerMetrics,
-      getServerMetricsAdvanced,
-      filterServers,
-      searchKnowledgeBase,
-      searchWeb, // 에러 코드/CVE 조회용
-      buildIncidentTimeline,
-      findRootCause,
-      correlateMetrics,
-      finalAnswer, // AI SDK v6 Best Practice: graceful loop termination
-    },
+    tools: buildAgentTools('Reporter Agent'),
     matchPatterns: [
       // Report keywords
       '보고서',
@@ -268,16 +277,7 @@ export const AGENT_CONFIGS: Record<AgentName, AgentConfig> = {
       '문제 해결 방법, CLI 명령어 추천, 과거 장애 사례 검색, 트러블슈팅 가이드, 웹 검색을 제공합니다. "어떻게 해결?", "명령어 알려줘" 질문에 적합합니다.',
     getModel: getAdvisorModel,
     instructions: ADVISOR_INSTRUCTIONS,
-    tools: {
-      searchKnowledgeBase,
-      recommendCommands,
-      searchWeb, // Added for external knowledge when RAG insufficient
-      // Diagnostic tools for informed recommendations (P2 enhancement)
-      findRootCause,
-      correlateMetrics,
-      detectAnomalies,
-      finalAnswer, // AI SDK v6 Best Practice: graceful loop termination
-    },
+    tools: buildAgentTools('Advisor Agent'),
     matchPatterns: [
       // Solution keywords
       '해결',
@@ -328,11 +328,7 @@ export const AGENT_CONFIGS: Record<AgentName, AgentConfig> = {
       '[Pipeline-Internal, Deterministic] 생성된 장애 보고서의 품질을 결정론적으로 평가합니다. 구조 완성도, 내용 완성도, 근본원인 분석 정확도, 조치 실행가능성을 점수화합니다.',
     getModel: getNlqModel, // Interface 호환용 (실제 LLM 호출 없음)
     instructions: EVALUATOR_AGENT_INSTRUCTIONS,
-    tools: {
-      evaluateIncidentReport,
-      validateReportStructure,
-      scoreRootCauseConfidence,
-    },
+    tools: buildAgentTools('Evaluator Agent'),
     matchPatterns: [], // 오케스트레이터에서 직접 호출만
   },
 
@@ -342,13 +338,7 @@ export const AGENT_CONFIGS: Record<AgentName, AgentConfig> = {
       '[Pipeline-Internal, Deterministic] 낮은 품질의 장애 보고서를 개선합니다. precomputed-state 히스토리 기반 근본원인 심화, CLI 명령어 추가, 서버 연관성 확장.',
     getModel: getAdvisorModel, // Interface 호환용 (실제 LLM 호출 없음)
     instructions: OPTIMIZER_AGENT_INSTRUCTIONS,
-    tools: {
-      refineRootCauseAnalysis,
-      enhanceSuggestedActions,
-      extendServerCorrelation,
-      findRootCause,
-      correlateMetrics,
-    },
+    tools: buildAgentTools('Optimizer Agent'),
     matchPatterns: [], // 오케스트레이터에서 직접 호출만
   },
 
@@ -362,11 +352,7 @@ export const AGENT_CONFIGS: Record<AgentName, AgentConfig> = {
       '대시보드 스크린샷 및 첨부 이미지 분석을 수행합니다. 이미지 기반의 시각 정보 추출에 적합합니다.',
     getModel: getVisionModel, // Gemini → OpenRouter fallback
     instructions: VISION_INSTRUCTIONS,
-    tools: {
-      // Vision-specific tools (Gemini Flash-Lite)
-      analyzeScreenshot,
-      finalAnswer, // AI SDK v6 Best Practice: graceful loop termination
-    },
+    tools: buildAgentTools('Vision Agent'),
     matchPatterns: [
       // Screenshot/Image keywords
       '스크린샷',

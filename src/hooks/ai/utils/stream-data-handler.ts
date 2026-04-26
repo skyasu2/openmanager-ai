@@ -13,6 +13,7 @@ import {
   extractModeSelectionSourceFromDoneData,
   extractProcessingTimeFromDoneData,
   extractResolvedModeFromDoneData,
+  extractRetrievalMetadataFromDoneData,
   normalizeRagSources,
   type ResponseSourceData,
 } from './response-view-helpers';
@@ -250,6 +251,7 @@ export function handleStreamDataPart(
     const resolvedMode = extractResolvedModeFromDoneData(doneData);
     const modeSelectionSource =
       extractModeSelectionSourceFromDoneData(doneData);
+    const retrieval = extractRetrievalMetadataFromDoneData(doneData);
     const normalizedHandoffHistory = normalizeHandoffHistory(
       pendingMessageMetadata.handoffHistory
     );
@@ -261,6 +263,7 @@ export function handleStreamDataPart(
       ...(modeSelectionSource && { modeSelectionSource }),
       ...(toolsCalled.length > 0 && { toolsCalled }),
       ...(analysisMode && { analysisMode }),
+      ...(retrieval && { retrieval }),
       ...(normalizedHandoffHistory && {
         handoffHistory: normalizedHandoffHistory,
       }),
@@ -274,6 +277,7 @@ export function handleStreamDataPart(
       traceId ||
       toolsCalled.length > 0 ||
       analysisMode ||
+      retrieval ||
       normalizedHandoffHistory !== undefined ||
       pendingToolResults.length > 0 ||
       Object.keys(pendingMessageMetadata).length > 0

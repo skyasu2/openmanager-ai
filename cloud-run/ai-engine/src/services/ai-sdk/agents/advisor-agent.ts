@@ -2,10 +2,10 @@
  * Advisor Agent
  *
  * Specializes in troubleshooting guidance and command recommendations.
- * Uses GraphRAG to search past incidents and best practices.
+ * Uses Knowledge Retrieval Lite (BM25 + pgVector) to search past incidents and best practices.
  *
- * Model: Mistral mistral-large-3-25-12 (primary - RAG + reasoning)
- * Fallback: Groq → Cerebras
+ * Model chain: Groq primary -> Cerebras Qwen/llama3.1-8b -> Mistral last-resort.
+ * Retrieval: Knowledge Retrieval Lite only; text fallback providers stay outside retrieval.
  *
  * @version 4.0.0 - Migrated to BaseAgent pattern
  * @created 2025-12-01

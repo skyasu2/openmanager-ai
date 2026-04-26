@@ -3,13 +3,16 @@ import { logger } from './lib/logger';
 
 export function setupTopologyRagBackfill(): void {
   const enableTopologyRagSync =
-    process.env.ENABLE_TOPOLOGY_RAG_SYNC !== 'false';
+    process.env.ENABLE_TOPOLOGY_RAG_SYNC === 'true';
   const topologyRagSyncMinutes = Math.max(
     30,
     Number.parseInt(process.env.TOPOLOGY_RAG_SYNC_MINUTES || '180', 10) || 180
   );
 
   if (!enableTopologyRagSync) {
+    logger.info(
+      'Topology knowledge sync disabled; set ENABLE_TOPOLOGY_RAG_SYNC=true to enable'
+    );
     return;
   }
 
@@ -29,11 +32,11 @@ export function setupTopologyRagBackfill(): void {
             failed: result.failed,
             error: result.error,
           },
-          'Topology RAG sync run'
+          'Topology knowledge sync run'
         );
       }
     } catch (error) {
-      logger.warn({ error }, 'Topology RAG sync failed');
+      logger.warn({ error }, 'Topology knowledge sync failed');
     } finally {
       syncInFlight = false;
     }
@@ -56,6 +59,6 @@ export function setupTopologyRagBackfill(): void {
 
   logger.info(
     { topologyRagSyncMinutes },
-    'Topology RAG periodic sync enabled'
+    'Topology knowledge periodic sync enabled'
   );
 }

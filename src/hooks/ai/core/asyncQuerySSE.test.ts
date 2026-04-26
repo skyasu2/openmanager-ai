@@ -250,6 +250,14 @@ describe('connectAsyncQuerySSE', () => {
         resolvedMode: 'multi',
         modeSelectionSource: 'auto_complexity',
         latencyTier: 'slow',
+        retrieval: {
+          retrievalEnabled: true,
+          retrievalUsed: false,
+          retrievalMode: 'lite',
+          suppressedReason: 'no_results',
+          evidenceCount: 0,
+          webUsed: false,
+        },
         handoffs: [{ from: 'supervisor', to: 'analyst', reason: 'deep dive' }],
         toolResultSummaries: [
           {
@@ -275,6 +283,14 @@ describe('connectAsyncQuerySSE', () => {
       resolvedMode: 'multi',
       modeSelectionSource: 'auto_complexity',
       traceId: 'trace-abc',
+      retrieval: {
+        retrievalEnabled: true,
+        retrievalUsed: false,
+        retrievalMode: 'lite',
+        suppressedReason: 'no_results',
+        evidenceCount: 0,
+        webUsed: false,
+      },
       handoffHistory: [
         { from: 'supervisor', to: 'analyst', reason: 'deep dive' },
       ],

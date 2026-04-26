@@ -1,5 +1,18 @@
 import './env-loader';
 import { logger } from './logger';
+import {
+  CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
+  CEREBRAS_QWEN_MODEL_ID,
+  DEFAULT_CEREBRAS_MODEL,
+} from '../services/ai-sdk/provider-model-policy';
+export {
+  CEREBRAS_GPT_OSS_MODEL_ID,
+  CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
+  CEREBRAS_QWEN_DEPRECATION_DATE,
+  CEREBRAS_QWEN_MODEL_ID,
+  DEFAULT_CEREBRAS_MODEL,
+  DEPRECATED_CEREBRAS_QWEN_MODEL_ID,
+} from '../services/ai-sdk/provider-model-policy';
 /**
  * Secret Configuration Parser
  * Parses JSON-based consolidated secrets from environment variables
@@ -295,12 +308,6 @@ export function getCerebrasApiKey(): string | null {
   return process.env.CEREBRAS_API_KEY || null;
 }
 
-export const CEREBRAS_QWEN_MODEL_ID = 'qwen-3-235b-a22b-instruct-2507';
-export const DEPRECATED_CEREBRAS_QWEN_MODEL_ID = CEREBRAS_QWEN_MODEL_ID;
-export const CEREBRAS_QWEN_DEPRECATION_DATE = '2026-05-27';
-export const CEREBRAS_GPT_OSS_MODEL_ID = 'gpt-oss-120b';
-export const CEREBRAS_LLAMA_FALLBACK_MODEL_ID = 'llama3.1-8b';
-export const DEFAULT_CEREBRAS_MODEL = CEREBRAS_QWEN_MODEL_ID;
 const DEFAULT_GROQ_MODEL = 'meta-llama/llama-4-scout-17b-16e-instruct';
 
 /**

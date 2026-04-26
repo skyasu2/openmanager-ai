@@ -10,6 +10,10 @@ import {
   resolveAssistantResponseView,
   splitAssistantResponseDetails,
 } from '@/lib/ai/utils/assistant-response-view';
+import {
+  buildAnalysisFeatureStatus,
+  buildVisibleFeatureStatusBadges,
+} from '@/lib/ai/utils/retrieval-status';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 import type { AIThinkingStep } from '@/types/ai-sidebar/ai-sidebar-types';
 import { RenderMarkdownContent } from '@/utils/markdown-parser';
@@ -54,6 +58,20 @@ export const MessageComponent = memo<{
   const hasWebEvidence = analysisSources.some(
     (source) => source.sourceType === 'web'
   );
+  const hasLegacyRagEvidence =
+    Boolean(analysisBasis?.ragUsed) && !hasRagEvidence && !hasWebEvidence;
+  const featureStatus =
+    analysisBasis?.featureStatus ??
+    (analysisBasis
+      ? buildAnalysisFeatureStatus({
+          retrieval: analysisBasis.retrieval,
+          ragEnabled: Boolean(analysisBasis.ragUsed),
+          hasKnowledgeEvidence: hasRagEvidence || hasLegacyRagEvidence,
+          hasWebEvidence,
+          analysisMode: analysisBasis.analysisMode,
+        })
+      : undefined);
+  const featureBadges = buildVisibleFeatureStatusBadges(featureStatus);
   const assistantResponseDetails = useMemo(
     () => splitAssistantResponseDetails(assistantResponseView?.details ?? null),
     [assistantResponseView?.details]
@@ -210,16 +228,15 @@ export const MessageComponent = memo<{
                   <span>{analysisBasis.engine}</span>
                   <span className="text-slate-300">&middot;</span>
                   <span>{analysisBasis.dataSource}</span>
-                  {hasRagEvidence && (
-                    <span className="rounded bg-indigo-50 px-1.5 py-0.5 text-xs font-medium text-indigo-600">
-                      RAG 사용됨
+                  {featureBadges.map((badge) => (
+                    <span
+                      key={badge.feature}
+                      className={`rounded px-1.5 py-0.5 text-xs font-medium ${badge.className}`}
+                      title={badge.state.reason}
+                    >
+                      {badge.label}
                     </span>
-                  )}
-                  {hasWebEvidence && (
-                    <span className="rounded bg-blue-50 px-1.5 py-0.5 text-xs font-medium text-blue-600">
-                      Web 사용됨
-                    </span>
-                  )}
+                  ))}
                 </div>
                 {/* 웹 출처 카드 + 분석 근거 뱃지 */}
                 <WebSourceCards

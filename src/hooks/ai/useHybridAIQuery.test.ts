@@ -351,6 +351,39 @@ describe('buildAssistantMessageFromAsyncResult', () => {
       modeSelectionSource: 'auto_complexity',
     });
   });
+
+  it('preserves retrieval and thinking mode metadata even without sources', () => {
+    const result: AsyncQueryResult = {
+      success: true,
+      response: '검색 없이 답변했습니다.',
+      analysisMode: 'thinking',
+      retrieval: {
+        retrievalEnabled: true,
+        retrievalUsed: false,
+        retrievalMode: 'lite',
+        suppressedReason: 'not_needed',
+        evidenceCount: 0,
+        webUsed: false,
+      },
+    };
+
+    const message = buildAssistantMessageFromAsyncResult(
+      result,
+      () => 'assistant-job-3'
+    );
+
+    expect(message.metadata).toMatchObject({
+      analysisMode: 'thinking',
+      retrieval: {
+        retrievalEnabled: true,
+        retrievalUsed: false,
+        retrievalMode: 'lite',
+        suppressedReason: 'not_needed',
+        evidenceCount: 0,
+        webUsed: false,
+      },
+    });
+  });
 });
 
 // ============================================================================

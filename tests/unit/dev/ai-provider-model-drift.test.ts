@@ -3,7 +3,7 @@
  */
 
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 interface DeprecatedModelRule {
@@ -27,9 +27,20 @@ const RULES: DeprecatedModelRule[] = [
     pattern: /qwen-3-235b-a22b-instruct-2507/,
     allowFiles: [
       'cloud-run/ai-engine/src/lib/config-parser.ts',
+      'cloud-run/ai-engine/src/lib/config-parser.test.ts',
+      'cloud-run/ai-engine/.env.example',
       'cloud-run/ai-engine/src/routes/providers.test.ts',
+      'cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-model-selectors.test.ts',
+      'cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-decomposition.test.ts',
+      'cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator.test.ts',
+      'cloud-run/ai-engine/src/services/ai-sdk/model-provider.compatibility.test.ts',
+      'cloud-run/ai-engine/src/services/ai-sdk/provider-model-policy.ts',
+      'cloud-run/ai-engine/src/services/ai-sdk/provider-model-policy.test.ts',
       'cloud-run/ai-engine/src/services/ai-sdk/provider-model-metadata.ts',
       'cloud-run/ai-engine/src/services/ai-sdk/provider-model-metadata.test.ts',
+      'cloud-run/ai-engine/src/services/resilience/quota-tracker.test.ts',
+      'cloud-run/ai-engine/src/services/resilience/retry-with-fallback.test.ts',
+      'src/config/ai-providers.ts',
     ],
   },
   {
@@ -65,6 +76,7 @@ function listTrackedFiles(): string[] {
   })
     .split('\n')
     .filter(Boolean)
+    .filter((file) => existsSync(file))
     .filter(
       (file) => !file.includes('/archive/') && !file.includes('/archived/')
     );

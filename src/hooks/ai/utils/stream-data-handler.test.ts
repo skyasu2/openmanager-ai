@@ -324,6 +324,34 @@ describe('handleStreamDataPart', () => {
       );
     });
 
+    it('should store retrieval metadata into deferred assistant metadata', () => {
+      const retrieval = {
+        retrievalEnabled: true,
+        retrievalUsed: false,
+        retrievalMode: 'lite',
+        suppressedReason: 'budget_guard',
+        evidenceCount: 0,
+        webUsed: false,
+      };
+      const part: StreamDataPart = {
+        type: 'data-done',
+        data: {
+          metadata: {
+            retrieval,
+          },
+        },
+      };
+
+      handleStreamDataPart(part, callbacks);
+
+      expect(callbacks.setDeferredAssistantMetadata).toHaveBeenCalledWith(
+        'msg-2',
+        expect.objectContaining({
+          retrieval,
+        })
+      );
+    });
+
     it('should preserve both traceId and structuredView when both are present', () => {
       const part: StreamDataPart = {
         type: 'data-done',

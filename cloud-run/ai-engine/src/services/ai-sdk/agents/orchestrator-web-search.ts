@@ -44,7 +44,7 @@ const WEB_SEARCH_INDICATORS = {
 // ============================================================================
 
 /**
- * Queries that benefit from internal knowledge retrieval (GraphRAG).
+ * Queries that benefit from internal knowledge retrieval (Knowledge Retrieval Lite).
  * Conservative by default: only clear knowledge/advisory intents auto-enable RAG.
  */
 const RAG_INDICATORS = [

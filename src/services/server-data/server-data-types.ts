@@ -74,40 +74,6 @@ export interface EnhancedServerMetrics {
   structuredLogs?: OTelLogRecord[];
 }
 
-/**
- * JSON 파일 데이터 구조 (sync 스크립트와 동기화)
- */
-export interface PrometheusTargetData {
-  job: string;
-  instance: string;
-  labels: {
-    hostname: string;
-    datacenter: string;
-    environment: string;
-    server_type: string;
-    os: string;
-    os_version: string;
-  };
-  metrics: {
-    up: 0 | 1;
-    node_cpu_utilization_ratio: number;
-    node_memory_utilization_ratio: number;
-    node_filesystem_utilization_ratio: number;
-    node_network_utilization_ratio: number;
-    node_load1: number;
-    node_load5: number;
-    node_boot_time_seconds: number;
-    node_procs_running: number;
-    http_server_request_duration_seconds: number;
-  };
-  nodeInfo: {
-    cpu_cores: number;
-    memory_total_bytes: number;
-    disk_total_bytes: number;
-  };
-  logs: string[];
-}
-
 export interface RawServerData {
   id: string;
   name: string;

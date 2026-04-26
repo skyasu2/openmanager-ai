@@ -34,6 +34,7 @@ import {
 import { logger } from '@/lib/logging';
 import { fetchWithRetry, RETRY_STANDARD } from '@/lib/utils/retry';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
+import type { RetrievalMetadata } from '@/types/ai/retrieval-status';
 import { createCSRFHeaders } from '@/utils/security/csrf-client';
 import {
   closeTrackedEventSource,
@@ -71,6 +72,7 @@ export interface AsyncQueryResult {
     sourceType: string;
     category?: string;
   }>;
+  retrieval?: RetrievalMetadata;
   processingTimeMs?: number;
   latencyTier?: 'fast' | 'normal' | 'slow' | 'very_slow';
   resolvedMode?: 'single' | 'multi';

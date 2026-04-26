@@ -1,5 +1,10 @@
 import { BookOpen, Clock, Cpu, Database, ExternalLink } from 'lucide-react';
 import {
+  buildAnalysisFeatureStatus,
+  buildVisibleFeatureStatusBadges,
+  type FeatureStatusBadge,
+} from '@/lib/ai/utils/retrieval-status';
+import {
   getToolDescription,
   getToolLabel,
 } from '@/lib/ai/utils/tool-presentation';
@@ -25,6 +30,26 @@ export function AnalysisBasisMetadata({
   );
   const hasLegacyRagEvidence =
     Boolean(basis.ragUsed) && !hasRagEvidence && !hasWebEvidence;
+  const featureStatus =
+    basis.featureStatus ??
+    buildAnalysisFeatureStatus({
+      retrieval: basis.retrieval,
+      ragEnabled: Boolean(basis.ragUsed),
+      hasKnowledgeEvidence: hasRagEvidence || hasLegacyRagEvidence,
+      hasWebEvidence,
+      analysisMode: basis.analysisMode,
+    });
+  const featureBadges = buildVisibleFeatureStatusBadges(featureStatus);
+
+  const renderFeatureBadge = (badge: FeatureStatusBadge) => (
+    <span
+      key={badge.feature}
+      className={`rounded-full px-1.5 py-0.5 text-xs ${badge.className}`}
+      title={badge.state.reason}
+    >
+      {badge.label}
+    </span>
+  );
 
   return (
     <>
@@ -49,16 +74,7 @@ export function AnalysisBasisMetadata({
         <Cpu className="h-3.5 w-3.5 text-gray-400" />
         <span className="text-gray-500">엔진:</span>
         <span className={getEngineColor(basis.engine)}>{basis.engine}</span>
-        {(hasRagEvidence || hasLegacyRagEvidence) && (
-          <span className="rounded-full bg-purple-100 px-1.5 py-0.5 text-xs text-purple-600">
-            RAG 사용됨
-          </span>
-        )}
-        {hasWebEvidence && (
-          <span className="rounded-full bg-sky-100 px-1.5 py-0.5 text-xs text-sky-700">
-            Web 사용됨
-          </span>
-        )}
+        {featureBadges.map(renderFeatureBadge)}
       </div>
 
       {meaningfulTools && meaningfulTools.length > 0 && (

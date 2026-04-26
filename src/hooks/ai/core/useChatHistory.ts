@@ -57,6 +57,9 @@ export function useChatHistory<TMessage extends RestoredMessage>({
 
       if (
         !metadata?.traceId &&
+        !analysisBasis?.retrieval &&
+        !analysisBasis?.featureStatus &&
+        !analysisBasis?.analysisMode &&
         !analysisBasis?.toolsCalled &&
         !analysisBasis?.ragSources &&
         !metadata?.assistantResponseView &&
@@ -71,6 +74,15 @@ export function useChatHistory<TMessage extends RestoredMessage>({
 
       return {
         ...(metadata?.traceId && { traceId: metadata.traceId }),
+        ...(analysisBasis?.retrieval && {
+          retrieval: analysisBasis.retrieval,
+        }),
+        ...(analysisBasis?.featureStatus && {
+          featureStatus: analysisBasis.featureStatus,
+        }),
+        ...(analysisBasis?.analysisMode && {
+          analysisMode: analysisBasis.analysisMode,
+        }),
         ...(analysisBasis?.toolsCalled && {
           toolsCalled: analysisBasis.toolsCalled,
         }),
