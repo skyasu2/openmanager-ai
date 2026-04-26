@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.35](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.34...v8.11.35) (2026-04-26)
+
+
+### Features
+
+* **ai-engine:** harden retrieval runtime contracts ([fa9291d](https://gitlab.com/skyasu2/openmanager-ai/-/commit/fa9291d9ee3eb2e8ebc0076a62038f4d3faff060))
+
+
+### Bug Fixes
+
+* **ai-engine:** stabilize topology routing in ci ([153364d](https://gitlab.com/skyasu2/openmanager-ai/-/commit/153364d021faf33e4d05d4ecaf789894900a7e82))
+
+
+### Code Refactoring
+
+* **ai-sidebar:** complete mobile tool navigation ([67f8d36](https://gitlab.com/skyasu2/openmanager-ai/-/commit/67f8d360c987b51f0c62d46a2753857d8b7b4b58))
+
+
+### Tests
+
+* **ai-engine:** update agent tool mocks ([6da4c5f](https://gitlab.com/skyasu2/openmanager-ai/-/commit/6da4c5fb7743ef6dc2795f6519d22f0032c7c8ba))
+
 ## [8.11.34](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.33...v8.11.34) (2026-04-26)
 
 
