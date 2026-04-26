@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-26 KST (`AI assistant retrieval contract implemented`)
+**Last Updated**: 2026-04-26 KST (`Knowledge Retrieval Lite adapter implemented`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -23,7 +23,7 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
-| AI assistant retrieval and multi-agent runtime refactor | High | **Approved / Task 1B 완료 / Task 2 대기** — Cloud Run `cloud-run/ai-engine` backend 제약을 전제로, Cerebras Qwen primary 경로 + `llama3.1-8b` intra-fallback/model-aware quota, Retrieval contract 타입, 18대 서버 topology contract를 반영했다. 다음 단계는 Knowledge Retrieval Lite service 도입이다. Mistral은 text fallback으로 유지하되 RAG runtime 의존을 제거하며 custom GraphRAG를 Knowledge Retrieval Lite로 대체한다. 상세: [ai-assistant-retrieval-multi-agent-refactor-plan.md](ai-assistant-retrieval-multi-agent-refactor-plan.md) |
+| AI assistant retrieval and multi-agent runtime refactor | High | **Approved / Task 2·4 완료 / Task 3 대기** — Cloud Run `cloud-run/ai-engine` backend 제약을 전제로, Cerebras Qwen primary 경로 + `llama3.1-8b` intra-fallback/model-aware quota, Retrieval contract 타입, 18대 서버 topology contract, Knowledge Retrieval Lite service, `searchKnowledgeBase` Lite adapter를 반영했다. 다음 단계는 custom GraphRAG runtime 제거다. Mistral은 text fallback으로 유지하되 RAG runtime 의존을 제거하며 custom GraphRAG를 Knowledge Retrieval Lite로 대체한다. 상세: [ai-assistant-retrieval-multi-agent-refactor-plan.md](ai-assistant-retrieval-multi-agent-refactor-plan.md) |
 | ~~AI Response Visibility & Rate Limit (Phase 1~5)~~ | — | **완료** — archive 이동. write bucket 재평가 결과 `supervisor 10/min`, `jobs/process 5/min`, `daily 100` 유지 결정 로그는 archived plan에 유지. |
 | ~~AI Stream Route Contract - residual cleanup~~ | — | **완료** — archive 이동. |
 | ~~OTel 토폴로지 개선~~ | — | **완료** — archive 이동: [archive/otel-topology-improvement-plan.md](archive/otel-topology-improvement-plan.md). |
@@ -31,6 +31,18 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-26 #186)
+- [x] Knowledge Retrieval Lite service + `searchKnowledgeBase` adapter 도입
+  - `retrieveKnowledgeEvidence`를 추가해 `search_knowledge_text` RPC 기반 BM25 retrieval과 tag/metadata boost re-ranking을 구현
+  - `searchKnowledgeBase` tool 이름과 legacy boolean input은 유지하되 내부 GraphRAG/vector/Tavily fallback 경로를 제거하고 Lite retrieval adapter로 교체
+  - RAG runtime에서 Mistral embedding, `hybridGraphSearch`, `traverse_knowledge_graph`, Tavily 내부 fallback을 호출하지 않는 계약 테스트 추가
+  - retrieval metadata(`retrievalEnabled`, `retrievalUsed`, `retrievalMode`, `suppressedReason`, `evidenceCount`, `webUsed`)와 `EvidenceCard[]`를 tool result에 포함
+  - Cloud Run 스펙 증설, background worker, live provider key 추가 없이 deterministic local test로 검증
+  - 검증:
+    - `cd cloud-run/ai-engine && npm run test -- src/lib/knowledge-retrieval-lite.test.ts src/tools-ai-sdk/reporter-tools/knowledge-search-tool.test.ts`
+    - `cd cloud-run/ai-engine && npm run type-check`
+    - `cd cloud-run/ai-engine && npm run test` (`79 files / 850 tests`)
 
 ### Completed (2026-04-26 #185)
 - [x] AI assistant 18대 topology contract 확정

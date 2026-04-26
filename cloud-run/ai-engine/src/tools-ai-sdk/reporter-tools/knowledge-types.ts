@@ -1,7 +1,7 @@
 export interface SupabaseClientLike {
   rpc: (
     fn: string,
-    params: Record<string, unknown>,
+    params: Record<string, unknown>
   ) => Promise<{ data: unknown; error: unknown }>;
 }
 
@@ -11,7 +11,14 @@ export interface RAGResultItem {
   content: string;
   category: string;
   similarity: number;
-  sourceType: 'vector' | 'graph' | 'web' | 'fallback';
+  sourceType:
+    | 'vector'
+    | 'graph'
+    | 'web'
+    | 'fallback'
+    | 'knowledge'
+    | 'incident'
+    | 'runbook';
   hopDistance: number;
   url?: string;
 }

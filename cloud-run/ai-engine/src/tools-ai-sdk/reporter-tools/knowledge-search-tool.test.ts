@@ -184,21 +184,44 @@ describe('searchKnowledgeBase', () => {
 
   it('returns error fallback when Knowledge Retrieval Lite is unavailable', async () => {
     mockGetSupabaseClient.mockResolvedValue({} as never);
-    mockRetrieveKnowledgeEvidence.mockResolvedValue({
-      success: false,
-      _source: 'Knowledge Retrieval Lite (Unavailable)',
-      evidenceCards: [],
-      totalFound: 0,
-      metadata: {
-        retrievalEnabled: true,
-        retrievalUsed: false,
-        retrievalMode: 'lite',
-        suppressedReason: 'unavailable',
-        evidenceCount: 0,
-        webUsed: false,
-      },
-      error: 'text search unavailable',
-    });
+    mockRetrieveKnowledgeEvidence
+      .mockResolvedValueOnce({
+        success: false,
+        _source: 'Knowledge Retrieval Lite (Unavailable)',
+        evidenceCards: [],
+        totalFound: 0,
+        metadata: {
+          retrievalEnabled: true,
+          retrievalUsed: false,
+          retrievalMode: 'lite',
+          suppressedReason: 'unavailable',
+          evidenceCount: 0,
+          webUsed: false,
+        },
+        error: 'text search unavailable',
+      })
+      .mockResolvedValueOnce({
+        success: true,
+        _source: 'Knowledge Retrieval Lite',
+        evidenceCards: [
+          {
+            id: 'kb-recovered',
+            title: 'Recovered KB',
+            summary: 'text search recovered',
+            score: 0.7,
+            sourceType: 'knowledge',
+            category: 'troubleshooting',
+          },
+        ],
+        totalFound: 1,
+        metadata: {
+          retrievalEnabled: true,
+          retrievalUsed: true,
+          retrievalMode: 'lite',
+          evidenceCount: 1,
+          webUsed: false,
+        },
+      });
 
     const result = await searchKnowledgeBase.execute({
       query: 'redis 설정 확인',
@@ -223,6 +246,17 @@ describe('searchKnowledgeBase', () => {
     expect(mockEmbedText).not.toHaveBeenCalled();
     expect(mockHybridGraphSearch).not.toHaveBeenCalled();
     expect(mockSearchWithEmbedding).not.toHaveBeenCalled();
+
+    const recovered = await searchKnowledgeBase.execute({
+      query: 'redis 설정 확인',
+      useGraphRAG: false,
+    });
+    expect(recovered).toMatchObject({
+      success: true,
+      _source: 'Knowledge Retrieval Lite',
+      totalFound: 1,
+    });
+    expect(mockRetrieveKnowledgeEvidence).toHaveBeenCalledTimes(2);
   });
 
   it('reuses cached result for duplicate KB searches', async () => {

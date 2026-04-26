@@ -494,23 +494,23 @@ interface ProviderModelPolicy {
 ### 테스트 시나리오
 
 - [ ] RAG off: `searchKnowledgeBase` 또는 retrieval tool이 active tools에서 제거된다.
-- [ ] RAG on: Knowledge Retrieval Lite는 실행되지만 `mistral-embed`를 호출하지 않는다.
-- [ ] RAG on: `traverse_knowledge_graph` RPC를 호출하지 않는다.
+- [x] RAG on: Knowledge Retrieval Lite는 실행되지만 `mistral-embed`를 호출하지 않는다.
+- [x] RAG on: `traverse_knowledge_graph` RPC를 호출하지 않는다.
 - [ ] topology/direct KB path: `useGraphRAG: true` 없이 deterministic evidence response를 만든다.
-- [ ] Web on: Tavily는 Web policy 경로에서만 호출되고 RAG 내부 fallback으로 호출되지 않는다.
-- [ ] Web off: retrieval 결과 부족 시에도 Tavily를 호출하지 않는다.
+- [x] Web on: Tavily는 Web policy 경로에서만 호출되고 RAG 내부 fallback으로 호출되지 않는다.
+- [x] Web off: retrieval 결과 부족 시에도 Tavily를 호출하지 않는다.
 - [ ] 심층 분석: `analysisMode='thinking'`은 deep routing metadata를 남기지만 provider-native reasoning으로 표시하지 않는다.
 - [ ] frontend badge: RAG 허용과 RAG 사용됨을 구분한다.
-- [ ] response metadata: `retrievalEnabled`, `retrievalUsed`, `retrievalMode`, `suppressedReason`, `evidenceCount`를 포함한다.
+- [x] response metadata: `retrievalEnabled`, `retrievalUsed`, `retrievalMode`, `suppressedReason`, `evidenceCount`를 포함한다.
 - [ ] provider chain: Mistral은 text fallback으로 남고 RAG provider로 표시되지 않는다.
 - [ ] Cerebras Qwen: direct text, structured output, forced tool call smoke 결과를 근거로 model metadata가 green으로 표시된다.
 - [ ] Cerebras fallback: Qwen quota/circuit/deprecation block 시 `llama3.1-8b`로 fallback하고, `llama3.1-8b`도 실패하면 기존 provider chain으로 이동한다.
 - [ ] Cerebras quota: Qwen은 provider 공통 `30 RPM / 60K TPM`이 아니라 계정 Limits 기준 보수값으로 pre-emptive fallback 된다.
 - [ ] Cerebras deprecation: 2026-05-27 이후 Qwen/`llama3.1-8b`가 기본 runtime model로 선택되지 않는 guard test가 있다.
 - [ ] Tool loop: Qwen forced tool call 뒤 final text 공백이면 deterministic summary/finalAnswer 재합성 또는 provider fallback이 동작한다.
-- [ ] Cloud Run contract: retrieval 기본 경로가 runtime embedding/graph traversal/background worker를 요구하지 않는다.
-- [ ] Cloud Run contract: 구현이나 문서가 Cloud Run 스펙 증설, min instances, paid always-on worker를 전제로 하지 않는다.
-- [ ] Secret contract: live provider key는 source/test fixture에 추가하지 않고 env/Secret Manager 참조만 사용한다.
+- [x] Cloud Run contract: retrieval 기본 경로가 runtime embedding/graph traversal/background worker를 요구하지 않는다.
+- [x] Cloud Run contract: 구현이나 문서가 Cloud Run 스펙 증설, min instances, paid always-on worker를 전제로 하지 않는다.
+- [x] Secret contract: live provider key는 source/test fixture에 추가하지 않고 env/Secret Manager 참조만 사용한다.
 - [x] Server topology contract: current inventory가 18대, role별 3대, AZ별 6대임을 검증한다.
 - [x] Server topology contract: active docs/data의 현재 설명에 `15대 서버` stale 표현이 남지 않는다.
 - [x] Server topology contract: `infrastructure-topology`가 resource catalog의 18대 핵심 노드를 누락하지 않는다.
@@ -521,8 +521,9 @@ interface ProviderModelPolicy {
 
 > 구현 착수 전 Status가 Approved인지 확인한다.
 
-- [ ] Task 0 - 계약 확정 및 failing test 작성
+- [x] Task 0 - 계약 확정 및 failing test 작성
   - 완료 기준: 위 테스트 시나리오와 Cloud Run runtime 계약을 기준으로 failing tests를 먼저 추가한다.
+  - 완료 기록(2026-04-26): `test(spec): knowledge retrieval lite add failing tests before implementation` 커밋으로 Lite service/tool adapter 실패 계약을 먼저 고정했다.
 - [x] Task 0A - Cerebras Qwen model policy 확정
   - 완료 기준: Qwen primary, `llama3.1-8b` intra-Cerebras fallback 정책과 model-aware quota/deprecation guard 테스트를 먼저 추가한다. `gpt-oss-120b`는 무료 티어 미포함으로 제외.
   - 완료 기록(2026-04-26): `CEREBRAS_MODEL_ID` 기본값을 Qwen으로 전환하고, `CEREBRAS_FALLBACK_MODEL_IDS=llama3.1-8b` intra-provider fallback, model-aware quota/usage key, pre-emptive model fallback, deprecation metadata, GPT-OSS runtime 제외 계약을 구현/검증했다.
@@ -534,12 +535,14 @@ interface ProviderModelPolicy {
   - 세부 범위: `ai-standards.md`의 15대 OTel 설명, `infrastructure-topology`의 15대 다이어그램, active docs/data의 stale topology 표현을 18대 컨셉으로 정렬한다.
   - RAG 경계: topology/direct query는 resource catalog와 topology lookup을 우선하고 RAG는 runbook/incident/manual 설명 evidence만 제공한다.
   - 완료 기록(2026-04-26): resource catalog/precomputed state/다이어그램을 18대 inventory로 동기화하고, role별 3대·AZ별 6대·다이어그램-카탈로그 일치 계약 테스트를 추가했다. active docs/UI/test fixture의 현재형 `15대 서버` 표현을 18대 관측 데이터셋 기준으로 갱신했고, OTel 로그에는 root-cause/topology answer label이 누출되지 않도록 `data:verify` 게이트를 추가했다.
-- [ ] Task 2 - Knowledge Retrieval Lite service 도입
+- [x] Task 2 - Knowledge Retrieval Lite service 도입
   - 완료 기준: BM25/text search + metadata boost 기반 retrieval service를 추가하고 Mistral embedding 및 Cloud Run request-path index 생성 없이 동작한다.
+  - 완료 기록(2026-04-26): `retrieveKnowledgeEvidence`를 추가해 `search_knowledge_text` RPC 기반 BM25 검색과 tag/metadata boost re-ranking을 구현했다. Supabase unavailable/no-results/error metadata를 명시하고, live provider key나 external embedding 호출 없이 deterministic unit contract로 검증했다.
 - [ ] Task 3 - custom GraphRAG runtime 제거
   - 완료 기준: 일반 runtime에서 `graphrag-service`, `graphrag-graph`, `traverse_knowledge_graph`, `useGraphRAG` 경로를 호출하지 않는다.
-- [ ] Task 4 - `searchKnowledgeBase`를 retrieval lite adapter로 교체
+- [x] Task 4 - `searchKnowledgeBase`를 retrieval lite adapter로 교체
   - 완료 기준: tool 이름 호환은 유지하되 내부 구현은 `retrieveKnowledgeEvidence`를 사용한다.
+  - 완료 기록(2026-04-26): `searchKnowledgeBase` tool은 이름과 legacy boolean input 호환을 유지하면서 내부 GraphRAG/vector/Tavily fallback 경로를 제거하고 `retrieveKnowledgeEvidence` adapter로 교체했다. `useGraphRAG`, `fastMode`, `includeWebSearch`는 호환 입력으로만 유지하며 Lite retrieval에서는 graph/web fallback을 호출하지 않는다.
 - [ ] Task 5 - multi-agent runtime policy SSOT 도입
   - 완료 기준: agent별 provider order, maxSteps, tool allowlist, evidence budget이 한 곳에서 관리된다.
 - [ ] Task 5A - provider model policy SSOT 도입
@@ -553,18 +556,18 @@ interface ProviderModelPolicy {
 
 ## 완료 기준
 
-- [ ] `cloud-run/ai-engine` type-check 통과
-- [ ] root type-check 통과
-- [ ] retrieval 관련 unit/contract tests 통과
+- [x] `cloud-run/ai-engine` type-check 통과
+- [x] root type-check 통과
+- [x] retrieval 관련 unit/contract tests 통과
 - [ ] frontend RAG/Web/analysis mode status tests 통과
 - [ ] provider/model drift guard 통과
 - [ ] Cerebras Qwen primary / llama3.1-8b intra-fallback model-aware quota/deprecation guard 통과
 - [ ] Qwen tool-call final text fallback 또는 재합성 계약 테스트 통과
 - [ ] docs/data stale reference guard 통과
-- [ ] `git diff --check` 통과
-- [ ] 변경이 AI/API 계약을 포함하므로 `npm run test:contract` 또는 해당 계약 테스트 subset 통과
-- [ ] production 외부 LLM/API 반복 호출 없이 검증 완료
-- [ ] Cloud Run 배포 스펙 증설 없이 완료
+- [x] `git diff --check` 통과
+- [x] 변경이 AI/API 계약을 포함하므로 `npm run test:contract` 또는 해당 계약 테스트 subset 통과
+- [x] production 외부 LLM/API 반복 호출 없이 검증 완료
+- [x] Cloud Run 배포 스펙 증설 없이 완료
 - [ ] GCP Secret Manager/Cloud Run env 동기화 필요 항목이 있으면 별도 env-sync 체크리스트로 분리
 
 ## 리스크와 완화
