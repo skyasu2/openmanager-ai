@@ -9,19 +9,18 @@ import {
   useRef,
   useState,
 } from 'react';
-import type { AIAssistantFunction } from '@/components/ai/AIAssistantIconPanel';
 import AIAssistantIconPanel from '@/components/ai/AIAssistantIconPanel';
 import AIContentArea from '@/components/ai/AIContentArea';
 // Components
 import { AIErrorBoundary } from '@/components/error/AIErrorBoundary';
 import { isGuestFullAccessEnabled } from '@/config/guestMode';
 import { useAIChatCore } from '@/hooks/ai/useAIChatCore';
+import { useAIChatSurface } from '@/hooks/ai/useAIChatSurface';
 import { useAIEntryController } from '@/hooks/ai/useAIEntryController';
 import { useResizable } from '@/hooks/ui/useResizable';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { cn } from '@/lib/utils';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
-import type { AnalysisMode } from '@/types/ai/analysis-mode';
 // Types
 import type { AISidebarV3Props } from '@/types/ai-sidebar/ai-sidebar-types';
 import { AISidebarHeader } from './AISidebarHeader';
@@ -52,49 +51,26 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
   // 🔐 권한 확인
   const permissions = useUserPermissions();
 
-  // 🔧 UI 상태 관리 (사이드바 전용)
-  const [selectedFunction, setSelectedFunction] =
-    useState<AIAssistantFunction>('chat');
+  // 🔧 공통 chat surface 상태 (selectedFunction + store 구독 번들)
+  const {
+    selectedFunction,
+    setSelectedFunction,
+    webSearchEnabled,
+    toggleWebSearch,
+    ragEnabled,
+    toggleRAG,
+    analysisMode,
+    selectAnalysisMode,
+    pendingEntryState,
+    consumePendingEntryState,
+    pendingPrefillMessage,
+    consumePendingPrefillMessage,
+  } = useAIChatSurface();
 
-  // 📐 사이드바 너비 상태 (Zustand Store)
+  // 📐 사이드바 너비 상태 (사이드바 전용)
   const sidebarWidth = useAISidebarStore((state) => state.sidebarWidth);
   const setSidebarWidth = useAISidebarStore((state) => state.setSidebarWidth);
-  const pendingPrefillMessage = useAISidebarStore(
-    (state) => state.pendingPrefillMessage
-  );
-  const pendingEntryState = useAISidebarStore(
-    (state) => state.pendingEntryState
-  );
-  const consumePendingPrefillMessage = useAISidebarStore(
-    (state) => state.consumePendingPrefillMessage
-  );
-  const consumePendingEntryState = useAISidebarStore(
-    (state) => state.consumePendingEntryState
-  );
-  const webSearchEnabled = useAISidebarStore((state) => state.webSearchEnabled);
-  const setWebSearchEnabled = useAISidebarStore(
-    (state) => state.setWebSearchEnabled
-  );
-  const ragEnabled = useAISidebarStore((state) => state.ragEnabled);
-  const setRagEnabled = useAISidebarStore((state) => state.setRagEnabled);
-  const analysisMode = useAISidebarStore((state) => state.analysisMode);
-  const setAnalysisMode = useAISidebarStore((state) => state.setAnalysisMode);
   const { openFullscreen } = useAIEntryController();
-
-  const toggleWebSearch = useCallback(() => {
-    setWebSearchEnabled(!webSearchEnabled);
-  }, [webSearchEnabled, setWebSearchEnabled]);
-
-  const toggleRAG = useCallback(() => {
-    setRagEnabled(!ragEnabled);
-  }, [ragEnabled, setRagEnabled]);
-
-  const selectAnalysisMode = useCallback(
-    (mode: AnalysisMode) => {
-      setAnalysisMode(mode);
-    },
-    [setAnalysisMode]
-  );
 
   // 📐 드래그 리사이즈 훅
   const { width, isResizing, handleMouseDown, handleTouchStart } = useResizable(
@@ -213,7 +189,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
       setSelectedFunction(entry.selectedFunction ?? 'chat');
 
       if (entry.analysisMode) {
-        setAnalysisMode(entry.analysisMode);
+        selectAnalysisMode(entry.analysisMode);
       }
 
       if (entry.draft) {
@@ -235,8 +211,9 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
     isOpen,
     pendingEntryState,
     pendingPrefillMessage,
-    setAnalysisMode,
+    selectAnalysisMode,
     setInput,
+    setSelectedFunction,
   ]);
 
   const handleOpenFullscreen = useCallback(() => {

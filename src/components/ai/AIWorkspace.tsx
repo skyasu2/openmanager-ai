@@ -25,8 +25,7 @@ import { EnhancedAIChat } from '@/components/ai-sidebar/EnhancedAIChat';
 import { AIErrorBoundary } from '@/components/error/AIErrorBoundary';
 import { APP_VERSION } from '@/config/app-meta';
 import { useAIChatCore } from '@/hooks/ai/useAIChatCore';
-import { useAISidebarStore } from '@/stores/useAISidebarStore';
-import type { AnalysisMode } from '@/types/ai/analysis-mode';
+import { useAIChatSurface } from '@/hooks/ai/useAIChatSurface';
 import { RealTimeDisplay } from '../dashboard/RealTimeDisplay';
 import { OpenManagerLogo } from '../shared/OpenManagerLogo';
 import UnifiedProfileHeader from '../shared/UnifiedProfileHeader';
@@ -52,52 +51,38 @@ interface AIWorkspaceProps {
 export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
-  const [selectedFunction, setSelectedFunction] =
-    useState<AIAssistantFunction>('chat');
   const [isRightPanelOpen, setIsRightPanelOpen] = useState(true);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // 🔧 P2: 핸들러 최적화 - useCallback으로 불필요한 리렌더 방지
-  const handleFunctionSelect = useCallback((func: AIAssistantFunction) => {
-    setSelectedFunction(func);
-  }, []);
+  // 🔧 공통 chat surface 상태 (selectedFunction + store 구독 번들)
+  const {
+    selectedFunction,
+    setSelectedFunction,
+    webSearchEnabled,
+    toggleWebSearch,
+    ragEnabled,
+    toggleRAG,
+    analysisMode,
+    selectAnalysisMode,
+    pendingEntryState,
+    consumePendingEntryState,
+    pendingPrefillMessage,
+    consumePendingPrefillMessage,
+  } = useAIChatSurface();
+
+  const handleFunctionSelect = useCallback(
+    (func: AIAssistantFunction) => {
+      setSelectedFunction(func);
+    },
+    [setSelectedFunction]
+  );
 
   const handleToggleRightPanel = useCallback(() => {
     setIsRightPanelOpen((prev) => !prev);
   }, []);
-
-  // 웹 검색 토글
-  const webSearchEnabled = useAISidebarStore((s) => s.webSearchEnabled);
-  const setWebSearchEnabled = useAISidebarStore((s) => s.setWebSearchEnabled);
-  const toggleWebSearch = useCallback(() => {
-    setWebSearchEnabled(!webSearchEnabled);
-  }, [webSearchEnabled, setWebSearchEnabled]);
-  const ragEnabled = useAISidebarStore((s) => s.ragEnabled);
-  const setRagEnabled = useAISidebarStore((s) => s.setRagEnabled);
-  const toggleRAG = useCallback(() => {
-    setRagEnabled(!ragEnabled);
-  }, [ragEnabled, setRagEnabled]);
-  const analysisMode = useAISidebarStore((s) => s.analysisMode);
-  const setAnalysisMode = useAISidebarStore((s) => s.setAnalysisMode);
-  const pendingEntryState = useAISidebarStore((s) => s.pendingEntryState);
-  const consumePendingEntryState = useAISidebarStore(
-    (s) => s.consumePendingEntryState
-  );
-  const pendingPrefillMessage = useAISidebarStore(
-    (s) => s.pendingPrefillMessage
-  );
-  const consumePendingPrefillMessage = useAISidebarStore(
-    (s) => s.consumePendingPrefillMessage
-  );
-  const selectAnalysisMode = useCallback(
-    (nextMode: AnalysisMode) => {
-      setAnalysisMode(nextMode);
-    },
-    [setAnalysisMode]
-  );
 
   // ============================================================================
   // 🎯 공통 AI 채팅 로직 (useAIChatCore 훅 사용)
@@ -163,13 +148,19 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
     setSelectedFunction(entry.selectedFunction ?? 'chat');
 
     if (entry.analysisMode) {
-      setAnalysisMode(entry.analysisMode);
+      selectAnalysisMode(entry.analysisMode);
     }
 
     if (entry.draft) {
       setInput(entry.draft);
     }
-  }, [consumePendingEntryState, pendingEntryState, setAnalysisMode, setInput]);
+  }, [
+    consumePendingEntryState,
+    pendingEntryState,
+    selectAnalysisMode,
+    setInput,
+    setSelectedFunction,
+  ]);
 
   useEffect(() => {
     if (pendingEntryState) {
@@ -188,6 +179,7 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
     pendingEntryState,
     pendingPrefillMessage,
     setInput,
+    setSelectedFunction,
   ]);
 
   // --- Render Logic ---
