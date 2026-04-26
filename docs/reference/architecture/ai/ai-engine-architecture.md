@@ -632,7 +632,7 @@ cloud-run/ai-engine/src/
 | **Free Tier 현실성** | 충분 | 1vCPU/512Mi에서 경량 객체, I/O-bound LLM 호출. 병목은 provider RPM |
 | **Cold Start 최적화** | 잘 설계됨 | Lazy route loading + deferred service init + cpu-boost |
 | **Secret 관리** | 적절 | 5개 JSON 그룹 (tavilyBackup 통합 완료), GCP Secret Manager `:latest` |
-| **RAG 파이프라인** | 기능 | cosine threshold 0.3은 낮음 (P2), Mistral embed 단일 의존 |
+| **Knowledge Retrieval Lite** | 기능 | BM25 + metadata boost 기반. cosine vector path 기본 비활성 (P2), Supabase `search_knowledge_text` RPC 의존 |
 | **Observability** | 충분 | Langfuse + Pino + Cloud Logging, 그리고 Vercel↔Cloud Run 간 W3C Trace Context 전파는 구현되어 있음. 다만 OTLP exporter 기반 full distributed tracing은 아직 아님 |
 | **확장성 한계** | Provider RPM이 첫 병목 | 기본적으로 LLM 쿼터/쿨타임 정책이 병목 가능, 추적 필요 |
 

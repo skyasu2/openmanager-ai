@@ -41,6 +41,8 @@ const RULES: DeprecatedModelRule[] = [
       'cloud-run/ai-engine/src/services/resilience/quota-tracker.test.ts',
       'cloud-run/ai-engine/src/services/resilience/retry-with-fallback.test.ts',
       'src/config/ai-providers.ts',
+      'docs/reference/architecture/ai/ai-engine-architecture.md',
+      'docs/reference/architecture/system/system-architecture-current.md',
     ],
   },
   {
