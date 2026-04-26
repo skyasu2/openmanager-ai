@@ -149,6 +149,13 @@ bash scripts/env/sync-vercel.sh
 # Codex MCP 래퍼 (프로젝트 스코프)
 bash scripts/mcp/codex-local.sh
 
+# 선택: 사용자 명령 설치
+npm run codex:install-launcher
+openmanager-codex
+
+# 선택: codex 명령 자체를 프로젝트 launcher로 shadow
+npm run codex:install-launcher:shadow
+
 # Storybook MCP 포함 실행 (storybook dev 서버가 살아있을 때 자동 포함)
 OPENMANAGER_STORYBOOK_MCP_MODE=auto bash scripts/mcp/codex-local.sh
 

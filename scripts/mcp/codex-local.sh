@@ -9,6 +9,37 @@ BACKUP_CONFIG_FILE=""
 FILTERED_CONFIG_FILE=""
 EFFECTIVE_CONFIG_MUTATED=0
 
+is_openmanager_codex_launcher() {
+  local candidate="$1"
+  [ -f "$candidate" ] && grep -q 'OPENMANAGER_CODEX_LAUNCHER=1' "$candidate" 2>/dev/null
+}
+
+resolve_codex_bin() {
+  local candidate=""
+
+  if [ -n "${OPENMANAGER_REAL_CODEX_BIN:-}" ]; then
+    if [ -x "$OPENMANAGER_REAL_CODEX_BIN" ]; then
+      printf '%s\n' "$OPENMANAGER_REAL_CODEX_BIN"
+      return 0
+    fi
+
+    echo "ERROR: OPENMANAGER_REAL_CODEX_BIN is not executable: $OPENMANAGER_REAL_CODEX_BIN" >&2
+    return 2
+  fi
+
+  while IFS= read -r candidate; do
+    if [ -z "$candidate" ] || is_openmanager_codex_launcher "$candidate"; then
+      continue
+    fi
+
+    printf '%s\n' "$candidate"
+    return 0
+  done < <(type -P -a codex 2>/dev/null || true)
+
+  echo "ERROR: codex binary not found in PATH" >&2
+  return 2
+}
+
 # OPENMANAGER_STORYBOOK_MCP_MODE:
 # - on: 항상 포함
 # - auto: Storybook MCP endpoint가 살아있을 때만 포함
@@ -237,8 +268,10 @@ fi
 trap cleanup_effective_config_override EXIT INT TERM
 prepare_effective_codex_config
 
+CODEX_BIN="$(resolve_codex_bin)" || exit $?
+
 set +e
-codex "$@"
+"$CODEX_BIN" "$@"
 CODEX_EXIT_CODE=$?
 set -e
 
