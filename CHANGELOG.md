@@ -2,6 +2,50 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.33](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.32...v8.11.33) (2026-04-26)
+
+
+### Features
+
+* **ai:** add SambaNova provider and fix Groq lifecycle metadata ([4874db5](https://gitlab.com/skyasu2/openmanager-ai/-/commit/4874db54fd00d48d5563a846e5bfb8c5e527a614))
+* **ai:** align provider models and tool evidence ([a0eb741](https://gitlab.com/skyasu2/openmanager-ai/-/commit/a0eb7411a27a2405fc7fc520322af8069e50f9b6))
+* **ai:** align Qwen fallback and retrieval contract ([495f790](https://gitlab.com/skyasu2/openmanager-ai/-/commit/495f790e450cc8b235c9e7bb3e25180757ca686a))
+* **ai:** finalize retrieval lite runtime policy ([f756643](https://gitlab.com/skyasu2/openmanager-ai/-/commit/f75664381d2c616bdbc0481b7cbb3099e949ae80))
+* **ai:** harden retrieval lite fallback ([2030661](https://gitlab.com/skyasu2/openmanager-ai/-/commit/20306618dfe2bfc5c8d99d73cb1306b1d328a065))
+* **ai:** implement knowledge retrieval lite adapter ([e7f32b2](https://gitlab.com/skyasu2/openmanager-ai/-/commit/e7f32b22e4f4abba790832124759f5f7ded619ba))
+* **otel:** align 18-server topology dataset ([339f089](https://gitlab.com/skyasu2/openmanager-ai/-/commit/339f089bb334612e470b0fcf09d4f6f1e2f49a7d))
+* **qa:** surface residual risk evidence signals ([a505acb](https://gitlab.com/skyasu2/openmanager-ai/-/commit/a505acb40d67b1821e0d78902577263eb636b76d))
+
+
+### Bug Fixes
+
+* **ai:** align retrieval lite evidence contract ([df54e47](https://gitlab.com/skyasu2/openmanager-ai/-/commit/df54e4710e4193422b1b95e1abbeef9851e1efeb))
+* **ai:** propagate retrieval evidence contract ([dc1f599](https://gitlab.com/skyasu2/openmanager-ai/-/commit/dc1f599ae7f2136ae7f65bace24ef56f64879b44))
+* **docs:** update TypeScript generator references ([6bec075](https://gitlab.com/skyasu2/openmanager-ai/-/commit/6bec0751764de4b80bdf3997570e75fe2dde33af))
+* **ops:** restore supabase rag and reduce redis polling ([d163840](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d163840e1ab774958ef93a8fcbabe16851e05da2))
+* **test:** resolve provider drift guard and stale doc entry ([d447610](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d447610694477f5d750b0bb58bfe5435cfc27b99))
+* **test:** update vision-fallback mock to match split model-provider modules ([4515fba](https://gitlab.com/skyasu2/openmanager-ai/-/commit/4515fbafdbfa9814ebac679c8df2a78aa75f2807))
+
+
+### Code Refactoring
+
+* **ai-ui:** simplify assistant icon rail ([edd862c](https://gitlab.com/skyasu2/openmanager-ai/-/commit/edd862c1df40de2b91ddaeee96bc2fd404d51649))
+* **ai:** extract useAIChatSurface to deduplicate store wiring ([3cb4f10](https://gitlab.com/skyasu2/openmanager-ai/-/commit/3cb4f1081cfccaabb1f1473e6a08513f9b90cb40))
+* **ai:** remove custom graphrag runtime path ([9340d91](https://gitlab.com/skyasu2/openmanager-ai/-/commit/9340d91828bba8d674b331b7095de6db3ff87ea9))
+* **ai:** remove SambaNova, enable Cerebras tool calling ([42dd985](https://gitlab.com/skyasu2/openmanager-ai/-/commit/42dd985fce39d8dc76c680c89554e30ab52bec93))
+
+
+### Tests
+
+* **ai-engine:** isolate orchestrator provider mocks ([66f6180](https://gitlab.com/skyasu2/openmanager-ai/-/commit/66f618079d0526db7b3391b122dce3e4766f571f))
+* **ai:** guard dashboard assistant parity ([31431ac](https://gitlab.com/skyasu2/openmanager-ai/-/commit/31431aceae26d0c3dec65570a634005bdcd52c0f))
+* **e2e:** stabilize production release-gate qa ([9436952](https://gitlab.com/skyasu2/openmanager-ai/-/commit/94369529572d18f0521a57c73003964145003a7d))
+* **qa:** add residual risk failing specs ([d0168fb](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d0168fb0f6447848c0bafcaccdb8483e351279af))
+* **qa:** record v8.11.32 accessibility recheck ([29e8f28](https://gitlab.com/skyasu2/openmanager-ai/-/commit/29e8f2836dfba4e9b6ff41f60641e3f9df9422e1))
+* **spec:** agent runtime policy add failing tests before implementation ([dea1bbc](https://gitlab.com/skyasu2/openmanager-ai/-/commit/dea1bbc76121aaa89edb6668ad882ce539dc095c))
+* **spec:** graph runtime removal add failing tests before implementation ([663a406](https://gitlab.com/skyasu2/openmanager-ai/-/commit/663a406b5d741ec03fdbc3e3f1ba7070f11233b7))
+* **spec:** knowledge retrieval lite add failing tests before implementation ([07f074e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/07f074e2e4079f7984b9beb033e63c0848cb5881))
+
 ## [8.11.32](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.31...v8.11.32) (2026-04-23)
 
 
