@@ -6,7 +6,7 @@
  * - Vercel에서 프록시를 통해 이 서비스 호출
  * - API 키는 Cloud Run에서만 관리
  *
- * Updated: 2026-04-25 - Cerebras default model candidate moved to gpt-oss-120b
+ * Updated: 2026-04-25 - Cerebras default follows account-level smoke evidence
  */
 
 import { generateText, streamText } from 'ai';

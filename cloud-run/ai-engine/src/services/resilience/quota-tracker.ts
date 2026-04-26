@@ -13,6 +13,12 @@
 
 import { getRedisClient } from '../../lib/redis-client';
 import { logger } from '../../lib/logger';
+import {
+  getCerebrasFallbackModelIds,
+  CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
+  CEREBRAS_QWEN_MODEL_ID,
+  getCerebrasModelId,
+} from '../../lib/config-parser';
 
 // ============================================================================
 // Types
@@ -30,6 +36,10 @@ export interface ProviderQuota {
   tokensPerMinute: number;
   requestsPerDay?: number;
 }
+
+export type CerebrasQuotaModelId =
+  | typeof CEREBRAS_QWEN_MODEL_ID
+  | typeof CEREBRAS_LLAMA_FALLBACK_MODEL_ID;
 
 export interface ProviderUsage {
   dailyTokens: number;
@@ -55,21 +65,35 @@ export interface QuotaStatus {
 // Provider Quota 설정 (Free-tier production guard 기준)
 // ============================================================================
 
-export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {
+export const CEREBRAS_MODEL_QUOTAS: Record<CerebrasQuotaModelId, ProviderQuota> = {
   /**
-   * Cerebras Free Tier (current default candidate: gpt-oss-120b)
-   * @see https://inference-docs.cerebras.ai/support/rate-limits
-   * @updated 2026-04-03
-   *
-   * - 1M TPD, 60K TPM, 30 RPM, 14.4K RPD
-   * - Context/capability lives in provider-model-metadata; this tracker only enforces usage quotas.
+   * Account Limits screen 기준. 공식 Free tier 표보다 계정별 제한을 우선한다.
    */
-  cerebras: {
+  [CEREBRAS_QWEN_MODEL_ID]: {
+    dailyTokenLimit: 1_000_000,
+    requestsPerMinute: 5,
+    tokensPerMinute: 30_000,
+    requestsPerDay: 14_400,
+  },
+  [CEREBRAS_LLAMA_FALLBACK_MODEL_ID]: {
     dailyTokenLimit: 1_000_000,
     requestsPerMinute: 30,
     tokensPerMinute: 60_000,
     requestsPerDay: 14_400,
   },
+};
+
+export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {
+  /**
+   * Cerebras primary model quota. Use getQuotaForProvider(provider, modelId)
+   * for model-aware fallback checks.
+   * @see https://inference-docs.cerebras.ai/support/rate-limits
+   * @updated 2026-04-26
+   *
+   * - Qwen account limit: 1M TPD, 30K TPM, 5 RPM, 14.4K RPD
+   * - Context/capability lives in provider-model-metadata; this tracker only enforces usage quotas.
+   */
+  cerebras: CEREBRAS_MODEL_QUOTAS[CEREBRAS_QWEN_MODEL_ID],
   /**
    * Groq Free Tier (meta-llama/llama-4-scout-17b-16e-instruct)
    * @see https://console.groq.com/docs/rate-limits
@@ -126,6 +150,34 @@ export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {
   },
 };
 
+export function getQuotaForProvider(
+  provider: ProviderName,
+  modelId?: string
+): ProviderQuota {
+  if (provider !== 'cerebras') {
+    return PROVIDER_QUOTAS[provider];
+  }
+
+  const effectiveModelId = modelId || getCerebrasModelId();
+  if (
+    effectiveModelId === CEREBRAS_QWEN_MODEL_ID ||
+    effectiveModelId === CEREBRAS_LLAMA_FALLBACK_MODEL_ID
+  ) {
+    return CEREBRAS_MODEL_QUOTAS[effectiveModelId];
+  }
+
+  return CEREBRAS_MODEL_QUOTAS[CEREBRAS_QWEN_MODEL_ID];
+}
+
+function getQuotaModelCandidates(provider: LLMProviderName): (string | undefined)[] {
+  if (provider !== 'cerebras') return [undefined];
+
+  return [
+    getCerebrasModelId(),
+    ...getCerebrasFallbackModelIds(),
+  ].filter((modelId, index, list) => modelId && list.indexOf(modelId) === index);
+}
+
 // ============================================================================
 // Pre-emptive Fallback 임계값
 // ============================================================================
@@ -141,7 +193,7 @@ export const PREEMPTIVE_THRESHOLDS = {
 // In-Memory Storage (단일 인스턴스용)
 // ============================================================================
 
-const inMemoryUsage = new Map<ProviderName, ProviderUsage>();
+const inMemoryUsage = new Map<string, ProviderUsage>();
 
 function getDefaultUsage(): ProviderUsage {
   const now = Date.now();
@@ -159,9 +211,16 @@ function getDefaultUsage(): ProviderUsage {
 // Redis Keys
 // ============================================================================
 
-function getRedisKey(provider: ProviderName): string {
+function getUsageScope(provider: ProviderName, modelId?: string): string {
+  if (provider !== 'cerebras') return provider;
+
+  const effectiveModelId = modelId || getCerebrasModelId();
+  return `cerebras:${effectiveModelId.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+}
+
+function getRedisKey(provider: ProviderName, modelId?: string): string {
   const today = new Date().toISOString().split('T')[0];
-  return `ai:quota:${provider}:${today}`;
+  return `ai:quota:${getUsageScope(provider, modelId)}:${today}`;
 }
 
 const REDIS_TIMEOUT_MS = 1_000;
@@ -174,14 +233,16 @@ const REDIS_TIMEOUT_MS = 1_000;
  * Provider 사용량 조회
  */
 export async function getProviderUsage(
-  provider: ProviderName
+  provider: ProviderName,
+  modelId?: string
 ): Promise<ProviderUsage> {
   const redis = getRedisClient();
   const today = new Date().toISOString().split('T')[0];
+  const usageScope = getUsageScope(provider, modelId);
 
   if (redis) {
     try {
-      const key = getRedisKey(provider);
+      const key = getRedisKey(provider, modelId);
       const data = await redis.get(key, { timeoutMs: REDIS_TIMEOUT_MS });
 
       if (data) {
@@ -221,10 +282,10 @@ export async function getProviderUsage(
   }
 
   // In-Memory Fallback
-  let usage = inMemoryUsage.get(provider);
+  let usage = inMemoryUsage.get(usageScope);
   if (!usage || usage.date !== today) {
     usage = getDefaultUsage();
-    inMemoryUsage.set(provider, usage);
+    inMemoryUsage.set(usageScope, usage);
   }
 
   const now = Date.now();
@@ -242,10 +303,12 @@ export async function getProviderUsage(
  */
 export async function recordProviderUsage(
   provider: ProviderName,
-  tokensUsed: number
+  tokensUsed: number,
+  modelId?: string
 ): Promise<void> {
   const redis = getRedisClient();
-  const usage = await getProviderUsage(provider);
+  const usage = await getProviderUsage(provider, modelId);
+  const usageScope = getUsageScope(provider, modelId);
 
   usage.dailyTokens += tokensUsed;
   usage.minuteRequests += 1;
@@ -254,7 +317,7 @@ export async function recordProviderUsage(
 
   if (redis) {
     try {
-      const key = getRedisKey(provider);
+      const key = getRedisKey(provider, modelId);
       await redis.set(key, JSON.stringify(usage), undefined, {
         timeoutMs: REDIS_TIMEOUT_MS,
       });
@@ -264,13 +327,13 @@ export async function recordProviderUsage(
     }
   }
 
-  inMemoryUsage.set(provider, usage);
+  inMemoryUsage.set(usageScope, usage);
 
   // 로깅
-  const quota = PROVIDER_QUOTAS[provider];
+  const quota = getQuotaForProvider(provider, modelId);
   const dailyRate = (usage.dailyTokens / quota.dailyTokenLimit) * 100;
   logger.info(
-    `[QuotaTracker] ${provider}: +${tokensUsed} tokens (daily: ${dailyRate.toFixed(1)}%)`
+    `[QuotaTracker] ${usageScope}: +${tokensUsed} tokens (daily: ${dailyRate.toFixed(1)}%)`
   );
 }
 
@@ -278,10 +341,11 @@ export async function recordProviderUsage(
  * Provider Quota 상태 조회
  */
 export async function getQuotaStatus(
-  provider: ProviderName
+  provider: ProviderName,
+  modelId?: string
 ): Promise<QuotaStatus> {
-  const usage = await getProviderUsage(provider);
-  const quota = PROVIDER_QUOTAS[provider];
+  const usage = await getProviderUsage(provider, modelId);
+  const quota = getQuotaForProvider(provider, modelId);
 
   const dailyTokenUsageRate = usage.dailyTokens / quota.dailyTokenLimit;
   const minuteRequestUsageRate = usage.minuteRequests / quota.requestsPerMinute;
@@ -321,28 +385,40 @@ export async function selectAvailableProvider(
   preferredOrder: LLMProviderName[] = ['groq', 'cerebras', 'mistral']
 ): Promise<{
   provider: LLMProviderName;
+  modelId?: string;
   status: QuotaStatus;
   isPreemptiveFallback: boolean;
 } | null> {
+  let skippedByQuota = false;
+
   for (const provider of preferredOrder) {
-    const status = await getQuotaStatus(provider);
+    for (const modelId of getQuotaModelCandidates(provider)) {
+      const status = await getQuotaStatus(provider, modelId);
 
-    if (!status.shouldPreemptiveFallback) {
-      return { provider, status, isPreemptiveFallback: false };
-    }
+      if (!status.shouldPreemptiveFallback) {
+        return {
+          provider,
+          ...(modelId && { modelId }),
+          status,
+          isPreemptiveFallback: skippedByQuota,
+        };
+      }
 
-    if (status.dailyTokenUsageRate >= 0.95) {
-      logger.info(
-        `[QuotaTracker] ${provider}: Daily limit 95% exceeded, switching`
-      );
-      continue;
-    }
+      skippedByQuota = true;
 
-    if (status.recommendedWaitMs && status.recommendedWaitMs < 30_000) {
-      logger.info(
-        `[QuotaTracker] ${provider}: Rate limit approaching, wait ${status.recommendedWaitMs}ms`
-      );
-      return { provider, status, isPreemptiveFallback: true };
+      if (status.dailyTokenUsageRate >= 0.95) {
+        logger.info(
+          `[QuotaTracker] ${provider}${modelId ? `/${modelId}` : ''}: Daily limit 95% exceeded, switching`
+        );
+        continue;
+      }
+
+      if (status.recommendedWaitMs && status.recommendedWaitMs < 30_000) {
+        logger.info(
+          `[QuotaTracker] ${provider}${modelId ? `/${modelId}` : ''}: Rate limit approaching, wait ${status.recommendedWaitMs}ms`
+        );
+        continue;
+      }
     }
   }
 
@@ -367,7 +443,9 @@ export async function getQuotaSummary(): Promise<{
     'gemini',
     'tavily',
   ];
-  const statuses = await Promise.all(providers.map(getQuotaStatus));
+  const statuses = await Promise.all(
+    providers.map((provider) => getQuotaStatus(provider))
+  );
 
   let onlineCount = 0;
   let warningCount = 0;

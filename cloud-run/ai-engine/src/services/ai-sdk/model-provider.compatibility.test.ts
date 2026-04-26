@@ -67,8 +67,14 @@ vi.mock('@ai-sdk/openai', () => ({
 }));
 
 vi.mock('../../lib/config-parser', () => ({
+  CEREBRAS_QWEN_MODEL_ID: 'qwen-3-235b-a22b-instruct-2507',
+  CEREBRAS_LLAMA_FALLBACK_MODEL_ID: 'llama3.1-8b',
+  CEREBRAS_QWEN_DEPRECATION_DATE: '2026-05-27',
+  CEREBRAS_GPT_OSS_MODEL_ID: 'gpt-oss-120b',
+  DEFAULT_CEREBRAS_MODEL: 'qwen-3-235b-a22b-instruct-2507',
   getCerebrasApiKey: vi.fn(() => 'test-cerebras-key'),
-  getCerebrasModelId: vi.fn(() => 'gpt-oss-120b'),
+  getCerebrasModelId: vi.fn(() => 'qwen-3-235b-a22b-instruct-2507'),
+  getCerebrasFallbackModelIds: vi.fn(() => ['llama3.1-8b']),
   getMistralApiKey: vi.fn(() => 'test-mistral-key'),
   getGroqApiKey: vi.fn(() => 'test-groq-key'),
   getGroqModelId: vi.fn(() => 'meta-llama/llama-4-scout-17b-16e-instruct'),

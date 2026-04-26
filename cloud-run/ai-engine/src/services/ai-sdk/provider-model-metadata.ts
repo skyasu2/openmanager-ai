@@ -1,7 +1,9 @@
 import {
+  CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
+  CEREBRAS_GPT_OSS_MODEL_ID,
   CEREBRAS_QWEN_DEPRECATION_DATE,
+  CEREBRAS_QWEN_MODEL_ID,
   DEFAULT_CEREBRAS_MODEL,
-  DEPRECATED_CEREBRAS_QWEN_MODEL_ID,
   getCerebrasModelId,
   getGroqModelId,
   getOpenRouterVisionModelId,
@@ -39,37 +41,66 @@ const CEREBRAS_SOURCE_URLS = [
   'https://inference-docs.cerebras.ai/capabilities/tool-use',
 ];
 
+function isPastDeprecationDate(
+  deprecationDate: string | undefined,
+  asOf: Date
+): boolean {
+  if (!deprecationDate) return false;
+  const startOfNextDayUtc = new Date(`${deprecationDate}T00:00:00Z`);
+  startOfNextDayUtc.setUTCDate(startOfNextDayUtc.getUTCDate() + 1);
+  return asOf >= startOfNextDayUtc;
+}
+
 export function getCerebrasModelMetadata(
   modelId = getCerebrasModelId()
 ): ProviderModelMetadata {
-  if (modelId === DEPRECATED_CEREBRAS_QWEN_MODEL_ID) {
+  if (modelId === CEREBRAS_QWEN_MODEL_ID) {
     return {
       provider: 'cerebras',
-      role: 'structured routing + opt-in text fallback',
+      role: 'primary structured routing + text fallback',
       modelId,
       lifecycle: 'preview',
       productionModel: false,
       preview: true,
-      deprecated: true,
+      deprecated: false,
       deprecationDate: CEREBRAS_QWEN_DEPRECATION_DATE,
-      recommendedReplacement: DEFAULT_CEREBRAS_MODEL,
-      contextWindowTokens: 8192,
-      freeTierLimitSummary: 'preview model; do not use as long-term runtime default',
+      recommendedReplacement: CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
+      contextWindowTokens: 65_536,
+      freeTierLimitSummary:
+        'Account limit: 5 RPM / 30K TPM / 14.4K RPD / 1M TPD; primary until 2026-05-27 deprecation',
       sourceUrls: CEREBRAS_SOURCE_URLS,
     };
   }
 
-  if (modelId === DEFAULT_CEREBRAS_MODEL) {
+  if (modelId === CEREBRAS_LLAMA_FALLBACK_MODEL_ID) {
     return {
       provider: 'cerebras',
-      role: 'structured routing + opt-in text fallback',
+      role: 'intra-Cerebras fallback',
       modelId,
       lifecycle: 'production',
       productionModel: true,
       preview: false,
       deprecated: false,
-      contextWindowTokens: 131072,
-      freeTierLimitSummary: 'free-tier constrained; keep usage behind routing and quota guards',
+      deprecationDate: CEREBRAS_QWEN_DEPRECATION_DATE,
+      recommendedReplacement: undefined,
+      contextWindowTokens: 8_192,
+      freeTierLimitSummary:
+        'Free: 30 RPM / 900 RPH / 14.4K RPD / 1M TPD; intra-Cerebras fallback only',
+      sourceUrls: CEREBRAS_SOURCE_URLS,
+    };
+  }
+
+  if (modelId === CEREBRAS_GPT_OSS_MODEL_ID) {
+    return {
+      provider: 'cerebras',
+      role: 'excluded free-tier unavailable model',
+      modelId,
+      lifecycle: 'custom',
+      productionModel: false,
+      preview: false,
+      deprecated: false,
+      freeTierLimitSummary:
+        'not in free-tier runtime candidates; current key chat smoke returned 404',
       sourceUrls: CEREBRAS_SOURCE_URLS,
     };
   }
@@ -155,10 +186,11 @@ export function getRuntimeProviderModelMetadata(): ProviderModelMetadata[] {
 }
 
 export function getDeprecatedRuntimeProviderModels(
-  metadata = getRuntimeProviderModelMetadata()
+  metadata = getRuntimeProviderModelMetadata(),
+  asOf: Date = new Date()
 ): DeprecatedProviderModelFinding[] {
   return metadata
-    .filter((entry) => entry.deprecated)
+    .filter((entry) => entry.deprecated || isPastDeprecationDate(entry.deprecationDate, asOf))
     .map((entry) => ({
       provider: entry.provider,
       modelId: entry.modelId,

@@ -3,7 +3,7 @@
  *
  * Vercel AI SDK 6 based model provider with tri-provider architecture:
  * - Primary: Groq (llama-4-scout-17b Preview, 1K RPD / 500K TPD, 131K ctx, tool calling ✅)
- * - Secondary: Cerebras (gpt-oss-120b, 14.4K RPD / 1M TPD, tool calling ✅)
+ * - Secondary: Cerebras (Qwen primary, llama3.1-8b intra-fallback, model-aware quota, tool calling ✅)
  * - Last Resort: Mistral (mistral-large-latest, 500 RPD, ~2 RPM free tier)
  * - Vision: Gemini 2.5 Flash-Lite (1K RPD, 1M context, no thinking tokens)
  *
@@ -72,7 +72,7 @@ export {
 
 /**
  * Get primary model for Supervisor (Single-Agent Mode)
- * Fallback chain: Groq → Cerebras → SambaNova → Mistral with CB check
+ * Fallback chain: Groq → Cerebras → Mistral with CB check
  *
  * @param excludeProviders - Providers to skip (e.g., recently failed providers on retry)
  */
@@ -93,7 +93,7 @@ export function getSupervisorModel(excludeProviders: ProviderName[] = []): {
 
 /**
  * Get verifier model with 3-way fallback + CB check
- * Groq(llama-4-scout) → Cerebras(gpt-oss-120b) → Mistral
+ * Groq(llama-4-scout) → Cerebras(Qwen→llama3.1-8b) → Mistral
  */
 export function getVerifierModel(): {
   model: LanguageModel;
@@ -298,7 +298,7 @@ export async function getSupervisorModelWithQuota(
     // Provider별 모델 반환
     switch (provider) {
       case 'cerebras': {
-        const cerebrasModelId = getCerebrasModelId();
+        const cerebrasModelId = selection.modelId || getCerebrasModelId();
         return {
           model: getCerebrasModel(cerebrasModelId),
           provider: 'cerebras',
@@ -344,11 +344,12 @@ export async function getSupervisorModelWithQuota(
 export async function recordModelUsage(
   provider: ProviderName,
   tokensUsed: number,
-  context: string = 'general'
+  context: string = 'general',
+  modelId?: string
 ): Promise<void> {
   // Track all providers for quota management
   // Groq has lower request quota than Cerebras (1K RPD vs 14.4K RPD), so tracking is still important.
-  await recordProviderUsage(provider as QuotaProviderName, tokensUsed);
+  await recordProviderUsage(provider as QuotaProviderName, tokensUsed, modelId);
 
   // Enhanced logging with context
   if (provider === 'groq') {

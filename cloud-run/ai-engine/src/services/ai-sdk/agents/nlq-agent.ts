@@ -6,7 +6,7 @@
  * - Complex: "CPU > 80% AND 메모리 > 70%", "지난 1시간 에러 TOP 5"
  *
  * Model: Groq configurable default (currently meta-llama/llama-4-scout-17b-16e-instruct)
- * Fallback: Cerebras gpt-oss-120b → Mistral
+ * Fallback: Cerebras configurable production fallback → Mistral
  *
  * @version 4.0.0 - Migrated to BaseAgent pattern
  * @created 2025-12-01

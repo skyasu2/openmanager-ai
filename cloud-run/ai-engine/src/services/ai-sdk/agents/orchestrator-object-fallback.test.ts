@@ -40,7 +40,7 @@ const baseOptions = {
   modelId: 'gpt-oss-120b',
   providerFallback: {
     agentLabel: 'Orchestrator',
-    providerOrder: ['cerebras', 'mistral', 'groq'] as const,
+    providerOrder: ['cerebras', 'groq', 'mistral'] as const,
     cbPrefix: 'orchestrator',
   },
 };
@@ -165,7 +165,7 @@ describe('generateObjectWithFallback', () => {
     expect(result.object).toEqual(expected);
     expect(mockSelectTextModel).toHaveBeenCalledWith(
       'Orchestrator',
-      ['cerebras', 'mistral', 'groq'],
+      ['cerebras', 'groq', 'mistral'],
       {
         excludeProviders: ['cerebras'],
         cbPrefix: 'orchestrator',
@@ -235,7 +235,7 @@ describe('generateObjectWithFallback', () => {
     expect(result.object).toEqual(expected);
     expect(mockSelectTextModel).toHaveBeenCalledWith(
       'Orchestrator',
-      ['cerebras', 'mistral', 'groq'],
+      ['cerebras', 'groq', 'mistral'],
       {
         excludeProviders: ['cerebras'],
         cbPrefix: 'orchestrator',

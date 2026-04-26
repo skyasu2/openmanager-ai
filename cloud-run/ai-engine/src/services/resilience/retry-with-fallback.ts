@@ -12,6 +12,7 @@ import { generateText, type LanguageModel } from 'ai';
 import type { ProviderName } from '../ai-sdk/model-provider';
 import { logger } from '../../lib/logger';
 import {
+  getCerebrasFallbackModelIds,
   getCerebrasModelId,
   getGroqModelId,
 } from '../../lib/config-parser';
@@ -119,24 +120,27 @@ const RETRY_ERROR_CODES = [
 interface ProviderConfig {
   name: TextProviderName;
   getModel: (modelId?: string) => LanguageModel;
-  defaultModelId: () => string;
+  modelIds: () => string[];
 }
 
 const PROVIDER_CHAIN: ProviderConfig[] = [
   {
     name: 'cerebras',
     getModel: getCerebrasModel,
-    defaultModelId: () => getCerebrasModelId(),
+    modelIds: () => [
+      getCerebrasModelId(),
+      ...getCerebrasFallbackModelIds(),
+    ].filter((modelId, index, list) => modelId && list.indexOf(modelId) === index),
   },
   {
     name: 'groq',
     getModel: getGroqModel,
-    defaultModelId: () => getGroqModelId(),
+    modelIds: () => [getGroqModelId()],
   },
   {
     name: 'mistral',
     getModel: getMistralModel,
-    defaultModelId: () => 'mistral-large-latest',
+    modelIds: () => ['mistral-large-latest'],
   },
 ];
 
@@ -296,186 +300,200 @@ export async function generateTextWithRetry(
     }
 
     const providerConfig = availableProviders[0];
-    const { name: provider, getModel, defaultModelId } = providerConfig;
-    const modelId = defaultModelId();
+    const { name: provider, getModel } = providerConfig;
+    const modelIds = providerConfig.modelIds();
 
-    let retryCount = 0;
+    for (let modelIndex = 0; modelIndex < modelIds.length; modelIndex++) {
+      const modelId = modelIds[modelIndex];
+      const hasNextModel = modelIndex < modelIds.length - 1;
+      let retryCount = 0;
 
-    while (retryCount <= fullConfig.maxRetries) {
-      const attemptStart = Date.now();
+      while (retryCount <= fullConfig.maxRetries) {
+        const attemptStart = Date.now();
 
-      const capabilityRequirements = options.tools
-        ? { requireToolCalling: true }
-        : {};
-      const capabilityMismatches = getCapabilityMismatchReasons(
-        getTextProviderCapabilities(provider),
-        capabilityRequirements
-      );
-
-      if (capabilityMismatches.length > 0) {
-        attempts.push({
-          provider,
-          modelId,
-          attempt: retryCount + 1,
-          error: `Missing required capabilities: ${capabilityMismatches.join(', ')}`,
-          durationMs: Date.now() - attemptStart,
-        });
-        logger.warn(
-          `[RetryWithFallback] Skipping ${provider}/${modelId}: missing ${capabilityMismatches.join(', ')}`
-        );
-        excludedProviders.push(provider);
-        break;
-      }
-
-      try {
-        logger.info(
-          `[RetryWithFallback] Trying ${provider}/${modelId} (attempt ${retryCount + 1}/${fullConfig.maxRetries + 1})`
+        const capabilityRequirements = options.tools
+          ? { requireToolCalling: true }
+          : {};
+        const capabilityMismatches = getCapabilityMismatchReasons(
+          getTextProviderCapabilities(provider),
+          capabilityRequirements
         );
 
-        const model = getModel(modelId);
-
-        // Create timeout promise (E-2 fix: clearTimeout on resolve)
-        let timeoutId: ReturnType<typeof setTimeout>;
-        const timeoutPromise = new Promise<never>((_, reject) => {
-          timeoutId = setTimeout(() => reject(new Error('Request timeout')), fullConfig.timeoutMs);
-        });
-
-        // Execute with timeout
-        // 🎯 P3-1: AI SDK v6.0.50 Best Practice - delegate network-level retries to SDK
-        // maxRetries: 1 handles transient network errors automatically
-        // Provider-level fallback is still managed by our custom logic
-        // 🎯 P2-2: Native timeout as primary + Promise.race as backup for full control
-        let result: Awaited<ReturnType<typeof generateText>>;
-        try {
-          result = await Promise.race([
-            generateText({
-              model,
-              messages: options.messages,
-              tools: options.tools,
-              ...(options.toolChoice && { toolChoice: options.toolChoice }),
-              temperature: options.temperature ?? 0.2,
-              maxOutputTokens: options.maxOutputTokens ?? 2048,
-              maxRetries: 1, // 🎯 P3-1: Delegate network retry to AI SDK
-              timeout: { totalMs: fullConfig.timeoutMs }, // 🎯 P2-2: Native timeout
-              ...(options.stopWhen && { stopWhen: options.stopWhen }),
-            }),
-            timeoutPromise, // Backup timeout via Promise.race
-          ]);
-        } finally {
-          clearTimeout(timeoutId!);
-        }
-
-        const durationMs = Date.now() - attemptStart;
-
-        attempts.push({
-          provider,
+        if (capabilityMismatches.length > 0) {
+          attempts.push({
+            provider,
             modelId,
-          attempt: retryCount + 1,
-          durationMs,
-        });
-
-        logger.info(
-          `[RetryWithFallback] ${provider} succeeded in ${durationMs}ms`
-        );
-
-        return {
-          success: true,
-          result,
-          provider,
-          modelId,
-          attempts,
-          totalDurationMs: Date.now() - startTime,
-          usedFallback: excludedProviders.length > 0,
-        };
-      } catch (error) {
-        const durationMs = Date.now() - attemptStart;
-        const errorMessage = error instanceof Error ? error.message : String(error);
-
-        attempts.push({
-          provider,
-          modelId,
-          attempt: retryCount + 1,
-          error: errorMessage,
-          durationMs,
-        });
-
-        logger.warn(
-          `[RetryWithFallback] ${provider} failed (attempt ${retryCount + 1}): ${errorMessage}`
-        );
-
-        // Check if should fallback to next provider
-        if (shouldFallback(error)) {
-          if (
-            !consumeProviderRetryBudget(
-              fullConfig,
-              `fallback:${provider}`,
-              'RetryWithFallback'
-            )
-          ) {
-            return {
-              success: false,
-              provider,
-              modelId,
-              attempts,
-              totalDurationMs: Date.now() - startTime,
-              usedFallback: excludedProviders.length > 0,
-            };
-          }
-          const delay = getProviderFallbackDelay(fullConfig);
-          logger.info(`[RetryWithFallback] Rate limit/unavailable, switching provider after ${delay}ms...`);
-          await sleep(delay);
+            attempt: retryCount + 1,
+            error: `Missing required capabilities: ${capabilityMismatches.join(', ')}`,
+            durationMs: Date.now() - attemptStart,
+          });
+          logger.warn(
+            `[RetryWithFallback] Skipping ${provider}/${modelId}: missing ${capabilityMismatches.join(', ')}`
+          );
           excludedProviders.push(provider);
-          break; // Exit retry loop, try next provider
+          break;
         }
 
-        // Check if should retry same provider
-        if (shouldRetry(error) && retryCount < fullConfig.maxRetries) {
-          if (
-            !consumeProviderRetryBudget(
-              fullConfig,
-              `retry:${provider}`,
-              'RetryWithFallback'
-            )
-          ) {
-            return {
-              success: false,
-              provider,
-              modelId,
-              attempts,
-              totalDurationMs: Date.now() - startTime,
-              usedFallback: excludedProviders.length > 0,
-            };
+        try {
+          logger.info(
+            `[RetryWithFallback] Trying ${provider}/${modelId} (attempt ${retryCount + 1}/${fullConfig.maxRetries + 1})`
+          );
+
+          const model = getModel(modelId);
+
+          // Create timeout promise (E-2 fix: clearTimeout on resolve)
+          let timeoutId: ReturnType<typeof setTimeout>;
+          const timeoutPromise = new Promise<never>((_, reject) => {
+            timeoutId = setTimeout(() => reject(new Error('Request timeout')), fullConfig.timeoutMs);
+          });
+
+          // Execute with timeout
+          // 🎯 P3-1: AI SDK v6.0.50 Best Practice - delegate network-level retries to SDK
+          // maxRetries: 1 handles transient network errors automatically
+          // Provider-level fallback is still managed by our custom logic
+          // 🎯 P2-2: Native timeout as primary + Promise.race as backup for full control
+          let result: Awaited<ReturnType<typeof generateText>>;
+          try {
+            result = await Promise.race([
+              generateText({
+                model,
+                messages: options.messages,
+                tools: options.tools,
+                ...(options.toolChoice && { toolChoice: options.toolChoice }),
+                temperature: options.temperature ?? 0.2,
+                maxOutputTokens: options.maxOutputTokens ?? 2048,
+                maxRetries: 1, // 🎯 P3-1: Delegate network retry to AI SDK
+                timeout: { totalMs: fullConfig.timeoutMs }, // 🎯 P2-2: Native timeout
+                ...(options.stopWhen && { stopWhen: options.stopWhen }),
+              }),
+              timeoutPromise, // Backup timeout via Promise.race
+            ]);
+          } finally {
+            clearTimeout(timeoutId!);
           }
-          const delay = getBackoffDelay(retryCount, fullConfig);
-          logger.info(`[RetryWithFallback] Retrying ${provider} in ${delay}ms...`);
-          await sleep(delay);
-          retryCount++;
-          continue;
-        }
 
-        // Non-retryable error - try next provider
-        if (
-          !consumeProviderRetryBudget(
-            fullConfig,
-            `next-provider:${provider}`,
-            'RetryWithFallback'
-          )
-        ) {
+          const durationMs = Date.now() - attemptStart;
+
+          attempts.push({
+            provider,
+            modelId,
+            attempt: retryCount + 1,
+            durationMs,
+          });
+
+          logger.info(
+            `[RetryWithFallback] ${provider} succeeded in ${durationMs}ms`
+          );
+
           return {
-            success: false,
+            success: true,
+            result,
             provider,
             modelId,
             attempts,
             totalDurationMs: Date.now() - startTime,
-            usedFallback: excludedProviders.length > 0,
+            usedFallback: excludedProviders.length > 0 || attempts.length > 1,
           };
+        } catch (error) {
+          const durationMs = Date.now() - attemptStart;
+          const errorMessage = error instanceof Error ? error.message : String(error);
+
+          attempts.push({
+            provider,
+            modelId,
+            attempt: retryCount + 1,
+            error: errorMessage,
+            durationMs,
+          });
+
+          logger.warn(
+            `[RetryWithFallback] ${provider}/${modelId} failed (attempt ${retryCount + 1}): ${errorMessage}`
+          );
+
+          // Check if should fallback to next model/provider
+          if (shouldFallback(error)) {
+            if (
+              !consumeProviderRetryBudget(
+                fullConfig,
+                `fallback:${provider}`,
+                'RetryWithFallback'
+              )
+            ) {
+              return {
+                success: false,
+                provider,
+                modelId,
+                attempts,
+                totalDurationMs: Date.now() - startTime,
+                usedFallback: excludedProviders.length > 0 || attempts.length > 1,
+              };
+            }
+            const delay = getProviderFallbackDelay(fullConfig);
+            logger.info(
+              `[RetryWithFallback] Rate limit/unavailable, switching ${hasNextModel ? 'model' : 'provider'} after ${delay}ms...`
+            );
+            await sleep(delay);
+            if (!hasNextModel) {
+              excludedProviders.push(provider);
+            }
+            break; // Exit retry loop, try next model/provider
+          }
+
+          // Check if should retry same provider/model
+          if (shouldRetry(error) && retryCount < fullConfig.maxRetries) {
+            if (
+              !consumeProviderRetryBudget(
+                fullConfig,
+                `retry:${provider}`,
+                'RetryWithFallback'
+              )
+            ) {
+              return {
+                success: false,
+                provider,
+                modelId,
+                attempts,
+                totalDurationMs: Date.now() - startTime,
+                usedFallback: excludedProviders.length > 0 || attempts.length > 1,
+              };
+            }
+            const delay = getBackoffDelay(retryCount, fullConfig);
+            logger.info(`[RetryWithFallback] Retrying ${provider}/${modelId} in ${delay}ms...`);
+            await sleep(delay);
+            retryCount++;
+            continue;
+          }
+
+          // Non-retryable error - try next model/provider
+          if (
+            !consumeProviderRetryBudget(
+              fullConfig,
+              `next-provider:${provider}`,
+              'RetryWithFallback'
+            )
+          ) {
+            return {
+              success: false,
+              provider,
+              modelId,
+              attempts,
+              totalDurationMs: Date.now() - startTime,
+              usedFallback: excludedProviders.length > 0 || attempts.length > 1,
+            };
+          }
+          const delay = getProviderFallbackDelay(fullConfig);
+          logger.info(
+            `[RetryWithFallback] Non-retryable error, trying next ${hasNextModel ? 'model' : 'provider'} after ${delay}ms...`
+          );
+          await sleep(delay);
+          if (!hasNextModel) {
+            excludedProviders.push(provider);
+          }
+          break;
         }
-        const delay = getProviderFallbackDelay(fullConfig);
-        logger.info(`[RetryWithFallback] Non-retryable error, trying next provider after ${delay}ms...`);
-        await sleep(delay);
-        excludedProviders.push(provider);
-        break;
       }
+
+      if (excludedProviders.includes(provider)) break;
     }
 
     // If we've exhausted retries for this provider, it's already excluded

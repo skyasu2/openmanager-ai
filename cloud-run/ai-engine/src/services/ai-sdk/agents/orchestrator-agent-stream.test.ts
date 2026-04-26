@@ -211,6 +211,42 @@ describe('executeAgentStream', () => {
     expect(mockStepCountIs).toHaveBeenCalledWith(7);
   });
 
+  it('exposes provider attempts and fallback reason in stream done metadata', async () => {
+    mockStreamText
+      .mockReturnValueOnce(createStreamResult({ chunks: ['   '] }))
+      .mockReturnValueOnce(createStreamResult({ chunks: ['대안 모델 응답'] }));
+
+    const events = await collectEvents('최근 에러 로그 보여줘');
+    const doneEvent = events.find((event) => event.type === 'done');
+    const doneData = doneEvent?.data as {
+      metadata: {
+        provider: string;
+        usedFallback?: boolean;
+        fallbackReason?: string;
+        providerAttempts?: Array<{
+          provider: string;
+          modelId: string;
+          error?: string;
+        }>;
+      };
+    };
+
+    expect(doneData.metadata.provider).toBe('groq');
+    expect(doneData.metadata.usedFallback).toBe(true);
+    expect(doneData.metadata.fallbackReason).toBe('empty_response');
+    expect(doneData.metadata.providerAttempts).toMatchObject([
+      {
+        provider: 'cerebras',
+        modelId: 'cerebras-model',
+        error: 'EMPTY_RESPONSE',
+      },
+      {
+        provider: 'groq',
+        modelId: 'groq-model',
+      },
+    ]);
+  });
+
   it('keeps expanded stream max steps for Analyst Agent multi-tool workflows', async () => {
     mockStreamText.mockReturnValue(
       createStreamResult({

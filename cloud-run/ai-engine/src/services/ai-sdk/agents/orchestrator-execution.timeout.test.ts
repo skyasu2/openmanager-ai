@@ -60,7 +60,7 @@ vi.mock('./orchestrator-routing', () => ({
   executeWithAgentFactory: vi.fn(),
   recordHandoff: vi.fn(),
   getRecentHandoffs: vi.fn(() => []),
-  ORCHESTRATOR_PROVIDER_ORDER: ['cerebras', 'mistral', 'groq'],
+  ORCHESTRATOR_PROVIDER_ORDER: ['cerebras', 'groq', 'mistral'],
 }));
 
 vi.mock('../../../config/timeout-config', () => ({

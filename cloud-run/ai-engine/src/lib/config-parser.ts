@@ -52,7 +52,6 @@ export interface AIProvidersConfig {
   tavilyBackup?: string; // Failover key
   gemini?: string; // Vision Agent - Gemini 2.5 Flash-Lite
   openrouter?: string; // Fallback Vision
-  sambanova?: string; // SambaNova Cloud - text fallback (Free: 200K TPD; Developer: 20M TPD account-wide)
 }
 
 /**
@@ -287,8 +286,8 @@ export function getMistralConfig(): MistralConfig | null {
  * Get Cerebras API Key (secondary provider - fast inference)
  * Uses AI_PROVIDERS_CONFIG or falls back to individual env var
  * @see https://inference-docs.cerebras.ai
- * Default model is the production Cerebras GPT-OSS candidate. The previous
- * qwen-3-235b-a22b-instruct-2507 default is Preview and deprecated on 2026-05-27.
+ * Default model is the current Cerebras primary available in this account.
+ * gpt-oss-120b is excluded from free-tier runtime candidates.
  */
 export function getCerebrasApiKey(): string | null {
   const providersConfig = getAIProvidersConfig();
@@ -296,15 +295,13 @@ export function getCerebrasApiKey(): string | null {
   return process.env.CEREBRAS_API_KEY || null;
 }
 
-export const DEPRECATED_CEREBRAS_QWEN_MODEL_ID = 'qwen-3-235b-a22b-instruct-2507';
+export const CEREBRAS_QWEN_MODEL_ID = 'qwen-3-235b-a22b-instruct-2507';
+export const DEPRECATED_CEREBRAS_QWEN_MODEL_ID = CEREBRAS_QWEN_MODEL_ID;
 export const CEREBRAS_QWEN_DEPRECATION_DATE = '2026-05-27';
-export const DEFAULT_CEREBRAS_MODEL = 'gpt-oss-120b';
+export const CEREBRAS_GPT_OSS_MODEL_ID = 'gpt-oss-120b';
+export const CEREBRAS_LLAMA_FALLBACK_MODEL_ID = 'llama3.1-8b';
+export const DEFAULT_CEREBRAS_MODEL = CEREBRAS_QWEN_MODEL_ID;
 const DEFAULT_GROQ_MODEL = 'meta-llama/llama-4-scout-17b-16e-instruct';
-// SambaNova Cloud — OpenAI-compatible. Free tier: 20 RPM, 20 RPD, 200K TPD.
-// Developer tier has higher request limits and 20M account-wide TPD.
-// @see https://docs.sambanova.ai/docs/en/models/rate-limits
-const DEFAULT_SAMBANOVA_MODEL = 'Meta-Llama-3.3-70B-Instruct';
-export const SAMBANOVA_BASE_URL = 'https://api.sambanova.ai/v1';
 
 /**
  * Get default Cerebras text model id.
@@ -317,8 +314,25 @@ export function getCerebrasModelId(): string {
 }
 
 /**
+ * Intra-provider fallback models for Cerebras. These are tried before leaving
+ * Cerebras for Groq/Mistral when the primary model is unavailable or quota-blocked.
+ */
+export function getCerebrasFallbackModelIds(): string[] {
+  const configured = process.env.CEREBRAS_FALLBACK_MODEL_IDS;
+  if (configured) {
+    return configured
+      .split(',')
+      .map((modelId) => modelId.trim())
+      .filter((modelId) => modelId.length > 0);
+  }
+
+  return [CEREBRAS_LLAMA_FALLBACK_MODEL_ID];
+}
+
+/**
  * Cerebras tool-calling gate for emergency compatibility fallback.
- * Default: false (disabled). Set CEREBRAS_TOOL_CALLING_ENABLED=true to opt in.
+ * Runtime default: false (disabled). Deployment/env files must set
+ * CEREBRAS_TOOL_CALLING_ENABLED=true to enable tool-calling fallback.
  */
 export function isCerebrasToolCallingEnabled(): boolean {
   return process.env.CEREBRAS_TOOL_CALLING_ENABLED === 'true';
@@ -371,26 +385,6 @@ export function getGeminiApiKey(): string | null {
   const providersConfig = getAIProvidersConfig();
   if (providersConfig?.gemini) return providersConfig.gemini;
   return process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY_PRIMARY || null;
-}
-
-/**
- * Get SambaNova API Key (text fallback; Free tier: 200K TPD)
- * Uses AI_PROVIDERS_CONFIG or falls back to individual env var
- * @see https://docs.sambanova.ai/docs/en/models/rate-limits
- * @added 2026-04-25
- */
-export function getSambaNovaApiKey(): string | null {
-  const providersConfig = getAIProvidersConfig();
-  if (providersConfig?.sambanova) return providersConfig.sambanova;
-  return process.env.SAMBANOVA_API_KEY || null;
-}
-
-/**
- * Get SambaNova model ID.
- * Default: Meta-Llama-3.3-70B-Instruct (tool calling ✅, 20 RPM / 20 RPD free)
- */
-export function getSambaNovaModelId(): string {
-  return process.env.SAMBANOVA_MODEL_ID || DEFAULT_SAMBANOVA_MODEL;
 }
 
 /**
@@ -494,7 +488,6 @@ export function getConfigStatus(): {
   groq: boolean;
   mistral: boolean;
   cerebras: boolean;
-  sambanova: boolean;
   tavily: boolean;
   tavilyBackup: boolean;
   gemini: boolean;
@@ -508,7 +501,6 @@ export function getConfigStatus(): {
     groq: getGroqApiKey() !== null,
     mistral: getMistralApiKey() !== null,
     cerebras: getCerebrasApiKey() !== null,
-    sambanova: getSambaNovaApiKey() !== null,
     tavily: getTavilyApiKey() !== null,
     tavilyBackup: getTavilyApiKeyBackup() !== null,
     gemini: getGeminiApiKey() !== null,

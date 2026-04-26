@@ -605,7 +605,7 @@ async function* streamSingleAgent(
 
       const totalTokensUsed = usage?.totalTokens ?? 0;
       if (totalTokensUsed > 0) {
-        await recordModelUsage(provider, totalTokensUsed, 'supervisor-stream');
+        await recordModelUsage(provider, totalTokensUsed, 'supervisor-stream', modelId);
       }
 
       yield {

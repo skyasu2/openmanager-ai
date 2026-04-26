@@ -10,6 +10,10 @@ import type {
   SupervisorMode,
   SupervisorModeSelectionSource,
 } from '../supervisor-types';
+import type {
+  EvidenceCard,
+  RetrievalMetadata,
+} from '../../../lib/retrieval-contract';
 import { TIMEOUT_CONFIG } from '../../../config/timeout-config';
 
 // ============================================================================
@@ -88,6 +92,8 @@ export interface MultiAgentResponse {
     category?: string;
     url?: string;
   }>;
+  /** New retrieval evidence contract. Kept alongside ragSources during migration. */
+  evidenceCards?: EvidenceCard[];
   usage: {
     promptTokens: number;
     completionTokens: number;
@@ -109,7 +115,23 @@ export interface MultiAgentResponse {
     latencyTier?: 'fast' | 'normal' | 'slow' | 'very_slow';
     /** Quality score from Reporter Pipeline (optional, 0-1) */
     qualityScore?: number;
+    /** Provider attempt trail for Langfuse/runtime fallback diagnostics. */
+    providerAttempts?: ProviderAttemptTelemetry[];
+    /** Stable reason explaining why the selected provider was not the first attempt. */
+    fallbackReason?: string;
+    /** True when at least one earlier provider attempt failed or was skipped. */
+    usedFallback?: boolean;
+    /** Retrieval execution contract for UI/Langfuse: enabled vs used vs suppressed. */
+    retrieval?: RetrievalMetadata;
   };
+}
+
+export interface ProviderAttemptTelemetry {
+  provider: string;
+  modelId: string;
+  attempt: number;
+  durationMs: number;
+  error?: string;
 }
 
 export interface MultiAgentError {

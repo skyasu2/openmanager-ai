@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { extractRagSources } from './ai-sdk-utils';
+import { extractEvidenceCards, extractRagSources } from './ai-sdk-utils';
 
 describe('extractRagSources', () => {
   it('maps searchKnowledgeBase similarCases to ragSources', () => {
@@ -82,5 +82,30 @@ describe('extractRagSources', () => {
     expect(extractRagSources('unknownTool', { foo: 'bar' })).toEqual([]);
     expect(extractRagSources('searchKnowledgeBase', null)).toEqual([]);
     expect(extractRagSources('searchWeb', { results: 'invalid' })).toEqual([]);
+  });
+
+  it('maps supported tool output into EvidenceCard contract', () => {
+    const result = extractEvidenceCards('searchKnowledgeBase', {
+      similarCases: [
+        {
+          title: 'CPU throttle runbook',
+          score: 0.78,
+          type: 'graph',
+          category: 'runbook',
+        },
+      ],
+    });
+
+    expect(result).toEqual([
+      {
+        id: 'legacy-rag-0-cpu-throttle-runbook',
+        title: 'CPU throttle runbook',
+        summary: 'CPU throttle runbook',
+        sourceType: 'runbook',
+        score: 0.78,
+        category: 'runbook',
+        reason: 'legacy-rag-source:graph',
+      },
+    ]);
   });
 });

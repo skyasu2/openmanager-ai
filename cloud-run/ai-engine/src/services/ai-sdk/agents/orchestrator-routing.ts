@@ -9,7 +9,10 @@
 
 import { generateText, hasToolCall, stepCountIs } from 'ai';
 import type { ProviderName } from '../model-provider';
-import { generateTextWithRetry } from '../../resilience/retry-with-fallback';
+import {
+  generateTextWithRetry,
+  type ProviderAttempt,
+} from '../../resilience/retry-with-fallback';
 import { sanitizeChineseCharacters } from '../../../lib/text-sanitizer';
 import { extractToolResultOutput } from '../../../lib/ai-sdk-utils';
 import {
@@ -26,7 +29,10 @@ import { AgentFactory, type AgentType } from './agent-factory';
 import type { ImageAttachment, FileAttachment } from './base-agent';
 import { TIMEOUT_CONFIG } from '../../../config/timeout-config';
 
-import type { MultiAgentResponse } from './orchestrator-types';
+import type {
+  MultiAgentResponse,
+  ProviderAttemptTelemetry,
+} from './orchestrator-types';
 import { filterToolsByWebSearch, filterToolsByRAG } from './orchestrator-web-search';
 import { recordHandoff, getRecentHandoffs } from './orchestrator-handoff';
 import { executeReporterWithPipeline } from './orchestrator-reporter-pipeline';
@@ -47,8 +53,8 @@ export { executeReporterWithPipeline } from './orchestrator-reporter-pipeline';
 
 export const ORCHESTRATOR_PROVIDER_ORDER: TextProvider[] = [
   'cerebras',
-  'mistral',
   'groq',
+  'mistral',
 ];
 
 function buildContextAwarePrompt(query: string, contextSummary?: string | null): string {
@@ -61,7 +67,8 @@ function buildContextAwarePrompt(query: string, contextSummary?: string | null):
 
 export function getOrchestratorModel(): ModelResult | null {
   // Orchestrator uses generateObject (requires json_schema support).
-  // Keep Cerebras/Mistral first until the Groq path is validated for this route.
+  // Keep Cerebras first for routing-only structured output; Groq is the
+  // validated fallback, and Mistral stays last because its free RPM is tight.
   return selectTextModel('Orchestrator', ORCHESTRATOR_PROVIDER_ORDER, {
     cbPrefix: 'orchestrator',
     requiredCapabilities: { requireStructuredOutput: true },
@@ -162,6 +169,65 @@ function asDirectKnowledgeResultItem(value: unknown): DirectKnowledgeResultItem 
     category: typeof value.category === 'string' ? value.category : undefined,
     url: typeof value.url === 'string' ? value.url : undefined,
   };
+}
+
+function toProviderAttemptTelemetry(
+  attempts: ProviderAttempt[]
+): ProviderAttemptTelemetry[] {
+  return attempts.map((attempt) => ({
+    provider: attempt.provider,
+    modelId: attempt.modelId,
+    attempt: attempt.attempt,
+    durationMs: attempt.durationMs,
+    ...(attempt.error ? { error: attempt.error } : {}),
+  }));
+}
+
+function resolveFallbackReason(
+  attempts: ProviderAttempt[],
+  usedFallback: boolean
+): string | undefined {
+  if (!usedFallback) {
+    return undefined;
+  }
+
+  const failedAttempt = attempts.find((attempt) => attempt.error);
+  if (!failedAttempt) {
+    return 'provider_fallback';
+  }
+
+  const normalizedError = failedAttempt.error?.toLowerCase() ?? '';
+  if (normalizedError.includes('rate limit') || normalizedError.includes('429')) {
+    return 'rate_limit';
+  }
+  if (normalizedError.includes('timeout')) {
+    return 'timeout';
+  }
+  if (
+    normalizedError.includes('missing required capabilities') ||
+    normalizedError.includes('tool-calling') ||
+    normalizedError.includes('structured-output')
+  ) {
+    return 'capability_mismatch';
+  }
+  if (
+    normalizedError.includes('does not exist') ||
+    normalizedError.includes('no access') ||
+    normalizedError.includes('model not found') ||
+    normalizedError.includes('404')
+  ) {
+    return 'model_unavailable';
+  }
+  if (
+    normalizedError.includes('unavailable') ||
+    normalizedError.includes('503') ||
+    normalizedError.includes('502') ||
+    normalizedError.includes('504')
+  ) {
+    return 'provider_unavailable';
+  }
+
+  return 'provider_error';
 }
 
 function asDirectKnowledgeSearchResult(value: unknown): DirectKnowledgeSearchResult | null {
@@ -376,6 +442,8 @@ export async function executeForcedRouting(
 
     const { result, provider, modelId, usedFallback, attempts } = retryResult;
     const durationMs = Date.now() - startTime;
+    const providerAttempts = toProviderAttemptTelemetry(attempts);
+    const fallbackReason = resolveFallbackReason(attempts, usedFallback);
 
     const toolsCalled: string[] = [];
     const collectedToolResults: Array<{ toolName: string; result: unknown }> = [];
@@ -561,6 +629,9 @@ export async function executeForcedRouting(
         formatCompliance: quality.formatCompliance,
         qualityFlags: quality.qualityFlags,
         latencyTier: quality.latencyTier,
+        providerAttempts,
+        usedFallback,
+        ...(fallbackReason ? { fallbackReason } : {}),
       },
     };
   } catch (error) {

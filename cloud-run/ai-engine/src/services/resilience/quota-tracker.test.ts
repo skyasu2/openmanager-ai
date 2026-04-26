@@ -32,6 +32,8 @@ import {
   selectAvailableProvider,
   getQuotaSummary,
   PROVIDER_QUOTAS,
+  CEREBRAS_MODEL_QUOTAS,
+  getQuotaForProvider,
   PREEMPTIVE_THRESHOLDS,
 } from './quota-tracker';
 
@@ -99,6 +101,21 @@ describe('QuotaTracker — Recording', () => {
 
     expect(gemini.dailyTokens).toBe(1000);
     expect(tavily.dailyTokens).toBe(500);
+  });
+
+  it('Cerebras 모델별 사용량은 서로 독립 추적', async () => {
+    vi.setSystemTime(new Date('2026-03-11T10:00:00Z'));
+
+    await recordProviderUsage('cerebras', 1000, 'qwen-3-235b-a22b-instruct-2507');
+    await recordProviderUsage('cerebras', 500, 'llama3.1-8b');
+
+    const qwenUsage = await getProviderUsage('cerebras', 'qwen-3-235b-a22b-instruct-2507');
+    const llamaUsage = await getProviderUsage('cerebras', 'llama3.1-8b');
+
+    expect(qwenUsage.dailyTokens).toBe(1000);
+    expect(qwenUsage.minuteRequests).toBe(1);
+    expect(llamaUsage.dailyTokens).toBe(500);
+    expect(llamaUsage.minuteRequests).toBe(1);
   });
 });
 
@@ -174,6 +191,23 @@ describe('QuotaTracker — getQuotaStatus', () => {
 
     expect(status.provider).toBe('gemini');
     expect(status.quota).toEqual(PROVIDER_QUOTAS.gemini);
+  });
+
+  it('Cerebras 기본 quota는 Qwen 계정 제한을 보수 적용한다', async () => {
+    const status = await getQuotaStatus('cerebras');
+
+    expect(status.quota).toEqual(CEREBRAS_MODEL_QUOTAS['qwen-3-235b-a22b-instruct-2507']);
+    expect(status.quota.requestsPerMinute).toBe(5);
+    expect(status.quota.tokensPerMinute).toBe(30_000);
+    expect(status.quota.requestsPerDay).toBe(14_400);
+  });
+
+  it('Cerebras llama3.1-8b fallback quota는 모델별로 분리한다', () => {
+    const quota = getQuotaForProvider('cerebras', 'llama3.1-8b');
+
+    expect(quota).toEqual(CEREBRAS_MODEL_QUOTAS['llama3.1-8b']);
+    expect(quota.requestsPerMinute).toBe(30);
+    expect(quota.tokensPerMinute).toBe(60_000);
   });
 });
 
@@ -311,14 +345,16 @@ describe('QuotaTracker — selectAvailableProvider', () => {
     expect(result!.isPreemptiveFallback).toBe(false);
   });
 
-  it('첫 번째 95% 초과 시 다음 provider 선택', async () => {
+  it('Cerebras Qwen quota 초과 시 llama3.1-8b 모델 fallback을 먼저 선택', async () => {
     const limit = PROVIDER_QUOTAS.cerebras.dailyTokenLimit;
     await recordProviderUsage('cerebras', Math.ceil(limit * 0.96));
 
     const result = await selectAvailableProvider(['cerebras', 'mistral', 'groq']);
 
     expect(result).not.toBeNull();
-    expect(result!.provider).toBe('mistral');
+    expect(result!.provider).toBe('cerebras');
+    expect(result!.modelId).toBe('llama3.1-8b');
+    expect(result!.isPreemptiveFallback).toBe(true);
   });
 
   it('전체 소진 시 null 반환', async () => {
@@ -327,6 +363,11 @@ describe('QuotaTracker — selectAvailableProvider', () => {
       const limit = PROVIDER_QUOTAS[p].dailyTokenLimit;
       await recordProviderUsage(p, Math.ceil(limit * 0.96));
     }
+    await recordProviderUsage(
+      'cerebras',
+      Math.ceil(CEREBRAS_MODEL_QUOTAS['llama3.1-8b'].dailyTokenLimit * 0.96),
+      'llama3.1-8b'
+    );
 
     const result = await selectAvailableProvider(['cerebras', 'mistral', 'groq']);
 
@@ -384,6 +425,13 @@ describe('QuotaTracker — Constants', () => {
     expect(PROVIDER_QUOTAS.groq).toBeDefined();
     expect(PROVIDER_QUOTAS.mistral).toBeDefined();
     expect(PROVIDER_QUOTAS.gemini).toBeDefined();
+  });
+
+  it('Cerebras model-aware quota defines Qwen primary and llama fallback only', () => {
+    expect(Object.keys(CEREBRAS_MODEL_QUOTAS)).toEqual([
+      'qwen-3-235b-a22b-instruct-2507',
+      'llama3.1-8b',
+    ]);
   });
 
   it('모든 쿼터에 필수 필드 존재', () => {

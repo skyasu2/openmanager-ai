@@ -33,7 +33,7 @@ vi.mock('./orchestrator-routing', () => ({
     getModel: vi.fn(() => ({ modelId: 'test-agent-model' })),
   })),
   executeForcedRouting: (...args: unknown[]) => mockExecuteForcedRouting(...args),
-  ORCHESTRATOR_PROVIDER_ORDER: ['cerebras', 'mistral', 'groq'],
+  ORCHESTRATOR_PROVIDER_ORDER: ['cerebras', 'groq', 'mistral'],
 }));
 
 describe('orchestrator decomposition stream contract', () => {

@@ -1,5 +1,6 @@
 import type { LanguageModel } from 'ai';
 import {
+  getCerebrasFallbackModelIds,
   getCerebrasModelId,
   getGroqModelId,
   getOpenRouterVisionModelId,
@@ -13,13 +14,13 @@ import {
   type ModelCapabilityRequirements,
 } from '../../provider-capabilities';
 import {
-  checkProviderStatus,
   getCerebrasModel,
   getGeminiFlashLiteModel,
   getGroqModel,
   getMistralModel,
   getOpenRouterVisionModel,
-} from '../../model-provider';
+} from '../../model-provider-core';
+import { checkProviderStatus } from '../../model-provider-status';
 import type { ModelCapabilities, ProviderName } from '../../model-provider.types';
 
 export interface ModelResult {
@@ -37,25 +38,29 @@ export type TextProvider = 'cerebras' | 'groq' | 'mistral';
 
 const TEXT_PROVIDER_MODELS: Record<TextProvider, {
   factory: (id: string) => LanguageModel;
-  modelId: () => string;
+  modelIds: () => string[];
   capabilities: ModelCapabilities | (() => ModelCapabilities);
 }> = {
-  // Cerebras GPT-OSS 120b - 14.4K RPD / 1M TPD, structured-output primary, tool calling opt-in.
+  // Cerebras primary/fallback pair. Qwen is primary until 2026-05-27 deprecation;
+  // llama3.1-8b stays intra-provider fallback only.
   cerebras: {
     factory: getCerebrasModel,
-    modelId: () => getCerebrasModelId(),
+    modelIds: () => [
+      getCerebrasModelId(),
+      ...getCerebrasFallbackModelIds(),
+    ].filter((modelId, index, list) => modelId && list.indexOf(modelId) === index),
     capabilities: () => getTextProviderCapabilities('cerebras')
   },
   // Groq Llama 4 Scout (17B Preview) - 1K RPD / 500K TPD, 131K ctx, tool calling ✅.
   groq: {
     factory: getGroqModel,
-    modelId: () => getGroqModelId(),
+    modelIds: () => [getGroqModelId()],
     capabilities: () => getTextProviderCapabilities('groq')
   },
   // Mistral Large - Frontier급 성능, free tier ~2 RPM / 500 RPD. Last resort.
   mistral: {
     factory: getMistralModel,
-    modelId: () => 'mistral-large-latest',
+    modelIds: () => ['mistral-large-latest'],
     capabilities: () => getTextProviderCapabilities('mistral')
   },
 };
@@ -111,28 +116,38 @@ export function selectTextModel(
     if (!status[provider] || excluded.has(provider)) continue;
 
     const config = TEXT_PROVIDER_MODELS[provider];
-    const modelId = config.modelId();
     const capabilities = typeof config.capabilities === 'function'
       ? config.capabilities()
       : config.capabilities;
     const mismatchReasons = getCapabilityMismatchReasons(capabilities, requiredCapabilities);
     if (mismatchReasons.length > 0) {
       logger.info(
-        `[${agentLabel}] Skipping ${provider}/${modelId}: missing ${mismatchReasons.join(', ')}`
+        `[${agentLabel}] Skipping ${provider}: missing ${mismatchReasons.join(', ')}`
       );
       continue;
     }
-    try {
-      return {
-        model: config.factory(modelId),
-        provider,
-        modelId,
-        capabilities,
-      };
-    } catch {
-      const nextIdx = providerOrder.indexOf(provider) + 1;
-      const next = nextIdx < providerOrder.length ? providerOrder[nextIdx] : null;
-      logger.warn(`[${agentLabel}] ${provider} unavailable${next ? `, trying ${next}` : ''}`);
+
+    const modelIds = config.modelIds();
+    for (const modelId of modelIds) {
+      try {
+        return {
+          model: config.factory(modelId),
+          provider,
+          modelId,
+          capabilities,
+        };
+      } catch {
+        const nextModel = modelIds[modelIds.indexOf(modelId) + 1];
+        const nextProviderIdx = providerOrder.indexOf(provider) + 1;
+        const nextProvider = nextProviderIdx < providerOrder.length
+          ? providerOrder[nextProviderIdx]
+          : null;
+        logger.warn(
+          `[${agentLabel}] ${provider}/${modelId} unavailable${
+            nextModel ? `, trying ${provider}/${nextModel}` : nextProvider ? `, trying ${nextProvider}` : ''
+          }`
+        );
+      }
     }
   }
 
@@ -153,7 +168,7 @@ export function selectTextModel(
 // ============================================================================
 
 /**
- * NLQ model: Groq(llama-4-scout) → Cerebras(gpt-oss-120b) → SambaNova(Llama-3.3-70B) → Mistral
+ * NLQ model: Groq(llama-4-scout) → Cerebras(Qwen→llama3.1-8b) → Mistral
  */
 export function getNlqModel(): ModelResult | null {
   return selectTextModel('NLQ Agent', ['groq', 'cerebras', 'mistral'], {
@@ -162,7 +177,7 @@ export function getNlqModel(): ModelResult | null {
 }
 
 /**
- * Analyst model: Groq(llama-4-scout) → Cerebras(gpt-oss-120b) → SambaNova(Llama-3.3-70B) → Mistral
+ * Analyst model: Groq(llama-4-scout) → Cerebras(Qwen→llama3.1-8b) → Mistral
  */
 export function getAnalystModel(): ModelResult | null {
   return selectTextModel('Analyst Agent', ['groq', 'cerebras', 'mistral'], {
@@ -171,7 +186,7 @@ export function getAnalystModel(): ModelResult | null {
 }
 
 /**
- * Reporter model: Groq(llama-4-scout) → Cerebras(gpt-oss-120b) → SambaNova(Llama-3.3-70B) → Mistral
+ * Reporter model: Groq(llama-4-scout) → Cerebras(Qwen→llama3.1-8b) → Mistral
  */
 export function getReporterModel(): ModelResult | null {
   return selectTextModel('Reporter Agent', ['groq', 'cerebras', 'mistral'], {
@@ -180,8 +195,7 @@ export function getReporterModel(): ModelResult | null {
 }
 
 /**
- * Advisor model: Groq(llama-4-scout) → Cerebras(gpt-oss-120b) → SambaNova(Llama-3.3-70B) → Mistral
- * SambaNova는 tool-calling text fallback으로 Mistral 전에 배치하되 free-tier guard를 적용한다.
+ * Advisor model: Groq(llama-4-scout) → Cerebras(Qwen→llama3.1-8b) → Mistral
  */
 export function getAdvisorModel(): ModelResult | null {
   return selectTextModel('Advisor Agent', ['groq', 'cerebras', 'mistral'], {

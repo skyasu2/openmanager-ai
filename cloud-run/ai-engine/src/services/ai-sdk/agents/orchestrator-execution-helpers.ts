@@ -196,6 +196,11 @@ export function finalizeMultiAgentResponse(
     totalRounds: tracedResponse.metadata.totalRounds,
     handoffCount,
     durationMs: tracedResponse.metadata.durationMs,
+    provider: tracedResponse.metadata.provider,
+    modelId: tracedResponse.metadata.modelId,
+    usedFallback: tracedResponse.metadata.usedFallback,
+    fallbackReason: tracedResponse.metadata.fallbackReason,
+    providerAttempts: tracedResponse.metadata.providerAttempts,
   });
 
   return tracedResponse;
@@ -255,6 +260,12 @@ export async function* streamWithTrace(
         finalAgent: doneData.finalAgent,
         toolsCalled: doneData.toolsCalled,
         durationMs,
+        provider: doneData.metadata?.provider,
+        modelId: doneData.metadata?.modelId,
+        usedFallback: doneData.metadata?.usedFallback,
+        fallbackReason: doneData.metadata?.fallbackReason,
+        providerAttempts: doneData.metadata?.providerAttempts,
+        ttfbMs: doneData.metadata?.ttfbMs,
       });
 
       yield enrichedEvent;
@@ -267,6 +278,7 @@ export async function* streamWithTrace(
         code?: string;
         error?: string;
         message?: string;
+        metadata?: Record<string, unknown>;
       };
       finalizeTrace(
         trace,
@@ -276,6 +288,7 @@ export async function* streamWithTrace(
           mode: 'multi',
           traceId,
           code: errorData.code,
+          ...errorData.metadata,
           durationMs: Date.now() - startTime,
         }
       );

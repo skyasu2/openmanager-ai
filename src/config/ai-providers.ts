@@ -39,9 +39,9 @@ export const AI_PROVIDERS: AIProviderConfig[] = [
   {
     name: 'Cerebras',
     role: 'Structured routing + secondary text fallback',
-    model: 'gpt-oss-120b',
+    model: 'qwen-3-235b-a22b-instruct-2507',
     description:
-      'Production model candidate for structured routing and opt-in text fallback when Groq is unavailable or a selector prefers Cerebras capabilities',
+      'Primary Cerebras model until the 2026-05-27 deprecation window, with llama3.1-8b as intra-provider fallback. gpt-oss-120b is excluded from the free-tier runtime.',
     color: 'bg-blue-500',
     dailyTokenLimit: '1M tokens/day',
   },
@@ -50,7 +50,7 @@ export const AI_PROVIDERS: AIProviderConfig[] = [
     role: 'Last-resort text fallback',
     model: 'mistral-large-latest',
     description:
-      'Frontier fallback for text agents and embedding-backed knowledge workflows',
+      'Last-resort text fallback for agents. It is not used for RAG runtime retrieval.',
     color: 'bg-amber-500',
   },
   {

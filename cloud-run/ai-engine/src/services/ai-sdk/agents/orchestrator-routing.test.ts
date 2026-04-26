@@ -140,6 +140,13 @@ import {
 function createRetryResult(options: {
   text?: string;
   usedFallback?: boolean;
+  attempts?: Array<{
+    provider: 'cerebras' | 'groq' | 'mistral';
+    modelId: string;
+    attempt: number;
+    durationMs: number;
+    error?: string;
+  }>;
   steps?: Array<{
     toolCalls?: Array<{ toolName: string }>;
     toolResults?: Array<{ toolName: string; result?: unknown; output?: unknown }>;
@@ -151,7 +158,7 @@ function createRetryResult(options: {
     modelId: 'cerebras-model',
     usedFallback: options.usedFallback ?? false,
     totalDurationMs: 10,
-    attempts: [
+    attempts: options.attempts ?? [
       {
         provider: 'cerebras',
         modelId: 'cerebras-model',
@@ -325,6 +332,54 @@ describe('executeForcedRouting', () => {
     expect(mockGenerateTextWithRetry).toHaveBeenCalledTimes(2);
   });
 
+  it('records provider attempts and fallback reason for Langfuse diagnostics', async () => {
+    mockGenerateTextWithRetry.mockResolvedValueOnce(
+      createRetryResult({
+        text: 'fallback 응답',
+        usedFallback: true,
+        attempts: [
+          {
+            provider: 'groq',
+            modelId: 'groq-model',
+            attempt: 1,
+            durationMs: 120,
+            error: 'rate limit exceeded: 429',
+          },
+          {
+            provider: 'cerebras',
+            modelId: 'llama3.1-8b',
+            attempt: 1,
+            durationMs: 80,
+          },
+        ],
+      })
+    );
+
+    const result = await executeForcedRouting(
+      '최근 에러 로그 보여줘',
+      'NLQ Agent',
+      Date.now()
+    );
+
+    expect(result?.metadata.usedFallback).toBe(true);
+    expect(result?.metadata.fallbackReason).toBe('rate_limit');
+    expect(result?.metadata.providerAttempts).toEqual([
+      {
+        provider: 'groq',
+        modelId: 'groq-model',
+        attempt: 1,
+        durationMs: 120,
+        error: 'rate limit exceeded: 429',
+      },
+      {
+        provider: 'cerebras',
+        modelId: 'llama3.1-8b',
+        attempt: 1,
+        durationMs: 80,
+      },
+    ]);
+  });
+
   it('injects distilled context summary into forced-routing prompt', async () => {
     mockGenerateTextWithRetry.mockResolvedValueOnce(
       createRetryResult({
@@ -378,7 +433,7 @@ describe('executeForcedRouting', () => {
         {
           id: 'kb-1',
           title: '현재 인프라 역할/트래픽 토폴로지 스냅샷',
-          content: '총 15대 서버 기준으로 LB->WEB->APP->DB 경로를 사용합니다.',
+          content: '총 18대 서버 기준으로 LB->WEB->APP->DB 경로를 사용합니다.',
           similarity: 0.91,
           sourceType: 'vector',
           category: 'architecture',
@@ -420,6 +475,6 @@ describe('provider order policy', () => {
   });
 
   it('keeps Orchestrator structured-output provider order as documented', () => {
-    expect(ORCHESTRATOR_PROVIDER_ORDER).toEqual(['cerebras', 'mistral', 'groq']);
+    expect(ORCHESTRATOR_PROVIDER_ORDER).toEqual(['cerebras', 'groq', 'mistral']);
   });
 });

@@ -21,7 +21,10 @@ import {
 } from './orchestrator-routing';
 import { saveAgentFindingsToContext } from './orchestrator-context';
 import { selectTextModel, type TextProvider, type ModelResult } from './config/agent-model-selectors';
-import { ORCHESTRATOR_CONFIG } from './orchestrator-types';
+import {
+  ORCHESTRATOR_CONFIG,
+  type ProviderAttemptTelemetry,
+} from './orchestrator-types';
 import { filterToolsByWebSearch, filterToolsByRAG } from './orchestrator-web-search';
 import { evaluateAgentResponseQuality } from './response-quality';
 import { streamTextInChunks } from './orchestrator-decomposition';
@@ -33,6 +36,39 @@ import {
 
 const PROVIDER_FALLBACK_BASE_DELAY_MS = 120;
 const PROVIDER_FALLBACK_JITTER_MS = 280;
+
+function classifyProviderFallbackReason(errorMessage: string): string {
+  const normalized = errorMessage.toLowerCase();
+  if (normalized.includes('rate limit') || normalized.includes('429')) {
+    return 'rate_limit';
+  }
+  if (normalized.includes('timeout')) {
+    return 'timeout';
+  }
+  if (normalized.includes('no output')) {
+    return 'no_output';
+  }
+  if (normalized.includes('empty_response')) {
+    return 'empty_response';
+  }
+  if (
+    normalized.includes('does not exist') ||
+    normalized.includes('no access') ||
+    normalized.includes('model not found') ||
+    normalized.includes('404')
+  ) {
+    return 'model_unavailable';
+  }
+  if (
+    normalized.includes('unavailable') ||
+    normalized.includes('503') ||
+    normalized.includes('502') ||
+    normalized.includes('504')
+  ) {
+    return 'provider_unavailable';
+  }
+  return 'provider_error';
+}
 
 async function waitBeforeProviderFallback(
   agentName: string,
@@ -140,6 +176,7 @@ export async function* executeAgentStream(
 
   // Build provider attempt list: Vision Agent uses native model, others use text providers
   const providerAttempts: ModelResult[] = [];
+  const providerAttemptTelemetry: ProviderAttemptTelemetry[] = [];
 
   if (isVisionAgent && nativeModel) {
     // Vision Agent: single attempt with native model (gemini/openrouter)
@@ -485,6 +522,13 @@ export async function* executeAgentStream(
       if (!textEmitted && attemptIndex < providerAttempts.length - 1) {
         excludedProviders.push(provider);
         lastError = 'EMPTY_RESPONSE';
+        providerAttemptTelemetry.push({
+          provider,
+          modelId,
+          attempt: attemptIndex + 1,
+          durationMs: Date.now() - providerStartTime,
+          error: 'EMPTY_RESPONSE',
+        });
         logger.warn(
           `[Stream ${agentName}] Empty response from ${provider}/${modelId}; trying next provider...`
         );
@@ -514,6 +558,16 @@ export async function* executeAgentStream(
       }
 
       const durationMs = Date.now() - startTime;
+      providerAttemptTelemetry.push({
+        provider,
+        modelId,
+        attempt: attemptIndex + 1,
+        durationMs: Date.now() - providerStartTime,
+        ...(fallbackReason ? { error: fallbackReason } : {}),
+      });
+      const usedFallback = providerAttemptTelemetry.length > 1;
+      const providerFallbackReason =
+        providerAttemptTelemetry.find((attempt) => attempt.error)?.error;
       const quality = evaluateAgentResponseQuality(agentName, fullResponseText, {
         durationMs,
         fallbackReason,
@@ -546,6 +600,11 @@ export async function* executeAgentStream(
             qualityFlags: quality.qualityFlags,
             latencyTier: quality.latencyTier,
             ...(firstChunkMs !== null ? { ttfbMs: firstChunkMs } : {}),
+            providerAttempts: providerAttemptTelemetry,
+            usedFallback,
+            ...(providerFallbackReason
+              ? { fallbackReason: classifyProviderFallbackReason(providerFallbackReason) }
+              : {}),
           },
           ...(followUp && { suggestedFollowUp: followUp }),
         },
@@ -561,6 +620,13 @@ export async function* executeAgentStream(
         lastError = errorMessage;
 
         if (attemptIndex < providerAttempts.length - 1) {
+          providerAttemptTelemetry.push({
+            provider,
+            modelId,
+            attempt: attemptIndex + 1,
+            durationMs: Date.now() - providerStartTime,
+            error: errorMessage,
+          });
           logger.warn(
             `[Stream ${agentName}] No output from ${provider}/${modelId}, trying next provider...`
           );
@@ -579,6 +645,13 @@ export async function* executeAgentStream(
         const noOutputFallback = '모델이 응답을 생성하지 못했습니다. 다시 시도해 주세요.';
         markFirstChunk('no_output_fallback');
         yield { type: 'text_delta', data: noOutputFallback };
+        providerAttemptTelemetry.push({
+          provider,
+          modelId,
+          attempt: attemptIndex + 1,
+          durationMs: Date.now() - providerStartTime,
+          error: 'NO_OUTPUT',
+        });
         const quality = evaluateAgentResponseQuality(agentName, '모델이 응답을 생성하지 못했습니다. 다시 시도해 주세요.', {
           durationMs,
           fallbackReason: 'NO_OUTPUT',
@@ -600,6 +673,9 @@ export async function* executeAgentStream(
               qualityFlags: quality.qualityFlags,
               latencyTier: quality.latencyTier,
               ...(firstChunkMs !== null ? { ttfbMs: firstChunkMs } : {}),
+              providerAttempts: providerAttemptTelemetry,
+              usedFallback: providerAttemptTelemetry.length > 1,
+              fallbackReason: 'no_output',
             },
           },
         };
@@ -616,6 +692,13 @@ export async function* executeAgentStream(
 
       excludedProviders.push(provider);
       lastError = errorMessage;
+      providerAttemptTelemetry.push({
+        provider,
+        modelId,
+        attempt: attemptIndex + 1,
+        durationMs: Date.now() - providerStartTime,
+        error: errorMessage,
+      });
       logger.warn(`[Stream ${agentName}] Provider ${provider} failed: ${errorMessage}, trying next...`);
       if (attemptIndex < providerAttempts.length - 1) {
         yield buildProviderRetryStatus(
@@ -633,5 +716,16 @@ export async function* executeAgentStream(
 
   // All providers exhausted
   logger.error(`❌ [Stream ${agentName}] All providers failed. Last error: ${lastError}`);
-  yield { type: 'error', data: { code: 'STREAM_ERROR', error: lastError ?? `All providers failed for ${agentName}` } };
+  yield {
+    type: 'error',
+    data: {
+      code: 'STREAM_ERROR',
+      error: lastError ?? `All providers failed for ${agentName}`,
+      metadata: {
+        providerAttempts: providerAttemptTelemetry,
+        usedFallback: providerAttemptTelemetry.length > 1,
+        ...(lastError ? { fallbackReason: classifyProviderFallbackReason(lastError) } : {}),
+      },
+    },
+  };
 }

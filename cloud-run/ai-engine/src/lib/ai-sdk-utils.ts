@@ -1,3 +1,9 @@
+import {
+  legacyRagSourcesToEvidenceCards,
+  type EvidenceCard,
+  type LegacyRagSource,
+} from './retrieval-contract';
+
 /**
  * AI SDK v6 호환: toolResult에서 output 추출
  * v6는 'output', 이전 버전은 'result' 사용
@@ -10,13 +16,7 @@ export function extractToolResultOutput(toolResult: unknown): unknown {
 /**
  * RAG source 타입 정의
  */
-export type RagSource = {
-  title: string;
-  similarity: number;
-  sourceType: string;
-  category?: string;
-  url?: string;
-};
+export type RagSource = LegacyRagSource;
 
 /**
  * toolResult에서 RAG sources를 추출하는 유틸리티.
@@ -60,6 +60,15 @@ export function extractRagSources(
   }
 
   return [];
+}
+
+export function extractEvidenceCards(
+  toolName: string,
+  toolOutput: unknown
+): EvidenceCard[] {
+  return legacyRagSourcesToEvidenceCards(
+    extractRagSources(toolName, toolOutput)
+  );
 }
 
 /**

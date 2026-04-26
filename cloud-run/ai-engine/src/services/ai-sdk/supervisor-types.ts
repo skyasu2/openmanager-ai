@@ -5,6 +5,10 @@
  */
 
 import type { ImageAttachment, FileAttachment } from './agents/base-agent';
+import type {
+  EvidenceCard,
+  RetrievalMetadata,
+} from '../../lib/retrieval-contract';
 
 // Re-export multimodal types
 export type { ImageAttachment, FileAttachment };
@@ -74,6 +78,8 @@ export interface SupervisorResponse {
     category?: string;
     url?: string;
   }>;
+  /** New retrieval evidence contract. Kept alongside ragSources during migration. */
+  evidenceCards?: EvidenceCard[];
   usage: {
     promptTokens: number;
     completionTokens: number;
@@ -108,6 +114,8 @@ export interface SupervisorResponse {
     fallback?: boolean;
     /** Fallback 사유 (e.g. 'no_provider', 'circuit_open') */
     fallbackReason?: string;
+    /** Retrieval execution contract for UI/Langfuse: enabled vs used vs suppressed. */
+    retrieval?: RetrievalMetadata;
     /** 상위 실행 모드에서 강등된 경우의 원래 모드 */
     degradedFromMode?: 'multi';
     /** 강등(Degraded)된 직접 원인 */

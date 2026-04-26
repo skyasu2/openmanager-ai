@@ -246,7 +246,8 @@ async function executeMultiAgentMode(
       await recordModelUsage(
         multiResult.metadata.provider as ProviderName,
         multiResult.usage.totalTokens,
-        'multi-agent'
+        'multi-agent',
+        multiResult.metadata.modelId
       );
     }
 
@@ -593,7 +594,7 @@ async function executeSupervisorAttempt(
 
       const totalTokens = result.usage?.totalTokens ?? 0;
       if (totalTokens > 0) {
-        await recordModelUsage(provider, totalTokens, 'supervisor');
+        await recordModelUsage(provider, totalTokens, 'supervisor', modelId);
       }
 
       return {
