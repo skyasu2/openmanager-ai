@@ -346,9 +346,11 @@ function loadResourceCatalog(): ResourceCatalog | null {
   }
 
   const candidates = [
+    // Prefer the tracked OTel SSOT so local generated copies cannot mask CI drift.
+    join(process.cwd(), 'public/data/otel-data/resource-catalog.json'),
+    join(process.cwd(), '..', '..', 'public/data/otel-data/resource-catalog.json'),
     join(process.cwd(), 'data/otel-data/resource-catalog.json'),
     join(process.cwd(), 'cloud-run/ai-engine/data/otel-data/resource-catalog.json'),
-    join(process.cwd(), 'public/data/otel-data/resource-catalog.json'),
   ];
 
   for (const filePath of candidates) {

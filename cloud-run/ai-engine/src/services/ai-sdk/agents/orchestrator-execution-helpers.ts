@@ -24,6 +24,10 @@ type StreamDoneData = {
   metadata?: Record<string, unknown>;
 };
 
+function elapsedMs(startTime: number): number {
+  return Math.max(0, Date.now() - startTime);
+}
+
 export function getLastUserQuery(
   request: MultiAgentRequest
 ): string | null {
@@ -89,7 +93,7 @@ export function buildFastPathResponse(
   responseText: string,
   startTime: number
 ): MultiAgentResponse {
-  const durationMs = Date.now() - startTime;
+  const durationMs = elapsedMs(startTime);
   const quality = evaluateAgentResponseQuality('Orchestrator', responseText, {
     durationMs,
   });
@@ -119,7 +123,7 @@ export async function* streamFastPathResponse(
   responseText: string,
   startTime: number
 ): AsyncGenerator<StreamEvent> {
-  const durationMs = Date.now() - startTime;
+  const durationMs = elapsedMs(startTime);
   logger.info(`[Stream Fast Path] Direct response in ${durationMs}ms`);
 
   yield { type: 'text_delta', data: responseText };
@@ -237,22 +241,22 @@ export async function* streamWithTrace(
     if (event.type === 'done') {
       terminalSeen = true;
       const doneData = event.data as StreamDoneData;
-      const durationMs =
+      const rawDurationMs =
         typeof doneData.metadata?.durationMs === 'number'
           ? doneData.metadata.durationMs
-          : Date.now() - startTime;
-      const enrichedEvent = traceId
-        ? {
-            ...event,
-            data: {
-              ...doneData,
-              metadata: {
-                ...(doneData.metadata ?? {}),
-                traceId,
-              },
-            },
-          }
-        : event;
+          : elapsedMs(startTime);
+      const durationMs = Math.max(0, rawDurationMs);
+      const enrichedEvent = {
+        ...event,
+        data: {
+          ...doneData,
+          metadata: {
+            ...(doneData.metadata ?? {}),
+            durationMs,
+            ...(traceId ? { traceId } : {}),
+          },
+        },
+      };
 
       finalizeTrace(trace, fullText || 'Stream completed', doneData.success !== false, {
         mode: 'multi',
@@ -289,7 +293,7 @@ export async function* streamWithTrace(
           traceId,
           code: errorData.code,
           ...errorData.metadata,
-          durationMs: Date.now() - startTime,
+          durationMs: elapsedMs(startTime),
         }
       );
 
@@ -305,7 +309,7 @@ export async function* streamWithTrace(
       mode: 'multi',
       traceId,
       code: 'STREAM_TERMINATED',
-      durationMs: Date.now() - startTime,
+      durationMs: elapsedMs(startTime),
     });
   }
 }
