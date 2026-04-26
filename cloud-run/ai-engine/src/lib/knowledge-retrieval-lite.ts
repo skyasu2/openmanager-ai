@@ -39,17 +39,23 @@ const MAX_QUERY_CANDIDATES = 4;
 
 const DOMAIN_QUERY_FALLBACKS = [
   {
-    signals: [
-      /redis|레디스|cache|캐시/i,
-      /oom|out\s*of\s*memory|memory|메모리|부족/i,
-    ],
+    domainSignals: [/redis|레디스|cache|캐시/i],
+    symptomSignals: [/oom|out\s*of\s*memory|memory|메모리|부족/i],
     candidates: ['redis memory', 'redis oom', 'cache memory', '레디스 메모리'],
   },
   {
-    signals: [
-      /postgres|postgresql|database|\bdb\b|디비|데이터베이스/i,
-      /connection|pool|timeout|접속|연결|타임아웃/i,
+    domainSignals: [/redis|레디스|cache|캐시/i],
+    symptomSignals: [/connection|pool|timeout|접속|연결|타임아웃|실패/i],
+    candidates: [
+      'redis connection',
+      'redis timeout',
+      'cache connection',
+      '레디스 연결',
     ],
+  },
+  {
+    domainSignals: [/postgres|postgresql|database|\bdb\b|디비|데이터베이스/i],
+    symptomSignals: [/connection|pool|timeout|접속|연결|타임아웃|실패/i],
     candidates: [
       'database connection',
       'postgres connection pool',
@@ -58,14 +64,15 @@ const DOMAIN_QUERY_FALLBACKS = [
     ],
   },
   {
-    signals: [
+    domainSignals: [
       /nginx|엔진엑스|gateway|proxy|\blb\b|load\s*balancer|로드밸런서/i,
-      /5xx|503|502|timeout|connection|타임아웃|연결/i,
     ],
+    symptomSignals: [/5xx|503|502|timeout|connection|타임아웃|연결/i],
     candidates: ['nginx gateway', 'http 5xx', 'gateway timeout', '엔진엑스 장애'],
   },
   {
-    signals: [/cpu|processor|프로세스|부하|load/i, /high|spike|높|과부하|지연/i],
+    domainSignals: [/cpu|processor|프로세스|부하|load/i],
+    symptomSignals: [/high|spike|높|과부하|지연/i],
     candidates: ['cpu high load', 'cpu spike', '프로세스 부하'],
   },
 ] as const;
@@ -258,7 +265,14 @@ function buildSearchQueryCandidates(query: string): string[] {
   const candidates = [primaryQuery];
 
   for (const fallback of DOMAIN_QUERY_FALLBACKS) {
-    if (fallback.signals.every((signal) => signal.test(normalizedForMatch))) {
+    const domainMatched = fallback.domainSignals.some((signal) =>
+      signal.test(normalizedForMatch)
+    );
+    const symptomMatched =
+      !fallback.symptomSignals ||
+      fallback.symptomSignals.some((signal) => signal.test(normalizedForMatch));
+
+    if (domainMatched && symptomMatched) {
       candidates.push(...fallback.candidates);
     }
   }

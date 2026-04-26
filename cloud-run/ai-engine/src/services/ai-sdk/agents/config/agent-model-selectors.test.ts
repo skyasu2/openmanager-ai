@@ -36,6 +36,7 @@ vi.mock('../../../../lib/config-parser', () => ({
   getGroqModelId: vi.fn(() => 'groq-model'),
   getOpenRouterVisionModelId: vi.fn(() => 'openrouter-vision-model'),
   isCerebrasToolCallingEnabled: mockIsCerebrasToolCallingEnabled,
+  isCerebrasLongContextEnabled: vi.fn(() => true),
   isOpenRouterVisionToolCallingEnabled: mockIsOpenRouterVisionToolCallingEnabled,
 }));
 
@@ -141,5 +142,25 @@ describe('selectTextModel capability requirements', () => {
     expect(mockGetCerebrasModel).toHaveBeenNthCalledWith(1, 'qwen-3-235b-a22b-instruct-2507');
     expect(mockGetCerebrasModel).toHaveBeenNthCalledWith(2, 'llama3.1-8b');
     expect(mockGetGroqModel).not.toHaveBeenCalled();
+  });
+
+  it('does not use llama3.1-8b for long-context requirements after Qwen fails', () => {
+    mockGetCerebrasModel.mockImplementation((modelId: string) => {
+      if (modelId === 'qwen-3-235b-a22b-instruct-2507') {
+        throw new Error('Qwen unavailable');
+      }
+      return { provider: 'cerebras', modelId };
+    });
+
+    const result = selectTextModel('Test Agent', ['cerebras', 'groq'], {
+      requiredCapabilities: { requireLongContext: true },
+    });
+
+    expect(result?.provider).toBe('groq');
+    expect(mockGetCerebrasModel).toHaveBeenCalledTimes(1);
+    expect(mockGetCerebrasModel).toHaveBeenCalledWith(
+      'qwen-3-235b-a22b-instruct-2507'
+    );
+    expect(mockGetGroqModel).toHaveBeenCalledWith('groq-model');
   });
 });

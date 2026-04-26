@@ -7,6 +7,7 @@ export type AgentToolName =
   | 'filterServers'
   | 'getServerByGroup'
   | 'getServerByGroupAdvanced'
+  | 'getServerLogs'
   | 'detectAnomalies'
   | 'detectAnomaliesAllServers'
   | 'predictTrends'
@@ -24,7 +25,13 @@ export type AgentToolName =
   | 'enhanceSuggestedActions'
   | 'extendServerCorrelation'
   | 'finalAnswer'
-  | 'analyzeScreenshot';
+  | 'analyzeScreenshot'
+  | 'analyzeLargeLog'
+  | 'searchWithGrounding'
+  | 'analyzeUrlContent'
+  | 'evaluateMathExpression'
+  | 'computeSeriesStats'
+  | 'estimateCapacityProjection';
 
 export interface AgentRuntimePolicy {
   providerOrder: readonly TextRuntimeProvider[];
@@ -104,6 +111,7 @@ export const AGENT_RUNTIME_POLICIES = {
       'searchKnowledgeBase',
       'recommendCommands',
       'searchWeb',
+      'getServerLogs',
       'findRootCause',
       'correlateMetrics',
       'detectAnomalies',

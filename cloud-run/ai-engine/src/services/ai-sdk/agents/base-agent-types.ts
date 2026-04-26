@@ -1,3 +1,9 @@
+import type {
+  EvidenceCard,
+  LegacyRagSource,
+  RetrievalMetadata,
+} from '../../../lib/retrieval-contract';
+
 export interface ImageAttachment {
   data: string;
   mimeType: string;
@@ -31,7 +37,10 @@ export interface AgentResult {
     finishReason?: string;
     fallbackUsed?: boolean;
     fallbackReason?: string;
+    retrieval?: RetrievalMetadata;
   };
+  ragSources?: LegacyRagSource[];
+  evidenceCards?: EvidenceCard[];
   error?: string;
 }
 

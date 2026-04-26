@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { extractEvidenceCards, extractRagSources } from './ai-sdk-utils';
+import {
+  extractEvidenceCards,
+  extractRagSources,
+  extractRetrievalMetadata,
+} from './ai-sdk-utils';
 
 describe('extractRagSources', () => {
   it('maps searchKnowledgeBase similarCases to ragSources', () => {
@@ -107,5 +111,51 @@ describe('extractRagSources', () => {
         reason: 'legacy-rag-source:graph',
       },
     ]);
+  });
+
+  it('prefers direct EvidenceCard contract when tool output provides it', () => {
+    const result = extractEvidenceCards('searchKnowledgeBase', {
+      evidenceCards: [
+        {
+          id: 'kb-redis',
+          title: 'Redis connection runbook',
+          summary: 'Redis connection troubleshooting',
+          sourceType: 'runbook',
+          score: 0.88,
+          category: 'troubleshooting',
+        },
+      ],
+    });
+
+    expect(result).toEqual([
+      {
+        id: 'kb-redis',
+        title: 'Redis connection runbook',
+        summary: 'Redis connection troubleshooting',
+        sourceType: 'runbook',
+        score: 0.88,
+        category: 'troubleshooting',
+      },
+    ]);
+  });
+
+  it('extracts Knowledge Retrieval Lite metadata from searchKnowledgeBase output', () => {
+    const result = extractRetrievalMetadata('searchKnowledgeBase', {
+      retrieval: {
+        retrievalEnabled: true,
+        retrievalUsed: true,
+        retrievalMode: 'lite',
+        evidenceCount: 2,
+        webUsed: false,
+      },
+    });
+
+    expect(result).toEqual({
+      retrievalEnabled: true,
+      retrievalUsed: true,
+      retrievalMode: 'lite',
+      evidenceCount: 2,
+      webUsed: false,
+    });
   });
 });

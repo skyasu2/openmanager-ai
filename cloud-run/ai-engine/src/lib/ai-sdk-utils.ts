@@ -1,7 +1,14 @@
 import {
+  createRetrievalMetadata,
   legacyRagSourcesToEvidenceCards,
   type EvidenceCard,
+  type EvidenceSourceType,
   type LegacyRagSource,
+  type RetrievalMetadata,
+  type RetrievalMode,
+  type RetrievalSuppressedReason,
+  RETRIEVAL_MODES,
+  RETRIEVAL_SUPPRESSED_REASONS,
 } from './retrieval-contract';
 
 /**
@@ -66,9 +73,141 @@ export function extractEvidenceCards(
   toolName: string,
   toolOutput: unknown
 ): EvidenceCard[] {
+  const directCards = readDirectEvidenceCards(toolOutput);
+  if (directCards.length > 0) {
+    return directCards;
+  }
+
   return legacyRagSourcesToEvidenceCards(
     extractRagSources(toolName, toolOutput)
   );
+}
+
+export function extractRetrievalMetadata(
+  toolName: string,
+  toolOutput: unknown
+): RetrievalMetadata | undefined {
+  if (toolName !== 'searchKnowledgeBase') return undefined;
+  if (toolOutput === null || toolOutput === undefined || typeof toolOutput !== 'object') {
+    return undefined;
+  }
+
+  const output = toolOutput as Record<string, unknown>;
+  const retrieval = output.retrieval;
+  if (retrieval === null || retrieval === undefined || typeof retrieval !== 'object') {
+    return undefined;
+  }
+
+  const raw = retrieval as Record<string, unknown>;
+  return createRetrievalMetadata({
+    retrievalEnabled: readBoolean(raw.retrievalEnabled) ?? true,
+    retrievalUsed: readBoolean(raw.retrievalUsed),
+    retrievalMode: readRetrievalMode(raw.retrievalMode),
+    suppressedReason: readSuppressedReason(raw.suppressedReason),
+    evidenceCount: readNumber(raw.evidenceCount),
+    webUsed: readBoolean(raw.webUsed),
+  });
+}
+
+export function mergeRetrievalMetadata(
+  current: RetrievalMetadata | undefined,
+  next: RetrievalMetadata | undefined
+): RetrievalMetadata | undefined {
+  if (!next) return current;
+  if (!current) return next;
+
+  const retrievalUsed = current.retrievalUsed || next.retrievalUsed;
+  const evidenceCount = current.evidenceCount + next.evidenceCount;
+  return createRetrievalMetadata({
+    retrievalEnabled: current.retrievalEnabled || next.retrievalEnabled,
+    retrievalUsed,
+    retrievalMode: next.retrievalMode === 'off' ? current.retrievalMode : next.retrievalMode,
+    evidenceCount,
+    webUsed: current.webUsed || next.webUsed,
+    suppressedReason: retrievalUsed
+      ? undefined
+      : current.suppressedReason ?? next.suppressedReason,
+  });
+}
+
+function readDirectEvidenceCards(toolOutput: unknown): EvidenceCard[] {
+  if (toolOutput === null || toolOutput === undefined || typeof toolOutput !== 'object') {
+    return [];
+  }
+
+  const output = toolOutput as Record<string, unknown>;
+  const cards = output.evidenceCards;
+  if (!Array.isArray(cards)) return [];
+
+  return cards
+    .map((card): EvidenceCard | null => {
+      if (card === null || card === undefined || typeof card !== 'object') {
+        return null;
+      }
+
+      const record = card as Record<string, unknown>;
+      const id = readString(record.id);
+      const title = readString(record.title);
+      const summary = readString(record.summary);
+      const sourceType = readEvidenceSourceType(record.sourceType);
+      const score = readNumber(record.score);
+
+      if (!id || !title || !summary || !sourceType || score === undefined) {
+        return null;
+      }
+
+      return {
+        id,
+        title,
+        summary,
+        sourceType,
+        score,
+        ...(readString(record.category) && { category: readString(record.category) }),
+        ...(readString(record.reason) && { reason: readString(record.reason) }),
+        ...(readString(record.url) && { url: readString(record.url) }),
+      };
+    })
+    .filter((card): card is EvidenceCard => card !== null);
+}
+
+function readString(value: unknown): string | undefined {
+  return typeof value === 'string' && value.trim().length > 0
+    ? value
+    : undefined;
+}
+
+function readNumber(value: unknown): number | undefined {
+  return typeof value === 'number' && Number.isFinite(value)
+    ? value
+    : undefined;
+}
+
+function readBoolean(value: unknown): boolean | undefined {
+  return typeof value === 'boolean' ? value : undefined;
+}
+
+function readEvidenceSourceType(value: unknown): EvidenceSourceType | undefined {
+  if (typeof value !== 'string') return undefined;
+  if (value === 'knowledge' || value === 'incident' || value === 'runbook' || value === 'web') {
+    return value;
+  }
+  return undefined;
+}
+
+function readRetrievalMode(value: unknown): RetrievalMode | undefined {
+  return typeof value === 'string' &&
+    RETRIEVAL_MODES.includes(value as RetrievalMode)
+    ? (value as RetrievalMode)
+    : undefined;
+}
+
+function readSuppressedReason(
+  value: unknown
+): RetrievalSuppressedReason | undefined {
+  return typeof value === 'string' &&
+    RETRIEVAL_SUPPRESSED_REASONS.includes(value as RetrievalSuppressedReason)
+    ? (value as RetrievalSuppressedReason)
+    : undefined;
 }
 
 /**

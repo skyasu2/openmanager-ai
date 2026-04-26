@@ -25,6 +25,7 @@ import {
 import {
   getCapabilityMismatchReasons,
   getTextProviderCapabilities,
+  type ModelCapabilityRequirements,
   type TextProviderName,
 } from '../ai-sdk/provider-capabilities';
 import { getCircuitBreaker } from './circuit-breaker';
@@ -112,6 +113,9 @@ const RETRY_ERROR_CODES = [
   408,  // Request timeout
   500,  // Internal server error (transient)
 ];
+
+const SHORT_CONTEXT_LIMIT_TOKENS = 8_192;
+const APPROX_CHARS_PER_TOKEN = 4;
 
 // ============================================================================
 // Provider Chain
@@ -219,6 +223,15 @@ function shouldFallback(error: unknown): boolean {
   return false;
 }
 
+function estimateContextTokens(options: GenerateTextOptions): number {
+  const messageTokens = options.messages.reduce(
+    (total, message) =>
+      total + Math.ceil(message.content.length / APPROX_CHARS_PER_TOKEN),
+    0
+  );
+  return messageTokens + (options.maxOutputTokens ?? 0);
+}
+
 /**
  * Check if error should trigger retry on same provider
  */
@@ -278,6 +291,11 @@ export async function generateTextWithRetry(
   const startTime = Date.now();
   const attempts: ProviderAttempt[] = [];
   const excludedProviders: ProviderName[] = [];
+  const estimatedContextTokens = estimateContextTokens(options);
+  const minContextTokens =
+    estimatedContextTokens > SHORT_CONTEXT_LIMIT_TOKENS
+      ? estimatedContextTokens
+      : undefined;
 
   let currentProviderIndex = 0;
   const MAX_ITERATIONS = preferredOrder.length * (fullConfig.maxRetries + 1) + 1;
@@ -311,11 +329,12 @@ export async function generateTextWithRetry(
       while (retryCount <= fullConfig.maxRetries) {
         const attemptStart = Date.now();
 
-        const capabilityRequirements = options.tools
-          ? { requireToolCalling: true }
-          : {};
+        const capabilityRequirements: ModelCapabilityRequirements = {
+          ...(options.tools ? { requireToolCalling: true } : {}),
+          ...(minContextTokens ? { minContextTokens } : {}),
+        };
         const capabilityMismatches = getCapabilityMismatchReasons(
-          getTextProviderCapabilities(provider),
+          getTextProviderCapabilities(provider, modelId),
           capabilityRequirements
         );
 

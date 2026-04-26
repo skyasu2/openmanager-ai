@@ -8,7 +8,13 @@ import {
   type LanguageModel,
 } from 'ai';
 import { sanitizeChineseCharacters } from '../../../lib/text-sanitizer';
-import { extractToolResultOutput } from '../../../lib/ai-sdk-utils';
+import {
+  extractEvidenceCards,
+  extractRagSources,
+  extractRetrievalMetadata,
+  extractToolResultOutput,
+  mergeRetrievalMetadata,
+} from '../../../lib/ai-sdk-utils';
 import type { AgentConfig, ModelResult } from './config';
 import { logger } from '../../../lib/logger';
 import { buildUserContent } from './base-agent-multimodal';
@@ -167,6 +173,9 @@ export abstract class BaseAgent {
       });
 
       const toolsCalled: string[] = [];
+      const ragSources: AgentResult['ragSources'] = [];
+      const evidenceCards: AgentResult['evidenceCards'] = [];
+      let retrievalMetadata: AgentResult['metadata']['retrieval'];
       let finalAnswerResult: { answer: string } | null = null;
       let finishReason = 'stop';
 
@@ -176,6 +185,12 @@ export abstract class BaseAgent {
         if (step.toolResults) {
           for (const tr of step.toolResults) {
             const trOutput = extractToolResultOutput(tr);
+            ragSources.push(...extractRagSources(tr.toolName, trOutput));
+            evidenceCards.push(...extractEvidenceCards(tr.toolName, trOutput));
+            retrievalMetadata = mergeRetrievalMetadata(
+              retrievalMetadata,
+              extractRetrievalMetadata(tr.toolName, trOutput)
+            );
             if (tr.toolName === 'finalAnswer' && trOutput && typeof trOutput === 'object') {
               const res = trOutput as Record<string, unknown>;
               if ('answer' in res && typeof res.answer === 'string') {
@@ -228,7 +243,10 @@ export abstract class BaseAgent {
           finishReason,
           fallbackUsed,
           fallbackReason,
+          ...(retrievalMetadata && { retrieval: retrievalMetadata }),
         },
+        ...(ragSources.length > 0 && { ragSources }),
+        ...(evidenceCards.length > 0 && { evidenceCards }),
       };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);

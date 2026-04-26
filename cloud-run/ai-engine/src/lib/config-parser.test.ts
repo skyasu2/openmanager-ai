@@ -14,6 +14,7 @@ import {
   getCerebrasApiKey,
   getCerebrasModelId,
   isCerebrasToolCallingEnabled,
+  isCerebrasLongContextEnabled,
   getOpenRouterVisionModelId,
   getOpenRouterVisionFallbackModelIds,
   isOpenRouterVisionToolCallingEnabled,
@@ -209,6 +210,17 @@ describe('Config Parser', () => {
       process.env.CEREBRAS_TOOL_CALLING_ENABLED = 'true';
 
       expect(isCerebrasToolCallingEnabled()).toBe(true);
+    });
+
+    it('should keep Cerebras long-context enabled unless explicitly disabled', () => {
+      delete process.env.CEREBRAS_LONG_CONTEXT_ENABLED;
+      expect(isCerebrasLongContextEnabled()).toBe(true);
+
+      process.env.CEREBRAS_LONG_CONTEXT_ENABLED = 'false';
+      expect(isCerebrasLongContextEnabled()).toBe(false);
+
+      process.env.CEREBRAS_LONG_CONTEXT_ENABLED = 'true';
+      expect(isCerebrasLongContextEnabled()).toBe(true);
     });
   });
 

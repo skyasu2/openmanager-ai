@@ -54,6 +54,7 @@ import {
   filterServers,
   getServerByGroup,
   getServerByGroupAdvanced,
+  getServerLogs,
   // Analysis tools
   detectAnomalies,
   detectAnomaliesAllServers,
@@ -79,6 +80,13 @@ import {
   finalAnswer,
   // Vision tools (Gemini Flash-Lite)
   analyzeScreenshot,
+  analyzeLargeLog,
+  searchWithGrounding,
+  analyzeUrlContent,
+  // Calculation tools
+  evaluateMathExpression,
+  computeSeriesStats,
+  estimateCapacityProjection,
 } from '../../../../tools-ai-sdk';
 
 const AGENT_TOOL_REGISTRY: Record<AgentToolName, ToolsMap[string]> = {
@@ -87,6 +95,7 @@ const AGENT_TOOL_REGISTRY: Record<AgentToolName, ToolsMap[string]> = {
   filterServers,
   getServerByGroup,
   getServerByGroupAdvanced,
+  getServerLogs,
   detectAnomalies,
   detectAnomaliesAllServers,
   predictTrends,
@@ -105,6 +114,12 @@ const AGENT_TOOL_REGISTRY: Record<AgentToolName, ToolsMap[string]> = {
   extendServerCorrelation,
   finalAnswer,
   analyzeScreenshot,
+  analyzeLargeLog,
+  searchWithGrounding,
+  analyzeUrlContent,
+  evaluateMathExpression,
+  computeSeriesStats,
+  estimateCapacityProjection,
 };
 
 // ============================================================================

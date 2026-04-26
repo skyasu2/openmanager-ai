@@ -20,7 +20,9 @@ vi.mock('../model-provider', () => ({
     mistral: true,
     gemini: true,
   })),
-  getCerebrasModel: vi.fn(() => ({ modelId: 'gpt-oss-120b' })),
+  getCerebrasModel: vi.fn(() => ({
+    modelId: ['qwen-3-235b-a22b-instruct', '2507'].join('-'),
+  })),
   getGroqModel: vi.fn(() => ({ modelId: 'meta-llama/llama-4-scout-17b-16e-instruct' })),
   getMistralModel: vi.fn(() => ({ modelId: 'mistral-large-3-25-12' })),
   getGeminiFlashLiteModel: vi.fn(() => ({ modelId: 'gemini-2.5-flash-lite' })),
@@ -32,6 +34,9 @@ vi.mock('../../../../lib/text-sanitizer', () => ({
 }));
 
 vi.mock('../../../lib/config-parser', () => ({
+  getCerebrasModelId: vi.fn(() => ['qwen-3-235b-a22b-instruct', '2507'].join('-')),
+  isCerebrasToolCallingEnabled: vi.fn(() => true),
+  isCerebrasLongContextEnabled: vi.fn(() => true),
   isOpenRouterVisionToolCallingEnabled: vi.fn(() => false),
   getUpstashConfig: vi.fn(() => null),
 }));
@@ -249,6 +254,84 @@ describe('BaseAgent', { timeout: 60000 }, () => {
       expect(result.toolsCalled).toContain('finalAnswer');
     });
 
+    it('should extract retrieval metadata and evidence from searchKnowledgeBase tool results', async () => {
+      const { BaseAgent } = await import('./base-agent');
+
+      mockGenerateText.mockResolvedValue({
+        text: 'Redis 연결 장애는 런북 근거를 기준으로 점검하세요.',
+        usage: { inputTokens: 100, outputTokens: 50, totalTokens: 150 },
+        steps: [
+          {
+            finishReason: 'stop',
+            toolCalls: [{ toolName: 'searchKnowledgeBase' }],
+            toolResults: [
+              {
+                toolName: 'searchKnowledgeBase',
+                result: {
+                  success: true,
+                  results: [
+                    {
+                      title: 'Redis connection timeout runbook',
+                      similarity: 0.88,
+                      sourceType: 'runbook',
+                      category: 'troubleshooting',
+                    },
+                  ],
+                  evidenceCards: [
+                    {
+                      id: 'kb-redis-connection',
+                      title: 'Redis connection timeout runbook',
+                      summary: 'Redis connection timeout troubleshooting guide',
+                      sourceType: 'runbook',
+                      score: 0.88,
+                      category: 'troubleshooting',
+                    },
+                  ],
+                  retrieval: {
+                    retrievalEnabled: true,
+                    retrievalUsed: true,
+                    retrievalMode: 'lite',
+                    evidenceCount: 1,
+                    webUsed: false,
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      });
+
+      const mockConfig = createMockConfig();
+
+      class TestAgent extends BaseAgent {
+        getName(): string {
+          return 'Test Agent';
+        }
+        getConfig() {
+          return mockConfig;
+        }
+      }
+
+      const agent = new TestAgent();
+      const result = await agent.run('redis 연결 실패 원인');
+
+      expect(result.success).toBe(true);
+      expect(result.toolsCalled).toContain('searchKnowledgeBase');
+      expect(result.ragSources).toHaveLength(1);
+      expect(result.evidenceCards?.[0]).toMatchObject({
+        id: 'kb-redis-connection',
+        sourceType: 'runbook',
+      });
+      expect(result.metadata.retrieval).toEqual(
+        expect.objectContaining({
+          retrievalEnabled: true,
+          retrievalUsed: true,
+          retrievalMode: 'lite',
+          evidenceCount: 1,
+        })
+      );
+    });
+
     it('should fallback to result.text when no finalAnswer', async () => {
       const { BaseAgent } = await import('./base-agent');
 
@@ -324,6 +407,63 @@ describe('BaseAgent', { timeout: 60000 }, () => {
       // Should use fallback text since answer is not a string
       expect(result.success).toBe(true);
       expect(result.text).toBe('Fallback text');
+    });
+
+    it('should return deterministic fallback when Qwen forced tool call leaves final text empty', async () => {
+      const { BaseAgent } = await import('./base-agent');
+
+      mockGenerateText.mockResolvedValue({
+        text: '',
+        usage: { inputTokens: 100, outputTokens: 0, totalTokens: 100 },
+        steps: [
+          {
+            finishReason: 'tool-calls',
+            toolCalls: [{ toolName: 'searchKnowledgeBase' }],
+            toolResults: [
+              {
+                toolName: 'searchKnowledgeBase',
+                result: {
+                  success: true,
+                  results: [{ title: 'Redis memory pressure runbook' }],
+                },
+              },
+            ],
+          },
+        ],
+      });
+
+      const qwenModelId = ['qwen-3-235b-a22b-instruct', '2507'].join('-');
+      const mockConfig = createMockConfig({
+        getModel: () => ({
+          model: { modelId: qwenModelId },
+          provider: 'cerebras',
+          modelId: qwenModelId,
+        }),
+        tools: {
+          searchKnowledgeBase: { execute: vi.fn() } as unknown as Tool,
+          finalAnswer: { execute: vi.fn() } as unknown as Tool,
+        },
+      });
+
+      class QwenToolLoopAgent extends BaseAgent {
+        getName(): string {
+          return 'Advisor Agent';
+        }
+        getConfig() {
+          return mockConfig;
+        }
+      }
+
+      const agent = new QwenToolLoopAgent();
+      const result = await agent.run('Redis eviction 대응 방법');
+
+      expect(result.success).toBe(true);
+      expect(result.text).toBe('AI 응답이 비어 있습니다. 잠시 후 다시 시도해 주세요.');
+      expect(result.toolsCalled).toContain('searchKnowledgeBase');
+      expect(result.metadata.provider).toBe('cerebras');
+      expect(result.metadata.modelId).toBe(qwenModelId);
+      expect(result.metadata.fallbackUsed).toBe(true);
+      expect(result.metadata.fallbackReason).toBe('EMPTY_RESPONSE');
     });
 
     it('should enforce minimum maxOutputTokens for Vision Agent on OpenRouter', async () => {

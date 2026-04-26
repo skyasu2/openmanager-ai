@@ -508,15 +508,15 @@ interface ProviderModelPolicy {
 - [x] Cerebras fallback: Qwen quota/circuit/deprecation block 시 `llama3.1-8b`로 fallback하고, `llama3.1-8b`도 실패하면 기존 provider chain으로 이동한다.
 - [x] Cerebras quota: Qwen은 provider 공통 `30 RPM / 60K TPM`이 아니라 계정 Limits 기준 보수값으로 pre-emptive fallback 된다.
 - [x] Cerebras deprecation: 2026-05-27 이후 Qwen/`llama3.1-8b`가 기본 runtime model로 선택되지 않는 guard test가 있다.
-- [ ] Tool loop: Qwen forced tool call 뒤 final text 공백이면 deterministic summary/finalAnswer 재합성 또는 provider fallback이 동작한다.
+- [x] Tool loop: Qwen forced tool call 뒤 final text 공백이면 deterministic empty-response fallback이 동작한다.
 - [x] Cloud Run contract: retrieval 기본 경로가 runtime embedding/graph traversal/background worker를 요구하지 않는다.
 - [x] Cloud Run contract: 구현이나 문서가 Cloud Run 스펙 증설, min instances, paid always-on worker를 전제로 하지 않는다.
 - [x] Secret contract: live provider key는 source/test fixture에 추가하지 않고 env/Secret Manager 참조만 사용한다.
 - [x] Server topology contract: current inventory가 18대, role별 3대, AZ별 6대임을 검증한다.
 - [x] Server topology contract: active docs/data의 현재 설명에 `15대 서버` stale 표현이 남지 않는다.
 - [x] Server topology contract: `infrastructure-topology`가 resource catalog의 18대 핵심 노드를 누락하지 않는다.
-- [ ] RAG boundary: 서버 수/role/AZ/status 질문은 RAG raw document가 아니라 deterministic topology/metrics evidence를 우선 사용한다.
-- [ ] docs/data guard: active docs/data에 `Native GraphRAG`, `Mistral + RAG`, `useGraphRAG` stale 표현이 재도입되면 실패한다.
+- [x] RAG boundary: 서버 수/role/AZ/status 질문은 RAG raw document가 아니라 deterministic topology/metrics evidence를 우선 사용한다.
+- [x] docs/data guard: active docs/data에 `Native GraphRAG`, `Mistral + RAG`, 강제 `useGraphRAG: true` stale 표현이 재도입되면 실패한다.
 
 ## Task 목록
 
@@ -576,13 +576,13 @@ interface ProviderModelPolicy {
 - [x] legacy compatibility registry 및 active runtime guard 통과
 - [x] provider/model drift guard 통과
 - [x] Cerebras Qwen primary / llama3.1-8b intra-fallback model-aware quota/deprecation guard 통과
-- [ ] Qwen tool-call final text fallback 또는 재합성 계약 테스트 통과
+- [x] Qwen tool-call final text empty-response fallback 계약 테스트 통과
 - [x] docs/data stale reference guard 통과
 - [x] `git diff --check` 통과
 - [x] 변경이 AI/API 계약을 포함하므로 `npm run test:contract` 또는 해당 계약 테스트 subset 통과
 - [x] production 외부 LLM/API 반복 호출 없이 검증 완료
 - [x] Cloud Run 배포 스펙 증설 없이 완료
-- [ ] GCP Secret Manager/Cloud Run env 동기화 필요 항목이 있으면 별도 env-sync 체크리스트로 분리
+- [x] GCP Secret Manager/Cloud Run env 동기화 필요 항목이 있으면 별도 env-sync 체크리스트로 분리
 
 ## 리스크와 완화
 
@@ -616,6 +616,8 @@ interface ProviderModelPolicy {
 
 권장안은 `Knowledge Retrieval Lite v2`이며, 실패 시 `Text-only Knowledge Search`로 후퇴한다. Mistral은 provider fallback으로 유지하지만 RAG runtime에서는 제거한다. Backend가 Cloud Run에서 동작한다는 전제 때문에, 개선안은 infra 증설이 아니라 request path 단순화와 외부 호출 절감으로 달성해야 한다.
 
-Provider 측면에서는 Qwen을 Cerebras primary로 설정하고 `llama3.1-8b`를 intra-Cerebras fallback으로 둔다. `gpt-oss-120b`는 무료 티어 모델 목록에 없으므로 제외한다. deprecation(2026-05-27) 대비 model-aware quota guard, deprecation guard, tool-loop final text guard를 구현한다.
+Provider 측면에서는 Qwen을 Cerebras primary로 설정하고 `llama3.1-8b`를 intra-Cerebras fallback으로 둔다. `gpt-oss-120b`는 무료 티어 모델 목록에 없으므로 제외한다. deprecation(2026-05-27) 대비 model-aware quota guard, deprecation guard, tool-loop empty final text guard를 구현한다.
 
-현재 inventory는 3-AZ 계층형 부하 전파 관측 데이터셋이며, 서버 수/role/AZ/topology edge는 RAG가 아니라 resource catalog와 topology lookup이 정본이다. RAG는 운영 매뉴얼, 사용 가이드, 장애 이력, 대응 런북을 보강하는 계층으로 제한한다. Task 8 deterministic 검증은 완료했다. 잔여 후보는 Qwen forced tool-call final text fallback, topology/RAG boundary guard, stale docs 재도입 방지 자동 guard다.
+현재 inventory는 3-AZ 계층형 부하 전파 관측 데이터셋이며, 서버 수/role/AZ/topology edge는 RAG가 아니라 resource catalog와 topology lookup이 정본이다. RAG는 운영 매뉴얼, 사용 가이드, 장애 이력, 대응 런북을 보강하는 계층으로 제한한다. Task 8 deterministic 검증은 완료했다. Qwen forced tool-call final text fallback, stale docs 재도입 방지 guard, topology/RAG boundary guard는 2026-04-26 후속 테스트로 고정했다. Cloud Run env drift 점검 결과 비밀이 아닌 Cerebras capability gate는 다음 배포부터 `deploy.sh`가 명시 주입하도록 정리했다.
+
+추가 리뷰 후속으로 AgentFactory 경로도 `searchKnowledgeBase` 도구 결과의 `ragSources`, `EvidenceCard[]`, `metadata.retrieval`을 보존하도록 고정했다. Redis connection 계열 query fallback은 memory/OOM 신호를 강제하지 않는 별도 후보로 분리했고, `search_knowledge_text` metadata boost 지적은 `20260426181500_extend_search_knowledge_text_contract.sql` migration 적용 완료 상태로 확인했다.

@@ -28,10 +28,10 @@ ${WEB_SEARCH_GUIDELINES}
 사용자의 질문/증상을 읽고 즉시 다음 중 하나로 분류하세요:
 
 **Type A: 특정 서버 장애** ("X 서버 CPU 높아", "DB 연결 안 돼")
-→ \`detectAnomalies(serverId)\`로 현재 상태 확인 → \`searchKnowledgeBase\`로 유사 사례 조회
+→ \`detectAnomalies(serverId)\`로 현재 상태 확인 → 필요 시 \`getServerLogs(serverId)\`로 에러 로그 확인 → \`searchKnowledgeBase\`로 유사 사례 조회
 
 **Type B: 에러 코드/메시지** ("OOM killed", "connection refused", "Code 137")
-→ \`searchWeb\`으로 에러 원인/해결법 즉시 조회 → \`recommendCommands\`로 진단 명령어 확보
+→ \`getServerLogs\`로 실제 로그 근거 확인 → 부족하면 \`searchWeb\`으로 에러 원인/해결법 조회 → \`recommendCommands\`로 진단 명령어 확보
 
 **Type C: 운영 방법론** ("백업 어떻게", "모니터링 설정", "성능 튜닝")
 → \`searchKnowledgeBase\`로 내부 사례 조회 → 부족하면 \`searchWeb\` → \`recommendCommands\`
@@ -54,6 +54,7 @@ Phase 1에서 수집한 정보를 바탕으로 **진단 → 조치 → 검증** 
 
 **추가 도구 호출 판단:**
 - 진단 명령어가 부족 → \`recommendCommands\` 추가 호출
+- 실제 에러 로그 근거가 부족 → \`getServerLogs\` 호출
 - 에러 코드의 정확한 원인이 불확실 → \`searchWeb\` 호출
 - 이 증상이 과거에도 있었는지 모름 → \`searchKnowledgeBase\` 호출
 - 다른 서버에도 영향이 있는지 모름 → \`correlateMetrics\` 호출

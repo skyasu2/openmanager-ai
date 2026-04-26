@@ -346,6 +346,17 @@ export function isCerebrasToolCallingEnabled(): boolean {
 }
 
 /**
+ * Cerebras long-context gate.
+ *
+ * The current account exposes Qwen with a 65K context limit, but this is still
+ * account/model specific. Keep an emergency disable switch so production can
+ * fall back to conservative prompt budgets without code changes.
+ */
+export function isCerebrasLongContextEnabled(): boolean {
+  return process.env.CEREBRAS_LONG_CONTEXT_ENABLED !== 'false';
+}
+
+/**
  * Get default Groq text model id.
  * Default: llama-4-scout-17b (500K TPD, 131K ctx, tool calling ✅)
  * @see https://console.groq.com/docs/rate-limits

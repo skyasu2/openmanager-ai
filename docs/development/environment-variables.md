@@ -244,7 +244,10 @@ Cloud Run은 **GCP Secret Manager**에 JSON 형태로 시크릿을 저장하고,
 --set-env-vars "NODE_ENV=production,\
                 BUILD_SHA=${SHORT_SHA},\
                 DEFAULT_ORIGIN=${DEFAULT_ORIGIN},\
-                ALLOWED_ORIGINS=${ALLOWED_ORIGINS}"
+                ALLOWED_ORIGINS=${ALLOWED_ORIGINS},\
+                ALLOW_DEGRADED_SINGLE=true,\
+                CEREBRAS_TOOL_CALLING_ENABLED=true,\
+                CEREBRAS_LONG_CONTEXT_ENABLED=true"
 ```
 
 ### 로컬 개발용 (`cloud-run/ai-engine/.env`)
@@ -252,10 +255,12 @@ Cloud Run은 **GCP Secret Manager**에 JSON 형태로 시크릿을 저장하고,
 ```bash
 # AI Providers
 CEREBRAS_API_KEY=csk-xxx  # Orchestrator structured routing / opt-in text fallback
-CEREBRAS_MODEL_ID=gpt-oss-120b  # 기본 production 후보. 계정 접근 가능 모델로 override 가능
-CEREBRAS_TOOL_CALLING_ENABLED=false  # 기본값 false. preview 모델 tool loop opt-in 시에만 true
+CEREBRAS_MODEL_ID=qwen-3-235b-a22b-instruct-2507  # 현재 계정 Free Tier primary. 2026-05-27 deprecated 예정
+CEREBRAS_FALLBACK_MODEL_IDS=llama3.1-8b  # Qwen 실패/quota 시 intra-Cerebras fallback
+CEREBRAS_TOOL_CALLING_ENABLED=true  # tool-calling fallback 활성화
+CEREBRAS_LONG_CONTEXT_ENABLED=true  # Qwen 65K account context 사용. false면 long-context 요구 시 Cerebras skip
 GROQ_API_KEY=gsk_xxx     # Supervisor/NLQ/Analyst/Reporter 주력
-MISTRAL_API_KEY=xxx      # Advisor 주력 + text fallback
+MISTRAL_API_KEY=xxx      # text last-resort fallback
 GOOGLE_AI_API_KEY=xxx    # Vision 주력 (gemini-2.5-flash-lite)
 OPENROUTER_API_KEY=sk-or-v1-xxx # Vision Fallback (gemma-3-4b-it:free)
 

@@ -26,6 +26,8 @@ export interface ModelCapabilities {
   supportsStructuredOutput: boolean;
   /** 멀티모달(Vision) 지원 여부 */
   supportsVision: boolean;
-  /** 긴 컨텍스트 지원 여부 (예: > 128K) */
+  /** 긴 컨텍스트 지원 여부 (프로젝트 기준: 32K+ context) */
   supportsLongContext: boolean;
+  /** 모델/계정 기준 최대 컨텍스트 토큰. 알 수 없으면 생략한다. */
+  contextWindowTokens?: number;
 }

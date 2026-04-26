@@ -418,6 +418,15 @@ export const searchKnowledgeBase = tool({
           results: [] as RAGResultItem[],
           totalFound: 0,
           _source: 'Knowledge Retrieval Lite (Unavailable)',
+          evidenceCards: [],
+          retrieval: createRetrievalMetadata({
+            retrievalEnabled: true,
+            retrievalUsed: false,
+            retrievalMode: 'lite',
+            suppressedReason: 'unavailable',
+            evidenceCount: 0,
+            webUsed: false,
+          }),
           webSearchTriggered: false,
           systemMessage: `TOOL_EXECUTION_FAILED: 지식 베이스 검색 중 오류가 발생했습니다. (오류: ${String(error)})`,
           suggestedAgentAction:

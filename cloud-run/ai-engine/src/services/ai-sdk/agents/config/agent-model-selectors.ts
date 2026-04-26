@@ -40,7 +40,7 @@ export type TextProvider = 'cerebras' | 'groq' | 'mistral';
 const TEXT_PROVIDER_MODELS: Record<TextProvider, {
   factory: (id: string) => LanguageModel;
   modelIds: () => string[];
-  capabilities: ModelCapabilities | (() => ModelCapabilities);
+  capabilities: ModelCapabilities | ((modelId?: string) => ModelCapabilities);
 }> = {
   // Cerebras primary/fallback pair. Qwen is primary until 2026-05-27 deprecation;
   // llama3.1-8b stays intra-provider fallback only.
@@ -50,19 +50,19 @@ const TEXT_PROVIDER_MODELS: Record<TextProvider, {
       getCerebrasModelId(),
       ...getCerebrasFallbackModelIds(),
     ].filter((modelId, index, list) => modelId && list.indexOf(modelId) === index),
-    capabilities: () => getTextProviderCapabilities('cerebras')
+    capabilities: (modelId) => getTextProviderCapabilities('cerebras', modelId)
   },
   // Groq Llama 4 Scout (17B Preview) - 1K RPD / 500K TPD, 131K ctx, tool calling ✅.
   groq: {
     factory: getGroqModel,
     modelIds: () => [getGroqModelId()],
-    capabilities: () => getTextProviderCapabilities('groq')
+    capabilities: (modelId) => getTextProviderCapabilities('groq', modelId)
   },
   // Mistral Large - Frontier급 성능, free tier ~2 RPM / 500 RPD. Last resort.
   mistral: {
     factory: getMistralModel,
     modelIds: () => ['mistral-large-latest'],
-    capabilities: () => getTextProviderCapabilities('mistral')
+    capabilities: (modelId) => getTextProviderCapabilities('mistral', modelId)
   },
 };
 
@@ -117,19 +117,22 @@ export function selectTextModel(
     if (!status[provider] || excluded.has(provider)) continue;
 
     const config = TEXT_PROVIDER_MODELS[provider];
-    const capabilities = typeof config.capabilities === 'function'
-      ? config.capabilities()
-      : config.capabilities;
-    const mismatchReasons = getCapabilityMismatchReasons(capabilities, requiredCapabilities);
-    if (mismatchReasons.length > 0) {
-      logger.info(
-        `[${agentLabel}] Skipping ${provider}: missing ${mismatchReasons.join(', ')}`
-      );
-      continue;
-    }
-
     const modelIds = config.modelIds();
     for (const modelId of modelIds) {
+      const capabilities = typeof config.capabilities === 'function'
+        ? config.capabilities(modelId)
+        : config.capabilities;
+      const mismatchReasons = getCapabilityMismatchReasons(
+        capabilities,
+        requiredCapabilities
+      );
+      if (mismatchReasons.length > 0) {
+        logger.info(
+          `[${agentLabel}] Skipping ${provider}/${modelId}: missing ${mismatchReasons.join(', ')}`
+        );
+        continue;
+      }
+
       try {
         return {
           model: config.factory(modelId),

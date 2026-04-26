@@ -67,6 +67,7 @@ const EXPECTED_POLICIES = {
       'searchKnowledgeBase',
       'recommendCommands',
       'searchWeb',
+      'getServerLogs',
       'findRootCause',
       'correlateMetrics',
       'detectAnomalies',

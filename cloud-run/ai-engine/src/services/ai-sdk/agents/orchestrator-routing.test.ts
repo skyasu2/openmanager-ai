@@ -142,10 +142,12 @@ vi.mock('../../../lib/logger', () => ({
 
 import {
   ORCHESTRATOR_PROVIDER_ORDER,
+  executeWithAgentFactory,
   executeForcedRouting,
   getAgentMaxSteps,
   getAgentProviderOrder,
 } from './orchestrator-routing';
+import { AgentFactory } from './agent-factory';
 
 function createRetryResult(options: {
   text?: string;
@@ -386,6 +388,14 @@ describe('executeForcedRouting', () => {
     expect(result?.success).toBe(true);
     expect(result?.response).toContain('api-01');
     expect(mockGenerateTextWithRetry).toHaveBeenCalledTimes(2);
+    expect(mockGenerateTextWithRetry.mock.calls[1]?.[0]).toEqual(
+      expect.objectContaining({
+        maxOutputTokens: 768,
+      })
+    );
+    expect(mockGenerateTextWithRetry.mock.calls[1]?.[2]).toEqual({
+      timeoutMs: 10000,
+    });
   });
 
   it('records provider attempts and fallback reason for Langfuse diagnostics', async () => {
@@ -479,6 +489,44 @@ describe('executeForcedRouting', () => {
       type: 'tool',
       toolName: 'searchKnowledgeBase',
     });
+  });
+
+  it('uses structured topology state before RAG documents for server count, role, AZ, and status questions', async () => {
+    const result = await executeForcedRouting(
+      '현재 인프라 토폴로지의 서버 수와 role/AZ/status 알려줘',
+      'Advisor Agent',
+      Date.now(),
+      true,
+      true
+    );
+
+    expect(result?.success).toBe(true);
+    expect(result?.metadata.provider).toBe('deterministic');
+    expect(result?.metadata.modelId).toBe('structured-topology-state');
+    expect(result?.toolsCalled).toEqual([
+      'structuredTopologyLookup',
+      'finalAnswer',
+    ]);
+    expect(result?.response).toContain('총 서버 수: 18대');
+    expect(result?.response).toContain('역할 분포');
+    expect(result?.response).toContain('AZ 분포');
+    expect(result?.response).toContain('현재 상태 요약');
+    expect(result?.response).toContain('RAG 문서가 아니라 구조화된 OTel resource catalog');
+    expect(result?.ragSources).toBeUndefined();
+    expect(result?.evidenceCards?.[0]).toMatchObject({
+      id: 'structured-topology-current-state',
+      category: 'structured-topology',
+      reason: 'structured-evidence:otel-resource-catalog+precomputed-state',
+    });
+    expect(result?.metadata.retrieval).toEqual(
+      expect.objectContaining({
+        retrievalEnabled: true,
+        retrievalUsed: false,
+        suppressedReason: 'not_needed',
+      })
+    );
+    expect(mockSearchKnowledgeBaseExecute).not.toHaveBeenCalled();
+    expect(mockGenerateTextWithRetry).not.toHaveBeenCalled();
   });
 
   it('uses direct KB deterministic path for advisor topology queries when KB succeeds', async () => {
@@ -658,5 +706,83 @@ describe('provider order policy', () => {
       'groq',
       'mistral',
     ]);
+  });
+});
+
+describe('executeWithAgentFactory', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('propagates retrieval evidence metadata from agent tool results', async () => {
+    vi.mocked(AgentFactory.create).mockReturnValue({
+      getName: () => 'Advisor Agent',
+      run: vi.fn().mockResolvedValue({
+        success: true,
+        text: 'Redis 연결 실패는 cache 계층 로그와 런북을 함께 확인해야 합니다.',
+        toolsCalled: ['searchKnowledgeBase'],
+        ragSources: [
+          {
+            title: 'Redis connection timeout runbook',
+            similarity: 0.88,
+            sourceType: 'runbook',
+            category: 'troubleshooting',
+          },
+        ],
+        evidenceCards: [
+          {
+            id: 'kb-redis-connection',
+            title: 'Redis connection timeout runbook',
+            summary: 'Redis connection timeout troubleshooting guide',
+            sourceType: 'runbook',
+            score: 0.88,
+            category: 'troubleshooting',
+          },
+        ],
+        usage: {
+          promptTokens: 10,
+          completionTokens: 5,
+          totalTokens: 15,
+        },
+        metadata: {
+          provider: 'groq',
+          modelId: 'groq-model',
+          durationMs: 20,
+          steps: 2,
+          responseChars: 38,
+          formatCompliance: true,
+          qualityFlags: [],
+          latencyTier: 'fast',
+          retrieval: {
+            retrievalEnabled: true,
+            retrievalUsed: true,
+            retrievalMode: 'lite',
+            evidenceCount: 1,
+            webUsed: false,
+          },
+        },
+      }),
+    } as unknown as ReturnType<typeof AgentFactory.create>);
+
+    const result = await executeWithAgentFactory(
+      'redis 연결 실패 원인 알려줘',
+      'advisor',
+      Date.now(),
+      true,
+      true
+    );
+
+    expect(result?.success).toBe(true);
+    expect(result?.toolsCalled).toEqual(['searchKnowledgeBase']);
+    expect(result?.ragSources).toHaveLength(1);
+    expect(result?.evidenceCards).toHaveLength(1);
+    expect(result?.metadata.retrieval).toEqual(
+      expect.objectContaining({
+        retrievalEnabled: true,
+        retrievalUsed: true,
+        retrievalMode: 'lite',
+        evidenceCount: 1,
+      })
+    );
   });
 });

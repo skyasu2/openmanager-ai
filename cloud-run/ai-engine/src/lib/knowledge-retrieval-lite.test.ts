@@ -167,6 +167,44 @@ describe('retrieveKnowledgeEvidence', () => {
     );
   });
 
+  it('uses Redis connection fallback without requiring memory signals', async () => {
+    const rpc = vi
+      .fn()
+      .mockResolvedValueOnce({ data: [], error: null })
+      .mockResolvedValueOnce({
+        data: [
+          {
+            id: 'kb-redis-connection',
+            title: 'Redis connection timeout runbook',
+            content: 'Redis connection timeout troubleshooting guide',
+            category: 'troubleshooting',
+            tags: ['redis', 'cache', 'connection'],
+            text_rank: 0.49,
+            metadata: { docType: 'runbook', serverRole: 'cache' },
+          },
+        ],
+        error: null,
+      });
+
+    const result = await retrieveKnowledgeEvidence(
+      { query: 'redis 연결 실패 원인 알려줘', limit: 3 },
+      { client: createClient(rpc) }
+    );
+
+    expect(rpc).toHaveBeenNthCalledWith(2, 'search_knowledge_text', {
+      p_query_text: 'redis connection',
+      p_max_results: 10,
+      p_filter_category: null,
+    });
+    expect(result.evidenceCards[0]).toMatchObject({
+      id: 'kb-redis-connection',
+      title: 'Redis connection timeout runbook',
+    });
+    expect(result.evidenceCards[0]?.reason).toContain(
+      'query-fallback:redis connection'
+    );
+  });
+
   it('returns unavailable metadata instead of falling back to external AI providers', async () => {
     const rpc = vi.fn().mockResolvedValue({
       data: null,

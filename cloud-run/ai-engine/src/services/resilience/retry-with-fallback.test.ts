@@ -44,6 +44,7 @@ vi.mock('../../lib/config-parser', () => ({
   getCerebrasFallbackModelIds: mockGetCerebrasFallbackModelIds,
   getGroqModelId: vi.fn(() => 'groq-model'),
   isCerebrasToolCallingEnabled: mockIsCerebrasToolCallingEnabled,
+  isCerebrasLongContextEnabled: vi.fn(() => true),
   isOpenRouterVisionToolCallingEnabled: mockIsOpenRouterVisionToolCallingEnabled,
 }));
 
@@ -138,6 +139,35 @@ describe('generateTextWithRetry', () => {
       'llama3.1-8b',
     ]);
     expect(mockGetGroqModel).not.toHaveBeenCalled();
+  });
+
+  it('skips short-context Cerebras fallback for long prompt contexts', async () => {
+    mockGenerateText
+      .mockRejectedValueOnce(new Error('Model qwen-3-235b-a22b-instruct-2507 does not exist or 404'))
+      .mockResolvedValueOnce({
+        text: 'ok from groq',
+        steps: [],
+        usage: { inputTokens: 10, outputTokens: 5, totalTokens: 15 },
+      });
+
+    const result = await generateTextWithRetry(
+      {
+        messages: [{ role: 'user', content: 'x'.repeat(40_000) }],
+        maxOutputTokens: 2048,
+      },
+      ['cerebras', 'groq'],
+      { maxRetries: 0, timeoutMs: 3000 }
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.provider).toBe('groq');
+    expect(result.attempts.map((attempt) => attempt.modelId)).toEqual([
+      'qwen-3-235b-a22b-instruct-2507',
+      'llama3.1-8b',
+      'groq-model',
+    ]);
+    expect(result.attempts[1]?.error).toContain('context-window');
+    expect(mockGenerateText).toHaveBeenCalledTimes(2);
   });
 
   it('returns failure when every provider rejects tool calling', async () => {
