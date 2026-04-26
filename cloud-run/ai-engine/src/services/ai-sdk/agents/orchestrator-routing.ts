@@ -534,9 +534,17 @@ export async function executeForcedRouting(
       category?: string;
       url?: string;
     }> = [];
+    const evidenceCards: EvidenceCard[] = [];
+    let retrievalMetadata: RetrievalMetadata | undefined;
+    let knowledgeRetrievalAttempted = false;
     const pushRagSource = (source: (typeof ragSources)[number]) => {
       if (ragSources.length < evidenceBudget) {
         ragSources.push(source);
+      }
+    };
+    const pushEvidenceCard = (card: EvidenceCard) => {
+      if (evidenceCards.length < evidenceBudget) {
+        evidenceCards.push(card);
       }
     };
 
@@ -557,14 +565,24 @@ export async function executeForcedRouting(
           }
 
           if (tr.toolName === 'searchKnowledgeBase' && trOutput && typeof trOutput === 'object') {
+            knowledgeRetrievalAttempted = true;
             const kbResult = trOutput as Record<string, unknown>;
+            if (Array.isArray(kbResult.evidenceCards)) {
+              for (const card of kbResult.evidenceCards) {
+                const parsedCard = asEvidenceCard(card);
+                if (parsedCard) {
+                  pushEvidenceCard(parsedCard);
+                }
+              }
+            }
+            retrievalMetadata = asRetrievalMetadata(kbResult.retrieval) ?? retrievalMetadata;
             const similarCases = (kbResult.similarCases ?? kbResult.results) as Array<Record<string, unknown>> | undefined;
             if (Array.isArray(similarCases)) {
               for (const doc of similarCases) {
                 pushRagSource({
                   title: String(doc.title ?? doc.name ?? 'Unknown'),
                   similarity: Number(doc.similarity ?? doc.score ?? 0),
-                  sourceType: String(doc.sourceType ?? doc.type ?? 'vector'),
+                  sourceType: String(doc.sourceType ?? doc.type ?? 'knowledge'),
                   category: doc.category ? String(doc.category) : undefined,
                 });
               }
@@ -676,6 +694,27 @@ export async function executeForcedRouting(
       sanitizedResponse,
       { durationMs }
     );
+    const resolvedEvidenceCards =
+      evidenceCards.length > 0
+        ? evidenceCards
+        : knowledgeRetrievalAttempted && ragSources.length > 0
+          ? legacyRagSourcesToEvidenceCards(ragSources.slice(0, evidenceBudget))
+          : [];
+    const resolvedRetrievalMetadata = knowledgeRetrievalAttempted
+      ? createRetrievalMetadata({
+          retrievalEnabled: true,
+          retrievalUsed: resolvedEvidenceCards.length > 0,
+          retrievalMode: retrievalMetadata?.retrievalMode ?? 'lite',
+          evidenceCount: resolvedEvidenceCards.length,
+          webUsed:
+            retrievalMetadata?.webUsed ??
+            ragSources.some((item) => item.sourceType === 'web'),
+          suppressedReason:
+            resolvedEvidenceCards.length > 0
+              ? undefined
+              : retrievalMetadata?.suppressedReason ?? 'no_results',
+        })
+      : undefined;
 
     if (usedFallback) {
       logger.info(`[Forced Routing] Used fallback: ${attempts.map(a => a.provider).join(' → ')}`);
@@ -689,6 +728,8 @@ export async function executeForcedRouting(
       success: true,
       response: sanitizedResponse,
       ragSources: ragSources.length > 0 ? ragSources : undefined,
+      evidenceCards:
+        resolvedEvidenceCards.length > 0 ? resolvedEvidenceCards : undefined,
       handoffs: [{
         from: 'Orchestrator',
         to: suggestedAgentName,
@@ -716,6 +757,9 @@ export async function executeForcedRouting(
         providerAttempts,
         usedFallback,
         ...(fallbackReason ? { fallbackReason } : {}),
+        ...(resolvedRetrievalMetadata && {
+          retrieval: resolvedRetrievalMetadata,
+        }),
       },
     };
   } catch (error) {

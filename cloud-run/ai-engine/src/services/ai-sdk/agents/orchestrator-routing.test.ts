@@ -552,6 +552,80 @@ describe('executeForcedRouting', () => {
     const kbArgs = mockSearchKnowledgeBaseExecute.mock.calls[0]?.[0];
     expect(kbArgs).not.toHaveProperty('useGraphRAG');
   });
+
+  it('propagates evidence cards from forced-routing knowledge tool results', async () => {
+    mockSearchKnowledgeBaseExecute.mockResolvedValueOnce({
+      success: true,
+      totalFound: 0,
+      results: [],
+    });
+    mockGenerateTextWithRetry.mockResolvedValueOnce(
+      createRetryResult({
+        text: '토폴로지 근거 요약',
+        steps: [
+          {
+            toolCalls: [{ toolName: 'searchKnowledgeBase' }],
+            toolResults: [
+              {
+                toolName: 'searchKnowledgeBase',
+                result: {
+                  success: true,
+                  results: [
+                    {
+                      id: 'kb-1',
+                      title: '현재 인프라 토폴로지',
+                      content: '총 18대 서버 기준 토폴로지 문서',
+                      similarity: 0.91,
+                      sourceType: 'knowledge',
+                      category: 'architecture',
+                    },
+                  ],
+                  evidenceCards: [
+                    {
+                      id: 'kb-1',
+                      title: '현재 인프라 토폴로지',
+                      summary: '총 18대 서버 기준 토폴로지 문서',
+                      sourceType: 'knowledge',
+                      score: 0.91,
+                      category: 'architecture',
+                    },
+                  ],
+                  retrieval: {
+                    retrievalEnabled: true,
+                    retrievalUsed: true,
+                    retrievalMode: 'lite',
+                    evidenceCount: 1,
+                    webUsed: false,
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      })
+    );
+
+    const result = await executeForcedRouting(
+      '현재 인프라 토폴로지 알려줘',
+      'Advisor Agent',
+      Date.now(),
+      true,
+      true
+    );
+
+    expect(result?.success).toBe(true);
+    expect(result?.toolsCalled).toContain('searchKnowledgeBase');
+    expect(result?.ragSources).toHaveLength(1);
+    expect(result?.evidenceCards).toHaveLength(1);
+    expect(result?.metadata.retrieval).toEqual(
+      expect.objectContaining({
+        retrievalEnabled: true,
+        retrievalUsed: true,
+        retrievalMode: 'lite',
+        evidenceCount: 1,
+      })
+    );
+  });
 });
 
 describe('provider order policy', () => {
