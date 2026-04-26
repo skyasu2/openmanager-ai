@@ -1,6 +1,6 @@
 > Owner: project
 > Status: Approved
-> Last reviewed: 2026-04-25
+> Last reviewed: 2026-04-26
 
 # AI Sidebar Tool and UX Simplification Plan
 
@@ -189,6 +189,11 @@ Source links:
 - [x] 1차 범위는 선택지 A + provider/model drift guard + Cerebras model refresh POC로 확정한다.
 - [ ] 구현 착수 전 failing test 커밋을 먼저 만든다.
 
+비고: 위 failing-test-first 커밋 순서 항목은 이미 여러 후속 구현/수정 커밋이
+진행된 뒤 발견된 역사적 SDD 순서 미준수 항목이다. 현재는 관련 회귀 테스트가
+추가되어 있으므로 소급 완료 처리하지 않고, 다음 신규 기능/계약 변경 plan부터
+적용한다.
+
 ### Task 1 - failing tests 먼저 추가
 
 - [x] async job 생성 시 `enableRAG`, `enableWebSearch`, `analysisMode`가 함께 전달되는 테스트 추가
@@ -213,9 +218,14 @@ test(spec): ai sidebar tool contract add failing tests
 - [x] SambaNova는 `20 RPD / 200K TPD`와 live smoke 실패를 근거로 runtime chain에서 제거
 - [x] `CEREBRAS_MODEL_ID=llama3.1-8b` 경로에서 direct/tool-calling smoke 통과 확인
 - [x] Orchestrator structured routing은 `Cerebras → Groq → Mistral`로 정렬하고, Cerebras/Groq `generateObject` smoke 통과 확인
-- [ ] Cerebras `supportsLongContext`를 Qwen account/model 설정 기반으로 보수화
-- [ ] 긴 RAG prompt는 Qwen context safety threshold를 넘으면 skip하도록 설계
+- [x] Cerebras `supportsLongContext`를 Qwen account/model 설정 기반으로 보수화
+- [x] 긴 RAG prompt는 Qwen context safety threshold를 넘으면 skip하도록 설계
 - [x] OpenAI/Anthropic/xAI/Together AI/Brave는 이번 runtime chain에 추가하지 않는 명시적 decision record를 남김
+
+2026-04-26 진행:
+- `provider-capabilities`가 Cerebras provider 전체가 아니라 Qwen/`llama3.1-8b` model policy의 `contextWindowTokens`를 기준으로 long-context capability를 계산하도록 보수화했다.
+- `CEREBRAS_LONG_CONTEXT_ENABLED=false` 운영 kill switch를 추가했다.
+- long prompt context가 short-context fallback 한도를 넘으면 retry path에서 `minContextTokens` capability check로 `llama3.1-8b`를 건너뛰도록 고정했다.
 
 예상 커밋:
 
@@ -242,7 +252,7 @@ feat: align ai sidebar tool options across async jobs
 - [x] RAG 설명을 "과거 장애 이력"보다 넓은 "내부 운영 지식/장애 이력"으로 정리
 - [x] Web 설명을 "최신 외부 정보"로 정리
 - [x] 입력 허용 badge와 답변 근거의 RAG/Web 사용 badge를 분리
-- [ ] 답변 metadata에서 used/suppressed/unavailable 표시 가능성 검토
+- [x] 답변 metadata에서 used/suppressed/unavailable 표시 가능성 검토
 
 예상 커밋:
 
@@ -254,14 +264,19 @@ fix: clarify ai sidebar tool mode semantics
 
 - [x] icon rail에서 장식용 gradient/pulse/emoji tooltip 축소
 - [x] 실제 engine/tool 상태와 무관한 "AI 활성" 신호 제거 또는 의미 재정의
-- [ ] 모바일에서 기능 전환과 채팅 입력이 충돌하지 않는지 확인
-- [ ] 선택지 B가 필요하면 별도 plan으로 승격
+- [x] 모바일에서 기능 전환과 채팅 입력이 충돌하지 않는지 확인
+- [x] 선택지 B가 필요하면 별도 plan으로 승격
 
 2026-04-25 진행:
 - `AIAssistantIconPanel`의 선택 상태를 gradient/color rail에서 단색 border 기반 navigation state로 단순화
 - 기능 tooltip의 emoji와 과장된 표현을 제거하고 clear text 설명으로 정리
 - 실제 Cloud Run/AI Engine 상태 확인과 무관한 `AI 활성` pulse 표시 제거
 - icon-only 버튼에 `aria-label`/`aria-pressed`를 추가해 기능 전환 접근성 보강
+
+2026-04-26 진행:
+- 모바일 기능 전환 패널을 chat/non-chat 공통 상단 영역으로 이동해 chat 입력 하단과 겹치지 않게 했다.
+- 모바일 chat 화면에서도 Reporter/Analyst 진입점이 유지되도록 `AISidebarV4` 회귀 테스트를 추가했다.
+- 선택지 B(Chat-first sidebar 재구조화)는 현재 범위에서 승격하지 않는다. 공통 상단 nav와 fullscreen handoff로 기본 행동이 충분히 명확하므로, production QA에서 여전히 조잡하다는 증거가 나올 때만 별도 plan으로 분리한다.
 
 예상 커밋:
 
@@ -271,9 +286,13 @@ refactor: simplify ai sidebar feature navigation
 
 ### Task 6 - sidebar/fullscreen 중복 배선 축소
 
-- [ ] `AISidebarV4`와 `AIWorkspace`의 chat prop bundle 중복을 추출
-- [ ] selected function/entry state/fullscreen handoff 책임 경계를 문서화
-- [ ] 파일 첨부, RAG/Web/Thinking toggle props가 한 곳에서 정의되도록 정리
+- [x] `AISidebarV4`와 `AIWorkspace`의 chat prop bundle 중복을 추출
+- [x] selected function/entry state/fullscreen handoff 책임 경계를 문서화
+- [x] 파일 첨부, RAG/Web/Thinking toggle props가 한 곳에서 정의되도록 정리
+
+2026-04-26 진행:
+- `useAIChatSurface`를 추가해 `AISidebarV4`와 `AIWorkspace`의 selected function, RAG/Web/analysis toggle, pending entry/prefill store 구독을 한 곳으로 묶었다.
+- 책임 경계: `useAIChatSurface`는 selected function/tool toggle/pending entry state를 소유한다. `useAIEntryController`는 sidebar/fullscreen open handoff를 소유한다. `AISidebarV4`는 resizable/mobile close UX, `AIWorkspace`는 fullscreen shell/right panel/router 책임만 가진다.
 
 예상 커밋:
 
@@ -284,33 +303,41 @@ refactor: extract shared ai chat surface contract
 ### Task 7 - 검증
 
 - [x] `npx vitest run src/components/ai/AIAssistantIconPanel.test.tsx src/components/ai-sidebar/AISidebarV4.test.tsx src/components/ai/AIWorkspace.test.tsx`
-- [ ] `npx vitest run src/hooks/ai/useAsyncAIQuery.test.ts src/hooks/ai/core/useQueryExecution.test.ts`
-- [ ] `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/supervisor-routing.test.ts src/services/ai-sdk/agents/orchestrator-web-search.test.ts`
-- [ ] provider drift guard 관련 unit test 실행
+- [x] `npx vitest run src/hooks/ai/useAsyncAIQuery.test.ts src/hooks/ai/core/useQueryExecution.test.ts`
+- [x] `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/supervisor-routing.test.ts src/services/ai-sdk/agents/orchestrator-web-search.test.ts`
+- [x] provider drift guard 관련 unit test 실행
 - [x] `npm run type-check`
 - [x] `npm run lint:changed`
 - [x] `bash scripts/dev/biome-wrapper.sh check src/components/ai/AIAssistantIconPanel.tsx src/components/ai/AIAssistantIconPanel.test.tsx`
-- [ ] `npm run lint`
-- [ ] 필요 시 `npm run test:quick`
+- [x] `npm run lint`
+- [x] 필요 시 `npm run test:quick`
 
 ### Task 8 - targeted QA
 
-- [ ] 로컬 계약 검증이 통과한 뒤에만 Vercel QA 실행 여부를 결정한다.
-- [ ] Vercel QA는 비용/사용량을 고려해 단일 smoke run으로 제한한다.
-- [ ] 대상은 sidebar chat: 기본 질의, RAG ON, Web ON, 심층 분석 ON, fullscreen 전환이다.
-- [ ] 실행 시 `reports/qa`에 `qa:record`로 남기고 `qa:evidence:audit` 확인.
+- [x] 로컬 계약 검증이 통과한 뒤에만 Vercel QA 실행 여부를 결정한다.
+- [x] Vercel QA는 비용/사용량을 고려해 다음 release/tag 배포 후 단일 smoke run으로 제한한다.
+- [x] 대상은 sidebar chat: 기본 질의, RAG ON, Web ON, 심층 분석 ON, fullscreen 전환으로 고정한다.
+- [x] 실행 시 `reports/qa`에 `qa:record`로 남기고 `qa:evidence:audit` 확인한다.
+
+2026-04-26 결정:
+- 이번 잔여 변경은 backend routing/capability guard, tests, docs/env 문서와 모바일 sidebar 기능 전환 보강 중심이다.
+- 따라서 Vercel/Playwright QA는 현재 미배포 로컬 변경에 대해 반복 실행하지 않고, 다음 release/tag 배포 후 단일 smoke로 제한한다.
+
+2026-04-26 추가 리뷰 후속:
+- `useAIChatSurface`의 Web/RAG 토글을 함수형 store update로 바꿔 연속 클릭 race 가능성을 줄였다.
+- `AISidebarV4` 모바일 기능 전환은 chat/non-chat 공통 상단 영역에 고정하고, 콘텐츠 영역은 `min-h-0 flex-1`로 분리해 입력창과 높이 충돌하지 않도록 했다.
 
 ## 8. 완료 조건
 
-- [ ] RAG/Web/Thinking 옵션이 streaming과 async job 경로에서 동일하게 해석된다.
-- [ ] UI가 enabled와 actually used를 혼동하지 않는다.
-- [ ] active code/docs/schema에서 deprecated provider model id가 제거되고 guard된다.
-- [ ] Cerebras Qwen preview/deprecation 리스크가 metadata와 test로 차단되고, `gpt-oss-120b`는 무료 티어 미포함으로 runtime 후보에서 제외된다.
-- [ ] Cerebras context/capability 정책이 하나의 metadata 기준으로 설명된다.
-- [ ] 기본 sidebar에서 핵심 행동이 chat-first로 보인다.
-- [ ] `AISidebarV4`와 `AIWorkspace`의 중복 배선이 감소한다.
-- [ ] 로컬 검증이 통과한다.
-- [ ] production QA를 수행했다면 QA tracker와 evidence audit가 clean 또는 accepted 상태다.
+- [x] RAG/Web/Thinking 옵션이 streaming과 async job 경로에서 동일하게 해석된다.
+- [x] UI가 enabled와 actually used를 혼동하지 않는다.
+- [x] active code/docs/schema에서 deprecated provider model id가 제거되고 guard된다.
+- [x] Cerebras Qwen preview/deprecation 리스크가 metadata와 test로 차단되고, `gpt-oss-120b`는 무료 티어 미포함으로 runtime 후보에서 제외된다.
+- [x] Cerebras context/capability 정책이 하나의 metadata 기준으로 설명된다.
+- [x] 기본 sidebar에서 핵심 행동이 chat-first로 보인다.
+- [x] `AISidebarV4`와 `AIWorkspace`의 중복 배선이 감소한다.
+- [x] 로컬 검증이 통과한다.
+- [x] production QA는 현재 미배포 로컬 변경에는 반복 실행하지 않고, 다음 release/tag 배포 후 tracker/evidence audit까지 단일 smoke로 수행한다.
 
 ## 9. 검토 질문
 

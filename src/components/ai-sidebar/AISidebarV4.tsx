@@ -224,6 +224,20 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
     });
   }, [analysisMode, input, openFullscreen, selectedFunction]);
 
+  const renderMobileFunctionNav = () => (
+    <div
+      className="block shrink-0 border-b border-slate-200 bg-white px-4 pt-3 sm:hidden"
+      data-testid="ai-mobile-function-nav"
+    >
+      <AIAssistantIconPanel
+        selectedFunction={selectedFunction}
+        onFunctionChange={setSelectedFunction}
+        onOpenFullscreen={handleOpenFullscreen}
+        isMobile={true}
+      />
+    </div>
+  );
+
   // ESC 키로 사이드바 닫기
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -275,69 +289,67 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
 
   const renderFunctionPage = () => {
     return (
-      <>
-        {/* Chat - Activity API로 상태 유지 */}
-        <Activity mode={selectedFunction === 'chat' ? 'visible' : 'hidden'}>
-          <EnhancedAIChat
-            autoReportTrigger={{ shouldGenerate: false }}
-            allMessages={enhancedMessages}
-            limitedMessages={enhancedMessages}
-            messagesEndRef={messagesEndRef}
-            MessageComponent={MessageComponent}
-            inputValue={input}
-            setInputValue={setInput}
-            handleSendInput={handleSendInput}
-            sessionState={sessionState}
-            onNewSession={handleNewSession}
-            isGenerating={isLoading}
-            streamStatus={streamStatus}
-            regenerateResponse={regenerateLastResponse}
-            onFeedback={handleFeedback}
-            onStopGeneration={stop}
-            jobProgress={hybridState.progress}
-            jobId={hybridState.jobId}
-            onCancelJob={cancel}
-            queryMode={currentMode}
-            error={error}
-            errorDetails={hybridState.errorDetails}
-            onClearError={clearError}
-            onRetry={retryLastQuery}
-            clarification={clarification}
-            onSelectClarification={selectClarification}
-            onSubmitCustomClarification={submitCustomClarification}
-            onSkipClarification={skipClarification}
-            onDismissClarification={dismissClarification}
-            currentAgentStatus={currentAgentStatus}
-            currentHandoff={currentHandoff}
-            webSearchEnabled={webSearchEnabled}
-            onToggleWebSearch={toggleWebSearch}
-            ragEnabled={ragEnabled}
-            onToggleRAG={toggleRAG}
-            analysisMode={analysisMode}
-            onSelectAnalysisMode={selectAnalysisMode}
-            warmingUp={warmingUp}
-            estimatedWaitSeconds={estimatedWaitSeconds}
-            queuedQueries={queuedQueries}
-            removeQueuedQuery={removeQueuedQuery}
-          />
-        </Activity>
-        {/* Reporter/Analyst - Activity API로 상태 유지 */}
-        <Activity mode={selectedFunction !== 'chat' ? 'visible' : 'hidden'}>
-          <div className="flex h-full flex-col">
-            <div className="block shrink-0 sm:hidden">
-              <AIAssistantIconPanel
-                selectedFunction={selectedFunction}
-                onFunctionChange={setSelectedFunction}
-                onOpenFullscreen={handleOpenFullscreen}
-                isMobile={true}
-              />
+      <div className="flex h-full flex-col" data-testid="ai-function-page">
+        {renderMobileFunctionNav()}
+        <div
+          className="min-h-0 flex-1 overflow-hidden"
+          data-testid="ai-function-content"
+        >
+          {/* Chat - Activity API로 상태 유지 */}
+          <Activity mode={selectedFunction === 'chat' ? 'visible' : 'hidden'}>
+            <EnhancedAIChat
+              autoReportTrigger={{ shouldGenerate: false }}
+              allMessages={enhancedMessages}
+              limitedMessages={enhancedMessages}
+              messagesEndRef={messagesEndRef}
+              MessageComponent={MessageComponent}
+              inputValue={input}
+              setInputValue={setInput}
+              handleSendInput={handleSendInput}
+              sessionState={sessionState}
+              onNewSession={handleNewSession}
+              isGenerating={isLoading}
+              streamStatus={streamStatus}
+              regenerateResponse={regenerateLastResponse}
+              onFeedback={handleFeedback}
+              onStopGeneration={stop}
+              jobProgress={hybridState.progress}
+              jobId={hybridState.jobId}
+              onCancelJob={cancel}
+              queryMode={currentMode}
+              error={error}
+              errorDetails={hybridState.errorDetails}
+              onClearError={clearError}
+              onRetry={retryLastQuery}
+              clarification={clarification}
+              onSelectClarification={selectClarification}
+              onSubmitCustomClarification={submitCustomClarification}
+              onSkipClarification={skipClarification}
+              onDismissClarification={dismissClarification}
+              currentAgentStatus={currentAgentStatus}
+              currentHandoff={currentHandoff}
+              webSearchEnabled={webSearchEnabled}
+              onToggleWebSearch={toggleWebSearch}
+              ragEnabled={ragEnabled}
+              onToggleRAG={toggleRAG}
+              analysisMode={analysisMode}
+              onSelectAnalysisMode={selectAnalysisMode}
+              warmingUp={warmingUp}
+              estimatedWaitSeconds={estimatedWaitSeconds}
+              queuedQueries={queuedQueries}
+              removeQueuedQuery={removeQueuedQuery}
+            />
+          </Activity>
+          {/* Reporter/Analyst - Activity API로 상태 유지 */}
+          <Activity mode={selectedFunction !== 'chat' ? 'visible' : 'hidden'}>
+            <div className="flex h-full flex-col">
+              <div className="flex-1 overflow-y-auto">
+                <AIContentArea selectedFunction={selectedFunction} />
+              </div>
             </div>
-            <div className="flex-1 overflow-y-auto">
-              <AIContentArea selectedFunction={selectedFunction} />
-            </div>
-          </div>
-        </Activity>
-      </>
+          </Activity>
+        </div>
+      </div>
     );
   };
 

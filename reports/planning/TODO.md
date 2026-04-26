@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-26 KST (`Supervisor retrieval smoke follow-up`)
+**Last Updated**: 2026-04-26 KST (`Post-review AI contract hardening`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI sidebar tool/UX simplification | High | Approved | RAG/Web/Thinking 계약 일관성, used tool evidence badge green, tool copy clarification green, async job tool option propagation green, provider model drift guard green, Cerebras Qwen deprecation 대응 일부 완료, icon rail 장식 신호 축소 green, sidebar 기능 밀도, fullscreen 중복 배선 정리 계획. 상세: [ai-sidebar-tool-ux-simplification-plan.md](ai-sidebar-tool-ux-simplification-plan.md) |
+| AI sidebar tool/UX simplification | High | release-qa-pending | RAG/Web/Thinking 계약 일관성, used/suppressed/unavailable 상태 분리, provider model drift guard, Cerebras Qwen deprecation/context guard, icon rail 장식 신호 축소, mobile chat-first 기능 전환, fullscreen 중복 배선 정리 완료. 남은 것은 다음 release/tag 배포 후 Vercel 단일 smoke 및 QA tracker 기록이다. 상세: [ai-sidebar-tool-ux-simplification-plan.md](ai-sidebar-tool-ux-simplification-plan.md) |
 
 ---
 
@@ -23,7 +23,7 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
-| AI assistant retrieval and multi-agent runtime refactor | High | **Approved / Task 2·3·4·5·5A·6·6A·7·7B·8 완료** — Cloud Run `cloud-run/ai-engine` backend 제약을 전제로, Cerebras Qwen primary 경로 + `llama3.1-8b` intra-fallback/model-aware quota, Retrieval contract 타입, 18대 서버 topology contract, Knowledge Retrieval Lite service, `searchKnowledgeBase` Lite adapter, custom GraphRAG runtime 제거, agent별 provider/tool/evidence budget SSOT, provider model policy SSOT, frontend retrieval status contract, legacy compatibility boundary registry, active docs/data stale 정리, deterministic query fallback과 검증 기록을 반영했다. Mistral은 text fallback으로 유지하되 RAG runtime 의존은 제거했다. 잔여 후보는 Qwen forced tool-call final text fallback, topology/RAG boundary guard, stale docs 재도입 방지 자동 guard다. 상세: [ai-assistant-retrieval-multi-agent-refactor-plan.md](ai-assistant-retrieval-multi-agent-refactor-plan.md) |
+| AI assistant retrieval and multi-agent runtime refactor | High | **Approved / Task 2·3·4·5·5A·6·6A·7·7B·8 완료** — Cloud Run `cloud-run/ai-engine` backend 제약을 전제로, Cerebras Qwen primary 경로 + `llama3.1-8b` intra-fallback/model-aware quota, Retrieval contract 타입, 18대 서버 topology contract, Knowledge Retrieval Lite service, `searchKnowledgeBase` Lite adapter, custom GraphRAG runtime 제거, agent별 provider/tool/evidence budget SSOT, provider model policy SSOT, frontend retrieval status contract, legacy compatibility boundary registry, active docs/data stale 정리, deterministic query fallback과 검증 기록을 반영했다. Mistral은 text fallback으로 유지하되 RAG runtime 의존은 제거했다. Qwen forced tool-call final text fallback, stale docs 재도입 방지 guard, topology/RAG boundary guard는 후속 테스트로 고정했다. 상세: [ai-assistant-retrieval-multi-agent-refactor-plan.md](ai-assistant-retrieval-multi-agent-refactor-plan.md) |
 | ~~AI Response Visibility & Rate Limit (Phase 1~5)~~ | — | **완료** — archive 이동. write bucket 재평가 결과 `supervisor 10/min`, `jobs/process 5/min`, `daily 100` 유지 결정 로그는 archived plan에 유지. |
 | ~~AI Stream Route Contract - residual cleanup~~ | — | **완료** — archive 이동. |
 | ~~OTel 토폴로지 개선~~ | — | **완료** — archive 이동: [archive/otel-topology-improvement-plan.md](archive/otel-topology-improvement-plan.md). |
@@ -31,6 +31,56 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-26 #202)
+- [x] Post-review AI contract hardening
+  - AgentFactory 경로가 `searchKnowledgeBase` tool result의 `ragSources`, `EvidenceCard[]`, `metadata.retrieval`을 보존하도록 `BaseAgent`와 `executeWithAgentFactory` propagation 보강
+  - `AgentToolName`/tool registry를 실제 tool registry와 맞추고 Advisor Agent에 `getServerLogs`를 추가해 로그 기반 조치 추천 경로를 복구
+  - Knowledge Retrieval Lite Redis connection fallback을 memory/OOM 신호와 분리해 `redis 연결 실패` 계열 쿼리가 적절한 후보로 재시도되도록 조정
+  - `search_knowledge_text` metadata boost dead-code 지적은 `20260426181500_extend_search_knowledge_text_contract.sql` migration 및 remote 적용 기록으로 stale finding임을 확인
+  - forced-routing summarization fallback의 2차 LLM 호출 비용/latency 상한을 `10s / 768 output tokens / 1,000 chars per tool result`로 축소
+  - `useAIChatSurface` Web/RAG toggle을 함수형 store update로 전환해 연속 클릭 stale closure 가능성을 제거
+  - 검증:
+    - `cd cloud-run/ai-engine && npx vitest run src/lib/ai-sdk-utils.test.ts src/services/ai-sdk/agents/base-agent.test.ts src/services/ai-sdk/agents/orchestrator-routing.test.ts src/lib/knowledge-retrieval-lite.test.ts src/services/ai-sdk/agents/config/agent-runtime-policy.test.ts`
+    - `npx vitest run src/stores/useAISidebarStore.test.ts`
+    - `cd cloud-run/ai-engine && npm run type-check`
+    - `npm run type-check`
+    - `npm run lint:changed`
+
+### Completed (2026-04-26 #201)
+- [x] Sidebar mobile residual completion
+  - 모바일 sidebar의 기능 전환 패널을 chat/non-chat 공통 상단 영역으로 이동해 chat 입력 하단과 충돌하지 않게 정리
+  - 모바일 chat 화면에서도 Reporter/Analyst 기능 전환 진입점이 유지되는 회귀 테스트를 추가
+  - 선택지 B(Chat-first sidebar 재구조화)는 현재 로컬 검증 기준 별도 승격하지 않고, 다음 release/tag production smoke에서 실제 조잡함이 확인될 때만 분리하기로 결정
+  - Vercel/Playwright QA는 현재 미배포 로컬 변경에 반복 실행하지 않고 다음 release/tag 배포 후 단일 smoke로 제한
+  - 검증:
+    - `npx vitest run src/components/ai-sidebar/AISidebarV4.test.tsx`
+    - `npm run type-check`
+
+### Completed (2026-04-26 #200)
+- [x] Plan residual guard completion
+  - 서버 수/role/AZ/status 질문은 `searchKnowledgeBase` RAG 문서가 아니라 `resource-catalog + precomputed-state` 기반 deterministic topology boundary path를 우선 사용하도록 보강
+  - Cerebras long-context capability를 provider 전체 하드코딩에서 Qwen/`llama3.1-8b` model policy 기준으로 보수화
+  - `CEREBRAS_LONG_CONTEXT_ENABLED=false` kill switch와 long prompt `minContextTokens` guard를 추가해 short-context fallback 모델이 긴 RAG prompt를 받지 않도록 고정
+  - 환경변수 문서와 `cloud-run/ai-engine/.env.example`에 Qwen primary, llama fallback, long-context gate를 반영
+  - Cloud Run 현재 env를 확인해 비밀 값은 출력하지 않고 env 이름만 점검했으며, 다음 배포부터 `CEREBRAS_TOOL_CALLING_ENABLED`/`CEREBRAS_LONG_CONTEXT_ENABLED`가 `deploy.sh`로 명시 주입되도록 정리
+  - 검증:
+    - `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/provider-capabilities.test.ts src/services/ai-sdk/agents/config/agent-model-selectors.test.ts src/services/resilience/retry-with-fallback.test.ts src/lib/config-parser.test.ts src/services/ai-sdk/agents/orchestrator-routing.test.ts src/services/ai-sdk/agents/base-agent.test.ts`
+    - `cd cloud-run/ai-engine && npm run type-check`
+    - `cd cloud-run/ai-engine && npm run test`
+    - `npm run type-check`
+    - `npm run lint`
+    - `npm run test:quick`
+    - `npm run test:contract`
+
+### Completed (2026-04-26 #199)
+- [x] Retrieval guard 후속 테스트 및 계획서 상태 정렬
+  - Qwen/Cerebras forced tool-call 이후 final text가 비어도 deterministic empty-response fallback과 `fallbackReason=EMPTY_RESPONSE`가 반환되는 계약 테스트를 추가
+  - active docs/data에 `Native GraphRAG`, `Mistral + RAG`, 강제 `useGraphRAG: true` stale 표현이 재도입되면 실패하는 guard 테스트를 추가
+  - `ai-sidebar-tool-ux-simplification-plan.md`의 실제 완료 체크박스를 코드 현실에 맞게 보정하고, fullscreen handoff 문서화는 잔여 항목으로 유지
+  - 검증:
+    - `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/agents/base-agent.test.ts`
+    - `npx vitest run tests/unit/dev/ai-retrieval-legacy-drift.test.ts tests/unit/dev/ai-provider-model-drift.test.ts`
 
 ### Completed (2026-04-26 #198)
 - [x] Cloud Run supervisor Knowledge Retrieval Lite smoke 후속 수정

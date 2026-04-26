@@ -133,13 +133,15 @@ vi.mock('@/components/ai/AIAssistantIconPanel', () => ({
   default: ({
     onFunctionChange,
     onOpenFullscreen,
+    isMobile,
   }: {
     onFunctionChange: (
       value: 'chat' | 'auto-report' | 'intelligent-monitoring'
     ) => void;
     onOpenFullscreen?: () => void;
+    isMobile?: boolean;
   }) => (
-    <div data-testid="ai-icon-panel">
+    <div data-testid={isMobile ? 'ai-mobile-icon-panel' : 'ai-icon-panel'}>
       <button type="button" onClick={() => onFunctionChange('chat')}>
         switch-chat
       </button>
@@ -370,6 +372,35 @@ describe('AISidebarV4', () => {
     expect(sidebar).toHaveClass('inset-0');
     expect(sidebar).toHaveClass('h-dvh');
     expect(sidebar).toHaveClass('w-screen');
+  });
+
+  it('keeps mobile function switching available above the chat surface', () => {
+    setViewportWidth(375);
+    render(<AISidebarV4 {...defaultProps} />);
+
+    expect(screen.getByTestId('ai-mobile-function-nav')).toHaveClass(
+      'shrink-0'
+    );
+    expect(screen.getByTestId('ai-function-page')).toHaveClass(
+      'flex',
+      'h-full',
+      'flex-col'
+    );
+    expect(screen.getByTestId('ai-function-content')).toHaveClass(
+      'min-h-0',
+      'flex-1',
+      'overflow-hidden'
+    );
+    expect(screen.getByTestId('ai-mobile-icon-panel')).toBeInTheDocument();
+    expect(screen.getByTestId('enhanced-ai-chat')).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getAllByRole('button', { name: 'switch-reporter' })[0]
+    );
+
+    expect(screen.getByTestId('ai-content-function')).toHaveTextContent(
+      'auto-report'
+    );
   });
 
   it('locks background scroll on mobile and restores on unmount', async () => {

@@ -272,8 +272,10 @@ interface AISidebarState {
   setMinimized: (minimized: boolean) => void;
   toggleSidebar: () => void;
   setSidebarWidth: (width: number) => void;
-  setWebSearchEnabled: (enabled: boolean) => void;
-  setRagEnabled: (enabled: boolean) => void;
+  setWebSearchEnabled: (
+    enabled: boolean | ((prev: boolean) => boolean)
+  ) => void;
+  setRagEnabled: (enabled: boolean | ((prev: boolean) => boolean)) => void;
   setAnalysisMode: (mode: AnalysisMode) => void;
   dismissRestoreBanner: () => void;
   resetRestoreBanner: () => void;
@@ -390,9 +392,21 @@ export const useAISidebarStore = create<AISidebarState>()(
 
         setSidebarWidth: (width) => set({ sidebarWidth: width }),
 
-        setWebSearchEnabled: (enabled) => set({ webSearchEnabled: enabled }),
+        setWebSearchEnabled: (enabled) =>
+          set((state) => ({
+            webSearchEnabled:
+              typeof enabled === 'function'
+                ? enabled(state.webSearchEnabled)
+                : enabled,
+          })),
 
-        setRagEnabled: (enabled) => set({ ragEnabled: enabled }),
+        setRagEnabled: (enabled) =>
+          set((state) => ({
+            ragEnabled:
+              typeof enabled === 'function'
+                ? enabled(state.ragEnabled)
+                : enabled,
+          })),
 
         setAnalysisMode: (mode) => set({ analysisMode: mode }),
 

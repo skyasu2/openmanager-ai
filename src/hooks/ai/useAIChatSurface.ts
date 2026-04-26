@@ -56,12 +56,12 @@ export function useAIChatSurface(
   );
 
   const toggleWebSearch = useCallback(() => {
-    setWebSearchEnabled(!webSearchEnabled);
-  }, [webSearchEnabled, setWebSearchEnabled]);
+    setWebSearchEnabled((prev) => !prev);
+  }, [setWebSearchEnabled]);
 
   const toggleRAG = useCallback(() => {
-    setRagEnabled(!ragEnabled);
-  }, [ragEnabled, setRagEnabled]);
+    setRagEnabled((prev) => !prev);
+  }, [setRagEnabled]);
 
   const selectAnalysisMode = useCallback(
     (mode: AnalysisMode) => {

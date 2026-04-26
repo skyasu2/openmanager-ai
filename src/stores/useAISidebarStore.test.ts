@@ -386,6 +386,30 @@ describe('useAISidebarStore', () => {
     });
   });
 
+  describe('AI 옵션 토글', () => {
+    it('webSearchEnabled를 함수형 업데이트로 토글할 수 있어야 함', () => {
+      const { result } = renderHook(() => useAISidebarStore());
+
+      act(() => {
+        result.current.setWebSearchEnabled((prev) => !prev);
+        result.current.setWebSearchEnabled((prev) => !prev);
+      });
+
+      expect(result.current.webSearchEnabled).toBe(false);
+    });
+
+    it('ragEnabled를 함수형 업데이트로 토글할 수 있어야 함', () => {
+      const { result } = renderHook(() => useAISidebarStore());
+
+      act(() => {
+        result.current.setRagEnabled((prev) => !prev);
+        result.current.setRagEnabled((prev) => !prev);
+      });
+
+      expect(result.current.ragEnabled).toBe(false);
+    });
+  });
+
   describe('reset', () => {
     it('모든 상태를 초기화해야 함', () => {
       const { result } = renderHook(() => useAISidebarStore());
