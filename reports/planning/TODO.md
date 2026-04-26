@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-26 KST (`Retrieval SQL contract aligned`)
+**Last Updated**: 2026-04-26 KST (`Retrieval SQL contract applied`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -31,6 +31,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-26 #197)
+- [x] Supabase remote Knowledge Retrieval Lite RPC contract 적용
+  - dry-run에서 pending migration이 `20260426181500_extend_search_knowledge_text_contract.sql` 1건뿐임을 확인 후 remote Supabase에 적용
+  - `supabase migration list --linked` 기준 local/remote migration version이 `20260426181500`까지 일치함을 확인
+  - 원격 `knowledge_base` 52건 기준 `search_knowledge_text` RPC smoke를 실행해 `severity`, `related_server_types`, `metadata` 반환 필드가 실제 응답에 포함됨을 검증
+  - GitLab CI는 Supabase migration 자동 적용을 수행하지 않으므로 DB contract 변경은 별도 `supabase db push` 운영 절차로 처리
 
 ### Completed (2026-04-26 #196)
 - [x] Knowledge Retrieval Lite SQL RPC 계약 정렬
