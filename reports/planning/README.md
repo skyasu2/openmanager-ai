@@ -163,6 +163,31 @@ TODO.md Backlog 등록
 - [ ] Task 1 — 완료 기준: ...
 - [ ] Task 2 — 완료 기준: ...
 
+## 단계별 커밋/푸시/배포 판단
+
+| Task | 커밋 prefix | gitlab push | Cloud Run 재배포 | Vercel 재배포 |
+|------|-------------|:-----------:|:----------------:|:-------------:|
+| Task 0 (failing test) | `test(spec):` | 선택 | ❌ | ❌ |
+| Task 1 | `feat:/fix:/refactor:` | ✅ | cloud-run 변경 시 | frontend 변경 시 |
+| Task N (최종) | — | ✅ | 판단 필요 | 판단 필요 |
+
+## 코드리뷰 게이트
+
+| 시점 | 리뷰 대상 |
+|------|-----------|
+| Task 0 완료 후 | failing test가 계약을 정확히 표현하는지 |
+| 핵심 구현 Task 완료 후 | 계약 변경 파일, 보안/비용 영향 여부 |
+| 전체 완료 후 | 완료 기준 체크리스트 전체 |
+
+## 진행 중 블로커 대응
+
+| 상황 | 기준 |
+|------|------|
+| Task 완료 기준 달성 불가 | TODO.md 블로커 기록 후 해당 Task On Hold |
+| 범위가 예상보다 2배 이상 확대 | 해당 Task를 별도 plan 파일로 분리 |
+| 외부 의존(API/provider) 장애로 검증 불가 | mock/contract test로 대체 진행, 실 smoke는 별도 이슈 추적 |
+| 회귀 발생 | 회귀 재현 test 커밋 → 수정 → 통과 순서 유지 |
+
 ## 완료 기준
 - [ ] 테스트 시나리오 전체 통과
 - [ ] type-check 통과
@@ -178,4 +203,4 @@ TODO.md Backlog 등록
 - 단, 회귀 테스트를 쉽게 추가할 수 있는 경우에는 regression test를 우선한다.
 - 회귀 테스트 추가가 비현실적이면 작업 보고에 간단한 justification을 남긴다.
 
-_Last Updated: 2026-04-17 (strict TDD/SDD 적용 범위 명확화)_
+_Last Updated: 2026-04-26 (커밋/배포 판단, 코드리뷰 게이트, 블로커 대응 섹션 템플릿 추가)_

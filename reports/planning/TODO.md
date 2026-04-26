@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-25 KST (`SambaNova provider 추가 + Groq lifecycle fix green`)
+**Last Updated**: 2026-04-26 KST (`AI assistant retrieval contract implemented`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -23,6 +23,7 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
+| AI assistant retrieval and multi-agent runtime refactor | High | **Approved / Task 1B 완료 / Task 2 대기** — Cloud Run `cloud-run/ai-engine` backend 제약을 전제로, Cerebras Qwen primary 경로 + `llama3.1-8b` intra-fallback/model-aware quota, Retrieval contract 타입, 18대 서버 topology contract를 반영했다. 다음 단계는 Knowledge Retrieval Lite service 도입이다. Mistral은 text fallback으로 유지하되 RAG runtime 의존을 제거하며 custom GraphRAG를 Knowledge Retrieval Lite로 대체한다. 상세: [ai-assistant-retrieval-multi-agent-refactor-plan.md](ai-assistant-retrieval-multi-agent-refactor-plan.md) |
 | ~~AI Response Visibility & Rate Limit (Phase 1~5)~~ | — | **완료** — archive 이동. write bucket 재평가 결과 `supervisor 10/min`, `jobs/process 5/min`, `daily 100` 유지 결정 로그는 archived plan에 유지. |
 | ~~AI Stream Route Contract - residual cleanup~~ | — | **완료** — archive 이동. |
 | ~~OTel 토폴로지 개선~~ | — | **완료** — archive 이동: [archive/otel-topology-improvement-plan.md](archive/otel-topology-improvement-plan.md). |
@@ -30,6 +31,55 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-26 #185)
+- [x] AI assistant 18대 topology contract 확정
+  - OTel resource catalog, hourly data, AI Engine precomputed state, infrastructure topology diagram을 18대 관측 inventory 기준으로 정렬
+  - role별 3대(Web/API/DB/Redis/Storage/LB)와 AZ별 6대(`DC1-AZ1/2/3`) 균등 분포를 계약 테스트로 고정
+  - active docs/UI/test fixture의 현재형 `15대 서버` 표현을 18대 관측 데이터셋 기준으로 갱신
+  - OTel/Loki식 로그에 root-cause/topology answer label이 누출되지 않도록 `data:verify`에 guard 추가
+  - `tsx`를 devDependency로 고정하고 `data:*` 스크립트를 로컬 binary 실행으로 정리
+  - 검증:
+    - `npm run data:precomputed:build`
+    - `npm run data:verify` (`54 passed / 0 failed`)
+    - `./node_modules/.bin/vitest run tests/unit/otel-topology-precomputed-state-sync.contract.test.ts tests/unit/otel-topology-phase3-lb-az2.contract.test.ts tests/unit/otel-topology-phase3-cache-az3.contract.test.ts tests/unit/otel-topology-phase3-storage-standby.contract.test.ts`
+    - `npx markdownlint-cli2 "reports/planning/TODO.md" "reports/planning/ai-assistant-retrieval-multi-agent-refactor-plan.md" "docs/guides/ai/ai-standards.md"`
+    - `git diff --check`
+
+### Completed (2026-04-26 #184)
+- [x] AI assistant retrieval contract/type 추가
+  - Cloud Run AI Engine에 `retrieval-contract` SSOT를 추가해 `EvidenceCard`, `RetrievalMetadata`, `RetrievalMode`, suppressed reason union을 고정
+  - 기존 `ragSources`를 즉시 제거하지 않고 병행 운용할 수 있도록 legacy `ragSources` → `EvidenceCard[]` adapter 추가
+  - `SupervisorResponse`와 `MultiAgentResponse`에 `evidenceCards`와 `metadata.retrieval` 타입 계약을 추가해 frontend/Langfuse propagation 표면을 고정
+  - 검증:
+    - `cd cloud-run/ai-engine && npx vitest run src/lib/retrieval-contract.test.ts src/lib/ai-sdk-utils.test.ts`
+    - `cd cloud-run/ai-engine && npm run type-check`
+    - `cd cloud-run/ai-engine && npm run test` (`78 files / 847 tests`)
+    - `npm run type-check`
+    - `npm run lint`
+    - `npm run test:quick`
+    - `npm run test:contract`
+    - `npx markdownlint-cli2 "reports/planning/TODO.md" "reports/planning/ai-assistant-retrieval-multi-agent-refactor-plan.md"`
+    - `git diff --check`
+
+### Completed (2026-04-26 #183)
+- [x] AI assistant Cerebras Qwen model policy 구현
+  - Cerebras 기본 모델을 `qwen-3-235b-a22b-instruct-2507`로 전환하고 `llama3.1-8b`를 intra-Cerebras fallback으로 고정
+  - `gpt-oss-120b`는 무료 티어 미포함/현재 키 404 근거로 runtime 후보에서 제외
+  - Cerebras 모델별 quota와 usage key를 계정 Limits 기준으로 분리해 Qwen `5 RPM / 30K TPM`, llama `30 RPM / 60K TPM`을 보수 적용
+  - Qwen quota가 pre-emptive threshold에 걸리면 Cerebras 전체를 건너뛰지 않고 `llama3.1-8b`를 먼저 선택하도록 보강
+  - provider metadata/deprecation guard를 date-aware로 변경해 2026-05-27 이후 Qwen/llama 교체 필요성을 감지
+  - `retry-with-fallback`와 agent model selector가 provider 내부 model fallback을 먼저 시도한 뒤 다음 provider로 이동하도록 계약을 고정
+  - 검증:
+    - `cd cloud-run/ai-engine && npx vitest run src/lib/config-parser.test.ts src/services/ai-sdk/provider-model-metadata.test.ts src/services/resilience/quota-tracker.test.ts src/services/ai-sdk/agents/config/agent-model-selectors.test.ts src/services/resilience/retry-with-fallback.test.ts`
+    - `cd cloud-run/ai-engine && npm run type-check`
+    - `cd cloud-run/ai-engine && npm run test` (`77 files / 840 tests`)
+    - `npm run type-check`
+    - `npm run lint`
+    - `npm run test:quick`
+    - `npm run test:contract`
+    - `npx markdownlint-cli2 "reports/planning/TODO.md" "reports/planning/ai-assistant-retrieval-multi-agent-refactor-plan.md"`
+    - `git diff --check`
 
 ### Completed (2026-04-25 #181)
 - [x] AI sidebar icon rail 시각 신호 단순화
@@ -43,20 +93,19 @@
     - `npm run lint:changed`
     - `bash scripts/dev/biome-wrapper.sh check src/components/ai/AIAssistantIconPanel.tsx src/components/ai/AIAssistantIconPanel.test.tsx`
 
-### Completed (2026-04-25 #181)
-- [x] SambaNova provider 추가 + Groq lifecycle metadata fix
-  - Fallback chain: Groq → Cerebras → **SambaNova**(Llama-3.3-70B, 20M TPD) → Mistral
-  - `config-parser.ts`: `getSambaNovaApiKey()`, `getSambaNovaModelId()`, `SAMBANOVA_BASE_URL` 추가
-  - `model-provider.types.ts`: `ProviderName`/`ProviderStatus`에 `sambanova` 추가
-  - `model-provider-core.ts`: `getSambaNovaModel()` lazy singleton 구현 (createOpenAI + SambaNova base URL)
-  - `model-provider-status.ts`: sambanova 상태 체크 추가
-  - `provider-capabilities.ts`: sambanova capabilities (`supportsToolCalling: true`) + `TextProviderName` 확장
-  - `provider-model-metadata.ts`: Groq `lifecycle: 'preview'` → `'production'` 수정, sambanova 메타데이터 추가
-  - `agent-model-selectors.ts`: 모든 에이전트(NLQ/Analyst/Reporter/Advisor/Supervisor/Verifier) 4-way fallback으로 전환
-  - `quota-tracker.ts`: `LLMProviderName`에 sambanova 추가, quota 설정 (20 RPM / 20M TPD)
-  - `.env.example`, `.env`, `.env.local`: `SAMBANOVA_API_KEY`, `SAMBANOVA_MODEL_ID` 추가
-  - `src/config/ai-providers.ts`: UI에 SambaNova 표시 추가
-  - `provider-model-metadata.test.ts`: sambanova/Groq lifecycle 기대값 갱신
+### Completed (2026-04-25 #182)
+- [x] SambaNova 제거 + Cerebras tool-calling fallback 활성화
+  - 최종 text fallback chain을 `Groq → Cerebras → Mistral` 3-way로 정리
+  - SambaNova는 live smoke에서 API key 인증 실패가 확인됐고, Free Tier `20 RPD / 200K TPD`가 운영 fallback으로 낮아 runtime chain에서 제거
+  - Cerebras 기본 모델은 현재 키에서 AI SDK direct/tool-calling smoke가 통과한 production `llama3.1-8b`로 보수화
+  - `gpt-oss-120b`는 현재 키의 chat completions smoke가 404였고, 이후 무료 티어 모델 목록 미포함으로 runtime 후보에서 제외
+  - Orchestrator는 text agent와 분리해 `Cerebras → Groq → Mistral` structured-output chain으로 정렬
+  - `llama3.1-8b`와 Groq Scout 모두 Orchestrator `generateObject` smoke가 통과했고, Mistral은 2 RPM 병목 때문에 last resort로 배치
+  - `config-parser.ts`, `model-provider-core.ts`, `model-provider-status.ts`, `model-provider.types.ts`, `provider-capabilities.ts`, `quota-tracker.ts`의 SambaNova runtime 경로 제거
+  - `CEREBRAS_TOOL_CALLING_ENABLED=true` 기본 예시로 Cerebras tool-calling fallback 활성화
+  - `provider-model-metadata.ts`: Groq Scout는 공식 Preview로 유지하고, Cerebras `llama3.1-8b` current fallback metadata 유지. `gpt-oss-120b` metadata는 후속 Qwen policy cleanup 대상
+  - `retry-with-fallback.test.ts`: Groq/Cerebras 실패 후 Mistral last-resort fallback 계약 고정
+  - `src/config/ai-providers.ts`: UI에서 SambaNova provider 표시 제거
   - 검증:
     - `npx tsc --noEmit -p cloud-run/ai-engine/tsconfig.json` ✅
     - `npm run type-check` ✅
