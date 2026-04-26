@@ -45,6 +45,9 @@ vi.mock('../../../../tools-ai-sdk', () => ({
   analyzeLargeLog: { execute: vi.fn() },
   searchWithGrounding: { execute: vi.fn() },
   analyzeUrlContent: { execute: vi.fn() },
+  evaluateMathExpression: { execute: vi.fn() },
+  computeSeriesStats: { execute: vi.fn() },
+  estimateCapacityProjection: { execute: vi.fn() },
 }));
 
 vi.mock('../../../../lib/logger', () => ({
