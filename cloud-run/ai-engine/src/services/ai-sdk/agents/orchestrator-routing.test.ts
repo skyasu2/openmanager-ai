@@ -1,4 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 const { mockStepCountIs } = vi.hoisted(() => ({
   mockStepCountIs: vi.fn(() => () => false),
@@ -190,6 +193,20 @@ function createRetryResult(options: {
       })),
       usage: { inputTokens: 10, outputTokens: 5, totalTokens: 15 },
     },
+  };
+}
+
+function createResourceCatalog(serverIds: string[]) {
+  return {
+    resources: Object.fromEntries(
+      serverIds.map((serverId, index) => [
+        serverId,
+        {
+          'server.role': index % 2 === 0 ? 'web' : 'app',
+          'cloud.availability_zone': `test-az-${index + 1}`,
+        },
+      ])
+    ),
   };
 }
 
@@ -527,6 +544,57 @@ describe('executeForcedRouting', () => {
     );
     expect(mockSearchKnowledgeBaseExecute).not.toHaveBeenCalled();
     expect(mockGenerateTextWithRetry).not.toHaveBeenCalled();
+  });
+
+  it('invalidates the resource catalog cache when a higher-priority SSOT catalog appears', async () => {
+    const originalCwd = process.cwd();
+    const tempDir = mkdtempSync(join(tmpdir(), 'om-resource-catalog-'));
+    const query = '현재 인프라 토폴로지의 서버 수와 role/AZ/status 알려줘';
+
+    try {
+      const generatedCatalogDir = join(tempDir, 'data/otel-data');
+      mkdirSync(generatedCatalogDir, { recursive: true });
+      writeFileSync(
+        join(generatedCatalogDir, 'resource-catalog.json'),
+        JSON.stringify(createResourceCatalog(['generated-01'])),
+        'utf-8'
+      );
+
+      process.chdir(tempDir);
+
+      const generatedResult = await executeForcedRouting(
+        query,
+        'Advisor Agent',
+        Date.now(),
+        true,
+        true
+      );
+
+      expect(generatedResult?.response).toContain('총 서버 수: 1대');
+
+      const ssotCatalogDir = join(tempDir, 'public/data/otel-data');
+      mkdirSync(ssotCatalogDir, { recursive: true });
+      writeFileSync(
+        join(ssotCatalogDir, 'resource-catalog.json'),
+        JSON.stringify(createResourceCatalog(['ssot-01', 'ssot-02'])),
+        'utf-8'
+      );
+
+      const ssotResult = await executeForcedRouting(
+        query,
+        'Advisor Agent',
+        Date.now(),
+        true,
+        true
+      );
+
+      expect(ssotResult?.response).toContain('총 서버 수: 2대');
+      expect(ssotResult?.response).toContain('- app: ssot-02');
+      expect(ssotResult?.response).toContain('- web: ssot-01');
+    } finally {
+      process.chdir(originalCwd);
+      rmSync(tempDir, { recursive: true, force: true });
+    }
   });
 
   it('uses direct KB deterministic path for advisor topology queries when KB succeeds', async () => {

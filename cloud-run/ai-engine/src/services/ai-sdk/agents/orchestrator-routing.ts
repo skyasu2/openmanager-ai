@@ -144,7 +144,12 @@ interface StructuredTopologySnapshot {
   dataSources: string[];
 }
 
-let resourceCatalogCache: ResourceCatalog | null | undefined;
+interface ResourceCatalogCache {
+  filePath: string | null;
+  catalog: ResourceCatalog | null;
+}
+
+let resourceCatalogCache: ResourceCatalogCache | undefined;
 
 const STRUCTURED_TOPOLOGY_BOUNDARY_PATTERN =
   /서버\s*(수|몇|목록|리스트|역할|role|상태|status)|몇\s*대|role|az|가용\s*영역|availability\s*zone|inventory|인벤토리/i;
@@ -341,10 +346,6 @@ function compactServerIds(serverIds: string[]): string {
 }
 
 function loadResourceCatalog(): ResourceCatalog | null {
-  if (resourceCatalogCache !== undefined) {
-    return resourceCatalogCache;
-  }
-
   const candidates = [
     // Prefer the tracked OTel SSOT so local generated copies cannot mask CI drift.
     join(process.cwd(), 'public/data/otel-data/resource-catalog.json'),
@@ -352,14 +353,25 @@ function loadResourceCatalog(): ResourceCatalog | null {
     join(process.cwd(), 'data/otel-data/resource-catalog.json'),
     join(process.cwd(), 'cloud-run/ai-engine/data/otel-data/resource-catalog.json'),
   ];
+  const firstExistingCandidate = candidates.find((filePath) =>
+    existsSync(filePath)
+  ) ?? null;
+
+  if (
+    resourceCatalogCache !== undefined &&
+    resourceCatalogCache.filePath === firstExistingCandidate
+  ) {
+    return resourceCatalogCache.catalog;
+  }
 
   for (const filePath of candidates) {
     if (!existsSync(filePath)) continue;
     try {
-      resourceCatalogCache = JSON.parse(
+      const catalog = JSON.parse(
         readFileSync(filePath, 'utf-8')
       ) as ResourceCatalog;
-      return resourceCatalogCache;
+      resourceCatalogCache = { filePath, catalog };
+      return catalog;
     } catch (error) {
       logger.warn(
         `[Forced Routing] Failed to parse resource catalog ${filePath}:`,
@@ -368,7 +380,7 @@ function loadResourceCatalog(): ResourceCatalog | null {
     }
   }
 
-  resourceCatalogCache = null;
+  resourceCatalogCache = { filePath: null, catalog: null };
   return null;
 }
 
