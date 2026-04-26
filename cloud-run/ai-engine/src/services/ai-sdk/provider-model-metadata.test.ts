@@ -11,6 +11,7 @@ import {
   getDeprecatedRuntimeProviderModels,
   getRuntimeProviderModelMetadata,
 } from './provider-model-metadata';
+import { CEREBRAS_DEPRECATION_REPLACEMENT } from './provider-model-policy';
 
 describe('provider model metadata', () => {
   const originalEnv = { ...process.env };
@@ -32,7 +33,7 @@ describe('provider model metadata', () => {
     expect(metadata.preview).toBe(true);
     expect(metadata.deprecated).toBe(false);
     expect(metadata.deprecationDate).toBe(CEREBRAS_QWEN_DEPRECATION_DATE);
-    expect(metadata.recommendedReplacement).toBe(CEREBRAS_LLAMA_FALLBACK_MODEL_ID);
+    expect(metadata.recommendedReplacement).toBe(CEREBRAS_DEPRECATION_REPLACEMENT);
     expect(metadata.contextWindowTokens).toBe(65_536);
     expect(metadata.enabled).toBe(true);
     expect(metadata.toolCallingEnabled).toBe(true);
@@ -104,7 +105,7 @@ describe('provider model metadata', () => {
       productionModel: false,
       preview: true,
       smokeStatus: 'green',
-      recommendedReplacement: CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
+      recommendedReplacement: CEREBRAS_DEPRECATION_REPLACEMENT,
     });
     expect(
       metadata.find((entry) => entry.modelId === CEREBRAS_LLAMA_FALLBACK_MODEL_ID)
@@ -130,7 +131,7 @@ describe('provider model metadata', () => {
         modelId: CEREBRAS_QWEN_MODEL_ID,
         severity: 'P1',
         reason: `${CEREBRAS_QWEN_MODEL_ID} is deprecated for cerebras after ${CEREBRAS_QWEN_DEPRECATION_DATE}`,
-        replacement: CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
+        replacement: CEREBRAS_DEPRECATION_REPLACEMENT,
       },
     ]);
   });

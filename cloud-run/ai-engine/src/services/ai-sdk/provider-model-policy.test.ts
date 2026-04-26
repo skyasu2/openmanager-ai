@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  CEREBRAS_DEPRECATION_REPLACEMENT,
   CEREBRAS_GPT_OSS_MODEL_ID,
   CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
   CEREBRAS_QWEN_DEPRECATION_DATE,
@@ -106,15 +107,31 @@ describe('provider model policy SSOT', () => {
         modelId: CEREBRAS_QWEN_MODEL_ID,
         severity: 'P1',
         reason: `${CEREBRAS_QWEN_MODEL_ID} is blocked for cerebras after ${CEREBRAS_QWEN_DEPRECATION_DATE}`,
-        replacement: CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
+        replacement: CEREBRAS_DEPRECATION_REPLACEMENT,
       },
       {
         provider: 'cerebras',
         modelId: CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
         severity: 'P1',
         reason: `${CEREBRAS_LLAMA_FALLBACK_MODEL_ID} is blocked for cerebras after ${CEREBRAS_QWEN_DEPRECATION_DATE}`,
-        replacement: CEREBRAS_QWEN_MODEL_ID,
+        replacement: CEREBRAS_DEPRECATION_REPLACEMENT,
       },
     ]);
+  });
+
+  it('does not recommend another same-date blocked Cerebras runtime model', () => {
+    const blockedRuntimeModelIds = new Set(
+      getCerebrasRuntimeModelPolicies()
+        .filter(
+          (policy) =>
+            policy.blockAfterDeprecation &&
+            policy.deprecationDate === CEREBRAS_QWEN_DEPRECATION_DATE
+        )
+        .map((policy) => policy.modelId)
+    );
+
+    for (const policy of getCerebrasRuntimeModelPolicies()) {
+      expect(blockedRuntimeModelIds).not.toContain(policy.recommendedReplacement);
+    }
   });
 });

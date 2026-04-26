@@ -7,7 +7,9 @@ import {
 } from '../../lib/knowledge-retrieval-lite';
 import { LEGACY_CONTRACTS } from '../../lib/legacy-contracts';
 import { logger } from '../../lib/logger';
-import type {
+import {
+  createRetrievalMetadata,
+  type EvidenceSourceType,
   EvidenceCard,
   RetrievalMetadata,
 } from '../../lib/retrieval-contract';
@@ -185,6 +187,58 @@ function mapEvidenceCardsToRagResults(
   }));
 }
 
+function mapRagSourceTypeToEvidenceSourceType(
+  result: RAGResultItem
+): EvidenceSourceType {
+  if (result.sourceType === 'web') return 'web';
+  if (result.sourceType === 'incident' || result.category === 'incident') {
+    return 'incident';
+  }
+  if (
+    result.sourceType === 'runbook' ||
+    result.category === 'troubleshooting' ||
+    result.category === 'best_practice' ||
+    result.category === 'command'
+  ) {
+    return 'runbook';
+  }
+  return 'knowledge';
+}
+
+function clampEvidenceScore(score: number): number {
+  if (!Number.isFinite(score)) return 0;
+  return Math.min(1, Math.max(0, score));
+}
+
+function mapBalancedResultsToEvidenceCards(
+  results: RAGResultItem[],
+  originalCards: EvidenceCard[]
+): EvidenceCard[] {
+  const cardsById = new Map(originalCards.map((card) => [card.id, card]));
+
+  return results.map((result) => {
+    const original = cardsById.get(result.id);
+    if (original) {
+      return {
+        ...original,
+        category: result.category,
+        score: clampEvidenceScore(result.similarity),
+        ...(result.url && { url: result.url }),
+      };
+    }
+
+    return {
+      id: result.id,
+      title: result.title,
+      summary: result.content,
+      sourceType: mapRagSourceTypeToEvidenceSourceType(result),
+      score: clampEvidenceScore(result.similarity),
+      category: result.category,
+      ...(result.url && { url: result.url }),
+    };
+  });
+}
+
 function buildUnavailableResult(
   retrievalResult: KnowledgeRetrievalLiteResult
 ): KnowledgeSearchResult {
@@ -282,6 +336,15 @@ export const searchKnowledgeBase = tool({
           results: [] as RAGResultItem[],
           totalFound: 0,
           _source: 'Fallback (No Supabase)',
+          evidenceCards: [],
+          retrieval: createRetrievalMetadata({
+            retrievalEnabled: true,
+            retrievalUsed: false,
+            retrievalMode: 'lite',
+            suppressedReason: 'unavailable',
+            evidenceCount: 0,
+            webUsed: false,
+          }),
           webSearchTriggered: false,
           systemMessage:
             'TOOL_EXECUTION_FAILED: Supabase 데이터베이스 연결 실패로 사내 런북 및 장애 이력을 검색할 수 없습니다.',
@@ -321,16 +384,20 @@ export const searchKnowledgeBase = tool({
           category,
           DEFAULT_KNOWLEDGE_RETRIEVAL_LIMIT
         );
+        const balancedEvidenceCards = mapBalancedResultsToEvidenceCards(
+          balancedResults,
+          retrievalResult.evidenceCards
+        );
 
         const response: KnowledgeSearchResult = {
           success: true,
           results: balancedResults,
-          totalFound: balancedResults.length,
+          totalFound: balancedEvidenceCards.length,
           _source: retrievalResult._source,
-          evidenceCards: retrievalResult.evidenceCards,
+          evidenceCards: balancedEvidenceCards,
           retrieval: {
             ...retrievalResult.metadata,
-            evidenceCount: balancedResults.length,
+            evidenceCount: balancedEvidenceCards.length,
           },
           fastMode,
           webSearchTriggered: false,

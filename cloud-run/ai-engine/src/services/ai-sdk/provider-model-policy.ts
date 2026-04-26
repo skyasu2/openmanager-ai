@@ -6,6 +6,8 @@ export const CEREBRAS_QWEN_DEPRECATION_DATE = '2026-05-27';
 export const CEREBRAS_GPT_OSS_MODEL_ID = 'gpt-oss-120b';
 export const CEREBRAS_LLAMA_FALLBACK_MODEL_ID = 'llama3.1-8b';
 export const DEFAULT_CEREBRAS_MODEL = CEREBRAS_QWEN_MODEL_ID;
+export const CEREBRAS_DEPRECATION_REPLACEMENT =
+  'groq:meta-llama/llama-4-scout-17b-16e-instruct';
 
 export type ProviderModelRole = 'primary' | 'fallback' | 'vision' | 'excluded';
 export type ProviderModelLifecycle = 'production' | 'preview' | 'custom';
@@ -89,7 +91,7 @@ export const CEREBRAS_MODEL_POLICIES = {
     freeTierLimitSummary:
       'Account limit: 5 RPM / 30K TPM / 14.4K RPD / 1M TPD; primary until 2026-05-27 deprecation',
     sourceUrls: CEREBRAS_SOURCE_URLS,
-    recommendedReplacement: CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
+    recommendedReplacement: CEREBRAS_DEPRECATION_REPLACEMENT,
   },
   [CEREBRAS_LLAMA_FALLBACK_MODEL_ID]: {
     provider: 'cerebras',
@@ -117,7 +119,7 @@ export const CEREBRAS_MODEL_POLICIES = {
     freeTierLimitSummary:
       'Free: 30 RPM / 900 RPH / 14.4K RPD / 1M TPD; intra-Cerebras fallback only',
     sourceUrls: CEREBRAS_SOURCE_URLS,
-    recommendedReplacement: CEREBRAS_QWEN_MODEL_ID,
+    recommendedReplacement: CEREBRAS_DEPRECATION_REPLACEMENT,
   },
   [CEREBRAS_GPT_OSS_MODEL_ID]: {
     provider: 'cerebras',

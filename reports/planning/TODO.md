@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-26 KST (`Retrieval validation completed`)
+**Last Updated**: 2026-04-26 KST (`Retrieval SQL contract aligned`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -31,6 +31,20 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-26 #196)
+- [x] Knowledge Retrieval Lite SQL RPC 계약 정렬
+  - `search_knowledge_text` migration을 추가해 `severity`, `related_server_types`, `metadata`를 반환하도록 확장
+  - incident/troubleshooting 검색이 `incident`, `troubleshooting`, `best_practice` 인접 카테고리 evidence를 함께 찾도록 SQL 필터 정책을 보강
+  - migration contract test를 추가해 RPC 반환 필드와 incident/runbook adjacency가 깨지면 실패하도록 고정
+  - 기존 KRL unit test의 metadata/severity boost fixture가 실제 RPC schema와 맞도록 계약 보강 완료
+
+### Completed (2026-04-26 #195)
+- [x] Retrieval Lite conditional review P2 수정
+  - `searchKnowledgeBase` no-Supabase branch가 `retrieval.suppressedReason=unavailable`과 빈 `evidenceCards`를 반환하도록 통일
+  - `rebalanceRagResultsForMonitoring` 후 `results`, `evidenceCards`, `retrieval.evidenceCount`, `totalFound`가 같은 filtered evidence set을 가리키도록 정리
+  - Cerebras Qwen/llama 동일 deprecation date 모델이 서로 replacement로 순환하지 않도록 Groq primary fallback replacement 정책으로 변경
+  - 회귀 테스트: no-Supabase retrieval metadata, destructive command evidenceCard filtering, deprecation replacement non-circular guard 추가
 
 ### Completed (2026-04-26 #194)
 - [x] AI retrieval refactor Task 8 deterministic validation 완료

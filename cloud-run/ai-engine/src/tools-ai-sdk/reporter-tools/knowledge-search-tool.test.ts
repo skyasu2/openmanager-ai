@@ -95,6 +95,15 @@ describe('searchKnowledgeBase', () => {
       results: [],
       totalFound: 0,
       _source: 'Fallback (No Supabase)',
+      evidenceCards: [],
+      retrieval: {
+        retrievalEnabled: true,
+        retrievalUsed: false,
+        retrievalMode: 'lite',
+        suppressedReason: 'unavailable',
+        evidenceCount: 0,
+        webUsed: false,
+      },
     });
     expect(result.systemMessage).toContain('Supabase 데이터베이스 연결 실패');
     expect(mockEmbedText).not.toHaveBeenCalled();
@@ -172,6 +181,55 @@ describe('searchKnowledgeBase', () => {
     expect(mockEmbedText).not.toHaveBeenCalled();
     expect(mockSearchWithEmbedding).not.toHaveBeenCalled();
     expect(mockEnhanceWithWebSearch).not.toHaveBeenCalled();
+  });
+
+  it('keeps evidenceCards aligned with rebalance-filtered results', async () => {
+    mockGetSupabaseClient.mockResolvedValue({} as never);
+    mockRetrieveKnowledgeEvidence.mockResolvedValue({
+      success: true,
+      _source: 'Knowledge Retrieval Lite',
+      totalFound: 2,
+      metadata: {
+        retrievalEnabled: true,
+        retrievalUsed: true,
+        retrievalMode: 'lite',
+        evidenceCount: 2,
+        webUsed: false,
+      },
+      evidenceCards: [
+        {
+          id: 'kb-safe',
+          title: 'Redis OOM 대응 가이드',
+          summary: '메모리 사용률 임계치 초과 시 eviction 정책을 확인합니다.',
+          score: 0.91,
+          sourceType: 'runbook',
+          category: 'troubleshooting',
+        },
+        {
+          id: 'kb-destructive',
+          title: 'docker system prune',
+          summary: '전체 Docker 캐시와 미사용 리소스를 삭제합니다.',
+          score: 0.89,
+          sourceType: 'runbook',
+          category: 'command',
+        },
+      ],
+    });
+
+    const result = await searchKnowledgeBase.execute({
+      query: 'Redis OOM 원인 분석',
+      category: 'incident',
+    });
+
+    expect(result.results).toHaveLength(1);
+    expect(result.evidenceCards).toHaveLength(1);
+    expect(result.totalFound).toBe(1);
+    expect(result.retrieval?.evidenceCount).toBe(1);
+    expect(result.results[0]?.id).toBe('kb-safe');
+    expect(result.evidenceCards?.[0]?.id).toBe('kb-safe');
+    expect(result.evidenceCards?.some((card) => card.id === 'kb-destructive')).toBe(
+      false
+    );
   });
 
   it('returns error fallback when Knowledge Retrieval Lite is unavailable', async () => {
