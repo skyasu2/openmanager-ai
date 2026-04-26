@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-26 KST (`Knowledge Retrieval Lite adapter implemented`)
+**Last Updated**: 2026-04-26 KST (`Custom GraphRAG runtime removed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -23,7 +23,7 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
-| AI assistant retrieval and multi-agent runtime refactor | High | **Approved / Task 2·4 완료 / Task 3 대기** — Cloud Run `cloud-run/ai-engine` backend 제약을 전제로, Cerebras Qwen primary 경로 + `llama3.1-8b` intra-fallback/model-aware quota, Retrieval contract 타입, 18대 서버 topology contract, Knowledge Retrieval Lite service, `searchKnowledgeBase` Lite adapter를 반영했다. 다음 단계는 custom GraphRAG runtime 제거다. Mistral은 text fallback으로 유지하되 RAG runtime 의존을 제거하며 custom GraphRAG를 Knowledge Retrieval Lite로 대체한다. 상세: [ai-assistant-retrieval-multi-agent-refactor-plan.md](ai-assistant-retrieval-multi-agent-refactor-plan.md) |
+| AI assistant retrieval and multi-agent runtime refactor | High | **Approved / Task 2·3·4 완료 / Task 5 대기** — Cloud Run `cloud-run/ai-engine` backend 제약을 전제로, Cerebras Qwen primary 경로 + `llama3.1-8b` intra-fallback/model-aware quota, Retrieval contract 타입, 18대 서버 topology contract, Knowledge Retrieval Lite service, `searchKnowledgeBase` Lite adapter, custom GraphRAG runtime 제거를 반영했다. 다음 단계는 agent별 provider/tool/evidence budget을 SSOT로 묶는 multi-agent runtime policy 정리다. Mistral은 text fallback으로 유지하되 RAG runtime 의존은 제거했다. 상세: [ai-assistant-retrieval-multi-agent-refactor-plan.md](ai-assistant-retrieval-multi-agent-refactor-plan.md) |
 | ~~AI Response Visibility & Rate Limit (Phase 1~5)~~ | — | **완료** — archive 이동. write bucket 재평가 결과 `supervisor 10/min`, `jobs/process 5/min`, `daily 100` 유지 결정 로그는 archived plan에 유지. |
 | ~~AI Stream Route Contract - residual cleanup~~ | — | **완료** — archive 이동. |
 | ~~OTel 토폴로지 개선~~ | — | **완료** — archive 이동: [archive/otel-topology-improvement-plan.md](archive/otel-topology-improvement-plan.md). |
@@ -31,6 +31,20 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-26 #187)
+- [x] custom GraphRAG runtime 제거
+  - `/graphrag/extract`, `/graphrag/stats`, `/graphrag/related/:nodeId`를 호환 410 응답으로 고정해 legacy client에는 명시적 replacement를 반환
+  - `graphrag-service.ts`, `graphrag-graph.ts`, `graphrag-types.ts` 및 관련 service test를 삭제해 request path에서 graph traversal/RPC 호출 경로 제거
+  - topology direct KB path에서 `useGraphRAG: true` 강제 플래그를 제거하고 Knowledge Retrieval Lite direct path만 사용하도록 계약 테스트 추가
+  - `searchKnowledgeBase` tool 설명을 Knowledge Retrieval Lite 기준으로 정리하고 stale graph service mock 제거
+  - 검증:
+    - `cd cloud-run/ai-engine && npm run test -- src/routes/graphrag.test.ts src/lib/graphrag-runtime-removal.test.ts src/services/ai-sdk/agents/orchestrator-routing.test.ts src/tools-ai-sdk/reporter-tools.test.ts src/tools-ai-sdk/reporter-tools/knowledge-search-tool.test.ts`
+    - `cd cloud-run/ai-engine && npm run type-check`
+    - `cd cloud-run/ai-engine && npm run test` (`79 files / 850 tests`)
+    - `npm run test:contract`
+    - `npx markdownlint-cli2 "reports/planning/TODO.md" "reports/planning/ai-assistant-retrieval-multi-agent-refactor-plan.md"`
+    - `git diff --check`
 
 ### Completed (2026-04-26 #186)
 - [x] Knowledge Retrieval Lite service + `searchKnowledgeBase` adapter 도입

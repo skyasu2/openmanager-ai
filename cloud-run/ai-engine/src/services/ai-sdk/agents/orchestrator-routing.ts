@@ -344,7 +344,6 @@ export async function executeForcedRouting(
         const directSearchResult = await directSearchTool.execute({
           query,
           category: 'architecture',
-          useGraphRAG: true,
           fastMode: true,
           includeWebSearch: false,
         });

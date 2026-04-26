@@ -47,14 +47,10 @@ vi.mock('@supabase/supabase-js', () => ({
   createClient: vi.fn(() => ({ rpc: vi.fn() })),
 }));
 
-// Mock embedding/rag functions (used by knowledge tool, not web-search, but needed for barrel import)
+// Mock embedding functions used by knowledge tool imports.
 vi.mock('../lib/embedding', () => ({
   searchWithEmbedding: vi.fn().mockResolvedValue({ success: false, results: [] }),
   embedText: vi.fn().mockResolvedValue([]),
-}));
-
-vi.mock('../lib/graphrag-service', () => ({
-  hybridGraphSearch: vi.fn().mockResolvedValue([]),
 }));
 
 vi.mock('../lib/config-parser', () => ({

@@ -250,7 +250,7 @@ export const toolDescriptions: Record<string, string> = {
   detectAnomaliesAllServers: '전체 서버 이상치 스캔 (장애보고서용)',
   predictTrends: '단기 위험 추세 계산',
   analyzePattern: '패턴 분석',
-  searchKnowledgeBase: '과거 장애 이력 및 해결 방법 검색 (GraphRAG)',
+  searchKnowledgeBase: '내부 운영 지식/장애 이력 검색 (Knowledge Retrieval Lite)',
   recommendCommands: 'CLI 명령어 추천',
   searchWeb: '실시간 웹 검색 (Tavily) - 최신 기술 정보, 보안 이슈',
   // Incident Evaluation

@@ -496,7 +496,7 @@ interface ProviderModelPolicy {
 - [ ] RAG off: `searchKnowledgeBase` 또는 retrieval tool이 active tools에서 제거된다.
 - [x] RAG on: Knowledge Retrieval Lite는 실행되지만 `mistral-embed`를 호출하지 않는다.
 - [x] RAG on: `traverse_knowledge_graph` RPC를 호출하지 않는다.
-- [ ] topology/direct KB path: `useGraphRAG: true` 없이 deterministic evidence response를 만든다.
+- [x] topology/direct KB path: `useGraphRAG: true` 없이 deterministic evidence response를 만든다.
 - [x] Web on: Tavily는 Web policy 경로에서만 호출되고 RAG 내부 fallback으로 호출되지 않는다.
 - [x] Web off: retrieval 결과 부족 시에도 Tavily를 호출하지 않는다.
 - [ ] 심층 분석: `analysisMode='thinking'`은 deep routing metadata를 남기지만 provider-native reasoning으로 표시하지 않는다.
@@ -538,8 +538,9 @@ interface ProviderModelPolicy {
 - [x] Task 2 - Knowledge Retrieval Lite service 도입
   - 완료 기준: BM25/text search + metadata boost 기반 retrieval service를 추가하고 Mistral embedding 및 Cloud Run request-path index 생성 없이 동작한다.
   - 완료 기록(2026-04-26): `retrieveKnowledgeEvidence`를 추가해 `search_knowledge_text` RPC 기반 BM25 검색과 tag/metadata boost re-ranking을 구현했다. Supabase unavailable/no-results/error metadata를 명시하고, live provider key나 external embedding 호출 없이 deterministic unit contract로 검증했다.
-- [ ] Task 3 - custom GraphRAG runtime 제거
+- [x] Task 3 - custom GraphRAG runtime 제거
   - 완료 기준: 일반 runtime에서 `graphrag-service`, `graphrag-graph`, `traverse_knowledge_graph`, `useGraphRAG` 경로를 호출하지 않는다.
+  - 완료 기록(2026-04-26): `/graphrag/*` legacy route를 410 호환 응답으로 정리하고, `graphrag-service.ts`, `graphrag-graph.ts`, `graphrag-types.ts`와 관련 service test를 삭제했다. topology direct KB path의 `useGraphRAG: true` 강제 플래그를 제거해 Knowledge Retrieval Lite direct path만 사용하도록 고정했다.
 - [x] Task 4 - `searchKnowledgeBase`를 retrieval lite adapter로 교체
   - 완료 기준: tool 이름 호환은 유지하되 내부 구현은 `retrieveKnowledgeEvidence`를 사용한다.
   - 완료 기록(2026-04-26): `searchKnowledgeBase` tool은 이름과 legacy boolean input 호환을 유지하면서 내부 GraphRAG/vector/Tavily fallback 경로를 제거하고 `retrieveKnowledgeEvidence` adapter로 교체했다. `useGraphRAG`, `fastMode`, `includeWebSearch`는 호환 입력으로만 유지하며 Lite retrieval에서는 graph/web fallback을 호출하지 않는다.
