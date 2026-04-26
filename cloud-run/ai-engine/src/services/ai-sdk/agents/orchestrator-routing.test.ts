@@ -4,13 +4,11 @@ const { mockStepCountIs } = vi.hoisted(() => ({
   mockStepCountIs: vi.fn(() => () => false),
 }));
 
-const {
-  mockGenerateTextWithRetry,
-  mockSearchKnowledgeBaseExecute,
-} = vi.hoisted(() => ({
-  mockGenerateTextWithRetry: vi.fn(),
-  mockSearchKnowledgeBaseExecute: vi.fn(),
-}));
+const { mockGenerateTextWithRetry, mockSearchKnowledgeBaseExecute } =
+  vi.hoisted(() => ({
+    mockGenerateTextWithRetry: vi.fn(),
+    mockSearchKnowledgeBaseExecute: vi.fn(),
+  }));
 
 vi.mock('ai', () => ({
   generateText: vi.fn(),
@@ -78,7 +76,7 @@ vi.mock('./config', () => ({
             },
             getModel: vi.fn(() => ({ provider: 'cerebras' })),
           }
-      : undefined,
+        : undefined,
 }));
 
 vi.mock('./config/agent-model-selectors', () => ({
@@ -149,7 +147,11 @@ function createRetryResult(options: {
   }>;
   steps?: Array<{
     toolCalls?: Array<{ toolName: string }>;
-    toolResults?: Array<{ toolName: string; result?: unknown; output?: unknown }>;
+    toolResults?: Array<{
+      toolName: string;
+      result?: unknown;
+      output?: unknown;
+    }>;
   }>;
 }) {
   return {
@@ -204,9 +206,27 @@ describe('executeForcedRouting', () => {
                 toolName: 'getServerMetrics',
                 result: {
                   servers: [
-                    { id: 'web-01', status: 'online', cpu: 32, memory: 48, disk: 28 },
-                    { id: 'api-01', status: 'warning', cpu: 71, memory: 78, disk: 36 },
-                    { id: 'db-01', status: 'online', cpu: 40, memory: 56, disk: 42 },
+                    {
+                      id: 'web-01',
+                      status: 'online',
+                      cpu: 32,
+                      memory: 48,
+                      disk: 28,
+                    },
+                    {
+                      id: 'api-01',
+                      status: 'warning',
+                      cpu: 71,
+                      memory: 78,
+                      disk: 36,
+                    },
+                    {
+                      id: 'db-01',
+                      status: 'online',
+                      cpu: 40,
+                      memory: 56,
+                      disk: 42,
+                    },
                   ],
                   alertServers: [
                     {
@@ -251,9 +271,27 @@ describe('executeForcedRouting', () => {
                 toolName: 'getServerMetrics',
                 result: {
                   servers: [
-                    { id: 'web-01', status: 'online', cpu: 32, memory: 48, disk: 28 },
-                    { id: 'api-01', status: 'warning', cpu: 71, memory: 78, disk: 36 },
-                    { id: 'db-01', status: 'online', cpu: 40, memory: 56, disk: 42 },
+                    {
+                      id: 'web-01',
+                      status: 'online',
+                      cpu: 32,
+                      memory: 48,
+                      disk: 28,
+                    },
+                    {
+                      id: 'api-01',
+                      status: 'warning',
+                      cpu: 71,
+                      memory: 78,
+                      disk: 36,
+                    },
+                    {
+                      id: 'db-01',
+                      status: 'online',
+                      cpu: 40,
+                      memory: 56,
+                      disk: 42,
+                    },
                   ],
                 },
               },
@@ -306,7 +344,13 @@ describe('executeForcedRouting', () => {
                   toolName: 'getServerMetrics',
                   result: {
                     servers: [
-                      { id: 'api-01', status: 'warning', cpu: 88, memory: 62, disk: 40 },
+                      {
+                        id: 'api-01',
+                        status: 'warning',
+                        cpu: 88,
+                        memory: 62,
+                        disk: 40,
+                      },
                     ],
                   },
                 },
@@ -395,7 +439,7 @@ describe('executeForcedRouting', () => {
       true,
       undefined,
       undefined,
-      '이전 분석: api-01 CPU 급등, 원인 미확정',
+      '이전 분석: api-01 CPU 급등, 원인 미확정'
     );
 
     const firstCall = mockGenerateTextWithRetry.mock.calls[0]?.[0];
@@ -415,7 +459,7 @@ describe('executeForcedRouting', () => {
       'Advisor Agent',
       Date.now(),
       true,
-      true,
+      true
     );
 
     const firstCall = mockGenerateTextWithRetry.mock.calls[0]?.[0];
@@ -454,7 +498,7 @@ describe('executeForcedRouting', () => {
       'Advisor Agent',
       Date.now(),
       true,
-      true,
+      true
     );
 
     expect(result?.success).toBe(true);
@@ -463,18 +507,41 @@ describe('executeForcedRouting', () => {
     expect(result?.response).toContain('해결/권장 조치');
     expect(result?.response).toContain('`getServerMetrics`');
     expect(mockGenerateTextWithRetry).not.toHaveBeenCalled();
+    expect(mockSearchKnowledgeBaseExecute).toHaveBeenCalledWith(
+      expect.not.objectContaining({ useGraphRAG: true })
+    );
   });
 });
 
 describe('provider order policy', () => {
   it('uses Groq-first order for text agents and default routing', () => {
-    expect(getAgentProviderOrder('NLQ Agent')).toEqual(['groq', 'cerebras', 'mistral']);
-    expect(getAgentProviderOrder('Analyst Agent')).toEqual(['groq', 'cerebras', 'mistral']);
-    expect(getAgentProviderOrder('Reporter Agent')).toEqual(['groq', 'cerebras', 'mistral']);
-    expect(getAgentProviderOrder('Unknown Agent')).toEqual(['groq', 'cerebras', 'mistral']);
+    expect(getAgentProviderOrder('NLQ Agent')).toEqual([
+      'groq',
+      'cerebras',
+      'mistral',
+    ]);
+    expect(getAgentProviderOrder('Analyst Agent')).toEqual([
+      'groq',
+      'cerebras',
+      'mistral',
+    ]);
+    expect(getAgentProviderOrder('Reporter Agent')).toEqual([
+      'groq',
+      'cerebras',
+      'mistral',
+    ]);
+    expect(getAgentProviderOrder('Unknown Agent')).toEqual([
+      'groq',
+      'cerebras',
+      'mistral',
+    ]);
   });
 
   it('keeps Orchestrator structured-output provider order as documented', () => {
-    expect(ORCHESTRATOR_PROVIDER_ORDER).toEqual(['cerebras', 'groq', 'mistral']);
+    expect(ORCHESTRATOR_PROVIDER_ORDER).toEqual([
+      'cerebras',
+      'groq',
+      'mistral',
+    ]);
   });
 });
