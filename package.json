@@ -195,7 +195,7 @@
     "sync:github:dry-run": "bash scripts/sync/github-sync.sh --dry-run",
     "test": "npm run test:node && npm run test:dom",
     "test:ci": "vitest run --config config/testing/vitest.config.ci.ts",
-    "test:cloud-contract": "node scripts/dev/vitest-main-wrapper.js run --config config/testing/vitest.config.main.ts tests/api/cloud-run-contract.test.ts",
+    "test:cloud-contract": "node scripts/dev/vitest-main-wrapper.js run --config config/testing/vitest.config.cloud-contract.ts",
     "test:cloud:essential": "NODE_OPTIONS=--dns-result-order=ipv4first node scripts/test/cloud-deploy-essential-smoke.mjs",
     "test:cloud:essential:llm-once": "NODE_OPTIONS=--dns-result-order=ipv4first node scripts/test/cloud-deploy-essential-smoke.mjs --require-auth --with-supervisor-call",
     "test:cloud:essential:strict": "NODE_OPTIONS=--dns-result-order=ipv4first node scripts/test/cloud-deploy-essential-smoke.mjs --require-auth",

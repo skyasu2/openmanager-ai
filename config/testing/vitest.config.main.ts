@@ -50,6 +50,7 @@ export default defineConfig({
       '.next/**',
       'out/**',
       'cloud-run/**', // ✅ Cloud Run AI 엔진 (별도 테스트 스위트)
+      'tests/api/cloud-run-contract.test.ts', // 실제 Cloud Run 호출: MSW 없는 test:cloud-contract 전용
       'tests/archive/**', // ✅ 아카이브된 테스트 제외 (jsdom 한계로 개선 불가능)
       'tests/e2e/**', // ✅ E2E 테스트 제외 (Playwright 전용)
       'tests/manual/**', // ✅ 수동 검증 테스트 제외

@@ -7,6 +7,7 @@
  * - 인증 거부 테스트
  * - CLOUD_RUN_AI_URL 미설정 시 자동 skip
  * - Supervisor 절대 호출하지 않음 (무료 티어 보호)
+ * - 반드시 npm run test:cloud-contract 전용 설정으로 실행 (MSW 미사용)
  */
 import { beforeAll, describe, expect, it } from 'vitest';
 import * as z from 'zod';
