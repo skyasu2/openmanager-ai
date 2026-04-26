@@ -24,18 +24,51 @@ const {
   mockFinalizeTrace: vi.fn(),
 }));
 
-// Mock model-provider before imports
-vi.mock('../model-provider', () => ({
-  checkProviderStatus: vi.fn(() => ({
+const {
+  mockCheckProviderStatus,
+  mockGetCerebrasModel,
+  mockGetGroqModel,
+  mockGetMistralModel,
+  mockGetGeminiFlashLiteModel,
+  mockGetOpenRouterVisionModel,
+  mockGetCerebrasModelId,
+  mockGetCerebrasFallbackModelIds,
+} = vi.hoisted(() => ({
+  mockCheckProviderStatus: vi.fn(() => ({
     cerebras: true,
     groq: true,
     mistral: true,
     gemini: true,
+    openrouter: true,
   })),
-  getCerebrasModel: vi.fn(() => ({ modelId: 'gpt-oss-120b' })),
-  getGroqModel: vi.fn(() => ({ modelId: 'meta-llama/llama-4-scout-17b-16e-instruct' })),
-  getMistralModel: vi.fn(() => ({ modelId: 'mistral-large-3-25-12' })),
-  getGeminiFlashLiteModel: vi.fn(() => ({ modelId: 'gemini-2.5-flash-lite' })),
+  mockGetCerebrasModel: vi.fn((modelId: string) => ({
+    provider: 'cerebras',
+    modelId,
+  })),
+  mockGetGroqModel: vi.fn((modelId: string) => ({ provider: 'groq', modelId })),
+  mockGetMistralModel: vi.fn((modelId: string) => ({
+    provider: 'mistral',
+    modelId,
+  })),
+  mockGetGeminiFlashLiteModel: vi.fn((modelId: string) => ({
+    provider: 'gemini',
+    modelId,
+  })),
+  mockGetOpenRouterVisionModel: vi.fn((modelId: string) => ({
+    provider: 'openrouter',
+    modelId,
+  })),
+  mockGetCerebrasModelId: vi.fn(() => 'qwen-3-235b-a22b-instruct-2507'),
+  mockGetCerebrasFallbackModelIds: vi.fn(() => ['llama3.1-8b']),
+}));
+
+// Mock model-provider before imports
+vi.mock('../model-provider', () => ({
+  checkProviderStatus: mockCheckProviderStatus,
+  getCerebrasModel: mockGetCerebrasModel,
+  getGroqModel: mockGetGroqModel,
+  getMistralModel: mockGetMistralModel,
+  getGeminiFlashLiteModel: mockGetGeminiFlashLiteModel,
   getVisionAgentModel: vi.fn(() => ({
     model: { modelId: 'gemini-2.5-flash-lite' },
     provider: 'gemini',
@@ -43,6 +76,31 @@ vi.mock('../model-provider', () => ({
   })),
   logProviderStatus: vi.fn(),
 }));
+
+vi.mock('../model-provider-core', () => ({
+  getCerebrasModel: mockGetCerebrasModel,
+  getGeminiFlashLiteModel: mockGetGeminiFlashLiteModel,
+  getGroqModel: mockGetGroqModel,
+  getMistralModel: mockGetMistralModel,
+  getOpenRouterVisionModel: mockGetOpenRouterVisionModel,
+}));
+
+vi.mock('../model-provider-status', () => ({
+  checkProviderStatus: mockCheckProviderStatus,
+}));
+
+vi.mock('../../../lib/config-parser', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../../lib/config-parser')>();
+  return {
+    ...actual,
+    getCerebrasModelId: mockGetCerebrasModelId,
+    getCerebrasFallbackModelIds: mockGetCerebrasFallbackModelIds,
+    getGroqModelId: vi.fn(() => 'meta-llama/llama-4-scout-17b-16e-instruct'),
+    getOpenRouterVisionModelId: vi.fn(() => 'google/gemma-3-27b-it:free'),
+    isCerebrasToolCallingEnabled: vi.fn(() => true),
+    isOpenRouterVisionToolCallingEnabled: vi.fn(() => true),
+  };
+});
 
 // Avoid external Upstash network calls in orchestrator tests.
 vi.mock('../../../lib/redis-client', async (importOriginal) => {
