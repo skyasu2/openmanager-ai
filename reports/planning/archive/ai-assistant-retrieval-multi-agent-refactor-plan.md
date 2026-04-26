@@ -1,11 +1,11 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-04-26
 
 # AI Assistant Retrieval and Multi-Agent Runtime Refactor Plan
 
-- 상태: Approved
+- 상태: Completed
 - 작성일: 2026-04-26
 - TODO.md 연결: Backlog > AI assistant retrieval and multi-agent runtime refactor
 

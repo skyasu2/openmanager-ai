@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-27 KST (`AI sidebar tool/UX release QA complete`)
+**Last Updated**: 2026-04-27 KST (`계획서 마무리 — retrieval/sidebar 계획서 archive 이동 완료`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -23,7 +23,7 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
-| AI assistant retrieval and multi-agent runtime refactor | High | **Approved / Task 2·3·4·5·5A·6·6A·7·7B·8 완료** — Cloud Run `cloud-run/ai-engine` backend 제약을 전제로, Cerebras Qwen primary 경로 + `llama3.1-8b` intra-fallback/model-aware quota, Retrieval contract 타입, 18대 서버 topology contract, Knowledge Retrieval Lite service, `searchKnowledgeBase` Lite adapter, custom GraphRAG runtime 제거, agent별 provider/tool/evidence budget SSOT, provider model policy SSOT, frontend retrieval status contract, legacy compatibility boundary registry, active docs/data stale 정리, deterministic query fallback과 검증 기록을 반영했다. Mistral은 text fallback으로 유지하되 RAG runtime 의존은 제거했다. Qwen forced tool-call final text fallback, stale docs 재도입 방지 guard, topology/RAG boundary guard는 후속 테스트로 고정했다. 상세: [ai-assistant-retrieval-multi-agent-refactor-plan.md](ai-assistant-retrieval-multi-agent-refactor-plan.md) |
+| ~~AI assistant retrieval and multi-agent runtime refactor~~ | — | **완료** — archive 이동. Task 0~8 전체 완료. Knowledge Retrieval Lite 도입, GraphRAG 제거, provider model policy SSOT, 18대 서버 topology contract, frontend retrieval status contract 모두 반영. 상세: [archive/ai-assistant-retrieval-multi-agent-refactor-plan.md](archive/ai-assistant-retrieval-multi-agent-refactor-plan.md) |
 | ~~AI Response Visibility & Rate Limit (Phase 1~5)~~ | — | **완료** — archive 이동. write bucket 재평가 결과 `supervisor 10/min`, `jobs/process 5/min`, `daily 100` 유지 결정 로그는 archived plan에 유지. |
 | ~~AI Stream Route Contract - residual cleanup~~ | — | **완료** — archive 이동. |
 | ~~OTel 토폴로지 개선~~ | — | **완료** — archive 이동: [archive/otel-topology-improvement-plan.md](archive/otel-topology-improvement-plan.md). |
@@ -31,6 +31,12 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-27 #204)
+- [x] 작업 계획서 마무리 처리
+  - `ai-assistant-retrieval-multi-agent-refactor-plan.md`: Status `Approved` → `Completed` 변경 후 `archive/` 이동
+  - `ai-sidebar-tool-ux-simplification-plan.md`: `archive/` 이동
+  - TODO.md Backlog의 retrieval refactor 항목 완료(~~취소선~~) 처리
 
 ### Completed (2026-04-27 #203)
 - [x] AI sidebar tool/UX simplification release QA 완료
