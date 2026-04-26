@@ -21,7 +21,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     basis: {
-      dataSource: '15개 서버 실시간 OTel 메트릭',
+      dataSource: '18개 서버 실시간 OTel 메트릭',
       engine: 'Cloud Run AI (Gemini 2.5 Flash)',
       serverCount: 15,
       timeRange: '최근 1시간',
@@ -32,7 +32,7 @@ export const Default: Story = {
 export const WithRAG: Story = {
   args: {
     basis: {
-      dataSource: '15개 서버 실시간 데이터',
+      dataSource: '18개 서버 실시간 데이터',
       engine: 'Cloud Run AI (Gemini 2.5 Flash)',
       ragUsed: true,
       serverCount: 15,

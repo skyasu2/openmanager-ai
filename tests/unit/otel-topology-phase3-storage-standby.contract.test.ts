@@ -57,7 +57,7 @@ describe('OTel topology Phase 3-C AZ2 NFS standby contract', () => {
     expect(entry?.['host.memory.size']).toBe(17_179_869_184);
     expect(entry?.['host.disk.size']).toBe(5_368_709_120_000);
     expect(entry?.['server.purpose']).toBe('hot-standby');
-    expect(entry?.['server.notes']).toBe('nfs failover target');
+    expect(entry?.['server.notes']).toBe('nfs secondary node');
     expect(getServerIP(STORAGE_ID)).toBe('10.100.1.52');
   });
 

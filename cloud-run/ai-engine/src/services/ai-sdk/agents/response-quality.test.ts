@@ -54,7 +54,7 @@ describe('evaluateAgentResponseQuality', () => {
     const result = evaluateAgentResponseQuality(
       'NLQ Agent',
       [
-        '서버 현황 요약: 전체 15대 모두 정상입니다.',
+        '서버 현황 요약: 전체 18대 모두 정상입니다.',
         'CPU: 52%, 메모리: 48%, 디스크: 41%, 네트워크: 22%',
         '권고: 현재 임계값을 유지하면서 추세만 확인하고, 변화가 10% 이상 커질 때만 재점검하세요.',
       ].join('\n'),

@@ -121,7 +121,7 @@ curl -H "X-API-Key: $CLOUD_RUN_API_SECRET" \
       "name": "supervisor-execution",
       "sessionId": "sess-456",
       "inputPreview": "서버 상태 요약해줘...",
-      "outputPreview": "현재 15대 서버 중...",
+      "outputPreview": "현재 18대 서버 중...",
       "createdAt": "2026-02-13T10:00:00Z"
     }
   ],

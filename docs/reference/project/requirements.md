@@ -18,7 +18,7 @@
 | 목적 | 개인 포트폴리오 + 바이브 코딩 학습 |
 | 운영 비용 | Vercel Pro 고정비를 제외한 가변 운영비 ₩0. 개발/설계 시 활용하는 AI 코딩 도구 비용은 별도 |
 | 개발 인력 | 1인 |
-| 데이터 | 시뮬레이션 (Korean DC 15대 가상 서버) |
+| 데이터 | 시뮬레이션 (OnPrem DC1 18대 관측 서버) |
 | 핵심 가치 | "대화로 서버를 모니터링한다" |
 
 ---
@@ -29,8 +29,8 @@
 
 | 항목 | 내용 |
 |------|------|
-| 설명 | 15대 서버의 CPU, Memory, Disk, Network 등 10개 메트릭을 실시간 대시보드에 표시 |
-| 수용 기준 | 15대 ServerCard 정상 렌더링, 1초 폴링 갱신, 장애 서버 시각적 구분 |
+| 설명 | 18대 서버의 CPU, Memory, Disk, Network 등 10개 메트릭을 실시간 대시보드에 표시 |
+| 수용 기준 | 18대 ServerCard 정상 렌더링, 1초 폴링 갱신, 장애 서버 시각적 구분 |
 | 구현 | `src/components/dashboard/`, `src/services/metrics/MetricsProvider.ts` |
 
 ### FR-002: AI 자연어 분석 (NLQ)

@@ -727,4 +727,4 @@ interface ServerConfig {
 ---
 
 *Last Updated: 2026-02-12*
-*코드베이스 기준: v8.0.0, OTel dataset 기반 (15 servers, PRNG-based)*
+*코드베이스 기준: v8.0.0, OTel dataset 기반 (18 servers, PRNG-based)*

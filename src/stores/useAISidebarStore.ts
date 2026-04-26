@@ -33,7 +33,7 @@ export interface AgentLog {
  * AI 응답의 투명성을 위해 분석 근거 정보를 제공
  */
 export interface AnalysisBasis {
-  /** 데이터 소스 설명 (예: "15개 서버 실시간 데이터") */
+  /** 데이터 소스 설명 (예: "18개 서버 실시간 데이터") */
   dataSource: string;
   /** AI 엔진 (예: "Cloud Run AI", "Fallback", "Streaming") */
   engine: string;

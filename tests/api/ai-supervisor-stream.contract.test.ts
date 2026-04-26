@@ -164,10 +164,10 @@ describe('AI Supervisor Stream v2 Contract', () => {
       },
       {
         type: 'tool_result',
-        data: { name: 'getServerMetrics', result: '15 servers' },
+        data: { name: 'getServerMetrics', result: '18 servers' },
       },
       { type: 'text_delta', data: '서버 현황: ' },
-      { type: 'text_delta', data: '15대 정상' },
+      { type: 'text_delta', data: '18대 정상' },
       { type: 'step_finish', data: { agent: 'nlq-agent', stepIndex: 0 } },
       { type: 'done', data: { success: true, finalAgent: 'NLQ Agent' } },
     ];
@@ -224,7 +224,7 @@ describe('AI Supervisor Stream v2 Contract', () => {
       .filter((e) => e.type === 'text_delta')
       .map((e) => String(e.data))
       .join('');
-    expect(text).toBe('서버 현황: 15대 정상');
+    expect(text).toBe('서버 현황: 18대 정상');
 
     // 마지막 이벤트는 done
     expect(parsedEvents.at(-1)?.type).toBe('done');

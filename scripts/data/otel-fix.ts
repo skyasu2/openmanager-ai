@@ -2,10 +2,10 @@
  * OTel Data Quality Fix Script
  *
  * 24개 hourly JSON + timeseries.json 일괄 변환.
- * P1/P2: 인과관계 기반 24시간 장애 시나리오 (5 stories, 메트릭-로그 일치)
+ * P1/P2: 인과관계 기반 24시간 관측 패턴 (5 stories, 메트릭-로그 일치)
  * C2, C4, W1-W3, W8, I1-I3: 기존 데이터 품질 수정
  *
- * Usage: npx tsx scripts/data/otel-fix.ts
+ * Usage: npm run data:fix
  */
 
 import * as fs from 'node:fs';
@@ -89,7 +89,7 @@ function processTimeseries(transform: (data: TimeSeries) => TimeSeries): void {
 }
 
 // ============================================================================
-// Scenario System: 인과관계 기반 24시간 장애 시나리오
+// Observation Pattern System: 인과관계 기반 24시간 관측 데이터
 // ============================================================================
 
 type ServerMetricOverride = {
@@ -99,13 +99,13 @@ type ServerMetricOverride = {
   network?: number; // 0-1 ratio (bytes 변환은 adjustMetricsForScenario에서)
 };
 
-const REDIS_CROSS_AZ_RESPONSE_SERIES: Record<number, number[]> = {
+const CACHE_LATENCY_RESPONSE_SERIES: Record<number, number[]> = {
   13: [0.31, 0.35, 0.39, 0.42, 0.38, 0.34],
   14: [0.44, 0.48, 0.52, 0.56, 0.50, 0.46],
   15: [0.36, 0.39, 0.41, 0.43, 0.40, 0.37],
 };
 
-const NFS_SPOF_STORAGE_SERIES: Record<
+const STORAGE_IO_PRESSURE_SERIES: Record<
   number,
   { disk: number[]; cpu: number[] }
 > = {
@@ -123,7 +123,7 @@ const NFS_SPOF_STORAGE_SERIES: Record<
   },
 };
 
-const NFS_SPOF_WAS_RESPONSE_SERIES: Record<number, Record<string, number[]>> = {
+const STORAGE_IO_WAS_RESPONSE_SERIES: Record<number, Record<string, number[]>> = {
   2: {
     'api-was-dc1-01': [0.41, 0.45, 0.49, 0.53, 0.57, 0.54],
     'api-was-dc1-02': [0.38, 0.42, 0.46, 0.5, 0.54, 0.51],
@@ -565,7 +565,7 @@ function getLogSource(category: string): string {
 }
 
 // ============================================================================
-// P1: 시나리오 기반 메트릭 조정 (C2/I3 이후 실행, 최종 메트릭 권한)
+// P1: 관측 패턴 기반 메트릭 조정 (C2/I3 이후 실행, 최종 메트릭 권한)
 // ============================================================================
 
 function adjustMetricsForScenario(data: HourlyFile, hour: number): HourlyFile {
@@ -607,7 +607,7 @@ function adjustMetricsForScenario(data: HourlyFile, hour: number): HourlyFile {
           touchedScenarioServers.add(serverId);
           dp.asDouble = serializeScenarioMetricValue(metricKey, nextValue);
         } else {
-          // 비시나리오 서버: 건강 범위 보장 (warning 미만)
+          // 비관측 대상 서버: 건강 범위 보장 (warning 미만)
           const maxHealthy = metricKey === 'network' ? 0.60 : 0.72;
 
           if (currentRatio > maxHealthy) {
@@ -645,11 +645,11 @@ function adjustMetricsForScenario(data: HourlyFile, hour: number): HourlyFile {
   return data;
 }
 
-function applyRedisCrossAzLatencyScenario(
+function applyRedisLatencyObservation(
   data: HourlyFile,
   hour: number
 ): HourlyFile {
-  const responseSeries = REDIS_CROSS_AZ_RESPONSE_SERIES[hour];
+  const responseSeries = CACHE_LATENCY_RESPONSE_SERIES[hour];
   if (!responseSeries) return data;
 
   for (let slotIdx = 0; slotIdx < data.slots.length; slotIdx++) {
@@ -673,7 +673,9 @@ function applyRedisCrossAzLatencyScenario(
         !(
           (log.resource === 'api-was-dc1-03' ||
             log.resource === 'cache-redis-dc1-01') &&
-          /remote az cache/i.test(log.body)
+          /remote az cache|cache read latency|latency-monitor|slowlog threshold exceeded/i.test(
+            log.body
+          )
         )
     );
 
@@ -685,7 +687,7 @@ function applyRedisCrossAzLatencyScenario(
         timeUnixNano: Math.min(baseTime, slot.endTimeUnixNano - 2),
         severityNumber: 13,
         severityText: 'WARN',
-        body: `java[${3000 + hour * 100 + slotIdx}]: [WARN] Remote AZ cache access detected: cache-redis-dc1-01 (AZ1) latency ${latencyMs}ms`,
+        body: `java[${3000 + hour * 100 + slotIdx}]: [WARN] cache read latency p95 ${latencyMs}ms, retry_count=${3 + slotIdx}`,
         attributes: { 'log.source': 'java' },
         resource: 'api-was-dc1-03',
       },
@@ -693,7 +695,15 @@ function applyRedisCrossAzLatencyScenario(
         timeUnixNano: Math.min(baseTime + 30_000_000_000, slot.endTimeUnixNano - 1),
         severityNumber: 13,
         severityText: 'WARN',
-        body: `redis-server[${5000 + hour * 100 + slotIdx}]: WARNING: Remote AZ cache client api-was-dc1-03 observed, round-trip ${latencyMs + 120}ms`,
+        body: `redis-server[${5000 + hour * 100 + slotIdx}]: WARNING: latency-monitor command=GET p95=${latencyMs + 120}ms clients=${42 + slotIdx * 3}`,
+        attributes: { 'log.source': 'redis' },
+        resource: 'cache-redis-dc1-01',
+      },
+      {
+        timeUnixNano: Math.min(baseTime + 45_000_000_000, slot.endTimeUnixNano - 1),
+        severityNumber: 17,
+        severityText: 'ERROR',
+        body: `redis-server[${5200 + hour * 100 + slotIdx}]: ERROR: slowlog threshold exceeded command=GET duration=${latencyMs + 180}ms clients=${45 + slotIdx * 3}`,
         attributes: { 'log.source': 'redis' },
         resource: 'cache-redis-dc1-01',
       }
@@ -703,9 +713,9 @@ function applyRedisCrossAzLatencyScenario(
   return data;
 }
 
-function applyNfsSpofScenario(data: HourlyFile, hour: number): HourlyFile {
-  const storageProfile = NFS_SPOF_STORAGE_SERIES[hour];
-  const responseProfiles = NFS_SPOF_WAS_RESPONSE_SERIES[hour];
+function applyStorageIoPressureObservation(data: HourlyFile, hour: number): HourlyFile {
+  const storageProfile = STORAGE_IO_PRESSURE_SERIES[hour];
+  const responseProfiles = STORAGE_IO_WAS_RESPONSE_SERIES[hour];
   if (!storageProfile || !responseProfiles) return data;
 
   for (let slotIdx = 0; slotIdx < data.slots.length; slotIdx++) {
@@ -750,7 +760,7 @@ function applyNfsSpofScenario(data: HourlyFile, hour: number): HourlyFile {
         !(
           (log.resource === 'storage-nfs-dc1-01' ||
             log.resource.startsWith('api-was-dc1-')) &&
-          /nfs/i.test(log.body)
+          /nfs|write queue depth|file operation latency|shared asset read latency/i.test(log.body)
         )
     );
 
@@ -760,9 +770,9 @@ function applyNfsSpofScenario(data: HourlyFile, hour: number): HourlyFile {
         timeUnixNano: Math.min(baseTime, slot.endTimeUnixNano - 3),
         severityNumber: 17,
         severityText: 'ERROR',
-        body: `nfsd[${7000 + hour * 100 + slotIdx}]: ERROR: NFS SPOF symptom detected, write backlog ${Math.round(
+        body: `nfsd[${7000 + hour * 100 + slotIdx}]: ERROR: write queue depth ${Math.round(
           targetDisk * 100
-        )}% on /data/shared`,
+        )}%, commit latency ${180 + slotIdx * 35}ms on /data/shared`,
         attributes: { 'log.source': 'nfsd' },
         resource: 'storage-nfs-dc1-01',
       },
@@ -770,9 +780,9 @@ function applyNfsSpofScenario(data: HourlyFile, hour: number): HourlyFile {
         timeUnixNano: Math.min(baseTime + 20_000_000_000, slot.endTimeUnixNano - 2),
         severityNumber: 13,
         severityText: 'WARN',
-        body: `java[${8000 + hour * 100 + slotIdx}]: [WARN] NFS mount latency on storage-nfs-dc1-01 caused request delay ${Math.round(
+        body: `java[${8000 + hour * 100 + slotIdx}]: [WARN] file operation latency ${Math.round(
           responseProfiles['api-was-dc1-01'][slotIdx] * 1000
-        )}ms`,
+        )}ms, request queue depth ${18 + slotIdx * 3}`,
         attributes: { 'log.source': 'java' },
         resource: 'api-was-dc1-01',
       },
@@ -780,7 +790,9 @@ function applyNfsSpofScenario(data: HourlyFile, hour: number): HourlyFile {
         timeUnixNano: Math.min(baseTime + 40_000_000_000, slot.endTimeUnixNano - 1),
         severityNumber: 13,
         severityText: 'WARN',
-        body: `java[${8100 + hour * 100 + slotIdx}]: [WARN] NFS storage bottleneck propagated to shared assets read path`,
+        body: `java[${8100 + hour * 100 + slotIdx}]: [WARN] shared asset read latency ${Math.round(
+          responseProfiles['api-was-dc1-02'][slotIdx] * 1000
+        )}ms, worker backlog ${11 + slotIdx * 2}`,
         attributes: { 'log.source': 'java' },
         resource: 'api-was-dc1-02',
       }
@@ -1549,11 +1561,7 @@ const THRESHOLDS: Record<string, { warning: number; critical: number }> = {
 };
 
 const SLOT_INFO_ROTATION = [0.04, 0.38, 0.74] as const;
-const BACKGROUND_INFO_EXCLUDED_RESOURCES = new Set([
-  PHASE3_AZ2_LB.serverId,
-  PHASE3_AZ3_REDIS.serverId,
-  PHASE3_AZ2_NFS.serverId,
-]);
+const BACKGROUND_INFO_EXCLUDED_RESOURCES = new Set<string>();
 
 function clampNumber(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
@@ -1595,8 +1603,8 @@ function shouldPreserveInfoLog(log: LogEntry): boolean {
   );
 }
 
-function shouldPreserveScenarioLog(log: LogEntry): boolean {
-  return /remote az cache|nfs/i.test(log.body);
+function shouldPreserveObservationLog(log: LogEntry): boolean {
+  return /cache read latency|latency-monitor|write queue depth|file operation latency|shared asset read latency/i.test(log.body);
 }
 
 function trimSlotLogsPerResource(slot: Slot, maxPerResource: number): void {
@@ -1630,7 +1638,7 @@ function trimSlotLogsPerResource(slot: Slot, maxPerResource: number): void {
       if (removeIndex === -1) {
         removeIndex = retained.findIndex(
           (log) =>
-            log.severityText === 'WARN' && !shouldPreserveScenarioLog(log)
+            log.severityText === 'WARN' && !shouldPreserveObservationLog(log)
         );
       }
 
@@ -1641,7 +1649,7 @@ function trimSlotLogsPerResource(slot: Slot, maxPerResource: number): void {
       if (removeIndex === -1) {
         removeIndex = retained.findIndex(
           (log) =>
-            log.severityText !== 'ERROR' && !shouldPreserveScenarioLog(log)
+            log.severityText !== 'ERROR' && !shouldPreserveObservationLog(log)
         );
       }
 
@@ -1742,6 +1750,57 @@ function buildBackgroundInfoTemplates(
   );
   const verifyFiles = 120 + (seed % 700);
   const bucketCount = 8 + (seed % 24);
+
+  if (resource === PHASE3_AZ2_LB.serverId) {
+    return [
+      {
+        source: 'haproxy',
+        body: `haproxy[${pid}]: frontend openmanager_fe sessions=${frontendSessions}, retries=${queueSize}, cpu=${cpuPct}%`,
+      },
+      {
+        source: 'haproxy',
+        body: `haproxy[${pid + 13}]: health checks passed for backend web_pool/server2 (HTTP 200), queue=${queueSize}`,
+      },
+      {
+        source: 'systemd',
+        body: `systemd[1]: haproxy runtime socket poll ok, conntrack usage ${conntrackUsage}%`,
+      },
+    ];
+  }
+
+  if (resource === PHASE3_AZ3_REDIS.serverId) {
+    return [
+      {
+        source: 'redis',
+        body: `redis-server[${pid}]: cache hit ratio: ${cacheHitRatio}% over last 60s`,
+      },
+      {
+        source: 'redis',
+        body: `redis-server[${pid + 5}]: replication backlog ${220000 + seed}, fragmentation ${fragmentPct}%`,
+      },
+      {
+        source: 'systemd',
+        body: `systemd[1]: redis persistence check ok, used memory ${memoryPct}% of maxmemory`,
+      },
+    ];
+  }
+
+  if (resource === PHASE3_AZ2_NFS.serverId) {
+    return [
+      {
+        source: 'nfsd',
+        body: `nfsd[${pid}]: export /data/shared latency ${exportAwaitMs}ms, disk ${diskPct}%`,
+      },
+      {
+        source: 'rsync',
+        body: `rsync[${pid + 7}]: incremental verify completed, changed files ${verifyFiles}`,
+      },
+      {
+        source: 'systemd',
+        body: `systemd[1]: storage scrub heartbeat ok, network ${networkPct}%`,
+      },
+    ];
+  }
 
   switch (category) {
     case 'db':
@@ -1933,11 +1992,11 @@ function reconcileLogsWithMetrics(data: HourlyFile, hour: number): HourlyFile {
       serverHealth[sid] = { status, highMetrics };
     }
 
-    // 3. 시나리오 원인 로그와 Redis restart sequence만 보존하고 나머지는 재생성
+    // 3. 관측 증상 로그와 Redis restart sequence만 보존하고 나머지는 재생성
     slot.logs = slot.logs.filter((log) => {
       if (log.severityText === 'INFO') return shouldPreserveInfoLog(log);
       if (log.severityText === 'WARN' || log.severityText === 'ERROR') {
-        return shouldPreserveScenarioLog(log);
+        return shouldPreserveObservationLog(log);
       }
       return false;
     });
@@ -2114,12 +2173,12 @@ function limitWatchdogDuplicates(data: HourlyFile): HourlyFile {
 }
 
 // ============================================================================
-// Timeseries: 시나리오 동기화
+// Timeseries: 관측 데이터 동기화
 // ============================================================================
 
 /**
  * Timeseries를 hourly 파일에서 직접 추출하여 완벽히 동기화.
- * 기존 방식(시나리오만 덮어쓰기)이 1.8% 불일치를 일으킨 것을 해결.
+ * 기존 방식(관측 패턴만 덮어쓰기)이 1.8% 불일치를 일으킨 것을 해결.
  *
  * 방식: 24개 hourly JSON을 읽고, 각 슬롯의 메트릭 값을 timeseries 144포인트에 1:1 매핑.
  * - cpu/memory/disk: hourly에 0-1 ratio 저장 → 그대로 복사
@@ -2186,7 +2245,7 @@ function syncTimeseriesFromHourlyFiles(data: TimeSeries): TimeSeries {
 // ============================================================================
 
 function main(): void {
-  console.log('=== OTel Data Quality Fix (Scenario-based) ===\n');
+  console.log('=== OTel Data Quality Fix (Observation-pattern) ===\n');
 
   // Phase 1: Hourly data fixes
   console.log('[Phase 1] Hourly JSON fixes...');
@@ -2197,12 +2256,18 @@ function main(): void {
     data = fixNetworkRatio(data);
     // I3: Storage/Cache network (after C2)
     data = fixStorageCacheNetwork(data);
-    // ★ P1: 시나리오 메트릭 조정 (C2/I3 이후, 최종 메트릭 권한)
+    // ★ P1: 관측 패턴 메트릭 조정 (C2/I3 이후, 최종 메트릭 권한)
     data = adjustMetricsForScenario(data, hour);
-    // ★ P2-A: Redis cross-AZ latency 시나리오
-    data = applyRedisCrossAzLatencyScenario(data, hour);
-    // ★ P2-B: NFS SPOF 시나리오
-    data = applyNfsSpofScenario(data, hour);
+    // ★ P2-A: Redis latency observation pattern
+    data = applyRedisLatencyObservation(data, hour);
+    // ★ P2-B: Storage I/O pressure observation pattern
+    data = applyStorageIoPressureObservation(data, hour);
+    // Phase 3-A: ensure AZ2 load balancer inventory is present before log reconciliation
+    data = ensurePhase3Az2LoadBalancer(data);
+    // Phase 3-B: ensure AZ3 Redis inventory is present before log reconciliation
+    data = ensurePhase3Az3Redis(data);
+    // Phase 3-C: ensure AZ2 NFS standby inventory is present before log reconciliation
+    data = ensurePhase3Az2NfsStandby(data);
     // W1: Log time distribution
     data = fixLogTimeDistribution(data);
     // W2: S3 Gateway logs
@@ -2219,20 +2284,14 @@ function main(): void {
     data = fixRedisOOMSequence(data);
     // ★ P2: 메트릭-로그 일치 (L2 교체, 최종 로그 권한)
     data = reconcileLogsWithMetrics(data, hour);
-    // Baseline debt cleanup: ensure realistic error ratio without full-dataset churn
+    // Baseline realism cleanup: ensure realistic error ratio without full-dataset churn
     data = applyErrorBaselineBoost(data, hour);
-    // Phase 3-A: ensure AZ2 load balancer inventory is present in hourly datasets
-    data = ensurePhase3Az2LoadBalancer(data);
-    // Phase 3-B: ensure AZ3 Redis inventory is present in hourly datasets
-    data = ensurePhase3Az3Redis(data);
-    // Phase 3-C: ensure AZ2 NFS standby inventory is present in hourly datasets
-    data = ensurePhase3Az2NfsStandby(data);
     // L3: Watchdog dedup + S3GW cron cleanup
     data = limitWatchdogDuplicates(data);
     return data;
   });
 
-  console.log('  ✓ 24 hourly files processed (5 scenarios applied)');
+  console.log('  ✓ 24 hourly files processed (5 observation patterns applied)');
 
   // Phase 2: Timeseries fixes
   console.log('\n[Phase 2] Timeseries fixes...');

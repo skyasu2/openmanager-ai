@@ -3,7 +3,7 @@
  *
  * otel-fix.ts 실행 후 데이터 무결성 검증.
  *
- * Usage: npx tsx scripts/data/otel-verify.ts
+ * Usage: npm run data:verify
  */
 
 import * as fs from 'node:fs';
@@ -12,6 +12,12 @@ import * as path from 'node:path';
 const OTEL_DATA_DIR = path.resolve('public/data/otel-data');
 const HOURLY_DIR = path.join(OTEL_DATA_DIR, 'hourly');
 const TIMESERIES_PATH = path.join(OTEL_DATA_DIR, 'timeseries.json');
+const PRECOMPUTED_STATES_PATH = path.resolve(
+  'cloud-run/ai-engine/data/precomputed-states.json'
+);
+
+const ANSWER_LABEL_LOG_PATTERN =
+  /remote AZ cache|NFS SPOF|SPOF symptom|caused request delay|storage bottleneck propagated|root cause|burst relief|warm-standby|warm cache|failover candidate|standby export sync|relief target/i;
 
 let passed = 0;
 let failed = 0;
@@ -152,10 +158,10 @@ function main(): void {
     Math.min(...backupDiskSeries) >= 0.68
   );
 
-  // ── 3c. Redis cross-AZ latency scenario ──
-  console.log('\n[3c] Redis cross-AZ latency scenario:');
+  // ── 3c. Redis latency observation window ──
+  console.log('\n[3c] Redis latency observation window:');
   const responseTargets = [13, 14, 15];
-  let remoteAzLogCount = 0;
+  let redisSymptomLogCount = 0;
   let redisLatencyHoursPassing = 0;
 
   for (const hour of responseTargets) {
@@ -189,9 +195,9 @@ function main(): void {
         if (
           (log.resource === 'api-was-dc1-03' ||
             log.resource === 'cache-redis-dc1-01') &&
-          /remote az cache/i.test(log.body)
+          /cache read latency|latency-monitor/i.test(log.body)
         ) {
-          remoteAzLogCount++;
+          redisSymptomLogCount++;
         }
       }
     }
@@ -208,20 +214,20 @@ function main(): void {
     `${redisLatencyHoursPassing}/3 hours`
   );
   check(
-    'Remote AZ cache cause logs recorded',
-    remoteAzLogCount >= 6,
-    `${remoteAzLogCount} logs`
+    'Redis latency symptom logs recorded',
+    redisSymptomLogCount >= 6,
+    `${redisSymptomLogCount} logs`
   );
   check(
-    'Timeseries syncs cross-AZ latency spikes',
+    'Timeseries syncs Redis latency spikes',
     Math.max(...crossAzWindow) >= 0.35,
     `${Math.max(...crossAzWindow).toFixed(3)} max`
   );
 
-  // ── 3d. NFS SPOF scenario ──
-  console.log('\n[3d] NFS SPOF scenario:');
+  // ── 3d. Storage I/O pressure observation window ──
+  console.log('\n[3d] Storage I/O pressure observation window:');
   let nfsHoursPassing = 0;
-  let nfsCauseLogCount = 0;
+  let storageSymptomLogCount = 0;
 
   for (const hour of [2, 3, 4]) {
     const hourly: HourlyFile = JSON.parse(
@@ -273,9 +279,9 @@ function main(): void {
         if (
           (log.resource === 'storage-nfs-dc1-01' ||
             log.resource.startsWith('api-was-dc1-')) &&
-          /nfs/i.test(log.body)
+          /write queue depth|file operation latency|shared asset read latency/i.test(log.body)
         ) {
-          nfsCauseLogCount++;
+          storageSymptomLogCount++;
         }
       }
     }
@@ -296,9 +302,9 @@ function main(): void {
     `${nfsHoursPassing}/3 hours`
   );
   check(
-    'NFS SPOF cause logs recorded',
-    nfsCauseLogCount >= 9,
-    `${nfsCauseLogCount} logs`
+    'Storage pressure symptom logs recorded',
+    storageSymptomLogCount >= 9,
+    `${storageSymptomLogCount} logs`
   );
   check(
     'Timeseries syncs NFS latency cascade',
@@ -314,6 +320,11 @@ function main(): void {
     az2Lb['host.name'] === 'lb-haproxy-dc1-03.openmanager.kr'
   );
   check('AZ2 LB zone = DC1-AZ2', az2Lb['cloud.availability_zone'] === 'DC1-AZ2');
+  check('AZ2 LB purpose = pool-member', az2Lb['server.purpose'] === 'pool-member');
+  check(
+    'AZ2 LB notes mention load balancer pool',
+    String(az2Lb['server.notes'] ?? '').includes('load balancer pool')
+  );
 
   let az2LbMissingHours = 0;
   for (let hour = 0; hour < 24; hour++) {
@@ -359,6 +370,14 @@ function main(): void {
   check(
     'AZ3 Redis zone = DC1-AZ3',
     az3Redis['cloud.availability_zone'] === 'DC1-AZ3'
+  );
+  check(
+    'AZ3 Redis purpose = replica',
+    az3Redis['server.purpose'] === 'replica'
+  );
+  check(
+    'AZ3 Redis notes mention cache replica',
+    String(az3Redis['server.notes'] ?? '').includes('cache replica')
   );
 
   let az3RedisMissingHours = 0;
@@ -409,6 +428,10 @@ function main(): void {
   check(
     'AZ2 NFS standby purpose = hot-standby',
     az2Nfs['server.purpose'] === 'hot-standby'
+  );
+  check(
+    'AZ2 NFS standby notes mention secondary node',
+    String(az2Nfs['server.notes'] ?? '').includes('secondary node')
   );
 
   let az2NfsMissingHours = 0;
@@ -562,11 +585,6 @@ function main(): void {
 
   // ── 9a. Phase B INFO density / slot upper bound ──
   console.log('\n[9a] Phase B INFO density / slot upper bound:');
-  const backgroundInfoExcluded = new Set([
-    'lb-haproxy-dc1-03',
-    'cache-redis-dc1-03',
-    'storage-nfs-dc1-02',
-  ]);
   let infoFloorViolations = 0;
   let slotUpperBoundViolations = 0;
 
@@ -579,7 +597,7 @@ function main(): void {
       for (const metric of slot.metrics) {
         for (const dp of metric.dataPoints) {
           const sid = (dp.attributes['host.name'] ?? '').split('.')[0];
-          if (!sid || backgroundInfoExcluded.has(sid)) continue;
+          if (!sid) continue;
           metricResources.add(sid);
         }
       }
@@ -628,7 +646,7 @@ function main(): void {
     }
   }
 
-  check('Scenario jitter keeps utilization metrics within [0.01, 0.99]', jitterBoundsViolations === 0, `${jitterBoundsViolations} out of range`);
+  check('Observation jitter keeps utilization metrics within [0.01, 0.99]', jitterBoundsViolations === 0, `${jitterBoundsViolations} out of range`);
 
   // ── 10. Severity distribution ──
   console.log('\n[10] Severity distribution:');
@@ -699,6 +717,52 @@ function main(): void {
     }
   }
   check('Watchdog messages <= 2 per server per slot', excessiveWatchdog === 0, `${excessiveWatchdog} excessive`);
+
+  // ── 13. No answer-label leakage in logs ──
+  console.log('\n[13] Answer-label leakage:');
+  let answerLabelLeaks = 0;
+  let firstLeak = '';
+
+  const recordLeak = (location: string, message: string): void => {
+    answerLabelLeaks++;
+    if (!firstLeak) firstLeak = `${location}: ${message}`;
+  };
+
+  for (let h = 0; h < 24; h++) {
+    const filename = `hour-${String(h).padStart(2, '0')}.json`;
+    const data: HourlyFile = JSON.parse(fs.readFileSync(path.join(HOURLY_DIR, filename), 'utf-8'));
+    for (const [slotIdx, slot] of data.slots.entries()) {
+      for (const log of slot.logs) {
+        if (ANSWER_LABEL_LOG_PATTERN.test(log.body)) {
+          recordLeak(`${filename} slot ${slotIdx} ${log.resource}`, log.body);
+        }
+      }
+    }
+  }
+
+  if (fs.existsSync(PRECOMPUTED_STATES_PATH)) {
+    const states: {
+      slotIndex: number;
+      serverLogs?: Record<string, { message?: string }[]>;
+    }[] = JSON.parse(fs.readFileSync(PRECOMPUTED_STATES_PATH, 'utf-8'));
+
+    for (const state of states) {
+      for (const [serverId, logs] of Object.entries(state.serverLogs ?? {})) {
+        for (const log of logs) {
+          const message = log.message ?? '';
+          if (ANSWER_LABEL_LOG_PATTERN.test(message)) {
+            recordLeak(`precomputed slot ${state.slotIndex} ${serverId}`, message);
+          }
+        }
+      }
+    }
+  }
+
+  check(
+    'No root-cause/topology answer labels in logs',
+    answerLabelLeaks === 0,
+    firstLeak || `${answerLabelLeaks} leaks`
+  );
 
   // ── Summary ──
   console.log(`\n=== Result: ${passed} passed, ${failed} failed ===`);

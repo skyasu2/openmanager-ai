@@ -1,9 +1,9 @@
-#!/usr/bin/env npx tsx
+#!/usr/bin/env tsx
 /**
  * Pre-computed States 빌드 스크립트
  *
  * 사용법:
- *   npx tsx scripts/build-precomputed-states.ts
+ *   npm run data:precomputed:build
  *
  * 출력:
  *   data/precomputed-states.json (144 슬롯)
@@ -36,7 +36,7 @@ console.log(`\n=== 샘플 (슬롯 0, 72, 143) ===`);
 for (const idx of [0, 72, 143]) {
   const slot = slots[idx];
   if (slot) {
-    console.log(`\n[${slot.timeLabel}] ${slot.summary.total}서버 - H:${slot.summary.healthy} W:${slot.summary.warning} C:${slot.summary.critical}`);
+    console.log(`\n[${slot.timeLabel}] ${slot.summary.total}서버 - O:${slot.summary.online} W:${slot.summary.warning} C:${slot.summary.critical} F:${slot.summary.offline}`);
     if (slot.alerts.length > 0) {
       console.log(`  알림: ${slot.alerts.slice(0, 2).map((a) => `${a.serverId}(${a.metric}:${a.value}%)`).join(', ')}`);
     }

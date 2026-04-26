@@ -1198,6 +1198,36 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
+          "timeUnixNano": 1771041624000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[3849]: frontend openmanager_fe sessions=260, retries=3, cpu=36%",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771041624000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nfsd[6277]: export /data/shared latency 115ms, disk 41%",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771041624000001000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[7235]: cache hit ratio: 69% over last 60s",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-03"
+        },
+        {
           "timeUnixNano": 1771041659903787300,
           "severityNumber": 13,
           "severityText": "WARN",
@@ -1216,6 +1246,36 @@
             "log.source": "java"
           },
           "resource": "api-was-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771041828000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[3862]: health checks passed for backend web_pool/server2 (HTTP 200), queue=5",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771041828000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "rsync[6284]: incremental verify completed, changed files 697",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771041828000001000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[7240]: replication backlog 238144, fragmentation 120%",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-03"
         },
         {
           "timeUnixNano": 1771041828000389000,
@@ -1388,6 +1448,36 @@
           "resource": "api-was-dc1-03"
         },
         {
+          "timeUnixNano": 1771042044000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 31%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771042044000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: storage scrub heartbeat ok, network 29%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771042044000001000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: redis persistence check ok, used memory 65% of maxmemory",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "cache-redis-dc1-03"
+        },
+        {
           "timeUnixNano": 1771042044000389000,
           "severityNumber": 9,
           "severityText": "INFO",
@@ -1551,7 +1641,7 @@
           "timeUnixNano": 1771042175497522000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[4300]: [WARN] Remote AZ cache access detected: cache-redis-dc1-01 (AZ1) latency 310ms",
+          "body": "java[4300]: [WARN] cache read latency p95 310ms, retry_count=3",
           "attributes": {
             "log.source": "java"
           },
@@ -1561,7 +1651,17 @@
           "timeUnixNano": 1771042189913354500,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "redis-server[6300]: WARNING: Remote AZ cache client api-was-dc1-03 observed, round-trip 430ms",
+          "body": "redis-server[6300]: WARNING: latency-monitor command=GET p95=430ms clients=48",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771041765000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "redis-server[6500]: ERROR: slowlog threshold exceeded command=GET duration=490ms clients=45",
           "attributes": {
             "log.source": "redis"
           },
@@ -2761,6 +2861,36 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
+          "timeUnixNano": 1771042224000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[3850]: frontend openmanager_fe sessions=260, retries=3, cpu=34%",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771042224000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nfsd[6278]: export /data/shared latency 106ms, disk 41%",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771042224000001000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[7236]: cache hit ratio: 68% over last 60s",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-03"
+        },
+        {
           "timeUnixNano": 1771042369074872800,
           "severityNumber": 13,
           "severityText": "WARN",
@@ -2769,6 +2899,36 @@
             "log.source": "java"
           },
           "resource": "api-was-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771042428000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[3863]: health checks passed for backend web_pool/server2 (HTTP 200), queue=5",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771042428000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "rsync[6285]: incremental verify completed, changed files 698",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771042428000001000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[7241]: replication backlog 238144, fragmentation 121%",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-03"
         },
         {
           "timeUnixNano": 1771042428000389000,
@@ -2939,6 +3099,36 @@
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771042644000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 31%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771042644000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: storage scrub heartbeat ok, network 18%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771042644000001000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: redis persistence check ok, used memory 66% of maxmemory",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "cache-redis-dc1-03"
         },
         {
           "timeUnixNano": 1771042644000389000,
@@ -3114,7 +3304,7 @@
           "timeUnixNano": 1771042778628695800,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[4301]: [WARN] Remote AZ cache access detected: cache-redis-dc1-01 (AZ1) latency 350ms",
+          "body": "java[4301]: [WARN] cache read latency p95 350ms, retry_count=4",
           "attributes": {
             "log.source": "java"
           },
@@ -3124,7 +3314,17 @@
           "timeUnixNano": 1771042788905485800,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "redis-server[6301]: WARNING: Remote AZ cache client api-was-dc1-03 observed, round-trip 470ms",
+          "body": "redis-server[6301]: WARNING: latency-monitor command=GET p95=470ms clients=49",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771042365000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "redis-server[6501]: ERROR: slowlog threshold exceeded command=GET duration=530ms clients=48",
           "attributes": {
             "log.source": "redis"
           },
@@ -4324,6 +4524,36 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
+          "timeUnixNano": 1771042824000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[3851]: frontend openmanager_fe sessions=260, retries=3, cpu=36%",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771042824000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nfsd[6279]: export /data/shared latency 114ms, disk 41%",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771042824000001000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[7237]: cache hit ratio: 67% over last 60s",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-03"
+        },
+        {
           "timeUnixNano": 1771042877468524800,
           "severityNumber": 13,
           "severityText": "WARN",
@@ -4342,6 +4572,36 @@
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771043028000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[3864]: health checks passed for backend web_pool/server2 (HTTP 200), queue=5",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771043028000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "rsync[6286]: incremental verify completed, changed files 699",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771043028000001000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[7242]: replication backlog 238144, fragmentation 122%",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-03"
         },
         {
           "timeUnixNano": 1771043028000389000,
@@ -4492,6 +4752,36 @@
             "log.source": "mysqld"
           },
           "resource": "db-mysql-dc1-replica"
+        },
+        {
+          "timeUnixNano": 1771043244000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 31%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771043244000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: storage scrub heartbeat ok, network 28%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771043244000001000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: redis persistence check ok, used memory 68% of maxmemory",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "cache-redis-dc1-03"
         },
         {
           "timeUnixNano": 1771043244000389000,
@@ -4677,7 +4967,7 @@
           "timeUnixNano": 1771043376091547100,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[4302]: [WARN] Remote AZ cache access detected: cache-redis-dc1-01 (AZ1) latency 390ms",
+          "body": "java[4302]: [WARN] cache read latency p95 390ms, retry_count=5",
           "attributes": {
             "log.source": "java"
           },
@@ -4687,7 +4977,17 @@
           "timeUnixNano": 1771043388348276500,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "redis-server[6302]: WARNING: Remote AZ cache client api-was-dc1-03 observed, round-trip 510ms",
+          "body": "redis-server[6302]: WARNING: latency-monitor command=GET p95=510ms clients=50",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771042965000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "redis-server[6502]: ERROR: slowlog threshold exceeded command=GET duration=570ms clients=51",
           "attributes": {
             "log.source": "redis"
           },
@@ -5887,6 +6187,36 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
+          "timeUnixNano": 1771043424000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[3852]: frontend openmanager_fe sessions=260, retries=3, cpu=34%",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771043424000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nfsd[6280]: export /data/shared latency 112ms, disk 41%",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771043424000001000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[7238]: cache hit ratio: 67% over last 60s",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-03"
+        },
+        {
           "timeUnixNano": 1771043447041611500,
           "severityNumber": 13,
           "severityText": "WARN",
@@ -5915,6 +6245,36 @@
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771043628000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[3865]: health checks passed for backend web_pool/server2 (HTTP 200), queue=5",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771043628000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "rsync[6287]: incremental verify completed, changed files 700",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771043628000001000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[7243]: replication backlog 238144, fragmentation 123%",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-03"
         },
         {
           "timeUnixNano": 1771043628000389000,
@@ -6065,6 +6425,36 @@
             "log.source": "mysqld"
           },
           "resource": "db-mysql-dc1-replica"
+        },
+        {
+          "timeUnixNano": 1771043844000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 31%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771043844000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: storage scrub heartbeat ok, network 23%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771043844000001000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: redis persistence check ok, used memory 69% of maxmemory",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "cache-redis-dc1-03"
         },
         {
           "timeUnixNano": 1771043844000389000,
@@ -6230,7 +6620,7 @@
           "timeUnixNano": 1771043976251017500,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[4303]: [WARN] Remote AZ cache access detected: cache-redis-dc1-01 (AZ1) latency 420ms",
+          "body": "java[4303]: [WARN] cache read latency p95 420ms, retry_count=6",
           "attributes": {
             "log.source": "java"
           },
@@ -6250,7 +6640,17 @@
           "timeUnixNano": 1771043989373343700,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "redis-server[6303]: WARNING: Remote AZ cache client api-was-dc1-03 observed, round-trip 540ms",
+          "body": "redis-server[6303]: WARNING: latency-monitor command=GET p95=540ms clients=51",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771043565000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "redis-server[6503]: ERROR: slowlog threshold exceeded command=GET duration=600ms clients=54",
           "attributes": {
             "log.source": "redis"
           },
@@ -7450,6 +7850,36 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
+          "timeUnixNano": 1771044024000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[3853]: frontend openmanager_fe sessions=260, retries=3, cpu=33%",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771044024000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nfsd[6281]: export /data/shared latency 109ms, disk 41%",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771044024000001000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[7239]: cache hit ratio: 71% over last 60s",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-03"
+        },
+        {
           "timeUnixNano": 1771044077192992300,
           "severityNumber": 13,
           "severityText": "WARN",
@@ -7468,6 +7898,36 @@
             "log.source": "java"
           },
           "resource": "api-was-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771044228000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[3866]: health checks passed for backend web_pool/server2 (HTTP 200), queue=5",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771044228000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "rsync[6288]: incremental verify completed, changed files 701",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771044228000001000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[7244]: replication backlog 238144, fragmentation 124%",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-03"
         },
         {
           "timeUnixNano": 1771044228000389000,
@@ -7640,6 +8100,36 @@
           "resource": "api-was-dc1-01"
         },
         {
+          "timeUnixNano": 1771044444000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 31%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771044444000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: storage scrub heartbeat ok, network 18%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771044444000001000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: redis persistence check ok, used memory 61% of maxmemory",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "cache-redis-dc1-03"
+        },
+        {
           "timeUnixNano": 1771044444000389000,
           "severityNumber": 9,
           "severityText": "INFO",
@@ -7803,7 +8293,7 @@
           "timeUnixNano": 1771044576512455700,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[4304]: [WARN] Remote AZ cache access detected: cache-redis-dc1-01 (AZ1) latency 380ms",
+          "body": "java[4304]: [WARN] cache read latency p95 380ms, retry_count=7",
           "attributes": {
             "log.source": "java"
           },
@@ -7813,7 +8303,17 @@
           "timeUnixNano": 1771044588379409000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "redis-server[6304]: WARNING: Remote AZ cache client api-was-dc1-03 observed, round-trip 500ms",
+          "body": "redis-server[6304]: WARNING: latency-monitor command=GET p95=500ms clients=52",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771044165000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "redis-server[6504]: ERROR: slowlog threshold exceeded command=GET duration=560ms clients=57",
           "attributes": {
             "log.source": "redis"
           },
@@ -9013,6 +9513,36 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
+          "timeUnixNano": 1771044624000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[3854]: frontend openmanager_fe sessions=260, retries=3, cpu=38%",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771044624000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nfsd[6282]: export /data/shared latency 109ms, disk 41%",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771044624000001000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[7240]: cache hit ratio: 67% over last 60s",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-03"
+        },
+        {
           "timeUnixNano": 1771044815775444200,
           "severityNumber": 13,
           "severityText": "WARN",
@@ -9021,6 +9551,36 @@
             "log.source": "java"
           },
           "resource": "api-was-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771044828000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[3867]: health checks passed for backend web_pool/server2 (HTTP 200), queue=6",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771044828000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "rsync[6289]: incremental verify completed, changed files 702",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771044828000001000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[7245]: replication backlog 238144, fragmentation 125%",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-03"
         },
         {
           "timeUnixNano": 1771044828000389000,
@@ -9203,6 +9763,36 @@
           "resource": "cache-redis-dc1-01"
         },
         {
+          "timeUnixNano": 1771045044000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 31%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771045044000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: storage scrub heartbeat ok, network 18%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771045044000001000,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: redis persistence check ok, used memory 68% of maxmemory",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "cache-redis-dc1-03"
+        },
+        {
           "timeUnixNano": 1771045044000389000,
           "severityNumber": 9,
           "severityText": "INFO",
@@ -9366,7 +9956,7 @@
           "timeUnixNano": 1771045178155061000,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "java[4305]: [WARN] Remote AZ cache access detected: cache-redis-dc1-01 (AZ1) latency 340ms",
+          "body": "java[4305]: [WARN] cache read latency p95 340ms, retry_count=8",
           "attributes": {
             "log.source": "java"
           },
@@ -9376,7 +9966,17 @@
           "timeUnixNano": 1771045187798140200,
           "severityNumber": 13,
           "severityText": "WARN",
-          "body": "redis-server[6305]: WARNING: Remote AZ cache client api-was-dc1-03 observed, round-trip 460ms",
+          "body": "redis-server[6305]: WARNING: latency-monitor command=GET p95=460ms clients=53",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771044765000000000,
+          "severityNumber": 17,
+          "severityText": "ERROR",
+          "body": "redis-server[6505]: ERROR: slowlog threshold exceeded command=GET duration=520ms clients=60",
           "attributes": {
             "log.source": "redis"
           },

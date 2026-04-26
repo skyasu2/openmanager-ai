@@ -1198,6 +1198,36 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
+          "timeUnixNano": 1771063224000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[3615]: frontend openmanager_fe sessions=260, retries=3, cpu=47%",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771063224000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nfsd[6043]: export /data/shared latency 112ms, disk 41%",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771063224000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[7001]: cache hit ratio: 71% over last 60s",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-03"
+        },
+        {
           "timeUnixNano": 1771063284380375000,
           "severityNumber": 13,
           "severityText": "WARN",
@@ -1206,6 +1236,36 @@
             "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771063428000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[3628]: health checks passed for backend web_pool/server2 (HTTP 200), queue=11",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771063428000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "rsync[6050]: incremental verify completed, changed files 163",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771063428000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[7006]: replication backlog 238144, fragmentation 110%",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-03"
         },
         {
           "timeUnixNano": 1771063428000389000,
@@ -1396,6 +1456,36 @@
             "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771063644000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 31%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771063644000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: storage scrub heartbeat ok, network 21%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771063644000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: redis persistence check ok, used memory 59% of maxmemory",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "cache-redis-dc1-03"
         },
         {
           "timeUnixNano": 1771063644000389000,
@@ -2761,6 +2851,36 @@
           "resource": "web-nginx-dc1-03"
         },
         {
+          "timeUnixNano": 1771063824000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[3616]: frontend openmanager_fe sessions=260, retries=3, cpu=48%",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771063824000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nfsd[6044]: export /data/shared latency 106ms, disk 41%",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771063824000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[7002]: cache hit ratio: 70% over last 60s",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-03"
+        },
+        {
           "timeUnixNano": 1771063832220062700,
           "severityNumber": 13,
           "severityText": "WARN",
@@ -2779,6 +2899,36 @@
             "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771064028000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[3629]: health checks passed for backend web_pool/server2 (HTTP 200), queue=12",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771064028000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "rsync[6051]: incremental verify completed, changed files 164",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771064028000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[7007]: replication backlog 238144, fragmentation 111%",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-03"
         },
         {
           "timeUnixNano": 1771064028000389000,
@@ -2939,6 +3089,36 @@
             "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771064244000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 31%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771064244000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: storage scrub heartbeat ok, network 19%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771064244000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: redis persistence check ok, used memory 62% of maxmemory",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "cache-redis-dc1-03"
         },
         {
           "timeUnixNano": 1771064244000389000,
@@ -4304,6 +4484,36 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
+          "timeUnixNano": 1771064424000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[3617]: frontend openmanager_fe sessions=260, retries=3, cpu=48%",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771064424000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nfsd[6045]: export /data/shared latency 110ms, disk 41%",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771064424000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[7003]: cache hit ratio: 73% over last 60s",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-03"
+        },
+        {
           "timeUnixNano": 1771064490335510800,
           "severityNumber": 13,
           "severityText": "WARN",
@@ -4322,6 +4532,36 @@
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771064628000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[3630]: health checks passed for backend web_pool/server2 (HTTP 200), queue=12",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771064628000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "rsync[6052]: incremental verify completed, changed files 165",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771064628000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[7008]: replication backlog 238144, fragmentation 112%",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-03"
         },
         {
           "timeUnixNano": 1771064628000389000,
@@ -4492,6 +4732,36 @@
             "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771064844000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 31%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771064844000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: storage scrub heartbeat ok, network 22%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771064844000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: redis persistence check ok, used memory 56% of maxmemory",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "cache-redis-dc1-03"
         },
         {
           "timeUnixNano": 1771064844000389000,
@@ -5857,6 +6127,36 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
+          "timeUnixNano": 1771065024000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[3618]: frontend openmanager_fe sessions=260, retries=3, cpu=45%",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771065024000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nfsd[6046]: export /data/shared latency 109ms, disk 41%",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771065024000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[7004]: cache hit ratio: 73% over last 60s",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-03"
+        },
+        {
           "timeUnixNano": 1771065166025901300,
           "severityNumber": 13,
           "severityText": "WARN",
@@ -5875,6 +6175,36 @@
             "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771065228000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[3631]: health checks passed for backend web_pool/server2 (HTTP 200), queue=11",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771065228000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "rsync[6053]: incremental verify completed, changed files 166",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771065228000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[7009]: replication backlog 238144, fragmentation 113%",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-03"
         },
         {
           "timeUnixNano": 1771065228000389000,
@@ -6055,6 +6385,36 @@
             "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771065444000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 31%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771065444000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: storage scrub heartbeat ok, network 25%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771065444000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: redis persistence check ok, used memory 56% of maxmemory",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "cache-redis-dc1-03"
         },
         {
           "timeUnixNano": 1771065444000389000,
@@ -7410,6 +7770,36 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
+          "timeUnixNano": 1771065624000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[3619]: frontend openmanager_fe sessions=260, retries=3, cpu=46%",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771065624000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nfsd[6047]: export /data/shared latency 107ms, disk 41%",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771065624000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[7005]: cache hit ratio: 76% over last 60s",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-03"
+        },
+        {
           "timeUnixNano": 1771065813272465200,
           "severityNumber": 13,
           "severityText": "WARN",
@@ -7418,6 +7808,36 @@
             "log.source": "nginx"
           },
           "resource": "web-nginx-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771065828000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[3632]: health checks passed for backend web_pool/server2 (HTTP 200), queue=11",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771065828000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "rsync[6054]: incremental verify completed, changed files 167",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771065828000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[7010]: replication backlog 238144, fragmentation 114%",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-03"
         },
         {
           "timeUnixNano": 1771065828000389000,
@@ -7588,6 +8008,36 @@
             "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771066044000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 31%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771066044000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: storage scrub heartbeat ok, network 18%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771066044000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: redis persistence check ok, used memory 49% of maxmemory",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "cache-redis-dc1-03"
         },
         {
           "timeUnixNano": 1771066044000389000,
@@ -8963,6 +9413,36 @@
           "resource": "db-mysql-dc1-replica"
         },
         {
+          "timeUnixNano": 1771066224000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[3620]: frontend openmanager_fe sessions=260, retries=3, cpu=50%",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771066224000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "nfsd[6048]: export /data/shared latency 109ms, disk 41%",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771066224000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[7006]: cache hit ratio: 75% over last 60s",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-03"
+        },
+        {
           "timeUnixNano": 1771066327330553000,
           "severityNumber": 13,
           "severityText": "WARN",
@@ -8981,6 +9461,36 @@
             "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771066428000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "haproxy[3633]: health checks passed for backend web_pool/server2 (HTTP 200), queue=12",
+          "attributes": {
+            "log.source": "haproxy"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771066428000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "rsync[6055]: incremental verify completed, changed files 168",
+          "attributes": {
+            "log.source": "nfsd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771066428000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "redis-server[7011]: replication backlog 238144, fragmentation 115%",
+          "attributes": {
+            "log.source": "redis"
+          },
+          "resource": "cache-redis-dc1-03"
         },
         {
           "timeUnixNano": 1771066428000389000,
@@ -9151,6 +9661,36 @@
             "log.source": "haproxy"
           },
           "resource": "lb-haproxy-dc1-01"
+        },
+        {
+          "timeUnixNano": 1771066644000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: haproxy runtime socket poll ok, conntrack usage 31%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "lb-haproxy-dc1-03"
+        },
+        {
+          "timeUnixNano": 1771066644000000500,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: storage scrub heartbeat ok, network 23%",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "storage-nfs-dc1-02"
+        },
+        {
+          "timeUnixNano": 1771066644000000800,
+          "severityNumber": 9,
+          "severityText": "INFO",
+          "body": "systemd[1]: redis persistence check ok, used memory 51% of maxmemory",
+          "attributes": {
+            "log.source": "systemd"
+          },
+          "resource": "cache-redis-dc1-03"
         },
         {
           "timeUnixNano": 1771066644000389000,

@@ -9,7 +9,7 @@
 **Scenario-based Metrics System** (`src/services/server-data/server-data-loader.ts`)
 
 - **위치**: `src/services/server-data/server-data-loader.ts`
-- **데이터 소스**: `src/data/otel-data/hourly/hour-*.json` (24시간 × 15개 서버)
+- **데이터 소스**: `src/data/otel-data/hourly/hour-*.json` (24시간 × 18개 서버)
 - **정합성 스크립트**: `scripts/data/otel-fix.ts`, `scripts/data/otel-verify.ts`
 - **품질**: ⭐⭐⭐⭐⭐ (5/5)
 
@@ -102,7 +102,7 @@ private async loadFromCustomSource(): Promise<Server[]> {
 ```
 scripts/data/otel-fix.ts + scripts/data/otel-verify.ts
   ↓
-src/data/otel-data/hourly/hour-*.json (24시간 × 15개 서버)
+src/data/otel-data/hourly/hour-*.json (24시간 × 18개 서버)
   ↓
 src/services/server-data/server-data-loader.ts (KST 회전)
   ↓
@@ -153,7 +153,7 @@ mockSystem: {
 curl http://localhost:3000/api/servers
 ```
 
-**예상 응답**: server-data-loader에서 생성된 15개 서버 데이터
+**예상 응답**: server-data-loader에서 생성된 18개 서버 데이터
 
 ---
 

@@ -27,7 +27,7 @@ export const WithRegenerate: Story = {
   args: {
     messageId: 'msg-002',
     content:
-      '현재 15개 서버 중 13개가 정상 운영 중이며, 2개 서버에서 경고가 감지되었습니다.',
+      '현재 18개 서버 중 16개가 정상 운영 중이며, 2개 서버에서 경고가 감지되었습니다.',
     role: 'assistant',
     onRegenerate: fn(),
     onFeedback: fn(),

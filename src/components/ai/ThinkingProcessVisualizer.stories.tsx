@@ -88,7 +88,7 @@ export const Completed: Story = {
       {
         id: 'step-5',
         step: 'analyzeServerHealth',
-        description: '15개 서버의 CPU, 메모리, 디스크 메트릭 수집 완료',
+        description: '18개 서버의 CPU, 메모리, 디스크 메트릭 수집 완료',
         status: 'completed',
         duration: 340,
       },

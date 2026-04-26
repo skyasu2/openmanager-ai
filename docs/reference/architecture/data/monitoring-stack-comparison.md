@@ -54,7 +54,7 @@ Prometheus 표준: `[namespace]_[subsystem]_[name]_[unit]`
 |------|--------------|----------------|
 | 에이전트 | Grafana Alloy (실제 설치) | 없음 (시뮬레이션) |
 | 프로토콜 | Prometheus scrape, OTLP push | N/A (파일 기반) |
-| 대상 | 실서버, 컨테이너, 클라우드 | 가상 15대 서버 (JSON) |
+| 대상 | 실서버, 컨테이너, 클라우드 | 가상 18대 서버 (JSON) |
 | 실시간 | 실시간 수집 | 사전 계산 (24시간 고정) |
 
 ### 전송 (Transmission)

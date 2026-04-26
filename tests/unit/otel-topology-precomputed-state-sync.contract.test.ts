@@ -2,6 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
+import { INFRASTRUCTURE_TOPOLOGY_ARCHITECTURE } from '../../src/data/architecture-diagrams/infrastructure-topology';
+
 type ResourceCatalog = {
   resources: Record<string, Record<string, string | number>>;
 };
@@ -24,6 +26,19 @@ const REQUIRED_IDS = [
   'cache-redis-dc1-03',
   'storage-nfs-dc1-02',
 ] as const;
+const EXPECTED_ROLE_COUNTS = {
+  application: 3,
+  cache: 3,
+  database: 3,
+  loadbalancer: 3,
+  storage: 3,
+  web: 3,
+} as const;
+const EXPECTED_ZONE_COUNTS = {
+  'DC1-AZ1': 6,
+  'DC1-AZ2': 6,
+  'DC1-AZ3': 6,
+} as const;
 
 describe('OTel precomputed-state sync contract', () => {
   it('keeps bundled ai-engine otel-data inventory in sync with public SSOT', () => {
@@ -44,6 +59,23 @@ describe('OTel precomputed-state sync contract', () => {
         `${id}.openmanager.kr`
       );
     }
+
+    const roleCounts = new Map<string, number>();
+    const zoneCounts = new Map<string, number>();
+
+    for (const resource of Object.values(rootCatalog.resources)) {
+      const role = String(resource['server.role'] ?? '');
+      const zone = String(resource['cloud.availability_zone'] ?? '');
+      roleCounts.set(role, (roleCounts.get(role) ?? 0) + 1);
+      zoneCounts.set(zone, (zoneCounts.get(zone) ?? 0) + 1);
+    }
+
+    expect(Object.fromEntries([...roleCounts.entries()].sort())).toEqual(
+      EXPECTED_ROLE_COUNTS
+    );
+    expect(Object.fromEntries([...zoneCounts.entries()].sort())).toEqual(
+      EXPECTED_ZONE_COUNTS
+    );
   });
 
   it('rebuilds precomputed-states.json with the 18-server inventory', () => {
@@ -63,6 +95,26 @@ describe('OTel precomputed-state sync contract', () => {
     expect(uniqueIds.size).toBe(18);
     for (const id of REQUIRED_IDS) {
       expect(uniqueIds.has(id)).toBe(true);
+    }
+  });
+
+  it('keeps infrastructure topology diagram aligned with the 18-server catalog', () => {
+    const rootCatalog: ResourceCatalog = JSON.parse(
+      fs.readFileSync(ROOT_CATALOG, 'utf8')
+    );
+    const catalogIds = Object.keys(rootCatalog.resources).sort();
+    const diagramIds = INFRASTRUCTURE_TOPOLOGY_ARCHITECTURE.layers
+      .flatMap((layer) => layer.nodes.map((node) => node.id))
+      .sort();
+    const connectionIds = new Set(
+      INFRASTRUCTURE_TOPOLOGY_ARCHITECTURE.connections?.flatMap(
+        (connection) => [connection.from, connection.to]
+      ) ?? []
+    );
+
+    expect(diagramIds).toEqual(catalogIds);
+    for (const id of REQUIRED_IDS) {
+      expect(connectionIds.has(id)).toBe(true);
     }
   });
 });

@@ -40,7 +40,7 @@ export const getServerMetricsAdvanced = tool({
 예시:
 - "6시간 CPU 평균" → { "timeRange": "last6h", "metric": "cpu", "aggregation": "avg" }
 
-출력: { answer: "지난 6시간 전체 15대 서버 집계: cpu_avg=34%...", globalSummary: {...} }`,
+출력: { answer: "지난 6시간 전체 18대 서버 집계: cpu_avg=34%...", globalSummary: {...} }`,
   inputSchema: z.object({
     serverId: z
       .string()

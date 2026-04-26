@@ -38,8 +38,8 @@
 ### Phase 4: Dual Strategy (Final Implementation)
 
 - A conditional rendering strategy was implemented.
-  - For lists of **less than 15 servers**, the simple pagination dropdown is used.
-  - For a **full list of 15 servers**, the `VirtualizedServerList` with the "Show More" button is used.
+  - For lists of **less than 18 servers**, the simple pagination dropdown is used.
+  - For a **full list of 18 servers**, the `VirtualizedServerList` with the "Show More" button is used.
 
 ---
 
@@ -49,7 +49,7 @@
 
 - **Reason for attempting**: It theoretically offers the best performance for hundreds or thousands of items by only rendering what is visible.
 - **Reason for abandoning (after 52 minutes)**:
-  - **Over-engineering**: For a list of only 15 items, the complexity of a virtualization library was not justified.
+  - **Over-engineering**: For a list of only 18 items, the complexity of a virtualization library was not justified.
   - **Poor UX**: It required a fixed item height (350px), which prevented a fully responsive design. The virtualized scroll experience also felt less natural than a native scroll.
   - **Dependency Bloat**: It added an unnecessary 13KB (minified) to the bundle.
 - **Conclusion**: The trade-off of implementation complexity vs. performance gain was not worth it for a small list. The "Show More" button provides a better, more natural UX.
@@ -80,4 +80,4 @@
 
 - **`react-window` is not a silver bullet**: It is a powerful tool, but it should only be used when dealing with hundreds or thousands of list items where the performance benefits clearly outweigh the implementation complexity.
 - **Debounce `resize` events**: The report suggests adding a `debounce` to the `resize` event listener in `VirtualizedServerList` to improve performance during window resizing.
-- **Re-evaluate at scale**: The decision to abandon `react-window` was based on a maximum of 15 servers. If this number is expected to grow significantly (e.g., to 30+), `react-window` should be reconsidered.
+- **Re-evaluate at scale**: The decision to abandon `react-window` was based on a maximum of 18 servers. If this number is expected to grow significantly (e.g., to 30+), `react-window` should be reconsidered.

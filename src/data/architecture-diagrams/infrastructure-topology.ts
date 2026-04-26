@@ -4,7 +4,7 @@ export const INFRASTRUCTURE_TOPOLOGY_ARCHITECTURE: ArchitectureDiagram = {
   id: 'infrastructure-topology',
   title: 'OnPrem DC1 서비스 토폴로지',
   description:
-    '15대 Active 서버의 계층 의존성. AZ1/AZ2/AZ3 가용 영역 기반, LB → Web → API → DB/Cache → Storage.',
+    '18대 관측 대상의 계층 의존성. 15대 주 서비스 경로와 3대 보조 capacity node를 함께 관측하며, LB → Web → API → DB/Cache → Storage 부하 전파를 표현한다.',
   layers: [
     {
       title: 'Load Balancer',
@@ -15,6 +15,13 @@ export const INFRASTRUCTURE_TOPOLOGY_ARCHITECTURE: ArchitectureDiagram = {
           label: 'HAProxy-01 (AZ1)',
           sublabel: '10.100.1.1 :443',
           type: 'highlight',
+          icon: '🔀',
+        },
+        {
+          id: 'lb-haproxy-dc1-03',
+          label: 'HAProxy-03 (AZ2)',
+          sublabel: '10.100.1.2 :443',
+          type: 'secondary',
           icon: '🔀',
         },
         {
@@ -119,6 +126,13 @@ export const INFRASTRUCTURE_TOPOLOGY_ARCHITECTURE: ArchitectureDiagram = {
           type: 'secondary',
           icon: '⚡',
         },
+        {
+          id: 'cache-redis-dc1-03',
+          label: 'Redis-03 (AZ3)',
+          sublabel: '10.100.2.42 :6379',
+          type: 'secondary',
+          icon: '⚡',
+        },
       ],
     },
     {
@@ -130,6 +144,13 @@ export const INFRASTRUCTURE_TOPOLOGY_ARCHITECTURE: ArchitectureDiagram = {
           label: 'NFS Storage (AZ1)',
           sublabel: '10.100.1.51 :2049',
           type: 'primary',
+          icon: '💾',
+        },
+        {
+          id: 'storage-nfs-dc1-02',
+          label: 'NFS-02 (AZ2)',
+          sublabel: '10.100.1.52 :2049',
+          type: 'secondary',
           icon: '💾',
         },
         {
@@ -146,6 +167,7 @@ export const INFRASTRUCTURE_TOPOLOGY_ARCHITECTURE: ArchitectureDiagram = {
     // LB -> Web
     { from: 'lb-haproxy-dc1-01', to: 'web-nginx-dc1-01', label: 'L7 Route' },
     { from: 'lb-haproxy-dc1-01', to: 'web-nginx-dc1-02' },
+    { from: 'lb-haproxy-dc1-03', to: 'web-nginx-dc1-02', label: 'AZ2 Route' },
     { from: 'lb-haproxy-dc1-02', to: 'web-nginx-dc1-03', label: 'L7 Route' },
     {
       from: 'lb-haproxy-dc1-02',
@@ -154,6 +176,12 @@ export const INFRASTRUCTURE_TOPOLOGY_ARCHITECTURE: ArchitectureDiagram = {
       type: 'dashed',
     },
     { from: 'lb-haproxy-dc1-02', to: 'web-nginx-dc1-02', type: 'dashed' },
+    {
+      from: 'lb-haproxy-dc1-03',
+      to: 'web-nginx-dc1-01',
+      label: 'Secondary Route',
+      type: 'dashed',
+    },
     // Web -> API
     {
       from: 'web-nginx-dc1-01',
@@ -204,6 +232,12 @@ export const INFRASTRUCTURE_TOPOLOGY_ARCHITECTURE: ArchitectureDiagram = {
       label: 'Replication',
       type: 'dashed',
     },
+    {
+      from: 'cache-redis-dc1-02',
+      to: 'cache-redis-dc1-03',
+      label: 'Replication',
+      type: 'dashed',
+    },
     // API -> Storage
     {
       from: 'api-was-dc1-01',
@@ -215,6 +249,12 @@ export const INFRASTRUCTURE_TOPOLOGY_ARCHITECTURE: ArchitectureDiagram = {
       from: 'api-was-dc1-02',
       to: 'storage-nfs-dc1-01',
       label: 'File I/O',
+      type: 'dashed',
+    },
+    {
+      from: 'storage-nfs-dc1-01',
+      to: 'storage-nfs-dc1-02',
+      label: 'Sync',
       type: 'dashed',
     },
     {
