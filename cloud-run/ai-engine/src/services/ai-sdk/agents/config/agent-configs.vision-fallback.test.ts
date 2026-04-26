@@ -57,13 +57,27 @@ vi.mock('../../../../lib/logger', () => ({
 }));
 
 vi.mock('../../../../lib/config-parser', () => ({
-  getOpenRouterVisionModelId: vi.fn(() => 'google/gemma-3-27b-it:free'),
-  isOpenRouterVisionToolCallingEnabled: vi.fn(() => false),
+  getGroqApiKey: vi.fn(() => 'test-groq-key'),
+  getMistralApiKey: vi.fn(() => 'test-mistral-key'),
+  getCerebrasApiKey: vi.fn(() => 'test-cerebras-key'),
+  getCerebrasModelId: vi.fn(() => 'qwen-3-235b-a22b-instruct-2507'),
+  getCerebrasFallbackModelIds: vi.fn(() => ['llama3.1-8b']),
   isCerebrasToolCallingEnabled: vi.fn(() => true),
+  getGroqModelId: vi.fn(() => 'meta-llama/llama-4-scout-17b-16e-instruct'),
+  getTavilyApiKey: vi.fn(() => null),
+  getTavilyApiKeyBackup: vi.fn(() => null),
+  getGeminiApiKey: vi.fn(() => null),
+  getOpenRouterApiKey: vi.fn(() => 'test-openrouter-key'),
+  getOpenRouterVisionModelId: vi.fn(() => 'google/gemma-3-27b-it:free'),
+  getOpenRouterVisionFallbackModelIds: vi.fn(() => []),
+  isOpenRouterVisionToolCallingEnabled: vi.fn(() => false),
 }));
 
-vi.mock('../../model-provider', () => ({
+vi.mock('../../model-provider-status', () => ({
   checkProviderStatus: vi.fn(),
+}));
+
+vi.mock('../../model-provider-core', () => ({
   getCerebrasModel: vi.fn(),
   getGroqModel: vi.fn(),
   getMistralModel: vi.fn(),
@@ -72,11 +86,11 @@ vi.mock('../../model-provider', () => ({
 }));
 
 import { getAgentConfig } from './agent-configs';
+import { checkProviderStatus } from '../../model-provider-status';
 import {
-  checkProviderStatus,
   getGeminiFlashLiteModel,
   getOpenRouterVisionModel,
-} from '../../model-provider';
+} from '../../model-provider-core';
 import { getOpenRouterVisionModelId } from '../../../../lib/config-parser';
 
 describe('agent-configs vision fallback', () => {
