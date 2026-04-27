@@ -1,0 +1,177 @@
+{
+  "runId": "QA-20260427-0352",
+  "recordedAt": "2026-04-27T08:33:24.156Z",
+  "recordedAtKst": "2026-04-27 17:33:24 KST",
+  "runTitle": "Vercel Playwright MCP QA - Reporter and Analyst Functional Quality Check",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_9Ni1cic8moLhSj3YXfhkLrDDkNkp",
+    "deploymentUrl": "https://openmanager-irdlojag9-skyasus-projects.vercel.app",
+    "commitSha": "0fe7179de3877bd11dcfb21d6ac58d24b1bfc045"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-advanced-surface", "ai-core"],
+  "coveredSurfaces": [
+    "Vercel production AI sidebar preserved guest-authenticated session from dashboard",
+    "Reporter tab opens from AI sidebar",
+    "Reporter empty state and first-report CTA render",
+    "Reporter generates Redis memory overload incident report through /api/ai/incident-report 200",
+    "Reporter result identifies cache-redis-dc1-01 as impacted server with 80% confidence root-cause summary",
+    "Reporter state remains present after switching to Analyst and back",
+    "Analyst tab opens from AI sidebar",
+    "Analyst full-system analysis executes 18 /api/ai/intelligent-monitoring requests with 200 responses",
+    "Analyst result renders 17 normal, 1 caution, 0 risk, plus cache-redis-dc1-01 detail with current state, one-hour prediction, and AI insight",
+    "Analyst NaN prediction regression was not observed",
+    "Browser console errors/warnings: 0/0"
+  ],
+  "skippedSurfaces": [
+    "Broad landing/privacy/modal sweep skipped; scope limited to Reporter and Analyst AI advanced surfaces",
+    "OAuth provider end-to-end login skipped; existing guest session was sufficient for this targeted QA",
+    "Cloud Run admin monitoring/traces skipped; Vercel AI proxy paths covered",
+    "Reporter detail modal deep controls were not expanded; generated report card and summary were validated"
+  ],
+  "checks": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Reporter incident report generation",
+      "agent": "Reporter Agent",
+      "provider": "cloud-run",
+      "route": "/api/ai/incident-report",
+      "source": "Playwright MCP browser resource timing",
+      "latencyMs": 2984
+    },
+    {
+      "surface": "Analyst full-system analysis slowest request",
+      "agent": "Analyst Agent",
+      "provider": "cloud-run",
+      "route": "/api/ai/intelligent-monitoring",
+      "source": "Playwright MCP browser resource timing",
+      "latencyMs": 10186
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": true,
+      "rationale": "Reporter and Analyst both complete on production, but Analyst trend result formatting and issue ranking still need non-blocking polish.",
+      "nextAction": "Clarify Analyst trend target values and suppress or explain low-priority issue rows such as CPU 24%."
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP exercised Reporter generation, Analyst full-system analysis, state switching, network status, and console cleanliness.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel usage remained normal and all tested AI proxy calls returned 200.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Core counts and warning server identification are coherent, but the Analyst main-issues ranking includes a CPU 24% row that needs clearer context or filtering.",
+      "nextAction": "Improve Analyst issue ranking/formatting for low-utilization outliers and missing prediction target display."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-27T17:32:00+09:00",
+      "summary": "npm run check:usage:vercel passed after Reporter/Analyst MCP QA; current billing period effective=17.7346 USD, billed=0.0000 USD, chargeCount=15834.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "Reporter and Analyst MCP QA summary",
+      "path": "reports/qa/evidence/qa-20260427-reporter-analyst-mcp.md"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Reporter generated incident report screenshot",
+      "path": "reports/qa/evidence/qa-20260427-reporter-result-mcp.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Analyst full-system result screenshot",
+      "path": "reports/qa/evidence/qa-20260427-analyst-result-mcp.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "reporter-analyst-production-mcp-functional-check-v81136",
+      "title": "Reporter and Analyst production MCP functional check on v8.11.36",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Reporter generated a Redis memory incident report; Analyst completed 18-server full-system analysis with no console errors and no NaN prediction regression.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "analyst-trend-formatting-and-issue-ranking-polish",
+      "title": "Analyst trend target formatting and issue ranking need polish",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "Functional AI paths are green; this is a result-clarity improvement, not a release blocker.",
+      "evidence": "Analyst result showed trend rows like `CPU 69% → --` and listed `storage-nfs-dc1-02 - CPU 24%` under main issues without enough context.",
+      "note": "Replace missing target values with explicit labels or numeric projections, and either filter or explain low-priority issue rows.",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    }
+  ],
+  "notes": [
+    "Reporter generated `Redis 서버 메모리 과부하 경고` with impacted server cache-redis-dc1-01 and confidence 80%.",
+    "Analyst full-system analysis completed for 18 servers and no NaN prediction text was observed.",
+    "Quality judgment: AI Chat and Reporter are improved/acceptable; Analyst is functionally stable but needs clarity polish.",
+    "mode audit: advanced Reporter/Analyst surfaces used their dedicated AI proxy paths rather than chat-only evaluation."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel deployment URL",
+      "url": "https://openmanager-irdlojag9-skyasus-projects.vercel.app/"
+    }
+  ]
+}

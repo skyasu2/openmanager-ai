@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-27T02:47:19.407Z"
+    "updatedAt": "2026-04-27T08:33:24.156Z"
   },
   "sequence": {
-    "nextRunNumber": 351
+    "nextRunNumber": 353
   },
   "summary": {
-    "totalRecordedRuns": 348,
-    "totalRuns": 283,
+    "totalRecordedRuns": 350,
+    "totalRuns": 285,
     "excludedRuns": 65,
-    "totalChecks": 2351,
-    "totalPassed": 2265,
+    "totalChecks": 2372,
+    "totalPassed": 2286,
     "totalFailed": 79,
     "completionRate": 100,
-    "completedItems": 341,
+    "completedItems": 343,
     "pendingItems": 0,
     "deferredItems": 0,
-    "wontFixItems": 17,
+    "wontFixItems": 18,
     "expertDomainsTracked": 10,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260427-0350",
-    "lastRecordedAt": "2026-04-27T02:47:19.407Z",
-    "latestRecordedRunId": "QA-20260427-0350",
-    "latestRecordedAt": "2026-04-27T02:47:19.407Z"
+    "expertDomainsOpenGaps": 2,
+    "lastRunId": "QA-20260427-0352",
+    "lastRecordedAt": "2026-04-27T08:33:24.156Z",
+    "latestRecordedRunId": "QA-20260427-0352",
+    "latestRecordedAt": "2026-04-27T08:33:24.156Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -8321,6 +8321,78 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-27T02:47:19.407Z"
+    },
+    "ai-assistant-guest-login-mcp-check-v81136-20260427": {
+      "id": "ai-assistant-guest-login-mcp-check-v81136-20260427",
+      "title": "AI assistant works through Vercel Playwright MCP guest login on v8.11.36",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260427-0351",
+      "firstSeenAt": "2026-04-27T08:20:05.391Z",
+      "lastSeenRunId": "QA-20260427-0351",
+      "lastSeenAt": "2026-04-27T08:20:05.391Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production Playwright MCP verified guest PIN login, authenticated dashboard, AI sidebar Ready state, direct chat response, AI stream 200, and console cleanliness.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-27T08:20:05.391Z"
+    },
+    "reporter-analyst-production-mcp-functional-check-v81136": {
+      "id": "reporter-analyst-production-mcp-functional-check-v81136",
+      "title": "Reporter and Analyst production MCP functional check on v8.11.36",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260427-0352",
+      "firstSeenAt": "2026-04-27T08:33:24.156Z",
+      "lastSeenRunId": "QA-20260427-0352",
+      "lastSeenAt": "2026-04-27T08:33:24.156Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Reporter generated a Redis memory incident report; Analyst completed 18-server full-system analysis with no console errors and no NaN prediction regression.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-27T08:33:24.156Z"
+    },
+    "analyst-trend-formatting-and-issue-ranking-polish": {
+      "id": "analyst-trend-formatting-and-issue-ranking-polish",
+      "title": "Analyst trend target formatting and issue ranking need polish",
+      "priority": "P2",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260427-0352",
+      "firstSeenAt": "2026-04-27T08:33:24.156Z",
+      "lastSeenRunId": "QA-20260427-0352",
+      "lastSeenAt": "2026-04-27T08:33:24.156Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Analyst result showed trend rows like `CPU 69% → --` and listed `storage-nfs-dc1-02 - CPU 24%` under main issues without enough context.",
+      "lastNote": "Replace missing target values with explicit labels or numeric projections, and either filter or explain low-priority issue rows.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "Functional AI paths are green; this is a result-clarity improvement, not a release blocker.",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-04-27T08:33:24.156Z"
     }
   },
   "runs": [
@@ -33025,6 +33097,291 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260427-0351",
+      "recordedAt": "2026-04-27T08:20:05.391Z",
+      "recordedAtKst": "2026-04-27 17:20:05 KST",
+      "title": "Vercel Playwright MCP QA - Guest Login AI Assistant Check",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260427-0351.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_9Ni1cic8moLhSj3YXfhkLrDDkNkp",
+        "deploymentUrl": "https://openmanager-irdlojag9-skyasus-projects.vercel.app",
+        "commitSha": "0fe7179de3877bd11dcfb21d6ac58d24b1bfc045"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "Vercel production /api/version returns 8.11.36",
+        "Vercel production /api/health healthy with database/cache/AI connected",
+        "/login guest PIN flow reaches authenticated landing session",
+        "Authenticated /dashboard route renders through guest session",
+        "/dashboard snapshot renders total 18, online 17, warning 1, risk 0, offline 0",
+        "AI sidebar opens from production dashboard and reports AI engine Ready",
+        "AI assistant renders server-status summary response with Streaming AI and analysis basis",
+        "Direct AI prompt for warning server and action recommendation returns concrete cache-redis-dc1-01 memory warning guidance",
+        "AI stream request /api/ai/supervisor/stream/v2 returns 200",
+        "Browser console errors/warnings: 0/0"
+      ],
+      "skippedSurfaces": [
+        "Broad landing/privacy/modal sweep skipped; scope limited to guest login and AI assistant health",
+        "OAuth provider end-to-end login skipped; guest PIN flow was the requested browser QA path",
+        "Reporter and Analyst advanced generation flows skipped",
+        "Cloud Run admin monitoring/traces skipped; Vercel /api/health and AI chat path covered"
+      ],
+      "checks": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI sidebar direct warning-summary prompt",
+          "agent": "AI Chat",
+          "provider": "cloud-run",
+          "model": "streaming-supervisor",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Playwright MCP UI response badge",
+          "latencyMs": 1778
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production AI assistant returned concrete status and warning-action guidance through the guest-authenticated browser flow.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP covered browser login, protected dashboard navigation, AI sidebar open, direct prompt send, and response evidence.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel deployment inspection, health endpoint, AI stream 200, console cleanliness, and usage check were green for the tested target.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Dashboard status-count snapshot and AI response both used the current 18-server topology and identified the live warning server context.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-27T17:18:35+09:00",
+          "summary": "npm run check:usage:vercel passed after guest-login AI assistant MCP QA; current billing period effective=17.7346 USD, billed=0.0000 USD, chargeCount=15834.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "Vercel guest login AI assistant MCP QA summary",
+          "path": "reports/qa/evidence/qa-20260427-vercel-guest-ai-assistant-mcp.md"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Vercel guest AI assistant response screenshot",
+          "path": "reports/qa/evidence/qa-20260427-vercel-guest-ai-assistant-mcp.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel deployment URL",
+          "url": "https://openmanager-irdlojag9-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260427-0352",
+      "recordedAt": "2026-04-27T08:33:24.156Z",
+      "recordedAtKst": "2026-04-27 17:33:24 KST",
+      "title": "Vercel Playwright MCP QA - Reporter and Analyst Functional Quality Check",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260427-0352.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_9Ni1cic8moLhSj3YXfhkLrDDkNkp",
+        "deploymentUrl": "https://openmanager-irdlojag9-skyasus-projects.vercel.app",
+        "commitSha": "0fe7179de3877bd11dcfb21d6ac58d24b1bfc045"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-advanced-surface",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "Vercel production AI sidebar preserved guest-authenticated session from dashboard",
+        "Reporter tab opens from AI sidebar",
+        "Reporter empty state and first-report CTA render",
+        "Reporter generates Redis memory overload incident report through /api/ai/incident-report 200",
+        "Reporter result identifies cache-redis-dc1-01 as impacted server with 80% confidence root-cause summary",
+        "Reporter state remains present after switching to Analyst and back",
+        "Analyst tab opens from AI sidebar",
+        "Analyst full-system analysis executes 18 /api/ai/intelligent-monitoring requests with 200 responses",
+        "Analyst result renders 17 normal, 1 caution, 0 risk, plus cache-redis-dc1-01 detail with current state, one-hour prediction, and AI insight",
+        "Analyst NaN prediction regression was not observed",
+        "Browser console errors/warnings: 0/0"
+      ],
+      "skippedSurfaces": [
+        "Broad landing/privacy/modal sweep skipped; scope limited to Reporter and Analyst AI advanced surfaces",
+        "OAuth provider end-to-end login skipped; existing guest session was sufficient for this targeted QA",
+        "Cloud Run admin monitoring/traces skipped; Vercel AI proxy paths covered",
+        "Reporter detail modal deep controls were not expanded; generated report card and summary were validated"
+      ],
+      "checks": {
+        "total": 11,
+        "passed": 11,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "Reporter incident report generation",
+          "agent": "Reporter Agent",
+          "provider": "cloud-run",
+          "route": "/api/ai/incident-report",
+          "source": "Playwright MCP browser resource timing",
+          "latencyMs": 2984
+        },
+        {
+          "surface": "Analyst full-system analysis slowest request",
+          "agent": "Analyst Agent",
+          "provider": "cloud-run",
+          "route": "/api/ai/intelligent-monitoring",
+          "source": "Playwright MCP browser resource timing",
+          "latencyMs": 10186
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": true,
+          "rationale": "Reporter and Analyst both complete on production, but Analyst trend result formatting and issue ranking still need non-blocking polish.",
+          "nextAction": "Clarify Analyst trend target values and suppress or explain low-priority issue rows such as CPU 24%."
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP exercised Reporter generation, Analyst full-system analysis, state switching, network status, and console cleanliness.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel usage remained normal and all tested AI proxy calls returned 200.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Core counts and warning server identification are coherent, but the Analyst main-issues ranking includes a CPU 24% row that needs clearer context or filtering.",
+          "nextAction": "Improve Analyst issue ranking/formatting for low-utilization outliers and missing prediction target display."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-27T17:32:00+09:00",
+          "summary": "npm run check:usage:vercel passed after Reporter/Analyst MCP QA; current billing period effective=17.7346 USD, billed=0.0000 USD, chargeCount=15834.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "Reporter and Analyst MCP QA summary",
+          "path": "reports/qa/evidence/qa-20260427-reporter-analyst-mcp.md"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Reporter generated incident report screenshot",
+          "path": "reports/qa/evidence/qa-20260427-reporter-result-mcp.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Analyst full-system result screenshot",
+          "path": "reports/qa/evidence/qa-20260427-analyst-result-mcp.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel deployment URL",
+          "url": "https://openmanager-irdlojag9-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 2,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1
     }
   ],
   "experts": {
@@ -33033,17 +33390,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 161,
-      "appropriateCount": 148,
+      "seenCount": 163,
+      "appropriateCount": 150,
       "partialCount": 13,
       "inappropriateCount": 0,
-      "improvementNeededCount": 22,
-      "lastRunId": "QA-20260427-0350",
-      "lastSeenAt": "2026-04-27T02:47:19.407Z",
+      "improvementNeededCount": 23,
+      "lastRunId": "QA-20260427-0352",
+      "lastSeenAt": "2026-04-27T08:33:24.156Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "Production AI sidebar starter and direct prompt paths both received real AI responses and passed dashboard-count parity assertions.",
-      "lastNextAction": ""
+      "lastImprovementNeeded": true,
+      "lastRationale": "Reporter and Analyst both complete on production, but Analyst trend result formatting and issue ranking still need non-blocking polish.",
+      "lastNextAction": "Clarify Analyst trend target values and suppress or explain low-priority issue rows such as CPU 24%."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -33084,16 +33441,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 94,
-      "appropriateCount": 83,
+      "seenCount": 96,
+      "appropriateCount": 85,
       "partialCount": 11,
       "inappropriateCount": 0,
       "improvementNeededCount": 15,
-      "lastRunId": "QA-20260427-0350",
-      "lastSeenAt": "2026-04-27T02:47:19.407Z",
+      "lastRunId": "QA-20260427-0352",
+      "lastSeenAt": "2026-04-27T08:33:24.156Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Vercel deployment inspection, /api/health, and usage checks were green for the tested production target.",
+      "lastRationale": "Vercel usage remained normal and all tested AI proxy calls returned 200.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -33101,16 +33458,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 131,
-      "appropriateCount": 122,
+      "seenCount": 133,
+      "appropriateCount": 124,
       "partialCount": 9,
       "inappropriateCount": 0,
       "improvementNeededCount": 11,
-      "lastRunId": "QA-20260427-0350",
-      "lastSeenAt": "2026-04-27T02:47:19.407Z",
+      "lastRunId": "QA-20260427-0352",
+      "lastSeenAt": "2026-04-27T08:33:24.156Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The targeted Playwright MCP pass exercised guest login, dashboard navigation, sidebar chat, tool menu, and response assertions against Vercel production.",
+      "lastRationale": "Playwright MCP exercised Reporter generation, Analyst full-system analysis, state switching, network status, and console cleanliness.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -33118,17 +33475,17 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 37,
-      "appropriateCount": 20,
-      "partialCount": 17,
+      "seenCount": 39,
+      "appropriateCount": 21,
+      "partialCount": 18,
       "inappropriateCount": 0,
-      "improvementNeededCount": 17,
-      "lastRunId": "QA-20260427-0350",
-      "lastSeenAt": "2026-04-27T02:47:19.407Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "The AI response assertions were tied to the dashboard status-count snapshot rather than free-form text alone.",
-      "lastNextAction": ""
+      "improvementNeededCount": 18,
+      "lastRunId": "QA-20260427-0352",
+      "lastSeenAt": "2026-04-27T08:33:24.156Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "Core counts and warning server identification are coherent, but the Analyst main-issues ranking includes a CPU 24% row that needs clearer context or filtering.",
+      "lastNextAction": "Improve Analyst issue ranking/formatting for low-utilization outliers and missing prediction target display."
     },
     "infra-reliability": {
       "domainId": "infra-reliability",

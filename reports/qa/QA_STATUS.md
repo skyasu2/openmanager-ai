@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-27 11:47:19 KST
+> Generated at: 2026-04-27 17:33:43 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 348 |
-| Total Runs (Counted) | 283 |
+| Total Recorded Runs | 350 |
+| Total Runs (Counted) | 285 |
 | Non-counted Runs | 65 |
-| Total Checks | 2351 |
-| Passed | 2265 |
+| Total Checks | 2372 |
+| Passed | 2286 |
 | Failed | 79 |
-| Completed Items | 341 |
+| Completed Items | 343 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 17 |
+| Wont-Fix Items | 18 |
 | Expert Domains Tracked | 10 |
-| Expert Open Gaps | 0 |
+| Expert Open Gaps | 2 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260427-0350 (2026-04-27T02:47:19.407Z) |
-| Latest Recorded Run | QA-20260427-0350 (2026-04-27T02:47:19.407Z) |
+| Last Counted Run | QA-20260427-0352 (2026-04-27T08:33:24.156Z) |
+| Latest Recorded Run | QA-20260427-0352 (2026-04-27T08:33:24.156Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,30 +34,32 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260427-0350 (2026-04-27T02:47:19.407Z)
+Latest run: QA-20260427-0352 (2026-04-27T08:33:24.156Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | yes | Clarify Analyst trend target values and suppress or explain low-priority issue rows such as CPU 24%. |
 | Test Automation Architect | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
-| Data Quality & Metrics Analyst | appropriate | no | - |
+| Data Quality & Metrics Analyst | partially-appropriate | yes | Improve Analyst issue ranking/formatting for low-utilization outliers and missing prediction target display. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | npm run check:usage:vercel passed after production AI assistant QA; current billing period effective=17.0653 USD, billed=0.0000 USD, chargeCount=15225. |
+| vercel | cli | checked | normal | npm run check:usage:vercel passed after Reporter/Analyst MCP QA; current billing period effective=17.7346 USD, billed=0.0000 USD, chargeCount=15834. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-26T02:47:19.407Z -> 2026-04-27T02:47:19.407Z (24h)
-- Runs with observations: 2 recorded / 2 counted
-- Samples: 3
+- Window: 2026-04-26T08:33:24.156Z -> 2026-04-27T08:33:24.156Z (24h)
+- Runs with observations: 4 recorded / 4 counted
+- Samples: 6
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| AI Chat | cloud-run | 3 | 3552ms | 5092ms | - | - | 2393ms | 2932ms | QA-20260427-0350 |
+| Analyst Agent | cloud-run | 1 | 10186ms | 10186ms | - | - | - | - | QA-20260427-0352 |
+| AI Chat | cloud-run | 4 | 3109ms | 5092ms | - | - | 2393ms | 2932ms | QA-20260427-0351 |
+| Reporter Agent | cloud-run | 1 | 2984ms | 2984ms | - | - | - | - | QA-20260427-0352 |
 
 ## Coverage (Latest Run)
 
@@ -65,9 +67,9 @@ Latest run: QA-20260427-0350 (2026-04-27T02:47:19.407Z)
 - Release-Facing: yes
 - Counts Toward Summary: yes
 - Deployment: dpl_9Ni1cic8moLhSj3YXfhkLrDDkNkp / SHA 0fe7179d
-- Coverage Packs: dashboard-core, ai-core
-- Covered Surfaces: Vercel production /api/version returns 8.11.36, Vercel production /api/health healthy with database/cache/AI connected, /login guest PIN flow reaches authenticated dashboard, /dashboard snapshot renders total 18, online 17, warning 1, critical 0, offline 0, /dashboard navigation performance captured through browser performance API, AI sidebar opens through production UI in 252ms, AI sidebar starter prompt sends all-server status summary query and receives actual AI response in 3042ms, AI sidebar direct prompt sends all-server status summary query and receives actual AI response in 2522ms, Both AI responses match dashboard status-count snapshot through MCP assertions, AI tool menu exposes RAG search, Web search, response mode, deep analysis, and file attachment controls, Browser console errors/warnings: 0/0, Playwright CLI dashboard-ai-chat regression guard passed 2/2 after MCP QA
-- Skipped Surfaces: Broad landing/privacy/modal sweep skipped; scope limited to AI assistant real chat, Reporter and Analyst advanced generation flows skipped, Cloud Run admin monitoring/traces skipped; Vercel /api/health and AI chat path covered, OAuth provider end-to-end login skipped; guest PIN flow was sufficient for targeted AI chat QA
+- Coverage Packs: ai-advanced-surface, ai-core
+- Covered Surfaces: Vercel production AI sidebar preserved guest-authenticated session from dashboard, Reporter tab opens from AI sidebar, Reporter empty state and first-report CTA render, Reporter generates Redis memory overload incident report through /api/ai/incident-report 200, Reporter result identifies cache-redis-dc1-01 as impacted server with 80% confidence root-cause summary, Reporter state remains present after switching to Analyst and back, Analyst tab opens from AI sidebar, Analyst full-system analysis executes 18 /api/ai/intelligent-monitoring requests with 200 responses, Analyst result renders 17 normal, 1 caution, 0 risk, plus cache-redis-dc1-01 detail with current state, one-hour prediction, and AI insight, Analyst NaN prediction regression was not observed, Browser console errors/warnings: 0/0
+- Skipped Surfaces: Broad landing/privacy/modal sweep skipped; scope limited to Reporter and Analyst AI advanced surfaces, OAuth provider end-to-end login skipped; existing guest session was sufficient for this targeted QA, Cloud Run admin monitoring/traces skipped; Vercel AI proxy paths covered, Reporter detail modal deep controls were not expanded; generated report card and summary were validated
 
 ## Links (Latest Run)
 
@@ -80,12 +82,16 @@ Latest run: QA-20260427-0350 (2026-04-27T02:47:19.407Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-report | Vercel AI assistant Playwright MCP real chat QA summary | `reports/qa/evidence/qa-20260427-vercel-ai-assistant-chat-e2e.md` | - |
-| playwright-screenshot | Vercel AI assistant MCP chat result screenshot | `reports/qa/evidence/qa-20260427-vercel-ai-assistant-mcp-chat.png` | - |
+| playwright-report | Reporter and Analyst MCP QA summary | `reports/qa/evidence/qa-20260427-reporter-analyst-mcp.md` | - |
+| playwright-screenshot | Reporter generated incident report screenshot | `reports/qa/evidence/qa-20260427-reporter-result-mcp.png` | - |
+| playwright-screenshot | Analyst full-system result screenshot | `reports/qa/evidence/qa-20260427-analyst-result-mcp.png` | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260427-0352)
+  next: Clarify Analyst trend target values and suppress or explain low-priority issue rows such as CPU 24%.
+- data-metrics-quality: Data Quality & Metrics Analyst (last QA-20260427-0352)
+  next: Improve Analyst issue ranking/formatting for low-utilization outliers and missing prediction target display.
 
 ## Pending Improvements
 
@@ -97,7 +103,7 @@ Latest run: QA-20260427-0350 (2026-04-27T02:47:19.407Z)
 
 ## Wont-Fix Improvements
 
-- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 4, Portfolio Deferral 9
+- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 4, Portfolio Deferral 10
 
 ### Platform Constraint
 
@@ -146,6 +152,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] analyst-drilldown: Analyst 서버별 드릴다운 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
+- [P2] analyst-trend-formatting-and-issue-ranking-polish: Analyst trend target formatting and issue ranking need polish (seen 1회, last QA-20260427-0352)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] landing-tech-stack-version-copy-drift: 기술 스택 모달 상세/아키텍처 간 버전 카피 정합성 정리 (seen 1회, last QA-20260330-0195)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] mobile-header-density: Review dashboard mobile header density around AI CTA and profile cluster (seen 1회, last QA-20260418-0303)
@@ -161,6 +169,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-answer-enumerated-requirements: AI 답변이 사용자가 요청한 항목 개수를 정확히 충족하도록 보강 (completed 1회, last QA-20260423-0339)
 - ai-assistant-fullscreen-query-path: AI 전체 화면 핵심 서버 상태 요약 질의 검증 (completed 1회, last QA-20260318-0123)
 - ai-assistant-fullscreen-tools-parity: AI 전체 화면 도구 메뉴 parity 검증 (completed 1회, last QA-20260318-0123)
+- ai-assistant-guest-login-mcp-check-v81136-20260427: AI assistant works through Vercel Playwright MCP guest login on v8.11.36 (completed 1회, last QA-20260427-0351)
 - ai-assistant-real-chat-e2e-v81136: AI assistant Playwright MCP real chat QA on Vercel v8.11.36 (completed 1회, last QA-20260427-0350)
 - ai-chat-cloud-run-500: AI Chat Cloud Run 자유입력 응답 - 최종 성공 확인 (completed 1회, last QA-20260310-0089)
 - ai-chat-cloud-run-rate-limit-production: Complex Cloud Run AI verification path should complete without rate-limit failure in production (completed 2회, last QA-20260408-0250)
@@ -382,6 +391,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - release-dod-test-gate: validate:all 0 에러 (completed 2회, last QA-20260302-0036)
 - reporter-agent-generate: Reporter Agent 보고서 생성 신뢰도 80% (completed 1회, last QA-20260419-0306)
 - reporter-agent-pass: Reporter Agent 보고서 즉시 생성 정상 (completed 1회, last QA-20260326-0190)
+- reporter-analyst-production-mcp-functional-check-v81136: Reporter and Analyst production MCP functional check on v8.11.36 (completed 1회, last QA-20260427-0352)
 - reporter-empty-cta-generate-v880: Reporter 빈 상태 CTA 생성 경로 검증 (completed 1회, last QA-20260308-0058)
 - reporter-empty-cta-generate-v880-quality-recheck: Reporter 빈 상태 CTA 생성 경로 재검증 (completed 1회, last QA-20260308-0059)
 - reporter-empty-cta-generate-v880-recheck-20260309: Reporter empty state CTA 생성 경로 재검증 (completed 4회, last QA-20260309-0068)
@@ -501,6 +511,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260427-0352 | 2026-04-27T08:33:24.156Z | targeted | yes | yes | Vercel Playwright MCP QA - Reporter and Analyst Functional Quality Check | 11 | 1 | 0 | 0 | 1 | 2 |
+| QA-20260427-0351 | 2026-04-27T08:20:05.391Z | targeted | yes | yes | Vercel Playwright MCP QA - Guest Login AI Assistant Check | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260427-0350 | 2026-04-27T02:47:19.407Z | targeted | yes | yes | Vercel Production AI Assistant Playwright MCP Real Chat QA | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260427-0349 | 2026-04-26T15:45:57.159Z | targeted | yes | yes | v8.11.35 AI Sidebar Tool UX Release Smoke | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260424-0348 | 2026-04-24T10:55:21.196Z | targeted | no | yes | Production Playwright E2E - AI slot provenance parity validation | 2 | 1 | 0 | 0 | 0 | 0 |
@@ -519,5 +531,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260423-0335 | 2026-04-22T16:04:43.748Z | release-gate | yes | yes | Vercel complementary release-gate QA - auth fallback routes and streaming header proof | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260423-0334 | 2026-04-22T15:53:14.284Z | broad | yes | yes | Vercel Playwright broad QA - v8.11.26 release baseline refresh | 15 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260423-0333 | 2026-04-22T15:25:24.516Z | targeted | no | no | QA sync - observability gap cleared after worker fallback production recheck | 0 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260423-0332 | 2026-04-22T15:20:28.286Z | targeted | no | no | Vercel targeted QA - AI workspace dashboard return worker fallback resolved | 4 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260422-0331 | 2026-04-22T14:47:29.748Z | targeted | no | no | Local dev browser verification - AI workspace dashboard return worker fallback | 6 | 0 | 0 | 0 | 0 | 0 |
