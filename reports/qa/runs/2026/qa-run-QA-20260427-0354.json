@@ -1,0 +1,86 @@
+{
+  "runId": "QA-20260427-0354",
+  "recordedAt": "2026-04-27T13:51:08.998Z",
+  "recordedAtKst": "2026-04-27 22:51:08 KST",
+  "runTitle": "AI Provider 분산 배치 (Spider-Web) Production QA (Task 3)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_A7Nhcu4FxYeVkhQAWvWv9hUSW9Ca",
+    "deploymentUrl": "",
+    "commitSha": "2a209c74c1528bb4d694e4e90eae51ff86568926"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core", "ai-advanced-surface"],
+  "coveredSurfaces": [
+    "/dashboard",
+    "AI Chat",
+    "Reporter (자동장애 보고서)",
+    "Analyst (이상감지/예측)"
+  ],
+  "skippedSurfaces": ["landing page full flow", "login page"],
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Provider 분산 배치 후 AI Chat, Analyst, Reporter 전 구간 정상 응답 확인",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "manual-dashboard",
+      "status": "checked",
+      "result": "unknown",
+      "checkedAt": "",
+      "summary": "",
+      "evidence": "",
+      "url": ""
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "AI Chat lb-haproxy-dc1-01 CPU 74% 분석 응답",
+      "path": "reports/qa/evidence/QA-20260427-0354/qa-20260427-chat-response.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Analyst 주요 이슈 결과 (network 72%)",
+      "path": "reports/qa/evidence/QA-20260427-0354/qa-20260427-analyst-result.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Reporter 보고서 생성 결과",
+      "path": "reports/qa/evidence/QA-20260427-0354/qa-20260427-reporter-result.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": [
+    {
+      "type": "general",
+      "label": "general",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

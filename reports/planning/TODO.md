@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-27 KST (`AI Assistant Analyst/Reporter quality improvement 완료`)
+**Last Updated**: 2026-04-27 KST (`AI Provider 분산 배치 Spider-Web 완료`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,6 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI Provider 분산 배치 (Spider-Web) 개선 | P0/P1 | Approved | Plan: [ai-provider-distribution-plan.md](ai-provider-distribution-plan.md). 현재 NLQ/Analyst/Reporter/Advisor/Supervisor/Verifier 6개 에이전트가 동일 순서(Groq→Cerebras→Mistral)로 설정돼 Groq 1K RPD를 경쟁 소진. Task 1(P0): Cerebras Qwen/llama 2026-05-27 종료 대응은 Groq provider replacement로 고정하고, `gpt-oss-120b`는 현재 계정 chat smoke 404로 runtime 제외 유지. Task 2(P1): Analyst/Reporter/Verifier를 Cerebras 1순위로 변경해 에이전트 그룹별 provider 분리. |
 
 ---
 
@@ -31,6 +30,14 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-27 #208)
+- [x] AI Provider 분산 배치 (Spider-Web) 완료 (v8.11.38)
+  - Analyst/Reporter/Verifier → Cerebras 1순위(CEREBRAS_FIRST_PROVIDER_ORDER), NLQ/Supervisor/Advisor → Groq 1순위 유지
+  - Groq 1K RPD를 Group A 3개 에이전트만 사용 → 실질 ~333회/에이전트/일 (2배 개선)
+  - Cerebras Qwen/llama 2026-05-27 종료 대응: runtime replacement=Groq 확정
+  - Production QA-20260427-0354: 7/7 pass, 콘솔 에러 0건
+  - Plan archived: [archive/ai-provider-distribution-plan.md](archive/ai-provider-distribution-plan.md)
 
 ### Completed (2026-04-27 #207)
 - [x] AI Assistant Analyst/Reporter quality improvement 완료 (v8.11.38)

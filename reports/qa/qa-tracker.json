@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-27T13:19:24.078Z"
+    "updatedAt": "2026-04-27T13:51:08.998Z"
   },
   "sequence": {
-    "nextRunNumber": 354
+    "nextRunNumber": 355
   },
   "summary": {
-    "totalRecordedRuns": 351,
-    "totalRuns": 286,
+    "totalRecordedRuns": 352,
+    "totalRuns": 287,
     "excludedRuns": 65,
-    "totalChecks": 2384,
-    "totalPassed": 2296,
+    "totalChecks": 2391,
+    "totalPassed": 2303,
     "totalFailed": 79,
     "completionRate": 100,
     "completedItems": 343,
@@ -21,10 +21,10 @@
     "wontFixItems": 18,
     "expertDomainsTracked": 10,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260427-0353",
-    "lastRecordedAt": "2026-04-27T13:19:24.078Z",
-    "latestRecordedRunId": "QA-20260427-0353",
-    "latestRecordedAt": "2026-04-27T13:19:24.078Z"
+    "lastRunId": "QA-20260427-0354",
+    "lastRecordedAt": "2026-04-27T13:51:08.998Z",
+    "latestRecordedRunId": "QA-20260427-0354",
+    "latestRecordedAt": "2026-04-27T13:51:08.998Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -33494,6 +33494,100 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260427-0354",
+      "recordedAt": "2026-04-27T13:51:08.998Z",
+      "recordedAtKst": "2026-04-27 22:51:08 KST",
+      "title": "AI Provider 분산 배치 (Spider-Web) Production QA (Task 3)",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260427-0354.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_A7Nhcu4FxYeVkhQAWvWv9hUSW9Ca",
+        "deploymentUrl": "",
+        "commitSha": "2a209c74c1528bb4d694e4e90eae51ff86568926"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "/dashboard",
+        "AI Chat",
+        "Reporter (자동장애 보고서)",
+        "Analyst (이상감지/예측)"
+      ],
+      "skippedSurfaces": [
+        "landing page full flow",
+        "login page"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Provider 분산 배치 후 AI Chat, Analyst, Reporter 전 구간 정상 응답 확인",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "manual-dashboard",
+          "status": "checked",
+          "result": "unknown",
+          "checkedAt": "",
+          "summary": "",
+          "evidence": "",
+          "url": ""
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "AI Chat lb-haproxy-dc1-01 CPU 74% 분석 응답",
+          "path": "reports/qa/evidence/QA-20260427-0354/qa-20260427-chat-response.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Analyst 주요 이슈 결과 (network 72%)",
+          "path": "reports/qa/evidence/QA-20260427-0354/qa-20260427-analyst-result.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Reporter 보고서 생성 결과",
+          "path": "reports/qa/evidence/QA-20260427-0354/qa-20260427-reporter-result.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "general",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -33502,16 +33596,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 164,
-      "appropriateCount": 151,
+      "seenCount": 165,
+      "appropriateCount": 152,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 23,
-      "lastRunId": "QA-20260427-0353",
-      "lastSeenAt": "2026-04-27T13:19:24.078Z",
+      "lastRunId": "QA-20260427-0354",
+      "lastSeenAt": "2026-04-27T13:51:08.998Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Analyst 주요 이슈 정렬/필터링, 예측값 표시, Reporter 카드 요약 개선이 QA 범위에 포함됨",
+      "lastRationale": "Provider 분산 배치 후 AI Chat, Analyst, Reporter 전 구간 정상 응답 확인",
       "lastNextAction": ""
     },
     "observability-monitoring": {

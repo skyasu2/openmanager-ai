@@ -1,0 +1,123 @@
+{
+  "runTitle": "AI Provider 분산 배치 (Spider-Web) Production QA (Task 3)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core", "ai-advanced-surface"],
+  "coveredSurfaces": [
+    "/dashboard",
+    "AI Chat",
+    "Reporter (자동장애 보고서)",
+    "Analyst (이상감지/예측)"
+  ],
+  "skippedSurfaces": ["landing page full flow", "login page"],
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "commitSha": "2a209c74c1528bb4d694e4e90eae51ff86568926",
+    "deploymentId": "dpl_A7Nhcu4FxYeVkhQAWvWv9hUSW9Ca"
+  },
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0,
+    "warned": 0,
+    "skipped": 0
+  },
+  "items": [
+    {
+      "id": "provider-dist-type-check",
+      "title": "루트 npm run type-check 통과",
+      "status": "pass",
+      "severity": "P0",
+      "note": "TypeScript 컴파일 성공 (101.3s)"
+    },
+    {
+      "id": "provider-dist-test-quick",
+      "title": "npm run test:quick 통과 (163 tests)",
+      "status": "pass",
+      "severity": "P0",
+      "note": "8 test files, 163 tests all passed"
+    },
+    {
+      "id": "provider-dist-ai-engine-type-check",
+      "title": "AI Engine (src/services/ai-sdk) type-check 통과",
+      "status": "pass",
+      "severity": "P0",
+      "note": "tsc --noEmit 성공. AI Engine이 Next.js 루트에 통합되어 루트 type-check로 검증"
+    },
+    {
+      "id": "provider-dist-cerebras-first",
+      "title": "Analyst/Reporter CEREBRAS_FIRST_PROVIDER_ORDER 확인",
+      "status": "pass",
+      "severity": "P1",
+      "note": "agent-runtime-policy.ts: Analyst/Reporter providerOrder=['cerebras','groq','mistral'], NLQ/Advisor/Supervisor는 TEXT_AGENT_PROVIDER_ORDER=['groq','cerebras','mistral'] 유지"
+    },
+    {
+      "id": "provider-dist-chat-response",
+      "title": "AI Chat: lb-haproxy-dc1-01 CPU 74% 분석 응답",
+      "status": "pass",
+      "severity": "P1",
+      "note": "Cloud Run AI · 서버 실시간 데이터 분석 · 4893ms. 평소 39.6% 대비 86% 증가, 조치 권고 포함 응답"
+    },
+    {
+      "id": "provider-dist-analyst-result",
+      "title": "Analyst: 전체 시스템 분석 정상 (주요 이슈 표시)",
+      "status": "pass",
+      "severity": "P1",
+      "note": "주요 이슈: lb-haproxy-dc1-01 network 72%, 상한 70% 초과, 조치: NETWORK 추세와 관련 로그를 점검하세요"
+    },
+    {
+      "id": "provider-dist-reporter-result",
+      "title": "Reporter: 보고서 생성 성공 (원인/영향/다음 조치 표시)",
+      "status": "pass",
+      "severity": "P1",
+      "note": "원인: 불균형한 트래픽 라우팅(신뢰도 65%), 영향: 주의 1대·위험 0대, 다음 조치: HAProxy stats 확인. 콘솔 에러 0건"
+    }
+  ],
+  "summary": "v8.11.38 AI Provider 분산 배치(Spider-Web) Production QA. type-check/test 통과. Analyst/Reporter Cerebras-first 배치 코드 확인. AI Chat(Groq-first Group A), Analyst/Reporter(Cerebras-first Group B) 모두 정상 응답. 콘솔 에러 0건.",
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Provider 분산 배치 후 AI Chat, Analyst, Reporter 전 구간 정상 응답 확인",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "period": "2026-04-01..2026-04-27",
+      "effectiveUsd": 17.73,
+      "billedUsd": 0.0,
+      "unexpectedBilledUsage": false,
+      "note": "effective $17.7347, billed $0.0000, chargeCount 15834"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "AI Chat lb-haproxy-dc1-01 CPU 74% 분석 응답",
+      "path": "reports/qa/evidence/QA-20260427-0354/qa-20260427-chat-response.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Analyst 주요 이슈 결과 (network 72%)",
+      "path": "reports/qa/evidence/QA-20260427-0354/qa-20260427-analyst-result.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Reporter 보고서 생성 결과",
+      "path": "reports/qa/evidence/QA-20260427-0354/qa-20260427-reporter-result.png"
+    }
+  ],
+  "links": [{ "label": "general", "url": "https://openmanager-ai.vercel.app" }],
+  "playwrightArtifacts": false
+}

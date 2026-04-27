@@ -1,17 +1,17 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-27 22:19:24 KST
+> Generated at: 2026-04-27 22:51:09 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 351 |
-| Total Runs (Counted) | 286 |
+| Total Recorded Runs | 352 |
+| Total Runs (Counted) | 287 |
 | Non-counted Runs | 65 |
-| Total Checks | 2384 |
-| Passed | 2296 |
+| Total Checks | 2391 |
+| Passed | 2303 |
 | Failed | 79 |
 | Completed Items | 343 |
 | Pending Items | 0 |
@@ -20,8 +20,8 @@
 | Expert Domains Tracked | 10 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260427-0353 (2026-04-27T13:19:24.078Z) |
-| Latest Recorded Run | QA-20260427-0353 (2026-04-27T13:19:24.078Z) |
+| Last Counted Run | QA-20260427-0354 (2026-04-27T13:51:08.998Z) |
+| Latest Recorded Run | QA-20260427-0354 (2026-04-27T13:51:08.998Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,12 +34,11 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260427-0353 (2026-04-27T13:19:24.078Z)
+Latest run: QA-20260427-0354 (2026-04-27T13:51:08.998Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
-| Data Quality & Metrics Analyst | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
@@ -49,7 +48,7 @@ Latest run: QA-20260427-0353 (2026-04-27T13:19:24.078Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-26T13:19:24.078Z -> 2026-04-27T13:19:24.078Z (24h)
+- Window: 2026-04-26T13:51:08.998Z -> 2026-04-27T13:51:08.998Z (24h)
 - Runs with observations: 4 recorded / 4 counted
 - Samples: 6
 
@@ -79,11 +78,9 @@ Latest run: QA-20260427-0353 (2026-04-27T13:19:24.078Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | AI Chat standalone query response | `reports/qa/evidence/QA-20260427-0353/qa-20260427-ai-chat-response.png` | - |
-| playwright-screenshot | Analyst 주요 이슈 정렬 결과 | `reports/qa/evidence/QA-20260427-0353/qa-20260427-analyst-result.png` | - |
-| playwright-screenshot | Reporter 접힌 카드 원인/영향/다음 조치 | `reports/qa/evidence/QA-20260427-0353/qa-20260427-reporter-card-top.png` | - |
-| playwright-screenshot | Reporter 보고서 상세 내용 | `reports/qa/evidence/QA-20260427-0353/qa-20260427-reporter-detail.png` | - |
-| playwright-screenshot | Reporter 3회차 성공 화면 | `reports/qa/evidence/QA-20260427-0353/qa-20260427-reporter-success.png` | - |
+| playwright-screenshot | AI Chat lb-haproxy-dc1-01 CPU 74% 분석 응답 | `reports/qa/evidence/QA-20260427-0354/qa-20260427-chat-response.png` | - |
+| playwright-screenshot | Analyst 주요 이슈 결과 (network 72%) | `reports/qa/evidence/QA-20260427-0354/qa-20260427-analyst-result.png` | - |
+| playwright-screenshot | Reporter 보고서 생성 결과 | `reports/qa/evidence/QA-20260427-0354/qa-20260427-reporter-result.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -507,6 +504,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260427-0354 | 2026-04-27T13:51:08.998Z | targeted | yes | yes | AI Provider 분산 배치 (Spider-Web) Production QA (Task 3) | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260427-0353 | 2026-04-27T13:19:24.078Z | targeted | yes | yes | AI Assistant Analyst/Reporter Quality - Production Playwright MCP QA (Task 5) | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260427-0352 | 2026-04-27T08:33:24.156Z | targeted | yes | yes | Vercel Playwright MCP QA - Reporter and Analyst Functional Quality Check | 11 | 1 | 0 | 0 | 1 | 2 |
 | QA-20260427-0351 | 2026-04-27T08:20:05.391Z | targeted | yes | yes | Vercel Playwright MCP QA - Guest Login AI Assistant Check | 10 | 1 | 0 | 0 | 0 | 0 |
@@ -526,4 +524,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260423-0337 | 2026-04-23T09:08:17.769Z | targeted | yes | yes | Vercel MCP targeted QA - Playwright and Chrome DevTools production refresh | 14 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260423-0336 | 2026-04-22T16:17:11.229Z | targeted | yes | yes | Vercel complementary release-gate QA - advanced AI surfaces after v8.11.26 release | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260423-0335 | 2026-04-22T16:04:43.748Z | release-gate | yes | yes | Vercel complementary release-gate QA - auth fallback routes and streaming header proof | 7 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260423-0334 | 2026-04-22T15:53:14.284Z | broad | yes | yes | Vercel Playwright broad QA - v8.11.26 release baseline refresh | 15 | 0 | 0 | 0 | 0 | 0 |
