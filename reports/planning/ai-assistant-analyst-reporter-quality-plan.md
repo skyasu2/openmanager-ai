@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Draft
+> Status: Approved
 > Doc type: Plan
 > Last reviewed: 2026-04-27
 > Canonical: reports/planning/ai-assistant-analyst-reporter-quality-plan.md
@@ -7,7 +7,7 @@
 
 # AI Assistant Analyst/Reporter Quality Plan
 
-- 상태: Draft
+- 상태: Approved
 - 작성일: 2026-04-27
 - TODO.md 연결: Active Tasks > AI Assistant Analyst/Reporter quality improvement
 - 기준 QA: `QA-20260427-0351`, `QA-20260427-0352`
@@ -168,6 +168,6 @@ Vercel production + Playwright MCP QA에서 확인된 AI assistant 품질 차이
 
 ## 현재 결정
 
-- 구현 착수 전 사용자 확인을 위해 Status는 `Draft`로 유지한다.
+- 사용자 확인 후 구현 착수를 위해 Status를 `Approved`로 전환했다.
 - 구현 방향은 Cloud Run/LLM 변경이 아니라 frontend summary contract와 UI rendering 개선이다.
 - 첫 구현 단계는 failing test 추가다.

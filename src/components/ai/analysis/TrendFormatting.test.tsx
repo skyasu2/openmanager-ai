@@ -26,7 +26,7 @@ vi.mock('lucide-react', async (importOriginal) => {
 });
 
 describe('analysis trend formatting', () => {
-  it('renders fallback labels when trend values are NaN', () => {
+  it('renders explicit missing prediction labels when trend values are NaN', () => {
     const trendData: MetricTrendResult = {
       trend: 'increasing',
       currentValue: 72,
@@ -38,12 +38,12 @@ describe('analysis trend formatting', () => {
     render(<TrendCard metric="cpu" data={trendData} />);
 
     expect(screen.getByText('72%')).toBeInTheDocument();
-    expect(screen.getAllByText('--')).toHaveLength(2);
+    expect(screen.getByText('예측값 없음')).toBeInTheDocument();
     expect(screen.queryByText(/NaN%/)).not.toBeInTheDocument();
     expect(screen.queryByText(/\+NaN/)).not.toBeInTheDocument();
   });
 
-  it('renders fallback prediction labels in the system summary', () => {
+  it('renders explicit missing prediction labels in the system summary', () => {
     const summary: SystemAnalysisSummary = {
       totalServers: 18,
       healthyServers: 16,
@@ -67,7 +67,8 @@ describe('analysis trend formatting', () => {
 
     render(<SystemSummarySection summary={summary} />);
 
-    expect(screen.getByText('86% → --')).toBeInTheDocument();
+    expect(screen.getByText('86% · 예측값 없음')).toBeInTheDocument();
+    expect(screen.queryByText('86% → --')).not.toBeInTheDocument();
     expect(screen.queryByText(/NaN%/)).not.toBeInTheDocument();
   });
 });
