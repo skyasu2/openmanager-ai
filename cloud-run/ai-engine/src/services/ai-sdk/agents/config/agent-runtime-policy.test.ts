@@ -27,7 +27,7 @@ const EXPECTED_POLICIES = {
     ],
   },
   'Analyst Agent': {
-    providerOrder: ['groq', 'cerebras', 'mistral'],
+    providerOrder: ['cerebras', 'groq', 'mistral'],
     maxSteps: 10,
     evidenceBudget: 5,
     toolAllowlist: [
@@ -44,7 +44,7 @@ const EXPECTED_POLICIES = {
     ],
   },
   'Reporter Agent': {
-    providerOrder: ['groq', 'cerebras', 'mistral'],
+    providerOrder: ['cerebras', 'groq', 'mistral'],
     maxSteps: 10,
     evidenceBudget: 6,
     toolAllowlist: [
@@ -139,8 +139,8 @@ describe('agent runtime policy SSOT', () => {
       'mistral',
     ]);
     expect(getAgentProviderOrder('Analyst Agent')).toEqual([
-      'groq',
       'cerebras',
+      'groq',
       'mistral',
     ]);
     expect(getAgentMaxSteps('Reporter Agent')).toBe(10);

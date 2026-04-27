@@ -96,6 +96,8 @@ import {
   getGroqModel,
   getMistralModel,
   getOpenRouterVisionModel,
+  getSupervisorModel,
+  getVerifierModel,
   getVisionAgentModel,
   invalidateProviderStatusCache,
   toggleProvider,
@@ -131,6 +133,16 @@ describe('model-provider compatibility (SDK upgrades)', () => {
     expect(vision).not.toBeNull();
     expect(vision?.provider).toBe('gemini');
     expect(vision?.modelId).toBe('gemini-2.5-flash-lite');
+  });
+
+  it('keeps Supervisor Groq-first while Verifier is Cerebras-first', () => {
+    expect(getSupervisorModel().provider).toBe('groq');
+    expect(getVerifierModel().provider).toBe('cerebras');
+
+    toggleProvider('cerebras', false);
+    invalidateProviderStatusCache();
+
+    expect(getVerifierModel().provider).toBe('groq');
   });
 
   it('falls back to OpenRouter when Gemini is disabled', () => {

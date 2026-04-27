@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI Provider 분산 배치 (Spider-Web) 개선 | P0/P1 | Draft | Plan: [ai-provider-distribution-plan.md](ai-provider-distribution-plan.md). 현재 NLQ/Analyst/Reporter/Advisor/Supervisor/Verifier 6개 에이전트가 동일 순서(Groq→Cerebras→Mistral)로 설정돼 Groq 1K RPD를 경쟁 소진. Task 1(P0): Cerebras Qwen 2026-05-27 종료 전 대체 모델 대응. Task 2(P1): Analyst/Reporter/Verifier를 Cerebras 1순위로 변경해 에이전트 그룹별 provider 분리. |
+| AI Provider 분산 배치 (Spider-Web) 개선 | P0/P1 | Approved | Plan: [ai-provider-distribution-plan.md](ai-provider-distribution-plan.md). 현재 NLQ/Analyst/Reporter/Advisor/Supervisor/Verifier 6개 에이전트가 동일 순서(Groq→Cerebras→Mistral)로 설정돼 Groq 1K RPD를 경쟁 소진. Task 1(P0): Cerebras Qwen/llama 2026-05-27 종료 대응은 Groq provider replacement로 고정하고, `gpt-oss-120b`는 현재 계정 chat smoke 404로 runtime 제외 유지. Task 2(P1): Analyst/Reporter/Verifier를 Cerebras 1순위로 변경해 에이전트 그룹별 provider 분리. |
 | AI Assistant Analyst/Reporter quality improvement | P1 | In Progress | Plan: [ai-assistant-analyst-reporter-quality-plan.md](ai-assistant-analyst-reporter-quality-plan.md). Task 1~4 구현/로컬 검증 완료. 남은 작업은 배포 후 production Playwright MCP QA 기록이다. |
 
 ---

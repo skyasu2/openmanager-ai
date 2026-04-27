@@ -745,20 +745,20 @@ describe('executeForcedRouting', () => {
 });
 
 describe('provider order policy', () => {
-  it('uses Groq-first order for text agents and default routing', () => {
+  it('splits text agent provider order by workload group', () => {
     expect(getAgentProviderOrder('NLQ Agent')).toEqual([
       'groq',
       'cerebras',
       'mistral',
     ]);
     expect(getAgentProviderOrder('Analyst Agent')).toEqual([
-      'groq',
       'cerebras',
+      'groq',
       'mistral',
     ]);
     expect(getAgentProviderOrder('Reporter Agent')).toEqual([
-      'groq',
       'cerebras',
+      'groq',
       'mistral',
     ]);
     expect(getAgentProviderOrder('Unknown Agent')).toEqual([

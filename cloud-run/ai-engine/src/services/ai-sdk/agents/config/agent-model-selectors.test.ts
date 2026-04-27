@@ -67,7 +67,13 @@ vi.mock('../../model-provider-status', () => ({
   checkProviderStatus: mockCheckProviderStatus,
 }));
 
-import { selectTextModel } from './agent-model-selectors';
+import {
+  getAdvisorModel,
+  getAnalystModel,
+  getNlqModel,
+  getReporterModel,
+  selectTextModel,
+} from './agent-model-selectors';
 
 describe('selectTextModel capability requirements', () => {
   beforeEach(() => {
@@ -162,5 +168,25 @@ describe('selectTextModel capability requirements', () => {
       'qwen-3-235b-a22b-instruct-2507'
     );
     expect(mockGetGroqModel).toHaveBeenCalledWith('groq-model');
+  });
+
+  it('splits primary providers by agent group', () => {
+    expect(getNlqModel()?.provider).toBe('groq');
+    expect(getAdvisorModel()?.provider).toBe('groq');
+    expect(getAnalystModel()?.provider).toBe('cerebras');
+    expect(getReporterModel()?.provider).toBe('cerebras');
+  });
+
+  it('falls Analyst and Reporter back to Groq when Cerebras is unavailable', () => {
+    mockCheckProviderStatus.mockReturnValue({
+      cerebras: false,
+      groq: true,
+      mistral: true,
+      gemini: true,
+      openrouter: true,
+    });
+
+    expect(getAnalystModel()?.provider).toBe('groq');
+    expect(getReporterModel()?.provider).toBe('groq');
   });
 });
