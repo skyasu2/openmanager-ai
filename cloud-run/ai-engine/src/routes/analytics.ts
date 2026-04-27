@@ -54,6 +54,76 @@ function isRecoverableReporterError(error: unknown): boolean {
   ].some((keyword) => message.includes(keyword));
 }
 
+interface AnalyzeServerInsights {
+  summary: string;
+  recommendations: string[];
+  confidence: number;
+}
+
+interface AnalyzeServerToolResults {
+  anomalyDetection?: unknown;
+  trendPrediction?: unknown;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function readBoolean(value: unknown): boolean {
+  return value === true;
+}
+
+function readNumber(value: unknown): number | null {
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
+function buildDeterministicAnalyzeServerInsights(
+  results: AnalyzeServerToolResults
+): AnalyzeServerInsights {
+  const anomalyData = isRecord(results.anomalyDetection)
+    ? results.anomalyDetection
+    : {};
+  const trendData = isRecord(results.trendPrediction)
+    ? results.trendPrediction
+    : {};
+  const trendSummary = isRecord(trendData.summary) ? trendData.summary : {};
+
+  const hasAnomalies = readBoolean(anomalyData.hasAnomalies);
+  const anomalyCount = readNumber(anomalyData.anomalyCount) ?? 0;
+  const hasRisingTrends = readBoolean(trendSummary.hasRisingTrends);
+
+  if (hasAnomalies) {
+    return {
+      summary: `이상 탐지에서 ${anomalyCount}개 항목이 감지되었습니다. 관련 서버의 CPU, Memory, Disk 지표를 우선 확인하세요.`,
+      recommendations: [
+        '이상 감지된 메트릭의 최근 10분 변화와 직전 배포/배치 작업을 대조하세요.',
+        '영향 서버의 상위 프로세스와 연결 수를 확인하고 필요 시 트래픽 분산을 적용하세요.',
+      ],
+      confidence: 0.88,
+    };
+  }
+
+  if (hasRisingTrends) {
+    return {
+      summary: '현재 이상 탐지는 정상이지만 일부 지표에 상승 추세가 있습니다. 임계값 도달 가능성을 계속 관찰하세요.',
+      recommendations: [
+        '상승 추세가 있는 메트릭의 다음 1시간 예측값과 임계값까지의 여유를 확인하세요.',
+        '동일 추세가 10분 이상 유지되면 관련 서버의 예약 작업과 트래픽 증가 요인을 점검하세요.',
+      ],
+      confidence: 0.84,
+    };
+  }
+
+  return {
+    summary: '이상 탐지와 추세 예측 모두 안정적입니다. 현재는 즉시 조치가 필요한 서버가 없습니다.',
+    recommendations: [
+      '현재 모니터링 주기를 유지하세요.',
+      '리소스 사용률 상위 서버는 정기 점검 대상으로만 추적하세요.',
+    ],
+    confidence: 0.9,
+  };
+}
+
 /**
  * POST /analyze-server - Server Analysis Endpoint
  *
@@ -112,64 +182,10 @@ analyticsRouter.post('/analyze-server', async (c: Context) => {
       }, { toolCallId: 'analyze-server-pattern', messages: [] });
     }
 
-    // 2. Use Agent for natural language insights (if available)
-    const analystConfig = getAgentConfig('Analyst Agent');
-    const analystModelResult = analystConfig.getModel();
-    if (analystModelResult && AgentFactory.isAvailable('analyst')) {
-      try {
-        const anomalyData = results.anomalyDetection as { hasAnomalies?: boolean; anomalyCount?: number } | undefined;
-        const trendData = results.trendPrediction as { summary?: { hasRisingTrends?: boolean } } | undefined;
-
-        const prompt = `분석 결과를 해석하고 권장 조치를 제안해주세요.
-
-## 분석 데이터
-- 이상 탐지: ${anomalyData?.hasAnomalies ? `${anomalyData.anomalyCount}개 이상 감지` : '정상'}
-- 트렌드: ${trendData?.summary?.hasRisingTrends ? '상승 추세 있음' : '안정적'}
-
-## 요청 사항
-1. 현재 상태에 대한 간략한 요약 (2-3문장)
-2. 권장 조치사항 (최대 3개)
-
-JSON 형식으로 응답하세요:
-{"summary": "...", "recommendations": ["...", "..."], "confidence": 0.9}`;
-
-        const agentResult = await generateText({
-          model: analystModelResult.model,
-          messages: [
-            { role: 'system', content: analystConfig.instructions },
-            { role: 'user', content: prompt },
-          ],
-          temperature: 0.4,
-          maxOutputTokens: 512,
-        });
-
-        // Sanitize Chinese characters from LLM output
-        const sanitizedText = sanitizeChineseCharacters(agentResult.text);
-
-        // Try to parse JSON from agent response
-        const jsonMatch = sanitizedText.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          try {
-            const insights = JSON.parse(jsonMatch[0]);
-            results.aiInsights = {
-              summary: insights.summary || '',
-              recommendations: insights.recommendations || [],
-              confidence: insights.confidence || 0.8,
-            };
-          } catch {
-            // If JSON parse fails, use sanitized text as summary
-            results.aiInsights = {
-              summary: sanitizedText.slice(0, 200),
-              recommendations: [],
-              confidence: 0.7,
-            };
-          }
-        }
-      } catch (agentError) {
-        logger.warn({ err: agentError }, '[Analyze Server] Agent insight generation failed');
-        // Continue without agent insights
-      }
-    }
+    // 2. Build deterministic insights.
+    // Full-system Analyst runs fan out across all servers. Calling an LLM per
+    // server can exceed free-tier RPM limits, so keep this endpoint tool-only.
+    results.aiInsights = buildDeterministicAnalyzeServerInsights(results);
 
     const durationMs = Date.now() - startTime;
     results._durationMs = durationMs;

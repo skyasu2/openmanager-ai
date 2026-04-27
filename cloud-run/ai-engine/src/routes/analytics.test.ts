@@ -144,7 +144,7 @@ describe('Analytics Routes', () => {
       expect(json.trendPrediction).toBeUndefined();
     });
 
-    it('Agent 사용 불가 시에도 tool 결과를 반환한다', async () => {
+    it('Analyst Agent 사용 불가 시에도 tool 결과와 deterministic insight를 반환한다', async () => {
       vi.mocked(AgentFactory.isAvailable).mockImplementationOnce((type) => type !== 'analyst');
 
       const res = await app.request('/analytics/analyze-server', {
@@ -156,10 +156,12 @@ describe('Analytics Routes', () => {
       expect(res.status).toBe(200);
       const json = await res.json();
       expect(json.success).toBe(true);
-      expect(json.aiInsights).toBeUndefined();
+      expect(json.aiInsights).toBeDefined();
+      expect(json.aiInsights.summary).toContain('2개 항목');
+      expect(generateText).not.toHaveBeenCalled();
     });
 
-    it('AI insights를 포함한다 (Agent 사용 가능 시)', async () => {
+    it('AI insights를 LLM 호출 없이 deterministic하게 포함한다', async () => {
       const res = await app.request('/analytics/analyze-server', {
         method: 'POST',
         body: JSON.stringify({ analysisType: 'full' }),
@@ -169,7 +171,9 @@ describe('Analytics Routes', () => {
       expect(res.status).toBe(200);
       const json = await res.json();
       expect(json.aiInsights).toBeDefined();
-      expect(json.aiInsights.summary).toBe('시스템 정상');
+      expect(json.aiInsights.summary).toContain('2개 항목');
+      expect(json.aiInsights.recommendations).toHaveLength(2);
+      expect(generateText).not.toHaveBeenCalled();
     });
   });
 
