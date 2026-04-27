@@ -93,6 +93,23 @@ function SystemSummarySection({
   );
 }
 
+function ReportQuickSummary({ report }: { report: IncidentReport }) {
+  const nextAction = report.recommendations?.[0]?.action;
+  const impact = report.systemSummary
+    ? `주의 ${report.systemSummary.warningServers}대 · 위험 ${report.systemSummary.criticalServers}대`
+    : null;
+
+  if (!nextAction && !impact) return null;
+
+  return (
+    <div className="mb-3 space-y-1 rounded-lg bg-white/60 px-3 py-2 text-xs text-gray-600">
+      <div>원인: {report.description}</div>
+      {impact && <div>영향: {impact}</div>}
+      {nextAction && <div>다음 조치: {nextAction}</div>}
+    </div>
+  );
+}
+
 /**
  * 이상 항목 섹션
  */
@@ -347,6 +364,7 @@ export default function ReportCard({
 
       {/* Description */}
       <p className="mb-3 text-sm text-gray-600">{report.description}</p>
+      <ReportQuickSummary report={report} />
 
       {/* System Summary */}
       {report.systemSummary && (

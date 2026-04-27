@@ -52,19 +52,26 @@ export function SystemSummarySection({ summary }: SystemSummarySectionProps) {
           <h4 className="mb-2 text-sm font-medium">주요 이슈</h4>
           <div className="space-y-1">
             {summary.topIssues.map((issue, idx) => (
-              <div
-                key={idx}
-                className="flex items-center justify-between rounded bg-white/60 px-2 py-1 text-xs"
-              >
-                <span>
-                  {issue.serverName} -{' '}
-                  {metricLabels[issue.metric] || issue.metric}
-                </span>
-                <span
-                  className={`font-medium ${issue.severity === 'high' ? 'text-red-600' : 'text-yellow-600'}`}
-                >
-                  {Math.round(issue.currentValue)}%
-                </span>
+              <div key={idx} className="rounded bg-white/60 px-2 py-1 text-xs">
+                <div className="flex items-center justify-between">
+                  <span>
+                    {issue.serverName} -{' '}
+                    {metricLabels[issue.metric] || issue.metric}
+                  </span>
+                  <span
+                    className={`font-medium ${issue.severity === 'high' ? 'text-red-600' : 'text-yellow-600'}`}
+                  >
+                    {Math.round(issue.currentValue)}%
+                  </span>
+                </div>
+                {issue.reason && (
+                  <div className="mt-0.5 text-[11px] text-gray-500">
+                    {issue.reason}
+                    {issue.confidence
+                      ? ` · 신뢰도 ${Math.round(issue.confidence * 100)}%`
+                      : ''}
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -78,9 +85,15 @@ export function SystemSummarySection({ summary }: SystemSummarySectionProps) {
           <div className="space-y-1">
             {summary.predictions.map((pred, idx) => {
               const current = formatPercentLabel(pred.currentValue ?? 0);
-              const predicted = formatPercentLabel(pred.predictedValue, {
-                clamp: true,
-              });
+              const hasPredictedValue =
+                pred.predictionState !== 'missing' &&
+                typeof pred.predictedValue === 'number' &&
+                Number.isFinite(pred.predictedValue);
+              const predicted = hasPredictedValue
+                ? formatPercentLabel(pred.predictedValue ?? Number.NaN, {
+                    clamp: true,
+                  })
+                : '예측값 없음';
               return (
                 <div key={idx} className="rounded bg-white/60 px-2 py-1">
                   <div className="flex items-center justify-between text-xs">
@@ -89,7 +102,9 @@ export function SystemSummarySection({ summary }: SystemSummarySectionProps) {
                       {metricLabels[pred.metric] || pred.metric}
                     </span>
                     <span className="font-medium text-orange-600">
-                      {current} → {predicted}
+                      {hasPredictedValue
+                        ? `${current} → ${predicted}`
+                        : `${current} · ${predicted}`}
                     </span>
                   </div>
                   {pred.thresholdBreachMessage && (

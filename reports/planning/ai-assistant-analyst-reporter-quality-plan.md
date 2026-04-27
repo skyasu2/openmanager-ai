@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Approved
+> Status: In Progress
 > Doc type: Plan
 > Last reviewed: 2026-04-27
 > Canonical: reports/planning/ai-assistant-analyst-reporter-quality-plan.md
@@ -7,7 +7,7 @@
 
 # AI Assistant Analyst/Reporter Quality Plan
 
-- 상태: Approved
+- 상태: In Progress
 - 작성일: 2026-04-27
 - TODO.md 연결: Active Tasks > AI Assistant Analyst/Reporter quality improvement
 - 기준 QA: `QA-20260427-0351`, `QA-20260427-0352`
@@ -106,20 +106,20 @@ Vercel production + Playwright MCP QA에서 확인된 AI assistant 품질 차이
 
 > 착수 전 Status가 Approved인지 확인한다.
 
-- [ ] Task 0 - failing test 커밋
+- [x] Task 0 - failing test 커밋
   - 완료 기준: T0~T6의 실패 테스트가 구현 변경 전에 추가된다.
   - 커밋 메시지: `test(spec): add AI assistant Analyst/Reporter quality specs`
 
-- [ ] Task 1 - Analyst summary builder 분리 및 정렬 계약 구현
+- [x] Task 1 - Analyst summary builder 분리 및 정렬 계약 구현
   - 완료 기준: `createSummary`의 issue/prediction 계산을 pure helper로 분리하고, severity/confidence/threshold 기반 ranking을 적용한다.
 
-- [ ] Task 2 - Analyst UI 표시 개선
+- [x] Task 2 - Analyst UI 표시 개선
   - 완료 기준: `→ --`가 사라지고, 예측값 부재/기준 정보 부족/신뢰도/이유가 명확히 표시된다.
 
-- [ ] Task 3 - Reporter 접힌 카드 요약 개선
+- [x] Task 3 - Reporter 접힌 카드 요약 개선
   - 완료 기준: 추가 API 호출 없이 원인·영향·다음 조치 1개가 접힌 카드에서 확인된다.
 
-- [ ] Task 4 - deterministic 검증
+- [x] Task 4 - deterministic 검증
   - 완료 기준: 관련 Vitest, `npm run type-check`, `npm run lint:changed` 또는 동등한 changed-scope lint가 통과한다.
 
 - [ ] Task 5 - production QA 및 기록
@@ -171,3 +171,12 @@ Vercel production + Playwright MCP QA에서 확인된 AI assistant 품질 차이
 - 사용자 확인 후 구현 착수를 위해 Status를 `Approved`로 전환했다.
 - 구현 방향은 Cloud Run/LLM 변경이 아니라 frontend summary contract와 UI rendering 개선이다.
 - 첫 구현 단계는 failing test 추가다.
+
+## 진행 기록
+
+- 2026-04-27: Task 0 failing test 커밋 완료.
+- 2026-04-27: Task 1~4 구현 및 deterministic 검증 완료.
+  - `npx vitest run src/components/ai/analysis/TrendFormatting.test.tsx src/components/ai/analysis/system-summary.test.ts src/components/ai/pages/auto-report/ReportCard.test.tsx`
+  - `npm run type-check`
+  - `npm run lint:changed`
+  - `npm run test:quick`

@@ -31,12 +31,17 @@ export function TrendCard({ metric, data }: TrendCardProps) {
       : Math.min(Math.abs(normalizedChangePercent) / 30, 1) * 100;
 
   const currentValueLabel = formatPercentLabel(data.currentValue);
-  const predictedValueLabel = formatPercentLabel(data.predictedValue, {
+  const normalizedPredictedValue = normalizePercentValue(data.predictedValue, {
     clamp: true,
   });
+  const predictedValueLabel =
+    normalizedPredictedValue === null
+      ? '예측값 없음'
+      : formatPercentLabel(normalizedPredictedValue);
   const changePercentLabel = formatPercentLabel(data.changePercent, {
     digits: 1,
     signed: true,
+    fallback: '변화율 없음',
   });
 
   return (
@@ -54,8 +59,12 @@ export function TrendCard({ metric, data }: TrendCardProps) {
         <span className="text-sm tabular-nums text-gray-500">
           {currentValueLabel}
         </span>
-        <ArrowRight className="h-3 w-3 text-gray-400" />
-        <span className={`text-2xl font-bold tabular-nums ${textColor}`}>
+        {normalizedPredictedValue !== null && (
+          <ArrowRight className="h-3 w-3 text-gray-400" />
+        )}
+        <span
+          className={`${normalizedPredictedValue === null ? 'text-sm' : 'text-2xl'} font-bold tabular-nums ${textColor}`}
+        >
           {predictedValueLabel}
         </span>
       </div>
