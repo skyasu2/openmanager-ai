@@ -11,6 +11,8 @@ EFFECTIVE_CONFIG_MUTATED=0
 
 is_openmanager_codex_launcher() {
   local candidate="$1"
+  # Legacy compatibility: older optional launchers marked themselves this way.
+  # Keep detecting them so this wrapper never recurses through a stale user shim.
   [ -f "$candidate" ] && grep -q 'OPENMANAGER_CODEX_LAUNCHER=1' "$candidate" 2>/dev/null
 }
 
@@ -258,7 +260,7 @@ export OPENMANAGER_CODEX_HOME_MODE
 # shellcheck source=/dev/null
 source "$RUNTIME_ENV_RESOLVER"
 # shellcheck source=/dev/null
-source "$PROJECT_ENV_LOADER"
+source "$PROJECT_ENV_LOADER" codex-mcp
 
 if [ ! -f "$CODEX_HOME/config.toml" ]; then
   echo "ERROR: $CODEX_HOME/config.toml not found"

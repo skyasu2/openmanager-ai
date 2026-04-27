@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-27 KST (`Codex GitHub MCP env 로딩 단순화`)
+**Last Updated**: 2026-04-27 KST (`Codex MCP env allowlist hardening`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| _None_ | — | — | Active 작업 없음. 최신 완료: v8.11.35 release/tag 배포 및 AI sidebar targeted production QA `QA-20260427-0349`. |
+| _None_ | — | — | Active 작업 없음. 최신 완료: Codex MCP env allowlist hardening. 최신 release QA는 `QA-20260427-0349`. |
 
 ---
 
@@ -31,6 +31,12 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-27 #206)
+- [x] Codex MCP env allowlist hardening
+  - `codex-local.sh`와 MCP health check가 `.env.local` 전체가 아니라 MCP allowlist token만 상속하도록 `codex-mcp` loader mode 적용
+  - `.env.local` parser가 `KEY = value`, quoted value trailing comment, unquoted inline comment를 정리하도록 보강
+  - 삭제된 Codex launcher marker 감지는 stale user shim 회피용 legacy compatibility 주석으로 명확화
 
 ### Completed (2026-04-27 #205)
 - [x] Codex GitHub MCP env 로딩 단순화

@@ -613,7 +613,7 @@ export OPENMANAGER_CODEX_HOME_MODE
 # shellcheck source=/dev/null
 source "$RUNTIME_ENV_RESOLVER"
 # shellcheck source=/dev/null
-source "$PROJECT_ENV_LOADER"
+source "$PROJECT_ENV_LOADER" codex-mcp
 
 load_expected_servers() {
   if [ ! -f "$CONFIG_FILE" ]; then

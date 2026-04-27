@@ -11,6 +11,10 @@ openmanager_project_env_mode() {
     printf 'gemini\n'
     return 0
   fi
+  if [ "${1:-}" = "codex-mcp" ]; then
+    printf 'codex-mcp\n'
+    return 0
+  fi
   printf 'default\n'
 }
 
@@ -18,9 +22,13 @@ openmanager_should_load_env_key() {
   local mode="$1"
   local key="$2"
 
-  if [ "$mode" != "gemini" ]; then
-    return 0
-  fi
+  case "$mode" in
+    gemini | codex-mcp)
+      ;;
+    *)
+      return 0
+      ;;
+  esac
 
   case "$key" in
     GITHUB_PERSONAL_ACCESS_TOKEN | GITHUB_TOKEN | SUPABASE_ACCESS_TOKEN | VERCEL_API_KEY | OPENMANAGER_MCP_CACHE_ROOT)
@@ -30,6 +38,25 @@ openmanager_should_load_env_key() {
       return 1
       ;;
   esac
+}
+
+openmanager_normalize_env_value() {
+  local raw_value="$1"
+  local value=""
+
+  value="$(printf '%s' "$raw_value" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+
+  if [[ "$value" =~ ^\"(.*)\"[[:space:]]*(#.*)?$ ]]; then
+    printf '%s\n' "${BASH_REMATCH[1]}"
+    return 0
+  fi
+  if [[ "$value" =~ ^\'(.*)\'[[:space:]]*(#.*)?$ ]]; then
+    printf '%s\n' "${BASH_REMATCH[1]}"
+    return 0
+  fi
+
+  value="$(printf '%s' "$value" | sed -e 's/[[:space:]]#.*$//' -e 's/[[:space:]]*$//')"
+  printf '%s\n' "$value"
 }
 
 openmanager_load_project_env() {
@@ -48,18 +75,12 @@ openmanager_load_project_env() {
       '' | '#'*)
         continue
         ;;
-      export\ [A-Za-z_]*=* | [A-Za-z_]*=*)
-        line="${line#export }"
-        key="${line%%=*}"
-        value="${line#*=}"
-        if [[ "$key" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then
+      *)
+        if [[ "$line" =~ ^[[:space:]]*(export[[:space:]]+)?([A-Za-z_][A-Za-z0-9_]*)[[:space:]]*=(.*)$ ]]; then
+          key="${BASH_REMATCH[2]}"
+          value="$(openmanager_normalize_env_value "${BASH_REMATCH[3]}")"
           if ! openmanager_should_load_env_key "$mode" "$key"; then
             continue
-          fi
-          if [[ "$value" == \"*\" && "$value" == *\" ]]; then
-            value="${value:1:${#value}-2}"
-          elif [[ "$value" == \'*\' && "$value" == *\' ]]; then
-            value="${value:1:${#value}-2}"
           fi
           export "$key=$value"
         fi

@@ -62,7 +62,7 @@
 - `.mcp.json`은 더 이상 gitignored secret 파일이 아닙니다. repo 공유 가능한 project config입니다.
 - Vercel token은 `scripts/mcp/start-vercel-mcp.sh`가 `.env.local` 또는 shell env에서 읽어 실행 시점에만 전달합니다.
 - Supabase token은 `scripts/mcp/run-with-project-env.sh`가 안전한 dotenv parser로 주입합니다.
-- GitHub MCP는 공식 HTTP endpoint `https://api.githubcopilot.com/mcp/`와 `GITHUB_PERSONAL_ACCESS_TOKEN` env placeholder를 사용합니다. Codex는 HTTP MCP에 wrapper를 붙일 수 없으므로 `scripts/mcp/codex-local.sh`가 `.env.local` 또는 shell env의 GitHub token을 Codex 프로세스 env로 주입합니다.
+- GitHub MCP는 공식 HTTP endpoint `https://api.githubcopilot.com/mcp/`와 `GITHUB_PERSONAL_ACCESS_TOKEN` env placeholder를 사용합니다. Codex는 HTTP MCP에 wrapper를 붙일 수 없으므로 `scripts/mcp/codex-local.sh`가 `.env.local` 또는 shell env의 MCP allowlist token만 Codex 프로세스 env로 주입합니다.
 
 ## MCP launcher 표준
 

@@ -147,7 +147,7 @@ bash scripts/env/sync-vercel.sh
 
 ```bash
 # Codex MCP 래퍼 (프로젝트 스코프)
-# .env.local의 GITHUB_PERSONAL_ACCESS_TOKEN/SUPABASE_ACCESS_TOKEN/VERCEL_API_KEY를 로드
+# .env.local의 MCP allowlist 토큰만 로드
 bash scripts/mcp/codex-local.sh
 
 # Storybook MCP 포함 실행 (storybook dev 서버가 살아있을 때 자동 포함)
