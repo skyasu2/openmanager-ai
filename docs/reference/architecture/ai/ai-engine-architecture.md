@@ -99,7 +99,7 @@ flowchart TB
         Multi["Multi path\nexecuteMultiAgent / executeMultiAgentStream"]
         Prefilter["preFilterQuery()\nfast path / forced routing / LLM routing"]
         Route["generateObjectWithFallback\nCerebras → Groq → Mistral\n(requireStructuredOutput)"]
-        Agent["Agent execution\nGroq → Cerebras → Mistral\nstreamText or generateTextWithRetry\n(requireToolCalling)"]
+        Agent["Agent execution\nGroup A: Groq → Cerebras → Mistral\nGroup B: Cerebras → Groq → Mistral\nstreamText or generateTextWithRetry\n(requireToolCalling)"]
         Context["save findings + getContextSummary()"]
         Stream["UIMessageStream\ntext-delta / handoff / data-mode / agent_status"]
         Trace["Langfuse + Pino\nmode audit / handoffCount / scores"]
@@ -202,26 +202,26 @@ flowchart LR
 | Provider | Primary 에이전트 | 모델 | 운영 메모 |
 |----------|----------------|------|-----------|
 | **Groq** | Supervisor, NLQ, Analyst, Reporter, Advisor, Verifier | `meta-llama/llama-4-scout-17b-16e-instruct` | tool-calling 중심 텍스트 경로의 primary |
-| **Cerebras** | Orchestrator structured routing, text fallback | `qwen-3-235b-a22b-instruct-2507` → `llama3.1-8b` | Qwen primary, 8B는 intra-provider fallback. `gpt-oss-120b`는 현재 계정 free-tier runtime 후보에서 제외 |
+| **Cerebras** | Orchestrator/Analyst/Reporter/Verifier primary, text fallback | `qwen-3-235b-a22b-instruct-2507` → `llama3.1-8b` | Qwen primary, 8B는 intra-provider fallback. `gpt-oss-120b`는 현재 계정 chat completions 404로 runtime 후보에서 제외 |
 | **Mistral** | Text last-resort fallback | `mistral-large-latest` | 저RPM 병목 때문에 마지막 fallback으로만 사용. RAG runtime/embedding에는 사용하지 않음 |
 | **Gemini** | Vision primary | `gemini-2.5-flash-lite` | Flash 대비 thinking token 소모 없음. Vision 기본 경로 |
 | **OpenRouter** | Vision fallback | `google/gemma-3-27b-it:free` → `gemma-3-12b-it:free` → `gemma-3-4b-it:free` | Vision fallback 전용. free-tier 모델 특성상 tool-calling은 기본 비활성 |
 
 ### Fallback 체인
 
-Structured routing은 Orchestrator 정책(`Cerebras → Groq → Mistral`)을 따르고, 일반 텍스트 에이전트는 공통 정책(`Groq → Cerebras → Mistral`)을 따릅니다. Cerebras 내부에서는 Qwen을 먼저 시도하고, 초기화/쿼터/권한 문제가 있으면 `llama3.1-8b`로 intra-provider fallback합니다.
+Structured routing은 Orchestrator 정책(`Cerebras → Groq → Mistral`)을 따릅니다. 텍스트 에이전트는 quota 격리를 위해 Group A(Supervisor/NLQ/Advisor)는 `Groq → Cerebras → Mistral`, Group B(Analyst/Reporter/Verifier)는 `Cerebras → Groq → Mistral`을 사용합니다. Cerebras 내부에서는 Qwen을 먼저 시도하고, 초기화/쿼터/권한 문제가 있으면 `llama3.1-8b`로 intra-provider fallback합니다.
 
 | Agent | Primary | → 2nd | → 3rd (Last Resort) |
 |-------|---------|-------|---------------------|
 | Supervisor | Groq | Cerebras | Mistral |
 | Orchestrator | Cerebras | Groq | Mistral |
 | NLQ | Groq | Cerebras | Mistral |
-| Analyst | Groq | Cerebras | Mistral |
-| Reporter | Groq | Cerebras | Mistral |
+| Analyst | Cerebras | Groq | Mistral |
+| Reporter | Cerebras | Groq | Mistral |
 | Advisor | Groq | Cerebras | Mistral |
 | Vision | Gemini | OpenRouter | — |
 
-> SSOT: `agent-runtime-policy.ts`, `agent-model-selectors.ts` — 텍스트 에이전트는 동일한 `['groq', 'cerebras', 'mistral']` chain을 공유하고 Orchestrator만 structured routing 우선순위를 별도로 갖습니다.
+> SSOT: `agent-runtime-policy.ts`, `agent-model-selectors.ts`, `model-provider.ts` — Supervisor/NLQ/Advisor는 Groq-first, Analyst/Reporter/Verifier/Orchestrator는 Cerebras-first chain을 사용합니다.
 
 ### Cerebras Tool-Calling 변화 대응
 
@@ -297,7 +297,7 @@ for await (const event of streamAgent('analyst', '이상 탐지')) { ... }
   ├─ ① Supervisor: selectExecutionMode() → 'multi' (보고서 패턴)
   ├─ ② Orchestrator: preFilterQuery() → 신뢰도 90%
   ├─ ③ Reporter Pipeline 실행
-  │    ├─ Reporter Agent: 초안 생성 (Groq)
+  │    ├─ Reporter Agent: 초안 생성 (Cerebras → Groq fallback)
   │    ├─ Evaluator Agent: 품질 평가 (4차원 점수)
   │    ├─ 품질 < 75%? → Optimizer Agent 개선 (최대 2회)
   │    └─ 최종 보고서 반환
@@ -654,11 +654,11 @@ cloud-run/ai-engine/src/
 | Agent | Current Primary | Route Type | Tool Count | Quality Gate |
 |-------|-----------------|------------|:----------:|:------------:|
 | NLQ | Groq `llama-4-scout-17b-16e-instruct` | tool-calling text path | 7 | — |
-| Analyst | Groq `llama-4-scout-17b-16e-instruct` | tool-calling text path | 8 | — |
-| Reporter | Groq `llama-4-scout-17b-16e-instruct` | Reporter pipeline + tool path | 12 | score ≥ 0.75 |
-| Advisor | Mistral `mistral-large-latest` | tool-calling text path | 4 | — |
+| Analyst | Cerebras `qwen-3-235b-a22b-instruct-2507` | tool-calling text path | 8 | — |
+| Reporter | Cerebras `qwen-3-235b-a22b-instruct-2507` | Reporter pipeline + tool path | 12 | score ≥ 0.75 |
+| Advisor | Groq `llama-4-scout-17b-16e-instruct` | tool-calling text path | 4 | — |
 | Vision | Gemini `gemini-2.5-flash-lite` | multimodal primary + OpenRouter fallback | 2 | — |
-| Orchestrator | Cerebras `gpt-oss-120b` | structured output routing | — | — |
+| Orchestrator | Cerebras `qwen-3-235b-a22b-instruct-2507` | structured output routing | — | — |
 | Evaluator | 결정론적 (LLM 없음) | pipeline internal | 3 | — |
 | Optimizer | 결정론적 (LLM 없음) | pipeline internal | 3 | — |
 

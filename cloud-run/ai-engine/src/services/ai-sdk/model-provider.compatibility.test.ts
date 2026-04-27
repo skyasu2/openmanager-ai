@@ -87,6 +87,7 @@ vi.mock('../../lib/config-parser', () => ({
     'google/gemma-3-4b-it:free',
   ]),
   isCerebrasToolCallingEnabled: vi.fn(() => true),
+  isCerebrasLongContextEnabled: vi.fn(() => true),
   isOpenRouterVisionToolCallingEnabled: vi.fn(() => true),
 }));
 

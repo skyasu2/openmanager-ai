@@ -67,7 +67,11 @@ vi.mock('./config', () => ({
         ? 5
         : 7
   ),
-  getAgentProviderOrder: vi.fn(() => ['groq', 'cerebras', 'mistral']),
+  getAgentProviderOrder: vi.fn((agentName: string) =>
+    agentName === 'Analyst Agent' || agentName === 'Reporter Agent'
+      ? ['cerebras', 'groq', 'mistral']
+      : ['groq', 'cerebras', 'mistral']
+  ),
   getOrchestratorProviderOrder: vi.fn(() => ['cerebras', 'groq', 'mistral']),
   getAgentConfig: (name: string) =>
     name === 'NLQ Agent'

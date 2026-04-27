@@ -58,7 +58,7 @@ function isPastDeprecationDate(
 function describeCerebrasRole(policy: ProviderModelPolicy): string {
   switch (policy.role) {
     case 'primary':
-      return 'primary structured routing + text fallback';
+      return 'primary structured routing + Analyst/Reporter/Verifier text';
     case 'fallback':
       return 'intra-Cerebras fallback';
     case 'excluded':
@@ -113,7 +113,7 @@ export function getRuntimeProviderModelMetadata(): ProviderModelMetadata[] {
   return [
     {
       provider: 'groq',
-      role: 'primary tool-calling text path',
+      role: 'Supervisor/NLQ/Advisor primary + Cerebras-first fallback',
       modelId: getGroqModelId(),
       lifecycle: 'preview',
       productionModel: false,

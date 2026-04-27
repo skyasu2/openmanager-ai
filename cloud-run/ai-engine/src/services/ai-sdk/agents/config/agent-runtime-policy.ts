@@ -41,7 +41,12 @@ export interface AgentRuntimePolicy {
   toolAllowlist: readonly AgentToolName[];
 }
 
-const TEXT_AGENT_PROVIDER_ORDER = ['groq', 'cerebras', 'mistral'] as const;
+export const TEXT_AGENT_PROVIDER_ORDER = ['groq', 'cerebras', 'mistral'] as const;
+export const CEREBRAS_FIRST_PROVIDER_ORDER = [
+  'cerebras',
+  'groq',
+  'mistral',
+] as const;
 
 const DEFAULT_AGENT_RUNTIME_POLICY: AgentRuntimePolicy = {
   providerOrder: TEXT_AGENT_PROVIDER_ORDER,
@@ -51,7 +56,7 @@ const DEFAULT_AGENT_RUNTIME_POLICY: AgentRuntimePolicy = {
 };
 
 export const ORCHESTRATOR_RUNTIME_POLICY = {
-  providerOrder: ['cerebras', 'groq', 'mistral'],
+  providerOrder: CEREBRAS_FIRST_PROVIDER_ORDER,
 } as const;
 
 export const AGENT_RUNTIME_POLICIES = {
@@ -71,7 +76,7 @@ export const AGENT_RUNTIME_POLICIES = {
     ],
   },
   'Analyst Agent': {
-    providerOrder: TEXT_AGENT_PROVIDER_ORDER,
+    providerOrder: CEREBRAS_FIRST_PROVIDER_ORDER,
     maxSteps: 10,
     evidenceBudget: 5,
     toolAllowlist: [
@@ -88,7 +93,7 @@ export const AGENT_RUNTIME_POLICIES = {
     ],
   },
   'Reporter Agent': {
-    providerOrder: TEXT_AGENT_PROVIDER_ORDER,
+    providerOrder: CEREBRAS_FIRST_PROVIDER_ORDER,
     maxSteps: 10,
     evidenceBudget: 6,
     toolAllowlist: [

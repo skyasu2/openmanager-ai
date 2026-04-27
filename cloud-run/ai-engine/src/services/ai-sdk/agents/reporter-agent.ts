@@ -4,7 +4,7 @@
  * Specializes in generating incident reports and timelines.
  * Creates structured documentation for incidents and events.
  *
- * Model: Groq llama-4-scout (primary) / Cerebras configurable production fallback / Mistral
+ * Model: Cerebras Qwen/llama3.1-8b primary / Groq llama-4-scout fallback / Mistral
  *
  * Usage:
  * - createReporterAgent(): Create agent for direct use

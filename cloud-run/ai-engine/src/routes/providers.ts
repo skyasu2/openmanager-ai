@@ -43,11 +43,14 @@ providersRouter.get('/', (c: Context) => {
     modelDrift: getDeprecatedRuntimeProviderModels(modelMetadata),
     info: {
       cerebras: {
-        role: 'Primary (Orchestrator structured routing) + opt-in text fallback',
+        role: 'Primary (Orchestrator/Analyst/Reporter/Verifier) + text fallback',
         model: getCerebrasModelId(),
         toolCallingEnabled: isCerebrasToolCallingEnabled(),
       },
-      groq: { role: 'Primary (Supervisor/Verifier/NLQ/Analyst/Reporter) + text fallback', model: getGroqModelId() },
+      groq: {
+        role: 'Primary (Supervisor/NLQ/Advisor) + fallback for Cerebras-first agents',
+        model: getGroqModelId(),
+      },
       mistral: { role: 'Last-resort text fallback', model: 'mistral-large-latest' },
     },
   });

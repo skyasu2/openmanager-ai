@@ -217,8 +217,8 @@ await pipeline.exec();
 
 | 우선순위 | 프로바이더 | 무료 한도 | Agent 역할 | 위험도 |
 |---------|-----------|---------|-----------|--------|
-| 1 | **Groq** | 1K RPD, 500K TPD, 30K TPM, 30 RPM | Supervisor·NLQ·Analyst·Reporter·Advisor (Primary) | ⚠️ 일/분 한도 동시 관리 필요 |
-| 2 | **Cerebras Qwen** | 14.4K RPD, 1M TPD, 30K TPM, 5 RPM | Orchestrator primary + text 2nd fallback | ⚠️ 2026-05-27 deprecation 대응 필요 |
+| 1A | **Groq** | 1K RPD, 500K TPD, 30K TPM, 30 RPM | Supervisor·NLQ·Advisor primary, Cerebras-first fallback | ⚠️ 일/분 한도 동시 관리 필요 |
+| 1B | **Cerebras Qwen** | 14.4K RPD, 1M TPD, 30K TPM, 5 RPM | Orchestrator·Analyst·Reporter·Verifier primary, Groq-first fallback | ⚠️ 2026-05-27 deprecation 대응 필요 |
 | 2a | **Cerebras llama3.1-8b** | 14.4K RPD, 1M TPD, 60K TPM, 30 RPM | Cerebras intra-provider fallback | ⚠️ 8K context / 성능 낮음 |
 | 3 | **Mistral** | 약 500 RPD, 2 RPM, 30K TPM | 위 전체 에이전트 text last-resort fallback | ⚠️ 저RPM 병목. RAG runtime/embedding에는 사용하지 않음 |
 | Vision 1 | **Google Gemini Flash** | 1,000 RPD, 250K TPM | Vision Agent | ⚠️ 일 1,000회 |

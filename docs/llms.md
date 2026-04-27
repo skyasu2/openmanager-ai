@@ -34,11 +34,9 @@ OpenManager AI is an AI-native server monitoring platform built with:
 - Agents (실행): NLQ, Analyst, Reporter, Advisor, Vision, Evaluator, Optimizer
 - Orchestrator: 에이전트 라우팅 코디네이터 (별도 컴포넌트)
 - Providers:
-  - Tool-calling text path (default): Groq → Mistral
-  - Tool-calling text path (opt-in): Groq → Cerebras → Mistral
-  - Structured routing path: Cerebras → Mistral → Groq
-  - Advisor (default): Mistral → Groq
-  - Advisor (opt-in): Mistral → Groq → Cerebras
+  - Group A tool-calling path (Supervisor/NLQ/Advisor): Groq → Cerebras → Mistral
+  - Group B tool-calling path (Analyst/Reporter/Verifier): Cerebras → Groq → Mistral
+  - Structured routing path: Cerebras → Groq → Mistral
   - Vision: Gemini Flash-Lite → OpenRouter
 - Tools: 30 specialized tools (Metrics 6, RCA 3, Analyst 4, Knowledge 3, Evaluation 6, Control 1, Vision 4, Math 3)
 - Observability: Langfuse mode audit (`requestedMode`, `resolvedMode`, `modeSelectionSource`) + `handoffCount`

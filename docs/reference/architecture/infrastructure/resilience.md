@@ -128,22 +128,21 @@ const result = await executeWithCircuitBreakerAndFallback(
 Cloud Run AI Engine은 LLM 호출 시 **자동 프로바이더 전환**을 수행합니다.
 
 ```
-요청 → Groq (llama-4-scout)
-         │  429/500 에러
-         ▼
-       Cerebras (gpt-oss-120b)
-         │  429/500 에러
-         ▼
-       Mistral (mistral-large-latest)
-         │  실패
-         ▼
-       ❌ 최종 실패 (모든 프로바이더 소진)
+Group A 요청(Supervisor/NLQ/Advisor)
+  → Groq (llama-4-scout)
+     → Cerebras (qwen-3-235b → llama3.1-8b)
+       → Mistral (mistral-large-latest)
+
+Group B 요청(Analyst/Reporter/Verifier)
+  → Cerebras (qwen-3-235b → llama3.1-8b)
+     → Groq (llama-4-scout)
+       → Mistral (mistral-large-latest)
 ```
 
 | 프로바이더 | 모델 | 역할 | 특징 |
 |-----------|------|------|------|
-| **Groq** | llama-4-scout | Primary | tool-calling 중심 텍스트 경로 |
-| **Cerebras** | gpt-oss-120b | Secondary | structured routing + opt-in text fallback |
+| **Groq** | llama-4-scout | Group A primary | Supervisor/NLQ/Advisor 중심 텍스트 경로 |
+| **Cerebras** | qwen-3-235b → llama3.1-8b | Group B primary | Orchestrator/Analyst/Reporter/Verifier 중심 경로 |
 | **Mistral** | mistral-large-latest | Tertiary | 안정적 폴백 |
 
 ### Retry 전략

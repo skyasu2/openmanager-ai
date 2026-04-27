@@ -11,6 +11,7 @@ const {
   mockGetCerebrasFallbackModelIds,
   mockIsCerebrasToolCallingEnabled,
   mockIsOpenRouterVisionToolCallingEnabled,
+  mockGetCircuitBreaker,
 } = vi.hoisted(() => ({
   mockCheckProviderStatus: vi.fn(() => ({
     cerebras: true,
@@ -28,6 +29,9 @@ const {
   mockGetCerebrasFallbackModelIds: vi.fn(() => ['llama3.1-8b']),
   mockIsCerebrasToolCallingEnabled: vi.fn(() => true),
   mockIsOpenRouterVisionToolCallingEnabled: vi.fn(() => true),
+  mockGetCircuitBreaker: vi.fn(() => ({
+    isAllowed: () => true,
+  })),
 }));
 
 vi.mock('../../../../lib/config-parser', () => ({
@@ -50,9 +54,7 @@ vi.mock('../../../../lib/logger', () => ({
 }));
 
 vi.mock('../../../resilience/circuit-breaker', () => ({
-  getCircuitBreaker: vi.fn(() => ({
-    isAllowed: () => true,
-  })),
+  getCircuitBreaker: mockGetCircuitBreaker,
 }));
 
 vi.mock('../../model-provider-core', () => ({
@@ -90,6 +92,9 @@ describe('selectTextModel capability requirements', () => {
     mockGetCerebrasModelId.mockReturnValue('qwen-3-235b-a22b-instruct-2507');
     mockGetCerebrasFallbackModelIds.mockReturnValue(['llama3.1-8b']);
     mockGetCerebrasModel.mockImplementation((modelId: string) => ({ provider: 'cerebras', modelId }));
+    mockGetCircuitBreaker.mockImplementation(() => ({
+      isAllowed: () => true,
+    }));
   });
 
   it('skips providers that do not satisfy required tool-calling support', () => {
@@ -188,5 +193,27 @@ describe('selectTextModel capability requirements', () => {
 
     expect(getAnalystModel()?.provider).toBe('groq');
     expect(getReporterModel()?.provider).toBe('groq');
+  });
+
+  it('uses agent-specific circuit breaker keys for the same provider', () => {
+    mockGetCircuitBreaker.mockImplementation((key: string) => ({
+      isAllowed: () => key !== 'nlq-agent-groq',
+    }));
+
+    const nlqResult = selectTextModel(
+      'NLQ Agent',
+      ['groq', 'cerebras'],
+      { requiredCapabilities: { requireToolCalling: true } }
+    );
+    const analystResult = selectTextModel(
+      'Analyst Agent',
+      ['groq', 'cerebras'],
+      { requiredCapabilities: { requireToolCalling: true } }
+    );
+
+    expect(nlqResult?.provider).toBe('cerebras');
+    expect(analystResult?.provider).toBe('groq');
+    expect(mockGetCircuitBreaker).toHaveBeenCalledWith('nlq-agent-groq');
+    expect(mockGetCircuitBreaker).toHaveBeenCalledWith('analyst-agent-groq');
   });
 });

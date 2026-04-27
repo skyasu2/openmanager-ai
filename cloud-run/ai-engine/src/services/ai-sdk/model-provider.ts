@@ -2,8 +2,8 @@
  * AI SDK Model Provider
  *
  * Vercel AI SDK 6 based model provider with tri-provider architecture:
- * - Primary: Groq (llama-4-scout-17b Preview, 1K RPD / 500K TPD, 131K ctx, tool calling ✅)
- * - Secondary: Cerebras (Qwen primary, llama3.1-8b intra-fallback, model-aware quota, tool calling ✅)
+ * - Group A primary: Groq (Supervisor/NLQ/Advisor, llama-4-scout-17b Preview, 1K RPD / 500K TPD, 131K ctx, tool calling ✅)
+ * - Group B primary: Cerebras (Analyst/Reporter/Verifier, Qwen primary, llama3.1-8b intra-fallback, model-aware quota, tool calling ✅)
  * - Last Resort: Mistral (mistral-large-latest, 500 RPD, ~2 RPM free tier)
  * - Vision: Gemini 2.5 Flash-Lite (1K RPD, 1M context, no thinking tokens)
  *
@@ -27,6 +27,10 @@ import {
   recordProviderUsage,
   selectAvailableProvider,
 } from '../resilience/quota-tracker';
+import {
+  CEREBRAS_FIRST_PROVIDER_ORDER,
+  TEXT_AGENT_PROVIDER_ORDER,
+} from './agents/config/agent-runtime-policy';
 import { selectTextModel } from './agents/config/agent-model-selectors';
 import {
   getCerebrasModel,
@@ -81,7 +85,7 @@ export function getSupervisorModel(excludeProviders: ProviderName[] = []): {
   provider: ProviderName;
   modelId: string;
 } {
-  const result = selectTextModel('Supervisor', ['groq', 'cerebras', 'mistral'], {
+  const result = selectTextModel('Supervisor', TEXT_AGENT_PROVIDER_ORDER, {
     throwOnEmpty: true,
     excludeProviders,
     cbPrefix: 'supervisor',
@@ -93,14 +97,14 @@ export function getSupervisorModel(excludeProviders: ProviderName[] = []): {
 
 /**
  * Get verifier model with 3-way fallback + CB check
- * Groq(llama-4-scout) → Cerebras(Qwen→llama3.1-8b) → Mistral
+ * Cerebras(Qwen→llama3.1-8b) → Groq(llama-4-scout) → Mistral
  */
 export function getVerifierModel(): {
   model: LanguageModel;
   provider: ProviderName;
   modelId: string;
 } {
-  const result = selectTextModel('Verifier', ['groq', 'cerebras', 'mistral'], {
+  const result = selectTextModel('Verifier', CEREBRAS_FIRST_PROVIDER_ORDER, {
     throwOnEmpty: true,
     requiredCapabilities: { requireToolCalling: true },
   });

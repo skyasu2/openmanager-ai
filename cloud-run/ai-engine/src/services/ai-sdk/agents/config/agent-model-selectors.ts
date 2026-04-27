@@ -89,7 +89,7 @@ interface SelectTextModelOptions {
  */
 export function selectTextModel(
   agentLabel: string,
-  providerOrder: TextProvider[],
+  providerOrder: readonly TextProvider[],
   options: SelectTextModelOptions = {},
 ): ModelResult | null {
   const {
@@ -181,7 +181,7 @@ export function getNlqModel(): ModelResult | null {
 }
 
 /**
- * Analyst model: Groq(llama-4-scout) → Cerebras(Qwen→llama3.1-8b) → Mistral
+ * Analyst model: Cerebras(Qwen→llama3.1-8b) → Groq(llama-4-scout) → Mistral
  */
 export function getAnalystModel(): ModelResult | null {
   return selectTextModel('Analyst Agent', getAgentProviderOrder('Analyst Agent'), {
@@ -190,7 +190,7 @@ export function getAnalystModel(): ModelResult | null {
 }
 
 /**
- * Reporter model: Groq(llama-4-scout) → Cerebras(Qwen→llama3.1-8b) → Mistral
+ * Reporter model: Cerebras(Qwen→llama3.1-8b) → Groq(llama-4-scout) → Mistral
  */
 export function getReporterModel(): ModelResult | null {
   return selectTextModel('Reporter Agent', getAgentProviderOrder('Reporter Agent'), {
