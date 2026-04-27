@@ -1,18 +1,24 @@
 #!/usr/bin/env bash
-set -euo pipefail
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  set -euo pipefail
+fi
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 ENV_FILE="$REPO_ROOT/.env.local"
-IS_GEMINI=false
 
-if [ "${1:-}" = "gemini" ]; then
-  IS_GEMINI=true
-fi
+openmanager_project_env_mode() {
+  if [ "${1:-}" = "gemini" ]; then
+    printf 'gemini\n'
+    return 0
+  fi
+  printf 'default\n'
+}
 
-should_load_env_key() {
-  local key="$1"
+openmanager_should_load_env_key() {
+  local mode="$1"
+  local key="$2"
 
-  if [ "$IS_GEMINI" != "true" ]; then
+  if [ "$mode" != "gemini" ]; then
     return 0
   fi
 
@@ -26,7 +32,16 @@ should_load_env_key() {
   esac
 }
 
-if [ -f "$ENV_FILE" ]; then
+openmanager_load_project_env() {
+  local mode="${1:-default}"
+  local line=""
+  local key=""
+  local value=""
+
+  if [ ! -f "$ENV_FILE" ]; then
+    return 0
+  fi
+
   while IFS= read -r line || [ -n "$line" ]; do
     line="${line%$'\r'}"
     case "$line" in
@@ -38,7 +53,7 @@ if [ -f "$ENV_FILE" ]; then
         key="${line%%=*}"
         value="${line#*=}"
         if [[ "$key" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then
-          if ! should_load_env_key "$key"; then
+          if ! openmanager_should_load_env_key "$mode" "$key"; then
             continue
           fi
           if [[ "$value" == \"*\" && "$value" == *\" ]]; then
@@ -51,17 +66,17 @@ if [ -f "$ENV_FILE" ]; then
         ;;
     esac
   done < "$ENV_FILE"
-fi
+
+  if [ -z "${GITHUB_PERSONAL_ACCESS_TOKEN:-}" ] && [ -n "${GITHUB_TOKEN:-}" ]; then
+    export GITHUB_PERSONAL_ACCESS_TOKEN="$GITHUB_TOKEN"
+  fi
+}
 
 # Gemini CLI headless/subcommands can miss stored folder trust and then skip
 # project MCP/skills or hang on a hidden trust prompt. This launcher is
 # project-scoped, so trust the current OpenManager workspace for this process.
 #
-# Keep this launcher as a direct shell entrypoint, not an npm health-check
-# wrapper. Gemini's self-relaunch can lose project-scoped trust/env behavior in
-# headless subcommands, so disable relaunch for Gemini invocations. Strip
-# npm-only variables as best-effort hygiene if someone calls it from npm.
-if [ "${1:-}" = "gemini" ]; then
+openmanager_sanitize_gemini_env() {
   while IFS='=' read -r key _; do
     case "$key" in
       npm_* | INIT_CWD | NODE | COLOR | EDITOR | GOOGLE_CLOUD_PROJECT | GOOGLE_CLOUD_LOCATION | GOOGLE_APPLICATION_CREDENTIALS | GOOGLE_GENAI_USE_VERTEXAI | GOOGLE_GENAI_USE_GCA | GEMINI_API_KEY | GEMINI_MODEL)
@@ -69,10 +84,29 @@ if [ "${1:-}" = "gemini" ]; then
         ;;
     esac
   done < <(env)
+}
+
+openmanager_run_with_project_env_main() {
+  local mode=""
+
+  mode="$(openmanager_project_env_mode "${1:-}")"
+  openmanager_load_project_env "$mode"
+
+  # Keep this launcher as a direct shell entrypoint, not an npm health-check
+  # wrapper. Gemini's self-relaunch can lose project-scoped trust/env behavior in
+  # headless subcommands, so disable relaunch for Gemini invocations. Strip
+  # npm-only variables as best-effort hygiene if someone calls it from npm.
+  if [ "$mode" = "gemini" ]; then
+    openmanager_sanitize_gemini_env
+    exec env GEMINI_CLI_TRUST_WORKSPACE=true GEMINI_CLI_NO_RELAUNCH=true "$@"
+  fi
+
+  exec "$@"
+}
+
+if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then
+  openmanager_load_project_env "$(openmanager_project_env_mode "${1:-}")"
+  return 0
 fi
 
-if [ "${1:-}" = "gemini" ]; then
-  exec env GEMINI_CLI_TRUST_WORKSPACE=true GEMINI_CLI_NO_RELAUNCH=true "$@"
-fi
-
-exec "$@"
+openmanager_run_with_project_env_main "$@"

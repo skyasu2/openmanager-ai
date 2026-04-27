@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-27 KST (`계획서 마무리 — retrieval/sidebar 계획서 archive 이동 완료`)
+**Last Updated**: 2026-04-27 KST (`Codex GitHub MCP env 로딩 단순화`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -16,7 +16,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-04-24 재검증 기준 `reports/qa=77.89MiB`, `reports/qa/evidence=72.80MiB / 333파일`. `npm run qa:evidence:audit` 결과 missing/recent artifact debt/archive candidate `0`, orphan durable evidence `6개 / 1.01MiB`, size warning만 남음. run-level soft budget warning은 `QA-20260330-0197`, `QA-20260330-0198` 2건으로 구조화됨. orphan 제거만으로는 warning 해소 효과가 낮고 top referenced legacy evidence는 modal/detail/landing proof 가치가 있어 explicit cleanup batch는 열지 않음. 새 evidence 누적 시점에만 재평가. |
+| P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-04-27 재검증 기준 `reports/qa=77.91MiB`, `reports/qa/evidence=72.81MiB / 335파일`. `npm run qa:evidence:audit` 결과 missing/recent artifact debt `0`, orphan durable evidence `6개`, archive candidate `7개 / 2.16MiB`, size warning 유지. run-level soft budget warning은 `QA-20260330-0197`, `QA-20260330-0198` 2건으로 구조화됨. orphan/archive candidate 제거만으로는 warning 해소 효과가 낮고 top referenced legacy evidence는 modal/detail/landing proof 가치가 있어 explicit cleanup batch는 열지 않음. 새 evidence 누적 시점에만 재평가. |
 
 ## Backlog
 
@@ -31,6 +31,12 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-27 #205)
+- [x] Codex GitHub MCP env 로딩 단순화
+  - GitHub 전용 MCP auth sync 스크립트와 선택형 Codex launcher 설치 래퍼 제거
+  - `run-with-project-env.sh`를 source 가능한 공용 `.env.local` 로더로 정리해 `codex-local.sh`와 MCP health check가 같은 경로로 `GITHUB_PERSONAL_ACCESS_TOKEN`을 사용하도록 통일
+  - Codex TOML에는 토큰 값을 넣지 않고 `bearer_token_env_var`만 유지
 
 ### Completed (2026-04-27 #204)
 - [x] 작업 계획서 마무리 처리

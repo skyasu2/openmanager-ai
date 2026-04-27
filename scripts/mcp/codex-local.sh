@@ -3,7 +3,7 @@ set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 RUNTIME_ENV_RESOLVER="$REPO_ROOT/scripts/mcp/resolve-runtime-env.sh"
-GITHUB_MCP_AUTH_SYNC="$REPO_ROOT/scripts/mcp/sync-github-mcp-auth.sh"
+PROJECT_ENV_LOADER="$REPO_ROOT/scripts/mcp/run-with-project-env.sh"
 ORIGINAL_CONFIG_FILE=""
 BACKUP_CONFIG_FILE=""
 FILTERED_CONFIG_FILE=""
@@ -246,6 +246,10 @@ if [ ! -f "$RUNTIME_ENV_RESOLVER" ]; then
   echo "ERROR: $RUNTIME_ENV_RESOLVER not found"
   exit 2
 fi
+if [ ! -f "$PROJECT_ENV_LOADER" ]; then
+  echo "ERROR: $PROJECT_ENV_LOADER not found"
+  exit 2
+fi
 
 # Force project-scoped Codex config by default.
 : "${OPENMANAGER_CODEX_HOME_MODE:=project}"
@@ -253,16 +257,13 @@ export OPENMANAGER_CODEX_HOME_MODE
 
 # shellcheck source=/dev/null
 source "$RUNTIME_ENV_RESOLVER"
+# shellcheck source=/dev/null
+source "$PROJECT_ENV_LOADER"
 
 if [ ! -f "$CODEX_HOME/config.toml" ]; then
   echo "ERROR: $CODEX_HOME/config.toml not found"
   echo "Hint: create $REPO_ROOT/.codex/config.toml or override OPENMANAGER_CODEX_HOME_MODE"
   exit 2
-fi
-
-if [ -f "$GITHUB_MCP_AUTH_SYNC" ]; then
-  # shellcheck source=/dev/null
-  source "$GITHUB_MCP_AUTH_SYNC" --export-env || true
 fi
 
 trap cleanup_effective_config_override EXIT INT TERM

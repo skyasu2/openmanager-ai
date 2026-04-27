@@ -18,7 +18,7 @@ TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 CODEX_LOCAL_RUNNER="$REPO_ROOT/scripts/mcp/codex-local.sh"
 RUNTIME_ENV_RESOLVER="$REPO_ROOT/scripts/mcp/resolve-runtime-env.sh"
-GITHUB_MCP_AUTH_SYNC="$REPO_ROOT/scripts/mcp/sync-github-mcp-auth.sh"
+PROJECT_ENV_LOADER="$REPO_ROOT/scripts/mcp/run-with-project-env.sh"
 USAGE_COUNTER="$REPO_ROOT/scripts/mcp/count-codex-mcp-usage.sh"
 EXPECTED_SERVERS=()
 CONFIG_FILE="$REPO_ROOT/.codex/config.toml"
@@ -598,6 +598,12 @@ if [ ! -f "$RUNTIME_ENV_RESOLVER" ]; then
   echo "런타임 환경 해석기 누락: $RUNTIME_ENV_RESOLVER" >> "$LOG_FILE"
   exit 2
 fi
+if [ ! -f "$PROJECT_ENV_LOADER" ]; then
+  LAST_ERROR="프로젝트 환경 로더 누락: $PROJECT_ENV_LOADER"
+  echo -e "${RED}프로젝트 환경 로더 누락: $PROJECT_ENV_LOADER${NC}"
+  echo "프로젝트 환경 로더 누락: $PROJECT_ENV_LOADER" >> "$LOG_FILE"
+  exit 2
+fi
 
 # project .codex/config.toml is the SSOT, but the diagnostic runtime path can
 # fall back to a writable home CODEX_HOME when the project directory is not
@@ -606,13 +612,8 @@ fi
 export OPENMANAGER_CODEX_HOME_MODE
 # shellcheck source=/dev/null
 source "$RUNTIME_ENV_RESOLVER"
-
-if [ -f "$GITHUB_MCP_AUTH_SYNC" ]; then
-  set +e
-  # shellcheck source=/dev/null
-  source "$GITHUB_MCP_AUTH_SYNC" --export-env
-  set -euo pipefail
-fi
+# shellcheck source=/dev/null
+source "$PROJECT_ENV_LOADER"
 
 load_expected_servers() {
   if [ ! -f "$CONFIG_FILE" ]; then

@@ -33,8 +33,6 @@
     "ci:local:docker": "node scripts/ci/run-local-docker-ci.js",
     "ci:local:docker:full": "CI_DOCKER_RUN_ENGINE_PREFLIGHT=true node scripts/ci/run-local-docker-ci.js",
     "codex:check": "ts-node scripts/ai/check-codex-project-scope.ts",
-    "codex:install-launcher": "bash scripts/mcp/install-codex-launcher.sh",
-    "codex:install-launcher:shadow": "bash scripts/mcp/install-codex-launcher.sh --name codex",
     "codex:local": "bash scripts/mcp/codex-local.sh",
     "codex:local:storybook": "OPENMANAGER_STORYBOOK_MCP_MODE=on bash scripts/mcp/codex-local.sh",
     "ci:runner:health": "bash scripts/ci/runner-health-check.sh",

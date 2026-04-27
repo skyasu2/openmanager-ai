@@ -97,13 +97,6 @@ npm run codex:check
 # project-scoped Codex wrapper
 bash scripts/mcp/codex-local.sh mcp list
 
-# optional user launcher for the same wrapper
-npm run codex:install-launcher
-openmanager-codex mcp list
-
-# optional shadow launcher when you want `codex` to load project env first
-npm run codex:install-launcher:shadow
-
 # health check
 bash scripts/mcp/mcp-health-check-codex.sh
 bash scripts/mcp/mcp-health-check-codex.sh --no-live-probe
@@ -275,8 +268,7 @@ curl -I http://127.0.0.1:6006
 
 - `.mcp.json`에 토큰을 직접 쓰지 않습니다.
 - `.env.local` 또는 shell env에 `SUPABASE_ACCESS_TOKEN`, `VERCEL_API_KEY`, `GITHUB_PERSONAL_ACCESS_TOKEN`이 있는지 확인합니다.
-- Codex GitHub MCP는 직접 `codex` 대신 `bash scripts/mcp/codex-local.sh ...` 또는 `openmanager-codex ...`로 시작해야 `.env.local`의 GitHub token이 HTTP MCP bearer env로 주입됩니다.
-- `codex` 입력 습관을 유지하려면 `npm run codex:install-launcher:shadow`를 실행해 `~/.local/bin/codex`가 project launcher를 가리키게 합니다. `~/.local/bin`이 global Codex binary보다 앞에 있어야 적용됩니다.
+- Codex GitHub MCP는 직접 `codex` 대신 `bash scripts/mcp/codex-local.sh ...`로 시작해야 `.env.local`의 GitHub token이 HTTP MCP bearer env로 주입됩니다.
 - GitHub token이 없을 때 GitHub MCP만 제외하려면 기본값인 `OPENMANAGER_GITHUB_MCP_MODE=auto`를 유지합니다. 강제로 끄려면 `OPENMANAGER_GITHUB_MCP_MODE=off`, 누락을 실패로 드러내려면 `OPENMANAGER_GITHUB_MCP_MODE=on`을 사용합니다.
 - 로그/문서/리뷰에는 실제 토큰 값을 출력하지 않습니다.
 

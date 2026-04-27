@@ -99,7 +99,6 @@ claude             # 대화형 모드 시작
 - Codex SSOT: `.codex/config.toml`의 `[mcp_servers.*]`
 - Codex bootstrap: `npm run mcp:setup:codex`로 tracked template 기반 project config를 재생성 가능
 - Codex runtime: 직접 `codex`보다 `bash scripts/mcp/codex-local.sh ...` 경로를 우선 사용
-- Codex launcher: `npm run codex:install-launcher`는 `openmanager-codex` 명령을 설치하고, `npm run codex:install-launcher:shadow`는 `codex` 명령 자체를 project launcher로 shadow합니다.
 - Codex auth/env: GitHub/Supabase 토큰은 `.codex/config.toml`에 직접 넣지 않고 런타임에 shell env 또는 `.env.local`에서 주입
 - Codex config 선택: `scripts/mcp/resolve-runtime-env.sh`가 기본적으로 project `/.codex`를 home `~/.codex`보다 우선
 - Codex scope: OpenManager MCP는 project `.codex/config.toml`, 공통 skill은 `.agents/skills`만 사용합니다. `~/.codex/skills`와 `.codex/skills`에 OpenManager 공통 skill 복사본을 두지 않습니다.
@@ -145,14 +144,6 @@ bash scripts/mcp/mcp-health-check-codex.sh --no-live-probe
 npm run codex:check
 GEMINI_CLI_TRUST_WORKSPACE=true GEMINI_CLI_NO_RELAUNCH=true gemini mcp list --debug
 npm run skills:check
-
-# 선택: .env.local 주입 launcher 설치
-npm run codex:install-launcher
-openmanager-codex mcp list
-
-# 선택: 이 프로젝트 셸에서 codex 입력 습관을 유지
-npm run codex:install-launcher:shadow
-codex mcp list
 ```
 
 ---
