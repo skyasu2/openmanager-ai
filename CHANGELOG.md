@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.37](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.36...v8.11.37) (2026-04-27)
+
+
+### Features
+
+* **ai-engine:** distribute text providers by agent group ([0245cc9](https://gitlab.com/skyasu2/openmanager-ai/-/commit/0245cc934913cd7df546716ddeb032e63e67394c))
+
+
+### Bug Fixes
+
+* **ai:** clarify Analyst summary and Reporter report cards ([74a82ea](https://gitlab.com/skyasu2/openmanager-ai/-/commit/74a82eab64264403c7be8ede8d27fb01f091f0d0))
+* **ai:** close Analyst and Reporter review gaps ([955936b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/955936be5d21e0b85964918802eacf420362bf6d))
+
+
+### Tests
+
+* **qa:** record AI assistant production QA ([0d8496f](https://gitlab.com/skyasu2/openmanager-ai/-/commit/0d8496fdceddaea1a804ed3beea342bfefc9b6ad))
+* **qa:** record vercel ai assistant mcp qa ([b25439d](https://gitlab.com/skyasu2/openmanager-ai/-/commit/b25439dcea4e6847b389e6d6355bc1cca0fd0d71))
+* **spec:** add AI assistant Analyst/Reporter quality specs ([bdb131b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/bdb131bca51183a9236f3a9e73acaeb60de9bdd4))
+* **spec:** add AI provider distribution specs ([b91fdf5](https://gitlab.com/skyasu2/openmanager-ai/-/commit/b91fdf51b0f854a5bc88af9295e356ae1379100c))
+
 ## [8.11.36](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.35...v8.11.36) (2026-04-26)
 
 
