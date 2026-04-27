@@ -110,6 +110,10 @@ function ReportQuickSummary({ report }: { report: IncidentReport }) {
   );
 }
 
+function hasReportQuickSummary(report: IncidentReport): boolean {
+  return Boolean(report.recommendations?.[0]?.action || report.systemSummary);
+}
+
 /**
  * 이상 항목 섹션
  */
@@ -328,6 +332,7 @@ export default function ReportCard({
   onSetDownloadMenuId,
 }: ReportCardProps) {
   const [copyState, setCopyState] = useState<'idle' | 'copied'>('idle');
+  const hasQuickSummary = hasReportQuickSummary(report);
 
   useEffect(() => {
     if (copyState !== 'copied') return;
@@ -363,8 +368,11 @@ export default function ReportCard({
       </div>
 
       {/* Description */}
-      <p className="mb-3 text-sm text-gray-600">{report.description}</p>
-      <ReportQuickSummary report={report} />
+      {hasQuickSummary ? (
+        <ReportQuickSummary report={report} />
+      ) : (
+        <p className="mb-3 text-sm text-gray-600">{report.description}</p>
+      )}
 
       {/* System Summary */}
       {report.systemSummary && (

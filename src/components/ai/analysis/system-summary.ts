@@ -52,8 +52,9 @@ function shouldPromoteIssue(
   result: MetricAnomalyResult,
   reason: string | null
 ): boolean {
-  if (!result.isAnomaly || !reason) return false;
+  if (!result.isAnomaly) return false;
   if (result.severity === 'high' || result.severity === 'medium') return true;
+  if (!reason) return false;
   return result.confidence >= 0.75 && getThresholdDistance(result) >= 5;
 }
 
@@ -104,7 +105,7 @@ export function createSystemAnalysisSummary(
         currentValue: result.currentValue,
         confidence: result.confidence,
         threshold: result.threshold,
-        reason: reason ?? '기준 범위 이탈',
+        reason: reason ?? '평소 범위 이탈',
         recommendation: createRecommendation(metric, result.severity),
       });
     }

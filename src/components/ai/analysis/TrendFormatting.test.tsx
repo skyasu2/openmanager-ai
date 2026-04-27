@@ -71,4 +71,34 @@ describe('analysis trend formatting', () => {
     expect(screen.queryByText('86% → --')).not.toBeInTheDocument();
     expect(screen.queryByText(/NaN%/)).not.toBeInTheDocument();
   });
+
+  it('renders issue reasons and recommendations in the system summary', () => {
+    const summary: SystemAnalysisSummary = {
+      totalServers: 18,
+      healthyServers: 16,
+      warningServers: 2,
+      criticalServers: 0,
+      overallStatus: 'warning',
+      topIssues: [
+        {
+          serverId: 'cache-redis-dc1-01',
+          serverName: 'cache-redis-dc1-01',
+          metric: 'memory',
+          severity: 'high',
+          currentValue: 91,
+          confidence: 0.91,
+          reason: '상한 80% 초과',
+          recommendation: 'MEMORY 포화 원인을 즉시 확인하세요',
+        },
+      ],
+      predictions: [],
+    };
+
+    render(<SystemSummarySection summary={summary} />);
+
+    expect(screen.getByText('상한 80% 초과 · 신뢰도 91%')).toBeInTheDocument();
+    expect(
+      screen.getByText('조치: MEMORY 포화 원인을 즉시 확인하세요')
+    ).toBeInTheDocument();
+  });
 });

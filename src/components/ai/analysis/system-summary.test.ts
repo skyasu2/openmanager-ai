@@ -111,6 +111,44 @@ describe('createSystemAnalysisSummary', () => {
     });
   });
 
+  it('keeps medium and high statistical anomalies even without a threshold breach', () => {
+    const summary = createSystemAnalysisSummary([
+      createServerResult({
+        serverId: 'api-was-dc1-02',
+        serverName: 'api-was-dc1-02',
+        overallStatus: 'warning',
+        anomalyDetection: {
+          success: true,
+          serverId: 'api-was-dc1-02',
+          serverName: 'api-was-dc1-02',
+          anomalyCount: 1,
+          hasAnomalies: true,
+          timestamp: '2026-04-27T00:00:00.000Z',
+          _algorithm: 'zscore',
+          _engine: 'test',
+          _cached: false,
+          results: {
+            cpu: {
+              isAnomaly: true,
+              severity: 'medium',
+              confidence: 0.84,
+              currentValue: 55,
+              threshold: { lower: 0, upper: 100 },
+            },
+          },
+        },
+      }),
+    ]);
+
+    expect(summary.topIssues[0]).toMatchObject({
+      serverName: 'api-was-dc1-02',
+      metric: 'cpu',
+      severity: 'medium',
+      reason: '평소 범위 이탈',
+      recommendation: 'CPU 추세와 관련 로그를 점검하세요',
+    });
+  });
+
   it('keeps threshold breach predictions even when the numeric target is missing', () => {
     const summary = createSystemAnalysisSummary([
       createServerResult({

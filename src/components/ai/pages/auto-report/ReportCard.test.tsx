@@ -79,5 +79,6 @@ describe('ReportCard', () => {
         '다음 조치: Redis 메모리 사용량과 eviction 정책을 점검하세요'
       )
     ).toBeInTheDocument();
+    expect(screen.queryByText('메모리 사용량 증가')).not.toBeInTheDocument();
   });
 });

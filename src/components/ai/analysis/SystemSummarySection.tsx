@@ -72,6 +72,11 @@ export function SystemSummarySection({ summary }: SystemSummarySectionProps) {
                       : ''}
                   </div>
                 )}
+                {issue.recommendation && (
+                  <div className="mt-0.5 text-[11px] font-medium text-gray-600">
+                    조치: {issue.recommendation}
+                  </div>
+                )}
               </div>
             ))}
           </div>
