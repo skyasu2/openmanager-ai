@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-27 KST (`AI Provider 분산 배치 계획 추가`)
+**Last Updated**: 2026-04-27 KST (`AI Assistant Analyst/Reporter quality improvement 완료`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -9,7 +9,6 @@
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
 | AI Provider 분산 배치 (Spider-Web) 개선 | P0/P1 | Approved | Plan: [ai-provider-distribution-plan.md](ai-provider-distribution-plan.md). 현재 NLQ/Analyst/Reporter/Advisor/Supervisor/Verifier 6개 에이전트가 동일 순서(Groq→Cerebras→Mistral)로 설정돼 Groq 1K RPD를 경쟁 소진. Task 1(P0): Cerebras Qwen/llama 2026-05-27 종료 대응은 Groq provider replacement로 고정하고, `gpt-oss-120b`는 현재 계정 chat smoke 404로 runtime 제외 유지. Task 2(P1): Analyst/Reporter/Verifier를 Cerebras 1순위로 변경해 에이전트 그룹별 provider 분리. |
-| AI Assistant Analyst/Reporter quality improvement | P1 | In Progress | Plan: [ai-assistant-analyst-reporter-quality-plan.md](ai-assistant-analyst-reporter-quality-plan.md). Task 1~4 구현/로컬 검증 완료. 남은 작업은 배포 후 production Playwright MCP QA 기록이다. |
 
 ---
 
@@ -32,6 +31,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-27 #207)
+- [x] AI Assistant Analyst/Reporter quality improvement 완료 (v8.11.38)
+  - Analyst T0~T4: 예측값 없음 표시 개선, severity/threshold 기반 주요 이슈 정렬, 각 이슈 기준/근거 명시
+  - Reporter T5~T6: 접힌 카드 원인/영향/다음 조치 표시, 탭 전환 후 캐시 보존
+  - Production QA-20260427-0353: 12 checks, 10 pass, 2 warn(Cerebras transient), 콘솔 에러 0건
+  - Plan archived: [archive/ai-assistant-analyst-reporter-quality-plan.md](archive/ai-assistant-analyst-reporter-quality-plan.md)
 
 ### Completed (2026-04-27 #206)
 - [x] Codex MCP env allowlist hardening

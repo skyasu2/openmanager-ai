@@ -1,0 +1,176 @@
+{
+  "runTitle": "AI Assistant Analyst/Reporter Quality - Production Playwright MCP QA (Task 5)",
+  "owner": "claude",
+  "source": "playwright-mcp",
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core", "ai-advanced-surface"],
+  "coveredSurfaces": [
+    "/dashboard",
+    "AI Chat",
+    "Reporter (자동장애 보고서)",
+    "Analyst (이상감지/예측)"
+  ],
+  "skippedSurfaces": ["landing page full flow", "login page"],
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "commitSha": "2a209c74c1528bb4d694e4e90eae51ff86568926",
+    "deploymentId": "dpl_A7Nhcu4FxYeVkhQAWvWv9hUSW9Ca"
+  },
+  "checks": {
+    "total": 12,
+    "passed": 10,
+    "failed": 0,
+    "warned": 2,
+    "skipped": 0
+  },
+  "items": [
+    {
+      "id": "analyst-quality-t0",
+      "title": "Analyst: predictedValue 없음 시 → -- 미렌더링",
+      "status": "pass",
+      "severity": "P1",
+      "note": "예측값 부재 항목이 '예측값 없음' 텍스트로 표시, 화살표 비교(→ --) 없음"
+    },
+    {
+      "id": "analyst-quality-t1",
+      "title": "Analyst: 예측값 없음 + threshold message 함께 표시",
+      "status": "pass",
+      "severity": "P1",
+      "note": "상승 추세 경고에서 예측값 없음 + 임계 도달 예상 메시지 함께 표시"
+    },
+    {
+      "id": "analyst-quality-t2",
+      "title": "Analyst: low severity 항목 주요 이슈 제외",
+      "status": "pass",
+      "severity": "P1",
+      "note": "storage-nfs-dc1-02 등 낮은 값 항목이 주요 이슈에서 제외됨"
+    },
+    {
+      "id": "analyst-quality-t3",
+      "title": "Analyst: 주요 이슈 severity/threshold 기준 정렬",
+      "status": "pass",
+      "severity": "P1",
+      "note": "network 92% > CPU 86% > load_average > CPU 68% 순서로 정렬"
+    },
+    {
+      "id": "analyst-quality-t4",
+      "title": "Analyst: 각 이슈 row에 기준/근거 표시",
+      "status": "pass",
+      "severity": "P1",
+      "note": "상한 70% 초과, 상한 80% 초과, 평소 범위 이탈 등 이유 명시"
+    },
+    {
+      "id": "reporter-quality-t5",
+      "title": "Reporter: 접힌 카드에 원인/영향/다음 조치 표시",
+      "status": "pass",
+      "severity": "P1",
+      "note": "로드밸런서 CPU 과부하 경고 카드: 원인(신뢰도 70%), 영향(주의 3대·위험 1대), 다음 조치 모두 접힌 상태에서 표시"
+    },
+    {
+      "id": "reporter-quality-t6",
+      "title": "Reporter: 탭 전환 후 보고서 캐시 보존",
+      "status": "pass",
+      "severity": "P1",
+      "note": "Analyst 탭으로 이동 후 Reporter로 복귀 시 보고서 내용 완전 보존"
+    },
+    {
+      "id": "analyst-reporter-quality-t7",
+      "title": "콘솔 에러 0건",
+      "status": "pass",
+      "severity": "P0",
+      "note": "AI Chat/Reporter/Analyst 전 구간에서 console error 0건"
+    },
+    {
+      "id": "ai-chat-standalone-query",
+      "title": "AI Chat: 서버 단독 쿼리 데이터 기반 응답",
+      "status": "pass",
+      "severity": "P1",
+      "note": "cache-redis-dc1-01 메모리 48%, 최대 93% 기록, maxmemory 정책 권고 응답 (서버 실시간 데이터 분석 모드)"
+    },
+    {
+      "id": "version-check",
+      "title": "v8.11.38 배포 확인",
+      "status": "pass",
+      "severity": "P0",
+      "note": "랜딩 페이지 및 /api/health에서 v8.11.38 확인"
+    },
+    {
+      "id": "reporter-generation-transient-failure",
+      "title": "Reporter 생성 일시 실패 (2회) 후 성공",
+      "status": "warn",
+      "severity": "P2",
+      "note": "인시던트 보고서 생성 일시적 불가 오류 2회 발생. 3회차 성공. Cerebras provider fallback 기간 중 transient failure로 판정. 코드 회귀 아님"
+    },
+    {
+      "id": "ai-chat-followup-empty-response",
+      "title": "AI Chat multi-turn 2번째 쿼리 빈 응답",
+      "status": "warn",
+      "severity": "P2",
+      "note": "Cerebras fallback 도중 multi-turn 후속 쿼리에서 일반 대화 응답 모드로 빈 응답 1건. 단독 쿼리 재시도 성공으로 코드 회귀 아님으로 판정"
+    }
+  ],
+  "summary": "v8.11.38 production QA. Analyst T0-T4 전체 통과: 예측값 없음 표시 개선, severity/threshold 기반 주요 이슈 정렬, 각 이슈 근거 명시. Reporter T5-T6 통과: 접힌 카드 원인/영향/다음 조치 표시, 탭 전환 후 캐시 보존. 콘솔 에러 0건. 2건 warn은 Cerebras provider transient failure로 판정.",
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Analyst 주요 이슈 정렬/필터링, 예측값 표시, Reporter 카드 요약 개선이 QA 범위에 포함됨",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "OTel 기반 이상 감지 정확도와 threshold 근거 표시가 검증됨",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "period": "2026-04-01..2026-04-27",
+      "effectiveUsd": 17.73,
+      "billedUsd": 0.0,
+      "unexpectedBilledUsage": false,
+      "note": "effective $17.7347, billed $0.0000, chargeCount 15834"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "AI Chat standalone query response",
+      "path": "reports/qa/evidence/QA-20260427-0353/qa-ai-chat-response.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Analyst 주요 이슈 정렬 결과",
+      "path": "reports/qa/evidence/QA-20260427-0353/qa-analyst-result.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Reporter 접힌 카드 원인/영향/다음 조치",
+      "path": "reports/qa/evidence/QA-20260427-0353/qa-reporter-card-top.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Reporter 보고서 상세 내용",
+      "path": "reports/qa/evidence/QA-20260427-0353/qa-reporter-detail.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Reporter 3회차 성공 화면",
+      "path": "reports/qa/evidence/QA-20260427-0353/qa-reporter-success.png"
+    }
+  ],
+  "links": [{ "label": "general", "url": "https://openmanager-ai.vercel.app" }],
+  "playwrightArtifacts": false
+}

@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-27T08:33:24.156Z"
+    "updatedAt": "2026-04-27T13:19:24.078Z"
   },
   "sequence": {
-    "nextRunNumber": 353
+    "nextRunNumber": 354
   },
   "summary": {
-    "totalRecordedRuns": 350,
-    "totalRuns": 285,
+    "totalRecordedRuns": 351,
+    "totalRuns": 286,
     "excludedRuns": 65,
-    "totalChecks": 2372,
-    "totalPassed": 2286,
+    "totalChecks": 2384,
+    "totalPassed": 2296,
     "totalFailed": 79,
     "completionRate": 100,
     "completedItems": 343,
@@ -20,11 +20,11 @@
     "deferredItems": 0,
     "wontFixItems": 18,
     "expertDomainsTracked": 10,
-    "expertDomainsOpenGaps": 2,
-    "lastRunId": "QA-20260427-0352",
-    "lastRecordedAt": "2026-04-27T08:33:24.156Z",
-    "latestRecordedRunId": "QA-20260427-0352",
-    "latestRecordedAt": "2026-04-27T08:33:24.156Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260427-0353",
+    "lastRecordedAt": "2026-04-27T13:19:24.078Z",
+    "latestRecordedRunId": "QA-20260427-0353",
+    "latestRecordedAt": "2026-04-27T13:19:24.078Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -33382,6 +33382,118 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 1
+    },
+    {
+      "runId": "QA-20260427-0353",
+      "recordedAt": "2026-04-27T13:19:24.078Z",
+      "recordedAtKst": "2026-04-27 22:19:24 KST",
+      "title": "AI Assistant Analyst/Reporter Quality - Production Playwright MCP QA (Task 5)",
+      "owner": "claude",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260427-0353.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_A7Nhcu4FxYeVkhQAWvWv9hUSW9Ca",
+        "deploymentUrl": "",
+        "commitSha": "2a209c74c1528bb4d694e4e90eae51ff86568926"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "/dashboard",
+        "AI Chat",
+        "Reporter (자동장애 보고서)",
+        "Analyst (이상감지/예측)"
+      ],
+      "skippedSurfaces": [
+        "landing page full flow",
+        "login page"
+      ],
+      "checks": {
+        "total": 12,
+        "passed": 10,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Analyst 주요 이슈 정렬/필터링, 예측값 표시, Reporter 카드 요약 개선이 QA 범위에 포함됨",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "OTel 기반 이상 감지 정확도와 threshold 근거 표시가 검증됨",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "manual-dashboard",
+          "status": "checked",
+          "result": "unknown",
+          "checkedAt": "",
+          "summary": "",
+          "evidence": "",
+          "url": ""
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "AI Chat standalone query response",
+          "path": "reports/qa/evidence/QA-20260427-0353/qa-20260427-ai-chat-response.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Analyst 주요 이슈 정렬 결과",
+          "path": "reports/qa/evidence/QA-20260427-0353/qa-20260427-analyst-result.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Reporter 접힌 카드 원인/영향/다음 조치",
+          "path": "reports/qa/evidence/QA-20260427-0353/qa-20260427-reporter-card-top.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Reporter 보고서 상세 내용",
+          "path": "reports/qa/evidence/QA-20260427-0353/qa-20260427-reporter-detail.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Reporter 3회차 성공 화면",
+          "path": "reports/qa/evidence/QA-20260427-0353/qa-20260427-reporter-success.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "general",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -33390,17 +33502,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 163,
-      "appropriateCount": 150,
+      "seenCount": 164,
+      "appropriateCount": 151,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 23,
-      "lastRunId": "QA-20260427-0352",
-      "lastSeenAt": "2026-04-27T08:33:24.156Z",
+      "lastRunId": "QA-20260427-0353",
+      "lastSeenAt": "2026-04-27T13:19:24.078Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Reporter and Analyst both complete on production, but Analyst trend result formatting and issue ranking still need non-blocking polish.",
-      "lastNextAction": "Clarify Analyst trend target values and suppress or explain low-priority issue rows such as CPU 24%."
+      "lastImprovementNeeded": false,
+      "lastRationale": "Analyst 주요 이슈 정렬/필터링, 예측값 표시, Reporter 카드 요약 개선이 QA 범위에 포함됨",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -33475,17 +33587,17 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 39,
-      "appropriateCount": 21,
+      "seenCount": 40,
+      "appropriateCount": 22,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 18,
-      "lastRunId": "QA-20260427-0352",
-      "lastSeenAt": "2026-04-27T08:33:24.156Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Core counts and warning server identification are coherent, but the Analyst main-issues ranking includes a CPU 24% row that needs clearer context or filtering.",
-      "lastNextAction": "Improve Analyst issue ranking/formatting for low-utilization outliers and missing prediction target display."
+      "lastRunId": "QA-20260427-0353",
+      "lastSeenAt": "2026-04-27T13:19:24.078Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "OTel 기반 이상 감지 정확도와 threshold 근거 표시가 검증됨",
+      "lastNextAction": ""
     },
     "infra-reliability": {
       "domainId": "infra-reliability",
