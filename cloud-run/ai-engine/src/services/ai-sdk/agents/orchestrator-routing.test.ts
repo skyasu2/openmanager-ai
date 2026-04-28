@@ -69,7 +69,9 @@ vi.mock('./config', () => ({
   ),
   MISTRAL_FIRST_PROVIDER_ORDER: ['mistral', 'groq', 'cerebras'],
   getAgentProviderOrder: vi.fn((agentName: string) =>
-    agentName === 'Analyst Agent' || agentName === 'Reporter Agent'
+    agentName === 'Analyst Agent' ||
+    agentName === 'Reporter Agent' ||
+    agentName === 'Advisor Agent'
       ? ['cerebras', 'groq', 'mistral']
       : ['groq', 'cerebras', 'mistral']
   ),
@@ -518,6 +520,33 @@ describe('executeForcedRouting', () => {
     });
   });
 
+  it('passes long-context capability requirements for forced-routing quality agents', async () => {
+    mockGenerateTextWithRetry.mockResolvedValueOnce(
+      createRetryResult({
+        text: '디스크 점검 명령어 요약',
+      })
+    );
+
+    await executeForcedRouting(
+      '디스크 사용률이 높은 서버를 위한 해결 방법과 확인 명령어 2개만 추천해줘',
+      'Advisor Agent',
+      Date.now(),
+      true,
+      true
+    );
+
+    const firstCall = mockGenerateTextWithRetry.mock.calls[0];
+    expect(firstCall?.[0]).toEqual(
+      expect.objectContaining({
+        requiredCapabilities: {
+          requireToolCalling: true,
+          minContextTokens: 32_000,
+        },
+      })
+    );
+    expect(firstCall?.[1]).toEqual(['cerebras', 'groq', 'mistral']);
+  });
+
   it('uses structured topology state before RAG documents for server count, role, AZ, and status questions', async () => {
     const result = await executeForcedRouting(
       '현재 인프라 토폴로지의 서버 수와 role/AZ/status 알려줘',
@@ -767,6 +796,11 @@ describe('provider order policy', () => {
       'mistral',
     ]);
     expect(getAgentProviderOrder('Reporter Agent')).toEqual([
+      'cerebras',
+      'groq',
+      'mistral',
+    ]);
+    expect(getAgentProviderOrder('Advisor Agent')).toEqual([
       'cerebras',
       'groq',
       'mistral',

@@ -170,6 +170,39 @@ describe('generateTextWithRetry', () => {
     expect(mockGenerateText).toHaveBeenCalledTimes(2);
   });
 
+  it('honors caller minContextTokens even when prompt estimate is short', async () => {
+    mockGenerateText
+      .mockRejectedValueOnce(new Error('Model qwen-3-235b-a22b-instruct-2507 does not exist or 404'))
+      .mockResolvedValueOnce({
+        text: 'ok from groq',
+        steps: [],
+        usage: { inputTokens: 10, outputTokens: 5, totalTokens: 15 },
+      });
+
+    const result = await generateTextWithRetry(
+      {
+        messages: [{ role: 'user', content: '디스크 해결 방법' }],
+        tools: {} as Record<string, unknown>,
+        requiredCapabilities: {
+          requireToolCalling: true,
+          minContextTokens: 32_000,
+        },
+      } as Parameters<typeof generateTextWithRetry>[0],
+      ['cerebras', 'groq'],
+      { maxRetries: 0, timeoutMs: 3000 }
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.provider).toBe('groq');
+    expect(result.attempts.map((attempt) => attempt.modelId)).toEqual([
+      'qwen-3-235b-a22b-instruct-2507',
+      'llama3.1-8b',
+      'groq-model',
+    ]);
+    expect(result.attempts[1]?.error).toContain('context-window');
+    expect(mockGenerateText).toHaveBeenCalledTimes(2);
+  });
+
   it('returns failure when every provider rejects tool calling', async () => {
     mockGenerateText.mockRejectedValue(new Error('tool_calls are not supported for this model'));
 
