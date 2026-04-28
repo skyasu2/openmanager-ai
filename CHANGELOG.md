@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.53](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.52...v8.11.53) (2026-04-28)
+
+
+### Bug Fixes
+
+* **ai-engine:** prevent cloud task target downgrade ([780bf3f](https://gitlab.com/skyasu2/openmanager-ai/-/commit/780bf3fae0e2f00de63892e48da36638851d07be))
+
 ## [8.11.52](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.51...v8.11.52) (2026-04-28)
 
 
