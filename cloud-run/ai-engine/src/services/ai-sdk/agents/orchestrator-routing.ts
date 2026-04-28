@@ -45,6 +45,7 @@ import { recordHandoff, getRecentHandoffs } from './orchestrator-handoff';
 import { executeReporterWithPipeline } from './orchestrator-reporter-pipeline';
 import { evaluateAgentResponseQuality } from './response-quality';
 import { FORCE_KB_QUERY_PATTERN } from '../query-routing-signals';
+import type { ModelCapabilityRequirements } from '../provider-capabilities';
 import {
   buildDeterministicSummaryFallback,
   buildDeterministicSummaryFromCurrentState,
@@ -82,6 +83,24 @@ function buildContextAwarePrompt(query: string, contextSummary?: string | null):
 
 function getAgentInstructions(config: AgentConfig, query: string): string {
   return config.getInstructions?.(query) ?? config.instructions;
+}
+
+function getForcedRoutingCapabilityRequirements(
+  agentName: string
+): ModelCapabilityRequirements {
+  if (agentName === 'NLQ Agent') {
+    return { requireToolCalling: true, minContextTokens: 16_000 };
+  }
+
+  if (
+    agentName === 'Analyst Agent' ||
+    agentName === 'Reporter Agent' ||
+    agentName === 'Advisor Agent'
+  ) {
+    return { requireToolCalling: true, minContextTokens: 32_000 };
+  }
+
+  return { requireToolCalling: true };
 }
 
 export function getOrchestratorModel(): ModelResult | null {
@@ -753,6 +772,7 @@ export async function executeForcedRouting(
         stopWhen: [hasToolCall('finalAnswer'), stepCountIs(agentMaxSteps)],
         temperature: 0.4,
         maxOutputTokens: 2048,
+        requiredCapabilities: getForcedRoutingCapabilityRequirements(suggestedAgentName),
       },
       providerOrder,
       { timeoutMs: 60000 }

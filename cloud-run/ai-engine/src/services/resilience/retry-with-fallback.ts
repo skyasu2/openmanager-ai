@@ -83,6 +83,7 @@ export interface GenerateTextOptions {
   maxOutputTokens?: number;
   stopWhen?: Parameters<typeof generateText>[0]['stopWhen'];
   abortSignal?: AbortSignal;
+  requiredCapabilities?: ModelCapabilityRequirements;
 }
 
 // ============================================================================
@@ -388,9 +389,16 @@ export async function generateTextWithRetry(
       while (retryCount <= fullConfig.maxRetries) {
         const attemptStart = Date.now();
 
+        const requiredMinContextTokens = Math.max(
+          options.requiredCapabilities?.minContextTokens ?? 0,
+          minContextTokens ?? 0
+        );
         const capabilityRequirements: ModelCapabilityRequirements = {
+          ...options.requiredCapabilities,
           ...(options.tools ? { requireToolCalling: true } : {}),
-          ...(minContextTokens ? { minContextTokens } : {}),
+          ...(requiredMinContextTokens > 0
+            ? { minContextTokens: requiredMinContextTokens }
+            : {}),
         };
         const capabilityMismatches = getCapabilityMismatchReasons(
           getTextProviderCapabilities(provider, modelId),

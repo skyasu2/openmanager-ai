@@ -222,6 +222,28 @@ Advisor가 Cerebras-first로 이동하면 Groq 실질 소비는 Cerebras 장애 
 
 - `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/supervisor-routing.test.ts` 통과
 
+### Phase 4.1: Forced-routing context guard hotfix (P1, 2026-04-28)
+
+- [x] T13. `generateTextWithRetry`가 caller의 `requiredCapabilities.minContextTokens`를 항상 반영하도록 수정
+  - 발견: production QA에서 Analyst/Advisor forced-routing이 Qwen 실패 후 `cerebras/llama3.1-8b`로 낙하하고 function-call JSON을 본문에 노출
+  - 원인: retry 계층은 추정 프롬프트가 8K를 넘을 때만 context floor를 계산했고, caller가 요구한 agent context floor를 받을 방법이 없었음
+- [x] T14. forced-routing 경로에서 agent별 context floor 전달
+  - NLQ Agent: `minContextTokens: 16_000`
+  - Analyst/Reporter/Advisor Agent: `minContextTokens: 32_000`
+  - 효과: Cerebras Qwen 실패 시 8K fallback을 건너뛰고 Groq/Mistral fallback으로 이동
+- [x] T15. 회귀 테스트
+  - `retry-with-fallback.test.ts`: 짧은 prompt라도 caller `minContextTokens: 32_000`가 있으면 `llama3.1-8b`를 skip
+  - `orchestrator-routing.test.ts`: Advisor forced-routing이 32K context floor를 retry 계층에 전달
+
+#### Phase 4.1 검증 (2026-04-28)
+
+- `cd cloud-run/ai-engine && npx vitest run src/services/resilience/retry-with-fallback.test.ts src/services/ai-sdk/agents/orchestrator-routing.test.ts` 통과
+- `cd cloud-run/ai-engine && npm run type-check` 통과
+- `cd cloud-run/ai-engine && npm run test` 통과 (`84 files / 896 tests`)
+- `npm run type-check` 통과
+- `npm run test:quick` 통과
+- `npm run test:contract` 통과 (`20 tests`)
+
 ---
 
 ## Done Definition
