@@ -22,6 +22,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { getComplexityThreshold } from '@/config/ai-proxy.config';
 import {
   type AgentStatusEventData,
   type AIStreamStatus,
@@ -31,6 +32,10 @@ import {
   useHybridAIQuery,
 } from '@/hooks/ai/useHybridAIQuery';
 import type { AIErrorDetails } from '@/lib/ai/error-details';
+import {
+  analyzeQueryComplexity,
+  shouldForceJobQueue,
+} from '@/lib/ai/utils/query-complexity';
 import { logger } from '@/lib/logging';
 import {
   type EnhancedChatMessage,
@@ -138,10 +143,74 @@ export interface UseAIChatCoreReturn {
 }
 
 const QA_THINKING_VISUALIZER_PROMPT = '/qa-thinking-visualizer';
+const DEBUG_ROUTING_PROMPT = '/debug-routing';
 
 function isQAThinkingVisualizerPrompt(text: string): boolean {
   const normalized = text.trim().toLowerCase();
   return normalized.includes(QA_THINKING_VISUALIZER_PROMPT);
+}
+
+function isDebugRoutingPrompt(text: string): boolean {
+  return text.trim().toLowerCase().startsWith(DEBUG_ROUTING_PROMPT);
+}
+
+function createDebugRoutingMessages(
+  fullText: string,
+  analysisMode: import('@/types/ai/analysis-mode').AnalysisMode
+): [UIMessage, UIMessage] {
+  const query = fullText.replace(/^\/debug-routing\s*/i, '').trim();
+  const token = Date.now().toString(36);
+
+  const threshold = getComplexityThreshold(); // 기본 19
+  const modeAdjustedThreshold =
+    analysisMode === 'thinking' ? Math.max(8, threshold - 8) : threshold;
+
+  const analysis = analyzeQueryComplexity(query || '(쿼리 없음)');
+  const forceResult = shouldForceJobQueue(query || '');
+
+  const isComplex = analysis.score > modeAdjustedThreshold || forceResult.force;
+  const routePath = isComplex
+    ? 'Job Queue (/api/ai/jobs)'
+    : 'Streaming (/api/ai/supervisor/stream/v2)';
+
+  const factorLines =
+    analysis.factors.length > 0
+      ? analysis.factors.map((f) => `  · ${f}`).join('\n')
+      : '  · (없음)';
+
+  const forceNote = forceResult.force
+    ? `\n⚡ 강제 Job Queue: 키워드 "${forceResult.matchedKeyword}" 감지`
+    : '';
+
+  const thinkingNote =
+    analysisMode === 'thinking'
+      ? `\n🧠 thinking 모드: threshold ${threshold} → ${modeAdjustedThreshold} (−8)`
+      : '';
+
+  const resultText =
+    `🔍 **Routing Debug**\n` +
+    `\`\`\`\n` +
+    `쿼리:       ${query || '(없음)'}\n` +
+    `복잡도:     ${analysis.level} (score: ${analysis.score})\n` +
+    `threshold:  ${modeAdjustedThreshold} (기본값: ${threshold})\n` +
+    `경로:       ${isComplex ? '🔄 ' : '⚡ '}${routePath}\n` +
+    `\`\`\`\n` +
+    `**factors**\n${factorLines}` +
+    forceNote +
+    thinkingNote;
+
+  const userMessage: UIMessage = {
+    id: `debug-user-${token}`,
+    role: 'user',
+    parts: [{ type: 'text', text: fullText }],
+  };
+  const assistantMessage: UIMessage = {
+    id: `debug-assistant-${token}`,
+    role: 'assistant',
+    parts: [{ type: 'text', text: resultText }],
+  };
+
+  return [userMessage, assistantMessage];
 }
 
 function createQAToolResultSummaries() {
@@ -543,6 +612,21 @@ export function useAIChatCore(
         return;
       }
 
+      if (isDebugRoutingPrompt(effectiveText)) {
+        setError(null);
+        setStreamRagSources([]);
+        lastQueryRef.current = effectiveText;
+        lastAttachmentsRef.current = attachments || null;
+        pendingQueryRef.current = '';
+        setInput('');
+        const [dbgUserMsg, dbgAssistantMsg] = createDebugRoutingMessages(
+          effectiveText,
+          analysisMode
+        );
+        setMessages([...messages, dbgUserMsg, dbgAssistantMsg]);
+        return;
+      }
+
       setError(null);
       setStreamRagSources([]);
       lastQueryRef.current = effectiveText;
@@ -562,6 +646,7 @@ export function useAIChatCore(
       addToQueue,
       messages,
       setMessages,
+      analysisMode,
     ]
   );
 
