@@ -285,8 +285,8 @@ CLOSED (정상) ──5회 실패──► OPEN (차단) ──30초──► HA
 
 ```
 Structured routing: Cerebras → Groq → Mistral
-Group A tool loop (Supervisor/NLQ/Advisor): Groq → Cerebras → Mistral
-Group B tool loop (Analyst/Reporter/Verifier): Cerebras → Groq → Mistral
+Group A tool loop (Supervisor/NLQ): Groq → Cerebras → Mistral
+Group B tool loop (Analyst/Reporter/Advisor/Verifier): Cerebras → Groq → Mistral
 Vision: Gemini Flash-Lite → OpenRouter
 모두 실패 → Static Fallback Response
 ```

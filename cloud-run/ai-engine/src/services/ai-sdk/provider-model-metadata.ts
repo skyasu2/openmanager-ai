@@ -58,7 +58,7 @@ function isPastDeprecationDate(
 function describeCerebrasRole(policy: ProviderModelPolicy): string {
   switch (policy.role) {
     case 'primary':
-      return 'primary structured routing + Analyst/Reporter/Verifier text';
+      return 'primary structured routing + Analyst/Reporter/Advisor/Verifier text';
     case 'fallback':
       return 'intra-Cerebras fallback';
     case 'excluded':

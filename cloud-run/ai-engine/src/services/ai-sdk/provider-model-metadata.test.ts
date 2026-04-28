@@ -101,6 +101,7 @@ describe('provider model metadata', () => {
       metadata.find((entry) => entry.modelId === CEREBRAS_QWEN_MODEL_ID)
     ).toMatchObject({
       modelId: CEREBRAS_QWEN_MODEL_ID,
+      role: expect.stringContaining('Advisor'),
       lifecycle: 'preview',
       productionModel: false,
       preview: true,

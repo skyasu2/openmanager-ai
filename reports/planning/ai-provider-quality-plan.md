@@ -116,6 +116,20 @@ Advisor가 Cerebras-first로 이동하면 Groq 실질 소비는 Cerebras 장애 
 - `npm run type-check` 통과 (57.9s)
 - `npm run test:quick` 통과 (163 tests)
 
+### Phase 1.6: Post-review context guard/documentation alignment (2026-04-28)
+
+- [x] T4d. `getVerifierModel`에도 `minContextTokens: 32_000` 적용
+  - 파일: `cloud-run/ai-engine/src/services/ai-sdk/model-provider.ts`
+  - 이유: Verifier는 Cerebras-first로 문서화되어 있었지만 Qwen 실패 시 8K `llama3.1-8b`로 낙하할 수 있었음
+  - 결과: Qwen 실패 시 8K fallback을 건너뛰고 Groq로 전환
+- [x] T4e. Provider role metadata/documentation 정렬
+  - `/providers` 응답, provider model metadata, AI architecture/free-tier/resilience docs에서 Advisor를 Group B로 정정
+
+#### Phase 1.6 검증 (2026-04-28)
+
+- `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/model-provider.verifier-context.test.ts src/routes/providers.test.ts src/services/ai-sdk/provider-model-metadata.test.ts` 통과
+- `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/agents/config/agent-model-selectors.test.ts src/services/ai-sdk/agents/config/agent-runtime-policy.test.ts` 통과
+
 ### Phase 2: NLQ 프롬프트 계층화 (P1)
 
 현재 `nlq.ts`는 단일 400줄 프롬프트. 17B 모델에게 매 요청마다 전체 파싱을 강제함.
@@ -176,7 +190,7 @@ Advisor가 Cerebras-first로 이동하면 Groq 실질 소비는 Cerebras 장애 
 - [ ] `cd cloud-run/ai-engine && npm run type-check` 통과
 - [ ] `cd cloud-run/ai-engine && npm run test` 통과 (T4 포함)
 - [ ] `npm run test:quick` 통과
-- [ ] Analyst/Reporter/Advisor의 `minContextTokens: 32_000` 요구사항이 테스트로 고정됨
+- [x] Analyst/Reporter/Advisor/Verifier의 `minContextTokens: 32_000` 요구사항이 테스트로 고정됨
 - [ ] Advisor provider order가 `CEREBRAS_FIRST_PROVIDER_ORDER`임이 테스트로 고정됨
 - [ ] Production QA: Analyst/Reporter/Advisor 각 1회씩 실제 응답 확인
 

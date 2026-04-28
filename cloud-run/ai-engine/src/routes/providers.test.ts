@@ -66,7 +66,9 @@ describe('Provider Routes', () => {
       expect(json.info.cerebras.toolCallingEnabled).toBe(false);
       expect(json.info.groq.model).toBe('meta-llama/llama-4-scout-17b-16e-instruct');
       expect(json.info.cerebras.role).toContain('Reporter');
+      expect(json.info.cerebras.role).toContain('Advisor');
       expect(json.info.groq.role).toContain('Supervisor');
+      expect(json.info.groq.role).not.toContain('Advisor');
       expect(json.info.mistral.role).toBe('Last-resort text fallback');
       expect(json.info.mistral.role).not.toContain('RAG');
     });

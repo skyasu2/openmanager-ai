@@ -97,7 +97,7 @@ export function getSupervisorModel(excludeProviders: ProviderName[] = []): {
 
 /**
  * Get verifier model with 3-way fallback + CB check
- * Cerebras(Qwen→llama3.1-8b) → Groq(llama-4-scout) → Mistral
+ * Cerebras(Qwen, 32K+ ctx) → Groq(llama-4-scout) → Mistral
  */
 export function getVerifierModel(): {
   model: LanguageModel;
@@ -106,7 +106,7 @@ export function getVerifierModel(): {
 } {
   const result = selectTextModel('Verifier', CEREBRAS_FIRST_PROVIDER_ORDER, {
     throwOnEmpty: true,
-    requiredCapabilities: { requireToolCalling: true },
+    requiredCapabilities: { requireToolCalling: true, minContextTokens: 32_000 },
   });
   return result as { model: LanguageModel; provider: ProviderName; modelId: string };
 }
