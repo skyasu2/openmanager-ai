@@ -1,9 +1,9 @@
 ---
 name: qa-ops
 description: Final QA workflow for OpenManager with Vercel+Playwright MCP default, local-dev fallback for non-AI checks, and mandatory cumulative logging to reports/qa.
-version: v1.3.0
+version: v1.4.0
 user-invocable: true
-allowed-tools: Bash, Read, Grep, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_click, mcp__playwright__browser_type, mcp__playwright__browser_wait_for, mcp__playwright__browser_console_messages, mcp__playwright__browser_network_requests, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_fill_form
+allowed-tools: Bash, Read, Grep, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_click, mcp__playwright__browser_type, mcp__playwright__browser_wait_for, mcp__playwright__browser_console_messages, mcp__playwright__browser_network_requests, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_fill_form, mcp__playwright__browser_evaluate, mcp__playwright__browser_close
 disable-model-invocation: true
 ---
 
@@ -64,6 +64,66 @@ disable-model-invocation: true
 - 항상: target, run id, scope, checks, release decision
 - 관련 있을 때만: covered/skipped surfaces, usage, expert gaps, completed/pending, next priority
 
+## Playbook — Async Job + SSE Probing on Vercel Production
+
+비동기 AI Job + SSE stream 경로(`POST /api/ai/jobs` → `GET /api/ai/jobs/:id/stream`)를 Playwright MCP로 검증할 때의 정확한 절차. v8.11.53 cloud-tasks dispatch QA에서 확립.
+
+### 1) 진입 동선
+
+1. `mcp__playwright__browser_navigate` → `https://openmanager-ai.vercel.app`
+2. `browser_snapshot` 으로 ref 확보 → 게스트 로그인 → "시스템 시작" 클릭 → `/dashboard` 이동까지 약 18초 대기
+3. "AI 어시스턴트 열기" 클릭 → `dialog [name="AI 어시스턴트"]` 노출
+
+### 2) Query 전송 (CSRF 우회 금지)
+
+- **반드시 UI fill+click 경로 사용**. `browser_evaluate`로 직접 `fetch('/api/ai/jobs')` 호출하면 **403 Invalid CSRF token**이 정상으로 반환됨 — 이건 보안 동작이지 회피 대상이 아니다.
+- thinking + RAG 등 무거운 옵션은 입력창 옆 모드 칩에서 선택. dispatch path를 강제로 타려면 query를 충분히 길게.
+
+### 3) Stream 경과 모니터링
+
+- snapshot은 무겁다. 진행 상태는 `browser_evaluate`로 한 줄로 뽑는 게 빠름:
+  ```js
+  () => document.querySelector('[role=dialog]')?.innerText?.slice(-2500)
+  ```
+- UI badge에서 직접 읽을 핵심 지표: `경과 N초`, `N% 완료`, `handoff N회`, 응답 카드 하단의 **`{ms}ms`**, "분석 근거" 행의 **`도구 N개 · 모드: ...`**.
+
+### 4) Network 캡처 — EventSource는 안 잡힌다
+
+- `browser_network_requests`는 **fetch만** 잡고 EventSource(`/api/ai/jobs/:id/stream`)는 누락됨.
+- SSE 호출까지 보려면 `browser_evaluate`로 Performance API:
+  ```js
+  () => performance.getEntriesByType('resource')
+    .filter(r => r.name.includes('/api/ai/'))
+    .map(r => ({ url: r.name, duration: Math.round(r.duration), transferSize: r.transferSize, initiator: r.initiatorType }))
+  ```
+- `initiator: 'other'`인 entry가 EventSource. 두 개 이상 잡히면 **maxDuration=60s 도달 후 client backoff reconnect가 정상 동작**한다는 뜻.
+
+### 5) 합격/불합격 판정
+
+| 항목 | 기준 |
+|------|------|
+| `POST /api/ai/jobs` 응답 시간 | < 3초 (Cloud Tasks dispatch 분리 검증) |
+| Stream entry 개수 | 1~3 (3 초과면 reconnect 폭주 의심) |
+| 응답 정확도 | UI 카드 수치 ↔ AI 응답 본문 정합 (예: "DISK 70%+ 3대" ↔ Top 5 카드와 일치) |
+| Handoff/도구 가시성 | UI에 stage/handoff/tool count 모두 노출 |
+| 회귀 신호 | `302 → 404` 패턴, "Job not found", `error: 'Worker request failed'` 없음 |
+
+### 6) 정리
+
+- `browser_take_screenshot` 1장으로 증거 보관 → `.playwright-mcp/<scenario>.png`
+- `browser_close`로 브라우저 종료
+- 결과를 `qa-run-input.json`에 기록하고 `npm run qa:record` 실행 (Workflow 4단계 그대로)
+
+### 함정 모음
+
+| 함정 | 대응 |
+|------|------|
+| `browser_network_requests` 가 SSE 누락 | Performance API로 보완 |
+| `evaluate(fetch)` 가 403 | UI 동선으로만 검증, CSRF 우회 금지 |
+| dialog 깊이가 깊어 snapshot 무거움 | innerText slice로 텍스트만 추출 |
+| `/api/health?service=ai` 가 500이지만 query는 정상 | health probe와 실제 동작은 분리 보고. badge "AI 엔진 상태: Error" 단독으로 fail 처리 금지 |
+| 첫 stream 60s에서 끊김 | reconnect 1회는 정상. 두 번째 stream entry duration도 함께 보고 |
+
 ## Output Format
 
 ```text
@@ -92,3 +152,4 @@ End with one short operator note for the highest remaining risk or `none in test
 - 2026-03-14: v1.1.0 - `state-triage`, `env-sync` 선행 규칙 추가
 - 2026-03-25: v1.2.0 - Data Parity Contract 검증 단계 추가 (±1 슬롯 기준)
 - 2026-04-03: v1.3.0 - 날짜 박힌 baseline 참조 제거, scope 승격 규칙 명시, Playwright 도구 추가
+- 2026-04-28: v1.4.0 - Async Job + SSE Probing Playbook 추가 (EventSource Performance API 우회, CSRF 우회 금지, reconnect 정상 신호, 함정 모음)

@@ -114,7 +114,8 @@
       "invariants": [
         "Use Vercel plus Playwright MCP by default for release-facing QA.",
         "Switch to local dev only when AI-path validation is unnecessary.",
-        "Record QA evidence through qa:record and status commands."
+        "Record QA evidence through qa:record and status commands.",
+        "For async AI Job + SSE QA, use the UI flow instead of CSRF-bypassing direct fetches, inspect EventSource streams through the Performance API, and report health probe failures separately from successful query execution."
       ],
       "adapters": {
         "codex": ".agents/skills/qa-ops/SKILL.md",

@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-28 KST (`Cloud Tasks Job Queue production smoke follow-up`)
+**Last Updated**: 2026-04-28 KST (`Cloud Tasks dispatch and health route follow-up`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -31,6 +31,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-28 #216)
+- [x] Cloud Tasks dispatch follow-up hardening and health route import safety
+  - Cloud Tasks task header forwarding을 allowlist로 전환해 `X-Rate-Limit-Identity`만 보존하고 민감 header 전파를 차단
+  - Cloud Tasks `createTask` 429/5xx 등 transient 실패에 1회 jitter retry 추가
+  - `/api/health?service=ai` production 500 원인을 strict env/config import-time 의존성으로 좁히고, health route가 단순 ping/Cloud Run health 분기 전에 `@/env`를 로드하지 않도록 정리
+  - 회귀 테스트: Cloud Tasks header/retry, health route import-safety
 
 ### Completed (2026-04-28 #215)
 - [x] Cloud Tasks Job Queue production HTTPS target hardening

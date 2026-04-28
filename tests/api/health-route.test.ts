@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // vi.hoisted()로 모든 mock 함수 선언
 const {
@@ -103,10 +103,17 @@ async function importRoute() {
 }
 
 describe('Health Route Contract (/api/health)', () => {
+  const originalEnv = { ...process.env };
+
+  afterEach(() => {
+    process.env = { ...originalEnv };
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
     // 모듈 캐시 리셋 → 매 테스트마다 healthCache가 초기화됨
     vi.resetModules();
+    process.env.APP_VERSION = 'test';
 
     // 기본 mock 설정
     mockCreateClient.mockResolvedValue({

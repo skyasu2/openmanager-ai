@@ -48,6 +48,12 @@ const DEFAULT_DISPATCH_DEADLINE_SECONDS = 600;
 const MAX_DISPATCH_DEADLINE_SECONDS = 1800;
 const METADATA_TOKEN_TIMEOUT_MS = 3000;
 const CREATE_TASK_TIMEOUT_MS = 5000;
+const CREATE_TASK_MAX_ATTEMPTS = 2;
+const CREATE_TASK_RETRY_BASE_DELAY_MS = 150;
+const CREATE_TASK_RETRY_JITTER_MS = 100;
+const FORWARDED_TASK_HEADER_ALLOWLIST = new Map([
+  ['x-rate-limit-identity', 'X-Rate-Limit-Identity'],
+]);
 
 function getTrimmedEnv(name: string): string {
   return process.env[name]?.trim() ?? '';
@@ -138,22 +144,30 @@ export function getCloudTasksParent(
   return `projects/${config.projectId}/locations/${config.location}/queues/${config.queueId}`;
 }
 
+function buildForwardedTaskHeaders(
+  headers?: Record<string, string | undefined>
+): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(headers ?? {}).flatMap(([key, value]) => {
+      const canonicalKey = FORWARDED_TASK_HEADER_ALLOWLIST.get(
+        key.toLowerCase()
+      );
+      if (!canonicalKey) {
+        return [];
+      }
+
+      const trimmedValue = value?.trim();
+      return trimmedValue ? [[canonicalKey, trimmedValue]] : [];
+    })
+  );
+}
+
 export function buildCreateTaskRequest(input: EnqueueCloudTaskInput): {
   parent: string;
   body: Record<string, unknown>;
 } {
   const parent = getCloudTasksParent(input.config);
-  const forwardedHeaders = Object.fromEntries(
-    Object.entries(input.headers ?? {}).flatMap(([key, value]) => {
-      const normalizedKey = key.toLowerCase();
-      if (normalizedKey === 'content-type' || normalizedKey === 'x-api-key') {
-        return [];
-      }
-
-      const trimmedValue = value?.trim();
-      return trimmedValue ? [[key, trimmedValue]] : [];
-    })
-  );
+  const forwardedHeaders = buildForwardedTaskHeaders(input.headers);
   const httpRequest: Record<string, unknown> = {
     httpMethod: 'POST',
     url: input.targetUrl,
@@ -226,30 +240,102 @@ async function getMetadataAccessToken(): Promise<string> {
   return payload.access_token;
 }
 
+function isRetriableCreateTaskStatus(status: number): boolean {
+  return status === 408 || status === 429 || status >= 500;
+}
+
+function isAbortError(error: unknown): boolean {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'name' in error &&
+    error.name === 'AbortError'
+  );
+}
+
+function getCreateTaskRetryDelayMs(): number {
+  return (
+    CREATE_TASK_RETRY_BASE_DELAY_MS +
+    Math.floor(Math.random() * CREATE_TASK_RETRY_JITTER_MS)
+  );
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function createCloudTaskWithRetry({
+  parent,
+  body,
+  accessToken,
+}: {
+  parent: string;
+  body: Record<string, unknown>;
+  accessToken: string;
+}): Promise<Response> {
+  const url = `${CLOUD_TASKS_API_BASE}/${parent}/tasks`;
+  const requestInit: RequestInit = {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  };
+
+  for (let attempt = 1; attempt <= CREATE_TASK_MAX_ATTEMPTS; attempt += 1) {
+    let response: Response;
+    try {
+      response = await fetchWithTimeout(
+        url,
+        requestInit,
+        CREATE_TASK_TIMEOUT_MS
+      );
+    } catch (error) {
+      if (attempt < CREATE_TASK_MAX_ATTEMPTS && !isAbortError(error)) {
+        logger.warn(
+          `[CloudTasks] createTask attempt ${attempt} failed before response; retrying`
+        );
+        await delay(getCreateTaskRetryDelayMs());
+        continue;
+      }
+      throw error;
+    }
+
+    if (response.ok) {
+      return response;
+    }
+
+    const errorText = await response.text().catch(() => 'Unknown error');
+    if (
+      attempt < CREATE_TASK_MAX_ATTEMPTS &&
+      isRetriableCreateTaskStatus(response.status)
+    ) {
+      logger.warn(
+        `[CloudTasks] createTask attempt ${attempt} failed: HTTP ${response.status}; retrying`
+      );
+      await delay(getCreateTaskRetryDelayMs());
+      continue;
+    }
+
+    logger.error(`[CloudTasks] createTask failed: HTTP ${response.status}`);
+    throw new Error(`Cloud Tasks createTask failed: ${errorText}`);
+  }
+
+  throw new Error('Cloud Tasks createTask failed after retry');
+}
+
 export async function enqueueCloudTask(
   input: EnqueueCloudTaskInput
 ): Promise<EnqueueCloudTaskResult> {
   const { parent, body } = buildCreateTaskRequest(input);
   const accessToken = await getMetadataAccessToken();
 
-  const response = await fetchWithTimeout(
-    `${CLOUD_TASKS_API_BASE}/${parent}/tasks`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    },
-    CREATE_TASK_TIMEOUT_MS
-  );
-
-  if (!response.ok) {
-    const errorText = await response.text().catch(() => 'Unknown error');
-    logger.error(`[CloudTasks] createTask failed: HTTP ${response.status}`);
-    throw new Error(`Cloud Tasks createTask failed: ${errorText}`);
-  }
+  const response = await createCloudTaskWithRetry({
+    parent,
+    body,
+    accessToken,
+  });
 
   const payload = (await response.json().catch(() => null)) as
     | { name?: string }

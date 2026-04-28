@@ -1,6 +1,7 @@
 ---
 name: qa-ops
 description: Execute final QA for OpenManager with Vercel+Playwright MCP by default, switch to local dev QA when AI validation is unnecessary, and record every run into reports/qa tracker.
+version: v1.4.0
 ---
 
 # OpenManager QA Ops
@@ -98,6 +99,66 @@ Final QA operation workflow with cumulative tracking.
   - `wont-fix` / expert gaps
   - next high-priority pending items
 
+## Playbook — Async Job + SSE Probing on Vercel Production
+
+For verifying the async AI Job + SSE stream path (`POST /api/ai/jobs` → `GET /api/ai/jobs/:id/stream`) using Playwright MCP. Established during the v8.11.53 cloud-tasks dispatch QA run.
+
+### 1) Entry flow
+
+1. `mcp__playwright__browser_navigate` → `https://openmanager-ai.vercel.app`
+2. `browser_snapshot` to get refs → click guest login → click "시스템 시작" → wait ~18s for `/dashboard`
+3. Click "AI 어시스턴트 열기" → `dialog [name="AI 어시스턴트"]` opens
+
+### 2) Send the query (do not bypass CSRF)
+
+- **Always use the UI fill+click path.** Calling `fetch('/api/ai/jobs')` directly via `browser_evaluate` returns **403 Invalid CSRF token** — that is the security control working, not something to work around.
+- To force the dispatch path, choose `thinking` mode + RAG and use a query long enough that direct sync handling is bypassed.
+
+### 3) Stream progress monitoring
+
+- `browser_snapshot` is heavy. For tail status use `browser_evaluate`:
+  ```js
+  () => document.querySelector('[role=dialog]')?.innerText?.slice(-2500)
+  ```
+- Read directly from the UI: `경과 N초`, `N% 완료`, `handoff N회`, response card footer `{ms}ms`, "분석 근거" line `도구 N개 · 모드: ...`.
+
+### 4) Network capture — EventSource is invisible to browser_network_requests
+
+- `browser_network_requests` only captures `fetch`. SSE on `/api/ai/jobs/:id/stream` is dropped.
+- Recover SSE via Performance API:
+  ```js
+  () => performance.getEntriesByType('resource')
+    .filter(r => r.name.includes('/api/ai/'))
+    .map(r => ({ url: r.name, duration: Math.round(r.duration), transferSize: r.transferSize, initiator: r.initiatorType }))
+  ```
+- Entries with `initiator: 'other'` are EventSource. Two or more entries = client backoff reconnect after the 60s `maxDuration` boundary, which is **expected and healthy**.
+
+### 5) Pass/fail bar
+
+| Item | Threshold |
+|------|-----------|
+| `POST /api/ai/jobs` latency | < 3s (validates Cloud Tasks dispatch separation) |
+| Stream entry count | 1–3 (more than 3 suggests reconnect storm) |
+| Answer accuracy | UI metric cards ↔ AI response body must match (e.g. "DISK 70%+ 3 servers" ↔ Top 5 cards) |
+| Handoff/tool visibility | Stage, handoff, tool count all visible in UI |
+| Regression signals | No `302 → 404`, no "Job not found", no `error: 'Worker request failed'` |
+
+### 6) Cleanup
+
+- Save one screenshot for evidence: `.playwright-mcp/<scenario>.png`
+- `browser_close`
+- Then follow the standard step 6 (Record QA result).
+
+### Pitfalls
+
+| Pitfall | Workaround |
+|---------|------------|
+| `browser_network_requests` misses SSE | Use Performance API |
+| `evaluate(fetch)` returns 403 | Use UI flow only — never bypass CSRF |
+| Deep dialog snapshot is slow | Slice innerText instead |
+| `/api/health?service=ai` returns 500 while queries succeed | Report health probe separately. Do not fail the run on the "AI 엔진 상태: Error" badge alone |
+| First stream cuts at 60s | One reconnect is normal. Report the duration of the second stream entry too |
+
 ## Output format
 
 ```text
@@ -127,3 +188,7 @@ Close with one short operator note that explains the highest remaining risk or s
 - `reports/qa/README.md`
 - `reports/qa/qa-tracker.json`
 - `reports/qa/QA_STATUS.md`
+
+## Changelog
+
+- 2026-04-28: v1.4.0 - Added Async Job + SSE Probing Playbook for Cloud Tasks dispatch QA, including EventSource Performance API capture, CSRF-safe UI flow, reconnect interpretation, and health badge separation.
