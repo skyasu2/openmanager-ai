@@ -296,7 +296,7 @@ export const ChatInputArea = memo(function ChatInputArea({
                 type="button"
                 onClick={handleTogglePopover}
                 disabled={sessionState?.isLimitReached}
-                className={`flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg transition-all disabled:cursor-not-allowed disabled:opacity-40 ${
+                className={`flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg transition-all disabled:cursor-not-allowed disabled:opacity-40 md:h-9 md:w-9 ${
                   isPopoverOpen || activeToolCount > 0 || showAnalysisModeBadge
                     ? 'bg-blue-500/10 text-blue-500'
                     : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'
@@ -490,7 +490,7 @@ export const ChatInputArea = memo(function ChatInputArea({
                 <button
                   type="button"
                   onClick={onStopGeneration}
-                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-500 text-white shadow-sm transition-all hover:bg-red-600"
+                  className="flex h-11 w-11 items-center justify-center rounded-lg bg-red-500 text-white shadow-sm transition-all hover:bg-red-600 md:h-9 md:w-9"
                   title="생성 중단"
                   aria-label="생성 중단"
                 >
@@ -504,7 +504,7 @@ export const ChatInputArea = memo(function ChatInputArea({
                   (!inputValue.trim() && attachments.length === 0) ||
                   sessionState?.isLimitReached
                 }
-                className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500 text-white shadow-sm transition-all hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
+                className="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-500 text-white shadow-sm transition-all hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40 md:h-9 md:w-9"
                 title={
                   isGenerating
                     ? streamStatus === 'submitted'

@@ -134,6 +134,20 @@ describe('ChatInputArea popover', () => {
     expect(toggle).toHaveFocus();
   });
 
+  it('keeps input action buttons at 44px on mobile and compact on desktop', () => {
+    renderComponent();
+
+    const toggle = screen.getByRole('button', { name: '도구 메뉴 열기' });
+    const send = screen.getByRole('button', { name: '메시지 전송' });
+
+    for (const button of [toggle, send]) {
+      expect(button).toHaveClass('h-11');
+      expect(button).toHaveClass('w-11');
+      expect(button).toHaveClass('md:h-9');
+      expect(button).toHaveClass('md:w-9');
+    }
+  });
+
   it('keeps RAG/Web names and explains them with short parenthetical labels', () => {
     render(
       <ChatInputArea
