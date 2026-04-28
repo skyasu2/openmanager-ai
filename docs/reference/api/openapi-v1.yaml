@@ -673,7 +673,7 @@ paths:
                 $ref: '#/components/schemas/RateLimitError'
     post:
       operationId: createStreamV2
-      summary: Create resumable stream
+      summary: Create supervisor stream
       security:
         - sessionCookie: []
         - secureSessionCookie: []

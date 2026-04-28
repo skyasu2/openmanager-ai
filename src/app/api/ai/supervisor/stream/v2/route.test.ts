@@ -147,10 +147,12 @@ describe('Supervisor Stream V2 Route', () => {
       })
     );
     mockCreateNewResumableStream.mockResolvedValue(createSseStream());
+    mockGetActiveStreamId.mockResolvedValue(null);
 
     process.env.CLOUD_RUN_ENABLED = 'true';
     process.env.CLOUD_RUN_AI_URL = 'https://example-ai.run.app';
     process.env.CLOUD_RUN_API_SECRET = 'test-secret';
+    delete process.env.AI_RESUMABLE_STREAMS_ENABLED;
   });
 
   describe('GET /resume', () => {
@@ -168,6 +170,7 @@ describe('Supervisor Stream V2 Route', () => {
     });
 
     it('활성 스트림이 없으면 204를 반환해야 함', async () => {
+      process.env.AI_RESUMABLE_STREAMS_ENABLED = 'true';
       mockGetActiveStreamId.mockResolvedValue(null);
 
       const request = new NextRequest(
@@ -180,6 +183,7 @@ describe('Supervisor Stream V2 Route', () => {
     });
 
     it('완료된 스트림은 resume 후 세션 매핑을 정리해야 함', async () => {
+      process.env.AI_RESUMABLE_STREAMS_ENABLED = 'true';
       mockGetActiveStreamId.mockResolvedValue('stream-abc');
       mockHasExistingStream.mockResolvedValue('completed');
       mockResumeExistingStream.mockResolvedValue(
@@ -200,6 +204,18 @@ describe('Supervisor Stream V2 Route', () => {
         'session-1234',
         expect.any(String)
       );
+    });
+
+    it('resumable stream이 비활성화되어 있으면 Redis 조회 없이 204를 반환해야 함', async () => {
+      const request = new NextRequest(
+        'http://localhost/api/ai/supervisor/stream/v2?sessionId=session-1234&skip=1'
+      );
+
+      const response = await GET(request);
+
+      expect(response.status).toBe(204);
+      expect(response.headers.get('X-Resumable')).toBe('false');
+      expect(mockGetActiveStreamId).not.toHaveBeenCalled();
     });
   });
 
@@ -344,7 +360,74 @@ describe('Supervisor Stream V2 Route', () => {
       expect(mockFetch).not.toHaveBeenCalled();
     });
 
-    it('Cloud Run v2로 프록시 후 resumable 응답을 반환해야 함', async () => {
+    it('resumable stream이 기본 비활성화 상태이면 pass-through 응답을 반환해야 함', async () => {
+      mockFetch.mockResolvedValueOnce(
+        new Response(createSseStream(), {
+          status: 200,
+          headers: {
+            'Content-Type': 'text/event-stream',
+            'X-AI-Latency-Ms': '1987',
+          },
+        })
+      );
+
+      const request = new NextRequest(
+        'http://localhost/api/ai/supervisor/stream/v2',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Session-Id': 'session-1234',
+            'X-Device-Type': 'mobile',
+            cookie: 'auth_session_id=guest-session-xyz',
+          },
+          body: JSON.stringify({
+            messages: [{ role: 'user', content: '서버 상태 확인' }],
+            enableWebSearch: true,
+          }),
+        }
+      );
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(200);
+      expect(response.headers.get('x-vercel-ai-ui-message-stream')).toBe('v1');
+      expect(response.headers.get('X-Resumable')).toBe('false');
+      expect(response.headers.get('X-Session-Id')).toBe('session-1234');
+      expect(response.headers.get('X-AI-Mode')).toBe('streaming');
+      expect(response.headers.get('X-AI-Source')).toBe('cloud-run');
+      expect(response.headers.get('X-AI-Cache-Status')).toBe('BYPASS');
+      expect(response.headers.get('X-AI-Latency-Ms')).toMatch(/^\d+$/);
+      expect(response.headers.get('X-AI-Processing-Ms')).toBe('1987');
+      expect(response.headers.get('Server-Timing')).toContain('ai;dur=');
+      expect(response.headers.get('Server-Timing')).toContain(
+        'ai_processing;dur=1987'
+      );
+
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      expect(mockFetch.mock.calls[0]?.[0]).toBe(
+        'https://example-ai.run.app/api/ai/supervisor/stream/v2'
+      );
+
+      const fetchOptions = mockFetch.mock.calls[0]?.[1] as RequestInit;
+      const body = JSON.parse(String(fetchOptions.body));
+      expect(body).toMatchObject({
+        sessionId: 'session-1234',
+        deviceType: 'mobile',
+        enableWebSearch: true,
+      });
+      expect(
+        (fetchOptions.headers as Record<string, string>)[
+          'X-Rate-Limit-Identity'
+        ]
+      ).toMatch(/^guest:/);
+
+      expect(mockSaveActiveStreamId).not.toHaveBeenCalled();
+      expect(mockCreateNewResumableStream).not.toHaveBeenCalled();
+    });
+
+    it('AI_RESUMABLE_STREAMS_ENABLED=true면 resumable 응답을 반환해야 함', async () => {
+      process.env.AI_RESUMABLE_STREAMS_ENABLED = 'true';
       mockFetch.mockResolvedValueOnce(
         new Response(createSseStream(), {
           status: 200,
@@ -380,32 +463,6 @@ describe('Supervisor Stream V2 Route', () => {
       expect(response.headers.get('X-Session-Id')).toBe('session-1234');
       expect(response.headers.get('X-AI-Mode')).toBe('streaming');
       expect(response.headers.get('X-AI-Source')).toBe('cloud-run');
-      expect(response.headers.get('X-AI-Cache-Status')).toBe('BYPASS');
-      expect(response.headers.get('X-AI-Latency-Ms')).toMatch(/^\d+$/);
-      expect(response.headers.get('X-AI-Processing-Ms')).toBe('1987');
-      expect(response.headers.get('Server-Timing')).toContain('ai;dur=');
-      expect(response.headers.get('Server-Timing')).toContain(
-        'ai_processing;dur=1987'
-      );
-
-      expect(mockFetch).toHaveBeenCalledTimes(1);
-      expect(mockFetch.mock.calls[0]?.[0]).toBe(
-        'https://example-ai.run.app/api/ai/supervisor/stream/v2'
-      );
-
-      const fetchOptions = mockFetch.mock.calls[0]?.[1] as RequestInit;
-      const body = JSON.parse(String(fetchOptions.body));
-      expect(body).toMatchObject({
-        sessionId: 'session-1234',
-        deviceType: 'mobile',
-        enableWebSearch: true,
-      });
-      expect(
-        (fetchOptions.headers as Record<string, string>)[
-          'X-Rate-Limit-Identity'
-        ]
-      ).toMatch(/^guest:/);
-
       expect(mockSaveActiveStreamId).toHaveBeenCalledWith(
         'session-1234',
         expect.any(String),
@@ -522,6 +579,7 @@ describe('Supervisor Stream V2 Route', () => {
     });
 
     it('인증 컨텍스트 userId가 있으면 ownerKey는 해시 기반 user 키를 사용해야 함', async () => {
+      process.env.AI_RESUMABLE_STREAMS_ENABLED = 'true';
       mockGetAPIAuthContext.mockReturnValueOnce({
         authType: 'supabase',
         userId: 'user-777',
@@ -553,6 +611,7 @@ describe('Supervisor Stream V2 Route', () => {
     });
 
     it('인증 컨텍스트 keyFingerprint가 있으면 헤더보다 우선해야 함', async () => {
+      process.env.AI_RESUMABLE_STREAMS_ENABLED = 'true';
       mockGetAPIAuthContext.mockReturnValueOnce({
         authType: 'api-key',
         keyFingerprint: 'fp-from-auth',
@@ -584,6 +643,7 @@ describe('Supervisor Stream V2 Route', () => {
     });
 
     it('인증 컨텍스트가 없으면 auth_session_id 쿠키를 ownerKey로 사용해야 함', async () => {
+      process.env.AI_RESUMABLE_STREAMS_ENABLED = 'true';
       const request = new NextRequest(
         'http://localhost/api/ai/supervisor/stream/v2',
         {
@@ -665,7 +725,8 @@ describe('Supervisor Stream V2 Route', () => {
       });
     });
 
-    it('fetch AbortError 발생 시 스트림 정리 후 타임아웃 에러를 반환해야 함', async () => {
+    it('fetch AbortError 발생 시 신규 stream state 저장 없이 fallback을 반환해야 함', async () => {
+      process.env.AI_RESUMABLE_STREAMS_ENABLED = 'true';
       const abortError = new DOMException(
         'The operation was aborted',
         'AbortError'
@@ -693,8 +754,9 @@ describe('Supervisor Stream V2 Route', () => {
       expect(response.status).toBe(200);
       expect(response.headers.get('X-Fallback-Response')).toBe('true');
       expect(response.headers.get('X-AI-Latency-Ms')).toMatch(/^\d+$/);
-      expect(mockClearActiveStreamId).toHaveBeenCalled();
-      expect(mockClearStream).toHaveBeenCalled();
+      expect(mockSaveActiveStreamId).not.toHaveBeenCalled();
+      expect(mockClearActiveStreamId).not.toHaveBeenCalled();
+      expect(mockClearStream).not.toHaveBeenCalled();
     });
 
     it('Cloud Run 5xx 응답 시 fallback 스트림을 반환해야 함', async () => {

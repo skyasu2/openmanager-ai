@@ -150,7 +150,7 @@ graph TB
 4. /api/ai/supervisor/stream/v2/route.ts:
    a. Auth 검증 (NextAuth session)
    b. Prompt injection guard
-   c. normalized message shaping + resumable stream 관리
+   c. normalized message shaping + optional resumable stream 관리 (`AI_RESUMABLE_STREAMS_ENABLED=true`)
    d. Proxy → Cloud Run UIMessageStream v2 (X-API-Key header)
 5. Cloud Run:
    a. cloud-run/ai-engine/src/routes/supervisor.ts → 수신

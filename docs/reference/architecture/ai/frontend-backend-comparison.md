@@ -156,7 +156,7 @@ graph LR
 | 기능 | Frontend | Backend | 평가 |
 |------|:--------:|:-------:|:----:|
 | 서버 메트릭 데이터 | hourly-data SSOT | precomputed-state (853줄) | 상태 정합성 완벽 (online/warning/critical/offline) |
-| 캐시 전략 | legacy `/api/ai/supervisor` 응답 캐시 + `/stream/v2` resumable stream state (Chat History만 localStorage) | precomputed-state + Redis session/job state | 설명 분리 완료 |
+| 캐시 전략 | legacy `/api/ai/supervisor` 응답 캐시 + `/stream/v2` optional resumable stream state (Chat History만 localStorage) | precomputed-state + Redis session/job state | 설명 분리 완료 |
 | 쿼리 정규화 | - | Cache Normalization | Backend 전담 |
 | 토큰 최적화 | - | 144슬롯 ~100토큰 압축 | Backend 전담 |
 
