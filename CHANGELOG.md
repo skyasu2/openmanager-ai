@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.43](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.42...v8.11.43) (2026-04-28)
+
+
+### Features
+
+* **ai-engine:** add response quality guard flags ([744f992](https://gitlab.com/skyasu2/openmanager-ai/-/commit/744f992144454bb8f30f3c7423f89ab8aa0200a3))
+
+
+### Tests
+
+* **spec:** add response quality guard contracts ([7fe10ea](https://gitlab.com/skyasu2/openmanager-ai/-/commit/7fe10eafd93a6a67cb37f5be30466498405c09f5))
+
 ## [8.11.42](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.41...v8.11.42) (2026-04-28)
 
 
