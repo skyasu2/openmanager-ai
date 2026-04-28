@@ -1,5 +1,5 @@
 > Owner: project
-> Status: In Progress
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-04-28
 > Tags: ai-engine,provider,prompt,quality
@@ -186,6 +186,7 @@ Advisor가 Cerebras-first로 이동하면 Groq 실질 소비는 Cerebras 장애 
 - `npm run type-check` 통과
 - `npm run test:quick` 통과
 - `npm run test:contract` 통과 (`20 tests`)
+- Production QA `QA-20260428-0356` 통과: Analyst/Reporter/Advisor 실제 응답 확인
 
 ### Phase 3.5: AI SDK timeout abort guard (P1, 2026-04-28)
 
@@ -254,7 +255,7 @@ Advisor가 Cerebras-first로 이동하면 Groq 실질 소비는 Cerebras 장애 
 - [x] `npm run test:quick` 통과
 - [x] Analyst/Reporter/Advisor/Verifier의 `minContextTokens: 32_000` 요구사항이 테스트로 고정됨
 - [x] Advisor provider order가 `CEREBRAS_FIRST_PROVIDER_ORDER`임이 테스트로 고정됨
-- [ ] Production QA: Analyst/Reporter/Advisor 각 1회씩 실제 응답 확인
+- [x] Production QA: Analyst/Reporter/Advisor 각 1회씩 실제 응답 확인 (`QA-20260428-0356`, v8.11.46)
 
 ---
 

@@ -1,0 +1,158 @@
+{
+  "runId": "QA-20260428-0356",
+  "recordedAt": "2026-04-28T05:38:09.460Z",
+  "recordedAtKst": "2026-04-28 14:38:09 KST",
+  "runTitle": "AI Provider forced-routing context guard production QA - v8.11.46",
+  "owner": "codex",
+  "source": "cloud-run-direct",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_Fz6VPj7oVzxHeaCivoyFtf1xd3ja",
+    "deploymentUrl": "https://openmanager-g44nhzorc-skyasus-projects.vercel.app",
+    "commitSha": "ea95897dbfd7dc603d722bdbabd5fb5bbd160d28"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "ai-core", "ai-advanced-surface"],
+  "coveredSurfaces": [
+    "Vercel production /api/version",
+    "GitLab tag deploy pipeline",
+    "Cloud Run /api/ai/supervisor",
+    "Analyst Agent forced-routing",
+    "Reporter Agent pipeline",
+    "Advisor Agent forced-routing"
+  ],
+  "skippedSurfaces": [
+    "browser Playwright UI sweep",
+    "landing/login visual pass",
+    "Cloud Run log inspection"
+  ],
+  "checks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Cloud Run supervisor Analyst forced-routing",
+      "agent": "Analyst Agent",
+      "provider": "groq",
+      "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+      "route": "/api/ai/supervisor",
+      "source": "phase4 production direct QA",
+      "latencyMs": 14039,
+      "processingTimeMs": 14039
+    },
+    {
+      "surface": "Cloud Run supervisor Reporter pipeline",
+      "agent": "Reporter Agent",
+      "provider": "pipeline",
+      "model": "reporter-pipeline",
+      "route": "/api/ai/supervisor",
+      "source": "phase4 production direct QA",
+      "latencyMs": 16321,
+      "processingTimeMs": 16321
+    },
+    {
+      "surface": "Cloud Run supervisor Advisor forced-routing",
+      "agent": "Advisor Agent",
+      "provider": "groq",
+      "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+      "route": "/api/ai/supervisor",
+      "source": "phase4 production direct QA",
+      "latencyMs": 4109,
+      "processingTimeMs": 4109
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Analyst, Reporter, and Advisor production responses completed after the context-floor hotfix. Analyst/Advisor no longer expose function-call JSON and both avoid the 8K Cerebras fallback.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab v8.11.46 tag pipeline completed with deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke all successful.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-28T14:35:29+09:00",
+      "summary": "Current billing period checked after v8.11.46 production QA; effective $17.7347, billed $0.0000, no unexpected billed usage.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-network",
+      "label": "Cloud Run direct AI QA summary",
+      "path": "reports/qa/evidence/QA-20260428-0356/phase4-prod-ai-qa-summary.json"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-provider-forced-routing-context-floor",
+      "title": "Forced-routing quality agents skip 8K Cerebras fallback",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production Analyst and Advisor direct QA returned provider=groq/model=meta-llama/llama-4-scout-17b-16e-instruct after v8.11.46, with non-empty Korean responses instead of function-call JSON.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-provider-phase4-supervisor-routing-hints",
+      "title": "Supervisor routing hints deployed",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.11.46 includes the Supervisor prompt hint contract and post-deploy production smoke passed.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Pre-fix production QA on v8.11.45 exposed Analyst/Advisor responses as function-call JSON with metadata provider=cerebras/modelId=llama3.1-8b.",
+    "Hotfix v8.11.46 added caller requiredCapabilities propagation in retry-with-fallback and forced-routing context floors for NLQ/Analyst/Reporter/Advisor.",
+    "Post-fix production direct QA passed for Analyst, Reporter, and Advisor. Reporter used the deterministic reporter pipeline; Analyst and Advisor used Groq fallback instead of the 8K Cerebras model.",
+    "Browser Playwright UI sweep was skipped because the changed behavior is Cloud Run AI Engine provider selection and direct Supervisor response quality."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab tag pipeline v8.11.46",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2484111299"
+    },
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

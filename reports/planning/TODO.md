@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-28 KST (`AI Provider forced-routing context guard 보강`)
+**Last Updated**: 2026-04-28 KST (`AI Provider 품질 개선 완료`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| #209: AI Provider 재배치 및 응답 품질 강화 | High | In Progress | [계획서](ai-provider-quality-plan.md) — Phase 1/1.5/1.6/2/3/4 + runtime abort guard + forced-routing context guard 완료. Production QA에서 Analyst/Advisor 8K Cerebras fallback/function-call JSON 노출을 발견해 회귀 테스트와 수정 반영. 잔여: 재배포 후 Production QA 재확인 |
+| — | — | Empty | Active Task 없음 |
 
 ---
 
@@ -31,6 +31,15 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-28 #209)
+- [x] AI Provider 재배치 및 응답 품질 강화 완료 (v8.11.46)
+  - Phase 1/1.5/1.6: Advisor/Verifier context guard, Mistral-first summarization fallback, embedding legacy 삭제, provider metadata/docs 정렬
+  - Phase 2/3/4: NLQ 프롬프트 계층화, response quality flag 보강, Supervisor 라우팅 힌트 추가
+  - Phase 3.5/4.1: AI SDK timeout abortSignal 전달, forced-routing context floor 보강
+  - Production QA `QA-20260428-0356`: Analyst/Reporter/Advisor 실제 응답 3/3 pass, Analyst/Advisor 8K Cerebras fallback 및 function-call JSON 노출 회귀 해소
+  - GitLab tag pipeline `2484111299` success: `deploy`, `deploy_ai_engine`, `post_deploy_smoke`, `post_deploy_ai_engine_smoke`
+  - Plan completed: [ai-provider-quality-plan.md](ai-provider-quality-plan.md)
 
 ### Completed (2026-04-27 #208)
 - [x] AI Provider 분산 배치 (Spider-Web) 완료 (v8.11.38)

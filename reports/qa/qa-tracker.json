@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-28T00:28:02.962Z"
+    "updatedAt": "2026-04-28T05:38:09.460Z"
   },
   "sequence": {
-    "nextRunNumber": 356
+    "nextRunNumber": 357
   },
   "summary": {
-    "totalRecordedRuns": 353,
-    "totalRuns": 288,
+    "totalRecordedRuns": 354,
+    "totalRuns": 289,
     "excludedRuns": 65,
-    "totalChecks": 2399,
-    "totalPassed": 2310,
+    "totalChecks": 2411,
+    "totalPassed": 2322,
     "totalFailed": 80,
     "completionRate": 99.71,
-    "completedItems": 344,
+    "completedItems": 346,
     "pendingItems": 1,
     "deferredItems": 0,
     "wontFixItems": 18,
     "expertDomainsTracked": 10,
-    "expertDomainsOpenGaps": 2,
-    "lastRunId": "QA-20260428-0355",
-    "lastRecordedAt": "2026-04-28T00:28:02.962Z",
-    "latestRecordedRunId": "QA-20260428-0355",
-    "latestRecordedAt": "2026-04-28T00:28:02.962Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260428-0356",
+    "lastRecordedAt": "2026-04-28T05:38:09.460Z",
+    "latestRecordedRunId": "QA-20260428-0356",
+    "latestRecordedAt": "2026-04-28T05:38:09.460Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -8441,6 +8441,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-28T00:28:02.962Z"
+    },
+    "ai-provider-forced-routing-context-floor": {
+      "id": "ai-provider-forced-routing-context-floor",
+      "title": "Forced-routing quality agents skip 8K Cerebras fallback",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260428-0356",
+      "firstSeenAt": "2026-04-28T05:38:09.460Z",
+      "lastSeenRunId": "QA-20260428-0356",
+      "lastSeenAt": "2026-04-28T05:38:09.460Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production Analyst and Advisor direct QA returned provider=groq/model=meta-llama/llama-4-scout-17b-16e-instruct after v8.11.46, with non-empty Korean responses instead of function-call JSON.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-28T05:38:09.460Z"
+    },
+    "ai-provider-phase4-supervisor-routing-hints": {
+      "id": "ai-provider-phase4-supervisor-routing-hints",
+      "title": "Supervisor routing hints deployed",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260428-0356",
+      "firstSeenAt": "2026-04-28T05:38:09.460Z",
+      "lastSeenRunId": "QA-20260428-0356",
+      "lastSeenAt": "2026-04-28T05:38:09.460Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "v8.11.46 includes the Supervisor prompt hint contract and post-deploy production smoke passed.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-28T05:38:09.460Z"
     }
   },
   "runs": [
@@ -33741,6 +33789,138 @@
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260428-0356",
+      "recordedAt": "2026-04-28T05:38:09.460Z",
+      "recordedAtKst": "2026-04-28 14:38:09 KST",
+      "title": "AI Provider forced-routing context guard production QA - v8.11.46",
+      "owner": "codex",
+      "source": "cloud-run-direct",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260428-0356.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_Fz6VPj7oVzxHeaCivoyFtf1xd3ja",
+        "deploymentUrl": "https://openmanager-g44nhzorc-skyasus-projects.vercel.app",
+        "commitSha": "ea95897dbfd7dc603d722bdbabd5fb5bbd160d28"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "Vercel production /api/version",
+        "GitLab tag deploy pipeline",
+        "Cloud Run /api/ai/supervisor",
+        "Analyst Agent forced-routing",
+        "Reporter Agent pipeline",
+        "Advisor Agent forced-routing"
+      ],
+      "skippedSurfaces": [
+        "browser Playwright UI sweep",
+        "landing/login visual pass",
+        "Cloud Run log inspection"
+      ],
+      "checks": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "Cloud Run supervisor Analyst forced-routing",
+          "agent": "Analyst Agent",
+          "provider": "groq",
+          "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+          "route": "/api/ai/supervisor",
+          "source": "phase4 production direct QA",
+          "latencyMs": 14039,
+          "processingTimeMs": 14039
+        },
+        {
+          "surface": "Cloud Run supervisor Reporter pipeline",
+          "agent": "Reporter Agent",
+          "provider": "pipeline",
+          "model": "reporter-pipeline",
+          "route": "/api/ai/supervisor",
+          "source": "phase4 production direct QA",
+          "latencyMs": 16321,
+          "processingTimeMs": 16321
+        },
+        {
+          "surface": "Cloud Run supervisor Advisor forced-routing",
+          "agent": "Advisor Agent",
+          "provider": "groq",
+          "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+          "route": "/api/ai/supervisor",
+          "source": "phase4 production direct QA",
+          "latencyMs": 4109,
+          "processingTimeMs": 4109
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Analyst, Reporter, and Advisor production responses completed after the context-floor hotfix. Analyst/Advisor no longer expose function-call JSON and both avoid the 8K Cerebras fallback.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab v8.11.46 tag pipeline completed with deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke all successful.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-28T14:35:29+09:00",
+          "summary": "Current billing period checked after v8.11.46 production QA; effective $17.7347, billed $0.0000, no unexpected billed usage.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-network",
+          "label": "Cloud Run direct AI QA summary",
+          "path": "reports/qa/evidence/QA-20260428-0356/phase4-prod-ai-qa-summary.json"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab tag pipeline v8.11.46",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2484111299"
+        },
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -33749,17 +33929,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 166,
-      "appropriateCount": 152,
+      "seenCount": 167,
+      "appropriateCount": 153,
       "partialCount": 14,
       "inappropriateCount": 0,
       "improvementNeededCount": 24,
-      "lastRunId": "QA-20260428-0355",
-      "lastSeenAt": "2026-04-28T00:28:02.962Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Route selection behavior is correct, but the documented thinking visualizer render contract does not match production UI.",
-      "lastNextAction": "Decide whether to restore the standalone ThinkingProcessVisualizer toggle for assistant messages with thinkingSteps or update the QA contract/docs to AnalysisBasisBadge."
+      "lastRunId": "QA-20260428-0356",
+      "lastSeenAt": "2026-04-28T05:38:09.460Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "Analyst, Reporter, and Advisor production responses completed after the context-floor hotfix. Analyst/Advisor no longer expose function-call JSON and both avoid the 8K Cerebras fallback.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -33800,16 +33980,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 96,
-      "appropriateCount": 85,
+      "seenCount": 97,
+      "appropriateCount": 86,
       "partialCount": 11,
       "inappropriateCount": 0,
       "improvementNeededCount": 15,
-      "lastRunId": "QA-20260427-0352",
-      "lastSeenAt": "2026-04-27T08:33:24.156Z",
+      "lastRunId": "QA-20260428-0356",
+      "lastSeenAt": "2026-04-28T05:38:09.460Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Vercel usage remained normal and all tested AI proxy calls returned 200.",
+      "lastRationale": "GitLab v8.11.46 tag pipeline completed with deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke all successful.",
       "lastNextAction": ""
     },
     "test-automation": {

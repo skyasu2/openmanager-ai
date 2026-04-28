@@ -1,0 +1,62 @@
+{
+  "runId": "QA-20260428-0356",
+  "version": "8.11.46",
+  "target": "cloud-run-production",
+  "pipeline": {
+    "id": 2484111299,
+    "status": "success",
+    "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2484111299",
+    "jobs": {
+      "deploy": "success",
+      "deploy_ai_engine": "success",
+      "post_deploy_smoke": "success",
+      "post_deploy_ai_engine_smoke": "success"
+    }
+  },
+  "productionAiChecks": [
+    {
+      "label": "Analyst Agent",
+      "ok": true,
+      "status": 200,
+      "latencyMs": 14039,
+      "mode": "multi",
+      "finalAgent": "Analyst Agent",
+      "provider": "groq",
+      "modelId": "meta-llama/llama-4-scout-17b-16e-instruct",
+      "toolsCalled": ["detectAnomaliesAllServers", "detectAnomalies"],
+      "answerChars": 270,
+      "regressionAbsent": "No function-call JSON body; no cerebras/llama3.1-8b metadata"
+    },
+    {
+      "label": "Reporter Agent",
+      "ok": true,
+      "status": 200,
+      "latencyMs": 16321,
+      "mode": "multi",
+      "finalAgent": "Reporter Agent",
+      "provider": "pipeline",
+      "modelId": "reporter-pipeline",
+      "toolsCalled": ["executeReporterPipeline"],
+      "answerChars": 371
+    },
+    {
+      "label": "Advisor Agent",
+      "ok": true,
+      "status": 200,
+      "latencyMs": 4109,
+      "mode": "multi",
+      "finalAgent": "Advisor Agent",
+      "provider": "groq",
+      "modelId": "meta-llama/llama-4-scout-17b-16e-instruct",
+      "toolsCalled": [],
+      "answerChars": 594,
+      "regressionAbsent": "No function-call JSON body; no cerebras/llama3.1-8b metadata"
+    }
+  ],
+  "usageCheck": {
+    "platform": "vercel",
+    "status": "normal",
+    "effectiveUsd": 17.7347,
+    "billedUsd": 0
+  }
+}

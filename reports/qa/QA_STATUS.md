@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-28 09:28:03 KST
+> Generated at: 2026-04-28 14:38:10 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 353 |
-| Total Runs (Counted) | 288 |
+| Total Recorded Runs | 354 |
+| Total Runs (Counted) | 289 |
 | Non-counted Runs | 65 |
-| Total Checks | 2399 |
-| Passed | 2310 |
+| Total Checks | 2411 |
+| Passed | 2322 |
 | Failed | 80 |
-| Completed Items | 344 |
+| Completed Items | 346 |
 | Pending Items | 1 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 18 |
 | Expert Domains Tracked | 10 |
-| Expert Open Gaps | 2 |
+| Expert Open Gaps | 1 |
 | Completion Rate | 99.71% |
-| Last Counted Run | QA-20260428-0355 (2026-04-28T00:28:02.962Z) |
-| Latest Recorded Run | QA-20260428-0355 (2026-04-28T00:28:02.962Z) |
+| Last Counted Run | QA-20260428-0356 (2026-04-28T05:38:09.460Z) |
+| Latest Recorded Run | QA-20260428-0356 (2026-04-28T05:38:09.460Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,59 +34,59 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260428-0355 (2026-04-28T00:28:02.962Z)
+Latest run: QA-20260428-0356 (2026-04-28T05:38:09.460Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | partially-appropriate | yes | Decide whether to restore the standalone ThinkingProcessVisualizer toggle for assistant messages with thinkingSteps or update the QA contract/docs to AnalysisBasisBadge. |
-| Test Automation Architect | partially-appropriate | yes | Align npm run test:vercel:thinking-visualizer with the current UI contract after product intent is confirmed. |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked after production QA; effective $17.7347, billed $0.0000, no unexpected billed usage. |
+| vercel | cli | checked | normal | Current billing period checked after v8.11.46 production QA; effective $17.7347, billed $0.0000, no unexpected billed usage. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-27T00:28:02.962Z -> 2026-04-28T00:28:02.962Z (24h)
+- Window: 2026-04-27T05:38:09.460Z -> 2026-04-28T05:38:09.460Z (24h)
 - Runs with observations: 3 recorded / 3 counted
-- Samples: 5
+- Samples: 6
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
+| Reporter Agent | pipeline | 1 | 16321ms | 16321ms | - | - | 16321ms | 16321ms | QA-20260428-0356 |
+| Analyst Agent | groq | 1 | 14039ms | 14039ms | - | - | 14039ms | 14039ms | QA-20260428-0356 |
 | Analyst Agent | cloud-run | 1 | 10186ms | 10186ms | - | - | - | - | QA-20260427-0352 |
-| AI Chat | cloud-run | 3 | 2447ms | 3042ms | - | - | 2655ms | 2932ms | QA-20260427-0351 |
+| Advisor Agent | groq | 1 | 4109ms | 4109ms | - | - | 4109ms | 4109ms | QA-20260428-0356 |
 | Reporter Agent | cloud-run | 1 | 2984ms | 2984ms | - | - | - | - | QA-20260427-0352 |
+| AI Chat | cloud-run | 1 | 1778ms | 1778ms | - | - | - | - | QA-20260427-0351 |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_A7Nhcu4FxYeVkhQAWvWv9hUSW9Ca / SHA 2a209c74
-- Coverage Packs: ai-core, ai-advanced-surface
-- Covered Surfaces: /api/version, /api/health, /dashboard/ai-assistant, AI analysis mode route selection, thinking visualizer documented render contract
-- Skipped Surfaces: landing/login full visual pass, Analyst/Reporter feature tabs, Cloud Run log inspection, real LLM completion for route comparison requests
+- Deployment: dpl_Fz6VPj7oVzxHeaCivoyFtf1xd3ja / SHA ea95897d
+- Coverage Packs: core-routes-smoke, ai-core, ai-advanced-surface
+- Covered Surfaces: Vercel production /api/version, GitLab tag deploy pipeline, Cloud Run /api/ai/supervisor, Analyst Agent forced-routing, Reporter Agent pipeline, Advisor Agent forced-routing
+- Skipped Surfaces: browser Playwright UI sweep, landing/login visual pass, Cloud Run log inspection
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
+| general | GitLab tag pipeline v8.11.46 | [GitLab tag pipeline v8.11.46](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2484111299) | - |
 | general | Vercel production | [Vercel production](https://openmanager-ai.vercel.app/) | - |
-| vercel-deployment | Production deployment | [Production deployment](https://openmanager-sp7w6ajzd-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | QA thinking prompt rendered as Analysis Basis, not AI Process toggle | `reports/qa/evidence/QA-20260428-0355/qa-20260428-thinking-visualizer-analysis-basis.jpg` | - |
-| playwright-network | auto vs thinking route comparison request capture | `reports/qa/evidence/QA-20260428-0355/qa-20260428-thinking-route-comparison.json` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260428-0355)
-  next: Decide whether to restore the standalone ThinkingProcessVisualizer toggle for assistant messages with thinkingSteps or update the QA contract/docs to AnalysisBasisBadge.
 - test-automation: Test Automation Architect (last QA-20260428-0355)
   next: Align npm run test:vercel:thinking-visualizer with the current UI contract after product intent is confirmed.
 
@@ -194,6 +194,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-math-tools: AI 계산 도구(수식/통계/용량) 셋업 완료 (completed 1회, last QA-20260228-0023)
 - ai-metric-ranking-answer-order: Ranking answers preserve descending order from tool output (completed 1회, last QA-20260418-0304)
 - ai-metric-ranking-cpu-route: Current metric ranking query routes to deterministic metric lookup (completed 1회, last QA-20260418-0304)
+- ai-provider-forced-routing-context-floor: Forced-routing quality agents skip 8K Cerebras fallback (completed 1회, last QA-20260428-0356)
+- ai-provider-phase4-supervisor-routing-hints: Supervisor routing hints deployed (completed 1회, last QA-20260428-0356)
 - ai-ranking-cpu-live-route: CPU highest-server query returns live top server on production (completed 1회, last QA-20260418-0305)
 - ai-ranking-memory-live-route: Memory top-N ranking uses deterministic live metric path on production (completed 1회, last QA-20260418-0305)
 - ai-recommendation-free-tier-fit: AI 운영 권고에서 리소스 업그레이드보다 조사/캐시/분산 조치를 우선 (completed 1회, last QA-20260423-0339)
@@ -509,6 +511,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260428-0356 | 2026-04-28T05:38:09.460Z | targeted | yes | yes | AI Provider forced-routing context guard production QA - v8.11.46 | 12 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260428-0355 | 2026-04-28T00:28:02.962Z | targeted | yes | yes | AI analysis mode auto vs thinking production route and visualizer QA | 8 | 1 | 1 | 0 | 0 | 2 |
 | QA-20260427-0354 | 2026-04-27T13:51:08.998Z | targeted | yes | yes | AI Provider 분산 배치 (Spider-Web) Production QA (Task 3) | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260427-0353 | 2026-04-27T13:19:24.078Z | targeted | yes | yes | AI Assistant Analyst/Reporter Quality - Production Playwright MCP QA (Task 5) | 12 | 0 | 0 | 0 | 0 | 0 |
@@ -528,4 +531,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260423-0339 | 2026-04-23T14:30:01.154Z | targeted | yes | yes | Vercel AI Assistant quality recheck after deterministic operator answer fix | 10 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260423-0338 | 2026-04-23T13:13:07.550Z | targeted | yes | yes | Vercel AI Assistant quality evaluation - feature surface, streaming, and answer quality | 12 | 0 | 2 | 0 | 0 | 2 |
 | QA-20260423-0337 | 2026-04-23T09:08:17.769Z | targeted | yes | yes | Vercel MCP targeted QA - Playwright and Chrome DevTools production refresh | 14 | 0 | 1 | 0 | 0 | 1 |
-| QA-20260423-0336 | 2026-04-22T16:17:11.229Z | targeted | yes | yes | Vercel complementary release-gate QA - advanced AI surfaces after v8.11.26 release | 7 | 0 | 0 | 0 | 0 | 0 |
