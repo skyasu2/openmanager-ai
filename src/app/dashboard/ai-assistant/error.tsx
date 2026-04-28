@@ -19,10 +19,12 @@ export default function AIAssistantError({
   }, [error]);
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-950">
+    <div className="flex h-screen items-center justify-center bg-background text-foreground">
       <div className="text-center">
-        <p className="mb-2 text-2xl font-bold text-white">AI Assistant 오류</p>
-        <p className="mb-6 text-sm text-gray-400">
+        <p className="mb-2 text-lg font-bold text-gray-900">
+          AI Assistant 오류
+        </p>
+        <p className="mb-6 text-sm text-gray-600">
           AI 응답 처리 중 문제가 발생했습니다. 다시 시도하거나 대시보드로
           돌아가세요.
         </p>
@@ -30,13 +32,13 @@ export default function AIAssistantError({
           <button
             type="button"
             onClick={reset}
-            className="rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+            className="min-h-6 min-w-6 rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
           >
             다시 시도
           </button>
           <a
             href="/dashboard"
-            className="rounded bg-gray-700 px-4 py-2 text-sm text-white hover:bg-gray-600"
+            className="inline-flex min-h-6 min-w-6 items-center rounded border border-gray-200 bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
           >
             대시보드로
           </a>

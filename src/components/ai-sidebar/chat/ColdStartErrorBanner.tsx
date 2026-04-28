@@ -280,7 +280,7 @@ export function ColdStartErrorBanner({
               <p className="mt-0.5 break-words text-xs text-amber-700">
                 {helperText}
               </p>
-              <div className="mt-2 flex flex-wrap gap-1.5 text-2xs text-amber-800">
+              <div className="mt-2 flex flex-wrap gap-1.5 text-xs text-amber-800">
                 <span className="rounded bg-white px-1.5 py-0.5">
                   차단 위치: {getRateLimitSourceLabel(rateLimitDetails.source)}
                 </span>

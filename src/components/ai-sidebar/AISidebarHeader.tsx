@@ -76,7 +76,7 @@ export const AISidebarHeader: FC<AISidebarHeaderProps> = ({
       {/* 새 대화 버튼 */}
       <button
         onClick={handleNewChat}
-        className="shrink-0 rounded-lg p-2 transition-colors hover:bg-purple-100 focus:outline-hidden focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+        className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg p-2 transition-colors hover:bg-purple-100 focus:outline-hidden focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
         title="새 대화 시작"
         aria-label="새 대화 시작"
         type="button"
@@ -87,7 +87,7 @@ export const AISidebarHeader: FC<AISidebarHeaderProps> = ({
       {/* 닫기 버튼 - 접근성 강화 */}
       <button
         onClick={onClose}
-        className="shrink-0 rounded-lg p-2 transition-colors hover:bg-gray-100 focus:outline-hidden focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+        className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg p-2 transition-colors hover:bg-gray-100 focus:outline-hidden focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
         title="AI 어시스턴트 닫기"
         aria-label="AI 어시스턴트 사이드바 닫기"
         type="button"

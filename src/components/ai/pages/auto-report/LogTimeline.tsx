@@ -129,7 +129,7 @@ export function LogTimeline({
           className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100"
         >
           {expanded ? '로그 타임라인 숨기기' : '로그 타임라인 보기'}
-          <span className="text-[11px] text-slate-500">
+          <span className="text-xs text-slate-500">
             {expanded ? '접기' : '열기'}
           </span>
         </button>
@@ -202,7 +202,7 @@ export function LogTimeline({
                             {formatLogTime(log.timeUnixNano)}
                           </span>
                           <span
-                            className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${getSeverityBadgeClass(log.severityText)}`}
+                            className={`rounded-full px-2 py-0.5 text-xs font-semibold ${getSeverityBadgeClass(log.severityText)}`}
                           >
                             {log.severityText.toUpperCase()}
                           </span>

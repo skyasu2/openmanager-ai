@@ -15,7 +15,17 @@ vi.mock('@/hooks/system/useHealthCheck', () => ({
 }));
 
 vi.mock('@/components/ai-sidebar/AIDebugPanel', () => ({
-  AIDebugPanel: () => <div data-testid="ai-debug-panel">debug</div>,
+  AIDebugPanel: ({
+    showStatus,
+    title,
+  }: {
+    showStatus?: boolean;
+    title?: string;
+  }) => (
+    <div data-show-status={String(showStatus)} data-testid="ai-debug-panel">
+      {title ?? 'debug'}
+    </div>
+  ),
 }));
 
 describe('SystemContextPanel', () => {
@@ -92,6 +102,10 @@ describe('SystemContextPanel', () => {
       'unknown'
     );
     expect(screen.getAllByText(/AI Engine|AI 엔진 상태/)).toHaveLength(1);
+    expect(screen.getByTestId('ai-debug-panel')).toHaveAttribute(
+      'data-show-status',
+      'false'
+    );
   });
 
   it('health refresh target은 desktop 24px 이상 계약을 가져야 한다', () => {

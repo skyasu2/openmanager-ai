@@ -238,7 +238,7 @@ export const ChatInputArea = memo(function ChatInputArea({
                     <p className="truncate text-xs font-medium text-gray-700">
                       {file.name}
                     </p>
-                    <p className="text-2xs text-gray-400">
+                    <p className="text-xs text-gray-400">
                       {formatFileSize(file.size)}
                     </p>
                   </div>

@@ -59,7 +59,7 @@ const CopyActionButton: FC<{
     <button
       type="button"
       onClick={handleCopy}
-      className={`inline-flex items-center gap-1.5 rounded border border-slate-200 bg-white px-2 py-1 text-2xs font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-800 ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-800 ${className}`}
       aria-label={label}
     >
       {copied ? (
@@ -118,7 +118,7 @@ export function AnalysisBasisDetailPanel({
         <>
           <div className="flex items-center justify-between rounded border border-slate-200 bg-slate-50 p-2.5">
             <div>
-              <p className="text-2xs font-medium uppercase tracking-wide text-slate-500">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
                 디버그 보기
               </p>
               <p className="mt-1 text-xs text-slate-600">
@@ -131,10 +131,10 @@ export function AnalysisBasisDetailPanel({
 
           {traceId && (
             <div className="rounded border border-slate-200 bg-slate-50 p-2">
-              <p className="mb-1 text-2xs font-medium uppercase tracking-wide text-slate-500">
+              <p className="mb-1 text-xs font-medium uppercase tracking-wide text-slate-500">
                 추적 가능 ID
               </p>
-              <code className="block break-all font-mono text-[11px] text-slate-700">
+              <code className="block break-all font-mono text-xs text-slate-700">
                 {traceId}
               </code>
             </div>
@@ -142,7 +142,7 @@ export function AnalysisBasisDetailPanel({
 
           {debugDetails && (
             <div className="rounded border border-slate-200 bg-slate-50 p-2">
-              <p className="mb-1 text-2xs font-medium uppercase tracking-wide text-slate-500">
+              <p className="mb-1 text-xs font-medium uppercase tracking-wide text-slate-500">
                 추가 메타데이터
               </p>
               <div className="overflow-hidden rounded-md border border-slate-200 bg-white p-2">
@@ -156,7 +156,7 @@ export function AnalysisBasisDetailPanel({
 
           {technicalExecutionPath.length > 0 && (
             <div className="rounded border border-slate-200 bg-slate-50 p-2">
-              <p className="mb-1 text-2xs font-medium uppercase tracking-wide text-slate-500">
+              <p className="mb-1 text-xs font-medium uppercase tracking-wide text-slate-500">
                 실행 경로
               </p>
               <p className="text-xs leading-relaxed text-slate-700">
@@ -167,7 +167,7 @@ export function AnalysisBasisDetailPanel({
 
           {handoffHistory && handoffHistory.length > 0 && (
             <div className="space-y-2">
-              <p className="text-2xs font-medium uppercase tracking-wide text-slate-500">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
                 전달 이력
               </p>
               <div className="space-y-2">
@@ -180,11 +180,11 @@ export function AnalysisBasisDetailPanel({
                       <span className="text-xs font-medium text-slate-700">
                         {handoff.from} → {handoff.to}
                       </span>
-                      <span className="rounded bg-white px-1.5 py-0.5 text-2xs text-slate-500">
+                      <span className="rounded bg-white px-1.5 py-0.5 text-xs text-slate-500">
                         {index + 1}단계
                       </span>
                     </div>
-                    <p className="mt-1 text-2xs text-slate-500">
+                    <p className="mt-1 text-xs text-slate-500">
                       {getAgentRoleLabel(handoff.from)} →{' '}
                       {getAgentRoleLabel(handoff.to)}
                     </p>
@@ -201,7 +201,7 @@ export function AnalysisBasisDetailPanel({
 
           {toolResultSummaries && toolResultSummaries.length > 0 && (
             <div className="space-y-2">
-              <p className="text-2xs font-medium uppercase tracking-wide text-slate-500">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
                 도구 결과 요약
               </p>
               <div className="space-y-2">
@@ -229,14 +229,14 @@ export function AnalysisBasisDetailPanel({
                               {toolPresentation.label}
                             </span>
                             <span
-                              className="rounded bg-white px-1.5 py-0.5 text-2xs text-slate-500"
+                              className="rounded bg-white px-1.5 py-0.5 text-xs text-slate-500"
                               title={`${toolResult.toolName} 내부 도구명`}
                             >
                               {toolResult.toolName}
                             </span>
                           </div>
                         </div>
-                        <span className="rounded bg-white px-1.5 py-0.5 text-2xs text-slate-500">
+                        <span className="rounded bg-white px-1.5 py-0.5 text-xs text-slate-500">
                           {toolResult.status === 'failed' ? '실패' : '완료'}
                         </span>
                       </div>
@@ -245,10 +245,10 @@ export function AnalysisBasisDetailPanel({
                       </p>
                       {toolResult.status === 'failed' && (
                         <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                          <span className="rounded bg-rose-100 px-1.5 py-0.5 text-2xs font-medium text-rose-700">
+                          <span className="rounded bg-rose-100 px-1.5 py-0.5 text-xs font-medium text-rose-700">
                             {failureReason.code}
                           </span>
-                          <span className="text-2xs text-slate-600">
+                          <span className="text-xs text-slate-600">
                             {failureReason.label}
                           </span>
                         </div>
@@ -262,7 +262,7 @@ export function AnalysisBasisDetailPanel({
 
           {thinkingSteps && thinkingSteps.length > 0 && (
             <div className="space-y-2">
-              <p className="text-2xs font-medium uppercase tracking-wide text-slate-500">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
                 단계별 처리 내역
               </p>
               <div className="space-y-2">
@@ -285,7 +285,7 @@ export function AnalysisBasisDetailPanel({
                             </span>
                             {stepPresentation.technicalName && (
                               <span
-                                className="rounded bg-white px-1.5 py-0.5 text-2xs text-slate-500"
+                                className="rounded bg-white px-1.5 py-0.5 text-xs text-slate-500"
                                 title={
                                   stepPresentation.description ??
                                   `${stepPresentation.technicalName} 내부 도구명`
@@ -296,7 +296,7 @@ export function AnalysisBasisDetailPanel({
                             )}
                           </div>
                         </div>
-                        <div className="flex items-center gap-1.5 text-2xs text-slate-500">
+                        <div className="flex items-center gap-1.5 text-xs text-slate-500">
                           {step.status && (
                             <span className="rounded bg-white px-1.5 py-0.5">
                               {STEP_STATUS_LABELS[step.status] ?? step.status}
@@ -323,7 +323,7 @@ export function AnalysisBasisDetailPanel({
 
           {runtimeSummaryItems.length > 0 && (
             <div className="rounded border border-slate-200 bg-slate-50 p-2">
-              <p className="mb-1 text-2xs font-medium uppercase tracking-wide text-slate-500">
+              <p className="mb-1 text-xs font-medium uppercase tracking-wide text-slate-500">
                 실행 특성
               </p>
               <div className="flex flex-wrap gap-1.5">

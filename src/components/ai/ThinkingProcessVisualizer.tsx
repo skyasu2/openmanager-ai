@@ -279,7 +279,7 @@ export const ThinkingProcessVisualizer: FC<ThinkingProcessVisualizerProps> = ({
                           </span>
                           {stepPresentation.technicalName && (
                             <span
-                              className="rounded bg-white px-1.5 py-0.5 text-2xs font-medium text-slate-500"
+                              className="rounded bg-white px-1.5 py-0.5 text-xs font-medium text-slate-500"
                               title={
                                 stepPresentation.description ??
                                 `${stepPresentation.technicalName} 내부 도구명`

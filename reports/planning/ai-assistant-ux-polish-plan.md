@@ -52,11 +52,11 @@
 ## 6. Task 목록
 
 - [x] Task 0 — failing test 커밋 (typography arbitrary lint, target-size assertion, SystemContextPanel state machine spec, Provider chip fill spec)
-- [ ] Task 1 — 타이포 스케일 정리 (P1-A)
-- [ ] Task 2 — 터치 타겟 ≥24/44 강제 (P1-B)
-- [ ] Task 3 — 전체페이지 light 톤 통일 (P1-C)
-- [ ] Task 4 — System Context AI Engine 상태 통합 (P2-A)
-- [ ] Task 5 — Provider Routing 활성 강조 (P2-B)
+- [x] Task 1 — 타이포 스케일 정리 (P1-A)
+- [x] Task 2 — 터치 타겟 ≥24/44 강제 (P1-B)
+- [x] Task 3 — 전체페이지 light 톤 통일 (P1-C)
+- [x] Task 4 — System Context AI Engine 상태 통합 (P2-A)
+- [x] Task 5 — Provider Routing 활성 강조 (P2-B)
 - [ ] Task 6 — Playwright targeted QA + qa:record
 - [ ] Task 7 — commit / push gitlab / GitHub sync
 

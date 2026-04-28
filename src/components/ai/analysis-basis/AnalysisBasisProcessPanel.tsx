@@ -62,7 +62,7 @@ export function AnalysisBasisProcessPanel({
     >
       <div className="flex items-center justify-between">
         <span className="text-xs font-semibold text-slate-700">응답 과정</span>
-        <div className="flex items-center gap-1.5 text-2xs text-slate-500">
+        <div className="flex items-center gap-1.5 text-xs text-slate-500">
           {handoffHistory && handoffHistory.length > 0 && (
             <span className="rounded bg-slate-100 px-1.5 py-0.5">
               handoff {handoffHistory.length}회
@@ -81,16 +81,16 @@ export function AnalysisBasisProcessPanel({
 
       <div className="rounded border border-slate-200 bg-slate-50 p-2.5">
         <div className="flex flex-wrap items-center gap-2">
-          <p className="text-2xs font-medium uppercase tracking-wide text-slate-500">
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
             처리 경로
           </p>
           <span
-            className={`rounded-full px-2 py-0.5 text-2xs font-medium ${processRoute.badgeClassName}`}
+            className={`rounded-full px-2 py-0.5 text-xs font-medium ${processRoute.badgeClassName}`}
           >
             {processRoute.label}
           </span>
           {failureReasons.length > 0 && (
-            <span className="rounded-full border border-rose-200 bg-rose-50 px-2 py-0.5 text-2xs font-medium text-rose-700">
+            <span className="rounded-full border border-rose-200 bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700">
               실패 {failureReasons.length}건
             </span>
           )}
@@ -100,13 +100,13 @@ export function AnalysisBasisProcessPanel({
         </p>
         {referencedServers.length > 0 && (
           <div className="mt-2 flex flex-wrap items-center gap-1.5">
-            <span className="text-2xs font-medium uppercase tracking-wide text-slate-500">
+            <span className="text-xs font-medium uppercase tracking-wide text-slate-500">
               참조 서버
             </span>
             {referencedServers.map((server) => (
               <span
                 key={server}
-                className="rounded bg-white px-1.5 py-0.5 text-2xs text-slate-600"
+                className="rounded bg-white px-1.5 py-0.5 text-xs text-slate-600"
               >
                 {server}
               </span>
@@ -117,7 +117,7 @@ export function AnalysisBasisProcessPanel({
 
       {executionPath.length > 0 && (
         <div className="rounded border border-slate-200 bg-slate-50 p-2">
-          <p className="mb-1 text-2xs font-medium uppercase tracking-wide text-slate-500">
+          <p className="mb-1 text-xs font-medium uppercase tracking-wide text-slate-500">
             실행 경로
           </p>
           <p className="text-xs leading-relaxed text-slate-700">
@@ -128,7 +128,7 @@ export function AnalysisBasisProcessPanel({
 
       {toolResultSummaries && toolResultSummaries.length > 0 && (
         <div className="space-y-2">
-          <p className="text-2xs font-medium uppercase tracking-wide text-slate-500">
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
             도구 결과 요약
           </p>
           <div className="space-y-2">
@@ -151,7 +151,7 @@ export function AnalysisBasisProcessPanel({
                     >
                       {toolPresentation.label}
                     </span>
-                    <span className="rounded bg-white px-1.5 py-0.5 text-2xs text-slate-500">
+                    <span className="rounded bg-white px-1.5 py-0.5 text-xs text-slate-500">
                       {toolResult.status === 'failed' ? '실패' : '완료'}
                     </span>
                   </div>
@@ -159,7 +159,7 @@ export function AnalysisBasisProcessPanel({
                     {toolResult.summary}
                   </p>
                   {toolResult.status === 'failed' && (
-                    <p className="mt-2 text-2xs text-rose-700">
+                    <p className="mt-2 text-xs text-rose-700">
                       {failureReason.label}
                     </p>
                   )}
@@ -172,7 +172,7 @@ export function AnalysisBasisProcessPanel({
 
       {runtimeSummaryItems.length > 0 && (
         <div className="rounded border border-slate-200 bg-slate-50 p-2">
-          <p className="mb-1 text-2xs font-medium uppercase tracking-wide text-slate-500">
+          <p className="mb-1 text-xs font-medium uppercase tracking-wide text-slate-500">
             실행 특성
           </p>
           <div className="flex flex-wrap gap-1.5">
@@ -200,7 +200,7 @@ export function AnalysisBasisProcessPanel({
 
       {details && (
         <div className="rounded border border-slate-200 bg-slate-50 p-2">
-          <p className="mb-1 text-2xs font-medium uppercase tracking-wide text-slate-500">
+          <p className="mb-1 text-xs font-medium uppercase tracking-wide text-slate-500">
             상세 분석
           </p>
           <div className="overflow-hidden rounded-md border border-slate-200 bg-white p-2">
@@ -214,7 +214,7 @@ export function AnalysisBasisProcessPanel({
 
       {thinkingSteps && thinkingSteps.length > 0 && (
         <div className="space-y-2">
-          <p className="text-2xs font-medium uppercase tracking-wide text-slate-500">
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
             처리 단계 요약
           </p>
           <div className="space-y-2">
@@ -236,7 +236,7 @@ export function AnalysisBasisProcessPanel({
                       {stepPresentation.title || `단계 ${index + 1}`}
                     </span>
                     {step.status && (
-                      <span className="rounded bg-white px-1.5 py-0.5 text-2xs text-slate-500">
+                      <span className="rounded bg-white px-1.5 py-0.5 text-xs text-slate-500">
                         {STEP_STATUS_LABELS[step.status] ?? step.status}
                       </span>
                     )}

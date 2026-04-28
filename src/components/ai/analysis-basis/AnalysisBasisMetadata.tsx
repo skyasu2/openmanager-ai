@@ -55,7 +55,7 @@ export function AnalysisBasisMetadata({
     <>
       {basis.analysisMode && (
         <div className="rounded-md border border-slate-200 bg-white p-3">
-          <p className="mb-1 text-2xs font-medium uppercase tracking-wide text-slate-500">
+          <p className="mb-1 text-xs font-medium uppercase tracking-wide text-slate-500">
             분석 강도
           </p>
           <p className="text-xs text-slate-700">
@@ -145,7 +145,7 @@ export function AnalysisBasisMetadata({
                 )}
                 {source.sourceType !== 'web' && (
                   <span
-                    className={`shrink-0 rounded px-1 py-0.5 text-2xs font-medium ${
+                    className={`shrink-0 rounded px-1 py-0.5 text-xs font-medium ${
                       source.similarity >= 0.8
                         ? 'bg-green-100 text-green-700'
                         : source.similarity >= 0.6
@@ -156,7 +156,7 @@ export function AnalysisBasisMetadata({
                     {Math.round(source.similarity * 100)}%
                   </span>
                 )}
-                <span className="shrink-0 rounded bg-purple-50 px-1 py-0.5 text-2xs text-purple-600">
+                <span className="shrink-0 rounded bg-purple-50 px-1 py-0.5 text-xs text-purple-600">
                   {source.sourceType === 'web' && source.url
                     ? extractDomain(source.url)
                     : source.sourceType}

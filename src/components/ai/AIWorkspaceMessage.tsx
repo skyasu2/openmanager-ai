@@ -156,7 +156,7 @@ export const AIWorkspaceMessage = memo<{
                   {assistantResponseView?.shouldCollapse ? (
                     <div className="space-y-3">
                       <div className="rounded-xl border border-indigo-100 bg-indigo-50/40 p-3">
-                        <p className="mb-2 text-2xs font-semibold uppercase tracking-wide text-indigo-500">
+                        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-indigo-500">
                           핵심 요약
                         </p>
                         <MarkdownRenderer
@@ -166,7 +166,7 @@ export const AIWorkspaceMessage = memo<{
                       </div>
                       {inlineAssistantDetails && (
                         <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3">
-                          <p className="mb-2 text-2xs font-semibold uppercase tracking-wide text-slate-500">
+                          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
                             상세 분석
                           </p>
                           <MarkdownRenderer

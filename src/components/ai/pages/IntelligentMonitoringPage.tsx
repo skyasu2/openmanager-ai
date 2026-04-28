@@ -241,7 +241,7 @@ export default function IntelligentMonitoringPage() {
       {/* 헤더 */}
       <header className="border-b border-gray-200 bg-white/80 p-4 backdrop-blur-sm">
         <div className="flex items-center justify-between">
-          <h1 className="flex items-center gap-3 text-xl font-bold text-gray-800">
+          <h1 className="flex items-center gap-3 text-lg font-bold text-gray-800">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-r from-emerald-500 to-teal-500">
               <Monitor className="h-5 w-5 text-white" />
             </div>

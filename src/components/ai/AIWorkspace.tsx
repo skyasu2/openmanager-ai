@@ -224,13 +224,13 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
         <div className="flex-1 px-3 overflow-y-auto">
           <div className="mb-4">
             <div className="mb-2 flex items-center justify-between px-1">
-              <span className="text-2xs font-semibold text-gray-500 uppercase tracking-wider">
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
                 현재 세션
               </span>
               <button
                 type="button"
                 onClick={handleNewSession}
-                className="flex items-center gap-1 rounded px-1.5 py-0.5 text-2xs text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition-colors"
+                className="flex min-h-6 min-w-6 items-center gap-1 rounded px-1.5 py-0.5 text-xs text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-700"
                 title="새 대화 시작"
               >
                 <Plus className="h-3 w-3" />
@@ -262,7 +262,7 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
 
         {/* Features Section (하단) - Fullscreen용 리스트 레이아웃 */}
         <div className="shrink-0 border-t border-gray-200 px-3 py-3">
-          <div className="mb-2 px-1 text-2xs font-semibold text-gray-500 uppercase tracking-wider">
+          <div className="mb-2 px-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">
             AI 기능
           </div>
           <div className="space-y-1">
@@ -341,7 +341,7 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
             <button
               type="button"
               onClick={() => router.back()}
-              className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
+              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
               title="뒤로 가기"
             >
               <ArrowLeftFromLine className="h-5 w-5" />
@@ -352,7 +352,7 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
             <button
               type="button"
               onClick={handleNewSession}
-              className="rounded-lg border border-gray-200 bg-white p-2 text-gray-500 hover:bg-gray-50 transition-colors shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
+              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-gray-200 bg-white p-2 text-gray-500 shadow-sm transition-colors hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
               title="새 대화"
             >
               <Plus className="h-4 w-4" />
@@ -373,7 +373,7 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
               <button
                 type="button"
                 onClick={() => router.push('/dashboard')}
-                className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
+                className="flex min-h-6 min-w-6 items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
                 title="대시보드로 돌아가기"
                 aria-label="대시보드로 돌아가기"
               >
@@ -408,7 +408,7 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
                 <button
                   type="button"
                   onClick={handleToggleRightPanel}
-                  className="hidden lg:flex rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
+                  className="hidden min-h-6 min-w-6 rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 lg:flex"
                   title="시스템 컨텍스트 패널 토글"
                 >
                   {isRightPanelOpen ? (

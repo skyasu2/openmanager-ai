@@ -27,19 +27,19 @@ export function SystemSummarySection({ summary }: SystemSummarySectionProps) {
       {/* 서버 상태 요약 */}
       <div className="mb-4 grid grid-cols-3 gap-3">
         <div className="rounded-lg bg-white/60 p-2 text-center">
-          <div className="text-xl font-bold text-green-600">
+          <div className="text-lg font-bold text-green-600">
             {summary.healthyServers}
           </div>
           <div className="text-xs text-gray-600">정상</div>
         </div>
         <div className="rounded-lg bg-white/60 p-2 text-center">
-          <div className="text-xl font-bold text-yellow-600">
+          <div className="text-lg font-bold text-yellow-600">
             {summary.warningServers}
           </div>
           <div className="text-xs text-gray-600">주의</div>
         </div>
         <div className="rounded-lg bg-white/60 p-2 text-center">
-          <div className="text-xl font-bold text-red-600">
+          <div className="text-lg font-bold text-red-600">
             {summary.criticalServers}
           </div>
           <div className="text-xs text-gray-600">위험</div>
@@ -65,7 +65,7 @@ export function SystemSummarySection({ summary }: SystemSummarySectionProps) {
                   </span>
                 </div>
                 {issue.reason && (
-                  <div className="mt-0.5 text-[11px] text-gray-500">
+                  <div className="mt-0.5 text-xs text-gray-500">
                     {issue.reason}
                     {issue.confidence
                       ? ` · 신뢰도 ${Math.round(issue.confidence * 100)}%`
@@ -73,7 +73,7 @@ export function SystemSummarySection({ summary }: SystemSummarySectionProps) {
                   </div>
                 )}
                 {issue.recommendation && (
-                  <div className="mt-0.5 text-[11px] font-medium text-gray-600">
+                  <div className="mt-0.5 text-xs font-medium text-gray-600">
                     조치: {issue.recommendation}
                   </div>
                 )}

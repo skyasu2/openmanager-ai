@@ -243,7 +243,7 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
                 <p className="text-xs font-semibold text-slate-700">
                   분석 보기
                 </p>
-                <p className="text-2xs text-slate-500">
+                <p className="text-xs text-slate-500">
                   일반 사용자용 과정 보기와 디버그 보기를 전환합니다.
                 </p>
               </div>

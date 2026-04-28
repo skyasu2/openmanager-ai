@@ -225,7 +225,7 @@ export const IncidentTable = memo(function IncidentTable({
                   </span>
                 )}
               </div>
-              <h4 className="mt-2 text-xl font-bold text-gray-800">
+              <h4 className="mt-2 text-lg font-bold text-gray-800">
                 {selectedReport.title}
               </h4>
               <p className="mt-2 text-gray-600">{selectedReport.description}</p>

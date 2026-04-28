@@ -58,7 +58,7 @@ export const WebSourceCards: FC<{ sources: WebSource[] }> = ({ sources }) => {
                 <div className="text-xs text-blue-600 group-hover:underline truncate">
                   {source.title}
                 </div>
-                <div className="text-2xs text-gray-400 truncate">
+                <div className="text-xs text-gray-400 truncate">
                   {extractDomain(source.url)}
                 </div>
               </div>

@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI Assistant UX polish (typography 4-tier, target ≥24/44, light tone unification, SystemContext dedupe, provider chip emphasis) | P1·P2 | Approved | [ai-assistant-ux-polish-plan.md](ai-assistant-ux-polish-plan.md) — Task 0 failing tests committed; Task 1 implementation next |
+| AI Assistant UX polish (typography 4-tier, target ≥24/44, light tone unification, SystemContext dedupe, provider chip emphasis) | P1·P2 | Approved | [ai-assistant-ux-polish-plan.md](ai-assistant-ux-polish-plan.md) — Task 0~5 local implementation done; Task 6 Playwright targeted QA next |
 
 ---
 

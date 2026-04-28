@@ -179,7 +179,7 @@ export const MarkdownRenderer = memo(function MarkdownRenderer({
           ),
           // 제목들
           h1: ({ children }) => (
-            <h1 className="text-xl font-bold text-gray-900 mt-4 mb-2 border-b pb-2">
+            <h1 className="text-lg font-bold text-gray-900 mt-4 mb-2 border-b pb-2">
               {children}
             </h1>
           ),

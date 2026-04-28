@@ -210,7 +210,7 @@ function RelatedServersSection({
               </div>
             </div>
             <span
-              className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+              className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
                 server.severity === 'critical'
                   ? 'bg-red-100 text-red-700'
                   : server.severity === 'warning'

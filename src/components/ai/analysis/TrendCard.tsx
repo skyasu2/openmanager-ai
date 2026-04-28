@@ -63,7 +63,7 @@ export function TrendCard({ metric, data }: TrendCardProps) {
           <ArrowRight className="h-3 w-3 text-gray-400" />
         )}
         <span
-          className={`${normalizedPredictedValue === null ? 'text-sm' : 'text-2xl'} font-bold tabular-nums ${textColor}`}
+          className={`${normalizedPredictedValue === null ? 'text-sm' : 'text-lg'} font-bold tabular-nums ${textColor}`}
         >
           {predictedValueLabel}
         </span>
