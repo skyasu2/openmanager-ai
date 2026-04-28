@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-28 KST (`Cloud Tasks Job Queue 개선 착수`)
+**Last Updated**: 2026-04-28 KST (`Cloud Tasks Job Queue 개선 완료`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| #213 Cloud Tasks Job Queue async execution | High | Approved | Vercel direct long worker trigger를 Cloud Run dispatch + Cloud Tasks HTTP task 경로로 분리. Plan: [cloud-tasks-job-queue-plan.md](cloud-tasks-job-queue-plan.md) |
+| — | — | Empty | Active Task 없음 |
 
 ---
 
@@ -31,6 +31,14 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-28 #213)
+- [x] Cloud Tasks Job Queue async execution
+  - Vercel `AI_JOB_TRIGGER_MODE=cloud-tasks` 선택 시 기존 long `/api/jobs/process` 직접 호출 대신 짧은 `/api/jobs/dispatch` 호출로 전환
+  - Cloud Run Hono `/api/jobs/dispatch`가 Cloud Tasks HTTP task를 생성해 `/api/jobs/process`를 비동기로 호출하도록 구현
+  - 기존 direct trigger는 기본값으로 유지하고, retry route도 같은 trigger mode와 source/thinking 옵션 보존 적용
+  - Cloud Tasks 설정/env/docs/deploy script 반영. GCP queue/IAM 생성 및 production 활성화는 별도 운영 단계로 남김
+  - Plan completed: [cloud-tasks-job-queue-plan.md](cloud-tasks-job-queue-plan.md)
 
 ### Completed (2026-04-28 #212)
 - [x] Supabase free-tier hardening

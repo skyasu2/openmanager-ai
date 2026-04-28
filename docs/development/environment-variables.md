@@ -158,12 +158,27 @@ curl -X POST https://openmanager-ai.vercel.app/api/auth/guest-login \
 | `CLOUD_RUN_ENABLED` | Cloud Run AI 프록시 활성화 (`true`일 때 URL/secret 요구) | `false` |
 | `CLOUD_RUN_AI_URL` | Frontend가 프록시할 Cloud Run AI 엔진 URL | — |
 | `CLOUD_RUN_API_SECRET` | Frontend → Cloud Run 인증 키 | — |
+| `AI_JOB_TRIGGER_MODE` | Job Queue worker trigger 방식. `direct`는 기존 `/api/jobs/process`, `cloud-tasks`는 짧은 `/api/jobs/dispatch` 경유 | `direct` |
 | `AI_ENGINE_MODE` | 개발 환경에서 `AUTO`(기본)/`CLOUD` 선택 | `AUTO` |
 | `USE_LOCAL_DOCKER` | 개발 환경에서 로컬 Docker AI 엔진 우선 사용 | `false` |
 | `LOCAL_DOCKER_URL` | 로컬 Docker AI 엔진 URL | `http://localhost:8080` |
 | `LOCAL_DOCKER_SECRET` | 로컬 Docker AI 엔진 인증 키 | `dev-only-secret` |
 
 > 현재 Next.js 런타임은 `CLOUD_RUN_ENABLED=true`와 `CLOUD_RUN_AI_URL`, `CLOUD_RUN_API_SECRET`의 조합을 Cloud Run 연동 기준으로 사용합니다. 개발 환경 기본값은 `AI_ENGINE_MODE=AUTO`이며, 필요하면 `USE_LOCAL_DOCKER=true`와 `LOCAL_DOCKER_*` 값으로 로컬 Docker AI 엔진을 명시적으로 우선 사용합니다.
+
+### 선택 환경변수 — Cloud Run AI Engine Job Queue
+
+| 변수 | 용도 | 기본값 |
+|------|------|--------|
+| `CLOUD_TASKS_ENABLED` | Cloud Run `/api/jobs/dispatch`에서 Cloud Tasks enqueue 활성화 | `false` |
+| `CLOUD_TASKS_PROJECT_ID` | Cloud Tasks queue가 있는 GCP project. 없으면 `GOOGLE_CLOUD_PROJECT`/`GCP_PROJECT_ID` 사용 | — |
+| `CLOUD_TASKS_LOCATION` | Cloud Tasks queue region | — |
+| `CLOUD_TASKS_QUEUE_ID` | Cloud Tasks queue id | — |
+| `CLOUD_TASKS_SERVICE_ACCOUNT_EMAIL` | task HTTP target OIDC token에 사용할 service account email | — |
+| `CLOUD_TASKS_OIDC_AUDIENCE` | OIDC audience override. 없으면 target origin 사용 | — |
+| `CLOUD_TASKS_DISPATCH_DEADLINE_SECONDS` | Cloud Tasks HTTP target dispatch deadline. 최대 1800초 | `600` |
+
+`AI_JOB_TRIGGER_MODE=cloud-tasks`는 Vercel runtime 변수이고, `CLOUD_TASKS_*`는 Cloud Run AI Engine runtime 변수입니다. queue/IAM 생성은 자동화하지 않으며, Cloud Run service account에는 Cloud Tasks enqueue 권한이 필요합니다.
 
 ### 선택 환경변수 — 데이터/캐시
 

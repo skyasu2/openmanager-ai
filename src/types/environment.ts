@@ -28,6 +28,7 @@ declare global {
       readonly CLOUD_RUN_AI_URL?: string;
       readonly CLOUD_RUN_AI_ENABLED?: string;
       readonly CLOUD_RUN_API_SECRET?: string;
+      readonly AI_JOB_TRIGGER_MODE?: 'direct' | 'cloud-tasks';
 
       // 🔧 개발 및 테스트 환경변수
       readonly ENABLE_MOCK_DATA?: string;

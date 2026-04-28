@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Last reviewed: 2026-04-28
 
 # Cloud Tasks Job Queue Plan
@@ -58,18 +58,44 @@ Cloud Tasks를 선택형 dispatch 계층으로 추가해 Vercel은 짧은 dispat
 
 ## 6. Task 목록
 
-- [ ] Task 0 — failing contract tests 커밋
-- [ ] Task 1 — Vercel trigger mode 구현
-- [ ] Task 2 — Cloud Run dispatch endpoint + Cloud Tasks REST client 구현
-- [ ] Task 3 — env/docs 업데이트
-- [ ] Task 4 — local checks
-- [ ] Task 5 — commit/push/pipeline
+- [x] Task 0 — failing contract tests 커밋
+- [x] Task 1 — Vercel trigger mode 구현
+- [x] Task 2 — Cloud Run dispatch endpoint + Cloud Tasks REST client 구현
+- [x] Task 3 — env/docs 업데이트
+- [x] Task 4 — local checks
+- [x] Task 5 — commit/push/pipeline
 
 ## 7. 완료 기준
 
-- [ ] targeted route tests 통과
-- [ ] Cloud Run jobs tests 통과
-- [ ] root `npm run test:contract` 통과
-- [ ] root `npm run type-check` 통과
-- [ ] AI Engine `npm run type-check` 통과
-- [ ] 최종 `git status` clean
+- [x] targeted route tests 통과
+- [x] Cloud Run jobs tests 통과
+- [x] root `npm run test:contract` 통과
+- [x] root `npm run type-check` 통과
+- [x] AI Engine `npm run type-check` 통과
+- [x] 최종 `git status` clean
+
+## 8. 완료 결과
+
+- Vercel runtime:
+  - `AI_JOB_TRIGGER_MODE=cloud-tasks`일 때 `/api/jobs/dispatch` 호출
+  - 기본값/미설정은 기존 `/api/jobs/process` direct 호출 유지
+  - retry route도 동일 trigger mode 사용 및 `analysisMode`, `enableRAG`, `enableWebSearch` 보존
+- Cloud Run AI Engine:
+  - `POST /api/jobs/dispatch` 추가
+  - `CLOUD_TASKS_ENABLED=true`일 때 Cloud Tasks REST API `createTask` 호출
+  - task body는 작은 JSON payload만 포함하고 결과/진행 상태는 기존 Redis 경로 유지
+  - `CLOUD_TASKS_SERVICE_ACCOUNT_EMAIL` 설정 시 OIDC token 포함
+- 운영 설정:
+  - `.env.example`, `cloud-run/ai-engine/.env.example`, `docs/development/environment-variables.md`, `deploy.sh`, `sync-vercel.sh` 업데이트
+  - GCP queue/IAM 생성 및 `AI_JOB_TRIGGER_MODE=cloud-tasks` production 활성화는 별도 운영 단계
+- 검증:
+  - `npx vitest run src/app/api/ai/jobs/route.trigger.test.ts src/app/api/ai/jobs/[id]/retry/route.test.ts`
+  - `cd cloud-run/ai-engine && npx vitest run src/lib/cloud-tasks.test.ts src/routes/jobs.dispatch.test.ts src/routes/jobs.test.ts`
+  - `npm run test:contract`
+  - `npm run type-check`
+  - `cd cloud-run/ai-engine && npm run type-check`
+  - `npm run lint`
+  - `npm run test:quick`
+  - `cd cloud-run/ai-engine && npm run test`
+  - `npm run docs:lint:changed`
+  - `npm run docs:budget`

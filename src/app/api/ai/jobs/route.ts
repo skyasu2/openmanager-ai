@@ -47,6 +47,9 @@ import { buildScopedJobListKey, resolveJobOwnerKey } from './job-ownership';
 /** Cloud Run worker 처리 완료 대기 타임아웃 (ms) */
 const TRIGGER_TIMEOUT_MS = 280000;
 
+/** Cloud Tasks dispatch endpoint 대기 타임아웃 (ms) */
+const CLOUD_TASKS_DISPATCH_TIMEOUT_MS = 10000;
+
 /** Job TTL (24시간) */
 const JOB_TTL_SECONDS = 86400;
 
@@ -334,6 +337,24 @@ interface TriggerResult {
   error?: string;
 }
 
+type JobWorkerTriggerMode = 'direct' | 'cloud-tasks';
+
+function getJobWorkerTriggerMode(): JobWorkerTriggerMode {
+  return process.env.AI_JOB_TRIGGER_MODE?.trim() === 'cloud-tasks'
+    ? 'cloud-tasks'
+    : 'direct';
+}
+
+function getWorkerTriggerPath(mode: JobWorkerTriggerMode): string {
+  return mode === 'cloud-tasks' ? '/api/jobs/dispatch' : '/api/jobs/process';
+}
+
+function getWorkerTriggerTimeoutMs(mode: JobWorkerTriggerMode): number {
+  return mode === 'cloud-tasks'
+    ? CLOUD_TASKS_DISPATCH_TIMEOUT_MS
+    : TRIGGER_TIMEOUT_MS;
+}
+
 /**
  * Cloud Run Worker에 Job 처리 요청 (타임아웃 적용)
  */
@@ -352,12 +373,15 @@ async function triggerWorker(
     return { status: 'skipped', error: cloudRunConfig.message };
   }
 
+  const triggerMode = getJobWorkerTriggerMode();
+  const triggerPath = getWorkerTriggerPath(triggerMode);
+  const triggerTimeoutMs = getWorkerTriggerTimeoutMs(triggerMode);
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), TRIGGER_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), triggerTimeoutMs);
   const startTime = Date.now();
 
   try {
-    const res = await fetch(`${cloudRunConfig.url}/api/jobs/process`, {
+    const res = await fetch(`${cloudRunConfig.url}${triggerPath}`, {
       method: 'POST',
       signal: controller.signal,
       headers: {
@@ -390,7 +414,9 @@ async function triggerWorker(
       return { status: 'failed', responseTime, error: `HTTP ${res.status}` };
     }
 
-    logger.info(`[AI Jobs] Worker triggered: ${jobId} (${responseTime}ms)`);
+    logger.info(
+      `[AI Jobs] Worker triggered: ${jobId} mode=${triggerMode} (${responseTime}ms)`
+    );
     return { status: 'sent', responseTime };
   } catch (error) {
     clearTimeout(timeoutId);
@@ -398,7 +424,7 @@ async function triggerWorker(
 
     if (error instanceof Error && error.name === 'AbortError') {
       logger.warn(
-        `[AI Jobs] Trigger timeout: ${jobId} (${TRIGGER_TIMEOUT_MS}ms)`
+        `[AI Jobs] Trigger timeout: ${jobId} mode=${triggerMode} (${triggerTimeoutMs}ms)`
       );
       return { status: 'timeout', responseTime, error: 'Request timeout' };
     }

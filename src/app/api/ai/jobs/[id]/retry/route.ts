@@ -20,6 +20,7 @@ import {
   RATE_LIMIT_IDENTITY_HEADER,
 } from '@/lib/security/rate-limit-identity';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
+import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { AIJob, TriggerStatus } from '@/types/ai-jobs';
 import { withCSRFProtection } from '@/utils/security/csrf';
 import { isJobOwnedByRequester } from '../../job-ownership';
@@ -28,6 +29,47 @@ const MAX_RETRIES = 2;
 const JOB_TTL_SECONDS = 86400;
 const PROGRESS_TTL_SECONDS = 600;
 const TRIGGER_TIMEOUT_MS = 280000;
+const CLOUD_TASKS_DISPATCH_TIMEOUT_MS = 10000;
+
+type JobWorkerTriggerMode = 'direct' | 'cloud-tasks';
+
+function getJobWorkerTriggerMode(): JobWorkerTriggerMode {
+  return process.env.AI_JOB_TRIGGER_MODE?.trim() === 'cloud-tasks'
+    ? 'cloud-tasks'
+    : 'direct';
+}
+
+function getWorkerTriggerPath(mode: JobWorkerTriggerMode): string {
+  return mode === 'cloud-tasks' ? '/api/jobs/dispatch' : '/api/jobs/process';
+}
+
+function getWorkerTriggerTimeoutMs(mode: JobWorkerTriggerMode): number {
+  return mode === 'cloud-tasks'
+    ? CLOUD_TASKS_DISPATCH_TIMEOUT_MS
+    : TRIGGER_TIMEOUT_MS;
+}
+
+interface RetryToolOptions {
+  analysisMode?: AnalysisMode;
+  enableRAG?: boolean;
+  enableWebSearch?: boolean;
+}
+
+function extractRetryToolOptions(job: AIJob): RetryToolOptions {
+  const metadata = job.metadata ?? {};
+
+  return {
+    ...(metadata.analysisMode && {
+      analysisMode: metadata.analysisMode,
+    }),
+    ...(typeof metadata.enableRAG === 'boolean' && {
+      enableRAG: metadata.enableRAG,
+    }),
+    ...(typeof metadata.enableWebSearch === 'boolean' && {
+      enableWebSearch: metadata.enableWebSearch,
+    }),
+  };
+}
 
 export const POST = withRateLimit<[{ params: Promise<{ id: string }> }]>(
   rateLimiters.aiJobCreation,
@@ -101,6 +143,7 @@ export const POST = withRateLimit<[{ params: Promise<{ id: string }> }]>(
                   job.query,
                   job.type,
                   job.sessionId ?? undefined,
+                  extractRetryToolOptions(job),
                   getRateLimitIdentity(request)
                 )
               : initialTriggerStatus;
@@ -145,6 +188,7 @@ async function triggerWorkerRetry(
   query: string,
   type: string,
   sessionId?: string,
+  toolOptions: RetryToolOptions = {},
   rateLimitIdentity?: string
 ): Promise<TriggerStatus> {
   const cloudRunConfig = getRequiredCloudRunConfig();
@@ -154,11 +198,14 @@ async function triggerWorkerRetry(
     return 'skipped';
   }
 
+  const triggerMode = getJobWorkerTriggerMode();
+  const triggerPath = getWorkerTriggerPath(triggerMode);
+  const triggerTimeoutMs = getWorkerTriggerTimeoutMs(triggerMode);
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), TRIGGER_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), triggerTimeoutMs);
 
   try {
-    const res = await fetch(`${cloudRunConfig.url}/api/jobs/process`, {
+    const res = await fetch(`${cloudRunConfig.url}${triggerPath}`, {
       method: 'POST',
       signal: controller.signal,
       headers: {
@@ -173,6 +220,7 @@ async function triggerWorkerRetry(
         messages: [{ role: 'user', content: query }],
         sessionId,
         type,
+        ...toolOptions,
       }),
     });
 

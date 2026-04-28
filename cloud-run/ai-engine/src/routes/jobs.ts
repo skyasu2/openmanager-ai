@@ -16,6 +16,7 @@
 import type { Context } from 'hono';
 import { Hono } from 'hono';
 
+import { enqueueCloudTask, getCloudTasksConfig } from '../lib/cloud-tasks';
 import { getPublicErrorResponse, handleApiError } from '../lib/error-handler';
 import { logger } from '../lib/logger';
 import { logAPIKeyStatus, validateAPIKeys } from '../lib/model-config';
@@ -230,6 +231,93 @@ jobsRouter.post('/process', async (c: Context) => {
     );
   } catch (error) {
     return handleApiError(c, error, 'Jobs');
+  }
+});
+
+/**
+ * POST /api/jobs/dispatch
+ *
+ * Enqueue a Cloud Tasks HTTP task that will call /api/jobs/process.
+ * This keeps Vercel's job creation request short while the long AI work runs
+ * in a Cloud Tasks-managed Cloud Run request.
+ */
+jobsRouter.post('/dispatch', async (c: Context) => {
+  try {
+    const payload = (await c.req.json()) as Record<string, unknown>;
+    const { jobId, messages } = payload;
+
+    if (typeof jobId !== 'string' || jobId.trim().length === 0) {
+      return c.json({ success: false, error: 'jobId is required' }, 400);
+    }
+
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return c.json(
+        { success: false, error: 'messages array is required' },
+        400
+      );
+    }
+
+    if (!isJobNotifierAvailable()) {
+      return c.json(
+        {
+          success: false,
+          error: 'Redis not available for async job processing',
+          fallback: 'Use /api/ai/supervisor directly',
+        },
+        503
+      );
+    }
+
+    const cloudTasksConfig = getCloudTasksConfig();
+    if (!cloudTasksConfig.ok) {
+      logger.warn(`[Jobs] Cloud Tasks dispatch unavailable: ${cloudTasksConfig.message}`);
+      return c.json(
+        {
+          success: false,
+          error: cloudTasksConfig.message,
+          code: cloudTasksConfig.code,
+        },
+        503
+      );
+    }
+
+    await updateJobProgress(
+      jobId,
+      'queued',
+      8,
+      'Cloud Tasks에 작업 등록 중...'
+    );
+
+    const targetUrl = new URL('/api/jobs/process', c.req.url).toString();
+    const task = await enqueueCloudTask({
+      config: cloudTasksConfig,
+      targetUrl,
+      payload,
+    });
+
+    await updateJobProgress(
+      jobId,
+      'queued',
+      10,
+      'Cloud Tasks 작업 등록 완료'
+    );
+
+    logger.info(
+      `[Jobs] Dispatched job ${jobId} via Cloud Tasks (${task.name ?? 'unnamed-task'})`
+    );
+
+    return c.json(
+      {
+        success: true,
+        jobId,
+        status: 'queued',
+        dispatchMode: 'cloud-tasks',
+        taskName: task.name,
+      },
+      202
+    );
+  } catch (error) {
+    return handleApiError(c, error, 'Jobs dispatch');
   }
 });
 
