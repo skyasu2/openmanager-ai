@@ -60,7 +60,7 @@ const EXPECTED_POLICIES = {
     ],
   },
   'Advisor Agent': {
-    providerOrder: ['groq', 'cerebras', 'mistral'],
+    providerOrder: ['cerebras', 'groq', 'mistral'],
     maxSteps: 7,
     evidenceBudget: 5,
     toolAllowlist: [

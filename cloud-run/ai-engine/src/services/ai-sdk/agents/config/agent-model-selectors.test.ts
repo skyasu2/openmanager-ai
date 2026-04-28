@@ -177,9 +177,62 @@ describe('selectTextModel capability requirements', () => {
 
   it('splits primary providers by agent group', () => {
     expect(getNlqModel()?.provider).toBe('groq');
-    expect(getAdvisorModel()?.provider).toBe('groq');
+    expect(getAdvisorModel()?.provider).toBe('cerebras');
     expect(getAnalystModel()?.provider).toBe('cerebras');
     expect(getReporterModel()?.provider).toBe('cerebras');
+  });
+
+  it('keeps NLQ on models with at least 16K context after Qwen fails', () => {
+    mockCheckProviderStatus.mockReturnValue({
+      cerebras: true,
+      groq: false,
+      mistral: true,
+      gemini: true,
+      openrouter: true,
+    });
+    mockGetCerebrasModel.mockImplementation((modelId: string) => {
+      if (modelId === 'qwen-3-235b-a22b-instruct-2507') {
+        throw new Error('Qwen unavailable');
+      }
+      return { provider: 'cerebras', modelId };
+    });
+
+    const result = getNlqModel();
+
+    expect(result?.provider).toBe('mistral');
+    expect(mockGetCerebrasModel).toHaveBeenCalledTimes(1);
+    expect(mockGetCerebrasModel).toHaveBeenCalledWith(
+      'qwen-3-235b-a22b-instruct-2507'
+    );
+    expect(mockGetCerebrasModel).not.toHaveBeenCalledWith('llama3.1-8b');
+    expect(mockGetMistralModel).toHaveBeenCalledWith('mistral-large-latest');
+  });
+
+  it('keeps Analyst, Reporter, and Advisor on models with at least 32K context after Qwen fails', () => {
+    mockGetCerebrasModel.mockImplementation((modelId: string) => {
+      if (modelId === 'qwen-3-235b-a22b-instruct-2507') {
+        throw new Error('Qwen unavailable');
+      }
+      return { provider: 'cerebras', modelId };
+    });
+
+    const results = [
+      getAnalystModel(),
+      getReporterModel(),
+      getAdvisorModel(),
+    ];
+
+    expect(results.map((result) => result?.provider)).toEqual([
+      'groq',
+      'groq',
+      'groq',
+    ]);
+    expect(mockGetCerebrasModel).toHaveBeenCalledTimes(3);
+    expect(mockGetCerebrasModel).toHaveBeenCalledWith(
+      'qwen-3-235b-a22b-instruct-2507'
+    );
+    expect(mockGetCerebrasModel).not.toHaveBeenCalledWith('llama3.1-8b');
+    expect(mockGetGroqModel).toHaveBeenCalledWith('groq-model');
   });
 
   it('falls Analyst and Reporter back to Groq when Cerebras is unavailable', () => {
