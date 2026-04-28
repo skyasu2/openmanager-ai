@@ -4,7 +4,7 @@
  * Specializes in troubleshooting guidance and command recommendations.
  * Uses Knowledge Retrieval Lite (BM25 + pgVector) to search past incidents and best practices.
  *
- * Model chain: Groq primary -> Cerebras Qwen/llama3.1-8b -> Mistral last-resort.
+ * Model chain: Cerebras Qwen primary -> Groq llama-4-scout -> Mistral last-resort.
  * Retrieval: Knowledge Retrieval Lite only; text fallback providers stay outside retrieval.
  *
  * @version 4.0.0 - Migrated to BaseAgent pattern

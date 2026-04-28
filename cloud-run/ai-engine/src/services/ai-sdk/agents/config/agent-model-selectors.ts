@@ -172,38 +172,38 @@ export function selectTextModel(
 // ============================================================================
 
 /**
- * NLQ model: Groq(llama-4-scout) → Cerebras(Qwen→llama3.1-8b) → Mistral
+ * NLQ model: Groq(llama-4-scout) → Cerebras(Qwen, 16K+ ctx) → Mistral
  */
 export function getNlqModel(): ModelResult | null {
   return selectTextModel('NLQ Agent', getAgentProviderOrder('NLQ Agent'), {
-    requiredCapabilities: { requireToolCalling: true },
+    requiredCapabilities: { requireToolCalling: true, minContextTokens: 16_000 },
   });
 }
 
 /**
- * Analyst model: Cerebras(Qwen→llama3.1-8b) → Groq(llama-4-scout) → Mistral
+ * Analyst model: Cerebras(Qwen, 32K+ ctx) → Groq(llama-4-scout) → Mistral
  */
 export function getAnalystModel(): ModelResult | null {
   return selectTextModel('Analyst Agent', getAgentProviderOrder('Analyst Agent'), {
-    requiredCapabilities: { requireToolCalling: true },
+    requiredCapabilities: { requireToolCalling: true, minContextTokens: 32_000 },
   });
 }
 
 /**
- * Reporter model: Cerebras(Qwen→llama3.1-8b) → Groq(llama-4-scout) → Mistral
+ * Reporter model: Cerebras(Qwen, 32K+ ctx) → Groq(llama-4-scout) → Mistral
  */
 export function getReporterModel(): ModelResult | null {
   return selectTextModel('Reporter Agent', getAgentProviderOrder('Reporter Agent'), {
-    requiredCapabilities: { requireToolCalling: true },
+    requiredCapabilities: { requireToolCalling: true, minContextTokens: 32_000 },
   });
 }
 
 /**
- * Advisor model: Groq(llama-4-scout) → Cerebras(Qwen→llama3.1-8b) → Mistral
+ * Advisor model: Cerebras(Qwen, 32K+ ctx) → Groq(llama-4-scout) → Mistral
  */
 export function getAdvisorModel(): ModelResult | null {
   return selectTextModel('Advisor Agent', getAgentProviderOrder('Advisor Agent'), {
-    requiredCapabilities: { requireToolCalling: true },
+    requiredCapabilities: { requireToolCalling: true, minContextTokens: 32_000 },
   });
 }
 

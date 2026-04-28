@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Approved
+> Status: In Progress
 > Doc type: Plan
 > Last reviewed: 2026-04-28
 > Tags: ai-engine,provider,prompt,quality
@@ -67,24 +67,32 @@ Advisor가 Cerebras-first로 이동하면 Groq 실질 소비는 Cerebras 장애 
 
 ### Phase 1: Provider 재배치 (P0/P1)
 
-- [ ] T1. `agent-runtime-policy.ts` — Advisor를 `CEREBRAS_FIRST_PROVIDER_ORDER` 로 변경
+- [x] T1. `agent-runtime-policy.ts` — Advisor를 `CEREBRAS_FIRST_PROVIDER_ORDER` 로 변경
   - 파일: `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-runtime-policy.ts`
   - 변경: `'Advisor Agent': { providerOrder: CEREBRAS_FIRST_PROVIDER_ORDER, ... }`
 
-- [ ] T2. `agent-model-selectors.ts` — Analyst/Reporter/Advisor에 `minContextTokens: 32_000` 추가
+- [x] T2. `agent-model-selectors.ts` — Analyst/Reporter/Advisor에 `minContextTokens: 32_000` 추가
   - 파일: `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-model-selectors.ts`
   - 변경: `getAnalystModel`, `getReporterModel`, `getAdvisorModel` 각 selector에 `requiredCapabilities: { requireToolCalling: true, minContextTokens: 32_000 }` 추가
   - 효과: Cerebras llama3.1-8b (8K ctx)가 capability check 실패로 자동 배제됨
 
-- [ ] T3. NLQ에도 context floor 명시 (`minContextTokens: 16_000`)
+- [x] T3. NLQ에도 context floor 명시 (`minContextTokens: 16_000`)
   - Groq Llama 4 Scout 131K, Cerebras Qwen 65K 모두 통과. Mistral large 32K도 통과.
   - llama3.1-8b (8K) 배제 확보.
 
-- [ ] T4. 테스트 — provider 배치 계약 테스트 업데이트
+- [x] T4. 테스트 — provider 배치 계약 테스트 업데이트
   - 파일: `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-model-selectors.test.ts`
   - Advisor가 Cerebras-first임을 검증하는 테스트 추가
   - `minContextTokens: 32_000` 요구사항이 실제로 llama3.1-8b를 배제하는지 단위 테스트 추가
   - provider drift guard 테스트 업데이트
+
+#### Phase 1 검증 (2026-04-28)
+
+- `npx vitest run src/services/ai-sdk/agents/config/agent-runtime-policy.test.ts src/services/ai-sdk/agents/config/agent-model-selectors.test.ts` 통과
+- `cd cloud-run/ai-engine && npm run type-check` 통과
+- `cd cloud-run/ai-engine && npm run test` 통과 (`84 files / 889 tests`)
+- `npm run type-check` 통과
+- `npm run test:quick` 통과
 
 ### Phase 2: NLQ 프롬프트 계층화 (P1)
 

@@ -109,7 +109,7 @@ export const AGENT_RUNTIME_POLICIES = {
     ],
   },
   'Advisor Agent': {
-    providerOrder: TEXT_AGENT_PROVIDER_ORDER,
+    providerOrder: CEREBRAS_FIRST_PROVIDER_ORDER,
     maxSteps: 7,
     evidenceBudget: 5,
     toolAllowlist: [

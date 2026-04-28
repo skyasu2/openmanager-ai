@@ -113,7 +113,7 @@ export function getRuntimeProviderModelMetadata(): ProviderModelMetadata[] {
   return [
     {
       provider: 'groq',
-      role: 'Supervisor/NLQ/Advisor primary + Cerebras-first fallback',
+      role: 'Supervisor/NLQ primary + fallback for Cerebras-first agents',
       modelId: getGroqModelId(),
       lifecycle: 'preview',
       productionModel: false,

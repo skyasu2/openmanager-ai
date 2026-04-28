@@ -4,7 +4,7 @@
  * Specializes in anomaly detection, trend prediction, and pattern analysis.
  * Provides deep insights into system behavior.
  *
- * Model: Cerebras Qwen/llama3.1-8b primary / Groq llama-4-scout fallback / Mistral
+ * Model: Cerebras Qwen primary / Groq llama-4-scout fallback / Mistral
  *
  * @version 4.0.0 - Migrated to BaseAgent pattern
  * @created 2025-12-01

@@ -2,8 +2,8 @@
  * AI SDK Model Provider
  *
  * Vercel AI SDK 6 based model provider with tri-provider architecture:
- * - Group A primary: Groq (Supervisor/NLQ/Advisor, llama-4-scout-17b Preview, 1K RPD / 500K TPD, 131K ctx, tool calling ✅)
- * - Group B primary: Cerebras (Analyst/Reporter/Verifier, Qwen primary, llama3.1-8b intra-fallback, model-aware quota, tool calling ✅)
+ * - Group A primary: Groq (single Supervisor/NLQ, llama-4-scout-17b Preview, 1K RPD / 500K TPD, 131K ctx, tool calling ✅)
+ * - Group B primary: Cerebras (Analyst/Reporter/Advisor/Verifier, Qwen primary, model-aware quota/context gates, tool calling ✅)
  * - Last Resort: Mistral (mistral-large-latest, 500 RPD, ~2 RPM free tier)
  * - Vision: Gemini 2.5 Flash-Lite (1K RPD, 1M context, no thinking tokens)
  *

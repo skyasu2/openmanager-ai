@@ -10,7 +10,7 @@
  * - NLQ Agent (Groq -> Cerebras -> Mistral): Natural language query processing + summaries
  * - Analyst Agent (Cerebras -> Groq -> Mistral): Anomaly detection, trend prediction
  * - Reporter Agent (Cerebras -> Groq -> Mistral): Incident reports, timelines
- * - Advisor Agent (Groq -> Cerebras -> Mistral): Troubleshooting guides, Knowledge Retrieval Lite
+ * - Advisor Agent (Cerebras -> Groq -> Mistral): Troubleshooting guides, Knowledge Retrieval Lite
  * - Vision Agent (Gemini): Screenshot/image analysis
  * - Evaluator Agent: Report quality evaluation (internal)
  * - Optimizer Agent: Report quality improvement (internal)
