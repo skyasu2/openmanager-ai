@@ -96,6 +96,7 @@ describe('ChatInputArea popover', () => {
         onRemoveFile={vi.fn()}
         onClearFileErrors={vi.fn()}
         onPaste={vi.fn()}
+        onToggleRAG={vi.fn()}
         onToggleWebSearch={vi.fn()}
         onSelectAnalysisMode={vi.fn()}
       />
@@ -168,7 +169,7 @@ describe('ChatInputArea popover', () => {
     expect(screen.queryByText('외부 웹')).not.toBeInTheDocument();
   });
 
-  it('labels active input badges as allowed tools rather than used tools', () => {
+  it('labels active input badges as forced On rather than used tools', () => {
     render(
       <ChatInputArea
         textareaRef={createRef<HTMLTextAreaElement>()}

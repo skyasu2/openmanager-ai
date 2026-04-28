@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-28 KST (`AI Assistant source mode 정리 진행`)
+**Last Updated**: 2026-04-28 KST (`AI Assistant source mode 정리 완료`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| #210 AI Assistant source mode contract | P1 | In Progress | `RAG 검색`/`Web 검색` 명칭은 유지하고 괄호 설명 추가. UI는 Auto/On만 노출하고 Auto는 요청 옵션 생략으로 Cloud Run conservative auto-detect 사용. Plan: [ai-assistant-source-mode-plan.md](ai-assistant-source-mode-plan.md) |
+| — | — | Empty | Active Task 없음 |
 
 ---
 
@@ -31,6 +31,14 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-28 #210)
+- [x] AI Assistant source mode contract 정리
+  - `RAG 검색`/`Web 검색` 명칭은 유지하고 `RAG 검색 (내부 지식)`, `Web 검색 (외부 웹)` 괄호 설명으로 보강
+  - UI 선택지를 `Auto / On`으로 단순화하고 `Off`는 노출하지 않음
+  - Auto 상태에서는 `enableRAG`/`enableWebSearch`를 요청에서 생략해 Cloud Run conservative auto-detection을 사용
+  - Streaming, Job Queue, local dev fallback, stream redirect Job Queue 경로의 source option 생성 로직을 공통화
+  - Plan completed: [ai-assistant-source-mode-plan.md](ai-assistant-source-mode-plan.md)
 
 ### Completed (2026-04-28 #209)
 - [x] AI Provider 재배치 및 응답 품질 강화 완료 (v8.11.46)

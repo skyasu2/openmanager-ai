@@ -40,6 +40,7 @@ import {
 } from '@/config/ai-proxy.config';
 import { createHybridChatTransport } from './core/createHybridChatTransport';
 import { createHybridStreamCallbacks } from './core/createHybridStreamCallbacks';
+import { buildSourceToolRequestOptions } from './core/source-tool-request-options';
 import { useClarificationHandlers } from './core/useClarificationHandlers';
 import { useQueryControls } from './core/useQueryControls';
 import { useQueryExecution } from './core/useQueryExecution';
@@ -353,7 +354,6 @@ export function useHybridAIQuery(
         apiEndpoint,
         traceIdRef,
         traceIdHeader: observabilityConfig.traceIdHeader,
-        warmingUpRef,
         webSearchEnabledRef,
         ragEnabledRef,
         analysisModeRef,
@@ -391,9 +391,22 @@ export function useHybridAIQuery(
           stopChatRef.current();
         },
         runJobQueueQuery: (query: string) => {
-          return asyncQueryRef.current.sendQuery(query, {
-            analysisMode: analysisModeRef.current,
-          });
+          const jobQueueOptions = {
+            ...(analysisModeRef.current && {
+              analysisMode: analysisModeRef.current,
+            }),
+            ...buildSourceToolRequestOptions({
+              webSearchEnabled: webSearchEnabledRef.current,
+              ragEnabled: ragEnabledRef.current,
+            }),
+          };
+
+          return asyncQueryRef.current.sendQuery(
+            query,
+            Object.keys(jobQueueOptions).length > 0
+              ? jobQueueOptions
+              : undefined
+          );
         },
       }),
     [

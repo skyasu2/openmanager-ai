@@ -245,10 +245,10 @@ interface AISidebarState {
   sessionId: string;
   // currentEngine 제거 - v4.0: AI 모드 자동 선택으로 불필요
 
-  // 웹 검색 토글
+  // 웹 검색 source mode. false=Auto, true=On.
   webSearchEnabled: boolean;
 
-  // RAG (Knowledge Base) 토글
+  // RAG (Knowledge Base) source mode. false=Auto, true=On.
   ragEnabled: boolean;
 
   // 분석 강도 모드

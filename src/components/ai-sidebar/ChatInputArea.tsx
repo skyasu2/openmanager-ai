@@ -261,19 +261,19 @@ export const ChatInputArea = memo(function ChatInputArea({
               {ragEnabled && (
                 <span
                   className="inline-flex items-center gap-1 rounded-full bg-purple-50 px-2.5 py-0.5 text-xs font-medium text-purple-700"
-                  title="내부 운영 지식과 장애 이력 검색을 허용합니다. 실제 사용 여부는 답변 근거에서 확인하세요."
+                  title="RAG 검색을 항상 허용합니다. 실제 사용 여부는 답변 근거에서 확인하세요."
                 >
                   <BookOpen className="h-3 w-3" />
-                  RAG 허용
+                  RAG On
                 </span>
               )}
               {webSearchEnabled && (
                 <span
                   className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700"
-                  title="최신 외부 정보 확인을 허용합니다. 실제 사용 여부는 답변 근거에서 확인하세요."
+                  title="Web 검색을 항상 허용합니다. 실제 사용 여부는 답변 근거에서 확인하세요."
                 >
                   <Globe className="h-3 w-3" />
-                  Web 허용
+                  Web On
                 </span>
               )}
               {showAnalysisModeBadge && (
@@ -315,13 +315,11 @@ export const ChatInputArea = memo(function ChatInputArea({
               {isPopoverOpen && (
                 <div
                   ref={popoverRef}
-                  className="absolute bottom-12 left-0 z-50 w-56 rounded-xl border border-gray-200 bg-white p-2 shadow-lg"
+                  className="absolute bottom-12 left-0 z-50 w-64 rounded-xl border border-gray-200 bg-white p-2 shadow-lg"
                 >
-                  {/* RAG 토글 */}
+                  {/* RAG source mode */}
                   {onToggleRAG && (
-                    <button
-                      type="button"
-                      onClick={onToggleRAG}
+                    <div
                       className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
                         ragEnabled
                           ? 'bg-purple-50 text-purple-700'
@@ -331,27 +329,39 @@ export const ChatInputArea = memo(function ChatInputArea({
                       <BookOpen
                         className={`h-4 w-4 ${ragEnabled ? 'text-purple-500' : 'text-gray-400'}`}
                       />
-                      <div className="flex-1 text-left">
-                        <div className="font-medium">RAG 검색</div>
+                      <div className="min-w-0 flex-1 text-left">
+                        <div className="font-medium">RAG 검색 (내부 지식)</div>
                         <div className="text-xs text-gray-500">
-                          내부 운영 지식/장애 이력
+                          운영 지식/장애 이력 자동 판단
                         </div>
                       </div>
-                      <div
-                        className={`h-4 w-7 rounded-full transition-colors ${ragEnabled ? 'bg-purple-500' : 'bg-gray-300'}`}
-                      >
-                        <div
-                          className={`h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${ragEnabled ? 'translate-x-3' : 'translate-x-0'}`}
-                        />
-                      </div>
-                    </button>
+                      <fieldset className="grid shrink-0 grid-cols-2 gap-0.5 rounded-lg border-0 bg-gray-100 p-0.5">
+                        <legend className="sr-only">RAG 검색 모드</legend>
+                        {([false, true] as const).map((enabled) => (
+                          <button
+                            key={String(enabled)}
+                            type="button"
+                            onClick={() => {
+                              if (ragEnabled !== enabled) {
+                                onToggleRAG();
+                              }
+                            }}
+                            className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${
+                              ragEnabled === enabled
+                                ? 'bg-white text-purple-700 shadow-xs'
+                                : 'text-gray-500 hover:bg-white/70'
+                            }`}
+                          >
+                            {enabled ? 'On' : 'Auto'}
+                          </button>
+                        ))}
+                      </fieldset>
+                    </div>
                   )}
 
-                  {/* 웹 검색 토글 */}
+                  {/* Web source mode */}
                   {onToggleWebSearch && (
-                    <button
-                      type="button"
-                      onClick={onToggleWebSearch}
+                    <div
                       className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
                         webSearchEnabled
                           ? 'bg-blue-50 text-blue-700'
@@ -361,20 +371,34 @@ export const ChatInputArea = memo(function ChatInputArea({
                       <Globe
                         className={`h-4 w-4 ${webSearchEnabled ? 'text-blue-500' : 'text-gray-400'}`}
                       />
-                      <div className="flex-1 text-left">
-                        <div className="font-medium">Web 검색</div>
+                      <div className="min-w-0 flex-1 text-left">
+                        <div className="font-medium">Web 검색 (외부 웹)</div>
                         <div className="text-xs text-gray-500">
-                          최신 외부 정보 확인
+                          최신 문서/CVE는 보수적 자동 판단
                         </div>
                       </div>
-                      <div
-                        className={`h-4 w-7 rounded-full transition-colors ${webSearchEnabled ? 'bg-blue-500' : 'bg-gray-300'}`}
-                      >
-                        <div
-                          className={`h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${webSearchEnabled ? 'translate-x-3' : 'translate-x-0'}`}
-                        />
-                      </div>
-                    </button>
+                      <fieldset className="grid shrink-0 grid-cols-2 gap-0.5 rounded-lg border-0 bg-gray-100 p-0.5">
+                        <legend className="sr-only">Web 검색 모드</legend>
+                        {([false, true] as const).map((enabled) => (
+                          <button
+                            key={String(enabled)}
+                            type="button"
+                            onClick={() => {
+                              if (webSearchEnabled !== enabled) {
+                                onToggleWebSearch();
+                              }
+                            }}
+                            className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${
+                              webSearchEnabled === enabled
+                                ? 'bg-white text-blue-700 shadow-xs'
+                                : 'text-gray-500 hover:bg-white/70'
+                            }`}
+                          >
+                            {enabled ? 'On' : 'Auto'}
+                          </button>
+                        ))}
+                      </fieldset>
+                    </div>
                   )}
 
                   {onSelectAnalysisMode && (

@@ -7,6 +7,7 @@ import {
 import { BREAKPOINTS } from '@/config/constants';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import { consumeWarmupStartedAtForFirstQuery } from '@/utils/ai-warmup';
+import { buildSourceToolRequestOptions } from './source-tool-request-options';
 
 function detectDeviceType(): 'mobile' | 'desktop' {
   if (typeof window === 'undefined') return 'desktop';
@@ -17,7 +18,6 @@ interface CreateHybridChatTransportParams {
   apiEndpoint: string;
   traceIdRef: MutableRefObject<string>;
   traceIdHeader: string;
-  warmingUpRef: MutableRefObject<boolean>;
   webSearchEnabledRef: MutableRefObject<boolean | undefined>;
   ragEnabledRef: MutableRefObject<boolean | undefined>;
   analysisModeRef: MutableRefObject<AnalysisMode | undefined>;
@@ -30,7 +30,6 @@ export function createHybridChatTransport(
     apiEndpoint,
     traceIdRef,
     traceIdHeader,
-    warmingUpRef,
     webSearchEnabledRef,
     ragEnabledRef,
     analysisModeRef,
@@ -53,12 +52,11 @@ export function createHybridChatTransport(
 
       return headers;
     },
-    // warmup 동안 web search를 비활성화해 cold start 부하를 낮춘다.
     body: () => ({
-      enableWebSearch: warmingUpRef.current
-        ? false
-        : webSearchEnabledRef.current,
-      enableRAG: warmingUpRef.current ? false : ragEnabledRef.current,
+      ...buildSourceToolRequestOptions({
+        webSearchEnabled: webSearchEnabledRef.current,
+        ragEnabled: ragEnabledRef.current,
+      }),
       analysisMode: analysisModeRef.current,
     }),
     prepareReconnectToStreamRequest: ({ id }) => ({

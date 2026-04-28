@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Last reviewed: 2026-04-28
 
 # AI Assistant Source Mode Contract Plan
@@ -37,3 +37,9 @@ AI Chat 입력창 도구 메뉴의 `RAG 검색`/`Web 검색`을 상용 AI의 sou
 - source option helper 테스트가 Auto일 때 옵션 생략, On일 때 `true` 전달을 고정한다.
 - useQueryExecution 테스트가 Job Queue Auto 요청에서 source 옵션을 생략함을 고정한다.
 
+## 5. 완료 결과
+
+- `RAG 검색 (내부 지식)`, `Web 검색 (외부 웹)` parenthetical label 적용
+- 입력창 도구 메뉴 source controls를 `Auto / On` segmented control로 변경
+- Auto는 request flag를 생략하고 Cloud Run conservative auto-detection을 사용하도록 공통 helper 적용
+- Streaming, Job Queue, local dev fallback, stream redirect Job Queue 경로의 source option 생성 방식 정렬

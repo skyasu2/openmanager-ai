@@ -25,6 +25,7 @@ import {
   generateMessageId,
   sanitizeMessages,
 } from '../utils/hybrid-query-utils';
+import { buildSourceToolRequestOptions } from './source-tool-request-options';
 
 // ============================================================================
 // Types
@@ -323,9 +324,9 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
 
         const jobQueueOptions: AsyncJobRequestOptions = {
           ...(analysisMode && { analysisMode }),
-          ...(typeof ragEnabled === 'boolean' && { enableRAG: ragEnabled }),
-          ...(typeof webSearchEnabled === 'boolean' && {
-            enableWebSearch: webSearchEnabled,
+          ...buildSourceToolRequestOptions({
+            ragEnabled,
+            webSearchEnabled,
           }),
         };
         const jobQueueRequest =
@@ -394,8 +395,10 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
             body: JSON.stringify({
               messages: nextMessages,
               analysisMode,
-              enableWebSearch: webSearchEnabled,
-              enableRAG: ragEnabled,
+              ...buildSourceToolRequestOptions({
+                webSearchEnabled,
+                ragEnabled,
+              }),
             }),
           })
             .then(async (response) => {
