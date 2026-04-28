@@ -77,7 +77,7 @@ fi
 
 # 2. 내부 링크 유효성 검사 (docs 전체)
 echo -e "\n${YELLOW}[2/7] 내부 링크 유효성 검사 (docs 전체)${NC}"
-if node scripts/docs/check-internal-links.js "$DOCS_DIR" 2>&1 | tee "$REPORTS_DIR/internal-links.log"; then
+if npm run --silent docs:links:internal 2>&1 | tee "$REPORTS_DIR/internal-links.log"; then
   echo -e "${GREEN}✅ 내부 링크 검사 통과${NC}"
 else
   echo -e "${RED}❌ 내부 링크 검사 실패${NC}"
@@ -109,12 +109,12 @@ fi
 
 # 5. 문서 예산 리포트
 echo -e "\n${YELLOW}[5/7] 문서 예산 리포트${NC}"
-DOC_BUDGET_ARGS=(--write)
+DOC_BUDGET_SCRIPT="docs:budget"
 if [[ "$STRICT_DOCS_MODE" == "true" ]]; then
-  DOC_BUDGET_ARGS+=(--strict)
+  DOC_BUDGET_SCRIPT="docs:budget:strict"
 fi
 
-if node scripts/docs/doc-budget-report.js "${DOC_BUDGET_ARGS[@]}" 2>&1 | tee "$REPORTS_DIR/doc-budget-report.log"; then
+if npm run --silent "$DOC_BUDGET_SCRIPT" 2>&1 | tee "$REPORTS_DIR/doc-budget-report.log"; then
   echo -e "${GREEN}✅ 문서 예산 리포트 생성 완료${NC}"
 else
   echo -e "${RED}❌ 문서 예산 리포트 생성 실패${NC}"

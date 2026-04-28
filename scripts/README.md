@@ -29,8 +29,8 @@ scripts/
 ├── docs/              # 문서 품질 관리
 │   ├── check-docs.sh          # 문서 품질 점검
 │   ├── check-ai-docs-consistency.ts
-│   ├── doc-budget-report.js   # 문서 예산 리포트
-│   ├── check-internal-links.js
+│   ├── doc-budget-report.ts   # 문서 예산 리포트
+│   ├── check-internal-links.ts
 │   ├── generate-inventory.ts
 │   └── lint-changed.sh
 ├── env/               # 환경변수 & 보안
@@ -56,7 +56,9 @@ scripts/
 ├── test/              # 테스트 헬퍼
 │   ├── github-auth-helper.cjs
 │   └── vercel-post-deploy-smoke.mjs
-└── update-hourly-data-scenarios.ts
+├── qa/                # QA tracker/evidence 자동화
+├── ci/                # GitLab/runner/Cloud Run smoke 보조
+└── wsl/               # WSL 전용 래퍼
 ```
 
 ## 주요 스크립트
@@ -127,7 +129,7 @@ ENCRYPTION_KEY='long-random-passphrase' GITHUB_PAT=ghp_placeholder \
 ```bash
 # 문서 품질 점검 + 예산 리포트
 bash scripts/docs/check-docs.sh
-node scripts/docs/doc-budget-report.js
+npm run docs:budget
 
 # AI 운영 문서(MCP/Skills stale guidance) 정합성 검사
 npm run docs:ai-consistency

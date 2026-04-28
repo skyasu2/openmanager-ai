@@ -1,29 +1,18 @@
-# AI Scripts - Archived
+# AI Scripts
 
-AI 교차 검증 시스템 관련 스크립트들은 다음 위치로 이동되었습니다:
+현재 `scripts/ai/`는 활성 에이전트 운영 도구만 유지합니다.
 
-```
-archive/ai-scripts-backup/$(date +%Y%m%d)/
-```
+## Active
 
-## 이동된 스크립트들
+- `agent-bridge.sh` - Claude/Codex/Gemini 교차 검증 브리지
+- `check-codex-project-scope.ts` - Codex project-scope 설정 점검
+- `check-gemini-global-config.ts` - Gemini global 설정 점검
+- `setup-codex-project-scope.sh` - Codex project-scope 설정 보정
+- `setup-gemini-global.sh` - Gemini global 설정 보정
+- `health/check-ai-tools-updates.sh` - AI CLI/tooling 업데이트 확인
 
-- `ai-agent-sync.mjs` - AI 에이전트 동기화
-- `ai-collaborate.sh` - AI 협업 스크립트
-- `ai-collaboration-workflow.mjs` - AI 협업 워크플로우
-- `ai-review-reporter.mjs` - AI 리뷰 리포터
-- `ai-review-system.mjs` - AI 리뷰 시스템 (메인)
-- `auto-trigger-system.mjs` - 자동 트리거 시스템
-- `check-ai-context.js` - AI 컨텍스트 체크
-- `queue-processor.sh` - 큐 처리기
-- `subagent-recovery.sh` - AI 래퍼 복구 (deprecated)
-- `test-sub-agents.sh` - AI 래퍼 테스트 (deprecated)
-- `unified-agent-interface.mjs` - 통합 에이전트 인터페이스
+## Archived
 
-## 복원 방법
-
-필요 시 다음 명령어로 복원할 수 있습니다:
-
-```bash
-cp -r archive/ai-scripts-backup/YYYYMMDD/* scripts/ai/
-```
+2026-04-10 이전의 자동 큐/리뷰/동기화 helper는 호출점 부재로 제거했습니다.
+복구가 필요한 경우 Git 이력 또는 `reports/history/legacy-scripts/2026-04-10/`를
+먼저 확인합니다.

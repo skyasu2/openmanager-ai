@@ -152,7 +152,7 @@ JavaScript 계열(`.js`, `.cjs`, `.mjs`)은 아래처럼 **Node가 바로 실행
 | 허용 위치 | 이유 | 예시 |
 |---|---|---|
 | Git hook / bootstrap wrapper | TypeScript toolchain 준비 전에도 실행되어야 함 | `scripts/hooks/pre-commit.js`, `scripts/dev/tsc-wrapper.js` |
-| 문서/QA/CI 단순 파일 처리 | Node 표준 API만 쓰는 짧은 자동화가 더 안정적 | `scripts/docs/doc-budget-report.js`, `scripts/qa/record-qa-run.js` |
+| 문서/QA/CI 단순 파일 처리 | Node 표준 API만 쓰는 짧은 자동화가 더 안정적 | `scripts/docs/check-docs.sh`, `scripts/qa/record-qa-run.js` |
 | ESM/CJS 모드가 도구 계약인 파일 | 호출자가 `.mjs`/`.cjs`를 기대함 | `next.config.mjs`, `scripts/test/*.mjs`, `*.cjs` |
 | 브라우저/worker 또는 생성 산출물 | Next/TS 빌드 경계 밖에서 로드됨 | `public/mockServiceWorker.js`, `public/workers/serverStatsWorker.js` |
 | 외부 공개 snapshot 필터/릴리즈 보조 | repo 구조를 조작하는 최소 의존 스크립트 | `scripts/sync/*.js`, `scripts/release/*.js` |
