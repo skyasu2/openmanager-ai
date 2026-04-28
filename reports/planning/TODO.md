@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-28 KST (`Cloud Tasks dispatch and health route follow-up`)
+**Last Updated**: 2026-04-29 KST (`AI Assistant UX polish plan approved`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| — | — | Empty | Active Task 없음 |
+| AI Assistant UX polish (typography 4-tier, target ≥24/44, light tone unification, SystemContext dedupe, provider chip emphasis) | P1·P2 | Approved | [ai-assistant-ux-polish-plan.md](ai-assistant-ux-polish-plan.md) — Task 0 failing tests committed; Task 1 implementation next |
 
 ---
 
