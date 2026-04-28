@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.45](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.44...v8.11.45) (2026-04-28)
+
+
+### Features
+
+* **ai-engine:** add supervisor routing hints ([70e89a1](https://gitlab.com/skyasu2/openmanager-ai/-/commit/70e89a1a8aacdc43228ad68ab53d1c50f6e6f04d))
+
+
+### Tests
+
+* **spec:** add supervisor routing hint contract ([d293cee](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d293ceed1267d30086b0d3ec110cb387e8e5afdc))
+
 ## [8.11.44](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.43...v8.11.44) (2026-04-28)
 
 
