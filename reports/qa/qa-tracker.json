@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-28T13:24:51.649Z"
+    "updatedAt": "2026-04-28T15:49:12.787Z"
   },
   "sequence": {
-    "nextRunNumber": 359
+    "nextRunNumber": 360
   },
   "summary": {
-    "totalRecordedRuns": 356,
-    "totalRuns": 291,
+    "totalRecordedRuns": 357,
+    "totalRuns": 292,
     "excludedRuns": 65,
-    "totalChecks": 2430,
-    "totalPassed": 2341,
+    "totalChecks": 2444,
+    "totalPassed": 2355,
     "totalFailed": 80,
     "completionRate": 100,
-    "completedItems": 348,
+    "completedItems": 350,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 19,
     "expertDomainsTracked": 10,
-    "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260428-0358",
-    "lastRecordedAt": "2026-04-28T13:24:51.649Z",
-    "latestRecordedRunId": "QA-20260428-0358",
-    "latestRecordedAt": "2026-04-28T13:24:51.649Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260429-0359",
+    "lastRecordedAt": "2026-04-28T15:49:12.787Z",
+    "latestRecordedRunId": "QA-20260429-0359",
+    "latestRecordedAt": "2026-04-28T15:49:12.787Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -8537,6 +8537,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-28T13:24:51.649Z"
+    },
+    "health-ai-500-production-probe": {
+      "id": "health-ai-500-production-probe",
+      "title": "/api/health?service=ai production probe returns JSON instead of HTML 500",
+      "priority": "P3",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260429-0359",
+      "firstSeenAt": "2026-04-28T15:49:12.787Z",
+      "lastSeenRunId": "QA-20260429-0359",
+      "lastSeenAt": "2026-04-28T15:49:12.787Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "project",
+      "lastEvidence": "",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-28T15:49:12.787Z"
+    },
+    "cloud-tasks-dispatch-follow-up-hardening": {
+      "id": "cloud-tasks-dispatch-follow-up-hardening",
+      "title": "Cloud Tasks dispatch header allowlist and createTask transient retry hardening",
+      "priority": "P3",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260429-0359",
+      "firstSeenAt": "2026-04-28T15:49:12.787Z",
+      "lastSeenRunId": "QA-20260429-0359",
+      "lastSeenAt": "2026-04-28T15:49:12.787Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "project",
+      "lastEvidence": "",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-28T15:49:12.787Z"
     }
   },
   "runs": [
@@ -34237,6 +34285,120 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260429-0359",
+      "recordedAt": "2026-04-28T15:49:12.787Z",
+      "recordedAtKst": "2026-04-29 00:49:12 KST",
+      "title": "v8.11.54 Release Production Smoke",
+      "owner": "codex",
+      "source": "vercel-production-smoke",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260429-0359.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_NZc8wFzLUCVFt7armLDjQb9QYota",
+        "deploymentUrl": "https://openmanager-falgamg8o-skyasus-projects.vercel.app",
+        "commitSha": "4236f07661e5a4da95599d41c2040d8ac6d82470"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "Vercel production /api/version reports 8.11.54",
+        "Vercel production /api/health?simple=true returns JSON 200",
+        "Vercel production /api/health?service=ai returns JSON 200 cloud-run backend after cache-busted recheck",
+        "GitLab main pipeline 2485887392 success",
+        "GitLab tag pipeline v8.11.54 2485887379 success",
+        "Cloud Run ai-engine revision ai-engine-00367-9jm deployed and post-deploy smoke passed"
+      ],
+      "skippedSurfaces": [
+        "browser Playwright UI sweep",
+        "guest AI assistant long-query SSE run",
+        "Cloud Tasks high-volume load test"
+      ],
+      "checks": {
+        "total": 14,
+        "passed": 14,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab main validate and v8.11.54 tag deployment pipelines completed successfully, including Vercel deploy, Cloud Run ai-engine deploy, and both post-deploy smoke jobs.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The health route no longer fails at module import time in production and /api/health?service=ai returns JSON 200 against the Cloud Run backend. Cloud Tasks dispatch hardening is covered by deterministic tests and AI Engine CI.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Local deterministic gates and GitLab CI covered root tests, contracts, skill drift, and AI Engine 87-file/911-test suite before and after release.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-29T00:46:38+09:00",
+          "summary": "Current billing period checked after v8.11.54 release smoke; effective $18.4121, billed $0.0000, no unexpected billed usage.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-network",
+          "label": "v8.11.54 release smoke summary",
+          "path": "reports/qa/evidence/QA-20260429-0359/qa-20260429-v81154-release-smoke-summary.json"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab main pipeline v8.11.54",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2485887392"
+        },
+        {
+          "type": "general",
+          "label": "GitLab tag pipeline v8.11.54",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2485887379"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment v8.11.54",
+          "url": "https://openmanager-falgamg8o-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -34279,16 +34441,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 47,
-      "appropriateCount": 34,
+      "seenCount": 48,
+      "appropriateCount": 35,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260424-0343",
-      "lastSeenAt": "2026-04-24T07:15:56.760Z",
+      "lastRunId": "QA-20260429-0359",
+      "lastSeenAt": "2026-04-28T15:49:12.787Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Guest authentication was exercised through the real UI path, mutating auth bypass was not used, and the AI request completed through the production stream endpoint without console errors.",
+      "lastRationale": "The health route no longer fails at module import time in production and /api/health?service=ai returns JSON 200 against the Cloud Run backend. Cloud Tasks dispatch hardening is covered by deterministic tests and AI Engine CI.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -34296,16 +34458,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 99,
-      "appropriateCount": 88,
+      "seenCount": 100,
+      "appropriateCount": 89,
       "partialCount": 11,
       "inappropriateCount": 0,
       "improvementNeededCount": 15,
-      "lastRunId": "QA-20260428-0358",
-      "lastSeenAt": "2026-04-28T13:24:51.649Z",
+      "lastRunId": "QA-20260429-0359",
+      "lastSeenAt": "2026-04-28T15:49:12.787Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "v8.11.52 tag pipeline completed deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke. Production Cloud Tasks worker execution returned POST /api/jobs/process 200 instead of the pre-fix 302->GET 404 path.",
+      "lastRationale": "GitLab main validate and v8.11.54 tag deployment pipelines completed successfully, including Vercel deploy, Cloud Run ai-engine deploy, and both post-deploy smoke jobs.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -34313,17 +34475,17 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 135,
-      "appropriateCount": 124,
+      "seenCount": 136,
+      "appropriateCount": 125,
       "partialCount": 11,
       "inappropriateCount": 0,
       "improvementNeededCount": 13,
-      "lastRunId": "QA-20260428-0357",
-      "lastSeenAt": "2026-04-28T06:41:22.936Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Browser QA still confirms the old AI 처리 과정 selector is not present in the sidebar flow; production now exposes reasoning/process evidence through AnalysisBasisBadge.",
-      "lastNextAction": "Resolve ai-thinking-visualizer-contract-drift by either updating the stale QA contract/docs to AnalysisBasisBadge or explicitly restoring a sidebar thinking process toggle."
+      "lastRunId": "QA-20260429-0359",
+      "lastSeenAt": "2026-04-28T15:49:12.787Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "Local deterministic gates and GitLab CI covered root tests, contracts, skill drift, and AI Engine 87-file/911-test suite before and after release.",
+      "lastNextAction": ""
     },
     "data-metrics-quality": {
       "domainId": "data-metrics-quality",

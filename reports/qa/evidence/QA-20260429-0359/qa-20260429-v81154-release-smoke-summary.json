@@ -1,0 +1,104 @@
+{
+  "runTitle": "v8.11.54 release production smoke",
+  "checkedAt": "2026-04-29T00:46:38+09:00",
+  "release": {
+    "version": "8.11.54",
+    "commitSha": "4236f07661e5a4da95599d41c2040d8ac6d82470",
+    "tag": "v8.11.54",
+    "vercelDeploymentId": "dpl_NZc8wFzLUCVFt7armLDjQb9QYota",
+    "vercelDeploymentUrl": "https://openmanager-falgamg8o-skyasus-projects.vercel.app"
+  },
+  "gitlab": {
+    "mainPipeline": {
+      "id": 2485887392,
+      "status": "success",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2485887392"
+    },
+    "tagPipeline": {
+      "id": 2485887379,
+      "ref": "v8.11.54",
+      "status": "success",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2485887379"
+    },
+    "jobs": [
+      {
+        "id": 14126351356,
+        "name": "validate",
+        "status": "success"
+      },
+      {
+        "id": 14126351357,
+        "name": "validate_ai_engine",
+        "status": "success",
+        "tests": "87 files, 911 tests"
+      },
+      {
+        "id": 14126351333,
+        "name": "deploy",
+        "status": "success"
+      },
+      {
+        "id": 14126351334,
+        "name": "deploy_ai_engine",
+        "status": "success",
+        "cloudRunRevision": "ai-engine-00367-9jm"
+      },
+      {
+        "id": 14126351336,
+        "name": "post_deploy_smoke",
+        "status": "success"
+      },
+      {
+        "id": 14126351335,
+        "name": "post_deploy_ai_engine_smoke",
+        "status": "success"
+      }
+    ]
+  },
+  "productionChecks": [
+    {
+      "name": "GET /api/version",
+      "status": 200,
+      "body": {
+        "version": "8.11.54",
+        "buildVersion": "8.11.54",
+        "nextjs": "16.1.6",
+        "environment": "production"
+      }
+    },
+    {
+      "name": "GET /api/health?simple=true",
+      "status": 200,
+      "body": {
+        "ping": "pong"
+      }
+    },
+    {
+      "name": "GET /api/health?service=ai&t=1777391170",
+      "status": 200,
+      "body": {
+        "status": "ok",
+        "backend": "cloud-run",
+        "latency": 107
+      }
+    }
+  ],
+  "localValidation": [
+    "npm run test:quick",
+    "npm run type-check",
+    "npm run lint",
+    "npm run test:contract",
+    "npm run skills:check",
+    "cd cloud-run/ai-engine && npm run type-check",
+    "cd cloud-run/ai-engine && npm run test",
+    "git diff --check"
+  ],
+  "usageCheck": {
+    "platform": "vercel",
+    "method": "cli",
+    "status": "checked",
+    "result": "normal",
+    "summary": "Current billing period checked after v8.11.54 release smoke; effective $18.4121, billed $0.0000, no unexpected billed usage."
+  },
+  "result": "pass"
+}

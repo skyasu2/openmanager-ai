@@ -1,0 +1,138 @@
+{
+  "runId": "QA-20260429-0359",
+  "recordedAt": "2026-04-28T15:49:12.787Z",
+  "recordedAtKst": "2026-04-29 00:49:12 KST",
+  "runTitle": "v8.11.54 Release Production Smoke",
+  "owner": "codex",
+  "source": "vercel-production-smoke",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_NZc8wFzLUCVFt7armLDjQb9QYota",
+    "deploymentUrl": "https://openmanager-falgamg8o-skyasus-projects.vercel.app",
+    "commitSha": "4236f07661e5a4da95599d41c2040d8ac6d82470"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "Vercel production /api/version reports 8.11.54",
+    "Vercel production /api/health?simple=true returns JSON 200",
+    "Vercel production /api/health?service=ai returns JSON 200 cloud-run backend after cache-busted recheck",
+    "GitLab main pipeline 2485887392 success",
+    "GitLab tag pipeline v8.11.54 2485887379 success",
+    "Cloud Run ai-engine revision ai-engine-00367-9jm deployed and post-deploy smoke passed"
+  ],
+  "skippedSurfaces": [
+    "browser Playwright UI sweep",
+    "guest AI assistant long-query SSE run",
+    "Cloud Tasks high-volume load test"
+  ],
+  "checks": {
+    "total": 14,
+    "passed": 14,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab main validate and v8.11.54 tag deployment pipelines completed successfully, including Vercel deploy, Cloud Run ai-engine deploy, and both post-deploy smoke jobs.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The health route no longer fails at module import time in production and /api/health?service=ai returns JSON 200 against the Cloud Run backend. Cloud Tasks dispatch hardening is covered by deterministic tests and AI Engine CI.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Local deterministic gates and GitLab CI covered root tests, contracts, skill drift, and AI Engine 87-file/911-test suite before and after release.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-29T00:46:38+09:00",
+      "summary": "Current billing period checked after v8.11.54 release smoke; effective $18.4121, billed $0.0000, no unexpected billed usage.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-network",
+      "label": "v8.11.54 release smoke summary",
+      "path": "reports/qa/evidence/QA-20260429-0359/qa-20260429-v81154-release-smoke-summary.json"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "health-ai-500-production-probe",
+      "title": "/api/health?service=ai production probe returns JSON instead of HTML 500",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "project",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "cloud-tasks-dispatch-follow-up-hardening",
+      "title": "Cloud Tasks dispatch header allowlist and createTask transient retry hardening",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "project",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Targeted release smoke only; the heavy guest AI long-query SSE scenario was not rerun because v8.11.53 already passed that path and this release specifically patched health import safety plus dispatch hardening.",
+    "Cache-busted /api/health?service=ai returned fresh JSON 200 after Cloud Run deployment completed."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab main pipeline v8.11.54",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2485887392"
+    },
+    {
+      "type": "general",
+      "label": "GitLab tag pipeline v8.11.54",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2485887379"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment v8.11.54",
+      "url": "https://openmanager-falgamg8o-skyasus-projects.vercel.app/"
+    }
+  ]
+}

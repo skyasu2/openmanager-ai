@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-28 22:24:51 KST
+> Generated at: 2026-04-29 00:49:13 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 356 |
-| Total Runs (Counted) | 291 |
+| Total Recorded Runs | 357 |
+| Total Runs (Counted) | 292 |
 | Non-counted Runs | 65 |
-| Total Checks | 2430 |
-| Passed | 2341 |
+| Total Checks | 2444 |
+| Passed | 2355 |
 | Failed | 80 |
-| Completed Items | 348 |
+| Completed Items | 350 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 19 |
 | Expert Domains Tracked | 10 |
-| Expert Open Gaps | 1 |
+| Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260428-0358 (2026-04-28T13:24:51.649Z) |
-| Latest Recorded Run | QA-20260428-0358 (2026-04-28T13:24:51.649Z) |
+| Last Counted Run | QA-20260429-0359 (2026-04-28T15:49:12.787Z) |
+| Latest Recorded Run | QA-20260429-0359 (2026-04-28T15:49:12.787Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,23 +34,23 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260428-0358 (2026-04-28T13:24:51.649Z)
+Latest run: QA-20260429-0359 (2026-04-28T15:49:12.787Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | DevOps / SRE Engineer | appropriate | no | - |
-| AI Quality Assurance Specialist | appropriate | no | - |
+| AI Security & Reliability Architect | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked after v8.11.52 Cloud Tasks production smoke; effective $18.4121, billed $0.0000, no unexpected billed usage. |
-| google-cloud-tasks | gcloud+official-pricing | checked | normal | Queue openmanager-ai-jobs is RUNNING with 1 dispatch/sec and 2 max concurrent dispatches. This smoke used one Cloud Tasks task; Google Cloud Tasks pricing lists the first 1M operations per month as free. |
+| vercel | cli | checked | normal | Current billing period checked after v8.11.54 release smoke; effective $18.4121, billed $0.0000, no unexpected billed usage. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-27T13:24:51.649Z -> 2026-04-28T13:24:51.649Z (24h)
+- Window: 2026-04-27T15:49:12.787Z -> 2026-04-28T15:49:12.787Z (24h)
 - Runs with observations: 3 recorded / 3 counted
 - Samples: 6
 
@@ -67,30 +67,28 @@ Latest run: QA-20260428-0358 (2026-04-28T13:24:51.649Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_9myc2vER1curArmZ646FA8yyeG6P / SHA de3f14cf
-- Coverage Packs: core-routes-smoke, ai-core
-- Covered Surfaces: Vercel production /api/version, GitLab v8.11.52 tag deploy pipeline, Cloud Run /api/jobs/dispatch, Cloud Tasks queue openmanager-ai-jobs, Cloud Run /api/jobs/process worker, Redis-backed job result polling
-- Skipped Surfaces: browser Playwright UI sweep, landing/login visual pass, Cloud Tasks high-volume load test
+- Deployment: dpl_NZc8wFzLUCVFt7armLDjQb9QYota / SHA 4236f076
+- Coverage Packs: core-routes-smoke, ai-core, observability-pack
+- Covered Surfaces: Vercel production /api/version reports 8.11.54, Vercel production /api/health?simple=true returns JSON 200, Vercel production /api/health?service=ai returns JSON 200 cloud-run backend after cache-busted recheck, GitLab main pipeline 2485887392 success, GitLab tag pipeline v8.11.54 2485887379 success, Cloud Run ai-engine revision ai-engine-00367-9jm deployed and post-deploy smoke passed
+- Skipped Surfaces: browser Playwright UI sweep, guest AI assistant long-query SSE run, Cloud Tasks high-volume load test
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab main pipeline for v8.11.52 commit | [GitLab main pipeline for v8.11.52 commit](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2485312996) | - |
-| general | GitLab tag pipeline v8.11.52 | [GitLab tag pipeline v8.11.52](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2485312954) | - |
-| general | Google Cloud Tasks HTTP target tasks | [Google Cloud Tasks HTTP target tasks](https://docs.cloud.google.com/tasks/docs/creating-http-target-tasks) | - |
-| general | Google Cloud Tasks pricing | [Google Cloud Tasks pricing](https://cloud.google.com/tasks/pricing) | - |
+| general | GitLab main pipeline v8.11.54 | [GitLab main pipeline v8.11.54](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2485887392) | - |
+| general | GitLab tag pipeline v8.11.54 | [GitLab tag pipeline v8.11.54](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2485887379) | - |
+| vercel-deployment | Vercel production deployment v8.11.54 | [Vercel production deployment v8.11.54](https://openmanager-falgamg8o-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-network | Cloud Tasks production smoke summary | `reports/qa/evidence/QA-20260428-0358/qa-20260428-cloud-tasks-production-smoke-summary.json` | - |
+| playwright-network | v8.11.54 release smoke summary | `reports/qa/evidence/QA-20260429-0359/qa-20260429-v81154-release-smoke-summary.json` | - |
 
 ## Expert Domain Open Gaps
 
-- test-automation: Test Automation Architect (last QA-20260428-0357)
-  next: Resolve ai-thinking-visualizer-contract-drift by either updating the stale QA contract/docs to AnalysisBasisBadge or explicitly restoring a sidebar thinking process toggle.
+- None
 
 ## Pending Improvements
 
@@ -264,6 +262,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - cloud-run-proxy-runtime-env-refresh: Cloud Run proxy runtime env refresh (completed 1회, last QA-20260325-0185)
 - cloud-run-readiness-guard: Cloud Run direct route readiness guard 공통화 (completed 1회, last QA-20260325-0184)
 - cloud-run-v892-manual-deploy: Cloud Run v8.9.2 manual deploy verification (completed 1회, last QA-20260317-0118)
+- cloud-tasks-dispatch-follow-up-hardening: Cloud Tasks dispatch header allowlist and createTask transient retry hardening (completed 1회, last QA-20260429-0359)
 - cloud-tasks-worker-target-https: Cloud Tasks worker target uses HTTPS in production (completed 1회, last QA-20260428-0358)
 - coverage-suite-stabilize: vitest coverage suite 0 failed (6→0) 안정화 (completed 1회, last QA-20260329-0194)
 - csrf-duplicate-removal: CSRF getCSRFTokenFromCookie 중복 제거 (completed 1회, last QA-20260307-0053)
@@ -322,6 +321,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - guest-login-pin-4231: 게스트 PIN 4231 로그인 및 세션 진입 (completed 1회, last QA-20260306-0052)
 - guest-login-visibility-toggle: 게스트 로그인 버튼 노출 옵션화 (completed 2회, last QA-20260227-0013)
 - guest-pin-login-flow: 게스트 PIN 인증 후 시스템 시작 버튼 노출 (completed 4회, last QA-20260227-0018)
+- health-ai-500-production-probe: /api/health?service=ai production probe returns JSON instead of HTML 500 (completed 1회, last QA-20260429-0359)
 - health-all-connected: Health API 전체 서비스 connected (completed 2회, last QA-20260314-0097)
 - health-api: /api/health DB/cache/ai connected (completed 2회, last QA-20260419-0306)
 - health-api-200-healthy: Health API 200 healthy (completed 3회, last QA-20260320-0140)
@@ -517,6 +517,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260429-0359 | 2026-04-28T15:49:12.787Z | targeted | yes | yes | v8.11.54 Release Production Smoke | 14 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260428-0358 | 2026-04-28T13:24:51.649Z | targeted | yes | yes | Cloud Tasks Job Queue production smoke - v8.11.52 | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260428-0357 | 2026-04-28T06:41:22.936Z | targeted | yes | yes | AI Assistant Vercel production Playwright MCP QA - v8.11.46 | 9 | 1 | 0 | 0 | 1 | 1 |
 | QA-20260428-0356 | 2026-04-28T05:38:09.460Z | targeted | yes | yes | AI Provider forced-routing context guard production QA - v8.11.46 | 12 | 2 | 0 | 0 | 0 | 0 |
@@ -536,4 +537,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260424-0342 | 2026-04-23T17:35:02.039Z | broad | yes | yes | Vercel broad production Playwright rerun on v8.11.32 after release-gate test harness fixes | 53 | 3 | 0 | 0 | 0 | 1 |
 | QA-20260424-0341 | 2026-04-23T16:21:52.417Z | targeted | yes | yes | Production landing accessibility recheck on v8.11.32 after decorative profile affordance fix | 5 | 1 | 0 | 0 | 0 | 1 |
 | QA-20260424-0340 | 2026-04-23T15:15:14.762Z | broad | yes | yes | Vercel broad production QA on v8.11.28 before landing profile label-in-name patch | 24 | 0 | 1 | 0 | 0 | 1 |
-| QA-20260423-0339 | 2026-04-23T14:30:01.154Z | targeted | yes | yes | Vercel AI Assistant quality recheck after deterministic operator answer fix | 10 | 3 | 0 | 0 | 0 | 0 |
