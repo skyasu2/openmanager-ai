@@ -187,6 +187,27 @@ Advisor가 Cerebras-first로 이동하면 Groq 실질 소비는 Cerebras 장애 
 - `npm run test:quick` 통과
 - `npm run test:contract` 통과 (`20 tests`)
 
+### Phase 3.5: AI SDK timeout abort guard (P1, 2026-04-28)
+
+- [x] T10a. `generateTextWithRetry`에 attempt-level `AbortController` 적용
+  - 파일: `cloud-run/ai-engine/src/services/resilience/retry-with-fallback.ts`
+  - 목적: `timeoutMs` 만료 시 Promise.race reject만 발생시키지 않고 AI SDK `generateText` 호출에도 `abortSignal`을 전달해 in-flight provider 요청을 중단
+  - 외부 `abortSignal`도 `GenerateTextOptions`에 수용해 향후 Hono/request abort propagation 경로를 열어둠
+
+- [x] T10b. timeout abort contract 테스트 추가
+  - 파일: `cloud-run/ai-engine/src/services/resilience/retry-with-fallback.test.ts`
+  - timeout 만료 후 AI SDK 호출에 전달된 `AbortSignal.aborted === true` 검증
+
+#### Phase 3.5 검증 (2026-04-28)
+
+- `cd cloud-run/ai-engine && npx vitest run src/services/resilience/retry-with-fallback.test.ts` 통과
+- `cd cloud-run/ai-engine && npx vitest run src/services/resilience/retry-with-fallback.test.ts src/services/ai-sdk/agents/orchestrator-routing.test.ts src/services/ai-sdk/agents/orchestrator-object-fallback.test.ts` 통과
+- `cd cloud-run/ai-engine && npm run type-check` 통과
+- `cd cloud-run/ai-engine && npm run test` 통과 (`84 files / 893 tests`)
+- `npm run type-check` 통과
+- `npm run test:quick` 통과
+- `npm run test:contract` 통과 (`20 tests`)
+
 ### Phase 4: Supervisor 시스템 프롬프트 보강 (P2)
 
 - [ ] T11. 에이전트 라우팅 컨텍스트 힌트 추가

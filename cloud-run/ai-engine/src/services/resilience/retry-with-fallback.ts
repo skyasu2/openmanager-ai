@@ -82,6 +82,7 @@ export interface GenerateTextOptions {
   temperature?: number;
   maxOutputTokens?: number;
   stopWhen?: Parameters<typeof generateText>[0]['stopWhen'];
+  abortSignal?: AbortSignal;
 }
 
 // ============================================================================
@@ -254,6 +255,64 @@ function shouldRetry(error: unknown): boolean {
   return false;
 }
 
+function createAttemptAbortController(
+  timeoutMs: number,
+  externalSignal?: AbortSignal
+): {
+  signal: AbortSignal;
+  timeoutPromise: Promise<never>;
+  externalAbortPromise?: Promise<never>;
+  cleanup: () => void;
+} {
+  const controller = new AbortController();
+  const timeoutError = new Error('Request timeout');
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  let removeExternalAbortListener: (() => void) | undefined;
+
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(() => {
+      controller.abort(timeoutError);
+      reject(timeoutError);
+    }, timeoutMs);
+  });
+
+  const externalAbortPromise = externalSignal
+    ? new Promise<never>((_, reject) => {
+        const abortFromExternalSignal = () => {
+          const reason =
+            externalSignal.reason instanceof Error
+              ? externalSignal.reason
+              : new Error('Request aborted');
+          controller.abort(reason);
+          reject(reason);
+        };
+
+        if (externalSignal.aborted) {
+          abortFromExternalSignal();
+          return;
+        }
+
+        externalSignal.addEventListener('abort', abortFromExternalSignal, {
+          once: true,
+        });
+        removeExternalAbortListener = () =>
+          externalSignal.removeEventListener('abort', abortFromExternalSignal);
+      })
+    : undefined;
+
+  return {
+    signal: controller.signal,
+    timeoutPromise,
+    externalAbortPromise,
+    cleanup: () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      removeExternalAbortListener?.();
+    },
+  };
+}
+
 // ============================================================================
 // Main Functions
 // ============================================================================
@@ -360,11 +419,10 @@ export async function generateTextWithRetry(
 
           const model = getModel(modelId);
 
-          // Create timeout promise (E-2 fix: clearTimeout on resolve)
-          let timeoutId: ReturnType<typeof setTimeout>;
-          const timeoutPromise = new Promise<never>((_, reject) => {
-            timeoutId = setTimeout(() => reject(new Error('Request timeout')), fullConfig.timeoutMs);
-          });
+          const attemptAbort = createAttemptAbortController(
+            fullConfig.timeoutMs,
+            options.abortSignal
+          );
 
           // Execute with timeout
           // 🎯 P3-1: AI SDK v6.0.50 Best Practice - delegate network-level retries to SDK
@@ -382,13 +440,17 @@ export async function generateTextWithRetry(
                 temperature: options.temperature ?? 0.2,
                 maxOutputTokens: options.maxOutputTokens ?? 2048,
                 maxRetries: 1, // 🎯 P3-1: Delegate network retry to AI SDK
+                abortSignal: attemptAbort.signal,
                 timeout: { totalMs: fullConfig.timeoutMs }, // 🎯 P2-2: Native timeout
                 ...(options.stopWhen && { stopWhen: options.stopWhen }),
               }),
-              timeoutPromise, // Backup timeout via Promise.race
+              attemptAbort.timeoutPromise,
+              ...(attemptAbort.externalAbortPromise
+                ? [attemptAbort.externalAbortPromise]
+                : []),
             ]);
           } finally {
-            clearTimeout(timeoutId!);
+            attemptAbort.cleanup();
           }
 
           const durationMs = Date.now() - attemptStart;

@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-28 KST (`AI Provider 재배치 Phase 3 응답 품질 검사 강화 완료`)
+**Last Updated**: 2026-04-28 KST (`AI SDK timeout abort guard 완료`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| #209: AI Provider 재배치 및 응답 품질 강화 | High | In Progress | [계획서](ai-provider-quality-plan.md) — Phase 1/1.5/1.6/2/3 완료: provider context guard + NLQ 프롬프트 계층화 + 응답 품질 flag 보강. Phase 4(P2): Supervisor 힌트 대기 |
+| #209: AI Provider 재배치 및 응답 품질 강화 | High | In Progress | [계획서](ai-provider-quality-plan.md) — Phase 1/1.5/1.6/2/3 + runtime abort guard 완료: provider context guard + NLQ 프롬프트 계층화 + 응답 품질 flag 보강 + AI SDK timeout abortSignal 전달. Phase 4(P2): Supervisor 힌트 대기 |
 
 ---
 
