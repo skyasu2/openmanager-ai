@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.50](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.49...v8.11.50) (2026-04-28)
+
+
+### Bug Fixes
+
+* **ai-engine:** rate limit job dispatch writes ([a0081ae](https://gitlab.com/skyasu2/openmanager-ai/-/commit/a0081ae79b13f9c3d36a0b1c6c5fec2f9ff67239))
+
 ## [8.11.49](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.48...v8.11.49) (2026-04-28)
 
 
