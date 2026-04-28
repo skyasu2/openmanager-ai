@@ -87,7 +87,10 @@ Cloud Tasks를 선택형 dispatch 계층으로 추가해 Vercel은 짧은 dispat
   - `CLOUD_TASKS_SERVICE_ACCOUNT_EMAIL` 설정 시 OIDC token 포함
 - 운영 설정:
   - `.env.example`, `cloud-run/ai-engine/.env.example`, `docs/development/environment-variables.md`, `deploy.sh`, `sync-vercel.sh` 업데이트
-  - GCP queue/IAM 생성 및 `AI_JOB_TRIGGER_MODE=cloud-tasks` production 활성화는 별도 운영 단계
+  - GCP queue/IAM 생성 및 `AI_JOB_TRIGGER_MODE=cloud-tasks` production 활성화는 별도 운영 단계로 완료
+  - 활성화 값: `openmanager-free-tier / asia-northeast1 / openmanager-ai-jobs`
+  - Queue guard: `max-dispatches-per-second=1`, `max-concurrent-dispatches=2`, `max-attempts=3`
+  - Durable env: GitLab CI `CLOUD_TASKS_ENABLED=true`, Vercel production `AI_JOB_TRIGGER_MODE=cloud-tasks`
 - 검증:
   - `npx vitest run src/app/api/ai/jobs/route.trigger.test.ts src/app/api/ai/jobs/[id]/retry/route.test.ts`
   - `cd cloud-run/ai-engine && npx vitest run src/lib/cloud-tasks.test.ts src/routes/jobs.dispatch.test.ts src/routes/jobs.test.ts`

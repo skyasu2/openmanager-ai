@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-28 KST (`Cloud Tasks Job Queue 개선 완료`)
+**Last Updated**: 2026-04-28 KST (`Cloud Tasks Job Queue production 전환`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -31,6 +31,14 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-28 #214)
+- [x] Cloud Tasks Job Queue production activation
+  - `cloudtasks.googleapis.com` API 활성화 및 `asia-northeast1/openmanager-ai-jobs` queue 생성
+  - Queue dispatch 제한을 `1/s`, concurrent `2`, retry `3회`로 보수화해 Cloud Run max instance 1 / Job write cap과 정렬
+  - Cloud Run runtime service account에 queue-level `roles/cloudtasks.enqueuer` 부여
+  - GitLab CI `CLOUD_TASKS_ENABLED=true`, Vercel production `AI_JOB_TRIGGER_MODE=cloud-tasks` 설정
+  - Production 적용은 `v8.11.51` tag pipeline으로 검증 예정
 
 ### Completed (2026-04-28 #213)
 - [x] Cloud Tasks Job Queue async execution
