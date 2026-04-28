@@ -73,6 +73,35 @@ describe('cloud run jobs limiter policy', () => {
     expect(body.retryAfter).toBeLessThanOrEqual(62);
   });
 
+  it('keeps POST /api/jobs/dispatch on the strict write bucket', async () => {
+    const app = new Hono();
+    app.use('/api/*', rateLimitMiddleware);
+    app.post('/api/jobs/dispatch', (c) => c.json({ ok: true }));
+
+    const headers = {
+      [RATE_LIMIT_IDENTITY_HEADER]: 'test:jobs-dispatch-strict',
+      'X-API-Key': 'shared-service-secret',
+    };
+
+    for (let index = 0; index < 5; index += 1) {
+      const res = await app.request('/api/jobs/dispatch', {
+        method: 'POST',
+        headers,
+      });
+      expect(res.status).toBe(200);
+    }
+
+    const blocked = await app.request('/api/jobs/dispatch', {
+      method: 'POST',
+      headers,
+    });
+
+    expect(blocked.status).toBe(429);
+    expect(blocked.headers.get('X-RateLimit-Limit')).toBe('5');
+    const body = await blocked.json();
+    expect(body.limitScope).toBe('minute');
+  });
+
   it('splits GET /api/jobs/:id/progress into a separate polling bucket', async () => {
     const app = new Hono();
     app.use('/api/*', rateLimitMiddleware);

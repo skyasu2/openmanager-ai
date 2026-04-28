@@ -389,18 +389,22 @@ const RATE_LIMIT_CONFIGS: Record<string, RateLimitConfig> = {
 
 /**
  * Resolve rate limit config from request path + method.
- * Jobs processing is a strict write workload, while status/progress polling
- * should not consume the same 5/min bucket.
+ * Jobs processing and Cloud Tasks dispatch are strict write workloads, while
+ * status/progress polling should not consume the same 5/min bucket.
  */
 function resolveConfig(path: string, method: string): RateLimitConfig {
+  const normalizedMethod = method.toUpperCase();
   if (
     path.includes('/supervisor/health') &&
-    method.toUpperCase() === 'GET'
+    normalizedMethod === 'GET'
   ) {
     return RATE_LIMIT_CONFIGS.supervisorHealth;
   }
   if (path.includes('/supervisor')) return RATE_LIMIT_CONFIGS.supervisor;
-  if (path.includes('/jobs/process') && method.toUpperCase() === 'POST') {
+  if (
+    normalizedMethod === 'POST' &&
+    (path.includes('/jobs/process') || path.includes('/jobs/dispatch'))
+  ) {
     return RATE_LIMIT_CONFIGS.jobsWrite;
   }
   if (path.includes('/jobs')) return RATE_LIMIT_CONFIGS.jobsRead;
