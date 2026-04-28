@@ -1,0 +1,76 @@
+{
+  "runId": "QA-20260429-0363",
+  "recordedAt": "2026-04-28T18:49:16.063Z",
+  "recordedAtKst": "2026-04-29 03:49:16 KST",
+  "runTitle": "Vercel Playwright MCP - Recent UI Change Propagation Check",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_2BqXNZmdN6VE4od2z8VENgLqjWPU",
+    "deploymentUrl": "https://openmanager-kfdfy6hpy-skyasus-projects.vercel.app",
+    "commitSha": ""
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["dashboard-core", "modal-detail-pack", "ai-core"],
+  "coveredSurfaces": [
+    "Vercel production landing guest session",
+    "Vercel production dashboard render after system start",
+    "Dashboard summary OTel source labels",
+    "Dashboard topology/log explorer changed-marker presence",
+    "Mobile /dashboard/ai-assistant route behavior",
+    "Mobile dashboard AI sidebar fullscreen button visibility"
+  ],
+  "skippedSurfaces": [
+    "AI response generation and Cloud Run job dispatch - not required for UI propagation check",
+    "Authenticated OAuth flows - guest session already sufficient for changed dashboard/AI surfaces",
+    "Cloud Run admin monitoring endpoints - out of scope for frontend propagation check"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 5,
+    "failed": 3
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-29T03:47:31+09:00",
+      "summary": "Current billing period effective 18.4121 USD, billed 0.0000 USD, no unexpected billed usage.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production /api/version returned v8.11.57, Next.js 16.1.6, environment production.",
+    "Vercel inspect showed production deployment dpl_2BqXNZmdN6VE4od2z8VENgLqjWPU created at 2026-04-28T16:47:13Z, earlier than local UI commit dcf8f413 at 2026-04-28T18:31Z.",
+    "FAIL: dashboard still renders old labels 'Synthetic OTel snapshot' and 'Dataset v1.0.0', not the committed 'Vercel static OTel' and '24h rotating dataset' labels.",
+    "FAIL: deployed topology/log explorer surface does not expose newly added changed-marker testids such as topology-modal-shell, log-explorer-filter-summary, log-explorer-terminal, or log-explorer-log-message.",
+    "FAIL: mobile /dashboard/ai-assistant remains on the fullscreen workspace and mobile dashboard AI sidebar still shows a visible '전체 화면으로 열기' button, so the mobile sidebar handoff/fullscreen-button removal is not deployed.",
+    "PASS: guest session, system start, dashboard base render, /api/monitoring/report network request, and Vercel usage check were normal.",
+    "This is a non-counting propagation check. It should not be treated as a product regression in the already deployed v8.11.57 baseline; it means the latest GitLab main UI commits need a Vercel production deploy before production QA can validate them."
+  ],
+  "links": [
+    {
+      "type": "vercel-deployment",
+      "label": "Inspected Vercel production deployment",
+      "url": "https://openmanager-kfdfy6hpy-skyasus-projects.vercel.app/",
+      "note": "Alias target for openmanager-ai.vercel.app during this Playwright MCP check"
+    }
+  ]
+}

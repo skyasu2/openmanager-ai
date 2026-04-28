@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-29 03:07:07 KST
+> Generated at: 2026-04-29 03:50:30 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 360 |
+| Total Recorded Runs | 361 |
 | Total Runs (Counted) | 293 |
-| Non-counted Runs | 67 |
+| Non-counted Runs | 68 |
 | Total Checks | 2462 |
 | Passed | 2373 |
 | Failed | 80 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260429-0360 (2026-04-28T16:57:31.077Z) |
-| Latest Recorded Run | QA-20260429-0362 (2026-04-28T18:07:07.122Z) |
+| Latest Recorded Run | QA-20260429-0363 (2026-04-28T18:49:16.063Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,7 +34,7 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260429-0362 (2026-04-28T18:07:07.122Z)
+Latest run: QA-20260429-0363 (2026-04-28T18:49:16.063Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -44,11 +44,11 @@ Latest run: QA-20260429-0362 (2026-04-28T18:07:07.122Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Current billing period effective 18.4121 USD, billed 0.0000 USD, no unexpected billed usage. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-27T18:07:07.122Z -> 2026-04-28T18:07:07.122Z (24h)
+- Window: 2026-04-27T18:49:16.063Z -> 2026-04-28T18:49:16.063Z (24h)
 - Runs with observations: 3 recorded / 3 counted
 - Samples: 6
 
@@ -65,16 +65,16 @@ Latest run: QA-20260429-0362 (2026-04-28T18:07:07.122Z)
 - Scope: targeted
 - Release-Facing: no
 - Counts Toward Summary: no
-- Deployment: SHA ad755d59
-- Coverage Packs: dashboard-core, modal-detail-pack
-- Covered Surfaces: Dashboard active alerts modal, Dashboard alert history modal filters and wrapping contract, Dashboard log explorer keyword/level/source/server filters, Dashboard log explorer terminal panel and reset/filter summary, Dashboard topology and AI login-required modal light-mode contract, Enhanced server modal logs terminal bounded scroll contract, Enhanced server modal metrics controls wrapping, Dashboard static OTel labels for Vercel public 24h rotation, Vercel public OTel static assets: resource catalog, timeseries, current hour JSON, Vercel parity API KST 10-minute slot response
-- Skipped Surfaces: Landing page routes and landing components - explicitly out of scope and not modified, AI sidebar and Cloud Run AI runtime - unchanged by this UI hardening, Database/Supabase live data migration - out of scope; static OTel data remains the contract
+- Deployment: dpl_2BqXNZmdN6VE4od2z8VENgLqjWPU
+- Coverage Packs: dashboard-core, modal-detail-pack, ai-core
+- Covered Surfaces: Vercel production landing guest session, Vercel production dashboard render after system start, Dashboard summary OTel source labels, Dashboard topology/log explorer changed-marker presence, Mobile /dashboard/ai-assistant route behavior, Mobile dashboard AI sidebar fullscreen button visibility
+- Skipped Surfaces: AI response generation and Cloud Run job dispatch - not required for UI propagation check, Authenticated OAuth flows - guest session already sufficient for changed dashboard/AI surfaces, Cloud Run admin monitoring endpoints - out of scope for frontend propagation check
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| vercel-deployment | Inspected Vercel production deployment | [Inspected Vercel production deployment](https://openmanager-kfdfy6hpy-skyasus-projects.vercel.app/) | Alias target for openmanager-ai.vercel.app during this Playwright MCP check |
 
 ## Artifacts (Latest Run)
 
@@ -517,6 +517,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260429-0363 | 2026-04-28T18:49:16.063Z | targeted | no | no | Vercel Playwright MCP - Recent UI Change Propagation Check | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260429-0362 | 2026-04-28T18:07:07.122Z | targeted | no | no | Dashboard Modal/Search Hardening Local QA | 11 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260429-0361 | 2026-04-28T17:16:25.397Z | targeted | no | no | v8.11.57 AI Assistant UX Polish Recheck | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260429-0360 | 2026-04-28T16:57:31.077Z | targeted | yes | yes | v8.11.57 AI Assistant UX Polish Production QA | 18 | 1 | 0 | 0 | 0 | 0 |
@@ -536,4 +537,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260424-0346 | 2026-04-24T09:25:23.818Z | broad | yes | yes | Vercel Playwright QA - Frontend Buttons Modals UIUX Sweep | 31 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260424-0345 | 2026-04-24T08:04:28.389Z | targeted | no | yes | Production Playwright E2E - AI parity guard final review validation | 2 | 1 | 0 | 0 | 0 | 1 |
 | QA-20260424-0344 | 2026-04-24T07:55:51.473Z | targeted | no | yes | Production Playwright E2E - AI starter/direct dashboard parity guard | 2 | 1 | 0 | 0 | 0 | 1 |
-| QA-20260424-0343 | 2026-04-24T07:15:56.760Z | targeted | yes | yes | Vercel MCP QA - Frontend, AI Assistant, and Performance targeted validation | 14 | 0 | 0 | 0 | 0 | 2 |

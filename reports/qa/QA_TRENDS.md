@@ -1,32 +1,34 @@
 # QA Trends Dashboard
 
 > Auto-generated file. Source: `reports/qa/qa-tracker.json`.
-> Generated at: 2026-04-27 17:33:44 KST
+> Generated at: 2026-04-29 03:50:30 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Recorded Runs | 350 |
-| Counted Runs | 285 |
-| Total Checks | 2372 |
-| Total Passed | 2286 |
-| Total Failed | 79 |
-| Overall Pass Rate | 96.37% |
-| Latest Recorded Run | QA-20260427-0352 |
-| Last Counted Run | QA-20260427-0352 |
+| Recorded Runs | 361 |
+| Counted Runs | 293 |
+| Total Checks | 2462 |
+| Total Passed | 2373 |
+| Total Failed | 80 |
+| Overall Pass Rate | 96.39% |
+| Latest Recorded Run | QA-20260429-0363 |
+| Last Counted Run | QA-20260429-0360 |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-26T08:33:24.156Z -> 2026-04-27T08:33:24.156Z (24h)
-- Runs with observations: 4 recorded / 4 counted
+- Window: 2026-04-27T18:49:16.063Z -> 2026-04-28T18:49:16.063Z (24h)
+- Runs with observations: 3 recorded / 3 counted
 - Samples: 6
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Analyst Agent | cloud-run | 1 | 10186ms | 10186ms | - | - | - | - | QA-20260427-0352 |
-| AI Chat | cloud-run | 4 | 3109ms | 5092ms | - | - | 2393ms | 2932ms | QA-20260427-0351 |
-| Reporter Agent | cloud-run | 1 | 2984ms | 2984ms | - | - | - | - | QA-20260427-0352 |
+| Supervisor Agent | multi-provider-fallback | 1 | 16988ms | 16988ms | - | - | 16988ms | 16988ms | QA-20260428-0358 |
+| Reporter Agent | pipeline | 1 | 16321ms | 16321ms | - | - | 16321ms | 16321ms | QA-20260428-0356 |
+| Analyst Agent | groq | 1 | 14039ms | 14039ms | - | - | 14039ms | 14039ms | QA-20260428-0356 |
+| Streaming AI | cloud-run-supervisor | 2 | 4335ms | 7624ms | - | - | 4335ms | 7624ms | QA-20260428-0357 |
+| Advisor Agent | groq | 1 | 4109ms | 4109ms | - | - | 4109ms | 4109ms | QA-20260428-0356 |
 
 ## Warnings
 
@@ -36,9 +38,9 @@
 
 | Window | Counted Runs | Checks | Pass Rate | Failed Runs | Failing Run Rate | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| All Counted Runs | 285 | 2372 | 96.37% | 50 | 17.54% | 56 | 19.65% |
-| Last 30 Counted Runs | 30 | 364 | 97.53% | 6 | 20% | 6 | 20% |
-| Last 10 Counted Runs | 10 | 141 | 100% | 0 | 0% | 0 | 0% |
+| All Counted Runs | 293 | 2462 | 96.39% | 51 | 17.41% | 57 | 19.45% |
+| Last 30 Counted Runs | 30 | 380 | 97.37% | 6 | 20% | 6 | 20% |
+| Last 10 Counted Runs | 10 | 111 | 97.3% | 1 | 10% | 1 | 10% |
 
 ## Gate Run Windows
 
@@ -58,7 +60,7 @@
 
 | Scope | Recorded Runs | Counted Runs |
 |---|---:|---:|
-| targeted | 176 | 112 |
+| targeted | 187 | 120 |
 | legacy | 137 | 137 |
 | broad | 29 | 28 |
 | release-gate | 6 | 6 |
@@ -69,14 +71,19 @@
 | Priority | Total Items | Recurring Items | Recurrence Rate | Open Items | Open Recurring | Open Recurrence Rate | Completed | Wont-Fix |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | P0 | 43 | 7 | 16.28% | 0 | 0 | 0% | 43 | 0 |
-| P1 | 156 | 69 | 44.23% | 0 | 0 | 0% | 152 | 4 |
-| P2 | 146 | 45 | 30.82% | 0 | 0 | 0% | 133 | 13 |
-| P3 | 16 | 10 | 62.5% | 0 | 0 | 0% | 15 | 1 |
+| P1 | 164 | 70 | 42.68% | 0 | 0 | 0% | 159 | 5 |
+| P2 | 148 | 45 | 30.41% | 0 | 0 | 0% | 135 | 13 |
+| P3 | 18 | 10 | 55.56% | 0 | 0 | 0% | 17 | 1 |
 
 ## Deployment Regression Correlation
 
 | Deployment ID | Target | Runs | Checks | Pass Rate | Regression Runs | Regression Run Rate | Latest Run | Commit |
 |---|---|---:|---:|---:|---:|---:|---|---|
+| dpl_2BqXNZmdN6VE4od2z8VENgLqjWPU | vercel-production | 1 | 18 | 100% | 0 | 0% | QA-20260429-0360 | 83099635 |
+| dpl_NZc8wFzLUCVFt7armLDjQb9QYota | vercel-production | 1 | 14 | 100% | 0 | 0% | QA-20260429-0359 | 4236f076 |
+| dpl_9myc2vER1curArmZ646FA8yyeG6P | vercel-production | 1 | 10 | 100% | 0 | 0% | QA-20260428-0358 | de3f14cf |
+| dpl_Fz6VPj7oVzxHeaCivoyFtf1xd3ja | vercel-production | 2 | 21 | 100% | 0 | 0% | QA-20260428-0357 | ea95897d |
+| dpl_A7Nhcu4FxYeVkhQAWvWv9hUSW9Ca | vercel-production | 3 | 27 | 96.3% | 1 | 33.33% | QA-20260428-0355 | 2a209c74 |
 | dpl_9Ni1cic8moLhSj3YXfhkLrDDkNkp | vercel-production | 3 | 31 | 100% | 0 | 0% | QA-20260427-0352 | 0fe7179d |
 | J53YviW4J7jFfetXp4Su7JDLUaQG | vercel-production | 1 | 6 | 100% | 0 | 0% | QA-20260427-0349 | 955bda49 |
 | dpl_Ab1ZA6FUYvA4LE67mWidSFvPvYP2 | vercel-production | 7 | 109 | 100% | 0 | 0% | QA-20260424-0348 | 31431ace |
@@ -84,18 +91,11 @@
 | dpl_HUrc3CAatRmgXyihV3V44t7zuFpS | vercel-production | 5 | 55 | 94.55% | 2 | 40% | QA-20260423-0338 | 644af633 |
 | dpl_643GY6xfecoQXhCqzRUnE4TNajmF | vercel-production | 2 | 25 | 96% | 1 | 50% | QA-20260422-0330 | 538282c1 |
 | dpl_3cutqnX7vMtm5qAuxzgnAnVULEmk | vercel-production | 1 | 15 | 86.67% | 1 | 100% | QA-20260421-0323 | 06e47ff8 |
-| dpl_JAFCywvdMLnVLVRLW6x3KaLuRi8u | vercel-production | 1 | 17 | 100% | 0 | 0% | QA-20260419-0309 | 74bb7960 |
-| n/a-vercel-mcp-token-expired | vercel-production | 1 | 12 | 100% | 0 | 0% | QA-20260419-0306 | 608600ab |
-| ai-engine-00333-gks | vercel-production | 1 | 4 | 100% | 0 | 0% | QA-20260418-0305 | c96881eb |
-| ai-engine-00329-jvq | vercel-production | 1 | 5 | 80% | 1 | 100% | QA-20260418-0304 | 2cd5f40d |
-| dpl_8Th4eohuqf6tGKxqt1G4Vro6WRcr | vercel-production | 1 | 22 | 100% | 0 | 0% | QA-20260418-0303 | d83e0a6a |
 
 ## Recent Daily Trend (KST)
 
 | Date | Runs | Checks | Pass Rate | Failed Runs | Regression Runs | Regression Run Rate |
 |---|---:|---:|---:|---:|---:|---:|
-| 2026-04-09 | 3 | 24 | 100% | 0 | 0 | 0% |
-| 2026-04-12 | 1 | 10 | 100% | 0 | 0 | 0% |
 | 2026-04-13 | 3 | 17 | 88.24% | 1 | 2 | 66.67% |
 | 2026-04-15 | 6 | 53 | 96.23% | 1 | 1 | 16.67% |
 | 2026-04-16 | 3 | 23 | 100% | 0 | 0 | 0% |
@@ -107,12 +107,15 @@
 | 2026-04-22 | 1 | 15 | 93.33% | 1 | 1 | 100% |
 | 2026-04-23 | 6 | 65 | 95.38% | 2 | 2 | 33.33% |
 | 2026-04-24 | 8 | 133 | 99.25% | 1 | 1 | 12.5% |
-| 2026-04-27 | 4 | 37 | 100% | 0 | 0 | 0% |
+| 2026-04-27 | 6 | 56 | 96.43% | 0 | 0 | 0% |
+| 2026-04-28 | 4 | 39 | 97.44% | 1 | 1 | 25% |
+| 2026-04-29 | 2 | 32 | 100% | 0 | 0 | 0% |
 
 ## Recent Regression Runs
 
 | Run ID | Time (UTC) | Scope | Failed Checks | Pending | Deferred | Wont-Fix | Title |
 |---|---|---|---:|---:|---:|---:|---|
+| QA-20260428-0355 | 2026-04-28T00:28:02.962Z | targeted | 1 | 1 | 0 | 0 | AI analysis mode auto vs thinking production route and visualizer QA |
 | QA-20260424-0340 | 2026-04-23T15:15:14.762Z | broad | 1 | 1 | 0 | 0 | Vercel broad production QA on v8.11.28 before landing profile label-in-name patch |
 | QA-20260423-0338 | 2026-04-23T13:13:07.550Z | targeted | 2 | 2 | 0 | 0 | Vercel AI Assistant quality evaluation - feature surface, streaming, and answer quality |
 | QA-20260423-0337 | 2026-04-23T09:08:17.769Z | targeted | 1 | 1 | 0 | 0 | Vercel MCP targeted QA - Playwright and Chrome DevTools production refresh |
@@ -122,7 +125,6 @@
 | QA-20260417-0299 | 2026-04-16T15:32:08.661Z | broad | 1 | 1 | 0 | 0 | Production broad QA - 8.11.16 dashboard AI parity with font preload warning regression |
 | QA-20260415-0288 | 2026-04-15T11:09:03.713Z | broad | 2 | 1 | 0 | 0 | Vercel broad QA - frontend and AI assistant evaluation on latest production |
 | QA-20260413-0281 | 2026-04-13T12:40:26.449Z | targeted | 2 | 1 | 0 | 0 | GraphRAG variant stability recheck after ai-engine-00311 (boolean-string tool schema hotfix) |
-| QA-20260413-0280 | 2026-04-13T11:41:39.894Z | targeted | 0 | 1 | 0 | 0 | GraphRAG variant direct supervisor recheck after ai-engine-00308 (RAG auto + advisor tool required) |
 
 ## Recurring Open Items
 
@@ -132,12 +134,12 @@
 | feature-dod-unit-tests | P2 | wont-fix | 9 | QA-20260307-0053 | 단위 테스트 158개 통과 |
 | obs-fp-fn-weekly-report | P1 | wont-fix | 3 | QA-20260227-0013 | 오탐/미탐 주간 리포트 자동 생성 |
 | ai-server-timing-header-production | P1 | wont-fix | 2 | QA-20260310-0081 | Server-Timing header visibility in production |
+| ai-thinking-visualizer-contract-drift | P1 | wont-fix | 2 | QA-20260428-0357 | Thinking visualizer production UI contract drift |
 | ai-cold-start-latency | P2 | wont-fix | 2 | QA-20260327-0193 | Cloud Run cold start 레이턴시 최적화 |
 | landing-console-api-system-unauthorized | P1 | wont-fix | 1 | QA-20260330-0195 | 랜딩 비로그인 상태에서 /api/system 401 콘솔 에러 제거 또는 graceful handling |
 | landing-vibe-content-deployment-drift | P1 | wont-fix | 1 | QA-20260330-0195 | Vibe Coding 프로덕션 카드 내용과 현재 소스 간 배포 드리프트 해소 |
 | ai-agent-type-metadata | P2 | wont-fix | 1 | QA-20260326-0190 | AI Chat 에이전트 타입 메타데이터 표시 개선 |
 | ai-metric-ranking-memory-path-metadata | P2 | wont-fix | 1 | QA-20260418-0304 | Memory top-N query should expose deterministic metric-ranking path instead of filter fallback metadata |
-| analyst-drilldown | P2 | wont-fix | 1 | QA-20260301-0030 | Analyst 서버별 드릴다운 |
 
 ## Most Repeated Completed Items
 
