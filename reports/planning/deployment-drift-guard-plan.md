@@ -1,10 +1,10 @@
 > Owner: project
-> Status: Approved
+> Status: In Progress
 > Last reviewed: 2026-04-29
 
 # Deployment Drift Guard Plan
 
-- 상태: Approved
+- 상태: In Progress
 - 작성일: 2026-04-29
 - TODO.md 연결: Active Tasks > Deployment drift guard and AI deploy skip
 
@@ -60,9 +60,9 @@ Vercel production QA가 최신 GitLab main 변경이 아직 배포되지 않은 
 
 ## Task 목록
 
-- [ ] Task 0 — failing test 커밋: 위 테스트 시나리오를 먼저 추가하고 실패를 확인한다.
-- [ ] Task 1 — `/api/version` 배포 메타데이터와 smoke/drift checker 구현.
-- [ ] Task 2 — GitLab CI에 Vercel metadata 주입 및 AI Engine deploy skip guard 적용.
+- [x] Task 0 — failing test 커밋: 위 테스트 시나리오를 먼저 추가하고 실패를 확인한다.
+- [x] Task 1 — `/api/version` 배포 메타데이터와 smoke/drift checker 구현.
+- [x] Task 2 — GitLab CI에 Vercel metadata 주입 및 AI Engine deploy skip guard 적용.
 - [ ] Task 3 — targeted validation, 코드리뷰, push 후 GitLab pipeline 확인.
 
 ## 단계별 커밋/푸시/배포 판단
@@ -91,7 +91,7 @@ Vercel production QA가 최신 GitLab main 변경이 아직 배포되지 않은 
 
 ## 완료 기준
 
-- [ ] 테스트 시나리오 전체 통과
-- [ ] `npm run test:contract` 통과
-- [ ] targeted QA/CI unit tests 통과
+- [x] 테스트 시나리오 전체 통과
+- [x] `npm run test:contract` 통과
+- [x] targeted QA/CI unit tests 통과
 - [ ] `git push gitlab main` 후 pipeline 결과 보고

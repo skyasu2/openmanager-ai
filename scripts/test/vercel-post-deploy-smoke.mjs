@@ -70,6 +70,9 @@ function parseArgs(argv) {
     retries: DEFAULT_RETRIES,
     retryDelayMs: DEFAULT_RETRY_DELAY_MS,
     expectedVersion: resolveDefaultExpectedVersion(),
+    expectedCommitSha: String(
+      process.env.EXPECTED_COMMIT_SHA || process.env.CI_COMMIT_SHA || ''
+    ).trim(),
   };
 
   for (const arg of argv) {
@@ -114,6 +117,13 @@ function parseArgs(argv) {
       options.expectedVersion = String(
         arg.slice('--expected-version='.length)
       ).trim();
+      continue;
+    }
+
+    if (arg.startsWith('--expected-commit-sha=')) {
+      options.expectedCommitSha = String(
+        arg.slice('--expected-commit-sha='.length)
+      ).trim();
     }
   }
 
@@ -132,6 +142,7 @@ Options:
   --retries=<number>            Retry count after the first attempt (default: ${DEFAULT_RETRIES})
   --retry-delay-ms=<number>     Delay between attempts in ms (default: ${DEFAULT_RETRY_DELAY_MS})
   --expected-version=<version>  Assert /api/version buildVersion matches this release version
+  --expected-commit-sha=<sha>   Assert /api/version commitSha matches this commit
   --help, -h                    Show help
 
 Examples:
@@ -205,7 +216,12 @@ async function checkValidationPage(baseUrl, timeoutMs) {
   );
 }
 
-async function checkVersionApi(baseUrl, timeoutMs, expectedVersion) {
+async function checkVersionApi(
+  baseUrl,
+  timeoutMs,
+  expectedVersion,
+  expectedCommitSha
+) {
   const result = await request(
     baseUrl,
     '/api/version',
@@ -247,16 +263,35 @@ async function checkVersionApi(baseUrl, timeoutMs, expectedVersion) {
       `expected deployed version ${expectedVersion}, got ${actualVersion}`
     );
   }
+
+  if (expectedCommitSha) {
+    const actualCommitSha =
+      typeof payload.commitSha === 'string' ? payload.commitSha.trim() : '';
+    assert(
+      actualCommitSha === expectedCommitSha,
+      `expected deployed commit ${expectedCommitSha}, got ${actualCommitSha || 'unknown'}`
+    );
+  }
 }
 
-async function runAttempt(baseUrl, timeoutMs, expectedVersion) {
+async function runAttempt(
+  baseUrl,
+  timeoutMs,
+  expectedVersion,
+  expectedCommitSha
+) {
   const checks = [
     { name: 'GET /', fn: checkLandingPage },
     { name: 'GET /validation', fn: checkValidationPage },
     {
       name: 'GET /api/version',
       fn: (targetUrl, targetTimeoutMs) =>
-        checkVersionApi(targetUrl, targetTimeoutMs, expectedVersion),
+        checkVersionApi(
+          targetUrl,
+          targetTimeoutMs,
+          expectedVersion,
+          expectedCommitSha
+        ),
     },
   ];
 
@@ -304,6 +339,9 @@ async function main() {
   if (options.expectedVersion) {
     console.log(`- expected version: ${options.expectedVersion}`);
   }
+  if (options.expectedCommitSha) {
+    console.log(`- expected commit: ${options.expectedCommitSha}`);
+  }
   console.log('');
 
   let lastFailures = [];
@@ -313,7 +351,8 @@ async function main() {
     lastFailures = await runAttempt(
       options.url,
       options.timeoutMs,
-      options.expectedVersion
+      options.expectedVersion,
+      options.expectedCommitSha
     );
 
     if (lastFailures.length === 0) {

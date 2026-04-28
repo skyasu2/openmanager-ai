@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| Deployment drift guard and AI deploy skip | High | Approved | [deployment-drift-guard-plan.md](deployment-drift-guard-plan.md) — `/api/version` build metadata, Vercel QA drift preflight, and Cloud Run AI deploy skip guard |
+| Deployment drift guard and AI deploy skip | High | In Progress | [deployment-drift-guard-plan.md](deployment-drift-guard-plan.md) — `/api/version` build metadata, Vercel QA drift preflight, and Cloud Run AI deploy skip guard |
 
 ---
 
