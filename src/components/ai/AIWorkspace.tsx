@@ -38,6 +38,50 @@ import SystemContextPanel from './SystemContextPanel';
 
 // 🔧 공통 로직은 useAIChatCore 훅에서 관리
 
+const AI_ASSISTANT_LIGHT_THEME_TOKENS = {
+  '--background': '0 0% 100%',
+  '--foreground': '222.2 84% 4.9%',
+  '--card': '0 0% 100%',
+  '--card-foreground': '222.2 84% 4.9%',
+  '--popover': '0 0% 100%',
+  '--popover-foreground': '222.2 84% 4.9%',
+  '--secondary': '210 40% 96%',
+  '--secondary-foreground': '222.2 84% 4.9%',
+  '--muted': '210 40% 96%',
+  '--muted-foreground': '215.4 16.3% 46.9%',
+  '--accent': '210 40% 96%',
+  '--accent-foreground': '222.2 84% 4.9%',
+  '--border': '214.3 31.8% 91.4%',
+  '--input': '214.3 31.8% 91.4%',
+} as const;
+
+function useAIAssistantLightTheme() {
+  useEffect(() => {
+    const root = document.documentElement;
+    const previousTokens = new Map<string, string>();
+    const previousColorScheme = root.style.colorScheme;
+
+    for (const [token, value] of Object.entries(
+      AI_ASSISTANT_LIGHT_THEME_TOKENS
+    )) {
+      previousTokens.set(token, root.style.getPropertyValue(token));
+      root.style.setProperty(token, value);
+    }
+    root.style.colorScheme = 'light';
+
+    return () => {
+      for (const [token, previousValue] of previousTokens) {
+        if (previousValue) {
+          root.style.setProperty(token, previousValue);
+        } else {
+          root.style.removeProperty(token);
+        }
+      }
+      root.style.colorScheme = previousColorScheme;
+    };
+  }, []);
+}
+
 interface AIWorkspaceProps {
   /** @deprecated mode prop은 제거됨. AIWorkspace는 fullscreen 전용. sidebar는 AISidebarV4 사용. */
   mode?: never;
@@ -54,6 +98,8 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
   const [isRightPanelOpen, setIsRightPanelOpen] = useState(true);
+
+  useAIAssistantLightTheme();
 
   useEffect(() => {
     setIsMounted(true);

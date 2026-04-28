@@ -4,7 +4,7 @@
 
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useState } from 'react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import AIWorkspace from '@/components/ai/AIWorkspace';
 
 const mockEnhancedAIChat = vi.fn(() => (
@@ -185,6 +185,7 @@ vi.mock('@/components/error/AIErrorBoundary', () => ({
 describe('AIWorkspace', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    document.documentElement.removeAttribute('style');
     mockSidebarState = {
       isOpen: true,
       toggleSidebar: vi.fn(),
@@ -206,6 +207,10 @@ describe('AIWorkspace', () => {
     };
   });
 
+  afterEach(() => {
+    document.documentElement.removeAttribute('style');
+  });
+
   it('renders AI workspace interface', () => {
     render(<AIWorkspace />);
 
@@ -216,6 +221,25 @@ describe('AIWorkspace', () => {
     expect(screen.getByText('새 대화')).toBeInTheDocument();
     // AI 기능 섹션 레이블 (한국어로 변경됨)
     expect(screen.getByText('AI 기능')).toBeInTheDocument();
+  });
+
+  it('scopes fullscreen workspace root theme tokens to the light surface', async () => {
+    document.documentElement.style.setProperty('--background', '217 33% 17%');
+
+    const { unmount } = render(<AIWorkspace />);
+
+    await waitFor(() => {
+      expect(
+        document.documentElement.style.getPropertyValue('--background')
+      ).toBe('0 0% 100%');
+      expect(document.documentElement.style.colorScheme).toBe('light');
+    });
+
+    unmount();
+
+    expect(
+      document.documentElement.style.getPropertyValue('--background')
+    ).toBe('217 33% 17%');
   });
 
   it('handles back navigation', () => {
