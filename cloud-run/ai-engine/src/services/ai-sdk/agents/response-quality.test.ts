@@ -16,6 +16,74 @@ describe('evaluateAgentResponseQuality', () => {
     expect(result.qualityFlags).toContain('MISSING_ACTION_SECTION');
   });
 
+  it('flags Analyst responses missing an explicit confidence score', () => {
+    const result = evaluateAgentResponseQuality(
+      'Analyst Agent',
+      [
+        '현황 요약: cache-redis-dc1-01 메모리 88%로 warning 상태입니다.',
+        '추정 원인: 캐시 key 증가와 eviction 지연이 메모리 압박을 만들고 있습니다.',
+        '인과 체인: key 증가 → 메모리 사용률 상승 → 응답 지연 위험 증가',
+        '조치: redis-cli INFO memory 결과를 확인하고 maxmemory 정책을 점검하세요.',
+      ].join('\n'),
+      { durationMs: 1200 }
+    );
+
+    expect(result.qualityFlags).toContain('MISSING_CONFIDENCE_SCORE');
+    expect(result.qualityFlags).not.toContain('MISSING_CAUSE_HYPOTHESIS');
+  });
+
+  it('flags Analyst responses missing causal direction', () => {
+    const result = evaluateAgentResponseQuality(
+      'Analyst Agent',
+      [
+        '현황 요약: api-was-dc1-01 CPU 82%로 warning 상태입니다.',
+        '추정 원인: 배치 작업 집중 가능성이 큽니다. 신뢰도: 84%',
+        '조치: ps aux --sort=-%cpu 결과를 확인하고 배치 스케줄을 분산하세요.',
+      ].join('\n'),
+      { durationMs: 1200 }
+    );
+
+    expect(result.qualityFlags).toContain('MISSING_CAUSAL_DIRECTION');
+    expect(result.qualityFlags).not.toContain('MISSING_CONFIDENCE_SCORE');
+  });
+
+  it('flags Reporter responses missing an explicit confidence score', () => {
+    const result = evaluateAgentResponseQuality(
+      'Reporter Agent',
+      [
+        '## 개요',
+        'cache-redis-dc1-01 메모리 88%로 장애 위험이 증가했습니다.',
+        '## 영향 범위',
+        'Redis 응답 지연이 API 캐시 조회 지연으로 이어질 수 있습니다.',
+        '## 타임라인',
+        '10:00 메모리 70% → 10:20 메모리 88%로 상승했습니다.',
+        '### 근본 원인',
+        '캐시 key 증가와 eviction 지연이 주요 원인입니다.',
+        '## 권장 조치',
+        'maxmemory 정책과 evicted_keys 증가 여부를 확인하세요.',
+      ].join('\n'),
+      { durationMs: 2200 }
+    );
+
+    expect(result.qualityFlags).toContain('MISSING_CONFIDENCE_SCORE');
+  });
+
+  it('flags Chinese characters without failing format compliance by itself', () => {
+    const result = evaluateAgentResponseQuality(
+      'NLQ Agent',
+      [
+        '서버 현황 요약: 전체 18대 중 정상 17대, 경고 1대입니다.',
+        'CPU: 52%, 메모리: 48%, 디스크: 41%, 네트워크: 22%',
+        '경고 서버: cache-redis-dc1-01 메모리 88%',
+        '권고: 服务器 관련 문구가 섞였으므로 응답 언어 정책을 점검하세요.',
+      ].join('\n'),
+      { durationMs: 900 }
+    );
+
+    expect(result.qualityFlags).toContain('CONTAINS_CHINESE_CHARS');
+    expect(result.formatCompliance).toBe(true);
+  });
+
   it('accepts NLQ response when it includes required structure', () => {
     const result = evaluateAgentResponseQuality(
       'NLQ Agent',
