@@ -1,0 +1,134 @@
+{
+  "runTitle": "v8.11.58 release production smoke",
+  "checkedAt": "2026-04-29T08:27:06+09:00",
+  "release": {
+    "version": "8.11.58",
+    "commitSha": "2a76df0c5a7714421ebc1687041d220ae17adc08",
+    "tag": "v8.11.58",
+    "vercelDeploymentId": "dpl_56Xd5rc13skiEsmeH28MLtZBa2ui",
+    "vercelDeploymentUrl": "https://openmanager-hfvwry4jx-skyasus-projects.vercel.app"
+  },
+  "gitlab": {
+    "mainPipeline": {
+      "id": 2486762017,
+      "status": "success",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2486762017"
+    },
+    "tagPipeline": {
+      "id": 2486766912,
+      "ref": "v8.11.58",
+      "status": "success",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2486766912"
+    },
+    "jobs": [
+      {
+        "id": 14132323340,
+        "name": "deploy",
+        "status": "success",
+        "durationSeconds": 135.688681
+      },
+      {
+        "id": 14132323341,
+        "name": "deploy_ai_engine",
+        "status": "success",
+        "durationSeconds": 334.442752,
+        "cloudRunRevision": "ai-engine-00371-krm"
+      },
+      {
+        "id": 14132323343,
+        "name": "post_deploy_smoke",
+        "status": "success"
+      },
+      {
+        "id": 14132323342,
+        "name": "post_deploy_ai_engine_smoke",
+        "status": "success"
+      }
+    ]
+  },
+  "productionChecks": [
+    {
+      "name": "GET /api/version",
+      "status": 200,
+      "body": {
+        "version": "8.11.58",
+        "buildVersion": "8.11.58",
+        "nextjs": "16.1.6",
+        "environment": "production",
+        "commitSha": "2a76df0c5a7714421ebc1687041d220ae17adc08",
+        "releaseTag": "v8.11.58",
+        "pipelineUrl": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2486766912"
+      }
+    },
+    {
+      "name": "GET /api/health?simple=true",
+      "status": 200,
+      "body": {
+        "ping": "pong"
+      }
+    },
+    {
+      "name": "GET /api/health?service=ai&t=202604292020",
+      "status": 200,
+      "body": {
+        "status": "ok",
+        "backend": "cloud-run",
+        "latency": 4818
+      }
+    },
+    {
+      "name": "GET Cloud Run /health",
+      "status": 200,
+      "body": {
+        "status": "ok",
+        "service": "ai-engine",
+        "version": "8.11.58",
+        "redis": true,
+        "routesReady": true
+      }
+    }
+  ],
+  "playwrightChecks": [
+    {
+      "name": "dashboard deployed OTel labels",
+      "status": "pass",
+      "url": "https://openmanager-ai.vercel.app/dashboard",
+      "observed": ["Vercel static OTel", "24h rotating dataset v1.0.0"]
+    },
+    {
+      "name": "mobile ai-assistant route handoff",
+      "status": "pass",
+      "url": "https://openmanager-ai.vercel.app/dashboard",
+      "viewport": "390x844",
+      "observed": [
+        "/dashboard/ai-assistant navigated to /dashboard",
+        "AI sidebar rendered",
+        "전체 화면으로 열기 button absent"
+      ]
+    }
+  ],
+  "localValidation": [
+    "npx vitest run tests/api/health-route.test.ts",
+    "cd cloud-run/ai-engine && npx vitest run src/lib/cloud-tasks.test.ts src/routes/jobs.dispatch.test.ts",
+    "npm run test:quick",
+    "npm run type-check",
+    "npm run lint",
+    "npm run test:contract",
+    "cd cloud-run/ai-engine && npm run type-check",
+    "cd cloud-run/ai-engine && npm run test",
+    "git diff --check"
+  ],
+  "usageCheck": {
+    "platform": "vercel",
+    "method": "cli",
+    "status": "checked",
+    "result": "normal",
+    "summary": "Current billing period checked after v8.11.58 release smoke; effective $18.4121, billed $0.0000, no unexpected billed usage."
+  },
+  "result": "pass",
+  "notes": [
+    "Release script production verification passed on attempt 23/81 after Vercel deployment propagation.",
+    "GitLab post_deploy_smoke later passed on attempt 1/9 with expected version and commit SHA.",
+    "The local main branch has an additional post-release commit c81a56e31 after v8.11.58; production release evidence is tied to tag commit 2a76df0c5."
+  ]
+}

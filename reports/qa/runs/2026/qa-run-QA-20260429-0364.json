@@ -1,0 +1,163 @@
+{
+  "runId": "QA-20260429-0364",
+  "recordedAt": "2026-04-28T23:37:46.502Z",
+  "recordedAtKst": "2026-04-29 08:37:46 KST",
+  "runTitle": "v8.11.58 Release Production Smoke",
+  "owner": "codex",
+  "source": "vercel-production-smoke",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_56Xd5rc13skiEsmeH28MLtZBa2ui",
+    "deploymentUrl": "https://openmanager-hfvwry4jx-skyasus-projects.vercel.app",
+    "commitSha": "2a76df0c5a7714421ebc1687041d220ae17adc08"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "Vercel production /api/version reports 8.11.58 and releaseTag v8.11.58",
+    "Vercel production /api/health?simple=true returns JSON 200",
+    "Vercel production /api/health?service=ai returns JSON 200 cloud-run backend",
+    "Cloud Run /health returns ai-engine version 8.11.58 with redis/routesReady true",
+    "GitLab main pipeline 2486762017 success",
+    "GitLab tag pipeline v8.11.58 2486766912 success",
+    "GitLab deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke jobs success",
+    "Cloud Run ai-engine revision ai-engine-00371-krm deployed and serving 100 percent traffic",
+    "Vercel production dashboard shows Vercel static OTel and 24h rotating dataset labels",
+    "Mobile /dashboard/ai-assistant hands off to /dashboard AI sidebar and hides 전체 화면으로 열기"
+  ],
+  "skippedSurfaces": [
+    "full broad browser route sweep",
+    "guest AI assistant long-query SSE run",
+    "Cloud Tasks high-volume load test",
+    "landing page functional regression sweep - landing code was intentionally not modified"
+  ],
+  "checks": {
+    "total": 22,
+    "passed": 22,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab v8.11.58 tag pipeline completed frontend deploy, Cloud Run AI Engine deploy, and both post-deploy smoke jobs successfully. Production /api/version and Cloud Run /health now serve 8.11.58.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Cloud Tasks payload oversize handling is bounded by deterministic tests and dispatch now returns 413 PAYLOAD_TOO_LARGE instead of falling through as an internal error. AI Engine post-deploy smoke passed after deployment.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Focused regression tests, root quick/type/lint/contract gates, AI Engine type/test suite, GitLab deploy smokes, and targeted Playwright production checks passed for the changed API, Cloud Tasks, dashboard label, and mobile handoff surfaces.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-29T08:20:28+09:00",
+      "summary": "Current billing period checked after v8.11.58 release smoke; effective $18.4121, billed $0.0000, no unexpected billed usage.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-network",
+      "label": "v8.11.58 release smoke summary",
+      "path": "reports/qa/evidence/QA-20260429-0364/qa-20260429-v81158-release-smoke-summary.json"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "cloud-tasks-payload-byte-guard",
+      "title": "Cloud Tasks dispatch payload byte guard and 413 response",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "cloud-run/ai-engine/src/lib/cloud-tasks.test.ts and src/routes/jobs.dispatch.test.ts",
+      "note": "Payloads over 64 KiB are rejected before enqueue and exposed as PAYLOAD_TOO_LARGE.",
+      "owner": "project",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "health-development-cache-disabled",
+      "title": "/api/health respects development cache disabled runtime config",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "tests/api/health-route.test.ts",
+      "note": "Development full health responses now use no-store and do not populate module cache.",
+      "owner": "project",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-ai-propagation-v81158",
+      "title": "Dashboard OTel labels and mobile AI sidebar handoff deployed to production",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Playwright production check on v8.11.58",
+      "note": "Previously recorded propagation drift QA-20260429-0363 is no longer reproduced for the checked labels and mobile handoff.",
+      "owner": "project",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Release script production verification passed on attempt 23/81 after Vercel deployment propagation.",
+    "GitLab post_deploy_smoke passed on attempt 1/9 with expected version 8.11.58 and commit 2a76df0c5a7714421ebc1687041d220ae17adc08.",
+    "Direct Cloud Run /health returned ai-engine version 8.11.58 and redis/routesReady true.",
+    "Current main has an additional post-release commit c81a56e31 after v8.11.58; this QA run is intentionally tied to the v8.11.58 tag commit."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Cloud Run ai-engine service",
+      "url": "https://ai-engine-490817238363.asia-northeast1.run.app/"
+    },
+    {
+      "type": "general",
+      "label": "GitLab main pipeline for API hardening commit",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2486762017"
+    },
+    {
+      "type": "general",
+      "label": "GitLab tag pipeline v8.11.58",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2486766912"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment v8.11.58",
+      "url": "https://openmanager-hfvwry4jx-skyasus-projects.vercel.app/"
+    }
+  ]
+}

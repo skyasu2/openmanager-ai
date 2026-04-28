@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-29 03:50:30 KST
+> Generated at: 2026-04-29 08:37:46 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 361 |
-| Total Runs (Counted) | 293 |
+| Total Recorded Runs | 362 |
+| Total Runs (Counted) | 294 |
 | Non-counted Runs | 68 |
-| Total Checks | 2462 |
-| Passed | 2373 |
+| Total Checks | 2484 |
+| Passed | 2395 |
 | Failed | 80 |
-| Completed Items | 354 |
+| Completed Items | 357 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 19 |
 | Expert Domains Tracked | 10 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260429-0360 (2026-04-28T16:57:31.077Z) |
-| Latest Recorded Run | QA-20260429-0363 (2026-04-28T18:49:16.063Z) |
+| Last Counted Run | QA-20260429-0364 (2026-04-28T23:37:46.502Z) |
+| Latest Recorded Run | QA-20260429-0364 (2026-04-28T23:37:46.502Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,21 +34,23 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260429-0363 (2026-04-28T18:49:16.063Z)
+Latest run: QA-20260429-0364 (2026-04-28T23:37:46.502Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| DevOps / SRE Engineer | appropriate | no | - |
+| AI Security & Reliability Architect | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period effective 18.4121 USD, billed 0.0000 USD, no unexpected billed usage. |
+| vercel | cli | checked | normal | Current billing period checked after v8.11.58 release smoke; effective $18.4121, billed $0.0000, no unexpected billed usage. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-27T18:49:16.063Z -> 2026-04-28T18:49:16.063Z (24h)
+- Window: 2026-04-27T23:37:46.502Z -> 2026-04-28T23:37:46.502Z (24h)
 - Runs with observations: 3 recorded / 3 counted
 - Samples: 6
 
@@ -63,24 +65,27 @@ Latest run: QA-20260429-0363 (2026-04-28T18:49:16.063Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: dpl_2BqXNZmdN6VE4od2z8VENgLqjWPU
-- Coverage Packs: dashboard-core, modal-detail-pack, ai-core
-- Covered Surfaces: Vercel production landing guest session, Vercel production dashboard render after system start, Dashboard summary OTel source labels, Dashboard topology/log explorer changed-marker presence, Mobile /dashboard/ai-assistant route behavior, Mobile dashboard AI sidebar fullscreen button visibility
-- Skipped Surfaces: AI response generation and Cloud Run job dispatch - not required for UI propagation check, Authenticated OAuth flows - guest session already sufficient for changed dashboard/AI surfaces, Cloud Run admin monitoring endpoints - out of scope for frontend propagation check
+- Release-Facing: yes
+- Counts Toward Summary: yes
+- Deployment: dpl_56Xd5rc13skiEsmeH28MLtZBa2ui / SHA 2a76df0c
+- Coverage Packs: core-routes-smoke, ai-core, observability-pack
+- Covered Surfaces: Vercel production /api/version reports 8.11.58 and releaseTag v8.11.58, Vercel production /api/health?simple=true returns JSON 200, Vercel production /api/health?service=ai returns JSON 200 cloud-run backend, Cloud Run /health returns ai-engine version 8.11.58 with redis/routesReady true, GitLab main pipeline 2486762017 success, GitLab tag pipeline v8.11.58 2486766912 success, GitLab deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke jobs success, Cloud Run ai-engine revision ai-engine-00371-krm deployed and serving 100 percent traffic, Vercel production dashboard shows Vercel static OTel and 24h rotating dataset labels, Mobile /dashboard/ai-assistant hands off to /dashboard AI sidebar and hides 전체 화면으로 열기
+- Skipped Surfaces: full broad browser route sweep, guest AI assistant long-query SSE run, Cloud Tasks high-volume load test, landing page functional regression sweep - landing code was intentionally not modified
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| vercel-deployment | Inspected Vercel production deployment | [Inspected Vercel production deployment](https://openmanager-kfdfy6hpy-skyasus-projects.vercel.app/) | Alias target for openmanager-ai.vercel.app during this Playwright MCP check |
+| general | Cloud Run ai-engine service | [Cloud Run ai-engine service](https://ai-engine-490817238363.asia-northeast1.run.app/) | - |
+| general | GitLab main pipeline for API hardening commit | [GitLab main pipeline for API hardening commit](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2486762017) | - |
+| general | GitLab tag pipeline v8.11.58 | [GitLab tag pipeline v8.11.58](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2486766912) | - |
+| vercel-deployment | Vercel production deployment v8.11.58 | [Vercel production deployment v8.11.58](https://openmanager-hfvwry4jx-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-network | v8.11.58 release smoke summary | `reports/qa/evidence/QA-20260429-0364/qa-20260429-v81158-release-smoke-summary.json` | - |
 
 ## Expert Domain Open Gaps
 
@@ -260,12 +265,14 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - cloud-run-readiness-guard: Cloud Run direct route readiness guard 공통화 (completed 1회, last QA-20260325-0184)
 - cloud-run-v892-manual-deploy: Cloud Run v8.9.2 manual deploy verification (completed 1회, last QA-20260317-0118)
 - cloud-tasks-dispatch-follow-up-hardening: Cloud Tasks dispatch header allowlist and createTask transient retry hardening (completed 1회, last QA-20260429-0359)
+- cloud-tasks-payload-byte-guard: Cloud Tasks dispatch payload byte guard and 413 response (completed 1회, last QA-20260429-0364)
 - cloud-tasks-worker-target-https: Cloud Tasks worker target uses HTTPS in production (completed 1회, last QA-20260428-0358)
 - coverage-suite-stabilize: vitest coverage suite 0 failed (6→0) 안정화 (completed 1회, last QA-20260329-0194)
 - csrf-duplicate-removal: CSRF getCSRFTokenFromCookie 중복 제거 (completed 1회, last QA-20260307-0053)
 - cve-brace-expansion: brace-expansion CVE GHSA-f886-m6hf-6m8v 패치 (completed 1회, last QA-20260329-0194)
 - dashboard-15-servers: 대시보드 15대 서버 모니터링 정상 (completed 2회, last QA-20260314-0097)
 - dashboard-active-alerts: 활성 알림 모달 (completed 1회, last QA-20260317-0114)
+- dashboard-ai-propagation-v81158: Dashboard OTel labels and mobile AI sidebar handoff deployed to production (completed 1회, last QA-20260429-0364)
 - dashboard-client-lazy-shell-split: Split DashboardClient into auth wrapper and lazy interactive shell (completed 1회, last QA-20260420-0318)
 - dashboard-content-lazy-server-section: Lazy load ServerDashboard from DashboardContent (completed 1회, last QA-20260420-0318)
 - dashboard-dev-defer-heavy-subtree: Defer DashboardContent subtree during dev bootstrap (completed 1회, last QA-20260420-0317)
@@ -326,6 +333,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - health-api: /api/health DB/cache/ai connected (completed 2회, last QA-20260419-0306)
 - health-api-200-healthy: Health API 200 healthy (completed 3회, last QA-20260320-0140)
 - health-api-response-format: Health API 응답 포맷 검증 스크립트 수정 (completed 1회, last QA-20260310-0077)
+- health-development-cache-disabled: /api/health respects development cache disabled runtime config (completed 1회, last QA-20260429-0364)
 - health-route-envelope-test-alignment: Health route envelope/cache typing 정렬 (completed 1회, last QA-20260325-0184)
 - health-route-supabase-session-timeout: 헬스체크 Supabase 세션 프로브 타임아웃 강제 (completed 1회, last QA-20260325-0183)
 - home-semantic-nav: 홈 페이지 nav 랜드마크 보강 (completed 1회, last QA-20260226-0009)
@@ -517,6 +525,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260429-0364 | 2026-04-28T23:37:46.502Z | targeted | yes | yes | v8.11.58 Release Production Smoke | 22 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260429-0363 | 2026-04-28T18:49:16.063Z | targeted | no | no | Vercel Playwright MCP - Recent UI Change Propagation Check | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260429-0362 | 2026-04-28T18:07:07.122Z | targeted | no | no | Dashboard Modal/Search Hardening Local QA | 11 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260429-0361 | 2026-04-28T17:16:25.397Z | targeted | no | no | v8.11.57 AI Assistant UX Polish Recheck | 12 | 0 | 0 | 0 | 0 | 0 |
@@ -536,4 +545,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260424-0347 | 2026-04-24T09:40:49.104Z | targeted | no | no | Vercel core routes follow-up for frontend UIUX QA review | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260424-0346 | 2026-04-24T09:25:23.818Z | broad | yes | yes | Vercel Playwright QA - Frontend Buttons Modals UIUX Sweep | 31 | 0 | 0 | 0 | 0 | 1 |
 | QA-20260424-0345 | 2026-04-24T08:04:28.389Z | targeted | no | yes | Production Playwright E2E - AI parity guard final review validation | 2 | 1 | 0 | 0 | 0 | 1 |
-| QA-20260424-0344 | 2026-04-24T07:55:51.473Z | targeted | no | yes | Production Playwright E2E - AI starter/direct dashboard parity guard | 2 | 1 | 0 | 0 | 0 | 1 |
