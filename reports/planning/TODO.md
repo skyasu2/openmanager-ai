@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-28 KST (`AI Workspace mobile function nav parity 완료`)
+**Last Updated**: 2026-04-28 KST (`Supabase free-tier hardening 착수`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| — | — | Empty | Active Task 없음 |
+| #212 Supabase free-tier hardening | High | Approved | service-role runtime 기준으로 legacy public RPC/table privilege와 unused vector index 정리. Plan: [supabase-free-tier-hardening-plan.md](supabase-free-tier-hardening-plan.md) |
 
 ---
 
