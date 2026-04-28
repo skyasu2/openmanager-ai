@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-28 KST (`Supabase free-tier hardening 착수`)
+**Last Updated**: 2026-04-28 KST (`Supabase free-tier hardening 완료`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| #212 Supabase free-tier hardening | High | Approved | service-role runtime 기준으로 legacy public RPC/table privilege와 unused vector index 정리. Plan: [supabase-free-tier-hardening-plan.md](supabase-free-tier-hardening-plan.md) |
+| — | — | Empty | Active Task 없음 |
 
 ---
 
@@ -31,6 +31,14 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-28 #212)
+- [x] Supabase free-tier hardening
+  - service-role runtime 기준으로 `search_knowledge_text`와 legacy RAG/vector/approval RPC의 anon/authenticated execute 권한 제거
+  - 서버 경유로만 사용하는 public table/view direct privilege를 service role 전용으로 정리
+  - unused vector-era index `idx_knowledge_base_embedding_hnsw`, `idx_knowledge_base_content_trgm`, `idx_command_vectors_embedding_hnsw` 제거, BM25 `idx_knowledge_base_search_vector` 유지
+  - 원격 Supabase migration 적용 및 live 검증 완료: RPC/table 권한, index 상태, KRL RPC smoke 3건 반환
+  - Plan completed: [supabase-free-tier-hardening-plan.md](supabase-free-tier-hardening-plan.md)
 
 ### Completed (2026-04-28 #211)
 - [x] AI Workspace mobile function nav parity

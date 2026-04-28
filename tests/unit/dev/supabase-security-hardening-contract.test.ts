@@ -34,6 +34,7 @@ const SERVER_ONLY_TABLES = [
   'knowledge_relationships',
   'security_audit_logs',
   'system_rules',
+  'vector_documents_stats',
 ];
 
 function readMigration(): string {
@@ -68,10 +69,10 @@ describe('Supabase security hardening migration contract', () => {
 
     for (const table of SERVER_ONLY_TABLES) {
       expect(sql).toContain(
-        `revoke all privileges on table public.${table} from public,anon,authenticated;`
+        `revoke all privileges on table public.${table} from public,anon,authenticated`
       );
       expect(sql).toContain(
-        `grant all privileges on table public.${table} to service_role;`
+        `grant all privileges on table public.${table} to service_role`
       );
     }
   });

@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Last reviewed: 2026-04-28
 
 # Supabase Free-Tier Hardening Plan
@@ -43,17 +43,33 @@ Supabase 사용량은 무료 티어 한도 대비 충분히 낮지만, 현재 DB
 
 ## 5. Task 목록
 
-- [ ] Task 0 — failing contract test 커밋
-- [ ] Task 1 — Supabase hardening migration 작성
-- [ ] Task 2 — local contract/type smoke 검증
-- [ ] Task 3 — remote Supabase migration 적용 및 live verification
-- [ ] Task 4 — 커밋/푸시 및 GitLab pipeline 확인
+- [x] Task 0 — failing contract test 커밋
+- [x] Task 1 — Supabase hardening migration 작성
+- [x] Task 2 — local contract/type smoke 검증
+- [x] Task 3 — remote Supabase migration 적용 및 live verification
+- [x] Task 4 — 커밋/푸시 및 GitLab pipeline 확인
 
 ## 6. 완료 기준
 
-- [ ] contract test 통과
-- [ ] root `npm run test:contract` 통과
-- [ ] DB migration 원격 적용 완료
-- [ ] `search_knowledge_text` service role 실행 가능 확인
-- [ ] anon/authenticated public RPC execute privilege 제거 확인
-- [ ] 최종 `git status` clean
+- [x] contract test 통과
+- [x] root `npm run test:contract` 통과
+- [x] DB migration 원격 적용 완료
+- [x] `search_knowledge_text` service role 실행 가능 확인
+- [x] anon/authenticated public RPC execute privilege 제거 확인
+- [x] 최종 `git status` clean
+
+## 7. 완료 결과
+
+- 원격 Supabase migration `harden_supabase_rag_public_surface` 적용 성공
+- `search_knowledge_text` 포함 19개 RAG/vector/approval RPC: `anon=false`, `authenticated=false`, `service_role=true`
+- 8개 runtime table과 `vector_documents_stats` view: direct anon/authenticated table privilege 제거, service role 유지
+- 제거 대상 vector-era index 3개 삭제 확인, `idx_knowledge_base_search_vector` 유지 확인
+- KRL RPC smoke: `search_knowledge_text('redis memory', 10, NULL)` 결과 3건 반환
+- 검증:
+  - `npx vitest run tests/unit/dev/supabase-security-hardening-contract.test.ts`
+  - `npm run test:contract`
+  - `supabase db lint` (기존 `match_knowledge_base.match_threshold` unused warning만 유지)
+  - `npm run test:quick`
+  - `npm run type-check`
+  - `npm run lint` (기존 `qa-tracker.json` size info만 유지)
+  - `node scripts/test/vercel-post-deploy-smoke.mjs --expected-version=8.11.47 --retries=1 --retry-delay-ms=1000`
