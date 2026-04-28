@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-28T05:38:09.460Z"
+    "updatedAt": "2026-04-28T06:41:22.936Z"
   },
   "sequence": {
-    "nextRunNumber": 357
+    "nextRunNumber": 358
   },
   "summary": {
-    "totalRecordedRuns": 354,
-    "totalRuns": 289,
+    "totalRecordedRuns": 355,
+    "totalRuns": 290,
     "excludedRuns": 65,
-    "totalChecks": 2411,
-    "totalPassed": 2322,
+    "totalChecks": 2420,
+    "totalPassed": 2331,
     "totalFailed": 80,
-    "completionRate": 99.71,
-    "completedItems": 346,
-    "pendingItems": 1,
+    "completionRate": 100,
+    "completedItems": 347,
+    "pendingItems": 0,
     "deferredItems": 0,
-    "wontFixItems": 18,
+    "wontFixItems": 19,
     "expertDomainsTracked": 10,
     "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260428-0356",
-    "lastRecordedAt": "2026-04-28T05:38:09.460Z",
-    "latestRecordedRunId": "QA-20260428-0356",
-    "latestRecordedAt": "2026-04-28T05:38:09.460Z"
+    "lastRunId": "QA-20260428-0357",
+    "lastRecordedAt": "2026-04-28T06:41:22.936Z",
+    "latestRecordedRunId": "QA-20260428-0357",
+    "latestRecordedAt": "2026-04-28T06:41:22.936Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -8422,25 +8422,25 @@
       "id": "ai-thinking-visualizer-contract-drift",
       "title": "Thinking visualizer production UI contract drift",
       "priority": "P1",
-      "status": "pending",
+      "status": "wont-fix",
       "firstSeenRunId": "QA-20260428-0355",
       "firstSeenAt": "2026-04-28T00:28:02.962Z",
-      "lastSeenRunId": "QA-20260428-0355",
-      "lastSeenAt": "2026-04-28T00:28:02.962Z",
-      "seenCount": 1,
+      "lastSeenRunId": "QA-20260428-0357",
+      "lastSeenAt": "2026-04-28T06:41:22.936Z",
+      "seenCount": 2,
       "completedCount": 0,
       "pendingCount": 1,
       "deferredCount": 0,
-      "wontFixCount": 0,
+      "wontFixCount": 1,
       "aliases": [],
-      "owner": "",
-      "lastEvidence": "",
-      "lastNote": "npm run test:vercel:thinking-visualizer failed on v8.11.38: /qa-thinking-visualizer and the prompt set did not expose the documented 'AI 처리 과정' toggle. The deterministic QA prompt currently renders process evidence under '분석 근거'.",
-      "isBlocking": true,
+      "owner": "project",
+      "lastEvidence": "Production sidebar thinking-mode response rendered 심층 분석 요청됨 and 모드: 심층 분석 under 분석 근거, but still did not render the legacy AI 처리 과정 toggle.",
+      "lastNote": "This did not block the targeted AI Assistant production smoke because the current evidence UI is AnalysisBasisBadge.",
+      "isBlocking": false,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
-      "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-04-28T00:28:02.962Z"
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-04-28T06:41:22.936Z"
     },
     "ai-provider-forced-routing-context-floor": {
       "id": "ai-provider-forced-routing-context-floor",
@@ -8489,6 +8489,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-28T05:38:09.460Z"
+    },
+    "ai-assistant-vercel-production-core-pass": {
+      "id": "ai-assistant-vercel-production-core-pass",
+      "title": "AI Assistant production browser smoke passes",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260428-0357",
+      "firstSeenAt": "2026-04-28T06:41:22.936Z",
+      "lastSeenRunId": "QA-20260428-0357",
+      "lastSeenAt": "2026-04-28T06:41:22.936Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "Playwright MCP verified /dashboard, AI Assistant sidebar, auto-mode stream response, thinking-mode metadata, and zero console errors on v8.11.46 production.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-28T06:41:22.936Z"
     }
   },
   "runs": [
@@ -33921,6 +33945,143 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260428-0357",
+      "recordedAt": "2026-04-28T06:41:22.936Z",
+      "recordedAtKst": "2026-04-28 15:41:22 KST",
+      "title": "AI Assistant Vercel production Playwright MCP QA - v8.11.46",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260428-0357.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_Fz6VPj7oVzxHeaCivoyFtf1xd3ja",
+        "deploymentUrl": "https://openmanager-g44nhzorc-skyasus-projects.vercel.app",
+        "commitSha": "ea95897dbfd7dc603d722bdbabd5fb5bbd160d28"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "Vercel production /api/version",
+        "Vercel production /dashboard",
+        "AI Assistant sidebar",
+        "AI Chat auto mode",
+        "AI Chat thinking mode metadata",
+        "Browser console error sweep"
+      ],
+      "skippedSurfaces": [
+        "Reporter fullscreen generation",
+        "Advisor command recommendation",
+        "Cloud Run log inspection",
+        "legacy standalone ThinkingProcessVisualizer restoration"
+      ],
+      "checks": {
+        "total": 9,
+        "passed": 9,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI Assistant sidebar auto mode",
+          "agent": "Streaming AI",
+          "provider": "cloud-run-supervisor",
+          "model": "server-selected",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Playwright MCP visible response timer + resource timing",
+          "latencyMs": 1046,
+          "processingTimeMs": 1046
+        },
+        {
+          "surface": "AI Assistant sidebar thinking mode",
+          "agent": "Streaming AI",
+          "provider": "cloud-run-supervisor",
+          "model": "server-selected",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Playwright MCP visible response timer + resource timing",
+          "latencyMs": 7624,
+          "processingTimeMs": 7624
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production AI Assistant returned grounded server metric responses in both auto and thinking UI modes. Analysis basis metadata matched the selected mode.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Browser QA still confirms the old AI 처리 과정 selector is not present in the sidebar flow; production now exposes reasoning/process evidence through AnalysisBasisBadge.",
+          "nextAction": "Resolve ai-thinking-visualizer-contract-drift by either updating the stale QA contract/docs to AnalysisBasisBadge or explicitly restoring a sidebar thinking process toggle."
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel deployment is Ready, /api/version reports 8.11.46, and post-QA Vercel usage check remains billed $0.0000.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-28T15:38:25+09:00",
+          "summary": "Current billing period checked after AI Assistant browser QA; effective $17.7347, billed $0.0000, no unexpected billed usage.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "AI Assistant production sidebar response",
+          "path": "reports/qa/evidence/QA-20260428-0357/qa-20260428-ai-assistant-vercel-production.png"
+        },
+        {
+          "type": "playwright-network",
+          "label": "AI Assistant production QA summary",
+          "path": "reports/qa/evidence/QA-20260428-0357/qa-20260428-ai-assistant-vercel-production-summary.json"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production deployment",
+          "url": "https://openmanager-g44nhzorc-skyasus-projects.vercel.app/"
+        },
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1
     }
   ],
   "experts": {
@@ -33929,16 +34090,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 167,
-      "appropriateCount": 153,
+      "seenCount": 168,
+      "appropriateCount": 154,
       "partialCount": 14,
       "inappropriateCount": 0,
       "improvementNeededCount": 24,
-      "lastRunId": "QA-20260428-0356",
-      "lastSeenAt": "2026-04-28T05:38:09.460Z",
+      "lastRunId": "QA-20260428-0357",
+      "lastSeenAt": "2026-04-28T06:41:22.936Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Analyst, Reporter, and Advisor production responses completed after the context-floor hotfix. Analyst/Advisor no longer expose function-call JSON and both avoid the 8K Cerebras fallback.",
+      "lastRationale": "Production AI Assistant returned grounded server metric responses in both auto and thinking UI modes. Analysis basis metadata matched the selected mode.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -33980,16 +34141,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 97,
-      "appropriateCount": 86,
+      "seenCount": 98,
+      "appropriateCount": 87,
       "partialCount": 11,
       "inappropriateCount": 0,
       "improvementNeededCount": 15,
-      "lastRunId": "QA-20260428-0356",
-      "lastSeenAt": "2026-04-28T05:38:09.460Z",
+      "lastRunId": "QA-20260428-0357",
+      "lastSeenAt": "2026-04-28T06:41:22.936Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab v8.11.46 tag pipeline completed with deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke all successful.",
+      "lastRationale": "Vercel deployment is Ready, /api/version reports 8.11.46, and post-QA Vercel usage check remains billed $0.0000.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -33997,17 +34158,17 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 134,
+      "seenCount": 135,
       "appropriateCount": 124,
-      "partialCount": 10,
+      "partialCount": 11,
       "inappropriateCount": 0,
-      "improvementNeededCount": 12,
-      "lastRunId": "QA-20260428-0355",
-      "lastSeenAt": "2026-04-28T00:28:02.962Z",
+      "improvementNeededCount": 13,
+      "lastRunId": "QA-20260428-0357",
+      "lastSeenAt": "2026-04-28T06:41:22.936Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "The dedicated production visualizer script reaches the app but fails on a stale selector/contract: matchedPrompt remains null because no AI 처리 과정 toggle is found.",
-      "lastNextAction": "Align npm run test:vercel:thinking-visualizer with the current UI contract after product intent is confirmed."
+      "lastRationale": "Browser QA still confirms the old AI 처리 과정 selector is not present in the sidebar flow; production now exposes reasoning/process evidence through AnalysisBasisBadge.",
+      "lastNextAction": "Resolve ai-thinking-visualizer-contract-drift by either updating the stale QA contract/docs to AnalysisBasisBadge or explicitly restoring a sidebar thinking process toggle."
     },
     "data-metrics-quality": {
       "domainId": "data-metrics-quality",

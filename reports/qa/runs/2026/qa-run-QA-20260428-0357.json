@@ -1,0 +1,169 @@
+{
+  "runId": "QA-20260428-0357",
+  "recordedAt": "2026-04-28T06:41:22.936Z",
+  "recordedAtKst": "2026-04-28 15:41:22 KST",
+  "runTitle": "AI Assistant Vercel production Playwright MCP QA - v8.11.46",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_Fz6VPj7oVzxHeaCivoyFtf1xd3ja",
+    "deploymentUrl": "https://openmanager-g44nhzorc-skyasus-projects.vercel.app",
+    "commitSha": "ea95897dbfd7dc603d722bdbabd5fb5bbd160d28"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "ai-advanced-surface"
+  ],
+  "coveredSurfaces": [
+    "Vercel production /api/version",
+    "Vercel production /dashboard",
+    "AI Assistant sidebar",
+    "AI Chat auto mode",
+    "AI Chat thinking mode metadata",
+    "Browser console error sweep"
+  ],
+  "skippedSurfaces": [
+    "Reporter fullscreen generation",
+    "Advisor command recommendation",
+    "Cloud Run log inspection",
+    "legacy standalone ThinkingProcessVisualizer restoration"
+  ],
+  "checks": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI Assistant sidebar auto mode",
+      "agent": "Streaming AI",
+      "provider": "cloud-run-supervisor",
+      "model": "server-selected",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright MCP visible response timer + resource timing",
+      "latencyMs": 1046,
+      "processingTimeMs": 1046
+    },
+    {
+      "surface": "AI Assistant sidebar thinking mode",
+      "agent": "Streaming AI",
+      "provider": "cloud-run-supervisor",
+      "model": "server-selected",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright MCP visible response timer + resource timing",
+      "latencyMs": 7624,
+      "processingTimeMs": 7624
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production AI Assistant returned grounded server metric responses in both auto and thinking UI modes. Analysis basis metadata matched the selected mode.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Browser QA still confirms the old AI 처리 과정 selector is not present in the sidebar flow; production now exposes reasoning/process evidence through AnalysisBasisBadge.",
+      "nextAction": "Resolve ai-thinking-visualizer-contract-drift by either updating the stale QA contract/docs to AnalysisBasisBadge or explicitly restoring a sidebar thinking process toggle."
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel deployment is Ready, /api/version reports 8.11.46, and post-QA Vercel usage check remains billed $0.0000.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-28T15:38:25+09:00",
+      "summary": "Current billing period checked after AI Assistant browser QA; effective $17.7347, billed $0.0000, no unexpected billed usage.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "AI Assistant production sidebar response",
+      "path": "reports/qa/evidence/QA-20260428-0357/qa-20260428-ai-assistant-vercel-production.png"
+    },
+    {
+      "type": "playwright-network",
+      "label": "AI Assistant production QA summary",
+      "path": "reports/qa/evidence/QA-20260428-0357/qa-20260428-ai-assistant-vercel-production-summary.json"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-assistant-vercel-production-core-pass",
+      "title": "AI Assistant production browser smoke passes",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Playwright MCP verified /dashboard, AI Assistant sidebar, auto-mode stream response, thinking-mode metadata, and zero console errors on v8.11.46 production.",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "ai-thinking-visualizer-contract-drift",
+      "title": "Thinking visualizer production UI contract drift",
+      "priority": "P1",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production sidebar thinking-mode response rendered 심층 분석 요청됨 and 모드: 심층 분석 under 분석 근거, but still did not render the legacy AI 처리 과정 toggle.",
+      "note": "This did not block the targeted AI Assistant production smoke because the current evidence UI is AnalysisBasisBadge.",
+      "owner": "project",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    }
+  ],
+  "notes": [
+    "Vercel production /api/version returned 8.11.46 before QA recording.",
+    "AI Assistant sidebar opened from /dashboard without login redirects, using the guest user session.",
+    "Auto query used /api/ai/supervisor/stream/v2 and returned a grounded answer for cache-redis-dc1-01 memory usage.",
+    "Thinking mode query kept the streaming route for this simple prompt but correctly rendered 심층 분석 요청됨 and 모드: 심층 분석 in analysis basis metadata.",
+    "Playwright console error sweep reported zero errors and zero warnings."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production deployment",
+      "url": "https://openmanager-g44nhzorc-skyasus-projects.vercel.app/"
+    },
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

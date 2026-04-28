@@ -1,0 +1,102 @@
+{
+  "runId": "QA-20260428-0357",
+  "capturedAt": "2026-04-28T06:38:11.380Z",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "dashboardUrl": "https://openmanager-ai.vercel.app/dashboard",
+    "version": "8.11.46",
+    "nextjs": "16.1.6",
+    "deploymentId": "dpl_Fz6VPj7oVzxHeaCivoyFtf1xd3ja",
+    "deploymentUrl": "https://openmanager-g44nhzorc-skyasus-projects.vercel.app",
+    "commitSha": "ea95897db"
+  },
+  "method": {
+    "tool": "Playwright MCP via next-devtools browser_eval",
+    "browser": "chrome",
+    "headless": true,
+    "source": "Vercel production UI"
+  },
+  "checks": [
+    {
+      "id": "dashboard-renders",
+      "status": "pass",
+      "evidence": "Dashboard rendered with title Dashboard | OpenManager AI, 18-server synthetic OTel snapshot, and AI assistant control visible."
+    },
+    {
+      "id": "ai-sidebar-opens",
+      "status": "pass",
+      "evidence": "AI Assistant sidebar opened from /dashboard and exposed AI Chat input, tool menu, and feature tabs."
+    },
+    {
+      "id": "auto-ai-chat-streams",
+      "status": "pass",
+      "query": "cache-redis-dc1-01 메모리 상태를 한 줄로 요약해줘",
+      "route": "/api/ai/supervisor/stream/v2",
+      "httpStatus": 200,
+      "observedDurationMs": 1046,
+      "resourceDurationMs": 2073,
+      "evidence": "Response: 캐시 서버 cache-redis-dc1-01의 메모리 사용률은 81%입니다. Analysis basis showed 모드: 오토."
+    },
+    {
+      "id": "thinking-mode-metadata",
+      "status": "pass",
+      "query": "cache-redis-dc1-01 상태는?",
+      "route": "/api/ai/supervisor/stream/v2",
+      "httpStatus": 200,
+      "observedDurationMs": 7624,
+      "resourceDurationMs": 8567,
+      "evidence": "Response identified cache-redis-dc1-01 as warning with memory usage 83%, CPU 19%, disk 23%. UI rendered 심층 분석 요청됨 and 모드: 심층 분석."
+    },
+    {
+      "id": "browser-console-errors",
+      "status": "pass",
+      "evidence": "Playwright console_messages(errorsOnly=true): Total messages 0, Errors 0, Warnings 0."
+    },
+    {
+      "id": "legacy-thinking-process-toggle",
+      "status": "observed-missing",
+      "blocking": false,
+      "evidence": "Sidebar response did not render the legacy AI 처리 과정 toggle; current production evidence is exposed through 분석 근거 / AnalysisBasisBadge. This matches the existing pending QA item ai-thinking-visualizer-contract-drift and does not block this targeted browser smoke."
+    }
+  ],
+  "fetchLog": [
+    {
+      "url": "/api/ai/supervisor/stream/v2",
+      "status": 200,
+      "ok": true,
+      "durationMs": 582
+    }
+  ],
+  "resourceEntries": [
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/wake-up",
+      "durationMs": 5279,
+      "transferSize": 328
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+      "durationMs": 2073,
+      "transferSize": 5578
+    },
+    {
+      "name": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+      "durationMs": 8567,
+      "transferSize": 3584
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "path": "reports/qa/evidence/QA-20260428-0357/qa-20260428-ai-assistant-vercel-production.png"
+    }
+  ],
+  "usageCheck": {
+    "command": "npm run check:usage:vercel",
+    "status": "pass",
+    "effectiveUsd": 17.7347,
+    "billedUsd": 0.0,
+    "chargeCount": 15834
+  },
+  "result": "pass"
+}
