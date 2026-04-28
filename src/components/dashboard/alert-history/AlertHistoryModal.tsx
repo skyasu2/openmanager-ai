@@ -367,7 +367,10 @@ export function AlertHistoryRow({
   const content = (
     <>
       <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-        <div className="flex min-w-0 items-center gap-2.5">
+        <div
+          className="flex min-w-0 flex-wrap items-center gap-2.5"
+          data-testid="alert-history-row-main"
+        >
           <span
             className={cn(
               'inline-flex shrink-0 rounded-md border px-1.5 py-0.5 text-[10px] font-bold uppercase',
@@ -376,10 +379,16 @@ export function AlertHistoryRow({
           >
             {alert.severity}
           </span>
-          <span className="truncate text-sm font-medium text-gray-800">
+          <span
+            className="min-w-0 max-w-full break-words text-sm font-medium text-gray-800 sm:truncate"
+            data-testid="alert-history-row-server"
+          >
             {alert.serverId}
           </span>
-          <span className="truncate text-xs text-gray-500">
+          <span
+            className="min-w-0 max-w-full break-words text-xs text-gray-500 sm:truncate"
+            data-testid="alert-history-row-metric"
+          >
             {formatMetricName(alert.metric)} ={' '}
             {formatMetricValue(alert.metric, alert.value)}
           </span>
@@ -403,7 +412,7 @@ export function AlertHistoryRow({
           </span>
         </div>
       </div>
-      <div className="mt-1.5 flex items-center gap-3 text-[11px] text-gray-400">
+      <div className="mt-1.5 flex flex-wrap items-center gap-3 text-[11px] text-gray-400">
         <span>
           Fired:{' '}
           {formatRotatingTimestamp(alert.firedAt, {

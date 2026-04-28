@@ -234,6 +234,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
         onFunctionChange={setSelectedFunction}
         onOpenFullscreen={handleOpenFullscreen}
         isMobile={true}
+        showFullscreenButton={false}
       />
     </div>
   );

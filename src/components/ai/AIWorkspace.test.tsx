@@ -18,10 +18,11 @@ let mockSidebarState: Record<string, unknown>;
 // Mock next/navigation
 const mockBack = vi.fn();
 const mockPush = vi.fn();
+const mockReplace = vi.fn();
 vi.mock('next/navigation', () => ({
   useRouter: vi.fn(() => ({
     push: mockPush,
-    replace: vi.fn(),
+    replace: mockReplace,
     back: mockBack,
     forward: vi.fn(),
     prefetch: vi.fn(),
@@ -182,10 +183,27 @@ vi.mock('@/components/error/AIErrorBoundary', () => ({
   ),
 }));
 
+function mockViewportMedia(matches: boolean) {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: vi.fn().mockImplementation((query: string) => ({
+      matches,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  });
+}
+
 describe('AIWorkspace', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     document.documentElement.removeAttribute('style');
+    mockViewportMedia(false);
     mockSidebarState = {
       isOpen: true,
       toggleSidebar: vi.fn(),
@@ -242,14 +260,15 @@ describe('AIWorkspace', () => {
     ).toBe('217 33% 17%');
   });
 
-  it('handles back navigation', () => {
+  it('handles dashboard navigation', () => {
     render(<AIWorkspace />);
 
-    // Find the back button by its title
-    const backButton = screen.getByTitle('뒤로 가기');
-    fireEvent.click(backButton);
+    const dashboardButton = screen.getByRole('button', {
+      name: '대시보드로 돌아가기',
+    });
+    fireEvent.click(dashboardButton);
 
-    expect(mockBack).toHaveBeenCalled();
+    expect(mockPush).toHaveBeenCalledWith('/dashboard');
   });
 
   it('displays loading state correctly', async () => {
@@ -308,22 +327,66 @@ describe('AIWorkspace', () => {
     expect(screen.getByText('이상감지/예측')).toBeInTheDocument();
   });
 
-  it('keeps mobile function switching available in fullscreen workspace', () => {
+  it('hands off the mobile fullscreen route to the dashboard sidebar', async () => {
+    mockViewportMedia(true);
+    const setOpen = vi.fn();
+    const queuePendingEntryState = vi.fn();
+    mockSidebarState = {
+      ...mockSidebarState,
+      setOpen,
+      queuePendingEntryState,
+    };
+
     render(<AIWorkspace />);
 
+    await waitFor(() => {
+      expect(queuePendingEntryState).toHaveBeenCalledWith(
+        expect.objectContaining({
+          target: 'sidebar',
+          selectedFunction: 'chat',
+          analysisMode: 'auto',
+        })
+      );
+    });
+    expect(setOpen).toHaveBeenCalledWith(true);
+    expect(mockReplace).toHaveBeenCalledWith('/dashboard');
     expect(
-      screen.getByTestId('ai-workspace-mobile-function-nav')
+      screen.getByTestId('ai-workspace-mobile-handoff')
     ).toBeInTheDocument();
-    expect(screen.getByTestId('ai-mobile-icon-panel')).toHaveAttribute(
-      'data-show-fullscreen',
-      'false'
-    );
+    expect(
+      screen.queryByTestId('ai-workspace-mobile-function-nav')
+    ).not.toBeInTheDocument();
+  });
 
-    fireEvent.click(screen.getByRole('button', { name: 'switch-reporter' }));
+  it('retargets pending fullscreen entry state to the sidebar during mobile handoff', async () => {
+    mockViewportMedia(true);
+    const setOpen = vi.fn();
+    const queuePendingEntryState = vi.fn();
+    mockSidebarState = {
+      ...mockSidebarState,
+      setOpen,
+      queuePendingEntryState,
+      pendingEntryState: {
+        draft: '모바일 handoff 초안',
+        selectedFunction: 'auto-report',
+        analysisMode: 'thinking',
+        target: 'fullscreen',
+      },
+    };
 
-    expect(screen.getByTestId('ai-content-function')).toHaveTextContent(
-      'auto-report'
-    );
+    render(<AIWorkspace />);
+
+    await waitFor(() => {
+      expect(queuePendingEntryState).toHaveBeenCalledWith({
+        draft: '모바일 handoff 초안',
+        selectedFunction: 'auto-report',
+        analysisMode: 'thinking',
+        target: 'sidebar',
+      });
+    });
+    expect(setOpen).toHaveBeenCalledWith(true);
+    expect(mockReplace).toHaveBeenCalledWith('/dashboard');
+    expect(mockConsumePendingEntryState).not.toHaveBeenCalledWith('fullscreen');
   });
 
   it('forwards sidebar parity props to fullscreen chat', async () => {

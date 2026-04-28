@@ -2,7 +2,13 @@
  * @vitest-environment jsdom
  */
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import { useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import AISidebarV4 from '@/components/ai-sidebar/AISidebarV4';
@@ -134,12 +140,14 @@ vi.mock('@/components/ai/AIAssistantIconPanel', () => ({
     onFunctionChange,
     onOpenFullscreen,
     isMobile,
+    showFullscreenButton = true,
   }: {
     onFunctionChange: (
       value: 'chat' | 'auto-report' | 'intelligent-monitoring'
     ) => void;
     onOpenFullscreen?: () => void;
     isMobile?: boolean;
+    showFullscreenButton?: boolean;
   }) => (
     <div data-testid={isMobile ? 'ai-mobile-icon-panel' : 'ai-icon-panel'}>
       <button type="button" onClick={() => onFunctionChange('chat')}>
@@ -154,9 +162,11 @@ vi.mock('@/components/ai/AIAssistantIconPanel', () => ({
       >
         switch-analyst
       </button>
-      <button type="button" onClick={onOpenFullscreen}>
-        open-fullscreen
-      </button>
+      {showFullscreenButton && (
+        <button type="button" onClick={onOpenFullscreen}>
+          open-fullscreen
+        </button>
+      )}
     </div>
   ),
 }));
@@ -392,6 +402,11 @@ describe('AISidebarV4', () => {
       'overflow-hidden'
     );
     expect(screen.getByTestId('ai-mobile-icon-panel')).toBeInTheDocument();
+    expect(
+      within(screen.getByTestId('ai-mobile-icon-panel')).queryByRole('button', {
+        name: 'open-fullscreen',
+      })
+    ).not.toBeInTheDocument();
     expect(screen.getByTestId('enhanced-ai-chat')).toBeInTheDocument();
 
     fireEvent.click(

@@ -37,6 +37,7 @@ export const Database = noop;
 export const Download = noop;
 export const ExternalLink = noop;
 export const File = noop;
+export const FileSearch = noop;
 export const FileText = noop;
 export const Filter = noop;
 export const Github = noop;

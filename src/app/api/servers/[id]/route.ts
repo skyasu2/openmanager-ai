@@ -214,7 +214,7 @@ export const GET = withAuth(
               processing_time_ms: Date.now() - startTime,
               timestamp: new Date().toISOString(),
             },
-            dataSource: 'hourly-scenarios',
+            dataSource: 'vercel-static-otel-hourly-scenarios',
             scenario: 'production',
           },
           data: {

@@ -242,7 +242,7 @@ async function handleServersUnified(
           },
           metadata: {
             action,
-            dataSource: 'otel-hourly-log-index',
+            dataSource: 'vercel-static-otel-hourly-log-index',
             logWindow: {
               start: logResult.metadata.windowStart,
               end: logResult.metadata.windowEnd,

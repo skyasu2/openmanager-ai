@@ -31,7 +31,7 @@ async function getHandler(_request: NextRequest) {
       ...report,
       resolvedAlerts: alertHistory.resolved,
       metadata: {
-        dataSource: 'hourly-data',
+        dataSource: 'vercel-static-otel-24h-rotation',
         processingTime,
       },
     };

@@ -110,16 +110,19 @@ export function LegacyLogView({
   displayLogs: LogEntry[];
 }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl shadow-2xl">
+    <div className="relative overflow-hidden rounded-2xl border border-slate-700/60 shadow-lg">
       <div className="absolute inset-0 bg-linear-to-br from-gray-900 via-gray-800 to-black" />
-      <div className="relative h-[500px] overflow-y-auto p-6 font-mono text-sm">
+      <div
+        className="relative h-[55vh] min-h-[320px] max-h-[500px] overflow-y-auto p-4 font-mono text-sm sm:p-6"
+        data-testid="server-log-terminal-scroll"
+      >
         {displayLogs.length > 0 ? (
           displayLogs.map((log: LogEntry, idx: number) => {
             const styles = getLogLevelStyles(log.level);
             return (
               <div
                 key={idx}
-                className={`animate-fade-in mb-3 flex items-start gap-3 rounded-lg p-3 backdrop-blur-sm ${styles.containerClass}`}
+                className={`animate-fade-in mb-3 flex min-w-0 items-start gap-3 rounded-lg p-3 backdrop-blur-sm ${styles.containerClass}`}
                 style={{ animationDelay: `${idx * 0.02}s` }}
               >
                 <div className="shrink-0">
@@ -129,8 +132,8 @@ export function LegacyLogView({
                     {log.level.toUpperCase()}
                   </span>
                 </div>
-                <div className="flex-1">
-                  <div className="mb-1 flex items-center gap-3">
+                <div className="min-w-0 flex-1">
+                  <div className="mb-1 flex flex-wrap items-center gap-3">
                     <span className="text-xs text-gray-400">
                       {formatTimestamp(log.timestamp)}
                     </span>
@@ -138,7 +141,12 @@ export function LegacyLogView({
                       [{log.source || 'system'}]
                     </span>
                   </div>
-                  <div className={styles.textClass}>{log.message}</div>
+                  <div
+                    className={`${styles.textClass} break-words`}
+                    data-testid="server-log-message"
+                  >
+                    {log.message}
+                  </div>
                 </div>
               </div>
             );
@@ -227,9 +235,9 @@ export const StreamsView: FC<{
         </span>
       </div>
 
-      <div className="relative overflow-hidden rounded-2xl shadow-2xl">
+      <div className="relative overflow-hidden rounded-2xl border border-slate-700/60 shadow-lg">
         <div className="absolute inset-0 bg-linear-to-br from-gray-900 via-gray-800 to-black" />
-        <div className="relative h-[500px] overflow-y-auto p-4 font-mono text-sm">
+        <div className="relative h-[55vh] min-h-[320px] max-h-[500px] overflow-y-auto p-4 font-mono text-sm">
           {streams.length > 0 ? (
             streams.map((stream, si) => {
               const streamKey = `${stream.stream.job}|${stream.stream.level}`;
@@ -242,7 +250,7 @@ export const StreamsView: FC<{
                     type="button"
                     onClick={() => toggleStream(streamKey)}
                     aria-expanded={isExpanded}
-                    className="mb-2 flex w-full items-center gap-2 rounded-lg bg-white/5 px-3 py-2 text-left transition-colors hover:bg-white/10"
+                    className="mb-2 flex w-full flex-wrap items-center gap-2 rounded-lg bg-white/5 px-3 py-2 text-left transition-colors hover:bg-white/10"
                   >
                     <span className="text-gray-400">
                       {isExpanded ? '\u25BC' : '\u25B6'}
@@ -264,12 +272,14 @@ export const StreamsView: FC<{
                     stream.values.map(([ns, line], li) => (
                       <div
                         key={li}
-                        className={`mb-1 flex items-start gap-3 rounded px-3 py-2 ${levelStyles.containerClass}`}
+                        className={`mb-1 flex min-w-0 items-start gap-3 rounded px-3 py-2 ${levelStyles.containerClass}`}
                       >
                         <span className="shrink-0 text-xs tabular-nums text-gray-500">
                           {formatNsTimestamp(ns)}
                         </span>
-                        <span className={`flex-1 ${levelStyles.textClass}`}>
+                        <span
+                          className={`min-w-0 flex-1 break-words ${levelStyles.textClass}`}
+                        >
                           {line}
                         </span>
                       </div>

@@ -100,7 +100,7 @@ function createReport(
     firingAlerts: [],
     resolvedAlerts: [],
     metadata: {
-      dataSource: 'hourly-data',
+      dataSource: 'vercel-static-otel-24h-rotation',
       processingTime: 5,
     },
     ...overrides,

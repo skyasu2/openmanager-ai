@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-29 KST (`AI Assistant UX polish completed`)
+**Last Updated**: 2026-04-29 KST (`Dashboard modal/search display hardening completed locally`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| — | — | — | No active task. |
+| _None_ | - | - | - |
 
 ---
 
@@ -31,6 +31,23 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-29 #219)
+- [x] Dashboard modal/search display hardening
+  - Plan completed: [dashboard-modal-search-hardening-plan.md](dashboard-modal-search-hardening-plan.md)
+  - 랜딩페이지 금지 경로를 제외하고 대시보드 모달만 개선
+  - `TopologyModal`, `AILoginRequiredModal` shell을 light mode로 정렬하고 graph/terminal dark 예외를 분리
+  - 로그 탐색기 필터 summary/reset, 로그 terminal 높이/줄바꿈, 알림 이력 row wrapping, 서버 상세 metrics/logs panel wrapping 보강
+  - OTel 표기를 Vercel public static + KST 24h rotating slot 모델로 정리
+  - QA 기록: `QA-20260429-0362`; targeted Vitest 31/31, local Playwright dashboard alerts/logs 6/6, type-check/lint/test:quick 통과
+
+### Completed (2026-04-29 #218)
+- [x] AI Assistant mobile full-page de-scope
+  - 모바일 `/dashboard/ai-assistant` 진입 시 별도 전체 페이지 워크스페이스를 유지하지 않고 `/dashboard`의 AI 사이드바로 handoff
+  - `AIWorkspace`의 모바일 전체페이지 전용 header/function nav 마크업 제거
+  - 모바일 사이드바 기능 레일에서는 불필요한 "전체 화면으로 열기" 버튼 숨김
+  - 기존 pending draft/function/analysisMode를 보존하면서 `fullscreen` target entry를 `sidebar` target으로 retarget
+  - 회귀 테스트: `AIWorkspace` 모바일 handoff, pending fullscreen entry 보존, `AISidebarV4` 모바일 fullscreen button 비노출
 
 ### Completed (2026-04-29 #217)
 - [x] AI Assistant UX polish

@@ -38,37 +38,40 @@ export function AILoginRequiredModal({
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DialogContent className="border-purple-500/30 bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 sm:max-w-md">
+      <DialogContent
+        className="border-gray-200 bg-white text-gray-900 sm:max-w-md"
+        data-testid="ai-login-required-modal-shell"
+      >
         <DialogHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-purple-500/20">
-            <Bot className="h-6 w-6 text-purple-400" />
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-purple-50 ring-1 ring-purple-100">
+            <Bot className="h-6 w-6 text-purple-600" />
           </div>
-          <DialogTitle className="text-xl font-semibold text-white">
+          <DialogTitle className="text-xl font-semibold text-gray-900">
             로그인이 필요합니다
           </DialogTitle>
-          <DialogDescription className="text-base text-slate-300">
+          <DialogDescription className="text-base text-gray-600">
             AI 어시스턴트 기능은 로그인 후 사용할 수 있습니다.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="mt-4 rounded-lg border border-slate-700 bg-slate-800/50 p-4">
-          <p className="text-sm leading-relaxed text-slate-400">
-            <span className="font-medium text-white">
+        <div className="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
+          <p className="text-sm leading-relaxed text-gray-600">
+            <span className="font-medium text-gray-900">
               {AUTH_PROVIDER_COPY.listInline}
             </span>{' '}
             인증으로 로그인하여 다음 기능을 이용하세요:
           </p>
-          <ul className="mt-3 space-y-2 text-sm text-slate-400">
+          <ul className="mt-3 space-y-2 text-sm text-gray-600">
             <li className="flex items-center gap-2">
-              <span className="text-purple-400">✦</span>
+              <span className="text-purple-600">•</span>
               AI 기반 서버 상태 분석
             </li>
             <li className="flex items-center gap-2">
-              <span className="text-purple-400">✦</span>
+              <span className="text-purple-600">•</span>
               AI Chat
             </li>
             <li className="flex items-center gap-2">
-              <span className="text-purple-400">✦</span>
+              <span className="text-purple-600">•</span>
               실시간 모니터링 인사이트
             </li>
           </ul>
@@ -78,7 +81,7 @@ export function AILoginRequiredModal({
           <Button
             variant="outline"
             onClick={onClose}
-            className="w-full border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white sm:w-auto"
+            className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-gray-900 sm:w-auto"
           >
             나중에
           </Button>

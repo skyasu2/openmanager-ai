@@ -1,0 +1,98 @@
+{
+  "runId": "QA-20260429-0362",
+  "recordedAt": "2026-04-28T18:07:07.122Z",
+  "recordedAtKst": "2026-04-29 03:07:07 KST",
+  "runTitle": "Dashboard Modal/Search Hardening Local QA",
+  "owner": "codex",
+  "source": "playwright-cli",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://localhost:3100",
+    "frontend": "Next.js local dev server",
+    "backend": "local API routes plus Vercel public static smoke",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "ad755d598dca7fd13feab5259830714567be0143"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["dashboard-core", "modal-detail-pack"],
+  "coveredSurfaces": [
+    "Dashboard active alerts modal",
+    "Dashboard alert history modal filters and wrapping contract",
+    "Dashboard log explorer keyword/level/source/server filters",
+    "Dashboard log explorer terminal panel and reset/filter summary",
+    "Dashboard topology and AI login-required modal light-mode contract",
+    "Enhanced server modal logs terminal bounded scroll contract",
+    "Enhanced server modal metrics controls wrapping",
+    "Dashboard static OTel labels for Vercel public 24h rotation",
+    "Vercel public OTel static assets: resource catalog, timeseries, current hour JSON",
+    "Vercel parity API KST 10-minute slot response"
+  ],
+  "skippedSurfaces": [
+    "Landing page routes and landing components - explicitly out of scope and not modified",
+    "AI sidebar and Cloud Run AI runtime - unchanged by this UI hardening",
+    "Database/Supabase live data migration - out of scope; static OTel data remains the contract"
+  ],
+  "checks": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "dashboard-modal-light-shells",
+      "title": "Dashboard modal light-mode shell alignment",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Vitest dashboard-modal-theme-contract passed; Topology and AI login-required modal shells are light while graph/terminal exceptions remain isolated.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-log-alert-filter-wrapping",
+      "title": "Dashboard log and alert filter/wrapping hardening",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Vitest AlertHistoryModal and LogExplorerModal contracts passed; Playwright dashboard-alerts-logs 6/6 passed locally.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-otel-static-labels",
+      "title": "Dashboard OTel static data labels aligned with Vercel public 24h rotation",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "DashboardSummary label tests passed; Vercel /data/otel-data catalog, timeseries, hour-03 JSON returned HTTP 200 HIT and /api/health?service=parity returned hour=3 globalSlotIndex=18.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Local Playwright command: PLAYWRIGHT_HTML_REPORT=0 PLAYWRIGHT_WORKERS=1 npx playwright test tests/e2e/dashboard-alerts-logs.spec.ts --config playwright.config.ts; result 6 passed.",
+    "Deterministic checks also passed: targeted Vitest 31 tests, npm run type-check, npm run lint, npm run test:quick.",
+    "This run is verification-only and non-counting because the hardening has not been deployed to Vercel production yet."
+  ],
+  "links": []
+}

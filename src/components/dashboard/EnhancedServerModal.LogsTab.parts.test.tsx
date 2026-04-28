@@ -7,6 +7,7 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   formatNsTimestamp,
   formatTimestamp,
+  LegacyLogView,
   StreamsView,
   ViewButton,
 } from './EnhancedServerModal.LogsTab.parts';
@@ -65,5 +66,28 @@ describe('EnhancedServerModal.LogsTab.parts', () => {
     });
     expect(streamToggle).toHaveAttribute('aria-expanded', 'false');
     fireEvent.click(streamToggle);
+  });
+
+  it('legacy log terminal keeps bounded internal scrolling for long logs', () => {
+    render(
+      <LegacyLogView
+        activeView="syslog"
+        displayLogs={[
+          {
+            timestamp: '2026-03-23T00:00:00Z',
+            level: 'error',
+            source: 'kernel',
+            message: 'x'.repeat(240),
+          },
+        ]}
+      />
+    );
+
+    const terminal = screen.getByTestId('server-log-terminal-scroll');
+    const message = screen.getByTestId('server-log-message');
+
+    expect(terminal).toHaveClass('overflow-y-auto');
+    expect(terminal).toHaveClass('max-h-[500px]');
+    expect(message).toHaveClass('break-words');
   });
 });

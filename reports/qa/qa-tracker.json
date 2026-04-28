@@ -2,20 +2,20 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-28T17:16:25.397Z"
+    "updatedAt": "2026-04-28T18:07:07.122Z"
   },
   "sequence": {
-    "nextRunNumber": 362
+    "nextRunNumber": 363
   },
   "summary": {
-    "totalRecordedRuns": 359,
+    "totalRecordedRuns": 360,
     "totalRuns": 293,
-    "excludedRuns": 66,
+    "excludedRuns": 67,
     "totalChecks": 2462,
     "totalPassed": 2373,
     "totalFailed": 80,
     "completionRate": 100,
-    "completedItems": 351,
+    "completedItems": 354,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 19,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260429-0360",
     "lastRecordedAt": "2026-04-28T16:57:31.077Z",
-    "latestRecordedRunId": "QA-20260429-0361",
-    "latestRecordedAt": "2026-04-28T17:16:25.397Z"
+    "latestRecordedRunId": "QA-20260429-0362",
+    "latestRecordedAt": "2026-04-28T18:07:07.122Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -8609,6 +8609,78 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-28T16:57:31.077Z"
+    },
+    "dashboard-modal-light-shells": {
+      "id": "dashboard-modal-light-shells",
+      "title": "Dashboard modal light-mode shell alignment",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260429-0362",
+      "firstSeenAt": "2026-04-28T18:07:07.122Z",
+      "lastSeenRunId": "QA-20260429-0362",
+      "lastSeenAt": "2026-04-28T18:07:07.122Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Vitest dashboard-modal-theme-contract passed; Topology and AI login-required modal shells are light while graph/terminal exceptions remain isolated.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-28T18:07:07.122Z"
+    },
+    "dashboard-log-alert-filter-wrapping": {
+      "id": "dashboard-log-alert-filter-wrapping",
+      "title": "Dashboard log and alert filter/wrapping hardening",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260429-0362",
+      "firstSeenAt": "2026-04-28T18:07:07.122Z",
+      "lastSeenRunId": "QA-20260429-0362",
+      "lastSeenAt": "2026-04-28T18:07:07.122Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Vitest AlertHistoryModal and LogExplorerModal contracts passed; Playwright dashboard-alerts-logs 6/6 passed locally.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-28T18:07:07.122Z"
+    },
+    "dashboard-otel-static-labels": {
+      "id": "dashboard-otel-static-labels",
+      "title": "Dashboard OTel static data labels aligned with Vercel public 24h rotation",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260429-0362",
+      "firstSeenAt": "2026-04-28T18:07:07.122Z",
+      "lastSeenRunId": "QA-20260429-0362",
+      "lastSeenAt": "2026-04-28T18:07:07.122Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "DashboardSummary label tests passed; Vercel /data/otel-data catalog, timeseries, hour-03 JSON returned HTTP 200 HIT and /api/health?service=parity returned hour=3 globalSlotIndex=18.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-28T18:07:07.122Z"
     }
   },
   "runs": [
@@ -34640,6 +34712,65 @@
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260429-0362",
+      "recordedAt": "2026-04-28T18:07:07.122Z",
+      "recordedAtKst": "2026-04-29 03:07:07 KST",
+      "title": "Dashboard Modal/Search Hardening Local QA",
+      "owner": "codex",
+      "source": "playwright-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260429-0362.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://localhost:3100",
+        "frontend": "Next.js local dev server",
+        "backend": "local API routes plus Vercel public static smoke",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "ad755d598dca7fd13feab5259830714567be0143"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "dashboard-core",
+        "modal-detail-pack"
+      ],
+      "coveredSurfaces": [
+        "Dashboard active alerts modal",
+        "Dashboard alert history modal filters and wrapping contract",
+        "Dashboard log explorer keyword/level/source/server filters",
+        "Dashboard log explorer terminal panel and reset/filter summary",
+        "Dashboard topology and AI login-required modal light-mode contract",
+        "Enhanced server modal logs terminal bounded scroll contract",
+        "Enhanced server modal metrics controls wrapping",
+        "Dashboard static OTel labels for Vercel public 24h rotation",
+        "Vercel public OTel static assets: resource catalog, timeseries, current hour JSON",
+        "Vercel parity API KST 10-minute slot response"
+      ],
+      "skippedSurfaces": [
+        "Landing page routes and landing components - explicitly out of scope and not modified",
+        "AI sidebar and Cloud Run AI runtime - unchanged by this UI hardening",
+        "Database/Supabase live data migration - out of scope; static OTel data remains the contract"
+      ],
+      "checks": {
+        "total": 11,
+        "passed": 11,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 3,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0

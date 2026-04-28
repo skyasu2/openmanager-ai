@@ -213,10 +213,12 @@ describe('DashboardSummary status filter cards', () => {
     );
 
     expect(
-      screen.getByText('Synthetic OTel snapshot · 12:20 KST (slot 74/143)')
+      screen.getByText('Vercel static OTel · 12:20 KST (slot 74/143)')
     ).toBeInTheDocument();
     expect(
-      screen.getByText('Dataset v1.0.0 · catalog 2026-02-15 03:56Z')
+      screen.getByText(
+        '24h rotating dataset v1.0.0 · catalog 2026-02-15 03:56Z'
+      )
     ).toBeInTheDocument();
   });
 
@@ -234,10 +236,10 @@ describe('DashboardSummary status filter cards', () => {
     );
 
     expect(
-      screen.getByText('Synthetic OTel snapshot · 17:20 KST (slot 104/143)')
+      screen.getByText('Vercel static OTel · 17:20 KST (slot 104/143)')
     ).toBeInTheDocument();
     expect(
-      screen.queryByText('Synthetic OTel snapshot · 17:30 KST (slot 105/143)')
+      screen.queryByText('Vercel static OTel · 17:30 KST (slot 105/143)')
     ).not.toBeInTheDocument();
   });
 });
