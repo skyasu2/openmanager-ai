@@ -275,6 +275,50 @@ describe('generateTextWithRetry', () => {
     expect(mockGenerateText).toHaveBeenCalledTimes(1);
   });
 
+  it('aborts the in-flight AI SDK call when the retry timeout elapses', async () => {
+    vi.useFakeTimers();
+    const observed: { signal?: AbortSignal } = {};
+
+    mockGenerateText.mockImplementationOnce(
+      (options: { abortSignal?: AbortSignal }) => {
+        observed.signal = options.abortSignal;
+        return new Promise((_resolve, reject) => {
+          options.abortSignal?.addEventListener('abort', () => {
+            reject(new Error('aborted by timeout signal'));
+          });
+        });
+      }
+    );
+
+    try {
+      const resultPromise = generateTextWithRetry(
+        {
+          messages: [{ role: 'user', content: 'timeout abort test' }],
+        },
+        ['groq'],
+        {
+          maxRetries: 0,
+          fallbackDelayMs: 0,
+          fallbackJitterMs: 0,
+          retryBudgetPerMinute: 10,
+          timeoutMs: 50,
+        }
+      );
+
+      await vi.advanceTimersByTimeAsync(50);
+      await vi.runOnlyPendingTimersAsync();
+      const result = await resultPromise;
+
+      expect(observed.signal).toBeDefined();
+      expect(observed.signal?.aborted).toBe(true);
+      expect(result.success).toBe(false);
+      expect(result.attempts).toHaveLength(1);
+      expect(result.attempts[0]?.error).toMatch(/abort|timeout/i);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('falls back to Mistral as last resort after Groq and Cerebras fail', async () => {
     mockGenerateText
       .mockRejectedValueOnce(new Error('rate limit exceeded: 429'))
