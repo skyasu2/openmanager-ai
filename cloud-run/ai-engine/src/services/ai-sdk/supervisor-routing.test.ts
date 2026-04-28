@@ -20,6 +20,17 @@ describe('createSystemPrompt', () => {
     expect(prompt).toContain('리소스 증설/업그레이드는 마지막 수단');
     expect(prompt).toContain('CPU 질의에는 CPU 원인 확인과 부하 분산 조치');
   });
+
+  it('should include agent routing context hints', () => {
+    const prompt = createSystemPrompt('desktop');
+
+    expect(prompt).toContain('에이전트 라우팅 힌트');
+    expect(prompt).toContain('이상감지/분석 질의는 Analyst Agent');
+    expect(prompt).toContain('보고서 생성은 Reporter Agent');
+    expect(prompt).toContain('해결 방법/명령어 추천은 Advisor Agent');
+    expect(prompt).toContain('단순 메트릭 조회는 NLQ Agent');
+    expect(prompt).toContain('이미지/스크린샷 분석은 Vision Agent');
+  });
 });
 
 // ============================================================================
