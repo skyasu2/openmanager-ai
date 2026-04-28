@@ -1,0 +1,89 @@
+{
+  "runId": "QA-20260429-0361",
+  "title": "v8.11.57 AI Assistant UX Polish Recheck",
+  "recordedAtKst": "2026-04-29 02:15 KST",
+  "release": "v8.11.57",
+  "commitSha": "830996352689ac410226c298ace68a2c6c39edf9",
+  "deployment": {
+    "id": "dpl_2BqXNZmdN6VE4od2z8VENgLqjWPU",
+    "url": "https://openmanager-kfdfy6hpy-skyasus-projects.vercel.app",
+    "alias": "https://openmanager-ai.vercel.app",
+    "status": "Ready"
+  },
+  "countsTowardSummary": false,
+  "apiChecks": {
+    "version": {
+      "status": "pass",
+      "version": "8.11.57",
+      "nextjs": "16.1.6",
+      "environment": "production"
+    },
+    "healthSimple": {
+      "status": "pass",
+      "body": {
+        "ping": "pong"
+      }
+    },
+    "healthAi": {
+      "status": "pass",
+      "body": {
+        "status": "ok",
+        "backend": "cloud-run",
+        "latency": 127
+      }
+    }
+  },
+  "playwrightChecks": {
+    "desktop": {
+      "viewport": {
+        "width": 1241,
+        "height": 994
+      },
+      "bodyBg": "rgb(255, 255, 255)",
+      "htmlBg": "rgb(255, 255, 255)",
+      "backgroundToken": "0 0% 100%",
+      "colorScheme": "light",
+      "versionVisible": true,
+      "providerRoutingVisible": true,
+      "systemContextVisible": true,
+      "legacyKoreanAiStatusVisible": false,
+      "quickCommandsVisible": true,
+      "tooSmallButtonsUnder24px": []
+    },
+    "mobile": {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "bodyBg": "rgb(255, 255, 255)",
+      "htmlBg": "rgb(255, 255, 255)",
+      "backgroundToken": "0 0% 100%",
+      "colorScheme": "light",
+      "legacyKoreanAiStatusVisible": false,
+      "tooSmallButtonsUnder44px": [],
+      "inputActionButtons": [
+        {
+          "label": "도구 메뉴 열기",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "메시지 전송",
+          "width": 44,
+          "height": 44
+        }
+      ]
+    }
+  },
+  "usageCheck": {
+    "platform": "vercel",
+    "method": "cli",
+    "status": "checked",
+    "result": "normal",
+    "summary": "Current billing period checked after v8.11.57 UX recheck; effective $18.4121, billed $0.0000, no unexpected billed usage."
+  },
+  "notes": [
+    "Verification-only rerun for the recently improved AI Assistant UX polish surface. QA-20260429-0360 remains the counted release-facing run for this build.",
+    "No heavy AI Cloud Tasks/SSE query was rerun because this recheck targets UI polish only."
+  ]
+}

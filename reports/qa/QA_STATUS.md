@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-29 01:57:31 KST
+> Generated at: 2026-04-29 02:16:25 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 358 |
+| Total Recorded Runs | 359 |
 | Total Runs (Counted) | 293 |
-| Non-counted Runs | 65 |
+| Non-counted Runs | 66 |
 | Total Checks | 2462 |
 | Passed | 2373 |
 | Failed | 80 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260429-0360 (2026-04-28T16:57:31.077Z) |
-| Latest Recorded Run | QA-20260429-0360 (2026-04-28T16:57:31.077Z) |
+| Latest Recorded Run | QA-20260429-0361 (2026-04-28T17:16:25.397Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,23 +34,21 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260429-0360 (2026-04-28T16:57:31.077Z)
+Latest run: QA-20260429-0361 (2026-04-28T17:16:25.397Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| Test Automation Architect | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
-| AI Quality Assurance Specialist | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked after v8.11.57 production QA; effective $18.4121, billed $0.0000, no unexpected billed usage. |
+| vercel | cli | checked | normal | Current billing period checked after v8.11.57 UX recheck; effective $18.4121, billed $0.0000, no unexpected billed usage. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-27T16:57:31.077Z -> 2026-04-28T16:57:31.077Z (24h)
+- Window: 2026-04-27T17:16:25.397Z -> 2026-04-28T17:16:25.397Z (24h)
 - Runs with observations: 3 recorded / 3 counted
 - Samples: 6
 
@@ -65,28 +63,26 @@ Latest run: QA-20260429-0360 (2026-04-28T16:57:31.077Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
-- Counts Toward Summary: yes
+- Release-Facing: no
+- Counts Toward Summary: no
 - Deployment: dpl_2BqXNZmdN6VE4od2z8VENgLqjWPU / SHA 83099635
-- Coverage Packs: ai-core, core-routes-smoke, observability-pack
-- Covered Surfaces: Vercel production /api/version reports 8.11.57, Vercel production /api/health?simple=true returns JSON 200, Vercel production /api/health?service=ai returns JSON 200 cloud-run backend, GitLab main pipeline 2486085286 success, GitLab tag pipeline v8.11.57 2486085266 success including Vercel deploy and AI Engine smoke, /dashboard/ai-assistant desktop Playwright render on v8.11.57, /dashboard/ai-assistant mobile Playwright render at 390x844, AI Assistant root/html/body light theme tokens: background 0 0% 100%, color-scheme light, AI Assistant desktop visible buttons all meet 24px target, AI Assistant mobile visible buttons all meet 44px target, System Context provider routing remains visible and legacy duplicate Korean AI status copy is absent
+- Coverage Packs: ai-core, core-routes-smoke
+- Covered Surfaces: Vercel production /api/version reports 8.11.57, Vercel production /api/health?simple=true returns JSON 200, Vercel production /api/health?service=ai returns JSON 200 cloud-run backend, /dashboard/ai-assistant desktop Playwright render on v8.11.57, /dashboard/ai-assistant mobile Playwright render at 390x844, AI Assistant root/html/body light theme tokens remain active, AI Assistant desktop visible buttons all meet 24px target, AI Assistant mobile visible buttons all meet 44px target, System Context provider routing remains visible and legacy duplicate Korean AI status copy is absent
 - Skipped Surfaces: guest AI assistant long-query SSE run - unchanged by UI polish and already covered by QA-20260428-0358, Cloud Tasks high-volume load test, full broad route pack
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab main pipeline v8.11.57 | [GitLab main pipeline v8.11.57](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2486085286) | - |
-| general | GitLab tag pipeline v8.11.57 | [GitLab tag pipeline v8.11.57](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2486085266) | - |
 | vercel-deployment | Vercel production deployment v8.11.57 | [Vercel production deployment v8.11.57](https://openmanager-kfdfy6hpy-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | AI assistant fullscreen desktop v8.11.57 | `reports/qa/evidence/QA-20260429-0360/qa-20260429-ai-assistant-fullscreen-desktop-v81157.png` | - |
-| playwright-screenshot | AI assistant fullscreen mobile v8.11.57 | `reports/qa/evidence/QA-20260429-0360/qa-20260429-ai-assistant-fullscreen-mobile-v81157.png` | - |
-| playwright-network | v8.11.57 AI assistant UX polish QA summary | `reports/qa/evidence/QA-20260429-0360/qa-20260429-v81157-ai-assistant-ux-polish-summary.json` | - |
+| playwright-screenshot | AI assistant UX recheck desktop v8.11.57 | `reports/qa/evidence/QA-20260429-0361/qa-20260429-ai-assistant-ux-recheck-desktop-v81157.png` | - |
+| playwright-screenshot | AI assistant UX recheck mobile v8.11.57 | `reports/qa/evidence/QA-20260429-0361/qa-20260429-ai-assistant-ux-recheck-mobile-v81157.png` | - |
+| playwright-network | v8.11.57 AI assistant UX recheck summary | `reports/qa/evidence/QA-20260429-0361/qa-20260429-v81157-ai-assistant-ux-recheck-summary.json` | - |
 
 ## Expert Domain Open Gaps
 
@@ -520,6 +516,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260429-0361 | 2026-04-28T17:16:25.397Z | targeted | no | no | v8.11.57 AI Assistant UX Polish Recheck | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260429-0360 | 2026-04-28T16:57:31.077Z | targeted | yes | yes | v8.11.57 AI Assistant UX Polish Production QA | 18 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260429-0359 | 2026-04-28T15:49:12.787Z | targeted | yes | yes | v8.11.54 Release Production Smoke | 14 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260428-0358 | 2026-04-28T13:24:51.649Z | targeted | yes | yes | Cloud Tasks Job Queue production smoke - v8.11.52 | 10 | 1 | 0 | 0 | 0 | 0 |
@@ -539,4 +536,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260424-0344 | 2026-04-24T07:55:51.473Z | targeted | no | yes | Production Playwright E2E - AI starter/direct dashboard parity guard | 2 | 1 | 0 | 0 | 0 | 1 |
 | QA-20260424-0343 | 2026-04-24T07:15:56.760Z | targeted | yes | yes | Vercel MCP QA - Frontend, AI Assistant, and Performance targeted validation | 14 | 0 | 0 | 0 | 0 | 2 |
 | QA-20260424-0342 | 2026-04-23T17:35:02.039Z | broad | yes | yes | Vercel broad production Playwright rerun on v8.11.32 after release-gate test harness fixes | 53 | 3 | 0 | 0 | 0 | 1 |
-| QA-20260424-0341 | 2026-04-23T16:21:52.417Z | targeted | yes | yes | Production landing accessibility recheck on v8.11.32 after decorative profile affordance fix | 5 | 1 | 0 | 0 | 0 | 1 |

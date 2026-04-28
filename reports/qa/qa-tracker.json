@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-28T16:57:31.077Z"
+    "updatedAt": "2026-04-28T17:16:25.397Z"
   },
   "sequence": {
-    "nextRunNumber": 361
+    "nextRunNumber": 362
   },
   "summary": {
-    "totalRecordedRuns": 358,
+    "totalRecordedRuns": 359,
     "totalRuns": 293,
-    "excludedRuns": 65,
+    "excludedRuns": 66,
     "totalChecks": 2462,
     "totalPassed": 2373,
     "totalFailed": 80,
@@ -23,8 +23,8 @@
     "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260429-0360",
     "lastRecordedAt": "2026-04-28T16:57:31.077Z",
-    "latestRecordedRunId": "QA-20260429-0360",
-    "latestRecordedAt": "2026-04-28T16:57:31.077Z"
+    "latestRecordedRunId": "QA-20260429-0361",
+    "latestRecordedAt": "2026-04-28T17:16:25.397Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -34549,6 +34549,97 @@
       "expertCount": 3,
       "expertNeedsImprovementCount": 0,
       "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260429-0361",
+      "recordedAt": "2026-04-28T17:16:25.397Z",
+      "recordedAtKst": "2026-04-29 02:16:25 KST",
+      "title": "v8.11.57 AI Assistant UX Polish Recheck",
+      "owner": "codex",
+      "source": "vercel-production-targeted",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260429-0361.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_2BqXNZmdN6VE4od2z8VENgLqjWPU",
+        "deploymentUrl": "https://openmanager-kfdfy6hpy-skyasus-projects.vercel.app",
+        "commitSha": "830996352689ac410226c298ace68a2c6c39edf9"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core",
+        "core-routes-smoke"
+      ],
+      "coveredSurfaces": [
+        "Vercel production /api/version reports 8.11.57",
+        "Vercel production /api/health?simple=true returns JSON 200",
+        "Vercel production /api/health?service=ai returns JSON 200 cloud-run backend",
+        "/dashboard/ai-assistant desktop Playwright render on v8.11.57",
+        "/dashboard/ai-assistant mobile Playwright render at 390x844",
+        "AI Assistant root/html/body light theme tokens remain active",
+        "AI Assistant desktop visible buttons all meet 24px target",
+        "AI Assistant mobile visible buttons all meet 44px target",
+        "System Context provider routing remains visible and legacy duplicate Korean AI status copy is absent"
+      ],
+      "skippedSurfaces": [
+        "guest AI assistant long-query SSE run - unchanged by UI polish and already covered by QA-20260428-0358",
+        "Cloud Tasks high-volume load test",
+        "full broad route pack"
+      ],
+      "checks": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-29T02:13:21+09:00",
+          "summary": "Current billing period checked after v8.11.57 UX recheck; effective $18.4121, billed $0.0000, no unexpected billed usage.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "AI assistant UX recheck desktop v8.11.57",
+          "path": "reports/qa/evidence/QA-20260429-0361/qa-20260429-ai-assistant-ux-recheck-desktop-v81157.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI assistant UX recheck mobile v8.11.57",
+          "path": "reports/qa/evidence/QA-20260429-0361/qa-20260429-ai-assistant-ux-recheck-mobile-v81157.png"
+        },
+        {
+          "type": "playwright-network",
+          "label": "v8.11.57 AI assistant UX recheck summary",
+          "path": "reports/qa/evidence/QA-20260429-0361/qa-20260429-v81157-ai-assistant-ux-recheck-summary.json"
+        }
+      ],
+      "links": [
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment v8.11.57",
+          "url": "https://openmanager-kfdfy6hpy-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
