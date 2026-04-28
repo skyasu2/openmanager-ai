@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.41](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.40...v8.11.41) (2026-04-28)
+
+
+### Bug Fixes
+
+* **ai-engine:** enforce verifier context guard ([275185b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/275185b20d72368ddccb538c975f03dec76e0bf5))
+
 ## [8.11.40](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.39...v8.11.40) (2026-04-28)
 
 
