@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.39](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.38...v8.11.39) (2026-04-28)
+
+
+### Features
+
+* **ai-chat:** add /debug-routing slash command ([37d17b2](https://gitlab.com/skyasu2/openmanager-ai/-/commit/37d17b2a784856d5d991e4323d972b3e0b8f95a7))
+
 ## [8.11.38](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.37...v8.11.38) (2026-04-27)
 
 
