@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.55](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.54...v8.11.55) (2026-04-28)
+
+
+### Features
+
+* ai assistant ux polish implement to pass specs ([c589706](https://gitlab.com/skyasu2/openmanager-ai/-/commit/c589706420cb7bb2737ae0ad40b542b984dd9389))
+
+
+### Tests
+
+* **spec:** ai assistant ux polish add failing tests before implementation ([b8c7309](https://gitlab.com/skyasu2/openmanager-ai/-/commit/b8c730971653789e9ec23dc44d74e2577d71bcdd))
+
 ## [8.11.54](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.53...v8.11.54) (2026-04-28)
 
 
