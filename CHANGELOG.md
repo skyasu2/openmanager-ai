@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.56](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.55...v8.11.56) (2026-04-28)
+
+
+### Bug Fixes
+
+* **ui:** scope ai assistant route light theme ([613ee74](https://gitlab.com/skyasu2/openmanager-ai/-/commit/613ee741cd4ad026aea5156c06454c46233041bc))
+
 ## [8.11.55](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.54...v8.11.55) (2026-04-28)
 
 
