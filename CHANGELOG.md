@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.48](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.47...v8.11.48) (2026-04-28)
+
+
+### Features
+
+* **ai:** add cloud tasks job dispatch mode ([6193207](https://gitlab.com/skyasu2/openmanager-ai/-/commit/6193207229f14b7414ccf27e7b5c57c5b2f175c7))
+
+
+### Bug Fixes
+
+* **db:** harden supabase rag public surface ([07d335c](https://gitlab.com/skyasu2/openmanager-ai/-/commit/07d335c7dec2a39c1a8f949fb6e90ad023e0b040))
+
+
+### Tests
+
+* **spec:** add cloud tasks job queue contract ([44cb6ea](https://gitlab.com/skyasu2/openmanager-ai/-/commit/44cb6ead27c0e9a9acd85c10873955e519690c36))
+* **spec:** add supabase hardening contract specs ([ad9bd6c](https://gitlab.com/skyasu2/openmanager-ai/-/commit/ad9bd6c93d7c9a136ad738c026fd9ffca4c32fdb))
+
 ## [8.11.47](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.46...v8.11.47) (2026-04-28)
 
 
