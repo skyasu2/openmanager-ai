@@ -20,6 +20,7 @@ import { enqueueCloudTask, getCloudTasksConfig } from '../lib/cloud-tasks';
 import { getPublicErrorResponse, handleApiError } from '../lib/error-handler';
 import { logger } from '../lib/logger';
 import { logAPIKeyStatus, validateAPIKeys } from '../lib/model-config';
+import { RATE_LIMIT_IDENTITY_HEADER } from '../middleware/rate-limiter';
 import {
   RETRIEVAL_MODES,
   RETRIEVAL_SUPPRESSED_REASONS,
@@ -71,6 +72,7 @@ const RETRIEVAL_MODE_SET = new Set<string>(RETRIEVAL_MODES);
 const RETRIEVAL_SUPPRESSED_REASON_SET = new Set<string>(
   RETRIEVAL_SUPPRESSED_REASONS
 );
+const PROCESSING_DUPLICATE_GRACE_MS = 30 * 60 * 1000;
 
 function isAnalysisMode(value: unknown): value is AnalysisMode {
   return value === 'auto' || value === 'thinking';
@@ -126,6 +128,13 @@ function extractJobProcessToolOptions(
       enableWebSearch: payload.enableWebSearch,
     }),
   };
+}
+
+function isRecentProcessingJob(startedAt?: string): boolean {
+  if (!startedAt) return true;
+  const startedAtMs = new Date(startedAt).getTime();
+  if (!Number.isFinite(startedAtMs)) return true;
+  return Date.now() - startedAtMs < PROCESSING_DUPLICATE_GRACE_MS;
 }
 
 /**
@@ -188,6 +197,28 @@ jobsRouter.post('/process', async (c: Context) => {
           fallback: 'Use /api/ai/supervisor directly',
         },
         503
+      );
+    }
+
+    const existingJob = await getJobResult(jobId);
+    const existingStatus =
+      typeof existingJob?.status === 'string' ? existingJob.status : undefined;
+    if (existingStatus === 'completed') {
+      logger.info(`[Jobs] Duplicate process delivery ignored for completed job ${jobId}`);
+      return c.json(
+        { success: true, jobId, status: 'completed', duplicate: true },
+        200
+      );
+    }
+
+    if (
+      existingStatus === 'processing' &&
+      isRecentProcessingJob(existingJob?.startedAt)
+    ) {
+      logger.info(`[Jobs] Duplicate process delivery ignored for active job ${jobId}`);
+      return c.json(
+        { success: true, jobId, status: 'processing', duplicate: true },
+        202
       );
     }
 
@@ -289,10 +320,16 @@ jobsRouter.post('/dispatch', async (c: Context) => {
     );
 
     const targetUrl = new URL('/api/jobs/process', c.req.url).toString();
+    const rateLimitIdentity = c.req.header(RATE_LIMIT_IDENTITY_HEADER)?.trim();
     const task = await enqueueCloudTask({
       config: cloudTasksConfig,
       targetUrl,
       payload,
+      headers: {
+        ...(rateLimitIdentity && {
+          [RATE_LIMIT_IDENTITY_HEADER]: rateLimitIdentity,
+        }),
+      },
     });
 
     await updateJobProgress(

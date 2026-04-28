@@ -55,6 +55,7 @@ describe('buildCreateTaskRequest', () => {
       },
       targetUrl: 'https://ai.example.run.app/api/jobs/process',
       payload,
+      headers: { 'X-Rate-Limit-Identity': 'guest:abc123' },
     });
 
     expect(request.parent).toBe(
@@ -68,6 +69,7 @@ describe('buildCreateTaskRequest', () => {
           url: 'https://ai.example.run.app/api/jobs/process',
           headers: {
             'Content-Type': 'application/json',
+            'X-Rate-Limit-Identity': 'guest:abc123',
             'X-API-Key': 'secret',
           },
           oidcToken: {

@@ -244,6 +244,62 @@ describe('Jobs Routes', () => {
       );
     });
 
+    it('completed job duplicate delivery는 AI 실행 없이 성공으로 반환한다', async () => {
+      vi.mocked(getJobResult).mockResolvedValueOnce({
+        status: 'completed',
+        result: 'cached response',
+        startedAt: '2026-04-28T00:00:00.000Z',
+        completedAt: '2026-04-28T00:00:05.000Z',
+      });
+
+      const res = await app.request('/jobs/process', {
+        method: 'POST',
+        body: JSON.stringify({
+          jobId: 'job-completed-duplicate',
+          messages: [{ role: 'user', content: '서버 상태 확인' }],
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      expect(res.status).toBe(200);
+      await expect(res.json()).resolves.toMatchObject({
+        success: true,
+        jobId: 'job-completed-duplicate',
+        status: 'completed',
+        duplicate: true,
+      });
+      expect(vi.mocked(markJobProcessing)).not.toHaveBeenCalled();
+      expect(vi.mocked(executeSupervisorStream)).not.toHaveBeenCalled();
+      expect(vi.mocked(storeJobResult)).not.toHaveBeenCalled();
+    });
+
+    it('processing job duplicate delivery는 AI 중복 실행 없이 202로 반환한다', async () => {
+      vi.mocked(getJobResult).mockResolvedValueOnce({
+        status: 'processing',
+        startedAt: new Date().toISOString(),
+      });
+
+      const res = await app.request('/jobs/process', {
+        method: 'POST',
+        body: JSON.stringify({
+          jobId: 'job-processing-duplicate',
+          messages: [{ role: 'user', content: '서버 상태 확인' }],
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      expect(res.status).toBe(202);
+      await expect(res.json()).resolves.toMatchObject({
+        success: true,
+        jobId: 'job-processing-duplicate',
+        status: 'processing',
+        duplicate: true,
+      });
+      expect(vi.mocked(markJobProcessing)).not.toHaveBeenCalled();
+      expect(vi.mocked(executeSupervisorStream)).not.toHaveBeenCalled();
+      expect(vi.mocked(storeJobResult)).not.toHaveBeenCalled();
+    });
+
     it('jobId 누락 시 400을 반환한다', async () => {
       const res = await app.request('/jobs/process', {
         method: 'POST',

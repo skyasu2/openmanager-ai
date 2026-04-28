@@ -357,7 +357,7 @@ describe('connectAsyncQuerySSE', () => {
     );
   });
 
-  it('calls onError with timeout message when "timeout" event fires', () => {
+  it('reconnects when the SSE route emits timeout before the job finishes', () => {
     const params = buildDefaultParams();
 
     connectAsyncQuerySSE(params);
@@ -366,10 +366,21 @@ describe('connectAsyncQuerySSE', () => {
     const timeoutPayload = { message: 'Request exceeded 60s limit' };
     es.emit('timeout', JSON.stringify(timeoutPayload));
 
-    expect(params.onError).toHaveBeenCalledWith('Request exceeded 60s limit');
+    expect(params.onError).not.toHaveBeenCalled();
+    expect(params.onProgress).toHaveBeenCalledWith({
+      stage: 'reconnecting',
+      progress: 50,
+      message: '재연결 중... (1/3)',
+    });
+    expect(es.readyState).toBe(MockEventSource.CLOSED);
+
+    vi.advanceTimersByTime(100);
+    const reconnected = getMock(params.eventSourceRef);
+    expect(reconnected).not.toBe(es);
+    expect(reconnected.url).toBe('/api/ai/jobs/test-job-123/stream');
   });
 
-  it('falls back to default timeout message when timeout data is unparseable', () => {
+  it('reconnects when timeout data is unparseable', () => {
     const params = buildDefaultParams();
 
     connectAsyncQuerySSE(params);
@@ -377,7 +388,12 @@ describe('connectAsyncQuerySSE', () => {
     const es = getMock(params.eventSourceRef);
     es.emit('timeout', '{invalid-json');
 
-    expect(params.onError).toHaveBeenCalledWith('Request timeout');
+    expect(params.onError).not.toHaveBeenCalled();
+    expect(params.onProgress).toHaveBeenCalledWith({
+      stage: 'reconnecting',
+      progress: 50,
+      message: '재연결 중... (1/3)',
+    });
   });
 
   it('calls onError when extractStreamError detects error in result response', () => {

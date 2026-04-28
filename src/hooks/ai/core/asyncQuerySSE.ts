@@ -72,6 +72,41 @@ export function connectAsyncQuerySSE(
     listenersRef.current.push({ eventType, handler });
   };
 
+  const scheduleReconnect = (message: string) => {
+    closeTrackedEventSource(eventSourceRef, listenersRef);
+
+    if (reconnectAttempt < maxReconnects) {
+      const delay = calculateBackoff(reconnectAttempt, 1000, 10000, 0.1);
+      logger.info(
+        `[AsyncAI] SSE disconnected, reconnecting in ${delay}ms (attempt ${reconnectAttempt + 1}/${maxReconnects})`
+      );
+      onProgress({
+        stage: 'reconnecting',
+        progress: getCurrentProgress(),
+        message: `재연결 중... (${reconnectAttempt + 1}/${maxReconnects})`,
+      });
+
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+
+      timeoutRef.current = setTimeout(() => {
+        if (eventSourceRef.current === null && timeoutRef.current === null) {
+          return;
+        }
+        try {
+          connectAsyncQuerySSE(params, reconnectAttempt + 1);
+        } catch (error) {
+          logger.error('[AsyncAI] Reconnection failed:', error);
+          onError('재연결에 실패했습니다.');
+        }
+      }, delay);
+      return;
+    }
+
+    onError(message);
+  };
+
   addTrackedListener('connected', () => {
     onConnected();
     if (reconnectAttempt > 0) {
@@ -184,45 +219,19 @@ export function connectAsyncQuerySSE(
       }
     }
 
-    closeTrackedEventSource(eventSourceRef, listenersRef);
-
-    if (reconnectAttempt < maxReconnects) {
-      const delay = calculateBackoff(reconnectAttempt, 1000, 10000, 0.1);
-      logger.info(
-        `[AsyncAI] SSE disconnected, reconnecting in ${delay}ms (attempt ${reconnectAttempt + 1}/${maxReconnects})`
-      );
-      onProgress({
-        stage: 'reconnecting',
-        progress: getCurrentProgress(),
-        message: `재연결 중... (${reconnectAttempt + 1}/${maxReconnects})`,
-      });
-
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-
-      timeoutRef.current = setTimeout(() => {
-        if (eventSourceRef.current === null && timeoutRef.current === null) {
-          return;
-        }
-        try {
-          connectAsyncQuerySSE(params, reconnectAttempt + 1);
-        } catch (error) {
-          logger.error('[AsyncAI] Reconnection failed:', error);
-          onError('재연결에 실패했습니다.');
-        }
-      }, delay);
-    } else {
-      onError('연결이 끊어졌습니다. 다시 시도해주세요.');
-    }
+    scheduleReconnect('연결이 끊어졌습니다. 다시 시도해주세요.');
   }) as EventListener);
 
   addTrackedListener('timeout', ((event: MessageEvent) => {
     try {
       const timeoutData = JSON.parse(event.data);
-      onError(timeoutData.message || 'Request timeout');
+      const message =
+        typeof timeoutData.message === 'string'
+          ? timeoutData.message
+          : 'Request timeout';
+      scheduleReconnect(message);
     } catch {
-      onError('Request timeout');
+      scheduleReconnect('Request timeout');
     }
   }) as EventListener);
 }

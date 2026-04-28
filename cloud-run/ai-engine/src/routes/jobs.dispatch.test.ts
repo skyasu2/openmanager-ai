@@ -78,7 +78,10 @@ describe('POST /jobs/dispatch', () => {
 
     const res = await app.request('/jobs/dispatch', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Rate-Limit-Identity': 'guest:abc123',
+      },
       body: JSON.stringify(payload),
     });
 
@@ -98,6 +101,7 @@ describe('POST /jobs/dispatch', () => {
       }),
       targetUrl: 'http://localhost/api/jobs/process',
       payload,
+      headers: { 'X-Rate-Limit-Identity': 'guest:abc123' },
     });
     expect(mockUpdateJobProgress).toHaveBeenCalledWith(
       'job-123',

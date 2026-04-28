@@ -28,6 +28,7 @@ export interface EnqueueCloudTaskInput {
   config: Extract<CloudTasksConfigResult, { ok: true }>;
   targetUrl: string;
   payload: Record<string, unknown>;
+  headers?: Record<string, string | undefined>;
 }
 
 export interface EnqueueCloudTaskResult {
@@ -142,11 +143,23 @@ export function buildCreateTaskRequest(input: EnqueueCloudTaskInput): {
   body: Record<string, unknown>;
 } {
   const parent = getCloudTasksParent(input.config);
+  const forwardedHeaders = Object.fromEntries(
+    Object.entries(input.headers ?? {}).flatMap(([key, value]) => {
+      const normalizedKey = key.toLowerCase();
+      if (normalizedKey === 'content-type' || normalizedKey === 'x-api-key') {
+        return [];
+      }
+
+      const trimmedValue = value?.trim();
+      return trimmedValue ? [[key, trimmedValue]] : [];
+    })
+  );
   const httpRequest: Record<string, unknown> = {
     httpMethod: 'POST',
     url: input.targetUrl,
     headers: {
       'Content-Type': 'application/json',
+      ...forwardedHeaders,
       'X-API-Key': input.config.apiSecret,
     },
     body: Buffer.from(JSON.stringify(input.payload), 'utf8').toString('base64'),
