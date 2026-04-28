@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.58](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.57...v8.11.58) (2026-04-28)
+
+
+### Features
+
+* **ci:** add deployment drift guards ([11050b5](https://gitlab.com/skyasu2/openmanager-ai/-/commit/11050b5c822e61164cf708164761ae21ede2017f))
+
+
+### Bug Fixes
+
+* **api:** harden health cache and cloud tasks payload ([8ae938e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/8ae938e257f37260d0cff3ce9cc3ff40716af038))
+* **ui:** harden dashboard modals and mobile ai handoff ([dcf8f41](https://gitlab.com/skyasu2/openmanager-ai/-/commit/dcf8f4138c9f90b03bb37b903b89855585073ccc))
+
+
+### Tests
+
+* **qa:** record vercel propagation drift check ([303ff18](https://gitlab.com/skyasu2/openmanager-ai/-/commit/303ff18f60a5a2f517aaa773ed535dbb3d32ad99))
+* **spec:** add deployment drift guard failing tests ([975686a](https://gitlab.com/skyasu2/openmanager-ai/-/commit/975686ad19f10fa1a6849cd0f7a1b7889a15fcea))
+
 ## [8.11.57](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.56...v8.11.57) (2026-04-28)
 
 
