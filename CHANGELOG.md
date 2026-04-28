@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.49](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.48...v8.11.49) (2026-04-28)
+
+
+### Bug Fixes
+
+* **ai:** harden job queue dispatch retries ([560ae83](https://gitlab.com/skyasu2/openmanager-ai/-/commit/560ae837d570489df0ba271e73c453c6bec1f84e))
+
 ## [8.11.48](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.47...v8.11.48) (2026-04-28)
 
 
