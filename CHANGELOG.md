@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.54](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.53...v8.11.54) (2026-04-28)
+
+
+### Bug Fixes
+
+* **api:** harden health checks and cloud task dispatch ([0842c85](https://gitlab.com/skyasu2/openmanager-ai/-/commit/0842c85dba187cb05dca4a012a6b84d2219dacdf))
+
 ## [8.11.53](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.52...v8.11.53) (2026-04-28)
 
 
