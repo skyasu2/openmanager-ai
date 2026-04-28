@@ -16,10 +16,15 @@
 import type { Context } from 'hono';
 import { Hono } from 'hono';
 
-import { enqueueCloudTask, getCloudTasksConfig } from '../lib/cloud-tasks';
+import {
+  CloudTasksPayloadTooLargeError,
+  enqueueCloudTask,
+  getCloudTasksConfig,
+} from '../lib/cloud-tasks';
 import { getPublicErrorResponse, handleApiError } from '../lib/error-handler';
 import { logger } from '../lib/logger';
 import { logAPIKeyStatus, validateAPIKeys } from '../lib/model-config';
+import { createErrorResponse, ErrorCodes } from '../types/api-response';
 import { RATE_LIMIT_IDENTITY_HEADER } from '../middleware/rate-limiter';
 import {
   RETRIEVAL_MODES,
@@ -393,6 +398,23 @@ jobsRouter.post('/dispatch', async (c: Context) => {
       202
     );
   } catch (error) {
+    if (error instanceof CloudTasksPayloadTooLargeError) {
+      logger.warn(
+        `[Jobs] Cloud Tasks payload too large: ${error.payloadBytes}/${error.maxBytes} bytes`
+      );
+      return c.json(
+        createErrorResponse(
+          'Cloud Tasks payload too large',
+          ErrorCodes.PAYLOAD_TOO_LARGE,
+          {
+            payloadBytes: error.payloadBytes,
+            maxBytes: error.maxBytes,
+          }
+        ),
+        413
+      );
+    }
+
     return handleApiError(c, error, 'Jobs dispatch');
   }
 });

@@ -37,6 +37,10 @@ function classifyError(error: unknown): { code: ErrorCode; status: ContentfulSta
     return { code: ErrorCodes.TIMEOUT, status: 504 };
   }
 
+  if (message.includes('payload too large') || message.includes('request entity too large')) {
+    return { code: ErrorCodes.PAYLOAD_TOO_LARGE, status: 413 };
+  }
+
   // Model/Provider errors
   if (message.includes('failed to call a function') || message.includes('function call')) {
     return { code: ErrorCodes.MODEL_ERROR, status: 503 };
@@ -66,6 +70,7 @@ const ERROR_STATUS_BY_CODE: Record<string, ContentfulStatusCode> = {
   [ErrorCodes.UNAUTHORIZED]: 401,
   [ErrorCodes.VALIDATION_ERROR]: 400,
   [ErrorCodes.BAD_REQUEST]: 400,
+  [ErrorCodes.PAYLOAD_TOO_LARGE]: 413,
   [ErrorCodes.NOT_FOUND]: 404,
   [ErrorCodes.RATE_LIMIT]: 429,
   [ErrorCodes.TIMEOUT]: 504,
@@ -84,6 +89,7 @@ const PUBLIC_ERROR_MESSAGES: Record<string, string> = {
   [ErrorCodes.UNAUTHORIZED]: 'Unauthorized',
   [ErrorCodes.VALIDATION_ERROR]: 'Invalid request',
   [ErrorCodes.BAD_REQUEST]: 'Invalid request',
+  [ErrorCodes.PAYLOAD_TOO_LARGE]: 'Payload too large',
   [ErrorCodes.NOT_FOUND]: 'Resource not found',
   [ErrorCodes.RATE_LIMIT]: 'Rate limit exceeded',
   [ErrorCodes.TIMEOUT]: 'Request timed out',

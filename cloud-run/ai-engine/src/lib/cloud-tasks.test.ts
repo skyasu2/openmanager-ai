@@ -14,6 +14,8 @@ vi.mock('./logger', () => ({
 
 import {
   buildCreateTaskRequest,
+  CLOUD_TASKS_MAX_PAYLOAD_BYTES,
+  CloudTasksPayloadTooLargeError,
   enqueueCloudTask,
   getCloudTasksConfig,
 } from './cloud-tasks';
@@ -138,6 +140,33 @@ describe('buildCreateTaskRequest', () => {
       'X-Rate-Limit-Identity': 'guest:abc123',
       'X-API-Key': 'secret',
     });
+  });
+
+  it('rejects payloads that exceed the Cloud Tasks enqueue budget', () => {
+    const oversizedPayload = {
+      jobId: 'job-oversized',
+      messages: [
+        {
+          role: 'user',
+          content: 'x'.repeat(CLOUD_TASKS_MAX_PAYLOAD_BYTES),
+        },
+      ],
+    };
+
+    expect(() =>
+      buildCreateTaskRequest({
+        config: {
+          ok: true,
+          projectId: 'test-project',
+          location: 'asia-northeast1',
+          queueId: 'ai-jobs',
+          apiSecret: 'secret',
+          dispatchDeadlineSeconds: 600,
+        },
+        targetUrl: 'https://ai.example.run.app/api/jobs/process',
+        payload: oversizedPayload,
+      })
+    ).toThrow(CloudTasksPayloadTooLargeError);
   });
 });
 

@@ -32,10 +32,14 @@ vi.mock('../lib/job-notifier', () => ({
   getJobProgress: vi.fn(async () => null),
 }));
 
-vi.mock('../lib/cloud-tasks', () => ({
-  enqueueCloudTask: mockEnqueueCloudTask,
-  getCloudTasksConfig: mockGetCloudTasksConfig,
-}));
+vi.mock('../lib/cloud-tasks', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../lib/cloud-tasks')>();
+  return {
+    ...actual,
+    enqueueCloudTask: mockEnqueueCloudTask,
+    getCloudTasksConfig: mockGetCloudTasksConfig,
+  };
+});
 
 vi.mock('../services/ai-sdk', () => ({
   executeSupervisorStream: vi.fn(async function* () {}),
@@ -43,6 +47,7 @@ vi.mock('../services/ai-sdk', () => ({
 }));
 
 import { jobsRouter } from './jobs';
+import { CloudTasksPayloadTooLargeError } from '../lib/cloud-tasks';
 
 const app = new Hono();
 app.route('/jobs', jobsRouter);
@@ -181,6 +186,34 @@ describe('POST /jobs/dispatch', () => {
         targetUrl: 'https://ai-engine-jdhrhws7ia-an.a.run.app/api/jobs/process',
       })
     );
+  });
+
+  it('returns 413 when the Cloud Tasks payload is too large to enqueue', async () => {
+    mockEnqueueCloudTask.mockRejectedValue(
+      new CloudTasksPayloadTooLargeError({
+        payloadBytes: 70000,
+        maxBytes: 65536,
+      })
+    );
+
+    const res = await app.request('/jobs/dispatch', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jobId: 'job-oversized',
+        messages: [{ role: 'user', content: 'server health' }],
+      }),
+    });
+
+    expect(res.status).toBe(413);
+    await expect(res.json()).resolves.toMatchObject({
+      success: false,
+      code: 'PAYLOAD_TOO_LARGE',
+      details: {
+        payloadBytes: 70000,
+        maxBytes: 65536,
+      },
+    });
   });
 
   it('returns 503 when Cloud Tasks is not configured', async () => {

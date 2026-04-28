@@ -51,9 +51,31 @@ const CREATE_TASK_TIMEOUT_MS = 5000;
 const CREATE_TASK_MAX_ATTEMPTS = 2;
 const CREATE_TASK_RETRY_BASE_DELAY_MS = 150;
 const CREATE_TASK_RETRY_JITTER_MS = 100;
+export const CLOUD_TASKS_MAX_PAYLOAD_BYTES = 64 * 1024;
 const FORWARDED_TASK_HEADER_ALLOWLIST = new Map([
   ['x-rate-limit-identity', 'X-Rate-Limit-Identity'],
 ]);
+
+export class CloudTasksPayloadTooLargeError extends Error {
+  readonly code = 'PAYLOAD_TOO_LARGE' as const;
+  readonly payloadBytes: number;
+  readonly maxBytes: number;
+
+  constructor({
+    payloadBytes,
+    maxBytes,
+  }: {
+    payloadBytes: number;
+    maxBytes: number;
+  }) {
+    super(
+      `Cloud Tasks payload too large: ${payloadBytes} bytes exceeds ${maxBytes} bytes`
+    );
+    this.name = 'CloudTasksPayloadTooLargeError';
+    this.payloadBytes = payloadBytes;
+    this.maxBytes = maxBytes;
+  }
+}
 
 function getTrimmedEnv(name: string): string {
   return process.env[name]?.trim() ?? '';
@@ -162,12 +184,27 @@ function buildForwardedTaskHeaders(
   );
 }
 
+function serializeCloudTaskPayload(payload: Record<string, unknown>): string {
+  const serializedPayload = JSON.stringify(payload);
+  const payloadBytes = Buffer.byteLength(serializedPayload, 'utf8');
+
+  if (payloadBytes > CLOUD_TASKS_MAX_PAYLOAD_BYTES) {
+    throw new CloudTasksPayloadTooLargeError({
+      payloadBytes,
+      maxBytes: CLOUD_TASKS_MAX_PAYLOAD_BYTES,
+    });
+  }
+
+  return serializedPayload;
+}
+
 export function buildCreateTaskRequest(input: EnqueueCloudTaskInput): {
   parent: string;
   body: Record<string, unknown>;
 } {
   const parent = getCloudTasksParent(input.config);
   const forwardedHeaders = buildForwardedTaskHeaders(input.headers);
+  const serializedPayload = serializeCloudTaskPayload(input.payload);
   const httpRequest: Record<string, unknown> = {
     httpMethod: 'POST',
     url: input.targetUrl,
@@ -176,7 +213,7 @@ export function buildCreateTaskRequest(input: EnqueueCloudTaskInput): {
       ...forwardedHeaders,
       'X-API-Key': input.config.apiSecret,
     },
-    body: Buffer.from(JSON.stringify(input.payload), 'utf8').toString('base64'),
+    body: Buffer.from(serializedPayload, 'utf8').toString('base64'),
   };
 
   if (input.config.serviceAccountEmail) {

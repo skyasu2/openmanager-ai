@@ -352,4 +352,32 @@ describe('Health Route Contract (/api/health)', () => {
     expect(payload.cached).toBe(true);
     expect(payload.cacheAge).toBeTypeOf('number');
   });
+
+  it('development 런타임에서는 전체 헬스체크 응답을 캐시하지 않는다', async () => {
+    process.env.NODE_ENV = 'development';
+
+    const { GET } = await importRoute();
+    const request = new NextRequest('http://localhost/api/health');
+
+    const firstResponse = await GET(request);
+    expect(firstResponse.status).toBe(200);
+    expect(firstResponse.headers.get('X-Cache')).toBe('MISS');
+    expect(firstResponse.headers.get('Cache-Control')).toBe('no-store');
+
+    const secondResponse = await GET(
+      new NextRequest('http://localhost/api/health')
+    );
+    expect(secondResponse.status).toBe(200);
+    expect(secondResponse.headers.get('X-Cache')).toBe('MISS');
+    expect(secondResponse.headers.get('Cache-Control')).toBe('no-store');
+
+    const payload = (await secondResponse.json()) as {
+      cached?: boolean;
+      cacheAge?: number;
+    };
+
+    expect(payload.cached).toBeUndefined();
+    expect(payload.cacheAge).toBeUndefined();
+    expect(mockCreateClient).toHaveBeenCalledTimes(2);
+  });
 });
