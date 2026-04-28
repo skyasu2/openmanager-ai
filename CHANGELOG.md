@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.47](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.46...v8.11.47) (2026-04-28)
+
+
+### Features
+
+* **ai:** implement source auto on modes ([5132f87](https://gitlab.com/skyasu2/openmanager-ai/-/commit/5132f8767ea014b8ffb8de044697bd6da028abf8))
+
+
+### Bug Fixes
+
+* **ai:** gate resumable stream redis writes ([9a915ba](https://gitlab.com/skyasu2/openmanager-ai/-/commit/9a915ba953e9fdb8b9544e23b21d7d1ed36e3be1))
+* **ai:** preserve job metadata and redis startup ([9539ffb](https://gitlab.com/skyasu2/openmanager-ai/-/commit/9539ffb1e886ea54f45c8bc86d61e03f555cebec))
+* **ai:** restore fullscreen mobile function nav ([349422b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/349422b4dc0084688c698848adc7075f7d6a531e))
+
+
+### Tests
+
+* **spec:** add ai source mode contract specs ([f709657](https://gitlab.com/skyasu2/openmanager-ai/-/commit/f7096571c17e2988b7e1fd6d053fadc9cbe338f6))
+
 ## [8.11.46](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.45...v8.11.46) (2026-04-28)
 
 
