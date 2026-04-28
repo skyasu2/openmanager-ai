@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-28 KST (`AI Provider 품질 개선 완료`)
+**Last Updated**: 2026-04-28 KST (`AI Assistant source mode 정리 진행`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| — | — | Empty | Active Task 없음 |
+| #210 AI Assistant source mode contract | P1 | In Progress | `RAG 검색`/`Web 검색` 명칭은 유지하고 괄호 설명 추가. UI는 Auto/On만 노출하고 Auto는 요청 옵션 생략으로 Cloud Run conservative auto-detect 사용. Plan: [ai-assistant-source-mode-plan.md](ai-assistant-source-mode-plan.md) |
 
 ---
 

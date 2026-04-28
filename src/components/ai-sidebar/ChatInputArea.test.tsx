@@ -107,12 +107,16 @@ describe('ChatInputArea popover', () => {
     const toggle = screen.getByRole('button', { name: '도구 메뉴 열기' });
     fireEvent.click(toggle);
 
-    expect(screen.getByText('Web 검색')).toBeInTheDocument();
-    expect(screen.getByText('최신 외부 정보 확인')).toBeInTheDocument();
+    expect(screen.getByText('Web 검색 (외부 웹)')).toBeInTheDocument();
+    expect(
+      screen.getByText('최신 문서/CVE는 보수적 자동 판단')
+    ).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: 'Auto' })).toHaveLength(2);
+    expect(screen.getAllByRole('button', { name: 'On' })).toHaveLength(2);
 
     fireEvent.touchStart(document.body);
 
-    expect(screen.queryByText('Web 검색')).not.toBeInTheDocument();
+    expect(screen.queryByText('Web 검색 (외부 웹)')).not.toBeInTheDocument();
   });
 
   it('closes the tool popover on Escape and restores focus to the toggle button', () => {
@@ -121,12 +125,47 @@ describe('ChatInputArea popover', () => {
     const toggle = screen.getByRole('button', { name: '도구 메뉴 열기' });
     fireEvent.click(toggle);
 
-    expect(screen.getByText('Web 검색')).toBeInTheDocument();
+    expect(screen.getByText('Web 검색 (외부 웹)')).toBeInTheDocument();
 
     fireEvent.keyDown(document, { key: 'Escape' });
 
-    expect(screen.queryByText('Web 검색')).not.toBeInTheDocument();
+    expect(screen.queryByText('Web 검색 (외부 웹)')).not.toBeInTheDocument();
     expect(toggle).toHaveFocus();
+  });
+
+  it('keeps RAG/Web names and explains them with short parenthetical labels', () => {
+    render(
+      <ChatInputArea
+        textareaRef={createRef<HTMLTextAreaElement>()}
+        fileInputRef={createRef<HTMLInputElement>()}
+        inputValue=""
+        setInputValue={vi.fn()}
+        isGenerating={false}
+        attachments={[]}
+        isDragging={false}
+        fileErrors={[]}
+        canAddMore={true}
+        previewImage={null}
+        dragHandlers={{}}
+        onSendWithAttachments={vi.fn()}
+        onOpenFileDialog={vi.fn()}
+        onFileSelect={vi.fn()}
+        onImageClick={vi.fn()}
+        onClosePreviewModal={vi.fn()}
+        onRemoveFile={vi.fn()}
+        onClearFileErrors={vi.fn()}
+        onPaste={vi.fn()}
+        onToggleRAG={vi.fn()}
+        onToggleWebSearch={vi.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '도구 메뉴 열기' }));
+
+    expect(screen.getByText('RAG 검색 (내부 지식)')).toBeInTheDocument();
+    expect(screen.getByText('Web 검색 (외부 웹)')).toBeInTheDocument();
+    expect(screen.queryByText('내부 지식')).not.toBeInTheDocument();
+    expect(screen.queryByText('외부 웹')).not.toBeInTheDocument();
   });
 
   it('labels active input badges as allowed tools rather than used tools', () => {
@@ -158,8 +197,8 @@ describe('ChatInputArea popover', () => {
       />
     );
 
-    expect(screen.getByText('RAG 허용')).toBeInTheDocument();
-    expect(screen.getByText('Web 허용')).toBeInTheDocument();
+    expect(screen.getByText('RAG On')).toBeInTheDocument();
+    expect(screen.getByText('Web On')).toBeInTheDocument();
     expect(screen.queryByText('RAG 사용됨')).not.toBeInTheDocument();
     expect(screen.queryByText('Web 사용됨')).not.toBeInTheDocument();
   });
