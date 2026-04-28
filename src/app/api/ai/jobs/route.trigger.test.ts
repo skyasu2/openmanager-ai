@@ -71,6 +71,7 @@ describe('POST /api/ai/jobs trigger readiness', () => {
   const originalEnabled = process.env.CLOUD_RUN_ENABLED;
   const originalUrl = process.env.CLOUD_RUN_AI_URL;
   const originalSecret = process.env.CLOUD_RUN_API_SECRET;
+  const originalTriggerMode = process.env.AI_JOB_TRIGGER_MODE;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -91,6 +92,7 @@ describe('POST /api/ai/jobs trigger readiness', () => {
     process.env.CLOUD_RUN_ENABLED = 'false';
     process.env.CLOUD_RUN_AI_URL = 'https://example-ai.run.app';
     process.env.CLOUD_RUN_API_SECRET = 'test-secret';
+    delete process.env.AI_JOB_TRIGGER_MODE;
   });
 
   afterEach(() => {
@@ -98,6 +100,7 @@ describe('POST /api/ai/jobs trigger readiness', () => {
     process.env.CLOUD_RUN_ENABLED = originalEnabled;
     process.env.CLOUD_RUN_AI_URL = originalUrl;
     process.env.CLOUD_RUN_API_SECRET = originalSecret;
+    process.env.AI_JOB_TRIGGER_MODE = originalTriggerMode;
   });
 
   it('Cloud Run readiness가 false면 초기 triggerStatus를 skipped로 반환한다', async () => {
@@ -199,6 +202,57 @@ describe('POST /api/ai/jobs trigger readiness', () => {
       enableRAG: true,
       enableWebSearch: true,
     });
+
+    const workerBody = JSON.parse(
+      (
+        mockFetch.mock.calls[0]?.[1] as {
+          body: string;
+        }
+      ).body
+    ) as Record<string, unknown>;
+    expect(workerBody).toMatchObject({
+      sessionId: 'session-1234',
+      analysisMode: 'thinking',
+      enableRAG: true,
+      enableWebSearch: true,
+    });
+  });
+
+  it('Cloud Tasks trigger mode dispatches to the short Cloud Run dispatcher endpoint', async () => {
+    process.env.CLOUD_RUN_ENABLED = 'true';
+    process.env.AI_JOB_TRIGGER_MODE = 'cloud-tasks';
+
+    const { POST } = await importRoute();
+    const request = new NextRequest('http://localhost/api/ai/jobs', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        cookie: 'auth_session_id=guest-session-xyz',
+      },
+      body: JSON.stringify({
+        query: 'server health',
+        options: {
+          sessionId: 'session-1234',
+          metadata: {
+            analysisMode: 'thinking',
+            enableRAG: true,
+            enableWebSearch: true,
+          },
+        },
+      }),
+    });
+
+    const response = await POST(request);
+    const scheduled = mockAfter.mock.calls[0]?.[0] as
+      | (() => Promise<void>)
+      | undefined;
+    await scheduled?.();
+
+    expect(response.status).toBe(201);
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(mockFetch.mock.calls[0]?.[0]).toBe(
+      'https://example-ai.run.app/api/jobs/dispatch'
+    );
 
     const workerBody = JSON.parse(
       (

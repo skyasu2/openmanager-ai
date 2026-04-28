@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-28 KST (`Supabase free-tier hardening 완료`)
+**Last Updated**: 2026-04-28 KST (`Cloud Tasks Job Queue 개선 착수`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| — | — | Empty | Active Task 없음 |
+| #213 Cloud Tasks Job Queue async execution | High | Approved | Vercel direct long worker trigger를 Cloud Run dispatch + Cloud Tasks HTTP task 경로로 분리. Plan: [cloud-tasks-job-queue-plan.md](cloud-tasks-job-queue-plan.md) |
 
 ---
 
