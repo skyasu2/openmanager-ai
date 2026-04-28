@@ -416,4 +416,50 @@ describe('vercel-post-deploy-smoke', () => {
       'expected deployed version 9.2.0, got 9.0.0'
     );
   });
+
+  it('fails when deployed commitSha does not match the expected commit sha', async () => {
+    if (!isLoopbackBindAvailable) return;
+
+    const baseUrl = await startServer((req, res) => {
+      const pathname = new URL(req.url || '/', 'http://127.0.0.1').pathname;
+
+      if (pathname === '/') {
+        writeHtml(res, '<html><body><h1>OpenManager AI</h1></body></html>');
+        return;
+      }
+
+      if (pathname === '/validation') {
+        writeHtml(
+          res,
+          '<html><body><main>Validation Evidence</main></body></html>'
+        );
+        return;
+      }
+
+      if (pathname === '/api/version') {
+        writeJson(res, {
+          version: '9.2.0',
+          buildVersion: '9.2.0',
+          environment: 'production',
+          commitSha: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        });
+        return;
+      }
+
+      res.statusCode = 404;
+      res.end('not found');
+    });
+
+    const result = await runScript(createTempWorkspace(), [
+      `--url=${baseUrl}`,
+      '--retries=0',
+      '--expected-version=9.2.0',
+      '--expected-commit-sha=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+    ]);
+
+    expect(result.status).toBe(1);
+    expect(`${result.stdout}${result.stderr}`).toContain(
+      'expected deployed commit bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, got aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+    );
+  });
 });

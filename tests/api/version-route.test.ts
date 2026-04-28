@@ -53,6 +53,28 @@ describe('GET /api/version', () => {
     expect(body.environment).toBe('production');
   });
 
+  it('exposes deployment commit metadata from explicit app env first', async () => {
+    vi.stubEnv('APP_COMMIT_SHA', 'abcdef1234567890fedcba');
+    vi.stubEnv('CI_COMMIT_SHA', '11111111111111111111');
+
+    const body = await importAndCall();
+
+    expect(body.commitSha).toBe('abcdef1234567890fedcba');
+    expect(body.shortCommitSha).toBe('abcdef1234');
+  });
+
+  it('exposes release tag and pipeline url for production traceability', async () => {
+    vi.stubEnv('APP_RELEASE_TAG', 'v8.12.0');
+    vi.stubEnv('CI_COMMIT_TAG', 'v8.11.99');
+    vi.stubEnv('APP_PIPELINE_URL', 'https://gitlab.example/pipelines/1');
+
+    const body = await importAndCall();
+
+    expect(body.releaseTag).toBe('v8.12.0');
+    expect(body.pipelineUrl).toBe('https://gitlab.example/pipelines/1');
+    expect(body.deploymentProvider).toBe('vercel');
+  });
+
   it("returns 'unknown' for version when no env vars are set", async () => {
     vi.stubEnv('NEXT_PUBLIC_APP_VERSION', '');
     vi.stubEnv('npm_package_version', '');

@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-29 KST (`Dashboard modal/search display hardening completed locally`)
+**Last Updated**: 2026-04-29 KST (`Deployment drift guard in progress`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| _None_ | - | - | - |
+| Deployment drift guard and AI deploy skip | High | Approved | [deployment-drift-guard-plan.md](deployment-drift-guard-plan.md) — `/api/version` build metadata, Vercel QA drift preflight, and Cloud Run AI deploy skip guard |
 
 ---
 
