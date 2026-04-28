@@ -38,7 +38,8 @@
   - Cloud Tasks worker target URL을 non-local 환경에서는 HTTPS로 고정하고, local host에서만 HTTP를 허용하도록 보강
   - `X-Forwarded-Proto: http`가 non-local target을 HTTP로 downgrade하지 못하도록 회귀 테스트 추가
   - `v8.11.52` production smoke `QA-20260428-0358`: `/api/jobs/dispatch` 202 → Cloud Tasks → `/api/jobs/process` POST 200 → job completed
-  - GitLab tag pipeline `2485312954` success: `deploy`, `deploy_ai_engine`, `post_deploy_smoke`, `post_deploy_ai_engine_smoke`
+  - 추가 downgrade guard는 `v8.11.53`으로 배포 완료
+  - GitLab tag pipeline `2485605736` success: `deploy`, `deploy_ai_engine`, `post_deploy_smoke`, `post_deploy_ai_engine_smoke`
 
 ### Completed (2026-04-28 #214)
 - [x] Cloud Tasks Job Queue production activation

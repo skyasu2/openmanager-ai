@@ -97,6 +97,7 @@ Cloud Tasks를 선택형 dispatch 계층으로 추가해 Vercel은 짧은 dispat
   - `v8.11.51` production smoke에서 `http://*.run.app/api/jobs/process` target이 Cloud Run `302` 후 `GET /api/jobs/process` 404로 바뀌는 문제를 확인
   - `v8.11.52`에서 non-local worker target을 HTTPS로 고정하고 local host에서만 HTTP를 허용하도록 보강
   - `QA-20260428-0358`에서 `/api/jobs/dispatch` 202, Cloud Tasks `POST /api/jobs/process` 200, Redis job result completed를 확인
+  - `v8.11.53`에서 `X-Forwarded-Proto: http`가 non-local worker target을 HTTP로 downgrade하지 못하도록 추가 hardening 배포
 - 검증:
   - `cd cloud-run/ai-engine && npm run test -- jobs.dispatch.test.ts`
   - `npx vitest run src/app/api/ai/jobs/route.trigger.test.ts src/app/api/ai/jobs/[id]/retry/route.test.ts`
