@@ -134,7 +134,7 @@ Advisor가 Cerebras-first로 이동하면 Groq 실질 소비는 Cerebras 장애 
 
 현재 `nlq.ts`는 단일 400줄 프롬프트. 17B 모델에게 매 요청마다 전체 파싱을 강제함.
 
-- [ ] T5. query type 분류기 추가
+- [x] T5. query type 분류기 추가
   - 파일 신규: `cloud-run/ai-engine/src/lib/query-type-classifier.ts`
   - 분류 유형 4가지:
     - `STATUS_SUMMARY`: "요약", "현황", "서버 상태", "모든 서버" 등
@@ -142,20 +142,26 @@ Advisor가 Cerebras-first로 이동하면 Groq 실질 소비는 Cerebras 장애 
     - `THRESHOLD_QUERY`: "% 이상", "초과", "임계값" 등
     - `SIMPLE_LOOKUP`: 그 외 단순 조회
 
-- [ ] T6. NLQ instructions 분리
+- [x] T6. NLQ instructions 분리
   - 파일 수정: `cloud-run/ai-engine/src/services/ai-sdk/agents/config/instructions/nlq.ts`
   - `NLQ_BASE_INSTRUCTIONS` (80줄 이내): 핵심 원칙 + 도구 선택 규칙
   - `NLQ_STATUS_SUMMARY_CONTEXT`: 5-섹션 포맷 + CLI 참조표 (현황 요청 시만 주입)
   - `NLQ_RANK_CONTEXT`: 순위 응답 포맷 (순위 질의 시만 주입)
   - `getNlqInstructions(queryType: QueryType): string` 조합 함수
 
-- [ ] T7. AgentConfig에서 instructions를 동적으로 주입하도록 연결
+- [x] T7. AgentConfig에서 instructions를 동적으로 주입하도록 연결
   - 파일 수정: `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts`
   - NLQ Agent의 `getInstructions` 함수형으로 변경 (query 인자 수용)
 
-- [ ] T8. 테스트
+- [x] T8. 테스트
   - query type 분류기 단위 테스트
   - NLQ base instructions가 80줄 이내임을 CI 검사하는 lint rule 또는 테스트
+
+#### Phase 2 검증 (2026-04-28)
+
+- `cd cloud-run/ai-engine && npx vitest run src/lib/query-type-classifier.test.ts src/services/ai-sdk/agents/config/instructions/nlq.test.ts src/services/ai-sdk/agents/config/agent-configs.nlq-instructions.test.ts src/services/ai-sdk/agents/config/agent-configs.vision-fallback.test.ts` 통과
+- `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/agents/base-agent.test.ts src/services/ai-sdk/agents/base-agent.stream.test.ts src/services/ai-sdk/agents/orchestrator-routing.test.ts src/services/ai-sdk/agents/orchestrator-agent-stream.test.ts` 통과
+- `cd cloud-run/ai-engine && npm run type-check` 통과
 
 ### Phase 3: 응답 품질 검사 강화 (P2)
 
@@ -191,7 +197,7 @@ Advisor가 Cerebras-first로 이동하면 Groq 실질 소비는 Cerebras 장애 
 - [ ] `cd cloud-run/ai-engine && npm run test` 통과 (T4 포함)
 - [ ] `npm run test:quick` 통과
 - [x] Analyst/Reporter/Advisor/Verifier의 `minContextTokens: 32_000` 요구사항이 테스트로 고정됨
-- [ ] Advisor provider order가 `CEREBRAS_FIRST_PROVIDER_ORDER`임이 테스트로 고정됨
+- [x] Advisor provider order가 `CEREBRAS_FIRST_PROVIDER_ORDER`임이 테스트로 고정됨
 - [ ] Production QA: Analyst/Reporter/Advisor 각 1회씩 실제 응답 확인
 
 ---

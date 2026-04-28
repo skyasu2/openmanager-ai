@@ -43,6 +43,10 @@ export type {
   ImageAttachment,
 } from './base-agent-types';
 
+function getAgentInstructions(config: AgentConfig, query: string): string {
+  return config.getInstructions?.(query) ?? config.instructions;
+}
+
 export abstract class BaseAgent {
   abstract getName(): string;
 
@@ -156,7 +160,7 @@ export abstract class BaseAgent {
 
       const agent = this.createToolLoopAgent({
         model,
-        instructions: config.instructions,
+        instructions: getAgentInstructions(config, query),
         tools: filteredTools,
         maxSteps: opts.maxSteps,
         temperature: opts.temperature,
@@ -305,7 +309,7 @@ export abstract class BaseAgent {
       );
       const agent = this.createToolLoopAgent({
         model,
-        instructions: config.instructions,
+        instructions: getAgentInstructions(config, query),
         tools: filteredTools,
         maxSteps: opts.maxSteps,
         temperature: opts.temperature,

@@ -80,6 +80,10 @@ function buildContextAwarePrompt(query: string, contextSummary?: string | null):
   return `${query}\n\n[세션 컨텍스트 요약]\n${contextSummary}`;
 }
 
+function getAgentInstructions(config: AgentConfig, query: string): string {
+  return config.getInstructions?.(query) ?? config.instructions;
+}
+
 export function getOrchestratorModel(): ModelResult | null {
   // Orchestrator uses generateObject (requires json_schema support).
   // Keep Cerebras first for routing-only structured output; Groq is the
@@ -739,7 +743,7 @@ export async function executeForcedRouting(
     const retryResult = await generateTextWithRetry(
       {
         messages: [
-          { role: 'system', content: agentConfig.instructions },
+          { role: 'system', content: getAgentInstructions(agentConfig, query) },
           { role: 'user', content: executionPrompt },
         ],
         tools: filteredTools as Parameters<typeof generateText>[0]['tools'],

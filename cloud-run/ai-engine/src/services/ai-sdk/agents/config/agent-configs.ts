@@ -21,6 +21,7 @@ type ToolsMap = ToolSet;
 // Instructions
 import {
   NLQ_INSTRUCTIONS,
+  getNlqInstructions,
   ANALYST_INSTRUCTIONS,
   REPORTER_INSTRUCTIONS,
   ADVISOR_INSTRUCTIONS,
@@ -138,6 +139,8 @@ export interface AgentConfig {
   getModel: () => ModelResult | null;
   /** Agent instructions (system prompt) */
   instructions: string;
+  /** Optional dynamic system prompt resolver for query-specific context */
+  getInstructions?: (query: string) => string;
   /** Available tools for the agent */
   tools: ToolsMap;
   /** Patterns for automatic routing */
@@ -176,6 +179,7 @@ export const AGENT_CONFIGS: Record<AgentName, AgentConfig> = {
       '서버 상태 조회, CPU/메모리/디스크 메트릭 질의, 시간 범위 집계(지난 N시간 평균/최대), 서버 목록 확인 및 필터링, 상태 요약, 웹 검색을 처리합니다.',
     getModel: getNlqModel,
     instructions: NLQ_INSTRUCTIONS,
+    getInstructions: getNlqInstructions,
     tools: buildAgentTools('NLQ Agent'),
     matchPatterns: [
       // Korean keywords
@@ -413,6 +417,13 @@ export function getAgentConfig(name: AgentName): AgentConfig;
 export function getAgentConfig(name: string): AgentConfig | undefined;
 export function getAgentConfig(name: string): AgentConfig | undefined {
   return isAgentName(name) ? AGENT_CONFIGS[name] : undefined;
+}
+
+export function getAgentInstructions(
+  config: AgentConfig,
+  query: string
+): string {
+  return config.getInstructions?.(query) ?? config.instructions;
 }
 
 /**

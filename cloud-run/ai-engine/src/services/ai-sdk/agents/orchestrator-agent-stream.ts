@@ -37,6 +37,13 @@ import {
 const PROVIDER_FALLBACK_BASE_DELAY_MS = 120;
 const PROVIDER_FALLBACK_JITTER_MS = 280;
 
+function getAgentInstructions(
+  config: NonNullable<ReturnType<typeof getAgentConfig>>,
+  query: string
+): string {
+  return config.getInstructions?.(query) ?? config.instructions;
+}
+
 function classifyProviderFallbackReason(errorMessage: string): string {
   const normalized = errorMessage.toLowerCase();
   if (normalized.includes('rate limit') || normalized.includes('429')) {
@@ -244,7 +251,7 @@ export async function* executeAgentStream(
       const streamResult = streamText({
         model,
         messages: [
-          { role: 'system', content: agentConfig.instructions },
+          { role: 'system', content: getAgentInstructions(agentConfig, query) },
           { role: 'user', content: userContent as UserContent },
         ],
         tools: filteredTools as Parameters<typeof generateText>[0]['tools'],

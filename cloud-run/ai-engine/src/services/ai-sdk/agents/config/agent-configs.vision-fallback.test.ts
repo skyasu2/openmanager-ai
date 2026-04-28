@@ -11,6 +11,7 @@ const createMockLanguageModel = (id: string) => ({
 
 vi.mock('./instructions', () => ({
   NLQ_INSTRUCTIONS: 'NLQ',
+  getNlqInstructions: vi.fn(() => 'NLQ'),
   ANALYST_INSTRUCTIONS: 'ANALYST',
   REPORTER_INSTRUCTIONS: 'REPORTER',
   ADVISOR_INSTRUCTIONS: 'ADVISOR',

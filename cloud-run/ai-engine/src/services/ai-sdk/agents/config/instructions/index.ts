@@ -14,7 +14,14 @@ export {
 } from './common-instructions';
 
 // 에이전트별 인스트럭션
-export { NLQ_INSTRUCTIONS } from './nlq';
+export {
+  NLQ_BASE_INSTRUCTIONS,
+  NLQ_INSTRUCTIONS,
+  NLQ_RANK_CONTEXT,
+  NLQ_STATUS_SUMMARY_CONTEXT,
+  NLQ_THRESHOLD_CONTEXT,
+  getNlqInstructions,
+} from './nlq';
 export { ANALYST_INSTRUCTIONS } from './analyst';
 export { REPORTER_INSTRUCTIONS } from './reporter';
 export { ADVISOR_INSTRUCTIONS } from './advisor';

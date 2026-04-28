@@ -11,6 +11,7 @@ export {
   AGENT_NAMES,
   getAgentNames,
   getAgentConfig,
+  getAgentInstructions,
   isAgentName,
   isAgentAvailable,
   getAvailableAgents,

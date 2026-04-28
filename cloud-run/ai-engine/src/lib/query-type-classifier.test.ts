@@ -8,7 +8,9 @@ describe('query type classifier', () => {
     ['CPU가 가장 높은 서버 top 3 보여줘', 'RANK_QUERY'],
     ['메모리 상위 5대 순위 알려줘', 'RANK_QUERY'],
     ['CPU 80% 이상인 서버만 보여줘', 'THRESHOLD_QUERY'],
+    ['CPU 80 이상인 서버만 보여줘', 'THRESHOLD_QUERY'],
     ['네트워크가 70%를 초과한 서버는?', 'THRESHOLD_QUERY'],
+    ['이상 서버 알려줘', 'STATUS_SUMMARY'],
     ['lb-haproxy-dc1-01 상태는?', 'SIMPLE_LOOKUP'],
     ['Redis 캐시 서버 목록 보여줘', 'SIMPLE_LOOKUP'],
   ])('classifies "%s" as %s', (query, expected) => {
