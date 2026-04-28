@@ -111,6 +111,52 @@ describe('POST /jobs/dispatch', () => {
     );
   });
 
+  it('forces HTTPS for proxied Cloud Run task targets to avoid redirecting POST to GET', async () => {
+    const payload = {
+      jobId: 'job-cloud-run-url',
+      messages: [{ role: 'user', content: 'server health' }],
+    };
+
+    const res = await app.request(
+      'http://ai-engine-jdhrhws7ia-an.a.run.app/jobs/dispatch',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    expect(res.status).toBe(202);
+    expect(mockEnqueueCloudTask).toHaveBeenCalledWith(
+      expect.objectContaining({
+        targetUrl: 'https://ai-engine-jdhrhws7ia-an.a.run.app/api/jobs/process',
+      })
+    );
+  });
+
+  it('honors X-Forwarded-Proto when building the Cloud Tasks process target', async () => {
+    const payload = {
+      jobId: 'job-forwarded-proto',
+      messages: [{ role: 'user', content: 'server health' }],
+    };
+
+    const res = await app.request('http://internal.example.com/jobs/dispatch', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Forwarded-Proto': 'https',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    expect(res.status).toBe(202);
+    expect(mockEnqueueCloudTask).toHaveBeenCalledWith(
+      expect.objectContaining({
+        targetUrl: 'https://internal.example.com/api/jobs/process',
+      })
+    );
+  });
+
   it('returns 503 when Cloud Tasks is not configured', async () => {
     mockGetCloudTasksConfig.mockReturnValue({
       ok: false,

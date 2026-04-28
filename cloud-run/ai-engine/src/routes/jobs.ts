@@ -74,6 +74,37 @@ const RETRIEVAL_SUPPRESSED_REASON_SET = new Set<string>(
 );
 const PROCESSING_DUPLICATE_GRACE_MS = 30 * 60 * 1000;
 
+function isLocalTargetHostname(hostname: string): boolean {
+  return (
+    hostname === 'localhost' ||
+    hostname === '127.0.0.1' ||
+    hostname === '::1' ||
+    hostname.endsWith('.localhost')
+  );
+}
+
+function buildJobProcessTargetUrl(
+  requestUrl: string,
+  forwardedProto?: string
+): string {
+  const targetUrl = new URL('/api/jobs/process', requestUrl);
+  const forwardedScheme = forwardedProto
+    ?.split(',')[0]
+    ?.trim()
+    .toLowerCase();
+
+  if (forwardedScheme === 'https' || forwardedScheme === 'http') {
+    targetUrl.protocol = `${forwardedScheme}:`;
+  } else if (
+    targetUrl.protocol === 'http:' &&
+    !isLocalTargetHostname(targetUrl.hostname)
+  ) {
+    targetUrl.protocol = 'https:';
+  }
+
+  return targetUrl.toString();
+}
+
 function isAnalysisMode(value: unknown): value is AnalysisMode {
   return value === 'auto' || value === 'thinking';
 }
@@ -319,7 +350,10 @@ jobsRouter.post('/dispatch', async (c: Context) => {
       'Cloud Tasks에 작업 등록 중...'
     );
 
-    const targetUrl = new URL('/api/jobs/process', c.req.url).toString();
+    const targetUrl = buildJobProcessTargetUrl(
+      c.req.url,
+      c.req.header('x-forwarded-proto')
+    );
     const rateLimitIdentity = c.req.header(RATE_LIMIT_IDENTITY_HEADER)?.trim();
     const task = await enqueueCloudTask({
       config: cloudTasksConfig,
