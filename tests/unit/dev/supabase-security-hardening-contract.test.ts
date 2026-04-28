@@ -8,7 +8,7 @@ import { describe, expect, it } from 'vitest';
 
 const HARDENING_MIGRATION = fileURLToPath(
   new URL(
-    '../../../supabase/migrations/20260428192000_harden_supabase_rag_public_surface.sql',
+    '../../../supabase/migrations/20260428101907_harden_supabase_rag_public_surface.sql',
     import.meta.url
   )
 );

@@ -60,7 +60,7 @@ Supabase 사용량은 무료 티어 한도 대비 충분히 낮지만, 현재 DB
 
 ## 7. 완료 결과
 
-- 원격 Supabase migration `harden_supabase_rag_public_surface` 적용 성공
+- 원격 Supabase migration `20260428101907_harden_supabase_rag_public_surface` 적용 성공
 - `search_knowledge_text` 포함 19개 RAG/vector/approval RPC: `anon=false`, `authenticated=false`, `service_role=true`
 - 8개 runtime table과 `vector_documents_stats` view: direct anon/authenticated table privilege 제거, service role 유지
 - 제거 대상 vector-era index 3개 삭제 확인, `idx_knowledge_base_search_vector` 유지 확인
