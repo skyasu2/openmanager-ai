@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-28 KST (`Cloud Tasks Job Queue production 전환`)
+**Last Updated**: 2026-04-28 KST (`Cloud Tasks Job Queue production smoke follow-up`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -32,13 +32,21 @@
 
 ## Recent Completed
 
+### Completed (2026-04-28 #215)
+- [x] Cloud Tasks Job Queue production HTTPS target hardening
+  - Production smoke에서 `http://*.run.app/api/jobs/process` target이 Cloud Run `302` 후 `GET /api/jobs/process` 404로 변하는 side effect를 확인
+  - Cloud Tasks worker target URL을 non-local 환경에서는 HTTPS로 고정하고, local host에서만 HTTP를 허용하도록 보강
+  - `X-Forwarded-Proto: http`가 non-local target을 HTTP로 downgrade하지 못하도록 회귀 테스트 추가
+  - `v8.11.52` production smoke `QA-20260428-0358`: `/api/jobs/dispatch` 202 → Cloud Tasks → `/api/jobs/process` POST 200 → job completed
+  - GitLab tag pipeline `2485312954` success: `deploy`, `deploy_ai_engine`, `post_deploy_smoke`, `post_deploy_ai_engine_smoke`
+
 ### Completed (2026-04-28 #214)
 - [x] Cloud Tasks Job Queue production activation
   - `cloudtasks.googleapis.com` API 활성화 및 `asia-northeast1/openmanager-ai-jobs` queue 생성
   - Queue dispatch 제한을 `1/s`, concurrent `2`, retry `3회`로 보수화해 Cloud Run max instance 1 / Job write cap과 정렬
   - Cloud Run runtime service account에 queue-level `roles/cloudtasks.enqueuer` 부여
   - GitLab CI `CLOUD_TASKS_ENABLED=true`, Vercel production `AI_JOB_TRIGGER_MODE=cloud-tasks` 설정
-  - Production 적용은 `v8.11.51` tag pipeline으로 검증 예정
+  - Production 적용은 `v8.11.51` deploy 후 `v8.11.52` HTTPS target hardening smoke로 최종 검증 완료
 
 ### Completed (2026-04-28 #213)
 - [x] Cloud Tasks Job Queue async execution

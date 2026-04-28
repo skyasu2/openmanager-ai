@@ -50,11 +50,13 @@ Cloud Tasks를 선택형 dispatch 계층으로 추가해 Vercel은 짧은 dispat
 
 ## 5. 테스트 시나리오
 
-- [ ] Vercel jobs route가 `AI_JOB_TRIGGER_MODE=cloud-tasks`에서 `/api/jobs/dispatch`를 호출한다.
-- [ ] Vercel jobs route가 direct mode에서 기존 `/api/jobs/process`를 유지한다.
-- [ ] Cloud Run `/api/jobs/dispatch`가 Cloud Tasks task를 만들고 202를 반환한다.
-- [ ] dispatch body가 source mode/thinking mode 옵션을 보존한다.
-- [ ] Cloud Tasks 설정이 없으면 dispatch가 503을 반환한다.
+- [x] Vercel jobs route가 `AI_JOB_TRIGGER_MODE=cloud-tasks`에서 `/api/jobs/dispatch`를 호출한다.
+- [x] Vercel jobs route가 direct mode에서 기존 `/api/jobs/process`를 유지한다.
+- [x] Cloud Run `/api/jobs/dispatch`가 Cloud Tasks task를 만들고 202를 반환한다.
+- [x] dispatch body가 source mode/thinking mode 옵션을 보존한다.
+- [x] Cloud Tasks 설정이 없으면 dispatch가 503을 반환한다.
+- [x] Cloud Run proxy 환경에서 worker target이 `https://*.run.app/api/jobs/process`로 생성되어 `302 -> GET 404` side effect를 피한다.
+- [x] `X-Forwarded-Proto: http`가 non-local worker target을 HTTP로 downgrade하지 못한다.
 
 ## 6. Task 목록
 
@@ -91,7 +93,12 @@ Cloud Tasks를 선택형 dispatch 계층으로 추가해 Vercel은 짧은 dispat
   - 활성화 값: `openmanager-free-tier / asia-northeast1 / openmanager-ai-jobs`
   - Queue guard: `max-dispatches-per-second=1`, `max-concurrent-dispatches=2`, `max-attempts=3`
   - Durable env: GitLab CI `CLOUD_TASKS_ENABLED=true`, Vercel production `AI_JOB_TRIGGER_MODE=cloud-tasks`
+- Side effect follow-up:
+  - `v8.11.51` production smoke에서 `http://*.run.app/api/jobs/process` target이 Cloud Run `302` 후 `GET /api/jobs/process` 404로 바뀌는 문제를 확인
+  - `v8.11.52`에서 non-local worker target을 HTTPS로 고정하고 local host에서만 HTTP를 허용하도록 보강
+  - `QA-20260428-0358`에서 `/api/jobs/dispatch` 202, Cloud Tasks `POST /api/jobs/process` 200, Redis job result completed를 확인
 - 검증:
+  - `cd cloud-run/ai-engine && npm run test -- jobs.dispatch.test.ts`
   - `npx vitest run src/app/api/ai/jobs/route.trigger.test.ts src/app/api/ai/jobs/[id]/retry/route.test.ts`
   - `cd cloud-run/ai-engine && npx vitest run src/lib/cloud-tasks.test.ts src/routes/jobs.dispatch.test.ts src/routes/jobs.test.ts`
   - `npm run test:contract`

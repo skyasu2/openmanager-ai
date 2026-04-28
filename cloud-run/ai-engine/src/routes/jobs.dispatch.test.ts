@@ -157,6 +157,32 @@ describe('POST /jobs/dispatch', () => {
     );
   });
 
+  it('does not let forwarded proto downgrade a non-local task target to HTTP', async () => {
+    const payload = {
+      jobId: 'job-forwarded-http',
+      messages: [{ role: 'user', content: 'server health' }],
+    };
+
+    const res = await app.request(
+      'http://ai-engine-jdhrhws7ia-an.a.run.app/jobs/dispatch',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Forwarded-Proto': 'http',
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    expect(res.status).toBe(202);
+    expect(mockEnqueueCloudTask).toHaveBeenCalledWith(
+      expect.objectContaining({
+        targetUrl: 'https://ai-engine-jdhrhws7ia-an.a.run.app/api/jobs/process',
+      })
+    );
+  });
+
   it('returns 503 when Cloud Tasks is not configured', async () => {
     mockGetCloudTasksConfig.mockReturnValue({
       ok: false,

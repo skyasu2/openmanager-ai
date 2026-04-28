@@ -93,8 +93,13 @@ function buildJobProcessTargetUrl(
     ?.trim()
     .toLowerCase();
 
-  if (forwardedScheme === 'https' || forwardedScheme === 'http') {
-    targetUrl.protocol = `${forwardedScheme}:`;
+  if (forwardedScheme === 'https') {
+    targetUrl.protocol = 'https:';
+  } else if (
+    forwardedScheme === 'http' &&
+    isLocalTargetHostname(targetUrl.hostname)
+  ) {
+    targetUrl.protocol = 'http:';
   } else if (
     targetUrl.protocol === 'http:' &&
     !isLocalTargetHostname(targetUrl.hostname)
