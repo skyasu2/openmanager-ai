@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.40](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.39...v8.11.40) (2026-04-28)
+
+
+### Features
+
+* **ai-engine:** activate Mistral-first for summarization fallback + remove embedding legacy ([19ab9e2](https://gitlab.com/skyasu2/openmanager-ai/-/commit/19ab9e2821d28525ca462cad022bf6eef96b50b6))
+* **ai:** implement provider quality phase 1 ([682e445](https://gitlab.com/skyasu2/openmanager-ai/-/commit/682e445818753600c3648f5bef6ca4c7f0f8ed19))
+
+
+### Bug Fixes
+
+* **ai-engine:** harden embedding legacy cleanup ([66d0c31](https://gitlab.com/skyasu2/openmanager-ai/-/commit/66d0c31443370d8e1366cd0944ce6712833ac9ab))
+
+
+### Tests
+
+* **spec:** add provider quality phase 1 contracts ([b460fe9](https://gitlab.com/skyasu2/openmanager-ai/-/commit/b460fe9bb7fdcb1922899dab2ef85730379e2e76))
+
 ## [8.11.39](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.38...v8.11.39) (2026-04-28)
 
 
