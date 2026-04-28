@@ -1,6 +1,9 @@
 /**
  * Apply RAG merge plan to knowledge_base.
  *
+ * Knowledge Retrieval Lite uses BM25/text metadata at request time, so this
+ * maintenance script does not generate or update embedding vectors.
+ *
  * Usage:
  *   npx tsx scripts/rag-merge-apply.ts                  # dry-run (default)
  *   npx tsx scripts/rag-merge-apply.ts --execute        # apply changes
@@ -9,7 +12,6 @@
 
 import './_env';
 import { createClient } from '@supabase/supabase-js';
-import { toVectorString } from '../src/lib/embedding';
 import {
   DEFAULT_TARGET_TOTAL_DOCS,
   MERGE_SIMILARITY_THRESHOLD,
@@ -18,7 +20,6 @@ import {
   buildMergePlan,
   type KnowledgeBaseDoc,
 } from '../src/lib/rag-merge-planner';
-import { createEmbedding } from '../src/lib/embedding';
 
 type KnowledgeRow = {
   id: string | null;
@@ -159,21 +160,9 @@ async function main() {
   const errors: string[] = [];
 
   for (const item of selectedItems) {
-    const mergedText = `${item.mergedTitle}\n\n${item.mergedContent}`;
-    const embeddingResult = await createEmbedding(mergedText);
-    if (!embeddingResult.success || !embeddingResult.embedding) {
-      errors.push(
-        `[${item.clusterId}] embedding generation failed: ${
-          embeddingResult.error || 'unknown'
-        }`
-      );
-      continue;
-    }
-
     const updatePayload = {
       title: item.mergedTitle,
       content: item.mergedContent,
-      embedding: toVectorString(embeddingResult.embedding),
       category: item.category,
       tags: item.mergedTags,
       severity: item.mergedSeverity,
@@ -242,4 +231,3 @@ main().catch((error) => {
   console.error('[FATAL] rag-merge-apply failed:', error);
   process.exit(1);
 });
-

@@ -368,12 +368,6 @@ const RATE_LIMIT_CONFIGS: Record<string, RateLimitConfig> = {
     windowMs: 60 * 1000, // 1분에 120회 (health/read)
     keyPrefix: 'rl:supervisor:health',
   },
-  embedding: {
-    maxRequests: 30,
-    windowMs: 60 * 1000, // 1분에 30회
-    maxInFlight: 6,
-    keyPrefix: 'rl:embedding',
-  },
   jobsWrite: {
     maxRequests: 5,
     windowMs: 60 * 1000, // 1분에 5회 (job creation / processing)
@@ -406,7 +400,6 @@ function resolveConfig(path: string, method: string): RateLimitConfig {
     return RATE_LIMIT_CONFIGS.supervisorHealth;
   }
   if (path.includes('/supervisor')) return RATE_LIMIT_CONFIGS.supervisor;
-  if (path.includes('/embedding')) return RATE_LIMIT_CONFIGS.embedding;
   if (path.includes('/jobs/process') && method.toUpperCase() === 'POST') {
     return RATE_LIMIT_CONFIGS.jobsWrite;
   }

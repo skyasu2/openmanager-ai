@@ -2,15 +2,16 @@
  * KB 문서 시드 스크립트
  *
  * 사용법:
- *   npx tsx scripts/seed-knowledge-base.ts              # 새 문서 추가 (임베딩 포함)
- *   npx tsx scripts/seed-knowledge-base.ts --backfill   # NULL 임베딩 문서 보정 + source 이름 통일
+ *   npx tsx scripts/seed-knowledge-base.ts              # 새 문서 추가 (BM25/KRL 텍스트 검색용)
+ *   npx tsx scripts/seed-knowledge-base.ts --backfill   # source 이름 통일
  *   npx tsx scripts/seed-knowledge-base.ts --input=scripts/data/knowledge-base.first-batch.json --dry-run
  *   npx tsx scripts/seed-knowledge-base.ts --input=scripts/data/knowledge-base.first-batch.json --upsert
  *
  * knowledge_base 테이블에 운영 지식 문서를 추가합니다.
  * 입력 파일을 주면 해당 배치를 검증하거나, title 기준으로 insert/upsert 할 수 있습니다.
  * 입력 배치에 relationships가 있으면 knowledge_relationships까지 같이 동기화합니다.
- * 각 문서에 Mistral mistral-embed (1024d) 임베딩을 생성하여 저장합니다.
+ * Knowledge Retrieval Lite request path는 search_knowledge_text BM25 RPC를 사용하므로
+ * 이 스크립트는 embedding helper를 호출하지 않습니다.
  */
 
 import './_env';
@@ -19,7 +20,6 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import { embedText, toVectorString } from '../src/lib/embedding';
 import {
   HARD_DOC_CHAR_MAX,
   TARGET_DOC_CHAR_MAX,
@@ -796,13 +796,12 @@ grep "ERROR" app.log | awk '{print $1, $2}' | cut -d: -f1,2 | sort | uniq -c
 ];
 
 // ============================================================================
-// Backfill: NULL 임베딩 보정 + source 이름 통일
+// Backfill: source 이름 통일
 // ============================================================================
 
-async function backfillEmbeddings(supabase: SupabaseClient) {
-  console.log('🔧 임베딩 백필 시작 — NULL 임베딩 문서 보정 + source 이름 통일...\n');
+async function normalizeSeedSources(supabase: SupabaseClient) {
+  console.log('🔧 KB source 이름 통일 시작...\n');
 
-  // 1. source 이름 통일: seed-script → seed_script
   const { data: wrongSource, error: sourceQueryError } = await supabase
     .from('knowledge_base')
     .select('id, title')
@@ -824,64 +823,15 @@ async function backfillEmbeddings(supabase: SupabaseClient) {
   } else {
     console.log('ℹ️  source 이름 불일치 없음');
   }
-
-  // 2. NULL 임베딩 문서 조회
-  const { data: nullEmbeddingDocs, error: nullQueryError } = await supabase
-    .from('knowledge_base')
-    .select('id, title, content')
-    .is('embedding', null);
-
-  if (nullQueryError) {
-    console.error('❌ NULL 임베딩 조회 실패:', nullQueryError.message);
-    return;
-  }
-
-  if (!nullEmbeddingDocs || nullEmbeddingDocs.length === 0) {
-    console.log('✅ NULL 임베딩 문서 없음 — 모든 문서에 임베딩 존재');
-    return;
-  }
-
-  console.log(`📋 NULL 임베딩 문서 ${nullEmbeddingDocs.length}건 발견\n`);
-
-  let updated = 0;
-  let failed = 0;
-
-  for (const doc of nullEmbeddingDocs) {
-    try {
-      const textToEmbed = `${doc.title}\n\n${doc.content}`.substring(0, 2000);
-      const embedding = await embedText(textToEmbed);
-      const vectorStr = toVectorString(embedding);
-
-      const { error: updateError } = await supabase
-        .from('knowledge_base')
-        .update({ embedding: vectorStr })
-        .eq('id', doc.id);
-
-      if (updateError) {
-        console.error(`  ❌ 임베딩 UPDATE 실패: ${doc.title}`, updateError.message);
-        failed++;
-      } else {
-        console.log(`  ✅ 임베딩 생성: ${doc.title}`);
-        updated++;
-      }
-    } catch (err) {
-      console.error(`  ❌ 임베딩 생성 실패: ${doc.title}`, err);
-      failed++;
-    }
-  }
-
-  console.log(`\n📊 백필 결과: ${updated}건 성공, ${failed}건 실패`);
 }
 
 // ============================================================================
-// Seed: 새 문서 추가 (임베딩 포함)
+// Seed: 새 문서 추가
 // ============================================================================
 
-function buildWritePayload(doc: KBDocument, embeddingStr?: string) {
+function buildWritePayload(doc: KBDocument) {
   const { relationships: _relationships, ...baseDoc } = doc;
-  return embeddingStr
-    ? { ...baseDoc, embedding: embeddingStr }
-    : baseDoc;
+  return baseDoc;
 }
 
 async function syncDocumentRelationships(
@@ -1063,17 +1013,7 @@ async function seedDocuments(
       continue;
     }
 
-    // 임베딩 생성 (title + content 결합)
-    const textToEmbed = `${doc.title}\n\n${doc.content}`.substring(0, 2000);
-    let embeddingStr: string | undefined;
-    try {
-      const embedding = await embedText(textToEmbed);
-      embeddingStr = toVectorString(embedding);
-    } catch (err) {
-      console.warn(`  ⚠️ 임베딩 생성 실패 (문서는 계속 반영 시도): ${doc.title}`, err);
-    }
-
-    const payload = buildWritePayload(doc, embeddingStr);
+    const payload = buildWritePayload(doc);
 
     if (existingId) {
       const { error } = await supabase
@@ -1085,7 +1025,7 @@ async function seedDocuments(
         console.error(`❌ 업데이트 실패: ${doc.title}`, error.message);
         failed++;
       } else {
-        console.log(`♻️  업데이트${embeddingStr ? ' (+ 임베딩)' : ''}: ${doc.title}`);
+        console.log(`♻️  업데이트: ${doc.title}`);
         documentIds.set(doc.title, existingId);
         updated++;
       }
@@ -1102,7 +1042,7 @@ async function seedDocuments(
       console.error(`❌ 추가 실패: ${doc.title}`, error.message);
       failed++;
     } else {
-      console.log(`✅ 추가${embeddingStr ? ' (+ 임베딩)' : ''}: ${doc.title}`);
+      console.log(`✅ 추가: ${doc.title}`);
       if (typeof insertedRow?.id === 'string') {
         documentIds.set(doc.title, insertedRow.id);
       }
@@ -1143,12 +1083,12 @@ async function main() {
 
   if (options.backfill) {
     if (options.dryRun) {
-      console.log('🧪 KB backfill dry-run — live DB 조회/수정 없이 종료');
+      console.log('🧪 KB source normalize dry-run — live DB 조회/수정 없이 종료');
       return;
     }
 
     const supabase = createSupabaseClient();
-    await backfillEmbeddings(supabase);
+    await normalizeSeedSources(supabase);
     return;
   }
 

@@ -415,6 +415,11 @@ describe('executeForcedRouting', () => {
         maxOutputTokens: 768,
       })
     );
+    expect(mockGenerateTextWithRetry.mock.calls[1]?.[1]).toEqual([
+      'mistral',
+      'groq',
+      'cerebras',
+    ]);
     expect(mockGenerateTextWithRetry.mock.calls[1]?.[2]).toEqual({
       timeoutMs: 10000,
     });

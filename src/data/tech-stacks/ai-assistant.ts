@@ -76,17 +76,17 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
   },
   // ========== Database & RAG ==========
   {
-    name: 'Supabase pgVector',
+    name: 'Supabase Postgres',
     category: 'database',
     importance: 'high',
     description:
-      'PostgreSQL 확장으로 벡터 유사도 검색 지원. 텍스트 임베딩을 저장하고 코사인 유사도로 관련 문서 검색 가능',
+      'PostgreSQL full-text search 기반 운영 지식 저장소. 과거 vector 컬럼은 호환 데이터로 남지만 runtime 검색 경로에서는 사용하지 않음',
     implementation:
       '과거 장애 사례 및 해결 방법 저장. Advisor Agent가 searchKnowledgeBase 도구로 유사 사례 검색',
-    version: 'PostgreSQL 15 + pgVector',
+    version: 'PostgreSQL 15 + BM25 RPC',
     status: 'active',
     icon: '🐘',
-    tags: ['Vector Search', 'RAG', 'Embedding'],
+    tags: ['BM25', 'RAG', 'Metadata Boost'],
     type: 'commercial',
   },
   {
@@ -94,13 +94,13 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     category: 'ai',
     importance: 'high',
     description:
-      'BM25 텍스트 매칭과 pgVector 유사도 검색을 결합한 경량 지식 검색 계층. 외부 프레임워크 없이 직접 구성',
+      'BM25 텍스트 매칭과 metadata boost를 결합한 경량 지식 검색 계층. 외부 프레임워크 없이 직접 구성',
     implementation:
-      'Supabase pgVector + BM25 + 메타데이터 부스트로 검색 흐름을 구성. Reporter Agent의 searchKnowledgeBase 도구로 연결',
+      'Supabase search_knowledge_text RPC + 메타데이터 부스트로 검색 흐름을 구성. Reporter Agent의 searchKnowledgeBase 도구로 연결',
     version: 'In-house',
     status: 'active',
     icon: '🔍',
-    tags: ['Vector Search', 'BM25', 'Hybrid Search'],
+    tags: ['BM25', 'Metadata Boost', 'Knowledge Retrieval'],
     type: 'custom',
   },
   // ========== ML Engine ==========
@@ -139,7 +139,7 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     description:
       '과거 GraphRAG/벡터 인덱싱 경로에서 사용하던 텍스트 임베딩 모델. 현재 AI assistant Knowledge Retrieval Lite request path에서는 사용하지 않음',
     implementation:
-      '→ legacy embedding endpoint와 과거 인덱싱 호환용 코드로만 남김. 운영 질의의 지식 검색은 BM25 + metadata boost 중심으로 처리',
+      '→ Cloud Run embedding endpoint와 runtime helper는 제거됨. 운영 질의의 지식 검색은 BM25 + metadata boost 중심으로 처리',
     version: 'mistral-embed (1024d)',
     status: 'history',
     icon: '🔍',

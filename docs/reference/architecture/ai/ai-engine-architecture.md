@@ -437,7 +437,6 @@ precomputed-state.ts → buildPrecomputedStates()
 | 엔드포인트 | 메서드 | 역할 |
 |-----------|--------|------|
 | `/api/ai/supervisor` | POST | 레거시 JSON/text 프록시 (local dev fallback, cache/plain callers, smoke/contract anchor) |
-| `/api/ai/embedding[/batch]` | POST | legacy embedding 호환 경계. 기본 Knowledge Retrieval Lite request path에서는 사용하지 않음 |
 | `/api/ai/generate[/stream]` | POST | 독립 텍스트 생성 |
 | `/api/ai/graphrag/extract` | POST | legacy graph runtime 410 shim. replacement: `searchKnowledgeBase` |
 | `/api/ai/graphrag/stats` | GET | legacy graph runtime 410 shim. replacement: `Knowledge Retrieval Lite` |
@@ -448,7 +447,7 @@ precomputed-state.ts → buildPrecomputedStates()
 | `/api/ai` | GET | 사용량 분석 |
 | `/api/jobs` | POST | 비동기 Job 관리 |
 
-> Source of truth (2026-04-26): `cloud-run/ai-engine/src/server.ts`, `cloud-run/ai-engine/src/routes/graphrag.ts`, `cloud-run/ai-engine/src/lib/legacy-contracts.ts`.
+> Source of truth (2026-04-28): `cloud-run/ai-engine/src/server.ts`, `cloud-run/ai-engine/src/routes/graphrag.ts`, `cloud-run/ai-engine/src/lib/legacy-contracts.ts`.
 
 ## 10. Observability
 
@@ -496,8 +495,7 @@ cloud-run/ai-engine/src/
 │   ├── retrieval-contract.ts          # EvidenceCard/RetrievalMetadata SSOT
 │   ├── legacy-contracts.ts            # legacy graph runtime 410/useGraphRAG 경계
 │   ├── rag-doc-policy.ts              # knowledge_base corpus 길이/카테고리 정책
-│   ├── embedding.ts                   # legacy embedding helper (Lite path 기본 미사용)
-│   └── hybrid-text-search.ts          # legacy/helper text search wrapper
+│   └── rag-merge-planner.ts           # knowledge_base 중복 문서 merge 계획
 └── data/
     └── precomputed-state.ts           # 144 슬롯 사전 계산
 ```

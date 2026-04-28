@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   AGENT_CONFIGS,
   AGENT_NAMES,
+  MISTRAL_FIRST_PROVIDER_ORDER,
   getAgentEvidenceBudget,
   getAgentMaxSteps,
   getAgentProviderOrder,
@@ -137,6 +138,11 @@ describe('agent runtime policy SSOT', () => {
       'cerebras',
       'groq',
       'mistral',
+    ]);
+    expect(MISTRAL_FIRST_PROVIDER_ORDER).toEqual([
+      'mistral',
+      'groq',
+      'cerebras',
     ]);
     expect(getAgentProviderOrder('Analyst Agent')).toEqual([
       'cerebras',

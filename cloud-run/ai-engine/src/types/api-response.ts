@@ -96,26 +96,6 @@ export interface SupervisorResponseData {
 }
 
 /**
- * Embedding response data
- */
-export interface EmbeddingResponseData {
-  embedding: number[];
-  model: string;
-  dimensions: number;
-  cached?: boolean;
-}
-
-/**
- * Batch embedding response data
- */
-export interface BatchEmbeddingResponseData {
-  embeddings: number[][];
-  model: string;
-  dimensions: number;
-  count: number;
-}
-
-/**
  * Generate response data
  */
 export interface GenerateResponseData {

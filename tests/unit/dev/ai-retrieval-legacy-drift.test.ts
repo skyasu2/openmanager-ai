@@ -20,6 +20,7 @@ const SCAN_ROOTS = [
   'src/config',
   'cloud-run/ai-engine/README.md',
   'cloud-run/ai-engine/src',
+  'cloud-run/ai-engine/scripts',
 ];
 
 const RULES: LegacyRetrievalRule[] = [
@@ -30,6 +31,18 @@ const RULES: LegacyRetrievalRule[] = [
   {
     label: 'Mistral RAG runtime coupling',
     pattern: /Mistral\s*\+\s*RAG|Mistral RAG Embedding/i,
+  },
+  {
+    label: 'removed embedding HTTP route',
+    pattern: /\/api\/ai\/embedding|routes\/embedding/,
+  },
+  {
+    label: 'deleted Cloud Run embedding helper import',
+    pattern: /\.\.\/src\/lib\/embedding|from ['"][.]{1,2}\/lib\/embedding['"]/,
+  },
+  {
+    label: 'removed hybrid vector/graph search helper',
+    pattern: /hybrid-text-search\.ts|hybridTextVectorSearch|HybridTextSearch/,
   },
   {
     label: 'forced useGraphRAG runtime flag',

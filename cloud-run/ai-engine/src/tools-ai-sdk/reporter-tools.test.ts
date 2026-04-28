@@ -47,12 +47,6 @@ vi.mock('@supabase/supabase-js', () => ({
   createClient: vi.fn(() => ({ rpc: vi.fn() })),
 }));
 
-// Mock embedding functions used by knowledge tool imports.
-vi.mock('../lib/embedding', () => ({
-  searchWithEmbedding: vi.fn().mockResolvedValue({ success: false, results: [] }),
-  embedText: vi.fn().mockResolvedValue([]),
-}));
-
 vi.mock('../lib/config-parser', () => ({
   getTavilyApiKey: vi.fn(),
   getTavilyApiKeyBackup: vi.fn(),

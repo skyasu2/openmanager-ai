@@ -3,26 +3,17 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const {
   mockGetSupabaseClient,
   mockRetrieveKnowledgeEvidence,
-  mockEmbedText,
-  mockSearchWithEmbedding,
   mockEnhanceWithWebSearch,
   mockIsTavilyAvailable,
 } = vi.hoisted(() => ({
   mockGetSupabaseClient: vi.fn(),
   mockRetrieveKnowledgeEvidence: vi.fn(),
-  mockEmbedText: vi.fn(),
-  mockSearchWithEmbedding: vi.fn(),
   mockEnhanceWithWebSearch: vi.fn(),
   mockIsTavilyAvailable: vi.fn(() => true),
 }));
 
 vi.mock('./knowledge-client', () => ({
   getSupabaseClient: mockGetSupabaseClient,
-}));
-
-vi.mock('../../lib/embedding', () => ({
-  embedText: mockEmbedText,
-  searchWithEmbedding: mockSearchWithEmbedding,
 }));
 
 vi.mock('../../lib/knowledge-retrieval-lite', () => ({
@@ -106,7 +97,6 @@ describe('searchKnowledgeBase', () => {
       },
     });
     expect(result.systemMessage).toContain('Supabase 데이터베이스 연결 실패');
-    expect(mockEmbedText).not.toHaveBeenCalled();
   });
 
   it('returns success result from Knowledge Retrieval Lite without embedding, graph, or web fallback', async () => {
@@ -178,8 +168,6 @@ describe('searchKnowledgeBase', () => {
       },
       { client: {} }
     );
-    expect(mockEmbedText).not.toHaveBeenCalled();
-    expect(mockSearchWithEmbedding).not.toHaveBeenCalled();
     expect(mockEnhanceWithWebSearch).not.toHaveBeenCalled();
   });
 
@@ -292,9 +280,6 @@ describe('searchKnowledgeBase', () => {
     expect(result.systemMessage).toContain(
       '지식 베이스 검색 중 오류가 발생했습니다'
     );
-    expect(mockEmbedText).not.toHaveBeenCalled();
-    expect(mockSearchWithEmbedding).not.toHaveBeenCalled();
-
     const recovered = await searchKnowledgeBase.execute({
       query: 'redis 설정 확인',
     });
@@ -342,7 +327,6 @@ describe('searchKnowledgeBase', () => {
 
     expect(first).toEqual(second);
     expect(mockRetrieveKnowledgeEvidence).toHaveBeenCalledTimes(1);
-    expect(mockEmbedText).not.toHaveBeenCalled();
   });
 
   it('emits sampled structured telemetry for production Knowledge Retrieval Lite usage', async () => {
