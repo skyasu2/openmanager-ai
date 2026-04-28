@@ -1,0 +1,15 @@
+{
+  "query": "전체 서버 상태 알려줘",
+  "method": "production-ui-request-capture",
+  "note": "Requests were aborted after capture to avoid consuming external LLM quota; this verifies frontend route selection and request body shape.",
+  "auto": {
+    "url": "https://openmanager-ai.vercel.app/api/ai/supervisor/stream/v2",
+    "method": "POST",
+    "analysisMode": "auto"
+  },
+  "thinking": {
+    "url": "https://openmanager-ai.vercel.app/api/ai/jobs",
+    "method": "POST",
+    "analysisMode": "thinking"
+  }
+}

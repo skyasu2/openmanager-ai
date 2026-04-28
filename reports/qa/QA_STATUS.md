@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-27 22:51:09 KST
+> Generated at: 2026-04-28 09:28:03 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 352 |
-| Total Runs (Counted) | 287 |
+| Total Recorded Runs | 353 |
+| Total Runs (Counted) | 288 |
 | Non-counted Runs | 65 |
-| Total Checks | 2391 |
-| Passed | 2303 |
-| Failed | 79 |
-| Completed Items | 343 |
-| Pending Items | 0 |
+| Total Checks | 2399 |
+| Passed | 2310 |
+| Failed | 80 |
+| Completed Items | 344 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 18 |
 | Expert Domains Tracked | 10 |
-| Expert Open Gaps | 0 |
-| Completion Rate | 100% |
-| Last Counted Run | QA-20260427-0354 (2026-04-27T13:51:08.998Z) |
-| Latest Recorded Run | QA-20260427-0354 (2026-04-27T13:51:08.998Z) |
+| Expert Open Gaps | 2 |
+| Completion Rate | 99.71% |
+| Last Counted Run | QA-20260428-0355 (2026-04-28T00:28:02.962Z) |
+| Latest Recorded Run | QA-20260428-0355 (2026-04-28T00:28:02.962Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,28 +34,29 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260427-0354 (2026-04-27T13:51:08.998Z)
+Latest run: QA-20260428-0355 (2026-04-28T00:28:02.962Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
+| AI Quality Assurance Specialist | partially-appropriate | yes | Decide whether to restore the standalone ThinkingProcessVisualizer toggle for assistant messages with thinkingSteps or update the QA contract/docs to AnalysisBasisBadge. |
+| Test Automation Architect | partially-appropriate | yes | Align npm run test:vercel:thinking-visualizer with the current UI contract after product intent is confirmed. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | manual-dashboard | checked | unknown | - |
+| vercel | cli | checked | normal | Current billing period checked after production QA; effective $17.7347, billed $0.0000, no unexpected billed usage. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-26T13:51:08.998Z -> 2026-04-27T13:51:08.998Z (24h)
-- Runs with observations: 4 recorded / 4 counted
-- Samples: 6
+- Window: 2026-04-27T00:28:02.962Z -> 2026-04-28T00:28:02.962Z (24h)
+- Runs with observations: 3 recorded / 3 counted
+- Samples: 5
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Analyst Agent | cloud-run | 1 | 10186ms | 10186ms | - | - | - | - | QA-20260427-0352 |
-| AI Chat | cloud-run | 4 | 3109ms | 5092ms | - | - | 2393ms | 2932ms | QA-20260427-0351 |
+| AI Chat | cloud-run | 3 | 2447ms | 3042ms | - | - | 2655ms | 2932ms | QA-20260427-0351 |
 | Reporter Agent | cloud-run | 1 | 2984ms | 2984ms | - | - | - | - | QA-20260427-0352 |
 
 ## Coverage (Latest Run)
@@ -65,30 +66,33 @@ Latest run: QA-20260427-0354 (2026-04-27T13:51:08.998Z)
 - Counts Toward Summary: yes
 - Deployment: dpl_A7Nhcu4FxYeVkhQAWvWv9hUSW9Ca / SHA 2a209c74
 - Coverage Packs: ai-core, ai-advanced-surface
-- Covered Surfaces: /dashboard, AI Chat, Reporter (자동장애 보고서), Analyst (이상감지/예측)
-- Skipped Surfaces: landing page full flow, login page
+- Covered Surfaces: /api/version, /api/health, /dashboard/ai-assistant, AI analysis mode route selection, thinking visualizer documented render contract
+- Skipped Surfaces: landing/login full visual pass, Analyst/Reporter feature tabs, Cloud Run log inspection, real LLM completion for route comparison requests
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | general | [general](https://openmanager-ai.vercel.app/) | - |
+| general | Vercel production | [Vercel production](https://openmanager-ai.vercel.app/) | - |
+| vercel-deployment | Production deployment | [Production deployment](https://openmanager-sp7w6ajzd-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | AI Chat lb-haproxy-dc1-01 CPU 74% 분석 응답 | `reports/qa/evidence/QA-20260427-0354/qa-20260427-chat-response.png` | - |
-| playwright-screenshot | Analyst 주요 이슈 결과 (network 72%) | `reports/qa/evidence/QA-20260427-0354/qa-20260427-analyst-result.png` | - |
-| playwright-screenshot | Reporter 보고서 생성 결과 | `reports/qa/evidence/QA-20260427-0354/qa-20260427-reporter-result.png` | - |
+| playwright-screenshot | QA thinking prompt rendered as Analysis Basis, not AI Process toggle | `reports/qa/evidence/QA-20260428-0355/qa-20260428-thinking-visualizer-analysis-basis.jpg` | - |
+| playwright-network | auto vs thinking route comparison request capture | `reports/qa/evidence/QA-20260428-0355/qa-20260428-thinking-route-comparison.json` | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260428-0355)
+  next: Decide whether to restore the standalone ThinkingProcessVisualizer toggle for assistant messages with thinkingSteps or update the QA contract/docs to AnalysisBasisBadge.
+- test-automation: Test Automation Architect (last QA-20260428-0355)
+  next: Align npm run test:vercel:thinking-visualizer with the current UI contract after product intent is confirmed.
 
 ## Pending Improvements
 
-- None
+- [P1] ai-thinking-visualizer-contract-drift: Thinking visualizer production UI contract drift (seen 1회, last QA-20260428-0355)
 
 ## Deferred Improvements
 
@@ -158,6 +162,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 - active-alerts-modal-ai-prefill: 활성 알림 모달에서 AI 사이드바 컨텍스트 자동 주입 (completed 1회, last QA-20260323-0166)
 - admin-log-level-admin-auth: 관리자 로그레벨 API 관리자 권한 강제 (completed 1회, last QA-20260325-0183)
+- ai-analysis-mode-route-selection-production: Production auto/thinking analysis mode route selection verified (completed 1회, last QA-20260428-0355)
 - ai-analyst-success: Analyst Agent 이상감지/예측 성공 (completed 2회, last QA-20260314-0097)
 - ai-answer-enumerated-requirements: AI 답변이 사용자가 요청한 항목 개수를 정확히 충족하도록 보강 (completed 1회, last QA-20260423-0339)
 - ai-assistant-fullscreen-query-path: AI 전체 화면 핵심 서버 상태 요약 질의 검증 (completed 1회, last QA-20260318-0123)
@@ -504,6 +509,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260428-0355 | 2026-04-28T00:28:02.962Z | targeted | yes | yes | AI analysis mode auto vs thinking production route and visualizer QA | 8 | 1 | 1 | 0 | 0 | 2 |
 | QA-20260427-0354 | 2026-04-27T13:51:08.998Z | targeted | yes | yes | AI Provider 분산 배치 (Spider-Web) Production QA (Task 3) | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260427-0353 | 2026-04-27T13:19:24.078Z | targeted | yes | yes | AI Assistant Analyst/Reporter Quality - Production Playwright MCP QA (Task 5) | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260427-0352 | 2026-04-27T08:33:24.156Z | targeted | yes | yes | Vercel Playwright MCP QA - Reporter and Analyst Functional Quality Check | 11 | 1 | 0 | 0 | 1 | 2 |
@@ -523,4 +529,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260423-0338 | 2026-04-23T13:13:07.550Z | targeted | yes | yes | Vercel AI Assistant quality evaluation - feature surface, streaming, and answer quality | 12 | 0 | 2 | 0 | 0 | 2 |
 | QA-20260423-0337 | 2026-04-23T09:08:17.769Z | targeted | yes | yes | Vercel MCP targeted QA - Playwright and Chrome DevTools production refresh | 14 | 0 | 1 | 0 | 0 | 1 |
 | QA-20260423-0336 | 2026-04-22T16:17:11.229Z | targeted | yes | yes | Vercel complementary release-gate QA - advanced AI surfaces after v8.11.26 release | 7 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260423-0335 | 2026-04-22T16:04:43.748Z | release-gate | yes | yes | Vercel complementary release-gate QA - auth fallback routes and streaming header proof | 7 | 0 | 0 | 0 | 0 | 0 |

@@ -1,0 +1,134 @@
+{
+  "runId": "QA-20260428-0355",
+  "recordedAt": "2026-04-28T00:28:02.962Z",
+  "recordedAtKst": "2026-04-28 09:28:02 KST",
+  "runTitle": "AI analysis mode auto vs thinking production route and visualizer QA",
+  "owner": "codex",
+  "source": "playwright-cli",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_A7Nhcu4FxYeVkhQAWvWv9hUSW9Ca",
+    "deploymentUrl": "https://openmanager-sp7w6ajzd-skyasus-projects.vercel.app",
+    "commitSha": "2a209c74c1528bb4d694e4e90eae51ff86568926"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core", "ai-advanced-surface"],
+  "coveredSurfaces": [
+    "/api/version",
+    "/api/health",
+    "/dashboard/ai-assistant",
+    "AI analysis mode route selection",
+    "thinking visualizer documented render contract"
+  ],
+  "skippedSurfaces": [
+    "landing/login full visual pass",
+    "Analyst/Reporter feature tabs",
+    "Cloud Run log inspection",
+    "real LLM completion for route comparison requests"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 7,
+    "failed": 1
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Route selection behavior is correct, but the documented thinking visualizer render contract does not match production UI.",
+      "nextAction": "Decide whether to restore the standalone ThinkingProcessVisualizer toggle for assistant messages with thinkingSteps or update the QA contract/docs to AnalysisBasisBadge."
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "The dedicated production visualizer script reaches the app but fails on a stale selector/contract: matchedPrompt remains null because no AI 처리 과정 toggle is found.",
+      "nextAction": "Align npm run test:vercel:thinking-visualizer with the current UI contract after product intent is confirmed."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-28T09:17:39+09:00",
+      "summary": "Current billing period checked after production QA; effective $17.7347, billed $0.0000, no unexpected billed usage.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "QA thinking prompt rendered as Analysis Basis, not AI Process toggle",
+      "path": "reports/qa/evidence/QA-20260428-0355/qa-20260428-thinking-visualizer-analysis-basis.jpg"
+    },
+    {
+      "type": "playwright-network",
+      "label": "auto vs thinking route comparison request capture",
+      "path": "reports/qa/evidence/QA-20260428-0355/qa-20260428-thinking-route-comparison.json"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-analysis-mode-route-selection-production",
+      "title": "Production auto/thinking analysis mode route selection verified",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "For query '전체 서버 상태 알려줘', auto used /api/ai/supervisor/stream/v2 with analysisMode=auto; thinking used /api/ai/jobs with analysisMode=thinking.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "ai-thinking-visualizer-contract-drift",
+      "title": "Thinking visualizer production UI contract drift",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "npm run test:vercel:thinking-visualizer failed on v8.11.38: /qa-thinking-visualizer and the prompt set did not expose the documented 'AI 처리 과정' toggle. The deterministic QA prompt currently renders process evidence under '분석 근거'.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Production version endpoint returned v8.11.38 and /api/health returned healthy for database/cache/AI.",
+    "vercel inspect confirmed production deployment dpl_A7Nhcu4FxYeVkhQAWvWv9hUSW9Ca is Ready.",
+    "Route comparison requests were aborted after capture to avoid consuming external LLM quota; this verifies frontend route selection and request body shape only.",
+    "npm run test:vercel:thinking-visualizer first failed in sandbox at browser launch, then the approved non-sandbox rerun reached production and failed at matchedPrompt=null.",
+    "mode audit: requested-mode-auto and requested-mode-thinking both preserved in request bodies; auto-resolved stream and thinking-resolved job queue confirmed for score-15 summary query."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Vercel production",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Production deployment",
+      "url": "https://openmanager-sp7w6ajzd-skyasus-projects.vercel.app/"
+    }
+  ]
+}

@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-27T13:51:08.998Z"
+    "updatedAt": "2026-04-28T00:28:02.962Z"
   },
   "sequence": {
-    "nextRunNumber": 355
+    "nextRunNumber": 356
   },
   "summary": {
-    "totalRecordedRuns": 352,
-    "totalRuns": 287,
+    "totalRecordedRuns": 353,
+    "totalRuns": 288,
     "excludedRuns": 65,
-    "totalChecks": 2391,
-    "totalPassed": 2303,
-    "totalFailed": 79,
-    "completionRate": 100,
-    "completedItems": 343,
-    "pendingItems": 0,
+    "totalChecks": 2399,
+    "totalPassed": 2310,
+    "totalFailed": 80,
+    "completionRate": 99.71,
+    "completedItems": 344,
+    "pendingItems": 1,
     "deferredItems": 0,
     "wontFixItems": 18,
     "expertDomainsTracked": 10,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260427-0354",
-    "lastRecordedAt": "2026-04-27T13:51:08.998Z",
-    "latestRecordedRunId": "QA-20260427-0354",
-    "latestRecordedAt": "2026-04-27T13:51:08.998Z"
+    "expertDomainsOpenGaps": 2,
+    "lastRunId": "QA-20260428-0355",
+    "lastRecordedAt": "2026-04-28T00:28:02.962Z",
+    "latestRecordedRunId": "QA-20260428-0355",
+    "latestRecordedAt": "2026-04-28T00:28:02.962Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -8393,6 +8393,54 @@
       "overengineeringScope": "Functional AI paths are green; this is a result-clarity improvement, not a release blocker.",
       "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
       "lastStatusChangeAt": "2026-04-27T08:33:24.156Z"
+    },
+    "ai-analysis-mode-route-selection-production": {
+      "id": "ai-analysis-mode-route-selection-production",
+      "title": "Production auto/thinking analysis mode route selection verified",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260428-0355",
+      "firstSeenAt": "2026-04-28T00:28:02.962Z",
+      "lastSeenRunId": "QA-20260428-0355",
+      "lastSeenAt": "2026-04-28T00:28:02.962Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "For query '전체 서버 상태 알려줘', auto used /api/ai/supervisor/stream/v2 with analysisMode=auto; thinking used /api/ai/jobs with analysisMode=thinking.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-28T00:28:02.962Z"
+    },
+    "ai-thinking-visualizer-contract-drift": {
+      "id": "ai-thinking-visualizer-contract-drift",
+      "title": "Thinking visualizer production UI contract drift",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260428-0355",
+      "firstSeenAt": "2026-04-28T00:28:02.962Z",
+      "lastSeenRunId": "QA-20260428-0355",
+      "lastSeenAt": "2026-04-28T00:28:02.962Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "npm run test:vercel:thinking-visualizer failed on v8.11.38: /qa-thinking-visualizer and the prompt set did not expose the documented 'AI 처리 과정' toggle. The deterministic QA prompt currently renders process evidence under '분석 근거'.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-28T00:28:02.962Z"
     }
   },
   "runs": [
@@ -33588,6 +33636,111 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260428-0355",
+      "recordedAt": "2026-04-28T00:28:02.962Z",
+      "recordedAtKst": "2026-04-28 09:28:02 KST",
+      "title": "AI analysis mode auto vs thinking production route and visualizer QA",
+      "owner": "codex",
+      "source": "playwright-cli",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260428-0355.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_A7Nhcu4FxYeVkhQAWvWv9hUSW9Ca",
+        "deploymentUrl": "https://openmanager-sp7w6ajzd-skyasus-projects.vercel.app",
+        "commitSha": "2a209c74c1528bb4d694e4e90eae51ff86568926"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "/api/version",
+        "/api/health",
+        "/dashboard/ai-assistant",
+        "AI analysis mode route selection",
+        "thinking visualizer documented render contract"
+      ],
+      "skippedSurfaces": [
+        "landing/login full visual pass",
+        "Analyst/Reporter feature tabs",
+        "Cloud Run log inspection",
+        "real LLM completion for route comparison requests"
+      ],
+      "checks": {
+        "total": 8,
+        "passed": 7,
+        "failed": 1
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Route selection behavior is correct, but the documented thinking visualizer render contract does not match production UI.",
+          "nextAction": "Decide whether to restore the standalone ThinkingProcessVisualizer toggle for assistant messages with thinkingSteps or update the QA contract/docs to AnalysisBasisBadge."
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "The dedicated production visualizer script reaches the app but fails on a stale selector/contract: matchedPrompt remains null because no AI 처리 과정 toggle is found.",
+          "nextAction": "Align npm run test:vercel:thinking-visualizer with the current UI contract after product intent is confirmed."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-28T09:17:39+09:00",
+          "summary": "Current billing period checked after production QA; effective $17.7347, billed $0.0000, no unexpected billed usage.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "QA thinking prompt rendered as Analysis Basis, not AI Process toggle",
+          "path": "reports/qa/evidence/QA-20260428-0355/qa-20260428-thinking-visualizer-analysis-basis.jpg"
+        },
+        {
+          "type": "playwright-network",
+          "label": "auto vs thinking route comparison request capture",
+          "path": "reports/qa/evidence/QA-20260428-0355/qa-20260428-thinking-route-comparison.json"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Vercel production",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Production deployment",
+          "url": "https://openmanager-sp7w6ajzd-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 2,
+      "completedCount": 1,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -33596,17 +33749,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 165,
+      "seenCount": 166,
       "appropriateCount": 152,
-      "partialCount": 13,
+      "partialCount": 14,
       "inappropriateCount": 0,
-      "improvementNeededCount": 23,
-      "lastRunId": "QA-20260427-0354",
-      "lastSeenAt": "2026-04-27T13:51:08.998Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "Provider 분산 배치 후 AI Chat, Analyst, Reporter 전 구간 정상 응답 확인",
-      "lastNextAction": ""
+      "improvementNeededCount": 24,
+      "lastRunId": "QA-20260428-0355",
+      "lastSeenAt": "2026-04-28T00:28:02.962Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "Route selection behavior is correct, but the documented thinking visualizer render contract does not match production UI.",
+      "lastNextAction": "Decide whether to restore the standalone ThinkingProcessVisualizer toggle for assistant messages with thinkingSteps or update the QA contract/docs to AnalysisBasisBadge."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -33664,17 +33817,17 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 133,
+      "seenCount": 134,
       "appropriateCount": 124,
-      "partialCount": 9,
+      "partialCount": 10,
       "inappropriateCount": 0,
-      "improvementNeededCount": 11,
-      "lastRunId": "QA-20260427-0352",
-      "lastSeenAt": "2026-04-27T08:33:24.156Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP exercised Reporter generation, Analyst full-system analysis, state switching, network status, and console cleanliness.",
-      "lastNextAction": ""
+      "improvementNeededCount": 12,
+      "lastRunId": "QA-20260428-0355",
+      "lastSeenAt": "2026-04-28T00:28:02.962Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "The dedicated production visualizer script reaches the app but fails on a stale selector/contract: matchedPrompt remains null because no AI 처리 과정 toggle is found.",
+      "lastNextAction": "Align npm run test:vercel:thinking-visualizer with the current UI contract after product intent is confirmed."
     },
     "data-metrics-quality": {
       "domainId": "data-metrics-quality",
