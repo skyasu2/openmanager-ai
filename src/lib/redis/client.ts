@@ -66,6 +66,11 @@ export async function runRedisWithTimeout<T>(
  * @returns Redis 인스턴스 또는 null (환경 변수 미설정 시)
  */
 export function getRedisClient(): Redis | null {
+  if (isRedisDisabled()) {
+    isRedisAvailable = false;
+    return null;
+  }
+
   // 이미 인스턴스가 있으면 반환
   if (redisInstance) {
     return redisInstance;
@@ -110,7 +115,11 @@ export function getRedisClient(): Redis | null {
  * @returns Redis 사용 가능 여부
  */
 export function isRedisEnabled(): boolean {
-  return isRedisAvailable && redisInstance !== null;
+  if (isRedisDisabled()) {
+    return false;
+  }
+
+  return isRedisAvailable && getRedisClient() !== null;
 }
 
 /**

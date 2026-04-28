@@ -54,6 +54,7 @@ function createPendingPromise<T>(): Promise<T> {
 describe('redis/client timeouts', () => {
   const originalUrl = process.env.KV_REST_API_URL;
   const originalToken = process.env.KV_REST_API_TOKEN;
+  const originalRedisEnabled = process.env.REDIS_ENABLED;
 
   beforeEach(() => {
     vi.resetModules();
@@ -69,6 +70,11 @@ describe('redis/client timeouts', () => {
     vi.useRealTimers();
     process.env.KV_REST_API_URL = originalUrl;
     process.env.KV_REST_API_TOKEN = originalToken;
+    if (originalRedisEnabled === undefined) {
+      delete process.env.REDIS_ENABLED;
+    } else {
+      process.env.REDIS_ENABLED = originalRedisEnabled;
+    }
   });
 
   it('redisGet returns null when GET exceeds timeout budget', async () => {
@@ -110,5 +116,25 @@ describe('redis/client timeouts', () => {
       available: false,
       error: expect.stringContaining('timed out'),
     });
+  });
+
+  it('isRedisEnabled initializes the Redis client on cold start', async () => {
+    const { isRedisEnabled } = await import('./client');
+
+    expect(isRedisEnabled()).toBe(true);
+    expect(mockRedisConstructor).toHaveBeenCalledWith({
+      url: 'https://example.com/redis',
+      token: 'token',
+      enableAutoPipelining: true,
+    });
+  });
+
+  it('getRedisClient respects REDIS_ENABLED=false', async () => {
+    process.env.REDIS_ENABLED = 'false';
+    const { getRedisClient, isRedisEnabled } = await import('./client');
+
+    expect(getRedisClient()).toBeNull();
+    expect(isRedisEnabled()).toBe(false);
+    expect(mockRedisConstructor).not.toHaveBeenCalled();
   });
 });

@@ -87,6 +87,28 @@ const PROGRESS_TTL_SECONDS = 600; // 10 minutes
 // Job Result Operations
 // ============================================================================
 
+function readObject(value: unknown): Record<string, unknown> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return {};
+  }
+
+  return value as Record<string, unknown>;
+}
+
+function mergeJobMetadata(
+  existingJob: Record<string, unknown> | null,
+  metadata: JobResult['metadata'] | undefined
+): JobResult['metadata'] | undefined {
+  const merged = {
+    ...readObject(existingJob?.metadata),
+    ...readObject(metadata),
+  };
+
+  return Object.keys(merged).length > 0
+    ? (merged as JobResult['metadata'])
+    : undefined;
+}
+
 /**
  * Mark job as processing (started)
  * 🎯 Fix: Merge with existing job data to preserve metadata (Stale Closure 방지)
@@ -147,7 +169,7 @@ export async function storeJobResult(
     toolsCalled: options?.toolsCalled,
     toolResults: options?.toolResults,
     ragSources: options?.ragSources,
-    metadata: options?.metadata,
+    metadata: mergeJobMetadata(existingJob, options?.metadata),
     startedAt,
     completedAt,
     processingTimeMs,
