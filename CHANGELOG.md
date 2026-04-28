@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.42](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.41...v8.11.42) (2026-04-28)
+
+
+### Features
+
+* **ai-engine:** implement NLQ instruction layering ([2ab1648](https://gitlab.com/skyasu2/openmanager-ai/-/commit/2ab1648b5fabf595fe76fb4e0c53e7aac04d27dc))
+
+
+### Tests
+
+* **spec:** add NLQ instruction layering contracts ([faec0fb](https://gitlab.com/skyasu2/openmanager-ai/-/commit/faec0fbcffc02b000a7449b49769aaeadd1a9578))
+
 ## [8.11.41](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.40...v8.11.41) (2026-04-28)
 
 
