@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.46](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.45...v8.11.46) (2026-04-28)
+
+
+### Bug Fixes
+
+* **ai-engine:** enforce forced routing context floor ([be788bd](https://gitlab.com/skyasu2/openmanager-ai/-/commit/be788bd80fd34e91bd4de5bebb3445cf3903322f))
+
+
+### Tests
+
+* **spec:** add forced routing context guard regression ([ab71a15](https://gitlab.com/skyasu2/openmanager-ai/-/commit/ab71a15b8fc7674ec136b3a69ea2542ebd39c71b))
+
 ## [8.11.45](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.44...v8.11.45) (2026-04-28)
 
 
