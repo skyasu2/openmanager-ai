@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-29 KST (`Deployment drift guard in progress`)
+**Last Updated**: 2026-04-29 KST (`Deployment drift guard completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| Deployment drift guard and AI deploy skip | High | In Progress | [deployment-drift-guard-plan.md](deployment-drift-guard-plan.md) — `/api/version` build metadata, Vercel QA drift preflight, and Cloud Run AI deploy skip guard |
+| _None_ | - | - | - |
 
 ---
 
@@ -31,6 +31,16 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-29 #220)
+- [x] Deployment drift guard and AI deploy skip
+  - Plan completed: [deployment-drift-guard-plan.md](deployment-drift-guard-plan.md)
+  - `/api/version`에 `commitSha`, `shortCommitSha`, `releaseTag`, `pipelineUrl`, `deploymentProvider` 메타데이터 추가
+  - Vercel post-deploy smoke가 release version과 GitLab commit SHA를 함께 검증하도록 확장
+  - QA용 `check-vercel-deployment-drift.mjs` preflight 추가: version/tag/commit mismatch를 deployment drift로 분리
+  - semver tag pipeline의 `deploy_ai_engine`/AI smoke가 `cloud-run/ai-engine/**` 변경이 없으면 GCP auth/Cloud Run deploy 전 no-op 처리
+  - SDD gate followed: failing tests were committed before implementation
+  - 검증: targeted Vitest 17/17, `test:contract`, `test:node:infra:smoke`, `type-check`, `lint`, `test:quick`, GitLab main pipeline `2486506961` success
 
 ### Completed (2026-04-29 #219)
 - [x] Dashboard modal/search display hardening

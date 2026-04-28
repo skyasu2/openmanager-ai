@@ -1,10 +1,10 @@
 > Owner: project
-> Status: In Progress
+> Status: Completed
 > Last reviewed: 2026-04-29
 
 # Deployment Drift Guard Plan
 
-- 상태: In Progress
+- 상태: Completed
 - 작성일: 2026-04-29
 - TODO.md 연결: Active Tasks > Deployment drift guard and AI deploy skip
 
@@ -63,7 +63,7 @@ Vercel production QA가 최신 GitLab main 변경이 아직 배포되지 않은 
 - [x] Task 0 — failing test 커밋: 위 테스트 시나리오를 먼저 추가하고 실패를 확인한다.
 - [x] Task 1 — `/api/version` 배포 메타데이터와 smoke/drift checker 구현.
 - [x] Task 2 — GitLab CI에 Vercel metadata 주입 및 AI Engine deploy skip guard 적용.
-- [ ] Task 3 — targeted validation, 코드리뷰, push 후 GitLab pipeline 확인.
+- [x] Task 3 — targeted validation, 코드리뷰, push 후 GitLab pipeline 확인.
 
 ## 단계별 커밋/푸시/배포 판단
 
@@ -94,4 +94,14 @@ Vercel production QA가 최신 GitLab main 변경이 아직 배포되지 않은 
 - [x] 테스트 시나리오 전체 통과
 - [x] `npm run test:contract` 통과
 - [x] targeted QA/CI unit tests 통과
-- [ ] `git push gitlab main` 후 pipeline 결과 보고
+- [x] `git push gitlab main` 후 pipeline 결과 보고
+
+## 검증 결과
+
+- `npx vitest run tests/api/version-route.test.ts tests/unit/qa/vercel-post-deploy-smoke.test.ts tests/unit/qa/vercel-deployment-drift.test.ts tests/unit/ci/should-deploy-ai-engine.test.ts` — pass, 17/17
+- `npm run test:contract` — pass, 20/20
+- `npm run test:node:infra:smoke` — pass
+- `npm run type-check` — pass
+- `npm run lint` — pass, qa-tracker size info only
+- `npm run test:quick` — pass
+- GitLab main pipeline `2486506961` — success
