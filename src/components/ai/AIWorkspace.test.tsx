@@ -94,7 +94,36 @@ vi.mock('@/components/ai-sidebar/EnhancedAIChat', () => ({
 }));
 
 vi.mock('@/components/ai/AIAssistantIconPanel', () => ({
-  default: () => <div data-testid="ai-icon-panel">Icon Panel</div>,
+  default: ({
+    selectedFunction,
+    onFunctionChange,
+    isMobile,
+    showFullscreenButton,
+  }: {
+    selectedFunction: string;
+    onFunctionChange: (fn: string) => void;
+    isMobile?: boolean;
+    showFullscreenButton?: boolean;
+  }) => (
+    <div
+      data-testid={isMobile ? 'ai-mobile-icon-panel' : 'ai-icon-panel'}
+      data-selected-function={selectedFunction}
+      data-show-fullscreen={String(showFullscreenButton)}
+    >
+      <button type="button" onClick={() => onFunctionChange('chat')}>
+        switch-chat
+      </button>
+      <button type="button" onClick={() => onFunctionChange('auto-report')}>
+        switch-reporter
+      </button>
+      <button
+        type="button"
+        onClick={() => onFunctionChange('intelligent-monitoring')}
+      >
+        switch-analyst
+      </button>
+    </div>
+  ),
 }));
 
 vi.mock('@/components/ai/AIContentArea', () => ({
@@ -253,6 +282,24 @@ describe('AIWorkspace', () => {
     expect(aiChatElements.length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('장애 보고서')).toBeInTheDocument();
     expect(screen.getByText('이상감지/예측')).toBeInTheDocument();
+  });
+
+  it('keeps mobile function switching available in fullscreen workspace', () => {
+    render(<AIWorkspace />);
+
+    expect(
+      screen.getByTestId('ai-workspace-mobile-function-nav')
+    ).toBeInTheDocument();
+    expect(screen.getByTestId('ai-mobile-icon-panel')).toHaveAttribute(
+      'data-show-fullscreen',
+      'false'
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'switch-reporter' }));
+
+    expect(screen.getByTestId('ai-content-function')).toHaveTextContent(
+      'auto-report'
+    );
   });
 
   it('forwards sidebar parity props to fullscreen chat', async () => {

@@ -57,6 +57,7 @@ interface AIAssistantIconPanelProps {
   selectedFunction: AIAssistantFunction;
   onFunctionChange: (func: AIAssistantFunction) => void;
   onOpenFullscreen?: () => void;
+  showFullscreenButton?: boolean;
   className?: string;
   isMobile?: boolean;
 }
@@ -165,6 +166,7 @@ export default function AIAssistantIconPanel({
   selectedFunction,
   onFunctionChange,
   onOpenFullscreen,
+  showFullscreenButton = true,
   className = '',
   isMobile = false,
 }: AIAssistantIconPanelProps) {
@@ -195,15 +197,17 @@ export default function AIAssistantIconPanel({
         ))}
 
         {/* 전체 화면 이동 버튼 (Mobile) */}
-        <button
-          type="button"
-          onClick={handleFullscreen}
-          data-testid="ai-fullscreen-button"
-          aria-label="전체 화면으로 열기"
-          className="group relative h-12 w-12 shrink-0 rounded-xl border border-slate-200 bg-white text-slate-600 transition-all duration-200 active:scale-95 hover:bg-slate-50 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
-        >
-          <Maximize2 className="mx-auto h-5 w-5" aria-hidden="true" />
-        </button>
+        {showFullscreenButton && (
+          <button
+            type="button"
+            onClick={handleFullscreen}
+            data-testid="ai-fullscreen-button"
+            aria-label="전체 화면으로 열기"
+            className="group relative h-12 w-12 shrink-0 rounded-xl border border-slate-200 bg-white text-slate-600 transition-all duration-200 active:scale-95 hover:bg-slate-50 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
+          >
+            <Maximize2 className="mx-auto h-5 w-5" aria-hidden="true" />
+          </button>
+        )}
       </div>
     );
   }
@@ -231,26 +235,28 @@ export default function AIAssistantIconPanel({
       </div>
 
       {/* 전체 화면 이동 버튼 (Desktop - 하단 분리) */}
-      <div className="mt-4 border-t border-gray-200 pt-2">
-        <button
-          type="button"
-          onClick={handleFullscreen}
-          data-testid="ai-fullscreen-button"
-          aria-label="전체 화면으로 열기"
-          className="group relative h-12 w-12 rounded-xl border border-slate-200 bg-white text-slate-500 transition-all duration-200 hover:scale-105 hover:bg-slate-50 hover:text-slate-900 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
-          title="전체 화면으로 열기"
-        >
-          <Maximize2 className="mx-auto h-5 w-5" aria-hidden="true" />
+      {showFullscreenButton && (
+        <div className="mt-4 border-t border-gray-200 pt-2">
+          <button
+            type="button"
+            onClick={handleFullscreen}
+            data-testid="ai-fullscreen-button"
+            aria-label="전체 화면으로 열기"
+            className="group relative h-12 w-12 rounded-xl border border-slate-200 bg-white text-slate-500 transition-all duration-200 hover:scale-105 hover:bg-slate-50 hover:text-slate-900 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
+            title="전체 화면으로 열기"
+          >
+            <Maximize2 className="mx-auto h-5 w-5" aria-hidden="true" />
 
-          {/* 툴팁 */}
-          <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 pointer-events-none z-60 min-w-max whitespace-nowrap rounded-lg bg-gray-800 px-3 py-2 text-xs text-white opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100">
-            전체 화면으로 보기
-            <div className="absolute left-full top-1/2 -translate-y-1/2 transform">
-              <div className="border-4 border-transparent border-l-gray-800"></div>
+            {/* 툴팁 */}
+            <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 pointer-events-none z-60 min-w-max whitespace-nowrap rounded-lg bg-gray-800 px-3 py-2 text-xs text-white opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100">
+              전체 화면으로 보기
+              <div className="absolute left-full top-1/2 -translate-y-1/2 transform">
+                <div className="border-4 border-transparent border-l-gray-800"></div>
+              </div>
             </div>
-          </div>
-        </button>
-      </div>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

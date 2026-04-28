@@ -29,7 +29,9 @@ import { useAIChatSurface } from '@/hooks/ai/useAIChatSurface';
 import { RealTimeDisplay } from '../dashboard/RealTimeDisplay';
 import { OpenManagerLogo } from '../shared/OpenManagerLogo';
 import UnifiedProfileHeader from '../shared/UnifiedProfileHeader';
-import type { AIAssistantFunction } from './AIAssistantIconPanel';
+import AIAssistantIconPanel, {
+  type AIAssistantFunction,
+} from './AIAssistantIconPanel';
 import AIContentArea from './AIContentArea';
 import { AIWorkspaceMessage } from './AIWorkspaceMessage';
 import SystemContextPanel from './SystemContextPanel';
@@ -83,6 +85,20 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
   const handleToggleRightPanel = useCallback(() => {
     setIsRightPanelOpen((prev) => !prev);
   }, []);
+
+  const renderMobileFunctionNav = () => (
+    <div
+      className="flex md:hidden shrink-0 border-b border-gray-200 bg-white px-4 pt-3"
+      data-testid="ai-workspace-mobile-function-nav"
+    >
+      <AIAssistantIconPanel
+        selectedFunction={selectedFunction}
+        onFunctionChange={setSelectedFunction}
+        isMobile
+        showFullscreenButton={false}
+      />
+    </div>
+  );
 
   // ============================================================================
   // 🎯 공통 AI 채팅 로직 (useAIChatCore 훅 사용)
@@ -345,6 +361,7 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
             <UnifiedProfileHeader />
           </div>
         </div>
+        {renderMobileFunctionNav()}
 
         {/* CENTER CONTENT */}
         <div className="flex flex-1 flex-col relative min-w-0">

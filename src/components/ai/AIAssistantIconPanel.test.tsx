@@ -86,4 +86,19 @@ describe('AIAssistantIconPanel', () => {
     );
     expect(screen.getByLabelText('전체 화면으로 열기')).toBeInTheDocument();
   });
+
+  it('can hide fullscreen handoff when already rendered in fullscreen', () => {
+    render(
+      <AIAssistantIconPanel
+        selectedFunction="chat"
+        onFunctionChange={vi.fn()}
+        isMobile
+        showFullscreenButton={false}
+      />
+    );
+
+    expect(
+      screen.queryByLabelText('전체 화면으로 열기')
+    ).not.toBeInTheDocument();
+  });
 });

@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-28 KST (`AI Assistant source mode 정리 완료`)
+**Last Updated**: 2026-04-28 KST (`AI Workspace mobile function nav parity 완료`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -31,6 +31,12 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-28 #211)
+- [x] AI Workspace mobile function nav parity
+  - 코드리뷰 결과 전체 화면 모바일에서 Chat/Reporter/Analyst 기능 전환 진입점이 없는 P1 UX 회귀를 확인
+  - 전체 화면 모바일 헤더 아래에 기능 전환 rail을 추가하고, 이미 전체 화면인 상태에서는 fullscreen handoff 버튼을 숨김
+  - 회귀 테스트: `AIWorkspace` 모바일 기능 전환 nav 렌더링 및 Reporter 전환, `AIAssistantIconPanel` fullscreen 버튼 숨김 옵션
 
 ### Completed (2026-04-28 #210)
 - [x] AI Assistant source mode contract 정리
