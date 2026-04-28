@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Last reviewed: 2026-04-29
 
 # AI Assistant UX Polish Plan
@@ -57,16 +57,18 @@
 - [x] Task 3 — 전체페이지 light 톤 통일 (P1-C)
 - [x] Task 4 — System Context AI Engine 상태 통합 (P2-A)
 - [x] Task 5 — Provider Routing 활성 강조 (P2-B)
-- [ ] Task 6 — Playwright targeted QA + qa:record
-- [ ] Task 7 — commit / push gitlab / GitHub sync
+- [x] Task 6 — Playwright targeted QA + qa:record
+- [x] Task 7 — commit / push gitlab / GitHub sync
 
 ## 7. 완료 기준
 
-- [ ] `npm run lint` 통과
-- [ ] `npm run type-check` 통과
-- [ ] 추가 단위/시나리오 테스트 모두 통과
-- [ ] Vercel production targeted QA `releaseDecision=go`
-- [ ] 증거 스크린샷 갱신: `.playwright-mcp/ux-sidebar-after.png`, `.playwright-mcp/ux-fullscreen-after.png`, `.playwright-mcp/ux-fullscreen-mobile-after.png`
+- [x] `npm run lint` 통과
+- [x] `npm run type-check` 통과
+- [x] 추가 단위/시나리오 테스트 모두 통과
+- [x] Vercel production targeted QA `releaseDecision=go`
+- [x] 증거 스크린샷 갱신:
+  `reports/qa/evidence/QA-20260429-0360/qa-20260429-ai-assistant-fullscreen-desktop-v81157.png`,
+  `reports/qa/evidence/QA-20260429-0360/qa-20260429-ai-assistant-fullscreen-mobile-v81157.png`
 
 ## 8. 위험과 대응
 

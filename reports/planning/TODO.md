@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-29 KST (`AI Assistant UX polish plan approved`)
+**Last Updated**: 2026-04-29 KST (`AI Assistant UX polish completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI Assistant UX polish (typography 4-tier, target ≥24/44, light tone unification, SystemContext dedupe, provider chip emphasis) | P1·P2 | Approved | [ai-assistant-ux-polish-plan.md](ai-assistant-ux-polish-plan.md) — Task 0~5 local implementation done; Task 6 Playwright targeted QA next |
+| — | — | — | No active task. |
 
 ---
 
@@ -31,6 +31,14 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-29 #217)
+- [x] AI Assistant UX polish
+  - Plan completed: [ai-assistant-ux-polish-plan.md](ai-assistant-ux-polish-plan.md)
+  - SDD gate followed: failing tests were committed before implementation
+  - Typography scale, desktop/mobile target sizes, fullscreen light theme, System Context AI Engine status consolidation, and provider routing active-chip contract implemented
+  - Production QA `QA-20260429-0360` passed on `v8.11.57`: desktop body/html light background, mobile 44px action targets, desktop 24px targets, health/version endpoints, GitLab main/tag pipelines, Vercel usage normal
+  - QA found and fixed two release-candidate regressions before final pass: global dark body token on `v8.11.55`, and mobile input action buttons at 36px on `v8.11.56`
 
 ### Completed (2026-04-28 #216)
 - [x] Cloud Tasks dispatch follow-up hardening and health route import safety

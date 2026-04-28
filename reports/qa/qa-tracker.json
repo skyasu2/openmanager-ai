@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-28T15:49:12.787Z"
+    "updatedAt": "2026-04-28T16:57:31.077Z"
   },
   "sequence": {
-    "nextRunNumber": 360
+    "nextRunNumber": 361
   },
   "summary": {
-    "totalRecordedRuns": 357,
-    "totalRuns": 292,
+    "totalRecordedRuns": 358,
+    "totalRuns": 293,
     "excludedRuns": 65,
-    "totalChecks": 2444,
-    "totalPassed": 2355,
+    "totalChecks": 2462,
+    "totalPassed": 2373,
     "totalFailed": 80,
     "completionRate": 100,
-    "completedItems": 350,
+    "completedItems": 351,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 19,
     "expertDomainsTracked": 10,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260429-0359",
-    "lastRecordedAt": "2026-04-28T15:49:12.787Z",
-    "latestRecordedRunId": "QA-20260429-0359",
-    "latestRecordedAt": "2026-04-28T15:49:12.787Z"
+    "lastRunId": "QA-20260429-0360",
+    "lastRecordedAt": "2026-04-28T16:57:31.077Z",
+    "latestRecordedRunId": "QA-20260429-0360",
+    "latestRecordedAt": "2026-04-28T16:57:31.077Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -8585,6 +8585,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-28T15:49:12.787Z"
+    },
+    "ai-assistant-ux-polish-p1-p2": {
+      "id": "ai-assistant-ux-polish-p1-p2",
+      "title": "AI Assistant typography scale, touch target, light surface, System Context status, and provider routing polish",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260429-0360",
+      "firstSeenAt": "2026-04-28T16:57:31.077Z",
+      "lastSeenRunId": "QA-20260429-0360",
+      "lastSeenAt": "2026-04-28T16:57:31.077Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "project",
+      "lastEvidence": "reports/qa/evidence/QA-20260429-0360/qa-20260429-v81157-ai-assistant-ux-polish-summary.json",
+      "lastNote": "Production Playwright validated desktop 24px targets, mobile 44px targets, light route theme tokens, and System Context copy/state consolidation on v8.11.57.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-28T16:57:31.077Z"
     }
   },
   "runs": [
@@ -34399,6 +34423,135 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260429-0360",
+      "recordedAt": "2026-04-28T16:57:31.077Z",
+      "recordedAtKst": "2026-04-29 01:57:31 KST",
+      "title": "v8.11.57 AI Assistant UX Polish Production QA",
+      "owner": "codex",
+      "source": "vercel-production-targeted",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260429-0360.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_2BqXNZmdN6VE4od2z8VENgLqjWPU",
+        "deploymentUrl": "https://openmanager-kfdfy6hpy-skyasus-projects.vercel.app",
+        "commitSha": "830996352689ac410226c298ace68a2c6c39edf9"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "core-routes-smoke",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "Vercel production /api/version reports 8.11.57",
+        "Vercel production /api/health?simple=true returns JSON 200",
+        "Vercel production /api/health?service=ai returns JSON 200 cloud-run backend",
+        "GitLab main pipeline 2486085286 success",
+        "GitLab tag pipeline v8.11.57 2486085266 success including Vercel deploy and AI Engine smoke",
+        "/dashboard/ai-assistant desktop Playwright render on v8.11.57",
+        "/dashboard/ai-assistant mobile Playwright render at 390x844",
+        "AI Assistant root/html/body light theme tokens: background 0 0% 100%, color-scheme light",
+        "AI Assistant desktop visible buttons all meet 24px target",
+        "AI Assistant mobile visible buttons all meet 44px target",
+        "System Context provider routing remains visible and legacy duplicate Korean AI status copy is absent"
+      ],
+      "skippedSurfaces": [
+        "guest AI assistant long-query SSE run - unchanged by UI polish and already covered by QA-20260428-0358",
+        "Cloud Tasks high-volume load test",
+        "full broad route pack"
+      ],
+      "checks": {
+        "total": 18,
+        "passed": 18,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The SDD gate added failing tests before implementation, targeted Vitest covered the new UI contracts, and production Playwright verified desktop/mobile DOM target sizes and route theme tokens.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab main and semver tag pipelines completed successfully, production /api/version serves 8.11.57, and Vercel usage remains normal.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The AI assistant UI changes preserve AI core entry points, System Context provider routing visibility, and the single AI Engine status presentation without changing the Cloud Tasks or model execution path.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-29T01:48:17+09:00",
+          "summary": "Current billing period checked after v8.11.57 production QA; effective $18.4121, billed $0.0000, no unexpected billed usage.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "AI assistant fullscreen desktop v8.11.57",
+          "path": "reports/qa/evidence/QA-20260429-0360/qa-20260429-ai-assistant-fullscreen-desktop-v81157.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "AI assistant fullscreen mobile v8.11.57",
+          "path": "reports/qa/evidence/QA-20260429-0360/qa-20260429-ai-assistant-fullscreen-mobile-v81157.png"
+        },
+        {
+          "type": "playwright-network",
+          "label": "v8.11.57 AI assistant UX polish QA summary",
+          "path": "reports/qa/evidence/QA-20260429-0360/qa-20260429-v81157-ai-assistant-ux-polish-summary.json"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab main pipeline v8.11.57",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2486085286"
+        },
+        {
+          "type": "general",
+          "label": "GitLab tag pipeline v8.11.57",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2486085266"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment v8.11.57",
+          "url": "https://openmanager-kfdfy6hpy-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -34407,16 +34560,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 169,
-      "appropriateCount": 155,
+      "seenCount": 170,
+      "appropriateCount": 156,
       "partialCount": 14,
       "inappropriateCount": 0,
       "improvementNeededCount": 24,
-      "lastRunId": "QA-20260428-0358",
-      "lastSeenAt": "2026-04-28T13:24:51.649Z",
+      "lastRunId": "QA-20260429-0360",
+      "lastSeenAt": "2026-04-28T16:57:31.077Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "A live thinking-mode job completed through the async queue, stored a Redis result, and returned a non-empty AI answer with tool evidence.",
+      "lastRationale": "The AI assistant UI changes preserve AI core entry points, System Context provider routing visibility, and the single AI Engine status presentation without changing the Cloud Tasks or model execution path.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -34458,16 +34611,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 100,
-      "appropriateCount": 89,
+      "seenCount": 101,
+      "appropriateCount": 90,
       "partialCount": 11,
       "inappropriateCount": 0,
       "improvementNeededCount": 15,
-      "lastRunId": "QA-20260429-0359",
-      "lastSeenAt": "2026-04-28T15:49:12.787Z",
+      "lastRunId": "QA-20260429-0360",
+      "lastSeenAt": "2026-04-28T16:57:31.077Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab main validate and v8.11.54 tag deployment pipelines completed successfully, including Vercel deploy, Cloud Run ai-engine deploy, and both post-deploy smoke jobs.",
+      "lastRationale": "GitLab main and semver tag pipelines completed successfully, production /api/version serves 8.11.57, and Vercel usage remains normal.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -34475,16 +34628,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 136,
-      "appropriateCount": 125,
+      "seenCount": 137,
+      "appropriateCount": 126,
       "partialCount": 11,
       "inappropriateCount": 0,
       "improvementNeededCount": 13,
-      "lastRunId": "QA-20260429-0359",
-      "lastSeenAt": "2026-04-28T15:49:12.787Z",
+      "lastRunId": "QA-20260429-0360",
+      "lastSeenAt": "2026-04-28T16:57:31.077Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Local deterministic gates and GitLab CI covered root tests, contracts, skill drift, and AI Engine 87-file/911-test suite before and after release.",
+      "lastRationale": "The SDD gate added failing tests before implementation, targeted Vitest covered the new UI contracts, and production Playwright verified desktop/mobile DOM target sizes and route theme tokens.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

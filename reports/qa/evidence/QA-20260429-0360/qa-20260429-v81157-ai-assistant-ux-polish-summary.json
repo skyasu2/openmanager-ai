@@ -1,0 +1,128 @@
+{
+  "runId": "QA-20260429-0360",
+  "title": "v8.11.57 AI Assistant UX Polish Production QA",
+  "recordedAtKst": "2026-04-29 01:55 KST",
+  "release": "v8.11.57",
+  "commitSha": "830996352689ac410226c298ace68a2c6c39edf9",
+  "deployment": {
+    "id": "dpl_2BqXNZmdN6VE4od2z8VENgLqjWPU",
+    "url": "https://openmanager-kfdfy6hpy-skyasus-projects.vercel.app",
+    "alias": "https://openmanager-ai.vercel.app",
+    "status": "Ready"
+  },
+  "pipelines": {
+    "main": {
+      "id": 2486085286,
+      "status": "success",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2486085286"
+    },
+    "tag": {
+      "id": 2486085266,
+      "ref": "v8.11.57",
+      "status": "success",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2486085266",
+      "jobs": {
+        "deploy": "success",
+        "post_deploy_smoke": "success",
+        "deploy_ai_engine": "success",
+        "post_deploy_ai_engine_smoke": "success"
+      }
+    }
+  },
+  "apiChecks": {
+    "version": {
+      "url": "https://openmanager-ai.vercel.app/api/version",
+      "status": "pass",
+      "body": {
+        "version": "8.11.57",
+        "buildVersion": "8.11.57",
+        "nextjs": "16.1.6",
+        "environment": "production"
+      }
+    },
+    "healthSimple": {
+      "url": "https://openmanager-ai.vercel.app/api/health?simple=true",
+      "status": "pass",
+      "body": {
+        "ping": "pong"
+      }
+    },
+    "healthAi": {
+      "url": "https://openmanager-ai.vercel.app/api/health?service=ai&t=2026042903",
+      "status": "pass",
+      "body": {
+        "status": "ok",
+        "backend": "cloud-run",
+        "latency": 146
+      }
+    }
+  },
+  "playwrightChecks": {
+    "desktop": {
+      "viewport": {
+        "width": 1241,
+        "height": 994
+      },
+      "bodyBg": "rgb(255, 255, 255)",
+      "htmlBg": "rgb(255, 255, 255)",
+      "backgroundToken": "0 0% 100%",
+      "colorScheme": "light",
+      "versionVisible": true,
+      "providerRoutingVisible": true,
+      "legacyKoreanAiStatusVisible": false,
+      "quickCommandsVisible": true,
+      "tooSmallButtonsUnder24px": []
+    },
+    "mobile": {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "bodyBg": "rgb(255, 255, 255)",
+      "htmlBg": "rgb(255, 255, 255)",
+      "backgroundToken": "0 0% 100%",
+      "colorScheme": "light",
+      "legacyKoreanAiStatusVisible": false,
+      "tooSmallButtonsUnder44px": [],
+      "inputActionButtons": [
+        {
+          "label": "도구 메뉴 열기",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "메시지 전송",
+          "width": 44,
+          "height": 44
+        }
+      ]
+    }
+  },
+  "localValidation": {
+    "typeCheck": "pass",
+    "lint": "pass with existing qa-tracker size info",
+    "testQuick": "pass",
+    "diffCheck": "pass",
+    "targetedVitest": [
+      {
+        "command": "npx vitest run tests/unit/ai-assistant-ux-polish.contract.test.ts src/components/ai/SystemContextPanel.test.tsx src/components/ai/AIWorkspace.test.tsx src/components/ai/MessageActions.test.tsx src/components/ai-sidebar/AISidebarV4.test.tsx src/components/ai-sidebar/AISidebarV4.smoke.test.tsx",
+        "result": "6 files, 36 tests passed"
+      },
+      {
+        "command": "npx vitest run src/components/ai-sidebar/ChatInputArea.test.tsx tests/unit/ai-assistant-ux-polish.contract.test.ts src/components/ai/AIWorkspace.test.tsx src/components/ai-sidebar/AISidebarV4.test.tsx src/components/ai-sidebar/AISidebarV4.smoke.test.tsx",
+        "result": "5 files, 34 tests passed"
+      }
+    ]
+  },
+  "usageCheck": {
+    "platform": "vercel",
+    "method": "cli",
+    "status": "checked",
+    "result": "normal",
+    "summary": "Current billing period checked after v8.11.57 production QA; effective $18.4121, billed $0.0000, no unexpected billed usage."
+  },
+  "notes": [
+    "Playwright QA found two issues before final recording: root/body background still used the global dark token in v8.11.55, and mobile input action buttons were 36x36 in v8.11.56. Both were fixed and re-released before this passing run.",
+    "This targeted run validates AI assistant UX polish and production deployment health. The heavy guest long-query Cloud Tasks SSE path was intentionally not rerun because v8.11.53 already covered that path and this work changed UI polish only."
+  ]
+}
