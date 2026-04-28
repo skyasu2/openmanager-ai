@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.44](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.43...v8.11.44) (2026-04-28)
+
+
+### Bug Fixes
+
+* **ai-engine:** abort AI SDK retries on timeout ([16c59d8](https://gitlab.com/skyasu2/openmanager-ai/-/commit/16c59d83726976bdd5d38dc85600da76576d3c6c))
+
+
+### Tests
+
+* **spec:** add AI SDK timeout abort contract ([d2502dd](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d2502ddf8f222f5bbf2bdb646cdd4e87381cb728))
+
 ## [8.11.43](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.42...v8.11.43) (2026-04-28)
 
 
