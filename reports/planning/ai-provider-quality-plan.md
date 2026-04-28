@@ -165,17 +165,27 @@ Advisor가 Cerebras-first로 이동하면 Groq 실질 소비는 Cerebras 장애 
 
 ### Phase 3: 응답 품질 검사 강화 (P2)
 
-- [ ] T9. `response-quality.ts` 패턴 보강
+- [x] T9. `response-quality.ts` 패턴 보강
   - 파일: `cloud-run/ai-engine/src/services/ai-sdk/agents/response-quality.ts`
   - Analyst 추가: `{ pattern: /(신뢰도|confidence):\s*\d+%/, flag: 'MISSING_CONFIDENCE_SCORE' }`
   - Analyst 추가: `{ pattern: /(→|유발|전파|인과|원인.*결과)/, flag: 'MISSING_CAUSAL_DIRECTION' }`
   - Reporter 추가: `{ pattern: /(신뢰도|confidence):\s*\d+%/, flag: 'MISSING_CONFIDENCE_SCORE' }`
   - 공통 BASE에 추가: `{ pattern: /[一-鿿]/, flag: 'CONTAINS_CHINESE_CHARS' }` (한자 감지 — flag만, block 아님)
 
-- [ ] T10. 테스트 업데이트
+- [x] T10. 테스트 업데이트
   - 파일: `cloud-run/ai-engine/src/services/ai-sdk/agents/response-quality.test.ts`
   - 신뢰도 없는 Analyst 응답 → `MISSING_CONFIDENCE_SCORE` flag 검증
   - 한자 포함 응답 → `CONTAINS_CHINESE_CHARS` flag 검증
+
+#### Phase 3 검증 (2026-04-28)
+
+- `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/agents/response-quality.test.ts` 통과
+- `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/agents/response-quality.test.ts src/services/ai-sdk/supervisor-quality-retry.test.ts src/services/ai-sdk/agents/orchestrator-routing.test.ts src/services/ai-sdk/agents/base-agent.test.ts` 통과
+- `cd cloud-run/ai-engine && npm run type-check` 통과
+- `cd cloud-run/ai-engine && npm run test` 통과 (`84 files / 892 tests`)
+- `npm run type-check` 통과
+- `npm run test:quick` 통과
+- `npm run test:contract` 통과 (`20 tests`)
 
 ### Phase 4: Supervisor 시스템 프롬프트 보강 (P2)
 
@@ -192,10 +202,10 @@ Advisor가 Cerebras-first로 이동하면 Groq 실질 소비는 Cerebras 장애 
 
 ## Done Definition
 
-- [ ] `npm run type-check` 통과
-- [ ] `cd cloud-run/ai-engine && npm run type-check` 통과
-- [ ] `cd cloud-run/ai-engine && npm run test` 통과 (T4 포함)
-- [ ] `npm run test:quick` 통과
+- [x] `npm run type-check` 통과
+- [x] `cd cloud-run/ai-engine && npm run type-check` 통과
+- [x] `cd cloud-run/ai-engine && npm run test` 통과 (T4 포함)
+- [x] `npm run test:quick` 통과
 - [x] Analyst/Reporter/Advisor/Verifier의 `minContextTokens: 32_000` 요구사항이 테스트로 고정됨
 - [x] Advisor provider order가 `CEREBRAS_FIRST_PROVIDER_ORDER`임이 테스트로 고정됨
 - [ ] Production QA: Analyst/Reporter/Advisor 각 1회씩 실제 응답 확인
