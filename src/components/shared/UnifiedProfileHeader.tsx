@@ -46,7 +46,9 @@ export default function UnifiedProfileHeader({
     setIsHydrated(true);
   }, []);
 
-  const { status: systemStatus } = useSystemStatus();
+  const { status: systemStatus } = useSystemStatus({
+    enabled: !isAuthResolving && status === 'authenticated',
+  });
   // 🎯 Zustand selector 패턴 사용 - 불필요한 리렌더 방지
   const isSystemStarted = useUnifiedAdminStore(
     (state) => state.isSystemStarted
@@ -201,6 +203,39 @@ export default function UnifiedProfileHeader({
     return '사용자';
   };
 
+  const getAvatarText = () => {
+    if (userType === 'guest') return 'GU';
+    if (userType === 'github') return 'GH';
+    if (userType === 'google') return 'G';
+
+    if (userInfo?.name) {
+      const words = userInfo.name.split(' ');
+      if (words.length >= 2 && words[0]?.[0] && words[1]?.[0]) {
+        return (words[0][0] + words[1][0]).toUpperCase();
+      }
+      return userInfo.name.substring(0, 2).toUpperCase();
+    }
+
+    if (userInfo?.email) {
+      return userInfo.email.substring(0, 2).toUpperCase();
+    }
+
+    return '?';
+  };
+
+  const getLoginStateLabel = () => {
+    if (userType === 'github') return 'GitHub 로그인';
+    if (userType === 'google') return 'Google 로그인';
+    if (userType === 'guest') return '게스트 로그인';
+    return '로그인 필요';
+  };
+
+  const userName = getUserName();
+  const loginStateLabel = getLoginStateLabel();
+  const profileButtonLabel = isAuthResolving
+    ? '프로필 메뉴, 권한 확인 중'
+    : `${getAvatarText()} ${userName} ${loginStateLabel}`;
+
   if (!isHydrated) {
     return (
       <div
@@ -249,7 +284,7 @@ export default function UnifiedProfileHeader({
         }}
         disabled={isAuthResolving}
         className="group pointer-events-auto relative z-50 flex items-center space-x-3 rounded-lg p-3 transition-all duration-200 hover:bg-gray-100 disabled:cursor-wait disabled:hover:bg-transparent"
-        aria-label="프로필 메뉴"
+        aria-label={profileButtonLabel}
         aria-expanded={menuState.showProfileMenu}
         aria-haspopup="true"
         aria-busy={isAuthResolving}
@@ -280,17 +315,11 @@ export default function UnifiedProfileHeader({
             {/* 사용자 정보 */}
             <div className="hidden text-left sm:block">
               <div className="flex items-center gap-1 text-sm font-medium text-gray-900">
-                {getUserName()}
+                {userName}
                 <UserTypeIcon userType={userType} className="h-3 w-3" />
               </div>
               <div className="flex items-center gap-1 text-xs text-gray-500">
-                {userType === 'github'
-                  ? 'GitHub 로그인'
-                  : userType === 'google'
-                    ? 'Google 로그인'
-                    : userType === 'guest'
-                      ? '게스트 로그인'
-                      : '로그인 필요'}
+                {loginStateLabel}
               </div>
             </div>
 

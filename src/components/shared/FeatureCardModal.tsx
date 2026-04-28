@@ -370,6 +370,10 @@ export default function FeatureCardModal({
   // ✅ Portal 기반 모달 렌더링 (AI 교차검증 기반 개선)
   // 클라이언트 사이드에서만 Portal 렌더링하고, isVisible과 selectedCard로 가시성 제어
 
+  if (typeof document === 'undefined') {
+    return null;
+  }
+
   return createPortal(
     <div
       className={`fixed inset-0 z-50 flex items-center justify-center p-1 sm:p-2 ${

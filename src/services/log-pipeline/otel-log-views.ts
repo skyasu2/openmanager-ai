@@ -82,7 +82,7 @@ export function otelToLokiEntry(log: OTelLogRecord): LokiLogEntry {
 
   const structuredMetadata: LokiStructuredMetadata = {
     trace_id: generateTraceId(),
-    instance: `${log.resource}:9100`,
+    instance: log.resource,
   };
 
   return { labels, timestampNs, timestamp, line: log.body, structuredMetadata };

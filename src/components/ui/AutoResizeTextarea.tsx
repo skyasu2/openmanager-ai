@@ -16,6 +16,7 @@ import {
   type TextareaHTMLAttributes,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
 } from 'react';
 
@@ -47,6 +48,7 @@ export const AutoResizeTextarea = memo(
     onInput,
     onKeyDown,
     ref,
+    value: controlledValue,
     ...props
   }: AutoResizeTextareaProps) => {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -131,10 +133,13 @@ export const AutoResizeTextarea = memo(
       return () => window.removeEventListener('resize', handleResize);
     }, [autoResize]);
 
-    // value prop 변경 시 자동 리사이즈
-    useEffect(() => {
+    // Controlled value가 바뀐 직후 높이를 다시 맞춰 flicker를 줄인다.
+    useLayoutEffect(() => {
+      if (controlledValue === undefined && !textareaRef.current) {
+        return;
+      }
       autoResize();
-    }, [autoResize]);
+    }, [autoResize, controlledValue]);
 
     const dynamicMaxHeight = calculateMaxHeight();
 
@@ -159,6 +164,7 @@ export const AutoResizeTextarea = memo(
         onInput={handleInput}
         onKeyDown={handleKeyDown}
         aria-label={props['aria-label'] || '자동 크기 조절 텍스트 입력'}
+        value={controlledValue}
         {...props}
       />
     );

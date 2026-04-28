@@ -89,7 +89,7 @@ async function runInitialization(): Promise<string[]> {
     logs.push('✅ 서버 데이터 생성기 초기화 완료');
     systemLogger.info('✅ 서버 데이터 생성기 초기화 완료');
 
-    logs.push('🔄 MCP 서버 웜업 시작 (백그라운드)');
+    logs.push('🔄 AI 엔진 웜업 시작 (백그라운드)');
     logs.push('✅ 기타 필수 서비스 초기화 완료');
 
     isInitialized = true;
@@ -118,7 +118,7 @@ async function syncSystemRunningFlag(
 // GET Handler
 // ============================================================================
 
-export async function GET(request: NextRequest) {
+export const GET = withAuth(async (request: NextRequest) => {
   try {
     const { searchParams } = new URL(request.url);
     const view = searchParams.get('view') || 'status';
@@ -276,7 +276,7 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // ============================================================================
 // POST Handler

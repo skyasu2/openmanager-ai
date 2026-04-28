@@ -18,6 +18,7 @@ interface ChartErrorBoundaryProps {
   fallback?: ReactNode;
   height?: number;
   chartName?: string;
+  resetKey?: string | number | null;
 }
 
 interface ChartErrorBoundaryState {
@@ -46,6 +47,16 @@ export class ChartErrorBoundary extends Component<
       '[ChartErrorBoundary] 컴포넌트 스택:',
       errorInfo.componentStack
     );
+  }
+
+  componentDidUpdate(prevProps: ChartErrorBoundaryProps): void {
+    if (
+      this.state.hasError &&
+      prevProps.resetKey !== this.props.resetKey &&
+      this.props.resetKey != null
+    ) {
+      this.setState({ hasError: false, error: null });
+    }
   }
 
   handleReset = (): void => {

@@ -53,11 +53,6 @@ export default function EnhancedServerModal({
     }
   }, [server?.id, loadMetricsHistory]);
 
-  // 📅 마지막 업데이트 시간
-  const lastUpdateTime = useMemo(() => {
-    return new Date().toLocaleTimeString('en-US', { hour12: false });
-  }, []); // Props로 전달된 server 정보가 변경될 때 갱신
-
   // 🔧 P2: 핸들러 최적화 - useCallback으로 불필요한 리렌더 방지
   const handleToggleRealtime = useCallback(() => {
     setIsRealtime((prev) => !prev);
@@ -149,6 +144,10 @@ export default function EnhancedServerModal({
     (): ServerData | null => (server ? normalizeServerData(server) : null),
     [server]
   );
+
+  const lastUpdateTime = safeServer?.lastUpdate.toLocaleTimeString('en-US', {
+    hour12: false,
+  });
 
   // 📅 로그 타임스탬프 메모이제이션
   const logTimestamp = useMemo(() => new Date().toISOString(), []);
@@ -409,6 +408,7 @@ export default function EnhancedServerModal({
                     시스템 로그
                   </h3>
                   <LogsTab
+                    key={safeServer.id}
                     serverId={safeServer.id}
                     serverMetrics={{
                       cpu: currentMetrics?.cpu ?? safeServer.cpu,
@@ -477,7 +477,7 @@ export default function EnhancedServerModal({
             </div>
 
             <div className="text-xs text-gray-400 font-mono">
-              LAST UPDATE: {lastUpdateTime}
+              LAST UPDATE: {lastUpdateTime ?? '--:--:--'}
             </div>
           </div>
         </div>

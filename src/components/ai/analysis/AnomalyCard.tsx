@@ -41,7 +41,7 @@ export function AnomalyCard({ metric, data }: AnomalyCardProps) {
           <CheckCircle className="h-4 w-4" />
         )}
       </div>
-      <div className="text-2xl font-bold">{Math.round(data.currentValue)}%</div>
+      <div className="text-lg font-bold">{Math.round(data.currentValue)}%</div>
 
       {/* 임계값 게이지 바 */}
       {hasThreshold && (
@@ -63,7 +63,7 @@ export function AnomalyCard({ metric, data }: AnomalyCardProps) {
               style={{ left: `${valuePosition}%` }}
             />
           </div>
-          <div className="mt-1 flex justify-between text-2xs opacity-60">
+          <div className="mt-1 flex justify-between text-xs opacity-60">
             <span>{Math.round(lower)}%</span>
             <span>{Math.round(upper)}%</span>
           </div>

@@ -11,6 +11,7 @@ interface UseChatActionsOptions {
   handleSendInput: (attachments?: FileAttachment[]) => void;
   isGenerating: boolean;
   isLimitReached?: boolean;
+  shouldRestoreFocus?: boolean;
   messagesEndRef: React.RefObject<HTMLDivElement | null>;
   limitedMessagesLength: number;
 }
@@ -20,12 +21,14 @@ export function useChatActions({
   handleSendInput,
   isGenerating,
   isLimitReached,
+  shouldRestoreFocus = true,
   messagesEndRef,
   limitedMessagesLength,
 }: UseChatActionsOptions) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const previousMessageCountRef = useRef(limitedMessagesLength);
 
   const {
     attachments,
@@ -122,27 +125,31 @@ export function useChatActions({
 
     if (!container || !endElement) return;
 
+    const hasNewMessages =
+      limitedMessagesLength > previousMessageCountRef.current;
     const isNearBottom =
       container.scrollHeight - container.scrollTop - container.clientHeight <
       100;
 
-    if (isNearBottom || isGenerating) {
+    if (hasNewMessages || isNearBottom) {
       requestAnimationFrame(() => {
         endElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
       });
     }
+
+    previousMessageCountRef.current = limitedMessagesLength;
   }, [limitedMessagesLength, isGenerating, messagesEndRef]);
 
   // Focus textarea after generation completes
   useEffect(() => {
-    if (!isGenerating && !isLimitReached) {
+    if (!isGenerating && !isLimitReached && shouldRestoreFocus) {
       const timer = setTimeout(() => {
         textareaRef.current?.focus();
       }, 100);
       return () => clearTimeout(timer);
     }
     return undefined;
-  }, [isGenerating, isLimitReached]);
+  }, [isGenerating, isLimitReached, shouldRestoreFocus]);
 
   return {
     scrollContainerRef,

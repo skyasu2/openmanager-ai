@@ -35,6 +35,9 @@ const withBundleAnalyzer = (() => {
   }
 })();
 
+const enableDevTurbopackFileSystemCache =
+  process.env.OPENMANAGER_TURBOPACK_FS_CACHE_DEV === 'true';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   cacheComponents: true,
@@ -53,10 +56,10 @@ const nextConfig = {
 
   // 🔧 Windows IDE에서 WSL 개발 서버 접속 허용 (Cross-Origin)
   allowedDevOrigins: [
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    'http://192.168.0.68:3000', // WSL IP (동적 변경 가능)
-    'http://host.docker.internal:3000',
+    'localhost',
+    '127.0.0.1',
+    '192.168.0.68', // WSL IP (동적 변경 가능)
+    'host.docker.internal',
   ],
 
   // 실험적 기능 (Next.js 16 호환)
@@ -77,10 +80,9 @@ const nextConfig = {
     serverMinification: true,
     optimizeCss: false, // critters 의존성 문제로 비활성화
     // Next.js 15에서 runtime, swcMinify 제거됨 - 기본 제공
-    // WSL2 NTFS 환경에서 Turbopack dev 캐시 손상 방지
-    // 프로젝트가 /mnt/d/ (Windows NTFS)에 있어 SIGKILL 시 .next/dev/ manifest 손상
-    // 16.2.0 stable 출시 후 true로 되돌려 재테스트 예정
-    turbopackFileSystemCacheForDev: false,
+    // 기본값은 false로 유지하되, Linux FS/안정 환경에서는 env로 opt-in 가능하게 둔다.
+    // 예: OPENMANAGER_TURBOPACK_FS_CACHE_DEV=true npm run dev
+    turbopackFileSystemCacheForDev: enableDevTurbopackFileSystemCache,
   },
 
   // 🚀 이미지 최적화 설정 (무료 티어 친화적 + 성능 우선)
@@ -472,26 +474,28 @@ const nextConfig = {
   },
 };
 
-export default withSentryConfig(
-  withBundleAnalyzer(nextConfig),
-  {
-    // 🎯 무료 티어: 소스맵 업로드 비활성화
-    silent: true,
-    org: 'om-4g',
-    project: 'javascript-nextjs',
+// dev 모드에서 Sentry 빌드 플러그인 생략 (컴파일 속도 대폭 개선)
+// Sentry는 production에서만 필요 (소스맵, 에러 트래킹)
+const baseConfig = withBundleAnalyzer(nextConfig);
 
-    // 🎯 무료 티어: 소스맵 업로드 완전 비활성화
-    sourcemaps: {
-      disable: true,
-    },
-  },
-  {
-    // 🎯 무료 티어 최적화 설정
-    widenClientFileUpload: false, // 소스맵 업로드 비활성화
-    transpileClientSDK: false, // 번들 사이즈 최적화
-    tunnelRoute: '/api/sentry-tunnel', // ad-blocker 우회 (수동 API route 사용)
-    hideSourceMaps: true, // 클라이언트 소스맵 숨김
-    disableLogger: true, // 로거 트리쉐이킹
-    automaticVercelMonitors: false, // Cron 모니터링 비활성화 (무료 제한)
-  }
-);
+export default process.env.NODE_ENV === 'development'
+  ? baseConfig
+  : withSentryConfig(
+      baseConfig,
+      {
+        // 🎯 무료 티어: 소스맵 업로드 비활성화
+        silent: true,
+        org: 'om-4g',
+        project: 'javascript-nextjs',
+        sourcemaps: { disable: true },
+      },
+      {
+        // 🎯 무료 티어 최적화 설정
+        widenClientFileUpload: false,
+        transpileClientSDK: false,
+        tunnelRoute: '/api/sentry-tunnel',
+        hideSourceMaps: true,
+        disableLogger: true,
+        automaticVercelMonitors: false,
+      }
+    );

@@ -8,6 +8,7 @@
  */
 
 import type { Metadata } from 'next';
+import '../landing-effects.css';
 
 // 서버 사이드 설정 - 서버 컴포넌트에서만 사용 가능
 // MIGRATED: Removed export const dynamic = "force-dynamic" (now default)

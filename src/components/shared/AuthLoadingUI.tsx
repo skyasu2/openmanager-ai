@@ -66,7 +66,7 @@ export default function AuthLoadingUI({
         role="status"
         aria-busy="true"
         aria-live="polite"
-        aria-label={showCopy ? undefined : accessibleLoadingLabel}
+        aria-label={accessibleLoadingLabel}
       >
         <div>
           <Loader2 className="mx-auto mb-4 h-8 w-8 animate-spin text-white" />

@@ -15,6 +15,7 @@
 import { BookOpen, Monitor, Play, RefreshCw, Server } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import AnalysisResultsCard from '@/components/ai/AnalysisResultsCard';
+import { createSystemAnalysisSummary } from '@/components/ai/analysis/system-summary';
 import { useServerQuery } from '@/hooks/useServerQuery';
 import { logger } from '@/lib/logging';
 import type {
@@ -22,7 +23,6 @@ import type {
   CloudRunAnalysisResponse,
   MultiServerAnalysisResponse,
   ServerAnalysisResult,
-  SystemAnalysisSummary,
 } from '@/types/intelligent-monitoring.types';
 import type { EnhancedServerMetrics } from '@/types/server';
 
@@ -137,80 +137,8 @@ export default function IntelligentMonitoringPage() {
 
   // 종합 요약 생성 함수
   const createSummary = useCallback(
-    (serverResults: ServerAnalysisResult[]): SystemAnalysisSummary => {
-      const healthyServers = serverResults.filter(
-        (s) => s.overallStatus === 'online'
-      ).length;
-      const warningServers = serverResults.filter(
-        (s) => s.overallStatus === 'warning'
-      ).length;
-      const criticalServers = serverResults.filter(
-        (s) => s.overallStatus === 'critical'
-      ).length;
-
-      // 전체 상태 판단
-      let overallStatus: 'online' | 'warning' | 'critical' = 'online';
-      if (criticalServers > 0) {
-        overallStatus = 'critical';
-      } else if (warningServers > 0) {
-        overallStatus = 'warning';
-      }
-
-      // Top Issues 추출 (이상 감지된 것들)
-      const topIssues: SystemAnalysisSummary['topIssues'] = [];
-      for (const server of serverResults) {
-        if (server.anomalyDetection?.hasAnomalies) {
-          for (const [metric, result] of Object.entries(
-            server.anomalyDetection.results || {}
-          )) {
-            if (result.isAnomaly) {
-              topIssues.push({
-                serverId: server.serverId,
-                serverName: server.serverName,
-                metric,
-                severity: result.severity,
-                currentValue: result.currentValue,
-              });
-            }
-          }
-        }
-      }
-
-      // 상승 추세 예측 추출
-      const predictions: SystemAnalysisSummary['predictions'] = [];
-      for (const server of serverResults) {
-        if (server.trendPrediction?.summary?.hasRisingTrends) {
-          for (const [metric, result] of Object.entries(
-            server.trendPrediction.results || {}
-          )) {
-            if (result.trend === 'increasing' && result.changePercent > 5) {
-              predictions.push({
-                serverId: server.serverId,
-                serverName: server.serverName,
-                metric,
-                trend: result.trend,
-                currentValue: result.currentValue,
-                predictedValue: result.predictedValue,
-                changePercent: result.changePercent,
-                thresholdBreachMessage: (
-                  result as { thresholdBreach?: { humanReadable?: string } }
-                ).thresholdBreach?.humanReadable,
-              });
-            }
-          }
-        }
-      }
-
-      return {
-        totalServers: serverResults.length,
-        healthyServers,
-        warningServers,
-        criticalServers,
-        overallStatus,
-        topIssues: topIssues.slice(0, 5), // 상위 5개
-        predictions: predictions.slice(0, 5), // 상위 5개
-      };
-    },
+    (serverResults: ServerAnalysisResult[]) =>
+      createSystemAnalysisSummary(serverResults),
     []
   );
 
@@ -313,7 +241,7 @@ export default function IntelligentMonitoringPage() {
       {/* 헤더 */}
       <header className="border-b border-gray-200 bg-white/80 p-4 backdrop-blur-sm">
         <div className="flex items-center justify-between">
-          <h1 className="flex items-center gap-3 text-xl font-bold text-gray-800">
+          <h1 className="flex items-center gap-3 text-lg font-bold text-gray-800">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-r from-emerald-500 to-teal-500">
               <Monitor className="h-5 w-5 text-white" />
             </div>

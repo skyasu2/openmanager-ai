@@ -21,7 +21,12 @@ import { getRequiredCloudRunConfig } from '@/lib/ai-proxy/cloud-run-config';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { getRedisClient, redisGet, redisMGet, redisSet } from '@/lib/redis';
+import {
+  getRateLimitIdentity,
+  RATE_LIMIT_IDENTITY_HEADER,
+} from '@/lib/security/rate-limit-identity';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
+import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type {
   AIJob,
   CreateJobRequest,
@@ -42,6 +47,9 @@ import { buildScopedJobListKey, resolveJobOwnerKey } from './job-ownership';
 /** Cloud Run worker 처리 완료 대기 타임아웃 (ms) */
 const TRIGGER_TIMEOUT_MS = 280000;
 
+/** Cloud Tasks dispatch endpoint 대기 타임아웃 (ms) */
+const CLOUD_TASKS_DISPATCH_TIMEOUT_MS = 10000;
+
 /** Job TTL (24시간) */
 const JOB_TTL_SECONDS = 86400;
 
@@ -50,6 +58,38 @@ const JOB_LIST_TTL_SECONDS = 3600;
 
 /** Progress TTL (10분) */
 const PROGRESS_TTL_SECONDS = 600;
+
+type JobRequestMetadata = NonNullable<
+  NonNullable<CreateJobRequest['options']>['metadata']
+>;
+
+interface JobToolOptions {
+  analysisMode?: AnalysisMode;
+  enableRAG?: boolean;
+  enableWebSearch?: boolean;
+}
+
+function isAnalysisMode(value: unknown): value is AnalysisMode {
+  return value === 'auto' || value === 'thinking';
+}
+
+function extractJobToolOptions(metadata?: JobRequestMetadata): JobToolOptions {
+  const analysisMode = metadata?.analysisMode;
+  const enableRAG = metadata?.enableRAG;
+  const enableWebSearch = metadata?.enableWebSearch;
+
+  return {
+    ...(isAnalysisMode(analysisMode) && {
+      analysisMode,
+    }),
+    ...(typeof enableRAG === 'boolean' && {
+      enableRAG,
+    }),
+    ...(typeof enableWebSearch === 'boolean' && {
+      enableWebSearch,
+    }),
+  };
+}
 
 // ============================================
 // POST /api/ai/jobs - Job 생성 (Rate Limited)
@@ -83,6 +123,7 @@ async function handlePOST(request: NextRequest) {
 
     // Job 타입 자동 추론
     const jobType = body.type || inferJobType(query);
+    const toolOptions = extractJobToolOptions(options?.metadata);
 
     // Job ID 생성
     const jobId = randomUUID();
@@ -107,6 +148,7 @@ async function handlePOST(request: NextRequest) {
         estimatedTime: complexity.estimatedTime,
         factors: complexity.factors,
         ownerKey,
+        ...toolOptions,
       },
     };
 
@@ -148,8 +190,16 @@ async function handlePOST(request: NextRequest) {
     after(async () => {
       const finalTriggerStatus =
         initialTriggerStatus === 'scheduled'
-          ? (await triggerWorker(jobId, query, jobType, options?.sessionId))
-              .status
+          ? (
+              await triggerWorker(
+                jobId,
+                query,
+                jobType,
+                options?.sessionId,
+                toolOptions,
+                getRateLimitIdentity(request)
+              )
+            ).status
           : initialTriggerStatus;
 
       await logJobCreation(
@@ -190,7 +240,7 @@ async function handlePOST(request: NextRequest) {
 
 // Auth + Rate Limiting 적용
 export const POST = withRateLimit(
-  rateLimiters.aiAnalysis,
+  rateLimiters.aiJobCreation,
   withAuth(withCSRFProtection(handlePOST))
 );
 
@@ -287,6 +337,24 @@ interface TriggerResult {
   error?: string;
 }
 
+type JobWorkerTriggerMode = 'direct' | 'cloud-tasks';
+
+function getJobWorkerTriggerMode(): JobWorkerTriggerMode {
+  return process.env.AI_JOB_TRIGGER_MODE?.trim() === 'cloud-tasks'
+    ? 'cloud-tasks'
+    : 'direct';
+}
+
+function getWorkerTriggerPath(mode: JobWorkerTriggerMode): string {
+  return mode === 'cloud-tasks' ? '/api/jobs/dispatch' : '/api/jobs/process';
+}
+
+function getWorkerTriggerTimeoutMs(mode: JobWorkerTriggerMode): number {
+  return mode === 'cloud-tasks'
+    ? CLOUD_TASKS_DISPATCH_TIMEOUT_MS
+    : TRIGGER_TIMEOUT_MS;
+}
+
 /**
  * Cloud Run Worker에 Job 처리 요청 (타임아웃 적용)
  */
@@ -294,7 +362,9 @@ async function triggerWorker(
   jobId: string,
   query: string,
   type: string,
-  sessionId?: string
+  sessionId?: string,
+  toolOptions: JobToolOptions = {},
+  rateLimitIdentity?: string
 ): Promise<TriggerResult> {
   const cloudRunConfig = getRequiredCloudRunConfig();
 
@@ -303,23 +373,30 @@ async function triggerWorker(
     return { status: 'skipped', error: cloudRunConfig.message };
   }
 
+  const triggerMode = getJobWorkerTriggerMode();
+  const triggerPath = getWorkerTriggerPath(triggerMode);
+  const triggerTimeoutMs = getWorkerTriggerTimeoutMs(triggerMode);
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), TRIGGER_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), triggerTimeoutMs);
   const startTime = Date.now();
 
   try {
-    const res = await fetch(`${cloudRunConfig.url}/api/jobs/process`, {
+    const res = await fetch(`${cloudRunConfig.url}${triggerPath}`, {
       method: 'POST',
       signal: controller.signal,
       headers: {
         'Content-Type': 'application/json',
         'X-API-Key': cloudRunConfig.apiSecret,
+        ...(rateLimitIdentity
+          ? { [RATE_LIMIT_IDENTITY_HEADER]: rateLimitIdentity }
+          : {}),
       },
       body: JSON.stringify({
         jobId,
         messages: [{ role: 'user', content: query }],
         sessionId,
         type,
+        ...toolOptions,
       }),
     });
 
@@ -337,7 +414,9 @@ async function triggerWorker(
       return { status: 'failed', responseTime, error: `HTTP ${res.status}` };
     }
 
-    logger.info(`[AI Jobs] Worker triggered: ${jobId} (${responseTime}ms)`);
+    logger.info(
+      `[AI Jobs] Worker triggered: ${jobId} mode=${triggerMode} (${responseTime}ms)`
+    );
     return { status: 'sent', responseTime };
   } catch (error) {
     clearTimeout(timeoutId);
@@ -345,7 +424,7 @@ async function triggerWorker(
 
     if (error instanceof Error && error.name === 'AbortError') {
       logger.warn(
-        `[AI Jobs] Trigger timeout: ${jobId} (${TRIGGER_TIMEOUT_MS}ms)`
+        `[AI Jobs] Trigger timeout: ${jobId} mode=${triggerMode} (${triggerTimeoutMs}ms)`
       );
       return { status: 'timeout', responseTime, error: 'Request timeout' };
     }

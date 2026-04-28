@@ -52,6 +52,10 @@ interface CustomTooltipProps {
   payload?: TooltipPayloadItem[];
 }
 
+function isFiniteMetricValue(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value);
+}
+
 /**
  * 커스텀 툴팁 컴포넌트
  */
@@ -101,20 +105,31 @@ export const MiniLineChart: React.FC<MiniLineChartProps> = ({
 
     // 이미 객체 형태인 경우
     if (typeof data[0] === 'object' && 'value' in data[0]) {
-      return (data as Array<{ time: string; value: number }>).map(
-        (item, index) => ({
-          index,
-          value: item.value,
-          time: item.time,
-        })
+      return (data as Array<{ time: string; value: number }>).flatMap(
+        (item, index) =>
+          isFiniteMetricValue(item.value)
+            ? [
+                {
+                  index,
+                  value: item.value,
+                  time: item.time,
+                },
+              ]
+            : []
       );
     }
 
     // 숫자 배열인 경우
-    return (data as number[]).map((value, index) => ({
-      index,
-      value,
-    }));
+    return (data as number[]).flatMap((value, index) =>
+      isFiniteMetricValue(value)
+        ? [
+            {
+              index,
+              value,
+            },
+          ]
+        : []
+    );
   }, [data]);
 
   // 최소 2개 데이터 포인트 필요

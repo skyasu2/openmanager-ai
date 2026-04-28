@@ -34,12 +34,11 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
   const clientEnv = useMemo(() => getClientEnvironment(), []);
 
   useEffect(() => {
-    // 프로덕션 환경에서만 에러 리포팅
-    Sentry.captureException(error, {
-      tags: { boundary: 'global-error', digest: error.digest },
-    });
-
     if (clientEnv.isProduction) {
+      Sentry.captureException(error, {
+        tags: { boundary: 'global-error', digest: error.digest },
+      });
+
       const platform = clientEnv.isVercel ? 'vercel' : 'local';
 
       debug.error('[GLOBAL_ERROR]', {

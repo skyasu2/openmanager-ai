@@ -11,6 +11,7 @@ import type {
 } from '@/lib/ai/clarification-generator';
 import type { AIErrorDetails } from '@/lib/ai/error-details';
 import type { QueryComplexity } from '@/lib/ai/utils/query-complexity';
+import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { AsyncQueryProgress, AsyncQueryResult } from '../useAsyncAIQuery';
 import type { FileAttachment } from '../useFileAttachments';
 
@@ -37,7 +38,7 @@ export interface HybridQueryState {
   errorDetails?: AIErrorDetails | null;
   /** 명확화 요청 (모호한 쿼리일 때) */
   clarification: ClarificationRequest | null;
-  /** 처리 지연 경고 메시지 (25초 초과 시) */
+  /** 처리 지연 경고 메시지 (활성 스트림 경로의 threshold 초과 시) */
   warning: string | null;
   /** 현재 처리 경과 시간 (ms) */
   processingTime: number;
@@ -58,7 +59,7 @@ export type StreamEventType =
   | 'step_finish'
   | 'handoff'
   | 'agent_status'
-  | 'warning' // 처리 지연 경고 (25초 초과 시) (2026-01-19)
+  | 'warning' // 처리 지연 경고 (활성 스트림 경로의 threshold 초과 시)
   | 'redirect' // Job Queue 리다이렉트 이벤트 (2026-01-18)
   | 'done'
   | 'error';
@@ -155,6 +156,8 @@ export interface UseHybridAIQueryOptions {
   webSearchEnabled?: boolean;
   /** RAG (Knowledge Base 검색) 활성화 여부 */
   ragEnabled?: boolean;
+  /** 사용자가 선택한 분석 강도 모드 */
+  analysisMode?: AnalysisMode;
   /**
    * 스트리밍 데이터 콜백 (AI SDK v6 베스트 프랙티스)
    * 실시간으로 데이터 파트를 받아 처리

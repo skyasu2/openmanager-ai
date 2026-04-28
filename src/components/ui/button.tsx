@@ -7,17 +7,8 @@ import { type ButtonHTMLAttributes, forwardRef } from 'react';
 
 import { cn } from '@/lib/utils';
 
-/**
- * Button variants using Design System v1.0.0 tokens
- *
- * 디자인 시스템 토큰 활용:
- * - Border Radius: var(--radius-lg)
- * - Shadow: var(--shadow-sm), var(--shadow-md)
- * - Transition: var(--duration-150)
- * - Color: var(--color-primary-500), var(--color-error-500), etc.
- */
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-all active:scale-[0.97] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg font-medium transition-all duration-150 active:scale-[0.97] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
   {
     variants: {
       variant: {
@@ -26,13 +17,13 @@ const buttonVariants = cva(
           'bg-linear-to-r from-purple-500 via-pink-500 to-cyan-500 text-white shadow-xs hover:opacity-90 focus-visible:ring-purple-400',
         // Destructive: 에러 색상
         destructive:
-          'bg-(--color-error-500) text-white shadow-xs hover:opacity-90 focus-visible:ring-red-400',
+          'bg-red-500 text-white shadow-xs hover:opacity-90 focus-visible:ring-red-400',
         // Outline: 테두리만
         outline:
           'border border-neutral-300 bg-white hover:bg-gray-50 focus-visible:ring-gray-400',
         // Secondary: 서피스 색상
         secondary:
-          'bg-(--color-surface-100) text-gray-700 border border-neutral-300 shadow-xs hover:bg-(--color-surface-200) focus-visible:ring-gray-400',
+          'border border-stone-300 bg-stone-100 text-gray-700 shadow-xs hover:bg-stone-200 focus-visible:ring-gray-400',
         // Ghost: 투명
         ghost: 'hover:bg-gray-100 focus-visible:ring-gray-400',
         // Link: 링크 스타일
@@ -77,13 +68,6 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const Comp = asChild ? Slot : 'button';
 
-    // 디자인 시스템 토큰 활용 (인라인 스타일)
-    const designSystemStyle: React.CSSProperties = {
-      borderRadius: 'var(--radius-lg)',
-      transitionDuration: 'var(--duration-150)',
-      ...style,
-    };
-
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
@@ -91,7 +75,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled || loading}
         aria-busy={loading}
         aria-disabled={disabled || loading}
-        style={designSystemStyle}
+        style={style}
         {...props}
       >
         {loading && (

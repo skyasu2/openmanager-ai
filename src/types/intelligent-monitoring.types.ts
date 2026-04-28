@@ -124,6 +124,13 @@ export interface SystemAnalysisSummary {
     metric: string;
     severity: 'low' | 'medium' | 'high';
     currentValue: number;
+    confidence?: number;
+    threshold?: {
+      upper: number;
+      lower: number;
+    };
+    reason?: string;
+    recommendation?: string;
   }>;
   predictions: Array<{
     serverId: string;
@@ -131,8 +138,10 @@ export interface SystemAnalysisSummary {
     metric: string;
     trend: 'increasing' | 'decreasing' | 'stable';
     currentValue: number;
-    predictedValue: number;
+    predictedValue: number | null;
+    predictionState?: 'available' | 'missing';
     changePercent: number;
+    confidence?: number;
     thresholdBreachMessage?: string;
   }>;
 }

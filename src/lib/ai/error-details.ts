@@ -39,6 +39,17 @@ const RATE_LIMIT_PATTERNS = [
   '오늘 한도',
 ];
 
+const UPSTREAM_PROVIDER_KEYWORDS = [
+  'provider',
+  'openai',
+  'anthropic',
+  'gemini',
+  'groq',
+  'mistral',
+  'cerebras',
+  'openrouter',
+];
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
@@ -166,10 +177,7 @@ export function inferRateLimitSourceFromMessage(
   }
 
   if (
-    normalized.includes('provider') ||
-    normalized.includes('openai') ||
-    normalized.includes('anthropic') ||
-    normalized.includes('gemini')
+    UPSTREAM_PROVIDER_KEYWORDS.some((keyword) => normalized.includes(keyword))
   ) {
     return 'upstream-provider';
   }
@@ -190,17 +198,27 @@ export function buildRateLimitErrorDetails(
 ): AIRateLimitErrorDetails {
   const { body, headers, fallbackSource = 'unknown' } = options;
   const payload = isRecord(body) ? body : {};
+  const dailyRemaining = normalizeInteger(
+    headers?.get('X-RateLimit-Daily-Remaining')
+  );
+  const dailyResetAt = normalizeInteger(
+    headers?.get('X-RateLimit-Daily-Reset')
+  );
   const retryAfterSeconds =
     normalizeInteger(payload.retryAfterSeconds) ??
     normalizeInteger(payload.retryAfter) ??
     normalizeInteger(headers?.get('Retry-After'));
   const remaining =
     normalizeInteger(payload.remaining) ??
+    (dailyRemaining !== undefined ? dailyRemaining : undefined) ??
     normalizeInteger(headers?.get('X-RateLimit-Remaining'));
   const resetAt =
     normalizeInteger(payload.resetAt) ??
+    (dailyResetAt !== undefined ? dailyResetAt : undefined) ??
     normalizeInteger(headers?.get('X-RateLimit-Reset'));
-  const dailyLimitExceeded = payload.dailyLimitExceeded === true;
+  const dailyLimitExceeded =
+    payload.dailyLimitExceeded === true ||
+    (dailyRemaining !== undefined && dailyRemaining <= 0);
   const scope = isRateLimitScope(payload.scope)
     ? payload.scope
     : isRateLimitScope(payload.limitScope)

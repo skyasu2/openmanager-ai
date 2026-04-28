@@ -7,8 +7,8 @@
  * AI SDK v6 Native UIMessageStream proxy to Cloud Run.
  *
  * Features:
- * - Upstash-compatible resumable stream (polling-based)
- * - Redis List storage for stream chunks
+ * - Optional Upstash-compatible resumable stream (polling-based)
+ * - Redis List storage for stream chunks when AI_RESUMABLE_STREAMS_ENABLED=true
  * - Auto-expire after 10 minutes
  *
  * @see https://ai-sdk.dev/docs/ai-sdk-ui/chatbot-resume-streams
@@ -33,6 +33,10 @@ import {
 import { getRequiredCloudRunConfig } from '@/lib/ai-proxy/cloud-run-config';
 import { withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
+import {
+  getRateLimitIdentity,
+  RATE_LIMIT_IDENTITY_HEADER,
+} from '@/lib/security/rate-limit-identity';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
 import {
   applySanitizedQueryToMessages,
@@ -73,6 +77,10 @@ export const maxDuration = 60;
 const AI_WARMUP_STARTED_AT_HEADER = 'x-ai-warmup-started-at';
 const AI_FIRST_QUERY_HEADER = 'x-ai-first-query';
 
+function isResumableStreamsEnabled(): boolean {
+  return process.env.AI_RESUMABLE_STREAMS_ENABLED === 'true';
+}
+
 // ============================================================================
 // 🔁 GET - Resume Stream (Upstash-compatible polling)
 // ============================================================================
@@ -98,6 +106,15 @@ const resumeStreamHandler = async (req: NextRequest) => {
       { status: 400 }
     );
   }
+
+  if (!isResumableStreamsEnabled()) {
+    logger.debug('[SupervisorStreamV2] Resume requested while disabled');
+    return new Response(null, {
+      status: 204,
+      headers: { 'X-Resumable': 'false' },
+    });
+  }
+
   const ownerKey = getStreamOwnerKey(req);
 
   logger.info(
@@ -207,6 +224,7 @@ export const POST = withRateLimit(
         sessionId: bodySessionId,
         enableWebSearch,
         enableRAG,
+        analysisMode,
       } = parseResult.data;
 
       // 2. Extract session ID
@@ -217,6 +235,7 @@ export const POST = withRateLimit(
       const deviceType = normalizeSupervisorDeviceType(
         req.headers.get('X-Device-Type')
       );
+      const rateLimitIdentity = getRateLimitIdentity(req);
       const warmupStartedAt = parseWarmupStartedAt(
         req.headers.get(AI_WARMUP_STARTED_AT_HEADER)
       );
@@ -325,20 +344,23 @@ export const POST = withRateLimit(
 
       // 6. Generate stream ID for tracking
       const streamId = generateId();
+      const resumableStreamsEnabled = isResumableStreamsEnabled();
 
       // Best-effort cleanup for stale stream mapping in same owner/session scope
-      try {
-        const staleStreamId = await getActiveStreamId(sessionId, ownerKey);
-        if (staleStreamId && staleStreamId !== streamId) {
-          const cleanupContext = createUpstashResumableContext();
-          await cleanupContext.clearStream(staleStreamId);
-          await clearActiveStreamId(sessionId, ownerKey);
+      if (resumableStreamsEnabled) {
+        try {
+          const staleStreamId = await getActiveStreamId(sessionId, ownerKey);
+          if (staleStreamId && staleStreamId !== streamId) {
+            const cleanupContext = createUpstashResumableContext();
+            await cleanupContext.clearStream(staleStreamId);
+            await clearActiveStreamId(sessionId, ownerKey);
+          }
+        } catch (cleanupError) {
+          logger.warn(
+            { err: cleanupError },
+            '[SupervisorStreamV2] Stale stream cleanup failed'
+          );
         }
-      } catch (cleanupError) {
-        logger.warn(
-          { err: cleanupError },
-          '[SupervisorStreamV2] Stale stream cleanup failed'
-        );
       }
 
       // 7. Proxy to Cloud Run v2 endpoint
@@ -380,6 +402,7 @@ export const POST = withRateLimit(
                 // NOTE: API secret in header is safe in transit (HTTPS) but may appear
                 // in Cloud Run access logs. Accept this trade-off for standard auth header usage.
                 'X-API-Key': cloudRunConfig.apiSecret,
+                [RATE_LIMIT_IDENTITY_HEADER]: rateLimitIdentity,
               },
               body: JSON.stringify({
                 messages: normalizedMessages,
@@ -387,6 +410,7 @@ export const POST = withRateLimit(
                 deviceType,
                 enableWebSearch,
                 enableRAG,
+                analysisMode,
               }),
               signal: AbortSignal.timeout(timeoutMs),
             });
@@ -509,6 +533,33 @@ export const POST = withRateLimit(
           );
         }
 
+        const processingTimeMs = parseOptionalDurationHeader(
+          cloudRunResponse.headers.get('x-ai-latency-ms')
+        );
+        const timingHeaders = buildAITimingHeaders({
+          latencyMs: aiTimer.elapsed(),
+          processingTimeMs,
+          cacheStatus: 'BYPASS',
+          mode: 'streaming',
+          source: 'cloud-run',
+        });
+
+        if (!resumableStreamsEnabled) {
+          logger.info(`✅ [SupervisorStreamV2] Stream started (pass-through)`);
+
+          return new Response(cloudRunResponse.body, {
+            headers: {
+              ...UI_MESSAGE_STREAM_HEADERS,
+              'X-Session-Id': sessionId,
+              'X-Stream-Id': streamId,
+              'X-Backend': 'cloud-run-stream-v2',
+              'X-Stream-Protocol': 'ui-message-stream',
+              'X-Resumable': 'false',
+              ...timingHeaders,
+            },
+          });
+        }
+
         // 8. Save stream ID to Redis for tracking
         await saveActiveStreamId(sessionId, streamId, ownerKey);
 
@@ -522,9 +573,6 @@ export const POST = withRateLimit(
         logger.info(`✅ [SupervisorStreamV2] Stream started (resumable)`);
 
         // 10. Return resumable stream response
-        const processingTimeMs = parseOptionalDurationHeader(
-          cloudRunResponse.headers.get('x-ai-latency-ms')
-        );
         return new Response(resumableStream, {
           headers: {
             ...UI_MESSAGE_STREAM_HEADERS,
@@ -533,20 +581,16 @@ export const POST = withRateLimit(
             'X-Backend': 'cloud-run-stream-v2',
             'X-Stream-Protocol': 'ui-message-stream',
             'X-Resumable': 'true',
-            ...buildAITimingHeaders({
-              latencyMs: aiTimer.elapsed(),
-              processingTimeMs,
-              cacheStatus: 'BYPASS',
-              mode: 'streaming',
-              source: 'cloud-run',
-            }),
+            ...timingHeaders,
           },
         });
       } catch (error) {
         // Clear both session mapping and resumable stream data
-        await clearActiveStreamId(sessionId, ownerKey);
-        const cleanupContext = createUpstashResumableContext();
-        await cleanupContext.clearStream(streamId);
+        if (resumableStreamsEnabled) {
+          await clearActiveStreamId(sessionId, ownerKey);
+          const cleanupContext = createUpstashResumableContext();
+          await cleanupContext.clearStream(streamId);
+        }
         throw error;
       }
     } catch (error) {

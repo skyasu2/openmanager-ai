@@ -17,6 +17,11 @@ export interface StructuredAssistantResponse {
   shouldCollapse?: boolean;
 }
 
+export interface AssistantResponseDetailSections {
+  processDetails: string | null;
+  debugDetails: string | null;
+}
+
 interface ResponseMetadataInput {
   responseSummary?: unknown;
   responseDetails?: unknown;
@@ -197,5 +202,42 @@ export function resolveAssistantResponseView(
         ? structured.details
         : null,
     shouldCollapse,
+  };
+}
+
+const PARITY_METADATA_HEADING = /###\s+Parity Metadata Contract\b/;
+
+export function splitAssistantResponseDetails(
+  details: string | null | undefined
+): AssistantResponseDetailSections {
+  if (typeof details !== 'string') {
+    return {
+      processDetails: null,
+      debugDetails: null,
+    };
+  }
+
+  const normalizedDetails = details.trim();
+  if (!normalizedDetails) {
+    return {
+      processDetails: null,
+      debugDetails: null,
+    };
+  }
+
+  const parityIndex = normalizedDetails.search(PARITY_METADATA_HEADING);
+  if (parityIndex === -1) {
+    return {
+      processDetails: normalizedDetails,
+      debugDetails: null,
+    };
+  }
+
+  const processDetails = normalizedDetails.slice(0, parityIndex).trim();
+  const debugDetails = normalizedDetails.slice(parityIndex).trim();
+
+  return {
+    processDetails: processDetails || null,
+    debugDetails: debugDetails || null,
   };
 }

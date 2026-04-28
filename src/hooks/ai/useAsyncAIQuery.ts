@@ -33,6 +33,8 @@ import {
 } from '@/lib/ai/error-details';
 import { logger } from '@/lib/logging';
 import { fetchWithRetry, RETRY_STANDARD } from '@/lib/utils/retry';
+import type { AnalysisMode } from '@/types/ai/analysis-mode';
+import type { RetrievalMetadata } from '@/types/ai/retrieval-status';
 import { createCSRFHeaders } from '@/utils/security/csrf-client';
 import {
   closeTrackedEventSource,
@@ -70,7 +72,11 @@ export interface AsyncQueryResult {
     sourceType: string;
     category?: string;
   }>;
+  retrieval?: RetrievalMetadata;
   processingTimeMs?: number;
+  latencyTier?: 'fast' | 'normal' | 'slow' | 'very_slow';
+  resolvedMode?: 'single' | 'multi';
+  modeSelectionSource?: string;
   error?: string;
   /** Langfuse trace ID for feedback scoring */
   traceId?: string;
@@ -86,6 +92,7 @@ export interface AsyncQueryResult {
     preview?: string;
     status: 'completed' | 'failed';
   }>;
+  analysisMode?: AnalysisMode;
   /** Job ID (Stale Closure 방지용) */
   jobId?: string;
 }
@@ -111,6 +118,12 @@ export interface UseAsyncAIQueryOptions {
   onResult?: (result: AsyncQueryResult) => void;
   /** Callback when error occurs */
   onError?: (error: string, details?: AIErrorDetails | null) => void;
+}
+
+export interface AsyncQueryRequestOptions {
+  analysisMode?: AnalysisMode;
+  enableRAG?: boolean;
+  enableWebSearch?: boolean;
 }
 
 // ============================================================================
@@ -203,7 +216,10 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
 
   // Send query
   const sendQuery = useCallback(
-    async (query: string): Promise<AsyncQueryResult> => {
+    async (
+      query: string,
+      requestOptions?: AsyncQueryRequestOptions
+    ): Promise<AsyncQueryResult> => {
       // Cleanup previous state
       cleanup();
       jobIdRef.current = null;
@@ -274,7 +290,21 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
                 headers,
                 body: JSON.stringify({
                   query,
-                  options: { sessionId },
+                  options: {
+                    sessionId,
+                    metadata: {
+                      ...(requestOptions?.analysisMode && {
+                        analysisMode: requestOptions.analysisMode,
+                      }),
+                      ...(typeof requestOptions?.enableRAG === 'boolean' && {
+                        enableRAG: requestOptions.enableRAG,
+                      }),
+                      ...(typeof requestOptions?.enableWebSearch ===
+                        'boolean' && {
+                        enableWebSearch: requestOptions.enableWebSearch,
+                      }),
+                    },
+                  },
                 }),
                 signal, // 🎯 P1 Fix: Pass abort signal for cancellation
               },

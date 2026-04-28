@@ -9,13 +9,14 @@ import {
   useRef,
   useState,
 } from 'react';
-import type { AIAssistantFunction } from '@/components/ai/AIAssistantIconPanel';
 import AIAssistantIconPanel from '@/components/ai/AIAssistantIconPanel';
 import AIContentArea from '@/components/ai/AIContentArea';
 // Components
 import { AIErrorBoundary } from '@/components/error/AIErrorBoundary';
 import { isGuestFullAccessEnabled } from '@/config/guestMode';
 import { useAIChatCore } from '@/hooks/ai/useAIChatCore';
+import { useAIChatSurface } from '@/hooks/ai/useAIChatSurface';
+import { useAIEntryController } from '@/hooks/ai/useAIEntryController';
 import { useResizable } from '@/hooks/ui/useResizable';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { cn } from '@/lib/utils';
@@ -34,9 +35,9 @@ import { MessageComponent } from './SidebarMessage';
 // - 메시지 변환
 
 // 📐 리사이즈 상수
-const SIDEBAR_MIN_WIDTH = 400;
-const SIDEBAR_MAX_WIDTH = 900;
-const SIDEBAR_DEFAULT_WIDTH = 600;
+const SIDEBAR_MIN_WIDTH = 440;
+const SIDEBAR_MAX_WIDTH = 960;
+const SIDEBAR_DEFAULT_WIDTH = 680;
 const MOBILE_BREAKPOINT = 768; // md breakpoint
 
 // 🔒 완전 Client-Only AI 사이드바 컴포넌트 (V4 - useAIChatCore 통합)
@@ -50,33 +51,26 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
   // 🔐 권한 확인
   const permissions = useUserPermissions();
 
-  // 🔧 UI 상태 관리 (사이드바 전용)
-  const [selectedFunction, setSelectedFunction] =
-    useState<AIAssistantFunction>('chat');
+  // 🔧 공통 chat surface 상태 (selectedFunction + store 구독 번들)
+  const {
+    selectedFunction,
+    setSelectedFunction,
+    webSearchEnabled,
+    toggleWebSearch,
+    ragEnabled,
+    toggleRAG,
+    analysisMode,
+    selectAnalysisMode,
+    pendingEntryState,
+    consumePendingEntryState,
+    pendingPrefillMessage,
+    consumePendingPrefillMessage,
+  } = useAIChatSurface();
 
-  // 📐 사이드바 너비 상태 (Zustand Store)
+  // 📐 사이드바 너비 상태 (사이드바 전용)
   const sidebarWidth = useAISidebarStore((state) => state.sidebarWidth);
   const setSidebarWidth = useAISidebarStore((state) => state.setSidebarWidth);
-  const pendingPrefillMessage = useAISidebarStore(
-    (state) => state.pendingPrefillMessage
-  );
-  const consumePendingPrefillMessage = useAISidebarStore(
-    (state) => state.consumePendingPrefillMessage
-  );
-  const webSearchEnabled = useAISidebarStore((state) => state.webSearchEnabled);
-  const setWebSearchEnabled = useAISidebarStore(
-    (state) => state.setWebSearchEnabled
-  );
-  const ragEnabled = useAISidebarStore((state) => state.ragEnabled);
-  const setRagEnabled = useAISidebarStore((state) => state.setRagEnabled);
-
-  const toggleWebSearch = useCallback(() => {
-    setWebSearchEnabled(!webSearchEnabled);
-  }, [webSearchEnabled, setWebSearchEnabled]);
-
-  const toggleRAG = useCallback(() => {
-    setRagEnabled(!ragEnabled);
-  }, [ragEnabled, setRagEnabled]);
+  const { openFullscreen } = useAIEntryController();
 
   // 📐 드래그 리사이즈 훅
   const { width, isResizing, handleMouseDown, handleTouchStart } = useResizable(
@@ -139,6 +133,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
     // 에러 상태
     error,
     clearError,
+    sessionId,
     // 세션 관리
     sessionState,
     handleNewSession,
@@ -181,14 +176,67 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
   }, [messageCount]);
 
   useEffect(() => {
-    if (!isOpen || !pendingPrefillMessage) {
+    if (!isOpen) {
+      return;
+    }
+
+    if (pendingEntryState) {
+      const entry = consumePendingEntryState('sidebar');
+      if (!entry) {
+        return;
+      }
+
+      setSelectedFunction(entry.selectedFunction ?? 'chat');
+
+      if (entry.analysisMode) {
+        selectAnalysisMode(entry.analysisMode);
+      }
+
+      if (entry.draft) {
+        setInput(entry.draft);
+      }
+      return;
+    }
+
+    if (!pendingPrefillMessage) {
       return;
     }
 
     setSelectedFunction('chat');
     setInput(pendingPrefillMessage);
     consumePendingPrefillMessage();
-  }, [consumePendingPrefillMessage, isOpen, pendingPrefillMessage, setInput]);
+  }, [
+    consumePendingEntryState,
+    consumePendingPrefillMessage,
+    isOpen,
+    pendingEntryState,
+    pendingPrefillMessage,
+    selectAnalysisMode,
+    setInput,
+    setSelectedFunction,
+  ]);
+
+  const handleOpenFullscreen = useCallback(() => {
+    openFullscreen({
+      draft: selectedFunction === 'chat' && input.trim() ? input : undefined,
+      selectedFunction,
+      analysisMode,
+    });
+  }, [analysisMode, input, openFullscreen, selectedFunction]);
+
+  const renderMobileFunctionNav = () => (
+    <div
+      className="block shrink-0 border-b border-slate-200 bg-white px-4 pt-3 sm:hidden"
+      data-testid="ai-mobile-function-nav"
+    >
+      <AIAssistantIconPanel
+        selectedFunction={selectedFunction}
+        onFunctionChange={setSelectedFunction}
+        onOpenFullscreen={handleOpenFullscreen}
+        isMobile={true}
+      />
+    </div>
+  );
 
   // ESC 키로 사이드바 닫기
   useEffect(() => {
@@ -241,66 +289,67 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
 
   const renderFunctionPage = () => {
     return (
-      <>
-        {/* Chat - Activity API로 상태 유지 */}
-        <Activity mode={selectedFunction === 'chat' ? 'visible' : 'hidden'}>
-          <EnhancedAIChat
-            autoReportTrigger={{ shouldGenerate: false }}
-            allMessages={enhancedMessages}
-            limitedMessages={enhancedMessages}
-            messagesEndRef={messagesEndRef}
-            MessageComponent={MessageComponent}
-            inputValue={input}
-            setInputValue={setInput}
-            handleSendInput={handleSendInput}
-            sessionState={sessionState}
-            onNewSession={handleNewSession}
-            isGenerating={isLoading}
-            streamStatus={streamStatus}
-            regenerateResponse={regenerateLastResponse}
-            onFeedback={handleFeedback}
-            onStopGeneration={stop}
-            jobProgress={hybridState.progress}
-            jobId={hybridState.jobId}
-            onCancelJob={cancel}
-            queryMode={currentMode}
-            error={error}
-            errorDetails={hybridState.errorDetails}
-            onClearError={clearError}
-            onRetry={retryLastQuery}
-            clarification={clarification}
-            onSelectClarification={selectClarification}
-            onSubmitCustomClarification={submitCustomClarification}
-            onSkipClarification={skipClarification}
-            onDismissClarification={dismissClarification}
-            currentAgentStatus={currentAgentStatus}
-            currentHandoff={currentHandoff}
-            webSearchEnabled={webSearchEnabled}
-            onToggleWebSearch={toggleWebSearch}
-            ragEnabled={ragEnabled}
-            onToggleRAG={toggleRAG}
-            warmingUp={warmingUp}
-            estimatedWaitSeconds={estimatedWaitSeconds}
-            queuedQueries={queuedQueries}
-            removeQueuedQuery={removeQueuedQuery}
-          />
-        </Activity>
-        {/* Reporter/Analyst - Activity API로 상태 유지 */}
-        <Activity mode={selectedFunction !== 'chat' ? 'visible' : 'hidden'}>
-          <div className="flex h-full flex-col">
-            <div className="block shrink-0 sm:hidden">
-              <AIAssistantIconPanel
-                selectedFunction={selectedFunction}
-                onFunctionChange={setSelectedFunction}
-                isMobile={true}
-              />
+      <div className="flex h-full flex-col" data-testid="ai-function-page">
+        {renderMobileFunctionNav()}
+        <div
+          className="min-h-0 flex-1 overflow-hidden"
+          data-testid="ai-function-content"
+        >
+          {/* Chat - Activity API로 상태 유지 */}
+          <Activity mode={selectedFunction === 'chat' ? 'visible' : 'hidden'}>
+            <EnhancedAIChat
+              autoReportTrigger={{ shouldGenerate: false }}
+              allMessages={enhancedMessages}
+              limitedMessages={enhancedMessages}
+              messagesEndRef={messagesEndRef}
+              MessageComponent={MessageComponent}
+              inputValue={input}
+              setInputValue={setInput}
+              handleSendInput={handleSendInput}
+              sessionState={sessionState}
+              onNewSession={handleNewSession}
+              isGenerating={isLoading}
+              streamStatus={streamStatus}
+              regenerateResponse={regenerateLastResponse}
+              onFeedback={handleFeedback}
+              onStopGeneration={stop}
+              jobProgress={hybridState.progress}
+              jobId={hybridState.jobId}
+              onCancelJob={cancel}
+              queryMode={currentMode}
+              error={error}
+              errorDetails={hybridState.errorDetails}
+              onClearError={clearError}
+              onRetry={retryLastQuery}
+              clarification={clarification}
+              onSelectClarification={selectClarification}
+              onSubmitCustomClarification={submitCustomClarification}
+              onSkipClarification={skipClarification}
+              onDismissClarification={dismissClarification}
+              currentAgentStatus={currentAgentStatus}
+              currentHandoff={currentHandoff}
+              webSearchEnabled={webSearchEnabled}
+              onToggleWebSearch={toggleWebSearch}
+              ragEnabled={ragEnabled}
+              onToggleRAG={toggleRAG}
+              analysisMode={analysisMode}
+              onSelectAnalysisMode={selectAnalysisMode}
+              warmingUp={warmingUp}
+              estimatedWaitSeconds={estimatedWaitSeconds}
+              queuedQueries={queuedQueries}
+              removeQueuedQuery={removeQueuedQuery}
+            />
+          </Activity>
+          {/* Reporter/Analyst - Activity API로 상태 유지 */}
+          <Activity mode={selectedFunction !== 'chat' ? 'visible' : 'hidden'}>
+            <div className="flex h-full flex-col">
+              <div className="flex-1 overflow-y-auto">
+                <AIContentArea selectedFunction={selectedFunction} />
+              </div>
             </div>
-            <div className="flex-1 overflow-y-auto">
-              <AIContentArea selectedFunction={selectedFunction} />
-            </div>
-          </div>
-        </Activity>
-      </>
+          </Activity>
+        </div>
+      </div>
     );
   };
 
@@ -350,6 +399,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
           <div className="flex-1 overflow-hidden pb-20 sm:pb-0">
             <AIErrorBoundary
               componentName="AISidebar"
+              resetKey={`${isOpen}:${selectedFunction}:${sessionId}`}
               onReset={() => {
                 // 에러 발생 시 세션 리셋
                 setInput('');
@@ -364,6 +414,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
           <AIAssistantIconPanel
             selectedFunction={selectedFunction}
             onFunctionChange={setSelectedFunction}
+            onOpenFullscreen={handleOpenFullscreen}
             className="w-16 sm:w-20"
           />
         </div>

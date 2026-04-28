@@ -9,6 +9,9 @@ type ServerContext = {
   serverType: string;
 };
 
+const FALLBACK_TIME_LABEL = '--:--:--';
+const FALLBACK_NS_TIME_LABEL = '--:--:--.---';
+
 export const getLogLevelStyles = (level: LogLevel | string) => {
   switch (level) {
     case 'error':
@@ -36,19 +39,23 @@ export const formatTimestamp = (timestamp: string): string => {
   try {
     const date = new Date(timestamp);
     return Number.isNaN(date.getTime())
-      ? new Date().toLocaleTimeString()
+      ? FALLBACK_TIME_LABEL
       : date.toLocaleTimeString();
   } catch {
-    return new Date().toLocaleTimeString();
+    return FALLBACK_TIME_LABEL;
   }
 };
 
 export const formatNsTimestamp = (ns: string): string => {
   const ms = Number(ns) / 1_000_000;
+  if (!Number.isFinite(ms)) {
+    return FALLBACK_NS_TIME_LABEL;
+  }
+
   try {
     const date = new Date(ms);
     return Number.isNaN(date.getTime())
-      ? new Date().toLocaleTimeString()
+      ? FALLBACK_NS_TIME_LABEL
       : date.toLocaleTimeString('en-US', {
           hour12: false,
           hour: '2-digit',
@@ -57,7 +64,7 @@ export const formatNsTimestamp = (ns: string): string => {
           fractionalSecondDigits: 3,
         });
   } catch {
-    return new Date().toLocaleTimeString();
+    return FALLBACK_NS_TIME_LABEL;
   }
 };
 
@@ -74,6 +81,7 @@ export function ViewButton({
     <button
       type="button"
       onClick={onClick}
+      aria-pressed={active}
       className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
         active
           ? 'bg-white text-gray-900 shadow-sm'
@@ -138,13 +146,11 @@ export function LegacyLogView({
         ) : (
           <EmptyState
             icon={activeView === 'syslog' ? 'log' : 'check'}
-            title={
-              activeView === 'syslog' ? 'No logs available' : 'No system alerts'
-            }
+            title={activeView === 'syslog' ? '로그 없음' : '시스템 알림 없음'}
             description={
               activeView === 'syslog'
-                ? 'No OTel structured logs found for this server in the current time slot'
-                : 'All system metrics are within normal range'
+                ? '이 시간대에 기록된 로그가 없습니다'
+                : '모든 시스템 메트릭이 정상 범위 내에 있습니다'
             }
           />
         )}
@@ -235,6 +241,7 @@ export const StreamsView: FC<{
                   <button
                     type="button"
                     onClick={() => toggleStream(streamKey)}
+                    aria-expanded={isExpanded}
                     className="mb-2 flex w-full items-center gap-2 rounded-lg bg-white/5 px-3 py-2 text-left transition-colors hover:bg-white/10"
                   >
                     <span className="text-gray-400">
@@ -297,6 +304,7 @@ function FilterChip({
     <button
       type="button"
       onClick={onClick}
+      aria-pressed={active}
       className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
         active
           ? 'border-blue-500 bg-blue-500 text-white'

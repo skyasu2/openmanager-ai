@@ -8,6 +8,12 @@ import { logger } from '@/lib/logging';
 import type { StreamRagSource } from '../types/stream-rag.types';
 import {
   buildStructuredResponseView,
+  extractAnalysisModeFromDoneData,
+  extractLatencyTierFromDoneData,
+  extractModeSelectionSourceFromDoneData,
+  extractProcessingTimeFromDoneData,
+  extractResolvedModeFromDoneData,
+  extractRetrievalMetadataFromDoneData,
   normalizeRagSources,
   type ResponseSourceData,
 } from './response-view-helpers';
@@ -82,6 +88,15 @@ function extractTraceIdFromDoneData(
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
+}
+
+function normalizeToolNames(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+
+  return value.filter(
+    (toolName): toolName is string =>
+      typeof toolName === 'string' && toolName.trim().length > 0
+  );
 }
 
 function extractPendingToolResult(
@@ -229,8 +244,29 @@ export function handleStreamDataPart(
 
     const structuredView = buildStructuredResponseView(doneData);
     const traceId = extractTraceIdFromDoneData(doneData);
+    const toolsCalled = normalizeToolNames(doneData?.toolsCalled);
+    const analysisMode = extractAnalysisModeFromDoneData(doneData);
+    const processingTime = extractProcessingTimeFromDoneData(doneData);
+    const latencyTier = extractLatencyTierFromDoneData(doneData);
+    const resolvedMode = extractResolvedModeFromDoneData(doneData);
+    const modeSelectionSource =
+      extractModeSelectionSourceFromDoneData(doneData);
+    const retrieval = extractRetrievalMetadataFromDoneData(doneData);
+    const normalizedHandoffHistory = normalizeHandoffHistory(
+      pendingMessageMetadata.handoffHistory
+    );
     const nextMessageMetadata = {
       ...(traceId && { traceId }),
+      ...(typeof processingTime === 'number' && { processingTime }),
+      ...(latencyTier && { latencyTier }),
+      ...(resolvedMode && { resolvedMode }),
+      ...(modeSelectionSource && { modeSelectionSource }),
+      ...(toolsCalled.length > 0 && { toolsCalled }),
+      ...(analysisMode && { analysisMode }),
+      ...(retrieval && { retrieval }),
+      ...(normalizedHandoffHistory && {
+        handoffHistory: normalizedHandoffHistory,
+      }),
       ...(structuredView && {
         assistantResponseView: structuredView,
       }),
@@ -239,6 +275,10 @@ export function handleStreamDataPart(
     if (
       structuredView ||
       traceId ||
+      toolsCalled.length > 0 ||
+      analysisMode ||
+      retrieval ||
+      normalizedHandoffHistory !== undefined ||
       pendingToolResults.length > 0 ||
       Object.keys(pendingMessageMetadata).length > 0
     ) {

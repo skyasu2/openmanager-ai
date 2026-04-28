@@ -12,6 +12,7 @@
  */
 
 import { AlertCircle, Clock, LogIn, RefreshCw, X, Zap } from 'lucide-react';
+import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import {
   isAuthRelatedError,
@@ -132,6 +133,11 @@ export function ColdStartErrorBanner({
     setCountdown(0);
   }, []);
 
+  const handleDismissColdStart = useCallback(() => {
+    cancelAutoRetry();
+    onClearError?.();
+  }, [cancelAutoRetry, onClearError]);
+
   // 인증 에러용 UI (로그인 필요)
   if (isAuthError) {
     return (
@@ -149,13 +155,23 @@ export function ColdStartErrorBanner({
               게스트 모드로 체험해보세요.
             </p>
           </div>
-          <a
+          <Link
             href="/login"
             className="flex shrink-0 items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700"
           >
             <LogIn className="h-4 w-4" />
             <span>로그인</span>
-          </a>
+          </Link>
+          {onClearError && (
+            <button
+              type="button"
+              onClick={onClearError}
+              className="rounded-lg p-1.5 text-blue-500 transition-colors hover:bg-blue-100 hover:text-blue-700"
+              aria-label="닫기"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
       </div>
     );
@@ -222,6 +238,16 @@ export function ColdStartErrorBanner({
                 자동 재시도 취소
               </button>
             )}
+            {onClearError && (
+              <button
+                type="button"
+                onClick={handleDismissColdStart}
+                className="rounded-lg p-1.5 text-orange-500 transition-colors hover:bg-orange-100 hover:text-orange-700"
+                aria-label="닫기"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -254,7 +280,7 @@ export function ColdStartErrorBanner({
               <p className="mt-0.5 break-words text-xs text-amber-700">
                 {helperText}
               </p>
-              <div className="mt-2 flex flex-wrap gap-1.5 text-2xs text-amber-800">
+              <div className="mt-2 flex flex-wrap gap-1.5 text-xs text-amber-800">
                 <span className="rounded bg-white px-1.5 py-0.5">
                   차단 위치: {getRateLimitSourceLabel(rateLimitDetails.source)}
                 </span>

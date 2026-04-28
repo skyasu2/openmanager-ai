@@ -1,7 +1,10 @@
 import { Bot, Brain, ChevronDown, ChevronUp, User } from 'lucide-react';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { AnalysisBasisBadge } from '@/components/ai/AnalysisBasisBadge';
-import { resolveAssistantResponseView } from '@/lib/ai/utils/assistant-response-view';
+import {
+  resolveAssistantResponseView,
+  splitAssistantResponseDetails,
+} from '@/lib/ai/utils/assistant-response-view';
 import { formatTime } from '@/lib/format-date';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 import type { AIThinkingStep } from '@/types/ai-sidebar/ai-sidebar-types';
@@ -62,22 +65,45 @@ export const AIWorkspaceMessage = memo<{
   ) => Promise<boolean>;
   isLastMessage?: boolean;
 }>(({ message, onRegenerateResponse, onFeedback, isLastMessage = false }) => {
+  const hasTextContent = Boolean(message.content?.trim());
   const assistantResponseView = useMemo(() => {
-    if (
-      message.role !== 'assistant' ||
-      !message.content ||
-      message.isStreaming
-    ) {
+    if (message.role !== 'assistant' || message.isStreaming) {
       return null;
     }
     return resolveAssistantResponseView(message.content, message.metadata);
   }, [message.content, message.metadata, message.isStreaming, message.role]);
+  const assistantResponseDetails = useMemo(
+    () => splitAssistantResponseDetails(assistantResponseView?.details ?? null),
+    [assistantResponseView?.details]
+  );
+  const analysisBasis = message.metadata?.analysisBasis ?? null;
   const analysisBasisDetails =
-    assistantResponseView?.shouldCollapse && assistantResponseView.details
-      ? null
-      : (assistantResponseView?.details ?? null);
+    analysisBasis && assistantResponseView?.details
+      ? assistantResponseDetails.processDetails
+      : !assistantResponseView?.shouldCollapse
+        ? (assistantResponseView?.details ?? null)
+        : null;
+  const analysisBasisDebugDetails =
+    analysisBasis && assistantResponseView?.details
+      ? assistantResponseDetails.debugDetails
+      : null;
+  const shouldCollapseIntoAnalysis = Boolean(
+    assistantResponseView?.shouldCollapse && analysisBasis
+  );
+  const inlineAssistantDetails =
+    assistantResponseView?.shouldCollapse && !analysisBasis
+      ? (assistantResponseDetails.processDetails ??
+        (!assistantResponseDetails.debugDetails
+          ? (assistantResponseView.details ?? null)
+          : null))
+      : null;
+  const shouldShowActionBar = hasTextContent;
 
-  if (message.role === 'thinking' && message.thinkingSteps) {
+  if (message.role === 'thinking' && !message.thinkingSteps?.length) {
+    return null;
+  }
+
+  if (message.role === 'thinking' && message.thinkingSteps?.length) {
     return (
       <div className="my-4">
         <MemoizedThinkingProcessVisualizer
@@ -95,7 +121,7 @@ export const AIWorkspaceMessage = memo<{
       data-testid={message.role === 'user' ? 'user-message' : 'ai-message'}
     >
       <div
-        className={`flex max-w-[90%] items-start space-x-2 sm:max-w-[85%] ${
+        className={`flex max-w-[90%] min-w-0 items-start space-x-2 sm:max-w-[85%] ${
           message.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''
         }`}
       >
@@ -113,70 +139,65 @@ export const AIWorkspaceMessage = memo<{
           )}
         </div>
 
-        <div className="flex-1">
-          <div
-            className={`rounded-2xl p-4 shadow-xs ${
-              message.role === 'user'
-                ? 'rounded-tr-sm bg-linear-to-br from-blue-500 to-blue-600 text-white'
-                : 'rounded-tl-sm border border-gray-100 bg-white text-gray-800'
-            }`}
-            data-testid={
-              message.role === 'assistant' ? 'ai-response' : undefined
-            }
-          >
-            {message.role === 'assistant' ? (
-              <div className="relative">
-                {assistantResponseView?.shouldCollapse ? (
-                  <div className="space-y-3">
-                    <div className="rounded-xl border border-indigo-100 bg-indigo-50/40 p-3">
-                      <p className="mb-2 text-2xs font-semibold uppercase tracking-wide text-indigo-500">
-                        핵심 요약
-                      </p>
-                      <MarkdownRenderer
-                        content={assistantResponseView.summary}
-                        className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
-                      />
-                    </div>
-
-                    <details className="group rounded-xl border border-slate-200 bg-slate-50/60 p-3">
-                      <summary className="flex cursor-pointer list-none items-center justify-between text-xs font-semibold text-slate-600 hover:text-slate-800">
-                        <span>상세 분석 보기</span>
-                        <span className="text-2xs text-slate-500 group-open:hidden">
-                          펼치기
-                        </span>
-                        <span className="hidden text-2xs text-slate-500 group-open:inline">
-                          접기
-                        </span>
-                      </summary>
-                      {assistantResponseView.details && (
-                        <div className="mt-3 border-t border-slate-200 pt-3">
+        <div className="min-w-0 flex-1">
+          {hasTextContent && (
+            <div
+              className={`overflow-hidden rounded-2xl p-4 shadow-xs ${
+                message.role === 'user'
+                  ? 'rounded-tr-sm bg-linear-to-br from-blue-500 to-blue-600 text-white'
+                  : 'rounded-tl-sm border border-gray-100 bg-white text-gray-800'
+              }`}
+              data-testid={
+                message.role === 'assistant' ? 'ai-response' : undefined
+              }
+            >
+              {message.role === 'assistant' ? (
+                <div className="relative">
+                  {assistantResponseView?.shouldCollapse ? (
+                    <div className="space-y-3">
+                      <div className="rounded-xl border border-indigo-100 bg-indigo-50/40 p-3">
+                        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-indigo-500">
+                          핵심 요약
+                        </p>
+                        <MarkdownRenderer
+                          content={assistantResponseView.summary}
+                          className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
+                        />
+                      </div>
+                      {inlineAssistantDetails && (
+                        <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3">
+                          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                            상세 분석
+                          </p>
                           <MarkdownRenderer
-                            content={assistantResponseView.details}
+                            content={inlineAssistantDetails}
                             className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
                           />
                         </div>
                       )}
-                    </details>
-                  </div>
-                ) : isLastMessage && !message.isStreaming ? (
-                  <TypewriterMarkdown
-                    content={message.content}
-                    enableTypewriter={true}
-                    speed={12}
-                  />
-                ) : (
-                  <MarkdownRenderer
-                    content={message.content}
-                    className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
-                  />
-                )}
-              </div>
-            ) : (
-              <div className="whitespace-pre-wrap wrap-break-word text-chat leading-relaxed">
-                {message.content}
-              </div>
-            )}
-          </div>
+                    </div>
+                  ) : isLastMessage &&
+                    !message.isStreaming &&
+                    !shouldCollapseIntoAnalysis ? (
+                    <TypewriterMarkdown
+                      content={message.content}
+                      enableTypewriter={true}
+                      speed={12}
+                    />
+                  ) : (
+                    <MarkdownRenderer
+                      content={message.content}
+                      className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
+                    />
+                  )}
+                </div>
+              ) : (
+                <div className="whitespace-pre-wrap wrap-break-word text-chat leading-relaxed">
+                  {message.content}
+                </div>
+              )}
+            </div>
+          )}
 
           <div
             className={`mt-1 flex items-center justify-between ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
@@ -193,25 +214,34 @@ export const AIWorkspaceMessage = memo<{
                 )}
             </div>
 
-            <MessageActions
-              messageId={message.id}
-              content={message.content}
-              role={message.role}
-              onRegenerate={onRegenerateResponse}
-              onFeedback={onFeedback}
-              traceId={message.metadata?.traceId}
-              showRegenerate={isLastMessage && message.role === 'assistant'}
-            />
+            <div className="flex items-center gap-1">
+              {shouldShowActionBar && hasTextContent && (
+                <MessageActions
+                  messageId={message.id}
+                  content={message.content}
+                  role={message.role}
+                  onRegenerate={onRegenerateResponse}
+                  onFeedback={onFeedback}
+                  traceId={message.metadata?.traceId}
+                  showRegenerate={isLastMessage && message.role === 'assistant'}
+                />
+              )}
+            </div>
           </div>
 
           {message.role === 'assistant' &&
             !message.isStreaming &&
-            message.metadata?.analysisBasis && (
+            analysisBasis && (
               <AnalysisBasisBadge
-                basis={message.metadata.analysisBasis}
+                basis={analysisBasis}
                 details={analysisBasisDetails}
+                debugDetails={analysisBasisDebugDetails}
                 thinkingSteps={message.thinkingSteps}
                 traceId={message.metadata?.traceId}
+                processingTime={message.metadata?.processingTime}
+                latencyTier={message.metadata?.latencyTier}
+                resolvedMode={message.metadata?.resolvedMode}
+                modeSelectionSource={message.metadata?.modeSelectionSource}
                 handoffHistory={message.metadata?.handoffHistory}
                 toolResultSummaries={message.metadata?.toolResultSummaries}
                 className="mt-2"
@@ -220,7 +250,8 @@ export const AIWorkspaceMessage = memo<{
 
           {message.role === 'assistant' &&
             message.thinkingSteps &&
-            message.thinkingSteps.length > 0 && (
+            message.thinkingSteps.length > 0 &&
+            !analysisBasis && (
               <ThinkingToggle
                 steps={message.thinkingSteps}
                 isStreaming={message.isStreaming || false}

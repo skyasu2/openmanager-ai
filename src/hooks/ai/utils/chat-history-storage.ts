@@ -6,6 +6,11 @@
 
 import { logger } from '@/lib/logging';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
+import type { AnalysisMode } from '@/types/ai/analysis-mode';
+import type {
+  AnalysisFeatureStatus,
+  RetrievalMetadata,
+} from '@/types/ai/retrieval-status';
 
 // ============================================================================
 // Constants
@@ -19,6 +24,38 @@ const HISTORY_EXPIRY_HOURS = 24;
 // Types
 // ============================================================================
 
+export interface StoredMessageMetadata {
+  traceId?: string;
+  retrieval?: RetrievalMetadata;
+  featureStatus?: AnalysisFeatureStatus;
+  analysisMode?: AnalysisMode;
+  toolsCalled?: string[];
+  ragSources?: Array<{
+    title: string;
+    similarity: number;
+    sourceType: string;
+    category?: string;
+    url?: string;
+  }>;
+  assistantResponseView?: {
+    summary: string;
+    details?: string | null;
+    shouldCollapse?: boolean;
+  };
+  handoffHistory?: Array<{
+    from: string;
+    to: string;
+    reason?: string;
+  }>;
+  toolResultSummaries?: Array<{
+    toolName: string;
+    label: string;
+    summary: string;
+    preview?: string;
+    status: 'completed' | 'failed';
+  }>;
+}
+
 export interface StoredChatHistory {
   sessionId: string;
   messages: Array<{
@@ -26,6 +63,7 @@ export interface StoredChatHistory {
     role: string;
     content: string;
     timestamp: string;
+    metadata?: StoredMessageMetadata;
   }>;
   lastUpdated: string;
 }
@@ -81,13 +119,64 @@ export function saveChatHistory(
           m.content.trim().length > 0
       )
       .slice(-MAX_STORED_MESSAGES)
-      .map((m) => ({
-        id: m.id,
-        role: m.role,
-        content: m.content,
-        timestamp:
-          m.timestamp instanceof Date ? m.timestamp.toISOString() : m.timestamp,
-      }));
+      .map((m) => {
+        const metadata = m.metadata;
+        const analysisBasis = m.metadata?.analysisBasis;
+        const hasExplicitHandoffHistory = Array.isArray(
+          metadata?.handoffHistory
+        );
+        const storedMetadata: StoredMessageMetadata | undefined =
+          metadata?.traceId ||
+          analysisBasis?.retrieval ||
+          analysisBasis?.featureStatus ||
+          analysisBasis?.analysisMode ||
+          analysisBasis?.toolsCalled ||
+          analysisBasis?.ragSources ||
+          metadata?.assistantResponseView ||
+          hasExplicitHandoffHistory ||
+          (metadata?.toolResultSummaries &&
+            metadata.toolResultSummaries.length > 0)
+            ? {
+                ...(metadata?.traceId && { traceId: metadata.traceId }),
+                ...(analysisBasis?.retrieval && {
+                  retrieval: analysisBasis.retrieval,
+                }),
+                ...(analysisBasis?.featureStatus && {
+                  featureStatus: analysisBasis.featureStatus,
+                }),
+                ...(analysisBasis?.analysisMode && {
+                  analysisMode: analysisBasis.analysisMode,
+                }),
+                ...(analysisBasis?.toolsCalled && {
+                  toolsCalled: analysisBasis.toolsCalled,
+                }),
+                ...(analysisBasis?.ragSources && {
+                  ragSources: analysisBasis.ragSources,
+                }),
+                ...(metadata?.assistantResponseView && {
+                  assistantResponseView: metadata.assistantResponseView,
+                }),
+                ...(hasExplicitHandoffHistory && {
+                  handoffHistory: metadata.handoffHistory,
+                }),
+                ...(metadata?.toolResultSummaries &&
+                  metadata.toolResultSummaries.length > 0 && {
+                    toolResultSummaries: metadata.toolResultSummaries,
+                  }),
+              }
+            : undefined;
+
+        return {
+          id: m.id,
+          role: m.role,
+          content: m.content,
+          timestamp:
+            m.timestamp instanceof Date
+              ? m.timestamp.toISOString()
+              : m.timestamp,
+          ...(storedMetadata && { metadata: storedMetadata }),
+        };
+      });
 
     const history: StoredChatHistory = {
       sessionId,

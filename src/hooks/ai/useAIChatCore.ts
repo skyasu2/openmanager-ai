@@ -22,6 +22,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { getComplexityThreshold } from '@/config/ai-proxy.config';
 import {
   type AgentStatusEventData,
   type AIStreamStatus,
@@ -31,6 +32,10 @@ import {
   useHybridAIQuery,
 } from '@/hooks/ai/useHybridAIQuery';
 import type { AIErrorDetails } from '@/lib/ai/error-details';
+import {
+  analyzeQueryComplexity,
+  shouldForceJobQueue,
+} from '@/lib/ai/utils/query-complexity';
 import { logger } from '@/lib/logging';
 import {
   type EnhancedChatMessage,
@@ -138,10 +143,74 @@ export interface UseAIChatCoreReturn {
 }
 
 const QA_THINKING_VISUALIZER_PROMPT = '/qa-thinking-visualizer';
+const DEBUG_ROUTING_PROMPT = '/debug-routing';
 
 function isQAThinkingVisualizerPrompt(text: string): boolean {
   const normalized = text.trim().toLowerCase();
   return normalized.includes(QA_THINKING_VISUALIZER_PROMPT);
+}
+
+function isDebugRoutingPrompt(text: string): boolean {
+  return text.trim().toLowerCase().startsWith(DEBUG_ROUTING_PROMPT);
+}
+
+function createDebugRoutingMessages(
+  fullText: string,
+  analysisMode: import('@/types/ai/analysis-mode').AnalysisMode
+): [UIMessage, UIMessage] {
+  const query = fullText.replace(/^\/debug-routing\s*/i, '').trim();
+  const token = Date.now().toString(36);
+
+  const threshold = getComplexityThreshold(); // 기본 19
+  const modeAdjustedThreshold =
+    analysisMode === 'thinking' ? Math.max(8, threshold - 8) : threshold;
+
+  const analysis = analyzeQueryComplexity(query || '(쿼리 없음)');
+  const forceResult = shouldForceJobQueue(query || '');
+
+  const isComplex = analysis.score > modeAdjustedThreshold || forceResult.force;
+  const routePath = isComplex
+    ? 'Job Queue (/api/ai/jobs)'
+    : 'Streaming (/api/ai/supervisor/stream/v2)';
+
+  const factorLines =
+    analysis.factors.length > 0
+      ? analysis.factors.map((f) => `  · ${f}`).join('\n')
+      : '  · (없음)';
+
+  const forceNote = forceResult.force
+    ? `\n⚡ 강제 Job Queue: 키워드 "${forceResult.matchedKeyword}" 감지`
+    : '';
+
+  const thinkingNote =
+    analysisMode === 'thinking'
+      ? `\n🧠 thinking 모드: threshold ${threshold} → ${modeAdjustedThreshold} (−8)`
+      : '';
+
+  const resultText =
+    `🔍 **Routing Debug**\n` +
+    `\`\`\`\n` +
+    `쿼리:       ${query || '(없음)'}\n` +
+    `복잡도:     ${analysis.level} (score: ${analysis.score})\n` +
+    `threshold:  ${modeAdjustedThreshold} (기본값: ${threshold})\n` +
+    `경로:       ${isComplex ? '🔄 ' : '⚡ '}${routePath}\n` +
+    `\`\`\`\n` +
+    `**factors**\n${factorLines}` +
+    forceNote +
+    thinkingNote;
+
+  const userMessage: UIMessage = {
+    id: `debug-user-${token}`,
+    role: 'user',
+    parts: [{ type: 'text', text: fullText }],
+  };
+  const assistantMessage: UIMessage = {
+    id: `debug-assistant-${token}`,
+    role: 'assistant',
+    parts: [{ type: 'text', text: resultText }],
+  };
+
+  return [userMessage, assistantMessage];
 }
 
 function createQAToolResultSummaries() {
@@ -220,6 +289,10 @@ export function useAIChatCore(
   // 웹 검색 / RAG 토글 상태 (Store에서 읽기)
   const webSearchEnabled = useAISidebarStore((s) => s.webSearchEnabled);
   const ragEnabled = useAISidebarStore((s) => s.ragEnabled);
+  const analysisMode = useAISidebarStore((s) => s.analysisMode);
+  const persistedSidebarMessages = useAISidebarStore((s) => s.messages);
+  const persistedSidebarSessionId = useAISidebarStore((s) => s.sessionId);
+  const syncChatSnapshot = useAISidebarStore((s) => s.syncChatSnapshot);
 
   // 🧩 Chat Queue Hook (메시지 대기열 Batching)
   const {
@@ -301,6 +374,7 @@ export function useAIChatCore(
     sessionId,
     webSearchEnabled,
     ragEnabled,
+    analysisMode,
     ...hybridCallbacks,
   });
 
@@ -349,13 +423,33 @@ export function useAIChatCore(
   });
 
   // 🧩 History Hook (Needs messages from hybrid query)
+  const handleMetadataRestore = useCallback(
+    (
+      metadataByMessageId: Record<
+        string,
+        { toolsCalled?: string[]; ragSources?: unknown[] }
+      >
+    ) => {
+      for (const [messageId, meta] of Object.entries(metadataByMessageId)) {
+        deferredHandlers.setDeferredAssistantMetadata(
+          messageId,
+          meta as Record<string, unknown>
+        );
+      }
+    },
+    [deferredHandlers]
+  );
+
   const { clearHistory } = useChatHistory({
     sessionId,
     isMessagesEmpty: messages.length === 0,
     enhancedMessages,
+    seedMessages: persistedSidebarMessages,
+    seedSessionId: persistedSidebarSessionId,
     setMessages,
     isLoading: hybridIsLoading,
     onSessionRestore: setSessionId,
+    onMetadataRestore: handleMetadataRestore,
   });
 
   // 🧩 Session State Hook
@@ -374,11 +468,10 @@ export function useAIChatCore(
     void triggerAIWarmup('ai-chat-core');
   }, []);
 
-  // 에러 동기화: hybridState.error가 변경될 때만 반영
+  // 에러 동기화: retry 경로가 로컬 에러를 먼저 지우지 않도록 정렬했으므로
+  // 메시지 변경 기준으로만 동기화한다.
   useEffect(() => {
-    if (hybridState.error) {
-      setError(hybridState.error);
-    }
+    setError(hybridState.error ?? null);
   }, [hybridState.error]);
 
   // 새 쿼리 시작 시 이전 스트림 RAG 출처를 초기화해 혼합 표시를 방지한다.
@@ -388,9 +481,14 @@ export function useAIChatCore(
     }
   }, [hybridIsLoading]);
 
+  useEffect(() => {
+    if (enhancedMessages.length === 0) return;
+    syncChatSnapshot(enhancedMessages, sessionId);
+  }, [enhancedMessages, sessionId, syncChatSnapshot]);
+
   const handleNewSession = useCallback(() => {
     resetHybridQuery();
-    refreshSessionId();
+    const nextSessionId = refreshSessionId();
     setInput('');
     setError(null);
     setStreamRagSources([]);
@@ -401,12 +499,14 @@ export function useAIChatCore(
     lastAttachmentsRef.current = null;
     clearHistory();
     clearQueue();
+    syncChatSnapshot([], nextSessionId);
   }, [
     resetHybridQuery,
     refreshSessionId,
     resetDeferredMetadata,
     clearHistory,
     clearQueue,
+    syncChatSnapshot,
   ]);
 
   const clearError = useCallback(() => {
@@ -448,7 +548,6 @@ export function useAIChatCore(
    */
   const retryLastQuery = useCallback(() => {
     if (!lastQueryRef.current) return;
-    setError(null);
     // 🎯 Fix: 재시도 시 executeQuery 사용 (재분류/재명확화 건너뛰기)
     // Cold Start 타임아웃 → 자동 재시도 시 동일 쿼리에 대해 명확화가 재트리거되는 문제 방지
     executeQuery(
@@ -513,6 +612,21 @@ export function useAIChatCore(
         return;
       }
 
+      if (isDebugRoutingPrompt(effectiveText)) {
+        setError(null);
+        setStreamRagSources([]);
+        lastQueryRef.current = effectiveText;
+        lastAttachmentsRef.current = attachments || null;
+        pendingQueryRef.current = '';
+        setInput('');
+        const [dbgUserMsg, dbgAssistantMsg] = createDebugRoutingMessages(
+          effectiveText,
+          analysisMode
+        );
+        setMessages([...messages, dbgUserMsg, dbgAssistantMsg]);
+        return;
+      }
+
       setError(null);
       setStreamRagSources([]);
       lastQueryRef.current = effectiveText;
@@ -532,6 +646,7 @@ export function useAIChatCore(
       addToQueue,
       messages,
       setMessages,
+      analysisMode,
     ]
   );
 

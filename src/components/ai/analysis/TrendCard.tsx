@@ -2,6 +2,7 @@ import { ArrowRight, Cpu } from 'lucide-react';
 import type { MetricTrendResult } from '@/types/intelligent-monitoring.types';
 import { metricIcons, metricLabels } from './constants';
 import { TrendIcon } from './TrendIcon';
+import { formatPercentLabel, normalizePercentValue } from './utils';
 
 interface TrendCardProps {
   metric: string;
@@ -23,9 +24,25 @@ export function TrendCard({ metric, data }: TrendCardProps) {
     : isDecreasing
       ? 'text-blue-700'
       : 'text-gray-700';
+  const normalizedChangePercent = normalizePercentValue(data.changePercent);
+  const changeBarWidth =
+    normalizedChangePercent === null
+      ? 0
+      : Math.min(Math.abs(normalizedChangePercent) / 30, 1) * 100;
 
-  // 변화율 바 너비 계산 (최대 ±30%를 100%로)
-  const changeBarWidth = Math.min(Math.abs(data.changePercent) / 30, 1) * 100;
+  const currentValueLabel = formatPercentLabel(data.currentValue);
+  const normalizedPredictedValue = normalizePercentValue(data.predictedValue, {
+    clamp: true,
+  });
+  const predictedValueLabel =
+    normalizedPredictedValue === null
+      ? '예측값 없음'
+      : formatPercentLabel(normalizedPredictedValue);
+  const changePercentLabel = formatPercentLabel(data.changePercent, {
+    digits: 1,
+    signed: true,
+    fallback: '변화율 없음',
+  });
 
   return (
     <div className={`rounded-lg border p-3 ${bgColor}`}>
@@ -40,11 +57,15 @@ export function TrendCard({ metric, data }: TrendCardProps) {
       {/* 현재값 → 예측값 시각화 */}
       <div className="flex items-center gap-2">
         <span className="text-sm tabular-nums text-gray-500">
-          {Math.round(data.currentValue)}%
+          {currentValueLabel}
         </span>
-        <ArrowRight className="h-3 w-3 text-gray-400" />
-        <span className={`text-2xl font-bold tabular-nums ${textColor}`}>
-          {Math.min(100, Math.max(0, Math.round(data.predictedValue)))}%
+        {normalizedPredictedValue !== null && (
+          <ArrowRight className="h-3 w-3 text-gray-400" />
+        )}
+        <span
+          className={`${normalizedPredictedValue === null ? 'text-sm' : 'text-lg'} font-bold tabular-nums ${textColor}`}
+        >
+          {predictedValueLabel}
         </span>
       </div>
 
@@ -52,32 +73,33 @@ export function TrendCard({ metric, data }: TrendCardProps) {
       <div className="mt-2">
         <div className="flex items-center gap-2">
           <div className="relative h-1.5 flex-1 rounded-full bg-gray-200">
-            {data.changePercent !== 0 && (
-              <div
-                className={`absolute h-full rounded-full ${
-                  data.changePercent > 0 ? 'bg-red-400' : 'bg-green-400'
-                }`}
-                style={{
-                  width: `${changeBarWidth}%`,
-                  left: data.changePercent < 0 ? 'auto' : '50%',
-                  right: data.changePercent < 0 ? '50%' : 'auto',
-                }}
-              />
-            )}
+            {normalizedChangePercent !== null &&
+              normalizedChangePercent !== 0 && (
+                <div
+                  className={`absolute h-full rounded-full ${
+                    normalizedChangePercent > 0 ? 'bg-red-400' : 'bg-green-400'
+                  }`}
+                  style={{
+                    width: `${changeBarWidth}%`,
+                    left: normalizedChangePercent < 0 ? 'auto' : '50%',
+                    right: normalizedChangePercent < 0 ? '50%' : 'auto',
+                  }}
+                />
+              )}
             {/* 중앙 기준선 */}
             <div className="absolute left-1/2 top-0 h-full w-0.5 -translate-x-1/2 bg-gray-400" />
           </div>
           <span
             className={`min-w-[3rem] text-right text-xs font-medium tabular-nums ${
-              data.changePercent > 0
+              normalizedChangePercent !== null && normalizedChangePercent > 0
                 ? 'text-red-500'
-                : data.changePercent < 0
+                : normalizedChangePercent !== null &&
+                    normalizedChangePercent < 0
                   ? 'text-green-500'
                   : 'text-gray-400'
             }`}
           >
-            {data.changePercent > 0 ? '+' : ''}
-            {data.changePercent.toFixed(1)}%
+            {changePercentLabel}
           </span>
         </div>
       </div>

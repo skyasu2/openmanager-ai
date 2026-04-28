@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { SYSTEM_AUTO_SHUTDOWN_TIME } from '@/config/system-constants';
 import { logger } from '@/lib/logging';
-import { browserNotificationService } from '@/services/notifications/BrowserNotificationService';
 
 interface UnifiedAdminState {
   // 시스템 상태
@@ -62,9 +61,15 @@ export const useUnifiedAdminStore = create<UnifiedAdminState>()((set, get) => ({
         logger.info('⏰ [System] 30분 자동 종료 타이머 실행');
 
         // 🔔 30분 자동 종료 알림 발송
-        browserNotificationService.sendSystemShutdownNotification(
-          '30분 자동 종료'
-        );
+        void import('@/services/notifications/BrowserNotificationService')
+          .then(({ browserNotificationService }) => {
+            browserNotificationService.sendSystemShutdownNotification(
+              '30분 자동 종료'
+            );
+          })
+          .catch((error: unknown) => {
+            logger.warn('⚠️ [System] 브라우저 종료 알림 전송 실패:', error);
+          });
 
         get().stopSystem();
       }, SYSTEM_AUTO_SHUTDOWN_TIME);

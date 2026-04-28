@@ -1,8 +1,11 @@
 'use client';
 
-import type { User } from '@supabase/supabase-js';
+import type {
+  AuthChangeEvent,
+  Session as SupabaseSession,
+  User,
+} from '@supabase/supabase-js';
 import { useEffect, useState } from 'react';
-import { clearAuthData } from '@/lib/auth/auth-state-manager';
 import {
   AUTH_SESSION_ID_KEY,
   AUTH_TYPE_KEY,
@@ -10,7 +13,6 @@ import {
   hasGuestStorageState,
 } from '@/lib/auth/guest-session-utils';
 import { logger } from '@/lib/logging';
-import { getSupabase } from '@/lib/supabase/client';
 
 // NextAuth 호환 세션 타입
 interface Session {
@@ -41,14 +43,22 @@ export function useSession(): UseSessionReturn {
   >('loading');
 
   useEffect(() => {
-    // 초기 세션 확인 - getUser()로 JWT 검증 활성화 (보안 강화)
+    let isMounted = true;
+    let unsubscribe: (() => void) | undefined;
+
     const checkSession = async () => {
       try {
+        const { getSupabase } = await import('@/lib/supabase/client');
+        const supabase = getSupabase();
+
         // 🔐 getUser()는 서버에서 JWT 서명을 검증함 (getSession()은 로컬 캐시만 확인)
         const {
           data: { user: validatedUser },
           error,
-        } = await getSupabase().auth.getUser();
+        } = await supabase.auth.getUser();
+
+        if (!isMounted) return;
+
         if (error) {
           // 'Auth session missing!'은 게스트 모드에서 예상된 동작 (경고 레벨 낮춤)
           if (error.message !== 'Auth session missing!') {
@@ -121,32 +131,37 @@ export function useSession(): UseSessionReturn {
             setStatus('unauthenticated');
           }
         }
+        const response = supabase.auth.onAuthStateChange(
+          (_event: AuthChangeEvent, session: SupabaseSession | null) => {
+            if (!isMounted) return;
+
+            if (session?.user) {
+              setUser(session.user);
+              setStatus('authenticated');
+            } else {
+              setUser(null);
+              setStatus('unauthenticated');
+            }
+
+            // 🎯 router.refresh() 제거: 불필요한 전체 페이지 리렌더링 방지
+            // React의 자연스러운 상태 전파를 통해 필요한 컴포넌트만 리렌더링
+          }
+        );
+
+        unsubscribe = response?.data?.subscription?.unsubscribe;
       } catch (error) {
+        if (!isMounted) return;
         logger.error('세션 확인 오류:', error);
+        setUser(null);
         setStatus('unauthenticated');
       }
     };
 
     void checkSession();
 
-    // 세션 변경 감지
-    const response = getSupabase().auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        setUser(session.user);
-        setStatus('authenticated');
-      } else {
-        setUser(null);
-        setStatus('unauthenticated');
-      }
-
-      // 🎯 router.refresh() 제거: 불필요한 전체 페이지 리렌더링 방지
-      // React의 자연스러운 상태 전파를 통해 필요한 컴포넌트만 리렌더링
-    });
-
     return () => {
-      if (response?.data?.subscription) {
-        response.data.subscription.unsubscribe();
-      }
+      isMounted = false;
+      unsubscribe?.();
     };
   }, []); // router 의존성 제거 - Next.js router는 불안정한 참조로 무한 리렌더링 유발
 
@@ -166,18 +181,45 @@ export function useSession(): UseSessionReturn {
 
   // 세션 업데이트 함수 - getUser()로 JWT 검증 활성화
   const update = async (): Promise<Session | null> => {
-    const {
-      data: { user: validatedUser },
-      error,
-    } = await getSupabase().auth.getUser();
-    if (error && error.message !== 'Auth session missing!') {
-      logger.warn('⚠️ 세션 업데이트 JWT 검증 실패:', error.message);
-    }
-    if (validatedUser) {
+    try {
+      const { getSupabase } = await import('@/lib/supabase/client');
+      const {
+        data: { user: validatedUser },
+        error,
+      } = await getSupabase().auth.getUser();
+      if (error && error.message !== 'Auth session missing!') {
+        logger.warn('⚠️ 세션 업데이트 JWT 검증 실패:', error.message);
+      }
+
+      if (!validatedUser) {
+        setUser(null);
+        setStatus('unauthenticated');
+        return null;
+      }
+
+      const nextSession: Session = {
+        user: {
+          id: validatedUser.id,
+          email: validatedUser.email,
+          name:
+            validatedUser.user_metadata?.name ||
+            validatedUser.email?.split('@')[0] ||
+            null,
+          image: validatedUser.user_metadata?.avatar_url || null,
+          provider: validatedUser.app_metadata?.provider || 'unknown',
+        },
+        expires: new Date(Date.now() + 60 * 60 * 24 * 30 * 1000).toISOString(),
+      };
+
       setUser(validatedUser);
       setStatus('authenticated');
+      return nextSession;
+    } catch (error) {
+      logger.error('세션 업데이트 오류:', error);
+      setUser(null);
+      setStatus('unauthenticated');
+      return null;
     }
-    return data;
   };
 
   return {
@@ -196,6 +238,11 @@ export async function signOut(options?: { callbackUrl?: string }) {
     logger.info('🚪 Supabase 로그아웃 시작');
 
     // Supabase 세션 종료 (핵심 동작)
+    const [{ getSupabase }, { clearAuthData }] = await Promise.all([
+      import('@/lib/supabase/client'),
+      import('@/lib/auth/auth-state-manager'),
+    ]);
+
     await getSupabase().auth.signOut();
 
     // AuthStateManager를 통한 통합 세션 정리
@@ -233,6 +280,7 @@ export async function signOut(options?: { callbackUrl?: string }) {
  */
 async function _signIn(provider: string, options?: { callbackUrl?: string }) {
   if (provider === 'github') {
+    const { getSupabase } = await import('@/lib/supabase/client');
     const baseUrl = window.location.origin;
     const finalRedirect = options?.callbackUrl || '/main';
 

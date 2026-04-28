@@ -16,9 +16,11 @@ import {
   Server,
   TrendingUp,
 } from 'lucide-react';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { formatTime } from '@/lib/format-date';
 import { copyReportAsMarkdown, downloadReport } from './formatters';
+import { LogTimeline } from './LogTimeline';
 import type { IncidentReport } from './types';
 import {
   getSeverityColor,
@@ -91,6 +93,27 @@ function SystemSummarySection({
   );
 }
 
+function ReportQuickSummary({ report }: { report: IncidentReport }) {
+  const nextAction = report.recommendations?.[0]?.action;
+  const impact = report.systemSummary
+    ? `주의 ${report.systemSummary.warningServers}대 · 위험 ${report.systemSummary.criticalServers}대`
+    : null;
+
+  if (!nextAction && !impact) return null;
+
+  return (
+    <div className="mb-3 space-y-1 rounded-lg bg-white/60 px-3 py-2 text-xs text-gray-600">
+      <div>원인: {report.description}</div>
+      {impact && <div>영향: {impact}</div>}
+      {nextAction && <div>다음 조치: {nextAction}</div>}
+    </div>
+  );
+}
+
+function hasReportQuickSummary(report: IncidentReport): boolean {
+  return Boolean(report.recommendations?.[0]?.action || report.systemSummary);
+}
+
 /**
  * 이상 항목 섹션
  */
@@ -153,6 +176,109 @@ function RecommendationsSection({
   );
 }
 
+function RelatedServersSection({
+  relatedServers,
+}: {
+  relatedServers: NonNullable<IncidentReport['relatedServers']>;
+}) {
+  if (relatedServers.length === 0) {
+    return (
+      <div className="rounded-lg bg-white/60 p-3">
+        <h4 className="mb-2 text-xs font-semibold text-gray-700">연관 서버</h4>
+        <p className="text-xs text-gray-500">연관 서버 없음</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-lg bg-white/60 p-3">
+      <h4 className="mb-2 text-xs font-semibold text-gray-700">연관 서버</h4>
+      <div className="space-y-2">
+        {relatedServers.map((server) => (
+          <Link
+            key={server.id}
+            href={`/dashboard?serverId=${encodeURIComponent(server.id)}`}
+            className="flex items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-2 text-xs text-gray-700 hover:border-blue-200 hover:bg-blue-50"
+          >
+            <div>
+              <div className="font-medium">{server.name}</div>
+              <div className="mt-1 text-gray-500">
+                {server.metric ? `${server.metric}` : 'metric 없음'}
+                {typeof server.value === 'number'
+                  ? ` ${Math.round(server.value)}`
+                  : ''}
+              </div>
+            </div>
+            <span
+              className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                server.severity === 'critical'
+                  ? 'bg-red-100 text-red-700'
+                  : server.severity === 'warning'
+                    ? 'bg-amber-100 text-amber-700'
+                    : 'bg-slate-100 text-slate-700'
+              }`}
+            >
+              {server.severity}
+            </span>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PostmortemSection({
+  postmortem,
+}: {
+  postmortem: NonNullable<IncidentReport['postmortem']>;
+}) {
+  return (
+    <div className="rounded-lg bg-slate-50 p-3">
+      <h4 className="mb-3 text-xs font-semibold text-slate-700">Postmortem</h4>
+      <div className="space-y-3 text-xs text-slate-600">
+        <div>
+          <h5 className="mb-1 font-semibold text-slate-700">타임라인</h5>
+          <ul className="space-y-1">
+            {postmortem.timeline.length > 0 ? (
+              postmortem.timeline.map((entry) => <li key={entry}>• {entry}</li>)
+            ) : (
+              <li>• 정보 없음</li>
+            )}
+          </ul>
+        </div>
+
+        <div>
+          <h5 className="mb-1 font-semibold text-slate-700">원인 가설</h5>
+          <ol className="space-y-1">
+            {postmortem.hypotheses.length > 0 ? (
+              postmortem.hypotheses.map((entry, index) => (
+                <li key={entry}>
+                  {index + 1}. {entry}
+                </li>
+              ))
+            ) : (
+              <li>1. 정보 없음</li>
+            )}
+          </ol>
+        </div>
+
+        <div>
+          <h5 className="mb-1 font-semibold text-slate-700">재발 방지</h5>
+          <ul className="space-y-1">
+            {postmortem.prevention.length > 0 ? (
+              postmortem.prevention.map((entry) => (
+                <li key={entry}>- [ ] {entry}</li>
+              ))
+            ) : (
+              <li>- [ ] 정보 없음</li>
+            )}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /**
  * 다운로드 메뉴
  */
@@ -206,6 +332,7 @@ export default function ReportCard({
   onSetDownloadMenuId,
 }: ReportCardProps) {
   const [copyState, setCopyState] = useState<'idle' | 'copied'>('idle');
+  const hasQuickSummary = hasReportQuickSummary(report);
 
   useEffect(() => {
     if (copyState !== 'copied') return;
@@ -241,7 +368,11 @@ export default function ReportCard({
       </div>
 
       {/* Description */}
-      <p className="mb-3 text-sm text-gray-600">{report.description}</p>
+      {hasQuickSummary ? (
+        <ReportQuickSummary report={report} />
+      ) : (
+        <p className="mb-3 text-sm text-gray-600">{report.description}</p>
+      )}
 
       {/* System Summary */}
       {report.systemSummary && (
@@ -253,6 +384,10 @@ export default function ReportCard({
         <div className="space-y-3">
           {report.anomalies && report.anomalies.length > 0 && (
             <AnomaliesSection anomalies={report.anomalies} />
+          )}
+
+          {report.relatedServers && (
+            <RelatedServersSection relatedServers={report.relatedServers} />
           )}
 
           {report.recommendations && report.recommendations.length > 0 && (
@@ -267,6 +402,15 @@ export default function ReportCard({
               <p className="text-xs text-purple-600">{report.pattern}</p>
             </div>
           )}
+
+          {report.postmortem && (
+            <PostmortemSection postmortem={report.postmortem} />
+          )}
+
+          <LogTimeline
+            timestamp={report.timestamp}
+            affectedServerIds={report.affectedServers}
+          />
         </div>
       )}
 

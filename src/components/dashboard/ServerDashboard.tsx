@@ -1,8 +1,8 @@
 'use client';
 
 import { Loader2 } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import EnhancedServerModal from '@/components/dashboard/EnhancedServerModal';
+import dynamic from 'next/dynamic';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ImprovedServerCard from '@/components/dashboard/ImprovedServerCard';
 import ServerDashboardPaginationControls from '@/components/dashboard/ServerDashboardPaginationControls';
 import VirtualizedServerList from '@/components/dashboard/VirtualizedServerList';
@@ -12,6 +12,11 @@ import type { DashboardTab } from '@/types/dashboard/server-dashboard.types';
 import type { Server } from '@/types/server';
 // react-window Grid는 사용하지 않음 (VirtualizedServerList에서 List 사용)
 import { usePerformanceTracking } from '@/utils/performance';
+
+const EnhancedServerModal = dynamic(
+  () => import('@/components/dashboard/EnhancedServerModal'),
+  { ssr: false, loading: () => null }
+);
 
 // 🚀 성능 최적화: statusPriority를 컴포넌트 외부로 이동 (매번 새로 생성 방지)
 const STATUS_PRIORITY = {
@@ -36,6 +41,10 @@ const getAlertsCountOptimized = (alerts: unknown): number => {
 interface ServerDashboardProps {
   /** 페이지네이션된 서버 목록 (DashboardClient에서 전달) */
   servers: Server[];
+  /** 전체 서버 목록 (query param focus 대응) */
+  allServers?: Server[];
+  /** URL query 기반 초기 포커스 서버 ID */
+  initialFocusServerId?: string | null;
   /** 전체 서버 수 (페이지네이션 계산용) */
   totalServers: number;
   /** 현재 페이지 */
@@ -63,6 +72,8 @@ interface ServerDashboardProps {
 
 export default function ServerDashboard({
   servers,
+  allServers,
+  initialFocusServerId,
   totalServers,
   currentPage,
   totalPages,
@@ -80,14 +91,56 @@ export default function ServerDashboard({
   // 🔧 Phase 4: useServerDashboard() 제거 - props로 데이터 받음
   // 모달 상태만 로컬로 관리
   const [selectedServer, setSelectedServer] = useState<Server | null>(null);
+  const consumedInitialFocusServerIdRef = useRef<string | null>(null);
 
-  const handleServerSelect = useCallback((server: Server) => {
-    setSelectedServer(server);
-  }, []);
+  const handleServerSelect = useCallback(
+    (server: Server) => {
+      // allServers(폴링 데이터)에는 structuredLogs가 없으므로
+      // SSR initial servers에서 merge한다.
+      if (!server.structuredLogs) {
+        const ssrServer = servers.find((s) => s.id === server.id);
+        if (ssrServer?.structuredLogs) {
+          setSelectedServer({
+            ...server,
+            structuredLogs: ssrServer.structuredLogs,
+          });
+          return;
+        }
+      }
+      setSelectedServer(server);
+    },
+    [servers]
+  );
 
   const handleModalClose = useCallback(() => {
     setSelectedServer(null);
   }, []);
+
+  const focusableServers = useMemo(
+    () => (allServers && allServers.length > 0 ? allServers : servers),
+    [allServers, servers]
+  );
+
+  useEffect(() => {
+    if (!initialFocusServerId) {
+      return;
+    }
+
+    if (consumedInitialFocusServerIdRef.current === initialFocusServerId) {
+      return;
+    }
+
+    const targetServer = focusableServers.find(
+      (server) => (server.id ?? server.name) === initialFocusServerId
+    );
+
+    if (!targetServer) {
+      return;
+    }
+
+    setSelectedServer(targetServer);
+    consumedInitialFocusServerIdRef.current = initialFocusServerId;
+  }, [focusableServers, initialFocusServerId]);
 
   // paginatedServers → servers (props)
   // onPageChange → onPageChange (props)

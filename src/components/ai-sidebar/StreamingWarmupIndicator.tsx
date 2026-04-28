@@ -22,16 +22,22 @@ export const StreamingWarmupIndicator = memo<StreamingWarmupIndicatorProps>(
     const [progress, setProgress] = useState(0);
     const [elapsed, setElapsed] = useState(0);
     const startTimeRef = useRef(Date.now());
+    const previousEstimatedWaitSecondsRef = useRef(estimatedWaitSeconds);
 
     useEffect(() => {
+      if (previousEstimatedWaitSecondsRef.current === estimatedWaitSeconds) {
+        return;
+      }
+
+      previousEstimatedWaitSecondsRef.current = estimatedWaitSeconds;
       startTimeRef.current = Date.now();
       setProgress(0);
       setElapsed(0);
-    }, []);
+    }, [estimatedWaitSeconds]);
 
     // Smooth progress: 빠르게 시작 → 느리게 마무리 (easeOutExpo 커브)
     useEffect(() => {
-      const estimatedMs = (estimatedWaitSeconds || 60) * 1000;
+      const estimatedMs = Math.max(1, estimatedWaitSeconds || 60) * 1000;
 
       const interval = setInterval(() => {
         const elapsedMs = Date.now() - startTimeRef.current;

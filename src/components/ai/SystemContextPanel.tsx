@@ -16,7 +16,10 @@ import { Activity, AlertCircle, Layout, RefreshCw, Server } from 'lucide-react';
 import { memo, useMemo } from 'react';
 import { AIDebugPanel } from '@/components/ai-sidebar/AIDebugPanel';
 import { AI_PROVIDERS, type AIProviderConfig } from '@/config/ai-providers';
-import { useHealthCheck } from '@/hooks/system/useHealthCheck';
+import {
+  type HealthStatus,
+  useHealthCheck,
+} from '@/hooks/system/useHealthCheck';
 import { formatTime } from '@/lib/format-date';
 
 /**
@@ -24,23 +27,26 @@ import { formatTime } from '@/lib/format-date';
  * @see config/ai-providers.ts
  */
 type AIProviderStatus = Pick<AIProviderConfig, 'name' | 'role' | 'color'> & {
-  status: 'active' | 'inactive' | 'error';
+  status: 'active' | 'configured' | 'error';
 };
 
 type SystemContextPanelProps = {
   className?: string;
+  finalProvider?: string;
 };
 
 const SystemContextPanel = memo(function SystemContextPanel({
   className = '',
+  finalProvider,
 }: SystemContextPanelProps) {
   // useHealthCheck 훅으로 통합 (10분 데이터 주기 기준으로 폴링 최소화)
   const {
     providers: healthProviders,
-    isSystemOnline,
+    status: healthStatus,
     lastChecked,
     isChecking,
     check,
+    error,
   } = useHealthCheck({
     pollingInterval: 600000, // 10분 (서버 데이터 갱신 주기 정렬)
     pauseWhenHidden: true,
@@ -53,15 +59,23 @@ const SystemContextPanel = memo(function SystemContextPanel({
       const healthProvider = healthProviders.find(
         (hp) => hp.name.toLowerCase() === configProvider.name.toLowerCase()
       );
+      const status: AIProviderStatus['status'] =
+        healthProvider?.status === 'active'
+          ? 'active'
+          : healthProvider?.status === 'error'
+            ? 'error'
+            : 'configured';
 
       return {
         name: configProvider.name,
         role: configProvider.role,
         color: configProvider.color,
-        status: healthProvider?.status ?? 'inactive',
+        status,
       };
     });
   }, [healthProviders]);
+
+  const activeProviderKey = finalProvider?.trim().toLowerCase() ?? '';
 
   const getStatusBadge = (status: AIProviderStatus['status']) => {
     switch (status) {
@@ -71,10 +85,10 @@ const SystemContextPanel = memo(function SystemContextPanel({
             Active
           </span>
         );
-      case 'inactive':
+      case 'configured':
         return (
-          <span className="rounded bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500">
-            Standby
+          <span className="rounded bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
+            Configured
           </span>
         );
       case 'error':
@@ -85,6 +99,41 @@ const SystemContextPanel = memo(function SystemContextPanel({
         );
     }
   };
+
+  const systemStatusConfig = useMemo(() => {
+    const configs: Record<
+      HealthStatus,
+      { label: string; className: string; description: string }
+    > = {
+      healthy: {
+        label: 'Online',
+        className: 'text-emerald-600',
+        description: 'AI Engine is responding normally.',
+      },
+      checking: {
+        label: 'Checking',
+        className: 'text-blue-600',
+        description: 'Health check in progress.',
+      },
+      degraded: {
+        label: 'Degraded',
+        className: 'text-amber-600',
+        description: 'Health endpoint responded but reported a degraded state.',
+      },
+      error: {
+        label: 'Error',
+        className: 'text-red-600',
+        description: error ?? 'Unable to reach the AI Engine health endpoint.',
+      },
+      unknown: {
+        label: 'Unknown',
+        className: 'text-gray-500',
+        description: 'No health result has been collected yet.',
+      },
+    };
+
+    return configs[healthStatus];
+  }, [error, healthStatus]);
 
   return (
     <div
@@ -100,7 +149,7 @@ const SystemContextPanel = memo(function SystemContextPanel({
           type="button"
           onClick={() => void check()}
           disabled={isChecking}
-          className="rounded p-1 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-600 disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-hidden"
+          className="inline-flex min-h-6 min-w-6 items-center justify-center rounded p-1 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-600 disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-hidden"
           title="새로고침"
         >
           <RefreshCw
@@ -113,27 +162,54 @@ const SystemContextPanel = memo(function SystemContextPanel({
         {/* AI Provider Status */}
         <div className="space-y-3">
           <h4 className="text-xs font-medium uppercase tracking-wider text-gray-500">
-            AI Providers
+            Provider Routing
           </h4>
           <div className="space-y-2.5 rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
-            {providers.map((provider) => (
-              <div
-                key={provider.name}
-                className="flex items-center justify-between"
-              >
-                <span className="flex items-center gap-2 text-sm text-gray-600">
-                  <span className={`h-2 w-2 rounded-full ${provider.color}`} />
-                  {provider.name}
-                  <span className="text-xs text-gray-400">
-                    ({provider.role})
+            {providers.map((provider) => {
+              const providerKey = provider.name.toLowerCase();
+              const isActiveProvider = activeProviderKey === providerKey;
+
+              return (
+                <div
+                  key={provider.name}
+                  className={`flex items-center justify-between rounded border px-2 py-1.5 ${
+                    isActiveProvider
+                      ? 'border-primary bg-primary text-primary-foreground'
+                      : 'border-transparent bg-white text-gray-600'
+                  }`}
+                  data-active-provider={String(isActiveProvider)}
+                  data-testid={`provider-chip-${providerKey}`}
+                >
+                  <span
+                    className={`flex items-center gap-2 text-sm ${
+                      isActiveProvider ? 'text-primary-foreground' : ''
+                    }`}
+                  >
+                    <span
+                      className={`h-2 w-2 rounded-full ${provider.color}`}
+                    />
+                    {provider.name}
+                    <span
+                      className={`text-xs ${
+                        isActiveProvider
+                          ? 'text-primary-foreground/80'
+                          : 'text-gray-400'
+                      }`}
+                    >
+                      ({provider.role})
+                    </span>
                   </span>
-                </span>
-                {getStatusBadge(provider.status)}
-              </div>
-            ))}
+                  {getStatusBadge(provider.status)}
+                </div>
+              );
+            })}
           </div>
+          <p className="text-xs text-gray-500">
+            표시 역할은 현재 라우팅 정책 기준이며, 실제 요청별 선택은 쿼리
+            유형과 fallback 상태에 따라 달라집니다.
+          </p>
           <p
-            className="text-right text-2xs text-gray-400"
+            className="text-right text-xs text-gray-400"
             suppressHydrationWarning
           >
             Updated: {formatTime(lastChecked)}
@@ -151,16 +227,20 @@ const SystemContextPanel = memo(function SystemContextPanel({
                 <Server className="h-3.5 w-3.5 text-blue-500" />
                 AI Engine
               </span>
-              {isSystemOnline ? (
-                <span className="text-sm font-bold text-emerald-600">
-                  Online
-                </span>
-              ) : (
-                <span className="flex items-center gap-1 text-sm font-bold text-amber-600">
+              <span
+                className={`flex items-center gap-1 text-sm font-bold ${systemStatusConfig.className}`}
+                data-status={healthStatus}
+                data-testid="ai-engine-health-badge"
+                title={systemStatusConfig.description}
+              >
+                {(healthStatus === 'error' || healthStatus === 'degraded') && (
                   <AlertCircle className="h-3.5 w-3.5" />
-                  Checking
-                </span>
-              )}
+                )}
+                {(healthStatus === 'checking' || isChecking) && (
+                  <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                )}
+                {systemStatusConfig.label}
+              </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-2 text-sm text-gray-600">
@@ -197,7 +277,7 @@ const SystemContextPanel = memo(function SystemContextPanel({
 
         {/* Debug Panel */}
         <div className="border-t border-gray-200 pt-4">
-          <AIDebugPanel />
+          <AIDebugPanel title="Manual Health Check" showStatus={false} />
         </div>
       </div>
     </div>

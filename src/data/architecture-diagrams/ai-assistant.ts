@@ -4,7 +4,7 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
   id: 'ai-assistant',
   title: 'Multi-Agent Architecture (AI SDK v6)',
   description:
-    'Vercel AI SDK v6 네이티브 ToolLoopAgent 기반 5-Agent 멀티 에이전트 + Evaluator-Optimizer 파이프라인. 4개 LLM 프로바이더 무료 한도 내 폴백 체인. GraphRAG + Tavily 하이브리드 검색.',
+    'Vercel AI SDK v6 네이티브 ToolLoopAgent 기반 5-Agent 멀티 에이전트 + Evaluator-Optimizer 파이프라인. 4개 LLM 프로바이더 무료 한도 내 폴백 체인. Knowledge Retrieval Lite + Tavily 하이브리드 검색.',
   layers: [
     {
       title: 'Client',
@@ -73,7 +73,7 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
         {
           id: 'advisor',
           label: 'Advisor Agent',
-          sublabel: 'Mistral + RAG',
+          sublabel: 'Groq/Cerebras + Knowledge Lite',
           type: 'secondary',
           icon: '💡',
         },
@@ -91,11 +91,11 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
       color: 'from-green-500 to-emerald-600',
       nodes: [
         {
-          id: 'graphrag',
-          label: 'GraphRAG',
-          sublabel: 'LlamaIndex + pgVector',
+          id: 'knowledgelite',
+          label: 'Knowledge Retrieval',
+          sublabel: 'BM25 + pgVector',
           type: 'secondary',
-          icon: '🦙',
+          icon: '🔍',
         },
         {
           id: 'websearch',
@@ -144,9 +144,9 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
     { from: 'orchestrator', to: 'vision', label: 'Handoff' },
     { from: 'nlq', to: 'otel-data', type: 'dashed' },
     { from: 'analyst', to: 'otel-data', type: 'dashed' },
-    { from: 'advisor', to: 'graphrag', type: 'dashed' },
+    { from: 'advisor', to: 'knowledgelite', type: 'dashed' },
     { from: 'nlq', to: 'websearch', type: 'dashed' },
-    { from: 'nlq', to: 'graphrag', type: 'dashed' },
+    { from: 'nlq', to: 'knowledgelite', type: 'dashed' },
     { from: 'reporter', to: 'otel-data', type: 'dashed' },
     { from: 'orchestrator', to: 'uimessagestream', label: 'Stream' },
     { from: 'uimessagestream', to: 'resumable', type: 'dashed' },

@@ -101,7 +101,7 @@ export class MetricsAggregator {
       .slice(0, 5)
       .map((m) => ({
         serverId: m.serverId,
-        instance: `${m.serverId}:9100`,
+        instance: m.serverId,
         serverType: m.serverType,
         value: m.cpu,
       }));
@@ -112,7 +112,7 @@ export class MetricsAggregator {
       .slice(0, 5)
       .map((m) => ({
         serverId: m.serverId,
-        instance: `${m.serverId}:9100`,
+        instance: m.serverId,
         serverType: m.serverType,
         value: m.memory,
       }));

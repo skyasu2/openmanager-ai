@@ -1,173 +1,47 @@
 /**
  * 🔐 Next.js Proxy - 라우트 보호 (Next.js 16+)
  *
- * 페이지별 접근 권한을 제어합니다.
- * Next.js 16에서 middleware → proxy로 명칭 변경됨.
- *
- * 📌 접근 권한 정책:
- * - 공개 페이지: `/`, `/main`, `/login`, `/auth/*`, `/api/*`
- * - 보호 페이지: `/dashboard/*`, `/system-boot/*` (GitHub 또는 게스트 로그인 필요)
- *
- * ⚠️ 개발 모드 (NEXT_PUBLIC_DEV_BYPASS_AUTH=true):
- * - 모든 페이지 접근 허용 (게스트/비로그인 포함)
- *
- * @see src/utils/supabase/middleware.ts - Supabase 세션 헬퍼
- * @see https://nextjs.org/docs/messages/middleware-to-proxy
+ * 로컬 dev에서는 인증 프록시 그래프를 건너뛰어 route compilation을 최소화한다.
+ * 운영/CI에서는 실제 auth proxy 구현을 동적 로드한다.
  */
 
 import { type NextRequest, NextResponse } from 'next/server';
-import {
-  AUTH_SESSION_ID_KEY,
-  GUEST_AUTH_PROOF_COOKIE_KEY,
-  getCookieValueFromHeader,
-} from '@/lib/auth/guest-session-utils';
-import { logger } from '@/lib/logging';
-import {
-  updateSession,
-  updateSessionWithAuth,
-} from '@/utils/supabase/middleware';
 
-// ============================================================================
-// 접근 권한 설정
-// ============================================================================
-
-/**
- * 공개 경로 (인증 불필요)
- * - 루트, 메인, 로그인, 인증 콜백, API
- */
-const PUBLIC_PATHS = [
-  '/',
-  '/main',
-  '/login',
-  '/auth',
-  '/api',
-  '/_next',
-  '/favicon.ico',
-  '/hourly-data', // 정적 데이터 파일
-];
-
-/**
- * 보호 경로 패턴 (GitHub 로그인 필요)
- * - 개발 완료 후 활성화 예정
- */
-const PROTECTED_PATH_PATTERNS = [
-  /^\/dashboard(\/.*)?$/,
-  /^\/system-boot(\/.*)?$/,
-];
-
-// ============================================================================
-// 헬퍼 함수
-// ============================================================================
-
-/**
- * 경로가 공개 경로인지 확인
- */
-function isPublicPath(pathname: string): boolean {
-  return PUBLIC_PATHS.some(
-    (path) => pathname === path || pathname.startsWith(`${path}/`)
-  );
+function readBooleanEnv(value: string | undefined): boolean | undefined {
+  if (value === undefined) return undefined;
+  if (value === 'true') return true;
+  if (value === 'false') return false;
+  return undefined;
 }
 
-/**
- * 경로가 보호 경로인지 확인
- */
-function isProtectedPath(pathname: string): boolean {
-  return PROTECTED_PATH_PATTERNS.some((pattern) => pattern.test(pathname));
-}
+function shouldBypassAuthProxyInDev(): boolean {
+  if (process.env.CI) return false;
 
-/**
- * 개발 모드 바이패스 확인
- *
- * 기본값 false (프로덕션 안전). 명시적 opt-in만 허용.
- */
-function isDevBypassEnabled(): boolean {
-  const envValue = process.env.NEXT_PUBLIC_DEV_BYPASS_AUTH;
-  if (envValue === 'true' || envValue === '1') {
-    return true;
-  }
-  return false;
-}
+  const explicitOverride =
+    readBooleanEnv(process.env.OPENMANAGER_DEV_AUTH_PROXY_BYPASS) ??
+    readBooleanEnv(process.env.NEXT_PUBLIC_DEV_BYPASS_AUTH);
 
-/**
- * 게스트 세션 여부 확인
- *
- * auth_session_id + guest_auth_proof 쿠키가 모두 존재하는지 확인합니다.
- * 실제 HMAC 서명 검증은 API 레이어(checkAPIAuth)에서 수행됩니다.
- * Proxy는 Edge Runtime 호환을 위해 쿠키 존재 여부만 게이트합니다.
- */
-function isGuestAuth(request: NextRequest): boolean {
-  const cookieHeader = request.headers.get('cookie') || '';
-  const sessionId = getCookieValueFromHeader(cookieHeader, AUTH_SESSION_ID_KEY);
-  const proof = getCookieValueFromHeader(
-    cookieHeader,
-    GUEST_AUTH_PROOF_COOKIE_KEY
-  );
-  return Boolean(sessionId) && Boolean(proof);
-}
-
-// ============================================================================
-// Proxy 메인 함수 (Next.js 16+)
-// ============================================================================
-
-export async function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  // 1. 개발 모드 바이패스 - 모든 접근 허용
-  if (isDevBypassEnabled()) {
-    // Supabase 세션 업데이트만 수행 (인증 체크 없음)
-    return updateSession(request);
+  if (explicitOverride !== undefined) {
+    return explicitOverride;
   }
 
-  // 2. 공개 경로 - 인증 불필요
-  if (isPublicPath(pathname)) {
-    return updateSession(request);
-  }
-
-  // 3. 보호 경로 - GitHub 로그인 확인
-  if (isProtectedPath(pathname)) {
-    // Supabase 세션 확인 (검증된 user 기준)
-    const response = NextResponse.next();
-    const { response: supabaseResponse, user } = await updateSessionWithAuth(
-      request,
-      response
-    );
-
-    // Supabase 권장: 쿠키 문자열이 아니라 검증된 사용자 존재 여부로 판별
-    const hasSession = Boolean(user);
-    const isGuest = isGuestAuth(request);
-
-    // 인증된 사용자만 허용 (GitHub OAuth 또는 게스트 세션)
-    if (!hasSession && !isGuest) {
-      logger.warn(
-        `[Proxy] Access denied: ${pathname} (hasSession: ${hasSession}, isGuest: ${isGuest})`
-      );
-
-      // 로그인 페이지로 리다이렉트 (원래 URL 저장)
-      const loginUrl = new URL('/login', request.url);
-      loginUrl.searchParams.set('redirectTo', pathname);
-      return NextResponse.redirect(loginUrl);
-    }
-
-    return supabaseResponse;
-  }
-
-  // 4. 기타 경로 - 기본 허용
-  return updateSession(request);
+  return process.env.NODE_ENV === 'development';
 }
 
-// ============================================================================
-// Proxy 설정
-// ============================================================================
+export async function proxy(request: NextRequest): Promise<NextResponse> {
+  // 로컬 dev에서는 기본적으로 auth proxy를 생략해 compile graph를 줄인다.
+  // 필요 시 OPENMANAGER_DEV_AUTH_PROXY_BYPASS=false 로 실제 auth proxy를 강제한다.
+  if (shouldBypassAuthProxyInDev()) {
+    return NextResponse.next();
+  }
 
+  const { handleAuthenticatedProxy } = await import('./proxy-auth');
+  return handleAuthenticatedProxy(request);
+}
+
+// config.matcher는 Next.js가 정적으로 분석하므로 리터럴 배열만 허용
 export const config = {
   matcher: [
-    /*
-     * 다음 경로 제외:
-     * - _next/static (정적 파일)
-     * - _next/image (이미지 최적화)
-     * - favicon.ico, sitemap.xml, robots.txt (메타데이터 파일)
-     * - 정적 에셋 (svg, png, jpg, jpeg, gif, webp, ico)
-     */
     '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
   ],
 };

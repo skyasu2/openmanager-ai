@@ -42,14 +42,31 @@ const STATUS_KO: Record<string, string> = {
   resolved: '🟢 해결됨',
 };
 
+function formatReportTimestamp(report: IncidentReport): Date {
+  return report.timestamp instanceof Date ? report.timestamp : new Date();
+}
+
+export function buildReportDownloadFilename(
+  report: IncidentReport,
+  format: 'md' | 'txt'
+): string {
+  const timestamp = formatReportTimestamp(report);
+  const year = timestamp.getUTCFullYear();
+  const month = String(timestamp.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(timestamp.getUTCDate()).padStart(2, '0');
+  const hours = String(timestamp.getUTCHours()).padStart(2, '0');
+  const minutes = String(timestamp.getUTCMinutes()).padStart(2, '0');
+  const seconds = String(timestamp.getUTCSeconds()).padStart(2, '0');
+
+  return `incident-${year}${month}${day}-${hours}${minutes}${seconds}.${format}`;
+}
+
 /**
  * 마크다운 형식 보고서 생성
  */
 export function formatReportAsMarkdown(report: IncidentReport): string {
-  const timestamp =
-    report.timestamp instanceof Date
-      ? report.timestamp.toLocaleString('ko-KR')
-      : new Date().toLocaleString('ko-KR');
+  const reportTimestamp = formatReportTimestamp(report);
+  const timestamp = reportTimestamp.toLocaleString('ko-KR');
   const reportId = report.id || `report-${Date.now()}`;
   const severityKo = SEVERITY_KO[report.severity] || report.severity;
   const statusKo = STATUS_KO[report.status] || report.status;
@@ -130,6 +147,24 @@ ${report.pattern}
 `
     : '';
 
+  const postmortemSection = report.postmortem
+    ? `## Postmortem
+
+### 타임라인
+
+${report.postmortem.timeline.length > 0 ? report.postmortem.timeline.map((entry) => `- ${entry}`).join('\n') : '- 타임라인 정보 없음'}
+
+### 원인 가설
+
+${report.postmortem.hypotheses.length > 0 ? report.postmortem.hypotheses.map((entry, index) => `${index + 1}. ${entry}`).join('\n') : '1. 원인 가설 정보 없음'}
+
+### 재발 방지
+
+${report.postmortem.prevention.length > 0 ? report.postmortem.prevention.map((entry) => `- [ ] ${entry}`).join('\n') : '- [ ] 재발 방지 대책 정보 없음'}
+
+`
+    : '';
+
   return `# 📋 ${report.title || '장애 보고서'}
 
 > **보고서 ID**: \`${reportId}\` | **생성 시각**: ${timestamp}
@@ -158,7 +193,7 @@ ${report.description}
 
 ${report.affectedServers.length > 0 ? report.affectedServers.map((s) => `- \`${s}\``).join('\n') : '- 없음'}
 
-${systemSummarySection}${timelineSection}${anomaliesSection}${buildDetectionSection(report)}${patternSection}${recommendationsSection}${buildResolutionSection(report)}${buildTopologyImpactSection(report)}---
+${systemSummarySection}${timelineSection}${anomaliesSection}${buildDetectionSection(report)}${patternSection}${recommendationsSection}${postmortemSection}${buildResolutionSection(report)}${buildTopologyImpactSection(report)}---
 
 ## 📎 부록
 
@@ -182,10 +217,7 @@ ${systemSummarySection}${timelineSection}${anomaliesSection}${buildDetectionSect
  * 텍스트 형식 보고서 생성
  */
 export function formatReportAsText(report: IncidentReport): string {
-  const timestamp =
-    report.timestamp instanceof Date
-      ? report.timestamp.toLocaleString('ko-KR')
-      : new Date().toLocaleString('ko-KR');
+  const timestamp = formatReportTimestamp(report).toLocaleString('ko-KR');
   const reportId = report.id || `report-${Date.now()}`;
   const titleText = report.title || '장애 보고서';
 
@@ -238,6 +270,20 @@ ${report.recommendations.map((r, i) => `${i + 1}. ${r.action}\n   - 우선순위
 `
       : '';
 
+  const postmortemTxt = report.postmortem
+    ? `Postmortem
+----------
+타임라인
+${report.postmortem.timeline.length > 0 ? report.postmortem.timeline.map((entry) => `- ${entry}`).join('\n') : '- 정보 없음'}
+
+원인 가설
+${report.postmortem.hypotheses.length > 0 ? report.postmortem.hypotheses.map((entry, index) => `${index + 1}. ${entry}`).join('\n') : '1. 정보 없음'}
+
+재발 방지
+${report.postmortem.prevention.length > 0 ? report.postmortem.prevention.map((entry) => `- [ ] ${entry}`).join('\n') : '- [ ] 정보 없음'}
+`
+    : '';
+
   return `${titleText}
 ${'='.repeat(titleText.length)}
 
@@ -256,7 +302,7 @@ ${report.description}
 ------------
 ${report.affectedServers.length > 0 ? report.affectedServers.join(', ') : '없음'}
 ${systemSummaryTxt}${timelineTxt}${anomaliesTxt}${buildDetectionSectionText(report)}${patternTxt}
-${recommendationsTxt}${buildResolutionSectionText(report)}${buildTopologyImpactSectionText(report)}
+${recommendationsTxt}${postmortemTxt}${buildResolutionSectionText(report)}${buildTopologyImpactSectionText(report)}
 ---
 자동 생성된 장애 보고서 - OpenManager AI v${APP_VERSION}
 문서 형식: ITIL Major Incident Report Template
@@ -285,7 +331,6 @@ export function downloadReport(
   report: IncidentReport,
   format: 'md' | 'txt'
 ): void {
-  const reportId = report.id || `report-${Date.now()}`;
   const content =
     format === 'md'
       ? formatReportAsMarkdown(report)
@@ -296,7 +341,7 @@ export function downloadReport(
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = `incident-report-${reportId.slice(0, 8)}.${format}`;
+  link.download = buildReportDownloadFilename(report, format);
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);

@@ -1,5 +1,6 @@
 'use client';
 
+import { useId } from 'react';
 import { formatPercentage } from '@/lib/utils';
 
 export interface UnifiedCircularGaugeProps {
@@ -73,8 +74,12 @@ export default function UnifiedCircularGauge({
   showRealTimeUpdates = false,
   className = '',
 }: UnifiedCircularGaugeProps) {
+  const svgIdBase = useId().replace(/:/g, '');
   const percentage = Math.max(0, Math.min(100, (value / max) * 100));
   const config = getMetricConfig(percentage, type);
+  const gradientId = `gradient-${svgIdBase}-${type}`;
+  const radialGradientId = `radial-gradient-${svgIdBase}-${type}`;
+  const shadowId = `shadow-${svgIdBase}-${type}`;
 
   // 변형별 크기 및 스타일 설정
   const variantConfig = {
@@ -121,20 +126,14 @@ export default function UnifiedCircularGauge({
         >
           <defs>
             {/* 그라데이션 정의 */}
-            <linearGradient
-              id={`gradient-${label}-${type}`}
-              x1="0%"
-              y1="0%"
-              x2="100%"
-              y2="100%"
-            >
+            <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor={config.color} stopOpacity="0.8" />
               <stop offset="100%" stopColor={config.color} stopOpacity="1" />
             </linearGradient>
 
             {/* 3D 효과용 방사형 그라데이션 */}
             {variant === 'modal-3d' && (
-              <radialGradient id={`radial-gradient-${label}-${type}`}>
+              <radialGradient id={radialGradientId}>
                 <stop offset="0%" stopColor={config.color} stopOpacity="0.3" />
                 <stop
                   offset="100%"
@@ -145,13 +144,7 @@ export default function UnifiedCircularGauge({
             )}
 
             {/* 그림자 효과 */}
-            <filter
-              id={`shadow-${label}-${type}`}
-              x="-50%"
-              y="-50%"
-              width="200%"
-              height="200%"
-            >
+            <filter id={shadowId} x="-50%" y="-50%" width="200%" height="200%">
               <feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.3" />
             </filter>
           </defs>
@@ -173,7 +166,7 @@ export default function UnifiedCircularGauge({
               cx={currentConfig.size / 2}
               cy={currentConfig.size / 2}
               r={radius - 10}
-              fill={`url(#radial-gradient-${label}-${type})`}
+              fill={`url(#${radialGradientId})`}
               className="opacity-20"
             />
           )}
@@ -184,18 +177,14 @@ export default function UnifiedCircularGauge({
             cy={currentConfig.size / 2}
             r={radius}
             stroke={
-              variant === 'modal-3d'
-                ? `url(#gradient-${label}-${type})`
-                : config.color
+              variant === 'modal-3d' ? `url(#${gradientId})` : config.color
             }
             strokeWidth={currentConfig.strokeWidth}
             fill="none"
             strokeLinecap="round"
             strokeDasharray={strokeDasharray}
             strokeDashoffset={strokeDashoffset}
-            filter={
-              variant !== 'card' ? `url(#shadow-${label}-${type})` : undefined
-            }
+            filter={variant !== 'card' ? `url(#${shadowId})` : undefined}
             className={
               showAnimation ? 'transition-all duration-1000 ease-out' : ''
             }

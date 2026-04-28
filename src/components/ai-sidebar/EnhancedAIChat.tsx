@@ -19,6 +19,7 @@ import {
   type EnhancedChatMessage,
   useAISidebarStore,
 } from '@/stores/useAISidebarStore';
+import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { SessionState } from '@/types/session';
 import { ChatInputArea } from './ChatInputArea';
 import { ChatMessageList } from './ChatMessageList';
@@ -84,6 +85,8 @@ interface EnhancedAIChatProps {
   onToggleWebSearch?: () => void;
   ragEnabled?: boolean;
   onToggleRAG?: () => void;
+  analysisMode?: AnalysisMode;
+  onSelectAnalysisMode?: (mode: AnalysisMode) => void;
   /** Cloud Run AI Engine 웜업 중 여부 */
   warmingUp?: boolean;
   /** 웜업 예상 대기 시간 (초) */
@@ -134,6 +137,8 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
   onToggleWebSearch,
   ragEnabled,
   onToggleRAG,
+  analysisMode,
+  onSelectAnalysisMode,
   warmingUp,
   estimatedWaitSeconds,
   queuedQueries,
@@ -162,6 +167,7 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
     handleSendInput,
     isGenerating,
     isLimitReached: sessionState?.isLimitReached,
+    shouldRestoreFocus: !clarification,
     messagesEndRef,
     limitedMessagesLength: limitedMessages.length,
   });
@@ -251,6 +257,7 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
         onSubmitCustomClarification &&
         onSkipClarification && (
           <ClarificationDialog
+            key={`${clarification.originalQuery}:${clarification.options[0]?.id ?? 'none'}`}
             clarification={clarification}
             onSelectOption={onSelectClarification}
             onSubmitCustom={onSubmitCustomClarification}
@@ -431,6 +438,8 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
         onToggleWebSearch={onToggleWebSearch}
         ragEnabled={ragEnabled}
         onToggleRAG={onToggleRAG}
+        analysisMode={analysisMode}
+        onSelectAnalysisMode={onSelectAnalysisMode}
       />
     </div>
   );

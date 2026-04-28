@@ -151,7 +151,9 @@ export function useLandingPageState() {
     multiUserStatus,
     navigateToDashboard,
     retryAuth,
-    shouldShowLoading: !authReady,
+    // 랜딩 최초 진입에서 full-screen loading -> Home 전환이 main 영역 CLS를 유발해
+    // 로딩 상태는 인라인 스켈레톤으로 흡수하고 전체 레이아웃 스왑은 피한다.
+    shouldShowLoading: false,
     shouldShowSystemStart,
     showGuestRestriction,
     statusInfo,

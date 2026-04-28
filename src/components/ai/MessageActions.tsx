@@ -1,7 +1,7 @@
 'use client';
 
 import { Check, Copy, RefreshCw, ThumbsDown, ThumbsUp } from 'lucide-react';
-import { memo, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { logger } from '@/lib/logging';
 
 interface MessageActionsProps {
@@ -41,12 +41,29 @@ export const MessageActions = memo(function MessageActions({
     null
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const copyResetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
+
+  useEffect(() => {
+    return () => {
+      if (copyResetTimeoutRef.current) {
+        clearTimeout(copyResetTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(content);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      if (copyResetTimeoutRef.current) {
+        clearTimeout(copyResetTimeoutRef.current);
+      }
+      copyResetTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+        copyResetTimeoutRef.current = null;
+      }, 2000);
     } catch (error) {
       logger.error('Failed to copy:', error);
     }
@@ -54,19 +71,19 @@ export const MessageActions = memo(function MessageActions({
 
   const handleFeedback = async (type: 'positive' | 'negative') => {
     if (isSubmitting) return;
-    if (feedback === type) {
-      setFeedback(null);
-    } else {
-      setFeedback(type);
-      setIsSubmitting(true);
-      try {
-        const result = await onFeedback?.(messageId, type, traceId);
-        if (result === false) {
-          setFeedback(null);
-        }
-      } finally {
-        setIsSubmitting(false);
+    if (feedback !== null) {
+      return;
+    }
+
+    setFeedback(type);
+    setIsSubmitting(true);
+    try {
+      const result = await onFeedback?.(messageId, type, traceId);
+      if (result === false) {
+        setFeedback(null);
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -75,6 +92,7 @@ export const MessageActions = memo(function MessageActions({
   };
 
   const isAssistant = role === 'assistant';
+  const feedbackLocked = feedback !== null;
 
   return (
     <div
@@ -84,7 +102,7 @@ export const MessageActions = memo(function MessageActions({
       <button
         type="button"
         onClick={handleCopy}
-        className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+        className="flex min-h-6 min-w-6 items-center gap-1 rounded-md px-2 py-1 text-xs text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
         title="메시지 복사"
       >
         {copied ? (
@@ -109,8 +127,8 @@ export const MessageActions = memo(function MessageActions({
           <button
             type="button"
             onClick={() => handleFeedback('positive')}
-            disabled={isSubmitting}
-            className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 ${
+            disabled={isSubmitting || feedbackLocked}
+            className={`flex min-h-6 min-w-6 items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-1 ${
               feedback === 'positive'
                 ? 'bg-green-100 text-green-600'
                 : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
@@ -124,8 +142,8 @@ export const MessageActions = memo(function MessageActions({
           <button
             type="button"
             onClick={() => handleFeedback('negative')}
-            disabled={isSubmitting}
-            className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-1 ${
+            disabled={isSubmitting || feedbackLocked}
+            className={`flex min-h-6 min-w-6 items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-1 ${
               feedback === 'negative'
                 ? 'bg-red-100 text-red-600'
                 : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
@@ -142,7 +160,7 @@ export const MessageActions = memo(function MessageActions({
               <button
                 type="button"
                 onClick={handleRegenerate}
-                className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+                className="flex min-h-6 min-w-6 items-center gap-1 rounded-md px-2 py-1 text-xs text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                 title="다시 생성"
               >
                 <RefreshCw className="h-3.5 w-3.5" />

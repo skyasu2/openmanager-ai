@@ -29,6 +29,8 @@ const BasicTyping: FC<BasicTypingProps> = ({
   cursorColor = '#3b82f6',
   delay = 0,
 }) => {
+  const safeText = text ?? '';
+  const typingSteps = Math.max(safeText.length, 1);
   const speedMap = {
     slow: '4s',
     normal: '3s',
@@ -39,7 +41,7 @@ const BasicTyping: FC<BasicTypingProps> = ({
 
   return (
     <div className={`typing-container ${className}`}>
-      <span className="typing-text">{text}</span>
+      <span className="typing-text">{safeText}</span>
 
       <style jsx>{`
         .typing-container {
@@ -54,7 +56,7 @@ const BasicTyping: FC<BasicTypingProps> = ({
           white-space: nowrap;
           margin: 0;
           width: 0;
-          animation: typing ${speedMap[speed]} steps(${text.length}, end)
+          animation: typing ${speedMap[speed]} steps(${typingSteps}, end)
             ${animationDelay} forwards
             ${
               showCursor

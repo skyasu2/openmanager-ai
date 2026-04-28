@@ -12,6 +12,9 @@ venv/
 !.yarn/versions
 *.log
 
+# npm cache (--cache .npm 옵션으로 생성, CI 재사용용)
+.npm/
+
 # Testing
 /coverage
 /test-results/
@@ -155,7 +158,13 @@ combined.log
 ai-combined.log
 # Codex CLI runtime (secrets, sessions, snapshots, tmp)
 .codex/
-.gemini/
+# Gemini CLI runtime (auth, history, state)
+.gemini/state.json
+.gemini/history/
+.gemini/tmp/
+# Gemini-only project skills are trackable overlays.
+!.gemini/skills/
+!.gemini/skills/**
 # temporary files
 *~
 *.tmp
@@ -199,8 +208,10 @@ next-env.d.ts
 # cursor IDE configuration (contains sensitive data)
 .cursor/
 
-# 🔐 MCP 민감한 정보 포함 파일들 (GitHub 완전 차단)
-.mcp.json
+# 🔐 MCP 설정
+# Claude Code의 project-scoped .mcp.json은 공식 공유 설정 파일로 사용하되,
+# 시크릿은 env/wrapper로만 주입한다. 백업/로컬 변형은 계속 차단.
+!.mcp.json
 .mcp.json.backup*
 *.mcp.json.backup
 .claude/mcp.json
@@ -458,6 +469,8 @@ eslint-result.json
 archive/
 !docs/archive/
 !docs/archive/**
+!supabase/archive/
+!supabase/archive/**
 !reports/planning/archive/
 !reports/planning/archive/**
 docs/.backup/
@@ -553,3 +566,6 @@ cloud-run/docker-compose.override.yml
 
 # Storybook
 storybook-static/
+
+# Planning tmp/ — local-only scratch files, not committed
+reports/planning/tmp/

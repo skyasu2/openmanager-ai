@@ -11,11 +11,21 @@ import {
   TransformStream as NodeTransformStream,
   WritableStream as NodeWritableStream,
 } from 'node:stream/web';
+import '@testing-library/jest-dom/vitest';
+import React from 'react';
 import { vi } from 'vitest';
 import {
   createSupabaseMock,
   SupabaseMockBuilder,
 } from './helpers/supabase-mock';
+
+// Some jsdom-annotated UI tests still run through the node wrapper config.
+// Keep a React global available so classic JSX transforms do not fail in that path.
+globalThis.React = React;
+
+if (typeof window !== 'undefined') {
+  window.React = React;
+}
 
 if (typeof globalThis.ReadableStream === 'undefined') {
   Object.defineProperty(globalThis, 'ReadableStream', {

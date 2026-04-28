@@ -54,6 +54,7 @@ const envSchema = z.object({
     .transform((val) => val === 'true')
     .optional(),
   CLOUD_RUN_API_SECRET: z.string().min(1).optional(),
+  AI_JOB_TRIGGER_MODE: z.enum(['direct', 'cloud-tasks']).optional(),
 
   // GitHub
   GITHUB_CLIENT_ID: z.string().min(1).optional(),

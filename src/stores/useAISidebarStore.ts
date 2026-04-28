@@ -14,6 +14,11 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import { useShallow } from 'zustand/react/shallow';
+import type { AnalysisMode } from '@/types/ai/analysis-mode';
+import type {
+  AnalysisFeatureStatus,
+  RetrievalMetadata,
+} from '@/types/ai/retrieval-status';
 
 // AI Thinking Step 타입 import (ai-sidebar에서 제공)
 import type { AIThinkingStep } from '../types/ai-sidebar';
@@ -32,7 +37,7 @@ export interface AgentLog {
  * AI 응답의 투명성을 위해 분석 근거 정보를 제공
  */
 export interface AnalysisBasis {
-  /** 데이터 소스 설명 (예: "15개 서버 실시간 데이터") */
+  /** 데이터 소스 설명 (예: "18개 서버 실시간 데이터") */
   dataSource: string;
   /** AI 엔진 (예: "Cloud Run AI", "Fallback", "Streaming") */
   engine: string;
@@ -52,6 +57,12 @@ export interface AnalysisBasis {
     category?: string;
     url?: string;
   }>;
+  /** Retrieval execution contract from Cloud Run AI Engine */
+  retrieval?: RetrievalMetadata;
+  /** UI-facing status split: enabled vs used vs suppressed vs unavailable */
+  featureStatus?: AnalysisFeatureStatus;
+  /** 사용자가 선택한 분석 강도 모드 */
+  analysisMode?: AnalysisMode;
 }
 
 export interface ToolResultSummary {
@@ -76,6 +87,9 @@ export interface ChatMessage {
   engine?: string;
   metadata?: {
     processingTime?: number;
+    latencyTier?: 'fast' | 'normal' | 'slow' | 'very_slow';
+    resolvedMode?: 'single' | 'multi';
+    modeSelectionSource?: string;
     confidence?: number;
     error?: string;
     /** Langfuse trace ID for feedback scoring */
@@ -112,6 +126,17 @@ export interface SidebarAIResponse {
 export interface ChatHookOptions {
   autoScroll?: boolean;
   maxMessages?: number;
+}
+
+export type AIEntryTarget = 'sidebar' | 'fullscreen' | 'any';
+
+export type AIEntryFunction = 'chat' | 'auto-report' | 'intelligent-monitoring';
+
+export interface PendingAIEntryState {
+  draft?: string;
+  selectedFunction?: AIEntryFunction;
+  analysisMode?: AnalysisMode;
+  target?: AIEntryTarget;
 }
 
 // 🔧 타입 정의
@@ -212,17 +237,22 @@ interface AISidebarState {
   sidebarWidth: number;
   /** 외부 UI 액션에서 주입하는 입력 초안 */
   pendingPrefillMessage: string | null;
+  /** surface 전환 또는 외부 진입 시 1회 소비할 상태 */
+  pendingEntryState: PendingAIEntryState | null;
 
   // 채팅 관련 상태
   messages: EnhancedChatMessage[];
   sessionId: string;
   // currentEngine 제거 - v4.0: AI 모드 자동 선택으로 불필요
 
-  // 웹 검색 토글
+  // 웹 검색 source mode. false=Auto, true=On.
   webSearchEnabled: boolean;
 
-  // RAG (Knowledge Base) 토글
+  // RAG (Knowledge Base) source mode. false=Auto, true=On.
   ragEnabled: boolean;
+
+  // 분석 강도 모드
+  analysisMode: AnalysisMode;
 
   // 대화 복원 배너 닫힘 상태 (탭 전환 시 재노출 방지)
   restoreBannerDismissed: boolean;
@@ -235,11 +265,18 @@ interface AISidebarState {
   setOpen: (open: boolean) => void;
   openWithPrefill: (message: string) => void;
   consumePendingPrefillMessage: () => string | null;
+  queuePendingEntryState: (entry: PendingAIEntryState) => void;
+  consumePendingEntryState: (
+    target?: AIEntryTarget
+  ) => PendingAIEntryState | null;
   setMinimized: (minimized: boolean) => void;
   toggleSidebar: () => void;
   setSidebarWidth: (width: number) => void;
-  setWebSearchEnabled: (enabled: boolean) => void;
-  setRagEnabled: (enabled: boolean) => void;
+  setWebSearchEnabled: (
+    enabled: boolean | ((prev: boolean) => boolean)
+  ) => void;
+  setRagEnabled: (enabled: boolean | ((prev: boolean) => boolean)) => void;
+  setAnalysisMode: (mode: AnalysisMode) => void;
   dismissRestoreBanner: () => void;
   resetRestoreBanner: () => void;
   setActiveTab: (
@@ -252,6 +289,10 @@ interface AISidebarState {
 
   // 채팅 관련 액션들
   addMessage: (message: EnhancedChatMessage) => void;
+  syncChatSnapshot: (
+    messages: EnhancedChatMessage[],
+    sessionId: string
+  ) => void;
   updateMessage: (
     messageId: string,
     updates: Partial<EnhancedChatMessage>
@@ -271,10 +312,12 @@ export const useAISidebarStore = create<AISidebarState>()(
         isOpen: false,
         isMinimized: false,
         activeTab: 'chat',
-        sidebarWidth: 600, // 기본 너비 600px
+        sidebarWidth: 680, // 기본 너비 680px
         pendingPrefillMessage: null,
+        pendingEntryState: null,
         webSearchEnabled: false,
         ragEnabled: false,
+        analysisMode: 'auto',
         restoreBannerDismissed: false,
         functionTab: 'qa',
         selectedContext: 'basic',
@@ -298,12 +341,49 @@ export const useAISidebarStore = create<AISidebarState>()(
             isMinimized: false,
             activeTab: 'chat',
             pendingPrefillMessage: message,
+            pendingEntryState: {
+              draft: message,
+              selectedFunction: 'chat',
+              target: 'sidebar',
+            },
           }),
 
         consumePendingPrefillMessage: () => {
-          const message = get().pendingPrefillMessage;
-          set({ pendingPrefillMessage: null });
+          const { pendingPrefillMessage, pendingEntryState } = get();
+          const message = pendingEntryState?.draft ?? pendingPrefillMessage;
+          set({
+            pendingPrefillMessage: null,
+            pendingEntryState: null,
+          });
           return message;
+        },
+
+        queuePendingEntryState: (entry) =>
+          set({
+            pendingEntryState: entry,
+            pendingPrefillMessage: entry.draft ?? null,
+          }),
+
+        consumePendingEntryState: (target = 'any') => {
+          const entry = get().pendingEntryState;
+          if (!entry) {
+            return null;
+          }
+
+          const entryTarget = entry.target ?? 'any';
+          const shouldConsume =
+            target === 'any' || entryTarget === 'any' || entryTarget === target;
+
+          if (!shouldConsume) {
+            return null;
+          }
+
+          set({
+            pendingEntryState: null,
+            pendingPrefillMessage: null,
+          });
+
+          return entry;
         },
 
         setMinimized: (minimized) => set({ isMinimized: minimized }),
@@ -312,9 +392,23 @@ export const useAISidebarStore = create<AISidebarState>()(
 
         setSidebarWidth: (width) => set({ sidebarWidth: width }),
 
-        setWebSearchEnabled: (enabled) => set({ webSearchEnabled: enabled }),
+        setWebSearchEnabled: (enabled) =>
+          set((state) => ({
+            webSearchEnabled:
+              typeof enabled === 'function'
+                ? enabled(state.webSearchEnabled)
+                : enabled,
+          })),
 
-        setRagEnabled: (enabled) => set({ ragEnabled: enabled }),
+        setRagEnabled: (enabled) =>
+          set((state) => ({
+            ragEnabled:
+              typeof enabled === 'function'
+                ? enabled(state.ragEnabled)
+                : enabled,
+          })),
+
+        setAnalysisMode: (mode) => set({ analysisMode: mode }),
 
         dismissRestoreBanner: () => set({ restoreBannerDismissed: true }),
         resetRestoreBanner: () => set({ restoreBannerDismissed: false }),
@@ -333,6 +427,12 @@ export const useAISidebarStore = create<AISidebarState>()(
             ), // SESSION_LIMITS 상수 사용 (50개, 보안 강화)
           })),
 
+        syncChatSnapshot: (messages, sessionId) =>
+          set({
+            messages: messages.slice(-SESSION_LIMITS.MESSAGE_LIMIT),
+            sessionId,
+          }),
+
         updateMessage: (messageId, updates) =>
           set((state) => ({
             messages: state.messages.map((msg) =>
@@ -349,10 +449,12 @@ export const useAISidebarStore = create<AISidebarState>()(
             isOpen: false,
             isMinimized: false,
             activeTab: 'chat',
-            sidebarWidth: 600, // 기본 너비로 리셋
+            sidebarWidth: 680, // 기본 너비로 리셋
             pendingPrefillMessage: null,
+            pendingEntryState: null,
             webSearchEnabled: false,
             ragEnabled: false,
+            analysisMode: 'auto',
             restoreBannerDismissed: false,
             functionTab: 'qa',
             selectedContext: 'basic',
@@ -373,6 +475,7 @@ export const useAISidebarStore = create<AISidebarState>()(
           sidebarWidth: state.sidebarWidth, // 사이드바 너비 영속화
           webSearchEnabled: state.webSearchEnabled,
           ragEnabled: state.ragEnabled,
+          analysisMode: state.analysisMode,
           restoreBannerDismissed: state.restoreBannerDismissed,
           functionTab: state.functionTab,
           selectedContext: state.selectedContext,

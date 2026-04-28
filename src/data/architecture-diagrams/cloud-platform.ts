@@ -91,7 +91,7 @@ export const CLOUD_PLATFORM_ARCHITECTURE: ArchitectureDiagram = {
     { from: 'gitlab', to: 'vercel', label: 'Auto Deploy' },
     { from: 'vercel', to: 'supabase', label: 'Query' },
     { from: 'vercel', to: 'cloudrun', label: 'AI Proxy' },
-    { from: 'cloudrun', to: 'supabase', label: 'GraphRAG' },
+    { from: 'cloudrun', to: 'supabase', label: 'Knowledge Retrieval' },
     { from: 'vercel', to: 'upstash', label: 'Cache' },
     { from: 'cloudrun', to: 'upstash', label: 'Cache' },
   ],

@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { memo, Suspense, useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { useDashboardStats } from '@/hooks/dashboard/useDashboardStats';
 import { useMonitoringReport } from '@/hooks/dashboard/useMonitoringReport';
 import type {
@@ -20,7 +20,6 @@ import {
 } from './alert-ai-context';
 import { DashboardSummary } from './DashboardSummary';
 import { resolveDashboardEmptyState } from './dashboard-empty-state';
-import ServerDashboard from './ServerDashboard';
 import { SystemOverviewSection } from './SystemOverviewSection';
 import type { DashboardStats } from './types/dashboard.types';
 
@@ -47,6 +46,18 @@ const TopologyModal = dynamic(
   () => import('./TopologyModal').then((mod) => mod.TopologyModal),
   { ssr: false }
 );
+const ServerDashboard = dynamic(() => import('./ServerDashboard'), {
+  ssr: false,
+  loading: () => (
+    <div className="rounded-xl border border-white/10 bg-white/5 p-6 shadow-lg backdrop-blur-md">
+      <div className="animate-pulse space-y-4">
+        <div className="h-4 rounded bg-white/10" />
+        <div className="h-4 rounded bg-white/10" />
+        <div className="h-4 w-5/6 rounded bg-white/10" />
+      </div>
+    </div>
+  ),
+});
 
 interface DashboardStatus {
   isRunning?: boolean;
@@ -67,6 +78,8 @@ interface DashboardContentProps {
   servers: Server[];
   /** 전체 서버 목록 (통계 계산용) */
   allServers?: Server[];
+  /** URL query 기반 초기 포커스 서버 ID */
+  initialFocusServerId?: string | null;
   /** 현재 synthetic OTel 데이터 슬롯 메타데이터 */
   dataSlotInfo?: DashboardTimeInfo;
   /** 현재 synthetic OTel 데이터 소스 메타데이터 */
@@ -98,6 +111,7 @@ export default memo(function DashboardContent({
   showSequentialGeneration,
   servers,
   allServers,
+  initialFocusServerId,
   dataSlotInfo,
   dataSourceInfo,
   totalServers,
@@ -220,7 +234,7 @@ export default memo(function DashboardContent({
   useEffect(() => {
     debug.log('✅ DashboardContent 마운트됨');
     // 🎯 상위 컴포넌트에 통계 업데이트 전달 (ref 사용으로 무한 루프 방지)
-    if (onStatsUpdateRef.current && serverStats.total > 0) {
+    if (onStatsUpdateRef.current) {
       onStatsUpdateRef.current(serverStats);
     }
   }, [serverStats]);
@@ -284,39 +298,26 @@ export default memo(function DashboardContent({
               onAskAIAboutAlert={onAskAIAboutAlert}
             />
 
-            {/* 서버 카드 목록 */}
-            <Suspense
-              fallback={
-                <div className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-md p-6 shadow-lg">
-                  <div className="animate-pulse">
-                    <div className="mb-4 h-4 rounded bg-white/10"></div>
-                    <div className="mb-4 h-4 rounded bg-white/10"></div>
-                    <div className="h-4 w-5/6 rounded bg-white/10"></div>
-                  </div>
-                </div>
-              }
-            >
-              {/* 🔧 Phase 4 (2026-01-28): Props 기반 데이터 흐름
-                    - DashboardClient → DashboardContent → ServerDashboard로 전달
-                    - 중복 fetch 제거 (useServerDashboard 호출 1회로 최적화) */}
-              <ServerDashboard
-                servers={servers}
-                totalServers={totalServers}
-                currentPage={currentPage}
-                totalPages={totalPages}
-                pageSize={pageSize}
-                onPageChange={onPageChange}
-                onPageSizeChange={onPageSizeChange}
-                onStatsUpdate={onStatsUpdate}
-                onAskAI={onAskAIAboutAlert ? handleAskAIAboutServer : undefined}
-              />
-            </Suspense>
+            {/* 🔧 Phase 4 (2026-01-28): Props 기반 데이터 흐름
+                  - DashboardClient → DashboardContent → ServerDashboard로 전달
+                  - 중복 fetch 제거 (useServerDashboard 호출 1회로 최적화)
+                  - ServerDashboard 그래프는 client-only lazy chunk로 분리 */}
+            <ServerDashboard
+              servers={servers}
+              allServers={allServers}
+              initialFocusServerId={initialFocusServerId}
+              totalServers={totalServers}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              pageSize={pageSize}
+              onPageChange={onPageChange}
+              onPageSizeChange={onPageSizeChange}
+              onStatsUpdate={onStatsUpdate}
+              onAskAI={onAskAIAboutAlert ? handleAskAIAboutServer : undefined}
+            />
           </>
         ) : (
-          <div
-            role="status"
-            className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg"
-          >
+          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg">
             <div className="text-center text-gray-500">
               {emptyStateMode === 'filtered-empty' ? (
                 <>

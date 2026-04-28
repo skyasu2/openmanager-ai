@@ -23,7 +23,10 @@ import type { SupervisorDeviceType } from '@/lib/ai/supervisor/request-contracts
 import type { NormalizedMessage } from '@/lib/ai/utils/message-normalizer';
 import { proxyToCloudRun } from '@/lib/ai-proxy/proxy';
 import { logger } from '@/lib/logging';
+import { RATE_LIMIT_IDENTITY_HEADER } from '@/lib/security/rate-limit-identity';
 import { getTraceId } from '@/lib/tracing/async-context';
+import type { AnalysisMode } from '@/types/ai/analysis-mode';
+import { applyLegacySupervisorRouteHeaders } from './route-contract';
 import { cloudRunResponseSchema } from './schemas';
 
 interface CloudRunHandlerParams {
@@ -40,6 +43,8 @@ interface CloudRunHandlerParams {
   deviceType?: SupervisorDeviceType;
   enableWebSearch?: boolean;
   enableRAG?: boolean;
+  analysisMode?: AnalysisMode;
+  rateLimitIdentity?: string;
 }
 
 /**
@@ -61,6 +66,8 @@ export async function handleCloudRunStream(
     deviceType,
     enableWebSearch,
     enableRAG,
+    analysisMode,
+    rateLimitIdentity,
   } = params;
 
   // 🎯 W3C Trace Context: traceId from AsyncLocalStorage + traceparent 생성
@@ -96,6 +103,7 @@ export async function handleCloudRunStream(
           deviceType,
           enableWebSearch,
           enableRAG,
+          analysisMode,
         },
         timeout: dynamicTimeout,
         endpoint: 'supervisor',
@@ -103,8 +111,13 @@ export async function handleCloudRunStream(
           ? {
               [TRACEPARENT_HEADER]: traceparentValue,
               [observability.traceIdHeader]: traceId,
+              ...(rateLimitIdentity
+                ? { [RATE_LIMIT_IDENTITY_HEADER]: rateLimitIdentity }
+                : {}),
             }
-          : undefined,
+          : rateLimitIdentity
+            ? { [RATE_LIMIT_IDENTITY_HEADER]: rateLimitIdentity }
+            : undefined,
       });
 
       if (!proxyResult.success || !proxyResult.data) {
@@ -130,27 +143,33 @@ export async function handleCloudRunStream(
           ).catch((err) => logger.warn('[Supervisor] Cache set failed:', err));
         }
 
-        return new NextResponse(data.response, {
-          headers: {
-            'Content-Type': 'text/plain; charset=utf-8',
-            'Cache-Control': 'no-cache',
-            'X-Session-Id': sessionId,
-            'X-Backend': 'cloud-run',
-            'X-Cache': 'MISS',
-            ...baseHeaders,
-          },
-        });
+        return applyLegacySupervisorRouteHeaders(
+          new NextResponse(data.response, {
+            headers: {
+              'Content-Type': 'text/plain; charset=utf-8',
+              'Cache-Control': 'no-cache',
+              'X-Session-Id': sessionId,
+              'X-Backend': 'cloud-run',
+              'X-Cache': 'MISS',
+              ...baseHeaders,
+            },
+          }),
+          'text'
+        );
       } else if (data.error) {
         const errorMessage = `⚠️ AI 오류: ${data.error}`;
         logger.warn(`[CloudRun/Stream] Error response: ${data.error}`);
-        return new NextResponse(errorMessage, {
-          headers: {
-            'Content-Type': 'text/plain; charset=utf-8',
-            'X-Session-Id': sessionId,
-            'X-Backend': 'cloud-run',
-            ...baseHeaders,
-          },
-        });
+        return applyLegacySupervisorRouteHeaders(
+          new NextResponse(errorMessage, {
+            headers: {
+              'Content-Type': 'text/plain; charset=utf-8',
+              'X-Session-Id': sessionId,
+              'X-Backend': 'cloud-run',
+              ...baseHeaders,
+            },
+          }),
+          'text'
+        );
       }
 
       throw new Error('Invalid response from Cloud Run');
@@ -163,17 +182,20 @@ export async function handleCloudRunStream(
 
       logger.info(`⚠️ [CloudRun/Stream] Fallback triggered`);
 
-      return new NextResponse(fallbackText, {
-        headers: {
-          'Content-Type': 'text/plain; charset=utf-8',
-          'Cache-Control': 'no-store, no-cache, must-revalidate',
-          'X-Session-Id': sessionId,
-          'X-Backend': 'fallback',
-          'X-Fallback-Response': 'true',
-          'X-Retry-After': '30000',
-          ...baseHeaders,
-        },
-      });
+      return applyLegacySupervisorRouteHeaders(
+        new NextResponse(fallbackText, {
+          headers: {
+            'Content-Type': 'text/plain; charset=utf-8',
+            'Cache-Control': 'no-store, no-cache, must-revalidate',
+            'X-Session-Id': sessionId,
+            'X-Backend': 'fallback',
+            'X-Fallback-Response': 'true',
+            'X-Retry-After': '30000',
+            ...baseHeaders,
+          },
+        }),
+        'text'
+      );
     }
   );
 
@@ -205,6 +227,8 @@ export async function handleCloudRunJson(
     deviceType,
     enableWebSearch,
     enableRAG,
+    analysisMode,
+    rateLimitIdentity,
   } = params;
 
   // 🎯 W3C Trace Context: traceId from AsyncLocalStorage + traceparent 생성
@@ -240,6 +264,7 @@ export async function handleCloudRunJson(
           deviceType,
           enableWebSearch,
           enableRAG,
+          analysisMode,
         },
         timeout: dynamicTimeout,
         endpoint: 'supervisor',
@@ -247,8 +272,13 @@ export async function handleCloudRunJson(
           ? {
               [TRACEPARENT_HEADER]: traceparentValue,
               [observability.traceIdHeader]: traceId,
+              ...(rateLimitIdentity
+                ? { [RATE_LIMIT_IDENTITY_HEADER]: rateLimitIdentity }
+                : {}),
             }
-          : undefined,
+          : rateLimitIdentity
+            ? { [RATE_LIMIT_IDENTITY_HEADER]: rateLimitIdentity }
+            : undefined,
       });
 
       if (!proxyResult.success || !proxyResult.data) {
@@ -283,15 +313,18 @@ export async function handleCloudRunJson(
     logger.info(
       `⚠️ [Supervisor] Using fallback response (json mode, trace: ${traceId})`
     );
-    return NextResponse.json(result.data, {
-      headers: {
-        'Cache-Control': 'no-store, no-cache, must-revalidate',
-        'X-Session-Id': sessionId,
-        'X-Fallback-Response': 'true',
-        'X-Retry-After': '30000',
-        ...baseHeaders,
-      },
-    });
+    return applyLegacySupervisorRouteHeaders(
+      NextResponse.json(result.data, {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate',
+          'X-Session-Id': sessionId,
+          'X-Fallback-Response': 'true',
+          'X-Retry-After': '30000',
+          ...baseHeaders,
+        },
+      }),
+      'json'
+    );
   }
 
   if (!skipCache && result.data) {
@@ -309,11 +342,14 @@ export async function handleCloudRunJson(
     }
   }
 
-  return NextResponse.json(result.data, {
-    headers: {
-      'X-Session-Id': sessionId,
-      'X-Cache': 'MISS',
-      ...baseHeaders,
-    },
-  });
+  return applyLegacySupervisorRouteHeaders(
+    NextResponse.json(result.data, {
+      headers: {
+        'X-Session-Id': sessionId,
+        'X-Cache': 'MISS',
+        ...baseHeaders,
+      },
+    }),
+    'json'
+  );
 }

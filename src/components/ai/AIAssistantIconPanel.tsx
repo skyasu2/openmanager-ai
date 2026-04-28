@@ -15,13 +15,7 @@
 
 'use client';
 
-import {
-  Brain,
-  FileText,
-  Maximize,
-  MessageSquare,
-  Monitor,
-} from 'lucide-react';
+import { FileText, Maximize2, MessageSquare, Monitor } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { type ComponentType, memo, useCallback } from 'react';
 
@@ -35,47 +29,35 @@ interface AIAssistantIcon {
   icon: ComponentType<{ className?: string }>;
   label: string;
   description: string;
-  color: string;
-  bgColor: string;
-  gradient: string;
 }
 
-// 🎯 간소화된 AI 기능 메뉴 - AI 사고 제거, 순서 조정
-// 🎨 화이트 모드 전환 (2025-12 업데이트)
+// 기능 전환 메뉴는 engine 상태와 분리된 navigation surface로 유지한다.
 const AI_ASSISTANT_ICONS: AIAssistantIcon[] = [
-  // === 핵심 기능 (상단) ===
   {
     id: 'chat',
     icon: MessageSquare,
     label: 'AI Chat',
-    description: '💬 서버 질의 + 트러블슈팅 + 명령어 추천',
-    color: 'text-blue-600',
-    bgColor: 'bg-blue-50 hover:bg-blue-100',
-    gradient: 'from-blue-500 to-cyan-500',
+    description: '서버 질의, 트러블슈팅, 명령어 추천',
   },
   {
     id: 'auto-report',
     icon: FileText,
     label: '자동장애 보고서',
-    description: '📄 Reporter Agent: 장애 분석 보고서 생성',
-    color: 'text-pink-600',
-    bgColor: 'bg-pink-50 hover:bg-pink-100',
-    gradient: 'from-pink-500 to-rose-500',
+    description: 'Reporter Agent 장애 분석 보고서 생성',
   },
   {
     id: 'intelligent-monitoring',
     icon: Monitor,
     label: '이상감지/예측',
-    description: '🔍 Analyst Agent: 이상탐지→근본원인→예측분석',
-    color: 'text-emerald-600',
-    bgColor: 'bg-emerald-50 hover:bg-emerald-100',
-    gradient: 'from-emerald-500 to-teal-500',
+    description: 'Analyst Agent 이상탐지, 근본원인, 예측분석',
   },
 ];
 
 interface AIAssistantIconPanelProps {
   selectedFunction: AIAssistantFunction;
   onFunctionChange: (func: AIAssistantFunction) => void;
+  onOpenFullscreen?: () => void;
+  showFullscreenButton?: boolean;
   className?: string;
   isMobile?: boolean;
 }
@@ -121,11 +103,13 @@ const IconButton = memo(function IconButton({
         type="button"
         key={item.id}
         data-testid={`ai-function-${item.id}`}
+        aria-label={item.label}
+        aria-pressed={isSelected}
         onClick={handleClick}
-        className={`group relative h-12 w-12 shrink-0 rounded-xl transition-all duration-200 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 ${
+        className={`group relative h-12 w-12 shrink-0 rounded-xl border transition-all duration-200 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 ${
           isSelected
-            ? `bg-linear-to-r ${item.gradient} scale-105 text-white shadow-lg`
-            : `${item.bgColor} ${item.color}`
+            ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
+            : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900'
         } `}
       >
         <Icon className="mx-auto h-5 w-5" aria-hidden="true" />
@@ -145,19 +129,21 @@ const IconButton = memo(function IconButton({
       type="button"
       key={item.id}
       data-testid={`ai-function-${item.id}`}
+      aria-label={item.label}
+      aria-pressed={isSelected}
       onClick={handleClick}
-      className={`animate-fade-in group relative h-12 w-12 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 ${
+      className={`animate-fade-in group relative h-12 w-12 rounded-xl border transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 ${
         isSelected
-          ? `bg-linear-to-r ${item.gradient} scale-105 text-white shadow-lg`
-          : `${item.bgColor} ${item.color}`
+          ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
+          : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900'
       } `}
       title={`${item.label}\n${item.description}`}
       style={{ animationDelay: `${index * 0.1}s` }}
     >
       <Icon className="mx-auto h-5 w-5" aria-hidden="true" />
-      {/* 선택 표시 (화이트 모드 - 파란색 인디케이터) */}
+      {/* 선택 표시 */}
       {isSelected && (
-        <div className="animate-fade-in absolute -left-1 top-1/2 h-6 w-1 -translate-y-1/2 transform rounded-r-full bg-blue-500" />
+        <div className="animate-fade-in absolute -left-1 top-1/2 h-6 w-1 -translate-y-1/2 transform rounded-r-full bg-slate-900" />
       )}
       {/* 호버 툴팁 - 왼쪽으로 위치 변경 (화이트 모드) */}
       <div
@@ -179,6 +165,8 @@ IconButton.displayName = 'IconButton';
 export default function AIAssistantIconPanel({
   selectedFunction,
   onFunctionChange,
+  onOpenFullscreen,
+  showFullscreenButton = true,
   className = '',
   isMobile = false,
 }: AIAssistantIconPanelProps) {
@@ -186,8 +174,11 @@ export default function AIAssistantIconPanel({
 
   // 🔧 P3: useCallback으로 네비게이션 핸들러 메모이제이션
   const handleFullscreen = useCallback(() => {
-    router.push('/dashboard/ai-assistant');
-  }, [router]);
+    onOpenFullscreen?.();
+    if (!onOpenFullscreen) {
+      router.push('/dashboard/ai-assistant');
+    }
+  }, [onOpenFullscreen, router]);
 
   if (isMobile) {
     return (
@@ -206,28 +197,27 @@ export default function AIAssistantIconPanel({
         ))}
 
         {/* 전체 화면 이동 버튼 (Mobile) */}
-        <button
-          type="button"
-          onClick={handleFullscreen}
-          data-testid="ai-fullscreen-button"
-          className="group relative h-12 w-12 shrink-0 rounded-xl bg-gray-50 text-gray-600 transition-all duration-200 active:scale-95 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
-        >
-          <Maximize className="mx-auto h-5 w-5" aria-hidden="true" />
-        </button>
+        {showFullscreenButton && (
+          <button
+            type="button"
+            onClick={handleFullscreen}
+            data-testid="ai-fullscreen-button"
+            aria-label="전체 화면으로 열기"
+            className="group relative h-12 w-12 shrink-0 rounded-xl border border-slate-200 bg-white text-slate-600 transition-all duration-200 active:scale-95 hover:bg-slate-50 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
+          >
+            <Maximize2 className="mx-auto h-5 w-5" aria-hidden="true" />
+          </button>
+        )}
       </div>
     );
   }
 
-  // 🎨 화이트 모드 전환 (2025-12 업데이트)
   return (
     <div
       className={`flex flex-col space-y-2 border-l border-gray-200 bg-white p-3 ${className}`}
     >
       {/* 헤더 */}
       <div className="mb-2 text-center">
-        <div className="mx-auto mb-1 flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-r from-purple-500 to-blue-500 shadow-sm">
-          <Brain className="h-4 w-4 text-white" aria-hidden="true" />
-        </div>
         <p className="text-xs font-medium text-gray-600">AI 기능</p>
       </div>
 
@@ -244,34 +234,29 @@ export default function AIAssistantIconPanel({
         ))}
       </div>
 
-      {/* 하단 상태 표시 (화이트 모드) */}
-      <div className="mt-4 border-t border-gray-200 pt-2">
-        <div className="text-center">
-          <div className="animate-pulse mx-auto mb-1 h-2 w-2 rounded-full bg-green-500"></div>
-          <p className="text-xs text-gray-500">AI 활성</p>
-        </div>
-      </div>
-
       {/* 전체 화면 이동 버튼 (Desktop - 하단 분리) */}
-      <div className="mt-2 border-t border-gray-200 pt-2">
-        <button
-          type="button"
-          onClick={handleFullscreen}
-          data-testid="ai-fullscreen-button"
-          className="group relative h-12 w-12 rounded-xl bg-gray-50 text-gray-500 transition-all duration-200 hover:scale-105 hover:bg-gray-100 hover:text-gray-900 active:scale-95"
-          title="전체 화면으로 열기"
-        >
-          <Maximize className="mx-auto h-5 w-5" aria-hidden="true" />
+      {showFullscreenButton && (
+        <div className="mt-4 border-t border-gray-200 pt-2">
+          <button
+            type="button"
+            onClick={handleFullscreen}
+            data-testid="ai-fullscreen-button"
+            aria-label="전체 화면으로 열기"
+            className="group relative h-12 w-12 rounded-xl border border-slate-200 bg-white text-slate-500 transition-all duration-200 hover:scale-105 hover:bg-slate-50 hover:text-slate-900 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
+            title="전체 화면으로 열기"
+          >
+            <Maximize2 className="mx-auto h-5 w-5" aria-hidden="true" />
 
-          {/* 툴팁 */}
-          <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 pointer-events-none z-60 min-w-max whitespace-nowrap rounded-lg bg-gray-800 px-3 py-2 text-xs text-white opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100">
-            전체 화면으로 보기
-            <div className="absolute left-full top-1/2 -translate-y-1/2 transform">
-              <div className="border-4 border-transparent border-l-gray-800"></div>
+            {/* 툴팁 */}
+            <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 pointer-events-none z-60 min-w-max whitespace-nowrap rounded-lg bg-gray-800 px-3 py-2 text-xs text-white opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100">
+              전체 화면으로 보기
+              <div className="absolute left-full top-1/2 -translate-y-1/2 transform">
+                <div className="border-4 border-transparent border-l-gray-800"></div>
+              </div>
             </div>
-          </div>
-        </button>
-      </div>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

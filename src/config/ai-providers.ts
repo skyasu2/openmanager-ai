@@ -3,8 +3,9 @@
  *
  * @description
  * - 실제 구현 기준: cloud-run/ai-engine/src/services/ai-sdk/model-provider.ts
- * - UI 및 문서에서 동일한 소스 참조
- * - 2025-12-30 최신화
+ * - 에이전트별 선택 체인 기준: cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-model-selectors.ts
+ * - UI에는 "현재 라우팅 정책"만 노출하며, 개별 요청의 실시간 선택 결과를 의미하지 않는다.
+ * - 2026-04-15 최신화
  */
 
 export interface AIProviderConfig {
@@ -28,26 +29,36 @@ export interface AIProviderConfig {
  */
 export const AI_PROVIDERS: AIProviderConfig[] = [
   {
+    name: 'Groq',
+    role: 'Primary text routing',
+    model: 'llama-4-scout-17b',
+    description:
+      'Primary text provider for Supervisor, Verifier, NLQ, Analyst, Reporter, and Advisor requests',
+    color: 'bg-purple-500',
+  },
+  {
     name: 'Cerebras',
-    role: 'Supervisor/NLQ/Verifier',
+    role: 'Structured routing + secondary text fallback',
     model: 'qwen-3-235b-a22b-instruct-2507',
-    description: 'Primary reasoning, routing, and RAG-LLM tasks (configurable via env)',
+    description:
+      'Primary Cerebras model until the 2026-05-27 deprecation window, with llama3.1-8b as intra-provider fallback. gpt-oss-120b is excluded from the free-tier runtime.',
     color: 'bg-blue-500',
     dailyTokenLimit: '1M tokens/day',
   },
   {
-    name: 'Groq',
-    role: 'Analyst/Reporter',
-    model: 'llama-3.3-70b-versatile',
-    description: 'Fast analysis and incident report generation',
-    color: 'bg-purple-500',
+    name: 'Mistral',
+    role: 'Last-resort text fallback',
+    model: 'mistral-large-latest',
+    description:
+      'Last-resort text fallback for agents. It is not used for RAG runtime retrieval.',
+    color: 'bg-amber-500',
   },
   {
-    name: 'Mistral',
-    role: 'Advisor/Fallback',
-    model: 'mistral-large-latest',
-    description: 'Operational guidance, fallback, and embedding support',
-    color: 'bg-amber-500',
+    name: 'Gemini',
+    role: 'Vision primary',
+    model: 'gemini-2.5-flash-lite',
+    description: 'Primary vision provider for screenshot and multimodal analysis',
+    color: 'bg-emerald-500',
   },
 ];
 

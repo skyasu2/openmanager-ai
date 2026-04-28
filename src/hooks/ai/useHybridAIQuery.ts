@@ -4,9 +4,10 @@
  * @description 쿼리 복잡도에 따라 자동으로 최적의 방식을 선택하는 하이브리드 AI 쿼리 훅
  *
  * 라우팅 전략:
- * - simple (score ≤ 20): useChat (빠른 스트리밍)
- * - moderate (20 < score ≤ 45): useChat (표준 스트리밍)
- * - complex/very_complex (score > 45): Job Queue (진행률 표시 + 타임아웃 회피)
+ * - 복잡도 점수(score)가 complexityThreshold(기본값: 19)를 초과하면 Job Queue, 이하면 Streaming
+ * - 레벨 라벨(simple ≤20 / moderate 21-45 / complex >45)은 복잡도 기술자일 뿐,
+ *   라우팅 기준값이 아님. 실제 전환 기준은 getComplexityThreshold() 반환값.
+ * - forceJobQueueKeywords(보고서·리포트·근본 원인 등) 매칭 시 점수 무관하게 Job Queue 강제
  *
  * Architecture (split into sub-hooks):
  * - core/useQueryExecution.ts: executeQuery + sendQuery routing
@@ -39,10 +40,11 @@ import {
 } from '@/config/ai-proxy.config';
 import { createHybridChatTransport } from './core/createHybridChatTransport';
 import { createHybridStreamCallbacks } from './core/createHybridStreamCallbacks';
+import { buildSourceToolRequestOptions } from './core/source-tool-request-options';
 import { useClarificationHandlers } from './core/useClarificationHandlers';
 import { useQueryControls } from './core/useQueryControls';
 import { useQueryExecution } from './core/useQueryExecution';
-import { useAsyncAIQuery } from './useAsyncAIQuery';
+import { type AsyncQueryResult, useAsyncAIQuery } from './useAsyncAIQuery';
 import { generateMessageId } from './utils/hybrid-query-utils';
 
 export type {
@@ -69,7 +71,11 @@ import {
   STREAM_ERROR_MARKER,
   STREAM_ERROR_REGEX,
 } from '@/lib/ai/constants/stream-errors';
-import { inferAIErrorDetailsFromMessage } from '@/lib/ai/error-details';
+import {
+  type AIRateLimitErrorDetails,
+  inferAIErrorDetailsFromMessage,
+} from '@/lib/ai/error-details';
+import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type {
   AIStreamStatus,
   HybridQueryState,
@@ -100,6 +106,91 @@ function normalizeStreamStatus(status: string): AIStreamStatus {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
+}
+
+function resolveRateLimitUntilMs(
+  details: AIRateLimitErrorDetails
+): number | null {
+  const now = Date.now();
+  const retryAfterMs =
+    typeof details.retryAfterSeconds === 'number' &&
+    details.retryAfterSeconds > 0
+      ? now + details.retryAfterSeconds * 1000
+      : null;
+  const resetAtMs =
+    typeof details.resetAt === 'number' && details.resetAt > 0
+      ? details.resetAt * 1000
+      : null;
+  const candidates = [retryAfterMs, resetAtMs].filter(
+    (value): value is number =>
+      typeof value === 'number' && Number.isFinite(value) && value > now
+  );
+
+  if (candidates.length === 0) {
+    return null;
+  }
+
+  return Math.max(...candidates);
+}
+
+export function buildAssistantMessageFromAsyncResult(
+  result: AsyncQueryResult,
+  createMessageId: (prefix: string) => string = generateMessageId
+): UIMessage {
+  const response = result.response ?? '';
+  const hasExplicitHandoffHistory = Array.isArray(result.handoffHistory);
+  const metadata =
+    result.ragSources ||
+    result.traceId ||
+    typeof result.processingTimeMs === 'number' ||
+    Boolean(result.latencyTier) ||
+    Boolean(result.resolvedMode) ||
+    Boolean(result.modeSelectionSource) ||
+    Boolean(result.retrieval) ||
+    Boolean(result.analysisMode) ||
+    (result.toolsCalled && result.toolsCalled.length > 0) ||
+    hasExplicitHandoffHistory ||
+    (result.toolResultSummaries && result.toolResultSummaries.length > 0)
+      ? {
+          ...(result.ragSources && { ragSources: result.ragSources }),
+          ...(result.retrieval && { retrieval: result.retrieval }),
+          ...(result.traceId && { traceId: result.traceId }),
+          ...(typeof result.processingTimeMs === 'number' && {
+            processingTime: result.processingTimeMs,
+          }),
+          ...(result.latencyTier && {
+            latencyTier: result.latencyTier,
+          }),
+          ...(result.resolvedMode && {
+            resolvedMode: result.resolvedMode,
+          }),
+          ...(result.modeSelectionSource && {
+            modeSelectionSource: result.modeSelectionSource,
+          }),
+          ...(result.toolsCalled &&
+            result.toolsCalled.length > 0 && {
+              toolsCalled: result.toolsCalled,
+            }),
+          ...(result.analysisMode && {
+            analysisMode: result.analysisMode,
+          }),
+          ...(hasExplicitHandoffHistory && {
+            handoffHistory: result.handoffHistory,
+          }),
+          ...(result.toolResultSummaries &&
+            result.toolResultSummaries.length > 0 && {
+              toolResultSummaries: result.toolResultSummaries,
+            }),
+        }
+      : undefined;
+
+  return {
+    id: createMessageId('assistant'),
+    role: 'assistant',
+    content: response,
+    parts: [{ type: 'text', text: response }],
+    ...(metadata && { metadata }),
+  } as UIMessage;
 }
 
 export function mergeFinishedAssistantIntoMessages(
@@ -191,6 +282,7 @@ export function useHybridAIQuery(
     onData,
     webSearchEnabled,
     ragEnabled,
+    analysisMode,
   } = options;
   const traceIdRef = useRef<string>(generateTraceId());
   const observabilityConfig = getObservabilityConfig();
@@ -200,6 +292,9 @@ export function useHybridAIQuery(
     webSearchEnabled ?? undefined
   );
   const ragEnabledRef = useRef<boolean | undefined>(ragEnabled ?? undefined);
+  const analysisModeRef = useRef<AnalysisMode | undefined>(
+    analysisMode ?? undefined
+  );
   const warmingUpRef = useRef<boolean>(false);
   useEffect(() => {
     webSearchEnabledRef.current = webSearchEnabled ?? undefined;
@@ -207,6 +302,9 @@ export function useHybridAIQuery(
   useEffect(() => {
     ragEnabledRef.current = ragEnabled ?? undefined;
   }, [ragEnabled]);
+  useEffect(() => {
+    analysisModeRef.current = analysisMode ?? undefined;
+  }, [analysisMode]);
   const apiEndpoint = customEndpoint ?? '/api/ai/supervisor/stream/v2';
   const sessionIdRef = useRef<string>(
     initialSessionId || generateMessageId('session')
@@ -234,6 +332,10 @@ export function useHybridAIQuery(
   const pendingAttachmentsRef = useRef<FileAttachment[] | null>(null);
   const currentQueryRef = useRef<string | null>(null);
   const errorHandledRef = useRef<boolean>(false);
+  const rateLimitBlockRef = useRef<{
+    details: AIRateLimitErrorDetails;
+    untilMs: number;
+  } | null>(null);
   const redirectingRef = useRef<boolean>(false);
   const abortControllerRef = useRef<AbortController | null>(null);
   const retryTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -252,9 +354,9 @@ export function useHybridAIQuery(
         apiEndpoint,
         traceIdRef,
         traceIdHeader: observabilityConfig.traceIdHeader,
-        warmingUpRef,
         webSearchEnabledRef,
         ragEnabledRef,
+        analysisModeRef,
       }),
     [apiEndpoint, observabilityConfig.traceIdHeader]
   );
@@ -289,7 +391,22 @@ export function useHybridAIQuery(
           stopChatRef.current();
         },
         runJobQueueQuery: (query: string) => {
-          return asyncQueryRef.current.sendQuery(query);
+          const jobQueueOptions = {
+            ...(analysisModeRef.current && {
+              analysisMode: analysisModeRef.current,
+            }),
+            ...buildSourceToolRequestOptions({
+              webSearchEnabled: webSearchEnabledRef.current,
+              ragEnabled: ragEnabledRef.current,
+            }),
+          };
+
+          return asyncQueryRef.current.sendQuery(
+            query,
+            Object.keys(jobQueueOptions).length > 0
+              ? jobQueueOptions
+              : undefined
+          );
         },
       }),
     [
@@ -348,38 +465,7 @@ export function useHybridAIQuery(
       onJobResult?.(result);
 
       if (result.success && result.response) {
-        // NOTE: normalizeAIResponse는 transformUIMessageToEnhanced에서
-        // 단일 지점으로 처리됨 (이중 호출 방지)
-        const messageWithRag = {
-          id: generateMessageId('assistant'),
-          role: 'assistant' as const,
-          content: result.response,
-          parts: [{ type: 'text' as const, text: result.response }],
-          metadata:
-            result.ragSources ||
-            result.traceId ||
-            (result.toolsCalled && result.toolsCalled.length > 0) ||
-            (result.handoffHistory && result.handoffHistory.length > 0) ||
-            (result.toolResultSummaries &&
-              result.toolResultSummaries.length > 0)
-              ? {
-                  ...(result.ragSources && { ragSources: result.ragSources }),
-                  ...(result.traceId && { traceId: result.traceId }),
-                  ...(result.toolsCalled &&
-                    result.toolsCalled.length > 0 && {
-                      toolsCalled: result.toolsCalled,
-                    }),
-                  ...(result.handoffHistory &&
-                    result.handoffHistory.length > 0 && {
-                      handoffHistory: result.handoffHistory,
-                    }),
-                  ...(result.toolResultSummaries &&
-                    result.toolResultSummaries.length > 0 && {
-                      toolResultSummaries: result.toolResultSummaries,
-                    }),
-                }
-              : undefined,
-        } as UIMessage;
+        const messageWithRag = buildAssistantMessageFromAsyncResult(result);
         setMessages((prev) => [...prev, messageWithRag]);
       }
     },
@@ -399,6 +485,21 @@ export function useHybridAIQuery(
     chatStatus === 'streaming' || chatStatus === 'submitted';
   const streamStatus = normalizeStreamStatus(chatStatus);
   const isLoading = state.isLoading || isChatLoading || asyncQuery.isLoading;
+  useEffect(() => {
+    if (state.errorDetails?.kind !== 'rate-limit') {
+      return;
+    }
+
+    const untilMs = resolveRateLimitUntilMs(state.errorDetails);
+    if (!untilMs) {
+      return;
+    }
+
+    rateLimitBlockRef.current = {
+      details: state.errorDetails,
+      untilMs,
+    };
+  }, [state.errorDetails]);
   const { executeQuery, sendQuery } = useQueryExecution({
     complexityThreshold,
     asyncQuery,
@@ -417,7 +518,11 @@ export function useHybridAIQuery(
       currentQuery: currentQueryRef,
       pendingQuery: pendingQueryRef,
       pendingAttachments: pendingAttachmentsRef,
+      rateLimitBlock: rateLimitBlockRef,
     },
+    analysisMode,
+    ragEnabled,
+    webSearchEnabled,
   });
   executeQueryRef.current = executeQuery;
   const {

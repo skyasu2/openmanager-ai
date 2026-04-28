@@ -15,6 +15,10 @@ import {
   getServerOsShortName,
 } from '../utils/serverUtils';
 
+function toSafeMetricValue(value: number | undefined): number {
+  return typeof value === 'number' && Number.isFinite(value) ? value : 0;
+}
+
 /**
  * 🛠️ View Model Hook for Server Objects
  *
@@ -33,10 +37,10 @@ export const useSafeServer = (server: ServerType | undefined | null) => {
       os: server?.os || 'Linux',
       ip: server?.ip || '-',
       uptime: server?.uptime || 0,
-      cpu: server?.cpu ?? 0,
-      memory: server?.memory ?? 0,
-      disk: server?.disk ?? 0,
-      network: server?.network ?? 0,
+      cpu: toSafeMetricValue(server?.cpu),
+      memory: toSafeMetricValue(server?.memory),
+      disk: toSafeMetricValue(server?.disk),
+      network: toSafeMetricValue(server?.network),
       alerts: server?.alerts || 0,
       services: Array.isArray(server?.services) ? server.services : [],
       lastUpdate: server?.lastUpdate || new Date(),

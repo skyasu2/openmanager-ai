@@ -11,18 +11,21 @@ import type { UIMessage } from '@ai-sdk/react';
 import type { MutableRefObject } from 'react';
 import { useCallback } from 'react';
 import { generateClarification } from '@/lib/ai/clarification-generator';
+import type { AIRateLimitErrorDetails } from '@/lib/ai/error-details';
 import { classifyQuery } from '@/lib/ai/query-classifier';
 import {
   analyzeQueryComplexity,
   shouldForceJobQueue,
 } from '@/lib/ai/utils/query-complexity';
 import { logger } from '@/lib/logging';
+import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { HybridQueryState } from '../types/hybrid-query.types';
 import type { FileAttachment } from '../useFileAttachments';
 import {
   generateMessageId,
   sanitizeMessages,
 } from '../utils/hybrid-query-utils';
+import { buildSourceToolRequestOptions } from './source-tool-request-options';
 
 // ============================================================================
 // Types
@@ -31,7 +34,16 @@ import {
 type StateSetter = React.Dispatch<React.SetStateAction<HybridQueryState>>;
 
 interface AsyncQueryLike {
-  sendQuery: (query: string) => Promise<{ jobId?: string }>;
+  sendQuery: (
+    query: string,
+    options?: AsyncJobRequestOptions
+  ) => Promise<{ jobId?: string }>;
+}
+
+interface AsyncJobRequestOptions {
+  analysisMode?: AnalysisMode;
+  enableRAG?: boolean;
+  enableWebSearch?: boolean;
 }
 
 type SendMessageLike = (message: {
@@ -48,6 +60,26 @@ type SetMessagesLike = (
   updater: UIMessage[] | ((prev: UIMessage[]) => UIMessage[])
 ) => void;
 
+interface ActiveRateLimitBlock {
+  details: AIRateLimitErrorDetails;
+  untilMs: number;
+}
+
+function buildRateLimitCooldownMessage(
+  scope: AIRateLimitErrorDetails['scope'],
+  retryAfterSeconds?: number
+): string {
+  if (scope === 'daily') {
+    return '오늘 AI 요청 한도가 소진되었습니다. 내일 다시 시도해주세요.';
+  }
+
+  if (typeof retryAfterSeconds === 'number' && retryAfterSeconds > 0) {
+    return `요청이 너무 많습니다. ${retryAfterSeconds}초 후 다시 시도해주세요.`;
+  }
+
+  return '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.';
+}
+
 export interface QueryExecutionDeps {
   complexityThreshold: number;
   asyncQuery: AsyncQueryLike;
@@ -63,7 +95,11 @@ export interface QueryExecutionDeps {
     currentQuery: MutableRefObject<string | null>;
     pendingQuery: MutableRefObject<string | null>;
     pendingAttachments: MutableRefObject<FileAttachment[] | null>;
+    rateLimitBlock: MutableRefObject<ActiveRateLimitBlock | null>;
   };
+  analysisMode?: AnalysisMode;
+  ragEnabled?: boolean;
+  webSearchEnabled?: boolean;
 }
 
 // ============================================================================
@@ -81,7 +117,57 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
     setState,
     chatStatus,
     refs,
+    analysisMode,
+    ragEnabled,
+    webSearchEnabled,
   } = deps;
+
+  const getActiveRateLimitDetails =
+    useCallback((): AIRateLimitErrorDetails | null => {
+      const activeBlock = refs.rateLimitBlock.current;
+      if (!activeBlock) {
+        return null;
+      }
+
+      const now = Date.now();
+      if (activeBlock.untilMs <= now) {
+        refs.rateLimitBlock.current = null;
+        return null;
+      }
+
+      const retryAfterSeconds = Math.max(
+        1,
+        Math.ceil((activeBlock.untilMs - now) / 1000)
+      );
+      const resetAt = Math.ceil(activeBlock.untilMs / 1000);
+
+      return {
+        ...activeBlock.details,
+        retryAfterSeconds,
+        resetAt,
+        message: buildRateLimitCooldownMessage(
+          activeBlock.details.scope,
+          retryAfterSeconds
+        ),
+      };
+    }, [refs]);
+
+  const applyRateLimitCooldown = useCallback(
+    (details: AIRateLimitErrorDetails) => {
+      setState((prev) => ({
+        ...prev,
+        progress: null,
+        jobId: null,
+        isLoading: false,
+        error: details.message,
+        errorDetails: details,
+        clarification: null,
+        warmingUp: false,
+        estimatedWaitSeconds: 0,
+      }));
+    },
+    [setState]
+  );
 
   /**
    * 실제 쿼리 전송 로직 (명확화 완료 후 호출)
@@ -108,6 +194,15 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
         return;
       }
 
+      const activeRateLimitDetails = getActiveRateLimitDetails();
+      if (activeRateLimitDetails) {
+        logger.warn(
+          `[HybridAI] executeQuery blocked: active rate-limit cooldown (${activeRateLimitDetails.retryAfterSeconds ?? 0}s remaining)`
+        );
+        applyRateLimitCooldown(activeRateLimitDetails);
+        return;
+      }
+
       const trimmedQuery = query.trim();
 
       // 🔒 새 요청 시작 시 에러 핸들링 플래그 리셋
@@ -119,17 +214,42 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
       // 1. 복잡도 분석 + 의도 기반 Job Queue 강제 라우팅
       const analysis = analyzeQueryComplexity(trimmedQuery);
       const forceJobQueue = shouldForceJobQueue(trimmedQuery);
+
+      // 오프도메인 감지: best-effort 모드로 처리하되 실패 시 요청 자체는 막지 않는다.
+      void Promise.resolve()
+        .then(() => classifyQuery(trimmedQuery))
+        .then((classification) => {
+          if (!classification?.isOffDomain) return;
+
+          setState((prev) => ({
+            ...prev,
+            warning:
+              prev.warning ??
+              '참고: 저는 서버 운영·모니터링 중심 AI입니다. 일반 정보 답변은 정확도와 최신성이 제한될 수 있습니다.',
+          }));
+        })
+        .catch((error) => {
+          logger.warn(
+            '[HybridAI] Query classification failed, continuing without off-domain disclaimer',
+            error
+          );
+        });
       // 파일 첨부 시 Vision Agent가 필요하므로 스트리밍 모드 선호
       const hasAttachments = attachments && attachments.length > 0;
+      const modeAdjustedThreshold =
+        analysisMode === 'thinking'
+          ? Math.max(8, complexityThreshold - 8)
+          : complexityThreshold;
       const isComplex =
         !hasAttachments &&
-        (analysis.score > complexityThreshold || forceJobQueue.force);
+        (analysis.score > modeAdjustedThreshold || forceJobQueue.force);
 
       if (process.env.NODE_ENV === 'development') {
         logger.info(
           `[HybridAI] Query complexity: ${analysis.level} (score: ${analysis.score}), ` +
             `Force Job Queue: ${forceJobQueue.force}${forceJobQueue.matchedKeyword ? ` (keyword: "${forceJobQueue.matchedKeyword}")` : ''}, ` +
             `Attachments: ${hasAttachments ? attachments!.length : 0}, ` +
+            `AnalysisMode: ${analysisMode ?? 'auto'}, ` +
             `Mode: ${isComplex ? 'job-queue' : 'streaming'}`
         );
       }
@@ -202,8 +322,19 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
           estimatedWaitSeconds: 0,
         }));
 
-        asyncQuery
-          .sendQuery(trimmedQuery)
+        const jobQueueOptions: AsyncJobRequestOptions = {
+          ...(analysisMode && { analysisMode }),
+          ...buildSourceToolRequestOptions({
+            ragEnabled,
+            webSearchEnabled,
+          }),
+        };
+        const jobQueueRequest =
+          Object.keys(jobQueueOptions).length > 0
+            ? asyncQuery.sendQuery(trimmedQuery, jobQueueOptions)
+            : asyncQuery.sendQuery(trimmedQuery);
+
+        jobQueueRequest
           .then((result) => {
             setState((prev) => ({ ...prev, jobId: result.jobId ?? null }));
           })
@@ -242,6 +373,8 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
             window.location.hostname
           );
 
+        // Legacy `/api/ai/supervisor`는 제거 대상이 아니라 local dev JSON fallback용으로만 유지.
+        // Primary streaming contract는 `/api/ai/supervisor/stream/v2`.
         const shouldUseLocalDevLegacyFallback =
           process.env.NODE_ENV === 'development' &&
           isLocalDevelopmentHost &&
@@ -259,7 +392,14 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
               'Content-Type': 'application/json',
               Accept: 'application/json',
             },
-            body: JSON.stringify({ messages: nextMessages }),
+            body: JSON.stringify({
+              messages: nextMessages,
+              analysisMode,
+              ...buildSourceToolRequestOptions({
+                webSearchEnabled,
+                ragEnabled,
+              }),
+            }),
           })
             .then(async (response) => {
               if (!response.ok) {
@@ -342,13 +482,18 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
     [
       complexityThreshold,
       asyncQuery,
+      applyRateLimitCooldown,
       sendMessage,
+      getActiveRateLimitDetails,
       onBeforeStreamingSend,
       getMessages,
       setMessages,
       setState,
       chatStatus,
       refs,
+      analysisMode,
+      ragEnabled,
+      webSearchEnabled,
     ]
   );
 
@@ -358,6 +503,15 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
   const sendQuery = useCallback(
     async (query: string, attachments?: FileAttachment[]) => {
       if (!query.trim()) return;
+
+      const activeRateLimitDetails = getActiveRateLimitDetails();
+      if (activeRateLimitDetails) {
+        logger.warn(
+          `[HybridAI] sendQuery blocked: active rate-limit cooldown (${activeRateLimitDetails.retryAfterSeconds ?? 0}s remaining)`
+        );
+        applyRateLimitCooldown(activeRateLimitDetails);
+        return;
+      }
 
       // 원본 쿼리 및 첨부 파일 저장 (명확화 플로우에서 사용)
       refs.pendingQuery.current = query;
@@ -415,7 +569,13 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
         }));
       }
     },
-    [executeQuery, setState, refs]
+    [
+      applyRateLimitCooldown,
+      executeQuery,
+      getActiveRateLimitDetails,
+      setState,
+      refs,
+    ]
   );
 
   return { executeQuery, sendQuery };

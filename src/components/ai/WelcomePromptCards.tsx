@@ -97,11 +97,11 @@ export const WelcomePromptCards = memo(function WelcomePromptCards({
         <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-slate-800">
           <Bot className="h-6 w-6 text-white" aria-hidden="true" />
         </div>
-        <h2 className="text-xl font-semibold text-gray-900">
+        <h2 className="text-lg font-semibold text-gray-900">
           무엇을 도와드릴까요?
         </h2>
         <p className="mt-2 text-sm text-gray-500">
-          서버 모니터링, 장애 분석, 성능 예측을 도와드립니다
+          서버 운영 질문을 빠르게 분석하고 조치안까지 연결합니다
         </p>
       </div>
 

@@ -13,6 +13,7 @@ import { Ratelimit } from '@upstash/ratelimit';
 import type { NextRequest } from 'next/server';
 import { getRedisTimeoutMs } from '@/config/redis-timeouts';
 import { logger } from '@/lib/logging';
+import { getRateLimitIdentity } from '@/lib/security/rate-limit-identity';
 import {
   getRedisClient,
   isRedisDisabled,
@@ -96,15 +97,6 @@ function getOrCreateLimiter(
   return limiter;
 }
 
-/**
- * 클라이언트 IP 추출
- */
-function getClientIP(request: NextRequest): string {
-  const forwarded = request.headers.get('x-forwarded-for');
-  const realIp = request.headers.get('x-real-ip');
-  return forwarded?.split(',')[0]?.trim() ?? realIp ?? 'unknown';
-}
-
 // ==============================================
 // 🎯 Redis Rate Limit 체크
 // ==============================================
@@ -125,9 +117,9 @@ export async function checkRedisRateLimit(
     return null;
   }
 
-  const ip = getClientIP(request);
+  const identity = getRateLimitIdentity(request);
   const path = request.nextUrl.pathname;
-  const identifier = `${ip}:${config.prefix ?? path}`;
+  const identifier = `${identity}:${config.prefix ?? path}`;
 
   const startTime = performance.now();
 

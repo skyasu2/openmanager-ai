@@ -21,8 +21,8 @@ export default function MainPageSkeleton() {
       <div className="container relative z-10 mx-auto px-6 pt-8">
         {/* 타이틀 스켈레톤 */}
         <div className="mb-12 text-center">
-          <div className="animate-pulse mx-auto mb-4 h-12 w-96 rounded-lg bg-white/10" />
-          <div className="animate-pulse mx-auto h-6 w-64 rounded bg-white/10" />
+          <div className="animate-pulse mx-auto mb-4 h-12 w-full max-w-96 rounded-lg bg-white/10" />
+          <div className="animate-pulse mx-auto h-6 w-full max-w-64 rounded bg-white/10" />
         </div>
 
         {/* 제어 패널 스켈레톤 */}

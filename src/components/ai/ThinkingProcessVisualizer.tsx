@@ -25,6 +25,7 @@ import {
   useEffect,
   useState,
 } from 'react';
+import { getThinkingStepPresentation } from '@/lib/ai/utils/tool-presentation';
 import type { ThinkingStep as AIThinkingStep } from '@/types/ai-sidebar/ai-sidebar-types';
 
 interface ThinkingProcessVisualizerProps {
@@ -58,6 +59,16 @@ const stepIconMap: Record<string, ComponentType<{ className?: string }>> = {
   getSystemStatus: Cpu,
   checkResourceUsage: Activity,
   analyzeLogs: Search,
+  detectAnomalies: AlertCircle,
+  detectAnomaliesAllServers: AlertCircle,
+  correlateMetrics: Activity,
+  findRootCause: Brain,
+  buildIncidentTimeline: Route,
+  predictTrends: TrendingDown,
+  analyzePattern: Search,
+  recommendCommands: Zap,
+  searchWeb: Search,
+  finalAnswer: CheckCircle2,
 };
 
 // status별 스타일
@@ -222,7 +233,11 @@ export const ThinkingProcessVisualizer: FC<ThinkingProcessVisualizerProps> = ({
             const status: 'pending' | 'processing' | 'completed' | 'failed' =
               step.status || 'pending';
             const config = stepStatusConfig[status];
-            const StepIcon = (step.step && stepIconMap[step.step]) || Activity;
+            const stepPresentation = getThinkingStepPresentation(step);
+            const StepIcon =
+              (step.step && stepIconMap[step.step]) ||
+              (stepPresentation.title && stepIconMap[stepPresentation.title]) ||
+              Activity;
             const StatusIcon = config.icon;
             const isLast = index === visibleSteps.length - 1;
             const isRouting = step.step === '라우팅 결정';
@@ -253,20 +268,38 @@ export const ThinkingProcessVisualizer: FC<ThinkingProcessVisualizerProps> = ({
 
                   {/* 내용 */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-800">
-                        {step.step}
-                      </span>
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <span
+                            className="text-sm font-medium text-gray-800"
+                            title={stepPresentation.description ?? undefined}
+                          >
+                            {stepPresentation.title}
+                          </span>
+                          {stepPresentation.technicalName && (
+                            <span
+                              className="rounded bg-white px-1.5 py-0.5 text-xs font-medium text-slate-500"
+                              title={
+                                stepPresentation.description ??
+                                `${stepPresentation.technicalName} 내부 도구명`
+                              }
+                            >
+                              {stepPresentation.technicalName}
+                            </span>
+                          )}
+                        </div>
+                      </div>
                       {step.duration !== undefined && (
-                        <span className="text-xs text-gray-500">
+                        <span className="shrink-0 text-xs text-gray-500">
                           {step.duration}ms
                         </span>
                       )}
                     </div>
 
-                    {step.description && (
+                    {stepPresentation.description && (
                       <p className="mt-1 text-xs text-gray-600 leading-relaxed">
-                        {step.description}
+                        {stepPresentation.description}
                       </p>
                     )}
 

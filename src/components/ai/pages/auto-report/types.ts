@@ -23,6 +23,20 @@ export const INCIDENT_REPORT_STATUSES = [
 
 export type IncidentStatus = (typeof INCIDENT_REPORT_STATUSES)[number];
 
+export interface RelatedServerSummary {
+  id: string;
+  name: string;
+  severity: string;
+  metric?: string;
+  value?: number;
+}
+
+export interface IncidentPostmortem {
+  timeline: string[];
+  hypotheses: string[];
+  prevention: string[];
+}
+
 export function isIncidentSeverity(value: string): value is IncidentSeverity {
   return (INCIDENT_REPORT_SEVERITIES as readonly string[]).includes(value);
 }
@@ -74,9 +88,11 @@ export interface IncidentReport {
   severity: IncidentSeverity;
   timestamp: Date;
   affectedServers: string[];
+  relatedServers?: RelatedServerSummary[];
   description: string;
   status: IncidentStatus;
   pattern?: string;
+  postmortem?: IncidentPostmortem;
   recommendations?: Array<{
     action: string;
     priority: string;

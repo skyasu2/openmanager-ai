@@ -9,11 +9,19 @@
 
 export interface QueryClassification {
   complexity: number; // 1-5
-  intent: 'general' | 'monitoring' | 'analysis' | 'guide' | 'coding';
+  intent:
+    | 'general'
+    | 'monitoring'
+    | 'analysis'
+    | 'guide'
+    | 'coding'
+    | 'off-domain';
   reasoning: string;
   confidence: number; // 0-100
   source?: 'llm' | 'fallback';
   latency?: number;
+  /** off-domain 감지 시 true. best-effort 응답 + disclaimer 표시 트리거 */
+  isOffDomain?: boolean;
 }
 
 /**
@@ -56,6 +64,28 @@ export class QueryClassifier {
    */
   private fallbackClassify(query: string): QueryClassification {
     const q = query.toLowerCase();
+    const INFRA_CONTEXT_PATTERN =
+      /서버|서벼|썹|인프라|시스템|시스탬|모니터링|cpu|씨피유|메모리|메머리|멤|디스크|트래픽|네트워크|server|servr|sever|memory|memroy|disk|traffic|network|latency|response|load|mysql|nginx|redis|haproxy|postgres|mariadb|apache|kafka|elasticsearch|mongo|tomcat/i;
+    const FORCE_KB_QUERY_PATTERN =
+      /토폴로지|topology|아키텍처|architecture|구성도|배치도|인프라\s*(구성|배치|토폴로지|architecture|topology)/i;
+    const OFF_DOMAIN_GENERAL_PATTERNS =
+      /(날씨|weather|운세|horoscope|뉴스|news|환율|exchange\s*rate|주가|stock\s*price|시세|가격|비트코인|btc|맛집|restaurant|번역|translate|일정|calendar)/i;
+
+    // 오프도메인 감지: 서버 운영과 무관한 생활형/오락형 질문
+    // hard reject 아님 — best-effort 처리 + disclaimer 표시 트리거
+    if (
+      OFF_DOMAIN_GENERAL_PATTERNS.test(query) &&
+      !INFRA_CONTEXT_PATTERN.test(query) &&
+      !FORCE_KB_QUERY_PATTERN.test(query)
+    ) {
+      return {
+        complexity: 1,
+        intent: 'off-domain',
+        reasoning: 'Off-domain: non-server general query',
+        confidence: 90,
+        isOffDomain: true,
+      };
+    }
     let confidence = 70; // 기본 신뢰도
 
     // 쿼리 길이에 따른 신뢰도 조정

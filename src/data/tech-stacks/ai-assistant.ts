@@ -37,11 +37,11 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     description:
       '프랑스 AI 스타트업의 효율적인 오픈웨이트 LLM. 24B 파라미터의 Small Language Model로 대형 모델 대비 낮은 비용과 빠른 응답 속도 제공',
     implementation:
-      '→ Advisor Agent 1순위. 복잡한 인프라 트러블슈팅 추론 및 GraphRAG 기반 지식 탐색 품질 최적화 담당',
+      '→ Groq/Cerebras 장애 또는 쿼터 초과 시 text last-resort fallback. RAG runtime과 임베딩 경로에서는 제외',
     version: 'mistral-large-latest',
     status: 'active',
     icon: '🛡️',
-    tags: ['Reasoning', 'Frontier', '오픈웨이트'],
+    tags: ['Text Fallback', 'Frontier', '오픈웨이트'],
     type: 'commercial',
   },
   {
@@ -76,32 +76,32 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
   },
   // ========== Database & RAG ==========
   {
-    name: 'Supabase pgVector',
+    name: 'Supabase Postgres',
     category: 'database',
     importance: 'high',
     description:
-      'PostgreSQL 확장으로 벡터 유사도 검색 지원. 텍스트 임베딩을 저장하고 코사인 유사도로 관련 문서 검색 가능',
+      'PostgreSQL full-text search 기반 운영 지식 저장소. 과거 vector 컬럼은 호환 데이터로 남지만 runtime 검색 경로에서는 사용하지 않음',
     implementation:
       '과거 장애 사례 및 해결 방법 저장. Advisor Agent가 searchKnowledgeBase 도구로 유사 사례 검색',
-    version: 'PostgreSQL 15 + pgVector',
+    version: 'PostgreSQL 15 + BM25 RPC',
     status: 'active',
     icon: '🐘',
-    tags: ['Vector Search', 'RAG', 'Embedding'],
+    tags: ['BM25', 'RAG', 'Metadata Boost'],
     type: 'commercial',
   },
   {
-    name: 'GraphRAG (LlamaIndex.TS)',
+    name: 'Knowledge Retrieval Lite',
     category: 'ai',
     importance: 'high',
     description:
-      '벡터 검색과 관계 기반 탐색을 함께 쓰는 검색 계층. 개념 간 연결을 따라가며 더 정확한 컨텍스트를 제공하도록 구성',
+      'BM25 텍스트 매칭과 metadata boost를 결합한 경량 지식 검색 계층. 외부 프레임워크 없이 직접 구성',
     implementation:
-      'LlamaIndex.TS + Mistral AI로 triplet을 추출하고, Supabase pgVector와 결합해 관계 탐색형 검색 흐름을 구성',
-    version: 'LlamaIndex.TS',
+      'Supabase search_knowledge_text RPC + 메타데이터 부스트로 검색 흐름을 구성. Reporter Agent의 searchKnowledgeBase 도구로 연결',
+    version: 'In-house',
     status: 'active',
-    icon: '🦙',
-    tags: ['LlamaIndex.TS', 'Hybrid Search', 'Knowledge Graph'],
-    type: 'opensource',
+    icon: '🔍',
+    tags: ['BM25', 'Metadata Boost', 'Knowledge Retrieval'],
+    type: 'custom',
   },
   // ========== ML Engine ==========
   {
@@ -135,15 +135,15 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
   {
     name: 'Mistral Embedding',
     category: 'ai',
-    importance: 'high',
+    importance: 'low',
     description:
-      'Mistral AI의 텍스트 임베딩 모델. 1024차원 벡터로 텍스트 의미를 표현하여 유사도 검색에 활용',
+      '과거 GraphRAG/벡터 인덱싱 경로에서 사용하던 텍스트 임베딩 모델. 현재 AI assistant Knowledge Retrieval Lite request path에서는 사용하지 않음',
     implementation:
-      '→ RAG 검색 및 Knowledge Base 저장에 사용. @ai-sdk/mistral embed API로 벡터 생성',
+      '→ Cloud Run embedding endpoint와 runtime helper는 제거됨. 운영 질의의 지식 검색은 BM25 + metadata boost 중심으로 처리',
     version: 'mistral-embed (1024d)',
-    status: 'active',
+    status: 'history',
     icon: '🔍',
-    tags: ['Embedding', '1024d', 'RAG'],
+    tags: ['Embedding', '1024d', 'Legacy'],
     type: 'commercial',
   },
   // ========== Observability ==========

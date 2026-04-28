@@ -14,6 +14,7 @@
 'use client';
 
 import { RefreshCw, Server, TrendingUp, XCircle } from 'lucide-react';
+import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { formatDateTime } from '@/lib/format-date';
 import type {
@@ -218,12 +219,12 @@ export default function AnalysisResultsCard({
             </span>
           </div>
           {isLoginRequired ? (
-            <a
+            <Link
               href="/login"
               className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
             >
               로그인하기
-            </a>
+            </Link>
           ) : onRetry ? (
             <button
               type="button"

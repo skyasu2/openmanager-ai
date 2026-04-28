@@ -1,31 +1,14 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Noto_Sans_KR } from 'next/font/google';
 import type { ReactNode } from 'react';
+import { RootClientRuntime } from '@/app/RootClientRuntime';
 import { ClientProviders } from '@/components/providers/ClientProviders';
 import './globals.css';
-import { EmergencyBanner } from '@/components/emergency/EmergencyBanner';
-import { WebVitalsReporter } from '@/components/providers/WebVitalsReporter';
-import { SystemBootstrap } from '@/components/system/SystemBootstrap';
-import { Toaster } from '@/components/ui/toaster';
+import './global-effects.css';
 import { getSiteUrl } from '@/lib/site-url';
 
 // Vercel Analytics & Speed Insights (무료 티어 최적화 - 비활성화)
 // import { SpeedInsights } from '@vercel/speed-insights/next';
 // import { Analytics } from '@vercel/analytics/react';
-
-// 🔤 Font Configuration: Inter (영문) + Noto Sans KR (한글)
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-});
-
-const notoSansKR = Noto_Sans_KR({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-noto-sans-kr',
-  display: 'swap',
-});
 
 // 🌐 SEO Configuration
 const SITE_URL = getSiteUrl();
@@ -138,16 +121,11 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ko" suppressHydrationWarning>
-      <body
-        className={`${inter.variable} ${notoSansKR.variable} font-sans antialiased`}
-      >
-        <EmergencyBanner />
+      <body className="font-sans antialiased">
         <ClientProviders>
-          <SystemBootstrap />
-          <Toaster />
           {children}
+          <RootClientRuntime />
         </ClientProviders>
-        <WebVitalsReporter />
         {/* Vercel Analytics 비활성화 - 무료 티어 최적화 (6개 404 에러 제거) */}
         {/* <SpeedInsights key="speed-insights" /> */}
         {/* <Analytics key="analytics" /> */}

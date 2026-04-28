@@ -29,6 +29,8 @@ class BrowserNotificationService {
   private isEnabled: boolean = false;
   private permission: NotificationPermission = 'default';
   private notificationHistory: NotificationOptions[] = [];
+  private pendingShutdownPromptTimer: ReturnType<typeof setTimeout> | null =
+    null;
 
   // 서버별 이전 상태 추적 (상태 변화 감지용)
   private previousServerStates = new Map<
@@ -202,6 +204,10 @@ class BrowserNotificationService {
   clearHistory(): void {
     this.notificationHistory = [];
     this.previousServerStates.clear();
+    if (this.pendingShutdownPromptTimer) {
+      clearTimeout(this.pendingShutdownPromptTimer);
+      this.pendingShutdownPromptTimer = null;
+    }
     logger.info('🧹 서버 알림 히스토리 초기화 완료');
   }
 
@@ -217,7 +223,12 @@ class BrowserNotificationService {
 
     // 추가: 브라우저 확인 팝업 (선택사항)
     if (typeof window !== 'undefined' && reason === '30분 자동 종료') {
-      setTimeout(() => {
+      if (this.pendingShutdownPromptTimer) {
+        clearTimeout(this.pendingShutdownPromptTimer);
+      }
+
+      this.pendingShutdownPromptTimer = setTimeout(() => {
+        this.pendingShutdownPromptTimer = null;
         const userConfirm = confirm(
           '⏰ 30분 세션이 종료되었습니다.\n\n새로운 세션을 시작하시겠습니까?'
         );

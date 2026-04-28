@@ -10,7 +10,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       description:
         'Agent-first AI-powered IDE - AI 에이전트가 계획, 실행, 검증까지 자율 수행 (Google)',
       implementation:
-        'VS Code 포크 기반 IDE. 현재는 주 개발 환경이라기보다 터미널 뷰어와 시각 보조 도구에 가깝게 사용하며, Claude/Codex/Gemini CLI 실행을 보조',
+        'VS Code 포크 기반 IDE. 이 프로젝트에서는 CLI 도구(Claude Code / Codex / Gemini) 실행 환경으로 주로 활용하며, 프론트엔드 시각 확인과 터미널 분할에 사용',
       status: 'active',
       icon: '🌌',
       tags: ['Google', 'Agent-First', 'IDE'],
@@ -22,7 +22,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       importance: 'high',
       description:
         'Anthropic의 Model Context Protocol. AI가 외부 도구, 데이터 소스, API에 표준화된 방식으로 접근하는 오픈 프로토콜. 다양한 MCP 서버로 AI 기능 확장',
-      implementation: `→ ${MCP_SERVERS.TOTAL_ACTIVE}개 서버 연동: vercel(배포), supabase(DB), context7(문서), playwright(E2E), next-devtools(Next.js진단), github(저장소), sequential-thinking(추론), stitch(UI디자인), storybook(컴포넌트문서), lighthouse(성능/A11y/SEO)`,
+      implementation: `→ ${MCP_SERVERS.TOTAL_ACTIVE}개 서버 상시 연동: vercel(배포), supabase(DB), context7(문서), playwright(E2E), next-devtools(Next.js진단), github(저장소), sequential-thinking(추론), stitch(UI디자인), diagram-converter(Mermaid). storybook은 온디맨드, Lighthouse는 CLI 스크립트로 사용`,
       status: 'active',
       icon: '🔌',
       tags: ['MCP', 'Protocol', '확장기능'],
@@ -33,10 +33,9 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       category: 'ai',
       importance: 'critical',
       description:
-        'An agentic coding tool that lives in your terminal, understands your codebase (Anthropic) — 전체 개발의 99% 주도',
+        'An agentic coding tool that lives in your terminal, understands your codebase (Anthropic)',
       implementation:
-        '기획·아키텍처 설계부터 구현·리팩토링·배포까지 전체 개발 사이클을 단독 주도. MCP 서버로 외부 시스템 직접 제어. v8.10.x 이후에도 핵심 설계·리뷰 역할 유지',
-      version: 'claude-opus-4-6',
+        '기획·아키텍처 설계부터 구현·리팩토링·배포까지 전체 개발 사이클을 주도. MCP 서버로 외부 시스템 직접 제어. v8.10.x 이후에도 핵심 설계·리뷰 역할 유지',
       status: 'active',
       icon: '🤖',
       tags: ['Anthropic', 'Agentic', 'MCP'],
@@ -63,7 +62,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       description:
         'A lightweight coding agent that runs in your terminal (OpenAI)',
       implementation:
-        'Generate, edit, and run code using natural language. ChatGPT Plus/Pro 플랜으로 사용. v8.10.x 마무리·배포 단계부터 비중이 높아졌으며, bounded refactor와 테스트 보완, 배포 전 정리를 주로 담당. 주요 구현은 Claude Code가 99% 주도',
+        'Generate, edit, and run code using natural language. ChatGPT Plus/Pro 플랜으로 사용. v8.10.x 이후 구현·리팩토링·테스트 보완을 집중 담당. bounded refactor와 배포 전 정리를 주로 담당',
       version: 'v0.117.0',
       status: 'active',
       icon: '💎',
@@ -98,14 +97,14 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       type: 'custom',
     },
     {
-      name: 'Vitest 4.0',
+      name: 'Vitest 4.1',
       category: 'testing',
       importance: 'high',
       description:
         'Vite 기반 차세대 테스트 프레임워크. Jest 호환 API, 네이티브 ESM, HMR 지원으로 초고속 테스트 실행. 워치 모드에서 변경 파일만 재실행',
       implementation:
-        '→ 유닛/통합 테스트 전체 적용. Coverage 리포트 및 실시간 피드백',
-      version: '4.0.18',
+        '→ unit/integration/contract 테스트의 기본 축. 빠른 로컬 피드백과 CI 비용 절감을 위해 minimal/ci/main 설정을 분리해 운영',
+      version: '4.1.2',
       status: 'active',
       icon: '🧪',
       tags: ['테스트', 'Vite', 'Jest호환'],
@@ -118,11 +117,25 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       description:
         'Rust 기반 초고속 Linter + Formatter. ESLint/Prettier 통합 대체, 단일 도구로 린트와 포맷팅 동시 수행. 10배 빠른 속도',
       implementation:
-        '→ 코드 스타일 자동 적용. PostToolUse hook으로 저장 시 자동 포맷',
-      version: '2.4.4',
+        '→ scripts/dev/biome-wrapper.sh를 통해 로컬/CI/훅 검증을 단일 경로로 통일. 빠른 feedback loop가 목표이며, 일부 ESLint 플러그인 생태계는 트레이드오프로 감수',
+      version: '2.4.9',
       status: 'active',
       icon: '🔧',
       tags: ['Linter', 'Formatter', 'Rust'],
+      type: 'opensource',
+    },
+    {
+      name: 'Knip 6.0',
+      category: 'tooling',
+      importance: 'high',
+      description:
+        'unused dependency를 넘어 export, file, type dead surface까지 추적하는 정적 분석 도구',
+      implementation:
+        '→ release 전 정리와 대규모 refactor 전후에 dead code를 탐지. AI가 남기기 쉬운 잔재를 장기적으로 줄이는 위생 도구로 사용',
+      version: '6.0.5',
+      status: 'active',
+      icon: '🧹',
+      tags: ['DeadCode', 'StaticAnalysis', 'Hygiene'],
       type: 'opensource',
     },
     {
@@ -146,12 +159,26 @@ export const VIBE_CODING_DATA: VibeCodeData = {
       description:
         'Microsoft의 E2E 테스트 프레임워크. Chromium/Firefox/WebKit 크로스 브라우저, 자동 대기, 트레이싱, 스크린샷 캡처 지원',
       implementation:
-        '→ 크리티컬 플로우 E2E 테스트. MCP 서버로 Claude Code에서 직접 제어',
+        '→ 로컬 회귀와 Vercel 실환경 QA를 모두 담당. MCP 서버로 브라우저를 직접 제어하고 release-facing evidence를 함께 남김',
       version: '1.58.2',
       status: 'active',
       icon: '🎭',
       tags: ['E2E', 'Microsoft', '크로스브라우저'],
       type: 'opensource',
+    },
+    {
+      name: 'Context-Aware Git Hooks',
+      category: 'custom',
+      importance: 'high',
+      description:
+        '문서/코드/아티팩트/no-op push를 구분해 필요한 검증만 실행하는 커스텀 훅 오케스트레이션',
+      implementation:
+        '→ Husky 엔트리포인트 위에 pre-push.js를 두고 fast/verify/strict 모드를 나눠 운영. 일반 lint-staged보다 유지보수는 어렵지만, 불필요한 전체 검증을 크게 줄임',
+      version: 'pre-push.js',
+      status: 'active',
+      icon: '🪝',
+      tags: ['Husky', 'PrePush', 'ShiftLeft'],
+      type: 'custom',
     },
   ],
   history: {
@@ -214,7 +241,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         name: 'Cursor AI (Auto Dev)',
         category: 'ai',
         importance: 'critical',
-        description: '2단계 - "자동 개발"의 시작',
+        description: '2단계 — AI 보조 코딩 도입 (Cursor)',
         implementation:
           'IDE 안에서 AI가 파일을 수정해주는 "Vibe Coding"의 탄생. 수동 복붙에서 벗어나 생산성이 비약적으로 향상된 시기',
         version: '0.42+',
@@ -322,10 +349,9 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         name: 'Multi-AI CLI (Manual Cross-Use)',
         category: 'ai',
         importance: 'critical',
-        description: 'Claude Code 메인 + 수동 교차 사용형 Multi-CLI 운영',
+        description: 'Claude Code 중심 + 수동 교차 사용형 Multi-CLI 운영',
         implementation:
-          'Claude Code(전체 개발 99% 주도), Codex(구현·리팩토링 및 테스트 보완), Gemini(리서치/분석)를 사용자가 수동 전환하며 교차 사용. 자동 라우팅보다는 사람 판단으로 필요한 CLI를 선택해 구현과 검토를 나누는 운영 방식',
-        version: '2026-04 운영 기준선',
+          'Claude Code(아키텍처·설계·구현 중심), Codex(구현·리팩토링 및 테스트 보완), Gemini(리서치/분석)를 사용자가 수동 전환하며 교차 사용. 자동 라우팅보다는 사람 판단으로 필요한 CLI를 선택해 구현과 검토를 나누는 운영 방식',
         status: 'active',
         icon: '🤝',
         tags: ['Multi-AI', 'Manual-Cross-Use', 'Codex', 'Gemini'],
@@ -349,7 +375,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         importance: 'high',
         description: 'Vercel 분리 AI 엔진 - Free Tier 운영',
         implementation:
-          'Vercel(Frontend)과 Cloud Run(AI Engine)으로 하이브리드 아키텍처 운영. 5개 라우팅 에이전트(NLQ/Analyst/Reporter/Advisor/Vision) + GraphRAG + Supabase pgVector. Cloud Run Free Tier 엄수(1vCPU, 512Mi)',
+          'Vercel(Frontend)과 Cloud Run(AI Engine)으로 하이브리드 아키텍처 운영. 5개 라우팅 에이전트(NLQ/Analyst/Reporter/Advisor/Vision) + Knowledge Retrieval Lite + Supabase pgVector. Cloud Run Free Tier 엄수(1vCPU, 512Mi)',
         version: 'v8.10+',
         status: 'active',
         icon: '☁️',

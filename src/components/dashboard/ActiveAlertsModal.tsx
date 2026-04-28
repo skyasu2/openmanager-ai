@@ -19,6 +19,11 @@ const severityBadge: Record<MonitoringAlert['severity'], string> = {
   warning: 'bg-amber-100 text-amber-700 border-amber-200',
 };
 
+function formatElapsedDuration(seconds: number): string {
+  if (seconds < 60) return '방금 전';
+  return `${Math.round(seconds / 60)}분 경과`;
+}
+
 interface ActiveAlertsModalProps {
   open: boolean;
   onClose: () => void;
@@ -52,7 +57,7 @@ export function ActiveAlertsModal({
             </div>
             <div>
               <DialogTitle className="text-lg font-bold text-gray-900">
-                Active Alerts
+                활성 알림
               </DialogTitle>
               <DialogDescription className="text-xs text-gray-500">
                 현재 진행 중인 시스템 활성 알림
@@ -62,12 +67,12 @@ export function ActiveAlertsModal({
               <div className="ml-auto flex items-center gap-2">
                 {criticalCount > 0 && (
                   <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-bold text-red-700">
-                    {criticalCount} Critical
+                    {criticalCount} 위험
                   </span>
                 )}
                 {warningCount > 0 && (
                   <span className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-bold text-amber-700">
-                    {warningCount} Warning
+                    {warningCount} 경고
                   </span>
                 )}
               </div>
@@ -98,17 +103,9 @@ export function ActiveAlertsModal({
 
         {/* Footer */}
         <div className="grid grid-cols-3 gap-4 border-t border-gray-100 bg-gray-50/80 px-6 py-3">
-          <StatCell label="Total" value={alerts.length} color="text-gray-800" />
-          <StatCell
-            label="Critical"
-            value={criticalCount}
-            color="text-red-600"
-          />
-          <StatCell
-            label="Warning"
-            value={warningCount}
-            color="text-amber-600"
-          />
+          <StatCell label="전체" value={alerts.length} color="text-gray-800" />
+          <StatCell label="위험" value={criticalCount} color="text-red-600" />
+          <StatCell label="경고" value={warningCount} color="text-amber-600" />
         </div>
       </DialogContent>
     </Dialog>
@@ -140,7 +137,7 @@ function AlertRow({
             severityBadge[alert.severity]
           )}
         >
-          {alert.severity}
+          {alert.severity === 'critical' ? '위험' : '경고'}
         </span>
         <div className="min-w-0">
           <div className="truncate text-sm font-medium text-gray-800">
@@ -153,9 +150,7 @@ function AlertRow({
         </div>
       </div>
       <span className="ml-3 shrink-0 tabular-nums text-xs text-gray-400">
-        {alert.duration > 0
-          ? `${Math.round(alert.duration / 60)}m elapsed`
-          : 'just now'}
+        {formatElapsedDuration(alert.duration)}
       </span>
     </>
   );

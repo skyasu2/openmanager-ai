@@ -32,7 +32,7 @@ const Alert = forwardRef<
 Alert.displayName = 'Alert';
 
 const AlertTitle = forwardRef<
-  HTMLParagraphElement,
+  HTMLHeadingElement,
   HTMLAttributes<HTMLHeadingElement>
 >(({ className, children, ...props }, ref) => (
   <h5

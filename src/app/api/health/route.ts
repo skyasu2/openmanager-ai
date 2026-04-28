@@ -20,9 +20,7 @@
 
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { env, isDevelopment } from '@/env';
 import { checkCloudRunHealth } from '@/lib/ai-proxy/proxy';
-import { getApiConfig } from '@/lib/api/api-config';
 import { createApiRoute } from '@/lib/api/zod-middleware';
 import { getCacheStats } from '@/lib/cache/unified-cache';
 import { getSiteUrl } from '@/lib/site-url';
@@ -57,12 +55,62 @@ interface HealthRouteEnvelope {
   cacheAge?: number;
 }
 
+interface HealthApiRuntimeConfig {
+  rateLimit: {
+    maxRequests: number;
+    windowMs: number;
+  };
+  timeout: {
+    default: number;
+    long: number;
+    stream: number;
+  };
+  cache: {
+    enabled: boolean;
+    ttl: number;
+  };
+}
+
 const HEALTH_CACHE_TTL = 60000; // 60초
 const SERVICE_CHECK_TIMEOUT_MS = 3000; // DB/캐시 연결 타임아웃
 let healthCache: HealthCache = {
   data: null,
   timestamp: 0,
 };
+
+function getTrimmedProcessEnv(name: string): string {
+  return process.env[name]?.trim() ?? '';
+}
+
+function getHealthApiRuntimeConfig(): HealthApiRuntimeConfig {
+  const nodeEnv = getTrimmedProcessEnv('NODE_ENV') || 'development';
+
+  if (nodeEnv === 'development') {
+    return {
+      rateLimit: { maxRequests: 100, windowMs: 60000 },
+      timeout: { default: 30000, long: 120000, stream: 300000 },
+      cache: { enabled: false, ttl: 0 },
+    };
+  }
+
+  if (nodeEnv === 'production') {
+    return {
+      rateLimit: { maxRequests: 60, windowMs: 60000 },
+      timeout: { default: 10000, long: 30000, stream: 120000 },
+      cache: { enabled: true, ttl: 600 },
+    };
+  }
+
+  return {
+    rateLimit: { maxRequests: 60, windowMs: 60000 },
+    timeout: { default: 15000, long: 60000, stream: 180000 },
+    cache: { enabled: true, ttl: 300 },
+  };
+}
+
+function isDevelopmentRuntime(): boolean {
+  return getTrimmedProcessEnv('NODE_ENV') === 'development';
+}
 
 /** 캐시가 유효한지 확인 */
 function isCacheValid(): boolean {
@@ -131,14 +179,15 @@ async function checkAIStatus(): Promise<
 > {
   try {
     const startTime = Date.now();
-    const gcpMcpEnabled = env.ENABLE_GCP_MCP_INTEGRATION === 'true';
+    const gcpMcpEnabled =
+      getTrimmedProcessEnv('ENABLE_GCP_MCP_INTEGRATION') === 'true';
 
     if (!gcpMcpEnabled) {
       debug.log('✅ AI service operational (local mode)');
       return 'connected';
     }
 
-    const vmUrl = env.GCP_MCP_SERVER_URL;
+    const vmUrl = getTrimmedProcessEnv('GCP_MCP_SERVER_URL');
     if (!vmUrl) {
       debug.log(
         '✅ AI service operational (GCP_MCP_SERVER_URL not configured)'
@@ -202,7 +251,6 @@ const healthCheckHandler = createApiRoute()
   .response(HealthCheckResponseSchema)
   .configure({ showDetailedErrors: true, enableLogging: true })
   .build(async (_request, _context): Promise<HealthCheckResponse> => {
-    const apiConfig = getApiConfig();
     const [dbResult, cacheResult, aiResult] = await Promise.all([
       checkDatabaseWithLatency(),
       checkCacheWithLatency(),
@@ -244,26 +292,27 @@ const healthCheckHandler = createApiRoute()
       },
       uptime: process.uptime ? Math.floor(process.uptime()) : 0,
       version:
-        env.APP_VERSION ||
+        getTrimmedProcessEnv('APP_VERSION') ||
         process.env.NEXT_PUBLIC_APP_VERSION ||
         process.env.npm_package_version ||
         'unknown',
       timestamp: new Date().toISOString(),
     };
 
-    if (isDevelopment) {
+    if (isDevelopmentRuntime()) {
       const siteUrl = getSiteUrl();
+      const apiRuntimeConfig = getHealthApiRuntimeConfig();
       (response as Record<string, unknown>).environment = {
-        type: env.NODE_ENV,
+        type: getTrimmedProcessEnv('NODE_ENV') || 'development',
         urls: {
           site: siteUrl,
           api: `${siteUrl}/api`,
-          vmApi: env.VM_API_URL,
+          vmApi: getTrimmedProcessEnv('VM_API_URL'),
         },
         config: {
-          rateLimit: apiConfig.rateLimit,
-          timeout: apiConfig.timeout,
-          cache: apiConfig.cache,
+          rateLimit: apiRuntimeConfig.rateLimit,
+          timeout: apiRuntimeConfig.timeout,
+          cache: apiRuntimeConfig.cache,
         },
       };
     }
@@ -362,16 +411,16 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const apiConfig = getApiConfig();
+    const cacheConfig = getHealthApiRuntimeConfig().cache;
     const response = await healthCheckHandler(request);
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       'X-Cache': 'MISS',
     };
 
-    if (apiConfig.cache.enabled) {
+    if (cacheConfig.enabled) {
       headers['Cache-Control'] =
-        `public, max-age=${apiConfig.cache.ttl}, stale-while-revalidate=30`;
+        `public, max-age=${cacheConfig.ttl}, stale-while-revalidate=30`;
     } else {
       headers['Cache-Control'] =
         'public, max-age=60, stale-while-revalidate=30';

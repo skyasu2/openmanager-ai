@@ -69,7 +69,7 @@ export function TopologyModal({ open, onClose, servers }: TopologyModalProps) {
                     온프레미스 DC1 서비스 토폴로지
                   </DialogPrimitive.Title>
                   <DialogPrimitive.Description className="text-[11px] text-slate-400">
-                    15대 서버 계층 구조와 의존성 흐름
+                    18대 관측 서버 계층 구조와 의존성 흐름
                   </DialogPrimitive.Description>
                 </div>
               </div>

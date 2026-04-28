@@ -85,14 +85,6 @@ export const ProfileAvatar = memo(function ProfileAvatar({
     return 'bg-gray-400';
   };
 
-  // 사용자 타입 타이틀
-  const getUserTypeTitle = () => {
-    if (userType === 'github') return 'GitHub 사용자';
-    if (userType === 'google') return 'Google 사용자';
-    if (userType === 'guest') return '게스트 사용자';
-    return '알 수 없음';
-  };
-
   return (
     // biome-ignore lint/a11y/noStaticElementInteractions: Interactive role is conditionally applied
     <div
@@ -130,8 +122,8 @@ export const ProfileAvatar = memo(function ProfileAvatar({
       {/* 사용자 타입 표시 배지 */}
       {showBadge && (
         <div
+          aria-hidden="true"
           className={`absolute -bottom-1 -right-1 ${badgeSizeClasses[size]} rounded-full border-2 border-white ${getBadgeColor()}`}
-          title={getUserTypeTitle()}
         />
       )}
     </div>
@@ -150,7 +142,7 @@ export const UserTypeIcon = memo(function UserTypeIcon({
 }) {
   if (userType === 'github') {
     return (
-      <span title="GitHub 인증">
+      <span aria-hidden="true">
         <Shield className={`${className} text-green-600`} />
       </span>
     );
@@ -158,7 +150,7 @@ export const UserTypeIcon = memo(function UserTypeIcon({
 
   if (userType === 'google') {
     return (
-      <span title="Google 인증">
+      <span aria-hidden="true">
         <Shield className={`${className} text-red-600`} />
       </span>
     );
@@ -166,7 +158,7 @@ export const UserTypeIcon = memo(function UserTypeIcon({
 
   if (userType === 'guest') {
     return (
-      <span title="게스트 모드">
+      <span aria-hidden="true">
         <UserCheck className={`${className} text-blue-600`} />
       </span>
     );

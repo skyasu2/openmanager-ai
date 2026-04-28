@@ -21,6 +21,7 @@ type ServerRegistryEntry = {
 const SERVER_REGISTRY: ServerRegistryEntry[] = [
   // DC1-AZ1/AZ2 subnet (10.100.1.0/24)
   { serverId: 'lb-haproxy-dc1-01', ip: '10.100.1.1' },
+  { serverId: 'lb-haproxy-dc1-03', ip: '10.100.1.2' },
   { serverId: 'web-nginx-dc1-01', ip: '10.100.1.11' },
   { serverId: 'web-nginx-dc1-02', ip: '10.100.1.12' },
   { serverId: 'api-was-dc1-01', ip: '10.100.1.21' },
@@ -30,8 +31,10 @@ const SERVER_REGISTRY: ServerRegistryEntry[] = [
   { serverId: 'cache-redis-dc1-01', ip: '10.100.1.41' },
   { serverId: 'cache-redis-dc1-02', ip: '10.100.1.42' },
   { serverId: 'storage-nfs-dc1-01', ip: '10.100.1.51' },
+  { serverId: 'storage-nfs-dc1-02', ip: '10.100.1.52' },
   // DC1-AZ3 subnet (10.100.2.0/24)
   { serverId: 'lb-haproxy-dc1-02', ip: '10.100.2.1' },
+  { serverId: 'cache-redis-dc1-03', ip: '10.100.2.42' },
   { serverId: 'web-nginx-dc1-03', ip: '10.100.2.11' },
   { serverId: 'api-was-dc1-03', ip: '10.100.2.21' },
   { serverId: 'db-mysql-dc1-backup', ip: '10.100.2.31' },

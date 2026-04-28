@@ -133,9 +133,11 @@
       "cloud.region": "onprem-dc1",
       "cloud.availability_zone": "DC1-AZ3",
       "deployment.environment.name": "production",
-      "host.cpu.count": 16,
-      "host.memory.size": 68719476736,
-      "host.disk.size": 1073741824000
+      "host.cpu.count": 8,
+      "host.memory.size": 34359738368,
+      "host.disk.size": 1073741824000,
+      "server.purpose": "cold-standby",
+      "server.notes": "cold-standby / daily snapshot target"
     },
     "cache-redis-dc1-01": {
       "service.name": "openmanager-ai",
@@ -167,6 +169,23 @@
       "host.memory.size": 34359738368,
       "host.disk.size": 53687091200
     },
+    "cache-redis-dc1-03": {
+      "service.name": "openmanager-ai",
+      "host.name": "cache-redis-dc1-03.openmanager.kr",
+      "host.id": "cache-redis-dc1-03",
+      "host.arch": "amd64",
+      "server.role": "cache",
+      "os.type": "linux",
+      "os.description": "ubuntu 22.04",
+      "cloud.region": "onprem-dc1",
+      "cloud.availability_zone": "DC1-AZ3",
+      "deployment.environment.name": "production",
+      "host.cpu.count": 4,
+      "host.memory.size": 34359738368,
+      "host.disk.size": 53687091200,
+      "server.purpose": "replica",
+      "server.notes": "az3 cache replica member"
+    },
     "storage-nfs-dc1-01": {
       "service.name": "openmanager-ai",
       "host.name": "storage-nfs-dc1-01.openmanager.kr",
@@ -177,6 +196,23 @@
       "os.description": "ubuntu 22.04",
       "cloud.region": "onprem-dc1",
       "cloud.availability_zone": "DC1-AZ1",
+      "deployment.environment.name": "production",
+      "host.cpu.count": 4,
+      "host.memory.size": 17179869184,
+      "host.disk.size": 5368709120000
+    },
+    "storage-nfs-dc1-02": {
+      "service.name": "openmanager-ai",
+      "host.name": "storage-nfs-dc1-02.openmanager.kr",
+      "host.id": "storage-nfs-dc1-02",
+      "host.arch": "amd64",
+      "server.role": "storage",
+      "server.purpose": "hot-standby",
+      "server.notes": "nfs secondary node",
+      "os.type": "linux",
+      "os.description": "ubuntu 22.04",
+      "cloud.region": "onprem-dc1",
+      "cloud.availability_zone": "DC1-AZ2",
       "deployment.environment.name": "production",
       "host.cpu.count": 4,
       "host.memory.size": 17179869184,
@@ -211,6 +247,23 @@
       "host.cpu.count": 4,
       "host.memory.size": 8589934592,
       "host.disk.size": 53687091200
+    },
+    "lb-haproxy-dc1-03": {
+      "service.name": "openmanager-ai",
+      "host.name": "lb-haproxy-dc1-03.openmanager.kr",
+      "host.id": "lb-haproxy-dc1-03",
+      "host.arch": "amd64",
+      "server.role": "loadbalancer",
+      "os.type": "linux",
+      "os.description": "ubuntu 22.04",
+      "cloud.region": "onprem-dc1",
+      "cloud.availability_zone": "DC1-AZ2",
+      "deployment.environment.name": "production",
+      "host.cpu.count": 4,
+      "host.memory.size": 8589934592,
+      "host.disk.size": 53687091200,
+      "server.purpose": "pool-member",
+      "server.notes": "az2 load balancer pool member"
     },
     "lb-haproxy-dc1-02": {
       "service.name": "openmanager-ai",

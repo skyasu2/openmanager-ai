@@ -1,30 +1,15 @@
 import { forwardRef, type HTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
-/**
- * Card 컴포넌트 - Design System v1.0.0
- *
- * 디자인 시스템 토큰 활용:
- * - Border Radius: var(--radius-lg)
- * - Shadow: var(--shadow-sm)
- * - Spacing: var(--spacing-6)
- * - Typography: text-heading-2 (CardTitle)
- * - Color: var(--color-surface-50), var(--color-neutral-200)
- */
 const Card = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
   ({ className, style, ...props }, ref) => (
     <div
       ref={ref}
       className={cn(
-        'border bg-white text-gray-900 transition-shadow duration-200 hover:shadow-md',
+        'rounded-lg border border-stone-200 bg-white text-gray-900 shadow-sm transition-shadow duration-200 hover:shadow-md',
         className
       )}
-      style={{
-        borderRadius: 'var(--radius-lg)',
-        boxShadow: 'var(--shadow-sm)',
-        borderColor: 'var(--color-neutral-200)',
-        ...style,
-      }}
+      style={style}
       {...props}
     />
   )
@@ -38,11 +23,8 @@ const CardHeader = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
   ({ className, style, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('flex flex-col space-y-1.5', className)}
-      style={{
-        padding: 'var(--spacing-6)',
-        ...style,
-      }}
+      className={cn('flex flex-col space-y-1.5 p-6', className)}
+      style={style}
       {...props}
     />
   )
@@ -56,7 +38,11 @@ const CardTitle = forwardRef<
   HTMLParagraphElement,
   HTMLAttributes<HTMLHeadingElement>
 >(({ className, children, ...props }, ref) => (
-  <h3 ref={ref} className={cn('text-heading-2', className)} {...props}>
+  <h3
+    ref={ref}
+    className={cn('text-2xl font-semibold leading-[1.35]', className)}
+    {...props}
+  >
     {children}
   </h3>
 ));
@@ -71,8 +57,7 @@ const CardDescription = forwardRef<
 >(({ className, children, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn('text-body-small', className)}
-    style={{ color: 'var(--color-neutral-600)' }}
+    className={cn('text-sm leading-6 text-stone-600', className)}
     {...props}
   >
     {children}
@@ -87,12 +72,8 @@ const CardContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
   ({ className, style, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('pt-0', className)}
-      style={{
-        padding: 'var(--spacing-6)',
-        paddingTop: 0,
-        ...style,
-      }}
+      className={cn('p-6 pt-0', className)}
+      style={style}
       {...props}
     />
   )
@@ -106,12 +87,8 @@ const CardFooter = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
   ({ className, style, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('flex items-center pt-0', className)}
-      style={{
-        padding: 'var(--spacing-6)',
-        paddingTop: 0,
-        ...style,
-      }}
+      className={cn('flex items-center p-6 pt-0', className)}
+      style={style}
       {...props}
     />
   )

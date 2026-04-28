@@ -28,6 +28,10 @@ import { ImagePreviewModal } from '@/components/ui/ImagePreviewModal';
 import type { FileAttachment } from '@/hooks/ai/useFileAttachments';
 import { formatFileSize } from '@/hooks/ai/useFileAttachments';
 import type { AIStreamStatus } from '@/hooks/ai/useHybridAIQuery';
+import {
+  ANALYSIS_MODE_LABELS,
+  type AnalysisMode,
+} from '@/types/ai/analysis-mode';
 import type { SessionState } from '@/types/session';
 
 interface ChatInputAreaProps {
@@ -57,6 +61,8 @@ interface ChatInputAreaProps {
   onToggleWebSearch?: () => void;
   ragEnabled?: boolean;
   onToggleRAG?: () => void;
+  analysisMode?: AnalysisMode;
+  onSelectAnalysisMode?: (mode: AnalysisMode) => void;
 }
 
 export const ChatInputArea = memo(function ChatInputArea({
@@ -86,32 +92,58 @@ export const ChatInputArea = memo(function ChatInputArea({
   onToggleWebSearch,
   ragEnabled,
   onToggleRAG,
+  analysisMode = 'auto',
+  onSelectAnalysisMode,
 }: ChatInputAreaProps) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const popoverRef = useRef<HTMLDivElement>(null);
   const toggleButtonRef = useRef<HTMLButtonElement>(null);
 
+  const closePopover = useCallback((restoreFocus: boolean = false) => {
+    setIsPopoverOpen(false);
+    if (restoreFocus) {
+      requestAnimationFrame(() => {
+        toggleButtonRef.current?.focus();
+      });
+    }
+  }, []);
+
   // 활성화된 도구 수 (badge 표시용)
   const activeToolCount = (webSearchEnabled ? 1 : 0) + (ragEnabled ? 1 : 0);
+  const showAnalysisModeBadge = analysisMode !== 'auto';
 
   // 외부 클릭 시 popover 닫기
   useEffect(() => {
     if (!isPopoverOpen) return;
 
-    const handleClickOutside = (e: MouseEvent) => {
+    const handlePointerOutside = (e: MouseEvent | TouchEvent) => {
       if (
         popoverRef.current &&
         !popoverRef.current.contains(e.target as Node) &&
         toggleButtonRef.current &&
         !toggleButtonRef.current.contains(e.target as Node)
       ) {
-        setIsPopoverOpen(false);
+        closePopover();
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isPopoverOpen]);
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closePopover(true);
+      }
+    };
+
+    document.addEventListener('mousedown', handlePointerOutside);
+    document.addEventListener('touchstart', handlePointerOutside);
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerOutside);
+      document.removeEventListener('touchstart', handlePointerOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [closePopover, isPopoverOpen]);
 
   const handleTogglePopover = useCallback(() => {
     setIsPopoverOpen((prev) => !prev);
@@ -119,8 +151,8 @@ export const ChatInputArea = memo(function ChatInputArea({
 
   const handleFileAttach = useCallback(() => {
     onOpenFileDialog();
-    setIsPopoverOpen(false);
-  }, [onOpenFileDialog]);
+    closePopover();
+  }, [closePopover, onOpenFileDialog]);
 
   return (
     <>
@@ -206,7 +238,7 @@ export const ChatInputArea = memo(function ChatInputArea({
                     <p className="truncate text-xs font-medium text-gray-700">
                       {file.name}
                     </p>
-                    <p className="text-2xs text-gray-400">
+                    <p className="text-xs text-gray-400">
                       {formatFileSize(file.size)}
                     </p>
                   </div>
@@ -224,18 +256,29 @@ export const ChatInputArea = memo(function ChatInputArea({
           )}
 
           {/* 활성 도구 뱃지 (popover 밖에 표시) */}
-          {activeToolCount > 0 && (
+          {(activeToolCount > 0 || showAnalysisModeBadge) && (
             <div className="mb-2 flex flex-wrap gap-1.5">
               {ragEnabled && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-purple-50 px-2.5 py-0.5 text-xs font-medium text-purple-700">
+                <span
+                  className="inline-flex items-center gap-1 rounded-full bg-purple-50 px-2.5 py-0.5 text-xs font-medium text-purple-700"
+                  title="RAG 검색을 항상 허용합니다. 실제 사용 여부는 답변 근거에서 확인하세요."
+                >
                   <BookOpen className="h-3 w-3" />
-                  RAG
+                  RAG On
                 </span>
               )}
               {webSearchEnabled && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700">
+                <span
+                  className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700"
+                  title="Web 검색을 항상 허용합니다. 실제 사용 여부는 답변 근거에서 확인하세요."
+                >
                   <Globe className="h-3 w-3" />
-                  Web
+                  Web On
+                </span>
+              )}
+              {showAnalysisModeBadge && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700">
+                  {ANALYSIS_MODE_LABELS[analysisMode]}
                 </span>
               )}
             </div>
@@ -247,20 +290,21 @@ export const ChatInputArea = memo(function ChatInputArea({
             onPaste={onPaste}
           >
             {/* + 버튼 (도구 popover 트리거) */}
-            <div className="relative flex items-center pl-2">
+            <div className="relative flex items-end pb-1.5 pl-2">
               <button
                 ref={toggleButtonRef}
                 type="button"
                 onClick={handleTogglePopover}
                 disabled={sessionState?.isLimitReached}
-                className={`flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg transition-all disabled:cursor-not-allowed disabled:opacity-40 ${
-                  isPopoverOpen || activeToolCount > 0
+                className={`flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg transition-all disabled:cursor-not-allowed disabled:opacity-40 md:h-9 md:w-9 ${
+                  isPopoverOpen || activeToolCount > 0 || showAnalysisModeBadge
                     ? 'bg-blue-500/10 text-blue-500'
                     : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'
                 }`}
                 title="도구 및 옵션"
                 aria-label="도구 메뉴 열기"
                 aria-expanded={isPopoverOpen}
+                aria-haspopup="dialog"
               >
                 <Plus
                   className={`h-5 w-5 transition-transform duration-200 ${isPopoverOpen ? 'rotate-45' : ''}`}
@@ -271,13 +315,11 @@ export const ChatInputArea = memo(function ChatInputArea({
               {isPopoverOpen && (
                 <div
                   ref={popoverRef}
-                  className="absolute bottom-12 left-0 z-50 w-56 rounded-xl border border-gray-200 bg-white p-2 shadow-lg"
+                  className="absolute bottom-12 left-0 z-50 w-64 rounded-xl border border-gray-200 bg-white p-2 shadow-lg"
                 >
-                  {/* RAG 토글 */}
+                  {/* RAG source mode */}
                   {onToggleRAG && (
-                    <button
-                      type="button"
-                      onClick={onToggleRAG}
+                    <div
                       className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
                         ragEnabled
                           ? 'bg-purple-50 text-purple-700'
@@ -287,27 +329,39 @@ export const ChatInputArea = memo(function ChatInputArea({
                       <BookOpen
                         className={`h-4 w-4 ${ragEnabled ? 'text-purple-500' : 'text-gray-400'}`}
                       />
-                      <div className="flex-1 text-left">
-                        <div className="font-medium">RAG 검색</div>
+                      <div className="min-w-0 flex-1 text-left">
+                        <div className="font-medium">RAG 검색 (내부 지식)</div>
                         <div className="text-xs text-gray-500">
-                          과거 장애 이력 검색
+                          운영 지식/장애 이력 자동 판단
                         </div>
                       </div>
-                      <div
-                        className={`h-4 w-7 rounded-full transition-colors ${ragEnabled ? 'bg-purple-500' : 'bg-gray-300'}`}
-                      >
-                        <div
-                          className={`h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${ragEnabled ? 'translate-x-3' : 'translate-x-0'}`}
-                        />
-                      </div>
-                    </button>
+                      <fieldset className="grid shrink-0 grid-cols-2 gap-0.5 rounded-lg border-0 bg-gray-100 p-0.5">
+                        <legend className="sr-only">RAG 검색 모드</legend>
+                        {([false, true] as const).map((enabled) => (
+                          <button
+                            key={String(enabled)}
+                            type="button"
+                            onClick={() => {
+                              if (ragEnabled !== enabled) {
+                                onToggleRAG();
+                              }
+                            }}
+                            className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${
+                              ragEnabled === enabled
+                                ? 'bg-white text-purple-700 shadow-xs'
+                                : 'text-gray-500 hover:bg-white/70'
+                            }`}
+                          >
+                            {enabled ? 'On' : 'Auto'}
+                          </button>
+                        ))}
+                      </fieldset>
+                    </div>
                   )}
 
-                  {/* 웹 검색 토글 */}
+                  {/* Web source mode */}
                   {onToggleWebSearch && (
-                    <button
-                      type="button"
-                      onClick={onToggleWebSearch}
+                    <div
                       className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
                         webSearchEnabled
                           ? 'bg-blue-50 text-blue-700'
@@ -317,20 +371,71 @@ export const ChatInputArea = memo(function ChatInputArea({
                       <Globe
                         className={`h-4 w-4 ${webSearchEnabled ? 'text-blue-500' : 'text-gray-400'}`}
                       />
-                      <div className="flex-1 text-left">
-                        <div className="font-medium">Web 검색</div>
+                      <div className="min-w-0 flex-1 text-left">
+                        <div className="font-medium">Web 검색 (외부 웹)</div>
                         <div className="text-xs text-gray-500">
-                          최신 정보 웹 검색
+                          최신 문서/CVE는 보수적 자동 판단
                         </div>
                       </div>
-                      <div
-                        className={`h-4 w-7 rounded-full transition-colors ${webSearchEnabled ? 'bg-blue-500' : 'bg-gray-300'}`}
-                      >
-                        <div
-                          className={`h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${webSearchEnabled ? 'translate-x-3' : 'translate-x-0'}`}
-                        />
+                      <fieldset className="grid shrink-0 grid-cols-2 gap-0.5 rounded-lg border-0 bg-gray-100 p-0.5">
+                        <legend className="sr-only">Web 검색 모드</legend>
+                        {([false, true] as const).map((enabled) => (
+                          <button
+                            key={String(enabled)}
+                            type="button"
+                            onClick={() => {
+                              if (webSearchEnabled !== enabled) {
+                                onToggleWebSearch();
+                              }
+                            }}
+                            className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${
+                              webSearchEnabled === enabled
+                                ? 'bg-white text-blue-700 shadow-xs'
+                                : 'text-gray-500 hover:bg-white/70'
+                            }`}
+                          >
+                            {enabled ? 'On' : 'Auto'}
+                          </button>
+                        ))}
+                      </fieldset>
+                    </div>
+                  )}
+
+                  {onSelectAnalysisMode && (
+                    <>
+                      <div className="my-1 border-t border-gray-100" />
+
+                      <div className="px-3 py-2">
+                        <div className="mb-2 text-xs font-medium text-gray-500">
+                          응답 모드
+                        </div>
+                        <div className="grid grid-cols-2 gap-1 rounded-lg bg-gray-100 p-1">
+                          {(['auto', 'thinking'] as AnalysisMode[]).map(
+                            (mode) => {
+                              const selected = analysisMode === mode;
+                              return (
+                                <button
+                                  key={mode}
+                                  type="button"
+                                  onClick={() => onSelectAnalysisMode(mode)}
+                                  className={`rounded-md px-2 py-1.5 text-xs font-medium transition-colors ${
+                                    selected
+                                      ? 'bg-white text-emerald-700 shadow-xs'
+                                      : 'text-gray-600 hover:bg-white/70'
+                                  }`}
+                                >
+                                  {ANALYSIS_MODE_LABELS[mode]}
+                                </button>
+                              );
+                            }
+                          )}
+                        </div>
+                        <p className="mt-2 text-xs leading-relaxed text-gray-500">
+                          심층 분석은 숨겨진 모델 추론이 아니라 더 긴
+                          분석/라우팅 경로입니다.
+                        </p>
                       </div>
-                    </button>
+                    </>
                   )}
 
                   {/* 구분선 */}
@@ -347,7 +452,7 @@ export const ChatInputArea = memo(function ChatInputArea({
                     <div className="flex-1 text-left">
                       <div className="font-medium">파일 첨부</div>
                       <div className="text-xs text-gray-500">
-                        이미지, PDF, MD ({attachments.length}/3)
+                        이미지/PDF/MD 시각·문서 분석 ({attachments.length}/3)
                       </div>
                     </div>
                   </button>
@@ -368,10 +473,10 @@ export const ChatInputArea = memo(function ChatInputArea({
                       ? '요청 전송 중입니다... 잠시만 기다려주세요'
                       : '대답 중에도 편하게 입력하세요 (대기열에 추가됨)'
                     : attachments.length > 0
-                      ? '이미지/파일과 함께 질문하세요...'
-                      : '메시지를 입력하세요...'
+                      ? '이미지/파일 분석 (시각·문서 분석) — 질문을 입력하세요'
+                      : '서버 운영 질문을 입력하세요'
               }
-              className="flex-1 resize-none border-none bg-transparent px-2 py-3 pr-14 text-chat text-gray-900 placeholder:text-gray-400 focus:outline-hidden focus:ring-0"
+              className="flex-1 resize-none border-none bg-transparent px-2 py-3 text-chat text-gray-900 placeholder:text-gray-400 focus:outline-hidden focus:ring-0"
               minHeight={48}
               maxHeight={200}
               maxHeightVh={30}
@@ -380,12 +485,12 @@ export const ChatInputArea = memo(function ChatInputArea({
             />
 
             {/* 전송/중단 버튼 */}
-            <div className="absolute bottom-2 right-2 flex items-center gap-1">
+            <div className="flex shrink-0 items-end gap-1 pb-1.5 pr-2">
               {isGenerating && onStopGeneration && (
                 <button
                   type="button"
                   onClick={onStopGeneration}
-                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-500 text-white shadow-sm transition-all hover:bg-red-600"
+                  className="flex h-11 w-11 items-center justify-center rounded-lg bg-red-500 text-white shadow-sm transition-all hover:bg-red-600 md:h-9 md:w-9"
                   title="생성 중단"
                   aria-label="생성 중단"
                 >
@@ -399,7 +504,7 @@ export const ChatInputArea = memo(function ChatInputArea({
                   (!inputValue.trim() && attachments.length === 0) ||
                   sessionState?.isLimitReached
                 }
-                className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500 text-white shadow-sm transition-all hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
+                className="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-500 text-white shadow-sm transition-all hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40 md:h-9 md:w-9"
                 title={
                   isGenerating
                     ? streamStatus === 'submitted'
@@ -442,6 +547,7 @@ export const ChatInputArea = memo(function ChatInputArea({
                   {attachments.length}/3 파일
                 </span>
               )}
+              <span>서버 운영 중심</span>
             </div>
             <span>Enter로 전송, Shift+Enter로 줄바꿈</span>
           </div>

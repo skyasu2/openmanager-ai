@@ -72,11 +72,11 @@ const JOB_STREAM_ROUTE_MAX_DURATION_SECONDS = 60;
 
 export const ACTIVE_POLL_INTERVAL_MS = getPollIntervalFromEnv(
   'AI_JOB_STREAM_POLL_INTERVAL_MS',
-  200
+  1000
 );
 export const QUEUED_POLL_INTERVAL_MS = getPollIntervalFromEnv(
   'AI_JOB_STREAM_QUEUED_POLL_INTERVAL_MS',
-  1000
+  2000
 );
 export const getJobStreamMaxWaitTimeMs = (): number => {
   const routeBudgetMs = getRouteMaxExecutionMs(

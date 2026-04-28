@@ -1,0 +1,185 @@
+/* 클릭 가능한 요소에 전역 pointer cursor 적용 (disabled 제외) */
+button:not(:disabled),
+[role='button']:not([aria-disabled='true']),
+summary,
+a[href],
+select:not(:disabled),
+[type='button']:not(:disabled),
+[type='submit']:not(:disabled),
+[type='reset']:not(:disabled) {
+  cursor: pointer;
+}
+
+/* Tailwind preflight가 box-sizing 처리, padding/margin은 유틸리티에 위임 */
+* {
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--primary)) rgba(0, 0, 0, 0.1);
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  touch-action: manipulation;
+  /* Tailwind v4의 font-sans만으로는 일부 surface가 흔들려 직접 고정 */
+  font-family: 'Inter', 'Noto Sans KR', ui-sans-serif, system-ui,
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, 'Noto Sans', sans-serif;
+  line-height: 1.6;
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* 스크롤바 스타일링 (Webkit) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, var(--primary-dark), var(--secondary));
+}
+
+@keyframes gradient-diagonal {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.88;
+  }
+}
+
+.animate-gradient-diagonal {
+  display: inline-block;
+  animation: gradient-diagonal 6s ease-in-out infinite;
+  will-change: opacity;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s linear infinite;
+}
+
+.bg-ai-card-gradient {
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.3),
+    rgba(236, 72, 153, 0.3),
+    rgba(34, 211, 238, 0.3),
+    rgba(59, 130, 246, 0.3)
+  );
+  background-size: 200% 200%;
+  animation: gradient-shift 4s ease-in-out infinite;
+  animation-play-state: paused;
+  contain: layout paint;
+}
+
+.group:hover .bg-ai-card-gradient,
+.bg-ai-card-gradient:focus-within {
+  animation-play-state: running;
+  will-change: background-position;
+}
+
+.bg-vibe-card-gradient {
+  background: linear-gradient(135deg, #f59e0b, #ea580c, #b91c1c, #f59e0b);
+  background-size: 200% 200%;
+  animation: gradient-shift 4s ease-in-out infinite;
+  animation-play-state: paused;
+  contain: layout paint;
+}
+
+.group:hover .bg-vibe-card-gradient,
+.bg-vibe-card-gradient:focus-within {
+  animation-play-state: running;
+  will-change: background-position;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-ai-card-gradient,
+  .bg-vibe-card-gradient,
+  .animate-gradient-diagonal {
+    animation: none;
+    will-change: auto;
+  }
+}
+
+.touch-text-safe-xs,
+.touch-text-safe-sm {
+  font-size: 1rem;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .touch-text-safe-xs {
+    font-size: 0.75rem;
+  }
+
+  .touch-text-safe-sm {
+    font-size: 0.875rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  :root {
+    --primary: 211 100% 35%;
+    --secondary: 120 100% 20%;
+    --accent: 0 65% 51%;
+    --text-primary: #000000;
+    --text-secondary: #212121;
+  }
+
+  .wave-particles {
+    opacity: 0.6;
+    filter: blur(0.3px);
+  }
+
+  .bg-gradient-to-r {
+    background: var(--primary);
+    color: white;
+    border: 2px solid var(--primary);
+  }
+
+  .text-white\/80 {
+    color: rgba(255, 255, 255, 0.95);
+  }
+
+  .text-white\/70 {
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+  }
+
+  body {
+    background: #0f172a;
+    color: var(--text-primary);
+  }
+}

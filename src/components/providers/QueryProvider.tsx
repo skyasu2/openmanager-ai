@@ -8,16 +8,20 @@
 'use client';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { lazy, type ReactNode, Suspense } from 'react';
+import dynamic from 'next/dynamic';
+import { type ReactNode, useEffect, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-// React Query DevTools 동적 로드 (개발 환경에서만)
+// React Query DevTools는 개발 환경에서만 클라이언트 렌더링으로 로드한다.
+// React.lazy()는 기본적으로 프리렌더링되므로 hydration mismatch를 유발할 수 있다.
 const ReactQueryDevtools =
   process.env.NODE_ENV === 'development'
-    ? lazy(() =>
-        import('@tanstack/react-query-devtools').then((module) => ({
-          default: module.ReactQueryDevtools,
-        }))
+    ? dynamic(
+        () =>
+          import('@tanstack/react-query-devtools').then(
+            (module) => module.ReactQueryDevtools
+          ),
+        { ssr: false, loading: () => null }
       )
     : null;
 
@@ -65,7 +69,7 @@ interface QueryProviderProps {
 function QueryErrorBoundary({ children }: { children: ReactNode }) {
   return (
     <ErrorBoundary
-      fallback={
+      fallbackRender={({ resetErrorBoundary }) => (
         <div className="flex min-h-screen items-center justify-center">
           <div className="text-center">
             <h2 className="mb-4 text-2xl font-bold text-red-600">
@@ -73,14 +77,14 @@ function QueryErrorBoundary({ children }: { children: ReactNode }) {
             </h2>
             <button
               type="button"
-              onClick={() => window.location.reload()}
+              onClick={resetErrorBoundary}
               className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
             >
-              페이지 새로고침
+              다시 시도
             </button>
           </div>
         </div>
-      }
+      )}
     >
       {children}
     </ErrorBoundary>
@@ -94,16 +98,20 @@ function QueryErrorBoundary({ children }: { children: ReactNode }) {
  * 에러 바운더리로 안정성을 보장합니다.
  */
 export default function QueryProvider({ children }: QueryProviderProps) {
+  const [isDevtoolsMounted, setIsDevtoolsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsDevtoolsMounted(true);
+  }, []);
+
   return (
     <QueryErrorBoundary>
       <QueryClientProvider client={queryClient}>
         {children}
         {/* 개발 환경에서만 DevTools 동적 로드 (프로덕션 번들에서 제외) */}
-        {ReactQueryDevtools && (
-          <Suspense fallback={null}>
-            <ReactQueryDevtools initialIsOpen={false} />
-          </Suspense>
-        )}
+        {isDevtoolsMounted && ReactQueryDevtools ? (
+          <ReactQueryDevtools initialIsOpen={false} />
+        ) : null}
       </QueryClientProvider>
     </QueryErrorBoundary>
   );
