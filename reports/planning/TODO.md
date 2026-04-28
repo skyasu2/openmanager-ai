@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-29 KST (`Deployment drift guard completed`)
+**Last Updated**: 2026-04-29 KST (`Vercel font source guard completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -31,6 +31,12 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-29 #221)
+- [x] Vercel Google font build-fetch regression guard
+  - `next/font/google` 재도입 시 GitLab self-hosted runner의 build-time `fonts.gstatic.com` fetch 실패가 Vercel prebuilt deploy를 막을 수 있어, active `src` 소스에서 해당 참조를 차단하는 quick test guard를 추가
+  - 기존 system/CSS font fallback은 유지하고, 실제 font asset이 필요하면 `next/font/local`로 vendoring하는 정책을 고정
+  - 검증: targeted Vitest, `test:quick`, targeted Biome check 통과
 
 ### Completed (2026-04-29 #220)
 - [x] Deployment drift guard and AI deploy skip
