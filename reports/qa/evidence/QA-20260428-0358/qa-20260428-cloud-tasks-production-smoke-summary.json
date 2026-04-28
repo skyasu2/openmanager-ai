@@ -1,0 +1,72 @@
+{
+  "runTitle": "Cloud Tasks Job Queue production smoke - v8.11.52",
+  "executedAtKst": "2026-04-28 22:20:47 KST",
+  "version": "8.11.52",
+  "commitSha": "de3f14cfb203a07db048e272da97740eb3d8571a",
+  "cloudRun": {
+    "service": "ai-engine",
+    "region": "asia-northeast1",
+    "revision": "ai-engine-00365-nv5",
+    "trafficPercent": 100,
+    "labelVersion": "de3f14c"
+  },
+  "preFixFailure": {
+    "jobId": "codex-cloudtasks-20260428220118",
+    "dispatchStatus": 202,
+    "symptom": "Cloud Tasks target was generated as http://*.run.app/api/jobs/process, Cloud Run returned 302, the redirected request reached Hono as GET /api/jobs/process and returned 404. Job progress remained queued and final result lookup returned 404."
+  },
+  "postFixSmoke": {
+    "jobId": "codex-cloudtasks-20260428222030",
+    "dispatch": {
+      "httpStatus": 202,
+      "success": true,
+      "dispatchMode": "cloud-tasks",
+      "taskName": "projects/openmanager-free-tier/locations/asia-northeast1/queues/openmanager-ai-jobs/tasks/60333273421258004061"
+    },
+    "result": {
+      "httpStatus": 200,
+      "success": true,
+      "status": "completed",
+      "processingTimeMs": 16988,
+      "textLength": 160,
+      "metadata": {
+        "analysisMode": "thinking",
+        "enableRAG": false,
+        "enableWebSearch": false
+      },
+      "toolsCalled": [
+        "getServerMetrics",
+        "finalAnswer",
+        "getServerMetrics",
+        "finalAnswer"
+      ]
+    }
+  },
+  "cloudRunLogProof": {
+    "requestMethod": "POST",
+    "requestUrl": "https://ai-engine-jdhrhws7ia-an.a.run.app/api/jobs/process",
+    "status": 200,
+    "userAgent": "Google-Cloud-Tasks",
+    "latency": "17.022779335s",
+    "revision": "ai-engine-00365-nv5"
+  },
+  "pipeline": {
+    "mainPipeline": {
+      "id": 2485312996,
+      "status": "success",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2485312996"
+    },
+    "tagPipeline": {
+      "id": 2485312954,
+      "status": "success",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2485312954"
+    }
+  },
+  "usage": {
+    "vercelEffectiveUsd": 18.4121,
+    "vercelBilledUsd": 0,
+    "cloudTasksQueue": "openmanager-ai-jobs",
+    "cloudTasksProject": "openmanager-free-tier",
+    "cloudTasksLocation": "asia-northeast1"
+  }
+}
