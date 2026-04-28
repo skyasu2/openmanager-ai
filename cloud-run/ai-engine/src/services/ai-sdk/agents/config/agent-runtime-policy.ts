@@ -47,6 +47,13 @@ export const CEREBRAS_FIRST_PROVIDER_ORDER = [
   'groq',
   'mistral',
 ] as const;
+// Mistral-first: simple text generation tasks (no tools needed, short output).
+// Suitable for summarization fallback — saves Groq/Cerebras RPD for agent calls.
+export const MISTRAL_FIRST_PROVIDER_ORDER = [
+  'mistral',
+  'groq',
+  'cerebras',
+] as const;
 
 const DEFAULT_AGENT_RUNTIME_POLICY: AgentRuntimePolicy = {
   providerOrder: TEXT_AGENT_PROVIDER_ORDER,

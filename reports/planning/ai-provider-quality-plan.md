@@ -94,6 +94,28 @@ Advisor가 Cerebras-first로 이동하면 Groq 실질 소비는 Cerebras 장애 
 - `npm run type-check` 통과
 - `npm run test:quick` 통과
 
+### Phase 1.5: Mistral 적극 배치 + 임베딩 레거시 삭제 (2026-04-28)
+
+- [x] T4a. `MISTRAL_FIRST_PROVIDER_ORDER` 추가 — `agent-runtime-policy.ts` + `config/index.ts` barrel export
+  - 서머라이제이션 fallback(단순 텍스트 생성, no tools)에 적용 → Groq/Cerebras RPD 절약
+- [x] T4b. `orchestrator-routing.ts` 서머라이제이션 fallback — `providerOrder` → `MISTRAL_FIRST_PROVIDER_ORDER`
+  - 파일: `src/services/ai-sdk/agents/orchestrator-routing.ts` (line 922)
+  - 이유: fallback은 no-tool 단순 요약 — Mistral Large 256K ctx, 500 RPD/일 충분
+- [x] T4c. 임베딩 레거시 삭제 (KRL 전환으로 미사용)
+  - 삭제: `lib/embedding.ts`, `lib/mistral-provider.ts`, `lib/incident-rag-injector.ts`,
+    `lib/incident-rag-injector-utils.ts`, `lib/topology-rag-injector.ts`,
+    `server-incident-rag-backfill.ts`, `server-topology-rag-backfill.ts`, `routes/embedding.ts`
+  - 삭제(테스트): `lib/embedding.test.ts`, `lib/topology-rag-injector.test.ts`,
+    `server-knowledge-sync.test.ts`, `routes/embedding.test.ts`
+  - 수정: `server.ts` (embeddingRouter 제거), `approval-store.ts` (syncIncidentsToRAG 제거)
+
+#### Phase 1.5 검증 (2026-04-28)
+
+- `cd cloud-run/ai-engine && npm run type-check` 통과
+- `cd cloud-run/ai-engine && npm run test` 통과 (`80 files / 869 tests`)
+- `npm run type-check` 통과 (57.9s)
+- `npm run test:quick` 통과 (163 tests)
+
 ### Phase 2: NLQ 프롬프트 계층화 (P1)
 
 현재 `nlq.ts`는 단일 400줄 프롬프트. 17B 모델에게 매 요청마다 전체 파싱을 강제함.

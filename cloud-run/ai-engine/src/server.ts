@@ -19,8 +19,6 @@ import { logAPIKeyStatus, validateAPIKeys } from './lib/model-config';
 import { getConfigStatus, getLangfuseConfig } from './lib/config-parser';
 import { isRedisAvailable } from './lib/redis-client';
 import { getCurrentState, initOTelDataAsync } from './data/precomputed-state';
-import { setupIncidentRagBackfill } from './server-incident-rag-backfill';
-import { setupTopologyRagBackfill } from './server-topology-rag-backfill';
 import { buildApiNotReadyResponse, shouldBlockApiRequest } from './server-readiness';
 import { registerAdminRoutes } from './server-admin-routes';
 import { preinitializeLlmProviders } from './server-llm-preinit';
@@ -195,7 +193,6 @@ registerAdminRoutes(app, verifyApiKey);
 async function registerRoutes() {
   const [
     { supervisorRouter },
-    { embeddingRouter },
     { generateRouter },
     { approvalRouter },
     { analyticsRouter },
@@ -205,7 +202,6 @@ async function registerRoutes() {
     { providersRouter },
   ] = await Promise.all([
     import('./routes/supervisor.js'),
-    import('./routes/embedding.js'),
     import('./routes/generate.js'),
     import('./routes/approval.js'),
     import('./routes/analytics.js'),
@@ -216,7 +212,6 @@ async function registerRoutes() {
   ]);
 
   app.route('/api/ai/supervisor', supervisorRouter);
-  app.route('/api/ai/embedding', embeddingRouter);
   app.route('/api/ai/generate', generateRouter);
   app.route('/api/ai/approval', approvalRouter);
   app.route('/api/ai', analyticsRouter);
@@ -287,11 +282,6 @@ registerRoutes().catch((err) => {
     err instanceof Error ? err.message : String(err);
   logger.error({ err }, 'Failed to register API routes');
 });
-
-// Optional Knowledge Retrieval corpus sync. Disabled by default to keep the
-// Cloud Run request path stateless and free-tier friendly.
-setupIncidentRagBackfill();
-setupTopologyRagBackfill();
 
 // Pre-initialize LLM provider singletons to reduce first-query latency.
 // These are lightweight object creations (no network calls); the singleton

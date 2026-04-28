@@ -23,7 +23,6 @@ import {
   redisDel,
   isRedisAvailable,
 } from '../../lib/redis-client';
-import { syncIncidentsToRAG } from '../../lib/incident-rag-injector';
 import { logger } from '../../lib/logger';
 import {
   fetchApprovalHistory,
@@ -238,18 +237,6 @@ class ApprovalStore {
     logger.info(
       `[Approval] Decision submitted: ${sessionId} -> ${approved ? 'APPROVED' : 'REJECTED'}`
     );
-
-    // Auto-sync to RAG when incident_report is approved
-    if (approved && entry.pending.actionType === 'incident_report') {
-      // Fire-and-forget: don't block the approval response
-      syncIncidentsToRAG({ limit: 1, daysBack: 1 }).then((result) => {
-        if (result.synced > 0) {
-          logger.info(`[Approval] Auto-synced incident to RAG: ${sessionId}`);
-        }
-      }).catch((e) => {
-        logger.warn(`[Approval] RAG auto-sync failed for ${sessionId}:`, e);
-      });
-    }
 
     return true;
   }

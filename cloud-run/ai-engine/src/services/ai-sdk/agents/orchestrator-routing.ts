@@ -18,6 +18,7 @@ import { sanitizeChineseCharacters } from '../../../lib/text-sanitizer';
 import { extractToolResultOutput } from '../../../lib/ai-sdk-utils';
 import {
   AGENT_NAMES,
+  MISTRAL_FIRST_PROVIDER_ORDER,
   getAgentEvidenceBudget,
   getAgentMaxSteps as getRuntimeAgentMaxSteps,
   getAgentConfig as getNamedAgentConfig,
@@ -919,7 +920,7 @@ export async function executeForcedRouting(
             temperature: 0.4,
             maxOutputTokens: SUMMARIZATION_FALLBACK_MAX_OUTPUT_TOKENS,
           },
-          providerOrder,
+          [...MISTRAL_FIRST_PROVIDER_ORDER],
           { timeoutMs: SUMMARIZATION_FALLBACK_TIMEOUT_MS }
         );
 
