@@ -210,14 +210,17 @@ Advisor가 Cerebras-first로 이동하면 Groq 실질 소비는 Cerebras 장애 
 
 ### Phase 4: Supervisor 시스템 프롬프트 보강 (P2)
 
-- [ ] T11. 에이전트 라우팅 컨텍스트 힌트 추가
+- [x] T11. 에이전트 라우팅 컨텍스트 힌트 추가
   - 파일: `cloud-run/ai-engine/src/services/ai-sdk/supervisor-routing.ts`
-  - 현재 SYSTEM_PROMPT_BASE는 "요약 우선" 원칙만 존재
-  - 추가: 어떤 질의가 어떤 에이전트로 라우팅되는지 supervisor가 인지하도록 컨텍스트 힌트 추가
-  - 예: "이상감지/분석 질의는 Analyst Agent가 처리합니다. 보고서 생성은 Reporter Agent가 처리합니다"
+  - 추가: NLQ/Analyst/Reporter/Advisor/Vision Agent 역할 경계를 supervisor 시스템 프롬프트에 명시
+  - 목적: multi-agent 결과 종합 시 질의 목적과 전문 에이전트 역할이 어긋나지 않도록 컨텍스트 제공
 
-- [ ] T12. 테스트
+- [x] T12. 테스트
   - supervisor 시스템 프롬프트에 에이전트 힌트 포함 여부 contract 테스트
+
+#### Phase 4 검증 (2026-04-28)
+
+- `cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/supervisor-routing.test.ts` 통과
 
 ---
 
