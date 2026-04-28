@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.57](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.56...v8.11.57) (2026-04-28)
+
+
+### Bug Fixes
+
+* **ui:** enforce mobile ai input action targets ([9f67147](https://gitlab.com/skyasu2/openmanager-ai/-/commit/9f67147551b4321513040f42796618a0890d4dbf))
+
 ## [8.11.56](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.55...v8.11.56) (2026-04-28)
 
 
