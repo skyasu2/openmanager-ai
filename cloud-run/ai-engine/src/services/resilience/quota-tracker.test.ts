@@ -13,6 +13,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 // Redis mock — getRedisClient()가 null 반환하도록 기본 설정
 vi.mock('../../lib/redis-client', () => ({
   getRedisClient: vi.fn(() => null),
+  isRedisDegraded: vi.fn(() => false),
 }));
 
 // logger mock

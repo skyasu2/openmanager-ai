@@ -17,7 +17,10 @@ import { verifyApiKeyValue } from './lib/api-key-auth';
 // Configuration
 import { logAPIKeyStatus, validateAPIKeys } from './lib/model-config';
 import { getConfigStatus, getLangfuseConfig } from './lib/config-parser';
-import { isRedisAvailable } from './lib/redis-client';
+import {
+  getRedisCircuitState,
+  isRedisAvailable,
+} from './lib/redis-client';
 import { getCurrentState, initOTelDataAsync } from './data/precomputed-state';
 import { buildApiNotReadyResponse, shouldBlockApiRequest } from './server-readiness';
 import { registerAdminRoutes } from './server-admin-routes';
@@ -131,14 +134,21 @@ app.onError((err: Error, c: Context) => {
 /**
  * GET /health - Health Check
  */
-app.get('/health', (c: Context) =>
-  c.json(
+app.get('/health', (c: Context) => {
+  const redisCircuit = getRedisCircuitState();
+
+  return c.json(
     {
       status: routeRegistrationFailed ? 'degraded' : 'ok',
       service: 'ai-engine',
       version: APP_VERSION,
       config: getConfigStatus(),
-      redis: isRedisAvailable(),
+      redis: {
+        configured: isRedisAvailable(),
+        degraded: redisCircuit.state !== 'closed',
+        state: redisCircuit.state,
+        retryAfterMs: redisCircuit.retryAfterMs,
+      },
       api: {
         routesReady,
         routeRegistrationFailed,
@@ -149,8 +159,8 @@ app.get('/health', (c: Context) =>
       timestamp: new Date().toISOString(),
     },
     routeRegistrationFailed ? 503 : 200
-  )
-);
+  );
+});
 
 /**
  * GET /warmup - Warm-up Endpoint (Lightweight)

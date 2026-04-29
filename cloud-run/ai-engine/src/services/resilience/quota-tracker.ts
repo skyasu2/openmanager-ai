@@ -11,7 +11,7 @@
  * @updated 2026-03-06 - Groq/Gemini/Cerebras 수치 공식 문서 기준 교정
  */
 
-import { getRedisClient } from '../../lib/redis-client';
+import { getRedisClient, isRedisDegraded } from '../../lib/redis-client';
 import { logger } from '../../lib/logger';
 import {
   getCerebrasFallbackModelIds,
@@ -903,6 +903,12 @@ export async function reserveProviderQuota(
 
   if (redisReservation) {
     return redisReservation;
+  }
+
+  // Redis 미가용(Circuit open 또는 설정 없음) → in-memory fallback
+  // MAX_INSTANCES=1이므로 단일 프로세스 내 lock으로 동시성 보장
+  if (isRedisDegraded()) {
+    logger.warn(`[QuotaTracker] Redis degraded — using in-memory quota for ${getUsageScope(provider, modelId)}`);
   }
 
   return withUsageLock(provider, modelId, async () => {

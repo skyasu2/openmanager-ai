@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-29 KST (`Provider quota admission gate`)
+**Last Updated**: 2026-04-29 KST (`Redis Circuit Breaker + health endpoint degraded state`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -31,6 +31,16 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-29 #226)
+- [x] Redis Circuit Breaker + health endpoint degraded 상태 노출
+  - `redis-client.ts`에 Circuit Breaker 내장: 연속 3회 실패 → 30초 OPEN → HALF-OPEN probe → 자동 복구
+  - OPEN 상태에서 `fetchRedis()` 즉시 null 반환 → 1초 timeout 낭비 없이 in-memory fallback 즉시 진입
+  - `isRedisDegraded()` export → `quota-tracker.ts`에서 degraded 진입 시 warn 로그
+  - `RedisClient.set()`/`redisSet()`이 circuit open 또는 Redis SET 실패를 `false`로 반환하도록 정렬해 job result 저장 실패 오판을 차단
+  - `/health` 응답을 `redis: boolean` → `redis: { configured, degraded, state, retryAfterMs }` 로 구조화하여 운영 가시성 확보
+  - `ai-engine-architecture.md` Resilience 섹션: Quota Admission Gate 상세, Redis Circuit Breaker 동작, 장애 시나리오표 갱신
+  - 검증: `redis-client.test.ts` Circuit Breaker/write-result 케이스 추가, `job-notifier.test.ts`, `quota-tracker.test.ts` mock 보완, targeted 54/54, `cloud-run/ai-engine npm test` 933/933 통과
 
 ### Completed (2026-04-29 #225)
 - [x] Provider quota admission gate + cooldown

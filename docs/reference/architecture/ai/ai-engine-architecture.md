@@ -385,11 +385,13 @@ for await (const event of streamAgent('analyst', '이상 탐지')) { ... }
 │ Capability Registry / Preflight Gate      │
 │  tool-calling / structured-output 사전 차단 │
 ├──────────────────────────────────────────┤
-│ Circuit Breaker (provider별)              │
+│ Provider Circuit Breaker (provider별)     │
 │  5회 실패 → OPEN (30초) → HALF_OPEN     │
 ├──────────────────────────────────────────┤
-│ Quota Tracker (Redis 기반)                │
-│  80% 도달 → 사전 전환 (Pre-emptive)      │
+│ Quota Admission Gate (호출 전 사전 예약)   │
+│  Redis atomic EVAL → 85% 임박 시 차단     │
+│  429/queue_exceeded → 90초 cooldown      │
+│  실제 사용량 확인 후 token delta 보정      │
 ├──────────────────────────────────────────┤
 │ Retry with Fallback (3-way)              │
 │  429/502/503/504 → 다음 provider         │
@@ -402,17 +404,75 @@ for await (const event of streamAgent('analyst', '이상 탐지')) { ... }
 └──────────────────────────────────────────┘
 ```
 
+### Quota Admission Gate 상세
+
+LLM 호출 **전에** 예약(admission)을 요청하고, 호출 **후에** 실제 사용량으로 보정하는 2단계 구조.
+
+```
+호출 전: reserveProviderQuota(provider, estimatedTokens)
+  → Redis EVAL atomic: cooldown 확인 → 일일/분당 limit 확인 → 예약
+  → Redis 불가: in-memory fallback (withUsageLock 직렬화)
+
+호출 후: reconcileProviderQuotaReservation(reservation, actualTokensUsed)
+  → 실제 토큰 - 예약 토큰 = delta를 Redis/in-memory 모두 보정
+```
+
+**Provider별 Quota 기준 (Free Tier)**
+
+| Provider | RPM | TPM | RPD |
+|----------|----:|----:|----:|
+| Cerebras Qwen | **5** | 30,000 | 14,400 |
+| Cerebras Llama | 30 | 60,000 | 14,400 |
+| Groq | 30 | 500,000 | 1,000 |
+| Mistral | 2 | — | — |
+| Gemini Flash-Lite | 15 | — | 1,000 |
+
+Pre-emptive 차단 임계값: 일일 토큰 80%, 일일 요청/분당 요청/분당 토큰 85%.
+
+### Redis Circuit Breaker (redis-client.ts)
+
+Redis 자체 장애 시 매 호출마다 1초 timeout을 낭비하지 않도록 Circuit Breaker를 내장.
+
+```
+정상: Redis EVAL 성공 → 실패 카운터 초기화
+장애: 연속 3회 실패 → circuit OPEN (30초)
+OPEN: fetchRedis() 즉시 null 반환 (0ms) → quota-tracker in-memory fallback 즉시 진입
+30초 후: HALF-OPEN → 동시 probe 1회만 허용
+  probe 성공 → circuit CLOSED, 카운터 초기화
+  probe 실패 → circuit 다시 OPEN 30초
+```
+
+Redis 장애 여부는 `/health` 응답의 `redis.degraded`/`redis.state` 필드로 확인 가능하다. 이 조회는 read-only이며 HALF_OPEN probe를 소비하지 않는다.
+
+```json
+{
+  "redis": {
+    "configured": true,
+    "degraded": false,
+    "state": "closed",
+    "retryAfterMs": 0
+  }
+}
+```
+
+**Redis 장애 시 안전성 (MAX_INSTANCES=1 기준)**
+
+- 단일 인스턴스 내 `withUsageLock` promise chain으로 동시 요청 직렬화 → race-free
+- rolling deployment(수초 창) 동안 구·신 인스턴스 각자 Redis 없이 in-memory 추적 → 이 짧은 구간에서 quota 공유 불가 (허용된 trade-off)
+- reconcile 실패 시 예약 토큰이 유지됨 → 보수적으로 동작하므로 실제 초과 위험 없음
+
 ### Fallback 발생 시 사용자 체감 지연 시나리오
 
 | 시나리오 | 예상 추가 지연 | 사용자 통보 (`agent_status`) |
 |---------|:-----------:|---------------------------|
-| Circuit Breaker OPEN (사전 차단) | ~0ms (즉시 전환) | `provider 일시 차단됨, 대안 모델로 전환 중...` |
+| Quota Admission 차단 (사전) | ~0ms | `provider 쿼터 보호로 대안 모델로 전환 중...` |
+| Provider Circuit Breaker OPEN | ~0ms | `provider 일시 차단됨, 대안 모델로 전환 중...` |
 | 429 Rate Limit → 다음 provider | ~0–500ms | `provider 응답 없음, 대안 모델로 전환 중...` |
 | 타임아웃 후 fallback (408/500) | +2–10s (backoff) | `provider 오류 발생, 대안 모델로 전환 중...` |
 | 모든 provider 소진 | N/A | `error`: ALL_PROVIDERS_FAILED |
 
 > **가장 큰 지연 원인**: tool timeout(25s) 소진 후 provider 전환이 누적될 때 single stream은 최대 120s, multi-agent는 Orchestrator 90s 한도 안에서 지연이 커질 수 있습니다.
-> **완화책**: Circuit Breaker가 5회 실패 감지 시 OPEN 전환 → 이후 요청은 즉시 차단 후 전환하여 cascading 지연 차단
+> **완화책**: Quota Admission Gate가 RPM 85% 도달 시 호출 전 차단 → 실제 429 발생 이전에 다음 provider로 전환. Redis Circuit Breaker가 3회 실패 후 30초 동안 Redis 시도를 차단하여 timeout 낭비 방지.
 
 ### Reporter Pipeline (Evaluator-Optimizer)
 

@@ -26,7 +26,12 @@ const HealthResponseSchema = z.object({
   service: z.literal('ai-engine'),
   version: z.string(),
   config: z.record(z.unknown()),
-  redis: z.boolean(),
+  redis: z.object({
+    configured: z.boolean(),
+    degraded: z.boolean(),
+    state: z.enum(['closed', 'open', 'half_open']),
+    retryAfterMs: z.number(),
+  }),
   timestamp: z.string(),
 });
 

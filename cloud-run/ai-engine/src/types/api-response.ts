@@ -115,7 +115,12 @@ export interface HealthResponseData {
   status: 'ok' | 'degraded' | 'error';
   service: string;
   config?: Record<string, unknown>;
-  redis?: boolean;
+  redis?: {
+    configured: boolean;
+    degraded: boolean;
+    state: 'closed' | 'open' | 'half_open';
+    retryAfterMs: number;
+  };
   version?: string;
 }
 
