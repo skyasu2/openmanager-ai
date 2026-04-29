@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-29T07:43:13.729Z"
+    "updatedAt": "2026-04-29T09:41:31.768Z"
   },
   "sequence": {
-    "nextRunNumber": 370
+    "nextRunNumber": 371
   },
   "summary": {
-    "totalRecordedRuns": 367,
-    "totalRuns": 297,
+    "totalRecordedRuns": 368,
+    "totalRuns": 298,
     "excludedRuns": 70,
-    "totalChecks": 2522,
-    "totalPassed": 2430,
+    "totalChecks": 2530,
+    "totalPassed": 2438,
     "totalFailed": 83,
-    "completionRate": 99.45,
-    "completedItems": 361,
-    "pendingItems": 2,
+    "completionRate": 100,
+    "completedItems": 363,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 19,
     "expertDomainsTracked": 10,
-    "expertDomainsOpenGaps": 2,
-    "lastRunId": "QA-20260429-0369",
-    "lastRecordedAt": "2026-04-29T07:43:13.729Z",
-    "latestRecordedRunId": "QA-20260429-0369",
-    "latestRecordedAt": "2026-04-29T07:43:13.729Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260429-0370",
+    "lastRecordedAt": "2026-04-29T09:41:31.768Z",
+    "latestRecordedRunId": "QA-20260429-0370",
+    "latestRecordedAt": "2026-04-29T09:41:31.768Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -8854,49 +8854,49 @@
       "id": "deploy-query-as-of-fix-to-production",
       "title": "Deploy query-as-of metric slot fix to Vercel production",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260429-0369",
       "firstSeenAt": "2026-04-29T07:43:13.729Z",
-      "lastSeenRunId": "QA-20260429-0369",
-      "lastSeenAt": "2026-04-29T07:43:13.729Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260429-0370",
+      "lastSeenAt": "2026-04-29T09:41:31.768Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "",
+      "lastEvidence": "v8.11.60 production /api/version reports 6d97486d1 and GitLab tag pipeline 2487846461 succeeded.",
       "lastNote": "Production still reports v8.11.59 / 94f4dea, while the latest pushed fix is 198183658.",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-04-29T07:43:13.729Z"
+      "lastStatusChangeAt": "2026-04-29T09:41:31.768Z"
     },
     "ai-analysis-main-response-empty-on-cerebras-quota": {
       "id": "ai-analysis-main-response-empty-on-cerebras-quota",
       "title": "Prevent empty main AI analysis response when Cerebras queue or token quota fails",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260429-0369",
       "firstSeenAt": "2026-04-29T07:43:13.729Z",
-      "lastSeenRunId": "QA-20260429-0369",
-      "lastSeenAt": "2026-04-29T07:43:13.729Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260429-0370",
+      "lastSeenAt": "2026-04-29T09:41:31.768Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "",
+      "lastEvidence": "Cerebras Qwen queue_exceeded recurred, but the main AI sidebar response included root cause, causal chain, and three immediate actions.",
       "lastNote": "The analysis evidence panel contained useful detail, but the main assistant answer collapsed to only headings after Cerebras queue_exceeded/token_quota_exceeded failures.",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-04-29T07:43:13.729Z"
+      "lastStatusChangeAt": "2026-04-29T09:41:31.768Z"
     }
   },
   "runs": [
@@ -35709,6 +35709,157 @@
       "pendingCount": 2,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260429-0370",
+      "recordedAt": "2026-04-29T09:41:31.768Z",
+      "recordedAtKst": "2026-04-29 18:41:31 KST",
+      "title": "v8.11.60 Vercel Production QA - AI Sidebar QueryAsOf and Cerebras Fallback Recheck",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260429-0370.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_5trDsasn1jmGV4ic8UqEiu1k3vAe",
+        "deploymentUrl": "https://openmanager-qkz5q3fpu-skyasus-projects.vercel.app",
+        "commitSha": "6d97486d1a8b5bc32e0e5b926091f909ae7212c4"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "/",
+        "/dashboard",
+        "AI sidebar",
+        "/api/version",
+        "/api/health?simple=true",
+        "/api/health?service=ai",
+        "/api/ai/jobs",
+        "/api/ai/jobs/[id]/stream",
+        "Cloud Run /health",
+        "Cloud Run /api/jobs/process",
+        "Cerebras Qwen provider fallback path"
+      ],
+      "skippedSurfaces": [
+        "login providers beyond guest session",
+        "admin pages",
+        "report generation",
+        "mobile layout",
+        "broad route sweep"
+      ],
+      "checks": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI sidebar server summary",
+          "agent": "Cloud Run AI",
+          "provider": "deterministic-grounding",
+          "model": "otel-data",
+          "route": "/api/ai/jobs/[id]/stream",
+          "source": "UI footer + browser Performance API",
+          "latencyMs": 2418,
+          "ttfbMs": 1129,
+          "processingTimeMs": 3035
+        },
+        {
+          "surface": "AI sidebar cache memory cause/action analysis",
+          "agent": "Cloud Run AI",
+          "provider": "multi-provider-fallback",
+          "model": "cerebras-qwen-to-fallback",
+          "route": "/api/ai/jobs/[id]/stream",
+          "source": "UI footer + browser Performance API + Cloud Run logs",
+          "latencyMs": 17606,
+          "ttfbMs": 751,
+          "processingTimeMs": 18276
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The previously failing cache memory analysis now renders a complete main answer even when Cerebras Qwen returns queue_exceeded.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The v8.11.60 GitLab tag pipeline deployed both Vercel frontend and Cloud Run AI Engine, and all post-deploy smoke jobs passed.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The run used a fresh Playwright browser session, UI-only CSRF-safe submission, and Performance API evidence for EventSource streams.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The 81% dashboard value and 82% AI value are explained by slot 110 versus query-time slot 111, matching the queryAsOf slot contract.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-29T18:27:24+09:00",
+          "summary": "Active period effective usage 19.0897 USD and billed usage 0.0000 USD after v8.11.60 production deploy.",
+          "evidence": "npm run check:usage:vercel",
+          "url": ""
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-network",
+          "label": "v8.11.60 targeted production QA evidence",
+          "path": "reports/qa/evidence/qa-20260429-v81160-ai-sidebar-recheck.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.60 tag pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2487846461"
+        },
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "general",
+          "label": "Vercel deployment",
+          "url": "https://openmanager-qkz5q3fpu-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -35717,17 +35868,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 173,
-      "appropriateCount": 157,
+      "seenCount": 174,
+      "appropriateCount": 158,
       "partialCount": 16,
       "inappropriateCount": 0,
       "improvementNeededCount": 26,
-      "lastRunId": "QA-20260429-0369",
-      "lastSeenAt": "2026-04-29T07:43:13.729Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "The simple summary path matched the dashboard, but the longer Cerebras-backed analysis surfaced a user-visible empty main answer.",
-      "lastNextAction": "Make provider quota failure produce a complete fallback answer in the main response, not only in the evidence panel."
+      "lastRunId": "QA-20260429-0370",
+      "lastSeenAt": "2026-04-29T09:41:31.768Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "The previously failing cache memory analysis now renders a complete main answer even when Cerebras Qwen returns queue_exceeded.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -35768,33 +35919,33 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 105,
-      "appropriateCount": 93,
+      "seenCount": 106,
+      "appropriateCount": 94,
       "partialCount": 12,
       "inappropriateCount": 0,
       "improvementNeededCount": 16,
-      "lastRunId": "QA-20260429-0369",
-      "lastSeenAt": "2026-04-29T07:43:13.729Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Production still serves v8.11.59 / 94f4dea, so the newer 198183658 query-as-of fix has not been validated on Vercel production.",
-      "lastNextAction": "Deploy the current GitLab HEAD through the release path before final production revalidation."
+      "lastRunId": "QA-20260429-0370",
+      "lastSeenAt": "2026-04-29T09:41:31.768Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "The v8.11.60 GitLab tag pipeline deployed both Vercel frontend and Cloud Run AI Engine, and all post-deploy smoke jobs passed.",
+      "lastNextAction": ""
     },
     "test-automation": {
       "domainId": "test-automation",
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 141,
-      "appropriateCount": 130,
+      "seenCount": 142,
+      "appropriateCount": 131,
       "partialCount": 11,
       "inappropriateCount": 0,
       "improvementNeededCount": 13,
-      "lastRunId": "QA-20260429-0369",
-      "lastSeenAt": "2026-04-29T07:43:13.729Z",
+      "lastRunId": "QA-20260429-0370",
+      "lastSeenAt": "2026-04-29T09:41:31.768Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP covered the real browser flow and Performance API captured EventSource stream entries.",
+      "lastRationale": "The run used a fresh Playwright browser session, UI-only CSRF-safe submission, and Performance API evidence for EventSource streams.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -35802,16 +35953,16 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 41,
-      "appropriateCount": 23,
+      "seenCount": 42,
+      "appropriateCount": 24,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 18,
-      "lastRunId": "QA-20260429-0369",
-      "lastSeenAt": "2026-04-29T07:43:13.729Z",
+      "lastRunId": "QA-20260429-0370",
+      "lastSeenAt": "2026-04-29T09:41:31.768Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The dashboard baseline and simple AI summary matched the same 16:30 KST slot values.",
+      "lastRationale": "The 81% dashboard value and 82% AI value are explained by slot 110 versus query-time slot 111, matching the queryAsOf slot contract.",
       "lastNextAction": ""
     },
     "infra-reliability": {
