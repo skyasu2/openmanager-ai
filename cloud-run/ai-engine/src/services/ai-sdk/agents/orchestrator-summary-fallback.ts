@@ -531,22 +531,31 @@ function getExplicitQueryServers(
   query: string,
   payload: MetricsToolPayload
 ): AlertServerSnapshot[] {
-  const matches = payload.servers
-    .map((server) => ({
-      server,
-      index: query.indexOf(server.id),
-    }))
-    .filter((entry) => entry.index >= 0)
-    .sort((left, right) => left.index - right.index);
-
+  const requestedIds = query.match(/\b[a-z0-9]+(?:-[a-z0-9]+){2,}\b/gi) ?? [];
   const seen = new Set<string>();
-  return matches
-    .filter(({ server }) => {
-      if (seen.has(server.id)) return false;
-      seen.add(server.id);
-      return true;
-    })
-    .map(({ server }) => toAlertSnapshot(server));
+  const uniqueRequestedIds = requestedIds.filter((serverId) => {
+    const normalizedServerId = serverId.toLowerCase();
+    if (seen.has(normalizedServerId)) return false;
+    seen.add(normalizedServerId);
+    return true;
+  });
+
+  const currentStatePayload = buildSummaryPayloadFromCurrentState();
+  const lookupServers = [
+    ...payload.servers,
+    ...(currentStatePayload?.servers ?? []).filter(
+      (server) => !payload.servers.some((payloadServer) => payloadServer.id === server.id)
+    ),
+  ];
+
+  return uniqueRequestedIds
+    .map((serverId) =>
+      lookupServers.find(
+        (server) => server.id.toLowerCase() === serverId.toLowerCase()
+      )
+    )
+    .filter((server): server is ServerSnapshot => Boolean(server))
+    .map((server) => toAlertSnapshot(server));
 }
 
 function buildCauseLine(server: AlertServerSnapshot): string {
