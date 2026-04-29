@@ -62,8 +62,11 @@ const DEFAULT_AGENT_RUNTIME_POLICY: AgentRuntimePolicy = {
   toolAllowlist: [],
 };
 
+// Orchestrator produces a short routing JSON — no need for 32K context.
+// Groq-first distributes quota: Orchestrator(Groq) + Agent(Cerebras) instead of
+// Orchestrator(Cerebras) + Agent(Cerebras), which consumed 2 of 5 Cerebras RPM.
 export const ORCHESTRATOR_RUNTIME_POLICY = {
-  providerOrder: CEREBRAS_FIRST_PROVIDER_ORDER,
+  providerOrder: TEXT_AGENT_PROVIDER_ORDER,
 } as const;
 
 export const AGENT_RUNTIME_POLICIES = {

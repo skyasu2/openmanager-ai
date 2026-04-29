@@ -38,6 +38,7 @@ vi.mock('../../../../lib/config-parser', () => ({
   getCerebrasModelId: mockGetCerebrasModelId,
   getCerebrasFallbackModelIds: mockGetCerebrasFallbackModelIds,
   getGroqModelId: vi.fn(() => 'groq-model'),
+  getMistralModelId: vi.fn(() => 'mistral-large-latest'),
   getOpenRouterVisionModelId: vi.fn(() => 'openrouter-vision-model'),
   isCerebrasToolCallingEnabled: mockIsCerebrasToolCallingEnabled,
   isCerebrasLongContextEnabled: vi.fn(() => true),

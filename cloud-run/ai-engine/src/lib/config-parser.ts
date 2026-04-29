@@ -365,6 +365,17 @@ export function getGroqModelId(): string {
   return process.env.GROQ_MODEL_ID || DEFAULT_GROQ_MODEL;
 }
 
+const DEFAULT_MISTRAL_MODEL = 'mistral-large-latest';
+
+/**
+ * Get default Mistral text model id.
+ * Default: mistral-large-latest (frontier-grade, ~2 RPM / 500 RPD free tier)
+ * Override: MISTRAL_MODEL_ID env var
+ */
+export function getMistralModelId(): string {
+  return process.env.MISTRAL_MODEL_ID || DEFAULT_MISTRAL_MODEL;
+}
+
 /**
  * Get Tavily API Key (Web Search)
  * Uses AI_PROVIDERS_CONFIG or falls back to individual env var

@@ -3,6 +3,7 @@ import {
   getCerebrasFallbackModelIds,
   getCerebrasModelId,
   getGroqModelId,
+  getMistralModelId,
   getOpenRouterVisionModelId,
 } from '../../../../lib/config-parser';
 import { logger } from '../../../../lib/logger';
@@ -61,7 +62,7 @@ const TEXT_PROVIDER_MODELS: Record<TextProvider, {
   // Mistral Large - Frontier급 성능, free tier ~2 RPM / 500 RPD. Last resort.
   mistral: {
     factory: getMistralModel,
-    modelIds: () => ['mistral-large-latest'],
+    modelIds: () => [getMistralModelId()],
     capabilities: (modelId) => getTextProviderCapabilities('mistral', modelId)
   },
 };
