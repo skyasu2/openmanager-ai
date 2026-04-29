@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-29T09:41:31.768Z"
+    "updatedAt": "2026-04-29T13:26:06.547Z"
   },
   "sequence": {
-    "nextRunNumber": 371
+    "nextRunNumber": 372
   },
   "summary": {
-    "totalRecordedRuns": 368,
-    "totalRuns": 298,
+    "totalRecordedRuns": 369,
+    "totalRuns": 299,
     "excludedRuns": 70,
-    "totalChecks": 2530,
-    "totalPassed": 2438,
-    "totalFailed": 83,
-    "completionRate": 100,
+    "totalChecks": 2538,
+    "totalPassed": 2444,
+    "totalFailed": 85,
+    "completionRate": 99.73,
     "completedItems": 363,
-    "pendingItems": 0,
+    "pendingItems": 1,
     "deferredItems": 0,
     "wontFixItems": 19,
     "expertDomainsTracked": 10,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260429-0370",
-    "lastRecordedAt": "2026-04-29T09:41:31.768Z",
-    "latestRecordedRunId": "QA-20260429-0370",
-    "latestRecordedAt": "2026-04-29T09:41:31.768Z"
+    "expertDomainsOpenGaps": 2,
+    "lastRunId": "QA-20260429-0371",
+    "lastRecordedAt": "2026-04-29T13:26:06.547Z",
+    "latestRecordedRunId": "QA-20260429-0371",
+    "latestRecordedAt": "2026-04-29T13:26:06.547Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -8897,6 +8897,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-29T09:41:31.768Z"
+    },
+    "ai-dashboard-query-asof-slot-drift": {
+      "id": "ai-dashboard-query-asof-slot-drift",
+      "title": "AI sidebar job requests must use the dashboard-visible OTel data slot at 10-minute boundaries",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260429-0371",
+      "firstSeenAt": "2026-04-29T13:26:06.547Z",
+      "lastSeenRunId": "QA-20260429-0371",
+      "lastSeenAt": "2026-04-29T13:26:06.547Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "Reproduced on v8.11.62: dashboard slot 131 showed critical/warning counts, AI job answered from slot 132.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-29T13:26:06.547Z"
     }
   },
   "runs": [
@@ -35860,6 +35884,146 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260429-0371",
+      "recordedAt": "2026-04-29T13:26:06.547Z",
+      "recordedAtKst": "2026-04-29 22:26:06 KST",
+      "title": "Vercel Playwright targeted QA - v8.11.62 dashboard AI data slot drift",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260429-0371.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "v8.11.62-production",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "2c2d91bb749e3f655a231496b9142d2086c595b9"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "/",
+        "/dashboard",
+        "AI sidebar open",
+        "AI job queue POST /api/ai/jobs",
+        "SSE /api/ai/jobs/[id]/stream",
+        "dashboard dataSlotInfo label",
+        "dashboard status summary vs AI response parity"
+      ],
+      "skippedSurfaces": [
+        "login providers beyond guest session",
+        "admin pages",
+        "reporter/analyst dedicated tabs",
+        "mobile layout",
+        "broad route sweep"
+      ],
+      "checks": {
+        "total": 8,
+        "passed": 6,
+        "failed": 2
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI sidebar job queue advisory query",
+          "agent": "Cloud Run AI",
+          "provider": "cloud-run-supervisor",
+          "route": "/api/ai/jobs/[id]/stream",
+          "source": "job result payload and Performance API resource timing",
+          "latencyMs": 6433,
+          "ttfbMs": 1196,
+          "processingTimeMs": 4704
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "AI answer did not preserve dashboard-visible OTel data slot at a 10-minute boundary.",
+          "nextAction": "Propagate dashboard dataSlotInfo into AI queryAsOf for sidebar job requests."
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Dashboard showed 16 online / 1 warning / 1 critical on slot 131, while AI answered 17 online / 1 warning / 0 critical from a different slot.",
+          "nextAction": "Add regression coverage for dashboard-provided queryAsOfDataSlot."
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "POST /api/ai/jobs returned 201 in 1196ms and SSE completed without reconnect storm; failure is data-slot parity, not infrastructure.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP captured UI, network, DOM, and Performance API evidence for the regression.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-29T22:24:36+09:00",
+          "summary": "Vercel usage after targeted production QA remained normal: effective 19.0897 USD, billed 0.0000 USD.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "v8.11.62 AI slot drift screenshot",
+          "path": "reports/qa/evidence/qa-20260429-v81162-ai-slot-drift.png"
+        },
+        {
+          "type": "playwright-network",
+          "label": "v8.11.62 AI slot drift DOM evidence",
+          "path": "reports/qa/evidence/qa-20260429-v81162-ai-slot-drift-dom.json"
+        },
+        {
+          "type": "playwright-network",
+          "label": "v8.11.62 AI slot drift network evidence",
+          "path": "reports/qa/evidence/qa-20260429-v81162-ai-slot-drift-network.txt"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.62 tag pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2488354879"
+        },
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 2,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -35868,17 +36032,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 174,
+      "seenCount": 175,
       "appropriateCount": 158,
-      "partialCount": 16,
+      "partialCount": 17,
       "inappropriateCount": 0,
-      "improvementNeededCount": 26,
-      "lastRunId": "QA-20260429-0370",
-      "lastSeenAt": "2026-04-29T09:41:31.768Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "The previously failing cache memory analysis now renders a complete main answer even when Cerebras Qwen returns queue_exceeded.",
-      "lastNextAction": ""
+      "improvementNeededCount": 27,
+      "lastRunId": "QA-20260429-0371",
+      "lastSeenAt": "2026-04-29T13:26:06.547Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "AI answer did not preserve dashboard-visible OTel data slot at a 10-minute boundary.",
+      "lastNextAction": "Propagate dashboard dataSlotInfo into AI queryAsOf for sidebar job requests."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -35919,16 +36083,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 106,
-      "appropriateCount": 94,
+      "seenCount": 107,
+      "appropriateCount": 95,
       "partialCount": 12,
       "inappropriateCount": 0,
       "improvementNeededCount": 16,
-      "lastRunId": "QA-20260429-0370",
-      "lastSeenAt": "2026-04-29T09:41:31.768Z",
+      "lastRunId": "QA-20260429-0371",
+      "lastSeenAt": "2026-04-29T13:26:06.547Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The v8.11.60 GitLab tag pipeline deployed both Vercel frontend and Cloud Run AI Engine, and all post-deploy smoke jobs passed.",
+      "lastRationale": "POST /api/ai/jobs returned 201 in 1196ms and SSE completed without reconnect storm; failure is data-slot parity, not infrastructure.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -35936,16 +36100,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 142,
-      "appropriateCount": 131,
+      "seenCount": 143,
+      "appropriateCount": 132,
       "partialCount": 11,
       "inappropriateCount": 0,
       "improvementNeededCount": 13,
-      "lastRunId": "QA-20260429-0370",
-      "lastSeenAt": "2026-04-29T09:41:31.768Z",
+      "lastRunId": "QA-20260429-0371",
+      "lastSeenAt": "2026-04-29T13:26:06.547Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The run used a fresh Playwright browser session, UI-only CSRF-safe submission, and Performance API evidence for EventSource streams.",
+      "lastRationale": "Playwright MCP captured UI, network, DOM, and Performance API evidence for the regression.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -35953,17 +36117,17 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 42,
+      "seenCount": 43,
       "appropriateCount": 24,
-      "partialCount": 18,
+      "partialCount": 19,
       "inappropriateCount": 0,
-      "improvementNeededCount": 18,
-      "lastRunId": "QA-20260429-0370",
-      "lastSeenAt": "2026-04-29T09:41:31.768Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "The 81% dashboard value and 82% AI value are explained by slot 110 versus query-time slot 111, matching the queryAsOf slot contract.",
-      "lastNextAction": ""
+      "improvementNeededCount": 19,
+      "lastRunId": "QA-20260429-0371",
+      "lastSeenAt": "2026-04-29T13:26:06.547Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "Dashboard showed 16 online / 1 warning / 1 critical on slot 131, while AI answered 17 online / 1 warning / 0 critical from a different slot.",
+      "lastNextAction": "Add regression coverage for dashboard-provided queryAsOfDataSlot."
     },
     "infra-reliability": {
       "domainId": "infra-reliability",

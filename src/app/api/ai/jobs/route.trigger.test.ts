@@ -284,6 +284,73 @@ describe('POST /api/ai/jobs trigger readiness', () => {
     expect(workerBody.queryAsOf).toEqual(expectedQueryAsOf);
   });
 
+  it('prefers the dashboard-provided data slot over the API creation boundary time', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-04-29T13:00:45.000Z'));
+    process.env.CLOUD_RUN_ENABLED = 'true';
+    const { POST } = await importRoute();
+    const request = new NextRequest('http://localhost/api/ai/jobs', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        cookie: 'auth_session_id=guest-session-xyz',
+      },
+      body: JSON.stringify({
+        query: '현재 위험/경고 서버를 기준으로 조치 우선순위 알려줘',
+        options: {
+          sessionId: 'session-1234',
+          metadata: {
+            analysisMode: 'thinking',
+            queryAsOfDataSlot: {
+              slotIndex: 131,
+              minuteOfDay: 1310,
+              timeLabel: '21:50 KST',
+            },
+          },
+        },
+      }),
+    });
+
+    const response = await POST(request);
+    const scheduled = mockAfter.mock.calls[0]?.[0] as
+      | (() => Promise<void>)
+      | undefined;
+    await scheduled?.();
+
+    expect(response.status).toBe(201);
+
+    const expectedQueryAsOf = {
+      createdAt: '2026-04-29T13:00:45.000Z',
+      source: 'vercel-static-otel',
+      datasetVersion: '24h-rotating-v1.0.0',
+      dataSlot: {
+        slotIndex: 131,
+        minuteOfDay: 1310,
+        timeLabel: '21:50 KST',
+      },
+    };
+
+    const savedJob = mockRedisSet.mock.calls.find(
+      ([key]) =>
+        typeof key === 'string' &&
+        key.startsWith('job:') &&
+        !key.startsWith('job:progress:') &&
+        !key.startsWith('job:list:') &&
+        !key.startsWith('job:trigger:')
+    )?.[1] as { metadata?: Record<string, unknown> } | undefined;
+
+    expect(savedJob?.metadata?.queryAsOf).toEqual(expectedQueryAsOf);
+
+    const workerBody = JSON.parse(
+      (
+        mockFetch.mock.calls[0]?.[1] as {
+          body: string;
+        }
+      ).body
+    ) as Record<string, unknown>;
+    expect(workerBody.queryAsOf).toEqual(expectedQueryAsOf);
+  });
+
   it('Cloud Tasks trigger mode dispatches to the short Cloud Run dispatcher endpoint', async () => {
     process.env.CLOUD_RUN_ENABLED = 'true';
     process.env.AI_JOB_TRIGGER_MODE = 'cloud-tasks';

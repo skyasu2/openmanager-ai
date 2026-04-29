@@ -12,6 +12,7 @@ import type {
 import type { AIErrorDetails } from '@/lib/ai/error-details';
 import type { QueryComplexity } from '@/lib/ai/utils/query-complexity';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
+import type { JobDataSlot } from '@/types/ai-jobs';
 import type { AsyncQueryProgress, AsyncQueryResult } from '../useAsyncAIQuery';
 import type { FileAttachment } from '../useFileAttachments';
 
@@ -158,6 +159,8 @@ export interface UseHybridAIQueryOptions {
   ragEnabled?: boolean;
   /** 사용자가 선택한 분석 강도 모드 */
   analysisMode?: AnalysisMode;
+  /** Dashboard snapshot data slot to keep AI metric tools aligned with the visible UI. */
+  queryAsOfDataSlot?: JobDataSlot;
   /**
    * 스트리밍 데이터 콜백 (AI SDK v6 베스트 프랙티스)
    * 실시간으로 데이터 파트를 받아 처리

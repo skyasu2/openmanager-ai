@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-29 18:41:32 KST
+> Generated at: 2026-04-29 22:26:07 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 368 |
-| Total Runs (Counted) | 298 |
+| Total Recorded Runs | 369 |
+| Total Runs (Counted) | 299 |
 | Non-counted Runs | 70 |
-| Total Checks | 2530 |
-| Passed | 2438 |
-| Failed | 83 |
+| Total Checks | 2538 |
+| Passed | 2444 |
+| Failed | 85 |
 | Completed Items | 363 |
-| Pending Items | 0 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 19 |
 | Expert Domains Tracked | 10 |
-| Expert Open Gaps | 0 |
-| Completion Rate | 100% |
-| Last Counted Run | QA-20260429-0370 (2026-04-29T09:41:31.768Z) |
-| Latest Recorded Run | QA-20260429-0370 (2026-04-29T09:41:31.768Z) |
+| Expert Open Gaps | 2 |
+| Completion Rate | 99.73% |
+| Last Counted Run | QA-20260429-0371 (2026-04-29T13:26:06.547Z) |
+| Latest Recorded Run | QA-20260429-0371 (2026-04-29T13:26:06.547Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,24 +34,24 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260429-0370 (2026-04-29T09:41:31.768Z)
+Latest run: QA-20260429-0371 (2026-04-29T13:26:06.547Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
+| AI Quality Assurance Specialist | partially-appropriate | yes | Propagate dashboard dataSlotInfo into AI queryAsOf for sidebar job requests. |
+| Data Quality & Metrics Analyst | partially-appropriate | yes | Add regression coverage for dashboard-provided queryAsOfDataSlot. |
 | DevOps / SRE Engineer | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
-| Data Quality & Metrics Analyst | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Active period effective usage 19.0897 USD and billed usage 0.0000 USD after v8.11.60 production deploy. |
+| vercel | cli | checked | normal | Vercel usage after targeted production QA remained normal: effective 19.0897 USD, billed 0.0000 USD. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-28T09:41:31.768Z -> 2026-04-29T09:41:31.768Z (24h)
+- Window: 2026-04-28T13:26:06.547Z -> 2026-04-29T13:26:06.547Z (24h)
 - Runs with observations: 5 recorded / 5 counted
 - Samples: 8
 
@@ -59,8 +59,8 @@ Latest run: QA-20260429-0370 (2026-04-29T09:41:31.768Z)
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Supervisor Agent | cloud-run-supervisor | 3 | 19726ms | 48818ms | 624ms | 732ms | 19067ms | 48818ms | QA-20260429-0368 |
 | Cloud Run AI | multi-provider-fallback | 1 | 17606ms | 17606ms | 751ms | 751ms | 18276ms | 18276ms | QA-20260429-0370 |
-| Supervisor Agent | multi-provider-fallback | 1 | 16988ms | 16988ms | - | - | 16988ms | 16988ms | QA-20260428-0358 |
 | Cloud Run AI | cerebras | 1 | 14892ms | 14892ms | 459ms | 459ms | 15903ms | 15903ms | QA-20260429-0369 |
+| Cloud Run AI | cloud-run-supervisor | 1 | 6433ms | 6433ms | 1196ms | 1196ms | 4704ms | 4704ms | QA-20260429-0371 |
 | Cloud Run AI | deterministic-grounding | 2 | 2284ms | 2418ms | 795ms | 1129ms | 3295ms | 3554ms | QA-20260429-0370 |
 
 ## Coverage (Latest Run)
@@ -68,32 +68,36 @@ Latest run: QA-20260429-0370 (2026-04-29T09:41:31.768Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_5trDsasn1jmGV4ic8UqEiu1k3vAe / SHA 6d97486d
+- Deployment: v8.11.62-production / SHA 2c2d91bb
 - Coverage Packs: dashboard-core, ai-core
-- Covered Surfaces: /, /dashboard, AI sidebar, /api/version, /api/health?simple=true, /api/health?service=ai, /api/ai/jobs, /api/ai/jobs/[id]/stream, Cloud Run /health, Cloud Run /api/jobs/process, Cerebras Qwen provider fallback path
-- Skipped Surfaces: login providers beyond guest session, admin pages, report generation, mobile layout, broad route sweep
+- Covered Surfaces: /, /dashboard, AI sidebar open, AI job queue POST /api/ai/jobs, SSE /api/ai/jobs/[id]/stream, dashboard dataSlotInfo label, dashboard status summary vs AI response parity
+- Skipped Surfaces: login providers beyond guest session, admin pages, reporter/analyst dedicated tabs, mobile layout, broad route sweep
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.11.60 tag pipeline | [GitLab v8.11.60 tag pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2487846461) | - |
+| general | GitLab v8.11.62 tag pipeline | [GitLab v8.11.62 tag pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2488354879) | - |
 | general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
-| general | Vercel deployment | [Vercel deployment](https://openmanager-qkz5q3fpu-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-network | v8.11.60 targeted production QA evidence | `reports/qa/evidence/qa-20260429-v81160-ai-sidebar-recheck.md` | - |
+| playwright-screenshot | v8.11.62 AI slot drift screenshot | `reports/qa/evidence/qa-20260429-v81162-ai-slot-drift.png` | - |
+| playwright-network | v8.11.62 AI slot drift DOM evidence | `reports/qa/evidence/qa-20260429-v81162-ai-slot-drift-dom.json` | - |
+| playwright-network | v8.11.62 AI slot drift network evidence | `reports/qa/evidence/qa-20260429-v81162-ai-slot-drift-network.txt` | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260429-0371)
+  next: Propagate dashboard dataSlotInfo into AI queryAsOf for sidebar job requests.
+- data-metrics-quality: Data Quality & Metrics Analyst (last QA-20260429-0371)
+  next: Add regression coverage for dashboard-provided queryAsOfDataSlot.
 
 ## Pending Improvements
 
-- None
+- [P1] ai-dashboard-query-asof-slot-drift: AI sidebar job requests must use the dashboard-visible OTel data slot at 10-minute boundaries (seen 1회, last QA-20260429-0371)
 
 ## Deferred Improvements
 
@@ -531,6 +535,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260429-0371 | 2026-04-29T13:26:06.547Z | targeted | yes | yes | Vercel Playwright targeted QA - v8.11.62 dashboard AI data slot drift | 8 | 0 | 1 | 0 | 0 | 2 |
 | QA-20260429-0370 | 2026-04-29T09:41:31.768Z | targeted | yes | yes | v8.11.60 Vercel Production QA - AI Sidebar QueryAsOf and Cerebras Fallback Recheck | 8 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260429-0369 | 2026-04-29T07:43:13.729Z | targeted | yes | yes | Vercel Production QA - AI Sidebar Cerebras Qwen Recheck | 6 | 0 | 2 | 0 | 0 | 2 |
 | QA-20260429-0368 | 2026-04-29T05:59:28.482Z | targeted | yes | yes | v8.11.59 Vercel Playwright DISK Threshold Fresh Slot Recheck | 18 | 1 | 0 | 0 | 0 | 0 |
@@ -550,4 +555,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260427-0354 | 2026-04-27T13:51:08.998Z | targeted | yes | yes | AI Provider 분산 배치 (Spider-Web) Production QA (Task 3) | 7 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260427-0353 | 2026-04-27T13:19:24.078Z | targeted | yes | yes | AI Assistant Analyst/Reporter Quality - Production Playwright MCP QA (Task 5) | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260427-0352 | 2026-04-27T08:33:24.156Z | targeted | yes | yes | Vercel Playwright MCP QA - Reporter and Analyst Functional Quality Check | 11 | 1 | 0 | 0 | 1 | 2 |
-| QA-20260427-0351 | 2026-04-27T08:20:05.391Z | targeted | yes | yes | Vercel Playwright MCP QA - Guest Login AI Assistant Check | 10 | 1 | 0 | 0 | 0 | 0 |

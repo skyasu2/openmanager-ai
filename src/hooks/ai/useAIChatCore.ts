@@ -41,6 +41,7 @@ import {
   type EnhancedChatMessage,
   useAISidebarStore,
 } from '@/stores/useAISidebarStore';
+import type { JobDataSlot } from '@/types/ai-jobs';
 import type { SessionState } from '@/types/session';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
 import { useChatFeedback } from './core/useChatFeedback';
@@ -71,6 +72,8 @@ export interface UseAIChatCoreOptions {
   onMessageSend?: (message: string) => void;
   /** 세션 제한 비활성화 (전체화면에서 필요시) */
   disableSessionLimit?: boolean;
+  /** Dashboard snapshot data slot used to keep sidebar AI answers aligned. */
+  queryAsOfDataSlot?: JobDataSlot;
 }
 
 export interface UseAIChatCoreReturn {
@@ -273,6 +276,7 @@ export function useAIChatCore(
     sessionId: propSessionId,
     onMessageSend,
     disableSessionLimit,
+    queryAsOfDataSlot,
   } = options;
 
   // 입력 상태
@@ -375,6 +379,7 @@ export function useAIChatCore(
     webSearchEnabled,
     ragEnabled,
     analysisMode,
+    queryAsOfDataSlot,
     ...hybridCallbacks,
   });
 

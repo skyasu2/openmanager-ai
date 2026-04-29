@@ -1,0 +1,155 @@
+{
+  "runId": "QA-20260429-0371",
+  "recordedAt": "2026-04-29T13:26:06.547Z",
+  "recordedAtKst": "2026-04-29 22:26:06 KST",
+  "runTitle": "Vercel Playwright targeted QA - v8.11.62 dashboard AI data slot drift",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "v8.11.62-production",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "2c2d91bb749e3f655a231496b9142d2086c595b9"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/",
+    "/dashboard",
+    "AI sidebar open",
+    "AI job queue POST /api/ai/jobs",
+    "SSE /api/ai/jobs/[id]/stream",
+    "dashboard dataSlotInfo label",
+    "dashboard status summary vs AI response parity"
+  ],
+  "skippedSurfaces": [
+    "login providers beyond guest session",
+    "admin pages",
+    "reporter/analyst dedicated tabs",
+    "mobile layout",
+    "broad route sweep"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 6,
+    "failed": 2
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI sidebar job queue advisory query",
+      "agent": "Cloud Run AI",
+      "provider": "cloud-run-supervisor",
+      "route": "/api/ai/jobs/[id]/stream",
+      "source": "job result payload and Performance API resource timing",
+      "latencyMs": 6433,
+      "ttfbMs": 1196,
+      "processingTimeMs": 4704
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "AI answer did not preserve dashboard-visible OTel data slot at a 10-minute boundary.",
+      "nextAction": "Propagate dashboard dataSlotInfo into AI queryAsOf for sidebar job requests."
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Dashboard showed 16 online / 1 warning / 1 critical on slot 131, while AI answered 17 online / 1 warning / 0 critical from a different slot.",
+      "nextAction": "Add regression coverage for dashboard-provided queryAsOfDataSlot."
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "POST /api/ai/jobs returned 201 in 1196ms and SSE completed without reconnect storm; failure is data-slot parity, not infrastructure.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP captured UI, network, DOM, and Performance API evidence for the regression.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-29T22:24:36+09:00",
+      "summary": "Vercel usage after targeted production QA remained normal: effective 19.0897 USD, billed 0.0000 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "v8.11.62 AI slot drift screenshot",
+      "path": "reports/qa/evidence/qa-20260429-v81162-ai-slot-drift.png"
+    },
+    {
+      "type": "playwright-network",
+      "label": "v8.11.62 AI slot drift DOM evidence",
+      "path": "reports/qa/evidence/qa-20260429-v81162-ai-slot-drift-dom.json"
+    },
+    {
+      "type": "playwright-network",
+      "label": "v8.11.62 AI slot drift network evidence",
+      "path": "reports/qa/evidence/qa-20260429-v81162-ai-slot-drift-network.txt"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "ai-dashboard-query-asof-slot-drift",
+      "title": "AI sidebar job requests must use the dashboard-visible OTel data slot at 10-minute boundaries",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Reproduced on v8.11.62: dashboard slot 131 showed critical/warning counts, AI job answered from slot 132.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "result: no-go for v8.11.62 targeted AI parity scope",
+    "dashboard dataSlotInfo: 21:50 KST slot 131/143",
+    "AI job id: 44f3716b-c489-48f1-84df-a8739fd0b575",
+    "POST /api/ai/jobs: 201, 1196ms; SSE stream: 6433ms, 5784 bytes, 1 stream entry",
+    "Root cause: dashboard was still showing the server-rendered 21:50 snapshot while the job API recomputed queryAsOf at 22:00."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.11.62 tag pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2488354879"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

@@ -46,6 +46,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
   onClose,
   className = '',
   sessionId: propSessionId,
+  queryAsOfDataSlot,
   onMessageSend,
 }) => {
   // 🔐 권한 확인
@@ -162,6 +163,7 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
     removeQueuedQuery,
   } = useAIChatCore({
     sessionId: propSessionId,
+    queryAsOfDataSlot,
     onMessageSend,
   });
 

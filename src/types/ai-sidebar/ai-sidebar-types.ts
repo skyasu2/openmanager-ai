@@ -3,6 +3,7 @@
  * 모든 AI 사이드바 관련 타입 통합 관리
  */
 
+import type { JobDataSlot } from '@/types/ai-jobs';
 import type { AIMode } from '@/types/ai-types';
 
 /**
@@ -125,6 +126,7 @@ export interface AISidebarV2Props {
 export interface AISidebarV3Props extends AISidebarV2Props {
   defaultEngine?: AIMode;
   sessionId?: string;
+  queryAsOfDataSlot?: JobDataSlot;
   onEngineChange?: (engine: AIMode) => void;
   onMessageSend?: (message: string) => void;
 }

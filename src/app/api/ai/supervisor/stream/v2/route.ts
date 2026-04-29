@@ -21,6 +21,7 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { createFallbackResponse } from '@/lib/ai/fallback/ai-fallback-handler';
 import { buildAITimingHeaders, startAITimer } from '@/lib/ai/observability';
+import { buildJobQueryAsOf } from '@/lib/ai/query-as-of';
 import {
   INVALID_SESSION_ID_MESSAGE,
   normalizeSupervisorDeviceType,
@@ -225,7 +226,12 @@ export const POST = withRateLimit(
         enableWebSearch,
         enableRAG,
         analysisMode,
+        queryAsOfDataSlot,
       } = parseResult.data;
+      const queryAsOf = buildJobQueryAsOf(
+        new Date().toISOString(),
+        queryAsOfDataSlot
+      );
 
       // 2. Extract session ID
       const { sessionId, ownerKey } = resolveScopedSessionIds(
@@ -411,6 +417,7 @@ export const POST = withRateLimit(
                 enableWebSearch,
                 enableRAG,
                 analysisMode,
+                queryAsOf,
               }),
               signal: AbortSignal.timeout(timeoutMs),
             });

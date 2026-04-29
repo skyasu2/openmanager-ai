@@ -56,6 +56,7 @@ export interface CreateJobRequest {
       analysisMode?: AnalysisMode;
       enableRAG?: boolean;
       enableWebSearch?: boolean;
+      queryAsOfDataSlot?: JobDataSlot;
     };
   };
 }

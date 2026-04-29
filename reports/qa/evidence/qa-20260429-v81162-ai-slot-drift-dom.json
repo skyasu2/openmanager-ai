@@ -1,0 +1,36 @@
+{
+  "dialogText": "AI 어시스턴트\n\nAI Chat으로 시스템 질의\n\nAI Chat\n\nAI 기반 대화형 인터페이스\n\n현재 위험/경고 서버를 기준으로 장애 원인을 추정하고, 운영자가 지금 해야 할 조치 3가지만 우선순위로 제안해줘\n\n10:00:52 PM\n\n복사\n\n핵심 요약\n\n분석 결과\n\n\n현재 서버 모니터링 분석 결과에 따르면, 총 18개의 서버 중 온라인 상태인 서버는 17개, 경고 상태인 서버는 1개, 위험 상태인 서버는 0개, 오프라인인 서버는 0개입니다. 비정상적인 상황이 탐지되지 않았으며, 위험/경고 서버는 없습니다.\n\n10:00:52 PM\n\n4704ms\n\nCloud Run AI\n·\n서버 실시간 데이터 분석\n심층 분석 요청됨\n분석 근거\n\n도구: 전체 서버 이상 징후 확인 · 모드: 심층 분석 · 기간: 최근 1시간\n\n복사\n다시 생성\n심층 분석\n대화 2/20\n서버 운영 중심\nEnter로 전송, Shift+Enter로 줄바꿈\n\nAI 기능\n\nAI Chat\n서버 질의, 트러블슈팅, 명령어 추천\n자동장애 보고서\nReporter Agent 장애 분석 보고서 생성\n이상감지/예측\nAnalyst Agent 이상탐지, 근본원인, 예측분석\n전체 화면으로 보기",
+  "dashboardText": "OpenManager AI\n2026.04.29 22:01:59\n(수)\n26:14\n남음\nAI 어시스턴트\nGU\n게스트 사용자\n게스트 로그인\n전체\n18\n\nVercel static OTel · 21:50 KST (slot 131/143)\n\n24h rotating dataset v1.0.0 · catalog 2026-02-15 03:56Z\n\n온라인\n16\n경고\n1\n위험\n1\n오프라인\n0\n상태\n문제 발생\n상태 헤더 도구\n알림\n3\n이력\n로그\n1\n위험\n1\n경고\n0\n오프라인\n토폴로지 맵\n\n시스템 리소스\n\n41%\nCPU\n47%\nMemory\n35%\nDisk\n\n리소스 경고 (TOP 5)\n\nlb-haproxy-dc1-01\nCPU 86%\napi-was-dc1-01\nCPU 76%\napi-was-dc1-02\nCPU 72%\ndb-mysql-dc1-backup\nDISK 70%\nlb-haproxy-dc1-02\nCPU 68%\n\n18개 서버 중 1-15번째 표시\n\n1/2 페이지\nlb-haproxy-dc1-01\n로드밸런서\n🐧\nLinux\nDC1-AZ1\nLIVE METRICS\nCritical\nCPU\n86.0%\nMEM\n39.0%\nDisk\n25.0%\nOS\nLinux\nUPTIME\n406d 15h\nlb-haproxy-dc1-02\n로드밸런서\n🐧\nLinux\nDC1-AZ3\nLIVE METRICS\nWarning\nCPU\n68.0%\nMEM\n41.0%\nDisk\n24.0%\nOS\nLinux\nUPTIME\n406d 17h\nweb-nginx-dc1-01\n웹서버\n🐧\nLinux\nDC1-AZ1\nLIVE METRICS\nStable\nCPU\n37.0%\nMEM\n43.0%\nDisk\n30.0%\nOS\nLinux\nUPTIME\n406d 8h\nweb-nginx-dc1-02\n웹서버\n🐧\nLinux\nDC1-AZ2\nLIVE METRICS\nStable\nCPU\n34.0%\nMEM\n41.0%\nDisk\n25.0%\nOS\nLinux\nUPTIME\n405d 21h\n11개 더 보기\n페이지당 표시:\n15개\n이전\n1\n2\n다음\n18개 서버 중 1-15번째 표시 중\nAI 어시스턴트\n\nAI Chat으로 시스템 질의\n\nAI Chat\n\nAI 기반 대화형 인터페이스\n\n현재 위험/경고 서버를 기준으로 장애 원인을 추정하고, 운영자가 지금 해야 할 조치 3가지만 우선순위로 제안해줘\n\n10:00:52 PM\n\n복사\n\n핵심 요약\n\n분석 결과\n\n\n현재 서버 모니터링 분석 결과에 따르면, 총 18개의 서버 중 온라인 상태인 서버는 17개, 경고 상태인 서버는 1개, 위험 상태인 서버는 0개, 오프라인인 서버는 0개입니다. 비정상적인 상황이 탐지되지 않았으며, 위험/경고 서버는 없습니다.\n\n10:00:52 PM\n\n4704ms\n\nCloud Run AI\n·\n서버 실시간 데이터 분석\n심층 분석 요청됨\n분석 근거\n\n도구: 전체 서버 이상 징후 확인 · 모드: 심층 분석 · 기간: 최근 1시간\n\n복사\n다시 생성\n심층 분석\n대화 2/20\n서버 운영 중심\nEnter로 전송, Shift+Enter로 줄바꿈\n\nAI 기능\n\nAI Chat\n서버 질의, 트러블슈팅, 명령어 추천\n자동장애 보고서\nReporter Agent 장애 분석 보고서 생성\n이상감지/예측\nAnalyst Agent 이상탐지, 근본원인, 예측분석\n전체 화면으로 보기",
+  "resources": [
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/wake-up",
+      "duration": 3928,
+      "transferSize": 328,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/health?service=ai",
+      "duration": 350,
+      "transferSize": 385,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/health?service=ai",
+      "duration": 60,
+      "transferSize": 384,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/jobs",
+      "duration": 1196,
+      "transferSize": 523,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/jobs/44f3716b-c489-48f1-84df-a8739fd0b575/stream",
+      "duration": 6433,
+      "transferSize": 5784,
+      "initiator": "other"
+    }
+  ]
+}

@@ -283,6 +283,38 @@ describe('useQueryExecution', () => {
     });
   });
 
+  it('job queue 요청에 dashboard data slot을 전달한다', async () => {
+    process.env.NODE_ENV = 'production';
+    const queryAsOfDataSlot = {
+      slotIndex: 131,
+      minuteOfDay: 1310,
+      timeLabel: '21:50 KST',
+    };
+    const deps = {
+      ...createDeps(),
+      complexityThreshold: -1,
+      analysisMode: 'thinking' as const,
+      queryAsOfDataSlot,
+    };
+
+    const { result } = renderHook(() => useQueryExecution(deps));
+    const query = '현재 위험/경고 서버 근본 원인 분석 보고서를 만들어줘';
+
+    act(() => {
+      result.current.executeQuery(query);
+    });
+
+    await waitFor(() => {
+      expect(deps.asyncQuery.sendQuery).toHaveBeenCalledWith(
+        query,
+        expect.objectContaining({
+          analysisMode: 'thinking',
+          queryAsOfDataSlot,
+        })
+      );
+    });
+  });
+
   it('만료된 Retry-After cooldown은 자동 해제하고 streaming 전송을 진행한다', async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-04-18T12:00:00.000Z'));

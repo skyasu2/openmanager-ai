@@ -33,6 +33,10 @@ import {
   filterMaliciousOutput,
   guardInput,
 } from '../lib/prompt-guard';
+import {
+  normalizeQueryAsOf,
+  runWithQueryAsOf,
+} from '../data/query-as-of-context';
 import { logger } from '../lib/logger';
 import { flushLangfuseBestEffort } from '../services/observability/langfuse-flush';
 import { extractTraceId } from './supervisor-trace';
@@ -103,6 +107,7 @@ const streamRequestSchema = z.object({
   enableWebSearch: z.union([z.boolean(), z.literal('auto')]).optional(),
   enableRAG: z.boolean().optional(),
   analysisMode: z.enum(['auto', 'thinking']).optional(),
+  queryAsOf: z.unknown().optional(),
   deviceType: z.enum(['mobile', 'desktop']).optional(),
 });
 
@@ -133,8 +138,13 @@ supervisorRouter.post('/', async (c: Context) => {
       enableWebSearch,
       enableRAG,
       analysisMode,
+      queryAsOf: rawQueryAsOf,
       deviceType,
     } = parseResult.data;
+    const queryAsOf = normalizeQueryAsOf(rawQueryAsOf);
+    if (rawQueryAsOf !== undefined && !queryAsOf) {
+      logger.warn('[Supervisor] Ignoring invalid queryAsOf payload');
+    }
 
     // 🎯 W3C Trace Context: traceparent 헤더에서 trace-id 추출
     const traceparent = c.req.header('traceparent');
@@ -180,20 +190,23 @@ supervisorRouter.post('/', async (c: Context) => {
       logger.info({ count: files.length }, 'Supervisor: files attached');
     }
 
-    const result = await executeSupervisor({
-      messages: sanitizedMessages.map((m: { role: string; content: string }) => ({
-        role: m.role as 'user' | 'assistant',
-        content: m.content,
-      })),
-      sessionId: sessionId || 'default',
-      enableWebSearch,
-      enableRAG,
-      analysisMode,
-      images,
-      files,
-      traceId: upstreamTraceId,
-      deviceType,
-    });
+    const result = await runWithQueryAsOf(queryAsOf, () =>
+      executeSupervisor({
+        messages: sanitizedMessages.map((m: { role: string; content: string }) => ({
+          role: m.role as 'user' | 'assistant',
+          content: m.content,
+        })),
+        sessionId: sessionId || 'default',
+        enableWebSearch,
+        enableRAG,
+        analysisMode,
+        images,
+        files,
+        traceId: upstreamTraceId,
+        queryAsOf,
+        deviceType,
+      })
+    );
 
     if (!result.success) {
       const publicError = sanitizeErrorData(result);
@@ -276,8 +289,13 @@ supervisorRouter.post('/stream', async (c: Context) => {
       enableWebSearch,
       enableRAG,
       analysisMode,
+      queryAsOf: rawQueryAsOf,
       deviceType,
     } = parseResult.data;
+    const queryAsOf = normalizeQueryAsOf(rawQueryAsOf);
+    if (rawQueryAsOf !== undefined && !queryAsOf) {
+      logger.warn('[SupervisorStream] Ignoring invalid queryAsOf payload');
+    }
 
     // 2. Get last user query for logging
     const lastMessage = messages[messages.length - 1];
@@ -322,31 +340,36 @@ supervisorRouter.post('/stream', async (c: Context) => {
           images,
           files,
           traceId: streamUpstreamTraceId,
+          queryAsOf,
           deviceType,
         };
 
-        for await (const event of executeSupervisorStream(request)) {
-          const safeEventData = event.type === 'error'
-            ? sanitizeErrorData(event.data)
-            : event.data;
-          const eventData = JSON.stringify({
-            type: event.type,
-            data: event.type === 'text_delta'
-              ? filterMaliciousOutput(sanitizeChineseCharacters(event.data as string))
-              : safeEventData,
-          });
+        await runWithQueryAsOf(queryAsOf, async () => {
+          for await (const event of executeSupervisorStream(request)) {
+            const safeEventData =
+              event.type === 'error' ? sanitizeErrorData(event.data) : event.data;
+            const eventData = JSON.stringify({
+              type: event.type,
+              data:
+                event.type === 'text_delta'
+                  ? filterMaliciousOutput(
+                      sanitizeChineseCharacters(event.data as string)
+                    )
+                  : safeEventData,
+            });
 
-          await stream.writeSSE({
-            id: String(messageId++),
-            event: event.type,
-            data: eventData,
-          });
+            await stream.writeSSE({
+              id: String(messageId++),
+              event: event.type,
+              data: eventData,
+            });
 
-          // Small delay to prevent overwhelming the client
-          if (event.type === 'text_delta') {
-            await stream.sleep(5);
+            // Small delay to prevent overwhelming the client
+            if (event.type === 'text_delta') {
+              await stream.sleep(5);
+            }
           }
-        }
+        });
 
         logger.info({ eventCount: messageId }, 'SupervisorStream completed');
       } catch (error) {

@@ -2,7 +2,14 @@
 
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
-import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import type { DashboardAlertContext } from '@/components/dashboard/alert-ai-context';
 import { useAIEntryController } from '@/hooks/ai/useAIEntryController';
@@ -15,6 +22,7 @@ import type {
 } from '@/lib/dashboard/server-data';
 import { systemInactivityService } from '@/services/system/SystemInactivityService';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
+import type { JobDataSlot } from '@/types/ai-jobs';
 import type { Server } from '@/types/server';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
 import debug from '@/utils/debug';
@@ -51,6 +59,21 @@ function consumeDashboardDevEffect(key: DashboardDevEffectKey): boolean {
 
   guardStore[key] = true;
   return true;
+}
+
+function toJobDataSlot(
+  timeInfo: DashboardTimeInfo | undefined
+): JobDataSlot | undefined {
+  if (!timeInfo) return undefined;
+
+  const hours = String(Math.floor(timeInfo.minuteOfDay / 60)).padStart(2, '0');
+  const minutes = String(timeInfo.minuteOfDay % 60).padStart(2, '0');
+
+  return {
+    slotIndex: timeInfo.globalSlotIndex,
+    minuteOfDay: timeInfo.minuteOfDay,
+    timeLabel: `${hours}:${minutes} KST`,
+  };
 }
 
 const DashboardHeader = dynamic(
@@ -118,6 +141,10 @@ export default function DashboardInteractiveShell({
   const hasTriggeredDashboardWarmupRef = useRef(false);
   const hasPreloadedMetricsRef = useRef(false);
   const hasAutoStartedSystemRef = useRef(false);
+  const aiQueryAsOfDataSlot = useMemo(
+    () => toJobDataSlot(initialTimeInfo),
+    [initialTimeInfo]
+  );
   const [deferDashboardContent, setDeferDashboardContent] = useState(
     process.env.NODE_ENV === 'development'
   );
@@ -369,6 +396,7 @@ export default function DashboardInteractiveShell({
             isOpen={isAgentOpen}
             onClose={closeAgent}
             userType={userType}
+            queryAsOfDataSlot={aiQueryAsOfDataSlot}
           />
         )}
 

@@ -6,6 +6,7 @@ import {
 } from '@/config/ai-proxy.config';
 import { BREAKPOINTS } from '@/config/constants';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
+import type { JobDataSlot } from '@/types/ai-jobs';
 import { consumeWarmupStartedAtForFirstQuery } from '@/utils/ai-warmup';
 import { buildSourceToolRequestOptions } from './source-tool-request-options';
 
@@ -21,6 +22,7 @@ interface CreateHybridChatTransportParams {
   webSearchEnabledRef: MutableRefObject<boolean | undefined>;
   ragEnabledRef: MutableRefObject<boolean | undefined>;
   analysisModeRef: MutableRefObject<AnalysisMode | undefined>;
+  queryAsOfDataSlotRef?: MutableRefObject<JobDataSlot | undefined>;
 }
 
 export function createHybridChatTransport(
@@ -33,6 +35,7 @@ export function createHybridChatTransport(
     webSearchEnabledRef,
     ragEnabledRef,
     analysisModeRef,
+    queryAsOfDataSlotRef,
   } = params;
 
   return new DefaultChatTransport({
@@ -58,6 +61,9 @@ export function createHybridChatTransport(
         ragEnabled: ragEnabledRef.current,
       }),
       analysisMode: analysisModeRef.current,
+      ...(queryAsOfDataSlotRef?.current && {
+        queryAsOfDataSlot: queryAsOfDataSlotRef.current,
+      }),
     }),
     prepareReconnectToStreamRequest: ({ id }) => ({
       api: `${apiEndpoint}?sessionId=${id}`,
