@@ -201,15 +201,45 @@ describe('SidebarMessage detail expand', () => {
     expect(
       screen.queryByText('Parity Metadata Contract')
     ).not.toBeInTheDocument();
+    expect(screen.getByText('일반 설명 문단')).toBeInTheDocument();
 
     fireEvent.click(
       screen.getByRole('button', { name: '분석 근거 상세 보기' })
     );
 
-    expect(screen.getByText('일반 설명 문단')).toBeInTheDocument();
-
     fireEvent.click(screen.getByRole('tab', { name: '디버그 보기' }));
 
     expect(screen.getByText(/Parity Metadata Contract/)).toBeInTheDocument();
+  });
+
+  it('shows actionable details inline even when analysis metadata exists', () => {
+    render(
+      <MessageComponent
+        message={{
+          id: 'assistant-6',
+          role: 'assistant',
+          content: '위험 서버를 분석했습니다.',
+          timestamp: new Date('2026-04-30T03:40:00.000Z'),
+          isStreaming: false,
+          metadata: {
+            analysisBasis: {
+              dataSource: '서버 실시간 데이터 분석',
+              engine: 'Cloud Run AI',
+            },
+            assistantResponseView: {
+              summary: '위험 서버를 분석했습니다.',
+              details:
+                'storage-nfs-dc1-01 DISK 95%\n\n1. 디스크 증설 또는 로그 정리',
+              shouldCollapse: true,
+            },
+          },
+        }}
+        isLastMessage={true}
+      />
+    );
+
+    expect(screen.getByText('상세 분석')).toBeInTheDocument();
+    expect(screen.getByText(/storage-nfs-dc1-01 DISK 95%/)).toBeInTheDocument();
+    expect(screen.getByText(/디스크 증설 또는 로그 정리/)).toBeInTheDocument();
   });
 });

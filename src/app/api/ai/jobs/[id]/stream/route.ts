@@ -20,6 +20,7 @@ import { logger } from '@/lib/logging';
 import { getRedisClient, getSystemRunningFlag, redisGet } from '@/lib/redis';
 import { runRedisWithTimeout } from '@/lib/redis/client';
 import type { RedisJobProgress } from '@/types/ai-jobs';
+import { sanitizeJobMetadataForClient } from '../../job-metadata';
 import { isJobOwnedByRequester } from '../../job-ownership';
 import {
   buildProgressEventData,
@@ -156,7 +157,7 @@ export async function GET(
                 toolsCalled: result.toolsCalled,
                 toolResults: result.toolResults,
                 ragSources: result.ragSources,
-                metadata: result.metadata,
+                metadata: sanitizeJobMetadataForClient(result.metadata),
                 processingTimeMs: result.processingTimeMs,
                 timestamp: result.completedAt,
               });

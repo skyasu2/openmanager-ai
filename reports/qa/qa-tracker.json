@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-29T18:53:53.244Z"
+    "updatedAt": "2026-04-29T19:26:27.989Z"
   },
   "sequence": {
-    "nextRunNumber": 375
+    "nextRunNumber": 376
   },
   "summary": {
-    "totalRecordedRuns": 372,
-    "totalRuns": 302,
+    "totalRecordedRuns": 373,
+    "totalRuns": 303,
     "excludedRuns": 70,
-    "totalChecks": 2566,
-    "totalPassed": 2469,
+    "totalChecks": 2570,
+    "totalPassed": 2473,
     "totalFailed": 88,
     "completionRate": 100,
-    "completedItems": 365,
+    "completedItems": 366,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 20,
     "expertDomainsTracked": 11,
     "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260430-0374",
-    "lastRecordedAt": "2026-04-29T18:53:53.244Z",
-    "latestRecordedRunId": "QA-20260430-0374",
-    "latestRecordedAt": "2026-04-29T18:53:53.244Z"
+    "lastRunId": "QA-20260430-0375",
+    "lastRecordedAt": "2026-04-29T19:26:27.989Z",
+    "latestRecordedRunId": "QA-20260430-0375",
+    "latestRecordedAt": "2026-04-29T19:26:27.989Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -8969,6 +8969,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
       "lastStatusChangeAt": "2026-04-29T18:53:53.244Z"
+    },
+    "redis-circuit-health-schema-production": {
+      "id": "redis-circuit-health-schema-production",
+      "title": "Cloud Run /health exposes redis circuit state as structured object",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260430-0375",
+      "firstSeenAt": "2026-04-29T19:26:27.989Z",
+      "lastSeenRunId": "QA-20260430-0375",
+      "lastSeenAt": "2026-04-29T19:26:27.989Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "GET /health returned redis: { configured: true, degraded: false, state: closed, retryAfterMs: 0 } — new object schema confirmed in production v8.11.64.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-29T19:26:27.989Z"
     }
   },
   "runs": [
@@ -15707,7 +15731,13 @@
       },
       "expertAssessments": [],
       "usageChecks": [],
-      "artifacts": [],
+      "artifacts": [
+        {
+          "type": "curl-response",
+          "label": "v8.11.64 Cloud Run /health redis circuit schema",
+          "path": "reports/qa/evidence/qa-20260430-v81164-cloud-run-health.json"
+        }
+      ],
       "links": [
         {
           "type": "github-actions-artifact",
@@ -36506,6 +36536,57 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 1
+    },
+    {
+      "runId": "QA-20260430-0375",
+      "recordedAt": "2026-04-29T19:26:27.989Z",
+      "recordedAtKst": "2026-04-30 04:26:27 KST",
+      "title": "curl smoke - v8.11.64 Cloud Run /health redis circuit schema",
+      "owner": "claude",
+      "source": "curl",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260430-0375.json",
+      "environment": {
+        "target": "cloud-run-production",
+        "url": "https://ai-engine-490817238363.asia-northeast1.run.app",
+        "frontend": "N/A",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "v8.11.64-production",
+        "deploymentUrl": "",
+        "commitSha": "279a3dcd644e55ed043d3b6bf8e269dff294b3a3"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "Cloud Run /health redis.configured field",
+        "Cloud Run /health redis.degraded field",
+        "Cloud Run /health redis.state field",
+        "Cloud Run /health redis.retryAfterMs field"
+      ],
+      "skippedSurfaces": [
+        "circuit open/half-open state (requires fault injection)",
+        "UI surfaces"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {

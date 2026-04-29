@@ -1,0 +1,20 @@
+{
+  "checkedAt": "2026-04-29T19:27:12.021Z",
+  "method": "curl -s https://ai-engine-490817238363.asia-northeast1.run.app/health",
+  "response": {
+    "status": "ok",
+    "service": "ai-engine",
+    "version": "8.11.64",
+    "redis": {
+      "configured": true,
+      "degraded": false,
+      "state": "closed",
+      "retryAfterMs": 0
+    },
+    "api": {
+      "routesReady": true,
+      "routeRegistrationFailed": false
+    },
+    "timestamp": "2026-04-29T19:27:12.021Z"
+  }
+}

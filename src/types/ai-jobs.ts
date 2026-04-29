@@ -95,6 +95,7 @@ export interface JobStatusResponse {
   startedAt: string | null;
   completedAt: string | null;
   processingTimeMs?: number | null;
+  metadata?: object | null;
 }
 
 /** Job 목록 조회 응답 */

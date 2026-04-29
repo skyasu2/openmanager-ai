@@ -77,25 +77,23 @@ export const AIWorkspaceMessage = memo<{
     [assistantResponseView?.details]
   );
   const analysisBasis = message.metadata?.analysisBasis ?? null;
+  const userFacingAssistantDetails =
+    assistantResponseDetails.processDetails ??
+    (!assistantResponseDetails.debugDetails
+      ? (assistantResponseView?.details ?? null)
+      : null);
+  const inlineAssistantDetails = assistantResponseView?.shouldCollapse
+    ? userFacingAssistantDetails
+    : null;
   const analysisBasisDetails =
-    analysisBasis && assistantResponseView?.details
-      ? assistantResponseDetails.processDetails
+    analysisBasis && assistantResponseView?.details && !inlineAssistantDetails
+      ? userFacingAssistantDetails
       : !assistantResponseView?.shouldCollapse
         ? (assistantResponseView?.details ?? null)
         : null;
   const analysisBasisDebugDetails =
     analysisBasis && assistantResponseView?.details
       ? assistantResponseDetails.debugDetails
-      : null;
-  const shouldCollapseIntoAnalysis = Boolean(
-    assistantResponseView?.shouldCollapse && analysisBasis
-  );
-  const inlineAssistantDetails =
-    assistantResponseView?.shouldCollapse && !analysisBasis
-      ? (assistantResponseDetails.processDetails ??
-        (!assistantResponseDetails.debugDetails
-          ? (assistantResponseView.details ?? null)
-          : null))
       : null;
   const shouldShowActionBar = hasTextContent;
 
@@ -178,7 +176,7 @@ export const AIWorkspaceMessage = memo<{
                     </div>
                   ) : isLastMessage &&
                     !message.isStreaming &&
-                    !shouldCollapseIntoAnalysis ? (
+                    !analysisBasis ? (
                     <TypewriterMarkdown
                       content={message.content}
                       enableTypewriter={true}

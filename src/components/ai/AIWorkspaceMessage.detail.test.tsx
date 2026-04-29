@@ -202,15 +202,44 @@ describe('AIWorkspaceMessage detail affordance', () => {
     expect(
       screen.queryByText('Parity Metadata Contract')
     ).not.toBeInTheDocument();
+    expect(screen.getByText('일반 설명')).toBeInTheDocument();
 
     fireEvent.click(
       screen.getByRole('button', { name: '분석 근거 상세 보기' })
     );
 
-    expect(screen.getByText('일반 설명')).toBeInTheDocument();
-
     fireEvent.click(screen.getByRole('tab', { name: '디버그 보기' }));
 
     expect(screen.getByText(/Parity Metadata Contract/)).toBeInTheDocument();
+  });
+
+  it('shows actionable details inline when analysis metadata exists', () => {
+    const message: EnhancedChatMessage = {
+      id: 'assistant-5',
+      role: 'assistant',
+      content: '위험 서버를 분석했습니다.',
+      timestamp: new Date('2026-04-30T03:40:00.000Z'),
+      isStreaming: false,
+      metadata: {
+        analysisBasis: {
+          dataSource: '서버 실시간 데이터 분석',
+          engine: 'Cloud Run AI',
+        },
+        assistantResponseView: {
+          summary: '위험 서버를 분석했습니다.',
+          details:
+            'db-mysql-dc1-primary MEM 90%\n\n1. 커넥션 풀과 버퍼 캐시를 확인',
+          shouldCollapse: true,
+        },
+      },
+    };
+
+    render(<AIWorkspaceMessage message={message} isLastMessage={true} />);
+
+    expect(screen.getByText('상세 분석')).toBeInTheDocument();
+    expect(
+      screen.getByText(/db-mysql-dc1-primary MEM 90%/)
+    ).toBeInTheDocument();
+    expect(screen.getByText(/커넥션 풀과 버퍼 캐시/)).toBeInTheDocument();
   });
 });

@@ -1,0 +1,72 @@
+{
+  "runId": "QA-20260430-0375",
+  "recordedAt": "2026-04-29T19:26:27.989Z",
+  "recordedAtKst": "2026-04-30 04:26:27 KST",
+  "runTitle": "curl smoke - v8.11.64 Cloud Run /health redis circuit schema",
+  "owner": "claude",
+  "source": "curl",
+  "environment": {
+    "target": "cloud-run-production",
+    "url": "https://ai-engine-490817238363.asia-northeast1.run.app",
+    "frontend": "N/A",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "v8.11.64-production",
+    "deploymentUrl": "",
+    "commitSha": "279a3dcd644e55ed043d3b6bf8e269dff294b3a3"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "Cloud Run /health redis.configured field",
+    "Cloud Run /health redis.degraded field",
+    "Cloud Run /health redis.state field",
+    "Cloud Run /health redis.retryAfterMs field"
+  ],
+  "skippedSurfaces": [
+    "circuit open/half-open state (requires fault injection)",
+    "UI surfaces"
+  ],
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "curl-response",
+      "label": "v8.11.64 Cloud Run /health redis circuit schema",
+      "path": "reports/qa/evidence/qa-20260430-v81164-cloud-run-health.json"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "redis-circuit-health-schema-production",
+      "title": "Cloud Run /health exposes redis circuit state as structured object",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "GET /health returned redis: { configured: true, degraded: false, state: closed, retryAfterMs: 0 } — new object schema confirmed in production v8.11.64.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "result: go for redis circuit health schema scope",
+    "curl GET /health: status=ok, version=8.11.64, redis.configured=true, redis.degraded=false, redis.state=closed, redis.retryAfterMs=0",
+    "All 4 new redis schema fields confirmed present and correctly typed",
+    "circuit open/half-open state validation requires Redis fault injection — skipped per free-tier constraint"
+  ],
+  "links": []
+}

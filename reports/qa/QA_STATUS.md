@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-30 03:53:54 KST
+> Generated at: 2026-04-30 04:26:28 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 372 |
-| Total Runs (Counted) | 302 |
+| Total Recorded Runs | 373 |
+| Total Runs (Counted) | 303 |
 | Non-counted Runs | 70 |
-| Total Checks | 2566 |
-| Passed | 2469 |
+| Total Checks | 2570 |
+| Passed | 2473 |
 | Failed | 88 |
-| Completed Items | 365 |
+| Completed Items | 366 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 20 |
 | Expert Domains Tracked | 11 |
 | Expert Open Gaps | 1 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260430-0374 (2026-04-29T18:53:53.244Z) |
-| Latest Recorded Run | QA-20260430-0374 (2026-04-29T18:53:53.244Z) |
+| Last Counted Run | QA-20260430-0375 (2026-04-29T19:26:27.989Z) |
+| Latest Recorded Run | QA-20260430-0375 (2026-04-29T19:26:27.989Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,24 +34,21 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260430-0374 (2026-04-29T18:53:53.244Z)
+Latest run: QA-20260430-0375 (2026-04-29T19:26:27.989Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| Data Quality & Metrics Analyst | appropriate | no | - |
-| Frontend UX Quality Reviewer | partially-appropriate | yes | Show user-facing response details inline in the assistant answer even when analysis metadata exists. |
-| Test Automation Architect | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Vercel usage after targeted production QA remained normal: effective 19.0897 USD, billed 0.0000 USD. |
+| - | - | - | - | - |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-28T18:53:53.244Z -> 2026-04-29T18:53:53.244Z (24h)
+- Window: 2026-04-28T19:26:27.989Z -> 2026-04-29T19:26:27.989Z (24h)
 - Runs with observations: 8 recorded / 8 counted
 - Samples: 11
 
@@ -69,26 +66,21 @@ Latest run: QA-20260430-0374 (2026-04-29T18:53:53.244Z)
 - Release-Facing: yes
 - Counts Toward Summary: yes
 - Deployment: v8.11.64-production / SHA 279a3dcd
-- Coverage Packs: dashboard-core, ai-core
-- Covered Surfaces: /, /dashboard, AI sidebar open, AI job queue POST /api/ai/jobs, SSE /api/ai/jobs/[id]/stream, dashboard dataSlotInfo label, AI job request metadata queryAsOfDataSlot, AI job result content for alert-status advisory query, AI sidebar collapsed and expanded response rendering
-- Skipped Surfaces: login providers beyond guest session, admin pages, reporter/analyst dedicated tabs, mobile layout, broad route sweep
+- Coverage Packs: ai-core
+- Covered Surfaces: Cloud Run /health redis.configured field, Cloud Run /health redis.degraded field, Cloud Run /health redis.state field, Cloud Run /health redis.retryAfterMs field
+- Skipped Surfaces: circuit open/half-open state (requires fault injection), UI surfaces
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.11.64 tag pipeline | [GitLab v8.11.64 tag pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2488706817) | - |
-| general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | v8.11.64 AI alert-status advisory rerun expanded screenshot | `reports/qa/evidence/qa-20260430-v81164-ai-alert-status-rerun-expanded.png` | - |
-| playwright-network | v8.11.64 AI rerun request body with queryAsOfDataSlot | `reports/qa/evidence/qa-20260430-v81164-ai-alert-status-rerun-network.txt` | - |
-| playwright-network | v8.11.64 AI rerun collapsed DOM evidence | `reports/qa/evidence/qa-20260430-v81164-ai-alert-status-rerun-dom.json` | - |
-| playwright-network | v8.11.64 AI rerun expanded DOM evidence | `reports/qa/evidence/qa-20260430-v81164-ai-alert-status-rerun-expanded-dom.json` | - |
-| playwright-network | v8.11.64 AI rerun job result payload | `reports/qa/evidence/qa-20260430-v81164-ai-alert-status-rerun-job-result.json` | - |
+| curl-response | v8.11.64 Cloud Run /health redis circuit schema | `reports/qa/evidence/qa-20260430-v81164-cloud-run-health.json` | - |
 
 ## Expert Domain Open Gaps
 
@@ -413,6 +405,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - rag-engine-doc-link-repair: RAG, Vercel fair-use 문서 링크 경로 갱신 (completed 1회, last QA-20260228-0026)
 - rag-smoke-coverage: Redis+Supabase RAG 경로 스모크 강화 (completed 2회, last QA-20260302-0039)
 - readme-qa-evidence-sync-20260325: README QA evidence snapshot sync (completed 1회, last QA-20260325-0185)
+- redis-circuit-health-schema-production: Cloud Run /health exposes redis circuit state as structured object (completed 1회, last QA-20260430-0375)
 - release-dod-contract-test: Release DoD: API contract test 통과 (completed 1회, last QA-20260226-0008)
 - release-dod-cost-gate: Release DoD: Cloud Run Free Tier 비용 가드 검증 (completed 1회, last QA-20260226-0008)
 - release-dod-doc-gate: Release DoD: 문서 게이트 90일 갱신·메타데이터·아카이빙 정책 (completed 1회, last QA-20260228-0025)
@@ -539,6 +532,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260430-0375 | 2026-04-29T19:26:27.989Z | targeted | yes | yes | curl smoke - v8.11.64 Cloud Run /health redis circuit schema | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260430-0374 | 2026-04-29T18:53:53.244Z | targeted | yes | yes | Vercel Playwright targeted QA - v8.11.64 AI alert-status advisory rerun | 10 | 1 | 0 | 0 | 1 | 1 |
 | QA-20260429-0373 | 2026-04-29T14:29:33.712Z | targeted | yes | yes | Vercel Playwright targeted QA - v8.11.64 AI alert-status advisory recheck | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260429-0372 | 2026-04-29T14:03:32.361Z | targeted | yes | yes | Vercel Playwright targeted QA - v8.11.63 AI slot propagation recheck | 9 | 1 | 1 | 0 | 0 | 1 |
@@ -558,4 +552,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260428-0358 | 2026-04-28T13:24:51.649Z | targeted | yes | yes | Cloud Tasks Job Queue production smoke - v8.11.52 | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260428-0357 | 2026-04-28T06:41:22.936Z | targeted | yes | yes | AI Assistant Vercel production Playwright MCP QA - v8.11.46 | 9 | 1 | 0 | 0 | 1 | 1 |
 | QA-20260428-0356 | 2026-04-28T05:38:09.460Z | targeted | yes | yes | AI Provider forced-routing context guard production QA - v8.11.46 | 12 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260428-0355 | 2026-04-28T00:28:02.962Z | targeted | yes | yes | AI analysis mode auto vs thinking production route and visualizer QA | 8 | 1 | 1 | 0 | 0 | 2 |

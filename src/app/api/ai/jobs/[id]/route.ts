@@ -17,6 +17,7 @@ import type {
   RedisJobProgress,
 } from '@/types/ai-jobs';
 import { withCSRFProtection } from '@/utils/security/csrf';
+import { sanitizeJobMetadataForClient } from '../job-metadata';
 import { isJobOwnedByRequester } from '../job-ownership';
 
 // ============================================
@@ -59,6 +60,7 @@ export const GET = withAuth(async function GET(
     if (job.status === 'queued' || job.status === 'processing') {
       progressInfo = await redisGet<RedisJobProgress>(`job:progress:${jobId}`);
     }
+    const clientMetadata = sanitizeJobMetadataForClient(job.metadata);
 
     const response: JobStatusResponse = {
       jobId: job.id,
@@ -73,6 +75,9 @@ export const GET = withAuth(async function GET(
       startedAt: job.startedAt,
       completedAt: job.completedAt,
       processingTimeMs: job.processingTimeMs ?? null,
+      metadata: clientMetadata
+        ? (clientMetadata as unknown as Record<string, unknown>)
+        : null,
     };
 
     // Cache 헤더 설정 (폴링 최적화)

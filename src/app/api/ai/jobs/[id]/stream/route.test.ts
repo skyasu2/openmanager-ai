@@ -348,4 +348,55 @@ describe('AI Job Stream Route', () => {
     expect(text).toContain('"source":"cloud-run-ai"');
     expect(text).toContain('"retryAfterSeconds":12');
   });
+
+  it('should stream sanitized provider telemetry without owner metadata', async () => {
+    mockGetSystemRunningFlag.mockResolvedValue(true);
+    mockRedisGet.mockResolvedValue({
+      status: 'completed',
+      startedAt: new Date().toISOString(),
+      completedAt: new Date().toISOString(),
+      metadata: {
+        ownerKey: 'owner-secret',
+      },
+    });
+    mockRedisMGet.mockResolvedValue([
+      {
+        status: 'completed',
+        result: 'done',
+        targetAgent: 'Analyst Agent',
+        startedAt: new Date().toISOString(),
+        completedAt: new Date().toISOString(),
+        metadata: {
+          ownerKey: 'owner-secret',
+          complexity: 'complex',
+          provider: 'cerebras',
+          modelId: 'qwen-3-235b-a22b-instruct-2507',
+          usedFallback: false,
+          providerAttempts: [
+            {
+              provider: 'cerebras',
+              modelId: 'qwen-3-235b-a22b-instruct-2507',
+              attempt: 1,
+              durationMs: 801,
+            },
+          ],
+        },
+      },
+      null,
+    ]);
+
+    const request = new NextRequest(
+      'http://localhost/api/ai/jobs/job-provider/stream'
+    );
+    const response = await GET(request, {
+      params: Promise.resolve({ id: 'job-provider' }),
+    });
+
+    expect(response.status).toBe(200);
+    const text = await response.text();
+    expect(text).toContain('"provider":"cerebras"');
+    expect(text).toContain('"modelId":"qwen-3-235b-a22b-instruct-2507"');
+    expect(text).not.toContain('owner-secret');
+    expect(text).not.toContain('"complexity"');
+  });
 });

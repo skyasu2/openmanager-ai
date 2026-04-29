@@ -47,6 +47,23 @@ export interface JobResult {
     retrieval?: RetrievalMetadata;
     traceId?: string;
     handoffs?: Array<{ from: string; to: string; reason?: string }>;
+    queryAsOf?: unknown;
+    provider?: string;
+    modelId?: string;
+    providerAttempts?: Array<{
+      provider: string;
+      modelId?: string;
+      attempt?: number;
+      durationMs?: number;
+      error?: string;
+    }>;
+    usedFallback?: boolean;
+    fallbackReason?: string;
+    durationMs?: number;
+    ttfbMs?: number;
+    latencyTier?: 'fast' | 'normal' | 'slow' | 'very_slow';
+    resolvedMode?: 'single' | 'multi';
+    modeSelectionSource?: string;
     toolResultSummaries?: Array<{
       toolName: string;
       label: string;

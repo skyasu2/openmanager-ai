@@ -163,6 +163,90 @@ describe('Jobs Routes', () => {
                 status: 'completed',
               },
             ],
+            provider: 'cerebras',
+            modelId: 'gpt-oss-120b',
+            durationMs: 500,
+          }),
+        })
+      );
+    });
+
+    it('stream done provider attempt telemetry를 job metadata에 보존한다', async () => {
+      vi.mocked(executeSupervisorStream).mockImplementationOnce(async function* () {
+        yield { type: 'text_delta', data: 'fallback 응답' };
+        yield {
+          type: 'done',
+          data: {
+            success: true,
+            finalAgent: 'Analyst Agent',
+            toolsCalled: ['getServerMetrics'],
+            ragSources: [],
+            metadata: {
+              provider: 'groq',
+              modelId: 'meta-llama/llama-4-scout-17b-16e-instruct',
+              usedFallback: true,
+              fallbackReason: 'rate_limit',
+              durationMs: 1234,
+              ttfbMs: 220,
+              latencyTier: 'normal',
+              providerAttempts: [
+                {
+                  provider: 'cerebras',
+                  modelId: 'qwen-3-235b-a22b-instruct-2507',
+                  attempt: 1,
+                  durationMs: 12,
+                  error: 'QUOTA_ADMISSION:minute_request_threshold',
+                },
+                {
+                  provider: 'groq',
+                  modelId: 'meta-llama/llama-4-scout-17b-16e-instruct',
+                  attempt: 2,
+                  durationMs: 1222,
+                },
+              ],
+            },
+          },
+        };
+      });
+
+      const res = await app.request('/jobs/process', {
+        method: 'POST',
+        body: JSON.stringify({
+          jobId: 'job-provider-telemetry',
+          messages: [{ role: 'user', content: '위험 서버 조치 알려줘' }],
+          sessionId: 'session-provider-telemetry',
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      expect(res.status).toBe(200);
+      expect(vi.mocked(storeJobResult)).toHaveBeenCalledWith(
+        'job-provider-telemetry',
+        'fallback 응답',
+        expect.objectContaining({
+          metadata: expect.objectContaining({
+            provider: 'groq',
+            modelId: 'meta-llama/llama-4-scout-17b-16e-instruct',
+            usedFallback: true,
+            fallbackReason: 'rate_limit',
+            durationMs: 1234,
+            ttfbMs: 220,
+            latencyTier: 'normal',
+            providerAttempts: [
+              {
+                provider: 'cerebras',
+                modelId: 'qwen-3-235b-a22b-instruct-2507',
+                attempt: 1,
+                durationMs: 12,
+                error: 'QUOTA_ADMISSION:minute_request_threshold',
+              },
+              {
+                provider: 'groq',
+                modelId: 'meta-llama/llama-4-scout-17b-16e-instruct',
+                attempt: 2,
+                durationMs: 1222,
+              },
+            ],
           }),
         })
       );

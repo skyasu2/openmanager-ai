@@ -100,6 +100,72 @@ describe('GET /api/ai/jobs/[id]', () => {
     });
     expect(payload.processingTimeMs).toBe(1234);
   });
+
+  it('completed job 응답에는 provider telemetry만 노출하고 ownerKey는 숨긴다', async () => {
+    const now = new Date().toISOString();
+    mockRedisGet.mockResolvedValueOnce({
+      id: 'job-provider',
+      type: 'analysis',
+      sessionId: 'session-1',
+      query: 'test',
+      status: 'completed',
+      progress: 100,
+      currentStep: 'completed',
+      result: '완료',
+      error: null,
+      createdAt: now,
+      startedAt: now,
+      completedAt: now,
+      processingTimeMs: 987,
+      metadata: {
+        complexity: 'complex',
+        estimatedTime: 45,
+        factors: {},
+        ownerKey: 'owner-secret',
+        provider: 'cerebras',
+        modelId: 'qwen-3-235b-a22b-instruct-2507',
+        usedFallback: false,
+        durationMs: 900,
+        providerAttempts: [
+          {
+            provider: 'cerebras',
+            modelId: 'qwen-3-235b-a22b-instruct-2507',
+            attempt: 1,
+            durationMs: 900,
+          },
+        ],
+      },
+    });
+
+    const request = new NextRequest(
+      'http://localhost/api/ai/jobs/job-provider'
+    );
+    const response = await GET(request, {
+      params: Promise.resolve({ id: 'job-provider' }),
+    });
+
+    expect(response.status).toBe(200);
+    const payload = (await response.json()) as {
+      metadata: Record<string, unknown> | null;
+    };
+
+    expect(payload.metadata).toMatchObject({
+      provider: 'cerebras',
+      modelId: 'qwen-3-235b-a22b-instruct-2507',
+      usedFallback: false,
+      durationMs: 900,
+      providerAttempts: [
+        {
+          provider: 'cerebras',
+          modelId: 'qwen-3-235b-a22b-instruct-2507',
+          attempt: 1,
+          durationMs: 900,
+        },
+      ],
+    });
+    expect(payload.metadata).not.toHaveProperty('ownerKey');
+    expect(payload.metadata).not.toHaveProperty('complexity');
+  });
 });
 
 describe('DELETE /api/ai/jobs/[id]', () => {
