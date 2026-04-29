@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-29 23:03:33 KST
+> Generated at: 2026-04-29 23:29:34 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 370 |
-| Total Runs (Counted) | 300 |
+| Total Recorded Runs | 371 |
+| Total Runs (Counted) | 301 |
 | Non-counted Runs | 70 |
-| Total Checks | 2547 |
-| Passed | 2451 |
+| Total Checks | 2556 |
+| Passed | 2460 |
 | Failed | 87 |
-| Completed Items | 364 |
-| Pending Items | 1 |
+| Completed Items | 365 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 19 |
 | Expert Domains Tracked | 10 |
-| Expert Open Gaps | 1 |
-| Completion Rate | 99.73% |
-| Last Counted Run | QA-20260429-0372 (2026-04-29T14:03:32.361Z) |
-| Latest Recorded Run | QA-20260429-0372 (2026-04-29T14:03:32.361Z) |
+| Expert Open Gaps | 0 |
+| Completion Rate | 100% |
+| Last Counted Run | QA-20260429-0373 (2026-04-29T14:29:33.712Z) |
+| Latest Recorded Run | QA-20260429-0373 (2026-04-29T14:29:33.712Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,11 +34,11 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260429-0372 (2026-04-29T14:03:32.361Z)
+Latest run: QA-20260429-0373 (2026-04-29T14:29:33.712Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | partially-appropriate | yes | For explicit 위험/경고 서버 operational questions, prefer deterministic alert-status summary from tool evidence. |
+| AI Quality Assurance Specialist | appropriate | no | - |
 | Data Quality & Metrics Analyst | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
@@ -51,16 +51,16 @@ Latest run: QA-20260429-0372 (2026-04-29T14:03:32.361Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-28T14:03:32.361Z -> 2026-04-29T14:03:32.361Z (24h)
-- Runs with observations: 6 recorded / 6 counted
-- Samples: 9
+- Window: 2026-04-28T14:29:33.712Z -> 2026-04-29T14:29:33.712Z (24h)
+- Runs with observations: 7 recorded / 7 counted
+- Samples: 10
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Supervisor Agent | cloud-run-supervisor | 3 | 19726ms | 48818ms | 624ms | 732ms | 19067ms | 48818ms | QA-20260429-0368 |
 | Cloud Run AI | multi-provider-fallback | 1 | 17606ms | 17606ms | 751ms | 751ms | 18276ms | 18276ms | QA-20260429-0370 |
 | Cloud Run AI | cerebras | 1 | 14892ms | 14892ms | 459ms | 459ms | 15903ms | 15903ms | QA-20260429-0369 |
-| Cloud Run AI | cloud-run-supervisor | 2 | 9118ms | 11803ms | 1167ms | 1196ms | 7820ms | 10936ms | QA-20260429-0372 |
+| Cloud Run AI | cloud-run-supervisor | 3 | 9299ms | 11803ms | 1192ms | 1242ms | 7988ms | 10936ms | QA-20260429-0373 |
 | Cloud Run AI | deterministic-grounding | 2 | 2284ms | 2418ms | 795ms | 1129ms | 3295ms | 3554ms | QA-20260429-0370 |
 
 ## Coverage (Latest Run)
@@ -68,7 +68,7 @@ Latest run: QA-20260429-0372 (2026-04-29T14:03:32.361Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: v8.11.63-production / SHA c91a4e31
+- Deployment: v8.11.64-production / SHA 279a3dcd
 - Coverage Packs: dashboard-core, ai-core
 - Covered Surfaces: /, /dashboard, AI sidebar open, AI job queue POST /api/ai/jobs, SSE /api/ai/jobs/[id]/stream, dashboard dataSlotInfo label, AI job request metadata queryAsOfDataSlot, AI response relevance for alert-status advisory query
 - Skipped Surfaces: login providers beyond guest session, admin pages, reporter/analyst dedicated tabs, mobile layout, broad route sweep
@@ -77,25 +77,24 @@ Latest run: QA-20260429-0372 (2026-04-29T14:03:32.361Z)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.11.63 tag pipeline | [GitLab v8.11.63 tag pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2488611542) | - |
+| general | GitLab v8.11.64 tag pipeline | [GitLab v8.11.64 tag pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2488706817) | - |
 | general | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | v8.11.63 slot propagation pass but response drift screenshot | `reports/qa/evidence/qa-20260429-v81163-ai-slot-body-pass-response-drift.png` | - |
-| playwright-network | v8.11.63 AI request body with queryAsOfDataSlot | `reports/qa/evidence/qa-20260429-v81163-ai-slot-body-pass-response-drift-network.txt` | - |
-| playwright-network | v8.11.63 AI response drift DOM evidence | `reports/qa/evidence/qa-20260429-v81163-ai-slot-body-pass-response-drift-dom.json` | - |
+| playwright-screenshot | v8.11.64 AI alert-status advisory pass screenshot | `reports/qa/evidence/qa-20260429-v81164-ai-alert-status-pass.png` | - |
+| playwright-network | v8.11.64 AI request body with queryAsOfDataSlot | `reports/qa/evidence/qa-20260429-v81164-ai-alert-status-pass-network.txt` | - |
+| playwright-network | v8.11.64 AI alert-status advisory DOM evidence | `reports/qa/evidence/qa-20260429-v81164-ai-alert-status-pass-dom.json` | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260429-0372)
-  next: For explicit 위험/경고 서버 operational questions, prefer deterministic alert-status summary from tool evidence.
+- None
 
 ## Pending Improvements
 
-- [P1] ai-alert-status-advisory-response-drift: Alert-status advisory queries must not drift into unrelated metric rankings (seen 1회, last QA-20260429-0372)
+- None
 
 ## Deferred Improvements
 
@@ -167,6 +166,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 - active-alerts-modal-ai-prefill: 활성 알림 모달에서 AI 사이드바 컨텍스트 자동 주입 (completed 1회, last QA-20260323-0166)
 - admin-log-level-admin-auth: 관리자 로그레벨 API 관리자 권한 강제 (completed 1회, last QA-20260325-0183)
+- ai-alert-status-advisory-response-drift: Alert-status advisory queries stay grounded and do not drift into unrelated metric rankings (completed 1회, last QA-20260429-0373)
 - ai-analysis-main-response-empty-on-cerebras-quota: Prevent empty main AI analysis response when Cerebras queue or token quota fails (completed 1회, last QA-20260429-0370)
 - ai-analysis-mode-route-selection-production: Production auto/thinking analysis mode route selection verified (completed 1회, last QA-20260428-0355)
 - ai-analyst-success: Analyst Agent 이상감지/예측 성공 (completed 2회, last QA-20260314-0097)
@@ -534,6 +534,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260429-0373 | 2026-04-29T14:29:33.712Z | targeted | yes | yes | Vercel Playwright targeted QA - v8.11.64 AI alert-status advisory recheck | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260429-0372 | 2026-04-29T14:03:32.361Z | targeted | yes | yes | Vercel Playwright targeted QA - v8.11.63 AI slot propagation recheck | 9 | 1 | 1 | 0 | 0 | 1 |
 | QA-20260429-0371 | 2026-04-29T13:26:06.547Z | targeted | yes | yes | Vercel Playwright targeted QA - v8.11.62 dashboard AI data slot drift | 8 | 0 | 1 | 0 | 0 | 2 |
 | QA-20260429-0370 | 2026-04-29T09:41:31.768Z | targeted | yes | yes | v8.11.60 Vercel Production QA - AI Sidebar QueryAsOf and Cerebras Fallback Recheck | 8 | 2 | 0 | 0 | 0 | 0 |
@@ -553,4 +554,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260428-0356 | 2026-04-28T05:38:09.460Z | targeted | yes | yes | AI Provider forced-routing context guard production QA - v8.11.46 | 12 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260428-0355 | 2026-04-28T00:28:02.962Z | targeted | yes | yes | AI analysis mode auto vs thinking production route and visualizer QA | 8 | 1 | 1 | 0 | 0 | 2 |
 | QA-20260427-0354 | 2026-04-27T13:51:08.998Z | targeted | yes | yes | AI Provider 분산 배치 (Spider-Web) Production QA (Task 3) | 7 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260427-0353 | 2026-04-27T13:19:24.078Z | targeted | yes | yes | AI Assistant Analyst/Reporter Quality - Production Playwright MCP QA (Task 5) | 12 | 0 | 0 | 0 | 0 | 0 |

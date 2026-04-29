@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-29T14:03:32.361Z"
+    "updatedAt": "2026-04-29T14:29:33.712Z"
   },
   "sequence": {
-    "nextRunNumber": 373
+    "nextRunNumber": 374
   },
   "summary": {
-    "totalRecordedRuns": 370,
-    "totalRuns": 300,
+    "totalRecordedRuns": 371,
+    "totalRuns": 301,
     "excludedRuns": 70,
-    "totalChecks": 2547,
-    "totalPassed": 2451,
+    "totalChecks": 2556,
+    "totalPassed": 2460,
     "totalFailed": 87,
-    "completionRate": 99.73,
-    "completedItems": 364,
-    "pendingItems": 1,
+    "completionRate": 100,
+    "completedItems": 365,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 19,
     "expertDomainsTracked": 10,
-    "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260429-0372",
-    "lastRecordedAt": "2026-04-29T14:03:32.361Z",
-    "latestRecordedRunId": "QA-20260429-0372",
-    "latestRecordedAt": "2026-04-29T14:03:32.361Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260429-0373",
+    "lastRecordedAt": "2026-04-29T14:29:33.712Z",
+    "latestRecordedRunId": "QA-20260429-0373",
+    "latestRecordedAt": "2026-04-29T14:29:33.712Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -8924,27 +8924,27 @@
     },
     "ai-alert-status-advisory-response-drift": {
       "id": "ai-alert-status-advisory-response-drift",
-      "title": "Alert-status advisory queries must not drift into unrelated metric rankings",
+      "title": "Alert-status advisory queries stay grounded and do not drift into unrelated metric rankings",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260429-0372",
       "firstSeenAt": "2026-04-29T14:03:32.361Z",
-      "lastSeenRunId": "QA-20260429-0372",
-      "lastSeenAt": "2026-04-29T14:03:32.361Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260429-0373",
+      "lastSeenAt": "2026-04-29T14:29:33.712Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "",
+      "lastEvidence": "v8.11.64 answered the 위험/경고 server advisory query with dashboard-matching warning/critical counts and storage-nfs-dc1-01 DISK 82% actions.",
       "lastNote": "v8.11.63 answered an alert-status operations query with memory usage top-5 content despite correct queryAsOfDataSlot propagation.",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-04-29T14:03:32.361Z"
+      "lastStatusChangeAt": "2026-04-29T14:29:33.712Z"
     }
   },
   "runs": [
@@ -36189,6 +36189,147 @@
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260429-0373",
+      "recordedAt": "2026-04-29T14:29:33.712Z",
+      "recordedAtKst": "2026-04-29 23:29:33 KST",
+      "title": "Vercel Playwright targeted QA - v8.11.64 AI alert-status advisory recheck",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260429-0373.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "v8.11.64-production",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "279a3dcd644e55ed043d3b6bf8e269dff294b3a3"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "/",
+        "/dashboard",
+        "AI sidebar open",
+        "AI job queue POST /api/ai/jobs",
+        "SSE /api/ai/jobs/[id]/stream",
+        "dashboard dataSlotInfo label",
+        "AI job request metadata queryAsOfDataSlot",
+        "AI response relevance for alert-status advisory query"
+      ],
+      "skippedSurfaces": [
+        "login providers beyond guest session",
+        "admin pages",
+        "reporter/analyst dedicated tabs",
+        "mobile layout",
+        "broad route sweep"
+      ],
+      "checks": {
+        "total": 9,
+        "passed": 9,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI sidebar job queue alert-status advisory query",
+          "agent": "Cloud Run AI",
+          "provider": "cloud-run-supervisor",
+          "route": "/api/ai/jobs/[id]/stream",
+          "source": "job result payload, Performance API resource timing, and Playwright request body capture",
+          "latencyMs": 9660,
+          "ttfbMs": 1242,
+          "processingTimeMs": 8323
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "AI answer stayed grounded in the alert-status query: warning 1, critical 0, storage-nfs-dc1-01 DISK 82%, and three operational actions.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Request metadata matched the dashboard data slot: 23:20 KST slot 140, minuteOfDay 1400.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab v8.11.64 tag pipeline succeeded; frontend and AI Engine post-deploy smoke jobs passed.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP captured request body, DOM, screenshot, and Performance API evidence for the fixed scenario.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-29T23:27:49+09:00",
+          "summary": "Vercel usage after targeted production QA remained normal: effective 19.0897 USD, billed 0.0000 USD.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "v8.11.64 AI alert-status advisory pass screenshot",
+          "path": "reports/qa/evidence/qa-20260429-v81164-ai-alert-status-pass.png"
+        },
+        {
+          "type": "playwright-network",
+          "label": "v8.11.64 AI request body with queryAsOfDataSlot",
+          "path": "reports/qa/evidence/qa-20260429-v81164-ai-alert-status-pass-network.txt"
+        },
+        {
+          "type": "playwright-network",
+          "label": "v8.11.64 AI alert-status advisory DOM evidence",
+          "path": "reports/qa/evidence/qa-20260429-v81164-ai-alert-status-pass-dom.json"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.64 tag pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2488706817"
+        },
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -36197,17 +36338,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 176,
-      "appropriateCount": 158,
+      "seenCount": 177,
+      "appropriateCount": 159,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 28,
-      "lastRunId": "QA-20260429-0372",
-      "lastSeenAt": "2026-04-29T14:03:32.361Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "v8.11.63 correctly propagated dashboard queryAsOfDataSlot, but the generated answer drifted from alert-status advisory intent to a memory top-N answer.",
-      "lastNextAction": "For explicit 위험/경고 서버 operational questions, prefer deterministic alert-status summary from tool evidence."
+      "lastRunId": "QA-20260429-0373",
+      "lastSeenAt": "2026-04-29T14:29:33.712Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "AI answer stayed grounded in the alert-status query: warning 1, critical 0, storage-nfs-dc1-01 DISK 82%, and three operational actions.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -36248,16 +36389,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 108,
-      "appropriateCount": 96,
+      "seenCount": 109,
+      "appropriateCount": 97,
       "partialCount": 12,
       "inappropriateCount": 0,
       "improvementNeededCount": 16,
-      "lastRunId": "QA-20260429-0372",
-      "lastSeenAt": "2026-04-29T14:03:32.361Z",
+      "lastRunId": "QA-20260429-0373",
+      "lastSeenAt": "2026-04-29T14:29:33.712Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Frontend v8.11.63 and AI Engine deploy pipeline completed successfully; POST /api/ai/jobs returned 201 and SSE completed with one stream entry.",
+      "lastRationale": "GitLab v8.11.64 tag pipeline succeeded; frontend and AI Engine post-deploy smoke jobs passed.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -36265,16 +36406,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 144,
-      "appropriateCount": 133,
+      "seenCount": 145,
+      "appropriateCount": 134,
       "partialCount": 11,
       "inappropriateCount": 0,
       "improvementNeededCount": 13,
-      "lastRunId": "QA-20260429-0372",
-      "lastSeenAt": "2026-04-29T14:03:32.361Z",
+      "lastRunId": "QA-20260429-0373",
+      "lastSeenAt": "2026-04-29T14:29:33.712Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP captured request body, DOM, screenshot, and Performance API evidence.",
+      "lastRationale": "Playwright MCP captured request body, DOM, screenshot, and Performance API evidence for the fixed scenario.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -36282,16 +36423,16 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 44,
-      "appropriateCount": 25,
+      "seenCount": 45,
+      "appropriateCount": 26,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 19,
-      "lastRunId": "QA-20260429-0372",
-      "lastSeenAt": "2026-04-29T14:03:32.361Z",
+      "lastRunId": "QA-20260429-0373",
+      "lastSeenAt": "2026-04-29T14:29:33.712Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Request metadata matched the dashboard data slot: 22:50 KST slot 137, minuteOfDay 1370.",
+      "lastRationale": "Request metadata matched the dashboard data slot: 23:20 KST slot 140, minuteOfDay 1400.",
       "lastNextAction": ""
     },
     "infra-reliability": {

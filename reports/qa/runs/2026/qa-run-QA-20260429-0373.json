@@ -1,0 +1,157 @@
+{
+  "runId": "QA-20260429-0373",
+  "recordedAt": "2026-04-29T14:29:33.712Z",
+  "recordedAtKst": "2026-04-29 23:29:33 KST",
+  "runTitle": "Vercel Playwright targeted QA - v8.11.64 AI alert-status advisory recheck",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "v8.11.64-production",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "279a3dcd644e55ed043d3b6bf8e269dff294b3a3"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/",
+    "/dashboard",
+    "AI sidebar open",
+    "AI job queue POST /api/ai/jobs",
+    "SSE /api/ai/jobs/[id]/stream",
+    "dashboard dataSlotInfo label",
+    "AI job request metadata queryAsOfDataSlot",
+    "AI response relevance for alert-status advisory query"
+  ],
+  "skippedSurfaces": [
+    "login providers beyond guest session",
+    "admin pages",
+    "reporter/analyst dedicated tabs",
+    "mobile layout",
+    "broad route sweep"
+  ],
+  "checks": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI sidebar job queue alert-status advisory query",
+      "agent": "Cloud Run AI",
+      "provider": "cloud-run-supervisor",
+      "route": "/api/ai/jobs/[id]/stream",
+      "source": "job result payload, Performance API resource timing, and Playwright request body capture",
+      "latencyMs": 9660,
+      "ttfbMs": 1242,
+      "processingTimeMs": 8323
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "AI answer stayed grounded in the alert-status query: warning 1, critical 0, storage-nfs-dc1-01 DISK 82%, and three operational actions.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Request metadata matched the dashboard data slot: 23:20 KST slot 140, minuteOfDay 1400.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab v8.11.64 tag pipeline succeeded; frontend and AI Engine post-deploy smoke jobs passed.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP captured request body, DOM, screenshot, and Performance API evidence for the fixed scenario.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-29T23:27:49+09:00",
+      "summary": "Vercel usage after targeted production QA remained normal: effective 19.0897 USD, billed 0.0000 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "v8.11.64 AI alert-status advisory pass screenshot",
+      "path": "reports/qa/evidence/qa-20260429-v81164-ai-alert-status-pass.png"
+    },
+    {
+      "type": "playwright-network",
+      "label": "v8.11.64 AI request body with queryAsOfDataSlot",
+      "path": "reports/qa/evidence/qa-20260429-v81164-ai-alert-status-pass-network.txt"
+    },
+    {
+      "type": "playwright-network",
+      "label": "v8.11.64 AI alert-status advisory DOM evidence",
+      "path": "reports/qa/evidence/qa-20260429-v81164-ai-alert-status-pass-dom.json"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-alert-status-advisory-response-drift",
+      "title": "Alert-status advisory queries stay grounded and do not drift into unrelated metric rankings",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "v8.11.64 answered the 위험/경고 server advisory query with dashboard-matching warning/critical counts and storage-nfs-dc1-01 DISK 82% actions.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "result: go for v8.11.64 targeted AI alert-status advisory scope",
+    "dashboard dataSlotInfo: 23:20 KST slot 140/143",
+    "POST /api/ai/jobs: 201, 1242ms; request body included queryAsOfDataSlot slotIndex=140, minuteOfDay=1400, timeLabel=23:20 KST",
+    "AI job id: 312be929-04a9-48c4-b066-4cacd6b6ef45",
+    "SSE stream: 9660ms, 3810 bytes, 1 stream entry",
+    "AI answer matched dashboard status: 18 total, 17 online, 1 warning, 0 critical, 0 offline; warning server storage-nfs-dc1-01 DISK 82%; three operational actions returned."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.11.64 tag pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2488706817"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

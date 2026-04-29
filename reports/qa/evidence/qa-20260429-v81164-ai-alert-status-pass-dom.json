@@ -1,0 +1,24 @@
+{
+  "url": "https://openmanager-ai.vercel.app/dashboard",
+  "text": "AI 어시스턴트\n\nAI Chat으로 시스템 질의\n\nAI Chat\n\nAI 기반 대화형 인터페이스\n\n현재 위험/경고 서버를 기준으로 장애 원인을 추정하고, 운영자가 지금 해야 할 조치 3가지만 우선순위로 제안해줘\n\n11:25:58 PM\n\n복사\n📊 서버 현황 요약\n• 전체 18대: 정상 17대, 경고 1대, 위험 0대, 오프라인 0대\n• 평균 CPU: 33%, 메모리: 45%, 디스크: 39%\n\n\n⚠️ 주의 서버\n• storage-nfs-dc1-01: 디스크 82% (상승 추세 ↑)\n\n\n📈 추세\n• storage-nfs-dc1-01: 디스크 평균 58% → 현재 82% (+25%p, 상승 추세 ↑)\n\n\n💡 권고\nstorage-nfs-dc1-01: 로그 적체와 임시 파일 증가 경로를 확인하세요.\nstorage-nfs-dc1-01: 백업 산출물과 회전 정책이 정상 동작하는지 점검하세요.\nstorage-nfs-dc1-01: 대용량 파일 생성 프로세스와 보존 기간 설정을 확인하세요.\n\n11:25:58 PM\n\n8323ms\n\nCloud Run AI\n·\n서버 실시간 데이터 분석\n심층 분석 요청됨\n분석 근거\n\n도구: 전체 서버 이상 징후 확인 · 모드: 심층 분석 · 기간: 최근 1시간\n\n복사\n다시 생성\n심층 분석\n대화 2/20\n서버 운영 중심\nEnter로 전송, Shift+Enter로 줄바꿈\n\nAI 기능\n\nAI Chat\n서버 질의, 트러블슈팅, 명령어 추천\n자동장애 보고서\nReporter Agent 장애 분석 보고서 생성\n이상감지/예측\nAnalyst Agent 이상탐지, 근본원인, 예측분석\n전체 화면으로 보기",
+  "perf": [
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/wake-up",
+      "duration": 969,
+      "transferSize": 328,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/jobs",
+      "duration": 1242,
+      "transferSize": 523,
+      "initiator": "fetch"
+    },
+    {
+      "url": "https://openmanager-ai.vercel.app/api/ai/jobs/312be929-04a9-48c4-b066-4cacd6b6ef45/stream",
+      "duration": 9660,
+      "transferSize": 3810,
+      "initiator": "other"
+    }
+  ]
+}
