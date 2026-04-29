@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.63](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.62...v8.11.63) (2026-04-29)
+
+
+### Bug Fixes
+
+* **ai:** pin dashboard data slot for sidebar queries ([7e2f368](https://gitlab.com/skyasu2/openmanager-ai/-/commit/7e2f368be4d176ec28191d768103a661f52efd43))
+
 ## [8.11.62](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.61...v8.11.62) (2026-04-29)
 
 
