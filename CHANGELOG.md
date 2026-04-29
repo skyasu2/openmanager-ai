@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.67](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.66...v8.11.67) (2026-04-29)
+
+
+### Bug Fixes
+
+* **ai-engine:** ground explicit server action summaries ([270a125](https://gitlab.com/skyasu2/openmanager-ai/-/commit/270a125ea81245ad74f47824cce0d5342581c331))
+
 ## [8.11.66](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.65...v8.11.66) (2026-04-29)
 
 
