@@ -325,6 +325,73 @@ describe('executeAgentStream', () => {
     ]);
   });
 
+  it('repairs heading-only tool-grounded responses with summarization fallback', async () => {
+    mockStreamText.mockReturnValueOnce(
+      createStreamResult({
+        chunks: ['핵심 요약\n분석 결과:'],
+        steps: [
+          {
+            toolCalls: [{ toolName: 'getServerMetrics' }],
+            toolResults: [
+              {
+                toolName: 'getServerMetrics',
+                result: {
+                  servers: [
+                    {
+                      id: 'cache-redis-dc1-01',
+                      status: 'warning',
+                      cpu: 42,
+                      memory: 91,
+                      disk: 58,
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        ],
+      })
+    );
+    mockGenerateText.mockResolvedValueOnce({
+      text: 'cache-redis-dc1-01은 메모리 91%로 임계치에 근접했습니다. 원인은 캐시 적중률 저하 또는 누적된 세션 데이터로 추정됩니다. 즉시 TTL 정리와 큰 키 점검을 권장합니다.',
+      usage: { inputTokens: 31, outputTokens: 24, totalTokens: 55 },
+    });
+
+    const events = await collectEvents(
+      'cache-redis-dc1-01 메모리 사용률이 높은 원인과 즉시 조치안을 알려줘'
+    );
+    const textPayload = events
+      .filter((event) => event.type === 'text_delta')
+      .map((event) => String(event.data))
+      .join('');
+
+    expect(textPayload).toContain('핵심 요약');
+    expect(textPayload).toContain('cache-redis-dc1-01은 메모리 91%');
+    expect(mockGenerateText).toHaveBeenCalledTimes(1);
+    expect(mockGenerateText.mock.calls[0]?.[0]).toMatchObject({
+      model: { provider: 'groq' },
+      maxRetries: 0,
+    });
+
+    const doneEvent = events.find((event) => event.type === 'done');
+    const doneData = doneEvent?.data as {
+      metadata: {
+        provider: string;
+        usedFallback?: boolean;
+        fallbackReason?: string;
+        providerAttempts?: Array<{ provider: string; error?: string }>;
+      };
+    };
+
+    expect(doneData.metadata.provider).toBe('groq');
+    expect(doneData.metadata.usedFallback).toBe(true);
+    expect(doneData.metadata.fallbackReason).toBe('low_information_response');
+    expect(doneData.metadata.providerAttempts).toMatchObject([
+      { provider: 'cerebras', error: 'LOW_INFORMATION_RESPONSE' },
+      { provider: 'groq' },
+    ]);
+  });
+
   it('keeps expanded stream max steps for Analyst Agent multi-tool workflows', async () => {
     mockStreamText.mockReturnValue(
       createStreamResult({

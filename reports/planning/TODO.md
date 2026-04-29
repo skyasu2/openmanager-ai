@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-29 KST (`Vercel font source guard completed`)
+**Last Updated**: 2026-04-29 KST (`Metric-aware deterministic routing + hardcode cleanup`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -31,6 +31,24 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-29 #224)
+- [x] Metric-aware deterministic routing + query hardcode cleanup + stream visibility repair
+  - Deterministic formatter가 `cpu/memory/disk/network/status` metric-aware filter/ranking을 지원하고, `filterServers` empty result를 0건 답변으로 포맷
+  - `orchestrator-query-intent.ts`가 metric/operator/threshold/rank/status metadata를 반환하도록 보강해 `MEM 90% 이상`, `DISK top N`, `status: warning` 회귀 차단
+  - `query-type-classifier.ts` 제거, NLQ instruction layering을 `classifyQueryIntent()` 기반으로 통합
+  - `supervisor-routing.ts`의 direct server ID 감지를 resource-catalog 기반 lazy pattern으로 전환하고 metric ranking 강제 라우팅을 intent classifier에 위임
+  - Tool 결과가 있는데 모델 본문이 제목/골격만 반환하는 경우 `LOW_INFORMATION_RESPONSE`로 감지해 summarization fallback을 추가 전송
+  - Plan completed: [query-routing-hardcode-cleanup-plan.md](query-routing-hardcode-cleanup-plan.md)
+  - 검증: `orchestrator-agent-stream.test.ts` 12/12, `cloud-run/ai-engine npm test` 913/913, `cloud-run/ai-engine npm run type-check`, `git diff --check`, `npm run lint:changed` 통과
+
+### Completed (2026-04-29 #223)
+- [x] Query intent classifier + queryAsOf slot contract + deterministic routing refactor
+  - `orchestrator-query-intent.ts` 신규: regex 3개(한국어/영어 모니터링 키워드) → 6-category 구조적 의도 분류(`data-lookup/filter/ranking` vs `causal-analysis/predictive/advisory`)
+  - Deterministic routing 판단 시점을 툴 실행 전 → 후로 이동. intent + tool result server count 기반으로 LLM 우회 여부 결정
+  - `query-as-of-context.ts` 신규: AsyncLocalStorage 기반 KST 10분 OTel 슬롯 실행 컨텍스트. 비동기 job의 슬롯 드리프트 방지
+  - Provider fallback 강화: `queue_exceeded` / `high traffic` 감지 추가, `maxRetries: 0`으로 재시도 증폭 차단
+  - 검증: `orchestrator-summary-fallback.test.ts` 9/9, `jobs.test.ts` 18/18, `server-metrics.test.ts` 22/22, `tsc --noEmit` 통과
 
 ### Completed (2026-04-29 #221)
 - [x] Vercel Google font build-fetch regression guard

@@ -5,10 +5,12 @@ interface CollectedToolResult {
 
 interface ServerSnapshot {
   id: string;
+  name?: string;
   status: string;
   cpu?: number;
   memory?: number;
   disk?: number;
+  network?: number;
   dailyTrend?: {
     cpu?: { avg?: number };
     memory?: { avg?: number };
@@ -33,37 +35,54 @@ interface AlertServerSnapshot {
 }
 
 interface MetricsToolPayload {
+  source: 'getServerMetrics' | 'filterServers';
   servers: ServerSnapshot[];
   alertServers?: AlertServerSnapshot[];
+  condition?: string;
+  filterSummary?: {
+    matched: number;
+    returned: number;
+    total: number;
+  };
+  emptyResultHint?: {
+    topServers?: Array<{
+      id: string;
+      name?: string;
+      status?: string;
+      value?: number;
+    }>;
+    suggestion?: string;
+  };
 }
 
 import {
   get24hTrendSummaries,
   getCurrentState,
 } from '../../../tools-ai-sdk/server-metrics/data';
+import {
+  classifyQueryIntent,
+  shouldPreferDeterministic,
+  type IntentClassification,
+  type QueryMetric,
+  type QueryOperator,
+} from './orchestrator-query-intent';
 
-const SUMMARY_QUERY_PATTERN =
-  /(서버|인프라|시스템|server|system|monitoring).*(요약|현황|상태|간단히|핵심|summary|overview|tldr)|((모든|전체|all).*(서버|server))/i;
-const CPU_RANKING_QUERY_PATTERN =
-  /(cpu|CPU|씨피유).*(높|상위|top|TOP|가장|순서|랭킹|ranking)|(높|상위|top|TOP|가장).*(cpu|CPU|씨피유)/i;
-const DISK_THRESHOLD_QUERY_PATTERN =
-  /((disk|DISK|디스크).*(사용률|usage)?.*(\d{1,3})\s*%?\s*(이상|초과|>=|넘))|((\d{1,3})\s*%?\s*(이상|초과|>=|넘).*(disk|DISK|디스크))/i;
+export { classifyQueryIntent, shouldPreferDeterministic };
 
+/**
+ * Determines whether to prefer deterministic (LLM-free) response for this
+ * query, based on structural intent classification and tool result completeness.
+ *
+ * Replaces the previous env-specific regex approach with parseable
+ * intent + metric metadata.
+ */
 export function isDeterministicSummaryQuery(
   query: string,
-  agentName: string
+  _agentName: string,
+  toolResultServerCount = 0
 ): boolean {
-  if (
-    DISK_THRESHOLD_QUERY_PATTERN.test(query) &&
-    (agentName === 'NLQ Agent' || agentName === 'Analyst Agent')
-  ) {
-    return true;
-  }
-
-  return (
-    agentName === 'NLQ Agent' &&
-    (SUMMARY_QUERY_PATTERN.test(query) || CPU_RANKING_QUERY_PATTERN.test(query))
-  );
+  const classification = classifyQueryIntent(query);
+  return shouldPreferDeterministic(classification, toolResultServerCount);
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -82,6 +101,39 @@ function isAlertServerSnapshot(value: unknown): value is AlertServerSnapshot {
   return isRecord(value) && typeof value.id === 'string' && typeof value.status === 'string';
 }
 
+function toFilterSummary(value: unknown): MetricsToolPayload['filterSummary'] | undefined {
+  if (!isRecord(value)) return undefined;
+  const matched = toNumber(value.matched);
+  const returned = toNumber(value.returned);
+  const total = toNumber(value.total);
+  if (matched === null || returned === null || total === null) return undefined;
+  return { matched, returned, total };
+}
+
+function toEmptyResultHint(value: unknown): MetricsToolPayload['emptyResultHint'] | undefined {
+  if (!isRecord(value)) return undefined;
+  const topServers = Array.isArray(value.topServers)
+    ? value.topServers
+        .filter(isRecord)
+        .map((server) => ({
+          id: String(server.id ?? ''),
+          name: server.name ? String(server.name) : undefined,
+          status: server.status ? String(server.status) : undefined,
+          value: toNumber(server.value) ?? undefined,
+        }))
+        .filter((server) => server.id)
+    : undefined;
+
+  const hint: MetricsToolPayload['emptyResultHint'] = {};
+  if (topServers) {
+    hint.topServers = topServers;
+  }
+  if (value.suggestion) {
+    hint.suggestion = String(value.suggestion);
+  }
+  return hint;
+}
+
 function getMetricsPayload(
   toolResults: CollectedToolResult[]
 ): MetricsToolPayload | null {
@@ -89,63 +141,49 @@ function getMetricsPayload(
     (entry) => entry.toolName === 'getServerMetrics' && isRecord(entry.result)
   );
 
-  if (!metricsEntry || !isRecord(metricsEntry.result)) {
+  if (metricsEntry && isRecord(metricsEntry.result)) {
+    const servers = Array.isArray(metricsEntry.result.servers)
+      ? metricsEntry.result.servers.filter(isServerSnapshot)
+      : [];
+    const alertServers = Array.isArray(metricsEntry.result.alertServers)
+      ? metricsEntry.result.alertServers.filter(isAlertServerSnapshot)
+      : undefined;
+
+    if (servers.length === 0) {
+      return null;
+    }
+
+    return { source: 'getServerMetrics', servers, alertServers };
+  }
+
+  const filterEntry = toolResults.find(
+    (entry) => entry.toolName === 'filterServers' && isRecord(entry.result)
+  );
+
+  if (!filterEntry || !isRecord(filterEntry.result)) {
     return null;
   }
 
-  const servers = Array.isArray(metricsEntry.result.servers)
-    ? metricsEntry.result.servers.filter(isServerSnapshot)
+  const servers = Array.isArray(filterEntry.result.servers)
+    ? filterEntry.result.servers.filter(isServerSnapshot)
     : [];
-  const alertServers = Array.isArray(metricsEntry.result.alertServers)
-    ? metricsEntry.result.alertServers.filter(isAlertServerSnapshot)
-    : undefined;
+  const filterSummary = toFilterSummary(filterEntry.result.summary);
 
-  if (servers.length === 0) {
+  if (servers.length === 0 && !filterSummary) {
     return null;
   }
 
-  return { servers, alertServers };
+  return {
+    source: 'filterServers',
+    servers,
+    condition: filterEntry.result.condition ? String(filterEntry.result.condition) : undefined,
+    filterSummary,
+    emptyResultHint: toEmptyResultHint(filterEntry.result.emptyResultHint),
+  };
 }
 
 function roundPercent(value: number | null): string {
   return value === null ? 'N/A' : `${Math.round(value)}%`;
-}
-
-function extractRequestedServerCount(query: string, fallback = 3): number {
-  const patterns = [
-    /(?:상위|top)\s*(\d{1,2})/i,
-    /(\d{1,2})\s*대/,
-  ];
-
-  for (const pattern of patterns) {
-    const match = query.match(pattern);
-    if (!match) continue;
-    const parsed = Number(match[1]);
-    if (Number.isInteger(parsed) && parsed > 0) {
-      return Math.min(parsed, 10);
-    }
-  }
-
-  return fallback;
-}
-
-function extractDiskThreshold(query: string, fallback = 70): number {
-  const patterns = [
-    /(disk|DISK|디스크).*?(\d{1,3})\s*%?\s*(이상|초과|>=|넘)/i,
-    /(\d{1,3})\s*%?\s*(이상|초과|>=|넘).*?(disk|DISK|디스크)/i,
-  ];
-
-  for (const pattern of patterns) {
-    const match = query.match(pattern);
-    if (!match) continue;
-    const rawValue = match[2] ?? match[1];
-    const parsed = Number(rawValue);
-    if (Number.isFinite(parsed) && parsed >= 0 && parsed <= 100) {
-      return parsed;
-    }
-  }
-
-  return fallback;
 }
 
 function extractRequestedActionCount(query: string): number | null {
@@ -599,64 +637,233 @@ function buildDiskCheckItem(server: ServerSnapshot): string {
   return '로그 적체, tmp 디렉터리, 대용량 파일 생성 프로세스를 확인하세요.';
 }
 
-function buildDiskThresholdRankingFromPayload(
-  query: string,
-  payload: MetricsToolPayload
-): string {
-  const threshold = extractDiskThreshold(query);
-  const matchedServers = [...payload.servers]
-    .filter((server) => server.status !== 'offline')
-    .map((server) => ({ server, disk: toNumber(server.disk) }))
-    .filter(
-      (entry): entry is { server: ServerSnapshot; disk: number } =>
-        entry.disk !== null && entry.disk >= threshold
-    )
-    .sort((left, right) => right.disk - left.disk);
+function getPayloadServerEvidenceCount(payload: MetricsToolPayload): number {
+  return payload.servers.length || payload.filterSummary?.total || 0;
+}
 
-  const lines = [
-    `📊 **DISK 사용률 ${threshold}% 이상 서버 ${matchedServers.length}대**`,
-    `• 기준: 전체 ${payload.servers.length}대 중 DISK >= ${threshold}%`,
-  ];
+function getMetricLabel(metric: QueryMetric): string {
+  switch (metric) {
+    case 'cpu':
+      return 'CPU';
+    case 'memory':
+      return '메모리';
+    case 'disk':
+      return 'DISK';
+    case 'network':
+      return '네트워크';
+    case 'status':
+      return '상태';
+  }
+}
 
-  if (matchedServers.length === 0) {
-    lines.push('• 현재 기준을 초과한 서버는 없습니다.');
+function getMetricValue(server: ServerSnapshot, metric: QueryMetric): number | null {
+  if (metric === 'status') return null;
+  return toNumber(server[metric]);
+}
+
+function formatOperatorForTitle(operator: QueryOperator): string {
+  switch (operator) {
+    case '>=':
+      return '이상';
+    case '>':
+      return '초과';
+    case '<=':
+      return '이하';
+    case '<':
+      return '미만';
+    case '==':
+      return '일치';
+    case '!=':
+      return '제외';
+  }
+}
+
+function compareMetricValue(value: number, operator: QueryOperator, threshold: number): boolean {
+  switch (operator) {
+    case '>':
+      return value > threshold;
+    case '>=':
+      return value >= threshold;
+    case '<':
+      return value < threshold;
+    case '<=':
+      return value <= threshold;
+    case '==':
+      return value === threshold;
+    case '!=':
+      return value !== threshold;
+  }
+}
+
+function buildMetricCheckItem(metric: QueryMetric, server: ServerSnapshot): string {
+  if (metric === 'cpu') {
+    return buildCpuCheckItem(server);
+  }
+  if (metric === 'disk') {
+    return buildDiskCheckItem(server);
+  }
+  if (metric === 'memory') {
+    if (server.id.includes('redis') || server.id.includes('cache')) {
+      return 'Redis used_memory, key cardinality, eviction/TTL 정책과 maxmemory 설정을 확인하세요.';
+    }
+    if (server.id.includes('db-')) {
+      return 'buffer pool, connection 수, 임시 테이블, 쿼리 캐시/워크 메모리 사용량을 확인하세요.';
+    }
+    return '상위 메모리 프로세스, OOM/GC 로그, 최근 배포 후 memory leak 여부를 확인하세요.';
+  }
+  if (metric === 'network') {
+    return '인터페이스 오류, 연결 수, LB 트래픽 분산, 비정상 egress 증가 여부를 확인하세요.';
+  }
+  return '상태 변화 시각, 최근 알림, 관련 로그를 확인하세요.';
+}
+
+function getMetricFailureWindow(metric: QueryMetric, value: number | null): string {
+  if (metric === 'disk') {
+    return getDiskFailureWindow(value);
+  }
+  if (value === null) {
+    return '추정 불가';
+  }
+  if (value >= 90) {
+    return '즉시 조치 필요 - 임계 상태 지속 시 서비스 영향 가능';
+  }
+  if (value >= 80) {
+    return '수 시간 내 임계치 도달 가능 - 증가 추세 재확인 필요';
+  }
+  return '24시간 내 추세 재확인 필요';
+}
+
+function buildMetricThresholdFilterFromPayload(
+  payload: MetricsToolPayload,
+  classification: IntentClassification
+): string | null {
+  const metric = classification.metric;
+  const operator = classification.operator;
+  const threshold = classification.threshold;
+
+  if (!metric || !operator) {
+    return null;
+  }
+
+  if (metric === 'status') {
+    const statusValue = classification.statusValue;
+    if (!statusValue) return null;
+    const matchedServers =
+      payload.source === 'filterServers'
+        ? payload.servers
+        : payload.servers.filter((server) => server.status === statusValue);
+    const total = payload.filterSummary?.total ?? payload.servers.length;
+    const lines = [
+      `📊 **상태 ${statusValue} 서버 ${matchedServers.length}대**`,
+      `• 기준: 전체 ${total}대 중 status == ${statusValue}`,
+    ];
+    if (matchedServers.length === 0) {
+      lines.push('• 현재 기준을 만족한 서버는 없습니다.');
+      return lines.join('\n');
+    }
+    matchedServers.forEach((server, index) => {
+      lines.push(`${index + 1}. ${server.id}: 상태 ${server.status}`);
+    });
     return lines.join('\n');
   }
 
-  matchedServers.forEach(({ server, disk }, index) => {
+  if (threshold === undefined) {
+    return null;
+  }
+
+  const label = getMetricLabel(metric);
+  const matchedEntries =
+    payload.source === 'filterServers'
+      ? payload.servers
+          .filter((server) => server.status !== 'offline')
+          .map((server) => ({ server, value: getMetricValue(server, metric) }))
+      : payload.servers
+          .filter((server) => server.status !== 'offline')
+          .map((server) => ({ server, value: getMetricValue(server, metric) }))
+          .filter(
+            (entry): entry is { server: ServerSnapshot; value: number } =>
+              entry.value !== null && compareMetricValue(entry.value, operator, threshold)
+          );
+
+  const sortableEntries = matchedEntries
+    .filter(
+      (entry): entry is { server: ServerSnapshot; value: number } =>
+        entry.value !== null
+    )
+    .sort((left, right) =>
+      operator.includes('<') ? left.value - right.value : right.value - left.value
+    );
+  const matchedCount = payload.filterSummary?.matched ?? sortableEntries.length;
+  const total = payload.filterSummary?.total ?? payload.servers.length;
+  const lines = [
+    `📊 **${label} 사용률 ${threshold}% ${formatOperatorForTitle(operator)} 서버 ${matchedCount}대**`,
+    `• 기준: 전체 ${total}대 중 ${label} ${operator} ${threshold}%`,
+  ];
+
+  if (sortableEntries.length === 0) {
+    lines.push('• 현재 기준을 만족한 서버는 없습니다.');
+    if (payload.emptyResultHint?.topServers?.length) {
+      lines.push('', '참고 상위 서버');
+      payload.emptyResultHint.topServers.forEach((server, index) => {
+        lines.push(`${index + 1}. ${server.id}: ${roundPercent(server.value ?? null)}`);
+      });
+    }
+    return lines.join('\n');
+  }
+
+  sortableEntries.forEach(({ server, value }, index) => {
     lines.push(
-      `${index + 1}. ${server.id}: DISK ${roundPercent(disk)} (상태 ${server.status}, 위험도 ${getDiskRiskLabel(disk)})`
+      `${index + 1}. ${server.id}: ${label} ${roundPercent(value)} (상태 ${server.status}, 위험도 ${metric === 'disk' ? getDiskRiskLabel(value) : value >= 90 ? '매우 높음' : value >= 80 ? '높음' : '주의'})`
     );
   });
 
   lines.push('', '⏱️ **잠재적 장애 시점**');
-  matchedServers.forEach(({ server, disk }, index) => {
-    lines.push(`${index + 1}. ${server.id}: ${getDiskFailureWindow(disk)}`);
+  sortableEntries.forEach(({ server, value }, index) => {
+    lines.push(`${index + 1}. ${server.id}: ${getMetricFailureWindow(metric, value)}`);
   });
 
   lines.push('', '💡 **권장 조치**');
-  matchedServers.forEach(({ server }, index) => {
-    lines.push(`${index + 1}. ${server.id}: ${buildDiskCheckItem(server)}`);
+  sortableEntries.forEach(({ server }, index) => {
+    lines.push(`${index + 1}. ${server.id}: ${buildMetricCheckItem(metric, server)}`);
   });
 
   return lines.join('\n');
 }
 
-function buildCpuRankingFromPayload(query: string, payload: MetricsToolPayload): string {
-  const requestedCount = extractRequestedServerCount(query, 3);
-  const topServers = [...payload.servers]
+function buildMetricRankingFromPayload(
+  payload: MetricsToolPayload,
+  classification: IntentClassification
+): string | null {
+  const metric = classification.metric;
+  if (!metric || metric === 'status') {
+    return null;
+  }
+
+  const requestedCount = classification.rankCount ?? 3;
+  const order = classification.rankOrder ?? 'desc';
+  const label = getMetricLabel(metric);
+  const rankedServers = [...payload.servers]
     .filter((server) => server.status !== 'offline')
-    .sort((left, right) => (toNumber(right.cpu) ?? -1) - (toNumber(left.cpu) ?? -1))
+    .map((server) => ({ server, value: getMetricValue(server, metric) }))
+    .filter(
+      (entry): entry is { server: ServerSnapshot; value: number } =>
+        entry.value !== null
+    )
+    .sort((left, right) =>
+      order === 'asc' ? left.value - right.value : right.value - left.value
+    )
     .slice(0, requestedCount);
 
-  const lines = [`📊 **CPU 사용률 상위 ${requestedCount}대**`];
-  topServers.forEach((server, index) => {
-    lines.push(`${index + 1}. ${server.id}: CPU ${roundPercent(toNumber(server.cpu))}`);
+  const lines = [
+    `📊 **${label} 사용률 ${order === 'asc' ? '하위' : '상위'} ${requestedCount}대**`,
+  ];
+  rankedServers.forEach(({ server, value }, index) => {
+    lines.push(`${index + 1}. ${server.id}: ${label} ${roundPercent(value)}`);
   });
 
   lines.push('', '💡 **서버별 확인 항목**');
-  topServers.forEach((server, index) => {
-    lines.push(`${index + 1}. ${server.id}: ${buildCpuCheckItem(server)}`);
+  rankedServers.forEach(({ server }, index) => {
+    lines.push(`${index + 1}. ${server.id}: ${buildMetricCheckItem(metric, server)}`);
   });
 
   return lines.join('\n');
@@ -666,12 +873,23 @@ function buildDeterministicAnswerFromPayload(
   query: string,
   payload: MetricsToolPayload
 ): string {
-  if (DISK_THRESHOLD_QUERY_PATTERN.test(query)) {
-    return buildDiskThresholdRankingFromPayload(query, payload);
+  const classification = classifyQueryIntent(query);
+
+  if (classification.intent === 'data-filter') {
+    const metricFilterAnswer = buildMetricThresholdFilterFromPayload(
+      payload,
+      classification
+    );
+    if (metricFilterAnswer) {
+      return metricFilterAnswer;
+    }
   }
 
-  if (CPU_RANKING_QUERY_PATTERN.test(query)) {
-    return buildCpuRankingFromPayload(query, payload);
+  if (classification.intent === 'data-ranking') {
+    const metricRankingAnswer = buildMetricRankingFromPayload(payload, classification);
+    if (metricRankingAnswer) {
+      return metricRankingAnswer;
+    }
   }
 
   return buildSummaryFromPayloadForQuery(query, payload);
@@ -761,6 +979,7 @@ function buildSummaryPayloadFromCurrentState(): MetricsToolPayload | null {
     });
 
   return {
+    source: 'getServerMetrics',
     servers,
     ...(alertServers.length > 0 && { alertServers }),
   };
@@ -772,12 +991,12 @@ export function buildDeterministicSummaryFallback(
   agentName: string,
   toolResults: CollectedToolResult[]
 ): string | null {
-  if (!isDeterministicSummaryQuery(query, agentName)) {
+  const payload = getMetricsPayload(toolResults);
+  if (!payload) {
     return null;
   }
 
-  const payload = getMetricsPayload(toolResults);
-  if (!payload) {
+  if (!isDeterministicSummaryQuery(query, agentName, getPayloadServerEvidenceCount(payload))) {
     return null;
   }
 
@@ -789,12 +1008,12 @@ export function buildDeterministicSummaryFromCurrentState(
   query: string,
   agentName: string
 ): string | null {
-  if (!isDeterministicSummaryQuery(query, agentName)) {
+  const payload = buildSummaryPayloadFromCurrentState();
+  if (!payload) {
     return null;
   }
 
-  const payload = buildSummaryPayloadFromCurrentState();
-  if (!payload) {
+  if (!isDeterministicSummaryQuery(query, agentName, getPayloadServerEvidenceCount(payload))) {
     return null;
   }
 

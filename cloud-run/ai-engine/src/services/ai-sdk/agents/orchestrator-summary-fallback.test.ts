@@ -207,19 +207,128 @@ describe('buildDeterministicSummaryFallback', () => {
     expect(summary).toContain('권장 조치');
   });
 
-  it('identifies NLQ summary prompts that must use deterministic output', () => {
-    expect(
-      isDeterministicSummaryQuery('현재 모든 서버의 상태를 요약해줘', 'NLQ Agent')
-    ).toBe(true);
-    expect(
-      isDeterministicSummaryQuery('CPU 높은 서버 찾아줘', 'NLQ Agent')
-    ).toBe(true);
-    expect(
-      isDeterministicSummaryQuery('DISK 사용률 70% 이상 서버를 위험도 순으로 알려줘', 'Analyst Agent')
-    ).toBe(true);
-    expect(
-      isDeterministicSummaryQuery('현재 모든 서버의 상태를 요약해줘', 'Analyst Agent')
-    ).toBe(false);
+  it('uses the requested metric for threshold filters instead of hardcoding DISK', () => {
+    const toolResults = [
+      {
+        toolName: 'getServerMetrics',
+        result: {
+          servers: [
+            { id: 'cache-redis-dc1-01', status: 'warning', cpu: 20, memory: 92, disk: 30 },
+            { id: 'db-mysql-dc1-primary', status: 'online', cpu: 40, memory: 65, disk: 88 },
+            { id: 'api-was-dc1-01', status: 'online', cpu: 77, memory: 55, disk: 45 },
+          ],
+        },
+      },
+    ];
+
+    const memorySummary = buildDeterministicSummaryFallback(
+      'MEM 사용률 90% 이상 서버 찾아줘',
+      'NLQ Agent',
+      toolResults
+    );
+    expect(memorySummary).toContain('메모리 사용률 90% 이상 서버 1대');
+    expect(memorySummary).toContain('cache-redis-dc1-01: 메모리 92%');
+    expect(memorySummary).not.toContain('DISK 사용률 90%');
+
+    const cpuSummary = buildDeterministicSummaryFallback(
+      'CPU >= 70 서버 찾아줘',
+      'NLQ Agent',
+      toolResults
+    );
+    expect(cpuSummary).toContain('CPU 사용률 70% 이상 서버 1대');
+    expect(cpuSummary).toContain('api-was-dc1-01: CPU 77%');
+    expect(cpuSummary).not.toContain('db-mysql-dc1-primary');
+  });
+
+  it('uses the requested metric for top-N rankings instead of hardcoding CPU', () => {
+    const summary = buildDeterministicSummaryFallback(
+      'DISK 사용률이 가장 높은 서버 2대 알려줘',
+      'NLQ Agent',
+      [
+        {
+          toolName: 'getServerMetrics',
+          result: {
+            servers: [
+              { id: 'cache-redis-dc1-01', status: 'warning', cpu: 20, memory: 92, disk: 30 },
+              { id: 'db-mysql-dc1-primary', status: 'online', cpu: 40, memory: 65, disk: 88 },
+              { id: 'api-was-dc1-01', status: 'online', cpu: 77, memory: 55, disk: 45 },
+            ],
+          },
+        },
+      ]
+    );
+
+    expect(summary).toContain('DISK 사용률 상위 2대');
+    expect(summary).toContain('1. db-mysql-dc1-primary: DISK 88%');
+    expect(summary).toContain('2. api-was-dc1-01: DISK 45%');
+    expect(summary).not.toContain('CPU 사용률 상위');
+  });
+
+  it('builds deterministic status filters without treating them as metric thresholds', () => {
+    const summary = buildDeterministicSummaryFallback(
+      'status: warning 서버 알려줘',
+      'NLQ Agent',
+      [
+        {
+          toolName: 'getServerMetrics',
+          result: {
+            servers: [
+              { id: 'cache-redis-dc1-01', status: 'warning', cpu: 20, memory: 92, disk: 30 },
+              { id: 'db-mysql-dc1-primary', status: 'online', cpu: 40, memory: 65, disk: 88 },
+            ],
+          },
+        },
+      ]
+    );
+
+    expect(summary).toContain('상태 warning 서버 1대');
+    expect(summary).toContain('cache-redis-dc1-01: 상태 warning');
+    expect(summary).not.toContain('DISK 사용률');
+  });
+
+  it('formats filterServers results even when no server matched', () => {
+    const summary = buildDeterministicSummaryFallback(
+      'DISK >= 80 서버 찾아줘',
+      'NLQ Agent',
+      [
+        {
+          toolName: 'filterServers',
+          result: {
+            success: true,
+            condition: 'disk >= 80%',
+            servers: [],
+            summary: { matched: 0, returned: 0, total: 18 },
+            emptyResultHint: {
+              topServers: [
+                { id: 'db-mysql-dc1-backup', name: 'DB Backup', status: 'online', value: 69 },
+              ],
+              suggestion: '조건(disk >= 80%)에 맞는 서버가 없습니다.',
+            },
+            timestamp: '2026-04-29T07:00:00.000Z',
+          },
+        },
+      ]
+    );
+
+    expect(summary).toContain('DISK 사용률 80% 이상 서버 0대');
+    expect(summary).toContain('기준: 전체 18대 중 DISK >= 80%');
+    expect(summary).toContain('현재 기준을 만족한 서버는 없습니다.');
+    expect(summary).toContain('db-mysql-dc1-backup: 69%');
+  });
+
+  it('routes data queries to deterministic when servers are present, LLM-required queries always to LLM', () => {
+    // Data queries with servers present → deterministic
+    expect(isDeterministicSummaryQuery('현재 모든 서버의 상태를 요약해줘', 'NLQ Agent', 3)).toBe(true);
+    expect(isDeterministicSummaryQuery('CPU 높은 서버 찾아줘', 'NLQ Agent', 5)).toBe(true);
+    expect(isDeterministicSummaryQuery('DISK 사용률 70% 이상 서버를 위험도 순으로 알려줘', 'Analyst Agent', 4)).toBe(true);
+    // Same queries with agentName ignored — result depends on intent + server count, not agentName
+    expect(isDeterministicSummaryQuery('현재 모든 서버의 상태를 요약해줘', 'Analyst Agent', 3)).toBe(true);
+    // No servers → always false regardless of query type
+    expect(isDeterministicSummaryQuery('현재 모든 서버의 상태를 요약해줘', 'NLQ Agent', 0)).toBe(false);
+    // LLM-required intents → always false regardless of server count
+    expect(isDeterministicSummaryQuery('왜 서버가 갑자기 느려졌어?', 'NLQ Agent', 10)).toBe(false);
+    expect(isDeterministicSummaryQuery('다음 주 CPU 사용률 예측해줘', 'Analyst Agent', 10)).toBe(false);
+    expect(isDeterministicSummaryQuery('어떻게 해야 서버 부하를 줄일 수 있어?', 'NLQ Agent', 10)).toBe(false);
   });
 
   it('builds deterministic summary from current state when tool results are absent', () => {

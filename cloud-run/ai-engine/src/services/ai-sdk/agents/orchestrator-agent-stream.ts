@@ -36,6 +36,13 @@ import {
 
 const PROVIDER_FALLBACK_BASE_DELAY_MS = 120;
 const PROVIDER_FALLBACK_JITTER_MS = 280;
+const TOOL_GROUNDED_REPAIR_MIN_CHARS = 120;
+const TOOL_RESULT_SUMMARY_MAX_CHARS = 2000;
+
+interface CollectedToolResult {
+  toolName: string;
+  result: unknown;
+}
 
 function getAgentInstructions(
   config: NonNullable<ReturnType<typeof getAgentConfig>>,
@@ -64,6 +71,12 @@ function classifyProviderFallbackReason(errorMessage: string): string {
   }
   if (normalized.includes('empty_response')) {
     return 'empty_response';
+  }
+  if (
+    normalized.includes('low_information_response') ||
+    normalized.includes('heading_only_response')
+  ) {
+    return 'low_information_response';
   }
   if (
     normalized.includes('does not exist') ||
@@ -141,6 +154,75 @@ function getSuggestedFollowUp(agentName: string, responseText: string): string |
   return null;
 }
 
+function getEvidenceToolResults(
+  collectedToolResults: CollectedToolResult[]
+): CollectedToolResult[] {
+  return collectedToolResults.filter((toolResult) => toolResult.toolName !== 'finalAnswer');
+}
+
+function isHeadingOnlyLine(line: string): boolean {
+  return /^(?:[#*\-\s\d.)]*(?:핵심\s*요약|분석\s*결과|분석|원인\s*분석|권장\s*조치|즉시\s*조치|조치|요약|현황|결론|summary|analysis|findings?|actions?|recommendations?)\s*[:：]?\s*)$/i.test(line);
+}
+
+function hasConcreteEvidence(text: string): boolean {
+  return /(?:\b[a-z]+-[a-z]+[-\w]*\d\b|\d{1,3}(?:\.\d+)?%|\b(?:cpu|mem|memory|disk|network)\b|메모리|디스크|네트워크|경고|위험|장애|error|warning|critical)/i.test(text);
+}
+
+function isLowInformationToolGroundedResponse(text: string): boolean {
+  const normalized = text.trim();
+  if (!normalized) return true;
+
+  const lines = normalized
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  if (
+    lines.length > 0 &&
+    lines.length <= 6 &&
+    lines.every(isHeadingOnlyLine)
+  ) {
+    return true;
+  }
+
+  if (
+    normalized.length < TOOL_GROUNDED_REPAIR_MIN_CHARS &&
+    !hasConcreteEvidence(normalized)
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+function shouldRepairToolGroundedResponse(
+  fullResponseText: string,
+  collectedToolResults: CollectedToolResult[],
+  preferDeterministicSummary: boolean
+): boolean {
+  if (preferDeterministicSummary) return false;
+  if (getEvidenceToolResults(collectedToolResults).length === 0) return false;
+  return isLowInformationToolGroundedResponse(fullResponseText);
+}
+
+function buildToolResultsSummary(
+  collectedToolResults: CollectedToolResult[]
+): string {
+  const uniqueResults = new Map<string, unknown>();
+  for (const tr of getEvidenceToolResults(collectedToolResults)) {
+    if (!uniqueResults.has(tr.toolName)) {
+      uniqueResults.set(tr.toolName, tr.result);
+    }
+  }
+
+  return Array.from(uniqueResults.entries())
+    .map(
+      ([name, result]) =>
+        `[${name}]: ${JSON.stringify(result).slice(0, TOOL_RESULT_SUMMARY_MAX_CHARS)}`
+    )
+    .join('\n\n');
+}
+
 export async function* executeAgentStream(
   query: string,
   agentName: string,
@@ -152,10 +234,14 @@ export async function* executeAgentStream(
   files?: FileAttachment[],
   contextSummary?: string | null,
 ): AsyncGenerator<StreamEvent> {
-  const preferDeterministicSummary = isDeterministicSummaryQuery(
+  // Buffer model text for queries that may be answered deterministically; once
+  // tool results are available, the route is re-evaluated with data evidence.
+  const mayUseDeterministicSummary = isDeterministicSummaryQuery(
     query,
-    agentName
+    agentName,
+    1
   );
+  let preferDeterministicSummary = mayUseDeterministicSummary;
   const agentConfig = getAgentConfig(agentName);
 
   if (!agentConfig) {
@@ -403,7 +489,7 @@ export async function* executeAgentStream(
       timeoutSpan.complete(true, finalElapsed);
 
       let finalAnswerResult: { answer: string } | null = null;
-      const collectedToolResults: Array<{ toolName: string; result: unknown }> = [];
+      const collectedToolResults: CollectedToolResult[] = [];
 
       if (steps) {
         for (const step of steps) {
@@ -440,7 +526,12 @@ export async function* executeAgentStream(
         }
       }
 
-      if (!textEmitted && finalAnswerResult?.answer && !textDelivered) {
+      if (
+        !textEmitted &&
+        finalAnswerResult?.answer &&
+        !textDelivered &&
+        !preferDeterministicSummary
+      ) {
         const sanitized = sanitizeChineseCharacters(finalAnswerResult.answer);
         if (sanitized) {
           textEmitted = true;
@@ -450,6 +541,26 @@ export async function* executeAgentStream(
           yield { type: 'text_delta', data: sanitized };
         }
       }
+
+      // Re-evaluate after tool results are known — intent classification + data completeness.
+      // This replaces the previous upfront regex check and makes routing data-driven.
+      const serverToolResults = collectedToolResults.filter(
+        (r) => r.toolName === 'getServerMetrics' || r.toolName === 'filterServers'
+      );
+      const toolResultServerCount = serverToolResults.reduce((sum, r) => {
+        if (r.result && typeof r.result === 'object' && 'servers' in r.result) {
+          const result = r.result as { servers?: unknown[]; summary?: { total?: unknown } };
+          const servers = result.servers;
+          const serverCount = Array.isArray(servers) ? servers.length : 0;
+          const total = typeof result.summary?.total === 'number' ? result.summary.total : 0;
+          return sum + Math.max(serverCount, total);
+        }
+        return sum;
+      }, 0);
+      preferDeterministicSummary =
+        toolResultServerCount > 0
+          ? isDeterministicSummaryQuery(query, agentName, toolResultServerCount)
+          : mayUseDeterministicSummary;
 
       const deterministicSummary = buildDeterministicSummaryFallback(
         query,
@@ -468,7 +579,7 @@ export async function* executeAgentStream(
         );
       }
 
-      if (preferDeterministicSummary && !textDelivered) {
+      if (mayUseDeterministicSummary && !textDelivered) {
         const stateSummary = buildDeterministicSummaryFromCurrentState(
           query,
           agentName
@@ -485,7 +596,7 @@ export async function* executeAgentStream(
         }
       }
 
-      if (preferDeterministicSummary && !textDelivered) {
+      if (mayUseDeterministicSummary && !textDelivered) {
         const bufferedText = sanitizeChineseCharacters(
           (finalAnswerResult?.answer ?? fullResponseText).trim()
         );
@@ -498,23 +609,29 @@ export async function* executeAgentStream(
         }
       }
 
+      const shouldRepairResponse =
+        textDelivered &&
+        shouldRepairToolGroundedResponse(
+          fullResponseText,
+          collectedToolResults,
+          preferDeterministicSummary
+        );
+
       // Summarization Fallback
-      if (!textDelivered && collectedToolResults.length > 0) {
+      if (
+        (!textDelivered && getEvidenceToolResults(collectedToolResults).length > 0) ||
+        shouldRepairResponse
+      ) {
+        const summarizationReason = shouldRepairResponse
+          ? 'LOW_INFORMATION_RESPONSE'
+          : 'EMPTY_RESPONSE';
+        fallbackReason = summarizationReason;
         logger.warn(
-          `[Stream ${agentName}] Empty response with ${collectedToolResults.length} tool results — attempting summarization fallback`
+          `[Stream ${agentName}] ${summarizationReason} with ${getEvidenceToolResults(collectedToolResults).length} tool results — attempting summarization fallback`
         );
 
         try {
-          const uniqueResults = new Map<string, unknown>();
-          for (const tr of collectedToolResults) {
-            if (!uniqueResults.has(tr.toolName)) {
-              uniqueResults.set(tr.toolName, tr.result);
-            }
-          }
-
-          const toolResultsSummary = Array.from(uniqueResults.entries())
-            .map(([name, result]) => `[${name}]: ${JSON.stringify(result).slice(0, 2000)}`)
-            .join('\n\n');
+          const toolResultsSummary = buildToolResultsSummary(collectedToolResults);
           const summaryModelSelection = selectSummarizationModel(
             providerAttempts,
             attemptIndex,
@@ -533,9 +650,8 @@ export async function* executeAgentStream(
               modelId,
               attempt: attemptIndex + 1,
               durationMs: Date.now() - providerStartTime,
-              error: 'EMPTY_RESPONSE',
+              error: summarizationReason,
             });
-            fallbackReason = 'EMPTY_RESPONSE';
             logger.info(
               `[Stream ${agentName}] Delegating summarization fallback from ${provider}/${modelId} to ${summaryProvider}/${summaryModelId}`
             );
@@ -569,9 +685,14 @@ export async function* executeAgentStream(
             responseUsage = summaryResult.usage;
             textEmitted = true;
             textDelivered = true;
-            fullResponseText = summaryText;
+            fullResponseText = shouldRepairResponse
+              ? `${fullResponseText.trim()}\n\n${summaryText}`.trim()
+              : summaryText;
             markFirstChunk('summarization_fallback');
-            yield { type: 'text_delta', data: summaryText };
+            yield {
+              type: 'text_delta',
+              data: shouldRepairResponse ? `\n\n${summaryText}` : summaryText,
+            };
             logger.info(`[Stream ${agentName}] Summarization fallback succeeded (${summaryText.length} chars)`);
           }
         } catch (summaryError) {

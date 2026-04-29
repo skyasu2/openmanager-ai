@@ -49,7 +49,6 @@ import type { ModelCapabilityRequirements } from '../provider-capabilities';
 import {
   buildDeterministicSummaryFallback,
   buildDeterministicSummaryFromCurrentState,
-  isDeterministicSummaryQuery,
 } from './orchestrator-summary-fallback';
 import { logger } from '../../../lib/logger';
 import {
@@ -889,7 +888,7 @@ export async function executeForcedRouting(
       logger.info(
         `[Forced Routing] Deterministic summary ${overridingGeneratedText ? 'override' : 'fallback'} succeeded (${response.length} chars)`
       );
-    } else if (isDeterministicSummaryQuery(query, suggestedAgentName)) {
+    } else {
       const stateSummary = buildDeterministicSummaryFromCurrentState(
         query,
         suggestedAgentName

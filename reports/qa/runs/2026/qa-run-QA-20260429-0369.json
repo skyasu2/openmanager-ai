@@ -1,0 +1,174 @@
+{
+  "runId": "QA-20260429-0369",
+  "recordedAt": "2026-04-29T07:43:13.729Z",
+  "recordedAtKst": "2026-04-29 16:43:13 KST",
+  "runTitle": "Vercel Production QA - AI Sidebar Cerebras Qwen Recheck",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_Amo8uRyiubLFYuxn9LnHThSjk4Ve",
+    "deploymentUrl": "https://openmanager-bpm41tlhi-skyasus-projects.vercel.app",
+    "commitSha": "94f4dea65aa09f321b4fb883906afbcb4185a058"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/",
+    "/dashboard",
+    "AI sidebar",
+    "/api/ai/jobs",
+    "/api/ai/jobs/[id]/stream",
+    "Cloud Run /api/jobs/process",
+    "Cerebras Qwen provider path"
+  ],
+  "skippedSurfaces": [
+    "login providers",
+    "admin pages",
+    "report generation",
+    "mobile layout"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 4,
+    "failed": 2
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI sidebar simple status summary",
+      "agent": "Cloud Run AI",
+      "provider": "deterministic-grounding",
+      "model": "otel-data",
+      "route": "/api/ai/jobs/[id]/stream",
+      "source": "UI footer + browser Performance API",
+      "latencyMs": 2150,
+      "ttfbMs": 460,
+      "processingTimeMs": 3554
+    },
+    {
+      "surface": "AI sidebar cache memory analysis",
+      "agent": "Cloud Run AI",
+      "provider": "cerebras",
+      "model": "qwen-3-235b-a22b-instruct-2507",
+      "route": "/api/ai/jobs/[id]/stream",
+      "source": "UI footer + browser Performance API + Cloud Run logs",
+      "latencyMs": 14892,
+      "ttfbMs": 459,
+      "processingTimeMs": 15903
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "The simple summary path matched the dashboard, but the longer Cerebras-backed analysis surfaced a user-visible empty main answer.",
+      "nextAction": "Make provider quota failure produce a complete fallback answer in the main response, not only in the evidence panel."
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Production still serves v8.11.59 / 94f4dea, so the newer 198183658 query-as-of fix has not been validated on Vercel production.",
+      "nextAction": "Deploy the current GitLab HEAD through the release path before final production revalidation."
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP covered the real browser flow and Performance API captured EventSource stream entries.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The dashboard baseline and simple AI summary matched the same 16:30 KST slot values.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-29T16:24:29+09:00",
+      "summary": "Active period effective usage 19.0897 USD and billed usage 0.0000 USD; no cost spike before targeted production QA.",
+      "evidence": "npm run check:usage:vercel",
+      "url": ""
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-network",
+      "label": "Targeted production QA evidence",
+      "path": "reports/qa/evidence/qa-20260429-v81159-cerebras-recheck.md"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [
+    {
+      "id": "deploy-query-as-of-fix-to-production",
+      "title": "Deploy query-as-of metric slot fix to Vercel production",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Production still reports v8.11.59 / 94f4dea, while the latest pushed fix is 198183658.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-analysis-main-response-empty-on-cerebras-quota",
+      "title": "Prevent empty main AI analysis response when Cerebras queue or token quota fails",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "The analysis evidence panel contained useful detail, but the main assistant answer collapsed to only headings after Cerebras queue_exceeded/token_quota_exceeded failures.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Targeted QA used a fresh Playwright browser after closing the stale locked MCP Chrome process.",
+    "Dashboard baseline: 16:30 KST slot 99/143, total 18, online 17, risk 1, cache-redis-dc1-01 MEM 92%.",
+    "Query 1 PASS: simple server summary matched dashboard values.",
+    "Query 2 FAIL: focused cache memory analysis had an empty visible main answer while analysis evidence contained details.",
+    "Cloud Run logs showed Cerebras Qwen queue_exceeded and token_quota_exceeded for the production path."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab pipeline for currently deployed version",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2487306094"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "general",
+      "label": "Vercel deployment",
+      "url": "https://openmanager-bpm41tlhi-skyasus-projects.vercel.app/"
+    }
+  ]
+}

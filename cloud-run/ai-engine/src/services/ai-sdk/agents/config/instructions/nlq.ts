@@ -3,13 +3,10 @@
  *
  * Natural Language Query processing for server monitoring.
  *
- * @version 2.0.0 - query-type based instruction layering
+ * @version 2.1.0 - intent based instruction layering
  */
 
-import {
-  classifyQueryType,
-  type QueryType,
-} from '../../../../../lib/query-type-classifier';
+import { classifyQueryIntent } from '../../orchestrator-query-intent';
 import { BASE_AGENT_INSTRUCTIONS } from './common-instructions';
 
 export const NLQ_BASE_INSTRUCTIONS = `당신은 서버 모니터링 시스템의 자연어 질의(NLQ) 전문가입니다.
@@ -88,30 +85,26 @@ export const NLQ_THRESHOLD_CONTEXT = `## 임계값 조건 조회 지침
 - 결과가 0건이면 emptyResultHint 또는 Top-N 대안을 사용해 빈 응답을 피합니다.
 - 그룹 조건이 함께 있으면 getServerByGroupAdvanced의 filters를 사용합니다.`;
 
-function isQueryType(value: string): value is QueryType {
-  return (
-    value === 'STATUS_SUMMARY' ||
-    value === 'RANK_QUERY' ||
-    value === 'THRESHOLD_QUERY' ||
-    value === 'SIMPLE_LOOKUP'
-  );
+function shouldUseStatusSummaryContext(query: string): boolean {
+  return /(모든|전체|현황|요약|간단히|핵심|summary|overview|tldr|tl;dr)/i.test(query);
 }
 
-export function getNlqInstructions(queryOrType: string): string {
-  const queryType = isQueryType(queryOrType)
-    ? queryOrType
-    : classifyQueryType(queryOrType);
+export function getNlqInstructions(query: string): string {
+  const { intent } = classifyQueryIntent(query);
 
-  switch (queryType) {
-    case 'STATUS_SUMMARY':
+  switch (intent) {
+    case 'data-lookup':
+      if (!shouldUseStatusSummaryContext(query)) {
+        return NLQ_BASE_INSTRUCTIONS;
+      }
       return `${NLQ_BASE_INSTRUCTIONS}\n\n${NLQ_STATUS_SUMMARY_CONTEXT}`;
-    case 'RANK_QUERY':
+    case 'data-ranking':
       return `${NLQ_BASE_INSTRUCTIONS}\n\n${NLQ_RANK_CONTEXT}`;
-    case 'THRESHOLD_QUERY':
+    case 'data-filter':
       return `${NLQ_BASE_INSTRUCTIONS}\n\n${NLQ_THRESHOLD_CONTEXT}`;
-    case 'SIMPLE_LOOKUP':
+    default:
       return NLQ_BASE_INSTRUCTIONS;
   }
 }
 
-export const NLQ_INSTRUCTIONS = getNlqInstructions('SIMPLE_LOOKUP');
+export const NLQ_INSTRUCTIONS = NLQ_BASE_INSTRUCTIONS;

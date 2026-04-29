@@ -8,7 +8,7 @@
 > Canonical: docs/reference/architecture/ai/ai-engine-architecture.md
 > Tags: ai,architecture,multi-agent,cloud-run
 >
-> **v8.11.58** | Updated 2026-04-29
+> **v8.11.59** | Updated 2026-04-29
 > (ai-model-policy.md 내용 통합됨, 2026-02-14)
 
 ## 1. Overview
@@ -495,6 +495,8 @@ cloud-run/ai-engine/src/
 │   │       ├── orchestrator-execution.ts   # 멀티에이전트 실행
 │   │       ├── orchestrator-routing.ts     # 에이전트 라우팅 + 강제 라우팅
 │   │       ├── orchestrator-decomposition.ts # 태스크 분해
+│   │       ├── orchestrator-query-intent.ts  # 쿼리 의도 분류 (data-lookup/filter/ranking vs causal/predictive/advisory)
+│   │       ├── orchestrator-summary-fallback.ts # deterministic 응답 포매터
 │   │       ├── base-agent.ts          # BaseAgent 추상 클래스
 │   │       ├── agent-factory.ts       # AgentFactory (생성 + 가용성)
 │   │       ├── reporter-pipeline.ts   # Evaluator-Optimizer 파이프라인
@@ -515,7 +517,8 @@ cloud-run/ai-engine/src/
 │   ├── rag-doc-policy.ts              # knowledge_base corpus 길이/카테고리 정책
 │   └── rag-merge-planner.ts           # knowledge_base 중복 문서 merge 계획
 └── data/
-    └── precomputed-state.ts           # 144 슬롯 사전 계산
+    ├── precomputed-state.ts           # 144 슬롯 사전 계산 + queryAsOf 컨텍스트 연동
+    └── query-as-of-context.ts         # AsyncLocalStorage 기반 쿼리 슬롯 실행 컨텍스트
 ```
 
 ## 12. 핵심 수치
@@ -550,7 +553,74 @@ cloud-run/ai-engine/src/
 
 > 현재 구조는 pure ToolLoopAgent-only가 아니라, `BaseAgent(ToolLoopAgent)` + `generateText`/`generateObject` 직접 호출을 병행하는 하이브리드 구조입니다.
 
+## 13. Deterministic Response Routing
+
+LLM 텍스트 생성을 생략하고 tool 결과에서 직접 응답을 구성하는 경로입니다. 비용·latency 절감과 수치 정확성 확보가 목적입니다.
+
+### 쿼리 의도 분류 (`orchestrator-query-intent.ts`)
+
+쿼리를 구조적 신호(의문사, 비교 연산자, 서수)와 모니터링 metric 신호(`cpu/memory/disk/network/status`) 기반으로 분류합니다. deterministic 응답은 metric/operator/status를 확정할 수 있고 tool 결과가 있을 때만 사용합니다.
+
+| Intent | 신호 | 라우팅 |
+|--------|------|--------|
+| `data-lookup` | 모니터링 대상(서버/인프라/pod) 언급, 복합 신호 없음 | **Deterministic** (데이터 있을 때) |
+| `data-filter` | metric + 비교 연산자 (`CPU >= 70`, `메모리 90% 이상`, `status: warning`) | **Deterministic** (metric/operator/status + 데이터 있을 때) |
+| `data-ranking` | metric + 서수 (`DISK 상위 5`, `memory top 3`, `CPU 가장 높은`) | **Deterministic** (metric + 데이터 있을 때) |
+| `causal-analysis` | 인과 의문사 (`왜`, `원인`, `why`, `reason`) | **LLM 필수** |
+| `predictive` | 예측 신호 (`예측`, `전망`, `forecast`, `will`) | **LLM 필수** |
+| `advisory` | 권고 요청 (`추천`, `어떻게 해야`, `recommend`, `should`) | **LLM 필수** |
+| `unknown` | 분류 불가 | **LLM fallback** |
+
+### 라우팅 결정 흐름
+
+```
+툴 실행 완료 → 서버 수 집계
+                    ↓
+classifyQueryIntent(query) → intent + metric/operator/status metadata
+                    ↓
+shouldPreferDeterministic(intent, serverCount)
+  ├─ causal / predictive / advisory / unknown → false → LLM 텍스트 사용
+  ├─ data-* + serverCount == 0              → false → LLM 텍스트 사용
+  ├─ data-filter + metric/operator 미확정   → false → LLM 텍스트 사용
+  ├─ data-ranking + metric 미확정           → false → LLM 텍스트 사용
+  └─ data-* + metadata 확정 + 데이터 있음   → true  → Deterministic 포맷
+```
+
+**이전 방식과의 차이**: 구 버전은 툴 실행 전에 한국어/영어 모니터링 키워드 regex 3개로 판단했습니다(`isDeterministicSummaryQuery`). 현재는 툴 결과 수집 후 intent + 데이터 완전성으로 판단합니다.
+
+Formatter는 `getServerMetrics`와 `filterServers` 결과를 모두 처리합니다. `filterServers`가 0건을 반환해도 `summary.total`과 `emptyResultHint`가 있으면 메인 답변에 "0대"와 참고 상위 서버를 출력합니다.
+
+원인/조치처럼 LLM이 필요한 질의는 deterministic 응답으로 대체하지 않습니다. 대신 tool 결과가 있는데 모델 스트림이 제목/골격만 반환하면 `LOW_INFORMATION_RESPONSE`로 분류하고, tool 결과 기반 summarization fallback을 추가 전송해 메인 응답 가시성을 복구합니다.
+
+### queryAsOf 데이터 슬롯 계약
+
+비동기 AI job은 생성 시각(KST 10분 OTel 슬롯)을 `queryAsOf` 객체로 고정합니다. worker 실행 시각과 dashboard 슬롯 드리프트를 방지합니다.
+
+```
+POST /api/ai/jobs
+  └─ buildJobQueryAsOf(createdAt)   # Vercel — 슬롯 고정
+       └─ Redis 메타데이터 저장
+       └─ worker payload 전달
+            └─ runWithQueryAsOf(queryAsOf, callback)  # Cloud Run
+                 └─ AsyncLocalStorage 컨텍스트 전파
+                      └─ getActiveQuerySlotIndex()    # 모든 메트릭 tool이 참조
+```
+
+`slotIndex * 10 === minuteOfDay` 불변식을 `normalizeQueryAsOf()`가 검증합니다. 검증 실패 시 wall-clock fallback으로 전환됩니다.
+
 ## Version History
+
+<details>
+<summary>v8.11.59 (2026-04-29) - Query Intent Classification + queryAsOf Slot Contract</summary>
+
+- **Query Intent Classifier 도입** (`orchestrator-query-intent.ts`): 구 regex 3개(한국어/영어 키워드 기반) → 구조적 신호(의문사/연산자/서수)와 metric metadata 기반 6-category intent 분류로 대체
+- **Deterministic routing data-driven 전환**: `isDeterministicSummaryQuery`의 판단 시점을 툴 실행 전→후로 변경. intent + metric/operator/status + tool result server count 기반으로 LLM 우회 여부 결정
+- **Metric-aware deterministic formatter**: `cpu/memory/disk/network/status` filter/ranking과 `filterServers` empty result 포맷 지원
+- **queryAsOf 데이터 슬롯 계약** (`query-as-of-context.ts`): AsyncLocalStorage 기반 실행 컨텍스트로 job 생성 시각 KST 10분 슬롯을 worker 전체에 전파. 비동기 job 실행 시 슬롯 드리프트 방지
+- **Provider fallback 강화**: `queue_exceeded`, `high traffic`, `too_many_requests` 감지 추가. `maxRetries: 0`으로 SDK 내부 재시도 증폭 차단. Cerebras rate limit 시 Groq 자동 전환
+- **Tool-grounded stream visibility repair**: tool 결과가 있는데 본문이 제목/골격만 있는 경우 `LOW_INFORMATION_RESPONSE`로 감지해 summarization fallback을 추가 전송
+- **Query routing hardcode cleanup**: `query-type-classifier.ts` 제거, NLQ instruction layering을 intent classifier로 통합, direct server ID 감지를 resource-catalog 기반 lazy pattern으로 전환
+</details>
 
 <details>
 <summary>v8.10.8 (2026-04-04) - Multi-Agent First Hardening + Capability Gate</summary>

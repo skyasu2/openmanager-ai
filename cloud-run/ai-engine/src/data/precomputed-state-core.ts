@@ -110,6 +110,10 @@ function getOTelResourceCatalog(): OTelResourceCatalog | null {
   return null;
 }
 
+export function getResourceCatalog(): OTelResourceCatalog | null {
+  return getOTelResourceCatalog();
+}
+
 /** OTel hourly JSON 경로 후보 */
 function getOTelPaths(hour: number): string[] {
   const paddedHour = hour.toString().padStart(2, '0');

@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-29T05:59:28.482Z"
+    "updatedAt": "2026-04-29T07:43:13.729Z"
   },
   "sequence": {
-    "nextRunNumber": 369
+    "nextRunNumber": 370
   },
   "summary": {
-    "totalRecordedRuns": 366,
-    "totalRuns": 296,
+    "totalRecordedRuns": 367,
+    "totalRuns": 297,
     "excludedRuns": 70,
-    "totalChecks": 2516,
-    "totalPassed": 2426,
-    "totalFailed": 81,
-    "completionRate": 100,
+    "totalChecks": 2522,
+    "totalPassed": 2430,
+    "totalFailed": 83,
+    "completionRate": 99.45,
     "completedItems": 361,
-    "pendingItems": 0,
+    "pendingItems": 2,
     "deferredItems": 0,
     "wontFixItems": 19,
     "expertDomainsTracked": 10,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260429-0368",
-    "lastRecordedAt": "2026-04-29T05:59:28.482Z",
-    "latestRecordedRunId": "QA-20260429-0368",
-    "latestRecordedAt": "2026-04-29T05:59:28.482Z"
+    "expertDomainsOpenGaps": 2,
+    "lastRunId": "QA-20260429-0369",
+    "lastRecordedAt": "2026-04-29T07:43:13.729Z",
+    "latestRecordedRunId": "QA-20260429-0369",
+    "latestRecordedAt": "2026-04-29T07:43:13.729Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -8849,6 +8849,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-29T04:48:07.819Z"
+    },
+    "deploy-query-as-of-fix-to-production": {
+      "id": "deploy-query-as-of-fix-to-production",
+      "title": "Deploy query-as-of metric slot fix to Vercel production",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260429-0369",
+      "firstSeenAt": "2026-04-29T07:43:13.729Z",
+      "lastSeenRunId": "QA-20260429-0369",
+      "lastSeenAt": "2026-04-29T07:43:13.729Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "Production still reports v8.11.59 / 94f4dea, while the latest pushed fix is 198183658.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-29T07:43:13.729Z"
+    },
+    "ai-analysis-main-response-empty-on-cerebras-quota": {
+      "id": "ai-analysis-main-response-empty-on-cerebras-quota",
+      "title": "Prevent empty main AI analysis response when Cerebras queue or token quota fails",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260429-0369",
+      "firstSeenAt": "2026-04-29T07:43:13.729Z",
+      "lastSeenRunId": "QA-20260429-0369",
+      "lastSeenAt": "2026-04-29T07:43:13.729Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "The analysis evidence panel contained useful detail, but the main assistant answer collapsed to only headings after Cerebras queue_exceeded/token_quota_exceeded failures.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-29T07:43:13.729Z"
     }
   },
   "runs": [
@@ -35515,6 +35563,152 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260429-0369",
+      "recordedAt": "2026-04-29T07:43:13.729Z",
+      "recordedAtKst": "2026-04-29 16:43:13 KST",
+      "title": "Vercel Production QA - AI Sidebar Cerebras Qwen Recheck",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260429-0369.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_Amo8uRyiubLFYuxn9LnHThSjk4Ve",
+        "deploymentUrl": "https://openmanager-bpm41tlhi-skyasus-projects.vercel.app",
+        "commitSha": "94f4dea65aa09f321b4fb883906afbcb4185a058"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "/",
+        "/dashboard",
+        "AI sidebar",
+        "/api/ai/jobs",
+        "/api/ai/jobs/[id]/stream",
+        "Cloud Run /api/jobs/process",
+        "Cerebras Qwen provider path"
+      ],
+      "skippedSurfaces": [
+        "login providers",
+        "admin pages",
+        "report generation",
+        "mobile layout"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 4,
+        "failed": 2
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI sidebar simple status summary",
+          "agent": "Cloud Run AI",
+          "provider": "deterministic-grounding",
+          "model": "otel-data",
+          "route": "/api/ai/jobs/[id]/stream",
+          "source": "UI footer + browser Performance API",
+          "latencyMs": 2150,
+          "ttfbMs": 460,
+          "processingTimeMs": 3554
+        },
+        {
+          "surface": "AI sidebar cache memory analysis",
+          "agent": "Cloud Run AI",
+          "provider": "cerebras",
+          "model": "qwen-3-235b-a22b-instruct-2507",
+          "route": "/api/ai/jobs/[id]/stream",
+          "source": "UI footer + browser Performance API + Cloud Run logs",
+          "latencyMs": 14892,
+          "ttfbMs": 459,
+          "processingTimeMs": 15903
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "The simple summary path matched the dashboard, but the longer Cerebras-backed analysis surfaced a user-visible empty main answer.",
+          "nextAction": "Make provider quota failure produce a complete fallback answer in the main response, not only in the evidence panel."
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Production still serves v8.11.59 / 94f4dea, so the newer 198183658 query-as-of fix has not been validated on Vercel production.",
+          "nextAction": "Deploy the current GitLab HEAD through the release path before final production revalidation."
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP covered the real browser flow and Performance API captured EventSource stream entries.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The dashboard baseline and simple AI summary matched the same 16:30 KST slot values.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-29T16:24:29+09:00",
+          "summary": "Active period effective usage 19.0897 USD and billed usage 0.0000 USD; no cost spike before targeted production QA.",
+          "evidence": "npm run check:usage:vercel",
+          "url": ""
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-network",
+          "label": "Targeted production QA evidence",
+          "path": "reports/qa/evidence/qa-20260429-v81159-cerebras-recheck.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab pipeline for currently deployed version",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2487306094"
+        },
+        {
+          "type": "general",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "general",
+          "label": "Vercel deployment",
+          "url": "https://openmanager-bpm41tlhi-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 2,
+      "completedCount": 0,
+      "pendingCount": 2,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -35523,17 +35717,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 172,
+      "seenCount": 173,
       "appropriateCount": 157,
-      "partialCount": 15,
+      "partialCount": 16,
       "inappropriateCount": 0,
-      "improvementNeededCount": 25,
-      "lastRunId": "QA-20260429-0368",
-      "lastSeenAt": "2026-04-29T05:59:28.482Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "The fresh-slot production recheck verified deterministic DISK threshold grounding: the 70% query correctly returned 0 servers for slot 89, and the 65% positive probe included only the 69% and 65% dashboard servers while excluding the 60% server.",
-      "lastNextAction": ""
+      "improvementNeededCount": 26,
+      "lastRunId": "QA-20260429-0369",
+      "lastSeenAt": "2026-04-29T07:43:13.729Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "The simple summary path matched the dashboard, but the longer Cerebras-backed analysis surfaced a user-visible empty main answer.",
+      "lastNextAction": "Make provider quota failure produce a complete fallback answer in the main response, not only in the evidence panel."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -35574,33 +35768,33 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 104,
+      "seenCount": 105,
       "appropriateCount": 93,
-      "partialCount": 11,
+      "partialCount": 12,
       "inappropriateCount": 0,
-      "improvementNeededCount": 15,
-      "lastRunId": "QA-20260429-0368",
-      "lastSeenAt": "2026-04-29T05:59:28.482Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "Vercel health, Cloud Run health proxy, POST /api/ai/jobs 201, and EventSource completion confirmed the production async job path is operational.",
-      "lastNextAction": ""
+      "improvementNeededCount": 16,
+      "lastRunId": "QA-20260429-0369",
+      "lastSeenAt": "2026-04-29T07:43:13.729Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "Production still serves v8.11.59 / 94f4dea, so the newer 198183658 query-as-of fix has not been validated on Vercel production.",
+      "lastNextAction": "Deploy the current GitLab HEAD through the release path before final production revalidation."
     },
     "test-automation": {
       "domainId": "test-automation",
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 140,
-      "appropriateCount": 129,
+      "seenCount": 141,
+      "appropriateCount": 130,
       "partialCount": 11,
       "inappropriateCount": 0,
       "improvementNeededCount": 13,
-      "lastRunId": "QA-20260429-0368",
-      "lastSeenAt": "2026-04-29T05:59:28.482Z",
+      "lastRunId": "QA-20260429-0369",
+      "lastSeenAt": "2026-04-29T07:43:13.729Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The run used a fresh Vercel navigation, UI-only CSRF-safe submission, Performance API EventSource evidence, and durable screenshot/summary artifacts.",
+      "lastRationale": "Playwright MCP covered the real browser flow and Performance API captured EventSource stream entries.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -35608,16 +35802,16 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 40,
-      "appropriateCount": 22,
+      "seenCount": 41,
+      "appropriateCount": 23,
       "partialCount": 18,
       "inappropriateCount": 0,
       "improvementNeededCount": 18,
-      "lastRunId": "QA-20260427-0353",
-      "lastSeenAt": "2026-04-27T13:19:24.078Z",
+      "lastRunId": "QA-20260429-0369",
+      "lastSeenAt": "2026-04-29T07:43:13.729Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "OTel 기반 이상 감지 정확도와 threshold 근거 표시가 검증됨",
+      "lastRationale": "The dashboard baseline and simple AI summary matched the same 16:30 KST slot values.",
       "lastNextAction": ""
     },
     "infra-reliability": {

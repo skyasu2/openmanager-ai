@@ -7,8 +7,10 @@
 import type { ToolName } from '../../tools-ai-sdk';
 import type { AnalysisMode, SupervisorMode } from './supervisor-types';
 import { getKSTDateTime } from '../../data/precomputed-state';
+import { getResourceCatalog } from '../../data/precomputed-state-core';
 import { isTavilyAvailable } from '../../lib/tavily-hybrid-rag';
 import { logger } from '../../lib/logger';
+import { classifyQueryIntent } from './agents/orchestrator-query-intent';
 import {
   ADVISOR_QUERY_PATTERN,
   COMPOSITE_QUERY_PATTERNS,
@@ -328,13 +330,8 @@ export function getIntentCategory(query: string): IntentCategory {
 }
 
 const SIMPLE_CONVERSATION_PATTERNS = /^(안녕|감사|고마워|잘했어|hi|hello|thanks|thank you|bye|잘가)[\s!?.]*$/i;
-const DIRECT_SERVER_ID_PATTERN =
-  /\b(?:lb-haproxy|web-nginx|api-was|db-mysql|cache-redis|storage-(?:nfs|s3gw))-dc1-(?:\d{2}|primary|replica|backup)\b/i;
 const CURRENT_METRIC_VALUE_PATTERNS =
   /(사용률|몇\s*%|몇퍼센트|퍼센트|얼마|수치|값|상태|어때|어떻|알려|보여|확인|usage|percent|percentage|status)/i;
-const METRIC_RANKING_PATTERNS =
-  /(가장\s*(높|낮)|최고|최저|상위\s*\d+|하위\s*\d+|순위|top\s*\d+|highest|lowest|top|rank)/i;
-const RANKABLE_METRIC_PATTERNS = /(cpu|메모리|memory|디스크|disk|네트워크|network)/i;
 const NON_CURRENT_METRIC_PATTERNS =
   /(지난|최근|평균|최대|최소|합계|추세|트렌드|예측|비교|대비|변화|last1h|last6h|last24h|last\s+\d+\s*h|avg|max|min|trend|forecast|compare)/i;
 const BEST_EFFORT_GENERAL_PATTERNS =
@@ -360,11 +357,36 @@ export function shouldForceWebSearch(query: string): boolean {
   );
 }
 
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function buildServerIdPattern(): RegExp {
+  try {
+    const resources = getResourceCatalog()?.resources;
+    const serverIds = resources ? Object.keys(resources) : [];
+    if (serverIds.length > 0) {
+      return new RegExp(`\\b(?:${serverIds.map(escapeRegExp).join('|')})\\b`, 'i');
+    }
+  } catch {
+    // Fallback below keeps routing available when local catalog files are absent.
+  }
+
+  return /\b[a-z][-a-z0-9]*-(?:dc|zone|region|prod|staging)\d*[-a-z0-9]*\b/i;
+}
+
+let serverIdPattern: RegExp | null = null;
+
+function getServerIdPattern(): RegExp {
+  serverIdPattern ??= buildServerIdPattern();
+  return serverIdPattern;
+}
+
 function shouldForceRealtimeServerMetricTool(query: string): boolean {
   const q = query.toLowerCase();
 
   return (
-    DIRECT_SERVER_ID_PATTERN.test(q) &&
+    getServerIdPattern().test(q) &&
     TOOL_ROUTING_PATTERNS.metrics.test(q) &&
     CURRENT_METRIC_VALUE_PATTERNS.test(q) &&
     !NON_CURRENT_METRIC_PATTERNS.test(q)
@@ -373,12 +395,12 @@ function shouldForceRealtimeServerMetricTool(query: string): boolean {
 
 function shouldForceMetricRankingTool(query: string): boolean {
   const q = query.toLowerCase();
+  const { intent } = classifyQueryIntent(query);
 
   return (
-    RANKABLE_METRIC_PATTERNS.test(q) &&
-    METRIC_RANKING_PATTERNS.test(q) &&
+    intent === 'data-ranking' &&
     !NON_CURRENT_METRIC_PATTERNS.test(q) &&
-    !DIRECT_SERVER_ID_PATTERN.test(q)
+    !getServerIdPattern().test(q)
   );
 }
 
