@@ -161,7 +161,7 @@ describe('executeAgentStream', () => {
         chunks: ['   '],
         steps: [
           {
-            toolCalls: [{ toolName: 'getServerMetrics' }],
+            toolCalls: [{ toolName: 'getServerLogs' }],
             toolResults: [
               {
                 toolName: 'getServerMetrics',
@@ -244,6 +244,84 @@ describe('executeAgentStream', () => {
         provider: 'groq',
         modelId: 'groq-model',
       },
+    ]);
+  });
+
+  it('delegates empty tool-result summarization to the next provider without same-provider retries', async () => {
+    mockStreamText.mockReturnValueOnce(
+      createStreamResult({
+        chunks: ['   '],
+        steps: [
+          {
+            toolCalls: [{ toolName: 'getServerMetrics' }],
+            toolResults: [
+              {
+                toolName: 'getServerLogs',
+                result: {
+                  logs: [
+                    {
+                      serverId: 'api-was-dc1-01',
+                      level: 'error',
+                      message: 'database connection timeout',
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        ],
+      })
+    );
+    mockGenerateText.mockResolvedValueOnce({
+      text: 'Groq 요약 응답',
+      usage: { inputTokens: 21, outputTokens: 8, totalTokens: 29 },
+    });
+
+    const events = await collectEvents('최근 에러 로그 기반으로 원인을 분석해줘');
+    const textPayload = events
+      .filter((event) => event.type === 'text_delta')
+      .map((event) => String(event.data))
+      .join('');
+
+    expect(textPayload).toContain('Groq 요약 응답');
+    expect(mockStreamText).toHaveBeenCalledTimes(1);
+    expect(mockStreamText.mock.calls[0]?.[0]).toMatchObject({
+      maxRetries: 0,
+    });
+    expect(mockGenerateText).toHaveBeenCalledTimes(1);
+    expect(mockGenerateText.mock.calls[0]?.[0]).toMatchObject({
+      model: { provider: 'groq' },
+      maxRetries: 0,
+    });
+
+    const doneEvent = events.find((event) => event.type === 'done');
+    const doneData = doneEvent?.data as {
+      metadata: {
+        provider: string;
+        modelId: string;
+        usedFallback?: boolean;
+        fallbackReason?: string;
+        providerAttempts?: Array<{ provider: string; error?: string }>;
+      };
+      usage: {
+        promptTokens: number;
+        completionTokens: number;
+        totalTokens: number;
+      };
+    };
+
+    expect(doneData.usage).toEqual({
+      promptTokens: 21,
+      completionTokens: 8,
+      totalTokens: 29,
+    });
+    expect(doneData.metadata.provider).toBe('groq');
+    expect(doneData.metadata.modelId).toBe('groq-model');
+    expect(doneData.metadata.usedFallback).toBe(true);
+    expect(doneData.metadata.fallbackReason).toBe('empty_response');
+    expect(doneData.metadata.providerAttempts).toMatchObject([
+      { provider: 'cerebras', error: 'EMPTY_RESPONSE' },
+      { provider: 'groq' },
     ]);
   });
 

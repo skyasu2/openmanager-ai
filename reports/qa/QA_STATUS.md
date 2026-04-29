@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-29 08:37:46 KST
+> Generated at: 2026-04-29 13:48:08 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 362 |
-| Total Runs (Counted) | 294 |
-| Non-counted Runs | 68 |
-| Total Checks | 2484 |
-| Passed | 2395 |
-| Failed | 80 |
-| Completed Items | 357 |
+| Total Recorded Runs | 365 |
+| Total Runs (Counted) | 295 |
+| Non-counted Runs | 70 |
+| Total Checks | 2498 |
+| Passed | 2408 |
+| Failed | 81 |
+| Completed Items | 361 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 19 |
 | Expert Domains Tracked | 10 |
-| Expert Open Gaps | 0 |
+| Expert Open Gaps | 1 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260429-0364 (2026-04-28T23:37:46.502Z) |
-| Latest Recorded Run | QA-20260429-0364 (2026-04-28T23:37:46.502Z) |
+| Last Counted Run | QA-20260429-0365 (2026-04-29T04:25:34.157Z) |
+| Latest Recorded Run | QA-20260429-0367 (2026-04-29T04:48:07.819Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,28 +34,27 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260429-0364 (2026-04-28T23:37:46.502Z)
+Latest run: QA-20260429-0367 (2026-04-29T04:48:07.819Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| DevOps / SRE Engineer | appropriate | no | - |
-| AI Security & Reliability Architect | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked after v8.11.58 release smoke; effective $18.4121, billed $0.0000, no unexpected billed usage. |
+| - | - | - | - | - |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-27T23:37:46.502Z -> 2026-04-28T23:37:46.502Z (24h)
-- Runs with observations: 3 recorded / 3 counted
-- Samples: 6
+- Window: 2026-04-28T04:48:07.819Z -> 2026-04-29T04:48:07.819Z (24h)
+- Runs with observations: 4 recorded / 4 counted
+- Samples: 7
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
+| Supervisor Agent | cloud-run-supervisor | 1 | 48818ms | 48818ms | - | - | 48818ms | 48818ms | QA-20260429-0365 |
 | Supervisor Agent | multi-provider-fallback | 1 | 16988ms | 16988ms | - | - | 16988ms | 16988ms | QA-20260428-0358 |
 | Reporter Agent | pipeline | 1 | 16321ms | 16321ms | - | - | 16321ms | 16321ms | QA-20260428-0356 |
 | Analyst Agent | groq | 1 | 14039ms | 14039ms | - | - | 14039ms | 14039ms | QA-20260428-0356 |
@@ -65,31 +64,29 @@ Latest run: QA-20260429-0364 (2026-04-28T23:37:46.502Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
-- Counts Toward Summary: yes
-- Deployment: dpl_56Xd5rc13skiEsmeH28MLtZBa2ui / SHA 2a76df0c
-- Coverage Packs: core-routes-smoke, ai-core, observability-pack
-- Covered Surfaces: Vercel production /api/version reports 8.11.58 and releaseTag v8.11.58, Vercel production /api/health?simple=true returns JSON 200, Vercel production /api/health?service=ai returns JSON 200 cloud-run backend, Cloud Run /health returns ai-engine version 8.11.58 with redis/routesReady true, GitLab main pipeline 2486762017 success, GitLab tag pipeline v8.11.58 2486766912 success, GitLab deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke jobs success, Cloud Run ai-engine revision ai-engine-00371-krm deployed and serving 100 percent traffic, Vercel production dashboard shows Vercel static OTel and 24h rotating dataset labels, Mobile /dashboard/ai-assistant hands off to /dashboard AI sidebar and hides 전체 화면으로 열기
-- Skipped Surfaces: full broad browser route sweep, guest AI assistant long-query SSE run, Cloud Tasks high-volume load test, landing page functional regression sweep - landing code was intentionally not modified
+- Release-Facing: no
+- Counts Toward Summary: no
+- Deployment: SHA e0b18c41
+- Coverage Packs: ai-core, observability-pack
+- Covered Surfaces: Cerebras queue_exceeded/429 provider fallback policy, AI SDK nested retry disabled for provider-managed fallback paths, Streaming agent empty tool-result summarization delegates to next provider, Summarization fallback done metadata reports delegated provider usage, DISK >=70% deterministic metric grounding for Analyst/NLQ paths, AI Engine type-check, AI Engine full Vitest suite, QA evidence audit missing durable artifact references
+- Skipped Surfaces: Vercel production browser recheck - requires Cloud Run deployment of this local fix, Cloud Tasks high-volume load test - intentionally skipped to preserve free-tier budget
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Cloud Run ai-engine service | [Cloud Run ai-engine service](https://ai-engine-490817238363.asia-northeast1.run.app/) | - |
-| general | GitLab main pipeline for API hardening commit | [GitLab main pipeline for API hardening commit](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2486762017) | - |
-| general | GitLab tag pipeline v8.11.58 | [GitLab tag pipeline v8.11.58](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2486766912) | - |
-| vercel-deployment | Vercel production deployment v8.11.58 | [Vercel production deployment v8.11.58](https://openmanager-hfvwry4jx-skyasus-projects.vercel.app/) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-network | v8.11.58 release smoke summary | `reports/qa/evidence/QA-20260429-0364/qa-20260429-v81158-release-smoke-summary.json` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260429-0365)
+  next: Add/fix deterministic metric grounding or final answer threshold validation for async job responses.
 
 ## Pending Improvements
 
@@ -192,8 +189,10 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-chat-response-quality-v880-recheck-20260309: AI Chat 응답 품질 및 권고 재검증 (completed 4회, last QA-20260309-0068)
 - ai-chat-sidebar-open: AI 사이드바 열기 (completed 1회, last QA-20260317-0114)
 - ai-code-gate-input-policy: AI Code Gate: Prompt 패턴 15개 방어 점검 (completed 2회, last QA-20260318-0125)
+- ai-disk-threshold-answer-accuracy-drift: AI async job answer should preserve DISK >=70% threshold and dashboard metric values (completed 1회, last QA-20260429-0366)
 - ai-domain-boundary-phase2-analysis-mode: AI Domain Boundary Phase 2 analysis mode toggle (auto/thinking) (completed 1회, last QA-20260416-0297)
 - ai-engine-status: AI 엔진 상태 표시 (completed 1회, last QA-20260317-0114)
+- ai-fallback-done-usage-metadata: Delegated summarization fallback should report delegated provider token usage (completed 1회, last QA-20260429-0367)
 - ai-friendly-template-todo-marker: Template TODO marker 분리 (TEMPLATE_TODO 적용) (completed 1회, last QA-20260226-0006)
 - ai-hardening-production-verification: Verify production AI hardening release on v8.11.20 (completed 1회, last QA-20260418-0303)
 - ai-math-tools: AI 계산 도구(수식/통계/용량) 셋업 완료 (completed 1회, last QA-20260228-0023)
@@ -201,6 +200,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-metric-ranking-cpu-route: Current metric ranking query routes to deterministic metric lookup (completed 1회, last QA-20260418-0304)
 - ai-provider-forced-routing-context-floor: Forced-routing quality agents skip 8K Cerebras fallback (completed 1회, last QA-20260428-0356)
 - ai-provider-phase4-supervisor-routing-hints: Supervisor routing hints deployed (completed 1회, last QA-20260428-0356)
+- ai-provider-queue-exceeded-retry-amplification: Cerebras queue_exceeded should not amplify retries before provider fallback (completed 1회, last QA-20260429-0366)
 - ai-ranking-cpu-live-route: CPU highest-server query returns live top server on production (completed 1회, last QA-20260418-0305)
 - ai-ranking-memory-live-route: Memory top-N ranking uses deterministic live metric path on production (completed 1회, last QA-20260418-0305)
 - ai-recommendation-free-tier-fit: AI 운영 권고에서 리소스 업그레이드보다 조사/캐시/분산 조치를 우선 (completed 1회, last QA-20260423-0339)
@@ -265,6 +265,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - cloud-run-readiness-guard: Cloud Run direct route readiness guard 공통화 (completed 1회, last QA-20260325-0184)
 - cloud-run-v892-manual-deploy: Cloud Run v8.9.2 manual deploy verification (completed 1회, last QA-20260317-0118)
 - cloud-tasks-dispatch-follow-up-hardening: Cloud Tasks dispatch header allowlist and createTask transient retry hardening (completed 1회, last QA-20260429-0359)
+- cloud-tasks-fresh-browser-dispatch-sse: Fresh browser Cloud Tasks dispatch and SSE completion verified (completed 1회, last QA-20260429-0365)
 - cloud-tasks-payload-byte-guard: Cloud Tasks dispatch payload byte guard and 413 response (completed 1회, last QA-20260429-0364)
 - cloud-tasks-worker-target-https: Cloud Tasks worker target uses HTTPS in production (completed 1회, last QA-20260428-0358)
 - coverage-suite-stabilize: vitest coverage suite 0 failed (6→0) 안정화 (completed 1회, last QA-20260329-0194)
@@ -525,6 +526,9 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260429-0367 | 2026-04-29T04:48:07.819Z | targeted | no | no | AI Engine Post-Review Fallback Metadata Verification | 4 | 1 | 0 | 0 | 0 | 0 |
+| QA-20260429-0366 | 2026-04-29T04:28:03.403Z | targeted | no | no | AI Engine Provider Fallback and DISK Threshold Regression Fix | 3 | 2 | 0 | 0 | 0 | 0 |
+| QA-20260429-0365 | 2026-04-29T04:25:34.157Z | targeted | yes | yes | Cloud Tasks Job Dispatch Fresh Browser Production Recheck - v8.11.58 | 14 | 1 | 0 | 0 | 1 | 1 |
 | QA-20260429-0364 | 2026-04-28T23:37:46.502Z | targeted | yes | yes | v8.11.58 Release Production Smoke | 22 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260429-0363 | 2026-04-28T18:49:16.063Z | targeted | no | no | Vercel Playwright MCP - Recent UI Change Propagation Check | 8 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260429-0362 | 2026-04-28T18:07:07.122Z | targeted | no | no | Dashboard Modal/Search Hardening Local QA | 11 | 3 | 0 | 0 | 0 | 0 |
@@ -542,6 +546,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260427-0350 | 2026-04-27T02:47:19.407Z | targeted | yes | yes | Vercel Production AI Assistant Playwright MCP Real Chat QA | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260427-0349 | 2026-04-26T15:45:57.159Z | targeted | yes | yes | v8.11.35 AI Sidebar Tool UX Release Smoke | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260424-0348 | 2026-04-24T10:55:21.196Z | targeted | no | yes | Production Playwright E2E - AI slot provenance parity validation | 2 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260424-0347 | 2026-04-24T09:40:49.104Z | targeted | no | no | Vercel core routes follow-up for frontend UIUX QA review | 6 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260424-0346 | 2026-04-24T09:25:23.818Z | broad | yes | yes | Vercel Playwright QA - Frontend Buttons Modals UIUX Sweep | 31 | 0 | 0 | 0 | 0 | 1 |
-| QA-20260424-0345 | 2026-04-24T08:04:28.389Z | targeted | no | yes | Production Playwright E2E - AI parity guard final review validation | 2 | 1 | 0 | 0 | 0 | 1 |

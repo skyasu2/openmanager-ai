@@ -1,0 +1,72 @@
+{
+  "runId": "QA-20260429-0367",
+  "recordedAt": "2026-04-29T04:48:07.819Z",
+  "recordedAtKst": "2026-04-29 13:48:07 KST",
+  "runTitle": "AI Engine Post-Review Fallback Metadata Verification",
+  "owner": "codex",
+  "source": "local-vitest",
+  "environment": {
+    "target": "local-dev",
+    "url": "cloud-run/ai-engine",
+    "frontend": "not exercised",
+    "backend": "Cloud Run AI Engine local test suite",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "e0b18c41d06b681b9761eb27ffdc8cecd24e9e95"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "Cerebras queue_exceeded/429 provider fallback policy",
+    "AI SDK nested retry disabled for provider-managed fallback paths",
+    "Streaming agent empty tool-result summarization delegates to next provider",
+    "Summarization fallback done metadata reports delegated provider usage",
+    "DISK >=70% deterministic metric grounding for Analyst/NLQ paths",
+    "AI Engine type-check",
+    "AI Engine full Vitest suite",
+    "QA evidence audit missing durable artifact references"
+  ],
+  "skippedSurfaces": [
+    "Vercel production browser recheck - requires Cloud Run deployment of this local fix",
+    "Cloud Tasks high-volume load test - intentionally skipped to preserve free-tier budget"
+  ],
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-fallback-done-usage-metadata",
+      "title": "Delegated summarization fallback should report delegated provider token usage",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Added regression assertion that Groq summarization fallback done usage uses generateText usage instead of the original empty Cerebras stream usage.",
+      "note": "Observability metadata correctness only; no user-facing answer change.",
+      "owner": "project",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Commands: cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/agents/orchestrator-agent-stream.test.ts src/services/ai-sdk/agents/orchestrator-summary-fallback.test.ts src/services/resilience/retry-with-fallback.test.ts",
+    "Commands: cd cloud-run/ai-engine && npm run type-check",
+    "Commands: cd cloud-run/ai-engine && npm run test",
+    "Commands: git diff --check -- changed AI Engine and QA files",
+    "Commands: npm run qa:evidence:audit",
+    "AI Engine test result: 87 files / 916 tests passed; QA evidence audit missing durable artifact paths: 0."
+  ],
+  "links": []
+}

@@ -308,6 +308,53 @@ describe('generateTextWithRetry', () => {
     expect(mockGenerateText).toHaveBeenCalledTimes(1);
   });
 
+  it('does not let the AI SDK retry Cerebras queue_exceeded before provider fallback', async () => {
+    const queueExceeded = Object.assign(
+      new Error("We're experiencing high traffic right now! Please try again soon."),
+      {
+        statusCode: 429,
+        data: {
+          type: 'too_many_requests_error',
+          param: 'queue',
+          code: 'queue_exceeded',
+        },
+      }
+    );
+
+    mockGenerateText
+      .mockRejectedValueOnce(queueExceeded)
+      .mockResolvedValueOnce({
+        text: 'ok from groq',
+        steps: [],
+        usage: { inputTokens: 1, outputTokens: 1, totalTokens: 2 },
+      });
+
+    const result = await generateTextWithRetry(
+      {
+        messages: [{ role: 'user', content: 'queue exceeded fallback test' }],
+      },
+      ['cerebras', 'groq'],
+      {
+        maxRetries: 2,
+        fallbackDelayMs: 0,
+        fallbackJitterMs: 0,
+        retryBudgetPerMinute: 10,
+        timeoutMs: 3000,
+      }
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.provider).toBe('groq');
+    expect(result.attempts.map((attempt) => attempt.provider)).toEqual([
+      'cerebras',
+      'groq',
+    ]);
+    expect(mockGenerateText).toHaveBeenCalledTimes(2);
+    expect(mockGenerateText.mock.calls[0]?.[0]).toMatchObject({
+      maxRetries: 0,
+    });
+  });
+
   it('aborts the in-flight AI SDK call when the retry timeout elapses', async () => {
     vi.useFakeTimers();
     const observed: { signal?: AbortSignal } = {};

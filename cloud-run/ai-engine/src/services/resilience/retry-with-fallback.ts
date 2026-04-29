@@ -195,17 +195,58 @@ function getBackoffDelay(attempt: number, config: RetryConfig): number {
   return Math.min(delay, config.maxDelayMs);
 }
 
+function getErrorStatusCode(error: Error): number | undefined {
+  const anyError = error as {
+    status?: number;
+    statusCode?: number;
+  };
+  return anyError.status ?? anyError.statusCode;
+}
+
+function getErrorDetailsText(error: Error): string {
+  const anyError = error as {
+    data?: unknown;
+    responseBody?: unknown;
+  };
+  const details = [
+    error.message,
+    typeof anyError.responseBody === 'string' ? anyError.responseBody : '',
+    anyError.data ? JSON.stringify(anyError.data) : '',
+  ];
+  return details.join(' ').toLowerCase();
+}
+
+function isProviderRateLimitError(error: unknown): boolean {
+  if (!(error instanceof Error)) {
+    return false;
+  }
+
+  const statusCode = getErrorStatusCode(error);
+  if (statusCode === 429) {
+    return true;
+  }
+
+  const details = getErrorDetailsText(error);
+  return (
+    details.includes('rate limit') ||
+    details.includes('too many requests') ||
+    details.includes('too_many_requests') ||
+    details.includes('queue_exceeded') ||
+    details.includes('high traffic') ||
+    details.includes('429')
+  );
+}
+
 /**
  * Check if error should trigger fallback to next provider
  */
 function shouldFallback(error: unknown): boolean {
   if (error instanceof Error) {
-    const message = error.message.toLowerCase();
-
-    // Check for rate limit keywords
-    if (message.includes('rate limit') || message.includes('429')) {
+    if (isProviderRateLimitError(error)) {
       return true;
     }
+
+    const message = error.message.toLowerCase();
 
     // Check for service unavailable
     if (message.includes('503') || message.includes('unavailable')) {
@@ -213,11 +254,8 @@ function shouldFallback(error: unknown): boolean {
     }
 
     // Check status code in error object
-    const anyError = error as { status?: number; statusCode?: number };
-    if (anyError.status && FALLBACK_ERROR_CODES.includes(anyError.status)) {
-      return true;
-    }
-    if (anyError.statusCode && FALLBACK_ERROR_CODES.includes(anyError.statusCode)) {
+    const statusCode = getErrorStatusCode(error);
+    if (statusCode && FALLBACK_ERROR_CODES.includes(statusCode)) {
       return true;
     }
   }
@@ -432,10 +470,8 @@ export async function generateTextWithRetry(
             options.abortSignal
           );
 
-          // Execute with timeout
-          // 🎯 P3-1: AI SDK v6.0.50 Best Practice - delegate network-level retries to SDK
-          // maxRetries: 1 handles transient network errors automatically
-          // Provider-level fallback is still managed by our custom logic
+          // Execute with timeout. Provider-level retry/fallback is managed here so
+          // upstream 429/queue pressure does not get amplified by nested SDK retries.
           // 🎯 P2-2: Native timeout as primary + Promise.race as backup for full control
           let result: Awaited<ReturnType<typeof generateText>>;
           try {
@@ -447,7 +483,7 @@ export async function generateTextWithRetry(
                 ...(options.toolChoice && { toolChoice: options.toolChoice }),
                 temperature: options.temperature ?? 0.2,
                 maxOutputTokens: options.maxOutputTokens ?? 2048,
-                maxRetries: 1, // 🎯 P3-1: Delegate network retry to AI SDK
+                maxRetries: 0, // Provider fallback is handled here; avoid retry amplification on 429/queue_exceeded.
                 abortSignal: attemptAbort.signal,
                 timeout: { totalMs: fullConfig.timeoutMs }, // 🎯 P2-2: Native timeout
                 ...(options.stopWhen && { stopWhen: options.stopWhen }),
@@ -501,6 +537,7 @@ export async function generateTextWithRetry(
 
           // Check if should fallback to next model/provider
           if (shouldFallback(error)) {
+            const skipRemainingProviderModels = isProviderRateLimitError(error);
             if (
               !consumeProviderRetryBudget(
                 fullConfig,
@@ -519,10 +556,12 @@ export async function generateTextWithRetry(
             }
             const delay = getProviderFallbackDelay(fullConfig);
             logger.info(
-              `[RetryWithFallback] Rate limit/unavailable, switching ${hasNextModel ? 'model' : 'provider'} after ${delay}ms...`
+              `[RetryWithFallback] Rate limit/unavailable, switching ${
+                hasNextModel && !skipRemainingProviderModels ? 'model' : 'provider'
+              } after ${delay}ms...`
             );
             await sleep(delay);
-            if (!hasNextModel) {
+            if (!hasNextModel || skipRemainingProviderModels) {
               excludedProviders.push(provider);
             }
             break; // Exit retry loop, try next model/provider

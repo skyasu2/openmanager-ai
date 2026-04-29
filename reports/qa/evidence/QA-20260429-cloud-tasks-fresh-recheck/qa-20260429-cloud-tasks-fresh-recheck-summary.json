@@ -1,0 +1,43 @@
+{
+  "scenario": "fresh-browser cloud-tasks async job UI recheck",
+  "target": "https://openmanager-ai.vercel.app",
+  "productionVersion": "8.11.58",
+  "freshSessionTimerAtDashboard": "29:57",
+  "query": "현재 18대 서버 중 DISK 사용률이 70% 이상인 서버를 모두 찾아서 위험도 순으로 정렬하고, 각 서버의 잠재적 장애 시점과 권장 조치안을 상세히 분석해줘",
+  "dashboardEvidence": {
+    "serverCount": 18,
+    "resourceWarningTop5": [
+      "api-was-dc1-01 CPU 83%",
+      "db-mysql-dc1-backup DISK 74%",
+      "cache-redis-dc1-01 MEM 69%",
+      "cache-redis-dc1-03 MEM 65%",
+      "db-mysql-dc1-primary DISK 63%"
+    ],
+    "expectedDiskOver70Servers": ["db-mysql-dc1-backup"]
+  },
+  "cloudTasksEvidence": {
+    "queue": "openmanager-ai-jobs",
+    "queueState": "RUNNING",
+    "maxDispatchesPerSecond": 1,
+    "maxConcurrentDispatches": 2,
+    "maxAttempts": 3
+  },
+  "jobEvidence": {
+    "jobId": "def72ab5-c218-40ad-89b2-d716893c46f7",
+    "postStatus": 201,
+    "postResourceDurationMs": 483,
+    "streamResourceDurationMs": 50245,
+    "streamTransferSizeBytes": 19144,
+    "streamEntryCount": 1,
+    "uiProcessingTimeMs": 48818,
+    "finalAgent": "Cloud Run AI",
+    "analysisMode": "심층 분석",
+    "toolCount": 3
+  },
+  "result": {
+    "dispatchPath": "pass",
+    "sseCompletion": "pass",
+    "answerAccuracy": "fail",
+    "accuracyFailure": "Dashboard showed db-mysql-dc1-backup DISK 74% as the only DISK >=70% server, but the AI answer reported db-mysql-dc1-backup as 68% and also mentioned storage-nfs-dc1-02 59.4% and db-mysql-dc1-primary 58% in the threshold analysis."
+  }
+}

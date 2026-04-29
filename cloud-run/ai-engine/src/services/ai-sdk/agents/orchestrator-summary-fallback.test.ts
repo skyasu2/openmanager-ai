@@ -178,12 +178,44 @@ describe('buildDeterministicSummaryFallback', () => {
     expect(summary).not.toContain('4. ');
   });
 
+  it('builds deterministic DISK threshold ranking for analyst queries', () => {
+    const summary = buildDeterministicSummaryFallback(
+      '현재 18대 서버 중 DISK 사용률이 70% 이상인 서버를 모두 찾아서 위험도 순으로 정렬하고, 각 서버의 잠재적 장애 시점과 권장 조치안을 상세히 분석해줘',
+      'Analyst Agent',
+      [
+        {
+          toolName: 'getServerMetrics',
+          result: {
+            servers: [
+              { id: 'web-01', status: 'online', cpu: 25, memory: 30, disk: 20 },
+              { id: 'db-mysql-dc1-backup', status: 'warning', cpu: 42, memory: 55, disk: 74 },
+              { id: 'db-mysql-dc1-primary', status: 'online', cpu: 40, memory: 50, disk: 63 },
+              { id: 'storage-nfs-dc1-01', status: 'warning', cpu: 35, memory: 44, disk: 80 },
+              { id: 'storage-s3gw-dc1-01', status: 'warning', cpu: 44, memory: 48, disk: 72 },
+            ],
+          },
+        },
+      ]
+    );
+
+    expect(summary).toContain('📊 **DISK 사용률 70% 이상 서버 3대**');
+    expect(summary).toContain('1. storage-nfs-dc1-01: DISK 80%');
+    expect(summary).toContain('2. db-mysql-dc1-backup: DISK 74%');
+    expect(summary).toContain('3. storage-s3gw-dc1-01: DISK 72%');
+    expect(summary).not.toContain('db-mysql-dc1-primary');
+    expect(summary).toContain('잠재적 장애 시점');
+    expect(summary).toContain('권장 조치');
+  });
+
   it('identifies NLQ summary prompts that must use deterministic output', () => {
     expect(
       isDeterministicSummaryQuery('현재 모든 서버의 상태를 요약해줘', 'NLQ Agent')
     ).toBe(true);
     expect(
       isDeterministicSummaryQuery('CPU 높은 서버 찾아줘', 'NLQ Agent')
+    ).toBe(true);
+    expect(
+      isDeterministicSummaryQuery('DISK 사용률 70% 이상 서버를 위험도 순으로 알려줘', 'Analyst Agent')
     ).toBe(true);
     expect(
       isDeterministicSummaryQuery('현재 모든 서버의 상태를 요약해줘', 'Analyst Agent')

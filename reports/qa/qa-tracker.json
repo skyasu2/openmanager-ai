@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-28T23:37:46.502Z"
+    "updatedAt": "2026-04-29T04:48:07.819Z"
   },
   "sequence": {
-    "nextRunNumber": 365
+    "nextRunNumber": 368
   },
   "summary": {
-    "totalRecordedRuns": 362,
-    "totalRuns": 294,
-    "excludedRuns": 68,
-    "totalChecks": 2484,
-    "totalPassed": 2395,
-    "totalFailed": 80,
+    "totalRecordedRuns": 365,
+    "totalRuns": 295,
+    "excludedRuns": 70,
+    "totalChecks": 2498,
+    "totalPassed": 2408,
+    "totalFailed": 81,
     "completionRate": 100,
-    "completedItems": 357,
+    "completedItems": 361,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 19,
     "expertDomainsTracked": 10,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260429-0364",
-    "lastRecordedAt": "2026-04-28T23:37:46.502Z",
-    "latestRecordedRunId": "QA-20260429-0364",
-    "latestRecordedAt": "2026-04-28T23:37:46.502Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260429-0365",
+    "lastRecordedAt": "2026-04-29T04:25:34.157Z",
+    "latestRecordedRunId": "QA-20260429-0367",
+    "latestRecordedAt": "2026-04-29T04:48:07.819Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -8753,6 +8753,102 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-28T23:37:46.502Z"
+    },
+    "cloud-tasks-fresh-browser-dispatch-sse": {
+      "id": "cloud-tasks-fresh-browser-dispatch-sse",
+      "title": "Fresh browser Cloud Tasks dispatch and SSE completion verified",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260429-0365",
+      "firstSeenAt": "2026-04-29T04:25:34.157Z",
+      "lastSeenRunId": "QA-20260429-0365",
+      "lastSeenAt": "2026-04-29T04:25:34.157Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "project",
+      "lastEvidence": "POST /api/ai/jobs 201, EventSource stream duration 50245ms, final Cloud Run AI card rendered with analysis basis.",
+      "lastNote": "Single-job production UI proof only; high-volume load intentionally skipped.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-29T04:25:34.157Z"
+    },
+    "ai-disk-threshold-answer-accuracy-drift": {
+      "id": "ai-disk-threshold-answer-accuracy-drift",
+      "title": "AI async job answer should preserve DISK >=70% threshold and dashboard metric values",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260429-0365",
+      "firstSeenAt": "2026-04-29T04:25:34.157Z",
+      "lastSeenRunId": "QA-20260429-0366",
+      "lastSeenAt": "2026-04-29T04:28:03.403Z",
+      "seenCount": 2,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "project",
+      "lastEvidence": "Added deterministic DISK threshold ranking for Analyst/NLQ metric queries and covered it with orchestrator-summary-fallback regression tests.",
+      "lastNote": "Production recheck still requires deploying the Cloud Run AI Engine fix.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-29T04:28:03.403Z"
+    },
+    "ai-provider-queue-exceeded-retry-amplification": {
+      "id": "ai-provider-queue-exceeded-retry-amplification",
+      "title": "Cerebras queue_exceeded should not amplify retries before provider fallback",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260429-0366",
+      "firstSeenAt": "2026-04-29T04:28:03.403Z",
+      "lastSeenRunId": "QA-20260429-0366",
+      "lastSeenAt": "2026-04-29T04:28:03.403Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "project",
+      "lastEvidence": "Added retry-with-fallback and streaming-agent regression tests verifying maxRetries=0 and fallback to next provider on 429/queue_exceeded.",
+      "lastNote": "Prevents the 3-attempt same-provider retry pattern observed in Cloud Run logs.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-29T04:28:03.403Z"
+    },
+    "ai-fallback-done-usage-metadata": {
+      "id": "ai-fallback-done-usage-metadata",
+      "title": "Delegated summarization fallback should report delegated provider token usage",
+      "priority": "P3",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260429-0367",
+      "firstSeenAt": "2026-04-29T04:48:07.819Z",
+      "lastSeenRunId": "QA-20260429-0367",
+      "lastSeenAt": "2026-04-29T04:48:07.819Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "project",
+      "lastEvidence": "Added regression assertion that Groq summarization fallback done usage uses generateText usage instead of the original empty Cerebras stream usage.",
+      "lastNote": "Observability metadata correctness only; no user-facing answer change.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-29T04:48:07.819Z"
     }
   },
   "runs": [
@@ -35044,6 +35140,246 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260429-0365",
+      "recordedAt": "2026-04-29T04:25:34.157Z",
+      "recordedAtKst": "2026-04-29 13:25:34 KST",
+      "title": "Cloud Tasks Job Dispatch Fresh Browser Production Recheck - v8.11.58",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260429-0365.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_56Xd5rc13skiEsmeH28MLtZBa2ui",
+        "deploymentUrl": "https://openmanager-hfvwry4jx-skyasus-projects.vercel.app",
+        "commitSha": "2a76df0c5a7714421ebc1687041d220ae17adc08"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "Fresh Vercel production browser session starts with 29:57 dashboard timer",
+        "Guest login and dashboard open through UI",
+        "Vercel production /api/version reports 8.11.58",
+        "Vercel production /api/health?simple=true returns JSON 200",
+        "Vercel production /api/health?service=ai returns JSON 200 cloud-run backend",
+        "Cloud Run /health returns ai-engine version 8.11.58 with redis/routesReady true",
+        "Cloud Tasks queue openmanager-ai-jobs RUNNING with maxDispatchesPerSecond=1 and maxConcurrentDispatches=2",
+        "AI sidebar opens with AI Engine Ready",
+        "New chat clears previous messages before dispatch",
+        "UI query POST /api/ai/jobs returns 201",
+        "EventSource /api/ai/jobs/{id}/stream completes in one stream entry",
+        "Cloud Run AI final card renders with analysis basis and tool count"
+      ],
+      "skippedSurfaces": [
+        "Cloud Tasks high-volume load test - intentionally skipped to preserve free-tier budget",
+        "Broad landing/login/modal route sweep - unchanged by this targeted Cloud Tasks recheck",
+        "Concurrent multi-job drain test - intentionally skipped after single-job dispatch/SSE proof"
+      ],
+      "checks": {
+        "total": 14,
+        "passed": 13,
+        "failed": 1
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "Cloud Tasks async job fresh browser UI recheck",
+          "agent": "Supervisor Agent",
+          "provider": "cloud-run-supervisor",
+          "model": "supervisor-runtime",
+          "route": "/api/ai/jobs/[id]/stream",
+          "source": "Playwright Performance API EventSource resource + UI final card",
+          "latencyMs": 48818,
+          "processingTimeMs": 48818
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Cloud Tasks queue state, production health, dispatch 201, and SSE completion confirm the async job infrastructure path works within the current free-tier guardrails.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "The final answer did not preserve the DISK >=70% threshold and dashboard metric values even though the Cloud Tasks path completed.",
+          "nextAction": "Add/fix deterministic metric grounding or final answer threshold validation for async job responses."
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The recheck used a fresh browser session, UI-only CSRF-safe submission, Performance API EventSource evidence, and durable screenshot/summary artifacts.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-29T13:07:31+09:00",
+          "summary": "Current billing period checked after Cloud Tasks fresh browser recheck; effective $18.4121, billed $0.0000, no unexpected billed usage.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        },
+        {
+          "platform": "google-cloud-tasks",
+          "method": "gcloud",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-29T13:07:31+09:00",
+          "summary": "Queue openmanager-ai-jobs is RUNNING with 1 dispatch/sec, 2 max concurrent dispatches, and maxAttempts=3.",
+          "evidence": "gcloud tasks queues describe openmanager-ai-jobs --location asia-northeast1 --format=json",
+          "url": "https://console.cloud.google.com/cloudtasks"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Fresh browser Cloud Tasks answer screenshot",
+          "path": "reports/qa/evidence/QA-20260429-cloud-tasks-fresh-recheck/qa-20260429-cloud-tasks-fresh-recheck.png"
+        },
+        {
+          "type": "playwright-network",
+          "label": "Fresh browser Cloud Tasks recheck summary",
+          "path": "reports/qa/evidence/QA-20260429-cloud-tasks-fresh-recheck/qa-20260429-cloud-tasks-fresh-recheck-summary.json"
+        }
+      ],
+      "links": [],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1
+    },
+    {
+      "runId": "QA-20260429-0366",
+      "recordedAt": "2026-04-29T04:28:03.403Z",
+      "recordedAtKst": "2026-04-29 13:28:03 KST",
+      "title": "AI Engine Provider Fallback and DISK Threshold Regression Fix",
+      "owner": "codex",
+      "source": "local-vitest",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260429-0366.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "cloud-run/ai-engine",
+        "frontend": "not exercised",
+        "backend": "Cloud Run AI Engine local test suite",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "e0b18c41d06b681b9761eb27ffdc8cecd24e9e95"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "Cerebras queue_exceeded/429 provider fallback policy",
+        "AI SDK nested retry disabled for provider-managed fallback paths",
+        "Streaming agent empty tool-result summarization delegates to next provider",
+        "Whitespace-only stream chunks do not count as delivered text",
+        "DISK >=70% metric threshold answers use deterministic server metrics output for Analyst/NLQ paths",
+        "AI Engine type-check",
+        "AI Engine full Vitest suite"
+      ],
+      "skippedSurfaces": [
+        "Vercel production browser recheck - requires Cloud Run deployment of this local fix",
+        "Cloud Tasks high-volume load test - intentionally skipped to preserve free-tier budget"
+      ],
+      "checks": {
+        "total": 3,
+        "passed": 3,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260429-0367",
+      "recordedAt": "2026-04-29T04:48:07.819Z",
+      "recordedAtKst": "2026-04-29 13:48:07 KST",
+      "title": "AI Engine Post-Review Fallback Metadata Verification",
+      "owner": "codex",
+      "source": "local-vitest",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260429-0367.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "cloud-run/ai-engine",
+        "frontend": "not exercised",
+        "backend": "Cloud Run AI Engine local test suite",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "e0b18c41d06b681b9761eb27ffdc8cecd24e9e95"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "Cerebras queue_exceeded/429 provider fallback policy",
+        "AI SDK nested retry disabled for provider-managed fallback paths",
+        "Streaming agent empty tool-result summarization delegates to next provider",
+        "Summarization fallback done metadata reports delegated provider usage",
+        "DISK >=70% deterministic metric grounding for Analyst/NLQ paths",
+        "AI Engine type-check",
+        "AI Engine full Vitest suite",
+        "QA evidence audit missing durable artifact references"
+      ],
+      "skippedSurfaces": [
+        "Vercel production browser recheck - requires Cloud Run deployment of this local fix",
+        "Cloud Tasks high-volume load test - intentionally skipped to preserve free-tier budget"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -35052,17 +35388,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 170,
+      "seenCount": 171,
       "appropriateCount": 156,
-      "partialCount": 14,
+      "partialCount": 15,
       "inappropriateCount": 0,
-      "improvementNeededCount": 24,
-      "lastRunId": "QA-20260429-0360",
-      "lastSeenAt": "2026-04-28T16:57:31.077Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "The AI assistant UI changes preserve AI core entry points, System Context provider routing visibility, and the single AI Engine status presentation without changing the Cloud Tasks or model execution path.",
-      "lastNextAction": ""
+      "improvementNeededCount": 25,
+      "lastRunId": "QA-20260429-0365",
+      "lastSeenAt": "2026-04-29T04:25:34.157Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "The final answer did not preserve the DISK >=70% threshold and dashboard metric values even though the Cloud Tasks path completed.",
+      "lastNextAction": "Add/fix deterministic metric grounding or final answer threshold validation for async job responses."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -35103,16 +35439,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 102,
-      "appropriateCount": 91,
+      "seenCount": 103,
+      "appropriateCount": 92,
       "partialCount": 11,
       "inappropriateCount": 0,
       "improvementNeededCount": 15,
-      "lastRunId": "QA-20260429-0364",
-      "lastSeenAt": "2026-04-28T23:37:46.502Z",
+      "lastRunId": "QA-20260429-0365",
+      "lastSeenAt": "2026-04-29T04:25:34.157Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab v8.11.58 tag pipeline completed frontend deploy, Cloud Run AI Engine deploy, and both post-deploy smoke jobs successfully. Production /api/version and Cloud Run /health now serve 8.11.58.",
+      "lastRationale": "Cloud Tasks queue state, production health, dispatch 201, and SSE completion confirm the async job infrastructure path works within the current free-tier guardrails.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -35120,16 +35456,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 138,
-      "appropriateCount": 127,
+      "seenCount": 139,
+      "appropriateCount": 128,
       "partialCount": 11,
       "inappropriateCount": 0,
       "improvementNeededCount": 13,
-      "lastRunId": "QA-20260429-0364",
-      "lastSeenAt": "2026-04-28T23:37:46.502Z",
+      "lastRunId": "QA-20260429-0365",
+      "lastSeenAt": "2026-04-29T04:25:34.157Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Focused regression tests, root quick/type/lint/contract gates, AI Engine type/test suite, GitLab deploy smokes, and targeted Playwright production checks passed for the changed API, Cloud Tasks, dashboard label, and mobile handoff surfaces.",
+      "lastRationale": "The recheck used a fresh browser session, UI-only CSRF-safe submission, Performance API EventSource evidence, and durable screenshot/summary artifacts.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

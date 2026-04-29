@@ -1,0 +1,82 @@
+{
+  "runId": "QA-20260429-0366",
+  "recordedAt": "2026-04-29T04:28:03.403Z",
+  "recordedAtKst": "2026-04-29 13:28:03 KST",
+  "runTitle": "AI Engine Provider Fallback and DISK Threshold Regression Fix",
+  "owner": "codex",
+  "source": "local-vitest",
+  "environment": {
+    "target": "local-dev",
+    "url": "cloud-run/ai-engine",
+    "frontend": "not exercised",
+    "backend": "Cloud Run AI Engine local test suite",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "e0b18c41d06b681b9761eb27ffdc8cecd24e9e95"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "Cerebras queue_exceeded/429 provider fallback policy",
+    "AI SDK nested retry disabled for provider-managed fallback paths",
+    "Streaming agent empty tool-result summarization delegates to next provider",
+    "Whitespace-only stream chunks do not count as delivered text",
+    "DISK >=70% metric threshold answers use deterministic server metrics output for Analyst/NLQ paths",
+    "AI Engine type-check",
+    "AI Engine full Vitest suite"
+  ],
+  "skippedSurfaces": [
+    "Vercel production browser recheck - requires Cloud Run deployment of this local fix",
+    "Cloud Tasks high-volume load test - intentionally skipped to preserve free-tier budget"
+  ],
+  "checks": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-disk-threshold-answer-accuracy-drift",
+      "title": "AI async job answer should preserve DISK >=70% threshold and dashboard metric values",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Added deterministic DISK threshold ranking for Analyst/NLQ metric queries and covered it with orchestrator-summary-fallback regression tests.",
+      "note": "Production recheck still requires deploying the Cloud Run AI Engine fix.",
+      "owner": "project",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-provider-queue-exceeded-retry-amplification",
+      "title": "Cerebras queue_exceeded should not amplify retries before provider fallback",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Added retry-with-fallback and streaming-agent regression tests verifying maxRetries=0 and fallback to next provider on 429/queue_exceeded.",
+      "note": "Prevents the 3-attempt same-provider retry pattern observed in Cloud Run logs.",
+      "owner": "project",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Commands: cd cloud-run/ai-engine && npx vitest run src/services/ai-sdk/agents/orchestrator-agent-stream.test.ts src/services/ai-sdk/agents/orchestrator-summary-fallback.test.ts src/services/resilience/retry-with-fallback.test.ts",
+    "Commands: cd cloud-run/ai-engine && npm run type-check",
+    "Commands: cd cloud-run/ai-engine && npm run test",
+    "AI Engine test result: 87 files / 916 tests passed."
+  ],
+  "links": []
+}

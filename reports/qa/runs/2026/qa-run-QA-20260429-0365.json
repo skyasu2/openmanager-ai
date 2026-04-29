@@ -1,0 +1,157 @@
+{
+  "runId": "QA-20260429-0365",
+  "recordedAt": "2026-04-29T04:25:34.157Z",
+  "recordedAtKst": "2026-04-29 13:25:34 KST",
+  "runTitle": "Cloud Tasks Job Dispatch Fresh Browser Production Recheck - v8.11.58",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_56Xd5rc13skiEsmeH28MLtZBa2ui",
+    "deploymentUrl": "https://openmanager-hfvwry4jx-skyasus-projects.vercel.app",
+    "commitSha": "2a76df0c5a7714421ebc1687041d220ae17adc08"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "Fresh Vercel production browser session starts with 29:57 dashboard timer",
+    "Guest login and dashboard open through UI",
+    "Vercel production /api/version reports 8.11.58",
+    "Vercel production /api/health?simple=true returns JSON 200",
+    "Vercel production /api/health?service=ai returns JSON 200 cloud-run backend",
+    "Cloud Run /health returns ai-engine version 8.11.58 with redis/routesReady true",
+    "Cloud Tasks queue openmanager-ai-jobs RUNNING with maxDispatchesPerSecond=1 and maxConcurrentDispatches=2",
+    "AI sidebar opens with AI Engine Ready",
+    "New chat clears previous messages before dispatch",
+    "UI query POST /api/ai/jobs returns 201",
+    "EventSource /api/ai/jobs/{id}/stream completes in one stream entry",
+    "Cloud Run AI final card renders with analysis basis and tool count"
+  ],
+  "skippedSurfaces": [
+    "Cloud Tasks high-volume load test - intentionally skipped to preserve free-tier budget",
+    "Broad landing/login/modal route sweep - unchanged by this targeted Cloud Tasks recheck",
+    "Concurrent multi-job drain test - intentionally skipped after single-job dispatch/SSE proof"
+  ],
+  "checks": {
+    "total": 14,
+    "passed": 13,
+    "failed": 1
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Cloud Tasks async job fresh browser UI recheck",
+      "agent": "Supervisor Agent",
+      "provider": "cloud-run-supervisor",
+      "model": "supervisor-runtime",
+      "route": "/api/ai/jobs/[id]/stream",
+      "source": "Playwright Performance API EventSource resource + UI final card",
+      "latencyMs": 48818,
+      "processingTimeMs": 48818
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Cloud Tasks queue state, production health, dispatch 201, and SSE completion confirm the async job infrastructure path works within the current free-tier guardrails.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "The final answer did not preserve the DISK >=70% threshold and dashboard metric values even though the Cloud Tasks path completed.",
+      "nextAction": "Add/fix deterministic metric grounding or final answer threshold validation for async job responses."
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The recheck used a fresh browser session, UI-only CSRF-safe submission, Performance API EventSource evidence, and durable screenshot/summary artifacts.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-29T13:07:31+09:00",
+      "summary": "Current billing period checked after Cloud Tasks fresh browser recheck; effective $18.4121, billed $0.0000, no unexpected billed usage.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    },
+    {
+      "platform": "google-cloud-tasks",
+      "method": "gcloud",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-29T13:07:31+09:00",
+      "summary": "Queue openmanager-ai-jobs is RUNNING with 1 dispatch/sec, 2 max concurrent dispatches, and maxAttempts=3.",
+      "evidence": "gcloud tasks queues describe openmanager-ai-jobs --location asia-northeast1 --format=json",
+      "url": "https://console.cloud.google.com/cloudtasks"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Fresh browser Cloud Tasks answer screenshot",
+      "path": "reports/qa/evidence/QA-20260429-cloud-tasks-fresh-recheck/qa-20260429-cloud-tasks-fresh-recheck.png"
+    },
+    {
+      "type": "playwright-network",
+      "label": "Fresh browser Cloud Tasks recheck summary",
+      "path": "reports/qa/evidence/QA-20260429-cloud-tasks-fresh-recheck/qa-20260429-cloud-tasks-fresh-recheck-summary.json"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "cloud-tasks-fresh-browser-dispatch-sse",
+      "title": "Fresh browser Cloud Tasks dispatch and SSE completion verified",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "POST /api/ai/jobs 201, EventSource stream duration 50245ms, final Cloud Run AI card rendered with analysis basis.",
+      "note": "Single-job production UI proof only; high-volume load intentionally skipped.",
+      "owner": "project",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "ai-disk-threshold-answer-accuracy-drift",
+      "title": "AI async job answer should preserve DISK >=70% threshold and dashboard metric values",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Dashboard top5 showed db-mysql-dc1-backup DISK 74% and db-mysql-dc1-primary DISK 63%; final answer reported backup as 68% and mentioned 59.4%/58% servers in the threshold analysis.",
+      "note": "Cloud Tasks dispatch/SSE passed; this is answer quality/data grounding drift.",
+      "owner": "project",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    }
+  ],
+  "notes": [
+    "Initial rerun used a fresh browser session and dashboard timer was 29:57, but previous AI conversation history persisted. A clean new chat was then started before the recorded dispatch.",
+    "Clean new chat had afterNewChatMessageCount=0 before the recorded query.",
+    "Recorded job def72ab5-c218-40ad-89b2-d716893c46f7 completed through POST /api/ai/jobs 201 and one EventSource stream entry.",
+    "No high-volume Cloud Tasks load test was executed."
+  ],
+  "links": []
+}

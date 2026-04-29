@@ -46,11 +46,20 @@ const SUMMARY_QUERY_PATTERN =
   /(서버|인프라|시스템|server|system|monitoring).*(요약|현황|상태|간단히|핵심|summary|overview|tldr)|((모든|전체|all).*(서버|server))/i;
 const CPU_RANKING_QUERY_PATTERN =
   /(cpu|CPU|씨피유).*(높|상위|top|TOP|가장|순서|랭킹|ranking)|(높|상위|top|TOP|가장).*(cpu|CPU|씨피유)/i;
+const DISK_THRESHOLD_QUERY_PATTERN =
+  /((disk|DISK|디스크).*(사용률|usage)?.*(\d{1,3})\s*%?\s*(이상|초과|>=|넘))|((\d{1,3})\s*%?\s*(이상|초과|>=|넘).*(disk|DISK|디스크))/i;
 
 export function isDeterministicSummaryQuery(
   query: string,
   agentName: string
 ): boolean {
+  if (
+    DISK_THRESHOLD_QUERY_PATTERN.test(query) &&
+    (agentName === 'NLQ Agent' || agentName === 'Analyst Agent')
+  ) {
+    return true;
+  }
+
   return (
     agentName === 'NLQ Agent' &&
     (SUMMARY_QUERY_PATTERN.test(query) || CPU_RANKING_QUERY_PATTERN.test(query))
@@ -114,6 +123,25 @@ function extractRequestedServerCount(query: string, fallback = 3): number {
     const parsed = Number(match[1]);
     if (Number.isInteger(parsed) && parsed > 0) {
       return Math.min(parsed, 10);
+    }
+  }
+
+  return fallback;
+}
+
+function extractDiskThreshold(query: string, fallback = 70): number {
+  const patterns = [
+    /(disk|DISK|디스크).*?(\d{1,3})\s*%?\s*(이상|초과|>=|넘)/i,
+    /(\d{1,3})\s*%?\s*(이상|초과|>=|넘).*?(disk|DISK|디스크)/i,
+  ];
+
+  for (const pattern of patterns) {
+    const match = query.match(pattern);
+    if (!match) continue;
+    const rawValue = match[2] ?? match[1];
+    const parsed = Number(rawValue);
+    if (Number.isFinite(parsed) && parsed >= 0 && parsed <= 100) {
+      return parsed;
     }
   }
 
@@ -541,6 +569,79 @@ function buildCpuCheckItem(server: ServerSnapshot): string {
   return '상위 프로세스, 예약 작업, 최근 배포 전후 CPU 변화를 확인하세요.';
 }
 
+function getDiskRiskLabel(disk: number | null): string {
+  if (disk === null) return '데이터 없음';
+  if (disk >= 85) return '매우 높음';
+  if (disk >= 80) return '높음';
+  return '주의';
+}
+
+function getDiskFailureWindow(disk: number | null): string {
+  if (disk === null) return '추정 불가';
+  if (disk >= 85) return '즉시~30분 내 쓰기 실패 또는 로그 적체 위험';
+  if (disk >= 80) return '수 시간 내 임계치 85% 도달 가능';
+  return '24시간 내 증가 추세 재확인 필요';
+}
+
+function buildDiskCheckItem(server: ServerSnapshot): string {
+  if (server.id.includes('backup')) {
+    return '백업 산출물 보존 기간, 증분 백업 크기, 오래된 dump 정리를 확인하세요.';
+  }
+  if (server.id.includes('storage-') || server.id.includes('nfs')) {
+    return 'NFS/export 사용량, 대용량 파일 생성 클라이언트, inode 사용률을 확인하세요.';
+  }
+  if (server.id.includes('db-')) {
+    return 'WAL/binlog, slow log, 임시 테이블 파일과 백업 디렉터리를 확인하세요.';
+  }
+  if (server.id.includes('api-') || server.id.includes('was-')) {
+    return '애플리케이션 로그 회전, 업로드 임시 파일, 배포 산출물 누적을 확인하세요.';
+  }
+  return '로그 적체, tmp 디렉터리, 대용량 파일 생성 프로세스를 확인하세요.';
+}
+
+function buildDiskThresholdRankingFromPayload(
+  query: string,
+  payload: MetricsToolPayload
+): string {
+  const threshold = extractDiskThreshold(query);
+  const matchedServers = [...payload.servers]
+    .filter((server) => server.status !== 'offline')
+    .map((server) => ({ server, disk: toNumber(server.disk) }))
+    .filter(
+      (entry): entry is { server: ServerSnapshot; disk: number } =>
+        entry.disk !== null && entry.disk >= threshold
+    )
+    .sort((left, right) => right.disk - left.disk);
+
+  const lines = [
+    `📊 **DISK 사용률 ${threshold}% 이상 서버 ${matchedServers.length}대**`,
+    `• 기준: 전체 ${payload.servers.length}대 중 DISK >= ${threshold}%`,
+  ];
+
+  if (matchedServers.length === 0) {
+    lines.push('• 현재 기준을 초과한 서버는 없습니다.');
+    return lines.join('\n');
+  }
+
+  matchedServers.forEach(({ server, disk }, index) => {
+    lines.push(
+      `${index + 1}. ${server.id}: DISK ${roundPercent(disk)} (상태 ${server.status}, 위험도 ${getDiskRiskLabel(disk)})`
+    );
+  });
+
+  lines.push('', '⏱️ **잠재적 장애 시점**');
+  matchedServers.forEach(({ server, disk }, index) => {
+    lines.push(`${index + 1}. ${server.id}: ${getDiskFailureWindow(disk)}`);
+  });
+
+  lines.push('', '💡 **권장 조치**');
+  matchedServers.forEach(({ server }, index) => {
+    lines.push(`${index + 1}. ${server.id}: ${buildDiskCheckItem(server)}`);
+  });
+
+  return lines.join('\n');
+}
+
 function buildCpuRankingFromPayload(query: string, payload: MetricsToolPayload): string {
   const requestedCount = extractRequestedServerCount(query, 3);
   const topServers = [...payload.servers]
@@ -565,6 +666,10 @@ function buildDeterministicAnswerFromPayload(
   query: string,
   payload: MetricsToolPayload
 ): string {
+  if (DISK_THRESHOLD_QUERY_PATTERN.test(query)) {
+    return buildDiskThresholdRankingFromPayload(query, payload);
+  }
+
   if (CPU_RANKING_QUERY_PATTERN.test(query)) {
     return buildCpuRankingFromPayload(query, payload);
   }

@@ -46,7 +46,14 @@ function getAgentInstructions(
 
 function classifyProviderFallbackReason(errorMessage: string): string {
   const normalized = errorMessage.toLowerCase();
-  if (normalized.includes('rate limit') || normalized.includes('429')) {
+  if (
+    normalized.includes('rate limit') ||
+    normalized.includes('429') ||
+    normalized.includes('too many requests') ||
+    normalized.includes('too_many_requests') ||
+    normalized.includes('queue_exceeded') ||
+    normalized.includes('high traffic')
+  ) {
     return 'rate_limit';
   }
   if (normalized.includes('timeout')) {
@@ -88,6 +95,33 @@ async function waitBeforeProviderFallback(
     `[Stream ${agentName}] Provider fallback delay ${delay}ms (${provider}, reason=${reason})`
   );
   await new Promise((resolve) => setTimeout(resolve, delay));
+}
+
+function selectSummarizationModel(
+  providerAttempts: ModelResult[],
+  currentAttemptIndex: number,
+  excludedProviders: string[]
+): { modelResult: ModelResult; attemptIndex: number; delegated: boolean } {
+  for (
+    let nextIndex = currentAttemptIndex + 1;
+    nextIndex < providerAttempts.length;
+    nextIndex++
+  ) {
+    const nextAttempt = providerAttempts[nextIndex];
+    if (nextAttempt && !excludedProviders.includes(nextAttempt.provider)) {
+      return {
+        modelResult: nextAttempt,
+        attemptIndex: nextIndex,
+        delegated: true,
+      };
+    }
+  }
+
+  return {
+    modelResult: providerAttempts[currentAttemptIndex],
+    attemptIndex: currentAttemptIndex,
+    delegated: false,
+  };
 }
 
 function getSuggestedFollowUp(agentName: string, responseText: string): string | null {
@@ -232,6 +266,10 @@ export async function* executeAgentStream(
     const timeoutSpan = createTimeoutSpan(sessionId, `${agentName}_stream`, ORCHESTRATOR_CONFIG.timeout);
     const abortController = new AbortController();
     const providerStartTime = Date.now();
+    let responseProvider = provider;
+    let responseModelId = modelId;
+    let responseAttemptNumber = attemptIndex + 1;
+    let responseProviderStartTime = providerStartTime;
     let firstChunkMs: number | null = null;
     const markFirstChunk = (source: string) => {
       if (firstChunkMs !== null) return;
@@ -260,6 +298,7 @@ export async function* executeAgentStream(
         stopWhen: [hasToolCall('finalAnswer'), stepCountIs(agentMaxSteps)],
         temperature: 0.4,
         maxOutputTokens: 2048,
+        maxRetries: 0,
         timeout: {
           totalMs: TIMEOUT_CONFIG.agent.hard,
           stepMs: TIMEOUT_CONFIG.subtask.hard,
@@ -332,10 +371,11 @@ export async function* executeAgentStream(
         const sanitized = sanitizeChineseCharacters(textChunk);
         if (sanitized) {
           fullResponseText += sanitized;
-          if (sanitized.trim().length > 0) {
+          const hasVisibleText = sanitized.trim().length > 0;
+          if (hasVisibleText) {
             textEmitted = true;
           }
-          if (!preferDeterministicSummary) {
+          if (hasVisibleText && !preferDeterministicSummary) {
             textDelivered = true;
             markFirstChunk('text_stream');
             yield { type: 'text_delta', data: sanitized };
@@ -358,6 +398,7 @@ export async function* executeAgentStream(
       );
       const steps = stepsAndUsage?.[0];
       const usage = stepsAndUsage?.[1];
+      let responseUsage = usage;
       const finalElapsed = Date.now() - startTime;
       timeoutSpan.complete(true, finalElapsed);
 
@@ -474,9 +515,34 @@ export async function* executeAgentStream(
           const toolResultsSummary = Array.from(uniqueResults.entries())
             .map(([name, result]) => `[${name}]: ${JSON.stringify(result).slice(0, 2000)}`)
             .join('\n\n');
+          const summaryModelSelection = selectSummarizationModel(
+            providerAttempts,
+            attemptIndex,
+            excludedProviders
+          );
+          const {
+            model: summaryModel,
+            provider: summaryProvider,
+            modelId: summaryModelId,
+          } = summaryModelSelection.modelResult;
+          const summaryStartTime = Date.now();
+
+          if (summaryModelSelection.delegated) {
+            providerAttemptTelemetry.push({
+              provider,
+              modelId,
+              attempt: attemptIndex + 1,
+              durationMs: Date.now() - providerStartTime,
+              error: 'EMPTY_RESPONSE',
+            });
+            fallbackReason = 'EMPTY_RESPONSE';
+            logger.info(
+              `[Stream ${agentName}] Delegating summarization fallback from ${provider}/${modelId} to ${summaryProvider}/${summaryModelId}`
+            );
+          }
 
           const summaryResult = await generateText({
-            model,
+            model: summaryModel,
             messages: [
               {
                 role: 'system',
@@ -489,11 +555,18 @@ export async function* executeAgentStream(
               },
             ],
             temperature: 0.4,
-            maxOutputTokens: 2048,
+            maxOutputTokens: 1024,
+            maxRetries: 0,
+            timeout: { totalMs: 10_000 },
           });
 
           const summaryText = sanitizeChineseCharacters(summaryResult.text?.trim() || '');
           if (summaryText) {
+            responseProvider = summaryProvider;
+            responseModelId = summaryModelId;
+            responseAttemptNumber = summaryModelSelection.attemptIndex + 1;
+            responseProviderStartTime = summaryStartTime;
+            responseUsage = summaryResult.usage;
             textEmitted = true;
             textDelivered = true;
             fullResponseText = summaryText;
@@ -566,11 +639,13 @@ export async function* executeAgentStream(
 
       const durationMs = Date.now() - startTime;
       providerAttemptTelemetry.push({
-        provider,
-        modelId,
-        attempt: attemptIndex + 1,
-        durationMs: Date.now() - providerStartTime,
-        ...(fallbackReason ? { error: fallbackReason } : {}),
+        provider: responseProvider,
+        modelId: responseModelId,
+        attempt: responseAttemptNumber,
+        durationMs: Date.now() - responseProviderStartTime,
+        ...(fallbackReason && responseProvider === provider
+          ? { error: fallbackReason }
+          : {}),
       });
       const usedFallback = providerAttemptTelemetry.length > 1;
       const providerFallbackReason =
@@ -579,7 +654,7 @@ export async function* executeAgentStream(
         durationMs,
         fallbackReason,
       });
-      logger.info(`[Stream ${agentName}] Completed in ${durationMs}ms via ${provider}, tools: [${toolsCalled.join(', ')}]`);
+      logger.info(`[Stream ${agentName}] Completed in ${durationMs}ms via ${responseProvider}, tools: [${toolsCalled.join(', ')}]`);
 
       // Phase 2C: Save agent findings to context (non-blocking)
       try { await saveAgentFindingsToContext(sessionId, agentName, fullResponseText); } catch { /* non-blocking */ }
@@ -594,13 +669,13 @@ export async function* executeAgentStream(
           toolsCalled,
           handoffs: [{ from: 'Orchestrator', to: agentName, reason: 'Routing' }],
           usage: {
-            promptTokens: usage?.inputTokens ?? 0,
-            completionTokens: usage?.outputTokens ?? 0,
-            totalTokens: usage?.totalTokens ?? 0,
+            promptTokens: responseUsage?.inputTokens ?? 0,
+            completionTokens: responseUsage?.outputTokens ?? 0,
+            totalTokens: responseUsage?.totalTokens ?? 0,
           },
           metadata: {
-            provider,
-            modelId,
+            provider: responseProvider,
+            modelId: responseModelId,
             durationMs,
             responseChars: quality.responseChars,
             formatCompliance: quality.formatCompliance,
