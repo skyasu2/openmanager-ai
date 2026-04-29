@@ -35,6 +35,12 @@ import {
   DEFAULT_PROVIDER_FALLBACK_CONTROL,
   getProviderFallbackDelay,
 } from './provider-fallback-control';
+import {
+  markProviderQuotaCooldown,
+  reconcileProviderQuotaReservation,
+  reserveProviderQuota,
+  type ProviderQuotaReservation,
+} from './quota-tracker';
 
 // ============================================================================
 // Types
@@ -269,7 +275,7 @@ function estimateContextTokens(options: GenerateTextOptions): number {
       total + Math.ceil(message.content.length / APPROX_CHARS_PER_TOKEN),
     0
   );
-  return messageTokens + (options.maxOutputTokens ?? 0);
+  return messageTokens + (options.maxOutputTokens ?? 2048);
 }
 
 /**
@@ -426,6 +432,7 @@ export async function generateTextWithRetry(
 
       while (retryCount <= fullConfig.maxRetries) {
         const attemptStart = Date.now();
+        let quotaReservation: ProviderQuotaReservation | null = null;
 
         const requiredMinContextTokens = Math.max(
           options.requiredCapabilities?.minContextTokens ?? 0,
@@ -459,6 +466,29 @@ export async function generateTextWithRetry(
         }
 
         try {
+          quotaReservation = await reserveProviderQuota(
+            provider,
+            estimatedContextTokens,
+            modelId
+          );
+
+          if (!quotaReservation.reserved) {
+            attempts.push({
+              provider,
+              modelId,
+              attempt: retryCount + 1,
+              error: `QUOTA_ADMISSION:${quotaReservation.reason ?? 'unknown'}`,
+              durationMs: Date.now() - attemptStart,
+            });
+            logger.info(
+              `[RetryWithFallback] Skipping ${provider}/${modelId}: quota admission ${quotaReservation.reason ?? 'blocked'}`
+            );
+            if (!hasNextModel) {
+              excludedProviders.push(provider);
+            }
+            break;
+          }
+
           logger.info(
             `[RetryWithFallback] Trying ${provider}/${modelId} (attempt ${retryCount + 1}/${fullConfig.maxRetries + 1})`
           );
@@ -509,6 +539,10 @@ export async function generateTextWithRetry(
           logger.info(
             `[RetryWithFallback] ${provider} succeeded in ${durationMs}ms`
           );
+          await reconcileProviderQuotaReservation(
+            quotaReservation,
+            result.usage?.totalTokens ?? estimatedContextTokens
+          );
 
           return {
             success: true,
@@ -522,6 +556,7 @@ export async function generateTextWithRetry(
         } catch (error) {
           const durationMs = Date.now() - attemptStart;
           const errorMessage = error instanceof Error ? error.message : String(error);
+          await reconcileProviderQuotaReservation(quotaReservation, 0);
 
           attempts.push({
             provider,
@@ -537,6 +572,9 @@ export async function generateTextWithRetry(
 
           // Check if should fallback to next model/provider
           if (shouldFallback(error)) {
+            if (isProviderRateLimitError(error)) {
+              await markProviderQuotaCooldown(provider, modelId, errorMessage);
+            }
             const skipRemainingProviderModels = isProviderRateLimitError(error);
             if (
               !consumeProviderRetryBudget(

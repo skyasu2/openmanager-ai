@@ -35,7 +35,11 @@ import {
   CEREBRAS_MODEL_QUOTAS,
   getQuotaForProvider,
   PREEMPTIVE_THRESHOLDS,
+  markProviderQuotaCooldown,
+  reconcileProviderQuotaReservation,
+  reserveProviderQuota,
 } from './quota-tracker';
+import { getRedisClient, type RedisLikeClient } from '../../lib/redis-client';
 
 // ============================================================================
 // 1. 초기 사용량
@@ -48,12 +52,14 @@ describe('QuotaTracker — Initial usage', () => {
 
   afterEach(() => {
     vi.useRealTimers();
+    vi.mocked(getRedisClient).mockReturnValue(null);
   });
 
   it('초기 사용량은 0', async () => {
     const usage = await getProviderUsage('cerebras');
 
     expect(usage.dailyTokens).toBe(0);
+    expect(usage.dailyRequests).toBe(0);
     expect(usage.minuteRequests).toBe(0);
     expect(usage.minuteTokens).toBe(0);
     expect(usage.date).toBe('2026-03-01');
@@ -87,6 +93,7 @@ describe('QuotaTracker — Recording', () => {
 
     const usage = await getProviderUsage('cerebras');
     expect(usage.dailyTokens).toBe(1500);
+    expect(usage.dailyRequests).toBe(2);
     expect(usage.minuteRequests).toBe(2);
     expect(usage.minuteTokens).toBe(1500);
   });
@@ -113,9 +120,189 @@ describe('QuotaTracker — Recording', () => {
     const llamaUsage = await getProviderUsage('cerebras', 'llama3.1-8b');
 
     expect(qwenUsage.dailyTokens).toBe(1000);
+    expect(qwenUsage.dailyRequests).toBe(1);
     expect(qwenUsage.minuteRequests).toBe(1);
     expect(llamaUsage.dailyTokens).toBe(500);
+    expect(llamaUsage.dailyRequests).toBe(1);
     expect(llamaUsage.minuteRequests).toBe(1);
+  });
+});
+
+// ============================================================================
+// 1-c. 호출 전 Admission Gate
+// ============================================================================
+describe('QuotaTracker — Admission reservation', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-03-12T10:00:00Z'));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('예약 성공 시 request와 예상 token을 호출 전에 반영한다', async () => {
+    const reservation = await reserveProviderQuota('groq', 1200);
+
+    expect(reservation.reserved).toBe(true);
+
+    const usage = await getProviderUsage('groq');
+    expect(usage.dailyRequests).toBe(1);
+    expect(usage.minuteRequests).toBe(1);
+    expect(usage.dailyTokens).toBe(1200);
+    expect(usage.minuteTokens).toBe(1200);
+  });
+
+  it('실제 token 사용량이 예상보다 작으면 예약 token을 보정한다', async () => {
+    vi.setSystemTime(new Date('2026-03-13T10:00:00Z'));
+    const reservation = await reserveProviderQuota('groq', 1200);
+
+    await reconcileProviderQuotaReservation(reservation, 300);
+
+    const usage = await getProviderUsage('groq');
+    expect(usage.dailyRequests).toBe(1);
+    expect(usage.minuteRequests).toBe(1);
+    expect(usage.dailyTokens).toBe(300);
+    expect(usage.minuteTokens).toBe(300);
+  });
+
+  it('projected minute request가 threshold에 닿으면 호출 전 차단한다', async () => {
+    vi.setSystemTime(new Date('2026-03-14T10:00:00Z'));
+    // Qwen RPM=5, threshold=85%. 4번째까지 허용되고 5번째 projected call은 차단.
+    for (let i = 0; i < 4; i++) {
+      const reservation = await reserveProviderQuota(
+        'cerebras',
+        100,
+        'qwen-3-235b-a22b-instruct-2507'
+      );
+      expect(reservation.reserved).toBe(true);
+      await reconcileProviderQuotaReservation(reservation, 10);
+    }
+
+    const blocked = await reserveProviderQuota(
+      'cerebras',
+      100,
+      'qwen-3-235b-a22b-instruct-2507'
+    );
+
+    expect(blocked.reserved).toBe(false);
+    expect(blocked.reason).toBe('minute_request_threshold');
+    expect(blocked.recommendedWaitMs).toBeGreaterThan(0);
+  });
+
+  it('cooldown 중인 provider/model은 quota가 남아도 호출 전 차단한다', async () => {
+    vi.setSystemTime(new Date('2026-03-06T10:00:00Z'));
+    await markProviderQuotaCooldown(
+      'cerebras',
+      'qwen-3-235b-a22b-instruct-2507',
+      'queue_exceeded',
+      60_000
+    );
+
+    const blocked = await reserveProviderQuota(
+      'cerebras',
+      100,
+      'qwen-3-235b-a22b-instruct-2507'
+    );
+
+    expect(blocked.reserved).toBe(false);
+    expect(blocked.reason).toBe('cooldown');
+    expect(blocked.recommendedWaitMs).toBeGreaterThan(0);
+  });
+
+  it('Redis가 있으면 EVAL로 atomic reservation을 수행한다', async () => {
+    vi.setSystemTime(new Date('2026-03-15T10:00:00Z'));
+    const usage = {
+      dailyTokens: 1200,
+      dailyRequests: 1,
+      minuteRequests: 1,
+      minuteTokens: 1200,
+      lastUpdated: Date.now(),
+      lastMinuteReset: Date.now(),
+      date: '2026-03-15',
+    };
+    const evalMock = vi.fn().mockResolvedValue(
+      JSON.stringify({
+        reserved: true,
+        provider: 'groq',
+        estimatedTokens: 1200,
+        status: {
+          provider: 'groq',
+          usage,
+          quota: PROVIDER_QUOTAS.groq,
+          dailyTokenUsageRate: 1200 / PROVIDER_QUOTAS.groq.dailyTokenLimit,
+          dailyRequestUsageRate: 1 / PROVIDER_QUOTAS.groq.requestsPerDay!,
+          minuteRequestUsageRate: 1 / PROVIDER_QUOTAS.groq.requestsPerMinute,
+          minuteTokenUsageRate: 1200 / PROVIDER_QUOTAS.groq.tokensPerMinute,
+          shouldPreemptiveFallback: false,
+        },
+      })
+    );
+    vi.mocked(getRedisClient).mockReturnValue({
+      eval: evalMock,
+    } as unknown as RedisLikeClient);
+
+    const reservation = await reserveProviderQuota('groq', 1200);
+
+    expect(reservation.reserved).toBe(true);
+    expect(reservation.status.usage).toEqual(usage);
+    expect(evalMock).toHaveBeenCalledOnce();
+    expect(evalMock.mock.calls[0]?.[1]).toEqual([
+      'ai:quota:groq:2026-03-15',
+      'ai:quota:cooldown:groq',
+    ]);
+    expect(evalMock.mock.calls[0]?.[2]).toEqual(
+      expect.arrayContaining(['groq', '1200'])
+    );
+  });
+
+  it('Redis가 있으면 EVAL로 reservation token delta를 보정한다', async () => {
+    vi.setSystemTime(new Date('2026-03-16T10:00:00Z'));
+    const initialUsage = {
+      dailyTokens: 1200,
+      dailyRequests: 1,
+      minuteRequests: 1,
+      minuteTokens: 1200,
+      lastUpdated: Date.now(),
+      lastMinuteReset: Date.now(),
+      date: '2026-03-16',
+    };
+    const reconciledUsage = {
+      ...initialUsage,
+      dailyTokens: 300,
+      minuteTokens: 300,
+    };
+    const evalMock = vi.fn().mockResolvedValue(JSON.stringify(reconciledUsage));
+    vi.mocked(getRedisClient).mockReturnValue({
+      eval: evalMock,
+    } as unknown as RedisLikeClient);
+
+    await reconcileProviderQuotaReservation(
+      {
+        reserved: true,
+        provider: 'groq',
+        estimatedTokens: 1200,
+        status: {
+          provider: 'groq',
+          usage: initialUsage,
+          quota: PROVIDER_QUOTAS.groq,
+          dailyTokenUsageRate: 1200 / PROVIDER_QUOTAS.groq.dailyTokenLimit,
+          dailyRequestUsageRate: 1 / PROVIDER_QUOTAS.groq.requestsPerDay!,
+          minuteRequestUsageRate: 1 / PROVIDER_QUOTAS.groq.requestsPerMinute,
+          minuteTokenUsageRate: 1200 / PROVIDER_QUOTAS.groq.tokensPerMinute,
+          shouldPreemptiveFallback: false,
+        },
+      },
+      300
+    );
+
+    expect(evalMock).toHaveBeenCalledOnce();
+    expect(evalMock.mock.calls[0]?.[1]).toEqual([
+      'ai:quota:groq:2026-03-16',
+    ]);
+    expect(evalMock.mock.calls[0]?.[2]).toEqual(
+      expect.arrayContaining(['-900'])
+    );
   });
 });
 

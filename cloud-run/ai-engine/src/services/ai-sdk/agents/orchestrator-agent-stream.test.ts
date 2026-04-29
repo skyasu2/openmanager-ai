@@ -6,12 +6,27 @@ const {
   mockStreamText,
   mockExecuteReporterWithPipeline,
   mockStreamTextInChunks,
+  mockMarkProviderQuotaCooldown,
+  mockReconcileProviderQuotaReservation,
+  mockReserveProviderQuota,
 } = vi.hoisted(() => ({
   mockGenerateText: vi.fn(),
   mockStepCountIs: vi.fn(() => () => false),
   mockStreamText: vi.fn(),
   mockExecuteReporterWithPipeline: vi.fn(),
   mockStreamTextInChunks: vi.fn(),
+  mockMarkProviderQuotaCooldown: vi.fn(() => Promise.resolve()),
+  mockReconcileProviderQuotaReservation: vi.fn(() => Promise.resolve()),
+  mockReserveProviderQuota: vi.fn(
+    (provider: string, estimatedTokens: number, modelId?: string) =>
+      Promise.resolve({
+        reserved: true,
+        provider,
+        modelId,
+        estimatedTokens,
+        status: {},
+      })
+  ),
 }));
 
 vi.mock('ai', () => ({
@@ -52,6 +67,12 @@ vi.mock('../../resilience/circuit-breaker', () => ({
     isAllowed: () => true,
     execute: vi.fn(() => Promise.resolve()),
   })),
+}));
+
+vi.mock('../../resilience/quota-tracker', () => ({
+  markProviderQuotaCooldown: mockMarkProviderQuotaCooldown,
+  reconcileProviderQuotaReservation: mockReconcileProviderQuotaReservation,
+  reserveProviderQuota: mockReserveProviderQuota,
 }));
 
 vi.mock('./orchestrator-routing', () => ({
@@ -150,6 +171,18 @@ describe('executeAgentStream', () => {
     vi.clearAllMocks();
     mockStepCountIs.mockClear();
     mockGenerateText.mockResolvedValue({ text: '' });
+    mockMarkProviderQuotaCooldown.mockResolvedValue(undefined);
+    mockReconcileProviderQuotaReservation.mockResolvedValue(undefined);
+    mockReserveProviderQuota.mockImplementation(
+      (provider: string, estimatedTokens: number, modelId?: string) =>
+        Promise.resolve({
+          reserved: true,
+          provider,
+          modelId,
+          estimatedTokens,
+          status: {},
+        })
+    );
     mockStreamTextInChunks.mockImplementation(function* (text: string) {
       yield { type: 'text_delta', data: text };
     });
@@ -245,6 +278,119 @@ describe('executeAgentStream', () => {
         modelId: 'groq-model',
       },
     ]);
+  });
+
+  it('skips a stream provider before streamText when quota admission blocks it', async () => {
+    mockReserveProviderQuota.mockImplementation(
+      (provider: string, estimatedTokens: number, modelId?: string) =>
+        Promise.resolve({
+          reserved: provider !== 'cerebras',
+          provider,
+          modelId,
+          estimatedTokens,
+          status: {},
+          reason: provider === 'cerebras' ? 'minute_request_threshold' : undefined,
+        })
+    );
+    mockStreamText.mockReturnValueOnce(
+      createStreamResult({
+        chunks: ['Groq 대체 응답'],
+        steps: [
+          {
+            toolCalls: [{ toolName: 'finalAnswer' }],
+            toolResults: [
+              {
+                toolName: 'finalAnswer',
+                result: { answer: 'Groq 대체 응답' },
+              },
+            ],
+          },
+        ],
+      })
+    );
+
+    const events = await collectEvents('최근 에러 로그 보여줘');
+    const textPayload = events
+      .filter((event) => event.type === 'text_delta')
+      .map((event) => String(event.data))
+      .join('');
+
+    expect(textPayload).toContain('Groq 대체 응답');
+    expect(mockStreamText).toHaveBeenCalledTimes(1);
+    expect(mockStreamText.mock.calls[0]?.[0]).toMatchObject({
+      model: { provider: 'groq' },
+    });
+
+    const retryStatusEvent = events.find((event) => event.type === 'agent_status');
+    expect(retryStatusEvent?.data).toMatchObject({
+      agent: 'NLQ Agent',
+      status: 'processing',
+      message: 'cerebras 쿼터 보호로 대안 모델로 전환 중...',
+    });
+
+    const doneEvent = events.find((event) => event.type === 'done');
+    const doneData = doneEvent?.data as {
+      metadata: {
+        provider: string;
+        usedFallback?: boolean;
+        fallbackReason?: string;
+        providerAttempts?: Array<{
+          provider: string;
+          modelId: string;
+          error?: string;
+        }>;
+      };
+    };
+    expect(doneData.metadata.provider).toBe('groq');
+    expect(doneData.metadata.usedFallback).toBe(true);
+    expect(doneData.metadata.fallbackReason).toBe('rate_limit');
+    expect(doneData.metadata.providerAttempts).toMatchObject([
+      {
+        provider: 'cerebras',
+        modelId: 'cerebras-model',
+        error: 'QUOTA_ADMISSION:minute_request_threshold',
+      },
+      {
+        provider: 'groq',
+        modelId: 'groq-model',
+      },
+    ]);
+  });
+
+  it('marks provider cooldown when streamText returns queue_exceeded', async () => {
+    mockStreamText.mockImplementation(({ model }: { model: { provider: string } }) => {
+      if (model.provider === 'cerebras') {
+        throw new Error('429 queue_exceeded');
+      }
+
+      return createStreamResult({
+        chunks: ['대체 모델 응답'],
+        steps: [
+          {
+            toolCalls: [{ toolName: 'finalAnswer' }],
+            toolResults: [
+              {
+                toolName: 'finalAnswer',
+                result: { answer: '대체 모델 응답' },
+              },
+            ],
+          },
+        ],
+      });
+    });
+
+    const events = await collectEvents('최근 에러 로그 보여줘');
+
+    expect(events.some((event) => event.type === 'done')).toBe(true);
+    expect(mockMarkProviderQuotaCooldown).toHaveBeenCalledWith(
+      'cerebras',
+      'cerebras-model',
+      '429 queue_exceeded'
+    );
+    expect(mockReconcileProviderQuotaReservation).toHaveBeenCalledWith(
+      expect.objectContaining({ provider: 'cerebras' }),
+      0
+    );
   });
 
   it('delegates empty tool-result summarization to the next provider without same-provider retries', async () => {

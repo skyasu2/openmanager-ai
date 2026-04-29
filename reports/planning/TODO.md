@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-29 KST (`Metric-aware deterministic routing + hardcode cleanup`)
+**Last Updated**: 2026-04-29 KST (`Provider quota admission gate`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -31,6 +31,14 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-29 #225)
+- [x] Provider quota admission gate + cooldown
+  - LLM 호출 전에 provider/model별 예상 token과 request를 예약하는 quota admission gate를 추가해 Qwen/Groq/Mistral의 RPM/TPM/RPD 초과 시도를 사전 차단
+  - Redis가 가용하면 `EVAL` 기반 atomic reservation/reconcile로 `read → check → reserve → token delta 보정`을 원자화해 Cloud Run multi-instance race를 완화
+  - `queue_exceeded`/429 계열 오류가 발생한 provider/model에 90초 cooldown을 기록하고, cooldown 중에는 quota가 남아도 다음 provider로 전환
+  - Multi-agent stream 경로와 `generateTextWithRetry` 경로 모두에 gate를 연결하고, 성공/실패 후 예약 token을 실제 usage 또는 0으로 보정
+  - 검증: targeted quota/fallback/stream tests 70/70, `cloud-run/ai-engine npm test` 923/923, `cloud-run/ai-engine npm run type-check`, `npm run lint:changed`, `git diff --check` 통과
 
 ### Completed (2026-04-29 #224)
 - [x] Metric-aware deterministic routing + query hardcode cleanup + stream visibility repair

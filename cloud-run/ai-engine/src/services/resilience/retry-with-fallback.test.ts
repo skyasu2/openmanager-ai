@@ -10,6 +10,9 @@ const {
   mockGetCerebrasFallbackModelIds,
   mockIsCerebrasToolCallingEnabled,
   mockIsOpenRouterVisionToolCallingEnabled,
+  mockMarkProviderQuotaCooldown,
+  mockReconcileProviderQuotaReservation,
+  mockReserveProviderQuota,
 } = vi.hoisted(() => ({
   mockGenerateText: vi.fn(),
   mockCheckProviderStatus: vi.fn(() => ({
@@ -26,6 +29,18 @@ const {
   mockGetCerebrasFallbackModelIds: vi.fn(() => ['llama3.1-8b']),
   mockIsCerebrasToolCallingEnabled: vi.fn(() => true),
   mockIsOpenRouterVisionToolCallingEnabled: vi.fn(() => true),
+  mockMarkProviderQuotaCooldown: vi.fn(() => Promise.resolve()),
+  mockReconcileProviderQuotaReservation: vi.fn(() => Promise.resolve()),
+  mockReserveProviderQuota: vi.fn(
+    (provider: string, estimatedTokens: number, modelId?: string) =>
+      Promise.resolve({
+        reserved: true,
+        provider,
+        modelId,
+        estimatedTokens,
+        status: {},
+      })
+  ),
 }));
 
 vi.mock('ai', () => ({
@@ -54,6 +69,12 @@ vi.mock('./circuit-breaker', () => ({
   })),
 }));
 
+vi.mock('./quota-tracker', () => ({
+  markProviderQuotaCooldown: mockMarkProviderQuotaCooldown,
+  reconcileProviderQuotaReservation: mockReconcileProviderQuotaReservation,
+  reserveProviderQuota: mockReserveProviderQuota,
+}));
+
 import {
   __resetRetryBudgetForTests,
   generateTextWithRetry,
@@ -75,6 +96,18 @@ describe('generateTextWithRetry', () => {
     mockIsOpenRouterVisionToolCallingEnabled.mockReturnValue(true);
     mockGetCerebrasModelId.mockReturnValue('qwen-3-235b-a22b-instruct-2507');
     mockGetCerebrasFallbackModelIds.mockReturnValue(['llama3.1-8b']);
+    mockMarkProviderQuotaCooldown.mockResolvedValue(undefined);
+    mockReconcileProviderQuotaReservation.mockResolvedValue(undefined);
+    mockReserveProviderQuota.mockImplementation(
+      (provider: string, estimatedTokens: number, modelId?: string) =>
+        Promise.resolve({
+          reserved: true,
+          provider,
+          modelId,
+          estimatedTokens,
+          status: {},
+        })
+    );
   });
 
   it('falls back to next provider after Cerebras primary and fallback reject tool calling', async () => {
@@ -228,6 +261,86 @@ describe('generateTextWithRetry', () => {
       'llama3.1-8b',
       'groq-model',
     ]);
+  });
+
+  it('skips a provider/model before calling the SDK when quota admission blocks it', async () => {
+    mockReserveProviderQuota.mockImplementation(
+      (provider: string, estimatedTokens: number, modelId?: string) =>
+        Promise.resolve({
+          reserved: provider !== 'cerebras',
+          provider,
+          modelId,
+          estimatedTokens,
+          status: {},
+          reason: provider === 'cerebras' ? 'minute_request_threshold' : undefined,
+        })
+    );
+    mockGenerateText.mockResolvedValueOnce({
+      text: 'ok from groq',
+      steps: [],
+      usage: { inputTokens: 10, outputTokens: 5, totalTokens: 15 },
+    });
+
+    const result = await generateTextWithRetry(
+      {
+        messages: [{ role: 'user', content: '현재 상태 요약' }],
+      },
+      ['cerebras', 'groq'],
+      { maxRetries: 0, timeoutMs: 3000 }
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.provider).toBe('groq');
+    expect(mockGenerateText).toHaveBeenCalledTimes(1);
+    expect(mockGenerateText.mock.calls[0]?.[0]).toMatchObject({
+      model: { provider: 'groq' },
+    });
+    expect(result.attempts).toMatchObject([
+      {
+        provider: 'cerebras',
+        modelId: 'qwen-3-235b-a22b-instruct-2507',
+        error: 'QUOTA_ADMISSION:minute_request_threshold',
+      },
+      {
+        provider: 'cerebras',
+        modelId: 'llama3.1-8b',
+        error: 'QUOTA_ADMISSION:minute_request_threshold',
+      },
+      {
+        provider: 'groq',
+        modelId: 'groq-model',
+      },
+    ]);
+  });
+
+  it('marks provider cooldown when the SDK returns queue_exceeded', async () => {
+    mockGenerateText
+      .mockRejectedValueOnce(new Error('429 queue_exceeded'))
+      .mockResolvedValueOnce({
+        text: 'ok from groq',
+        steps: [],
+        usage: { inputTokens: 10, outputTokens: 5, totalTokens: 15 },
+      });
+
+    const result = await generateTextWithRetry(
+      {
+        messages: [{ role: 'user', content: '원인 분석' }],
+      },
+      ['cerebras', 'groq'],
+      { maxRetries: 0, timeoutMs: 3000 }
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.provider).toBe('groq');
+    expect(mockMarkProviderQuotaCooldown).toHaveBeenCalledWith(
+      'cerebras',
+      'qwen-3-235b-a22b-instruct-2507',
+      '429 queue_exceeded'
+    );
+    expect(mockReconcileProviderQuotaReservation).toHaveBeenCalledWith(
+      expect.objectContaining({ provider: 'cerebras' }),
+      0
+    );
   });
 
   it('skips Cerebras immediately when tool calling is disabled by env gate', async () => {

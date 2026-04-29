@@ -11,6 +11,13 @@ import { logger } from '../../../lib/logger';
 import { sanitizeChineseCharacters } from '../../../lib/text-sanitizer';
 import { createTimeoutSpan, logTimeoutEvent } from '../../observability/langfuse';
 import { getCircuitBreaker } from '../../resilience/circuit-breaker';
+import {
+  markProviderQuotaCooldown,
+  reconcileProviderQuotaReservation,
+  reserveProviderQuota,
+  type ProviderName as QuotaProviderName,
+  type ProviderQuotaReservation,
+} from '../../resilience/quota-tracker';
 import type { StreamEvent } from '../supervisor';
 import type { FileAttachment, ImageAttachment } from './base-agent';
 import {
@@ -38,6 +45,9 @@ const PROVIDER_FALLBACK_BASE_DELAY_MS = 120;
 const PROVIDER_FALLBACK_JITTER_MS = 280;
 const TOOL_GROUNDED_REPAIR_MIN_CHARS = 120;
 const TOOL_RESULT_SUMMARY_MAX_CHARS = 2000;
+const APPROX_CHARS_PER_TOKEN = 4;
+const STREAM_MAX_OUTPUT_TOKENS = 2048;
+const SUMMARY_MAX_OUTPUT_TOKENS = 1024;
 
 interface CollectedToolResult {
   toolName: string;
@@ -59,7 +69,8 @@ function classifyProviderFallbackReason(errorMessage: string): string {
     normalized.includes('too many requests') ||
     normalized.includes('too_many_requests') ||
     normalized.includes('queue_exceeded') ||
-    normalized.includes('high traffic')
+    normalized.includes('high traffic') ||
+    normalized.includes('quota_admission')
   ) {
     return 'rate_limit';
   }
@@ -95,6 +106,65 @@ function classifyProviderFallbackReason(errorMessage: string): string {
     return 'provider_unavailable';
   }
   return 'provider_error';
+}
+
+function isQuotaTrackedProvider(provider: string): provider is QuotaProviderName {
+  return (
+    provider === 'cerebras' ||
+    provider === 'groq' ||
+    provider === 'mistral' ||
+    provider === 'gemini'
+  );
+}
+
+function isProviderRateLimitErrorMessage(errorMessage: string): boolean {
+  const normalized = errorMessage.toLowerCase();
+  return (
+    normalized.includes('rate limit') ||
+    normalized.includes('429') ||
+    normalized.includes('too many requests') ||
+    normalized.includes('too_many_requests') ||
+    normalized.includes('queue_exceeded') ||
+    normalized.includes('high traffic')
+  );
+}
+
+function estimateQuotaTokens(
+  contents: Array<string | UserContent>,
+  maxOutputTokens: number
+): number {
+  const inputChars = contents.reduce((total, content) => {
+    if (typeof content === 'string') return total + content.length;
+    return total + JSON.stringify(content).length;
+  }, 0);
+
+  return Math.ceil(inputChars / APPROX_CHARS_PER_TOKEN) + maxOutputTokens;
+}
+
+async function reserveStreamQuota(
+  provider: string,
+  modelId: string,
+  estimatedTokens: number
+): Promise<ProviderQuotaReservation | null> {
+  if (!isQuotaTrackedProvider(provider)) return null;
+  return reserveProviderQuota(provider, estimatedTokens, modelId);
+}
+
+async function reconcileStreamQuota(
+  reservation: ProviderQuotaReservation | null,
+  actualTokensUsed: number
+): Promise<void> {
+  await reconcileProviderQuotaReservation(reservation, actualTokensUsed);
+}
+
+async function markStreamProviderCooldown(
+  provider: string,
+  modelId: string,
+  errorMessage: string
+): Promise<void> {
+  if (!isQuotaTrackedProvider(provider)) return;
+  if (!isProviderRateLimitErrorMessage(errorMessage)) return;
+  await markProviderQuotaCooldown(provider, modelId, errorMessage);
 }
 
 async function waitBeforeProviderFallback(
@@ -354,28 +424,71 @@ export async function* executeAgentStream(
     const providerStartTime = Date.now();
     let responseProvider = provider;
     let responseModelId = modelId;
-    let responseAttemptNumber = attemptIndex + 1;
-    let responseProviderStartTime = providerStartTime;
-    let firstChunkMs: number | null = null;
-    const markFirstChunk = (source: string) => {
-      if (firstChunkMs !== null) return;
-      firstChunkMs = Date.now() - providerStartTime;
-      logger.info(
-        `[Stream ${agentName}] TTFB: ${firstChunkMs}ms (${provider}/${modelId}, source=${source})`
-      );
-    };
+      let responseAttemptNumber = attemptIndex + 1;
+      let responseProviderStartTime = providerStartTime;
+      let firstChunkMs: number | null = null;
+      let quotaReservation: ProviderQuotaReservation | null = null;
+      let quotaReservationReconciled = false;
+      const reconcileQuotaOnce = async (actualTokensUsed: number) => {
+        if (quotaReservationReconciled) return;
+        await reconcileStreamQuota(quotaReservation, actualTokensUsed);
+        quotaReservationReconciled = true;
+      };
+      const markFirstChunk = (source: string) => {
+        if (firstChunkMs !== null) return;
+        firstChunkMs = Date.now() - providerStartTime;
+        logger.info(
+          `[Stream ${agentName}] TTFB: ${firstChunkMs}ms (${provider}/${modelId}, source=${source})`
+        );
+      };
 
     try {
       const promptWithContext = contextSummary
         ? `${query}\n\n[세션 컨텍스트 요약]\n${contextSummary}`
         : query;
       const userContent = buildMultimodalContent(promptWithContext, images, files);
+      const systemContent = getAgentInstructions(agentConfig, query);
+      const estimatedTokens = estimateQuotaTokens(
+        [systemContent, userContent as UserContent],
+        STREAM_MAX_OUTPUT_TOKENS
+      );
+      quotaReservation = await reserveStreamQuota(
+        provider,
+        modelId,
+        estimatedTokens
+      );
+
+      if (quotaReservation && !quotaReservation.reserved) {
+        excludedProviders.push(provider);
+        lastError = `QUOTA_ADMISSION:${quotaReservation.reason ?? 'unknown'}`;
+        providerAttemptTelemetry.push({
+          provider,
+          modelId,
+          attempt: attemptIndex + 1,
+          durationMs: Date.now() - providerStartTime,
+          error: lastError,
+        });
+        logger.info(
+          `[Stream ${agentName}] Skipping ${provider}/${modelId}: quota admission ${quotaReservation.reason ?? 'blocked'}`
+        );
+        if (attemptIndex < providerAttempts.length - 1) {
+          yield buildProviderRetryStatus(
+            `${provider} 쿼터 보호로 대안 모델로 전환 중...`
+          );
+          await waitBeforeProviderFallback(
+            agentName,
+            provider,
+            'quota_admission'
+          );
+        }
+        continue providerLoop;
+      }
 
       const agentMaxSteps = getAgentMaxSteps(agentName);
       const streamResult = streamText({
         model,
         messages: [
-          { role: 'system', content: getAgentInstructions(agentConfig, query) },
+          { role: 'system', content: systemContent },
           { role: 'user', content: userContent as UserContent },
         ],
         tools: filteredTools as Parameters<typeof generateText>[0]['tools'],
@@ -485,6 +598,9 @@ export async function* executeAgentStream(
       const steps = stepsAndUsage?.[0];
       const usage = stepsAndUsage?.[1];
       let responseUsage = usage;
+      await reconcileQuotaOnce(
+        usage?.totalTokens ?? quotaReservation?.estimatedTokens ?? 0
+      );
       const finalElapsed = Date.now() - startTime;
       timeoutSpan.complete(true, finalElapsed);
 
@@ -630,6 +746,16 @@ export async function* executeAgentStream(
           `[Stream ${agentName}] ${summarizationReason} with ${getEvidenceToolResults(collectedToolResults).length} tool results — attempting summarization fallback`
         );
 
+        let summaryReservation: ProviderQuotaReservation | null = null;
+        let summaryReservationReconciled = false;
+        let summaryProviderForCooldown = '';
+        let summaryModelIdForCooldown = '';
+        const reconcileSummaryQuotaOnce = async (actualTokensUsed: number) => {
+          if (summaryReservationReconciled) return;
+          await reconcileStreamQuota(summaryReservation, actualTokensUsed);
+          summaryReservationReconciled = true;
+        };
+
         try {
           const toolResultsSummary = buildToolResultsSummary(collectedToolResults);
           const summaryModelSelection = selectSummarizationModel(
@@ -642,7 +768,12 @@ export async function* executeAgentStream(
             provider: summaryProvider,
             modelId: summaryModelId,
           } = summaryModelSelection.modelResult;
+          summaryProviderForCooldown = summaryProvider;
+          summaryModelIdForCooldown = summaryModelId;
           const summaryStartTime = Date.now();
+          const summarySystemContent =
+            '당신은 서버 모니터링 분석 도우미입니다. 아래 도구 실행 결과를 바탕으로 사용자 질문에 한국어로 명확하게 답변하세요. 핵심 데이터를 인용하고 권장 조치를 포함하세요.';
+          const summaryUserContent = `질문: ${query}\n\n도구 실행 결과:\n${toolResultsSummary}\n\n위 결과를 바탕으로 분석 답변을 작성하세요.`;
 
           if (summaryModelSelection.delegated) {
             providerAttemptTelemetry.push({
@@ -657,24 +788,42 @@ export async function* executeAgentStream(
             );
           }
 
+          summaryReservation = await reserveStreamQuota(
+            summaryProvider,
+            summaryModelId,
+            estimateQuotaTokens(
+              [summarySystemContent, summaryUserContent],
+              SUMMARY_MAX_OUTPUT_TOKENS
+            )
+          );
+          if (summaryReservation && !summaryReservation.reserved) {
+            throw new Error(
+              `QUOTA_ADMISSION:${summaryReservation.reason ?? 'unknown'}`
+            );
+          }
+
           const summaryResult = await generateText({
             model: summaryModel,
             messages: [
               {
                 role: 'system',
-                content:
-                  '당신은 서버 모니터링 분석 도우미입니다. 아래 도구 실행 결과를 바탕으로 사용자 질문에 한국어로 명확하게 답변하세요. 핵심 데이터를 인용하고 권장 조치를 포함하세요.',
+                content: summarySystemContent,
               },
               {
                 role: 'user',
-                content: `질문: ${query}\n\n도구 실행 결과:\n${toolResultsSummary}\n\n위 결과를 바탕으로 분석 답변을 작성하세요.`,
+                content: summaryUserContent,
               },
             ],
             temperature: 0.4,
-            maxOutputTokens: 1024,
+            maxOutputTokens: SUMMARY_MAX_OUTPUT_TOKENS,
             maxRetries: 0,
             timeout: { totalMs: 10_000 },
           });
+          await reconcileSummaryQuotaOnce(
+            summaryResult.usage?.totalTokens ??
+              summaryReservation?.estimatedTokens ??
+              0
+          );
 
           const summaryText = sanitizeChineseCharacters(summaryResult.text?.trim() || '');
           if (summaryText) {
@@ -696,9 +845,21 @@ export async function* executeAgentStream(
             logger.info(`[Stream ${agentName}] Summarization fallback succeeded (${summaryText.length} chars)`);
           }
         } catch (summaryError) {
+          const summaryErrorMessage =
+            summaryError instanceof Error
+              ? summaryError.message
+              : String(summaryError);
+          await reconcileSummaryQuotaOnce(0);
+          if (summaryProviderForCooldown && summaryModelIdForCooldown) {
+            await markStreamProviderCooldown(
+              summaryProviderForCooldown,
+              summaryModelIdForCooldown,
+              summaryErrorMessage
+            );
+          }
           logger.warn(
             `[Stream ${agentName}] Summarization fallback failed:`,
-            summaryError instanceof Error ? summaryError.message : String(summaryError)
+            summaryErrorMessage
           );
         }
       }
@@ -816,6 +977,8 @@ export async function* executeAgentStream(
     } catch (error) {
       const durationMs = Date.now() - startTime;
       const errorMessage = error instanceof Error ? error.message : String(error);
+      await reconcileQuotaOnce(0);
+      await markStreamProviderCooldown(provider, modelId, errorMessage);
       const isNoOutput = errorMessage.includes('No output generated');
 
       if (isNoOutput) {

@@ -9,6 +9,9 @@ const {
   mockIsSingleModeAllowed,
   mockCreateSupervisorTrace,
   mockSelectExecutionMode,
+  mockMarkProviderQuotaCooldown,
+  mockReconcileProviderQuotaReservation,
+  mockReserveProviderQuota,
 } = vi.hoisted(() => ({
   mockGenerateText: vi.fn(),
   mockStreamText: vi.fn(),
@@ -29,6 +32,18 @@ const {
     update: vi.fn(),
   })),
   mockSelectExecutionMode: vi.fn(() => 'multi'),
+  mockMarkProviderQuotaCooldown: vi.fn(async () => undefined),
+  mockReconcileProviderQuotaReservation: vi.fn(async () => undefined),
+  mockReserveProviderQuota: vi.fn(
+    (provider: string, estimatedTokens: number, modelId?: string) =>
+      Promise.resolve({
+        reserved: true,
+        provider,
+        modelId,
+        estimatedTokens,
+        status: {},
+      })
+  ),
 }));
 
 vi.mock('ai', () => ({
@@ -90,6 +105,12 @@ vi.mock('../resilience/circuit-breaker', () => ({
     execute: async (fn: () => Promise<unknown>) => await fn(),
     getStats: () => ({ failures: 0, totalFailures: 0, lastFailure: undefined }),
   })),
+}));
+
+vi.mock('../resilience/quota-tracker', () => ({
+  markProviderQuotaCooldown: mockMarkProviderQuotaCooldown,
+  reconcileProviderQuotaReservation: mockReconcileProviderQuotaReservation,
+  reserveProviderQuota: mockReserveProviderQuota,
 }));
 
 vi.mock('../../lib/ai-sdk-utils', () => ({

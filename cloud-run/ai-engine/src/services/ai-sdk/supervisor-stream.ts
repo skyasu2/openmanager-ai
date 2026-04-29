@@ -12,6 +12,13 @@ import { isSingleModeAllowed } from '../../lib/config-parser';
 import { allTools } from '../../tools-ai-sdk';
 import { createSupervisorTrace, finalizeTrace, logGeneration, logToolCall } from '../observability/langfuse';
 import { CircuitOpenError, getCircuitBreaker } from '../resilience/circuit-breaker';
+import {
+  markProviderQuotaCooldown,
+  reconcileProviderQuotaReservation,
+  reserveProviderQuota,
+  type LLMProviderName as QuotaProviderName,
+  type ProviderQuotaReservation,
+} from '../resilience/quota-tracker';
 import { executeMultiAgentStream } from './agents';
 import {
   filterToolsByRAG,
@@ -46,6 +53,40 @@ import type { StreamEvent, SupervisorRequest } from './supervisor-types';
 
 const PROVIDER_FALLBACK_BASE_DELAY_MS = 150;
 const PROVIDER_FALLBACK_JITTER_MS = 250;
+const APPROX_CHARS_PER_TOKEN = 4;
+const SUPERVISOR_STREAM_MAX_OUTPUT_TOKENS = 2048;
+
+function isQuotaTrackedProvider(provider: ProviderName): provider is QuotaProviderName {
+  return (
+    provider === 'cerebras' ||
+    provider === 'groq' ||
+    provider === 'mistral' ||
+    provider === 'gemini'
+  );
+}
+
+function isProviderRateLimitErrorMessage(errorMessage: string): boolean {
+  const normalized = errorMessage.toLowerCase();
+  return (
+    normalized.includes('rate limit') ||
+    normalized.includes('429') ||
+    normalized.includes('too many requests') ||
+    normalized.includes('too_many_requests') ||
+    normalized.includes('queue_exceeded') ||
+    normalized.includes('high traffic')
+  );
+}
+
+function estimateSupervisorStreamQuotaTokens(
+  messages: unknown[],
+  maxOutputTokens = SUPERVISOR_STREAM_MAX_OUTPUT_TOKENS
+): number {
+  const inputChars = messages.reduce<number>(
+    (total, message) => total + JSON.stringify(message).length,
+    0
+  );
+  return Math.ceil(inputChars / APPROX_CHARS_PER_TOKEN) + maxOutputTokens;
+}
 
 async function waitBeforeProviderFallback(
   provider: ProviderName,
@@ -57,6 +98,32 @@ async function waitBeforeProviderFallback(
     `[SupervisorStream] Provider fallback delay ${delay}ms (${provider}, reason=${reason})`
   );
   await new Promise((resolve) => setTimeout(resolve, delay));
+}
+
+async function reserveSupervisorStreamQuota(
+  provider: ProviderName,
+  modelId: string,
+  estimatedTokens: number
+): Promise<ProviderQuotaReservation | null> {
+  if (!isQuotaTrackedProvider(provider)) return null;
+  return reserveProviderQuota(provider, estimatedTokens, modelId);
+}
+
+async function reconcileSupervisorStreamQuota(
+  reservation: ProviderQuotaReservation | null,
+  actualTokensUsed: number
+): Promise<void> {
+  await reconcileProviderQuotaReservation(reservation, actualTokensUsed);
+}
+
+async function markSupervisorStreamCooldown(
+  provider: ProviderName,
+  modelId: string,
+  errorMessage: string
+): Promise<void> {
+  if (!isQuotaTrackedProvider(provider)) return;
+  if (!isProviderRateLimitErrorMessage(errorMessage)) return;
+  await markProviderQuotaCooldown(provider, modelId, errorMessage);
 }
 
 export async function* executeSupervisorStream(
@@ -304,9 +371,58 @@ async function* streamSingleAgent(
     }
 
     // --- 3. Stream Execution ---
+    let quotaReservation: ProviderQuotaReservation | null = null;
+    let quotaReservationReconciled = false;
+    const reconcileQuotaOnce = async (actualTokensUsed: number) => {
+      if (quotaReservationReconciled) return;
+      await reconcileSupervisorStreamQuota(quotaReservation, actualTokensUsed);
+      quotaReservationReconciled = true;
+    };
+
     try {
       logger.info(`[SupervisorStream] Using ${provider}/${modelId}${attempt > 0 ? ` (retry #${attempt})` : ''}`);
       const providerStartTime = Date.now();
+      const estimatedTokens = estimateSupervisorStreamQuotaTokens(modelMessages);
+      quotaReservation = await reserveSupervisorStreamQuota(
+        provider,
+        modelId,
+        estimatedTokens
+      );
+
+      if (quotaReservation && !quotaReservation.reserved) {
+        const quotaError = `QUOTA_ADMISSION:${quotaReservation.reason ?? 'unknown'}`;
+        excludedProviders.push(provider);
+        logger.info(
+          `[SupervisorStream] Skipping ${provider}/${modelId}: quota admission ${quotaReservation.reason ?? 'blocked'}`
+        );
+        if (!hasImages && attempt < MAX_PROVIDER_ATTEMPTS - 1) {
+          yield {
+            type: 'agent_status',
+            data: {
+              agent: 'Supervisor',
+              status: 'processing',
+              message: `${provider} 쿼터 보호로 대안 모델로 전환 중...`,
+            },
+          };
+          await waitBeforeProviderFallback(provider, 'quota_admission');
+          continue providerLoop;
+        }
+        yield {
+          type: 'error',
+          data: {
+            code: 'RATE_LIMITED',
+            message: getPublicErrorMessage('RATE_LIMIT'),
+            metadata: {
+              provider,
+              modelId,
+              reason: quotaReservation.reason,
+              recommendedWaitMs: quotaReservation.recommendedWaitMs,
+            },
+          },
+        };
+        logger.warn(`[SupervisorStream] ${quotaError}`);
+        return;
+      }
 
       const trace = createSupervisorTrace({
         sessionId: request.sessionId,
@@ -457,6 +573,9 @@ async function* streamSingleAgent(
       });
       const steps = stepsAndUsage?.[0] ?? [];
       const usage = stepsAndUsage?.[1];
+      await reconcileQuotaOnce(
+        usage?.totalTokens ?? quotaReservation?.estimatedTokens ?? 0
+      );
 
       // Recover response from finalAnswer tool result when textStream was empty
       // (LLM may produce no text when it only calls tools and terminates via finalAnswer)
@@ -504,6 +623,8 @@ async function* streamSingleAgent(
           logger.warn(
             `⚠️ [SingleAgent] ${provider}/${modelId} failed without output (${failedError.message}), retrying with next provider...`
           );
+          await reconcileQuotaOnce(0);
+          await markSupervisorStreamCooldown(provider, modelId, failedError.message);
           yield {
             type: 'agent_status',
             data: {
@@ -608,7 +729,7 @@ async function* streamSingleAgent(
       );
 
       const totalTokensUsed = usage?.totalTokens ?? 0;
-      if (totalTokensUsed > 0) {
+      if (!quotaReservation?.reserved && totalTokensUsed > 0) {
         await recordModelUsage(provider, totalTokensUsed, 'supervisor-stream', modelId);
       }
 
@@ -647,6 +768,8 @@ async function* streamSingleAgent(
     } catch (error) {
       const durationMs = Date.now() - startTime;
       const errorMessage = error instanceof Error ? error.message : String(error);
+      await reconcileQuotaOnce(0);
+      await markSupervisorStreamCooldown(provider, modelId, errorMessage);
       const publicError = error instanceof CircuitOpenError
         ? { code: 'CIRCUIT_OPEN', message: getPublicErrorMessage('CIRCUIT_OPEN') }
         : getPublicErrorResponse(error);
