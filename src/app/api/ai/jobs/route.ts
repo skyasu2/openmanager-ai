@@ -26,12 +26,14 @@ import {
   RATE_LIMIT_IDENTITY_HEADER,
 } from '@/lib/security/rate-limit-identity';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
+import { getKSTDateTime } from '@/services/metrics/kst-time';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type {
   AIJob,
   CreateJobRequest,
   CreateJobResponse,
   JobListResponse,
+  JobQueryAsOf,
   JobStatus,
   JobStatusResponse,
   TriggerStatus,
@@ -58,6 +60,8 @@ const JOB_LIST_TTL_SECONDS = 3600;
 
 /** Progress TTL (10분) */
 const PROGRESS_TTL_SECONDS = 600;
+
+const JOB_DATASET_VERSION = '24h-rotating-v1.0.0' as const;
 
 type JobRequestMetadata = NonNullable<
   NonNullable<CreateJobRequest['options']>['metadata']
@@ -88,6 +92,20 @@ function extractJobToolOptions(metadata?: JobRequestMetadata): JobToolOptions {
     ...(typeof enableWebSearch === 'boolean' && {
       enableWebSearch,
     }),
+  };
+}
+
+function buildJobQueryAsOf(createdAt: string): JobQueryAsOf {
+  const kst = getKSTDateTime();
+  return {
+    createdAt,
+    source: 'vercel-static-otel',
+    datasetVersion: JOB_DATASET_VERSION,
+    dataSlot: {
+      slotIndex: kst.slotIndex,
+      minuteOfDay: kst.minuteOfDay,
+      timeLabel: `${kst.time} KST`,
+    },
   };
 }
 
@@ -128,6 +146,7 @@ async function handlePOST(request: NextRequest) {
     // Job ID 생성
     const jobId = randomUUID();
     const now = new Date().toISOString();
+    const queryAsOf = buildJobQueryAsOf(now);
 
     // Redis에 Job 저장
     const job: AIJob = {
@@ -148,6 +167,7 @@ async function handlePOST(request: NextRequest) {
         estimatedTime: complexity.estimatedTime,
         factors: complexity.factors,
         ownerKey,
+        queryAsOf,
         ...toolOptions,
       },
     };
@@ -197,7 +217,8 @@ async function handlePOST(request: NextRequest) {
                 jobType,
                 options?.sessionId,
                 toolOptions,
-                getRateLimitIdentity(request)
+                getRateLimitIdentity(request),
+                queryAsOf
               )
             ).status
           : initialTriggerStatus;
@@ -364,7 +385,8 @@ async function triggerWorker(
   type: string,
   sessionId?: string,
   toolOptions: JobToolOptions = {},
-  rateLimitIdentity?: string
+  rateLimitIdentity?: string,
+  queryAsOf?: JobQueryAsOf
 ): Promise<TriggerResult> {
   const cloudRunConfig = getRequiredCloudRunConfig();
 
@@ -397,6 +419,7 @@ async function triggerWorker(
         sessionId,
         type,
         ...toolOptions,
+        ...(queryAsOf && { queryAsOf }),
       }),
     });
 

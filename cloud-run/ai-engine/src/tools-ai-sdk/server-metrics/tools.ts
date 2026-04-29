@@ -247,94 +247,114 @@ export const filterServers = tool({
     limit: number;
   }) => {
     const cache = getDataCache();
-    const cacheKey = `filter:${field}:${operator}:${value}:${limit}`;
+    const state = getCurrentState();
+    const cacheKey = `filter:${state.slotIndex}:${field}:${operator}:${value}:${limit}`;
 
     return cache.getOrCompute('metrics', cacheKey, async () => {
-    logger.info(`[filterServers] Computing for ${cacheKey} (cache miss)`);
-    const state = getCurrentState();
+      logger.info(`[filterServers] Computing for ${cacheKey} (cache miss)`);
 
-    const filtered = state.servers.filter((server) => {
-      // status 필드: 문자열 비교
-      if (field === 'status') {
-        const strValue = String(value).toLowerCase();
+      const filtered = state.servers.filter((server) => {
+        // status 필드: 문자열 비교
+        if (field === 'status') {
+          const strValue = String(value).toLowerCase();
+          switch (operator) {
+            case '==':
+              return server.status === strValue;
+            case '!=':
+              return server.status !== strValue;
+            default:
+              return false;
+          }
+        }
+        // 숫자 필드: cpu, memory, disk, network
+        const serverValue = server[field] as number;
+        const numValue = Number(value);
         switch (operator) {
+          case '>':
+            return serverValue > numValue;
+          case '<':
+            return serverValue < numValue;
+          case '>=':
+            return serverValue >= numValue;
+          case '<=':
+            return serverValue <= numValue;
           case '==':
-            return server.status === strValue;
+            return serverValue === numValue;
           case '!=':
-            return server.status !== strValue;
+            return serverValue !== numValue;
           default:
             return false;
         }
+      });
+
+      // Sort by the filtered field (descending for >, ascending for <)
+      // status 필드는 이름순 정렬
+      const sortedResults =
+        field === 'status'
+          ? filtered.sort((a, b) => a.name.localeCompare(b.name))
+          : filtered.sort((a, b) =>
+              operator.includes('>')
+                ? (b[field] as number) - (a[field] as number)
+                : (a[field] as number) - (b[field] as number)
+            );
+
+      const limitedResults = sortedResults.slice(0, limit);
+
+      // Empty result hint: 조건에 맞는 서버가 없으면 상위 N개 서버 정보 제공
+      let emptyResultHint:
+        | {
+            topServers: Array<{
+              id: string;
+              name: string;
+              status: string;
+              value: number;
+            }>;
+            suggestion: string;
+          }
+        | undefined;
+
+      if (filtered.length === 0 && field !== 'status') {
+        const allSorted = [...state.servers].sort((a, b) =>
+          operator.includes('>')
+            ? (b[field] as number) - (a[field] as number)
+            : (a[field] as number) - (b[field] as number)
+        );
+        emptyResultHint = {
+          topServers: allSorted.slice(0, 3).map((s) => ({
+            id: s.id,
+            name: s.name,
+            status: s.status,
+            value: s[field] as number,
+          })),
+          suggestion: `조건(${field} ${operator} ${value}%)에 맞는 서버가 없습니다. 현재 ${field} 상위 3대를 참고하세요.`,
+        };
       }
-      // 숫자 필드: cpu, memory, disk, network
-      const serverValue = server[field] as number;
-      const numValue = Number(value);
-      switch (operator) {
-        case '>':
-          return serverValue > numValue;
-        case '<':
-          return serverValue < numValue;
-        case '>=':
-          return serverValue >= numValue;
-        case '<=':
-          return serverValue <= numValue;
-        case '==':
-          return serverValue === numValue;
-        case '!=':
-          return serverValue !== numValue;
-        default:
-          return false;
-      }
-    });
 
-    // Sort by the filtered field (descending for >, ascending for <)
-    // status 필드는 이름순 정렬
-    const sortedResults = field === 'status'
-      ? filtered.sort((a, b) => a.name.localeCompare(b.name))
-      : filtered.sort((a, b) =>
-        operator.includes('>') ? (b[field] as number) - (a[field] as number) : (a[field] as number) - (b[field] as number)
-      );
-
-    const limitedResults = sortedResults.slice(0, limit);
-
-    // Empty result hint: 조건에 맞는 서버가 없으면 상위 N개 서버 정보 제공
-    let emptyResultHint: {
-      topServers: Array<{ id: string; name: string; status: string; value: number }>;
-      suggestion: string;
-    } | undefined;
-
-    if (filtered.length === 0 && field !== 'status') {
-      const allSorted = [...state.servers].sort((a, b) =>
-        operator.includes('>') ? (b[field] as number) - (a[field] as number) : (a[field] as number) - (b[field] as number)
-      );
-      emptyResultHint = {
-        topServers: allSorted.slice(0, 3).map((s) => ({
+      return {
+        success: true,
+        condition:
+          field === 'status'
+            ? `${field} ${operator} ${value}`
+            : `${field} ${operator} ${value}%`,
+        servers: limitedResults.map((s) => ({
           id: s.id,
           name: s.name,
           status: s.status,
-          value: s[field] as number,
+          [field]: s[field],
         })),
-        suggestion: `조건(${field} ${operator} ${value}%)에 맞는 서버가 없습니다. 현재 ${field} 상위 3대를 참고하세요.`,
+        summary: {
+          matched: filtered.length,
+          returned: limitedResults.length,
+          total: state.servers.length,
+        },
+        dataSlot: {
+          slotIndex: state.slotIndex,
+          minuteOfDay: state.minuteOfDay,
+          timeLabel: `${state.timeLabel} KST`,
+        },
+        ...(emptyResultHint && { emptyResultHint }),
+        timestamp: new Date().toISOString(),
       };
-    }
-
-    return {
-      success: true,
-      condition: field === 'status' ? `${field} ${operator} ${value}` : `${field} ${operator} ${value}%`,
-      servers: limitedResults.map((s) => ({
-        id: s.id,
-        name: s.name,
-        status: s.status,
-        [field]: s[field],
-      })),
-      summary: {
-        matched: filtered.length,
-        returned: limitedResults.length,
-        total: state.servers.length,
-      },
-      ...(emptyResultHint && { emptyResultHint }),
-      timestamp: new Date().toISOString(),
-    };
     }); // End of cache.getOrCompute wrapper
   },
 });
@@ -381,14 +401,14 @@ ${SERVER_GROUP_DESCRIPTION_LIST}
   execute: async ({ group }: { group: string }) => {
     const cache = getDataCache();
     const normalizedGroup = group.toLowerCase().trim();
-    const cacheKey = `group:${normalizedGroup}`;
+    const state = getCurrentState();
+    const cacheKey = `group:${state.slotIndex}:${normalizedGroup}`;
 
     return cache.getOrCompute('metrics', cacheKey, async () => {
       logger.info(`[getServerByGroup] Computing for ${cacheKey} (cache miss)`);
 
       // Use shared type mapping from config/server-types.ts
       const targetType = normalizeServerType(normalizedGroup);
-      const state = getCurrentState();
 
       // Filter by server type (exact match only after normalization)
       const filteredServers = state.servers.filter((s) => {
@@ -418,6 +438,11 @@ ${SERVER_GROUP_DESCRIPTION_LIST}
           disk: s.disk,
         })),
         summary,
+        dataSlot: {
+          slotIndex: state.slotIndex,
+          minuteOfDay: state.minuteOfDay,
+          timeLabel: `${state.timeLabel} KST`,
+        },
         timestamp: new Date().toISOString(),
       };
     });

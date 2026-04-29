@@ -9,16 +9,40 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-const getMetricsMock = vi.fn(
-  (_key: string, compute: () => Promise<unknown>) => compute()
+const { getMetricsMock, getOrComputeMock, activeQuerySlotIndex } = vi.hoisted(
+  () => ({
+    getMetricsMock: vi.fn(
+      (_key: string, compute: () => Promise<unknown>) => compute()
+    ),
+    getOrComputeMock: vi.fn(
+      (_type: string, _key: string, compute: () => Promise<unknown>) =>
+        compute()
+    ),
+    activeQuerySlotIndex: { value: undefined as number | undefined },
+  })
 );
-const getOrComputeMock = vi.fn(
-  (_type: string, _key: string, compute: () => Promise<unknown>) => compute()
-);
+
+vi.mock('../data/query-as-of-context', () => ({
+  getActiveQuerySlotIndex: vi.fn(() => activeQuerySlotIndex.value),
+  runWithQueryAsOf: vi.fn(
+    async (
+      queryAsOf: { dataSlot: { slotIndex: number } },
+      callback: () => Promise<unknown>
+    ) => {
+      const previous = activeQuerySlotIndex.value;
+      activeQuerySlotIndex.value = queryAsOf.dataSlot.slotIndex;
+      try {
+        return await callback();
+      } finally {
+        activeQuerySlotIndex.value = previous;
+      }
+    }
+  ),
+}));
 
 // Mock precomputed-state
 vi.mock('../data/precomputed-state', () => {
-  const servers = [
+  const baseServers = [
     {
       id: 'web-nginx-dc1-01',
       name: 'Web Server 01',
@@ -111,27 +135,38 @@ vi.mock('../data/precomputed-state', () => {
     },
   ];
 
-  const state = {
-    slotIndex: 74,
-    minuteOfDay: 740,
-    timeLabel: '12:20',
+  const buildServersForSlot = (slotIndex: number) =>
+    baseServers.map((server) =>
+      server.id === 'db-mysql-dc1-01'
+        ? { ...server, disk: slotIndex }
+        : server
+    );
+
+  const buildStateForSlot = (slotIndex: number) => ({
+    slotIndex,
+    minuteOfDay: slotIndex * 10,
+    timeLabel: `${String(Math.floor(slotIndex / 6)).padStart(2, '0')}:${String((slotIndex % 6) * 10).padStart(2, '0')}`,
     timestamp: new Date().toISOString(),
-    servers,
+    servers: buildServersForSlot(slotIndex),
+    summary: {
+      overall: 'warning',
+      onlineCount: 6,
+      warningCount: 2,
+      criticalCount: 1,
+    },
     systemHealth: {
       overall: 'warning',
       onlineCount: 6,
       warningCount: 2,
       criticalCount: 1,
     },
-  };
+  });
 
-  const slots = Array.from({ length: 144 }, (_, slotIndex) => ({
-    slotIndex,
-    timestamp: new Date(Date.now() - (143 - slotIndex) * 10 * 60 * 1000).toISOString(),
-    timeLabel: `${String(Math.floor(slotIndex / 6)).padStart(2, '0')}:${String((slotIndex % 6) * 10).padStart(2, '0')}`,
-    servers,
-    summary: state.systemHealth,
-  }));
+  const state = buildStateForSlot(74);
+
+  const slots = Array.from({ length: 144 }, (_, slotIndex) =>
+    buildStateForSlot(slotIndex)
+  );
 
   return {
     getCurrentDataSourceInfo: vi.fn(() => ({
@@ -140,7 +175,9 @@ vi.mock('../data/precomputed-state', () => {
       catalogGeneratedAt: '2026-02-15T03:56:41.821Z',
       hour: 12,
     })),
-    getCurrentState: vi.fn(() => state),
+    getCurrentState: vi.fn(
+      () => slots[activeQuerySlotIndex.value ?? 74] ?? state
+    ),
     getSlots: vi.fn(() => slots),
     getStateBySlot: vi.fn((slot: number) => slots[((slot % 144) + 144) % 144]),
   };
@@ -155,12 +192,20 @@ vi.mock('../lib/cache-layer', () => ({
 }));
 
 import {
+  runWithQueryAsOf,
+  type QueryAsOf,
+} from '../data/query-as-of-context';
+import {
   getServerByGroup,
   getServerByGroupAdvanced,
   getServerMetrics,
   getServerMetricsAdvanced,
   filterServers,
 } from './server-metrics';
+
+beforeEach(() => {
+  activeQuerySlotIndex.value = undefined;
+});
 
 // ============================================================================
 // getServerByGroup Tests
@@ -169,6 +214,7 @@ import {
 describe('getServerByGroupAdvanced', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    activeQuerySlotIndex.value = undefined;
   });
 
   describe('Basic Functionality', () => {
@@ -409,6 +455,38 @@ describe('getServerMetrics', () => {
     expect(result.servers).toHaveLength(1);
     expect(result.servers[0].id).toBe('db-mysql-dc1-01');
   });
+
+  it('uses the query-as-of data slot when present', async () => {
+    const queryAsOf: QueryAsOf = {
+      createdAt: '2026-04-29T05:55:00.000Z',
+      source: 'vercel-static-otel',
+      datasetVersion: '24h-rotating-v1.0.0',
+      dataSlot: {
+        slotIndex: 89,
+        minuteOfDay: 890,
+        timeLabel: '14:50 KST',
+      },
+    };
+
+    const result = await runWithQueryAsOf(queryAsOf, () =>
+      getServerMetrics.execute(
+        { serverId: 'db-mysql-dc1-01', metric: 'disk' },
+        {} as never
+      )
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.dataSlot).toEqual({
+      slotIndex: 89,
+      minuteOfDay: 890,
+      timeLabel: '14:50 KST',
+    });
+    expect(result.servers[0].disk).toBe(89);
+    expect(getMetricsMock).toHaveBeenCalledWith(
+      'slot:89:db-mysql-dc1-01:disk',
+      expect.any(Function)
+    );
+  });
 });
 
 describe('getServerMetricsAdvanced', () => {
@@ -441,6 +519,45 @@ describe('getServerMetricsAdvanced', () => {
     expect(result.answer).toContain('2. cache-redis-dc1-01 85%');
     expect(result.answer).toContain('3. web-nginx-dc1-02 82%');
     expect(result.answer).toContain('순서를 바꾸지 말고 그대로 사용자에게 전달하세요.');
+  });
+
+  it('uses query-as-of slot for current range lookups', async () => {
+    const queryAsOf: QueryAsOf = {
+      createdAt: '2026-04-29T05:55:00.000Z',
+      source: 'vercel-static-otel',
+      datasetVersion: '24h-rotating-v1.0.0',
+      dataSlot: {
+        slotIndex: 89,
+        minuteOfDay: 890,
+        timeLabel: '14:50 KST',
+      },
+    };
+
+    const result = await runWithQueryAsOf(queryAsOf, () =>
+      getServerMetricsAdvanced.execute(
+        {
+          serverId: 'db-mysql-dc1-01',
+          timeRange: 'current',
+          metric: 'disk',
+          aggregation: 'none',
+          sortOrder: 'desc',
+        },
+        {} as never
+      )
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.dataSlot).toEqual({
+      slotIndex: 89,
+      minuteOfDay: 890,
+      timeLabel: '14:50 KST',
+    });
+    expect(result.servers[0].metrics.disk).toBe(89);
+    expect(getOrComputeMock).toHaveBeenCalledWith(
+      'metrics',
+      expect.stringContaining('adv:89:'),
+      expect.any(Function)
+    );
   });
 });
 

@@ -61,6 +61,11 @@ import type {
   AnalysisMode,
   SupervisorRequest,
 } from '../services/ai-sdk/supervisor-types';
+import {
+  normalizeQueryAsOf,
+  runWithQueryAsOf,
+  type QueryAsOf,
+} from '../data/query-as-of-context';
 
 // ============================================================================
 // Jobs Router
@@ -171,6 +176,16 @@ function extractJobProcessToolOptions(
   };
 }
 
+function extractJobProcessQueryAsOf(
+  payload: Record<string, unknown>
+): QueryAsOf | undefined {
+  const queryAsOf = normalizeQueryAsOf(payload.queryAsOf);
+  if (payload.queryAsOf !== undefined && !queryAsOf) {
+    logger.warn('[Jobs] Ignoring invalid queryAsOf payload');
+  }
+  return queryAsOf;
+}
+
 function isRecentProcessingJob(startedAt?: string): boolean {
   if (!startedAt) return true;
   const startedAtMs = new Date(startedAt).getTime();
@@ -200,22 +215,14 @@ jobsRouter.post('/process', async (c: Context) => {
   const startTime = Date.now();
 
   try {
-    const {
-      jobId,
-      messages,
-      sessionId,
-      analysisMode,
-      enableRAG,
-      enableWebSearch,
-    } = await c.req.json();
-    const toolOptions = extractJobProcessToolOptions({
-      analysisMode,
-      enableRAG,
-      enableWebSearch,
-    });
+    const payload = (await c.req.json()) as Record<string, unknown>;
+    const { jobId, messages, sessionId } = payload;
+    const toolOptions = extractJobProcessToolOptions(payload);
+    const queryAsOf = extractJobProcessQueryAsOf(payload);
+    const jobIdValue = typeof jobId === 'string' ? jobId.trim() : '';
 
     // Validate request
-    if (!jobId) {
+    if (!jobIdValue) {
       return c.json({ success: false, error: 'jobId is required' }, 400);
     }
 
@@ -225,6 +232,9 @@ jobsRouter.post('/process', async (c: Context) => {
         400
       );
     }
+    const jobMessages = messages as Array<{ role: string; content: string }>;
+    const sessionIdValue =
+      typeof sessionId === 'string' ? sessionId : undefined;
 
     // Check Redis availability
     if (!isJobNotifierAvailable()) {
@@ -241,13 +251,20 @@ jobsRouter.post('/process', async (c: Context) => {
       );
     }
 
-    const existingJob = await getJobResult(jobId);
+    const existingJob = await getJobResult(jobIdValue);
     const existingStatus =
       typeof existingJob?.status === 'string' ? existingJob.status : undefined;
     if (existingStatus === 'completed') {
-      logger.info(`[Jobs] Duplicate process delivery ignored for completed job ${jobId}`);
+      logger.info(
+        `[Jobs] Duplicate process delivery ignored for completed job ${jobIdValue}`
+      );
       return c.json(
-        { success: true, jobId, status: 'completed', duplicate: true },
+        {
+          success: true,
+          jobId: jobIdValue,
+          status: 'completed',
+          duplicate: true,
+        },
         200
       );
     }
@@ -256,9 +273,16 @@ jobsRouter.post('/process', async (c: Context) => {
       existingStatus === 'processing' &&
       isRecentProcessingJob(existingJob?.startedAt)
     ) {
-      logger.info(`[Jobs] Duplicate process delivery ignored for active job ${jobId}`);
+      logger.info(
+        `[Jobs] Duplicate process delivery ignored for active job ${jobIdValue}`
+      );
       return c.json(
-        { success: true, jobId, status: 'processing', duplicate: true },
+        {
+          success: true,
+          jobId: jobIdValue,
+          status: 'processing',
+          duplicate: true,
+        },
         202
       );
     }
@@ -270,32 +294,40 @@ jobsRouter.post('/process', async (c: Context) => {
     }
 
     // Mark job as processing
-    await markJobProcessing(jobId);
-    await updateJobProgress(jobId, 'initializing', 10, 'AI 에이전트 초기화 중...');
+    await markJobProcessing(jobIdValue);
+    await updateJobProgress(
+      jobIdValue,
+      'initializing',
+      10,
+      'AI 에이전트 초기화 중...'
+    );
 
-    logger.info(`[Jobs] Processing job ${jobId}`);
+    logger.info(`[Jobs] Processing job ${jobIdValue}`);
 
     // Extract query from last user message
-    const lastMessage = messages[messages.length - 1];
+    const lastMessage = jobMessages[jobMessages.length - 1];
     const query = lastMessage?.content;
 
     if (!query) {
-      await storeJobError(jobId, 'No query content in messages');
+      await storeJobError(jobIdValue, 'No query content in messages');
       return c.json({ success: false, error: 'No query in messages' }, 400);
     }
 
-    const outcome = await processJobSynchronously({
-      jobId,
-      messages,
-      sessionId,
-      ...toolOptions,
-      startTime,
-    });
+    const outcome = await runWithQueryAsOf(queryAsOf, () =>
+      processJobSynchronously({
+        jobId: jobIdValue,
+        messages: jobMessages,
+        sessionId: sessionIdValue,
+        ...toolOptions,
+        queryAsOf,
+        startTime,
+      })
+    );
 
     return c.json(
       {
         success: outcome.status === 'completed',
-        jobId,
+        jobId: jobIdValue,
         status: outcome.status,
         ...(outcome.error && { error: outcome.error }),
       },
@@ -426,6 +458,7 @@ async function processJobSynchronously({
   analysisMode,
   enableRAG,
   enableWebSearch,
+  queryAsOf,
   startTime,
 }: {
   jobId: string;
@@ -434,6 +467,7 @@ async function processJobSynchronously({
   analysisMode?: AnalysisMode;
   enableRAG?: SupervisorRequest['enableRAG'];
   enableWebSearch?: SupervisorRequest['enableWebSearch'];
+  queryAsOf?: QueryAsOf;
   startTime: number;
 }): Promise<{ status: 'completed' | 'failed'; error?: string }> {
   const startedAt = new Date().toISOString();
@@ -499,6 +533,7 @@ async function processJobSynchronously({
       analysisMode,
       enableRAG,
       enableWebSearch,
+      queryAsOf,
     })) {
       if (event.type === 'text_delta' && typeof event.data === 'string') {
         responseChunks.push(event.data);
@@ -679,6 +714,7 @@ async function processJobSynchronously({
         ...(analysisMode && { analysisMode }),
         ...(typeof enableRAG === 'boolean' && { enableRAG }),
         ...(enableWebSearch !== undefined && { enableWebSearch }),
+        ...(queryAsOf && { queryAsOf }),
         ...(retrieval && { retrieval }),
         ...(traceId && { traceId }),
         handoffs,

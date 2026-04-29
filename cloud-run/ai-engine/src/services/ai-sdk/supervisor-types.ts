@@ -9,6 +9,7 @@ import type {
   EvidenceCard,
   RetrievalMetadata,
 } from '../../lib/retrieval-contract';
+import type { QueryAsOf } from '../../data/query-as-of-context';
 
 // Re-export multimodal types
 export type { ImageAttachment, FileAttachment };
@@ -62,6 +63,8 @@ export interface SupervisorRequest {
   analysisMode?: AnalysisMode;
   /** Upstream trace ID (W3C traceparent에서 추출). Langfuse 연동에 사용. */
   traceId?: string;
+  /** Job creation time data slot used to answer "current" metric questions. */
+  queryAsOf?: QueryAsOf;
   /** 클라이언트 디바이스 타입 (응답 길이/형식 최적화) */
   deviceType?: 'mobile' | 'desktop';
 }
@@ -116,6 +119,8 @@ export interface SupervisorResponse {
     fallbackReason?: string;
     /** Retrieval execution contract for UI/Langfuse: enabled vs used vs suppressed. */
     retrieval?: RetrievalMetadata;
+    /** Data slot captured when the async job was created. */
+    queryAsOf?: QueryAsOf;
     /** 상위 실행 모드에서 강등된 경우의 원래 모드 */
     degradedFromMode?: 'multi';
     /** 강등(Degraded)된 직접 원인 */

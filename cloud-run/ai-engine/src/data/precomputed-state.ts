@@ -13,6 +13,7 @@ import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { logger } from '../lib/logger';
 import { generateLogs, type GeneratedLog } from './log-generator';
+import { getActiveQuerySlotIndex } from './query-as-of-context';
 import {
   buildPrecomputedStates,
   getOTelDataSourceInfo,
@@ -209,6 +210,11 @@ export function getSlots(): PrecomputedSlot[] {
  * UTC + 9시간 직접 계산 방식 사용 (Vercel과 동일)
  */
 function getCurrentSlotIndex(): number {
+  const querySlotIndex = getActiveQuerySlotIndex();
+  if (querySlotIndex !== undefined) {
+    return querySlotIndex;
+  }
+
   const now = new Date();
   // UTC + 9시간 = KST (Vercel MetricsProvider와 동일 로직)
   const kstOffset = 9 * 60; // 분 단위

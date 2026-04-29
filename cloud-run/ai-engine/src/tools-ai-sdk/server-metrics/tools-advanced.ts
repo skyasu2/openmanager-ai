@@ -99,7 +99,8 @@ export const getServerMetricsAdvanced = tool({
     limit?: number;
   }) => {
     const cache = getDataCache();
-    const cacheKey = `adv:${serverId || 'all'}:${timeRange}:${metric}:${aggregation}:${sortBy || 'none'}:${sortOrder}:${limit || 0}:${stableStringify(filters)}`;
+    const state = getCurrentState();
+    const cacheKey = `adv:${state.slotIndex}:${serverId || 'all'}:${timeRange}:${metric}:${aggregation}:${sortBy || 'none'}:${sortOrder}:${limit || 0}:${stableStringify(filters)}`;
 
     return cache.getOrCompute('metrics', cacheKey, async () => {
       logger.info(`[getServerMetricsAdvanced] Computing for ${cacheKey} (cache miss)`);
@@ -272,6 +273,11 @@ export const getServerMetricsAdvanced = tool({
           query: { timeRange, metric, aggregation, sortBy, limit },
           servers: filteredResults.slice(0, 5),
           hasMore: filteredResults.length > 5,
+          dataSlot: {
+            slotIndex: state.slotIndex,
+            minuteOfDay: state.minuteOfDay,
+            timeLabel: `${state.timeLabel} KST`,
+          },
           timestamp: new Date().toISOString(),
         };
       } catch (error) {
@@ -347,15 +353,15 @@ ${SERVER_GROUP_DESCRIPTION_LIST}
   }) => {
     const cache = getDataCache();
     const normalizedGroup = group.toLowerCase().trim();
+    const state = getCurrentState();
     const filterKey = filters ? JSON.stringify(filters) : 'none';
     const sortKey = sort ? `${sort.by}-${sort.order}` : 'none';
-    const cacheKey = `group-adv:${normalizedGroup}:${filterKey}:${sortKey}:${limit || 'all'}`;
+    const cacheKey = `group-adv:${state.slotIndex}:${normalizedGroup}:${filterKey}:${sortKey}:${limit || 'all'}`;
 
     return cache.getOrCompute('metrics', cacheKey, async () => {
       logger.info(`[getServerByGroupAdvanced] Computing for ${cacheKey} (cache miss)`);
 
       const targetType = normalizeServerType(normalizedGroup);
-      const state = getCurrentState();
 
       let filteredServers = state.servers.filter((s) => {
         const serverType = normalizeServerType(s.type || '');
@@ -460,6 +466,11 @@ ${SERVER_GROUP_DESCRIPTION_LIST}
         summary,
         appliedFilters: filters || undefined,
         appliedSort: sort || undefined,
+        dataSlot: {
+          slotIndex: state.slotIndex,
+          minuteOfDay: state.minuteOfDay,
+          timeLabel: `${state.timeLabel} KST`,
+        },
         timestamp: new Date().toISOString(),
       };
     });

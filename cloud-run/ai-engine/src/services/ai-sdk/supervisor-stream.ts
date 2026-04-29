@@ -134,6 +134,7 @@ export async function* executeSupervisorStream(
               ...doneData,
               metadata: {
                 ...existingMetadata,
+                ...(request.queryAsOf && { queryAsOf: request.queryAsOf }),
                 ...buildSupervisorModeMetadata(modeDecision),
               },
             },
@@ -252,6 +253,7 @@ async function* streamSingleAgent(
             stepsExecuted: 0,
             durationMs: Date.now() - startTime,
             mode: 'single',
+            ...(request.queryAsOf && { queryAsOf: request.queryAsOf }),
             ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
             ...buildDegradedMetadata(degradedFallbackContext, {
               fallback: true,
@@ -372,6 +374,7 @@ async function* streamSingleAgent(
               stepsExecuted: finishSteps.length,
               durationMs,
               finishReason,
+              ...(request.queryAsOf && { queryAsOf: request.queryAsOf }),
               ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
               ...buildDegradedMetadata(degradedFallbackContext, {}),
             });
@@ -595,6 +598,7 @@ async function* streamSingleAgent(
         durationMs,
         ...(firstChunkMs !== null && { ttfbMs: firstChunkMs }),
         ...(capturedError && { error: capturedError.message }),
+        ...(request.queryAsOf && { queryAsOf: request.queryAsOf }),
         ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
         ...buildDegradedMetadata(degradedFallbackContext, {}),
       });
@@ -625,6 +629,7 @@ async function* streamSingleAgent(
             durationMs,
             mode: 'single',
             traceId: trace.id,
+            ...(request.queryAsOf && { queryAsOf: request.queryAsOf }),
             ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
             ...buildDegradedMetadata(degradedFallbackContext, {}),
             ...(attempt > 0 && { providerRetries: attempt }),

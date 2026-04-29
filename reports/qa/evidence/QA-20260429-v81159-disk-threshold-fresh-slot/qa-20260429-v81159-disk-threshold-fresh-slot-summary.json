@@ -1,0 +1,115 @@
+{
+  "runTitle": "v8.11.59 Vercel Playwright DISK Threshold Fresh Slot Recheck",
+  "checkedAt": "2026-04-29T14:57:00+09:00",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "version": "8.11.59",
+    "commitSha": "94f4dea65aa09f321b4fb883906afbcb4185a058",
+    "releaseTag": "v8.11.59",
+    "pipelineUrl": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2487306094",
+    "backend": "Cloud Run"
+  },
+  "baseline": {
+    "qaStatusBeforeRun": {
+      "totalRecordedRuns": 365,
+      "totalCountedRuns": 295,
+      "activeGateWarnings": 0,
+      "openExpertGaps": [
+        {
+          "domainId": "ai-quality-assurance",
+          "lastRun": "QA-20260429-0365",
+          "next": "Add/fix deterministic metric grounding or final answer threshold validation for async job responses."
+        }
+      ]
+    }
+  },
+  "freshDashboardSlot": {
+    "label": "Vercel static OTel · 14:50 KST (slot 89/143)",
+    "servers": 18,
+    "statusCounts": {
+      "online": 17,
+      "warning": 1,
+      "critical": 0,
+      "offline": 0
+    },
+    "topResourceWarnings": [
+      "cache-redis-dc1-01 MEM 86%",
+      "db-mysql-dc1-backup DISK 69%",
+      "db-mysql-dc1-primary DISK 65%",
+      "db-mysql-dc1-replica MEM 62%",
+      "storage-nfs-dc1-02 DISK 60%"
+    ]
+  },
+  "checks": [
+    {
+      "name": "70% threshold regression query",
+      "expected": "No DISK >= 70% servers for fresh slot 89.",
+      "actual": "DISK 사용률 70% 이상 서버 0대. 기준: 전체 18대 중 DISK >= 70%.",
+      "result": "pass",
+      "job": {
+        "post": {
+          "url": "/api/ai/jobs",
+          "status": 201,
+          "durationMs": 732
+        },
+        "stream": {
+          "url": "/api/ai/jobs/505eb131-59de-4af9-a8b5-00f51aa82b04/stream",
+          "durationMs": 2666,
+          "transferSizeBytes": 1765
+        },
+        "uiProcessingTimeMs": 1547,
+        "footer": "Cloud Run AI · 서버 실시간 데이터 분석 · 심층 분석 요청됨"
+      }
+    },
+    {
+      "name": "65% positive threshold ranking probe",
+      "expected": "Include db-mysql-dc1-backup 69% and db-mysql-dc1-primary 65%; exclude storage-nfs-dc1-02 60%.",
+      "actual": "DISK 사용률 65% 이상 서버 2대: db-mysql-dc1-backup 69%, db-mysql-dc1-primary 65%.",
+      "result": "pass",
+      "job": {
+        "post": {
+          "url": "/api/ai/jobs",
+          "status": 201,
+          "durationMs": 515
+        },
+        "stream": {
+          "url": "/api/ai/jobs/33eab086-d17a-4b5c-b31c-8aeffc38b526/stream",
+          "durationMs": 7695,
+          "transferSizeBytes": 2798
+        },
+        "uiProcessingTimeMs": 6837,
+        "footer": "Cloud Run AI · 일반 대화 응답 · 심층 분석 요청됨"
+      }
+    }
+  ],
+  "observations": [
+    {
+      "severity": "P3",
+      "title": "Positive threshold answer footer metadata can still show general response",
+      "details": "The 65% positive threshold answer was numerically correct and used live dashboard data, but its footer displayed '일반 대화 응답' instead of '서버 실시간 데이터 분석'. This is a non-blocking metadata display drift, not a grounding failure."
+    },
+    {
+      "severity": "info",
+      "title": "Stale dashboard slot can create false mismatch if the page is reused across a 10-minute boundary",
+      "details": "Before reloading, the browser showed clock 14:50 with dashboard slot 14:40. A fresh navigation updated the dashboard to slot 89. Future QA should reload production before comparing UI card values to AI answers."
+    }
+  ],
+  "health": {
+    "vercelSimple": {
+      "status": "ok",
+      "response": "{\"ping\":\"pong\"}"
+    },
+    "aiHealth": {
+      "status": "ok",
+      "backend": "cloud-run",
+      "latencyMs": 152
+    },
+    "vercelUsage": {
+      "status": "checked",
+      "result": "normal",
+      "effectiveUsd": 18.4121,
+      "billedUsd": 0.0
+    }
+  }
+}

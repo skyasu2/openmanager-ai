@@ -28,6 +28,19 @@ export type JobType =
 
 export type JobPriority = 'low' | 'normal' | 'high';
 
+export interface JobDataSlot {
+  slotIndex: number;
+  minuteOfDay: number;
+  timeLabel: string;
+}
+
+export interface JobQueryAsOf {
+  createdAt: string;
+  source: 'vercel-static-otel';
+  datasetVersion: '24h-rotating-v1.0.0';
+  dataSlot: JobDataSlot;
+}
+
 // ============================================
 // API Request/Response 타입
 // ============================================
@@ -119,6 +132,7 @@ export interface AIJob {
     analysisMode?: AnalysisMode;
     enableRAG?: boolean;
     enableWebSearch?: boolean;
+    queryAsOf?: JobQueryAsOf;
   };
 }
 

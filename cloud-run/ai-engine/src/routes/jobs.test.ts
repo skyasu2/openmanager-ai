@@ -244,6 +244,47 @@ describe('Jobs Routes', () => {
       );
     });
 
+    it('queryAsOf 데이터 슬롯을 supervisor와 결과 metadata에 보존한다', async () => {
+      const queryAsOf = {
+        createdAt: '2026-04-29T05:55:00.000Z',
+        source: 'vercel-static-otel',
+        datasetVersion: '24h-rotating-v1.0.0',
+        dataSlot: {
+          slotIndex: 89,
+          minuteOfDay: 890,
+          timeLabel: '14:50 KST',
+        },
+      };
+
+      const res = await app.request('/jobs/process', {
+        method: 'POST',
+        body: JSON.stringify({
+          jobId: 'job-query-as-of',
+          messages: [{ role: 'user', content: '현재 DISK 70% 이상 서버' }],
+          sessionId: 'session-query-as-of',
+          queryAsOf,
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      expect(res.status).toBe(200);
+      expect(vi.mocked(executeSupervisorStream)).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sessionId: 'session-query-as-of',
+          queryAsOf,
+        })
+      );
+      expect(vi.mocked(storeJobResult)).toHaveBeenCalledWith(
+        'job-query-as-of',
+        'AI 응답',
+        expect.objectContaining({
+          metadata: expect.objectContaining({
+            queryAsOf,
+          }),
+        })
+      );
+    });
+
     it('completed job duplicate delivery는 AI 실행 없이 성공으로 반환한다', async () => {
       vi.mocked(getJobResult).mockResolvedValueOnce({
         status: 'completed',

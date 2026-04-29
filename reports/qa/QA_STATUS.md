@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-29 13:48:08 KST
+> Generated at: 2026-04-29 14:59:29 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 365 |
-| Total Runs (Counted) | 295 |
+| Total Recorded Runs | 366 |
+| Total Runs (Counted) | 296 |
 | Non-counted Runs | 70 |
-| Total Checks | 2498 |
-| Passed | 2408 |
+| Total Checks | 2516 |
+| Passed | 2426 |
 | Failed | 81 |
 | Completed Items | 361 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 19 |
 | Expert Domains Tracked | 10 |
-| Expert Open Gaps | 1 |
+| Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260429-0365 (2026-04-29T04:25:34.157Z) |
-| Latest Recorded Run | QA-20260429-0367 (2026-04-29T04:48:07.819Z) |
+| Last Counted Run | QA-20260429-0368 (2026-04-29T05:59:28.482Z) |
+| Latest Recorded Run | QA-20260429-0368 (2026-04-29T05:59:28.482Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,42 +34,41 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260429-0367 (2026-04-29T04:48:07.819Z)
+Latest run: QA-20260429-0368 (2026-04-29T05:59:28.482Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Current billing period checked after targeted production AI QA; effective $18.4121, billed $0.0000, no unexpected billed usage. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-28T04:48:07.819Z -> 2026-04-29T04:48:07.819Z (24h)
+- Window: 2026-04-28T05:59:28.482Z -> 2026-04-29T05:59:28.482Z (24h)
 - Runs with observations: 4 recorded / 4 counted
-- Samples: 7
+- Samples: 6
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Supervisor Agent | cloud-run-supervisor | 1 | 48818ms | 48818ms | - | - | 48818ms | 48818ms | QA-20260429-0365 |
+| Supervisor Agent | cloud-run-supervisor | 3 | 19726ms | 48818ms | 624ms | 732ms | 19067ms | 48818ms | QA-20260429-0368 |
 | Supervisor Agent | multi-provider-fallback | 1 | 16988ms | 16988ms | - | - | 16988ms | 16988ms | QA-20260428-0358 |
-| Reporter Agent | pipeline | 1 | 16321ms | 16321ms | - | - | 16321ms | 16321ms | QA-20260428-0356 |
-| Analyst Agent | groq | 1 | 14039ms | 14039ms | - | - | 14039ms | 14039ms | QA-20260428-0356 |
 | Streaming AI | cloud-run-supervisor | 2 | 4335ms | 7624ms | - | - | 4335ms | 7624ms | QA-20260428-0357 |
-| Advisor Agent | groq | 1 | 4109ms | 4109ms | - | - | 4109ms | 4109ms | QA-20260428-0356 |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: SHA e0b18c41
+- Release-Facing: yes
+- Counts Toward Summary: yes
+- Deployment: v8.11.59 / SHA 94f4dea6
 - Coverage Packs: ai-core, observability-pack
-- Covered Surfaces: Cerebras queue_exceeded/429 provider fallback policy, AI SDK nested retry disabled for provider-managed fallback paths, Streaming agent empty tool-result summarization delegates to next provider, Summarization fallback done metadata reports delegated provider usage, DISK >=70% deterministic metric grounding for Analyst/NLQ paths, AI Engine type-check, AI Engine full Vitest suite, QA evidence audit missing durable artifact references
-- Skipped Surfaces: Vercel production browser recheck - requires Cloud Run deployment of this local fix, Cloud Tasks high-volume load test - intentionally skipped to preserve free-tier budget
+- Covered Surfaces: Vercel production /api/version reports 8.11.59 at commit 94f4dea65aa09f321b4fb883906afbcb4185a058, Vercel production /api/health?simple=true returns JSON pong, Vercel production /api/health?service=ai returns status ok with backend cloud-run, Fresh dashboard navigation loads Vercel static OTel 14:50 KST slot 89/143, Dashboard Top 5 resource warnings show db-mysql-dc1-backup DISK 69%, db-mysql-dc1-primary DISK 65%, storage-nfs-dc1-02 DISK 60%, AI sidebar opens with AI Engine Ready, New chat clears previous conversation before dispatch, 70% threshold query submitted through UI only and POST /api/ai/jobs returns 201, 70% threshold EventSource stream completes via Performance API evidence, 70% threshold final answer matches dashboard slot 89: DISK >=70% servers 0대, 65% positive threshold probe submitted through UI only and POST /api/ai/jobs returns 201, 65% positive threshold EventSource stream completes via Performance API evidence, 65% positive threshold final answer includes db-mysql-dc1-backup 69% and db-mysql-dc1-primary 65%, 65% positive threshold final answer excludes storage-nfs-dc1-02 DISK 60%, Playwright screenshot captures dashboard Top 5 and final AI answer, QA baseline reviewed before recording: active gate warnings none; open expert gap ai-quality-assurance from QA-20260429-0365
+- Skipped Surfaces: Cloud Tasks high-volume load test - intentionally skipped to preserve free-tier budget, Broad landing/login/modal route sweep - unchanged by this targeted AI grounding recheck, Long-running >60s SSE reconnect scenario - not required for this deterministic threshold regression recheck
 
 ## Links (Latest Run)
 
@@ -81,12 +80,12 @@ Latest run: QA-20260429-0367 (2026-04-29T04:48:07.819Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-screenshot | Fresh slot DISK threshold answer screenshot | `reports/qa/evidence/QA-20260429-v81159-disk-threshold-fresh-slot/qa-20260429-v81159-disk-threshold-fresh-slot.png` | - |
+| playwright-network | Fresh slot DISK threshold QA summary | `reports/qa/evidence/QA-20260429-v81159-disk-threshold-fresh-slot/qa-20260429-v81159-disk-threshold-fresh-slot-summary.json` | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260429-0365)
-  next: Add/fix deterministic metric grounding or final answer threshold validation for async job responses.
+- None
 
 ## Pending Improvements
 
@@ -189,7 +188,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-chat-response-quality-v880-recheck-20260309: AI Chat 응답 품질 및 권고 재검증 (completed 4회, last QA-20260309-0068)
 - ai-chat-sidebar-open: AI 사이드바 열기 (completed 1회, last QA-20260317-0114)
 - ai-code-gate-input-policy: AI Code Gate: Prompt 패턴 15개 방어 점검 (completed 2회, last QA-20260318-0125)
-- ai-disk-threshold-answer-accuracy-drift: AI async job answer should preserve DISK >=70% threshold and dashboard metric values (completed 1회, last QA-20260429-0366)
+- ai-disk-threshold-answer-accuracy-drift: AI async job answer preserves DISK threshold and dashboard metric values (completed 2회, last QA-20260429-0368)
 - ai-domain-boundary-phase2-analysis-mode: AI Domain Boundary Phase 2 analysis mode toggle (auto/thinking) (completed 1회, last QA-20260416-0297)
 - ai-engine-status: AI 엔진 상태 표시 (completed 1회, last QA-20260317-0114)
 - ai-fallback-done-usage-metadata: Delegated summarization fallback should report delegated provider token usage (completed 1회, last QA-20260429-0367)
@@ -526,6 +525,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260429-0368 | 2026-04-29T05:59:28.482Z | targeted | yes | yes | v8.11.59 Vercel Playwright DISK Threshold Fresh Slot Recheck | 18 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260429-0367 | 2026-04-29T04:48:07.819Z | targeted | no | no | AI Engine Post-Review Fallback Metadata Verification | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260429-0366 | 2026-04-29T04:28:03.403Z | targeted | no | no | AI Engine Provider Fallback and DISK Threshold Regression Fix | 3 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260429-0365 | 2026-04-29T04:25:34.157Z | targeted | yes | yes | Cloud Tasks Job Dispatch Fresh Browser Production Recheck - v8.11.58 | 14 | 1 | 0 | 0 | 1 | 1 |
@@ -545,4 +545,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260427-0351 | 2026-04-27T08:20:05.391Z | targeted | yes | yes | Vercel Playwright MCP QA - Guest Login AI Assistant Check | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260427-0350 | 2026-04-27T02:47:19.407Z | targeted | yes | yes | Vercel Production AI Assistant Playwright MCP Real Chat QA | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260427-0349 | 2026-04-26T15:45:57.159Z | targeted | yes | yes | v8.11.35 AI Sidebar Tool UX Release Smoke | 6 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260424-0348 | 2026-04-24T10:55:21.196Z | targeted | no | yes | Production Playwright E2E - AI slot provenance parity validation | 2 | 1 | 0 | 0 | 0 | 0 |

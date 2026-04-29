@@ -60,9 +60,7 @@ export function stableStringify(filters: Array<Record<string, unknown>> | undefi
  * Uses UTC+9 arithmetic instead of toLocaleString for consistency
  */
 export function getCurrentMinuteOfDay(): number {
-  const now = new Date();
-  const kstHour = (now.getUTCHours() + 9) % 24;
-  return kstHour * 60 + now.getUTCMinutes();
+  return getCurrentState().minuteOfDay;
 }
 
 /**
@@ -115,7 +113,7 @@ export function getTimeRangeData(
   serverId: string,
   timeRange: string
 ): Array<{ cpu: number; memory: number; disk: number; network: number }> {
-  const currentSlot = getCurrentSlotIndex();
+  const currentSlot = getCurrentState().slotIndex;
 
   let slotsBack = 0;
   switch (timeRange) {
@@ -146,14 +144,6 @@ export function getTimeRangeData(
     }
   }
   return points;
-}
-
-function getCurrentSlotIndex(): number {
-  const now = new Date();
-  const kstOffset = 9 * 60;
-  const utcMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
-  const kstMinutes = (utcMinutes + kstOffset) % 1440;
-  return Math.floor(kstMinutes / 10);
 }
 
 /**
