@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.66](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.65...v8.11.66) (2026-04-29)
+
+
+### Bug Fixes
+
+* **ai-engine:** distribute alert action recommendations ([1816d2e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/1816d2eeeace93c1b920664a820fc9f834a90289))
+
+
+### Code Refactoring
+
+* **ai-engine:** distribute orchestrator quota away from Cerebras and unify model ID config ([4410ebc](https://gitlab.com/skyasu2/openmanager-ai/-/commit/4410ebc517db0ab64192dddbd3805df4dfa0df36))
+
 ## [8.11.65](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.64...v8.11.65) (2026-04-29)
 
 
