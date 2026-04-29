@@ -220,6 +220,24 @@ function extractRequestedActionCount(query: string): number | null {
   return null;
 }
 
+function extractMentionedServerCount(query: string): number | null {
+  const match = query.match(/(\d{1,2})\s*대/);
+  if (!match) return null;
+  const parsed = Number(match[1]);
+  return Number.isInteger(parsed) && parsed > 0 ? Math.min(parsed, 20) : null;
+}
+
+function isPerServerActionRequest(query: string): boolean {
+  return (
+    /(각\s*서버|서버별|서버마다).*(조치|권고|확인\s*항목|확인할\s*항목)/i.test(
+      query
+    ) ||
+    /(조치|권고|확인\s*항목|확인할\s*항목).*(각\s*서버|서버별|서버마다|개씩)/i.test(
+      query
+    )
+  );
+}
+
 function average(values: Array<number | null>): number | null {
   const validValues = values.filter((value): value is number => value !== null);
   if (validValues.length === 0) return null;
@@ -328,20 +346,9 @@ function formatTrendLabel(trendLabel: string): string {
 }
 
 function getAttentionServer(payload: MetricsToolPayload): AlertServerSnapshot | null {
-  const alertServers = deriveAlertServers(payload);
-  const activeAlerts = alertServers.filter((server) => server.status !== 'offline');
-  if (activeAlerts.length > 0) {
-    return [...activeAlerts].sort((left, right) => {
-      const leftPriority =
-        left.status === 'critical' ? 0 : left.status === 'warning' ? 1 : 2;
-      const rightPriority =
-        right.status === 'critical' ? 0 : right.status === 'warning' ? 1 : 2;
-      if (leftPriority !== rightPriority) return leftPriority - rightPriority;
-      return (
-        (getDominantMetric(right).metricValue ?? 0) -
-        (getDominantMetric(left).metricValue ?? 0)
-      );
-    })[0];
+  const alertServers = getPrioritizedActionServers(payload);
+  if (alertServers.length > 0) {
+    return alertServers[0];
   }
 
   const topServer = [...payload.servers]
@@ -363,6 +370,57 @@ function getAttentionServer(payload: MetricsToolPayload): AlertServerSnapshot | 
   return topServer ? toAlertSnapshot(topServer) : null;
 }
 
+function getPrioritizedActionServers(
+  payload: MetricsToolPayload
+): AlertServerSnapshot[] {
+  return deriveAlertServers(payload)
+    .filter((server) => server.status !== 'offline')
+    .sort((left, right) => {
+      const leftPriority =
+        left.status === 'critical' ? 0 : left.status === 'warning' ? 1 : 2;
+      const rightPriority =
+        right.status === 'critical' ? 0 : right.status === 'warning' ? 1 : 2;
+      if (leftPriority !== rightPriority) return leftPriority - rightPriority;
+      return (
+        (getDominantMetric(right).metricValue ?? 0) -
+        (getDominantMetric(left).metricValue ?? 0)
+      );
+    });
+}
+
+function buildActionPoolForServer(server: AlertServerSnapshot): string[] {
+  const dominantMetric = getDominantMetric(server);
+  if (dominantMetric.metricLabel === 'CPU') {
+    return [
+      `${server.id}: 상위 프로세스와 스레드/worker 점유율을 확인하세요.`,
+      `${server.id}: 최근 배포, 배치 작업, 트래픽 분산 편차를 함께 확인하세요.`,
+      `${server.id}: 같은 추세가 10분 이상 지속되면 LB 분산 정책과 캐시/쿼리 설정을 조정하세요.`,
+    ];
+  }
+
+  if (dominantMetric.metricLabel === '메모리') {
+    return [
+      `${server.id}: 메모리 상위 프로세스와 OOM/GC 로그를 확인하세요.`,
+      `${server.id}: cache eviction, 세션 증가, 누수 가능성을 우선 점검하세요.`,
+      `${server.id}: 최근 배포 후 heap/connection 증가 추세를 비교하세요.`,
+    ];
+  }
+
+  if (dominantMetric.metricLabel === '디스크') {
+    return [
+      `${server.id}: 로그 적체와 임시 파일 증가 경로를 확인하세요.`,
+      `${server.id}: 백업 산출물과 회전 정책이 정상 동작하는지 점검하세요.`,
+      `${server.id}: 대용량 파일 생성 프로세스와 보존 기간 설정을 확인하세요.`,
+    ];
+  }
+
+  return [
+    `${server.id}: 헬스체크, 최근 배포 이력, 애플리케이션 로그를 확인하세요.`,
+    `${server.id}: 알림 발생 시각 전후의 트래픽과 배치 작업을 비교하세요.`,
+    `${server.id}: 동일 증상이 지속되면 관련 인스턴스를 분산 또는 격리하세요.`,
+  ];
+}
+
 function buildActionItems(
   alertServers: AlertServerSnapshot[],
   payload: MetricsToolPayload,
@@ -373,39 +431,38 @@ function buildActionItems(
     return null;
   }
 
-  const attentionServer = getAttentionServer(payload);
-  if (!attentionServer) {
+  const perServerRequest = isPerServerActionRequest(query);
+  const mentionedServerCount = extractMentionedServerCount(query);
+  const prioritizedServers = getPrioritizedActionServers(payload);
+  const fallbackAttentionServer = getAttentionServer(payload);
+  const actionServers =
+    prioritizedServers.length > 0
+      ? prioritizedServers.slice(
+          0,
+          mentionedServerCount
+            ? Math.min(mentionedServerCount, prioritizedServers.length)
+            : prioritizedServers.length
+        )
+      : fallbackAttentionServer
+        ? [fallbackAttentionServer]
+        : [];
+
+  if (actionServers.length === 0) {
     return null;
   }
 
-  const dominantMetric = getDominantMetric(attentionServer);
-  const actionPool =
-    dominantMetric.metricLabel === 'CPU'
-      ? [
-          `${attentionServer.id}: 상위 프로세스와 스레드/worker 점유율을 확인하세요.`,
-          `${attentionServer.id}: 최근 배포, 배치 작업, 트래픽 분산 편차를 함께 확인하세요.`,
-          `${attentionServer.id}: 같은 추세가 10분 이상 지속되면 LB 분산 정책과 캐시/쿼리 설정을 조정하세요.`,
-        ]
-      : dominantMetric.metricLabel === '메모리'
-        ? [
-            `${attentionServer.id}: 메모리 상위 프로세스와 OOM/GC 로그를 확인하세요.`,
-            `${attentionServer.id}: cache eviction, 세션 증가, 누수 가능성을 우선 점검하세요.`,
-            `${attentionServer.id}: 최근 배포 후 heap/connection 증가 추세를 비교하세요.`,
-          ]
-        : dominantMetric.metricLabel === '디스크'
-          ? [
-              `${attentionServer.id}: 로그 적체와 임시 파일 증가 경로를 확인하세요.`,
-              `${attentionServer.id}: 백업 산출물과 회전 정책이 정상 동작하는지 점검하세요.`,
-              `${attentionServer.id}: 대용량 파일 생성 프로세스와 보존 기간 설정을 확인하세요.`,
-            ]
-          : [
-              `${attentionServer.id}: 헬스체크, 최근 배포 이력, 애플리케이션 로그를 확인하세요.`,
-              `${attentionServer.id}: 알림 발생 시각 전후의 트래픽과 배치 작업을 비교하세요.`,
-              `${attentionServer.id}: 동일 증상이 지속되면 관련 인스턴스를 분산 또는 격리하세요.`,
-            ];
+  const actions = perServerRequest
+    ? actionServers.flatMap((server) =>
+        buildActionPoolForServer(server).slice(0, requestedCount)
+      )
+    : Array.from({ length: requestedCount }, (_, actionIndex) => {
+        const server = actionServers[actionIndex % actionServers.length];
+        const serverActionIndex = Math.floor(actionIndex / actionServers.length);
+        const actionPool = buildActionPoolForServer(server);
+        return actionPool[serverActionIndex % actionPool.length];
+      });
 
-  return actionPool
-    .slice(0, requestedCount)
+  return actions
     .map((action, index) => `${index + 1}. ${action}`)
     .join('\n');
 }

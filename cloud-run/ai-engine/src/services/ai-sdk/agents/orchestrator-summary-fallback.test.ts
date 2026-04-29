@@ -188,6 +188,57 @@ describe('buildDeterministicSummaryFallback', () => {
     expect(summary).not.toContain('메모리 사용률 상위');
   });
 
+  it('distributes per-server action requests across warning servers', () => {
+    const query =
+      '현재 경고 서버 2대를 기준으로 장애 원인을 추정하고, 각 서버별 즉시 조치 1개씩만 우선순위로 제안해줘. 대시보드 현재 시점 데이터 기준으로 답해줘';
+    const summary = buildDeterministicSummaryFallback(query, 'Analyst Agent', [
+      {
+        toolName: 'getServerMetrics',
+        result: {
+          servers: [
+            { id: 'web-01', status: 'online', cpu: 25, memory: 30, disk: 20 },
+            {
+              id: 'storage-nfs-dc1-01',
+              status: 'warning',
+              cpu: 47,
+              memory: 45,
+              disk: 84,
+            },
+            {
+              id: 'db-mysql-dc1-primary',
+              status: 'warning',
+              cpu: 70,
+              memory: 78,
+              disk: 81,
+            },
+          ],
+          alertServers: [
+            {
+              id: 'storage-nfs-dc1-01',
+              status: 'warning',
+              cpu: 47,
+              memory: 45,
+              disk: 84,
+              diskTrend: 'rising',
+            },
+            {
+              id: 'db-mysql-dc1-primary',
+              status: 'warning',
+              cpu: 70,
+              memory: 78,
+              disk: 81,
+              diskTrend: 'rising',
+            },
+          ],
+        },
+      },
+    ]);
+
+    expect(summary).toContain('1. storage-nfs-dc1-01: 로그 적체');
+    expect(summary).toContain('2. db-mysql-dc1-primary: 로그 적체');
+    expect(summary).not.toContain('3. ');
+  });
+
   it('builds deterministic CPU top-N ranking with one check item per server', () => {
     const summary = buildDeterministicSummaryFallback(
       'CPU 사용률이 가장 높은 서버 3대를 현재 수치와 함께 순서대로 알려주고, 운영자가 바로 확인할 항목을 서버별로 1개씩 제안해줘.',
