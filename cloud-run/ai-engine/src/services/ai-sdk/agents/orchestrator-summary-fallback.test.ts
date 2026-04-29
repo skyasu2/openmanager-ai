@@ -239,6 +239,58 @@ describe('buildDeterministicSummaryFallback', () => {
     expect(summary).not.toContain('3. ');
   });
 
+  it('keeps explicitly named resource warning servers instead of substituting LLM-selected peers', () => {
+    const query =
+      '현재 리소스 경고 TOP 2인 db-mysql-dc1-primary와 db-mysql-dc1-backup을 기준으로 장애 원인을 추정하고, 각 서버별 즉시 조치 1개씩만 우선순위로 제안해줘. 대시보드 현재 시점 데이터 기준으로 답해줘';
+    const summary = buildDeterministicSummaryFallback(query, 'Analyst Agent', [
+      {
+        toolName: 'getServerMetrics',
+        result: {
+          servers: [
+            {
+              id: 'db-mysql-dc1-primary',
+              status: 'warning',
+              cpu: 61,
+              memory: 69,
+              disk: 81,
+            },
+            {
+              id: 'db-mysql-dc1-backup',
+              status: 'online',
+              cpu: 42,
+              memory: 55,
+              disk: 69,
+            },
+            {
+              id: 'db-mysql-dc1-replica',
+              status: 'online',
+              cpu: 40,
+              memory: 56,
+              disk: 42,
+            },
+          ],
+          alertServers: [
+            {
+              id: 'db-mysql-dc1-primary',
+              status: 'warning',
+              cpu: 61,
+              memory: 69,
+              disk: 81,
+              diskTrend: 'rising',
+            },
+          ],
+        },
+      },
+    ]);
+
+    expect(summary).toContain('📊 **요청 서버 2대 상태**');
+    expect(summary).toContain('1. db-mysql-dc1-primary: 디스크 81%');
+    expect(summary).toContain('2. db-mysql-dc1-backup: 디스크 69%');
+    expect(summary).toContain('1. db-mysql-dc1-primary: 로그 적체');
+    expect(summary).toContain('2. db-mysql-dc1-backup: 로그 적체');
+    expect(summary).not.toContain('db-mysql-dc1-replica');
+  });
+
   it('builds deterministic CPU top-N ranking with one check item per server', () => {
     const summary = buildDeterministicSummaryFallback(
       'CPU 사용률이 가장 높은 서버 3대를 현재 수치와 함께 순서대로 알려주고, 운영자가 바로 확인할 항목을 서버별로 1개씩 제안해줘.',
@@ -423,6 +475,13 @@ describe('buildDeterministicSummaryFallback', () => {
     expect(
       isDeterministicSummaryQuery(
         '현재 위험/경고 서버를 기준으로 운영자가 해야 할 조치 3가지만 제안해줘',
+        'Analyst Agent',
+        18
+      )
+    ).toBe(true);
+    expect(
+      isDeterministicSummaryQuery(
+        '현재 리소스 경고 TOP 2인 db-mysql-dc1-primary와 db-mysql-dc1-backup을 기준으로 장애 원인을 추정하고, 각 서버별 즉시 조치 1개씩 제안해줘',
         'Analyst Agent',
         18
       )

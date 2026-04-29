@@ -81,7 +81,11 @@ export function isDeterministicSummaryQuery(
   _agentName: string,
   toolResultServerCount = 0
 ): boolean {
-  if (toolResultServerCount > 0 && isStatusAlertOperationalQuery(query)) {
+  if (
+    toolResultServerCount > 0 &&
+    (isStatusAlertOperationalQuery(query) ||
+      isExplicitServerOperationalQuery(query))
+  ) {
     return true;
   }
 
@@ -123,6 +127,21 @@ function isStatusAlertOperationalQuery(query: string): boolean {
     /원인|이유|장애|조치|대응|권장|권고|우선순위|해야|운영자|확인/i.test(query);
 
   return mentionsAlertStatus && asksForOperations;
+}
+
+function hasExplicitServerId(query: string): boolean {
+  return /\b[a-z0-9]+(?:-[a-z0-9]+){2,}\b/i.test(query);
+}
+
+function isExplicitServerOperationalQuery(query: string): boolean {
+  const asksForOperations =
+    /원인|이유|장애|조치|대응|권장|권고|우선순위|해야|운영자|확인/i.test(query);
+  const asksForExplicitDistribution =
+    isPerServerActionRequest(query) ||
+    /(?:리소스|성능).{0,10}(?:경고|주의)|(?:top|TOP)\s*\d{1,2}|상위\s*\d{1,2}/i.test(
+      query
+    );
+  return hasExplicitServerId(query) && asksForOperations && asksForExplicitDistribution;
 }
 
 function toEmptyResultHint(value: unknown): MetricsToolPayload['emptyResultHint'] | undefined {
@@ -506,6 +525,99 @@ function buildRecommendation(
   }
 
   return `• ${primaryAlert.id}: 최근 상태 변화 원인과 관련 로그를 점검하세요.`;
+}
+
+function getExplicitQueryServers(
+  query: string,
+  payload: MetricsToolPayload
+): AlertServerSnapshot[] {
+  const matches = payload.servers
+    .map((server) => ({
+      server,
+      index: query.indexOf(server.id),
+    }))
+    .filter((entry) => entry.index >= 0)
+    .sort((left, right) => left.index - right.index);
+
+  const seen = new Set<string>();
+  return matches
+    .filter(({ server }) => {
+      if (seen.has(server.id)) return false;
+      seen.add(server.id);
+      return true;
+    })
+    .map(({ server }) => toAlertSnapshot(server));
+}
+
+function buildCauseLine(server: AlertServerSnapshot): string {
+  const dominantMetric = getDominantMetric(server);
+  if (dominantMetric.metricLabel === 'CPU') {
+    return `• ${server.id}: CPU ${roundPercent(dominantMetric.metricValue)} - 상위 프로세스, 배치 작업, 트래픽 분산 편차 가능성을 우선 점검해야 합니다.`;
+  }
+  if (dominantMetric.metricLabel === '메모리') {
+    return `• ${server.id}: 메모리 ${roundPercent(dominantMetric.metricValue)} - 프로세스 증가, cache/세션 누적, 누수 가능성을 우선 점검해야 합니다.`;
+  }
+  if (dominantMetric.metricLabel === '디스크') {
+    return `• ${server.id}: 디스크 ${roundPercent(dominantMetric.metricValue)} - 로그, 백업 산출물, tmp 파일 증가 가능성을 우선 점검해야 합니다.`;
+  }
+  return `• ${server.id}: 상태 ${server.status} - 최근 상태 변화 시각과 관련 로그를 우선 점검해야 합니다.`;
+}
+
+function buildExplicitServerOperationalAnswer(
+  query: string,
+  payload: MetricsToolPayload
+): string | null {
+  if (!isExplicitServerOperationalQuery(query)) {
+    return null;
+  }
+
+  const requestedServers = getExplicitQueryServers(query, payload);
+  if (requestedServers.length === 0) {
+    return null;
+  }
+
+  const requestedActionCount = extractRequestedActionCount(query) ?? 1;
+  const perServerRequest = isPerServerActionRequest(query);
+  const actionServers = requestedServers.filter(
+    (server) => server.status !== 'offline'
+  );
+  const actions =
+    actionServers.length === 0
+      ? []
+      : perServerRequest
+        ? actionServers.flatMap((server) =>
+            buildActionPoolForServer(server).slice(0, requestedActionCount)
+          )
+        : Array.from({ length: requestedActionCount }, (_, actionIndex) => {
+            const server = actionServers[actionIndex % actionServers.length];
+            const serverActionIndex = Math.floor(actionIndex / actionServers.length);
+            const actionPool = buildActionPoolForServer(server);
+            return actionPool[serverActionIndex % actionPool.length];
+          });
+
+  const lines = [`📊 **요청 서버 ${requestedServers.length}대 상태**`];
+  requestedServers.forEach((server, index) => {
+    const dominantMetric = getDominantMetric(server);
+    lines.push(
+      `${index + 1}. ${server.id}: ${dominantMetric.metricLabel} ${roundPercent(dominantMetric.metricValue)} (상태 ${server.status})`
+    );
+  });
+
+  lines.push('', '⚠️ **장애 원인 추정**');
+  requestedServers.forEach((server) => {
+    lines.push(buildCauseLine(server));
+  });
+
+  lines.push('', '💡 **즉시 조치**');
+  if (actions.length === 0) {
+    lines.push('• 오프라인 서버의 헬스체크, 최근 배포 이력, 애플리케이션 로그를 우선 확인하세요.');
+  } else {
+    actions.forEach((action, index) => {
+      lines.push(`${index + 1}. ${action}`);
+    });
+  }
+
+  return lines.join('\n');
 }
 
 function buildTrendSummary(alertServers: AlertServerSnapshot[]): string {
@@ -945,6 +1057,11 @@ function buildDeterministicAnswerFromPayload(
   query: string,
   payload: MetricsToolPayload
 ): string {
+  const explicitServerAnswer = buildExplicitServerOperationalAnswer(query, payload);
+  if (explicitServerAnswer) {
+    return explicitServerAnswer;
+  }
+
   const classification = classifyQueryIntent(query);
 
   if (classification.intent === 'data-filter') {
