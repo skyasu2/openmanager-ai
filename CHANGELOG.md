@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.65](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.64...v8.11.65) (2026-04-29)
+
+
+### Bug Fixes
+
+* **ai:** surface response details and provider telemetry ([5b6e600](https://gitlab.com/skyasu2/openmanager-ai/-/commit/5b6e60084f27ba3349f37c14cc7ee2e0d0e34858))
+
+
+### Tests
+
+* **qa:** record v8.11.64 alert-status recheck ([8881c51](https://gitlab.com/skyasu2/openmanager-ai/-/commit/8881c51e9597605021b2881f4c5b47ae79b57615))
+* **qa:** record v8.11.64 alert-status rerun ([9b90fa2](https://gitlab.com/skyasu2/openmanager-ai/-/commit/9b90fa24e0d5bbc25514c2a13491cb556974d348))
+
 ## [8.11.64](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.63...v8.11.64) (2026-04-29)
 
 
