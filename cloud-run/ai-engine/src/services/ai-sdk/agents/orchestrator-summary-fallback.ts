@@ -81,6 +81,10 @@ export function isDeterministicSummaryQuery(
   _agentName: string,
   toolResultServerCount = 0
 ): boolean {
+  if (toolResultServerCount > 0 && isStatusAlertOperationalQuery(query)) {
+    return true;
+  }
+
   const classification = classifyQueryIntent(query);
   return shouldPreferDeterministic(classification, toolResultServerCount);
 }
@@ -108,6 +112,17 @@ function toFilterSummary(value: unknown): MetricsToolPayload['filterSummary'] | 
   const total = toNumber(value.total);
   if (matched === null || returned === null || total === null) return undefined;
   return { matched, returned, total };
+}
+
+function isStatusAlertOperationalQuery(query: string): boolean {
+  const mentionsAlertStatus =
+    /위험\s*\/\s*경고|경고\s*\/\s*위험|(?:위험|critical|경고|warning|주의|alert|알림).{0,20}서버|서버.{0,20}(?:위험|critical|경고|warning|주의|alert|알림)/i.test(
+      query
+    );
+  const asksForOperations =
+    /원인|이유|장애|조치|대응|권장|권고|우선순위|해야|운영자|확인/i.test(query);
+
+  return mentionsAlertStatus && asksForOperations;
 }
 
 function toEmptyResultHint(value: unknown): MetricsToolPayload['emptyResultHint'] | undefined {
@@ -188,8 +203,8 @@ function roundPercent(value: number | null): string {
 
 function extractRequestedActionCount(query: string): number | null {
   const patterns = [
-    /(?:즉시\s*)?(?:조치|권고|확인\s*항목|확인할\s*항목)\s*(\d{1,2})\s*개/,
-    /(\d{1,2})\s*개\s*(?:즉시\s*)?(?:조치|권고|확인\s*항목|확인할\s*항목)/,
+    /(?:즉시\s*)?(?:조치|권고|확인\s*항목|확인할\s*항목)\s*(\d{1,2})\s*(?:개|가지)?/,
+    /(\d{1,2})\s*(?:개|가지)\s*(?:즉시\s*)?(?:조치|권고|확인\s*항목|확인할\s*항목)/,
     /서버별로\s*(\d{1,2})\s*개/,
   ];
 

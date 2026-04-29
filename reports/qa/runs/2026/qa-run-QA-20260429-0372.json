@@ -1,0 +1,171 @@
+{
+  "runId": "QA-20260429-0372",
+  "recordedAt": "2026-04-29T14:03:32.361Z",
+  "recordedAtKst": "2026-04-29 23:03:32 KST",
+  "runTitle": "Vercel Playwright targeted QA - v8.11.63 AI slot propagation recheck",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "v8.11.63-production",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "c91a4e31a8fc39790b0dfb52629c6c3989dc6092"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/",
+    "/dashboard",
+    "AI sidebar open",
+    "AI job queue POST /api/ai/jobs",
+    "SSE /api/ai/jobs/[id]/stream",
+    "dashboard dataSlotInfo label",
+    "AI job request metadata queryAsOfDataSlot",
+    "AI response relevance for alert-status advisory query"
+  ],
+  "skippedSurfaces": [
+    "login providers beyond guest session",
+    "admin pages",
+    "reporter/analyst dedicated tabs",
+    "mobile layout",
+    "broad route sweep"
+  ],
+  "checks": {
+    "total": 9,
+    "passed": 7,
+    "failed": 2
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI sidebar job queue alert-status advisory query",
+      "agent": "Cloud Run AI",
+      "provider": "cloud-run-supervisor",
+      "route": "/api/ai/jobs/[id]/stream",
+      "source": "job result payload, Performance API resource timing, and Playwright request body capture",
+      "latencyMs": 11803,
+      "ttfbMs": 1137,
+      "processingTimeMs": 10936
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "v8.11.63 correctly propagated dashboard queryAsOfDataSlot, but the generated answer drifted from alert-status advisory intent to a memory top-N answer.",
+      "nextAction": "For explicit 위험/경고 서버 operational questions, prefer deterministic alert-status summary from tool evidence."
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Request metadata matched the dashboard data slot: 22:50 KST slot 137, minuteOfDay 1370.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Frontend v8.11.63 and AI Engine deploy pipeline completed successfully; POST /api/ai/jobs returned 201 and SSE completed with one stream entry.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP captured request body, DOM, screenshot, and Performance API evidence.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-29T23:01:24+09:00",
+      "summary": "Vercel usage after targeted production QA remained normal: effective 19.0897 USD, billed 0.0000 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "v8.11.63 slot propagation pass but response drift screenshot",
+      "path": "reports/qa/evidence/qa-20260429-v81163-ai-slot-body-pass-response-drift.png"
+    },
+    {
+      "type": "playwright-network",
+      "label": "v8.11.63 AI request body with queryAsOfDataSlot",
+      "path": "reports/qa/evidence/qa-20260429-v81163-ai-slot-body-pass-response-drift-network.txt"
+    },
+    {
+      "type": "playwright-network",
+      "label": "v8.11.63 AI response drift DOM evidence",
+      "path": "reports/qa/evidence/qa-20260429-v81163-ai-slot-body-pass-response-drift-dom.json"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-dashboard-query-asof-slot-drift",
+      "title": "AI sidebar job requests use the dashboard-visible OTel data slot",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "POST /api/ai/jobs included queryAsOfDataSlot slotIndex=137, minuteOfDay=1370, timeLabel=22:50 KST matching dashboard slot label.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "ai-alert-status-advisory-response-drift",
+      "title": "Alert-status advisory queries must not drift into unrelated metric rankings",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "v8.11.63 answered an alert-status operations query with memory usage top-5 content despite correct queryAsOfDataSlot propagation.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "result: no-go for v8.11.63 targeted AI answer relevance scope",
+    "dashboard dataSlotInfo: 22:50 KST slot 137/143",
+    "POST /api/ai/jobs: 201, 1137ms; request body included queryAsOfDataSlot slotIndex=137, minuteOfDay=1370, timeLabel=22:50 KST",
+    "AI job id: e2459f4a-5c74-450b-bda9-6ecdc105f6f4",
+    "SSE stream: 11803ms, 7367 bytes, 1 stream entry",
+    "Observed answer drift: user asked 위험/경고 server advisory actions, response summarized memory usage top-5."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.11.63 tag pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2488611542"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

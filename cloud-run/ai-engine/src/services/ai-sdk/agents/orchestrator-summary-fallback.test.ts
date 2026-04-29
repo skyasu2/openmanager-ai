@@ -148,6 +148,46 @@ describe('buildDeterministicSummaryFallback', () => {
     expect(summary).not.toContain('3. lb-01:');
   });
 
+  it('keeps alert-status operational questions grounded instead of drifting to metric rankings', () => {
+    const query =
+      '현재 위험/경고 서버를 기준으로 장애 원인을 추정하고, 운영자가 지금 해야 할 조치 3가지만 우선순위로 제안해줘';
+    const summary = buildDeterministicSummaryFallback(query, 'Analyst Agent', [
+      {
+        toolName: 'getServerMetrics',
+        result: {
+          servers: [
+            { id: 'web-01', status: 'online', cpu: 25, memory: 30, disk: 20 },
+            {
+              id: 'lb-haproxy-dc1-01',
+              status: 'warning',
+              cpu: 75,
+              memory: 38,
+              disk: 26,
+            },
+            { id: 'db-mysql-dc1-backup', status: 'online', cpu: 42, memory: 55, disk: 71 },
+          ],
+          alertServers: [
+            {
+              id: 'lb-haproxy-dc1-01',
+              status: 'warning',
+              cpu: 75,
+              memory: 38,
+              disk: 26,
+              cpuTrend: 'stable',
+            },
+          ],
+        },
+      },
+    ]);
+
+    expect(summary).toContain('전체 3대: 정상 2대, 경고 1대, 위험 0대');
+    expect(summary).toContain('lb-haproxy-dc1-01: CPU 75%');
+    expect(summary).toContain('1. lb-haproxy-dc1-01: 상위 프로세스');
+    expect(summary).toContain('2. lb-haproxy-dc1-01: 최근 배포');
+    expect(summary).toContain('3. lb-haproxy-dc1-01: 같은 추세');
+    expect(summary).not.toContain('메모리 사용률 상위');
+  });
+
   it('builds deterministic CPU top-N ranking with one check item per server', () => {
     const summary = buildDeterministicSummaryFallback(
       'CPU 사용률이 가장 높은 서버 3대를 현재 수치와 함께 순서대로 알려주고, 운영자가 바로 확인할 항목을 서버별로 1개씩 제안해줘.',
@@ -329,6 +369,13 @@ describe('buildDeterministicSummaryFallback', () => {
     expect(isDeterministicSummaryQuery('왜 서버가 갑자기 느려졌어?', 'NLQ Agent', 10)).toBe(false);
     expect(isDeterministicSummaryQuery('다음 주 CPU 사용률 예측해줘', 'Analyst Agent', 10)).toBe(false);
     expect(isDeterministicSummaryQuery('어떻게 해야 서버 부하를 줄일 수 있어?', 'NLQ Agent', 10)).toBe(false);
+    expect(
+      isDeterministicSummaryQuery(
+        '현재 위험/경고 서버를 기준으로 운영자가 해야 할 조치 3가지만 제안해줘',
+        'Analyst Agent',
+        18
+      )
+    ).toBe(true);
   });
 
   it('builds deterministic summary from current state when tool results are absent', () => {
