@@ -1,0 +1,183 @@
+{
+  "runId": "QA-20260430-0374",
+  "recordedAt": "2026-04-29T18:53:53.244Z",
+  "recordedAtKst": "2026-04-30 03:53:53 KST",
+  "runTitle": "Vercel Playwright targeted QA - v8.11.64 AI alert-status advisory rerun",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "v8.11.64-production",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "279a3dcd644e55ed043d3b6bf8e269dff294b3a3"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/",
+    "/dashboard",
+    "AI sidebar open",
+    "AI job queue POST /api/ai/jobs",
+    "SSE /api/ai/jobs/[id]/stream",
+    "dashboard dataSlotInfo label",
+    "AI job request metadata queryAsOfDataSlot",
+    "AI job result content for alert-status advisory query",
+    "AI sidebar collapsed and expanded response rendering"
+  ],
+  "skippedSurfaces": [
+    "login providers beyond guest session",
+    "admin pages",
+    "reporter/analyst dedicated tabs",
+    "mobile layout",
+    "broad route sweep"
+  ],
+  "checks": {
+    "total": 10,
+    "passed": 9,
+    "failed": 1
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI sidebar job queue alert-status advisory query",
+      "agent": "Cloud Run AI",
+      "provider": "cloud-run-supervisor",
+      "route": "/api/ai/jobs/[id]/stream",
+      "source": "job result payload, Performance API resource timing, Playwright request body capture, and expanded DOM evidence",
+      "latencyMs": 3951,
+      "ttfbMs": 701,
+      "processingTimeMs": 2375
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Cloud Run job result stayed grounded in the alert-status query: warning 1, critical 2, storage-nfs-dc1-01 DISK 95%, db-mysql-dc1-primary MEM 90%, api-was-dc1-01 CPU 84%, and three operational actions.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Request metadata matched the dashboard data slot: 03:40 KST slot 22, minuteOfDay 220.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "frontend-ux-quality",
+      "domainName": "Frontend UX Quality Reviewer",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "The full answer is present in job result and in the expanded analysis panel, but the default assistant bubble only shows the first summary block. Actionable details require expanding the analysis basis panel.",
+      "nextAction": "Show user-facing response details inline in the assistant answer even when analysis metadata exists."
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP captured request body, DOM, expanded DOM, job result payload, screenshot, and Performance API evidence for the fixed scenario.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-30T03:52:15+09:00",
+      "summary": "Vercel usage after targeted production QA remained normal: effective 19.0897 USD, billed 0.0000 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "v8.11.64 AI alert-status advisory rerun expanded screenshot",
+      "path": "reports/qa/evidence/qa-20260430-v81164-ai-alert-status-rerun-expanded.png"
+    },
+    {
+      "type": "playwright-network",
+      "label": "v8.11.64 AI rerun request body with queryAsOfDataSlot",
+      "path": "reports/qa/evidence/qa-20260430-v81164-ai-alert-status-rerun-network.txt"
+    },
+    {
+      "type": "playwright-network",
+      "label": "v8.11.64 AI rerun collapsed DOM evidence",
+      "path": "reports/qa/evidence/qa-20260430-v81164-ai-alert-status-rerun-dom.json"
+    },
+    {
+      "type": "playwright-network",
+      "label": "v8.11.64 AI rerun expanded DOM evidence",
+      "path": "reports/qa/evidence/qa-20260430-v81164-ai-alert-status-rerun-expanded-dom.json"
+    },
+    {
+      "type": "playwright-network",
+      "label": "v8.11.64 AI rerun job result payload",
+      "path": "reports/qa/evidence/qa-20260430-v81164-ai-alert-status-rerun-job-result.json"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-alert-status-advisory-response-drift",
+      "title": "Alert-status advisory queries stay grounded and do not drift into unrelated metric rankings",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.11.64 job result answered the 위험/경고 server advisory query with dashboard-matching warning/critical counts, storage-nfs-dc1-01 DISK 95%, db-mysql-dc1-primary MEM 90%, api-was-dc1-01 CPU 84%, and three operational actions.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "ai-sidebar-answer-details-default-visibility",
+      "title": "AI sidebar should show actionable response details inline by default when analysis metadata exists",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Collapsed assistant bubble showed only the first summary block; the warning servers, trend, and recommendations were available only after expanding the Analysis Basis panel.",
+      "note": "",
+      "owner": "project",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    }
+  ],
+  "notes": [
+    "result: go for Cloud Tasks and Cloud Run job dispatch path; follow-up needed for default frontend answer visibility",
+    "dashboard dataSlotInfo: 03:40 KST slot 22/143",
+    "POST /api/ai/jobs: 201, 701ms; request body included queryAsOfDataSlot slotIndex=22, minuteOfDay=220, timeLabel=03:40 KST",
+    "AI job id: 4dca494f-e6d6-478b-9f3f-750832df18ae",
+    "SSE stream: 3951ms, 6467 bytes, 1 stream entry",
+    "AI job result matched dashboard status: 18 total, 15 online, 1 warning, 2 critical, 0 offline; storage-nfs-dc1-01 DISK 95%, db-mysql-dc1-primary MEM 90%, api-was-dc1-01 CPU 84%; three operational actions returned.",
+    "Default assistant bubble rendered only the summary section; expanded Analysis Basis rendered the user-facing details."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.11.64 tag pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2488706817"
+    },
+    {
+      "type": "general",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

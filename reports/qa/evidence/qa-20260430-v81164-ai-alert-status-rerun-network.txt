@@ -1,0 +1,2 @@
+[POST] https://openmanager-ai.vercel.app/api/ai/jobs => [201]
+  Request body: {"query":"현재 위험/경고 서버를 기준으로 장애 원인을 추정하고, 운영자가 지금 해야 할 조치 3가지만 우선순위로 제안해줘","options":{"sessionId":"session-062c8c3e-cd2c-407d-be29-1e7ea56a94a2","metadata":{"analysisMode":"thinking","queryAsOfDataSlot":{"slotIndex":22,"minuteOfDay":220,"timeLabel":"03:40 KST"}}}}

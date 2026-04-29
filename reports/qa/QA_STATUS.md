@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-29 23:29:34 KST
+> Generated at: 2026-04-30 03:53:54 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 371 |
-| Total Runs (Counted) | 301 |
+| Total Recorded Runs | 372 |
+| Total Runs (Counted) | 302 |
 | Non-counted Runs | 70 |
-| Total Checks | 2556 |
-| Passed | 2460 |
-| Failed | 87 |
+| Total Checks | 2566 |
+| Passed | 2469 |
+| Failed | 88 |
 | Completed Items | 365 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 19 |
-| Expert Domains Tracked | 10 |
-| Expert Open Gaps | 0 |
+| Wont-Fix Items | 20 |
+| Expert Domains Tracked | 11 |
+| Expert Open Gaps | 1 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260429-0373 (2026-04-29T14:29:33.712Z) |
-| Latest Recorded Run | QA-20260429-0373 (2026-04-29T14:29:33.712Z) |
+| Last Counted Run | QA-20260430-0374 (2026-04-29T18:53:53.244Z) |
+| Latest Recorded Run | QA-20260430-0374 (2026-04-29T18:53:53.244Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,13 +34,13 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260429-0373 (2026-04-29T14:29:33.712Z)
+Latest run: QA-20260430-0374 (2026-04-29T18:53:53.244Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
 | Data Quality & Metrics Analyst | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
+| Frontend UX Quality Reviewer | partially-appropriate | yes | Show user-facing response details inline in the assistant answer even when analysis metadata exists. |
 | Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
@@ -51,16 +51,16 @@ Latest run: QA-20260429-0373 (2026-04-29T14:29:33.712Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-28T14:29:33.712Z -> 2026-04-29T14:29:33.712Z (24h)
-- Runs with observations: 7 recorded / 7 counted
-- Samples: 10
+- Window: 2026-04-28T18:53:53.244Z -> 2026-04-29T18:53:53.244Z (24h)
+- Runs with observations: 8 recorded / 8 counted
+- Samples: 11
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Supervisor Agent | cloud-run-supervisor | 3 | 19726ms | 48818ms | 624ms | 732ms | 19067ms | 48818ms | QA-20260429-0368 |
 | Cloud Run AI | multi-provider-fallback | 1 | 17606ms | 17606ms | 751ms | 751ms | 18276ms | 18276ms | QA-20260429-0370 |
 | Cloud Run AI | cerebras | 1 | 14892ms | 14892ms | 459ms | 459ms | 15903ms | 15903ms | QA-20260429-0369 |
-| Cloud Run AI | cloud-run-supervisor | 3 | 9299ms | 11803ms | 1192ms | 1242ms | 7988ms | 10936ms | QA-20260429-0373 |
+| Cloud Run AI | cloud-run-supervisor | 4 | 7962ms | 11803ms | 1069ms | 1242ms | 6585ms | 10936ms | QA-20260430-0374 |
 | Cloud Run AI | deterministic-grounding | 2 | 2284ms | 2418ms | 795ms | 1129ms | 3295ms | 3554ms | QA-20260429-0370 |
 
 ## Coverage (Latest Run)
@@ -70,7 +70,7 @@ Latest run: QA-20260429-0373 (2026-04-29T14:29:33.712Z)
 - Counts Toward Summary: yes
 - Deployment: v8.11.64-production / SHA 279a3dcd
 - Coverage Packs: dashboard-core, ai-core
-- Covered Surfaces: /, /dashboard, AI sidebar open, AI job queue POST /api/ai/jobs, SSE /api/ai/jobs/[id]/stream, dashboard dataSlotInfo label, AI job request metadata queryAsOfDataSlot, AI response relevance for alert-status advisory query
+- Covered Surfaces: /, /dashboard, AI sidebar open, AI job queue POST /api/ai/jobs, SSE /api/ai/jobs/[id]/stream, dashboard dataSlotInfo label, AI job request metadata queryAsOfDataSlot, AI job result content for alert-status advisory query, AI sidebar collapsed and expanded response rendering
 - Skipped Surfaces: login providers beyond guest session, admin pages, reporter/analyst dedicated tabs, mobile layout, broad route sweep
 
 ## Links (Latest Run)
@@ -84,13 +84,16 @@ Latest run: QA-20260429-0373 (2026-04-29T14:29:33.712Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | v8.11.64 AI alert-status advisory pass screenshot | `reports/qa/evidence/qa-20260429-v81164-ai-alert-status-pass.png` | - |
-| playwright-network | v8.11.64 AI request body with queryAsOfDataSlot | `reports/qa/evidence/qa-20260429-v81164-ai-alert-status-pass-network.txt` | - |
-| playwright-network | v8.11.64 AI alert-status advisory DOM evidence | `reports/qa/evidence/qa-20260429-v81164-ai-alert-status-pass-dom.json` | - |
+| playwright-screenshot | v8.11.64 AI alert-status advisory rerun expanded screenshot | `reports/qa/evidence/qa-20260430-v81164-ai-alert-status-rerun-expanded.png` | - |
+| playwright-network | v8.11.64 AI rerun request body with queryAsOfDataSlot | `reports/qa/evidence/qa-20260430-v81164-ai-alert-status-rerun-network.txt` | - |
+| playwright-network | v8.11.64 AI rerun collapsed DOM evidence | `reports/qa/evidence/qa-20260430-v81164-ai-alert-status-rerun-dom.json` | - |
+| playwright-network | v8.11.64 AI rerun expanded DOM evidence | `reports/qa/evidence/qa-20260430-v81164-ai-alert-status-rerun-expanded-dom.json` | - |
+| playwright-network | v8.11.64 AI rerun job result payload | `reports/qa/evidence/qa-20260430-v81164-ai-alert-status-rerun-job-result.json` | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- frontend-ux-quality: Frontend UX Quality Reviewer (last QA-20260430-0374)
+  next: Show user-facing response details inline in the assistant answer even when analysis metadata exists.
 
 ## Pending Improvements
 
@@ -102,7 +105,7 @@ Latest run: QA-20260429-0373 (2026-04-29T14:29:33.712Z)
 
 ## Wont-Fix Improvements
 
-- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 4, Portfolio Deferral 11
+- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 4, Portfolio Deferral 12
 
 ### Platform Constraint
 
@@ -151,6 +154,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] ai-metric-ranking-memory-path-metadata: Memory top-N query should expose deterministic metric-ranking path instead of filter fallback metadata (seen 1회, last QA-20260418-0304)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P2] ai-sidebar-answer-details-default-visibility: AI sidebar should show actionable response details inline by default when analysis metadata exists (seen 1회, last QA-20260430-0374)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] analyst-drilldown: Analyst 서버별 드릴다운 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
 - [P2] analyst-trend-formatting-and-issue-ranking-polish: Analyst trend target formatting and issue ranking need polish (seen 1회, last QA-20260427-0352)
@@ -166,7 +171,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 - active-alerts-modal-ai-prefill: 활성 알림 모달에서 AI 사이드바 컨텍스트 자동 주입 (completed 1회, last QA-20260323-0166)
 - admin-log-level-admin-auth: 관리자 로그레벨 API 관리자 권한 강제 (completed 1회, last QA-20260325-0183)
-- ai-alert-status-advisory-response-drift: Alert-status advisory queries stay grounded and do not drift into unrelated metric rankings (completed 1회, last QA-20260429-0373)
+- ai-alert-status-advisory-response-drift: Alert-status advisory queries stay grounded and do not drift into unrelated metric rankings (completed 2회, last QA-20260430-0374)
 - ai-analysis-main-response-empty-on-cerebras-quota: Prevent empty main AI analysis response when Cerebras queue or token quota fails (completed 1회, last QA-20260429-0370)
 - ai-analysis-mode-route-selection-production: Production auto/thinking analysis mode route selection verified (completed 1회, last QA-20260428-0355)
 - ai-analyst-success: Analyst Agent 이상감지/예측 성공 (completed 2회, last QA-20260314-0097)
@@ -534,6 +539,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260430-0374 | 2026-04-29T18:53:53.244Z | targeted | yes | yes | Vercel Playwright targeted QA - v8.11.64 AI alert-status advisory rerun | 10 | 1 | 0 | 0 | 1 | 1 |
 | QA-20260429-0373 | 2026-04-29T14:29:33.712Z | targeted | yes | yes | Vercel Playwright targeted QA - v8.11.64 AI alert-status advisory recheck | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260429-0372 | 2026-04-29T14:03:32.361Z | targeted | yes | yes | Vercel Playwright targeted QA - v8.11.63 AI slot propagation recheck | 9 | 1 | 1 | 0 | 0 | 1 |
 | QA-20260429-0371 | 2026-04-29T13:26:06.547Z | targeted | yes | yes | Vercel Playwright targeted QA - v8.11.62 dashboard AI data slot drift | 8 | 0 | 1 | 0 | 0 | 2 |
@@ -553,4 +559,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260428-0357 | 2026-04-28T06:41:22.936Z | targeted | yes | yes | AI Assistant Vercel production Playwright MCP QA - v8.11.46 | 9 | 1 | 0 | 0 | 1 | 1 |
 | QA-20260428-0356 | 2026-04-28T05:38:09.460Z | targeted | yes | yes | AI Provider forced-routing context guard production QA - v8.11.46 | 12 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260428-0355 | 2026-04-28T00:28:02.962Z | targeted | yes | yes | AI analysis mode auto vs thinking production route and visualizer QA | 8 | 1 | 1 | 0 | 0 | 2 |
-| QA-20260427-0354 | 2026-04-27T13:51:08.998Z | targeted | yes | yes | AI Provider 분산 배치 (Spider-Web) Production QA (Task 3) | 7 | 0 | 0 | 0 | 0 | 0 |

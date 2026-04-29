@@ -1,0 +1,21 @@
+{
+  "status": 200,
+  "contentType": "application/json",
+  "text": "{\"jobId\":\"4dca494f-e6d6-478b-9f3f-750832df18ae\",\"type\":\"general\",\"status\":\"completed\",\"progress\":0,\"currentStep\":null,\"result\":{\"content\":\"📊 **서버 현황 요약**\\n• 전체 18대: 정상 15대, 경고 1대, 위험 2대, 오프라인 0대\\n• 평균 CPU: 38%, 메모리: 47%, 디스크: 39%\\n\\n⚠️ **주의 서버**\\n• storage-nfs-dc1-01: 디스크 95% (상승 추세 ↑)\\n• db-mysql-dc1-primary: 메모리 90% (상승 추세 ↑)\\n• api-was-dc1-01: CPU 84% (상승 추세 ↑)\\n\\n📈 **추세**\\n• storage-nfs-dc1-01: 디스크 평균 58% → 현재 95% (+38%p, 상승 추세 ↑)\\n• db-mysql-dc1-primary: 메모리 평균 65% → 현재 90% (+25%p, 상승 추세 ↑)\\n\\n💡 **권고**\\n1. storage-nfs-dc1-01: 로그 적체와 임시 파일 증가 경로를 확인하세요.\\n2. storage-nfs-dc1-01: 백업 산출물과 회전 정책이 정상 동작하는지 점검하세요.\\n3. storage-nfs-dc1-01: 대용량 파일 생성 프로세스와 보존 기간 설정을 확인하세요.\"},\"error\":null,\"errorDetails\":null,\"createdAt\":\"2026-04-29T18:47:35.440Z\",\"startedAt\":\"2026-04-29T18:47:36.023Z\",\"completedAt\":\"2026-04-29T18:47:38.398Z\",\"processingTimeMs\":2375}",
+  "json": {
+    "jobId": "4dca494f-e6d6-478b-9f3f-750832df18ae",
+    "type": "general",
+    "status": "completed",
+    "progress": 0,
+    "currentStep": null,
+    "result": {
+      "content": "📊 **서버 현황 요약**\n• 전체 18대: 정상 15대, 경고 1대, 위험 2대, 오프라인 0대\n• 평균 CPU: 38%, 메모리: 47%, 디스크: 39%\n\n⚠️ **주의 서버**\n• storage-nfs-dc1-01: 디스크 95% (상승 추세 ↑)\n• db-mysql-dc1-primary: 메모리 90% (상승 추세 ↑)\n• api-was-dc1-01: CPU 84% (상승 추세 ↑)\n\n📈 **추세**\n• storage-nfs-dc1-01: 디스크 평균 58% → 현재 95% (+38%p, 상승 추세 ↑)\n• db-mysql-dc1-primary: 메모리 평균 65% → 현재 90% (+25%p, 상승 추세 ↑)\n\n💡 **권고**\n1. storage-nfs-dc1-01: 로그 적체와 임시 파일 증가 경로를 확인하세요.\n2. storage-nfs-dc1-01: 백업 산출물과 회전 정책이 정상 동작하는지 점검하세요.\n3. storage-nfs-dc1-01: 대용량 파일 생성 프로세스와 보존 기간 설정을 확인하세요."
+    },
+    "error": null,
+    "errorDetails": null,
+    "createdAt": "2026-04-29T18:47:35.440Z",
+    "startedAt": "2026-04-29T18:47:36.023Z",
+    "completedAt": "2026-04-29T18:47:38.398Z",
+    "processingTimeMs": 2375
+  }
+}
