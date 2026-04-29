@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.62](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.61...v8.11.62) (2026-04-29)
+
+
+### Bug Fixes
+
+* **ai-engine:** expose redis circuit health state ([c7cbdb9](https://gitlab.com/skyasu2/openmanager-ai/-/commit/c7cbdb9aabb19aad290d7edc884ee9736e16f796))
+
 ## [8.11.61](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.60...v8.11.61) (2026-04-29)
 
 
