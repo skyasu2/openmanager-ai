@@ -1,18 +1,21 @@
 /**
  * Cloud Run Generate Service
- * Cerebras AI 텍스트 생성 담당 (AI SDK 버전)
+ * AI SDK text generation endpoint with provider fallback.
  *
  * Hybrid Architecture:
  * - Vercel에서 프록시를 통해 이 서비스 호출
  * - API 키는 Cloud Run에서만 관리
  *
- * Updated: 2026-04-25 - Cerebras default follows account-level smoke evidence
+ * Updated: 2026-04-30 - Uses shared quota admission + provider fallback path
  */
 
-import { generateText, streamText } from 'ai';
-import { createCerebras } from '@ai-sdk/cerebras';
 import { logger } from '../../lib/logger';
 import { getCerebrasModelId } from '../../lib/config-parser';
+import {
+  generateTextWithRetry,
+  type ProviderAttempt,
+} from '../resilience/retry-with-fallback';
+import type { ProviderName } from '../ai-sdk/model-provider';
 
 interface GenerateOptions {
   model?: string;
@@ -26,6 +29,9 @@ interface GenerateResult {
   text?: string;
   error?: string;
   model?: string;
+  provider?: ProviderName;
+  usedFallback?: boolean;
+  attempts?: ProviderAttempt[];
   usage?: {
     promptTokens: number;
     completionTokens: number;
@@ -37,7 +43,7 @@ interface GenerateResult {
 class CloudRunGenerateService {
   // Use the verified-access Cerebras default model unless env overrides it.
   private readonly DEFAULT_MODEL = getCerebrasModelId();
-  private cerebras: ReturnType<typeof createCerebras> | null = null;
+  private readonly PROVIDER_ORDER: ProviderName[] = ['cerebras', 'groq', 'mistral'];
 
   // 통계
   private stats = {
@@ -48,22 +54,6 @@ class CloudRunGenerateService {
   };
 
   /**
-   * Get Cerebras provider (lazy initialization)
-   */
-  private getCerebras(): ReturnType<typeof createCerebras> | null {
-    if (this.cerebras) return this.cerebras;
-
-    const apiKey = process.env.CEREBRAS_API_KEY;
-    if (!apiKey) {
-      logger.error('[Generate] CEREBRAS_API_KEY not configured');
-      return null;
-    }
-
-    this.cerebras = createCerebras({ apiKey });
-    return this.cerebras;
-  }
-
-  /**
    * 텍스트 생성
    */
   async generate(
@@ -71,7 +61,7 @@ class CloudRunGenerateService {
     options: GenerateOptions = {}
   ): Promise<GenerateResult> {
     const startTime = Date.now();
-    const modelId = options.model || this.DEFAULT_MODEL;
+    const requestedModelId = options.model || this.DEFAULT_MODEL;
 
     this.stats.requests++;
 
@@ -80,19 +70,40 @@ class CloudRunGenerateService {
       return { success: false, error: 'Empty prompt provided' };
     }
 
-    const cerebras = this.getCerebras();
-    if (!cerebras) {
-      return { success: false, error: 'No API key configured' };
-    }
-
     try {
-      const { text, usage } = await generateText({
-        model: cerebras(modelId),
-        prompt,
+      const retryResult = await generateTextWithRetry({
+        messages: [{ role: 'user', content: prompt }],
         temperature: options.temperature ?? 0.7,
         maxOutputTokens: options.maxTokens ?? 2048,
         topP: options.topP ?? 0.95,
+        ...(options.model && {
+          providerModelIds: { cerebras: [options.model] },
+        }),
+      }, this.PROVIDER_ORDER, {
+        // Legacy generate endpoint previously made one SDK attempt. Keep this
+        // path conservative and rely on provider fallback instead of same-model retries.
+        maxRetries: 0,
+        timeoutMs: 30_000,
       });
+
+      if (!retryResult.success || !retryResult.result) {
+        const lastError =
+          retryResult.attempts[retryResult.attempts.length - 1]?.error ||
+          'All providers failed';
+        this.stats.errors++;
+        logger.error('[Generate] All providers failed:', lastError);
+        return {
+          success: false,
+          error: lastError,
+          provider: retryResult.provider,
+          model: retryResult.modelId || requestedModelId,
+          usedFallback: retryResult.usedFallback,
+          attempts: retryResult.attempts,
+          processingTime: Date.now() - startTime,
+        };
+      }
+
+      const { text, usage } = retryResult.result;
 
       const processingTime = Date.now() - startTime;
 
@@ -100,20 +111,25 @@ class CloudRunGenerateService {
       const usageInfo = {
         promptTokens: usage?.inputTokens || 0,
         completionTokens: usage?.outputTokens || 0,
-        totalTokens: (usage?.inputTokens || 0) + (usage?.outputTokens || 0),
+        totalTokens:
+          usage?.totalTokens ??
+          (usage?.inputTokens || 0) + (usage?.outputTokens || 0),
       };
 
       this.stats.successes++;
       this.stats.totalTokens += usageInfo.totalTokens;
 
       logger.info(
-        `[Generate] Success: ${modelId}, ${usageInfo.totalTokens} tokens, ${processingTime}ms`
+        `[Generate] Success: ${retryResult.provider}/${retryResult.modelId}, ${usageInfo.totalTokens} tokens, ${processingTime}ms`
       );
 
       return {
         success: true,
         text,
-        model: modelId,
+        model: retryResult.modelId,
+        provider: retryResult.provider,
+        usedFallback: retryResult.usedFallback,
+        attempts: retryResult.attempts,
         usage: usageInfo,
         processingTime,
       };
@@ -137,45 +153,26 @@ class CloudRunGenerateService {
     prompt: string,
     options: GenerateOptions = {}
   ): Promise<ReadableStream<Uint8Array> | null> {
-    const modelId = options.model || this.DEFAULT_MODEL;
-
-    const cerebras = this.getCerebras();
-    if (!cerebras) {
-      logger.error('[Generate Stream] No API key available');
+    const result = await this.generate(prompt, options);
+    if (!result.success || !result.text) {
+      logger.error('[Generate Stream] Generation failed:', result.error);
       return null;
     }
 
-    try {
-      const result = streamText({
-        model: cerebras(modelId),
-        prompt,
-        temperature: options.temperature ?? 0.7,
-        maxOutputTokens: options.maxTokens ?? 2048,
-        topP: options.topP ?? 0.95,
-      });
+    const encoder = new TextEncoder();
 
-      const encoder = new TextEncoder();
-      const textStream = result.textStream;
-
-      return new ReadableStream({
-        async start(controller) {
-          try {
-            for await (const text of textStream) {
-              if (text) {
-                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`));
-              }
-            }
-            controller.enqueue(encoder.encode('data: [DONE]\n\n'));
-            controller.close();
-          } catch (error) {
-            controller.error(error);
-          }
-        },
-      });
-    } catch (error) {
-      logger.error('[Generate Stream] Error:', error);
-      return null;
-    }
+    return new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({
+          text: result.text,
+          provider: result.provider,
+          model: result.model,
+          usedFallback: result.usedFallback,
+        })}\n\n`));
+        controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+        controller.close();
+      },
+    });
   }
 
   /**
@@ -188,7 +185,7 @@ class CloudRunGenerateService {
         this.stats.requests > 0
           ? Math.round((this.stats.successes / this.stats.requests) * 100)
           : 0,
-      provider: 'cerebras (ai-sdk)',
+      provider: 'cerebras -> groq -> mistral (ai-sdk)',
       model: this.DEFAULT_MODEL,
     };
   }

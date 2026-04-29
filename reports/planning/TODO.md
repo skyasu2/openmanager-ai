@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-29 KST (`Redis Circuit Breaker + health endpoint degraded state`)
+**Last Updated**: 2026-04-30 KST (`Generate service quota admission fallback`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -31,6 +31,20 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-30 #228)
+- [x] Generate service quota admission fallback
+  - `/api/ai/generate` raw Cerebras-only path를 shared `generateTextWithRetry()` 경로로 전환
+  - Cerebras → Groq → Mistral provider fallback, quota admission reservation/reconcile, cooldown 경로를 legacy generate endpoint에도 적용
+  - `topP`와 explicit Cerebras `options.model` override를 shared retry helper에서 보존
+  - `generate/stream`은 동일 quota-aware generation path를 재사용해 raw Cerebras stream 우회를 차단
+  - 회귀 테스트: `generate-service.test.ts`, `generate.test.ts`, `retry-with-fallback.test.ts` targeted 23/23 통과
+
+### Completed (2026-04-30 #227)
+- [x] Frontend unused API config cleanup
+  - knip가 unused file로 탐지한 `src/lib/api/api-config.ts` 제거
+  - health route가 자체 runtime config를 사용하도록 바뀐 뒤 남아 있던 stale `api-config` test mock 제거
+  - `generate`/`approval` 라우트와 RAG merge planner는 실제 server route/script 계약에 묶여 있어 이번 dead-code 삭제 범위에서 제외
 
 ### Completed (2026-04-29 #226)
 - [x] Redis Circuit Breaker + health endpoint degraded 상태 노출

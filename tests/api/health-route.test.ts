@@ -6,14 +6,12 @@ const {
   mockCreateClient,
   mockGetCacheStats,
   mockCheckCloudRunHealth,
-  mockGetApiConfig,
   mockGetSiteUrl,
   mockBuildCallback,
 } = vi.hoisted(() => ({
   mockCreateClient: vi.fn(),
   mockGetCacheStats: vi.fn(),
   mockCheckCloudRunHealth: vi.fn(),
-  mockGetApiConfig: vi.fn(),
   mockGetSiteUrl: vi.fn(),
   mockBuildCallback: vi.fn(),
 }));
@@ -38,10 +36,6 @@ vi.mock('@/env', () => ({
     GCP_MCP_SERVER_URL: '',
   },
   isDevelopment: false,
-}));
-
-vi.mock('@/lib/api/api-config', () => ({
-  getApiConfig: mockGetApiConfig,
 }));
 
 // createApiRoute mock: 빌더 패턴을 시뮬레이션하여 build 콜백을 캡처
@@ -131,12 +125,6 @@ describe('Health Route Contract (/api/health)', () => {
     mockCheckCloudRunHealth.mockResolvedValue({
       healthy: true,
       latency: 150,
-    });
-
-    mockGetApiConfig.mockReturnValue({
-      rateLimit: {},
-      timeout: 30,
-      cache: { enabled: true, ttl: 60 },
     });
 
     mockGetSiteUrl.mockReturnValue('http://localhost:3000');

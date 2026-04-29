@@ -86,10 +86,12 @@ export interface GenerateTextOptions {
   tools?: Parameters<typeof generateText>[0]['tools'];
   toolChoice?: Parameters<typeof generateText>[0]['toolChoice'];
   temperature?: number;
+  topP?: number;
   maxOutputTokens?: number;
   stopWhen?: Parameters<typeof generateText>[0]['stopWhen'];
   abortSignal?: AbortSignal;
   requiredCapabilities?: ModelCapabilityRequirements;
+  providerModelIds?: Partial<Record<ProviderName, string[]>>;
 }
 
 // ============================================================================
@@ -423,7 +425,9 @@ export async function generateTextWithRetry(
 
     const providerConfig = availableProviders[0];
     const { name: provider, getModel } = providerConfig;
-    const modelIds = providerConfig.modelIds();
+    const modelIds =
+      options.providerModelIds?.[provider]?.filter(Boolean) ??
+      providerConfig.modelIds();
 
     for (let modelIndex = 0; modelIndex < modelIds.length; modelIndex++) {
       const modelId = modelIds[modelIndex];
@@ -512,6 +516,7 @@ export async function generateTextWithRetry(
                 tools: options.tools,
                 ...(options.toolChoice && { toolChoice: options.toolChoice }),
                 temperature: options.temperature ?? 0.2,
+                ...(options.topP !== undefined && { topP: options.topP }),
                 maxOutputTokens: options.maxOutputTokens ?? 2048,
                 maxRetries: 0, // Provider fallback is handled here; avoid retry amplification on 429/queue_exceeded.
                 abortSignal: attemptAbort.signal,

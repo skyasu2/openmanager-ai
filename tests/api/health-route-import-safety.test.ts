@@ -9,9 +9,6 @@ function mockHealthRouteDependencies(
   vi.doMock('@/env', () => {
     throw new Error('strict env module should not load for health route');
   });
-  vi.doMock('@/lib/api/api-config', () => {
-    throw new Error('api-config should not load for health route');
-  });
   vi.doMock('@/lib/ai-proxy/proxy', () => ({
     checkCloudRunHealth: mockCheckCloudRunHealth,
   }));
@@ -72,7 +69,6 @@ function mockHealthRouteDependencies(
 describe('Health route import safety', () => {
   afterEach(() => {
     vi.doUnmock('@/env');
-    vi.doUnmock('@/lib/api/api-config');
     vi.resetModules();
     vi.clearAllMocks();
   });
