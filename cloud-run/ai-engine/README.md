@@ -28,8 +28,17 @@ npm run test:all
 bash deploy.sh
 
 # Artifact Registry cleanup 재점검
-# 7일 보존 임계 + cleanup background job 반영 후 용량/삭제 로그 점검
+# 1일 보존 임계 + keep latest 3 + cleanup background job 반영 후 용량/삭제 로그 점검
 bash scripts/check-artifact-registry-cleanup.sh
+
+# Cleanup policy 적용 계획 출력 (외부 상태 변경 없음)
+bash scripts/apply-cleanup-policies.sh
+
+# Artifact Registry cleanup policy dry-run 저장
+MODE=dry-run bash scripts/apply-cleanup-policies.sh
+
+# Cleanup policy 실제 적용
+MODE=apply bash scripts/apply-cleanup-policies.sh
 
 # GitLab CI 수동/스케줄 재점검
 # job: observe_artifact_registry_cleanup
@@ -40,35 +49,25 @@ bash scripts/check-artifact-registry-cleanup.sh
 gcloud run deploy ai-engine --source . --region asia-northeast1
 ```
 
-### Artifact Registry Cleanup Recheck Timing
+### Cleanup Policy
 
-- 기준 날짜 계산:
-  - 현재 대용량 blob 누적의 가장 이른 관측일: `2026-04-14`
-  - cleanup delete 조건: `olderThan=7 days`
-  - earliest threshold day: `2026-04-21`
-  - Google cleanup background job 반영 여유: 약 `1 day`
-  - 권장 재점검일: `2026-04-22` 이후
-- 예시:
-  - `2026-04-18 KST`에 보면 `2026-04-22`는 `4일` 뒤였다.
-  - `2026-04-19 KST`인 지금 보면 `2026-04-22`는 `3일` 남은 상태가 맞다.
-- 확인 방법:
-  - 로컬: `bash scripts/check-artifact-registry-cleanup.sh`
+- Artifact Registry: `cloud-run/ai-engine/config/artifact-registry-cleanup-policy.json`
+  - delete: `ai-engine` images older than `1d`
+  - keep: latest `3` versions for rollback
+- Deploy cleanup: GitLab CI runs `deploy.sh` with cleanup enabled.
+  - images: keep latest `3`
+  - Cloud Build source uploads: keep latest `5`
+  - Cloud Run revisions: keep latest `3`
+- Cloud Storage lifecycle:
+  - `openmanager-free-tier_cloudbuild/source/`: delete after `7d`
+  - `run-sources-openmanager-free-tier-asia-northeast1/services/ai-engine/`: delete after `7d`
+- Apply:
+  - plan only: `bash scripts/apply-cleanup-policies.sh`
+  - Artifact Registry dry-run: `MODE=dry-run bash scripts/apply-cleanup-policies.sh`
+  - active: `MODE=apply bash scripts/apply-cleanup-policies.sh`
+- Verification:
+  - local: `bash scripts/check-artifact-registry-cleanup.sh`
   - GitLab CI: `observe_artifact_registry_cleanup`
-  - GitLab schedule 권장:
-    - branch: `main`
-    - cadence: daily
-    - start: `2026-04-22` 이후
-    - 권장 시각: `10:00 KST` 전후
-    - UI path: `GitLab > Build > Pipeline schedules > New schedule`
-    - description 예시: `Artifact Registry cleanup recheck`
-    - timezone이 `Asia/Seoul`이면 `0 10 * * *`
-    - timezone이 `UTC`면 `0 1 * * *`로 `10:00 KST`에 해당
-    - target branch: `main`
-    - variable 추가는 불필요
-  - GitLab CI 결과 파일: `tmp/ci/artifact-registry-cleanup-recheck.txt` artifact
-- 기대 신호:
-  - `Cleanup Delete Logs`에 Artifact Registry service account 기반 `DeleteVersion` 또는 `BatchDeleteVersions`
-  - `Files By Day`에서 `2026-04-14` bucket 감소 시작
 
 ## Architecture (v8.0.0)
 
@@ -112,7 +111,7 @@ src/
 - `stopWhen: [hasToolCall('finalAnswer'), stepCountIs(N)]` - 종료 조건
 - `timeout: { totalMs, chunkMs }` - 실행 시간 제한
 - `onStepFinish` - 단계별 모니터링
-- 7개 에이전트 모두 `ConfigBasedAgent` 단일 클래스 사용 (per-type 서브클래스 제거)
+- 5개 라우팅 LLM Agent와 2개 내부 pipeline config가 `ConfigBasedAgent` 단일 클래스를 공유 (per-type 서브클래스 제거)
 
 ### AgentFactory Pattern
 
@@ -331,7 +330,7 @@ Current: `8.0.0`
 
 ### v8.0.0 (2026-02-16)
 - **ToolLoopAgent 채택** - AI SDK v6 공식 에이전트 패턴으로 BaseAgent 내부 마이그레이션
-- **ConfigBasedAgent 통합** - 7개 per-type 서브클래스 제거, 단일 ConfigBasedAgent로 통합
+- **ConfigBasedAgent 통합** - 라우팅 LLM Agent와 내부 pipeline config의 per-type 서브클래스 제거, 단일 ConfigBasedAgent로 통합
 - **AgentFactory 단순화** - switch문 제거, config key 매핑 방식으로 전환
 
 ### v7.1.0 (2026-01-27)
@@ -340,7 +339,7 @@ Current: `8.0.0`
 - **Vision Agent 추가** - Gemini Flash-Lite 전용 (1M context, multimodal)
 - **AI SDK v6.0.50** - `timeout`, `stopWhen` 설정 적용
 - **Codex/Gemini 코드 리뷰 반영** - type guard, edge case 처리
-- **7-Agent 시스템** - NLQ, Analyst, Reporter, Advisor, Vision, Evaluator, Optimizer
+- **5개 라우팅 LLM Agent + 2개 내부 pipeline stage** - NLQ, Analyst, Reporter, Advisor, Vision + Evaluator/Optimizer
 
 ### v5.88.0 (2026-01-16)
 - Summarizer Agent 제거 (NLQ Agent로 통합)

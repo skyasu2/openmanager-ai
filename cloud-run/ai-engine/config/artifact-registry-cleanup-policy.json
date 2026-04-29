@@ -1,0 +1,27 @@
+[
+  {
+    "name": "delete-ai-engine-older-than-1d",
+    "action": {
+      "type": "Delete"
+    },
+    "condition": {
+      "tagState": "any",
+      "packageNamePrefixes": [
+        "ai-engine"
+      ],
+      "olderThan": "1d"
+    }
+  },
+  {
+    "name": "keep-ai-engine-latest-3",
+    "action": {
+      "type": "Keep"
+    },
+    "mostRecentVersions": {
+      "packageNamePrefixes": [
+        "ai-engine"
+      ],
+      "keepCount": 3
+    }
+  }
+]

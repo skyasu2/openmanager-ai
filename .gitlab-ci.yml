@@ -354,7 +354,7 @@ deploy_ai_engine:
     - gcloud config set project "$GCP_PROJECT_ID"
     - echo "▶ AI Engine Cloud Run 배포..."
     - cd cloud-run/ai-engine
-    - LOCAL_DOCKER_PREFLIGHT=false CLEANUP_ENABLED=false bash deploy.sh
+    - LOCAL_DOCKER_PREFLIGHT=false CLEANUP_ENABLED=true CLEANUP_KEEP_IMAGES=3 CLEANUP_KEEP_SOURCES=5 CLEANUP_KEEP_REVISIONS=3 bash deploy.sh
     - echo "✅ AI Engine 배포 완료"
   after_script:
     - rm -f gcp-key.json

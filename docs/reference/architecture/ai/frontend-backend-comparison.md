@@ -69,7 +69,7 @@ graph LR
 부가 경로: `/api/ai/supervisor`는 legacy JSON/text proxy이며 cache/plain callers와 local dev fallback을 담당합니다.
 ```
 
-> Source of truth (2026-04-29): `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (execution agents 7 + internal deterministic Evaluator/Optimizer configs), `src/app/api/**/route.ts(x)` (frontend API routes 31), `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')` (Cloud Run API mounts 9), `cloud-run/ai-engine/src/routes/*.ts` (13 non-test route/helper modules), `cloud-run/ai-engine/src/lib/cloud-tasks.ts`.
+> Source of truth (2026-04-29): `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (5 routing LLM agents + 2 internal deterministic Evaluator/Optimizer pipeline configs), `src/app/api/**/route.ts(x)` (frontend API routes 31), `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')` (Cloud Run API mounts 9), `cloud-run/ai-engine/src/routes/*.ts` (13 non-test route/helper modules), `cloud-run/ai-engine/src/lib/cloud-tasks.ts`.
 
 ---
 

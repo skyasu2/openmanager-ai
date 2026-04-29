@@ -76,7 +76,7 @@ CLEANUP_DRY_RUN="${CLEANUP_DRY_RUN:-false}"
 CLEANUP_PARALLEL="${CLEANUP_PARALLEL:-false}"
 # Keep aligned with Artifact Registry keep-latest-3 policy to avoid churn.
 KEEP_IMAGES="${CLEANUP_KEEP_IMAGES:-3}"
-KEEP_SOURCES="${CLEANUP_KEEP_SOURCES:-10}"
+KEEP_SOURCES="${CLEANUP_KEEP_SOURCES:-5}"
 KEEP_REVISIONS="${CLEANUP_KEEP_REVISIONS:-3}"
 
 if [ "${FREE_TIER_GUARD_ONLY:-false}" = "true" ]; then
