@@ -1,0 +1,122 @@
+{
+  "runId": "QA-20260430-0376",
+  "recordedAt": "2026-04-29T20:55:55.746Z",
+  "recordedAtKst": "2026-04-30 05:55:55 KST",
+  "runTitle": "Vercel Playwright QA - v8.11.68 Explicit Server Summary",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_CB3LGcG3bvz6yPWw7Fu6UB1jM3h8",
+    "deploymentUrl": "https://openmanager-r9ok4yfdy-skyasus-projects.vercel.app",
+    "commitSha": "cd4e0332ffcdfe89203fe8f0cdfdc34192b2bd2c"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/dashboard",
+    "AI sidebar",
+    "Cloud Tasks async job stream",
+    "Cloud Run AI Engine deterministic fallback"
+  ],
+  "skippedSurfaces": ["login", "modal-detail-pack", "observability-pack"],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI sidebar explicit server summary",
+      "agent": "Cloud Run AI",
+      "provider": "cerebras",
+      "model": "qwen-3-235b-a22b-instruct-2507",
+      "route": "/api/ai/jobs/[id]/stream",
+      "source": "job result metadata",
+      "latencyMs": 698,
+      "ttfbMs": 369,
+      "processingTimeMs": 740
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "명시 서버 보존, providerAttempts, SSE/POST 호출 수를 production UI 경로에서 검증했습니다.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline, Vercel smoke, Cloud Run health/smoke가 모두 성공했습니다.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-30T05:53:28+09:00",
+      "summary": "vercel usage reported effective=19.0897 USD, billed=0.0000 USD for the current billing period; no unexpected billed usage observed.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "AI sidebar explicit server summary result",
+      "path": "reports/qa/evidence/qa-20260430-v81168-explicit-server-summary.png"
+    },
+    {
+      "type": "playwright-network",
+      "label": "Job metadata and provider attempts",
+      "path": "reports/qa/evidence/qa-20260430-v81168-explicit-server-summary-job.json"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-explicit-server-summary-backfill",
+      "title": "Explicit server action summary keeps named TOP2 servers and backfills partial tool payloads",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-cerebras-single-attempt-check",
+      "title": "Cerebras Qwen executes once per UI question without fallback",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": []
+}

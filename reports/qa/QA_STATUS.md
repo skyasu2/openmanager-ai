@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-30 04:26:28 KST
+> Generated at: 2026-04-30 05:55:56 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 373 |
-| Total Runs (Counted) | 303 |
+| Total Recorded Runs | 374 |
+| Total Runs (Counted) | 304 |
 | Non-counted Runs | 70 |
-| Total Checks | 2570 |
-| Passed | 2473 |
+| Total Checks | 2576 |
+| Passed | 2479 |
 | Failed | 88 |
-| Completed Items | 366 |
+| Completed Items | 368 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 20 |
 | Expert Domains Tracked | 11 |
 | Expert Open Gaps | 1 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260430-0375 (2026-04-29T19:26:27.989Z) |
-| Latest Recorded Run | QA-20260430-0375 (2026-04-29T19:26:27.989Z) |
+| Last Counted Run | QA-20260430-0376 (2026-04-29T20:55:55.746Z) |
+| Latest Recorded Run | QA-20260430-0376 (2026-04-29T20:55:55.746Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,29 +34,30 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260430-0375 (2026-04-29T19:26:27.989Z)
+Latest run: QA-20260430-0376 (2026-04-29T20:55:55.746Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | vercel usage reported effective=19.0897 USD, billed=0.0000 USD for the current billing period; no unexpected billed usage observed. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-28T19:26:27.989Z -> 2026-04-29T19:26:27.989Z (24h)
-- Runs with observations: 8 recorded / 8 counted
-- Samples: 11
+- Window: 2026-04-28T20:55:55.746Z -> 2026-04-29T20:55:55.746Z (24h)
+- Runs with observations: 9 recorded / 9 counted
+- Samples: 12
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
 | Supervisor Agent | cloud-run-supervisor | 3 | 19726ms | 48818ms | 624ms | 732ms | 19067ms | 48818ms | QA-20260429-0368 |
 | Cloud Run AI | multi-provider-fallback | 1 | 17606ms | 17606ms | 751ms | 751ms | 18276ms | 18276ms | QA-20260429-0370 |
-| Cloud Run AI | cerebras | 1 | 14892ms | 14892ms | 459ms | 459ms | 15903ms | 15903ms | QA-20260429-0369 |
+| Cloud Run AI | cerebras | 2 | 7795ms | 14892ms | 414ms | 459ms | 8322ms | 15903ms | QA-20260430-0376 |
 | Cloud Run AI | cloud-run-supervisor | 4 | 7962ms | 11803ms | 1069ms | 1242ms | 6585ms | 10936ms | QA-20260430-0374 |
 | Cloud Run AI | deterministic-grounding | 2 | 2284ms | 2418ms | 795ms | 1129ms | 3295ms | 3554ms | QA-20260429-0370 |
 
@@ -65,10 +66,10 @@ Latest run: QA-20260430-0375 (2026-04-29T19:26:27.989Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: v8.11.64-production / SHA 279a3dcd
-- Coverage Packs: ai-core
-- Covered Surfaces: Cloud Run /health redis.configured field, Cloud Run /health redis.degraded field, Cloud Run /health redis.state field, Cloud Run /health redis.retryAfterMs field
-- Skipped Surfaces: circuit open/half-open state (requires fault injection), UI surfaces
+- Deployment: dpl_CB3LGcG3bvz6yPWw7Fu6UB1jM3h8 / SHA cd4e0332
+- Coverage Packs: dashboard-core, ai-core
+- Covered Surfaces: /dashboard, AI sidebar, Cloud Tasks async job stream, Cloud Run AI Engine deterministic fallback
+- Skipped Surfaces: login, modal-detail-pack, observability-pack
 
 ## Links (Latest Run)
 
@@ -80,7 +81,8 @@ Latest run: QA-20260430-0375 (2026-04-29T19:26:27.989Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| curl-response | v8.11.64 Cloud Run /health redis circuit schema | `reports/qa/evidence/qa-20260430-v81164-cloud-run-health.json` | - |
+| playwright-screenshot | AI sidebar explicit server summary result | `reports/qa/evidence/qa-20260430-v81168-explicit-server-summary.png` | - |
+| playwright-network | Job metadata and provider attempts | `reports/qa/evidence/qa-20260430-v81168-explicit-server-summary-job.json` | - |
 
 ## Expert Domain Open Gaps
 
@@ -174,6 +176,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-assistant-real-chat-e2e-v81136: AI assistant Playwright MCP real chat QA on Vercel v8.11.36 (completed 1회, last QA-20260427-0350)
 - ai-assistant-ux-polish-p1-p2: AI Assistant typography scale, touch target, light surface, System Context status, and provider routing polish (completed 1회, last QA-20260429-0360)
 - ai-assistant-vercel-production-core-pass: AI Assistant production browser smoke passes (completed 1회, last QA-20260428-0357)
+- ai-cerebras-single-attempt-check: Cerebras Qwen executes once per UI question without fallback (completed 1회, last QA-20260430-0376)
 - ai-chat-cloud-run-500: AI Chat Cloud Run 자유입력 응답 - 최종 성공 확인 (completed 1회, last QA-20260310-0089)
 - ai-chat-cloud-run-rate-limit-production: Complex Cloud Run AI verification path should complete without rate-limit failure in production (completed 2회, last QA-20260408-0250)
 - ai-chat-detail-expand: AI Chat 상세 분석 펼치기 (completed 1회, last QA-20260407-0248)
@@ -196,6 +199,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-disk-threshold-answer-accuracy-drift: AI async job answer preserves DISK threshold and dashboard metric values (completed 2회, last QA-20260429-0368)
 - ai-domain-boundary-phase2-analysis-mode: AI Domain Boundary Phase 2 analysis mode toggle (auto/thinking) (completed 1회, last QA-20260416-0297)
 - ai-engine-status: AI 엔진 상태 표시 (completed 1회, last QA-20260317-0114)
+- ai-explicit-server-summary-backfill: Explicit server action summary keeps named TOP2 servers and backfills partial tool payloads (completed 1회, last QA-20260430-0376)
 - ai-fallback-done-usage-metadata: Delegated summarization fallback should report delegated provider token usage (completed 1회, last QA-20260429-0367)
 - ai-friendly-template-todo-marker: Template TODO marker 분리 (TEMPLATE_TODO 적용) (completed 1회, last QA-20260226-0006)
 - ai-hardening-production-verification: Verify production AI hardening release on v8.11.20 (completed 1회, last QA-20260418-0303)
@@ -532,6 +536,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260430-0376 | 2026-04-29T20:55:55.746Z | targeted | yes | yes | Vercel Playwright QA - v8.11.68 Explicit Server Summary | 6 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260430-0375 | 2026-04-29T19:26:27.989Z | targeted | yes | yes | curl smoke - v8.11.64 Cloud Run /health redis circuit schema | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260430-0374 | 2026-04-29T18:53:53.244Z | targeted | yes | yes | Vercel Playwright targeted QA - v8.11.64 AI alert-status advisory rerun | 10 | 1 | 0 | 0 | 1 | 1 |
 | QA-20260429-0373 | 2026-04-29T14:29:33.712Z | targeted | yes | yes | Vercel Playwright targeted QA - v8.11.64 AI alert-status advisory recheck | 9 | 1 | 0 | 0 | 0 | 0 |
@@ -551,4 +556,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260429-0359 | 2026-04-28T15:49:12.787Z | targeted | yes | yes | v8.11.54 Release Production Smoke | 14 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260428-0358 | 2026-04-28T13:24:51.649Z | targeted | yes | yes | Cloud Tasks Job Queue production smoke - v8.11.52 | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260428-0357 | 2026-04-28T06:41:22.936Z | targeted | yes | yes | AI Assistant Vercel production Playwright MCP QA - v8.11.46 | 9 | 1 | 0 | 0 | 1 | 1 |
-| QA-20260428-0356 | 2026-04-28T05:38:09.460Z | targeted | yes | yes | AI Provider forced-routing context guard production QA - v8.11.46 | 12 | 2 | 0 | 0 | 0 | 0 |

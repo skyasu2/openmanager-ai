@@ -1,0 +1,57 @@
+{
+  "run": "Vercel Playwright MCP QA - v8.11.68 explicit server summary",
+  "capturedAt": "2026-04-30T05:49:50+09:00",
+  "target": "https://openmanager-ai.vercel.app/dashboard",
+  "versions": {
+    "frontend": "8.11.68",
+    "aiEngine": "8.11.68",
+    "commitSha": "cd4e0332ffcdfe89203fe8f0cdfdc34192b2bd2c"
+  },
+  "query": "현재 리소스 경고 TOP 2인 db-mysql-dc1-primary와 db-mysql-dc1-backup을 기준으로 장애 원인을 추정하고, 각 서버별 즉시 조치 1개씩만 우선순위로 제안해줘. 대시보드 현재 시점 데이터 기준으로 답해줘",
+  "jobId": "5c7cc20f-1436-445f-8e3a-d0dc8382bea1",
+  "network": {
+    "jobPostCount": 1,
+    "streamCount": 1,
+    "postStatus": 201,
+    "postDurationMs": 1152,
+    "streamDurationMs": 2091,
+    "streamEvents": ["open", "progress", "result"],
+    "consoleWarningsOrErrors": 0
+  },
+  "result": {
+    "status": "completed",
+    "processingTimeMs": 740,
+    "contentChecks": {
+      "includesPrimary": true,
+      "includesBackup": true,
+      "excludesReplicaSubstitution": true,
+      "primaryActionCount": 1,
+      "backupActionCount": 1
+    },
+    "contentExcerpt": "요청 서버 2대 상태: db-mysql-dc1-primary DISK 82%, db-mysql-dc1-backup DISK 71%. 즉시 조치 2개가 각 서버별 1개씩 반환됨."
+  },
+  "metadata": {
+    "analysisMode": "thinking",
+    "dataSlot": {
+      "slotIndex": 34,
+      "minuteOfDay": 340,
+      "timeLabel": "05:40 KST"
+    },
+    "provider": "cerebras",
+    "modelId": "qwen-3-235b-a22b-instruct-2507",
+    "providerAttempts": [
+      {
+        "provider": "cerebras",
+        "modelId": "qwen-3-235b-a22b-instruct-2507",
+        "attempt": 1,
+        "durationMs": 370
+      }
+    ],
+    "usedFallback": false,
+    "durationMs": 698,
+    "ttfbMs": 369,
+    "latencyTier": "fast",
+    "resolvedMode": "multi",
+    "modeSelectionSource": "analysis_mode_thinking"
+  }
+}
