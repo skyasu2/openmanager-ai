@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.61](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.60...v8.11.61) (2026-04-29)
+
+
+### Bug Fixes
+
+* **ai-engine:** add atomic provider quota admission gate ([83af7ca](https://gitlab.com/skyasu2/openmanager-ai/-/commit/83af7ca0e3a371b7c89bccab08da7c28d07c0b48))
+
+
+### Tests
+
+* **qa:** record v8.11.60 ai sidebar recheck ([672b530](https://gitlab.com/skyasu2/openmanager-ai/-/commit/672b530e73cde3952d82e2c693edd935714dc256))
+
 ## [8.11.60](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.59...v8.11.60) (2026-04-29)
 
 
