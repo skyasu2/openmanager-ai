@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.60](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.59...v8.11.60) (2026-04-29)
+
+
+### Bug Fixes
+
+* **ai-engine:** harden query routing and stream fallback ([6d201bb](https://gitlab.com/skyasu2/openmanager-ai/-/commit/6d201bb7a3f86534628bd74b2b44884c94690e9d))
+* **ai:** pin async job metric data slot ([1981836](https://gitlab.com/skyasu2/openmanager-ai/-/commit/198183658c3dc1c6876d9102017082f05596e1e4))
+
 ## [8.11.59](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.58...v8.11.59) (2026-04-29)
 
 
