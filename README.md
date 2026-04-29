@@ -5,7 +5,7 @@
 > **AI-Native Server Monitoring Platform**
 > 자연어로 대화하며 서버를 모니터링하는 차세대 운영 플랫폼
 
-![Version](https://img.shields.io/badge/version-8.10.8-blue.svg?style=for-the-badge) ![License](https://img.shields.io/badge/License-GPL_v3-blue.svg?style=for-the-badge) ![Next.js](https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js&logoColor=white) ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB) ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white) ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white) ![Supabase](https://img.shields.io/badge/Supabase-181818?style=for-the-badge&logo=supabase&logoColor=3ECF8E) ![Google Cloud](https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)
+![Version](https://img.shields.io/badge/version-8.11.58-blue.svg?style=for-the-badge) ![License](https://img.shields.io/badge/License-GPL_v3-blue.svg?style=for-the-badge) ![Next.js](https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js&logoColor=white) ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB) ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white) ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white) ![Supabase](https://img.shields.io/badge/Supabase-181818?style=for-the-badge&logo=supabase&logoColor=3ECF8E) ![Google Cloud](https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)
 
 ---
 
@@ -15,8 +15,8 @@
   <i>Real-time Server Monitoring Dashboard</i>
 </div>
 
-> **Latest QA Snapshot (April 2, 2026 — v8.10.8)**
-> Broad production smoke: QA-20260402-0208 (18/18 pass) | 상태 SSOT: `reports/qa/QA_STATUS.md`
+> **Latest QA Snapshot (April 29, 2026 — v8.11.58)**
+> Release smoke: QA-20260429-0364 | 상태 SSOT: `reports/qa/QA_STATUS.md`
 > Production: [openmanager-ai.vercel.app](https://openmanager-ai.vercel.app)
 
 ## Overview
@@ -196,12 +196,13 @@ graph TD
 |---------|----------|--------|
 | Frontend | Vercel | Global Edge |
 | AI Engine | Google Cloud Run | asia-northeast1 |
+| Async Queue | Google Cloud Tasks | asia-northeast1 |
 | Database | Supabase | ap-northeast-1 |
 | Cache | Upstash Redis | ap-northeast-1 |
 
 ### Runtime Tuning
 
-Job Queue SSE 폴링은 Redis 명령어 예산 보호를 위해 기본값을 아래로 사용합니다.
+복합 질의 Job Queue는 Cloud Tasks가 Cloud Run worker 호출을 dispatch하고, Redis가 job 상태/진행률/결과를 저장합니다. Job Queue SSE 폴링은 Redis 명령어 예산 보호를 위해 기본값을 아래로 사용합니다.
 
 - `AI_JOB_STREAM_POLL_INTERVAL_MS=1000`
 - `AI_JOB_STREAM_QUEUED_POLL_INTERVAL_MS=2000`
@@ -219,6 +220,7 @@ Job Queue SSE 폴링은 Redis 명령어 예산 보호를 위해 기본값을 아
 | **AI** | Vercel AI SDK v6 (Native Multi-Agent, UIMessageStream), Gemini Flash |
 | **Database** | Supabase (PostgreSQL + pgvector) |
 | **Cache** | Upstash Redis |
+| **Async Jobs** | Google Cloud Tasks + Redis-backed Job State |
 
 ---
 
@@ -228,11 +230,10 @@ Job Queue SSE 폴링은 Redis 명령어 예산 보호를 위해 기본값을 아
 
 ## Validation Evidence
 
-As of **April 2, 2026 (v8.10.8)**, this project is backed by tracked QA runs, not screenshots alone.
+As of **April 29, 2026 (v8.11.58)**, this project is backed by tracked QA runs, not screenshots alone.
 
 - **QA SSOT**: [reports/qa/QA_STATUS.md](reports/qa/QA_STATUS.md)
-- **Latest broad production QA**: [QA-20260402-0208](reports/qa/runs/2026/qa-run-QA-20260402-0208.json) — `vercel-production`, 18/18 pass, covers landing → login → guest PIN → dashboard → AI chat → streaming
-- **Latest release-facing QA**: [QA-20260326-0190](reports/qa/runs/2026/qa-run-QA-20260326-0190.json) — v8.10.0 broad production, 15 checks
+- **Latest release-facing QA**: [QA-20260429-0364](reports/qa/runs/2026/qa-run-QA-20260429-0364.json) — v8.11.58 production release smoke, covers `/api/version`, health probes, Cloud Run, GitLab deploy jobs, dashboard labels, and mobile AI handoff
 - **CI pipeline**: GitLab CI validate(frontend+ai-engine) on self-hosted WSL2 runner, frontend deploy on shared runner via `vercel build --prod` + `vercel deploy --prebuilt --prod`
 
 Portfolio evidence includes:
@@ -314,5 +315,5 @@ This project is licensed under the **GNU General Public License v3.0** - see the
 <div align="center">
   <sub>Built with Vibe Coding</sub>
   <br/>
-  <sub>v8.10.8</sub>
+  <sub>v8.11.58</sub>
 </div>

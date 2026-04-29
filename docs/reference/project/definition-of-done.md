@@ -1,9 +1,9 @@
-# OpenManager AI v8.11.32 - Definition of Done
+# OpenManager AI v8.11.58 - Definition of Done
 
 > Owner: project-lead
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-04-25
+> Last reviewed: 2026-04-29
 > Tags: dod,checklist,quality,release
 
 **성격**: Living Document — 프로젝트 진화에 따라 갱신.
@@ -56,8 +56,9 @@
 
 인프라/배포 변경 시 반드시 확인:
 
-- [ ] Cloud Build: `e2-medium` 기본 머신만 (machineType 옵션 금지)
+- [ ] Cloud Build: 기본 머신/기본 풀만 사용 (`machineType` 옵션 금지, 공식 Free Tier는 `e2-standard-2` build-min 기준)
 - [ ] Cloud Run: 1 vCPU, 512Mi (Free Tier 한도 내)
+- [ ] Google Cloud 부대 리소스: Cloud Tasks, Artifact Registry, Secret Manager 사용량을 같은 billing account 월간 예산으로 함께 점검
 - [ ] Vercel Build: Standard 머신 ($0.014/min, Turbo 금지)
 - [ ] Vercel Pro 기능은 꼭 필요할 때만 사용하고, 기본 사용량은 무료 티어 수준에 머물도록 설계
 - [ ] Vercel Free 전환 시에도 핵심 경로(로그인/대시보드/기본 AI 질의) 유지

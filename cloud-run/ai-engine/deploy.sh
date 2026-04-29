@@ -25,7 +25,7 @@
 #
 # v6.0 - 2026-02-02 (Cloud Build Free Tier Optimization)
 #   - Removed --machine-type=e2-highcpu-8 (not covered by free tier)
-#   - Uses default e2-medium (free: 120 min/day)
+#   - Uses default Cloud Build pool (official free tier: e2-standard-2 2,500 build-min/month)
 #   - ⚠️ FREE TIER RULE: Do NOT add --machine-type option
 #
 # v5.0 - 2026-01-08 (Artifact Registry Migration)
@@ -470,7 +470,7 @@ echo "   Using BuildKit for cache optimization..."
 echo "   Target: Artifact Registry"
 
 # Use Cloud Build with BuildKit enabled
-# ⚠️ FREE TIER: Do NOT add --machine-type (default e2-medium = free 120 min/day)
+# ⚠️ FREE TIER: Do NOT add --machine-type (default pool free tier: e2-standard-2 2,500 build-min/month)
 #    e2-highcpu-8 등 커스텀 머신은 무료 대상 아님!
 # Note: --tag mode uses Dockerfile ARG defaults for APP_VERSION/BUILD_DATE/GIT_SHA.
 # For dynamic version passing, use: gcloud builds submit --config cloudbuild.yaml --substitutions=TAG_NAME=$APP_VERSION

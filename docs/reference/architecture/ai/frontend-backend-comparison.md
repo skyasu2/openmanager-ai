@@ -4,12 +4,12 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-04-25
+> Last reviewed: 2026-04-29
 > Canonical: docs/reference/architecture/ai/frontend-backend-comparison.md
 > Tags: ai,frontend,backend,comparison
 
-**분석 일시**: 2026-04-25 (route count / deployment topology refresh)
-**버전**: v8.11.32
+**분석 일시**: 2026-04-29 (Cloud Tasks async Job Queue topology refresh)
+**버전**: v8.11.58
 **아키텍처**: Vercel (Frontend) + Cloud Run (Backend AI Engine)
 
 ---
@@ -36,9 +36,19 @@ graph LR
         Agents["7 Execution Agents<br/>(NLQ/Analyst/Reporter/<br/>Advisor/Vision/Evaluator/Optimizer)"]
         Provider["Quad-Provider LLM"]
         PreComp["Pre-computed 144슬롯"]
+        Dispatch["/api/jobs/dispatch"]
+        Process["/api/jobs/process"]
     end
 
+    Redis["Upstash Redis<br/>Job State + Progress + Result"]
+    CloudTasks["Cloud Tasks<br/>HTTP Task Queue"]
+
     Vercel -->|"primary stream /api/ai/supervisor/stream/v2\nlegacy JSON/text /api/ai/supervisor"| CloudRun
+    Vercel -->|"complex query /api/ai/jobs"| Redis
+    Vercel -->|"short dispatch request"| Dispatch
+    Dispatch --> CloudTasks
+    CloudTasks -->|"POST worker"| Process
+    Process --> Redis
 ```
 
 ### ASCII Fallback
@@ -46,6 +56,9 @@ graph LR
 ```
 [사용자] → [Vercel/Next.js Frontend] ──primary stream v2──→ [Cloud Run AI Engine]
               │                                        │
+              ├─ complex job create ─→ [Upstash Redis] ←─ job result/progress
+              └─ short dispatch ─────→ [/api/jobs/dispatch] → [Cloud Tasks] → [/api/jobs/process]
+
          UI/UX Layer                            AI Processing Layer
          - AISidebarV4                          - Supervisor (듀얼모드)
          - useAIChatCore                        - Orchestrator (모듈 분할)
@@ -56,7 +69,7 @@ graph LR
 부가 경로: `/api/ai/supervisor`는 legacy JSON/text proxy이며 cache/plain callers와 local dev fallback을 담당합니다.
 ```
 
-> Source of truth (2026-04-25): `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (execution agents 7 + internal deterministic Evaluator/Optimizer configs), `src/app/api/**/route.ts(x)` (frontend API routes 31), `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')` (Cloud Run API mounts 9), `cloud-run/ai-engine/src/routes/*.ts` (13 non-test route/helper modules).
+> Source of truth (2026-04-29): `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (execution agents 7 + internal deterministic Evaluator/Optimizer configs), `src/app/api/**/route.ts(x)` (frontend API routes 31), `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')` (Cloud Run API mounts 9), `cloud-run/ai-engine/src/routes/*.ts` (13 non-test route/helper modules), `cloud-run/ai-engine/src/lib/cloud-tasks.ts`.
 
 ---
 
@@ -88,7 +101,7 @@ graph LR
 |------|:--------:|:-------:|:----:|
 | Hybrid Query Router | 복잡도 기반 자동 분기 (909줄) | stream/json 듀얼 모드 | 양쪽 완벽 |
 | Streaming (단순 쿼리) | useChat SSE | streamText SSE | 양쪽 완벽 |
-| Job Queue (복잡 쿼리) | useAsyncAIQuery SSE | generateText Job | 양쪽 완벽 |
+| Job Queue (복잡 쿼리) | `useAsyncAIQuery` + `/api/ai/jobs/:id/stream` SSE | Redis job store + Cloud Tasks dispatch + `/api/jobs/process` worker | 양쪽 완벽 |
 | Job 진행률 표시 | JobProgressIndicator | 단계별 progress 전송 | 양쪽 완벽 |
 | Clarification Dialog | ClarificationDialog | confidence < 0.6 감지 | 양쪽 완벽 |
 

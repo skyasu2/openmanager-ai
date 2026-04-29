@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-04-26
+> Last reviewed: 2026-04-29
 > Canonical: docs/reference/architecture/infrastructure/free-tier-optimization.md
 > Tags: free-tier,cost,performance,web-vitals,optimization
 >
-> **프로젝트 버전**: v8.11.32 | **Updated**: 2026-04-26
+> **프로젝트 버전**: v8.11.58 | **Updated**: 2026-04-29
 
 ## 개요
 
@@ -22,10 +22,13 @@
 | 서비스 | 플랜 | 월 제한 | 현재 사용 | 비용 |
 |--------|------|---------|----------|------|
 | **Vercel** | Pro (예외) | 꼭 필요한 기능만 사용, 기본 사용량은 무료 티어 수준 유지 | ~5% | 고정 Pro 비용만 허용 |
-| **Google Cloud Run** | Free Tier | 180K vCPU-sec, 2M 요청 | ~10% | ₩0 |
-| **Google Cloud Build** | Free Tier | 120분/일 (e2-medium) | ~5% | ₩0 |
+| **Google Cloud Run** | Free Tier | 180K vCPU-sec, 360K GB-sec, 2M 요청 | ~10% | ₩0 |
+| **Google Cloud Tasks** | Free Tier | 1M billable operations/월 | <1% | ₩0 |
+| **Google Cloud Build** | Free Tier | 2,500 build-min/월 (`e2-standard-2`) | ~5% | ₩0 |
+| **Artifact Registry** | Free Tier | 0.5GB storage/월 | 감시 필요 | ₩0 |
+| **Secret Manager** | Free Tier | 6 active versions, 10K access ops/월 | 감시 필요 | ₩0 |
 | **Supabase** | Free | 500MB DB, 1GB 스토리지 | ~15% | ₩0 |
-| **Upstash Redis** | Free | 10K 커맨드/일 | ~20% | ₩0 |
+| **Upstash Redis** | Free | 500K commands/월, 256MB data | ~20% | ₩0 |
 | **Langfuse** | Hobby | 50K 이벤트/월 | ~5% | ₩0 |
 | **Sentry** | Free | 50K 이벤트/월 | ~3% | ₩0 |
 | **LLM Providers** | Free Tier | 프로바이더별 상이 | 변동 | ₩0 |
@@ -37,8 +40,26 @@ Reference (baseline links, re-verify before policy changes):
 - https://vercel.com/pricing
 - https://vercel.com/docs/limits/overview
 - https://vercel.com/docs/limits/fair-use-guidelines
+- https://cloud.google.com/free/docs/free-cloud-features
+- https://cloud.google.com/run/pricing
+- https://cloud.google.com/tasks/pricing
+- https://upstash.com/docs/redis/overall/pricing
 
 ---
+
+## Google Cloud Free Tier 회계 경계
+
+Google Cloud는 하나의 "통합 무료 큐/런타임 크레딧"을 제공하는 방식이 아니라, **billing account 단위로 서비스별 Free Tier 한도와 할인**을 적용합니다. Cloud Run, Cloud Tasks, Cloud Build, Artifact Registry, Secret Manager는 각각 과금 단위가 다르지만 초과분은 같은 billing account에 합산 청구되므로, 운영 관점에서는 **GCP 월간 비용 예산**으로 함께 감시합니다.
+
+| 서비스 | 무료 한도 적용 단위 | 이 프로젝트에서의 비용 해석 |
+|--------|------------------|---------------------------|
+| Cloud Run | 요청, vCPU-sec, GB-sec | Cloud Tasks가 worker를 호출하면 `/api/jobs/process` 요청과 실행 시간이 Cloud Run 사용량에 잡힙니다. |
+| Cloud Tasks | API call 또는 push delivery attempt, 32KB chunk 단위 | 정상 job은 `CreateTask`와 push delivery가 각각 operation을 만듭니다. retry가 늘면 delivery attempt도 늘어납니다. |
+| Cloud Build | build-minutes | `deploy.sh`는 custom machine type을 금지하고 기본 build path만 사용합니다. |
+| Artifact Registry | image storage | Cloud Run 사용량이 무료여도 이미지 보관이 0.5GB를 넘으면 별도 과금될 수 있어 cleanup policy를 감시합니다. |
+| Secret Manager | active secret versions, access operations | secret version을 불필요하게 늘리거나 잦은 수동 검증을 반복하면 별도 한도를 소모합니다. |
+
+현재처럼 실사용자가 거의 없고 production QA를 최소화하면 Cloud Tasks 1M operations/월보다 Cloud Run CPU 시간, Upstash Redis command, LLM provider RPM/RPD가 먼저 병목이 될 가능성이 큽니다.
 
 ## Part 1: Cloud Run Free Tier 가드레일
 
@@ -59,7 +80,7 @@ Monthly Free:
 # Non-negotiable free-tier limits
 FREE_TIER_MIN_INSTANCES="0"      # 항상 scale-to-zero
 FREE_TIER_MAX_INSTANCES="1"      # 최대 1개 인스턴스
-FREE_TIER_CONCURRENCY="80"       # 동시 요청 80
+FREE_TIER_CONCURRENCY="16"       # 동시 요청 16
 FREE_TIER_CPU="1"                # 1 vCPU
 FREE_TIER_MEMORY="512Mi"         # 512MB
 FREE_TIER_TIMEOUT="300"          # 5분 타임아웃
@@ -77,7 +98,7 @@ FREE_TIER_TIMEOUT="300"          # 5분 타임아웃
 2. cloudbuild.yaml 정합성 검증
    ├── --min-instances == 0?
    ├── --max-instances == 1?
-   ├── --concurrency == 80?
+   ├── --concurrency == 16?
    └── --memory == 512Mi?
 
 3. 금지 옵션 검사
@@ -102,11 +123,23 @@ FREE_TIER_GUARD_ONLY=true bash deploy.sh  # CI에서 가드레일만 검증
 
 | 항목 | 설정 | 이유 |
 |------|------|------|
-| 머신 타입 | 기본값 (e2-medium) | 무료: 120분/일, `e2-highcpu-8`은 무료 대상 아님 |
-| 빌드 타임아웃 | 600초 | 불필요한 빌드 시간 방지 |
-| 이미지 정리 | 최신 2개만 유지 | Artifact Registry 스토리지 절약 |
+| 머신 타입 | 기본값 (`machineType` 미지정) | 공식 Free Tier는 `e2-standard-2` 2,500 build-min/월 기준이며, `e2-highcpu-8` 같은 custom machine은 금지 |
+| 빌드 타임아웃 | `deploy.sh` 600초 | 불필요한 빌드 시간 방지 |
+| 이미지 정리 | 최신 3개 유지 | Artifact Registry 스토리지 절약 |
 | 소스 정리 | 최신 10개만 유지 | Cloud Storage 절약 |
 | 리비전 정리 | 최신 3개만 유지 | 오래된 revision 자동 삭제 |
+
+### Async Job Queue 비용 상한 감각
+
+Cloud Tasks 자체는 월 첫 1M billable operations가 무료라 현재 트래픽 규모에서는 병목 가능성이 낮습니다. 실제 비용 압력은 Cloud Tasks가 전달한 worker 요청이 Cloud Run에서 얼마나 오래 실행되는지에 따라 결정됩니다.
+
+| 평균 job 실행 시간 | Cloud Run CPU 무료분 기준 월 처리 여유 |
+|------------------|------------------------------------|
+| 300초 | 약 600 jobs |
+| 60초 | 약 3,000 jobs |
+| 30초 | 약 6,000 jobs |
+
+위 계산은 1 vCPU active time `180,000 vCPU-sec/월`만 단순 나눈 값입니다. 실제 운영에서는 retry, cold start, health/smoke 요청, LLM provider quota, Redis SSE polling command를 함께 차감합니다. 현재 production queue guard는 `max-dispatches-per-second=1`, `max-concurrent-dispatches=2`, `max-attempts=3`으로 보수화되어 있습니다.
 
 ---
 
@@ -140,21 +173,34 @@ schedule:
 
 ### 무료 한도
 
-- 일일 10,000 커맨드
+- 월 500,000 commands
 - 256MB 데이터
+
+### Job Queue 상태 저장 경계
+
+현재 async Job Queue는 **Redis와 Cloud Tasks를 함께 사용**합니다. Redis는 queue worker가 아니라 상태 저장소이며, Cloud Tasks가 실제 worker HTTP delivery를 담당합니다.
+
+| 계층 | 역할 | 비용/한도 관점 |
+|------|------|---------------|
+| Upstash Redis | `job:{id}`, `job:progress:{id}`, 최종 result/error, SSE polling source | job 생성/진행률 갱신/폴링마다 Redis command 사용 |
+| Cloud Tasks | `/api/jobs/process` HTTP task delivery, retry, dispatch/concurrency guard | 32KB 단위 billable operation, 월 첫 1M operations 무료 |
+| Cloud Run | 실제 AI worker 실행 | 1 vCPU/512Mi/timeout 300s free-tier guard 유지 |
+
+Redis 장애 시 async Job Queue는 결과를 보존할 수 없으므로 fail-fast합니다. Cloud Tasks만으로는 브라우저가 최종 답변을 읽을 source of truth가 생기지 않습니다.
 
 ### Stream 저장/재개 비용 경고
 
-서버는 현재 모든 스트리밍 응답을 resumable-compatible wrapper로 감싸며, 세션 매핑/메타데이터/청크 저장을 위해 Redis를 사용합니다. 프론트엔드의 자동 resume 플래그는 현재 기본 비활성(`resume: false`)이지만, 서버 측 저장과 정리 비용은 계속 발생합니다.
+Streaming resume chunk 저장은 `AI_RESUMABLE_STREAMS_ENABLED=true`일 때만 활성화됩니다. 기본값은 비활성이라 일반 streaming 응답은 Redis chunk 저장 비용을 만들지 않습니다. 단, async Job Queue 경로는 별도이며 job 상태/진행률/결과 저장을 위해 Redis를 계속 사용합니다.
 
 | 경로 | Redis 동작 |
 |------|-----------|
-| 스트림 시작 | session `SET` + meta `SET` + chunk마다 `RPUSH`/`EXPIRE` |
+| resumable 스트림 시작 (`AI_RESUMABLE_STREAMS_ENABLED=true`) | session `SET` + meta `SET` + chunk마다 `RPUSH`/`EXPIRE` |
 | 재개 조회 | session `GET` + meta `GET` + `LRANGE` (반복 가능) |
 | 종료/정리 | session `DEL` + data/meta `DEL` |
+| async Job Queue | job `SET`, progress `SET`, SSE stream `MGET` polling |
 
 > **포트폴리오 제약**: 명령 수는 청크 수와 resume/cleanup 경로에 따라 달라집니다. 응답 청크 증가, 재시도 확대, 재개 polling 증가는 모두 Redis 사용량 증가로 직결됩니다.
-> 동시 사용자가 늘어나면 10K 커맨드/일 한도가 빠르게 병목이 될 수 있습니다.
+> 동시 사용자가 늘어나면 500K commands/월 한도가 빠르게 병목이 될 수 있습니다.
 
 ### Pipeline 배칭
 
@@ -178,7 +224,7 @@ await pipeline.exec();
 | 기능 | Redis 정상 | Redis 장애 |
 |------|----------|----------|
 | Circuit Breaker | 분산 상태 (인스턴스 간 공유) | InMemory 폴백 (인스턴스 독립) |
-| Job Queue | Redis 저장/조회 | 에러 응답 반환 |
+| Job Queue | Redis 상태/결과 저장 + Cloud Tasks worker delivery | job 생성/조회 503, Cloud Tasks 단독 복구 불가 |
 | Stream 재개 | 세션/청크 Redis 저장 | 신규 세션으로 시작 |
 | AI Cache | Redis L2 캐시 | Memory LRU만 사용 |
 

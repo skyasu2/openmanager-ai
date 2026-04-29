@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-04-26
+> Last reviewed: 2026-04-29
 > Canonical: docs/reference/architecture/ai/ai-engine-architecture.md
 > Tags: ai,architecture,multi-agent,cloud-run
 >
-> **v8.10.9** | Updated 2026-04-26
+> **v8.11.58** | Updated 2026-04-29
 > (ai-model-policy.md 내용 통합됨, 2026-02-14)
 
 ## 1. Overview
@@ -31,6 +31,7 @@ OpenManager AI의 AI Engine은 **Vercel AI SDK v6 계열** 기반 **multi-agent 
 | **기반 모델** | Groq `llama-4-scout-17b-16e-instruct`, Cerebras `qwen-3-235b-a22b-instruct-2507` + `llama3.1-8b` intra-fallback, Mistral `mistral-large-latest`, Gemini `gemini-2.5-flash-lite` |
 | **호스팅** | Cerebras, Groq, Mistral, Google AI (Gemini), OpenRouter 인프라 |
 | **비용** | 프로덕션 서비스는 무료 tier 한도 내 운영 |
+| **복합 질의 비동기 처리** | Redis job store + Cloud Tasks dispatch + Cloud Run `/api/jobs/process` worker |
 
 > **[비용 분리 원칙]**: `Free Tier` 원칙은 **프로덕션 인프라/API 비용**에만 적용됩니다.
 > 개발 환경 (Claude Code 등 AI 코딩 에이전트)에서는 품질 확보를 위해 유료 토큰을 사용합니다.
@@ -175,12 +176,28 @@ flowchart LR
 │           │              │              │                     │
 │     ┌─────┴─────┐  ┌────┴────┐  ┌─────┴──────┐             │
 │     │ OTel Data │  │Knowledge│  │   Redis    │             │
-│     │ (18 hosts)│  │ Lite KB │  │  (Upstash) │             │
+│     │ (18 hosts)│  │ Lite KB │  │ Job State  │             │
 │     └───────────┘  └─────────┘  └────────────┘             │
 └─────────────────────────────────────────────────────────────┘
+                     ▲
+                     │ Cloud Tasks delivers queued complex jobs
+                     │ to Cloud Run /api/jobs/process
 ```
 
-> Source of truth (2026-04-04): `cloud-run/ai-engine/src/services/ai-sdk/supervisor-mode.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts`, `cloud-run/ai-engine/src/services/ai-sdk/provider-capabilities.ts`
+> Source of truth (2026-04-29): `cloud-run/ai-engine/src/services/ai-sdk/supervisor-mode.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts`, `cloud-run/ai-engine/src/services/ai-sdk/provider-capabilities.ts`, `cloud-run/ai-engine/src/routes/jobs.ts`, `cloud-run/ai-engine/src/lib/cloud-tasks.ts`
+
+### Async Job Queue Boundary
+
+복합 질의는 Vercel request lifecycle에 장시간 AI 처리를 묶지 않습니다. Vercel은 `POST /api/ai/jobs`에서 Redis에 job record를 만들고 `jobId`를 반환한 뒤, `AI_JOB_TRIGGER_MODE=cloud-tasks`일 때 Cloud Run `/api/jobs/dispatch`만 짧게 호출합니다. Cloud Run dispatch endpoint는 Cloud Tasks HTTP task를 생성하고, Cloud Tasks가 다시 Cloud Run `/api/jobs/process`를 호출해 실제 AI 작업을 수행합니다.
+
+| 계층 | 책임 |
+|------|------|
+| Vercel `/api/ai/jobs` | job 생성, owner metadata 저장, jobId 반환, worker dispatch 트리거 |
+| Cloud Tasks | `/api/jobs/process` HTTP delivery, retry, rate/concurrency guard |
+| Cloud Run `/api/jobs/process` | Supervisor/Agent 실행, 진행률 및 최종 result/error 저장 |
+| Upstash Redis | `job:{id}`, `job:progress:{id}` 상태 저장과 Vercel SSE polling source |
+
+Cloud Tasks는 작업을 저장/전달하는 queue 계층이며, job 상태와 최종 응답의 source of truth는 Redis입니다. Redis가 없으면 현재 async Job Queue는 503으로 fail-fast하고 사용자는 streaming/direct fallback 경로를 사용해야 합니다.
 
 ### Supervisor vs Orchestrator (분리 이유)
 

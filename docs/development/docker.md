@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-02-17
+> Last reviewed: 2026-04-29
 > Canonical: docs/development/docker.md
 > Tags: docker,cloud-run,ai-engine
 
@@ -249,7 +249,7 @@ WSL 터미널
   │
   ├─ Phase 1: gcloud builds submit (GCP Cloud Build)
   │   ※ 로컬 Docker 사용 안 함! 소스를 GCS에 업로드 → GCP에서 빌드
-  │   ※ 기본 e2-medium 머신 (Free Tier, --machine-type 금지)
+  │   ※ 기본 Cloud Build 머신 (machineType 미지정, --machine-type 금지)
   │
   ├─ Phase 2: Cloud Run Deploy
   │   1 vCPU, 512Mi, scale-to-zero, cpu-throttling ON
@@ -288,11 +288,11 @@ gcloud artifacts docker images list \
 
 | 항목 | 무료 한도 | 현재 설정 |
 |------|----------|----------|
-| Cloud Build | e2-medium, 120분/일 | 기본 머신 (변경 금지) |
+| Cloud Build | `e2-standard-2` 2,500 build-min/월 | 기본 머신, `machineType` 미지정 |
 | Cloud Run vCPU | 180,000 sec/월 (~50hr) | 1 vCPU |
 | Cloud Run Memory | 360,000 GB-sec/월 | 512Mi |
 | Cloud Run Requests | 2M/월 | - |
-| Artifact Registry | 500MB 무료 | ~693MB/이미지, 3개 보관 |
+| Artifact Registry | 0.5GB storage/월 | cleanup policy + recheck job으로 감시 |
 
 ---
 

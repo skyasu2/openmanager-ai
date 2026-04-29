@@ -4,7 +4,7 @@
 > Owner: platform-devops
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-04-04
+> Last reviewed: 2026-04-29
 > Canonical: docs/development/environment-variables.md
 > Tags: env,secrets,configuration,setup
 
@@ -180,6 +180,8 @@ curl -X POST https://openmanager-ai.vercel.app/api/auth/guest-login \
 
 `AI_JOB_TRIGGER_MODE=cloud-tasks`는 Vercel runtime 변수이고, `CLOUD_TASKS_*`는 Cloud Run AI Engine runtime 변수입니다. queue/IAM 생성은 자동화하지 않으며, Cloud Run service account에는 Cloud Tasks enqueue 권한이 필요합니다.
 
+역할 경계는 다음과 같습니다. Cloud Tasks는 `/api/jobs/process` HTTP worker 호출을 큐잉/재시도/속도제어하지만 job 상태나 최종 응답은 저장하지 않습니다. 현재 async Job Queue의 상태 저장소는 Upstash Redis이므로 `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN`이 없으면 job 생성, 진행률 SSE, 결과 조회가 fail-fast합니다.
+
 ### 선택 환경변수 — 데이터/캐시
 
 | 변수 | 용도 | 기본값 |
@@ -219,7 +221,7 @@ curl -X POST https://openmanager-ai.vercel.app/api/auth/guest-login \
 | `AI_JOB_STREAM_POLL_INTERVAL_MS` | 진행 중인 Job SSE Redis polling 간격 (ms) | `1000` |
 | `AI_JOB_STREAM_QUEUED_POLL_INTERVAL_MS` | queued/pending Job SSE Redis polling 간격 (ms) | `2000` |
 
-> Redis 환경변수가 없으면 InMemory 캐시로 자동 폴백됩니다.
+> Redis 환경변수가 없으면 Cache/Circuit Breaker 일부 경로는 InMemory로 폴백하지만, async Job Queue는 상태/결과 저장소가 없어 fail-fast합니다.
 > Redis timeout 값이 없거나 잘못된 값이면 경로별 기본 bucket 값으로 자동 폴백됩니다.
 
 ### 빌드 전용

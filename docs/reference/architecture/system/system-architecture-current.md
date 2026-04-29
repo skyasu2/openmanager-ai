@@ -2,10 +2,10 @@
 
 > Vercel + Cloud Run 하이브리드 시스템 구조의 기준 문서
 > Owner: platform-architecture
-> Last verified against code: 2026-04-26
+> Last verified against code: 2026-04-29
 > Status: Active Canonical (hybrid-split.md 통합됨)
 > Doc type: Explanation
-> Last reviewed: 2026-04-26
+> Last reviewed: 2026-04-29
 > Canonical: docs/reference/architecture/system/system-architecture-current.md
 > Tags: system,architecture,hybrid,cloud-run,vercel
 
@@ -13,7 +13,7 @@
 
 ## 1. Overview
 
-**OpenManager AI v8.11.32 기준** AI Native Server Monitoring Platform으로, Vercel(Frontend/BFF)과 Cloud Run(AI Engine)의 **Hybrid Architecture**로 운영됩니다.
+**OpenManager AI v8.11.58 기준** AI Native Server Monitoring Platform으로, Vercel(Frontend/BFF)과 Cloud Run(AI Engine)의 **Hybrid Architecture**로 운영됩니다.
 
 | 항목 | 수치 |
 |------|------|
@@ -53,7 +53,8 @@ graph TB
 
     subgraph External["External Services"]
         Supabase["Supabase<br/>(PostgreSQL + pgvector)"]
-        Redis["Upstash Redis<br/>(Cache, Stream)"]
+        Redis["Upstash Redis<br/>(Cache, Stream, Job State)"]
+        CloudTasks["Cloud Tasks<br/>(Async Job Dispatch)"]
         LLM["LLM Providers<br/>(Cerebras, Groq,<br/>Mistral, Gemini, OpenRouter)"]
     end
 
@@ -74,8 +75,11 @@ graph TB
     PreComp --> Compat
     Agents -->|Tool Calls| Supabase
     Agents -->|LLM API| LLM
-    API -->|Rate Limit, Cache| Redis
-    Hono -->|Stream Resume| Redis
+    API -->|Rate Limit, Cache, Job State| Redis
+    API -->|Short Job Dispatch| Hono
+    Hono -->|CreateTask| CloudTasks
+    CloudTasks -->|POST /api/jobs/process| Hono
+    Hono -->|Stream Resume, Job Result| Redis
     NextJS --> Providers
 ```
 
@@ -110,11 +114,14 @@ graph TB
    ┌──────────────┐      ┌──────────────┐       ┌──────────────────┐
    │ Supabase     │      │ Upstash Redis│       │ LLM Providers    │
    │ PostgreSQL   │      │ Cache/Stream │       │ Cerebras/Groq/   │
-   │ + pgvector   │      │ Rate Limit   │       │ Mistral/Gemini   │
+   │ + pgvector   │      │ Job State    │       │ Mistral/Gemini   │
    └──────────────┘      └──────────────┘       └──────────────────┘
+                                   ▲
+                                   │ Cloud Tasks dispatches long jobs to
+                                   │ Cloud Run /api/jobs/process
 ```
 
-> Source of truth (2026-04-25): `src/app/api/**/route.ts(x)` (31), `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')` (Cloud Run API mounts 9), `cloud-run/ai-engine/src/routes/*.ts` (13 non-test route/helper modules), `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (7 execution agents + internal deterministic Evaluator/Optimizer configs).
+> Source of truth (2026-04-29): `src/app/api/**/route.ts(x)`, `src/app/api/ai/jobs/**`, `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')`, `cloud-run/ai-engine/src/routes/jobs.ts`, `cloud-run/ai-engine/src/lib/cloud-tasks.ts`, `cloud-run/ai-engine/src/routes/*.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (7 execution agents + internal deterministic Evaluator/Optimizer configs).
 
 ---
 
@@ -172,6 +179,39 @@ graph TB
 - `cloud-run/ai-engine/src/services/ai-sdk/supervisor.ts`
 - `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator.ts`
 
+### Flow 2-A: Complex AI Job Queue
+
+복합 질의나 `forceJobQueueKeywords`에 걸린 질의는 Vercel 함수가 AI 처리를 끝까지 기다리지 않고 Cloud Tasks dispatch 경로로 분리합니다.
+
+```
+1. User → AI Sidebar → 복합 질의 입력
+2. useHybridAIQuery() → useAsyncAIQuery() → POST /api/ai/jobs
+3. Vercel /api/ai/jobs:
+   a. Redis에 job:{id}, job:progress:{id}, owner metadata 저장
+   b. 즉시 201 + jobId 반환
+   c. AI_JOB_TRIGGER_MODE=cloud-tasks이면 Cloud Run /api/jobs/dispatch를 짧게 호출
+4. Cloud Run /api/jobs/dispatch:
+   a. Cloud Tasks CreateTask 호출
+   b. task target을 /api/jobs/process로 지정
+5. Cloud Tasks → Cloud Run /api/jobs/process:
+   a. 실제 장시간 AI 작업 실행
+   b. 진행률과 최종 result/error를 Redis에 저장
+6. Browser EventSource → Vercel /api/ai/jobs/{id}/stream:
+   a. Vercel이 Redis job/result/progress를 폴링
+   b. result/error SSE 이벤트로 브라우저에 전달
+```
+
+**역할 경계**:
+- **Cloud Tasks**: worker HTTP 요청을 큐잉/전달/재시도/속도제어합니다. job 상태나 결과를 저장하지 않습니다.
+- **Upstash Redis**: job 생성 상태, 진행률, 최종 답변, SSE polling 상태의 저장소입니다. 현재 async Job Queue에서 필수 의존성입니다.
+
+**핵심 파일 경로**:
+- `src/app/api/ai/jobs/route.ts`
+- `src/app/api/ai/jobs/[id]/stream/route.ts`
+- `cloud-run/ai-engine/src/routes/jobs.ts`
+- `cloud-run/ai-engine/src/lib/cloud-tasks.ts`
+- `cloud-run/ai-engine/src/lib/job-notifier.ts`
+
 ---
 
 ## 4. Data Flow Architecture
@@ -212,8 +252,8 @@ graph TB
 
 ### Stateless Cloud Run 설계 원칙
 
-Cloud Run AI Engine은 **Stateless** 설계를 따르며, 영속 데이터는 Supabase에 저장됩니다.  
-단, 운영 메트릭 스냅샷은 런타임에 컨테이너 번들 JSON(`otel-data` 우선, `otel-processed` 호환 폴백)을 사용합니다.
+Cloud Run AI Engine은 **Stateless** 설계를 따르며, 영속 데이터는 Supabase에 저장됩니다.
+단, async Job Queue의 진행률/결과처럼 짧은 TTL의 실행 상태는 Redis에 저장하고, 운영 메트릭 스냅샷은 런타임에 컨테이너 번들 JSON(`otel-data` 우선, `otel-processed` 호환 폴백)을 사용합니다.
 
 | 원칙 | 설명 |
 |------|------|
@@ -370,6 +410,7 @@ Client                     Vercel                     Cloud Run
 | **AI Engine** | Cloud Run (gen2) | Free Tier | $0 |
 | **Database** | Supabase | Free Tier | $0 |
 | **Cache** | Upstash Redis | Free Tier | $0 |
+| **Async Queue** | Cloud Tasks | Free Tier | $0 |
 | **Domain** | Vercel | 포함 | - |
 
 ### Cloud Run Constraints
