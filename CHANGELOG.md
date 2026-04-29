@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.59](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.58...v8.11.59) (2026-04-29)
+
+
+### Bug Fixes
+
+* **ai-engine:** harden provider fallback and disk grounding ([6eb4e23](https://gitlab.com/skyasu2/openmanager-ai/-/commit/6eb4e23a8a9bccde4cd5a01e6d5f0c1d9ba49110))
+* **docs:** repair WSL docs check script paths ([d2ce0d8](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d2ce0d8cf015b5c01921c7072c61fe4ab3bfb682))
+
+
+### Tests
+
+* **dev:** guard against google font build fetches ([c81a56e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/c81a56e3105f17275ec700382efa17c6f41efc76))
+* **qa:** record v8.11.58 release smoke ([d1d1374](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d1d137444778d00c24ff9c26ee28eb5e860104e3))
+
 ## [8.11.58](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.57...v8.11.58) (2026-04-28)
 
 
