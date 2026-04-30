@@ -1,11 +1,15 @@
 <!-- Owner: project -->
-<!-- Status: Draft -->
+<!-- Status: Approved -->
 <!-- Doc type: How-to -->
-<!-- Last reviewed: 2026-04-30 -->
+<!-- Last reviewed: 2026-05-01 -->
 
 # Dashboard Server & Log UX 개선 계획
 
 - TODO.md 연결: Backlog > Dashboard Server & Log UX 개선
+- 상태: Approved
+- 작성일: 2026-04-30
+- 승인일: 2026-05-01
+- 구현 착수 조건: Phase 단위 `test(spec)` 선행 커밋 후 구현
 
 > 개요(Overview) 섹션은 **변경 금지**. 서버 섹션과 로그 섹션만 대상.
 
@@ -198,6 +202,14 @@ const textColor = value >= 85 ? 'text-red-700 font-bold' : value >= 70 ? 'text-a
 - [ ] **T3**: 로그 레벨 컬러 배지 (`[WARN]` → `bg-amber-100 text-amber-700 border-l-2 border-amber-400`)
 - [ ] **T4**: 로그 ERROR 행 `bg-red-50` 전체 행 강조
 - [ ] **T5**: 로그 통계(전체/정보/경고/오류)를 필터바 위 상단으로 이동 + 클릭 필터 연동
+
+#### Phase 1 테스트 계약
+
+- `LogExplorerPanel`은 ERROR 레벨 로그 행에 전체 행 강조 배경을 적용한다.
+- 로그 통계 셀은 클릭 가능한 필터 컨트롤이며, 클릭 시 해당 레벨 필터가 토글된다.
+- `ImprovedServerCard` 또는 서버 카드 표시 계층은 상태별 좌측 accent border를 제공한다.
+- CPU/MEM/DSK 임계치 70% 이상 수치는 텍스트 색/weight로도 강조된다.
+- 기존 Overview 섹션과 `/dashboard` 개요 라우트 진입점은 변경하지 않는다.
 
 ### Phase 2 — 레이아웃 변경 (P1, ~2일)
 

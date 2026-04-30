@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-30 KST (`approval write layer removed`)
+**Last Updated**: 2026-05-01 KST (`dashboard server/log UX plan approved`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -16,7 +16,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| Dashboard Server & Log UX 개선 | P2 | Draft 계획: [dashboard-server-log-ux-plan.md](dashboard-server-log-ux-plan.md). Overview 섹션 제외, 서버/로그 섹션 UI 개선 |
+| Dashboard Server & Log UX 개선 | P2 | Approved 계획: [dashboard-server-log-ux-plan.md](dashboard-server-log-ux-plan.md). Overview 섹션 제외, 서버/로그 섹션 UI 개선 |
 | quota-tracker.ts 레이어 분리 | P3 | 1,145줄 → 4파일 분리. 계획: Task 2 |
 | orchestrator-routing / summary-fallback 분리 | P3 | 각 1,100~1,200줄. 계획: Task 3 |
 
