@@ -258,7 +258,9 @@ BP 정렬: LangGraph 패턴에서 에이전트 Factory는 독립 레지스트리
 - 코드 정책: `DEFAULT_CEREBRAS_MODEL=llama3.1-8b`, runtime 후보 `llama3.1-8b` 단일화, Qwen/GPT-OSS excluded metadata 유지.
 - Capability routing: 16K/32K context 요구 경로는 8K Cerebras runtime을 건너뛰고 Groq/Mistral fallback으로 이동.
 - 검증: AI Engine targeted 123/123, root job API targeted 15/15, model drift guard 1/1, AI Engine type-check, root type-check, `lint:changed`, `docs:lint:changed`, `test:quick` 통과.
-- 남은 작업: GitLab push/pipeline 확인 후 Cloud Run `CEREBRAS_MODEL_ID=llama3.1-8b`, `CEREBRAS_FALLBACK_MODEL_IDS=` 정렬 및 배포 QA.
+- 배포 완료: `v8.11.76` tag pipeline `2491551446` success, Cloud Run revision `ai-engine-00391-qvf`.
+- 운영 검증: Cloud Run env `CEREBRAS_MODEL_ID=llama3.1-8b`, `CEREBRAS_FALLBACK_MODEL_IDS` empty, `/health` version `8.11.76`, `/api/ai/providers` Cerebras model `llama3.1-8b`, `modelDrift=[]`.
+- QA 기록: `QA-20260430-0385` targeted release-facing smoke 7/7 pass.
 
 ---
 

@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-30 KST (`Cerebras runtime model transition in progress`)
+**Last Updated**: 2026-04-30 KST (`Cerebras runtime model transition completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| Cerebras Qwen deprecation 대응 | P1 | in-progress | 코드 기본 runtime `llama3.1-8b` 정렬 완료. Cloud Run env 교체/배포/QA pending. 계획: [ai-engine-code-quality-plan.md](ai-engine-code-quality-plan.md) Task 4 |
+| _No active task_ | — | — | Backlog에서 다음 우선순위 선택 대기 |
 
 ---
 
@@ -41,6 +41,15 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-30 #232)
+- [x] Cerebras Qwen deprecation 대응
+  - Plan completed: [ai-engine-code-quality-plan.md](ai-engine-code-quality-plan.md) Task 4
+  - Cerebras runtime default를 `llama3.1-8b`로 전환하고 Qwen 235B Preview는 excluded metadata/override 감지용으로만 유지
+  - 16K/32K context 요구 경로는 8K Cerebras runtime을 건너뛰고 Groq/Mistral fallback으로 이동하도록 capability gate 정렬
+  - Cloud Run deploy env에 `CEREBRAS_MODEL_ID=llama3.1-8b`, 빈 `CEREBRAS_FALLBACK_MODEL_IDS` 명시
+  - Release: `v8.11.76`, GitLab tag pipeline `2491551446` success, Cloud Run revision `ai-engine-00391-qvf`, Vercel deployment `dpl_5FNfh7toXujQ6CiE4XUsCFtKSDLg`
+  - QA: `QA-20260430-0385` targeted release-facing smoke, 7/7 pass, model drift `[]`
 
 ### Completed (2026-04-30 #231)
 - [x] Dashboard app shell + modal-to-route refactor
