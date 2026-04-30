@@ -89,6 +89,7 @@ class LiveOtelMonitoringDataSource implements MonitoringDataSource {
       );
     }
 
+    // endpoint가 있어도 adapter 미구현 — Task 7에서 실제 OTLP 연결 시 이 throw를 교체
     throw new MonitoringDataSourceError(
       'LIVE_SOURCE_DISABLED',
       'Live OTel monitoring source adapter is not implemented yet.',

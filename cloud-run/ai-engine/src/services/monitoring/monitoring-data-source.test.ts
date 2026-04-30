@@ -10,6 +10,7 @@ const mockSlot: PrecomputedSlot = {
   slotIndex: 42,
   timeLabel: '07:00',
   minuteOfDay: 420,
+  fullTimestamp: '2026-04-29T22:00:00.000Z',
   summary: {
     total: 2,
     online: 1,
@@ -68,6 +69,7 @@ const mockPreviousSlot: PrecomputedSlot = {
   slotIndex: 41,
   timeLabel: '06:50',
   minuteOfDay: 410,
+  fullTimestamp: '2026-04-29T21:50:00.000Z',
   alerts: [],
   servers: mockSlot.servers.map((server) =>
     server.id === 'api-was-dc1-01'
@@ -84,6 +86,8 @@ vi.mock('../../data/precomputed-state', () => ({
     hour: 7,
   }),
   getCurrentState: () => mockSlot,
+  getRecentHistory: (count: number) =>
+    [mockSlot, mockPreviousSlot].slice(0, count),
   getStateBySlot: (slotIndex: number) => {
     if (slotIndex === mockSlot.slotIndex) return mockSlot;
     if (slotIndex === mockPreviousSlot.slotIndex) return mockPreviousSlot;
