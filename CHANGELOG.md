@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.69](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.68...v8.11.69) (2026-04-30)
+
+
+### Features
+
+* dashboard app shell route navigation ([faf0c99](https://gitlab.com/skyasu2/openmanager-ai/-/commit/faf0c996fe3ee6692b5e9459063a699b7d29a416))
+* monitoring data source and reporter analyst grounding ([2f1db3e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/2f1db3e91af9381a9b81787ceacdd25aff71c537))
+
+
+### Bug Fixes
+
+* **ai-engine:** route /generate through shared quota-aware provider fallback ([0a4ed3b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/0a4ed3b421cf161e1bd6a06b1e54a4f0e90c7729))
+
+
+### Code Refactoring
+
+* **ai:** share query-as-of builder ([fb46e4a](https://gitlab.com/skyasu2/openmanager-ai/-/commit/fb46e4a0b5ac0f4e970b3003e569e1525257f7db))
+
+
+### Tests
+
+* **ai-engine:** align monitoring data source history mock ([e53a27d](https://gitlab.com/skyasu2/openmanager-ai/-/commit/e53a27de77e6a27898c2550f46d9ebc1720ca8e4))
+* **qa:** record v8.11.68 explicit server summary ([431a315](https://gitlab.com/skyasu2/openmanager-ai/-/commit/431a3151514b3e6047c22260837aa22351fbab5c))
+* **spec:** dashboard app shell add failing tests before implementation ([878e3b4](https://gitlab.com/skyasu2/openmanager-ai/-/commit/878e3b4b3048f69d1bb6bf38af336042757e5926))
+* **spec:** monitoring data source add failing tests before implementation ([d6a034c](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d6a034cb8d83748d6139d90a80142f1611627bd2))
+
 ## [8.11.68](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.67...v8.11.68) (2026-04-29)
 
 
