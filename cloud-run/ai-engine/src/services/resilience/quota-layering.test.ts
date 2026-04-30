@@ -1,8 +1,9 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('../../lib/config-parser', () => ({
   getCerebrasFallbackModelIds: vi.fn(() => []),
   getCerebrasModelId: vi.fn(() => 'llama3.1-8b'),
+  getUpstashConfig: vi.fn(() => null),
 }));
 
 import {
@@ -32,6 +33,14 @@ import {
 } from './quota-tracker';
 
 describe('QuotaTracker layering contract', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('keeps quota constants and model-aware lookup in the type/config layer', () => {
     expect(PROVIDER_QUOTAS).toBe(FACADE_PROVIDER_QUOTAS);
     expect(CEREBRAS_MODEL_QUOTAS).toBe(FACADE_CEREBRAS_MODEL_QUOTAS);
