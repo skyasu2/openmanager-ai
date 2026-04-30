@@ -20,45 +20,62 @@ describe('provider model metadata', () => {
     process.env = { ...originalEnv };
   });
 
-  it('treats the default Cerebras model as Qwen primary until deprecation date', () => {
+  it('treats the default Cerebras model as llama3.1-8b production runtime', () => {
     delete process.env.CEREBRAS_MODEL_ID;
 
     const metadata = getCerebrasModelMetadata();
 
     expect(metadata.modelId).toBe(DEFAULT_CEREBRAS_MODEL);
-    expect(metadata.modelId).toBe(CEREBRAS_QWEN_MODEL_ID);
+    expect(metadata.modelId).toBe(CEREBRAS_LLAMA_FALLBACK_MODEL_ID);
     expect(metadata.role).toContain('primary');
-    expect(metadata.lifecycle).toBe('preview');
-    expect(metadata.productionModel).toBe(false);
-    expect(metadata.preview).toBe(true);
+    expect(metadata.lifecycle).toBe('production');
+    expect(metadata.productionModel).toBe(true);
+    expect(metadata.preview).toBe(false);
     expect(metadata.deprecated).toBe(false);
-    expect(metadata.deprecationDate).toBe(CEREBRAS_QWEN_DEPRECATION_DATE);
-    expect(metadata.recommendedReplacement).toBe(CEREBRAS_DEPRECATION_REPLACEMENT);
-    expect(metadata.contextWindowTokens).toBe(65_536);
+    expect(metadata.deprecationDate).toBeUndefined();
+    expect(metadata.contextWindowTokens).toBe(8_192);
     expect(metadata.enabled).toBe(true);
     expect(metadata.toolCallingEnabled).toBe(true);
     expect(metadata.structuredOutputEnabled).toBe(true);
     expect(metadata.smokeStatus).toBe('green');
     expect(metadata.quota).toMatchObject({
-      requestsPerMinute: 5,
-      tokensPerMinute: 30_000,
+      requestsPerMinute: 30,
+      tokensPerMinute: 60_000,
       requestsPerDay: 14_400,
       tokensPerDay: 1_000_000,
     });
   });
 
-  it('keeps llama3.1-8b as intra-Cerebras fallback metadata only', () => {
+  it('keeps Qwen as excluded preview metadata for explicit override detection', () => {
+    const metadata = getCerebrasModelMetadata(CEREBRAS_QWEN_MODEL_ID);
+
+    expect(metadata).toMatchObject({
+      provider: 'cerebras',
+      modelId: CEREBRAS_QWEN_MODEL_ID,
+      role: 'excluded free-tier unavailable model',
+      lifecycle: 'preview',
+      productionModel: false,
+      preview: true,
+      deprecated: false,
+      deprecationDate: CEREBRAS_QWEN_DEPRECATION_DATE,
+      enabled: false,
+      smokeStatus: 'red',
+      recommendedReplacement: CEREBRAS_DEPRECATION_REPLACEMENT,
+    });
+  });
+
+  it('keeps llama3.1-8b as production Cerebras metadata', () => {
     const metadata = getCerebrasModelMetadata(CEREBRAS_LLAMA_FALLBACK_MODEL_ID);
 
     expect(metadata).toMatchObject({
       provider: 'cerebras',
       modelId: CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
-      role: 'intra-Cerebras fallback',
+      role: expect.stringContaining('primary'),
       lifecycle: 'production',
       productionModel: true,
       preview: false,
       deprecated: false,
-      deprecationDate: CEREBRAS_QWEN_DEPRECATION_DATE,
+      deprecationDate: undefined,
       enabled: true,
       smokeStatus: 'green',
     });
@@ -85,7 +102,6 @@ describe('provider model metadata', () => {
     expect(metadata.map((entry) => entry.provider)).toEqual([
       'groq',
       'cerebras',
-      'cerebras',
       'mistral',
       'gemini',
       'openrouter',
@@ -98,21 +114,10 @@ describe('provider model metadata', () => {
       preview: true,
     });
     expect(
-      metadata.find((entry) => entry.modelId === CEREBRAS_QWEN_MODEL_ID)
-    ).toMatchObject({
-      modelId: CEREBRAS_QWEN_MODEL_ID,
-      role: expect.stringContaining('Advisor'),
-      lifecycle: 'preview',
-      productionModel: false,
-      preview: true,
-      smokeStatus: 'green',
-      recommendedReplacement: CEREBRAS_DEPRECATION_REPLACEMENT,
-    });
-    expect(
       metadata.find((entry) => entry.modelId === CEREBRAS_LLAMA_FALLBACK_MODEL_ID)
     ).toMatchObject({
       modelId: CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
-      role: 'intra-Cerebras fallback',
+      role: expect.stringContaining('primary'),
       lifecycle: 'production',
       smokeStatus: 'green',
     });

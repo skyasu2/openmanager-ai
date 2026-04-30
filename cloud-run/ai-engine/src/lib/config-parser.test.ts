@@ -182,11 +182,11 @@ describe('Config Parser', () => {
   });
 
   describe('getCerebrasModelId', () => {
-    it('should use Qwen as the default Cerebras primary model when env is missing', () => {
+    it('should use llama3.1-8b as the default Cerebras production model when env is missing', () => {
       delete process.env.CEREBRAS_MODEL_ID;
 
-      expect(DEFAULT_CEREBRAS_MODEL).toBe(CEREBRAS_QWEN_MODEL_ID);
-      expect(getCerebrasModelId()).toBe('qwen-3-235b-a22b-instruct-2507');
+      expect(DEFAULT_CEREBRAS_MODEL).toBe(CEREBRAS_LLAMA_FALLBACK_MODEL_ID);
+      expect(getCerebrasModelId()).toBe('llama3.1-8b');
     });
 
     it('should use CEREBRAS_MODEL_ID when configured', () => {
@@ -195,9 +195,9 @@ describe('Config Parser', () => {
       expect(getCerebrasModelId()).toBe('custom-cerebras-model');
     });
 
-    it('should expose llama3.1-8b as the intra-Cerebras fallback only', () => {
+    it('should not add an intra-Cerebras fallback when llama3.1-8b is already the default', () => {
       expect(CEREBRAS_LLAMA_FALLBACK_MODEL_ID).toBe('llama3.1-8b');
-      expect(getCerebrasFallbackModelIds()).toEqual(['llama3.1-8b']);
+      expect(getCerebrasFallbackModelIds()).toEqual([]);
     });
 
     it('should disable Cerebras tool-calling by default', () => {

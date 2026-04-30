@@ -5,6 +5,7 @@ import {
   CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
   CEREBRAS_QWEN_DEPRECATION_DATE,
   CEREBRAS_QWEN_MODEL_ID,
+  DEFAULT_CEREBRAS_MODEL,
   getCerebrasModelPolicy,
   getCerebrasModelQuota,
   getCerebrasRuntimeModelIds,
@@ -13,37 +14,29 @@ import {
 } from './provider-model-policy';
 
 describe('provider model policy SSOT', () => {
-  it('defines Cerebras Qwen primary and llama3.1-8b fallback with account-limit quotas', () => {
-    expect(getCerebrasRuntimeModelIds()).toEqual([
-      CEREBRAS_QWEN_MODEL_ID,
-      CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
-    ]);
+  it('uses Cerebras llama3.1-8b as the only runtime default after Qwen preview de-scope', () => {
+    expect(DEFAULT_CEREBRAS_MODEL).toBe(CEREBRAS_LLAMA_FALLBACK_MODEL_ID);
+    expect(getCerebrasRuntimeModelIds()).toEqual([CEREBRAS_LLAMA_FALLBACK_MODEL_ID]);
 
-    expect(getCerebrasRuntimeModelPolicies()).toHaveLength(2);
+    expect(getCerebrasRuntimeModelPolicies()).toHaveLength(1);
     expect(getCerebrasModelPolicy(CEREBRAS_QWEN_MODEL_ID)).toMatchObject({
       provider: 'cerebras',
       modelId: CEREBRAS_QWEN_MODEL_ID,
-      role: 'primary',
+      role: 'excluded',
       lifecycle: 'preview',
-      enabled: true,
-      toolCallingEnabled: true,
+      enabled: false,
+      toolCallingEnabled: false,
       structuredOutputEnabled: true,
       contextWindowTokens: 65_536,
-      quota: {
-        requestsPerMinute: 5,
-        tokensPerMinute: 30_000,
-        requestsPerDay: 14_400,
-        tokensPerDay: 1_000_000,
-      },
       deprecationDate: CEREBRAS_QWEN_DEPRECATION_DATE,
       blockAfterDeprecation: true,
-      smokeStatus: 'green',
+      smokeStatus: 'red',
     });
 
     expect(getCerebrasModelPolicy(CEREBRAS_LLAMA_FALLBACK_MODEL_ID)).toMatchObject({
       provider: 'cerebras',
       modelId: CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
-      role: 'fallback',
+      role: 'primary',
       lifecycle: 'production',
       enabled: true,
       toolCallingEnabled: true,
@@ -55,8 +48,8 @@ describe('provider model policy SSOT', () => {
         requestsPerDay: 14_400,
         tokensPerDay: 1_000_000,
       },
-      deprecationDate: CEREBRAS_QWEN_DEPRECATION_DATE,
-      blockAfterDeprecation: true,
+      deprecationDate: undefined,
+      blockAfterDeprecation: false,
       smokeStatus: 'green',
     });
   });
@@ -74,12 +67,6 @@ describe('provider model policy SSOT', () => {
   });
 
   it('exposes quota from the same policy object used by metadata and selectors', () => {
-    expect(getCerebrasModelQuota(CEREBRAS_QWEN_MODEL_ID)).toEqual({
-      requestsPerMinute: 5,
-      tokensPerMinute: 30_000,
-      requestsPerDay: 14_400,
-      tokensPerDay: 1_000_000,
-    });
     expect(getCerebrasModelQuota(CEREBRAS_LLAMA_FALLBACK_MODEL_ID)).toEqual({
       requestsPerMinute: 30,
       tokensPerMinute: 60_000,
@@ -101,22 +88,7 @@ describe('provider model policy SSOT', () => {
         getCerebrasRuntimeModelPolicies(),
         new Date('2026-05-28T00:00:00Z')
       )
-    ).toEqual([
-      {
-        provider: 'cerebras',
-        modelId: CEREBRAS_QWEN_MODEL_ID,
-        severity: 'P1',
-        reason: `${CEREBRAS_QWEN_MODEL_ID} is blocked for cerebras after ${CEREBRAS_QWEN_DEPRECATION_DATE}`,
-        replacement: CEREBRAS_DEPRECATION_REPLACEMENT,
-      },
-      {
-        provider: 'cerebras',
-        modelId: CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
-        severity: 'P1',
-        reason: `${CEREBRAS_LLAMA_FALLBACK_MODEL_ID} is blocked for cerebras after ${CEREBRAS_QWEN_DEPRECATION_DATE}`,
-        replacement: CEREBRAS_DEPRECATION_REPLACEMENT,
-      },
-    ]);
+    ).toEqual([]);
   });
 
   it('does not recommend another same-date blocked Cerebras runtime model', () => {

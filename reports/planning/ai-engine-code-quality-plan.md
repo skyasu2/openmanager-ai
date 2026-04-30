@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Draft
+> Status: Approved
 > Doc type: Reference
 > Last reviewed: 2026-04-30
 > Tags: ai-engine, refactoring, cleanup, quota, cerebras
@@ -195,24 +195,52 @@ BP 정렬: LangGraph 패턴에서 에이전트 Factory는 독립 레지스트리
 
 **장점**: env var 이미 파라미터화 완료 → 모델 교체 시 코드 변경 불필요.
 
+### 2026-04-30 공식 문서/계정 smoke 재확인
+
+공식 Cerebras Inference 문서 기준:
+- Supported Models: Production 모델은 `gpt-oss-120b`, `llama3.1-8b`; `qwen-3-235b-a22b-instruct-2507`는 Preview 모델.
+- Deprecations: 현재 공개 목록에는 `qwen-3-235b-a22b-instruct-2507` 직접 deprecation 공지는 없지만, Preview 모델은 production 의존 대상으로 부적절.
+- Change Log: `qwen-3-235b-a22b-instruct-2507`는 2025-07-29 Preview support로 추가됨.
+
+현재 계정 smoke (`node /tmp/openmanager-cerebras-models.mjs`, max_tokens=16):
+
+| 모델 | 결과 | 판단 |
+|------|------|------|
+| `gpt-oss-120b` | `/v1/models`에는 표시, chat completions 404 | 현재 계정 runtime 후보 제외 유지 |
+| `llama3.1-8b` | chat completions 200, `OK` | 현재 계정의 유일한 production Cerebras 후보 |
+| `qwen-3-235b-a22b-instruct-2507` | 429 high traffic | 기본 runtime 후보에서 제거 필요 |
+| `zai-glm-4.7` | `/v1/models`에는 표시, chat completions 404 | 현재 계정 runtime 후보 제외 |
+
+### Task 4 계약 (Approved)
+
+**목표 상태**:
+- `DEFAULT_CEREBRAS_MODEL`은 `llama3.1-8b`.
+- `getCerebrasRuntimeModelIds()`는 production smoke가 통과한 `llama3.1-8b`만 반환.
+- Qwen policy는 이력/명시적 env override 감지용으로 유지하되 runtime 후보에서는 제외.
+- `llama3.1-8b`는 production 모델이므로 Qwen deprecation date로 차단하지 않음.
+- 16K/32K 이상 context가 필요한 Agent 경로는 `llama3.1-8b` capability mismatch로 Cerebras를 건너뛰고 기존 Groq/Mistral fallback으로 이동.
+- `gpt-oss-120b`는 공식 production 모델이지만 현재 계정 chat completions 404이므로 excluded 유지.
+- Cloud Run env는 코드 배포 후 `CEREBRAS_MODEL_ID=llama3.1-8b`, `CEREBRAS_FALLBACK_MODEL_IDS=` 기준으로 정렬.
+
 ### 액션 플랜
 
 ```
-1. Cerebras 공식 채널 확인 (Changelog / 대시보드)
-   - qwen-3-235b-a22b-instruct-2507 후계 모델 ID 확인
-   - deprecation notice URL 보관
+1. Cerebras 공식 채널 확인 (완료)
+   - Supported Models / Deprecations / Change Log 기준으로 production vs preview 분리
+   - 근거 URL: `https://cerebras-inference.mintlify.app/models/overview`, `https://cerebras-inference.mintlify.app/support/deprecation`, `https://cerebras-inference.mintlify.app/support/change-log`
 
-2. 후계 모델 사전 smoke 테스트 (배포 전)
-   - env CEREBRAS_MODEL_ID=<new-model> 로컬 설정
-   - npm run test:quick (ai-engine)
-   - 필요 시 agent-model-selectors.test.ts mock 값 업데이트
+2. 후계 모델 사전 smoke 테스트 (완료)
+   - 현재 계정 smoke 결과 `llama3.1-8b`만 통과
+   - `gpt-oss-120b`는 공식 production 모델이나 현재 계정 chat completions 404로 제외 유지
 
-3. Cloud Run env 교체
-   - GCP Secret Manager에서 CEREBRAS_MODEL_ID 값 갱신
-   - Cloud Run revision 재배포 (./deploy.sh)
-   - /health 엔드포인트로 모델 응답 확인
+3. 코드 정책 정렬
+   - provider model policy / metadata / quota / config parser 테스트를 production `llama3.1-8b` 기본값으로 갱신
+   - Qwen 문자열은 deprecated/preview policy와 historical docs 범위에만 허용
 
-4. (선택) CEREBRAS_FALLBACK_MODEL_IDS 후계 모델도 업데이트
+4. Cloud Run env 교체
+   - `CEREBRAS_MODEL_ID=llama3.1-8b`
+   - `CEREBRAS_FALLBACK_MODEL_IDS=` 또는 미설정
+   - Cloud Run revision 재배포 후 `/health`, `/providers`, AI sidebar smoke 확인
 ```
 
 **데드라인**: 2026-05-20 — 배포 여유 7일 확보 기준.
