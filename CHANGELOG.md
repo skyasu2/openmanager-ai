@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.75](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.74...v8.11.75) (2026-04-30)
+
+
+### Bug Fixes
+
+* **dashboard:** keep ai page manual sidebar open ([ebe58d6](https://gitlab.com/skyasu2/openmanager-ai/-/commit/ebe58d66037f33e650a8d6b40dfe7aa440c4e9a2))
+
+
+### Tests
+
+* **qa:** record v8.11.74 ai shell production qa ([d2ab452](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d2ab4524df58769db9259fbeb8e97d584218faef))
+
 ## [8.11.74](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.73...v8.11.74) (2026-04-30)
 
 
