@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.71](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.70...v8.11.71) (2026-04-30)
+
+
+### Bug Fixes
+
+* **dashboard:** polish ai assistant app shell ([78fd54b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/78fd54b32ae99060e11a73605cb955a03ac145cd))
+
+
+### Performance Improvements
+
+* **ai-engine:** cap agent maxSteps and evidenceBudget to free-tier quota budget ([a370da0](https://gitlab.com/skyasu2/openmanager-ai/-/commit/a370da0bd9894832c935464e98999224707f2d37))
+
+
+### Tests
+
+* **qa:** record v8.11.70 nav contrast recheck ([cc7f847](https://gitlab.com/skyasu2/openmanager-ai/-/commit/cc7f847610a2d61bec0777f4798c501968719c2b))
+
 ## [8.11.70](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.69...v8.11.70) (2026-04-30)
 
 
