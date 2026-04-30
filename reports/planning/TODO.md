@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-30 KST (`Monitoring AI data source completed`)
+**Last Updated**: 2026-04-30 KST (`Dashboard app shell navigation plan drafted`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -9,6 +9,7 @@
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
 | Cerebras Qwen deprecation 대응 | P1 | pending | 2026-05-27 deprecation. 후계 모델 확인 + env 교체. 계획: [ai-engine-code-quality-plan.md](ai-engine-code-quality-plan.md) Task 4 |
+| Dashboard app shell + modal-to-route refactor | P2 | draft | 좌측 navigation rail/drawer, 대시보드 모달 기능의 route page 전환. 계획: [dashboard-app-shell-navigation-refactor-plan.md](dashboard-app-shell-navigation-refactor-plan.md) |
 
 ---
 

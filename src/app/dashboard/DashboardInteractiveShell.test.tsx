@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  */
 
-import { render, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -161,5 +161,52 @@ describe('DashboardInteractiveShell', () => {
       String(message).includes('대시보드 초기화')
     );
     expect(dashboardInitLogs).toHaveLength(1);
+  });
+
+  it('renders dashboard app navigation links inside the interactive shell', async () => {
+    const { default: DashboardInteractiveShell } = await import(
+      './DashboardInteractiveShell'
+    );
+
+    render(
+      React.createElement(DashboardInteractiveShell, {
+        initialServers: [],
+        initialTimeInfo: undefined,
+        initialDataSourceInfo: null,
+        initialFocusServerId: null,
+        isMounted: true,
+        canToggleAI: true,
+        userType: 'github',
+        isGuestFullAccess: false,
+      })
+    );
+
+    expect(
+      screen.getByRole('navigation', { name: '대시보드 내비게이션' })
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '개요' })).toHaveAttribute(
+      'href',
+      '/dashboard'
+    );
+    expect(screen.getByRole('link', { name: '서버' })).toHaveAttribute(
+      'href',
+      '/dashboard/servers'
+    );
+    expect(screen.getByRole('link', { name: '알림' })).toHaveAttribute(
+      'href',
+      '/dashboard/alerts'
+    );
+    expect(screen.getByRole('link', { name: '로그' })).toHaveAttribute(
+      'href',
+      '/dashboard/logs'
+    );
+    expect(screen.getByRole('link', { name: '토폴로지' })).toHaveAttribute(
+      'href',
+      '/dashboard/topology'
+    );
+    expect(screen.getByRole('link', { name: 'AI 어시스턴트' })).toHaveAttribute(
+      'href',
+      '/dashboard/ai-assistant'
+    );
   });
 });

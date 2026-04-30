@@ -6,6 +6,8 @@
   ],
   "exactFiles": [
     "src/app/main/components/SystemStartSection.test.tsx",
+    "src/app/dashboard/DashboardInteractiveShell.test.tsx",
+    "src/app/dashboard/dashboard-route-contract.test.ts",
     "src/app/validation/page.test.tsx",
     "src/lib/auth/auth-state-manager.test.ts",
     "src/lib/auth/supabase-auth-oauth.test.ts",

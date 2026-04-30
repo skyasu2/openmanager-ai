@@ -10,6 +10,16 @@ import type { Server } from '@/types/server';
 import { toDashboardAlertContext } from './alert-ai-context';
 import DashboardContent from './DashboardContent';
 
+const { routerPush } = vi.hoisted(() => ({
+  routerPush: vi.fn(),
+}));
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: routerPush,
+  }),
+}));
+
 vi.mock('next/dynamic', async () => {
   const React = await import('react');
 
@@ -183,6 +193,7 @@ vi.mock('./log-explorer/LogExplorerModal', () => ({
 const mockedUseDashboardStats = vi.mocked(useDashboardStats);
 
 beforeEach(() => {
+  routerPush.mockClear();
   mockedUseDashboardStats.mockReturnValue({
     total: 15,
     online: 15,
@@ -307,6 +318,32 @@ describe('DashboardContent empty state', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'open topology' }));
     expect(await screen.findByTestId('topology-modal')).toBeInTheDocument();
+  });
+
+  it('요약 액션은 모달 상태 대신 대시보드 route navigation으로 연결한다', async () => {
+    render(
+      <DashboardContent
+        {...createProps({
+          servers: [{ id: 's1', name: 'server-1', status: 'online' } as Server],
+          allServers: [
+            { id: 's1', name: 'server-1', status: 'online' } as Server,
+          ],
+          totalServers: 1,
+        })}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'open active alerts' }));
+    expect(routerPush).toHaveBeenCalledWith('/dashboard/alerts');
+
+    fireEvent.click(screen.getByRole('button', { name: 'open alert history' }));
+    expect(routerPush).toHaveBeenCalledWith('/dashboard/alerts');
+
+    fireEvent.click(screen.getByRole('button', { name: 'open log explorer' }));
+    expect(routerPush).toHaveBeenCalledWith('/dashboard/logs');
+
+    fireEvent.click(screen.getByRole('button', { name: 'open topology' }));
+    expect(routerPush).toHaveBeenCalledWith('/dashboard/topology');
   });
 
   it('서버 카드 AI 요청을 최고 사용률 메트릭으로 변환해 브리지해야 한다', async () => {

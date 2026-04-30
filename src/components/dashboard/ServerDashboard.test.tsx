@@ -8,6 +8,16 @@ import { describe, expect, it, vi } from 'vitest';
 import type { Server } from '@/types/server';
 import ServerDashboard from './ServerDashboard';
 
+const { routerPush } = vi.hoisted(() => ({
+  routerPush: vi.fn(),
+}));
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: routerPush,
+  }),
+}));
+
 vi.mock('next/dynamic', () => ({
   default: () =>
     function MockEnhancedServerModal({
@@ -79,6 +89,30 @@ function createServer(id: string, name: string): Server {
 }
 
 describe('ServerDashboard', () => {
+  it('서버 카드 클릭은 상세 모달 대신 서버 상세 route로 이동한다', () => {
+    routerPush.mockClear();
+
+    render(
+      <ServerDashboard
+        servers={[createServer('server-1', 'API Server')]}
+        allServers={[createServer('server-1', 'API Server')]}
+        totalServers={1}
+        currentPage={1}
+        totalPages={1}
+        pageSize={1}
+        onPageChange={vi.fn()}
+        onPageSizeChange={vi.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'API Server' }));
+
+    expect(routerPush).toHaveBeenCalledWith('/dashboard/servers/server-1');
+    expect(
+      screen.queryByTestId('enhanced-server-modal')
+    ).not.toBeInTheDocument();
+  });
+
   it('initialFocusServerId가 있으면 전체 서버 목록에서 찾아 모달을 연다', async () => {
     render(
       <ServerDashboard
