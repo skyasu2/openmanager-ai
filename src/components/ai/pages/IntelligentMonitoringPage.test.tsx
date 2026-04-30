@@ -59,7 +59,15 @@ describe('IntelligentMonitoringPage', () => {
       json: async () => ({}),
     });
 
-    render(<IntelligentMonitoringPage />);
+    render(
+      <IntelligentMonitoringPage
+        queryAsOfDataSlot={{
+          slotIndex: 42,
+          minuteOfDay: 420,
+          timeLabel: '07:00 KST',
+        }}
+      />
+    );
 
     fireEvent.change(screen.getByLabelText('분석 대상'), {
       target: { value: 'server-1' },
@@ -128,7 +136,15 @@ describe('IntelligentMonitoringPage', () => {
       }),
     });
 
-    render(<IntelligentMonitoringPage />);
+    render(
+      <IntelligentMonitoringPage
+        queryAsOfDataSlot={{
+          slotIndex: 42,
+          minuteOfDay: 420,
+          timeLabel: '07:00 KST',
+        }}
+      />
+    );
 
     fireEvent.change(screen.getByLabelText('분석 대상'), {
       target: { value: 'server-1' },
@@ -156,5 +172,142 @@ describe('IntelligentMonitoringPage', () => {
       'aria-pressed',
       'true'
     );
+  });
+
+  it('전체 시스템 분석은 서버별 fan-out 없이 batch 요청 1회만 보낸다', async () => {
+    mockUseServerQuery.mockReturnValue({
+      data: [
+        {
+          id: 'server-1',
+          name: '웹 서버 01',
+          cpu: 86,
+          memory: 51,
+          disk: 33,
+          network: 12,
+        },
+        {
+          id: 'server-2',
+          name: 'DB 서버 01',
+          cpu: 38,
+          memory: 44,
+          disk: 57,
+          network: 9,
+        },
+      ],
+    });
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        success: true,
+        data: {
+          success: true,
+          sourceMode: 'replay-json',
+          queryAsOf: '2026-04-30T00:00:00.000Z',
+          slot: {
+            slotIndex: 42,
+            hour: 7,
+            slotInHour: 0,
+            minuteOfDay: 420,
+            timeLabel: '07:00',
+            startTime: '2026-04-30T00:00:00.000Z',
+            endTime: '2026-04-30T00:10:00.000Z',
+          },
+          summary: '1대 서버에서 risk signal이 감지되었습니다.',
+          servers: [
+            {
+              id: 'server-1',
+              name: '웹 서버 01',
+              type: 'web',
+              status: 'warning',
+              cpu: 86,
+              memory: 51,
+              disk: 33,
+              network: 12,
+            },
+            {
+              id: 'server-2',
+              name: 'DB 서버 01',
+              type: 'database',
+              status: 'online',
+              cpu: 38,
+              memory: 44,
+              disk: 57,
+              network: 9,
+            },
+          ],
+          riskSignals: [
+            {
+              id: 'risk-server-1-cpu',
+              serverId: 'server-1',
+              serverName: '웹 서버 01',
+              serverType: 'web',
+              metric: 'cpu',
+              value: 86,
+              threshold: 80,
+              trend: 'up',
+              severity: 'warning',
+              evidenceRefId: 'evidence-risk-server-1-cpu',
+            },
+          ],
+          evidenceRefs: [
+            {
+              id: 'evidence-risk-server-1-cpu',
+              kind: 'metric',
+              serverId: 'server-1',
+              metric: 'cpu',
+              timeRange: {
+                from: '2026-04-30T00:00:00.000Z',
+                to: '2026-04-30T00:10:00.000Z',
+              },
+              summary: '웹 서버 01 cpu warning threshold exceeded',
+              value: 86,
+              threshold: 80,
+              severity: 'warning',
+            },
+          ],
+          dataFreshness: {
+            generatedAt: '2026-02-15T03:56:41.821Z',
+            sourceUpdatedAt: '2026-02-15T03:56:41.821Z',
+            stale: false,
+          },
+        },
+      }),
+    });
+
+    render(
+      <IntelligentMonitoringPage
+        queryAsOfDataSlot={{
+          slotIndex: 42,
+          minuteOfDay: 420,
+          timeLabel: '07:00 KST',
+        }}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '전체 분석' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('has-result')).toBeInTheDocument();
+    });
+
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    const request = mockFetch.mock.calls[0]?.[1];
+    expect(request).toBeDefined();
+    expect(JSON.parse(String(request?.body))).toMatchObject({
+      action: 'analyze_batch',
+      serverId: 'all',
+      analysisType: 'full',
+      enableRAG: false,
+      queryAsOf: {
+        source: 'vercel-static-otel',
+        datasetVersion: '24h-rotating-v1.0.0',
+        dataSlot: {
+          slotIndex: 42,
+          minuteOfDay: 420,
+          timeLabel: '07:00 KST',
+        },
+      },
+    });
   });
 });

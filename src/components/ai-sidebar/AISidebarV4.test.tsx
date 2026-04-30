@@ -231,7 +231,16 @@ describe('AISidebarV4', () => {
   });
 
   it('renders sidebar when user has AI permission', () => {
-    render(<AISidebarV4 {...defaultProps} />);
+    render(
+      <AISidebarV4
+        {...defaultProps}
+        queryAsOfDataSlot={{
+          slotIndex: 42,
+          minuteOfDay: 420,
+          timeLabel: '07:00 KST',
+        }}
+      />
+    );
     expect(screen.getByTestId('sidebar-header')).toBeInTheDocument();
   });
 
@@ -242,7 +251,16 @@ describe('AISidebarV4', () => {
   });
 
   it('closes sidebar on ESC key press', () => {
-    render(<AISidebarV4 {...defaultProps} />);
+    render(
+      <AISidebarV4
+        {...defaultProps}
+        queryAsOfDataSlot={{
+          slotIndex: 42,
+          minuteOfDay: 420,
+          timeLabel: '07:00 KST',
+        }}
+      />
+    );
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(defaultProps.onClose).toHaveBeenCalled();
   });
@@ -254,7 +272,16 @@ describe('AISidebarV4', () => {
   });
 
   it('renders chat view by default', () => {
-    render(<AISidebarV4 {...defaultProps} />);
+    render(
+      <AISidebarV4
+        {...defaultProps}
+        queryAsOfDataSlot={{
+          slotIndex: 42,
+          minuteOfDay: 420,
+          timeLabel: '07:00 KST',
+        }}
+      />
+    );
     expect(screen.getByTestId('enhanced-ai-chat')).toBeInTheDocument();
   });
 
@@ -306,7 +333,16 @@ describe('AISidebarV4', () => {
       removeQueuedQuery: vi.fn(),
     } as unknown as ReturnType<typeof useAIChatCore>);
 
-    render(<AISidebarV4 {...defaultProps} />);
+    render(
+      <AISidebarV4
+        {...defaultProps}
+        queryAsOfDataSlot={{
+          slotIndex: 42,
+          minuteOfDay: 420,
+          timeLabel: '07:00 KST',
+        }}
+      />
+    );
     fireEvent.click(
       screen.getAllByRole('button', { name: 'open-fullscreen' })[0]
     );
@@ -315,6 +351,11 @@ describe('AISidebarV4', () => {
       draft: 'CPU 경고 서버 원인 분석',
       selectedFunction: 'chat',
       analysisMode: 'auto',
+      queryAsOfDataSlot: {
+        slotIndex: 42,
+        minuteOfDay: 420,
+        timeLabel: '07:00 KST',
+      },
     });
   });
 

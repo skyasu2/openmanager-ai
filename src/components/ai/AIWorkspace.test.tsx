@@ -389,6 +389,37 @@ describe('AIWorkspace', () => {
     expect(mockConsumePendingEntryState).not.toHaveBeenCalledWith('fullscreen');
   });
 
+  it('preserves dashboard queryAsOf data slot in fullscreen AI core', async () => {
+    const { useAIChatCore } = await import('@/hooks/ai/useAIChatCore');
+    const queryAsOfDataSlot = {
+      slotIndex: 42,
+      minuteOfDay: 420,
+      timeLabel: '07:00 KST',
+    };
+
+    mockConsumePendingEntryState.mockReturnValueOnce({
+      selectedFunction: 'intelligent-monitoring',
+      target: 'fullscreen',
+      queryAsOfDataSlot,
+    });
+    mockSidebarState = {
+      ...mockSidebarState,
+      pendingEntryState: {
+        selectedFunction: 'intelligent-monitoring',
+        target: 'fullscreen',
+        queryAsOfDataSlot,
+      },
+    };
+
+    render(<AIWorkspace />);
+
+    expect(useAIChatCore).toHaveBeenCalledWith(
+      expect.objectContaining({
+        queryAsOfDataSlot,
+      })
+    );
+  });
+
   it('forwards sidebar parity props to fullscreen chat', async () => {
     const { useAIChatCore } = await import('@/hooks/ai/useAIChatCore');
 

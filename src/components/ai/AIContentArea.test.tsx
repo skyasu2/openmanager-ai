@@ -9,12 +9,15 @@ import AIContentArea from './AIContentArea';
 
 const autoReportEffectStart = vi.fn();
 const autoReportEffectCleanup = vi.fn();
+const autoReportPropsSpy = vi.fn();
 const analystEffectStart = vi.fn();
 const analystEffectCleanup = vi.fn();
+const analystPropsSpy = vi.fn();
 
 vi.mock('@/components/ai/pages/AutoReportPage', () => ({
-  default: function AutoReportPageMock() {
+  default: function AutoReportPageMock(props: unknown) {
     const [count, setCount] = useState(0);
+    autoReportPropsSpy(props);
 
     useEffect(() => {
       autoReportEffectStart();
@@ -33,8 +36,9 @@ vi.mock('@/components/ai/pages/AutoReportPage', () => ({
 }));
 
 vi.mock('@/components/ai/pages/IntelligentMonitoringPage', () => ({
-  default: function IntelligentMonitoringPageMock() {
+  default: function IntelligentMonitoringPageMock(props: unknown) {
     const [count, setCount] = useState(0);
+    analystPropsSpy(props);
 
     useEffect(() => {
       analystEffectStart();
@@ -56,8 +60,10 @@ describe('AIContentArea', () => {
   beforeEach(() => {
     autoReportEffectStart.mockClear();
     autoReportEffectCleanup.mockClear();
+    autoReportPropsSpy.mockClear();
     analystEffectStart.mockClear();
     analystEffectCleanup.mockClear();
+    analystPropsSpy.mockClear();
   });
 
   it('lazy-mounts Reporter and Analyst pages only after selection', async () => {
@@ -132,5 +138,55 @@ describe('AIContentArea', () => {
       expect(autoReportEffectStart).toHaveBeenCalledTimes(2);
       expect(analystEffectCleanup).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it('passes dashboard queryAsOf data slot to Analyst page', async () => {
+    render(
+      <AIContentArea
+        selectedFunction="intelligent-monitoring"
+        queryAsOfDataSlot={{
+          slotIndex: 42,
+          minuteOfDay: 420,
+          timeLabel: '07:00 KST',
+        }}
+      />
+    );
+
+    await screen.findByText('analyst-count:0');
+
+    expect(analystPropsSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        queryAsOfDataSlot: {
+          slotIndex: 42,
+          minuteOfDay: 420,
+          timeLabel: '07:00 KST',
+        },
+      })
+    );
+  });
+
+  it('passes dashboard queryAsOf data slot to Reporter page', async () => {
+    render(
+      <AIContentArea
+        selectedFunction="auto-report"
+        queryAsOfDataSlot={{
+          slotIndex: 42,
+          minuteOfDay: 420,
+          timeLabel: '07:00 KST',
+        }}
+      />
+    );
+
+    await screen.findByText('report-count:0');
+
+    expect(autoReportPropsSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        queryAsOfDataSlot: {
+          slotIndex: 42,
+          minuteOfDay: 420,
+          timeLabel: '07:00 KST',
+        },
+      })
+    );
   });
 });

@@ -158,4 +158,45 @@ describe('AutoReportPage', () => {
       );
     });
   });
+
+  it('sends dashboard queryAsOf data slot when generating a report', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        success: false,
+        message: 'stop after request assertion',
+      }),
+    });
+
+    render(
+      <AutoReportPage
+        queryAsOfDataSlot={{
+          slotIndex: 42,
+          minuteOfDay: 420,
+          timeLabel: '07:00 KST',
+        }}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId('report-generate-btn'));
+
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+    });
+
+    const request = mockFetch.mock.calls[0]?.[1];
+    expect(JSON.parse(String(request?.body))).toMatchObject({
+      action: 'generate',
+      queryAsOf: {
+        source: 'vercel-static-otel',
+        datasetVersion: '24h-rotating-v1.0.0',
+        dataSlot: {
+          slotIndex: 42,
+          minuteOfDay: 420,
+          timeLabel: '07:00 KST',
+        },
+      },
+    });
+  });
 });
