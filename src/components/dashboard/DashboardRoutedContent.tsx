@@ -1,6 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { useSearchParams } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { useMonitoringReport } from '@/hooks/dashboard/useMonitoringReport';
 import type {
@@ -94,6 +95,12 @@ export default function DashboardRoutedContent({
   onStatusFilterChange: _onStatusFilterChange,
   onAskAIAboutAlert,
 }: DashboardRoutedContentProps) {
+  const searchParams = useSearchParams();
+  const initialLogServerId =
+    view === 'logs'
+      ? (searchParams.get('server') ?? searchParams.get('serverId'))
+      : null;
+
   const sourceServers = allServers?.length ? allServers : servers;
   const {
     data: monitoringReport,
@@ -197,7 +204,7 @@ export default function DashboardRoutedContent({
         description="24시간 OTel 로그 통합 검색과 레벨/소스/서버 필터"
       >
         <div className="flex min-h-[680px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-          <LogExplorerPanel />
+          <LogExplorerPanel initialServerId={initialLogServerId} />
         </div>
       </PageFrame>
     );

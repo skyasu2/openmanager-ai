@@ -1,9 +1,18 @@
 'use client';
 
 import { FileSearch, RotateCcw } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
+import {
+  type UIEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import {
+  type GlobalLogEntry,
   type GlobalLogFilter,
   useGlobalLogs,
 } from '@/hooks/dashboard/useGlobalLogs';
@@ -37,15 +46,70 @@ const levelStyles: Record<
   },
 };
 
-const INITIAL_DISPLAY = 100;
-const LOAD_MORE_COUNT = 100;
+const INITIAL_DISPLAY = 50;
+const LOAD_MORE_COUNT = 50;
 
-export function LogExplorerPanel({ active = true }: { active?: boolean }) {
+type LogGroup = {
+  key: string;
+  logs: GlobalLogEntry[];
+  patternKey: string;
+  representative: GlobalLogEntry;
+};
+
+const normalizeLogPattern = (message: string): string =>
+  message
+    .toLowerCase()
+    .replace(/\b[0-9a-f]{8,}\b/g, '<hex>')
+    .replace(/\b\d{1,3}(?:\.\d{1,3}){3}\b/g, '<ip>')
+    .replace(/\b\d+(?:\.\d+)?(?:ms|s|%|mb|gb|kb|b)?\b/g, '<num>')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+const getPatternKey = (log: GlobalLogEntry): string =>
+  [log.serverId, log.level, log.source, normalizeLogPattern(log.message)].join(
+    '|'
+  );
+
+const getLogKey = (log: GlobalLogEntry, index: number): string =>
+  `${log.serverId}-${log.timestamp}-${log.level}-${log.source}-${index}`;
+
+const groupConsecutiveLogs = (logs: GlobalLogEntry[]): LogGroup[] => {
+  const groups: LogGroup[] = [];
+
+  logs.forEach((log, index) => {
+    const patternKey = getPatternKey(log);
+    const previousGroup = groups.at(-1);
+
+    if (previousGroup?.patternKey === patternKey) {
+      previousGroup.logs.push(log);
+      return;
+    }
+
+    groups.push({
+      key: getLogKey(log, index),
+      logs: [log],
+      patternKey,
+      representative: log,
+    });
+  });
+
+  return groups;
+};
+
+export function LogExplorerPanel({
+  active = true,
+  initialServerId = null,
+}: {
+  active?: boolean;
+  initialServerId?: string | null;
+}) {
   const [level, setLevel] = useState<'info' | 'warn' | 'error' | 'all'>('all');
   const [source, setSource] = useState('');
-  const [serverId, setServerId] = useState('');
+  const [serverId, setServerId] = useState(initialServerId ?? '');
   const [keyword, setKeyword] = useState('');
   const [debouncedKeyword, setDebouncedKeyword] = useState('');
+  const appliedInitialServerIdRef = useRef(initialServerId ?? '');
+  const previousLoadedLogsRef = useRef(0);
   const sessionAnchorRef = useRef(new Date());
   const [sessionAnchorLabel, setSessionAnchorLabel] = useState('');
   const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY);
@@ -75,6 +139,20 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
       setExpandedLogKey(null);
     });
   };
+
+  useEffect(() => {
+    const normalizedInitialServerId = initialServerId ?? '';
+    if (appliedInitialServerIdRef.current === normalizedInitialServerId) {
+      return;
+    }
+
+    appliedInitialServerIdRef.current = normalizedInitialServerId;
+    startTransition(() => {
+      setServerId(normalizedInitialServerId);
+      setDisplayCount(INITIAL_DISPLAY);
+      setExpandedLogKey(null);
+    });
+  }, [initialServerId]);
 
   const handleLevelStatClick = (nextLevel: typeof level) => {
     handleFilterChange(() =>
@@ -107,6 +185,7 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
   // biome-ignore lint/correctness/useExhaustiveDependencies: debouncedKeyword is intentional trigger
   useEffect(() => {
     setDisplayCount(INITIAL_DISPLAY);
+    setExpandedLogKey(null);
   }, [debouncedKeyword]);
 
   const filterParams = useMemo(
@@ -128,6 +207,9 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
     isError,
     errorMessage,
     retry,
+    hasNextPage: hasNextLogPage = false,
+    isFetchingNextPage: isFetchingNextLogPage = false,
+    fetchNextPage: fetchNextLogPage,
     windowStart,
     windowEnd,
   } = useGlobalLogs(filterParams);
@@ -136,7 +218,63 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
     () => logs.slice(0, displayCount),
     [logs, displayCount]
   );
+  const displayLogGroups = useMemo(
+    () => groupConsecutiveLogs(displayLogs),
+    [displayLogs]
+  );
   const hasMore = logs.length > displayCount;
+  const canLoadMore = hasMore || hasNextLogPage || isFetchingNextLogPage;
+  const loadMoreLogs = useCallback(() => {
+    if (displayCount < logs.length) {
+      setDisplayCount((currentCount) =>
+        Math.min(logs.length, currentCount + LOAD_MORE_COUNT)
+      );
+      return;
+    }
+
+    if (hasNextLogPage && !isFetchingNextLogPage) {
+      void fetchNextLogPage?.();
+    }
+  }, [
+    displayCount,
+    fetchNextLogPage,
+    hasNextLogPage,
+    isFetchingNextLogPage,
+    logs.length,
+  ]);
+  const handleLogScroll = useCallback(
+    (event: UIEvent<HTMLDivElement>) => {
+      const target = event.currentTarget;
+      const distanceFromBottom =
+        target.scrollHeight - target.scrollTop - target.clientHeight;
+
+      if (distanceFromBottom <= 120) {
+        loadMoreLogs();
+      }
+    },
+    [loadMoreLogs]
+  );
+
+  useEffect(() => {
+    const previousLoadedLogs = previousLoadedLogsRef.current;
+
+    if (logs.length < previousLoadedLogs) {
+      previousLoadedLogsRef.current = logs.length;
+      return;
+    }
+
+    if (
+      previousLoadedLogs > 0 &&
+      logs.length > previousLoadedLogs &&
+      displayCount >= previousLoadedLogs
+    ) {
+      setDisplayCount((currentCount) =>
+        Math.min(logs.length, currentCount + LOAD_MORE_COUNT)
+      );
+    }
+
+    previousLoadedLogsRef.current = logs.length;
+  }, [displayCount, logs.length]);
   const activeFilterLabels = useMemo(() => {
     const labels: string[] = [];
     if (level !== 'all') labels.push(`레벨 ${level.toUpperCase()}`);
@@ -336,7 +474,12 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
         className="relative min-h-[320px] flex-1 overflow-hidden sm:max-h-[56vh]"
       >
         <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black" />
-        <div className="relative h-full overflow-y-auto p-4 font-mono text-xs">
+        <div
+          data-testid="log-explorer-scroll-container"
+          className="relative h-full overflow-y-auto p-4 font-mono text-xs"
+          onScroll={handleLogScroll}
+          style={{ contain: 'strict' }}
+        >
           {errorMessage && (
             <div className="mb-3 flex items-center justify-between gap-3 rounded border border-amber-300/80 bg-amber-100/90 px-3 py-2 text-[11px] text-amber-900">
               <span>{errorMessage}</span>
@@ -384,11 +527,13 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
                 isPending && 'opacity-60 transition-opacity duration-200'
               )}
             >
-              {displayLogs.map((log) => {
+              {displayLogGroups.map((group) => {
+                const log = group.representative;
                 const logLevel = log.level as keyof typeof levelStyles;
                 const style = levelStyles[logLevel] ?? levelStyles.info;
-                const logKey = `${log.serverId}-${log.timestamp}-${log.level}-${log.source}-${log.message.slice(0, 32)}`;
+                const logKey = group.key;
                 const isExpanded = expandedLogKey === logKey;
+                const isGrouped = group.logs.length > 1;
                 return (
                   <button
                     type="button"
@@ -461,19 +606,46 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
                     >
                       {log.message}
                     </span>
+                    {isGrouped && (
+                      <span className="shrink-0 rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-bold text-gray-200">
+                        ×{group.logs.length}
+                      </span>
+                    )}
+                    {isGrouped && isExpanded && (
+                      <span
+                        data-testid="log-explorer-log-group-details"
+                        className="basis-full space-y-1 rounded border border-white/10 bg-black/20 px-2 py-1 text-[10px] text-gray-300"
+                      >
+                        {group.logs.slice(1, 6).map((groupLog) => (
+                          <span
+                            key={`${groupLog.timestamp}-${groupLog.message}`}
+                            className="block break-words"
+                          >
+                            {formatRotatingTimestamp(groupLog.timestamp, {
+                              anchorDate: sessionAnchorRef.current,
+                            })}
+                            {'  '}
+                            {groupLog.message}
+                          </span>
+                        ))}
+                      </span>
+                    )}
                   </button>
                 );
               })}
-              {hasMore && (
+              {canLoadMore && (
                 <div className="text-center py-3">
                   <button
                     type="button"
-                    onClick={() =>
-                      setDisplayCount((prev) => prev + LOAD_MORE_COUNT)
-                    }
-                    className="rounded-md border border-gray-500/40 px-4 py-1.5 text-xs font-medium text-gray-300 hover:bg-white/10 transition-colors"
+                    onClick={loadMoreLogs}
+                    disabled={isFetchingNextLogPage}
+                    className="rounded-md border border-gray-500/40 px-4 py-1.5 text-xs font-medium text-gray-300 transition-colors hover:bg-white/10 disabled:cursor-wait disabled:opacity-60"
                   >
-                    더 보기 ({logs.length - displayCount}건 남음)
+                    {isFetchingNextLogPage
+                      ? '불러오는 중...'
+                      : hasMore
+                        ? `더 보기 (${logs.length - displayCount}건 로드됨)`
+                        : '다음 로그 불러오기'}
                   </button>
                 </div>
               )}

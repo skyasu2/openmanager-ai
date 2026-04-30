@@ -237,13 +237,20 @@ describe('LogExplorerModal display contract', () => {
     expect(screen.getAllByTestId('log-explorer-log-row')).toHaveLength(50);
 
     const scroller = screen.getByTestId('log-explorer-scroll-container');
-    fireEvent.scroll(scroller, {
-      target: {
-        scrollTop: 1000,
-        clientHeight: 500,
-        scrollHeight: 1400,
-      },
+    Object.defineProperty(scroller, 'scrollTop', {
+      configurable: true,
+      value: 1000,
     });
+    Object.defineProperty(scroller, 'clientHeight', {
+      configurable: true,
+      value: 500,
+    });
+    Object.defineProperty(scroller, 'scrollHeight', {
+      configurable: true,
+      value: 1400,
+    });
+
+    fireEvent.scroll(scroller);
 
     expect(screen.getAllByTestId('log-explorer-log-row')).toHaveLength(60);
   });

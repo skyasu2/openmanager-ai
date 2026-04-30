@@ -1,4 +1,11 @@
-import { ChevronDown, ChevronUp, Clock, Globe, MapPin } from 'lucide-react';
+import {
+  ChevronDown,
+  ChevronUp,
+  Clock,
+  FileText,
+  Globe,
+  MapPin,
+} from 'lucide-react';
 import React, {
   type FC,
   memo,
@@ -36,6 +43,7 @@ export interface ImprovedServerCardProps {
   server: ServerType;
   onClick: (server: ServerType) => void;
   onAskAI?: (server: ServerType) => void;
+  onOpenLogs?: (server: ServerType) => void;
   variant?: 'compact' | 'standard' | 'detailed';
   showRealTimeUpdates?: boolean;
   index?: number;
@@ -100,6 +108,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
     server,
     onClick,
     onAskAI,
+    onOpenLogs,
     variant = 'standard',
     showRealTimeUpdates = true,
     enableProgressiveDisclosure = true,
@@ -207,6 +216,14 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
         onAskAI(safeServer);
       },
       [isAIActionable, onAskAI, safeServer]
+    );
+
+    const handleOpenLogs = useCallback(
+      (e: React.MouseEvent | React.KeyboardEvent) => {
+        e.stopPropagation();
+        onOpenLogs?.(safeServer);
+      },
+      [onOpenLogs, safeServer]
     );
 
     // 🔧 인라인 화살표 함수를 useCallback으로 최적화
@@ -341,6 +358,16 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
           </button>
 
           <div className="flex items-center gap-1 pt-4">
+            {onOpenLogs && (
+              <button
+                type="button"
+                onClick={handleOpenLogs}
+                aria-label={`${safeServer.name} 로그 보기`}
+                className="flex h-11 w-11 items-center justify-center rounded-full bg-black/5 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+              >
+                <FileText className="h-4 w-4" />
+              </button>
+            )}
             {enableProgressiveDisclosure && (
               <button
                 type="button"

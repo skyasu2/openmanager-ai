@@ -3,7 +3,7 @@
  */
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { createElement } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -106,6 +106,65 @@ describe('useGlobalLogs', () => {
     expect(url).toContain('level=warn');
     expect(url).toContain('logSource=monitor');
     expect(url).toContain('logKeyword=high');
+  });
+
+  it('passes serverId filter as an explicit query parameter', async () => {
+    const fetchSpy = vi.mocked(fetch);
+
+    renderHook(() => useGlobalLogs({ serverId: 'web-01' }), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => {
+      expect(fetchSpy).toHaveBeenCalled();
+    });
+
+    const url = fetchSpy.mock.calls[0][0] as string;
+    expect(url).toContain('serverId=web-01');
+  });
+
+  it('fetches the next page when more log pages are available', async () => {
+    const fetchSpy = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            ...mockApiResponse,
+            data: mockApiResponse.data.slice(0, 2),
+            pagination: { page: 1, limit: 100, total: 3, totalPages: 2 },
+          }),
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            ...mockApiResponse,
+            data: mockApiResponse.data.slice(2),
+            pagination: { page: 2, limit: 100, total: 3, totalPages: 2 },
+          }),
+      } as Response);
+    vi.stubGlobal('fetch', fetchSpy);
+
+    const { result } = renderHook(() => useGlobalLogs({}), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => {
+      expect(result.current.logs).toHaveLength(2);
+    });
+    expect(result.current.hasNextPage).toBe(true);
+
+    await act(async () => {
+      await result.current.fetchNextPage?.();
+    });
+
+    await waitFor(() => {
+      expect(result.current.logs).toHaveLength(3);
+    });
+
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
+    expect(fetchSpy.mock.calls[1][0]).toContain('page=2');
   });
 
   it('handles API errors gracefully', async () => {

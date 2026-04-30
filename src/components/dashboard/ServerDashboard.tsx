@@ -139,6 +139,14 @@ export default function ServerDashboard({
     [router]
   );
 
+  const handleOpenLogs = useCallback(
+    (server: Server) => {
+      const serverId = server.id ?? server.name;
+      router.push(`/dashboard/logs?server=${encodeURIComponent(serverId)}`);
+    },
+    [router]
+  );
+
   const handleModalClose = useCallback(() => {
     setSelectedServer(null);
   }, []);
@@ -403,6 +411,7 @@ export default function ServerDashboard({
                         index={index}
                         onClick={handleServerSelect}
                         onAskAI={onAskAI}
+                        onOpenLogs={handleOpenLogs}
                       />
                     </ServerCardErrorBoundary>
                   );
