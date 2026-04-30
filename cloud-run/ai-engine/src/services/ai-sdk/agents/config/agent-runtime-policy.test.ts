@@ -14,8 +14,8 @@ import {
 const EXPECTED_POLICIES = {
   'NLQ Agent': {
     providerOrder: ['groq', 'cerebras', 'mistral'],
-    maxSteps: 7,
-    evidenceBudget: 3,
+    maxSteps: 4,
+    evidenceBudget: 2,
     toolAllowlist: [
       'getServerMetrics',
       'getServerMetricsAdvanced',
@@ -29,8 +29,8 @@ const EXPECTED_POLICIES = {
   },
   'Analyst Agent': {
     providerOrder: ['cerebras', 'groq', 'mistral'],
-    maxSteps: 10,
-    evidenceBudget: 5,
+    maxSteps: 5,
+    evidenceBudget: 3,
     toolAllowlist: [
       'getServerMetrics',
       'getServerMetricsAdvanced',
@@ -46,8 +46,8 @@ const EXPECTED_POLICIES = {
   },
   'Reporter Agent': {
     providerOrder: ['cerebras', 'groq', 'mistral'],
-    maxSteps: 10,
-    evidenceBudget: 6,
+    maxSteps: 5,
+    evidenceBudget: 4,
     toolAllowlist: [
       'getServerMetrics',
       'getServerMetricsAdvanced',
@@ -62,8 +62,8 @@ const EXPECTED_POLICIES = {
   },
   'Advisor Agent': {
     providerOrder: ['cerebras', 'groq', 'mistral'],
-    maxSteps: 7,
-    evidenceBudget: 5,
+    maxSteps: 4,
+    evidenceBudget: 3,
     toolAllowlist: [
       'searchKnowledgeBase',
       'recommendCommands',
@@ -149,12 +149,12 @@ describe('agent runtime policy SSOT', () => {
       'groq',
       'mistral',
     ]);
-    expect(getAgentMaxSteps('Reporter Agent')).toBe(10);
-    expect(getAgentEvidenceBudget('NLQ Agent')).toBe(3);
+    expect(getAgentMaxSteps('Reporter Agent')).toBe(5);
+    expect(getAgentEvidenceBudget('NLQ Agent')).toBe(2);
     expect(getAgentRuntimePolicy('Unknown Agent')).toMatchObject({
       providerOrder: ['groq', 'cerebras', 'mistral'],
-      maxSteps: 7,
-      evidenceBudget: 3,
+      maxSteps: 4,
+      evidenceBudget: 2,
     });
   });
 });

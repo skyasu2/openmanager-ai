@@ -445,7 +445,7 @@ async function* streamSingleAgent(
           enableWebSearch: webSearchEnabled,
           enableRAG: ragEnabled,
         }),
-        stopWhen: [hasToolCall('finalAnswer'), stepCountIs(5)],
+        stopWhen: [hasToolCall('finalAnswer'), stepCountIs(4)],
         temperature: 0.3,
         maxOutputTokens: 2048,
         timeout: {
