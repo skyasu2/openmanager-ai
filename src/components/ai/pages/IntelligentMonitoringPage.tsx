@@ -16,8 +16,9 @@ import { BookOpen, Monitor, Play, RefreshCw, Server } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import AnalysisResultsCard from '@/components/ai/AnalysisResultsCard';
 import { useServerQuery } from '@/hooks/useServerQuery';
+import { createQueryAsOf } from '@/lib/ai/query-as-of';
 import { logger } from '@/lib/logging';
-import type { JobDataSlot, JobQueryAsOf } from '@/types/ai-jobs';
+import type { JobDataSlot } from '@/types/ai-jobs';
 import type {
   AnalysisResponse,
   CloudRunAnalysisResponse,
@@ -33,21 +34,6 @@ import type { EnhancedServerMetrics } from '@/types/server';
 
 interface IntelligentMonitoringPageProps {
   queryAsOfDataSlot?: JobDataSlot;
-}
-
-function createQueryAsOf(
-  queryAsOfDataSlot?: JobDataSlot
-): JobQueryAsOf | undefined {
-  if (!queryAsOfDataSlot) {
-    return undefined;
-  }
-
-  return {
-    createdAt: new Date().toISOString(),
-    source: 'vercel-static-otel',
-    datasetVersion: '24h-rotating-v1.0.0',
-    dataSlot: queryAsOfDataSlot,
-  };
 }
 
 function batchStatusToOverallStatus(

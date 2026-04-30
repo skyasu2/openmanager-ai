@@ -70,3 +70,15 @@ export function buildJobQueryAsOf(
     dataSlot,
   };
 }
+
+export function createQueryAsOf(
+  dataSlot?: JobDataSlot
+): JobQueryAsOf | undefined {
+  if (!dataSlot) return undefined;
+  return {
+    createdAt: new Date().toISOString(),
+    source: 'vercel-static-otel',
+    datasetVersion: JOB_DATASET_VERSION,
+    dataSlot,
+  };
+}

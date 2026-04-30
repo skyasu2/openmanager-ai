@@ -47,19 +47,11 @@ function readStringField(value: unknown, fallback: string): string {
 }
 
 function readQueryAsOfSlot(value: unknown): string {
-  if (
-    typeof value === 'object' &&
-    value !== null &&
-    'dataSlot' in value &&
-    typeof value.dataSlot === 'object' &&
-    value.dataSlot !== null &&
-    'slotIndex' in value.dataSlot &&
-    typeof value.dataSlot.slotIndex === 'number'
-  ) {
-    return String(value.dataSlot.slotIndex);
-  }
-
-  return 'current';
+  const slot = (value as { dataSlot?: { slotIndex?: unknown } } | null)
+    ?.dataSlot;
+  return typeof slot?.slotIndex === 'number'
+    ? String(slot.slotIndex)
+    : 'current';
 }
 
 function buildMonitoringCacheQuery(

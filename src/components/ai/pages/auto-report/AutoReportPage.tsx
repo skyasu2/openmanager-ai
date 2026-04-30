@@ -31,8 +31,9 @@ import Link from 'next/link';
 import { useCallback, useState } from 'react';
 import { rulesLoader } from '@/config/rules/loader';
 import { useServerQuery } from '@/hooks/useServerQuery';
+import { createQueryAsOf } from '@/lib/ai/query-as-of';
 import { logger } from '@/lib/logging';
-import type { JobDataSlot, JobQueryAsOf } from '@/types/ai-jobs';
+import type { JobDataSlot } from '@/types/ai-jobs';
 
 import { IncidentHistoryPage } from './IncidentHistoryPage';
 import ReportCard from './ReportCard';
@@ -48,21 +49,6 @@ type TabType = 'generate' | 'history';
 
 interface AutoReportPageProps {
   queryAsOfDataSlot?: JobDataSlot;
-}
-
-function createQueryAsOf(
-  queryAsOfDataSlot?: JobDataSlot
-): JobQueryAsOf | undefined {
-  if (!queryAsOfDataSlot) {
-    return undefined;
-  }
-
-  return {
-    createdAt: new Date().toISOString(),
-    source: 'vercel-static-otel',
-    datasetVersion: '24h-rotating-v1.0.0',
-    dataSlot: queryAsOfDataSlot,
-  };
 }
 
 function normalizeRecommendations(
