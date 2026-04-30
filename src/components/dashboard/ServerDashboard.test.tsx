@@ -44,17 +44,24 @@ vi.mock('@/components/dashboard/ImprovedServerCard', () => ({
   default: ({
     server,
     onClick,
+    onOpenLogs,
   }: {
     server: Server;
     onClick?: (server: Server) => void;
+    onOpenLogs?: (server: Server) => void;
   }) => (
-    <button
-      type="button"
-      data-testid={`server-card-${server.id}`}
-      onClick={() => onClick?.(server)}
-    >
-      {server.name}
-    </button>
+    <div data-testid={`server-card-${server.id}`}>
+      <button type="button" onClick={() => onClick?.(server)}>
+        {server.name}
+      </button>
+      <button
+        type="button"
+        aria-label={`${server.name} 로그 보기`}
+        onClick={() => onOpenLogs?.(server)}
+      >
+        로그
+      </button>
+    </div>
   ),
 }));
 
@@ -230,7 +237,9 @@ describe('ServerDashboard', () => {
     });
 
     expect(
-      screen.getAllByTestId(/^server-card-/).map((node) => node.textContent)
+      screen
+        .getAllByTestId(/^server-card-/)
+        .map((node) => node.querySelector('button')?.textContent)
     ).toEqual(['DB Server', 'Cache Server', 'API Server']);
 
     fireEvent.change(screen.getByLabelText('서버 정렬'), {
@@ -238,7 +247,32 @@ describe('ServerDashboard', () => {
     });
 
     expect(
-      screen.getAllByTestId(/^server-card-/).map((node) => node.textContent)
+      screen
+        .getAllByTestId(/^server-card-/)
+        .map((node) => node.querySelector('button')?.textContent)
     ).toEqual(['API Server', 'Cache Server', 'DB Server']);
+  });
+
+  it('서버 카드의 로그 버튼은 서버 필터가 포함된 로그 페이지로 이동한다', () => {
+    routerPush.mockClear();
+
+    render(
+      <ServerDashboard
+        servers={[createServer('server-1', 'API Server')]}
+        allServers={[createServer('server-1', 'API Server')]}
+        totalServers={1}
+        currentPage={1}
+        totalPages={1}
+        pageSize={1}
+        onPageChange={vi.fn()}
+        onPageSizeChange={vi.fn()}
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'API Server 로그 보기' })
+    );
+
+    expect(routerPush).toHaveBeenCalledWith('/dashboard/logs?server=server-1');
   });
 });

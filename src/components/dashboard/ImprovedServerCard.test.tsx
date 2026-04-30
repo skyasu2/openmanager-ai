@@ -12,6 +12,7 @@
  */
 
 import { fireEvent, render, screen, within } from '@testing-library/react';
+import type { ComponentProps } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Server } from '../../types/server';
 
@@ -682,6 +683,30 @@ describe('ImprovedServerCard - User Event 테스트', () => {
 
       expect(mockOnAskAI).toHaveBeenCalledWith(
         expect.objectContaining({ id: warningServer.id })
+      );
+      expect(mockOnClick).not.toHaveBeenCalled();
+    });
+
+    it('로그 버튼 클릭 시 서버 상세 클릭과 분리되어 로그 요청만 호출해야 한다', () => {
+      const mockOnOpenLogs = vi.fn();
+      const props = {
+        server: mockServer,
+        onClick: mockOnClick,
+        onOpenLogs: mockOnOpenLogs,
+      } as ComponentProps<typeof ImprovedServerCard> & {
+        onOpenLogs: (server: Server) => void;
+      };
+
+      render(<ImprovedServerCard {...props} />);
+
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: `${mockServer.name} 로그 보기`,
+        })
+      );
+
+      expect(mockOnOpenLogs).toHaveBeenCalledWith(
+        expect.objectContaining({ id: mockServer.id })
       );
       expect(mockOnClick).not.toHaveBeenCalled();
     });

@@ -3,15 +3,32 @@
  */
 
 import { fireEvent, render, screen } from '@testing-library/react';
+import { type ComponentType, createElement } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useGlobalLogs } from '@/hooks/dashboard/useGlobalLogs';
-import { LogExplorerModal } from './LogExplorerModal';
+import { LogExplorerModal, LogExplorerPanel } from './LogExplorerModal';
 
 vi.mock('@/hooks/dashboard/useGlobalLogs', () => ({
   useGlobalLogs: vi.fn(),
 }));
 
 const mockedUseGlobalLogs = vi.mocked(useGlobalLogs);
+
+function createLog(overrides: {
+  timestamp?: string;
+  level?: 'info' | 'warn' | 'error';
+  message: string;
+  source?: string;
+  serverId?: string;
+}) {
+  return {
+    timestamp: overrides.timestamp ?? '2026-02-13T10:00:00.000Z',
+    level: overrides.level ?? 'warn',
+    message: overrides.message,
+    source: overrides.source ?? 'nginx',
+    serverId: overrides.serverId ?? 'web-01',
+  };
+}
 
 describe('LogExplorerModal display contract', () => {
   beforeEach(() => {
@@ -123,5 +140,111 @@ describe('LogExplorerModal display contract', () => {
     expect(screen.getByTestId('log-explorer-filter-summary')).toHaveTextContent(
       '없음'
     );
+  });
+
+  it('초기 서버 필터가 있으면 로그 API 필터와 UI 선택값에 반영한다', () => {
+    render(
+      createElement(
+        LogExplorerPanel as ComponentType<Record<string, unknown>>,
+        {
+          active: true,
+          initialServerId: 'web-01',
+        }
+      )
+    );
+
+    expect(mockedUseGlobalLogs).toHaveBeenCalledWith(
+      expect.objectContaining({ serverId: 'web-01' })
+    );
+    expect(screen.getByLabelText('서버 필터')).toHaveValue('web-01');
+    expect(screen.getByTestId('log-explorer-filter-summary')).toHaveTextContent(
+      '서버 web-01'
+    );
+  });
+
+  it('같은 서버의 동일 반복 패턴 로그는 하나의 그룹 행으로 축소한다', () => {
+    mockedUseGlobalLogs.mockReturnValue({
+      logs: [
+        createLog({
+          timestamp: '2026-02-13T10:00:00.000Z',
+          message: 'nfsd WARNING pressure cpu=65% mem=40% disk=83%',
+          serverId: 'storage-nfs-dc1-01',
+          source: 'nfsd',
+        }),
+        createLog({
+          timestamp: '2026-02-13T10:00:10.000Z',
+          message: 'nfsd WARNING pressure cpu=67% mem=41% disk=84%',
+          serverId: 'storage-nfs-dc1-01',
+          source: 'nfsd',
+        }),
+      ],
+      stats: {
+        total: 2,
+        info: 0,
+        warn: 2,
+        error: 0,
+      },
+      sources: ['nfsd'],
+      serverIds: ['storage-nfs-dc1-01'],
+      isLoading: false,
+      isError: false,
+      errorMessage: null,
+      retry: vi.fn(),
+      windowStart: '2026-02-13T00:00:00.000Z',
+      windowEnd: '2026-02-13T23:59:00.000Z',
+    });
+
+    render(<LogExplorerModal open onClose={vi.fn()} />);
+
+    expect(screen.getAllByTestId('log-explorer-log-row')).toHaveLength(1);
+    expect(screen.getByTestId('log-explorer-log-row')).toHaveTextContent('×2');
+
+    fireEvent.click(screen.getByTestId('log-explorer-log-row'));
+
+    expect(
+      screen.getByTestId('log-explorer-log-group-details')
+    ).toHaveTextContent('cpu=67%');
+  });
+
+  it('로그 결과는 50개 청크로 렌더링하고 스크롤 끝에서 다음 청크를 추가한다', () => {
+    mockedUseGlobalLogs.mockReturnValue({
+      logs: Array.from({ length: 60 }, (_, index) =>
+        createLog({
+          timestamp: `2026-02-13T10:${String(index).padStart(2, '0')}:00.000Z`,
+          message: `unique log message ${index}`,
+          source: 'app',
+          serverId: `web-${index}`,
+        })
+      ),
+      stats: {
+        total: 60,
+        info: 0,
+        warn: 60,
+        error: 0,
+      },
+      sources: ['app'],
+      serverIds: Array.from({ length: 60 }, (_, index) => `web-${index}`),
+      isLoading: false,
+      isError: false,
+      errorMessage: null,
+      retry: vi.fn(),
+      windowStart: '2026-02-13T00:00:00.000Z',
+      windowEnd: '2026-02-13T23:59:00.000Z',
+    });
+
+    render(<LogExplorerModal open onClose={vi.fn()} />);
+
+    expect(screen.getAllByTestId('log-explorer-log-row')).toHaveLength(50);
+
+    const scroller = screen.getByTestId('log-explorer-scroll-container');
+    fireEvent.scroll(scroller, {
+      target: {
+        scrollTop: 1000,
+        clientHeight: 500,
+        scrollHeight: 1400,
+      },
+    });
+
+    expect(screen.getAllByTestId('log-explorer-log-row')).toHaveLength(60);
   });
 });
