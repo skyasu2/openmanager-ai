@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import {
-  CEREBRAS_DEPRECATION_REPLACEMENT,
   CEREBRAS_GPT_OSS_MODEL_ID,
   CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
   CEREBRAS_QWEN_DEPRECATION_DATE,
@@ -48,7 +47,6 @@ describe('provider model policy SSOT', () => {
         requestsPerDay: 14_400,
         tokensPerDay: 1_000_000,
       },
-      deprecationDate: undefined,
       blockAfterDeprecation: false,
       smokeStatus: 'green',
     });

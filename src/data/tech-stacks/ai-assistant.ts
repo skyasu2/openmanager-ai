@@ -9,8 +9,8 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     description:
       '세계 최대 AI 칩 Wafer-Scale Engine(WSE-3) 기반 추론 서비스. 850,000개 코어가 단일 웨이퍼에 집적되어 GPU 클러스터의 통신 병목 없이 초고속 추론 제공',
     implementation:
-      '→ Orchestrator Planning + Verifier 1순위 모델. 복잡한 작업 분해 및 최종 응답 품질 검증 담당. qwen-3-235b-a22b-instruct-2507 고성능 모델 활용',
-    version: 'Qwen 3 235B A22B',
+      '→ 짧은 컨텍스트 fallback 및 structured route 보조. 8K context 제약이 있어 장문 Agent 경로는 Groq/Mistral fallback으로 전환',
+    version: 'Llama 3.1 8B',
     status: 'active',
     icon: '🧠',
     tags: ['WSE-3', 'Planning', '웨이퍼스케일'],

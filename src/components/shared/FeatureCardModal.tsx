@@ -154,7 +154,7 @@ export default function FeatureCardModal({
     return getDiagramByCardId(cardData.id);
   }, [cardData.id]);
 
-  // 🎯 Qwen 제안: 메모리 효율성 개선 - 단일 순회로 모든 중요도별 분류 처리
+  // 🎯 이전 AI 리뷰 제안: 메모리 효율성 개선 - 단일 순회로 모든 중요도별 분류 처리
   const categorizedTechData = React.useMemo(() => {
     return buildCategorizedTechData(cardData.id, vibeView === 'history');
   }, [cardData.id, vibeView]);

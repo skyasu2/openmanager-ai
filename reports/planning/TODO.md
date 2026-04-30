@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-30 KST (`Dashboard app shell navigation completed`)
+**Last Updated**: 2026-04-30 KST (`Cerebras runtime model transition in progress`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| Cerebras Qwen deprecation 대응 | P1 | pending | 2026-05-27 deprecation. 후계 모델 확인 + env 교체. 계획: [ai-engine-code-quality-plan.md](ai-engine-code-quality-plan.md) Task 4 |
+| Cerebras Qwen deprecation 대응 | P1 | in-progress | 코드 기본 runtime `llama3.1-8b` 정렬 완료. Cloud Run env 교체/배포/QA pending. 계획: [ai-engine-code-quality-plan.md](ai-engine-code-quality-plan.md) Task 4 |
 
 ---
 

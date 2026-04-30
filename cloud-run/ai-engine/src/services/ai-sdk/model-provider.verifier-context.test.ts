@@ -23,9 +23,6 @@ const {
     cerebrasModelCalls,
     mockCreateCerebras: vi.fn(() => (modelId: string) => {
       cerebrasModelCalls.push(modelId);
-      if (modelId === 'qwen-3-235b-a22b-instruct-2507') {
-        throw new Error('Qwen unavailable');
-      }
       return createModel('cerebras', modelId);
     }),
     mockCreateGroq: vi.fn(() => (modelId: string) =>
@@ -68,10 +65,10 @@ vi.mock('../../lib/config-parser', () => ({
   CEREBRAS_LLAMA_FALLBACK_MODEL_ID: 'llama3.1-8b',
   CEREBRAS_QWEN_DEPRECATION_DATE: '2026-05-27',
   CEREBRAS_GPT_OSS_MODEL_ID: 'gpt-oss-120b',
-  DEFAULT_CEREBRAS_MODEL: 'qwen-3-235b-a22b-instruct-2507',
+  DEFAULT_CEREBRAS_MODEL: 'llama3.1-8b',
   getCerebrasApiKey: vi.fn(() => 'test-cerebras-key'),
-  getCerebrasModelId: vi.fn(() => 'qwen-3-235b-a22b-instruct-2507'),
-  getCerebrasFallbackModelIds: vi.fn(() => ['llama3.1-8b']),
+  getCerebrasModelId: vi.fn(() => 'llama3.1-8b'),
+  getCerebrasFallbackModelIds: vi.fn((): string[] => []),
   getMistralApiKey: vi.fn(() => 'test-mistral-key'),
   getGroqApiKey: vi.fn(() => 'test-groq-key'),
   getGroqModelId: vi.fn(() => 'meta-llama/llama-4-scout-17b-16e-instruct'),
@@ -103,12 +100,11 @@ describe('Verifier model context guard', () => {
     toggleProvider('mistral', true);
   });
 
-  it('skips the 8K Cerebras fallback when Qwen is unavailable', () => {
+  it('skips the 8K Cerebras runtime for Verifier long-context requirements', () => {
     const result = getVerifierModel();
 
     expect(result.provider).toBe('groq');
     expect(result.modelId).toBe('meta-llama/llama-4-scout-17b-16e-instruct');
-    expect(cerebrasModelCalls).toEqual(['qwen-3-235b-a22b-instruct-2507']);
-    expect(cerebrasModelCalls).not.toContain('llama3.1-8b');
+    expect(cerebrasModelCalls).toEqual([]);
   });
 });

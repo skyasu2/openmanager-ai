@@ -264,8 +264,8 @@ await pipeline.exec();
 | 프로바이더 | RPM | TPM | RPD | TPD | 실제 병목 |
 |-----------|----:|----:|----:|----:|---------|
 | **Groq** (Llama 4 Scout) | 30 | 500,000 | 1,000 | — | RPD (일 1K 소진 빠름) |
-| **Cerebras Qwen** | **5** | 30,000 | 14,400 | 1,000,000 | RPM (분당 5회 — 핵심 병목) |
 | **Cerebras Llama 3.1-8b** | 30 | 60,000 | 14,400 | 1,000,000 | 8K context 제약 |
+| **Cerebras Qwen 235B Preview** | 5 | 30,000 | 14,400 | 1,000,000 | runtime 제외(Preview/high traffic) |
 | **Mistral** (large-latest) | 2 | 30,000 | ~500 | — | RPM·RPD 모두 극도로 낮음 |
 | **Gemini Flash-Lite** | 15 | 250,000 | 1,000 | — | RPD (Vision 전용) |
 | **OpenRouter Free** | — | — | — | — | 응답 느림, Vision fallback |
@@ -294,12 +294,12 @@ await pipeline.exec();
 
 | 환경변수 | 기본값 | 대상 Provider |
 |---------|-------|--------------|
-| `CEREBRAS_MODEL_ID` | `qwen-3-235b-a22b-instruct-2507` | Cerebras primary |
+| `CEREBRAS_MODEL_ID` | `llama3.1-8b` | Cerebras production runtime |
 | `GROQ_MODEL_ID` | `meta-llama/llama-4-scout-17b-16e-instruct` | Groq |
 | `MISTRAL_MODEL_ID` | `mistral-large-latest` | Mistral |
 | `GEMINI_VISION_MODEL_ID` | `gemini-2.5-flash-lite` | Gemini Vision |
 
-> 코드 수정 없이 환경변수만 변경하면 모델이 즉시 교체됩니다. Cerebras Qwen deprecation(2026-05-27) 대응 시 `CEREBRAS_MODEL_ID`만 갱신하면 됩니다.
+> 코드 수정 없이 환경변수만 변경하면 모델이 즉시 교체됩니다. 2026-04-30 기준 현재 계정에서 `gpt-oss-120b`는 목록에는 보이나 chat completions 404라 runtime 제외, `llama3.1-8b`만 production smoke가 통과했습니다.
 
 ### RPM 자동 대응 (Quota Admission Gate)
 

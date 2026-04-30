@@ -114,15 +114,15 @@ describe('QuotaTracker — Recording', () => {
   it('Cerebras 모델별 사용량은 서로 독립 추적', async () => {
     vi.setSystemTime(new Date('2026-03-11T10:00:00Z'));
 
-    await recordProviderUsage('cerebras', 1000, 'qwen-3-235b-a22b-instruct-2507');
+    await recordProviderUsage('cerebras', 1000, 'custom-cerebras-model');
     await recordProviderUsage('cerebras', 500, 'llama3.1-8b');
 
-    const qwenUsage = await getProviderUsage('cerebras', 'qwen-3-235b-a22b-instruct-2507');
+    const customUsage = await getProviderUsage('cerebras', 'custom-cerebras-model');
     const llamaUsage = await getProviderUsage('cerebras', 'llama3.1-8b');
 
-    expect(qwenUsage.dailyTokens).toBe(1000);
-    expect(qwenUsage.dailyRequests).toBe(1);
-    expect(qwenUsage.minuteRequests).toBe(1);
+    expect(customUsage.dailyTokens).toBe(1000);
+    expect(customUsage.dailyRequests).toBe(1);
+    expect(customUsage.minuteRequests).toBe(1);
     expect(llamaUsage.dailyTokens).toBe(500);
     expect(llamaUsage.dailyRequests).toBe(1);
     expect(llamaUsage.minuteRequests).toBe(1);
@@ -169,12 +169,12 @@ describe('QuotaTracker — Admission reservation', () => {
 
   it('projected minute request가 threshold에 닿으면 호출 전 차단한다', async () => {
     vi.setSystemTime(new Date('2026-03-14T10:00:00Z'));
-    // Qwen RPM=5, threshold=85%. 4번째까지 허용되고 5번째 projected call은 차단.
-    for (let i = 0; i < 4; i++) {
+    // llama3.1-8b RPM=30, threshold=85%. 25번째까지 허용되고 26번째 projected call은 차단.
+    for (let i = 0; i < 25; i++) {
       const reservation = await reserveProviderQuota(
         'cerebras',
         100,
-        'qwen-3-235b-a22b-instruct-2507'
+        'llama3.1-8b'
       );
       expect(reservation.reserved).toBe(true);
       await reconcileProviderQuotaReservation(reservation, 10);
@@ -183,7 +183,7 @@ describe('QuotaTracker — Admission reservation', () => {
     const blocked = await reserveProviderQuota(
       'cerebras',
       100,
-      'qwen-3-235b-a22b-instruct-2507'
+      'llama3.1-8b'
     );
 
     expect(blocked.reserved).toBe(false);
@@ -195,7 +195,7 @@ describe('QuotaTracker — Admission reservation', () => {
     vi.setSystemTime(new Date('2026-03-06T10:00:00Z'));
     await markProviderQuotaCooldown(
       'cerebras',
-      'qwen-3-235b-a22b-instruct-2507',
+      'llama3.1-8b',
       'queue_exceeded',
       60_000
     );
@@ -203,7 +203,7 @@ describe('QuotaTracker — Admission reservation', () => {
     const blocked = await reserveProviderQuota(
       'cerebras',
       100,
-      'qwen-3-235b-a22b-instruct-2507'
+      'llama3.1-8b'
     );
 
     expect(blocked.reserved).toBe(false);
@@ -381,12 +381,12 @@ describe('QuotaTracker — getQuotaStatus', () => {
     expect(status.quota).toEqual(PROVIDER_QUOTAS.gemini);
   });
 
-  it('Cerebras 기본 quota는 Qwen 계정 제한을 보수 적용한다', async () => {
+  it('Cerebras 기본 quota는 llama3.1-8b production 계정 제한을 적용한다', async () => {
     const status = await getQuotaStatus('cerebras');
 
-    expect(status.quota).toEqual(CEREBRAS_MODEL_QUOTAS['qwen-3-235b-a22b-instruct-2507']);
-    expect(status.quota.requestsPerMinute).toBe(5);
-    expect(status.quota.tokensPerMinute).toBe(30_000);
+    expect(status.quota).toEqual(CEREBRAS_MODEL_QUOTAS['llama3.1-8b']);
+    expect(status.quota.requestsPerMinute).toBe(30);
+    expect(status.quota.tokensPerMinute).toBe(60_000);
     expect(status.quota.requestsPerDay).toBe(14_400);
   });
 
@@ -533,15 +533,15 @@ describe('QuotaTracker — selectAvailableProvider', () => {
     expect(result!.isPreemptiveFallback).toBe(false);
   });
 
-  it('Cerebras Qwen quota 초과 시 llama3.1-8b 모델 fallback을 먼저 선택', async () => {
+  it('Cerebras 기본 모델 quota 초과 시 다음 provider로 전환한다', async () => {
     const limit = PROVIDER_QUOTAS.cerebras.dailyTokenLimit;
     await recordProviderUsage('cerebras', Math.ceil(limit * 0.96));
 
     const result = await selectAvailableProvider(['cerebras', 'mistral', 'groq']);
 
     expect(result).not.toBeNull();
-    expect(result!.provider).toBe('cerebras');
-    expect(result!.modelId).toBe('llama3.1-8b');
+    expect(result!.provider).toBe('mistral');
+    expect(result!.modelId).toBeUndefined();
     expect(result!.isPreemptiveFallback).toBe(true);
   });
 
@@ -615,11 +615,8 @@ describe('QuotaTracker — Constants', () => {
     expect(PROVIDER_QUOTAS.gemini).toBeDefined();
   });
 
-  it('Cerebras model-aware quota defines Qwen primary and llama fallback only', () => {
-    expect(Object.keys(CEREBRAS_MODEL_QUOTAS)).toEqual([
-      'qwen-3-235b-a22b-instruct-2507',
-      'llama3.1-8b',
-    ]);
+  it('Cerebras model-aware quota defines only the production runtime model', () => {
+    expect(Object.keys(CEREBRAS_MODEL_QUOTAS)).toEqual(['llama3.1-8b']);
   });
 
   it('모든 쿼터에 필수 필드 존재', () => {

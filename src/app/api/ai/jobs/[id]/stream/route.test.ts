@@ -370,12 +370,12 @@ describe('AI Job Stream Route', () => {
           ownerKey: 'owner-secret',
           complexity: 'complex',
           provider: 'cerebras',
-          modelId: 'qwen-3-235b-a22b-instruct-2507',
+          modelId: 'llama3.1-8b',
           usedFallback: false,
           providerAttempts: [
             {
               provider: 'cerebras',
-              modelId: 'qwen-3-235b-a22b-instruct-2507',
+              modelId: 'llama3.1-8b',
               attempt: 1,
               durationMs: 801,
             },
@@ -395,7 +395,7 @@ describe('AI Job Stream Route', () => {
     expect(response.status).toBe(200);
     const text = await response.text();
     expect(text).toContain('"provider":"cerebras"');
-    expect(text).toContain('"modelId":"qwen-3-235b-a22b-instruct-2507"');
+    expect(text).toContain('"modelId":"llama3.1-8b"');
     expect(text).not.toContain('owner-secret');
     expect(text).not.toContain('"complexity"');
   });

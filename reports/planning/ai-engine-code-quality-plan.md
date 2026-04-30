@@ -252,6 +252,14 @@ BP 정렬: LangGraph 패턴에서 에이전트 Factory는 독립 레지스트리
 | 후계 모델 API 호환성 문제 | smoke test 필수 → 문제 시 Groq-first 임시 운영 |
 | deprecation 실제 날짜 변동 | Cerebras 공식 채널 2주 전 재확인 |
 
+### 2026-04-30 구현 로그
+
+- SDD 선행 테스트 커밋: `ccfd90933 test(spec): cerebras runtime model add failing policy specs`
+- 코드 정책: `DEFAULT_CEREBRAS_MODEL=llama3.1-8b`, runtime 후보 `llama3.1-8b` 단일화, Qwen/GPT-OSS excluded metadata 유지.
+- Capability routing: 16K/32K context 요구 경로는 8K Cerebras runtime을 건너뛰고 Groq/Mistral fallback으로 이동.
+- 검증: AI Engine targeted 123/123, root job API targeted 15/15, model drift guard 1/1, AI Engine type-check, root type-check, `lint:changed`, `docs:lint:changed`, `test:quick` 통과.
+- 남은 작업: GitLab push/pipeline 확인 후 Cloud Run `CEREBRAS_MODEL_ID=llama3.1-8b`, `CEREBRAS_FALLBACK_MODEL_IDS=` 정렬 및 배포 QA.
+
 ---
 
 ## 실행 순서
@@ -268,4 +276,4 @@ Task 3 (orchestrator 분리) ← 가장 규모 큼, 사전 내용 분석 필수
 각 Task 구현 전:
 1. 이 계획서 Status → Approved
 2. `test(spec):` 커밋 선행 (Task 1, 2, 3 모두 해당)
-3. Task 4만 예외 (env 변경 + smoke test, 코드 변경 없음)
+3. Task 4는 코드 정책 정렬이 포함되어 SDD 선행 테스트 커밋 후 구현 커밋으로 진행

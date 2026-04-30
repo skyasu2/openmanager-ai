@@ -5,7 +5,7 @@
  * - Claude: 실용적 enum 구조 설계
  * - Gemini: 확장성 고려한 타입 체계
  * - Codex: 런타임 안전성 강화
- * - Qwen: 성능 최적화된 타입 선택
+ * - Previous AI review: 성능 최적화된 타입 선택
  */
 
 // 🎯 서버 상태 Enum (Single Source of Truth)

@@ -32,7 +32,7 @@ vi.mock('../../../../lib/text-sanitizer', () => ({
 }));
 
 vi.mock('../../../lib/config-parser', () => ({
-  getCerebrasModelId: vi.fn(() => ['qwen-3-235b-a22b-instruct', '2507'].join('-')),
+  getCerebrasModelId: vi.fn(() => 'llama3.1-8b'),
   isCerebrasToolCallingEnabled: vi.fn(() => true),
   isCerebrasLongContextEnabled: vi.fn(() => true),
   isOpenRouterVisionToolCallingEnabled: vi.fn(() => false),

@@ -5,7 +5,7 @@ const {
   mockGetCerebrasModelId,
 } = vi.hoisted(() => ({
   mockGenerateTextWithRetry: vi.fn(),
-  mockGetCerebrasModelId: vi.fn(() => 'qwen-3-235b-a22b-instruct-2507'),
+  mockGetCerebrasModelId: vi.fn(() => 'llama3.1-8b'),
 }));
 
 vi.mock('../resilience/retry-with-fallback', () => ({
@@ -32,11 +32,11 @@ describe('CloudRunGenerateService', () => {
     mockGenerateTextWithRetry.mockResolvedValue({
       success: true,
       provider: 'cerebras',
-      modelId: 'qwen-3-235b-a22b-instruct-2507',
+      modelId: 'llama3.1-8b',
       attempts: [
         {
           provider: 'cerebras',
-          modelId: 'qwen-3-235b-a22b-instruct-2507',
+          modelId: 'llama3.1-8b',
           attempt: 1,
           durationMs: 25,
         },
@@ -61,7 +61,7 @@ describe('CloudRunGenerateService', () => {
       success: true,
       text: '정상 응답',
       provider: 'cerebras',
-      model: 'qwen-3-235b-a22b-instruct-2507',
+      model: 'llama3.1-8b',
       usage: {
         promptTokens: 8,
         completionTokens: 12,
@@ -91,7 +91,7 @@ describe('CloudRunGenerateService', () => {
       attempts: [
         {
           provider: 'cerebras',
-          modelId: 'qwen-3-235b-a22b-instruct-2507',
+          modelId: 'llama3.1-8b',
           attempt: 1,
           error: 'QUOTA_ADMISSION:rpm_exceeded',
           durationMs: 1,
@@ -126,11 +126,11 @@ describe('CloudRunGenerateService', () => {
     mockGenerateTextWithRetry.mockResolvedValueOnce({
       success: false,
       provider: 'cerebras',
-      modelId: 'qwen-3-235b-a22b-instruct-2507',
+      modelId: 'llama3.1-8b',
       attempts: [
         {
           provider: 'cerebras',
-          modelId: 'qwen-3-235b-a22b-instruct-2507',
+          modelId: 'llama3.1-8b',
           attempt: 1,
           error: 'QUOTA_ADMISSION:rpm_exceeded',
           durationMs: 1,
@@ -146,7 +146,7 @@ describe('CloudRunGenerateService', () => {
       success: false,
       error: 'QUOTA_ADMISSION:rpm_exceeded',
       provider: 'cerebras',
-      model: 'qwen-3-235b-a22b-instruct-2507',
+      model: 'llama3.1-8b',
     });
   });
 

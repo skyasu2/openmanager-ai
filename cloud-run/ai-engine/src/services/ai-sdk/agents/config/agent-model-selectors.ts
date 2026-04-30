@@ -43,8 +43,8 @@ const TEXT_PROVIDER_MODELS: Record<TextProvider, {
   modelIds: () => string[];
   capabilities: ModelCapabilities | ((modelId?: string) => ModelCapabilities);
 }> = {
-  // Cerebras primary/fallback pair. Qwen is primary until 2026-05-27 deprecation;
-  // llama3.1-8b stays intra-provider fallback only.
+  // Cerebras runtime candidates are config-driven. The default list is
+  // llama3.1-8b only; long-context callers skip it by capability.
   cerebras: {
     factory: getCerebrasModel,
     modelIds: () => [
@@ -173,7 +173,7 @@ export function selectTextModel(
 // ============================================================================
 
 /**
- * NLQ model: Groq(llama-4-scout) → Cerebras(Qwen, 16K+ ctx) → Mistral
+ * NLQ model: Groq(llama-4-scout) → Cerebras(short-context only) → Mistral
  */
 export function getNlqModel(): ModelResult | null {
   return selectTextModel('NLQ Agent', getAgentProviderOrder('NLQ Agent'), {
@@ -182,7 +182,7 @@ export function getNlqModel(): ModelResult | null {
 }
 
 /**
- * Analyst model: Cerebras(Qwen, 32K+ ctx) → Groq(llama-4-scout) → Mistral
+ * Analyst model: Cerebras(short-context only) → Groq(llama-4-scout) → Mistral
  */
 export function getAnalystModel(): ModelResult | null {
   return selectTextModel('Analyst Agent', getAgentProviderOrder('Analyst Agent'), {
@@ -191,7 +191,7 @@ export function getAnalystModel(): ModelResult | null {
 }
 
 /**
- * Reporter model: Cerebras(Qwen, 32K+ ctx) → Groq(llama-4-scout) → Mistral
+ * Reporter model: Cerebras(short-context only) → Groq(llama-4-scout) → Mistral
  */
 export function getReporterModel(): ModelResult | null {
   return selectTextModel('Reporter Agent', getAgentProviderOrder('Reporter Agent'), {
@@ -200,7 +200,7 @@ export function getReporterModel(): ModelResult | null {
 }
 
 /**
- * Advisor model: Cerebras(Qwen, 32K+ ctx) → Groq(llama-4-scout) → Mistral
+ * Advisor model: Cerebras(short-context only) → Groq(llama-4-scout) → Mistral
  */
 export function getAdvisorModel(): ModelResult | null {
   return selectTextModel('Advisor Agent', getAgentProviderOrder('Advisor Agent'), {

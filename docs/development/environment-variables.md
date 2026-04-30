@@ -272,10 +272,10 @@ Cloud Run은 **GCP Secret Manager**에 JSON 형태로 시크릿을 저장하고,
 ```bash
 # AI Providers
 CEREBRAS_API_KEY=csk-xxx  # Orchestrator structured routing / opt-in text fallback
-CEREBRAS_MODEL_ID=qwen-3-235b-a22b-instruct-2507  # 현재 계정 Free Tier primary. 2026-05-27 deprecated 예정
-CEREBRAS_FALLBACK_MODEL_IDS=llama3.1-8b  # Qwen 실패/quota 시 intra-Cerebras fallback
+CEREBRAS_MODEL_ID=llama3.1-8b  # 현재 계정 production Cerebras runtime. 2026-04-30 smoke 통과
+CEREBRAS_FALLBACK_MODEL_IDS=  # 같은 계정 production 후보 smoke 통과 전까지 비움
 CEREBRAS_TOOL_CALLING_ENABLED=true  # tool-calling fallback 활성화
-CEREBRAS_LONG_CONTEXT_ENABLED=true  # Qwen 65K account context 사용. false면 long-context 요구 시 Cerebras skip
+CEREBRAS_LONG_CONTEXT_ENABLED=true  # llama3.1-8b는 8K. 16K/32K 요구 경로는 capability gate로 Cerebras skip
 GROQ_API_KEY=gsk_xxx     # Supervisor/NLQ/Analyst/Reporter 주력
 MISTRAL_API_KEY=xxx      # text last-resort fallback
 GOOGLE_AI_API_KEY=xxx    # Vision 주력 (gemini-2.5-flash-lite)

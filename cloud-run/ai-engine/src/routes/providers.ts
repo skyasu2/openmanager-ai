@@ -43,7 +43,7 @@ providersRouter.get('/', (c: Context) => {
     modelDrift: getDeprecatedRuntimeProviderModels(modelMetadata),
     info: {
       cerebras: {
-        role: 'Primary (Orchestrator/Analyst/Reporter/Advisor/Verifier) + text fallback',
+        role: 'Short-context text runtime + fallback for Groq-first agents',
         model: getCerebrasModelId(),
         toolCallingEnabled: isCerebrasToolCallingEnabled(),
       },

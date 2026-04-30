@@ -39,9 +39,9 @@ export const AI_PROVIDERS: AIProviderConfig[] = [
   {
     name: 'Cerebras',
     role: 'Structured routing + secondary text fallback',
-    model: 'qwen-3-235b-a22b-instruct-2507',
+    model: 'llama3.1-8b',
     description:
-      'Primary Cerebras model until the 2026-05-27 deprecation window, with llama3.1-8b as intra-provider fallback. gpt-oss-120b is excluded from the free-tier runtime.',
+      'Production Cerebras runtime for short-context fallback. Qwen 235B is preview/high-traffic and gpt-oss-120b is excluded because the current account chat completion smoke returns 404.',
     color: 'bg-blue-500',
     dailyTokenLimit: '1M tokens/day',
   },

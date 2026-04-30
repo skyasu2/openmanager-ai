@@ -123,13 +123,13 @@ describe('GET /api/ai/jobs/[id]', () => {
         factors: {},
         ownerKey: 'owner-secret',
         provider: 'cerebras',
-        modelId: 'qwen-3-235b-a22b-instruct-2507',
+        modelId: 'llama3.1-8b',
         usedFallback: false,
         durationMs: 900,
         providerAttempts: [
           {
             provider: 'cerebras',
-            modelId: 'qwen-3-235b-a22b-instruct-2507',
+            modelId: 'llama3.1-8b',
             attempt: 1,
             durationMs: 900,
           },
@@ -151,13 +151,13 @@ describe('GET /api/ai/jobs/[id]', () => {
 
     expect(payload.metadata).toMatchObject({
       provider: 'cerebras',
-      modelId: 'qwen-3-235b-a22b-instruct-2507',
+      modelId: 'llama3.1-8b',
       usedFallback: false,
       durationMs: 900,
       providerAttempts: [
         {
           provider: 'cerebras',
-          modelId: 'qwen-3-235b-a22b-instruct-2507',
+          modelId: 'llama3.1-8b',
           attempt: 1,
           durationMs: 900,
         },

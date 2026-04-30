@@ -19,7 +19,6 @@ import {
 } from '../../lib/config-parser';
 import {
   CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
-  CEREBRAS_QWEN_MODEL_ID,
   getCerebrasModelPolicy,
   type CerebrasRuntimeModelId,
 } from '../ai-sdk/provider-model-policy';
@@ -105,21 +104,20 @@ export const CEREBRAS_MODEL_QUOTAS: Record<CerebrasQuotaModelId, ProviderQuota> 
   /**
    * Account Limits screen 기준. 공식 Free tier 표보다 계정별 제한을 우선한다.
    */
-  [CEREBRAS_QWEN_MODEL_ID]: quotaFromModelPolicy(CEREBRAS_QWEN_MODEL_ID),
   [CEREBRAS_LLAMA_FALLBACK_MODEL_ID]: quotaFromModelPolicy(CEREBRAS_LLAMA_FALLBACK_MODEL_ID),
 };
 
 export const PROVIDER_QUOTAS: Record<ProviderName, ProviderQuota> = {
   /**
-   * Cerebras primary model quota. Use getQuotaForProvider(provider, modelId)
+   * Cerebras default production model quota. Use getQuotaForProvider(provider, modelId)
    * for model-aware fallback checks.
    * @see https://inference-docs.cerebras.ai/support/rate-limits
-   * @updated 2026-04-26
+   * @updated 2026-04-30
    *
-   * - Qwen account limit: 1M TPD, 30K TPM, 5 RPM, 14.4K RPD
+   * - llama3.1-8b account limit: 1M TPD, 60K TPM, 30 RPM, 14.4K RPD
    * - Context/capability lives in provider-model-metadata; this tracker only enforces usage quotas.
    */
-  cerebras: CEREBRAS_MODEL_QUOTAS[CEREBRAS_QWEN_MODEL_ID],
+  cerebras: CEREBRAS_MODEL_QUOTAS[CEREBRAS_LLAMA_FALLBACK_MODEL_ID],
   /**
    * Groq Free Tier (meta-llama/llama-4-scout-17b-16e-instruct)
    * @see https://console.groq.com/docs/rate-limits
@@ -185,14 +183,11 @@ export function getQuotaForProvider(
   }
 
   const effectiveModelId = modelId || getCerebrasModelId();
-  if (
-    effectiveModelId === CEREBRAS_QWEN_MODEL_ID ||
-    effectiveModelId === CEREBRAS_LLAMA_FALLBACK_MODEL_ID
-  ) {
+  if (effectiveModelId === CEREBRAS_LLAMA_FALLBACK_MODEL_ID) {
     return CEREBRAS_MODEL_QUOTAS[effectiveModelId];
   }
 
-  return CEREBRAS_MODEL_QUOTAS[CEREBRAS_QWEN_MODEL_ID];
+  return CEREBRAS_MODEL_QUOTAS[CEREBRAS_LLAMA_FALLBACK_MODEL_ID];
 }
 
 function getQuotaModelCandidates(provider: LLMProviderName): (string | undefined)[] {

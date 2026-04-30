@@ -21,7 +21,7 @@ vi.mock('../model-provider', () => ({
     gemini: true,
   })),
   getCerebrasModel: vi.fn(() => ({
-    modelId: ['qwen-3-235b-a22b-instruct', '2507'].join('-'),
+    modelId: 'llama3.1-8b',
   })),
   getGroqModel: vi.fn(() => ({ modelId: 'meta-llama/llama-4-scout-17b-16e-instruct' })),
   getMistralModel: vi.fn(() => ({ modelId: 'mistral-large-3-25-12' })),
@@ -34,7 +34,7 @@ vi.mock('../../../../lib/text-sanitizer', () => ({
 }));
 
 vi.mock('../../../lib/config-parser', () => ({
-  getCerebrasModelId: vi.fn(() => ['qwen-3-235b-a22b-instruct', '2507'].join('-')),
+  getCerebrasModelId: vi.fn(() => 'llama3.1-8b'),
   isCerebrasToolCallingEnabled: vi.fn(() => true),
   isCerebrasLongContextEnabled: vi.fn(() => true),
   isOpenRouterVisionToolCallingEnabled: vi.fn(() => false),
@@ -409,7 +409,7 @@ describe('BaseAgent', { timeout: 60000 }, () => {
       expect(result.text).toBe('Fallback text');
     });
 
-    it('should return deterministic fallback when Qwen forced tool call leaves final text empty', async () => {
+    it('should return deterministic fallback when a Cerebras forced tool call leaves final text empty', async () => {
       const { BaseAgent } = await import('./base-agent');
 
       mockGenerateText.mockResolvedValue({
@@ -432,12 +432,12 @@ describe('BaseAgent', { timeout: 60000 }, () => {
         ],
       });
 
-      const qwenModelId = ['qwen-3-235b-a22b-instruct', '2507'].join('-');
+      const cerebrasModelId = 'llama3.1-8b';
       const mockConfig = createMockConfig({
         getModel: () => ({
-          model: { modelId: qwenModelId },
+          model: { modelId: cerebrasModelId },
           provider: 'cerebras',
-          modelId: qwenModelId,
+          modelId: cerebrasModelId,
         }),
         tools: {
           searchKnowledgeBase: { execute: vi.fn() } as unknown as Tool,
@@ -445,7 +445,7 @@ describe('BaseAgent', { timeout: 60000 }, () => {
         },
       });
 
-      class QwenToolLoopAgent extends BaseAgent {
+      class CerebrasToolLoopAgent extends BaseAgent {
         getName(): string {
           return 'Advisor Agent';
         }
@@ -454,14 +454,14 @@ describe('BaseAgent', { timeout: 60000 }, () => {
         }
       }
 
-      const agent = new QwenToolLoopAgent();
+      const agent = new CerebrasToolLoopAgent();
       const result = await agent.run('Redis eviction 대응 방법');
 
       expect(result.success).toBe(true);
       expect(result.text).toBe('AI 응답이 비어 있습니다. 잠시 후 다시 시도해 주세요.');
       expect(result.toolsCalled).toContain('searchKnowledgeBase');
       expect(result.metadata.provider).toBe('cerebras');
-      expect(result.metadata.modelId).toBe(qwenModelId);
+      expect(result.metadata.modelId).toBe(cerebrasModelId);
       expect(result.metadata.fallbackUsed).toBe(true);
       expect(result.metadata.fallbackReason).toBe('EMPTY_RESPONSE');
     });

@@ -130,11 +130,11 @@ Cloud Run AI Engine은 LLM 호출 시 **자동 프로바이더 전환**을 수�
 ```
 Group A 요청(Supervisor/NLQ)
   → Groq (llama-4-scout)
-     → Cerebras (qwen-3-235b → llama3.1-8b)
+     → Cerebras (llama3.1-8b)
        → Mistral (mistral-large-latest)
 
 Group B 요청(Analyst/Reporter/Advisor/Verifier)
-  → Cerebras (qwen-3-235b; 32K context floor 경로는 llama3.1-8b skip)
+  → Cerebras (llama3.1-8b; 16K/32K context floor 경로는 capability gate로 skip)
      → Groq (llama-4-scout)
        → Mistral (mistral-large-latest)
 ```
@@ -142,7 +142,7 @@ Group B 요청(Analyst/Reporter/Advisor/Verifier)
 | 프로바이더 | 모델 | 역할 | 특징 |
 |-----------|------|------|------|
 | **Groq** | llama-4-scout | Group A primary | Supervisor/NLQ 중심 텍스트 경로 |
-| **Cerebras** | qwen-3-235b → llama3.1-8b | Group B primary | Orchestrator/Analyst/Reporter/Advisor/Verifier 중심 경로 |
+| **Cerebras** | llama3.1-8b | Short-context fallback / Group B first candidate when context permits | 8K context 제약으로 long-context 경로는 Groq로 전환 |
 | **Mistral** | mistral-large-latest | Tertiary | 안정적 폴백 |
 
 ### Retry 전략

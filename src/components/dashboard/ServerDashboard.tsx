@@ -187,7 +187,7 @@ export default function ServerDashboard({
       );
     }
 
-    // 🎯 Qwen 권장: O(17)→O(1) 복잡도 최적화 (82.9% 성능 향상)
+    // 🎯 이전 AI 리뷰 권장: O(17)→O(1) 복잡도 최적화 (82.9% 성능 향상)
     return validatedServers.sort((a, b) => {
       // 🛡️ 정렬 중 추가 안전성 검증
       const statusA = a?.status || 'unknown';
@@ -228,7 +228,7 @@ export default function ServerDashboard({
       safeServersLength
     );
 
-    // 🎯 Qwen 권장: 계산 결과 유효성 검증
+    // 🎯 이전 AI 리뷰 권장: 계산 결과 유효성 검증
     if (startIndex > endIndex && safeServersLength > 0) {
       logger.warn('⚠️ ServerDashboard: 페이지네이션 계산 오류', {
         startIndex,

@@ -25,8 +25,8 @@ const {
   mockGetCerebrasModel: vi.fn(() => ({ provider: 'cerebras' })),
   mockGetGroqModel: vi.fn(() => ({ provider: 'groq' })),
   mockGetMistralModel: vi.fn(() => ({ provider: 'mistral' })),
-  mockGetCerebrasModelId: vi.fn(() => 'qwen-3-235b-a22b-instruct-2507'),
-  mockGetCerebrasFallbackModelIds: vi.fn(() => ['llama3.1-8b']),
+  mockGetCerebrasModelId: vi.fn(() => 'llama3.1-8b'),
+  mockGetCerebrasFallbackModelIds: vi.fn((): string[] => []),
   mockIsCerebrasToolCallingEnabled: vi.fn(() => true),
   mockIsOpenRouterVisionToolCallingEnabled: vi.fn(() => true),
   mockMarkProviderQuotaCooldown: vi.fn(() => Promise.resolve()),
@@ -94,8 +94,8 @@ describe('generateTextWithRetry', () => {
     });
     mockIsCerebrasToolCallingEnabled.mockReturnValue(true);
     mockIsOpenRouterVisionToolCallingEnabled.mockReturnValue(true);
-    mockGetCerebrasModelId.mockReturnValue('qwen-3-235b-a22b-instruct-2507');
-    mockGetCerebrasFallbackModelIds.mockReturnValue(['llama3.1-8b']);
+    mockGetCerebrasModelId.mockReturnValue('llama3.1-8b');
+    mockGetCerebrasFallbackModelIds.mockReturnValue([]);
     mockMarkProviderQuotaCooldown.mockResolvedValue(undefined);
     mockReconcileProviderQuotaReservation.mockResolvedValue(undefined);
     mockReserveProviderQuota.mockImplementation(
@@ -110,9 +110,8 @@ describe('generateTextWithRetry', () => {
     );
   });
 
-  it('falls back to next provider after Cerebras primary and fallback reject tool calling', async () => {
+  it('falls back to the next provider after the Cerebras runtime rejects tool calling', async () => {
     mockGenerateText
-      .mockRejectedValueOnce(new Error('tool_calls are not supported for this model'))
       .mockRejectedValueOnce(new Error('tool_calls are not supported for this model'))
       .mockResolvedValueOnce({
         text: 'ok from groq',
@@ -132,22 +131,22 @@ describe('generateTextWithRetry', () => {
     expect(result.success).toBe(true);
     expect(result.provider).toBe('groq');
     expect(result.usedFallback).toBe(true);
-    expect(result.attempts).toHaveLength(3);
+    expect(result.attempts).toHaveLength(2);
     expect(result.attempts.map((attempt) => attempt.provider)).toEqual([
-      'cerebras',
       'cerebras',
       'groq',
     ]);
     expect(result.attempts.map((attempt) => attempt.modelId)).toEqual([
-      'qwen-3-235b-a22b-instruct-2507',
       'llama3.1-8b',
       'groq-model',
     ]);
   });
 
-  it('tries llama3.1-8b as intra-Cerebras fallback before leaving Cerebras', async () => {
+  it('tries a configured intra-Cerebras fallback before leaving Cerebras', async () => {
+    mockGetCerebrasModelId.mockReturnValue('custom-cerebras-model');
+    mockGetCerebrasFallbackModelIds.mockReturnValue(['llama3.1-8b']);
     mockGenerateText
-      .mockRejectedValueOnce(new Error('Model qwen-3-235b-a22b-instruct-2507 does not exist or 404'))
+      .mockRejectedValueOnce(new Error('Model custom-cerebras-model does not exist or 404'))
       .mockResolvedValueOnce({
         text: 'ok from llama fallback',
         steps: [],
@@ -168,20 +167,18 @@ describe('generateTextWithRetry', () => {
     expect(result.modelId).toBe('llama3.1-8b');
     expect(result.usedFallback).toBe(true);
     expect(result.attempts.map((attempt) => attempt.modelId)).toEqual([
-      'qwen-3-235b-a22b-instruct-2507',
+      'custom-cerebras-model',
       'llama3.1-8b',
     ]);
     expect(mockGetGroqModel).not.toHaveBeenCalled();
   });
 
   it('skips short-context Cerebras fallback for long prompt contexts', async () => {
-    mockGenerateText
-      .mockRejectedValueOnce(new Error('Model qwen-3-235b-a22b-instruct-2507 does not exist or 404'))
-      .mockResolvedValueOnce({
-        text: 'ok from groq',
-        steps: [],
-        usage: { inputTokens: 10, outputTokens: 5, totalTokens: 15 },
-      });
+    mockGenerateText.mockResolvedValueOnce({
+      text: 'ok from groq',
+      steps: [],
+      usage: { inputTokens: 10, outputTokens: 5, totalTokens: 15 },
+    });
 
     const result = await generateTextWithRetry(
       {
@@ -195,22 +192,19 @@ describe('generateTextWithRetry', () => {
     expect(result.success).toBe(true);
     expect(result.provider).toBe('groq');
     expect(result.attempts.map((attempt) => attempt.modelId)).toEqual([
-      'qwen-3-235b-a22b-instruct-2507',
       'llama3.1-8b',
       'groq-model',
     ]);
-    expect(result.attempts[1]?.error).toContain('context-window');
-    expect(mockGenerateText).toHaveBeenCalledTimes(2);
+    expect(result.attempts[0]?.error).toContain('context-window');
+    expect(mockGenerateText).toHaveBeenCalledTimes(1);
   });
 
   it('honors caller minContextTokens even when prompt estimate is short', async () => {
-    mockGenerateText
-      .mockRejectedValueOnce(new Error('Model qwen-3-235b-a22b-instruct-2507 does not exist or 404'))
-      .mockResolvedValueOnce({
-        text: 'ok from groq',
-        steps: [],
-        usage: { inputTokens: 10, outputTokens: 5, totalTokens: 15 },
-      });
+    mockGenerateText.mockResolvedValueOnce({
+      text: 'ok from groq',
+      steps: [],
+      usage: { inputTokens: 10, outputTokens: 5, totalTokens: 15 },
+    });
 
     const result = await generateTextWithRetry(
       {
@@ -228,12 +222,11 @@ describe('generateTextWithRetry', () => {
     expect(result.success).toBe(true);
     expect(result.provider).toBe('groq');
     expect(result.attempts.map((attempt) => attempt.modelId)).toEqual([
-      'qwen-3-235b-a22b-instruct-2507',
       'llama3.1-8b',
       'groq-model',
     ]);
-    expect(result.attempts[1]?.error).toContain('context-window');
-    expect(mockGenerateText).toHaveBeenCalledTimes(2);
+    expect(result.attempts[0]?.error).toContain('context-window');
+    expect(mockGenerateText).toHaveBeenCalledTimes(1);
   });
 
   it('returns failure when every provider rejects tool calling', async () => {
@@ -250,14 +243,12 @@ describe('generateTextWithRetry', () => {
 
     expect(result.success).toBe(false);
     expect(result.usedFallback).toBe(true);
-    expect(result.attempts).toHaveLength(3);
+    expect(result.attempts).toHaveLength(2);
     expect(result.attempts.map((attempt) => attempt.provider)).toEqual([
-      'cerebras',
       'cerebras',
       'groq',
     ]);
     expect(result.attempts.map((attempt) => attempt.modelId)).toEqual([
-      'qwen-3-235b-a22b-instruct-2507',
       'llama3.1-8b',
       'groq-model',
     ]);
@@ -298,11 +289,6 @@ describe('generateTextWithRetry', () => {
     expect(result.attempts).toMatchObject([
       {
         provider: 'cerebras',
-        modelId: 'qwen-3-235b-a22b-instruct-2507',
-        error: 'QUOTA_ADMISSION:minute_request_threshold',
-      },
-      {
-        provider: 'cerebras',
         modelId: 'llama3.1-8b',
         error: 'QUOTA_ADMISSION:minute_request_threshold',
       },
@@ -334,7 +320,7 @@ describe('generateTextWithRetry', () => {
     expect(result.provider).toBe('groq');
     expect(mockMarkProviderQuotaCooldown).toHaveBeenCalledWith(
       'cerebras',
-      'qwen-3-235b-a22b-instruct-2507',
+      'llama3.1-8b',
       '429 queue_exceeded'
     );
     expect(mockReconcileProviderQuotaReservation).toHaveBeenCalledWith(
@@ -516,7 +502,6 @@ describe('generateTextWithRetry', () => {
     mockGenerateText
       .mockRejectedValueOnce(new Error('rate limit exceeded: 429'))
       .mockRejectedValueOnce(new Error('service unavailable: 503'))
-      .mockRejectedValueOnce(new Error('service unavailable: 503'))
       .mockResolvedValueOnce({
         text: 'ok from mistral',
         steps: [],
@@ -543,12 +528,10 @@ describe('generateTextWithRetry', () => {
     expect(result.attempts.map((attempt) => attempt.provider)).toEqual([
       'groq',
       'cerebras',
-      'cerebras',
       'mistral',
     ]);
     expect(result.attempts.map((attempt) => attempt.modelId)).toEqual([
       'groq-model',
-      'qwen-3-235b-a22b-instruct-2507',
       'llama3.1-8b',
       'mistral-large-latest',
     ]);

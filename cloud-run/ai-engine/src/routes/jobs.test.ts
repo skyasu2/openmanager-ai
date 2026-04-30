@@ -192,7 +192,7 @@ describe('Jobs Routes', () => {
               providerAttempts: [
                 {
                   provider: 'cerebras',
-                  modelId: 'qwen-3-235b-a22b-instruct-2507',
+                  modelId: 'llama3.1-8b',
                   attempt: 1,
                   durationMs: 12,
                   error: 'QUOTA_ADMISSION:minute_request_threshold',
@@ -235,7 +235,7 @@ describe('Jobs Routes', () => {
             providerAttempts: [
               {
                 provider: 'cerebras',
-                modelId: 'qwen-3-235b-a22b-instruct-2507',
+                modelId: 'llama3.1-8b',
                 attempt: 1,
                 durationMs: 12,
                 error: 'QUOTA_ADMISSION:minute_request_threshold',

@@ -8,7 +8,7 @@ const {
 } = vi.hoisted(() => ({
   mockIsCerebrasToolCallingEnabled: vi.fn(() => true),
   mockIsCerebrasLongContextEnabled: vi.fn(() => true),
-  mockGetCerebrasModelId: vi.fn(() => 'qwen-3-235b-a22b-instruct-2507'),
+  mockGetCerebrasModelId: vi.fn(() => 'llama3.1-8b'),
   mockIsOpenRouterVisionToolCallingEnabled: vi.fn(() => true),
 }));
 
@@ -20,13 +20,14 @@ vi.mock('../../lib/config-parser', () => ({
 }));
 
 import { getProviderCapabilities } from './provider-capabilities';
+import { CEREBRAS_QWEN_MODEL_ID } from './provider-model-policy';
 
 describe('provider capabilities', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockIsCerebrasToolCallingEnabled.mockReturnValue(true);
     mockIsCerebrasLongContextEnabled.mockReturnValue(true);
-    mockGetCerebrasModelId.mockReturnValue('qwen-3-235b-a22b-instruct-2507');
+    mockGetCerebrasModelId.mockReturnValue('llama3.1-8b');
     mockIsOpenRouterVisionToolCallingEnabled.mockReturnValue(true);
   });
 
@@ -41,12 +42,12 @@ describe('provider capabilities', () => {
 
   it('uses Cerebras model policy for long-context capability', () => {
     expect(getProviderCapabilities('cerebras')).toMatchObject({
-      supportsLongContext: true,
-      contextWindowTokens: 65_536,
-    });
-    expect(getProviderCapabilities('cerebras', 'llama3.1-8b')).toMatchObject({
       supportsLongContext: false,
       contextWindowTokens: 8_192,
+    });
+    expect(getProviderCapabilities('cerebras', CEREBRAS_QWEN_MODEL_ID)).toMatchObject({
+      supportsLongContext: true,
+      contextWindowTokens: 65_536,
     });
   });
 
@@ -55,7 +56,7 @@ describe('provider capabilities', () => {
 
     const capabilities = getProviderCapabilities(
       'cerebras',
-      'qwen-3-235b-a22b-instruct-2507'
+      CEREBRAS_QWEN_MODEL_ID
     );
 
     expect(capabilities.supportsLongContext).toBe(false);

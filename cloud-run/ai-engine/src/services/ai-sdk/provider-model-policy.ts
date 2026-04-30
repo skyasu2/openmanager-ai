@@ -5,7 +5,7 @@ export const DEPRECATED_CEREBRAS_QWEN_MODEL_ID = CEREBRAS_QWEN_MODEL_ID;
 export const CEREBRAS_QWEN_DEPRECATION_DATE = '2026-05-27';
 export const CEREBRAS_GPT_OSS_MODEL_ID = 'gpt-oss-120b';
 export const CEREBRAS_LLAMA_FALLBACK_MODEL_ID = 'llama3.1-8b';
-export const DEFAULT_CEREBRAS_MODEL = CEREBRAS_QWEN_MODEL_ID;
+export const DEFAULT_CEREBRAS_MODEL = CEREBRAS_LLAMA_FALLBACK_MODEL_ID;
 export const CEREBRAS_DEPRECATION_REPLACEMENT =
   'groq:meta-llama/llama-4-scout-17b-16e-instruct';
 
@@ -48,8 +48,7 @@ export interface DeprecatedProviderModelPolicyFinding {
 }
 
 export type CerebrasRuntimeModelId =
-  | typeof CEREBRAS_QWEN_MODEL_ID
-  | typeof CEREBRAS_LLAMA_FALLBACK_MODEL_ID;
+  typeof CEREBRAS_LLAMA_FALLBACK_MODEL_ID;
 
 const CEREBRAS_SOURCE_URLS = [
   'https://inference-docs.cerebras.ai/models/overview',
@@ -68,35 +67,29 @@ export const CEREBRAS_MODEL_POLICIES = {
   [CEREBRAS_QWEN_MODEL_ID]: {
     provider: 'cerebras',
     modelId: CEREBRAS_QWEN_MODEL_ID,
-    role: 'primary',
+    role: 'excluded',
     lifecycle: 'preview',
-    enabled: true,
-    toolCallingEnabled: true,
+    enabled: false,
+    toolCallingEnabled: false,
     structuredOutputEnabled: true,
     contextWindowTokens: 65_536,
-    quota: {
-      requestsPerMinute: 5,
-      tokensPerMinute: 30_000,
-      requestsPerDay: 14_400,
-      tokensPerDay: 1_000_000,
-    },
+    quota: EMPTY_QUOTA,
     deprecationDate: CEREBRAS_QWEN_DEPRECATION_DATE,
     blockAfterDeprecation: true,
-    smokeStatus: 'green',
+    smokeStatus: 'red',
     smokeEvidence: [
-      'direct text/SQL smoke passed',
-      'structured output smoke passed',
-      'forced tool call smoke passed',
+      '2026-04-30 account smoke returned 429 high traffic',
+      'official Cerebras docs list this as a Preview model, not Production',
     ],
     freeTierLimitSummary:
-      'Account limit: 5 RPM / 30K TPM / 14.4K RPD / 1M TPD; primary until 2026-05-27 deprecation',
+      'Preview model retained for explicit override detection only; not a production runtime default',
     sourceUrls: CEREBRAS_SOURCE_URLS,
     recommendedReplacement: CEREBRAS_DEPRECATION_REPLACEMENT,
   },
   [CEREBRAS_LLAMA_FALLBACK_MODEL_ID]: {
     provider: 'cerebras',
     modelId: CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
-    role: 'fallback',
+    role: 'primary',
     lifecycle: 'production',
     enabled: true,
     toolCallingEnabled: true,
@@ -108,16 +101,16 @@ export const CEREBRAS_MODEL_POLICIES = {
       requestsPerDay: 14_400,
       tokensPerDay: 1_000_000,
     },
-    deprecationDate: CEREBRAS_QWEN_DEPRECATION_DATE,
-    blockAfterDeprecation: true,
+    blockAfterDeprecation: false,
     smokeStatus: 'green',
     smokeEvidence: [
+      '2026-04-30 account smoke passed via chat completions',
       'chat completions smoke passed',
       'tool calling smoke passed',
       'generateObject smoke passed',
     ],
     freeTierLimitSummary:
-      'Free: 30 RPM / 900 RPH / 14.4K RPD / 1M TPD; intra-Cerebras fallback only',
+      'Free: 30 RPM / 900 RPH / 14.4K RPD / 1M TPD; short-context Cerebras production runtime',
     sourceUrls: CEREBRAS_SOURCE_URLS,
     recommendedReplacement: CEREBRAS_DEPRECATION_REPLACEMENT,
   },
@@ -144,7 +137,7 @@ export const CEREBRAS_MODEL_POLICIES = {
 } as const satisfies Record<string, ProviderModelPolicy>;
 
 export function getCerebrasRuntimeModelIds(): CerebrasRuntimeModelId[] {
-  return [CEREBRAS_QWEN_MODEL_ID, CEREBRAS_LLAMA_FALLBACK_MODEL_ID];
+  return [CEREBRAS_LLAMA_FALLBACK_MODEL_ID];
 }
 
 export function getCerebrasRuntimeModelPolicies(): ProviderModelPolicy[] {

@@ -42,8 +42,8 @@ const {
     provider: 'openrouter',
     modelId,
   })),
-  mockGetCerebrasModelId: vi.fn(() => 'qwen-3-235b-a22b-instruct-2507'),
-  mockGetCerebrasFallbackModelIds: vi.fn(() => ['llama3.1-8b']),
+  mockGetCerebrasModelId: vi.fn(() => 'llama3.1-8b'),
+  mockGetCerebrasFallbackModelIds: vi.fn((): string[] => []),
 }));
 
 // Mock model-provider

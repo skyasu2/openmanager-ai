@@ -12,10 +12,10 @@ vi.mock('../lib/config-parser', () => ({
   CEREBRAS_QWEN_DEPRECATION_DATE: '2026-05-27',
   CEREBRAS_LLAMA_FALLBACK_MODEL_ID: 'llama3.1-8b',
   CEREBRAS_GPT_OSS_MODEL_ID: 'gpt-oss-120b',
-  DEFAULT_CEREBRAS_MODEL: 'qwen-3-235b-a22b-instruct-2507',
+  DEFAULT_CEREBRAS_MODEL: 'llama3.1-8b',
   DEPRECATED_CEREBRAS_QWEN_MODEL_ID: 'qwen-3-235b-a22b-instruct-2507',
-  getCerebrasModelId: vi.fn(() => 'qwen-3-235b-a22b-instruct-2507'),
-  getCerebrasFallbackModelIds: vi.fn(() => ['llama3.1-8b']),
+  getCerebrasModelId: vi.fn(() => 'llama3.1-8b'),
+  getCerebrasFallbackModelIds: vi.fn((): string[] => []),
   getGroqModelId: vi.fn(() => 'meta-llama/llama-4-scout-17b-16e-instruct'),
   getOpenRouterVisionModelId: vi.fn(() => 'google/gemma-3-27b-it:free'),
   isCerebrasToolCallingEnabled: vi.fn(() => false),
@@ -61,12 +61,11 @@ describe('Provider Routes', () => {
       expect(json.available).toBeDefined();
       expect(json.info).toBeDefined();
       expect(json.modelDrift).toEqual([]);
-      expect(json.modelMetadata).toHaveLength(6);
-      expect(json.info.cerebras.model).toBe('qwen-3-235b-a22b-instruct-2507');
+      expect(json.modelMetadata).toHaveLength(5);
+      expect(json.info.cerebras.model).toBe('llama3.1-8b');
       expect(json.info.cerebras.toolCallingEnabled).toBe(false);
       expect(json.info.groq.model).toBe('meta-llama/llama-4-scout-17b-16e-instruct');
-      expect(json.info.cerebras.role).toContain('Reporter');
-      expect(json.info.cerebras.role).toContain('Advisor');
+      expect(json.info.cerebras.role).toContain('Short-context');
       expect(json.info.groq.role).toContain('Supervisor');
       expect(json.info.groq.role).not.toContain('Advisor');
       expect(json.info.mistral.role).toBe('Last-resort text fallback');

@@ -2,7 +2,6 @@ import './env-loader';
 import { logger } from './logger';
 import {
   CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
-  CEREBRAS_QWEN_MODEL_ID,
   DEFAULT_CEREBRAS_MODEL,
 } from '../services/ai-sdk/provider-model-policy';
 export {
@@ -299,8 +298,9 @@ export function getMistralConfig(): MistralConfig | null {
  * Get Cerebras API Key (secondary provider - fast inference)
  * Uses AI_PROVIDERS_CONFIG or falls back to individual env var
  * @see https://inference-docs.cerebras.ai
- * Default model is the current Cerebras primary available in this account.
- * gpt-oss-120b is excluded from free-tier runtime candidates.
+ * Default model is the current Cerebras production model available in this
+ * account. Qwen 235B remains documented as a preview override only.
+ * gpt-oss-120b is excluded from free-tier runtime candidates for this account.
  */
 export function getCerebrasApiKey(): string | null {
   const providersConfig = getAIProvidersConfig();
@@ -321,8 +321,8 @@ export function getCerebrasModelId(): string {
 }
 
 /**
- * Intra-provider fallback models for Cerebras. These are tried before leaving
- * Cerebras for Groq/Mistral when the primary model is unavailable or quota-blocked.
+ * Intra-provider fallback models for Cerebras. The default model is already
+ * llama3.1-8b, so the built-in fallback list is empty unless explicitly set.
  */
 export function getCerebrasFallbackModelIds(): string[] {
   const configured = process.env.CEREBRAS_FALLBACK_MODEL_IDS;
@@ -333,7 +333,7 @@ export function getCerebrasFallbackModelIds(): string[] {
       .filter((modelId) => modelId.length > 0);
   }
 
-  return [CEREBRAS_LLAMA_FALLBACK_MODEL_ID];
+  return [];
 }
 
 /**
@@ -348,9 +348,9 @@ export function isCerebrasToolCallingEnabled(): boolean {
 /**
  * Cerebras long-context gate.
  *
- * The current account exposes Qwen with a 65K context limit, but this is still
- * account/model specific. Keep an emergency disable switch so production can
- * fall back to conservative prompt budgets without code changes.
+ * Cerebras context support is account/model specific. Keep an emergency
+ * disable switch so production can fall back to conservative prompt budgets
+ * without code changes.
  */
 export function isCerebrasLongContextEnabled(): boolean {
   return process.env.CEREBRAS_LONG_CONTEXT_ENABLED !== 'false';

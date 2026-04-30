@@ -25,8 +25,8 @@ const {
   mockGetMistralModel: vi.fn((modelId: string) => ({ provider: 'mistral', modelId })),
   mockGetGeminiFlashLiteModel: vi.fn((modelId: string) => ({ provider: 'gemini', modelId })),
   mockGetOpenRouterVisionModel: vi.fn((modelId: string) => ({ provider: 'openrouter', modelId })),
-  mockGetCerebrasModelId: vi.fn(() => 'qwen-3-235b-a22b-instruct-2507'),
-  mockGetCerebrasFallbackModelIds: vi.fn(() => ['llama3.1-8b']),
+  mockGetCerebrasModelId: vi.fn(() => 'llama3.1-8b'),
+  mockGetCerebrasFallbackModelIds: vi.fn((): string[] => []),
   mockIsCerebrasToolCallingEnabled: vi.fn(() => true),
   mockIsOpenRouterVisionToolCallingEnabled: vi.fn(() => true),
   mockGetCircuitBreaker: vi.fn(() => ({
@@ -90,8 +90,8 @@ describe('selectTextModel capability requirements', () => {
     });
     mockIsCerebrasToolCallingEnabled.mockReturnValue(true);
     mockIsOpenRouterVisionToolCallingEnabled.mockReturnValue(true);
-    mockGetCerebrasModelId.mockReturnValue('qwen-3-235b-a22b-instruct-2507');
-    mockGetCerebrasFallbackModelIds.mockReturnValue(['llama3.1-8b']);
+    mockGetCerebrasModelId.mockReturnValue('llama3.1-8b');
+    mockGetCerebrasFallbackModelIds.mockReturnValue([]);
     mockGetCerebrasModel.mockImplementation((modelId: string) => ({ provider: 'cerebras', modelId }));
     mockGetCircuitBreaker.mockImplementation(() => ({
       isAllowed: () => true,
@@ -134,13 +134,15 @@ describe('selectTextModel capability requirements', () => {
     const result = selectTextModel('Test Agent', ['cerebras']);
 
     expect(result?.provider).toBe('cerebras');
-    expect(mockGetCerebrasModel).toHaveBeenCalledWith('qwen-3-235b-a22b-instruct-2507');
+    expect(mockGetCerebrasModel).toHaveBeenCalledWith('llama3.1-8b');
   });
 
-  it('tries llama3.1-8b as intra-Cerebras fallback when Qwen model init fails', () => {
+  it('tries a configured intra-Cerebras fallback when a custom primary model init fails', () => {
+    mockGetCerebrasModelId.mockReturnValue('custom-cerebras-model');
+    mockGetCerebrasFallbackModelIds.mockReturnValue(['llama3.1-8b']);
     mockGetCerebrasModel.mockImplementation((modelId: string) => {
-      if (modelId === 'qwen-3-235b-a22b-instruct-2507') {
-        throw new Error('Qwen unavailable');
+      if (modelId === 'custom-cerebras-model') {
+        throw new Error('custom model unavailable');
       }
       return { provider: 'cerebras', modelId };
     });
@@ -151,39 +153,29 @@ describe('selectTextModel capability requirements', () => {
 
     expect(result?.provider).toBe('cerebras');
     expect(result?.modelId).toBe('llama3.1-8b');
-    expect(mockGetCerebrasModel).toHaveBeenNthCalledWith(1, 'qwen-3-235b-a22b-instruct-2507');
+    expect(mockGetCerebrasModel).toHaveBeenNthCalledWith(1, 'custom-cerebras-model');
     expect(mockGetCerebrasModel).toHaveBeenNthCalledWith(2, 'llama3.1-8b');
     expect(mockGetGroqModel).not.toHaveBeenCalled();
   });
 
-  it('does not use llama3.1-8b for long-context requirements after Qwen fails', () => {
-    mockGetCerebrasModel.mockImplementation((modelId: string) => {
-      if (modelId === 'qwen-3-235b-a22b-instruct-2507') {
-        throw new Error('Qwen unavailable');
-      }
-      return { provider: 'cerebras', modelId };
-    });
-
+  it('skips the default 8K Cerebras runtime for long-context requirements', () => {
     const result = selectTextModel('Test Agent', ['cerebras', 'groq'], {
       requiredCapabilities: { requireLongContext: true },
     });
 
     expect(result?.provider).toBe('groq');
-    expect(mockGetCerebrasModel).toHaveBeenCalledTimes(1);
-    expect(mockGetCerebrasModel).toHaveBeenCalledWith(
-      'qwen-3-235b-a22b-instruct-2507'
-    );
+    expect(mockGetCerebrasModel).not.toHaveBeenCalled();
     expect(mockGetGroqModel).toHaveBeenCalledWith('groq-model');
   });
 
-  it('splits primary providers by agent group', () => {
+  it('keeps long-context agent groups on Groq when the Cerebras default is 8K', () => {
     expect(getNlqModel()?.provider).toBe('groq');
-    expect(getAdvisorModel()?.provider).toBe('cerebras');
-    expect(getAnalystModel()?.provider).toBe('cerebras');
-    expect(getReporterModel()?.provider).toBe('cerebras');
+    expect(getAdvisorModel()?.provider).toBe('groq');
+    expect(getAnalystModel()?.provider).toBe('groq');
+    expect(getReporterModel()?.provider).toBe('groq');
   });
 
-  it('keeps NLQ on models with at least 16K context after Qwen fails', () => {
+  it('keeps NLQ on models with at least 16K context when Groq is unavailable', () => {
     mockCheckProviderStatus.mockReturnValue({
       cerebras: true,
       groq: false,
@@ -191,32 +183,16 @@ describe('selectTextModel capability requirements', () => {
       gemini: true,
       openrouter: true,
     });
-    mockGetCerebrasModel.mockImplementation((modelId: string) => {
-      if (modelId === 'qwen-3-235b-a22b-instruct-2507') {
-        throw new Error('Qwen unavailable');
-      }
-      return { provider: 'cerebras', modelId };
-    });
 
     const result = getNlqModel();
 
     expect(result?.provider).toBe('mistral');
-    expect(mockGetCerebrasModel).toHaveBeenCalledTimes(1);
-    expect(mockGetCerebrasModel).toHaveBeenCalledWith(
-      'qwen-3-235b-a22b-instruct-2507'
-    );
+    expect(mockGetCerebrasModel).not.toHaveBeenCalled();
     expect(mockGetCerebrasModel).not.toHaveBeenCalledWith('llama3.1-8b');
     expect(mockGetMistralModel).toHaveBeenCalledWith('mistral-large-latest');
   });
 
-  it('keeps Analyst, Reporter, and Advisor on models with at least 32K context after Qwen fails', () => {
-    mockGetCerebrasModel.mockImplementation((modelId: string) => {
-      if (modelId === 'qwen-3-235b-a22b-instruct-2507') {
-        throw new Error('Qwen unavailable');
-      }
-      return { provider: 'cerebras', modelId };
-    });
-
+  it('keeps Analyst, Reporter, and Advisor on models with at least 32K context', () => {
     const results = [
       getAnalystModel(),
       getReporterModel(),
@@ -228,10 +204,7 @@ describe('selectTextModel capability requirements', () => {
       'groq',
       'groq',
     ]);
-    expect(mockGetCerebrasModel).toHaveBeenCalledTimes(3);
-    expect(mockGetCerebrasModel).toHaveBeenCalledWith(
-      'qwen-3-235b-a22b-instruct-2507'
-    );
+    expect(mockGetCerebrasModel).not.toHaveBeenCalled();
     expect(mockGetCerebrasModel).not.toHaveBeenCalledWith('llama3.1-8b');
     expect(mockGetGroqModel).toHaveBeenCalledWith('groq-model');
   });

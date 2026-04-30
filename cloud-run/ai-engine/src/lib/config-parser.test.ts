@@ -23,7 +23,6 @@ import {
   clearConfigCache,
   getAIProvidersConfig,
   DEFAULT_CEREBRAS_MODEL,
-  CEREBRAS_QWEN_MODEL_ID,
   CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
   getCerebrasFallbackModelIds,
 } from './config-parser';

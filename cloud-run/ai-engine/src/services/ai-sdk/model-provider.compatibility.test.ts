@@ -71,10 +71,10 @@ vi.mock('../../lib/config-parser', () => ({
   CEREBRAS_LLAMA_FALLBACK_MODEL_ID: 'llama3.1-8b',
   CEREBRAS_QWEN_DEPRECATION_DATE: '2026-05-27',
   CEREBRAS_GPT_OSS_MODEL_ID: 'gpt-oss-120b',
-  DEFAULT_CEREBRAS_MODEL: 'qwen-3-235b-a22b-instruct-2507',
+  DEFAULT_CEREBRAS_MODEL: 'llama3.1-8b',
   getCerebrasApiKey: vi.fn(() => 'test-cerebras-key'),
-  getCerebrasModelId: vi.fn(() => 'qwen-3-235b-a22b-instruct-2507'),
-  getCerebrasFallbackModelIds: vi.fn(() => ['llama3.1-8b']),
+  getCerebrasModelId: vi.fn(() => 'llama3.1-8b'),
+  getCerebrasFallbackModelIds: vi.fn((): string[] => []),
   getMistralApiKey: vi.fn(() => 'test-mistral-key'),
   getGroqApiKey: vi.fn(() => 'test-groq-key'),
   getGroqModelId: vi.fn(() => 'meta-llama/llama-4-scout-17b-16e-instruct'),
@@ -136,9 +136,9 @@ describe('model-provider compatibility (SDK upgrades)', () => {
     expect(vision?.modelId).toBe('gemini-2.5-flash-lite');
   });
 
-  it('keeps Supervisor Groq-first while Verifier is Cerebras-first', () => {
+  it('keeps Supervisor Groq-first and routes Verifier to long-context Groq', () => {
     expect(getSupervisorModel().provider).toBe('groq');
-    expect(getVerifierModel().provider).toBe('cerebras');
+    expect(getVerifierModel().provider).toBe('groq');
 
     toggleProvider('cerebras', false);
     invalidateProviderStatusCache();
