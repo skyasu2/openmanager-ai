@@ -57,6 +57,12 @@ describe('LogExplorerModal display contract', () => {
     );
   });
 
+  it('ERROR 로그 행은 전체 행 배경으로 강조한다', () => {
+    render(<LogExplorerModal open onClose={vi.fn()} />);
+
+    expect(screen.getByTestId('log-explorer-log-row')).toHaveClass('bg-red-50');
+  });
+
   it('활성 필터 요약과 초기화를 제공한다', () => {
     render(<LogExplorerModal open onClose={vi.fn()} />);
 
@@ -81,5 +87,24 @@ describe('LogExplorerModal display contract', () => {
 
     expect(screen.getByLabelText('로그 키워드 검색')).toHaveValue('');
     expect(summary).toHaveTextContent('없음');
+  });
+
+  it('통계 셀 클릭으로 레벨 필터를 토글한다', () => {
+    render(<LogExplorerModal open onClose={vi.fn()} />);
+
+    const errorStat = screen.getByTestId('log-stat-error');
+    fireEvent.click(errorStat);
+
+    expect(errorStat).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByTestId('log-explorer-filter-summary')).toHaveTextContent(
+      '레벨 ERROR'
+    );
+
+    fireEvent.click(errorStat);
+
+    expect(errorStat).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByTestId('log-explorer-filter-summary')).toHaveTextContent(
+      '없음'
+    );
   });
 });

@@ -352,6 +352,32 @@ describe('ImprovedServerCard - User Event 테스트', () => {
       expect(screen.queryByText(/^IP$/)).not.toBeInTheDocument();
       expect(screen.queryByText('192.168.1.100')).not.toBeInTheDocument();
     });
+
+    it('임계치 70% 이상 핵심 메트릭 수치를 텍스트 색상과 weight로 강조한다', () => {
+      const stressedServer = {
+        ...mockServer,
+        cpu: 74,
+        memory: 86,
+        disk: 91,
+      };
+
+      render(
+        <ImprovedServerCard server={stressedServer} onClick={mockOnClick} />
+      );
+
+      expect(screen.getByText('74.0%')).toHaveClass(
+        'text-amber-700',
+        'font-semibold'
+      );
+      expect(screen.getByText('86.0%')).toHaveClass(
+        'text-red-700',
+        'font-bold'
+      );
+      expect(screen.getByText('91.0%')).toHaveClass(
+        'text-red-700',
+        'font-bold'
+      );
+    });
   });
 
   describe('상태별 스타일', () => {
@@ -387,6 +413,18 @@ describe('ImprovedServerCard - User Event 테스트', () => {
         <ImprovedServerCard server={criticalServer} onClick={mockOnClick} />
       );
       expect(getCardContainer(container)).toBeInTheDocument();
+    });
+
+    it('상태별 좌측 accent border를 제공한다', () => {
+      const criticalServer = { ...mockServer, status: 'critical' as const };
+      const { container } = render(
+        <ImprovedServerCard server={criticalServer} onClick={mockOnClick} />
+      );
+
+      expect(getCardContainer(container)).toHaveClass(
+        'border-l-4',
+        'border-l-red-500'
+      );
     });
   });
 
