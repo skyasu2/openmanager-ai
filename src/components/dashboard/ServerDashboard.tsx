@@ -1,17 +1,15 @@
 'use client';
 
-import { Loader2 } from 'lucide-react';
+import { ArrowUpDown, LayoutGrid, List, Loader2 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ImprovedServerCard from '@/components/dashboard/ImprovedServerCard';
 import ServerDashboardPaginationControls from '@/components/dashboard/ServerDashboardPaginationControls';
-import VirtualizedServerList from '@/components/dashboard/VirtualizedServerList';
 import ServerCardErrorBoundary from '@/components/error/ServerCardErrorBoundary';
 import { logger } from '@/lib/logging';
 import type { DashboardTab } from '@/types/dashboard/server-dashboard.types';
 import type { Server } from '@/types/server';
-// react-window Grid는 사용하지 않음 (VirtualizedServerList에서 List 사용)
 import { usePerformanceTracking } from '@/utils/performance';
 
 const EnhancedServerModal = dynamic(
@@ -27,11 +25,47 @@ const STATUS_PRIORITY = {
   online: 2,
 } as const;
 
+type ServerViewMode = 'list' | 'grid';
+type ServerSortKey = 'status' | 'cpu' | 'memory' | 'name';
+
+const SORT_OPTIONS: Array<{ value: ServerSortKey; label: string }> = [
+  { value: 'status', label: '상태' },
+  { value: 'cpu', label: 'CPU' },
+  { value: 'memory', label: 'MEM' },
+  { value: 'name', label: '이름' },
+];
+
 // 🚀 성능 최적화: 알림 수 계산 로직 분리 및 메모이제이션
 const getAlertsCountOptimized = (alerts: unknown): number => {
   if (typeof alerts === 'number') return alerts;
   if (Array.isArray(alerts)) return alerts.length;
   return 0;
+};
+
+const compareByStatusPriority = (a: Server, b: Server): number => {
+  const statusA = a?.status || 'unknown';
+  const statusB = b?.status || 'unknown';
+
+  const priorityA =
+    STATUS_PRIORITY[statusA as keyof typeof STATUS_PRIORITY] ?? 3;
+  const priorityB =
+    STATUS_PRIORITY[statusB as keyof typeof STATUS_PRIORITY] ?? 3;
+
+  if (priorityA !== priorityB) {
+    return priorityA - priorityB;
+  }
+
+  const alertsA = getAlertsCountOptimized(a?.alerts);
+  const alertsB = getAlertsCountOptimized(b?.alerts);
+
+  if (alertsA !== alertsB) {
+    return alertsB - alertsA;
+  }
+
+  return a.name.localeCompare(b.name, 'ko-KR', {
+    numeric: true,
+    sensitivity: 'base',
+  });
 };
 
 /**
@@ -89,6 +123,8 @@ export default function ServerDashboard({
   const performanceStats = usePerformanceTracking('ServerDashboard');
 
   const [activeTab] = useState<DashboardTab>('servers');
+  const [viewMode, setViewMode] = useState<ServerViewMode>('list');
+  const [serverSortKey, setServerSortKey] = useState<ServerSortKey>('status');
 
   // 🔧 Phase 4: useServerDashboard() 제거 - props로 데이터 받음
   // 모달 상태만 로컬로 관리
@@ -187,28 +223,27 @@ export default function ServerDashboard({
       );
     }
 
-    // 🎯 이전 AI 리뷰 권장: O(17)→O(1) 복잡도 최적화 (82.9% 성능 향상)
-    return validatedServers.sort((a, b) => {
-      // 🛡️ 정렬 중 추가 안전성 검증
-      const statusA = a?.status || 'unknown';
-      const statusB = b?.status || 'unknown';
-
-      const priorityA =
-        STATUS_PRIORITY[statusA as keyof typeof STATUS_PRIORITY] ?? 3;
-      const priorityB =
-        STATUS_PRIORITY[statusB as keyof typeof STATUS_PRIORITY] ?? 3;
-
-      if (priorityA !== priorityB) {
-        return priorityA - priorityB;
+    return [...validatedServers].sort((a, b) => {
+      if (serverSortKey === 'cpu') {
+        const cpuDiff = (b.cpu ?? 0) - (a.cpu ?? 0);
+        return cpuDiff || compareByStatusPriority(a, b);
       }
 
-      // 🎯 안전한 알림 수 계산
-      const alertsA = getAlertsCountOptimized(a?.alerts);
-      const alertsB = getAlertsCountOptimized(b?.alerts);
+      if (serverSortKey === 'memory') {
+        const memoryDiff = (b.memory ?? 0) - (a.memory ?? 0);
+        return memoryDiff || compareByStatusPriority(a, b);
+      }
 
-      return alertsB - alertsA;
+      if (serverSortKey === 'name') {
+        return a.name.localeCompare(b.name, 'ko-KR', {
+          numeric: true,
+          sensitivity: 'base',
+        });
+      }
+
+      return compareByStatusPriority(a, b);
     });
-  }, [servers]);
+  }, [servers, serverSortKey]);
 
   // 페이지네이션 정보 계산 (메모이제이션으로 최적화)
   // 🔧 Phase 4: totalServers props 사용 (전체 서버 수)
@@ -261,6 +296,65 @@ export default function ServerDashboard({
       <div>
         {activeTab === 'servers' && (
           <div className="space-y-4">
+            <div className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white px-3 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:px-4">
+              <fieldset className="inline-flex w-full rounded-md border border-gray-200 bg-gray-50 p-1 sm:w-auto">
+                <legend className="sr-only">서버 보기 방식</legend>
+                <button
+                  type="button"
+                  aria-label="리스트 보기"
+                  aria-pressed={viewMode === 'list'}
+                  onClick={() => setViewMode('list')}
+                  className={`inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded px-3 text-xs font-medium transition-colors sm:flex-none ${
+                    viewMode === 'list'
+                      ? 'bg-white text-blue-700 shadow-sm ring-1 ring-blue-100'
+                      : 'text-gray-600 hover:bg-white/80 hover:text-gray-900'
+                  }`}
+                >
+                  <List className="h-3.5 w-3.5" />
+                  <span>리스트</span>
+                </button>
+                <button
+                  type="button"
+                  aria-label="그리드 보기"
+                  aria-pressed={viewMode === 'grid'}
+                  onClick={() => setViewMode('grid')}
+                  className={`inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded px-3 text-xs font-medium transition-colors sm:flex-none ${
+                    viewMode === 'grid'
+                      ? 'bg-white text-blue-700 shadow-sm ring-1 ring-blue-100'
+                      : 'text-gray-600 hover:bg-white/80 hover:text-gray-900'
+                  }`}
+                >
+                  <LayoutGrid className="h-3.5 w-3.5" />
+                  <span>그리드</span>
+                </button>
+              </fieldset>
+
+              <div className="flex w-full items-center gap-2 sm:w-auto">
+                <label
+                  htmlFor="server-sort"
+                  className="inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-gray-600"
+                >
+                  <ArrowUpDown className="h-3.5 w-3.5" />
+                  정렬
+                </label>
+                <select
+                  id="server-sort"
+                  aria-label="서버 정렬"
+                  value={serverSortKey}
+                  onChange={(event) =>
+                    setServerSortKey(event.target.value as ServerSortKey)
+                  }
+                  className="touch-text-safe-xs min-h-9 w-full rounded-md border border-gray-200 bg-white px-2.5 py-1.5 text-sm text-gray-700 focus:border-blue-400 focus:outline-none sm:w-36"
+                >
+                  {SORT_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
             {/* 📊 페이지네이션 정보 헤더 (간소화 - 선택기는 하단에만) */}
             {totalPages > 1 && (
               <div className="mb-4 flex items-center justify-between rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-2">
@@ -280,77 +374,66 @@ export default function ServerDashboard({
               </div>
             )}
 
-            {/* 🎯 페이지 크기에 따른 렌더링 방식 선택 */}
-            {pageSize >= 15 && sortedServers.length >= 15 ? (
-              // ⚡ 15개 전체 보기: 반응형 그리드 + 더보기 버튼
-              <VirtualizedServerList
-                servers={sortedServers}
-                handleServerSelect={handleServerSelect}
-                onAskAI={onAskAI}
-              />
-            ) : (
-              // 📊 일반 보기 (3/6/9/12개): 그리드 레이아웃
+            {sortedServers.length > 0 ? (
               <div
-                className={`grid gap-4 transition-all duration-300 sm:gap-6 ${
-                  pageSize <= 3
-                    ? 'grid-cols-1' // 3개: 모바일 최적화 (1열)
-                    : pageSize <= 6
-                      ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' // 6개: 2x3 레이아웃
-                      : pageSize <= 9
-                        ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' // 9개: 3x3 레이아웃
-                        : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' // 12개 이상: 3x4 레이아웃
-                }`}
+                data-testid={
+                  viewMode === 'grid'
+                    ? 'server-dashboard-grid'
+                    : 'server-dashboard-list'
+                }
+                className={
+                  viewMode === 'grid'
+                    ? 'grid grid-cols-1 gap-4 transition-all duration-300 sm:grid-cols-2 sm:gap-6'
+                    : 'grid grid-cols-1 gap-3 transition-all duration-300'
+                }
               >
-                {sortedServers.length > 0 ? (
-                  sortedServers.map((server, index) => {
-                    const serverId = server.id || `server-${index}`;
+                {sortedServers.map((server, index) => {
+                  const serverId = server.id || `server-${index}`;
 
-                    return (
-                      <ServerCardErrorBoundary
-                        key={`boundary-${serverId}`}
-                        serverId={serverId}
-                      >
-                        <ImprovedServerCard
-                          key={serverId}
-                          server={server}
-                          variant="compact"
-                          showRealTimeUpdates={true}
-                          index={index}
-                          onClick={handleServerSelect}
-                          onAskAI={onAskAI}
-                        />
-                      </ServerCardErrorBoundary>
-                    );
-                  })
-                ) : (
-                  // 🎯 빈 상태 UI (Gemini UX 개선 권장)
-                  <div className="col-span-full flex h-64 items-center justify-center">
-                    <div className="text-center">
-                      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
-                        <svg
-                          className="h-6 w-6 text-gray-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          aria-hidden="true"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                          />
-                        </svg>
-                      </div>
-                      <h3 className="mb-1 text-sm font-medium text-gray-900">
-                        서버 정보 없음
-                      </h3>
-                      <p className="text-sm text-gray-500">
-                        표시할 서버가 없습니다.
-                      </p>
-                    </div>
+                  return (
+                    <ServerCardErrorBoundary
+                      key={`boundary-${serverId}`}
+                      serverId={serverId}
+                    >
+                      <ImprovedServerCard
+                        key={serverId}
+                        server={server}
+                        variant="compact"
+                        showRealTimeUpdates={true}
+                        index={index}
+                        onClick={handleServerSelect}
+                        onAskAI={onAskAI}
+                      />
+                    </ServerCardErrorBoundary>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="flex h-64 items-center justify-center">
+                <div className="text-center">
+                  <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
+                    <svg
+                      className="h-6 w-6 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
+                    </svg>
                   </div>
-                )}
+                  <h3 className="mb-1 text-sm font-medium text-gray-900">
+                    서버 정보 없음
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    표시할 서버가 없습니다.
+                  </p>
+                </div>
               </div>
             )}
           </div>

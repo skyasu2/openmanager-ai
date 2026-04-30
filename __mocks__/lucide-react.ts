@@ -14,6 +14,7 @@ export const AlertCircle = noop;
 export const AlertTriangle = noop;
 export const ArrowLeftFromLine = noop;
 export const ArrowRight = noop;
+export const ArrowUpDown = noop;
 export const BarChart3 = noop;
 export const Bell = noop;
 export const BookOpen = noop;

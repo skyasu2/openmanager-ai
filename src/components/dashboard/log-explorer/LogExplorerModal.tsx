@@ -49,6 +49,7 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
   const sessionAnchorRef = useRef(new Date());
   const [sessionAnchorLabel, setSessionAnchorLabel] = useState('');
   const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY);
+  const [expandedLogKey, setExpandedLogKey] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   // Debounce keyword with proper cleanup on unmount
@@ -71,6 +72,7 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
     startTransition(() => {
       update();
       setDisplayCount(INITIAL_DISPLAY);
+      setExpandedLogKey(null);
     });
   };
 
@@ -91,6 +93,7 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
       setKeyword('');
       setDebouncedKeyword('');
       setDisplayCount(INITIAL_DISPLAY);
+      setExpandedLogKey(null);
     });
   };
 
@@ -384,17 +387,28 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
               {displayLogs.map((log) => {
                 const logLevel = log.level as keyof typeof levelStyles;
                 const style = levelStyles[logLevel] ?? levelStyles.info;
+                const logKey = `${log.serverId}-${log.timestamp}-${log.level}-${log.source}-${log.message.slice(0, 32)}`;
+                const isExpanded = expandedLogKey === logKey;
                 return (
-                  <div
+                  <button
+                    type="button"
                     data-testid="log-explorer-log-row"
-                    key={`${log.serverId}-${log.timestamp}-${log.level}-${log.source}-${log.message.slice(0, 32)}`}
+                    key={logKey}
+                    aria-expanded={isExpanded}
+                    onClick={() =>
+                      setExpandedLogKey((currentKey) =>
+                        currentKey === logKey ? null : logKey
+                      )
+                    }
                     className={cn(
-                      'flex flex-wrap items-start gap-1.5 rounded border-l-2 px-2.5 py-1.5 sm:flex-nowrap sm:gap-2',
+                      'flex w-full gap-1.5 rounded border-l-2 px-2.5 py-1.5 text-left transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400/60 sm:gap-2',
+                      isExpanded
+                        ? 'flex-wrap items-start'
+                        : 'flex-nowrap items-center',
                       style.border,
                       logLevel === 'error'
                         ? 'bg-red-50 hover:bg-red-100'
-                        : 'bg-white/[0.03] hover:bg-white/[0.06]',
-                      'transition-colors'
+                        : 'bg-white/[0.03] hover:bg-white/[0.06]'
                     )}
                   >
                     {/* Server badge */}
@@ -438,13 +452,16 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
                     <span
                       data-testid="log-explorer-log-message"
                       className={cn(
-                        'min-w-0 basis-full break-words sm:basis-auto sm:flex-1 sm:break-all',
+                        'min-w-0 flex-1 break-words',
+                        isExpanded
+                          ? 'basis-full whitespace-pre-wrap sm:basis-auto'
+                          : 'truncate',
                         style.text
                       )}
                     >
                       {log.message}
                     </span>
-                  </div>
+                  </button>
                 );
               })}
               {hasMore && (
