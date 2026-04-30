@@ -14,7 +14,7 @@ async function main() {
   }
 
   const cerebras = createCerebras({ apiKey });
-  const modelId = process.env.CEREBRAS_MODEL_ID?.replace(/^"|"$/g, '') || 'qwen-3-235b-a22b-instruct-2507';
+  const modelId = process.env.CEREBRAS_MODEL_ID?.replace(/^"|"$/g, '') || 'llama3.1-8b';
   
   console.log(`--- Final Validation of Cerebras Agent via ${modelId} ---`);
   console.log('Query: "SELECT * FROM server_metrics WHERE cpu_usage > 90;"');

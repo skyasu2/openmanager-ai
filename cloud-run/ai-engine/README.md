@@ -163,9 +163,9 @@ if (isVisionQuery(query)) {
 | Agent | Primary | Fallback Chain | Free Tier |
 |-------|---------|---------------|-----------|
 | Supervisor (single-agent) | Groq `meta-llama/llama-4-scout-17b-16e-instruct` | → Cerebras → Mistral | 30 RPM, 30K TPM, 1K RPD, 500K TPD |
-| NLQ Agent | Groq `meta-llama/llama-4-scout-17b-16e-instruct` | → Cerebras(Qwen, 16K+ ctx) → Mistral | 30 RPM, 30K TPM, 1K RPD, 500K TPD |
-| Analyst/Reporter/Advisor/Verifier | Cerebras Qwen (`CEREBRAS_MODEL_ID`) | → Groq → Mistral | Free-tier constrained; quota guarded |
-| Orchestrator | Cerebras Qwen (`CEREBRAS_MODEL_ID`) | → Groq → Mistral | Free-tier constrained; quota guarded |
+| NLQ Agent | Groq `meta-llama/llama-4-scout-17b-16e-instruct` | → Cerebras `llama3.1-8b` when context permits → Mistral | 30 RPM, 30K TPM, 1K RPD, 500K TPD |
+| Analyst/Reporter/Advisor/Verifier | Groq long-context path; Cerebras `llama3.1-8b` only when context permits | → Mistral | Free-tier constrained; quota guarded |
+| Orchestrator | Groq primary; Cerebras `llama3.1-8b` short-context fallback | → Mistral | Free-tier constrained; quota guarded |
 | Summarization fallback | Mistral `mistral-large-latest` | → Groq → Cerebras | 500 RPD, low RPM |
 | **Vision Agent** | **Gemini `gemini-2.5-flash-lite`** | **→ OpenRouter Gemma fallback** | **15 RPM, 1K RPD** |
 
