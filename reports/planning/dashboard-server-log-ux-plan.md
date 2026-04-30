@@ -1,12 +1,12 @@
 <!-- Owner: project -->
-<!-- Status: Approved -->
+<!-- Status: In Progress -->
 <!-- Doc type: How-to -->
 <!-- Last reviewed: 2026-05-01 -->
 
 # Dashboard Server & Log UX 개선 계획
 
-- TODO.md 연결: Backlog > Dashboard Server & Log UX 개선
-- 상태: Approved
+- TODO.md 연결: Active Tasks > Dashboard Server & Log UX 개선
+- 상태: In Progress
 - 작성일: 2026-04-30
 - 승인일: 2026-05-01
 - 구현 착수 조건: Phase 단위 `test(spec)` 선행 커밋 후 구현
@@ -197,11 +197,11 @@ const textColor = value >= 85 ? 'text-red-700 font-bold' : value >= 70 ? 'text-a
 
 ### Phase 1 — CSS/스타일만 (P0, ~1일)
 
-- [ ] **T1**: 서버 카드 상태별 `border-left` 컬러 적용 (`ServerCard.tsx` 또는 `ServerDashboard.tsx`)
-- [ ] **T2**: 임계치 초과 메트릭 행 색상 강조 (CPU/MEM/DSK 바 + 수치 텍스트)
-- [ ] **T3**: 로그 레벨 컬러 배지 (`[WARN]` → `bg-amber-100 text-amber-700 border-l-2 border-amber-400`)
-- [ ] **T4**: 로그 ERROR 행 `bg-red-50` 전체 행 강조
-- [ ] **T5**: 로그 통계(전체/정보/경고/오류)를 필터바 위 상단으로 이동 + 클릭 필터 연동
+- [x] **T1**: 서버 카드 상태별 `border-left` 컬러 적용 (`ServerCard.tsx` 또는 `ServerDashboard.tsx`)
+- [x] **T2**: 임계치 초과 메트릭 행 색상 강조 (CPU/MEM/DSK 바 + 수치 텍스트)
+- [x] **T3**: 로그 레벨 컬러 배지 (`[WARN]` → `bg-amber-100 text-amber-700 border-l-2 border-amber-400`)
+- [x] **T4**: 로그 ERROR 행 `bg-red-50` 전체 행 강조
+- [x] **T5**: 로그 통계(전체/정보/경고/오류)를 필터바 위 상단으로 이동 + 클릭 필터 연동
 
 #### Phase 1 테스트 계약
 
@@ -210,6 +210,17 @@ const textColor = value >= 85 ? 'text-red-700 font-bold' : value >= 70 ? 'text-a
 - `ImprovedServerCard` 또는 서버 카드 표시 계층은 상태별 좌측 accent border를 제공한다.
 - CPU/MEM/DSK 임계치 70% 이상 수치는 텍스트 색/weight로도 강조된다.
 - 기존 Overview 섹션과 `/dashboard` 개요 라우트 진입점은 변경하지 않는다.
+
+#### Phase 1 구현 로그 (2026-05-01)
+
+- SDD 선행 테스트 커밋: `b2a4e096e test(spec): dashboard server log phase1 contracts`
+- 구현 커밋: `17322154a feat(dashboard): implement server log phase1 polish`
+- 서버 카드 상태별 좌측 accent border 추가.
+- CPU/MEM/DSK/Network 70% 이상 수치 텍스트 강조, 85% 이상 red 강조로 정렬.
+- 로그 ERROR 행 전체 `bg-red-50` 강조 및 error row 텍스트 대비 보정.
+- 로그 통계 바를 필터 상단으로 이동하고 `전체/정보/경고/오류` 클릭 필터 토글 추가.
+- T3 로그 레벨 좌측 border/badge는 기존 구현을 확인하고 Phase 1 범위 완료로 체크.
+- 검증: targeted dashboard component tests 48/48, root type-check, `lint:changed`, `test:quick`, `git diff --check` 통과.
 
 ### Phase 2 — 레이아웃 변경 (P1, ~2일)
 
