@@ -63,6 +63,23 @@ describe('LogExplorerModal display contract', () => {
     expect(screen.getByTestId('log-explorer-log-row')).toHaveClass('bg-red-50');
   });
 
+  it('로그 행은 기본 1줄 압축 상태이며 클릭하면 메시지를 확장한다', () => {
+    render(<LogExplorerModal open onClose={vi.fn()} />);
+
+    const row = screen.getByTestId('log-explorer-log-row');
+    const message = screen.getByTestId('log-explorer-log-message');
+
+    expect(row).toHaveAttribute('aria-expanded', 'false');
+    expect(row).toHaveClass('flex-nowrap');
+    expect(message).toHaveClass('truncate');
+
+    fireEvent.click(row);
+
+    expect(row).toHaveAttribute('aria-expanded', 'true');
+    expect(message).toHaveClass('whitespace-pre-wrap', 'break-words');
+    expect(message).not.toHaveClass('truncate');
+  });
+
   it('활성 필터 요약과 초기화를 제공한다', () => {
     render(<LogExplorerModal open onClose={vi.fn()} />);
 

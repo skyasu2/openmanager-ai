@@ -48,7 +48,11 @@ vi.mock('@/components/dashboard/ImprovedServerCard', () => ({
     server: Server;
     onClick?: (server: Server) => void;
   }) => (
-    <button type="button" onClick={() => onClick?.(server)}>
+    <button
+      type="button"
+      data-testid={`server-card-${server.id}`}
+      onClick={() => onClick?.(server)}
+    >
       {server.name}
     </button>
   ),
@@ -73,7 +77,11 @@ vi.mock('@/utils/performance', () => ({
   }),
 }));
 
-function createServer(id: string, name: string): Server {
+function createServer(
+  id: string,
+  name: string,
+  overrides: Partial<Server> = {}
+): Server {
   return {
     id,
     name,
@@ -85,6 +93,7 @@ function createServer(id: string, name: string): Server {
     uptime: '1h',
     location: 'seoul-dc1',
     alerts: 0,
+    ...overrides,
   };
 }
 
@@ -164,5 +173,72 @@ describe('ServerDashboard', () => {
         screen.queryByTestId('enhanced-server-modal')
       ).not.toBeInTheDocument();
     });
+  });
+
+  it('서버 목록은 리스트/그리드 뷰 토글을 제공하고 그리드는 2열 레이아웃으로 전환된다', () => {
+    render(
+      <ServerDashboard
+        servers={[
+          createServer('server-1', 'API Server'),
+          createServer('server-2', 'DB Server'),
+        ]}
+        totalServers={2}
+        currentPage={1}
+        totalPages={1}
+        pageSize={2}
+        onPageChange={vi.fn()}
+        onPageSizeChange={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole('button', { name: '리스트 보기' })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    );
+    expect(screen.getByTestId('server-dashboard-list')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '그리드 보기' }));
+
+    expect(screen.getByRole('button', { name: '그리드 보기' })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    );
+    expect(screen.getByTestId('server-dashboard-grid')).toHaveClass(
+      'sm:grid-cols-2'
+    );
+  });
+
+  it('서버 정렬 셀렉트로 CPU, 메모리, 이름 기준 순서를 바꿀 수 있다', () => {
+    render(
+      <ServerDashboard
+        servers={[
+          createServer('server-1', 'API Server', { cpu: 20, memory: 80 }),
+          createServer('server-2', 'DB Server', { cpu: 91, memory: 35 }),
+          createServer('server-3', 'Cache Server', { cpu: 54, memory: 70 }),
+        ]}
+        totalServers={3}
+        currentPage={1}
+        totalPages={1}
+        pageSize={3}
+        onPageChange={vi.fn()}
+        onPageSizeChange={vi.fn()}
+      />
+    );
+
+    fireEvent.change(screen.getByLabelText('서버 정렬'), {
+      target: { value: 'cpu' },
+    });
+
+    expect(
+      screen.getAllByTestId(/^server-card-/).map((node) => node.textContent)
+    ).toEqual(['DB Server', 'Cache Server', 'API Server']);
+
+    fireEvent.change(screen.getByLabelText('서버 정렬'), {
+      target: { value: 'name' },
+    });
+
+    expect(
+      screen.getAllByTestId(/^server-card-/).map((node) => node.textContent)
+    ).toEqual(['API Server', 'Cache Server', 'DB Server']);
   });
 });
