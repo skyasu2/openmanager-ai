@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.74](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.73...v8.11.74) (2026-04-30)
+
+
+### Bug Fixes
+
+* **dashboard:** keep embedded ai page on mobile ([bdf4b87](https://gitlab.com/skyasu2/openmanager-ai/-/commit/bdf4b8728534d048b8d89279bc0b257d626a15f2))
+
 ## [8.11.73](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.72...v8.11.73) (2026-04-30)
 
 
