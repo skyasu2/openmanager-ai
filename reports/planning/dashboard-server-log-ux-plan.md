@@ -1,12 +1,12 @@
 <!-- Owner: project -->
-<!-- Status: In Progress -->
+<!-- Status: Completed -->
 <!-- Doc type: How-to -->
 <!-- Last reviewed: 2026-05-01 -->
 
 # Dashboard Server & Log UX 개선 계획
 
 - TODO.md 연결: Active Tasks > Dashboard Server & Log UX 개선
-- 상태: In Progress
+- 상태: Completed
 - 작성일: 2026-04-30
 - 승인일: 2026-05-01
 - 구현 착수 조건: Phase 단위 `test(spec)` 선행 커밋 후 구현
@@ -240,9 +240,22 @@ const textColor = value >= 85 ? 'text-red-700 font-bold' : value >= 70 ? 'text-a
 
 ### Phase 3 — 기능 추가 (P2, ~3일)
 
-- [ ] **T9**: 서버 카드 `[로그 →]` Cross-link (`/dashboard/logs?server=xxx`)
-- [ ] **T10**: 로그 반복 패턴 그룹핑 (같은 서버·같은 패턴 연속 시 축소)
-- [ ] **T11**: 로그 가상 스크롤 (50개씩 청크)
+- [x] **T9**: 서버 카드 `[로그 →]` Cross-link (`/dashboard/logs?server=xxx`)
+- [x] **T10**: 로그 반복 패턴 그룹핑 (같은 서버·같은 패턴 연속 시 축소)
+- [x] **T11**: 로그 가상 스크롤 (50개씩 청크)
+
+#### Phase 3 구현 로그 (2026-05-01)
+
+- SDD 선행 테스트 커밋: `1fb32767b test(spec): dashboard server log phase3 contracts`
+- 구현 커밋: `73eda44f9 feat(dashboard): implement server log phase3 interactions`
+- QA 보정 커밋: `94487ec80 fix(dashboard): improve stat filter touch targets`
+- 서버 카드에 로그 바로가기 아이콘 버튼을 추가하고 `/dashboard/logs?server=<serverId>`로 이동하도록 연결.
+- 로그 페이지는 `server`/`serverId` URL query를 초기 서버 필터로 반영하고, 로그 API는 `serverId` query를 명시적으로 사용.
+- 로그 행은 같은 서버·레벨·소스·정규화 메시지 패턴이 연속될 때 `×N` 그룹으로 축소하고, 클릭 시 하위 반복 로그 샘플을 표시.
+- 로그 목록은 최초 50개 렌더링, 스크롤/더보기 시 50개씩 추가하며 100개 이후는 다음 API page를 가져와 이어 표시.
+- QA에서 발견한 로그 통계 필터 버튼 높이 22px 이슈를 `StatCell` 44px touch target으로 보정.
+- 검증: targeted dashboard/log tests 64/64, QA 보정 targeted tests 13/13, root type-check, `lint:changed`, `test:quick`, `git diff --check` 통과.
+- 로컬 Playwright MCP QA: 서버 로그 버튼 15개 렌더링 및 44px target 확인, 서버→로그 링크 이동, URL 기반 서버 필터 적용, 로그 청크 50→100→150 증가, console error 0, horizontal overflow 0 확인.
 
 ---
 

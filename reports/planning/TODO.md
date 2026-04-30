@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-01 KST (`dashboard server/log UX phase 2 completed`)
+**Last Updated**: 2026-05-01 KST (`dashboard server/log UX completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| Dashboard Server & Log UX 개선 | P2 | In Progress | Phase 1/2 완료. Phase 3 남음. 계획: [dashboard-server-log-ux-plan.md](dashboard-server-log-ux-plan.md) |
+| — | — | — | 현재 활성 작업 없음 |
 
 ---
 
@@ -40,6 +40,18 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-01 #234)
+- [x] Dashboard Server & Log UX 개선
+  - Plan completed: [dashboard-server-log-ux-plan.md](dashboard-server-log-ux-plan.md)
+  - Phase 1: 서버 카드 상태 accent, 임계치 메트릭 강조, 로그 ERROR 행/통계 필터 정렬 완료
+  - Phase 2: 서버 리스트/그리드 보기 토글, 정렬 셀렉트, 로그 1줄 압축/확장 완료
+  - Phase 3: 서버 카드 로그 cross-link, URL 기반 서버 필터, 반복 로그 그룹핑, 50개 청크+페이지 로드 완료
+  - QA 보정: 로그 통계 필터 버튼을 44px touch target으로 보강
+  - SDD 선행 테스트 커밋: `1fb32767b test(spec): dashboard server log phase3 contracts`
+  - 구현 커밋: `73eda44f9 feat(dashboard): implement server log phase3 interactions`
+  - QA 보정 커밋: `94487ec80 fix(dashboard): improve stat filter touch targets`
+  - 검증: targeted dashboard/log tests 64/64, QA 보정 targeted tests 13/13, root type-check, `lint:changed`, `test:quick`, `git diff --check`, local Playwright MCP QA 통과
 
 ### Completed (2026-04-30 #233)
 - [x] approval write 레이어 제거

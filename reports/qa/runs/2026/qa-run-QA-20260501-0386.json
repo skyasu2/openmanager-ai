@@ -1,0 +1,132 @@
+{
+  "runId": "QA-20260501-0386",
+  "recordedAt": "2026-04-30T22:58:38.750Z",
+  "recordedAtKst": "2026-05-01 07:58:38 KST",
+  "runTitle": "Dashboard server/log UX Phase 3 local Playwright QA",
+  "owner": "codex",
+  "source": "playwright-mcp+local-dev",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://127.0.0.1:3000",
+    "frontend": "Next.js dev server",
+    "backend": "local Next.js API routes for dashboard logs",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "94487ec803275cbe249e6a9917c5fda12b357d4c"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["dashboard-core", "modal-detail-pack"],
+  "coveredSurfaces": [
+    "/dashboard/servers: server card log cross-link buttons render for visible server cards",
+    "/dashboard/servers -> /dashboard/logs?server=api-was-dc1-01: log button route transition",
+    "/dashboard/logs?server=api-was-dc1-01: URL query seeds server filter select and active filter state",
+    "Log explorer rows: visible rows match selected server filter",
+    "Log explorer chunk rendering: initial 50 rows, scroll loads 100 rows, next page extends to 150 rows",
+    "Log explorer layout: horizontal overflow 0 and console errors 0",
+    "Log stat filters: clickable target height verified at 44px after QA polish",
+    "Targeted dashboard/log DOM tests: 64/64 pass",
+    "QA polish targeted tests: 13/13 pass",
+    "Root gates: type-check, lint:changed, test:quick, git diff --check pass"
+  ],
+  "skippedSurfaces": [
+    "Vercel production validation: local UI/layout/source verification only before GitLab push",
+    "AI generation and Cloud Run streaming paths: not changed by server/log UX Phase 3",
+    "Cloud Run admin observability endpoints: out of scope"
+  ],
+  "checks": {
+    "total": 16,
+    "passed": 16,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Dashboard logs server-filter Phase 3 QA screenshot",
+      "path": "reports/qa/evidence/qa-20260501-dashboard-server-log-phase3.png",
+      "note": "Local Playwright MCP viewport on /dashboard/logs?server=api-was-dc1-01 after URL-seeded filter and stat target QA."
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "dashboard-server-log-cross-link",
+      "title": "서버 카드 로그 바로가기 cross-link",
+      "priority": "P2",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Playwright MCP: 15 visible server log buttons, first buttons 44x44, click routes to /dashboard/logs?server=api-was-dc1-01",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-log-url-server-filter",
+      "title": "로그 페이지 URL 기반 서버 필터 초기화",
+      "priority": "P2",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Playwright MCP: server select value api-was-dc1-01 and visible rows all match selected server",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-log-pattern-grouping",
+      "title": "반복 로그 패턴 그룹핑",
+      "priority": "P2",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Vitest DOM contract: repeated NFS pressure logs collapse into one row with x2 badge and expandable details",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-log-chunk-pagination",
+      "title": "로그 50개 청크 렌더링과 다음 페이지 로드",
+      "priority": "P2",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Playwright MCP: log rows increased 50 -> 100 -> 150 through scroll; useGlobalLogs pagination test covers page=2 fetch",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-log-stat-touch-target",
+      "title": "로그 통계 필터 클릭 타깃 보강",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Playwright MCP: stat filter buttons min height 44px, horizontal overflow 0",
+      "note": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Local dev server was restarted before browser QA to avoid stale Turbopack bundle results.",
+    "No browser console errors were observed in the targeted server/log flow after the final QA polish.",
+    "Subagents were used for Phase 3 analysis: one explorer reviewed server-card-to-log route integration, another reviewed log grouping/chunk-loading risks.",
+    "The grouped log badge was verified by DOM contract tests because the current filtered local fixture did not contain adjacent repeated patterns in the visible sample."
+  ],
+  "links": []
+}

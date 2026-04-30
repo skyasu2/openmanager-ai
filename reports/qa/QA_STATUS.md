@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-30 23:18:19 KST
+> Generated at: 2026-05-01 07:58:39 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 383 |
-| Total Runs (Counted) | 312 |
+| Total Recorded Runs | 384 |
+| Total Runs (Counted) | 313 |
 | Non-counted Runs | 71 |
-| Total Checks | 2670 |
-| Passed | 2572 |
+| Total Checks | 2686 |
+| Passed | 2588 |
 | Failed | 89 |
-| Completed Items | 391 |
+| Completed Items | 396 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 20 |
 | Expert Domains Tracked | 12 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260430-0385 (2026-04-30T14:18:18.454Z) |
-| Latest Recorded Run | QA-20260430-0385 (2026-04-30T14:18:18.454Z) |
+| Last Counted Run | QA-20260501-0386 (2026-04-30T22:58:38.750Z) |
+| Latest Recorded Run | QA-20260501-0386 (2026-04-30T22:58:38.750Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,55 +34,49 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260430-0385 (2026-04-30T14:18:18.454Z)
+Latest run: QA-20260501-0386 (2026-04-30T22:58:38.750Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| DevOps / SRE Engineer | appropriate | no | - |
-| AI Security & Reliability Architect | appropriate | no | - |
-| Test Automation Architect | partially-appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period effective 19.7666 USD, billed 0.0000 USD; no unexpected billed usage reported by CLI. |
+| - | - | - | - | - |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-29T14:18:18.454Z -> 2026-04-30T14:18:18.454Z (24h)
-- Runs with observations: 4 recorded / 4 counted
-- Samples: 4
+- Window: 2026-04-29T22:58:38.750Z -> 2026-04-30T22:58:38.750Z (24h)
+- Runs with observations: 1 recorded / 1 counted
+- Samples: 1
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Cloud Run AI | cloud-run-supervisor | 2 | 6806ms | 9660ms | 972ms | 1242ms | 5349ms | 8323ms | QA-20260430-0374 |
 | NLQ Agent | cerebras | 1 | 5526ms | 5526ms | - | - | - | - | QA-20260430-0379 |
-| Cloud Run AI | cerebras | 1 | 698ms | 698ms | 369ms | 369ms | 740ms | 740ms | QA-20260430-0376 |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
+- Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: dpl_5FNfh7toXujQ6CiE4XUsCFtKSDLg / SHA 890461cf
-- Coverage Packs: core-routes-smoke, ai-core, observability-pack
-- Covered Surfaces: GitLab tag pipeline v8.11.76, Vercel /api/version, Vercel /api/health?service=ai, Cloud Run /health, Cloud Run /api/ai/providers, Cloud Run env CEREBRAS_MODEL_ID, Cloud Run monitoring auth boundary
-- Skipped Surfaces: Browser UI Playwright flow not rerun; unchanged dashboard AI sidebar flow was covered by QA-20260430-0384
+- Deployment: SHA 94487ec8
+- Coverage Packs: dashboard-core, modal-detail-pack
+- Covered Surfaces: /dashboard/servers: server card log cross-link buttons render for visible server cards, /dashboard/servers -> /dashboard/logs?server=api-was-dc1-01: log button route transition, /dashboard/logs?server=api-was-dc1-01: URL query seeds server filter select and active filter state, Log explorer rows: visible rows match selected server filter, Log explorer chunk rendering: initial 50 rows, scroll loads 100 rows, next page extends to 150 rows, Log explorer layout: horizontal overflow 0 and console errors 0, Log stat filters: clickable target height verified at 44px after QA polish, Targeted dashboard/log DOM tests: 64/64 pass, QA polish targeted tests: 13/13 pass, Root gates: type-check, lint:changed, test:quick, git diff --check pass
+- Skipped Surfaces: Vercel production validation: local UI/layout/source verification only before GitLab push, AI generation and Cloud Run streaming paths: not changed by server/log UX Phase 3, Cloud Run admin observability endpoints: out of scope
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.11.76 pipeline | [GitLab v8.11.76 pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2491551446) | - |
-| monitoring | Cloud Run service | [Cloud Run service](https://ai-engine-jdhrhws7ia-an.a.run.app/) | - |
-| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-mgt64f1zp-skyasus-projects.vercel.app/) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-screenshot | Dashboard logs server-filter Phase 3 QA screenshot | `reports/qa/evidence/qa-20260501-dashboard-server-log-phase3.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -307,6 +301,10 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - dashboard-health-v880-quality-recheck: 프로덕션 대시보드/Health API 품질 재검증 (completed 1회, last QA-20260308-0059)
 - dashboard-health-v880-recheck: 프로덕션 대시보드 및 Health API 재검증 (completed 5회, last QA-20260309-0068)
 - dashboard-log-alert-filter-wrapping: Dashboard log and alert filter/wrapping hardening (completed 1회, last QA-20260429-0362)
+- dashboard-log-chunk-pagination: 로그 50개 청크 렌더링과 다음 페이지 로드 (completed 1회, last QA-20260501-0386)
+- dashboard-log-pattern-grouping: 반복 로그 패턴 그룹핑 (completed 1회, last QA-20260501-0386)
+- dashboard-log-stat-touch-target: 로그 통계 필터 클릭 타깃 보강 (completed 1회, last QA-20260501-0386)
+- dashboard-log-url-server-filter: 로그 페이지 URL 기반 서버 필터 초기화 (completed 1회, last QA-20260501-0386)
 - dashboard-mobile-ai-open-menu-trigger-hidden: 모바일 AI 사이드바 오픈 시 좌측 대시보드 메뉴 버튼 겹침 방지 (completed 1회, last QA-20260430-0382)
 - dashboard-mobile-ai-sidebar-full-width-position: 모바일 AI 사이드바 이중 래퍼로 인한 우측 밀림 제거 (completed 1회, last QA-20260430-0382)
 - dashboard-mobile-header-ai-cta-spacing: 모바일 헤더 로고와 AI CTA 겹침 방지 (completed 1회, last QA-20260430-0380)
@@ -320,6 +318,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - dashboard-resources: 시스템 리소스 개요 (completed 1회, last QA-20260317-0114)
 - dashboard-server-card-selector-stabilization: 서버 카드 선택자 및 빈 상태 처리 안정화 (completed 2회, last QA-20260302-0039)
 - dashboard-server-cards: 대시보드 서버 카드 및 메트릭 (completed 2회, last QA-20260302-0038)
+- dashboard-server-log-cross-link: 서버 카드 로그 바로가기 cross-link (completed 1회, last QA-20260501-0386)
 - dashboard-status-filter: 상태 필터 토글 (completed 1회, last QA-20260317-0114)
 - dashboard-topology-map: 토폴로지 맵 모달 (completed 1회, last QA-20260317-0114)
 - dashboard-worker-console-error-on-ai-workspace-return: Dashboard logs Web Worker fallback error after returning from fullscreen AI workspace (completed 1회, last QA-20260423-0332)
@@ -558,6 +557,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260501-0386 | 2026-04-30T22:58:38.750Z | targeted | no | yes | Dashboard server/log UX Phase 3 local Playwright QA | 16 | 5 | 0 | 0 | 0 | 0 |
 | QA-20260430-0385 | 2026-04-30T14:18:18.454Z | targeted | yes | yes | Vercel/Cloud Run Production QA v8.11.76 - Cerebras llama runtime | 7 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260430-0384 | 2026-04-30T13:00:04.697Z | targeted | yes | yes | Vercel Production QA v8.11.75 - Direct AI page sidebar reopen | 12 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260430-0383 | 2026-04-30T12:02:34.893Z | targeted | yes | yes | Vercel Production QA v8.11.74 - Dashboard AI app shell | 21 | 4 | 0 | 0 | 0 | 0 |
@@ -577,4 +577,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260429-0369 | 2026-04-29T07:43:13.729Z | targeted | yes | yes | Vercel Production QA - AI Sidebar Cerebras Qwen Recheck | 6 | 0 | 2 | 0 | 0 | 2 |
 | QA-20260429-0368 | 2026-04-29T05:59:28.482Z | targeted | yes | yes | v8.11.59 Vercel Playwright DISK Threshold Fresh Slot Recheck | 18 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260429-0367 | 2026-04-29T04:48:07.819Z | targeted | no | no | AI Engine Post-Review Fallback Metadata Verification | 4 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260429-0366 | 2026-04-29T04:28:03.403Z | targeted | no | no | AI Engine Provider Fallback and DISK Threshold Regression Fix | 3 | 2 | 0 | 0 | 0 | 0 |
