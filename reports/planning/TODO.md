@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-30 KST (`Cerebras runtime model transition completed`)
+**Last Updated**: 2026-04-30 KST (`approval write layer removed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -16,7 +16,6 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| approval write 레이어 제거 | P2 | HITL 재활성화 계획 없음 확인 후. 계획: [ai-engine-code-quality-plan.md](ai-engine-code-quality-plan.md) Task 1 |
 | quota-tracker.ts 레이어 분리 | P3 | 1,145줄 → 4파일 분리. 계획: Task 2 |
 | orchestrator-routing / summary-fallback 분리 | P3 | 각 1,100~1,200줄. 계획: Task 3 |
 
@@ -41,6 +40,16 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-30 #233)
+- [x] approval write 레이어 제거
+  - Plan completed: [ai-engine-code-quality-plan.md](ai-engine-code-quality-plan.md) Task 1
+  - `ApprovalStore` class, Memory Map, Redis sync, TTL cleanup, pending/decision write APIs 제거
+  - `/approval/history`, `/approval/history/stats`는 Supabase read 함수 직접 호출로 정렬
+  - `approval-store.ts`는 `fetchApprovalHistory`, `fetchApprovalHistoryStats` read-only facade로 축소
+  - SDD 선행 테스트 커밋: `19aefcc0b test(spec): approval store add read-only contract specs`
+  - 구현 커밋: `862571a4f refactor(ai-engine): remove approval write layer`
+  - 검증: targeted approval tests 9/9, AI Engine type-check, `cloud-run/ai-engine npm test` 938/938 통과
 
 ### Completed (2026-04-30 #232)
 - [x] Cerebras Qwen deprecation 대응
