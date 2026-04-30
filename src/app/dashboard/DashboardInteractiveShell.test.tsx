@@ -278,6 +278,38 @@ describe('DashboardInteractiveShell', () => {
     expect(mockAIEntryController.closeSidebar).toHaveBeenCalledTimes(1);
   });
 
+  it('closes the AI sidebar when the AI page hydrates with a delayed open state', async () => {
+    mockAIEntryController.isOpen = false;
+    const { default: DashboardInteractiveShell } = await import(
+      './DashboardInteractiveShell'
+    );
+
+    const props = {
+      dashboardView: 'ai-assistant',
+      initialServers: [],
+      initialTimeInfo: undefined,
+      initialDataSourceInfo: null,
+      initialFocusServerId: null,
+      isMounted: true,
+      canToggleAI: true,
+      userType: 'github',
+      isGuestFullAccess: false,
+    } as const;
+
+    const { rerender } = render(
+      React.createElement(DashboardInteractiveShell, props)
+    );
+
+    expect(mockAIEntryController.closeSidebar).not.toHaveBeenCalled();
+
+    mockAIEntryController.isOpen = true;
+    rerender(React.createElement(DashboardInteractiveShell, props));
+
+    await waitFor(() => {
+      expect(mockAIEntryController.closeSidebar).toHaveBeenCalledTimes(1);
+    });
+  });
+
   it('opens and closes the mobile dashboard navigation drawer', async () => {
     const { default: DashboardInteractiveShell } = await import(
       './DashboardInteractiveShell'

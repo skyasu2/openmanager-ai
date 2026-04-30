@@ -308,14 +308,12 @@ export default function DashboardInteractiveShell({
       return;
     }
 
-    if (hasClosedAgentForAIPageRef.current) {
+    if (!isAgentOpen || hasClosedAgentForAIPageRef.current) {
       return;
     }
 
     hasClosedAgentForAIPageRef.current = true;
-    if (isAgentOpen) {
-      closeSidebar();
-    }
+    closeSidebar();
   }, [closeSidebar, dashboardView, isAgentOpen]);
 
   const toggleAgent = useCallback(() => {
