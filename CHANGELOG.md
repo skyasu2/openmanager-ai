@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.72](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.71...v8.11.72) (2026-04-30)
+
+
+### Bug Fixes
+
+* **dashboard:** compact authenticated mobile profile ([370d37d](https://gitlab.com/skyasu2/openmanager-ai/-/commit/370d37dc1fdd18f0eca64ff30946a4474809e241))
+
 ## [8.11.71](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.70...v8.11.71) (2026-04-30)
 
 
