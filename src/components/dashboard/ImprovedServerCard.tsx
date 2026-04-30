@@ -86,6 +86,15 @@ const hoverShadowClasses: Record<string, string> = {
   unknown: 'hover:shadow-purple-500/20',
 };
 
+const statusAccentBorderClasses: Record<string, string> = {
+  critical: 'border-l-4 border-l-red-500',
+  warning: 'border-l-4 border-l-orange-500',
+  online: 'border-l-4 border-l-green-500',
+  offline: 'border-l-4 border-l-slate-400',
+  maintenance: 'border-l-4 border-l-blue-500',
+  unknown: 'border-l-4 border-l-purple-500',
+};
+
 const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
   ({
     server,
@@ -212,6 +221,9 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
 
     const currentHoverShadow =
       hoverShadowClasses[safeServer.status] || hoverShadowClasses.online;
+    const currentAccentBorder =
+      statusAccentBorderClasses[safeServer.status] ||
+      statusAccentBorderClasses.online;
 
     const insightBadge = (
       <AIInsightBadge
@@ -226,7 +238,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
       <div
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className={`group relative w-full overflow-hidden rounded-2xl border shadow-sm transition-all duration-300 ease-out hover:shadow-xl backdrop-blur-md text-left bg-transparent ${statusTheme.background} ${statusTheme.border} ${variantStyles.container} ${currentHoverShadow}`}
+        className={`group relative w-full overflow-hidden rounded-2xl border shadow-sm transition-all duration-300 ease-out hover:shadow-xl backdrop-blur-md text-left bg-transparent ${statusTheme.background} ${statusTheme.border} ${currentAccentBorder} ${variantStyles.container} ${currentHoverShadow}`}
       >
         {/* 🎨 그라데이션 애니메이션 배경 (랜딩 카드 스타일) */}
         <div

@@ -17,19 +17,45 @@ export const MetricItem = ({ type, value, history }: MetricItemProps) => {
     network: 'Network',
   };
 
-  const getSeverityColor = (val: number) => {
+  const getMetricSeverity = (val: number) => {
     if (type === 'network') {
-      if (val >= 85) return '#ef4444';
-      if (val >= 70) return '#f97316';
-      return '#10b981';
+      if (val >= 85) {
+        return {
+          chartColor: '#ef4444',
+          textClass: 'text-red-700 font-bold',
+        };
+      }
+      if (val >= 70) {
+        return {
+          chartColor: '#f97316',
+          textClass: 'text-amber-700 font-semibold',
+        };
+      }
+      return {
+        chartColor: '#10b981',
+        textClass: 'text-slate-600 font-medium',
+      };
     }
 
-    if (val >= 90) return '#ef4444';
-    if (val >= 80) return '#f97316';
-    return '#10b981';
+    if (val >= 85) {
+      return {
+        chartColor: '#ef4444',
+        textClass: 'text-red-700 font-bold',
+      };
+    }
+    if (val >= 70) {
+      return {
+        chartColor: '#f97316',
+        textClass: 'text-amber-700 font-semibold',
+      };
+    }
+    return {
+      chartColor: '#10b981',
+      textClass: 'text-slate-600 font-medium',
+    };
   };
 
-  const metricColor = getSeverityColor(value);
+  const metricSeverity = getMetricSeverity(value);
 
   return (
     <div className="flex flex-col">
@@ -38,8 +64,7 @@ export const MetricItem = ({ type, value, history }: MetricItemProps) => {
           {labels[type]}
         </span>
         <span
-          className="text-sm font-bold tracking-tight tabular-nums transition-all duration-700 ease-in-out"
-          style={{ color: metricColor }}
+          className={`text-sm tracking-tight tabular-nums transition-all duration-700 ease-in-out ${metricSeverity.textClass}`}
         >
           {formatMetricValue(type, value)}
         </span>
@@ -49,7 +74,7 @@ export const MetricItem = ({ type, value, history }: MetricItemProps) => {
           data={history && history.length > 1 ? history : [value, value]}
           width={72}
           height={40}
-          color={metricColor}
+          color={metricSeverity.chartColor}
           fill
           strokeWidth={1.5}
           disableAnimation={false}

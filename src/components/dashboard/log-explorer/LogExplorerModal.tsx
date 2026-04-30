@@ -32,7 +32,7 @@ const levelStyles: Record<
   },
   error: {
     badge: 'bg-red-500 text-white',
-    text: 'text-red-300',
+    text: 'text-red-700',
     border: 'border-l-red-500',
   },
 };
@@ -72,6 +72,14 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
       update();
       setDisplayCount(INITIAL_DISPLAY);
     });
+  };
+
+  const handleLevelStatClick = (nextLevel: typeof level) => {
+    handleFilterChange(() =>
+      setLevel((currentLevel) =>
+        currentLevel === nextLevel || nextLevel === 'all' ? 'all' : nextLevel
+      )
+    );
   };
 
   const resetFilters = () => {
@@ -156,6 +164,48 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
 
       {/* Search & Filter Bar */}
       <div className="sticky top-0 z-20 border-b border-gray-100 bg-white/95 px-4 py-3 backdrop-blur-sm sm:px-6">
+        <div
+          data-testid="log-stats-bar"
+          className="mb-3 grid grid-cols-2 gap-2 rounded-lg bg-gray-50/90 p-2 sm:grid-cols-4"
+        >
+          <StatCell
+            label="전체"
+            value={stats.total}
+            color="text-gray-800"
+            active={level === 'all'}
+            ariaLabel="전체 로그 보기"
+            onClick={() => handleLevelStatClick('all')}
+            testId="log-stat-all"
+          />
+          <StatCell
+            label="정보"
+            value={stats.info}
+            color="text-green-600"
+            active={level === 'info'}
+            ariaLabel="정보 로그 필터"
+            onClick={() => handleLevelStatClick('info')}
+            testId="log-stat-info"
+          />
+          <StatCell
+            label="경고"
+            value={stats.warn}
+            color="text-yellow-600"
+            active={level === 'warn'}
+            ariaLabel="경고 로그 필터"
+            onClick={() => handleLevelStatClick('warn')}
+            testId="log-stat-warn"
+          />
+          <StatCell
+            label="오류"
+            value={stats.error}
+            color="text-red-600"
+            active={level === 'error'}
+            ariaLabel="오류 로그 필터"
+            onClick={() => handleLevelStatClick('error')}
+            testId="log-stat-error"
+          />
+        </div>
+
         {/* Keyword search */}
         <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
           <input
@@ -336,11 +386,15 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
                 const style = levelStyles[logLevel] ?? levelStyles.info;
                 return (
                   <div
+                    data-testid="log-explorer-log-row"
                     key={`${log.serverId}-${log.timestamp}-${log.level}-${log.source}-${log.message.slice(0, 32)}`}
                     className={cn(
                       'flex flex-wrap items-start gap-1.5 rounded border-l-2 px-2.5 py-1.5 sm:flex-nowrap sm:gap-2',
                       style.border,
-                      'bg-white/[0.03] hover:bg-white/[0.06] transition-colors'
+                      logLevel === 'error'
+                        ? 'bg-red-50 hover:bg-red-100'
+                        : 'bg-white/[0.03] hover:bg-white/[0.06]',
+                      'transition-colors'
                     )}
                   >
                     {/* Server badge */}
@@ -348,7 +402,14 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
                       {log.serverId.split('.')[0]}
                     </span>
                     {/* Timestamp */}
-                    <span className="shrink-0 text-sky-300/85 tabular-nums">
+                    <span
+                      className={cn(
+                        'shrink-0 tabular-nums',
+                        logLevel === 'error'
+                          ? 'text-red-700'
+                          : 'text-sky-300/85'
+                      )}
+                    >
                       {formatRotatingTimestamp(log.timestamp, {
                         anchorDate: sessionAnchorRef.current,
                       })}
@@ -363,7 +424,14 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
                       {log.level}
                     </span>
                     {/* Source tag */}
-                    <span className="shrink-0 text-purple-400/80 text-[10px]">
+                    <span
+                      className={cn(
+                        'shrink-0 text-[10px]',
+                        logLevel === 'error'
+                          ? 'text-red-700/80'
+                          : 'text-purple-400/80'
+                      )}
+                    >
                       [{log.source}]
                     </span>
                     {/* Message */}
@@ -397,14 +465,6 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
         </div>
         {/* Fade overlay */}
         <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-gray-900 to-transparent" />
-      </div>
-
-      {/* Stats Footer */}
-      <div className="grid grid-cols-2 gap-3 border-t border-gray-100 bg-gray-50/80 px-4 py-3 sm:grid-cols-4 sm:gap-4 sm:px-6">
-        <StatCell label="전체" value={stats.total} color="text-gray-800" />
-        <StatCell label="정보" value={stats.info} color="text-green-600" />
-        <StatCell label="경고" value={stats.warn} color="text-yellow-600" />
-        <StatCell label="오류" value={stats.error} color="text-red-600" />
       </div>
     </div>
   );
