@@ -151,4 +151,28 @@ describe('UnifiedProfileHeader', () => {
       'GU 게스트 사용자 게스트 로그인'
     );
   });
+
+  it('인증 모바일 헤더에서 프로필 버튼을 compact avatar button으로 렌더링한다', async () => {
+    mocks.useProfileAuth.mockReturnValue({
+      userInfo: {
+        id: 'guest-1',
+        name: '게스트 사용자',
+        email: 'guest@test.local',
+      },
+      userType: 'guest',
+      status: 'authenticated',
+      isLoading: false,
+      handleLogout: vi.fn(),
+      navigateToLogin: vi.fn(),
+      navigateToDashboard: vi.fn(),
+    });
+
+    render(<UnifiedProfileHeader />);
+
+    const trigger = await screen.findByTestId('profile-dropdown-trigger');
+    expect(trigger).toHaveClass('w-10');
+    expect(trigger).toHaveClass('p-0');
+    expect(trigger).toHaveClass('sm:w-auto');
+    expect(trigger).toHaveClass('sm:p-3');
+  });
 });
