@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-29T20:55:55.746Z"
+    "updatedAt": "2026-04-30T05:14:43.053Z"
   },
   "sequence": {
-    "nextRunNumber": 377
+    "nextRunNumber": 378
   },
   "summary": {
-    "totalRecordedRuns": 374,
-    "totalRuns": 304,
+    "totalRecordedRuns": 375,
+    "totalRuns": 305,
     "excludedRuns": 70,
-    "totalChecks": 2576,
-    "totalPassed": 2479,
-    "totalFailed": 88,
-    "completionRate": 100,
-    "completedItems": 368,
-    "pendingItems": 0,
+    "totalChecks": 2591,
+    "totalPassed": 2493,
+    "totalFailed": 89,
+    "completionRate": 99.73,
+    "completedItems": 369,
+    "pendingItems": 1,
     "deferredItems": 0,
     "wontFixItems": 20,
     "expertDomainsTracked": 11,
-    "expertDomainsOpenGaps": 1,
-    "lastRunId": "QA-20260430-0376",
-    "lastRecordedAt": "2026-04-29T20:55:55.746Z",
-    "latestRecordedRunId": "QA-20260430-0376",
-    "latestRecordedAt": "2026-04-29T20:55:55.746Z"
+    "expertDomainsOpenGaps": 2,
+    "lastRunId": "QA-20260430-0377",
+    "lastRecordedAt": "2026-04-30T05:14:43.053Z",
+    "latestRecordedRunId": "QA-20260430-0377",
+    "latestRecordedAt": "2026-04-30T05:14:43.053Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -9041,6 +9041,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-29T20:55:55.746Z"
+    },
+    "dashboard-nav-anchor-reset-local-fix": {
+      "id": "dashboard-nav-anchor-reset-local-fix",
+      "title": "Global anchor reset no longer overrides Tailwind text utility colors in local build",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260430-0377",
+      "firstSeenAt": "2026-04-30T05:14:43.053Z",
+      "lastSeenRunId": "QA-20260430-0377",
+      "lastSeenAt": "2026-04-30T05:14:43.053Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "src/app/global-effects.css uses :where(a) for text decoration and excludes text-* links from color inheritance reset; local Playwright computed colors confirm blue-700/slate-600 nav text.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-30T05:14:43.053Z"
+    },
+    "dashboard-nav-contrast-production": {
+      "id": "dashboard-nav-contrast-production",
+      "title": "Vercel production dashboard left navigation text contrast regression",
+      "priority": "P1",
+      "status": "pending",
+      "firstSeenRunId": "QA-20260430-0377",
+      "firstSeenAt": "2026-04-30T05:14:43.053Z",
+      "lastSeenRunId": "QA-20260430-0377",
+      "lastSeenAt": "2026-04-30T05:14:43.053Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "Production v8.11.69 still shows left nav text as near-white on white. Source fix is local and needs deploy/recheck.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-30T05:14:43.053Z"
     }
   },
   "runs": [
@@ -36739,6 +36787,117 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260430-0377",
+      "recordedAt": "2026-04-30T05:14:43.053Z",
+      "recordedAtKst": "2026-04-30 14:14:43 KST",
+      "title": "Vercel Playwright QA - v8.11.69 Dashboard Navigation Contrast",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260430-0377.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_8Ho8hZP5LY1pEMq1oMDvbZqa6Yjs",
+        "deploymentUrl": "https://openmanager-10ljggcrx-skyasus-projects.vercel.app",
+        "commitSha": "9e9824ca69cd8ff9749e42a388eb981a297585ae"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "modal-detail-pack"
+      ],
+      "coveredSurfaces": [
+        "Vercel / landing render and system start",
+        "Vercel /api/version v8.11.69 commit 9e9824ca69cd8ff9749e42a388eb981a297585ae",
+        "Vercel /api/health and /api/health?service=ai",
+        "Vercel /dashboard app shell",
+        "Vercel /dashboard/servers",
+        "Vercel /dashboard/servers/cache-redis-dc1-01",
+        "Vercel server detail tabs: overview, performance, logs/network",
+        "Vercel /dashboard/alerts",
+        "Vercel /dashboard/logs",
+        "Vercel /dashboard/topology",
+        "Vercel legacy /dashboard?serverId=cache-redis-dc1-01 redirect",
+        "Local fix verification for dashboard navigation contrast"
+      ],
+      "skippedSurfaces": [
+        "AI sidebar real chat",
+        "observability-pack",
+        "Cloud Run admin monitoring"
+      ],
+      "checks": {
+        "total": 15,
+        "passed": 14,
+        "failed": 1
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "frontend-ux-quality",
+          "domainName": "Frontend UX Quality Reviewer",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "The app shell routes render, but production left navigation text has insufficient contrast because global anchor color reset overrides Tailwind link color utilities.",
+          "nextAction": "Deploy the anchor reset specificity fix and re-run Vercel Playwright dashboard navigation contrast QA."
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The regression is now covered by a static CSS contract test and dashboard shell route tests continued to pass.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Production v8.11.69 remains affected until the source fix is deployed through the canonical pipeline.",
+          "nextAction": "Run the GitLab deploy path after local gates, then verify deployment SHA and Vercel UI."
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-30T14:13:13+09:00",
+          "summary": "vercel usage reported effective=19.0897 USD, billed=0.0000 USD for the current billing period; no unexpected billed usage observed.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Vercel v8.11.69 dashboard nav contrast regression",
+          "path": "reports/qa/evidence/qa-20260430-v81169-nav-contrast-regression.png",
+          "note": "Production screenshot shows left dashboard navigation inheriting light foreground on white aside."
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Local dashboard nav contrast fixed",
+          "path": "reports/qa/evidence/qa-20260430-local-nav-contrast-fixed.png",
+          "note": "Local browser verification after global anchor reset specificity fix."
+        }
+      ],
+      "links": [],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 2,
+      "completedCount": 1,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -36798,33 +36957,33 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 110,
+      "seenCount": 111,
       "appropriateCount": 98,
-      "partialCount": 12,
+      "partialCount": 13,
       "inappropriateCount": 0,
-      "improvementNeededCount": 16,
-      "lastRunId": "QA-20260430-0376",
-      "lastSeenAt": "2026-04-29T20:55:55.746Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag pipeline, Vercel smoke, Cloud Run health/smoke가 모두 성공했습니다.",
-      "lastNextAction": ""
+      "improvementNeededCount": 17,
+      "lastRunId": "QA-20260430-0377",
+      "lastSeenAt": "2026-04-30T05:14:43.053Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "Production v8.11.69 remains affected until the source fix is deployed through the canonical pipeline.",
+      "lastNextAction": "Run the GitLab deploy path after local gates, then verify deployment SHA and Vercel UI."
     },
     "test-automation": {
       "domainId": "test-automation",
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 146,
-      "appropriateCount": 135,
+      "seenCount": 147,
+      "appropriateCount": 136,
       "partialCount": 11,
       "inappropriateCount": 0,
       "improvementNeededCount": 13,
-      "lastRunId": "QA-20260430-0374",
-      "lastSeenAt": "2026-04-29T18:53:53.244Z",
+      "lastRunId": "QA-20260430-0377",
+      "lastSeenAt": "2026-04-30T05:14:43.053Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP captured request body, DOM, expanded DOM, job result payload, screenshot, and Performance API evidence for the fixed scenario.",
+      "lastRationale": "The regression is now covered by a static CSS contract test and dashboard shell route tests continued to pass.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -36917,17 +37076,17 @@
       "domainName": "Frontend UX Quality Reviewer",
       "firstSeenRunId": "QA-20260430-0374",
       "firstSeenAt": "2026-04-29T18:53:53.244Z",
-      "seenCount": 1,
+      "seenCount": 2,
       "appropriateCount": 0,
-      "partialCount": 1,
+      "partialCount": 2,
       "inappropriateCount": 0,
-      "improvementNeededCount": 1,
-      "lastRunId": "QA-20260430-0374",
-      "lastSeenAt": "2026-04-29T18:53:53.244Z",
+      "improvementNeededCount": 2,
+      "lastRunId": "QA-20260430-0377",
+      "lastSeenAt": "2026-04-30T05:14:43.053Z",
       "lastFit": "partially-appropriate",
       "lastImprovementNeeded": true,
-      "lastRationale": "The full answer is present in job result and in the expanded analysis panel, but the default assistant bubble only shows the first summary block. Actionable details require expanding the analysis basis panel.",
-      "lastNextAction": "Show user-facing response details inline in the assistant answer even when analysis metadata exists."
+      "lastRationale": "The app shell routes render, but production left navigation text has insufficient contrast because global anchor color reset overrides Tailwind link color utilities.",
+      "lastNextAction": "Deploy the anchor reset specificity fix and re-run Vercel Playwright dashboard navigation contrast QA."
     }
   }
 }

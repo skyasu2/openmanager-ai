@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-30 05:55:56 KST
+> Generated at: 2026-04-30 14:14:44 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 374 |
-| Total Runs (Counted) | 304 |
+| Total Recorded Runs | 375 |
+| Total Runs (Counted) | 305 |
 | Non-counted Runs | 70 |
-| Total Checks | 2576 |
-| Passed | 2479 |
-| Failed | 88 |
-| Completed Items | 368 |
-| Pending Items | 0 |
+| Total Checks | 2591 |
+| Passed | 2493 |
+| Failed | 89 |
+| Completed Items | 369 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 20 |
 | Expert Domains Tracked | 11 |
-| Expert Open Gaps | 1 |
-| Completion Rate | 100% |
-| Last Counted Run | QA-20260430-0376 (2026-04-29T20:55:55.746Z) |
-| Latest Recorded Run | QA-20260430-0376 (2026-04-29T20:55:55.746Z) |
+| Expert Open Gaps | 2 |
+| Completion Rate | 99.73% |
+| Last Counted Run | QA-20260430-0377 (2026-04-30T05:14:43.053Z) |
+| Latest Recorded Run | QA-20260430-0377 (2026-04-30T05:14:43.053Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,12 +34,13 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260430-0376 (2026-04-29T20:55:55.746Z)
+Latest run: QA-20260430-0377 (2026-04-30T05:14:43.053Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
+| Frontend UX Quality Reviewer | partially-appropriate | yes | Deploy the anchor reset specificity fix and re-run Vercel Playwright dashboard navigation contrast QA. |
+| Test Automation Architect | appropriate | no | - |
+| DevOps / SRE Engineer | partially-appropriate | yes | Run the GitLab deploy path after local gates, then verify deployment SHA and Vercel UI. |
 
 ## Usage Checks (Latest Run)
 
@@ -49,16 +50,16 @@ Latest run: QA-20260430-0376 (2026-04-29T20:55:55.746Z)
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-28T20:55:55.746Z -> 2026-04-29T20:55:55.746Z (24h)
-- Runs with observations: 9 recorded / 9 counted
-- Samples: 12
+- Window: 2026-04-29T05:14:43.053Z -> 2026-04-30T05:14:43.053Z (24h)
+- Runs with observations: 8 recorded / 8 counted
+- Samples: 11
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Supervisor Agent | cloud-run-supervisor | 3 | 19726ms | 48818ms | 624ms | 732ms | 19067ms | 48818ms | QA-20260429-0368 |
 | Cloud Run AI | multi-provider-fallback | 1 | 17606ms | 17606ms | 751ms | 751ms | 18276ms | 18276ms | QA-20260429-0370 |
 | Cloud Run AI | cerebras | 2 | 7795ms | 14892ms | 414ms | 459ms | 8322ms | 15903ms | QA-20260430-0376 |
 | Cloud Run AI | cloud-run-supervisor | 4 | 7962ms | 11803ms | 1069ms | 1242ms | 6585ms | 10936ms | QA-20260430-0374 |
+| Supervisor Agent | cloud-run-supervisor | 2 | 5181ms | 7695ms | 624ms | 732ms | 4192ms | 6837ms | QA-20260429-0368 |
 | Cloud Run AI | deterministic-grounding | 2 | 2284ms | 2418ms | 795ms | 1129ms | 3295ms | 3554ms | QA-20260429-0370 |
 
 ## Coverage (Latest Run)
@@ -66,10 +67,10 @@ Latest run: QA-20260430-0376 (2026-04-29T20:55:55.746Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_CB3LGcG3bvz6yPWw7Fu6UB1jM3h8 / SHA cd4e0332
-- Coverage Packs: dashboard-core, ai-core
-- Covered Surfaces: /dashboard, AI sidebar, Cloud Tasks async job stream, Cloud Run AI Engine deterministic fallback
-- Skipped Surfaces: login, modal-detail-pack, observability-pack
+- Deployment: dpl_8Ho8hZP5LY1pEMq1oMDvbZqa6Yjs / SHA 9e9824ca
+- Coverage Packs: core-routes-smoke, dashboard-core, modal-detail-pack
+- Covered Surfaces: Vercel / landing render and system start, Vercel /api/version v8.11.69 commit 9e9824ca69cd8ff9749e42a388eb981a297585ae, Vercel /api/health and /api/health?service=ai, Vercel /dashboard app shell, Vercel /dashboard/servers, Vercel /dashboard/servers/cache-redis-dc1-01, Vercel server detail tabs: overview, performance, logs/network, Vercel /dashboard/alerts, Vercel /dashboard/logs, Vercel /dashboard/topology, Vercel legacy /dashboard?serverId=cache-redis-dc1-01 redirect, Local fix verification for dashboard navigation contrast
+- Skipped Surfaces: AI sidebar real chat, observability-pack, Cloud Run admin monitoring
 
 ## Links (Latest Run)
 
@@ -81,17 +82,19 @@ Latest run: QA-20260430-0376 (2026-04-29T20:55:55.746Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | AI sidebar explicit server summary result | `reports/qa/evidence/qa-20260430-v81168-explicit-server-summary.png` | - |
-| playwright-network | Job metadata and provider attempts | `reports/qa/evidence/qa-20260430-v81168-explicit-server-summary-job.json` | - |
+| playwright-screenshot | Vercel v8.11.69 dashboard nav contrast regression | `reports/qa/evidence/qa-20260430-v81169-nav-contrast-regression.png` | - |
+| playwright-screenshot | Local dashboard nav contrast fixed | `reports/qa/evidence/qa-20260430-local-nav-contrast-fixed.png` | - |
 
 ## Expert Domain Open Gaps
 
-- frontend-ux-quality: Frontend UX Quality Reviewer (last QA-20260430-0374)
-  next: Show user-facing response details inline in the assistant answer even when analysis metadata exists.
+- frontend-ux-quality: Frontend UX Quality Reviewer (last QA-20260430-0377)
+  next: Deploy the anchor reset specificity fix and re-run Vercel Playwright dashboard navigation contrast QA.
+- sre-devops: DevOps / SRE Engineer (last QA-20260430-0377)
+  next: Run the GitLab deploy path after local gates, then verify deployment SHA and Vercel UI.
 
 ## Pending Improvements
 
-- None
+- [P1] dashboard-nav-contrast-production: Vercel production dashboard left navigation text contrast regression (seen 1회, last QA-20260430-0377)
 
 ## Deferred Improvements
 
@@ -292,6 +295,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - dashboard-health-v880-recheck: 프로덕션 대시보드 및 Health API 재검증 (completed 5회, last QA-20260309-0068)
 - dashboard-log-alert-filter-wrapping: Dashboard log and alert filter/wrapping hardening (completed 1회, last QA-20260429-0362)
 - dashboard-modal-light-shells: Dashboard modal light-mode shell alignment (completed 1회, last QA-20260429-0362)
+- dashboard-nav-anchor-reset-local-fix: Global anchor reset no longer overrides Tailwind text utility colors in local build (completed 1회, last QA-20260430-0377)
 - dashboard-otel-static-labels: Dashboard OTel static data labels aligned with Vercel public 24h rotation (completed 1회, last QA-20260429-0362)
 - dashboard-page-dev-server-data-import-split: Avoid server-data graph import on dashboard dev path (completed 1회, last QA-20260420-0317)
 - dashboard-render: 대시보드 18서버 17온라인 1경고 (completed 1회, last QA-20260419-0306)
@@ -536,6 +540,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260430-0377 | 2026-04-30T05:14:43.053Z | targeted | yes | yes | Vercel Playwright QA - v8.11.69 Dashboard Navigation Contrast | 15 | 1 | 1 | 0 | 0 | 2 |
 | QA-20260430-0376 | 2026-04-29T20:55:55.746Z | targeted | yes | yes | Vercel Playwright QA - v8.11.68 Explicit Server Summary | 6 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260430-0375 | 2026-04-29T19:26:27.989Z | targeted | yes | yes | curl smoke - v8.11.64 Cloud Run /health redis circuit schema | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260430-0374 | 2026-04-29T18:53:53.244Z | targeted | yes | yes | Vercel Playwright targeted QA - v8.11.64 AI alert-status advisory rerun | 10 | 1 | 0 | 0 | 1 | 1 |
@@ -555,4 +560,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260429-0360 | 2026-04-28T16:57:31.077Z | targeted | yes | yes | v8.11.57 AI Assistant UX Polish Production QA | 18 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260429-0359 | 2026-04-28T15:49:12.787Z | targeted | yes | yes | v8.11.54 Release Production Smoke | 14 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260428-0358 | 2026-04-28T13:24:51.649Z | targeted | yes | yes | Cloud Tasks Job Queue production smoke - v8.11.52 | 10 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260428-0357 | 2026-04-28T06:41:22.936Z | targeted | yes | yes | AI Assistant Vercel production Playwright MCP QA - v8.11.46 | 9 | 1 | 0 | 0 | 1 | 1 |
