@@ -23,7 +23,18 @@ vi.mock('next/dynamic', () => ({
     _loader: unknown,
     options?: { loading?: () => React.ReactNode }
   ) => {
-    function MockDynamicComponent() {
+    function MockDynamicComponent(props: { onToggleAgent?: () => void }) {
+      if (typeof props.onToggleAgent === 'function') {
+        return React.createElement(
+          'button',
+          {
+            type: 'button',
+            onClick: props.onToggleAgent,
+          },
+          '테스트 AI 토글'
+        );
+      }
+
       return React.createElement(
         React.Fragment,
         null,
@@ -308,6 +319,41 @@ describe('DashboardInteractiveShell', () => {
     await waitFor(() => {
       expect(mockAIEntryController.closeSidebar).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it('keeps the AI sidebar open when reopened from a directly loaded AI page', async () => {
+    mockAIEntryController.isOpen = false;
+    const { default: DashboardInteractiveShell } = await import(
+      './DashboardInteractiveShell'
+    );
+
+    const props = {
+      dashboardView: 'ai-assistant',
+      initialServers: [],
+      initialTimeInfo: undefined,
+      initialDataSourceInfo: null,
+      initialFocusServerId: null,
+      isMounted: true,
+      canToggleAI: true,
+      userType: 'github',
+      isGuestFullAccess: false,
+    } as const;
+
+    const { rerender } = render(
+      React.createElement(DashboardInteractiveShell, props)
+    );
+
+    expect(mockAIEntryController.closeSidebar).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole('button', { name: '테스트 AI 토글' }));
+
+    expect(triggerAIWarmup).toHaveBeenCalledWith('ai-sidebar-open');
+    expect(mockAIEntryController.toggleSidebar).toHaveBeenCalledTimes(1);
+
+    mockAIEntryController.isOpen = true;
+    rerender(React.createElement(DashboardInteractiveShell, props));
+
+    expect(mockAIEntryController.closeSidebar).not.toHaveBeenCalled();
   });
 
   it('opens and closes the mobile dashboard navigation drawer', async () => {

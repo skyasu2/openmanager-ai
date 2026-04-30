@@ -322,11 +322,20 @@ export default function DashboardInteractiveShell({
     }
 
     if (!isAgentOpen) {
+      if (dashboardView === 'ai-assistant') {
+        hasClosedAgentForAIPageRef.current = true;
+      }
       void triggerAIWarmup('ai-sidebar-open');
     }
 
     toggleSidebar();
-  }, [canToggleAI, isAgentOpen, isGuestFullAccess, toggleSidebar]);
+  }, [
+    canToggleAI,
+    dashboardView,
+    isAgentOpen,
+    isGuestFullAccess,
+    toggleSidebar,
+  ]);
 
   const closeAgent = useCallback(() => {
     closeSidebar();
