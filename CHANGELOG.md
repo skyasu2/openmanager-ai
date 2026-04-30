@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.76](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.75...v8.11.76) (2026-04-30)
+
+
+### Features
+
+* **ai-engine:** implement cerebras llama runtime policy ([d1e70b6](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d1e70b60e664194c576b5ee3c9c9b15af2e5cc7e))
+
+
+### Chores
+
+* **ai-engine:** pin cerebras deploy env ([1abfed8](https://gitlab.com/skyasu2/openmanager-ai/-/commit/1abfed84fbc1178d77a553961782f3ea11d2b57d))
+
+
+### Tests
+
+* **qa:** record v8.11.75 ai page sidebar qa ([5cbca0f](https://gitlab.com/skyasu2/openmanager-ai/-/commit/5cbca0fa4dff307d20e9cb4740546d3e87fb360f))
+* **spec:** cerebras runtime model add failing policy specs ([ccfd909](https://gitlab.com/skyasu2/openmanager-ai/-/commit/ccfd90933a222e425e7249517c81b1a8e5467440))
+
 ## [8.11.75](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.74...v8.11.75) (2026-04-30)
 
 
