@@ -2,11 +2,9 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { getSupabaseConfig } from '../../lib/config-parser';
 import { logger } from '../../lib/logger';
 import type {
-  ApprovalDecision,
   ApprovalHistoryOptions,
   ApprovalHistoryRecord,
   ApprovalHistoryStats,
-  PendingApproval,
 } from './approval-store-types';
 
 let supabaseClient: SupabaseClient | null = null;
@@ -35,79 +33,6 @@ function getSupabaseClient(): SupabaseClient | null {
     supabaseInitFailed = true;
     logger.error('[Approval] Supabase init failed:', error);
     return null;
-  }
-}
-
-export function hasApprovalHistoryPersistence(): boolean {
-  return getSupabaseClient() !== null;
-}
-
-export async function persistApprovalPending(
-  approval: Omit<PendingApproval, 'expiresAt'>,
-  expiresAt: Date
-): Promise<void> {
-  const supabase = getSupabaseClient();
-  if (!supabase) {
-    return;
-  }
-
-  try {
-    await supabase.from('approval_history').insert({
-      session_id: approval.sessionId,
-      action_type: approval.actionType,
-      description: approval.description,
-      payload: approval.payload,
-      requested_by: approval.requestedBy,
-      requested_at: approval.requestedAt.toISOString(),
-      expires_at: expiresAt.toISOString(),
-      status: 'pending',
-    });
-    logger.info(`[Approval] Persisted to PostgreSQL: ${approval.sessionId}`);
-  } catch (error) {
-    logger.error('[Approval] PostgreSQL persist failed:', error);
-  }
-}
-
-export async function persistApprovalDecision(
-  sessionId: string,
-  decision: ApprovalDecision
-): Promise<void> {
-  const supabase = getSupabaseClient();
-  if (!supabase) {
-    return;
-  }
-
-  try {
-    await supabase
-      .from('approval_history')
-      .update({
-        status: decision.approved ? 'approved' : 'rejected',
-        decided_by: decision.decidedBy,
-        decided_at: decision.decidedAt.toISOString(),
-        reason: decision.reason,
-      })
-      .eq('session_id', sessionId)
-      .eq('status', 'pending');
-    logger.info(`[Approval] Decision persisted: ${sessionId}`);
-  } catch (error) {
-    logger.error('[Approval] PostgreSQL decision update failed:', error);
-  }
-}
-
-export async function markApprovalExpired(sessionId: string): Promise<void> {
-  const supabase = getSupabaseClient();
-  if (!supabase) {
-    return;
-  }
-
-  try {
-    await supabase
-      .from('approval_history')
-      .update({ status: 'expired' })
-      .eq('session_id', sessionId)
-      .eq('status', 'pending');
-  } catch (error) {
-    logger.warn(`[Approval] PostgreSQL expiry update failed for ${sessionId}:`, error);
   }
 }
 

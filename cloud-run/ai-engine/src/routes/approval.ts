@@ -13,7 +13,10 @@
 
 import { Hono } from 'hono';
 import type { Context } from 'hono';
-import { approvalStore } from '../services/approval/approval-store';
+import {
+  fetchApprovalHistory,
+  fetchApprovalHistoryStats,
+} from '../services/approval/approval-store-supabase';
 import { handleApiError, jsonSuccess } from '../lib/error-handler';
 
 export const approvalRouter = new Hono();
@@ -28,7 +31,7 @@ approvalRouter.get('/history', async (c: Context) => {
     const limit = parseInt(c.req.query('limit') || '50', 10);
     const offset = parseInt(c.req.query('offset') || '0', 10);
 
-    const history = await approvalStore.getHistory({
+    const history = await fetchApprovalHistory({
       status,
       actionType,
       limit,
@@ -59,7 +62,7 @@ approvalRouter.get('/history', async (c: Context) => {
 approvalRouter.get('/history/stats', async (c: Context) => {
   try {
     const days = parseInt(c.req.query('days') || '7', 10);
-    const stats = await approvalStore.getHistoryStats(days);
+    const stats = await fetchApprovalHistoryStats(days);
 
     if (stats === null) {
       return c.json({
