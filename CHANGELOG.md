@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.73](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.72...v8.11.73) (2026-04-30)
+
+
+### Bug Fixes
+
+* **dashboard:** close assistant on ai page hydration ([42852e2](https://gitlab.com/skyasu2/openmanager-ai/-/commit/42852e2c787bea3496d1a9cbc6cb6c5a54820cf0))
+
 ## [8.11.72](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.71...v8.11.72) (2026-04-30)
 
 
