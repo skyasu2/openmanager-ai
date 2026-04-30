@@ -5,19 +5,69 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
+import { useAISidebarStore } from '@/stores/useAISidebarStore';
 import { dashboardNavItems } from './dashboard-navigation.config';
 
 function DashboardNavLinks({
   pathname,
+  compact = false,
   onNavigate,
 }: {
   pathname: string;
+  compact?: boolean;
   onNavigate?: () => void;
 }) {
+  const itemClassName = (active: boolean) =>
+    cn(
+      'group/nav-item relative flex h-11 w-full items-center rounded-lg text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2',
+      compact
+        ? 'justify-center gap-0 px-0 group-hover/sidebar:justify-start group-hover/sidebar:gap-3 group-hover/sidebar:px-3'
+        : 'gap-3 px-3',
+      active
+        ? 'bg-blue-50 font-semibold text-blue-700 ring-1 ring-blue-100'
+        : 'font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+    );
+
+  const renderItemContent = (
+    item: (typeof dashboardNavItems)[number],
+    active: boolean
+  ) => {
+    const Icon = item.icon;
+
+    return (
+      <>
+        <span
+          aria-hidden="true"
+          className={cn(
+            'absolute top-2 bottom-2 left-0 w-0.5 rounded-r-full bg-blue-600 transition-opacity',
+            active ? 'opacity-100' : 'opacity-0'
+          )}
+        />
+        <Icon
+          className={cn(
+            'h-4 w-4 shrink-0 transition-colors',
+            active
+              ? 'text-blue-600'
+              : 'text-slate-500 group-hover/nav-item:text-slate-700'
+          )}
+          aria-hidden="true"
+        />
+        <span
+          className={cn(
+            'min-w-0 whitespace-nowrap transition-[width,opacity] duration-150',
+            compact &&
+              'w-0 overflow-hidden opacity-0 group-hover/sidebar:w-auto group-hover/sidebar:opacity-100'
+          )}
+        >
+          {item.label}
+        </span>
+      </>
+    );
+  };
+
   return (
     <nav aria-label="대시보드 내비게이션" className="space-y-1">
       {dashboardNavItems.map((item) => {
-        const Icon = item.icon;
         const active = item.match(pathname);
 
         return (
@@ -26,16 +76,11 @@ function DashboardNavLinks({
             href={item.href}
             prefetch={false}
             onClick={onNavigate}
+            aria-label={item.label}
             aria-current={active ? 'page' : undefined}
-            className={cn(
-              'flex h-11 items-center gap-3 rounded-lg px-3 text-sm font-semibold transition-colors',
-              active
-                ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-100'
-                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-            )}
+            className={itemClassName(active)}
           >
-            <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
-            <span>{item.label}</span>
+            {renderItemContent(item, active)}
           </Link>
         );
       })}
@@ -43,9 +88,15 @@ function DashboardNavLinks({
   );
 }
 
-export function DashboardNavigation() {
+export function DashboardNavigation({
+  isAIAssistantOpen = false,
+}: {
+  isAIAssistantOpen?: boolean;
+}) {
   const pathname = usePathname() || '/dashboard';
   const [mobileOpen, setMobileOpen] = useState(false);
+  const isSidebarStoreOpen = useAISidebarStore((state) => state.isOpen);
+  const isCompact = isAIAssistantOpen || isSidebarStoreOpen;
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: close mobile drawer on route change
   useEffect(() => {
@@ -54,20 +105,27 @@ export function DashboardNavigation() {
 
   return (
     <>
-      <aside className="hidden w-56 shrink-0 border-r border-slate-200 bg-white px-3 py-4 shadow-xs lg:block">
-        <DashboardNavLinks pathname={pathname} />
+      <aside
+        className={cn(
+          'group/sidebar hidden h-dvh shrink-0 overflow-x-hidden overflow-y-auto border-r border-slate-200 bg-white px-3 py-4 shadow-xs transition-[width] duration-200 lg:block',
+          isCompact ? 'w-16 hover:w-56' : 'w-56'
+        )}
+      >
+        <DashboardNavLinks pathname={pathname} compact={isCompact} />
       </aside>
 
-      <div className="fixed top-3 left-3 z-50 lg:hidden">
-        <button
-          type="button"
-          onClick={() => setMobileOpen(true)}
-          aria-label="대시보드 메뉴 열기"
-          className="flex h-11 w-11 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 shadow-md"
-        >
-          <Menu className="h-5 w-5" aria-hidden="true" />
-        </button>
-      </div>
+      {!isCompact && (
+        <div className="fixed top-3 left-3 z-50 lg:hidden">
+          <button
+            type="button"
+            onClick={() => setMobileOpen(true)}
+            aria-label="대시보드 메뉴 열기"
+            className="flex h-11 w-11 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 shadow-md"
+          >
+            <Menu className="h-5 w-5" aria-hidden="true" />
+          </button>
+        </div>
+      )}
 
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
@@ -85,8 +143,8 @@ export function DashboardNavigation() {
           >
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <p className="text-sm font-bold text-slate-900">Dashboard</p>
-                <p className="text-xs text-slate-500">OpenManager</p>
+                <p className="text-sm font-bold text-slate-900">OpenManager</p>
+                <p className="text-xs text-slate-500">대시보드</p>
               </div>
               <button
                 type="button"

@@ -1,0 +1,195 @@
+{
+  "runId": "QA-20260430-0380",
+  "recordedAt": "2026-04-30T09:14:16.317Z",
+  "recordedAtKst": "2026-04-30 18:14:16 KST",
+  "runTitle": "Dashboard AI app-shell navigation targeted QA",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://localhost:3000",
+    "frontend": "Next.js dev server",
+    "backend": "not exercised for AI generation",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "a370da0bd9894832c935464e98999224707f2d37"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/dashboard desktop app shell navigation",
+    "/dashboard AI sidebar open from top-right CTA",
+    "left side navigation rail collapse while AI sidebar is open",
+    "AI sidebar resize handle drag",
+    "AI sidebar fullscreen handoff to /dashboard/ai-assistant",
+    "/dashboard/ai-assistant embedded AI function page",
+    "AI sidebar auto-close on embedded AI page entry",
+    "AI sidebar top-right reopen on embedded AI page",
+    "/dashboard mobile header logo and AI CTA spacing"
+  ],
+  "skippedSurfaces": [
+    "Vercel production deployment validation: local changes are not deployed yet",
+    "AI backend streaming response quality: UI/navigation-only change",
+    "Cloud Run admin observability endpoints: out of scope"
+  ],
+  "checks": {
+    "total": 14,
+    "passed": 14,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Embedded dashboard AI assistant page",
+      "path": "reports/qa/evidence/qa-20260430-dashboard-ai-shell-local.png",
+      "note": "Local Playwright screenshot after /dashboard/ai-assistant embedded-page handoff with AI sidebar closed"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "dashboard-ai-left-nav-item-removal",
+      "title": "좌측 app shell navigation에서 AI 어시스턴트 항목 제거",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Playwright: desktop side nav contains 개요/서버/알림/로그/토폴로지만 노출",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-ai-sidebar-left-rail-collapse",
+      "title": "우측 AI 사이드바가 열릴 때 좌측 navigation rail 축소",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Playwright: AI sidebar open state에서 aside 64px, labels width 0/opacity 0",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-ai-sidebar-resizable",
+      "title": "AI 사이드바 사용자 resize 동작 검증",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Playwright drag: dialog width 720px -> 863px",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-ai-fullscreen-embedded-page",
+      "title": "AI 전체 화면을 별도 standalone 대신 dashboard embedded page로 통합",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Playwright: /dashboard/ai-assistant에서 Chat/Reporter/Analyst 기능 버튼 렌더링, standalone back chrome 미노출",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-ai-page-sidebar-autoclose-reopen",
+      "title": "AI 전체 페이지 진입 시 사이드바 자동 닫힘 및 상단 버튼 재열림",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Playwright: full handoff 후 dialog 0개, top-right CTA 재클릭 후 dialog open 및 URL 유지",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-mobile-header-ai-cta-spacing",
+      "title": "모바일 헤더 로고와 AI CTA 겹침 방지",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Playwright 390x844: logo rect right 262px, AI CTA left 273px, overlap false",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-ai-shell-targeted-vitest",
+      "title": "Dashboard/AI shell targeted Vitest suites pass",
+      "priority": "P2",
+      "evidence": "npx vitest run src/components/dashboard/shell/DashboardNavigation.test.tsx src/app/dashboard/DashboardInteractiveShell.test.tsx src/components/ai/AIWorkspace.test.tsx src/components/ai-sidebar/AISidebarV4.test.tsx src/components/dashboard/DashboardHeader.test.tsx --config config/testing/vitest.config.dom.ts",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-ai-shell-type-check",
+      "title": "Root TypeScript type-check passes",
+      "priority": "P2",
+      "evidence": "npm run type-check",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-ai-shell-lint-changed",
+      "title": "Changed-file lint passes",
+      "priority": "P2",
+      "evidence": "npm run lint:changed",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-ai-shell-diff-check",
+      "title": "Patch whitespace check passes",
+      "priority": "P2",
+      "evidence": "git diff --check",
+      "note": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "No global KeyG/g keyboard handler found in dashboard or AI sidebar code paths; only Escape/Tab/Enter handlers were present in the searched app/component scope.",
+    "Browser QA reported 0 console errors. Console warnings were local dev/HMR diagnostics and not product runtime failures.",
+    "Vercel production QA is intentionally skipped for this run because these source changes have not been deployed."
+  ],
+  "links": []
+}

@@ -327,6 +327,24 @@ describe('AIWorkspace', () => {
     expect(screen.getByText('이상감지/예측')).toBeInTheDocument();
   });
 
+  it('renders dashboard embedded AI function page without standalone workspace chrome', () => {
+    render(<AIWorkspace embedded />);
+
+    expect(
+      screen.getByRole('button', { name: /AI Chat\s+NLQ Agent/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /장애 보고서\s+Reporter Agent/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /이상감지\/예측\s+Analyst Agent/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: '대시보드로 돌아가기' })
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('AI Engine Active')).not.toBeInTheDocument();
+  });
+
   it('hands off the mobile fullscreen route to the dashboard sidebar', async () => {
     mockViewportMedia(true);
     const setOpen = vi.fn();

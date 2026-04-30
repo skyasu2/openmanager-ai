@@ -17,7 +17,7 @@ const UnifiedProfileHeader = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-10 w-28 animate-pulse rounded-full bg-gray-200" />
+      <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 sm:w-28" />
     ),
   }
 );
@@ -145,10 +145,10 @@ const DashboardHeader = memo(function DashboardHeader({
       suppressHydrationWarning
       className="sticky top-0 z-40 border-b border-gray-200 bg-white shadow-xs"
     >
-      <div className="flex items-center justify-between px-4 py-4 sm:px-6">
+      <div className="flex items-center justify-between py-4 pr-4 pl-16 sm:pr-6 lg:px-6">
         {/* 왼쪽: 브랜드 로고 */}
-        <div className="flex min-w-0 items-center gap-4">
-          <OpenManagerLogo variant="light" href="/" />
+        <div className="flex min-w-0 flex-1 items-center gap-4 overflow-hidden pr-3">
+          <OpenManagerLogo variant="light" compactOnMobile href="/" />
         </div>
 
         {/* 중앙: 실시간 정보 + 세션 카운트다운 */}
@@ -160,7 +160,7 @@ const DashboardHeader = memo(function DashboardHeader({
         )}
 
         {/* 오른쪽: AI 어시스턴트 & 프로필 */}
-        <div className="flex shrink-0 items-center gap-2 sm:gap-4">
+        <div className="relative z-10 flex shrink-0 items-center gap-2 sm:gap-4">
           {/* 🔐 AI 어시스턴트 토글 버튼 - 항상 표시, 클릭 시 인증 체크 */}
           <AIAssistantButton
             isOpen={isSidebarOpen}

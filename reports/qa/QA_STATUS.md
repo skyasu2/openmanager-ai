@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-30 14:30:46 KST
+> Generated at: 2026-04-30 19:20:01 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 376 |
-| Total Runs (Counted) | 306 |
-| Non-counted Runs | 70 |
-| Total Checks | 2599 |
-| Passed | 2501 |
+| Total Recorded Runs | 380 |
+| Total Runs (Counted) | 309 |
+| Non-counted Runs | 71 |
+| Total Checks | 2630 |
+| Passed | 2532 |
 | Failed | 89 |
-| Completed Items | 370 |
+| Completed Items | 384 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 20 |
 | Expert Domains Tracked | 11 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260430-0378 (2026-04-30T05:30:46.057Z) |
-| Latest Recorded Run | QA-20260430-0378 (2026-04-30T05:30:46.057Z) |
+| Last Counted Run | QA-20260430-0382 (2026-04-30T10:20:01.475Z) |
+| Latest Recorded Run | QA-20260430-0382 (2026-04-30T10:20:01.475Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,43 +34,39 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260430-0378 (2026-04-30T05:30:46.057Z)
+Latest run: QA-20260430-0382 (2026-04-30T10:20:01.475Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| Frontend UX Quality Reviewer | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | vercel usage reported effective=19.0897 USD, billed=0.0000 USD for the current billing period after v8.11.70 deploy; no unexpected billed usage observed. |
+| - | - | - | - | - |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-29T05:30:46.057Z -> 2026-04-30T05:30:46.057Z (24h)
-- Runs with observations: 8 recorded / 8 counted
-- Samples: 11
+- Window: 2026-04-29T10:20:01.475Z -> 2026-04-30T10:20:01.475Z (24h)
+- Runs with observations: 6 recorded / 6 counted
+- Samples: 6
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Cloud Run AI | multi-provider-fallback | 1 | 17606ms | 17606ms | 751ms | 751ms | 18276ms | 18276ms | QA-20260429-0370 |
-| Cloud Run AI | cerebras | 2 | 7795ms | 14892ms | 414ms | 459ms | 8322ms | 15903ms | QA-20260430-0376 |
 | Cloud Run AI | cloud-run-supervisor | 4 | 7962ms | 11803ms | 1069ms | 1242ms | 6585ms | 10936ms | QA-20260430-0374 |
-| Supervisor Agent | cloud-run-supervisor | 2 | 5181ms | 7695ms | 624ms | 732ms | 4192ms | 6837ms | QA-20260429-0368 |
-| Cloud Run AI | deterministic-grounding | 2 | 2284ms | 2418ms | 795ms | 1129ms | 3295ms | 3554ms | QA-20260429-0370 |
+| NLQ Agent | cerebras | 1 | 5526ms | 5526ms | - | - | - | - | QA-20260430-0379 |
+| Cloud Run AI | cerebras | 1 | 698ms | 698ms | 369ms | 369ms | 740ms | 740ms | QA-20260430-0376 |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
+- Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: dpl_6tsZYhAwS2ze8WLpyEwLSL1eAa2J / SHA 4c90510c
-- Coverage Packs: core-routes-smoke, dashboard-core
-- Covered Surfaces: Vercel /api/version v8.11.70 commit 4c90510cfb29043aa868ae7234ebf74c584bf523, Vercel post-deploy smoke /, /validation, /api/version, Vercel /dashboard app shell, Dashboard left navigation active link computed color blue-700, Dashboard left navigation inactive link computed color slate-600, Dashboard server cards and resource summary remain rendered
-- Skipped Surfaces: AI sidebar real chat, modal-detail-pack, observability-pack, Cloud Run admin monitoring
+- Deployment: SHA a370da0b
+- Coverage Packs: dashboard-core, ai-core
+- Covered Surfaces: /dashboard mobile header at 390x844: no horizontal scroll and no logo/AI/login overlap, /dashboard mobile AI sidebar open: full-width dialog left 0/right viewport, dashboard menu trigger hidden, /dashboard desktop AI sidebar open: left side navigation collapses to 64px rail, /dashboard desktop AI sidebar resize handle: drag changed width from 680px to 840px, /dashboard/ai-assistant embedded AI workspace: sidebar auto-closed and page route rendered without dialog, browser console error check: 0 errors observed during targeted local QA
+- Skipped Surfaces: Vercel production validation: local UI/layout source verification only, AI backend streaming response quality: not required for app-shell layout overlap fix, Cloud Run admin observability endpoints: out of scope
 
 ## Links (Latest Run)
 
@@ -82,7 +78,7 @@ Latest run: QA-20260430-0378 (2026-04-30T05:30:46.057Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Vercel v8.11.70 dashboard nav contrast fixed | `reports/qa/evidence/qa-20260430-v81170-nav-contrast-fixed.png` | - |
+| playwright-screenshot | Mobile AI sidebar overlap fix screenshot | `reports/qa/evidence/qa-20260430-dashboard-mobile-overlap-fix.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -280,7 +276,17 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - cve-brace-expansion: brace-expansion CVE GHSA-f886-m6hf-6m8v 패치 (completed 1회, last QA-20260329-0194)
 - dashboard-15-servers: 대시보드 15대 서버 모니터링 정상 (completed 2회, last QA-20260314-0097)
 - dashboard-active-alerts: 활성 알림 모달 (completed 1회, last QA-20260317-0114)
+- dashboard-ai-fullscreen-embedded-page: AI 전체 화면을 별도 standalone 대신 dashboard embedded page로 통합 (completed 1회, last QA-20260430-0380)
+- dashboard-ai-left-nav-item-removal: 좌측 app shell navigation에서 AI 어시스턴트 항목 제거 (completed 1회, last QA-20260430-0380)
+- dashboard-ai-page-sidebar-autoclose-reopen: AI 전체 페이지 진입 시 사이드바 자동 닫힘 및 상단 버튼 재열림 (completed 1회, last QA-20260430-0380)
 - dashboard-ai-propagation-v81158: Dashboard OTel labels and mobile AI sidebar handoff deployed to production (completed 1회, last QA-20260429-0364)
+- dashboard-ai-shell-diff-check: Patch whitespace check passes (completed 1회, last QA-20260430-0380)
+- dashboard-ai-shell-lint-changed: Changed-file lint passes (completed 1회, last QA-20260430-0380)
+- dashboard-ai-shell-targeted-vitest: Dashboard/AI shell targeted Vitest suites pass (completed 1회, last QA-20260430-0380)
+- dashboard-ai-shell-type-check: Root TypeScript type-check passes (completed 1회, last QA-20260430-0380)
+- dashboard-ai-sidebar-desktop-resize-after-wrapper-removal: AI 사이드바 래퍼 제거 후 데스크톱 resize 동작 유지 (completed 1회, last QA-20260430-0382)
+- dashboard-ai-sidebar-left-rail-collapse: 우측 AI 사이드바가 열릴 때 좌측 navigation rail 축소 (completed 1회, last QA-20260430-0380)
+- dashboard-ai-sidebar-resizable: AI 사이드바 사용자 resize 동작 검증 (completed 1회, last QA-20260430-0380)
 - dashboard-client-lazy-shell-split: Split DashboardClient into auth wrapper and lazy interactive shell (completed 1회, last QA-20260420-0318)
 - dashboard-content-lazy-server-section: Lazy load ServerDashboard from DashboardContent (completed 1회, last QA-20260420-0318)
 - dashboard-dev-defer-heavy-subtree: Defer DashboardContent subtree during dev bootstrap (completed 1회, last QA-20260420-0317)
@@ -290,6 +296,10 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - dashboard-health-v880-quality-recheck: 프로덕션 대시보드/Health API 품질 재검증 (completed 1회, last QA-20260308-0059)
 - dashboard-health-v880-recheck: 프로덕션 대시보드 및 Health API 재검증 (completed 5회, last QA-20260309-0068)
 - dashboard-log-alert-filter-wrapping: Dashboard log and alert filter/wrapping hardening (completed 1회, last QA-20260429-0362)
+- dashboard-mobile-ai-open-menu-trigger-hidden: 모바일 AI 사이드바 오픈 시 좌측 대시보드 메뉴 버튼 겹침 방지 (completed 1회, last QA-20260430-0382)
+- dashboard-mobile-ai-sidebar-full-width-position: 모바일 AI 사이드바 이중 래퍼로 인한 우측 밀림 제거 (completed 1회, last QA-20260430-0382)
+- dashboard-mobile-header-ai-cta-spacing: 모바일 헤더 로고와 AI CTA 겹침 방지 (completed 1회, last QA-20260430-0380)
+- dashboard-mobile-header-overflow-fix: 모바일 대시보드 헤더 가로 overflow 및 버튼 겹침 해소 (completed 1회, last QA-20260430-0382)
 - dashboard-modal-light-shells: Dashboard modal light-mode shell alignment (completed 1회, last QA-20260429-0362)
 - dashboard-nav-anchor-reset-local-fix: Global anchor reset no longer overrides Tailwind text utility colors in production (completed 2회, last QA-20260430-0378)
 - dashboard-nav-contrast-production: Vercel production dashboard left navigation text contrast regression (completed 1회, last QA-20260430-0378)
@@ -537,6 +547,10 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260430-0382 | 2026-04-30T10:20:01.475Z | targeted | no | yes | Dashboard mobile overlap and AI sidebar local QA | 11 | 4 | 0 | 0 | 0 | 0 |
+| QA-20260430-0381 | 2026-04-30T09:32:32.544Z | targeted | no | no | Dashboard AI app-shell local Playwright rerun | 14 | 0 | 0 | 0 | 0 | 0 |
+| QA-20260430-0380 | 2026-04-30T09:14:16.317Z | targeted | no | yes | Dashboard AI app-shell navigation targeted QA | 14 | 10 | 0 | 0 | 0 | 0 |
+| QA-20260430-0379 | 2026-04-30T06:12:50.431Z | broad | yes | yes | Vercel Production QA v8.11.70 - Dashboard + AI 3-Feature + Cerebras Check | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260430-0378 | 2026-04-30T05:30:46.057Z | targeted | yes | yes | Vercel Playwright QA - v8.11.70 Dashboard Navigation Contrast Recheck | 8 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260430-0377 | 2026-04-30T05:14:43.053Z | targeted | yes | yes | Vercel Playwright QA - v8.11.69 Dashboard Navigation Contrast | 15 | 1 | 1 | 0 | 0 | 2 |
 | QA-20260430-0376 | 2026-04-29T20:55:55.746Z | targeted | yes | yes | Vercel Playwright QA - v8.11.68 Explicit Server Summary | 6 | 2 | 0 | 0 | 0 | 0 |
@@ -553,7 +567,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260429-0365 | 2026-04-29T04:25:34.157Z | targeted | yes | yes | Cloud Tasks Job Dispatch Fresh Browser Production Recheck - v8.11.58 | 14 | 1 | 0 | 0 | 1 | 1 |
 | QA-20260429-0364 | 2026-04-28T23:37:46.502Z | targeted | yes | yes | v8.11.58 Release Production Smoke | 22 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260429-0363 | 2026-04-28T18:49:16.063Z | targeted | no | no | Vercel Playwright MCP - Recent UI Change Propagation Check | 8 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260429-0362 | 2026-04-28T18:07:07.122Z | targeted | no | no | Dashboard Modal/Search Hardening Local QA | 11 | 3 | 0 | 0 | 0 | 0 |
-| QA-20260429-0361 | 2026-04-28T17:16:25.397Z | targeted | no | no | v8.11.57 AI Assistant UX Polish Recheck | 12 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260429-0360 | 2026-04-28T16:57:31.077Z | targeted | yes | yes | v8.11.57 AI Assistant UX Polish Production QA | 18 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260429-0359 | 2026-04-28T15:49:12.787Z | targeted | yes | yes | v8.11.54 Release Production Smoke | 14 | 2 | 0 | 0 | 0 | 0 |

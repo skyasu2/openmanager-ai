@@ -1,0 +1,60 @@
+{
+  "runId": "QA-20260430-0381",
+  "recordedAt": "2026-04-30T09:32:32.544Z",
+  "recordedAtKst": "2026-04-30 18:32:32 KST",
+  "runTitle": "Dashboard AI app-shell local Playwright rerun",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://localhost:3000",
+    "frontend": "Next.js dev server",
+    "backend": "not exercised for AI generation",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "a370da0bd9894832c935464e98999224707f2d37"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/dashboard desktop side navigation labels and contrast",
+    "/dashboard AI sidebar top-right open",
+    "left navigation rail collapse while AI sidebar is open",
+    "AI sidebar resize shrink and grow drag",
+    "AI fullscreen handoff to /dashboard/ai-assistant",
+    "/dashboard/ai-assistant auto-close and embedded page content",
+    "/dashboard/ai-assistant top-right AI sidebar reopen",
+    "/dashboard mobile header spacing",
+    "/dashboard mobile drawer navigation"
+  ],
+  "skippedSurfaces": [
+    "Vercel production validation: local source verification only",
+    "AI backend streaming response quality: not required for navigation/layout change",
+    "Cloud Run admin observability endpoints: out of scope"
+  ],
+  "checks": {
+    "total": 14,
+    "passed": 14,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Fresh local dev server started with npm run dev on port 3000 before Playwright MCP verification.",
+    "Initial all-in-one probe saw a transient dialog-count mismatch at 800ms after reopen; focused reproduction with 1600ms stabilization returned one AI sidebar dialog.",
+    "Initial resize probe started at persisted max width 960px, so grow-only drag could not increase. Focused bidirectional probe confirmed 960px -> 780px shrink and 780px -> 940px grow.",
+    "Desktop nav labels rendered in non-white oklch text, active font-weight 600 and inactive 500.",
+    "Pressing g on /dashboard did not mutate the URL and did not type into an app input.",
+    "Browser console errors observed during the rerun: 0. Local dev warnings were present but non-blocking."
+  ],
+  "links": []
+}

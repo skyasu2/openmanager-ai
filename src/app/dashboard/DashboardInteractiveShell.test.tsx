@@ -11,6 +11,12 @@ const triggerAIWarmup = vi.fn().mockResolvedValue(undefined);
 const ensureDataLoaded = vi.fn().mockResolvedValue(undefined);
 const debugLog = vi.fn();
 const debugError = vi.fn();
+const mockAIEntryController = vi.hoisted(() => ({
+  isOpen: false,
+  toggleSidebar: vi.fn(),
+  closeSidebar: vi.fn(),
+  openWithPrefill: vi.fn(),
+}));
 
 vi.mock('next/dynamic', () => ({
   default: (
@@ -57,12 +63,7 @@ vi.mock('next/navigation', () => ({
 }));
 
 vi.mock('@/hooks/ai/useAIEntryController', () => ({
-  useAIEntryController: () => ({
-    isOpen: false,
-    toggleSidebar: vi.fn(),
-    closeSidebar: vi.fn(),
-    openWithPrefill: vi.fn(),
-  }),
+  useAIEntryController: () => mockAIEntryController,
 }));
 
 vi.mock('@/hooks/useAutoLogout', () => ({
@@ -132,6 +133,10 @@ describe('DashboardInteractiveShell', () => {
     ensureDataLoaded.mockClear();
     debugLog.mockClear();
     debugError.mockClear();
+    mockAIEntryController.isOpen = false;
+    mockAIEntryController.toggleSidebar.mockClear();
+    mockAIEntryController.closeSidebar.mockClear();
+    mockAIEntryController.openWithPrefill.mockClear();
     delete (
       window as typeof window & {
         __openmanagerDashboardInteractiveShellDevEffects__?: unknown;
@@ -224,10 +229,53 @@ describe('DashboardInteractiveShell', () => {
       'href',
       '/dashboard/topology'
     );
-    expect(screen.getByRole('link', { name: 'AI 어시스턴트' })).toHaveAttribute(
-      'href',
-      '/dashboard/ai-assistant'
+    expect(
+      screen.queryByRole('link', { name: 'AI 어시스턴트' })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'AI 어시스턴트' })
+    ).not.toBeInTheDocument();
+  });
+
+  it('closes the AI sidebar once when entering the dashboard AI page', async () => {
+    mockAIEntryController.isOpen = true;
+    const { default: DashboardInteractiveShell } = await import(
+      './DashboardInteractiveShell'
     );
+
+    const { rerender } = render(
+      React.createElement(DashboardInteractiveShell, {
+        dashboardView: 'ai-assistant',
+        initialServers: [],
+        initialTimeInfo: undefined,
+        initialDataSourceInfo: null,
+        initialFocusServerId: null,
+        isMounted: true,
+        canToggleAI: true,
+        userType: 'github',
+        isGuestFullAccess: false,
+      })
+    );
+
+    await waitFor(() => {
+      expect(mockAIEntryController.closeSidebar).toHaveBeenCalledTimes(1);
+    });
+
+    rerender(
+      React.createElement(DashboardInteractiveShell, {
+        dashboardView: 'ai-assistant',
+        initialServers: [],
+        initialTimeInfo: undefined,
+        initialDataSourceInfo: null,
+        initialFocusServerId: null,
+        isMounted: true,
+        canToggleAI: true,
+        userType: 'github',
+        isGuestFullAccess: false,
+      })
+    );
+
+    expect(mockAIEntryController.closeSidebar).toHaveBeenCalledTimes(1);
   });
 
   it('opens and closes the mobile dashboard navigation drawer', async () => {

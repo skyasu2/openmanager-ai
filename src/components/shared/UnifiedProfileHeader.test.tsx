@@ -92,6 +92,26 @@ describe('UnifiedProfileHeader', () => {
     expect(mocks.useSystemStatus).toHaveBeenCalledWith({ enabled: false });
   });
 
+  it('비인증 모바일 헤더에서 로그인 버튼을 compact icon button으로 렌더링한다', () => {
+    mocks.useProfileAuth.mockReturnValue({
+      userInfo: null,
+      userType: 'unknown',
+      status: 'unauthenticated',
+      isLoading: false,
+      handleLogout: vi.fn(),
+      navigateToLogin: vi.fn(),
+      navigateToDashboard: vi.fn(),
+    });
+
+    render(<UnifiedProfileHeader />);
+
+    const loginButton = screen.getByTestId('login-button');
+    expect(loginButton).toHaveAttribute('aria-label', '로그인');
+    expect(loginButton).toHaveClass('w-10');
+    expect(loginButton).toHaveClass('sm:w-auto');
+    expect(screen.getByText('로그인')).toHaveClass('hidden');
+  });
+
   it('인증 상태에서는 /api/system 구독을 활성화한다', () => {
     mocks.useProfileAuth.mockReturnValue({
       userInfo: { id: 'u-1', name: 'Tester', email: 't@example.com' },

@@ -221,7 +221,7 @@ export default function DashboardRoutedContent({
         description="질의, Reporter, Analyst 기능을 한 화면에서 실행"
       >
         <div className="min-h-[680px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-          <AIWorkspace />
+          <AIWorkspace embedded />
         </div>
       </PageFrame>
     );

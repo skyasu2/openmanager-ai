@@ -59,4 +59,12 @@ describe('OpenManagerLogo', () => {
 
     expect(screen.getByRole('link')).toHaveAttribute('data-prefetch', 'true');
   });
+
+  it('모바일 compact 옵션은 좁은 앱 헤더용 크기 클래스를 적용한다', () => {
+    render(<OpenManagerLogo variant="light" href="/" compactOnMobile />);
+
+    const title = screen.getByRole('heading', { name: /OpenManager AI/ });
+    expect(title).toHaveClass('text-base');
+    expect(title).toHaveClass('sm:text-xl');
+  });
 });

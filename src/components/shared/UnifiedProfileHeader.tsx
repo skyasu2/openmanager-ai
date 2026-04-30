@@ -244,7 +244,7 @@ export default function UnifiedProfileHeader({
         className={`relative z-50 ${className}`}
         aria-hidden="true"
       >
-        <div className="h-12 w-32 animate-pulse rounded-full bg-gray-200" />
+        <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 sm:h-12 sm:w-32" />
       </div>
     );
   }
@@ -256,11 +256,12 @@ export default function UnifiedProfileHeader({
         <button
           type="button"
           onClick={navigateToLogin}
-          className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+          aria-label="로그인"
+          className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-sm font-medium text-white transition-colors hover:bg-blue-700 sm:w-auto sm:gap-2 sm:px-4"
           data-testid="login-button"
         >
           <User className="h-4 w-4" />
-          로그인
+          <span className="hidden sm:inline">로그인</span>
         </button>
       </div>
     );

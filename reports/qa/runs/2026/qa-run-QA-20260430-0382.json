@@ -1,0 +1,115 @@
+{
+  "runId": "QA-20260430-0382",
+  "recordedAt": "2026-04-30T10:20:01.475Z",
+  "recordedAtKst": "2026-04-30 19:20:01 KST",
+  "runTitle": "Dashboard mobile overlap and AI sidebar local QA",
+  "owner": "codex",
+  "source": "chrome-devtools-mcp",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://localhost:3000",
+    "frontend": "Next.js dev server",
+    "backend": "not exercised for AI generation",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "a370da0bd9894832c935464e98999224707f2d37"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "/dashboard mobile header at 390x844: no horizontal scroll and no logo/AI/login overlap",
+    "/dashboard mobile AI sidebar open: full-width dialog left 0/right viewport, dashboard menu trigger hidden",
+    "/dashboard desktop AI sidebar open: left side navigation collapses to 64px rail",
+    "/dashboard desktop AI sidebar resize handle: drag changed width from 680px to 840px",
+    "/dashboard/ai-assistant embedded AI workspace: sidebar auto-closed and page route rendered without dialog",
+    "browser console error check: 0 errors observed during targeted local QA"
+  ],
+  "skippedSurfaces": [
+    "Vercel production validation: local UI/layout source verification only",
+    "AI backend streaming response quality: not required for app-shell layout overlap fix",
+    "Cloud Run admin observability endpoints: out of scope"
+  ],
+  "checks": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Mobile AI sidebar overlap fix screenshot",
+      "path": "reports/qa/evidence/qa-20260430-dashboard-mobile-overlap-fix.png",
+      "note": "390x844 local browser viewport after AI sidebar open; dialog spans x=0..390 and dashboard menu trigger is hidden"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "dashboard-mobile-header-overflow-fix",
+      "title": "모바일 대시보드 헤더 가로 overflow 및 버튼 겹침 해소",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Chrome DevTools MCP 390x844: body/doc scrollWidth 390, AI CTA right 327px, login right 374px",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-mobile-ai-sidebar-full-width-position",
+      "title": "모바일 AI 사이드바 이중 래퍼로 인한 우측 밀림 제거",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Chrome DevTools MCP: opened dialog rect x=0 width=390 right=390",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-mobile-ai-open-menu-trigger-hidden",
+      "title": "모바일 AI 사이드바 오픈 시 좌측 대시보드 메뉴 버튼 겹침 방지",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Chrome DevTools MCP: AI sidebar open state에서 대시보드 메뉴 열기 버튼 count 0",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-ai-sidebar-desktop-resize-after-wrapper-removal",
+      "title": "AI 사이드바 래퍼 제거 후 데스크톱 resize 동작 유지",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Chrome DevTools MCP drag: dialog width 680px -> 840px",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Local dev server was restarted after clearing .next to avoid stale Turbopack bundles before browser QA.",
+    "Initial Playwright MCP probing identified mobile header overflow and mobile AI sidebar/menu overlap; Chrome DevTools MCP was used for final viewport/emulation measurements after the Playwright MCP page context closed.",
+    "Validation gates passed: npm run type-check, npm run lint, targeted Vitest suites (8 files / 47 tests), npm run test:quick, git diff --check.",
+    "Browser console errors observed during targeted QA: 0. Local development warnings were non-blocking."
+  ],
+  "links": []
+}
