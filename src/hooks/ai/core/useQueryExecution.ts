@@ -19,6 +19,7 @@ import {
 } from '@/lib/ai/utils/query-complexity';
 import { logger } from '@/lib/logging';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
+import type { JobDataSlot } from '@/types/ai-jobs';
 import type { HybridQueryState } from '../types/hybrid-query.types';
 import type { FileAttachment } from '../useFileAttachments';
 import {
@@ -44,6 +45,7 @@ interface AsyncJobRequestOptions {
   analysisMode?: AnalysisMode;
   enableRAG?: boolean;
   enableWebSearch?: boolean;
+  queryAsOfDataSlot?: JobDataSlot;
 }
 
 type SendMessageLike = (message: {
@@ -100,6 +102,7 @@ export interface QueryExecutionDeps {
   analysisMode?: AnalysisMode;
   ragEnabled?: boolean;
   webSearchEnabled?: boolean;
+  queryAsOfDataSlot?: JobDataSlot;
 }
 
 // ============================================================================
@@ -120,6 +123,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
     analysisMode,
     ragEnabled,
     webSearchEnabled,
+    queryAsOfDataSlot,
   } = deps;
 
   const getActiveRateLimitDetails =
@@ -324,6 +328,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
 
         const jobQueueOptions: AsyncJobRequestOptions = {
           ...(analysisMode && { analysisMode }),
+          ...(queryAsOfDataSlot && { queryAsOfDataSlot }),
           ...buildSourceToolRequestOptions({
             ragEnabled,
             webSearchEnabled,
@@ -494,6 +499,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
       analysisMode,
       ragEnabled,
       webSearchEnabled,
+      queryAsOfDataSlot,
     ]
   );
 

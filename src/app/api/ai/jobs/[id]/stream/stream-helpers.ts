@@ -9,6 +9,7 @@ import {
 } from '@/config/ai-proxy.config';
 import { getRedisTimeoutMs } from '@/config/redis-timeouts';
 import type { RedisJobProgress } from '@/types/ai-jobs';
+import type { ClientJobMetadata } from '../../job-metadata';
 
 // ============================================================================
 // Types
@@ -41,17 +42,7 @@ export interface JobResult {
     sourceType: string;
     category?: string;
   }>;
-  metadata?: {
-    traceId?: string;
-    handoffs?: Array<{ from: string; to: string; reason?: string }>;
-    toolResultSummaries?: Array<{
-      toolName: string;
-      label: string;
-      summary: string;
-      preview?: string;
-      status: 'completed' | 'failed';
-    }>;
-  };
+  metadata?: ClientJobMetadata;
   startedAt: string;
   completedAt?: string;
   processingTimeMs?: number;

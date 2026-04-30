@@ -9,6 +9,7 @@
 
 import { Activity, lazy, Suspense, useEffect, useState } from 'react';
 import type { AIAssistantFunction } from '@/components/ai/AIAssistantIconPanel';
+import type { JobDataSlot } from '@/types/ai-jobs';
 
 // 📦 Dynamic imports - only loaded when tab is first selected
 const AutoReportPage = lazy(
@@ -30,10 +31,12 @@ const LoadingSpinner = () => (
 
 interface AIContentAreaProps {
   selectedFunction: AIAssistantFunction;
+  queryAsOfDataSlot?: JobDataSlot;
 }
 
 export default function AIContentArea({
   selectedFunction,
+  queryAsOfDataSlot,
 }: AIContentAreaProps) {
   const [mountedTabs, setMountedTabs] = useState<Set<string>>(() => {
     if (selectedFunction === 'chat') {
@@ -65,7 +68,7 @@ export default function AIContentArea({
         >
           <div className="h-full" data-testid="auto-report-page">
             <Suspense fallback={<LoadingSpinner />}>
-              <AutoReportPage />
+              <AutoReportPage queryAsOfDataSlot={queryAsOfDataSlot} />
             </Suspense>
           </div>
         </Activity>
@@ -78,7 +81,9 @@ export default function AIContentArea({
         >
           <div className="h-full" data-testid="intelligent-monitoring-page">
             <Suspense fallback={<LoadingSpinner />}>
-              <IntelligentMonitoringPage />
+              <IntelligentMonitoringPage
+                queryAsOfDataSlot={queryAsOfDataSlot}
+              />
             </Suspense>
           </div>
         </Activity>

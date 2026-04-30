@@ -153,6 +153,7 @@ export const requestSchema = z.object({
   enableWebSearch: z.boolean().optional(),
   enableRAG: z.boolean().optional(),
   analysisMode: z.enum(['auto', 'thinking']).optional(),
+  queryAsOfDataSlot: z.unknown().optional(),
 });
 
 /**
@@ -166,6 +167,7 @@ export const requestSchemaLoose = z.object({
   enableWebSearch: z.boolean().optional(),
   enableRAG: z.boolean().optional(),
   analysisMode: z.enum(['auto', 'thinking']).optional(),
+  queryAsOfDataSlot: z.unknown().optional(),
 });
 
 // ============================================================================

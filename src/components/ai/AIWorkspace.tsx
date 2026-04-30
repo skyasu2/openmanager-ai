@@ -26,12 +26,14 @@ import { AIErrorBoundary } from '@/components/error/AIErrorBoundary';
 import { APP_VERSION } from '@/config/app-meta';
 import { useAIChatCore } from '@/hooks/ai/useAIChatCore';
 import { useAIChatSurface } from '@/hooks/ai/useAIChatSurface';
+import {
+  type PendingAIEntryState,
+  useAISidebarStore,
+} from '@/stores/useAISidebarStore';
 import { RealTimeDisplay } from '../dashboard/RealTimeDisplay';
 import { OpenManagerLogo } from '../shared/OpenManagerLogo';
 import UnifiedProfileHeader from '../shared/UnifiedProfileHeader';
-import AIAssistantIconPanel, {
-  type AIAssistantFunction,
-} from './AIAssistantIconPanel';
+import type { AIAssistantFunction } from './AIAssistantIconPanel';
 import AIContentArea from './AIContentArea';
 import { AIWorkspaceMessage } from './AIWorkspaceMessage';
 import SystemContextPanel from './SystemContextPanel';
@@ -54,6 +56,9 @@ const AI_ASSISTANT_LIGHT_THEME_TOKENS = {
   '--border': '214.3 31.8% 91.4%',
   '--input': '214.3 31.8% 91.4%',
 } as const;
+
+const MOBILE_WORKSPACE_MEDIA_QUERY = '(max-width: 767px)';
+const DASHBOARD_ROUTE = '/dashboard';
 
 function useAIAssistantLightTheme() {
   useEffect(() => {
@@ -97,9 +102,16 @@ interface AIWorkspaceProps {
 export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
+  const [isMobileHandoffActive, setIsMobileHandoffActive] = useState(false);
   const [isRightPanelOpen, setIsRightPanelOpen] = useState(true);
+  const mobileHandoffStartedRef = useRef(false);
 
   useAIAssistantLightTheme();
+
+  const openSidebar = useAISidebarStore((state) => state.setOpen);
+  const queuePendingEntryState = useAISidebarStore(
+    (state) => state.queuePendingEntryState
+  );
 
   useEffect(() => {
     setIsMounted(true);
@@ -120,6 +132,9 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
     pendingPrefillMessage,
     consumePendingPrefillMessage,
   } = useAIChatSurface();
+  const [workspaceQueryAsOfDataSlot, setWorkspaceQueryAsOfDataSlot] = useState(
+    pendingEntryState?.queryAsOfDataSlot
+  );
 
   const handleFunctionSelect = useCallback(
     (func: AIAssistantFunction) => {
@@ -131,20 +146,6 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
   const handleToggleRightPanel = useCallback(() => {
     setIsRightPanelOpen((prev) => !prev);
   }, []);
-
-  const renderMobileFunctionNav = () => (
-    <div
-      className="flex md:hidden shrink-0 border-b border-gray-200 bg-white px-4 pt-3"
-      data-testid="ai-workspace-mobile-function-nav"
-    >
-      <AIAssistantIconPanel
-        selectedFunction={selectedFunction}
-        onFunctionChange={setSelectedFunction}
-        isMobile
-        showFullscreenButton={false}
-      />
-    </div>
-  );
 
   // ============================================================================
   // 🎯 공통 AI 채팅 로직 (useAIChatCore 훅 사용)
@@ -193,11 +194,59 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
   } = useAIChatCore({
     // 전체화면에서도 세션 제한 적용 (악의적 사용/폭주 방지)
     disableSessionLimit: false,
+    queryAsOfDataSlot: workspaceQueryAsOfDataSlot,
   });
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (mobileHandoffStartedRef.current) {
+      return;
+    }
+
+    if (
+      typeof window === 'undefined' ||
+      typeof window.matchMedia !== 'function' ||
+      !window.matchMedia(MOBILE_WORKSPACE_MEDIA_QUERY).matches
+    ) {
+      return;
+    }
+
+    mobileHandoffStartedRef.current = true;
+
+    const sidebarEntry: PendingAIEntryState = {
+      ...(pendingEntryState ?? {}),
+      selectedFunction: pendingEntryState?.selectedFunction ?? selectedFunction,
+      analysisMode: pendingEntryState?.analysisMode ?? analysisMode,
+      target: 'sidebar',
+    };
+    const draft =
+      pendingEntryState?.draft ??
+      (selectedFunction === 'chat' ? input.trim() : undefined);
+
+    if (draft) {
+      sidebarEntry.draft = draft;
+    }
+
+    queuePendingEntryState(sidebarEntry);
+    openSidebar(true);
+    setIsMobileHandoffActive(true);
+    router.replace(DASHBOARD_ROUTE);
+  }, [
+    analysisMode,
+    input,
+    openSidebar,
+    pendingEntryState,
+    queuePendingEntryState,
+    router,
+    selectedFunction,
+  ]);
+
+  useEffect(() => {
+    if (mobileHandoffStartedRef.current) {
+      return;
+    }
+
     if (!pendingEntryState) {
       return;
     }
@@ -213,6 +262,8 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
       selectAnalysisMode(entry.analysisMode);
     }
 
+    setWorkspaceQueryAsOfDataSlot(entry.queryAsOfDataSlot);
+
     if (entry.draft) {
       setInput(entry.draft);
     }
@@ -225,6 +276,10 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
   ]);
 
   useEffect(() => {
+    if (mobileHandoffStartedRef.current) {
+      return;
+    }
+
     if (pendingEntryState) {
       return;
     }
@@ -251,6 +306,20 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
     return (
       <div className="flex h-full items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (isMobileHandoffActive) {
+    return (
+      <div
+        className="flex h-dvh w-full items-center justify-center bg-white px-6 text-center text-gray-700"
+        data-testid="ai-workspace-mobile-handoff"
+      >
+        <div className="space-y-3">
+          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+          <p className="text-sm font-medium">AI 사이드바로 전환 중입니다</p>
+        </div>
       </div>
     );
   }
@@ -381,34 +450,6 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
 
       {/* CENTER & RIGHT (Main Content) */}
       <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
-        {/* MOBILE HEADER - Only visible on small screens */}
-        <div className="flex md:hidden h-14 items-center justify-between border-b border-gray-200 bg-white px-4 shrink-0 shadow-xs">
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
-              title="뒤로 가기"
-            >
-              <ArrowLeftFromLine className="h-5 w-5" />
-            </button>
-            <OpenManagerLogo variant="light" showSubtitle={false} href="/" />
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={handleNewSession}
-              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-gray-200 bg-white p-2 text-gray-500 shadow-sm transition-colors hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
-              title="새 대화"
-            >
-              <Plus className="h-4 w-4" />
-            </button>
-            {/* 모바일 프로필 */}
-            <UnifiedProfileHeader />
-          </div>
-        </div>
-        {renderMobileFunctionNav()}
-
         {/* CENTER CONTENT */}
         <div className="flex flex-1 flex-col relative min-w-0">
           {/* 🎯 통합 헤더 (대시보드와 동일한 스타일) - Desktop Only */}
@@ -529,7 +570,10 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
                 mode={selectedFunction !== 'chat' ? 'visible' : 'hidden'}
               >
                 <div className="h-full p-0">
-                  <AIContentArea selectedFunction={selectedFunction} />
+                  <AIContentArea
+                    selectedFunction={selectedFunction}
+                    queryAsOfDataSlot={workspaceQueryAsOfDataSlot}
+                  />
                 </div>
               </Activity>
             </AIErrorBoundary>

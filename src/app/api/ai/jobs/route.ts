@@ -13,6 +13,7 @@ export const maxDuration = 30;
 
 import { randomUUID } from 'crypto';
 import { after, type NextRequest, NextResponse } from 'next/server';
+import { buildJobQueryAsOf } from '@/lib/ai/query-as-of';
 import {
   analyzeJobQueryComplexity,
   inferJobType,
@@ -32,6 +33,7 @@ import type {
   CreateJobRequest,
   CreateJobResponse,
   JobListResponse,
+  JobQueryAsOf,
   JobStatus,
   JobStatusResponse,
   TriggerStatus,
@@ -128,6 +130,10 @@ async function handlePOST(request: NextRequest) {
     // Job ID 생성
     const jobId = randomUUID();
     const now = new Date().toISOString();
+    const queryAsOf = buildJobQueryAsOf(
+      now,
+      options?.metadata?.queryAsOfDataSlot
+    );
 
     // Redis에 Job 저장
     const job: AIJob = {
@@ -148,6 +154,7 @@ async function handlePOST(request: NextRequest) {
         estimatedTime: complexity.estimatedTime,
         factors: complexity.factors,
         ownerKey,
+        queryAsOf,
         ...toolOptions,
       },
     };
@@ -197,7 +204,8 @@ async function handlePOST(request: NextRequest) {
                 jobType,
                 options?.sessionId,
                 toolOptions,
-                getRateLimitIdentity(request)
+                getRateLimitIdentity(request),
+                queryAsOf
               )
             ).status
           : initialTriggerStatus;
@@ -364,7 +372,8 @@ async function triggerWorker(
   type: string,
   sessionId?: string,
   toolOptions: JobToolOptions = {},
-  rateLimitIdentity?: string
+  rateLimitIdentity?: string,
+  queryAsOf?: JobQueryAsOf
 ): Promise<TriggerResult> {
   const cloudRunConfig = getRequiredCloudRunConfig();
 
@@ -397,6 +406,7 @@ async function triggerWorker(
         sessionId,
         type,
         ...toolOptions,
+        ...(queryAsOf && { queryAsOf }),
       }),
     });
 

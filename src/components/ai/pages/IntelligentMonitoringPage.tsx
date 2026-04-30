@@ -15,18 +15,158 @@
 import { BookOpen, Monitor, Play, RefreshCw, Server } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import AnalysisResultsCard from '@/components/ai/AnalysisResultsCard';
-import { createSystemAnalysisSummary } from '@/components/ai/analysis/system-summary';
 import { useServerQuery } from '@/hooks/useServerQuery';
+import { createQueryAsOf } from '@/lib/ai/query-as-of';
 import { logger } from '@/lib/logging';
+import type { JobDataSlot } from '@/types/ai-jobs';
 import type {
   AnalysisResponse,
   CloudRunAnalysisResponse,
+  MetricAnomalyResult,
+  MonitoringBatchAnalysisResponse,
+  MonitoringBatchRiskSignal,
+  MonitoringBatchServer,
   MultiServerAnalysisResponse,
   ServerAnalysisResult,
+  SystemAnalysisSummary,
 } from '@/types/intelligent-monitoring.types';
 import type { EnhancedServerMetrics } from '@/types/server';
 
-export default function IntelligentMonitoringPage() {
+interface IntelligentMonitoringPageProps {
+  queryAsOfDataSlot?: JobDataSlot;
+}
+
+function batchStatusToOverallStatus(
+  status: MonitoringBatchServer['status']
+): ServerAnalysisResult['overallStatus'] {
+  if (status === 'critical' || status === 'offline') {
+    return 'critical';
+  }
+  if (status === 'warning') {
+    return 'warning';
+  }
+  return 'online';
+}
+
+function riskSeverityToAnomalySeverity(
+  severity: MonitoringBatchRiskSignal['severity']
+): MetricAnomalyResult['severity'] {
+  return severity === 'critical' ? 'high' : 'medium';
+}
+
+function buildSnapshotAnomalyResults(
+  server: MonitoringBatchServer,
+  riskSignals: MonitoringBatchRiskSignal[]
+): Record<string, MetricAnomalyResult> {
+  return Object.fromEntries(
+    riskSignals
+      .filter((signal) => signal.serverId === server.id)
+      .map((signal) => [
+        signal.metric,
+        {
+          isAnomaly: true,
+          severity: riskSeverityToAnomalySeverity(signal.severity),
+          confidence: 0.9,
+          currentValue: signal.value,
+          threshold: {
+            upper: signal.threshold,
+            lower: 0,
+          },
+        },
+      ])
+  );
+}
+
+function createBatchSystemSummary(
+  batch: MonitoringBatchAnalysisResponse
+): SystemAnalysisSummary {
+  const healthyServers = batch.servers.filter(
+    (server) => server.status === 'online'
+  ).length;
+  const warningServers = batch.servers.filter(
+    (server) => server.status === 'warning'
+  ).length;
+  const criticalServers = batch.servers.filter(
+    (server) => server.status === 'critical' || server.status === 'offline'
+  ).length;
+
+  return {
+    totalServers: batch.servers.length,
+    healthyServers,
+    warningServers,
+    criticalServers,
+    overallStatus:
+      criticalServers > 0
+        ? 'critical'
+        : warningServers > 0
+          ? 'warning'
+          : 'online',
+    topIssues: batch.riskSignals.map((signal) => ({
+      serverId: signal.serverId,
+      serverName: signal.serverName,
+      metric: signal.metric,
+      severity: riskSeverityToAnomalySeverity(signal.severity),
+      currentValue: signal.value,
+      confidence: 0.9,
+      threshold: {
+        upper: signal.threshold,
+        lower: 0,
+      },
+      reason: `${signal.metric} ${Math.round(signal.value)}% >= ${signal.threshold}%`,
+      recommendation:
+        signal.severity === 'critical'
+          ? '즉시 원인 프로세스와 최근 배포/배치 작업을 확인하세요.'
+          : '다음 10분 슬롯에서도 유지되는지 확인하고 여유 용량을 점검하세요.',
+    })),
+    predictions: [],
+  };
+}
+
+function adaptMonitoringBatchResponse(
+  batch: MonitoringBatchAnalysisResponse
+): MultiServerAnalysisResponse {
+  const timestamp = batch.queryAsOf || new Date().toISOString();
+  const servers: ServerAnalysisResult[] = batch.servers.map((server) => {
+    const anomalyResults = buildSnapshotAnomalyResults(
+      server,
+      batch.riskSignals
+    );
+    const anomalyCount = Object.keys(anomalyResults).length;
+
+    return {
+      success: true,
+      serverId: server.id,
+      serverName: server.name,
+      analysisType: 'full',
+      timestamp,
+      anomalyDetection: {
+        success: true,
+        serverId: server.id,
+        serverName: server.name,
+        anomalyCount,
+        hasAnomalies: anomalyCount > 0,
+        results: anomalyResults,
+        timestamp,
+        _algorithm: 'monitoring-snapshot-risk-signal',
+        _engine: batch._source ?? 'Monitoring Snapshot',
+        _cached: false,
+      },
+      overallStatus: batchStatusToOverallStatus(server.status),
+    };
+  });
+
+  return {
+    success: true,
+    isMultiServer: true,
+    timestamp,
+    servers,
+    summary: createBatchSystemSummary(batch),
+  };
+}
+
+export default function IntelligentMonitoringPage({
+  queryAsOfDataSlot,
+}: IntelligentMonitoringPageProps = {}) {
   // 서버 데이터 (React Query)
   const { data: servers = [] } = useServerQuery();
 
@@ -80,6 +220,7 @@ export default function IntelligentMonitoringPage() {
             analysisType: 'full',
             currentMetrics,
             enableRAG: ragEnabled,
+            queryAsOf: createQueryAsOf(queryAsOfDataSlot),
           }),
         });
 
@@ -132,14 +273,7 @@ export default function IntelligentMonitoringPage() {
         return null;
       }
     },
-    [ragEnabled]
-  );
-
-  // 종합 요약 생성 함수
-  const createSummary = useCallback(
-    (serverResults: ServerAnalysisResult[]) =>
-      createSystemAnalysisSummary(serverResults),
-    []
+    [ragEnabled, queryAsOfDataSlot]
   );
 
   // 분석 실행
@@ -166,61 +300,40 @@ export default function IntelligentMonitoringPage() {
         // 단일 서버도 CloudRunAnalysisResponse로 반환
         setResult(serverResult);
       } else {
-        // 전체 시스템 분석 (각 서버 순차 분석)
-        const targetServers =
-          servers.length > 0
-            ? servers
-            : [
-                { id: 'web-server-01', name: '웹 서버 01' },
-                { id: 'web-server-02', name: '웹 서버 02' },
-                { id: 'db-server-01', name: 'DB 서버 01' },
-                { id: 'api-server-01', name: 'API 서버 01' },
-              ];
+        // 전체 시스템 분석은 Cloud Run batch endpoint 1회 호출로 처리한다.
+        setProgress({ current: 0, total: 1 });
+        const response = await fetch('/api/ai/intelligent-monitoring', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'analyze_batch',
+            serverId: 'all',
+            analysisType: 'full',
+            enableRAG: ragEnabled,
+            queryAsOf: createQueryAsOf(queryAsOfDataSlot),
+          }),
+        });
 
-        setProgress({ current: 0, total: targetServers.length });
-
-        // 병렬 호출 (최대 5개 동시 실행으로 Cloud Run 부하 제어)
-        const CONCURRENCY_LIMIT = 5;
-        const serverResults: ServerAnalysisResult[] = [];
-        let completed = 0;
-
-        for (let i = 0; i < targetServers.length; i += CONCURRENCY_LIMIT) {
-          const batch = targetServers.slice(i, i + CONCURRENCY_LIMIT);
-          const batchPromises = batch.map((server) => {
-            if (!server) return Promise.resolve(null);
-            return analyzeSingleServer(
-              server.id,
-              server.name,
-              'hostname' in server
-                ? (server as unknown as EnhancedServerMetrics)
-                : undefined
+        if (!response.ok) {
+          if (response.status === 401) {
+            throw new Error(
+              '로그인이 필요합니다. 게스트 로그인 후 이용해주세요.'
             );
-          });
-
-          const batchResults = await Promise.all(batchPromises);
-          for (const result of batchResults) {
-            completed++;
-            setProgress({ current: completed, total: targetServers.length });
-            if (result) {
-              serverResults.push(result);
-            }
           }
+          throw new Error('전체 시스템 분석에 실패했습니다.');
         }
 
-        if (serverResults.length === 0) {
-          throw new Error('모든 서버 분석에 실패했습니다.');
+        const data = await response.json();
+        if (!data.success || !data.data) {
+          throw new Error('전체 시스템 분석에 실패했습니다.');
         }
 
-        // 다중 서버 응답 생성
-        const multiServerResult: MultiServerAnalysisResponse = {
-          success: true,
-          isMultiServer: true,
-          timestamp: new Date().toISOString(),
-          servers: serverResults,
-          summary: createSummary(serverResults),
-        };
-
-        setResult(multiServerResult);
+        setProgress({ current: 1, total: 1 });
+        setResult(
+          adaptMonitoringBatchResponse(
+            data.data as MonitoringBatchAnalysisResponse
+          )
+        );
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : '알 수 없는 오류');
@@ -228,7 +341,13 @@ export default function IntelligentMonitoringPage() {
       setIsAnalyzing(false);
       setProgress({ current: 0, total: 0 });
     }
-  }, [selectedServer, servers, analyzeSingleServer, createSummary]);
+  }, [
+    selectedServer,
+    servers,
+    analyzeSingleServer,
+    ragEnabled,
+    queryAsOfDataSlot,
+  ]);
 
   // 초기화
   const resetAnalysis = useCallback(() => {

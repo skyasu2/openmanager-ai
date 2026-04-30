@@ -50,7 +50,7 @@ function formatDataSourceLabel(
   const generatedAt = dataSourceInfo.catalogGeneratedAt
     ? `${dataSourceInfo.catalogGeneratedAt.slice(0, 16).replace('T', ' ')}Z`
     : 'unknown';
-  return `Dataset v${dataSourceInfo.scopeVersion} · catalog ${generatedAt}`;
+  return `24h rotating dataset v${dataSourceInfo.scopeVersion} · catalog ${generatedAt}`;
 }
 
 // 🎨 상태별 그라데이션 설정 (ImprovedServerCard와 통일)
@@ -286,7 +286,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
             </div>
             {dataSlotInfo && (
               <p className="mt-2 text-[11px] font-medium text-gray-500">
-                Synthetic OTel snapshot · {formatSlotLabel(dataSlotInfo)}
+                Vercel static OTel · {formatSlotLabel(dataSlotInfo)}
               </p>
             )}
             {dataSourceInfo && (

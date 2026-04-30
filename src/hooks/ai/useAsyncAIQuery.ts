@@ -35,6 +35,7 @@ import { logger } from '@/lib/logging';
 import { fetchWithRetry, RETRY_STANDARD } from '@/lib/utils/retry';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { RetrievalMetadata } from '@/types/ai/retrieval-status';
+import type { JobDataSlot } from '@/types/ai-jobs';
 import { createCSRFHeaders } from '@/utils/security/csrf-client';
 import {
   closeTrackedEventSource,
@@ -124,6 +125,7 @@ export interface AsyncQueryRequestOptions {
   analysisMode?: AnalysisMode;
   enableRAG?: boolean;
   enableWebSearch?: boolean;
+  queryAsOfDataSlot?: JobDataSlot;
 }
 
 // ============================================================================
@@ -302,6 +304,9 @@ export function useAsyncAIQuery(options: UseAsyncAIQueryOptions = {}) {
                       ...(typeof requestOptions?.enableWebSearch ===
                         'boolean' && {
                         enableWebSearch: requestOptions.enableWebSearch,
+                      }),
+                      ...(requestOptions?.queryAsOfDataSlot && {
+                        queryAsOfDataSlot: requestOptions.queryAsOfDataSlot,
                       }),
                     },
                   },

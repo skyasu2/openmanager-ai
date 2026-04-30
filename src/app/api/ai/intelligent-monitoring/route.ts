@@ -32,10 +32,47 @@ const IntelligentMonitoringRequestSchema = z
   .object({
     action: z.string().min(1),
     serverId: z.string().min(1),
+    analysisType: z.string().optional(),
     sessionId: z.string().optional(),
     analysisDepth: z.string().optional(),
   })
   .passthrough();
+
+function isBatchAnalysisRequest(action: string, serverId: string): boolean {
+  return action === 'analyze_batch' || serverId === 'all';
+}
+
+function readStringField(value: unknown, fallback: string): string {
+  return typeof value === 'string' && value.length > 0 ? value : fallback;
+}
+
+function readQueryAsOfSlot(value: unknown): string {
+  const slot = (value as { dataSlot?: { slotIndex?: unknown } } | null)
+    ?.dataSlot;
+  return typeof slot?.slotIndex === 'number'
+    ? String(slot.slotIndex)
+    : 'current';
+}
+
+function buildMonitoringCacheQuery(
+  body: z.infer<typeof IntelligentMonitoringRequestSchema>
+): string {
+  const action = body.action;
+  const serverId = body.serverId;
+  const analysisType = body.analysisType || body.analysisDepth || 'full';
+  const sourceMode = readStringField(body.sourceMode, 'default');
+  const querySlot = readQueryAsOfSlot(body.queryAsOf);
+  const ragMode = body.enableRAG === true ? 'rag-on' : 'rag-auto';
+
+  return [
+    `action=${action}`,
+    `server=${serverId}`,
+    `analysis=${analysisType}`,
+    `sourceMode=${sourceMode}`,
+    `slot=${querySlot}`,
+    ragMode,
+  ].join(':');
+}
 
 // MIGRATED: Removed export const runtime = "nodejs" (default)
 
@@ -71,8 +108,9 @@ async function postHandler(request: NextRequest) {
 
     const body = parsed.data;
     const { action, serverId } = body;
+    const analysisType = body.analysisType || body.analysisDepth || 'full';
     const sessionId = body.sessionId ?? `monitoring_${serverId}`;
-    const cacheQuery = `${action}:${serverId}:${body.analysisDepth || 'full'}`;
+    const cacheQuery = buildMonitoringCacheQuery(body);
 
     // 1. Cloud Run 활성화 확인
     if (!isCloudRunEnabled()) {
@@ -90,7 +128,9 @@ async function postHandler(request: NextRequest) {
       querySummary: `intelligent-monitoring:${action}:${serverId}`,
     });
 
-    const cloudRunPath = '/api/ai/analyze-server';
+    const cloudRunPath = isBatchAnalysisRequest(action, serverId)
+      ? '/api/ai/monitoring/analyze-batch'
+      : '/api/ai/analyze-server';
 
     debug.info(
       `[intelligent-monitoring] Proxying action '${action}' for ${serverId} to Cloud Run...`
@@ -111,7 +151,7 @@ async function postHandler(request: NextRequest) {
               method: 'POST',
               body: {
                 ...body,
-                analysisType: body.analysisDepth || 'full',
+                analysisType,
               },
               timeout: getDefaultTimeout('intelligent-monitoring'),
               endpoint: 'intelligent-monitoring',

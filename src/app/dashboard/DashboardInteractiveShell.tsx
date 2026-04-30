@@ -2,9 +2,18 @@
 
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
-import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import type { DashboardAlertContext } from '@/components/dashboard/alert-ai-context';
+import { DashboardNavigation } from '@/components/dashboard/shell/DashboardNavigation';
+import type { DashboardView } from '@/components/dashboard/types/dashboard-view.types';
 import { useAIEntryController } from '@/hooks/ai/useAIEntryController';
 import { useAutoLogout } from '@/hooks/useAutoLogout';
 import { useServerDashboard } from '@/hooks/useServerDashboard';
@@ -15,6 +24,7 @@ import type {
 } from '@/lib/dashboard/server-data';
 import { systemInactivityService } from '@/services/system/SystemInactivityService';
 import { useUnifiedAdminStore } from '@/stores/useUnifiedAdminStore';
+import type { JobDataSlot } from '@/types/ai-jobs';
 import type { Server } from '@/types/server';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
 import debug from '@/utils/debug';
@@ -53,6 +63,21 @@ function consumeDashboardDevEffect(key: DashboardDevEffectKey): boolean {
   return true;
 }
 
+function toJobDataSlot(
+  timeInfo: DashboardTimeInfo | undefined
+): JobDataSlot | undefined {
+  if (!timeInfo) return undefined;
+
+  const hours = String(Math.floor(timeInfo.minuteOfDay / 60)).padStart(2, '0');
+  const minutes = String(timeInfo.minuteOfDay % 60).padStart(2, '0');
+
+  return {
+    slotIndex: timeInfo.globalSlotIndex,
+    minuteOfDay: timeInfo.minuteOfDay,
+    timeLabel: `${hours}:${minutes} KST`,
+  };
+}
+
 const DashboardHeader = dynamic(
   () => import('@/components/dashboard/DashboardHeader'),
   {
@@ -76,6 +101,11 @@ const DashboardContent = dynamic(
   { ssr: false, loading: () => <ContentLoadingSkeleton /> }
 );
 
+const DashboardRoutedContent = dynamic(
+  () => import('@/components/dashboard/DashboardRoutedContent'),
+  { ssr: false, loading: () => <ContentLoadingSkeleton /> }
+);
+
 const AutoLogoutWarning = dynamic(
   () =>
     import('@/components/auth/AutoLogoutWarning').then(
@@ -93,6 +123,7 @@ const NotificationToast = dynamic(
 );
 
 type DashboardInteractiveShellProps = {
+  dashboardView?: DashboardView;
   initialServers?: Server[];
   initialTimeInfo?: DashboardTimeInfo;
   initialDataSourceInfo?: DashboardDataSourceInfo | null;
@@ -104,6 +135,7 @@ type DashboardInteractiveShellProps = {
 };
 
 export default function DashboardInteractiveShell({
+  dashboardView = 'overview',
   initialServers,
   initialTimeInfo,
   initialDataSourceInfo,
@@ -118,6 +150,10 @@ export default function DashboardInteractiveShell({
   const hasTriggeredDashboardWarmupRef = useRef(false);
   const hasPreloadedMetricsRef = useRef(false);
   const hasAutoStartedSystemRef = useRef(false);
+  const aiQueryAsOfDataSlot = useMemo(
+    () => toJobDataSlot(initialTimeInfo),
+    [initialTimeInfo]
+  );
   const [deferDashboardContent, setDeferDashboardContent] = useState(
     process.env.NODE_ENV === 'development'
   );
@@ -328,6 +364,7 @@ export default function DashboardInteractiveShell({
 
   return (
     <>
+      <DashboardNavigation />
       <div className="flex min-h-0 flex-1 flex-col">
         <DashboardHeader onToggleAgent={toggleAgent} />
 
@@ -336,30 +373,55 @@ export default function DashboardInteractiveShell({
             <ContentLoadingSkeleton />
           ) : (
             <Suspense fallback={<ContentLoadingSkeleton />}>
-              <DashboardContent
-                showSequentialGeneration={false}
-                servers={realServers}
-                allServers={allServers}
-                dataSlotInfo={initialTimeInfo}
-                dataSourceInfo={initialDataSourceInfo}
-                initialFocusServerId={initialFocusServerId}
-                totalServers={filteredTotal}
-                currentPage={currentPage}
-                totalPages={totalPages}
-                pageSize={pageSize}
-                onPageChange={setCurrentPage}
-                onPageSizeChange={changePageSize}
-                status={{ type: 'idle' }}
-                onStatsUpdate={handleStatsUpdate}
-                onShowSequentialChange={() => {}}
-                statusFilter={statusFilter}
-                onStatusFilterChange={setStatusFilter}
-                onAskAIAboutAlert={
-                  canToggleAI || isGuestFullAccess
-                    ? handleAskAIAboutAlert
-                    : undefined
-                }
-              />
+              {dashboardView === 'overview' ? (
+                <DashboardContent
+                  showSequentialGeneration={false}
+                  servers={realServers}
+                  allServers={allServers}
+                  dataSlotInfo={initialTimeInfo}
+                  dataSourceInfo={initialDataSourceInfo}
+                  initialFocusServerId={initialFocusServerId}
+                  totalServers={filteredTotal}
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  pageSize={pageSize}
+                  onPageChange={setCurrentPage}
+                  onPageSizeChange={changePageSize}
+                  status={{ type: 'idle' }}
+                  onStatsUpdate={handleStatsUpdate}
+                  onShowSequentialChange={() => {}}
+                  statusFilter={statusFilter}
+                  onStatusFilterChange={setStatusFilter}
+                  onAskAIAboutAlert={
+                    canToggleAI || isGuestFullAccess
+                      ? handleAskAIAboutAlert
+                      : undefined
+                  }
+                />
+              ) : (
+                <DashboardRoutedContent
+                  view={dashboardView}
+                  servers={realServers}
+                  allServers={allServers}
+                  dataSlotInfo={initialTimeInfo}
+                  dataSourceInfo={initialDataSourceInfo}
+                  initialFocusServerId={initialFocusServerId}
+                  totalServers={filteredTotal}
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  pageSize={pageSize}
+                  onPageChange={setCurrentPage}
+                  onPageSizeChange={changePageSize}
+                  onStatsUpdate={handleStatsUpdate}
+                  statusFilter={statusFilter}
+                  onStatusFilterChange={setStatusFilter}
+                  onAskAIAboutAlert={
+                    canToggleAI || isGuestFullAccess
+                      ? handleAskAIAboutAlert
+                      : undefined
+                  }
+                />
+              )}
             </Suspense>
           )}
         </div>
@@ -369,6 +431,7 @@ export default function DashboardInteractiveShell({
             isOpen={isAgentOpen}
             onClose={closeAgent}
             userType={userType}
+            queryAsOfDataSlot={aiQueryAsOfDataSlot}
           />
         )}
 

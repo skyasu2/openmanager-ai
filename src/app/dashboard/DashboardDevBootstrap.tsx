@@ -1,6 +1,7 @@
 'use client';
 
 import { type ComponentType, useEffect, useState } from 'react';
+import type { DashboardView } from '@/components/dashboard/types/dashboard-view.types';
 import type {
   DashboardDataSourceInfo,
   DashboardStats,
@@ -11,6 +12,7 @@ import DashboardLoading from './loading';
 
 type DashboardClientModule = {
   default: ComponentType<{
+    dashboardView?: DashboardView;
     initialServers?: Server[];
     initialStats?: DashboardStats;
     initialTimeInfo?: DashboardTimeInfo;
@@ -20,10 +22,12 @@ type DashboardClientModule = {
 };
 
 interface DashboardDevBootstrapProps {
+  dashboardView?: DashboardView;
   initialFocusServerId?: string | null;
 }
 
 export default function DashboardDevBootstrap({
+  dashboardView,
   initialFocusServerId,
 }: DashboardDevBootstrapProps) {
   const [DashboardClient, setDashboardClient] = useState<
@@ -48,5 +52,10 @@ export default function DashboardDevBootstrap({
     return <DashboardLoading />;
   }
 
-  return <DashboardClient initialFocusServerId={initialFocusServerId} />;
+  return (
+    <DashboardClient
+      dashboardView={dashboardView}
+      initialFocusServerId={initialFocusServerId}
+    />
+  );
 }

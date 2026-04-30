@@ -113,10 +113,10 @@ function isDevelopmentRuntime(): boolean {
 }
 
 /** 캐시가 유효한지 확인 */
-function isCacheValid(): boolean {
+function isCacheValid(ttlSeconds: number): boolean {
+  const ttlMs = ttlSeconds > 0 ? ttlSeconds * 1000 : HEALTH_CACHE_TTL;
   return (
-    healthCache.data !== null &&
-    Date.now() - healthCache.timestamp < HEALTH_CACHE_TTL
+    healthCache.data !== null && Date.now() - healthCache.timestamp < ttlMs
   );
 }
 
@@ -391,8 +391,14 @@ export async function GET(request: NextRequest) {
 
   // 3. Full system health check (default)
   try {
-    // 캐시된 응답이 있으면 즉시 반환 (60초 TTL)
-    if (isCacheValid() && healthCache.data) {
+    const cacheConfig = getHealthApiRuntimeConfig().cache;
+
+    // 캐시된 응답이 있으면 즉시 반환
+    if (
+      cacheConfig.enabled &&
+      isCacheValid(cacheConfig.ttl) &&
+      healthCache.data
+    ) {
       debug.log('📦 Health check cache hit');
       return NextResponse.json(
         {
@@ -404,14 +410,13 @@ export async function GET(request: NextRequest) {
         {
           headers: {
             'Content-Type': 'application/json',
-            'Cache-Control': 'public, max-age=60, stale-while-revalidate=30',
+            'Cache-Control': `public, max-age=${cacheConfig.ttl}, stale-while-revalidate=30`,
             'X-Cache': 'HIT',
           },
         }
       );
     }
 
-    const cacheConfig = getHealthApiRuntimeConfig().cache;
     const response = await healthCheckHandler(request);
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -422,15 +427,15 @@ export async function GET(request: NextRequest) {
       headers['Cache-Control'] =
         `public, max-age=${cacheConfig.ttl}, stale-while-revalidate=30`;
     } else {
-      headers['Cache-Control'] =
-        'public, max-age=60, stale-while-revalidate=30';
+      headers['Cache-Control'] = 'no-store';
     }
 
     const body = (await response.json()) as HealthRouteEnvelope;
 
-    // 캐시 업데이트
-    updateCache(body);
-    debug.log('📦 Health check cache updated');
+    if (cacheConfig.enabled) {
+      updateCache(body);
+      debug.log('📦 Health check cache updated');
+    }
 
     return NextResponse.json(body, { headers });
   } catch (error) {

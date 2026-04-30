@@ -109,13 +109,13 @@ export const MetricsTab: FC<MetricsTabProps> = ({
             실시간 메트릭 모니터링
           </h3>
 
-          <div className="flex items-center gap-3">
+          <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto sm:justify-end">
             {/* 뷰 모드 토글 */}
-            <div className="flex rounded-lg border border-gray-200 bg-gray-100 p-1">
+            <div className="flex shrink-0 rounded-lg border border-gray-200 bg-gray-100 p-1">
               <button
                 type="button"
                 onClick={() => setViewMode('simple')}
-                className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all ${
+                className={`flex min-h-9 items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all ${
                   viewMode === 'simple'
                     ? 'bg-white text-gray-900 shadow-sm'
                     : 'text-gray-500 hover:text-gray-700'
@@ -127,7 +127,7 @@ export const MetricsTab: FC<MetricsTabProps> = ({
               <button
                 type="button"
                 onClick={() => setViewMode('advanced')}
-                className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all ${
+                className={`flex min-h-9 items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all ${
                   viewMode === 'advanced'
                     ? 'bg-white text-gray-900 shadow-sm'
                     : 'text-gray-500 hover:text-gray-700'
@@ -142,7 +142,7 @@ export const MetricsTab: FC<MetricsTabProps> = ({
             <button
               type="button"
               onClick={onToggleRealtime}
-              className={`flex items-center gap-2 rounded-xl border px-5 py-2.5 font-semibold transition-all hover:scale-105 active:scale-95 ${
+              className={`flex min-h-10 items-center gap-2 whitespace-nowrap rounded-xl border px-4 py-2.5 font-semibold transition-colors active:scale-95 sm:px-5 ${
                 isRealtime
                   ? 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50'
                   : 'border-emerald-300 bg-white text-emerald-700 hover:bg-emerald-50'
@@ -181,10 +181,10 @@ export const MetricsTab: FC<MetricsTabProps> = ({
 
                   <div className="relative">
                     {/* 차트 헤더 */}
-                    <div className="mb-4 flex items-center justify-between">
-                      <div className="flex items-center gap-2">
+                    <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                      <div className="flex min-w-0 items-center gap-2">
                         <span className="text-2xl">{chart.icon}</span>
-                        <h4 className="font-bold text-gray-800">
+                        <h4 className="break-words font-bold text-gray-800">
                           {chart.label}
                         </h4>
                       </div>
@@ -268,19 +268,19 @@ export const MetricsTab: FC<MetricsTabProps> = ({
         {viewMode === 'advanced' && (
           <div className="space-y-6">
             {/* 컨트롤 패널 */}
-            <div className="flex flex-wrap items-center gap-4 rounded-xl border border-gray-200 bg-white p-4">
+            <div className="flex flex-wrap items-center gap-3 rounded-xl border border-gray-200 bg-white p-4 sm:gap-4">
               {/* 메트릭 선택 */}
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-gray-600">
+              <div className="flex min-w-0 flex-wrap items-center gap-2">
+                <span className="shrink-0 text-sm font-medium text-gray-600">
                   메트릭:
                 </span>
-                <div className="flex gap-1">
+                <div className="flex flex-wrap gap-1">
                   {METRIC_TYPES.map((m) => (
                     <button
                       type="button"
                       key={m}
                       onClick={() => setSelectedMetric(m)}
-                      className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-all ${
+                      className={`min-h-9 rounded-lg px-3 py-1.5 text-sm font-medium transition-all ${
                         selectedMetric === m
                           ? 'bg-blue-500 text-white'
                           : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -311,8 +311,8 @@ export const MetricsTab: FC<MetricsTabProps> = ({
               </div>
 
               {/* 토글 옵션 */}
-              <div className="flex items-center gap-4">
-                <label className="flex cursor-pointer items-center gap-2">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+                <label className="flex min-h-9 cursor-pointer items-center gap-2">
                   <input
                     type="checkbox"
                     checked={showPrediction}
@@ -322,7 +322,7 @@ export const MetricsTab: FC<MetricsTabProps> = ({
                   <span className="text-sm text-gray-600">예측</span>
                 </label>
 
-                <label className="flex cursor-pointer items-center gap-2">
+                <label className="flex min-h-9 cursor-pointer items-center gap-2">
                   <input
                     type="checkbox"
                     checked={showAnomalies}
@@ -338,7 +338,7 @@ export const MetricsTab: FC<MetricsTabProps> = ({
                 type="button"
                 onClick={() => refetchTimeSeries()}
                 disabled={timeSeriesLoading}
-                className="ml-auto rounded-lg bg-gray-100 px-3 py-1.5 text-sm text-gray-600 transition-colors hover:bg-gray-200 disabled:opacity-50"
+                className="min-h-9 rounded-lg bg-gray-100 px-3 py-1.5 text-sm text-gray-600 transition-colors hover:bg-gray-200 disabled:opacity-50 sm:ml-auto"
               >
                 {timeSeriesLoading ? '로딩...' : '새로고침'}
               </button>
@@ -346,14 +346,14 @@ export const MetricsTab: FC<MetricsTabProps> = ({
 
             {/* 시계열 차트 */}
             <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-lg">
-              <div className="mb-4 flex items-center justify-between">
-                <div className="flex items-center gap-2">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                <div className="flex min-w-0 flex-wrap items-center gap-2">
                   <TrendingUp className="h-5 w-5 text-blue-500" />
-                  <h4 className="font-bold text-gray-800">
+                  <h4 className="break-words font-bold text-gray-800">
                     {selectedMetric.toUpperCase()} 트렌드 분석
                   </h4>
                   {timeSeriesData && (
-                    <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
+                    <span className="max-w-full break-words rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
                       {timeSeriesData.serverName}
                     </span>
                   )}
@@ -424,15 +424,15 @@ export const MetricsTab: FC<MetricsTabProps> = ({
                     {timeSeriesData.anomalies.map((anomaly, i) => (
                       <div
                         key={i}
-                        className="flex items-center justify-between rounded-lg bg-white p-3"
+                        className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-white p-3"
                       >
-                        <div className="flex items-center gap-3">
+                        <div className="flex min-w-0 flex-wrap items-center gap-3">
                           <span
                             className={`rounded-full px-2 py-0.5 text-xs font-medium ${getAnomalySeverityBadgeClass(anomaly.severity)}`}
                           >
                             {anomaly.severity}
                           </span>
-                          <span className="text-sm text-gray-700">
+                          <span className="min-w-0 break-words text-sm text-gray-700">
                             {anomaly.description}
                           </span>
                         </div>

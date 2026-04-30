@@ -76,6 +76,7 @@ import {
   inferAIErrorDetailsFromMessage,
 } from '@/lib/ai/error-details';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
+import type { JobDataSlot } from '@/types/ai-jobs';
 import type {
   AIStreamStatus,
   HybridQueryState,
@@ -283,6 +284,7 @@ export function useHybridAIQuery(
     webSearchEnabled,
     ragEnabled,
     analysisMode,
+    queryAsOfDataSlot,
   } = options;
   const traceIdRef = useRef<string>(generateTraceId());
   const observabilityConfig = getObservabilityConfig();
@@ -295,6 +297,9 @@ export function useHybridAIQuery(
   const analysisModeRef = useRef<AnalysisMode | undefined>(
     analysisMode ?? undefined
   );
+  const queryAsOfDataSlotRef = useRef<JobDataSlot | undefined>(
+    queryAsOfDataSlot
+  );
   const warmingUpRef = useRef<boolean>(false);
   useEffect(() => {
     webSearchEnabledRef.current = webSearchEnabled ?? undefined;
@@ -305,6 +310,9 @@ export function useHybridAIQuery(
   useEffect(() => {
     analysisModeRef.current = analysisMode ?? undefined;
   }, [analysisMode]);
+  useEffect(() => {
+    queryAsOfDataSlotRef.current = queryAsOfDataSlot;
+  }, [queryAsOfDataSlot]);
   const apiEndpoint = customEndpoint ?? '/api/ai/supervisor/stream/v2';
   const sessionIdRef = useRef<string>(
     initialSessionId || generateMessageId('session')
@@ -357,6 +365,7 @@ export function useHybridAIQuery(
         webSearchEnabledRef,
         ragEnabledRef,
         analysisModeRef,
+        queryAsOfDataSlotRef,
       }),
     [apiEndpoint, observabilityConfig.traceIdHeader]
   );
@@ -394,6 +403,9 @@ export function useHybridAIQuery(
           const jobQueueOptions = {
             ...(analysisModeRef.current && {
               analysisMode: analysisModeRef.current,
+            }),
+            ...(queryAsOfDataSlotRef.current && {
+              queryAsOfDataSlot: queryAsOfDataSlotRef.current,
             }),
             ...buildSourceToolRequestOptions({
               webSearchEnabled: webSearchEnabledRef.current,
@@ -523,6 +535,7 @@ export function useHybridAIQuery(
     analysisMode,
     ragEnabled,
     webSearchEnabled,
+    queryAsOfDataSlot,
   });
   executeQueryRef.current = executeQuery;
   const {

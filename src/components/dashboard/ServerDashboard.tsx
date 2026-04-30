@@ -2,6 +2,7 @@
 
 import { Loader2 } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ImprovedServerCard from '@/components/dashboard/ImprovedServerCard';
 import ServerDashboardPaginationControls from '@/components/dashboard/ServerDashboardPaginationControls';
@@ -83,6 +84,7 @@ export default function ServerDashboard({
   onStatsUpdate: _onStatsUpdate, // Reserved for future stats callback
   onAskAI,
 }: ServerDashboardProps) {
+  const router = useRouter();
   // 🚀 성능 추적 활성화
   const performanceStats = usePerformanceTracking('ServerDashboard');
 
@@ -95,21 +97,10 @@ export default function ServerDashboard({
 
   const handleServerSelect = useCallback(
     (server: Server) => {
-      // allServers(폴링 데이터)에는 structuredLogs가 없으므로
-      // SSR initial servers에서 merge한다.
-      if (!server.structuredLogs) {
-        const ssrServer = servers.find((s) => s.id === server.id);
-        if (ssrServer?.structuredLogs) {
-          setSelectedServer({
-            ...server,
-            structuredLogs: ssrServer.structuredLogs,
-          });
-          return;
-        }
-      }
-      setSelectedServer(server);
+      const serverId = server.id ?? server.name;
+      router.push(`/dashboard/servers/${encodeURIComponent(serverId)}`);
     },
-    [servers]
+    [router]
   );
 
   const handleModalClose = useCallback(() => {

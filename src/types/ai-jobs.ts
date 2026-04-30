@@ -28,6 +28,19 @@ export type JobType =
 
 export type JobPriority = 'low' | 'normal' | 'high';
 
+export interface JobDataSlot {
+  slotIndex: number;
+  minuteOfDay: number;
+  timeLabel: string;
+}
+
+export interface JobQueryAsOf {
+  createdAt: string;
+  source: 'vercel-static-otel';
+  datasetVersion: '24h-rotating-v1.0.0';
+  dataSlot: JobDataSlot;
+}
+
 // ============================================
 // API Request/Response 타입
 // ============================================
@@ -43,6 +56,7 @@ export interface CreateJobRequest {
       analysisMode?: AnalysisMode;
       enableRAG?: boolean;
       enableWebSearch?: boolean;
+      queryAsOfDataSlot?: JobDataSlot;
     };
   };
 }
@@ -81,6 +95,7 @@ export interface JobStatusResponse {
   startedAt: string | null;
   completedAt: string | null;
   processingTimeMs?: number | null;
+  metadata?: object | null;
 }
 
 /** Job 목록 조회 응답 */
@@ -119,6 +134,7 @@ export interface AIJob {
     analysisMode?: AnalysisMode;
     enableRAG?: boolean;
     enableWebSearch?: boolean;
+    queryAsOf?: JobQueryAsOf;
   };
 }
 

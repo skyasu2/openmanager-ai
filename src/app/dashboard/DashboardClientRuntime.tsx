@@ -9,6 +9,7 @@
 import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
+import type { DashboardView } from '@/components/dashboard/types/dashboard-view.types';
 import AuthLoadingUI from '@/components/shared/AuthLoadingUI';
 import UnauthorizedAccessUI from '@/components/shared/UnauthorizedAccessUI';
 import { isGuestFullAccessEnabled } from '@/config/guestMode';
@@ -36,6 +37,7 @@ const DashboardInteractiveShell = dynamic(
 );
 
 type DashboardClientProps = {
+  dashboardView?: DashboardView;
   initialServers?: Server[];
   initialStats?: DashboardStats;
   initialTimeInfo?: DashboardTimeInfo;
@@ -44,6 +46,7 @@ type DashboardClientProps = {
 };
 
 function DashboardPageContent({
+  dashboardView = 'overview',
   initialServers,
   initialTimeInfo,
   initialDataSourceInfo,
@@ -156,6 +159,7 @@ function DashboardPageContent({
       className="flex h-dvh bg-gray-100"
     >
       <DashboardInteractiveShell
+        dashboardView={dashboardView}
         initialServers={initialServers}
         initialTimeInfo={initialTimeInfo}
         initialDataSourceInfo={initialDataSourceInfo}

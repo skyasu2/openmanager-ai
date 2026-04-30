@@ -83,20 +83,22 @@ export const MessageComponent = memo<{
   const collapsibleResponse = isCollapsibleAssistantResponse
     ? assistantResponseView
     : null;
+  const userFacingAssistantDetails =
+    assistantResponseDetails.processDetails ??
+    (!assistantResponseDetails.debugDetails
+      ? (collapsibleResponse?.details ?? null)
+      : null);
+  const inlineAssistantDetails = collapsibleResponse
+    ? userFacingAssistantDetails
+    : null;
   const analysisBasisDetails =
-    analysisBasis && assistantResponseView?.details
-      ? assistantResponseDetails.processDetails
+    analysisBasis && assistantResponseView?.details && !inlineAssistantDetails
+      ? userFacingAssistantDetails
       : null;
   const analysisBasisDebugDetails =
     analysisBasis && assistantResponseView?.details
       ? assistantResponseDetails.debugDetails
       : null;
-  const inlineAssistantDetails = !analysisBasis
-    ? (assistantResponseDetails.processDetails ??
-      (!assistantResponseDetails.debugDetails
-        ? (collapsibleResponse?.details ?? null)
-        : null))
-    : null;
 
   // thinking 메시지일 경우 간소화된 인라인 상태 표시
   if (message.role === 'thinking' && message.thinkingSteps) {

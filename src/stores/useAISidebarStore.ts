@@ -19,6 +19,7 @@ import type {
   AnalysisFeatureStatus,
   RetrievalMetadata,
 } from '@/types/ai/retrieval-status';
+import type { JobDataSlot } from '@/types/ai-jobs';
 
 // AI Thinking Step 타입 import (ai-sidebar에서 제공)
 import type { AIThinkingStep } from '../types/ai-sidebar';
@@ -136,6 +137,7 @@ export interface PendingAIEntryState {
   draft?: string;
   selectedFunction?: AIEntryFunction;
   analysisMode?: AnalysisMode;
+  queryAsOfDataSlot?: JobDataSlot;
   target?: AIEntryTarget;
 }
 
