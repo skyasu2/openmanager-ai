@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.70](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.69...v8.11.70) (2026-04-30)
+
+
+### Bug Fixes
+
+* **dashboard:** restore navigation link contrast ([30d2e60](https://gitlab.com/skyasu2/openmanager-ai/-/commit/30d2e600557e72c4372070f97115d3491f8a09a1))
+
 ## [8.11.69](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.68...v8.11.69) (2026-04-30)
 
 
