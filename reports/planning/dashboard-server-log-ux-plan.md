@@ -5,6 +5,8 @@
 
 # Dashboard Server & Log UX 개선 계획
 
+- TODO.md 연결: Backlog > Dashboard Server & Log UX 개선
+
 > 개요(Overview) 섹션은 **변경 금지**. 서버 섹션과 로그 섹션만 대상.
 
 ---
@@ -77,6 +79,13 @@ DashboardContent.tsx:231  onOpenActiveAlerts={() => router.push('/dashboard/aler
 ---
 
 ## 2. 설계 — 서버 섹션
+
+### 2-0. 계약 (Contract)
+
+- Overview 섹션 컴포넌트와 라우트 진입점은 수정하지 않는다.
+- 서버 섹션은 기존 서버 데이터 shape와 상세 진입 경로를 유지한다.
+- 로그 섹션은 기존 로그 데이터 source와 필터 계약을 유지한다.
+- 새 UI 상태는 URL query 또는 component state 중 구현 단계에서 확정하되, 기존 `/dashboard/logs`와 `/dashboard/servers` route는 유지한다.
 
 ### 2-1. 카드 레이아웃 (뷰 토글)
 
