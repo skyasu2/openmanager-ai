@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-30T10:20:01.475Z"
+    "updatedAt": "2026-04-30T12:02:34.893Z"
   },
   "sequence": {
-    "nextRunNumber": 383
+    "nextRunNumber": 384
   },
   "summary": {
-    "totalRecordedRuns": 380,
-    "totalRuns": 309,
+    "totalRecordedRuns": 381,
+    "totalRuns": 310,
     "excludedRuns": 71,
-    "totalChecks": 2630,
-    "totalPassed": 2532,
+    "totalChecks": 2651,
+    "totalPassed": 2553,
     "totalFailed": 89,
     "completionRate": 100,
-    "completedItems": 384,
+    "completedItems": 388,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 20,
-    "expertDomainsTracked": 11,
+    "expertDomainsTracked": 12,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260430-0382",
-    "lastRecordedAt": "2026-04-30T10:20:01.475Z",
-    "latestRecordedRunId": "QA-20260430-0382",
-    "latestRecordedAt": "2026-04-30T10:20:01.475Z"
+    "lastRunId": "QA-20260430-0383",
+    "lastRecordedAt": "2026-04-30T12:02:34.893Z",
+    "latestRecordedRunId": "QA-20260430-0383",
+    "latestRecordedAt": "2026-04-30T12:02:34.893Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -9425,6 +9425,102 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-30T10:20:01.475Z"
+    },
+    "dashboard-ai-left-nav-removal-production": {
+      "id": "dashboard-ai-left-nav-removal-production",
+      "title": "AI 어시스턴트를 좌측 내비게이션에서 제거하고 상단 우측 CTA로 통합",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260430-0383",
+      "firstSeenAt": "2026-04-30T12:02:34.893Z",
+      "lastSeenRunId": "QA-20260430-0383",
+      "lastSeenAt": "2026-04-30T12:02:34.893Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Desktop Playwright MCP navText=개요/서버/알림/로그/토폴로지 and navHasAI=false on Vercel v8.11.74",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-30T12:02:34.893Z"
+    },
+    "dashboard-ai-sidebar-resize-and-rail-collapse": {
+      "id": "dashboard-ai-sidebar-resize-and-rail-collapse",
+      "title": "AI 사이드바 오픈 시 좌측 rail 축소 및 데스크톱 사이드바 리사이즈",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260430-0383",
+      "firstSeenAt": "2026-04-30T12:02:34.893Z",
+      "lastSeenRunId": "QA-20260430-0383",
+      "lastSeenAt": "2026-04-30T12:02:34.893Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Desktop Playwright MCP measured aside width 64px and sidebar resize 960px -> 740px -> 960px",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-30T12:02:34.893Z"
+    },
+    "dashboard-ai-fullscreen-route-auto-close-reopen": {
+      "id": "dashboard-ai-fullscreen-route-auto-close-reopen",
+      "title": "AI 전체 페이지 진입 시 사이드바 자동 닫힘 및 상단 버튼 재오픈",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260430-0383",
+      "firstSeenAt": "2026-04-30T12:02:34.893Z",
+      "lastSeenRunId": "QA-20260430-0383",
+      "lastSeenAt": "2026-04-30T12:02:34.893Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Desktop Playwright MCP measured /dashboard/ai-assistant dialogCount=0, tabs present, top-right AI button reopened dialogCount=1",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-30T12:02:34.893Z"
+    },
+    "dashboard-ai-embedded-mobile-route": {
+      "id": "dashboard-ai-embedded-mobile-route",
+      "title": "모바일 /dashboard/ai-assistant를 사이드바 handoff가 아닌 대시보드 embedded 기능 페이지로 유지",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260430-0383",
+      "firstSeenAt": "2026-04-30T12:02:34.893Z",
+      "lastSeenRunId": "QA-20260430-0383",
+      "lastSeenAt": "2026-04-30T12:02:34.893Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Mobile Playwright measured dialogCount=0, tabs present, and scrollWidth=390 at 390px viewport",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-30T12:02:34.893Z"
     }
   },
   "runs": [
@@ -37605,6 +37701,138 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260430-0383",
+      "recordedAt": "2026-04-30T12:02:34.893Z",
+      "recordedAtKst": "2026-04-30 21:02:34 KST",
+      "title": "Vercel Production QA v8.11.74 - Dashboard AI app shell",
+      "owner": "codex",
+      "source": "playwright-mcp+playwright-cli+vercel-smoke",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260430-0383.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run not exercised for AI generation",
+        "branch": "main",
+        "deploymentId": "dpl_DQNQ4VrzvFNgPDJgN26JKCCxPVWK",
+        "deploymentUrl": "https://openmanager-hv9e3pkav-skyasus-projects.vercel.app",
+        "commitSha": "c9117758bf9119b36c149d66dbf09633a5653e2e"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "production deployment smoke: /, /validation, /api/version all passed for v8.11.74",
+        "/api/version returned version 8.11.74, releaseTag v8.11.74, commit c9117758bf9119b36c149d66dbf09633a5653e2e",
+        "GitLab main pipeline 2491196415 success and release tag pipeline 2491196412 success",
+        "/dashboard desktop side navigation labels are visible and do not include AI 어시스턴트",
+        "/dashboard desktop top-right AI button opens the AI sidebar",
+        "/dashboard desktop left navigation collapses to a 64px rail while AI sidebar is open",
+        "/dashboard desktop AI sidebar resize handle changed width 960px -> 740px -> 960px",
+        "/dashboard desktop AI sidebar fullscreen button routes to /dashboard/ai-assistant",
+        "/dashboard/ai-assistant desktop renders embedded AI function page with dialogCount=0",
+        "/dashboard/ai-assistant desktop renders AI Chat, Reporter, and Analyst tabs",
+        "/dashboard/ai-assistant desktop top-right AI button reopens the sidebar",
+        "/dashboard desktop Playwright MCP console error check: 0 errors",
+        "/dashboard mobile authenticated header at 390x844 has body/doc scrollWidth 390",
+        "/dashboard mobile AI sidebar opens as full viewport dialog with x=0/right=390",
+        "/dashboard mobile menu trigger is hidden while AI sidebar is open",
+        "/dashboard/ai-assistant mobile renders embedded AI function page with dialogCount=0",
+        "/dashboard/ai-assistant mobile renders AI Chat, Reporter, and Analyst tabs",
+        "/dashboard/ai-assistant mobile has no horizontal overflow at 390px viewport"
+      ],
+      "skippedSurfaces": [
+        "AI backend streaming response quality: not required for app-shell/navigation layout regression",
+        "Cloud Run admin observability endpoints: out of scope for dashboard AI shell layout QA",
+        "core route broad pack beyond production smoke: unchanged by this targeted UI fix"
+      ],
+      "checks": {
+        "total": 21,
+        "passed": 21,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Targeted production coverage used Playwright MCP for desktop behavior, Playwright browser automation for mobile layout, local Vitest regression tests, and Vercel smoke/version checks.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Canonical GitLab main and v8.11.74 tag pipelines completed successfully, Vercel deployment is Ready, production smoke passed, and Vercel usage check reported normal billed usage.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "frontend-ui-ux",
+          "domainName": "Frontend UI/UX Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The tested app shell matches the target IA: AI is removed from left navigation, opened from the top-right action, desktop sidebar collapses the rail and resizes, and the AI route renders as an embedded dashboard function page on desktop and mobile.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-30T21:00:48+09:00",
+          "summary": "vercel usage checked after production QA; current billing period effective 19.7666 USD, billed 0.0000 USD, no unexpected billed usage reported by CLI.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Desktop AI app shell production screenshot",
+          "path": "reports/qa/evidence/qa-20260430-vercel-v81174-desktop-ai-shell.png",
+          "note": "Playwright MCP viewport screenshot on /dashboard/ai-assistant after top-right AI sidebar reopen"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Mobile AI app shell production screenshot",
+          "path": "reports/qa/evidence/qa-20260430-vercel-v81174-mobile-ai-shell.png",
+          "note": "390x844 Playwright mobile viewport after /dashboard/ai-assistant embedded route verification"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab main validate pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2491196415"
+        },
+        {
+          "type": "general",
+          "label": "GitLab release tag pipeline v8.11.74",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2491196412"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://openmanager-hv9e3pkav-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 4,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -37664,16 +37892,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 113,
-      "appropriateCount": 100,
+      "seenCount": 114,
+      "appropriateCount": 101,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 17,
-      "lastRunId": "QA-20260430-0379",
-      "lastSeenAt": "2026-04-30T06:12:50.431Z",
+      "lastRunId": "QA-20260430-0383",
+      "lastSeenAt": "2026-04-30T12:02:34.893Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "v8.11.70 배포 후 대시보드/AI 기능 정상 동작 확인. CSS specificity 수정 효과 검증 완료",
+      "lastRationale": "Canonical GitLab main and v8.11.74 tag pipelines completed successfully, Vercel deployment is Ready, production smoke passed, and Vercel usage check reported normal billed usage.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -37681,16 +37909,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 148,
-      "appropriateCount": 137,
+      "seenCount": 149,
+      "appropriateCount": 138,
       "partialCount": 11,
       "inappropriateCount": 0,
       "improvementNeededCount": 13,
-      "lastRunId": "QA-20260430-0378",
-      "lastSeenAt": "2026-04-30T05:30:46.057Z",
+      "lastRunId": "QA-20260430-0383",
+      "lastSeenAt": "2026-04-30T12:02:34.893Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The regression is covered by a static CSS contract test and validated in a real browser on production.",
+      "lastRationale": "Targeted production coverage used Playwright MCP for desktop behavior, Playwright browser automation for mobile layout, local Vitest regression tests, and Vercel smoke/version checks.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -37793,6 +38021,23 @@
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
       "lastRationale": "Production dashboard left navigation labels are readable after the anchor reset specificity fix. Active and inactive links compute to expected blue/slate colors.",
+      "lastNextAction": ""
+    },
+    "frontend-ui-ux": {
+      "domainId": "frontend-ui-ux",
+      "domainName": "Frontend UI/UX Engineer",
+      "firstSeenRunId": "QA-20260430-0383",
+      "firstSeenAt": "2026-04-30T12:02:34.893Z",
+      "seenCount": 1,
+      "appropriateCount": 1,
+      "partialCount": 0,
+      "inappropriateCount": 0,
+      "improvementNeededCount": 0,
+      "lastRunId": "QA-20260430-0383",
+      "lastSeenAt": "2026-04-30T12:02:34.893Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "The tested app shell matches the target IA: AI is removed from left navigation, opened from the top-right action, desktop sidebar collapses the rail and resizes, and the AI route renders as an embedded dashboard function page on desktop and mobile.",
       "lastNextAction": ""
     }
   }

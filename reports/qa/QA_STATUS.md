@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-30 19:20:01 KST
+> Generated at: 2026-04-30 21:02:35 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 380 |
-| Total Runs (Counted) | 309 |
+| Total Recorded Runs | 381 |
+| Total Runs (Counted) | 310 |
 | Non-counted Runs | 71 |
-| Total Checks | 2630 |
-| Passed | 2532 |
+| Total Checks | 2651 |
+| Passed | 2553 |
 | Failed | 89 |
-| Completed Items | 384 |
+| Completed Items | 388 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 20 |
-| Expert Domains Tracked | 11 |
+| Expert Domains Tracked | 12 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260430-0382 (2026-04-30T10:20:01.475Z) |
-| Latest Recorded Run | QA-20260430-0382 (2026-04-30T10:20:01.475Z) |
+| Last Counted Run | QA-20260430-0383 (2026-04-30T12:02:34.893Z) |
+| Latest Recorded Run | QA-20260430-0383 (2026-04-30T12:02:34.893Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,21 +34,23 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260430-0382 (2026-04-30T10:20:01.475Z)
+Latest run: QA-20260430-0383 (2026-04-30T12:02:34.893Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| Test Automation Architect | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
+| Frontend UI/UX Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | vercel usage checked after production QA; current billing period effective 19.7666 USD, billed 0.0000 USD, no unexpected billed usage reported by CLI. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-29T10:20:01.475Z -> 2026-04-30T10:20:01.475Z (24h)
+- Window: 2026-04-29T12:02:34.893Z -> 2026-04-30T12:02:34.893Z (24h)
 - Runs with observations: 6 recorded / 6 counted
 - Samples: 6
 
@@ -61,24 +63,27 @@ Latest run: QA-20260430-0382 (2026-04-30T10:20:01.475Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
+- Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: SHA a370da0b
+- Deployment: dpl_DQNQ4VrzvFNgPDJgN26JKCCxPVWK / SHA c9117758
 - Coverage Packs: dashboard-core, ai-core
-- Covered Surfaces: /dashboard mobile header at 390x844: no horizontal scroll and no logo/AI/login overlap, /dashboard mobile AI sidebar open: full-width dialog left 0/right viewport, dashboard menu trigger hidden, /dashboard desktop AI sidebar open: left side navigation collapses to 64px rail, /dashboard desktop AI sidebar resize handle: drag changed width from 680px to 840px, /dashboard/ai-assistant embedded AI workspace: sidebar auto-closed and page route rendered without dialog, browser console error check: 0 errors observed during targeted local QA
-- Skipped Surfaces: Vercel production validation: local UI/layout source verification only, AI backend streaming response quality: not required for app-shell layout overlap fix, Cloud Run admin observability endpoints: out of scope
+- Covered Surfaces: production deployment smoke: /, /validation, /api/version all passed for v8.11.74, /api/version returned version 8.11.74, releaseTag v8.11.74, commit c9117758bf9119b36c149d66dbf09633a5653e2e, GitLab main pipeline 2491196415 success and release tag pipeline 2491196412 success, /dashboard desktop side navigation labels are visible and do not include AI 어시스턴트, /dashboard desktop top-right AI button opens the AI sidebar, /dashboard desktop left navigation collapses to a 64px rail while AI sidebar is open, /dashboard desktop AI sidebar resize handle changed width 960px -> 740px -> 960px, /dashboard desktop AI sidebar fullscreen button routes to /dashboard/ai-assistant, /dashboard/ai-assistant desktop renders embedded AI function page with dialogCount=0, /dashboard/ai-assistant desktop renders AI Chat, Reporter, and Analyst tabs, /dashboard/ai-assistant desktop top-right AI button reopens the sidebar, /dashboard desktop Playwright MCP console error check: 0 errors, /dashboard mobile authenticated header at 390x844 has body/doc scrollWidth 390, /dashboard mobile AI sidebar opens as full viewport dialog with x=0/right=390, /dashboard mobile menu trigger is hidden while AI sidebar is open, /dashboard/ai-assistant mobile renders embedded AI function page with dialogCount=0, /dashboard/ai-assistant mobile renders AI Chat, Reporter, and Analyst tabs, /dashboard/ai-assistant mobile has no horizontal overflow at 390px viewport
+- Skipped Surfaces: AI backend streaming response quality: not required for app-shell/navigation layout regression, Cloud Run admin observability endpoints: out of scope for dashboard AI shell layout QA, core route broad pack beyond production smoke: unchanged by this targeted UI fix
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | GitLab main validate pipeline | [GitLab main validate pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2491196415) | - |
+| general | GitLab release tag pipeline v8.11.74 | [GitLab release tag pipeline v8.11.74](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2491196412) | - |
+| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-hv9e3pkav-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Mobile AI sidebar overlap fix screenshot | `reports/qa/evidence/qa-20260430-dashboard-mobile-overlap-fix.png` | - |
+| playwright-screenshot | Desktop AI app shell production screenshot | `reports/qa/evidence/qa-20260430-vercel-v81174-desktop-ai-shell.png` | - |
+| playwright-screenshot | Mobile AI app shell production screenshot | `reports/qa/evidence/qa-20260430-vercel-v81174-mobile-ai-shell.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -276,8 +281,11 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - cve-brace-expansion: brace-expansion CVE GHSA-f886-m6hf-6m8v 패치 (completed 1회, last QA-20260329-0194)
 - dashboard-15-servers: 대시보드 15대 서버 모니터링 정상 (completed 2회, last QA-20260314-0097)
 - dashboard-active-alerts: 활성 알림 모달 (completed 1회, last QA-20260317-0114)
+- dashboard-ai-embedded-mobile-route: 모바일 /dashboard/ai-assistant를 사이드바 handoff가 아닌 대시보드 embedded 기능 페이지로 유지 (completed 1회, last QA-20260430-0383)
 - dashboard-ai-fullscreen-embedded-page: AI 전체 화면을 별도 standalone 대신 dashboard embedded page로 통합 (completed 1회, last QA-20260430-0380)
+- dashboard-ai-fullscreen-route-auto-close-reopen: AI 전체 페이지 진입 시 사이드바 자동 닫힘 및 상단 버튼 재오픈 (completed 1회, last QA-20260430-0383)
 - dashboard-ai-left-nav-item-removal: 좌측 app shell navigation에서 AI 어시스턴트 항목 제거 (completed 1회, last QA-20260430-0380)
+- dashboard-ai-left-nav-removal-production: AI 어시스턴트를 좌측 내비게이션에서 제거하고 상단 우측 CTA로 통합 (completed 1회, last QA-20260430-0383)
 - dashboard-ai-page-sidebar-autoclose-reopen: AI 전체 페이지 진입 시 사이드바 자동 닫힘 및 상단 버튼 재열림 (completed 1회, last QA-20260430-0380)
 - dashboard-ai-propagation-v81158: Dashboard OTel labels and mobile AI sidebar handoff deployed to production (completed 1회, last QA-20260429-0364)
 - dashboard-ai-shell-diff-check: Patch whitespace check passes (completed 1회, last QA-20260430-0380)
@@ -287,6 +295,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - dashboard-ai-sidebar-desktop-resize-after-wrapper-removal: AI 사이드바 래퍼 제거 후 데스크톱 resize 동작 유지 (completed 1회, last QA-20260430-0382)
 - dashboard-ai-sidebar-left-rail-collapse: 우측 AI 사이드바가 열릴 때 좌측 navigation rail 축소 (completed 1회, last QA-20260430-0380)
 - dashboard-ai-sidebar-resizable: AI 사이드바 사용자 resize 동작 검증 (completed 1회, last QA-20260430-0380)
+- dashboard-ai-sidebar-resize-and-rail-collapse: AI 사이드바 오픈 시 좌측 rail 축소 및 데스크톱 사이드바 리사이즈 (completed 1회, last QA-20260430-0383)
 - dashboard-client-lazy-shell-split: Split DashboardClient into auth wrapper and lazy interactive shell (completed 1회, last QA-20260420-0318)
 - dashboard-content-lazy-server-section: Lazy load ServerDashboard from DashboardContent (completed 1회, last QA-20260420-0318)
 - dashboard-dev-defer-heavy-subtree: Defer DashboardContent subtree during dev bootstrap (completed 1회, last QA-20260420-0317)
@@ -547,6 +556,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260430-0383 | 2026-04-30T12:02:34.893Z | targeted | yes | yes | Vercel Production QA v8.11.74 - Dashboard AI app shell | 21 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260430-0382 | 2026-04-30T10:20:01.475Z | targeted | no | yes | Dashboard mobile overlap and AI sidebar local QA | 11 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260430-0381 | 2026-04-30T09:32:32.544Z | targeted | no | no | Dashboard AI app-shell local Playwright rerun | 14 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260430-0380 | 2026-04-30T09:14:16.317Z | targeted | no | yes | Dashboard AI app-shell navigation targeted QA | 14 | 10 | 0 | 0 | 0 | 0 |
@@ -566,4 +576,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260429-0366 | 2026-04-29T04:28:03.403Z | targeted | no | no | AI Engine Provider Fallback and DISK Threshold Regression Fix | 3 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260429-0365 | 2026-04-29T04:25:34.157Z | targeted | yes | yes | Cloud Tasks Job Dispatch Fresh Browser Production Recheck - v8.11.58 | 14 | 1 | 0 | 0 | 1 | 1 |
 | QA-20260429-0364 | 2026-04-28T23:37:46.502Z | targeted | yes | yes | v8.11.58 Release Production Smoke | 22 | 3 | 0 | 0 | 0 | 0 |
-| QA-20260429-0363 | 2026-04-28T18:49:16.063Z | targeted | no | no | Vercel Playwright MCP - Recent UI Change Propagation Check | 8 | 0 | 0 | 0 | 0 | 0 |

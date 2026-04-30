@@ -1,0 +1,183 @@
+{
+  "runId": "QA-20260430-0383",
+  "recordedAt": "2026-04-30T12:02:34.893Z",
+  "recordedAtKst": "2026-04-30 21:02:34 KST",
+  "runTitle": "Vercel Production QA v8.11.74 - Dashboard AI app shell",
+  "owner": "codex",
+  "source": "playwright-mcp+playwright-cli+vercel-smoke",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run not exercised for AI generation",
+    "branch": "main",
+    "deploymentId": "dpl_DQNQ4VrzvFNgPDJgN26JKCCxPVWK",
+    "deploymentUrl": "https://openmanager-hv9e3pkav-skyasus-projects.vercel.app",
+    "commitSha": "c9117758bf9119b36c149d66dbf09633a5653e2e"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "production deployment smoke: /, /validation, /api/version all passed for v8.11.74",
+    "/api/version returned version 8.11.74, releaseTag v8.11.74, commit c9117758bf9119b36c149d66dbf09633a5653e2e",
+    "GitLab main pipeline 2491196415 success and release tag pipeline 2491196412 success",
+    "/dashboard desktop side navigation labels are visible and do not include AI 어시스턴트",
+    "/dashboard desktop top-right AI button opens the AI sidebar",
+    "/dashboard desktop left navigation collapses to a 64px rail while AI sidebar is open",
+    "/dashboard desktop AI sidebar resize handle changed width 960px -> 740px -> 960px",
+    "/dashboard desktop AI sidebar fullscreen button routes to /dashboard/ai-assistant",
+    "/dashboard/ai-assistant desktop renders embedded AI function page with dialogCount=0",
+    "/dashboard/ai-assistant desktop renders AI Chat, Reporter, and Analyst tabs",
+    "/dashboard/ai-assistant desktop top-right AI button reopens the sidebar",
+    "/dashboard desktop Playwright MCP console error check: 0 errors",
+    "/dashboard mobile authenticated header at 390x844 has body/doc scrollWidth 390",
+    "/dashboard mobile AI sidebar opens as full viewport dialog with x=0/right=390",
+    "/dashboard mobile menu trigger is hidden while AI sidebar is open",
+    "/dashboard/ai-assistant mobile renders embedded AI function page with dialogCount=0",
+    "/dashboard/ai-assistant mobile renders AI Chat, Reporter, and Analyst tabs",
+    "/dashboard/ai-assistant mobile has no horizontal overflow at 390px viewport"
+  ],
+  "skippedSurfaces": [
+    "AI backend streaming response quality: not required for app-shell/navigation layout regression",
+    "Cloud Run admin observability endpoints: out of scope for dashboard AI shell layout QA",
+    "core route broad pack beyond production smoke: unchanged by this targeted UI fix"
+  ],
+  "checks": {
+    "total": 21,
+    "passed": 21,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Targeted production coverage used Playwright MCP for desktop behavior, Playwright browser automation for mobile layout, local Vitest regression tests, and Vercel smoke/version checks.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Canonical GitLab main and v8.11.74 tag pipelines completed successfully, Vercel deployment is Ready, production smoke passed, and Vercel usage check reported normal billed usage.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "frontend-ui-ux",
+      "domainName": "Frontend UI/UX Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The tested app shell matches the target IA: AI is removed from left navigation, opened from the top-right action, desktop sidebar collapses the rail and resizes, and the AI route renders as an embedded dashboard function page on desktop and mobile.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-30T21:00:48+09:00",
+      "summary": "vercel usage checked after production QA; current billing period effective 19.7666 USD, billed 0.0000 USD, no unexpected billed usage reported by CLI.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Desktop AI app shell production screenshot",
+      "path": "reports/qa/evidence/qa-20260430-vercel-v81174-desktop-ai-shell.png",
+      "note": "Playwright MCP viewport screenshot on /dashboard/ai-assistant after top-right AI sidebar reopen"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Mobile AI app shell production screenshot",
+      "path": "reports/qa/evidence/qa-20260430-vercel-v81174-mobile-ai-shell.png",
+      "note": "390x844 Playwright mobile viewport after /dashboard/ai-assistant embedded route verification"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "dashboard-ai-left-nav-removal-production",
+      "title": "AI 어시스턴트를 좌측 내비게이션에서 제거하고 상단 우측 CTA로 통합",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Desktop Playwright MCP navText=개요/서버/알림/로그/토폴로지 and navHasAI=false on Vercel v8.11.74",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-ai-sidebar-resize-and-rail-collapse",
+      "title": "AI 사이드바 오픈 시 좌측 rail 축소 및 데스크톱 사이드바 리사이즈",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Desktop Playwright MCP measured aside width 64px and sidebar resize 960px -> 740px -> 960px",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-ai-fullscreen-route-auto-close-reopen",
+      "title": "AI 전체 페이지 진입 시 사이드바 자동 닫힘 및 상단 버튼 재오픈",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Desktop Playwright MCP measured /dashboard/ai-assistant dialogCount=0, tabs present, top-right AI button reopened dialogCount=1",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-ai-embedded-mobile-route",
+      "title": "모바일 /dashboard/ai-assistant를 사이드바 handoff가 아닌 대시보드 embedded 기능 페이지로 유지",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Mobile Playwright measured dialogCount=0, tabs present, and scrollWidth=390 at 390px viewport",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "QA intentionally focused on dashboard AI app-shell/navigation/layout changes from this release.",
+    "No real AI generation was sent during this run to keep production LLM usage within the free-tier guardrails."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab main validate pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2491196415"
+    },
+    {
+      "type": "general",
+      "label": "GitLab release tag pipeline v8.11.74",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2491196412"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-hv9e3pkav-skyasus-projects.vercel.app/"
+    }
+  ]
+}
