@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-04-30 14:14:44 KST
+> Generated at: 2026-04-30 14:30:46 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 375 |
-| Total Runs (Counted) | 305 |
+| Total Recorded Runs | 376 |
+| Total Runs (Counted) | 306 |
 | Non-counted Runs | 70 |
-| Total Checks | 2591 |
-| Passed | 2493 |
+| Total Checks | 2599 |
+| Passed | 2501 |
 | Failed | 89 |
-| Completed Items | 369 |
-| Pending Items | 1 |
+| Completed Items | 370 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 20 |
 | Expert Domains Tracked | 11 |
-| Expert Open Gaps | 2 |
-| Completion Rate | 99.73% |
-| Last Counted Run | QA-20260430-0377 (2026-04-30T05:14:43.053Z) |
-| Latest Recorded Run | QA-20260430-0377 (2026-04-30T05:14:43.053Z) |
+| Expert Open Gaps | 0 |
+| Completion Rate | 100% |
+| Last Counted Run | QA-20260430-0378 (2026-04-30T05:30:46.057Z) |
+| Latest Recorded Run | QA-20260430-0378 (2026-04-30T05:30:46.057Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,23 +34,23 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260430-0377 (2026-04-30T05:14:43.053Z)
+Latest run: QA-20260430-0378 (2026-04-30T05:30:46.057Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| Frontend UX Quality Reviewer | partially-appropriate | yes | Deploy the anchor reset specificity fix and re-run Vercel Playwright dashboard navigation contrast QA. |
+| Frontend UX Quality Reviewer | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
-| DevOps / SRE Engineer | partially-appropriate | yes | Run the GitLab deploy path after local gates, then verify deployment SHA and Vercel UI. |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | vercel usage reported effective=19.0897 USD, billed=0.0000 USD for the current billing period; no unexpected billed usage observed. |
+| vercel | cli | checked | normal | vercel usage reported effective=19.0897 USD, billed=0.0000 USD for the current billing period after v8.11.70 deploy; no unexpected billed usage observed. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-29T05:14:43.053Z -> 2026-04-30T05:14:43.053Z (24h)
+- Window: 2026-04-29T05:30:46.057Z -> 2026-04-30T05:30:46.057Z (24h)
 - Runs with observations: 8 recorded / 8 counted
 - Samples: 11
 
@@ -67,10 +67,10 @@ Latest run: QA-20260430-0377 (2026-04-30T05:14:43.053Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_8Ho8hZP5LY1pEMq1oMDvbZqa6Yjs / SHA 9e9824ca
-- Coverage Packs: core-routes-smoke, dashboard-core, modal-detail-pack
-- Covered Surfaces: Vercel / landing render and system start, Vercel /api/version v8.11.69 commit 9e9824ca69cd8ff9749e42a388eb981a297585ae, Vercel /api/health and /api/health?service=ai, Vercel /dashboard app shell, Vercel /dashboard/servers, Vercel /dashboard/servers/cache-redis-dc1-01, Vercel server detail tabs: overview, performance, logs/network, Vercel /dashboard/alerts, Vercel /dashboard/logs, Vercel /dashboard/topology, Vercel legacy /dashboard?serverId=cache-redis-dc1-01 redirect, Local fix verification for dashboard navigation contrast
-- Skipped Surfaces: AI sidebar real chat, observability-pack, Cloud Run admin monitoring
+- Deployment: dpl_6tsZYhAwS2ze8WLpyEwLSL1eAa2J / SHA 4c90510c
+- Coverage Packs: core-routes-smoke, dashboard-core
+- Covered Surfaces: Vercel /api/version v8.11.70 commit 4c90510cfb29043aa868ae7234ebf74c584bf523, Vercel post-deploy smoke /, /validation, /api/version, Vercel /dashboard app shell, Dashboard left navigation active link computed color blue-700, Dashboard left navigation inactive link computed color slate-600, Dashboard server cards and resource summary remain rendered
+- Skipped Surfaces: AI sidebar real chat, modal-detail-pack, observability-pack, Cloud Run admin monitoring
 
 ## Links (Latest Run)
 
@@ -82,19 +82,15 @@ Latest run: QA-20260430-0377 (2026-04-30T05:14:43.053Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Vercel v8.11.69 dashboard nav contrast regression | `reports/qa/evidence/qa-20260430-v81169-nav-contrast-regression.png` | - |
-| playwright-screenshot | Local dashboard nav contrast fixed | `reports/qa/evidence/qa-20260430-local-nav-contrast-fixed.png` | - |
+| playwright-screenshot | Vercel v8.11.70 dashboard nav contrast fixed | `reports/qa/evidence/qa-20260430-v81170-nav-contrast-fixed.png` | - |
 
 ## Expert Domain Open Gaps
 
-- frontend-ux-quality: Frontend UX Quality Reviewer (last QA-20260430-0377)
-  next: Deploy the anchor reset specificity fix and re-run Vercel Playwright dashboard navigation contrast QA.
-- sre-devops: DevOps / SRE Engineer (last QA-20260430-0377)
-  next: Run the GitLab deploy path after local gates, then verify deployment SHA and Vercel UI.
+- None
 
 ## Pending Improvements
 
-- [P1] dashboard-nav-contrast-production: Vercel production dashboard left navigation text contrast regression (seen 1회, last QA-20260430-0377)
+- None
 
 ## Deferred Improvements
 
@@ -295,7 +291,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - dashboard-health-v880-recheck: 프로덕션 대시보드 및 Health API 재검증 (completed 5회, last QA-20260309-0068)
 - dashboard-log-alert-filter-wrapping: Dashboard log and alert filter/wrapping hardening (completed 1회, last QA-20260429-0362)
 - dashboard-modal-light-shells: Dashboard modal light-mode shell alignment (completed 1회, last QA-20260429-0362)
-- dashboard-nav-anchor-reset-local-fix: Global anchor reset no longer overrides Tailwind text utility colors in local build (completed 1회, last QA-20260430-0377)
+- dashboard-nav-anchor-reset-local-fix: Global anchor reset no longer overrides Tailwind text utility colors in production (completed 2회, last QA-20260430-0378)
+- dashboard-nav-contrast-production: Vercel production dashboard left navigation text contrast regression (completed 1회, last QA-20260430-0378)
 - dashboard-otel-static-labels: Dashboard OTel static data labels aligned with Vercel public 24h rotation (completed 1회, last QA-20260429-0362)
 - dashboard-page-dev-server-data-import-split: Avoid server-data graph import on dashboard dev path (completed 1회, last QA-20260420-0317)
 - dashboard-render: 대시보드 18서버 17온라인 1경고 (completed 1회, last QA-20260419-0306)
@@ -540,6 +537,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260430-0378 | 2026-04-30T05:30:46.057Z | targeted | yes | yes | Vercel Playwright QA - v8.11.70 Dashboard Navigation Contrast Recheck | 8 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260430-0377 | 2026-04-30T05:14:43.053Z | targeted | yes | yes | Vercel Playwright QA - v8.11.69 Dashboard Navigation Contrast | 15 | 1 | 1 | 0 | 0 | 2 |
 | QA-20260430-0376 | 2026-04-29T20:55:55.746Z | targeted | yes | yes | Vercel Playwright QA - v8.11.68 Explicit Server Summary | 6 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260430-0375 | 2026-04-29T19:26:27.989Z | targeted | yes | yes | curl smoke - v8.11.64 Cloud Run /health redis circuit schema | 4 | 1 | 0 | 0 | 0 | 0 |
@@ -559,4 +557,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260429-0361 | 2026-04-28T17:16:25.397Z | targeted | no | no | v8.11.57 AI Assistant UX Polish Recheck | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260429-0360 | 2026-04-28T16:57:31.077Z | targeted | yes | yes | v8.11.57 AI Assistant UX Polish Production QA | 18 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260429-0359 | 2026-04-28T15:49:12.787Z | targeted | yes | yes | v8.11.54 Release Production Smoke | 14 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260428-0358 | 2026-04-28T13:24:51.649Z | targeted | yes | yes | Cloud Tasks Job Queue production smoke - v8.11.52 | 10 | 1 | 0 | 0 | 0 | 0 |
