@@ -1,6 +1,6 @@
 # AGENTS.md - OpenManager Codex 실행 규칙
 
-<!-- Version: 6.1.3 -->
+<!-- Version: 6.1.4 -->
 **이 문서는 OpenManager AI 프로젝트 내에서 Codex 에이전트 전용 실행 규칙만 정의합니다.**
 
 ## 1) 정책 참조 구조 (SSOT)
@@ -135,10 +135,36 @@ plan 파일이 있는 작업은 아래 순서를 따른다.
 
 상세 규칙: `reports/planning/README.md`
 
+<!-- OPENMANAGER_SUBAGENTS_GUIDANCE_BEGIN
+Rollback: 이 블록 전체를 삭제하고 문서 상단 Version을 6.1.3, Last reviewed를 2026-04-25로 되돌리면 적용 전 AGENTS.md 상태로 복구됩니다.
+Backup note: .codex/backups/subagents-20260430-before.md
+-->
+## 2.8 서브 에이전트 활용 규칙 (Codex)
+
+Codex는 공식 subagent workflow를 사용할 수 있습니다. 이 저장소에서는 사용자가 "서브 에이전트를 활용", "병렬 에이전트로 검토", "각 영역을 나눠 조사/구현"처럼 명시적으로 허용하거나 요청한 경우 아래 기준으로 제한적으로 사용합니다.
+
+- **사용 권장 상황**
+  - 코드베이스 탐색, 회귀 위험 검토, 문서/API 확인처럼 서로 독립적인 read-heavy 작업을 병렬로 수행할 때
+  - 대규모 구현을 파일/모듈 ownership 단위로 충돌 없이 분리할 수 있을 때
+  - 브라우저 재현, 코드 경로 추적, 구현처럼 역할이 분명히 다른 작업을 병렬 또는 순차 협업으로 나눌 때
+
+- **사용 금지/회피 상황**
+  - 단순 질문, 단일 파일 수정, 작은 문서/copy 변경
+  - 현재 Codex가 직접 처리해야 하는 blocking 작업
+  - write scope가 겹쳐 merge conflict나 사용자 변경 되돌림 위험이 큰 작업
+  - 토큰/시간 비용 대비 병렬화 이점이 불명확한 작업
+
+- **위임 원칙**
+  - 기본 내장 agent는 `explorer`(read-heavy 조사), `worker`(구현/수정), `default`(일반 작업) 순으로 목적에 맞게 선택합니다.
+  - worker에게 코드 수정을 맡길 때는 담당 파일/모듈 ownership을 명시하고, 다른 작업자의 변경을 되돌리지 않도록 지시합니다.
+  - parent Codex는 subagent 결과를 그대로 믿고 끝내지 않고, 핵심 근거를 검토한 뒤 통합/최종 판단을 책임집니다.
+  - 완료된 subagent thread는 더 필요 없으면 닫아 열린 thread 수와 토큰 사용을 관리합니다.
+<!-- OPENMANAGER_SUBAGENTS_GUIDANCE_END -->
+
 ## 3) 공통 지식 및 유지보수 메모
 - **[필독] 프로젝트 3대 원칙 (Free Tier, 배포 환경 인지, OTel 데이터 SSOT)** 등 모든 AI 에이전트가 완벽히 숙지해야 할 핵심 규칙은 `docs/guides/ai/ai-standards.md` 파일에 정의되어 있습니다. 작업을 시작하기 전 해당 문서를 반드시 참조하세요.
 - 이 문서는 주로 "Codex 전용 실행 환경 및 MCP 설정" 등에 대한 규칙만 제한적으로 유지합니다.
 - 공통 정책이 변경되는 경우 이 파일이 아닌 `docs/guides/ai/ai-standards.md`를 갱신해야 합니다.
 
 ---
-_Last reviewed: 2026-04-25_
+_Last reviewed: 2026-04-30_
