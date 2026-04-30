@@ -146,6 +146,71 @@ export interface SystemAnalysisSummary {
   }>;
 }
 
+// ============================================================================
+// Monitoring Snapshot Batch Types (Cloud Run /monitoring/analyze-batch)
+// ============================================================================
+
+export interface MonitoringBatchServer {
+  id: string;
+  name: string;
+  type: string;
+  status: 'online' | 'warning' | 'critical' | 'offline';
+  cpu: number;
+  memory: number;
+  disk: number;
+  network: number;
+}
+
+export interface MonitoringBatchRiskSignal {
+  id: string;
+  serverId: string;
+  serverName: string;
+  serverType: string;
+  metric: 'cpu' | 'memory' | 'disk' | 'network';
+  value: number;
+  threshold: number;
+  trend: 'up' | 'down' | 'stable';
+  severity: 'warning' | 'critical';
+  evidenceRefId: string;
+}
+
+export interface MonitoringBatchEvidenceRef {
+  id: string;
+  kind: 'metric' | 'log' | 'topology' | 'rule' | 'prediction';
+  serverId?: string;
+  metric?: string;
+  timeRange: { from: string; to: string };
+  summary: string;
+  value?: number | string;
+  threshold?: number;
+  severity: 'info' | 'warning' | 'critical';
+}
+
+export interface MonitoringBatchAnalysisResponse {
+  success: boolean;
+  sourceMode: 'replay-json' | 'live-otel';
+  queryAsOf: string;
+  slot: {
+    slotIndex: number;
+    hour: number;
+    slotInHour: number;
+    minuteOfDay: number;
+    timeLabel: string;
+    startTime: string;
+    endTime: string;
+  };
+  summary: string;
+  servers: MonitoringBatchServer[];
+  riskSignals: MonitoringBatchRiskSignal[];
+  evidenceRefs: MonitoringBatchEvidenceRef[];
+  dataFreshness: {
+    generatedAt: string | null;
+    sourceUpdatedAt: string | null;
+    stale: boolean;
+  };
+  _source?: string;
+}
+
 /** 다중 서버 분석 응답 (전체 시스템 분석 시) */
 export interface MultiServerAnalysisResponse {
   success: boolean;

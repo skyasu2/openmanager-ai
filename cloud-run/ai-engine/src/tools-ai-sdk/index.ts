@@ -20,6 +20,18 @@ export {
 } from './server-metrics';
 
 // ============================================================================
+// Monitoring Data Source Tools
+// ============================================================================
+export {
+  buildMonitoringIncidentTimeline,
+  getMetricSeries,
+  getMonitoringSnapshot,
+  getRelatedLogs,
+  monitoringTools,
+  rankRiskSignals,
+} from './monitoring-tools';
+
+// ============================================================================
 // RCA (Root Cause Analysis) Tools
 // ============================================================================
 export {
@@ -117,6 +129,7 @@ export type {
 // Tool Collections (for Supervisor)
 // ============================================================================
 import { getServerMetrics, getServerMetricsAdvanced, filterServers, getServerByGroup, getServerByGroupAdvanced } from './server-metrics';
+import { buildMonitoringIncidentTimeline, getMetricSeries, getMonitoringSnapshot, getRelatedLogs, rankRiskSignals } from './monitoring-tools';
 import { buildIncidentTimeline, correlateMetrics, findRootCause } from './rca-analysis';
 import { detectAnomalies, detectAnomaliesAllServers, predictTrends, analyzePattern } from './analyst-tools';
 import { searchKnowledgeBase, recommendCommands, searchWeb } from './reporter-tools';
@@ -138,6 +151,13 @@ export const allTools: ToolSet = {
   filterServers,
   getServerByGroup,
   getServerByGroupAdvanced,
+
+  // Monitoring data source contract
+  getMonitoringSnapshot,
+  getMetricSeries,
+  getRelatedLogs,
+  rankRiskSignals,
+  buildMonitoringIncidentTimeline,
 
   // RCA Analysis
   buildIncidentTimeline,
@@ -192,9 +212,14 @@ export const toolCategories = {
     getServerByGroup,
     getServerByGroupAdvanced,
     getServerLogs,
+    getMonitoringSnapshot,
+    getMetricSeries,
+    getRelatedLogs,
+    rankRiskSignals,
   },
   rca: {
     buildIncidentTimeline,
+    buildMonitoringIncidentTimeline,
     correlateMetrics,
     findRootCause,
   },
@@ -243,6 +268,11 @@ export const toolDescriptions: Record<string, string> = {
   getServerByGroup: '서버 그룹/타입 조회 (db, lb, web, cache 등)',
   getServerByGroupAdvanced: '서버 그룹 복합 조회 (필터링, 정렬, 제한)',
   getServerLogs: '서버 로그 조회 (에러, 경고, 시스템 로그)',
+  getMonitoringSnapshot: '공통 monitoring snapshot 조회 (sourceMode/queryAsOf/evidenceRefs 포함)',
+  getMetricSeries: '특정 서버/메트릭 시계열 조회',
+  getRelatedLogs: '서버/시간 범위별 관련 로그 조회',
+  rankRiskSignals: '모니터링 위험 신호 정렬',
+  buildMonitoringIncidentTimeline: 'MonitoringSnapshot 기반 장애 타임라인 구성',
   buildIncidentTimeline: '장애 타임라인 구성',
   correlateMetrics: '메트릭 간 상관관계 분석',
   findRootCause: '근본 원인 분석 (RCA)',

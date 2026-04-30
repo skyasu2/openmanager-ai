@@ -32,6 +32,7 @@ import { useCallback, useState } from 'react';
 import { rulesLoader } from '@/config/rules/loader';
 import { useServerQuery } from '@/hooks/useServerQuery';
 import { logger } from '@/lib/logging';
+import type { JobDataSlot, JobQueryAsOf } from '@/types/ai-jobs';
 
 import { IncidentHistoryPage } from './IncidentHistoryPage';
 import ReportCard from './ReportCard';
@@ -44,6 +45,25 @@ import { extractNumericValue, mapSeverity } from './utils';
 let reportsCache: IncidentReport[] = [];
 
 type TabType = 'generate' | 'history';
+
+interface AutoReportPageProps {
+  queryAsOfDataSlot?: JobDataSlot;
+}
+
+function createQueryAsOf(
+  queryAsOfDataSlot?: JobDataSlot
+): JobQueryAsOf | undefined {
+  if (!queryAsOfDataSlot) {
+    return undefined;
+  }
+
+  return {
+    createdAt: new Date().toISOString(),
+    source: 'vercel-static-otel',
+    datasetVersion: '24h-rotating-v1.0.0',
+    dataSlot: queryAsOfDataSlot,
+  };
+}
 
 function normalizeRecommendations(
   recommendations: unknown
@@ -89,7 +109,9 @@ function normalizeRelatedServers(report: Record<string, unknown>) {
     }));
 }
 
-export default function AutoReportPage() {
+export default function AutoReportPage({
+  queryAsOfDataSlot,
+}: AutoReportPageProps = {}) {
   // Tab state
   const [activeTab, setActiveTab] = useState<TabType>('generate');
 
@@ -145,6 +167,7 @@ export default function AutoReportPage() {
           metrics,
           notify: true,
           enableRAG: ragEnabled,
+          queryAsOf: createQueryAsOf(queryAsOfDataSlot),
         }),
       });
 
@@ -299,7 +322,7 @@ export default function AutoReportPage() {
     } finally {
       setIsGenerating(false);
     }
-  }, [servers, ragEnabled, setReports]);
+  }, [servers, ragEnabled, setReports, queryAsOfDataSlot]);
 
   // Event handlers
   const handleResolve = useCallback(

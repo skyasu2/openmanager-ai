@@ -132,6 +132,9 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
     pendingPrefillMessage,
     consumePendingPrefillMessage,
   } = useAIChatSurface();
+  const [workspaceQueryAsOfDataSlot, setWorkspaceQueryAsOfDataSlot] = useState(
+    pendingEntryState?.queryAsOfDataSlot
+  );
 
   const handleFunctionSelect = useCallback(
     (func: AIAssistantFunction) => {
@@ -191,6 +194,7 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
   } = useAIChatCore({
     // 전체화면에서도 세션 제한 적용 (악의적 사용/폭주 방지)
     disableSessionLimit: false,
+    queryAsOfDataSlot: workspaceQueryAsOfDataSlot,
   });
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -257,6 +261,8 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
     if (entry.analysisMode) {
       selectAnalysisMode(entry.analysisMode);
     }
+
+    setWorkspaceQueryAsOfDataSlot(entry.queryAsOfDataSlot);
 
     if (entry.draft) {
       setInput(entry.draft);
@@ -564,7 +570,10 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
                 mode={selectedFunction !== 'chat' ? 'visible' : 'hidden'}
               >
                 <div className="h-full p-0">
-                  <AIContentArea selectedFunction={selectedFunction} />
+                  <AIContentArea
+                    selectedFunction={selectedFunction}
+                    queryAsOfDataSlot={workspaceQueryAsOfDataSlot}
+                  />
                 </div>
               </Activity>
             </AIErrorBoundary>

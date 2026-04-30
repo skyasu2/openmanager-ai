@@ -21,12 +21,23 @@ import {
 } from '../tools-ai-sdk';
 import { handleApiError, jsonSuccess } from '../lib/error-handler';
 import { sanitizeChineseCharacters } from '../lib/text-sanitizer';
+import {
+  normalizeQueryAsOf,
+  runWithQueryAsOf,
+} from '../data/query-as-of-context';
 import { getAgentConfig } from '../services/ai-sdk/agents/config';
 import { AgentFactory } from '../services/ai-sdk/agents/agent-factory';
 import {
   extractToolBasedData,
   parseAgentJsonResponse,
 } from './analytics-report-utils';
+import {
+  createMonitoringDataSource,
+  type MonitoringEvidenceRef,
+  type MonitoringIncidentTimeline,
+  type MonitoringSnapshot,
+  type MonitoringSourceMode,
+} from '../services/monitoring/monitoring-data-source';
 // incident-rag-injector imports removed - endpoints deprecated
 
 export const analyticsRouter = new Hono();
@@ -77,6 +88,110 @@ function readNumber(value: unknown): number | null {
   return typeof value === 'number' && Number.isFinite(value) ? value : null;
 }
 
+function readMonitoringSourceMode(value: unknown): MonitoringSourceMode | undefined {
+  return value === 'replay-json' || value === 'live-otel' ? value : undefined;
+}
+
+function buildAnalyzeBatchSummary(snapshot: MonitoringSnapshot): string {
+  const affectedServerCount = new Set(
+    snapshot.riskSignals.map((signal) => signal.serverId)
+  ).size;
+  const criticalCount = snapshot.riskSignals.filter(
+    (signal) => signal.severity === 'critical'
+  ).length;
+  const warningCount = snapshot.riskSignals.filter(
+    (signal) => signal.severity === 'warning'
+  ).length;
+
+  if (snapshot.riskSignals.length === 0) {
+    return `${snapshot.topology.totalServers}대 서버가 정상 범위입니다. 현재 즉시 조치가 필요한 risk signal은 없습니다.`;
+  }
+
+  return `${affectedServerCount}대 서버에서 ${snapshot.riskSignals.length}개 risk signal이 감지되었습니다. critical ${criticalCount}개, warning ${warningCount}개입니다.`;
+}
+
+interface ReporterMonitoringGrounding {
+  sourceMode?: MonitoringSourceMode;
+  queryAsOf?: string;
+  evidenceRefs: MonitoringEvidenceRef[];
+  timeline: MonitoringIncidentTimeline | null;
+}
+
+function mergeEvidenceRefs(
+  evidenceRefs: MonitoringEvidenceRef[]
+): MonitoringEvidenceRef[] {
+  const refsById = new Map<string, MonitoringEvidenceRef>();
+  for (const evidenceRef of evidenceRefs) {
+    if (!refsById.has(evidenceRef.id)) {
+      refsById.set(evidenceRef.id, evidenceRef);
+    }
+  }
+  return Array.from(refsById.values()).slice(0, 40);
+}
+
+async function collectReporterMonitoringGrounding(input: {
+  sourceMode: unknown;
+  queryAsOf: unknown;
+  serverId?: string;
+}): Promise<ReporterMonitoringGrounding> {
+  try {
+    const source = createMonitoringDataSource({
+      mode: readMonitoringSourceMode(input.sourceMode),
+    });
+    const queryAsOf = normalizeQueryAsOf(input.queryAsOf);
+    const [snapshot, timeline] = await Promise.all([
+      source.getSnapshot({ queryAsOf }),
+      source.buildIncidentTimeline({
+        queryAsOf,
+        serverId: input.serverId,
+        limit: 20,
+      }),
+    ]);
+
+    return {
+      sourceMode: snapshot.sourceMode,
+      queryAsOf: snapshot.queryAsOf,
+      evidenceRefs: mergeEvidenceRefs([
+        ...snapshot.evidenceRefs,
+        ...timeline.evidenceRefs,
+      ]),
+      timeline,
+    };
+  } catch (error) {
+    logger.warn(
+      { err: error },
+      '[Incident Report] Monitoring grounding unavailable, continuing with legacy tools'
+    );
+    return {
+      evidenceRefs: [],
+      timeline: null,
+    };
+  }
+}
+
+function buildMonitoringEvidenceContext(
+  grounding: ReporterMonitoringGrounding
+): string {
+  if (grounding.evidenceRefs.length === 0) {
+    return '';
+  }
+
+  return `
+- Monitoring sourceMode: ${grounding.sourceMode ?? 'unknown'}
+- Monitoring queryAsOf: ${grounding.queryAsOf ?? 'unknown'}
+- Monitoring evidenceRefs: ${JSON.stringify(grounding.evidenceRefs.slice(0, 8)).slice(0, 900)}
+- Monitoring timeline: ${JSON.stringify(grounding.timeline?.events.slice(0, 8) ?? []).slice(0, 500)}`;
+}
+
+async function readRequestBody(c: Context): Promise<Record<string, unknown>> {
+  try {
+    const body = await c.req.json();
+    return isRecord(body) ? body : {};
+  } catch {
+    return {};
+  }
+}
+
 function buildDeterministicAnalyzeServerInsights(
   results: AnalyzeServerToolResults
 ): AnalyzeServerInsights {
@@ -125,6 +240,58 @@ function buildDeterministicAnalyzeServerInsights(
 }
 
 /**
+ * POST /monitoring/snapshot - deterministic monitoring snapshot
+ *
+ * Shared contract for Chat, Reporter, and Analyst grounding.
+ */
+analyticsRouter.post('/monitoring/snapshot', async (c: Context) => {
+  try {
+    const body = await readRequestBody(c);
+    const source = createMonitoringDataSource({
+      mode: readMonitoringSourceMode(body.sourceMode),
+    });
+    const snapshot = await source.getSnapshot({
+      queryAsOf: normalizeQueryAsOf(body.queryAsOf),
+    });
+
+    return jsonSuccess(c, snapshot);
+  } catch (error) {
+    return handleApiError(c, error, 'Monitoring Snapshot');
+  }
+});
+
+/**
+ * POST /monitoring/analyze-batch - deterministic Analyst batch summary
+ *
+ * Keeps Vercel as a thin proxy and avoids per-server LLM fan-out.
+ */
+analyticsRouter.post('/monitoring/analyze-batch', async (c: Context) => {
+  try {
+    const body = await readRequestBody(c);
+    const source = createMonitoringDataSource({
+      mode: readMonitoringSourceMode(body.sourceMode),
+    });
+    const snapshot = await source.getSnapshot({
+      queryAsOf: normalizeQueryAsOf(body.queryAsOf),
+    });
+
+    return jsonSuccess(c, {
+      sourceMode: snapshot.sourceMode,
+      queryAsOf: snapshot.queryAsOf,
+      slot: snapshot.slot,
+      summary: buildAnalyzeBatchSummary(snapshot),
+      servers: snapshot.servers,
+      riskSignals: snapshot.riskSignals,
+      evidenceRefs: snapshot.evidenceRefs,
+      dataFreshness: snapshot.dataFreshness,
+      _source: 'Monitoring Snapshot (Deterministic)',
+    });
+  } catch (error) {
+    return handleApiError(c, error, 'Monitoring Analyze Batch');
+  }
+});
+
+/**
  * POST /analyze-server - Server Analysis Endpoint
  *
  * Hybrid approach: Tools for structured data + Agent for natural language insights.
@@ -134,7 +301,13 @@ function buildDeterministicAnalyzeServerInsights(
  */
 analyticsRouter.post('/analyze-server', async (c: Context) => {
   try {
-    const { serverId, analysisType = 'full', options = {}, currentMetrics } = await c.req.json();
+    const {
+      serverId,
+      analysisType = 'full',
+      options = {},
+      currentMetrics,
+      queryAsOf: rawQueryAsOf,
+    } = await c.req.json();
 
     logger.info(`[Analyze Server] serverId=${serverId}, type=${analysisType}`);
 
@@ -159,28 +332,32 @@ analyticsRouter.post('/analyze-server', async (c: Context) => {
       _source: 'Hybrid (Tool + Agent)',
     };
 
-    // Execute tools based on analysis type
-    if (analysisType === 'anomaly' || analysisType === 'full') {
-      results.anomalyDetection = await detectAnomalies.execute!({
-        serverId: serverId || undefined,
-        metricType,
-        currentMetrics,
-      }, { toolCallId: 'analyze-server-anomaly', messages: [] });
-    }
+    const queryAsOf = normalizeQueryAsOf(rawQueryAsOf);
 
-    if (analysisType === 'trend' || analysisType === 'full') {
-      results.trendPrediction = await predictTrends.execute!({
-        serverId: serverId || undefined,
-        metricType,
-        predictionHours: (options.predictionHours as number) || 1,
-      }, { toolCallId: 'analyze-server-trend', messages: [] });
-    }
+    await runWithQueryAsOf(queryAsOf, async () => {
+      // Execute tools based on analysis type
+      if (analysisType === 'anomaly' || analysisType === 'full') {
+        results.anomalyDetection = await detectAnomalies.execute!({
+          serverId: serverId || undefined,
+          metricType,
+          currentMetrics,
+        }, { toolCallId: 'analyze-server-anomaly', messages: [] });
+      }
 
-    if (analysisType === 'pattern' || analysisType === 'full') {
-      results.patternAnalysis = await analyzePattern.execute!({
-        query: (options.query as string) || '서버 상태 전체 분석',
-      }, { toolCallId: 'analyze-server-pattern', messages: [] });
-    }
+      if (analysisType === 'trend' || analysisType === 'full') {
+        results.trendPrediction = await predictTrends.execute!({
+          serverId: serverId || undefined,
+          metricType,
+          predictionHours: (options.predictionHours as number) || 1,
+        }, { toolCallId: 'analyze-server-trend', messages: [] });
+      }
+
+      if (analysisType === 'pattern' || analysisType === 'full') {
+        results.patternAnalysis = await analyzePattern.execute!({
+          query: (options.query as string) || '서버 상태 전체 분석',
+        }, { toolCallId: 'analyze-server-pattern', messages: [] });
+      }
+    });
 
     // 2. Build deterministic insights.
     // Full-system Analyst runs fan out across all servers. Calling an LLM per
@@ -210,7 +387,7 @@ analyticsRouter.post('/analyze-server', async (c: Context) => {
  */
 analyticsRouter.post('/incident-report', async (c: Context) => {
   try {
-    const { serverId, query, severity, category, metrics, action } = await c.req.json();
+    const { serverId, query, severity, category, metrics, action, sourceMode, queryAsOf: rawQueryAsOf } = await c.req.json();
 
     logger.info(`[Incident Report] action=${action}, serverId=${serverId}`);
 
@@ -218,24 +395,33 @@ analyticsRouter.post('/incident-report', async (c: Context) => {
 
     // 1. Collect real-time data from tools first (parallel execution)
     // Use detectAnomaliesAllServers to get full system summary for incident reports
-    const [anomalyData, trendData, timelineData] = await Promise.all([
-      detectAnomaliesAllServers.execute!(
-        { metricType: 'all' },
-        { toolCallId: 'ir-anomaly-all', messages: [] }
-      ),
-      predictTrends.execute!(
-        { serverId: serverId || undefined, metricType: 'all', predictionHours: 1 },
-        { toolCallId: 'ir-trend', messages: [] }
-      ),
-      serverId
-        ? (await import('../tools-ai-sdk/index.js').then((m) =>
-            m.buildIncidentTimeline.execute!(
-              { serverId, timeRangeHours: 6 },
-              { toolCallId: 'ir-timeline', messages: [] }
-            )
-          ))
-        : null,
-    ]);
+    const normalizedQueryAsOf = normalizeQueryAsOf(rawQueryAsOf);
+    const [anomalyData, trendData, timelineData, monitoringGrounding] =
+      await runWithQueryAsOf(normalizedQueryAsOf, async () =>
+        Promise.all([
+          detectAnomaliesAllServers.execute!(
+            { metricType: 'all' },
+            { toolCallId: 'ir-anomaly-all', messages: [] }
+          ),
+          predictTrends.execute!(
+            { serverId: serverId || undefined, metricType: 'all', predictionHours: 1 },
+            { toolCallId: 'ir-trend', messages: [] }
+          ),
+          serverId
+            ? (await import('../tools-ai-sdk/index.js').then((m) =>
+                m.buildIncidentTimeline.execute!(
+                  { serverId, timeRangeHours: 6 },
+                  { toolCallId: 'ir-timeline', messages: [] }
+                )
+              ))
+            : null,
+          collectReporterMonitoringGrounding({
+            sourceMode,
+            queryAsOf: rawQueryAsOf,
+            serverId,
+          }),
+        ])
+      );
 
     // 2. Extract structured data from tool results
     const toolBasedData = extractToolBasedData(anomalyData, trendData, timelineData, serverId);
@@ -248,6 +434,10 @@ analyticsRouter.post('/incident-report', async (c: Context) => {
       fallbackReason?: string
     ) => ({
       ...toolBasedData,
+      sourceMode: monitoringGrounding.sourceMode,
+      queryAsOf: monitoringGrounding.queryAsOf,
+      evidenceRefs: monitoringGrounding.evidenceRefs,
+      monitoringTimeline: monitoringGrounding.timeline?.events ?? [],
       created_at: new Date().toISOString(),
       _source: source,
       _durationMs: Date.now() - startTime,
@@ -289,6 +479,7 @@ ${metricsContext}
 - 이상 감지: ${JSON.stringify(anomalyData).slice(0, 500)}
 - 트렌드: ${JSON.stringify(trendData).slice(0, 300)}
 - 타임라인: ${JSON.stringify(timelineData).slice(0, 300)}
+${buildMonitoringEvidenceContext(monitoringGrounding)}
 
 ## 중요: 반드시 아래 JSON 형식으로만 응답하세요
 
@@ -376,6 +567,10 @@ ${metricsContext}
         : toolBasedData.recommendations,
       pattern: agentReport.pattern || toolBasedData.pattern,
       postmortem: agentReport.postmortem,
+      sourceMode: monitoringGrounding.sourceMode,
+      queryAsOf: monitoringGrounding.queryAsOf,
+      evidenceRefs: monitoringGrounding.evidenceRefs,
+      monitoringTimeline: monitoringGrounding.timeline?.events ?? [],
       created_at: new Date().toISOString(),
       _agentResponse: sanitizedText,
       _source: 'Reporter Agent + Tool Data (Hybrid)',

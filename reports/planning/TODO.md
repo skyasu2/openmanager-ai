@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-30 KST (`Generate service quota admission fallback`)
+**Last Updated**: 2026-04-30 KST (`Monitoring AI data source completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,17 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| _None_ | - | - | - |
+| Cerebras Qwen deprecation 대응 | P1 | pending | 2026-05-27 deprecation. 후계 모델 확인 + env 교체. 계획: [ai-engine-code-quality-plan.md](ai-engine-code-quality-plan.md) Task 4 |
+
+---
+
+## Backlog
+
+| Task | Priority | Notes |
+|------|----------|-------|
+| approval write 레이어 제거 | P2 | HITL 재활성화 계획 없음 확인 후. 계획: [ai-engine-code-quality-plan.md](ai-engine-code-quality-plan.md) Task 1 |
+| quota-tracker.ts 레이어 분리 | P3 | 1,145줄 → 4파일 분리. 계획: Task 2 |
+| orchestrator-routing / summary-fallback 분리 | P3 | 각 1,100~1,200줄. 계획: Task 3 |
 
 ---
 
@@ -18,7 +28,7 @@
 |------|----------|--------|-------|
 | P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-04-27 재검증 기준 `reports/qa=77.91MiB`, `reports/qa/evidence=72.81MiB / 335파일`. `npm run qa:evidence:audit` 결과 missing/recent artifact debt `0`, orphan durable evidence `6개`, archive candidate `7개 / 2.16MiB`, size warning 유지. run-level soft budget warning은 `QA-20260330-0197`, `QA-20260330-0198` 2건으로 구조화됨. orphan/archive candidate 제거만으로는 warning 해소 효과가 낮고 top referenced legacy evidence는 modal/detail/landing proof 가치가 있어 explicit cleanup batch는 열지 않음. 새 evidence 누적 시점에만 재평가. |
 
-## Backlog
+## Backlog (완료 이력)
 
 | Task | Priority | Notes |
 |------|----------|-------|
@@ -31,6 +41,23 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-30 #230)
+- [x] Monitoring AI data source / Reporter-Analyst grounding
+  - Plan completed: [monitoring-ai-data-source-plan.md](monitoring-ai-data-source-plan.md)
+  - Cloud Run `MonitoringDataSource` 계약, replay-json provider, live-otel disabled skeleton 추가
+  - `/api/ai/monitoring/snapshot`, `/api/ai/monitoring/analyze-batch` endpoint 및 AI SDK monitoring tools 추가
+  - Intelligent Monitoring 전체 분석을 Vercel 서버별 fan-out에서 Cloud Run batch proxy 1회 호출로 전환
+  - Reporter 결과와 prompt에 monitoring `sourceMode`, `queryAsOf`, `evidenceRefs`, `monitoringTimeline` grounding 추가
+  - Side-effect review 보강: Vercel cache key에 `sourceMode`/slot 포함, Analyst/Reporter page와 fullscreen handoff에 dashboard `queryAsOfDataSlot` 전달, metric/log 조회 범위 반영
+  - 검증: AI Engine targeted 44/44, Vercel route/UI targeted 39/39, root/AI Engine type-check, lint, `test:quick`, `test:contract` 통과
+
+### Completed (2026-04-30 #229)
+- [x] Codex subagent workflow guidance
+  - OpenAI Codex 공식 subagents/AGENTS.md guidance 기준으로 `AGENTS.md`에 제한적 subagent 활용 규칙 추가
+  - `.codex/config.toml`에 `[agents] max_threads=6`, `max_depth=1` 명시해 병렬 thread cap과 재귀 fan-out 제한을 고정
+  - `.codex/backups/subagents-20260430-before.md`에 적용 전 상태와 rollback 절차 기록
+  - custom agent TOML은 아직 만들지 않음: 현재는 built-in `explorer`/`worker`/`default`로 충분하고, 역할이 반복적으로 안정화된 뒤 추가하는 쪽이 비용/복잡도 측면에서 안전
 
 ### Completed (2026-04-30 #228)
 - [x] Generate service quota admission fallback

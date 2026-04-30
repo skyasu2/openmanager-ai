@@ -223,8 +223,15 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
       draft: selectedFunction === 'chat' && input.trim() ? input : undefined,
       selectedFunction,
       analysisMode,
+      queryAsOfDataSlot,
     });
-  }, [analysisMode, input, openFullscreen, selectedFunction]);
+  }, [
+    analysisMode,
+    input,
+    openFullscreen,
+    queryAsOfDataSlot,
+    selectedFunction,
+  ]);
 
   const renderMobileFunctionNav = () => (
     <div
@@ -347,7 +354,10 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
           <Activity mode={selectedFunction !== 'chat' ? 'visible' : 'hidden'}>
             <div className="flex h-full flex-col">
               <div className="flex-1 overflow-y-auto">
-                <AIContentArea selectedFunction={selectedFunction} />
+                <AIContentArea
+                  selectedFunction={selectedFunction}
+                  queryAsOfDataSlot={queryAsOfDataSlot}
+                />
               </div>
             </div>
           </Activity>
