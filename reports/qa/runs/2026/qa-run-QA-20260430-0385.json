@@ -1,0 +1,128 @@
+{
+  "runId": "QA-20260430-0385",
+  "recordedAt": "2026-04-30T14:18:18.454Z",
+  "recordedAtKst": "2026-04-30 23:18:18 KST",
+  "runTitle": "Vercel/Cloud Run Production QA v8.11.76 - Cerebras llama runtime",
+  "owner": "codex",
+  "source": "cli-smoke",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_5FNfh7toXujQ6CiE4XUsCFtKSDLg",
+    "deploymentUrl": "https://openmanager-mgt64f1zp-skyasus-projects.vercel.app",
+    "commitSha": "890461cf8e5b3659861b1c5fb4cf49dbdfee0a57"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "ai-core", "observability-pack"],
+  "coveredSurfaces": [
+    "GitLab tag pipeline v8.11.76",
+    "Vercel /api/version",
+    "Vercel /api/health?service=ai",
+    "Cloud Run /health",
+    "Cloud Run /api/ai/providers",
+    "Cloud Run env CEREBRAS_MODEL_ID",
+    "Cloud Run monitoring auth boundary"
+  ],
+  "skippedSurfaces": [
+    "Browser UI Playwright flow not rerun; unchanged dashboard AI sidebar flow was covered by QA-20260430-0384"
+  ],
+  "checks": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline, Cloud Run deploy, post-deploy smoke, env verification, and health checks all passed.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Cerebras runtime now reports production llama3.1-8b with empty drift and authenticated provider metadata; unauthenticated monitoring remains blocked.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": false,
+      "rationale": "This was a targeted release smoke for provider/env routing. Browser UI was intentionally not rerun because the changed surface was backend model policy and deploy env.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-04-30T23:16:07+09:00",
+      "summary": "Current billing period effective 19.7666 USD, billed 0.0000 USD; no unexpected billed usage reported by CLI.",
+      "evidence": "npm run check:usage:vercel",
+      "url": ""
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "cerebras-qwen-preview-runtime-removed",
+      "title": "Cerebras Qwen Preview removed from production runtime default",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Cloud Run /api/ai/providers reports cerebras model llama3.1-8b and modelDrift []",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "cloud-run-cerebras-env-pinned",
+      "title": "Cloud Run env pins CEREBRAS_MODEL_ID=llama3.1-8b",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "gcloud run services describe ai-engine shows CEREBRAS_MODEL_ID=llama3.1-8b and CEREBRAS_FALLBACK_MODEL_IDS empty",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.11.76 pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2491551446"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run service",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-mgt64f1zp-skyasus-projects.vercel.app/"
+    }
+  ]
+}

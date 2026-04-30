@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-30T13:00:04.697Z"
+    "updatedAt": "2026-04-30T14:18:18.454Z"
   },
   "sequence": {
-    "nextRunNumber": 385
+    "nextRunNumber": 386
   },
   "summary": {
-    "totalRecordedRuns": 382,
-    "totalRuns": 311,
+    "totalRecordedRuns": 383,
+    "totalRuns": 312,
     "excludedRuns": 71,
-    "totalChecks": 2663,
-    "totalPassed": 2565,
+    "totalChecks": 2670,
+    "totalPassed": 2572,
     "totalFailed": 89,
     "completionRate": 100,
-    "completedItems": 389,
+    "completedItems": 391,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 20,
     "expertDomainsTracked": 12,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260430-0384",
-    "lastRecordedAt": "2026-04-30T13:00:04.697Z",
-    "latestRecordedRunId": "QA-20260430-0384",
-    "latestRecordedAt": "2026-04-30T13:00:04.697Z"
+    "lastRunId": "QA-20260430-0385",
+    "lastRecordedAt": "2026-04-30T14:18:18.454Z",
+    "latestRecordedRunId": "QA-20260430-0385",
+    "latestRecordedAt": "2026-04-30T14:18:18.454Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -9545,6 +9545,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-30T13:00:04.697Z"
+    },
+    "cerebras-qwen-preview-runtime-removed": {
+      "id": "cerebras-qwen-preview-runtime-removed",
+      "title": "Cerebras Qwen Preview removed from production runtime default",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260430-0385",
+      "firstSeenAt": "2026-04-30T14:18:18.454Z",
+      "lastSeenRunId": "QA-20260430-0385",
+      "lastSeenAt": "2026-04-30T14:18:18.454Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Cloud Run /api/ai/providers reports cerebras model llama3.1-8b and modelDrift []",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-30T14:18:18.454Z"
+    },
+    "cloud-run-cerebras-env-pinned": {
+      "id": "cloud-run-cerebras-env-pinned",
+      "title": "Cloud Run env pins CEREBRAS_MODEL_ID=llama3.1-8b",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260430-0385",
+      "firstSeenAt": "2026-04-30T14:18:18.454Z",
+      "lastSeenRunId": "QA-20260430-0385",
+      "lastSeenAt": "2026-04-30T14:18:18.454Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "gcloud run services describe ai-engine shows CEREBRAS_MODEL_ID=llama3.1-8b and CEREBRAS_FALLBACK_MODEL_IDS empty",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-04-30T14:18:18.454Z"
     }
   },
   "runs": [
@@ -37983,6 +38031,113 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260430-0385",
+      "recordedAt": "2026-04-30T14:18:18.454Z",
+      "recordedAtKst": "2026-04-30 23:18:18 KST",
+      "title": "Vercel/Cloud Run Production QA v8.11.76 - Cerebras llama runtime",
+      "owner": "codex",
+      "source": "cli-smoke",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260430-0385.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_5FNfh7toXujQ6CiE4XUsCFtKSDLg",
+        "deploymentUrl": "https://openmanager-mgt64f1zp-skyasus-projects.vercel.app",
+        "commitSha": "890461cf8e5b3659861b1c5fb4cf49dbdfee0a57"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "GitLab tag pipeline v8.11.76",
+        "Vercel /api/version",
+        "Vercel /api/health?service=ai",
+        "Cloud Run /health",
+        "Cloud Run /api/ai/providers",
+        "Cloud Run env CEREBRAS_MODEL_ID",
+        "Cloud Run monitoring auth boundary"
+      ],
+      "skippedSurfaces": [
+        "Browser UI Playwright flow not rerun; unchanged dashboard AI sidebar flow was covered by QA-20260430-0384"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline, Cloud Run deploy, post-deploy smoke, env verification, and health checks all passed.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Cerebras runtime now reports production llama3.1-8b with empty drift and authenticated provider metadata; unauthenticated monitoring remains blocked.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "partially-appropriate",
+          "improvementNeeded": false,
+          "rationale": "This was a targeted release smoke for provider/env routing. Browser UI was intentionally not rerun because the changed surface was backend model policy and deploy env.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-04-30T23:16:07+09:00",
+          "summary": "Current billing period effective 19.7666 USD, billed 0.0000 USD; no unexpected billed usage reported by CLI.",
+          "evidence": "npm run check:usage:vercel",
+          "url": ""
+        }
+      ],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.76 pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2491551446"
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run service",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://openmanager-mgt64f1zp-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -38025,16 +38180,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 49,
-      "appropriateCount": 36,
+      "seenCount": 50,
+      "appropriateCount": 37,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260429-0364",
-      "lastSeenAt": "2026-04-28T23:37:46.502Z",
+      "lastRunId": "QA-20260430-0385",
+      "lastSeenAt": "2026-04-30T14:18:18.454Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Cloud Tasks payload oversize handling is bounded by deterministic tests and dispatch now returns 413 PAYLOAD_TOO_LARGE instead of falling through as an internal error. AI Engine post-deploy smoke passed after deployment.",
+      "lastRationale": "Cerebras runtime now reports production llama3.1-8b with empty drift and authenticated provider metadata; unauthenticated monitoring remains blocked.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -38042,16 +38197,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 115,
-      "appropriateCount": 102,
+      "seenCount": 116,
+      "appropriateCount": 103,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 17,
-      "lastRunId": "QA-20260430-0384",
-      "lastSeenAt": "2026-04-30T13:00:04.697Z",
+      "lastRunId": "QA-20260430-0385",
+      "lastSeenAt": "2026-04-30T14:18:18.454Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Canonical main validation and v8.11.75 release tag pipelines completed successfully, Vercel deployment is Ready, /api/version serves 8.11.75, and usage check remains normal.",
+      "lastRationale": "GitLab tag pipeline, Cloud Run deploy, post-deploy smoke, env verification, and health checks all passed.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -38059,16 +38214,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 150,
+      "seenCount": 151,
       "appropriateCount": 139,
-      "partialCount": 11,
+      "partialCount": 12,
       "inappropriateCount": 0,
       "improvementNeededCount": 13,
-      "lastRunId": "QA-20260430-0384",
-      "lastSeenAt": "2026-04-30T13:00:04.697Z",
-      "lastFit": "appropriate",
+      "lastRunId": "QA-20260430-0385",
+      "lastSeenAt": "2026-04-30T14:18:18.454Z",
+      "lastFit": "partially-appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The regression is now covered by Vitest plus production Playwright checks for direct route load, manual sidebar reopen, fullscreen handoff, desktop rail collapse, mobile viewport fit, and console cleanliness.",
+      "lastRationale": "This was a targeted release smoke for provider/env routing. Browser UI was intentionally not rerun because the changed surface was backend model policy and deploy env.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
