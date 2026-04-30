@@ -26,9 +26,9 @@
 
 | Inventory Slice | Count |
 | --- | --- |
-| Shared component graph scope (`src/components/**/*.tsx`) | 145 |
+| Shared component graph scope (`src/components/**/*.tsx`) | 148 |
 | Route-local components excluded from graph (`src/app/**/components/**/*.tsx`) | 7 |
-| Total TSX component inventory | 152 |
+| Total TSX component inventory | 155 |
 
 ## App Route-Local Component Distribution
 
@@ -51,12 +51,12 @@ Route-local component files:
 
 | Metric | Value |
 | --- | --- |
-| Component source lines | 27824 |
-| Component nodes | 145 |
-| Component edges | 127 |
-| Graph density | 0.61% |
+| Component source lines | 28495 |
+| Component nodes | 148 |
+| Component edges | 139 |
+| Graph density | 0.64% |
 | Alias edges (`@/components/*`) | 41 |
-| Relative edges (`./`, `../`) | 86 |
+| Relative edges (`./`, `../`) | 98 |
 | Isolated components | 30 |
 | SCC cycle groups | 0 |
 | Largest cycle size | 0 |
@@ -69,7 +69,7 @@ flowchart LR
   d1["ai-sidebar (15)"]
   d2["auth (1)"]
   d3["charts (2)"]
-  d4["dashboard (30)"]
+  d4["dashboard (33)"]
   d5["emergency (1)"]
   d6["error (3)"]
   d7["home (2)"]
@@ -78,8 +78,8 @@ flowchart LR
   d10["system (2)"]
   d11["ui (22)"]
   d12["unified-profile (3)"]
+  d4 -->|38| d4
   d0 -->|32| d0
-  d4 -->|26| d4
   d1 -->|13| d1
   d9 -->|10| d9
   d1 -->|8| d0
@@ -107,7 +107,7 @@ flowchart LR
 | Domain | Node Count |
 | --- | --- |
 | ai | 37 |
-| dashboard | 30 |
+| dashboard | 33 |
 | shared | 23 |
 | ui | 22 |
 | ai-sidebar | 15 |
@@ -124,8 +124,8 @@ flowchart LR
 
 | From | To | Edge Count |
 | --- | --- | --- |
+| dashboard | dashboard | 38 |
 | ai | ai | 32 |
-| dashboard | dashboard | 26 |
 | ai-sidebar | ai-sidebar | 13 |
 | shared | shared | 10 |
 | ai-sidebar | ai | 8 |
@@ -172,14 +172,14 @@ flowchart LR
 | ai/AIWorkspace | 9 |
 | ai-sidebar/AISidebarV4 | 7 |
 | dashboard/EnhancedServerModal | 7 |
+| dashboard/DashboardRoutedContent | 6 |
+| dashboard/ServerDetailView | 6 |
 | ai/AIWorkspaceMessage | 5 |
 | shared/FeatureCardModal | 5 |
 | ai-sidebar/SidebarMessage | 4 |
 | ai/analysis/ServerResultCard | 4 |
 | dashboard/DashboardHeader | 4 |
 | dashboard/ServerDashboard | 4 |
-| ai/AnalysisBasisBadge | 3 |
-| dashboard/alert-history/AlertHistoryModal | 3 |
 
 ## Cycle Risk (SCC Top 10)
 
@@ -193,10 +193,10 @@ ai-sidebar/EnhancedAIChat -> ai/AgentHandoffBadge, ai/AgentStatusIndicator, ai-s
 ai/AIWorkspace -> ai-sidebar/EnhancedAIChat, error/AIErrorBoundary, dashboard/RealTimeDisplay, shared/OpenManagerLogo, shared/UnifiedProfileHeader, ai/AIAssistantIconPanel
 ai-sidebar/AISidebarV4 -> ai/AIAssistantIconPanel, ai/AIContentArea, error/AIErrorBoundary, ai-sidebar/AISidebarHeader, ai-sidebar/EnhancedAIChat, ai-sidebar/ResizeHandle
 dashboard/EnhancedServerModal -> dashboard/EnhancedServerModal.LogsTab, dashboard/EnhancedServerModal.MetricsTab, dashboard/EnhancedServerModal.NetworkTab, dashboard/EnhancedServerModal.OverviewTab, dashboard/EnhancedServerModal.ProcessesTab, dashboard/ServerModalHeader
+dashboard/DashboardRoutedContent -> dashboard/ActiveAlertsModal, dashboard/alert-history/AlertHistoryModal, dashboard/log-explorer/LogExplorerModal, dashboard/ServerDashboard, dashboard/ServerDetailView, dashboard/TopologyModal
+dashboard/ServerDetailView -> dashboard/EnhancedServerModal.LogsTab, dashboard/EnhancedServerModal.MetricsTab, dashboard/EnhancedServerModal.NetworkTab, dashboard/EnhancedServerModal.OverviewTab, dashboard/EnhancedServerModal.ProcessesTab, dashboard/ServerModalTabNav
 ai/AIWorkspaceMessage -> ai/AnalysisBasisBadge, ai/MarkdownRenderer, ai/MessageActions, ai/ThinkingProcessVisualizer, ai/TypewriterMarkdown
 shared/FeatureCardModal -> shared/FeatureCardModalHeader, shared/ReactFlowDiagram, shared/TechStackSection, shared/VibeCiCdSection, shared/VibeHistorySection
-ai-sidebar/SidebarMessage -> ai/AnalysisBasisBadge, ai/MessageActions, ai/WebSourceCards, ai-sidebar/InlineAgentStatus
-ai/analysis/ServerResultCard -> ai/analysis/AnomalySection, ai/analysis/constants, ai/analysis/InsightSection, ai/analysis/TrendSection
 ```
 
 ## Update Rule

@@ -6,17 +6,17 @@
     "excludedRouteLocalNodes": "src/app/**/components/**/*.tsx"
   },
   "inventory": {
-    "sharedComponentNodes": 145,
+    "sharedComponentNodes": 148,
     "routeLocalComponentNodes": 7,
-    "totalComponentNodes": 152
+    "totalComponentNodes": 155
   },
   "metrics": {
-    "componentSourceLines": 27824,
-    "componentNodes": 145,
-    "componentEdges": 127,
-    "graphDensity": 0.006082,
+    "componentSourceLines": 28495,
+    "componentNodes": 148,
+    "componentEdges": 139,
+    "graphDensity": 0.006389,
     "aliasEdges": 41,
-    "relativeEdges": 86,
+    "relativeEdges": 98,
     "isolatedComponents": 30,
     "sccCycleGroups": 0,
     "largestCycleSize": 0
@@ -89,6 +89,14 @@
       "outDegree": 7
     },
     {
+      "component": "dashboard/DashboardRoutedContent",
+      "outDegree": 6
+    },
+    {
+      "component": "dashboard/ServerDetailView",
+      "outDegree": 6
+    },
+    {
       "component": "ai/AIWorkspaceMessage",
       "outDegree": 5
     },
@@ -111,26 +119,18 @@
     {
       "component": "dashboard/ServerDashboard",
       "outDegree": 4
-    },
-    {
-      "component": "ai/AnalysisBasisBadge",
-      "outDegree": 3
-    },
-    {
-      "component": "dashboard/alert-history/AlertHistoryModal",
-      "outDegree": 3
     }
   ],
   "topDomainEdges": [
     {
+      "fromDomain": "dashboard",
+      "toDomain": "dashboard",
+      "count": 38
+    },
+    {
       "fromDomain": "ai",
       "toDomain": "ai",
       "count": 32
-    },
-    {
-      "fromDomain": "dashboard",
-      "toDomain": "dashboard",
-      "count": 26
     },
     {
       "fromDomain": "ai-sidebar",
