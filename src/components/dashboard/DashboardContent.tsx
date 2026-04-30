@@ -1,51 +1,26 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { memo, useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { memo, useEffect, useRef } from 'react';
 import { useDashboardStats } from '@/hooks/dashboard/useDashboardStats';
 import { useMonitoringReport } from '@/hooks/dashboard/useMonitoringReport';
 import type {
   DashboardDataSourceInfo,
   DashboardTimeInfo,
 } from '@/lib/dashboard/server-data';
-import type { MonitoringAlert } from '@/schemas/api.monitoring-report.schema';
-import type { Alert } from '@/services/monitoring/AlertManager';
 import type { Server } from '@/types/server';
 import debug from '@/utils/debug';
 import { safeErrorMessage } from '@/utils/utils-functions';
 import {
   type DashboardAlertContext,
   getHighestServerAlertMetric,
-  toDashboardAlertContext,
 } from './alert-ai-context';
 import { DashboardSummary } from './DashboardSummary';
 import { resolveDashboardEmptyState } from './dashboard-empty-state';
 import { SystemOverviewSection } from './SystemOverviewSection';
 import type { DashboardStats } from './types/dashboard.types';
 
-// Lazy load modals for better initial load performance
-const ActiveAlertsModal = dynamic(
-  () => import('./ActiveAlertsModal').then((mod) => mod.ActiveAlertsModal),
-  { ssr: false }
-);
-const AlertHistoryModal = dynamic(
-  () =>
-    import('./alert-history/AlertHistoryModal').then(
-      (mod) => mod.AlertHistoryModal
-    ),
-  { ssr: false }
-);
-const LogExplorerModal = dynamic(
-  () =>
-    import('./log-explorer/LogExplorerModal').then(
-      (mod) => mod.LogExplorerModal
-    ),
-  { ssr: false }
-);
-const TopologyModal = dynamic(
-  () => import('./TopologyModal').then((mod) => mod.TopologyModal),
-  { ssr: false }
-);
 const ServerDashboard = dynamic(() => import('./ServerDashboard'), {
   ssr: false,
   loading: () => (
@@ -127,6 +102,7 @@ export default memo(function DashboardContent({
   onStatusFilterChange,
   onAskAIAboutAlert,
 }: DashboardContentProps) {
+  const router = useRouter();
   // 🛡️ P1-8 Fix: onStatsUpdate를 ref에 저장하여 useEffect 무한 루프 방지
   const onStatsUpdateRef = useRef(onStatsUpdate);
   onStatsUpdateRef.current = onStatsUpdate;
@@ -154,12 +130,6 @@ export default memo(function DashboardContent({
         '모니터링 리포트를 불러오지 못했습니다.'
       )
     : null;
-
-  // 모달 상태
-  const [alertHistoryOpen, setAlertHistoryOpen] = useState(false);
-  const [logExplorerOpen, setLogExplorerOpen] = useState(false);
-  const [activeAlertsOpen, setActiveAlertsOpen] = useState(false);
-  const [topologyModalOpen, setTopologyModalOpen] = useState(false);
 
   // 🎯 서버 데이터에서 직접 통계 계산 (중복 API 호출 제거)
   const statsLoading = false;
@@ -198,34 +168,6 @@ export default memo(function DashboardContent({
       metricLabel,
       metricValue: Math.round(metricValue),
     });
-  };
-
-  const handleAskAIAboutMonitoringAlert = (alert: MonitoringAlert) => {
-    if (!onAskAIAboutAlert) {
-      return;
-    }
-
-    const alertContext = toDashboardAlertContext(alert);
-    if (!alertContext) {
-      return;
-    }
-
-    setActiveAlertsOpen(false);
-    onAskAIAboutAlert(alertContext);
-  };
-
-  const handleAskAIAboutAlertHistory = (alert: Alert) => {
-    if (!onAskAIAboutAlert) {
-      return;
-    }
-
-    const alertContext = toDashboardAlertContext(alert);
-    if (!alertContext) {
-      return;
-    }
-
-    setAlertHistoryOpen(false);
-    onAskAIAboutAlert(alertContext);
   };
 
   // F04 fix: isClient 상태 제거 — 'use client' 컴포넌트에서 불필요한 이중 렌더링
@@ -281,12 +223,12 @@ export default memo(function DashboardContent({
           dataSourceInfo={dataSourceInfo}
           activeFilter={statusFilter}
           onFilterChange={onStatusFilterChange}
-          onOpenAlertHistory={() => setAlertHistoryOpen(true)}
-          onOpenLogExplorer={() => setLogExplorerOpen(true)}
-          showTopology={topologyModalOpen}
-          onToggleTopology={() => setTopologyModalOpen(true)}
+          onOpenAlertHistory={() => router.push('/dashboard/alerts')}
+          onOpenLogExplorer={() => router.push('/dashboard/logs')}
+          showTopology={false}
+          onToggleTopology={() => router.push('/dashboard/topology')}
           activeAlertsCount={monitoringReport?.firingAlerts?.length ?? 0}
-          onOpenActiveAlerts={() => setActiveAlertsOpen(true)}
+          onOpenActiveAlerts={() => router.push('/dashboard/alerts')}
         />
 
         {/* 🎯 메인 컨텐츠 영역 */}
@@ -353,49 +295,6 @@ export default memo(function DashboardContent({
               )}
             </div>
           </div>
-        )}
-
-        {/* Active Alerts Modal */}
-        {activeAlertsOpen && (
-          <ActiveAlertsModal
-            open={activeAlertsOpen}
-            onClose={() => setActiveAlertsOpen(false)}
-            alerts={monitoringReport?.firingAlerts ?? []}
-            onAskAIAboutAlert={
-              onAskAIAboutAlert ? handleAskAIAboutMonitoringAlert : undefined
-            }
-          />
-        )}
-
-        {/* Topology Modal */}
-        {topologyModalOpen && (
-          <TopologyModal
-            open={topologyModalOpen}
-            onClose={() => setTopologyModalOpen(false)}
-            servers={allServers?.length ? allServers : servers}
-          />
-        )}
-
-        {/* Alert History Modal */}
-        {alertHistoryOpen && (
-          <AlertHistoryModal
-            open={alertHistoryOpen}
-            onClose={() => setAlertHistoryOpen(false)}
-            serverIds={(allServers?.length ? allServers : servers).map(
-              (s) => s.id
-            )}
-            onAskAIAboutAlert={
-              onAskAIAboutAlert ? handleAskAIAboutAlertHistory : undefined
-            }
-          />
-        )}
-
-        {/* Log Explorer Modal */}
-        {logExplorerOpen && (
-          <LogExplorerModal
-            open={logExplorerOpen}
-            onClose={() => setLogExplorerOpen(false)}
-          />
         )}
       </div>
     </main>

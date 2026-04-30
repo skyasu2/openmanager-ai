@@ -1,7 +1,5 @@
-'use client';
-
-import AIWorkspace from '@/components/ai/AIWorkspace';
+import { renderDashboardRoute } from '../DashboardRoutePage';
 
 export default function AIAssistantPage() {
-  return <AIWorkspace />;
+  return renderDashboardRoute({ dashboardView: 'ai-assistant' });
 }

@@ -290,36 +290,6 @@ describe('DashboardContent empty state', () => {
     });
   });
 
-  it('요약 액션 콜백을 각 모달 open 상태로 연결한다', async () => {
-    render(
-      <DashboardContent
-        {...createProps({
-          servers: [{ id: 's1', name: 'server-1', status: 'online' } as Server],
-          allServers: [
-            { id: 's1', name: 'server-1', status: 'online' } as Server,
-          ],
-          totalServers: 1,
-        })}
-      />
-    );
-
-    fireEvent.click(screen.getByRole('button', { name: 'open active alerts' }));
-    expect(
-      await screen.findByTestId('active-alerts-modal')
-    ).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: 'open alert history' }));
-    expect(
-      await screen.findByTestId('alert-history-modal')
-    ).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: 'open log explorer' }));
-    expect(await screen.findByTestId('log-explorer-modal')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: 'open topology' }));
-    expect(await screen.findByTestId('topology-modal')).toBeInTheDocument();
-  });
-
   it('요약 액션은 모달 상태 대신 대시보드 route navigation으로 연결한다', async () => {
     render(
       <DashboardContent

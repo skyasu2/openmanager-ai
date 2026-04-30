@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-04-30 KST (`Dashboard app shell navigation plan drafted`)
+**Last Updated**: 2026-04-30 KST (`Dashboard app shell navigation completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -9,7 +9,6 @@
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
 | Cerebras Qwen deprecation 대응 | P1 | pending | 2026-05-27 deprecation. 후계 모델 확인 + env 교체. 계획: [ai-engine-code-quality-plan.md](ai-engine-code-quality-plan.md) Task 4 |
-| Dashboard app shell + modal-to-route refactor | P2 | draft | 좌측 navigation rail/drawer, 대시보드 모달 기능의 route page 전환. 계획: [dashboard-app-shell-navigation-refactor-plan.md](dashboard-app-shell-navigation-refactor-plan.md) |
 
 ---
 
@@ -42,6 +41,16 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-04-30 #231)
+- [x] Dashboard app shell + modal-to-route refactor
+  - Plan completed: [dashboard-app-shell-navigation-refactor-plan.md](dashboard-app-shell-navigation-refactor-plan.md)
+  - `/dashboard` 좌측 navigation rail과 모바일 drawer 추가, 우측 AI sidebar/session/auto-shutdown 흐름 유지
+  - `/dashboard/servers`, `/dashboard/servers/[serverId]`, `/dashboard/alerts`, `/dashboard/logs`, `/dashboard/topology` route 추가
+  - Active Alerts, Alert History, Log Explorer, Topology, Server Detail 모달 본문을 page-ready panel/view로 분리하고 기존 modal wrapper는 호환 유지
+  - Overview summary/server/top-alert 액션을 모달 상태 대신 route navigation으로 전환
+  - `/dashboard?serverId=<id>` legacy deep link를 `/dashboard/servers/<id>`로 redirect
+  - 검증: route/unit targeted 18/18, modal panel targeted 22/22, Playwright dashboard targeted 12/12, type-check, test:quick, lint, build, `git diff --check` 통과
 
 ### Completed (2026-04-30 #230)
 - [x] Monitoring AI data source / Reporter-Analyst grounding

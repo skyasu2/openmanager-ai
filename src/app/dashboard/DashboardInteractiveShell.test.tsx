@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  */
 
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -29,7 +29,27 @@ vi.mock('next/dynamic', () => ({
   },
 }));
 
+vi.mock('next/link', () => ({
+  default: ({
+    href,
+    children,
+    ...props
+  }: {
+    href: string;
+    children: React.ReactNode;
+  }) =>
+    React.createElement(
+      'a',
+      {
+        href,
+        ...props,
+      },
+      children
+    ),
+}));
+
 vi.mock('next/navigation', () => ({
+  usePathname: () => '/dashboard',
   useRouter: () => ({
     push: vi.fn(),
     replace: vi.fn(),
@@ -208,5 +228,32 @@ describe('DashboardInteractiveShell', () => {
       'href',
       '/dashboard/ai-assistant'
     );
+  });
+
+  it('opens and closes the mobile dashboard navigation drawer', async () => {
+    const { default: DashboardInteractiveShell } = await import(
+      './DashboardInteractiveShell'
+    );
+
+    render(
+      React.createElement(DashboardInteractiveShell, {
+        initialServers: [],
+        initialTimeInfo: undefined,
+        initialDataSourceInfo: null,
+        initialFocusServerId: null,
+        isMounted: true,
+        canToggleAI: true,
+        userType: 'github',
+        isGuestFullAccess: false,
+      })
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '대시보드 메뉴 열기' }));
+    expect(screen.getByText('OpenManager')).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getAllByRole('button', { name: '대시보드 메뉴 닫기' })[0]
+    );
+    expect(screen.queryByText('OpenManager')).not.toBeInTheDocument();
   });
 });

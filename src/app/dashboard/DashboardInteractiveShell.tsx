@@ -12,6 +12,8 @@ import {
 } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import type { DashboardAlertContext } from '@/components/dashboard/alert-ai-context';
+import { DashboardNavigation } from '@/components/dashboard/shell/DashboardNavigation';
+import type { DashboardView } from '@/components/dashboard/types/dashboard-view.types';
 import { useAIEntryController } from '@/hooks/ai/useAIEntryController';
 import { useAutoLogout } from '@/hooks/useAutoLogout';
 import { useServerDashboard } from '@/hooks/useServerDashboard';
@@ -99,6 +101,11 @@ const DashboardContent = dynamic(
   { ssr: false, loading: () => <ContentLoadingSkeleton /> }
 );
 
+const DashboardRoutedContent = dynamic(
+  () => import('@/components/dashboard/DashboardRoutedContent'),
+  { ssr: false, loading: () => <ContentLoadingSkeleton /> }
+);
+
 const AutoLogoutWarning = dynamic(
   () =>
     import('@/components/auth/AutoLogoutWarning').then(
@@ -116,6 +123,7 @@ const NotificationToast = dynamic(
 );
 
 type DashboardInteractiveShellProps = {
+  dashboardView?: DashboardView;
   initialServers?: Server[];
   initialTimeInfo?: DashboardTimeInfo;
   initialDataSourceInfo?: DashboardDataSourceInfo | null;
@@ -127,6 +135,7 @@ type DashboardInteractiveShellProps = {
 };
 
 export default function DashboardInteractiveShell({
+  dashboardView = 'overview',
   initialServers,
   initialTimeInfo,
   initialDataSourceInfo,
@@ -355,6 +364,7 @@ export default function DashboardInteractiveShell({
 
   return (
     <>
+      <DashboardNavigation />
       <div className="flex min-h-0 flex-1 flex-col">
         <DashboardHeader onToggleAgent={toggleAgent} />
 
@@ -363,30 +373,55 @@ export default function DashboardInteractiveShell({
             <ContentLoadingSkeleton />
           ) : (
             <Suspense fallback={<ContentLoadingSkeleton />}>
-              <DashboardContent
-                showSequentialGeneration={false}
-                servers={realServers}
-                allServers={allServers}
-                dataSlotInfo={initialTimeInfo}
-                dataSourceInfo={initialDataSourceInfo}
-                initialFocusServerId={initialFocusServerId}
-                totalServers={filteredTotal}
-                currentPage={currentPage}
-                totalPages={totalPages}
-                pageSize={pageSize}
-                onPageChange={setCurrentPage}
-                onPageSizeChange={changePageSize}
-                status={{ type: 'idle' }}
-                onStatsUpdate={handleStatsUpdate}
-                onShowSequentialChange={() => {}}
-                statusFilter={statusFilter}
-                onStatusFilterChange={setStatusFilter}
-                onAskAIAboutAlert={
-                  canToggleAI || isGuestFullAccess
-                    ? handleAskAIAboutAlert
-                    : undefined
-                }
-              />
+              {dashboardView === 'overview' ? (
+                <DashboardContent
+                  showSequentialGeneration={false}
+                  servers={realServers}
+                  allServers={allServers}
+                  dataSlotInfo={initialTimeInfo}
+                  dataSourceInfo={initialDataSourceInfo}
+                  initialFocusServerId={initialFocusServerId}
+                  totalServers={filteredTotal}
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  pageSize={pageSize}
+                  onPageChange={setCurrentPage}
+                  onPageSizeChange={changePageSize}
+                  status={{ type: 'idle' }}
+                  onStatsUpdate={handleStatsUpdate}
+                  onShowSequentialChange={() => {}}
+                  statusFilter={statusFilter}
+                  onStatusFilterChange={setStatusFilter}
+                  onAskAIAboutAlert={
+                    canToggleAI || isGuestFullAccess
+                      ? handleAskAIAboutAlert
+                      : undefined
+                  }
+                />
+              ) : (
+                <DashboardRoutedContent
+                  view={dashboardView}
+                  servers={realServers}
+                  allServers={allServers}
+                  dataSlotInfo={initialTimeInfo}
+                  dataSourceInfo={initialDataSourceInfo}
+                  initialFocusServerId={initialFocusServerId}
+                  totalServers={filteredTotal}
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  pageSize={pageSize}
+                  onPageChange={setCurrentPage}
+                  onPageSizeChange={changePageSize}
+                  onStatsUpdate={handleStatsUpdate}
+                  statusFilter={statusFilter}
+                  onStatusFilterChange={setStatusFilter}
+                  onAskAIAboutAlert={
+                    canToggleAI || isGuestFullAccess
+                      ? handleAskAIAboutAlert
+                      : undefined
+                  }
+                />
+              )}
             </Suspense>
           )}
         </div>

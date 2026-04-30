@@ -9,21 +9,14 @@
  */
 
 import type { Metadata } from 'next';
-import dynamic from 'next/dynamic';
-import { connection } from 'next/server';
-import DashboardDevBootstrap from './DashboardDevBootstrap';
-import DashboardLoading from './loading';
+import { redirect } from 'next/navigation';
+import { renderDashboardRoute } from './DashboardRoutePage';
 
 type DashboardPageProps = {
   searchParams: Promise<{
     serverId?: string | string[] | undefined;
   }>;
 };
-
-const DashboardClient = dynamic(() => import('./DashboardClient'), {
-  loading: () => <DashboardLoading />,
-  ssr: process.env.NODE_ENV !== 'development',
-});
 
 export const metadata: Metadata = {
   title: 'Dashboard',
@@ -38,24 +31,9 @@ export default async function DashboardPage({
     ? (resolvedSearchParams.serverId[0] ?? null)
     : (resolvedSearchParams.serverId ?? null);
 
-  if (process.env.NODE_ENV === 'development') {
-    return (
-      <DashboardDevBootstrap initialFocusServerId={initialFocusServerId} />
-    );
+  if (initialFocusServerId) {
+    redirect(`/dashboard/servers/${encodeURIComponent(initialFocusServerId)}`);
   }
 
-  await connection();
-  const { getOTelDashboardData } = await import('@/lib/dashboard/server-data');
-  const { servers, stats, timeInfo, dataSourceInfo } =
-    await getOTelDashboardData();
-
-  return (
-    <DashboardClient
-      initialServers={servers}
-      initialStats={stats}
-      initialTimeInfo={timeInfo}
-      initialDataSourceInfo={dataSourceInfo}
-      initialFocusServerId={initialFocusServerId}
-    />
-  );
+  return renderDashboardRoute({ dashboardView: 'overview' });
 }

@@ -1,11 +1,10 @@
 /**
- * 대시보드 서버 카드 + 모달 E2E 테스트
+ * 대시보드 서버 카드 + 상세 route E2E 테스트
  *
  * 테스트 범위:
  * - 서버 카드 렌더링
- * - 서버 카드 클릭 → 모달 열기
- * - 모달 내용 확인 (탭, 메트릭)
- * - 모달 닫기 (ESC, 외부 클릭)
+ * - 서버 카드 클릭 → 서버 상세 route 이동
+ * - 상세 route 내용 확인 (탭, 메트릭)
  */
 
 import { expect, test } from '@playwright/test';
@@ -39,7 +38,7 @@ test.describe('대시보드 서버 카드 테스트', () => {
         }
         test.skip(
           true,
-          '대시보드에 서버 카드가 없어 모달 테스트를 건너뜁니다.'
+          '대시보드에 서버 카드가 없어 상세 route 테스트를 건너뜁니다.'
         );
       }
     }
@@ -73,58 +72,51 @@ test.describe('대시보드 서버 카드 테스트', () => {
     await expect(memoryLabel).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
   });
 
-  test('서버 카드 클릭 → 모달 열기', async ({ page }) => {
+  test('서버 카드 클릭 → 서버 상세 route 이동', async ({ page }) => {
     const firstCard = getServerCardButtons(page).first();
     await expect(firstCard).toBeVisible({
       timeout: TIMEOUTS.MODAL_DISPLAY,
     });
     await firstCard.click();
 
-    // 모달이 나타나는지 확인 (native <dialog> element or [role="dialog"])
-    const modal = page
-      .locator('dialog[open], [role="dialog"], [role="alertdialog"]')
-      .first();
-    await expect(modal).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
+    await expect(page).toHaveURL(/\/dashboard\/servers\/[^/]+/);
+    await expect(page.getByRole('heading', { name: '서버 상세' })).toBeVisible({
+      timeout: TIMEOUTS.MODAL_DISPLAY,
+    });
   });
 
-  test('서버 모달 닫기 (ESC 키)', async ({ page }) => {
+  test('서버 상세 route에서 목록으로 돌아갈 수 있다', async ({ page }) => {
     const firstCard = getServerCardButtons(page).first();
     await expect(firstCard).toBeVisible({
       timeout: TIMEOUTS.MODAL_DISPLAY,
     });
     await firstCard.click();
 
-    // Native <dialog> element or [role="dialog"]
-    const modal = page
-      .locator('dialog[open], [role="dialog"], [role="alertdialog"]')
-      .first();
-    await expect(modal).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
+    await expect(page).toHaveURL(/\/dashboard\/servers\/[^/]+/);
 
-    // ESC 키로 닫기
-    await page.keyboard.press('Escape');
-    await expect(modal).not.toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
+    await page.getByRole('link', { name: /서버 목록/ }).click();
+    await expect(page).toHaveURL(/\/dashboard\/servers$/);
+    await expect(getServerCardButtons(page).first()).toBeVisible({
+      timeout: TIMEOUTS.MODAL_DISPLAY,
+    });
   });
 
-  test('서버 모달 탭 전환 확인', async ({ page }) => {
+  test('서버 상세 route 탭 전환 확인', async ({ page }) => {
     const firstCard = getServerCardButtons(page).first();
     await expect(firstCard).toBeVisible({
       timeout: TIMEOUTS.MODAL_DISPLAY,
     });
     await firstCard.click();
 
-    // Native <dialog> element or [role="dialog"]
-    const modal = page
-      .locator('dialog[open], [role="dialog"], [role="alertdialog"]')
-      .first();
-    await expect(modal).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
+    await expect(page).toHaveURL(/\/dashboard\/servers\/[^/]+/);
 
     // 탭 버튼이 존재하는지 확인 (종합 상황, 성능 분석 등)
-    const tabButtons = modal.locator(
-      'button:has-text("종합 상황"), button:has-text("성능 분석")'
-    );
-    const tabCount = await tabButtons.count();
-
-    expect(tabCount).toBeGreaterThan(0);
+    await expect(page.getByRole('tab', { name: '종합 상황' })).toBeVisible({
+      timeout: TIMEOUTS.DOM_UPDATE,
+    });
+    await expect(page.getByRole('tab', { name: '성능 분석' })).toBeVisible({
+      timeout: TIMEOUTS.DOM_UPDATE,
+    });
   });
 
   test('성능 분석 탭의 주요 버튼/컨트롤이 동작한다', async ({ page }) => {
@@ -134,51 +126,48 @@ test.describe('대시보드 서버 카드 테스트', () => {
     });
     await firstCard.click();
 
-    const modal = page
-      .locator('dialog[open], [role="dialog"], [role="alertdialog"]')
-      .first();
-    await expect(modal).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
+    await expect(page).toHaveURL(/\/dashboard\/servers\/[^/]+/);
 
     // 상위 탭: 성능 분석
-    const metricsTab = modal.getByRole('tab', { name: '성능 분석' });
+    const metricsTab = page.getByRole('tab', { name: '성능 분석' });
     await expect(metricsTab).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
     await metricsTab.click();
 
     // 하위 뷰 토글: 기본 ↔ 분석
-    const advancedViewButton = modal.getByRole('button', { name: '분석' });
+    const advancedViewButton = page.getByRole('button', { name: '분석' });
     await expect(advancedViewButton).toBeVisible({
       timeout: TIMEOUTS.DOM_UPDATE,
     });
     await advancedViewButton.click();
 
-    await expect(modal.getByText(/트렌드 분석/).first()).toBeVisible({
+    await expect(page.getByText(/트렌드 분석/).first()).toBeVisible({
       timeout: TIMEOUTS.NETWORK_REQUEST,
     });
 
     // 메트릭 버튼 순회
     for (const metric of ['CPU', 'MEMORY', 'DISK', 'NETWORK']) {
-      const metricButton = modal.getByRole('button', { name: metric }).first();
+      const metricButton = page.getByRole('button', { name: metric }).first();
       await expect(metricButton).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
       await metricButton.click();
     }
 
     // 시간 범위 선택 변경
-    const rangeSelect = modal.locator('select').first();
+    const rangeSelect = page.locator('select').first();
     await expect(rangeSelect).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
     await rangeSelect.selectOption('24h');
 
     // 토글 옵션 클릭
-    const predictionToggle = modal.getByLabel('예측').first();
-    const anomaliesToggle = modal.getByLabel('이상탐지').first();
+    const predictionToggle = page.getByLabel('예측').first();
+    const anomaliesToggle = page.getByLabel('이상탐지').first();
     await predictionToggle.click();
     await anomaliesToggle.click();
 
     // 새로고침 버튼 동작
-    const refreshButton = modal.getByRole('button', { name: '새로고침' });
+    const refreshButton = page.getByRole('button', { name: '새로고침' });
     await expect(refreshButton).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
     await refreshButton.click();
 
-    // 에러 배너가 뜨더라도 모달이 유지되어야 함 (치명 크래시 방지)
-    await expect(modal).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
+    // 에러 배너가 뜨더라도 상세 route가 유지되어야 함 (치명 크래시 방지)
+    await expect(page).toHaveURL(/\/dashboard\/servers\/[^/]+/);
   });
 });

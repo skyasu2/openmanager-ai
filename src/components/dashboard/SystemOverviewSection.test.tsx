@@ -11,6 +11,16 @@ vi.mock('next/dynamic', () => ({
   default: () => () => null,
 }));
 
+const { routerPush } = vi.hoisted(() => ({
+  routerPush: vi.fn(),
+}));
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: routerPush,
+  }),
+}));
+
 describe('SystemOverviewSection', () => {
   const servers = [
     {

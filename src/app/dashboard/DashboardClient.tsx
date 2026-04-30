@@ -1,6 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import type { DashboardView } from '@/components/dashboard/types/dashboard-view.types';
 import type {
   DashboardDataSourceInfo,
   DashboardStats,
@@ -10,6 +11,7 @@ import type { Server } from '@/types/server';
 import { ContentLoadingSkeleton } from './dashboard-client-helpers';
 
 type DashboardClientProps = {
+  dashboardView?: DashboardView;
   initialServers?: Server[];
   initialStats?: DashboardStats;
   initialTimeInfo?: DashboardTimeInfo;

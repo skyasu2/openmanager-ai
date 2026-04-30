@@ -1,12 +1,12 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-04-30
 > Tags: dashboard,app-shell,navigation,modal,frontend,vercel-free-tier
 
 # Dashboard App Shell Navigation Refactor Plan
 
-- 상태: Approved
+- 상태: Completed
 - 작성일: 2026-04-30
 - TODO.md 연결: Active Tasks > Dashboard app shell + modal-to-route refactor
 
@@ -193,48 +193,48 @@
 
 Task 0에서 아래 테스트를 먼저 failing state로 추가한다.
 
-- [ ] 시나리오 1: dashboard shell navigation — `/dashboard`에서 좌측 nav가 보이고 `개요/서버/알림/로그/토폴로지/AI 어시스턴트` 항목이 route와 연결된다.
-- [ ] 시나리오 2: right AI sidebar preservation — 새 shell에서도 AI sidebar open/close와 `queryAsOfDataSlot` 전달이 유지된다.
-- [ ] 시나리오 3: summary route actions — `DashboardSummary`의 알림/이력/로그/토폴로지 액션이 modal state 대신 route navigation으로 이어진다.
-- [ ] 시나리오 4: alerts page parity — `/dashboard/alerts`에서 활성 알림 count, 이력 검색, severity/state/server/time 필터가 기존 모달과 동등하게 동작한다.
-- [ ] 시나리오 5: logs page parity — `/dashboard/logs`에서 keyword/level/source/server 필터, reset, retry, terminal list가 기존 모달과 동등하게 동작한다.
-- [ ] 시나리오 6: topology page parity — `/dashboard/topology`에서 React Flow topology가 표시되고 기존 노드/레이어/edge summary가 유지된다.
-- [ ] 시나리오 7: server detail route — `/dashboard/servers/[serverId]`에서 overview/metrics/logs 탭이 표시되고 새로고침 가능한 URL로 동작한다.
-- [ ] 시나리오 8: legacy deep link compatibility — `/dashboard?serverId=<id>`가 기존처럼 서버 상세를 보여주거나 새 route로 안전하게 이동한다.
-- [ ] 시나리오 9: mobile navigation — 좁은 viewport에서 menu button, drawer open/close, active route 표시가 동작하고 본문과 AI sidebar가 겹치지 않는다.
+- [x] 시나리오 1: dashboard shell navigation — `/dashboard`에서 좌측 nav가 보이고 `개요/서버/알림/로그/토폴로지/AI 어시스턴트` 항목이 route와 연결된다.
+- [x] 시나리오 2: right AI sidebar preservation — 새 shell에서도 AI sidebar open/close와 `queryAsOfDataSlot` 전달이 유지된다.
+- [x] 시나리오 3: summary route actions — `DashboardSummary`의 알림/이력/로그/토폴로지 액션이 modal state 대신 route navigation으로 이어진다.
+- [x] 시나리오 4: alerts page parity — `/dashboard/alerts`에서 활성 알림 count, 이력 검색, severity/state/server/time 필터가 기존 모달과 동등하게 동작한다.
+- [x] 시나리오 5: logs page parity — `/dashboard/logs`에서 keyword/level/source/server 필터, reset, retry, terminal list가 기존 모달과 동등하게 동작한다.
+- [x] 시나리오 6: topology page parity — `/dashboard/topology`에서 React Flow topology가 표시되고 기존 노드/레이어/edge summary가 유지된다.
+- [x] 시나리오 7: server detail route — `/dashboard/servers/[serverId]`에서 overview/metrics/logs 탭이 표시되고 새로고침 가능한 URL로 동작한다.
+- [x] 시나리오 8: legacy deep link compatibility — `/dashboard?serverId=<id>`가 기존처럼 서버 상세를 보여주거나 새 route로 안전하게 이동한다.
+- [x] 시나리오 9: mobile navigation — 좁은 viewport에서 menu button, drawer open/close, active route 표시가 동작하고 본문과 AI sidebar가 겹치지 않는다.
 
 ## Task 목록
 
 > 구현 착수 전 Status를 Approved로 올리고, Task 0 failing test 커밋을 먼저 만든다.
 
-- [ ] Task 0 — failing test 추가
+- [x] Task 0 — failing test 추가
   - 완료 기준: 위 테스트 시나리오 중 route/shell/parity 핵심 테스트가 현재 코드에서 실패한다.
   - 커밋 메시지: `test(spec): dashboard app shell add failing tests before implementation`
 
-- [ ] Task 1 — Dashboard app shell foundation
+- [x] Task 1 — Dashboard app shell foundation
   - 완료 기준: auth/session/auto-shutdown/right AI sidebar를 보존하면서 좌측 nav desktop rail과 mobile drawer가 추가된다.
   - 주요 검토: `DashboardClientRuntime`과 `DashboardInteractiveShell` 책임 분리, route children 구조.
 
-- [ ] Task 2 — Modal content를 page-ready panel로 추출
+- [x] Task 2 — Modal content를 page-ready panel로 추출
   - 완료 기준: `ActiveAlertsPanel`, `AlertHistoryPanel`, `LogExplorerPanel`, `TopologyView`, `ServerDetailView`가 modal shell 없이 렌더 가능하다.
   - 기존 modal 컴포넌트는 필요 시 wrapper로 유지한다.
 
-- [ ] Task 3 — Route pages 추가
+- [x] Task 3 — Route pages 추가
   - 완료 기준: `/dashboard/servers`, `/dashboard/servers/[serverId]`, `/dashboard/alerts`, `/dashboard/logs`, `/dashboard/topology`가 직접 접근/새로고침 가능하다.
   - 기존 `/dashboard/ai-assistant`는 nav에 연결하되 동작을 바꾸지 않는다.
 
-- [ ] Task 4 — 기존 overview의 modal trigger 제거/전환
+- [x] Task 4 — 기존 overview의 modal trigger 제거/전환
   - 완료 기준: `DashboardContent`, `ServerDashboard`, `SystemOverviewSection`의 page 역할 모달 상태가 route navigation으로 대체된다.
   - `AILoginRequiredModal` 같은 권한 안내 모달은 유지한다.
 
-- [ ] Task 5 — Legacy link compatibility
+- [x] Task 5 — Legacy link compatibility
   - 완료 기준: `ReportCard`의 `/dashboard?serverId=...` 링크와 기존 테스트가 깨지지 않거나 새 `/dashboard/servers/[id]` 링크로 안전하게 전환된다.
 
-- [ ] Task 6 — Free-tier and bundle side-effect guard
+- [x] Task 6 — Free-tier and bundle side-effect guard
   - 완료 기준: route 추가가 추가 LLM 호출, background polling 증가, Cloud Run 호출 증가를 만들지 않음을 테스트/리뷰로 확인한다.
   - 대형 React Flow/terminal/detail view는 route chunk 또는 dynamic import로 유지한다.
 
-- [ ] Task 7 — QA and documentation
+- [x] Task 7 — QA and documentation
   - 완료 기준: targeted component tests, route tests, dashboard E2E smoke, type-check/lint/test:quick 통과 후 TODO/plan 상태를 갱신한다.
 
 ## 단계별 커밋/푸시/배포 판단
@@ -258,6 +258,25 @@ Task 0에서 아래 테스트를 먼저 failing state로 추가한다.
 | Task 2~3 완료 후 | modal content 추출의 상태 보존, 직접 URL 접근, 새로고침 안정성 |
 | Task 4~5 완료 후 | 기존 사용자 진입점과 deep link 호환성 |
 | 전체 완료 후 | Vercel free-tier compute 증가 여부, mobile layout, accessibility, QA 기록 |
+
+## 완료 검증
+
+- `npx vitest run --config config/testing/vitest.config.dom.ts src/app/dashboard/DashboardInteractiveShell.test.tsx src/components/dashboard/DashboardContent.test.tsx src/components/dashboard/ServerDashboard.test.tsx src/app/dashboard/dashboard-route-contract.test.ts` → 18/18 pass
+- `npx vitest run --config config/testing/vitest.config.dom.ts src/components/dashboard/ActiveAlertsModal.test.tsx src/components/dashboard/alert-history/AlertHistoryModal.test.tsx src/components/dashboard/log-explorer/LogExplorerModal.test.tsx src/components/dashboard/dashboard-modal-theme-contract.test.tsx src/components/dashboard/SystemOverviewSection.test.tsx src/components/dashboard/DashboardSummary.test.tsx` → 22/22 pass
+- `PLAYWRIGHT_SKIP_SERVER=1 PLAYWRIGHT_BASE_URL=http://localhost:3100 PLAYWRIGHT_HTML_REPORT=0 PLAYWRIGHT_WORKERS=1 npx playwright test tests/e2e/dashboard-server-cards.spec.ts tests/e2e/dashboard-alerts-logs.spec.ts --config playwright.config.ts` → 12/12 pass
+- `npm run type-check` → pass
+- `npm run test:quick` → pass
+- `npm run lint` → pass (`reports/qa/qa-tracker.json` size info only)
+- `npm run build` → pass
+- `git diff --check` → pass
+
+## 사이드 이펙트 검토
+
+- Cloud Run AI Engine, OTel 데이터 형식, Supabase schema 변경 없음.
+- `/api/monitoring/report`, `/api/servers-unified`, `useServerMetrics()` 기존 데이터 계약 유지.
+- 좌측 navigation 추가는 client route 전환만 수행하며 LLM 호출, background polling, Cloud Run fan-out을 늘리지 않음.
+- Alert/Log/Topology/AI workspace는 route별 dynamic import 또는 기존 lazy boundary를 유지해 overview 초기 렌더 부담을 억제.
+- 기존 `/dashboard?serverId=<id>` deep link는 `/dashboard/servers/<id>` redirect로 호환.
 
 ## 사이드 이펙트 분석
 

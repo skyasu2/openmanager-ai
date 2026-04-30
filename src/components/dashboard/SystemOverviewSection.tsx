@@ -1,15 +1,11 @@
 import { CheckCircle2 } from 'lucide-react';
-import dynamic from 'next/dynamic';
-import { useCallback, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useCallback, useMemo } from 'react';
 import type { Server } from '@/types/server';
 import {
   type DashboardAlertContext,
   getHighestServerAlertMetric,
 } from './alert-ai-context';
-
-const EnhancedServerModal = dynamic(() => import('./EnhancedServerModal'), {
-  ssr: false,
-});
 
 const GAUGE_COLORS = {
   cpu: '#6366f1',
@@ -26,7 +22,7 @@ export function SystemOverviewSection({
   servers,
   onAskAIAboutAlert,
 }: SystemOverviewSectionProps) {
-  const [selectedServer, setSelectedServer] = useState<Server | null>(null);
+  const router = useRouter();
 
   const handleAlertClick = useCallback(
     (context: DashboardAlertContext) => {
@@ -35,16 +31,10 @@ export function SystemOverviewSection({
         return;
       }
 
-      const serverId = context.serverId;
-      const server = servers.find((s) => (s.id ?? s.name) === serverId);
-      if (server) setSelectedServer(server);
+      router.push(`/dashboard/servers/${encodeURIComponent(context.serverId)}`);
     },
-    [onAskAIAboutAlert, servers]
+    [onAskAIAboutAlert, router]
   );
-
-  const handleModalClose = useCallback(() => {
-    setSelectedServer(null);
-  }, []);
 
   const averages = useMemo(() => {
     if (!servers || servers.length === 0) {
@@ -167,13 +157,6 @@ export function SystemOverviewSection({
           </div>
         </div>
       </div>
-
-      {selectedServer && (
-        <EnhancedServerModal
-          server={selectedServer}
-          onClose={handleModalClose}
-        />
-      )}
     </div>
   );
 }
