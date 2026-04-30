@@ -231,6 +231,10 @@ export default function AIWorkspace({
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (embedded) {
+      return;
+    }
+
     if (mobileHandoffStartedRef.current) {
       return;
     }
@@ -271,6 +275,7 @@ export default function AIWorkspace({
     queuePendingEntryState,
     router,
     selectedFunction,
+    embedded,
   ]);
 
   useEffect(() => {

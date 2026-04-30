@@ -345,6 +345,35 @@ describe('AIWorkspace', () => {
     expect(screen.queryByText('AI Engine Active')).not.toBeInTheDocument();
   });
 
+  it('keeps the embedded mobile AI route as a dashboard function page', async () => {
+    mockViewportMedia(true);
+    const setOpen = vi.fn();
+    const queuePendingEntryState = vi.fn();
+    mockSidebarState = {
+      ...mockSidebarState,
+      setOpen,
+      queuePendingEntryState,
+    };
+
+    render(<AIWorkspace embedded />);
+
+    expect(
+      await screen.findByRole('button', { name: /AI Chat\s+NLQ Agent/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /장애 보고서\s+Reporter Agent/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /이상감지\/예측\s+Analyst Agent/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('ai-workspace-mobile-handoff')
+    ).not.toBeInTheDocument();
+    expect(queuePendingEntryState).not.toHaveBeenCalled();
+    expect(setOpen).not.toHaveBeenCalled();
+    expect(mockReplace).not.toHaveBeenCalledWith('/dashboard');
+  });
+
   it('hands off the mobile fullscreen route to the dashboard sidebar', async () => {
     mockViewportMedia(true);
     const setOpen = vi.fn();
