@@ -224,9 +224,19 @@ const textColor = value >= 85 ? 'text-red-700 font-bold' : value >= 70 ? 'text-a
 
 ### Phase 2 — 레이아웃 변경 (P1, ~2일)
 
-- [ ] **T6**: 서버 뷰 토글 (`[≡ 리스트][▦ 그리드]`) + 그리드 2열 레이아웃
-- [ ] **T7**: 서버 카드 정렬 셀렉트 (상태/CPU/MEM/이름)
-- [ ] **T8**: 로그 행 1줄 압축 + 클릭 확장 (현재 2~3줄 → 1줄 기본, 클릭 시 상세)
+- [x] **T6**: 서버 뷰 토글 (`[≡ 리스트][▦ 그리드]`) + 그리드 2열 레이아웃
+- [x] **T7**: 서버 카드 정렬 셀렉트 (상태/CPU/MEM/이름)
+- [x] **T8**: 로그 행 1줄 압축 + 클릭 확장 (현재 2~3줄 → 1줄 기본, 클릭 시 상세)
+
+#### Phase 2 구현 로그 (2026-05-01)
+
+- SDD 선행 테스트 커밋: `e0a30666d test(spec): dashboard server log phase2 contracts`
+- 구현 커밋: `7a681bb23 feat(dashboard): implement server log phase2 controls`
+- 서버 목록 상단에 리스트/그리드 보기 토글 추가. 기본은 운영 대시보드 스캔에 맞춰 리스트, 그리드는 2열로 고정.
+- 서버 정렬 셀렉트를 추가해 상태/CPU/MEM/이름 기준으로 카드 순서를 전환.
+- 로그 행을 기본 1줄 압축 버튼으로 바꾸고, 클릭 시 메시지 전체를 `whitespace-pre-wrap`으로 확장.
+- 필터/초기화/더보기 동작 시 확장 로그 상태를 초기화해 이전 행 확장 상태가 다른 결과에 남지 않도록 정렬.
+- 검증: targeted dashboard component tests 10/10, root type-check, `lint:changed`, `test:quick`, `git diff --check` 통과.
 
 ### Phase 3 — 기능 추가 (P2, ~3일)
 

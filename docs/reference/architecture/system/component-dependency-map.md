@@ -51,11 +51,11 @@ Route-local component files:
 
 | Metric | Value |
 | --- | --- |
-| Component source lines | 28801 |
+| Component source lines | 28901 |
 | Component nodes | 148 |
-| Component edges | 139 |
-| Graph density | 0.64% |
-| Alias edges (`@/components/*`) | 41 |
+| Component edges | 138 |
+| Graph density | 0.63% |
+| Alias edges (`@/components/*`) | 40 |
 | Relative edges (`./`, `../`) | 98 |
 | Isolated components | 30 |
 | SCC cycle groups | 0 |
@@ -78,7 +78,7 @@ flowchart LR
   d10["system (2)"]
   d11["ui (22)"]
   d12["unified-profile (3)"]
-  d4 -->|38| d4
+  d4 -->|37| d4
   d0 -->|32| d0
   d1 -->|13| d1
   d9 -->|10| d9
@@ -124,7 +124,7 @@ flowchart LR
 
 | From | To | Edge Count |
 | --- | --- | --- |
-| dashboard | dashboard | 38 |
+| dashboard | dashboard | 37 |
 | ai | ai | 32 |
 | ai-sidebar | ai-sidebar | 13 |
 | shared | shared | 10 |
@@ -179,7 +179,7 @@ flowchart LR
 | ai-sidebar/SidebarMessage | 4 |
 | ai/analysis/ServerResultCard | 4 |
 | dashboard/DashboardHeader | 4 |
-| dashboard/ServerDashboard | 4 |
+| ai/AnalysisBasisBadge | 3 |
 
 ## Cycle Risk (SCC Top 10)
 

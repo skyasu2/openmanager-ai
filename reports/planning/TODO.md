@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-01 KST (`dashboard server/log UX phase 1 completed`)
+**Last Updated**: 2026-05-01 KST (`dashboard server/log UX phase 2 completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| Dashboard Server & Log UX 개선 | P2 | In Progress | Phase 1 완료. Phase 2/3 남음. 계획: [dashboard-server-log-ux-plan.md](dashboard-server-log-ux-plan.md) |
+| Dashboard Server & Log UX 개선 | P2 | In Progress | Phase 1/2 완료. Phase 3 남음. 계획: [dashboard-server-log-ux-plan.md](dashboard-server-log-ux-plan.md) |
 
 ---
 
