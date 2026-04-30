@@ -39,7 +39,7 @@ export function StatCell({
         data-testid={testId}
         onClick={onClick}
         className={cn(
-          'rounded-md text-center transition-colors hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400',
+          'min-h-11 rounded-md px-2 py-1 text-center transition-colors hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400',
           active && 'bg-white ring-1 ring-blue-200',
           className
         )}
