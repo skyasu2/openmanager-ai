@@ -2,7 +2,6 @@
 
 > Vercel + Cloud Run 하이브리드 시스템 구조의 기준 문서
 > Owner: platform-architecture
-> Last verified against code: 2026-04-29
 > Status: Active Canonical (hybrid-split.md 통합됨)
 > Doc type: Explanation
 > Last reviewed: 2026-04-29

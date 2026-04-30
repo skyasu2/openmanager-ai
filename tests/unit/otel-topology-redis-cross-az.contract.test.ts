@@ -69,7 +69,7 @@ describe('OTel topology redis cross-AZ latency contract', () => {
           if (
             (log.resource === 'api-was-dc1-03' ||
               log.resource === 'cache-redis-dc1-01') &&
-            /remote az cache/i.test(log.body)
+            /cache read latency|latency-monitor/i.test(log.body)
           ) {
             matchingLogs.push(`${hour}:${log.resource}:${log.body}`);
           }

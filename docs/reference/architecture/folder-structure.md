@@ -2,7 +2,6 @@
 
 > 코드베이스 현재 폴더 구조와 책임 범위를 정리한 레퍼런스
 > Owner: platform-architecture
-> Last verified against code: 2026-04-25
 > Status: Active Canonical
 > Doc type: Reference
 > Last reviewed: 2026-04-25

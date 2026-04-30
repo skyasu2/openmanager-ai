@@ -8,7 +8,6 @@
 > Canonical: docs/reference/api/endpoints.md
 > Tags: api,endpoints,reference
 >
-> Last verified against code: 2026-02-22
 > Source of truth: `src/app/api/**/route.ts*`
 
 이 문서는 **엔드포인트 존재 여부와 라우트 매핑**을 빠르게 확인하기 위한 카탈로그입니다.
