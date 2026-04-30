@@ -1,7 +1,7 @@
 > Owner: project
 > Status: Approved
 > Doc type: Reference
-> Last reviewed: 2026-04-30
+> Last reviewed: 2026-05-01
 > Tags: ai-engine, refactoring, cleanup, quota, cerebras
 
 # AI Engine Code Quality Plan
@@ -107,6 +107,7 @@ routes/approval.ts → approvalStore.getHistory() → fetchApprovalHistory() 직
 ## Task 2 — quota-tracker.ts 레이어 분리
 
 **우선순위**: P3 (1,145줄 → 400줄 목표)
+**상태**: 완료 (2026-05-01)
 
 ### 현황 섹션 구조
 
@@ -144,6 +145,16 @@ BP 정렬: Redis sliding window(quota-store-redis)와 In-memory L1(quota-store-m
 |--------|:------:|------|
 | 순환 import | 중간 | types ← memory/redis ← tracker 단방향 유지 |
 | 테스트 mock 경로 변경 | 있음 | 기존 `vi.mock('../resilience/quota-tracker')` 패턴 그대로 유지 가능 (facade 유지) |
+
+### 2026-05-01 구현 로그
+
+- SDD 선행 테스트 커밋: `5844bb989 test(spec): quota tracker layer split contracts`
+- 구현 커밋: `02685431b refactor(ai-engine): split quota tracker layers`
+- `quota-types.ts` 신규: provider/model quota types, constants, thresholds, `getQuotaForProvider`, `getQuotaModelCandidates`, `getQuotaUsageScope` 분리.
+- `quota-store-memory.ts` 신규: default/normalize usage, memory usage/cooldown map, per-scope lock 분리.
+- `quota-store-redis.ts` 신규: Redis key/TTL, usage/cooldown read/write, atomic reservation/reconcile Lua script 실행 분리.
+- `quota-tracker.ts`는 기존 public import contract를 re-export로 유지하고 `getProviderUsage`, `recordProviderUsage`, `reserveProviderQuota`, `reconcileProviderQuotaReservation`, `markProviderQuotaCooldown`, `getQuotaStatus`, `selectAvailableProvider`, `getQuotaSummary` core facade만 보유.
+- 검증: quota targeted 37/37, quota facade importer targeted 49/49, AI Engine type-check, AI Engine test 941/941, `lint:changed`, `git diff --check` 통과.
 
 ---
 
@@ -282,7 +293,7 @@ BP 정렬: LangGraph 패턴에서 에이전트 Factory는 독립 레지스트리
 ```
 Task 4 (Cerebras 모델) ← 데드라인 있음, 2026-05-20 전 처리
 Task 1 (approval 단순화) ← 완료 (2026-04-30)
-Task 2 (quota-tracker 분리) ← 중간 규모, 기존 테스트 커버리지 있음
+Task 2 (quota-tracker 분리) ← 완료 (2026-05-01)
 Task 3 (orchestrator 분리) ← 가장 규모 큼, 사전 내용 분석 필수
 ```
 

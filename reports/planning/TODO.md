@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-01 KST (`dashboard server/log UX completed`)
+**Last Updated**: 2026-05-01 KST (`quota tracker layer split completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -16,7 +16,6 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| quota-tracker.ts 레이어 분리 | P3 | 1,145줄 → 4파일 분리. 계획: Task 2 |
 | orchestrator-routing / summary-fallback 분리 | P3 | 각 1,100~1,200줄. 계획: Task 3 |
 
 ---
@@ -40,6 +39,16 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-01 #235)
+- [x] quota-tracker.ts 레이어 분리
+  - Plan partial completed: [ai-engine-code-quality-plan.md](ai-engine-code-quality-plan.md) Task 2
+  - `quota-types.ts`, `quota-store-memory.ts`, `quota-store-redis.ts` 추가
+  - `quota-tracker.ts`는 기존 public facade와 core API를 유지하고 내부 store/config 의존만 분리
+  - Redis reservation/reconcile은 memory store에 숨은 write를 하지 않고 facade가 동기화하도록 정렬
+  - SDD 선행 테스트 커밋: `5844bb989 test(spec): quota tracker layer split contracts`
+  - 구현 커밋: `02685431b refactor(ai-engine): split quota tracker layers`
+  - 검증: quota targeted 37/37, facade importer targeted 49/49, AI Engine type-check, AI Engine test 941/941, `lint:changed`, `git diff --check` 통과
 
 ### Completed (2026-05-01 #234)
 - [x] Dashboard Server & Log UX 개선
