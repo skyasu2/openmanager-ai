@@ -52,7 +52,11 @@ vi.mock('./alert-history/AlertHistoryModal', () => ({
 }));
 
 vi.mock('./log-explorer/LogExplorerModal', () => ({
-  LogExplorerPanel: ({ initialServerId }: { initialServerId?: string | null }) => (
+  LogExplorerPanel: ({
+    initialServerId,
+  }: {
+    initialServerId?: string | null;
+  }) => (
     <div
       data-testid="log-explorer-panel"
       data-initial-server-id={initialServerId ?? ''}
@@ -99,9 +103,7 @@ describe('DashboardRoutedContent route query contracts', () => {
   });
 
   it('알림 route의 server query를 AlertHistoryPanel 초기 서버 필터로 전달한다', () => {
-    searchParamsState.value = new URLSearchParams(
-      'server=api-was-dc1-01'
-    );
+    searchParamsState.value = new URLSearchParams('server=api-was-dc1-01');
 
     render(<DashboardRoutedContent {...baseProps} view="alerts" />);
 
@@ -117,9 +119,7 @@ describe('DashboardRoutedContent route query contracts', () => {
   });
 
   it('알림 route는 legacy serverId query도 초기 서버 필터로 수용한다', () => {
-    searchParamsState.value = new URLSearchParams(
-      'serverId=api-was-dc1-01'
-    );
+    searchParamsState.value = new URLSearchParams('serverId=api-was-dc1-01');
 
     render(<DashboardRoutedContent {...baseProps} view="alerts" />);
 

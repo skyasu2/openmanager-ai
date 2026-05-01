@@ -94,6 +94,8 @@ describe('LogsTab', () => {
       screen.getByRole('button', { name: 'server-a 알림 이력 보기' })
     );
 
-    expect(routerPush).toHaveBeenCalledWith('/dashboard/alerts?server=server-a');
+    expect(routerPush).toHaveBeenCalledWith(
+      '/dashboard/alerts?server=server-a'
+    );
   });
 });

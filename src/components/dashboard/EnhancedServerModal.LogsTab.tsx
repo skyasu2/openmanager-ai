@@ -15,10 +15,10 @@
  * or generateServerLogs/generateLokiLogs (synthetic).
  */
 
-import type { FC } from 'react';
-import { useMemo, useState } from 'react';
 import { Bell } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import type { FC } from 'react';
+import { useMemo, useState } from 'react';
 import {
   buildLogQL,
   groupOTelLogsIntoStreams,

@@ -555,10 +555,7 @@ export function LogExplorerPanel({
               </p>
             </div>
           ) : (
-            <div
-              aria-busy={isPending ? true : undefined}
-              className="space-y-1"
-            >
+            <div aria-busy={isPending ? true : undefined} className="space-y-1">
               {displayLogGroups.map((group) => {
                 const log = group.representative;
                 const logLevel = log.level as keyof typeof levelStyles;
