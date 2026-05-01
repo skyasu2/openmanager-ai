@@ -13,6 +13,7 @@ import {
   type HybridMessage,
   normalizeAIResponse,
   normalizeMessagesForCloudRun,
+  RAW_TOOL_CALL_SUPPRESSED_MESSAGE,
 } from './message-normalizer';
 
 describe('message-normalizer', () => {
@@ -393,7 +394,7 @@ describe('message-normalizer', () => {
   });
 
   describe('normalizeAIResponse', () => {
-    it('raw function-call JSON은 응답 본문에서 숨긴다', () => {
+    it('raw function-call JSON은 안전 안내문으로 정규화한다', () => {
       const rawToolCall = JSON.stringify({
         type: 'function',
         name: 'analyzePattern',
@@ -402,10 +403,12 @@ describe('message-normalizer', () => {
         },
       });
 
-      expect(normalizeAIResponse(rawToolCall)).toBe('');
+      expect(normalizeAIResponse(rawToolCall)).toBe(
+        RAW_TOOL_CALL_SUPPRESSED_MESSAGE
+      );
     });
 
-    it('fenced raw function-call JSON도 숨긴다', () => {
+    it('fenced raw function-call JSON도 안전 안내문으로 정규화한다', () => {
       const rawToolCall = [
         '```json',
         JSON.stringify({
@@ -416,7 +419,9 @@ describe('message-normalizer', () => {
         '```',
       ].join('\n');
 
-      expect(normalizeAIResponse(rawToolCall)).toBe('');
+      expect(normalizeAIResponse(rawToolCall)).toBe(
+        RAW_TOOL_CALL_SUPPRESSED_MESSAGE
+      );
     });
 
     it('answer JSON은 표시 가능한 텍스트로 정규화한다', () => {

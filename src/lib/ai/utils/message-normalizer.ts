@@ -120,6 +120,9 @@ export interface HybridMessage {
   createdAt?: Date | string;
 }
 
+export const RAW_TOOL_CALL_SUPPRESSED_MESSAGE =
+  'AI 엔진이 도구 호출 정보를 응답 본문으로 반환해 표시를 차단했습니다. 같은 질문을 다시 시도해 주세요.';
+
 // ============================================================================
 // 텍스트 추출 함수
 // ============================================================================
@@ -438,7 +441,7 @@ export function normalizeAIResponse(text: string): string {
 
     // AI SDK/provider가 tool call을 텍스트로 누출한 경우 UI 본문에서는 숨긴다.
     if (isRawToolCallPayload(parsed)) {
-      return '';
+      return RAW_TOOL_CALL_SUPPRESSED_MESSAGE;
     }
 
     // `answer` 필드가 있는 AI 응답 JSON → 텍스트만 추출

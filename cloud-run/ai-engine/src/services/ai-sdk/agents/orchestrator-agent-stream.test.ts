@@ -712,6 +712,77 @@ describe('executeAgentStream', () => {
     expect(mockStreamText).toHaveBeenCalledTimes(2);
   });
 
+  it('suppresses raw tool-call JSON text and retries the next provider', async () => {
+    mockStreamText.mockImplementation(
+      ({ model }: { model: { provider: string } }) => {
+        if (model.provider === 'cerebras') {
+          return createStreamResult({
+            chunks: [
+              '{"type":"function","name":"analyzePattern",',
+              '"arguments":{"query":"지난 1시간 동안 장애 징후가 있었던 구간만 요약해줘"}}',
+            ],
+            steps: [],
+          });
+        }
+
+        return createStreamResult({
+          chunks: ['장애 징후 구간은 01:20~01:30 KST이며 네트워크 사용률 상승이 핵심입니다.'],
+          steps: [
+            {
+              toolCalls: [{ toolName: 'finalAnswer' }],
+              toolResults: [
+                {
+                  toolName: 'finalAnswer',
+                  result: {
+                    answer:
+                      '장애 징후 구간은 01:20~01:30 KST이며 네트워크 사용률 상승이 핵심입니다.',
+                  },
+                },
+              ],
+            },
+          ],
+        });
+      }
+    );
+
+    const events = await collectEvents(
+      '지난 1시간 동안 장애 징후가 있었던 구간만 요약해줘'
+    );
+    const textPayload = events
+      .filter((event) => event.type === 'text_delta')
+      .map((event) => String(event.data))
+      .join('');
+
+    expect(textPayload).toContain('장애 징후 구간은');
+    expect(textPayload).not.toContain('"type":"function"');
+    expect(textPayload).not.toContain('analyzePattern');
+    expect(mockStreamText).toHaveBeenCalledTimes(2);
+
+    const retryStatusEvent = events.find((event) => event.type === 'agent_status');
+    expect(retryStatusEvent?.data).toMatchObject({
+      agent: 'NLQ Agent',
+      status: 'processing',
+      message: 'cerebras 응답 형식 오류로 대안 모델로 전환 중...',
+    });
+
+    const doneEvent = events.find((event) => event.type === 'done');
+    const doneData = doneEvent?.data as {
+      metadata: {
+        provider: string;
+        usedFallback?: boolean;
+        fallbackReason?: string;
+        providerAttempts?: Array<{ provider: string; error?: string }>;
+      };
+    };
+    expect(doneData.metadata.provider).toBe('groq');
+    expect(doneData.metadata.usedFallback).toBe(true);
+    expect(doneData.metadata.fallbackReason).toBe('raw_tool_call_json');
+    expect(doneData.metadata.providerAttempts).toMatchObject([
+      { provider: 'cerebras', error: 'RAW_TOOL_CALL_JSON' },
+      { provider: 'groq' },
+    ]);
+  });
+
   it('emits a threshold-aware slow processing warning for multi-agent streaming', async () => {
     mockStreamText.mockReturnValue(
       createStreamResult({

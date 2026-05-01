@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-02 KST (`AI raw tool-call JSON suppression`)
+**Last Updated**: 2026-05-02 KST (`AI multi-agent raw tool-call JSON suppression`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -41,6 +41,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-02 #245)
+- [x] AI Chat multi-agent raw tool-call JSON/blank response residual fix
+  - Production v8.11.78 재현에서 raw JSON 직접 노출은 사라졌으나 두 번째 질문 job result가 raw function-call JSON으로 저장되고 UI 응답 본문이 빈 상태로 표시되는 잔여 증상 확인
+  - multi-agent `orchestrator-agent-stream`에도 structured text guard를 적용해 raw function/tool-call JSON 텍스트 델타 suppress 및 provider fallback 처리
+  - frontend fallback을 빈 문자열 대신 안전 안내문으로 전환해 legacy/cached job result에서도 빈 assistant 버블 방지
+  - 검증: targeted normalizer/orchestrator-agent-stream tests, root/AI Engine type-check, `npm run lint`, `npm run test:quick`, `npm run test:contract`, `cloud-run/ai-engine npm test`
 
 ### Completed (2026-05-02 #244)
 - [x] AI Chat raw tool-call JSON 노출 방지

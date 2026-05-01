@@ -40,6 +40,7 @@ import {
   buildDeterministicSummaryFromCurrentState,
   isDeterministicSummaryQuery,
 } from './orchestrator-summary-fallback';
+import { createStructuredTextDeltaGuard } from '../supervisor-stream-text-guard';
 
 const PROVIDER_FALLBACK_BASE_DELAY_MS = 120;
 const PROVIDER_FALLBACK_JITTER_MS = 280;
@@ -48,6 +49,8 @@ const TOOL_RESULT_SUMMARY_MAX_CHARS = 2000;
 const APPROX_CHARS_PER_TOKEN = 4;
 const STREAM_MAX_OUTPUT_TOKENS = 2048;
 const SUMMARY_MAX_OUTPUT_TOKENS = 1024;
+const RAW_TOOL_CALL_JSON_FALLBACK_TEXT =
+  'AI 엔진이 도구 호출 정보를 응답 본문으로 반환해 표시를 차단했습니다. 같은 질문을 다시 시도해 주세요.';
 
 interface CollectedToolResult {
   toolName: string;
@@ -82,6 +85,9 @@ function classifyProviderFallbackReason(errorMessage: string): string {
   }
   if (normalized.includes('empty_response')) {
     return 'empty_response';
+  }
+  if (normalized.includes('raw_tool_call_json')) {
+    return 'raw_tool_call_json';
   }
   if (
     normalized.includes('low_information_response') ||
@@ -517,6 +523,24 @@ export async function* executeAgentStream(
       const toolsCalled: string[] = [];
       let fullResponseText = '';
       let fallbackReason: string | undefined;
+      const textDeltaGuard = createStructuredTextDeltaGuard();
+      const emitDisplayText = function* (
+        displayText: string,
+        source: string
+      ): Generator<StreamEvent> {
+        if (!displayText) return;
+
+        fullResponseText += displayText;
+        const hasVisibleText = displayText.trim().length > 0;
+        if (hasVisibleText) {
+          textEmitted = true;
+        }
+        if (hasVisibleText && !preferDeterministicSummary) {
+          textDelivered = true;
+          markFirstChunk(source);
+          yield { type: 'text_delta', data: displayText };
+        }
+      };
 
       for await (const textChunk of streamResult.textStream) {
         const elapsed = Date.now() - startTime;
@@ -569,21 +593,47 @@ export async function* executeAgentStream(
 
         const sanitized = sanitizeChineseCharacters(textChunk);
         if (sanitized) {
-          fullResponseText += sanitized;
-          const hasVisibleText = sanitized.trim().length > 0;
-          if (hasVisibleText) {
-            textEmitted = true;
-          }
-          if (hasVisibleText && !preferDeterministicSummary) {
-            textDelivered = true;
-            markFirstChunk('text_stream');
-            yield { type: 'text_delta', data: sanitized };
+          for (const displayText of textDeltaGuard.push(sanitized)) {
+            yield* emitDisplayText(displayText, 'text_stream');
           }
         }
       }
 
       if (hardTimeoutReached) {
         return;
+      }
+
+      for (const displayText of textDeltaGuard.flush()) {
+        yield* emitDisplayText(displayText, 'text_stream');
+      }
+
+      if (textDeltaGuard.hasRawToolCall() && !textDelivered) {
+        const toolName = textDeltaGuard.getRawToolCallName();
+        lastError = 'RAW_TOOL_CALL_JSON';
+        fallbackReason = lastError;
+        logger.warn(
+          `[Stream ${agentName}] ${provider}/${modelId} emitted raw tool-call JSON${toolName ? ` (${toolName})` : ''}`
+        );
+
+        if (attemptIndex < providerAttempts.length - 1) {
+          excludedProviders.push(provider);
+          providerAttemptTelemetry.push({
+            provider,
+            modelId,
+            attempt: attemptIndex + 1,
+            durationMs: Date.now() - providerStartTime,
+            error: lastError,
+          });
+          yield buildProviderRetryStatus(
+            `${provider} 응답 형식 오류로 대안 모델로 전환 중...`
+          );
+          await waitBeforeProviderFallback(
+            agentName,
+            provider,
+            'raw_tool_call_json'
+          );
+          continue providerLoop;
+        }
       }
 
       const stepsAndUsage = await Promise.all([streamResult.steps, streamResult.usage]).catch(
@@ -906,15 +956,32 @@ export async function* executeAgentStream(
       }
 
       if (!textEmitted) {
-        const fallbackText =
-          '응답을 생성하지 못했습니다. 질문을 더 구체적으로 다시 시도해 주세요.';
+        const rawToolCallSuppressed = textDeltaGuard.hasRawToolCall();
+        const fallbackText = rawToolCallSuppressed
+          ? RAW_TOOL_CALL_JSON_FALLBACK_TEXT
+          : '응답을 생성하지 못했습니다. 질문을 더 구체적으로 다시 시도해 주세요.';
         logger.warn(`[Stream ${agentName}] Empty response, emitting fallback`);
-        fallbackReason = 'EMPTY_RESPONSE';
+        fallbackReason = rawToolCallSuppressed
+          ? 'RAW_TOOL_CALL_JSON'
+          : 'EMPTY_RESPONSE';
         yield {
           type: 'warning',
-          data: { code: 'EMPTY_RESPONSE', message: '모델이 빈 응답을 반환했습니다.' },
+          data: rawToolCallSuppressed
+            ? {
+                code: 'RAW_TOOL_CALL_JSON_SUPPRESSED',
+                message:
+                  '도구 호출 JSON이 응답 본문으로 반환되어 표시를 차단했습니다.',
+              }
+            : {
+                code: 'EMPTY_RESPONSE',
+                message: '모델이 빈 응답을 반환했습니다.',
+              },
         };
-        markFirstChunk('empty_response_fallback');
+        markFirstChunk(
+          rawToolCallSuppressed
+            ? 'raw_tool_call_json_fallback'
+            : 'empty_response_fallback'
+        );
         yield { type: 'text_delta', data: fallbackText };
         fullResponseText = fallbackText;
       }
