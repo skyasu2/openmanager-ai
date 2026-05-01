@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Reference
 > Last reviewed: 2026-05-01
 > Tags: ai-engine, refactoring, cleanup, quota, cerebras
@@ -7,7 +7,7 @@
 # AI Engine Code Quality Plan
 
 AI 어시스턴트 개선 사이클 완료 후 잔여 구조 정리 작업 계획.  
-총 4개 작업, 우선순위 순으로 정렬. **구현 전 Status → Approved 전환 필요.**
+총 4개 작업, 우선순위 순으로 정렬. **전체 완료 (2026-05-01).**
 
 ---
 
@@ -191,7 +191,7 @@ BP 정렬: LangGraph 패턴에서 에이전트 Factory는 독립 레지스트리
 
 ### Task 3-B: orchestrator-summary-fallback.ts (1,219줄)
 
-**상태**: 진행 중 — 3-B.1/3-B.2 완료 (2026-05-01)
+**상태**: 완료 (2026-05-01)
 
 현재 구조 파악 필요:
 - l.70: query intent re-export
@@ -205,7 +205,7 @@ BP 정렬: LangGraph 패턴에서 에이전트 Factory는 독립 레지스트리
 1. public facade 대상 characterization tests 보강 — 완료
 2. `CollectedToolResult`, `ServerSnapshot`, `AlertServerSnapshot`, `MetricsToolPayload`, tool result parsing, current-state payload construction을 payload adapter 모듈로 추출 — 완료
 3. metric threshold/ranking answer builder 추출 — 완료
-4. operational/status summary builder 추출 — 남음
+4. operational/status summary builder 추출 — 완료
 5. `orchestrator-summary-fallback.ts`는 `isDeterministicSummaryQuery`, `buildDeterministicSummaryFallback`, `buildDeterministicSummaryFromCurrentState` public compatibility facade로 유지
 
 #### 2026-05-01 구현 로그 — 3-B.1 payload adapter
@@ -225,6 +225,15 @@ BP 정렬: LangGraph 패턴에서 에이전트 Factory는 독립 레지스트리
 - `orchestrator-summary-metric.ts` 신규: `buildMetricThresholdFilterFromPayload`, `buildMetricRankingFromPayload`와 private metric helpers 분리.
 - `orchestrator-summary-fallback.ts`는 public export와 operational/status renderer 유지.
 - 검증: summary/routing/stream targeted tests 54/54, AI Engine type-check, AI Engine test 949/949, `lint:changed`, `git diff --check` 통과.
+
+#### 2026-05-01 구현 로그 — 3-B.3 operational/status builder
+
+- SDD 선행 테스트 커밋: `8fac9e02c test(spec): characterize summary operational builders`
+- 구현 커밋: `53f90b623 refactor(ai-engine): extract summary operational builders`
+- characterization tests: critical 우선순위, offline operational section, metric ranking drift 방지 경로 보강.
+- `orchestrator-summary-operational.ts` 신규: status/explicit-server operational predicates, action/recommendation/trend/summary builders 분리.
+- `orchestrator-summary-fallback.ts`는 deterministic facade와 metric/operational builder dispatch만 유지.
+- 검증: summary/routing/stream targeted tests 56/56, AI Engine type-check, AI Engine test 951/951, `lint:changed`, `git diff --check` 통과.
 
 ### 테스트 시나리오
 
@@ -334,7 +343,7 @@ Task 2 (quota-tracker 분리) ← 완료 (2026-05-01)
 Task 3-A (orchestrator factory 분리) ← 완료 (2026-05-01)
 Task 3-B.1 (summary payload adapter 분리) ← 완료 (2026-05-01)
 Task 3-B.2 (summary metric builder 분리) ← 완료 (2026-05-01)
-Task 3-B.3 (operational/status builder 분리) ← 남은 범위
+Task 3-B.3 (operational/status builder 분리) ← 완료 (2026-05-01)
 ```
 
 ## SDD 게이트
