@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-01 KST (`summary payload adapter extraction completed`)
+**Last Updated**: 2026-05-01 KST (`summary metric builder extraction completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -16,7 +16,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| orchestrator-summary-fallback metric/operational builder 분리 | P3 | Task 3-B.1 payload adapter 추출 완료. 남은 범위: metric threshold/ranking builder, operational/status summary builder |
+| orchestrator-summary-fallback operational/status builder 분리 | P3 | Task 3-B.1 payload adapter, 3-B.2 metric threshold/ranking builder 추출 완료. 남은 범위: operational/status summary builder |
 
 ---
 
@@ -39,6 +39,16 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-01 #238)
+- [x] orchestrator-summary-fallback metric builder 분리
+  - Plan partial completed: [ai-engine-code-quality-plan.md](ai-engine-code-quality-plan.md) Task 3-B.2
+  - metric characterization tests 보강: partial filter summary, trusted filter rows, network ranking, ascending CPU ranking
+  - `orchestrator-summary-metric.ts` 추가: metric threshold/ranking builders and private metric helpers 분리
+  - `orchestrator-summary-fallback.ts`는 public facade와 operational/status renderer 유지
+  - SDD 선행 테스트 커밋: `a3e9de9aa test(spec): characterize summary metric builders`
+  - 구현 커밋: `0ee776526 refactor(ai-engine): extract summary metric builders`
+  - 검증: summary/routing/stream targeted tests 54/54, AI Engine type-check, AI Engine test 949/949, `lint:changed`, `git diff --check` 통과
 
 ### Completed (2026-05-01 #237)
 - [x] orchestrator-summary-fallback payload adapter 분리
