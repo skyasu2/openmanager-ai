@@ -244,7 +244,7 @@ export default function UnifiedProfileHeader({
         className={`relative z-50 ${className}`}
         aria-hidden="true"
       >
-        <div className="h-12 w-32 animate-pulse rounded-full bg-gray-200" />
+        <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 sm:h-12 sm:w-32" />
       </div>
     );
   }
@@ -256,11 +256,12 @@ export default function UnifiedProfileHeader({
         <button
           type="button"
           onClick={navigateToLogin}
-          className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+          aria-label="로그인"
+          className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-sm font-medium text-white transition-colors hover:bg-blue-700 sm:w-auto sm:gap-2 sm:px-4"
           data-testid="login-button"
         >
           <User className="h-4 w-4" />
-          로그인
+          <span className="hidden sm:inline">로그인</span>
         </button>
       </div>
     );
@@ -283,7 +284,7 @@ export default function UnifiedProfileHeader({
           toggleMenu();
         }}
         disabled={isAuthResolving}
-        className="group pointer-events-auto relative z-50 flex items-center space-x-3 rounded-lg p-3 transition-all duration-200 hover:bg-gray-100 disabled:cursor-wait disabled:hover:bg-transparent"
+        className="group pointer-events-auto relative z-50 flex h-10 w-10 items-center justify-center rounded-lg p-0 transition-all duration-200 hover:bg-gray-100 disabled:cursor-wait disabled:hover:bg-transparent sm:h-auto sm:w-auto sm:justify-start sm:space-x-3 sm:p-3"
         aria-label={profileButtonLabel}
         aria-expanded={menuState.showProfileMenu}
         aria-haspopup="true"
@@ -301,7 +302,7 @@ export default function UnifiedProfileHeader({
               <div className="h-3 w-20 animate-pulse rounded bg-gray-200" />
               <div className="h-2.5 w-16 animate-pulse rounded bg-gray-100" />
             </div>
-            <ChevronDown className="h-4 w-4 text-gray-300" />
+            <ChevronDown className="hidden h-4 w-4 text-gray-300 sm:block" />
           </>
         ) : (
           <>
@@ -325,7 +326,7 @@ export default function UnifiedProfileHeader({
 
             {/* 드롭다운 화살표 */}
             <ChevronDown
-              className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${
+              className={`hidden h-4 w-4 text-gray-400 transition-transform duration-200 sm:block ${
                 menuState.showProfileMenu ? 'rotate-180' : ''
               }`}
             />

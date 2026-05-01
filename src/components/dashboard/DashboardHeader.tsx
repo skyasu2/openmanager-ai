@@ -17,7 +17,7 @@ const UnifiedProfileHeader = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-10 w-28 animate-pulse rounded-full bg-gray-200" />
+      <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 sm:w-28" />
     ),
   }
 );
@@ -34,6 +34,8 @@ const AILoginRequiredModal = dynamic(
 interface DashboardHeaderProps {
   /** AI 에이전트 토글 핸들러 - 기존 호환성을 위해 유지 */
   onToggleAgent?: () => void;
+  /** 전체 화면 AI 워크스페이스 route에서는 사이드바 토글을 숨긴다 */
+  hideAIAssistantButton?: boolean;
 }
 
 /**
@@ -52,6 +54,7 @@ interface DashboardHeaderProps {
  */
 const DashboardHeader = memo(function DashboardHeader({
   onToggleAgent,
+  hideAIAssistantButton = false,
 }: DashboardHeaderProps) {
   // 🔒 Hydration 불일치 방지를 위한 클라이언트 전용 상태
   const [isMounted, setIsMounted] = React.useState(false);
@@ -145,10 +148,10 @@ const DashboardHeader = memo(function DashboardHeader({
       suppressHydrationWarning
       className="sticky top-0 z-40 border-b border-gray-200 bg-white shadow-xs"
     >
-      <div className="flex items-center justify-between px-4 py-4 sm:px-6">
+      <div className="flex items-center justify-between py-4 pr-4 pl-16 sm:pr-6 lg:px-6">
         {/* 왼쪽: 브랜드 로고 */}
-        <div className="flex min-w-0 items-center gap-4">
-          <OpenManagerLogo variant="light" href="/" />
+        <div className="flex min-w-0 flex-1 items-center gap-4 overflow-hidden pr-3">
+          <OpenManagerLogo variant="light" compactOnMobile href="/" />
         </div>
 
         {/* 중앙: 실시간 정보 + 세션 카운트다운 */}
@@ -160,13 +163,15 @@ const DashboardHeader = memo(function DashboardHeader({
         )}
 
         {/* 오른쪽: AI 어시스턴트 & 프로필 */}
-        <div className="flex shrink-0 items-center gap-2 sm:gap-4">
+        <div className="relative z-10 flex shrink-0 items-center gap-2 sm:gap-4">
           {/* 🔐 AI 어시스턴트 토글 버튼 - 항상 표시, 클릭 시 인증 체크 */}
-          <AIAssistantButton
-            isOpen={isSidebarOpen}
-            isEnabled={isAIAgentEnabled}
-            onClick={handleAIAgentToggle}
-          />
+          {!hideAIAssistantButton && (
+            <AIAssistantButton
+              isOpen={isSidebarOpen}
+              isEnabled={isAIAgentEnabled}
+              onClick={handleAIAgentToggle}
+            />
+          )}
 
           {/* 🎯 UnifiedProfileHeader 사용 - Zustand 스토어로 Props Drilling 제거 */}
           <UnifiedProfileHeader />

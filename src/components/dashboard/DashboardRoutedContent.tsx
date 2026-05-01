@@ -1,6 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { useSearchParams } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { useMonitoringReport } from '@/hooks/dashboard/useMonitoringReport';
 import type {
@@ -14,6 +15,7 @@ import { safeErrorMessage } from '@/utils/utils-functions';
 import { ActiveAlertsPanel } from './ActiveAlertsModal';
 import {
   type DashboardAlertContext,
+  getHighestServerAlertMetric,
   toDashboardAlertContext,
 } from './alert-ai-context';
 import { AlertHistoryPanel } from './alert-history/AlertHistoryModal';
@@ -94,10 +96,21 @@ export default function DashboardRoutedContent({
   onStatusFilterChange: _onStatusFilterChange,
   onAskAIAboutAlert,
 }: DashboardRoutedContentProps) {
+  const searchParams = useSearchParams();
+  const initialLogServerId =
+    view === 'logs'
+      ? (searchParams.get('server') ?? searchParams.get('serverId'))
+      : null;
+  const initialAlertServerId =
+    view === 'alerts'
+      ? (searchParams.get('server') ?? searchParams.get('serverId'))
+      : null;
+
   const sourceServers = allServers?.length ? allServers : servers;
   const {
     data: monitoringReport,
     error: monitoringError,
+    isLoading: isMonitoringLoading,
     isError: isMonitoringError,
   } = useMonitoringReport();
   const monitoringErrorMessage = isMonitoringError
@@ -119,15 +132,25 @@ export default function DashboardRoutedContent({
     if (context) onAskAIAboutAlert(context);
   };
 
+  const askAIAboutServer = (server: Server) => {
+    if (!onAskAIAboutAlert) return;
+    const { metricLabel, metricValue } = getHighestServerAlertMetric(server);
+    onAskAIAboutAlert({
+      serverId: server.id ?? server.name,
+      serverName: server.name,
+      metricLabel,
+      metricValue: Math.round(metricValue),
+    });
+  };
+
   if (view === 'servers') {
     return (
       <PageFrame
         title="서버"
-        description="18대 관측 서버 상태, 리소스 사용률, 페이지네이션 목록"
+        description="18대 관측 서버 상태, 리소스 사용률, 더 보기 목록"
       >
         <ServerDashboard
           servers={servers}
-          allServers={allServers}
           totalServers={totalServers}
           currentPage={currentPage}
           totalPages={totalPages}
@@ -135,7 +158,8 @@ export default function DashboardRoutedContent({
           onPageChange={onPageChange}
           onPageSizeChange={onPageSizeChange}
           onStatsUpdate={onStatsUpdate}
-          onAskAI={undefined}
+          onAskAI={onAskAIAboutAlert ? askAIAboutServer : undefined}
+          initialVisibleRows={3}
         />
       </PageFrame>
     );
@@ -172,6 +196,9 @@ export default function DashboardRoutedContent({
           <div className="flex min-h-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
             <ActiveAlertsPanel
               alerts={monitoringReport?.firingAlerts ?? []}
+              isLoading={isMonitoringLoading}
+              isError={isMonitoringError}
+              errorMessage={monitoringErrorMessage}
               onAskAIAboutAlert={
                 onAskAIAboutAlert ? askAIAboutMonitoringAlert : undefined
               }
@@ -183,6 +210,7 @@ export default function DashboardRoutedContent({
               onAskAIAboutAlert={
                 onAskAIAboutAlert ? askAIAboutAlertHistory : undefined
               }
+              initialServerId={initialAlertServerId}
             />
           </div>
         </section>
@@ -197,7 +225,7 @@ export default function DashboardRoutedContent({
         description="24시간 OTel 로그 통합 검색과 레벨/소스/서버 필터"
       >
         <div className="flex min-h-[680px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-          <LogExplorerPanel />
+          <LogExplorerPanel initialServerId={initialLogServerId} />
         </div>
       </PageFrame>
     );
@@ -221,7 +249,7 @@ export default function DashboardRoutedContent({
         description="질의, Reporter, Analyst 기능을 한 화면에서 실행"
       >
         <div className="min-h-[680px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-          <AIWorkspace />
+          <AIWorkspace embedded />
         </div>
       </PageFrame>
     );

@@ -480,6 +480,8 @@ export const ChatInputArea = memo(function ChatInputArea({
               minHeight={48}
               maxHeight={200}
               maxHeightVh={30}
+              id="ai-chat-input"
+              name="ai-chat-input"
               aria-label="AI 질문 입력"
               disabled={sessionState?.isLimitReached}
             />
@@ -528,6 +530,8 @@ export const ChatInputArea = memo(function ChatInputArea({
           {/* 숨겨진 파일 입력 */}
           <input
             ref={fileInputRef}
+            id="ai-chat-attachments"
+            name="ai-chat-attachments"
             type="file"
             accept="image/*,.pdf,.md,text/markdown,text/plain"
             multiple

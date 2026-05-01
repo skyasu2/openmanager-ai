@@ -52,7 +52,7 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
         {
           id: 'nlq',
           label: 'NLQ Agent',
-          sublabel: 'Cerebras qwen-3-235b-a22b-instruct-2507',
+          sublabel: 'Cerebras llama3.1-8b',
           type: 'secondary',
           icon: '🔍',
         },

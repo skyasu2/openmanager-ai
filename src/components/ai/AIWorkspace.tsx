@@ -26,6 +26,7 @@ import { AIErrorBoundary } from '@/components/error/AIErrorBoundary';
 import { APP_VERSION } from '@/config/app-meta';
 import { useAIChatCore } from '@/hooks/ai/useAIChatCore';
 import { useAIChatSurface } from '@/hooks/ai/useAIChatSurface';
+import { cn } from '@/lib/utils';
 import {
   type PendingAIEntryState,
   useAISidebarStore,
@@ -60,6 +61,32 @@ const AI_ASSISTANT_LIGHT_THEME_TOKENS = {
 const MOBILE_WORKSPACE_MEDIA_QUERY = '(max-width: 767px)';
 const DASHBOARD_ROUTE = '/dashboard';
 
+const AI_WORKSPACE_FUNCTION_TABS: Array<{
+  id: AIAssistantFunction;
+  label: string;
+  description: string;
+  icon: typeof MessageSquare;
+}> = [
+  {
+    id: 'chat',
+    label: 'AI Chat',
+    description: 'NLQ Agent',
+    icon: MessageSquare,
+  },
+  {
+    id: 'auto-report',
+    label: '장애 보고서',
+    description: 'Reporter Agent',
+    icon: FileText,
+  },
+  {
+    id: 'intelligent-monitoring',
+    label: '이상감지/예측',
+    description: 'Analyst Agent',
+    icon: Monitor,
+  },
+];
+
 function useAIAssistantLightTheme() {
   useEffect(() => {
     const root = document.documentElement;
@@ -88,8 +115,10 @@ function useAIAssistantLightTheme() {
 }
 
 interface AIWorkspaceProps {
-  /** @deprecated mode prop은 제거됨. AIWorkspace는 fullscreen 전용. sidebar는 AISidebarV4 사용. */
-  mode?: never;
+  /** Dashboard route body mode. Avoids the legacy standalone AI shell. */
+  embedded?: boolean;
+  /** @deprecated kept for older stories/tests; sidebar uses AISidebarV4. */
+  mode?: 'fullscreen';
 }
 
 /**
@@ -99,7 +128,9 @@ interface AIWorkspaceProps {
  * Sidebar 모드와 Fullscreen 모드를 모두 지원하며,
  * Chat, Auto Report, Intelligent Monitoring 기능을 포함합니다.
  */
-export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
+export default function AIWorkspace({
+  embedded = false,
+}: AIWorkspaceProps = {}) {
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
   const [isMobileHandoffActive, setIsMobileHandoffActive] = useState(false);
@@ -200,6 +231,10 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (embedded) {
+      return;
+    }
+
     if (mobileHandoffStartedRef.current) {
       return;
     }
@@ -240,6 +275,7 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
     queuePendingEntryState,
     router,
     selectedFunction,
+    embedded,
   ]);
 
   useEffect(() => {
@@ -300,6 +336,69 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
   ]);
 
   // --- Render Logic ---
+  const renderAssistantContent = () => (
+    <AIErrorBoundary
+      componentName="AIWorkspace"
+      resetKey={`${selectedFunction}:${sessionId}`}
+      onReset={() => {
+        setInput('');
+        handleNewSession();
+      }}
+    >
+      <Activity mode={selectedFunction === 'chat' ? 'visible' : 'hidden'}>
+        <EnhancedAIChat
+          autoReportTrigger={{ shouldGenerate: false }}
+          allMessages={enhancedMessages}
+          limitedMessages={enhancedMessages}
+          messagesEndRef={messagesEndRef}
+          MessageComponent={AIWorkspaceMessage}
+          inputValue={input}
+          setInputValue={setInput}
+          handleSendInput={handleSendInput}
+          sessionState={sessionState}
+          onNewSession={handleNewSession}
+          isGenerating={isLoading}
+          streamStatus={streamStatus}
+          regenerateResponse={regenerateLastResponse}
+          onStopGeneration={stop}
+          onFeedback={handleFeedback}
+          jobProgress={hybridState.progress}
+          jobId={hybridState.jobId}
+          onCancelJob={cancel}
+          queryMode={currentMode}
+          error={error}
+          errorDetails={hybridState.errorDetails}
+          onClearError={clearError}
+          onRetry={retryLastQuery}
+          clarification={clarification}
+          onSelectClarification={selectClarification}
+          onSubmitCustomClarification={submitCustomClarification}
+          onSkipClarification={skipClarification}
+          onDismissClarification={dismissClarification}
+          currentAgentStatus={currentAgentStatus}
+          currentHandoff={currentHandoff}
+          webSearchEnabled={webSearchEnabled}
+          onToggleWebSearch={toggleWebSearch}
+          ragEnabled={ragEnabled}
+          onToggleRAG={toggleRAG}
+          analysisMode={analysisMode}
+          onSelectAnalysisMode={selectAnalysisMode}
+          warmingUp={warmingUp}
+          estimatedWaitSeconds={estimatedWaitSeconds}
+          queuedQueries={queuedQueries}
+          removeQueuedQuery={removeQueuedQuery}
+        />
+      </Activity>
+      <Activity mode={selectedFunction !== 'chat' ? 'visible' : 'hidden'}>
+        <div className="h-full p-0">
+          <AIContentArea
+            selectedFunction={selectedFunction}
+            queryAsOfDataSlot={workspaceQueryAsOfDataSlot}
+          />
+        </div>
+      </Activity>
+    </AIErrorBoundary>
+  );
 
   // 🔒 Hydration 불일치 방지 (Zustand persist + 조건부 렌더링)
   if (!isMounted) {
@@ -320,6 +419,73 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
           <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
           <p className="text-sm font-medium">AI 사이드바로 전환 중입니다</p>
         </div>
+      </div>
+    );
+  }
+
+  if (embedded) {
+    return (
+      <div className="flex h-full min-h-[680px] w-full overflow-hidden bg-white text-gray-900">
+        <div className="flex min-w-0 flex-1 flex-col">
+          <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 py-3">
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
+              {AI_WORKSPACE_FUNCTION_TABS.map((item) => {
+                const Icon = item.icon;
+                const active = selectedFunction === item.id;
+
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => handleFunctionSelect(item.id)}
+                    aria-label={`${item.label} ${item.description}`}
+                    aria-pressed={active}
+                    className={cn(
+                      'inline-flex h-11 items-center gap-2 rounded-lg border px-3 text-left transition-colors',
+                      active
+                        ? 'border-blue-200 bg-blue-50 text-blue-700'
+                        : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    )}
+                  >
+                    <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                    <span className="min-w-0">
+                      <span className="block text-sm font-semibold leading-tight">
+                        {item.label}
+                      </span>
+                      <span className="block text-xs leading-tight text-slate-500">
+                        {item.description}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {selectedFunction === 'chat' && (
+              <button
+                type="button"
+                onClick={handleToggleRightPanel}
+                className="hidden h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900 lg:inline-flex"
+                aria-pressed={isRightPanelOpen}
+              >
+                {isRightPanelOpen ? (
+                  <PanelRightClose className="h-4 w-4" aria-hidden="true" />
+                ) : (
+                  <PanelRightOpen className="h-4 w-4" aria-hidden="true" />
+                )}
+                컨텍스트
+              </button>
+            )}
+          </div>
+
+          <div className="relative min-h-0 flex-1 overflow-hidden">
+            {renderAssistantContent()}
+          </div>
+        </div>
+
+        {selectedFunction === 'chat' && isRightPanelOpen && (
+          <SystemContextPanel className="hidden xl:flex" />
+        )}
       </div>
     );
   }
@@ -512,71 +678,7 @@ export default function AIWorkspace(_props: AIWorkspaceProps = {}) {
           </header>
 
           <div className="flex-1 overflow-hidden relative">
-            <AIErrorBoundary
-              componentName="AIWorkspace"
-              resetKey={`${selectedFunction}:${sessionId}`}
-              onReset={() => {
-                setInput('');
-                handleNewSession();
-              }}
-            >
-              <Activity
-                mode={selectedFunction === 'chat' ? 'visible' : 'hidden'}
-              >
-                <EnhancedAIChat
-                  autoReportTrigger={{ shouldGenerate: false }}
-                  allMessages={enhancedMessages}
-                  limitedMessages={enhancedMessages}
-                  messagesEndRef={messagesEndRef}
-                  MessageComponent={AIWorkspaceMessage}
-                  inputValue={input}
-                  setInputValue={setInput}
-                  handleSendInput={handleSendInput}
-                  sessionState={sessionState}
-                  onNewSession={handleNewSession}
-                  isGenerating={isLoading}
-                  streamStatus={streamStatus}
-                  regenerateResponse={regenerateLastResponse}
-                  onStopGeneration={stop}
-                  onFeedback={handleFeedback}
-                  jobProgress={hybridState.progress}
-                  jobId={hybridState.jobId}
-                  onCancelJob={cancel}
-                  queryMode={currentMode}
-                  error={error}
-                  errorDetails={hybridState.errorDetails}
-                  onClearError={clearError}
-                  onRetry={retryLastQuery}
-                  clarification={clarification}
-                  onSelectClarification={selectClarification}
-                  onSubmitCustomClarification={submitCustomClarification}
-                  onSkipClarification={skipClarification}
-                  onDismissClarification={dismissClarification}
-                  currentAgentStatus={currentAgentStatus}
-                  currentHandoff={currentHandoff}
-                  webSearchEnabled={webSearchEnabled}
-                  onToggleWebSearch={toggleWebSearch}
-                  ragEnabled={ragEnabled}
-                  onToggleRAG={toggleRAG}
-                  analysisMode={analysisMode}
-                  onSelectAnalysisMode={selectAnalysisMode}
-                  warmingUp={warmingUp}
-                  estimatedWaitSeconds={estimatedWaitSeconds}
-                  queuedQueries={queuedQueries}
-                  removeQueuedQuery={removeQueuedQuery}
-                />
-              </Activity>
-              <Activity
-                mode={selectedFunction !== 'chat' ? 'visible' : 'hidden'}
-              >
-                <div className="h-full p-0">
-                  <AIContentArea
-                    selectedFunction={selectedFunction}
-                    queryAsOfDataSlot={workspaceQueryAsOfDataSlot}
-                  />
-                </div>
-              </Activity>
-            </AIErrorBoundary>
+            {renderAssistantContent()}
           </div>
         </div>
 

@@ -15,6 +15,8 @@
  * or generateServerLogs/generateLokiLogs (synthetic).
  */
 
+import { Bell } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import type { FC } from 'react';
 import { useMemo, useState } from 'react';
 import {
@@ -71,6 +73,7 @@ export const LogsTab: FC<LogsTabProps> = ({
   serverLogs,
   structuredLogs,
 }) => {
+  const router = useRouter();
   const [activeView, setActiveView] = useState<ViewMode>('syslog');
   const [labelFilters, setLabelFilters] = useState<Partial<LokiStreamLabels>>(
     {}
@@ -200,12 +203,16 @@ export const LogsTab: FC<LogsTabProps> = ({
   // Display logs for legacy views
   const displayLogs = activeView === 'syslog' ? syslogView : realtimeData.logs;
 
+  const handleOpenAlertHistory = () => {
+    router.push(`/dashboard/alerts?server=${encodeURIComponent(serverId)}`);
+  };
+
   return (
     <div className="space-y-6">
       <div className="animate-fade-in">
         {/* Header */}
-        <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <h3 className="bg-linear-to-r from-gray-700 to-gray-900 bg-clip-text text-2xl font-bold text-transparent">
               Server Logs
             </h3>
@@ -230,7 +237,17 @@ export const LogsTab: FC<LogsTabProps> = ({
           </div>
 
           {/* Legend */}
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={handleOpenAlertHistory}
+              aria-label={`${serverId} 알림 이력 보기`}
+              title="알림 이력"
+              className="inline-flex items-center gap-1.5 rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-xs font-semibold text-amber-700 transition-colors hover:bg-amber-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
+            >
+              <Bell size={13} />
+              알림 이력
+            </button>
             <LegendDot color="bg-green-500" label="INFO" />
             <LegendDot color="bg-yellow-500" label="WARN" />
             <LegendDot color="bg-red-500" label="ERROR" />

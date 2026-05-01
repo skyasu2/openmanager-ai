@@ -31,9 +31,12 @@ body {
   background: hsl(var(--background));
 }
 
-a {
-  color: inherit;
+:where(a) {
   text-decoration: none;
+}
+
+:where(a:not([class*='text-'])) {
+  color: inherit;
 }
 
 /* 스크롤바 스타일링 (Webkit) */

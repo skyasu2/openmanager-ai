@@ -3,7 +3,7 @@
 > **AI-Native Server Monitoring Platform**
 > 자연어로 대화하며 서버를 모니터링하는 차세대 운영 플랫폼
 
-[![Version](https://img.shields.io/badge/version-8.11.69-blue.svg?style=for-the-badge)](https://openmanager-ai.vercel.app)
+[![Version](https://img.shields.io/badge/version-8.11.78-blue.svg?style=for-the-badge)](https://openmanager-ai.vercel.app)
 [![Live Demo](https://img.shields.io/badge/Live_Demo-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://openmanager-ai.vercel.app)
 [![License](https://img.shields.io/badge/License-GPL_v3-blue.svg?style=for-the-badge)](LICENSE)
 
@@ -44,7 +44,6 @@ OpenManager AI는 서버 모니터링의 패러다임을 **"차트 해석"에서
 |---------|-------------|
 | **AI Workspace UI** | 자연어 질의, 스트리밍 상태, agent handoff UI 제공 |
 | **Real-time Dashboard** | 서버 카드, 시계열 차트, 경보/상태 요약 |
-| **Validation Evidence** | 배포 검증 근거를 `/validation` 화면과 public JSON으로 공개 |
 | **Precomputed OTel Data** | 공개 데모와 fallback 경로에 쓰이는 모니터링 샘플 데이터 포함 |
 | **Production Shell** | Vercel production에서 동작하는 frontend shell과 API proxy 포함 |
 
@@ -77,7 +76,7 @@ User (Natural Language Query)
 
 이 저장소는 frontend shell과 공개 데이터만 제공하므로, AI backend 내부 구현과 모델 구성은 설명 대상에서 제외합니다. 공개 범위에서 중요한 점은 다음 두 가지입니다.
 
-- dashboard, validation, public data 경로는 이 저장소만으로 확인 가능
+- dashboard, login, public data 경로는 이 저장소만으로 확인 가능
 - 실제 AI 응답 생성과 agent orchestration은 private runtime 의존
 
 ---
@@ -124,17 +123,7 @@ npm run type-check
 npm run lint
 ```
 
-기본 UI, 대시보드, validation 화면은 공개 데이터와 fallback 경로로 확인할 수 있습니다. AI chat과 production-equivalent backend 동작은 private runtime과 유효한 secrets가 있어야 합니다.
-
----
-
-## Validation Evidence
-
-- Validation page: [openmanager-ai.vercel.app/validation](https://openmanager-ai.vercel.app/validation)
-- Public QA snapshot JSON: [validation-evidence.json](https://openmanager-ai.vercel.app/data/qa/validation-evidence.json)
-- Live app: [openmanager-ai.vercel.app](https://openmanager-ai.vercel.app)
-
-이 저장소는 "스크린샷만 있는 데모"가 아니라, 공개 가능한 범위 안에서 실제 배포 검증 근거를 같이 보여주는 포트폴리오 snapshot입니다.
+기본 UI, 로그인, 대시보드는 공개 데이터와 fallback 경로로 확인할 수 있습니다. AI chat과 production-equivalent backend 동작은 private runtime과 유효한 secrets가 있어야 합니다.
 
 ---
 
@@ -155,5 +144,5 @@ GNU General Public License v3.0 — see [LICENSE](LICENSE) for details.
 <div align="center">
   <a href="https://openmanager-ai.vercel.app"><strong>🚀 Live Demo</strong></a>
   &nbsp;·&nbsp;
-  <sub>Public Snapshot · v8.11.69</sub>
+  <sub>Public Snapshot · v8.11.78</sub>
 </div>

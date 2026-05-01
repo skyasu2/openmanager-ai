@@ -2,10 +2,8 @@ import {
   Activity,
   AlertOctagon,
   AlertTriangle,
-  Bell,
   CheckCircle2,
   FileSearch,
-  Network,
   Server as ServerIcon,
   ShieldAlert,
   XCircle,
@@ -27,12 +25,8 @@ interface DashboardSummaryProps {
   onFilterChange?: (filter: string | null) => void;
   onOpenAlertHistory?: () => void;
   onOpenLogExplorer?: () => void;
-  showTopology?: boolean;
-  onToggleTopology?: () => void;
   /** 현재 활성 알림 건수 */
   activeAlertsCount?: number;
-  /** Active Alerts 모달 열기 */
-  onOpenActiveAlerts?: () => void;
 }
 
 function formatSlotLabel(dataSlotInfo: DashboardTimeInfo): string {
@@ -235,10 +229,7 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
     onFilterChange,
     onOpenAlertHistory,
     onOpenLogExplorer,
-    showTopology = false,
-    onToggleTopology,
     activeAlertsCount = 0,
-    onOpenActiveAlerts,
   }) {
     // Null-safe 처리
     const safeStats = {
@@ -398,10 +389,11 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
 
               {/* 액션 버튼 그룹 */}
               <StatusHeaderActionGroup>
-                {onOpenActiveAlerts && (
+                {onOpenAlertHistory && (
                   <StatusHeaderActionButton
-                    onClick={onOpenActiveAlerts}
-                    ariaLabel="활성 알림 보기"
+                    onClick={onOpenAlertHistory}
+                    ariaLabel="알림 보기"
+                    title="알림"
                     accentClassName="hover:bg-rose-50 hover:text-rose-600"
                     icon={<AlertTriangle size={14} />}
                     label="알림"
@@ -412,16 +404,6 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
                         </span>
                       ) : undefined
                     }
-                  />
-                )}
-                {onOpenAlertHistory && (
-                  <StatusHeaderActionButton
-                    onClick={onOpenAlertHistory}
-                    ariaLabel="알림 이력 보기"
-                    title="알림 이력"
-                    accentClassName="hover:bg-amber-50 hover:text-amber-600"
-                    icon={<Bell size={16} />}
-                    label="이력"
                   />
                 )}
                 {onOpenLogExplorer && (
@@ -471,27 +453,6 @@ export const DashboardSummary: React.FC<DashboardSummaryProps> = memo(
                   오프라인
                 </div>
               </div>
-              {onToggleTopology && (
-                <>
-                  <div className="h-10 w-px bg-gray-200 mx-2" />
-                  <button
-                    type="button"
-                    onClick={onToggleTopology}
-                    aria-pressed={showTopology}
-                    className={cn(
-                      'inline-flex h-12 items-center gap-2 rounded-xl border bg-white/85 px-4 sm:px-6 text-sm font-bold shadow-xs transition-all duration-200',
-                      'hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 cursor-pointer',
-                      showTopology
-                        ? 'border-indigo-300 text-indigo-700 hover:bg-indigo-50 focus-visible:ring-indigo-300/60'
-                        : 'border-gray-200 text-gray-700 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600 focus-visible:ring-indigo-300/60'
-                    )}
-                    title="시스템 토폴로지"
-                  >
-                    <Network size={18} />
-                    <span>토폴로지 맵</span>
-                  </button>
-                </>
-              )}
             </div>
           </div>
         </div>

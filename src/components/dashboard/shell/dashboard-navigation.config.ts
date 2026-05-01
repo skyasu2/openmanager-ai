@@ -1,6 +1,5 @@
 import {
   Bell,
-  Bot,
   FileSearch,
   LayoutDashboard,
   Network,
@@ -45,11 +44,5 @@ export const dashboardNavItems: DashboardNavItem[] = [
     href: '/dashboard/topology',
     match: (pathname) => pathname.startsWith('/dashboard/topology'),
     icon: Network,
-  },
-  {
-    label: 'AI 어시스턴트',
-    href: '/dashboard/ai-assistant',
-    match: (pathname) => pathname.startsWith('/dashboard/ai-assistant'),
-    icon: Bot,
   },
 ];

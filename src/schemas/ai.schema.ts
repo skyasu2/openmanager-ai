@@ -29,15 +29,14 @@ export const AIEngineTypeSchema = z.enum([
 export const AIModelSchema = z.enum([
   // Cloud Run multi-agent models
   'gpt-oss-120b',
-  'qwen-3-235b-a22b-instruct-2507',
-  'llama-3.3-70b-versatile',
+  'llama3.1-8b',
+  'meta-llama/llama-4-scout-17b-16e-instruct',
   'mistral-large-latest',
   'mistral-embed',
   // Vision / auxiliary
   'gemini-2.5-flash',
   'gemini-2.5-flash-lite',
-  // Compatibility
-  'llama-3.3-70b',
+  'google/gemma-3-27b-it:free',
   'custom',
 ]);
 

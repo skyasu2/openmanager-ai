@@ -127,10 +127,10 @@ export const NetworkTab: FC<NetworkTabProps> = ({ server, realtimeData }) => {
                 <span
                   className={`font-bold ${
                     latestNetwork >= networkThreshold.critical
-                      ? 'text-red-300'
+                      ? 'text-red-100'
                       : latestNetwork >= networkThreshold.warning
-                        ? 'text-yellow-300'
-                        : 'text-green-300'
+                        ? 'text-amber-100'
+                        : 'text-emerald-100'
                   }`}
                 >
                   {latestNetwork >= networkThreshold.critical

@@ -5,7 +5,6 @@ import { useReportWebVitals } from 'next/web-vitals';
 import { useCallback, useEffect, useRef } from 'react';
 import { APP_VERSION } from '@/config/app-meta';
 
-const TRACKED_PATH_PREFIXES = ['/validation'] as const;
 const SUPPORTED_METRICS = ['CLS', 'INP', 'LCP', 'FCP', 'TTFB'] as const;
 const FLUSH_DELAY_MS = 1200;
 
@@ -40,8 +39,7 @@ function isSupportedMetric(name: string): name is SupportedMetricName {
 }
 
 function isTrackedPath(pathname: string): boolean {
-  if (pathname === '/') return true;
-  return TRACKED_PATH_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+  return pathname === '/';
 }
 
 function roundMetricValue(name: SupportedMetricName, value: number): number {

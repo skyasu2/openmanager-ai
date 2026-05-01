@@ -20,6 +20,8 @@ interface OpenManagerLogoProps {
   showSubtitle?: boolean;
   /** 추가 클래스 */
   className?: string;
+  /** 좁은 앱 헤더에서 모바일 로고 폭을 줄일지 여부 */
+  compactOnMobile?: boolean;
   /** 클릭 시 이동할 경로 (기본: /) */
   href?: string;
   /** Link prefetch 여부 (기본: false, 로고는 저우선 탐색 링크로 취급) */
@@ -39,6 +41,7 @@ export const OpenManagerLogo: React.FC<OpenManagerLogoProps> = ({
   variant = 'dark',
   showSubtitle = true,
   className = '',
+  compactOnMobile = false,
   href,
   prefetch = false,
   titleAs = 'h1',
@@ -67,16 +70,26 @@ export const OpenManagerLogo: React.FC<OpenManagerLogoProps> = ({
   const TitleTag = titleAs;
 
   const content = (
-    <div className={`flex min-w-0 items-center gap-3 ${className}`}>
+    <div
+      className={`flex min-w-0 items-center ${
+        compactOnMobile ? 'gap-2 sm:gap-3' : 'gap-3'
+      } ${className}`}
+    >
       {/* 아이콘 영역 - 그라데이션 스퀘어 */}
       <div
-        className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-lg shadow-lg"
+        className={`relative flex shrink-0 items-center justify-center rounded-lg shadow-lg ${
+          compactOnMobile ? 'h-9 w-9 sm:h-10 sm:w-10' : 'h-10 w-10'
+        }`}
         style={iconStyle}
       />
 
       {/* 텍스트 영역 - suppressHydrationWarning for dynamic subtitle */}
       <div className="min-w-0 text-left" suppressHydrationWarning>
-        <TitleTag className={`truncate text-xl font-bold ${titleColor}`}>
+        <TitleTag
+          className={`truncate font-bold ${
+            compactOnMobile ? 'text-base sm:text-xl' : 'text-xl'
+          } ${titleColor}`}
+        >
           OpenManager <span style={AI_TEXT_GRADIENT_ANIMATED_STYLE}>AI</span>
         </TitleTag>
         {(() => {
@@ -105,7 +118,7 @@ export const OpenManagerLogo: React.FC<OpenManagerLogoProps> = ({
       <Link
         href={href}
         prefetch={prefetch}
-        className="transition-opacity hover:opacity-80"
+        className="min-w-0 transition-opacity hover:opacity-80"
       >
         {content}
       </Link>

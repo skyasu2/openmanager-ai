@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getRegisteredServerIds } from '@/config/server-registry';
 import { renderDashboardRoute } from '../../DashboardRoutePage';
 
 type DashboardServerDetailPageProps = {
@@ -11,6 +12,10 @@ export const metadata: Metadata = {
   title: 'Server Detail',
   description: 'OpenManager 서버 상세 메트릭과 로그',
 };
+
+export function generateStaticParams() {
+  return getRegisteredServerIds().map((serverId) => ({ serverId }));
+}
 
 export default async function DashboardServerDetailPage({
   params,

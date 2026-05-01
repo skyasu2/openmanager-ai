@@ -18,7 +18,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
     detailedContent: {
       overview: `운영자가 메트릭 그래프를 직접 해석하지 않아도, 질문 하나로 현재 상태, 원인 분석, 다음 조치안을 받을 수 있도록 설계한 AI 실행 계층입니다. 4개의 AI Provider(Cerebras, Groq, Mistral, Gemini)와 Vercel AI SDK 6.0 기반의 고도화된 5-Agent 멀티에이전트 오케스트레이션을 사용하며, Vision Agent의 대시보드 스크린샷 분석, 1M 토큰 로그 분석, Google Search Grounding을 지원합니다. 경량 커스텀 TypeScript ML(통계 이상 탐지 + 추세 예측)과 Knowledge Retrieval Lite(BM25 + pgVector) + Tavily 하이브리드 검색을 함께 사용합니다.`,
       features: [
-        '🧠 Cerebras Inference: 세계 최고속 추론 인프라 (qwen-3-235b-a22b-instruct-2507) — Orchestrator Planning / Verifier 1순위 모델',
+        '🧠 Cerebras Inference: 초고속 추론 인프라 (llama3.1-8b) — 짧은 컨텍스트 fallback 및 structured route 보조',
         '⚡ Groq Cloud: LPU 기반 초고속 500 Tokens/s 추론 (llama-4-scout-17b) — NLQ / Analyst / Tool-calling 1순위 모델',
         '🛡️ Mistral AI: mistral-large-latest Frontier 모델 — Groq/Cerebras 장애 또는 쿼터 초과 시 text last-resort fallback 담당',
         '👁️ Gemini Flash-Lite: Vision Agent 전용, 스크린샷 분석, 1M 컨텍스트 — 사고 토큰 없는 안정적 비전 분석 및 대용량 로그 처리',

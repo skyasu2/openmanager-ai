@@ -362,6 +362,60 @@ export function normalizeMessagesForCloudRun(
 // AI 응답 정규화 (JSON → 텍스트)
 // ============================================================================
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function stripJsonCodeFence(text: string): string {
+  const match = text.trim().match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
+  return match?.[1]?.trim() ?? text.trim();
+}
+
+function hasToolArguments(record: Record<string, unknown>): boolean {
+  return (
+    'arguments' in record ||
+    'args' in record ||
+    'input' in record ||
+    'parameters' in record
+  );
+}
+
+function getNonEmptyString(value: unknown): string | null {
+  return typeof value === 'string' && value.trim().length > 0
+    ? value.trim()
+    : null;
+}
+
+function isRawToolCallPayload(value: unknown): boolean {
+  if (!isRecord(value)) return false;
+
+  const type = getNonEmptyString(value.type)?.toLowerCase();
+  const directName =
+    getNonEmptyString(value.name) ?? getNonEmptyString(value.toolName);
+  if (
+    directName &&
+    hasToolArguments(value) &&
+    (!type || type === 'function' || type === 'tool_call' || type === 'tool')
+  ) {
+    return true;
+  }
+
+  if (isRecord(value.function)) {
+    const functionName = getNonEmptyString(value.function.name);
+    if (functionName && hasToolArguments(value.function)) {
+      return true;
+    }
+  }
+
+  const toolCalls = Array.isArray(value.tool_calls)
+    ? value.tool_calls
+    : Array.isArray(value.toolCalls)
+      ? value.toolCalls
+      : [];
+
+  return toolCalls.some(isRawToolCallPayload);
+}
+
 /**
  * AI 응답이 JSON 문자열인 경우 `answer` 필드만 추출
  *
@@ -374,13 +428,18 @@ export function normalizeMessagesForCloudRun(
 export function normalizeAIResponse(text: string): string {
   if (!text || typeof text !== 'string') return text;
 
-  const trimmed = text.trim();
+  const trimmed = stripJsonCodeFence(text);
 
   // JSON 객체가 아닌 경우 원본 반환
   if (!trimmed.startsWith('{') || !trimmed.endsWith('}')) return text;
 
   try {
     const parsed = JSON.parse(trimmed) as Record<string, unknown>;
+
+    // AI SDK/provider가 tool call을 텍스트로 누출한 경우 UI 본문에서는 숨긴다.
+    if (isRawToolCallPayload(parsed)) {
+      return '';
+    }
 
     // `answer` 필드가 있는 AI 응답 JSON → 텍스트만 추출
     if (typeof parsed.answer === 'string' && parsed.answer.length > 0) {

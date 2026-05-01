@@ -1,12 +1,22 @@
 'use client';
 
-import { FileSearch, RotateCcw } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
+import { Bell, FileSearch, RotateCcw } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import {
+  type GlobalLogEntry,
   type GlobalLogFilter,
   useGlobalLogs,
 } from '@/hooks/dashboard/useGlobalLogs';
+import { useScrollSentinel } from '@/hooks/dashboard/useScrollSentinel';
 import { cn } from '@/lib/utils';
 import {
   formatDashboardDateTime,
@@ -22,34 +32,116 @@ const levelStyles: Record<
 > = {
   info: {
     badge: 'bg-green-500 text-white',
-    text: 'text-green-300',
+    text: 'text-green-700',
     border: 'border-l-green-500',
   },
   warn: {
     badge: 'bg-yellow-500 text-white',
-    text: 'text-yellow-300',
+    text: 'text-amber-700',
     border: 'border-l-yellow-500',
   },
   error: {
     badge: 'bg-red-500 text-white',
-    text: 'text-red-300',
+    text: 'text-red-700',
     border: 'border-l-red-500',
   },
 };
 
-const INITIAL_DISPLAY = 100;
-const LOAD_MORE_COUNT = 100;
+const INITIAL_DISPLAY = 50;
+const LOAD_MORE_COUNT = 50;
 
-export function LogExplorerPanel({ active = true }: { active?: boolean }) {
+type LogGroup = {
+  key: string;
+  logs: GlobalLogEntry[];
+  patternKey: string;
+  representative: GlobalLogEntry;
+};
+
+const normalizeLogPattern = (message: string): string =>
+  message
+    .toLowerCase()
+    .replace(/\b[0-9a-f]{8,}\b/g, '<hex>')
+    .replace(/\b\d{1,3}(?:\.\d{1,3}){3}\b/g, '<ip>')
+    .replace(/\b\d+(?:\.\d+)?(?:ms|s|%|mb|gb|kb|b)?\b/g, '<num>')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+const getPatternKey = (log: GlobalLogEntry): string =>
+  [log.serverId, log.level, log.source, normalizeLogPattern(log.message)].join(
+    '|'
+  );
+
+const getLogKey = (log: GlobalLogEntry, index: number): string =>
+  `${log.serverId}-${log.timestamp}-${log.level}-${log.source}-${index}`;
+
+const groupConsecutiveLogs = (logs: GlobalLogEntry[]): LogGroup[] => {
+  const groups: LogGroup[] = [];
+
+  logs.forEach((log, index) => {
+    const patternKey = getPatternKey(log);
+    const previousGroup = groups.at(-1);
+
+    if (previousGroup?.patternKey === patternKey) {
+      previousGroup.logs.push(log);
+      return;
+    }
+
+    groups.push({
+      key: getLogKey(log, index),
+      logs: [log],
+      patternKey,
+      representative: log,
+    });
+  });
+
+  return groups;
+};
+
+function LogAlertButton({
+  serverId,
+  onOpenAlertHistory,
+}: {
+  serverId: string;
+  onOpenAlertHistory: (serverId: string) => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={(event) => {
+        event.stopPropagation();
+        onOpenAlertHistory(serverId);
+      }}
+      aria-label={`${serverId} 알림 이력 보기`}
+      title="알림 이력"
+      className="inline-flex shrink-0 items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 transition-colors hover:bg-amber-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
+    >
+      <Bell size={11} />
+      알림
+    </button>
+  );
+}
+
+export function LogExplorerPanel({
+  active = true,
+  initialServerId = null,
+}: {
+  active?: boolean;
+  initialServerId?: string | null;
+}) {
   const [level, setLevel] = useState<'info' | 'warn' | 'error' | 'all'>('all');
   const [source, setSource] = useState('');
-  const [serverId, setServerId] = useState('');
+  const [serverId, setServerId] = useState(initialServerId ?? '');
   const [keyword, setKeyword] = useState('');
   const [debouncedKeyword, setDebouncedKeyword] = useState('');
+  const appliedInitialServerIdRef = useRef(initialServerId ?? '');
+  const previousLoadedLogsRef = useRef(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const sessionAnchorRef = useRef(new Date());
   const [sessionAnchorLabel, setSessionAnchorLabel] = useState('');
   const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY);
+  const [expandedLogKey, setExpandedLogKey] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   // Debounce keyword with proper cleanup on unmount
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -71,7 +163,30 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
     startTransition(() => {
       update();
       setDisplayCount(INITIAL_DISPLAY);
+      setExpandedLogKey(null);
     });
+  };
+
+  useEffect(() => {
+    const normalizedInitialServerId = initialServerId ?? '';
+    if (appliedInitialServerIdRef.current === normalizedInitialServerId) {
+      return;
+    }
+
+    appliedInitialServerIdRef.current = normalizedInitialServerId;
+    startTransition(() => {
+      setServerId(normalizedInitialServerId);
+      setDisplayCount(INITIAL_DISPLAY);
+      setExpandedLogKey(null);
+    });
+  }, [initialServerId]);
+
+  const handleLevelStatClick = (nextLevel: typeof level) => {
+    handleFilterChange(() =>
+      setLevel((currentLevel) =>
+        currentLevel === nextLevel || nextLevel === 'all' ? 'all' : nextLevel
+      )
+    );
   };
 
   const resetFilters = () => {
@@ -83,8 +198,18 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
       setKeyword('');
       setDebouncedKeyword('');
       setDisplayCount(INITIAL_DISPLAY);
+      setExpandedLogKey(null);
     });
   };
+
+  const handleOpenAlertHistory = useCallback(
+    (targetServerId: string) => {
+      router.push(
+        `/dashboard/alerts?server=${encodeURIComponent(targetServerId)}`
+      );
+    },
+    [router]
+  );
 
   useEffect(() => {
     if (!active) return;
@@ -96,6 +221,7 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
   // biome-ignore lint/correctness/useExhaustiveDependencies: debouncedKeyword is intentional trigger
   useEffect(() => {
     setDisplayCount(INITIAL_DISPLAY);
+    setExpandedLogKey(null);
   }, [debouncedKeyword]);
 
   const filterParams = useMemo(
@@ -117,6 +243,9 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
     isError,
     errorMessage,
     retry,
+    hasNextPage: hasNextLogPage = false,
+    isFetchingNextPage: isFetchingNextLogPage = false,
+    fetchNextPage: fetchNextLogPage,
     windowStart,
     windowEnd,
   } = useGlobalLogs(filterParams);
@@ -125,7 +254,56 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
     () => logs.slice(0, displayCount),
     [logs, displayCount]
   );
+  const displayLogGroups = useMemo(
+    () => groupConsecutiveLogs(displayLogs),
+    [displayLogs]
+  );
   const hasMore = logs.length > displayCount;
+  const canLoadMore = hasMore || hasNextLogPage || isFetchingNextLogPage;
+  const loadMoreLogs = useCallback(() => {
+    if (displayCount < logs.length) {
+      setDisplayCount((currentCount) =>
+        Math.min(logs.length, currentCount + LOAD_MORE_COUNT)
+      );
+      return;
+    }
+
+    if (hasNextLogPage && !isFetchingNextLogPage) {
+      void fetchNextLogPage?.();
+    }
+  }, [
+    displayCount,
+    fetchNextLogPage,
+    hasNextLogPage,
+    isFetchingNextLogPage,
+    logs.length,
+  ]);
+  const loadMoreSentinelRef = useScrollSentinel(
+    loadMoreLogs,
+    canLoadMore && !isFetchingNextLogPage && !isPending,
+    { rootRef: scrollContainerRef }
+  );
+
+  useEffect(() => {
+    const previousLoadedLogs = previousLoadedLogsRef.current;
+
+    if (logs.length < previousLoadedLogs) {
+      previousLoadedLogsRef.current = logs.length;
+      return;
+    }
+
+    if (
+      previousLoadedLogs > 0 &&
+      logs.length > previousLoadedLogs &&
+      displayCount >= previousLoadedLogs
+    ) {
+      setDisplayCount((currentCount) =>
+        Math.min(logs.length, currentCount + LOAD_MORE_COUNT)
+      );
+    }
+
+    previousLoadedLogsRef.current = logs.length;
+  }, [displayCount, logs.length]);
   const activeFilterLabels = useMemo(() => {
     const labels: string[] = [];
     if (level !== 'all') labels.push(`레벨 ${level.toUpperCase()}`);
@@ -156,9 +334,53 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
 
       {/* Search & Filter Bar */}
       <div className="sticky top-0 z-20 border-b border-gray-100 bg-white/95 px-4 py-3 backdrop-blur-sm sm:px-6">
+        <div
+          data-testid="log-stats-bar"
+          className="mb-3 grid grid-cols-2 gap-2 rounded-lg bg-gray-50/90 p-2 sm:grid-cols-4"
+        >
+          <StatCell
+            label="전체"
+            value={stats.total}
+            color="text-gray-800"
+            active={level === 'all'}
+            ariaLabel="전체 로그 보기"
+            onClick={() => handleLevelStatClick('all')}
+            testId="log-stat-all"
+          />
+          <StatCell
+            label="정보"
+            value={stats.info}
+            color="text-green-600"
+            active={level === 'info'}
+            ariaLabel="정보 로그 필터"
+            onClick={() => handleLevelStatClick('info')}
+            testId="log-stat-info"
+          />
+          <StatCell
+            label="경고"
+            value={stats.warn}
+            color="text-yellow-600"
+            active={level === 'warn'}
+            ariaLabel="경고 로그 필터"
+            onClick={() => handleLevelStatClick('warn')}
+            testId="log-stat-warn"
+          />
+          <StatCell
+            label="오류"
+            value={stats.error}
+            color="text-red-600"
+            active={level === 'error'}
+            ariaLabel="오류 로그 필터"
+            onClick={() => handleLevelStatClick('error')}
+            testId="log-stat-error"
+          />
+        </div>
+
         {/* Keyword search */}
         <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
           <input
+            id="log-explorer-search"
+            name="log-explorer-search"
             type="text"
             value={keyword}
             onChange={(e) => handleKeywordChange(e.target.value)}
@@ -196,6 +418,8 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
           <div className="grid grid-cols-2 gap-2 sm:flex sm:min-w-0 sm:flex-wrap sm:items-center">
             {/* Source dropdown */}
             <select
+              id="log-explorer-source-filter"
+              name="log-explorer-source-filter"
               value={source}
               onChange={(e) =>
                 handleFilterChange(() => setSource(e.target.value))
@@ -213,6 +437,8 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
 
             {/* Server dropdown */}
             <select
+              id="log-explorer-server-filter"
+              name="log-explorer-server-filter"
               value={serverId}
               onChange={(e) =>
                 handleFilterChange(() => setServerId(e.target.value))
@@ -277,13 +503,17 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
         </div>
       </div>
 
-      {/* Log Result List - Terminal style */}
+      {/* Log Result List */}
       <div
         data-testid="log-explorer-terminal"
-        className="relative min-h-[320px] flex-1 overflow-hidden sm:max-h-[56vh]"
+        className="relative min-h-[320px] flex-1 overflow-hidden bg-white sm:max-h-[56vh]"
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black" />
-        <div className="relative h-full overflow-y-auto p-4 font-mono text-xs">
+        <div
+          ref={scrollContainerRef}
+          data-testid="log-explorer-scroll-container"
+          className="relative h-full overflow-y-auto p-4 font-mono text-xs"
+          style={{ contain: 'strict' }}
+        >
           {errorMessage && (
             <div className="mb-3 flex items-center justify-between gap-3 rounded border border-amber-300/80 bg-amber-100/90 px-3 py-2 text-[11px] text-amber-900">
               <span>{errorMessage}</span>
@@ -311,7 +541,7 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
               <button
                 type="button"
                 onClick={retry}
-                className="mt-3 rounded border border-gray-400/60 px-3 py-1 text-[11px] text-gray-300 hover:bg-white/10"
+                className="mt-3 rounded border border-gray-300 px-3 py-1 text-[11px] text-gray-600 hover:bg-gray-50"
               >
                 다시 시도
               </button>
@@ -325,70 +555,153 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
               </p>
             </div>
           ) : (
-            <div
-              className={cn(
-                'space-y-1',
-                isPending && 'opacity-60 transition-opacity duration-200'
-              )}
-            >
-              {displayLogs.map((log) => {
+            <div aria-busy={isPending ? true : undefined} className="space-y-1">
+              {displayLogGroups.map((group) => {
+                const log = group.representative;
                 const logLevel = log.level as keyof typeof levelStyles;
                 const style = levelStyles[logLevel] ?? levelStyles.info;
+                const logKey = group.key;
+                const isExpanded = expandedLogKey === logKey;
+                const isGrouped = group.logs.length > 1;
+                const toggleExpanded = () =>
+                  setExpandedLogKey((currentKey) =>
+                    currentKey === logKey ? null : logKey
+                  );
+                const rowToneClass =
+                  logLevel === 'error'
+                    ? 'bg-red-50 hover:bg-red-100'
+                    : 'bg-white hover:bg-gray-50';
                 return (
                   <div
-                    key={`${log.serverId}-${log.timestamp}-${log.level}-${log.source}-${log.message.slice(0, 32)}`}
+                    key={logKey}
                     className={cn(
-                      'flex flex-wrap items-start gap-1.5 rounded border-l-2 px-2.5 py-1.5 sm:flex-nowrap sm:gap-2',
+                      'flex w-full gap-1.5 rounded border-l-2 px-2.5 py-1.5 transition-colors sm:gap-2',
+                      isExpanded
+                        ? 'flex-wrap items-start'
+                        : 'flex-nowrap items-center',
                       style.border,
-                      'bg-white/[0.03] hover:bg-white/[0.06] transition-colors'
+                      rowToneClass
                     )}
                   >
-                    {/* Server badge */}
-                    <span className="max-w-[120px] shrink-0 truncate rounded bg-blue-500/20 px-1.5 py-0.5 text-[10px] font-medium text-blue-400">
-                      {log.serverId.split('.')[0]}
-                    </span>
-                    {/* Timestamp */}
-                    <span className="shrink-0 text-sky-300/85 tabular-nums">
-                      {formatRotatingTimestamp(log.timestamp, {
-                        anchorDate: sessionAnchorRef.current,
-                      })}
-                    </span>
-                    {/* Level badge */}
-                    <span
+                    <button
+                      type="button"
+                      data-testid="log-explorer-log-row"
+                      aria-expanded={isExpanded}
+                      onClick={toggleExpanded}
                       className={cn(
-                        'shrink-0 inline-flex rounded px-1.5 py-0.5 text-[10px] font-bold uppercase',
-                        style.badge
+                        'flex min-w-0 flex-1 gap-1.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/60 sm:gap-2',
+                        isExpanded
+                          ? 'flex-wrap items-start'
+                          : 'flex-nowrap items-center',
+                        rowToneClass
                       )}
                     >
-                      {log.level}
-                    </span>
-                    {/* Source tag */}
-                    <span className="shrink-0 text-purple-400/80 text-[10px]">
-                      [{log.source}]
-                    </span>
-                    {/* Message */}
-                    <span
-                      data-testid="log-explorer-log-message"
-                      className={cn(
-                        'min-w-0 basis-full break-words sm:basis-auto sm:flex-1 sm:break-all',
-                        style.text
+                      {/* Server badge */}
+                      <span className="max-w-[120px] shrink-0 truncate rounded bg-blue-100 px-1.5 py-0.5 text-[10px] font-medium text-blue-700">
+                        {log.serverId.split('.')[0]}
+                      </span>
+                      {/* Timestamp */}
+                      <span
+                        className={cn(
+                          'shrink-0 tabular-nums',
+                          logLevel === 'error' ? 'text-red-700' : 'text-sky-600'
+                        )}
+                      >
+                        {formatRotatingTimestamp(log.timestamp, {
+                          anchorDate: sessionAnchorRef.current,
+                        })}
+                      </span>
+                      {/* Level badge */}
+                      <span
+                        className={cn(
+                          'shrink-0 inline-flex rounded px-1.5 py-0.5 text-[10px] font-bold uppercase',
+                          style.badge
+                        )}
+                      >
+                        {log.level}
+                      </span>
+                      {/* Source tag */}
+                      <span
+                        className={cn(
+                          'shrink-0 text-[10px]',
+                          logLevel === 'error'
+                            ? 'text-red-700/80'
+                            : 'text-purple-400/80'
+                        )}
+                      >
+                        [{log.source}]
+                      </span>
+                      {/* Message */}
+                      <span
+                        data-testid="log-explorer-log-message"
+                        className={cn(
+                          'min-w-0 flex-1 break-words',
+                          isExpanded
+                            ? 'basis-full whitespace-pre-wrap sm:basis-auto'
+                            : 'truncate',
+                          style.text
+                        )}
+                      >
+                        {log.message}
+                      </span>
+                      {isGrouped && (
+                        <span className="shrink-0 rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-600">
+                          ×{group.logs.length}
+                        </span>
                       )}
-                    >
-                      {log.message}
-                    </span>
+                    </button>
+                    <LogAlertButton
+                      serverId={log.serverId}
+                      onOpenAlertHistory={handleOpenAlertHistory}
+                    />
+                    {isGrouped && isExpanded && (
+                      <div
+                        data-testid="log-explorer-log-group-details"
+                        className="basis-full space-y-1 rounded border border-gray-200 bg-gray-50 px-2 py-1 text-[10px] text-gray-600"
+                      >
+                        {group.logs.slice(1, 6).map((groupLog) => (
+                          <div
+                            key={`${groupLog.timestamp}-${groupLog.message}`}
+                            className="flex flex-wrap items-center gap-2 break-words"
+                          >
+                            <span className="tabular-nums">
+                              {formatRotatingTimestamp(groupLog.timestamp, {
+                                anchorDate: sessionAnchorRef.current,
+                              })}
+                            </span>
+                            <span className="min-w-0 flex-1 break-words">
+                              {groupLog.message}
+                            </span>
+                            <LogAlertButton
+                              serverId={groupLog.serverId}
+                              onOpenAlertHistory={handleOpenAlertHistory}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 );
               })}
-              {hasMore && (
+              {canLoadMore && (
                 <div className="text-center py-3">
+                  <div
+                    ref={loadMoreSentinelRef}
+                    data-testid="log-explorer-load-sentinel"
+                    className="h-px"
+                    aria-hidden="true"
+                  />
                   <button
                     type="button"
-                    onClick={() =>
-                      setDisplayCount((prev) => prev + LOAD_MORE_COUNT)
-                    }
-                    className="rounded-md border border-gray-500/40 px-4 py-1.5 text-xs font-medium text-gray-300 hover:bg-white/10 transition-colors"
+                    onClick={loadMoreLogs}
+                    disabled={isFetchingNextLogPage}
+                    className="rounded-md border border-gray-300 px-4 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50 disabled:cursor-wait disabled:opacity-60"
                   >
-                    더 보기 ({logs.length - displayCount}건 남음)
+                    {isFetchingNextLogPage
+                      ? '불러오는 중...'
+                      : hasMore
+                        ? `더 보기 (${logs.length - displayCount}건 남음)`
+                        : '다음 로그 불러오기'}
                   </button>
                 </div>
               )}
@@ -396,15 +709,7 @@ export function LogExplorerPanel({ active = true }: { active?: boolean }) {
           )}
         </div>
         {/* Fade overlay */}
-        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-gray-900 to-transparent" />
-      </div>
-
-      {/* Stats Footer */}
-      <div className="grid grid-cols-2 gap-3 border-t border-gray-100 bg-gray-50/80 px-4 py-3 sm:grid-cols-4 sm:gap-4 sm:px-6">
-        <StatCell label="전체" value={stats.total} color="text-gray-800" />
-        <StatCell label="정보" value={stats.info} color="text-green-600" />
-        <StatCell label="경고" value={stats.warn} color="text-yellow-600" />
-        <StatCell label="오류" value={stats.error} color="text-red-600" />
+        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-white to-transparent" />
       </div>
     </div>
   );
