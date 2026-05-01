@@ -24,6 +24,57 @@ export interface FinalAnswerResult {
   timestamp: string;
 }
 
+const normalizeToolsUsedInput = (value: unknown): unknown => {
+  if (value === undefined || value === null) {
+    return undefined;
+  }
+
+  if (Array.isArray(value)) {
+    return value;
+  }
+
+  if (typeof value !== 'string') {
+    return value;
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(trimmed);
+    if (Array.isArray(parsed)) {
+      return parsed;
+    }
+    if (typeof parsed === 'string') {
+      return [parsed];
+    }
+  } catch {
+    // Some models emit comma-separated tool names despite the array schema.
+  }
+
+  return trimmed
+    .split(',')
+    .map((toolName) => toolName.trim().replace(/^["']|["']$/g, ''))
+    .filter(Boolean);
+};
+
+const finalAnswerInputSchema = z.object({
+  answer: z.string().describe('사용자에게 전달할 최종 응답 (마크다운 형식 지원)'),
+  confidence: z
+    .number()
+    .min(0)
+    .max(1)
+    .optional()
+    .describe('응답 신뢰도 (0-1, 기본값: 0.8)'),
+  toolsUsed: z
+    .preprocess(normalizeToolsUsedInput, z.array(z.string()).optional())
+    .describe('분석에 사용된 도구 목록 (자동 추적용)'),
+});
+
+type FinalAnswerInput = z.infer<typeof finalAnswerInputSchema>;
+
 /**
  * Final Answer Tool
  *
@@ -35,28 +86,12 @@ export interface FinalAnswerResult {
 export const finalAnswer = tool({
   description:
     '최종 응답을 제출합니다. 분석이 완료되면 반드시 이 도구를 호출하세요. 이 도구를 호출하면 도구 루프가 종료됩니다.',
-  inputSchema: z.object({
-    answer: z.string().describe('사용자에게 전달할 최종 응답 (마크다운 형식 지원)'),
-    confidence: z
-      .number()
-      .min(0)
-      .max(1)
-      .optional()
-      .describe('응답 신뢰도 (0-1, 기본값: 0.8)'),
-    toolsUsed: z
-      .array(z.string())
-      .optional()
-      .describe('분석에 사용된 도구 목록 (자동 추적용)'),
-  }),
+  inputSchema: finalAnswerInputSchema,
   execute: async ({
     answer,
     confidence,
     toolsUsed,
-  }: {
-    answer: string;
-    confidence?: number;
-    toolsUsed?: string[];
-  }): Promise<FinalAnswerResult> => ({
+  }: FinalAnswerInput): Promise<FinalAnswerResult> => ({
     answer,
     confidence: confidence ?? 0.8,
     toolsUsed: toolsUsed ?? [],

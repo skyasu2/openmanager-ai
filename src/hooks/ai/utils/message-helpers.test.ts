@@ -35,6 +35,18 @@ function createMessage(params: {
     enableWebSearch?: boolean | 'auto';
     analysisMode?: 'auto' | 'thinking';
     toolsCalled?: string[];
+    provider?: string;
+    modelId?: string;
+    providerAttempts?: Array<{
+      provider: string;
+      modelId?: string;
+      attempt?: number;
+      durationMs?: number;
+      error?: string;
+    }>;
+    usedFallback?: boolean;
+    fallbackReason?: string;
+    ttfbMs?: number;
     handoffHistory?: Array<{
       from: string;
       to: string;
@@ -613,6 +625,61 @@ describe('transformMessages', () => {
         reason: '최종 요약 작성',
       },
     ]);
+  });
+
+  it('preserves provider fallback telemetry in assistant metadata', () => {
+    const messages = transformMessages(
+      [
+        createMessage({ id: 'u1', role: 'user', text: '장애 구간 요약해줘' }),
+        createMessage({
+          id: 'a1',
+          role: 'assistant',
+          text: '대체 모델에서 응답했습니다.',
+          metadata: {
+            provider: 'mistral',
+            modelId: 'mistral-large-latest',
+            usedFallback: true,
+            fallbackReason: 'empty_response',
+            ttfbMs: 1520,
+            providerAttempts: [
+              {
+                provider: 'cerebras',
+                modelId: 'llama3.1-8b',
+                attempt: 1,
+                durationMs: 820,
+                error: 'raw tool-call JSON',
+              },
+              {
+                provider: 'mistral',
+                modelId: 'mistral-large-latest',
+                attempt: 1,
+                durationMs: 1540,
+              },
+            ],
+          },
+        }),
+      ],
+      { isLoading: false, currentMode: 'job-queue' }
+    );
+
+    const assistant = messages.find((m) => m.id === 'a1');
+    expect(assistant?.metadata).toMatchObject({
+      provider: 'mistral',
+      modelId: 'mistral-large-latest',
+      usedFallback: true,
+      fallbackReason: 'empty_response',
+      ttfbMs: 1520,
+      providerAttempts: [
+        expect.objectContaining({
+          provider: 'cerebras',
+          error: 'raw tool-call JSON',
+        }),
+        expect.objectContaining({
+          provider: 'mistral',
+          modelId: 'mistral-large-latest',
+        }),
+      ],
+    });
   });
 
   it('preserves metadata-provided tool result summaries for async job responses', () => {

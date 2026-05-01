@@ -18,7 +18,10 @@ export function getRedisKey(provider: ProviderName, modelId?: string): string {
   return `ai:quota:${getQuotaUsageScope(provider, modelId)}:${today}`;
 }
 
-export function getCooldownKey(provider: ProviderName, modelId?: string): string {
+export function getCooldownKey(
+  provider: ProviderName,
+  modelId?: string
+): string {
   return `ai:quota:cooldown:${getQuotaUsageScope(provider, modelId)}`;
 }
 
@@ -125,7 +128,7 @@ end
 local cooldownRaw = redis.call('GET', cooldownKey)
 if cooldownRaw then
   local ok, cooldown = pcall(cjson.decode, cooldownRaw)
-  if ok and type(cooldown) == 'table' and tonumber(cooldown.until) and tonumber(cooldown.until) > now then
+  if ok and type(cooldown) == 'table' and tonumber(cooldown["until"]) and tonumber(cooldown["until"]) > now then
     local usage = normalizeUsage(redis.call('GET', usageKey))
     return cjson.encode({
       reserved = false,
@@ -134,8 +137,8 @@ if cooldownRaw then
       estimatedTokens = estimatedTokens,
       status = buildStatus(usage),
       reason = 'cooldown',
-      cooldownUntil = tonumber(cooldown.until),
-      recommendedWaitMs = math.max(0, tonumber(cooldown.until) - now),
+      cooldownUntil = tonumber(cooldown["until"]),
+      recommendedWaitMs = math.max(0, tonumber(cooldown["until"]) - now),
     })
   end
   redis.call('DEL', cooldownKey)
@@ -249,15 +252,20 @@ redis.call('SET', usageKey, cjson.encode(usage), 'EX', ttlSeconds)
 return cjson.encode(usage)
 `;
 
+export function getAtomicQuotaReservationScriptForTests(): string {
+  return ATOMIC_QUOTA_RESERVATION_SCRIPT;
+}
+
 function normalizeQuotaReservation(
   value: unknown,
   provider: ProviderName,
   modelId: string | undefined,
   estimatedTokens: number
 ): ProviderQuotaReservation | null {
-  const source = typeof value === 'string'
-    ? JSON.parse(value) as Partial<ProviderQuotaReservation>
-    : value as Partial<ProviderQuotaReservation>;
+  const source =
+    typeof value === 'string'
+      ? (JSON.parse(value) as Partial<ProviderQuotaReservation>)
+      : (value as Partial<ProviderQuotaReservation>);
 
   if (!source || typeof source !== 'object') return null;
   if (typeof source.reserved !== 'boolean') return null;
@@ -334,7 +342,10 @@ export async function getProviderCooldownFromRedis(
     if (!data) return null;
     if (data.until > Date.now()) return data;
   } catch (error) {
-    logger.warn(`[QuotaTracker] Redis cooldown read error for ${provider}:`, error);
+    logger.warn(
+      `[QuotaTracker] Redis cooldown read error for ${provider}:`,
+      error
+    );
   }
 
   return null;
@@ -357,7 +368,10 @@ export async function setProviderCooldownInRedis(
       { timeoutMs: REDIS_TIMEOUT_MS }
     );
   } catch (error) {
-    logger.warn(`[QuotaTracker] Redis cooldown save error for ${provider}:`, error);
+    logger.warn(
+      `[QuotaTracker] Redis cooldown save error for ${provider}:`,
+      error
+    );
   }
 }
 
@@ -396,9 +410,17 @@ export async function reserveProviderQuotaInRedis(
       { timeoutMs: REDIS_TIMEOUT_MS }
     );
 
-    return normalizeQuotaReservation(result, provider, modelId, estimatedTokens);
+    return normalizeQuotaReservation(
+      result,
+      provider,
+      modelId,
+      estimatedTokens
+    );
   } catch (error) {
-    logger.warn(`[QuotaTracker] Redis atomic reservation error for ${provider}:`, error);
+    logger.warn(
+      `[QuotaTracker] Redis atomic reservation error for ${provider}:`,
+      error
+    );
     return null;
   }
 }
@@ -423,9 +445,14 @@ export async function reconcileProviderQuotaInRedis(
       ],
       { timeoutMs: REDIS_TIMEOUT_MS }
     );
-    return normalizeUsage(typeof result === 'string' ? JSON.parse(result) : result);
+    return normalizeUsage(
+      typeof result === 'string' ? JSON.parse(result) : result
+    );
   } catch (error) {
-    logger.warn(`[QuotaTracker] Redis atomic reconcile error for ${provider}:`, error);
+    logger.warn(
+      `[QuotaTracker] Redis atomic reconcile error for ${provider}:`,
+      error
+    );
     return null;
   }
 }

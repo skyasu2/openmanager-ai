@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-01T09:03:46.030Z"
+    "updatedAt": "2026-05-01T18:36:18.241Z"
   },
   "sequence": {
-    "nextRunNumber": 389
+    "nextRunNumber": 390
   },
   "summary": {
-    "totalRecordedRuns": 386,
-    "totalRuns": 315,
+    "totalRecordedRuns": 387,
+    "totalRuns": 316,
     "excludedRuns": 71,
-    "totalChecks": 2702,
-    "totalPassed": 2604,
+    "totalChecks": 2714,
+    "totalPassed": 2616,
     "totalFailed": 89,
     "completionRate": 100,
-    "completedItems": 396,
+    "completedItems": 398,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 20,
     "expertDomainsTracked": 12,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260501-0388",
-    "lastRecordedAt": "2026-05-01T09:03:46.030Z",
-    "latestRecordedRunId": "QA-20260501-0388",
-    "latestRecordedAt": "2026-05-01T09:03:46.030Z"
+    "lastRunId": "QA-20260502-0389",
+    "lastRecordedAt": "2026-05-01T18:36:18.241Z",
+    "latestRecordedRunId": "QA-20260502-0389",
+    "latestRecordedAt": "2026-05-01T18:36:18.241Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -9713,6 +9713,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-04-30T22:58:38.750Z"
+    },
+    "ai-chat-raw-tool-call-json-v81179": {
+      "id": "ai-chat-raw-tool-call-json-v81179",
+      "title": "AI Chat raw function/tool-call JSON is suppressed and no longer rendered in production",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260502-0389",
+      "firstSeenAt": "2026-05-01T18:36:18.241Z",
+      "lastSeenRunId": "QA-20260502-0389",
+      "lastSeenAt": "2026-05-01T18:36:18.241Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Second AI Chat question job result and fullscreen UI both rawJson=false on v8.11.79",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-01T18:36:18.241Z"
+    },
+    "ai-chat-multi-agent-blank-response-v81179": {
+      "id": "ai-chat-multi-agent-blank-response-v81179",
+      "title": "AI Chat multi-agent raw JSON path returns a visible natural-language response instead of an empty assistant bubble",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260502-0389",
+      "firstSeenAt": "2026-05-01T18:36:18.241Z",
+      "lastSeenRunId": "QA-20260502-0389",
+      "lastSeenAt": "2026-05-01T18:36:18.241Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Second anomaly-interval question completed with 1415-character natural-language response and tool analysis basis",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-01T18:36:18.241Z"
     }
   },
   "runs": [
@@ -38528,6 +38576,119 @@
       "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260502-0389",
+      "recordedAt": "2026-05-01T18:36:18.241Z",
+      "recordedAtKst": "2026-05-02 03:36:18 KST",
+      "title": "Vercel Production AI Chat Recent Change Playwright QA v8.11.79",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260502-0389.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_5Sbmh9PzcMiiGkCtLKAauPj9smdK",
+        "deploymentUrl": "https://openmanager-rh36o8g3g-skyasus-projects.vercel.app",
+        "commitSha": "47cde877ca7b788ea6ae5c108ec1f5b29553a1dc"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "/api/version: v8.11.79 releaseTag and commit match deployed GitLab tag",
+        "/api/health: production health check returned healthy database/cache/ai",
+        "/login: restricted guest PIN dialog and guest login path",
+        "/dashboard: AI sidebar opens from production dashboard",
+        "AI sidebar: new conversation started before recent-change regression checks",
+        "AI sidebar: first server-summary question completed via /api/ai/jobs in 3595ms with non-empty grounded response",
+        "AI sidebar: second anomaly-interval question completed via /api/ai/jobs in 18797ms with non-empty response",
+        "AI sidebar: raw function/tool-call JSON not present in job result or rendered dialog for both questions",
+        "AI sidebar: analysis basis and tool basis visible for AI responses",
+        "/dashboard/ai-assistant: fullscreen handoff preserves the two-turn conversation and analysis basis",
+        "/dashboard/ai-assistant: raw function/tool-call JSON not visible after fullscreen handoff",
+        "Vercel usage guard: current billing period check completed before production QA"
+      ],
+      "skippedSurfaces": [
+        "Reporter Agent tab: not part of the v8.11.79 raw tool-call JSON regression scope",
+        "Analyst Agent full-analysis button: not re-run because the changed path was AI Chat message streaming/rendering",
+        "modal-detail-pack: unchanged by recent AI stream guard fix",
+        "security-pack: prompt-injection and auth abuse scenarios outside this targeted retest",
+        "Cloud Run admin observability /monitoring and /monitoring/traces: not part of Vercel AI Chat rendering regression"
+      ],
+      "checks": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI sidebar first server summary question",
+          "agent": "NLQ Agent",
+          "provider": "groq",
+          "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+          "route": "/api/ai/jobs/[id]/stream",
+          "source": "Playwright MCP job result payload",
+          "latencyMs": 3595,
+          "processingTimeMs": 3595
+        },
+        {
+          "surface": "AI sidebar second anomaly interval question",
+          "agent": "Analyst Agent",
+          "provider": "mistral",
+          "model": "mistral-large-latest",
+          "route": "/api/ai/jobs/[id]/stream",
+          "source": "Playwright MCP job result payload",
+          "latencyMs": 18797,
+          "processingTimeMs": 18797
+        }
+      ],
+      "expertAssessments": [],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-02T03:25:15+09:00",
+          "summary": "Current billing period has no charge records yet; previous-month probe confirmed CLI connectivity and showed billed 0.0000 USD.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "AI Chat recent-change two-turn regression recheck",
+          "path": "reports/qa/evidence/qa-20260502-v81179-ai-chat-recent-change-recheck.png",
+          "note": "Fullscreen AI assistant view after sidebar handoff; latest response shows analysis basis without raw function-call JSON."
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.79 deploy pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2493958962"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment v8.11.79",
+          "url": "https://openmanager-rh36o8g3g-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 0,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0

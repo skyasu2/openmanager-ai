@@ -236,6 +236,13 @@ export function transformUIMessageToEnhanced(
     toolParts
   );
   const handoffHistory = metadata?.handoffHistory;
+  const hasProviderTelemetry =
+    Boolean(metadata?.provider) ||
+    Boolean(metadata?.modelId) ||
+    Boolean(metadata?.providerAttempts?.length) ||
+    typeof metadata?.usedFallback === 'boolean' ||
+    Boolean(metadata?.fallbackReason) ||
+    typeof metadata?.ttfbMs === 'number';
 
   // 분석 근거 생성 (assistant 메시지에만)
   let analysisBasis: AnalysisBasis | undefined;
@@ -334,7 +341,8 @@ export function transformUIMessageToEnhanced(
       traceId ||
       assistantResponseView ||
       handoffHistory ||
-      toolResultSummaries.length > 0
+      toolResultSummaries.length > 0 ||
+      hasProviderTelemetry
         ? {
             ...(analysisBasis && { analysisBasis }),
             ...(traceId && { traceId }),
@@ -349,6 +357,25 @@ export function transformUIMessageToEnhanced(
             }),
             ...(metadata?.modeSelectionSource && {
               modeSelectionSource: metadata.modeSelectionSource,
+            }),
+            ...(metadata?.provider && {
+              provider: metadata.provider,
+            }),
+            ...(metadata?.modelId && {
+              modelId: metadata.modelId,
+            }),
+            ...(metadata?.providerAttempts &&
+              metadata.providerAttempts.length > 0 && {
+                providerAttempts: metadata.providerAttempts,
+              }),
+            ...(typeof metadata?.usedFallback === 'boolean' && {
+              usedFallback: metadata.usedFallback,
+            }),
+            ...(metadata?.fallbackReason && {
+              fallbackReason: metadata.fallbackReason,
+            }),
+            ...(typeof metadata?.ttfbMs === 'number' && {
+              ttfbMs: metadata.ttfbMs,
             }),
             ...(assistantResponseView && {
               assistantResponseView,

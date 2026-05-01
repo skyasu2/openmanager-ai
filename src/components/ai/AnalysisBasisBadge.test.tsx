@@ -638,6 +638,72 @@ describe('AnalysisBasisBadge', () => {
     expect(within(detailPanel).getByText('1987ms')).toBeInTheDocument();
   });
 
+  it('shows provider fallback attempts in the debug tab only', () => {
+    render(
+      <AnalysisBasisBadge
+        basis={{
+          ...basis,
+          toolsCalled: ['analyzePattern'],
+        }}
+        provider="mistral"
+        modelId="mistral-large-latest"
+        usedFallback={true}
+        fallbackReason="empty_response"
+        ttfbMs={1520}
+        providerAttempts={[
+          {
+            provider: 'cerebras',
+            modelId: 'llama3.1-8b',
+            attempt: 1,
+            durationMs: 820,
+            error: 'raw tool-call JSON',
+          },
+          {
+            provider: 'mistral',
+            modelId: 'mistral-large-latest',
+            attempt: 1,
+            durationMs: 1540,
+          },
+        ]}
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: '분석 근거 상세 보기' })
+    );
+
+    const processPanel = screen.getByRole('tabpanel', { name: '과정 보기' });
+    expect(
+      within(processPanel).queryByText('Provider 시도')
+    ).not.toBeInTheDocument();
+    expect(
+      within(processPanel).queryByText('cerebras/llama3.1-8b')
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('tab', { name: '디버그 보기' }));
+
+    const detailPanel = screen.getByRole('tabpanel', { name: '디버그 보기' });
+    expect(within(detailPanel).getByText('Provider 시도')).toBeInTheDocument();
+    expect(
+      within(detailPanel).getByText('최종 mistral/mistral-large-latest')
+    ).toBeInTheDocument();
+    expect(
+      within(detailPanel).getAllByText('fallback 사용').length
+    ).toBeGreaterThan(0);
+    expect(
+      within(detailPanel).getByText('전환 사유: empty_response')
+    ).toBeInTheDocument();
+    expect(
+      within(detailPanel).getByText('cerebras/llama3.1-8b')
+    ).toBeInTheDocument();
+    expect(
+      within(detailPanel).getByText('mistral/mistral-large-latest')
+    ).toBeInTheDocument();
+    expect(
+      within(detailPanel).getByText('raw tool-call JSON')
+    ).toBeInTheDocument();
+  });
+
   it('hides technical details again when returning to the process tab', () => {
     render(
       <AnalysisBasisBadge

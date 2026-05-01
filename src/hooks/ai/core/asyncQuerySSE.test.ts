@@ -250,6 +250,26 @@ describe('connectAsyncQuerySSE', () => {
         resolvedMode: 'multi',
         modeSelectionSource: 'auto_complexity',
         latencyTier: 'slow',
+        provider: 'mistral',
+        modelId: 'mistral-large-latest',
+        usedFallback: true,
+        fallbackReason: 'empty_response',
+        ttfbMs: 1520,
+        providerAttempts: [
+          {
+            provider: 'cerebras',
+            modelId: 'llama3.1-8b',
+            attempt: 1,
+            durationMs: 820,
+            error: 'raw tool-call JSON',
+          },
+          {
+            provider: 'mistral',
+            modelId: 'mistral-large-latest',
+            attempt: 1,
+            durationMs: 1540,
+          },
+        ],
         retrieval: {
           retrievalEnabled: true,
           retrievalUsed: false,
@@ -282,6 +302,26 @@ describe('connectAsyncQuerySSE', () => {
       latencyTier: 'slow',
       resolvedMode: 'multi',
       modeSelectionSource: 'auto_complexity',
+      provider: 'mistral',
+      modelId: 'mistral-large-latest',
+      usedFallback: true,
+      fallbackReason: 'empty_response',
+      ttfbMs: 1520,
+      providerAttempts: [
+        {
+          provider: 'cerebras',
+          modelId: 'llama3.1-8b',
+          attempt: 1,
+          durationMs: 820,
+          error: 'raw tool-call JSON',
+        },
+        {
+          provider: 'mistral',
+          modelId: 'mistral-large-latest',
+          attempt: 1,
+          durationMs: 1540,
+        },
+      ],
       traceId: 'trace-abc',
       retrieval: {
         retrievalEnabled: true,

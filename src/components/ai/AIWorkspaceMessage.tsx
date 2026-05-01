@@ -33,7 +33,7 @@ const ThinkingToggle = memo<{
         onClick={() => setIsOpen((prev) => !prev)}
         data-testid="thinking-toggle-button"
         data-thinking-open={isOpen ? 'true' : 'false'}
-        className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-700 transition-colors"
+        className="flex items-center gap-1.5 text-xs text-gray-500 transition-colors hover:text-gray-700"
       >
         {isOpen ? (
           <ChevronUp className="h-3 w-3" />
@@ -154,22 +154,22 @@ export const AIWorkspaceMessage = memo<{
                   {assistantResponseView?.shouldCollapse ? (
                     <div className="space-y-3">
                       <div className="rounded-xl border border-indigo-100 bg-indigo-50/40 p-3">
-                        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-indigo-500">
+                        <p className="mb-2 text-xs font-semibold tracking-wide text-indigo-500 uppercase">
                           핵심 요약
                         </p>
                         <MarkdownRenderer
                           content={assistantResponseView.summary}
-                          className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
+                          className="text-chat leading-relaxed [overflow-wrap:anywhere] break-words"
                         />
                       </div>
                       {inlineAssistantDetails && (
                         <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3">
-                          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          <p className="mb-2 text-xs font-semibold tracking-wide text-slate-500 uppercase">
                             상세 분석
                           </p>
                           <MarkdownRenderer
                             content={inlineAssistantDetails}
-                            className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
+                            className="text-chat leading-relaxed [overflow-wrap:anywhere] break-words"
                           />
                         </div>
                       )}
@@ -185,12 +185,12 @@ export const AIWorkspaceMessage = memo<{
                   ) : (
                     <MarkdownRenderer
                       content={message.content}
-                      className="text-chat leading-relaxed break-words [overflow-wrap:anywhere]"
+                      className="text-chat leading-relaxed [overflow-wrap:anywhere] break-words"
                     />
                   )}
                 </div>
               ) : (
-                <div className="whitespace-pre-wrap wrap-break-word text-chat leading-relaxed">
+                <div className="text-chat leading-relaxed wrap-break-word whitespace-pre-wrap">
                   {message.content}
                 </div>
               )}
@@ -240,6 +240,12 @@ export const AIWorkspaceMessage = memo<{
                 latencyTier={message.metadata?.latencyTier}
                 resolvedMode={message.metadata?.resolvedMode}
                 modeSelectionSource={message.metadata?.modeSelectionSource}
+                provider={message.metadata?.provider}
+                modelId={message.metadata?.modelId}
+                providerAttempts={message.metadata?.providerAttempts}
+                usedFallback={message.metadata?.usedFallback}
+                fallbackReason={message.metadata?.fallbackReason}
+                ttfbMs={message.metadata?.ttfbMs}
                 handoffHistory={message.metadata?.handoffHistory}
                 toolResultSummaries={message.metadata?.toolResultSummaries}
                 className="mt-2"

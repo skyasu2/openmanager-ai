@@ -4,6 +4,7 @@ import {
 } from '@/lib/ai/utils/tool-presentation';
 import type {
   AnalysisBasis,
+  ProviderAttemptTelemetry,
   ResponseHandoff,
   ToolResultSummary,
 } from '@/stores/useAISidebarStore';
@@ -24,6 +25,12 @@ export interface AnalysisBasisBadgeProps {
   latencyTier?: LatencyTier;
   resolvedMode?: ResolvedMode;
   modeSelectionSource?: string;
+  provider?: string;
+  modelId?: string;
+  providerAttempts?: ProviderAttemptTelemetry[];
+  usedFallback?: boolean;
+  fallbackReason?: string;
+  ttfbMs?: number;
   handoffHistory?: ResponseHandoff[];
   toolResultSummaries?: ToolResultSummary[];
   className?: string;
@@ -390,6 +397,12 @@ export function buildDebugBundle(params: {
   referencedServers: string[];
   toolResultSummaries?: ToolResultSummary[];
   traceId?: string;
+  provider?: string;
+  modelId?: string;
+  providerAttempts?: ProviderAttemptTelemetry[];
+  usedFallback?: boolean;
+  fallbackReason?: string;
+  ttfbMs?: number;
 }): string {
   const {
     basis,
@@ -400,6 +413,12 @@ export function buildDebugBundle(params: {
     referencedServers,
     toolResultSummaries,
     traceId,
+    provider,
+    modelId,
+    providerAttempts,
+    usedFallback,
+    fallbackReason,
+    ttfbMs,
   } = params;
 
   const toolCalls = (toolResultSummaries ?? meaningfulTools ?? []).map(
@@ -433,6 +452,14 @@ export function buildDebugBundle(params: {
       referencedServers,
       executionPath,
       toolCalls,
+      runtime: {
+        provider: provider ?? null,
+        modelId: modelId ?? null,
+        usedFallback: usedFallback ?? null,
+        fallbackReason: fallbackReason ?? null,
+        ttfbMs: ttfbMs ?? null,
+        providerAttempts: providerAttempts ?? [],
+      },
       failureReasons: failureReasons.map((failure) => ({
         toolName: failure.toolName,
         code: failure.reason.code,
@@ -446,15 +473,35 @@ export function buildDebugBundle(params: {
 
 export function buildRuntimeSummaryItems(params: {
   latencyTier?: LatencyTier;
+  modelId?: string;
+  provider?: string;
+  fallbackReason?: string;
   processingTime?: number;
   resolvedMode?: ResolvedMode;
+  ttfbMs?: number;
+  usedFallback?: boolean;
 }): string[] {
-  const { latencyTier, processingTime, resolvedMode } = params;
+  const {
+    fallbackReason,
+    latencyTier,
+    modelId,
+    processingTime,
+    provider,
+    resolvedMode,
+    ttfbMs,
+    usedFallback,
+  } = params;
+  const providerLabel =
+    provider && modelId ? `${provider}/${modelId}` : (provider ?? modelId);
 
   return [
     typeof processingTime === 'number' ? `${processingTime}ms` : null,
+    typeof ttfbMs === 'number' ? `TTFB ${ttfbMs}ms` : null,
     resolvedMode ? `${RESOLVED_MODE_LABELS[resolvedMode]} 경로` : null,
     latencyTier ? `지연 ${LATENCY_TIER_LABELS[latencyTier]}` : null,
+    providerLabel ? `모델 ${providerLabel}` : null,
+    usedFallback ? 'fallback 사용' : null,
+    fallbackReason ? `사유 ${fallbackReason}` : null,
   ].filter(Boolean) as string[];
 }
 
@@ -544,6 +591,7 @@ export function hasTechnicalAnalysisDetails(params: {
   thinkingSteps?: AIThinkingStep[];
   toolResultSummaries?: ToolResultSummary[];
   traceId?: string;
+  providerAttempts?: ProviderAttemptTelemetry[];
 }): boolean {
   const {
     debugDetails,
@@ -554,6 +602,7 @@ export function hasTechnicalAnalysisDetails(params: {
     thinkingSteps,
     toolResultSummaries,
     traceId,
+    providerAttempts,
   } = params;
 
   return (
@@ -561,6 +610,7 @@ export function hasTechnicalAnalysisDetails(params: {
     Boolean(thinkingSteps && thinkingSteps.length > 0) ||
     Boolean(handoffHistory && handoffHistory.length > 0) ||
     Boolean(toolResultSummaries && toolResultSummaries.length > 0) ||
+    Boolean(providerAttempts && providerAttempts.length > 0) ||
     technicalExecutionPath.length > 0 ||
     runtimeSummaryItems.length > 0 ||
     Boolean(modeSelectionLabel) ||

@@ -43,6 +43,12 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
   latencyTier,
   resolvedMode,
   modeSelectionSource,
+  provider,
+  modelId,
+  providerAttempts,
+  usedFallback,
+  fallbackReason,
+  ttfbMs,
   handoffHistory,
   toolResultSummaries,
   className = '',
@@ -120,16 +126,28 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
         referencedServers,
         toolResultSummaries,
         traceId,
+        provider,
+        modelId,
+        providerAttempts,
+        usedFallback,
+        fallbackReason,
+        ttfbMs,
       }),
     [
       basis,
       executionPath,
       failureReasons,
+      fallbackReason,
       meaningfulTools,
+      modelId,
       processRoute,
+      provider,
+      providerAttempts,
       referencedServers,
+      ttfbMs,
       toolResultSummaries,
       traceId,
+      usedFallback,
     ]
   );
   const { collapsedSummary, collapsedTitle } = useMemo(
@@ -147,10 +165,24 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
     () =>
       buildRuntimeSummaryItems({
         latencyTier,
+        modelId,
         processingTime,
+        provider,
         resolvedMode,
+        ttfbMs,
+        usedFallback,
+        fallbackReason,
       }),
-    [latencyTier, processingTime, resolvedMode]
+    [
+      fallbackReason,
+      latencyTier,
+      modelId,
+      processingTime,
+      provider,
+      resolvedMode,
+      ttfbMs,
+      usedFallback,
+    ]
   );
   const modeSelectionLabel = getModeSelectionLabel(modeSelectionSource);
   const resolvedModeDescription = getResolvedModeDescription(resolvedMode);
@@ -163,6 +195,7 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
     thinkingSteps,
     toolResultSummaries,
     traceId,
+    providerAttempts,
   });
   const tabButtonClassName = (tab: AnalysisBasisTab) =>
     `rounded-full px-3 py-1 text-xs font-medium transition-colors ${
@@ -236,7 +269,7 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
       )}
 
       {isExpanded && (
-        <div className="min-w-0 space-y-2 border-t border-gray-200 px-3 pb-3 pt-1">
+        <div className="min-w-0 space-y-2 border-t border-gray-200 px-3 pt-1 pb-3">
           <div className="rounded-md border border-slate-200 bg-white p-3">
             <div className="mb-3 flex items-center justify-between gap-3">
               <div>
@@ -312,8 +345,11 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
                 hasTechnicalDetails={hasTechnicalDetails}
                 handoffHistory={handoffHistory}
                 modeSelectionLabel={modeSelectionLabel}
+                modelId={modelId}
                 panelId={detailPanelId}
                 processRoute={processRoute}
+                provider={provider}
+                providerAttempts={providerAttempts}
                 resolvedModeDescription={resolvedModeDescription}
                 runtimeSummaryItems={runtimeSummaryItems}
                 tabId={detailTabId}
@@ -321,6 +357,9 @@ export const AnalysisBasisBadge: FC<AnalysisBasisBadgeProps> = ({
                 thinkingSteps={thinkingSteps}
                 toolResultSummaries={toolResultSummaries}
                 traceId={traceId}
+                ttfbMs={ttfbMs}
+                usedFallback={usedFallback}
+                fallbackReason={fallbackReason}
               />
             </div>
           </div>

@@ -22,6 +22,7 @@ import {
 } from './quota-store-memory';
 import {
   REDIS_QUOTA_TTL_SECONDS,
+  getAtomicQuotaReservationScriptForTests,
   getCooldownKey,
   getRedisKey,
 } from './quota-store-redis';
@@ -73,5 +74,12 @@ describe('QuotaTracker layering contract', () => {
       'ai:quota:cooldown:cerebras:llama3.1-8b'
     );
     expect(REDIS_QUOTA_TTL_SECONDS).toBe(86_400);
+  });
+
+  it('avoids Lua reserved words when reading Redis cooldown fields', () => {
+    const script = getAtomicQuotaReservationScriptForTests();
+
+    expect(script).toContain('cooldown["until"]');
+    expect(script).not.toContain('cooldown.until');
   });
 });

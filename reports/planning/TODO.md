@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-02 KST (`AI multi-agent raw tool-call JSON suppression`)
+**Last Updated**: 2026-05-02 KST (`Cerebras finalAnswer schema tolerance`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -41,6 +41,21 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-02 #247)
+- [x] Cerebras finalAnswer schema tolerance
+  - Cerebras 공식 Chat Completions/tool-use/rate-limit 문서와 직접 REST/AI SDK 스모크로 원인 재분류: RPM quota가 아니라 `finalAnswer.toolsUsed` 배열 필드가 JSON 문자열로 들어오는 tool-call schema drift 확인
+  - `finalAnswer` 도구 입력에서 `toolsUsed` JSON 문자열 배열 및 comma-separated 문자열을 `string[]`로 정규화해 tool-error/empty response fallback 가능성 축소
+  - 회귀 테스트 추가: `cloud-run/ai-engine/src/tools-ai-sdk/final-answer.test.ts`
+  - 검증: Cerebras direct REST/AI SDK smoke, `cloud-run/ai-engine npx vitest run src/tools-ai-sdk/final-answer.test.ts`, `cloud-run/ai-engine npm run type-check`, `cloud-run/ai-engine npm run test`
+
+### Completed (2026-05-02 #246)
+- [x] AI provider fallback observability hardening
+  - Redis quota atomic reservation Lua script에서 예약어 `until` dot access를 bracket access로 수정해 `EVAL` syntax error 제거
+  - Async job SSE 결과의 `provider`, `modelId`, `providerAttempts`, `usedFallback`, `fallbackReason`, `ttfbMs`를 assistant metadata까지 보존
+  - 클라이언트 전달 metadata sanitizer에서 provider attempt 오류 메시지의 bearer/API-key 형태 토큰 redaction 및 길이 제한 적용
+  - 분석 근거 디버그 탭에 provider 시도 순서, 최종 provider/model, fallback 여부, 전환 사유, TTFB를 표시해 Cerebras/Groq/Mistral 전환 원인 확인 가능
+  - 검증: targeted SSE/message/analysis-basis/stream route tests, AI Engine quota targeted test, root/AI Engine type-check, `npm run lint`, `npm run test:quick`, `npm run test:contract`, `cloud-run/ai-engine npm test`
 
 ### Completed (2026-05-02 #245)
 - [x] AI Chat multi-agent raw tool-call JSON/blank response residual fix

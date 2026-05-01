@@ -28,6 +28,51 @@ interface ConnectAsyncQuerySSEParams {
   onError: (error: string, details?: AIErrorDetails | null) => void;
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function getNonEmptyString(value: unknown): string | undefined {
+  return typeof value === 'string' && value.trim().length > 0
+    ? value.trim()
+    : undefined;
+}
+
+function getFiniteNumber(value: unknown): number | undefined {
+  return typeof value === 'number' && Number.isFinite(value)
+    ? Math.max(0, Math.round(value))
+    : undefined;
+}
+
+function normalizeProviderAttempts(
+  value: unknown
+): AsyncQueryResult['providerAttempts'] {
+  if (!Array.isArray(value)) {
+    return undefined;
+  }
+
+  const attempts = value
+    .map((entry) => {
+      if (!isRecord(entry)) return null;
+      const provider = getNonEmptyString(entry.provider);
+      if (!provider) return null;
+      const modelId = getNonEmptyString(entry.modelId);
+      const attempt = getFiniteNumber(entry.attempt);
+      const durationMs = getFiniteNumber(entry.durationMs);
+      const error = getNonEmptyString(entry.error);
+      return {
+        provider,
+        ...(modelId && { modelId }),
+        ...(attempt !== undefined && { attempt }),
+        ...(durationMs !== undefined && { durationMs }),
+        ...(error && { error }),
+      };
+    })
+    .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
+
+  return attempts.length > 0 ? attempts : undefined;
+}
+
 export function closeTrackedEventSource(
   eventSourceRef: MutableRefObject<EventSource | null>,
   listenersRef: MutableRefObject<TrackedSSEListener[]>
@@ -145,6 +190,14 @@ export function connectAsyncQuerySSE(
         onError(errorInResponse);
         return;
       }
+      const metadata = isRecord(resultData.metadata) ? resultData.metadata : {};
+      const provider = getNonEmptyString(metadata.provider);
+      const modelId = getNonEmptyString(metadata.modelId);
+      const providerAttempts = normalizeProviderAttempts(
+        metadata.providerAttempts
+      );
+      const fallbackReason = getNonEmptyString(metadata.fallbackReason);
+      const ttfbMs = getFiniteNumber(metadata.ttfbMs);
 
       onResult({
         success: true,
@@ -157,35 +210,42 @@ export function connectAsyncQuerySSE(
         ragSources: resultData.ragSources,
         processingTimeMs: resultData.processingTimeMs,
         latencyTier:
-          resultData.metadata?.latencyTier === 'fast' ||
-          resultData.metadata?.latencyTier === 'normal' ||
-          resultData.metadata?.latencyTier === 'slow' ||
-          resultData.metadata?.latencyTier === 'very_slow'
-            ? resultData.metadata.latencyTier
+          metadata.latencyTier === 'fast' ||
+          metadata.latencyTier === 'normal' ||
+          metadata.latencyTier === 'slow' ||
+          metadata.latencyTier === 'very_slow'
+            ? metadata.latencyTier
             : undefined,
         resolvedMode:
-          resultData.metadata?.resolvedMode === 'single' ||
-          resultData.metadata?.resolvedMode === 'multi'
-            ? resultData.metadata.resolvedMode
+          metadata.resolvedMode === 'single' ||
+          metadata.resolvedMode === 'multi'
+            ? metadata.resolvedMode
             : undefined,
         modeSelectionSource:
-          typeof resultData.metadata?.modeSelectionSource === 'string'
-            ? resultData.metadata.modeSelectionSource
+          typeof metadata.modeSelectionSource === 'string'
+            ? metadata.modeSelectionSource
             : undefined,
-        traceId: resultData.metadata?.traceId,
-        retrieval: normalizeRetrievalMetadata(resultData.metadata?.retrieval),
+        traceId:
+          typeof metadata.traceId === 'string' ? metadata.traceId : undefined,
+        retrieval: normalizeRetrievalMetadata(metadata.retrieval),
+        ...(provider && { provider }),
+        ...(modelId && { modelId }),
+        ...(providerAttempts && { providerAttempts }),
+        ...(typeof metadata.usedFallback === 'boolean' && {
+          usedFallback: metadata.usedFallback,
+        }),
+        ...(fallbackReason && { fallbackReason }),
+        ...(ttfbMs !== undefined && { ttfbMs }),
         analysisMode:
-          resultData.metadata?.analysisMode === 'auto' ||
-          resultData.metadata?.analysisMode === 'thinking'
-            ? resultData.metadata.analysisMode
+          metadata.analysisMode === 'auto' ||
+          metadata.analysisMode === 'thinking'
+            ? metadata.analysisMode
             : undefined,
-        handoffHistory: Array.isArray(resultData.metadata?.handoffs)
-          ? resultData.metadata.handoffs
+        handoffHistory: Array.isArray(metadata.handoffs)
+          ? (metadata.handoffs as AsyncQueryResult['handoffHistory'])
           : undefined,
-        toolResultSummaries: Array.isArray(
-          resultData.metadata?.toolResultSummaries
-        )
-          ? resultData.metadata.toolResultSummaries
+        toolResultSummaries: Array.isArray(metadata.toolResultSummaries)
+          ? (metadata.toolResultSummaries as AsyncQueryResult['toolResultSummaries'])
           : undefined,
       });
     } catch (error) {

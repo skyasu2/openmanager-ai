@@ -369,15 +369,25 @@ describe('AI Job Stream Route', () => {
         metadata: {
           ownerKey: 'owner-secret',
           complexity: 'complex',
-          provider: 'cerebras',
-          modelId: 'llama3.1-8b',
-          usedFallback: false,
+          provider: 'mistral',
+          modelId: 'mistral-large-latest',
+          usedFallback: true,
+          fallbackReason: 'empty_response',
+          ttfbMs: 801,
           providerAttempts: [
             {
               provider: 'cerebras',
               modelId: 'llama3.1-8b',
               attempt: 1,
               durationMs: 801,
+              error:
+                'empty response Authorization: Bearer sk-test-1234567890abcdef',
+            },
+            {
+              provider: 'mistral',
+              modelId: 'mistral-large-latest',
+              attempt: 1,
+              durationMs: 1200,
             },
           ],
         },
@@ -394,8 +404,18 @@ describe('AI Job Stream Route', () => {
 
     expect(response.status).toBe(200);
     const text = await response.text();
+    expect(text).toContain('"provider":"mistral"');
+    expect(text).toContain('"modelId":"mistral-large-latest"');
     expect(text).toContain('"provider":"cerebras"');
     expect(text).toContain('"modelId":"llama3.1-8b"');
+    expect(text).toContain('"usedFallback":true');
+    expect(text).toContain('"fallbackReason":"empty_response"');
+    expect(text).toContain('"ttfbMs":801');
+    expect(text).toContain('"providerAttempts"');
+    expect(text).toContain(
+      '"error":"empty response Authorization: Bearer [redacted-token]"'
+    );
+    expect(text).not.toContain('sk-test-1234567890abcdef');
     expect(text).not.toContain('owner-secret');
     expect(text).not.toContain('"complexity"');
   });
