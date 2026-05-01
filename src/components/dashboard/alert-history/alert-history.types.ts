@@ -5,6 +5,7 @@ export type AlertHistoryModalProps = {
   onClose: () => void;
   serverIds: string[];
   onAskAIAboutAlert?: (alert: Alert) => void;
+  initialServerId?: string | null;
 };
 
 export const TIME_RANGE_OPTIONS = [

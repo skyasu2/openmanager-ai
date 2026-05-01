@@ -8,6 +8,16 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useGlobalLogs } from '@/hooks/dashboard/useGlobalLogs';
 import { LogExplorerModal, LogExplorerPanel } from './LogExplorerModal';
 
+const { routerPush } = vi.hoisted(() => ({
+  routerPush: vi.fn(),
+}));
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: routerPush,
+  }),
+}));
+
 vi.mock('@/hooks/dashboard/useGlobalLogs', () => ({
   useGlobalLogs: vi.fn(),
 }));
@@ -33,6 +43,7 @@ function createLog(overrides: {
 describe('LogExplorerModal display contract', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    routerPush.mockClear();
     mockedUseGlobalLogs.mockReturnValue({
       logs: [
         {
@@ -206,7 +217,7 @@ describe('LogExplorerModal display contract', () => {
     ).toHaveTextContent('cpu=67%');
   });
 
-  it('로그 결과는 50개 청크로 렌더링하고 스크롤 끝에서 다음 청크를 추가한다', () => {
+  it('로그 결과는 50개 청크로 렌더링하고 더 보기로 다음 청크를 추가한다', () => {
     mockedUseGlobalLogs.mockReturnValue({
       logs: Array.from({ length: 60 }, (_, index) =>
         createLog({
@@ -235,23 +246,112 @@ describe('LogExplorerModal display contract', () => {
     render(<LogExplorerModal open onClose={vi.fn()} />);
 
     expect(screen.getAllByTestId('log-explorer-log-row')).toHaveLength(50);
+    expect(
+      screen.getByTestId('log-explorer-load-sentinel')
+    ).toBeInTheDocument();
 
-    const scroller = screen.getByTestId('log-explorer-scroll-container');
-    Object.defineProperty(scroller, 'scrollTop', {
-      configurable: true,
-      value: 1000,
-    });
-    Object.defineProperty(scroller, 'clientHeight', {
-      configurable: true,
-      value: 500,
-    });
-    Object.defineProperty(scroller, 'scrollHeight', {
-      configurable: true,
-      value: 1400,
-    });
-
-    fireEvent.scroll(scroller);
+    fireEvent.click(
+      screen.getByRole('button', { name: '더 보기 (10건 남음)' })
+    );
 
     expect(screen.getAllByTestId('log-explorer-log-row')).toHaveLength(60);
+  });
+
+  it('로그 행 알림 버튼은 서버 필터가 적용된 알림 페이지로 이동한다', () => {
+    render(<LogExplorerModal open onClose={vi.fn()} />);
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'web-01 알림 이력 보기' })
+    );
+
+    expect(routerPush).toHaveBeenCalledWith('/dashboard/alerts?server=web-01');
+  });
+
+  it('로그 행 알림 버튼은 서버 ID를 URL 안전하게 인코딩한다', () => {
+    mockedUseGlobalLogs.mockReturnValue({
+      logs: [
+        createLog({
+          message: 'server id needs encoding',
+          serverId: 'api was/dc1-01',
+        }),
+      ],
+      stats: {
+        total: 1,
+        info: 0,
+        warn: 1,
+        error: 0,
+      },
+      sources: ['nginx'],
+      serverIds: ['api was/dc1-01'],
+      isLoading: false,
+      isError: false,
+      errorMessage: null,
+      retry: vi.fn(),
+      windowStart: '2026-02-13T00:00:00.000Z',
+      windowEnd: '2026-02-13T23:59:00.000Z',
+    });
+
+    render(<LogExplorerModal open onClose={vi.fn()} />);
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'api was/dc1-01 알림 이력 보기' })
+    );
+
+    expect(routerPush).toHaveBeenCalledWith(
+      '/dashboard/alerts?server=api%20was%2Fdc1-01'
+    );
+  });
+
+  it('반복 그룹 상세 행도 알림 페이지 링크를 제공한다', () => {
+    mockedUseGlobalLogs.mockReturnValue({
+      logs: [
+        createLog({
+          timestamp: '2026-02-13T10:00:00.000Z',
+          message: 'nfsd WARNING pressure cpu=65% mem=40% disk=83%',
+          serverId: 'storage-nfs-dc1-01',
+          source: 'nfsd',
+        }),
+        createLog({
+          timestamp: '2026-02-13T10:00:10.000Z',
+          message: 'nfsd WARNING pressure cpu=67% mem=41% disk=84%',
+          serverId: 'storage-nfs-dc1-01',
+          source: 'nfsd',
+        }),
+      ],
+      stats: {
+        total: 2,
+        info: 0,
+        warn: 2,
+        error: 0,
+      },
+      sources: ['nfsd'],
+      serverIds: ['storage-nfs-dc1-01'],
+      isLoading: false,
+      isError: false,
+      errorMessage: null,
+      retry: vi.fn(),
+      windowStart: '2026-02-13T00:00:00.000Z',
+      windowEnd: '2026-02-13T23:59:00.000Z',
+    });
+
+    render(<LogExplorerModal open onClose={vi.fn()} />);
+
+    fireEvent.click(screen.getByTestId('log-explorer-log-row'));
+
+    expect(
+      screen.getAllByRole('button', {
+        name: 'storage-nfs-dc1-01 알림 이력 보기',
+      })
+    ).toHaveLength(2);
+
+    fireEvent.click(
+      screen.getAllByRole('button', {
+        name: 'storage-nfs-dc1-01 알림 이력 보기',
+      })[1]
+    );
+
+    expect(routerPush).toHaveBeenCalledWith(
+      '/dashboard/alerts?server=storage-nfs-dc1-01'
+    );
   });
 });

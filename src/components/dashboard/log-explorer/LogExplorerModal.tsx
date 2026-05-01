@@ -1,8 +1,8 @@
 'use client';
 
-import { FileSearch, RotateCcw } from 'lucide-react';
+import { Bell, FileSearch, RotateCcw } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import {
-  type UIEvent,
   useCallback,
   useEffect,
   useMemo,
@@ -16,6 +16,7 @@ import {
   type GlobalLogFilter,
   useGlobalLogs,
 } from '@/hooks/dashboard/useGlobalLogs';
+import { useScrollSentinel } from '@/hooks/dashboard/useScrollSentinel';
 import { cn } from '@/lib/utils';
 import {
   formatDashboardDateTime,
@@ -96,6 +97,30 @@ const groupConsecutiveLogs = (logs: GlobalLogEntry[]): LogGroup[] => {
   return groups;
 };
 
+function LogAlertButton({
+  serverId,
+  onOpenAlertHistory,
+}: {
+  serverId: string;
+  onOpenAlertHistory: (serverId: string) => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={(event) => {
+        event.stopPropagation();
+        onOpenAlertHistory(serverId);
+      }}
+      aria-label={`${serverId} 알림 이력 보기`}
+      title="알림 이력"
+      className="inline-flex shrink-0 items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 transition-colors hover:bg-amber-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
+    >
+      <Bell size={11} />
+      알림
+    </button>
+  );
+}
+
 export function LogExplorerPanel({
   active = true,
   initialServerId = null,
@@ -110,11 +135,13 @@ export function LogExplorerPanel({
   const [debouncedKeyword, setDebouncedKeyword] = useState('');
   const appliedInitialServerIdRef = useRef(initialServerId ?? '');
   const previousLoadedLogsRef = useRef(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const sessionAnchorRef = useRef(new Date());
   const [sessionAnchorLabel, setSessionAnchorLabel] = useState('');
   const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY);
   const [expandedLogKey, setExpandedLogKey] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   // Debounce keyword with proper cleanup on unmount
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -174,6 +201,15 @@ export function LogExplorerPanel({
       setExpandedLogKey(null);
     });
   };
+
+  const handleOpenAlertHistory = useCallback(
+    (targetServerId: string) => {
+      router.push(
+        `/dashboard/alerts?server=${encodeURIComponent(targetServerId)}`
+      );
+    },
+    [router]
+  );
 
   useEffect(() => {
     if (!active) return;
@@ -242,20 +278,10 @@ export function LogExplorerPanel({
     isFetchingNextLogPage,
     logs.length,
   ]);
-  const scrollThrottleRef = useRef(false);
-  const handleLogScroll = useCallback(
-    (event: UIEvent<HTMLDivElement>) => {
-      if (scrollThrottleRef.current) return;
-      const { scrollHeight, scrollTop, clientHeight } = event.currentTarget;
-      const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
-      if (distanceFromBottom > 120) return;
-      scrollThrottleRef.current = true;
-      loadMoreLogs();
-      setTimeout(() => {
-        scrollThrottleRef.current = false;
-      }, 200);
-    },
-    [loadMoreLogs]
+  const loadMoreSentinelRef = useScrollSentinel(
+    loadMoreLogs,
+    canLoadMore && !isFetchingNextLogPage && !isPending,
+    { rootRef: scrollContainerRef }
   );
 
   useEffect(() => {
@@ -353,6 +379,8 @@ export function LogExplorerPanel({
         {/* Keyword search */}
         <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
           <input
+            id="log-explorer-search"
+            name="log-explorer-search"
             type="text"
             value={keyword}
             onChange={(e) => handleKeywordChange(e.target.value)}
@@ -390,6 +418,8 @@ export function LogExplorerPanel({
           <div className="grid grid-cols-2 gap-2 sm:flex sm:min-w-0 sm:flex-wrap sm:items-center">
             {/* Source dropdown */}
             <select
+              id="log-explorer-source-filter"
+              name="log-explorer-source-filter"
               value={source}
               onChange={(e) =>
                 handleFilterChange(() => setSource(e.target.value))
@@ -407,6 +437,8 @@ export function LogExplorerPanel({
 
             {/* Server dropdown */}
             <select
+              id="log-explorer-server-filter"
+              name="log-explorer-server-filter"
               value={serverId}
               onChange={(e) =>
                 handleFilterChange(() => setServerId(e.target.value))
@@ -477,9 +509,9 @@ export function LogExplorerPanel({
         className="relative min-h-[320px] flex-1 overflow-hidden bg-white sm:max-h-[56vh]"
       >
         <div
+          ref={scrollContainerRef}
           data-testid="log-explorer-scroll-container"
           className="relative h-full overflow-y-auto p-4 font-mono text-xs"
-          onScroll={handleLogScroll}
           style={{ contain: 'strict' }}
         >
           {errorMessage && (
@@ -524,10 +556,8 @@ export function LogExplorerPanel({
             </div>
           ) : (
             <div
-              className={cn(
-                'space-y-1',
-                isPending && 'opacity-60 transition-opacity duration-200'
-              )}
+              aria-busy={isPending ? true : undefined}
+              className="space-y-1"
             >
               {displayLogGroups.map((group) => {
                 const log = group.representative;
@@ -536,105 +566,134 @@ export function LogExplorerPanel({
                 const logKey = group.key;
                 const isExpanded = expandedLogKey === logKey;
                 const isGrouped = group.logs.length > 1;
+                const toggleExpanded = () =>
+                  setExpandedLogKey((currentKey) =>
+                    currentKey === logKey ? null : logKey
+                  );
+                const rowToneClass =
+                  logLevel === 'error'
+                    ? 'bg-red-50 hover:bg-red-100'
+                    : 'bg-white hover:bg-gray-50';
                 return (
-                  <button
-                    type="button"
-                    data-testid="log-explorer-log-row"
+                  <div
                     key={logKey}
-                    aria-expanded={isExpanded}
-                    onClick={() =>
-                      setExpandedLogKey((currentKey) =>
-                        currentKey === logKey ? null : logKey
-                      )
-                    }
                     className={cn(
-                      'flex w-full gap-1.5 rounded border-l-2 px-2.5 py-1.5 text-left transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400/60 sm:gap-2',
+                      'flex w-full gap-1.5 rounded border-l-2 px-2.5 py-1.5 transition-colors sm:gap-2',
                       isExpanded
                         ? 'flex-wrap items-start'
                         : 'flex-nowrap items-center',
                       style.border,
-                      logLevel === 'error'
-                        ? 'bg-red-50 hover:bg-red-100'
-                        : 'bg-white hover:bg-gray-50'
+                      rowToneClass
                     )}
                   >
-                    {/* Server badge */}
-                    <span className="max-w-[120px] shrink-0 truncate rounded bg-blue-100 px-1.5 py-0.5 text-[10px] font-medium text-blue-700">
-                      {log.serverId.split('.')[0]}
-                    </span>
-                    {/* Timestamp */}
-                    <span
+                    <button
+                      type="button"
+                      data-testid="log-explorer-log-row"
+                      aria-expanded={isExpanded}
+                      onClick={toggleExpanded}
                       className={cn(
-                        'shrink-0 tabular-nums',
-                        logLevel === 'error' ? 'text-red-700' : 'text-sky-600'
-                      )}
-                    >
-                      {formatRotatingTimestamp(log.timestamp, {
-                        anchorDate: sessionAnchorRef.current,
-                      })}
-                    </span>
-                    {/* Level badge */}
-                    <span
-                      className={cn(
-                        'shrink-0 inline-flex rounded px-1.5 py-0.5 text-[10px] font-bold uppercase',
-                        style.badge
-                      )}
-                    >
-                      {log.level}
-                    </span>
-                    {/* Source tag */}
-                    <span
-                      className={cn(
-                        'shrink-0 text-[10px]',
-                        logLevel === 'error'
-                          ? 'text-red-700/80'
-                          : 'text-purple-400/80'
-                      )}
-                    >
-                      [{log.source}]
-                    </span>
-                    {/* Message */}
-                    <span
-                      data-testid="log-explorer-log-message"
-                      className={cn(
-                        'min-w-0 flex-1 break-words',
+                        'flex min-w-0 flex-1 gap-1.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/60 sm:gap-2',
                         isExpanded
-                          ? 'basis-full whitespace-pre-wrap sm:basis-auto'
-                          : 'truncate',
-                        style.text
+                          ? 'flex-wrap items-start'
+                          : 'flex-nowrap items-center',
+                        rowToneClass
                       )}
                     >
-                      {log.message}
-                    </span>
-                    {isGrouped && (
-                      <span className="shrink-0 rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-600">
-                        ×{group.logs.length}
+                      {/* Server badge */}
+                      <span className="max-w-[120px] shrink-0 truncate rounded bg-blue-100 px-1.5 py-0.5 text-[10px] font-medium text-blue-700">
+                        {log.serverId.split('.')[0]}
                       </span>
-                    )}
-                    {isGrouped && isExpanded && (
+                      {/* Timestamp */}
                       <span
+                        className={cn(
+                          'shrink-0 tabular-nums',
+                          logLevel === 'error' ? 'text-red-700' : 'text-sky-600'
+                        )}
+                      >
+                        {formatRotatingTimestamp(log.timestamp, {
+                          anchorDate: sessionAnchorRef.current,
+                        })}
+                      </span>
+                      {/* Level badge */}
+                      <span
+                        className={cn(
+                          'shrink-0 inline-flex rounded px-1.5 py-0.5 text-[10px] font-bold uppercase',
+                          style.badge
+                        )}
+                      >
+                        {log.level}
+                      </span>
+                      {/* Source tag */}
+                      <span
+                        className={cn(
+                          'shrink-0 text-[10px]',
+                          logLevel === 'error'
+                            ? 'text-red-700/80'
+                            : 'text-purple-400/80'
+                        )}
+                      >
+                        [{log.source}]
+                      </span>
+                      {/* Message */}
+                      <span
+                        data-testid="log-explorer-log-message"
+                        className={cn(
+                          'min-w-0 flex-1 break-words',
+                          isExpanded
+                            ? 'basis-full whitespace-pre-wrap sm:basis-auto'
+                            : 'truncate',
+                          style.text
+                        )}
+                      >
+                        {log.message}
+                      </span>
+                      {isGrouped && (
+                        <span className="shrink-0 rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-600">
+                          ×{group.logs.length}
+                        </span>
+                      )}
+                    </button>
+                    <LogAlertButton
+                      serverId={log.serverId}
+                      onOpenAlertHistory={handleOpenAlertHistory}
+                    />
+                    {isGrouped && isExpanded && (
+                      <div
                         data-testid="log-explorer-log-group-details"
                         className="basis-full space-y-1 rounded border border-gray-200 bg-gray-50 px-2 py-1 text-[10px] text-gray-600"
                       >
                         {group.logs.slice(1, 6).map((groupLog) => (
-                          <span
+                          <div
                             key={`${groupLog.timestamp}-${groupLog.message}`}
-                            className="block break-words"
+                            className="flex flex-wrap items-center gap-2 break-words"
                           >
-                            {formatRotatingTimestamp(groupLog.timestamp, {
-                              anchorDate: sessionAnchorRef.current,
-                            })}
-                            {'  '}
-                            {groupLog.message}
-                          </span>
+                            <span className="tabular-nums">
+                              {formatRotatingTimestamp(groupLog.timestamp, {
+                                anchorDate: sessionAnchorRef.current,
+                              })}
+                            </span>
+                            <span className="min-w-0 flex-1 break-words">
+                              {groupLog.message}
+                            </span>
+                            <LogAlertButton
+                              serverId={groupLog.serverId}
+                              onOpenAlertHistory={handleOpenAlertHistory}
+                            />
+                          </div>
                         ))}
-                      </span>
+                      </div>
                     )}
-                  </button>
+                  </div>
                 );
               })}
               {canLoadMore && (
                 <div className="text-center py-3">
+                  <div
+                    ref={loadMoreSentinelRef}
+                    data-testid="log-explorer-load-sentinel"
+                    className="h-px"
+                    aria-hidden="true"
+                  />
                   <button
                     type="button"
                     onClick={loadMoreLogs}
@@ -644,7 +703,7 @@ export function LogExplorerPanel({
                     {isFetchingNextLogPage
                       ? '불러오는 중...'
                       : hasMore
-                        ? `더 보기 (${logs.length - displayCount}건 로드됨)`
+                        ? `더 보기 (${logs.length - displayCount}건 남음)`
                         : '다음 로그 불러오기'}
                   </button>
                 </div>

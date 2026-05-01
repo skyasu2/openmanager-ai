@@ -100,6 +100,10 @@ export default function DashboardRoutedContent({
     view === 'logs'
       ? (searchParams.get('server') ?? searchParams.get('serverId'))
       : null;
+  const initialAlertServerId =
+    view === 'alerts'
+      ? (searchParams.get('server') ?? searchParams.get('serverId'))
+      : null;
 
   const sourceServers = allServers?.length ? allServers : servers;
   const {
@@ -190,6 +194,7 @@ export default function DashboardRoutedContent({
               onAskAIAboutAlert={
                 onAskAIAboutAlert ? askAIAboutAlertHistory : undefined
               }
+              initialServerId={initialAlertServerId}
             />
           </div>
         </section>
