@@ -574,6 +574,106 @@ describe('buildDeterministicSummaryFallback', () => {
     expect(summary).toContain('현재 기준을 만족한 서버는 없습니다.');
   });
 
+  it('uses filterServers summary matched count when returned rows are partial', () => {
+    const summary = buildDeterministicSummaryFallback(
+      'DISK >= 70 서버 찾아줘',
+      'NLQ Agent',
+      [
+        {
+          toolName: 'filterServers',
+          result: {
+            success: true,
+            condition: 'disk >= 70%',
+            servers: [
+              { id: 'storage-nfs-dc1-01', status: 'warning', cpu: 35, memory: 44, disk: 88 },
+              { id: 'db-mysql-dc1-backup', status: 'warning', cpu: 42, memory: 55, disk: 74 },
+            ],
+            summary: { matched: 5, returned: 2, total: 18 },
+          },
+        },
+      ]
+    );
+
+    expect(summary).toContain('DISK 사용률 70% 이상 서버 5대');
+    expect(summary).toContain('기준: 전체 18대 중 DISK >= 70%');
+    expect(summary).toContain('1. storage-nfs-dc1-01: DISK 88%');
+    expect(summary).toContain('2. db-mysql-dc1-backup: DISK 74%');
+    expect(summary).not.toContain('3. ');
+  });
+
+  it('trusts filterServers returned rows instead of re-filtering by threshold', () => {
+    const summary = buildDeterministicSummaryFallback(
+      'CPU >= 80 서버 찾아줘',
+      'NLQ Agent',
+      [
+        {
+          toolName: 'filterServers',
+          result: {
+            success: true,
+            condition: 'cpu >= 80%',
+            servers: [
+              { id: 'api-was-dc1-01', status: 'warning', cpu: 70, memory: 55, disk: 45 },
+            ],
+            summary: { matched: 1, returned: 1, total: 18 },
+          },
+        },
+      ]
+    );
+
+    expect(summary).toContain('CPU 사용률 80% 이상 서버 1대');
+    expect(summary).toContain('api-was-dc1-01: CPU 70%');
+  });
+
+  it('builds deterministic network top-N ranking with network-specific checks', () => {
+    const summary = buildDeterministicSummaryFallback(
+      '네트워크 사용률이 가장 높은 서버 2대 알려줘',
+      'NLQ Agent',
+      [
+        {
+          toolName: 'getServerMetrics',
+          result: {
+            servers: [
+              { id: 'web-01', status: 'online', cpu: 70, memory: 30, disk: 20, network: 10 },
+              { id: 'lb-haproxy-dc1-01', status: 'online', cpu: 25, memory: 45, disk: 26, network: 91 },
+              { id: 'api-was-dc1-01', status: 'online', cpu: 63, memory: 44, disk: 31, network: 76 },
+            ],
+          },
+        },
+      ]
+    );
+
+    expect(summary).toContain('네트워크 사용률 상위 2대');
+    expect(summary).toContain('1. lb-haproxy-dc1-01: 네트워크 91%');
+    expect(summary).toContain('2. api-was-dc1-01: 네트워크 76%');
+    expect(summary).toContain('인터페이스 오류, 연결 수, LB 트래픽 분산');
+    expect(summary).not.toContain('web-01');
+  });
+
+  it('builds deterministic ascending CPU rankings and excludes offline servers', () => {
+    const summary = buildDeterministicSummaryFallback(
+      'CPU 사용률이 가장 낮은 서버 2대 알려줘',
+      'NLQ Agent',
+      [
+        {
+          toolName: 'getServerMetrics',
+          result: {
+            servers: [
+              { id: 'web-01', status: 'online', cpu: 25, memory: 30, disk: 20 },
+              { id: 'api-was-dc1-01', status: 'online', cpu: 63, memory: 44, disk: 31 },
+              { id: 'db-mysql-dc1-primary', status: 'online', cpu: 40, memory: 65, disk: 88 },
+              { id: 'legacy-offline-01', status: 'offline', cpu: 1, memory: 0, disk: 0 },
+            ],
+          },
+        },
+      ]
+    );
+
+    expect(summary).toContain('CPU 사용률 하위 2대');
+    expect(summary).toContain('1. web-01: CPU 25%');
+    expect(summary).toContain('2. db-mysql-dc1-primary: CPU 40%');
+    expect(summary).not.toContain('legacy-offline-01');
+  });
+
   it('routes data queries to deterministic when servers are present, LLM-required queries always to LLM', () => {
     // Data queries with servers present → deterministic
     expect(isDeterministicSummaryQuery('현재 모든 서버의 상태를 요약해줘', 'NLQ Agent', 3)).toBe(true);
