@@ -108,7 +108,7 @@ export function DashboardNavigation({
       <aside
         className={cn(
           'group/sidebar hidden h-dvh shrink-0 overflow-x-hidden overflow-y-auto border-r border-slate-200 bg-white px-3 py-4 shadow-xs transition-[width] duration-200 lg:block',
-          isCompact ? 'w-16 hover:w-56' : 'w-56'
+          isCompact ? 'w-16 hover:w-28' : 'w-28'
         )}
       >
         <DashboardNavLinks pathname={pathname} compact={isCompact} />

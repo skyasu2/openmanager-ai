@@ -44,7 +44,9 @@ describe('DashboardNavigation', () => {
   });
 
   it('keeps AI assistant out of the left app navigation', () => {
-    render(<DashboardNavigation />);
+    const { container } = render(<DashboardNavigation />);
+
+    expect(container.querySelector('aside')).toHaveClass('w-28');
 
     expect(screen.getByRole('link', { name: '개요' })).toHaveAttribute(
       'href',
@@ -64,7 +66,7 @@ describe('DashboardNavigation', () => {
 
     const aside = container.querySelector('aside');
     expect(aside).toHaveClass('w-16');
-    expect(aside).toHaveClass('hover:w-56');
+    expect(aside).toHaveClass('hover:w-28');
     expect(screen.getByRole('link', { name: '개요' })).toHaveClass(
       'justify-center'
     );
