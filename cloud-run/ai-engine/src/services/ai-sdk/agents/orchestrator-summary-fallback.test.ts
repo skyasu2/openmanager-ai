@@ -485,6 +485,95 @@ describe('buildDeterministicSummaryFallback', () => {
     expect(summary).toContain('db-mysql-dc1-backup: 69%');
   });
 
+  it('prefers getServerMetrics over filterServers when both tool payloads are present', () => {
+    const summary = buildDeterministicSummaryFallback(
+      'DISK >= 80 서버 찾아줘',
+      'NLQ Agent',
+      [
+        {
+          toolName: 'filterServers',
+          result: {
+            success: true,
+            condition: 'disk >= 80%',
+            servers: [
+              {
+                id: 'storage-nfs-dc1-01',
+                status: 'warning',
+                cpu: 35,
+                memory: 44,
+                disk: 88,
+              },
+            ],
+            summary: { matched: 1, returned: 1, total: 18 },
+          },
+        },
+        {
+          toolName: 'getServerMetrics',
+          result: {
+            servers: [
+              { id: 'web-01', status: 'online', cpu: 25, memory: 30, disk: 20 },
+              { id: 'db-mysql-dc1-primary', status: 'online', cpu: 40, memory: 50, disk: 63 },
+            ],
+          },
+        },
+      ]
+    );
+
+    expect(summary).toContain('DISK 사용률 80% 이상 서버 0대');
+    expect(summary).toContain('기준: 전체 2대 중 DISK >= 80%');
+    expect(summary).not.toContain('storage-nfs-dc1-01');
+  });
+
+  it('returns null for malformed getServerMetrics payloads before considering later tools', () => {
+    const summary = buildDeterministicSummaryFallback(
+      '현재 모든 서버의 상태를 요약해줘',
+      'NLQ Agent',
+      [
+        {
+          toolName: 'getServerMetrics',
+          result: {
+            servers: 'not-an-array',
+          },
+        },
+        {
+          toolName: 'filterServers',
+          result: {
+            success: true,
+            condition: 'status == warning',
+            servers: [
+              { id: 'cache-redis-dc1-01', status: 'warning', cpu: 20, memory: 92, disk: 30 },
+            ],
+            summary: { matched: 1, returned: 1, total: 18 },
+          },
+        },
+      ]
+    );
+
+    expect(summary).toBeNull();
+  });
+
+  it('formats empty status filters from filter summary totals', () => {
+    const summary = buildDeterministicSummaryFallback(
+      'status: critical 서버 알려줘',
+      'NLQ Agent',
+      [
+        {
+          toolName: 'filterServers',
+          result: {
+            success: true,
+            condition: 'status == critical',
+            servers: [],
+            summary: { matched: 0, returned: 0, total: 18 },
+          },
+        },
+      ]
+    );
+
+    expect(summary).toContain('상태 critical 서버 0대');
+    expect(summary).toContain('기준: 전체 18대 중 status == critical');
+    expect(summary).toContain('현재 기준을 만족한 서버는 없습니다.');
+  });
+
   it('routes data queries to deterministic when servers are present, LLM-required queries always to LLM', () => {
     // Data queries with servers present → deterministic
     expect(isDeterministicSummaryQuery('현재 모든 서버의 상태를 요약해줘', 'NLQ Agent', 3)).toBe(true);
