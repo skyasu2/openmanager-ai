@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.79](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.78...v8.11.79) (2026-05-01)
+
+
+### Bug Fixes
+
+* **ai:** handle multi-agent raw tool-call JSON ([097bae3](https://gitlab.com/skyasu2/openmanager-ai/-/commit/097bae30c6e306f444bb08e67ab146e96787021e))
+
 ## [8.11.78](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.77...v8.11.78) (2026-05-01)
 
 
