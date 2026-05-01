@@ -1,17 +1,17 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-01 17:52:57 KST
+> Generated at: 2026-05-01 18:03:46 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 385 |
-| Total Runs (Counted) | 314 |
+| Total Recorded Runs | 386 |
+| Total Runs (Counted) | 315 |
 | Non-counted Runs | 71 |
-| Total Checks | 2690 |
-| Passed | 2592 |
+| Total Checks | 2702 |
+| Passed | 2604 |
 | Failed | 89 |
 | Completed Items | 396 |
 | Pending Items | 0 |
@@ -20,8 +20,8 @@
 | Expert Domains Tracked | 12 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260501-0387 (2026-05-01T08:52:56.763Z) |
-| Latest Recorded Run | QA-20260501-0387 (2026-05-01T08:52:56.763Z) |
+| Last Counted Run | QA-20260501-0388 (2026-05-01T09:03:46.030Z) |
+| Latest Recorded Run | QA-20260501-0388 (2026-05-01T09:03:46.030Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,24 +34,21 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260501-0387 (2026-05-01T08:52:56.763Z)
+Latest run: QA-20260501-0388 (2026-05-01T09:03:46.030Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
-| AI Quality Assurance Specialist | partially-appropriate | no | - |
-| IT Monitoring & Observability SME | partially-appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period returned no charge records yet; previous month probe confirmed Vercel CLI connectivity with no billed usage. |
+| - | - | - | - | - |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-30T08:52:56.763Z -> 2026-05-01T08:52:56.763Z (24h)
+- Window: 2026-04-30T09:03:46.030Z -> 2026-05-01T09:03:46.030Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 
@@ -61,29 +58,25 @@ Latest run: QA-20260501-0387 (2026-05-01T08:52:56.763Z)
 
 ## Coverage (Latest Run)
 
-- Scope: smoke
-- Release-Facing: yes
+- Scope: targeted
+- Release-Facing: no
 - Counts Toward Summary: yes
-- Deployment: EFrtgbAaNuHVoTf79VBizxJmVJJv / SHA 43c0df8c
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: GitLab semver tag pipeline v8.11.77, Vercel production deploy, Production post-deploy smoke expected version 8.11.77, Production post-deploy smoke expected commit 43c0df8c25fb903e0b8e4c8f877539e488343741, AI Engine deploy job, AI Engine post-deploy smoke job
-- Skipped Surfaces: manual Playwright dashboard modal/detail walkthrough, manual AI sidebar conversation flow, manual browser performance trace
+- Deployment: SHA f2ed3024
+- Coverage Packs: dashboard-core, modal-detail-pack
+- Covered Surfaces: /dashboard/servers: progressive server card expansion 3 to 6 to 9 to 12 with row counter sync, /dashboard/servers: collapse returns visible cards from 12 to 3 and hides collapse action, /dashboard/servers: sort dropdown for CPU, memory, name, and status, /dashboard/servers: compact and wide view mode switching with responsive column calculation, /dashboard/servers: inline server card detail expansion in list and grid views, /dashboard/servers/[server]: overview, performance analysis, and logs/network tabs render, /dashboard/alerts: alert severity left border color renders for warning state, /dashboard/alerts: active, resolved, and all filters update counters, /dashboard/logs: WARN level filter applies active label and reset state, /dashboard/logs: scroll sentinel expands visible logs and synchronizes top statistics, /dashboard/logs: grouped repeated log rows expand inline, Dashboard cross-links: server to logs, server to alerts, and logs to alerts preserve server filter
+- Skipped Surfaces: Vercel production browser rerun: already covered by v8.11.77 GitLab release smoke, AI sidebar conversation quality: outside dashboard server/log/alert interaction scope, Deep performance profiling: only development-server render timing was observed
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab release pipeline | [GitLab release pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2493283396) | - |
-| general | Vercel inspect | [Vercel inspect](https://vercel.com/skyasus-projects/openmanager-ai/EFrtgbAaNuHVoTf79VBizxJmVJJv) | - |
-| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-c9dtcv0oo-skyasus-projects.vercel.app/) | - |
+| general | Related v8.11.77 release pipeline | [Related v8.11.77 release pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2493283396) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-report | GitLab release pipeline v8.11.77 | [GitLab release pipeline v8.11.77](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2493283396) | - |
-| playwright-report | GitLab production post-deploy smoke job | [GitLab production post-deploy smoke job](https://gitlab.com/skyasu2/openmanager-ai/-/jobs/14175199359) | - |
-| playwright-report | GitLab AI Engine post-deploy smoke job | [GitLab AI Engine post-deploy smoke job](https://gitlab.com/skyasu2/openmanager-ai/-/jobs/14175199358) | - |
+| playwright-report | Dashboard Playwright MCP detailed QA report | `reports/qa/evidence/qa-20260501-dashboard-playwright-detail-report.html` | - |
 
 ## Expert Domain Open Gaps
 
@@ -564,6 +557,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260501-0388 | 2026-05-01T09:03:46.030Z | targeted | no | yes | Dashboard Playwright MCP Detailed Interaction QA | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260501-0387 | 2026-05-01T08:52:56.763Z | smoke | yes | yes | v8.11.77 GitLab Release Smoke | 4 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260501-0386 | 2026-04-30T22:58:38.750Z | targeted | no | yes | Dashboard server/log UX Phase 3 local Playwright QA | 16 | 5 | 0 | 0 | 0 | 0 |
 | QA-20260430-0385 | 2026-04-30T14:18:18.454Z | targeted | yes | yes | Vercel/Cloud Run Production QA v8.11.76 - Cerebras llama runtime | 7 | 2 | 0 | 0 | 0 | 0 |
@@ -583,4 +577,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260429-0371 | 2026-04-29T13:26:06.547Z | targeted | yes | yes | Vercel Playwright targeted QA - v8.11.62 dashboard AI data slot drift | 8 | 0 | 1 | 0 | 0 | 2 |
 | QA-20260429-0370 | 2026-04-29T09:41:31.768Z | targeted | yes | yes | v8.11.60 Vercel Production QA - AI Sidebar QueryAsOf and Cerebras Fallback Recheck | 8 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260429-0369 | 2026-04-29T07:43:13.729Z | targeted | yes | yes | Vercel Production QA - AI Sidebar Cerebras Qwen Recheck | 6 | 0 | 2 | 0 | 0 | 2 |
-| QA-20260429-0368 | 2026-04-29T05:59:28.482Z | targeted | yes | yes | v8.11.59 Vercel Playwright DISK Threshold Fresh Slot Recheck | 18 | 1 | 0 | 0 | 0 | 0 |

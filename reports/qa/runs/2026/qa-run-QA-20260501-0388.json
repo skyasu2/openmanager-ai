@@ -1,0 +1,77 @@
+{
+  "runId": "QA-20260501-0388",
+  "recordedAt": "2026-05-01T09:03:46.030Z",
+  "recordedAtKst": "2026-05-01 18:03:46 KST",
+  "runTitle": "Dashboard Playwright MCP Detailed Interaction QA",
+  "owner": "codex",
+  "source": "playwright-mcp+local-dev+operator-report",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://127.0.0.1:3000",
+    "frontend": "Next.js dev server",
+    "backend": "local Next.js API routes and OTel fixture-backed dashboard data",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "f2ed30248e94496eef504d09519b31d5979f0656"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["dashboard-core", "modal-detail-pack"],
+  "coveredSurfaces": [
+    "/dashboard/servers: progressive server card expansion 3 to 6 to 9 to 12 with row counter sync",
+    "/dashboard/servers: collapse returns visible cards from 12 to 3 and hides collapse action",
+    "/dashboard/servers: sort dropdown for CPU, memory, name, and status",
+    "/dashboard/servers: compact and wide view mode switching with responsive column calculation",
+    "/dashboard/servers: inline server card detail expansion in list and grid views",
+    "/dashboard/servers/[server]: overview, performance analysis, and logs/network tabs render",
+    "/dashboard/alerts: alert severity left border color renders for warning state",
+    "/dashboard/alerts: active, resolved, and all filters update counters",
+    "/dashboard/logs: WARN level filter applies active label and reset state",
+    "/dashboard/logs: scroll sentinel expands visible logs and synchronizes top statistics",
+    "/dashboard/logs: grouped repeated log rows expand inline",
+    "Dashboard cross-links: server to logs, server to alerts, and logs to alerts preserve server filter"
+  ],
+  "skippedSurfaces": [
+    "Vercel production browser rerun: already covered by v8.11.77 GitLab release smoke",
+    "AI sidebar conversation quality: outside dashboard server/log/alert interaction scope",
+    "Deep performance profiling: only development-server render timing was observed"
+  ],
+  "checks": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "Dashboard Playwright MCP detailed QA report",
+      "path": "reports/qa/evidence/qa-20260501-dashboard-playwright-detail-report.html",
+      "note": "Durable summary of the 12-item Playwright MCP interaction check and non-blocking observations."
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "No functional bugs or regressions were found in the tested dashboard server, alert, log, and cross-link flows.",
+    "Navigation width was confirmed at 112px with icon and text labels still readable.",
+    "Single short log rows show minimal visual change when expanded; this is expected because wrapping is only visible for long messages.",
+    "Server detail log tab currently shows no recent logs because the available OTel fixture range ends on April 30.",
+    "Alert page initial render briefly shows zero alerts before data appears after roughly 1 to 2 seconds; treat as non-blocking UX polish candidate.",
+    "Development-server render timing observed: initial render 61ms to 221ms, after expanding more servers 284ms to 352ms.",
+    "TypeScript check and 164-unit-test suite were reported passing for this QA scope."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Related v8.11.77 release pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2493283396"
+    }
+  ]
+}

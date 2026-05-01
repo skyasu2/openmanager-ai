@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-01T08:52:56.763Z"
+    "updatedAt": "2026-05-01T09:03:46.030Z"
   },
   "sequence": {
-    "nextRunNumber": 388
+    "nextRunNumber": 389
   },
   "summary": {
-    "totalRecordedRuns": 385,
-    "totalRuns": 314,
+    "totalRecordedRuns": 386,
+    "totalRuns": 315,
     "excludedRuns": 71,
-    "totalChecks": 2690,
-    "totalPassed": 2592,
+    "totalChecks": 2702,
+    "totalPassed": 2604,
     "totalFailed": 89,
     "completionRate": 100,
     "completedItems": 396,
@@ -21,10 +21,10 @@
     "wontFixItems": 20,
     "expertDomainsTracked": 12,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260501-0387",
-    "lastRecordedAt": "2026-05-01T08:52:56.763Z",
-    "latestRecordedRunId": "QA-20260501-0387",
-    "latestRecordedAt": "2026-05-01T08:52:56.763Z"
+    "lastRunId": "QA-20260501-0388",
+    "lastRecordedAt": "2026-05-01T09:03:46.030Z",
+    "latestRecordedRunId": "QA-20260501-0388",
+    "latestRecordedAt": "2026-05-01T09:03:46.030Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -38452,6 +38452,80 @@
         }
       ],
       "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260501-0388",
+      "recordedAt": "2026-05-01T09:03:46.030Z",
+      "recordedAtKst": "2026-05-01 18:03:46 KST",
+      "title": "Dashboard Playwright MCP Detailed Interaction QA",
+      "owner": "codex",
+      "source": "playwright-mcp+local-dev+operator-report",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260501-0388.json",
+      "environment": {
+        "target": "local-dev",
+        "url": "http://127.0.0.1:3000",
+        "frontend": "Next.js dev server",
+        "backend": "local Next.js API routes and OTel fixture-backed dashboard data",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "f2ed30248e94496eef504d09519b31d5979f0656"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "dashboard-core",
+        "modal-detail-pack"
+      ],
+      "coveredSurfaces": [
+        "/dashboard/servers: progressive server card expansion 3 to 6 to 9 to 12 with row counter sync",
+        "/dashboard/servers: collapse returns visible cards from 12 to 3 and hides collapse action",
+        "/dashboard/servers: sort dropdown for CPU, memory, name, and status",
+        "/dashboard/servers: compact and wide view mode switching with responsive column calculation",
+        "/dashboard/servers: inline server card detail expansion in list and grid views",
+        "/dashboard/servers/[server]: overview, performance analysis, and logs/network tabs render",
+        "/dashboard/alerts: alert severity left border color renders for warning state",
+        "/dashboard/alerts: active, resolved, and all filters update counters",
+        "/dashboard/logs: WARN level filter applies active label and reset state",
+        "/dashboard/logs: scroll sentinel expands visible logs and synchronizes top statistics",
+        "/dashboard/logs: grouped repeated log rows expand inline",
+        "Dashboard cross-links: server to logs, server to alerts, and logs to alerts preserve server filter"
+      ],
+      "skippedSurfaces": [
+        "Vercel production browser rerun: already covered by v8.11.77 GitLab release smoke",
+        "AI sidebar conversation quality: outside dashboard server/log/alert interaction scope",
+        "Deep performance profiling: only development-server render timing was observed"
+      ],
+      "checks": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [],
+      "usageChecks": [],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "Dashboard Playwright MCP detailed QA report",
+          "path": "reports/qa/evidence/qa-20260501-dashboard-playwright-detail-report.html",
+          "note": "Durable summary of the 12-item Playwright MCP interaction check and non-blocking observations."
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Related v8.11.77 release pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2493283396"
+        }
+      ],
+      "expertCount": 0,
       "expertNeedsImprovementCount": 0,
       "completedCount": 0,
       "pendingCount": 0,

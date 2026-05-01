@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>Dashboard Playwright MCP Detailed QA - 2026-05-01</title>
+    <style>
+      body {
+        color: #111827;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.55;
+        margin: 32px;
+        max-width: 1120px;
+      }
+
+      h1,
+      h2 {
+        line-height: 1.2;
+      }
+
+      table {
+        border-collapse: collapse;
+        margin: 16px 0;
+        width: 100%;
+      }
+
+      th,
+      td {
+        border: 1px solid #d1d5db;
+        padding: 8px 10px;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background: #f3f4f6;
+      }
+
+      .pass {
+        color: #047857;
+        font-weight: 700;
+      }
+
+      .note {
+        background: #fffbeb;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Dashboard Playwright MCP Detailed QA</h1>
+    <p>
+      <strong>Scope:</strong> 12 dashboard interaction checks focused on areas
+      changed yesterday and today.
+    </p>
+    <p><strong>Target:</strong> local development server</p>
+    <p><strong>Result:</strong> <span class="pass">12 passed / 0 failed</span></p>
+
+    <h2>Passed Checks</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Area</th>
+          <th>Observed result</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Server card progressive expansion</td>
+          <td>Card count increased 3 to 6 to 9 to 12, with row counter synced.</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Collapse action</td>
+          <td>Visible card count returned from 12 to 3 and the collapse button hid immediately.</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Sort dropdown</td>
+          <td>CPU, memory, name, and status sorting applied immediately with correct order.</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>View mode switch</td>
+          <td>Compact three-column and wide two-column modes rendered correctly with responsive column calculation.</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Server card details</td>
+          <td>OS and uptime expanded inline in both list and grid views, with chevron state updated.</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Server detail tabs</td>
+          <td>Overview, performance analysis, and logs/network tabs all rendered correctly.</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Alert severity border</td>
+          <td>Warning alerts used the expected amber left border styling.</td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td>Alert filters</td>
+          <td>Active, resolved, and all filters changed immediately, with footer counters synced.</td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td>Log level filter</td>
+          <td>WARN filtering showed 1,099 logs, displayed active filter label, and enabled reset.</td>
+        </tr>
+        <tr>
+          <td>10</td>
+          <td>Log scroll sentinel</td>
+          <td>Visible log rows expanded from 100 to 188 and top statistics synced from 64/35/1 to 144/53/3.</td>
+        </tr>
+        <tr>
+          <td>11</td>
+          <td>Grouped logs</td>
+          <td>Clicking the x2 group revealed child logs in an inline gray detail panel.</td>
+        </tr>
+        <tr>
+          <td>12</td>
+          <td>Cross-links</td>
+          <td>Server to logs, server to alerts, and logs to alerts all applied the server filter automatically.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Non-Blocking Observations</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Area</th>
+          <th>Observation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>A</td>
+          <td>Navigation width</td>
+          <td>112px width is reduced and labels remain readable without clipping.</td>
+        </tr>
+        <tr>
+          <td>B</td>
+          <td>Single log row expand</td>
+          <td>aria-expanded updates; short messages show little visual difference because wrapping only matters for long messages.</td>
+        </tr>
+        <tr>
+          <td>C</td>
+          <td>Server detail log tab</td>
+          <td>No recent logs were shown because the current OTel fixture range ends on April 30.</td>
+        </tr>
+        <tr class="note">
+          <td>D</td>
+          <td>Alert page initial load</td>
+          <td>The first render briefly shows zero alerts before real data appears after roughly 1 to 2 seconds.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Performance Context</h2>
+    <ul>
+      <li>Initial page render: 61ms to 221ms on the development server.</li>
+      <li>Render after expanding more servers: 284ms to 352ms while processing nine server cards.</li>
+      <li>TypeScript check passed.</li>
+      <li>Unit test suite passed: 164 tests.</li>
+    </ul>
+  </body>
+</html>
