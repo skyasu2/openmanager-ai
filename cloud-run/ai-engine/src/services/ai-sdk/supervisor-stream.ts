@@ -49,6 +49,7 @@ import {
   buildSupervisorStreamMessages,
   getLastUserQueryText,
 } from './supervisor-stream-messages';
+import { createStructuredTextDeltaGuard } from './supervisor-stream-text-guard';
 import type { StreamEvent, SupervisorRequest } from './supervisor-types';
 
 const PROVIDER_FALLBACK_BASE_DELAY_MS = 150;
@@ -436,6 +437,7 @@ async function* streamSingleAgent(
       let fullText = '';
       let streamError: Error | null = null;
       const abortController = new AbortController();
+      const textDeltaGuard = createStructuredTextDeltaGuard();
 
       const result = streamText({
         model,
@@ -508,6 +510,12 @@ async function* streamSingleAgent(
       let warningEmitted = false;
       let firstChunkMs: number | null = null;
 
+      const emitDisplayText = function* (text: string): Generator<StreamEvent> {
+        if (text.length === 0) return;
+        fullText += text;
+        yield { type: 'text_delta', data: text };
+      };
+
       for await (const textPart of result.textStream) {
         const elapsed = Date.now() - startTime;
 
@@ -562,8 +570,13 @@ async function* streamSingleAgent(
           return;
         }
 
-        fullText += textPart;
-        yield { type: 'text_delta', data: textPart };
+        for (const displayText of textDeltaGuard.push(textPart)) {
+          yield* emitDisplayText(displayText);
+        }
+      }
+
+      for (const displayText of textDeltaGuard.flush()) {
+        yield* emitDisplayText(displayText);
       }
 
       // Resolve steps/usage early — needed to extract finalAnswer before empty-text check
@@ -576,6 +589,48 @@ async function* streamSingleAgent(
       await reconcileQuotaOnce(
         usage?.totalTokens ?? quotaReservation?.estimatedTokens ?? 0
       );
+
+      if (textDeltaGuard.hasRawToolCall() && fullText.trim().length === 0) {
+        const toolName = textDeltaGuard.getRawToolCallName();
+        const formatError = `MODEL_EMITTED_RAW_TOOL_CALL_JSON${toolName ? `:${toolName}` : ''}`;
+        excludedProviders.push(provider);
+
+        if (!hasImages && attempt < MAX_PROVIDER_ATTEMPTS - 1) {
+          finalizeTrace(trace, '', false, {
+            toolsCalled: toolName ? [toolName] : [],
+            stepsExecuted: steps.length,
+            durationMs: Date.now() - startTime,
+            error: formatError,
+            ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
+            ...buildDegradedMetadata(degradedFallbackContext, {}),
+          });
+          logger.warn(
+            `[SupervisorStream] ${provider}/${modelId} emitted raw tool-call JSON${toolName ? ` (${toolName})` : ''}; retrying with next provider`
+          );
+          yield {
+            type: 'agent_status',
+            data: {
+              agent: 'Supervisor',
+              status: 'processing',
+              message: `${provider} 응답 형식 오류로 대안 모델로 전환 중...`,
+            },
+          };
+          await waitBeforeProviderFallback(provider, 'raw_tool_call_json');
+          continue providerLoop;
+        }
+
+        const fallbackText =
+          'AI 엔진이 도구 호출 정보를 응답 본문으로 반환해 표시를 차단했습니다. 같은 질문을 다시 시도해 주세요.';
+        yield {
+          type: 'warning',
+          data: {
+            code: 'RAW_TOOL_CALL_JSON_SUPPRESSED',
+            message:
+              '도구 호출 JSON이 응답 본문으로 반환되어 표시를 차단했습니다.',
+          },
+        };
+        yield* emitDisplayText(fallbackText);
+      }
 
       // Recover response from finalAnswer tool result when textStream was empty
       // (LLM may produce no text when it only calls tools and terminates via finalAnswer)

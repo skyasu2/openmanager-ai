@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-01 KST (`secondary route cleanup completed`)
+**Last Updated**: 2026-05-02 KST (`AI raw tool-call JSON suppression`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -41,6 +41,12 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-02 #244)
+- [x] AI Chat raw tool-call JSON 노출 방지
+  - Cloud Run supervisor stream에 structured text guard를 추가해 raw function/tool-call JSON 텍스트 델타 suppress 및 provider fallback 처리
+  - frontend `normalizeAIResponse`에도 동일 payload 표시 차단 fallback 추가
+  - 검증: targeted normalizer/message helper/AI Engine stream guard tests, root/AI Engine type-check, `npm run lint`, `npm run test:quick`, `npm run test:contract`, `cloud-run/ai-engine npm test`
 
 ### Completed (2026-05-01 #243)
 - [x] 제품 외 보조 route 정리

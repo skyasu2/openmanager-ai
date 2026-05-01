@@ -11,6 +11,7 @@ import {
   extractTextFromHybridMessage,
   extractTextFromUIMessage,
   type HybridMessage,
+  normalizeAIResponse,
   normalizeMessagesForCloudRun,
 } from './message-normalizer';
 
@@ -388,6 +389,45 @@ describe('message-normalizer', () => {
       ];
 
       expect(extractLastUserQuery(messages)).toBe('New format');
+    });
+  });
+
+  describe('normalizeAIResponse', () => {
+    it('raw function-call JSON은 응답 본문에서 숨긴다', () => {
+      const rawToolCall = JSON.stringify({
+        type: 'function',
+        name: 'analyzePattern',
+        arguments: {
+          query: '지난 1시간 동안 장애 징후가 있었던 구간만 요약해줘',
+        },
+      });
+
+      expect(normalizeAIResponse(rawToolCall)).toBe('');
+    });
+
+    it('fenced raw function-call JSON도 숨긴다', () => {
+      const rawToolCall = [
+        '```json',
+        JSON.stringify({
+          type: 'function',
+          name: 'analyzePattern',
+          arguments: { query: '장애 징후 요약' },
+        }),
+        '```',
+      ].join('\n');
+
+      expect(normalizeAIResponse(rawToolCall)).toBe('');
+    });
+
+    it('answer JSON은 표시 가능한 텍스트로 정규화한다', () => {
+      const response = JSON.stringify({
+        answer: '지난 1시간 동안 장애 징후는 1건입니다.',
+        confidence: 0.8,
+      });
+
+      expect(normalizeAIResponse(response)).toBe(
+        '지난 1시간 동안 장애 징후는 1건입니다.'
+      );
     });
   });
 });
