@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.78](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.77...v8.11.78) (2026-05-01)
+
+
+### Bug Fixes
+
+* **ai:** suppress raw tool-call JSON in streams ([91362bd](https://gitlab.com/skyasu2/openmanager-ai/-/commit/91362bd42c175aa38af6fc303dd600737522a551))
+* **dashboard:** polish alert loading and mobile nav accessibility ([0ef8dc8](https://gitlab.com/skyasu2/openmanager-ai/-/commit/0ef8dc83bf2a64f4dba2d63f00f91039bec8931f))
+* **dashboard:** refine alert loading feedback ([006e217](https://gitlab.com/skyasu2/openmanager-ai/-/commit/006e21737dfe46bfd6507a2c689238c8b6668389))
+
+
+### Code Refactoring
+
+* **routes:** remove unused secondary pages ([cfb67f5](https://gitlab.com/skyasu2/openmanager-ai/-/commit/cfb67f58d70779cc7bc8785bcb0d0e2fb57a1702))
+
 ## [8.11.77](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.76...v8.11.77) (2026-05-01)
 
 
