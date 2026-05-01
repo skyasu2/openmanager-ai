@@ -26,9 +26,9 @@
 
 | Inventory Slice | Count |
 | --- | --- |
-| Shared component graph scope (`src/components/**/*.tsx`) | 148 |
+| Shared component graph scope (`src/components/**/*.tsx`) | 147 |
 | Route-local components excluded from graph (`src/app/**/components/**/*.tsx`) | 7 |
-| Total TSX component inventory | 155 |
+| Total TSX component inventory | 154 |
 
 ## App Route-Local Component Distribution
 
@@ -51,13 +51,13 @@ Route-local component files:
 
 | Metric | Value |
 | --- | --- |
-| Component source lines | 29116 |
-| Component nodes | 148 |
-| Component edges | 138 |
+| Component source lines | 29195 |
+| Component nodes | 147 |
+| Component edges | 135 |
 | Graph density | 0.63% |
-| Alias edges (`@/components/*`) | 40 |
+| Alias edges (`@/components/*`) | 37 |
 | Relative edges (`./`, `../`) | 98 |
-| Isolated components | 30 |
+| Isolated components | 31 |
 | SCC cycle groups | 0 |
 | Largest cycle size | 0 |
 
@@ -69,7 +69,7 @@ flowchart LR
   d1["ai-sidebar (15)"]
   d2["auth (1)"]
   d3["charts (2)"]
-  d4["dashboard (33)"]
+  d4["dashboard (32)"]
   d5["emergency (1)"]
   d6["error (3)"]
   d7["home (2)"]
@@ -78,12 +78,12 @@ flowchart LR
   d10["system (2)"]
   d11["ui (22)"]
   d12["unified-profile (3)"]
-  d4 -->|37| d4
+  d4 -->|36| d4
   d0 -->|32| d0
   d1 -->|13| d1
   d9 -->|10| d9
   d1 -->|8| d0
-  d4 -->|7| d11
+  d4 -->|5| d11
   d4 -->|4| d9
   d1 -->|3| d11
   d4 -->|3| d6
@@ -107,7 +107,7 @@ flowchart LR
 | Domain | Node Count |
 | --- | --- |
 | ai | 37 |
-| dashboard | 33 |
+| dashboard | 32 |
 | shared | 23 |
 | ui | 22 |
 | ai-sidebar | 15 |
@@ -124,12 +124,12 @@ flowchart LR
 
 | From | To | Edge Count |
 | --- | --- | --- |
-| dashboard | dashboard | 37 |
+| dashboard | dashboard | 36 |
 | ai | ai | 32 |
 | ai-sidebar | ai-sidebar | 13 |
 | shared | shared | 10 |
 | ai-sidebar | ai | 8 |
-| dashboard | ui | 7 |
+| dashboard | ui | 5 |
 | dashboard | shared | 4 |
 | ai-sidebar | ui | 3 |
 | dashboard | error | 3 |
