@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.80](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.79...v8.11.80) (2026-05-01)
+
+
+### Bug Fixes
+
+* **ai:** harden provider fallback telemetry ([3ada424](https://gitlab.com/skyasu2/openmanager-ai/-/commit/3ada42464382476a284515785decf1e94d9ad092))
+
 ## [8.11.79](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.78...v8.11.79) (2026-05-01)
 
 
