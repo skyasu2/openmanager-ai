@@ -28,13 +28,22 @@ interface ActiveAlertsModalProps {
   open: boolean;
   onClose: () => void;
   alerts: MonitoringAlert[];
+  isLoading?: boolean;
+  isError?: boolean;
+  errorMessage?: string | null;
   onAskAIAboutAlert?: (alert: MonitoringAlert) => void;
 }
 
 export function ActiveAlertsPanel({
   alerts,
+  isLoading = false,
+  isError = false,
+  errorMessage,
   onAskAIAboutAlert,
-}: Pick<ActiveAlertsModalProps, 'alerts' | 'onAskAIAboutAlert'>) {
+}: Pick<
+  ActiveAlertsModalProps,
+  'alerts' | 'isLoading' | 'isError' | 'errorMessage' | 'onAskAIAboutAlert'
+>) {
   const sorted = [...alerts].sort((a, b) => {
     if (a.severity === 'critical' && b.severity !== 'critical') return -1;
     if (a.severity !== 'critical' && b.severity === 'critical') return 1;
@@ -75,7 +84,28 @@ export function ActiveAlertsPanel({
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto bg-gray-50/30 px-4 py-4 sm:px-6">
-        {sorted.length === 0 ? (
+        {isLoading && sorted.length === 0 ? (
+          <div
+            className="flex flex-col items-center justify-center py-16 text-gray-500"
+            aria-live="polite"
+          >
+            <div className="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-rose-200 border-t-rose-500" />
+            <p className="text-sm font-medium">활성 알림을 불러오는 중입니다</p>
+            <p className="mt-1 text-xs text-gray-400">
+              현재 알림 상태를 확인하고 있습니다
+            </p>
+          </div>
+        ) : isError && sorted.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+            <AlertTriangle size={40} className="mb-3 opacity-30" />
+            <p className="text-sm font-medium">
+              활성 알림을 불러오지 못했습니다
+            </p>
+            <p className="mt-1 text-xs">
+              {errorMessage || '잠시 후 다시 시도해 주세요'}
+            </p>
+          </div>
+        ) : sorted.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-gray-400">
             <AlertTriangle size={40} className="mb-3 opacity-30" />
             <p className="text-sm font-medium">현재 활성 알림이 없습니다</p>
@@ -95,9 +125,21 @@ export function ActiveAlertsPanel({
       </div>
 
       <div className="grid grid-cols-3 gap-4 border-t border-gray-100 bg-gray-50/80 px-6 py-3">
-        <StatCell label="전체" value={alerts.length} color="text-gray-800" />
-        <StatCell label="위험" value={criticalCount} color="text-red-600" />
-        <StatCell label="경고" value={warningCount} color="text-amber-600" />
+        <StatCell
+          label="전체"
+          value={isLoading ? '...' : alerts.length}
+          color="text-gray-800"
+        />
+        <StatCell
+          label="위험"
+          value={isLoading ? '...' : criticalCount}
+          color="text-red-600"
+        />
+        <StatCell
+          label="경고"
+          value={isLoading ? '...' : warningCount}
+          color="text-amber-600"
+        />
       </div>
     </div>
   );
@@ -107,6 +149,9 @@ export function ActiveAlertsModal({
   open,
   onClose,
   alerts,
+  isLoading,
+  isError,
+  errorMessage,
   onAskAIAboutAlert,
 }: ActiveAlertsModalProps) {
   return (
@@ -114,6 +159,9 @@ export function ActiveAlertsModal({
       <DialogContent className="max-h-[85vh] w-[95vw] max-w-2xl flex flex-col gap-0 p-0">
         <ActiveAlertsPanel
           alerts={alerts}
+          isLoading={isLoading}
+          isError={isError}
+          errorMessage={errorMessage}
           onAskAIAboutAlert={onAskAIAboutAlert}
         />
       </DialogContent>

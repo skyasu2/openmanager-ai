@@ -110,6 +110,7 @@ export default function DashboardRoutedContent({
   const {
     data: monitoringReport,
     error: monitoringError,
+    isLoading: isMonitoringLoading,
     isError: isMonitoringError,
   } = useMonitoringReport();
   const monitoringErrorMessage = isMonitoringError
@@ -195,6 +196,9 @@ export default function DashboardRoutedContent({
           <div className="flex min-h-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
             <ActiveAlertsPanel
               alerts={monitoringReport?.firingAlerts ?? []}
+              isLoading={isMonitoringLoading}
+              isError={isMonitoringError}
+              errorMessage={monitoringErrorMessage}
               onAskAIAboutAlert={
                 onAskAIAboutAlert ? askAIAboutMonitoringAlert : undefined
               }

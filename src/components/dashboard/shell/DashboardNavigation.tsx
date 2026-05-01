@@ -3,7 +3,7 @@
 import { Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useAISidebarStore } from '@/stores/useAISidebarStore';
 import { dashboardNavItems } from './dashboard-navigation.config';
@@ -95,6 +95,10 @@ export function DashboardNavigation({
 }) {
   const pathname = usePathname() || '/dashboard';
   const [mobileOpen, setMobileOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const didOpenMobileDrawerRef = useRef(false);
   const isSidebarStoreOpen = useAISidebarStore((state) => state.isOpen);
   const isCompact = isAIAssistantOpen || isSidebarStoreOpen;
 
@@ -102,6 +106,76 @@ export function DashboardNavigation({
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    if (!mobileOpen) {
+      if (didOpenMobileDrawerRef.current) {
+        menuButtonRef.current?.focus();
+        didOpenMobileDrawerRef.current = false;
+      }
+      return undefined;
+    }
+
+    didOpenMobileDrawerRef.current = true;
+    closeButtonRef.current?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setMobileOpen(false);
+        return;
+      }
+
+      if (event.key !== 'Tab') {
+        return;
+      }
+
+      const drawer = drawerRef.current;
+      if (!drawer) {
+        return;
+      }
+
+      const focusableElements = Array.from(
+        drawer.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      ).filter((element) => !element.hasAttribute('disabled'));
+
+      if (focusableElements.length === 0) {
+        event.preventDefault();
+        return;
+      }
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+      if (!firstElement || !lastElement) {
+        return;
+      }
+
+      if (!drawer.contains(document.activeElement)) {
+        event.preventDefault();
+        firstElement.focus();
+        return;
+      }
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+        return;
+      }
+
+      if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [mobileOpen]);
 
   return (
     <>
@@ -117,6 +191,7 @@ export function DashboardNavigation({
       {!isCompact && (
         <div className="fixed top-3 left-3 z-50 lg:hidden">
           <button
+            ref={menuButtonRef}
             type="button"
             onClick={() => setMobileOpen(true)}
             aria-label="대시보드 메뉴 열기"
@@ -131,11 +206,12 @@ export function DashboardNavigation({
         <div className="fixed inset-0 z-50 lg:hidden">
           <button
             type="button"
-            aria-label="대시보드 메뉴 닫기"
+            aria-label="대시보드 메뉴 배경 닫기"
             className="absolute inset-0 bg-slate-950/45"
             onClick={() => setMobileOpen(false)}
           />
           <div
+            ref={drawerRef}
             role="dialog"
             aria-modal="true"
             aria-label="대시보드 메뉴"
@@ -147,6 +223,7 @@ export function DashboardNavigation({
                 <p className="text-xs text-slate-500">대시보드</p>
               </div>
               <button
+                ref={closeButtonRef}
                 type="button"
                 onClick={() => setMobileOpen(false)}
                 aria-label="대시보드 메뉴 닫기"

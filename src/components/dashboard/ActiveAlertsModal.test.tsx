@@ -123,4 +123,15 @@ describe('ActiveAlertsModal', () => {
     expect(screen.getByText('방금 전')).toBeInTheDocument();
     expect(screen.queryByText('0분 경과')).not.toBeInTheDocument();
   });
+
+  it('로딩 중에는 0건 empty state 대신 로딩 상태를 표시한다', () => {
+    render(<ActiveAlertsModal open onClose={vi.fn()} alerts={[]} isLoading />);
+
+    expect(
+      screen.getByText('활성 알림을 불러오는 중입니다')
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText('현재 활성 알림이 없습니다')
+    ).not.toBeInTheDocument();
+  });
 });

@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  */
 
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { DashboardNavigation } from './DashboardNavigation';
@@ -86,5 +86,46 @@ describe('DashboardNavigation', () => {
     expect(
       screen.queryByRole('button', { name: '대시보드 메뉴 열기' })
     ).not.toBeInTheDocument();
+  });
+
+  it('closes the mobile drawer with Escape and restores focus to the menu trigger', () => {
+    render(<DashboardNavigation />);
+
+    const menuButton = screen.getByRole('button', {
+      name: '대시보드 메뉴 열기',
+    });
+    fireEvent.click(menuButton);
+
+    expect(screen.getByRole('dialog', { name: '대시보드 메뉴' })).toBeVisible();
+    expect(
+      screen.getByRole('button', { name: '대시보드 메뉴 닫기' })
+    ).toHaveFocus();
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+
+    expect(
+      screen.queryByRole('dialog', { name: '대시보드 메뉴' })
+    ).not.toBeInTheDocument();
+    expect(menuButton).toHaveFocus();
+  });
+
+  it('keeps keyboard tab focus inside the mobile drawer', () => {
+    render(<DashboardNavigation />);
+
+    fireEvent.click(screen.getByRole('button', { name: '대시보드 메뉴 열기' }));
+
+    const drawer = screen.getByRole('dialog', { name: '대시보드 메뉴' });
+    const closeButton = within(drawer).getByRole('button', {
+      name: '대시보드 메뉴 닫기',
+    });
+    const lastNavLink = within(drawer).getByRole('link', { name: '토폴로지' });
+
+    expect(closeButton).toHaveFocus();
+
+    fireEvent.keyDown(document, { key: 'Tab', shiftKey: true });
+    expect(lastNavLink).toHaveFocus();
+
+    fireEvent.keyDown(document, { key: 'Tab' });
+    expect(closeButton).toHaveFocus();
   });
 });
