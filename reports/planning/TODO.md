@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-01 KST (`quota tracker layer split completed`)
+**Last Updated**: 2026-05-01 KST (`orchestrator factory extraction completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -16,7 +16,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| orchestrator-routing / summary-fallback 분리 | P3 | 각 1,100~1,200줄. 계획: Task 3 |
+| orchestrator-summary-fallback 분리 | P3 | Task 3-A routing factory 추출 완료. 남은 범위: Task 3-B payload/metric/operational summary 단계 분리 |
 
 ---
 
@@ -39,6 +39,15 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-01 #236)
+- [x] orchestrator-routing AgentFactory 경로 분리
+  - Plan partial completed: [ai-engine-code-quality-plan.md](ai-engine-code-quality-plan.md) Task 3-A
+  - `executeWithAgentFactory`, `getAgentTypeFromName`을 `orchestrator-factory.ts`로 이동
+  - `orchestrator-routing.ts`는 기존 import/mock 호환을 위해 re-export 유지
+  - SDD 선행 테스트 커밋: `88e5ff5ae test(spec): orchestrator factory split contract`
+  - 구현 커밋: `ae8aef08d refactor(ai-engine): extract orchestrator factory execution`
+  - 검증: targeted routing/factory/stream tests 43/43, AI Engine type-check, AI Engine test 942/942, `lint:changed`, `git diff --check` 통과
 
 ### Completed (2026-05-01 #235)
 - [x] quota-tracker.ts 레이어 분리

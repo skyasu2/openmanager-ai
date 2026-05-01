@@ -164,6 +164,8 @@ BP 정렬: Redis sliding window(quota-store-redis)와 In-memory L1(quota-store-m
 
 ### Task 3-A: orchestrator-routing.ts (1,157줄)
 
+**상태**: 완료 (2026-05-01)
+
 현재 구조:
 - l.64~126: Orchestrator Model 설정 (상수/getter)
 - l.127~1042: Agent Execution — `executeForcedRouting()` 핵심 라우팅 로직
@@ -179,7 +181,17 @@ orchestrator-factory.ts     (신규, ~120줄)  — executeWithAgentFactory + get
 BP 정렬: LangGraph 패턴에서 에이전트 Factory는 독립 레지스트리로 분리.  
 `executeWithAgentFactory`가 라우팅 로직과 독립적이라면 파일 분리 후 가독성 향상.
 
+#### 2026-05-01 구현 로그
+
+- SDD 선행 테스트 커밋: `88e5ff5ae test(spec): orchestrator factory split contract`
+- 구현 커밋: `ae8aef08d refactor(ai-engine): extract orchestrator factory execution`
+- `orchestrator-factory.ts` 신규: `executeWithAgentFactory`, `getAgentTypeFromName` 이동.
+- `orchestrator-routing.ts`는 기존 import/mock 호환을 위해 `orchestrator-factory.ts` re-export 유지.
+- 검증: targeted routing/factory/stream tests 43/43, AI Engine type-check, AI Engine test 942/942, `lint:changed`, `git diff --check` 통과.
+
 ### Task 3-B: orchestrator-summary-fallback.ts (1,219줄)
+
+**상태**: 미착수
 
 현재 구조 파악 필요:
 - l.70: query intent re-export
@@ -188,6 +200,13 @@ BP 정렬: LangGraph 패턴에서 에이전트 Factory는 독립 레지스트리
 - l.1187~끝: `buildDeterministicSummaryFallback()`, `buildDeterministicSummaryFromCurrentState()`
 
 **전제 조건**: 실제 섹션 경계 분석 후 분리 경계 확정. 내용 확인 없이 기계적 분리는 금지.
+
+**권장 후속 순서**:
+1. public facade 대상 characterization tests 보강
+2. `CollectedToolResult`, `ServerSnapshot`, `AlertServerSnapshot`, `MetricsToolPayload`, tool result parsing, current-state payload construction을 payload adapter 모듈로 추출
+3. metric threshold/ranking answer builder 추출
+4. operational/status summary builder 추출
+5. `orchestrator-summary-fallback.ts`는 `isDeterministicSummaryQuery`, `buildDeterministicSummaryFallback`, `buildDeterministicSummaryFromCurrentState` public compatibility facade로 유지
 
 ### 테스트 시나리오
 
@@ -294,7 +313,8 @@ BP 정렬: LangGraph 패턴에서 에이전트 Factory는 독립 레지스트리
 Task 4 (Cerebras 모델) ← 데드라인 있음, 2026-05-20 전 처리
 Task 1 (approval 단순화) ← 완료 (2026-04-30)
 Task 2 (quota-tracker 분리) ← 완료 (2026-05-01)
-Task 3 (orchestrator 분리) ← 가장 규모 큼, 사전 내용 분석 필수
+Task 3-A (orchestrator factory 분리) ← 완료 (2026-05-01)
+Task 3-B (summary fallback 분리) ← 남은 범위, characterization test 선행 필수
 ```
 
 ## SDD 게이트
