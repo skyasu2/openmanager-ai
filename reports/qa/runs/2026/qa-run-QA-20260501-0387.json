@@ -1,0 +1,132 @@
+{
+  "runId": "QA-20260501-0387",
+  "recordedAt": "2026-05-01T08:52:56.763Z",
+  "recordedAtKst": "2026-05-01 17:52:56 KST",
+  "runTitle": "v8.11.77 GitLab Release Smoke",
+  "owner": "codex",
+  "source": "gitlab-ci",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "EFrtgbAaNuHVoTf79VBizxJmVJJv",
+    "deploymentUrl": "https://openmanager-c9dtcv0oo-skyasus-projects.vercel.app",
+    "commitSha": "43c0df8c25fb903e0b8e4c8f877539e488343741"
+  },
+  "scope": "smoke",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "GitLab semver tag pipeline v8.11.77",
+    "Vercel production deploy",
+    "Production post-deploy smoke expected version 8.11.77",
+    "Production post-deploy smoke expected commit 43c0df8c25fb903e0b8e4c8f877539e488343741",
+    "AI Engine deploy job",
+    "AI Engine post-deploy smoke job"
+  ],
+  "skippedSurfaces": [
+    "manual Playwright dashboard modal/detail walkthrough",
+    "manual AI sidebar conversation flow",
+    "manual browser performance trace"
+  ],
+  "checks": {
+    "total": 4,
+    "passed": 4,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline completed production deploy and post-deploy smoke successfully.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Release smoke was automated through GitLab CI and verified frontend plus AI Engine smoke jobs.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": false,
+      "rationale": "AI Engine deploy and post-deploy smoke passed; manual AI conversation quality was intentionally outside this smoke scope.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": false,
+      "rationale": "This run validates release deployment health, not deep observability dashboards or trace search.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-01T17:51:36+09:00",
+      "summary": "Current billing period returned no charge records yet; previous month probe confirmed Vercel CLI connectivity with no billed usage.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "GitLab release pipeline v8.11.77",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2493283396",
+      "note": "Tag pipeline succeeded with deploy, post_deploy_smoke, deploy_ai_engine, and post_deploy_ai_engine_smoke jobs."
+    },
+    {
+      "type": "playwright-report",
+      "label": "GitLab production post-deploy smoke job",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/jobs/14175199359"
+    },
+    {
+      "type": "playwright-report",
+      "label": "GitLab AI Engine post-deploy smoke job",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/jobs/14175199358"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "release: v8.11.77",
+    "pipeline: 2493283396 success",
+    "frontend deploy and post-deploy smoke succeeded",
+    "AI Engine deploy and post-deploy smoke succeeded"
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab release pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2493283396"
+    },
+    {
+      "type": "general",
+      "label": "Vercel inspect",
+      "url": "https://vercel.com/skyasus-projects/openmanager-ai/EFrtgbAaNuHVoTf79VBizxJmVJJv"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-c9dtcv0oo-skyasus-projects.vercel.app/"
+    }
+  ]
+}

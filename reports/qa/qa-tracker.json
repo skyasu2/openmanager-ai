@@ -2,17 +2,17 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-04-30T22:58:38.750Z"
+    "updatedAt": "2026-05-01T08:52:56.763Z"
   },
   "sequence": {
-    "nextRunNumber": 387
+    "nextRunNumber": 388
   },
   "summary": {
-    "totalRecordedRuns": 384,
-    "totalRuns": 313,
+    "totalRecordedRuns": 385,
+    "totalRuns": 314,
     "excludedRuns": 71,
-    "totalChecks": 2686,
-    "totalPassed": 2588,
+    "totalChecks": 2690,
+    "totalPassed": 2592,
     "totalFailed": 89,
     "completionRate": 100,
     "completedItems": 396,
@@ -21,10 +21,10 @@
     "wontFixItems": 20,
     "expertDomainsTracked": 12,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260501-0386",
-    "lastRecordedAt": "2026-04-30T22:58:38.750Z",
-    "latestRecordedRunId": "QA-20260501-0386",
-    "latestRecordedAt": "2026-04-30T22:58:38.750Z"
+    "lastRunId": "QA-20260501-0387",
+    "lastRecordedAt": "2026-05-01T08:52:56.763Z",
+    "latestRecordedRunId": "QA-20260501-0387",
+    "latestRecordedAt": "2026-05-01T08:52:56.763Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -38324,6 +38324,139 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260501-0387",
+      "recordedAt": "2026-05-01T08:52:56.763Z",
+      "recordedAtKst": "2026-05-01 17:52:56 KST",
+      "title": "v8.11.77 GitLab Release Smoke",
+      "owner": "codex",
+      "source": "gitlab-ci",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260501-0387.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "EFrtgbAaNuHVoTf79VBizxJmVJJv",
+        "deploymentUrl": "https://openmanager-c9dtcv0oo-skyasus-projects.vercel.app",
+        "commitSha": "43c0df8c25fb903e0b8e4c8f877539e488343741"
+      },
+      "scope": "smoke",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "GitLab semver tag pipeline v8.11.77",
+        "Vercel production deploy",
+        "Production post-deploy smoke expected version 8.11.77",
+        "Production post-deploy smoke expected commit 43c0df8c25fb903e0b8e4c8f877539e488343741",
+        "AI Engine deploy job",
+        "AI Engine post-deploy smoke job"
+      ],
+      "skippedSurfaces": [
+        "manual Playwright dashboard modal/detail walkthrough",
+        "manual AI sidebar conversation flow",
+        "manual browser performance trace"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline completed production deploy and post-deploy smoke successfully.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Release smoke was automated through GitLab CI and verified frontend plus AI Engine smoke jobs.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": false,
+          "rationale": "AI Engine deploy and post-deploy smoke passed; manual AI conversation quality was intentionally outside this smoke scope.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "partially-appropriate",
+          "improvementNeeded": false,
+          "rationale": "This run validates release deployment health, not deep observability dashboards or trace search.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-01T17:51:36+09:00",
+          "summary": "Current billing period returned no charge records yet; previous month probe confirmed Vercel CLI connectivity with no billed usage.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "GitLab release pipeline v8.11.77",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2493283396",
+          "note": "Tag pipeline succeeded with deploy, post_deploy_smoke, deploy_ai_engine, and post_deploy_ai_engine_smoke jobs."
+        },
+        {
+          "type": "playwright-report",
+          "label": "GitLab production post-deploy smoke job",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/jobs/14175199359"
+        },
+        {
+          "type": "playwright-report",
+          "label": "GitLab AI Engine post-deploy smoke job",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/jobs/14175199358"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab release pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2493283396"
+        },
+        {
+          "type": "general",
+          "label": "Vercel inspect",
+          "url": "https://vercel.com/skyasus-projects/openmanager-ai/EFrtgbAaNuHVoTf79VBizxJmVJJv"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://openmanager-c9dtcv0oo-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -38332,16 +38465,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 180,
+      "seenCount": 181,
       "appropriateCount": 162,
-      "partialCount": 18,
+      "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 28,
-      "lastRunId": "QA-20260430-0379",
-      "lastSeenAt": "2026-04-30T06:12:50.431Z",
-      "lastFit": "appropriate",
+      "lastRunId": "QA-20260501-0387",
+      "lastSeenAt": "2026-05-01T08:52:56.763Z",
+      "lastFit": "partially-appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Cerebras fallback 동작, Reporter/Analyst 정상 응답 확인. 3개 AI 기능 모두 실응답 검증 완료",
+      "lastRationale": "AI Engine deploy and post-deploy smoke passed; manual AI conversation quality was intentionally outside this smoke scope.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -38349,16 +38482,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 98,
+      "seenCount": 99,
       "appropriateCount": 70,
-      "partialCount": 28,
+      "partialCount": 29,
       "inappropriateCount": 0,
       "improvementNeededCount": 29,
-      "lastRunId": "QA-20260424-0343",
-      "lastSeenAt": "2026-04-24T07:15:56.760Z",
-      "lastFit": "appropriate",
+      "lastRunId": "QA-20260501-0387",
+      "lastSeenAt": "2026-05-01T08:52:56.763Z",
+      "lastFit": "partially-appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Dashboard status, resource alert list, API health, AI health, monitoring report fetches, and version checks were visible and healthy on Vercel production.",
+      "lastRationale": "This run validates release deployment health, not deep observability dashboards or trace search.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -38383,16 +38516,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 116,
-      "appropriateCount": 103,
+      "seenCount": 117,
+      "appropriateCount": 104,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 17,
-      "lastRunId": "QA-20260430-0385",
-      "lastSeenAt": "2026-04-30T14:18:18.454Z",
+      "lastRunId": "QA-20260501-0387",
+      "lastSeenAt": "2026-05-01T08:52:56.763Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag pipeline, Cloud Run deploy, post-deploy smoke, env verification, and health checks all passed.",
+      "lastRationale": "GitLab tag pipeline completed production deploy and post-deploy smoke successfully.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -38400,16 +38533,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 151,
-      "appropriateCount": 139,
+      "seenCount": 152,
+      "appropriateCount": 140,
       "partialCount": 12,
       "inappropriateCount": 0,
       "improvementNeededCount": 13,
-      "lastRunId": "QA-20260430-0385",
-      "lastSeenAt": "2026-04-30T14:18:18.454Z",
-      "lastFit": "partially-appropriate",
+      "lastRunId": "QA-20260501-0387",
+      "lastSeenAt": "2026-05-01T08:52:56.763Z",
+      "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "This was a targeted release smoke for provider/env routing. Browser UI was intentionally not rerun because the changed surface was backend model policy and deploy env.",
+      "lastRationale": "Release smoke was automated through GitLab CI and verified frontend plus AI Engine smoke jobs.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
