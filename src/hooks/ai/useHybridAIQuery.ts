@@ -140,6 +140,13 @@ export function buildAssistantMessageFromAsyncResult(
 ): UIMessage {
   const response = result.response ?? '';
   const hasExplicitHandoffHistory = Array.isArray(result.handoffHistory);
+  const hasProviderTelemetry =
+    Boolean(result.provider) ||
+    Boolean(result.modelId) ||
+    Boolean(result.providerAttempts && result.providerAttempts.length > 0) ||
+    typeof result.usedFallback === 'boolean' ||
+    Boolean(result.fallbackReason) ||
+    typeof result.ttfbMs === 'number';
   const metadata =
     result.ragSources ||
     result.traceId ||
@@ -151,7 +158,8 @@ export function buildAssistantMessageFromAsyncResult(
     Boolean(result.analysisMode) ||
     (result.toolsCalled && result.toolsCalled.length > 0) ||
     hasExplicitHandoffHistory ||
-    (result.toolResultSummaries && result.toolResultSummaries.length > 0)
+    (result.toolResultSummaries && result.toolResultSummaries.length > 0) ||
+    hasProviderTelemetry
       ? {
           ...(result.ragSources && { ragSources: result.ragSources }),
           ...(result.retrieval && { retrieval: result.retrieval }),
@@ -182,6 +190,21 @@ export function buildAssistantMessageFromAsyncResult(
             result.toolResultSummaries.length > 0 && {
               toolResultSummaries: result.toolResultSummaries,
             }),
+          ...(result.provider && { provider: result.provider }),
+          ...(result.modelId && { modelId: result.modelId }),
+          ...(result.providerAttempts &&
+            result.providerAttempts.length > 0 && {
+              providerAttempts: result.providerAttempts,
+            }),
+          ...(typeof result.usedFallback === 'boolean' && {
+            usedFallback: result.usedFallback,
+          }),
+          ...(result.fallbackReason && {
+            fallbackReason: result.fallbackReason,
+          }),
+          ...(typeof result.ttfbMs === 'number' && {
+            ttfbMs: result.ttfbMs,
+          }),
         }
       : undefined;
 

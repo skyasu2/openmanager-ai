@@ -50,6 +50,21 @@ function getFiniteNumber(value: unknown): number | undefined {
     : undefined;
 }
 
+function sanitizeProviderErrorForClient(value: unknown): string | undefined {
+  const raw = getNonEmptyString(value);
+  if (!raw) return undefined;
+
+  const redacted = raw
+    .replace(/Bearer\s+[A-Za-z0-9._-]+/gi, 'Bearer [redacted-token]')
+    .replace(
+      /\b[A-Za-z0-9_-]*(?:sk|key)_[A-Za-z0-9_-]{12,}\b/gi,
+      '[redacted-secret]'
+    )
+    .replace(/\b(?:sk|csk)-[A-Za-z0-9_-]{12,}\b/gi, '[redacted-secret]');
+
+  return redacted.length > 240 ? `${redacted.slice(0, 237)}...` : redacted;
+}
+
 function normalizeHandoffs(
   value: unknown
 ): ClientJobMetadata['handoffs'] | undefined {
@@ -102,7 +117,7 @@ function normalizeProviderAttempts(
       const provider = getNonEmptyString(entry.provider);
       if (!provider) return null;
       const modelId = getNonEmptyString(entry.modelId);
-      const error = getNonEmptyString(entry.error);
+      const error = sanitizeProviderErrorForClient(entry.error);
       const attempt = getFiniteNumber(entry.attempt);
       const durationMs = getFiniteNumber(entry.durationMs);
       return {

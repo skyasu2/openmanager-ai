@@ -80,6 +80,14 @@ export interface ResponseHandoff {
   reason?: string;
 }
 
+export interface ProviderAttemptTelemetry {
+  provider: string;
+  modelId?: string;
+  attempt?: number;
+  durationMs?: number;
+  error?: string;
+}
+
 export interface ChatMessage {
   id: string;
   content: string;
@@ -91,6 +99,12 @@ export interface ChatMessage {
     latencyTier?: 'fast' | 'normal' | 'slow' | 'very_slow';
     resolvedMode?: 'single' | 'multi';
     modeSelectionSource?: string;
+    provider?: string;
+    modelId?: string;
+    providerAttempts?: ProviderAttemptTelemetry[];
+    usedFallback?: boolean;
+    fallbackReason?: string;
+    ttfbMs?: number;
     confidence?: number;
     error?: string;
     /** Langfuse trace ID for feedback scoring */

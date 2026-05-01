@@ -61,6 +61,14 @@ export interface AsyncQueryProgress {
   stageDetail?: string;
 }
 
+export interface AsyncQueryProviderAttempt {
+  provider: string;
+  modelId?: string;
+  attempt?: number;
+  durationMs?: number;
+  error?: string;
+}
+
 export interface AsyncQueryResult {
   success: boolean;
   response?: string;
@@ -78,6 +86,12 @@ export interface AsyncQueryResult {
   latencyTier?: 'fast' | 'normal' | 'slow' | 'very_slow';
   resolvedMode?: 'single' | 'multi';
   modeSelectionSource?: string;
+  provider?: string;
+  modelId?: string;
+  providerAttempts?: AsyncQueryProviderAttempt[];
+  usedFallback?: boolean;
+  fallbackReason?: string;
+  ttfbMs?: number;
   error?: string;
   /** Langfuse trace ID for feedback scoring */
   traceId?: string;

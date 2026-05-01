@@ -5,6 +5,7 @@ import {
   getToolLabel,
 } from '@/lib/ai/utils/tool-presentation';
 import type {
+  ProviderAttemptTelemetry,
   ResponseHandoff,
   ToolResultSummary,
 } from '@/stores/useAISidebarStore';
@@ -36,6 +37,12 @@ export type MessageMetadata = {
   latencyTier?: 'fast' | 'normal' | 'slow' | 'very_slow';
   resolvedMode?: 'single' | 'multi';
   modeSelectionSource?: string;
+  provider?: string;
+  modelId?: string;
+  providerAttempts?: ProviderAttemptTelemetry[];
+  usedFallback?: boolean;
+  fallbackReason?: string;
+  ttfbMs?: number;
   assistantResponseView?: StructuredAssistantResponse;
   handoffHistory?: ResponseHandoff[];
   toolResultSummaries?: ToolResultSummary[];
