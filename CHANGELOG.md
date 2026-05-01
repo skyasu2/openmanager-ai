@@ -2,6 +2,49 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.77](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.76...v8.11.77) (2026-05-01)
+
+
+### Features
+
+* **dashboard:** alert UX - Korean labels, border-left, stat filter, scroll load, log crosslink ([5b0618f](https://gitlab.com/skyasu2/openmanager-ai/-/commit/5b0618f493f9d64e605d9c6b63f29e442119f54a))
+* **dashboard:** implement server log phase1 polish ([1732215](https://gitlab.com/skyasu2/openmanager-ai/-/commit/17322154a543e078c3daef7dd4d682907f288544))
+* **dashboard:** implement server log phase2 controls ([7a681bb](https://gitlab.com/skyasu2/openmanager-ai/-/commit/7a681bb23eac0cb5b911573ba1c1c8447759c80c))
+* **dashboard:** implement server log phase3 interactions ([73eda44](https://gitlab.com/skyasu2/openmanager-ai/-/commit/73eda44f95d4e4c9c54881ccd752c14f8a208154))
+* **dashboard:** improve log and alert panels ([1355a25](https://gitlab.com/skyasu2/openmanager-ai/-/commit/1355a2562dfeec06fe3ecbead7345e360230dd23))
+* **dashboard:** refine server cards and actions ([36fa528](https://gitlab.com/skyasu2/openmanager-ai/-/commit/36fa528e0fedbaa645233ee1a81ed624dde1edd5))
+
+
+### Bug Fixes
+
+* **dashboard:** improve stat filter touch targets ([94487ec](https://gitlab.com/skyasu2/openmanager-ai/-/commit/94487ec803275cbe249e6a9917c5fda12b357d4c))
+* **dashboard:** reduce left navigation width ([07e94a8](https://gitlab.com/skyasu2/openmanager-ai/-/commit/07e94a81e256ac253fb7ec893f0adcc326ecbb10))
+* **dashboard:** stabilize server detail view ([2ef3999](https://gitlab.com/skyasu2/openmanager-ai/-/commit/2ef399987f064dafa900105cce4e06c0a77315d9))
+
+
+### Code Refactoring
+
+* **ai-engine:** extract orchestrator factory execution ([ae8aef0](https://gitlab.com/skyasu2/openmanager-ai/-/commit/ae8aef08d79a4905d69cdf40f9e7d7be703ca2d8))
+* **ai-engine:** extract summary metric builders ([0ee7765](https://gitlab.com/skyasu2/openmanager-ai/-/commit/0ee7765262599f47dec7a07b1dbc16f745c6f80f))
+* **ai-engine:** extract summary operational builders ([53f90b6](https://gitlab.com/skyasu2/openmanager-ai/-/commit/53f90b62363f3f0e7e7cf1b9d8961dccb648d128))
+* **ai-engine:** extract summary payload adapter ([3d32ca7](https://gitlab.com/skyasu2/openmanager-ai/-/commit/3d32ca798a8c8d776551650a42552294ab97287b))
+* **ai-engine:** remove approval write layer ([862571a](https://gitlab.com/skyasu2/openmanager-ai/-/commit/862571a4f5e7679787266ea9508408377a738797))
+* **ai-engine:** split quota tracker layers ([0268543](https://gitlab.com/skyasu2/openmanager-ai/-/commit/02685431b9e36b738cbb17cac34641ec317f5536))
+
+
+### Tests
+
+* **qa:** record v8.11.76 cerebras runtime qa ([69ddaad](https://gitlab.com/skyasu2/openmanager-ai/-/commit/69ddaada4733076e9f9630ff467c784e374f537a))
+* **spec:** approval store add read-only contract specs ([19aefcc](https://gitlab.com/skyasu2/openmanager-ai/-/commit/19aefcc0bee9040e84ba0e0852f135c7aa060325))
+* **spec:** characterize summary fallback payload behavior ([8258a37](https://gitlab.com/skyasu2/openmanager-ai/-/commit/8258a370023c8db190d9f32b8ae694505be73670))
+* **spec:** characterize summary metric builders ([a3e9de9](https://gitlab.com/skyasu2/openmanager-ai/-/commit/a3e9de9aa5f4789e88be671fd10fce09ea56c97a))
+* **spec:** characterize summary operational builders ([8fac9e0](https://gitlab.com/skyasu2/openmanager-ai/-/commit/8fac9e02cfe9cf741d2c19749ef798745bb70db4))
+* **spec:** dashboard server log phase1 contracts ([b2a4e09](https://gitlab.com/skyasu2/openmanager-ai/-/commit/b2a4e096e3257f53f9fee15e2656b3aa610d0437))
+* **spec:** dashboard server log phase2 contracts ([e0a3066](https://gitlab.com/skyasu2/openmanager-ai/-/commit/e0a30666de10f6407e88c5cc42ba9709043321f5))
+* **spec:** dashboard server log phase3 contracts ([1fb3276](https://gitlab.com/skyasu2/openmanager-ai/-/commit/1fb32767b790e624966bd74749e8379ffb5e1e1d))
+* **spec:** orchestrator factory split contract ([88e5ff5](https://gitlab.com/skyasu2/openmanager-ai/-/commit/88e5ff5ae812bf679ea516df5e419abe5a604534))
+* **spec:** quota tracker layer split contracts ([5844bb9](https://gitlab.com/skyasu2/openmanager-ai/-/commit/5844bb989623c02bb0cbc8b3a39beb7837761939))
+
 ## [8.11.76](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.75...v8.11.76) (2026-04-30)
 
 
