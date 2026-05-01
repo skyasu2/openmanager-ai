@@ -186,7 +186,7 @@ afterEach(async () => {
 });
 
 describe('vercel-post-deploy-smoke', () => {
-  it('passes when landing, validation, and version routes are healthy', async () => {
+  it('passes when landing, login, and version routes are healthy', async () => {
     if (!isLoopbackBindAvailable) return;
 
     const baseUrl = await startServer((req, res) => {
@@ -197,10 +197,10 @@ describe('vercel-post-deploy-smoke', () => {
         return;
       }
 
-      if (pathname === '/validation') {
+      if (pathname === '/login') {
         writeHtml(
           res,
-          '<html><body><main>Validation Evidence</main></body></html>'
+          '<html><body><main>OpenManager 로그인</main></body></html>'
         );
         return;
       }
@@ -248,10 +248,10 @@ describe('vercel-post-deploy-smoke', () => {
         return;
       }
 
-      if (pathname === '/validation') {
+      if (pathname === '/login') {
         writeHtml(
           res,
-          '<html><body><main>Validation Evidence</main></body></html>'
+          '<html><body><main>OpenManager 로그인</main></body></html>'
         );
         return;
       }
@@ -280,7 +280,7 @@ describe('vercel-post-deploy-smoke', () => {
     expect(`${result.stdout}${result.stderr}`).toContain('Attempt 2/2');
   });
 
-  it('fails when validation route does not expose expected marker', async () => {
+  it('fails when login route does not expose expected marker', async () => {
     if (!isLoopbackBindAvailable) return;
 
     const baseUrl = await startServer((req, res) => {
@@ -291,7 +291,7 @@ describe('vercel-post-deploy-smoke', () => {
         return;
       }
 
-      if (pathname === '/validation') {
+      if (pathname === '/login') {
         writeHtml(res, '<html><body><main>Release Notes</main></body></html>');
         return;
       }
@@ -315,8 +315,8 @@ describe('vercel-post-deploy-smoke', () => {
     ]);
 
     expect(result.status).toBe(1);
-    expect(`${result.stdout}${result.stderr}`).toContain('GET /validation');
-    expect(`${result.stdout}${result.stderr}`).toContain('Validation Evidence');
+    expect(`${result.stdout}${result.stderr}`).toContain('GET /login');
+    expect(`${result.stdout}${result.stderr}`).toContain('OpenManager');
   });
 
   it('uses local package version as the expected deployed version when available', async () => {
@@ -336,10 +336,10 @@ describe('vercel-post-deploy-smoke', () => {
         return;
       }
 
-      if (pathname === '/validation') {
+      if (pathname === '/login') {
         writeHtml(
           res,
-          '<html><body><main>Validation Evidence</main></body></html>'
+          '<html><body><main>OpenManager 로그인</main></body></html>'
         );
         return;
       }
@@ -385,10 +385,10 @@ describe('vercel-post-deploy-smoke', () => {
         return;
       }
 
-      if (pathname === '/validation') {
+      if (pathname === '/login') {
         writeHtml(
           res,
-          '<html><body><main>Validation Evidence</main></body></html>'
+          '<html><body><main>OpenManager 로그인</main></body></html>'
         );
         return;
       }
@@ -428,10 +428,10 @@ describe('vercel-post-deploy-smoke', () => {
         return;
       }
 
-      if (pathname === '/validation') {
+      if (pathname === '/login') {
         writeHtml(
           res,
-          '<html><body><main>Validation Evidence</main></body></html>'
+          '<html><body><main>OpenManager 로그인</main></body></html>'
         );
         return;
       }

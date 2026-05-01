@@ -11,7 +11,7 @@ import path from 'node:path';
  *
  * Default checks:
  * 1) GET /
- * 2) GET /validation
+ * 2) GET /login
  * 3) GET /api/version
  *
  * Notes:
@@ -196,10 +196,10 @@ async function checkLandingPage(baseUrl, timeoutMs) {
   );
 }
 
-async function checkValidationPage(baseUrl, timeoutMs) {
+async function checkLoginPage(baseUrl, timeoutMs) {
   const result = await request(
     baseUrl,
-    '/validation',
+    '/login',
     timeoutMs,
     'text/html,application/xhtml+xml'
   );
@@ -210,9 +210,8 @@ async function checkValidationPage(baseUrl, timeoutMs) {
     `expected text/html content-type, got ${result.contentType || 'unknown'}`
   );
   assert(
-    result.body.includes('Validation Evidence') ||
-      result.body.includes('QA Status'),
-    'expected validation page marker "Validation Evidence" or "QA Status"'
+    result.body.includes('OpenManager') || result.body.includes('로그인'),
+    'expected login page marker "OpenManager" or "로그인"'
   );
 }
 
@@ -282,7 +281,7 @@ async function runAttempt(
 ) {
   const checks = [
     { name: 'GET /', fn: checkLandingPage },
-    { name: 'GET /validation', fn: checkValidationPage },
+    { name: 'GET /login', fn: checkLoginPage },
     {
       name: 'GET /api/version',
       fn: (targetUrl, targetTimeoutMs) =>

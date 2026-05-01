@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-01 KST (`dashboard alert loading nav a11y completed`)
+**Last Updated**: 2026-05-01 KST (`secondary route cleanup completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -41,6 +41,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-01 #243)
+- [x] 제품 외 보조 route 정리
+  - `/validation` QA evidence page 제거, post-deploy smoke HTML 확인 대상을 `/login`으로 전환
+  - `/auth/success` 레거시 OAuth 성공 페이지 제거, 현재 OAuth 표준 경로 `/auth/callback` 유지
+  - validation page 전용 컴포넌트/테스트/상수 제거 및 CI/CD/public README 문구 정리
+  - 검증: route cleanup targeted tests 16/16, `npm run type-check`, `npm run lint:changed`, `npm run test:quick`, `npm run docs:budget`, `npm run docs:ai-consistency`, `npm run docs:components:map`, `git diff --check`
 
 ### Completed (2026-05-01 #242)
 - [x] Dashboard 알림 로딩 상태 및 모바일 내비게이션 접근성 보강

@@ -30,7 +30,7 @@ vi.mock('next/web-vitals', () => ({
 
 describe('WebVitalsReporter', () => {
   beforeEach(() => {
-    currentPathname = '/validation/first';
+    currentPathname = '/';
     reportWebVitalsCallback = null;
     vi.useFakeTimers();
     vi.stubEnv('NODE_ENV', 'production');
@@ -63,7 +63,7 @@ describe('WebVitalsReporter', () => {
       });
     });
 
-    currentPathname = '/validation/second';
+    currentPathname = '/login';
     rerender(<WebVitalsReporter />);
 
     expect(sendBeacon).toHaveBeenCalledTimes(1);
@@ -74,7 +74,7 @@ describe('WebVitalsReporter', () => {
       metrics: Array<{ name: string; value: number }>;
     };
 
-    expect(payload.url).toBe('/validation/first');
+    expect(payload.url).toBe('/');
     expect(payload.metrics).toEqual([
       expect.objectContaining({
         name: 'LCP',
