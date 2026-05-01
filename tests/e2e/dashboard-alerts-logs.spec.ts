@@ -11,9 +11,8 @@ import { expect, test } from '@playwright/test';
 import { TIMEOUTS } from './helpers/timeouts';
 import { navigateToDashboard } from './helpers/ui-flow';
 
-const ALERT_HISTORY_BUTTON = 'button[aria-label="알림 이력 보기"]';
+const ALERTS_BUTTON = 'button[aria-label="알림 보기"]';
 const LOG_EXPLORER_BUTTON = 'button[aria-label="로그 검색 보기"]';
-const ACTIVE_ALERTS_BUTTON = 'button[aria-label="활성 알림 보기"]';
 
 test.describe('📢 알람 기능 QA', () => {
   test.beforeEach(async ({ page }) => {
@@ -29,7 +28,7 @@ test.describe('📢 알람 기능 QA', () => {
     page,
   }) => {
     // 버튼 클릭 → 알림 route 이동
-    const button = page.locator(ACTIVE_ALERTS_BUTTON).first();
+    const button = page.locator(ALERTS_BUTTON).first();
     await expect(button).toBeVisible({ timeout: TIMEOUTS.MODAL_DISPLAY });
     await button.click();
 
@@ -64,20 +63,19 @@ test.describe('📢 알람 기능 QA', () => {
   test('Alert History: 필터 (Severity, State, 시간, 서버)', async ({
     page,
   }) => {
-    await page.locator(ALERT_HISTORY_BUTTON).first().click();
+    await page.locator(ALERTS_BUTTON).first().click();
 
     await expect(page).toHaveURL(/\/dashboard\/alerts$/);
 
     // 헤더
-    await expect(page.getByText('Alert History')).toBeVisible({
+    await expect(page.getByText('알림 이력')).toBeVisible({
       timeout: TIMEOUTS.DOM_UPDATE,
     });
 
-    // Severity 필터: All, Warning, Critical
-    const allChip = page.getByRole('button', { name: 'All' }).first();
-    const warningChip = page.getByRole('button', { name: 'Warning' }).first();
-    const criticalChip = page.getByRole('button', { name: 'Critical' }).first();
-
+    // Severity 필터: 전체, 경고, 위험
+    const allChip = page.getByRole('button', { name: '전체' }).first();
+    const warningChip = page.getByRole('button', { name: '경고' }).first();
+    const criticalChip = page.getByRole('button', { name: '위험' }).first();
     await expect(allChip).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
     await expect(warningChip).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
     await expect(criticalChip).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
@@ -88,9 +86,9 @@ test.describe('📢 알람 기능 QA', () => {
     await page.waitForTimeout(TIMEOUTS.ANIMATION);
     await allChip.click();
 
-    // State 필터: Firing, Resolved
-    const firingChip = page.getByRole('button', { name: 'Firing' }).first();
-    const resolvedChip = page.getByRole('button', { name: 'Resolved' }).first();
+    // State 필터: 발생중, 해결됨
+    const firingChip = page.getByRole('button', { name: '발생중' }).first();
+    const resolvedChip = page.getByRole('button', { name: '해결됨' }).first();
 
     await expect(firingChip).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
     await expect(resolvedChip).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
@@ -128,7 +126,7 @@ test.describe('📢 알람 기능 QA', () => {
   });
 
   test('Alert History: Anchor, 통계, 알림 항목', async ({ page }) => {
-    await page.locator(ALERT_HISTORY_BUTTON).first().click();
+    await page.locator(ALERTS_BUTTON).first().click();
 
     await expect(page).toHaveURL(/\/dashboard\/alerts$/);
 
@@ -137,13 +135,13 @@ test.describe('📢 알람 기능 QA', () => {
       timeout: TIMEOUTS.DOM_UPDATE,
     });
 
-    // Stats Footer: Total, Critical, Warning, Firing, Avg Resolution
+    // Stats Footer: 전체, 위험, 경고, 발생중, 평균 해결
     for (const label of [
-      /^Total$/i,
-      /^Critical$/i,
-      /^Warning$/i,
-      /^Firing$/i,
-      /^Avg Res(\.|olution)?$/i,
+      /^전체$/i,
+      /^위험$/i,
+      /^경고$/i,
+      /^발생중$/i,
+      /^평균 해결$/i,
     ]) {
       await expect(page.getByText(label).first()).toBeVisible({
         timeout: TIMEOUTS.DOM_UPDATE,
@@ -158,18 +156,18 @@ test.describe('📢 알람 기능 QA', () => {
       const firstAlert = alertItems.first();
 
       // severity 배지
-      await expect(
-        firstAlert.locator('text=/critical|warning/i').first()
-      ).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
+      await expect(firstAlert.locator('text=/위험|경고/i').first()).toBeVisible(
+        { timeout: TIMEOUTS.DOM_UPDATE }
+      );
 
       // state 배지
       await expect(
-        firstAlert.locator('text=/firing|resolved/i').first()
+        firstAlert.locator('text=/발생중|해결됨/i').first()
       ).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
 
-      // Fired 타임스탬프
+      // 발생 타임스탬프
       await expect(
-        firstAlert.getByText('Fired:', { exact: false }).first()
+        firstAlert.getByText('발생:', { exact: false }).first()
       ).toBeVisible({ timeout: TIMEOUTS.DOM_UPDATE });
     } else {
       await expect(page.getByText('알림 이력이 없습니다')).toBeVisible({

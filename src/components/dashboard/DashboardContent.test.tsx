@@ -93,24 +93,13 @@ vi.mock('@/hooks/dashboard/useMonitoringReport', () => ({
 vi.mock('./DashboardSummary', () => ({
   DashboardSummary: vi.fn(
     ({
-      onOpenActiveAlerts,
       onOpenAlertHistory,
       onOpenLogExplorer,
-      onToggleTopology,
     }: {
-      onOpenActiveAlerts?: () => void;
       onOpenAlertHistory?: () => void;
       onOpenLogExplorer?: () => void;
-      onToggleTopology?: () => void;
     }) => (
       <div data-testid="dashboard-summary">
-        <button
-          type="button"
-          aria-label="open active alerts"
-          onClick={onOpenActiveAlerts}
-        >
-          active alerts
-        </button>
         <button
           type="button"
           aria-label="open alert history"
@@ -124,13 +113,6 @@ vi.mock('./DashboardSummary', () => ({
           onClick={onOpenLogExplorer}
         >
           log explorer
-        </button>
-        <button
-          type="button"
-          aria-label="open topology"
-          onClick={onToggleTopology}
-        >
-          topology
         </button>
       </div>
     )
@@ -303,17 +285,11 @@ describe('DashboardContent empty state', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'open active alerts' }));
-    expect(routerPush).toHaveBeenCalledWith('/dashboard/alerts');
-
     fireEvent.click(screen.getByRole('button', { name: 'open alert history' }));
     expect(routerPush).toHaveBeenCalledWith('/dashboard/alerts');
 
     fireEvent.click(screen.getByRole('button', { name: 'open log explorer' }));
     expect(routerPush).toHaveBeenCalledWith('/dashboard/logs');
-
-    fireEvent.click(screen.getByRole('button', { name: 'open topology' }));
-    expect(routerPush).toHaveBeenCalledWith('/dashboard/topology');
   });
 
   it('서버 카드 AI 요청을 최고 사용률 메트릭으로 변환해 브리지해야 한다', async () => {

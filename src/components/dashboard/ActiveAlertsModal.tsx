@@ -135,9 +135,7 @@ function AlertRow({
   const rowClassName = cn(
     'flex w-full items-center justify-between rounded-lg border border-gray-200/80 bg-white px-4 py-3 text-left shadow-sm',
     severityBorderLeft[alert.severity],
-    canAskAI
-      ? 'cursor-pointer transition-colors hover:bg-gray-50/50'
-      : 'cursor-default'
+    'transition-colors hover:bg-gray-50/50'
   );
 
   const handleOpenLogs = (e: React.MouseEvent) => {
@@ -170,6 +168,17 @@ function AlertRow({
         <span className="tabular-nums text-xs text-gray-400">
           {formatElapsedDuration(alert.duration)}
         </span>
+        {canAskAI && (
+          <button
+            type="button"
+            onClick={() => onAskAIAboutAlert(alert)}
+            aria-label={`AI에게 ${alert.instance} ${formatMetricName(alert.metric)} 경고 분석 요청`}
+            title="AI 분석"
+            className="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold text-rose-600 transition-colors hover:bg-rose-50"
+          >
+            AI
+          </button>
+        )}
         <button
           type="button"
           onClick={handleOpenLogs}
@@ -184,18 +193,5 @@ function AlertRow({
     </>
   );
 
-  if (!canAskAI) {
-    return <div className={rowClassName}>{content}</div>;
-  }
-
-  return (
-    <button
-      type="button"
-      onClick={() => onAskAIAboutAlert(alert)}
-      aria-label={`AI에게 ${alert.instance} ${formatMetricName(alert.metric)} 경고 분석 요청`}
-      className={rowClassName}
-    >
-      {content}
-    </button>
-  );
+  return <div className={rowClassName}>{content}</div>;
 }

@@ -3,9 +3,19 @@
  */
 
 import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { MonitoringAlert } from '@/schemas/api.monitoring-report.schema';
 import { ActiveAlertsModal } from './ActiveAlertsModal';
+
+const { routerPush } = vi.hoisted(() => ({
+  routerPush: vi.fn(),
+}));
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: routerPush,
+  }),
+}));
 
 function createAlert(
   overrides: Partial<MonitoringAlert> = {}
@@ -27,6 +37,10 @@ function createAlert(
 }
 
 describe('ActiveAlertsModal', () => {
+  beforeEach(() => {
+    routerPush.mockClear();
+  });
+
   it('지원되는 메트릭 알림은 AI prefill 버튼으로 렌더링한다', () => {
     const onAskAIAboutAlert = vi.fn();
     const alert = createAlert();
@@ -47,6 +61,25 @@ describe('ActiveAlertsModal', () => {
     );
 
     expect(onAskAIAboutAlert).toHaveBeenCalledWith(alert);
+  });
+
+  it('로그 버튼은 서버 필터가 적용된 로그 페이지로 이동한다', () => {
+    render(
+      <ActiveAlertsModal
+        open
+        onClose={vi.fn()}
+        alerts={[createAlert()]}
+        onAskAIAboutAlert={vi.fn()}
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'api-was-dc1-01 로그 보기' })
+    );
+
+    expect(routerPush).toHaveBeenCalledWith(
+      '/dashboard/logs?server=api-was-dc1-01'
+    );
   });
 
   it('지원되지 않는 메트릭 알림은 읽기 전용으로 유지한다', () => {

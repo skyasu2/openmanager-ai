@@ -53,8 +53,6 @@ interface DashboardContentProps {
   servers: Server[];
   /** 전체 서버 목록 (통계 계산용) */
   allServers?: Server[];
-  /** URL query 기반 초기 포커스 서버 ID */
-  initialFocusServerId?: string | null;
   /** 현재 synthetic OTel 데이터 슬롯 메타데이터 */
   dataSlotInfo?: DashboardTimeInfo;
   /** 현재 synthetic OTel 데이터 소스 메타데이터 */
@@ -86,7 +84,6 @@ export default memo(function DashboardContent({
   showSequentialGeneration,
   servers,
   allServers,
-  initialFocusServerId,
   dataSlotInfo,
   dataSourceInfo,
   totalServers,
@@ -225,10 +222,7 @@ export default memo(function DashboardContent({
           onFilterChange={onStatusFilterChange}
           onOpenAlertHistory={() => router.push('/dashboard/alerts')}
           onOpenLogExplorer={() => router.push('/dashboard/logs')}
-          showTopology={false}
-          onToggleTopology={() => router.push('/dashboard/topology')}
           activeAlertsCount={monitoringReport?.firingAlerts?.length ?? 0}
-          onOpenActiveAlerts={() => router.push('/dashboard/alerts')}
         />
 
         {/* 🎯 메인 컨텐츠 영역 */}
@@ -246,8 +240,6 @@ export default memo(function DashboardContent({
                   - ServerDashboard 그래프는 client-only lazy chunk로 분리 */}
             <ServerDashboard
               servers={servers}
-              allServers={allServers}
-              initialFocusServerId={initialFocusServerId}
               totalServers={totalServers}
               currentPage={currentPage}
               totalPages={totalPages}
@@ -256,6 +248,7 @@ export default memo(function DashboardContent({
               onPageSizeChange={onPageSizeChange}
               onStatsUpdate={onStatsUpdate}
               onAskAI={onAskAIAboutAlert ? handleAskAIAboutServer : undefined}
+              initialVisibleRows={1}
             />
           </>
         ) : (

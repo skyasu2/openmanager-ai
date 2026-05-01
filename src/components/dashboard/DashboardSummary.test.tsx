@@ -14,7 +14,6 @@ vi.mock('lucide-react', () => {
     Activity: MockIcon,
     AlertOctagon: MockIcon,
     AlertTriangle: MockIcon,
-    Bell: MockIcon,
     CheckCircle2: MockIcon,
     FileSearch: MockIcon,
     Network: MockIcon,
@@ -108,26 +107,20 @@ describe('DashboardSummary status filter cards', () => {
     render(
       <DashboardSummary
         stats={mockStats}
-        onOpenActiveAlerts={vi.fn()}
         onOpenAlertHistory={vi.fn()}
         onOpenLogExplorer={vi.fn()}
       />
     );
 
-    const activeAlertsButton = screen.getByRole('button', {
-      name: '활성 알림 보기',
-    });
-    const alertHistoryButton = screen.getByRole('button', {
-      name: '알림 이력 보기',
+    const alertsButton = screen.getByRole('button', {
+      name: '알림 보기',
     });
     const logSearchButton = screen.getByRole('button', {
       name: '로그 검색 보기',
     });
 
-    expect(activeAlertsButton).toHaveClass('h-12');
-    expect(activeAlertsButton).toHaveClass('min-w-12');
-    expect(alertHistoryButton).toHaveClass('h-12');
-    expect(alertHistoryButton).toHaveClass('min-w-12');
+    expect(alertsButton).toHaveClass('h-12');
+    expect(alertsButton).toHaveClass('min-w-12');
     expect(logSearchButton).toHaveClass('h-12');
     expect(logSearchButton).toHaveClass('min-w-12');
   });
@@ -136,7 +129,6 @@ describe('DashboardSummary status filter cards', () => {
     render(
       <DashboardSummary
         stats={mockStats}
-        onOpenActiveAlerts={vi.fn()}
         onOpenAlertHistory={vi.fn()}
         onOpenLogExplorer={vi.fn()}
       />
@@ -146,10 +138,7 @@ describe('DashboardSummary status filter cards', () => {
 
     expect(group).toHaveClass('divide-x');
     expect(
-      within(group).getByRole('button', { name: '활성 알림 보기' })
-    ).toBeInTheDocument();
-    expect(
-      within(group).getByRole('button', { name: '알림 이력 보기' })
+      within(group).getByRole('button', { name: '알림 보기' })
     ).toBeInTheDocument();
     expect(
       within(group).getByRole('button', { name: '로그 검색 보기' })
@@ -160,27 +149,21 @@ describe('DashboardSummary status filter cards', () => {
     render(
       <DashboardSummary
         stats={mockStats}
-        onOpenActiveAlerts={vi.fn()}
         onOpenAlertHistory={vi.fn()}
         onOpenLogExplorer={vi.fn()}
       />
     );
 
     expect(
-      within(screen.getByRole('button', { name: '활성 알림 보기' })).getByText(
+      within(screen.getByRole('button', { name: '알림 보기' })).getByText(
         '알림'
       )
     ).toHaveClass('hidden');
     expect(
-      within(screen.getByRole('button', { name: '활성 알림 보기' })).getByText(
+      within(screen.getByRole('button', { name: '알림 보기' })).getByText(
         '알림'
       )
     ).toHaveClass('md:inline');
-    expect(
-      within(screen.getByRole('button', { name: '알림 이력 보기' })).getByText(
-        '이력'
-      )
-    ).toHaveClass('hidden');
     expect(
       within(screen.getByRole('button', { name: '로그 검색 보기' })).getByText(
         '로그'

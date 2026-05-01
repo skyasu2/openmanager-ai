@@ -15,6 +15,7 @@ import { safeErrorMessage } from '@/utils/utils-functions';
 import { ActiveAlertsPanel } from './ActiveAlertsModal';
 import {
   type DashboardAlertContext,
+  getHighestServerAlertMetric,
   toDashboardAlertContext,
 } from './alert-ai-context';
 import { AlertHistoryPanel } from './alert-history/AlertHistoryModal';
@@ -130,15 +131,25 @@ export default function DashboardRoutedContent({
     if (context) onAskAIAboutAlert(context);
   };
 
+  const askAIAboutServer = (server: Server) => {
+    if (!onAskAIAboutAlert) return;
+    const { metricLabel, metricValue } = getHighestServerAlertMetric(server);
+    onAskAIAboutAlert({
+      serverId: server.id ?? server.name,
+      serverName: server.name,
+      metricLabel,
+      metricValue: Math.round(metricValue),
+    });
+  };
+
   if (view === 'servers') {
     return (
       <PageFrame
         title="서버"
-        description="18대 관측 서버 상태, 리소스 사용률, 페이지네이션 목록"
+        description="18대 관측 서버 상태, 리소스 사용률, 더 보기 목록"
       >
         <ServerDashboard
           servers={servers}
-          allServers={allServers}
           totalServers={totalServers}
           currentPage={currentPage}
           totalPages={totalPages}
@@ -146,7 +157,8 @@ export default function DashboardRoutedContent({
           onPageChange={onPageChange}
           onPageSizeChange={onPageSizeChange}
           onStatsUpdate={onStatsUpdate}
-          onAskAI={undefined}
+          onAskAI={onAskAIAboutAlert ? askAIAboutServer : undefined}
+          initialVisibleRows={3}
         />
       </PageFrame>
     );

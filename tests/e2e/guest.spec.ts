@@ -22,8 +22,7 @@ const DASHBOARD_READY_SELECTORS = [
   '[data-testid="dashboard-total-card"]',
   '[data-testid="dashboard-status-grid"]',
   '[data-testid="dashboard-system-status-card"]',
-  'button[aria-label="활성 알림 보기"]',
-  'button[aria-label="알림 이력 보기"]',
+  'button[aria-label="알림 보기"]',
   'button[aria-label="로그 검색 보기"]',
 ];
 const APP_SHELL_SELECTORS = [

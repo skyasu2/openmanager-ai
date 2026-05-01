@@ -390,7 +390,10 @@ export default function DashboardInteractiveShell({
     <>
       <DashboardNavigation isAIAssistantOpen={isAgentOpen} />
       <div className="flex min-h-0 flex-1 flex-col">
-        <DashboardHeader onToggleAgent={toggleAgent} />
+        <DashboardHeader
+          onToggleAgent={toggleAgent}
+          hideAIAssistantButton={dashboardView === 'ai-assistant'}
+        />
 
         <div className="flex-1 overflow-hidden pt-6">
           {deferDashboardContent ? (
@@ -404,7 +407,6 @@ export default function DashboardInteractiveShell({
                   allServers={allServers}
                   dataSlotInfo={initialTimeInfo}
                   dataSourceInfo={initialDataSourceInfo}
-                  initialFocusServerId={initialFocusServerId}
                   totalServers={filteredTotal}
                   currentPage={currentPage}
                   totalPages={totalPages}

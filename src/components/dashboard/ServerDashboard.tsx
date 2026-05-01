@@ -1,21 +1,21 @@
 'use client';
 
-import { ArrowUpDown, LayoutGrid, List, Loader2 } from 'lucide-react';
-import dynamic from 'next/dynamic';
+import {
+  ArrowUpDown,
+  ChevronDown,
+  ChevronUp,
+  LayoutGrid,
+  List,
+  Loader2,
+} from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import ImprovedServerCard from '@/components/dashboard/ImprovedServerCard';
-import ServerDashboardPaginationControls from '@/components/dashboard/ServerDashboardPaginationControls';
 import ServerCardErrorBoundary from '@/components/error/ServerCardErrorBoundary';
 import { logger } from '@/lib/logging';
 import type { DashboardTab } from '@/types/dashboard/server-dashboard.types';
 import type { Server } from '@/types/server';
 import { usePerformanceTracking } from '@/utils/performance';
-
-const EnhancedServerModal = dynamic(
-  () => import('@/components/dashboard/EnhancedServerModal'),
-  { ssr: false, loading: () => null }
-);
 
 // 🚀 성능 최적화: statusPriority를 컴포넌트 외부로 이동 (매번 새로 생성 방지)
 const STATUS_PRIORITY = {
@@ -27,6 +27,8 @@ const STATUS_PRIORITY = {
 
 type ServerViewMode = 'list' | 'grid';
 type ServerSortKey = 'status' | 'cpu' | 'memory' | 'name';
+
+const DEFAULT_VISIBLE_ROWS = 3;
 
 const SORT_OPTIONS: Array<{ value: ServerSortKey; label: string }> = [
   { value: 'status', label: '상태' },
@@ -68,6 +70,13 @@ const compareByStatusPriority = (a: Server, b: Server): number => {
   });
 };
 
+function getServerCardColumns(viewMode: ServerViewMode, width: number): number {
+  if (width < 640) return 1;
+  if (viewMode === 'grid') return 2;
+  if (width < 1024) return 2;
+  return 3;
+}
+
 /**
  * ServerDashboard Props (Phase 4: Props 기반 데이터 흐름)
  * - 중복 fetch 제거: DashboardClient → DashboardContent → ServerDashboard로 props 전달
@@ -76,10 +85,6 @@ const compareByStatusPriority = (a: Server, b: Server): number => {
 interface ServerDashboardProps {
   /** 페이지네이션된 서버 목록 (DashboardClient에서 전달) */
   servers: Server[];
-  /** 전체 서버 목록 (query param focus 대응) */
-  allServers?: Server[];
-  /** URL query 기반 초기 포커스 서버 ID */
-  initialFocusServerId?: string | null;
   /** 전체 서버 수 (페이지네이션 계산용) */
   totalServers: number;
   /** 현재 페이지 */
@@ -103,12 +108,12 @@ interface ServerDashboardProps {
   }) => void;
   /** 서버 카드 경고 배지에서 AI 분석 요청 */
   onAskAI?: (server: Server) => void;
+  /** 최초 화면에서 노출할 서버 카드 줄 수 */
+  initialVisibleRows?: number;
 }
 
 export default function ServerDashboard({
   servers,
-  allServers,
-  initialFocusServerId,
   totalServers,
   currentPage,
   totalPages,
@@ -117,6 +122,7 @@ export default function ServerDashboard({
   onPageSizeChange,
   onStatsUpdate: _onStatsUpdate, // Reserved for future stats callback
   onAskAI,
+  initialVisibleRows = DEFAULT_VISIBLE_ROWS,
 }: ServerDashboardProps) {
   const router = useRouter();
   // 🚀 성능 추적 활성화
@@ -125,11 +131,10 @@ export default function ServerDashboard({
   const [activeTab] = useState<DashboardTab>('servers');
   const [viewMode, setViewMode] = useState<ServerViewMode>('list');
   const [serverSortKey, setServerSortKey] = useState<ServerSortKey>('status');
+  const [visibleRows, setVisibleRows] = useState(initialVisibleRows);
+  const [viewportWidth, setViewportWidth] = useState(1280);
 
   // 🔧 Phase 4: useServerDashboard() 제거 - props로 데이터 받음
-  // 모달 상태만 로컬로 관리
-  const [selectedServer, setSelectedServer] = useState<Server | null>(null);
-  const consumedInitialFocusServerIdRef = useRef<string | null>(null);
 
   const handleServerSelect = useCallback(
     (server: Server) => {
@@ -147,36 +152,6 @@ export default function ServerDashboard({
     [router]
   );
 
-  const handleModalClose = useCallback(() => {
-    setSelectedServer(null);
-  }, []);
-
-  const focusableServers = useMemo(
-    () => (allServers && allServers.length > 0 ? allServers : servers),
-    [allServers, servers]
-  );
-
-  useEffect(() => {
-    if (!initialFocusServerId) {
-      return;
-    }
-
-    if (consumedInitialFocusServerIdRef.current === initialFocusServerId) {
-      return;
-    }
-
-    const targetServer = focusableServers.find(
-      (server) => (server.id ?? server.name) === initialFocusServerId
-    );
-
-    if (!targetServer) {
-      return;
-    }
-
-    setSelectedServer(targetServer);
-    consumedInitialFocusServerIdRef.current = initialFocusServerId;
-  }, [focusableServers, initialFocusServerId]);
-
   // paginatedServers → servers (props)
   // onPageChange → onPageChange (props)
   // changePageSize → onPageSizeChange (props)
@@ -184,6 +159,21 @@ export default function ServerDashboard({
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
     setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return undefined;
+    }
+
+    const handleResize = () => {
+      setViewportWidth(window.innerWidth);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // 🚀 서버 정렬 최적화: 외부 상수와 최적화된 함수 사용
@@ -253,6 +243,26 @@ export default function ServerDashboard({
     });
   }, [servers, serverSortKey]);
 
+  const cardsPerRow = useMemo(
+    () => getServerCardColumns(viewMode, viewportWidth),
+    [viewMode, viewportWidth]
+  );
+
+  const rowStep = Math.max(1, initialVisibleRows);
+  const visibleLimit = Math.max(1, visibleRows * cardsPerRow);
+  const displayedServers = useMemo(
+    () => sortedServers.slice(0, visibleLimit),
+    [sortedServers, visibleLimit]
+  );
+
+  useEffect(() => {
+    setVisibleRows(initialVisibleRows);
+  }, [initialVisibleRows]);
+
+  const handleCollapseServers = useCallback(() => {
+    setVisibleRows(initialVisibleRows);
+  }, [initialVisibleRows]);
+
   // 페이지네이션 정보 계산 (메모이제이션으로 최적화)
   // 🔧 Phase 4: totalServers props 사용 (전체 서버 수)
   const paginationInfo = useMemo(() => {
@@ -290,6 +300,54 @@ export default function ServerDashboard({
     };
   }, [totalServers, totalPages, currentPage, pageSize]);
 
+  const hasMoreLoadedServers = visibleLimit < sortedServers.length;
+  const hasMorePagedServers =
+    paginationInfo.pageSize < paginationInfo.totalServers ||
+    currentPage < totalPages;
+  const canShowMoreServers = hasMoreLoadedServers || hasMorePagedServers;
+  const hiddenServerCount = Math.max(
+    0,
+    paginationInfo.totalServers - displayedServers.length
+  );
+  const showCollapseButton = visibleRows > initialVisibleRows;
+
+  const handleShowMoreServers = useCallback(() => {
+    const nextRows = visibleRows + rowStep;
+    const nextVisibleLimit = nextRows * cardsPerRow;
+
+    if (visibleLimit < sortedServers.length) {
+      setVisibleRows(nextRows);
+      return;
+    }
+
+    if (paginationInfo.pageSize < paginationInfo.totalServers) {
+      const nextPageSize = Math.min(
+        paginationInfo.totalServers,
+        paginationInfo.pageSize + rowStep * cardsPerRow
+      );
+      setVisibleRows(Math.ceil(nextPageSize / cardsPerRow));
+      onPageSizeChange(nextPageSize);
+      return;
+    }
+
+    if (currentPage < totalPages) {
+      setVisibleRows(Math.ceil(nextVisibleLimit / cardsPerRow));
+      onPageChange(currentPage + 1);
+    }
+  }, [
+    cardsPerRow,
+    currentPage,
+    onPageChange,
+    onPageSizeChange,
+    paginationInfo.pageSize,
+    paginationInfo.totalServers,
+    rowStep,
+    sortedServers.length,
+    totalPages,
+    visibleLimit,
+    visibleRows,
+  ]);
+
   if (!isClient) {
     return (
       <div className="flex h-64 items-center justify-center">
@@ -309,7 +367,7 @@ export default function ServerDashboard({
                 <legend className="sr-only">서버 보기 방식</legend>
                 <button
                   type="button"
-                  aria-label="리스트 보기"
+                  aria-label="촘촘히 보기"
                   aria-pressed={viewMode === 'list'}
                   onClick={() => setViewMode('list')}
                   className={`inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded px-3 text-xs font-medium transition-colors sm:flex-none ${
@@ -319,11 +377,11 @@ export default function ServerDashboard({
                   }`}
                 >
                   <List className="h-3.5 w-3.5" />
-                  <span>리스트</span>
+                  <span>촘촘히</span>
                 </button>
                 <button
                   type="button"
-                  aria-label="그리드 보기"
+                  aria-label="넓게 보기"
                   aria-pressed={viewMode === 'grid'}
                   onClick={() => setViewMode('grid')}
                   className={`inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded px-3 text-xs font-medium transition-colors sm:flex-none ${
@@ -333,7 +391,7 @@ export default function ServerDashboard({
                   }`}
                 >
                   <LayoutGrid className="h-3.5 w-3.5" />
-                  <span>그리드</span>
+                  <span>넓게</span>
                 </button>
               </fieldset>
 
@@ -363,21 +421,19 @@ export default function ServerDashboard({
               </div>
             </div>
 
-            {/* 📊 페이지네이션 정보 헤더 (간소화 - 선택기는 하단에만) */}
-            {totalPages > 1 && (
+            {/* 📊 서버 노출 정보 헤더 */}
+            {paginationInfo.totalServers > 0 && (
               <div className="mb-4 flex items-center justify-between rounded-lg border border-blue-100 bg-blue-50/50 px-4 py-2">
                 <p className="text-sm text-blue-800">
                   <span className="font-medium">
                     {paginationInfo.totalServers}개
                   </span>{' '}
-                  서버 중{' '}
-                  <span className="font-mono">
-                    {paginationInfo.startIndex}-{paginationInfo.endIndex}
-                  </span>
-                  번째 표시
+                  서버 중 현재{' '}
+                  <span className="font-mono">{displayedServers.length}</span>개
+                  표시
                 </p>
                 <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700">
-                  {currentPage}/{totalPages} 페이지
+                  {visibleRows}줄 표시
                 </span>
               </div>
             )}
@@ -392,10 +448,10 @@ export default function ServerDashboard({
                 className={
                   viewMode === 'grid'
                     ? 'grid grid-cols-1 gap-4 transition-all duration-300 sm:grid-cols-2 sm:gap-6'
-                    : 'grid grid-cols-1 gap-3 transition-all duration-300'
+                    : 'grid grid-cols-1 gap-3 transition-all duration-300 sm:grid-cols-2 lg:grid-cols-3'
                 }
               >
-                {sortedServers.map((server, index) => {
+                {displayedServers.map((server, index) => {
                   const serverId = server.id || `server-${index}`;
 
                   return (
@@ -445,29 +501,45 @@ export default function ServerDashboard({
                 </div>
               </div>
             )}
+
+            {(canShowMoreServers || showCollapseButton) && (
+              <div className="flex flex-col items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm sm:flex-row sm:justify-between">
+                <span className="text-slate-600">
+                  {displayedServers.length}/{paginationInfo.totalServers}개 서버
+                  표시
+                </span>
+                <div className="flex w-full gap-2 sm:w-auto">
+                  {showCollapseButton && (
+                    <button
+                      type="button"
+                      onClick={handleCollapseServers}
+                      className="inline-flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 sm:flex-none"
+                    >
+                      <ChevronUp className="h-4 w-4" />
+                      접기
+                    </button>
+                  )}
+                  {canShowMoreServers && (
+                    <button
+                      type="button"
+                      onClick={handleShowMoreServers}
+                      className="inline-flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-md bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-700 sm:flex-none"
+                    >
+                      <ChevronDown className="h-4 w-4" />더 보기
+                      {hiddenServerCount > 0 && (
+                        <span className="text-blue-100">
+                          ({hiddenServerCount}개 남음)
+                        </span>
+                      )}
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         )}
         {/* 다른 탭 컨텐츠는 여기에 추가될 수 있습니다. */}
       </div>
-
-      {totalPages > 1 && activeTab === 'servers' && (
-        <ServerDashboardPaginationControls
-          currentPage={currentPage}
-          totalPages={totalPages}
-          pageSize={pageSize}
-          totalServers={totalServers}
-          onPageChange={onPageChange}
-          onPageSizeChange={onPageSizeChange}
-        />
-      )}
-
-      {/* 🎯 통합된 모달 - EnhancedServerModal 사용 */}
-      {selectedServer && (
-        <EnhancedServerModal
-          server={selectedServer}
-          onClose={handleModalClose}
-        />
-      )}
 
       {/* 🚀 개발 환경 전용: 성능 통계 표시 (좌측 하단 - AI 어시스턴트와 겹침 방지) */}
       {process.env.NODE_ENV === 'development' && (
@@ -480,7 +552,7 @@ export default function ServerDashboard({
             </div>
             <div>서버 수: {sortedServers.length}개</div>
             <div>
-              페이지: {currentPage}/{totalPages}
+              표시: {displayedServers.length}/{paginationInfo.totalServers}
             </div>
           </div>
         </div>

@@ -29,7 +29,7 @@ describe('useResponsivePageSize', () => {
 
     const { result } = renderHook(() => useResponsivePageSize(3));
 
-    expect(result.current.pageSize).toBe(6);
+    expect(result.current.pageSize).toBe(3);
   });
 
   it('resize 이후 debounce가 지난 뒤에만 pageSize를 갱신한다', () => {
@@ -37,26 +37,26 @@ describe('useResponsivePageSize', () => {
 
     const { result } = renderHook(() => useResponsivePageSize(3, 150));
 
-    expect(result.current.pageSize).toBe(6);
+    expect(result.current.pageSize).toBe(3);
 
     act(() => {
       setViewportWidth(1440);
       window.dispatchEvent(new Event('resize'));
     });
 
-    expect(result.current.pageSize).toBe(6);
+    expect(result.current.pageSize).toBe(3);
 
     act(() => {
       vi.advanceTimersByTime(149);
     });
 
-    expect(result.current.pageSize).toBe(6);
+    expect(result.current.pageSize).toBe(3);
 
     act(() => {
       vi.advanceTimersByTime(1);
     });
 
-    expect(result.current.pageSize).toBe(15);
+    expect(result.current.pageSize).toBe(9);
   });
 
   it('unmount 시 pending resize timer를 정리한다', () => {

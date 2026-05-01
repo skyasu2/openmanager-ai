@@ -46,8 +46,6 @@ const meta = {
     onFilterChange: fn(),
     onOpenAlertHistory: fn(),
     onOpenLogExplorer: fn(),
-    onToggleTopology: fn(),
-    onOpenActiveAlerts: fn(),
   },
 } satisfies Meta<typeof DashboardSummary>;
 
@@ -75,6 +73,5 @@ export const WithAlerts: Story = {
     stats: alertStats,
     activeFilter: 'critical',
     activeAlertsCount: 12,
-    showTopology: true,
   },
 };
