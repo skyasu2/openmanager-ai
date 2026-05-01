@@ -1,6 +1,7 @@
 'use client';
 
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, FileText } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import type { MonitoringAlert } from '@/schemas/api.monitoring-report.schema';
@@ -11,6 +12,11 @@ import { StatCell } from './shared/StatCell';
 const severityBadge: Record<MonitoringAlert['severity'], string> = {
   critical: 'bg-red-100 text-red-700 border-red-200',
   warning: 'bg-amber-100 text-amber-700 border-amber-200',
+};
+
+const severityBorderLeft: Record<MonitoringAlert['severity'], string> = {
+  critical: 'border-l-4 border-l-red-500',
+  warning: 'border-l-4 border-l-amber-500',
 };
 
 function formatElapsedDuration(seconds: number): string {
@@ -122,15 +128,23 @@ function AlertRow({
   alert: MonitoringAlert;
   onAskAIAboutAlert?: (alert: MonitoringAlert) => void;
 }) {
+  const router = useRouter();
   const canAskAI =
     typeof onAskAIAboutAlert === 'function' &&
     supportsDashboardAlertAIPrefill(alert.metric);
   const rowClassName = cn(
     'flex w-full items-center justify-between rounded-lg border border-gray-200/80 bg-white px-4 py-3 text-left shadow-sm',
+    severityBorderLeft[alert.severity],
     canAskAI
       ? 'cursor-pointer transition-colors hover:bg-gray-50/50'
       : 'cursor-default'
   );
+
+  const handleOpenLogs = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    router.push(`/dashboard/logs?server=${encodeURIComponent(alert.instance)}`);
+  };
+
   const content = (
     <>
       <div className="flex min-w-0 items-center gap-3">
@@ -152,9 +166,21 @@ function AlertRow({
           </div>
         </div>
       </div>
-      <span className="ml-3 shrink-0 tabular-nums text-xs text-gray-400">
-        {formatElapsedDuration(alert.duration)}
-      </span>
+      <div className="ml-3 flex shrink-0 items-center gap-2">
+        <span className="tabular-nums text-xs text-gray-400">
+          {formatElapsedDuration(alert.duration)}
+        </span>
+        <button
+          type="button"
+          onClick={handleOpenLogs}
+          aria-label={`${alert.instance} 로그 보기`}
+          title="로그 보기"
+          className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] text-blue-600 hover:bg-blue-50 transition-colors"
+        >
+          <FileText size={11} />
+          로그
+        </button>
+      </div>
     </>
   );
 

@@ -31,12 +31,12 @@ const levelStyles: Record<
 > = {
   info: {
     badge: 'bg-green-500 text-white',
-    text: 'text-green-300',
+    text: 'text-green-700',
     border: 'border-l-green-500',
   },
   warn: {
     badge: 'bg-yellow-500 text-white',
-    text: 'text-yellow-300',
+    text: 'text-amber-700',
     border: 'border-l-yellow-500',
   },
   error: {
@@ -242,15 +242,18 @@ export function LogExplorerPanel({
     isFetchingNextLogPage,
     logs.length,
   ]);
+  const scrollThrottleRef = useRef(false);
   const handleLogScroll = useCallback(
     (event: UIEvent<HTMLDivElement>) => {
-      const target = event.currentTarget;
-      const distanceFromBottom =
-        target.scrollHeight - target.scrollTop - target.clientHeight;
-
-      if (distanceFromBottom <= 120) {
-        loadMoreLogs();
-      }
+      if (scrollThrottleRef.current) return;
+      const { scrollHeight, scrollTop, clientHeight } = event.currentTarget;
+      const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+      if (distanceFromBottom > 120) return;
+      scrollThrottleRef.current = true;
+      loadMoreLogs();
+      setTimeout(() => {
+        scrollThrottleRef.current = false;
+      }, 200);
     },
     [loadMoreLogs]
   );
@@ -468,12 +471,11 @@ export function LogExplorerPanel({
         </div>
       </div>
 
-      {/* Log Result List - Terminal style */}
+      {/* Log Result List */}
       <div
         data-testid="log-explorer-terminal"
-        className="relative min-h-[320px] flex-1 overflow-hidden sm:max-h-[56vh]"
+        className="relative min-h-[320px] flex-1 overflow-hidden bg-white sm:max-h-[56vh]"
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black" />
         <div
           data-testid="log-explorer-scroll-container"
           className="relative h-full overflow-y-auto p-4 font-mono text-xs"
@@ -507,7 +509,7 @@ export function LogExplorerPanel({
               <button
                 type="button"
                 onClick={retry}
-                className="mt-3 rounded border border-gray-400/60 px-3 py-1 text-[11px] text-gray-300 hover:bg-white/10"
+                className="mt-3 rounded border border-gray-300 px-3 py-1 text-[11px] text-gray-600 hover:bg-gray-50"
               >
                 다시 시도
               </button>
@@ -553,20 +555,18 @@ export function LogExplorerPanel({
                       style.border,
                       logLevel === 'error'
                         ? 'bg-red-50 hover:bg-red-100'
-                        : 'bg-white/[0.03] hover:bg-white/[0.06]'
+                        : 'bg-white hover:bg-gray-50'
                     )}
                   >
                     {/* Server badge */}
-                    <span className="max-w-[120px] shrink-0 truncate rounded bg-blue-500/20 px-1.5 py-0.5 text-[10px] font-medium text-blue-400">
+                    <span className="max-w-[120px] shrink-0 truncate rounded bg-blue-100 px-1.5 py-0.5 text-[10px] font-medium text-blue-700">
                       {log.serverId.split('.')[0]}
                     </span>
                     {/* Timestamp */}
                     <span
                       className={cn(
                         'shrink-0 tabular-nums',
-                        logLevel === 'error'
-                          ? 'text-red-700'
-                          : 'text-sky-300/85'
+                        logLevel === 'error' ? 'text-red-700' : 'text-sky-600'
                       )}
                     >
                       {formatRotatingTimestamp(log.timestamp, {
@@ -607,14 +607,14 @@ export function LogExplorerPanel({
                       {log.message}
                     </span>
                     {isGrouped && (
-                      <span className="shrink-0 rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-bold text-gray-200">
+                      <span className="shrink-0 rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-600">
                         ×{group.logs.length}
                       </span>
                     )}
                     {isGrouped && isExpanded && (
                       <span
                         data-testid="log-explorer-log-group-details"
-                        className="basis-full space-y-1 rounded border border-white/10 bg-black/20 px-2 py-1 text-[10px] text-gray-300"
+                        className="basis-full space-y-1 rounded border border-gray-200 bg-gray-50 px-2 py-1 text-[10px] text-gray-600"
                       >
                         {group.logs.slice(1, 6).map((groupLog) => (
                           <span
@@ -639,7 +639,7 @@ export function LogExplorerPanel({
                     type="button"
                     onClick={loadMoreLogs}
                     disabled={isFetchingNextLogPage}
-                    className="rounded-md border border-gray-500/40 px-4 py-1.5 text-xs font-medium text-gray-300 transition-colors hover:bg-white/10 disabled:cursor-wait disabled:opacity-60"
+                    className="rounded-md border border-gray-300 px-4 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50 disabled:cursor-wait disabled:opacity-60"
                   >
                     {isFetchingNextLogPage
                       ? '불러오는 중...'
@@ -653,7 +653,7 @@ export function LogExplorerPanel({
           )}
         </div>
         {/* Fade overlay */}
-        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-gray-900 to-transparent" />
+        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-white to-transparent" />
       </div>
     </div>
   );

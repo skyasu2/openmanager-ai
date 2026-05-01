@@ -1,7 +1,15 @@
 'use client';
 
-import { Bell } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
+import { Bell, FileText } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useAlertHistory } from '@/hooks/dashboard/useAlertHistory';
 import { cn } from '@/lib/utils';
@@ -57,6 +65,7 @@ export function AlertHistoryPanel({
   const [debouncedKeyword, setDebouncedKeyword] = useState('');
   const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY);
   const [isPending, startTransition] = useTransition();
+  const scrollThrottleRef = useRef(false);
 
   const sessionAnchorRef = useRef(new Date());
   const [sessionAnchorLabel, setSessionAnchorLabel] = useState('');
@@ -81,6 +90,17 @@ export function AlertHistoryPanel({
       setDisplayCount(INITIAL_DISPLAY);
     });
   };
+
+  const handleAlertScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    if (scrollThrottleRef.current) return;
+    const { scrollHeight, scrollTop, clientHeight } = e.currentTarget;
+    if (scrollHeight - scrollTop - clientHeight > 120) return;
+    scrollThrottleRef.current = true;
+    setDisplayCount((prev) => prev + LOAD_MORE_COUNT);
+    setTimeout(() => {
+      scrollThrottleRef.current = false;
+    }, 200);
+  }, []);
 
   useEffect(() => {
     if (!active) return;
@@ -123,14 +143,14 @@ export function AlertHistoryPanel({
             <Bell size={18} />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-gray-900">Alert History</h2>
+            <h2 className="text-lg font-bold text-gray-900">알림 이력</h2>
             <p className="text-xs text-gray-500">
               시스템 알림 이력 (firing + resolved) · 접속 시점 기준 시계열
             </p>
           </div>
           {stats.firing > 0 && (
             <span className="ml-2 inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-bold text-red-700">
-              {stats.firing} active
+              {stats.firing} 발생중
             </span>
           )}
         </div>
@@ -152,12 +172,12 @@ export function AlertHistoryPanel({
 
           {/* Severity chips */}
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-xs font-medium text-gray-500">Severity:</span>
+            <span className="text-xs font-medium text-gray-500">심각도</span>
             {(['all', 'warning', 'critical'] as const).map((s) => (
               <FilterChip
                 key={s}
                 label={
-                  s === 'all' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)
+                  s === 'all' ? '전체' : s === 'critical' ? '위험' : '경고'
                 }
                 active={severity === s}
                 onClick={() => handleFilterChange(() => setSeverity(s))}
@@ -170,12 +190,12 @@ export function AlertHistoryPanel({
 
           {/* State chips */}
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-xs font-medium text-gray-500">State:</span>
+            <span className="text-xs font-medium text-gray-500">상태</span>
             {(['all', 'firing', 'resolved'] as const).map((s) => (
               <FilterChip
                 key={s}
                 label={
-                  s === 'all' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)
+                  s === 'all' ? '전체' : s === 'firing' ? '발생중' : '해결됨'
                 }
                 active={state === s}
                 onClick={() => handleFilterChange(() => setState(s))}
@@ -233,7 +253,10 @@ export function AlertHistoryPanel({
       </div>
 
       {/* Timeline List */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 min-h-0 sm:px-6 bg-gray-50/30">
+      <div
+        className="flex-1 overflow-y-auto px-4 py-4 min-h-0 sm:px-6 bg-gray-50/30"
+        onScroll={handleAlertScroll}
+      >
         {errorMessage && (
           <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
             {errorMessage}
@@ -284,16 +307,9 @@ export function AlertHistoryPanel({
               );
             })}
             {hasMore && (
-              <div className="text-center py-3">
-                <button
-                  type="button"
-                  onClick={() =>
-                    setDisplayCount((prev) => prev + LOAD_MORE_COUNT)
-                  }
-                  className="rounded-md border border-gray-300 bg-white px-4 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors shadow-sm"
-                >
-                  더 보기 ({alerts.length - displayCount}건 남음)
-                </button>
+              <div className="py-3 text-center text-[11px] text-gray-400">
+                아래로 스크롤하면 더 보기 ({alerts.length - displayCount}건
+                남음)
               </div>
             )}
           </div>
@@ -302,20 +318,54 @@ export function AlertHistoryPanel({
 
       {/* Stats Footer */}
       <div className="grid grid-cols-2 gap-3 border-t border-gray-100 bg-gray-50/80 px-4 py-3 sm:grid-cols-5 sm:gap-4 sm:px-6">
-        <StatCell label="Total" value={stats.total} color="text-gray-800" />
         <StatCell
-          label="Critical"
+          label="전체"
+          value={stats.total}
+          color="text-gray-800"
+          active={severity === 'all' && state === 'all'}
+          onClick={() =>
+            startTransition(() => {
+              setSeverity('all');
+              setState('all');
+              setDisplayCount(INITIAL_DISPLAY);
+            })
+          }
+        />
+        <StatCell
+          label="위험"
           value={stats.critical}
           color="text-red-600"
+          active={severity === 'critical'}
+          onClick={() =>
+            handleFilterChange(() =>
+              setSeverity((prev) => (prev === 'critical' ? 'all' : 'critical'))
+            )
+          }
         />
         <StatCell
-          label="Warning"
+          label="경고"
           value={stats.warning}
           color="text-amber-600"
+          active={severity === 'warning'}
+          onClick={() =>
+            handleFilterChange(() =>
+              setSeverity((prev) => (prev === 'warning' ? 'all' : 'warning'))
+            )
+          }
         />
-        <StatCell label="Firing" value={stats.firing} color="text-red-500" />
         <StatCell
-          label="Avg Res."
+          label="발생중"
+          value={stats.firing}
+          color="text-red-500"
+          active={state === 'firing'}
+          onClick={() =>
+            handleFilterChange(() =>
+              setState((prev) => (prev === 'firing' ? 'all' : 'firing'))
+            )
+          }
+        />
+        <StatCell
+          label="평균 해결"
           value={
             stats.avgResolutionSec > 0
               ? formatDuration(stats.avgResolutionSec)
@@ -360,6 +410,7 @@ export function AlertHistoryRow({
   anchorDate: Date;
   onAskAIAboutAlert?: (alert: Alert) => void;
 }) {
+  const router = useRouter();
   const isResolved = alert.state === 'resolved';
   const canAskAI =
     typeof onAskAIAboutAlert === 'function' &&
@@ -372,6 +423,12 @@ export function AlertHistoryRow({
     borderClassName,
     isResolved && 'opacity-60 shadow-none'
   );
+
+  const handleOpenLogs = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    router.push(`/dashboard/logs?server=${encodeURIComponent(alert.serverId)}`);
+  };
+
   const content = (
     <>
       <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
@@ -381,11 +438,11 @@ export function AlertHistoryRow({
         >
           <span
             className={cn(
-              'inline-flex shrink-0 rounded-md border px-1.5 py-0.5 text-[10px] font-bold uppercase',
+              'inline-flex shrink-0 rounded-md border px-1.5 py-0.5 text-[10px] font-bold',
               badgeClassName
             )}
           >
-            {alert.severity}
+            {alert.severity === 'critical' ? '위험' : '경고'}
           </span>
           <span
             className="min-w-0 max-w-full break-words text-sm font-medium text-gray-800 sm:truncate"
@@ -401,7 +458,7 @@ export function AlertHistoryRow({
             {formatMetricValue(alert.metric, alert.value)}
           </span>
           <span className="shrink-0 text-xs text-gray-400">
-            (threshold: {alert.threshold}%)
+            (임계값: {alert.threshold}%)
           </span>
         </div>
         <div className="flex shrink-0 items-center gap-2 self-end sm:self-auto">
@@ -413,23 +470,33 @@ export function AlertHistoryRow({
                 : 'bg-red-100 text-red-700'
             )}
           >
-            {alert.state}
+            {isResolved ? '해결됨' : '발생중'}
           </span>
           <span className="tabular-nums text-xs text-gray-400">
             {formatDuration(alert.duration)}
           </span>
+          <button
+            type="button"
+            onClick={handleOpenLogs}
+            aria-label={`${alert.serverId} 로그 보기`}
+            title="로그 보기"
+            className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] text-blue-600 hover:bg-blue-50 transition-colors"
+          >
+            <FileText size={11} />
+            로그
+          </button>
         </div>
       </div>
       <div className="mt-1.5 flex flex-wrap items-center gap-3 text-[11px] text-gray-400">
         <span>
-          Fired:{' '}
+          발생:{' '}
           {formatRotatingTimestamp(alert.firedAt, {
             anchorDate,
           })}
         </span>
         {alert.resolvedAt && (
           <span>
-            Resolved:{' '}
+            해결:{' '}
             {formatRotatingTimestamp(alert.resolvedAt, {
               anchorDate,
             })}
@@ -447,7 +514,7 @@ export function AlertHistoryRow({
     <button
       type="button"
       onClick={() => onAskAIAboutAlert(alert)}
-      aria-label={`AI에게 ${alert.instance} ${formatMetricName(alert.metric)} 알림 분석 요청`}
+      aria-label={`AI에게 ${alert.serverId} ${formatMetricName(alert.metric)} 알림 분석 요청`}
       className={cn(rowClassName, 'w-full text-left')}
     >
       {content}

@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-01 KST (`summary operational builder extraction completed`)
+**Last Updated**: 2026-05-01 KST (`dashboard alert ux A1~A7 completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| — | — | — | 현재 활성 작업 없음 |
+| — | — | — | 현재 계획서 기준 잔여 작업 없음 |
 
 ---
 
@@ -30,6 +30,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| ~~Dashboard 알림 UX 개선 (A1~A7)~~ | — | **완료** — 한국어 통일, border-left, StatCell 클릭 필터, 스크롤 자동 로드, 로그 크로스링크 전부 적용. [archive/dashboard-alert-ux-plan.md](archive/dashboard-alert-ux-plan.md) |
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
 | ~~AI assistant retrieval and multi-agent runtime refactor~~ | — | **완료** — archive 이동. Task 0~8 전체 완료. Knowledge Retrieval Lite 도입, GraphRAG 제거, provider model policy SSOT, 18대 서버 topology contract, frontend retrieval status contract 모두 반영. 상세: [archive/ai-assistant-retrieval-multi-agent-refactor-plan.md](archive/ai-assistant-retrieval-multi-agent-refactor-plan.md) |
 | ~~AI Response Visibility & Rate Limit (Phase 1~5)~~ | — | **완료** — archive 이동. write bucket 재평가 결과 `supervisor 10/min`, `jobs/process 5/min`, `daily 100` 유지 결정 로그는 archived plan에 유지. |
