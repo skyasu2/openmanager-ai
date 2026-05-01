@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-01 KST (`dashboard alert ux A1~A7 completed`)
+**Last Updated**: 2026-05-01 KST (`dashboard log alert crosslink completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| — | — | — | 현재 계획서 기준 잔여 작업 없음 |
+| — | — | — | 현재 계획서 기준 진행 중 작업 없음 |
 
 ---
 
@@ -31,6 +31,7 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | ~~Dashboard 알림 UX 개선 (A1~A7)~~ | — | **완료** — 한국어 통일, border-left, StatCell 클릭 필터, 스크롤 자동 로드, 로그 크로스링크 전부 적용. [archive/dashboard-alert-ux-plan.md](archive/dashboard-alert-ux-plan.md) |
+| ~~IntersectionObserver 전환 (B1~B6)~~ | — | **완료** — scroll event 제거, sentinel 패턴, 로그+알림 더보기 버튼 fallback 적용. [dashboard-scroll-observer-plan.md](dashboard-scroll-observer-plan.md) |
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
 | ~~AI assistant retrieval and multi-agent runtime refactor~~ | — | **완료** — archive 이동. Task 0~8 전체 완료. Knowledge Retrieval Lite 도입, GraphRAG 제거, provider model policy SSOT, 18대 서버 topology contract, frontend retrieval status contract 모두 반영. 상세: [archive/ai-assistant-retrieval-multi-agent-refactor-plan.md](archive/ai-assistant-retrieval-multi-agent-refactor-plan.md) |
 | ~~AI Response Visibility & Rate Limit (Phase 1~5)~~ | — | **완료** — archive 이동. write bucket 재평가 결과 `supervisor 10/min`, `jobs/process 5/min`, `daily 100` 유지 결정 로그는 archived plan에 유지. |
@@ -40,6 +41,22 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-01 #241)
+- [x] Dashboard Log→Alert 역방향 크로스링크
+  - Plan completed: [dashboard-log-alert-crosslink-plan.md](dashboard-log-alert-crosslink-plan.md)
+  - `AlertHistoryPanel`에 `initialServerId` 계약을 추가하고 `/dashboard/alerts?server=...` 및 legacy `serverId` query를 초기 서버 필터로 연결
+  - `LogExplorerModal` 로그 행/반복 그룹 상세 행에 서버별 "알림" 버튼 추가, URL encoding 및 no-param fallback 테스트 보강
+  - 서버 상세 `로그 & 네트워크` 탭에 같은 서버 알림 이력 이동 버튼 추가
+  - 검증: targeted tests 23/23, `npm run type-check`, `npm run lint`, `npm run test:quick`, `git diff --check`, local browser QA 통과
+
+### Completed (2026-05-01 #240)
+- [x] 서버 상세 페이지 2가지 버그 수정
+  - Plan completed: [dashboard-server-detail-fix-plan.md](dashboard-server-detail-fix-plan.md)
+  - `LogsTab.parts`의 LegacyLogView/StreamsView dark 배경 잔재를 white UI로 정리하고 Streams empty state를 한국어로 통일
+  - `normalizeServerData`에 서버 ID 기반 타입 추론 fallback 추가, `ServerDetailView` 헤더 타입 라벨 표시 개선
+  - Next.js 16 `cacheComponents` 환경에서 `/dashboard/servers/{serverId}` 상세 route가 404/500으로 흔들리지 않도록 registry 기반 `generateStaticParams` 추가
+  - 검증: targeted tests 44/44, `npm run type-check`, `npm run lint:changed`, `git diff --check`, Chrome DevTools UI 확인 통과
 
 ### Completed (2026-05-01 #239)
 - [x] orchestrator-summary-fallback operational/status builder 분리
