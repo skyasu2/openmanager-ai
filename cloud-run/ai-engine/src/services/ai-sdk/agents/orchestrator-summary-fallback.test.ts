@@ -188,6 +188,76 @@ describe('buildDeterministicSummaryFallback', () => {
     expect(summary).not.toContain('메모리 사용률 상위');
   });
 
+  it('prioritizes critical operational alerts before higher-metric warnings', () => {
+    const summary = buildDeterministicSummaryFallback(
+      '현재 위험/경고 서버를 기준으로 운영자가 해야 할 조치 2가지를 제안해줘',
+      'Analyst Agent',
+      [
+        {
+          toolName: 'getServerMetrics',
+          result: {
+            servers: [
+              { id: 'web-01', status: 'online', cpu: 25, memory: 30, disk: 20 },
+              { id: 'api-critical-01', status: 'critical', cpu: 66, memory: 64, disk: 35 },
+              { id: 'cache-warning-01', status: 'warning', cpu: 94, memory: 82, disk: 41 },
+            ],
+            alertServers: [
+              {
+                id: 'api-critical-01',
+                status: 'critical',
+                cpu: 66,
+                memory: 64,
+                disk: 35,
+                cpuTrend: 'stable',
+              },
+              {
+                id: 'cache-warning-01',
+                status: 'warning',
+                cpu: 94,
+                memory: 82,
+                disk: 41,
+                cpuTrend: 'rising',
+              },
+            ],
+          },
+        },
+      ]
+    );
+
+    expect(summary).toContain('⚠️ **주의 서버**');
+    expect(summary).toContain('• api-critical-01: CPU 66%');
+    expect(summary).toContain('• cache-warning-01: CPU 94%');
+    expect(summary?.indexOf('api-critical-01')).toBeLessThan(
+      summary?.indexOf('cache-warning-01') ?? Number.MAX_SAFE_INTEGER
+    );
+    expect(summary).toContain('1. api-critical-01: 상위 프로세스');
+    expect(summary).toContain('2. cache-warning-01: 상위 프로세스');
+    expect(summary).not.toContain('CPU 사용률 상위');
+  });
+
+  it('keeps offline operational sections without falling through to metric summaries', () => {
+    const summary = buildDeterministicSummaryFallback(
+      '현재 위험/경고 서버를 기준으로 장애 원인을 추정하고 운영자가 해야 할 조치 1가지를 제안해줘',
+      'Analyst Agent',
+      [
+        {
+          toolName: 'getServerMetrics',
+          result: {
+            servers: [
+              { id: 'worker-offline-01', status: 'offline', cpu: 0, memory: 0, disk: 0 },
+              { id: 'web-01', status: 'online', cpu: 25, memory: 30, disk: 20 },
+            ],
+          },
+        },
+      ]
+    );
+
+    expect(summary).toContain('⛔ **오프라인 서버**');
+    expect(summary).toContain('worker-offline-01: 헬스체크 실패 또는 서비스 중단 상태');
+    expect(summary).toContain('1. web-01: 메모리 상위 프로세스와 OOM/GC 로그를 확인하세요.');
+    expect(summary).not.toContain('CPU 사용률 상위');
+  });
+
   it('distributes per-server action requests across warning servers', () => {
     const query =
       '현재 경고 서버 2대를 기준으로 장애 원인을 추정하고, 각 서버별 즉시 조치 1개씩만 우선순위로 제안해줘. 대시보드 현재 시점 데이터 기준으로 답해줘';
