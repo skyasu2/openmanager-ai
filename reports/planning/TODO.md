@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-01 KST (`orchestrator factory extraction completed`)
+**Last Updated**: 2026-05-01 KST (`summary payload adapter extraction completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -16,7 +16,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| orchestrator-summary-fallback 분리 | P3 | Task 3-A routing factory 추출 완료. 남은 범위: Task 3-B payload/metric/operational summary 단계 분리 |
+| orchestrator-summary-fallback metric/operational builder 분리 | P3 | Task 3-B.1 payload adapter 추출 완료. 남은 범위: metric threshold/ranking builder, operational/status summary builder |
 
 ---
 
@@ -39,6 +39,16 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-01 #237)
+- [x] orchestrator-summary-fallback payload adapter 분리
+  - Plan partial completed: [ai-engine-code-quality-plan.md](ai-engine-code-quality-plan.md) Task 3-B.1
+  - public facade characterization tests 보강: payload precedence, malformed getServerMetrics, empty status filter summary
+  - `orchestrator-summary-payload.ts` 추가: payload types, tool result parsing, current-state payload construction, evidence count helper 분리
+  - `orchestrator-summary-fallback.ts`는 기존 public facade와 renderer/query builder 로직 유지
+  - SDD 선행 테스트 커밋: `8258a3700 test(spec): characterize summary fallback payload behavior`
+  - 구현 커밋: `3d32ca798 refactor(ai-engine): extract summary payload adapter`
+  - 검증: summary/routing/stream targeted tests 50/50, AI Engine type-check, AI Engine test 945/945, `lint:changed`, `git diff --check` 통과
 
 ### Completed (2026-05-01 #236)
 - [x] orchestrator-routing AgentFactory 경로 분리

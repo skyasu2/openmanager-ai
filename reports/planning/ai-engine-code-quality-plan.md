@@ -191,7 +191,7 @@ BP 정렬: LangGraph 패턴에서 에이전트 Factory는 독립 레지스트리
 
 ### Task 3-B: orchestrator-summary-fallback.ts (1,219줄)
 
-**상태**: 미착수
+**상태**: 진행 중 — 3-B.1 완료 (2026-05-01)
 
 현재 구조 파악 필요:
 - l.70: query intent re-export
@@ -202,11 +202,20 @@ BP 정렬: LangGraph 패턴에서 에이전트 Factory는 독립 레지스트리
 **전제 조건**: 실제 섹션 경계 분석 후 분리 경계 확정. 내용 확인 없이 기계적 분리는 금지.
 
 **권장 후속 순서**:
-1. public facade 대상 characterization tests 보강
-2. `CollectedToolResult`, `ServerSnapshot`, `AlertServerSnapshot`, `MetricsToolPayload`, tool result parsing, current-state payload construction을 payload adapter 모듈로 추출
-3. metric threshold/ranking answer builder 추출
-4. operational/status summary builder 추출
+1. public facade 대상 characterization tests 보강 — 완료
+2. `CollectedToolResult`, `ServerSnapshot`, `AlertServerSnapshot`, `MetricsToolPayload`, tool result parsing, current-state payload construction을 payload adapter 모듈로 추출 — 완료
+3. metric threshold/ranking answer builder 추출 — 남음
+4. operational/status summary builder 추출 — 남음
 5. `orchestrator-summary-fallback.ts`는 `isDeterministicSummaryQuery`, `buildDeterministicSummaryFallback`, `buildDeterministicSummaryFromCurrentState` public compatibility facade로 유지
+
+#### 2026-05-01 구현 로그 — 3-B.1 payload adapter
+
+- SDD 선행 테스트 커밋: `8258a3700 test(spec): characterize summary fallback payload behavior`
+- 구현 커밋: `3d32ca798 refactor(ai-engine): extract summary payload adapter`
+- characterization tests: payload precedence, malformed `getServerMetrics`, empty status filter summary 경로 보강.
+- `orchestrator-summary-payload.ts` 신규: `CollectedToolResult`, `ServerSnapshot`, `AlertServerSnapshot`, `MetricsToolPayload`, `getMetricsPayload`, `buildSummaryPayloadFromCurrentState`, `getPayloadServerEvidenceCount`, `toNumber` 분리.
+- `orchestrator-summary-fallback.ts`는 기존 public export와 metric/operational renderer 로직을 유지.
+- 검증: summary/routing/stream targeted tests 50/50, AI Engine type-check, AI Engine test 945/945, `lint:changed`, `git diff --check` 통과.
 
 ### 테스트 시나리오
 
@@ -314,7 +323,8 @@ Task 4 (Cerebras 모델) ← 데드라인 있음, 2026-05-20 전 처리
 Task 1 (approval 단순화) ← 완료 (2026-04-30)
 Task 2 (quota-tracker 분리) ← 완료 (2026-05-01)
 Task 3-A (orchestrator factory 분리) ← 완료 (2026-05-01)
-Task 3-B (summary fallback 분리) ← 남은 범위, characterization test 선행 필수
+Task 3-B.1 (summary payload adapter 분리) ← 완료 (2026-05-01)
+Task 3-B.2/3-B.3 (metric/operational builder 분리) ← 남은 범위
 ```
 
 ## SDD 게이트
