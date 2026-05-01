@@ -16,21 +16,21 @@ export const getLogLevelStyles = (level: LogLevel | string) => {
   switch (level) {
     case 'error':
       return {
-        containerClass: 'bg-red-500/10 border-l-4 border-red-500',
+        containerClass: 'bg-red-50 border-l-4 border-red-500',
         badgeClass: 'bg-red-500 text-white',
-        textClass: 'text-red-300',
+        textClass: 'text-red-700',
       };
     case 'warn':
       return {
-        containerClass: 'bg-yellow-500/10 border-l-4 border-yellow-500',
+        containerClass: 'bg-amber-50 border-l-4 border-amber-500',
         badgeClass: 'bg-yellow-500 text-white',
-        textClass: 'text-yellow-300',
+        textClass: 'text-amber-700',
       };
     default:
       return {
-        containerClass: 'bg-green-500/10 border-l-4 border-green-500',
+        containerClass: 'bg-green-50 border-l-4 border-green-500',
         badgeClass: 'bg-green-500 text-white',
-        textClass: 'text-green-300',
+        textClass: 'text-green-700',
       };
   }
 };
@@ -110,10 +110,9 @@ export function LegacyLogView({
   displayLogs: LogEntry[];
 }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-slate-700/60 shadow-lg">
-      <div className="absolute inset-0 bg-linear-to-br from-gray-900 via-gray-800 to-black" />
+    <div className="relative overflow-hidden rounded-2xl border border-slate-200 shadow-sm">
       <div
-        className="relative h-[55vh] min-h-[320px] max-h-[500px] overflow-y-auto p-4 font-mono text-sm sm:p-6"
+        className="h-[55vh] min-h-[320px] max-h-[500px] overflow-y-auto bg-white p-4 font-mono text-sm sm:p-6"
         data-testid="server-log-terminal-scroll"
       >
         {displayLogs.length > 0 ? (
@@ -134,10 +133,10 @@ export function LegacyLogView({
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="mb-1 flex flex-wrap items-center gap-3">
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-gray-500">
                       {formatTimestamp(log.timestamp)}
                     </span>
-                    <span className="text-xs font-semibold text-blue-400">
+                    <span className="text-xs font-semibold text-blue-600">
                       [{log.source || 'system'}]
                     </span>
                   </div>
@@ -163,7 +162,7 @@ export function LegacyLogView({
           />
         )}
       </div>
-      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-6 bg-linear-to-t from-gray-900 to-transparent" />
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-6 bg-linear-to-t from-white to-transparent" />
     </div>
   );
 }
@@ -235,9 +234,8 @@ export const StreamsView: FC<{
         </span>
       </div>
 
-      <div className="relative overflow-hidden rounded-2xl border border-slate-700/60 shadow-lg">
-        <div className="absolute inset-0 bg-linear-to-br from-gray-900 via-gray-800 to-black" />
-        <div className="relative h-[55vh] min-h-[320px] max-h-[500px] overflow-y-auto p-4 font-mono text-sm">
+      <div className="relative overflow-hidden rounded-2xl border border-slate-200 shadow-sm">
+        <div className="h-[55vh] min-h-[320px] max-h-[500px] overflow-y-auto bg-white p-4 font-mono text-sm">
           {streams.length > 0 ? (
             streams.map((stream, si) => {
               const streamKey = `${stream.stream.job}|${stream.stream.level}`;
@@ -250,9 +248,9 @@ export const StreamsView: FC<{
                     type="button"
                     onClick={() => toggleStream(streamKey)}
                     aria-expanded={isExpanded}
-                    className="mb-2 flex w-full flex-wrap items-center gap-2 rounded-lg bg-white/5 px-3 py-2 text-left transition-colors hover:bg-white/10"
+                    className="mb-2 flex w-full flex-wrap items-center gap-2 rounded-lg bg-gray-50 px-3 py-2 text-left transition-colors hover:bg-gray-100"
                   >
-                    <span className="text-gray-400">
+                    <span className="text-gray-500">
                       {isExpanded ? '\u25BC' : '\u25B6'}
                     </span>
                     <span
@@ -260,11 +258,11 @@ export const StreamsView: FC<{
                     >
                       {stream.stream.level.toUpperCase()}
                     </span>
-                    <span className="text-xs text-blue-400">
+                    <span className="text-xs text-blue-600">
                       job={stream.stream.job}
                     </span>
                     <span className="text-xs text-gray-500">
-                      ({stream.values.length} entries)
+                      ({stream.values.length}건)
                     </span>
                   </button>
 
@@ -290,12 +288,12 @@ export const StreamsView: FC<{
           ) : (
             <EmptyState
               icon="log"
-              title="No matching streams"
-              description="Adjust label filters to see log streams"
+              title="일치하는 스트림 없음"
+              description="레이블 필터를 조정하면 로그 스트림이 표시됩니다"
             />
           )}
         </div>
-        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-6 bg-linear-to-t from-gray-900 to-transparent" />
+        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-6 bg-linear-to-t from-white to-transparent" />
       </div>
     </div>
   );
@@ -365,7 +363,7 @@ export function LogStats({
       style={{ animationDelay: '0.3s' }}
     >
       <StatCard
-        label={activeView === 'syslog' ? 'Total Logs' : 'Total Alerts'}
+        label={activeView === 'syslog' ? '전체 로그' : '전체 알림'}
         value={logs.length}
         color="text-gray-800"
         bgColor="bg-gray-100"
@@ -409,7 +407,7 @@ export function StreamStats({
       style={{ animationDelay: '0.3s' }}
     >
       <StatCard
-        label="Streams"
+        label="스트림"
         value={streams.length}
         color="text-gray-800"
         bgColor="bg-gray-100"

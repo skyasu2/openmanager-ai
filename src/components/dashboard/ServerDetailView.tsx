@@ -34,6 +34,27 @@ const tabs: TabInfo[] = [
   { id: 'logs', label: '로그 & 네트워크', icon: FileText },
 ];
 
+const SERVER_TYPE_LABELS: Record<string, string> = {
+  web: 'Web',
+  application: 'Application',
+  database: 'Database',
+  cache: 'Cache',
+  storage: 'Storage',
+  'load-balancer': 'Load Balancer',
+  loadbalancer: 'Load Balancer',
+  monitoring: 'Monitoring',
+  security: 'Security',
+  backup: 'Backup',
+  queue: 'Queue',
+  log: 'Log',
+  app: 'App',
+  unknown: '타입 미확인',
+};
+
+function formatServerType(type: string): string {
+  return SERVER_TYPE_LABELS[type.toLowerCase()] ?? type;
+}
+
 export default function ServerDetailView({ server }: ServerDetailViewProps) {
   const [selectedTab, setSelectedTab] = useState<TabId>('overview');
   const [isRealtime, setIsRealtime] = useState(true);
@@ -139,7 +160,7 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
               {safeServer.name}
             </h1>
             <p className="mt-1 text-sm text-slate-500">
-              {safeServer.type} · {safeServer.location}
+              {formatServerType(safeServer.type)} · {safeServer.location}
             </p>
           </div>
 

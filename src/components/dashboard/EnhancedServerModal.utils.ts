@@ -166,6 +166,35 @@ function deriveNetworkStatus(
   return 'good';
 }
 
+export function inferServerTypeFromId(idOrName: string): string {
+  const value = idOrName.toLowerCase();
+
+  if (value.startsWith('web-') || value.includes('nginx')) return 'web';
+  if (value.startsWith('api-') || value.includes('was')) return 'application';
+  if (
+    value.startsWith('db-mysql-') ||
+    value.startsWith('db-pg-') ||
+    value.includes('mysql') ||
+    value.includes('postgres')
+  ) {
+    return 'database';
+  }
+  if (value.startsWith('db-redis-') || value.startsWith('cache-')) {
+    return 'cache';
+  }
+  if (value.startsWith('storage-') || value.startsWith('nfs-')) {
+    return 'storage';
+  }
+  if (value.startsWith('lb-') || value.includes('haproxy')) {
+    return 'load-balancer';
+  }
+  if (value.startsWith('monitoring-') || value.includes('prometheus')) {
+    return 'monitoring';
+  }
+
+  return 'unknown';
+}
+
 /**
  * 서버 원본 데이터를 모달용 안전한 ServerData로 변환
  *
@@ -176,15 +205,21 @@ export function normalizeServerData(server: Server): ServerData {
   const cpu = typeof server.cpu === 'number' ? server.cpu : 0;
   const memory = typeof server.memory === 'number' ? server.memory : 0;
   const network = typeof server.network === 'number' ? server.network : 0;
+  const serverId = server.id || server.name || 'unknown';
+  const explicitType = server.type?.trim();
+  const inferredType =
+    explicitType && explicitType !== 'unknown'
+      ? explicitType
+      : inferServerTypeFromId(serverId);
 
   return {
-    id: server.id || 'unknown',
+    id: serverId,
     hostname:
       server.hostname ||
       server.name?.toLowerCase().replace(/\s+/g, '-') ||
       '미확인 호스트',
     name: server.name || '서버',
-    type: server.type || 'unknown',
+    type: inferredType || 'unknown',
     environment: server.environment || 'production',
     location: server.location || '위치 미지정',
     provider:
@@ -210,7 +245,7 @@ export function normalizeServerData(server: Server): ServerData {
             status: s?.status || 'unknown',
             port: s?.port || 80,
           }))
-        : getDefaultServicesByType(server.type, server.name),
+        : getDefaultServicesByType(inferredType, server.name || serverId),
     specs: server.specs || { cpu_cores: 4, memory_gb: 8, disk_gb: 100 },
     os: server.os || 'Unknown OS',
     ip: server.ip || '-',

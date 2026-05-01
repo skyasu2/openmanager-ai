@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { getThreshold } from '@/config/rules';
 import type { Server } from '@/types/server';
-import { normalizeServerData } from './EnhancedServerModal.utils';
+import {
+  inferServerTypeFromId,
+  normalizeServerData,
+} from './EnhancedServerModal.utils';
 
 const baseServer: Server = {
   id: 'web-01',
@@ -77,5 +80,56 @@ describe('normalizeServerData networkStatus', () => {
       trend: [],
       status: 'warning',
     });
+  });
+
+  it('명시된 application 타입은 그대로 유지한다', () => {
+    const normalized = normalizeServerData({
+      ...baseServer,
+      id: 'api-was-dc1-01',
+      name: 'api-was-dc1-01',
+      type: 'application',
+    });
+
+    expect(normalized.type).toBe('application');
+  });
+
+  it('타입이 비어 있으면 api-was 서버를 application으로 추론한다', () => {
+    const normalized = normalizeServerData({
+      ...baseServer,
+      id: 'api-was-dc1-01',
+      name: 'api-was-dc1-01',
+      type: undefined,
+    });
+
+    expect(normalized.type).toBe('application');
+  });
+
+  it('타입이 unknown이면 api-was 서버를 application으로 재추론한다', () => {
+    const normalized = normalizeServerData({
+      ...baseServer,
+      id: 'api-was-dc1-01',
+      name: 'api-was-dc1-01',
+      type: 'unknown' as Server['type'],
+    });
+
+    expect(normalized.type).toBe('application');
+  });
+
+  it('타입이 비어 있으면 web-nginx 서버를 web으로 추론한다', () => {
+    const normalized = normalizeServerData({
+      ...baseServer,
+      id: 'web-nginx-dc1-01',
+      name: 'web-nginx-dc1-01',
+      type: undefined,
+    });
+
+    expect(normalized.type).toBe('web');
+  });
+
+  it('서버 id/name 패턴별 타입 추론을 제공한다', () => {
+    expect(inferServerTypeFromId('db-mysql-dc1-primary')).toBe('database');
+    expect(inferServerTypeFromId('cache-redis-dc1-01')).toBe('cache');
+    expect(inferServerTypeFromId('storage-nfs-dc1-01')).toBe('storage');
+    expect(inferServerTypeFromId('lb-haproxy-dc1-01')).toBe('load-balancer');
   });
 });

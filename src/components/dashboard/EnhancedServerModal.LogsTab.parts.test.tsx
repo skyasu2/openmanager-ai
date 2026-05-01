@@ -7,6 +7,7 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   formatNsTimestamp,
   formatTimestamp,
+  getLogLevelStyles,
   LegacyLogView,
   StreamsView,
   ViewButton,
@@ -89,5 +90,63 @@ describe('EnhancedServerModal.LogsTab.parts', () => {
     expect(terminal).toHaveClass('overflow-y-auto');
     expect(terminal).toHaveClass('max-h-[500px]');
     expect(message).toHaveClass('break-words');
+  });
+
+  it('legacy log terminal uses light theme classes, not dark terminal remnants', () => {
+    render(
+      <LegacyLogView
+        activeView="syslog"
+        displayLogs={[
+          {
+            timestamp: '2026-03-23T00:00:00Z',
+            level: 'error',
+            source: 'kernel',
+            message: 'kernel error',
+          },
+        ]}
+      />
+    );
+
+    const terminal = screen.getByTestId('server-log-terminal-scroll');
+    const message = screen.getByTestId('server-log-message');
+
+    expect(terminal).toHaveClass('bg-white');
+    expect(message).toHaveClass('text-red-700');
+    expect(terminal.parentElement?.className).not.toContain('border-slate-700');
+    expect(terminal.parentElement?.innerHTML).not.toContain('from-gray-900');
+  });
+
+  it('log level text colors are readable on a light background', () => {
+    expect(getLogLevelStyles('error').textClass).toBe('text-red-700');
+    expect(getLogLevelStyles('warn').textClass).toBe('text-amber-700');
+    expect(getLogLevelStyles('info').textClass).toBe('text-green-700');
+  });
+
+  it('streams view uses light surfaces and Korean empty state copy', () => {
+    render(
+      <StreamsView
+        logqlQuery={'{hostname="web-01"}'}
+        availableLabels={{ jobs: ['nginx'], levels: ['error'] }}
+        labelFilters={{}}
+        toggleFilter={vi.fn()}
+        streams={[]}
+        expandedStreams={new Set<string>()}
+        toggleStream={vi.fn()}
+        ctx={{
+          hostname: 'web-01',
+          environment: 'prod',
+          datacenter: 'dc1',
+          serverType: 'web',
+        }}
+      />
+    );
+
+    expect(screen.getByText('일치하는 스트림 없음')).toBeInTheDocument();
+    expect(
+      screen.getByText('레이블 필터를 조정하면 로그 스트림이 표시됩니다')
+    ).toBeInTheDocument();
+    expect(screen.queryByText('No matching streams')).not.toBeInTheDocument();
+    expect(document.body.innerHTML).not.toContain('from-gray-900');
+    expect(document.body.innerHTML).not.toContain('bg-white/5');
   });
 });

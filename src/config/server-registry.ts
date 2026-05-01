@@ -53,3 +53,7 @@ const registryMap = new Map<string, string>(
 export function getServerIP(serverId: string): string | undefined {
   return registryMap.get(serverId);
 }
+
+export function getRegisteredServerIds(): string[] {
+  return SERVER_REGISTRY.map((entry) => entry.serverId);
+}
