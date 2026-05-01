@@ -127,8 +127,34 @@ describe('ActiveAlertsModal', () => {
   it('로딩 중에는 0건 empty state 대신 로딩 상태를 표시한다', () => {
     render(<ActiveAlertsModal open onClose={vi.fn()} alerts={[]} isLoading />);
 
+    expect(screen.getByRole('status')).toHaveAttribute('aria-busy', 'true');
     expect(
       screen.getByText('활성 알림을 불러오는 중입니다')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('최근 알림 상태를 준비하고 있습니다')
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText('현재 활성 알림이 없습니다')
+    ).not.toBeInTheDocument();
+  });
+
+  it('에러 상태에서는 empty state 대신 실패 메시지를 표시한다', () => {
+    render(
+      <ActiveAlertsModal
+        open
+        onClose={vi.fn()}
+        alerts={[]}
+        isError
+        errorMessage="모니터링 리포트를 불러오지 못했습니다."
+      />
+    );
+
+    expect(
+      screen.getByText('활성 알림을 불러오지 못했습니다')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('모니터링 리포트를 불러오지 못했습니다.')
     ).toBeInTheDocument();
     expect(
       screen.queryByText('현재 활성 알림이 없습니다')

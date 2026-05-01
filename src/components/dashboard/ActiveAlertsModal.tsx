@@ -3,6 +3,7 @@
 import { AlertTriangle, FileText } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import type { MonitoringAlert } from '@/schemas/api.monitoring-report.schema';
 import { formatMetricName, formatMetricValue } from '@/utils/metric-formatters';
@@ -22,6 +23,47 @@ const severityBorderLeft: Record<MonitoringAlert['severity'], string> = {
 function formatElapsedDuration(seconds: number): string {
   if (seconds < 60) return '방금 전';
   return `${Math.round(seconds / 60)}분 경과`;
+}
+
+function ActiveAlertLoadingSkeleton() {
+  return (
+    <div
+      aria-busy="true"
+      aria-live="polite"
+      className="space-y-3"
+      role="status"
+    >
+      <div>
+        <p className="text-sm font-medium text-gray-700">
+          활성 알림을 불러오는 중입니다
+        </p>
+        <p className="mt-1 text-xs text-gray-400">
+          최근 알림 상태를 준비하고 있습니다
+        </p>
+      </div>
+      {Array.from({ length: 3 }, (_, index) => (
+        <div
+          aria-hidden="true"
+          className="rounded-lg border border-gray-200/80 border-l-4 border-l-gray-200 bg-white px-4 py-3 shadow-sm"
+          key={`active-alert-skeleton-${index}`}
+        >
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex min-w-0 flex-1 items-center gap-3">
+              <Skeleton className="h-5 w-10 rounded-md" />
+              <div className="min-w-0 flex-1 space-y-2">
+                <Skeleton className="h-4 w-36 max-w-full" />
+                <Skeleton className="h-3 w-28 max-w-[75%]" />
+              </div>
+            </div>
+            <div className="flex shrink-0 items-center gap-2">
+              <Skeleton className="h-3 w-12" />
+              <Skeleton className="h-6 w-10 rounded" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 interface ActiveAlertsModalProps {
@@ -85,16 +127,7 @@ export function ActiveAlertsPanel({
 
       <div className="min-h-0 flex-1 overflow-y-auto bg-gray-50/30 px-4 py-4 sm:px-6">
         {isLoading && sorted.length === 0 ? (
-          <div
-            className="flex flex-col items-center justify-center py-16 text-gray-500"
-            aria-live="polite"
-          >
-            <div className="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-rose-200 border-t-rose-500" />
-            <p className="text-sm font-medium">활성 알림을 불러오는 중입니다</p>
-            <p className="mt-1 text-xs text-gray-400">
-              현재 알림 상태를 확인하고 있습니다
-            </p>
-          </div>
+          <ActiveAlertLoadingSkeleton />
         ) : isError && sorted.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-gray-400">
             <AlertTriangle size={40} className="mb-3 opacity-30" />

@@ -7,11 +7,18 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Server } from '@/types/server';
 import DashboardRoutedContent from './DashboardRoutedContent';
 
-const { searchParamsState, alertHistoryPanelMock } = vi.hoisted(() => ({
+const {
+  searchParamsState,
+  activeAlertsPanelMock,
+  alertHistoryPanelMock,
+  useMonitoringReportMock,
+} = vi.hoisted(() => ({
   searchParamsState: {
     value: new URLSearchParams(),
   },
+  activeAlertsPanelMock: vi.fn(),
   alertHistoryPanelMock: vi.fn(),
+  useMonitoringReportMock: vi.fn(),
 }));
 
 vi.mock('next/navigation', () => ({
@@ -28,15 +35,26 @@ vi.mock('next/dynamic', () => {
 });
 
 vi.mock('@/hooks/dashboard/useMonitoringReport', () => ({
-  useMonitoringReport: vi.fn(() => ({
-    data: null,
-    error: null,
-    isError: false,
-  })),
+  useMonitoringReport: useMonitoringReportMock,
 }));
 
 vi.mock('./ActiveAlertsModal', () => ({
-  ActiveAlertsPanel: () => <div data-testid="active-alerts-panel" />,
+  ActiveAlertsPanel: (props: Record<string, unknown>) => {
+    activeAlertsPanelMock(props);
+    return (
+      <div
+        data-testid="active-alerts-panel"
+        data-alert-count={
+          Array.isArray(props.alerts) ? String(props.alerts.length) : '0'
+        }
+        data-error={String(Boolean(props.isError))}
+        data-error-message={
+          typeof props.errorMessage === 'string' ? props.errorMessage : ''
+        }
+        data-loading={String(Boolean(props.isLoading))}
+      />
+    );
+  },
 }));
 
 vi.mock('./alert-history/AlertHistoryModal', () => ({
@@ -99,7 +117,14 @@ const baseProps = {
 describe('DashboardRoutedContent route query contracts', () => {
   beforeEach(() => {
     searchParamsState.value = new URLSearchParams();
+    activeAlertsPanelMock.mockClear();
     alertHistoryPanelMock.mockClear();
+    useMonitoringReportMock.mockReturnValue({
+      data: null,
+      error: null,
+      isError: false,
+      isLoading: false,
+    });
   });
 
   it('알림 route의 server query를 AlertHistoryPanel 초기 서버 필터로 전달한다', () => {
@@ -140,6 +165,38 @@ describe('DashboardRoutedContent route query contracts', () => {
     expect(alertHistoryPanelMock).toHaveBeenCalledWith(
       expect.objectContaining({
         initialServerId: null,
+      })
+    );
+  });
+
+  it('알림 route는 모니터링 조회 상태를 ActiveAlertsPanel로 전달한다', () => {
+    useMonitoringReportMock.mockReturnValue({
+      data: null,
+      error: new Error('network down'),
+      isError: true,
+      isLoading: true,
+    });
+
+    render(<DashboardRoutedContent {...baseProps} view="alerts" />);
+
+    expect(screen.getByTestId('active-alerts-panel')).toHaveAttribute(
+      'data-loading',
+      'true'
+    );
+    expect(screen.getByTestId('active-alerts-panel')).toHaveAttribute(
+      'data-error',
+      'true'
+    );
+    expect(screen.getByTestId('active-alerts-panel')).toHaveAttribute(
+      'data-error-message',
+      'network down'
+    );
+    expect(activeAlertsPanelMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        alerts: [],
+        errorMessage: 'network down',
+        isError: true,
+        isLoading: true,
       })
     );
   });

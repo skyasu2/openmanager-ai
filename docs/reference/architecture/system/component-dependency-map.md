@@ -51,13 +51,13 @@ Route-local component files:
 
 | Metric | Value |
 | --- | --- |
-| Component source lines | 29324 |
+| Component source lines | 29357 |
 | Component nodes | 147 |
-| Component edges | 135 |
+| Component edges | 136 |
 | Graph density | 0.63% |
-| Alias edges (`@/components/*`) | 37 |
+| Alias edges (`@/components/*`) | 38 |
 | Relative edges (`./`, `../`) | 98 |
-| Isolated components | 31 |
+| Isolated components | 30 |
 | SCC cycle groups | 0 |
 | Largest cycle size | 0 |
 
@@ -83,7 +83,7 @@ flowchart LR
   d1 -->|13| d1
   d9 -->|10| d9
   d1 -->|8| d0
-  d4 -->|5| d11
+  d4 -->|6| d11
   d4 -->|4| d9
   d1 -->|3| d11
   d4 -->|3| d6
@@ -129,7 +129,7 @@ flowchart LR
 | ai-sidebar | ai-sidebar | 13 |
 | shared | shared | 10 |
 | ai-sidebar | ai | 8 |
-| dashboard | ui | 5 |
+| dashboard | ui | 6 |
 | dashboard | shared | 4 |
 | ai-sidebar | ui | 3 |
 | dashboard | error | 3 |

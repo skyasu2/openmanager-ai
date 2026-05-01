@@ -11,13 +11,13 @@
     "totalComponentNodes": 154
   },
   "metrics": {
-    "componentSourceLines": 29324,
+    "componentSourceLines": 29357,
     "componentNodes": 147,
-    "componentEdges": 135,
-    "graphDensity": 0.00629,
-    "aliasEdges": 37,
+    "componentEdges": 136,
+    "graphDensity": 0.006337,
+    "aliasEdges": 38,
     "relativeEdges": 98,
-    "isolatedComponents": 31,
+    "isolatedComponents": 30,
     "sccCycleGroups": 0,
     "largestCycleSize": 0
   },
@@ -150,7 +150,7 @@
     {
       "fromDomain": "dashboard",
       "toDomain": "ui",
-      "count": 5
+      "count": 6
     },
     {
       "fromDomain": "dashboard",

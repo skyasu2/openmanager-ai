@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-01 KST (`dashboard log alert crosslink completed`)
+**Last Updated**: 2026-05-01 KST (`dashboard alert loading nav a11y completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -41,6 +41,14 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-01 #242)
+- [x] Dashboard 알림 로딩 상태 및 모바일 내비게이션 접근성 보강
+  - `ActiveAlertsPanel` 로딩/에러/empty 상태를 분리하고 알림 route에서 monitoring loading/error props 전달
+  - 활성 알림 초기 로딩을 중앙 스피너 대신 skeleton row로 전환해 체감 대기 시간 개선
+  - 모바일 drawer ESC 닫기, focus trap, 닫힘 후 메뉴 버튼 focus 복귀 보강
+  - 테스트 보강: ActiveAlertsModal 로딩/에러 상태, DashboardRoutedContent active alert panel 상태 전달, DashboardNavigation mobile a11y
+  - 검증: targeted dashboard tests 15/15, `npm run type-check`, `npm run lint:changed`, `npm run test:quick`, `npm run docs:budget`, `npm run docs:ai-consistency`, `npm run docs:components:verify`, `git diff --check`
 
 ### Completed (2026-05-01 #241)
 - [x] Dashboard Log→Alert 역방향 크로스링크
