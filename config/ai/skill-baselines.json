@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastReviewed": "2026-04-25",
+  "lastReviewed": "2026-05-01",
   "policy": {
     "standardsDoc": "docs/guides/ai/skill-standards.md",
     "geminiSameNameOverlay": "forbidden",
@@ -30,6 +30,7 @@
       "purpose": "Review OpenManager changes with severity-first findings and evidence-backed go/no-go judgment.",
       "invariants": [
         "Findings come before summary.",
+        "Adapt output mode to the user intent: formal gate reviews stay severity-first; pragmatic/plain reviews can lead with concise engineering judgment while still surfacing blockers.",
         "Use correctness, readability, complexity, design, performance, security, and test coverage perspectives when relevant.",
         "Do not claim safety without command evidence or an explicit testing gap.",
         "Security and Correctness findings are auto-escalated one level due to vibe coding (AI-generated code only)."

@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: 6관점 심각도 우선 코드 리뷰. OpenManager 변경사항의 결함·회귀 리스크를 Correctness/Readability/Design/Performance/Security/Test Coverage 관점으로 분석하고 go/conditional/no-go 판정을 내린다. Use when the user asks for review, risk analysis, merge readiness, or regression hunting.
+description: OpenManager 코드 리뷰. merge/release readiness는 심각도 우선 go/no-go로 검토하고, 사용자가 실무 감각/스킬 영향 없는 리뷰를 요청하면 간결한 engineering judgment 중심으로 검토한다. Use when the user asks for review, risk analysis, merge readiness, or regression hunting.
 version: v1.0.0
 user-invocable: true
 allowed-tools: Bash, Read, Grep, Glob
@@ -18,6 +18,13 @@ disable-model-invocation: true
 - "/code-review", "/review"
 - "코드 리뷰", "리뷰해줘", "머지 가능해?", "회귀 확인"
 - "risk analysis", "go/no-go"
+
+## Review Mode Selection
+
+- **Formal gate review**: 머지 가능 여부, 릴리즈 가능 여부, 커밋 승인, 보안 리뷰, 회귀 추적, 명시적 go/no-go 판단 요청에는 전체 심각도 우선 형식을 사용합니다.
+- **Pragmatic/plain review**: "그냥 리뷰", "스킬 영향 없이", "느낌", 실무 감각 중심 판단 요청에는 간결한 결론과 가장 중요한 리스크를 먼저 말합니다. 과한 템플릿 출력은 줄입니다.
+- 어떤 모드에서도 P0/P1 blocker, 증거 부족, Security/Correctness 리스크는 반드시 드러냅니다.
+- 스킬 영향도 분석은 사용자가 명시적으로 물을 때만 포함합니다.
 
 ## Review Perspectives (6관점)
 

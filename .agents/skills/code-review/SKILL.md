@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: Perform Agile 6-perspective severity-first code review for OpenManager changes with evidence-based findings, regression risk checks, and clear go/no-go reporting. Use when the user asks for a review, risk analysis, merge readiness, or bug/regression hunting.
+description: Perform OpenManager code reviews with evidence-based findings, regression risk checks, and clear go/no-go reporting. Use formal severity-first review for merge/release readiness, and pragmatic review when the user asks for plain engineering judgment.
 ---
 
 # OpenManager Code Review
@@ -8,6 +8,13 @@ description: Perform Agile 6-perspective severity-first code review for OpenMana
 > Common baseline: before editing this skill, review `docs/guides/ai/skill-standards.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
 
 Run practical code reviews from 6 perspectives that surface real defects and release risks.
+
+## Review Mode Selection
+
+- **Formal gate review**: Use the full severity-first format when the user asks for merge readiness, release readiness, commit approval, security review, regression hunting, or explicit go/no-go judgment.
+- **Pragmatic/plain review**: When the user asks for "just your review", "스킬 영향 없이", "느낌", or practical engineering judgment, lead with the concise conclusion and the highest-impact risks. Keep the tone direct and less template-heavy.
+- In every mode, surface P0/P1 blockers, missing evidence, and security/correctness risks. Do not hide material risk to make a plain review feel smoother.
+- Only analyze or disclose skill influence when the user explicitly asks for it.
 
 ## Review Perspectives (6-관점)
 
