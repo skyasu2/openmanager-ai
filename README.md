@@ -3,7 +3,7 @@
 > **AI-Native Server Monitoring Platform**
 > 자연어로 대화하며 서버를 모니터링하는 차세대 운영 플랫폼
 
-[![Version](https://img.shields.io/badge/version-8.11.78-blue.svg?style=for-the-badge)](https://openmanager-ai.vercel.app)
+[![Version](https://img.shields.io/badge/version-8.11.79-blue.svg?style=for-the-badge)](https://openmanager-ai.vercel.app)
 [![Live Demo](https://img.shields.io/badge/Live_Demo-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://openmanager-ai.vercel.app)
 [![License](https://img.shields.io/badge/License-GPL_v3-blue.svg?style=for-the-badge)](LICENSE)
 
@@ -144,5 +144,5 @@ GNU General Public License v3.0 — see [LICENSE](LICENSE) for details.
 <div align="center">
   <a href="https://openmanager-ai.vercel.app"><strong>🚀 Live Demo</strong></a>
   &nbsp;·&nbsp;
-  <sub>Public Snapshot · v8.11.78</sub>
+  <sub>Public Snapshot · v8.11.79</sub>
 </div>
