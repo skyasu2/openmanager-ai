@@ -365,11 +365,11 @@ export function getGroqModelId(): string {
   return process.env.GROQ_MODEL_ID || DEFAULT_GROQ_MODEL;
 }
 
-const DEFAULT_MISTRAL_MODEL = 'mistral-large-latest';
+const DEFAULT_MISTRAL_MODEL = 'mistral-small-latest';
 
 /**
  * Get default Mistral text model id.
- * Default: mistral-large-latest (frontier-grade, ~2 RPM / 500 RPD free tier)
+ * Default: mistral-small-latest (free-tier friendly last-resort text fallback)
  * Override: MISTRAL_MODEL_ID env var
  */
 export function getMistralModelId(): string {

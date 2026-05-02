@@ -14,7 +14,9 @@ export type ChatArtifactIntentReason =
   | 'incident_report_implicit_keyword'
   | 'monitoring_action_pattern'
   | 'monitoring_guidance_pattern'
-  | 'monitoring_implicit_artifact_keyword';
+  | 'monitoring_implicit_artifact_keyword'
+  | 'llm_artifact_classification'
+  | 'llm_unavailable';
 
 const REPORT_PATTERN =
   /(장애\s*(보고서|리포트|보고)|인시던트\s*(보고서|리포트)|incident\s*report)/i;
@@ -31,6 +33,12 @@ const MONITORING_ARTIFACT_PATTERN =
   /(이상\s*감지|이상감지|이상\s*탐지|추세\s*(분석|리포트|보고서)|리스크\s*(추세|분석)|장애\s*(예측|예상)|예측\s*(분석|리포트|보고서)|forecast|trend\s*(analysis|report)?)/i;
 const MONITORING_GUIDANCE_PATTERN =
   /(어떻게|방법|어디|기능|설명|안내|가능|사용법|뭐야|무엇|무슨|지원|되나|돼\?|될까)/i;
+const LLM_ARTIFACT_CANDIDATE_PATTERN =
+  /(장애|인시던트|incident|보고서|리포트|report|이상\s*(감지|탐지)|이상감지|추세|트렌드|리스크|예측|모니터링|anomaly|forecast|trend|risk)/i;
+const LLM_ARTIFACT_ACTION_HINT_PATTERN =
+  /(작성|생성|만들|부탁|요청|뽑아|출력|다운로드|내려받|실행|돌려|요약|확인|해줘|해주세요|해줄래|분석\s*(해|해줘|해주세요|좀|부탁|요청)|export|generate|download|create|write|analy[sz]e|run)/i;
+const LLM_ARTIFACT_SHAPE_PATTERN =
+  /(보고서|리포트|report|이상\s*감지|이상감지|이상\s*탐지|추세\s*(분석|리포트|보고서)|트렌드\s*분석|리스크\s*(추세|분석)|장애\s*(예측|예상)|예측\s*(분석|리포트|보고서)|forecast|trend\s*(analysis|report)|risk\s*analysis)/i;
 
 function isImplicitKeywordRequest(query: string): boolean {
   const normalized = query.trim();
@@ -93,6 +101,46 @@ export function classifyChatArtifactIntent(query: string): ChatArtifactIntent {
   }
 
   return { kind: 'none' };
+}
+
+export function shouldUseLLMChatArtifactIntent(query: string): boolean {
+  const normalized = query.trim();
+  if (!normalized) return false;
+  if (!LLM_ARTIFACT_CANDIDATE_PATTERN.test(normalized)) return false;
+  if (LLM_ARTIFACT_ACTION_HINT_PATTERN.test(normalized)) return true;
+
+  return (
+    LLM_ARTIFACT_SHAPE_PATTERN.test(normalized) &&
+    isImplicitKeywordRequest(normalized)
+  );
+}
+
+export async function fetchLLMChatArtifactIntent(
+  query: string,
+  signal?: AbortSignal
+): Promise<ChatArtifactIntent> {
+  try {
+    const response = await fetch('/api/ai/artifact-intent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal,
+      body: JSON.stringify({ query }),
+    });
+    if (!response.ok) return { kind: 'none' };
+    const data = (await response.json()) as { kind?: string };
+    if (data.kind === 'incident-report') {
+      return { kind: 'incident-report', reason: 'llm_artifact_classification' };
+    }
+    if (data.kind === 'monitoring-analysis') {
+      return {
+        kind: 'monitoring-analysis',
+        reason: 'llm_artifact_classification',
+      };
+    }
+    return { kind: 'none' };
+  } catch {
+    return { kind: 'none' };
+  }
 }
 
 export function createArtifactGuidanceMessage(

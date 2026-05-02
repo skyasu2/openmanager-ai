@@ -11,7 +11,10 @@ import {
   getDeprecatedRuntimeProviderModels,
   getRuntimeProviderModelMetadata,
 } from './provider-model-metadata';
-import { CEREBRAS_DEPRECATION_REPLACEMENT } from './provider-model-policy';
+import {
+  CEREBRAS_DEPRECATION_REPLACEMENT,
+  CEREBRAS_LLAMA_DEPRECATION_DATE,
+} from './provider-model-policy';
 
 describe('provider model metadata', () => {
   const originalEnv = { ...process.env };
@@ -32,7 +35,7 @@ describe('provider model metadata', () => {
     expect(metadata.productionModel).toBe(true);
     expect(metadata.preview).toBe(false);
     expect(metadata.deprecated).toBe(false);
-    expect(metadata.deprecationDate).toBeUndefined();
+    expect(metadata.deprecationDate).toBe(CEREBRAS_LLAMA_DEPRECATION_DATE);
     expect(metadata.contextWindowTokens).toBe(8_192);
     expect(metadata.enabled).toBe(true);
     expect(metadata.toolCallingEnabled).toBe(true);
@@ -75,7 +78,7 @@ describe('provider model metadata', () => {
       productionModel: true,
       preview: false,
       deprecated: false,
-      deprecationDate: undefined,
+      deprecationDate: CEREBRAS_LLAMA_DEPRECATION_DATE,
       enabled: true,
       smokeStatus: 'green',
     });

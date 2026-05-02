@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { classifyChatArtifactIntent } from './chat-artifact-intent';
+import {
+  classifyChatArtifactIntent,
+  shouldUseLLMChatArtifactIntent,
+} from './chat-artifact-intent';
 
 describe('classifyChatArtifactIntent', () => {
   it('routes explicit incident report creation requests to incident-report artifact', () => {
@@ -107,5 +110,22 @@ describe('classifyChatArtifactIntent', () => {
     expect(classifyChatArtifactIntent('최근 추세가 어때?')).toEqual({
       kind: 'none',
     });
+  });
+
+  it('blocks artifact execution when query has a question mark (implicit path)', () => {
+    // 물음표가 있으면 isImplicitKeywordRequest = false → none으로 폴백
+    expect(classifyChatArtifactIntent('이상감지?')).toEqual({ kind: 'none' });
+    expect(classifyChatArtifactIntent('추세 분석?')).toEqual({ kind: 'none' });
+    expect(classifyChatArtifactIntent('장애보고서?')).toEqual({ kind: 'none' });
+    // 예측 단독은 artifact 형태 구문이 아니므로 none
+    expect(classifyChatArtifactIntent('예측')).toEqual({ kind: 'none' });
+  });
+
+  it('keeps LLM fallback behind an artifact candidate gate', () => {
+    expect(shouldUseLLMChatArtifactIntent('CPU 높은 서버 알려줘')).toBe(false);
+    expect(shouldUseLLMChatArtifactIntent('최근 추세가 어때?')).toBe(false);
+    expect(shouldUseLLMChatArtifactIntent('추세 분석?')).toBe(false);
+    expect(shouldUseLLMChatArtifactIntent('장애 리포트 만들어줘')).toBe(true);
+    expect(shouldUseLLMChatArtifactIntent('트렌드 분석 좀 해줘')).toBe(true);
   });
 });

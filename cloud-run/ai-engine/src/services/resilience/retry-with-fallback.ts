@@ -15,6 +15,7 @@ import {
   getCerebrasFallbackModelIds,
   getCerebrasModelId,
   getGroqModelId,
+  getMistralModelId,
 } from '../../lib/config-parser';
 import {
   getCerebrasModel,
@@ -154,7 +155,7 @@ const PROVIDER_CHAIN: ProviderConfig[] = [
   {
     name: 'mistral',
     getModel: getMistralModel,
-    modelIds: () => ['mistral-large-latest'],
+    modelIds: () => [getMistralModelId()],
   },
 ];
 

@@ -12,6 +12,7 @@ import type { Context } from 'hono';
 import {
   getCerebrasModelId,
   getGroqModelId,
+  getMistralModelId,
   isCerebrasToolCallingEnabled,
 } from '../lib/config-parser';
 import {
@@ -51,7 +52,7 @@ providersRouter.get('/', (c: Context) => {
         role: 'Primary (Supervisor/NLQ) + fallback for Cerebras-first agents',
         model: getGroqModelId(),
       },
-      mistral: { role: 'Last-resort text fallback', model: 'mistral-large-latest' },
+      mistral: { role: 'Last-resort text fallback', model: getMistralModelId() },
     },
   });
 });

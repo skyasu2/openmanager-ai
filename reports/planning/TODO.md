@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-02 KST (`Artifact intent reason metadata`)
+**Last Updated**: 2026-05-02 KST (`Artifact intent free-tier guardrails`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -41,6 +41,15 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-02 #256)
+- [x] Mistral fallback 무료 티어 기본값 보정
+  - `MISTRAL_MODEL_ID` 기본값을 `mistral-large-latest`에서 `mistral-small-latest`로 낮춰 last-resort fallback의 무료 티어 소모를 줄임
+  - Mistral 모델 목록/직접 호출 확인 결과를 반영해 런타임 메타데이터, provider route, AI provider UI copy, free-tier/architecture/resilience 문서를 정렬
+  - Groq Llama 4 Scout 무료 한도 문서 오기(`500K TPM`)를 `30K TPM / 500K TPD`로 수정
+  - 아티팩트 LLM fallback 앞에 로컬 후보 게이트를 추가해 일반 채팅이 추가 분류기 호출을 만들지 않도록 보정
+  - `/api/ai/artifact-intent`에 AI rate limiter, deterministic structured output 옵션, route regression tests를 추가하고 intent 분류 중 중복 전송을 차단
+  - Vercel env sync 경로에 `MISTRAL_API_KEY`를 optional로 추가하고, GCP 소액 과금 원인을 Secret Manager active versions 초과 가능성으로 문서화
 
 ### Completed (2026-05-02 #255)
 - [x] AI Assistant 아티팩트 intent reason code 보강

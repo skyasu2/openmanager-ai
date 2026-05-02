@@ -15,6 +15,7 @@ import {
   getCerebrasModelId,
   isCerebrasToolCallingEnabled,
   isCerebrasLongContextEnabled,
+  getMistralModelId,
   getOpenRouterVisionModelId,
   getOpenRouterVisionFallbackModelIds,
   isOpenRouterVisionToolCallingEnabled,
@@ -220,6 +221,20 @@ describe('Config Parser', () => {
 
       process.env.CEREBRAS_LONG_CONTEXT_ENABLED = 'true';
       expect(isCerebrasLongContextEnabled()).toBe(true);
+    });
+  });
+
+  describe('getMistralModelId', () => {
+    it('should use mistral-small-latest as the free-tier friendly default', () => {
+      delete process.env.MISTRAL_MODEL_ID;
+
+      expect(getMistralModelId()).toBe('mistral-small-latest');
+    });
+
+    it('should use MISTRAL_MODEL_ID when configured', () => {
+      process.env.MISTRAL_MODEL_ID = 'custom-mistral-model';
+
+      expect(getMistralModelId()).toBe('custom-mistral-model');
     });
   });
 

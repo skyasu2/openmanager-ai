@@ -5,6 +5,7 @@ export const DEPRECATED_CEREBRAS_QWEN_MODEL_ID = CEREBRAS_QWEN_MODEL_ID;
 export const CEREBRAS_QWEN_DEPRECATION_DATE = '2026-05-27';
 export const CEREBRAS_GPT_OSS_MODEL_ID = 'gpt-oss-120b';
 export const CEREBRAS_LLAMA_FALLBACK_MODEL_ID = 'llama3.1-8b';
+export const CEREBRAS_LLAMA_DEPRECATION_DATE = '2026-05-27';
 export const DEFAULT_CEREBRAS_MODEL = CEREBRAS_LLAMA_FALLBACK_MODEL_ID;
 export const CEREBRAS_DEPRECATION_REPLACEMENT =
   'groq:meta-llama/llama-4-scout-17b-16e-instruct';
@@ -101,16 +102,16 @@ export const CEREBRAS_MODEL_POLICIES = {
       requestsPerDay: 14_400,
       tokensPerDay: 1_000_000,
     },
+    deprecationDate: CEREBRAS_LLAMA_DEPRECATION_DATE,
     blockAfterDeprecation: false,
     smokeStatus: 'green',
     smokeEvidence: [
-      '2026-04-30 account smoke passed via chat completions',
-      'chat completions smoke passed',
+      '2026-05-02 smoke passed llama3.1-8b chat completions HTTP 200',
       'tool calling smoke passed',
       'generateObject smoke passed',
     ],
     freeTierLimitSummary:
-      'Free: 30 RPM / 900 RPH / 14.4K RPD / 1M TPD; short-context Cerebras production runtime',
+      `Free: 30 RPM / 60K TPM / 14.4K RPD / 1M TPD; ~2200 t/s; deprecated ${CEREBRAS_LLAMA_DEPRECATION_DATE}`,
     sourceUrls: CEREBRAS_SOURCE_URLS,
     recommendedReplacement: CEREBRAS_DEPRECATION_REPLACEMENT,
   },

@@ -38,7 +38,7 @@ vi.mock('../../../../lib/config-parser', () => ({
   getCerebrasModelId: mockGetCerebrasModelId,
   getCerebrasFallbackModelIds: mockGetCerebrasFallbackModelIds,
   getGroqModelId: vi.fn(() => 'groq-model'),
-  getMistralModelId: vi.fn(() => 'mistral-large-latest'),
+  getMistralModelId: vi.fn(() => 'mistral-small-latest'),
   getOpenRouterVisionModelId: vi.fn(() => 'openrouter-vision-model'),
   isCerebrasToolCallingEnabled: mockIsCerebrasToolCallingEnabled,
   isCerebrasLongContextEnabled: vi.fn(() => true),
@@ -189,7 +189,7 @@ describe('selectTextModel capability requirements', () => {
     expect(result?.provider).toBe('mistral');
     expect(mockGetCerebrasModel).not.toHaveBeenCalled();
     expect(mockGetCerebrasModel).not.toHaveBeenCalledWith('llama3.1-8b');
-    expect(mockGetMistralModel).toHaveBeenCalledWith('mistral-large-latest');
+    expect(mockGetMistralModel).toHaveBeenCalledWith('mistral-small-latest');
   });
 
   it('keeps Analyst, Reporter, and Advisor on models with at least 32K context', () => {

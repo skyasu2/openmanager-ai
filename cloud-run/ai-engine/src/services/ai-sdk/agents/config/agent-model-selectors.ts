@@ -59,7 +59,7 @@ const TEXT_PROVIDER_MODELS: Record<TextProvider, {
     modelIds: () => [getGroqModelId()],
     capabilities: (modelId) => getTextProviderCapabilities('groq', modelId)
   },
-  // Mistral Large - Frontier급 성능, free tier ~2 RPM / 500 RPD. Last resort.
+  // Mistral Small - free-tier friendly last-resort fallback. Limits are workspace-tier dependent.
   mistral: {
     factory: getMistralModel,
     modelIds: () => [getMistralModelId()],

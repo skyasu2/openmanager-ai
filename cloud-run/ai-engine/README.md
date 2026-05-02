@@ -166,7 +166,7 @@ if (isVisionQuery(query)) {
 | NLQ Agent | Groq `meta-llama/llama-4-scout-17b-16e-instruct` | → Cerebras `llama3.1-8b` when context permits → Mistral | 30 RPM, 30K TPM, 1K RPD, 500K TPD |
 | Analyst/Reporter/Advisor/Verifier | Groq long-context path; Cerebras `llama3.1-8b` only when context permits | → Mistral | Free-tier constrained; quota guarded |
 | Orchestrator | Groq primary; Cerebras `llama3.1-8b` short-context fallback | → Mistral | Free-tier constrained; quota guarded |
-| Summarization fallback | Mistral `mistral-large-latest` | → Groq → Cerebras | 500 RPD, low RPM |
+| Summarization fallback | Mistral `mistral-small-latest` | → Groq → Cerebras | Workspace-tier dependent; low RPM |
 | **Vision Agent** | **Gemini `gemini-2.5-flash-lite`** | **→ OpenRouter Gemma fallback** | **15 RPM, 1K RPD** |
 
 ### Agent Usage by Feature
@@ -229,7 +229,8 @@ curl -X POST https://ai-engine-xxx.run.app/monitoring/reset
 # Required - AI Providers (최소 1개)
 CEREBRAS_API_KEY=xxx               # Cerebras (Primary - Supervisor, NLQ)
 GROQ_API_KEY=xxx                   # Groq (Analyst, Reporter)
-MISTRAL_API_KEY=xxx                # Mistral (Advisor, Verifier)
+MISTRAL_API_KEY=xxx                # Mistral last-resort text fallback
+MISTRAL_MODEL_ID=mistral-small-latest
 # OPENROUTER_API_KEY=xxx           # 제거됨 (2026-01-07) - Summarizer Agent 통합
 
 # Optional - Observability (FREE)

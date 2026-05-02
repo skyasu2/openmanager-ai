@@ -31,6 +31,7 @@ export const AIModelSchema = z.enum([
   'gpt-oss-120b',
   'llama3.1-8b',
   'meta-llama/llama-4-scout-17b-16e-instruct',
+  'mistral-small-latest',
   'mistral-large-latest',
   'mistral-embed',
   // Vision / auxiliary

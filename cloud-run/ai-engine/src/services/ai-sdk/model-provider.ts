@@ -4,7 +4,7 @@
  * Vercel AI SDK 6 based model provider with tri-provider architecture:
  * - Group A primary: Groq (single Supervisor/NLQ, llama-4-scout-17b Preview, 1K RPD / 500K TPD, 131K ctx, tool calling ✅)
  * - Group B primary: Cerebras-first agents use llama3.1-8b only when context permits; long-context paths fall back to Groq/Mistral
- * - Last Resort: Mistral (mistral-large-latest, 500 RPD, ~2 RPM free tier)
+ * - Last Resort: Mistral (mistral-small-latest, workspace-tier dependent free limits)
  * - Vision: Gemini 2.5 Flash-Lite (1K RPD, 1M context, no thinking tokens)
  *
  * @version 4.2.0
@@ -19,6 +19,7 @@ import { logger } from '../../lib/logger';
 import {
   getCerebrasModelId,
   getGroqModelId,
+  getMistralModelId,
   getOpenRouterVisionModelId,
 } from '../../lib/config-parser';
 import {
@@ -320,13 +321,15 @@ export async function getSupervisorModelWithQuota(
           isPreemptiveFallback,
         };
       }
-      case 'mistral':
+      case 'mistral': {
+        const mistralModelId = getMistralModelId();
         return {
-          model: getMistralModel('mistral-large-latest'),
+          model: getMistralModel(mistralModelId),
           provider: 'mistral',
-          modelId: 'mistral-large-latest',
+          modelId: mistralModelId,
           isPreemptiveFallback,
         };
+      }
     }
   }
 

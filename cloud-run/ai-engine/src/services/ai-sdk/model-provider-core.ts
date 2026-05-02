@@ -11,6 +11,7 @@ import {
   getGroqApiKey,
   getGroqModelId,
   getMistralApiKey,
+  getMistralModelId,
   getOpenRouterApiKey,
   getOpenRouterVisionFallbackModelIds,
   getOpenRouterVisionModelId,
@@ -155,7 +156,7 @@ export function getGroqModel(
 }
 
 export function getMistralModel(
-  modelId: string = 'mistral-large-latest'
+  modelId: string = getMistralModelId()
 ): LanguageModel {
   const mistral = getMistralProvider();
   return asLanguageModel(mistral(modelId));
@@ -175,4 +176,3 @@ export function getOpenRouterVisionModel(modelId?: string): LanguageModel {
   const model = modelId || getOpenRouterVisionModelId();
   return asLanguageModel(openrouter(model));
 }
-

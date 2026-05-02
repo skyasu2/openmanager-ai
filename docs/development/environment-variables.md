@@ -158,6 +158,7 @@ curl -X POST https://openmanager-ai.vercel.app/api/auth/guest-login \
 | `CLOUD_RUN_ENABLED` | Cloud Run AI 프록시 활성화 (`true`일 때 URL/secret 요구) | `false` |
 | `CLOUD_RUN_AI_URL` | Frontend가 프록시할 Cloud Run AI 엔진 URL | — |
 | `CLOUD_RUN_API_SECRET` | Frontend → Cloud Run 인증 키 | — |
+| `MISTRAL_API_KEY` | `/api/ai/artifact-intent` LLM fallback 및 Cloud Run Mistral fallback 키. 없으면 모호한 아티팩트 후보는 일반 채팅으로 graceful fallback | — |
 | `AI_JOB_TRIGGER_MODE` | Job Queue worker trigger 방식. `direct`는 기존 `/api/jobs/process`, `cloud-tasks`는 짧은 `/api/jobs/dispatch` 경유 | `direct` |
 | `AI_ENGINE_MODE` | 개발 환경에서 `AUTO`(기본)/`CLOUD` 선택 | `AUTO` |
 | `USE_LOCAL_DOCKER` | 개발 환경에서 로컬 Docker AI 엔진 우선 사용 | `false` |

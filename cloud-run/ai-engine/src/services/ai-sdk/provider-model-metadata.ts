@@ -2,6 +2,7 @@ import {
   DEFAULT_CEREBRAS_MODEL,
   getCerebrasModelId,
   getGroqModelId,
+  getMistralModelId,
   getOpenRouterVisionModelId,
 } from '../../lib/config-parser';
 import type { ProviderName } from './model-provider.types';
@@ -142,7 +143,7 @@ export function getRuntimeProviderModelMetadata(): ProviderModelMetadata[] {
     {
       provider: 'mistral',
       role: 'last-resort text fallback',
-      modelId: 'mistral-large-latest',
+      modelId: getMistralModelId(),
       lifecycle: 'production',
       productionModel: true,
       preview: false,
@@ -159,10 +160,11 @@ export function getRuntimeProviderModelMetadata(): ProviderModelMetadata[] {
         requestsPerDay: 500,
         tokensPerDay: 1_000_000,
       },
-      freeTierLimitSummary: 'workspace-tier dependent; keep as last-resort text fallback',
+      freeTierLimitSummary:
+        'workspace-tier dependent; default model is mistral-small-latest to preserve free-tier headroom',
       sourceUrls: [
         'https://docs.mistral.ai/admin/user-management-finops/tier',
-        'https://docs.mistral.ai/models/model-cards/mistral-large-3-25-12',
+        'https://docs.mistral.ai/models/model-cards/mistral-small-4-0-26-03',
       ],
     },
     {

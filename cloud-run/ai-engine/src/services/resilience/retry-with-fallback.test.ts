@@ -58,6 +58,7 @@ vi.mock('../../lib/config-parser', () => ({
   getCerebrasModelId: mockGetCerebrasModelId,
   getCerebrasFallbackModelIds: mockGetCerebrasFallbackModelIds,
   getGroqModelId: vi.fn(() => 'groq-model'),
+  getMistralModelId: vi.fn(() => 'mistral-small-latest'),
   isCerebrasToolCallingEnabled: mockIsCerebrasToolCallingEnabled,
   isCerebrasLongContextEnabled: vi.fn(() => true),
   isOpenRouterVisionToolCallingEnabled: mockIsOpenRouterVisionToolCallingEnabled,
@@ -533,8 +534,8 @@ describe('generateTextWithRetry', () => {
     expect(result.attempts.map((attempt) => attempt.modelId)).toEqual([
       'groq-model',
       'llama3.1-8b',
-      'mistral-large-latest',
+      'mistral-small-latest',
     ]);
-    expect(mockGetMistralModel).toHaveBeenCalledWith('mistral-large-latest');
+    expect(mockGetMistralModel).toHaveBeenCalledWith('mistral-small-latest');
   });
 });

@@ -20,7 +20,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
       features: [
         '🧠 Cerebras Inference: 초고속 추론 인프라 (llama3.1-8b) — 짧은 컨텍스트 fallback 및 structured route 보조',
         '⚡ Groq Cloud: LPU 기반 초고속 500 Tokens/s 추론 (llama-4-scout-17b) — NLQ / Analyst / Tool-calling 1순위 모델',
-        '🛡️ Mistral AI: mistral-large-latest Frontier 모델 — Groq/Cerebras 장애 또는 쿼터 초과 시 text last-resort fallback 담당',
+        '🛡️ Mistral AI: mistral-small-latest — Groq/Cerebras 장애 또는 쿼터 초과 시 무료 티어 친화적 text last-resort fallback 담당',
         '👁️ Gemini Flash-Lite: Vision Agent 전용, 스크린샷과 긴 로그 컨텍스트 분석 — 사고 토큰 없는 안정적 비전 분석 경로',
         '▲ Vercel AI SDK 6.0: streamText, generateObject 중심 API — 고도화된 멀티 에이전트 스트리밍 응답 아키텍처',
         '🤖 Multi-Agent Orchestration: Orchestrator Planning + 전문 에이전트 Handoff 시스템 기반의 지능형 라우팅 및 협업 워크플로우',

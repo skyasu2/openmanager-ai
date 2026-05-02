@@ -35,6 +35,8 @@ import {
   type ChatArtifactIntentReason,
   classifyChatArtifactIntent,
   createArtifactGuidanceMessage,
+  fetchLLMChatArtifactIntent,
+  shouldUseLLMChatArtifactIntent,
 } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
 import { generateIncidentReportArtifact } from '@/lib/ai/chat-artifacts/incident-report-artifact';
 import { generateMonitoringAnalysisArtifact } from '@/lib/ai/chat-artifacts/monitoring-analysis-artifact';
@@ -433,6 +435,7 @@ export function useAIChatCore(
   const lastQueryRef = useRef<string>('');
   const lastAttachmentsRef = useRef<FileAttachment[] | null>(null);
   const pendingQueryRef = useRef<string>('');
+  const artifactIntentInFlightRef = useRef(false);
   const artifactInFlightRef = useRef(false);
   const artifactRequestIdRef = useRef<string | null>(null);
   const artifactAbortControllerRef = useRef<AbortController | null>(null);
@@ -625,6 +628,7 @@ export function useAIChatCore(
     artifactAbortControllerRef.current?.abort();
     artifactAbortControllerRef.current = null;
     artifactRequestIdRef.current = null;
+    artifactIntentInFlightRef.current = false;
     artifactInFlightRef.current = false;
     setArtifactIsLoading(false);
     clearHistory();
@@ -705,7 +709,7 @@ export function useAIChatCore(
   // ============================================================================
 
   const handleSendInput = useCallback(
-    (attachments?: FileAttachment[]) => {
+    async (attachments?: FileAttachment[]) => {
       // 🎯 Fix: 텍스트 또는 첨부 중 하나는 있어야 전송
       const hasText = input.trim().length > 0;
       const hasAttachments = attachments && attachments.length > 0;
@@ -729,7 +733,7 @@ export function useAIChatCore(
         return;
       }
 
-      if (artifactInFlightRef.current) {
+      if (artifactInFlightRef.current || artifactIntentInFlightRef.current) {
         setError(
           '아티팩트 생성이 진행 중입니다. 완료 후 다음 요청을 보내주세요.'
         );
@@ -764,7 +768,40 @@ export function useAIChatCore(
         return;
       }
 
-      const artifactIntent = classifyChatArtifactIntent(effectiveText);
+      const regexIntent = classifyChatArtifactIntent(effectiveText);
+      let artifactIntent = regexIntent;
+      if (
+        regexIntent.kind === 'none' &&
+        shouldUseLLMChatArtifactIntent(effectiveText)
+      ) {
+        const intentAbortController = new AbortController();
+        artifactIntentInFlightRef.current = true;
+        artifactAbortControllerRef.current = intentAbortController;
+        setArtifactIsLoading(true);
+        try {
+          artifactIntent = await fetchLLMChatArtifactIntent(
+            effectiveText,
+            intentAbortController.signal
+          );
+        } finally {
+          artifactIntentInFlightRef.current = false;
+          if (artifactAbortControllerRef.current === intentAbortController) {
+            artifactAbortControllerRef.current = null;
+          }
+        }
+
+        if (intentAbortController.signal.aborted) {
+          setArtifactIsLoading(false);
+          return;
+        }
+
+        if (
+          artifactIntent.kind !== 'incident-report' &&
+          artifactIntent.kind !== 'monitoring-analysis'
+        ) {
+          setArtifactIsLoading(false);
+        }
+      }
       if (artifactIntent.kind === 'guidance') {
         setError(null);
         setStreamRagSources([]);
@@ -943,7 +980,7 @@ export function useAIChatCore(
   );
 
   const stopGeneration = useCallback(() => {
-    if (artifactInFlightRef.current) {
+    if (artifactInFlightRef.current || artifactIntentInFlightRef.current) {
       artifactAbortControllerRef.current?.abort();
       return;
     }

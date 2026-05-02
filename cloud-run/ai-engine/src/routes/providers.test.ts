@@ -17,6 +17,7 @@ vi.mock('../lib/config-parser', () => ({
   getCerebrasModelId: vi.fn(() => 'llama3.1-8b'),
   getCerebrasFallbackModelIds: vi.fn((): string[] => []),
   getGroqModelId: vi.fn(() => 'meta-llama/llama-4-scout-17b-16e-instruct'),
+  getMistralModelId: vi.fn(() => 'mistral-small-latest'),
   getOpenRouterVisionModelId: vi.fn(() => 'google/gemma-3-27b-it:free'),
   isCerebrasToolCallingEnabled: vi.fn(() => false),
 }));
@@ -69,6 +70,7 @@ describe('Provider Routes', () => {
       expect(json.info.groq.role).toContain('Supervisor');
       expect(json.info.groq.role).not.toContain('Advisor');
       expect(json.info.mistral.role).toBe('Last-resort text fallback');
+      expect(json.info.mistral.model).toBe('mistral-small-latest');
       expect(json.info.mistral.role).not.toContain('RAG');
     });
   });

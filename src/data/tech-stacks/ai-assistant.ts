@@ -35,13 +35,13 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     category: 'ai',
     importance: 'high',
     description:
-      '프랑스 AI 스타트업의 효율적인 오픈웨이트 LLM. 24B 파라미터의 Small Language Model로 대형 모델 대비 낮은 비용과 빠른 응답 속도 제공',
+      '프랑스 AI 스타트업의 효율적인 오픈웨이트 LLM. 무료 티어 보호를 위해 Large 대신 Small 계열을 text fallback 기본값으로 사용',
     implementation:
       '→ Groq/Cerebras 장애 또는 쿼터 초과 시 text last-resort fallback. RAG runtime과 임베딩 경로에서는 제외',
-    version: 'mistral-large-latest',
+    version: 'mistral-small-latest',
     status: 'active',
     icon: '🛡️',
-    tags: ['Text Fallback', 'Frontier', '오픈웨이트'],
+    tags: ['Text Fallback', 'Free-tier', '오픈웨이트'],
     type: 'commercial',
   },
   {
