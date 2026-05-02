@@ -101,30 +101,52 @@ describe('classifyChatArtifactIntent', () => {
   });
 
   it('does not capture normal operational chat questions', () => {
-    expect(classifyChatArtifactIntent('CPU 높은 서버 알려줘')).toEqual({
+    expect(classifyChatArtifactIntent('CPU 높은 서버 알려줘')).toMatchObject({
       kind: 'none',
     });
-    expect(classifyChatArtifactIntent('추세')).toEqual({
+    expect(classifyChatArtifactIntent('추세')).toMatchObject({
       kind: 'none',
     });
-    expect(classifyChatArtifactIntent('최근 추세가 어때?')).toEqual({
+    expect(classifyChatArtifactIntent('최근 추세가 어때?')).toMatchObject({
+      kind: 'none',
+    });
+    expect(classifyChatArtifactIntent('현재 서버 상태 분석해줘')).toMatchObject(
+      {
+        kind: 'none',
+      }
+    );
+    expect(classifyChatArtifactIntent('서버 분석해줘')).toMatchObject({
+      kind: 'none',
+    });
+    expect(
+      classifyChatArtifactIntent('CPU 높은 서버 원인 분석해줘')
+    ).toMatchObject({
       kind: 'none',
     });
   });
 
   it('blocks artifact execution when query has a question mark (implicit path)', () => {
     // 물음표가 있으면 isImplicitKeywordRequest = false → none으로 폴백
-    expect(classifyChatArtifactIntent('이상감지?')).toEqual({ kind: 'none' });
-    expect(classifyChatArtifactIntent('추세 분석?')).toEqual({ kind: 'none' });
-    expect(classifyChatArtifactIntent('장애보고서?')).toEqual({ kind: 'none' });
+    expect(classifyChatArtifactIntent('이상감지?')).toMatchObject({
+      kind: 'none',
+    });
+    expect(classifyChatArtifactIntent('추세 분석?')).toMatchObject({
+      kind: 'none',
+    });
+    expect(classifyChatArtifactIntent('장애보고서?')).toMatchObject({
+      kind: 'none',
+    });
     // 예측 단독은 artifact 형태 구문이 아니므로 none
-    expect(classifyChatArtifactIntent('예측')).toEqual({ kind: 'none' });
+    expect(classifyChatArtifactIntent('예측')).toMatchObject({ kind: 'none' });
   });
 
   it('keeps LLM fallback behind an artifact candidate gate', () => {
     expect(shouldUseLLMChatArtifactIntent('CPU 높은 서버 알려줘')).toBe(false);
     expect(shouldUseLLMChatArtifactIntent('최근 추세가 어때?')).toBe(false);
     expect(shouldUseLLMChatArtifactIntent('추세 분석?')).toBe(false);
+    expect(shouldUseLLMChatArtifactIntent('현재 서버 상태 분석해줘')).toBe(
+      false
+    );
     expect(shouldUseLLMChatArtifactIntent('장애 리포트 만들어줘')).toBe(true);
     expect(shouldUseLLMChatArtifactIntent('트렌드 분석 좀 해줘')).toBe(true);
   });

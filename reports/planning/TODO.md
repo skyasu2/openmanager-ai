@@ -42,6 +42,16 @@
 
 ## Recent Completed
 
+### Completed (2026-05-02 #257)
+- [x] Artifact intent deterministic local classifier evaluation 추가
+  - `ARTIFACT_INTENT_RULE_VERSION=2026-05-02-v1`를 classifier 결과에 포함하고 corpus version과 일치하도록 검증
+  - 74개 deterministic seed corpus로 `incident-report`, `monitoring-analysis`, `guidance`, `none` intent를 균형 평가
+  - confusion matrix + precision/recall 계산 유틸과 Vitest local classifier guard 추가
+  - `incident-report` / `monitoring-analysis` local classifier precision `>= 0.94`를 `test:quick`에서 방어
+  - `현재 서버 상태 분석해줘`, `서버 분석해줘`, `CPU 높은 서버 원인 분석해줘` 같은 일반 운영 분석 쿼리는 artifact 실행으로 라우팅하지 않도록 회귀 케이스 추가
+  - 평가 결과 기록: [artifact-intent-benchmark-2026-05-02.md](../docs/artifact-intent-benchmark-2026-05-02.md)
+  - 검증: artifact intent targeted local classifier evaluation 74/74
+
 ### Completed (2026-05-02 #256)
 - [x] Mistral fallback 무료 티어 기본값 보정
   - `MISTRAL_MODEL_ID` 기본값을 `mistral-large-latest`에서 `mistral-small-latest`로 낮춰 last-resort fallback의 무료 티어 소모를 줄임

@@ -38,6 +38,7 @@ export default defineConfig({
       'src/**/*.{test,spec}.{js,ts,tsx}',
       'tests/ai-sidebar/**/*.{test,spec}.{js,ts,tsx}',
       'tests/api/**/*.{test,spec}.{js,ts,tsx}',
+      'tests/intent-classifier/**/*.{test,spec,bench}.{js,ts,tsx}',
       'tests/integration/**/*.{test,spec}.{js,ts,tsx}',
       'tests/performance/**/*.{test,spec}.{js,ts,tsx}',
       'tests/unit/**/*.{test,spec}.{js,ts,tsx}',
