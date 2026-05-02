@@ -5,7 +5,7 @@
 
 # AI Assistant Artifact Improvement Plan
 
-- 상태: Approved — Phase 1~3 완료, Phase 4 Server Snapshot Artifact 구현 대기
+- 상태: Approved — Phase 1~4 구현 및 로컬 게이트 완료, production QA 대기
 - 작성일: 2026-05-02
 - TODO.md 연결: Active Tasks > AI Assistant Server Snapshot Artifact Expansion
 
@@ -49,7 +49,7 @@ AI Chat에서 명시적인 "장애 보고서 작성/다운로드" 또는 "이상
 
 | 함수/API | 입력 타입 | 출력 타입 | 에러 케이스 |
 |----------|----------|----------|------------|
-| `classifyChatArtifactIntent` | `string` | `none | incident-report | monitoring-analysis | guidance` | 없음, 보수적 분류 |
+| `classifyChatArtifactIntent` | `string` | `none | incident-report | monitoring-analysis | server-snapshot | guidance` | 없음, 보수적 분류 |
 | `generateIncidentReportArtifact` | `{ queryAsOfDataSlot? }` | `IncidentReportArtifact` | 401/5xx 또는 invalid payload |
 | `generateMonitoringAnalysisArtifact` | `{ queryAsOfDataSlot? }` | `MonitoringAnalysisArtifact` | 401/5xx 또는 invalid payload |
 | `useAIChatCore.handleSendInput` | user text | user message + artifact assistant message | API 실패 시 assistant error message |
@@ -153,7 +153,7 @@ AI Chat에서 명시적인 "장애 보고서 작성/다운로드" 또는 "이상
 
 | 단계 | 입력 | 출력 | 비용/사용량 계약 |
 |------|------|------|------------------|
-| Regex classifier | user query | `incident-report` / `monitoring-analysis` / `guidance` / `none` + reason | LLM 호출 0 |
+| Regex classifier | user query | `incident-report` / `monitoring-analysis` / `server-snapshot` / `guidance` / `none` + reason | LLM 호출 0 |
 | LLM candidate gate | regex `none` query | boolean | 일반 채팅은 LLM 호출 0 |
 | `/api/ai/artifact-intent` | gated query | `{ kind }` | Mistral 3B 1회, 3초 timeout, rate limit 적용 |
 | Artifact generation | confirmed artifact kind | artifact message metadata | 기존 artifact API 1회 |
@@ -172,7 +172,7 @@ AI Chat에서 명시적인 "장애 보고서 작성/다운로드" 또는 "이상
 
 ### 상태
 
-Approved. 이 Phase는 신규 기능이므로 구현 전 `test(spec):` 커밋으로 failing contract tests를 먼저 추가한다.
+Implemented. 신규 기능이므로 `test(spec):` 선행 커밋으로 failing contract tests를 먼저 추가했고, 구현 커밋은 각 계약을 통과하도록 분리했다. 로컬 표준 게이트는 통과했으며, 남은 작업은 배포 후 production QA 기록이다.
 
 ### 베스트 프랙티스 및 외부 비교
 
@@ -193,12 +193,12 @@ Approved. 이 Phase는 신규 기능이므로 구현 전 `test(spec):` 커밋으
 
 | 영역 | 현재 상태 | Phase 4 영향 |
 |------|----------|--------------|
-| Artifact type | `IncidentReportArtifact`, `MonitoringAnalysisArtifact` 2종만 존재 (`src/lib/ai/chat-artifacts/types.ts`) | `ServerSnapshotArtifact` union 추가 필요 |
-| Intent classifier | 2종 artifact + guidance + none. rule version/eval corpus/benchmark 존재 | broad `서버 상태`를 잡지 않고, `스냅샷/상태 카드/상태 리포트/다운로드` 같은 artifact-shaped 요청만 추가 |
-| Generation | 기존 2종은 `/api/ai/incident-report`, `/api/ai/intelligent-monitoring` 호출 | Phase 4는 `MetricsProvider`/OTel static JSON만 사용. 신규 LLM/API/DB write 없음 |
-| Rendering | `IncidentReportArtifactCard`, `MonitoringAnalysisArtifactCard`, `SidebarMessage`, `AIWorkspaceMessage` | `ServerSnapshotArtifactCard` 추가 및 공통 message render 분기 추가 |
-| Persistence | chat history metadata 보존 및 legacy payload fallback 테스트 존재 | snapshot metadata restore fallback 테스트 추가 |
-| Evaluation | 102개 intent corpus + precision/recall guard | corpus에 snapshot category를 추가하되 existing "현재 서버 상태 분석해줘" none 방어 유지 |
+| Artifact type | `IncidentReportArtifact`, `MonitoringAnalysisArtifact`, `ServerSnapshotArtifact` 3종 (`src/lib/ai/chat-artifacts/types.ts`) | Phase 4 반영 완료 |
+| Intent classifier | 3종 artifact + guidance + none. rule version/eval corpus/benchmark 존재 | broad `서버 상태`를 잡지 않고, `스냅샷/상태 카드/상태 리포트/다운로드` 같은 artifact-shaped 요청만 추가 |
+| Generation | 기존 2종은 `/api/ai/incident-report`, `/api/ai/intelligent-monitoring` 호출. Snapshot은 `MetricsProvider`/OTel static data만 사용 | 신규 LLM/API/DB write 없음 |
+| Rendering | `IncidentReportArtifactCard`, `MonitoringAnalysisArtifactCard`, `ServerSnapshotArtifactCard`, `SidebarMessage`, `AIWorkspaceMessage` | 공통 message render 분기 완료 |
+| Persistence | chat history metadata 보존 및 legacy payload fallback 테스트 존재 | `serverSnapshotArtifact` metadata restore fallback 테스트 추가 완료 |
+| Evaluation | 112개 intent corpus + precision/recall guard | snapshot category 추가, existing "현재 서버 상태 분석해줘" none 방어 유지 |
 
 ### 최근 변경 사항 분석 및 진입 판단
 
@@ -325,37 +325,37 @@ interface ServerSnapshotArtifact {
 
 ### 테스트 시나리오
 
-- [ ] `ServerSnapshotArtifact` 타입과 markdown/json download payload가 stable shape를 유지한다.
-- [ ] generator는 `MetricsProvider`/OTel static data만 사용하고 `fetch('/api/ai/...')`, `sendQuery`, Cloud Run route를 호출하지 않는다.
-- [ ] explicit snapshot queries는 `server-snapshot`으로 분류한다.
-- [ ] 일반 운영 질문과 원인 분석 질문은 `none`으로 유지한다.
-- [ ] guidance query는 local guidance로 처리한다.
-- [ ] `useAIChatCore`는 server snapshot 요청에서 `sendQuery`를 호출하지 않고 artifact metadata message를 추가한다.
-- [ ] Sidebar/Workspace가 `ServerSnapshotArtifactCard`를 렌더링한다.
-- [ ] chat history 저장/복원 시 snapshot artifact metadata가 보존되고 legacy optional field 누락에 방어적으로 렌더링한다.
-- [ ] intent evaluation corpus에 `server-snapshot` category를 추가하고 all-kind precision/recall threshold를 유지한다.
+- [x] `ServerSnapshotArtifact` 타입과 markdown/json download payload가 stable shape를 유지한다.
+- [x] generator는 `MetricsProvider`/OTel static data만 사용하고 `fetch('/api/ai/...')`, `sendQuery`, Cloud Run route를 호출하지 않는다.
+- [x] explicit snapshot queries는 `server-snapshot`으로 분류한다.
+- [x] 일반 운영 질문과 원인 분석 질문은 `none`으로 유지한다.
+- [x] guidance query는 artifact 실행 없이 일반 chat 또는 기존 guidance 정책으로 처리한다.
+- [x] `useAIChatCore`는 server snapshot 요청에서 `sendQuery`를 호출하지 않고 artifact metadata message를 추가한다.
+- [x] Sidebar/Workspace가 `ServerSnapshotArtifactCard`를 렌더링한다.
+- [x] chat history 저장/복원 시 snapshot artifact metadata가 보존되고 legacy optional field 누락에 방어적으로 렌더링한다.
+- [x] intent evaluation corpus에 `server-snapshot` category를 추가하고 all-kind precision/recall threshold를 유지한다.
 
 ### Task 목록
 
-- [ ] Task 10 — `test(spec): server snapshot artifact contract`
+- [x] Task 10 — `test(spec): server snapshot artifact contract`
   아래 10-A~10-D를 같은 test/spec 단계로 묶어 구현 전 계약을 먼저 고정.
-- [ ] Task 10-A — `test(spec): server snapshot intent corpus contract`
+- [x] Task 10-A — `test(spec): server snapshot intent corpus contract`
   `server-snapshot` kind, 실행/비실행 query, category support, precision/recall guard를 failing test로 추가.
-- [ ] Task 10-B — `test(spec): server snapshot data contract`
+- [x] Task 10-B — `test(spec): server snapshot data contract`
   `ServerSnapshotArtifact` 타입, generator output, MD/JSON download payload, API/LLM 호출 금지 contract를 failing test로 추가.
-- [ ] Task 10-C — `test(spec): server snapshot card contract`
+- [x] Task 10-C — `test(spec): server snapshot card contract`
   inline card totals, averages, top servers, alerts, server detail link, defensive legacy render를 failing test로 추가.
-- [ ] Task 10-D — `test(spec): server snapshot chat persistence contract`
+- [x] Task 10-D — `test(spec): server snapshot chat persistence contract`
   `useAIChatCore` bypass, `serverSnapshotArtifact` metadata, Sidebar/Workspace render, chat history 저장/복원 failing test를 추가.
-- [ ] Task 11 — `feat: server snapshot artifact data model and generator`
+- [x] Task 11 — `feat: server snapshot artifact data model and generator`
   `types.ts`, `server-snapshot-artifact.ts`, OTel/MetricsProvider 기반 summary builder 구현.
-- [ ] Task 12 — `feat: render server snapshot artifact card`
+- [x] Task 12 — `feat: render server snapshot artifact card`
   `ServerSnapshotArtifactCard`, MD/JSON download, server detail links, compact inline layout 구현.
-- [ ] Task 13 — `feat: route explicit snapshot artifact intents`
+- [x] Task 13 — `feat: route explicit snapshot artifact intents`
   classifier kind/reason/corpus/eval/benchmark 갱신. broad query false-positive 방어.
-- [ ] Task 14 — `feat: wire snapshot artifact into chat surfaces`
+- [x] Task 14 — `feat: wire snapshot artifact into chat surfaces`
   `useAIChatCore`, `SidebarMessage`, `AIWorkspaceMessage`, metadata/history transform 갱신.
-- [ ] Task 15 — `docs/test: record snapshot artifact rollout`
+- [x] Task 15 — `docs/test: record snapshot artifact rollout`
   architecture/docs/TODO 반영, targeted + smoke + production QA 계획 기록.
 
 ### 사이드 이펙트 및 방어책
@@ -387,3 +387,14 @@ interface ServerSnapshotArtifact {
   - Network: `/api/ai/supervisor/stream/v2`, `/api/ai/incident-report`, `/api/ai/intelligent-monitoring` 미호출 확인
   - UI: card totals/top servers/download action 확인
   - QA tracker 기록
+
+### 로컬 검증 결과 (2026-05-02)
+
+- Targeted artifact suite: 9 files / 58 tests passed
+- `npm run type-check`: passed
+- `npm run lint`: passed (Biome info only: `reports/qa/qa-tracker.json` file size)
+- `npm run test:quick`: passed
+- `npm run test:contract`: 2 files / 20 tests passed
+- `npm run docs:budget`: passed, active docs 57/80
+- `npm run docs:ai-consistency`: passed
+- `git diff --check`: passed

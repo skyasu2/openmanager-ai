@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-02 KST (`Server snapshot artifact plan`)
+**Last Updated**: 2026-05-02 KST (`Server snapshot artifact rollout`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI Assistant Server Snapshot Artifact Expansion | P1 | Approved | Existing plan: [ai-assistant-artifact-improvement-plan.md](ai-assistant-artifact-improvement-plan.md) Phase 4. 신규 기능이므로 구현은 `test(spec): server snapshot artifact contract` 선행 커밋으로 시작 |
+| — | — | — | 현재 계획서 기준 잔여 active task 없음 |
 
 ---
 
@@ -41,6 +41,15 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-02 #260)
+- [x] AI Assistant Server Snapshot Artifact Expansion
+  - [ai-assistant-artifact-improvement-plan.md](ai-assistant-artifact-improvement-plan.md) Phase 4 완료: `ServerSnapshotArtifact` 타입, `generateServerSnapshotArtifact()`, `ServerSnapshotArtifactCard`, chat/sidebar/workspace/history metadata 연결
+  - intent classifier rule version을 `2026-05-02-v2`로 올리고 `server-snapshot` kind + `snapshot-artifact` corpus category 추가
+  - broad `서버 상태 알려줘`, `현재 서버 상태 분석해줘`, `CPU 높은 서버 원인 분석해줘`는 일반 채팅으로 유지하고, `서버 상태 스냅샷`, `전체 인프라 상태 카드`, `server snapshot export`처럼 artifact-shaped 요청만 실행
+  - 비용/사용량 계약: 신규 LLM/API/Cloud Run/DB write 없음. snapshot generator는 `MetricsProvider`/OTel static data만 read-only 사용
+  - 평가 기록: [artifact-intent-benchmark-2026-05-02.md](../docs/artifact-intent-benchmark-2026-05-02.md) `112/112`
+  - 검증: targeted artifact suite 58/58, `type-check`, `lint`, `test:quick`, `test:contract`, `docs:budget`, `docs:ai-consistency`, `git diff --check`
 
 ### Completed (2026-05-02 #259)
 - [x] Artifact intent benchmark compatibility and category coverage

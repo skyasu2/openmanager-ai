@@ -198,7 +198,7 @@ flowchart LR
 | src/lib/ai/chat-artifacts/chat-artifact-intent.ts                  |
 | src/hooks/ai/useAIChatCore.ts                                      |
 | rule version: ARTIFACT_INTENT_RULE_VERSION (corpus lock)           |
-| eval guard: tests/intent-classifier/ 102 cases                     |
+| eval guard: tests/intent-classifier/ 112 cases                     |
 |   execution precision >= 0.94, all-class precision/recall >= 0.90 |
 +--------------------------------------------------------------------+
 
@@ -247,6 +247,20 @@ User Query
     |           추세 분석/트렌드 분석/이상감지/anomaly detection...
     |           reason: monitoring_implicit_artifact_keyword ────────> monitoring-analysis
     |
+    +-- server status snapshot keyword
+    |     서버 상태/인프라 상태/운영 현황 + 스냅샷/상태 카드/상태 리포트
+    |     |
+    |     +-- guidance/function explanation ------------------------> none
+    |     |     snapshot has no separate guidance artifact target
+    |     |
+    |     +-- [negation absent] + action ---------------------------> server-snapshot
+    |     |     생성/만들/보여줘/다운로드/요청/뽑아/export/create
+    |     |     reason: server_snapshot_action_pattern
+    |     |
+    |     `-- [negation absent] + implicit keyword -----------------> server-snapshot
+    |           (short phrase, no ?)
+    |           reason: server_snapshot_implicit_artifact_keyword
+    |
     `-- none
           negation only blocks action/implicit/LLM candidate paths
           (말고/아니고/없이/나중에/필요 없/하지 마/제외)
@@ -285,6 +299,7 @@ Result handling in useAIChatCore.ts
     +-- guidance             -> local guidance message only
     +-- incident-report      -> generateIncidentReportArtifact()
     +-- monitoring-analysis  -> generateMonitoringAnalysisArtifact()
+    +-- server-snapshot      -> generateServerSnapshotArtifact()
     `-- none                 -> sendQuery() to /api/ai/supervisor/stream/v2
 
 Loading contract
@@ -350,6 +365,12 @@ Vercel artifact intent classifier
     |
     `-- Mistral ministral-3b-latest
           fixed route-local classifier, no provider fallback chain
+          scope: incident-report / monitoring-analysis only
+
+Server snapshot artifact
+    |
+    `-- MetricsProvider OTel static data
+          no LLM, no Cloud Run artifact route, no DB write
 ```
 
 #### Module 3. Multi-Agent 오케스트레이션
