@@ -20,18 +20,20 @@ const LOCAL_CLASSIFIER_CLASS_HEALTH_THRESHOLD = 0.9;
 const LOCAL_CLASSIFIER_MIN_KIND_SUPPORT = {
   'incident-report': 18,
   'monitoring-analysis': 18,
+  'server-snapshot': 8,
   guidance: 30,
-  none: 36,
+  none: 38,
 } satisfies Record<ArtifactIntentEvaluationKind, number>;
 const LOCAL_CLASSIFIER_MIN_CATEGORY_SUPPORT = {
   'explicit-action': 16,
   'implicit-artifact': 4,
   'guidance-question': 19,
-  negation: 15,
+  negation: 16,
   'operational-chat': 17,
   'ambiguous-chat': 3,
   navigation: 6,
   'mixed-language': 22,
+  'snapshot-artifact': 8,
 } satisfies Record<ArtifactIntentCorpusCategory, number>;
 
 const evaluation = evaluateArtifactIntentClassifier(
@@ -94,6 +96,9 @@ describe('Artifact Intent Local Classifier Evaluation', () => {
     ).toBeGreaterThanOrEqual(LOCAL_CLASSIFIER_PRECISION_THRESHOLD);
     expect(
       evaluation.metrics['monitoring-analysis'].precision
+    ).toBeGreaterThanOrEqual(LOCAL_CLASSIFIER_PRECISION_THRESHOLD);
+    expect(
+      evaluation.metrics['server-snapshot'].precision ?? 0
     ).toBeGreaterThanOrEqual(LOCAL_CLASSIFIER_PRECISION_THRESHOLD);
   });
 

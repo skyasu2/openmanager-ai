@@ -7,6 +7,7 @@ export const artifactIntentCorpusCategories = [
   'ambiguous-chat',
   'navigation',
   'mixed-language',
+  'snapshot-artifact',
 ] as const;
 
 export type ArtifactIntentCorpusCategory =
@@ -15,6 +16,7 @@ export type ArtifactIntentCorpusCategory =
 export type ArtifactIntentExpectedKind =
   | 'incident-report'
   | 'monitoring-analysis'
+  | 'server-snapshot'
   | 'guidance'
   | 'none';
 
@@ -280,6 +282,62 @@ export const artifactIntentCorpus = {
       expected: 'monitoring-analysis',
       category: 'mixed-language',
       note: '영어 trend report download',
+    },
+    {
+      id: 'ss-001',
+      query: '서버 상태 스냅샷',
+      expected: 'server-snapshot',
+      category: 'snapshot-artifact',
+      note: '짧은 서버 상태 스냅샷 artifact 요청',
+    },
+    {
+      id: 'ss-002',
+      query: '전체 인프라 상태 카드로 보여줘',
+      expected: 'server-snapshot',
+      category: 'snapshot-artifact',
+      note: '전체 인프라 상태를 카드 산출물로 요청',
+    },
+    {
+      id: 'ss-003',
+      query: '현재 서버 상태 리포트 다운로드',
+      expected: 'server-snapshot',
+      category: 'snapshot-artifact',
+      note: '다운로드 가능한 서버 상태 리포트 요청',
+    },
+    {
+      id: 'ss-004',
+      query: '운영 현황 요약 카드 만들어줘',
+      expected: 'server-snapshot',
+      category: 'snapshot-artifact',
+      note: '운영 현황 요약 카드 생성 요청',
+    },
+    {
+      id: 'ss-005',
+      query: 'server snapshot export',
+      expected: 'server-snapshot',
+      category: 'snapshot-artifact',
+      note: '영어 server snapshot export 요청',
+    },
+    {
+      id: 'ss-006',
+      query: 'infrastructure status card',
+      expected: 'server-snapshot',
+      category: 'snapshot-artifact',
+      note: '영어 인프라 상태 카드 요청',
+    },
+    {
+      id: 'ss-007',
+      query: '전체 서버 상태 스냅샷 만들어줘',
+      expected: 'server-snapshot',
+      category: 'snapshot-artifact',
+      note: '전체 서버 상태 스냅샷 생성 요청',
+    },
+    {
+      id: 'ss-008',
+      query: '오늘 운영 상태 카드 다운로드',
+      expected: 'server-snapshot',
+      category: 'snapshot-artifact',
+      note: '운영 상태 카드 다운로드 요청',
     },
     {
       id: 'gd-001',
@@ -742,6 +800,20 @@ export const artifactIntentCorpus = {
       expected: 'none',
       category: 'negation',
       note: '트렌드 분석 지연 + 서버 목록',
+    },
+    {
+      id: 'no-037',
+      query: '서버 상태 스냅샷 기능 설명해줘',
+      expected: 'none',
+      category: 'guidance-question',
+      note: 'snapshot 기능 설명은 실행 artifact가 아님',
+    },
+    {
+      id: 'no-038',
+      query: '스냅샷 말고 현재 서버 상태만 알려줘',
+      expected: 'none',
+      category: 'negation',
+      note: 'snapshot artifact 명시 배제',
     },
   ],
 } as const satisfies {
