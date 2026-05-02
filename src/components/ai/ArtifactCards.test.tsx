@@ -4,9 +4,13 @@
 
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import type { MonitoringAnalysisArtifact } from '@/lib/ai/chat-artifacts/types';
+import type {
+  MonitoringAnalysisArtifact,
+  ServerSnapshotArtifact,
+} from '@/lib/ai/chat-artifacts/types';
 import { IncidentReportArtifactCard } from './IncidentReportArtifactCard';
 import { MonitoringAnalysisArtifactCard } from './MonitoringAnalysisArtifactCard';
+import { ServerSnapshotArtifactCard } from './ServerSnapshotArtifactCard';
 
 vi.mock('@/hooks/ai/useAIEntryController', () => ({
   useAIEntryController: () => ({
@@ -258,5 +262,101 @@ describe('AI artifact cards', () => {
     expect(screen.getByText('복원된 이상감지/추세 분석')).toBeInTheDocument();
     expect(screen.getByText('source unknown')).toBeInTheDocument();
     expect(screen.getByText('기준 현재')).toBeInTheDocument();
+  });
+
+  it('renders server snapshot artifact status, links, and download actions', () => {
+    const artifact: ServerSnapshotArtifact = {
+      kind: 'server-snapshot',
+      generatedAt: '2026-05-02T22:00:00.000Z',
+      title: '현재 서버 상태 스냅샷',
+      summary: '4대 서버 중 위험 1대, 주의 1대, 오프라인 1대입니다.',
+      source: 'otel-static',
+      slot: {
+        slotIndex: 42,
+        minuteOfDay: 420,
+        timeLabel: '07:00 KST',
+      },
+      totals: {
+        total: 4,
+        online: 1,
+        warning: 1,
+        critical: 1,
+        offline: 1,
+      },
+      averages: {
+        cpu: 60,
+        memory: 67.8,
+        disk: 56.8,
+        network: 35,
+      },
+      topServers: [
+        {
+          id: 'web-01',
+          name: 'web-01',
+          status: 'critical',
+          cpu: 92.4,
+          memory: 71.2,
+          disk: 62.1,
+          network: 55.4,
+          primaryRisk: 'cpu',
+        },
+      ],
+      alerts: [
+        {
+          serverId: 'web-01',
+          metric: 'cpu',
+          value: 92.4,
+          severity: 'critical',
+          summary: 'web-01 CPU 92.4%',
+        },
+      ],
+    };
+
+    render(<ServerSnapshotArtifactCard artifact={artifact} />);
+
+    expect(screen.getByText('서버 상태 스냅샷')).toBeInTheDocument();
+    expect(screen.getByText('현재 서버 상태 스냅샷')).toBeInTheDocument();
+    expect(screen.getByText('source otel-static')).toBeInTheDocument();
+    expect(screen.getByText('기준 07:00 KST')).toBeInTheDocument();
+    expect(screen.getByText('4')).toBeInTheDocument();
+    expect(screen.getByText('CPU 60%')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /web-01/i })).toHaveAttribute(
+      'href',
+      '/dashboard/servers/web-01'
+    );
+    expect(screen.getByText('web-01 CPU 92.4%')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /MD 다운로드/i })).toBeEnabled();
+    expect(
+      screen.getByRole('button', { name: /JSON 다운로드/i })
+    ).toBeEnabled();
+  });
+
+  it('renders restored server snapshot artifacts defensively when optional sections are missing', () => {
+    const restoredArtifact = {
+      kind: 'server-snapshot',
+      generatedAt: '2026-05-02T22:00:00.000Z',
+      title: '복원된 서버 상태 스냅샷',
+      summary: 'legacy metadata',
+      source: 'otel-static',
+      totals: {
+        total: 0,
+        online: 0,
+        warning: 0,
+        critical: 0,
+        offline: 0,
+      },
+      averages: {
+        cpu: 0,
+        memory: 0,
+        disk: 0,
+        network: 0,
+      },
+    } as unknown as ServerSnapshotArtifact;
+
+    render(<ServerSnapshotArtifactCard artifact={restoredArtifact} />);
+
+    expect(screen.getByText('복원된 서버 상태 스냅샷')).toBeInTheDocument();
+    expect(screen.getByText('기준 현재')).toBeInTheDocument();
+    expect(screen.getByText('표시할 위험 상위 서버 없음')).toBeInTheDocument();
   });
 });
