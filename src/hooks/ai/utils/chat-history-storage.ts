@@ -4,6 +4,7 @@
  * 로컬 스토리지를 활용한 채팅 히스토리 영속화
  */
 
+import type { ChatArtifactIntentReason } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
 import type {
   IncidentReportArtifact,
   MonitoringAnalysisArtifact,
@@ -46,6 +47,8 @@ export interface StoredMessageMetadata {
     details?: string | null;
     shouldCollapse?: boolean;
   };
+  artifactIntentReason?: ChatArtifactIntentReason;
+  artifactIntentTarget?: 'incident-report' | 'monitoring-analysis';
   incidentReportArtifact?: IncidentReportArtifact;
   monitoringAnalysisArtifact?: MonitoringAnalysisArtifact;
   handoffHistory?: Array<{
@@ -139,6 +142,8 @@ export function saveChatHistory(
           analysisBasis?.toolsCalled ||
           analysisBasis?.ragSources ||
           metadata?.assistantResponseView ||
+          metadata?.artifactIntentReason ||
+          metadata?.artifactIntentTarget ||
           metadata?.incidentReportArtifact ||
           metadata?.monitoringAnalysisArtifact ||
           hasExplicitHandoffHistory ||
@@ -163,6 +168,12 @@ export function saveChatHistory(
                 }),
                 ...(metadata?.assistantResponseView && {
                   assistantResponseView: metadata.assistantResponseView,
+                }),
+                ...(metadata?.artifactIntentReason && {
+                  artifactIntentReason: metadata.artifactIntentReason,
+                }),
+                ...(metadata?.artifactIntentTarget && {
+                  artifactIntentTarget: metadata.artifactIntentTarget,
                 }),
                 ...(metadata?.incidentReportArtifact && {
                   incidentReportArtifact: metadata.incidentReportArtifact,

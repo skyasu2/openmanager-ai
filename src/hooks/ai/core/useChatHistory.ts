@@ -63,6 +63,8 @@ export function useChatHistory<TMessage extends RestoredMessage>({
         !analysisBasis?.toolsCalled &&
         !analysisBasis?.ragSources &&
         !metadata?.assistantResponseView &&
+        !metadata?.artifactIntentReason &&
+        !metadata?.artifactIntentTarget &&
         !metadata?.incidentReportArtifact &&
         !metadata?.monitoringAnalysisArtifact &&
         !hasExplicitHandoffHistory &&
@@ -93,6 +95,12 @@ export function useChatHistory<TMessage extends RestoredMessage>({
         }),
         ...(metadata?.assistantResponseView && {
           assistantResponseView: metadata.assistantResponseView,
+        }),
+        ...(metadata?.artifactIntentReason && {
+          artifactIntentReason: metadata.artifactIntentReason,
+        }),
+        ...(metadata?.artifactIntentTarget && {
+          artifactIntentTarget: metadata.artifactIntentTarget,
         }),
         ...(metadata?.incidentReportArtifact && {
           incidentReportArtifact: metadata.incidentReportArtifact,

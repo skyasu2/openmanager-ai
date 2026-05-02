@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-02 KST (`Artifact intent keywords hardened`)
+**Last Updated**: 2026-05-02 KST (`Artifact intent reason metadata`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -41,6 +41,12 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-02 #255)
+- [x] AI Assistant 아티팩트 intent reason code 보강
+  - `artifactIntentReason` metadata를 아티팩트 실행/가이던스 응답에 보존해 QA와 디버깅에서 분기 원인 추적 가능
+  - `추세` 단독은 일반 채팅으로 유지하고, `추세 분석` 같은 artifact-shaped phrase만 implicit 실행하는 비대칭 정책 주석 추가
+  - 검증: artifact intent, chat core, message metadata/history targeted tests 55/55
 
 ### Completed (2026-05-02 #254)
 - [x] AI Assistant 아티팩트 intent 키워드형 요청 보강

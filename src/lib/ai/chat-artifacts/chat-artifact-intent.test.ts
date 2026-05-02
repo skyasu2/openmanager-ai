@@ -8,9 +8,11 @@ describe('classifyChatArtifactIntent', () => {
     });
     expect(classifyChatArtifactIntent('장애보고서')).toMatchObject({
       kind: 'incident-report',
+      reason: 'incident_report_implicit_keyword',
     });
     expect(classifyChatArtifactIntent('장애 보고서 부탁')).toMatchObject({
       kind: 'incident-report',
+      reason: 'incident_report_action_pattern',
     });
     expect(
       classifyChatArtifactIntent(
@@ -34,12 +36,15 @@ describe('classifyChatArtifactIntent', () => {
     });
     expect(classifyChatArtifactIntent('추세 분석')).toMatchObject({
       kind: 'monitoring-analysis',
+      reason: 'monitoring_implicit_artifact_keyword',
     });
     expect(classifyChatArtifactIntent('이상감지')).toMatchObject({
       kind: 'monitoring-analysis',
+      reason: 'monitoring_implicit_artifact_keyword',
     });
     expect(classifyChatArtifactIntent('장애 예측 추세 분석')).toMatchObject({
       kind: 'monitoring-analysis',
+      reason: 'monitoring_implicit_artifact_keyword',
     });
     expect(classifyChatArtifactIntent('추세 분석 기능 실행해줘')).toMatchObject(
       {
@@ -58,6 +63,7 @@ describe('classifyChatArtifactIntent', () => {
     expect(classifyChatArtifactIntent('추세 기능 어디서 봐?')).toMatchObject({
       kind: 'guidance',
       target: 'monitoring-analysis',
+      reason: 'monitoring_guidance_pattern',
     });
     expect(classifyChatArtifactIntent('추세 분석 기능 설명해줘')).toMatchObject(
       {
@@ -93,6 +99,9 @@ describe('classifyChatArtifactIntent', () => {
 
   it('does not capture normal operational chat questions', () => {
     expect(classifyChatArtifactIntent('CPU 높은 서버 알려줘')).toEqual({
+      kind: 'none',
+    });
+    expect(classifyChatArtifactIntent('추세')).toEqual({
       kind: 'none',
     });
     expect(classifyChatArtifactIntent('최근 추세가 어때?')).toEqual({

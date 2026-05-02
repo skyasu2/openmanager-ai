@@ -620,6 +620,9 @@ describe('useAIChatCore', () => {
     expect(result.current.messages[1]?.content).toContain(
       '장애 보고서를 작성했습니다'
     );
+    expect(result.current.messages[1]?.metadata?.artifactIntentReason).toBe(
+      'incident_report_action_pattern'
+    );
     expect(
       result.current.messages[1]?.metadata?.incidentReportArtifact?.report.title
     ).toBe('스토리지 디스크 포화 경고');
@@ -786,6 +789,9 @@ describe('useAIChatCore', () => {
     expect(result.current.messages[1]?.content).toContain(
       '이상감지/추세 분석을 완료했습니다'
     );
+    expect(result.current.messages[1]?.metadata?.artifactIntentReason).toBe(
+      'monitoring_action_pattern'
+    );
     expect(
       result.current.messages[1]?.metadata?.monitoringAnalysisArtifact
         ?.riskSignalCount
@@ -808,6 +814,9 @@ describe('useAIChatCore', () => {
     expect(mocks.generateMonitoringAnalysisArtifact).not.toHaveBeenCalled();
     expect(result.current.messages[1]?.content).toContain(
       '장애 보고서 작성 기능'
+    );
+    expect(result.current.messages[1]?.metadata?.artifactIntentReason).toBe(
+      'incident_report_guidance_pattern'
     );
   });
 });

@@ -14,6 +14,7 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import { useShallow } from 'zustand/react/shallow';
+import type { ChatArtifactIntentReason } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
 import type {
   IncidentReportArtifact,
   MonitoringAnalysisArtifact,
@@ -121,6 +122,10 @@ export interface ChatMessage {
       details?: string | null;
       shouldCollapse?: boolean;
     };
+    /** 아티팩트 intent 분기 원인 코드 */
+    artifactIntentReason?: ChatArtifactIntentReason;
+    /** guidance 응답일 때 대상 아티팩트 */
+    artifactIntentTarget?: 'incident-report' | 'monitoring-analysis';
     /** 채팅에서 생성한 사용자 다운로드 가능 장애 보고서 */
     incidentReportArtifact?: IncidentReportArtifact;
     /** 채팅에서 생성한 사용자 다운로드 가능 이상감지/추세 분석 */

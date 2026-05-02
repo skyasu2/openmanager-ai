@@ -1,11 +1,20 @@
 export type ChatArtifactIntent =
   | { kind: 'none' }
-  | { kind: 'incident-report' }
-  | { kind: 'monitoring-analysis' }
+  | { kind: 'incident-report'; reason: ChatArtifactIntentReason }
+  | { kind: 'monitoring-analysis'; reason: ChatArtifactIntentReason }
   | {
       kind: 'guidance';
       target: 'incident-report' | 'monitoring-analysis';
+      reason: ChatArtifactIntentReason;
     };
+
+export type ChatArtifactIntentReason =
+  | 'incident_report_action_pattern'
+  | 'incident_report_guidance_pattern'
+  | 'incident_report_implicit_keyword'
+  | 'monitoring_action_pattern'
+  | 'monitoring_guidance_pattern'
+  | 'monitoring_implicit_artifact_keyword';
 
 const REPORT_PATTERN =
   /(장애\s*(보고서|리포트|보고)|인시던트\s*(보고서|리포트)|incident\s*report)/i;
@@ -36,28 +45,50 @@ export function classifyChatArtifactIntent(query: string): ChatArtifactIntent {
 
   if (REPORT_PATTERN.test(normalized)) {
     if (REPORT_ACTION_PATTERN.test(normalized)) {
-      return { kind: 'incident-report' };
+      return {
+        kind: 'incident-report',
+        reason: 'incident_report_action_pattern',
+      };
     }
     if (REPORT_GUIDANCE_PATTERN.test(normalized)) {
-      return { kind: 'guidance', target: 'incident-report' };
+      return {
+        kind: 'guidance',
+        target: 'incident-report',
+        reason: 'incident_report_guidance_pattern',
+      };
     }
     if (isImplicitKeywordRequest(normalized)) {
-      return { kind: 'incident-report' };
+      return {
+        kind: 'incident-report',
+        reason: 'incident_report_implicit_keyword',
+      };
     }
   }
 
   if (MONITORING_PATTERN.test(normalized)) {
     if (MONITORING_ACTION_PATTERN.test(normalized)) {
-      return { kind: 'monitoring-analysis' };
+      return {
+        kind: 'monitoring-analysis',
+        reason: 'monitoring_action_pattern',
+      };
     }
     if (MONITORING_GUIDANCE_PATTERN.test(normalized)) {
-      return { kind: 'guidance', target: 'monitoring-analysis' };
+      return {
+        kind: 'guidance',
+        target: 'monitoring-analysis',
+        reason: 'monitoring_guidance_pattern',
+      };
     }
+    // Bare "추세" is often a normal chat topic, so monitoring implicit routing
+    // requires an artifact-shaped phrase while "장애보고서" remains actionable.
     if (
       MONITORING_ARTIFACT_PATTERN.test(normalized) &&
       isImplicitKeywordRequest(normalized)
     ) {
-      return { kind: 'monitoring-analysis' };
+      return {
+        kind: 'monitoring-analysis',
+        reason: 'monitoring_implicit_artifact_keyword',
+      };
     }
   }
 

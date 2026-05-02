@@ -240,6 +240,9 @@ export function transformUIMessageToEnhanced(
   const hasChatArtifact = Boolean(
     incidentReportArtifact || monitoringAnalysisArtifact
   );
+  const hasArtifactIntentMetadata = Boolean(
+    metadata?.artifactIntentReason || metadata?.artifactIntentTarget
+  );
   const handoffHistory = metadata?.handoffHistory;
   const hasProviderTelemetry =
     Boolean(metadata?.provider) ||
@@ -346,6 +349,7 @@ export function transformUIMessageToEnhanced(
       traceId ||
       assistantResponseView ||
       hasChatArtifact ||
+      hasArtifactIntentMetadata ||
       handoffHistory ||
       toolResultSummaries.length > 0 ||
       hasProviderTelemetry
@@ -385,6 +389,12 @@ export function transformUIMessageToEnhanced(
             }),
             ...(assistantResponseView && {
               assistantResponseView,
+            }),
+            ...(metadata?.artifactIntentReason && {
+              artifactIntentReason: metadata.artifactIntentReason,
+            }),
+            ...(metadata?.artifactIntentTarget && {
+              artifactIntentTarget: metadata.artifactIntentTarget,
             }),
             ...(incidentReportArtifact && {
               incidentReportArtifact,

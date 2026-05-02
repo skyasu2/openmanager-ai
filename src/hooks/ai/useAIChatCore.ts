@@ -32,6 +32,7 @@ import {
   useHybridAIQuery,
 } from '@/hooks/ai/useHybridAIQuery';
 import {
+  type ChatArtifactIntentReason,
   classifyChatArtifactIntent,
   createArtifactGuidanceMessage,
 } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
@@ -345,10 +346,12 @@ function getArtifactErrorText(
 }
 
 function buildArtifactMetadata(
-  artifact: ChatArtifact
+  artifact: ChatArtifact,
+  intentReason: ChatArtifactIntentReason
 ): Record<string, unknown> {
   if (artifact.kind === 'incident-report') {
     return {
+      artifactIntentReason: intentReason,
       incidentReportArtifact: artifact,
       toolsCalled: ['generateIncidentReportArtifact'],
       toolResultSummaries: [
@@ -363,6 +366,7 @@ function buildArtifactMetadata(
   }
 
   return {
+    artifactIntentReason: intentReason,
     monitoringAnalysisArtifact: artifact,
     toolsCalled: ['generateMonitoringAnalysisArtifact'],
     toolResultSummaries: [
@@ -780,6 +784,10 @@ export function useAIChatCore(
             id: `artifact-guidance-assistant-${token}`,
             role: 'assistant',
             text: createArtifactGuidanceMessage(artifactIntent.target),
+            metadata: {
+              artifactIntentReason: artifactIntent.reason,
+              artifactIntentTarget: artifactIntent.target,
+            },
           }),
         ]);
         return;
@@ -841,7 +849,7 @@ export function useAIChatCore(
               id: pendingAssistantMessage.id,
               role: 'assistant',
               text: getArtifactSuccessText(artifact),
-              metadata: buildArtifactMetadata(artifact),
+              metadata: buildArtifactMetadata(artifact, artifactIntent.reason),
             });
             const currentMessages = messagesRef.current;
             const nextMessages = currentMessages.some(
@@ -867,6 +875,7 @@ export function useAIChatCore(
               role: 'assistant',
               text: errorText,
               metadata: {
+                artifactIntentReason: artifactIntent.reason,
                 toolResultSummaries: [
                   {
                     toolName:
