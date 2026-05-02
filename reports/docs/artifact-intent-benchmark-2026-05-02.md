@@ -34,4 +34,6 @@
 
 - `incident-report` local classifier precision threshold: `>= 0.94`
 - `monitoring-analysis` local classifier precision threshold: `>= 0.94`
+- All four local classifier classes must have at least one prediction and
+  precision/recall `>= 0.90` to catch guidance/none drift.
 - The evaluation is included in `test:quick` through `config/testing/vitest.config.minimal.ts`.

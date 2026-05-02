@@ -35,8 +35,8 @@ export interface ArtifactIntentKindMetrics {
   truePositive: number;
   falsePositive: number;
   falseNegative: number;
-  precision: number;
-  recall: number;
+  precision: number | null;
+  recall: number | null;
 }
 
 export interface ArtifactIntentEvaluation {
@@ -92,8 +92,8 @@ function calculateKindMetrics(
     truePositive,
     falsePositive,
     falseNegative,
-    precision: predicted === 0 ? 1 : truePositive / predicted,
-    recall: support === 0 ? 1 : truePositive / support,
+    precision: predicted === 0 ? null : truePositive / predicted,
+    recall: support === 0 ? null : truePositive / support,
   };
 }
 
@@ -140,6 +140,6 @@ export function evaluateArtifactIntentClassifier(
   };
 }
 
-export function formatRatio(value: number): string {
-  return value.toFixed(4);
+export function formatRatio(value: number | null): string {
+  return value === null ? 'n/a' : value.toFixed(4);
 }

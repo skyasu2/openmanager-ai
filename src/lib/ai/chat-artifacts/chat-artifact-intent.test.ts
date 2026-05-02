@@ -24,6 +24,12 @@ describe('classifyChatArtifactIntent', () => {
     ).toMatchObject({
       kind: 'incident-report',
     });
+    expect(
+      classifyChatArtifactIntent('장애 보고서 기능 실행해줘')
+    ).toMatchObject({
+      kind: 'incident-report',
+      reason: 'incident_report_action_pattern',
+    });
   });
 
   it('routes explicit trend analysis requests to monitoring-analysis artifact', () => {

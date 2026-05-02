@@ -11,6 +11,7 @@ import {
 } from './intent-classifier-metrics';
 
 const LOCAL_CLASSIFIER_PRECISION_THRESHOLD = 0.94;
+const LOCAL_CLASSIFIER_CLASS_HEALTH_THRESHOLD = 0.9;
 
 const evaluation = evaluateArtifactIntentClassifier(
   artifactIntentCorpus.cases,
@@ -60,5 +61,22 @@ describe('Artifact Intent Local Classifier Evaluation', () => {
     expect(
       evaluation.metrics['monitoring-analysis'].precision
     ).toBeGreaterThanOrEqual(LOCAL_CLASSIFIER_PRECISION_THRESHOLD);
+  });
+
+  it('keeps all local classifier classes represented and healthy', () => {
+    for (const kind of ARTIFACT_INTENT_EVALUATION_KINDS) {
+      const metrics = evaluation.metrics[kind];
+
+      expect(metrics.support).toBeGreaterThan(0);
+      expect(metrics.predicted).toBeGreaterThan(0);
+      expect(metrics.precision).not.toBeNull();
+      expect(metrics.recall).not.toBeNull();
+      expect(metrics.precision ?? 0).toBeGreaterThanOrEqual(
+        LOCAL_CLASSIFIER_CLASS_HEALTH_THRESHOLD
+      );
+      expect(metrics.recall ?? 0).toBeGreaterThanOrEqual(
+        LOCAL_CLASSIFIER_CLASS_HEALTH_THRESHOLD
+      );
+    }
   });
 });

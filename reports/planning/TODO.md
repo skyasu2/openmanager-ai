@@ -48,6 +48,7 @@
   - 74개 deterministic seed corpus로 `incident-report`, `monitoring-analysis`, `guidance`, `none` intent를 균형 평가
   - confusion matrix + precision/recall 계산 유틸과 Vitest local classifier guard 추가
   - `incident-report` / `monitoring-analysis` local classifier precision `>= 0.94`를 `test:quick`에서 방어
+  - `guidance` / `none` 포함 전체 클래스가 최소 1회 이상 예측되고 precision/recall `>= 0.90`을 유지하도록 drift guard 추가
   - `현재 서버 상태 분석해줘`, `서버 분석해줘`, `CPU 높은 서버 원인 분석해줘` 같은 일반 운영 분석 쿼리는 artifact 실행으로 라우팅하지 않도록 회귀 케이스 추가
   - 평가 결과 기록: [artifact-intent-benchmark-2026-05-02.md](../docs/artifact-intent-benchmark-2026-05-02.md)
   - 검증: artifact intent targeted local classifier evaluation 74/74

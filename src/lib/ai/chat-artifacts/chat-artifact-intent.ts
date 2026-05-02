@@ -31,12 +31,11 @@ const ARTIFACT_NEGATION_PATTERN =
   /(말고|아니고|없이|나중에|필요\s*없|하지\s*마|하지\s*말|제외)/i;
 const ARTIFACT_GUIDANCE_PRIORITY_PATTERN =
   /(어떻게|방법|어디|어떤|가능|사용법|뭐야|무엇|무슨|지원|되나|돼\?|될까|샘플|예시|화면|위치|보여줄\s*수)/i;
+const ARTIFACT_GUIDANCE_PATTERN = /(기능|설명|안내)/i;
 const REPORT_PATTERN =
   /(장애\s*(보고서|리포트|보고)|인시던트\s*(보고서|리포트)|incident\s*report)/i;
 const REPORT_ACTION_PATTERN =
-  /(작성(?!\s*(방법|법|기능|설명|안내))|생성(?!\s*(방법|법|기능|설명|안내))|만들|만들어|다운로드(?!\s*(방법|법|기능|설명|안내))|내려받|부탁|요청|뽑아|출력|export|generate|download)/i;
-const REPORT_GUIDANCE_PATTERN =
-  /(어떻게|방법|어디|어떤|기능|설명|안내|가능|사용법|뭐야|무엇|무슨|지원|되나|돼\?|될까|샘플|예시|화면|위치|보여줄\s*수)/i;
+  /(작성(?!\s*(방법|법|기능|설명|안내))|생성(?!\s*(방법|법|기능|설명|안내))|만들|만들어|다운로드(?!\s*(방법|법|기능|설명|안내))|내려받|부탁|요청|실행|돌려|뽑아|출력|export|generate|download|run)/i;
 
 const MONITORING_PATTERN =
   /(이상\s*감지|이상감지|이상\s*탐지|추세|트렌드|리스크\s*(추세|분석)|예측|예상|anomaly|forecast|trend)/i;
@@ -44,8 +43,6 @@ const MONITORING_ACTION_PATTERN =
   /(분석\s*(해|해줘|해주세요|해줄래|좀|부탁|요청)|분석해|실행|돌려|요약\s*(해|해줘|해주세요|해줄래|부탁|요청)|요약해|확인\s*(해|해줘|해주세요|해줄래|부탁|요청)|확인해|생성(?!\s*(방법|법|기능|설명|안내))|만들|다운로드(?!\s*(방법|법|기능|설명|안내))|예측\s*(해|해줘|해주세요|해줄래|부탁|요청)|예측해|forecast|analy[sz]e|run)/i;
 const MONITORING_ARTIFACT_PATTERN =
   /(이상\s*감지|이상감지|이상\s*탐지|추세\s*(분석|리포트|보고서)|트렌드\s*(분석|리포트|보고서)|리스크\s*(추세|분석)|장애\s*(예측|예상)|예측\s*(분석|리포트|보고서)|anomaly\s*detection|forecast|trend\s*(analysis|report)?)/i;
-const MONITORING_GUIDANCE_PATTERN =
-  /(어떻게|방법|어디|어떤|기능|설명|안내|가능|사용법|뭐야|무엇|무슨|지원|되나|돼\?|될까|샘플|예시|화면|위치|보여줄\s*수)/i;
 const LLM_ARTIFACT_CANDIDATE_PATTERN =
   /(장애|인시던트|incident|보고서|리포트|report|이상\s*(감지|탐지)|이상감지|추세|트렌드|리스크|예측|모니터링|anomaly|forecast|trend|risk)/i;
 const LLM_ARTIFACT_ACTION_HINT_PATTERN =
@@ -86,7 +83,7 @@ export function classifyChatArtifactIntent(query: string): ChatArtifactIntent {
         reason: 'incident_report_action_pattern',
       });
     }
-    if (REPORT_GUIDANCE_PATTERN.test(normalized)) {
+    if (ARTIFACT_GUIDANCE_PATTERN.test(normalized)) {
       return withRuleVersion({
         kind: 'guidance',
         target: 'incident-report',
@@ -115,7 +112,7 @@ export function classifyChatArtifactIntent(query: string): ChatArtifactIntent {
         reason: 'monitoring_action_pattern',
       });
     }
-    if (MONITORING_GUIDANCE_PATTERN.test(normalized)) {
+    if (ARTIFACT_GUIDANCE_PATTERN.test(normalized)) {
       return withRuleVersion({
         kind: 'guidance',
         target: 'monitoring-analysis',
