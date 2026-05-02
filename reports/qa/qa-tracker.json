@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-02T07:43:11.883Z"
+    "updatedAt": "2026-05-02T08:22:31.207Z"
   },
   "sequence": {
-    "nextRunNumber": 391
+    "nextRunNumber": 392
   },
   "summary": {
-    "totalRecordedRuns": 388,
-    "totalRuns": 317,
+    "totalRecordedRuns": 389,
+    "totalRuns": 318,
     "excludedRuns": 71,
-    "totalChecks": 2723,
-    "totalPassed": 2625,
+    "totalChecks": 2729,
+    "totalPassed": 2631,
     "totalFailed": 89,
     "completionRate": 100,
-    "completedItems": 401,
+    "completedItems": 402,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 20,
     "expertDomainsTracked": 12,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260502-0390",
-    "lastRecordedAt": "2026-05-02T07:43:11.883Z",
-    "latestRecordedRunId": "QA-20260502-0390",
-    "latestRecordedAt": "2026-05-02T07:43:11.883Z"
+    "lastRunId": "QA-20260502-0391",
+    "lastRecordedAt": "2026-05-02T08:22:31.207Z",
+    "latestRecordedRunId": "QA-20260502-0391",
+    "latestRecordedAt": "2026-05-02T08:22:31.207Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -9833,6 +9833,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-02T07:43:11.883Z"
+    },
+    "ai-artifact-keyword-routing-v81182": {
+      "id": "ai-artifact-keyword-routing-v81182",
+      "title": "Short artifact keywords route to the intended artifact execution path",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260502-0391",
+      "firstSeenAt": "2026-05-02T08:22:31.207Z",
+      "lastSeenRunId": "QA-20260502-0391",
+      "lastSeenAt": "2026-05-02T08:22:31.207Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production Playwright MCP: '추세 분석' called /api/ai/intelligent-monitoring and rendered the Monitoring Analysis artifact card.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-02T08:22:31.207Z"
     }
   },
   "runs": [
@@ -38879,6 +38903,108 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260502-0391",
+      "recordedAt": "2026-05-02T08:22:31.207Z",
+      "recordedAtKst": "2026-05-02 17:22:31 KST",
+      "title": "Vercel Production Targeted QA - Artifact Keyword Routing v8.11.82",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260502-0391.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_2AckfwZgPbFHCLjf3uj5sXquVLKj",
+        "deploymentUrl": "https://openmanager-7wcxc65qj-skyasus-projects.vercel.app",
+        "commitSha": "3b241447a659a65adcd735896b1ed57e76c985c8"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "/api/version: production serves v8.11.82 with commit 3b241447a659a65adcd735896b1ed57e76c985c8",
+        "/: landing renders v8.11.82 badge",
+        "/system-boot -> /dashboard: system start flow reached dashboard",
+        "/dashboard: AI sidebar opens from production dashboard",
+        "AI sidebar keyword query: '추세 분석' called /api/ai/intelligent-monitoring and rendered Monitoring Analysis artifact card",
+        "Monitoring artifact card rendered analyzed server count, risk signal count, source metadata, MD download, JSON download, and fullscreen handoff action"
+      ],
+      "skippedSurfaces": [
+        "Incident report keyword recheck: covered by local intent tests and previous v8.11.81 production run",
+        "Abort/stop in-flight artifact: still covered by unit tests because production artifact responses complete quickly",
+        "Modal/detail pack: unchanged by keyword routing fix",
+        "Cloud Run admin observability /monitoring and /monitoring/traces: not part of Vercel artifact routing scope"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production browser QA verified the exact short keyword query that previously felt unreliable now routes to the monitoring artifact path.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Local classifier and chat-path regression tests were paired with a production Playwright MCP confirmation.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-02T17:20:43+09:00",
+          "summary": "Current billing period effective 0.6724 USD and billed 0.0000 USD after production QA.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Monitoring artifact keyword routing production verification",
+          "path": "reports/qa/evidence/qa-20260502-v81182-artifact-keyword-routing.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.82 deploy pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2494833445"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment v8.11.82",
+          "url": "https://openmanager-7wcxc65qj-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -38887,16 +39013,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 182,
-      "appropriateCount": 163,
+      "seenCount": 183,
+      "appropriateCount": 164,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 28,
-      "lastRunId": "QA-20260502-0390",
-      "lastSeenAt": "2026-05-02T07:43:11.883Z",
+      "lastRunId": "QA-20260502-0391",
+      "lastSeenAt": "2026-05-02T08:22:31.207Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Changed AI artifact intent paths were verified on production with one guidance query and one artifact generation query.",
+      "lastRationale": "Production browser QA verified the exact short keyword query that previously felt unreliable now routes to the monitoring artifact path.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -38955,16 +39081,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 153,
-      "appropriateCount": 141,
+      "seenCount": 154,
+      "appropriateCount": 142,
       "partialCount": 12,
       "inappropriateCount": 0,
       "improvementNeededCount": 13,
-      "lastRunId": "QA-20260502-0390",
-      "lastSeenAt": "2026-05-02T07:43:11.883Z",
+      "lastRunId": "QA-20260502-0391",
+      "lastSeenAt": "2026-05-02T08:22:31.207Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Unit/contract gates were already green before release; this run adds browser-level Playwright MCP coverage for the changed production surface.",
+      "lastRationale": "Local classifier and chat-path regression tests were paired with a production Playwright MCP confirmation.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
