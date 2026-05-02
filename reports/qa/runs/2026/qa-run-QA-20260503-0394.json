@@ -1,0 +1,127 @@
+{
+  "runId": "QA-20260503-0394",
+  "recordedAt": "2026-05-02T16:09:07.439Z",
+  "recordedAtKst": "2026-05-03 01:09:07 KST",
+  "runTitle": "Vercel Production Targeted QA - Server Snapshot Artifact v8.11.84",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_ArfQ7rxrJkRun4hjvZXJ49wvBudy",
+    "deploymentUrl": "https://openmanager-aksl2nqxu-skyasus-projects.vercel.app",
+    "commitSha": "0f767f05fb5f32698ee2483cdda77bafd708b059"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["dashboard-core", "ai-core", "ai-advanced-surface"],
+  "coveredSurfaces": [
+    "/: landing render exposed v8.11.84 badge before dashboard verification",
+    "/dashboard: production dashboard loaded with synthetic OTel dataset and 18 server summary",
+    "/dashboard: AI sidebar opened from the production dashboard",
+    "AI sidebar query: '서버 상태 스냅샷' rendered the Server Snapshot artifact card",
+    "Server Snapshot artifact card rendered total server count, warning count, risk count, average CPU, source metadata, and KST data slot",
+    "Server Snapshot artifact card exposed MD and JSON download actions",
+    "Assistant evidence panel recorded tool metadata as generateServerSnapshotArtifact",
+    "Network requests for the snapshot path stayed on /api/ai/wake-up and /data/otel-data static JSON; no supervisor stream, artifact-intent, incident-report, or intelligent-monitoring API call was observed",
+    "/api/version returned 8.11.84, commit 0f767f05fb5f32698ee2483cdda77bafd708b059, releaseTag v8.11.84, and GitLab pipeline 2495131125",
+    "Vercel usage check completed after production QA with billed usage remaining 0.0000 USD"
+  ],
+  "skippedSurfaces": [
+    "Incident report artifact rerun: already covered by QA-20260502-0390 and QA-20260502-0392, unchanged by server-snapshot feature",
+    "Monitoring analysis artifact rerun: already covered by QA-20260502-0392 and unchanged by server-snapshot feature",
+    "General Cloud Run streaming chat: intentionally not invoked because this QA validates that server-snapshot avoids Cloud Run/LLM cost paths",
+    "Modal/detail pack: unchanged by server-snapshot artifact wiring",
+    "Cloud Run admin observability /monitoring and /monitoring/traces: outside this Vercel artifact routing scope"
+  ],
+  "checks": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production browser QA verified the new server-snapshot intent through the real sidebar input, artifact rendering, structured metrics, and download actions.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The release tag pipeline and Vercel production deployment were both verified, and the artifact path stayed on static OTel data without unnecessary Cloud Run execution.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "This targeted MCP run complements the local 59-test artifact regression suite by covering the deployed UI, network behavior, and durable screenshot evidence.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-03T01:08:05+09:00",
+      "summary": "Current billing period effective 0.6724 USD and billed 0.0000 USD after v8.11.84 server snapshot artifact QA.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Server Snapshot artifact production verification",
+      "path": "reports/qa/evidence/qa-20260503-v81184-server-snapshot-artifact.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-server-snapshot-artifact-v81184",
+      "title": "Server status snapshot artifact routes and renders in production without LLM/Cloud Run cost path",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production Playwright MCP: '서버 상태 스냅샷' rendered the Server Snapshot artifact card, MD/JSON actions, generateServerSnapshotArtifact metadata, and no supervisor/artifact-intent/incident/monitoring AI endpoint calls.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "GitLab v8.11.84 deploy pipeline 2495131125 succeeded for deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke.",
+    "Browser network capture after the server snapshot flow showed POST /api/ai/wake-up and GET /data/otel-data/hourly/hour-00.json, timeseries.json, and resource-catalog.json only for AI/data resources.",
+    "No aiLatencyObservations were recorded because the validated path intentionally avoids LLM inference and Cloud Run supervisor streaming."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.11.84 deploy pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2495131125"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment v8.11.84",
+      "url": "https://openmanager-aksl2nqxu-skyasus-projects.vercel.app/"
+    }
+  ]
+}

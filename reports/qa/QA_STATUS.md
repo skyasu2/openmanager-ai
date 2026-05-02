@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-02 18:30:17 KST
+> Generated at: 2026-05-03 01:09:08 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 391 |
-| Total Runs (Counted) | 319 |
+| Total Recorded Runs | 392 |
+| Total Runs (Counted) | 320 |
 | Non-counted Runs | 72 |
-| Total Checks | 2737 |
-| Passed | 2639 |
+| Total Checks | 2747 |
+| Passed | 2649 |
 | Failed | 89 |
-| Completed Items | 403 |
+| Completed Items | 404 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 20 |
 | Expert Domains Tracked | 12 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260502-0392 (2026-05-02T09:10:56.289Z) |
-| Latest Recorded Run | QA-20260502-0393 (2026-05-02T09:30:16.319Z) |
+| Last Counted Run | QA-20260503-0394 (2026-05-02T16:09:07.439Z) |
+| Latest Recorded Run | QA-20260503-0394 (2026-05-02T16:09:07.439Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,21 +34,23 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260502-0393 (2026-05-02T09:30:16.319Z)
+Latest run: QA-20260503-0394 (2026-05-02T16:09:07.439Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period effective 0.6724 USD and billed 0.0000 USD after the supplementary Playwright MCP recheck. |
+| vercel | cli | checked | normal | Current billing period effective 0.6724 USD and billed 0.0000 USD after v8.11.84 server snapshot artifact QA. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-01T09:30:16.319Z -> 2026-05-02T09:30:16.319Z (24h)
+- Window: 2026-05-01T16:09:07.439Z -> 2026-05-02T16:09:07.439Z (24h)
 - Runs with observations: 1 recorded / 1 counted
 - Samples: 2
 
@@ -60,25 +62,25 @@ Latest run: QA-20260502-0393 (2026-05-02T09:30:16.319Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: dpl_2AckfwZgPbFHCLjf3uj5sXquVLKj / SHA 3b241447
+- Release-Facing: yes
+- Counts Toward Summary: yes
+- Deployment: dpl_ArfQ7rxrJkRun4hjvZXJ49wvBudy / SHA 0f767f05
 - Coverage Packs: dashboard-core, ai-core, ai-advanced-surface
-- Covered Surfaces: /: landing renders v8.11.82 badge, /system-boot -> /dashboard: system start flow reached dashboard, /dashboard: AI sidebar opens from production dashboard, AI sidebar keyword query: '추세 분석' called /api/ai/intelligent-monitoring and rendered Monitoring Analysis artifact card, Monitoring artifact card rendered analyzed server count, risk signal count, source metadata, evidence, MD/JSON downloads, and fullscreen handoff action, Network resources included /api/ai/wake-up and /api/ai/intelligent-monitoring; no supervisor stream route was needed for this artifact request
-- Skipped Surfaces: Incident report artifact rerun: already covered by QA-20260502-0392 on the same v8.11.82 deployment, Guidance/non-execution prompts: already covered by local regression tests and QA-20260502-0390, Broad dashboard/modal packs: unchanged by artifact keyword routing and already covered by prior targeted runs, Cloud Run admin observability /monitoring and /monitoring/traces: outside this Vercel keyword recheck scope
+- Covered Surfaces: /: landing render exposed v8.11.84 badge before dashboard verification, /dashboard: production dashboard loaded with synthetic OTel dataset and 18 server summary, /dashboard: AI sidebar opened from the production dashboard, AI sidebar query: '서버 상태 스냅샷' rendered the Server Snapshot artifact card, Server Snapshot artifact card rendered total server count, warning count, risk count, average CPU, source metadata, and KST data slot, Server Snapshot artifact card exposed MD and JSON download actions, Assistant evidence panel recorded tool metadata as generateServerSnapshotArtifact, Network requests for the snapshot path stayed on /api/ai/wake-up and /data/otel-data static JSON; no supervisor stream, artifact-intent, incident-report, or intelligent-monitoring API call was observed, /api/version returned 8.11.84, commit 0f767f05fb5f32698ee2483cdda77bafd708b059, releaseTag v8.11.84, and GitLab pipeline 2495131125, Vercel usage check completed after production QA with billed usage remaining 0.0000 USD
+- Skipped Surfaces: Incident report artifact rerun: already covered by QA-20260502-0390 and QA-20260502-0392, unchanged by server-snapshot feature, Monitoring analysis artifact rerun: already covered by QA-20260502-0392 and unchanged by server-snapshot feature, General Cloud Run streaming chat: intentionally not invoked because this QA validates that server-snapshot avoids Cloud Run/LLM cost paths, Modal/detail pack: unchanged by server-snapshot artifact wiring, Cloud Run admin observability /monitoring and /monitoring/traces: outside this Vercel artifact routing scope
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.11.82 deploy pipeline | [GitLab v8.11.82 deploy pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2494833445) | - |
-| vercel-deployment | Vercel production deployment v8.11.82 | [Vercel production deployment v8.11.82](https://openmanager-7wcxc65qj-skyasus-projects.vercel.app/) | - |
+| general | GitLab v8.11.84 deploy pipeline | [GitLab v8.11.84 deploy pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2495131125) | - |
+| vercel-deployment | Vercel production deployment v8.11.84 | [Vercel production deployment v8.11.84](https://openmanager-aksl2nqxu-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Artifact keyword change recheck production screenshot | `reports/qa/evidence/qa-20260502-v81182-artifact-change-recheck.png` | - |
+| playwright-screenshot | Server Snapshot artifact production verification | `reports/qa/evidence/qa-20260503-v81184-server-snapshot-artifact.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -215,6 +217,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-ranking-memory-live-route: Memory top-N ranking uses deterministic live metric path on production (completed 1회, last QA-20260418-0305)
 - ai-recommendation-free-tier-fit: AI 운영 권고에서 리소스 업그레이드보다 조사/캐시/분산 조치를 우선 (completed 1회, last QA-20260423-0339)
 - ai-reporter-success: Reporter Agent 보고서 생성 성공 (completed 3회, last QA-20260315-0104)
+- ai-server-snapshot-artifact-v81184: Server status snapshot artifact routes and renders in production without LLM/Cloud Run cost path (completed 1회, last QA-20260503-0394)
 - ai-server-timing-hosting-path-diagnosed: Server-Timing production/local hosting path difference diagnosed (completed 1회, last QA-20260310-0081)
 - ai-sidebar-open: AI 사이드바 열기/닫기 (completed 1회, last QA-20260317-0114)
 - ai-sidebar-parity-contract-rendering: AI sidebar 상세 분석에 실제 parity metadata contract 노출 (completed 1회, last QA-20260323-0164)
@@ -566,6 +569,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260503-0394 | 2026-05-02T16:09:07.439Z | targeted | yes | yes | Vercel Production Targeted QA - Server Snapshot Artifact v8.11.84 | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260502-0393 | 2026-05-02T09:30:16.319Z | targeted | no | no | Vercel Production Verification - Artifact Keyword Change Recheck v8.11.82 | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260502-0392 | 2026-05-02T09:10:56.289Z | targeted | yes | yes | Vercel Production Targeted QA - Artifact Short Keyword Pair v8.11.82 | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260502-0391 | 2026-05-02T08:22:31.207Z | targeted | yes | yes | Vercel Production Targeted QA - Artifact Keyword Routing v8.11.82 | 6 | 1 | 0 | 0 | 0 | 0 |
@@ -585,4 +589,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260430-0377 | 2026-04-30T05:14:43.053Z | targeted | yes | yes | Vercel Playwright QA - v8.11.69 Dashboard Navigation Contrast | 15 | 1 | 1 | 0 | 0 | 2 |
 | QA-20260430-0376 | 2026-04-29T20:55:55.746Z | targeted | yes | yes | Vercel Playwright QA - v8.11.68 Explicit Server Summary | 6 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260430-0375 | 2026-04-29T19:26:27.989Z | targeted | yes | yes | curl smoke - v8.11.64 Cloud Run /health redis circuit schema | 4 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260430-0374 | 2026-04-29T18:53:53.244Z | targeted | yes | yes | Vercel Playwright targeted QA - v8.11.64 AI alert-status advisory rerun | 10 | 1 | 0 | 0 | 1 | 1 |

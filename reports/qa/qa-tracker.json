@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-02T09:30:16.319Z"
+    "updatedAt": "2026-05-02T16:09:07.439Z"
   },
   "sequence": {
-    "nextRunNumber": 394
+    "nextRunNumber": 395
   },
   "summary": {
-    "totalRecordedRuns": 391,
-    "totalRuns": 319,
+    "totalRecordedRuns": 392,
+    "totalRuns": 320,
     "excludedRuns": 72,
-    "totalChecks": 2737,
-    "totalPassed": 2639,
+    "totalChecks": 2747,
+    "totalPassed": 2649,
     "totalFailed": 89,
     "completionRate": 100,
-    "completedItems": 403,
+    "completedItems": 404,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 20,
     "expertDomainsTracked": 12,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260502-0392",
-    "lastRecordedAt": "2026-05-02T09:10:56.289Z",
-    "latestRecordedRunId": "QA-20260502-0393",
-    "latestRecordedAt": "2026-05-02T09:30:16.319Z"
+    "lastRunId": "QA-20260503-0394",
+    "lastRecordedAt": "2026-05-02T16:09:07.439Z",
+    "latestRecordedRunId": "QA-20260503-0394",
+    "latestRecordedAt": "2026-05-02T16:09:07.439Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -9881,6 +9881,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-02T09:10:56.289Z"
+    },
+    "ai-server-snapshot-artifact-v81184": {
+      "id": "ai-server-snapshot-artifact-v81184",
+      "title": "Server status snapshot artifact routes and renders in production without LLM/Cloud Run cost path",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260503-0394",
+      "firstSeenAt": "2026-05-02T16:09:07.439Z",
+      "lastSeenRunId": "QA-20260503-0394",
+      "lastSeenAt": "2026-05-02T16:09:07.439Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production Playwright MCP: '서버 상태 스냅샷' rendered the Server Snapshot artifact card, MD/JSON actions, generateServerSnapshotArtifact metadata, and no supervisor/artifact-intent/incident/monitoring AI endpoint calls.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-02T16:09:07.439Z"
     }
   },
   "runs": [
@@ -39218,6 +39242,121 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260503-0394",
+      "recordedAt": "2026-05-02T16:09:07.439Z",
+      "recordedAtKst": "2026-05-03 01:09:07 KST",
+      "title": "Vercel Production Targeted QA - Server Snapshot Artifact v8.11.84",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260503-0394.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_ArfQ7rxrJkRun4hjvZXJ49wvBudy",
+        "deploymentUrl": "https://openmanager-aksl2nqxu-skyasus-projects.vercel.app",
+        "commitSha": "0f767f05fb5f32698ee2483cdda77bafd708b059"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "/: landing render exposed v8.11.84 badge before dashboard verification",
+        "/dashboard: production dashboard loaded with synthetic OTel dataset and 18 server summary",
+        "/dashboard: AI sidebar opened from the production dashboard",
+        "AI sidebar query: '서버 상태 스냅샷' rendered the Server Snapshot artifact card",
+        "Server Snapshot artifact card rendered total server count, warning count, risk count, average CPU, source metadata, and KST data slot",
+        "Server Snapshot artifact card exposed MD and JSON download actions",
+        "Assistant evidence panel recorded tool metadata as generateServerSnapshotArtifact",
+        "Network requests for the snapshot path stayed on /api/ai/wake-up and /data/otel-data static JSON; no supervisor stream, artifact-intent, incident-report, or intelligent-monitoring API call was observed",
+        "/api/version returned 8.11.84, commit 0f767f05fb5f32698ee2483cdda77bafd708b059, releaseTag v8.11.84, and GitLab pipeline 2495131125",
+        "Vercel usage check completed after production QA with billed usage remaining 0.0000 USD"
+      ],
+      "skippedSurfaces": [
+        "Incident report artifact rerun: already covered by QA-20260502-0390 and QA-20260502-0392, unchanged by server-snapshot feature",
+        "Monitoring analysis artifact rerun: already covered by QA-20260502-0392 and unchanged by server-snapshot feature",
+        "General Cloud Run streaming chat: intentionally not invoked because this QA validates that server-snapshot avoids Cloud Run/LLM cost paths",
+        "Modal/detail pack: unchanged by server-snapshot artifact wiring",
+        "Cloud Run admin observability /monitoring and /monitoring/traces: outside this Vercel artifact routing scope"
+      ],
+      "checks": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production browser QA verified the new server-snapshot intent through the real sidebar input, artifact rendering, structured metrics, and download actions.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The release tag pipeline and Vercel production deployment were both verified, and the artifact path stayed on static OTel data without unnecessary Cloud Run execution.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "This targeted MCP run complements the local 59-test artifact regression suite by covering the deployed UI, network behavior, and durable screenshot evidence.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-03T01:08:05+09:00",
+          "summary": "Current billing period effective 0.6724 USD and billed 0.0000 USD after v8.11.84 server snapshot artifact QA.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Server Snapshot artifact production verification",
+          "path": "reports/qa/evidence/qa-20260503-v81184-server-snapshot-artifact.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.84 deploy pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2495131125"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment v8.11.84",
+          "url": "https://openmanager-aksl2nqxu-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -39226,16 +39365,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 184,
-      "appropriateCount": 165,
+      "seenCount": 185,
+      "appropriateCount": 166,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 28,
-      "lastRunId": "QA-20260502-0392",
-      "lastSeenAt": "2026-05-02T09:10:56.289Z",
+      "lastRunId": "QA-20260503-0394",
+      "lastSeenAt": "2026-05-02T16:09:07.439Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production browser QA covered both representative short keyword families: incident report and failure prediction/trend analysis.",
+      "lastRationale": "Production browser QA verified the new server-snapshot intent through the real sidebar input, artifact rendering, structured metrics, and download actions.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -39277,16 +39416,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 118,
-      "appropriateCount": 105,
+      "seenCount": 119,
+      "appropriateCount": 106,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 17,
-      "lastRunId": "QA-20260502-0390",
-      "lastSeenAt": "2026-05-02T07:43:11.883Z",
+      "lastRunId": "QA-20260503-0394",
+      "lastSeenAt": "2026-05-02T16:09:07.439Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag pipeline, Vercel deployment, post-deploy smoke, and production version evidence all point to the same v8.11.81 release.",
+      "lastRationale": "The release tag pipeline and Vercel production deployment were both verified, and the artifact path stayed on static OTel data without unnecessary Cloud Run execution.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -39294,16 +39433,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 155,
-      "appropriateCount": 143,
+      "seenCount": 156,
+      "appropriateCount": 144,
       "partialCount": 12,
       "inappropriateCount": 0,
       "improvementNeededCount": 13,
-      "lastRunId": "QA-20260502-0392",
-      "lastSeenAt": "2026-05-02T09:10:56.289Z",
+      "lastRunId": "QA-20260503-0394",
+      "lastSeenAt": "2026-05-02T16:09:07.439Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The production evidence complements the local classifier regression suite by verifying UI input, routing, network calls, and artifact rendering.",
+      "lastRationale": "This targeted MCP run complements the local 59-test artifact regression suite by covering the deployed UI, network behavior, and durable screenshot evidence.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
