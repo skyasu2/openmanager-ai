@@ -51,13 +51,13 @@ Route-local component files:
 
 | Metric | Value |
 | --- | --- |
-| Component source lines | 29847 |
+| Component source lines | 29885 |
 | Component nodes | 149 |
-| Component edges | 136 |
-| Graph density | 0.62% |
-| Alias edges (`@/components/*`) | 38 |
-| Relative edges (`./`, `../`) | 98 |
-| Isolated components | 32 |
+| Component edges | 140 |
+| Graph density | 0.63% |
+| Alias edges (`@/components/*`) | 40 |
+| Relative edges (`./`, `../`) | 100 |
+| Isolated components | 30 |
 | SCC cycle groups | 0 |
 | Largest cycle size | 0 |
 
@@ -79,10 +79,10 @@ flowchart LR
   d11["ui (22)"]
   d12["unified-profile (3)"]
   d4 -->|36| d4
-  d0 -->|32| d0
+  d0 -->|34| d0
   d1 -->|13| d1
+  d1 -->|10| d0
   d9 -->|10| d9
-  d1 -->|8| d0
   d4 -->|6| d11
   d4 -->|4| d9
   d1 -->|3| d11
@@ -125,10 +125,10 @@ flowchart LR
 | From | To | Edge Count |
 | --- | --- | --- |
 | dashboard | dashboard | 36 |
-| ai | ai | 32 |
+| ai | ai | 34 |
 | ai-sidebar | ai-sidebar | 13 |
+| ai-sidebar | ai | 10 |
 | shared | shared | 10 |
-| ai-sidebar | ai | 8 |
 | dashboard | ui | 6 |
 | dashboard | shared | 4 |
 | ai-sidebar | ui | 3 |
@@ -161,8 +161,8 @@ flowchart LR
 | ai/AgentHandoffBadge | 2 |
 | ai/AIContentArea | 2 |
 | ai/AnalysisBasisBadge | 2 |
+| ai/IncidentReportArtifactCard | 2 |
 | ai/MarkdownRenderer | 2 |
-| ai/MessageActions | 2 |
 
 ## Top Component Hubs by Out-Degree (Top 12)
 
@@ -171,12 +171,12 @@ flowchart LR
 | ai-sidebar/EnhancedAIChat | 9 |
 | ai/AIWorkspace | 9 |
 | ai-sidebar/AISidebarV4 | 7 |
+| ai/AIWorkspaceMessage | 7 |
 | dashboard/EnhancedServerModal | 7 |
+| ai-sidebar/SidebarMessage | 6 |
 | dashboard/DashboardRoutedContent | 6 |
 | dashboard/ServerDetailView | 6 |
-| ai/AIWorkspaceMessage | 5 |
 | shared/FeatureCardModal | 5 |
-| ai-sidebar/SidebarMessage | 4 |
 | ai/analysis/ServerResultCard | 4 |
 | dashboard/DashboardHeader | 4 |
 | ai/AnalysisBasisBadge | 3 |
@@ -192,11 +192,11 @@ flowchart LR
 ai-sidebar/EnhancedAIChat -> ai/AgentHandoffBadge, ai/AgentStatusIndicator, ai-sidebar/ChatInputArea, ai-sidebar/ChatMessageList, ai-sidebar/ClarificationDialog, ai-sidebar/chat/ColdStartErrorBanner
 ai/AIWorkspace -> ai-sidebar/EnhancedAIChat, error/AIErrorBoundary, dashboard/RealTimeDisplay, shared/OpenManagerLogo, shared/UnifiedProfileHeader, ai/AIAssistantIconPanel
 ai-sidebar/AISidebarV4 -> ai/AIAssistantIconPanel, ai/AIContentArea, error/AIErrorBoundary, ai-sidebar/AISidebarHeader, ai-sidebar/EnhancedAIChat, ai-sidebar/ResizeHandle
+ai/AIWorkspaceMessage -> ai/AnalysisBasisBadge, ai/IncidentReportArtifactCard, ai/MarkdownRenderer, ai/MessageActions, ai/MonitoringAnalysisArtifactCard, ai/ThinkingProcessVisualizer
 dashboard/EnhancedServerModal -> dashboard/EnhancedServerModal.LogsTab, dashboard/EnhancedServerModal.MetricsTab, dashboard/EnhancedServerModal.NetworkTab, dashboard/EnhancedServerModal.OverviewTab, dashboard/EnhancedServerModal.ProcessesTab, dashboard/ServerModalHeader
+ai-sidebar/SidebarMessage -> ai/AnalysisBasisBadge, ai/IncidentReportArtifactCard, ai/MessageActions, ai/MonitoringAnalysisArtifactCard, ai/WebSourceCards, ai-sidebar/InlineAgentStatus
 dashboard/DashboardRoutedContent -> dashboard/ActiveAlertsModal, dashboard/alert-history/AlertHistoryModal, dashboard/log-explorer/LogExplorerModal, dashboard/ServerDashboard, dashboard/ServerDetailView, dashboard/TopologyModal
 dashboard/ServerDetailView -> dashboard/EnhancedServerModal.LogsTab, dashboard/EnhancedServerModal.MetricsTab, dashboard/EnhancedServerModal.NetworkTab, dashboard/EnhancedServerModal.OverviewTab, dashboard/EnhancedServerModal.ProcessesTab, dashboard/ServerModalTabNav
-ai/AIWorkspaceMessage -> ai/AnalysisBasisBadge, ai/MarkdownRenderer, ai/MessageActions, ai/ThinkingProcessVisualizer, ai/TypewriterMarkdown
-shared/FeatureCardModal -> shared/FeatureCardModalHeader, shared/ReactFlowDiagram, shared/TechStackSection, shared/VibeCiCdSection, shared/VibeHistorySection
 ```
 
 ## Update Rule

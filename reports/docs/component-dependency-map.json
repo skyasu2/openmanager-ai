@@ -11,13 +11,13 @@
     "totalComponentNodes": 156
   },
   "metrics": {
-    "componentSourceLines": 29847,
+    "componentSourceLines": 29885,
     "componentNodes": 149,
-    "componentEdges": 136,
-    "graphDensity": 0.006167,
-    "aliasEdges": 38,
-    "relativeEdges": 98,
-    "isolatedComponents": 32,
+    "componentEdges": 140,
+    "graphDensity": 0.006349,
+    "aliasEdges": 40,
+    "relativeEdges": 100,
+    "isolatedComponents": 30,
     "sccCycleGroups": 0,
     "largestCycleSize": 0
   },
@@ -63,11 +63,11 @@
       "inDegree": 2
     },
     {
-      "component": "ai/MarkdownRenderer",
+      "component": "ai/IncidentReportArtifactCard",
       "inDegree": 2
     },
     {
-      "component": "ai/MessageActions",
+      "component": "ai/MarkdownRenderer",
       "inDegree": 2
     }
   ],
@@ -85,8 +85,16 @@
       "outDegree": 7
     },
     {
+      "component": "ai/AIWorkspaceMessage",
+      "outDegree": 7
+    },
+    {
       "component": "dashboard/EnhancedServerModal",
       "outDegree": 7
+    },
+    {
+      "component": "ai-sidebar/SidebarMessage",
+      "outDegree": 6
     },
     {
       "component": "dashboard/DashboardRoutedContent",
@@ -97,16 +105,8 @@
       "outDegree": 6
     },
     {
-      "component": "ai/AIWorkspaceMessage",
-      "outDegree": 5
-    },
-    {
       "component": "shared/FeatureCardModal",
       "outDegree": 5
-    },
-    {
-      "component": "ai-sidebar/SidebarMessage",
-      "outDegree": 4
     },
     {
       "component": "ai/analysis/ServerResultCard",
@@ -130,7 +130,7 @@
     {
       "fromDomain": "ai",
       "toDomain": "ai",
-      "count": 32
+      "count": 34
     },
     {
       "fromDomain": "ai-sidebar",
@@ -138,14 +138,14 @@
       "count": 13
     },
     {
-      "fromDomain": "shared",
-      "toDomain": "shared",
+      "fromDomain": "ai-sidebar",
+      "toDomain": "ai",
       "count": 10
     },
     {
-      "fromDomain": "ai-sidebar",
-      "toDomain": "ai",
-      "count": 8
+      "fromDomain": "shared",
+      "toDomain": "shared",
+      "count": 10
     },
     {
       "fromDomain": "dashboard",
