@@ -2,7 +2,7 @@
  * 📄 자동 장애 보고서 페이지 v2.3
  *
  * 기능:
- * - 실시간 장애 리포트 생성 및 관리
+ * - 클릭 시 장애 리포트 생성 및 관리
  * - /api/ai/incident-report API 연동
  * - 전체 서버 종합 분석 표시
  * - 히스토리 조회 탭
@@ -312,7 +312,8 @@ export default function AutoReportPage({
 
   // Event handlers
   const handleResolve = useCallback(
-    (reportId: string) => {
+    async (reportId: string) => {
+      // Optimistic UI update
       setReports((prev) =>
         prev.map((report) =>
           report.id === reportId
@@ -320,6 +321,22 @@ export default function AutoReportPage({
             : report
         )
       );
+      // Persist to DB
+      try {
+        await fetch(
+          `/api/ai/incident-report?id=${encodeURIComponent(reportId)}`,
+          {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              status: 'resolved',
+              resolved_at: new Date().toISOString(),
+            }),
+          }
+        );
+      } catch {
+        // DB 저장 실패해도 UI는 이미 반영됨 (fire-and-forget)
+      }
     },
     [setReports]
   );
@@ -374,7 +391,7 @@ export default function AutoReportPage({
                   자동 장애보고서
                 </h2>
                 <p className="text-sm text-gray-600">
-                  실시간 장애 리포트 생성 및 관리
+                  클릭 시 장애 리포트 생성 및 관리
                 </p>
               </div>
             </div>
@@ -420,12 +437,18 @@ export default function AutoReportPage({
                 자동 장애보고서
               </h2>
               <p className="text-sm text-gray-600">
-                실시간 장애 리포트 생성 및 관리
+                클릭 시 장애 리포트 생성 및 관리
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
+            {queryAsOfDataSlot && (
+              <span className="rounded-full border border-red-100 bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700">
+                기준 {queryAsOfDataSlot.timeLabel} · slot{' '}
+                {queryAsOfDataSlot.slotIndex}
+              </span>
+            )}
             <button
               type="button"
               onClick={() => setRagEnabled((prev) => !prev)}

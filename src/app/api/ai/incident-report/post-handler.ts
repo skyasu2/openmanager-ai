@@ -99,7 +99,6 @@ async function saveGeneratedIncidentReport(reportData: IncidentReport) {
       recommendations: reportData.recommendations || [],
       timeline: reportData.timeline || [],
       pattern: reportData.pattern || 'unknown',
-      system_summary: reportData.system_summary || null,
       created_at: reportData.created_at || new Date().toISOString(),
     });
 

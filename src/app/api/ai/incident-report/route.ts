@@ -12,6 +12,7 @@
 import type { NextRequest } from 'next/server';
 import { withAuth } from '@/lib/auth/api-auth';
 import { getHandler } from './get-handler';
+import { patchHandler } from './patch-handler';
 import {
   createIncidentReportHandlerErrorResponse,
   createValidationErrorResponse,
@@ -46,3 +47,4 @@ async function postHandler(request: NextRequest) {
 
 export const POST = withAuth(postHandler);
 export const GET = withAuth(getHandler);
+export const PATCH = withAuth(patchHandler);

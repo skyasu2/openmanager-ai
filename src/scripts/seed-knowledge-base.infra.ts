@@ -156,7 +156,7 @@ export const INFRA_KNOWLEDGE_ENTRIES: KnowledgeEntry[] = [
     content: `API 서버 성능 튜닝 체크리스트:
 1. 연결 풀링: DB 커넥션 풀 크기 최적화 (동시 요청 수 기준)
 2. 캐싱 전략: cache-redis-01/02와 연동, 핫 데이터 캐싱
-3. 비동기 처리: 무거운 작업은 큐로 분리 (backup-server-01 활용)
+3. 비동기 처리: 무거운 작업은 큐로 분리 (db-mysql-dc1-backup 활용)
 4. 요청 제한: Rate Limiting 적용 (분당 1000 요청 권장)
 5. 로깅 최적화: 프로덕션에서 DEBUG 레벨 비활성화
 6. 모니터링 지표: RPS, 평균 응답시간, 에러율, DB 쿼리 시간`,
@@ -187,7 +187,7 @@ export const INFRA_KNOWLEDGE_ENTRIES: KnowledgeEntry[] = [
 1. Streaming Replication: db-main-01 → db-repl-01 실시간 복제
 2. Replication 모니터링: lag_bytes < 1MB, lag_time < 5초 권장
 3. 읽기 분산: 조회 쿼리는 db-repl-01로 라우팅 (pgpool/application level)
-4. 백업 스케줄: backup-server-01에서 일일 pg_dump, 주간 베이스 백업
+4. 백업 스케줄: db-mysql-dc1-backup에서 일일 pg_dump, 주간 베이스 백업
 5. WAL 아카이빙: 연속 백업을 위한 WAL 파일 보관 (7일)
 6. 복구 테스트: 분기별 db-repl-01에서 복구 절차 검증`,
     category: 'best_practice',
@@ -302,18 +302,18 @@ export const INFRA_KNOWLEDGE_ENTRIES: KnowledgeEntry[] = [
     related_server_types: ['monitor'],
   },
 
-  // --- Backup 서버 (backup-server-01) ---
+  // --- Backup 서버 (db-mysql-dc1-backup) ---
   {
-    title: 'Backup 서버 (backup-server-01) 운영 가이드',
+    title: 'Backup 서버 (db-mysql-dc1-backup) 운영 가이드',
     content: `백업 서버 운영 및 복구 가이드:
-1. backup-server-01: 일일 백업 작업 수행, 장기 보관
+1. db-mysql-dc1-backup: 일일 백업 작업 수행, 장기 보관
 2. 백업 실패 알림: 크론 작업 로그 확인, 디스크 용량 점검
 3. 백업 종류: DB(pg_dump), 파일(rsync), 설정(ansible backup)
 4. 보존 정책: 일일 7일, 주간 4주, 월간 12개월
-5. 복구 테스트: 월 1회 db-repl-01에서 복구 검증
-6. 오프사이트: 주간 백업은 storage-s3-gateway로 전송`,
+5. 복구 테스트: 월 1회 db-mysql-dc1-replica에서 복구 검증
+6. 오프사이트: 주간 백업은 storage-s3gw-dc1-01로 전송`,
     category: 'best_practice',
-    tags: ['backup', 'recovery', 'disaster-recovery', 'backup-server-01'],
+    tags: ['backup', 'recovery', 'disaster-recovery', 'db-mysql-dc1-backup'],
     severity: 'info',
     related_server_types: ['backup'],
   },
