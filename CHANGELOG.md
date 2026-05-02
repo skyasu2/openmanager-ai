@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.82](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.81...v8.11.82) (2026-05-02)
+
+
+### Bug Fixes
+
+* **ai:** improve artifact intent keyword routing ([46992dd](https://gitlab.com/skyasu2/openmanager-ai/-/commit/46992ddc549ed42e162f8618cd13f4cecf520f32))
+
 ## [8.11.81](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.80...v8.11.81) (2026-05-02)
 
 
