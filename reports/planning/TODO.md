@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-02 KST (`Server snapshot artifact rollout`)
+**Last Updated**: 2026-05-03 KST (`Server snapshot artifact production QA and plan archive`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -24,7 +24,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-04-27 재검증 기준 `reports/qa=77.91MiB`, `reports/qa/evidence=72.81MiB / 335파일`. `npm run qa:evidence:audit` 결과 missing/recent artifact debt `0`, orphan durable evidence `6개`, archive candidate `7개 / 2.16MiB`, size warning 유지. run-level soft budget warning은 `QA-20260330-0197`, `QA-20260330-0198` 2건으로 구조화됨. orphan/archive candidate 제거만으로는 warning 해소 효과가 낮고 top referenced legacy evidence는 modal/detail/landing proof 가치가 있어 explicit cleanup batch는 열지 않음. 새 evidence 누적 시점에만 재평가. |
+| P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-05-03 재검증 기준 `reports/qa=85.22MiB`, `reports/qa/evidence=79.62MiB / 404파일`. `npm run qa:evidence:audit` 결과 missing durable artifact paths `0`, orphan durable evidence `6개`, archive candidate `7개 / 2.16MiB`, size warning 유지. run-level soft budget warning은 `QA-20260330-0197`, `QA-20260330-0198` 2건으로 구조화됨. orphan/archive candidate 제거만으로는 warning 해소 효과가 낮고 top referenced legacy evidence는 modal/detail/landing proof 가치가 있어 explicit cleanup batch는 열지 않음. 새 evidence 누적 시점에만 재평가. |
 
 ## Backlog (완료 이력)
 
@@ -44,12 +44,13 @@
 
 ### Completed (2026-05-02 #260)
 - [x] AI Assistant Server Snapshot Artifact Expansion
-  - [ai-assistant-artifact-improvement-plan.md](ai-assistant-artifact-improvement-plan.md) Phase 4 완료: `ServerSnapshotArtifact` 타입, `generateServerSnapshotArtifact()`, `ServerSnapshotArtifactCard`, chat/sidebar/workspace/history metadata 연결
+  - [archive/ai-assistant-artifact-improvement-plan.md](archive/ai-assistant-artifact-improvement-plan.md) Phase 4 완료: `ServerSnapshotArtifact` 타입, `generateServerSnapshotArtifact()`, `ServerSnapshotArtifactCard`, chat/sidebar/workspace/history metadata 연결
   - intent classifier rule version을 `2026-05-02-v2`로 올리고 `server-snapshot` kind + `snapshot-artifact` corpus category 추가
   - broad `서버 상태 알려줘`, `현재 서버 상태 분석해줘`, `CPU 높은 서버 원인 분석해줘`는 일반 채팅으로 유지하고, `서버 상태 스냅샷`, `전체 인프라 상태 카드`, `server snapshot export`처럼 artifact-shaped 요청만 실행
   - 비용/사용량 계약: 신규 LLM/API/Cloud Run/DB write 없음. snapshot generator는 `MetricsProvider`/OTel static data만 read-only 사용
   - 평가 기록: [artifact-intent-benchmark-2026-05-02.md](../docs/artifact-intent-benchmark-2026-05-02.md) `112/112`
   - 검증: targeted artifact suite 59/59, `type-check`, `lint`, `test:quick`, `test:contract`, `docs:budget`, `docs:ai-consistency`, `git diff --check`
+  - Production QA: [QA-20260503-0394](../qa/runs/2026/qa-run-QA-20260503-0394.json) `10/10`, Vercel billed `0.0000 USD`, snapshot flow Cloud Run/LLM artifact endpoints 미호출 확인
 
 ### Completed (2026-05-02 #259)
 - [x] Artifact intent benchmark compatibility and category coverage

@@ -1,11 +1,11 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-02
 
 # AI Assistant Artifact Improvement Plan
 
-- 상태: Approved — Phase 1~4 구현 및 로컬 게이트 완료, production QA 대기
+- 상태: Completed — Phase 1~4 구현, 배포, production QA 기록 완료
 - 작성일: 2026-05-02
 - TODO.md 연결: Active Tasks > AI Assistant Server Snapshot Artifact Expansion
 
@@ -172,7 +172,7 @@ AI Chat에서 명시적인 "장애 보고서 작성/다운로드" 또는 "이상
 
 ### 상태
 
-Implemented. 신규 기능이므로 `test(spec):` 선행 커밋으로 failing contract tests를 먼저 추가했고, 구현 커밋은 각 계약을 통과하도록 분리했다. 로컬 표준 게이트는 통과했으며, 남은 작업은 배포 후 production QA 기록이다.
+Completed. 신규 기능이므로 `test(spec):` 선행 커밋으로 failing contract tests를 먼저 추가했고, 구현 커밋은 각 계약을 통과하도록 분리했다. 로컬 표준 게이트, GitLab tag deploy pipeline, Vercel production Playwright MCP QA 기록까지 완료했다.
 
 ### 베스트 프랙티스 및 외부 비교
 
@@ -398,3 +398,13 @@ interface ServerSnapshotArtifact {
 - `npm run docs:budget`: passed, active docs 57/80
 - `npm run docs:ai-consistency`: passed
 - `git diff --check`: passed
+
+### Production QA 결과 (2026-05-03)
+
+- Release: `v8.11.84`
+- GitLab deploy tag pipeline: `2495131125` passed
+- Vercel deployment: `dpl_ArfQ7rxrJkRun4hjvZXJ49wvBudy`
+- QA run: `QA-20260503-0394`
+- Checks: `10/10` passed
+- Cost path: `서버 상태 스냅샷` flow observed only `/api/ai/wake-up` and `/data/otel-data/...` static JSON for AI/data resources; no supervisor stream, artifact-intent, incident-report, or intelligent-monitoring API call.
+- Usage check: Vercel current period `effective=0.6724 USD`, `billed=0.0000 USD`.
