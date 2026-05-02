@@ -31,4 +31,47 @@ export interface MonitoringAnalysisArtifact {
   queryAsOfDataSlot?: JobDataSlot;
 }
 
-export type ChatArtifact = IncidentReportArtifact | MonitoringAnalysisArtifact;
+export interface ServerSnapshotArtifact {
+  kind: 'server-snapshot';
+  generatedAt: string;
+  title: string;
+  summary: string;
+  source: 'otel-static';
+  queryAsOfDataSlot?: JobDataSlot;
+  slot: JobDataSlot;
+  totals: {
+    total: number;
+    online: number;
+    warning: number;
+    critical: number;
+    offline: number;
+  };
+  averages: {
+    cpu: number;
+    memory: number;
+    disk: number;
+    network: number;
+  };
+  topServers: Array<{
+    id: string;
+    name: string;
+    status: 'online' | 'warning' | 'critical' | 'offline';
+    cpu: number;
+    memory: number;
+    disk: number;
+    network: number;
+    primaryRisk: 'cpu' | 'memory' | 'disk' | 'network';
+  }>;
+  alerts: Array<{
+    serverId: string;
+    metric: 'cpu' | 'memory' | 'disk' | 'network';
+    value: number;
+    severity: 'warning' | 'critical';
+    summary: string;
+  }>;
+}
+
+export type ChatArtifact =
+  | IncidentReportArtifact
+  | MonitoringAnalysisArtifact
+  | ServerSnapshotArtifact;
