@@ -83,10 +83,12 @@ export async function generateIncidentReportArtifact({
   query,
   sessionId,
   queryAsOfDataSlot,
+  signal,
 }: ChatArtifactRequest): Promise<IncidentReportArtifact> {
   const response = await fetch('/api/ai/incident-report', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    signal,
     body: JSON.stringify({
       action: 'generate',
       notify: true,

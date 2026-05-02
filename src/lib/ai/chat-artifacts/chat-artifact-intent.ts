@@ -24,20 +24,20 @@ export function classifyChatArtifactIntent(query: string): ChatArtifactIntent {
   if (!normalized) return { kind: 'none' };
 
   if (REPORT_PATTERN.test(normalized)) {
-    if (REPORT_ACTION_PATTERN.test(normalized)) {
-      return { kind: 'incident-report' };
-    }
     if (REPORT_GUIDANCE_PATTERN.test(normalized)) {
       return { kind: 'guidance', target: 'incident-report' };
+    }
+    if (REPORT_ACTION_PATTERN.test(normalized)) {
+      return { kind: 'incident-report' };
     }
   }
 
   if (MONITORING_PATTERN.test(normalized)) {
-    if (MONITORING_ACTION_PATTERN.test(normalized)) {
-      return { kind: 'monitoring-analysis' };
-    }
     if (MONITORING_GUIDANCE_PATTERN.test(normalized)) {
       return { kind: 'guidance', target: 'monitoring-analysis' };
+    }
+    if (MONITORING_ACTION_PATTERN.test(normalized)) {
+      return { kind: 'monitoring-analysis' };
     }
   }
 

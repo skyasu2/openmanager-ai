@@ -319,10 +319,25 @@ function getArtifactSuccessText(artifact: ChatArtifact): string {
   ].join('\n');
 }
 
+function isAbortError(error: unknown): boolean {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'name' in error &&
+    (error as { name?: unknown }).name === 'AbortError'
+  );
+}
+
 function getArtifactErrorText(
   kind: ChatArtifact['kind'],
   error: unknown
 ): string {
+  if (isAbortError(error)) {
+    const target =
+      kind === 'incident-report' ? '장애 보고서 작성' : '이상감지/추세 분석';
+    return `${target}을 중단했습니다.`;
+  }
+
   const message = error instanceof Error ? error.message : String(error);
   const target =
     kind === 'incident-report' ? '장애 보고서 작성' : '이상감지/추세 분석';
@@ -378,6 +393,7 @@ export function useAIChatCore(
   // 입력 상태
   const [input, setInput] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [artifactIsLoading, setArtifactIsLoading] = useState(false);
 
   // 🎯 실시간 Agent 상태 (스트리밍 중 표시)
   const [currentAgentStatus, setCurrentAgentStatus] =
@@ -413,6 +429,9 @@ export function useAIChatCore(
   const lastQueryRef = useRef<string>('');
   const lastAttachmentsRef = useRef<FileAttachment[] | null>(null);
   const pendingQueryRef = useRef<string>('');
+  const artifactInFlightRef = useRef(false);
+  const artifactRequestIdRef = useRef<string | null>(null);
+  const artifactAbortControllerRef = useRef<AbortController | null>(null);
 
   // 🧩 Composed Hooks
   const { sessionId, sessionIdRef, refreshSessionId, setSessionId } =
@@ -478,6 +497,7 @@ export function useAIChatCore(
     queryAsOfDataSlot,
     ...hybridCallbacks,
   });
+  const isGenerating = hybridIsLoading || artifactIsLoading;
 
   const {
     streamTraceIds,
@@ -513,7 +533,7 @@ export function useAIChatCore(
 
   const enhancedMessages = useEnhancedChatMessages({
     messages,
-    isLoading: hybridIsLoading,
+    isLoading: isGenerating,
     currentMode: currentMode ?? undefined,
     traceIdByMessageId: streamTraceIds,
     deferredAssistantMetadataByMessageId,
@@ -548,7 +568,7 @@ export function useAIChatCore(
     seedMessages: persistedSidebarMessages,
     seedSessionId: persistedSidebarSessionId,
     setMessages,
-    isLoading: hybridIsLoading,
+    isLoading: isGenerating,
     onSessionRestore: setSessionId,
     onMetadataRestore: handleMetadataRestore,
   });
@@ -598,6 +618,11 @@ export function useAIChatCore(
     setCurrentHandoff(null);
     pendingQueryRef.current = '';
     lastAttachmentsRef.current = null;
+    artifactAbortControllerRef.current?.abort();
+    artifactAbortControllerRef.current = null;
+    artifactRequestIdRef.current = null;
+    artifactInFlightRef.current = false;
+    setArtifactIsLoading(false);
     clearHistory();
     clearQueue();
     syncChatSnapshot([], nextSessionId);
@@ -700,6 +725,13 @@ export function useAIChatCore(
         return;
       }
 
+      if (artifactInFlightRef.current) {
+        setError(
+          '아티팩트 생성이 진행 중입니다. 완료 후 다음 요청을 보내주세요.'
+        );
+        return;
+      }
+
       if (isQAThinkingVisualizerPrompt(effectiveText)) {
         setError(null);
         setStreamRagSources([]);
@@ -777,7 +809,12 @@ export function useAIChatCore(
           text: getArtifactLoadingText(artifactKind),
         });
         const fallbackArtifactMessages = [...messages, userMessage];
+        const abortController = new AbortController();
         setMessages([...fallbackArtifactMessages, pendingAssistantMessage]);
+        artifactRequestIdRef.current = token;
+        artifactAbortControllerRef.current = abortController;
+        artifactInFlightRef.current = true;
+        setArtifactIsLoading(true);
 
         void (async () => {
           try {
@@ -787,12 +824,18 @@ export function useAIChatCore(
                     query: effectiveText,
                     sessionId,
                     queryAsOfDataSlot,
+                    signal: abortController.signal,
                   })
                 : await generateMonitoringAnalysisArtifact({
                     query: effectiveText,
                     sessionId,
                     queryAsOfDataSlot,
+                    signal: abortController.signal,
                   });
+
+            if (artifactRequestIdRef.current !== token) {
+              return;
+            }
 
             const finalMessage = createTextMessage({
               id: pendingAssistantMessage.id,
@@ -811,8 +854,13 @@ export function useAIChatCore(
                 )
               : [...fallbackArtifactMessages, finalMessage];
 
+            setError(null);
             setMessages(nextMessages);
           } catch (requestError) {
+            if (artifactRequestIdRef.current !== token) {
+              return;
+            }
+
             const errorText = getArtifactErrorText(artifactKind, requestError);
             const errorMessage = createTextMessage({
               id: pendingAssistantMessage.id,
@@ -848,6 +896,13 @@ export function useAIChatCore(
 
             setError(errorText);
             setMessages(nextMessages);
+          } finally {
+            if (artifactRequestIdRef.current === token) {
+              artifactRequestIdRef.current = null;
+              artifactAbortControllerRef.current = null;
+              artifactInFlightRef.current = false;
+              setArtifactIsLoading(false);
+            }
           }
         })();
         return;
@@ -878,6 +933,15 @@ export function useAIChatCore(
     ]
   );
 
+  const stopGeneration = useCallback(() => {
+    if (artifactInFlightRef.current) {
+      artifactAbortControllerRef.current?.abort();
+      return;
+    }
+
+    stop();
+  }, [stop]);
+
   // ============================================================================
   // Return
   // ============================================================================
@@ -887,7 +951,7 @@ export function useAIChatCore(
     setInput,
     messages: enhancedMessages,
     sendQuery,
-    isLoading: hybridIsLoading,
+    isLoading: isGenerating,
     hybridState: {
       progress: hybridState.progress ?? undefined,
       jobId: hybridState.jobId ?? undefined,
@@ -904,7 +968,7 @@ export function useAIChatCore(
     handleFeedback,
     regenerateLastResponse,
     retryLastQuery,
-    stop,
+    stop: stopGeneration,
     cancel,
     handleSendInput,
     clarification: hybridState.clarification ?? null,

@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-02 KST (`Periodic job contract documented`)
+**Last Updated**: 2026-05-02 KST (`Artifact guardrails hardened`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -41,6 +41,14 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-02 #253)
+- [x] AI Assistant 아티팩트 guardrail 보강
+  - 공식 문서 기준으로 Route Handler surface, 런타임 응답 검증, 중복 제출 방지, persisted metadata 복원 내성을 재점검
+  - 아티팩트 생성 중 `isLoading`/disabled/in-flight guard와 fetch abort를 연결해 중복 Cloud Run 호출을 차단하고 중단 버튼 의미를 정렬
+  - 이상감지/추세 아티팩트 응답을 카드가 사용하는 `slot`, `evidenceRefs`, `dataFreshness`까지 Zod로 검증하고 legacy 복원 payload는 안전 fallback으로 렌더링
+  - 모호한 기능 설명 질문은 외부 API 호출 없이 guidance로 처리하고, incident-report API 카탈로그를 실제 POST-only route surface와 동기화
+  - 검증: targeted artifact/chat/input/API-doc tests 30/30, `type-check`, `lint:changed`, `test:quick`, `test:contract`, `docs:budget`, `lint`, `docs:components:map`, `docs:components:verify`
 
 ### Completed (2026-05-02 #252)
 - [x] 주기 작업/Cron 운영 계약 정리

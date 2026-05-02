@@ -504,23 +504,12 @@ export const ChatInputArea = memo(function ChatInputArea({
                 onClick={onSendWithAttachments}
                 disabled={
                   (!inputValue.trim() && attachments.length === 0) ||
+                  isGenerating ||
                   sessionState?.isLimitReached
                 }
                 className="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-500 text-white shadow-sm transition-all hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40 md:h-9 md:w-9"
-                title={
-                  isGenerating
-                    ? streamStatus === 'submitted'
-                      ? '요청 전송 중 (대기열에 추가 가능)'
-                      : '대기열에 추가'
-                    : '메시지 전송'
-                }
-                aria-label={
-                  isGenerating
-                    ? streamStatus === 'submitted'
-                      ? '요청 전송 중 (대기열에 추가 가능)'
-                      : '대기열에 추가'
-                    : '메시지 전송'
-                }
+                title={isGenerating ? '요청 처리 중' : '메시지 전송'}
+                aria-label={isGenerating ? '요청 처리 중' : '메시지 전송'}
               >
                 <Send className="h-4 w-4" />
               </button>

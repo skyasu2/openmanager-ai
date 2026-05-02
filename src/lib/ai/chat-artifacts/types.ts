@@ -6,6 +6,7 @@ export interface ChatArtifactRequest {
   query: string;
   sessionId?: string;
   queryAsOfDataSlot?: JobDataSlot;
+  signal?: AbortSignal;
 }
 
 export interface IncidentReportArtifact {

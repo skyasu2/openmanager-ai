@@ -4,6 +4,10 @@ import { Activity, Download, ExternalLink, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { useAIEntryController } from '@/hooks/ai/useAIEntryController';
 import type { MonitoringAnalysisArtifact } from '@/lib/ai/chat-artifacts/types';
+import type {
+  MonitoringBatchEvidenceRef,
+  MonitoringBatchRiskSignal,
+} from '@/types/intelligent-monitoring.types';
 
 function downloadBlob({
   content,
@@ -26,9 +30,11 @@ function downloadBlob({
 }
 
 function buildAnalysisMarkdown(artifact: MonitoringAnalysisArtifact): string {
+  const riskSignals = readRiskSignals(artifact);
+  const timeLabel = readTimeLabel(artifact);
   const warningLines =
-    artifact.analysis.riskSignals.length > 0
-      ? artifact.analysis.riskSignals
+    riskSignals.length > 0
+      ? riskSignals
           .map(
             (signal) =>
               `- ${signal.serverName || signal.serverId}: ${signal.metric} ${signal.value}% (${signal.severity})`
@@ -40,7 +46,7 @@ function buildAnalysisMarkdown(artifact: MonitoringAnalysisArtifact): string {
     `# ${artifact.title}`,
     '',
     `- 생성 시각: ${new Date(artifact.generatedAt).toLocaleString('ko-KR')}`,
-    `- 데이터 기준: ${artifact.analysis.slot.timeLabel}`,
+    `- 데이터 기준: ${timeLabel}`,
     `- 분석 서버: ${artifact.serverCount}대`,
     `- 위험 신호: ${artifact.riskSignalCount}건`,
     `- 주의 서버: ${artifact.warningServers}대`,
@@ -84,14 +90,41 @@ function signalClass(severity: 'warning' | 'critical'): string {
     : 'bg-amber-50 text-amber-700';
 }
 
+function readRiskSignals(
+  artifact: MonitoringAnalysisArtifact
+): MonitoringBatchRiskSignal[] {
+  return Array.isArray(artifact.analysis.riskSignals)
+    ? artifact.analysis.riskSignals
+    : [];
+}
+
+function readEvidenceRefs(
+  artifact: MonitoringAnalysisArtifact
+): MonitoringBatchEvidenceRef[] {
+  return Array.isArray(artifact.analysis.evidenceRefs)
+    ? artifact.analysis.evidenceRefs
+    : [];
+}
+
+function readTimeLabel(artifact: MonitoringAnalysisArtifact): string {
+  return (
+    artifact.analysis.slot?.timeLabel ||
+    artifact.queryAsOfDataSlot?.timeLabel ||
+    '현재'
+  );
+}
+
 export function MonitoringAnalysisArtifactCard({
   artifact,
 }: {
   artifact: MonitoringAnalysisArtifact;
 }) {
   const { openFullscreen } = useAIEntryController();
-  const riskSignals = artifact.analysis.riskSignals.slice(0, 3);
-  const evidenceRefs = artifact.analysis.evidenceRefs.slice(0, 3);
+  const riskSignals = readRiskSignals(artifact).slice(0, 3);
+  const evidenceRefs = readEvidenceRefs(artifact).slice(0, 3);
+  const timeLabel = readTimeLabel(artifact);
+  const sourceMode = artifact.analysis.sourceMode ?? 'unknown';
+  const isStale = artifact.analysis.dataFreshness?.stale === true;
 
   return (
     <section className="mt-3 rounded-lg border border-cyan-200 bg-white p-3 shadow-xs">
@@ -110,11 +143,9 @@ export function MonitoringAnalysisArtifactCard({
             {artifact.summary}
           </p>
           <div className="mt-2 flex flex-wrap gap-1.5 text-xs text-slate-500">
-            <span>source {artifact.analysis.sourceMode}</span>
-            <span>기준 {artifact.analysis.slot.timeLabel}</span>
-            {artifact.analysis.dataFreshness.stale && (
-              <span className="text-amber-700">stale data</span>
-            )}
+            <span>source {sourceMode}</span>
+            <span>기준 {timeLabel}</span>
+            {isStale && <span className="text-amber-700">stale data</span>}
           </div>
           <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
             <div className="rounded-md border border-slate-100 bg-slate-50 px-2 py-1.5">

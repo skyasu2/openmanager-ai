@@ -148,6 +148,37 @@ describe('ChatInputArea popover', () => {
     }
   });
 
+  it('disables the send button while a generation is in progress', () => {
+    render(
+      <ChatInputArea
+        textareaRef={createRef<HTMLTextAreaElement>()}
+        fileInputRef={createRef<HTMLInputElement>()}
+        inputValue="장애 보고서 작성해줘"
+        setInputValue={vi.fn()}
+        isGenerating={true}
+        attachments={[]}
+        isDragging={false}
+        fileErrors={[]}
+        canAddMore={true}
+        previewImage={null}
+        dragHandlers={{}}
+        onSendWithAttachments={vi.fn()}
+        onOpenFileDialog={vi.fn()}
+        onFileSelect={vi.fn()}
+        onImageClick={vi.fn()}
+        onClosePreviewModal={vi.fn()}
+        onRemoveFile={vi.fn()}
+        onClearFileErrors={vi.fn()}
+        onPaste={vi.fn()}
+        onToggleRAG={vi.fn()}
+        onToggleWebSearch={vi.fn()}
+        onSelectAnalysisMode={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole('button', { name: '요청 처리 중' })).toBeDisabled();
+  });
+
   it('keeps RAG/Web names and explains them with short parenthetical labels', () => {
     render(
       <ChatInputArea

@@ -625,6 +625,106 @@ describe('useAIChatCore', () => {
     ).toBe('스토리지 디스크 포화 경고');
   });
 
+  it('marks artifact generation as loading and blocks duplicate artifact calls', async () => {
+    let resolveArtifact: (
+      value: Awaited<ReturnType<typeof mocks.generateIncidentReportArtifact>>
+    ) => void = () => undefined;
+    mocks.generateIncidentReportArtifact.mockReturnValue(
+      new Promise((resolve) => {
+        resolveArtifact = resolve;
+      })
+    );
+
+    const { result } = renderHook(() => useAIChatCore());
+
+    await act(async () => {
+      result.current.setInput('장애 보고서 작성해줘');
+    });
+
+    await act(async () => {
+      result.current.handleSendInput();
+    });
+
+    expect(result.current.isLoading).toBe(true);
+    expect(mocks.generateIncidentReportArtifact).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      result.current.setInput('장애 보고서 작성해줘');
+    });
+
+    await act(async () => {
+      result.current.handleSendInput();
+    });
+
+    expect(mocks.generateIncidentReportArtifact).toHaveBeenCalledTimes(1);
+    expect(result.current.error).toContain('아티팩트 생성이 진행 중입니다');
+
+    await act(async () => {
+      resolveArtifact({
+        kind: 'incident-report',
+        generatedAt: '2026-05-02T00:00:00.000Z',
+        report: {
+          id: 'incident-chat-2',
+          title: '중복 요청 방지 보고서',
+          severity: 'warning',
+          timestamp: new Date('2026-05-02T00:00:00.000Z'),
+          affectedServers: ['api-was-dc1-01'],
+          description: '중복 요청 방지 검증',
+          status: 'active',
+        },
+      });
+    });
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+    expect(result.current.error).toBeNull();
+    expect(result.current.messages[1]?.content).toContain(
+      '장애 보고서를 작성했습니다'
+    );
+  });
+
+  it('aborts an in-flight artifact request when stop is invoked', async () => {
+    let capturedSignal: AbortSignal | undefined;
+    mocks.generateIncidentReportArtifact.mockImplementation(
+      ({ signal }: { signal?: AbortSignal }) => {
+        capturedSignal = signal;
+        return new Promise((_resolve, reject) => {
+          signal?.addEventListener('abort', () => {
+            const error = new Error('aborted');
+            error.name = 'AbortError';
+            reject(error);
+          });
+        });
+      }
+    );
+
+    const { result } = renderHook(() => useAIChatCore());
+
+    await act(async () => {
+      result.current.setInput('장애 보고서 작성해줘');
+    });
+
+    await act(async () => {
+      result.current.handleSendInput();
+    });
+
+    expect(result.current.isLoading).toBe(true);
+    expect(capturedSignal).toBeDefined();
+
+    await act(async () => {
+      result.current.stop();
+    });
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+    expect(capturedSignal?.aborted).toBe(true);
+    expect(result.current.messages[1]?.content).toContain(
+      '장애 보고서 작성을 중단했습니다'
+    );
+  });
+
   it('turns explicit trend analysis requests into an artifact without calling chat backend', async () => {
     mocks.generateMonitoringAnalysisArtifact.mockResolvedValue({
       kind: 'monitoring-analysis',

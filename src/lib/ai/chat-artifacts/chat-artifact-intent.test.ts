@@ -39,6 +39,12 @@ describe('classifyChatArtifactIntent', () => {
       kind: 'guidance',
       target: 'monitoring-analysis',
     });
+    expect(classifyChatArtifactIntent('추세 분석 기능 설명해줘')).toMatchObject(
+      {
+        kind: 'guidance',
+        target: 'monitoring-analysis',
+      }
+    );
   });
 
   it('does not capture normal operational chat questions', () => {

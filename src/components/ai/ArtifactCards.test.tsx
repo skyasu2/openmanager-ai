@@ -4,6 +4,7 @@
 
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+import type { MonitoringAnalysisArtifact } from '@/lib/ai/chat-artifacts/types';
 import { IncidentReportArtifactCard } from './IncidentReportArtifactCard';
 import { MonitoringAnalysisArtifactCard } from './MonitoringAnalysisArtifactCard';
 
@@ -233,5 +234,29 @@ describe('AI artifact cards', () => {
     expect(
       screen.getByText('api-was-dc1-01 CPU가 90% 임계치를 초과했습니다.')
     ).toBeInTheDocument();
+  });
+
+  it('renders restored monitoring artifacts defensively when optional payload sections are missing', () => {
+    const restoredArtifact = {
+      kind: 'monitoring-analysis',
+      generatedAt: '2026-05-02T00:01:00.000Z',
+      title: '복원된 이상감지/추세 분석',
+      summary: 'legacy metadata',
+      serverCount: 0,
+      riskSignalCount: 0,
+      warningServers: 0,
+      criticalServers: 0,
+      analysis: {
+        success: true,
+        servers: [],
+        riskSignals: [],
+      },
+    } as unknown as MonitoringAnalysisArtifact;
+
+    render(<MonitoringAnalysisArtifactCard artifact={restoredArtifact} />);
+
+    expect(screen.getByText('복원된 이상감지/추세 분석')).toBeInTheDocument();
+    expect(screen.getByText('source unknown')).toBeInTheDocument();
+    expect(screen.getByText('기준 현재')).toBeInTheDocument();
   });
 });

@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-02-28
+> Last reviewed: 2026-05-02
 > Canonical: docs/reference/api/endpoints.md
 > Tags: api,endpoints,reference
 >
@@ -56,7 +56,7 @@
 | Endpoint | Methods | Source |
 |---|---|---|
 | `/api/ai/feedback` | `GET, POST` | `src/app/api/ai/feedback/route.ts` |
-| `/api/ai/incident-report` | `GET, POST` | `src/app/api/ai/incident-report/route.ts` |
+| `/api/ai/incident-report` | `POST` | `src/app/api/ai/incident-report/route.ts` |
 | `/api/ai/intelligent-monitoring` | `GET, POST` | `src/app/api/ai/intelligent-monitoring/route.ts` |
 | `/api/ai/jobs` | `GET, POST` | `src/app/api/ai/jobs/route.ts` |
 | `/api/ai/jobs/[id]` | `GET, DELETE` | `src/app/api/ai/jobs/[id]/route.ts` |

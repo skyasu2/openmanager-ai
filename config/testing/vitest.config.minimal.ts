@@ -27,6 +27,7 @@ export default defineConfig({
       'tests/unit/dev/vercel-font-source-guard.test.ts',
       'tests/unit/dev/periodic-jobs-contract.test.ts',
       'tests/unit/dev/component-map-verify-script.test.ts',
+      'tests/unit/dev/api-endpoints-doc-contract.test.ts',
       // 참고: integration 테스트는 별도 config에서 실행
     ],
     exclude: [
