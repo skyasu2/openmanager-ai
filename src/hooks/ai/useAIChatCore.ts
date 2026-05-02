@@ -31,6 +31,13 @@ import {
   type HandoffEventData,
   useHybridAIQuery,
 } from '@/hooks/ai/useHybridAIQuery';
+import {
+  classifyChatArtifactIntent,
+  createArtifactGuidanceMessage,
+} from '@/lib/ai/artifacts/chat-artifact-intent';
+import { generateIncidentReportArtifact } from '@/lib/ai/artifacts/incident-report-artifact';
+import { generateMonitoringAnalysisArtifact } from '@/lib/ai/artifacts/monitoring-analysis-artifact';
+import type { ChatArtifact } from '@/lib/ai/artifacts/types';
 import type { AIErrorDetails } from '@/lib/ai/error-details';
 import {
   analyzeQueryComplexity,
@@ -263,6 +270,95 @@ function createQAAssistantMessages(text: string): [UIMessage, UIMessage] {
   };
 
   return [userMessage, assistantMessage];
+}
+
+function createTextMessage({
+  id,
+  role,
+  text,
+  metadata,
+}: {
+  id: string;
+  role: 'user' | 'assistant';
+  text: string;
+  metadata?: Record<string, unknown>;
+}): UIMessage {
+  return {
+    id,
+    role,
+    parts: [{ type: 'text', text }],
+    ...(metadata && { metadata }),
+  };
+}
+
+function getArtifactLoadingText(kind: ChatArtifact['kind']): string {
+  return kind === 'incident-report'
+    ? '장애 보고서를 작성하고 있습니다.'
+    : '이상감지/추세 분석을 실행하고 있습니다.';
+}
+
+function getArtifactSuccessText(artifact: ChatArtifact): string {
+  if (artifact.kind === 'incident-report') {
+    return [
+      '장애 보고서를 작성했습니다.',
+      '',
+      `- 제목: ${artifact.report.title}`,
+      `- 영향 서버: ${artifact.report.affectedServers.length}대`,
+      '',
+      '아래 카드에서 MD/TXT 파일로 내려받거나 장애 보고서 작성 화면에서 확인할 수 있습니다.',
+    ].join('\n');
+  }
+
+  return [
+    '이상감지/추세 분석을 완료했습니다.',
+    '',
+    `- 분석 서버: ${artifact.serverCount}대`,
+    `- 위험 신호: ${artifact.riskSignalCount}건`,
+    '',
+    '아래 카드에서 MD/JSON 파일로 내려받거나 이상감지/추세 화면에서 확인할 수 있습니다.',
+  ].join('\n');
+}
+
+function getArtifactErrorText(
+  kind: ChatArtifact['kind'],
+  error: unknown
+): string {
+  const message = error instanceof Error ? error.message : String(error);
+  const target =
+    kind === 'incident-report' ? '장애 보고서 작성' : '이상감지/추세 분석';
+  return `${target}을 완료하지 못했습니다. ${message}`;
+}
+
+function buildArtifactMetadata(
+  artifact: ChatArtifact
+): Record<string, unknown> {
+  if (artifact.kind === 'incident-report') {
+    return {
+      incidentReportArtifact: artifact,
+      toolsCalled: ['generateIncidentReportArtifact'],
+      toolResultSummaries: [
+        {
+          toolName: 'generateIncidentReportArtifact',
+          label: '장애 보고서 작성',
+          summary: `${artifact.report.title} 보고서를 생성했습니다.`,
+          status: 'completed' as const,
+        },
+      ],
+    };
+  }
+
+  return {
+    monitoringAnalysisArtifact: artifact,
+    toolsCalled: ['generateMonitoringAnalysisArtifact'],
+    toolResultSummaries: [
+      {
+        toolName: 'generateMonitoringAnalysisArtifact',
+        label: '이상감지/추세 분석',
+        summary: `${artifact.serverCount}개 서버 분석과 위험 신호 ${artifact.riskSignalCount}건을 정리했습니다.`,
+        status: 'completed' as const,
+      },
+    ],
+  };
 }
 
 // ============================================================================
@@ -632,6 +728,131 @@ export function useAIChatCore(
         return;
       }
 
+      const artifactIntent = classifyChatArtifactIntent(effectiveText);
+      if (artifactIntent.kind === 'guidance') {
+        setError(null);
+        setStreamRagSources([]);
+        lastQueryRef.current = effectiveText;
+        lastAttachmentsRef.current = attachments || null;
+        pendingQueryRef.current = '';
+        setInput('');
+        const token = Date.now().toString(36);
+        setMessages([
+          ...messages,
+          createTextMessage({
+            id: `artifact-guidance-user-${token}`,
+            role: 'user',
+            text: effectiveText,
+          }),
+          createTextMessage({
+            id: `artifact-guidance-assistant-${token}`,
+            role: 'assistant',
+            text: createArtifactGuidanceMessage(artifactIntent.target),
+          }),
+        ]);
+        return;
+      }
+
+      if (
+        artifactIntent.kind === 'incident-report' ||
+        artifactIntent.kind === 'monitoring-analysis'
+      ) {
+        const artifactKind = artifactIntent.kind;
+        setError(null);
+        setStreamRagSources([]);
+        lastQueryRef.current = effectiveText;
+        lastAttachmentsRef.current = attachments || null;
+        pendingQueryRef.current = '';
+        setInput('');
+
+        const token = Date.now().toString(36);
+        const userMessage = createTextMessage({
+          id: `artifact-user-${token}`,
+          role: 'user',
+          text: effectiveText,
+        });
+        const pendingAssistantMessage = createTextMessage({
+          id: `artifact-assistant-${token}`,
+          role: 'assistant',
+          text: getArtifactLoadingText(artifactKind),
+        });
+        const fallbackArtifactMessages = [...messages, userMessage];
+        setMessages([...fallbackArtifactMessages, pendingAssistantMessage]);
+
+        void (async () => {
+          try {
+            const artifact =
+              artifactKind === 'incident-report'
+                ? await generateIncidentReportArtifact({
+                    query: effectiveText,
+                    sessionId,
+                    queryAsOfDataSlot,
+                  })
+                : await generateMonitoringAnalysisArtifact({
+                    query: effectiveText,
+                    sessionId,
+                    queryAsOfDataSlot,
+                  });
+
+            const finalMessage = createTextMessage({
+              id: pendingAssistantMessage.id,
+              role: 'assistant',
+              text: getArtifactSuccessText(artifact),
+              metadata: buildArtifactMetadata(artifact),
+            });
+            const currentMessages = messagesRef.current;
+            const nextMessages = currentMessages.some(
+              (message) => message.id === pendingAssistantMessage.id
+            )
+              ? currentMessages.map((message) =>
+                  message.id === pendingAssistantMessage.id
+                    ? finalMessage
+                    : message
+                )
+              : [...fallbackArtifactMessages, finalMessage];
+
+            setMessages(nextMessages);
+          } catch (requestError) {
+            const errorText = getArtifactErrorText(artifactKind, requestError);
+            const errorMessage = createTextMessage({
+              id: pendingAssistantMessage.id,
+              role: 'assistant',
+              text: errorText,
+              metadata: {
+                toolResultSummaries: [
+                  {
+                    toolName:
+                      artifactKind === 'incident-report'
+                        ? 'generateIncidentReportArtifact'
+                        : 'generateMonitoringAnalysisArtifact',
+                    label:
+                      artifactKind === 'incident-report'
+                        ? '장애 보고서 작성'
+                        : '이상감지/추세 분석',
+                    summary: errorText,
+                    status: 'failed' as const,
+                  },
+                ],
+              },
+            });
+            const currentMessages = messagesRef.current;
+            const nextMessages = currentMessages.some(
+              (message) => message.id === pendingAssistantMessage.id
+            )
+              ? currentMessages.map((message) =>
+                  message.id === pendingAssistantMessage.id
+                    ? errorMessage
+                    : message
+                )
+              : [...fallbackArtifactMessages, errorMessage];
+
+            setError(errorText);
+            setMessages(nextMessages);
+          }
+        })();
+        return;
+      }
+
       setError(null);
       setStreamRagSources([]);
       lastQueryRef.current = effectiveText;
@@ -652,6 +873,8 @@ export function useAIChatCore(
       messages,
       setMessages,
       analysisMode,
+      sessionId,
+      queryAsOfDataSlot,
     ]
   );
 

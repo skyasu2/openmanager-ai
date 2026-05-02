@@ -80,7 +80,7 @@ describe('AIAssistantIconPanel', () => {
       />
     );
 
-    expect(screen.getByLabelText('이상감지/예측')).toHaveAttribute(
+    expect(screen.getByLabelText('이상감지/추세')).toHaveAttribute(
       'aria-pressed',
       'true'
     );

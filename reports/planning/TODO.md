@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| — | — | — | 현재 계획서 기준 진행 중 작업 없음 |
+| AI Assistant 사용자-facing 아티팩트 개선 | High | Approved | [ai-assistant-artifact-improvement-plan.md](ai-assistant-artifact-improvement-plan.md) — 채팅 명시 요청을 장애 보고서/이상감지·추세 아티팩트로 전환 |
 
 ---
 

@@ -1,4 +1,8 @@
 import type { UIMessage } from 'ai';
+import type {
+  IncidentReportArtifact,
+  MonitoringAnalysisArtifact,
+} from '@/lib/ai/artifacts/types';
 import type { StructuredAssistantResponse } from '@/lib/ai/utils/assistant-response-view';
 import {
   getToolDescription,
@@ -44,6 +48,8 @@ export type MessageMetadata = {
   fallbackReason?: string;
   ttfbMs?: number;
   assistantResponseView?: StructuredAssistantResponse;
+  incidentReportArtifact?: IncidentReportArtifact;
+  monitoringAnalysisArtifact?: MonitoringAnalysisArtifact;
   handoffHistory?: ResponseHandoff[];
   toolResultSummaries?: ToolResultSummary[];
 };

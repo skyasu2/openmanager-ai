@@ -4,6 +4,10 @@
  * 로컬 스토리지를 활용한 채팅 히스토리 영속화
  */
 
+import type {
+  IncidentReportArtifact,
+  MonitoringAnalysisArtifact,
+} from '@/lib/ai/artifacts/types';
 import { logger } from '@/lib/logging';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
@@ -42,6 +46,8 @@ export interface StoredMessageMetadata {
     details?: string | null;
     shouldCollapse?: boolean;
   };
+  incidentReportArtifact?: IncidentReportArtifact;
+  monitoringAnalysisArtifact?: MonitoringAnalysisArtifact;
   handoffHistory?: Array<{
     from: string;
     to: string;
@@ -133,6 +139,8 @@ export function saveChatHistory(
           analysisBasis?.toolsCalled ||
           analysisBasis?.ragSources ||
           metadata?.assistantResponseView ||
+          metadata?.incidentReportArtifact ||
+          metadata?.monitoringAnalysisArtifact ||
           hasExplicitHandoffHistory ||
           (metadata?.toolResultSummaries &&
             metadata.toolResultSummaries.length > 0)
@@ -155,6 +163,13 @@ export function saveChatHistory(
                 }),
                 ...(metadata?.assistantResponseView && {
                   assistantResponseView: metadata.assistantResponseView,
+                }),
+                ...(metadata?.incidentReportArtifact && {
+                  incidentReportArtifact: metadata.incidentReportArtifact,
+                }),
+                ...(metadata?.monitoringAnalysisArtifact && {
+                  monitoringAnalysisArtifact:
+                    metadata.monitoringAnalysisArtifact,
                 }),
                 ...(hasExplicitHandoffHistory && {
                   handoffHistory: metadata.handoffHistory,

@@ -22,6 +22,8 @@ const mocks = vi.hoisted(() => {
   const triggerAIWarmup = vi.fn(async () => undefined);
   const hybridSetMessagesSpy = vi.fn();
   const syncChatSnapshot = vi.fn();
+  const generateIncidentReportArtifact = vi.fn();
+  const generateMonitoringAnalysisArtifact = vi.fn();
 
   let latestHybridOptions: Record<string, unknown> | null = null;
   let seedHybridMessages:
@@ -44,6 +46,8 @@ const mocks = vi.hoisted(() => {
     triggerAIWarmup,
     hybridSetMessagesSpy,
     syncChatSnapshot,
+    generateIncidentReportArtifact,
+    generateMonitoringAnalysisArtifact,
     getLatestHybridOptions: () => latestHybridOptions,
     setLatestHybridOptions: (options: Record<string, unknown>) => {
       latestHybridOptions = options;
@@ -78,6 +82,14 @@ vi.mock('@/stores/useAISidebarStore', () => ({
 
 vi.mock('@/utils/ai-warmup', () => ({
   triggerAIWarmup: mocks.triggerAIWarmup,
+}));
+
+vi.mock('@/lib/ai/artifacts/incident-report-artifact', () => ({
+  generateIncidentReportArtifact: mocks.generateIncidentReportArtifact,
+}));
+
+vi.mock('@/lib/ai/artifacts/monitoring-analysis-artifact', () => ({
+  generateMonitoringAnalysisArtifact: mocks.generateMonitoringAnalysisArtifact,
 }));
 
 vi.mock('./core/useChatFeedback', () => ({
@@ -556,5 +568,146 @@ describe('useAIChatCore', () => {
         (step) => step.step === 'analyzeIntent'
       )
     ).toBe(true);
+  });
+
+  it('turns explicit incident report requests into an artifact without calling chat backend', async () => {
+    const slot = {
+      slotIndex: 143,
+      minuteOfDay: 1430,
+      timeLabel: '23:50 KST',
+    };
+    mocks.generateIncidentReportArtifact.mockResolvedValue({
+      kind: 'incident-report',
+      generatedAt: '2026-05-02T00:00:00.000Z',
+      report: {
+        id: 'incident-chat-1',
+        title: '스토리지 디스크 포화 경고',
+        severity: 'critical',
+        timestamp: new Date('2026-05-02T00:00:00.000Z'),
+        affectedServers: ['storage-nfs-dc1-01'],
+        description: 'NFS 디스크 사용률이 임계값을 초과했습니다.',
+        status: 'active',
+      },
+    });
+
+    const { result } = renderHook(() =>
+      useAIChatCore({ queryAsOfDataSlot: slot })
+    );
+
+    await act(async () => {
+      result.current.setInput('장애 보고서 작성해줘');
+    });
+
+    await act(async () => {
+      result.current.handleSendInput();
+    });
+
+    await waitFor(() => {
+      expect(
+        result.current.messages[1]?.metadata?.incidentReportArtifact
+      ).toBeDefined();
+    });
+
+    expect(mocks.sendQuery).not.toHaveBeenCalled();
+    expect(mocks.generateIncidentReportArtifact).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: '장애 보고서 작성해줘',
+        queryAsOfDataSlot: slot,
+        sessionId: 'session-test',
+      })
+    );
+    expect(result.current.messages[0]?.role).toBe('user');
+    expect(result.current.messages[1]?.content).toContain(
+      '장애 보고서를 작성했습니다'
+    );
+    expect(
+      result.current.messages[1]?.metadata?.incidentReportArtifact?.report.title
+    ).toBe('스토리지 디스크 포화 경고');
+  });
+
+  it('turns explicit trend analysis requests into an artifact without calling chat backend', async () => {
+    mocks.generateMonitoringAnalysisArtifact.mockResolvedValue({
+      kind: 'monitoring-analysis',
+      generatedAt: '2026-05-02T00:01:00.000Z',
+      title: '전체 서버 이상감지/추세 분석',
+      summary: '18개 서버 분석 완료, 주의 1대',
+      serverCount: 18,
+      riskSignalCount: 1,
+      warningServers: 1,
+      criticalServers: 0,
+      analysis: {
+        success: true,
+        sourceMode: 'replay-json',
+        queryAsOf: '2026-05-02T00:00:00.000Z',
+        slot: {
+          slotIndex: 143,
+          hour: 23,
+          slotInHour: 5,
+          minuteOfDay: 1430,
+          timeLabel: '23:50 KST',
+          startTime: '2026-05-02T00:00:00.000Z',
+          endTime: '2026-05-02T00:10:00.000Z',
+        },
+        summary: '18개 서버 분석 완료',
+        servers: [],
+        riskSignals: [],
+        evidenceRefs: [],
+        dataFreshness: {
+          generatedAt: null,
+          sourceUpdatedAt: null,
+          stale: false,
+        },
+      },
+    });
+
+    const { result } = renderHook(() => useAIChatCore());
+
+    await act(async () => {
+      result.current.setInput('최근 추세 기준으로 리스크 분석해줘');
+    });
+
+    await act(async () => {
+      result.current.handleSendInput();
+    });
+
+    await waitFor(() => {
+      expect(
+        result.current.messages[1]?.metadata?.monitoringAnalysisArtifact
+      ).toBeDefined();
+    });
+
+    expect(mocks.sendQuery).not.toHaveBeenCalled();
+    expect(mocks.generateMonitoringAnalysisArtifact).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: '최근 추세 기준으로 리스크 분석해줘',
+        sessionId: 'session-test',
+      })
+    );
+    expect(result.current.messages[1]?.content).toContain(
+      '이상감지/추세 분석을 완료했습니다'
+    );
+    expect(
+      result.current.messages[1]?.metadata?.monitoringAnalysisArtifact
+        ?.riskSignalCount
+    ).toBe(1);
+  });
+
+  it('answers ambiguous artifact feature questions locally without API calls', async () => {
+    const { result } = renderHook(() => useAIChatCore());
+
+    await act(async () => {
+      result.current.setInput('장애 보고는 어떻게 하면 돼?');
+    });
+
+    await act(async () => {
+      result.current.handleSendInput();
+    });
+
+    expect(mocks.sendQuery).not.toHaveBeenCalled();
+    expect(mocks.generateIncidentReportArtifact).not.toHaveBeenCalled();
+    expect(mocks.generateMonitoringAnalysisArtifact).not.toHaveBeenCalled();
+    expect(result.current.messages[1]?.content).toContain(
+      '장애 보고서 작성 기능'
+    );
   });
 });

@@ -10,6 +10,7 @@ import type {
 } from '@/lib/dashboard/server-data';
 import type { MonitoringAlert } from '@/schemas/api.monitoring-report.schema';
 import type { Alert } from '@/services/monitoring/AlertManager';
+import type { JobDataSlot } from '@/types/ai-jobs';
 import type { Server } from '@/types/server';
 import { safeErrorMessage } from '@/utils/utils-functions';
 import { ActiveAlertsPanel } from './ActiveAlertsModal';
@@ -54,6 +55,21 @@ interface DashboardRoutedContentProps {
   onAskAIAboutAlert?: (context: DashboardAlertContext) => void;
 }
 
+function toJobDataSlot(
+  timeInfo: DashboardTimeInfo | undefined
+): JobDataSlot | undefined {
+  if (!timeInfo) return undefined;
+
+  const hours = String(Math.floor(timeInfo.minuteOfDay / 60)).padStart(2, '0');
+  const minutes = String(timeInfo.minuteOfDay % 60).padStart(2, '0');
+
+  return {
+    slotIndex: timeInfo.globalSlotIndex,
+    minuteOfDay: timeInfo.minuteOfDay,
+    timeLabel: `${hours}:${minutes} KST`,
+  };
+}
+
 function PageFrame({
   title,
   description,
@@ -82,7 +98,7 @@ export default function DashboardRoutedContent({
   view,
   servers,
   allServers,
-  dataSlotInfo: _dataSlotInfo,
+  dataSlotInfo,
   dataSourceInfo: _dataSourceInfo,
   initialFocusServerId,
   totalServers,
@@ -97,6 +113,7 @@ export default function DashboardRoutedContent({
   onAskAIAboutAlert,
 }: DashboardRoutedContentProps) {
   const searchParams = useSearchParams();
+  const aiQueryAsOfDataSlot = toJobDataSlot(dataSlotInfo);
   const initialLogServerId =
     view === 'logs'
       ? (searchParams.get('server') ?? searchParams.get('serverId'))
@@ -249,7 +266,7 @@ export default function DashboardRoutedContent({
         description="질의, Reporter, Analyst 기능을 한 화면에서 실행"
       >
         <div className="min-h-[680px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-          <AIWorkspace embedded />
+          <AIWorkspace embedded queryAsOfDataSlot={aiQueryAsOfDataSlot} />
         </div>
       </PageFrame>
     );

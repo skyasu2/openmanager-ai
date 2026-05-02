@@ -12,6 +12,7 @@ const {
   activeAlertsPanelMock,
   alertHistoryPanelMock,
   useMonitoringReportMock,
+  aiWorkspaceMock,
 } = vi.hoisted(() => ({
   searchParamsState: {
     value: new URLSearchParams(),
@@ -19,6 +20,7 @@ const {
   activeAlertsPanelMock: vi.fn(),
   alertHistoryPanelMock: vi.fn(),
   useMonitoringReportMock: vi.fn(),
+  aiWorkspaceMock: vi.fn(),
 }));
 
 vi.mock('next/navigation', () => ({
@@ -28,8 +30,17 @@ vi.mock('next/navigation', () => ({
 vi.mock('next/dynamic', () => {
   return {
     default: () =>
-      function MockDynamicComponent() {
-        return <div data-testid="ai-workspace" />;
+      function MockDynamicComponent(props: Record<string, unknown>) {
+        aiWorkspaceMock(props);
+        const queryAsOfDataSlot = props.queryAsOfDataSlot as
+          | { slotIndex?: number }
+          | undefined;
+        return (
+          <div
+            data-testid="ai-workspace"
+            data-slot-index={queryAsOfDataSlot?.slotIndex ?? ''}
+          />
+        );
       },
   };
 });
@@ -119,6 +130,7 @@ describe('DashboardRoutedContent route query contracts', () => {
     searchParamsState.value = new URLSearchParams();
     activeAlertsPanelMock.mockClear();
     alertHistoryPanelMock.mockClear();
+    aiWorkspaceMock.mockClear();
     useMonitoringReportMock.mockReturnValue({
       data: null,
       error: null,
@@ -197,6 +209,36 @@ describe('DashboardRoutedContent route query contracts', () => {
         errorMessage: 'network down',
         isError: true,
         isLoading: true,
+      })
+    );
+  });
+
+  it('AI 어시스턴트 route에 대시보드 데이터 슬롯을 전달한다', () => {
+    render(
+      <DashboardRoutedContent
+        {...baseProps}
+        view="ai-assistant"
+        dataSlotInfo={{
+          hour: 7,
+          slotIndex: 0,
+          globalSlotIndex: 42,
+          minuteOfDay: 420,
+        }}
+      />
+    );
+
+    expect(screen.getByTestId('ai-workspace')).toHaveAttribute(
+      'data-slot-index',
+      '42'
+    );
+    expect(aiWorkspaceMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        embedded: true,
+        queryAsOfDataSlot: {
+          slotIndex: 42,
+          minuteOfDay: 420,
+          timeLabel: '07:00 KST',
+        },
       })
     );
   });

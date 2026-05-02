@@ -324,7 +324,7 @@ describe('AIWorkspace', () => {
     const aiChatElements = screen.getAllByText('AI Chat');
     expect(aiChatElements.length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('장애 보고서')).toBeInTheDocument();
-    expect(screen.getByText('이상감지/예측')).toBeInTheDocument();
+    expect(screen.getByText('이상감지/추세')).toBeInTheDocument();
   });
 
   it('renders dashboard embedded AI function page without standalone workspace chrome', () => {
@@ -337,7 +337,7 @@ describe('AIWorkspace', () => {
       screen.getByRole('button', { name: /장애 보고서\s+Reporter Agent/i })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /이상감지\/예측\s+Analyst Agent/i })
+      screen.getByRole('button', { name: /이상감지\/추세\s+경량 분석/i })
     ).toBeInTheDocument();
     expect(
       screen.queryByRole('button', { name: '대시보드로 돌아가기' })
@@ -364,7 +364,7 @@ describe('AIWorkspace', () => {
       screen.getByRole('button', { name: /장애 보고서\s+Reporter Agent/i })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /이상감지\/예측\s+Analyst Agent/i })
+      screen.getByRole('button', { name: /이상감지\/추세\s+경량 분석/i })
     ).toBeInTheDocument();
     expect(
       screen.queryByTestId('ai-workspace-mobile-handoff')
@@ -459,6 +459,23 @@ describe('AIWorkspace', () => {
     };
 
     render(<AIWorkspace />);
+
+    expect(useAIChatCore).toHaveBeenCalledWith(
+      expect.objectContaining({
+        queryAsOfDataSlot,
+      })
+    );
+  });
+
+  it('uses the embedded dashboard queryAsOf data slot when no handoff state exists', async () => {
+    const { useAIChatCore } = await import('@/hooks/ai/useAIChatCore');
+    const queryAsOfDataSlot = {
+      slotIndex: 88,
+      minuteOfDay: 880,
+      timeLabel: '14:40 KST',
+    };
+
+    render(<AIWorkspace embedded queryAsOfDataSlot={queryAsOfDataSlot} />);
 
     expect(useAIChatCore).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -659,7 +676,7 @@ describe('AIWorkspace', () => {
     render(<AIWorkspace mode="fullscreen" />);
 
     fireEvent.click(
-      screen.getByRole('button', { name: /이상감지\/예측\s+Analyst Agent/i })
+      screen.getByRole('button', { name: /이상감지\/추세\s+경량 분석/i })
     );
     fireEvent.click(screen.getByRole('button', { name: 'content-count:0' }));
 
@@ -674,7 +691,7 @@ describe('AIWorkspace', () => {
       screen.getByRole('button', { name: /AI Chat\s+NLQ Agent/i })
     );
     fireEvent.click(
-      screen.getByRole('button', { name: /이상감지\/예측\s+Analyst Agent/i })
+      screen.getByRole('button', { name: /이상감지\/추세\s+경량 분석/i })
     );
 
     expect(screen.getByTestId('ai-content-function')).toHaveTextContent(

@@ -8,8 +8,10 @@ import {
 import { formatTime } from '@/lib/format-date';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 import type { AIThinkingStep } from '@/types/ai-sidebar/ai-sidebar-types';
+import { IncidentReportArtifactCard } from './IncidentReportArtifactCard';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { MessageActions } from './MessageActions';
+import { MonitoringAnalysisArtifactCard } from './MonitoringAnalysisArtifactCard';
 import { ThinkingProcessVisualizer } from './ThinkingProcessVisualizer';
 import { TypewriterMarkdown } from './TypewriterMarkdown';
 
@@ -66,6 +68,14 @@ export const AIWorkspaceMessage = memo<{
   isLastMessage?: boolean;
 }>(({ message, onRegenerateResponse, onFeedback, isLastMessage = false }) => {
   const hasTextContent = Boolean(message.content?.trim());
+  const incidentReportArtifact =
+    message.role === 'assistant'
+      ? message.metadata?.incidentReportArtifact
+      : undefined;
+  const monitoringAnalysisArtifact =
+    message.role === 'assistant'
+      ? message.metadata?.monitoringAnalysisArtifact
+      : undefined;
   const assistantResponseView = useMemo(() => {
     if (message.role !== 'assistant' || message.isStreaming) {
       return null;
@@ -195,6 +205,15 @@ export const AIWorkspaceMessage = memo<{
                 </div>
               )}
             </div>
+          )}
+
+          {incidentReportArtifact && (
+            <IncidentReportArtifactCard artifact={incidentReportArtifact} />
+          )}
+          {monitoringAnalysisArtifact && (
+            <MonitoringAnalysisArtifactCard
+              artifact={monitoringAnalysisArtifact}
+            />
           )}
 
           <div

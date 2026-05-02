@@ -221,6 +221,44 @@ describe('chat-history-storage', () => {
         handoffHistory: [],
       });
     });
+
+    it('persists artifact metadata for assistant messages', () => {
+      const messages = [
+        {
+          ...makeMessage({
+            id: 'assistant-artifact',
+            role: 'assistant',
+            content: '장애 보고서를 작성했습니다.',
+          }),
+          metadata: {
+            incidentReportArtifact: {
+              kind: 'incident-report',
+              generatedAt: '2026-05-02T00:00:00.000Z',
+              report: {
+                id: 'incident-history-1',
+                title: 'DB 메모리 경고',
+                severity: 'warning',
+                timestamp: new Date('2026-05-02T00:00:00.000Z'),
+                affectedServers: ['db-mysql-dc1-primary'],
+                description: '메모리 사용률이 높습니다.',
+                status: 'active',
+              },
+            },
+          },
+        },
+      ];
+
+      saveChatHistory('s-artifact', messages as never[]);
+
+      const stored = JSON.parse(localStorage.getItem(CHAT_HISTORY_KEY)!);
+      expect(stored.messages[0].metadata.incidentReportArtifact).toMatchObject({
+        kind: 'incident-report',
+        report: {
+          id: 'incident-history-1',
+          title: 'DB 메모리 경고',
+        },
+      });
+    });
   });
 
   // ── clearChatHistory ─────────────────────────────────────────────

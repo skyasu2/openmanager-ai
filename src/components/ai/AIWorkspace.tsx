@@ -31,6 +31,7 @@ import {
   type PendingAIEntryState,
   useAISidebarStore,
 } from '@/stores/useAISidebarStore';
+import type { JobDataSlot } from '@/types/ai-jobs';
 import { RealTimeDisplay } from '../dashboard/RealTimeDisplay';
 import { OpenManagerLogo } from '../shared/OpenManagerLogo';
 import UnifiedProfileHeader from '../shared/UnifiedProfileHeader';
@@ -81,8 +82,8 @@ const AI_WORKSPACE_FUNCTION_TABS: Array<{
   },
   {
     id: 'intelligent-monitoring',
-    label: '이상감지/예측',
-    description: 'Analyst Agent',
+    label: '이상감지/추세',
+    description: '경량 분석',
     icon: Monitor,
   },
 ];
@@ -117,6 +118,8 @@ function useAIAssistantLightTheme() {
 interface AIWorkspaceProps {
   /** Dashboard route body mode. Avoids the legacy standalone AI shell. */
   embedded?: boolean;
+  /** Dashboard data slot used to keep AI pages aligned with visible metrics. */
+  queryAsOfDataSlot?: JobDataSlot;
   /** @deprecated kept for older stories/tests; sidebar uses AISidebarV4. */
   mode?: 'fullscreen';
 }
@@ -130,6 +133,7 @@ interface AIWorkspaceProps {
  */
 export default function AIWorkspace({
   embedded = false,
+  queryAsOfDataSlot,
 }: AIWorkspaceProps = {}) {
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
@@ -164,8 +168,15 @@ export default function AIWorkspace({
     consumePendingPrefillMessage,
   } = useAIChatSurface();
   const [workspaceQueryAsOfDataSlot, setWorkspaceQueryAsOfDataSlot] = useState(
-    pendingEntryState?.queryAsOfDataSlot
+    pendingEntryState?.queryAsOfDataSlot ?? queryAsOfDataSlot
   );
+
+  useEffect(() => {
+    if (pendingEntryState?.queryAsOfDataSlot) {
+      return;
+    }
+    setWorkspaceQueryAsOfDataSlot(queryAsOfDataSlot);
+  }, [pendingEntryState?.queryAsOfDataSlot, queryAsOfDataSlot]);
 
   const handleFunctionSelect = useCallback(
     (func: AIAssistantFunction) => {
@@ -255,6 +266,13 @@ export default function AIWorkspace({
       analysisMode: pendingEntryState?.analysisMode ?? analysisMode,
       target: 'sidebar',
     };
+    const handoffQueryAsOfDataSlot =
+      pendingEntryState?.queryAsOfDataSlot ??
+      workspaceQueryAsOfDataSlot ??
+      queryAsOfDataSlot;
+    if (handoffQueryAsOfDataSlot) {
+      sidebarEntry.queryAsOfDataSlot = handoffQueryAsOfDataSlot;
+    }
     const draft =
       pendingEntryState?.draft ??
       (selectedFunction === 'chat' ? input.trim() : undefined);
@@ -273,8 +291,10 @@ export default function AIWorkspace({
     openSidebar,
     pendingEntryState,
     queuePendingEntryState,
+    queryAsOfDataSlot,
     router,
     selectedFunction,
+    workspaceQueryAsOfDataSlot,
     embedded,
   ]);
 
@@ -298,7 +318,7 @@ export default function AIWorkspace({
       selectAnalysisMode(entry.analysisMode);
     }
 
-    setWorkspaceQueryAsOfDataSlot(entry.queryAsOfDataSlot);
+    setWorkspaceQueryAsOfDataSlot(entry.queryAsOfDataSlot ?? queryAsOfDataSlot);
 
     if (entry.draft) {
       setInput(entry.draft);
@@ -306,6 +326,7 @@ export default function AIWorkspace({
   }, [
     consumePendingEntryState,
     pendingEntryState,
+    queryAsOfDataSlot,
     selectAnalysisMode,
     setInput,
     setSelectedFunction,
@@ -581,7 +602,7 @@ export default function AIWorkspace({
                 </div>
               </div>
             </button>
-            {/* 이상감지/예측 */}
+            {/* 이상감지/추세 */}
             <button
               type="button"
               onClick={() => handleFunctionSelect('intelligent-monitoring')}
@@ -593,10 +614,8 @@ export default function AIWorkspace({
             >
               <Monitor className="h-4 w-4 shrink-0" />
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium">이상감지/예측</div>
-                <div className="text-xs text-gray-500 truncate">
-                  Analyst Agent
-                </div>
+                <div className="text-sm font-medium">이상감지/추세</div>
+                <div className="text-xs text-gray-500 truncate">경량 분석</div>
               </div>
             </button>
           </div>

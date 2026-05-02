@@ -3,7 +3,9 @@
 import { Bot, Cpu, User } from 'lucide-react';
 import { memo, useMemo } from 'react';
 import { AnalysisBasisBadge } from '@/components/ai/AnalysisBasisBadge';
+import { IncidentReportArtifactCard } from '@/components/ai/IncidentReportArtifactCard';
 import { MessageActions } from '@/components/ai/MessageActions';
+import { MonitoringAnalysisArtifactCard } from '@/components/ai/MonitoringAnalysisArtifactCard';
 import { WebSourceCards } from '@/components/ai/WebSourceCards';
 import { convertThinkingStepsToUI } from '@/hooks/ai/useAIChatCore';
 import {
@@ -40,6 +42,14 @@ export const MessageComponent = memo<{
   isLastMessage?: boolean;
 }>(({ message, onRegenerateResponse, onFeedback, isLastMessage }) => {
   const hasTextContent = Boolean(message.content?.trim());
+  const incidentReportArtifact =
+    message.role === 'assistant'
+      ? message.metadata?.incidentReportArtifact
+      : undefined;
+  const monitoringAnalysisArtifact =
+    message.role === 'assistant'
+      ? message.metadata?.monitoringAnalysisArtifact
+      : undefined;
   const agentSteps = useMemo(
     () => convertToAgentSteps(message.thinkingSteps),
     [message.thinkingSteps]
@@ -199,6 +209,15 @@ export const MessageComponent = memo<{
                 </div>
               )}
             </div>
+          )}
+
+          {incidentReportArtifact && (
+            <IncidentReportArtifactCard artifact={incidentReportArtifact} />
+          )}
+          {monitoringAnalysisArtifact && (
+            <MonitoringAnalysisArtifactCard
+              artifact={monitoringAnalysisArtifact}
+            />
           )}
 
           {/* 타임스탬프 & 메타데이터 */}

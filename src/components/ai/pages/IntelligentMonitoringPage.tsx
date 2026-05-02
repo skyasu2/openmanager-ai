@@ -1,9 +1,9 @@
 /**
- * 이상감지/예측 페이지 v5.1
+ * 이상감지/추세 페이지 v5.1
  *
- * 버튼 클릭으로 서버 상태 분석 및 예측
+ * 버튼 클릭으로 서버 상태와 경량 추세 분석
  * - Cloud Run /api/ai/analyze-server 호출
- * - 이상 탐지 + 트렌드 예측 + AI 인사이트 표시
+ * - 이상 탐지 + 트렌드 분석 + AI 인사이트 표시
  *
  * v5.1 변경사항 (2025-12-26):
  * - 전체 시스템 분석: 각 서버별 개별 분석 + 종합 요약
@@ -364,8 +364,14 @@ export default function IntelligentMonitoringPage({
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-r from-emerald-500 to-teal-500">
               <Monitor className="h-5 w-5 text-white" />
             </div>
-            이상감지/예측
+            이상감지/추세
           </h1>
+          {queryAsOfDataSlot && (
+            <span className="rounded-full border border-emerald-100 bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
+              기준 {queryAsOfDataSlot.timeLabel} · slot{' '}
+              {queryAsOfDataSlot.slotIndex}
+            </span>
+          )}
         </div>
       </header>
 

@@ -14,6 +14,10 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import { useShallow } from 'zustand/react/shallow';
+import type {
+  IncidentReportArtifact,
+  MonitoringAnalysisArtifact,
+} from '@/lib/ai/artifacts/types';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type {
   AnalysisFeatureStatus,
@@ -117,6 +121,10 @@ export interface ChatMessage {
       details?: string | null;
       shouldCollapse?: boolean;
     };
+    /** 채팅에서 생성한 사용자 다운로드 가능 장애 보고서 */
+    incidentReportArtifact?: IncidentReportArtifact;
+    /** 채팅에서 생성한 사용자 다운로드 가능 이상감지/추세 분석 */
+    monitoringAnalysisArtifact?: MonitoringAnalysisArtifact;
     /** 도구 실행 결과 요약 */
     toolResultSummaries?: ToolResultSummary[];
     /** 에이전트 handoff 이력 */
