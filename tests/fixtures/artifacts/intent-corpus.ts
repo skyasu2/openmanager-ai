@@ -29,7 +29,7 @@ export interface ArtifactIntentCorpusCase {
 }
 
 export const artifactIntentCorpus = {
-  version: '2026-05-02-v1',
+  version: '2026-05-02-v2',
   cases: [
     {
       id: 'ir-001',
