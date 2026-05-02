@@ -6,6 +6,12 @@ describe('classifyChatArtifactIntent', () => {
     expect(classifyChatArtifactIntent('장애 보고서 작성해줘')).toMatchObject({
       kind: 'incident-report',
     });
+    expect(classifyChatArtifactIntent('장애보고서')).toMatchObject({
+      kind: 'incident-report',
+    });
+    expect(classifyChatArtifactIntent('장애 보고서 부탁')).toMatchObject({
+      kind: 'incident-report',
+    });
     expect(
       classifyChatArtifactIntent(
         '현재 장애 리포트를 md 파일로 다운로드하게 만들어줘'
@@ -26,6 +32,20 @@ describe('classifyChatArtifactIntent', () => {
     ).toMatchObject({
       kind: 'monitoring-analysis',
     });
+    expect(classifyChatArtifactIntent('추세 분석')).toMatchObject({
+      kind: 'monitoring-analysis',
+    });
+    expect(classifyChatArtifactIntent('이상감지')).toMatchObject({
+      kind: 'monitoring-analysis',
+    });
+    expect(classifyChatArtifactIntent('장애 예측 추세 분석')).toMatchObject({
+      kind: 'monitoring-analysis',
+    });
+    expect(classifyChatArtifactIntent('추세 분석 기능 실행해줘')).toMatchObject(
+      {
+        kind: 'monitoring-analysis',
+      }
+    );
   });
 
   it('keeps ambiguous feature questions as local guidance without API execution', () => {
@@ -45,10 +65,37 @@ describe('classifyChatArtifactIntent', () => {
         target: 'monitoring-analysis',
       }
     );
+    expect(
+      classifyChatArtifactIntent('장애 보고서 기능 설명해줘')
+    ).toMatchObject({
+      kind: 'guidance',
+      target: 'incident-report',
+    });
+    expect(
+      classifyChatArtifactIntent('장애 보고서 작성 방법 알려줘')
+    ).toMatchObject({
+      kind: 'guidance',
+      target: 'incident-report',
+    });
+    expect(
+      classifyChatArtifactIntent('장애 보고서 파일 형식 설명해줘')
+    ).toMatchObject({
+      kind: 'guidance',
+      target: 'incident-report',
+    });
+    expect(
+      classifyChatArtifactIntent('추세 보고서 기능 설명해줘')
+    ).toMatchObject({
+      kind: 'guidance',
+      target: 'monitoring-analysis',
+    });
   });
 
   it('does not capture normal operational chat questions', () => {
     expect(classifyChatArtifactIntent('CPU 높은 서버 알려줘')).toEqual({
+      kind: 'none',
+    });
+    expect(classifyChatArtifactIntent('최근 추세가 어때?')).toEqual({
       kind: 'none',
     });
   });

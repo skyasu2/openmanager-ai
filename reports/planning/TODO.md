@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-02 KST (`Artifact guardrails hardened`)
+**Last Updated**: 2026-05-02 KST (`Artifact intent keywords hardened`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -41,6 +41,12 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-02 #254)
+- [x] AI Assistant 아티팩트 intent 키워드형 요청 보강
+  - `장애보고서`, `장애 보고서 부탁`, `추세 분석`, `이상감지`, `장애 예측 추세 분석`처럼 짧은 키워드형 요청도 실행 intent로 분류
+  - `작성 방법`, `파일 형식 설명`, `기능 설명` 같은 안내 요청은 guidance로 유지해 불필요한 API 호출 방지
+  - 검증: targeted artifact intent/chat/card/input tests 27/27, `type-check`, `lint:changed`
 
 ### Completed (2026-05-02 #253)
 - [x] AI Assistant 아티팩트 guardrail 보강
