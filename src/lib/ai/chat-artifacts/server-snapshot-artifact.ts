@@ -6,14 +6,9 @@ import { metricsProvider } from '@/services/metrics/MetricsProvider';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import type { ChatArtifactRequest, ServerSnapshotArtifact } from './types';
 
-type SnapshotMetric = 'cpu' | 'memory' | 'disk' | 'network';
+const SNAPSHOT_METRICS = ['cpu', 'memory', 'disk', 'network'] as const;
 
-const SNAPSHOT_METRICS = [
-  'cpu',
-  'memory',
-  'disk',
-  'network',
-] as const satisfies readonly SnapshotMetric[];
+type SnapshotMetric = (typeof SNAPSHOT_METRICS)[number];
 
 function roundMetric(value: number): number {
   return Math.round(value * 10) / 10;
@@ -47,10 +42,6 @@ function readPrimaryRisk(server: ApiServerMetrics): SnapshotMetric {
   );
 }
 
-function readPrimaryRiskValue(server: ApiServerMetrics): number {
-  return server[readPrimaryRisk(server)];
-}
-
 function buildSummary(summary: SystemSummary): string {
   const riskServers = summary.criticalServers + summary.offlineServers;
 
@@ -62,7 +53,8 @@ function buildTopServers(
 ): ServerSnapshotArtifact['topServers'] {
   return [...servers]
     .sort(
-      (left, right) => readPrimaryRiskValue(right) - readPrimaryRiskValue(left)
+      (left, right) =>
+        right[readPrimaryRisk(right)] - left[readPrimaryRisk(left)]
     )
     .slice(0, 3)
     .map((server) => ({
@@ -108,18 +100,6 @@ function buildAlerts(
     });
 }
 
-function createAbortError(): Error {
-  const error = new Error('Server snapshot artifact generation aborted');
-  error.name = 'AbortError';
-  return error;
-}
-
-function throwIfAborted(signal?: AbortSignal): void {
-  if (signal?.aborted) {
-    throw createAbortError();
-  }
-}
-
 export function readServerSnapshotTimeLabel(
   artifact: ServerSnapshotArtifact
 ): string {
@@ -144,14 +124,14 @@ export async function generateServerSnapshotArtifact({
   queryAsOfDataSlot,
   signal,
 }: ChatArtifactRequest): Promise<ServerSnapshotArtifact> {
-  throwIfAborted(signal);
+  signal?.throwIfAborted();
 
   const [servers, summary] = await Promise.all([
     metricsProvider.getAllServerMetrics(),
     metricsProvider.getSystemSummary(),
   ]);
 
-  throwIfAborted(signal);
+  signal?.throwIfAborted();
 
   const slot = createSlot(summary, queryAsOfDataSlot);
 

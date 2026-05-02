@@ -11,15 +11,7 @@ import {
 } from '@/lib/ai/chat-artifacts/server-snapshot-artifact';
 import type { ServerSnapshotArtifact } from '@/lib/ai/chat-artifacts/types';
 
-function downloadBlob({
-  content,
-  filename,
-  type,
-}: {
-  content: string;
-  filename: string;
-  type: string;
-}): void {
+function downloadBlob(content: string, filename: string, type: string): void {
   const blob = new Blob([content], { type: `${type};charset=utf-8` });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
@@ -57,19 +49,19 @@ function downloadSnapshot(
 ): void {
   const stamp = artifact.generatedAt.replace(/[:.]/g, '-');
   if (format === 'json') {
-    downloadBlob({
-      content: buildServerSnapshotJson(artifact),
-      filename: `server-snapshot-${stamp}.json`,
-      type: 'application/json',
-    });
+    downloadBlob(
+      buildServerSnapshotJson(artifact),
+      `server-snapshot-${stamp}.json`,
+      'application/json'
+    );
     return;
   }
 
-  downloadBlob({
-    content: buildServerSnapshotMarkdown(artifact),
-    filename: `server-snapshot-${stamp}.md`,
-    type: 'text/markdown',
-  });
+  downloadBlob(
+    buildServerSnapshotMarkdown(artifact),
+    `server-snapshot-${stamp}.md`,
+    'text/markdown'
+  );
 }
 
 export function ServerSnapshotArtifactCard({
