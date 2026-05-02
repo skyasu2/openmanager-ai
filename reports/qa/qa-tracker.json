@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-01T18:36:18.241Z"
+    "updatedAt": "2026-05-02T07:43:11.883Z"
   },
   "sequence": {
-    "nextRunNumber": 390
+    "nextRunNumber": 391
   },
   "summary": {
-    "totalRecordedRuns": 387,
-    "totalRuns": 316,
+    "totalRecordedRuns": 388,
+    "totalRuns": 317,
     "excludedRuns": 71,
-    "totalChecks": 2714,
-    "totalPassed": 2616,
+    "totalChecks": 2723,
+    "totalPassed": 2625,
     "totalFailed": 89,
     "completionRate": 100,
-    "completedItems": 398,
+    "completedItems": 401,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 20,
     "expertDomainsTracked": 12,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260502-0389",
-    "lastRecordedAt": "2026-05-01T18:36:18.241Z",
-    "latestRecordedRunId": "QA-20260502-0389",
-    "latestRecordedAt": "2026-05-01T18:36:18.241Z"
+    "lastRunId": "QA-20260502-0390",
+    "lastRecordedAt": "2026-05-02T07:43:11.883Z",
+    "latestRecordedRunId": "QA-20260502-0390",
+    "latestRecordedAt": "2026-05-02T07:43:11.883Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -9761,6 +9761,78 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-01T18:36:18.241Z"
+    },
+    "ai-artifact-guidance-intent-guard-v81181": {
+      "id": "ai-artifact-guidance-intent-guard-v81181",
+      "title": "Artifact guidance requests should not trigger monitoring artifact execution",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260502-0390",
+      "firstSeenAt": "2026-05-02T07:43:11.883Z",
+      "lastSeenRunId": "QA-20260502-0390",
+      "lastSeenAt": "2026-05-02T07:43:11.883Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production Playwright MCP: '추세 분석 기능 설명해줘' returned guidance text and no /api/ai/intelligent-monitoring resource was observed.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-02T07:43:11.883Z"
+    },
+    "ai-incident-artifact-render-v81181": {
+      "id": "ai-incident-artifact-render-v81181",
+      "title": "Incident report artifact renders from production AI sidebar",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260502-0390",
+      "firstSeenAt": "2026-05-02T07:43:11.883Z",
+      "lastSeenRunId": "QA-20260502-0390",
+      "lastSeenAt": "2026-05-02T07:43:11.883Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production Playwright MCP: '장애 보고서 작성해줘' called /api/ai/incident-report and rendered an Incident Report card with MD/TXT downloads.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-02T07:43:11.883Z"
+    },
+    "ai-artifact-input-guard-v81181": {
+      "id": "ai-artifact-input-guard-v81181",
+      "title": "AI sidebar send button disables when input is empty after artifact submission",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260502-0390",
+      "firstSeenAt": "2026-05-02T07:43:11.883Z",
+      "lastSeenRunId": "QA-20260502-0390",
+      "lastSeenAt": "2026-05-02T07:43:11.883Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production Playwright MCP observed message send disabled after submit cleared the input.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-02T07:43:11.883Z"
     }
   },
   "runs": [
@@ -38692,6 +38764,121 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260502-0390",
+      "recordedAt": "2026-05-02T07:43:11.883Z",
+      "recordedAtKst": "2026-05-02 16:43:11 KST",
+      "title": "Vercel Production Targeted QA - Artifact Guardrails v8.11.81",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260502-0390.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_4Erbf7frXhUsVPTFSMCXxjL4fxt7",
+        "deploymentUrl": "https://openmanager-2g7a7o589-skyasus-projects.vercel.app",
+        "commitSha": "4d952562bff3d3f93fb0b41c6631563aa061f9e4"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "/api/version: production serves v8.11.81 with commit 4d952562bff3d3f93fb0b41c6631563aa061f9e4",
+        "/api/health: production health check returned healthy database/cache/ai",
+        "/api/ai/incident-report: GET returns 405, matching POST-only route contract",
+        "/: landing renders v8.11.81 badge",
+        "/system-boot -> /dashboard: system start flow reached dashboard",
+        "/dashboard: AI sidebar opens and AI Engine Ready is visible",
+        "AI sidebar guidance query: '추세 분석 기능 설명해줘' returned a normal guidance response, not an intelligent-monitoring artifact execution",
+        "AI sidebar artifact query: '장애 보고서 작성해줘' called /api/ai/incident-report once and rendered Incident Report artifact card with MD/TXT downloads",
+        "AI sidebar input guard: send button is disabled when the input is empty after submit"
+      ],
+      "skippedSurfaces": [
+        "Monitoring Analysis artifact execution: not re-run to keep this QA focused on the changed intent guard and incident artifact path",
+        "Abort/stop in-flight artifact: not directly observed because the production incident-report response completed in about 1891ms",
+        "Modal/detail pack: unchanged by the artifact guardrail release",
+        "Security prompt-injection pack: outside this targeted release validation",
+        "Cloud Run admin observability /monitoring and /monitoring/traces: not part of Vercel AI artifact UI guardrail scope"
+      ],
+      "checks": {
+        "total": 9,
+        "passed": 9,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Changed AI artifact intent paths were verified on production with one guidance query and one artifact generation query.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Unit/contract gates were already green before release; this run adds browser-level Playwright MCP coverage for the changed production surface.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline, Vercel deployment, post-deploy smoke, and production version evidence all point to the same v8.11.81 release.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-02T16:26:00+09:00",
+          "summary": "Current billing period returned no charge records yet; previous-month probe confirmed CLI connectivity and billed 0.0000 USD.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "AI artifact guardrail production verification",
+          "path": "reports/qa/evidence/qa-20260502-v81181-artifacts-guardrails.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.81 deploy pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2494790209"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment v8.11.81",
+          "url": "https://openmanager-2g7a7o589-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 3,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -38700,16 +38887,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 181,
-      "appropriateCount": 162,
+      "seenCount": 182,
+      "appropriateCount": 163,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 28,
-      "lastRunId": "QA-20260501-0387",
-      "lastSeenAt": "2026-05-01T08:52:56.763Z",
-      "lastFit": "partially-appropriate",
+      "lastRunId": "QA-20260502-0390",
+      "lastSeenAt": "2026-05-02T07:43:11.883Z",
+      "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "AI Engine deploy and post-deploy smoke passed; manual AI conversation quality was intentionally outside this smoke scope.",
+      "lastRationale": "Changed AI artifact intent paths were verified on production with one guidance query and one artifact generation query.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -38751,16 +38938,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 117,
-      "appropriateCount": 104,
+      "seenCount": 118,
+      "appropriateCount": 105,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 17,
-      "lastRunId": "QA-20260501-0387",
-      "lastSeenAt": "2026-05-01T08:52:56.763Z",
+      "lastRunId": "QA-20260502-0390",
+      "lastSeenAt": "2026-05-02T07:43:11.883Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag pipeline completed production deploy and post-deploy smoke successfully.",
+      "lastRationale": "GitLab tag pipeline, Vercel deployment, post-deploy smoke, and production version evidence all point to the same v8.11.81 release.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -38768,16 +38955,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 152,
-      "appropriateCount": 140,
+      "seenCount": 153,
+      "appropriateCount": 141,
       "partialCount": 12,
       "inappropriateCount": 0,
       "improvementNeededCount": 13,
-      "lastRunId": "QA-20260501-0387",
-      "lastSeenAt": "2026-05-01T08:52:56.763Z",
+      "lastRunId": "QA-20260502-0390",
+      "lastSeenAt": "2026-05-02T07:43:11.883Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Release smoke was automated through GitLab CI and verified frontend plus AI Engine smoke jobs.",
+      "lastRationale": "Unit/contract gates were already green before release; this run adds browser-level Playwright MCP coverage for the changed production surface.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

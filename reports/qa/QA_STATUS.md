@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-02 03:36:20 KST
+> Generated at: 2026-05-02 16:43:13 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 387 |
-| Total Runs (Counted) | 316 |
+| Total Recorded Runs | 388 |
+| Total Runs (Counted) | 317 |
 | Non-counted Runs | 71 |
-| Total Checks | 2714 |
-| Passed | 2616 |
+| Total Checks | 2723 |
+| Passed | 2625 |
 | Failed | 89 |
-| Completed Items | 398 |
+| Completed Items | 401 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 20 |
 | Expert Domains Tracked | 12 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260502-0389 (2026-05-01T18:36:18.241Z) |
-| Latest Recorded Run | QA-20260502-0389 (2026-05-01T18:36:18.241Z) |
+| Last Counted Run | QA-20260502-0390 (2026-05-02T07:43:11.883Z) |
+| Latest Recorded Run | QA-20260502-0390 (2026-05-02T07:43:11.883Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,21 +34,23 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260502-0389 (2026-05-01T18:36:18.241Z)
+Latest run: QA-20260502-0390 (2026-05-02T07:43:11.883Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period has no charge records yet; previous-month probe confirmed CLI connectivity and showed billed 0.0000 USD. |
+| vercel | cli | checked | normal | Current billing period returned no charge records yet; previous-month probe confirmed CLI connectivity and billed 0.0000 USD. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-04-30T18:36:18.241Z -> 2026-05-01T18:36:18.241Z (24h)
+- Window: 2026-05-01T07:43:11.883Z -> 2026-05-02T07:43:11.883Z (24h)
 - Runs with observations: 1 recorded / 1 counted
 - Samples: 2
 
@@ -60,25 +62,25 @@ Latest run: QA-20260502-0389 (2026-05-01T18:36:18.241Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
+- Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_5Sbmh9PzcMiiGkCtLKAauPj9smdK / SHA 47cde877
-- Coverage Packs: ai-core, ai-advanced-surface
-- Covered Surfaces: /api/version: v8.11.79 releaseTag and commit match deployed GitLab tag, /api/health: production health check returned healthy database/cache/ai, /login: restricted guest PIN dialog and guest login path, /dashboard: AI sidebar opens from production dashboard, AI sidebar: new conversation started before recent-change regression checks, AI sidebar: first server-summary question completed via /api/ai/jobs in 3595ms with non-empty grounded response, AI sidebar: second anomaly-interval question completed via /api/ai/jobs in 18797ms with non-empty response, AI sidebar: raw function/tool-call JSON not present in job result or rendered dialog for both questions, AI sidebar: analysis basis and tool basis visible for AI responses, /dashboard/ai-assistant: fullscreen handoff preserves the two-turn conversation and analysis basis, /dashboard/ai-assistant: raw function/tool-call JSON not visible after fullscreen handoff, Vercel usage guard: current billing period check completed before production QA
-- Skipped Surfaces: Reporter Agent tab: not part of the v8.11.79 raw tool-call JSON regression scope, Analyst Agent full-analysis button: not re-run because the changed path was AI Chat message streaming/rendering, modal-detail-pack: unchanged by recent AI stream guard fix, security-pack: prompt-injection and auth abuse scenarios outside this targeted retest, Cloud Run admin observability /monitoring and /monitoring/traces: not part of Vercel AI Chat rendering regression
+- Deployment: dpl_4Erbf7frXhUsVPTFSMCXxjL4fxt7 / SHA 4d952562
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, ai-advanced-surface
+- Covered Surfaces: /api/version: production serves v8.11.81 with commit 4d952562bff3d3f93fb0b41c6631563aa061f9e4, /api/health: production health check returned healthy database/cache/ai, /api/ai/incident-report: GET returns 405, matching POST-only route contract, /: landing renders v8.11.81 badge, /system-boot -> /dashboard: system start flow reached dashboard, /dashboard: AI sidebar opens and AI Engine Ready is visible, AI sidebar guidance query: '추세 분석 기능 설명해줘' returned a normal guidance response, not an intelligent-monitoring artifact execution, AI sidebar artifact query: '장애 보고서 작성해줘' called /api/ai/incident-report once and rendered Incident Report artifact card with MD/TXT downloads, AI sidebar input guard: send button is disabled when the input is empty after submit
+- Skipped Surfaces: Monitoring Analysis artifact execution: not re-run to keep this QA focused on the changed intent guard and incident artifact path, Abort/stop in-flight artifact: not directly observed because the production incident-report response completed in about 1891ms, Modal/detail pack: unchanged by the artifact guardrail release, Security prompt-injection pack: outside this targeted release validation, Cloud Run admin observability /monitoring and /monitoring/traces: not part of Vercel AI artifact UI guardrail scope
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.11.79 deploy pipeline | [GitLab v8.11.79 deploy pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2493958962) | - |
-| vercel-deployment | Vercel production deployment v8.11.79 | [Vercel production deployment v8.11.79](https://openmanager-rh36o8g3g-skyasus-projects.vercel.app/) | - |
+| general | GitLab v8.11.81 deploy pipeline | [GitLab v8.11.81 deploy pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2494790209) | - |
+| vercel-deployment | Vercel production deployment v8.11.81 | [Vercel production deployment v8.11.81](https://openmanager-2g7a7o589-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | AI Chat recent-change two-turn regression recheck | `reports/qa/evidence/qa-20260502-v81179-ai-chat-recent-change-recheck.png` | - |
+| playwright-screenshot | AI artifact guardrail production verification | `reports/qa/evidence/qa-20260502-v81181-artifacts-guardrails.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -165,6 +167,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-analysis-mode-route-selection-production: Production auto/thinking analysis mode route selection verified (completed 1회, last QA-20260428-0355)
 - ai-analyst-success: Analyst Agent 이상감지/예측 성공 (completed 2회, last QA-20260314-0097)
 - ai-answer-enumerated-requirements: AI 답변이 사용자가 요청한 항목 개수를 정확히 충족하도록 보강 (completed 1회, last QA-20260423-0339)
+- ai-artifact-guidance-intent-guard-v81181: Artifact guidance requests should not trigger monitoring artifact execution (completed 1회, last QA-20260502-0390)
+- ai-artifact-input-guard-v81181: AI sidebar send button disables when input is empty after artifact submission (completed 1회, last QA-20260502-0390)
 - ai-assistant-fullscreen-query-path: AI 전체 화면 핵심 서버 상태 요약 질의 검증 (completed 1회, last QA-20260318-0123)
 - ai-assistant-fullscreen-tools-parity: AI 전체 화면 도구 메뉴 parity 검증 (completed 1회, last QA-20260318-0123)
 - ai-assistant-guest-login-mcp-check-v81136-20260427: AI assistant works through Vercel Playwright MCP guest login on v8.11.36 (completed 1회, last QA-20260427-0351)
@@ -200,6 +204,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-fallback-done-usage-metadata: Delegated summarization fallback should report delegated provider token usage (completed 1회, last QA-20260429-0367)
 - ai-friendly-template-todo-marker: Template TODO marker 분리 (TEMPLATE_TODO 적용) (completed 1회, last QA-20260226-0006)
 - ai-hardening-production-verification: Verify production AI hardening release on v8.11.20 (completed 1회, last QA-20260418-0303)
+- ai-incident-artifact-render-v81181: Incident report artifact renders from production AI sidebar (completed 1회, last QA-20260502-0390)
 - ai-math-tools: AI 계산 도구(수식/통계/용량) 셋업 완료 (completed 1회, last QA-20260228-0023)
 - ai-metric-ranking-answer-order: Ranking answers preserve descending order from tool output (completed 1회, last QA-20260418-0304)
 - ai-metric-ranking-cpu-route: Current metric ranking query routes to deterministic metric lookup (completed 1회, last QA-20260418-0304)
@@ -561,6 +566,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260502-0390 | 2026-05-02T07:43:11.883Z | targeted | yes | yes | Vercel Production Targeted QA - Artifact Guardrails v8.11.81 | 9 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260502-0389 | 2026-05-01T18:36:18.241Z | targeted | no | yes | Vercel Production AI Chat Recent Change Playwright QA v8.11.79 | 12 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260501-0388 | 2026-05-01T09:03:46.030Z | targeted | no | yes | Dashboard Playwright MCP Detailed Interaction QA | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260501-0387 | 2026-05-01T08:52:56.763Z | smoke | yes | yes | v8.11.77 GitLab Release Smoke | 4 | 0 | 0 | 0 | 0 | 0 |
@@ -580,4 +586,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260429-0373 | 2026-04-29T14:29:33.712Z | targeted | yes | yes | Vercel Playwright targeted QA - v8.11.64 AI alert-status advisory recheck | 9 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260429-0372 | 2026-04-29T14:03:32.361Z | targeted | yes | yes | Vercel Playwright targeted QA - v8.11.63 AI slot propagation recheck | 9 | 1 | 1 | 0 | 0 | 1 |
 | QA-20260429-0371 | 2026-04-29T13:26:06.547Z | targeted | yes | yes | Vercel Playwright targeted QA - v8.11.62 dashboard AI data slot drift | 8 | 0 | 1 | 0 | 0 | 2 |
-| QA-20260429-0370 | 2026-04-29T09:41:31.768Z | targeted | yes | yes | v8.11.60 Vercel Production QA - AI Sidebar QueryAsOf and Cerebras Fallback Recheck | 8 | 2 | 0 | 0 | 0 | 0 |
