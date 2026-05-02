@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-02T16:09:07.439Z"
+    "updatedAt": "2026-05-02T19:10:10.245Z"
   },
   "sequence": {
-    "nextRunNumber": 395
+    "nextRunNumber": 396
   },
   "summary": {
-    "totalRecordedRuns": 392,
-    "totalRuns": 320,
+    "totalRecordedRuns": 393,
+    "totalRuns": 321,
     "excludedRuns": 72,
-    "totalChecks": 2747,
-    "totalPassed": 2649,
+    "totalChecks": 2760,
+    "totalPassed": 2662,
     "totalFailed": 89,
     "completionRate": 100,
-    "completedItems": 404,
+    "completedItems": 405,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 20,
     "expertDomainsTracked": 12,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260503-0394",
-    "lastRecordedAt": "2026-05-02T16:09:07.439Z",
-    "latestRecordedRunId": "QA-20260503-0394",
-    "latestRecordedAt": "2026-05-02T16:09:07.439Z"
+    "lastRunId": "QA-20260503-0395",
+    "lastRecordedAt": "2026-05-02T19:10:10.245Z",
+    "latestRecordedRunId": "QA-20260503-0395",
+    "latestRecordedAt": "2026-05-02T19:10:10.245Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -9905,6 +9905,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-02T16:09:07.439Z"
+    },
+    "ai-server-snapshot-artifact-cancellation-v81185": {
+      "id": "ai-server-snapshot-artifact-cancellation-v81185",
+      "title": "Server snapshot artifact respects cancellation and preserves production rendering",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260503-0395",
+      "firstSeenAt": "2026-05-02T19:10:10.245Z",
+      "lastSeenRunId": "QA-20260503-0395",
+      "lastSeenAt": "2026-05-02T19:10:10.245Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Local tests verify pre-aborted and mid-flight AbortError handling; production Playwright MCP verifies the server snapshot artifact still renders with static OTel data and no LLM/Cloud Run cost path.",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-02T19:10:10.245Z"
     }
   },
   "runs": [
@@ -39357,6 +39381,124 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260503-0395",
+      "recordedAt": "2026-05-02T19:10:10.245Z",
+      "recordedAtKst": "2026-05-03 04:10:10 KST",
+      "title": "Vercel Production Targeted QA - Server Snapshot Artifact v8.11.85",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260503-0395.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_C5KzCTBKFK8cPhWK9RByuFJZvizF",
+        "deploymentUrl": "https://openmanager-j1ubcu999-skyasus-projects.vercel.app",
+        "commitSha": "0c041acdadc4cd4ede87b0ca5a745f8164d44c9e"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "dashboard-core",
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "/dashboard: production dashboard loaded on v8.11.85 with synthetic OTel dataset, 18 total servers, 16 online, 2 warning, 0 critical/offline",
+        "/dashboard: AI sidebar opened from production dashboard",
+        "AI sidebar query: '서버 상태 스냅샷' submitted through the real input and rendered a fresh Server Snapshot artifact card",
+        "Server Snapshot artifact card rendered source otel-static, 기준 04:00 KST, total 18, warning 2, risk 0, average CPU 32.5%",
+        "Server Snapshot artifact card rendered top servers db-mysql-dc1-primary DISK 81%, storage-nfs-dc1-01 DISK 80%, and api-was-dc1-01 CPU 72%",
+        "Server Snapshot artifact card rendered 주요 알림 rows for db-mysql-dc1-primary DISK 81% and storage-nfs-dc1-01 DISK 80%",
+        "Server Snapshot artifact card exposed MD and JSON download actions",
+        "Assistant evidence panel recorded tool metadata as generateServerSnapshotArtifact",
+        "Network requests for the snapshot path stayed on POST /api/ai/wake-up plus static /data/otel-data JSON and /api/health; no supervisor stream, /api/ai/artifact-intent, /api/ai/incident-report, /api/ai/intelligent-monitoring, or /api/ai/jobs request was observed",
+        "/api/version returned 8.11.85, commit 0c041acdadc4cd4ede87b0ca5a745f8164d44c9e, releaseTag v8.11.85, and GitLab pipeline 2495292672",
+        "GitLab v8.11.85 tag pipeline 2495292672 succeeded across deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke",
+        "Post-deploy smoke verified /, /login, and /api/version with expected version 8.11.85 and commit 0c041acdadc4cd4ede87b0ca5a745f8164d44c9e",
+        "Vercel usage check completed after production QA with billed usage remaining 0.0000 USD"
+      ],
+      "skippedSurfaces": [
+        "Incident report artifact rerun: unchanged by server-snapshot cancellation hardening and already covered by prior v8.11.81/v8.11.82 production artifact QA",
+        "Monitoring analysis artifact rerun: unchanged by server-snapshot cancellation hardening and already covered by prior artifact QA",
+        "General Cloud Run streaming chat: intentionally not invoked because this QA validates that server-snapshot stays off LLM/Cloud Run cost paths",
+        "Modal/detail pack: unchanged by this server-snapshot artifact maintenance patch",
+        "Cloud Run admin observability /monitoring and /monitoring/traces: outside this Vercel artifact routing scope"
+      ],
+      "checks": {
+        "total": 13,
+        "passed": 13,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production browser QA verified the server-snapshot artifact still routes and renders after cancellation and reader hardening, while local targeted tests covered pre-abort and mid-flight AbortError behavior.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The GitLab semver tag pipeline completed successfully for frontend deploy, AI engine deploy, and both post-deploy smoke jobs; production /api/version matches the release commit.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The run combines targeted Vitest coverage, root smoke gates, contract tests, GitLab pipeline gates, and Playwright MCP production evidence for the changed artifact path.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-03T04:08:53+09:00",
+          "summary": "Current billing period effective 0.6724 USD and billed 0.0000 USD after v8.11.85 server snapshot artifact QA.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Server Snapshot artifact production verification v8.11.85",
+          "path": "reports/qa/evidence/qa-20260503-v81185-server-snapshot-artifact.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.85 deploy pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2495292672"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment v8.11.85",
+          "url": "https://openmanager-j1ubcu999-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 3,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -39365,16 +39507,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 185,
-      "appropriateCount": 166,
+      "seenCount": 186,
+      "appropriateCount": 167,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 28,
-      "lastRunId": "QA-20260503-0394",
-      "lastSeenAt": "2026-05-02T16:09:07.439Z",
+      "lastRunId": "QA-20260503-0395",
+      "lastSeenAt": "2026-05-02T19:10:10.245Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production browser QA verified the new server-snapshot intent through the real sidebar input, artifact rendering, structured metrics, and download actions.",
+      "lastRationale": "Production browser QA verified the server-snapshot artifact still routes and renders after cancellation and reader hardening, while local targeted tests covered pre-abort and mid-flight AbortError behavior.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -39416,16 +39558,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 119,
-      "appropriateCount": 106,
+      "seenCount": 120,
+      "appropriateCount": 107,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 17,
-      "lastRunId": "QA-20260503-0394",
-      "lastSeenAt": "2026-05-02T16:09:07.439Z",
+      "lastRunId": "QA-20260503-0395",
+      "lastSeenAt": "2026-05-02T19:10:10.245Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The release tag pipeline and Vercel production deployment were both verified, and the artifact path stayed on static OTel data without unnecessary Cloud Run execution.",
+      "lastRationale": "The GitLab semver tag pipeline completed successfully for frontend deploy, AI engine deploy, and both post-deploy smoke jobs; production /api/version matches the release commit.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -39433,16 +39575,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 156,
-      "appropriateCount": 144,
+      "seenCount": 157,
+      "appropriateCount": 145,
       "partialCount": 12,
       "inappropriateCount": 0,
       "improvementNeededCount": 13,
-      "lastRunId": "QA-20260503-0394",
-      "lastSeenAt": "2026-05-02T16:09:07.439Z",
+      "lastRunId": "QA-20260503-0395",
+      "lastSeenAt": "2026-05-02T19:10:10.245Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "This targeted MCP run complements the local 59-test artifact regression suite by covering the deployed UI, network behavior, and durable screenshot evidence.",
+      "lastRationale": "The run combines targeted Vitest coverage, root smoke gates, contract tests, GitLab pipeline gates, and Playwright MCP production evidence for the changed artifact path.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

@@ -1,0 +1,130 @@
+{
+  "runId": "QA-20260503-0395",
+  "recordedAt": "2026-05-02T19:10:10.245Z",
+  "recordedAtKst": "2026-05-03 04:10:10 KST",
+  "runTitle": "Vercel Production Targeted QA - Server Snapshot Artifact v8.11.85",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_C5KzCTBKFK8cPhWK9RByuFJZvizF",
+    "deploymentUrl": "https://openmanager-j1ubcu999-skyasus-projects.vercel.app",
+    "commitSha": "0c041acdadc4cd4ede87b0ca5a745f8164d44c9e"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["dashboard-core", "ai-core", "ai-advanced-surface"],
+  "coveredSurfaces": [
+    "/dashboard: production dashboard loaded on v8.11.85 with synthetic OTel dataset, 18 total servers, 16 online, 2 warning, 0 critical/offline",
+    "/dashboard: AI sidebar opened from production dashboard",
+    "AI sidebar query: '서버 상태 스냅샷' submitted through the real input and rendered a fresh Server Snapshot artifact card",
+    "Server Snapshot artifact card rendered source otel-static, 기준 04:00 KST, total 18, warning 2, risk 0, average CPU 32.5%",
+    "Server Snapshot artifact card rendered top servers db-mysql-dc1-primary DISK 81%, storage-nfs-dc1-01 DISK 80%, and api-was-dc1-01 CPU 72%",
+    "Server Snapshot artifact card rendered 주요 알림 rows for db-mysql-dc1-primary DISK 81% and storage-nfs-dc1-01 DISK 80%",
+    "Server Snapshot artifact card exposed MD and JSON download actions",
+    "Assistant evidence panel recorded tool metadata as generateServerSnapshotArtifact",
+    "Network requests for the snapshot path stayed on POST /api/ai/wake-up plus static /data/otel-data JSON and /api/health; no supervisor stream, /api/ai/artifact-intent, /api/ai/incident-report, /api/ai/intelligent-monitoring, or /api/ai/jobs request was observed",
+    "/api/version returned 8.11.85, commit 0c041acdadc4cd4ede87b0ca5a745f8164d44c9e, releaseTag v8.11.85, and GitLab pipeline 2495292672",
+    "GitLab v8.11.85 tag pipeline 2495292672 succeeded across deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke",
+    "Post-deploy smoke verified /, /login, and /api/version with expected version 8.11.85 and commit 0c041acdadc4cd4ede87b0ca5a745f8164d44c9e",
+    "Vercel usage check completed after production QA with billed usage remaining 0.0000 USD"
+  ],
+  "skippedSurfaces": [
+    "Incident report artifact rerun: unchanged by server-snapshot cancellation hardening and already covered by prior v8.11.81/v8.11.82 production artifact QA",
+    "Monitoring analysis artifact rerun: unchanged by server-snapshot cancellation hardening and already covered by prior artifact QA",
+    "General Cloud Run streaming chat: intentionally not invoked because this QA validates that server-snapshot stays off LLM/Cloud Run cost paths",
+    "Modal/detail pack: unchanged by this server-snapshot artifact maintenance patch",
+    "Cloud Run admin observability /monitoring and /monitoring/traces: outside this Vercel artifact routing scope"
+  ],
+  "checks": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production browser QA verified the server-snapshot artifact still routes and renders after cancellation and reader hardening, while local targeted tests covered pre-abort and mid-flight AbortError behavior.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The GitLab semver tag pipeline completed successfully for frontend deploy, AI engine deploy, and both post-deploy smoke jobs; production /api/version matches the release commit.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The run combines targeted Vitest coverage, root smoke gates, contract tests, GitLab pipeline gates, and Playwright MCP production evidence for the changed artifact path.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-03T04:08:53+09:00",
+      "summary": "Current billing period effective 0.6724 USD and billed 0.0000 USD after v8.11.85 server snapshot artifact QA.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Server Snapshot artifact production verification v8.11.85",
+      "path": "reports/qa/evidence/qa-20260503-v81185-server-snapshot-artifact.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-server-snapshot-artifact-cancellation-v81185",
+      "title": "Server snapshot artifact respects cancellation and preserves production rendering",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Local tests verify pre-aborted and mid-flight AbortError handling; production Playwright MCP verifies the server snapshot artifact still renders with static OTel data and no LLM/Cloud Run cost path.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "GitLab v8.11.85 tag pipeline 2495292672 succeeded for deploy, deploy_ai_engine, post_deploy_smoke, and post_deploy_ai_engine_smoke.",
+    "Browser network capture after the fresh server snapshot flow showed POST /api/ai/wake-up, GET /api/health?service=ai, and static OTel JSON only for AI/data resources.",
+    "No aiLatencyObservations were recorded because the validated path intentionally avoids LLM inference and Cloud Run supervisor streaming."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.11.85 deploy pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2495292672"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment v8.11.85",
+      "url": "https://openmanager-j1ubcu999-skyasus-projects.vercel.app/"
+    }
+  ]
+}

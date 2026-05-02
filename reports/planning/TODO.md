@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-03 KST (`Server snapshot artifact production QA and plan archive`)
+**Last Updated**: 2026-05-03 KST (`Server snapshot artifact cancellation hardening release`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -41,6 +41,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-03 #261)
+- [x] Server Snapshot Artifact P3 maintenance
+  - `generateServerSnapshotArtifact()`가 pre-aborted/mid-flight `AbortSignal`을 `AbortError`로 처리하도록 보강하고, 서버 스냅샷 복원 reader를 export해 Markdown/UI fallback을 공유
+  - `ServerSnapshotArtifactCard`는 shared reader를 사용하되 UI 표시 cap(`slice(0, 3)`)은 card 내부에 유지
+  - 검증: targeted artifact/chat/card tests 26/26, `type-check`, `lint`, `test:quick`, `test:contract`, `git diff --check`
+  - Release/QA: `v8.11.85` GitLab tag pipeline green, production `/api/version` version+commit 확인, [QA-20260503-0395](../qa/runs/2026/qa-run-QA-20260503-0395.json) `13/13`
 
 ### Completed (2026-05-02 #260)
 - [x] AI Assistant Server Snapshot Artifact Expansion
