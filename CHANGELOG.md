@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.85](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.84...v8.11.85) (2026-05-02)
+
+
+### Bug Fixes
+
+* **ai:** harden server snapshot artifact cancellation ([1230d2b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/1230d2b859a6abeb6c577fe8b757dab5976efd89))
+
 ## [8.11.84](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.83...v8.11.84) (2026-05-02)
 
 
