@@ -24,6 +24,7 @@ const mocks = vi.hoisted(() => {
   const syncChatSnapshot = vi.fn();
   const generateIncidentReportArtifact = vi.fn();
   const generateMonitoringAnalysisArtifact = vi.fn();
+  const generateServerSnapshotArtifact = vi.fn();
 
   let latestHybridOptions: Record<string, unknown> | null = null;
   let seedHybridMessages:
@@ -48,6 +49,7 @@ const mocks = vi.hoisted(() => {
     syncChatSnapshot,
     generateIncidentReportArtifact,
     generateMonitoringAnalysisArtifact,
+    generateServerSnapshotArtifact,
     getLatestHybridOptions: () => latestHybridOptions,
     setLatestHybridOptions: (options: Record<string, unknown>) => {
       latestHybridOptions = options;
@@ -90,6 +92,10 @@ vi.mock('@/lib/ai/chat-artifacts/incident-report-artifact', () => ({
 
 vi.mock('@/lib/ai/chat-artifacts/monitoring-analysis-artifact', () => ({
   generateMonitoringAnalysisArtifact: mocks.generateMonitoringAnalysisArtifact,
+}));
+
+vi.mock('@/lib/ai/chat-artifacts/server-snapshot-artifact', () => ({
+  generateServerSnapshotArtifact: mocks.generateServerSnapshotArtifact,
 }));
 
 vi.mock('./core/useChatFeedback', () => ({
@@ -699,7 +705,7 @@ describe('useAIChatCore', () => {
     const { result } = renderHook(() => useAIChatCore());
 
     await act(async () => {
-      result.current.setInput('트렌드 분석 좀 해줘');
+      result.current.setInput('보고서 뽑아줘');
     });
 
     let sendPromise: Promise<void> | undefined;
@@ -713,7 +719,7 @@ describe('useAIChatCore', () => {
         '/api/ai/artifact-intent',
         expect.objectContaining({
           method: 'POST',
-          body: JSON.stringify({ query: '트렌드 분석 좀 해줘' }),
+          body: JSON.stringify({ query: '보고서 뽑아줘' }),
         })
       );
     });
@@ -730,10 +736,7 @@ describe('useAIChatCore', () => {
       await sendPromise;
     });
 
-    expect(mocks.sendQuery).toHaveBeenCalledWith(
-      '트렌드 분석 좀 해줘',
-      undefined
-    );
+    expect(mocks.sendQuery).toHaveBeenCalledWith('보고서 뽑아줘', undefined);
   });
 
   it('aborts an in-flight artifact request when stop is invoked', async () => {
@@ -845,6 +848,74 @@ describe('useAIChatCore', () => {
       result.current.messages[1]?.metadata?.monitoringAnalysisArtifact
         ?.riskSignalCount
     ).toBe(1);
+  });
+
+  it('turns explicit server snapshot requests into an artifact without calling chat backend', async () => {
+    const slot = {
+      slotIndex: 42,
+      minuteOfDay: 420,
+      timeLabel: '07:00 KST',
+    };
+    mocks.generateServerSnapshotArtifact.mockResolvedValue({
+      kind: 'server-snapshot',
+      generatedAt: '2026-05-02T22:00:00.000Z',
+      title: '현재 서버 상태 스냅샷',
+      summary: '4대 서버 중 위험 1대, 주의 1대입니다.',
+      source: 'otel-static',
+      queryAsOfDataSlot: slot,
+      slot,
+      totals: {
+        total: 4,
+        online: 2,
+        warning: 1,
+        critical: 1,
+        offline: 0,
+      },
+      averages: {
+        cpu: 60,
+        memory: 67.8,
+        disk: 56.8,
+        network: 35,
+      },
+      topServers: [],
+      alerts: [],
+    });
+
+    const { result } = renderHook(() =>
+      useAIChatCore({ queryAsOfDataSlot: slot })
+    );
+
+    await act(async () => {
+      result.current.setInput('서버 상태 스냅샷');
+    });
+
+    await act(async () => {
+      result.current.handleSendInput();
+    });
+
+    await waitFor(() => {
+      expect(
+        result.current.messages[1]?.metadata?.serverSnapshotArtifact
+      ).toBeDefined();
+    });
+
+    expect(mocks.sendQuery).not.toHaveBeenCalled();
+    expect(mocks.generateServerSnapshotArtifact).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: '서버 상태 스냅샷',
+        queryAsOfDataSlot: slot,
+        sessionId: 'session-test',
+      })
+    );
+    expect(result.current.messages[1]?.content).toContain(
+      '서버 상태 스냅샷을 생성했습니다'
+    );
+    expect(result.current.messages[1]?.metadata?.artifactIntentReason).toBe(
+      'server_snapshot_implicit_artifact_keyword'
+    );
+    expect(
+      result.current.messages[1]?.metadata?.serverSnapshotArtifact?.totals.total
+    ).toBe(4);
   });
 
   it('answers ambiguous artifact feature questions locally without API calls', async () => {

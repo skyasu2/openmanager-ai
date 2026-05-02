@@ -259,6 +259,58 @@ describe('chat-history-storage', () => {
         },
       });
     });
+
+    it('persists server snapshot artifact metadata for assistant messages', () => {
+      const messages = [
+        {
+          ...makeMessage({
+            id: 'assistant-server-snapshot',
+            role: 'assistant',
+            content: '서버 상태 스냅샷을 생성했습니다.',
+          }),
+          metadata: {
+            serverSnapshotArtifact: {
+              kind: 'server-snapshot',
+              generatedAt: '2026-05-02T22:00:00.000Z',
+              title: '현재 서버 상태 스냅샷',
+              summary: '4대 서버 중 위험 1대, 주의 1대입니다.',
+              source: 'otel-static',
+              slot: {
+                slotIndex: 42,
+                minuteOfDay: 420,
+                timeLabel: '07:00 KST',
+              },
+              totals: {
+                total: 4,
+                online: 2,
+                warning: 1,
+                critical: 1,
+                offline: 0,
+              },
+              averages: {
+                cpu: 60,
+                memory: 67.8,
+                disk: 56.8,
+                network: 35,
+              },
+              topServers: [],
+              alerts: [],
+            },
+          },
+        },
+      ];
+
+      saveChatHistory('s-server-snapshot', messages as never[]);
+
+      const stored = JSON.parse(localStorage.getItem(CHAT_HISTORY_KEY)!);
+      expect(stored.messages[0].metadata.serverSnapshotArtifact).toMatchObject({
+        kind: 'server-snapshot',
+        title: '현재 서버 상태 스냅샷',
+        totals: {
+          total: 4,
+        },
+      });
+    });
   });
 
   // ── clearChatHistory ─────────────────────────────────────────────

@@ -231,4 +231,50 @@ describe('SidebarMessage RAG badge smoke integration', () => {
       '"slotIndex": 88'
     );
   });
+
+  it('renders server snapshot artifacts from assistant metadata', () => {
+    const assistantMessage = {
+      id: 'a-server-snapshot',
+      role: 'assistant',
+      content: '서버 상태 스냅샷을 생성했습니다.',
+      timestamp: new Date('2026-05-02T22:00:00.000Z'),
+      metadata: {
+        serverSnapshotArtifact: {
+          kind: 'server-snapshot',
+          generatedAt: '2026-05-02T22:00:00.000Z',
+          title: '현재 서버 상태 스냅샷',
+          summary: '4대 서버 중 위험 1대, 주의 1대입니다.',
+          source: 'otel-static',
+          slot: {
+            slotIndex: 42,
+            minuteOfDay: 420,
+            timeLabel: '07:00 KST',
+          },
+          totals: {
+            total: 4,
+            online: 2,
+            warning: 1,
+            critical: 1,
+            offline: 0,
+          },
+          averages: {
+            cpu: 60,
+            memory: 67.8,
+            disk: 56.8,
+            network: 35,
+          },
+          topServers: [],
+          alerts: [],
+        },
+      },
+    } as unknown as EnhancedChatMessage;
+
+    render(
+      <MessageComponent message={assistantMessage} isLastMessage={true} />
+    );
+
+    expect(screen.getByText('서버 상태 스냅샷')).toBeInTheDocument();
+    expect(screen.getByText('현재 서버 상태 스냅샷')).toBeInTheDocument();
+    expect(screen.getByText('source otel-static')).toBeInTheDocument();
+  });
 });
