@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.83](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.82...v8.11.83) (2026-05-02)
+
+
+### Features
+
+* **ai:** harden artifact intent routing ([117290d](https://gitlab.com/skyasu2/openmanager-ai/-/commit/117290d9f78823c499a5e073a67189272b4e9d5f))
+
+
+### Bug Fixes
+
+* **ai:** add artifact intent reason metadata ([8999b69](https://gitlab.com/skyasu2/openmanager-ai/-/commit/8999b69a7cf8fc075ededf5a657e5d87bc4cb03d))
+* **ai:** delay artifact loading indicator ([2a3c1db](https://gitlab.com/skyasu2/openmanager-ai/-/commit/2a3c1db849d23748a0eeeb5bc3a3b32d3ef072e7))
+
+
+### Tests
+
+* **ai:** add artifact intent classifier eval ([f52cbeb](https://gitlab.com/skyasu2/openmanager-ai/-/commit/f52cbeb1ee843bb5601a59476961c9885a1d0dbc))
+* **ai:** harden artifact intent eval guards ([fb03929](https://gitlab.com/skyasu2/openmanager-ai/-/commit/fb03929bd07fc5bc7af9a27585916601ae961232))
+
 ## [8.11.82](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.81...v8.11.82) (2026-05-02)
 
 
