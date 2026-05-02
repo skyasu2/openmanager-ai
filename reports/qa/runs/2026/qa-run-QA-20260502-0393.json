@@ -1,0 +1,84 @@
+{
+  "runId": "QA-20260502-0393",
+  "recordedAt": "2026-05-02T09:30:16.319Z",
+  "recordedAtKst": "2026-05-02 18:30:16 KST",
+  "runTitle": "Vercel Production Verification - Artifact Keyword Change Recheck v8.11.82",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_2AckfwZgPbFHCLjf3uj5sXquVLKj",
+    "deploymentUrl": "https://openmanager-7wcxc65qj-skyasus-projects.vercel.app",
+    "commitSha": "3b241447a659a65adcd735896b1ed57e76c985c8"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["dashboard-core", "ai-core", "ai-advanced-surface"],
+  "coveredSurfaces": [
+    "/: landing renders v8.11.82 badge",
+    "/system-boot -> /dashboard: system start flow reached dashboard",
+    "/dashboard: AI sidebar opens from production dashboard",
+    "AI sidebar keyword query: '추세 분석' called /api/ai/intelligent-monitoring and rendered Monitoring Analysis artifact card",
+    "Monitoring artifact card rendered analyzed server count, risk signal count, source metadata, evidence, MD/JSON downloads, and fullscreen handoff action",
+    "Network resources included /api/ai/wake-up and /api/ai/intelligent-monitoring; no supervisor stream route was needed for this artifact request"
+  ],
+  "skippedSurfaces": [
+    "Incident report artifact rerun: already covered by QA-20260502-0392 on the same v8.11.82 deployment",
+    "Guidance/non-execution prompts: already covered by local regression tests and QA-20260502-0390",
+    "Broad dashboard/modal packs: unchanged by artifact keyword routing and already covered by prior targeted runs",
+    "Cloud Run admin observability /monitoring and /monitoring/traces: outside this Vercel keyword recheck scope"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-02T18:29:36+09:00",
+      "summary": "Current billing period effective 0.6724 USD and billed 0.0000 USD after the supplementary Playwright MCP recheck.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Artifact keyword change recheck production screenshot",
+      "path": "reports/qa/evidence/qa-20260502-v81182-artifact-change-recheck.png"
+    }
+  ],
+  "completedImprovements": [],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This is a verification-only rerun on an already tested v8.11.82 deployment, so countsTowardSummary=false avoids inflating public totals.",
+    "Observed Performance API resource timing: /api/ai/intelligent-monitoring duration about 417ms, transferSize 3154 bytes.",
+    "Network panel captured POST /api/ai/intelligent-monitoring => 200.",
+    "Release pipeline: https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2494833445"
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.11.82 deploy pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2494833445"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment v8.11.82",
+      "url": "https://openmanager-7wcxc65qj-skyasus-projects.vercel.app/"
+    }
+  ]
+}

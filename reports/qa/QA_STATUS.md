@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-02 18:10:57 KST
+> Generated at: 2026-05-02 18:30:17 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 390 |
+| Total Recorded Runs | 391 |
 | Total Runs (Counted) | 319 |
-| Non-counted Runs | 71 |
+| Non-counted Runs | 72 |
 | Total Checks | 2737 |
 | Passed | 2639 |
 | Failed | 89 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260502-0392 (2026-05-02T09:10:56.289Z) |
-| Latest Recorded Run | QA-20260502-0392 (2026-05-02T09:10:56.289Z) |
+| Latest Recorded Run | QA-20260502-0393 (2026-05-02T09:30:16.319Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,22 +34,21 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260502-0392 (2026-05-02T09:10:56.289Z)
+Latest run: QA-20260502-0393 (2026-05-02T09:30:16.319Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period effective 0.6724 USD and billed 0.0000 USD after supplementary production keyword QA. |
+| vercel | cli | checked | normal | Current billing period effective 0.6724 USD and billed 0.0000 USD after the supplementary Playwright MCP recheck. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-01T09:10:56.289Z -> 2026-05-02T09:10:56.289Z (24h)
+- Window: 2026-05-01T09:30:16.319Z -> 2026-05-02T09:30:16.319Z (24h)
 - Runs with observations: 1 recorded / 1 counted
 - Samples: 2
 
@@ -61,12 +60,12 @@ Latest run: QA-20260502-0392 (2026-05-02T09:10:56.289Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
-- Counts Toward Summary: yes
+- Release-Facing: no
+- Counts Toward Summary: no
 - Deployment: dpl_2AckfwZgPbFHCLjf3uj5sXquVLKj / SHA 3b241447
 - Coverage Packs: dashboard-core, ai-core, ai-advanced-surface
-- Covered Surfaces: /: landing renders v8.11.82 badge, /system-boot -> /dashboard: system start flow reached dashboard, /dashboard: AI sidebar opens from production dashboard, AI sidebar short keyword query: '장애보고서' called /api/ai/incident-report and rendered Incident Report artifact card, Incident artifact card rendered affected server, recommendation, anomaly signal, MD/TXT downloads, and fullscreen handoff action, AI sidebar short keyword query: '장애 예측 추세 분석' called /api/ai/intelligent-monitoring and rendered Monitoring Analysis artifact card, Monitoring artifact card rendered analyzed server count, risk signal count, source metadata, evidence, MD/JSON downloads, and fullscreen handoff action
-- Skipped Surfaces: General streaming chat: unchanged by this supplementary keyword routing QA, Guidance/non-execution prompts: covered by local intent regression tests and QA-20260502-0390, Abort/stop in-flight artifact: covered by unit tests because production artifact responses completed quickly, Modal/detail pack: unchanged by artifact keyword routing, Cloud Run admin observability /monitoring and /monitoring/traces: not part of Vercel artifact routing scope
+- Covered Surfaces: /: landing renders v8.11.82 badge, /system-boot -> /dashboard: system start flow reached dashboard, /dashboard: AI sidebar opens from production dashboard, AI sidebar keyword query: '추세 분석' called /api/ai/intelligent-monitoring and rendered Monitoring Analysis artifact card, Monitoring artifact card rendered analyzed server count, risk signal count, source metadata, evidence, MD/JSON downloads, and fullscreen handoff action, Network resources included /api/ai/wake-up and /api/ai/intelligent-monitoring; no supervisor stream route was needed for this artifact request
+- Skipped Surfaces: Incident report artifact rerun: already covered by QA-20260502-0392 on the same v8.11.82 deployment, Guidance/non-execution prompts: already covered by local regression tests and QA-20260502-0390, Broad dashboard/modal packs: unchanged by artifact keyword routing and already covered by prior targeted runs, Cloud Run admin observability /monitoring and /monitoring/traces: outside this Vercel keyword recheck scope
 
 ## Links (Latest Run)
 
@@ -79,7 +78,7 @@ Latest run: QA-20260502-0392 (2026-05-02T09:10:56.289Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Artifact short keyword pair production verification | `reports/qa/evidence/qa-20260502-v81182-artifact-short-keyword-pair.png` | - |
+| playwright-screenshot | Artifact keyword change recheck production screenshot | `reports/qa/evidence/qa-20260502-v81182-artifact-change-recheck.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -567,6 +566,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260502-0393 | 2026-05-02T09:30:16.319Z | targeted | no | no | Vercel Production Verification - Artifact Keyword Change Recheck v8.11.82 | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260502-0392 | 2026-05-02T09:10:56.289Z | targeted | yes | yes | Vercel Production Targeted QA - Artifact Short Keyword Pair v8.11.82 | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260502-0391 | 2026-05-02T08:22:31.207Z | targeted | yes | yes | Vercel Production Targeted QA - Artifact Keyword Routing v8.11.82 | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260502-0390 | 2026-05-02T07:43:11.883Z | targeted | yes | yes | Vercel Production Targeted QA - Artifact Guardrails v8.11.81 | 9 | 3 | 0 | 0 | 0 | 0 |
@@ -586,4 +586,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260430-0376 | 2026-04-29T20:55:55.746Z | targeted | yes | yes | Vercel Playwright QA - v8.11.68 Explicit Server Summary | 6 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260430-0375 | 2026-04-29T19:26:27.989Z | targeted | yes | yes | curl smoke - v8.11.64 Cloud Run /health redis circuit schema | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260430-0374 | 2026-04-29T18:53:53.244Z | targeted | yes | yes | Vercel Playwright targeted QA - v8.11.64 AI alert-status advisory rerun | 10 | 1 | 0 | 0 | 1 | 1 |
-| QA-20260429-0373 | 2026-04-29T14:29:33.712Z | targeted | yes | yes | Vercel Playwright targeted QA - v8.11.64 AI alert-status advisory recheck | 9 | 1 | 0 | 0 | 0 | 0 |
