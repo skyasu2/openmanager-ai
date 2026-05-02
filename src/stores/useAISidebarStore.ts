@@ -18,6 +18,7 @@ import type { ChatArtifactIntentReason } from '@/lib/ai/chat-artifacts/chat-arti
 import type {
   IncidentReportArtifact,
   MonitoringAnalysisArtifact,
+  ServerSnapshotArtifact,
 } from '@/lib/ai/chat-artifacts/types';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type {
@@ -130,6 +131,8 @@ export interface ChatMessage {
     incidentReportArtifact?: IncidentReportArtifact;
     /** 채팅에서 생성한 사용자 다운로드 가능 이상감지/추세 분석 */
     monitoringAnalysisArtifact?: MonitoringAnalysisArtifact;
+    /** 채팅에서 생성한 사용자 다운로드 가능 서버 상태 스냅샷 */
+    serverSnapshotArtifact?: ServerSnapshotArtifact;
     /** 도구 실행 결과 요약 */
     toolResultSummaries?: ToolResultSummary[];
     /** 에이전트 handoff 이력 */

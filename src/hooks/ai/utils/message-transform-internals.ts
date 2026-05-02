@@ -3,6 +3,7 @@ import type { ChatArtifactIntentReason } from '@/lib/ai/chat-artifacts/chat-arti
 import type {
   IncidentReportArtifact,
   MonitoringAnalysisArtifact,
+  ServerSnapshotArtifact,
 } from '@/lib/ai/chat-artifacts/types';
 import type { StructuredAssistantResponse } from '@/lib/ai/utils/assistant-response-view';
 import {
@@ -53,6 +54,7 @@ export type MessageMetadata = {
   artifactIntentTarget?: 'incident-report' | 'monitoring-analysis';
   incidentReportArtifact?: IncidentReportArtifact;
   monitoringAnalysisArtifact?: MonitoringAnalysisArtifact;
+  serverSnapshotArtifact?: ServerSnapshotArtifact;
   handoffHistory?: ResponseHandoff[];
   toolResultSummaries?: ToolResultSummary[];
 };

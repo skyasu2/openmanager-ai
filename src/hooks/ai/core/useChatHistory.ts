@@ -67,6 +67,7 @@ export function useChatHistory<TMessage extends RestoredMessage>({
         !metadata?.artifactIntentTarget &&
         !metadata?.incidentReportArtifact &&
         !metadata?.monitoringAnalysisArtifact &&
+        !metadata?.serverSnapshotArtifact &&
         !hasExplicitHandoffHistory &&
         !(
           metadata?.toolResultSummaries &&
@@ -107,6 +108,9 @@ export function useChatHistory<TMessage extends RestoredMessage>({
         }),
         ...(metadata?.monitoringAnalysisArtifact && {
           monitoringAnalysisArtifact: metadata.monitoringAnalysisArtifact,
+        }),
+        ...(metadata?.serverSnapshotArtifact && {
+          serverSnapshotArtifact: metadata.serverSnapshotArtifact,
         }),
         ...(hasExplicitHandoffHistory && {
           handoffHistory: metadata.handoffHistory,

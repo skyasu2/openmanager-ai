@@ -12,6 +12,7 @@ import { IncidentReportArtifactCard } from './IncidentReportArtifactCard';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { MessageActions } from './MessageActions';
 import { MonitoringAnalysisArtifactCard } from './MonitoringAnalysisArtifactCard';
+import { ServerSnapshotArtifactCard } from './ServerSnapshotArtifactCard';
 import { ThinkingProcessVisualizer } from './ThinkingProcessVisualizer';
 import { TypewriterMarkdown } from './TypewriterMarkdown';
 
@@ -75,6 +76,10 @@ export const AIWorkspaceMessage = memo<{
   const monitoringAnalysisArtifact =
     message.role === 'assistant'
       ? message.metadata?.monitoringAnalysisArtifact
+      : undefined;
+  const serverSnapshotArtifact =
+    message.role === 'assistant'
+      ? message.metadata?.serverSnapshotArtifact
       : undefined;
   const assistantResponseView = useMemo(() => {
     if (message.role !== 'assistant' || message.isStreaming) {
@@ -214,6 +219,9 @@ export const AIWorkspaceMessage = memo<{
             <MonitoringAnalysisArtifactCard
               artifact={monitoringAnalysisArtifact}
             />
+          )}
+          {serverSnapshotArtifact && (
+            <ServerSnapshotArtifactCard artifact={serverSnapshotArtifact} />
           )}
 
           <div

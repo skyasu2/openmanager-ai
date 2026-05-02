@@ -40,6 +40,7 @@ import {
 } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
 import { generateIncidentReportArtifact } from '@/lib/ai/chat-artifacts/incident-report-artifact';
 import { generateMonitoringAnalysisArtifact } from '@/lib/ai/chat-artifacts/monitoring-analysis-artifact';
+import { generateServerSnapshotArtifact } from '@/lib/ai/chat-artifacts/server-snapshot-artifact';
 import type { ChatArtifact } from '@/lib/ai/chat-artifacts/types';
 import type { AIErrorDetails } from '@/lib/ai/error-details';
 import {
@@ -295,9 +296,14 @@ function createTextMessage({
 }
 
 function getArtifactLoadingText(kind: ChatArtifact['kind']): string {
-  return kind === 'incident-report'
-    ? '장애 보고서를 작성하고 있습니다.'
-    : '이상감지/추세 분석을 실행하고 있습니다.';
+  switch (kind) {
+    case 'incident-report':
+      return '장애 보고서를 작성하고 있습니다.';
+    case 'monitoring-analysis':
+      return '이상감지/추세 분석을 실행하고 있습니다.';
+    case 'server-snapshot':
+      return '서버 상태 스냅샷을 생성하고 있습니다.';
+  }
 }
 
 function getArtifactSuccessText(artifact: ChatArtifact): string {
@@ -309,6 +315,17 @@ function getArtifactSuccessText(artifact: ChatArtifact): string {
       `- 영향 서버: ${artifact.report.affectedServers.length}대`,
       '',
       '아래 카드에서 MD/TXT 파일로 내려받거나 장애 보고서 작성 화면에서 확인할 수 있습니다.',
+    ].join('\n');
+  }
+
+  if (artifact.kind === 'server-snapshot') {
+    return [
+      '서버 상태 스냅샷을 생성했습니다.',
+      '',
+      `- 총 서버: ${artifact.totals.total}대`,
+      `- 주의/위험: ${artifact.totals.warning + artifact.totals.critical + artifact.totals.offline}대`,
+      '',
+      '아래 카드에서 MD/JSON 파일로 내려받을 수 있습니다.',
     ].join('\n');
   }
 
@@ -337,13 +354,21 @@ function getArtifactErrorText(
 ): string {
   if (isAbortError(error)) {
     const target =
-      kind === 'incident-report' ? '장애 보고서 작성' : '이상감지/추세 분석';
+      kind === 'incident-report'
+        ? '장애 보고서 작성'
+        : kind === 'server-snapshot'
+          ? '서버 상태 스냅샷 생성'
+          : '이상감지/추세 분석';
     return `${target}을 중단했습니다.`;
   }
 
   const message = error instanceof Error ? error.message : String(error);
   const target =
-    kind === 'incident-report' ? '장애 보고서 작성' : '이상감지/추세 분석';
+    kind === 'incident-report'
+      ? '장애 보고서 작성'
+      : kind === 'server-snapshot'
+        ? '서버 상태 스냅샷 생성'
+        : '이상감지/추세 분석';
   return `${target}을 완료하지 못했습니다. ${message}`;
 }
 
@@ -361,6 +386,22 @@ function buildArtifactMetadata(
           toolName: 'generateIncidentReportArtifact',
           label: '장애 보고서 작성',
           summary: `${artifact.report.title} 보고서를 생성했습니다.`,
+          status: 'completed' as const,
+        },
+      ],
+    };
+  }
+
+  if (artifact.kind === 'server-snapshot') {
+    return {
+      artifactIntentReason: intentReason,
+      serverSnapshotArtifact: artifact,
+      toolsCalled: ['generateServerSnapshotArtifact'],
+      toolResultSummaries: [
+        {
+          toolName: 'generateServerSnapshotArtifact',
+          label: '서버 상태 스냅샷',
+          summary: `${artifact.totals.total}대 서버 상태 스냅샷을 생성했습니다.`,
           status: 'completed' as const,
         },
       ],
@@ -826,7 +867,8 @@ export function useAIChatCore(
 
       if (
         artifactIntent.kind === 'incident-report' ||
-        artifactIntent.kind === 'monitoring-analysis'
+        artifactIntent.kind === 'monitoring-analysis' ||
+        artifactIntent.kind === 'server-snapshot'
       ) {
         const artifactKind = artifactIntent.kind;
         setError(null);
@@ -865,12 +907,19 @@ export function useAIChatCore(
                     queryAsOfDataSlot,
                     signal: abortController.signal,
                   })
-                : await generateMonitoringAnalysisArtifact({
-                    query: effectiveText,
-                    sessionId,
-                    queryAsOfDataSlot,
-                    signal: abortController.signal,
-                  });
+                : artifactKind === 'server-snapshot'
+                  ? await generateServerSnapshotArtifact({
+                      query: effectiveText,
+                      sessionId,
+                      queryAsOfDataSlot,
+                      signal: abortController.signal,
+                    })
+                  : await generateMonitoringAnalysisArtifact({
+                      query: effectiveText,
+                      sessionId,
+                      queryAsOfDataSlot,
+                      signal: abortController.signal,
+                    });
 
             if (artifactRequestIdRef.current !== token) {
               return;
@@ -912,11 +961,15 @@ export function useAIChatCore(
                     toolName:
                       artifactKind === 'incident-report'
                         ? 'generateIncidentReportArtifact'
-                        : 'generateMonitoringAnalysisArtifact',
+                        : artifactKind === 'server-snapshot'
+                          ? 'generateServerSnapshotArtifact'
+                          : 'generateMonitoringAnalysisArtifact',
                     label:
                       artifactKind === 'incident-report'
                         ? '장애 보고서 작성'
-                        : '이상감지/추세 분석',
+                        : artifactKind === 'server-snapshot'
+                          ? '서버 상태 스냅샷'
+                          : '이상감지/추세 분석',
                     summary: errorText,
                     status: 'failed' as const,
                   },

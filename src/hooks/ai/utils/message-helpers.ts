@@ -237,8 +237,11 @@ export function transformUIMessageToEnhanced(
   );
   const incidentReportArtifact = metadata?.incidentReportArtifact;
   const monitoringAnalysisArtifact = metadata?.monitoringAnalysisArtifact;
+  const serverSnapshotArtifact = metadata?.serverSnapshotArtifact;
   const hasChatArtifact = Boolean(
-    incidentReportArtifact || monitoringAnalysisArtifact
+    incidentReportArtifact ||
+      monitoringAnalysisArtifact ||
+      serverSnapshotArtifact
   );
   const hasArtifactIntentMetadata = Boolean(
     metadata?.artifactIntentReason || metadata?.artifactIntentTarget
@@ -401,6 +404,9 @@ export function transformUIMessageToEnhanced(
             }),
             ...(monitoringAnalysisArtifact && {
               monitoringAnalysisArtifact,
+            }),
+            ...(serverSnapshotArtifact && {
+              serverSnapshotArtifact,
             }),
             ...(handoffHistory &&
               handoffHistory.length > 0 && {

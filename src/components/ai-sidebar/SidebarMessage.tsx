@@ -6,6 +6,7 @@ import { AnalysisBasisBadge } from '@/components/ai/AnalysisBasisBadge';
 import { IncidentReportArtifactCard } from '@/components/ai/IncidentReportArtifactCard';
 import { MessageActions } from '@/components/ai/MessageActions';
 import { MonitoringAnalysisArtifactCard } from '@/components/ai/MonitoringAnalysisArtifactCard';
+import { ServerSnapshotArtifactCard } from '@/components/ai/ServerSnapshotArtifactCard';
 import { WebSourceCards } from '@/components/ai/WebSourceCards';
 import { convertThinkingStepsToUI } from '@/hooks/ai/useAIChatCore';
 import {
@@ -49,6 +50,10 @@ export const MessageComponent = memo<{
   const monitoringAnalysisArtifact =
     message.role === 'assistant'
       ? message.metadata?.monitoringAnalysisArtifact
+      : undefined;
+  const serverSnapshotArtifact =
+    message.role === 'assistant'
+      ? message.metadata?.serverSnapshotArtifact
       : undefined;
   const agentSteps = useMemo(
     () => convertToAgentSteps(message.thinkingSteps),
@@ -218,6 +223,9 @@ export const MessageComponent = memo<{
             <MonitoringAnalysisArtifactCard
               artifact={monitoringAnalysisArtifact}
             />
+          )}
+          {serverSnapshotArtifact && (
+            <ServerSnapshotArtifactCard artifact={serverSnapshotArtifact} />
           )}
 
           {/* 타임스탬프 & 메타데이터 */}

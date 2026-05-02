@@ -8,6 +8,7 @@ import type { ChatArtifactIntentReason } from '@/lib/ai/chat-artifacts/chat-arti
 import type {
   IncidentReportArtifact,
   MonitoringAnalysisArtifact,
+  ServerSnapshotArtifact,
 } from '@/lib/ai/chat-artifacts/types';
 import { logger } from '@/lib/logging';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
@@ -51,6 +52,7 @@ export interface StoredMessageMetadata {
   artifactIntentTarget?: 'incident-report' | 'monitoring-analysis';
   incidentReportArtifact?: IncidentReportArtifact;
   monitoringAnalysisArtifact?: MonitoringAnalysisArtifact;
+  serverSnapshotArtifact?: ServerSnapshotArtifact;
   handoffHistory?: Array<{
     from: string;
     to: string;
@@ -146,6 +148,7 @@ export function saveChatHistory(
           metadata?.artifactIntentTarget ||
           metadata?.incidentReportArtifact ||
           metadata?.monitoringAnalysisArtifact ||
+          metadata?.serverSnapshotArtifact ||
           hasExplicitHandoffHistory ||
           (metadata?.toolResultSummaries &&
             metadata.toolResultSummaries.length > 0)
@@ -181,6 +184,9 @@ export function saveChatHistory(
                 ...(metadata?.monitoringAnalysisArtifact && {
                   monitoringAnalysisArtifact:
                     metadata.monitoringAnalysisArtifact,
+                }),
+                ...(metadata?.serverSnapshotArtifact && {
+                  serverSnapshotArtifact: metadata.serverSnapshotArtifact,
                 }),
                 ...(hasExplicitHandoffHistory && {
                   handoffHistory: metadata.handoffHistory,
