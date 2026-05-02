@@ -42,6 +42,11 @@
 
 ## Recent Completed
 
+### Completed (2026-05-02 #258)
+- [x] Artifact intent architecture documentation alignment
+  - `ai-engine-architecture.md` Module 1 ASCII map을 실제 classifier 순서와 맞춰 guidance priority, negation scope, report action tokens, rule version, eval guard 기준을 보정
+  - `frontend-backend-comparison.md`의 분석 일시/버전/SSOT route counts와 artifact intent 전처리 설명을 2026-05-02 기준으로 갱신
+
 ### Completed (2026-05-02 #257)
 - [x] Artifact intent deterministic local classifier evaluation 추가
   - `ARTIFACT_INTENT_RULE_VERSION=2026-05-02-v1`를 classifier 결과에 포함하고 corpus version과 일치하도록 검증

@@ -197,42 +197,68 @@ flowchart LR
 | ARTIFACT INTENT PIPELINE                                           |
 | src/lib/ai/chat-artifacts/chat-artifact-intent.ts                  |
 | src/hooks/ai/useAIChatCore.ts                                      |
+| rule version: ARTIFACT_INTENT_RULE_VERSION (corpus lock)           |
+| eval guard: tests/intent-classifier/ 74 cases                      |
+|   execution precision >= 0.94, all-class precision/recall >= 0.90 |
 +--------------------------------------------------------------------+
 
 User Query
     |
     v
 +----------------------------------+
-| classifyChatArtifactIntent()     |  Tier 1: regex, sync, 0ms
+| classifyChatArtifactIntent()     |  Tier 1: regex, sync, no network
+| returns { kind, ruleVersion, ... }  (ruleVersion always present)  |
 +----------------------------------+
     |
-    +-- report keyword + action ---------------> incident-report
-    |     reason: incident_report_action_pattern
+    +-- report keyword (장애/인시던트/incident report)
+    |     |
+    |     +-- [guidance priority first]                ──> guidance
+    |     |     어떻게/방법/어디/어떤/가능/사용법/무엇/지원/되나/
+    |     |     될까/샘플/예시/화면/위치/보여줄 수
+    |     |     target: incident-report
+    |     |
+    |     +-- [negation absent] + action ──────────────> incident-report
+    |     |     작성/생성/만들/다운로드/부탁/실행/돌려/뽑아/run
+    |     |     export/generate
+    |     |     reason: incident_report_action_pattern
+    |     |
+    |     +-- guidance fallback (기능/설명/안내) ───────> guidance
+    |     |     target: incident-report
+    |     |
+    |     `-- [negation absent] + implicit keyword ────> incident-report
+    |           (short phrase, no ?)
+    |           reason: incident_report_implicit_keyword
     |
-    +-- report keyword + guidance -------------> guidance
-    |     target: incident-report
-    |
-    +-- report keyword + no question mark ------> incident-report
-    |     reason: incident_report_implicit_keyword
-    |
-    +-- monitoring keyword + action -----------> monitoring-analysis
-    |     reason: monitoring_action_pattern
-    |
-    +-- monitoring keyword + guidance ---------> guidance
-    |     target: monitoring-analysis
-    |
-    +-- monitoring artifact-shaped phrase ------> monitoring-analysis
-    |     reason: monitoring_implicit_artifact_keyword
+    +-- monitoring keyword (이상감지/추세/트렌드/리스크/예측/anomaly/forecast)
+    |     |
+    |     +-- [guidance priority first]                ──> guidance
+    |     |     어떻게/방법/어디/어떤/가능/사용법/무엇/지원/되나/
+    |     |     될까/샘플/예시/화면/위치/보여줄 수
+    |     |     target: monitoring-analysis
+    |     |
+    |     +-- [negation absent] + action ──────────────> monitoring-analysis
+    |     |     분석해/실행/돌려/요약/확인/만들/다운로드/forecast/analyze
+    |     |     reason: monitoring_action_pattern
+    |     |
+    |     +-- guidance fallback (기능/설명/안내) ─────> guidance
+    |     |     target: monitoring-analysis
+    |     |
+    |     `-- [negation absent] + artifact phrase + implicit keyword
+    |           추세 분석/트렌드 분석/이상감지/anomaly detection...
+    |           reason: monitoring_implicit_artifact_keyword ────────> monitoring-analysis
     |
     `-- none
+          negation only blocks action/implicit/LLM candidate paths
+          (말고/아니고/없이/나중에/필요 없/하지 마/제외)
           |
           v
 +----------------------------------+
 | shouldUseLLMChatArtifactIntent() |  Tier 2: candidate gate
+| negation pattern → false early   |  (말고/아니고/없이... → skip LLM)
 +----------------------------------+
     |
-    +-- false ----------------------------------> none
-    |                                             no LLM call
+    +-- false (no artifact candidate or negated) ─────> none
+    |                                                    no LLM call
     |
     `-- true
           |
