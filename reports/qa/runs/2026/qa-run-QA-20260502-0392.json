@@ -1,0 +1,116 @@
+{
+  "runId": "QA-20260502-0392",
+  "recordedAt": "2026-05-02T09:10:56.289Z",
+  "recordedAtKst": "2026-05-02 18:10:56 KST",
+  "runTitle": "Vercel Production Targeted QA - Artifact Short Keyword Pair v8.11.82",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_2AckfwZgPbFHCLjf3uj5sXquVLKj",
+    "deploymentUrl": "https://openmanager-7wcxc65qj-skyasus-projects.vercel.app",
+    "commitSha": "3b241447a659a65adcd735896b1ed57e76c985c8"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["dashboard-core", "ai-core", "ai-advanced-surface"],
+  "coveredSurfaces": [
+    "/: landing renders v8.11.82 badge",
+    "/system-boot -> /dashboard: system start flow reached dashboard",
+    "/dashboard: AI sidebar opens from production dashboard",
+    "AI sidebar short keyword query: '장애보고서' called /api/ai/incident-report and rendered Incident Report artifact card",
+    "Incident artifact card rendered affected server, recommendation, anomaly signal, MD/TXT downloads, and fullscreen handoff action",
+    "AI sidebar short keyword query: '장애 예측 추세 분석' called /api/ai/intelligent-monitoring and rendered Monitoring Analysis artifact card",
+    "Monitoring artifact card rendered analyzed server count, risk signal count, source metadata, evidence, MD/JSON downloads, and fullscreen handoff action"
+  ],
+  "skippedSurfaces": [
+    "General streaming chat: unchanged by this supplementary keyword routing QA",
+    "Guidance/non-execution prompts: covered by local intent regression tests and QA-20260502-0390",
+    "Abort/stop in-flight artifact: covered by unit tests because production artifact responses completed quickly",
+    "Modal/detail pack: unchanged by artifact keyword routing",
+    "Cloud Run admin observability /monitoring and /monitoring/traces: not part of Vercel artifact routing scope"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production browser QA covered both representative short keyword families: incident report and failure prediction/trend analysis.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The production evidence complements the local classifier regression suite by verifying UI input, routing, network calls, and artifact rendering.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-02T18:09:44+09:00",
+      "summary": "Current billing period effective 0.6724 USD and billed 0.0000 USD after supplementary production keyword QA.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Artifact short keyword pair production verification",
+      "path": "reports/qa/evidence/qa-20260502-v81182-artifact-short-keyword-pair.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-artifact-short-keyword-pair-v81182",
+      "title": "Representative short artifact keywords route correctly in production",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Production Playwright MCP: '장애보고서' called /api/ai/incident-report and '장애 예측 추세 분석' called /api/ai/intelligent-monitoring; both rendered artifact cards.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Network requests captured: POST /api/ai/incident-report => 200 and POST /api/ai/intelligent-monitoring => 200.",
+    "This run is supplementary to QA-20260502-0391 and specifically targets the short Korean keyword phrases raised by the user.",
+    "Release pipeline: https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2494833445"
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.11.82 deploy pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2494833445"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment v8.11.82",
+      "url": "https://openmanager-7wcxc65qj-skyasus-projects.vercel.app/"
+    }
+  ]
+}

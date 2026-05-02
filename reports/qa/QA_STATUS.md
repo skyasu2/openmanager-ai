@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-02 17:22:33 KST
+> Generated at: 2026-05-02 18:10:57 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 389 |
-| Total Runs (Counted) | 318 |
+| Total Recorded Runs | 390 |
+| Total Runs (Counted) | 319 |
 | Non-counted Runs | 71 |
-| Total Checks | 2729 |
-| Passed | 2631 |
+| Total Checks | 2737 |
+| Passed | 2639 |
 | Failed | 89 |
-| Completed Items | 402 |
+| Completed Items | 403 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 20 |
 | Expert Domains Tracked | 12 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260502-0391 (2026-05-02T08:22:31.207Z) |
-| Latest Recorded Run | QA-20260502-0391 (2026-05-02T08:22:31.207Z) |
+| Last Counted Run | QA-20260502-0392 (2026-05-02T09:10:56.289Z) |
+| Latest Recorded Run | QA-20260502-0392 (2026-05-02T09:10:56.289Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,7 +34,7 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260502-0391 (2026-05-02T08:22:31.207Z)
+Latest run: QA-20260502-0392 (2026-05-02T09:10:56.289Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
@@ -45,11 +45,11 @@ Latest run: QA-20260502-0391 (2026-05-02T08:22:31.207Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period effective 0.6724 USD and billed 0.0000 USD after production QA. |
+| vercel | cli | checked | normal | Current billing period effective 0.6724 USD and billed 0.0000 USD after supplementary production keyword QA. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-01T08:22:31.207Z -> 2026-05-02T08:22:31.207Z (24h)
+- Window: 2026-05-01T09:10:56.289Z -> 2026-05-02T09:10:56.289Z (24h)
 - Runs with observations: 1 recorded / 1 counted
 - Samples: 2
 
@@ -65,8 +65,8 @@ Latest run: QA-20260502-0391 (2026-05-02T08:22:31.207Z)
 - Counts Toward Summary: yes
 - Deployment: dpl_2AckfwZgPbFHCLjf3uj5sXquVLKj / SHA 3b241447
 - Coverage Packs: dashboard-core, ai-core, ai-advanced-surface
-- Covered Surfaces: /api/version: production serves v8.11.82 with commit 3b241447a659a65adcd735896b1ed57e76c985c8, /: landing renders v8.11.82 badge, /system-boot -> /dashboard: system start flow reached dashboard, /dashboard: AI sidebar opens from production dashboard, AI sidebar keyword query: '추세 분석' called /api/ai/intelligent-monitoring and rendered Monitoring Analysis artifact card, Monitoring artifact card rendered analyzed server count, risk signal count, source metadata, MD download, JSON download, and fullscreen handoff action
-- Skipped Surfaces: Incident report keyword recheck: covered by local intent tests and previous v8.11.81 production run, Abort/stop in-flight artifact: still covered by unit tests because production artifact responses complete quickly, Modal/detail pack: unchanged by keyword routing fix, Cloud Run admin observability /monitoring and /monitoring/traces: not part of Vercel artifact routing scope
+- Covered Surfaces: /: landing renders v8.11.82 badge, /system-boot -> /dashboard: system start flow reached dashboard, /dashboard: AI sidebar opens from production dashboard, AI sidebar short keyword query: '장애보고서' called /api/ai/incident-report and rendered Incident Report artifact card, Incident artifact card rendered affected server, recommendation, anomaly signal, MD/TXT downloads, and fullscreen handoff action, AI sidebar short keyword query: '장애 예측 추세 분석' called /api/ai/intelligent-monitoring and rendered Monitoring Analysis artifact card, Monitoring artifact card rendered analyzed server count, risk signal count, source metadata, evidence, MD/JSON downloads, and fullscreen handoff action
+- Skipped Surfaces: General streaming chat: unchanged by this supplementary keyword routing QA, Guidance/non-execution prompts: covered by local intent regression tests and QA-20260502-0390, Abort/stop in-flight artifact: covered by unit tests because production artifact responses completed quickly, Modal/detail pack: unchanged by artifact keyword routing, Cloud Run admin observability /monitoring and /monitoring/traces: not part of Vercel artifact routing scope
 
 ## Links (Latest Run)
 
@@ -79,7 +79,7 @@ Latest run: QA-20260502-0391 (2026-05-02T08:22:31.207Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Monitoring artifact keyword routing production verification | `reports/qa/evidence/qa-20260502-v81182-artifact-keyword-routing.png` | - |
+| playwright-screenshot | Artifact short keyword pair production verification | `reports/qa/evidence/qa-20260502-v81182-artifact-short-keyword-pair.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -169,6 +169,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-artifact-guidance-intent-guard-v81181: Artifact guidance requests should not trigger monitoring artifact execution (completed 1회, last QA-20260502-0390)
 - ai-artifact-input-guard-v81181: AI sidebar send button disables when input is empty after artifact submission (completed 1회, last QA-20260502-0390)
 - ai-artifact-keyword-routing-v81182: Short artifact keywords route to the intended artifact execution path (completed 1회, last QA-20260502-0391)
+- ai-artifact-short-keyword-pair-v81182: Representative short artifact keywords route correctly in production (completed 1회, last QA-20260502-0392)
 - ai-assistant-fullscreen-query-path: AI 전체 화면 핵심 서버 상태 요약 질의 검증 (completed 1회, last QA-20260318-0123)
 - ai-assistant-fullscreen-tools-parity: AI 전체 화면 도구 메뉴 parity 검증 (completed 1회, last QA-20260318-0123)
 - ai-assistant-guest-login-mcp-check-v81136-20260427: AI assistant works through Vercel Playwright MCP guest login on v8.11.36 (completed 1회, last QA-20260427-0351)
@@ -566,6 +567,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260502-0392 | 2026-05-02T09:10:56.289Z | targeted | yes | yes | Vercel Production Targeted QA - Artifact Short Keyword Pair v8.11.82 | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260502-0391 | 2026-05-02T08:22:31.207Z | targeted | yes | yes | Vercel Production Targeted QA - Artifact Keyword Routing v8.11.82 | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260502-0390 | 2026-05-02T07:43:11.883Z | targeted | yes | yes | Vercel Production Targeted QA - Artifact Guardrails v8.11.81 | 9 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260502-0389 | 2026-05-01T18:36:18.241Z | targeted | no | yes | Vercel Production AI Chat Recent Change Playwright QA v8.11.79 | 12 | 2 | 0 | 0 | 0 | 0 |
@@ -585,4 +587,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260430-0375 | 2026-04-29T19:26:27.989Z | targeted | yes | yes | curl smoke - v8.11.64 Cloud Run /health redis circuit schema | 4 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260430-0374 | 2026-04-29T18:53:53.244Z | targeted | yes | yes | Vercel Playwright targeted QA - v8.11.64 AI alert-status advisory rerun | 10 | 1 | 0 | 0 | 1 | 1 |
 | QA-20260429-0373 | 2026-04-29T14:29:33.712Z | targeted | yes | yes | Vercel Playwright targeted QA - v8.11.64 AI alert-status advisory recheck | 9 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260429-0372 | 2026-04-29T14:03:32.361Z | targeted | yes | yes | Vercel Playwright targeted QA - v8.11.63 AI slot propagation recheck | 9 | 1 | 1 | 0 | 0 | 1 |
