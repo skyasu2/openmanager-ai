@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.81](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.80...v8.11.81) (2026-05-02)
+
+
+### Features
+
+* **ai:** harden artifacts and free-tier contracts ([e40d665](https://gitlab.com/skyasu2/openmanager-ai/-/commit/e40d665405da4601bf4187dfc7fa27b4d275e2ae))
+
+
+### Bug Fixes
+
+* **ai:** harden chat artifact guardrails ([dd6f116](https://gitlab.com/skyasu2/openmanager-ai/-/commit/dd6f1167cc9ac8029d6717727a284ad306f3cf13))
+* **reporter:** resolve 3 shell-UI bugs found in QA session ([612c136](https://gitlab.com/skyasu2/openmanager-ai/-/commit/612c13624d1f2b37237ea5024e9cb000e7746681))
+
 ## [8.11.80](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.79...v8.11.80) (2026-05-01)
 
 
