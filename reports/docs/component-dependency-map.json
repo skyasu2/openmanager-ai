@@ -6,18 +6,18 @@
     "excludedRouteLocalNodes": "src/app/**/components/**/*.tsx"
   },
   "inventory": {
-    "sharedComponentNodes": 147,
+    "sharedComponentNodes": 149,
     "routeLocalComponentNodes": 7,
-    "totalComponentNodes": 154
+    "totalComponentNodes": 156
   },
   "metrics": {
-    "componentSourceLines": 29514,
-    "componentNodes": 147,
+    "componentSourceLines": 29847,
+    "componentNodes": 149,
     "componentEdges": 136,
-    "graphDensity": 0.006337,
+    "graphDensity": 0.006167,
     "aliasEdges": 38,
     "relativeEdges": 98,
-    "isolatedComponents": 30,
+    "isolatedComponents": 32,
     "sccCycleGroups": 0,
     "largestCycleSize": 0
   },
