@@ -26,9 +26,9 @@
 
 | Inventory Slice | Count |
 | --- | --- |
-| Shared component graph scope (`src/components/**/*.tsx`) | 146 |
+| Shared component graph scope (`src/components/**/*.tsx`) | 147 |
 | Route-local components excluded from graph (`src/app/**/components/**/*.tsx`) | 7 |
-| Total TSX component inventory | 153 |
+| Total TSX component inventory | 154 |
 
 ## App Route-Local Component Distribution
 
@@ -51,12 +51,12 @@ Route-local component files:
 
 | Metric | Value |
 | --- | --- |
-| Component source lines | 29320 |
-| Component nodes | 146 |
-| Component edges | 136 |
+| Component source lines | 29559 |
+| Component nodes | 147 |
+| Component edges | 138 |
 | Graph density | 0.64% |
-| Alias edges (`@/components/*`) | 40 |
-| Relative edges (`./`, `../`) | 96 |
+| Alias edges (`@/components/*`) | 41 |
+| Relative edges (`./`, `../`) | 97 |
 | Isolated components | 31 |
 | SCC cycle groups | 0 |
 | Largest cycle size | 0 |
@@ -65,7 +65,7 @@ Route-local component files:
 
 ```mermaid
 flowchart LR
-  d0["ai (36)"]
+  d0["ai (37)"]
   d1["ai-sidebar (15)"]
   d2["auth (1)"]
   d3["charts (2)"]
@@ -79,9 +79,9 @@ flowchart LR
   d11["ui (22)"]
   d12["unified-profile (3)"]
   d4 -->|36| d4
-  d0 -->|30| d0
+  d0 -->|31| d0
   d1 -->|13| d1
-  d1 -->|10| d0
+  d1 -->|11| d0
   d9 -->|10| d9
   d4 -->|6| d11
   d4 -->|4| d9
@@ -106,7 +106,7 @@ flowchart LR
 
 | Domain | Node Count |
 | --- | --- |
-| ai | 36 |
+| ai | 37 |
 | dashboard | 32 |
 | shared | 23 |
 | ui | 22 |
@@ -125,9 +125,9 @@ flowchart LR
 | From | To | Edge Count |
 | --- | --- | --- |
 | dashboard | dashboard | 36 |
-| ai | ai | 30 |
+| ai | ai | 31 |
 | ai-sidebar | ai-sidebar | 13 |
-| ai-sidebar | ai | 10 |
+| ai-sidebar | ai | 11 |
 | shared | shared | 10 |
 | dashboard | ui | 6 |
 | dashboard | shared | 4 |
@@ -170,10 +170,10 @@ flowchart LR
 | --- | --- |
 | ai-sidebar/EnhancedAIChat | 9 |
 | ai/AIWorkspace | 9 |
+| ai/AIWorkspaceMessage | 8 |
 | ai-sidebar/AISidebarV4 | 7 |
-| ai/AIWorkspaceMessage | 7 |
+| ai-sidebar/SidebarMessage | 7 |
 | dashboard/EnhancedServerModal | 7 |
-| ai-sidebar/SidebarMessage | 6 |
 | dashboard/DashboardRoutedContent | 6 |
 | dashboard/ServerDetailView | 6 |
 | shared/FeatureCardModal | 5 |
@@ -191,10 +191,10 @@ flowchart LR
 [Top Outgoing Dependency Samples]
 ai-sidebar/EnhancedAIChat -> ai/AgentHandoffBadge, ai/AgentStatusIndicator, ai-sidebar/ChatInputArea, ai-sidebar/ChatMessageList, ai-sidebar/ClarificationDialog, ai-sidebar/chat/ColdStartErrorBanner
 ai/AIWorkspace -> ai-sidebar/EnhancedAIChat, error/AIErrorBoundary, dashboard/RealTimeDisplay, shared/OpenManagerLogo, shared/UnifiedProfileHeader, ai/AIAssistantIconPanel
+ai/AIWorkspaceMessage -> ai/AnalysisBasisBadge, ai/IncidentReportArtifactCard, ai/MarkdownRenderer, ai/MessageActions, ai/MonitoringAnalysisArtifactCard, ai/ServerSnapshotArtifactCard
 ai-sidebar/AISidebarV4 -> ai/AIAssistantIconPanel, ai/AIContentArea, error/AIErrorBoundary, ai-sidebar/AISidebarHeader, ai-sidebar/EnhancedAIChat, ai-sidebar/ResizeHandle
-ai/AIWorkspaceMessage -> ai/AnalysisBasisBadge, ai/IncidentReportArtifactCard, ai/MarkdownRenderer, ai/MessageActions, ai/MonitoringAnalysisArtifactCard, ai/ThinkingProcessVisualizer
+ai-sidebar/SidebarMessage -> ai/AnalysisBasisBadge, ai/IncidentReportArtifactCard, ai/MessageActions, ai/MonitoringAnalysisArtifactCard, ai/ServerSnapshotArtifactCard, ai/WebSourceCards
 dashboard/EnhancedServerModal -> dashboard/EnhancedServerModal.LogsTab, dashboard/EnhancedServerModal.MetricsTab, dashboard/EnhancedServerModal.NetworkTab, dashboard/EnhancedServerModal.OverviewTab, dashboard/EnhancedServerModal.ProcessesTab, dashboard/ServerModalHeader
-ai-sidebar/SidebarMessage -> ai/AnalysisBasisBadge, ai/IncidentReportArtifactCard, ai/MessageActions, ai/MonitoringAnalysisArtifactCard, ai/WebSourceCards, ai-sidebar/InlineAgentStatus
 dashboard/DashboardRoutedContent -> dashboard/ActiveAlertsModal, dashboard/alert-history/AlertHistoryModal, dashboard/log-explorer/LogExplorerModal, dashboard/ServerDashboard, dashboard/ServerDetailView, dashboard/TopologyModal
 dashboard/ServerDetailView -> dashboard/EnhancedServerModal.LogsTab, dashboard/EnhancedServerModal.MetricsTab, dashboard/EnhancedServerModal.NetworkTab, dashboard/EnhancedServerModal.OverviewTab, dashboard/EnhancedServerModal.ProcessesTab, dashboard/ServerModalTabNav
 ```
