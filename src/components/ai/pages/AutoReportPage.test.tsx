@@ -30,7 +30,6 @@ vi.mock('lucide-react', () => ({
   AlertCircle: () => <svg data-testid="icon-alert-circle" />,
   BookOpen: () => <svg data-testid="icon-book-open" />,
   FileText: () => <svg data-testid="icon-file-text" />,
-  History: () => <svg data-testid="icon-history" />,
   RefreshCw: () => <svg data-testid="icon-refresh" />,
   X: () => <svg data-testid="icon-x" />,
 }));
@@ -56,19 +55,21 @@ vi.mock('@/lib/logging', () => ({
   },
 }));
 
-vi.mock('@/components/ai/pages/auto-report/IncidentHistoryPage', () => ({
-  IncidentHistoryPage: () => <div>history-page</div>,
-}));
-
 vi.mock('@/components/ai/pages/auto-report/ReportCard', () => ({
   default: ({
     report,
+    onResolve,
   }: {
-    report: { id: string; title: string; severity: string };
+    report: { id: string; title: string; severity: string; status: string };
+    onResolve: (id: string) => void;
   }) => (
     <article>
       <h3>{report.title}</h3>
       <p>{report.severity}</p>
+      <p>{report.status}</p>
+      <button type="button" onClick={() => onResolve(report.id)}>
+        해결 완료
+      </button>
     </article>
   ),
 }));
@@ -198,5 +199,53 @@ describe('AutoReportPage', () => {
         },
       },
     });
+  });
+
+  it('does not render the persistent history tab', () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({ success: true }),
+    });
+
+    render(<AutoReportPage />);
+
+    expect(
+      screen.queryByRole('button', { name: /히스토리/ })
+    ).not.toBeInTheDocument();
+  });
+
+  it('marks a report resolved locally without PATCH persistence', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        success: true,
+        report: {
+          id: 'report-local-resolve',
+          title: '세션 내 보고서',
+          severity: 'warning',
+          created_at: '2026-03-18T14:00:00.000Z',
+          affected_servers: ['api-was-dc1-01'],
+          description: '세션 내 상태 변경 검증',
+        },
+      }),
+    });
+
+    render(<AutoReportPage />);
+
+    fireEvent.click(screen.getByTestId('report-generate-btn'));
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { name: '세션 내 보고서' })
+      ).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getAllByRole('button', { name: '해결 완료' })[0]);
+
+    expect(screen.getByText('resolved')).toBeInTheDocument();
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(mockFetch.mock.calls[0]?.[1]).toMatchObject({ method: 'POST' });
   });
 });

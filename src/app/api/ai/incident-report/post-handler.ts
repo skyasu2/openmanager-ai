@@ -1,9 +1,6 @@
 import { NextResponse } from 'next/server';
 import { clampTimeout, getDefaultTimeout } from '@/config/ai-proxy.config';
-import {
-  type CacheableAIResponse,
-  withAICache,
-} from '@/lib/ai/cache/ai-response-cache';
+import type { CacheableAIResponse } from '@/lib/ai/cache/ai-response-cache';
 import { executeWithCircuitBreakerAndFallback } from '@/lib/ai/circuit-breaker';
 import { createFallbackResponse } from '@/lib/ai/fallback/ai-fallback-handler';
 import {
@@ -13,7 +10,6 @@ import {
   startAITimer,
 } from '@/lib/ai/observability';
 import { isCloudRunEnabled, proxyToCloudRun } from '@/lib/ai-proxy/proxy';
-import { supabaseAdmin } from '@/lib/supabase/admin';
 import { getErrorMessage } from '@/types/type-utils';
 import debug from '@/utils/debug';
 import { executeGenerateRetry } from './retry-handler';
@@ -25,7 +21,6 @@ import {
   getMaxRequestTimeoutMs,
   getRetryAfterMs,
   INCIDENT_REPORT_ENDPOINT,
-  type IncidentReport,
   type IncidentReportRequest,
   isFallbackPayload,
   toFallbackReasonCode,
@@ -81,33 +76,6 @@ export function createIncidentReportHandlerErrorResponse(error: unknown) {
       }),
     }
   );
-}
-
-async function saveGeneratedIncidentReport(reportData: IncidentReport) {
-  if (!reportData.id) {
-    return;
-  }
-
-  try {
-    const { error } = await supabaseAdmin.from('incident_reports').insert({
-      id: reportData.id,
-      title: reportData.title,
-      severity: reportData.severity,
-      affected_servers: reportData.affected_servers || [],
-      anomalies: reportData.anomalies || [],
-      root_cause_analysis: reportData.root_cause_analysis || {},
-      recommendations: reportData.recommendations || [],
-      timeline: reportData.timeline || [],
-      pattern: reportData.pattern || 'unknown',
-      created_at: reportData.created_at || new Date().toISOString(),
-    });
-
-    if (error) {
-      debug.error('DB save error (Cloud Run data):', error);
-    }
-  } catch (dbError) {
-    debug.error('DB connection error:', dbError);
-  }
 }
 
 function createCloudRunDisabledResponse() {
@@ -167,25 +135,6 @@ function createFallbackResultResponse(
   );
 }
 
-function createCachedResponse(
-  responseData: Record<string, unknown>,
-  latencyMs: number
-) {
-  debug.info('[incident-report] Cache HIT');
-
-  return NextResponse.json(responseData, {
-    headers: withNoStoreHeaders({
-      'X-Cache': 'HIT',
-      ...buildAITimingHeaders({
-        latencyMs,
-        cacheStatus: 'HIT',
-        mode: 'proxy',
-        source: 'cache',
-      }),
-    }),
-  });
-}
-
 function createSuccessResponse(
   responseData: Record<string, unknown>,
   latencyMs: number,
@@ -229,8 +178,6 @@ export async function handleValidatedIncidentReportRequest(
   try {
     const { action, serverId } = body;
     const sessionId = body.sessionId ?? `incident_${serverId ?? 'system'}`;
-    const cacheQuery = `${action}:${serverId ?? 'all'}:${body.severity ?? 'any'}`;
-    const shouldUseCache = action !== 'generate';
 
     if (!isCloudRunEnabled()) {
       return createCloudRunDisabledResponse();
@@ -276,11 +223,6 @@ export async function handleValidatedIncidentReportRequest(
         throw new Error(cloudRunResult.error ?? 'Cloud Run request failed');
       }
 
-      const reportData = cloudRunResult.data as IncidentReport;
-      if (action === 'generate') {
-        await saveGeneratedIncidentReport(reportData);
-      }
-
       return {
         success: true,
         report: {
@@ -315,16 +257,7 @@ export async function handleValidatedIncidentReportRequest(
       } as CacheableAIResponse;
     };
 
-    const cacheResult = shouldUseCache
-      ? await withAICache<CacheableAIResponse>(
-          sessionId,
-          cacheQuery,
-          fetchIncidentReport,
-          'incident-report'
-        )
-      : { data: await fetchIncidentReport(), cached: false };
-
-    let responseData = cacheResult.data as Record<string, unknown>;
+    let responseData = (await fetchIncidentReport()) as Record<string, unknown>;
     let isFallback = isFallbackPayload(responseData);
     let didGenerateRetry = false;
     let attemptedDirectRetry = false;
@@ -353,10 +286,6 @@ export async function handleValidatedIncidentReportRequest(
         didGenerateRetry,
         attemptedDirectRetry
       );
-    }
-
-    if (cacheResult.cached) {
-      return createCachedResponse(responseData, latencyMs);
     }
 
     return createSuccessResponse(

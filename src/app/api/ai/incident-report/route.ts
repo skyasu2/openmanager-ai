@@ -6,13 +6,11 @@
  * - Cloud Run: AI Analysis & Report Generation
  *
  * 🔄 v5.84.0: Local Fallback Removed (Cloud Run dependency enforced)
- * 🔄 v5.84.1: withAICache 추가 (중복 호출 방지, 1시간 TTL)
+ * 🔄 v8.11.80: POST generate 전용. DB 히스토리/상태 변경 API 제거
  */
 
 import type { NextRequest } from 'next/server';
 import { withAuth } from '@/lib/auth/api-auth';
-import { getHandler } from './get-handler';
-import { patchHandler } from './patch-handler';
 import {
   createIncidentReportHandlerErrorResponse,
   createValidationErrorResponse,
@@ -46,5 +44,3 @@ async function postHandler(request: NextRequest) {
 }
 
 export const POST = withAuth(postHandler);
-export const GET = withAuth(getHandler);
-export const PATCH = withAuth(patchHandler);

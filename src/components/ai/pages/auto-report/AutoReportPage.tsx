@@ -1,32 +1,16 @@
 /**
- * 📄 자동 장애 보고서 페이지 v2.3
+ * 📄 자동 장애 보고서 페이지 v2.4
  *
  * 기능:
- * - 클릭 시 장애 리포트 생성 및 관리
+ * - 클릭 시 장애 리포트 생성 및 다운로드
  * - /api/ai/incident-report API 연동
  * - 전체 서버 종합 분석 표시
- * - 히스토리 조회 탭
- *
- * v2.3 변경사항 (2026-01-12):
- * - 탭 구조 추가 (생성 / 히스토리)
- * - IncidentHistoryPage 통합
- * - SLAWidget 추가
- *
- * v2.2 변경사항 (2025-12-27):
- * - 파일 분리 리팩토링 (941줄 → ~350줄)
- * - 타입, 유틸, 포맷터, 카드 컴포넌트 분리
+ * - 보고서는 세션 내 메모리에만 유지
  */
 
 'use client';
 
-import {
-  AlertCircle,
-  BookOpen,
-  FileText,
-  History,
-  RefreshCw,
-  X,
-} from 'lucide-react';
+import { AlertCircle, BookOpen, FileText, RefreshCw, X } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useState } from 'react';
 import { rulesLoader } from '@/config/rules/loader';
@@ -35,7 +19,6 @@ import { createQueryAsOf } from '@/lib/ai/query-as-of';
 import { logger } from '@/lib/logging';
 import type { JobDataSlot } from '@/types/ai-jobs';
 
-import { IncidentHistoryPage } from './IncidentHistoryPage';
 import ReportCard from './ReportCard';
 import type { IncidentReport, ServerMetric } from './types';
 import { extractNumericValue, mapSeverity } from './utils';
@@ -44,8 +27,6 @@ import { extractNumericValue, mapSeverity } from './utils';
 // Module-level cache — survives Activity hide/show and potential remounts
 // ============================================================================
 let reportsCache: IncidentReport[] = [];
-
-type TabType = 'generate' | 'history';
 
 interface AutoReportPageProps {
   queryAsOfDataSlot?: JobDataSlot;
@@ -98,9 +79,6 @@ function normalizeRelatedServers(report: Record<string, unknown>) {
 export default function AutoReportPage({
   queryAsOfDataSlot,
 }: AutoReportPageProps = {}) {
-  // Tab state
-  const [activeTab, setActiveTab] = useState<TabType>('generate');
-
   // Server data (React Query)
   const { data: servers = [], isLoading: isServersLoading } = useServerQuery();
 
@@ -312,8 +290,7 @@ export default function AutoReportPage({
 
   // Event handlers
   const handleResolve = useCallback(
-    async (reportId: string) => {
-      // Optimistic UI update
+    (reportId: string) => {
       setReports((prev) =>
         prev.map((report) =>
           report.id === reportId
@@ -321,22 +298,6 @@ export default function AutoReportPage({
             : report
         )
       );
-      // Persist to DB
-      try {
-        await fetch(
-          `/api/ai/incident-report?id=${encodeURIComponent(reportId)}`,
-          {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              status: 'resolved',
-              resolved_at: new Date().toISOString(),
-            }),
-          }
-        );
-      } catch {
-        // DB 저장 실패해도 UI는 이미 반영됨 (fire-and-forget)
-      }
     },
     [setReports]
   );
@@ -375,54 +336,6 @@ export default function AutoReportPage({
   // Render
   // ============================================================================
 
-  // 히스토리 탭은 별도 컴포넌트로 렌더링
-  if (activeTab === 'history') {
-    return (
-      <div className="flex h-full flex-col">
-        {/* Tab Header */}
-        <div className="border-b border-gray-200 bg-white/80 px-4 pt-4 backdrop-blur-sm">
-          <div className="flex items-center justify-between pb-4">
-            <div className="flex items-center space-x-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-r from-red-500 to-pink-500">
-                <FileText className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <h2 className="text-lg font-bold text-gray-800">
-                  자동 장애보고서
-                </h2>
-                <p className="text-sm text-gray-600">
-                  클릭 시 장애 리포트 생성 및 관리
-                </p>
-              </div>
-            </div>
-          </div>
-          {/* Tabs */}
-          <div className="flex gap-1">
-            <button
-              type="button"
-              onClick={() => setActiveTab('generate')}
-              className="flex items-center gap-2 rounded-t-lg border-b-2 border-transparent px-4 py-2 text-sm font-medium text-gray-500 transition-colors hover:text-gray-700"
-            >
-              <RefreshCw className="h-4 w-4" />
-              보고서 생성
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('history')}
-              className="flex items-center gap-2 rounded-t-lg border-b-2 border-blue-500 px-4 py-2 text-sm font-medium text-blue-600"
-            >
-              <History className="h-4 w-4" />
-              히스토리
-            </button>
-          </div>
-        </div>
-        <div className="flex-1 overflow-hidden">
-          <IncidentHistoryPage />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="flex h-full flex-col bg-linear-to-br from-slate-50 to-pink-50">
       {/* Header */}
@@ -434,10 +347,10 @@ export default function AutoReportPage({
             </div>
             <div>
               <h2 className="text-lg font-bold text-gray-800">
-                자동 장애보고서
+                장애 보고서 작성
               </h2>
               <p className="text-sm text-gray-600">
-                클릭 시 장애 리포트 생성 및 관리
+                클릭 시 장애 리포트 생성 및 다운로드
               </p>
             </div>
           </div>
@@ -481,26 +394,6 @@ export default function AutoReportPage({
               </span>
             </button>
           </div>
-        </div>
-
-        {/* Tabs */}
-        <div className="flex gap-1">
-          <button
-            type="button"
-            onClick={() => setActiveTab('generate')}
-            className="flex items-center gap-2 rounded-t-lg border-b-2 border-red-500 px-4 py-2 text-sm font-medium text-red-600"
-          >
-            <RefreshCw className="h-4 w-4" />
-            보고서 생성
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('history')}
-            className="flex items-center gap-2 rounded-t-lg border-b-2 border-transparent px-4 py-2 text-sm font-medium text-gray-500 transition-colors hover:text-gray-700"
-          >
-            <History className="h-4 w-4" />
-            히스토리
-          </button>
         </div>
       </div>
 

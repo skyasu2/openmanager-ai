@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active Canonical (hybrid-split.md 통합됨)
 > Doc type: Explanation
-> Last reviewed: 2026-04-29
+> Last reviewed: 2026-05-02
 > Canonical: docs/reference/architecture/system/system-architecture-current.md
 > Tags: system,architecture,hybrid,cloud-run,vercel
 
@@ -12,7 +12,7 @@
 
 ## 1. Overview
 
-**OpenManager AI v8.11.58 기준** AI Native Server Monitoring Platform으로, Vercel(Frontend/BFF)과 Cloud Run(AI Engine)의 **Hybrid Architecture**로 운영됩니다.
+**OpenManager AI v8.11.80 기준** AI Native Server Monitoring Platform으로, Vercel(Frontend/BFF)과 Cloud Run(AI Engine)의 **Hybrid Architecture**로 운영됩니다.
 
 | 항목 | 수치 |
 |------|------|
@@ -51,7 +51,7 @@ graph TB
     end
 
     subgraph External["External Services"]
-        Supabase["Supabase<br/>(PostgreSQL + pgvector)"]
+        Supabase["Supabase<br/>(PostgreSQL + Auth/RLS)"]
         Redis["Upstash Redis<br/>(Cache, Stream, Job State)"]
         CloudTasks["Cloud Tasks<br/>(Async Job Dispatch)"]
         LLM["LLM Providers<br/>(Cerebras, Groq,<br/>Mistral, Gemini, OpenRouter)"]
@@ -113,7 +113,7 @@ graph TB
    ┌──────────────┐      ┌──────────────┐       ┌──────────────────┐
    │ Supabase     │      │ Upstash Redis│       │ LLM Providers    │
    │ PostgreSQL   │      │ Cache/Stream │       │ Cerebras/Groq/   │
-   │ + pgvector   │      │ Job State    │       │ Mistral/Gemini   │
+   │ + Auth/RLS   │      │ Job State    │       │ Mistral/Gemini   │
    └──────────────┘      └──────────────┘       └──────────────────┘
                                    ▲
                                    │ Cloud Tasks dispatches long jobs to
@@ -204,6 +204,12 @@ graph TB
 - **Cloud Tasks**: worker HTTP 요청을 큐잉/전달/재시도/속도제어합니다. job 상태나 결과를 저장하지 않습니다.
 - **Upstash Redis**: job 생성 상태, 진행률, 최종 답변, SSE polling 상태의 저장소입니다. 현재 async Job Queue에서 필수 의존성입니다.
 
+**주기 실행 경계**:
+- Cloud Tasks는 `/api/ai/jobs` 같은 사용자 요청에서 파생된 HTTP delivery 큐이며, Cloud Scheduler나 Cloud Run Jobs처럼 시간 기반으로 시작되는 Cron 실행기가 아닙니다.
+- Vercel Cron은 `vercel.json`에 정의되어 있지 않고, frontend env는 `DISABLE_CRON_JOBS=true`, `DISABLE_BACKGROUND_JOBS=true`를 유지합니다.
+- 2026-05-02 운영 점검 기준 Cloud Scheduler job, Cloud Run Job, Supabase `pg_cron`/`pg_net` 확장은 사용하지 않습니다.
+- GitHub/GitLab에 schedule 정의나 rule은 남아 있지만 GitHub schedule은 `ENABLE_ACTIONS_SCHEDULES=true` opt-in guard가 필요하고, GitLab schedule은 Artifact Registry cleanup 상태 관측 job 외에 production write/backup 경로를 갖지 않습니다.
+
 **핵심 파일 경로**:
 - `src/app/api/ai/jobs/route.ts`
 - `src/app/api/ai/jobs/[id]/stream/route.ts`
@@ -247,7 +253,7 @@ graph TB
 | **AI Engine (Cloud Run)** | `cloud-run/ai-engine/src/data/precomputed-state.ts` | `otel-data` → `otel-processed` fallback |
 | **24h Chart** | `src/hooks/useServerMetrics.ts` → MetricsProvider | MetricsProvider 동일 체인 |
 | **Alert System** | `src/services/monitoring/AlertManager.ts` | MetricsProvider 동일 체인 |
-| **RAG (Supabase)** | `supabase/` (server_logs, embeddings) | DB Query |
+| **RAG (Supabase)** | `knowledge_base`, `search_knowledge_text` RPC | BM25 text query + metadata boost |
 
 ### Stateless Cloud Run 설계 원칙
 

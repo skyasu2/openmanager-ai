@@ -19,11 +19,12 @@ export const CLOUD_PLATFORM_TECH_STACK: TechItem[] = [
     category: 'database',
     importance: 'critical',
     description:
-      '오픈소스 Firebase 대안 BaaS. PostgreSQL 기반으로 인증, 스토리지, 실시간 구독, Edge Functions, 벡터 검색(pgVector) 통합 제공',
-    implementation: '→ pgVector로 AI 벡터 검색, RLS로 행 수준 보안 적용',
+      '오픈소스 Firebase 대안 BaaS. PostgreSQL 기반으로 인증, 스토리지, 실시간 구독, Row Level Security를 통합 제공',
+    implementation:
+      '→ 운영 지식/사용자 상태 저장, search_knowledge_text RPC, RLS 기반 접근 제어에 사용. 과거 vector 컬럼은 호환 데이터로만 유지',
     status: 'active',
     icon: '🐘',
-    tags: ['데이터베이스', 'pgVector', 'BaaS'],
+    tags: ['데이터베이스', 'PostgreSQL', 'RLS', 'BaaS'],
     type: 'commercial',
   },
   {
@@ -37,6 +38,19 @@ export const CLOUD_PLATFORM_TECH_STACK: TechItem[] = [
     status: 'active',
     icon: '☁️',
     tags: ['CloudRun', 'Container', 'Serverless'],
+    type: 'commercial',
+  },
+  {
+    name: 'Google Cloud Tasks',
+    category: 'deployment',
+    importance: 'high',
+    description:
+      'HTTP 작업을 큐잉하고 재시도/dispatch 속도를 제어하는 GCP managed queue. 주기 실행기가 아니라 사용자 요청에서 파생된 비동기 AI job delivery에 사용',
+    implementation:
+      '→ /api/ai/jobs 생성 후 Cloud Run /api/jobs/dispatch가 /api/jobs/process HTTP task를 생성. pending task가 없으면 비용과 실행이 발생하지 않음',
+    status: 'active',
+    icon: '📬',
+    tags: ['CloudTasks', 'Queue', 'Async Jobs'],
     type: 'commercial',
   },
   {

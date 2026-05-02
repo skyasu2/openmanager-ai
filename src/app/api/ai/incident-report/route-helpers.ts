@@ -9,7 +9,7 @@ import {
 
 export const IncidentReportRequestSchema = z
   .object({
-    action: z.string().min(1),
+    action: z.literal('generate'),
     serverId: z.string().optional(),
     sessionId: z.string().optional(),
     severity: z.string().optional(),

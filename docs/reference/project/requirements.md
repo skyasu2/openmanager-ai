@@ -3,7 +3,7 @@
 > Owner: project-lead
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-04-25
+> Last reviewed: 2026-05-02
 > Tags: requirements,srs,functional,non-functional
 
 **기반**: IEEE 830 / ISO/IEC/IEEE 29148 경량 버전
@@ -19,6 +19,7 @@
 | 운영 비용 | Vercel Pro 고정비를 제외한 가변 운영비 ₩0. 개발/설계 시 활용하는 AI 코딩 도구 비용은 별도 |
 | 개발 인력 | 1인 |
 | 데이터 | 시뮬레이션 (OnPrem DC1 18대 관측 서버) |
+| 주기 작업 | production 기본값은 활성 Cron 없음. DB 저장/백업/정리는 사용자 요청, 수동 스크립트, migration으로만 수행 |
 | 핵심 가치 | "대화로 서버를 모니터링한다" |
 
 ---
@@ -54,7 +55,7 @@
 | 항목 | 내용 |
 |------|------|
 | 설명 | 과거 장애 보고서 + 기술 문서를 RAG로 검색하여 AI 응답에 활용 |
-| 수용 기준 | pgvector 임베딩 검색, ragSources 배지 프론트 노출, 승인 기반 자동 주입 |
+| 수용 기준 | BM25 RPC + metadata boost 기반 Knowledge Retrieval Lite 검색, ragSources 배지 프론트 노출, 승인 기반 자동 주입 |
 | 구현 | `cloud-run/ai-engine/src/tools-ai-sdk/reporter-tools/knowledge.ts` |
 
 ### FR-005: 인증/인가
@@ -85,9 +86,9 @@
 
 | 항목 | 내용 |
 |------|------|
-| 설명 | AI 기반 장애 보고서 자동 생성 + 품질 평가 |
-| 수용 기준 | Supabase 영속 저장, Evaluator+Optimizer 에이전트 평가 |
-| 구현 | `src/app/api/ai/incident-report/`, `cloud-run/ai-engine/src/services/ai-sdk/agents/` |
+| 설명 | 사용자가 명시적으로 요청하거나 버튼을 클릭할 때 AI 기반 장애 보고서를 1회 생성 |
+| 수용 기준 | POST `generate` 전용, 세션 내 보고서 목록 유지, MD/TXT 다운로드, Supabase 영속 저장·히스토리·PATCH 비활성 |
+| 구현 | `src/app/api/ai/incident-report/`, `src/components/ai/pages/auto-report/`, `cloud-run/ai-engine/src/services/ai-sdk/agents/` |
 
 ### FR-009: 웹 검색 통합
 
@@ -142,6 +143,7 @@
 | Cloud Build | 기본 머신/기본 풀만 허용 (커스텀 machineType 금지) |
 | Cloud Run | 1 vCPU, 512Mi (180K vCPU-sec/월) |
 | Vercel Build | Standard 머신만 ($0.014/min) |
+| 주기 실행 | Vercel Cron, Cloud Scheduler, Cloud Run Jobs, Supabase pg_cron 비활성. Cloud Tasks는 사용자 요청 기반 AI job delivery에만 사용 |
 
 ### NFR-004: 가용성
 
@@ -216,4 +218,4 @@
 
 ---
 
-_Last Updated: 2026-02-22_
+_Last Updated: 2026-05-02_

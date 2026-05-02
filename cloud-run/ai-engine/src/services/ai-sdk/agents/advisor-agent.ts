@@ -2,7 +2,7 @@
  * Advisor Agent
  *
  * Specializes in troubleshooting guidance and command recommendations.
- * Uses Knowledge Retrieval Lite (BM25 + pgVector) to search past incidents and best practices.
+ * Uses Knowledge Retrieval Lite (BM25 RPC + metadata boost) to search past incidents and best practices.
  *
  * Model chain: Cerebras llama3.1-8b when context permits -> Groq llama-4-scout -> Mistral last-resort.
  * Retrieval: Knowledge Retrieval Lite only; text fallback providers stay outside retrieval.

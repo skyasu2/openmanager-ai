@@ -34,10 +34,10 @@ import {
 import {
   classifyChatArtifactIntent,
   createArtifactGuidanceMessage,
-} from '@/lib/ai/artifacts/chat-artifact-intent';
-import { generateIncidentReportArtifact } from '@/lib/ai/artifacts/incident-report-artifact';
-import { generateMonitoringAnalysisArtifact } from '@/lib/ai/artifacts/monitoring-analysis-artifact';
-import type { ChatArtifact } from '@/lib/ai/artifacts/types';
+} from '@/lib/ai/chat-artifacts/chat-artifact-intent';
+import { generateIncidentReportArtifact } from '@/lib/ai/chat-artifacts/incident-report-artifact';
+import { generateMonitoringAnalysisArtifact } from '@/lib/ai/chat-artifacts/monitoring-analysis-artifact';
+import type { ChatArtifact } from '@/lib/ai/chat-artifacts/types';
 import type { AIErrorDetails } from '@/lib/ai/error-details';
 import {
   analyzeQueryComplexity,

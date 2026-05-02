@@ -14,13 +14,10 @@ const {
   mockGetMinTimeout,
   mockGetMaxTimeout,
   mockClampTimeout,
-  mockWithAICache,
   mockExecuteWithCircuitBreakerAndFallback,
   mockCreateFallbackResponse,
   mockIsCloudRunEnabled,
   mockProxyToCloudRun,
-  mockSupabaseFrom,
-  mockInsert,
   mockDebugInfo,
   mockDebugError,
 } = vi.hoisted(() => ({
@@ -32,13 +29,10 @@ const {
   mockGetMinTimeout: vi.fn(),
   mockGetMaxTimeout: vi.fn(),
   mockClampTimeout: vi.fn(),
-  mockWithAICache: vi.fn(),
   mockExecuteWithCircuitBreakerAndFallback: vi.fn(),
   mockCreateFallbackResponse: vi.fn(),
   mockIsCloudRunEnabled: vi.fn(),
   mockProxyToCloudRun: vi.fn(),
-  mockSupabaseFrom: vi.fn(),
-  mockInsert: vi.fn(),
   mockDebugInfo: vi.fn(),
   mockDebugError: vi.fn(),
 }));
@@ -58,10 +52,6 @@ vi.mock('@/config/ai-proxy.config', () => ({
   clampTimeout: mockClampTimeout,
 }));
 
-vi.mock('@/lib/ai/cache/ai-response-cache', () => ({
-  withAICache: mockWithAICache,
-}));
-
 vi.mock('@/lib/ai/circuit-breaker', () => ({
   executeWithCircuitBreakerAndFallback:
     mockExecuteWithCircuitBreakerAndFallback,
@@ -76,12 +66,6 @@ vi.mock('@/lib/ai-proxy/proxy', () => ({
   proxyToCloudRun: mockProxyToCloudRun,
 }));
 
-vi.mock('@/lib/supabase/admin', () => ({
-  supabaseAdmin: {
-    from: mockSupabaseFrom,
-  },
-}));
-
 vi.mock('@/types/type-utils', () => ({
   getErrorMessage: (error: unknown) =>
     error instanceof Error ? error.message : String(error),
@@ -94,7 +78,9 @@ vi.mock('@/utils/debug', () => ({
   },
 }));
 
-import { POST } from './route';
+import * as routeModule from './route';
+
+const { POST } = routeModule;
 
 function createPostRequest(body: Record<string, unknown>): NextRequest {
   return new NextRequest('http://localhost/api/ai/incident-report', {
@@ -125,10 +111,6 @@ describe('/api/ai/incident-report POST', () => {
       return Math.max(minTimeout, Math.min(maxTimeout, timeout));
     });
     mockIsCloudRunEnabled.mockReturnValue(true);
-    mockSupabaseFrom.mockReturnValue({
-      insert: mockInsert,
-    });
-    mockInsert.mockResolvedValue({ error: null });
 
     mockProxyToCloudRun.mockResolvedValue({
       success: true,
@@ -144,17 +126,6 @@ describe('/api/ai/incident-report POST', () => {
       async (_serviceName: string, primaryFn: () => Promise<unknown>) => ({
         data: await primaryFn(),
         source: 'primary',
-      })
-    );
-
-    mockWithAICache.mockImplementation(
-      async (
-        _sessionId: string,
-        _query: string,
-        fetcher: () => Promise<unknown>
-      ) => ({
-        data: await fetcher(),
-        cached: false,
       })
     );
 
@@ -185,7 +156,6 @@ describe('/api/ai/incident-report POST', () => {
     expect(response.headers.get('X-AI-Latency-Ms')).toMatch(/^\d+$/);
     expect(response.headers.get('server-timing')).toContain('ai;dur=');
     expect(response.headers.get('cache-control')).toContain('no-store');
-    expect(mockWithAICache).not.toHaveBeenCalled();
     expect(mockProxyToCloudRun).toHaveBeenCalledTimes(1);
     expect(data.success).toBe(true);
     expect(data.report?.id).toBe('report-1');
@@ -372,59 +342,23 @@ describe('/api/ai/incident-report POST', () => {
     await POST(createPostRequest({ action: 'generate', metrics: [] }));
     await POST(createPostRequest({ action: 'generate', metrics: [] }));
 
-    expect(mockWithAICache).not.toHaveBeenCalled();
     expect(mockProxyToCloudRun).toHaveBeenCalledTimes(2);
   });
 
-  it('non-generate 액션은 캐시 HIT 헤더를 반환한다', async () => {
-    mockWithAICache.mockResolvedValueOnce({
-      cached: true,
-      data: {
-        success: true,
-        report: { id: 'cached-report-1' },
-      },
-    });
+  it('route module은 POST generate 전용 surface만 노출한다', () => {
+    expect(routeModule.POST).toBeTypeOf('function');
+    expect('GET' in routeModule).toBe(false);
+    expect('PATCH' in routeModule).toBe(false);
+  });
 
+  it('generate 외 액션은 Cloud Run/cache 호출 없이 validation 400을 반환한다', async () => {
     const response = await POST(createPostRequest({ action: 'history' }));
     const data = await response.json();
 
-    expect(response.status).toBe(200);
-    expect(response.headers.get('X-Cache')).toBe('HIT');
-    expect(response.headers.get('X-AI-Cache-Status')).toBe('HIT');
-    expect(response.headers.get('X-AI-Source')).toBe('cache');
-    expect(response.headers.get('server-timing')).toContain('ai;dur=');
-    expect(response.headers.get('cache-control')).toContain('no-store');
-    expect(mockWithAICache).toHaveBeenCalledTimes(1);
+    expect(response.status).toBe(400);
+    expect(data.success).toBe(false);
+    expect(data.error).toBe('Validation failed');
+    expect(data.details.action).toBeDefined();
     expect(mockProxyToCloudRun).not.toHaveBeenCalled();
-    expect(data.success).toBe(true);
-    expect(data.report.id).toBe('cached-report-1');
-  });
-
-  it('fallback 메시지 우선순위는 message > data.message > 기본값이다', async () => {
-    mockWithAICache
-      .mockResolvedValueOnce({
-        cached: false,
-        data: {
-          source: 'fallback',
-          data: { source: 'fallback', message: 'data-message-only' },
-        },
-      })
-      .mockResolvedValueOnce({
-        cached: false,
-        data: {
-          source: 'fallback',
-          data: {},
-        },
-      });
-
-    const first = await POST(createPostRequest({ action: 'history' }));
-    const firstData = await first.json();
-    expect(firstData.message).toBe('data-message-only');
-
-    const second = await POST(createPostRequest({ action: 'history' }));
-    const secondData = await second.json();
-    expect(secondData.message).toBe(
-      '보고서 생성 서비스가 일시적으로 불안정합니다.'
-    );
   });
 });

@@ -17,7 +17,7 @@ import { useShallow } from 'zustand/react/shallow';
 import type {
   IncidentReportArtifact,
   MonitoringAnalysisArtifact,
-} from '@/lib/ai/artifacts/types';
+} from '@/lib/ai/chat-artifacts/types';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type {
   AnalysisFeatureStatus,

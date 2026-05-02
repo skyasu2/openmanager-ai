@@ -8,7 +8,7 @@ export const TECH_STACK_ITEMS: TechItem[] = [
     description:
       'Meta의 UI 라이브러리. Concurrent Rendering, Server Components, Suspense, Transitions 등 최신 렌더링 패턴 제공',
     implementation: '→ Concurrent 기능과 Server Components로 성능 최적화 적용',
-    version: '19.2.3',
+    version: '19.2.4',
     status: 'active',
     icon: '⚛️',
     tags: ['프레임워크', '오픈소스', 'React'],
@@ -55,14 +55,14 @@ export const TECH_STACK_ITEMS: TechItem[] = [
     type: 'opensource',
   },
   {
-    name: 'Recharts 3.7',
+    name: 'Recharts 3.8',
     category: 'ui',
     importance: 'high',
     description:
       'React 기반 선언적 차트 라이브러리. D3.js 위에 구축, SVG 렌더링, 반응형 컨테이너, 애니메이션 지원. 예측선, 이상치 영역, Brush 줌 등 풍부한 인터랙션 제공',
     implementation:
       '→ TimeSeriesChart(예측+이상치), MiniLineChart(서버카드 스파크라인) 구현. 수백 포인트 규모 데이터에 최적',
-    version: '3.7.0',
+    version: '3.8.0',
     status: 'active',
     icon: '📊',
     tags: ['차트', 'SVG', '인터랙티브'],
@@ -151,13 +151,13 @@ export const TECH_STACK_ITEMS: TechItem[] = [
     type: 'commercial',
   },
   {
-    name: 'Tailwind CSS 4.1',
+    name: 'Tailwind CSS 4.2',
     category: 'ui',
     importance: 'high',
     description:
-      '유틸리티 퍼스트 CSS 프레임워크. v4 Oxides 엔진으로 빌드 10배 향상, CSS-first 설정, 클래스 기반 스타일링',
+      '유틸리티 퍼스트 CSS 프레임워크. v4 Oxide 엔진으로 빌드 10배 향상, CSS-first 설정, 클래스 기반 스타일링',
     implementation: '→ 컴포넌트 스타일링 전체 적용. 다크 모드, 반응형 지원',
-    version: '4.1.18',
+    version: '4.2.1',
     status: 'active',
     icon: '🎨',
     tags: ['UI', 'CSS', '스타일링'],

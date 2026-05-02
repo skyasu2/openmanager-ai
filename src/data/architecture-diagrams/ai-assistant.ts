@@ -4,7 +4,7 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
   id: 'ai-assistant',
   title: 'Multi-Agent Architecture (AI SDK v6)',
   description:
-    'Vercel AI SDK v6 네이티브 ToolLoopAgent 기반 5-Agent 멀티 에이전트 + Evaluator-Optimizer 파이프라인. 4개 LLM 프로바이더 무료 한도 내 폴백 체인. Knowledge Retrieval Lite + Tavily 하이브리드 검색.',
+    'Vercel AI SDK v6 네이티브 ToolLoopAgent 기반 5-Agent 멀티 에이전트 + Evaluator-Optimizer 파이프라인. 4개 LLM 프로바이더 무료 한도 내 폴백 체인. Knowledge Retrieval Lite와 요청 기반 Web Search를 분리 운영.',
   layers: [
     {
       title: 'Client',
@@ -93,14 +93,14 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
         {
           id: 'knowledgelite',
           label: 'Knowledge Retrieval',
-          sublabel: 'BM25 + pgVector',
+          sublabel: 'BM25 RPC + metadata boost',
           type: 'secondary',
           icon: '🔍',
         },
         {
           id: 'websearch',
           label: 'Web Search',
-          sublabel: 'Tavily Hybrid RAG',
+          sublabel: 'searchWeb toggle',
           type: 'tertiary',
           icon: '🌐',
         },

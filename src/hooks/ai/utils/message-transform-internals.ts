@@ -2,7 +2,7 @@ import type { UIMessage } from 'ai';
 import type {
   IncidentReportArtifact,
   MonitoringAnalysisArtifact,
-} from '@/lib/ai/artifacts/types';
+} from '@/lib/ai/chat-artifacts/types';
 import type { StructuredAssistantResponse } from '@/lib/ai/utils/assistant-response-view';
 import {
   getToolDescription,

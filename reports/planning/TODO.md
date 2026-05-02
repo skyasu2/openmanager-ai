@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-02 KST (`Cerebras finalAnswer schema tolerance`)
+**Last Updated**: 2026-05-02 KST (`Periodic job contract documented`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI Assistant 사용자-facing 아티팩트 개선 | High | Approved | [ai-assistant-artifact-improvement-plan.md](ai-assistant-artifact-improvement-plan.md) — 채팅 명시 요청을 장애 보고서/이상감지·추세 아티팩트로 전환 |
+| — | — | — | 현재 활성 작업 없음 |
 
 ---
 
@@ -41,6 +41,45 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-02 #252)
+- [x] 주기 작업/Cron 운영 계약 정리
+  - Vercel Cron, Cloud Scheduler, Cloud Run Jobs, Supabase pg_cron 비활성 상태와 Cloud Tasks request-driven 경계를 free-tier/architecture/requirements 문서에 반영
+  - GitHub scheduled workflow는 `ENABLE_ACTIONS_SCHEDULES` opt-in guard가 필요하고, GitLab schedule rule은 Artifact Registry cleanup 관측 전용임을 명확화
+  - 랜딩 클라우드 카드/기술 스택/다이어그램에 Cloud Tasks를 요청 기반 AI job delivery 큐로 추가
+  - `periodic-jobs-contract` 회귀 테스트 추가로 Vercel cron 비활성, GitHub schedule guard, GitLab schedule 범위 유지 검증
+  - 컴포넌트 맵 검증 스크립트가 dirty-but-current 생성물을 false negative로 실패시키던 문제를 수정하고 회귀 테스트 추가
+  - 검증: `test:contract`, `docs:components:map`, `docs:components:verify`, `docs:budget`, targeted component-map/periodic tests, `type-check`, `lint`, `test:quick`, `git diff --check`
+
+### Completed (2026-05-02 #251)
+- [x] 랜딩 카드 아티팩트/검색/배포 설명 정합성 보정
+  - 4개 소개 카드의 AI 아티팩트, Knowledge Retrieval Lite, GitLab CI 배포 권한 문구를 현재 런타임 기준으로 정리
+  - card modal/architecture diagram/요구사항/free-tier 문서의 `pgVector`/하이브리드 RAG/자동 배포 표현을 BM25 RPC, 요청 기반 Web Search, GitLab CI deploy gate 기준으로 동기화
+  - 랜딩 데이터 회귀 테스트 추가로 오래된 검색·배포·버전 문구 재유입 방지
+  - 검증: feature card targeted tests 7/7, `npm run docs:budget`, `npm run docs:ai-consistency`, `npm run type-check`, `npm run lint`, `npm run test:quick`, `git diff --check`
+
+### Completed (2026-05-02 #250)
+- [x] AI Assistant 아티팩트 client-only 강화
+  - 장애 보고서 아티팩트 카드에 영향 서버 상세 링크, 권장 조치, 이상 징후, 타임라인 요약 표시 추가
+  - 이상감지/추세 아티팩트 카드에 source/기준 시각, 위험 신호, 근거 요약, 서버 상세 링크 표시 추가
+  - 기존 `IncidentReportArtifact` / `MonitoringAnalysisArtifact` metadata만 사용해 추가 AI/API/DB 호출 없이 렌더링
+  - 검증: artifact card targeted tests 4/4, artifact/chat/history/route targeted tests 42/42, `npm run test:quick`, `npm run type-check`, `npm run lint`
+
+### Completed (2026-05-02 #249)
+- [x] 장애 보고서 free-tier 단순화
+  - `/api/ai/incident-report`를 POST `generate` 전용으로 정리하고 GET 히스토리/PATCH 해결 API surface 제거
+  - Cloud Run 보고서 생성 결과의 Supabase `incident_reports` 저장을 제거해 DB write/read/update 부담 제거
+  - Auto Report 페이지에서 히스토리 탭과 DB 기반 history table/filter hook 제거, 해결 완료는 세션 내 상태만 변경
+  - free-tier 문서와 요구사항 문서에 "세션 내 아티팩트 + 다운로드" 운영 결정을 반영
+  - 검증: targeted route/AutoReport/artifact tests 40/40, type-check, lint, test:quick, test:contract, docs:budget, docs:ai-consistency, `git diff --check`
+
+### Completed (2026-05-02 #248)
+- [x] AI Assistant 사용자-facing 아티팩트 개선
+  - 채팅에서 명시적인 장애 보고서 작성/다운로드 요청을 일반 LLM 응답 대신 기존 `/api/ai/incident-report` 1회 호출로 전환
+  - 채팅에서 명시적인 이상감지/추세 분석 요청을 기존 `/api/ai/intelligent-monitoring` batch 1회 호출로 전환
+  - 사이드바/전체 페이지 공통 메시지에 장애 보고서 및 이상감지/추세 아티팩트 카드, MD/TXT/JSON 다운로드, 기능 화면 이동 액션 추가
+  - 모호한 기능 문의는 외부 API 호출 없이 사용 안내만 응답하도록 분리해 사용량 증가를 제한
+  - 검증: targeted artifact/chat/history tests 22/22, type-check, lint, test:quick, test:contract, `git diff --check`
 
 ### Completed (2026-05-02 #247)
 - [x] Cerebras finalAnswer schema tolerance

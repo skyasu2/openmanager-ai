@@ -84,11 +84,11 @@ vi.mock('@/utils/ai-warmup', () => ({
   triggerAIWarmup: mocks.triggerAIWarmup,
 }));
 
-vi.mock('@/lib/ai/artifacts/incident-report-artifact', () => ({
+vi.mock('@/lib/ai/chat-artifacts/incident-report-artifact', () => ({
   generateIncidentReportArtifact: mocks.generateIncidentReportArtifact,
 }));
 
-vi.mock('@/lib/ai/artifacts/monitoring-analysis-artifact', () => ({
+vi.mock('@/lib/ai/chat-artifacts/monitoring-analysis-artifact', () => ({
   generateMonitoringAnalysisArtifact: mocks.generateMonitoringAnalysisArtifact,
 }));
 

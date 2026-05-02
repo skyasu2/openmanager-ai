@@ -7,7 +7,7 @@
 import type {
   IncidentReportArtifact,
   MonitoringAnalysisArtifact,
-} from '@/lib/ai/artifacts/types';
+} from '@/lib/ai/chat-artifacts/types';
 import { logger } from '@/lib/logging';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
