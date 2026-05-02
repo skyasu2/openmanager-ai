@@ -199,4 +199,38 @@ describe('generateServerSnapshotArtifact', () => {
     expect(buildServerSnapshotMarkdown(artifact)).toContain('web-01');
     expect(JSON.parse(buildServerSnapshotJson(artifact))).toEqual(artifact);
   });
+
+  it('serializes restored legacy payloads without optional snapshot sections', () => {
+    const restoredArtifact = {
+      kind: 'server-snapshot',
+      generatedAt: '2026-05-02T22:00:00.000Z',
+      title: '복원된 서버 상태 스냅샷',
+      summary: 'legacy metadata',
+      source: 'otel-static',
+      totals: {
+        total: 0,
+        online: 0,
+        warning: 0,
+        critical: 0,
+        offline: 0,
+      },
+      averages: {
+        cpu: 0,
+        memory: 0,
+        disk: 0,
+        network: 0,
+      },
+    } as unknown as ServerSnapshotArtifact;
+
+    expect(() => buildServerSnapshotMarkdown(restoredArtifact)).not.toThrow();
+    expect(buildServerSnapshotMarkdown(restoredArtifact)).toContain(
+      '기준 시각: 현재'
+    );
+    expect(buildServerSnapshotMarkdown(restoredArtifact)).toContain(
+      '위험 상위 서버 없음'
+    );
+    expect(buildServerSnapshotMarkdown(restoredArtifact)).toContain(
+      '현재 표시할 경고 없음'
+    );
+  });
 });

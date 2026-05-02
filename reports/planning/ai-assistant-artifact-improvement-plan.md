@@ -390,7 +390,7 @@ interface ServerSnapshotArtifact {
 
 ### 로컬 검증 결과 (2026-05-02)
 
-- Targeted artifact suite: 9 files / 58 tests passed
+- Targeted artifact suite: 9 files / 59 tests passed
 - `npm run type-check`: passed
 - `npm run lint`: passed (Biome info only: `reports/qa/qa-tracker.json` file size)
 - `npm run test:quick`: passed

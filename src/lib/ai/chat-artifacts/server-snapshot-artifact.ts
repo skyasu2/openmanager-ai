@@ -108,6 +108,24 @@ function buildAlerts(
     });
 }
 
+function readSlotTimeLabel(artifact: ServerSnapshotArtifact): string {
+  return (
+    artifact.slot?.timeLabel || artifact.queryAsOfDataSlot?.timeLabel || '현재'
+  );
+}
+
+function readTopServers(
+  artifact: ServerSnapshotArtifact
+): ServerSnapshotArtifact['topServers'] {
+  return Array.isArray(artifact.topServers) ? artifact.topServers : [];
+}
+
+function readAlerts(
+  artifact: ServerSnapshotArtifact
+): ServerSnapshotArtifact['alerts'] {
+  return Array.isArray(artifact.alerts) ? artifact.alerts : [];
+}
+
 export async function generateServerSnapshotArtifact({
   queryAsOfDataSlot,
 }: ChatArtifactRequest): Promise<ServerSnapshotArtifact> {
@@ -146,16 +164,22 @@ export async function generateServerSnapshotArtifact({
 export function buildServerSnapshotMarkdown(
   artifact: ServerSnapshotArtifact
 ): string {
-  const topServers = artifact.topServers.length
-    ? artifact.topServers
-        .map(
-          (server, index) =>
-            `${index + 1}. ${server.name} (${server.status}) - ${server.primaryRisk.toUpperCase()} ${server[server.primaryRisk]}%`
-        )
+  const topServerRows = readTopServers(artifact);
+  const alertRows = readAlerts(artifact);
+  const topServers = topServerRows.length
+    ? topServerRows
+        .map((server, index) => {
+          const primaryRisk = server.primaryRisk ?? 'cpu';
+          const primaryRiskLabel = primaryRisk.toUpperCase();
+          return [
+            `${index + 1}. ${server.name || server.id} (${server.status})`,
+            `${primaryRiskLabel} ${server[primaryRisk]}%`,
+          ].join(' - ');
+        })
         .join('\n')
     : '위험 상위 서버 없음';
-  const alerts = artifact.alerts.length
-    ? artifact.alerts
+  const alerts = alertRows.length
+    ? alertRows
         .map((alert) => `- [${alert.severity}] ${alert.summary}`)
         .join('\n')
     : '- 현재 표시할 경고 없음';
@@ -164,7 +188,7 @@ export function buildServerSnapshotMarkdown(
     `# ${artifact.title}`,
     '',
     `- 생성 시각: ${new Date(artifact.generatedAt).toLocaleString('ko-KR')}`,
-    `- 기준 시각: ${artifact.slot.timeLabel}`,
+    `- 기준 시각: ${readSlotTimeLabel(artifact)}`,
     `- 총 서버: ${artifact.totals.total}대`,
     `- 정상: ${artifact.totals.online}대`,
     `- 주의: ${artifact.totals.warning}대`,

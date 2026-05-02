@@ -49,7 +49,7 @@
   - broad `서버 상태 알려줘`, `현재 서버 상태 분석해줘`, `CPU 높은 서버 원인 분석해줘`는 일반 채팅으로 유지하고, `서버 상태 스냅샷`, `전체 인프라 상태 카드`, `server snapshot export`처럼 artifact-shaped 요청만 실행
   - 비용/사용량 계약: 신규 LLM/API/Cloud Run/DB write 없음. snapshot generator는 `MetricsProvider`/OTel static data만 read-only 사용
   - 평가 기록: [artifact-intent-benchmark-2026-05-02.md](../docs/artifact-intent-benchmark-2026-05-02.md) `112/112`
-  - 검증: targeted artifact suite 58/58, `type-check`, `lint`, `test:quick`, `test:contract`, `docs:budget`, `docs:ai-consistency`, `git diff --check`
+  - 검증: targeted artifact suite 59/59, `type-check`, `lint`, `test:quick`, `test:contract`, `docs:budget`, `docs:ai-consistency`, `git diff --check`
 
 ### Completed (2026-05-02 #259)
 - [x] Artifact intent benchmark compatibility and category coverage
