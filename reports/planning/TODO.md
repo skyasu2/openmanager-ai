@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-02 KST (`Artifact intent free-tier guardrails`)
+**Last Updated**: 2026-05-02 KST (`Server snapshot artifact plan`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| — | — | — | 현재 활성 작업 없음 |
+| AI Assistant Server Snapshot Artifact Expansion | P1 | Approved | Existing plan: [ai-assistant-artifact-improvement-plan.md](ai-assistant-artifact-improvement-plan.md) Phase 4. 신규 기능이므로 구현은 `test(spec): server snapshot artifact contract` 선행 커밋으로 시작 |
 
 ---
 
