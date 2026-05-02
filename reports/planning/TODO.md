@@ -50,6 +50,7 @@
   - 아티팩트 LLM fallback 앞에 로컬 후보 게이트를 추가해 일반 채팅이 추가 분류기 호출을 만들지 않도록 보정
   - `/api/ai/artifact-intent`에 AI rate limiter, deterministic structured output 옵션, route regression tests를 추가하고 intent 분류 중 중복 전송을 차단
   - Vercel env sync 경로에 `MISTRAL_API_KEY`를 optional로 추가하고, GCP 소액 과금 원인을 Secret Manager active versions 초과 가능성으로 문서화
+  - Follow-up review: LLM intent 분류 중 artifact loading UI가 켜지지 않도록 조정하고, `MISTRAL_MODEL_ID`가 Cloud Run 전용 override임을 env 문서에 명시
 
 ### Completed (2026-05-02 #255)
 - [x] AI Assistant 아티팩트 intent reason code 보강

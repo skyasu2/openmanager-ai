@@ -777,7 +777,6 @@ export function useAIChatCore(
         const intentAbortController = new AbortController();
         artifactIntentInFlightRef.current = true;
         artifactAbortControllerRef.current = intentAbortController;
-        setArtifactIsLoading(true);
         try {
           artifactIntent = await fetchLLMChatArtifactIntent(
             effectiveText,
@@ -790,16 +789,11 @@ export function useAIChatCore(
           }
         }
 
+        // fetchLLMChatArtifactIntent intentionally degrades failures to none.
+        // On an explicit abort, stop here so cancellation does not fall through
+        // into the normal Supervisor chat path.
         if (intentAbortController.signal.aborted) {
-          setArtifactIsLoading(false);
           return;
-        }
-
-        if (
-          artifactIntent.kind !== 'incident-report' &&
-          artifactIntent.kind !== 'monitoring-analysis'
-        ) {
-          setArtifactIsLoading(false);
         }
       }
       if (artifactIntent.kind === 'guidance') {
