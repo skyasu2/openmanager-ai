@@ -190,6 +190,7 @@ import { useAIChatCore } from './useAIChatCore';
 
 describe('useAIChatCore', () => {
   beforeEach(() => {
+    vi.unstubAllGlobals();
     vi.clearAllMocks();
   });
 
@@ -684,6 +685,54 @@ describe('useAIChatCore', () => {
     expect(result.current.error).toBeNull();
     expect(result.current.messages[1]?.content).toContain(
       '장애 보고서를 작성했습니다'
+    );
+  });
+
+  it('does not mark artifact generation as loading while LLM artifact intent classification is pending', async () => {
+    let resolveClassifier: (response: Response) => void = () => undefined;
+    const classifierPromise = new Promise<Response>((resolve) => {
+      resolveClassifier = resolve;
+    });
+    const fetchMock = vi.fn(() => classifierPromise);
+    vi.stubGlobal('fetch', fetchMock);
+
+    const { result } = renderHook(() => useAIChatCore());
+
+    await act(async () => {
+      result.current.setInput('트렌드 분석 좀 해줘');
+    });
+
+    let sendPromise: Promise<void> | undefined;
+    await act(async () => {
+      sendPromise = result.current.handleSendInput();
+      await Promise.resolve();
+    });
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/ai/artifact-intent',
+        expect.objectContaining({
+          method: 'POST',
+          body: JSON.stringify({ query: '트렌드 분석 좀 해줘' }),
+        })
+      );
+    });
+
+    expect(result.current.isLoading).toBe(false);
+    expect(mocks.generateIncidentReportArtifact).not.toHaveBeenCalled();
+    expect(mocks.generateMonitoringAnalysisArtifact).not.toHaveBeenCalled();
+
+    await act(async () => {
+      resolveClassifier({
+        ok: true,
+        json: async () => ({ kind: 'none' }),
+      } as Response);
+      await sendPromise;
+    });
+
+    expect(mocks.sendQuery).toHaveBeenCalledWith(
+      '트렌드 분석 좀 해줘',
+      undefined
     );
   });
 

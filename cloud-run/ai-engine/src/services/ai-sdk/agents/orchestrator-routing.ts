@@ -105,8 +105,9 @@ function getForcedRoutingCapabilityRequirements(
 
 export function getOrchestratorModel(): ModelResult | null {
   // Orchestrator uses generateObject (requires json_schema support).
-  // Keep Cerebras first for routing-only structured output; Groq is the
-  // validated fallback, and Mistral stays last because its free RPM is tight.
+  // Keep Groq first for routing-only structured output to preserve Cerebras RPM
+  // for specialist agents; Cerebras remains fallback and Mistral stays last
+  // because its free RPM is tight.
   return selectTextModel('Orchestrator', ORCHESTRATOR_PROVIDER_ORDER, {
     cbPrefix: 'orchestrator',
     requiredCapabilities: { requireStructuredOutput: true },

@@ -288,7 +288,7 @@ npm run data:precomputed:build # Cloud Run precomputed states 재생성
 | **NLQ** | Groq (`meta-llama/llama-4-scout-17b-16e-instruct`) | 서버 메트릭 조회 (단순+복합) | 외부 |
 | **Analyst** | Cerebras `llama3.1-8b` when context permits (fallback: Groq → Mistral) | 이상 감지, 추세 예측 | 외부 |
 | **Reporter** | Cerebras `llama3.1-8b` when context permits (fallback: Groq → Mistral) | 장애 보고서, 타임라인 | 외부 |
-| **Advisor** | Groq primary (fallback: Cerebras → Mistral) | 트러블슈팅, 명령 추천, Knowledge Retrieval Lite 보강 | 외부 |
+| **Advisor** | Cerebras `llama3.1-8b` when context permits (fallback: Groq → Mistral) | 트러블슈팅, 명령 추천, Knowledge Retrieval Lite 보강 | 외부 |
 | **Vision** | Gemini 2.5 Flash-Lite (fallback: OpenRouter vision 모델) | 스크린샷/로그 분석, 웹 검색 | 외부 |
 | **Evaluator** | Deterministic quality gate | 보고서 품질 평가 (내부) | 내부 |
 | **Optimizer** | Deterministic rewrite stage | 보고서 품질 개선 (내부) | 내부 |
@@ -329,8 +329,8 @@ CLOSED (정상) ──5회 실패──► OPEN (차단) ──30초──► HA
 ### LLM Provider Fallback Chain
 
 ```
-Structured routing: Cerebras → Groq → Mistral
-Group A tool loop (Supervisor/NLQ): Groq → Cerebras → Mistral
+Structured routing: Groq → Cerebras → Mistral
+Group A tool loop (Supervisor/NLQ/Orchestrator): Groq → Cerebras → Mistral
 Group B tool loop (Analyst/Reporter/Advisor/Verifier): Cerebras → Groq → Mistral
 Vision: Gemini Flash-Lite → OpenRouter
 모두 실패 → Static Fallback Response

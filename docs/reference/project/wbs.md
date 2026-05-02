@@ -3,7 +3,7 @@
 > Owner: project-lead
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-04-26
+> Last reviewed: 2026-05-02
 > Tags: wbs,deliverable,completion,modules
 
 **목적**: 모듈(Deliverable) 기반 WBS. 100% Rule 적용 — 모든 프로덕션 산출물 포착.
@@ -70,7 +70,7 @@
 |---|--------|----------|:-------:|:-------:|:----:|
 | E1 | 실행 에이전트 | 등록 수 | 7+1 | 7+1 | Done |
 | E2 | 도구(Tools) | validateTools() 통과 수 | 27 | 27 | Done |
-| E3 | Provider Fallback | Cerebras→Groq→Mistral 3-way | 3/3 | 3/3 | Done |
+| E3 | Provider Fallback | Agent policy별 3-way fallback | 3/3 | 3/3 | Done |
 | E4 | Vision Fallback | Gemini→OpenRouter→Analyst | 3/3 | 3/3 | Done |
 | E5 | 보안 4종 | timing-safe, SHA-256, Prompt Guard, CORS | 4/4 | 4/4 | Done |
 | E6 | Graceful Shutdown | SIGTERM→30s→강제 종료 | 적용 | 적용 | Done |

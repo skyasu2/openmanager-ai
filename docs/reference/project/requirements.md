@@ -149,7 +149,7 @@
 
 | 항목 | 기준 |
 |------|------|
-| Provider Fallback | Cerebras → Groq → Mistral 3-way |
+| Provider Fallback | Agent policy별 3-way fallback: Group A `Groq → Cerebras → Mistral`, Group B `Cerebras → Groq → Mistral` |
 | Vision Fallback | Gemini → OpenRouter → Analyst 3단 |
 | Circuit Breaker | InMemory + Redis, 3상태 전이 |
 | Graceful Shutdown | SIGTERM → 30초 대기 → 강제 종료 |

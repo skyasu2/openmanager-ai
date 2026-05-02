@@ -51,6 +51,7 @@
   - `/api/ai/artifact-intent`에 AI rate limiter, deterministic structured output 옵션, route regression tests를 추가하고 intent 분류 중 중복 전송을 차단
   - Vercel env sync 경로에 `MISTRAL_API_KEY`를 optional로 추가하고, GCP 소액 과금 원인을 Secret Manager active versions 초과 가능성으로 문서화
   - Follow-up review: LLM intent 분류 중 artifact loading UI가 켜지지 않도록 조정하고, `MISTRAL_MODEL_ID`가 Cloud Run 전용 override임을 env 문서에 명시
+  - Architecture docs/tests follow-up: Artifact Intent / Provider Fallback / Multi-Agent 3개 기능 모듈 ASCII 맵 추가, provider routing stale copy 보정, classifier pending loading 회귀 테스트 추가
 
 ### Completed (2026-05-02 #255)
 - [x] AI Assistant 아티팩트 intent reason code 보강

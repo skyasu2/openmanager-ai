@@ -1,5 +1,6 @@
 > Owner: project
 > Status: Completed
+> Doc type: Plan
 > Last reviewed: 2026-05-02
 
 # AI Assistant Artifact Improvement Plan
@@ -23,7 +24,7 @@ AI Chat에서 명시적인 "장애 보고서 작성/다운로드" 또는 "이상
   - 모호한 보고서/추세 언급은 API 호출 없이 기능 안내 CTA만 표시
 - 제외:
   - 백그라운드 cron/자동 장애 감지
-  - 신규 LLM 호출 경로 추가
+  - 초기 Phase 1 범위에서는 신규 LLM 호출 경로 추가 제외
   - Vercel AI Elements 도입
   - Pyodide 코드 실행 기능 확장
   - Cloud Run AI Engine 계약 변경
@@ -126,3 +127,41 @@ AI Chat에서 명시적인 "장애 보고서 작성/다운로드" 또는 "이상
 - [x] Task 7 — IncidentReport artifact card 상세/서버 링크 UI 구현
 - [x] Task 8 — MonitoringAnalysis artifact card 위험 신호/근거 UI 구현
 - [x] Task 9 — targeted/type/lint 검증 및 TODO 완료 기록
+
+## Phase 3 — Intent Fallback Hardening
+
+### 목표
+
+짧은 한국어 키워드형 요청과 모호한 artifact 후보를 일반 Supervisor 채팅으로 흘리지 않도록 하되, 일반 운영 질문에는 추가 LLM 호출을 만들지 않는다.
+
+### 범위
+
+- 포함:
+  - regex 1차 분류에 `reason` code 부여
+  - `shouldUseLLMChatArtifactIntent()` 후보 게이트
+  - Vercel `/api/ai/artifact-intent` route-local Mistral classifier (`ministral-3b-latest`)
+  - classifier 대기 중 artifact loading UI 비활성 유지
+  - abort 시 일반 Supervisor fallback 차단
+  - `MISTRAL_MODEL_ID`는 Cloud Run AI Engine 전용 fallback override로 문서화
+- 제외:
+  - 전체 채팅 intent router를 LLM 기반으로 교체
+  - Cloud Run Supervisor 계약 변경
+  - Sandpack/임의 코드 실행형 artifact
+  - Supabase artifact 저장 재도입
+
+### 계약 (Contract)
+
+| 단계 | 입력 | 출력 | 비용/사용량 계약 |
+|------|------|------|------------------|
+| Regex classifier | user query | `incident-report` / `monitoring-analysis` / `guidance` / `none` + reason | LLM 호출 0 |
+| LLM candidate gate | regex `none` query | boolean | 일반 채팅은 LLM 호출 0 |
+| `/api/ai/artifact-intent` | gated query | `{ kind }` | Mistral 3B 1회, 3초 timeout, rate limit 적용 |
+| Artifact generation | confirmed artifact kind | artifact message metadata | 기존 artifact API 1회 |
+
+### 테스트 시나리오
+
+- [x] `장애보고서`, `추세 분석`, `이상감지`, `장애 예측 추세 분석` 같은 키워드형 요청을 artifact로 분류한다.
+- [x] `추세`, `최근 추세가 어때?`, `추세 분석?` 같은 일반/질문형 요청은 artifact 실행으로 분류하지 않는다.
+- [x] `/api/ai/artifact-intent`는 local gate, missing key, deterministic structured output, provider error fallback을 검증한다.
+- [x] LLM intent 분류가 pending인 동안 `isLoading`을 켜지 않는다.
+- [x] abort된 LLM intent 분류는 일반 Supervisor 채팅으로 fall through하지 않는다.

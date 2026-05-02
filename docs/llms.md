@@ -4,11 +4,11 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-04-04
+> Last reviewed: 2026-05-02
 > Canonical: docs/llms.md
 > Tags: llm,context,ai
 >
-> **v8.10.8** | Updated 2026-04-04
+> **v8.11.82** | Updated 2026-05-02
 >
 > AI 어시스턴트가 프로젝트를 이해하는 데 필요한 핵심 정보
 
@@ -17,7 +17,7 @@
 OpenManager AI is an AI-native server monitoring platform built with:
 - Frontend: Next.js 16, React 19, TypeScript 5.9
 - AI Engine: Vercel AI SDK 6 family, multi-agent first system
-- Database: Supabase (PostgreSQL + pgVector)
+- Database: Supabase (PostgreSQL + Auth/RLS); Knowledge Retrieval Lite uses BM25 RPC + metadata boost
 - Deployment: Vercel (Frontend) + Cloud Run (AI Engine)
 
 ## Architecture
@@ -34,9 +34,9 @@ OpenManager AI is an AI-native server monitoring platform built with:
 - Agents (실행): NLQ, Analyst, Reporter, Advisor, Vision, Evaluator, Optimizer
 - Orchestrator: 에이전트 라우팅 코디네이터 (별도 컴포넌트)
 - Providers:
-  - Group A tool-calling path (Supervisor/NLQ/Advisor): Groq → Cerebras → Mistral
-  - Group B tool-calling path (Analyst/Reporter/Verifier): Cerebras → Groq → Mistral
-  - Structured routing path: Cerebras → Groq → Mistral
+  - Group A tool-calling path (Supervisor/NLQ/Orchestrator): Groq → Cerebras → Mistral
+  - Group B tool-calling path (Analyst/Reporter/Advisor/Verifier): Cerebras → Groq → Mistral
+  - Structured routing path: Groq → Cerebras → Mistral
   - Vision: Gemini Flash-Lite → OpenRouter
 - Tools: 30 specialized tools (Metrics 6, RCA 3, Analyst 4, Knowledge 3, Evaluation 6, Control 1, Vision 4, Math 3)
 - Observability: Langfuse mode audit (`requestedMode`, `resolvedMode`, `modeSelectionSource`) + `handoffCount`
@@ -97,9 +97,9 @@ curl $SERVICE_URL/health  # Health check
 - Vision 기본 모델은 `gemini-2.5-flash-lite`
 - Orchestrator는 `generateObjectWithFallback`로 structured routing 수행
 - Agent 실행은 `streamText` / `generateTextWithRetry` 기반 tool loop
-- Cerebras는 structured-output primary, tool loop는 기본 비활성 + capability gate로 선제 skip
+- Orchestrator structured routing은 Groq-first로 Cerebras RPM을 보존하며, Cerebras tool loop는 기본 비활성 + capability gate로 선제 skip
 
-Reference (checked: 2026-04-04):
+Reference (checked: 2026-05-02):
 - https://vercel.com/docs/limits/overview
 
 ## Contact

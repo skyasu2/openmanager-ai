@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-04-29
+> Last reviewed: 2026-05-02
 > Canonical: docs/reference/architecture/ai/ai-engine-architecture.md
 > Tags: ai,architecture,multi-agent,cloud-run
 >
-> **v8.11.59** | Updated 2026-04-29
+> **v8.11.82** | Updated 2026-05-02
 > (ai-model-policy.md 내용 통합됨, 2026-02-14)
 
 ## 1. Overview
@@ -99,7 +99,7 @@ flowchart TB
         Single["Single path\nstreamText + prepareStep + stopWhen"]
         Multi["Multi path\nexecuteMultiAgent / executeMultiAgentStream"]
         Prefilter["preFilterQuery()\nfast path / forced routing / LLM routing"]
-        Route["generateObjectWithFallback\nCerebras → Groq → Mistral\n(requireStructuredOutput)"]
+        Route["generateObjectWithFallback\nGroq → Cerebras → Mistral\n(requireStructuredOutput)"]
         Agent["Agent execution\nGroup A: Groq → Cerebras → Mistral\nGroup B: Cerebras → Groq → Mistral\nstreamText or generateTextWithRetry\n(requireToolCalling)"]
         Context["save findings + getContextSummary()"]
         Stream["UIMessageStream\ntext-delta / handoff / data-mode / agent_status"]
@@ -137,7 +137,7 @@ flowchart LR
     Groq --> Mistral["Mistral"]
     CerebrasTool -->|true| Groq
 
-    SO -->|yes| Structured["Orchestrator route\nCerebras → Groq → Mistral"]
+    SO -->|yes| Structured["Orchestrator route\nGroq → Cerebras → Mistral"]
     Need -->|vision| Vision["Gemini Flash-Lite → OpenRouter"]
 ```
 
@@ -184,7 +184,221 @@ flowchart LR
                      │ to Cloud Run /api/jobs/process
 ```
 
-> Source of truth (2026-04-29): `cloud-run/ai-engine/src/services/ai-sdk/supervisor-mode.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts`, `cloud-run/ai-engine/src/services/ai-sdk/provider-capabilities.ts`, `cloud-run/ai-engine/src/routes/jobs.ts`, `cloud-run/ai-engine/src/lib/cloud-tasks.ts`
+> Source of truth (2026-05-02): `src/lib/ai/chat-artifacts/chat-artifact-intent.ts`, `src/hooks/ai/useAIChatCore.ts`, `src/app/api/ai/artifact-intent/route.ts`, `cloud-run/ai-engine/src/services/ai-sdk/supervisor-mode.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/orchestrator-execution.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-runtime-policy.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-model-selectors.ts`, `cloud-run/ai-engine/src/services/ai-sdk/provider-capabilities.ts`, `cloud-run/ai-engine/src/routes/jobs.ts`, `cloud-run/ai-engine/src/lib/cloud-tasks.ts`
+
+### 기능 모듈 ASCII 맵
+
+#### Module 1. Artifact Intent 분류 파이프라인
+
+아티팩트 intent는 Cloud Run Supervisor에 들어가기 전 Next.js/브라우저 채팅 계층에서 먼저 판정합니다. 확정된 아티팩트 요청만 기존 artifact 생성 API를 호출하고, `none`이면 일반 Supervisor 채팅 경로로 넘어갑니다.
+
+```
++--------------------------------------------------------------------+
+| ARTIFACT INTENT PIPELINE                                           |
+| src/lib/ai/chat-artifacts/chat-artifact-intent.ts                  |
+| src/hooks/ai/useAIChatCore.ts                                      |
++--------------------------------------------------------------------+
+
+User Query
+    |
+    v
++----------------------------------+
+| classifyChatArtifactIntent()     |  Tier 1: regex, sync, 0ms
++----------------------------------+
+    |
+    +-- report keyword + action ---------------> incident-report
+    |     reason: incident_report_action_pattern
+    |
+    +-- report keyword + guidance -------------> guidance
+    |     target: incident-report
+    |
+    +-- report keyword + no question mark ------> incident-report
+    |     reason: incident_report_implicit_keyword
+    |
+    +-- monitoring keyword + action -----------> monitoring-analysis
+    |     reason: monitoring_action_pattern
+    |
+    +-- monitoring keyword + guidance ---------> guidance
+    |     target: monitoring-analysis
+    |
+    +-- monitoring artifact-shaped phrase ------> monitoring-analysis
+    |     reason: monitoring_implicit_artifact_keyword
+    |
+    `-- none
+          |
+          v
++----------------------------------+
+| shouldUseLLMChatArtifactIntent() |  Tier 2: candidate gate
++----------------------------------+
+    |
+    +-- false ----------------------------------> none
+    |                                             no LLM call
+    |
+    `-- true
+          |
+          v
++------------------------------------------+
+| fetchLLMChatArtifactIntent()             |  Tier 3: Vercel route
+| POST /api/ai/artifact-intent             |  fixed model: ministral-3b-latest
+| timeout <= 3000ms, temperature 0         |  maxOutputTokens 24
++------------------------------------------+
+    |
+    +-- incident-report ------------------------> incident-report
+    |     reason: llm_artifact_classification
+    |
+    +-- monitoring-analysis --------------------> monitoring-analysis
+    |     reason: llm_artifact_classification
+    |
+    +-- none / provider error ------------------> normal Supervisor chat
+    |
+    `-- abort ----------------------------------> early return
+                                                  no Supervisor fallthrough
+
+Result handling in useAIChatCore.ts
+    |
+    +-- guidance             -> local guidance message only
+    +-- incident-report      -> generateIncidentReportArtifact()
+    +-- monitoring-analysis  -> generateMonitoringAnalysisArtifact()
+    `-- none                 -> sendQuery() to /api/ai/supervisor/stream/v2
+
+Loading contract
+    |
+    +-- LLM intent classification pending -> isLoading remains false
+    `-- artifact generation started       -> setArtifactIsLoading(true)
+```
+
+#### Module 2. LLM Provider Fallback Chain
+
+Provider chain은 단일 전역 순서가 아니라 실행 위치별 policy로 나뉩니다. Orchestrator는 Groq-first로 Cerebras RPM을 보존하고, Analyst/Reporter/Advisor는 Cerebras-first policy를 갖지만 16K/32K context floor에서 `llama3.1-8b`는 capability gate에 의해 요청 전 skip될 수 있습니다.
+
+```
++--------------------------------------------------------------------+
+| LLM PROVIDER FALLBACK CHAIN                                        |
+| cloud-run/ai-engine/src/services/ai-sdk/agents/config/             |
++--------------------------------------------------------------------+
+
+Text request
+    |
+    v
++------------------------------------------+
+| selectTextModel(agent, providerOrder)    |
++------------------------------------------+
+    |
+    +-- circuit breaker OPEN --------------> skip provider
+    +-- provider env/key missing ----------> skip provider
+    +-- capability mismatch ---------------> skip provider before request
+    `-- model init / call error -----------> next provider
+
+Group A: Supervisor / Orchestrator / NLQ
+    |
+    +-- Groq
+    |     model: meta-llama/llama-4-scout-17b-16e-instruct
+    |
+    +-- Cerebras
+    |     model: llama3.1-8b
+    |
+    `-- Mistral
+          model: MISTRAL_MODEL_ID || mistral-small-latest
+
+Group B: Analyst / Reporter / Advisor / Verifier
+    |
+    +-- Cerebras
+    |     model: llama3.1-8b
+    |     note: skipped when required context/tool capability is not met
+    |
+    +-- Groq
+    |     model: meta-llama/llama-4-scout-17b-16e-instruct
+    |
+    `-- Mistral
+          model: MISTRAL_MODEL_ID || mistral-small-latest
+
+Vision path
+    |
+    +-- Gemini
+    |     model: GEMINI_VISION_MODEL_ID || gemini-2.5-flash-lite
+    |
+    `-- OpenRouter
+          model: OpenRouter vision fallback list
+
+Vercel artifact intent classifier
+    |
+    `-- Mistral ministral-3b-latest
+          fixed route-local classifier, no provider fallback chain
+```
+
+#### Module 3. Multi-Agent 오케스트레이션
+
+Supervisor는 실행 모드(`single`/`multi`)를 정하고, multi로 resolve된 요청만 Orchestrator로 넘깁니다. Orchestrator는 deterministic pre-filter, forced route, structured route를 순서대로 활용해 specialist agent를 선택합니다.
+
+```
++--------------------------------------------------------------------+
+| MULTI-AGENT ORCHESTRATION                                          |
+| cloud-run/ai-engine/src/services/ai-sdk/agents/                    |
++--------------------------------------------------------------------+
+
+POST /api/ai/supervisor/stream/v2
+    |
+    v
++------------------------------------------+
+| resolveSupervisorModeDecision()          |
++------------------------------------------+
+    |
+    +-- explicit multi --------------------> multi
+    +-- explicit single + allowed ---------> single
+    +-- explicit single + not allowed -----> multi
+    +-- auto + simple ---------------------> single
+    `-- auto + complex/thinking -----------> multi
+
+single
+    |
+    `-- executeSupervisor()
+          streamText + prepareStep + stopWhen(finalAnswer)
+
+multi
+    |
+    v
++------------------------------------------+
+| executeMultiAgent(Stream)                |
++------------------------------------------+
+    |
+    +-- preFilterQuery() fast path --------> deterministic summary
+    |
+    +-- forced route ----------------------> selected specialist
+    |
+    `-- structured route ------------------> Orchestrator routing JSON
+          |
+          v
+    +------------------+   +------------------+   +------------------+
+    | NLQ Agent        |   | Analyst Agent    |   | Reporter Agent   |
+    | metrics/query    |   | anomaly/trend    |   | incident/RCA     |
+    +------------------+   +------------------+   +------------------+
+             |                      |                      |
+             +----------------------+----------------------+
+                                    |
+                                    v
+                         +------------------+
+                         | Advisor Agent    |
+                         | remediation/KB   |
+                         +------------------+
+
+Vision attachments
+    |
+    `-- Vision Agent (Gemini -> OpenRouter)
+
+SSE events to frontend
+    |
+    +-- text_delta
+    +-- tool_call / tool_result
+    +-- handoff
+    +-- agent_status
+    `-- done
+
+Degraded fallback
+    |
+    multi error MODEL_UNAVAILABLE / MODEL_ERROR / INTERNAL_ERROR
+    + ALLOW_DEGRADED_SINGLE=true
+    `-- retry single path with degradedMetadata
+```
 
 ### Async Job Queue Boundary
 
@@ -751,7 +965,7 @@ POST /api/ai/jobs
 | **ConfigBasedAgent + AgentFactory** | 올바른 패턴 | 서브클래스 폭발 방지, 단일 SSOT 설정. BaseAgent에 ConfigBasedAgent 하나만 구현 → 확장성 확보 |
 | **도구 할당** | 적절 | 에이전트별 도구 중복(findRootCause 등)은 Cross-cutting 용도로 정당. NLQ=조회, Analyst=분석으로 구분 |
 | **finalAnswer 패턴** | AI SDK v6 Best Practice | `stopWhen: [hasToolCall('finalAnswer'), stepCountIs(N)]` 적용. 기본 multi-agent cap은 `7`, 복합 tool workflow가 잦은 Analyst/Reporter만 `10` 유지. 빈 텍스트 시 toolResults 복구 로직 구현 |
-| **Cerebras 활용성** | 조건부 강함 | structured output에는 여전히 유효하지만, tool-calling 경로는 `CEREBRAS_TOOL_CALLING_ENABLED`와 capability gate에 종속됨 |
+| **Cerebras 활용성** | 조건부 강함 | Orchestrator structured routing의 fallback으로 여전히 유효하지만, tool-calling 경로는 `CEREBRAS_TOOL_CALLING_ENABLED`와 capability gate에 종속됨 |
 | **AI SDK v6 구현 성숙도** | 높음 | Frontend는 `useChat`/`DefaultChatTransport`, 서버는 `createUIMessageStreamResponse`, `streamText`, `generateText`, `generateObjectWithFallback`를 조합함. SDK core abstraction을 우회하지 않으면서 커스텀 복원력 계층을 붙임 |
 | **업계 비교** | 실용적 수준 | AutoGen보다 구조적이고 LangGraph보다 가볍다. 서버 모니터링 도메인에 필요한 tool use와 fallback 제어를 현실적으로 구현 |
 
@@ -759,7 +973,7 @@ POST /api/ai/jobs
 
 | 항목 | 상세 분석 |
 |------|-----------|
-| **모델 배분** | Groq는 tool-calling 중심 text path primary, Cerebras는 structured route primary + opt-in text fallback, Mistral은 `mistral-small-latest` last-resort text fallback, Gemini는 Vision primary, OpenRouter는 Vision fallback으로 역할이 분리됨 |
+| **모델 배분** | Groq는 Supervisor/NLQ/Orchestrator primary, Cerebras는 Analyst/Reporter/Advisor policy의 primary이되 context/capability gate에 따라 skip 가능, Mistral은 `mistral-small-latest` last-resort text fallback, Gemini는 Vision primary, OpenRouter는 Vision fallback으로 역할이 분리됨 |
 | **AI SDK 적용 방식** | 프론트엔드는 `useChat`/`DefaultChatTransport`, 서버는 `createUIMessageStreamResponse`, `streamText`, `generateText`, `generateObjectWithFallback`, 작업 에이전트는 BaseAgent 내부 tool loop를 사용함 |
 | **문서 검증 범위** | 2026-04-04 기준 코드로 직접 검증한 항목은 mode policy, capability gate, Vision Flash-Lite default, context distillation, Langfuse mode audit임. 외부 provider 무료 티어/성능 수치는 별도 재검증 필요 |
 
