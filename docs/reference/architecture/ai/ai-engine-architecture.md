@@ -198,7 +198,7 @@ flowchart LR
 | src/lib/ai/chat-artifacts/chat-artifact-intent.ts                  |
 | src/hooks/ai/useAIChatCore.ts                                      |
 | rule version: ARTIFACT_INTENT_RULE_VERSION (corpus lock)           |
-| eval guard: tests/intent-classifier/ 74 cases                      |
+| eval guard: tests/intent-classifier/ 102 cases                     |
 |   execution precision >= 0.94, all-class precision/recall >= 0.90 |
 +--------------------------------------------------------------------+
 

@@ -1,8 +1,10 @@
 import type { ChatArtifactIntent } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
 import type {
   ArtifactIntentCorpusCase,
+  ArtifactIntentCorpusCategory,
   ArtifactIntentExpectedKind,
-} from '../fixtures/chat-artifact-intent/intent-corpus';
+} from '../fixtures/artifacts/intent-corpus';
+import { artifactIntentCorpusCategories } from '../fixtures/artifacts/intent-corpus';
 
 export const ARTIFACT_INTENT_EVALUATION_KINDS = [
   'incident-report',
@@ -22,6 +24,7 @@ export type ArtifactIntentConfusionMatrix = Record<
 export interface ArtifactIntentPrediction {
   id: string;
   query: string;
+  category: ArtifactIntentCorpusCategory;
   note: string;
   expected: ArtifactIntentEvaluationKind;
   predicted: ArtifactIntentEvaluationKind;
@@ -39,12 +42,24 @@ export interface ArtifactIntentKindMetrics {
   recall: number | null;
 }
 
+export interface ArtifactIntentCategoryMetrics {
+  category: ArtifactIntentCorpusCategory;
+  support: number;
+  correct: number;
+  accuracy: number | null;
+  mismatches: number;
+}
+
 export interface ArtifactIntentEvaluation {
   total: number;
   correct: number;
   accuracy: number;
   confusion: ArtifactIntentConfusionMatrix;
   metrics: Record<ArtifactIntentEvaluationKind, ArtifactIntentKindMetrics>;
+  categoryMetrics: Record<
+    ArtifactIntentCorpusCategory,
+    ArtifactIntentCategoryMetrics
+  >;
   predictions: ArtifactIntentPrediction[];
   mismatches: ArtifactIntentPrediction[];
 }
@@ -111,6 +126,7 @@ export function evaluateArtifactIntentClassifier(
     return {
       id: testCase.id,
       query: testCase.query,
+      category: testCase.category,
       note: testCase.note,
       expected: testCase.expected,
       predicted,
@@ -126,6 +142,30 @@ export function evaluateArtifactIntentClassifier(
       calculateKindMetrics(confusion, kind),
     ])
   ) as Record<ArtifactIntentEvaluationKind, ArtifactIntentKindMetrics>;
+  const categoryMetrics = Object.fromEntries(
+    artifactIntentCorpusCategories.map((category) => {
+      const categoryPredictions = predictions.filter(
+        (prediction) => prediction.category === category
+      );
+      const correctInCategory = categoryPredictions.filter(
+        (prediction) => prediction.expected === prediction.predicted
+      ).length;
+
+      return [
+        category,
+        {
+          category,
+          support: categoryPredictions.length,
+          correct: correctInCategory,
+          accuracy:
+            categoryPredictions.length === 0
+              ? null
+              : correctInCategory / categoryPredictions.length,
+          mismatches: categoryPredictions.length - correctInCategory,
+        },
+      ];
+    })
+  ) as Record<ArtifactIntentCorpusCategory, ArtifactIntentCategoryMetrics>;
 
   return {
     total: cases.length,
@@ -133,6 +173,7 @@ export function evaluateArtifactIntentClassifier(
     accuracy: cases.length === 0 ? 1 : correct / cases.length,
     confusion,
     metrics,
+    categoryMetrics,
     predictions,
     mismatches: predictions.filter(
       (prediction) => prediction.expected !== prediction.predicted

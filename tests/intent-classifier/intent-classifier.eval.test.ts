@@ -3,15 +3,36 @@ import {
   ARTIFACT_INTENT_RULE_VERSION,
   classifyChatArtifactIntent,
 } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
-import { artifactIntentCorpus } from '../fixtures/chat-artifact-intent/intent-corpus';
+import {
+  type ArtifactIntentCorpusCategory,
+  artifactIntentCorpus,
+  artifactIntentCorpusCategories,
+} from '../fixtures/artifacts/intent-corpus';
 import {
   ARTIFACT_INTENT_EVALUATION_KINDS,
+  type ArtifactIntentEvaluationKind,
   evaluateArtifactIntentClassifier,
   formatRatio,
 } from './intent-classifier-metrics';
 
 const LOCAL_CLASSIFIER_PRECISION_THRESHOLD = 0.94;
 const LOCAL_CLASSIFIER_CLASS_HEALTH_THRESHOLD = 0.9;
+const LOCAL_CLASSIFIER_MIN_KIND_SUPPORT = {
+  'incident-report': 18,
+  'monitoring-analysis': 18,
+  guidance: 30,
+  none: 36,
+} satisfies Record<ArtifactIntentEvaluationKind, number>;
+const LOCAL_CLASSIFIER_MIN_CATEGORY_SUPPORT = {
+  'explicit-action': 16,
+  'implicit-artifact': 4,
+  'guidance-question': 19,
+  negation: 15,
+  'operational-chat': 17,
+  'ambiguous-chat': 3,
+  navigation: 6,
+  'mixed-language': 22,
+} satisfies Record<ArtifactIntentCorpusCategory, number>;
 
 const evaluation = evaluateArtifactIntentClassifier(
   artifactIntentCorpus.cases,
@@ -37,6 +58,19 @@ function printEvaluationSummary(): void {
     })
   );
   console.table(evaluation.confusion);
+  console.table(
+    artifactIntentCorpusCategories.map((category) => {
+      const metrics = evaluation.categoryMetrics[category];
+
+      return {
+        category,
+        support: metrics.support,
+        correct: metrics.correct,
+        mismatches: metrics.mismatches,
+        accuracy: formatRatio(metrics.accuracy),
+      };
+    })
+  );
 }
 
 describe('Artifact Intent Local Classifier Evaluation', () => {
@@ -67,7 +101,9 @@ describe('Artifact Intent Local Classifier Evaluation', () => {
     for (const kind of ARTIFACT_INTENT_EVALUATION_KINDS) {
       const metrics = evaluation.metrics[kind];
 
-      expect(metrics.support).toBeGreaterThan(0);
+      expect(metrics.support).toBeGreaterThanOrEqual(
+        LOCAL_CLASSIFIER_MIN_KIND_SUPPORT[kind]
+      );
       expect(metrics.predicted).toBeGreaterThan(0);
       expect(metrics.precision).not.toBeNull();
       expect(metrics.recall).not.toBeNull();
@@ -75,6 +111,20 @@ describe('Artifact Intent Local Classifier Evaluation', () => {
         LOCAL_CLASSIFIER_CLASS_HEALTH_THRESHOLD
       );
       expect(metrics.recall ?? 0).toBeGreaterThanOrEqual(
+        LOCAL_CLASSIFIER_CLASS_HEALTH_THRESHOLD
+      );
+    }
+  });
+
+  it('keeps all corpus categories represented and healthy', () => {
+    for (const category of artifactIntentCorpusCategories) {
+      const metrics = evaluation.categoryMetrics[category];
+
+      expect(metrics.support).toBeGreaterThanOrEqual(
+        LOCAL_CLASSIFIER_MIN_CATEGORY_SUPPORT[category]
+      );
+      expect(metrics.accuracy).not.toBeNull();
+      expect(metrics.accuracy ?? 0).toBeGreaterThanOrEqual(
         LOCAL_CLASSIFIER_CLASS_HEALTH_THRESHOLD
       );
     }

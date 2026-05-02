@@ -116,7 +116,7 @@ graph LR
 | 쿼리 분류기 | `src/lib/ai/query-classifier.ts` | 인텐트 분류 (`general\|monitoring\|analysis\|guide\|coding`), 신뢰도 0-100% 계산 |
 | 복잡도 분석기 | `src/lib/ai/utils/query-complexity.ts` | 4단계 분류 (`simple\|moderate\|complex\|very_complex`), 복잡도 점수 기반 Streaming/Job Queue 자동 전환 |
 | 명확화 생성기 | `src/lib/ai/clarification-generator.ts` | `confidence < 85% && complexity ≥ 2` 조건에서 서버 스코프·시간범위·메트릭 유형 중 부족한 항목 자동 감지 → 선택지 생성 |
-| 아티팩트 인텐트 분류기 | `src/lib/ai/chat-artifacts/chat-artifact-intent.ts` | 3-tier artifact gate (local regex → LLM candidate gate → Vercel route): `incident-report\|monitoring-analysis\|guidance\|none`, 부정 패턴은 실행/implicit/LLM 후보 경로를 차단하고 guidance priority는 action보다 먼저 평가. 74-case eval guard: execution precision ≥ 0.94, all-class precision/recall ≥ 0.90 |
+| 아티팩트 인텐트 분류기 | `src/lib/ai/chat-artifacts/chat-artifact-intent.ts` | 3-tier artifact gate (local regex → LLM candidate gate → Vercel route): `incident-report\|monitoring-analysis\|guidance\|none`, 부정 패턴은 실행/implicit/LLM 후보 경로를 차단하고 guidance priority는 action보다 먼저 평가. 102-case eval guard: execution precision ≥ 0.94, all-class precision/recall ≥ 0.90 |
 | 메시지 정규화 | `src/lib/ai/utils/message-normalizer.ts` | AI SDK v6 UIMessage ↔ Cloud Run 형식 변환, 멀티모달(이미지·파일) 추출 |
 | 컨텍스트 압축 | `src/lib/ai/utils/context-compressor.ts` | 4개 이상 메시지 시 자동 압축 (최근 3개 유지), 토큰 추정 (한국어 ~1.5자/토큰) |
 

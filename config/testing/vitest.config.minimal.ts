@@ -21,6 +21,7 @@ export default defineConfig({
       // Phase 2 추가: AI supervisor utils
       'src/app/api/ai/supervisor/cache-utils.test.ts',
       'src/app/api/ai/supervisor/security.test.ts',
+      'tests/artifacts/intent-classifier.bench.ts',
       'tests/intent-classifier/intent-classifier.eval.test.ts',
       // Phase 3 추가: monitoring
       'src/services/monitoring/HealthCalculator.test.ts',
