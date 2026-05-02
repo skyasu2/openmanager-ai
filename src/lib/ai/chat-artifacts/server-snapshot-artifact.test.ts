@@ -3,6 +3,9 @@ import {
   buildServerSnapshotJson,
   buildServerSnapshotMarkdown,
   generateServerSnapshotArtifact,
+  readServerSnapshotAlerts,
+  readServerSnapshotTimeLabel,
+  readServerSnapshotTopServers,
 } from './server-snapshot-artifact';
 import type { ServerSnapshotArtifact } from './types';
 
@@ -92,9 +95,45 @@ const systemSummary = {
 
 describe('generateServerSnapshotArtifact', () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     metricsMocks.getAllServerMetrics.mockResolvedValue(serverMetrics);
     metricsMocks.getSystemSummary.mockResolvedValue(systemSummary);
     vi.stubGlobal('fetch', vi.fn());
+  });
+
+  it('rejects with AbortError before metrics reads when signal is already aborted', async () => {
+    const controller = new AbortController();
+    controller.abort();
+
+    await expect(
+      generateServerSnapshotArtifact({
+        query: '서버 상태 스냅샷',
+        queryAsOfDataSlot,
+        signal: controller.signal,
+      })
+    ).rejects.toMatchObject({ name: 'AbortError' });
+
+    expect(metricsMocks.getAllServerMetrics).not.toHaveBeenCalled();
+    expect(metricsMocks.getSystemSummary).not.toHaveBeenCalled();
+  });
+
+  it('rejects with AbortError after metrics reads when signal aborts mid-flight', async () => {
+    const controller = new AbortController();
+    metricsMocks.getAllServerMetrics.mockImplementation(async () => {
+      controller.abort();
+      return serverMetrics;
+    });
+
+    await expect(
+      generateServerSnapshotArtifact({
+        query: '서버 상태 스냅샷',
+        queryAsOfDataSlot,
+        signal: controller.signal,
+      })
+    ).rejects.toMatchObject({ name: 'AbortError' });
+
+    expect(metricsMocks.getAllServerMetrics).toHaveBeenCalledTimes(1);
+    expect(metricsMocks.getSystemSummary).toHaveBeenCalledTimes(1);
   });
 
   it('builds a read-only server snapshot from MetricsProvider without AI API calls', async () => {
@@ -223,6 +262,9 @@ describe('generateServerSnapshotArtifact', () => {
     } as unknown as ServerSnapshotArtifact;
 
     expect(() => buildServerSnapshotMarkdown(restoredArtifact)).not.toThrow();
+    expect(readServerSnapshotTimeLabel(restoredArtifact)).toBe('현재');
+    expect(readServerSnapshotTopServers(restoredArtifact)).toEqual([]);
+    expect(readServerSnapshotAlerts(restoredArtifact)).toEqual([]);
     expect(buildServerSnapshotMarkdown(restoredArtifact)).toContain(
       '기준 시각: 현재'
     );

@@ -359,4 +359,116 @@ describe('AI artifact cards', () => {
     expect(screen.getByText('기준 현재')).toBeInTheDocument();
     expect(screen.getByText('표시할 위험 상위 서버 없음')).toBeInTheDocument();
   });
+
+  it('uses shared server snapshot fallback readers while keeping card display capped', () => {
+    const restoredArtifact = {
+      kind: 'server-snapshot',
+      generatedAt: '2026-05-02T22:00:00.000Z',
+      title: '복원된 서버 상태 스냅샷',
+      summary: 'legacy metadata',
+      source: 'otel-static',
+      queryAsOfDataSlot: {
+        slotIndex: 42,
+        minuteOfDay: 420,
+        timeLabel: '07:00 KST',
+      },
+      totals: {
+        total: 4,
+        online: 1,
+        warning: 1,
+        critical: 1,
+        offline: 1,
+      },
+      averages: {
+        cpu: 60,
+        memory: 67.8,
+        disk: 56.8,
+        network: 35,
+      },
+      topServers: [
+        {
+          id: 'server-01',
+          name: 'server-01',
+          status: 'critical',
+          cpu: 91,
+          memory: 70,
+          disk: 60,
+          network: 40,
+          primaryRisk: 'cpu',
+        },
+        {
+          id: 'server-02',
+          name: 'server-02',
+          status: 'warning',
+          cpu: 82,
+          memory: 68,
+          disk: 66,
+          network: 41,
+          primaryRisk: 'cpu',
+        },
+        {
+          id: 'server-03',
+          name: 'server-03',
+          status: 'warning',
+          cpu: 78,
+          memory: 74,
+          disk: 55,
+          network: 45,
+          primaryRisk: 'cpu',
+        },
+        {
+          id: 'server-04',
+          name: 'server-04',
+          status: 'online',
+          cpu: 71,
+          memory: 65,
+          disk: 52,
+          network: 35,
+          primaryRisk: 'cpu',
+        },
+      ],
+      alerts: [
+        {
+          serverId: 'alert-01',
+          metric: 'cpu',
+          value: 91,
+          severity: 'critical',
+          summary: 'alert-01 CPU 91%',
+        },
+        {
+          serverId: 'alert-02',
+          metric: 'memory',
+          value: 88,
+          severity: 'warning',
+          summary: 'alert-02 MEMORY 88%',
+        },
+        {
+          serverId: 'alert-03',
+          metric: 'disk',
+          value: 81,
+          severity: 'warning',
+          summary: 'alert-03 DISK 81%',
+        },
+        {
+          serverId: 'alert-04',
+          metric: 'network',
+          value: 77,
+          severity: 'warning',
+          summary: 'alert-04 NETWORK 77%',
+        },
+      ],
+    } as ServerSnapshotArtifact;
+
+    render(<ServerSnapshotArtifactCard artifact={restoredArtifact} />);
+
+    expect(screen.getByText('기준 07:00 KST')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /server-01/i })).toBeVisible();
+    expect(screen.getByRole('link', { name: /server-03/i })).toBeVisible();
+    expect(
+      screen.queryByRole('link', { name: /server-04/i })
+    ).not.toBeInTheDocument();
+    expect(screen.getByText('alert-01 CPU 91%')).toBeInTheDocument();
+    expect(screen.getByText('alert-03 DISK 81%')).toBeInTheDocument();
+    expect(screen.queryByText('alert-04 NETWORK 77%')).not.toBeInTheDocument();
+  });
 });

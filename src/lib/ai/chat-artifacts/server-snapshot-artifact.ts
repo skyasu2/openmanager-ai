@@ -108,19 +108,33 @@ function buildAlerts(
     });
 }
 
-function readSlotTimeLabel(artifact: ServerSnapshotArtifact): string {
+function createAbortError(): Error {
+  const error = new Error('Server snapshot artifact generation aborted');
+  error.name = 'AbortError';
+  return error;
+}
+
+function throwIfAborted(signal?: AbortSignal): void {
+  if (signal?.aborted) {
+    throw createAbortError();
+  }
+}
+
+export function readServerSnapshotTimeLabel(
+  artifact: ServerSnapshotArtifact
+): string {
   return (
     artifact.slot?.timeLabel || artifact.queryAsOfDataSlot?.timeLabel || '현재'
   );
 }
 
-function readTopServers(
+export function readServerSnapshotTopServers(
   artifact: ServerSnapshotArtifact
 ): ServerSnapshotArtifact['topServers'] {
   return Array.isArray(artifact.topServers) ? artifact.topServers : [];
 }
 
-function readAlerts(
+export function readServerSnapshotAlerts(
   artifact: ServerSnapshotArtifact
 ): ServerSnapshotArtifact['alerts'] {
   return Array.isArray(artifact.alerts) ? artifact.alerts : [];
@@ -128,11 +142,17 @@ function readAlerts(
 
 export async function generateServerSnapshotArtifact({
   queryAsOfDataSlot,
+  signal,
 }: ChatArtifactRequest): Promise<ServerSnapshotArtifact> {
+  throwIfAborted(signal);
+
   const [servers, summary] = await Promise.all([
     metricsProvider.getAllServerMetrics(),
     metricsProvider.getSystemSummary(),
   ]);
+
+  throwIfAborted(signal);
+
   const slot = createSlot(summary, queryAsOfDataSlot);
 
   return {
@@ -164,8 +184,8 @@ export async function generateServerSnapshotArtifact({
 export function buildServerSnapshotMarkdown(
   artifact: ServerSnapshotArtifact
 ): string {
-  const topServerRows = readTopServers(artifact);
-  const alertRows = readAlerts(artifact);
+  const topServerRows = readServerSnapshotTopServers(artifact);
+  const alertRows = readServerSnapshotAlerts(artifact);
   const topServers = topServerRows.length
     ? topServerRows
         .map((server, index) => {
@@ -188,7 +208,7 @@ export function buildServerSnapshotMarkdown(
     `# ${artifact.title}`,
     '',
     `- 생성 시각: ${new Date(artifact.generatedAt).toLocaleString('ko-KR')}`,
-    `- 기준 시각: ${readSlotTimeLabel(artifact)}`,
+    `- 기준 시각: ${readServerSnapshotTimeLabel(artifact)}`,
     `- 총 서버: ${artifact.totals.total}대`,
     `- 정상: ${artifact.totals.online}대`,
     `- 주의: ${artifact.totals.warning}대`,

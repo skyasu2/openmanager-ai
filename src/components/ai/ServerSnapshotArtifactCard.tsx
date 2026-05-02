@@ -5,6 +5,9 @@ import Link from 'next/link';
 import {
   buildServerSnapshotJson,
   buildServerSnapshotMarkdown,
+  readServerSnapshotAlerts,
+  readServerSnapshotTimeLabel,
+  readServerSnapshotTopServers,
 } from '@/lib/ai/chat-artifacts/server-snapshot-artifact';
 import type { ServerSnapshotArtifact } from '@/lib/ai/chat-artifacts/types';
 
@@ -26,26 +29,6 @@ function downloadBlob({
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
-}
-
-function readTimeLabel(artifact: ServerSnapshotArtifact): string {
-  return (
-    artifact.slot?.timeLabel || artifact.queryAsOfDataSlot?.timeLabel || '현재'
-  );
-}
-
-function readTopServers(
-  artifact: ServerSnapshotArtifact
-): ServerSnapshotArtifact['topServers'] {
-  return Array.isArray(artifact.topServers)
-    ? artifact.topServers.slice(0, 3)
-    : [];
-}
-
-function readAlerts(
-  artifact: ServerSnapshotArtifact
-): ServerSnapshotArtifact['alerts'] {
-  return Array.isArray(artifact.alerts) ? artifact.alerts.slice(0, 3) : [];
 }
 
 function statusClass(
@@ -94,9 +77,9 @@ export function ServerSnapshotArtifactCard({
 }: {
   artifact: ServerSnapshotArtifact;
 }) {
-  const topServers = readTopServers(artifact);
-  const alerts = readAlerts(artifact);
-  const timeLabel = readTimeLabel(artifact);
+  const topServers = readServerSnapshotTopServers(artifact).slice(0, 3);
+  const alerts = readServerSnapshotAlerts(artifact).slice(0, 3);
+  const timeLabel = readServerSnapshotTimeLabel(artifact);
 
   return (
     <section className="mt-3 rounded-lg border border-slate-200 bg-white p-3 shadow-xs">
