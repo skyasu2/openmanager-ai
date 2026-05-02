@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.84](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.83...v8.11.84) (2026-05-02)
+
+
+### Features
+
+* **ai:** add server snapshot artifact data model ([47c328e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/47c328e5fe7d78c5761891e5f149a4bed3df84b0))
+* **ai:** classify server snapshot artifact intents ([f482ef1](https://gitlab.com/skyasu2/openmanager-ai/-/commit/f482ef1c6b3417c37c55273ff1cc466a580592e2))
+* **ai:** render server snapshot artifact card ([23aa65a](https://gitlab.com/skyasu2/openmanager-ai/-/commit/23aa65a064b07c354ec87cd9a93c5bcea7140671))
+* **ai:** wire server snapshot artifact into chat ([4bdff60](https://gitlab.com/skyasu2/openmanager-ai/-/commit/4bdff60fbcd24dcffcfe620e276e0295ff940b9f))
+
+
+### Bug Fixes
+
+* **ai:** harden server snapshot legacy downloads ([11f1826](https://gitlab.com/skyasu2/openmanager-ai/-/commit/11f18268c0aa6d2079fbe69a8be35e1f30817eff))
+
+
+### Tests
+
+* **ai:** improve artifact intent benchmark coverage ([5a508f9](https://gitlab.com/skyasu2/openmanager-ai/-/commit/5a508f9554d6c02958a150daf177f812f89c2cb7))
+* **spec:** server snapshot card contract ([9952689](https://gitlab.com/skyasu2/openmanager-ai/-/commit/99526893ed7ddb45ce3e384a19dcf32f293b27b1))
+* **spec:** server snapshot chat persistence contract ([cd2ee56](https://gitlab.com/skyasu2/openmanager-ai/-/commit/cd2ee5637ca4f2a231adacb8ba9898ba521ca496))
+* **spec:** server snapshot data contract ([e5d092d](https://gitlab.com/skyasu2/openmanager-ai/-/commit/e5d092d3f39e7e841621870feaf11de429a34c8b))
+* **spec:** server snapshot intent corpus contract ([7ef1026](https://gitlab.com/skyasu2/openmanager-ai/-/commit/7ef1026b04ea19ef2f266b132ffa46089386bde4))
+
 ## [8.11.83](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.82...v8.11.83) (2026-05-02)
 
 
