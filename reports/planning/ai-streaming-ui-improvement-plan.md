@@ -12,7 +12,7 @@
 
 진행 상태:
 - S1/S2: completed on 2026-05-03
-- S3: approved on 2026-05-03. Cloud Run stream event contract 변경이므로 failing test 커밋 후 구현한다.
+- S3: local implementation completed on 2026-05-03. Cloud Run runtime 반영에는 push/deploy와 targeted QA 기록이 남아 있다.
 
 현재 아키텍처 분석 결과:
 - 사이드바: SSE 기반 실제 스트리밍 (`useChat` + `DefaultChatTransport`) ✅
@@ -81,7 +81,7 @@
 - [x] `AIWorkspaceMessage.tsx`에 `TypewriterMarkdown` import가 0건임을 grep으로 검증
 - [x] 마지막 non-streaming assistant 메시지 렌더링 단위 테스트: TypewriterMarkdown이 아닌 MarkdownRenderer 사용 확인
 - [x] `estimatedWaitSeconds=3`일 때 카운트다운 UI가 렌더링되고 0 도달 시 "거의 다 됐습니다"로 전환되는 단위 테스트
-- [ ] `onData` 에서 `agent-step` 이벤트 수신 시 `InlineAgentStatus`가 업데이트되는 훅 테스트
+- [x] `onData` 에서 `agent-step` 이벤트 수신 시 `InlineAgentStatus`가 업데이트되는 훅 테스트
 - [ ] Playwright targeted QA: 전체 페이지 채팅에서 응답 토큰이 점진적으로 표시되는지 확인
 
 ## 6. Task 목록
@@ -90,17 +90,17 @@
 - [x] Task 1 — S1: AIWorkspaceMessage TypewriterMarkdown → MarkdownRenderer 전환
 - [x] Task 2 — S1: TypewriterMarkdown.tsx 사용처 grep 후 삭제 또는 deprecated 마킹
 - [x] Task 3 — S2: StreamingWarmupIndicator 카운트다운 progress bar 구현
-- [ ] Task 4 — S3: Cloud Run `agent-step` data event 전송 추가
-- [ ] Task 5 — S3: 프론트엔드 `onData` 핸들러에서 `agent-step` 이벤트 처리
-- [ ] Task 6 — `npm run validate:all` 통과 확인
+- [x] Task 4 — S3: Cloud Run `agent-step` data event 전송 추가
+- [x] Task 5 — S3: 프론트엔드 `onData` 핸들러에서 `agent-step` 이벤트 처리
+- [x] Task 6 — 로컬 deterministic validation 통과 확인 (`type-check`, `lint`, `test:quick`, `test:contract`, AI Engine `type-check`/`test`)
 - [ ] Task 7 — Playwright targeted QA + `npm run qa:record`
 - [ ] Task 8 — commit / push gitlab
 
 ## 7. 완료 기준
 
-- [ ] `npm run lint` 통과
-- [ ] `npm run type-check` 통과
-- [ ] 추가 단위 테스트 모두 통과
+- [x] `npm run lint` 통과
+- [x] `npm run type-check` 통과
+- [x] 추가 단위 테스트 모두 통과
 - [ ] 전체 페이지 채팅에서 실제 SSE 토큰 점진 렌더링 확인
 - [ ] 사이드바 스트리밍 동작 회귀 없음
 - [ ] Playwright targeted QA `releaseDecision=go`

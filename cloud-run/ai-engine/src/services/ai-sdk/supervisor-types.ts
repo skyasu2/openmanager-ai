@@ -274,14 +274,23 @@ export type StreamEventType =
   | 'step_finish'
   | 'handoff'
   | 'agent_status'
+  | 'agent_step'
   | 'warning'
   | 'done'
   | 'error';
 
-export interface StreamEvent {
+export type AgentStepStatus = 'start' | 'done';
+
+export type AgentStepEventData = {
+  tool: string;
+  status: AgentStepStatus;
+  message?: string;
+};
+
+export type StreamEvent = {
   type: StreamEventType;
   data: unknown;
-}
+};
 
 export interface SupervisorHealth {
   status: 'ok' | 'degraded' | 'error';

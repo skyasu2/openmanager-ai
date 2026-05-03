@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-03 KST (`Streaming UI S3 approved`)
+**Last Updated**: 2026-05-03 KST (`Streaming UI S3 local implementation validated; release QA/push pending`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| AI Streaming UI 개선 S3 (`agent-step` stream event) | Medium | Approved | [ai-streaming-ui-improvement-plan.md](ai-streaming-ui-improvement-plan.md) — S1/S2는 구현 완료. S3는 Cloud Run `data` event + frontend `onData` contract 변경이므로 실패 테스트부터 진행 |
+| AI Streaming UI 개선 S3 release QA/push | Medium | Pending | [ai-streaming-ui-improvement-plan.md](ai-streaming-ui-improvement-plan.md) — S3 로컬 구현과 deterministic 검증은 완료. 남은 범위는 GitLab push/deploy 판단, 실환경 targeted QA 기록 |
 
 ---
 
@@ -41,6 +41,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-03 #276)
+- [x] AI Streaming UI 개선 S3 local implementation
+  - Cloud Run single-agent stream이 AI SDK `fullStream`의 `tool-call` / `tool-result`를 읽어 `agent_step` start/done event를 조기 방출하도록 추가
+  - UIMessageStream response 변환에서 `agent_step`을 `data-agent-step`으로 매핑해 underscore event drift를 제거
+  - 프론트 `onData` 처리에서 `data-agent-step`을 `InlineAgentStatus`용 `processing` / `completed` 상태로 정규화
+  - S3는 Cloud Run runtime 변경이므로 실제 사용 반영에는 GitLab push/deploy와 targeted QA 기록이 추가로 필요
 
 ### Completed (2026-05-03 #275)
 - [x] AI Streaming UI 개선 S1/S2

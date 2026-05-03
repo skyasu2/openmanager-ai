@@ -1,15 +1,16 @@
 import type { UIMessage } from '@ai-sdk/react';
-import type {
-  AgentStatusEventData,
-  HandoffEventData,
-  StreamDataPart,
-} from '@/hooks/ai/useHybridAIQuery';
 import {
   normalizeAssistantPlan,
   normalizeAssistantResult,
 } from '@/lib/ai/assistant-contract';
 import { normalizeRouteDecision } from '@/lib/ai/route-decision';
 import { logger } from '@/lib/logging';
+import type {
+  AgentStatusEventData,
+  AgentStepEventData,
+  HandoffEventData,
+  StreamDataPart,
+} from '../types/hybrid-query.types';
 import type { StreamRagSource } from '../types/stream-rag.types';
 import {
   buildStructuredResponseView,
@@ -29,6 +30,7 @@ const VALID_AGENT_STATUSES = new Set([
   'completed',
   'idle',
 ]);
+const VALID_AGENT_STEP_STATUSES = new Set(['start', 'done']);
 
 const LEGACY_AGENT_STATUS_FALLBACKS: Record<
   string,
@@ -228,6 +230,38 @@ function normalizeAgentStatusEventData(
   };
 }
 
+function isAgentStepEventData(value: unknown): value is AgentStepEventData {
+  return (
+    isRecord(value) &&
+    typeof value.tool === 'string' &&
+    value.tool.trim().length > 0 &&
+    typeof value.status === 'string' &&
+    VALID_AGENT_STEP_STATUSES.has(value.status)
+  );
+}
+
+function normalizeAgentStepEventData(
+  value: unknown
+): AgentStatusEventData | null {
+  if (!isAgentStepEventData(value)) {
+    return null;
+  }
+
+  const tool = value.tool.trim();
+  const message =
+    typeof value.message === 'string' && value.message.trim().length > 0
+      ? value.message.trim()
+      : value.status === 'start'
+        ? `${tool} 실행 중...`
+        : `${tool} 완료`;
+
+  return {
+    agent: tool,
+    status: value.status === 'start' ? 'processing' : 'completed',
+    message,
+  };
+}
+
 function _createSyntheticToolParts(
   toolResults: PendingStreamToolResult[]
 ): SyntheticToolPart[] {
@@ -248,6 +282,22 @@ export function handleStreamDataPart(
   if (partType === 'data-start') {
     callbacks.setPendingToolResults([]);
     callbacks.setPendingMessageMetadata({});
+  } else if (partType === 'data-agent-step' && dataPart.data) {
+    const agentStatus = normalizeAgentStepEventData(dataPart.data);
+    if (!agentStatus) {
+      if (process.env.NODE_ENV === 'development') {
+        logger.warn('⚠️ [Agent Step] Invalid event payload ignored', {
+          data: dataPart.data,
+        });
+      }
+      return;
+    }
+    callbacks.setCurrentAgentStatus(agentStatus);
+    if (process.env.NODE_ENV === 'development') {
+      logger.info(
+        `🤖 [Agent Step] ${agentStatus.agent}: ${agentStatus.status}`
+      );
+    }
   } else if (partType === 'data-agent-status' && dataPart.data) {
     const agentStatus = normalizeAgentStatusEventData(dataPart.data);
     if (!agentStatus) {

@@ -53,7 +53,11 @@ import {
   getLastUserQueryText,
 } from './supervisor-stream-messages';
 import { createStructuredTextDeltaGuard } from './supervisor-stream-text-guard';
-import type { StreamEvent, SupervisorRequest } from './supervisor-types';
+import type {
+  AgentStepStatus,
+  StreamEvent,
+  SupervisorRequest,
+} from './supervisor-types';
 
 const PROVIDER_FALLBACK_BASE_DELAY_MS = 150;
 const PROVIDER_FALLBACK_JITTER_MS = 250;
@@ -90,6 +94,56 @@ function estimateSupervisorStreamQuotaTokens(
     0
   );
   return Math.ceil(inputChars / APPROX_CHARS_PER_TOKEN) + maxOutputTokens;
+}
+
+type TextDeltaStreamPart = {
+  type: 'text-delta';
+  text: string;
+};
+
+type SupervisorFullStreamPart = {
+  type: string;
+  text?: unknown;
+  toolName?: unknown;
+  toolCallId?: unknown;
+  error?: unknown;
+};
+
+async function* textStreamAsFullStream(
+  textStream: AsyncIterable<string>
+): AsyncGenerator<TextDeltaStreamPart> {
+  for await (const text of textStream) {
+    yield { type: 'text-delta', text };
+  }
+}
+
+function readNonEmptyString(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+function readToolStep(
+  streamPart: SupervisorFullStreamPart
+): { key: string; tool: string } | null {
+  const tool = readNonEmptyString(streamPart.toolName);
+  if (!tool) return null;
+
+  const toolCallId = readNonEmptyString(streamPart.toolCallId);
+  return {
+    key: toolCallId ? `${toolCallId}:${tool}` : tool,
+    tool,
+  };
+}
+
+function buildAgentStepEvent(
+  tool: string,
+  status: AgentStepStatus
+): StreamEvent {
+  return {
+    type: 'agent_step',
+    data: { tool, status },
+  };
 }
 
 async function waitBeforeProviderFallback(
@@ -548,16 +602,21 @@ async function* streamSingleAgent(
         fullText += text;
         yield { type: 'text_delta', data: text };
       };
+      const markFirstStreamOutput = () => {
+        if (firstChunkMs !== null) return;
+        firstChunkMs = Date.now() - providerStartTime;
+        logger.info(
+          `[SupervisorStream] TTFB: ${firstChunkMs}ms (${provider}/${modelId})`
+        );
+      };
 
-      for await (const textPart of result.textStream) {
+      const startedAgentSteps = new Set<string>();
+      const completedAgentSteps = new Set<string>();
+      const streamParts =
+        result.fullStream ?? textStreamAsFullStream(result.textStream);
+
+      for await (const streamPart of streamParts) {
         const elapsed = Date.now() - startTime;
-
-        if (firstChunkMs === null) {
-          firstChunkMs = Date.now() - providerStartTime;
-          logger.info(
-            `[SupervisorStream] TTFB: ${firstChunkMs}ms (${provider}/${modelId})`
-          );
-        }
 
         if (!warningEmitted && elapsed >= TIMEOUT_WARNING_THRESHOLD) {
           warningEmitted = true;
@@ -603,12 +662,40 @@ async function* streamSingleAgent(
           return;
         }
 
-        for (const displayText of textDeltaGuard.push(textPart)) {
-          yield* emitDisplayText(displayText);
+        if (streamPart.type === 'text-delta') {
+          const text = typeof streamPart.text === 'string' ? streamPart.text : '';
+          for (const displayText of textDeltaGuard.push(text)) {
+            markFirstStreamOutput();
+            yield* emitDisplayText(displayText);
+          }
+        } else if (streamPart.type === 'tool-call') {
+          const toolStep = readToolStep(streamPart);
+          if (toolStep && !startedAgentSteps.has(toolStep.key)) {
+            startedAgentSteps.add(toolStep.key);
+            markFirstStreamOutput();
+            yield buildAgentStepEvent(toolStep.tool, 'start');
+          }
+        } else if (
+          streamPart.type === 'tool-result' ||
+          streamPart.type === 'tool-error' ||
+          streamPart.type === 'tool-output-denied'
+        ) {
+          const toolStep = readToolStep(streamPart);
+          if (toolStep && !completedAgentSteps.has(toolStep.key)) {
+            completedAgentSteps.add(toolStep.key);
+            markFirstStreamOutput();
+            yield buildAgentStepEvent(toolStep.tool, 'done');
+          }
+        } else if (streamPart.type === 'error') {
+          streamError =
+            streamPart.error instanceof Error
+              ? streamPart.error
+              : new Error(String(streamPart.error ?? 'stream error'));
         }
       }
 
       for (const displayText of textDeltaGuard.flush()) {
+        markFirstStreamOutput();
         yield* emitDisplayText(displayText);
       }
 

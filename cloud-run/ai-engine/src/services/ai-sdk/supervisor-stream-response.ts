@@ -290,6 +290,13 @@ export function createSupervisorStreamResponse(
               });
               break;
 
+            case 'agent_step':
+              writer.write({
+                type: 'data-agent-step',
+                data: event.data as object,
+              });
+              break;
+
             case 'done':
               if (textPartStarted) {
                 writer.write({

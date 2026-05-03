@@ -50,6 +50,8 @@ import { generateMessageId } from './utils/hybrid-query-utils';
 export type {
   AgentStatus,
   AgentStatusEventData,
+  AgentStepEventData,
+  AgentStepStatus,
   AIStreamStatus,
   ClarificationOption,
   ClarificationRequest,
