@@ -69,6 +69,52 @@ function createMessage(params: {
       ruleVersion: string;
       decidedBy: 'frontend' | 'bff' | 'cloud-run';
     };
+    assistantPlan?: {
+      kind: 'chat' | 'artifact' | 'clarification';
+      planVersion: string;
+      routeDecision: {
+        intent: 'chat' | 'artifact' | 'job' | 'clarification';
+        executionPath: 'stream' | 'job' | 'client-artifact';
+        mode?: 'single' | 'multi';
+        artifactKind?:
+          | 'server-snapshot'
+          | 'incident-report'
+          | 'monitoring-analysis';
+        reasonCodes: string[];
+        ruleVersion: string;
+        decidedBy: 'frontend' | 'bff' | 'cloud-run';
+      };
+      executionPath: 'stream' | 'job' | 'client-artifact';
+      stream: boolean;
+      job: boolean;
+      artifactKind?:
+        | 'server-snapshot'
+        | 'incident-report'
+        | 'monitoring-analysis';
+      reasonCodes: string[];
+      decidedBy: 'frontend' | 'bff' | 'cloud-run';
+    };
+    assistantResult?: {
+      kind: 'chat' | 'artifact' | 'error';
+      resultVersion: string;
+      routeDecision?: {
+        intent: 'chat' | 'artifact' | 'job' | 'clarification';
+        executionPath: 'stream' | 'job' | 'client-artifact';
+        mode?: 'single' | 'multi';
+        artifactKind?:
+          | 'server-snapshot'
+          | 'incident-report'
+          | 'monitoring-analysis';
+        reasonCodes: string[];
+        ruleVersion: string;
+        decidedBy: 'frontend' | 'bff' | 'cloud-run';
+      };
+      status: 'completed' | 'failed' | 'partial';
+      artifactKind?:
+        | 'server-snapshot'
+        | 'incident-report'
+        | 'monitoring-analysis';
+    };
     toolResultSummaries?: Array<{
       toolName: string;
       label: string;
@@ -147,6 +193,50 @@ describe('transformMessages', () => {
     expect(
       messages.find((m) => m.id === 'a1')?.metadata?.routeDecision
     ).toEqual(routeDecision);
+  });
+
+  it('preserves AssistantPlan and AssistantResult facade metadata for assistant messages', () => {
+    const routeDecision = {
+      intent: 'chat' as const,
+      executionPath: 'stream' as const,
+      mode: 'single' as const,
+      reasonCodes: ['auto_complexity'],
+      ruleVersion: '2026-05-03-v1',
+      decidedBy: 'cloud-run' as const,
+    };
+    const assistantPlan = {
+      kind: 'chat' as const,
+      planVersion: '2026-05-03-v1',
+      routeDecision,
+      executionPath: 'stream' as const,
+      stream: true,
+      job: false,
+      reasonCodes: ['auto_complexity'],
+      decidedBy: 'cloud-run' as const,
+    };
+    const assistantResult = {
+      kind: 'chat' as const,
+      resultVersion: '2026-05-03-v1',
+      routeDecision,
+      status: 'completed' as const,
+    };
+
+    const messages = transformMessages(
+      [
+        createMessage({ id: 'u1', role: 'user', text: 'CPU 알려줘' }),
+        createMessage({
+          id: 'a1',
+          role: 'assistant',
+          text: 'CPU는 정상입니다.',
+          metadata: { routeDecision, assistantPlan, assistantResult },
+        }),
+      ],
+      { isLoading: false, currentMode: 'streaming' }
+    );
+
+    const metadata = messages.find((m) => m.id === 'a1')?.metadata;
+    expect(metadata?.assistantPlan).toEqual(assistantPlan);
+    expect(metadata?.assistantResult).toEqual(assistantResult);
   });
 
   it('uses streamRagSources fallback for the last assistant message', () => {

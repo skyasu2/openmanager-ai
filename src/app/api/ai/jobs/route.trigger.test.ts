@@ -147,6 +147,7 @@ describe('POST /api/ai/jobs trigger readiness', () => {
     const response = await POST(request);
     const body = (await response.json()) as {
       routeDecision?: Record<string, unknown>;
+      assistantPlan?: Record<string, unknown>;
     };
 
     expect(response.status).toBe(201);
@@ -156,6 +157,18 @@ describe('POST /api/ai/jobs trigger readiness', () => {
       complexity: 'complex',
       reasonCodes: ['job_queue_api'],
       decidedBy: 'bff',
+    });
+    expect(body.assistantPlan).toMatchObject({
+      kind: 'chat',
+      executionPath: 'job',
+      stream: false,
+      job: true,
+      reasonCodes: ['job_queue_api'],
+      decidedBy: 'bff',
+      routeDecision: expect.objectContaining({
+        intent: 'job',
+        executionPath: 'job',
+      }),
     });
 
     const savedJob = mockRedisSet.mock.calls.find(
@@ -173,6 +186,18 @@ describe('POST /api/ai/jobs trigger readiness', () => {
       complexity: 'complex',
       reasonCodes: ['job_queue_api'],
       decidedBy: 'bff',
+    });
+    expect(savedJob?.metadata?.assistantPlan).toMatchObject({
+      kind: 'chat',
+      executionPath: 'job',
+      stream: false,
+      job: true,
+      reasonCodes: ['job_queue_api'],
+      decidedBy: 'bff',
+      routeDecision: expect.objectContaining({
+        intent: 'job',
+        executionPath: 'job',
+      }),
     });
   });
 

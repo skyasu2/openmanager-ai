@@ -229,6 +229,75 @@ describe('useChatHistory', () => {
     });
   });
 
+  it('restores AssistantPlan and AssistantResult facade metadata', () => {
+    const routeDecision = {
+      intent: 'job',
+      executionPath: 'job',
+      complexity: 'complex',
+      reasonCodes: ['job_queue_api'],
+      ruleVersion: '2026-05-03-v1',
+      decidedBy: 'bff',
+    };
+    const assistantPlan = {
+      kind: 'chat',
+      planVersion: '2026-05-03-v1',
+      routeDecision,
+      executionPath: 'job',
+      stream: false,
+      job: true,
+      reasonCodes: ['job_queue_api'],
+      decidedBy: 'bff',
+    };
+    const assistantResult = {
+      kind: 'chat',
+      resultVersion: '2026-05-03-v1',
+      routeDecision,
+      status: 'completed',
+    };
+    localStorage.setItem(
+      CHAT_HISTORY_KEY,
+      JSON.stringify({
+        sessionId: 'session-plan-result',
+        messages: [
+          {
+            id: 'assistant-1',
+            role: 'assistant',
+            content: '작업 큐로 처리했습니다.',
+            timestamp: '2026-05-03T10:00:05.000Z',
+            metadata: {
+              routeDecision,
+              assistantPlan,
+              assistantResult,
+            },
+          },
+        ],
+        lastUpdated: new Date().toISOString(),
+      })
+    );
+
+    const setMessages = vi.fn();
+    const onMetadataRestore = vi.fn();
+
+    renderHook(() =>
+      useChatHistory({
+        sessionId: 'session-current',
+        isMessagesEmpty: true,
+        enhancedMessages: [],
+        setMessages,
+        isLoading: false,
+        onMetadataRestore,
+      })
+    );
+
+    expect(onMetadataRestore).toHaveBeenCalledWith({
+      'assistant-1': {
+        routeDecision,
+        assistantPlan,
+        assistantResult,
+      },
+    });
+  });
+
   it('prefers richer seed messages from sidebar snapshot over local history', () => {
     localStorage.setItem(
       CHAT_HISTORY_KEY,

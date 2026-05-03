@@ -73,4 +73,42 @@ describe('sanitizeJobMetadataForClient', () => {
       decidedBy: 'bff',
     });
   });
+
+  it('keeps normalized AssistantPlan and AssistantResult facade metadata for client diagnostics', () => {
+    const routeDecision = {
+      intent: 'job',
+      executionPath: 'job',
+      complexity: 'complex',
+      reasonCodes: ['job_queue_api'],
+      ruleVersion: '2026-05-03-v1',
+      decidedBy: 'bff',
+    };
+    const assistantPlan = {
+      kind: 'chat',
+      planVersion: '2026-05-03-v1',
+      routeDecision,
+      executionPath: 'job',
+      stream: false,
+      job: true,
+      reasonCodes: ['job_queue_api'],
+      decidedBy: 'bff',
+    };
+    const assistantResult = {
+      kind: 'chat',
+      resultVersion: '2026-05-03-v1',
+      routeDecision,
+      status: 'completed',
+    };
+    const metadata = sanitizeJobMetadataForClient({
+      routeDecision,
+      assistantPlan,
+      assistantResult,
+    });
+
+    expect(metadata).toMatchObject({
+      routeDecision,
+      assistantPlan,
+      assistantResult,
+    });
+  });
 });

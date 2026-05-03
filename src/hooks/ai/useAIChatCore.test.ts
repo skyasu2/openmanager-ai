@@ -637,6 +637,30 @@ describe('useAIChatCore', () => {
       reasonCodes: ['incident_report_action_pattern'],
       decidedBy: 'frontend',
     });
+    expect(result.current.messages[1]?.metadata?.assistantPlan).toMatchObject({
+      kind: 'artifact',
+      executionPath: 'client-artifact',
+      stream: false,
+      job: false,
+      artifactKind: 'incident-report',
+      reasonCodes: ['incident_report_action_pattern'],
+      decidedBy: 'frontend',
+      routeDecision: expect.objectContaining({
+        intent: 'artifact',
+        artifactKind: 'incident-report',
+      }),
+    });
+    expect(result.current.messages[1]?.metadata?.assistantResult).toMatchObject(
+      {
+        kind: 'artifact',
+        status: 'completed',
+        artifactKind: 'incident-report',
+        routeDecision: expect.objectContaining({
+          intent: 'artifact',
+          artifactKind: 'incident-report',
+        }),
+      }
+    );
     expect(
       result.current.messages[1]?.metadata?.incidentReportArtifact?.report.title
     ).toBe('스토리지 디스크 포화 경고');
@@ -851,6 +875,22 @@ describe('useAIChatCore', () => {
     expect(result.current.messages[1]?.metadata?.artifactIntentReason).toBe(
       'monitoring_action_pattern'
     );
+    expect(result.current.messages[1]?.metadata?.assistantPlan).toMatchObject({
+      kind: 'artifact',
+      executionPath: 'client-artifact',
+      stream: false,
+      job: false,
+      artifactKind: 'monitoring-analysis',
+      reasonCodes: ['monitoring_action_pattern'],
+      decidedBy: 'frontend',
+    });
+    expect(result.current.messages[1]?.metadata?.assistantResult).toMatchObject(
+      {
+        kind: 'artifact',
+        status: 'completed',
+        artifactKind: 'monitoring-analysis',
+      }
+    );
     expect(
       result.current.messages[1]?.metadata?.monitoringAnalysisArtifact
         ?.riskSignalCount
@@ -928,6 +968,31 @@ describe('useAIChatCore', () => {
       decidedBy: 'frontend',
       dataSlot: '07:00 KST',
     });
+    expect(result.current.messages[1]?.metadata?.assistantPlan).toMatchObject({
+      kind: 'artifact',
+      executionPath: 'client-artifact',
+      stream: false,
+      job: false,
+      artifactKind: 'server-snapshot',
+      reasonCodes: ['server_snapshot_implicit_artifact_keyword'],
+      dataSlot: '07:00 KST',
+      decidedBy: 'frontend',
+      routeDecision: expect.objectContaining({
+        intent: 'artifact',
+        artifactKind: 'server-snapshot',
+      }),
+    });
+    expect(result.current.messages[1]?.metadata?.assistantResult).toMatchObject(
+      {
+        kind: 'artifact',
+        status: 'completed',
+        artifactKind: 'server-snapshot',
+        routeDecision: expect.objectContaining({
+          intent: 'artifact',
+          artifactKind: 'server-snapshot',
+        }),
+      }
+    );
     expect(
       result.current.messages[1]?.metadata?.serverSnapshotArtifact?.totals.total
     ).toBe(4);

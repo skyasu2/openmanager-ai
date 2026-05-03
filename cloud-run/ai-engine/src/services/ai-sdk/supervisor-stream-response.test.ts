@@ -8,6 +8,8 @@ const {
   mockResolveSupervisorModeDecision,
   mockBuildSupervisorModeMetadata,
   mockBuildSupervisorRouteDecision,
+  mockBuildSupervisorAssistantPlan,
+  mockBuildSupervisorAssistantResult,
   mockFlushLangfuseBestEffort,
 } = vi.hoisted(() => ({
   mockCreateUIMessageStream: vi.fn((config: unknown) => config),
@@ -36,6 +38,22 @@ const {
     ruleVersion: '2026-05-03-v1',
     decidedBy: 'cloud-run',
   })),
+  mockBuildSupervisorAssistantPlan: vi.fn((routeDecision: Record<string, unknown>) => ({
+    kind: 'chat',
+    planVersion: '2026-05-03-v1',
+    routeDecision,
+    executionPath: 'stream',
+    stream: true,
+    job: false,
+    reasonCodes: routeDecision.reasonCodes,
+    decidedBy: 'cloud-run',
+  })),
+  mockBuildSupervisorAssistantResult: vi.fn((routeDecision: Record<string, unknown>) => ({
+    kind: 'chat',
+    resultVersion: '2026-05-03-v1',
+    routeDecision,
+    status: 'completed',
+  })),
   mockFlushLangfuseBestEffort: vi.fn(async () => undefined),
 }));
 
@@ -53,6 +71,8 @@ vi.mock('./supervisor-mode', () => ({
   resolveSupervisorModeDecision: mockResolveSupervisorModeDecision,
   buildSupervisorModeMetadata: mockBuildSupervisorModeMetadata,
   buildSupervisorRouteDecision: mockBuildSupervisorRouteDecision,
+  buildSupervisorAssistantPlan: mockBuildSupervisorAssistantPlan,
+  buildSupervisorAssistantResult: mockBuildSupervisorAssistantResult,
 }));
 
 vi.mock('../../lib/error-handler', () => ({
@@ -138,6 +158,13 @@ describe('createSupervisorStreamResponse', () => {
         resolvedMode: 'single',
         modeSelectionSource: 'auto_complexity',
         autoSelectedByComplexity: 'single',
+        assistantPlan: expect.objectContaining({
+          kind: 'chat',
+          executionPath: 'stream',
+          stream: true,
+          job: false,
+          decidedBy: 'cloud-run',
+        }),
         }),
       }),
     );
@@ -160,6 +187,21 @@ describe('createSupervisorStreamResponse', () => {
               ruleVersion: '2026-05-03-v1',
               decidedBy: 'cloud-run',
             },
+            assistantPlan: expect.objectContaining({
+              kind: 'chat',
+              executionPath: 'stream',
+              stream: true,
+              job: false,
+              decidedBy: 'cloud-run',
+            }),
+            assistantResult: expect.objectContaining({
+              kind: 'chat',
+              status: 'completed',
+              routeDecision: expect.objectContaining({
+                intent: 'chat',
+                executionPath: 'stream',
+              }),
+            }),
           }),
         }),
       }),

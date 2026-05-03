@@ -252,6 +252,56 @@ describe('chat-history-storage', () => {
       });
     });
 
+    it('persists AssistantPlan and AssistantResult facade metadata for assistant messages', () => {
+      const routeDecision = {
+        intent: 'job',
+        executionPath: 'job',
+        complexity: 'complex',
+        reasonCodes: ['job_queue_api'],
+        ruleVersion: '2026-05-03-v1',
+        decidedBy: 'bff',
+      };
+      const assistantPlan = {
+        kind: 'chat',
+        planVersion: '2026-05-03-v1',
+        routeDecision,
+        executionPath: 'job',
+        stream: false,
+        job: true,
+        reasonCodes: ['job_queue_api'],
+        decidedBy: 'bff',
+      };
+      const assistantResult = {
+        kind: 'chat',
+        resultVersion: '2026-05-03-v1',
+        routeDecision,
+        status: 'completed',
+      };
+      const messages = [
+        {
+          ...makeMessage({
+            id: 'assistant-plan-result',
+            role: 'assistant',
+            content: '분석 작업을 완료했습니다.',
+          }),
+          metadata: {
+            routeDecision,
+            assistantPlan,
+            assistantResult,
+          },
+        },
+      ];
+
+      saveChatHistory('s-plan-result', messages as never[]);
+
+      const stored = JSON.parse(localStorage.getItem(CHAT_HISTORY_KEY)!);
+      expect(stored.messages[0].metadata).toEqual({
+        routeDecision,
+        assistantPlan,
+        assistantResult,
+      });
+    });
+
     it('persists artifact metadata for assistant messages', () => {
       const messages = [
         {

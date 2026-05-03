@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-03 KST (`AI Assistant routeDecision metadata M1 completed`)
+**Last Updated**: 2026-05-03 KST (`AI Assistant AssistantPlan/AssistantResult facade M2 active`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| — | — | — | 현재 계획서 기준 잔여 active task 없음 |
+| AI Assistant AssistantPlan/AssistantResult facade M2 | High | Approved | [plan](ai-assistant-plan-result-facade-plan.md) - 기존 라우팅 동작을 바꾸지 않고 `routeDecision`을 read-only plan/result facade로 확장 |
 
 ---
 
@@ -46,9 +46,8 @@
 - [x] AI Assistant routeDecision metadata M1
   - `RouteDecision` read-only contract를 frontend streaming/job/artifact metadata, BFF job metadata, Cloud Run supervisor stream metadata에 연결
   - chat history/message restore, async SSE, stream done metadata에서 routeDecision을 normalize/persist하도록 보강
-  - UI health polling은 `soft=true` 계약으로 전환해 expected degraded 상태가 브라우저 503 콘솔 에러로 보이지 않게 정리
   - AssistantPlan/AssistantResult facade와 routing authority 이전은 다음 단계로 남기고, 기존 라우팅 동작은 변경하지 않음
-  - 검증: root `type-check`, `lint`, `test:quick`, `test:contract`, AI Engine `type-check`, AI Engine `test`, `docs:components:verify`, local Playwright MCP QA `QA-20260503-0396`
+  - 검증: root targeted routeDecision suite `100/100`, AI Engine targeted `1/1`, root `type-check`, `lint`, `test:quick`, `test:contract`, AI Engine `type-check`, AI Engine `test`, `docs:budget`, `docs:ai-consistency`, `git diff --check`
 
 ### Completed (2026-05-03 #262)
 - [x] Artifact/AI response regression hardening follow-up

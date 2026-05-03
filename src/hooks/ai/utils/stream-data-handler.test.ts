@@ -400,6 +400,54 @@ describe('handleStreamDataPart', () => {
       );
     });
 
+    it('should persist AssistantPlan and AssistantResult facade metadata from stream done events', () => {
+      const routeDecision = {
+        intent: 'chat',
+        executionPath: 'stream',
+        mode: 'single',
+        reasonCodes: ['auto_complexity'],
+        ruleVersion: '2026-05-03-v1',
+        decidedBy: 'cloud-run',
+      };
+      const assistantPlan = {
+        kind: 'chat',
+        planVersion: '2026-05-03-v1',
+        routeDecision,
+        executionPath: 'stream',
+        stream: true,
+        job: false,
+        reasonCodes: ['auto_complexity'],
+        decidedBy: 'cloud-run',
+      };
+      const assistantResult = {
+        kind: 'chat',
+        resultVersion: '2026-05-03-v1',
+        routeDecision,
+        status: 'completed',
+      };
+      const part: StreamDataPart = {
+        type: 'data-done',
+        data: {
+          metadata: {
+            routeDecision,
+            assistantPlan,
+            assistantResult,
+          },
+        },
+      };
+
+      handleStreamDataPart(part, callbacks);
+
+      expect(callbacks.setDeferredAssistantMetadata).toHaveBeenCalledWith(
+        'msg-2',
+        expect.objectContaining({
+          routeDecision,
+          assistantPlan,
+          assistantResult,
+        })
+      );
+    });
+
     it('should preserve both traceId and structuredView when both are present', () => {
       const part: StreamDataPart = {
         type: 'data-done',

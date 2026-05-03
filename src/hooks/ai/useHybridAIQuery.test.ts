@@ -330,6 +330,31 @@ describe('buildAssistantMessageFromAsyncResult', () => {
   });
 
   it('includes runtime metadata for operator-facing UI', () => {
+    const routeDecision = {
+      intent: 'job' as const,
+      executionPath: 'job' as const,
+      mode: 'multi' as const,
+      complexity: 'complex' as const,
+      reasonCodes: ['job_queue_api'],
+      ruleVersion: '2026-05-03-v1',
+      decidedBy: 'cloud-run' as const,
+    };
+    const assistantPlan = {
+      kind: 'chat' as const,
+      planVersion: '2026-05-03-v1',
+      routeDecision,
+      executionPath: 'job' as const,
+      stream: false,
+      job: true,
+      reasonCodes: ['job_queue_api'],
+      decidedBy: 'cloud-run' as const,
+    };
+    const assistantResult = {
+      kind: 'chat' as const,
+      resultVersion: '2026-05-03-v1',
+      routeDecision,
+      status: 'completed' as const,
+    };
     const result: AsyncQueryResult = {
       success: true,
       response: '분석 완료',
@@ -342,6 +367,9 @@ describe('buildAssistantMessageFromAsyncResult', () => {
       usedFallback: true,
       fallbackReason: 'empty_response',
       ttfbMs: 1520,
+      routeDecision,
+      assistantPlan,
+      assistantResult,
       providerAttempts: [
         {
           provider: 'cerebras',
@@ -374,6 +402,9 @@ describe('buildAssistantMessageFromAsyncResult', () => {
       usedFallback: true,
       fallbackReason: 'empty_response',
       ttfbMs: 1520,
+      routeDecision,
+      assistantPlan,
+      assistantResult,
       providerAttempts: [
         {
           provider: 'cerebras',
