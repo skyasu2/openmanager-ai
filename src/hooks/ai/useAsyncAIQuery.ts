@@ -148,7 +148,6 @@ export interface AsyncQueryRequestOptions {
   enableRAG?: boolean;
   enableWebSearch?: boolean;
   queryAsOfDataSlot?: JobDataSlot;
-  localRouteDecision?: RouteDecision;
 }
 
 // ============================================================================

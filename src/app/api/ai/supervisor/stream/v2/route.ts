@@ -83,6 +83,12 @@ function isResumableStreamsEnabled(): boolean {
   return process.env.AI_RESUMABLE_STREAMS_ENABLED === 'true';
 }
 
+function normalizeFrontendLocalRouteDecision(value: unknown) {
+  const decision = normalizeRouteDecision(value);
+  if (!decision) return undefined;
+  return decision.decidedBy === 'frontend' ? decision : undefined;
+}
+
 // ============================================================================
 // 🔁 GET - Resume Stream (Upstash-compatible polling)
 // ============================================================================
@@ -234,7 +240,9 @@ export const POST = withRateLimit(
         new Date().toISOString(),
         queryAsOfDataSlot
       );
-      const localRouteDecision = normalizeRouteDecision(rawLocalRouteDecision);
+      const localRouteDecision = normalizeFrontendLocalRouteDecision(
+        rawLocalRouteDecision
+      );
       if (rawLocalRouteDecision !== undefined && !localRouteDecision) {
         logger.warn(
           '[SupervisorStreamV2] Ignoring invalid localRouteDecision payload'

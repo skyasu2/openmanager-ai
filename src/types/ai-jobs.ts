@@ -62,7 +62,6 @@ export interface CreateJobRequest {
       enableRAG?: boolean;
       enableWebSearch?: boolean;
       queryAsOfDataSlot?: JobDataSlot;
-      localRouteDecision?: RouteDecision;
     };
   };
 }

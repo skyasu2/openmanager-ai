@@ -445,9 +445,6 @@ export function useHybridAIQuery(
             ...(queryAsOfDataSlotRef.current && {
               queryAsOfDataSlot: queryAsOfDataSlotRef.current,
             }),
-            ...(currentRouteDecisionRef.current && {
-              localRouteDecision: currentRouteDecisionRef.current,
-            }),
             ...buildSourceToolRequestOptions({
               webSearchEnabled: webSearchEnabledRef.current,
               ragEnabled: ragEnabledRef.current,

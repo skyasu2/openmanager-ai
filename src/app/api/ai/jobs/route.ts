@@ -17,7 +17,6 @@ import { buildAssistantPlanFromRouteDecision } from '@/lib/ai/assistant-contract
 import { buildJobQueryAsOf } from '@/lib/ai/query-as-of';
 import {
   buildRouteDecision,
-  normalizeRouteDecision,
   type RouteDecision,
   type RouteDecisionComplexity,
 } from '@/lib/ai/route-decision';
@@ -99,12 +98,6 @@ function extractJobToolOptions(metadata?: JobRequestMetadata): JobToolOptions {
   const analysisMode = metadata?.analysisMode;
   const enableRAG = metadata?.enableRAG;
   const enableWebSearch = metadata?.enableWebSearch;
-  const localRouteDecision = normalizeRouteDecision(
-    metadata?.localRouteDecision
-  );
-  if (metadata?.localRouteDecision !== undefined && !localRouteDecision) {
-    logger.warn('[AI Jobs] Ignoring invalid localRouteDecision metadata');
-  }
 
   return {
     ...(isAnalysisMode(analysisMode) && {
@@ -116,7 +109,6 @@ function extractJobToolOptions(metadata?: JobRequestMetadata): JobToolOptions {
     ...(typeof enableWebSearch === 'boolean' && {
       enableWebSearch,
     }),
-    ...(localRouteDecision && { localRouteDecision }),
   };
 }
 
@@ -174,7 +166,7 @@ async function handlePOST(request: NextRequest) {
     const assistantPlan = buildAssistantPlanFromRouteDecision(routeDecision);
     const workerToolOptions: JobToolOptions = {
       ...toolOptions,
-      localRouteDecision: toolOptions.localRouteDecision ?? routeDecision,
+      localRouteDecision: routeDecision,
     };
 
     // Redis에 Job 저장

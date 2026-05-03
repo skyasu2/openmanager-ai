@@ -620,6 +620,39 @@ describe('Supervisor Stream V2 Route', () => {
       expect(body.localRouteDecision).not.toHaveProperty('providerRawError');
     });
 
+    it('frontend가 아닌 localRouteDecision은 Cloud Run으로 전달하지 않아야 함', async () => {
+      const request = new NextRequest(
+        'http://localhost/api/ai/supervisor/stream/v2',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Session-Id': 'session-1234',
+          },
+          body: JSON.stringify({
+            messages: [{ role: 'user', content: '서버 상태 확인' }],
+            localRouteDecision: {
+              intent: 'chat',
+              executionPath: 'stream',
+              mode: 'single',
+              reasonCodes: ['client_claimed'],
+              ruleVersion: '2026-05-03-v1',
+              decidedBy: 'cloud-run',
+            },
+          }),
+        }
+      );
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(200);
+      const fetchOptions = mockFetch.mock.calls[0]?.[1] as RequestInit;
+      const body = JSON.parse(String(fetchOptions.body)) as {
+        localRouteDecision?: Record<string, unknown>;
+      };
+      expect(body.localRouteDecision).toBeUndefined();
+    });
+
     it('인증 컨텍스트 userId가 있으면 ownerKey는 해시 기반 user 키를 사용해야 함', async () => {
       process.env.AI_RESUMABLE_STREAMS_ENABLED = 'true';
       mockGetAPIAuthContext.mockReturnValueOnce({
