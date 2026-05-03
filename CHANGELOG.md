@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.87](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.86...v8.11.87) (2026-05-03)
+
+
+### Features
+
+* **ai:** add artifact envelope metadata contract ([58dbb20](https://gitlab.com/skyasu2/openmanager-ai/-/commit/58dbb2051039fd8f52b7e6542ba2565229a34287))
+
+
+### Tests
+
+* **spec:** add artifact envelope contract tests ([fee68d7](https://gitlab.com/skyasu2/openmanager-ai/-/commit/fee68d75a25aaca290bf47a3bde7c4f0cb0b6d51))
+
 ## [8.11.86](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.85...v8.11.86) (2026-05-03)
 
 
