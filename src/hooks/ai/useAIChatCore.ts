@@ -48,10 +48,6 @@ import { generateServerSnapshotArtifact } from '@/lib/ai/chat-artifacts/server-s
 import type { ChatArtifact } from '@/lib/ai/chat-artifacts/types';
 import type { AIErrorDetails } from '@/lib/ai/error-details';
 import { buildRouteDecision } from '@/lib/ai/route-decision';
-import {
-  analyzeQueryComplexity,
-  shouldForceJobQueue,
-} from '@/lib/ai/utils/query-complexity';
 import { logger } from '@/lib/logging';
 import {
   type EnhancedChatMessage,
@@ -60,6 +56,7 @@ import {
 import type { JobDataSlot } from '@/types/ai-jobs';
 import type { SessionState } from '@/types/session';
 import { triggerAIWarmup } from '@/utils/ai-warmup';
+import { buildFrontendQueryRoutingDecision } from './core/query-routing';
 import { useChatFeedback } from './core/useChatFeedback';
 import { useChatHistory } from './core/useChatHistory';
 import { useChatQueue } from './core/useChatQueue';
@@ -181,13 +178,19 @@ function createDebugRoutingMessages(
   const token = Date.now().toString(36);
 
   const threshold = getComplexityThreshold(); // 기본 19
-  const modeAdjustedThreshold =
-    analysisMode === 'thinking' ? Math.max(8, threshold - 8) : threshold;
+  const routingDecision = buildFrontendQueryRoutingDecision({
+    query: query || '(쿼리 없음)',
+    complexityThreshold: threshold,
+    analysisMode,
+  });
+  const {
+    analysis,
+    forceJobQueue: forceResult,
+    modeAdjustedThreshold,
+    queryMode,
+  } = routingDecision;
 
-  const analysis = analyzeQueryComplexity(query || '(쿼리 없음)');
-  const forceResult = shouldForceJobQueue(query || '');
-
-  const isComplex = analysis.score > modeAdjustedThreshold || forceResult.force;
+  const isComplex = queryMode === 'job-queue';
   const routePath = isComplex
     ? 'Job Queue (/api/ai/jobs)'
     : 'Streaming (/api/ai/supervisor/stream/v2)';

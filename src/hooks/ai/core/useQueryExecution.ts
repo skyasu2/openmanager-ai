@@ -13,14 +13,7 @@ import { useCallback } from 'react';
 import { generateClarification } from '@/lib/ai/clarification-generator';
 import type { AIRateLimitErrorDetails } from '@/lib/ai/error-details';
 import { classifyQuery } from '@/lib/ai/query-classifier';
-import {
-  buildRouteDecision,
-  type RouteDecision,
-} from '@/lib/ai/route-decision';
-import {
-  analyzeQueryComplexity,
-  shouldForceJobQueue,
-} from '@/lib/ai/utils/query-complexity';
+import type { RouteDecision } from '@/lib/ai/route-decision';
 import { logger } from '@/lib/logging';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { JobDataSlot } from '@/types/ai-jobs';
@@ -30,6 +23,7 @@ import {
   generateMessageId,
   sanitizeMessages,
 } from '../utils/hybrid-query-utils';
+import { buildFrontendQueryRoutingDecision } from './query-routing';
 import { buildSourceToolRequestOptions } from './source-tool-request-options';
 
 // ============================================================================
@@ -222,8 +216,21 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
       refs.currentQuery.current = trimmedQuery;
 
       // 1. 복잡도 분석 + 의도 기반 Job Queue 강제 라우팅
-      const analysis = analyzeQueryComplexity(trimmedQuery);
-      const forceJobQueue = shouldForceJobQueue(trimmedQuery);
+      const hasAttachments = Boolean(attachments?.length);
+      const routingDecision = buildFrontendQueryRoutingDecision({
+        query: trimmedQuery,
+        complexityThreshold,
+        analysisMode,
+        hasAttachments,
+        queryAsOfDataSlot,
+      });
+      const {
+        analysis,
+        forceJobQueue,
+        modeAdjustedThreshold,
+        queryMode,
+        routeDecision,
+      } = routingDecision;
 
       // 오프도메인 감지: best-effort 모드로 처리하되 실패 시 요청 자체는 막지 않는다.
       void Promise.resolve()
@@ -244,35 +251,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
             error
           );
         });
-      // 파일 첨부 시 Vision Agent가 필요하므로 스트리밍 모드 선호
-      const hasAttachments = attachments && attachments.length > 0;
-      const modeAdjustedThreshold =
-        analysisMode === 'thinking'
-          ? Math.max(8, complexityThreshold - 8)
-          : complexityThreshold;
-      const isComplex =
-        !hasAttachments &&
-        (analysis.score > modeAdjustedThreshold || forceJobQueue.force);
-      const routeDecision = buildRouteDecision({
-        intent: isComplex ? 'job' : 'chat',
-        executionPath: isComplex ? 'job' : 'stream',
-        complexity: analysis.level,
-        reasonCodes: isComplex
-          ? [
-              forceJobQueue.force
-                ? 'force_job_queue_keyword'
-                : 'complexity_threshold_exceeded',
-            ]
-          : [
-              hasAttachments
-                ? 'attachment_streaming'
-                : 'complexity_below_threshold',
-            ],
-        decidedBy: 'frontend',
-        ...(queryAsOfDataSlot?.timeLabel && {
-          dataSlot: queryAsOfDataSlot.timeLabel,
-        }),
-      });
+      const isComplex = queryMode === 'job-queue';
       onRouteDecision?.(routeDecision);
 
       if (process.env.NODE_ENV === 'development') {
@@ -281,6 +260,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
             `Force Job Queue: ${forceJobQueue.force}${forceJobQueue.matchedKeyword ? ` (keyword: "${forceJobQueue.matchedKeyword}")` : ''}, ` +
             `Attachments: ${hasAttachments ? attachments!.length : 0}, ` +
             `AnalysisMode: ${analysisMode ?? 'auto'}, ` +
+            `ModeAdjustedThreshold: ${modeAdjustedThreshold}, ` +
             `Mode: ${isComplex ? 'job-queue' : 'streaming'}`
         );
       }

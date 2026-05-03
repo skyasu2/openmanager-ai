@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-03 KST (`M5b shadow planner implemented; M6 facade next`)
+**Last Updated**: 2026-05-03 KST (`M5c thinking route delta measured; M6 facade next`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -42,6 +42,15 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-03 #271)
+- [x] AI Assistant Architecture Evolution M5c (thinking route delta measurement)
+  - `analysisMode=thinking`을 provider-native reasoning이 아닌 app-level routing-intensity toggle로 명확히 고정
+  - frontend route decision helper를 분리해 auto/thinking On-Off corpus를 테스트로 측정: job queue `auto 2/6` → `thinking 4/6`, `streaming → job-queue` 전환 2건
+  - Cloud Run supervisor mode corpus를 테스트로 측정: multi `auto 2/6` → `thinking 4/6`, `single → multi` 전환 2건
+  - `modeSelectionSource=analysis_mode_thinking`은 thinking 버튼이 실제 승격 원인인 경우에만 표시하고, 원래 multi인 RCA/report/topology 요청은 `auto_complexity`로 유지
+  - 신규 LLM/provider 호출, route/API shape 변경, Cloud Run/Vercel surface 변경 없음
+  - 검증: targeted route/supervisor suites, root `type-check`, `lint`, `test:quick`, AI Engine targeted supervisor suite
 
 ### Completed (2026-05-03 #270)
 - [x] AI Assistant Architecture Evolution M5b (shadow planner + drift + escalation)

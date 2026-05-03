@@ -115,6 +115,85 @@ describe('resolveSupervisorMode', () => {
     });
   });
 
+  it('measures auto vs thinking mode deltas without relabeling already-complex routes', () => {
+    const queries = [
+      'CPU 알려줘',
+      '서버 상태 알려줘',
+      '운영 지표 용어 설명',
+      '전체 서버 장애 원인 분석 보고서 만들어줘',
+      '날씨 알려줘',
+      '토폴로지 설명해줘',
+    ];
+
+    const rows = queries.map((query) => {
+      const auto = resolveSupervisorModeDecision({
+        mode: 'auto',
+        messages: [{ role: 'user', content: query }],
+      });
+      const thinking = resolveSupervisorModeDecision({
+        mode: 'auto',
+        analysisMode: 'thinking',
+        messages: [{ role: 'user', content: query }],
+      });
+
+      return {
+        query,
+        autoMode: auto.resolvedMode,
+        thinkingMode: thinking.resolvedMode,
+        thinkingSource: thinking.modeSelectionSource,
+        changed: auto.resolvedMode !== thinking.resolvedMode,
+      };
+    });
+
+    expect(rows).toMatchObject([
+      {
+        query: 'CPU 알려줘',
+        autoMode: 'single',
+        thinkingMode: 'multi',
+        thinkingSource: 'analysis_mode_thinking',
+        changed: true,
+      },
+      {
+        query: '서버 상태 알려줘',
+        autoMode: 'single',
+        thinkingMode: 'multi',
+        thinkingSource: 'analysis_mode_thinking',
+        changed: true,
+      },
+      {
+        query: '운영 지표 용어 설명',
+        autoMode: 'single',
+        thinkingMode: 'single',
+        thinkingSource: 'auto_complexity',
+        changed: false,
+      },
+      {
+        query: '전체 서버 장애 원인 분석 보고서 만들어줘',
+        autoMode: 'multi',
+        thinkingMode: 'multi',
+        thinkingSource: 'auto_complexity',
+        changed: false,
+      },
+      {
+        query: '날씨 알려줘',
+        autoMode: 'single',
+        thinkingMode: 'single',
+        thinkingSource: 'auto_complexity',
+        changed: false,
+      },
+      {
+        query: '토폴로지 설명해줘',
+        autoMode: 'multi',
+        thinkingMode: 'multi',
+        thinkingSource: 'auto_complexity',
+        changed: false,
+      },
+    ]);
+    expect(rows.filter((row) => row.changed)).toHaveLength(2);
+    expect(rows.filter((row) => row.autoMode === 'multi')).toHaveLength(2);
+    expect(rows.filter((row) => row.thinkingMode === 'multi')).toHaveLength(4);
+  });
+
   it.each([
     {
       label: 'simple metric lookup',
@@ -272,6 +351,67 @@ describe('supervisor planner shadow', () => {
         'execution_path_mismatch',
         'execution_mode_mismatch',
       ]),
+    });
+  });
+
+  it('marks thinking as a shadow escalation only when the button changes the mode decision', () => {
+    const genericShadow = buildSupervisorPlannerShadow({
+      request: {
+        analysisMode: 'thinking',
+        mode: 'auto',
+        messages: [{ role: 'user', content: '운영 지표 용어 설명' }],
+        sessionId: 'session-shadow-generic-thinking',
+      },
+      routeDecision: buildSupervisorRouteDecision(
+        resolveSupervisorModeDecision({
+          mode: 'auto',
+          analysisMode: 'thinking',
+          messages: [{ role: 'user', content: '운영 지표 용어 설명' }],
+        })
+      ),
+      localRouteDecision: normalizeSupervisorLocalRouteDecision({
+        intent: 'chat',
+        executionPath: 'stream',
+        mode: 'single',
+        reasonCodes: ['complexity_below_threshold'],
+        ruleVersion: '2026-05-03-v1',
+        decidedBy: 'frontend',
+      }),
+    });
+
+    expect(genericShadow.candidate).toMatchObject({
+      executionMode: 'single-agent',
+      reasonCodes: ['single_agent_default'],
+    });
+
+    const infraShadow = buildSupervisorPlannerShadow({
+      request: {
+        analysisMode: 'thinking',
+        mode: 'auto',
+        messages: [{ role: 'user', content: 'CPU 알려줘' }],
+        sessionId: 'session-shadow-infra-thinking',
+      },
+      routeDecision: buildSupervisorRouteDecision(
+        resolveSupervisorModeDecision({
+          mode: 'auto',
+          analysisMode: 'thinking',
+          messages: [{ role: 'user', content: 'CPU 알려줘' }],
+        })
+      ),
+      localRouteDecision: normalizeSupervisorLocalRouteDecision({
+        intent: 'chat',
+        executionPath: 'stream',
+        mode: 'single',
+        reasonCodes: ['complexity_below_threshold'],
+        ruleVersion: '2026-05-03-v1',
+        decidedBy: 'frontend',
+      }),
+    });
+
+    expect(infraShadow.candidate).toMatchObject({
+      executionMode: 'multi-agent',
+      reasonCodes: ['analysis_mode_thinking'],
+      escalationReasonCodes: ['analysis_mode_thinking'],
     });
   });
 

@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-02
+> Last reviewed: 2026-05-03
 > Canonical: docs/reference/architecture/infrastructure/free-tier-optimization.md
 > Tags: free-tier,cost,performance,web-vitals,optimization
 >
-> **프로젝트 버전**: v8.11.80 | **Updated**: 2026-05-02
+> **프로젝트 버전**: v8.11.87 | **Updated**: 2026-05-03
 
 ## 개요
 
@@ -294,6 +294,23 @@ await pipeline.exec();
 > AI 응답 품질 향상 = 에이전트 추가 호출 = API 요청 수 증가 = 무료 티어 소진 가속.
 > 성능 개선은 반드시 **캐싱 강화, 응답 재사용, 라우팅 최적화** 방향으로만 진행해야 합니다.
 > LLM 모델 업그레이드, 에이전트 추가 호출, 병렬 실행 확대는 모두 **무료 한도 영향 검토 후** 결정합니다.
+
+### Native reasoning / thinking 비용 계약
+
+현재 제품 UI의 `심층 분석`(`analysisMode=thinking`)은 provider-native reasoning token을 켜지 않습니다. 이 모드는 frontend 복잡도 threshold를 낮추고 Cloud Run에서 infra-context 요청을 multi-agent 후보로 승격하는 **애플리케이션 라우팅 모드**입니다.
+
+2026-05-03 deterministic corpus 기준으로 thinking ON은 frontend job queue 비율을 `2/6 → 4/6`, Cloud Run multi 비율을 `2/6 → 4/6`로 올립니다. 이는 reasoning token 비용은 만들지 않지만, 더 긴 job/agent 경로를 선택할 가능성을 높이므로 latency와 provider 호출 수 표본을 별도로 추적해야 합니다.
+
+공식 API 기준으로 Groq reasoning 모델, Mistral `mistral-small-latest` adjustable reasoning, Gemini 2.5 Flash-Lite `thinkingBudget`는 후보가 될 수 있습니다. 그러나 production runtime에서는 아직 `reasoningEffort`, `reasoningFormat`, `thinkingConfig`, `providerOptions`를 전달하지 않습니다. Native reasoning을 도입하려면 다음 조건을 먼저 충족해야 합니다.
+
+| 조건 | 이유 |
+|------|------|
+| 계정별 모델 entitlement smoke | Groq/Cerebras reasoning 후보는 계정별 접근 가능 여부가 다를 수 있음 |
+| provider option wiring + contract test | reasoning 옵션이 실제 `streamText()` / `generateTextWithRetry()` 요청에 들어가는지 고정 |
+| reasoning token quota accounting | thinking token은 TPM/TPD와 latency를 늘려 무료 한도 병목을 앞당김 |
+| 사용자 노출 정책 | raw reasoning trace는 노출하지 않고, 필요한 경우 hidden/parsed summary만 허용 |
+
+따라서 현재 기본 경로에서는 native reasoning을 비용 최적화 대상으로 보지 않고, 별도 opt-in 실험으로만 검토합니다.
 
 ### 프로바이더별 무료 한도 (SSOT)
 

@@ -211,13 +211,19 @@ export function resolveSupervisorModeDecision(
     };
   }
 
+  const baselineMode =
+    selectExecutionMode(lastUserMessage.content) === 'multi'
+      ? 'multi'
+      : 'single';
   const resolvedMode =
     selectExecutionMode(lastUserMessage.content, request.analysisMode) ===
     'multi'
       ? 'multi'
       : 'single';
   const modeSelectionSource =
-    request.analysisMode === 'thinking' && resolvedMode === 'multi'
+    request.analysisMode === 'thinking' &&
+    resolvedMode === 'multi' &&
+    baselineMode !== 'multi'
       ? 'analysis_mode_thinking'
       : 'auto_complexity';
 
@@ -432,7 +438,12 @@ function buildShadowCandidate(
     ]);
   }
 
-  if (request.analysisMode === 'thinking' && query.length > 0) {
+  if (
+    request.analysisMode === 'thinking' &&
+    query.length > 0 &&
+    selectExecutionMode(query, 'thinking') === 'multi' &&
+    selectExecutionMode(query) !== 'multi'
+  ) {
     return buildCandidate('stream', 'multi-agent', ['analysis_mode_thinking'], [
       'analysis_mode_thinking',
     ]);
