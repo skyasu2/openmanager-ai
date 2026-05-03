@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-03 15:27:02 KST
+> Generated at: 2026-05-03 16:53:49 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 395 |
-| Total Runs (Counted) | 323 |
+| Total Recorded Runs | 396 |
+| Total Runs (Counted) | 324 |
 | Non-counted Runs | 72 |
-| Total Checks | 2774 |
-| Passed | 2676 |
+| Total Checks | 2780 |
+| Passed | 2682 |
 | Failed | 89 |
-| Completed Items | 411 |
+| Completed Items | 412 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 21 |
 | Expert Domains Tracked | 12 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260503-0397 (2026-05-03T06:27:01.464Z) |
-| Latest Recorded Run | QA-20260503-0397 (2026-05-03T06:27:01.464Z) |
+| Last Counted Run | QA-20260503-0398 (2026-05-03T07:53:49.065Z) |
+| Latest Recorded Run | QA-20260503-0398 (2026-05-03T07:53:49.065Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,24 +34,22 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260503-0397 (2026-05-03T06:27:01.464Z)
+Latest run: QA-20260503-0398 (2026-05-03T07:53:49.065Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
-| Data Quality & Metrics Analyst | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period effective 0.6724 USD and billed 0.0000 USD after v8.11.86 production release smoke. |
+| vercel | cli | checked | normal | Current billing period checked after v8.11.87 production release; billed remains 0.0000 USD. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-02T06:27:01.464Z -> 2026-05-03T06:27:01.464Z (24h)
+- Window: 2026-05-02T07:53:49.065Z -> 2026-05-03T07:53:49.065Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 
@@ -61,20 +59,21 @@ Latest run: QA-20260503-0397 (2026-05-03T06:27:01.464Z)
 
 ## Coverage (Latest Run)
 
-- Scope: targeted
+- Scope: smoke
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_2Cfxy7XNLFTNKrN7jbvhkqdR6sk5 / SHA b721b190
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: GitLab main pipeline 2495866828 completed successfully for a99b190cf793865ce6816d8ef2b61aa3e097be43, GitLab semver tag pipeline 2495869829 completed successfully for v8.11.86 commit b721b190c27a3c92d0937a163d2b752568589a5a, Release script post-deploy smoke verified production /, /login, and /api/version, Production /api/version returned version 8.11.86, releaseTag v8.11.86, and commit b721b190c27a3c92d0937a163d2b752568589a5a, Local deterministic gates passed before release: root type-check, lint, test:quick, test:contract, AI Engine type-check/test, docs:budget, docs:ai-consistency, git diff --check, Local Playwright MCP targeted QA QA-20260503-0396 already covered the AI Assistant soft-health UI path before release
-- Skipped Surfaces: Full broad Playwright production QA skipped because this was a targeted release smoke for metadata/health hardening, Real LLM chat and Cloud Run prompt execution skipped to avoid external provider usage beyond CI smoke, Modal/detail pack skipped because unchanged by AssistantPlan/AssistantResult metadata facade work, Streaming UI S1/S2/S3 plan is Draft only and was not implemented in v8.11.86
+- Deployment: gitlab-pipeline-2495943443 / SHA 71609cf1
+- Coverage Packs: core-routes-smoke
+- Covered Surfaces: GET /, GET /login, GET /api/version, GitLab deploy job, GitLab deploy_ai_engine job, GitLab post-deploy frontend and AI Engine smoke jobs
+- Skipped Surfaces: dashboard authenticated interaction, AI chat live prompt, Playwright visual UI flow
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | Production /api/version v8.11.86 | [Production /api/version v8.11.86](https://openmanager-ai.vercel.app/api/version) | - |
-| general | v8.11.86 tag pipeline | [v8.11.86 tag pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2495869829) | - |
+| general | GitLab v8.11.87 pipeline | [GitLab v8.11.87 pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2495943443) | - |
+| general | Production version endpoint | [Production version endpoint](https://openmanager-ai.vercel.app/api/version) | - |
+| vercel-deployment | Production URL | [Production URL](https://openmanager-ai.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
@@ -169,6 +168,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-analysis-mode-route-selection-production: Production auto/thinking analysis mode route selection verified (completed 1회, last QA-20260428-0355)
 - ai-analyst-success: Analyst Agent 이상감지/예측 성공 (completed 2회, last QA-20260314-0097)
 - ai-answer-enumerated-requirements: AI 답변이 사용자가 요청한 항목 개수를 정확히 충족하도록 보강 (completed 1회, last QA-20260423-0339)
+- ai-artifact-envelope-metadata-contract: AI artifact envelope-compatible metadata contract (completed 1회, last QA-20260503-0398)
 - ai-artifact-guidance-intent-guard-v81181: Artifact guidance requests should not trigger monitoring artifact execution (completed 1회, last QA-20260502-0390)
 - ai-artifact-input-guard-v81181: AI sidebar send button disables when input is empty after artifact submission (completed 1회, last QA-20260502-0390)
 - ai-artifact-keyword-routing-v81182: Short artifact keywords route to the intended artifact execution path (completed 1회, last QA-20260502-0391)
@@ -578,6 +578,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260503-0398 | 2026-05-03T07:53:49.065Z | smoke | yes | yes | Production Release Smoke v8.11.87 | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260503-0397 | 2026-05-03T06:27:01.464Z | targeted | yes | yes | Production Release Smoke - v8.11.86 Assistant Metadata Hardening | 6 | 2 | 0 | 0 | 1 | 0 |
 | QA-20260503-0396 | 2026-05-03T05:25:47.342Z | targeted | no | yes | Local Playwright Targeted QA - AI Assistant Data Truth Hardening | 8 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260503-0395 | 2026-05-02T19:10:10.245Z | targeted | yes | yes | Vercel Production Targeted QA - Server Snapshot Artifact v8.11.85 | 13 | 1 | 0 | 0 | 0 | 0 |
@@ -597,4 +598,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260430-0381 | 2026-04-30T09:32:32.544Z | targeted | no | no | Dashboard AI app-shell local Playwright rerun | 14 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260430-0380 | 2026-04-30T09:14:16.317Z | targeted | no | yes | Dashboard AI app-shell navigation targeted QA | 14 | 10 | 0 | 0 | 0 | 0 |
 | QA-20260430-0379 | 2026-04-30T06:12:50.431Z | broad | yes | yes | Vercel Production QA v8.11.70 - Dashboard + AI 3-Feature + Cerebras Check | 6 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260430-0378 | 2026-04-30T05:30:46.057Z | targeted | yes | yes | Vercel Playwright QA - v8.11.70 Dashboard Navigation Contrast Recheck | 8 | 2 | 0 | 0 | 0 | 0 |

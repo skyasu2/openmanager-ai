@@ -2,11 +2,11 @@
 > Status: Approved
 > Doc type: Plan
 > Last reviewed: 2026-05-03
-> Tags: ai-assistant,architecture,assistant-plan,artifact,deterministic-analytics,vercel-ai-sdk
+> Tags: ai-assistant,architecture,assistant-plan,artifact,deterministic-analytics,vercel-ai-sdk,multi-agent,planner
 
 # AI Assistant Architecture Evolution Plan
 
-- 상태: Approved (M3~M4 completed; M5~M7 pending milestone approval)
+- 상태: Approved (M3~M4 completed; M5-A/M5-B planning completed; M5~M7 implementation pending milestone approval)
 - 작성일: 2026-05-03
 - TODO.md 연결: Backlog > `AI Assistant Architecture Evolution (M5~M7)`
 - 기준 문서: [ai-assistant-initial-design-comparison.md](../../docs/reference/architecture/ai/ai-assistant-initial-design-comparison.md)
@@ -23,6 +23,7 @@
 - 제품 목표: 채팅 텍스트보다 typed artifact를 우선하는 Option C 흡수
 - 분석 목표: LLM이 메트릭을 판단하지 않고 deterministic monitoring core가 fact를 계산하는 Option E 흡수
 - 런타임 기준: Vercel AI SDK는 streaming, structured output, tool orchestration 계층으로 사용하고 metric decision engine으로 사용하지 않음
+- 멀티에이전트 기준: 폐기하지 않되 기본 정체성으로 두지 않고, Planner가 조건부로 선택하는 고비용 escalation path로 축소
 - 개선 방식: big-bang rewrite 없이 M1/M2 read-only contract 위에 단계적으로 authority와 schema를 수렴
 
 최종 목표 구조:
@@ -31,6 +32,7 @@
 User query
   -> BFF facade
   -> Cloud Run Planner creates authoritative AssistantPlan
+     -> executionMode = deterministic | single-agent | multi-agent
   -> Deterministic monitoring core creates MonitoringFactPack
   -> LLM formats/explains facts through Vercel AI SDK
   -> AssistantResult returns typed ArtifactEnvelope or chat result
@@ -42,9 +44,41 @@ User query
 - M1: `RouteDecision` metadata가 frontend stream/job/artifact, BFF job, Cloud Run supervisor result 경로에 read-only로 보존됨
 - M2: `AssistantPlan`/`AssistantResult` read-only facade가 `RouteDecision` 위에 추가됨
 - 아직 routing authority는 frontend/BFF/Cloud Run에 분산되어 있음
-- artifact 타입은 `IncidentReportArtifact`, `MonitoringAnalysisArtifact`, `ServerSnapshotArtifact`로 분리되어 있으나 공통 envelope/version contract는 없음
+- M4: `IncidentReportArtifact`, `MonitoringAnalysisArtifact`, `ServerSnapshotArtifact` 신규 생성 경로에 envelope-compatible metadata가 부여되고 legacy restore는 `restored-legacy`로 정규화됨
 - precomputed OTel 데이터와 AI Engine tool layer는 이미 deterministic fact source에 가깝지만, `MonitoringFactPack` 같은 명시적 경계는 없음
 - BM25 기반 Knowledge Retrieval Lite와 provider fallback은 운영 중이나 recall/freshness eval guard가 충분히 표준화되지 않음
+- 현재 supervisor는 `auto` mode에서 `selectExecutionMode()`로 single/multi를 고르지만, 주석과 운영 의미는 multi-agent를 standard default처럼 다룬다. M5 목표는 이를 deterministic/single 기본값 + multi-agent escalation으로 재정의하는 것이다.
+
+## 현재 동작 분석 기반 작업 계획
+
+2026-05-03 코드 기준 실제 동작은 아래 3개 public execution surface로 나뉜다.
+
+| Surface | 현재 권위자 | 현재 동작 | 개선 방향 |
+|---------|-------------|-----------|-----------|
+| Frontend artifact path | frontend `useAIChatCore` | artifact-shaped intent면 `generateIncidentReportArtifact`, `generateMonitoringAnalysisArtifact`, `generateServerSnapshotArtifact`를 client path에서 실행하고 `RouteDecision`/`AssistantPlan`/`AssistantResult` metadata를 붙인다. | M4 metadata는 유지한다. M5에서는 Cloud Run Planner candidate와 비교할 수 있도록 동일 query corpus에서 shadow plan을 기록한다. |
+| Frontend stream/job decision | frontend `useQueryExecution` + BFF job route | complexity score와 forced keyword로 `stream` 또는 `job`을 고르고, `/api/ai/jobs`는 BFF가 `job_queue_api` plan을 만든다. | M5 shadow mode에서 frontend decision과 Cloud Run candidate plan의 drift를 기록한다. M6 전까지 기존 route authority는 유지한다. |
+| Cloud Run supervisor mode | Cloud Run `resolveSupervisorModeDecision` | Cloud Run이 `auto` mode에서 `selectExecutionMode()`로 `single`/`multi`를 다시 고르고, stream done metadata에 plan/result facade를 붙인다. | M5에서 `executionMode`를 `deterministic`/`single-agent`/`multi-agent`로 확장하고, multi-agent는 escalation reason이 있을 때만 candidate가 되게 한다. |
+
+M5 구현 전에는 현재 동작을 먼저 고정한다. 이 작업은 기능 변경이 아니라 regression baseline 작성이다.
+
+| 단계 | 목적 | 산출물 | 완료 기준 |
+|------|------|--------|-----------|
+| M5-B.0 Current behavior baseline | 현재 routing/metadata 동작을 테스트 corpus로 고정 | stream/job/artifact/multi-agent baseline fixture | 현재 production route authority를 바꾸지 않고 기존 테스트가 통과 |
+| M5-B.1 ExecutionMode contract spec | `AssistantPlan`이 future execution mode를 담을 수 있게 계약 확장 시나리오 정의 | failing tests for `executionMode`, `escalationReasonCodes`, `plannerShadow` | legacy `AssistantPlan`/`AssistantResult` normalize가 throw 없이 동작 |
+| M5-B.2 Cloud Run shadow planner | Cloud Run이 authoritative candidate plan을 만들되 실행 경로는 바꾸지 않음 | `plannerShadow` metadata, public-safe drift reason | frontend/BFF 기존 decision과 shadow candidate가 함께 보존 |
+| M5-B.3 Drift corpus and threshold | 단순 조회가 multi-agent로 과잉 승격되는지 측정 | query corpus: simple metric, artifact, RCA/report, advisor, vision, low-retrieval | drift가 높으면 authority 이전 금지 |
+| M5-B.4 Multi-agent escalation guard | multi-agent를 고비용 분석 모드로 제한 | escalation reason allowlist + tests | 단순 metric lookup/server snapshot은 multi-agent candidate가 되지 않음 |
+| M5-B.5 Rollout decision | M6 `/api/ask`와 authority 이전 가능 여부 판단 | go/no-go checklist | shadow drift, latency, free-tier 영향이 허용 범위일 때만 M6 진행 |
+
+비교 기준:
+
+| 현재 동작 | 목표 동작 |
+|-----------|-----------|
+| `RouteDecision.mode`는 `single`/`multi`만 표현 | `AssistantPlan.executionMode`가 `deterministic`/`single-agent`/`multi-agent`를 표현 |
+| frontend가 artifact/job/stream을 먼저 결정 | Cloud Run Planner candidate가 같은 결정을 shadow로 제시 |
+| Cloud Run은 stream 내부에서 다시 `single`/`multi` 결정 | Cloud Run Planner가 execution mode와 escalation reason을 함께 제시 |
+| artifact path는 이미 envelope-compatible metadata 보유 | artifact path도 planner shadow/drift 비교 대상에 포함 |
+| low retrieval은 품질 문제가 LLM 응답으로 섞일 수 있음 | `insufficient_evidence` reason으로 명시하고 multi-agent 자동 승격 금지 |
 
 ## 범위
 
@@ -52,7 +86,7 @@ User query
 
 - M3: 기준 문서와 실제 M2 contract 정합성 보정
 - M4: `ArtifactEnvelope` 및 artifact versioning contract 정의
-- M5: Cloud Run Planner가 생성하는 authoritative `AssistantPlan` shadow mode 도입
+- M5: Cloud Run Planner가 생성하는 authoritative `AssistantPlan` shadow mode와 multi-agent escalation policy 도입
 - M6: `/api/ask` BFF facade 설계 및 기존 stream/job/artifact route wrapping
 - M7: deterministic `MonitoringFactPack`와 provider/retrieval eval guard 도입
 
@@ -75,6 +109,7 @@ User query
 | 제품 방향 | Option C 흡수: chat-first가 아니라 artifact-first 결과물 강화 |
 | 분석 방향 | Option E 흡수: deterministic core가 fact 계산, LLM은 설명/요약/포맷팅 |
 | Vercel AI SDK 역할 | provider/runtime abstraction, stream, structured output, tool orchestration |
+| 멀티에이전트 역할 | 유지하되 기본 실행 경로가 아니라 RCA/report/vision/advisory/cross-domain evidence에만 쓰는 escalation path |
 | migration 방식 | read-only metadata → shadow authoritative plan → facade endpoint → route 축소 |
 
 ## 계약 (Contract)
@@ -87,6 +122,8 @@ User query
 - `RouteDecision`, `AssistantPlan`, `AssistantResult` legacy metadata 복원은 throw 없이 동작해야 한다.
 - 신규 contract는 secret, provider raw error, internal owner metadata를 client로 노출하지 않는다.
 - 신규 LLM/provider 호출은 기본값으로 추가하지 않는다. 필요한 경우 deterministic guard와 rate-limit 기준을 먼저 둔다.
+- 단순 상태 조회, metric filter/ranking, server snapshot은 multi-agent를 기본 선택하지 않는다.
+- multi-agent 선택은 항상 public-safe `reasonCodes`로 설명 가능해야 하며, handoff metadata는 legacy-safe하게 보존되어야 한다.
 - 배포 환경 비용은 Free Tier 원칙을 유지한다. Vercel Pro는 예외적으로 허용되지만 설계 기본값으로 사용하지 않는다.
 - OTel 데이터 SSOT는 기존 precomputed fixture를 유지한다.
 
@@ -146,13 +183,14 @@ type ArtifactEnvelope<TArtifact extends ChatArtifact = ChatArtifact> = {
 - [ ] history restore는 envelope metadata를 보존한다.
 - [ ] provider raw error나 internal metadata는 `providerSummary`에 들어가지 않는다.
 
-### M5 — Authoritative Cloud Run Planner shadow mode
+### M5 — Authoritative Cloud Run Planner shadow mode + multi-agent escalation policy
 
 변경 후보 파일:
 - `cloud-run/ai-engine/src/services/ai-sdk/supervisor-mode.ts`
 - `cloud-run/ai-engine/src/services/ai-sdk/supervisor-stream.ts`
 - `cloud-run/ai-engine/src/services/ai-sdk/supervisor-stream-response.ts`
 - `cloud-run/ai-engine/src/services/ai-sdk/supervisor-types.ts`
+- `cloud-run/ai-engine/src/services/ai-sdk/supervisor-routing.ts`
 - `src/app/api/ai/supervisor/stream/v2/route.ts`
 - `src/app/api/ai/jobs/route.ts`
 - `src/lib/ai/assistant-contract.ts`
@@ -163,12 +201,53 @@ type ArtifactEnvelope<TArtifact extends ChatArtifact = ChatArtifact> = {
 - 첫 단계는 shadow mode로만 노출한다. BFF/frontend의 기존 routing 동작은 즉시 변경하지 않는다.
 - shadow plan과 local routeDecision이 다르면 drift metadata를 기록한다.
 - drift가 일정 기준 이하로 안정화되기 전에는 frontend routing authority를 제거하지 않는다.
+- `AssistantPlan`은 실행 모드를 `deterministic`, `single-agent`, `multi-agent`로 분리한다.
+- multi-agent는 폐기하지 않지만 기본값으로 두지 않는다. Planner가 아래 escalation 조건을 만족할 때만 선택한다.
+
+```ts
+type AssistantExecutionMode =
+  | 'deterministic'
+  | 'single-agent'
+  | 'multi-agent';
+
+type MultiAgentEscalationReason =
+  | 'rca_requested'
+  | 'incident_report_requested'
+  | 'cross_domain_evidence_required'
+  | 'advisor_requested'
+  | 'vision_input_present'
+  | 'analysis_mode_thinking'
+  | 'single_path_low_confidence';
+```
+
+Escalation 기준:
+
+| 요청 유형 | 목표 executionMode | 기준 reason code |
+|-----------|--------------------|------------------|
+| 단순 인사/기능 안내 | `single-agent` 또는 deterministic guidance | `simple_chat` |
+| 현재 서버 상태, CPU top N, 메모리 90% 이상 | `deterministic` 또는 `single-agent` | `metric_lookup` |
+| 서버 상태 스냅샷 artifact | `deterministic` | `artifact_snapshot_requested` |
+| RCA, 원인 분석, 상관관계 분석 | `multi-agent` | `rca_requested`, `cross_domain_evidence_required` |
+| 장애 보고서/report 작성 | `multi-agent` 또는 report pipeline | `incident_report_requested` |
+| 대응 방안/명령어 추천 | `multi-agent` | `advisor_requested` |
+| image/file 포함 | `multi-agent` | `vision_input_present` |
+| retrieval 근거 부족 | multi-agent 자동 승격 금지, 근거 부족 응답 우선 | `insufficient_evidence` |
+
+비목표:
+- multi-agent를 삭제하지 않는다.
+- `mode='single'` emergency/degraded path를 즉시 제거하지 않는다.
+- 기존 `handoffs`, `resolvedMode`, `modeSelectionSource`, `degradedFromMode` metadata를 깨지 않는다.
+- 단순 metric query를 multi-agent로 보내 품질이 높아졌다고 간주하지 않는다. 비용, latency, drift까지 함께 평가한다.
 
 테스트 시나리오:
 - [ ] Cloud Run planner가 chat/artifact/job/clarification plan을 생성한다.
 - [ ] BFF는 Cloud Run shadow plan을 metadata로 보존하되 기존 실행 경로를 바꾸지 않는다.
 - [ ] local decision과 shadow plan mismatch가 public-safe reason code로 기록된다.
 - [ ] provider/LLM 실패 시 deterministic fallback plan이 생성된다.
+- [ ] 단순 metric lookup은 `multi-agent`로 escalation되지 않는다.
+- [ ] RCA/report/advisor/vision 요청은 `multi-agent` candidate와 escalation reason을 가진다.
+- [ ] retrieval low-confidence는 multi-agent 자동 승격이 아니라 `insufficient_evidence` 계약으로 노출된다.
+- [ ] 기존 `resolvedMode`/`handoffs` metadata는 legacy client에서 그대로 복원된다.
 
 ### M6 — `/api/ask` BFF facade
 
@@ -236,8 +315,8 @@ type MonitoringFactPack = {
 - [x] Task 1 — M3 기준 문서 보정: 점수표 `/45`, M2 actual contract, M4~M7 gap table, AI SDK/Vercel/best-practice 정합성
 - [x] Task 2 — M4 `ArtifactEnvelope` contract failing tests 작성
 - [x] Task 3 — M4 artifact generator/card/history restore envelope 적용
-- [ ] Task 4 — M5 Cloud Run authoritative planner shadow mode spec 및 failing tests 작성
-- [ ] Task 5 — M5 shadow plan metadata, drift reason, fallback plan 구현
+- [ ] Task 4 — M5 Cloud Run authoritative planner shadow mode + multi-agent escalation policy spec 및 failing tests 작성
+- [ ] Task 5 — M5 shadow plan metadata, executionMode, escalation reason, drift reason, fallback plan 구현
 - [ ] Task 6 — M6 `/api/ask` facade spec 및 failing tests 작성
 - [ ] Task 7 — M6 `/api/ask` wrapper 구현 및 frontend opt-in path 연결
 - [ ] Task 8 — M7 `MonitoringFactPack` spec 및 deterministic tests 작성
@@ -266,8 +345,9 @@ type MonitoringFactPack = {
 | M3 완료 후 | 문서가 현재 구현과 future target을 혼동하지 않는지 |
 | M4 test 완료 후 | `ArtifactEnvelope`가 legacy artifact를 깨지 않는 계약인지 |
 | M4 구현 후 | artifact payload 중복, history restore, card rendering 회귀 |
-| M5 test 완료 후 | shadow mode가 routing authority를 즉시 변경하지 않는지 |
-| M5 구현 후 | planner drift metadata가 public-safe인지, provider 실패 fallback이 deterministic인지 |
+| M5 test 완료 후 | shadow mode가 routing authority를 즉시 변경하지 않고, multi-agent escalation 조건이 과도하지 않은지 |
+| M5 구현 후 | planner drift metadata가 public-safe인지, provider 실패 fallback이 deterministic인지, 단순 metric query가 multi-agent로 과잉 승격되지 않는지 |
+| M5 rollout 전 | current behavior baseline corpus에서 frontend/BFF/Cloud Run decision drift가 허용 범위인지 |
 | M6 test 완료 후 | `/api/ask`가 기존 route 제거 없이 facade 역할만 하는지 |
 | M7 구현 후 | fact pack 계산이 LLM/provider 결과에 의존하지 않는지, eval guard가 CI/무료 티어에 적합한지 |
 
@@ -277,6 +357,7 @@ type MonitoringFactPack = {
 |------|------|
 | M4 envelope가 legacy artifact restore를 크게 깨는 경우 | wrapper 방식 우선, direct field migration 보류 |
 | M5 shadow planner drift가 높게 나오는 경우 | authority 이전 보류, drift corpus 추가 |
+| M5 multi-agent 선택률이 단순 조회에서 높게 나오는 경우 | multi-agent 기본값 전환 금지, escalation rule과 corpus를 먼저 축소 |
 | M6 `/api/ask`가 route surface를 더 복잡하게 만드는 경우 | 내부 wrapper만 유지하고 frontend opt-in rollout 보류 |
 | M7 provider/retrieval eval이 외부 호출을 요구하는 경우 | deterministic fixture/mocked provider 기준으로 CI guard 작성, 실 smoke는 수동/운영 QA로 분리 |
 | 범위가 예상보다 2배 이상 확대 | milestone별 하위 plan으로 분리 |
@@ -290,7 +371,9 @@ type MonitoringFactPack = {
 - [x] M3 기준 문서가 AI SDK v6 structured output 목표를 `Output.object` 방향으로 설명하고 기존 `generateObjectWithFallback`을 compatibility path로 분리한다.
 - [x] M3 기준 문서가 Vercel duration을 60초 hard limit로 단정하지 않고 route/runtime별 제약으로 표현한다.
 - [x] Artifact artifactVersion/envelope contract가 legacy-safe하게 적용된다.
-- [ ] Cloud Run Planner shadow mode가 `AssistantPlan` candidate와 drift metadata를 노출한다.
+- [ ] Cloud Run Planner shadow mode가 `AssistantPlan` candidate, `executionMode`, escalation reason, drift metadata를 노출한다.
+- [ ] 현재 stream/job/artifact/multi-agent 동작 baseline corpus가 M5 변경 전후를 비교한다.
+- [ ] 단순 metric query는 deterministic/single 경로로 유지되고, RCA/report/vision/advisory만 multi-agent candidate가 된다.
 - [ ] `/api/ask` facade가 기존 route를 감싸며 최소 1개 frontend opt-in path에서 동작한다.
 - [ ] MonitoringFactPack이 deterministic threshold 판단을 고정한다.
 - [ ] retrieval recall/provider freshness guard가 deterministic test 또는 bounded smoke로 추적된다.
@@ -307,3 +390,5 @@ type MonitoringFactPack = {
 - 2026-05-03 M3 완료: 기준 문서가 M2 actual read-only facade와 future authoritative target을 분리했고, 점수표 `/45` 및 M4~M7 gap table을 반영했다.
 - 2026-05-03 M4 완료: 기존 artifact payload shape는 유지하면서 envelope-compatible metadata와 `ArtifactEnvelope` helper를 추가했다. M5~M7은 milestone별 contract 승인 후 진행한다.
 - 2026-05-03 M3 추가 보강: 웹/공식 문서 기준으로 현재 상태를 Option A 개선 중간 단계로 명시하고, AI SDK v6 `Output.object` 방향, Vercel route/runtime duration 표현, tool guardrail/eval/OTel observability/token limit 관점을 반영했다.
+- 2026-05-03 M5-A 계획 보강: multi-agent는 폐기하지 않고 RCA/report/vision/advisory/cross-domain evidence용 escalation path로 유지하며, 기본 실행 모델은 deterministic/single로 낮추는 방향을 M5 계약에 추가했다.
+- 2026-05-03 M5-B 계획 보강: 현재 실제 동작 surface(frontend artifact, frontend stream/job, Cloud Run supervisor)를 기준으로 baseline corpus, shadow planner, drift 측정, escalation guard, rollout decision 작업을 M5 실행 계획에 추가했다.

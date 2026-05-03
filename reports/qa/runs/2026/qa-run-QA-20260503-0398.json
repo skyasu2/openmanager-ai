@@ -1,0 +1,113 @@
+{
+  "runId": "QA-20260503-0398",
+  "recordedAt": "2026-05-03T07:53:49.065Z",
+  "recordedAtKst": "2026-05-03 16:53:49 KST",
+  "runTitle": "Production Release Smoke v8.11.87",
+  "owner": "codex",
+  "source": "release-script",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "gitlab-pipeline-2495943443",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "71609cf11bc0eb49346d44206ecef3453d2a9741"
+  },
+  "scope": "smoke",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke"],
+  "coveredSurfaces": [
+    "GET /",
+    "GET /login",
+    "GET /api/version",
+    "GitLab deploy job",
+    "GitLab deploy_ai_engine job",
+    "GitLab post-deploy frontend and AI Engine smoke jobs"
+  ],
+  "skippedSurfaces": [
+    "dashboard authenticated interaction",
+    "AI chat live prompt",
+    "Playwright visual UI flow"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline completed successfully and production /api/version points at v8.11.87.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Release smoke covered public routes, version endpoint, and CI deploy smoke jobs. Full Playwright UI flow was intentionally skipped for this contract metadata patch.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-03T16:52:35+09:00",
+      "summary": "Current billing period checked after v8.11.87 production release; billed remains 0.0000 USD.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-artifact-envelope-metadata-contract",
+      "title": "AI artifact envelope-compatible metadata contract",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "v8.11.87 release; targeted artifact tests and GitLab tag pipeline success",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "ArtifactEnvelope M4 변경은 public API route shape를 바꾸지 않는 metadata contract patch다.",
+    "Production /api/version returned version=8.11.87, commit=71609cf11bc0eb49346d44206ecef3453d2a9741, releaseTag=v8.11.87.",
+    "GitLab pipeline 2495943443 succeeded: deploy, deploy_ai_engine, post_deploy_smoke, post_deploy_ai_engine_smoke.",
+    "Playwright full visual QA was skipped because the change is artifact metadata contract and prior UI/UX Playwright review was satisfactory."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.11.87 pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2495943443"
+    },
+    {
+      "type": "general",
+      "label": "Production version endpoint",
+      "url": "https://openmanager-ai.vercel.app/api/version"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Production URL",
+      "url": "https://openmanager-ai.vercel.app/"
+    }
+  ]
+}

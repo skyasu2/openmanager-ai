@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-03T06:27:01.464Z"
+    "updatedAt": "2026-05-03T07:53:49.065Z"
   },
   "sequence": {
-    "nextRunNumber": 398
+    "nextRunNumber": 399
   },
   "summary": {
-    "totalRecordedRuns": 395,
-    "totalRuns": 323,
+    "totalRecordedRuns": 396,
+    "totalRuns": 324,
     "excludedRuns": 72,
-    "totalChecks": 2774,
-    "totalPassed": 2676,
+    "totalChecks": 2780,
+    "totalPassed": 2682,
     "totalFailed": 89,
     "completionRate": 100,
-    "completedItems": 411,
+    "completedItems": 412,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 21,
     "expertDomainsTracked": 12,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260503-0397",
-    "lastRecordedAt": "2026-05-03T06:27:01.464Z",
-    "latestRecordedRunId": "QA-20260503-0397",
-    "latestRecordedAt": "2026-05-03T06:27:01.464Z"
+    "lastRunId": "QA-20260503-0398",
+    "lastRecordedAt": "2026-05-03T07:53:49.065Z",
+    "latestRecordedRunId": "QA-20260503-0398",
+    "latestRecordedAt": "2026-05-03T07:53:49.065Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -10097,6 +10097,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
       "lastStatusChangeAt": "2026-05-03T06:27:01.464Z"
+    },
+    "ai-artifact-envelope-metadata-contract": {
+      "id": "ai-artifact-envelope-metadata-contract",
+      "title": "AI artifact envelope-compatible metadata contract",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260503-0398",
+      "firstSeenAt": "2026-05-03T07:53:49.065Z",
+      "lastSeenRunId": "QA-20260503-0398",
+      "lastSeenAt": "2026-05-03T07:53:49.065Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "v8.11.87 release; targeted artifact tests and GitLab tag pipeline success",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-03T07:53:49.065Z"
     }
   },
   "runs": [
@@ -39860,6 +39884,104 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 1
+    },
+    {
+      "runId": "QA-20260503-0398",
+      "recordedAt": "2026-05-03T07:53:49.065Z",
+      "recordedAtKst": "2026-05-03 16:53:49 KST",
+      "title": "Production Release Smoke v8.11.87",
+      "owner": "codex",
+      "source": "release-script",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260503-0398.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "gitlab-pipeline-2495943443",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "71609cf11bc0eb49346d44206ecef3453d2a9741"
+      },
+      "scope": "smoke",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke"
+      ],
+      "coveredSurfaces": [
+        "GET /",
+        "GET /login",
+        "GET /api/version",
+        "GitLab deploy job",
+        "GitLab deploy_ai_engine job",
+        "GitLab post-deploy frontend and AI Engine smoke jobs"
+      ],
+      "skippedSurfaces": [
+        "dashboard authenticated interaction",
+        "AI chat live prompt",
+        "Playwright visual UI flow"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline completed successfully and production /api/version points at v8.11.87.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Release smoke covered public routes, version endpoint, and CI deploy smoke jobs. Full Playwright UI flow was intentionally skipped for this contract metadata patch.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-03T16:52:35+09:00",
+          "summary": "Current billing period checked after v8.11.87 production release; billed remains 0.0000 USD.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.87 pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2495943443"
+        },
+        {
+          "type": "general",
+          "label": "Production version endpoint",
+          "url": "https://openmanager-ai.vercel.app/api/version"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Production URL",
+          "url": "https://openmanager-ai.vercel.app/"
+        }
+      ],
+      "expertCount": 2,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -39919,16 +40041,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 121,
-      "appropriateCount": 108,
+      "seenCount": 122,
+      "appropriateCount": 109,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 17,
-      "lastRunId": "QA-20260503-0397",
-      "lastSeenAt": "2026-05-03T06:27:01.464Z",
+      "lastRunId": "QA-20260503-0398",
+      "lastSeenAt": "2026-05-03T07:53:49.065Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab main and semver tag pipelines succeeded, and production /api/version points to the released tag and commit.",
+      "lastRationale": "GitLab tag pipeline completed successfully and production /api/version points at v8.11.87.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -39936,16 +40058,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 158,
-      "appropriateCount": 146,
+      "seenCount": 159,
+      "appropriateCount": 147,
       "partialCount": 12,
       "inappropriateCount": 0,
       "improvementNeededCount": 13,
-      "lastRunId": "QA-20260503-0397",
-      "lastSeenAt": "2026-05-03T06:27:01.464Z",
+      "lastRunId": "QA-20260503-0398",
+      "lastSeenAt": "2026-05-03T07:53:49.065Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Deterministic root and AI Engine gates passed before release; release smoke verified production routes.",
+      "lastRationale": "Release smoke covered public routes, version endpoint, and CI deploy smoke jobs. Full Playwright UI flow was intentionally skipped for this contract metadata patch.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {

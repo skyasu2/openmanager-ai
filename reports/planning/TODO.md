@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-03 KST (`AI Assistant Architecture Evolution M4 completed`)
+**Last Updated**: 2026-05-03 KST (`AI Assistant Architecture Evolution M5-B work plan updated`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -16,7 +16,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| AI Assistant Architecture Evolution (M5~M7) | High | [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) — Option A 유지, Option C/E 흡수: authoritative Planner, `/api/ask`, deterministic fact/eval guard |
+| AI Assistant Architecture Evolution (M5~M7) | High | [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) — Option A 유지, Option C/E 흡수: current behavior baseline, authoritative Planner shadow, multi-agent escalation policy, `/api/ask`, deterministic fact/eval guard |
 | AI Streaming UI 개선 (S1~S3) | Medium | [ai-streaming-ui-improvement-plan.md](ai-streaming-ui-improvement-plan.md) — 전체 페이지 실제 SSE 전환, Cold Start 카운트다운, Agent 단계 실시간 표시 |
 
 ---
@@ -42,6 +42,20 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-03 #268)
+- [x] AI Assistant Architecture Evolution M5-B work plan
+  - 현재 실제 동작 surface를 frontend artifact path, frontend stream/job decision, Cloud Run supervisor mode로 분해해 기존 계획서에 반영
+  - M5 구현 전 baseline corpus, `executionMode` contract spec, Cloud Run shadow planner, drift corpus, multi-agent escalation guard, rollout decision 단계 추가
+  - 신규 계획서 생성 없이 기존 [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md)에 작업 계획을 통합
+  - 검증: `npm run docs:budget`, `npm run docs:ai-consistency`, `git diff --check`
+
+### Completed (2026-05-03 #267)
+- [x] AI Assistant Architecture Evolution M5-A planning
+  - 기존 [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md)에 multi-agent 유지/축소 판단을 M5 하위 계약으로 편입
+  - multi-agent는 폐기하지 않고 RCA/report/vision/advisory/cross-domain evidence용 escalation path로 유지하며, 기본 실행 모델은 deterministic/single로 낮추는 방향을 명시
+  - 신규 계획서 생성 없이 기존 M5 Cloud Run Planner shadow mode 범위에 `executionMode`, escalation reason, drift metadata 테스트 시나리오 추가
+  - 검증: `npm run docs:budget`, `npm run docs:ai-consistency`, `git diff --check`
 
 ### Completed (2026-05-03 #266)
 - [x] AI Assistant Architecture Evolution M4
