@@ -24,7 +24,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-05-03 재검증 기준 `reports/qa=85.52MiB`, `reports/qa/evidence=79.85MiB / 407파일`. `npm run qa:evidence:audit` 결과 missing durable artifact paths `0`, orphan durable evidence `6개`, archive candidate `7개 / 2.16MiB`, size warning 유지. run-level soft budget warning은 `QA-20260330-0197`, `QA-20260330-0198` 2건으로 구조화됨. orphan/archive candidate 제거만으로는 warning 해소 효과가 낮고 top referenced legacy evidence는 modal/detail/landing proof 가치가 있어 explicit cleanup batch는 열지 않음. 새 evidence 누적 시점에만 재평가. |
+| P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-05-04 Playwright MCP QA 후 재검증 기준 `reports/qa=85.77MiB`, `reports/qa/evidence=80.07MiB / 409파일`. `npm run qa:evidence:audit` 결과 missing durable artifact paths `0`, orphan durable evidence `6개`, archive candidate `7개 / 2.16MiB`, size warning 유지. run-level soft budget warning은 `QA-20260330-0197`, `QA-20260330-0198` 2건으로 구조화됨. orphan/archive candidate 제거만으로는 warning 해소 효과가 낮고 top referenced legacy evidence는 modal/detail/landing proof 가치가 있어 explicit cleanup batch는 열지 않음. 새 evidence 누적 시점에만 재평가. |
 
 ## Backlog (완료 이력)
 

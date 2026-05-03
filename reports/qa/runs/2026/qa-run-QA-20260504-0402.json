@@ -1,0 +1,186 @@
+{
+  "runId": "QA-20260504-0402",
+  "recordedAt": "2026-05-03T23:00:39.195Z",
+  "recordedAtKst": "2026-05-04 08:00:39 KST",
+  "runTitle": "v8.11.89 Vercel Playwright MCP Targeted QA",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_7f3iQxsyUvq2NifnaHLQHMCWYSsS",
+    "deploymentUrl": "https://openmanager-1ddl2y5er-skyasus-projects.vercel.app",
+    "commitSha": "6aa1560f5bad1e0e750ffb5538ac87750f9429a9"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "Landing page rendered on Vercel production with version badge v8.11.89",
+    "System start CTA routed through /system-boot and landed on /dashboard",
+    "Dashboard rendered current OTel slot 07:20 KST with 18 total servers, 17 online, 1 warning, 0 risk, 0 offline",
+    "Dashboard system resources rendered CPU 43%, Memory 47%, Disk 39%",
+    "Dashboard resource warning Top 5 rendered api-was-dc1-01 CPU 81%, db-mysql-dc1-backup DISK 68%, db-mysql-dc1-primary DISK 63%, web-nginx-dc1-01 CPU 62%, db-mysql-dc1-replica MEM 60%",
+    "AI sidebar opened from dashboard and showed AI Engine status Ready",
+    "AI sidebar tool menu exposed RAG/Web/response mode controls and kept send disabled while input was empty",
+    "AI sidebar feature tabs rendered AI Chat, automatic incident report empty state, and anomaly/trend analysis empty state without broken controls",
+    "Fullscreen /dashboard/ai-assistant opened from the sidebar and rendered System Context with provider routing and AI Engine Online",
+    "Fullscreen AI Chat accepted a real prompt through the visible input path and POST /api/ai/supervisor/stream/v2 returned HTTP 200",
+    "Fullscreen AI response for CPU top 3 was grounded to current dashboard values: api-was-dc1-01 CPU 81%, web-nginx-dc1-01 CPU 62%, web-nginx-dc1-02 CPU 59%",
+    "Fullscreen answer rendered analysis basis with server metric detail tool metadata and 1463ms response footer",
+    "Manual Health Check button rechecked AI Engine status and remained on /dashboard/ai-assistant",
+    "Browser-side /api/version returned 8.11.89, releaseTag v8.11.89, commit 6aa1560f5bad1e0e750ffb5538ac87750f9429a9, pipeline 2496399525",
+    "Browser-side /api/health returned healthy with database/cache/ai connected"
+  ],
+  "skippedSurfaces": [
+    "Reporter report generation button was not clicked to avoid extra artifact generation beyond tab render validation",
+    "Anomaly/trend full analysis button was not clicked to avoid additional Cloud Run work beyond tab render validation",
+    "Modal detail pack, topology deep interaction, blocked prompt/security pack, and Cloud Run admin /monitoring were outside this targeted QA",
+    "Two /api/system net::ERR_ABORTED entries were observed during route reload/navigation and were treated as non-blocking because subsequent /api/system, /api/health, /api/database, and AI stream calls returned HTTP 200"
+  ],
+  "checks": {
+    "total": 15,
+    "passed": 15,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Fullscreen AI Chat CPU top 3",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright MCP visible response footer",
+      "latencyMs": 1463,
+      "processingTimeMs": 1463
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "A real fullscreen AI prompt completed through the production stream route and produced grounded CPU ranking values matching the visible dashboard data.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP covered landing, boot, dashboard, sidebar, fullscreen AI, API health/version, and durable screenshots were attached.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The run verified dashboard OTel slot labels, metric values, AI Engine Online state, and health/version endpoints on production.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel production deployment was Ready, /api/health returned healthy, and Vercel usage remained billed 0.0000 USD.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The AI response preserved the same CPU top ranking and current dashboard metric values observed in the UI.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-04T07:59:11+09:00",
+      "summary": "Current billing period checked after Vercel Playwright MCP QA; effective 1.3446 USD, billed remains 0.0000 USD, chargeCount 1218.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Dashboard Vercel production smoke",
+      "path": "reports/qa/evidence/qa-20260504-v81189-dashboard.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Fullscreen AI response Vercel production smoke",
+      "path": "reports/qa/evidence/qa-20260504-v81189-ai-fullscreen-response.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "vercel-playwright-mcp-v81189-targeted-qa",
+      "title": "v8.11.89 Vercel production Playwright MCP targeted QA completed",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "QA covered landing, boot, dashboard, AI sidebar, fullscreen AI stream, health/version, and durable screenshots",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-fullscreen-cpu-ranking-v81189",
+      "title": "Fullscreen AI Chat CPU top-3 answer remains grounded to dashboard OTel values",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "api-was-dc1-01 CPU 81%, web-nginx-dc1-01 CPU 62%, web-nginx-dc1-02 CPU 59%; /api/ai/supervisor/stream/v2 HTTP 200",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Playwright MCP was used for browser navigation, snapshots, clicks, form fill, screenshots, network request inspection, and browser-side API fetches.",
+    "One earlier MCP evaluation after the Manual Health Check click briefly landed on about:blank, but the same action was rerun after restoring /dashboard/ai-assistant and did not reproduce; the app stayed on the AI Assistant route and changed the button to 재확인.",
+    "Network log after the first AI query included POST /api/ai/supervisor/stream/v2 => 200. Subsequent route reload logs contained two /api/system net::ERR_ABORTED entries that were navigation-related and non-blocking.",
+    "No GitHub public snapshot sync was performed."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab tag pipeline 2496399525",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2496399525"
+    },
+    {
+      "type": "general",
+      "label": "Production app",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "general",
+      "label": "Production version endpoint",
+      "url": "https://openmanager-ai.vercel.app/api/version"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-1ddl2y5er-skyasus-projects.vercel.app/"
+    }
+  ]
+}

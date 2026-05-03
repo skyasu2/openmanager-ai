@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-04 02:29:58 KST
+> Generated at: 2026-05-04 08:00:39 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 399 |
-| Total Runs (Counted) | 327 |
+| Total Recorded Runs | 400 |
+| Total Runs (Counted) | 328 |
 | Non-counted Runs | 72 |
-| Total Checks | 2813 |
-| Passed | 2715 |
+| Total Checks | 2828 |
+| Passed | 2730 |
 | Failed | 89 |
-| Completed Items | 417 |
+| Completed Items | 419 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 21 |
 | Expert Domains Tracked | 12 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260504-0401 (2026-05-03T17:29:57.587Z) |
-| Latest Recorded Run | QA-20260504-0401 (2026-05-03T17:29:57.587Z) |
+| Last Counted Run | QA-20260504-0402 (2026-05-03T23:00:39.195Z) |
+| Latest Recorded Run | QA-20260504-0402 (2026-05-03T23:00:39.195Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,31 +34,31 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260504-0401 (2026-05-03T17:29:57.587Z)
+Latest run: QA-20260504-0402 (2026-05-03T23:00:39.195Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| DevOps / SRE Engineer | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
 | AI Quality Assurance Specialist | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 | Data Quality & Metrics Analyst | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked after v8.11.89 release smoke; effective 1.3446 USD, billed remains 0.0000 USD, chargeCount 1218. |
+| vercel | cli | checked | normal | Current billing period checked after Vercel Playwright MCP QA; effective 1.3446 USD, billed remains 0.0000 USD, chargeCount 1218. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-02T17:29:57.587Z -> 2026-05-03T17:29:57.587Z (24h)
-- Runs with observations: 2 recorded / 2 counted
-- Samples: 2
+- Window: 2026-05-02T23:00:39.195Z -> 2026-05-03T23:00:39.195Z (24h)
+- Runs with observations: 3 recorded / 3 counted
+- Samples: 3
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Supervisor | cloud-run-ai-engine | 2 | 2898ms | 3351ms | 1809ms | 2445ms | 1657ms | 2152ms | QA-20260503-0400 |
+| Supervisor | cloud-run-ai-engine | 3 | 2420ms | 3351ms | 1809ms | 2445ms | 1592ms | 2152ms | QA-20260504-0402 |
 
 ## Coverage (Latest Run)
 
@@ -66,9 +66,9 @@ Latest run: QA-20260504-0401 (2026-05-03T17:29:57.587Z)
 - Release-Facing: yes
 - Counts Toward Summary: yes
 - Deployment: dpl_7f3iQxsyUvq2NifnaHLQHMCWYSsS / SHA 6aa1560f
-- Coverage Packs: core-routes-smoke, observability-pack
-- Covered Surfaces: GitLab semver tag pipeline v8.11.89 completed successfully, Frontend deploy job succeeded through GitLab CI deploy stage, Cloud Run ai-engine deploy job succeeded through GitLab CI deploy_ai stage, GitLab post_deploy_smoke job succeeded, GitLab post_deploy_ai_engine_smoke job succeeded, Production / returned PASS in release script verification, Production /login returned PASS in release script verification, Production /api/version reported version 8.11.89, releaseTag v8.11.89, commit 6aa1560f5bad1e0e750ffb5538ac87750f9429a9, and pipeline 2496399525, Vercel production deployment dpl_7f3iQxsyUvq2NifnaHLQHMCWYSsS inspected as Ready
-- Skipped Surfaces: Playwright UI interaction was not rerun because v8.11.89 changed monitoring error pass-through and deployment metadata, not visible dashboard layout, AI live chat content QA was not rerun to avoid unnecessary LLM calls; deterministic tests and GitLab AI Engine smoke covered the runtime path, Broad dashboard modal/detail/security packs were outside this release smoke scope, Cloud Run admin /monitoring and /monitoring/traces were not manually queried; CI post_deploy_ai_engine_smoke was used as the release gate
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
+- Covered Surfaces: Landing page rendered on Vercel production with version badge v8.11.89, System start CTA routed through /system-boot and landed on /dashboard, Dashboard rendered current OTel slot 07:20 KST with 18 total servers, 17 online, 1 warning, 0 risk, 0 offline, Dashboard system resources rendered CPU 43%, Memory 47%, Disk 39%, Dashboard resource warning Top 5 rendered api-was-dc1-01 CPU 81%, db-mysql-dc1-backup DISK 68%, db-mysql-dc1-primary DISK 63%, web-nginx-dc1-01 CPU 62%, db-mysql-dc1-replica MEM 60%, AI sidebar opened from dashboard and showed AI Engine status Ready, AI sidebar tool menu exposed RAG/Web/response mode controls and kept send disabled while input was empty, AI sidebar feature tabs rendered AI Chat, automatic incident report empty state, and anomaly/trend analysis empty state without broken controls, Fullscreen /dashboard/ai-assistant opened from the sidebar and rendered System Context with provider routing and AI Engine Online, Fullscreen AI Chat accepted a real prompt through the visible input path and POST /api/ai/supervisor/stream/v2 returned HTTP 200, Fullscreen AI response for CPU top 3 was grounded to current dashboard values: api-was-dc1-01 CPU 81%, web-nginx-dc1-01 CPU 62%, web-nginx-dc1-02 CPU 59%, Fullscreen answer rendered analysis basis with server metric detail tool metadata and 1463ms response footer, Manual Health Check button rechecked AI Engine status and remained on /dashboard/ai-assistant, Browser-side /api/version returned 8.11.89, releaseTag v8.11.89, commit 6aa1560f5bad1e0e750ffb5538ac87750f9429a9, pipeline 2496399525, Browser-side /api/health returned healthy with database/cache/ai connected
+- Skipped Surfaces: Reporter report generation button was not clicked to avoid extra artifact generation beyond tab render validation, Anomaly/trend full analysis button was not clicked to avoid additional Cloud Run work beyond tab render validation, Modal detail pack, topology deep interaction, blocked prompt/security pack, and Cloud Run admin /monitoring were outside this targeted QA, Two /api/system net::ERR_ABORTED entries were observed during route reload/navigation and were treated as non-blocking because subsequent /api/system, /api/health, /api/database, and AI stream calls returned HTTP 200
 
 ## Links (Latest Run)
 
@@ -83,7 +83,8 @@ Latest run: QA-20260504-0401 (2026-05-03T17:29:57.587Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-screenshot | Dashboard Vercel production smoke | `reports/qa/evidence/qa-20260504-v81189-dashboard.png` | - |
+| playwright-screenshot | Fullscreen AI response Vercel production smoke | `reports/qa/evidence/qa-20260504-v81189-ai-fullscreen-response.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -213,6 +214,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-explicit-server-summary-backfill: Explicit server action summary keeps named TOP2 servers and backfills partial tool payloads (completed 1회, last QA-20260430-0376)
 - ai-fallback-done-usage-metadata: Delegated summarization fallback should report delegated provider token usage (completed 1회, last QA-20260429-0367)
 - ai-friendly-template-todo-marker: Template TODO marker 분리 (TEMPLATE_TODO 적용) (completed 1회, last QA-20260226-0006)
+- ai-fullscreen-cpu-ranking-v81189: Fullscreen AI Chat CPU top-3 answer remains grounded to dashboard OTel values (completed 1회, last QA-20260504-0402)
 - ai-hardening-production-verification: Verify production AI hardening release on v8.11.20 (completed 1회, last QA-20260418-0303)
 - ai-health-soft-polling-local: AI health UI polling uses soft responses (completed 1회, last QA-20260503-0396)
 - ai-incident-artifact-render-v81181: Incident report artifact renders from production AI sidebar (completed 1회, last QA-20260502-0390)
@@ -527,6 +529,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - validation-stale-banner-client-side-fix: Validation stale banner client-side age check fix (completed 1회, last QA-20260324-0170)
 - vercel-build-fix: SessionState import 수정으로 Vercel 빌드 복구 (completed 1회, last QA-20260307-0053)
 - vercel-deployment-ready: Vercel 배포 3건 모두 READY (completed 1회, last QA-20260314-0096)
+- vercel-playwright-mcp-v81189-targeted-qa: v8.11.89 Vercel production Playwright MCP targeted QA completed (completed 1회, last QA-20260504-0402)
 - vercel-prod-ai-clarification: AI 질의 모호성 해소 UI 정상 렌더링 및 Fallback 응답 확인 (completed 1회, last QA-20260317-0114)
 - vercel-prod-ai-guest-flow-v892: Vercel 프로덕션 게스트 부팅 + 대시보드 + AI 응답 + 피드백 경로 실측 (completed 1회, last QA-20260317-0119)
 - vercel-prod-ai-sidebar: 대시보드 AI 어시스턴트 사이드바 열기/닫기 정상 (completed 1회, last QA-20260317-0114)
@@ -587,6 +590,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260504-0402 | 2026-05-03T23:00:39.195Z | targeted | yes | yes | v8.11.89 Vercel Playwright MCP Targeted QA | 15 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260504-0401 | 2026-05-03T17:29:57.587Z | targeted | yes | yes | v8.11.89 Release Smoke - Monitoring Source Error Contract | 9 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260503-0400 | 2026-05-03T14:21:43.788Z | targeted | yes | yes | v8.11.88 Fullscreen AI Stream Complementary QA | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260503-0399 | 2026-05-03T14:14:02.510Z | targeted | yes | yes | v8.11.88 Agent Step Streaming Release QA | 19 | 2 | 0 | 0 | 0 | 0 |
@@ -606,4 +610,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260430-0385 | 2026-04-30T14:18:18.454Z | targeted | yes | yes | Vercel/Cloud Run Production QA v8.11.76 - Cerebras llama runtime | 7 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260430-0384 | 2026-04-30T13:00:04.697Z | targeted | yes | yes | Vercel Production QA v8.11.75 - Direct AI page sidebar reopen | 12 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260430-0383 | 2026-04-30T12:02:34.893Z | targeted | yes | yes | Vercel Production QA v8.11.74 - Dashboard AI app shell | 21 | 4 | 0 | 0 | 0 | 0 |
-| QA-20260430-0382 | 2026-04-30T10:20:01.475Z | targeted | no | yes | Dashboard mobile overlap and AI sidebar local QA | 11 | 4 | 0 | 0 | 0 | 0 |
