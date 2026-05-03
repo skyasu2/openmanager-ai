@@ -154,6 +154,34 @@ flowchart TB
 - 하지만 현재 precomputed 데이터 전제 하에서는, LLM 역할을 "판단"에서 "설명"으로 명시적으로 축소하고, Planner를 deterministic-first로 강화하는 것이 가장 효과적인 개선이다.
 - 이 gap을 의식하면서 C/E 원칙을 흡수하는 것이 §1에서 제시한 점진적 개선 방향의 근거다.
 
+### 2.5 업계 레퍼런스와 LLM 의존도 스펙트럼
+
+상용 AI 제품(ChatGPT, Grok, Claude, Gemini)과 LLM API + Framework 기반 커스텀 앱, 그리고 업계 모니터링 AI copilot들을 비교해 현재 구현의 위치를 확인한다.
+
+**LLM 의존도 스펙트럼**:
+
+```text
+LLM 의존도 높음 ◄──────────────────────────────────────────► LLM 의존도 낮음
+
+상용 AI        일반 AI SDK 앱       OpenManager(명목)      OpenManager(실질)
+(ChatGPT 등)   (LLM이 판단+생성)    (supervisor가 LLM      (deterministic tool이
+                                   orchestration)        계산, LLM은 설명만)
+```
+
+**업계 모니터링 AI copilot 비교**:
+
+| 제품 | 패턴 | OpenManager와 공통점 | OpenManager와 차이 |
+|------|------|---------------------|-------------------|
+| Datadog AI Assistant | 자체 query engine (PromQL 등) + LLM narration | deterministic 계산 → LLM 설명 패턴 동일 | 실시간 사용자 데이터 기반. 구조가 실질에 맞게 단순 |
+| New Relic AIM | NRQL 자동 생성 + GPT-4 narrator | query engine이 판단 주체, LLM은 설명 역할 | MCP 서버 호출 지원. full-stack observability |
+| Elastic AI Assistant | RAG + Elasticsearch query → LLM 요약 | 쿼리 엔진 결과를 LLM이 변환하는 구조 동일 | vector search 활용. 실시간 로그/메트릭 |
+
+**핵심 확인**: 업계 레퍼런스 모두 **"deterministic query/analysis engine + LLM narration"** 패턴을 사용한다. LLM이 메트릭을 직접 "판단"하지 않는다. OpenManager의 `precomputed-state` → deterministic tool → LLM narration 실질 동작은 이 업계 표준과 일치한다.
+
+**구조적 차이**: 업계 레퍼런스는 query engine + LLM wrapper로 실질에 맞게 구조를 단순화한 반면, OpenManager는 multi-agent supervisor + 8 BFF routes + job queue로 실질보다 구조가 복잡하다. 이것은 §2.4의 gap을 외부 근거로 재확인한다.
+
+**상용 AI 대신 커스텀 앱을 선택한 근거**: 내부 서버 메트릭 직접 접근, multi-provider 무료 tier 활용, 도메인 특화 UI/artifact, deterministic 계산 보장은 ChatGPT/Claude/Gemini 같은 상용 제품으로는 충족 불가하므로 LLM API + Vercel AI SDK 기반 커스텀 앱 선택은 올바르다.
+
 ---
 
 ## 3. 내가 처음 설계한다면: 기준 아키텍처
@@ -588,4 +616,5 @@ Browser -> Query Planner -> Cloud Run Metrics DSL execution -> Deterministic ans
 | 2026-05-03 | §2.4 데이터 본질 vs 아키텍처 복잡도 관찰 추가 | 실질 동작은 E(deterministic 계산 + LLM 설명)이나 구조는 A(multi-agent supervisor)인 gap 명시. B 운영 안정성 "중"으로 상향. rewrite하지 않고 C+E 원칙을 A 안에서 흡수하는 방향 재확인 |
 | 2026-05-03 | 문서 목적을 현재 상태 개선 분석으로 명시 | 대안 설계를 rewrite 후보가 아니라 현재 구현의 변경·개선 필요점을 도출하는 비교 렌즈로 사용하도록 목적/§4/§7을 보강 |
 | 2026-05-03 | 대체 설계 후보 기준 강화 | `/api/ask`, `routeDecision`, `ArtifactEnvelope` 등은 대체 설계가 아니라 A의 개선 항목으로 분리. B/C/D/E는 A와 execution/state/output/control plane이 다른 후보로 재정의 |
+| 2026-05-03 | §2.5 업계 레퍼런스 비교 추가 | Datadog AI, New Relic AIM, Elastic AI 모두 "deterministic query engine + LLM narration" 패턴 확인. OpenManager 실질 동작은 업계 표준과 일치하나 구조적 복잡도에서 gap 존재를 외부 근거로 재확인 |
 | 2026-05-03 | `routeDecision` read-only metadata M1 구현 | 라우팅 동작은 유지하되 frontend stream/job/artifact, BFF job, Cloud Run stream done/job result metadata가 같은 `RouteDecision` shape를 보존하도록 정렬. `AssistantPlan`/`AssistantResult` facade와 routing authority 이전은 다음 단계로 유지 |
