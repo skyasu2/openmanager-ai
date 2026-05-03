@@ -1,5 +1,9 @@
-import { describe, expect, it } from 'vitest';
-import { parseMonitoringBatchAnalysisResponse } from './monitoring-analysis-artifact';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  generateMonitoringAnalysisArtifact,
+  parseMonitoringBatchAnalysisResponse,
+} from './monitoring-analysis-artifact';
+import { ARTIFACT_CONTRACT_VERSION } from './types';
 
 const validBatchResponse = {
   success: true,
@@ -40,5 +44,40 @@ describe('parseMonitoringBatchAnalysisResponse', () => {
         riskSignals: [],
       })
     ).toBeNull();
+  });
+});
+
+describe('generateMonitoringAnalysisArtifact', () => {
+  beforeEach(() => {
+    vi.stubGlobal('fetch', vi.fn());
+  });
+
+  it('returns an envelope-compatible versioned artifact payload', async () => {
+    vi.mocked(fetch).mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        success: true,
+        data: validBatchResponse,
+      }),
+    } as Response);
+
+    const artifact = await generateMonitoringAnalysisArtifact({
+      query: '전체 서버 추세 분석',
+      sessionId: 'session-test',
+      queryAsOfDataSlot: {
+        slotIndex: 143,
+        minuteOfDay: 1430,
+        timeLabel: '23:50 KST',
+      },
+    });
+
+    expect(artifact).toMatchObject({
+      artifactVersion: ARTIFACT_CONTRACT_VERSION,
+      kind: 'monitoring-analysis',
+      sourceMode: 'tool-result',
+      dataSlot: '23:50 KST',
+      serverCount: 0,
+      riskSignalCount: 0,
+    });
   });
 });

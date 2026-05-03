@@ -3,7 +3,11 @@ import {
   normalizeIncidentSeverity,
 } from '@/components/ai/pages/auto-report/types';
 import { createQueryAsOf } from '@/lib/ai/query-as-of';
-import type { ChatArtifactRequest, IncidentReportArtifact } from './types';
+import {
+  attachArtifactEnvelopeMetadata,
+  type ChatArtifactRequest,
+  type IncidentReportArtifact,
+} from './types';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
@@ -121,12 +125,18 @@ export async function generateIncidentReportArtifact({
 
   const report = normalizeIncidentReport(data.report);
 
-  return {
-    kind: 'incident-report',
-    generatedAt: new Date().toISOString(),
-    report,
-    source:
-      readString(data.report._source) || readString(data.source) || undefined,
-    queryAsOfDataSlot,
-  };
+  return attachArtifactEnvelopeMetadata(
+    {
+      kind: 'incident-report',
+      generatedAt: new Date().toISOString(),
+      report,
+      source:
+        readString(data.report._source) || readString(data.source) || undefined,
+      queryAsOfDataSlot,
+    },
+    {
+      sourceMode: 'tool-result',
+      dataSlot: queryAsOfDataSlot?.timeLabel,
+    }
+  );
 }

@@ -6,9 +6,9 @@
 
 # AI Assistant Architecture Evolution Plan
 
-- 상태: Approved for M4 (M3 completed; M5~M7 pending milestone approval)
+- 상태: Approved (M3~M4 completed; M5~M7 pending milestone approval)
 - 작성일: 2026-05-03
-- TODO.md 연결: Active Tasks > `AI Assistant Architecture Evolution M4`
+- TODO.md 연결: Backlog > `AI Assistant Architecture Evolution (M5~M7)`
 - 기준 문서: [ai-assistant-initial-design-comparison.md](../../docs/reference/architecture/ai/ai-assistant-initial-design-comparison.md)
 - 선행 완료:
   - [AI Assistant Route Decision Metadata Plan](ai-assistant-route-decision-metadata-plan.md) — M1 완료
@@ -235,7 +235,7 @@ type MonitoringFactPack = {
 - [x] Task 0 — M3 문서 정합성 failing/docs check 기준 확정
 - [x] Task 1 — M3 기준 문서 보정: 점수표 `/45`, M2 actual contract, M4~M7 gap table, AI SDK/Vercel/best-practice 정합성
 - [x] Task 2 — M4 `ArtifactEnvelope` contract failing tests 작성
-- [ ] Task 3 — M4 artifact generator/card/history restore envelope 적용
+- [x] Task 3 — M4 artifact generator/card/history restore envelope 적용
 - [ ] Task 4 — M5 Cloud Run authoritative planner shadow mode spec 및 failing tests 작성
 - [ ] Task 5 — M5 shadow plan metadata, drift reason, fallback plan 구현
 - [ ] Task 6 — M6 `/api/ask` facade spec 및 failing tests 작성
@@ -289,7 +289,7 @@ type MonitoringFactPack = {
 - [x] M3 기준 문서가 현재 구현을 Option A 개선 중간 단계로 판정하고 C/E를 완료 상태가 아닌 목표 원칙으로 분리한다.
 - [x] M3 기준 문서가 AI SDK v6 structured output 목표를 `Output.object` 방향으로 설명하고 기존 `generateObjectWithFallback`을 compatibility path로 분리한다.
 - [x] M3 기준 문서가 Vercel duration을 60초 hard limit로 단정하지 않고 route/runtime별 제약으로 표현한다.
-- [ ] Artifact artifactVersion/envelope contract가 legacy-safe하게 적용된다.
+- [x] Artifact artifactVersion/envelope contract가 legacy-safe하게 적용된다.
 - [ ] Cloud Run Planner shadow mode가 `AssistantPlan` candidate와 drift metadata를 노출한다.
 - [ ] `/api/ask` facade가 기존 route를 감싸며 최소 1개 frontend opt-in path에서 동작한다.
 - [ ] MonitoringFactPack이 deterministic threshold 판단을 고정한다.
@@ -305,4 +305,5 @@ type MonitoringFactPack = {
 - 대체 설계는 현재 구현의 개선 gap을 찾는 비교 렌즈로만 사용한다.
 - `Option A`는 infrastructure baseline, `Option C`는 product target, `Option E`는 analysis reliability target으로 분리해서 다룬다.
 - 2026-05-03 M3 완료: 기준 문서가 M2 actual read-only facade와 future authoritative target을 분리했고, 점수표 `/45` 및 M4~M7 gap table을 반영했다.
+- 2026-05-03 M4 완료: 기존 artifact payload shape는 유지하면서 envelope-compatible metadata와 `ArtifactEnvelope` helper를 추가했다. M5~M7은 milestone별 contract 승인 후 진행한다.
 - 2026-05-03 M3 추가 보강: 웹/공식 문서 기준으로 현재 상태를 Option A 개선 중간 단계로 명시하고, AI SDK v6 `Output.object` 방향, Vercel route/runtime duration 표현, tool guardrail/eval/OTel observability/token limit 관점을 반영했다.

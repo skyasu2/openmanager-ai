@@ -1,7 +1,11 @@
 import { z } from 'zod';
 import { createQueryAsOf } from '@/lib/ai/query-as-of';
 import type { MonitoringBatchAnalysisResponse } from '@/types/intelligent-monitoring.types';
-import type { ChatArtifactRequest, MonitoringAnalysisArtifact } from './types';
+import {
+  attachArtifactEnvelopeMetadata,
+  type ChatArtifactRequest,
+  type MonitoringAnalysisArtifact,
+} from './types';
 
 const MonitoringBatchServerSchema = z
   .object({
@@ -154,14 +158,20 @@ export async function generateMonitoringAnalysisArtifact({
 
   const summary = summarizeMonitoringAnalysis(analysis);
 
-  return {
-    kind: 'monitoring-analysis',
-    generatedAt: new Date().toISOString(),
-    ...summary,
-    analysis,
-    source:
-      analysis._source ||
-      (typeof data._source === 'string' ? data._source : undefined),
-    queryAsOfDataSlot,
-  };
+  return attachArtifactEnvelopeMetadata(
+    {
+      kind: 'monitoring-analysis',
+      generatedAt: new Date().toISOString(),
+      ...summary,
+      analysis,
+      source:
+        analysis._source ||
+        (typeof data._source === 'string' ? data._source : undefined),
+      queryAsOfDataSlot,
+    },
+    {
+      sourceMode: 'tool-result',
+      dataSlot: analysis.slot.timeLabel,
+    }
+  );
 }

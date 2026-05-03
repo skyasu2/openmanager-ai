@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-03 KST (`AI Assistant Architecture Evolution M4 spec in progress`)
+**Last Updated**: 2026-05-03 KST (`AI Assistant Architecture Evolution M4 completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI Assistant Architecture Evolution M4 | High | spec-in-progress | [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) — `ArtifactEnvelope`/artifact versioning contract failing tests 작성 |
+| — | — | — | 현재 계획서 기준 잔여 active task 없음 |
 
 ---
 
@@ -42,6 +42,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-03 #266)
+- [x] AI Assistant Architecture Evolution M4
+  - `ArtifactEnvelope`/artifact versioning contract helper 추가: `artifactVersion`, `sourceMode`, `dataSlot`, `traceId`, `evidence`, public-safe `providerSummary`
+  - 기존 card payload shape는 유지하고 신규 incident/monitoring/server-snapshot artifact 생성 결과에 envelope-compatible metadata를 부여
+  - legacy artifact payload는 `readArtifactEnvelope()`에서 `sourceMode='restored-legacy'`로 정규화
+  - 검증: targeted artifact/history/card tests, `type-check`, `lint`, `test:quick`, `test:contract`, `docs:budget`, `docs:ai-consistency`, `git diff --check`
 
 ### Completed (2026-05-03 #265)
 - [x] AI Assistant Architecture Evolution M3

@@ -4,7 +4,11 @@ import type {
 } from '@/services/metrics/MetricsProvider';
 import { metricsProvider } from '@/services/metrics/MetricsProvider';
 import type { JobDataSlot } from '@/types/ai-jobs';
-import type { ChatArtifactRequest, ServerSnapshotArtifact } from './types';
+import {
+  attachArtifactEnvelopeMetadata,
+  type ChatArtifactRequest,
+  type ServerSnapshotArtifact,
+} from './types';
 
 const SNAPSHOT_METRICS = ['cpu', 'memory', 'disk', 'network'] as const;
 
@@ -143,30 +147,36 @@ export async function generateServerSnapshotArtifact({
 
   const slot = createSlot(summary, queryAsOfDataSlot);
 
-  return {
-    kind: 'server-snapshot',
-    generatedAt: new Date().toISOString(),
-    title: '현재 서버 상태 스냅샷',
-    summary: buildSummary(summary),
-    source: 'otel-static',
-    queryAsOfDataSlot,
-    slot,
-    totals: {
-      total: summary.totalServers,
-      online: summary.onlineServers,
-      warning: summary.warningServers,
-      critical: summary.criticalServers,
-      offline: summary.offlineServers,
+  return attachArtifactEnvelopeMetadata(
+    {
+      kind: 'server-snapshot',
+      generatedAt: new Date().toISOString(),
+      title: '현재 서버 상태 스냅샷',
+      summary: buildSummary(summary),
+      source: 'otel-static',
+      queryAsOfDataSlot,
+      slot,
+      totals: {
+        total: summary.totalServers,
+        online: summary.onlineServers,
+        warning: summary.warningServers,
+        critical: summary.criticalServers,
+        offline: summary.offlineServers,
+      },
+      averages: {
+        cpu: summary.averageCpu,
+        memory: summary.averageMemory,
+        disk: summary.averageDisk,
+        network: summary.averageNetwork,
+      },
+      topServers: buildTopServers(servers),
+      alerts: buildAlerts(servers),
     },
-    averages: {
-      cpu: summary.averageCpu,
-      memory: summary.averageMemory,
-      disk: summary.averageDisk,
-      network: summary.averageNetwork,
-    },
-    topServers: buildTopServers(servers),
-    alerts: buildAlerts(servers),
-  };
+    {
+      sourceMode: 'otel-static',
+      dataSlot: slot.timeLabel,
+    }
+  );
 }
 
 export function buildServerSnapshotMarkdown(
