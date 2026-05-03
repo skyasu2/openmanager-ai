@@ -49,8 +49,8 @@
 
 | 개선 | 방법 | 현재 구현 상태 |
 |------|------|----------------|
-| BFF surface 수렴 | `/api/ask` facade를 목표로 삼되, 먼저 기존 streaming/job/artifact route가 같은 `AssistantPlan`/`AssistantResult` metadata를 쓰게 한다. | 미구현. 현재 `/supervisor/stream/v2`, `/jobs`, `/incident-report`, `/intelligent-monitoring` route가 분리되어 있음. |
-| Route decision drift 방지 | frontend, job API, Cloud Run이 같은 route decision schema를 사용하게 통일 | 미구현. frontend `useQueryExecution`과 backend `resolveSupervisorModeDecision()`이 독립적으로 판단 중. |
+| BFF surface 수렴 | `/api/ask` facade를 목표로 삼되, 먼저 기존 streaming/job/artifact route가 같은 `AssistantPlan`/`AssistantResult` metadata를 쓰게 한다. | 부분 구현. `routeDecision` read-only metadata slice는 구현됨. `/api/ask`와 `AssistantPlan`/`AssistantResult` facade는 미구현. |
+| Route decision drift 방지 | frontend, job API, Cloud Run이 같은 route decision schema를 사용하게 통일 | 부분 구현. frontend stream/job/artifact, BFF job API, Cloud Run stream done metadata가 `routeDecision` shape를 보존한다. 라우팅 권한은 아직 frontend/backend에 분산되어 있음. |
 | Artifact 표준 필드 | `artifactVersion`, `traceId`, `dataSlot`을 모든 artifact card에 표준 포함 | `dataSlot`은 일부 artifact에서 사용 중. `artifactVersion`은 코드베이스에 미존재. |
 | Provider smoke freshness | provider policy에 `lastVerified`, `expiresAt` 필드 추가 | 미구현. 현재 `provider-model-policy.ts`에 freshness 관련 필드 없음. |
 
@@ -277,7 +277,7 @@ AIExperienceShell
 
 처음부터 backend contract는 다음처럼 둔다. 아래 타입은 **proposed sketch**이며, 실제 도입 시에는 기존 타입과 정렬해야 한다. 특히 `EvidenceCard`는 현재 `cloud-run/ai-engine/src/lib/retrieval-contract.ts`의 계약을 우선 재사용하고, `ArtifactKind`/`PublicErrorCode` 같은 이름은 실제 코드의 artifact/error union에 맞춰 확정한다.
 
-> **구현 상태 (2026-05-03)**: `AssistantPlan`/`AssistantResult`는 미구현이다. 현재 route decision은 frontend `useQueryExecution`과 backend `resolveSupervisorModeDecision()`이 독립적으로 수행한다.
+> **구현 상태 (2026-05-03)**: `routeDecision` read-only metadata는 구현되어 frontend stream/job/artifact, BFF job, Cloud Run stream done metadata에서 보존된다. `AssistantPlan`/`AssistantResult` facade는 아직 미구현이며, 실제 라우팅 권한은 frontend `useQueryExecution`과 backend `resolveSupervisorModeDecision()`에 분산되어 있다.
 
 ```ts
 type AssistantPlan =
@@ -502,11 +502,12 @@ Browser -> Query Planner -> Cloud Run Metrics DSL execution -> Deterministic ans
 
 ### 7.1 지금 당장 큰 구조 변경 없이 개선
 
-1. `AssistantPlan` / `AssistantResult`를 read-only metadata로 먼저 정의한다. 실제 라우팅 권한은 아직 바꾸지 않는다.
-2. Frontend streaming path, job queue path, Cloud Run planner/stream done event가 같은 `routeDecision` object를 기록하게 한다.
-3. 기존 route surface 위에 `/api/ask` facade 목표를 문서화하고, 새 기능은 facade-compatible request/response shape를 우선 사용한다.
-4. Artifact card에 `artifactVersion`, `traceId`, `dataSlot`, `sourceMode`, `providerSummary`를 표준 필드로 표시한다.
-5. Provider policy smoke evidence에 `lastVerified`, `expiresAt`, `smokeSource`를 추가해 freshness 기준을 명시한다.
+1. `routeDecision` read-only metadata를 먼저 정의한다. 실제 라우팅 권한은 아직 바꾸지 않는다. **완료: 2026-05-03 M1**
+2. Frontend streaming path, job queue path, Cloud Run planner/stream done event가 같은 `routeDecision` object를 기록하게 한다. **완료: 2026-05-03 M1**
+3. `AssistantPlan` / `AssistantResult` facade를 read-only result/plan metadata로 확장한다. 실제 라우팅 권한은 아직 바꾸지 않는다.
+4. 기존 route surface 위에 `/api/ask` facade 목표를 문서화하고, 새 기능은 facade-compatible request/response shape를 우선 사용한다.
+5. Artifact card에 `artifactVersion`, `traceId`, `dataSlot`, `sourceMode`, `providerSummary`를 표준 필드로 표시한다.
+6. Provider policy smoke evidence에 `lastVerified`, `expiresAt`, `smokeSource`를 추가해 freshness 기준을 명시한다.
 
 ### 7.2 다음 단계 제품성 강화
 
@@ -587,3 +588,4 @@ Browser -> Query Planner -> Cloud Run Metrics DSL execution -> Deterministic ans
 | 2026-05-03 | §2.4 데이터 본질 vs 아키텍처 복잡도 관찰 추가 | 실질 동작은 E(deterministic 계산 + LLM 설명)이나 구조는 A(multi-agent supervisor)인 gap 명시. B 운영 안정성 "중"으로 상향. rewrite하지 않고 C+E 원칙을 A 안에서 흡수하는 방향 재확인 |
 | 2026-05-03 | 문서 목적을 현재 상태 개선 분석으로 명시 | 대안 설계를 rewrite 후보가 아니라 현재 구현의 변경·개선 필요점을 도출하는 비교 렌즈로 사용하도록 목적/§4/§7을 보강 |
 | 2026-05-03 | 대체 설계 후보 기준 강화 | `/api/ask`, `routeDecision`, `ArtifactEnvelope` 등은 대체 설계가 아니라 A의 개선 항목으로 분리. B/C/D/E는 A와 execution/state/output/control plane이 다른 후보로 재정의 |
+| 2026-05-03 | `routeDecision` read-only metadata M1 구현 | 라우팅 동작은 유지하되 frontend stream/job/artifact, BFF job, Cloud Run stream done/job result metadata가 같은 `RouteDecision` shape를 보존하도록 정렬. `AssistantPlan`/`AssistantResult` facade와 routing authority 이전은 다음 단계로 유지 |

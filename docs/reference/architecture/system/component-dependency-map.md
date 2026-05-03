@@ -189,7 +189,7 @@ flowchart LR
 
 ```text
 [Top Outgoing Dependency Samples]
-ai/AIWorkspace -> ai-sidebar/EnhancedAIChat, ai-sidebar/CloudRunStatusIndicator, error/AIErrorBoundary, dashboard/RealTimeDisplay, shared/OpenManagerLogo, shared/UnifiedProfileHeader
+ai/AIWorkspace -> ai-sidebar/CloudRunStatusIndicator, ai-sidebar/EnhancedAIChat, error/AIErrorBoundary, dashboard/RealTimeDisplay, shared/OpenManagerLogo, shared/UnifiedProfileHeader
 ai-sidebar/EnhancedAIChat -> ai/AgentHandoffBadge, ai/AgentStatusIndicator, ai-sidebar/ChatInputArea, ai-sidebar/ChatMessageList, ai-sidebar/ClarificationDialog, ai-sidebar/chat/ColdStartErrorBanner
 ai/AIWorkspaceMessage -> ai/AnalysisBasisBadge, ai/IncidentReportArtifactCard, ai/MarkdownRenderer, ai/MessageActions, ai/MonitoringAnalysisArtifactCard, ai/ServerSnapshotArtifactCard
 ai-sidebar/AISidebarV4 -> ai/AIAssistantIconPanel, ai/AIContentArea, error/AIErrorBoundary, ai-sidebar/AISidebarHeader, ai-sidebar/EnhancedAIChat, ai-sidebar/ResizeHandle

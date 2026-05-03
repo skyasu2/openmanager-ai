@@ -92,10 +92,18 @@ type RouteDecision = {
 - `npm run lint`
 - `npm run test:quick`
 - `npm run test:contract`
-- `cloud-run/ai-engine` `npm run type-check`
-- `cloud-run/ai-engine` `npm run test`
+- `cd cloud-run/ai-engine && npm run type-check`
+- `cd cloud-run/ai-engine && npm test` (`962/962`)
 - `npm run docs:components:verify`
 - local Playwright MCP targeted QA 기록: `QA-20260503-0396`
+
+## Completion Notes
+
+- `src/lib/ai/route-decision.ts`에 root app 공통 `RouteDecision` builder/normalizer를 추가했다.
+- frontend stream/job 판단은 `useQueryExecution`의 read-only callback으로 노출하고, client-only artifact는 assistant metadata에 `routeDecision`을 보존한다.
+- BFF job 생성 응답과 Redis job metadata에 `intent='job'`, `executionPath='job'` routeDecision을 저장한다.
+- Cloud Run supervisor stream done metadata와 AI Engine job result metadata에 `decidedBy='cloud-run'` routeDecision을 보존한다.
+- AssistantPlan/AssistantResult facade와 routing authority 이전은 범위 밖으로 유지했다.
 
 ## 단계별 커밋/푸시/배포 판단
 
