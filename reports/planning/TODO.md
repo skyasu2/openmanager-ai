@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-03 KST (`AI Assistant AssistantPlan/AssistantResult facade M2 completed`)
+**Last Updated**: 2026-05-03 KST (`AI Assistant Architecture Evolution M3 completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -16,6 +16,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| AI Assistant Architecture Evolution (M4~M7) | High | [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) — Option A 유지, Option C/E 흡수: ArtifactEnvelope, authoritative Planner, `/api/ask`, deterministic fact/eval guard |
 | AI Streaming UI 개선 (S1~S3) | Medium | [ai-streaming-ui-improvement-plan.md](ai-streaming-ui-improvement-plan.md) — 전체 페이지 실제 SSE 전환, Cold Start 카운트다운, Agent 단계 실시간 표시 |
 
 ---
@@ -41,6 +42,14 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-03 #265)
+- [x] AI Assistant Architecture Evolution M3
+  - [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md)를 M3 범위 Approved로 정리하고 기준 문서 정합성 보정
+  - `ai-assistant-initial-design-comparison.md`가 M2 실제 read-only `AssistantPlan`/`AssistantResult` contract와 future authoritative planner target을 분리해서 설명하도록 수정
+  - 종합 점수 분모를 9개 기준 기준 `/45`로 정정하고 M4~M7 gap table 추가
+  - 웹/공식 문서 기준으로 현재 상태를 Option A 개선 중간 단계로 명시하고, AI SDK v6 `Output.object` 방향, Vercel route/runtime duration 표현, tool guardrail/eval/OTel observability/token limit 관점 보강
+  - 검증: `npm run docs:budget`, `npm run docs:ai-consistency`, `git diff --check`
 
 ### Completed (2026-05-03 #264)
 - [x] AI Assistant AssistantPlan/AssistantResult facade M2

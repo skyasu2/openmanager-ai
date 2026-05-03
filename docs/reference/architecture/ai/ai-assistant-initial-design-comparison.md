@@ -9,7 +9,7 @@
 > Tags: ai,assistant,architecture,frontend,backend,comparison
 
 **분석 기준일**: 2026-05-03
-**현재 구현 기준**: OpenManager AI v8.11.85, Vercel Frontend + Cloud Run AI Engine
+**현재 구현 기준**: OpenManager AI v8.11.86, Vercel Frontend + Cloud Run AI Engine
 **목적**: 처음부터 프로젝트를 설계한다고 가정하고, 실제 채택한 구조(Option A)와 검토했던 대안들을 비교한다. 합리화가 아니라 대체 설계와의 차이를 통해 현재 구현에서 바꿀 점, 유지할 점, 나중에 검토할 점을 분리하는 것이 목적이다. 더 나은 방법이 있으면 채택한다.
 
 **문서 사용법**:
@@ -17,6 +17,12 @@
 - 대안들은 즉시 rewrite 후보가 아니라 현재 구현을 비추는 비교 렌즈로 사용한다.
 - 각 대안은 "현재 Option A에 무엇을 흡수해야 하는가", "무엇은 지금 바꾸지 말아야 하는가"를 판단하기 위한 기준이다.
 - 최종 산출물은 추상적인 아키텍처 선호가 아니라 §7의 적용 시나리오와 §8의 미결정 질문이다.
+
+**현재 상태 판정**:
+
+- 현재 구현은 아직 **Option A 개선 중간 단계**다.
+- M1/M2는 routing authority 이전이 아니라, 향후 Option C/E 원칙을 흡수하기 위한 read-only contract layer다.
+- Option C/E는 완료된 현재 상태가 아니라, 현재 Option A가 M4~M7에서 흡수해야 할 제품/분석 목표다.
 
 ---
 
@@ -69,7 +75,7 @@
 |------------|-----------|
 | Frontend chat transport | `useChat` + `DefaultChatTransport`로 UIMessage stream을 유지한다. |
 | Cloud Run streaming | `createUIMessageStreamResponse`, `streamText`를 stream protocol과 token delivery에 사용한다. |
-| Artifact formatting | `generateObject` + Zod schema로 typed artifact를 생성·검증한다. |
+| Artifact formatting | 목표 설계는 AI SDK v6 `generateText`/`streamText` + `Output.object`/Zod schema로 typed artifact를 생성·검증한다. 현재 일부 `generateObjectWithFallback` 경로는 compatibility layer로 보고 점진 수렴한다. |
 | Drill-down 조사 | `ToolLoopAgent`/tool calling은 사용하되, tool은 deterministic OTel Engine의 typed query만 노출한다. |
 | Provider abstraction | Groq/Cerebras/Mistral/Gemini fallback과 capability gate를 SDK wrapper 뒤에 둔다. |
 
@@ -145,8 +151,8 @@ flowchart TB
 |------|-----------|-----------|-----|
 | 데이터 | precomputed deterministic (18호스트 × 144슬롯, 같은 입력 → 같은 출력) | 실시간 모니터링 AI처럼 보이는 UX | 데이터 복잡도 < 아키텍처 복잡도 |
 | 판단 | `rca-analysis.ts`, `analyst-tools-detect.ts` 등 모든 tool이 deterministic code로 계산 | ToolLoopAgent + multi-agent supervisor | LLM이 "판단"이 아닌 "설명" 역할 |
-| 라우팅 | `supervisor-routing.ts` 574줄 regex 기반 deterministic intent 분류 | LLM 기반 agent orchestration처럼 보이는 구조 | 실체는 rule engine |
-| 비동기 | precomputed 데이터 기반 계산은 대부분 수 초 이내 완료 | Job queue (Redis + Cloud Tasks) | 60초 timeout이 병목이 되는 경우는 LLM 호출 실패이지 분석 시간 초과가 아님 |
+| 라우팅 | `supervisor-routing.ts`의 큰 regex 기반 deterministic intent 분류 | LLM 기반 agent orchestration처럼 보이는 구조 | 실체는 rule engine |
+| 비동기 | precomputed 데이터 기반 계산은 대부분 수 초 이내 완료 | Job queue (Redis + Cloud Tasks) | route duration/stream 유지가 병목이 되는 경우는 LLM 호출 실패이지 분석 시간 초과가 아님 |
 
 **이 관찰의 의미**:
 
@@ -162,15 +168,15 @@ flowchart TB
 [원인 1] Vercel + Cloud Run 분리 (auth는 Vercel, AI 실행은 Cloud Run)
   │
   ├─→ BFF proxy 계층 필수
-  │     └─ stream route 611줄 (fetch → retry → timeout → resumable)
-  │     └─ 8개 BFF 엔드포인트 (각기 다른 maxDuration, 에러 핸들링)
+  │     └─ 큰 stream route (fetch → retry → timeout → resumable)
+  │     └─ 여러 BFF 엔드포인트 (각기 다른 maxDuration, 에러 핸들링)
   │     └─ 메시지 정규화 (normalizeMessagesForCloudRun)
   │
-  ├─→ [원인 2] Vercel maxDuration = 60초 hard limit
-  │     └─ 60초 넘는 분석 → Job Queue (Redis + Cloud Tasks) 도입
+  ├─→ [원인 2] Vercel function duration / stream proxy 제약
+  │     └─ route별 maxDuration, 비용, 장시간 streaming 안정성 때문에 Job Queue (Redis + Cloud Tasks) 도입
   │     └─ /api/ai/jobs route + 상태 폴링 + progress UI
   │     └─ 단, precomputed 데이터 기반 계산은 수 초면 완료
-  │        → 60초 초과는 "LLM 호출 실패/재시도" 시나리오뿐
+  │        → 장시간 경로의 실제 병목은 "분석 계산"보다 LLM 호출 실패/재시도/stream 유지 시나리오
   │        → job queue의 실제 활용도가 낮은 이유
   │
   ├─→ [원인 3] Multi-provider 무료 tier 제약 (분리와 독립적 원인)
@@ -181,13 +187,13 @@ flowchart TB
   │
   └─→ [원인 4] Frontend/Backend 라우팅 이중화 (원인 1의 파생)
         └─ Frontend: useQueryExecution (복잡도 판단 → streaming vs job 분기)
-        └─ Backend: supervisor-routing.ts (574줄 regex intent 분류)
+        └─ Backend: supervisor-routing.ts (large regex intent classifier)
         └─ 같은 질문에 대해 두 곳에서 독립적으로 판단 → drift 위험
 ```
 
 **업계 레퍼런스는 왜 단순한가**: Datadog AI, New Relic AIM 등은 단일 플랫폼(자체 인프라)에서 query engine과 LLM wrapper가 같은 런타임으로 동작한다. BFF proxy가 불필요하고, duration 제한이 없어 job queue 동기도 없다. 단일 유료 provider 계약이므로 multi-provider fallback 복잡도도 없다.
 
-**분리 자체는 올바른 결정이었다**: Vercel에 모든 것을 넣으면 AI tool 실행이 60초로 제한되고, Cloud Run에 모든 것을 넣으면 SSR/CDN/edge 이점을 포기해야 한다. 분리는 맞지만, 분리로 인한 복잡도를 §7의 개선 방향(`/api/ask` facade, `AssistantPlan` 통일, Planner를 Cloud Run 집중)으로 줄이는 것이 과제다.
+**분리 자체는 올바른 결정이었다**: Vercel에 모든 것을 넣으면 route별 duration, 비용, streaming proxy 안정성 제약을 강하게 받기 쉽고, Cloud Run에 모든 것을 넣으면 SSR/CDN/edge 이점을 포기해야 한다. 분리는 맞지만, 분리로 인한 복잡도를 §7의 개선 방향(`/api/ask` facade, `AssistantPlan` 통일, Planner를 Cloud Run 집중)으로 줄이는 것이 과제다.
 
 ### 2.5 업계 레퍼런스와 LLM 의존도 스펙트럼
 
@@ -261,7 +267,7 @@ flowchart TB
         Planner["Monitoring Planner\ndeterministic route plan"]
         Tools["Monitoring Tools\nmetrics/logs/topology/retrieval"]
         Agent["Controlled Agent\nToolLoopAgent or provider API"]
-        Artifact["Artifact Builder\nZod validated output"]
+        Artifact["Artifact Builder\nAI SDK Output + Zod"]
         Policy["Provider Policy\ncapability/quota/fallback"]
     end
 
@@ -333,26 +339,40 @@ AIExperienceShell
 | Gateway | auth secret, Zod request validation, trace context, prompt guard | Cloud Run Hono route에서 일관 적용 |
 | Planner | query를 `lookup`, `ranking`, `diagnosis`, `forecast`, `report` 계획으로 변환 | LLM 전 deterministic classifier + optional structured classifier |
 | Tool layer | metrics/logs/topology/retrieval/web를 모두 typed tool로 제공 | LLM이 raw data를 만들지 않고 도구 결과만 사용 |
-| Agent runtime | plan별 single/multi/tool loop 실행 | AI SDK `ToolLoopAgent`, `streamText`, `generateText`, `generateObject` 조합 |
-| Artifact builder | report/trend/RCA/snapshot schema 생성 | Zod schema + versioned artifact contract |
+| Agent runtime | plan별 single/multi/tool loop 실행 | AI SDK `ToolLoopAgent`, `streamText`, `generateText` + `Output.object` 중심. 현재 `generateObjectWithFallback`는 compatibility path로 유지 |
+| Artifact builder | report/trend/RCA/snapshot schema 생성 | AI SDK Output/Zod schema + versioned artifact contract |
 | Resilience | timeout, abort, fallback, quota, cache | provider policy와 quota tracker를 runtime 앞단에 둠 |
 | Observability | route decision, tool call, provider attempt, usage, artifact id | trace id를 frontend metadata까지 전파 |
 
-처음부터 backend contract는 다음처럼 둔다. 아래 타입은 **proposed sketch**이며, 실제 도입 시에는 기존 타입과 정렬해야 한다. 특히 `EvidenceCard`는 현재 `cloud-run/ai-engine/src/lib/retrieval-contract.ts`의 계약을 우선 재사용하고, `ArtifactKind`/`PublicErrorCode` 같은 이름은 실제 코드의 artifact/error union에 맞춰 확정한다.
-
-> **구현 상태 (2026-05-03)**: `routeDecision` read-only metadata는 M1에서 구현되어 frontend stream/job/artifact, BFF job, Cloud Run stream done/job result metadata에서 보존된다. `AssistantPlan`/`AssistantResult` read-only facade는 M2에서 구현되어 기존 routeDecision을 감싸는 계획/결과 언어로 함께 보존된다. 실제 라우팅 권한은 아직 frontend `useQueryExecution`과 backend `resolveSupervisorModeDecision()`에 분산되어 있으며, `/api/ask` 단일 endpoint도 아직 없다.
+현재 M2 contract는 **authoritative planner가 아니라 read-only facade**다. 실제 shape는 `src/lib/ai/assistant-contract.ts`가 기준이며, 기존 `RouteDecision`을 감싸서 frontend stream/job/artifact, BFF job, Cloud Run stream done/job result metadata, history/restore/SSE 경로에 보존한다. 실제 라우팅 권한은 아직 frontend `useQueryExecution`과 backend `resolveSupervisorModeDecision()`에 분산되어 있으며, `/api/ask` 단일 endpoint도 아직 없다.
 
 ```ts
-type AssistantPlan =
-  | { kind: 'chat'; stream: true; tools: ToolName[] }
-  | { kind: 'artifact'; artifactKind: ArtifactKind; job: boolean }
-  | { kind: 'clarification'; missing: ScopeField[] };
+type AssistantPlan = {
+  kind: 'chat' | 'artifact' | 'clarification';
+  planVersion: string;
+  routeDecision: RouteDecision;
+  executionPath: RouteDecisionExecutionPath;
+  stream: boolean;
+  job: boolean;
+  artifactKind?: RouteDecisionArtifactKind;
+  reasonCodes: string[];
+  dataSlot?: string;
+  traceId?: string;
+  decidedBy: RouteDecisionDecider;
+};
 
-type AssistantResult =
-  | { kind: 'chat'; text: string; evidence: EvidenceCard[]; metadata: TraceMetadata }
-  | { kind: 'artifact'; artifact: AssistantArtifact; evidence: EvidenceCard[]; metadata: TraceMetadata }
-  | { kind: 'error'; code: PublicErrorCode; retryAfterMs?: number };
+type AssistantResult = {
+  kind: 'chat' | 'artifact' | 'error';
+  resultVersion: string;
+  routeDecision?: RouteDecision;
+  status: 'completed' | 'failed' | 'partial';
+  artifactKind?: RouteDecisionArtifactKind;
+  traceId?: string;
+  errorCode?: string;
+};
 ```
+
+future target에서는 위 facade가 Cloud Run Planner가 생성한 authoritative plan으로 승격되고, `AssistantResult`가 typed `ArtifactEnvelope` 또는 chat result payload를 직접 운반한다. 그 단계에서 `EvidenceCard`는 현재 `cloud-run/ai-engine/src/lib/retrieval-contract.ts`의 계약을 우선 재사용하고, artifact/error union은 실제 코드의 artifact/error 타입과 맞춰 확정한다.
 
 ---
 
@@ -368,13 +388,13 @@ type AssistantResult =
 
 | # | 후보 | 대체 설계 유형 | Option A와 다른 핵심 축 | 주요 장점 | 종합 점수¹ |
 |---|------|---------------|------------------------|-----------|:---------:|
-| B | Direct Streaming-Only | **실행 단순화** — job queue 제거, BFF는 인증만 | State boundary: Redis/Cloud Tasks 없음 | 운영 부담 감소, 디버깅 단순화 | 29 / 40 |
-| C | Artifact-First | **출력 우선 전환** — typed artifact가 1차 결과물 | Primary output: chat stream → typed artifact | 재현성·계약 테스트·QA 용이 | 33.5 / 40 |
-| D | Dedicated Pipeline | **실행 경계 분리** — 범용 supervisor 제거 | Control plane: 단일 supervisor → artifact별 pipeline | pipeline별 독립 테스트·최적화 | 31 / 40 |
-| E | Analytics Core | **판단 주체 전환** — deterministic engine이 핵심 | Execution model: LLM agent → query planner + DSL | hallucination 최소화, 비용 예측 가능 | 34.5 / 40 |
+| B | Direct Streaming-Only | **실행 단순화** — job queue 제거, BFF는 인증만 | State boundary: Redis/Cloud Tasks 없음 | 운영 부담 감소, 디버깅 단순화 | 29 / 45 |
+| C | Artifact-First | **출력 우선 전환** — typed artifact가 1차 결과물 | Primary output: chat stream → typed artifact | 재현성·계약 테스트·QA 용이 | 33.5 / 45 |
+| D | Dedicated Pipeline | **실행 경계 분리** — 범용 supervisor 제거 | Control plane: 단일 supervisor → artifact별 pipeline | pipeline별 독립 테스트·최적화 | 31 / 45 |
+| E | Analytics Core | **판단 주체 전환** — deterministic engine이 핵심 | Execution model: LLM agent → query planner + DSL | hallucination 최소화, 비용 예측 가능 | 34.5 / 45 |
 
 > ¹ 점수 산정: §4 종합 매트릭스 9개 기준, 각 5점 만점. "현재 구현과 거리"는 가까울수록 고점(없음=5, 중=3, 높음=2).
-> **Option A 기준점: 34 / 40**
+> **Option A 기준점: 34 / 45**
 
 반대로 `/api/ask` facade, `AssistantPlan`/`AssistantResult`, `routeDecision`, `ArtifactEnvelope`, provider smoke freshness는 대체 설계가 아니라 **Option A 개선 항목**이다. 이 항목들은 §7의 적용 시나리오에서 다룬다.
 
@@ -415,7 +435,7 @@ job queue(Redis/Cloud Tasks)를 제거하고 모든 요청을 Cloud Run streamin
 | 단점 | 브라우저가 Cloud Run stream에 직접 붙으므로 signed token, CORS, stream reconnect, abort, abuse protection 설계를 새로 해야 한다. durable result가 없으므로 탭 종료/네트워크 끊김에 약하다. |
 | Frontend | `useChat` transport 대상이 BFF stream route가 아니라 signed Cloud Run stream이 된다. job progress UI는 불필요하지만 reconnect/resume UX가 중요해진다. |
 | Backend | supervisor는 남길 수 있지만 job worker가 없다. 긴 report는 partial streaming 또는 client retry로 처리해야 한다. |
-| 적합도 | 대부분의 분석이 60초 이내이고, 결과 저장보다 즉시 응답 UX가 중요한 제품이면 현실적이다. 운영 보고서/재현성까지 중요하면 A보다 약하다. |
+| 적합도 | 대부분의 분석이 짧은 요청 예산 안에 끝나고, 결과 저장보다 즉시 응답 UX가 중요한 제품이면 현실적이다. 운영 보고서/재현성까지 중요하면 A보다 약하다. |
 
 ### Option C. Artifact-First Monitoring Copilot
 
@@ -480,11 +500,11 @@ Browser -> Query Planner -> Cloud Run Metrics DSL execution -> Deterministic ans
 | 계약 테스트 용이성 | 3 | 3 | 5 | 4 | 5 |
 | 장기 확장성 | 4 | 3 | 4 | 4 | 4 |
 | 현재 구현과 거리 | 5 | 2 | 2.5 | 2 | 3 |
-| **합계 (/ 40)** | **34** | **29** | **33.5** | **31** | **34.5** |
+| **합계 (/ 45)** | **34** | **29** | **33.5** | **31** | **34.5** |
 
 **채택 이유**: A는 job queue가 없으면 처리 못 하는 장시간 분석(B의 한계)과, artifact별 운영 복잡도(D의 단점) 사이에서 현실적 균형점이다. C와 E의 원칙은 A 구조 안에서 점진적으로 흡수한다.
 
-**솔직한 자기 진단**: §2.4에서 분석한 것처럼 현재 데이터가 precomputed/deterministic인 환경에서는 C+E 하이브리드가 데이터 본질에 더 맞았을 수 있다. 그럼에도 A를 유지하는 현실적 근거는 세 가지다: (1) 이미 작동하는 구현의 rewrite 비용이 개선 이점보다 크다, (2) 실시간 ingestion 전환 시 A의 복잡도가 정당화된다, (3) 포트폴리오/학습 자산으로서 multi-agent + provider fallback 경험이 가치가 있다. B의 운영 안정성은 precomputed 데이터 환경에서 "중"으로 평가한다. direct Cloud Run stream은 BFF 60초 병목을 피할 수 있지만, durable result와 reconnect/resume을 포기하거나 별도로 다시 설계해야 한다.
+**솔직한 자기 진단**: §2.4에서 분석한 것처럼 현재 데이터가 precomputed/deterministic인 환경에서는 C+E 하이브리드가 데이터 본질에 더 맞았을 수 있다. 그럼에도 A를 유지하는 현실적 근거는 세 가지다: (1) 이미 작동하는 구현의 rewrite 비용이 개선 이점보다 크다, (2) 실시간 ingestion 전환 시 A의 복잡도가 정당화된다, (3) 포트폴리오/학습 자산으로서 multi-agent + provider fallback 경험이 가치가 있다. B의 운영 안정성은 precomputed 데이터 환경에서 "중"으로 평가한다. direct Cloud Run stream은 BFF duration/stream proxy 병목을 피할 수 있지만, durable result와 reconnect/resume을 포기하거나 별도로 다시 설계해야 한다.
 
 ---
 
@@ -529,7 +549,7 @@ Browser -> Query Planner -> Cloud Run Metrics DSL execution -> Deterministic ans
 | 항목 | 현재 상태 | 평가 |
 |------|-----------|------|
 | Runtime split | Cloud Run Hono AI Engine | 긴 실행과 provider fallback에 적합하다. |
-| Agent execution | AI SDK `ToolLoopAgent`, `generateText`, `streamText`, `generateObject` 조합 | provider-neutral하고 TypeScript 생태계와 맞다. |
+| Agent execution | AI SDK `ToolLoopAgent`, `generateText`, `streamText`, 일부 `generateObjectWithFallback` compatibility path 조합 | provider-neutral하고 TypeScript 생태계와 맞다. 단, 새 structured output 경로는 AI SDK v6 `Output.object` 방향으로 수렴한다. |
 | Mode decision | multi-first + controlled single | 비용과 품질 균형을 잡으려는 설계다. |
 | Tools | metrics/logs/analysis/retrieval/web/finalAnswer | 도메인 tool coverage가 넓다. |
 | Provider policy | capability/quota/deprecation metadata | 무료 tier 운영에 필수다. |
@@ -539,7 +559,7 @@ Browser -> Query Planner -> Cloud Run Metrics DSL execution -> Deterministic ans
 
 | 보강 | 이유 |
 |------|------|
-| `AssistantPlan` schema 도입 | frontend/backend가 같은 route decision 언어를 쓰게 한다. |
+| authoritative `AssistantPlan` 승격 | M2 read-only facade는 완료됐다. 다음 단계는 Cloud Run Planner가 만든 plan을 shadow mode로 비교한 뒤 routing authority를 점진 이전하는 것이다. |
 | Planner와 Agent 분리 강화 | LLM이 route와 answer를 동시에 책임지면 재현성이 떨어진다. |
 | Tool result canonical schema | metric/log/retrieval evidence가 agent별로 다르게 흐르는 것을 막는다. |
 | Artifact version registry | `incident-report:v1`, `server-snapshot:v1`처럼 migration 가능하게 만든다. |
@@ -550,12 +570,12 @@ Browser -> Query Planner -> Cloud Run Metrics DSL execution -> Deterministic ans
 
 | 체크 | 현재 관찰 | 제안 |
 |------|-----------|------|
-| Tool-side guardrail | prompt guard는 있으나 tool input/output guardrail을 agent별로 더 좁힐 수 있다. | destructive/unsupported command, stale evidence, empty evidence를 tool guard로 차단. |
+| Tool-side guardrail | prompt guard는 있으나 tool input/output validation을 agent별로 더 좁힐 수 있다. | destructive/unsupported command, stale evidence, empty evidence를 tool input/output guard로 차단. |
 | Long job idempotency | Cloud Tasks retry와 Cloud Run timeout 특성상 idempotency가 중요하다. | job process lock + result version + retry attempt 기록 강화. |
 | Partial result | 장시간 report 실패 시 전체 실패 대신 partial artifact를 줄 수 있다. | `artifact.status = partial` contract 추가 검토. |
 | Provider capability drift | tool calling/structured output 지원 여부가 변하면 장애가 난다. | capability smoke를 정기/배포 전으로 분리. |
 | Retrieval recall gap 측정 | Knowledge Retrieval Lite가 no-result/low-score를 반환하는 자연어 질의에서 LLM이 근거 없는 일반론으로 보완할 수 있다. | `retrieval-contract.ts`의 `RetrievalSuppressedReason` (`no_results`/`budget_guard`/`unavailable`) 분포와 query class별 evidenceCount=0 응답 품질을 추적. 특히 `suppressedReason='no_results'`일 때 LLM 응답에 사실 근거가 포함되지 않았는지 검증. |
-| Evaluation set | artifact intent corpus는 좋지만 backend answer quality eval은 더 넓힐 수 있다. | query class별 golden response/evidence eval 추가. |
+| Evaluation set | artifact intent corpus는 좋지만 backend answer quality eval은 더 넓힐 수 있다. | query class별 golden response/evidence eval, retrieval context recall/precision, evidenceCount=0 응답 품질 기준 추가. |
 
 ---
 
@@ -583,10 +603,21 @@ Browser -> Query Planner -> Cloud Run Metrics DSL execution -> Deterministic ans
 
 전제 조건은 현재 서로 다른 응답 shape를 갖는 job queue 경로(`/api/ai/jobs`)와 streaming 경로(`/api/ai/supervisor/stream/v2`)를 먼저 정렬하는 것이다. 이 정규화 없이 `AssistantPlan`을 공통 contract로 올리면 BFF와 Cloud Run이 같은 계획 언어를 쓰더라도 결과 복원, artifact 렌더, retry 흐름이 다시 갈라진다.
 
-1. `AssistantPlan`을 BFF와 Cloud Run의 공통 contract로 만든다.
+1. Cloud Run Planner가 생성한 authoritative `AssistantPlan`을 BFF와 Cloud Run의 공통 contract로 만든다.
 2. Planner는 deterministic first, LLM classifier optional로 구성한다.
 3. Agent runtime은 plan executor로 내려가고, provider-specific logic은 policy layer에만 둔다.
 4. 모든 artifact는 schema registry와 migration function을 갖는다.
+
+### 7.4 M4~M7 Gap Table
+
+M1/M2는 기존 라우팅을 바꾸지 않고 공통 metadata 언어를 만든 단계다. 다음 gap은 routing authority, artifact contract, facade endpoint, deterministic fact boundary를 실제 제품 계약으로 승격하기 전에 해소해야 한다.
+
+| Milestone | 현재 상태 | 남은 gap | 다음 계약 |
+|-----------|-----------|----------|-----------|
+| M4 `ArtifactEnvelope` | artifact payload는 kind별로 분리되어 있고 legacy restore fallback은 보강됨 | artifact 공통 `artifactVersion`, `sourceMode`, `traceId`, `providerSummary`, evidence contract가 없음 | legacy payload는 계속 렌더링하고, 신규 artifact는 versioned envelope 또는 envelope-compatible metadata를 항상 포함 |
+| M5 authoritative Planner shadow | `AssistantPlan`은 `RouteDecision` read-only facade이며 authority는 frontend/BFF/Cloud Run에 분산 | Cloud Run이 만든 plan과 local decision drift를 측정할 shadow contract가 없음 | Cloud Run planner candidate를 metadata로 보존하고 mismatch는 public-safe reason code로 기록 |
+| M6 `/api/ask` facade | stream/job/artifact route surface가 유지되고 각 route가 M1/M2 metadata를 보존 | public entrypoint가 여러 개라 client routing과 route catalog 유지 비용이 남음 | `/api/ask`는 기존 route를 내부 위임으로 감싸고, 기존 route는 deprecation 전까지 backward compatible 유지 |
+| M7 `MonitoringFactPack`/eval guard | precomputed-state와 tool layer가 deterministic fact source처럼 동작하지만 명시적 fact boundary는 없음 | LLM/provider/retrieval 결과와 metric severity 계산의 책임 경계가 문서와 타입으로 분리되지 않음 | 같은 dataSlot/query scope는 같은 fact pack을 만들고, LLM은 fact explanation/formatting만 수행 |
 
 ---
 
@@ -608,11 +639,13 @@ Browser -> Query Planner -> Cloud Run Metrics DSL execution -> Deterministic ans
 
 - Vercel AI SDK v6 문서는 `useChat`이 transport 기반 구조를 사용하고, streaming chat UI 상태를 관리한다고 설명한다. 현재 `DefaultChatTransport` 사용은 이 방향과 맞다.
 - AI SDK UI의 `createUIMessageStreamResponse`는 UI message chunk streaming을 위한 Response를 만든다. 현재 Cloud Run stream v2가 이 프로토콜을 직접 만든다.
-- AI SDK Core는 `generateText`/`streamText`를 기본 텍스트 생성 API로 두고, tool calling과 structured data generation을 그 위 기능으로 설명한다.
+- AI SDK Core는 `generateText`/`streamText`를 기본 텍스트 생성 API로 두고, tool calling과 structured data generation을 그 위 기능으로 설명한다. v6 기준 새 structured output 경로는 `Output.object` 같은 output specification을 우선 기준으로 삼고, 현재 `generateObjectWithFallback` 경로는 compatibility/migration 대상으로 본다.
 - AI SDK `ToolLoopAgent`는 tool을 여러 step에서 호출하고 stop condition까지 반복하는 agent primitive다. 현재 BaseAgent의 `ToolLoopAgent` 사용은 multi-step monitoring agent에 적합하다.
-- Vercel Functions는 duration 제한이 있고, Cloud Run service timeout은 기본 300초, 최대 3600초다. 긴 AI 분석을 Cloud Run/job worker로 분리한 선택은 이 제약과 맞다.
+- Vercel Functions는 plan/runtime 설정에 따라 duration 제한이 있고, Cloud Run service timeout은 기본 300초, 최대 3600초다. 긴 AI 분석을 Cloud Run/job worker로 분리한 선택은 route별 duration, stream 안정성, 비용 통제 관점에서 타당하다.
 - OpenAI Structured Outputs는 JSON Schema 기반 schema adherence를 제공한다. provider가 OpenAI가 아니더라도 artifact contract 설계 원칙으로는 동일하게 유효하다.
-- OpenAI Agents SDK는 handoffs, guardrails, tracing을 SDK primitive로 제공한다. 다만 이 문서의 대안들은 Vercel AI SDK 기반을 고정 전제로 하므로, OpenAI Agents SDK는 비교 대상이 아니라 참고 가능한 managed-agent 설계 배경으로만 본다.
+- OpenAI Agents SDK는 handoffs, guardrails, tracing을 SDK primitive로 제공한다. 다만 이 문서의 대안들은 Vercel AI SDK 기반을 고정 전제로 하므로, OpenAI Agents SDK는 비교 대상이 아니라 tool guardrail/tracing 설계 배경으로만 본다.
+- OpenTelemetry GenAI semantic conventions와 Datadog LLM Observability는 LLM call, tool call, token, latency, evaluation result를 trace/span 단위로 보는 방향을 제시한다. `traceId`, `providerSummary`, `tool span`, `promptVersion`, `artifactVersion`은 M4~M7에서 함께 정렬할 관측성 축이다.
+- Elastic/New Relic 계열 observability AI 문서는 자연어 입력을 query/data fetch로 연결한 뒤 설명, 차트, 보고서로 반환하는 패턴을 보여준다. OpenManager의 deterministic fact → LLM explanation 방향은 이 패턴과 맞지만, broad prompt/token limit 관리는 scope narrowing과 clarification으로 보강해야 한다.
 
 ### External References
 
@@ -622,13 +655,22 @@ Browser -> Query Planner -> Cloud Run Metrics DSL execution -> Deterministic ans
 - Vercel AI SDK `ToolLoopAgent`: https://ai-sdk.dev/docs/reference/ai-sdk-core/tool-loop-agent
 - Vercel AI SDK loop control: https://ai-sdk.dev/docs/agents/loop-control
 - Vercel AI SDK text generation: https://ai-sdk.dev/docs/ai-sdk-core/generating-text
+- Vercel AI SDK Output: https://ai-sdk.dev/docs/reference/ai-sdk-core/output
+- Vercel AI SDK Testing: https://ai-sdk.dev/docs/ai-sdk-core/testing
+- Vercel AI SDK Telemetry: https://ai-sdk.dev/docs/ai-sdk-core/telemetry
 - Vercel Functions duration: https://vercel.com/docs/functions/configuring-functions/duration
 - Cloud Run request timeout: https://cloud.google.com/run/docs/configuring/request-timeout
+- Cloud Tasks HTTP target tasks: https://cloud.google.com/tasks/docs/creating-http-target-tasks
 - OpenAI Structured Outputs: https://platform.openai.com/docs/guides/structured-outputs
+- OpenAI Evaluation best practices: https://developers.openai.com/api/docs/guides/evaluation-best-practices
 - OpenAI Agents SDK guardrails: https://openai.github.io/openai-agents-js/guides/guardrails/
 - OpenAI Agents SDK handoffs: https://openai.github.io/openai-agents-js/guides/handoffs/
 - OpenAI Agents SDK tracing: https://openai.github.io/openai-agents-js/guides/tracing/
 - OpenAI Responses API: https://platform.openai.com/docs/api-reference/responses/create
+- OpenTelemetry GenAI spans: https://opentelemetry.io/docs/specs/semconv/gen-ai/gen-ai-spans/
+- Datadog LLM Observability: https://docs.datadoghq.com/llm_observability/
+- Elastic Observability AI Assistant: https://www.elastic.co/docs/solutions/observability/ai/observability-ai-assistant
+- New Relic AI: https://docs.newrelic.com/docs/agentic-ai/new-relic-ai/
 
 ---
 
@@ -652,6 +694,8 @@ Browser -> Query Planner -> Cloud Run Metrics DSL execution -> Deterministic ans
 | 2026-05-03 | 문서 목적을 현재 상태 개선 분석으로 명시 | 대안 설계를 rewrite 후보가 아니라 현재 구현의 변경·개선 필요점을 도출하는 비교 렌즈로 사용하도록 목적/§4/§7을 보강 |
 | 2026-05-03 | 대체 설계 후보 기준 강화 | `/api/ask`, `routeDecision`, `ArtifactEnvelope` 등은 대체 설계가 아니라 A의 개선 항목으로 분리. B/C/D/E는 A와 execution/state/output/control plane이 다른 후보로 재정의 |
 | 2026-05-03 | §2.5 업계 레퍼런스 비교 추가 | Datadog AI, New Relic AIM, Elastic AI 모두 "deterministic query engine + LLM narration" 패턴 확인. OpenManager 실질 동작은 업계 표준과 일치하나 구조적 복잡도에서 gap 존재를 외부 근거로 재확인 |
-| 2026-05-03 | §2.4 구조적 복잡도 인과관계 체인 추가 | Vercel+Cloud Run 분리가 BFF proxy(611줄 stream route), duration 제한→job queue, 라우팅 이중화의 1차 원인. multi-provider 무료 tier가 독립적 2차 원인. 업계 레퍼런스가 단순한 이유(단일 플랫폼, 단일 provider)와 대비. 분리 자체는 올바르나 복잡도를 §7 개선 방향으로 축소하는 것이 과제 |
+| 2026-05-03 | §2.4 구조적 복잡도 인과관계 체인 추가 | Vercel+Cloud Run 분리가 BFF proxy(large stream route), duration/stream 제약→job queue, 라우팅 이중화의 1차 원인. multi-provider 무료 tier가 독립적 2차 원인. 업계 레퍼런스가 단순한 이유(단일 플랫폼, 단일 provider)와 대비. 분리 자체는 올바르나 복잡도를 §7 개선 방향으로 축소하는 것이 과제 |
 | 2026-05-03 | `routeDecision` read-only metadata M1 구현 | 라우팅 동작은 유지하되 frontend stream/job/artifact, BFF job, Cloud Run stream done/job result metadata가 같은 `RouteDecision` shape를 보존하도록 정렬. `AssistantPlan`/`AssistantResult` facade와 routing authority 이전은 다음 단계로 유지 |
 | 2026-05-03 | `AssistantPlan`/`AssistantResult` read-only facade M2 구현 | 기존 라우팅 동작은 유지하고 `RouteDecision`을 plan/result facade로 감싸 frontend artifact/stream/job metadata, BFF job response/Redis metadata, Cloud Run supervisor stream done/job result metadata, history/restore/SSE 경로에 보존. `/api/ask`와 routing authority 이전은 후속 과제로 유지 |
+| 2026-05-03 | Architecture Evolution M3 문서 정합성 보정 | 현재 M2 read-only facade shape와 future authoritative planner target을 분리하고, 9개 기준 점수 분모를 `/45`로 정정했으며, M4~M7 gap table을 추가 |
+| 2026-05-03 | 웹/공식 문서 기반 M3 보강 | 현재 상태를 Option A 개선 중간 단계로 명시하고, AI SDK v6 structured output 목표를 `Output.object` 방향으로 보정했으며, Vercel duration을 60초 고정 제약으로 단정하지 않도록 수정. tool guardrail, eval, OTel/LLM observability, token limit 관점도 M4~M7 gap에 반영 |
