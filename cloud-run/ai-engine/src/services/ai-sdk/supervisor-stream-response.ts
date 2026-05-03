@@ -15,7 +15,7 @@ import {
 
 import type { SupervisorRequest } from './supervisor-types';
 import {
-  buildSupervisorAssistantPlan,
+  buildSupervisorAssistantPlanForRequest,
   buildSupervisorAssistantResult,
   buildSupervisorModeMetadata,
   buildSupervisorRouteDecision,
@@ -208,7 +208,10 @@ export function createSupervisorStreamResponse(
           traceId: request.traceId,
           queryAsOf: request.queryAsOf,
         });
-        const assistantPlan = buildSupervisorAssistantPlan(routeDecision);
+        const assistantPlan = buildSupervisorAssistantPlanForRequest(
+          request,
+          routeDecision
+        );
 
         writer.write({
           type: 'data-mode',

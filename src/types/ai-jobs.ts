@@ -62,6 +62,7 @@ export interface CreateJobRequest {
       enableRAG?: boolean;
       enableWebSearch?: boolean;
       queryAsOfDataSlot?: JobDataSlot;
+      localRouteDecision?: RouteDecision;
     };
   };
 }
@@ -142,6 +143,7 @@ export interface AIJob {
     enableRAG?: boolean;
     enableWebSearch?: boolean;
     queryAsOf?: JobQueryAsOf;
+    localRouteDecision?: RouteDecision;
     routeDecision?: RouteDecision;
     assistantPlan?: AssistantPlan;
     assistantResult?: AssistantResult;

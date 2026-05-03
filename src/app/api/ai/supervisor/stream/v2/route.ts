@@ -22,6 +22,7 @@ import { NextResponse } from 'next/server';
 import { createFallbackResponse } from '@/lib/ai/fallback/ai-fallback-handler';
 import { buildAITimingHeaders, startAITimer } from '@/lib/ai/observability';
 import { buildJobQueryAsOf } from '@/lib/ai/query-as-of';
+import { normalizeRouteDecision } from '@/lib/ai/route-decision';
 import {
   INVALID_SESSION_ID_MESSAGE,
   normalizeSupervisorDeviceType,
@@ -227,11 +228,18 @@ export const POST = withRateLimit(
         enableRAG,
         analysisMode,
         queryAsOfDataSlot,
+        localRouteDecision: rawLocalRouteDecision,
       } = parseResult.data;
       const queryAsOf = buildJobQueryAsOf(
         new Date().toISOString(),
         queryAsOfDataSlot
       );
+      const localRouteDecision = normalizeRouteDecision(rawLocalRouteDecision);
+      if (rawLocalRouteDecision !== undefined && !localRouteDecision) {
+        logger.warn(
+          '[SupervisorStreamV2] Ignoring invalid localRouteDecision payload'
+        );
+      }
 
       // 2. Extract session ID
       const { sessionId, ownerKey } = resolveScopedSessionIds(
@@ -418,6 +426,7 @@ export const POST = withRateLimit(
                 enableRAG,
                 analysisMode,
                 queryAsOf,
+                ...(localRouteDecision && { localRouteDecision }),
               }),
               signal: AbortSignal.timeout(timeoutMs),
             });

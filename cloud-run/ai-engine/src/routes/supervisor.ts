@@ -38,6 +38,7 @@ import {
   runWithQueryAsOf,
 } from '../data/query-as-of-context';
 import { logger } from '../lib/logger';
+import { normalizeSupervisorLocalRouteDecision } from '../services/ai-sdk/supervisor-mode';
 import { flushLangfuseBestEffort } from '../services/observability/langfuse-flush';
 import { extractTraceId } from './supervisor-trace';
 import { emitSupervisorStreamError } from './supervisor-stream-error';
@@ -109,6 +110,7 @@ const streamRequestSchema = z.object({
   analysisMode: z.enum(['auto', 'thinking']).optional(),
   queryAsOf: z.unknown().optional(),
   deviceType: z.enum(['mobile', 'desktop']).optional(),
+  localRouteDecision: z.unknown().optional(),
 });
 
 type StreamSupervisorRequest = z.infer<typeof streamRequestSchema>;
@@ -140,10 +142,16 @@ supervisorRouter.post('/', async (c: Context) => {
       analysisMode,
       queryAsOf: rawQueryAsOf,
       deviceType,
+      localRouteDecision: rawLocalRouteDecision,
     } = parseResult.data;
     const queryAsOf = normalizeQueryAsOf(rawQueryAsOf);
     if (rawQueryAsOf !== undefined && !queryAsOf) {
       logger.warn('[Supervisor] Ignoring invalid queryAsOf payload');
+    }
+    const localRouteDecision =
+      normalizeSupervisorLocalRouteDecision(rawLocalRouteDecision);
+    if (rawLocalRouteDecision !== undefined && !localRouteDecision) {
+      logger.warn('[Supervisor] Ignoring invalid localRouteDecision payload');
     }
 
     // 🎯 W3C Trace Context: traceparent 헤더에서 trace-id 추출
@@ -205,6 +213,7 @@ supervisorRouter.post('/', async (c: Context) => {
         traceId: upstreamTraceId,
         queryAsOf,
         deviceType,
+        localRouteDecision,
       })
     );
 
@@ -291,10 +300,18 @@ supervisorRouter.post('/stream', async (c: Context) => {
       analysisMode,
       queryAsOf: rawQueryAsOf,
       deviceType,
+      localRouteDecision: rawLocalRouteDecision,
     } = parseResult.data;
     const queryAsOf = normalizeQueryAsOf(rawQueryAsOf);
     if (rawQueryAsOf !== undefined && !queryAsOf) {
       logger.warn('[SupervisorStream] Ignoring invalid queryAsOf payload');
+    }
+    const localRouteDecision =
+      normalizeSupervisorLocalRouteDecision(rawLocalRouteDecision);
+    if (rawLocalRouteDecision !== undefined && !localRouteDecision) {
+      logger.warn(
+        '[SupervisorStream] Ignoring invalid localRouteDecision payload'
+      );
     }
 
     // 2. Get last user query for logging
@@ -342,6 +359,7 @@ supervisorRouter.post('/stream', async (c: Context) => {
           traceId: streamUpstreamTraceId,
           queryAsOf,
           deviceType,
+          localRouteDecision,
         };
 
         await runWithQueryAsOf(queryAsOf, async () => {
@@ -428,9 +446,22 @@ supervisorRouter.post('/stream/v2', async (c: Context) => {
       enableWebSearch,
       enableRAG,
       analysisMode,
+      queryAsOf: rawQueryAsOf,
       deviceType,
+      localRouteDecision: rawLocalRouteDecision,
     } =
       parseResult.data;
+    const queryAsOf = normalizeQueryAsOf(rawQueryAsOf);
+    if (rawQueryAsOf !== undefined && !queryAsOf) {
+      logger.warn('[SupervisorStreamV2] Ignoring invalid queryAsOf payload');
+    }
+    const localRouteDecision =
+      normalizeSupervisorLocalRouteDecision(rawLocalRouteDecision);
+    if (rawLocalRouteDecision !== undefined && !localRouteDecision) {
+      logger.warn(
+        '[SupervisorStreamV2] Ignoring invalid localRouteDecision payload'
+      );
+    }
 
     // 2. Get last user query for logging
     const lastUserMessage = messages.filter((m) => m.role === 'user').pop();
@@ -488,7 +519,9 @@ supervisorRouter.post('/stream/v2', async (c: Context) => {
       images,
       files,
       traceId: v2UpstreamTraceId,
+      queryAsOf,
       deviceType,
+      localRouteDecision,
     });
 
     logger.info('SupervisorStreamV2 response created');

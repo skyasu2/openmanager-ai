@@ -5,6 +5,7 @@ import {
   TRACEPARENT_HEADER,
 } from '@/config/ai-proxy.config';
 import { BREAKPOINTS } from '@/config/constants';
+import type { RouteDecision } from '@/lib/ai/route-decision';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import { consumeWarmupStartedAtForFirstQuery } from '@/utils/ai-warmup';
@@ -23,6 +24,7 @@ interface CreateHybridChatTransportParams {
   ragEnabledRef: MutableRefObject<boolean | undefined>;
   analysisModeRef: MutableRefObject<AnalysisMode | undefined>;
   queryAsOfDataSlotRef?: MutableRefObject<JobDataSlot | undefined>;
+  localRouteDecisionRef?: MutableRefObject<RouteDecision | undefined>;
 }
 
 export function createHybridChatTransport(
@@ -36,6 +38,7 @@ export function createHybridChatTransport(
     ragEnabledRef,
     analysisModeRef,
     queryAsOfDataSlotRef,
+    localRouteDecisionRef,
   } = params;
 
   return new DefaultChatTransport({
@@ -63,6 +66,9 @@ export function createHybridChatTransport(
       analysisMode: analysisModeRef.current,
       ...(queryAsOfDataSlotRef?.current && {
         queryAsOfDataSlot: queryAsOfDataSlotRef.current,
+      }),
+      ...(localRouteDecisionRef?.current && {
+        localRouteDecision: localRouteDecisionRef.current,
       }),
     }),
     prepareReconnectToStreamRequest: ({ id }) => ({

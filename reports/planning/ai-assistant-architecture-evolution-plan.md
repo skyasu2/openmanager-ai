@@ -6,7 +6,7 @@
 
 # AI Assistant Architecture Evolution Plan
 
-- 상태: Approved (M3~M4 completed; M5a contract/baseline completed; M5b~M7 implementation pending milestone approval)
+- 상태: Approved (M3~M5b completed; M6~M7 implementation pending milestone approval)
 - 작성일: 2026-05-03
 - TODO.md 연결: Backlog > `AI Assistant Architecture Evolution (M5~M7)`
 - 기준 문서: [ai-assistant-initial-design-comparison.md](../../docs/reference/architecture/ai/ai-assistant-initial-design-comparison.md)
@@ -86,6 +86,13 @@ M5a 완료 기록 (2026-05-03):
 - frontend stream/job decision, attachment streaming, artifact path, Cloud Run supervisor current behavior baseline을 테스트로 고정
 - routing authority, LLM/provider 호출, Cloud Run/Vercel route surface는 변경하지 않음
 
+M5b 완료 기록 (2026-05-03):
+- frontend streaming transport와 BFF job trigger가 local `RouteDecision`을 Cloud Run request에 전달한다.
+- Cloud Run은 기존 실행 경로를 바꾸지 않고 `plannerShadow` candidate를 `AssistantPlan` metadata에 추가한다.
+- drift는 `execution_path_mismatch`, `execution_mode_mismatch`, `artifact_kind_mismatch`, `local_decision_missing` 같은 public-safe reason code로만 노출한다.
+- 단순 metric lookup 및 server snapshot artifact는 deterministic candidate로 유지하고, RCA/report/advisor/vision만 multi-agent escalation candidate가 된다.
+- 50개 baseline corpus에서 shadow/local mismatch 허용치 `≤5/50`, latency overhead `≤200ms`, 신규 LLM/provider 호출 없음 기준을 unit test로 고정했다.
+
 ## 범위
 
 ### 포함
@@ -121,7 +128,7 @@ M5a 완료 기록 (2026-05-03):
 
 ## 계약 (Contract)
 
-> Approved 범위는 M3 문서/contract 정합성으로 제한한다. M4~M7은 변경 대상 파일과 계약 초안은 기록되어 있으나, 구현 착수 전 milestone별 failing test 시나리오를 다시 확정한다. 이 계획서는 전체 로드맵이며, 구현은 milestone 단위로 진행한다.
+> Approved 범위 중 M3~M5b는 완료되었다. M6~M7은 변경 대상 파일과 계약 초안은 기록되어 있으나, 구현 착수 전 milestone별 failing test 시나리오를 다시 확정한다. 이 계획서는 전체 로드맵이며, 구현은 milestone 단위로 진행한다.
 
 ### 공통 불변조건
 
@@ -247,12 +254,12 @@ Escalation 기준:
 - 단순 metric query를 multi-agent로 보내 품질이 높아졌다고 간주하지 않는다. 비용, latency, drift까지 함께 평가한다.
 
 테스트 시나리오:
-- [ ] Cloud Run planner가 chat/artifact/job/clarification plan을 생성한다.
-- [ ] BFF는 Cloud Run shadow plan을 metadata로 보존하되 기존 실행 경로를 바꾸지 않는다.
-- [ ] local decision과 shadow plan mismatch가 public-safe reason code로 기록된다.
+- [x] Cloud Run planner가 chat/artifact/job plan을 shadow candidate로 생성한다.
+- [x] BFF는 local decision을 Cloud Run으로 전달하고 Cloud Run은 shadow plan을 metadata로 보존하되 기존 실행 경로를 바꾸지 않는다.
+- [x] local decision과 shadow plan mismatch가 public-safe reason code로 기록된다.
 - [ ] provider/LLM 실패 시 deterministic fallback plan이 생성된다.
-- [ ] 단순 metric lookup은 `multi-agent`로 escalation되지 않는다.
-- [ ] RCA/report/advisor/vision 요청은 `multi-agent` candidate와 escalation reason을 가진다.
+- [x] 단순 metric lookup은 `multi-agent`로 escalation되지 않는다.
+- [x] RCA/report/advisor/vision 요청은 `multi-agent` candidate와 escalation reason을 가진다.
 - [ ] retrieval low-confidence는 multi-agent 자동 승격이 아니라 `insufficient_evidence` 계약으로 노출된다.
 - [ ] 기존 `resolvedMode`/`handoffs` metadata는 legacy client에서 그대로 복원된다.
 
@@ -323,8 +330,8 @@ type MonitoringFactPack = {
 - [x] Task 2 — M4 `ArtifactEnvelope` contract failing tests 작성
 - [x] Task 3 — M4 artifact generator/card/history restore envelope 적용
 - [x] Task 4a — M5a current behavior baseline + ExecutionMode contract spec/failing tests 작성
-- [ ] Task 4b — M5b Cloud Run authoritative planner shadow mode + multi-agent escalation policy spec 및 failing tests 작성
-- [ ] Task 5 — M5 shadow plan metadata, executionMode, escalation reason, drift reason, fallback plan 구현
+- [x] Task 4b — M5b Cloud Run authoritative planner shadow mode + multi-agent escalation policy spec 및 failing tests 작성
+- [x] Task 5 — M5 shadow plan metadata, executionMode, escalation reason, drift reason 구현
 - [ ] Task 6 — M6 `/api/ask` facade spec 및 failing tests 작성
 - [ ] Task 7 — M6 `/api/ask` wrapper 구현 및 frontend opt-in path 연결
 - [ ] Task 8 — M7 `MonitoringFactPack` spec 및 deterministic tests 작성
@@ -379,14 +386,14 @@ type MonitoringFactPack = {
 - [x] M3 기준 문서가 AI SDK v6 structured output 목표를 `Output.object` 방향으로 설명하고 기존 `generateObjectWithFallback`을 compatibility path로 분리한다.
 - [x] M3 기준 문서가 Vercel duration을 60초 hard limit로 단정하지 않고 route/runtime별 제약으로 표현한다.
 - [x] Artifact artifactVersion/envelope contract가 legacy-safe하게 적용된다.
-- [ ] Cloud Run Planner shadow mode가 `AssistantPlan` candidate, `executionMode`, escalation reason, drift metadata를 노출한다.
-- [ ] 현재 stream/job/artifact/multi-agent 동작 baseline corpus가 M5 변경 전후를 비교한다.
-- [ ] 단순 metric query는 deterministic/single 경로로 유지되고, RCA/report/vision/advisory만 multi-agent candidate가 된다.
+- [x] Cloud Run Planner shadow mode가 `AssistantPlan` candidate, `executionMode`, escalation reason, drift metadata를 노출한다.
+- [x] 현재 stream/job/artifact/multi-agent 동작 baseline corpus가 M5 변경 전후를 비교한다.
+- [x] 단순 metric query는 deterministic/single 경로로 유지되고, RCA/report/vision/advisory만 multi-agent candidate가 된다.
 - [ ] `/api/ask` facade가 기존 route를 감싸며 최소 1개 frontend opt-in path에서 동작한다.
 - [ ] MonitoringFactPack이 deterministic threshold 판단을 고정한다.
 - [ ] retrieval recall/provider freshness guard가 deterministic test 또는 bounded smoke로 추적된다.
-- [ ] root `npm run type-check`, `npm run lint`, `npm run test:quick`, `npm run test:contract` 통과
-- [ ] AI Engine 변경 시 `cd cloud-run/ai-engine && npm run type-check && npm test` 통과
+- [x] root `npm run type-check`, `npm run lint`, `npm run test:quick`, `npm run test:contract` 통과
+- [x] AI Engine 변경 시 `cd cloud-run/ai-engine && npm run type-check && npm test` 통과
 - [x] docs 변경 시 `npm run docs:budget`, `npm run docs:ai-consistency` 통과
 - [ ] 배포 필요 시 GitLab CI 경유 또는 예외 사유 기록
 
@@ -402,3 +409,4 @@ type MonitoringFactPack = {
 - 2026-05-03 M5-B 계획 보강: 현재 실제 동작 surface(frontend artifact, frontend stream/job, Cloud Run supervisor)를 기준으로 baseline corpus, shadow planner, drift 측정, escalation guard, rollout decision 작업을 M5 실행 계획에 추가했다.
 - 2026-05-03 계획서 평가 결과 반영: M5를 M5a(contract+baseline)와 M5b(shadow+drift+escalation)로 분리해 범위를 관리 가능 수준으로 축소했다. M7을 M5와 병렬 진행 가능으로 표시했다. M5-B.5 rollout decision에 drift ≤10%, latency overhead ≤200ms p95, quota 영향 ≤5% 정량 기준을 추가했다. Streaming UI plan과의 S1→M6, S2→M5 교차 리스크를 명시했다. TODO.md Active Task에 M5a를 승격했다.
 - 2026-05-03 M5a 완료: `AssistantPlan.executionMode`, public-safe escalation/planner shadow normalizer, frontend/Cloud Run current behavior baseline을 구현했다. TODO.md Active Task는 M5b shadow planner로 이동했다.
+- 2026-05-03 M5b 완료: local route decision 전달, Cloud Run planner shadow metadata, drift/escalation reason, 50개 corpus threshold를 구현했다. 기존 실행 authority는 유지하며 TODO.md Active Task는 M6 `/api/ask` facade로 이동했다.

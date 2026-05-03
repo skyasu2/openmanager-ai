@@ -20,12 +20,93 @@ export type { ImageAttachment, FileAttachment };
 
 export type SupervisorMode = 'single' | 'multi' | 'auto';
 export type AnalysisMode = 'auto' | 'thinking';
+export type SupervisorRouteDecisionExecutionPath =
+  | 'stream'
+  | 'job'
+  | 'client-artifact';
+export type SupervisorRouteDecisionMode = 'single' | 'multi';
+export type SupervisorRouteDecisionComplexity =
+  | 'simple'
+  | 'moderate'
+  | 'complex'
+  | 'very_complex';
+export type SupervisorRouteDecisionDecider = 'frontend' | 'bff' | 'cloud-run';
+export type SupervisorPlannerExecutionMode =
+  | 'deterministic'
+  | 'single-agent'
+  | 'multi-agent';
+export type SupervisorPlannerEscalationReasonCode =
+  | 'rca_requested'
+  | 'incident_report_requested'
+  | 'cross_domain_evidence_required'
+  | 'advisor_requested'
+  | 'vision_input_present'
+  | 'analysis_mode_thinking'
+  | 'single_path_low_confidence';
+export type SupervisorPlannerDriftReasonCode =
+  | 'execution_path_mismatch'
+  | 'execution_mode_mismatch'
+  | 'artifact_kind_mismatch'
+  | 'reason_code_mismatch'
+  | 'local_decision_missing'
+  | 'shadow_plan_unavailable';
 export type SupervisorModeSelectionSource =
   | 'explicit'
   | 'auto_complexity'
   | 'auto_default'
   | 'single_disallowed_upgrade'
   | 'analysis_mode_thinking';
+
+export interface SupervisorLocalRouteDecision {
+  intent: 'chat' | 'artifact' | 'job' | 'clarification';
+  executionPath: SupervisorRouteDecisionExecutionPath;
+  mode?: SupervisorRouteDecisionMode;
+  artifactKind?:
+    | 'server-snapshot'
+    | 'incident-report'
+    | 'monitoring-analysis';
+  complexity?: SupervisorRouteDecisionComplexity;
+  reasonCodes: string[];
+  ruleVersion: string;
+  dataSlot?: string;
+  traceId?: string;
+  decidedBy: SupervisorRouteDecisionDecider;
+}
+
+export interface SupervisorPlannerShadowCandidate {
+  kind: 'chat' | 'artifact' | 'clarification';
+  executionPath: SupervisorRouteDecisionExecutionPath;
+  executionMode: SupervisorPlannerExecutionMode;
+  artifactKind?:
+    | 'server-snapshot'
+    | 'incident-report'
+    | 'monitoring-analysis';
+  reasonCodes: string[];
+  escalationReasonCodes?: SupervisorPlannerEscalationReasonCode[];
+  decidedBy: 'cloud-run';
+}
+
+export interface SupervisorPlannerShadowLocalDecision {
+  intent?: SupervisorLocalRouteDecision['intent'];
+  executionPath: SupervisorRouteDecisionExecutionPath;
+  mode?: SupervisorRouteDecisionMode;
+  complexity?: SupervisorRouteDecisionComplexity;
+  reasonCodes: string[];
+  decidedBy: SupervisorRouteDecisionDecider;
+}
+
+export interface SupervisorPlannerShadowDrift {
+  matched: boolean;
+  reasonCodes: SupervisorPlannerDriftReasonCode[];
+}
+
+export interface SupervisorPlannerShadow {
+  plannerVersion?: string;
+  candidate: SupervisorPlannerShadowCandidate;
+  localDecision?: SupervisorPlannerShadowLocalDecision;
+  drift?: SupervisorPlannerShadowDrift;
+  latencyMs?: number;
+}
 
 export interface SupervisorRequest {
   messages: Array<{ role: 'user' | 'assistant'; content: string }>;
@@ -67,6 +148,8 @@ export interface SupervisorRequest {
   queryAsOf?: QueryAsOf;
   /** 클라이언트 디바이스 타입 (응답 길이/형식 최적화) */
   deviceType?: 'mobile' | 'desktop';
+  /** BFF/frontend route decision captured before Cloud Run planning. */
+  localRouteDecision?: SupervisorLocalRouteDecision;
 }
 
 export interface SupervisorResponse {
@@ -131,6 +214,7 @@ export interface SupervisorResponse {
       stream: true;
       job: false;
       reasonCodes: string[];
+      plannerShadow?: SupervisorPlannerShadow;
       dataSlot?: string;
       traceId?: string;
       decidedBy: 'cloud-run';

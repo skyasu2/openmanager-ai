@@ -17,6 +17,8 @@ import { buildAssistantPlanFromRouteDecision } from '@/lib/ai/assistant-contract
 import { buildJobQueryAsOf } from '@/lib/ai/query-as-of';
 import {
   buildRouteDecision,
+  normalizeRouteDecision,
+  type RouteDecision,
   type RouteDecisionComplexity,
 } from '@/lib/ai/route-decision';
 import {
@@ -74,6 +76,7 @@ interface JobToolOptions {
   analysisMode?: AnalysisMode;
   enableRAG?: boolean;
   enableWebSearch?: boolean;
+  localRouteDecision?: RouteDecision;
 }
 
 function mapJobComplexityToRouteDecision(
@@ -96,6 +99,12 @@ function extractJobToolOptions(metadata?: JobRequestMetadata): JobToolOptions {
   const analysisMode = metadata?.analysisMode;
   const enableRAG = metadata?.enableRAG;
   const enableWebSearch = metadata?.enableWebSearch;
+  const localRouteDecision = normalizeRouteDecision(
+    metadata?.localRouteDecision
+  );
+  if (metadata?.localRouteDecision !== undefined && !localRouteDecision) {
+    logger.warn('[AI Jobs] Ignoring invalid localRouteDecision metadata');
+  }
 
   return {
     ...(isAnalysisMode(analysisMode) && {
@@ -107,6 +116,7 @@ function extractJobToolOptions(metadata?: JobRequestMetadata): JobToolOptions {
     ...(typeof enableWebSearch === 'boolean' && {
       enableWebSearch,
     }),
+    ...(localRouteDecision && { localRouteDecision }),
   };
 }
 
@@ -162,6 +172,10 @@ async function handlePOST(request: NextRequest) {
       dataSlot: queryAsOf.dataSlot.timeLabel,
     });
     const assistantPlan = buildAssistantPlanFromRouteDecision(routeDecision);
+    const workerToolOptions: JobToolOptions = {
+      ...toolOptions,
+      localRouteDecision: toolOptions.localRouteDecision ?? routeDecision,
+    };
 
     // Redis에 Job 저장
     const job: AIJob = {
@@ -183,6 +197,7 @@ async function handlePOST(request: NextRequest) {
         factors: complexity.factors,
         ownerKey,
         queryAsOf,
+        localRouteDecision: workerToolOptions.localRouteDecision,
         routeDecision,
         assistantPlan,
         ...toolOptions,
@@ -233,7 +248,7 @@ async function handlePOST(request: NextRequest) {
                 query,
                 jobType,
                 options?.sessionId,
-                toolOptions,
+                workerToolOptions,
                 getRateLimitIdentity(request),
                 queryAsOf
               )

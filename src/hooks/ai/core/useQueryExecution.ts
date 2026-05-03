@@ -50,6 +50,7 @@ interface AsyncJobRequestOptions {
   enableRAG?: boolean;
   enableWebSearch?: boolean;
   queryAsOfDataSlot?: JobDataSlot;
+  localRouteDecision?: RouteDecision;
 }
 
 type SendMessageLike = (message: {
@@ -356,6 +357,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
         const jobQueueOptions: AsyncJobRequestOptions = {
           ...(analysisMode && { analysisMode }),
           ...(queryAsOfDataSlot && { queryAsOfDataSlot }),
+          localRouteDecision: routeDecision,
           ...buildSourceToolRequestOptions({
             ragEnabled,
             webSearchEnabled,

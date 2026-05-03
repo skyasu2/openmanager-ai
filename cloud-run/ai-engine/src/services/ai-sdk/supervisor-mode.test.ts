@@ -274,4 +274,189 @@ describe('supervisor planner shadow', () => {
       ]),
     });
   });
+
+  it('keeps shadow planner drift within the rollout threshold on the baseline corpus', () => {
+    const metricQueries = [
+      'CPU 알려줘',
+      'MEMORY 사용률 알려줘',
+      'DISK 상태 알려줘',
+      'network traffic 보여줘',
+      '서버 health 확인',
+      'CPU 높은 서버 알려줘',
+      '메모리 높은 서버 목록',
+      '디스크 80 이상 서버',
+      'network 오류 상태',
+      'server metrics',
+      'CPU top 3',
+      '현재 서버 상태',
+    ];
+    const artifactQueries = [
+      '서버 상태 스냅샷 만들어줘',
+      'server snapshot export',
+      '인프라 상태 카드 생성',
+      '서버 상태 스냅샷 JSON',
+      '서버 상태 스냅샷 카드',
+      'server snapshot card',
+    ];
+    const reportQueries = [
+      '전체 서버 장애 원인 분석 보고서 만들어줘',
+      'incident report 작성',
+      '장애 분석 보고서',
+      'postmortem 작성',
+      '서버 사고 분석 리포트',
+      '장애 보고서 생성',
+      'incident summary report',
+      '장애 원인 report',
+    ];
+    const rcaQueries = [
+      '장애 원인 분석',
+      'RCA 해줘',
+      'root cause of CPU spike',
+      '근본 원인 찾아줘',
+      '상관관계 분석',
+      '장애 원인 상관관계',
+      'CPU spike 원인 분석',
+      '에러율 상승 원인 분석',
+    ];
+    const advisorQueries = [
+      '조치 방안 알려줘',
+      '해결 방법 추천',
+      'remediation plan',
+      'runbook 만들어줘',
+      'how to fix CPU spike',
+      '최적화 권장사항',
+    ];
+    const visionQueries = [
+      '이미지 첨부된 대시보드 분석',
+      'screenshot 분석',
+      '그래프 이미지 원인',
+      'alert 캡처 봐줘',
+      'dashboard screenshot',
+    ];
+    const singleAgentQueries = [
+      '안녕하세요',
+      '운영 지표 용어 설명',
+      'Prometheus가 뭐야',
+      '도움말 알려줘',
+      '이 기능 설명해줘',
+    ];
+
+    const cases = [
+      ...metricQueries.map((query) => ({
+        query,
+        expectedExecutionMode: 'deterministic',
+        localDecision: {
+          intent: 'chat',
+          executionPath: 'stream',
+          complexity: 'simple',
+          reasonCodes: ['complexity_below_threshold'],
+          decidedBy: 'frontend',
+        },
+      })),
+      ...artifactQueries.map((query) => ({
+        query,
+        expectedExecutionMode: 'deterministic',
+        localDecision: {
+          intent: 'artifact',
+          executionPath: 'client-artifact',
+          artifactKind: 'server-snapshot',
+          reasonCodes: ['artifact_server-snapshot'],
+          decidedBy: 'frontend',
+        },
+      })),
+      ...reportQueries.map((query) => ({
+        query,
+        expectedExecutionMode: 'multi-agent',
+        localDecision: {
+          intent: 'job',
+          executionPath: 'job',
+          complexity: 'complex',
+          reasonCodes: ['job_queue_api'],
+          decidedBy: 'bff',
+        },
+      })),
+      ...rcaQueries.map((query) => ({
+        query,
+        expectedExecutionMode: 'multi-agent',
+        localDecision: {
+          intent: 'chat',
+          executionPath: 'stream',
+          mode: 'multi',
+          reasonCodes: ['rca_requested'],
+          decidedBy: 'frontend',
+        },
+      })),
+      ...advisorQueries.map((query) => ({
+        query,
+        expectedExecutionMode: 'multi-agent',
+        localDecision: {
+          intent: 'chat',
+          executionPath: 'stream',
+          mode: 'multi',
+          reasonCodes: ['advisor_requested'],
+          decidedBy: 'frontend',
+        },
+      })),
+      ...visionQueries.map((query) => ({
+        query,
+        expectedExecutionMode: 'multi-agent',
+        images: [{ data: 'data:image/png;base64,aaa', mimeType: 'image/png' }],
+        localDecision: {
+          intent: 'chat',
+          executionPath: 'stream',
+          mode: 'multi',
+          reasonCodes: ['attachment_streaming'],
+          decidedBy: 'frontend',
+        },
+      })),
+      ...singleAgentQueries.map((query) => ({
+        query,
+        expectedExecutionMode: 'single-agent',
+        localDecision: {
+          intent: 'chat',
+          executionPath: 'stream',
+          mode: 'single',
+          reasonCodes: ['complexity_below_threshold'],
+          decidedBy: 'frontend',
+        },
+      })),
+    ];
+
+    expect(cases).toHaveLength(50);
+
+    const startedAt = Date.now();
+    let mismatches = 0;
+    for (const item of cases) {
+      const routeDecision = buildSupervisorRouteDecision(
+        resolveSupervisorModeDecision({
+          mode: 'auto',
+          messages: [{ role: 'user', content: item.query }],
+        })
+      );
+      const localRouteDecision = normalizeSupervisorLocalRouteDecision(
+        item.localDecision
+      );
+      const shadow = buildSupervisorPlannerShadow({
+        request: {
+          mode: 'auto',
+          messages: [{ role: 'user', content: item.query }],
+          sessionId: 'session-shadow-corpus',
+          images: item.images,
+        },
+        routeDecision,
+        localRouteDecision,
+        latencyMs: 0,
+      });
+
+      expect(shadow.candidate.executionMode).toBe(
+        item.expectedExecutionMode
+      );
+      if (shadow.drift?.matched === false) {
+        mismatches += 1;
+      }
+    }
+
+    expect(mismatches).toBeLessThanOrEqual(5);
+    expect(Date.now() - startedAt).toBeLessThanOrEqual(200);
+  });
 });

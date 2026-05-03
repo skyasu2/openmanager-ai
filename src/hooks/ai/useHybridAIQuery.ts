@@ -75,6 +75,7 @@ import {
   type AIRateLimitErrorDetails,
   inferAIErrorDetailsFromMessage,
 } from '@/lib/ai/error-details';
+import type { RouteDecision } from '@/lib/ai/route-decision';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type { JobDataSlot } from '@/types/ai-jobs';
 import type {
@@ -335,6 +336,7 @@ export function useHybridAIQuery(
   const queryAsOfDataSlotRef = useRef<JobDataSlot | undefined>(
     queryAsOfDataSlot
   );
+  const currentRouteDecisionRef = useRef<RouteDecision | undefined>(undefined);
   const warmingUpRef = useRef<boolean>(false);
   useEffect(() => {
     webSearchEnabledRef.current = webSearchEnabled ?? undefined;
@@ -401,6 +403,7 @@ export function useHybridAIQuery(
         ragEnabledRef,
         analysisModeRef,
         queryAsOfDataSlotRef,
+        localRouteDecisionRef: currentRouteDecisionRef,
       }),
     [apiEndpoint, observabilityConfig.traceIdHeader]
   );
@@ -441,6 +444,9 @@ export function useHybridAIQuery(
             }),
             ...(queryAsOfDataSlotRef.current && {
               queryAsOfDataSlot: queryAsOfDataSlotRef.current,
+            }),
+            ...(currentRouteDecisionRef.current && {
+              localRouteDecision: currentRouteDecisionRef.current,
             }),
             ...buildSourceToolRequestOptions({
               webSearchEnabled: webSearchEnabledRef.current,
@@ -559,6 +565,9 @@ export function useHybridAIQuery(
     getMessages: () => messagesRef.current,
     setMessages,
     setState,
+    onRouteDecision: (decision) => {
+      currentRouteDecisionRef.current = decision;
+    },
     chatStatus,
     refs: {
       errorHandled: errorHandledRef,

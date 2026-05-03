@@ -57,6 +57,7 @@ import {
   resolveAgentStage,
 } from './jobs-route-helpers';
 import { executeSupervisorStream, logProviderStatus } from '../services/ai-sdk';
+import { normalizeSupervisorLocalRouteDecision } from '../services/ai-sdk/supervisor-mode';
 import type {
   AnalysisMode,
   SupervisorRequest,
@@ -75,7 +76,7 @@ export const jobsRouter = new Hono();
 
 type JobProcessToolOptions = Pick<
   SupervisorRequest,
-  'analysisMode' | 'enableRAG' | 'enableWebSearch'
+  'analysisMode' | 'enableRAG' | 'enableWebSearch' | 'localRouteDecision'
 >;
 
 const RETRIEVAL_MODE_SET = new Set<string>(RETRIEVAL_MODES);
@@ -265,6 +266,13 @@ function extractProviderMetadata(
 function extractJobProcessToolOptions(
   payload: Record<string, unknown>
 ): JobProcessToolOptions {
+  const localRouteDecision = normalizeSupervisorLocalRouteDecision(
+    payload.localRouteDecision
+  );
+  if (payload.localRouteDecision !== undefined && !localRouteDecision) {
+    logger.warn('[Jobs] Ignoring invalid localRouteDecision payload');
+  }
+
   return {
     ...(isAnalysisMode(payload.analysisMode) && {
       analysisMode: payload.analysisMode,
@@ -275,6 +283,7 @@ function extractJobProcessToolOptions(
     ...(isWebSearchOption(payload.enableWebSearch) && {
       enableWebSearch: payload.enableWebSearch,
     }),
+    ...(localRouteDecision && { localRouteDecision }),
   };
 }
 
@@ -560,6 +569,7 @@ async function processJobSynchronously({
   analysisMode,
   enableRAG,
   enableWebSearch,
+  localRouteDecision,
   queryAsOf,
   startTime,
 }: {
@@ -569,6 +579,7 @@ async function processJobSynchronously({
   analysisMode?: AnalysisMode;
   enableRAG?: SupervisorRequest['enableRAG'];
   enableWebSearch?: SupervisorRequest['enableWebSearch'];
+  localRouteDecision?: SupervisorRequest['localRouteDecision'];
   queryAsOf?: QueryAsOf;
   startTime: number;
 }): Promise<{ status: 'completed' | 'failed'; error?: string }> {
@@ -639,6 +650,7 @@ async function processJobSynchronously({
       analysisMode,
       enableRAG,
       enableWebSearch,
+      localRouteDecision,
       queryAsOf,
     })) {
       if (event.type === 'text_delta' && typeof event.data === 'string') {
@@ -827,6 +839,7 @@ async function processJobSynchronously({
         ...(analysisMode && { analysisMode }),
         ...(typeof enableRAG === 'boolean' && { enableRAG }),
         ...(enableWebSearch !== undefined && { enableWebSearch }),
+        ...(localRouteDecision && { localRouteDecision }),
         ...(queryAsOf && { queryAsOf }),
         ...(retrieval && { retrieval }),
         ...(traceId && { traceId }),

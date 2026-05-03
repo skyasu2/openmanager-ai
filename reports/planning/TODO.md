@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-03 KST (`M5a contract/baseline implemented; M5b shadow planner next`)
+**Last Updated**: 2026-05-03 KST (`M5b shadow planner implemented; M6 facade next`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| AI Assistant Architecture Evolution M5b (shadow planner + drift + escalation) | High | Ready | [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) — M5-B.2~B.5: Cloud Run shadow planner, drift corpus/threshold, multi-agent escalation guard, rollout go/no-go. Failing spec commit부터 착수 |
+| AI Assistant Architecture Evolution M6 (`/api/ask` facade) | High | Ready | [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) — 기존 stream/job/artifact route를 즉시 제거하지 않고 단일 BFF facade로 감싸는 spec/failing tests부터 착수 |
 
 ---
 
@@ -16,7 +16,6 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| AI Assistant Architecture Evolution M6 (`/api/ask` facade) | High | [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) — M5b rollout go 판정 후 착수 |
 | AI Assistant Architecture Evolution M7 (`MonitoringFactPack` + eval guard) | High | [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) — M5와 **병렬 진행 가능**: precomputed-state 위에 typed fact boundary, retrieval recall guard, provider freshness guard |
 | AI Streaming UI 개선 (S1~S3) | Medium | [ai-streaming-ui-improvement-plan.md](ai-streaming-ui-improvement-plan.md) — 전체 페이지 실제 SSE 전환, Cold Start 카운트다운, Agent 단계 실시간 표시. ⚠️ S1은 M6 `/api/ask` transport와, S2는 M5 shadow planner latency 측정과 교차 가능 |
 
@@ -43,6 +42,14 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-03 #270)
+- [x] AI Assistant Architecture Evolution M5b (shadow planner + drift + escalation)
+  - frontend stream transport와 BFF job route가 local `RouteDecision`을 public-safe 형태로 Cloud Run에 전달하도록 연결
+  - Cloud Run supervisor가 기존 실행 authority는 바꾸지 않고 `plannerShadow` candidate, `executionMode`, escalation reason, drift reason, latency metadata를 `AssistantPlan`에 보존
+  - 단순 metric/server snapshot artifact는 deterministic candidate로 유지하고 RCA/report/advisor/vision만 multi-agent escalation candidate가 되도록 guard 추가
+  - M5 rollout 기준 corpus 50개를 unit test로 고정: mismatch 허용치 `≤5/50`, shadow planner latency `≤200ms`, 신규 LLM/provider 호출 없음
+  - 검증: root targeted M5b suites, root `type-check`, `lint`, `test:quick`, `test:contract`, AI Engine `type-check`, AI Engine `test`
 
 ### Completed (2026-05-03 #269)
 - [x] AI Assistant Architecture Evolution M5a (contract + baseline)

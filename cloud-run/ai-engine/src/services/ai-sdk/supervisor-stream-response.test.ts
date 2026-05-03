@@ -71,7 +71,7 @@ vi.mock('./supervisor-mode', () => ({
   resolveSupervisorModeDecision: mockResolveSupervisorModeDecision,
   buildSupervisorModeMetadata: mockBuildSupervisorModeMetadata,
   buildSupervisorRouteDecision: mockBuildSupervisorRouteDecision,
-  buildSupervisorAssistantPlan: mockBuildSupervisorAssistantPlan,
+  buildSupervisorAssistantPlanForRequest: mockBuildSupervisorAssistantPlan,
   buildSupervisorAssistantResult: mockBuildSupervisorAssistantResult,
 }));
 

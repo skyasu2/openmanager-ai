@@ -41,7 +41,7 @@ import {
   type SupervisorDegradedFallbackContext,
 } from './supervisor-multi-fallback';
 import {
-  buildSupervisorAssistantPlan,
+  buildSupervisorAssistantPlanForRequest,
   buildSupervisorAssistantResult,
   buildSupervisorModeMetadata,
   buildSupervisorRouteDecision,
@@ -139,7 +139,10 @@ export async function* executeSupervisorStream(
     traceId: request.traceId,
     queryAsOf: request.queryAsOf,
   });
-  const assistantPlan = buildSupervisorAssistantPlan(routeDecision);
+  const assistantPlan = buildSupervisorAssistantPlanForRequest(
+    request,
+    routeDecision
+  );
   const mode = modeDecision.resolvedMode;
 
   logger.info({
@@ -279,7 +282,7 @@ async function* streamSingleAgent(
       })
     : undefined;
   const assistantPlan = routeDecision
-    ? buildSupervisorAssistantPlan(routeDecision)
+    ? buildSupervisorAssistantPlanForRequest(request, routeDecision)
     : undefined;
   const excludedProviders: ProviderName[] = [];
   const MAX_PROVIDER_ATTEMPTS = 3;
