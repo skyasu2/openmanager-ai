@@ -12,12 +12,14 @@ vi.mock('./MessageActions', () => ({
 }));
 
 vi.mock('./MarkdownRenderer', () => ({
-  MarkdownRenderer: ({ content }: { content: string }) => <div>{content}</div>,
+  MarkdownRenderer: ({ content }: { content: string }) => (
+    <div data-testid="markdown-renderer">{content}</div>
+  ),
 }));
 
 vi.mock('./TypewriterMarkdown', () => ({
   TypewriterMarkdown: ({ content }: { content: string }) => (
-    <div>{content}</div>
+    <div data-testid="typewriter-markdown">{content}</div>
   ),
 }));
 
@@ -32,6 +34,23 @@ vi.mock('@/utils/markdown-parser', () => ({
 }));
 
 describe('AIWorkspaceMessage detail affordance', () => {
+  it('renders the latest completed assistant response with MarkdownRenderer instead of TypewriterMarkdown', () => {
+    const message: EnhancedChatMessage = {
+      id: 'assistant-latest-complete',
+      role: 'assistant',
+      content: '완료된 응답 본문',
+      timestamp: new Date('2026-04-10T17:01:00.000Z'),
+      isStreaming: false,
+    };
+
+    render(<AIWorkspaceMessage message={message} isLastMessage={true} />);
+
+    expect(screen.getByTestId('markdown-renderer')).toHaveTextContent(
+      '완료된 응답 본문'
+    );
+    expect(screen.queryByTestId('typewriter-markdown')).not.toBeInTheDocument();
+  });
+
   it('renders structured details inline when analysis metadata is absent', () => {
     const message: EnhancedChatMessage = {
       id: 'assistant-inline-details',
