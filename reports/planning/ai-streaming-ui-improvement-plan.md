@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Draft
+> Status: Approved
 > Doc type: Plan
 > Last reviewed: 2026-05-03
 > Tags: ai-assistant,streaming,ui,plan
@@ -12,9 +12,9 @@
 
 현재 아키텍처 분석 결과:
 - 사이드바: SSE 기반 실제 스트리밍 (`useChat` + `DefaultChatTransport`) ✅
-- 전체 페이지(AIWorkspace): 완성된 응답을 `TypewriterMarkdown`으로 시뮬레이션 ⚠️
+- 전체 페이지(AIWorkspace): 완성된 마지막 응답을 `TypewriterMarkdown`으로 재생해 실제 SSE와 구분이 흐려짐 ⚠️
 - 스트리밍 중 메타데이터(toolsCalled, ragSources): 완료 후에만 표시 ⚠️
-- Cold Start 대기 UX: 스피너만 표시, 예상 대기시간 미사용 ⚠️
+- Cold Start 대기 UX: `estimatedWaitSeconds`는 전달되지만 남은 시간 카운트다운으로 표현되지 않음 ⚠️
 
 관련 파일:
 - `src/components/ai/AIWorkspaceMessage.tsx` — TypewriterMarkdown 사용 중
@@ -29,7 +29,7 @@
 
 - **S1**: 전체 페이지(AIWorkspace) 실제 SSE 스트리밍 전환 — TypewriterMarkdown 제거
 - **S2**: Cold Start 대기 UX 개선 — estimatedWaitSeconds 활용한 카운트다운 표시
-- **S3**: 스트리밍 중 Agent 단계 실시간 표시 — tool 실행 시점에 metadata event 조기 전송
+- **S3**: 스트리밍 중 Agent 단계 실시간 표시 — tool 실행 시점에 metadata event 조기 전송. **이번 승인 범위에서는 제외하고 S1/S2 완료 후 별도 승인**
 
 ### 제외
 
@@ -50,18 +50,21 @@
 | 항목 | 계약 |
 |------|------|
 | `AIWorkspaceMessage.tsx` | `message.isStreaming === true`일 때 `TypewriterMarkdown` 대신 일반 `MarkdownRenderer`로 토큰을 그대로 표시 |
-| `TypewriterMarkdown.tsx` | 파일 삭제 또는 외부 사용처가 있으면 deprecated 마킹 후 유지 |
+| `AIWorkspaceMessage.tsx` | 완료된 마지막 assistant 응답도 `TypewriterMarkdown`으로 재생하지 않고 `MarkdownRenderer`로 즉시 표시 |
+| `TypewriterMarkdown.tsx` | 사용처가 0건이면 삭제. 남는 외부 사용처가 있으면 deprecated 마킹 후 유지 |
 | 회귀 조건 | 사이드바 스트리밍 동작 변경 없음. `useAIChatCore` 수정 없음 |
 
 ### S2 — Cold Start 카운트다운
 
 | 항목 | 계약 |
 |------|------|
-| `StreamingWarmupIndicator` (또는 신규) | `warmingUp=true` + `estimatedWaitSeconds > 0`일 때 카운트다운 progress bar 표시 |
+| `StreamingWarmupIndicator` | `warmingUp=true` + `estimatedWaitSeconds > 0`일 때 카운트다운 progress bar 표시 |
 | 카운트다운 범위 | `estimatedWaitSeconds` 기준 0까지 1초 감소, 0 도달 시 "거의 다 됐습니다" 전환 |
 | 완료 후 | 카운트다운 숨김, 응답 스트리밍으로 자연 전환 |
 
 ### S3 — 스트리밍 중 Agent 단계 표시
+
+상태: Pending. Cloud Run `data` event contract 변경이므로 S1/S2 완료 후 별도 failing test와 구현 커밋으로 진행한다.
 
 | 항목 | 계약 |
 |------|------|
@@ -72,8 +75,8 @@
 ## 5. 테스트 시나리오
 
 - [ ] `AIWorkspaceMessage.tsx`에 `TypewriterMarkdown` import가 0건임을 grep으로 검증
-- [ ] `isStreaming=true` 메시지 렌더링 단위 테스트: TypewriterMarkdown이 아닌 MarkdownRenderer 사용 확인
-- [ ] `warmingUp=true` + `estimatedWaitSeconds=3`일 때 카운트다운 UI가 렌더링되는 단위 테스트
+- [ ] 마지막 non-streaming assistant 메시지 렌더링 단위 테스트: TypewriterMarkdown이 아닌 MarkdownRenderer 사용 확인
+- [ ] `estimatedWaitSeconds=3`일 때 카운트다운 UI가 렌더링되고 0 도달 시 "거의 다 됐습니다"로 전환되는 단위 테스트
 - [ ] `onData` 에서 `agent-step` 이벤트 수신 시 `InlineAgentStatus`가 업데이트되는 훅 테스트
 - [ ] Playwright targeted QA: 전체 페이지 채팅에서 응답 토큰이 점진적으로 표시되는지 확인
 
@@ -83,8 +86,8 @@
 - [ ] Task 1 — S1: AIWorkspaceMessage TypewriterMarkdown → MarkdownRenderer 전환
 - [ ] Task 2 — S1: TypewriterMarkdown.tsx 사용처 grep 후 삭제 또는 deprecated 마킹
 - [ ] Task 3 — S2: StreamingWarmupIndicator 카운트다운 progress bar 구현
-- [ ] Task 4 — S3: Cloud Run `agent-step` data event 전송 추가
-- [ ] Task 5 — S3: 프론트엔드 `onData` 핸들러에서 `agent-step` 이벤트 처리
+- [ ] Task 4 — S3: Cloud Run `agent-step` data event 전송 추가 (S1/S2 완료 후 별도 승인)
+- [ ] Task 5 — S3: 프론트엔드 `onData` 핸들러에서 `agent-step` 이벤트 처리 (S1/S2 완료 후 별도 승인)
 - [ ] Task 6 — `npm run validate:all` 통과 확인
 - [ ] Task 7 — Playwright targeted QA + `npm run qa:record`
 - [ ] Task 8 — commit / push gitlab

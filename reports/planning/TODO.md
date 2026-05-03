@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-03 KST (`M7 fact pack guards implemented; streaming UI next`)
+**Last Updated**: 2026-05-03 KST (`Streaming UI S1/S2 approved`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| AI Streaming UI 개선 (S1~S3) | Medium | Draft | [ai-streaming-ui-improvement-plan.md](ai-streaming-ui-improvement-plan.md) — 다음 단계는 S1/S2 계약 재검토 후 Approved 전환과 failing test 커밋. S3는 Cloud Run event contract 변경이 있어 S1/S2 이후 분리 권장 |
+| AI Streaming UI 개선 (S1/S2) | Medium | Approved | [ai-streaming-ui-improvement-plan.md](ai-streaming-ui-improvement-plan.md) — `TypewriterMarkdown` 시뮬레이션 제거와 warmup countdown을 failing test부터 진행. S3 agent-step event는 Cloud Run contract 변경이라 S1/S2 이후 별도 승인 |
 
 ---
 
