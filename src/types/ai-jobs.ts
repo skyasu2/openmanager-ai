@@ -5,6 +5,10 @@
  * @version 1.0.0
  */
 
+import type {
+  AssistantPlan,
+  AssistantResult,
+} from '@/lib/ai/assistant-contract';
 import type { AIErrorDetails } from '@/lib/ai/error-details';
 import type { RouteDecision } from '@/lib/ai/route-decision';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
@@ -81,6 +85,7 @@ export interface CreateJobResponse {
   routingMode?: 'job-queue';
   complexity?: QueryComplexity;
   routeDecision?: RouteDecision;
+  assistantPlan?: AssistantPlan;
 }
 
 /** Job 상태 조회 응답 */
@@ -138,6 +143,8 @@ export interface AIJob {
     enableWebSearch?: boolean;
     queryAsOf?: JobQueryAsOf;
     routeDecision?: RouteDecision;
+    assistantPlan?: AssistantPlan;
+    assistantResult?: AssistantResult;
   };
 }
 

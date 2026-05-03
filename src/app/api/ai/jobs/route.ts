@@ -13,6 +13,7 @@ export const maxDuration = 30;
 
 import { randomUUID } from 'crypto';
 import { after, type NextRequest, NextResponse } from 'next/server';
+import { buildAssistantPlanFromRouteDecision } from '@/lib/ai/assistant-contract';
 import { buildJobQueryAsOf } from '@/lib/ai/query-as-of';
 import {
   buildRouteDecision,
@@ -160,6 +161,7 @@ async function handlePOST(request: NextRequest) {
       decidedBy: 'bff',
       dataSlot: queryAsOf.dataSlot.timeLabel,
     });
+    const assistantPlan = buildAssistantPlanFromRouteDecision(routeDecision);
 
     // Redis에 Job 저장
     const job: AIJob = {
@@ -182,6 +184,7 @@ async function handlePOST(request: NextRequest) {
         ownerKey,
         queryAsOf,
         routeDecision,
+        assistantPlan,
         ...toolOptions,
       },
     };
@@ -254,6 +257,7 @@ async function handlePOST(request: NextRequest) {
       routingMode: 'job-queue',
       complexity: complexity.level,
       routeDecision,
+      assistantPlan,
     };
 
     return NextResponse.json(response, {

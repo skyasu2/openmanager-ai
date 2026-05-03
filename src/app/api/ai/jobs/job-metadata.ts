@@ -1,4 +1,10 @@
 import {
+  type AssistantPlan,
+  type AssistantResult,
+  normalizeAssistantPlan,
+  normalizeAssistantResult,
+} from '@/lib/ai/assistant-contract';
+import {
   normalizeRouteDecision,
   type RouteDecision,
 } from '@/lib/ai/route-decision';
@@ -38,6 +44,8 @@ export interface ClientJobMetadata {
   resolvedMode?: 'single' | 'multi';
   modeSelectionSource?: string;
   routeDecision?: RouteDecision;
+  assistantPlan?: AssistantPlan;
+  assistantResult?: AssistantResult;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -174,6 +182,8 @@ export function sanitizeJobMetadataForClient(
       : undefined;
   const modeSelectionSource = getNonEmptyString(metadata.modeSelectionSource);
   const routeDecision = normalizeRouteDecision(metadata.routeDecision);
+  const assistantPlan = normalizeAssistantPlan(metadata.assistantPlan);
+  const assistantResult = normalizeAssistantResult(metadata.assistantResult);
   const providerAttempts = normalizeProviderAttempts(metadata.providerAttempts);
   const handoffs = normalizeHandoffs(metadata.handoffs);
   const toolResultSummaries = normalizeToolResultSummaries(
@@ -202,6 +212,8 @@ export function sanitizeJobMetadataForClient(
     ...(resolvedMode && { resolvedMode }),
     ...(modeSelectionSource && { modeSelectionSource }),
     ...(routeDecision && { routeDecision }),
+    ...(assistantPlan && { assistantPlan }),
+    ...(assistantResult && { assistantResult }),
   };
 
   return Object.keys(result).length > 0 ? result : undefined;

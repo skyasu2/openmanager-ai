@@ -15,6 +15,8 @@ import {
 
 import type { SupervisorRequest } from './supervisor-types';
 import {
+  buildSupervisorAssistantPlan,
+  buildSupervisorAssistantResult,
   buildSupervisorModeMetadata,
   buildSupervisorRouteDecision,
   resolveSupervisorModeDecision,
@@ -206,6 +208,7 @@ export function createSupervisorStreamResponse(
           traceId: request.traceId,
           queryAsOf: request.queryAsOf,
         });
+        const assistantPlan = buildSupervisorAssistantPlan(routeDecision);
 
         writer.write({
           type: 'data-mode',
@@ -213,6 +216,7 @@ export function createSupervisorStreamResponse(
             mode: modeDecision.resolvedMode,
             ...modeMetadata,
             routeDecision,
+            assistantPlan,
           },
         });
 
@@ -304,6 +308,13 @@ export function createSupervisorStreamResponse(
               const upstreamMetadata = isRecordValue(doneData.metadata)
                 ? doneData.metadata
                 : {};
+              const assistantResult = buildSupervisorAssistantResult(
+                routeDecision,
+                {
+                  status: success ? 'completed' : 'failed',
+                  ...(!success && { errorCode: 'SUPERVISOR_STREAM_FAILED' }),
+                }
+              );
 
               writer.write({
                 type: 'data-done',
@@ -314,6 +325,8 @@ export function createSupervisorStreamResponse(
                     ...upstreamMetadata,
                     ...modeMetadata,
                     routeDecision,
+                    assistantPlan,
+                    assistantResult,
                   },
                   ...(normalizedResponseSummary
                     ? {

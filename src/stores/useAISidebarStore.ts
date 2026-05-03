@@ -14,6 +14,10 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import { useShallow } from 'zustand/react/shallow';
+import type {
+  AssistantPlan,
+  AssistantResult,
+} from '@/lib/ai/assistant-contract';
 import type { ChatArtifactIntentReason } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
 import type {
   IncidentReportArtifact,
@@ -120,6 +124,10 @@ export interface ChatMessage {
     analysisBasis?: AnalysisBasis;
     /** read-only routing/planning decision metadata */
     routeDecision?: RouteDecision;
+    /** read-only assistant plan facade derived from routeDecision */
+    assistantPlan?: AssistantPlan;
+    /** read-only assistant result facade derived from routeDecision */
+    assistantResult?: AssistantResult;
     /** 접을 수 있는 응답 뷰 */
     assistantResponseView?: {
       summary: string;

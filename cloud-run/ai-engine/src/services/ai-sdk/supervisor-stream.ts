@@ -41,6 +41,8 @@ import {
   type SupervisorDegradedFallbackContext,
 } from './supervisor-multi-fallback';
 import {
+  buildSupervisorAssistantPlan,
+  buildSupervisorAssistantResult,
   buildSupervisorModeMetadata,
   buildSupervisorRouteDecision,
   resolveSupervisorModeDecision,
@@ -137,6 +139,7 @@ export async function* executeSupervisorStream(
     traceId: request.traceId,
     queryAsOf: request.queryAsOf,
   });
+  const assistantPlan = buildSupervisorAssistantPlan(routeDecision);
   const mode = modeDecision.resolvedMode;
 
   logger.info({
@@ -210,6 +213,13 @@ export async function* executeSupervisorStream(
                 ...(request.queryAsOf && { queryAsOf: request.queryAsOf }),
                 ...buildSupervisorModeMetadata(modeDecision),
                 routeDecision,
+                assistantPlan,
+                assistantResult: buildSupervisorAssistantResult(routeDecision, {
+                  status: doneData.success === false ? 'failed' : 'completed',
+                  ...(doneData.success === false && {
+                    errorCode: 'SUPERVISOR_STREAM_FAILED',
+                  }),
+                }),
               },
             },
           };
@@ -267,6 +277,9 @@ async function* streamSingleAgent(
         traceId: request.traceId,
         queryAsOf: request.queryAsOf,
       })
+    : undefined;
+  const assistantPlan = routeDecision
+    ? buildSupervisorAssistantPlan(routeDecision)
     : undefined;
   const excludedProviders: ProviderName[] = [];
   const MAX_PROVIDER_ATTEMPTS = 3;
@@ -336,6 +349,10 @@ async function* streamSingleAgent(
             ...(request.queryAsOf && { queryAsOf: request.queryAsOf }),
             ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
             ...(routeDecision && { routeDecision }),
+            ...(assistantPlan && { assistantPlan }),
+            ...(routeDecision && {
+              assistantResult: buildSupervisorAssistantResult(routeDecision),
+            }),
             ...buildDegradedMetadata(degradedFallbackContext, {
               fallback: true,
               fallbackReason: 'no_provider',
@@ -821,6 +838,15 @@ async function* streamSingleAgent(
             ...(request.queryAsOf && { queryAsOf: request.queryAsOf }),
             ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
             ...(routeDecision && { routeDecision }),
+            ...(assistantPlan && { assistantPlan }),
+            ...(routeDecision && {
+              assistantResult: buildSupervisorAssistantResult(routeDecision, {
+                status: capturedError === null ? 'completed' : 'failed',
+                ...(capturedError && {
+                  errorCode: 'SUPERVISOR_STREAM_ERROR',
+                }),
+              }),
+            }),
             ...buildDegradedMetadata(degradedFallbackContext, {}),
             ...(attempt > 0 && { providerRetries: attempt }),
           },

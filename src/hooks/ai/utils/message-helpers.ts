@@ -5,6 +5,10 @@
  */
 
 import type { UIMessage } from 'ai';
+import {
+  normalizeAssistantPlan,
+  normalizeAssistantResult,
+} from '@/lib/ai/assistant-contract';
 import { normalizeRouteDecision } from '@/lib/ai/route-decision';
 import {
   extractTextFromUIMessage,
@@ -237,6 +241,8 @@ export function transformUIMessageToEnhanced(
     toolParts
   );
   const routeDecision = normalizeRouteDecision(metadata?.routeDecision);
+  const assistantPlan = normalizeAssistantPlan(metadata?.assistantPlan);
+  const assistantResult = normalizeAssistantResult(metadata?.assistantResult);
   const incidentReportArtifact = metadata?.incidentReportArtifact;
   const monitoringAnalysisArtifact = metadata?.monitoringAnalysisArtifact;
   const serverSnapshotArtifact = metadata?.serverSnapshotArtifact;
@@ -353,6 +359,8 @@ export function transformUIMessageToEnhanced(
       analysisBasis ||
       traceId ||
       routeDecision ||
+      assistantPlan ||
+      assistantResult ||
       assistantResponseView ||
       hasChatArtifact ||
       hasArtifactIntentMetadata ||
@@ -363,6 +371,8 @@ export function transformUIMessageToEnhanced(
             ...(analysisBasis && { analysisBasis }),
             ...(traceId && { traceId }),
             ...(routeDecision && { routeDecision }),
+            ...(assistantPlan && { assistantPlan }),
+            ...(assistantResult && { assistantResult }),
             ...(typeof metadata?.processingTime === 'number' && {
               processingTime: metadata.processingTime,
             }),

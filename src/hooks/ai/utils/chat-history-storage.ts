@@ -4,6 +4,12 @@
  * 로컬 스토리지를 활용한 채팅 히스토리 영속화
  */
 
+import {
+  type AssistantPlan,
+  type AssistantResult,
+  normalizeAssistantPlan,
+  normalizeAssistantResult,
+} from '@/lib/ai/assistant-contract';
 import type { ChatArtifactIntentReason } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
 import type {
   IncidentReportArtifact,
@@ -40,6 +46,8 @@ export interface StoredMessageMetadata {
   featureStatus?: AnalysisFeatureStatus;
   analysisMode?: AnalysisMode;
   routeDecision?: RouteDecision;
+  assistantPlan?: AssistantPlan;
+  assistantResult?: AssistantResult;
   toolsCalled?: string[];
   ragSources?: Array<{
     title: string;
@@ -139,6 +147,10 @@ export function saveChatHistory(
         const metadata = m.metadata;
         const analysisBasis = m.metadata?.analysisBasis;
         const routeDecision = normalizeRouteDecision(metadata?.routeDecision);
+        const assistantPlan = normalizeAssistantPlan(metadata?.assistantPlan);
+        const assistantResult = normalizeAssistantResult(
+          metadata?.assistantResult
+        );
         const hasExplicitHandoffHistory = Array.isArray(
           metadata?.handoffHistory
         );
@@ -150,6 +162,8 @@ export function saveChatHistory(
           analysisBasis?.toolsCalled ||
           analysisBasis?.ragSources ||
           routeDecision ||
+          assistantPlan ||
+          assistantResult ||
           metadata?.assistantResponseView ||
           metadata?.artifactIntentReason ||
           metadata?.artifactIntentTarget ||
@@ -178,6 +192,12 @@ export function saveChatHistory(
                 }),
                 ...(routeDecision && {
                   routeDecision,
+                }),
+                ...(assistantPlan && {
+                  assistantPlan,
+                }),
+                ...(assistantResult && {
+                  assistantResult,
                 }),
                 ...(metadata?.assistantResponseView && {
                   assistantResponseView: metadata.assistantResponseView,

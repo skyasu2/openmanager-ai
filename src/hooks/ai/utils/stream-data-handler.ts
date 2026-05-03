@@ -4,6 +4,10 @@ import type {
   HandoffEventData,
   StreamDataPart,
 } from '@/hooks/ai/useHybridAIQuery';
+import {
+  normalizeAssistantPlan,
+  normalizeAssistantResult,
+} from '@/lib/ai/assistant-contract';
 import { normalizeRouteDecision } from '@/lib/ai/route-decision';
 import { logger } from '@/lib/logging';
 import type { StreamRagSource } from '../types/stream-rag.types';
@@ -127,6 +131,20 @@ function extractRouteDecisionFromDoneData(
 ) {
   const directRouteDecision = readDoneDataField(doneData, 'routeDecision');
   return normalizeRouteDecision(directRouteDecision);
+}
+
+function extractAssistantPlanFromDoneData(
+  doneData: ResponseSourceData | undefined
+) {
+  const directAssistantPlan = readDoneDataField(doneData, 'assistantPlan');
+  return normalizeAssistantPlan(directAssistantPlan);
+}
+
+function extractAssistantResultFromDoneData(
+  doneData: ResponseSourceData | undefined
+) {
+  const directAssistantResult = readDoneDataField(doneData, 'assistantResult');
+  return normalizeAssistantResult(directAssistantResult);
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -298,6 +316,8 @@ export function handleStreamDataPart(
     const usedFallback = extractUsedFallbackFromDoneData(doneData);
     const fallbackReason = extractFallbackReasonFromDoneData(doneData);
     const routeDecision = extractRouteDecisionFromDoneData(doneData);
+    const assistantPlan = extractAssistantPlanFromDoneData(doneData);
+    const assistantResult = extractAssistantResultFromDoneData(doneData);
     const normalizedHandoffHistory = normalizeHandoffHistory(
       pendingMessageMetadata.handoffHistory
     );
@@ -313,6 +333,8 @@ export function handleStreamDataPart(
       ...(typeof usedFallback === 'boolean' && { usedFallback }),
       ...(fallbackReason && { fallbackReason }),
       ...(routeDecision && { routeDecision }),
+      ...(assistantPlan && { assistantPlan }),
+      ...(assistantResult && { assistantResult }),
       ...(normalizedHandoffHistory && {
         handoffHistory: normalizedHandoffHistory,
       }),
@@ -330,6 +352,8 @@ export function handleStreamDataPart(
       typeof usedFallback === 'boolean' ||
       fallbackReason ||
       routeDecision ||
+      assistantPlan ||
+      assistantResult ||
       normalizedHandoffHistory !== undefined ||
       pendingToolResults.length > 0 ||
       Object.keys(pendingMessageMetadata).length > 0

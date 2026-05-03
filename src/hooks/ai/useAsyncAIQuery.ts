@@ -26,6 +26,10 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import type {
+  AssistantPlan,
+  AssistantResult,
+} from '@/lib/ai/assistant-contract';
 import {
   type AIErrorDetails,
   buildRateLimitErrorDetails,
@@ -94,6 +98,8 @@ export interface AsyncQueryResult {
   fallbackReason?: string;
   ttfbMs?: number;
   routeDecision?: RouteDecision;
+  assistantPlan?: AssistantPlan;
+  assistantResult?: AssistantResult;
   error?: string;
   /** Langfuse trace ID for feedback scoring */
   traceId?: string;

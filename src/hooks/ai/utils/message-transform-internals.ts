@@ -1,4 +1,8 @@
 import type { UIMessage } from 'ai';
+import type {
+  AssistantPlan,
+  AssistantResult,
+} from '@/lib/ai/assistant-contract';
 import type { ChatArtifactIntentReason } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
 import type {
   IncidentReportArtifact,
@@ -51,6 +55,8 @@ export type MessageMetadata = {
   fallbackReason?: string;
   ttfbMs?: number;
   routeDecision?: RouteDecision;
+  assistantPlan?: AssistantPlan;
+  assistantResult?: AssistantResult;
   assistantResponseView?: StructuredAssistantResponse;
   artifactIntentReason?: ChatArtifactIntentReason;
   artifactIntentTarget?: 'incident-report' | 'monitoring-analysis';

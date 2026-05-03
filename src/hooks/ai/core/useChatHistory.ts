@@ -1,6 +1,10 @@
 'use client';
 
 import { useCallback, useEffect, useRef } from 'react';
+import {
+  normalizeAssistantPlan,
+  normalizeAssistantResult,
+} from '@/lib/ai/assistant-contract';
 import { normalizeRouteDecision } from '@/lib/ai/route-decision';
 import { logger } from '@/lib/logging';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
@@ -55,6 +59,10 @@ export function useChatHistory<TMessage extends RestoredMessage>({
       const metadata = message.metadata;
       const analysisBasis = metadata?.analysisBasis;
       const routeDecision = normalizeRouteDecision(metadata?.routeDecision);
+      const assistantPlan = normalizeAssistantPlan(metadata?.assistantPlan);
+      const assistantResult = normalizeAssistantResult(
+        metadata?.assistantResult
+      );
       const hasExplicitHandoffHistory = Array.isArray(metadata?.handoffHistory);
 
       if (
@@ -65,6 +73,8 @@ export function useChatHistory<TMessage extends RestoredMessage>({
         !analysisBasis?.toolsCalled &&
         !analysisBasis?.ragSources &&
         !routeDecision &&
+        !assistantPlan &&
+        !assistantResult &&
         !metadata?.assistantResponseView &&
         !metadata?.artifactIntentReason &&
         !metadata?.artifactIntentTarget &&
@@ -99,6 +109,12 @@ export function useChatHistory<TMessage extends RestoredMessage>({
         }),
         ...(routeDecision && {
           routeDecision,
+        }),
+        ...(assistantPlan && {
+          assistantPlan,
+        }),
+        ...(assistantResult && {
+          assistantResult,
         }),
         ...(metadata?.assistantResponseView && {
           assistantResponseView: metadata.assistantResponseView,

@@ -1,4 +1,8 @@
 import type { MutableRefObject } from 'react';
+import {
+  normalizeAssistantPlan,
+  normalizeAssistantResult,
+} from '@/lib/ai/assistant-contract';
 import { extractStreamError } from '@/lib/ai/constants/stream-errors';
 import {
   type AIErrorDetails,
@@ -200,6 +204,10 @@ export function connectAsyncQuerySSE(
       const fallbackReason = getNonEmptyString(metadata.fallbackReason);
       const ttfbMs = getFiniteNumber(metadata.ttfbMs);
       const routeDecision = normalizeRouteDecision(metadata.routeDecision);
+      const assistantPlan = normalizeAssistantPlan(metadata.assistantPlan);
+      const assistantResult = normalizeAssistantResult(
+        metadata.assistantResult
+      );
 
       onResult({
         success: true,
@@ -239,11 +247,12 @@ export function connectAsyncQuerySSE(
         ...(fallbackReason && { fallbackReason }),
         ...(ttfbMs !== undefined && { ttfbMs }),
         ...(routeDecision && { routeDecision }),
-        analysisMode:
-          metadata.analysisMode === 'auto' ||
-          metadata.analysisMode === 'thinking'
-            ? metadata.analysisMode
-            : undefined,
+        ...(assistantPlan && { assistantPlan }),
+        ...(assistantResult && { assistantResult }),
+        ...(metadata.analysisMode === 'auto' ||
+        metadata.analysisMode === 'thinking'
+          ? { analysisMode: metadata.analysisMode }
+          : {}),
         handoffHistory: Array.isArray(metadata.handoffs)
           ? (metadata.handoffs as AsyncQueryResult['handoffHistory'])
           : undefined,

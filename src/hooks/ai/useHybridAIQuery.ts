@@ -157,6 +157,8 @@ export function buildAssistantMessageFromAsyncResult(
     Boolean(result.retrieval) ||
     Boolean(result.analysisMode) ||
     Boolean(result.routeDecision) ||
+    Boolean(result.assistantPlan) ||
+    Boolean(result.assistantResult) ||
     (result.toolsCalled && result.toolsCalled.length > 0) ||
     hasExplicitHandoffHistory ||
     (result.toolResultSummaries && result.toolResultSummaries.length > 0) ||
@@ -186,6 +188,12 @@ export function buildAssistantMessageFromAsyncResult(
           }),
           ...(result.routeDecision && {
             routeDecision: result.routeDecision,
+          }),
+          ...(result.assistantPlan && {
+            assistantPlan: result.assistantPlan,
+          }),
+          ...(result.assistantResult && {
+            assistantResult: result.assistantResult,
           }),
           ...(hasExplicitHandoffHistory && {
             handoffHistory: result.handoffHistory,

@@ -29,6 +29,28 @@ export interface SupervisorRouteDecision {
   decidedBy: 'cloud-run';
 }
 
+export interface SupervisorAssistantPlan {
+  kind: 'chat';
+  planVersion: string;
+  routeDecision: SupervisorRouteDecision;
+  executionPath: 'stream';
+  stream: true;
+  job: false;
+  reasonCodes: string[];
+  dataSlot?: string;
+  traceId?: string;
+  decidedBy: 'cloud-run';
+}
+
+export interface SupervisorAssistantResult {
+  kind: 'chat' | 'error';
+  resultVersion: string;
+  routeDecision?: SupervisorRouteDecision;
+  status: 'completed' | 'failed' | 'partial';
+  traceId?: string;
+  errorCode?: string;
+}
+
 /**
  * Resolve final execution mode for the request.
  * 
@@ -153,5 +175,40 @@ export function buildSupervisorRouteDecision(
     }),
     ...(options?.traceId && { traceId: options.traceId }),
     decidedBy: 'cloud-run',
+  };
+}
+
+export function buildSupervisorAssistantPlan(
+  routeDecision: SupervisorRouteDecision
+): SupervisorAssistantPlan {
+  return {
+    kind: 'chat',
+    planVersion: ROUTE_DECISION_RULE_VERSION,
+    routeDecision,
+    executionPath: 'stream',
+    stream: true,
+    job: false,
+    reasonCodes: [...routeDecision.reasonCodes],
+    ...(routeDecision.dataSlot && { dataSlot: routeDecision.dataSlot }),
+    ...(routeDecision.traceId && { traceId: routeDecision.traceId }),
+    decidedBy: 'cloud-run',
+  };
+}
+
+export function buildSupervisorAssistantResult(
+  routeDecision: SupervisorRouteDecision | undefined,
+  options?: {
+    status?: SupervisorAssistantResult['status'];
+    errorCode?: string;
+  }
+): SupervisorAssistantResult {
+  const status = options?.status ?? 'completed';
+  return {
+    kind: status === 'failed' ? 'error' : 'chat',
+    resultVersion: ROUTE_DECISION_RULE_VERSION,
+    ...(routeDecision && { routeDecision }),
+    status,
+    ...(routeDecision?.traceId && { traceId: routeDecision.traceId }),
+    ...(options?.errorCode && { errorCode: options.errorCode }),
   };
 }

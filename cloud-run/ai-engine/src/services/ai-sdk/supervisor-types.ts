@@ -113,6 +113,44 @@ export interface SupervisorResponse {
       traceId?: string;
       decidedBy: 'cloud-run';
     };
+    assistantPlan?: {
+      kind: 'chat';
+      planVersion: string;
+      routeDecision: {
+        intent: 'chat';
+        executionPath: 'stream';
+        mode: Exclude<SupervisorMode, 'auto'>;
+        reasonCodes: string[];
+        ruleVersion: string;
+        dataSlot?: string;
+        traceId?: string;
+        decidedBy: 'cloud-run';
+      };
+      executionPath: 'stream';
+      stream: true;
+      job: false;
+      reasonCodes: string[];
+      dataSlot?: string;
+      traceId?: string;
+      decidedBy: 'cloud-run';
+    };
+    assistantResult?: {
+      kind: 'chat' | 'error';
+      resultVersion: string;
+      routeDecision?: {
+        intent: 'chat';
+        executionPath: 'stream';
+        mode: Exclude<SupervisorMode, 'auto'>;
+        reasonCodes: string[];
+        ruleVersion: string;
+        dataSlot?: string;
+        traceId?: string;
+        decidedBy: 'cloud-run';
+      };
+      status: 'completed' | 'failed' | 'partial';
+      traceId?: string;
+      errorCode?: string;
+    };
     traceId?: string;
     handoffs?: Array<{ from: string; to: string; reason?: string }>;
     toolResultSummaries?: Array<{

@@ -32,6 +32,10 @@ import {
   useHybridAIQuery,
 } from '@/hooks/ai/useHybridAIQuery';
 import {
+  buildAssistantPlanFromRouteDecision,
+  buildAssistantResultFromRouteDecision,
+} from '@/lib/ai/assistant-contract';
+import {
   type ChatArtifactIntentReason,
   classifyChatArtifactIntent,
   createArtifactGuidanceMessage,
@@ -388,11 +392,15 @@ function buildArtifactMetadata(
       dataSlot: queryAsOfDataSlot.timeLabel,
     }),
   });
+  const assistantPlan = buildAssistantPlanFromRouteDecision(routeDecision);
+  const assistantResult = buildAssistantResultFromRouteDecision(routeDecision);
 
   if (artifact.kind === 'incident-report') {
     return {
       artifactIntentReason: intentReason,
       routeDecision,
+      assistantPlan,
+      assistantResult,
       incidentReportArtifact: artifact,
       toolsCalled: ['generateIncidentReportArtifact'],
       toolResultSummaries: [
@@ -410,6 +418,8 @@ function buildArtifactMetadata(
     return {
       artifactIntentReason: intentReason,
       routeDecision,
+      assistantPlan,
+      assistantResult,
       serverSnapshotArtifact: artifact,
       toolsCalled: ['generateServerSnapshotArtifact'],
       toolResultSummaries: [
@@ -426,6 +436,8 @@ function buildArtifactMetadata(
   return {
     artifactIntentReason: intentReason,
     routeDecision,
+    assistantPlan,
+    assistantResult,
     monitoringAnalysisArtifact: artifact,
     toolsCalled: ['generateMonitoringAnalysisArtifact'],
     toolResultSummaries: [
@@ -970,22 +982,34 @@ export function useAIChatCore(
             }
 
             const errorText = getArtifactErrorText(artifactKind, requestError);
+            const routeDecision = buildRouteDecision({
+              intent: 'artifact',
+              executionPath: 'client-artifact',
+              artifactKind,
+              reasonCodes: [artifactIntent.reason],
+              decidedBy: 'frontend',
+              ...(queryAsOfDataSlot?.timeLabel && {
+                dataSlot: queryAsOfDataSlot.timeLabel,
+              }),
+            });
             const errorMessage = createTextMessage({
               id: pendingAssistantMessage.id,
               role: 'assistant',
               text: errorText,
               metadata: {
                 artifactIntentReason: artifactIntent.reason,
-                routeDecision: buildRouteDecision({
-                  intent: 'artifact',
-                  executionPath: 'client-artifact',
-                  artifactKind,
-                  reasonCodes: [artifactIntent.reason],
-                  decidedBy: 'frontend',
-                  ...(queryAsOfDataSlot?.timeLabel && {
-                    dataSlot: queryAsOfDataSlot.timeLabel,
-                  }),
-                }),
+                routeDecision,
+                assistantPlan:
+                  buildAssistantPlanFromRouteDecision(routeDecision),
+                assistantResult: buildAssistantResultFromRouteDecision(
+                  routeDecision,
+                  {
+                    status: 'failed',
+                    errorCode: isAbortError(requestError)
+                      ? 'ARTIFACT_ABORTED'
+                      : 'ARTIFACT_GENERATION_FAILED',
+                  }
+                ),
                 toolResultSummaries: [
                   {
                     toolName:
