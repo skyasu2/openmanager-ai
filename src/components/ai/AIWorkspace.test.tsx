@@ -169,12 +169,6 @@ vi.mock('@/components/ai/MarkdownRenderer', () => ({
   ),
 }));
 
-vi.mock('@/components/ai/TypewriterMarkdown', () => ({
-  TypewriterMarkdown: ({ content }: { content: string }) => (
-    <div data-testid="typewriter-markdown">{content}</div>
-  ),
-}));
-
 vi.mock('@/components/ai/MessageActions', () => ({
   MessageActions: () => <div data-testid="message-actions">Actions</div>,
 }));

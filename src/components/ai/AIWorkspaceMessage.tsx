@@ -14,7 +14,6 @@ import { MessageActions } from './MessageActions';
 import { MonitoringAnalysisArtifactCard } from './MonitoringAnalysisArtifactCard';
 import { ServerSnapshotArtifactCard } from './ServerSnapshotArtifactCard';
 import { ThinkingProcessVisualizer } from './ThinkingProcessVisualizer';
-import { TypewriterMarkdown } from './TypewriterMarkdown';
 
 const MemoizedThinkingProcessVisualizer = memo(ThinkingProcessVisualizer);
 
@@ -189,14 +188,6 @@ export const AIWorkspaceMessage = memo<{
                         </div>
                       )}
                     </div>
-                  ) : isLastMessage &&
-                    !message.isStreaming &&
-                    !analysisBasis ? (
-                    <TypewriterMarkdown
-                      content={message.content}
-                      enableTypewriter={true}
-                      speed={12}
-                    />
                   ) : (
                     <MarkdownRenderer
                       content={message.content}

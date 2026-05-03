@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-03 KST (`Streaming UI S1/S2 approved`)
+**Last Updated**: 2026-05-03 KST (`Streaming UI S1/S2 implemented; S3 pending`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| AI Streaming UI 개선 (S1/S2) | Medium | Approved | [ai-streaming-ui-improvement-plan.md](ai-streaming-ui-improvement-plan.md) — `TypewriterMarkdown` 시뮬레이션 제거와 warmup countdown을 failing test부터 진행. S3 agent-step event는 Cloud Run contract 변경이라 S1/S2 이후 별도 승인 |
+| AI Streaming UI 개선 S3 (`agent-step` stream event) | Medium | Pending | [ai-streaming-ui-improvement-plan.md](ai-streaming-ui-improvement-plan.md) — S1/S2는 구현 완료. S3는 Cloud Run `data` event + frontend `onData` contract 변경이므로 별도 승인/실패 테스트부터 진행 |
 
 ---
 
@@ -41,6 +41,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-03 #275)
+- [x] AI Streaming UI 개선 S1/S2
+  - `AIWorkspaceMessage`가 마지막 완료 assistant 응답을 `TypewriterMarkdown`으로 재생하지 않고 `MarkdownRenderer`로 즉시 표시하도록 변경
+  - `TypewriterMarkdown.tsx`는 실제 import 사용처가 0건이 되어 삭제
+  - `StreamingWarmupIndicator`가 `estimatedWaitSeconds` 기준 남은 시간 카운트다운과 접근 가능한 `progressbar`를 표시하고, 0초 도달 시 "거의 다 됐습니다"로 전환
+  - S3 `agent-step` streaming event는 Cloud Run stream contract 변경이므로 별도 작업으로 유지
 
 ### Completed (2026-05-03 #274)
 - [x] AI Assistant Architecture Evolution M7 (`MonitoringFactPack` + eval guard)

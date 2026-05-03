@@ -10,6 +10,10 @@
 
 `ai-assistant-ux-polish-plan.md`에서 명시적으로 제외된 스트리밍 개선 항목을 별도 계획으로 진행한다.
 
+진행 상태:
+- S1/S2: completed on 2026-05-03
+- S3: pending separate approval because it changes the Cloud Run stream event contract
+
 현재 아키텍처 분석 결과:
 - 사이드바: SSE 기반 실제 스트리밍 (`useChat` + `DefaultChatTransport`) ✅
 - 전체 페이지(AIWorkspace): 완성된 마지막 응답을 `TypewriterMarkdown`으로 재생해 실제 SSE와 구분이 흐려짐 ⚠️
@@ -74,18 +78,18 @@
 
 ## 5. 테스트 시나리오
 
-- [ ] `AIWorkspaceMessage.tsx`에 `TypewriterMarkdown` import가 0건임을 grep으로 검증
-- [ ] 마지막 non-streaming assistant 메시지 렌더링 단위 테스트: TypewriterMarkdown이 아닌 MarkdownRenderer 사용 확인
-- [ ] `estimatedWaitSeconds=3`일 때 카운트다운 UI가 렌더링되고 0 도달 시 "거의 다 됐습니다"로 전환되는 단위 테스트
+- [x] `AIWorkspaceMessage.tsx`에 `TypewriterMarkdown` import가 0건임을 grep으로 검증
+- [x] 마지막 non-streaming assistant 메시지 렌더링 단위 테스트: TypewriterMarkdown이 아닌 MarkdownRenderer 사용 확인
+- [x] `estimatedWaitSeconds=3`일 때 카운트다운 UI가 렌더링되고 0 도달 시 "거의 다 됐습니다"로 전환되는 단위 테스트
 - [ ] `onData` 에서 `agent-step` 이벤트 수신 시 `InlineAgentStatus`가 업데이트되는 훅 테스트
 - [ ] Playwright targeted QA: 전체 페이지 채팅에서 응답 토큰이 점진적으로 표시되는지 확인
 
 ## 6. Task 목록
 
-- [ ] Task 0 — failing test 커밋 (S1 TypewriterMarkdown 제거 spec, S2 카운트다운 spec)
-- [ ] Task 1 — S1: AIWorkspaceMessage TypewriterMarkdown → MarkdownRenderer 전환
-- [ ] Task 2 — S1: TypewriterMarkdown.tsx 사용처 grep 후 삭제 또는 deprecated 마킹
-- [ ] Task 3 — S2: StreamingWarmupIndicator 카운트다운 progress bar 구현
+- [x] Task 0 — failing test 커밋 (S1 TypewriterMarkdown 제거 spec, S2 카운트다운 spec)
+- [x] Task 1 — S1: AIWorkspaceMessage TypewriterMarkdown → MarkdownRenderer 전환
+- [x] Task 2 — S1: TypewriterMarkdown.tsx 사용처 grep 후 삭제 또는 deprecated 마킹
+- [x] Task 3 — S2: StreamingWarmupIndicator 카운트다운 progress bar 구현
 - [ ] Task 4 — S3: Cloud Run `agent-step` data event 전송 추가 (S1/S2 완료 후 별도 승인)
 - [ ] Task 5 — S3: 프론트엔드 `onData` 핸들러에서 `agent-step` 이벤트 처리 (S1/S2 완료 후 별도 승인)
 - [ ] Task 6 — `npm run validate:all` 통과 확인

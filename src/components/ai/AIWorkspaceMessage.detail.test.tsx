@@ -17,12 +17,6 @@ vi.mock('./MarkdownRenderer', () => ({
   ),
 }));
 
-vi.mock('./TypewriterMarkdown', () => ({
-  TypewriterMarkdown: ({ content }: { content: string }) => (
-    <div data-testid="typewriter-markdown">{content}</div>
-  ),
-}));
-
 vi.mock('./ThinkingProcessVisualizer', () => ({
   ThinkingProcessVisualizer: () => <div data-testid="thinking-visualizer" />,
 }));

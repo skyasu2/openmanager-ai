@@ -23,6 +23,14 @@ export const StreamingWarmupIndicator = memo<StreamingWarmupIndicatorProps>(
     const [elapsed, setElapsed] = useState(0);
     const startTimeRef = useRef(Date.now());
     const previousEstimatedWaitSecondsRef = useRef(estimatedWaitSeconds);
+    const normalizedEstimatedWaitSeconds = Math.max(
+      1,
+      Math.floor(estimatedWaitSeconds || 60)
+    );
+    const remainingSeconds = Math.max(
+      0,
+      normalizedEstimatedWaitSeconds - elapsed
+    );
 
     useEffect(() => {
       if (previousEstimatedWaitSecondsRef.current === estimatedWaitSeconds) {
@@ -37,7 +45,7 @@ export const StreamingWarmupIndicator = memo<StreamingWarmupIndicatorProps>(
 
     // Smooth progress: 빠르게 시작 → 느리게 마무리 (easeOutExpo 커브)
     useEffect(() => {
-      const estimatedMs = Math.max(1, estimatedWaitSeconds || 60) * 1000;
+      const estimatedMs = normalizedEstimatedWaitSeconds * 1000;
 
       const interval = setInterval(() => {
         const elapsedMs = Date.now() - startTimeRef.current;
@@ -50,7 +58,7 @@ export const StreamingWarmupIndicator = memo<StreamingWarmupIndicatorProps>(
       }, 200);
 
       return () => clearInterval(interval);
-    }, [estimatedWaitSeconds]);
+    }, [normalizedEstimatedWaitSeconds]);
 
     return (
       <div className="border-t border-blue-200 bg-linear-to-r from-blue-50 to-indigo-50 p-4">
@@ -72,14 +80,25 @@ export const StreamingWarmupIndicator = memo<StreamingWarmupIndicatorProps>(
 
             {/* Progress bar */}
             <div className="mt-2 flex items-center gap-2">
-              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-blue-200">
+              <div
+                aria-valuemax={normalizedEstimatedWaitSeconds}
+                aria-valuemin={0}
+                aria-valuenow={Math.min(
+                  elapsed,
+                  normalizedEstimatedWaitSeconds
+                )}
+                className="h-1.5 flex-1 overflow-hidden rounded-full bg-blue-200"
+                role="progressbar"
+              >
                 <div
                   className="h-full rounded-full bg-linear-to-r from-blue-500 to-indigo-500 transition-all duration-300 ease-out"
                   style={{ width: `${progress}%` }}
                 />
               </div>
               <span className="text-xs tabular-nums text-blue-500">
-                {elapsed}초
+                {remainingSeconds > 0
+                  ? `약 ${remainingSeconds}초 남음`
+                  : '거의 다 됐습니다'}
               </span>
             </div>
           </div>
