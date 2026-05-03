@@ -369,6 +369,56 @@ describe('Jobs Routes', () => {
       );
     });
 
+    it('localRouteDecision을 supervisor stream 요청에 보존한다', async () => {
+      const localRouteDecision = {
+        intent: 'job',
+        executionPath: 'job',
+        complexity: 'complex',
+        reasonCodes: ['job_queue_api'],
+        ruleVersion: '2026-05-03-v1',
+        decidedBy: 'bff',
+        providerRawError: 'must not leak',
+      };
+
+      const res = await app.request('/jobs/process', {
+        method: 'POST',
+        body: JSON.stringify({
+          jobId: 'job-local-route',
+          messages: [
+            {
+              role: 'user',
+              content: '전체 서버 장애 원인 분석 보고서 만들어줘',
+            },
+          ],
+          sessionId: 'session-local-route',
+          localRouteDecision,
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      expect(res.status).toBe(200);
+      expect(vi.mocked(executeSupervisorStream)).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sessionId: 'session-local-route',
+          localRouteDecision: expect.objectContaining({
+            intent: 'job',
+            executionPath: 'job',
+            complexity: 'complex',
+            reasonCodes: ['job_queue_api'],
+            ruleVersion: '2026-05-03-v1',
+            decidedBy: 'bff',
+          }),
+        })
+      );
+      expect(
+        (
+          vi.mocked(executeSupervisorStream).mock.calls[0]?.[0] as {
+            localRouteDecision?: Record<string, unknown>;
+          }
+        ).localRouteDecision
+      ).not.toHaveProperty('providerRawError');
+    });
+
     it('completed job duplicate delivery는 AI 실행 없이 성공으로 반환한다', async () => {
       vi.mocked(getJobResult).mockResolvedValueOnce({
         status: 'completed',

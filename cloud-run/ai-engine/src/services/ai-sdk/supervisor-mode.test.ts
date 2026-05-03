@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildSupervisorAssistantPlan,
+  buildSupervisorPlannerShadow,
   buildSupervisorRouteDecision,
+  normalizeSupervisorLocalRouteDecision,
   resolveSupervisorMode,
   resolveSupervisorModeDecision,
 } from './supervisor-mode';
@@ -164,4 +166,112 @@ describe('resolveSupervisorMode', () => {
       });
     }
   );
+});
+
+describe('supervisor planner shadow', () => {
+  it('treats simple metric lookups as deterministic candidates without escalation', () => {
+    const routeDecision = buildSupervisorRouteDecision(
+      resolveSupervisorModeDecision({
+        mode: 'auto',
+        messages: [{ role: 'user', content: 'CPU 알려줘' }],
+      }),
+      { traceId: 'trace-shadow-simple' }
+    );
+    const localRouteDecision = normalizeSupervisorLocalRouteDecision({
+      intent: 'chat',
+      executionPath: 'stream',
+      complexity: 'simple',
+      reasonCodes: ['complexity_below_threshold'],
+      ruleVersion: '2026-05-03-v1',
+      decidedBy: 'frontend',
+      providerRawError: 'must not leak',
+    });
+
+    expect(localRouteDecision).toMatchObject({
+      intent: 'chat',
+      executionPath: 'stream',
+      complexity: 'simple',
+      reasonCodes: ['complexity_below_threshold'],
+      decidedBy: 'frontend',
+    });
+    expect(localRouteDecision).not.toHaveProperty('providerRawError');
+
+    const shadow = buildSupervisorPlannerShadow({
+      request: {
+        mode: 'auto',
+        messages: [{ role: 'user', content: 'CPU 알려줘' }],
+        sessionId: 'session-shadow-simple',
+      },
+      routeDecision,
+      localRouteDecision,
+      latencyMs: 7,
+    });
+
+    expect(shadow).toMatchObject({
+      candidate: {
+        kind: 'chat',
+        executionPath: 'stream',
+        executionMode: 'deterministic',
+        reasonCodes: ['metric_lookup'],
+      },
+      localDecision: expect.objectContaining({
+        intent: 'chat',
+        executionPath: 'stream',
+        decidedBy: 'frontend',
+      }),
+      drift: {
+        matched: true,
+        reasonCodes: [],
+      },
+      latencyMs: 7,
+    });
+    expect(shadow.candidate).not.toHaveProperty('escalationReasonCodes');
+  });
+
+  it('marks report-style analysis as a multi-agent escalation candidate and reports drift', () => {
+    const routeDecision = buildSupervisorRouteDecision(
+      resolveSupervisorModeDecision({
+        mode: 'auto',
+        messages: [
+          { role: 'user', content: '전체 서버 장애 원인 분석 보고서 만들어줘' },
+        ],
+      }),
+      { traceId: 'trace-shadow-report' }
+    );
+    const localRouteDecision = normalizeSupervisorLocalRouteDecision({
+      intent: 'chat',
+      executionPath: 'stream',
+      complexity: 'simple',
+      reasonCodes: ['complexity_below_threshold'],
+      ruleVersion: '2026-05-03-v1',
+      decidedBy: 'frontend',
+    });
+
+    const shadow = buildSupervisorPlannerShadow({
+      request: {
+        mode: 'auto',
+        messages: [
+          { role: 'user', content: '전체 서버 장애 원인 분석 보고서 만들어줘' },
+        ],
+        sessionId: 'session-shadow-report',
+      },
+      routeDecision,
+      localRouteDecision,
+      latencyMs: 9,
+    });
+
+    expect(shadow.candidate).toMatchObject({
+      kind: 'chat',
+      executionPath: 'job',
+      executionMode: 'multi-agent',
+      escalationReasonCodes: ['incident_report_requested'],
+    });
+    expect(shadow.drift).toMatchObject({
+      matched: false,
+      reasonCodes: expect.arrayContaining([
+        'execution_path_mismatch',
+        'execution_mode_mismatch',
+      ]),
+    });
+  });
 });

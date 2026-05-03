@@ -293,6 +293,51 @@ describe('POST /api/ai/jobs trigger readiness', () => {
     });
   });
 
+  it('Cloud Run worker trigger forwards the BFF route decision as localRouteDecision', async () => {
+    process.env.CLOUD_RUN_ENABLED = 'true';
+    mockAnalyzeJobQueryComplexity.mockReturnValue({
+      level: 'complex',
+      estimatedTime: 55,
+      factors: { dataVolume: 'high' },
+    });
+
+    const { POST } = await importRoute();
+    const request = new NextRequest('http://localhost/api/ai/jobs', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        cookie: 'auth_session_id=guest-session-xyz',
+      },
+      body: JSON.stringify({
+        query: '전체 서버 장애 원인 분석 보고서 만들어줘',
+        options: { sessionId: 'session-1234' },
+      }),
+    });
+
+    const response = await POST(request);
+    const scheduled = mockAfter.mock.calls[0]?.[0] as
+      | (() => Promise<void>)
+      | undefined;
+    await scheduled?.();
+
+    expect(response.status).toBe(201);
+    const workerBody = JSON.parse(
+      (
+        mockFetch.mock.calls[0]?.[1] as {
+          body: string;
+        }
+      ).body
+    ) as Record<string, unknown>;
+
+    expect(workerBody.localRouteDecision).toMatchObject({
+      intent: 'job',
+      executionPath: 'job',
+      complexity: 'complex',
+      reasonCodes: ['job_queue_api'],
+      decidedBy: 'bff',
+    });
+  });
+
   it('stores and forwards the job creation data slot as queryAsOf', async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-04-29T05:55:00.000Z'));
