@@ -6,9 +6,9 @@
 
 # AI Assistant Architecture Evolution Plan
 
-- 상태: Approved (M3 completed; M4~M7 pending milestone approval)
+- 상태: Approved for M4 (M3 completed; M5~M7 pending milestone approval)
 - 작성일: 2026-05-03
-- TODO.md 연결: Backlog > `AI Assistant Architecture Evolution (M4~M7)`
+- TODO.md 연결: Active Tasks > `AI Assistant Architecture Evolution M4`
 - 기준 문서: [ai-assistant-initial-design-comparison.md](../../docs/reference/architecture/ai/ai-assistant-initial-design-comparison.md)
 - 선행 완료:
   - [AI Assistant Route Decision Metadata Plan](ai-assistant-route-decision-metadata-plan.md) — M1 완료
@@ -234,7 +234,7 @@ type MonitoringFactPack = {
 
 - [x] Task 0 — M3 문서 정합성 failing/docs check 기준 확정
 - [x] Task 1 — M3 기준 문서 보정: 점수표 `/45`, M2 actual contract, M4~M7 gap table, AI SDK/Vercel/best-practice 정합성
-- [ ] Task 2 — M4 `ArtifactEnvelope` contract failing tests 작성
+- [x] Task 2 — M4 `ArtifactEnvelope` contract failing tests 작성
 - [ ] Task 3 — M4 artifact generator/card/history restore envelope 적용
 - [ ] Task 4 — M5 Cloud Run authoritative planner shadow mode spec 및 failing tests 작성
 - [ ] Task 5 — M5 shadow plan metadata, drift reason, fallback plan 구현

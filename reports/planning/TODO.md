@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-03 KST (`AI Assistant Architecture Evolution M3 completed`)
+**Last Updated**: 2026-05-03 KST (`AI Assistant Architecture Evolution M4 spec in progress`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| — | — | — | 현재 계획서 기준 잔여 active task 없음 |
+| AI Assistant Architecture Evolution M4 | High | spec-in-progress | [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) — `ArtifactEnvelope`/artifact versioning contract failing tests 작성 |
 
 ---
 
@@ -16,7 +16,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| AI Assistant Architecture Evolution (M4~M7) | High | [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) — Option A 유지, Option C/E 흡수: ArtifactEnvelope, authoritative Planner, `/api/ask`, deterministic fact/eval guard |
+| AI Assistant Architecture Evolution (M5~M7) | High | [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) — Option A 유지, Option C/E 흡수: authoritative Planner, `/api/ask`, deterministic fact/eval guard |
 | AI Streaming UI 개선 (S1~S3) | Medium | [ai-streaming-ui-improvement-plan.md](ai-streaming-ui-improvement-plan.md) — 전체 페이지 실제 SSE 전환, Cold Start 카운트다운, Agent 단계 실시간 표시 |
 
 ---

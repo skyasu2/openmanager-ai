@@ -8,7 +8,10 @@ import {
   readServerSnapshotTimeLabel,
   readServerSnapshotTopServers,
 } from './server-snapshot-artifact';
-import type { ServerSnapshotArtifact } from './types';
+import {
+  ARTIFACT_CONTRACT_VERSION,
+  type ServerSnapshotArtifact,
+} from './types';
 
 const metricsMocks = vi.hoisted(() => ({
   getAllServerMetrics: vi.fn(),
@@ -147,9 +150,12 @@ describe('generateServerSnapshotArtifact', () => {
     expect(metricsMocks.getAllServerMetrics).toHaveBeenCalledTimes(1);
     expect(metricsMocks.getSystemSummary).toHaveBeenCalledTimes(1);
     expect(artifact).toMatchObject({
+      artifactVersion: ARTIFACT_CONTRACT_VERSION,
       kind: 'server-snapshot',
       title: '현재 서버 상태 스냅샷',
       source: 'otel-static',
+      sourceMode: 'otel-static',
+      dataSlot: '07:00 KST',
       queryAsOfDataSlot,
       slot: queryAsOfDataSlot,
       totals: {
