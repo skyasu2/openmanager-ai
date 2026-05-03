@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-03 KST (`M5 review fixes applied; M6 facade next`)
+**Last Updated**: 2026-05-03 KST (`M6 ask facade implemented; M7 fact pack next`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| AI Assistant Architecture Evolution M6 (`/api/ask` facade) | High | Ready | [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) — 기존 stream/job/artifact route를 즉시 제거하지 않고 단일 BFF facade로 감싸는 spec/failing tests부터 착수 |
+| AI Assistant Architecture Evolution M7 (`MonitoringFactPack` + eval guard) | High | Ready | [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) — 기존 `sourceMode`/`queryAsOf`/`evidenceRefs` tool result를 canonical fact bundle로 묶는 spec/failing tests부터 착수 |
 
 ---
 
@@ -16,7 +16,6 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| AI Assistant Architecture Evolution M7 (`MonitoringFactPack` + eval guard) | High | [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) — M5와 **병렬 진행 가능**: precomputed-state 위에 typed fact boundary, retrieval recall guard, provider freshness guard |
 | AI Streaming UI 개선 (S1~S3) | Medium | [ai-streaming-ui-improvement-plan.md](ai-streaming-ui-improvement-plan.md) — 전체 페이지 실제 SSE 전환, Cold Start 카운트다운, Agent 단계 실시간 표시. ⚠️ S1은 M6 `/api/ask` transport와, S2는 M5 shadow planner latency 측정과 교차 가능 |
 
 ---
@@ -42,6 +41,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-03 #273)
+- [x] AI Assistant Architecture Evolution M6 (`/api/ai/ask` wrapper-only facade)
+  - 신규 `/api/ai/ask` POST facade 추가: 기본 `stream`은 기존 `/api/ai/supervisor/stream/v2`, 명시 `job`은 `/api/ai/jobs`, artifact transport는 기존 incident/monitoring route로 위임
+  - facade 내부에서 별도 planner/route decision을 만들지 않고 기존 route가 생성/보존하는 `RouteDecision`/`AssistantPlan`/`AssistantResult` metadata를 그대로 전달
+  - `NEXT_PUBLIC_AI_ASK_FACADE_ENABLED=true`일 때 streaming frontend path가 `/api/ai/ask`를 쓰도록 opt-in 연결. 기본값은 기존 stream endpoint 유지
+  - spec/failing test commit 후 구현 commit으로 분리. 신규 LLM/provider 호출, Cloud Run route 변경, 기존 route 삭제 없음
 
 ### Completed (2026-05-03 #272)
 - [x] AI Assistant Architecture Evolution M5 review fixes

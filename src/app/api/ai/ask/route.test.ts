@@ -2,11 +2,13 @@ import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const {
+  mockStreamGet,
   mockStreamPost,
   mockJobsPost,
   mockIncidentReportPost,
   mockMonitoringPost,
 } = vi.hoisted(() => ({
+  mockStreamGet: vi.fn(),
   mockStreamPost: vi.fn(),
   mockJobsPost: vi.fn(),
   mockIncidentReportPost: vi.fn(),
@@ -14,6 +16,7 @@ const {
 }));
 
 vi.mock('../supervisor/stream/v2/route', () => ({
+  GET: mockStreamGet,
   POST: mockStreamPost,
 }));
 
@@ -29,7 +32,7 @@ vi.mock('../intelligent-monitoring/route', () => ({
   POST: mockMonitoringPost,
 }));
 
-import { POST } from './route';
+import { GET, POST } from './route';
 
 function createAskRequest(body: Record<string, unknown>): NextRequest {
   return new NextRequest('http://localhost/api/ai/ask', {
@@ -98,6 +101,7 @@ describe('POST /api/ai/ask facade', () => {
   });
 
   it('delegates long-running requests to the existing job route and preserves plan metadata', async () => {
+    let capturedJobBody: Record<string, unknown> | undefined;
     mockJobsPost.mockImplementation(async (request: NextRequest) => {
       const delegatedBody = (await request.json()) as {
         query: string;
@@ -105,6 +109,7 @@ describe('POST /api/ai/ask facade', () => {
           metadata?: Record<string, unknown>;
         };
       };
+      capturedJobBody = delegatedBody as Record<string, unknown>;
 
       return Response.json(
         {
@@ -161,9 +166,7 @@ describe('POST /api/ai/ask facade', () => {
       routeDecision,
       assistantPlan,
     });
-    await expect(readDelegatedJson(mockJobsPost)).resolves.not.toHaveProperty(
-      'transport'
-    );
+    expect(capturedJobBody).not.toHaveProperty('transport');
   });
 
   it('delegates artifact-shaped requests to existing artifact routes and keeps result metadata', async () => {
@@ -234,5 +237,41 @@ describe('POST /api/ai/ask facade', () => {
     expect(mockJobsPost).not.toHaveBeenCalled();
     expect(mockIncidentReportPost).not.toHaveBeenCalled();
     expect(mockMonitoringPost).not.toHaveBeenCalled();
+  });
+});
+
+describe('GET /api/ai/ask facade', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('delegates stream resume requests to the existing streaming resume route', async () => {
+    mockStreamGet.mockImplementation(async (request: NextRequest) => {
+      return Response.json({
+        delegatedUrl: request.url,
+      });
+    });
+
+    const response = await GET(
+      new NextRequest(
+        'http://localhost/api/ai/ask?sessionId=session-ask-resume&skip=2',
+        {
+          method: 'GET',
+          headers: {
+            'X-Trace-Id': 'trace-ask-resume',
+          },
+        }
+      )
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('X-AI-Ask-Facade')).toBe('wrapper');
+    expect(response.headers.get('X-AI-Ask-Delegated-Route')).toBe(
+      '/api/ai/supervisor/stream/v2'
+    );
+    await expect(response.json()).resolves.toEqual({
+      delegatedUrl:
+        'http://localhost/api/ai/supervisor/stream/v2?sessionId=session-ask-resume&skip=2',
+    });
   });
 });

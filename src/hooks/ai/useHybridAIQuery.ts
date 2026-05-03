@@ -350,7 +350,7 @@ export function useHybridAIQuery(
   useEffect(() => {
     queryAsOfDataSlotRef.current = queryAsOfDataSlot;
   }, [queryAsOfDataSlot]);
-  const apiEndpoint = customEndpoint ?? '/api/ai/supervisor/stream/v2';
+  const apiEndpoint = resolveHybridAIEndpoint(customEndpoint);
   const sessionIdRef = useRef<string>(
     initialSessionId || generateMessageId('session')
   );
@@ -657,4 +657,14 @@ export function useHybridAIQuery(
     skipClarification,
     dismissClarification,
   };
+}
+
+export function resolveHybridAIEndpoint(customEndpoint?: string): string {
+  if (customEndpoint) {
+    return customEndpoint;
+  }
+
+  return process.env.NEXT_PUBLIC_AI_ASK_FACADE_ENABLED === 'true'
+    ? '/api/ai/ask'
+    : '/api/ai/supervisor/stream/v2';
 }

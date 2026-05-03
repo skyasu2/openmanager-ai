@@ -86,6 +86,7 @@ import { useHybridAIQuery } from '@/hooks/ai/useHybridAIQuery';
 describe('useHybridAIQuery Contract', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    delete process.env.NEXT_PUBLIC_AI_ASK_FACADE_ENABLED;
 
     mocks.sendMessage.mockResolvedValue(undefined);
     mocks.asyncSendQuery.mockResolvedValue({ jobId: 'job-contract-1' });
@@ -126,6 +127,30 @@ describe('useHybridAIQuery Contract', () => {
       transportOptions.prepareReconnectToStreamRequest({ id: 'session-abc' })
     ).toEqual({
       api: '/api/ai/supervisor/stream/v2?sessionId=session-abc',
+    });
+  });
+
+  it('ask facade opt-in flag가 켜진 경우 스트리밍 엔드포인트를 /api/ai/ask로 전환한다', () => {
+    process.env.NEXT_PUBLIC_AI_ASK_FACADE_ENABLED = 'true';
+
+    renderHook(() => useHybridAIQuery());
+
+    expect(mocks.defaultChatTransport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        api: '/api/ai/ask',
+      })
+    );
+
+    const transportOptions = mocks.defaultChatTransport.mock.calls[0]?.[0] as {
+      prepareReconnectToStreamRequest: (args: { id: string }) => {
+        api: string;
+      };
+    };
+
+    expect(
+      transportOptions.prepareReconnectToStreamRequest({ id: 'session-abc' })
+    ).toEqual({
+      api: '/api/ai/ask?sessionId=session-abc',
     });
   });
 

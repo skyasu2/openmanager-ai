@@ -6,9 +6,9 @@
 
 # AI Assistant Architecture Evolution Plan
 
-- 상태: Approved (M3~M5c completed; M6~M7 implementation pending milestone approval)
+- 상태: Approved (M3~M6 completed; M7 implementation pending milestone approval)
 - 작성일: 2026-05-03
-- TODO.md 연결: Backlog > `AI Assistant Architecture Evolution (M5~M7)`
+- TODO.md 연결: Active Tasks > `AI Assistant Architecture Evolution M7 (MonitoringFactPack + eval guard)`
 - 기준 문서: [ai-assistant-initial-design-comparison.md](../../docs/reference/architecture/ai/ai-assistant-initial-design-comparison.md)
 - 선행 완료:
   - [AI Assistant Route Decision Metadata Plan](ai-assistant-route-decision-metadata-plan.md) — M1 완료
@@ -47,7 +47,7 @@ User query
 - M4: `IncidentReportArtifact`, `MonitoringAnalysisArtifact`, `ServerSnapshotArtifact` 신규 생성 경로에 envelope-compatible metadata가 부여되고 legacy restore는 `restored-legacy`로 정규화됨
 - precomputed OTel 데이터와 AI Engine tool layer는 이미 deterministic fact source에 가깝지만, `MonitoringFactPack` 같은 명시적 경계는 없음
 - BM25 기반 Knowledge Retrieval Lite와 provider fallback은 운영 중이나 recall/freshness eval guard가 충분히 표준화되지 않음
-- 현재 supervisor는 `auto` mode에서 `selectExecutionMode()`로 single/multi를 고르지만, 주석과 운영 의미는 multi-agent를 standard default처럼 다룬다. M5 목표는 이를 deterministic/single 기본값 + multi-agent escalation으로 재정의하는 것이다.
+- 현재 supervisor는 `auto` mode에서 `selectExecutionMode()`로 single/multi를 고른다. M5에서 planner shadow와 escalation reason은 추가됐지만, 실제 authority는 아직 frontend/BFF/Cloud Run에 분산되어 있다. M6 목표는 새 planner를 만들지 않고 기존 route를 감싸는 facade로 public surface를 수렴하는 것이다.
 
 ## 현재 동작 분석 기반 작업 계획
 
@@ -100,6 +100,13 @@ M5c 완료 기록 (2026-05-03):
 - Cloud Run mode delta corpus를 추가했다. 현재 corpus 6개 기준 multi는 `auto 2/6` → `thinking 4/6`, `single → multi` 전환은 2건이다.
 - `modeSelectionSource=analysis_mode_thinking`은 thinking 버튼이 실제 승격 원인일 때만 사용하고, 원래도 multi였던 보고서/RCA/토폴로지 요청은 `auto_complexity`로 남긴다.
 
+M5 이후 코드 교차 감사 반영 (2026-05-03):
+- frontend `useQueryExecution`은 여전히 stream/job route authority를 갖는다. `/api/ask` 도입 후에도 즉시 제거하지 않는다.
+- BFF stream route와 job route는 `queryAsOf`, `analysisMode`, sanitized `localRouteDecision`, `AssistantPlan` metadata를 Cloud Run 또는 Redis job metadata로 전달한다.
+- Cloud Run planner shadow는 candidate/drift/latency 관측용이다. M6에서 이 로직을 새로 구현하지 않고 기존 stream/job/artifact route를 wrapper로 감싼다.
+- monitoring tool layer는 이미 `sourceMode`, `queryAsOf`, `evidenceRefs`를 반환한다. M7 `MonitoringFactPack`은 새 데이터 소스가 아니라 기존 deterministic tool result를 canonical bundle로 묶는 계약이다.
+- provider model policy는 deprecation/quota/capability/smokeEvidence를 갖지만 `lastVerified`, `expiresAt`, `reasoningCapability`가 없다. provider-native thinking은 policy freshness가 준비된 뒤 opt-in으로만 연결한다.
+
 ## 범위
 
 ### 포함
@@ -109,7 +116,7 @@ M5c 완료 기록 (2026-05-03):
 - **M5a** (contract + baseline): `ExecutionMode` contract 확장 + current behavior baseline corpus 고정 — Task 4의 전반부
 - **M5b** (shadow + drift + escalation): Cloud Run shadow planner, drift 측정/threshold, multi-agent escalation guard, rollout decision — Task 4 후반 + Task 5
 - **M5c** (thinking route delta measurement): thinking On/Off가 frontend routing 및 Cloud Run mode selection에 주는 차이를 corpus로 고정
-- M6: `/api/ask` BFF facade 설계 및 기존 stream/job/artifact route wrapping — M5b rollout go 판정 후 착수
+- M6: `/api/ask` BFF facade 설계 및 기존 stream/job/artifact route wrapping — 완료. 초기 구현은 wrapper-only이며 기존 route authority를 즉시 제거하지 않음
 - M7: deterministic `MonitoringFactPack`와 provider/retrieval eval guard 도입 — **M5와 병렬 진행 가능** (precomputed-state와 tool layer 위에 typed boundary를 씌우는 것이므로 shadow planner와 직접 의존 없음)
 
 ### 제외
@@ -136,7 +143,7 @@ M5c 완료 기록 (2026-05-03):
 
 ## 계약 (Contract)
 
-> Approved 범위 중 M3~M5c는 완료되었다. M6~M7은 변경 대상 파일과 계약 초안은 기록되어 있으나, 구현 착수 전 milestone별 failing test 시나리오를 다시 확정한다. 이 계획서는 전체 로드맵이며, 구현은 milestone 단위로 진행한다.
+> Approved 범위 중 M3~M6는 완료되었다. M7은 변경 대상 파일과 계약 초안은 기록되어 있으나, 구현 착수 전 milestone별 failing test 시나리오를 다시 확정한다. 이 계획서는 전체 로드맵이며, 구현은 milestone 단위로 진행한다.
 
 ### 공통 불변조건
 
@@ -286,14 +293,18 @@ Escalation 기준:
 계약 초안:
 - `/api/ask`는 단일 public BFF facade로 request를 받는다.
 - 초기 구현은 기존 stream/job/artifact route를 내부적으로 감싼다.
+- facade 내부에서 별도 planner/route decision을 새로 만들지 않는다. 기존 route가 만든 `RouteDecision`/`AssistantPlan`/`AssistantResult`를 보존한다.
+- frontend opt-in은 최소 1개 path부터 시작하고, 기존 `/api/ai/supervisor/stream/v2`, `/api/ai/jobs`, artifact route contract는 유지한다.
 - 응답은 `AssistantPlan`/`AssistantResult` metadata를 포함한다.
 - 기존 route는 즉시 삭제하지 않고 compatibility surface로 유지한다.
 
 테스트 시나리오:
-- [ ] simple chat request는 streaming-compatible response로 위임된다.
-- [ ] long-running request는 job response로 위임된다.
-- [ ] artifact-shaped request는 artifact result metadata를 보존한다.
-- [ ] 기존 route contract test는 계속 통과한다.
+- [x] simple chat request는 streaming-compatible response로 위임된다.
+- [x] long-running request는 job response로 위임된다.
+- [x] artifact-shaped request는 artifact result metadata를 보존한다.
+- [x] `/api/ask`는 자체 planner를 실행하지 않고 기존 route wrapper로만 동작한다.
+- [x] local `RouteDecision`/`AssistantPlan`/`queryAsOf` metadata는 facade 경유 후에도 보존된다.
+- [x] 기존 route contract test는 계속 통과한다.
 
 ### M7 — MonitoringFactPack, provider freshness, retrieval recall guard
 
@@ -312,6 +323,8 @@ Escalation 기준:
 type MonitoringFactPack = {
   factPackVersion: string;
   dataSlot: string;
+  sourceMode: 'replay-json' | 'live-otel';
+  queryAsOf: string;
   thresholds: Record<string, { warning: number; critical: number }>;
   summary: {
     total: number;
@@ -321,13 +334,14 @@ type MonitoringFactPack = {
     offline: number;
   };
   signals: MonitoringSignal[];
-  evidenceRefs: string[];
+  evidenceRefs: MonitoringEvidenceRef[];
 };
 ```
 
 테스트 시나리오:
 - [ ] 같은 dataSlot과 query scope는 같은 `MonitoringFactPack`을 생성한다.
 - [ ] CPU/Memory/Disk/Network severity는 threshold rule로 결정되며 LLM output에 의존하지 않는다.
+- [ ] 기존 monitoring tool result의 `sourceMode`, `queryAsOf`, `evidenceRefs`가 fact pack에 손실 없이 보존된다.
 - [ ] retrieval lite recall fixture가 최소 기준을 만족하지 못하면 fallback reason을 노출한다.
 - [ ] provider model policy freshness smoke가 stale provider metadata를 탐지한다.
 
@@ -340,8 +354,8 @@ type MonitoringFactPack = {
 - [x] Task 4a — M5a current behavior baseline + ExecutionMode contract spec/failing tests 작성
 - [x] Task 4b — M5b Cloud Run authoritative planner shadow mode + multi-agent escalation policy spec 및 failing tests 작성
 - [x] Task 5 — M5 shadow plan metadata, executionMode, escalation reason, drift reason 구현
-- [ ] Task 6 — M6 `/api/ask` facade spec 및 failing tests 작성
-- [ ] Task 7 — M6 `/api/ask` wrapper 구현 및 frontend opt-in path 연결
+- [x] Task 6 — M6 `/api/ask` wrapper-only facade spec 및 failing tests 작성
+- [x] Task 7 — M6 `/api/ask` wrapper 구현 및 최소 1개 frontend opt-in path 연결
 - [ ] Task 8 — M7 `MonitoringFactPack` spec 및 deterministic tests 작성
 - [ ] Task 9 — M7 fact pack, retrieval recall guard, provider freshness guard 구현
 - [ ] Task 10 — 전체 검증, planning/TODO 상태 갱신, 필요 시 release/QA 판단
@@ -372,6 +386,7 @@ type MonitoringFactPack = {
 | M5 구현 후 | planner drift metadata가 public-safe인지, provider 실패 fallback이 deterministic인지, 단순 metric query가 multi-agent로 과잉 승격되지 않는지 |
 | M5 rollout 전 | current behavior baseline corpus에서 frontend/BFF/Cloud Run decision drift가 허용 범위인지 |
 | M6 test 완료 후 | `/api/ask`가 기존 route 제거 없이 facade 역할만 하는지 |
+| M6 구현 후 | `/api/ask`가 별도 planner를 만들지 않고 기존 stream/job/artifact metadata를 보존하는지 |
 | M7 구현 후 | fact pack 계산이 LLM/provider 결과에 의존하지 않는지, eval guard가 CI/무료 티어에 적합한지 |
 
 ## 진행 중 블로커 대응
@@ -383,6 +398,7 @@ type MonitoringFactPack = {
 | M5 multi-agent 선택률이 단순 조회에서 높게 나오는 경우 | multi-agent 기본값 전환 금지, escalation rule과 corpus를 먼저 축소 |
 | M6 `/api/ask`가 route surface를 더 복잡하게 만드는 경우 | 내부 wrapper만 유지하고 frontend opt-in rollout 보류 |
 | M7 provider/retrieval eval이 외부 호출을 요구하는 경우 | deterministic fixture/mocked provider 기준으로 CI guard 작성, 실 smoke는 수동/운영 QA로 분리 |
+| M7 fact pack이 새 데이터 계층으로 커지는 경우 | 기존 `sourceMode/queryAsOf/evidenceRefs` tool result bundling 범위로 축소 |
 | 범위가 예상보다 2배 이상 확대 | milestone별 하위 plan으로 분리 |
 
 ## 완료 기준
@@ -397,7 +413,7 @@ type MonitoringFactPack = {
 - [x] Cloud Run Planner shadow mode가 `AssistantPlan` candidate, `executionMode`, escalation reason, drift metadata를 노출한다.
 - [x] 현재 stream/job/artifact/multi-agent 동작 baseline corpus가 M5 변경 전후를 비교한다.
 - [x] 단순 metric query는 deterministic/single 경로로 유지되고, RCA/report/vision/advisory만 multi-agent candidate가 된다.
-- [ ] `/api/ask` facade가 기존 route를 감싸며 최소 1개 frontend opt-in path에서 동작한다.
+- [x] `/api/ask` facade가 기존 route를 감싸며 최소 1개 frontend opt-in path에서 동작한다.
 - [ ] MonitoringFactPack이 deterministic threshold 판단을 고정한다.
 - [ ] retrieval recall/provider freshness guard가 deterministic test 또는 bounded smoke로 추적된다.
 - [x] root `npm run type-check`, `npm run lint`, `npm run test:quick`, `npm run test:contract` 통과
@@ -419,3 +435,5 @@ type MonitoringFactPack = {
 - 2026-05-03 M5a 완료: `AssistantPlan.executionMode`, public-safe escalation/planner shadow normalizer, frontend/Cloud Run current behavior baseline을 구현했다. TODO.md Active Task는 M5b shadow planner로 이동했다.
 - 2026-05-03 M5b 완료: local route decision 전달, Cloud Run planner shadow metadata, drift/escalation reason, 50개 corpus threshold를 구현했다. 기존 실행 authority는 유지하며 TODO.md Active Task는 M6 `/api/ask` facade로 이동했다.
 - 2026-05-03 M5c 완료: thinking On/Off가 frontend job routing 및 Cloud Run single/multi mode selection에 주는 차이를 각각 6개 corpus로 고정했다. thinking은 provider-native hidden reasoning이 아니라 app-level routing intensity로 유지하며, M6 `/api/ask` facade가 다음 구현 대상이다.
+- 2026-05-03 코드 교차 감사 반영: M6는 wrapper-only facade로 제한하고, M7 `MonitoringFactPack`은 기존 `sourceMode/queryAsOf/evidenceRefs` tool result를 canonical bundle로 묶는 계약으로 축소했다. Artifact workspace/schema registry는 M6/M7 이후 제품성 강화 과제로 유지한다.
+- 2026-05-03 M6 완료: `/api/ai/ask` wrapper-only facade를 추가해 stream/job/incident-report/monitoring-analysis 기존 route로 위임하고, `NEXT_PUBLIC_AI_ASK_FACADE_ENABLED=true` frontend opt-in을 연결했다. 기본 stream endpoint와 기존 route contract는 유지한다.
