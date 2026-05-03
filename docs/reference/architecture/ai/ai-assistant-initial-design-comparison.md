@@ -49,8 +49,8 @@
 
 | 개선 | 방법 | 현재 구현 상태 |
 |------|------|----------------|
-| BFF surface 수렴 | `/api/ask` facade를 목표로 삼되, 먼저 기존 streaming/job/artifact route가 같은 `AssistantPlan`/`AssistantResult` metadata를 쓰게 한다. | 부분 구현. `routeDecision` read-only metadata slice는 구현됨. `/api/ask`와 `AssistantPlan`/`AssistantResult` facade는 미구현. |
-| Route decision drift 방지 | frontend, job API, Cloud Run이 같은 route decision schema를 사용하게 통일 | 부분 구현. frontend stream/job/artifact, BFF job API, Cloud Run stream done metadata가 `routeDecision` shape를 보존한다. 라우팅 권한은 아직 frontend/backend에 분산되어 있음. |
+| BFF surface 수렴 | `/api/ask` facade를 목표로 삼되, 먼저 기존 streaming/job/artifact route가 같은 `AssistantPlan`/`AssistantResult` metadata를 쓰게 한다. | 부분 구현. `routeDecision` M1과 `AssistantPlan`/`AssistantResult` read-only facade M2는 구현됨. `/api/ask` 단일 endpoint는 아직 미구현. |
+| Route decision drift 방지 | frontend, job API, Cloud Run이 같은 route decision schema를 사용하게 통일 | 부분 구현. frontend stream/job/artifact, BFF job API, Cloud Run stream done/job result metadata가 `routeDecision`과 read-only plan/result facade를 보존한다. 라우팅 권한은 아직 frontend/backend에 분산되어 있음. |
 | Artifact 표준 필드 | `artifactVersion`, `traceId`, `dataSlot`을 모든 artifact card에 표준 포함 | `dataSlot`은 일부 artifact에서 사용 중. `artifactVersion`은 코드베이스에 미존재. |
 | Provider smoke freshness | provider policy에 `lastVerified`, `expiresAt` 필드 추가 | 미구현. 현재 `provider-model-policy.ts`에 freshness 관련 필드 없음. |
 
@@ -340,7 +340,7 @@ AIExperienceShell
 
 처음부터 backend contract는 다음처럼 둔다. 아래 타입은 **proposed sketch**이며, 실제 도입 시에는 기존 타입과 정렬해야 한다. 특히 `EvidenceCard`는 현재 `cloud-run/ai-engine/src/lib/retrieval-contract.ts`의 계약을 우선 재사용하고, `ArtifactKind`/`PublicErrorCode` 같은 이름은 실제 코드의 artifact/error union에 맞춰 확정한다.
 
-> **구현 상태 (2026-05-03)**: `routeDecision` read-only metadata는 구현되어 frontend stream/job/artifact, BFF job, Cloud Run stream done metadata에서 보존된다. `AssistantPlan`/`AssistantResult` facade는 아직 미구현이며, 실제 라우팅 권한은 frontend `useQueryExecution`과 backend `resolveSupervisorModeDecision()`에 분산되어 있다.
+> **구현 상태 (2026-05-03)**: `routeDecision` read-only metadata는 M1에서 구현되어 frontend stream/job/artifact, BFF job, Cloud Run stream done/job result metadata에서 보존된다. `AssistantPlan`/`AssistantResult` read-only facade는 M2에서 구현되어 기존 routeDecision을 감싸는 계획/결과 언어로 함께 보존된다. 실제 라우팅 권한은 아직 frontend `useQueryExecution`과 backend `resolveSupervisorModeDecision()`에 분산되어 있으며, `/api/ask` 단일 endpoint도 아직 없다.
 
 ```ts
 type AssistantPlan =
@@ -567,7 +567,7 @@ Browser -> Query Planner -> Cloud Run Metrics DSL execution -> Deterministic ans
 
 1. `routeDecision` read-only metadata를 먼저 정의한다. 실제 라우팅 권한은 아직 바꾸지 않는다. **완료: 2026-05-03 M1**
 2. Frontend streaming path, job queue path, Cloud Run planner/stream done event가 같은 `routeDecision` object를 기록하게 한다. **완료: 2026-05-03 M1**
-3. `AssistantPlan` / `AssistantResult` facade를 read-only result/plan metadata로 확장한다. 실제 라우팅 권한은 아직 바꾸지 않는다.
+3. `AssistantPlan` / `AssistantResult` facade를 read-only result/plan metadata로 확장한다. 실제 라우팅 권한은 아직 바꾸지 않는다. **완료: 2026-05-03 M2**
 4. 기존 route surface 위에 `/api/ask` facade 목표를 문서화하고, 새 기능은 facade-compatible request/response shape를 우선 사용한다.
 5. Artifact card에 `artifactVersion`, `traceId`, `dataSlot`, `sourceMode`, `providerSummary`를 표준 필드로 표시한다.
 6. Provider policy smoke evidence에 `lastVerified`, `expiresAt`, `smokeSource`를 추가해 freshness 기준을 명시한다.
@@ -577,7 +577,7 @@ Browser -> Query Planner -> Cloud Run Metrics DSL execution -> Deterministic ans
 1. `RCAReportArtifact`를 추가한다.
 2. Artifact schema registry를 먼저 설계한 뒤, trend/anomaly/report를 하나의 `MonitoringArtifact` family로 versioning한다.
 3. Evidence panel을 chat/card 공통 컴포넌트로 분리한다.
-4. Job queue 결과도 streaming route와 같은 `AssistantResult` shape로 정규화한다.
+4. Job queue 결과도 streaming route와 같은 `AssistantResult` shape로 정규화한다. **완료: 2026-05-03 M2**
 
 ### 7.3 장기 재설계
 
@@ -654,3 +654,4 @@ Browser -> Query Planner -> Cloud Run Metrics DSL execution -> Deterministic ans
 | 2026-05-03 | §2.5 업계 레퍼런스 비교 추가 | Datadog AI, New Relic AIM, Elastic AI 모두 "deterministic query engine + LLM narration" 패턴 확인. OpenManager 실질 동작은 업계 표준과 일치하나 구조적 복잡도에서 gap 존재를 외부 근거로 재확인 |
 | 2026-05-03 | §2.4 구조적 복잡도 인과관계 체인 추가 | Vercel+Cloud Run 분리가 BFF proxy(611줄 stream route), duration 제한→job queue, 라우팅 이중화의 1차 원인. multi-provider 무료 tier가 독립적 2차 원인. 업계 레퍼런스가 단순한 이유(단일 플랫폼, 단일 provider)와 대비. 분리 자체는 올바르나 복잡도를 §7 개선 방향으로 축소하는 것이 과제 |
 | 2026-05-03 | `routeDecision` read-only metadata M1 구현 | 라우팅 동작은 유지하되 frontend stream/job/artifact, BFF job, Cloud Run stream done/job result metadata가 같은 `RouteDecision` shape를 보존하도록 정렬. `AssistantPlan`/`AssistantResult` facade와 routing authority 이전은 다음 단계로 유지 |
+| 2026-05-03 | `AssistantPlan`/`AssistantResult` read-only facade M2 구현 | 기존 라우팅 동작은 유지하고 `RouteDecision`을 plan/result facade로 감싸 frontend artifact/stream/job metadata, BFF job response/Redis metadata, Cloud Run supervisor stream done/job result metadata, history/restore/SSE 경로에 보존. `/api/ask`와 routing authority 이전은 후속 과제로 유지 |

@@ -46,15 +46,14 @@
 - [x] AI Assistant AssistantPlan/AssistantResult facade M2
   - `AssistantPlan`/`AssistantResult` read-only facade를 `RouteDecision` 위에 추가하고 routing authority는 변경하지 않음
   - frontend artifact/stream/job metadata, BFF job response/Redis metadata, Cloud Run supervisor stream metadata, history/restore/SSE 경로에 facade 보존
-  - 검증: root targeted facade suite `144/144`, AI Engine supervisor targeted `1/1`
+  - 검증: root targeted facade suite `144/144`, AI Engine supervisor targeted `1/1`, root `type-check`, `lint`, `test:quick`, `test:contract`, AI Engine `type-check`, AI Engine `test`
 
 ### Completed (2026-05-03 #263)
 - [x] AI Assistant routeDecision metadata M1
   - `RouteDecision` read-only contract를 frontend streaming/job/artifact metadata, BFF job metadata, Cloud Run supervisor stream metadata에 연결
   - chat history/message restore, async SSE, stream done metadata에서 routeDecision을 normalize/persist하도록 보강
-  - UI health polling은 `soft=true` 계약으로 전환해 expected degraded 상태가 브라우저 503 콘솔 에러로 보이지 않게 정리
   - AssistantPlan/AssistantResult facade와 routing authority 이전은 다음 단계로 남기고, 기존 라우팅 동작은 변경하지 않음
-  - 검증: root `type-check`, `lint`, `test:quick`, `test:contract`, AI Engine `type-check`, AI Engine `test`, `docs:components:verify`, local Playwright MCP QA `QA-20260503-0396`
+  - 검증: root targeted routeDecision suite `100/100`, AI Engine targeted `1/1`, root `type-check`, `lint`, `test:quick`, `test:contract`, AI Engine `type-check`, AI Engine `test`, `docs:budget`, `docs:ai-consistency`, `git diff --check`
 
 ### Completed (2026-05-03 #262)
 - [x] Artifact/AI response regression hardening follow-up

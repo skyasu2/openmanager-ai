@@ -139,6 +139,10 @@ type AssistantResult = {
 - [x] AI Engine targeted supervisor facade suite 통과 (`1/1`)
 - [x] `npm run type-check`
 - [x] `cd cloud-run/ai-engine && npm run type-check`
+- [x] `npm run lint`
+- [x] `npm run test:quick`
+- [x] `npm run test:contract`
+- [x] `cd cloud-run/ai-engine && npm test` (`962/962`)
 - [x] `npm run docs:budget`
 - [x] `npm run docs:ai-consistency`
 - [x] `git diff --check`
@@ -146,3 +150,10 @@ type AssistantResult = {
 ## 진행 로그
 
 - 2026-05-03 Task 0: root targeted facade suite가 `10 failed / 1 failed suite`, AI Engine supervisor stream targeted suite가 `1 failed`로 실패함을 확인했다. 실패 지점은 모두 `assistantPlan`/`assistantResult` 생성 또는 metadata 보존 누락이며, 기존 routeDecision routing 동작 실패는 아니다.
+- 2026-05-03 Task 1~4: `src/lib/ai/assistant-contract.ts` helper를 추가하고 frontend artifact/stream/job, BFF job, Cloud Run supervisor stream/job result, history/restore/SSE 경로에 facade metadata를 연결했다.
+
+## Completion Notes
+
+- `AssistantPlan`은 routeDecision의 `executionPath`, `reasonCodes`, `dataSlot`, `traceId`, `decidedBy`를 그대로 감싸며 read-only plan language로만 사용한다.
+- `AssistantResult`는 stream/job/artifact 완료 결과를 같은 result language로 보존한다. 실패한 client artifact는 `status='failed'`와 public error code만 기록한다.
+- `/api/ask` 단일 endpoint, routing authority 이전, UI debug badge, artifact schema registry는 범위 밖으로 유지했다.
