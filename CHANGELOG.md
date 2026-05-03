@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.86](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.85...v8.11.86) (2026-05-03)
+
+
+### Features
+
+* **ai:** add assistant plan result facade metadata ([1c84e16](https://gitlab.com/skyasu2/openmanager-ai/-/commit/1c84e16d988c403e9964ff8b26e1ac9009bae2aa))
+* **ai:** add route decision metadata contract ([c86d148](https://gitlab.com/skyasu2/openmanager-ai/-/commit/c86d1485c8bdf0c73f83f47c2f048b50ee1ca1c0))
+
+
+### Code Refactoring
+
+* **ai:** simplify server snapshot artifact helpers ([29d213c](https://gitlab.com/skyasu2/openmanager-ai/-/commit/29d213c4f8f1ed68f5e85468282d9b18f8e0670d))
+
+
+### Tests
+
+* **spec:** add assistant plan result facade contract tests ([776ebcf](https://gitlab.com/skyasu2/openmanager-ai/-/commit/776ebcfe188d689621ad8f9fccb5e4f609d43a1c))
+
 ## [8.11.85](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.84...v8.11.85) (2026-05-02)
 
 
