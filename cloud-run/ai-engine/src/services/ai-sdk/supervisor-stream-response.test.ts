@@ -208,4 +208,56 @@ describe('createSupervisorStreamResponse', () => {
     );
     expect(mockFlushLangfuseBestEffort).toHaveBeenCalledWith('UIMessageStream');
   });
+
+  it('maps agent_step stream events to data-agent-step UI parts', async () => {
+    mockExecuteSupervisorStream.mockReturnValue((async function* () {
+      yield {
+        type: 'agent_step',
+        data: {
+          tool: 'getServerMetrics',
+          status: 'start',
+        },
+      };
+      yield {
+        type: 'done',
+        data: {
+          success: true,
+          metadata: {
+            mode: 'single',
+            provider: 'groq',
+            modelId: 'groq-model',
+          },
+        },
+      };
+    })());
+
+    const response = createSupervisorStreamResponse({
+      sessionId: 'session-agent-step',
+      mode: 'auto',
+      messages: [{ role: 'user', content: 'CPU 알려줘' }],
+    }) as unknown as {
+      stream: {
+        execute: (args: {
+          writer: { write: (chunk: unknown) => void };
+        }) => Promise<void>;
+      };
+    };
+
+    const writes: unknown[] = [];
+    await response.stream.execute({
+      writer: {
+        write: (chunk: unknown) => {
+          writes.push(chunk);
+        },
+      },
+    });
+
+    expect(writes).toContainEqual({
+      type: 'data-agent-step',
+      data: {
+        tool: 'getServerMetrics',
+        status: 'start',
+      },
+    });
+  });
 });

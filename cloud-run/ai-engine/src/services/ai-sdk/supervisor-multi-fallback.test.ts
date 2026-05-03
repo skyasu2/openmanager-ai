@@ -471,4 +471,74 @@ describe('supervisor degraded single fallback', () => {
       },
     });
   });
+
+  it('emits agent_step start and done events from streamed tool parts', async () => {
+    mockSelectExecutionMode.mockReturnValue('single');
+    mockStreamText.mockReturnValue({
+      textStream: (async function* () {
+        yield '메트릭 분석 중';
+      })(),
+      fullStream: (async function* () {
+        yield {
+          type: 'tool-call',
+          toolCallId: 'tool-call-1',
+          toolName: 'getServerMetrics',
+          input: { serverId: 'all' },
+        };
+        yield {
+          type: 'text-delta',
+          id: 'text-1',
+          text: '메트릭 분석 중',
+        };
+        yield {
+          type: 'tool-result',
+          toolCallId: 'tool-call-1',
+          toolName: 'getServerMetrics',
+          output: { success: true },
+        };
+      })(),
+      steps: Promise.resolve([
+        {
+          toolCalls: [
+            {
+              toolCallId: 'tool-call-1',
+              toolName: 'getServerMetrics',
+            },
+          ],
+          toolResults: [
+            {
+              toolCallId: 'tool-call-1',
+              toolName: 'getServerMetrics',
+              result: { success: true },
+            },
+          ],
+        },
+      ]),
+      usage: Promise.resolve({ inputTokens: 1, outputTokens: 2, totalTokens: 3 }),
+    });
+
+    const events = [];
+    for await (const event of executeSupervisorStream({
+      mode: 'auto',
+      messages: [{ role: 'user', content: '서버 메트릭 조회해줘' }],
+      sessionId: 'session-agent-step-stream',
+    })) {
+      events.push(event);
+    }
+
+    expect(events).toContainEqual({
+      type: 'agent_step',
+      data: {
+        tool: 'getServerMetrics',
+        status: 'start',
+      },
+    });
+    expect(events).toContainEqual({
+      type: 'agent_step',
+      data: {
+        tool: 'getServerMetrics',
+        status: 'done',
+      },
+    });
+  });
 });

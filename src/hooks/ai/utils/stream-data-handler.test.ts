@@ -154,6 +154,42 @@ describe('handleStreamDataPart', () => {
 
       expect(callbacks.setCurrentAgentStatus).not.toHaveBeenCalled();
     });
+
+    it('should map agent-step start and done events to inline agent status', () => {
+      handleStreamDataPart(
+        {
+          type: 'data-agent-step',
+          data: {
+            tool: 'getServerMetrics',
+            status: 'start',
+          },
+        },
+        callbacks
+      );
+
+      expect(callbacks.setCurrentAgentStatus).toHaveBeenLastCalledWith({
+        agent: 'getServerMetrics',
+        status: 'processing',
+        message: 'getServerMetrics 실행 중...',
+      });
+
+      handleStreamDataPart(
+        {
+          type: 'data-agent-step',
+          data: {
+            tool: 'getServerMetrics',
+            status: 'done',
+          },
+        },
+        callbacks
+      );
+
+      expect(callbacks.setCurrentAgentStatus).toHaveBeenLastCalledWith({
+        agent: 'getServerMetrics',
+        status: 'completed',
+        message: 'getServerMetrics 완료',
+      });
+    });
   });
 
   describe('handoff event', () => {
