@@ -23,7 +23,11 @@ import {
   logAIResponse,
   startAITimer,
 } from '@/lib/ai/observability';
-import { isCloudRunEnabled, proxyToCloudRun } from '@/lib/ai-proxy/proxy';
+import {
+  isCloudRunEnabled,
+  type ProxyResult,
+  proxyToCloudRun,
+} from '@/lib/ai-proxy/proxy';
 import { withAuth } from '@/lib/auth/api-auth';
 import { getErrorMessage } from '@/types/type-utils';
 import debug from '@/utils/debug';
@@ -72,6 +76,72 @@ function buildMonitoringCacheQuery(
     `slot=${querySlot}`,
     ragMode,
   ].join(':');
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function readMonitoringErrorPassThrough(
+  result: ProxyResult
+): CacheableAIResponse | null {
+  const data = result.errorData;
+  if (!isRecord(data) || data.success !== false) {
+    return null;
+  }
+
+  const code = data.code;
+  const sourceMode = data.sourceMode;
+  if (
+    code !== 'LIVE_SOURCE_DISABLED' &&
+    code !== 'DATA_SOURCE_UNAVAILABLE' &&
+    code !== 'SNAPSHOT_STALE' &&
+    code !== 'SLOT_NOT_FOUND' &&
+    code !== 'SERVER_NOT_FOUND' &&
+    code !== 'METRIC_NOT_FOUND'
+  ) {
+    return null;
+  }
+
+  return {
+    success: false,
+    error:
+      typeof data.error === 'string'
+        ? data.error
+        : (result.error ?? 'Monitoring data source unavailable'),
+    code,
+    ...(sourceMode === 'replay-json' || sourceMode === 'live-otel'
+      ? { sourceMode }
+      : {}),
+    ...(typeof data.queryAsOf === 'string'
+      ? { queryAsOf: data.queryAsOf }
+      : {}),
+    ...(typeof data.requestId === 'string'
+      ? { requestId: data.requestId }
+      : {}),
+    ...(typeof data.recoverable === 'boolean'
+      ? { recoverable: data.recoverable }
+      : {}),
+    _source: 'Cloud Run AI Engine',
+    _status: result.status ?? 503,
+  };
+}
+
+function readPassThroughStatus(data: CacheableAIResponse): number | null {
+  if (data.success !== false || typeof data._status !== 'number') {
+    return null;
+  }
+
+  if (data._status >= 400 && data._status <= 599) {
+    return data._status;
+  }
+
+  return null;
+}
+
+function omitInternalStatus(data: CacheableAIResponse): CacheableAIResponse {
+  const { _status, ...publicData } = data as Record<string, unknown>;
+  return publicData as CacheableAIResponse;
 }
 
 // MIGRATED: Removed export const runtime = "nodejs" (default)
@@ -157,7 +227,19 @@ async function postHandler(request: NextRequest) {
               endpoint: 'intelligent-monitoring',
             });
 
-            if (!cloudRunResult.success || !cloudRunResult.data) {
+            if (!cloudRunResult.success) {
+              const passThrough =
+                readMonitoringErrorPassThrough(cloudRunResult);
+              if (passThrough) {
+                return passThrough;
+              }
+
+              throw new Error(
+                cloudRunResult.error ?? 'Cloud Run request failed'
+              );
+            }
+
+            if (!cloudRunResult.data) {
               throw new Error(
                 cloudRunResult.error ?? 'Cloud Run request failed'
               );
@@ -188,6 +270,35 @@ async function postHandler(request: NextRequest) {
     // 3. 응답 반환
     const responseData = cacheResult.data;
     const isFallback = (responseData as Record<string, unknown>)._fallback;
+    const passThroughStatus = readPassThroughStatus(responseData);
+
+    if (passThroughStatus !== null) {
+      const latencyMs = aiTimer.elapsed();
+      logAIResponse({
+        operation: 'chat',
+        system: 'cloud-run',
+        model: 'multi-agent',
+        latencyMs,
+        success: false,
+        errorMessage:
+          typeof responseData.error === 'string'
+            ? responseData.error
+            : 'monitoring source error',
+      });
+
+      return NextResponse.json(omitInternalStatus(responseData), {
+        status: passThroughStatus,
+        headers: {
+          'X-Cache': 'MISS',
+          ...buildAITimingHeaders({
+            latencyMs,
+            cacheStatus: 'MISS',
+            mode: 'proxy',
+            source: 'cloud-run',
+          }),
+        },
+      });
+    }
 
     if (cacheResult.cached) {
       debug.info('[intelligent-monitoring] Cache HIT');

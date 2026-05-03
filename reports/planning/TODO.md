@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-03 KST (`Streaming UI S3 deployed; release QA recorded`)
+**Last Updated**: 2026-05-04 KST (`MonitoringDataSource live-mode error contract hardened`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -41,6 +41,14 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-04 #278)
+- [x] MonitoringDataSource live-mode error contract hardening
+  - 기존 `MonitoringDataSource`/`live-otel` skeleton 범위 안에서 개선. 새 telemetry backend, LLM/provider 호출, route surface 증설 없음
+  - `MonitoringDataSourceError`가 `queryAsOf`를 보존하도록 보강해 실제 source 전환 실패도 어느 데이터 슬롯 기준인지 추적 가능하게 정렬
+  - Cloud Run `/monitoring/snapshot`, `/monitoring/analyze-batch`가 monitoring source 오류를 generic 500으로 뭉개지 않고 `code`, `sourceMode`, `queryAsOf`, `requestId`, `recoverable`이 포함된 표준 오류 계약으로 반환
+  - Vercel `/api/ai/intelligent-monitoring` proxy가 Cloud Run monitoring source 오류를 fallback으로 숨기지 않고 동일한 503/error contract로 pass-through하도록 보강
+  - 회귀 테스트: `live-otel` disabled 경로가 Cloud Run snapshot/analyze-batch와 Vercel BFF에서 503 + monitoring error contract로 반환되는지 고정
 
 ### Completed (2026-05-03 #277)
 - [x] AI Streaming UI 개선 S3 release/deploy QA

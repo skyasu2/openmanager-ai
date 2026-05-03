@@ -7,7 +7,31 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { Hono } from 'hono';
 
-const { mockMonitoringSource } = vi.hoisted(() => {
+const { mockMonitoringSource, MockMonitoringDataSourceError } = vi.hoisted(() => {
+  class MockMonitoringDataSourceError extends Error {
+    readonly code: string;
+    readonly recoverable: boolean;
+    readonly sourceMode: 'replay-json' | 'live-otel';
+    readonly queryAsOf?: string;
+
+    constructor(
+      code: string,
+      message: string,
+      options: {
+        sourceMode: 'replay-json' | 'live-otel';
+        recoverable?: boolean;
+        queryAsOf?: string;
+      }
+    ) {
+      super(message);
+      this.name = 'MonitoringDataSourceError';
+      this.code = code;
+      this.recoverable = options.recoverable ?? true;
+      this.sourceMode = options.sourceMode;
+      this.queryAsOf = options.queryAsOf;
+    }
+  }
+
   const snapshot = {
     sourceMode: 'replay-json',
     queryAsOf: '2026-04-30T00:00:00.000Z',
@@ -95,6 +119,7 @@ const { mockMonitoringSource } = vi.hoisted(() => {
         evidenceRefs: snapshot.evidenceRefs,
       })),
     },
+    MockMonitoringDataSourceError,
   };
 });
 
@@ -194,11 +219,12 @@ vi.mock('../services/ai-sdk/agents/agent-factory', () => ({
 
 vi.mock('../services/monitoring/monitoring-data-source', () => ({
   createMonitoringDataSource: vi.fn(() => mockMonitoringSource),
-  MonitoringDataSourceError: class MonitoringDataSourceError extends Error {},
+  MonitoringDataSourceError: MockMonitoringDataSourceError,
 }));
 
 import { analyticsRouter } from './analytics';
 import { AgentFactory } from '../services/ai-sdk/agents/agent-factory';
+import { MonitoringDataSourceError } from '../services/monitoring/monitoring-data-source';
 import { generateText } from 'ai';
 
 const app = new Hono();
@@ -229,6 +255,48 @@ describe('Analytics Routes', () => {
       });
       expect(mockMonitoringSource.getSnapshot).toHaveBeenCalledTimes(1);
     });
+
+    it('live-otel disabled 오류를 monitoring error contract로 반환한다', async () => {
+      mockMonitoringSource.getSnapshot.mockRejectedValueOnce(
+        new MonitoringDataSourceError(
+          'LIVE_SOURCE_DISABLED',
+          'Live OTel monitoring source is disabled.',
+          { sourceMode: 'live-otel', recoverable: true }
+        )
+      );
+
+      const res = await app.request('/analytics/monitoring/snapshot', {
+        method: 'POST',
+        body: JSON.stringify({
+          sourceMode: 'live-otel',
+          queryAsOf: {
+            createdAt: '2026-04-30T00:00:00.000Z',
+            source: 'vercel-static-otel',
+            datasetVersion: '24h-rotating-v1.0.0',
+            dataSlot: {
+              slotIndex: 42,
+              minuteOfDay: 420,
+              timeLabel: '07:00 KST',
+            },
+          },
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Request-Id': 'req-monitoring-live-disabled',
+        },
+      });
+
+      expect(res.status).toBe(503);
+      const json = await res.json();
+      expect(json).toMatchObject({
+        success: false,
+        code: 'LIVE_SOURCE_DISABLED',
+        sourceMode: 'live-otel',
+        queryAsOf: '2026-04-30T00:00:00.000Z',
+        requestId: 'req-monitoring-live-disabled',
+        recoverable: true,
+      });
+    });
   });
 
   describe('POST /analytics/monitoring/analyze-batch', () => {
@@ -248,6 +316,48 @@ describe('Analytics Routes', () => {
       expect(json.riskSignals).toHaveLength(1);
       expect(json.evidenceRefs).toHaveLength(1);
       expect(generateText).not.toHaveBeenCalled();
+    });
+
+    it('monitoring source 오류를 batch endpoint에서도 같은 계약으로 반환한다', async () => {
+      mockMonitoringSource.getSnapshot.mockRejectedValueOnce(
+        new MonitoringDataSourceError(
+          'LIVE_SOURCE_DISABLED',
+          'Live OTel monitoring source is disabled.',
+          { sourceMode: 'live-otel', recoverable: true }
+        )
+      );
+
+      const res = await app.request('/analytics/monitoring/analyze-batch', {
+        method: 'POST',
+        body: JSON.stringify({
+          sourceMode: 'live-otel',
+          queryAsOf: {
+            createdAt: '2026-04-30T00:00:00.000Z',
+            source: 'vercel-static-otel',
+            datasetVersion: '24h-rotating-v1.0.0',
+            dataSlot: {
+              slotIndex: 42,
+              minuteOfDay: 420,
+              timeLabel: '07:00 KST',
+            },
+          },
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Request-Id': 'req-monitoring-batch-disabled',
+        },
+      });
+
+      expect(res.status).toBe(503);
+      const json = await res.json();
+      expect(json).toMatchObject({
+        success: false,
+        code: 'LIVE_SOURCE_DISABLED',
+        sourceMode: 'live-otel',
+        queryAsOf: '2026-04-30T00:00:00.000Z',
+        requestId: 'req-monitoring-batch-disabled',
+        recoverable: true,
+      });
     });
   });
 

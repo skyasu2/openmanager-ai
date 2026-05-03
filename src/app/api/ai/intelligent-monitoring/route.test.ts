@@ -183,4 +183,45 @@ describe('/api/ai/intelligent-monitoring POST', () => {
       'intelligent-monitoring'
     );
   });
+
+  it('Cloud Run monitoring source 오류를 fallback으로 숨기지 않고 그대로 반환한다', async () => {
+    const errorPayload = {
+      success: false,
+      error: 'Live OTel monitoring source is disabled.',
+      code: 'LIVE_SOURCE_DISABLED',
+      sourceMode: 'live-otel',
+      queryAsOf: '2026-04-30T00:00:00.000Z',
+      requestId: 'req-live-disabled',
+      recoverable: true,
+    };
+    mockProxyToCloudRun.mockResolvedValueOnce({
+      success: false,
+      status: 503,
+      error: errorPayload.error,
+      errorData: errorPayload,
+    });
+
+    const response = await POST(
+      createPostRequest({
+        action: 'analyze_batch',
+        serverId: 'all',
+        analysisType: 'full',
+        sourceMode: 'live-otel',
+        queryAsOf: {
+          createdAt: '2026-04-30T00:00:00.000Z',
+          source: 'vercel-static-otel',
+          datasetVersion: '24h-rotating-v1.0.0',
+          dataSlot: {
+            slotIndex: 42,
+            minuteOfDay: 420,
+            timeLabel: '07:00 KST',
+          },
+        },
+      })
+    );
+
+    expect(response.status).toBe(503);
+    await expect(response.json()).resolves.toMatchObject(errorPayload);
+    expect(mockCreateFallbackResponse).not.toHaveBeenCalled();
+  });
 });

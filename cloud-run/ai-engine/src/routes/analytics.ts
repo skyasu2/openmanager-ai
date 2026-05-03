@@ -38,6 +38,10 @@ import {
   type MonitoringSnapshot,
   type MonitoringSourceMode,
 } from '../services/monitoring/monitoring-data-source';
+import {
+  handleMonitoringApiError,
+  type MonitoringApiErrorContext,
+} from './analytics-monitoring-error';
 // incident-rag-injector imports removed - endpoints deprecated
 
 export const analyticsRouter = new Hono();
@@ -245,18 +249,28 @@ function buildDeterministicAnalyzeServerInsights(
  * Shared contract for Chat, Reporter, and Analyst grounding.
  */
 analyticsRouter.post('/monitoring/snapshot', async (c: Context) => {
+  let errorContext: MonitoringApiErrorContext = {};
+
   try {
     const body = await readRequestBody(c);
+    const sourceMode = readMonitoringSourceMode(body.sourceMode);
+    const queryAsOf = normalizeQueryAsOf(body.queryAsOf);
+    errorContext = { sourceMode, queryAsOf };
     const source = createMonitoringDataSource({
-      mode: readMonitoringSourceMode(body.sourceMode),
+      mode: sourceMode,
     });
     const snapshot = await source.getSnapshot({
-      queryAsOf: normalizeQueryAsOf(body.queryAsOf),
+      queryAsOf,
     });
 
     return jsonSuccess(c, snapshot);
   } catch (error) {
-    return handleApiError(c, error, 'Monitoring Snapshot');
+    return handleMonitoringApiError(
+      c,
+      error,
+      'Monitoring Snapshot',
+      errorContext
+    ) ?? handleApiError(c, error, 'Monitoring Snapshot');
   }
 });
 
@@ -266,13 +280,18 @@ analyticsRouter.post('/monitoring/snapshot', async (c: Context) => {
  * Keeps Vercel as a thin proxy and avoids per-server LLM fan-out.
  */
 analyticsRouter.post('/monitoring/analyze-batch', async (c: Context) => {
+  let errorContext: MonitoringApiErrorContext = {};
+
   try {
     const body = await readRequestBody(c);
+    const sourceMode = readMonitoringSourceMode(body.sourceMode);
+    const queryAsOf = normalizeQueryAsOf(body.queryAsOf);
+    errorContext = { sourceMode, queryAsOf };
     const source = createMonitoringDataSource({
-      mode: readMonitoringSourceMode(body.sourceMode),
+      mode: sourceMode,
     });
     const snapshot = await source.getSnapshot({
-      queryAsOf: normalizeQueryAsOf(body.queryAsOf),
+      queryAsOf,
     });
 
     return jsonSuccess(c, {
@@ -287,7 +306,12 @@ analyticsRouter.post('/monitoring/analyze-batch', async (c: Context) => {
       _source: 'Monitoring Snapshot (Deterministic)',
     });
   } catch (error) {
-    return handleApiError(c, error, 'Monitoring Analyze Batch');
+    return handleMonitoringApiError(
+      c,
+      error,
+      'Monitoring Analyze Batch',
+      errorContext
+    ) ?? handleApiError(c, error, 'Monitoring Analyze Batch');
   }
 });
 

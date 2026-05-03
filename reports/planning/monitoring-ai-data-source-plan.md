@@ -3,7 +3,7 @@
 > Owner: project
 > Status: Completed
 > Doc type: Plan
-> Last reviewed: 2026-04-30
+> Last reviewed: 2026-05-04
 > Tags: monitoring, ai-engine, otel, data-source, ai-tools, sdd
 
 ## 1. 배경
@@ -320,6 +320,13 @@ type MonitoringErrorCode =
 - Side-effect review 후 Vercel cache key에 `sourceMode`/`queryAsOf` slot을 포함하고, Analyst/Reporter page와 fullscreen handoff가 dashboard `queryAsOfDataSlot`을 요청에 전달하도록 보강.
 - Metric series/log/timeline 조회가 requested `queryAsOf`와 `from`/`to` 범위를 반영하도록 보강.
 - `docs/reference/architecture/data/otel-data-architecture.md`에 replay/live provider 구조 반영.
+
+### 13.1 유지보수 보정 (2026-05-04)
+
+- 제품 운영 기준은 계속 `replay-json`이다. 실제 서버를 붙이는 것은 현재 active 목표가 아니며, `live-otel`은 미래 연결 가능성을 위한 port/skeleton으로만 유지한다.
+- `live-otel` 요청은 성공 경로를 흉내 내지 않는다. backend가 없으면 `LIVE_SOURCE_DISABLED`로 명시 실패하고, 오류 응답은 `sourceMode`, `queryAsOf`, `requestId`, `recoverable`을 포함한다.
+- Vercel `/api/ai/intelligent-monitoring` proxy는 Cloud Run monitoring source 오류를 generic fallback으로 숨기지 않고 동일한 오류 계약과 HTTP status로 pass-through한다.
+- 실제 OTLP/Prometheus/Loki adapter, collector 운영, TSDB, live smoke는 별도 제품 결정 전까지 non-goal이다.
 
 검증:
 - `cloud-run/ai-engine npm test -- src/routes/analytics.test.ts src/services/monitoring/monitoring-data-source.test.ts src/tools-ai-sdk/analyst-tools.test.ts`

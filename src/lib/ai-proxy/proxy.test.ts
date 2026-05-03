@@ -155,4 +155,44 @@ describe('ai-proxy runtime config', () => {
     expect(isCloudRunEnabled()).toBe(true);
     expect(mockLogger.info).toHaveBeenCalledTimes(2);
   });
+
+  it('preserves structured Cloud Run error payloads', async () => {
+    vi.stubEnv('NODE_ENV', 'production');
+    vi.stubEnv('VERCEL', '1');
+    vi.stubEnv('CLOUD_RUN_ENABLED', 'true');
+    vi.stubEnv('CLOUD_RUN_AI_URL', 'https://ai.run.app');
+    vi.stubEnv('CLOUD_RUN_API_SECRET', 'secret');
+
+    const { proxyToCloudRun } = await loadProxy();
+    const errorPayload = {
+      success: false,
+      error: 'Live OTel monitoring source is disabled.',
+      code: 'LIVE_SOURCE_DISABLED',
+      sourceMode: 'live-otel',
+      queryAsOf: '2026-04-30T00:00:00.000Z',
+      requestId: 'req-live-disabled',
+      recoverable: true,
+    };
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 503,
+        text: async () => JSON.stringify(errorPayload),
+      })
+    );
+
+    const result = await proxyToCloudRun({
+      path: '/api/ai/monitoring/analyze-batch',
+      method: 'POST',
+      body: { sourceMode: 'live-otel' },
+    });
+
+    expect(result).toMatchObject({
+      success: false,
+      status: 503,
+      error: 'Live OTel monitoring source is disabled.',
+      errorData: errorPayload,
+    });
+  });
 });

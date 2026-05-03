@@ -133,6 +133,7 @@ export interface ProxyResult {
   success: boolean;
   data?: unknown;
   error?: string;
+  errorData?: unknown;
   status?: number;
 }
 
@@ -156,6 +157,36 @@ function resolveProxyTimeout(
   );
 
   return endpoint ? clampTimeout(endpoint, targetTimeout) : targetTimeout;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function parseStructuredErrorPayload(errorText: string): unknown {
+  try {
+    return JSON.parse(errorText);
+  } catch {
+    return undefined;
+  }
+}
+
+function readErrorMessageFromPayload(
+  errorData: unknown,
+  fallback: string
+): string {
+  if (isRecord(errorData)) {
+    const error = errorData.error;
+    const message = errorData.message;
+    if (typeof error === 'string' && error.length > 0) {
+      return error;
+    }
+    if (typeof message === 'string' && message.length > 0) {
+      return message;
+    }
+  }
+
+  return fallback;
 }
 
 // ============================================================================
@@ -217,9 +248,12 @@ export async function proxyToCloudRun(
 
     if (!response.ok) {
       const errorText = await response.text();
+      const errorData = parseStructuredErrorPayload(errorText);
+      const errorMessage = readErrorMessageFromPayload(errorData, errorText);
       return {
         success: false,
-        error: `Cloud Run error: ${response.status} - ${errorText}`,
+        error: errorMessage,
+        ...(errorData !== undefined && { errorData }),
         status: response.status,
       };
     }

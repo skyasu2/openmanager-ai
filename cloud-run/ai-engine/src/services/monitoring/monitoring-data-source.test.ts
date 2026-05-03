@@ -238,14 +238,25 @@ describe('MonitoringDataSource', () => {
 
   it('fails explicitly when live-otel mode is requested without an endpoint', async () => {
     const source = createMonitoringDataSource({ mode: 'live-otel' });
+    const queryAsOf = {
+      createdAt: '2026-04-30T00:00:00.000Z',
+      source: 'vercel-static-otel' as const,
+      datasetVersion: '24h-rotating-v1.0.0' as const,
+      dataSlot: {
+        slotIndex: 42,
+        minuteOfDay: 420,
+        timeLabel: '07:00 KST',
+      },
+    };
 
-    await expect(source.getSnapshot({})).rejects.toBeInstanceOf(
+    await expect(source.getSnapshot({ queryAsOf })).rejects.toBeInstanceOf(
       MonitoringDataSourceError
     );
-    await expect(source.getSnapshot({})).rejects.toMatchObject({
+    await expect(source.getSnapshot({ queryAsOf })).rejects.toMatchObject({
       code: 'LIVE_SOURCE_DISABLED',
       recoverable: true,
       sourceMode: 'live-otel',
+      queryAsOf: '2026-04-30T00:00:00.000Z',
     });
   });
 });

@@ -31,15 +31,16 @@ import type {
 
 export * from './monitoring-types';
 
-interface MonitoringDataSourceOptions {
+type MonitoringDataSourceOptions = {
   mode?: MonitoringSourceMode;
   liveEndpoint?: string;
-}
+};
 
 export class MonitoringDataSourceError extends Error {
   readonly code: MonitoringErrorCode;
   readonly recoverable: boolean;
   readonly sourceMode: MonitoringSourceMode;
+  readonly queryAsOf?: string;
 
   constructor(
     code: MonitoringErrorCode,
@@ -47,6 +48,7 @@ export class MonitoringDataSourceError extends Error {
     options: {
       sourceMode: MonitoringSourceMode;
       recoverable?: boolean;
+      queryAsOf?: string;
     }
   ) {
     super(message);
@@ -54,6 +56,7 @@ export class MonitoringDataSourceError extends Error {
     this.code = code;
     this.recoverable = options.recoverable ?? true;
     this.sourceMode = options.sourceMode;
+    this.queryAsOf = options.queryAsOf;
   }
 }
 
@@ -62,32 +65,44 @@ class LiveOtelMonitoringDataSource implements MonitoringDataSource {
 
   constructor(private readonly endpoint?: string) {}
 
-  async getSnapshot(): Promise<MonitoringSnapshot> {
-    this.assertEnabled();
+  async getSnapshot(
+    input: MonitoringSnapshotInput = {}
+  ): Promise<MonitoringSnapshot> {
+    this.assertEnabled(input);
   }
 
-  async getMetricSeries(): Promise<MonitoringMetricSeries> {
-    this.assertEnabled();
+  async getMetricSeries(
+    input: MonitoringMetricSeriesInput
+  ): Promise<MonitoringMetricSeries> {
+    this.assertEnabled(input);
   }
 
-  async getRelatedLogs(): Promise<MonitoringLogResult> {
-    this.assertEnabled();
+  async getRelatedLogs(
+    input: MonitoringLogQueryInput = {}
+  ): Promise<MonitoringLogResult> {
+    this.assertEnabled(input);
   }
 
-  async rankRiskSignals(): Promise<MonitoringRiskSignal[]> {
-    this.assertEnabled();
+  async rankRiskSignals(
+    input: MonitoringRiskInput = {}
+  ): Promise<MonitoringRiskSignal[]> {
+    this.assertEnabled(input);
   }
 
-  async buildIncidentTimeline(): Promise<MonitoringIncidentTimeline> {
-    this.assertEnabled();
+  async buildIncidentTimeline(
+    input: MonitoringTimelineInput = {}
+  ): Promise<MonitoringIncidentTimeline> {
+    this.assertEnabled(input);
   }
 
-  private assertEnabled(): never {
+  private assertEnabled(input: MonitoringSnapshotInput = {}): never {
+    const queryAsOf = readInputQueryAsOf(input);
+
     if (!this.endpoint) {
       throw new MonitoringDataSourceError(
         'LIVE_SOURCE_DISABLED',
         'Live OTel monitoring source is disabled. Configure LIVE_OTEL_ENDPOINT to enable it.',
-        { sourceMode: this.mode, recoverable: true }
+        { sourceMode: this.mode, recoverable: true, queryAsOf }
       );
     }
 
@@ -95,7 +110,7 @@ class LiveOtelMonitoringDataSource implements MonitoringDataSource {
     throw new MonitoringDataSourceError(
       'LIVE_SOURCE_DISABLED',
       'Live OTel monitoring source adapter is not implemented yet.',
-      { sourceMode: this.mode, recoverable: true }
+      { sourceMode: this.mode, recoverable: true, queryAsOf }
     );
   }
 }
@@ -153,7 +168,11 @@ class JsonReplayMonitoringDataSource implements MonitoringDataSource {
       throw new MonitoringDataSourceError(
         'SERVER_NOT_FOUND',
         `Server not found for metric series: ${input.serverId}`,
-        { sourceMode: this.mode, recoverable: true }
+        {
+          sourceMode: this.mode,
+          recoverable: true,
+          queryAsOf: readInputQueryAsOf(input),
+        }
       );
     }
 
@@ -270,6 +289,10 @@ export function createMonitoringDataSource(
   return new JsonReplayMonitoringDataSource();
 }
 
+function readInputQueryAsOf(input: MonitoringSnapshotInput): string | undefined {
+  return input.queryAsOf?.createdAt;
+}
+
 function readMonitoringSourceMode(): MonitoringSourceMode {
   return process.env.MONITORING_SOURCE_MODE === 'live-otel'
     ? 'live-otel'
@@ -286,7 +309,11 @@ function resolveSlot(
       throw new MonitoringDataSourceError(
         'SLOT_NOT_FOUND',
         `Monitoring slot not found: ${input.queryAsOf.dataSlot.slotIndex}`,
-        { sourceMode, recoverable: true }
+        {
+          sourceMode,
+          recoverable: true,
+          queryAsOf: readInputQueryAsOf(input),
+        }
       );
     }
     return slot;
