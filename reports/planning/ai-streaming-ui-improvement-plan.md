@@ -1,7 +1,7 @@
 > Owner: project
 > Status: Completed
 > Doc type: Plan
-> Last reviewed: 2026-05-03
+> Last reviewed: 2026-05-04
 > Tags: ai-assistant,streaming,ui,plan
 
 # AI Streaming UI Improvement Plan
@@ -14,7 +14,7 @@
 - S1/S2: completed on 2026-05-03
 - S3: completed and deployed on 2026-05-03 as `v8.11.88`. GitLab main validation, semver tag deploy, production targeted QA, and complementary fullscreen stream QA are recorded.
 
-현재 아키텍처 분석 결과:
+초기 아키텍처 분석 결과(구현 전 기준):
 - 사이드바: SSE 기반 실제 스트리밍 (`useChat` + `DefaultChatTransport`) ✅
 - 전체 페이지(AIWorkspace): 완성된 마지막 응답을 `TypewriterMarkdown`으로 재생해 실제 SSE와 구분이 흐려짐 ⚠️
 - 스트리밍 중 메타데이터(toolsCalled, ragSources): 완료 후에만 표시 ⚠️
@@ -68,7 +68,7 @@
 
 ### S3 — 스트리밍 중 Agent 단계 표시
 
-상태: Approved. Cloud Run `data` event contract 변경이므로 별도 failing test와 구현 커밋으로 진행한다.
+상태: Completed. Cloud Run `data` event contract 변경은 별도 failing test와 구현 커밋으로 진행했고, `v8.11.88` 배포/QA까지 완료했다.
 
 | 항목 | 계약 |
 |------|------|
@@ -112,8 +112,8 @@
 | TypewriterMarkdown 삭제 시 Job Queue 완성 응답이 즉시 표시되어 어색할 수 있음 | Job Queue 응답은 `isStreaming=false`이므로 영향 없음. 별도 확인 필요 |
 | estimatedWaitSeconds가 0으로 초기화되어 카운트다운이 즉시 종료되는 케이스 | `estimatedWaitSeconds > 0` 조건 가드 필수 |
 | Cloud Run `agent-step` event 추가 시 기존 스트림 파싱 오류 | `onData` 핸들러에서 unknown type은 무시하는 방어 코드 선행 |
-| S3 Cloud Run 수정 후 ai-engine 재배포 필요 | `cloud-run/ai-engine/deploy.sh` 수동 실행 필요. Vercel 배포와 별도 타이밍 조율 |
+| S3 Cloud Run 수정 후 ai-engine 재배포 필요 | 완료: `v8.11.88` semver tag pipeline에서 Cloud Run 배포와 post-deploy smoke 확인 |
 
-## 9. 구현 순서 권고
+## 9. 구현 순서 기록
 
-S1 → S2 → S3 순서 권장. S1·S2는 프론트엔드만 수정하므로 Cloud Run 재배포 없이 독립 진행 가능. S3는 Cloud Run 수정이 수반되므로 S1·S2 QA 완료 후 진행.
+S1 → S2 → S3 순서로 완료했다. S1·S2는 프론트엔드 변경으로 먼저 검증했고, S3는 Cloud Run stream contract 변경이 수반되어 이후 배포/QA로 마감했다.
