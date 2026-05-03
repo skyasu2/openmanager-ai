@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-03 KST (`M6 ask facade implemented; M7 fact pack next`)
+**Last Updated**: 2026-05-03 KST (`M7 fact pack guards implemented; streaming UI next`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| AI Assistant Architecture Evolution M7 (`MonitoringFactPack` + eval guard) | High | Ready | [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) — 기존 `sourceMode`/`queryAsOf`/`evidenceRefs` tool result를 canonical fact bundle로 묶는 spec/failing tests부터 착수 |
+| AI Streaming UI 개선 (S1~S3) | Medium | Draft | [ai-streaming-ui-improvement-plan.md](ai-streaming-ui-improvement-plan.md) — 다음 단계는 S1/S2 계약 재검토 후 Approved 전환과 failing test 커밋. S3는 Cloud Run event contract 변경이 있어 S1/S2 이후 분리 권장 |
 
 ---
 
@@ -16,7 +16,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| AI Streaming UI 개선 (S1~S3) | Medium | [ai-streaming-ui-improvement-plan.md](ai-streaming-ui-improvement-plan.md) — 전체 페이지 실제 SSE 전환, Cold Start 카운트다운, Agent 단계 실시간 표시. ⚠️ S1은 M6 `/api/ask` transport와, S2는 M5 shadow planner latency 측정과 교차 가능 |
+| _None_ | — | 현재 신규 backlog는 없음. Draft 상태의 Streaming UI 개선을 Active Task로 승격 |
 
 ---
 
@@ -41,6 +41,14 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-03 #274)
+- [x] AI Assistant Architecture Evolution M7 (`MonitoringFactPack` + eval guard)
+  - `MonitoringFactPack` builder 추가: 기존 monitoring snapshot의 `sourceMode`, `queryAsOf`, `evidenceRefs`를 보존하고 `cpu/memory/disk/network` severity는 LLM/riskSignals가 아니라 deterministic threshold rule로 재계산
+  - replay-json monitoring snapshot에 `factPack`을 붙여 tool result 내부에서 canonical fact bundle을 바로 사용할 수 있게 정렬
+  - `evaluateRetrievalRecallGuard()` 추가: Knowledge Retrieval Lite 결과가 최소 evidence 기준 미달이면 `insufficient_evidence` fallback reason을 노출
+  - `getStaleProviderModelPolicyFindings()` 추가: 외부 provider 호출 없이 `smokeEvidence` 날짜 기반으로 stale provider policy metadata를 탐지
+  - spec/failing test commit 후 구현 commit으로 분리. 신규 LLM/provider 호출, Cloud Run route surface 변경, 인프라 증설 없음
 
 ### Completed (2026-05-03 #273)
 - [x] AI Assistant Architecture Evolution M6 (`/api/ai/ask` wrapper-only facade)

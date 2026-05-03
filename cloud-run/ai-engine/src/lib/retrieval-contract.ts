@@ -40,6 +40,22 @@ export interface RetrievalMetadata {
   webUsed: boolean;
 }
 
+export type RetrievalRecallFallbackReason =
+  | RetrievalSuppressedReason
+  | 'insufficient_evidence';
+
+export type RetrievalRecallGuardOptions = {
+  minEvidenceCount?: number;
+};
+
+export type RetrievalRecallGuardResult = {
+  ok: boolean;
+  retrievalMode: RetrievalMode;
+  evidenceCount: number;
+  minEvidenceCount: number;
+  fallbackReason?: RetrievalRecallFallbackReason;
+};
+
 export interface LegacyRagSource {
   title: string;
   similarity: number;
@@ -80,6 +96,41 @@ export function createRetrievalMetadata(
   };
 }
 
+export function evaluateRetrievalRecallGuard(
+  metadata: RetrievalMetadata,
+  options: RetrievalRecallGuardOptions = {}
+): RetrievalRecallGuardResult {
+  const minEvidenceCount = normalizeMinEvidenceCount(options.minEvidenceCount);
+  const base = {
+    retrievalMode: metadata.retrievalMode,
+    evidenceCount: metadata.evidenceCount,
+    minEvidenceCount,
+  };
+
+  if (!metadata.retrievalEnabled || !metadata.retrievalUsed) {
+    return {
+      ok: false,
+      ...base,
+      fallbackReason:
+        metadata.suppressedReason ??
+        (metadata.retrievalEnabled ? 'not_needed' : 'disabled'),
+    };
+  }
+
+  if (metadata.evidenceCount < minEvidenceCount) {
+    return {
+      ok: false,
+      ...base,
+      fallbackReason: 'insufficient_evidence',
+    };
+  }
+
+  return {
+    ok: true,
+    ...base,
+  };
+}
+
 export function legacyRagSourcesToEvidenceCards(
   sources: readonly LegacyRagSource[]
 ): EvidenceCard[] {
@@ -111,6 +162,11 @@ function mapLegacySourceType(source: LegacyRagSource): EvidenceSourceType {
     return 'incident';
   }
   return 'knowledge';
+}
+
+function normalizeMinEvidenceCount(value: number | undefined): number {
+  if (!Number.isFinite(value)) return 1;
+  return Math.max(1, Math.floor(value ?? 1));
 }
 
 function clampScore(score: number): number {

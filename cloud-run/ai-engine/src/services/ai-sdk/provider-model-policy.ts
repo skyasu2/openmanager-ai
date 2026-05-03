@@ -48,8 +48,24 @@ export interface DeprecatedProviderModelPolicyFinding {
   replacement: string;
 }
 
+export type StaleProviderModelPolicyFinding = {
+  provider: ProviderName;
+  modelId: string;
+  severity: 'P2';
+  reason: string;
+  lastVerifiedAt?: string;
+};
+
+export type ProviderModelPolicyFreshnessOptions = {
+  asOf?: Date;
+  maxAgeDays?: number;
+};
+
 export type CerebrasRuntimeModelId =
   typeof CEREBRAS_LLAMA_FALLBACK_MODEL_ID;
+
+const DEFAULT_PROVIDER_SMOKE_MAX_AGE_DAYS = 14;
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
 const CEREBRAS_SOURCE_URLS = [
   'https://inference-docs.cerebras.ai/models/overview',
@@ -190,4 +206,74 @@ export function getDeprecatedProviderModelPolicyFindings(
       reason: `${policy.modelId} is blocked for ${policy.provider} after ${policy.deprecationDate}`,
       replacement: policy.recommendedReplacement || DEFAULT_CEREBRAS_MODEL,
     }));
+}
+
+export function getStaleProviderModelPolicyFindings(
+  policies: readonly ProviderModelPolicy[] = getCerebrasRuntimeModelPolicies(),
+  options: ProviderModelPolicyFreshnessOptions = {}
+): StaleProviderModelPolicyFinding[] {
+  const asOf = options.asOf ?? new Date();
+  const maxAgeDays =
+    normalizePositiveInteger(options.maxAgeDays) ??
+    DEFAULT_PROVIDER_SMOKE_MAX_AGE_DAYS;
+
+  return policies.flatMap((policy) => {
+    const lastVerifiedAt = readLatestSmokeEvidenceDate(policy.smokeEvidence);
+    if (!lastVerifiedAt) {
+      return [
+        {
+          provider: policy.provider,
+          modelId: policy.modelId,
+          severity: 'P2' as const,
+          reason: 'provider smoke metadata has no verifiable date',
+        },
+      ];
+    }
+
+    const lastVerifiedTime = Date.parse(`${lastVerifiedAt}T00:00:00Z`);
+    if (!Number.isFinite(lastVerifiedTime)) {
+      return [
+        {
+          provider: policy.provider,
+          modelId: policy.modelId,
+          severity: 'P2' as const,
+          reason: `provider smoke metadata has an invalid date: ${lastVerifiedAt}`,
+          lastVerifiedAt,
+        },
+      ];
+    }
+
+    if (asOf.getTime() - lastVerifiedTime <= maxAgeDays * DAY_IN_MS) {
+      return [];
+    }
+
+    return [
+      {
+        provider: policy.provider,
+        modelId: policy.modelId,
+        severity: 'P2' as const,
+        reason: `provider smoke metadata is older than ${maxAgeDays} days: last verified ${lastVerifiedAt}`,
+        lastVerifiedAt,
+      },
+    ];
+  });
+}
+
+function readLatestSmokeEvidenceDate(
+  smokeEvidence: readonly string[]
+): string | undefined {
+  return smokeEvidence
+    .flatMap((entry) =>
+      Array.from(entry.matchAll(/\b(20\d{2}-\d{2}-\d{2})\b/g), (match) =>
+        match[1]
+      )
+    )
+    .filter((value): value is string => typeof value === 'string')
+    .sort()
+    .at(-1);
+}
+
+function normalizePositiveInteger(value: number | undefined): number | undefined {
+  if (!Number.isFinite(value)) return undefined;
+  return Math.max(1, Math.floor(value ?? 1));
 }

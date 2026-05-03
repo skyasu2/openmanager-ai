@@ -6,7 +6,9 @@ import {
   type ServerAlert,
   type ServerSnapshot,
 } from '../../data/precomputed-state';
+import { THRESHOLDS } from '../../data/precomputed-state-core';
 import type { GeneratedLog } from '../../data/log-generator';
+import { buildMonitoringFactPack } from './monitoring-fact-pack';
 import type {
   MonitoringDataSource,
   MonitoringErrorCode,
@@ -113,8 +115,7 @@ class JsonReplayMonitoringDataSource implements MonitoringDataSource {
     const logEvidence = buildLogEvidence(slot, slotMeta);
     const topologyEvidence = buildTopologyEvidence(slot, slotMeta);
     const dataSourceInfo = getCurrentDataSourceInfo();
-
-    return {
+    const snapshot = {
       sourceMode: this.mode,
       queryAsOf: input.queryAsOf?.createdAt ?? new Date().toISOString(),
       slot: slotMeta,
@@ -131,6 +132,15 @@ class JsonReplayMonitoringDataSource implements MonitoringDataSource {
         sourceUpdatedAt: dataSourceInfo?.catalogGeneratedAt ?? null,
         stale: false,
       },
+    } satisfies Omit<MonitoringSnapshot, 'factPack'>;
+
+    return {
+      ...snapshot,
+      factPack: buildMonitoringFactPack({
+        snapshot,
+        thresholds: THRESHOLDS,
+        dataSlot: input.queryAsOf?.dataSlot.timeLabel,
+      }),
     };
   }
 

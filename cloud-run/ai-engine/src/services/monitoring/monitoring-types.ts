@@ -9,6 +9,15 @@ export type MonitoringSourceMode = 'replay-json' | 'live-otel';
 
 export type MonitoringSeverity = 'info' | 'warning' | 'critical';
 
+export const MONITORING_FACT_METRICS = [
+  'cpu',
+  'memory',
+  'disk',
+  'network',
+] as const;
+
+export type MonitoringFactMetric = (typeof MONITORING_FACT_METRICS)[number];
+
 export type MonitoringErrorCode =
   | 'DATA_SOURCE_UNAVAILABLE'
   | 'SLOT_NOT_FOUND'
@@ -75,6 +84,57 @@ export interface MonitoringEvidenceRef {
   severity: MonitoringSeverity;
 }
 
+export type MonitoringFactSeverity = Exclude<MonitoringSeverity, 'info'>;
+
+export type MonitoringFactThreshold = {
+  warning: number;
+  critical: number;
+};
+
+export type MonitoringFactThresholds = Record<
+  MonitoringFactMetric,
+  MonitoringFactThreshold
+>;
+
+export type MonitoringFactSummary = {
+  total: number;
+  online: number;
+  warning: number;
+  critical: number;
+  offline: number;
+};
+
+export type MonitoringFactSignal = {
+  id: string;
+  serverId: string;
+  serverName: string;
+  serverType: string;
+  metric: MonitoringFactMetric;
+  value: number;
+  threshold: number;
+  thresholdLevel: MonitoringFactSeverity;
+  severity: MonitoringFactSeverity;
+  evidenceRefId?: string;
+};
+
+export type MonitoringFactPackScope = {
+  serverIds?: readonly string[];
+  metrics?: readonly MonitoringFactMetric[];
+  severities?: readonly MonitoringFactSeverity[];
+  limit?: number;
+};
+
+export type MonitoringFactPack = {
+  factPackVersion: string;
+  dataSlot: string;
+  sourceMode: MonitoringSourceMode;
+  queryAsOf: string;
+  thresholds: MonitoringFactThresholds;
+  summary: MonitoringFactSummary;
+  signals: MonitoringFactSignal[];
+  evidenceRefs: MonitoringEvidenceRef[];
+};
+
 export interface MonitoringRiskSignal {
   id: string;
   serverId: string;
@@ -96,6 +156,7 @@ export interface MonitoringSnapshot {
   topology: MonitoringTopologySummary;
   riskSignals: MonitoringRiskSignal[];
   evidenceRefs: MonitoringEvidenceRef[];
+  factPack?: MonitoringFactPack;
   dataFreshness: {
     generatedAt: string | null;
     sourceUpdatedAt: string | null;

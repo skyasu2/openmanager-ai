@@ -137,6 +137,27 @@ describe('MonitoringDataSource', () => {
       value: 87.3,
       threshold: 80,
     });
+    expect(snapshot.factPack).toMatchObject({
+      factPackVersion: '2026-05-03-v1',
+      dataSlot: '07:00 KST',
+      sourceMode: 'replay-json',
+      queryAsOf: '2026-04-30T00:00:00.000Z',
+      summary: {
+        total: 2,
+        online: 1,
+        warning: 1,
+        critical: 0,
+        offline: 0,
+      },
+      signals: [
+        expect.objectContaining({
+          serverId: 'api-was-dc1-01',
+          metric: 'cpu',
+          severity: 'warning',
+          threshold: 80,
+        }),
+      ],
+    });
     expect(snapshot.evidenceRefs).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
