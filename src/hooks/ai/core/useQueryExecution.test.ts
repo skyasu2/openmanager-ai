@@ -55,7 +55,8 @@ describe('useQueryExecution', () => {
 
   it('streaming query 시작 전에 trace lifecycle hook을 호출한다', async () => {
     process.env.NODE_ENV = 'production';
-    const deps = createDeps();
+    const onRouteDecision = vi.fn();
+    const deps = { ...createDeps(), onRouteDecision };
 
     const { result } = renderHook(() => useQueryExecution(deps));
 
@@ -66,6 +67,15 @@ describe('useQueryExecution', () => {
     await Promise.resolve();
 
     expect(deps.onBeforeStreamingSend).toHaveBeenCalledWith(false);
+    expect(onRouteDecision).toHaveBeenCalledWith(
+      expect.objectContaining({
+        intent: 'chat',
+        executionPath: 'stream',
+        complexity: 'simple',
+        reasonCodes: ['complexity_below_threshold'],
+        decidedBy: 'frontend',
+      })
+    );
     expect(deps.sendMessage).toHaveBeenCalledWith({
       text: '서버 상태 알려줘',
     });
@@ -285,6 +295,7 @@ describe('useQueryExecution', () => {
 
   it('job queue 요청에 dashboard data slot을 전달한다', async () => {
     process.env.NODE_ENV = 'production';
+    const onRouteDecision = vi.fn();
     const queryAsOfDataSlot = {
       slotIndex: 131,
       minuteOfDay: 1310,
@@ -295,6 +306,7 @@ describe('useQueryExecution', () => {
       complexityThreshold: -1,
       analysisMode: 'thinking' as const,
       queryAsOfDataSlot,
+      onRouteDecision,
     };
 
     const { result } = renderHook(() => useQueryExecution(deps));
@@ -313,6 +325,14 @@ describe('useQueryExecution', () => {
         })
       );
     });
+    expect(onRouteDecision).toHaveBeenCalledWith(
+      expect.objectContaining({
+        intent: 'job',
+        executionPath: 'job',
+        decidedBy: 'frontend',
+        dataSlot: '21:50 KST',
+      })
+    );
   });
 
   it('만료된 Retry-After cooldown은 자동 해제하고 streaming 전송을 진행한다', async () => {

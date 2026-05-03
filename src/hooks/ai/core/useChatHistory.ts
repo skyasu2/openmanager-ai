@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef } from 'react';
+import { normalizeRouteDecision } from '@/lib/ai/route-decision';
 import { logger } from '@/lib/logging';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 import {
@@ -53,6 +54,7 @@ export function useChatHistory<TMessage extends RestoredMessage>({
     (message: EnhancedChatMessage): StoredMessageMetadata | undefined => {
       const metadata = message.metadata;
       const analysisBasis = metadata?.analysisBasis;
+      const routeDecision = normalizeRouteDecision(metadata?.routeDecision);
       const hasExplicitHandoffHistory = Array.isArray(metadata?.handoffHistory);
 
       if (
@@ -62,6 +64,7 @@ export function useChatHistory<TMessage extends RestoredMessage>({
         !analysisBasis?.analysisMode &&
         !analysisBasis?.toolsCalled &&
         !analysisBasis?.ragSources &&
+        !routeDecision &&
         !metadata?.assistantResponseView &&
         !metadata?.artifactIntentReason &&
         !metadata?.artifactIntentTarget &&
@@ -93,6 +96,9 @@ export function useChatHistory<TMessage extends RestoredMessage>({
         }),
         ...(analysisBasis?.ragSources && {
           ragSources: analysisBasis.ragSources,
+        }),
+        ...(routeDecision && {
+          routeDecision,
         }),
         ...(metadata?.assistantResponseView && {
           assistantResponseView: metadata.assistantResponseView,

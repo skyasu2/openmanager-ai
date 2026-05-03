@@ -94,6 +94,12 @@ vi.mock('@/components/ai-sidebar/EnhancedAIChat', () => ({
   EnhancedAIChat: (props: unknown) => mockEnhancedAIChat(props),
 }));
 
+vi.mock('@/components/ai-sidebar/CloudRunStatusIndicator', () => ({
+  CloudRunStatusIndicator: () => (
+    <div data-testid="cloud-run-status-indicator">AI Engine: Ready</div>
+  ),
+}));
+
 vi.mock('@/components/ai/AIAssistantIconPanel', () => ({
   default: ({
     selectedFunction,
@@ -239,6 +245,10 @@ describe('AIWorkspace', () => {
     expect(screen.getByText('새 대화')).toBeInTheDocument();
     // AI 기능 섹션 레이블 (한국어로 변경됨)
     expect(screen.getByText('AI 기능')).toBeInTheDocument();
+    expect(
+      screen.getByTestId('cloud-run-status-indicator')
+    ).toBeInTheDocument();
+    expect(screen.queryByText('AI Engine Active')).not.toBeInTheDocument();
   });
 
   it('scopes fullscreen workspace root theme tokens to the light surface', async () => {

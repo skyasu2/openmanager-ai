@@ -4,6 +4,7 @@ import {
   buildServerSnapshotMarkdown,
   generateServerSnapshotArtifact,
   readServerSnapshotAlerts,
+  readServerSnapshotSummary,
   readServerSnapshotTimeLabel,
   readServerSnapshotTopServers,
 } from './server-snapshot-artifact';
@@ -273,6 +274,36 @@ describe('generateServerSnapshotArtifact', () => {
     );
     expect(buildServerSnapshotMarkdown(restoredArtifact)).toContain(
       '현재 표시할 경고 없음'
+    );
+  });
+
+  it('serializes restored legacy payloads without summary text', () => {
+    const restoredArtifact = {
+      kind: 'server-snapshot',
+      generatedAt: '2026-05-02T22:00:00.000Z',
+      title: '복원된 서버 상태 스냅샷',
+      source: 'otel-static',
+      totals: {
+        total: 0,
+        online: 0,
+        warning: 0,
+        critical: 0,
+        offline: 0,
+      },
+      averages: {
+        cpu: 0,
+        memory: 0,
+        disk: 0,
+        network: 0,
+      },
+    } as unknown as ServerSnapshotArtifact;
+
+    expect(readServerSnapshotSummary(restoredArtifact)).toBe('요약 정보 없음');
+    expect(buildServerSnapshotMarkdown(restoredArtifact)).toContain(
+      '요약 정보 없음'
+    );
+    expect(buildServerSnapshotMarkdown(restoredArtifact)).not.toContain(
+      'undefined'
     );
   });
 });

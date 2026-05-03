@@ -1,0 +1,131 @@
+{
+  "runId": "QA-20260503-0396",
+  "recordedAt": "2026-05-03T05:25:47.342Z",
+  "recordedAtKst": "2026-05-03 14:25:47 KST",
+  "runTitle": "Local Playwright Targeted QA - AI Assistant Data Truth Hardening",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "local-dev",
+    "url": "http://127.0.0.1:3000",
+    "frontend": "Next.js dev server",
+    "backend": "local route handlers with configured AI health probe",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "29d213c4f8f1ed68f5e85468282d9b18f8e0670d"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": true,
+  "coveragePacks": ["dashboard-core", "ai-core", "ai-advanced-surface"],
+  "coveredSurfaces": [
+    "/dashboard/ai-assistant loaded in local Next.js dev with title AI Assistant | OpenManager AI",
+    "Fullscreen AI workspace no longer exposes the static 'AI Engine Active' label",
+    "AI Assistant shell rendered chat, command presets, provider routing context, and manual health check controls",
+    "Soft AI health probe /api/health?service=ai&soft=true returned HTTP 200 with status ok in the current local environment",
+    "Browser console capture after the local smoke reported 0 errors and 0 warnings",
+    "Targeted regression tests covered AI status indicator replacement, monitoring empty server-list behavior, stream fallback metadata, and soft health contract behavior",
+    "Contract tests passed after AI response metadata and health endpoint changes",
+    "Static gates passed: type-check, lint, test:quick, and git diff --check"
+  ],
+  "skippedSurfaces": [
+    "Vercel production QA skipped because this run validates local implementation before commit/deploy",
+    "Real Cloud Run streaming chat skipped to avoid external LLM/Cloud Run cost during deterministic local validation",
+    "Cloud Run admin observability routes /monitoring and /monitoring/traces skipped because they are outside this AI Assistant UI health/fallback scope",
+    "Modal/detail pack skipped because unchanged by AI health polling, fake server fallback removal, and stream fallback evidence metadata"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "not-applicable",
+      "status": "skipped",
+      "result": "normal",
+      "checkedAt": "2026-05-03T14:24:29+09:00",
+      "summary": "Local targeted QA only; no Vercel deployment and no production AI/Cloud Run chat invocation.",
+      "evidence": "local-only QA",
+      "url": ""
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Local AI Assistant soft health smoke",
+      "path": "reports/qa/evidence/qa-20260503-ai-health-soft-local.png"
+    },
+    {
+      "type": "playwright-console",
+      "label": "Local AI Assistant console after soft health smoke",
+      "path": "reports/qa/evidence/qa-20260503-ai-health-soft-console.log"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-health-soft-polling-local",
+      "title": "AI health UI polling uses soft responses",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Local Playwright probe verified /api/health?service=ai&soft=true returns HTTP 200 and browser console records 0 errors.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-assistant-static-health-label",
+      "title": "Static AI Engine Active label removed",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "AIWorkspace regression test and local Playwright text check verify the static label is absent.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "monitoring-empty-server-fallback-options",
+      "title": "Fake monitoring server options removed on empty data",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "IntelligentMonitoringPage regression test verifies legacy fake server option '웹 서버 01' is not exposed when the server list is empty.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-stream-fallback-evidence-metadata",
+      "title": "AI stream fallback metadata is preserved",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "stream-data-handler regression test verifies usedFallback and fallbackReason metadata are retained.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "This is a local targeted QA run; release-facing Vercel QA is still required after commit and deployment.",
+    "The default hard /api/health?service=ai failure behavior is intentionally preserved for non-UI callers; only UI polling uses soft=true."
+  ],
+  "links": []
+}

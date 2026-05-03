@@ -630,6 +630,13 @@ describe('useAIChatCore', () => {
     expect(result.current.messages[1]?.metadata?.artifactIntentReason).toBe(
       'incident_report_action_pattern'
     );
+    expect(result.current.messages[1]?.metadata?.routeDecision).toMatchObject({
+      intent: 'artifact',
+      executionPath: 'client-artifact',
+      artifactKind: 'incident-report',
+      reasonCodes: ['incident_report_action_pattern'],
+      decidedBy: 'frontend',
+    });
     expect(
       result.current.messages[1]?.metadata?.incidentReportArtifact?.report.title
     ).toBe('스토리지 디스크 포화 경고');
@@ -913,6 +920,14 @@ describe('useAIChatCore', () => {
     expect(result.current.messages[1]?.metadata?.artifactIntentReason).toBe(
       'server_snapshot_implicit_artifact_keyword'
     );
+    expect(result.current.messages[1]?.metadata?.routeDecision).toMatchObject({
+      intent: 'artifact',
+      executionPath: 'client-artifact',
+      artifactKind: 'server-snapshot',
+      reasonCodes: ['server_snapshot_implicit_artifact_keyword'],
+      decidedBy: 'frontend',
+      dataSlot: '07:00 KST',
+    });
     expect(
       result.current.messages[1]?.metadata?.serverSnapshotArtifact?.totals.total
     ).toBe(4);

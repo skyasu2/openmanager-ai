@@ -352,6 +352,54 @@ describe('handleStreamDataPart', () => {
       );
     });
 
+    it('should persist stream fallback metadata for UI evidence display', () => {
+      const part: StreamDataPart = {
+        type: 'data-done',
+        data: {
+          fallback: true,
+          fallbackReason: 'cloud_run_504',
+        },
+      };
+
+      handleStreamDataPart(part, callbacks);
+
+      expect(callbacks.setDeferredAssistantMetadata).toHaveBeenCalledWith(
+        'msg-2',
+        expect.objectContaining({
+          usedFallback: true,
+          fallbackReason: 'cloud_run_504',
+        })
+      );
+    });
+
+    it('should persist routeDecision metadata from stream done events', () => {
+      const routeDecision = {
+        intent: 'chat',
+        executionPath: 'stream',
+        mode: 'single',
+        reasonCodes: ['auto_complexity'],
+        ruleVersion: '2026-05-03-v1',
+        decidedBy: 'cloud-run',
+      };
+      const part: StreamDataPart = {
+        type: 'data-done',
+        data: {
+          metadata: {
+            routeDecision,
+          },
+        },
+      };
+
+      handleStreamDataPart(part, callbacks);
+
+      expect(callbacks.setDeferredAssistantMetadata).toHaveBeenCalledWith(
+        'msg-2',
+        expect.objectContaining({
+          routeDecision,
+        })
+      );
+    });
+
     it('should preserve both traceId and structuredView when both are present', () => {
       const part: StreamDataPart = {
         type: 'data-done',

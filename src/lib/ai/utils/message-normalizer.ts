@@ -122,6 +122,8 @@ export interface HybridMessage {
 
 export const RAW_TOOL_CALL_SUPPRESSED_MESSAGE =
   'AI 엔진이 도구 호출 정보를 응답 본문으로 반환해 표시를 차단했습니다. 같은 질문을 다시 시도해 주세요.';
+export const INTERNAL_ERROR_SUPPRESSED_MESSAGE =
+  'AI 엔진 내부 오류 정보가 응답 본문으로 반환되어 표시를 차단했습니다. 같은 질문을 다시 시도해 주세요.';
 
 // ============================================================================
 // 텍스트 추출 함수
@@ -398,7 +400,11 @@ function isRawToolCallPayload(value: unknown): boolean {
   if (
     directName &&
     hasToolArguments(value) &&
-    (!type || type === 'function' || type === 'tool_call' || type === 'tool')
+    (!type ||
+      type === 'function' ||
+      type === 'tool_call' ||
+      type === 'tool-call' ||
+      type === 'tool')
   ) {
     return true;
   }
@@ -417,6 +423,29 @@ function isRawToolCallPayload(value: unknown): boolean {
       : [];
 
   return toolCalls.some(isRawToolCallPayload);
+}
+
+function isInternalErrorPayload(value: unknown): boolean {
+  if (!isRecord(value)) return false;
+
+  const errorText =
+    getNonEmptyString(value.error) ??
+    getNonEmptyString(value.errorMessage) ??
+    getNonEmptyString(value.message);
+  if (!errorText) return false;
+
+  const hasInternalSignal =
+    'provider' in value ||
+    'modelId' in value ||
+    'providerAttempts' in value ||
+    'fallbackReason' in value ||
+    'errorDetails' in value ||
+    'stack' in value ||
+    /(authorization|bearer|api[-_\s]?key|\b(?:sk|csk)-|provider|tool[_-]?call|fallback)/i.test(
+      errorText
+    );
+
+  return hasInternalSignal;
 }
 
 /**
@@ -442,6 +471,10 @@ export function normalizeAIResponse(text: string): string {
     // AI SDK/provider가 tool call을 텍스트로 누출한 경우 UI 본문에서는 숨긴다.
     if (isRawToolCallPayload(parsed)) {
       return RAW_TOOL_CALL_SUPPRESSED_MESSAGE;
+    }
+
+    if (isInternalErrorPayload(parsed)) {
+      return INTERNAL_ERROR_SUPPRESSED_MESSAGE;
     }
 
     // `answer` 필드가 있는 AI 응답 JSON → 텍스트만 추출

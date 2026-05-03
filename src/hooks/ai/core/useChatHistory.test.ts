@@ -180,6 +180,55 @@ describe('useChatHistory', () => {
     });
   });
 
+  it('restores routeDecision from stored assistant metadata', () => {
+    const routeDecision = {
+      intent: 'job',
+      executionPath: 'job',
+      complexity: 'complex',
+      reasonCodes: ['complexity_threshold_exceeded'],
+      ruleVersion: '2026-05-03-v1',
+      decidedBy: 'bff',
+    };
+    localStorage.setItem(
+      CHAT_HISTORY_KEY,
+      JSON.stringify({
+        sessionId: 'session-route-decision',
+        messages: [
+          {
+            id: 'assistant-1',
+            role: 'assistant',
+            content: '작업 큐로 처리합니다.',
+            timestamp: '2026-05-03T10:00:05.000Z',
+            metadata: {
+              routeDecision,
+            },
+          },
+        ],
+        lastUpdated: new Date().toISOString(),
+      })
+    );
+
+    const setMessages = vi.fn();
+    const onMetadataRestore = vi.fn();
+
+    renderHook(() =>
+      useChatHistory({
+        sessionId: 'session-current',
+        isMessagesEmpty: true,
+        enhancedMessages: [],
+        setMessages,
+        isLoading: false,
+        onMetadataRestore,
+      })
+    );
+
+    expect(onMetadataRestore).toHaveBeenCalledWith({
+      'assistant-1': {
+        routeDecision,
+      },
+    });
+  });
+
   it('prefers richer seed messages from sidebar snapshot over local history', () => {
     localStorage.setItem(
       CHAT_HISTORY_KEY,

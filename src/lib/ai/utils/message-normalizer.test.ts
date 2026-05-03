@@ -11,6 +11,7 @@ import {
   extractTextFromHybridMessage,
   extractTextFromUIMessage,
   type HybridMessage,
+  INTERNAL_ERROR_SUPPRESSED_MESSAGE,
   normalizeAIResponse,
   normalizeMessagesForCloudRun,
   RAW_TOOL_CALL_SUPPRESSED_MESSAGE,
@@ -421,6 +422,38 @@ describe('message-normalizer', () => {
 
       expect(normalizeAIResponse(rawToolCall)).toBe(
         RAW_TOOL_CALL_SUPPRESSED_MESSAGE
+      );
+    });
+
+    it('AI SDK tool-call JSON 배열도 안전 안내문으로 정규화한다', () => {
+      const rawToolCall = JSON.stringify({
+        toolCalls: [
+          {
+            type: 'tool-call',
+            toolName: 'getServerMetrics',
+            args: { serverId: 'web-01' },
+          },
+        ],
+      });
+
+      expect(normalizeAIResponse(rawToolCall)).toBe(
+        RAW_TOOL_CALL_SUPPRESSED_MESSAGE
+      );
+    });
+
+    it('provider 내부 오류 JSON은 사용자 본문에서 차단한다', () => {
+      const internalError = JSON.stringify({
+        error: 'empty response Authorization: Bearer sk-test-1234567890abcdef',
+        provider: 'cerebras',
+        modelId: 'llama3.1-8b',
+        fallbackReason: 'empty_response',
+      });
+
+      expect(normalizeAIResponse(internalError)).toBe(
+        INTERNAL_ERROR_SUPPRESSED_MESSAGE
+      );
+      expect(normalizeAIResponse(internalError)).not.toContain(
+        'sk-test-1234567890abcdef'
       );
     });
 

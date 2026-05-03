@@ -360,6 +360,33 @@ describe('AI artifact cards', () => {
     expect(screen.getByText('표시할 위험 상위 서버 없음')).toBeInTheDocument();
   });
 
+  it('renders restored server snapshot artifacts defensively when summary is missing', () => {
+    const restoredArtifact = {
+      kind: 'server-snapshot',
+      generatedAt: '2026-05-02T22:00:00.000Z',
+      title: '복원된 서버 상태 스냅샷',
+      source: 'otel-static',
+      totals: {
+        total: 0,
+        online: 0,
+        warning: 0,
+        critical: 0,
+        offline: 0,
+      },
+      averages: {
+        cpu: 0,
+        memory: 0,
+        disk: 0,
+        network: 0,
+      },
+    } as unknown as ServerSnapshotArtifact;
+
+    render(<ServerSnapshotArtifactCard artifact={restoredArtifact} />);
+
+    expect(screen.getByText('요약 정보 없음')).toBeInTheDocument();
+    expect(screen.queryByText('undefined')).not.toBeInTheDocument();
+  });
+
   it('uses shared server snapshot fallback readers while keeping card display capped', () => {
     const restoredArtifact = {
       kind: 'server-snapshot',

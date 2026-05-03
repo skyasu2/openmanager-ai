@@ -127,6 +127,55 @@ describe('POST /api/ai/jobs trigger readiness', () => {
     expect(response.headers.get('X-AI-Trigger-Status')).toBe('skipped');
   });
 
+  it('stores read-only routeDecision metadata for created jobs', async () => {
+    mockAnalyzeJobQueryComplexity.mockReturnValue({
+      level: 'complex',
+      estimatedTime: 55,
+      factors: { dataVolume: 'high' },
+    });
+
+    const { POST } = await importRoute();
+    const request = new NextRequest('http://localhost/api/ai/jobs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        query: '전체 서버 장애 원인 분석 보고서 만들어줘',
+        options: { sessionId: 'session-1234' },
+      }),
+    });
+
+    const response = await POST(request);
+    const body = (await response.json()) as {
+      routeDecision?: Record<string, unknown>;
+    };
+
+    expect(response.status).toBe(201);
+    expect(body.routeDecision).toMatchObject({
+      intent: 'job',
+      executionPath: 'job',
+      complexity: 'complex',
+      reasonCodes: ['job_queue_api'],
+      decidedBy: 'bff',
+    });
+
+    const savedJob = mockRedisSet.mock.calls.find(
+      ([key]) =>
+        typeof key === 'string' &&
+        key.startsWith('job:') &&
+        !key.startsWith('job:progress:') &&
+        !key.startsWith('job:list:') &&
+        !key.startsWith('job:trigger:')
+    )?.[1] as { metadata?: Record<string, unknown> } | undefined;
+
+    expect(savedJob?.metadata?.routeDecision).toMatchObject({
+      intent: 'job',
+      executionPath: 'job',
+      complexity: 'complex',
+      reasonCodes: ['job_queue_api'],
+      decidedBy: 'bff',
+    });
+  });
+
   it('Cloud Run worker trigger forwards session-aware rate-limit identity', async () => {
     process.env.CLOUD_RUN_ENABLED = 'true';
 

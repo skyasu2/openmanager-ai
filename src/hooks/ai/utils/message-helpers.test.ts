@@ -57,6 +57,18 @@ function createMessage(params: {
       details?: string | null;
       shouldCollapse?: boolean;
     };
+    routeDecision?: {
+      intent: 'chat' | 'artifact' | 'job' | 'clarification';
+      executionPath: 'stream' | 'job' | 'client-artifact';
+      mode?: 'single' | 'multi';
+      artifactKind?:
+        | 'server-snapshot'
+        | 'incident-report'
+        | 'monitoring-analysis';
+      reasonCodes: string[];
+      ruleVersion: string;
+      decidedBy: 'frontend' | 'bff' | 'cloud-run';
+    };
     toolResultSummaries?: Array<{
       toolName: string;
       label: string;
@@ -107,6 +119,34 @@ describe('transformMessages', () => {
       'RAG 지식베이스 검색'
     );
     expect(assistant?.metadata?.analysisBasis?.ragUsed).toBe(true);
+  });
+
+  it('preserves routeDecision metadata for assistant messages', () => {
+    const routeDecision = {
+      intent: 'chat' as const,
+      executionPath: 'stream' as const,
+      mode: 'single' as const,
+      reasonCodes: ['auto_complexity'],
+      ruleVersion: '2026-05-03-v1',
+      decidedBy: 'cloud-run' as const,
+    };
+
+    const messages = transformMessages(
+      [
+        createMessage({ id: 'u1', role: 'user', text: 'CPU 알려줘' }),
+        createMessage({
+          id: 'a1',
+          role: 'assistant',
+          text: 'CPU는 정상입니다.',
+          metadata: { routeDecision },
+        }),
+      ],
+      { isLoading: false, currentMode: 'streaming' }
+    );
+
+    expect(
+      messages.find((m) => m.id === 'a1')?.metadata?.routeDecision
+    ).toEqual(routeDecision);
   });
 
   it('uses streamRagSources fallback for the last assistant message', () => {

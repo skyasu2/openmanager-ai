@@ -52,6 +52,26 @@ describe('IntelligentMonitoringPage', () => {
     });
   });
 
+  it('서버 목록이 비어도 legacy fallback 서버 옵션을 노출하지 않는다', () => {
+    mockUseServerQuery.mockReturnValue({
+      data: [],
+      isLoading: false,
+      isError: false,
+    });
+
+    render(<IntelligentMonitoringPage />);
+
+    expect(
+      screen.getByRole('option', { name: '전체 시스템 (서버 목록 없음)' })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('option', { name: '웹 서버 01' })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText(/단일 서버 분석 옵션은 숨겼습니다/)
+    ).toBeInTheDocument();
+  });
+
   it('shows login CTA when analysis API returns 401', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: false,

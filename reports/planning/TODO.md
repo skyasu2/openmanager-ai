@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-03 KST (`Server snapshot artifact cancellation hardening release`)
+**Last Updated**: 2026-05-03 KST (`AI Assistant routeDecision metadata M1 completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -41,6 +41,21 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-03 #263)
+- [x] AI Assistant routeDecision metadata M1
+  - `RouteDecision` read-only contract를 frontend streaming/job/artifact metadata, BFF job metadata, Cloud Run supervisor stream metadata에 연결
+  - chat history/message restore, async SSE, stream done metadata에서 routeDecision을 normalize/persist하도록 보강
+  - UI health polling은 `soft=true` 계약으로 전환해 expected degraded 상태가 브라우저 503 콘솔 에러로 보이지 않게 정리
+  - 검증: root `type-check`, `lint`, `test:quick`, `test:contract`, AI Engine `type-check`, AI Engine `test`, `docs:components:verify`, local Playwright MCP QA `QA-20260503-0396`
+
+### Completed (2026-05-03 #262)
+- [x] Artifact/AI response regression hardening follow-up
+  - artifact intent deterministic corpus를 `112 → 121` 케이스로 확장해 server snapshot mixed-language 실행 요청, broad status 질문, snapshot negation/guidance false-positive 방어를 고정
+  - server snapshot legacy 복원 payload에서 `summary` 누락 시 Markdown/Card가 `undefined`를 노출하지 않도록 shared summary reader 추가
+  - AI response normalizer와 Cloud Run stream text guard가 AI SDK `tool-call` shape를 raw 본문으로 노출하지 않도록 보강하고, provider 내부 오류 JSON은 사용자 본문에서 차단
+  - job metadata sanitizer unit test로 owner/internal metadata와 secret-bearing provider error fragment 차단을 고정
+  - 검증: targeted root tests 54/54, artifact intent benchmark 121/121, AI Engine targeted 5/5, root `type-check`, `lint`, `test:quick`, `test:contract`, AI Engine `type-check`, AI Engine `test`, `docs:components:verify`, `git diff --check`
 
 ### Completed (2026-05-03 #261)
 - [x] Server Snapshot Artifact P3 maintenance

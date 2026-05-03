@@ -5,6 +5,7 @@
  */
 
 import type { UIMessage } from 'ai';
+import { normalizeRouteDecision } from '@/lib/ai/route-decision';
 import {
   extractTextFromUIMessage,
   normalizeAIResponse,
@@ -235,6 +236,7 @@ export function transformUIMessageToEnhanced(
     metadata?.assistantResponseView,
     toolParts
   );
+  const routeDecision = normalizeRouteDecision(metadata?.routeDecision);
   const incidentReportArtifact = metadata?.incidentReportArtifact;
   const monitoringAnalysisArtifact = metadata?.monitoringAnalysisArtifact;
   const serverSnapshotArtifact = metadata?.serverSnapshotArtifact;
@@ -350,6 +352,7 @@ export function transformUIMessageToEnhanced(
     metadata:
       analysisBasis ||
       traceId ||
+      routeDecision ||
       assistantResponseView ||
       hasChatArtifact ||
       hasArtifactIntentMetadata ||
@@ -359,6 +362,7 @@ export function transformUIMessageToEnhanced(
         ? {
             ...(analysisBasis && { analysisBasis }),
             ...(traceId && { traceId }),
+            ...(routeDecision && { routeDecision }),
             ...(typeof metadata?.processingTime === 'number' && {
               processingTime: metadata.processingTime,
             }),

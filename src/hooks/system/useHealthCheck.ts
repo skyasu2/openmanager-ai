@@ -131,7 +131,12 @@ async function performHealthCheck(service: 'ai' | 'all' = 'ai'): Promise<void> {
   const startTime = Date.now();
 
   try {
-    const response = await fetch(`/api/health?service=${service}`, {
+    const params = new URLSearchParams({ service });
+    if (service === 'ai') {
+      params.set('soft', 'true');
+    }
+
+    const response = await fetch(`/api/health?${params.toString()}`, {
       method: 'GET',
       cache: 'no-store',
       signal: controller.signal,

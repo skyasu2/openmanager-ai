@@ -43,6 +43,7 @@ import { generateMonitoringAnalysisArtifact } from '@/lib/ai/chat-artifacts/moni
 import { generateServerSnapshotArtifact } from '@/lib/ai/chat-artifacts/server-snapshot-artifact';
 import type { ChatArtifact } from '@/lib/ai/chat-artifacts/types';
 import type { AIErrorDetails } from '@/lib/ai/error-details';
+import { buildRouteDecision } from '@/lib/ai/route-decision';
 import {
   analyzeQueryComplexity,
   shouldForceJobQueue,
@@ -374,11 +375,24 @@ function getArtifactErrorText(
 
 function buildArtifactMetadata(
   artifact: ChatArtifact,
-  intentReason: ChatArtifactIntentReason
+  intentReason: ChatArtifactIntentReason,
+  queryAsOfDataSlot?: JobDataSlot
 ): Record<string, unknown> {
+  const routeDecision = buildRouteDecision({
+    intent: 'artifact',
+    executionPath: 'client-artifact',
+    artifactKind: artifact.kind,
+    reasonCodes: [intentReason],
+    decidedBy: 'frontend',
+    ...(queryAsOfDataSlot?.timeLabel && {
+      dataSlot: queryAsOfDataSlot.timeLabel,
+    }),
+  });
+
   if (artifact.kind === 'incident-report') {
     return {
       artifactIntentReason: intentReason,
+      routeDecision,
       incidentReportArtifact: artifact,
       toolsCalled: ['generateIncidentReportArtifact'],
       toolResultSummaries: [
@@ -395,6 +409,7 @@ function buildArtifactMetadata(
   if (artifact.kind === 'server-snapshot') {
     return {
       artifactIntentReason: intentReason,
+      routeDecision,
       serverSnapshotArtifact: artifact,
       toolsCalled: ['generateServerSnapshotArtifact'],
       toolResultSummaries: [
@@ -410,6 +425,7 @@ function buildArtifactMetadata(
 
   return {
     artifactIntentReason: intentReason,
+    routeDecision,
     monitoringAnalysisArtifact: artifact,
     toolsCalled: ['generateMonitoringAnalysisArtifact'],
     toolResultSummaries: [
@@ -929,7 +945,11 @@ export function useAIChatCore(
               id: pendingAssistantMessage.id,
               role: 'assistant',
               text: getArtifactSuccessText(artifact),
-              metadata: buildArtifactMetadata(artifact, artifactIntent.reason),
+              metadata: buildArtifactMetadata(
+                artifact,
+                artifactIntent.reason,
+                queryAsOfDataSlot
+              ),
             });
             const currentMessages = messagesRef.current;
             const nextMessages = currentMessages.some(
@@ -956,6 +976,16 @@ export function useAIChatCore(
               text: errorText,
               metadata: {
                 artifactIntentReason: artifactIntent.reason,
+                routeDecision: buildRouteDecision({
+                  intent: 'artifact',
+                  executionPath: 'client-artifact',
+                  artifactKind,
+                  reasonCodes: [artifactIntent.reason],
+                  decidedBy: 'frontend',
+                  ...(queryAsOfDataSlot?.timeLabel && {
+                    dataSlot: queryAsOfDataSlot.timeLabel,
+                  }),
+                }),
                 toolResultSummaries: [
                   {
                     toolName:

@@ -68,7 +68,11 @@ function getRawToolCallName(value: unknown): string | null {
   if (
     directName &&
     hasToolArguments(value) &&
-    (!type || type === 'function' || type === 'tool_call' || type === 'tool')
+    (!type ||
+      type === 'function' ||
+      type === 'tool_call' ||
+      type === 'tool-call' ||
+      type === 'tool')
   ) {
     return directName;
   }

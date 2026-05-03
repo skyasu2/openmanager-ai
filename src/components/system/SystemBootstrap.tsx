@@ -134,21 +134,21 @@ export function SystemBootstrap(): React.ReactNode {
       aiHealthTimeout = setTimeout(() => aiHealthController.abort(), 3000);
       try {
         logger.info('🤖 Cloud Run AI 상태 확인...');
-        const aiHealthResponse = await fetch('/api/health?service=ai', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          signal: aiHealthController.signal,
-        });
+        const aiHealthResponse = await fetch(
+          '/api/health?service=ai&soft=true',
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            signal: aiHealthController.signal,
+          }
+        );
 
         if (isMounted) {
-          if (aiHealthResponse.ok) {
-            const aiData = await aiHealthResponse.json();
-            logger.info(
-              '✅ Cloud Run AI 상태 확인 완료:',
-              aiData.status === 'ok' ? '정상' : '오류'
-            );
+          const aiData = await aiHealthResponse.json();
+          if (aiHealthResponse.ok && aiData.status === 'ok') {
+            logger.info('✅ Cloud Run AI 상태 확인 완료:', '정상');
             localStatus.cloudRunAI = 'success';
             setBootstrapStatus((prev) => ({ ...prev, cloudRunAI: 'success' }));
           } else {

@@ -51,11 +51,11 @@ Route-local component files:
 
 | Metric | Value |
 | --- | --- |
-| Component source lines | 29534 |
+| Component source lines | 29550 |
 | Component nodes | 147 |
-| Component edges | 138 |
-| Graph density | 0.64% |
-| Alias edges (`@/components/*`) | 41 |
+| Component edges | 139 |
+| Graph density | 0.65% |
+| Alias edges (`@/components/*`) | 42 |
 | Relative edges (`./`, `../`) | 97 |
 | Isolated components | 31 |
 | SCC cycle groups | 0 |
@@ -85,10 +85,10 @@ flowchart LR
   d9 -->|10| d9
   d4 -->|6| d11
   d4 -->|4| d9
+  d0 -->|3| d1
   d1 -->|3| d11
   d4 -->|3| d6
   d11 -->|3| d11
-  d0 -->|2| d1
   d0 -->|2| d9
   d4 -->|2| d3
   d8 -->|2| d8
@@ -131,10 +131,10 @@ flowchart LR
 | shared | shared | 10 |
 | dashboard | ui | 6 |
 | dashboard | shared | 4 |
+| ai | ai-sidebar | 3 |
 | ai-sidebar | ui | 3 |
 | dashboard | error | 3 |
 | ui | ui | 3 |
-| ai | ai-sidebar | 2 |
 | ai | shared | 2 |
 | dashboard | charts | 2 |
 | providers | providers | 2 |
@@ -157,19 +157,19 @@ flowchart LR
 | dashboard/EnhancedServerModal.components | 3 |
 | dashboard/shared/StatCell | 3 |
 | error/ServerCardErrorBoundary | 3 |
+| ai-sidebar/CloudRunStatusIndicator | 2 |
 | ai-sidebar/EnhancedAIChat | 2 |
 | ai/AgentHandoffBadge | 2 |
 | ai/AIContentArea | 2 |
 | ai/AnalysisBasisBadge | 2 |
 | ai/IncidentReportArtifactCard | 2 |
-| ai/MarkdownRenderer | 2 |
 
 ## Top Component Hubs by Out-Degree (Top 12)
 
 | Component | Out-Degree |
 | --- | --- |
+| ai/AIWorkspace | 10 |
 | ai-sidebar/EnhancedAIChat | 9 |
-| ai/AIWorkspace | 9 |
 | ai/AIWorkspaceMessage | 8 |
 | ai-sidebar/AISidebarV4 | 7 |
 | ai-sidebar/SidebarMessage | 7 |
@@ -189,8 +189,8 @@ flowchart LR
 
 ```text
 [Top Outgoing Dependency Samples]
+ai/AIWorkspace -> ai-sidebar/EnhancedAIChat, ai-sidebar/CloudRunStatusIndicator, error/AIErrorBoundary, dashboard/RealTimeDisplay, shared/OpenManagerLogo, shared/UnifiedProfileHeader
 ai-sidebar/EnhancedAIChat -> ai/AgentHandoffBadge, ai/AgentStatusIndicator, ai-sidebar/ChatInputArea, ai-sidebar/ChatMessageList, ai-sidebar/ClarificationDialog, ai-sidebar/chat/ColdStartErrorBanner
-ai/AIWorkspace -> ai-sidebar/EnhancedAIChat, error/AIErrorBoundary, dashboard/RealTimeDisplay, shared/OpenManagerLogo, shared/UnifiedProfileHeader, ai/AIAssistantIconPanel
 ai/AIWorkspaceMessage -> ai/AnalysisBasisBadge, ai/IncidentReportArtifactCard, ai/MarkdownRenderer, ai/MessageActions, ai/MonitoringAnalysisArtifactCard, ai/ServerSnapshotArtifactCard
 ai-sidebar/AISidebarV4 -> ai/AIAssistantIconPanel, ai/AIContentArea, error/AIErrorBoundary, ai-sidebar/AISidebarHeader, ai-sidebar/EnhancedAIChat, ai-sidebar/ResizeHandle
 ai-sidebar/SidebarMessage -> ai/AnalysisBasisBadge, ai/IncidentReportArtifactCard, ai/MessageActions, ai/MonitoringAnalysisArtifactCard, ai/ServerSnapshotArtifactCard, ai/WebSourceCards

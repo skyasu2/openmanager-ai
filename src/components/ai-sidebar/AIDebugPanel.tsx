@@ -30,7 +30,7 @@ export function AIDebugPanel({
       }
 
       const start = Date.now();
-      const res = await fetch('/api/health?service=ai');
+      const res = await fetch('/api/health?service=ai&soft=true');
       const data = await res.json();
 
       if (res.ok && data.status === 'ok') {

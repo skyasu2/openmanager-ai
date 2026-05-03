@@ -615,6 +615,7 @@ async function processJobSynchronously({
     let finalAgent: string | undefined;
     let traceId: string | undefined;
     let retrieval: RetrievalMetadata | undefined;
+    let routeDecision: unknown;
     let providerMetadata: JobProviderMetadata = {};
     let toolResultSummaries:
       | Array<{
@@ -773,6 +774,7 @@ async function processJobSynchronously({
 
         traceId = getStringValue(metadata.traceId) ?? traceId;
         retrieval = parseRetrievalMetadata(metadata.retrieval) ?? retrieval;
+        routeDecision = metadata.routeDecision ?? routeDecision;
         providerMetadata = {
           ...providerMetadata,
           ...extractProviderMetadata(metadata),
@@ -824,6 +826,7 @@ async function processJobSynchronously({
         ...(queryAsOf && { queryAsOf }),
         ...(retrieval && { retrieval }),
         ...(traceId && { traceId }),
+        ...(routeDecision !== undefined && { routeDecision }),
         ...providerMetadata,
         handoffs,
         ...(toolResultSummaries && toolResultSummaries.length > 0 && {

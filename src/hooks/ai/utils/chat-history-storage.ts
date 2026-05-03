@@ -10,6 +10,10 @@ import type {
   MonitoringAnalysisArtifact,
   ServerSnapshotArtifact,
 } from '@/lib/ai/chat-artifacts/types';
+import {
+  normalizeRouteDecision,
+  type RouteDecision,
+} from '@/lib/ai/route-decision';
 import { logger } from '@/lib/logging';
 import type { EnhancedChatMessage } from '@/stores/useAISidebarStore';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
@@ -35,6 +39,7 @@ export interface StoredMessageMetadata {
   retrieval?: RetrievalMetadata;
   featureStatus?: AnalysisFeatureStatus;
   analysisMode?: AnalysisMode;
+  routeDecision?: RouteDecision;
   toolsCalled?: string[];
   ragSources?: Array<{
     title: string;
@@ -133,6 +138,7 @@ export function saveChatHistory(
       .map((m) => {
         const metadata = m.metadata;
         const analysisBasis = m.metadata?.analysisBasis;
+        const routeDecision = normalizeRouteDecision(metadata?.routeDecision);
         const hasExplicitHandoffHistory = Array.isArray(
           metadata?.handoffHistory
         );
@@ -143,6 +149,7 @@ export function saveChatHistory(
           analysisBasis?.analysisMode ||
           analysisBasis?.toolsCalled ||
           analysisBasis?.ragSources ||
+          routeDecision ||
           metadata?.assistantResponseView ||
           metadata?.artifactIntentReason ||
           metadata?.artifactIntentTarget ||
@@ -168,6 +175,9 @@ export function saveChatHistory(
                 }),
                 ...(analysisBasis?.ragSources && {
                   ragSources: analysisBasis.ragSources,
+                }),
+                ...(routeDecision && {
+                  routeDecision,
                 }),
                 ...(metadata?.assistantResponseView && {
                   assistantResponseView: metadata.assistantResponseView,

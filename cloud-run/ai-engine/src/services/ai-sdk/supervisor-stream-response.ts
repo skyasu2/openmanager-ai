@@ -16,6 +16,7 @@ import {
 import type { SupervisorRequest } from './supervisor-types';
 import {
   buildSupervisorModeMetadata,
+  buildSupervisorRouteDecision,
   resolveSupervisorModeDecision,
 } from './supervisor-mode';
 import { executeSupervisorStream } from './supervisor-single-agent';
@@ -131,6 +132,10 @@ function isBooleanValue(value: unknown): value is boolean {
   return typeof value === 'boolean';
 }
 
+function isRecordValue(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
 function getStructuredResponseSummary(
   doneData: Record<string, unknown>,
   fallback: AssistantResponseSummary
@@ -196,12 +201,18 @@ export function createSupervisorStreamResponse(
         });
 
         const modeDecision = resolveSupervisorModeDecision(request);
+        const modeMetadata = buildSupervisorModeMetadata(modeDecision);
+        const routeDecision = buildSupervisorRouteDecision(modeDecision, {
+          traceId: request.traceId,
+          queryAsOf: request.queryAsOf,
+        });
 
         writer.write({
           type: 'data-mode',
           data: {
             mode: modeDecision.resolvedMode,
-            ...buildSupervisorModeMetadata(modeDecision),
+            ...modeMetadata,
+            routeDecision,
           },
         });
 
@@ -290,12 +301,20 @@ export function createSupervisorStreamResponse(
                 summary
               );
               const normalizedResponseSummary = responseSummaryView.summary.trim();
+              const upstreamMetadata = isRecordValue(doneData.metadata)
+                ? doneData.metadata
+                : {};
 
               writer.write({
                 type: 'data-done',
                 data: {
                   durationMs: Date.now() - startTime,
                   ...doneData,
+                  metadata: {
+                    ...upstreamMetadata,
+                    ...modeMetadata,
+                    routeDecision,
+                  },
                   ...(normalizedResponseSummary
                     ? {
                         responseSummary: responseSummaryView.summary,

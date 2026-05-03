@@ -20,20 +20,20 @@ const LOCAL_CLASSIFIER_CLASS_HEALTH_THRESHOLD = 0.9;
 const LOCAL_CLASSIFIER_MIN_KIND_SUPPORT = {
   'incident-report': 18,
   'monitoring-analysis': 18,
-  'server-snapshot': 8,
+  'server-snapshot': 12,
   guidance: 30,
-  none: 38,
+  none: 43,
 } satisfies Record<ArtifactIntentEvaluationKind, number>;
 const LOCAL_CLASSIFIER_MIN_CATEGORY_SUPPORT = {
   'explicit-action': 16,
   'implicit-artifact': 4,
-  'guidance-question': 19,
-  negation: 16,
-  'operational-chat': 17,
+  'guidance-question': 21,
+  negation: 17,
+  'operational-chat': 20,
   'ambiguous-chat': 3,
   navigation: 6,
   'mixed-language': 22,
-  'snapshot-artifact': 8,
+  'snapshot-artifact': 12,
 } satisfies Record<ArtifactIntentCorpusCategory, number>;
 
 const evaluation = evaluateArtifactIntentClassifier(

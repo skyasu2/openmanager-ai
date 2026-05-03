@@ -21,6 +21,7 @@
 
 ### AI
 - [AI Engine Architecture](./architecture/ai/ai-engine-architecture.md)
+- [AI Assistant Initial Design Comparison](./architecture/ai/ai-assistant-initial-design-comparison.md)
 - [API Endpoints](./api/endpoints.md)
 - [API Contracts](./api/contracts.md)
 - [Frontend/Backend Comparison](./architecture/ai/frontend-backend-comparison.md)

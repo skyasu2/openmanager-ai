@@ -222,6 +222,36 @@ describe('chat-history-storage', () => {
       });
     });
 
+    it('persists routeDecision metadata for assistant messages', () => {
+      const routeDecision = {
+        intent: 'job',
+        executionPath: 'job',
+        complexity: 'complex',
+        reasonCodes: ['complexity_threshold_exceeded'],
+        ruleVersion: '2026-05-03-v1',
+        decidedBy: 'frontend',
+      };
+      const messages = [
+        {
+          ...makeMessage({
+            id: 'assistant-route-decision',
+            role: 'assistant',
+            content: '분석 작업을 시작했습니다.',
+          }),
+          metadata: {
+            routeDecision,
+          },
+        },
+      ];
+
+      saveChatHistory('s-route-decision', messages as never[]);
+
+      const stored = JSON.parse(localStorage.getItem(CHAT_HISTORY_KEY)!);
+      expect(stored.messages[0].metadata).toEqual({
+        routeDecision,
+      });
+    });
+
     it('persists artifact metadata for assistant messages', () => {
       const messages = [
         {

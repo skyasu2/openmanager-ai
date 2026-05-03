@@ -16,6 +16,19 @@ export interface ResolvedSupervisorModeDecision {
   analysisMode?: SupervisorRequest['analysisMode'];
 }
 
+const ROUTE_DECISION_RULE_VERSION = '2026-05-03-v1';
+
+export interface SupervisorRouteDecision {
+  intent: 'chat';
+  executionPath: 'stream';
+  mode: ResolvedSupervisorMode;
+  reasonCodes: string[];
+  ruleVersion: string;
+  dataSlot?: string;
+  traceId?: string;
+  decidedBy: 'cloud-run';
+}
+
 /**
  * Resolve final execution mode for the request.
  * 
@@ -119,5 +132,26 @@ export function buildSupervisorModeMetadata(
     ...((analysisMode ?? decision.analysisMode)
       ? { analysisMode: analysisMode ?? decision.analysisMode }
       : {}),
+  };
+}
+
+export function buildSupervisorRouteDecision(
+  decision: ResolvedSupervisorModeDecision,
+  options?: {
+    traceId?: string;
+    queryAsOf?: SupervisorRequest['queryAsOf'];
+  },
+): SupervisorRouteDecision {
+  return {
+    intent: 'chat',
+    executionPath: 'stream',
+    mode: decision.resolvedMode,
+    reasonCodes: [decision.modeSelectionSource],
+    ruleVersion: ROUTE_DECISION_RULE_VERSION,
+    ...(options?.queryAsOf?.dataSlot?.timeLabel && {
+      dataSlot: options.queryAsOf.dataSlot.timeLabel,
+    }),
+    ...(options?.traceId && { traceId: options.traceId }),
+    decidedBy: 'cloud-run',
   };
 }

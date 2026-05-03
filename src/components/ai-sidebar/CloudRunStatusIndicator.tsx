@@ -146,10 +146,13 @@ export function CloudRunStatusIndicator({
         }
 
         try {
-          const healthResponse = await fetch('/api/health?service=ai', {
-            cache: 'no-store',
-            signal: abortController.signal,
-          });
+          const healthResponse = await fetch(
+            '/api/health?service=ai&soft=true',
+            {
+              cache: 'no-store',
+              signal: abortController.signal,
+            }
+          );
           const healthData = await healthResponse.json();
 
           if (healthResponse.ok && healthData.status === 'ok') {

@@ -5,7 +5,7 @@
 - Evaluation: `tests/intent-classifier/intent-classifier.eval.test.ts`
 - Benchmark wrapper: `tests/artifacts/intent-classifier.bench.ts`
 - Command: `npx vitest run --config config/testing/vitest.config.main.ts tests/intent-classifier/intent-classifier.eval.test.ts tests/artifacts/intent-classifier.bench.ts --reporter verbose`
-- Result: passed, `112/112` correct
+- Result: passed, `121/121` correct
 - Policy note: broad symptom + analysis phrases such as `현재 서버 상태 분석해줘`,
   `서버 분석해줘`, and `CPU 높은 서버 원인 분석해줘` are treated as `none`
   unless the user explicitly asks for an artifact-shaped output.
@@ -24,9 +24,9 @@
 |------|--------:|----------:|--------------:|---------------:|---------------:|----------:|-------:|
 | `incident-report` | 18 | 18 | 18 | 0 | 0 | 1.0000 | 1.0000 |
 | `monitoring-analysis` | 18 | 18 | 18 | 0 | 0 | 1.0000 | 1.0000 |
-| `server-snapshot` | 8 | 8 | 8 | 0 | 0 | 1.0000 | 1.0000 |
+| `server-snapshot` | 12 | 12 | 12 | 0 | 0 | 1.0000 | 1.0000 |
 | `guidance` | 30 | 30 | 30 | 0 | 0 | 1.0000 | 1.0000 |
-| `none` | 38 | 38 | 38 | 0 | 0 | 1.0000 | 1.0000 |
+| `none` | 43 | 43 | 43 | 0 | 0 | 1.0000 | 1.0000 |
 
 ## Category Coverage
 
@@ -34,10 +34,10 @@
 |----------|--------:|--------:|-----------:|---------:|
 | `explicit-action` | 16 | 16 | 0 | 1.0000 |
 | `implicit-artifact` | 4 | 4 | 0 | 1.0000 |
-| `snapshot-artifact` | 8 | 8 | 0 | 1.0000 |
-| `guidance-question` | 20 | 20 | 0 | 1.0000 |
-| `negation` | 16 | 16 | 0 | 1.0000 |
-| `operational-chat` | 17 | 17 | 0 | 1.0000 |
+| `snapshot-artifact` | 12 | 12 | 0 | 1.0000 |
+| `guidance-question` | 21 | 21 | 0 | 1.0000 |
+| `negation` | 17 | 17 | 0 | 1.0000 |
+| `operational-chat` | 20 | 20 | 0 | 1.0000 |
 | `ambiguous-chat` | 3 | 3 | 0 | 1.0000 |
 | `navigation` | 6 | 6 | 0 | 1.0000 |
 | `mixed-language` | 22 | 22 | 0 | 1.0000 |
@@ -48,9 +48,9 @@
 |----------------------|------------------:|----------------------:|------------------:|-----------:|-------:|
 | `incident-report` | 18 | 0 | 0 | 0 | 0 |
 | `monitoring-analysis` | 0 | 18 | 0 | 0 | 0 |
-| `server-snapshot` | 0 | 0 | 8 | 0 | 0 |
+| `server-snapshot` | 0 | 0 | 12 | 0 | 0 |
 | `guidance` | 0 | 0 | 0 | 30 | 0 |
-| `none` | 0 | 0 | 0 | 0 | 38 |
+| `none` | 0 | 0 | 0 | 0 | 43 |
 
 ## Guard
 

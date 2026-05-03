@@ -4,6 +4,7 @@ import type {
   HandoffEventData,
   StreamDataPart,
 } from '@/hooks/ai/useHybridAIQuery';
+import { normalizeRouteDecision } from '@/lib/ai/route-decision';
 import { logger } from '@/lib/logging';
 import type { StreamRagSource } from '../types/stream-rag.types';
 import {
@@ -84,6 +85,48 @@ function extractTraceIdFromDoneData(
       : undefined;
 
   return typeof metadata?.traceId === 'string' ? metadata.traceId : undefined;
+}
+
+function readDoneDataField(
+  doneData: ResponseSourceData | undefined,
+  key: string
+): unknown {
+  if (!doneData) return undefined;
+  const directValue = (doneData as Record<string, unknown>)[key];
+  if (directValue !== undefined) return directValue;
+
+  const metadata =
+    typeof doneData.metadata === 'object' && doneData.metadata !== null
+      ? (doneData.metadata as Record<string, unknown>)
+      : undefined;
+  return metadata?.[key];
+}
+
+function extractUsedFallbackFromDoneData(
+  doneData: ResponseSourceData | undefined
+): boolean | undefined {
+  const usedFallback = readDoneDataField(doneData, 'usedFallback');
+  if (typeof usedFallback === 'boolean') return usedFallback;
+
+  const fallback = readDoneDataField(doneData, 'fallback');
+  return fallback === true ? true : undefined;
+}
+
+function extractFallbackReasonFromDoneData(
+  doneData: ResponseSourceData | undefined
+): string | undefined {
+  const fallbackReason = readDoneDataField(doneData, 'fallbackReason');
+  if (typeof fallbackReason !== 'string') return undefined;
+
+  const trimmed = fallbackReason.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
+function extractRouteDecisionFromDoneData(
+  doneData: ResponseSourceData | undefined
+) {
+  const directRouteDecision = readDoneDataField(doneData, 'routeDecision');
+  return normalizeRouteDecision(directRouteDecision);
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -252,6 +295,9 @@ export function handleStreamDataPart(
     const modeSelectionSource =
       extractModeSelectionSourceFromDoneData(doneData);
     const retrieval = extractRetrievalMetadataFromDoneData(doneData);
+    const usedFallback = extractUsedFallbackFromDoneData(doneData);
+    const fallbackReason = extractFallbackReasonFromDoneData(doneData);
+    const routeDecision = extractRouteDecisionFromDoneData(doneData);
     const normalizedHandoffHistory = normalizeHandoffHistory(
       pendingMessageMetadata.handoffHistory
     );
@@ -264,6 +310,9 @@ export function handleStreamDataPart(
       ...(toolsCalled.length > 0 && { toolsCalled }),
       ...(analysisMode && { analysisMode }),
       ...(retrieval && { retrieval }),
+      ...(typeof usedFallback === 'boolean' && { usedFallback }),
+      ...(fallbackReason && { fallbackReason }),
+      ...(routeDecision && { routeDecision }),
       ...(normalizedHandoffHistory && {
         handoffHistory: normalizedHandoffHistory,
       }),
@@ -278,6 +327,9 @@ export function handleStreamDataPart(
       toolsCalled.length > 0 ||
       analysisMode ||
       retrieval ||
+      typeof usedFallback === 'boolean' ||
+      fallbackReason ||
+      routeDecision ||
       normalizedHandoffHistory !== undefined ||
       pendingToolResults.length > 0 ||
       Object.keys(pendingMessageMetadata).length > 0

@@ -52,6 +52,11 @@ describe('supervisor stream text guard', () => {
         '{"tool_calls":[{"type":"function","function":{"name":"finalAnswer","arguments":{"answer":"ok"}}}]}'
       )
     ).toBe('finalAnswer');
+    expect(
+      getRawToolCallNameFromText(
+        '{"toolCalls":[{"type":"tool-call","toolName":"getServerMetrics","args":{"serverId":"web-01"}}]}'
+      )
+    ).toBe('getServerMetrics');
   });
 
   it('does not classify ordinary JSON as a tool call', () => {

@@ -20,6 +20,7 @@ import type {
   MonitoringAnalysisArtifact,
   ServerSnapshotArtifact,
 } from '@/lib/ai/chat-artifacts/types';
+import type { RouteDecision } from '@/lib/ai/route-decision';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 import type {
   AnalysisFeatureStatus,
@@ -117,6 +118,8 @@ export interface ChatMessage {
     traceId?: string;
     /** 분석 근거 정보 */
     analysisBasis?: AnalysisBasis;
+    /** read-only routing/planning decision metadata */
+    routeDecision?: RouteDecision;
     /** 접을 수 있는 응답 뷰 */
     assistantResponseView?: {
       summary: string;

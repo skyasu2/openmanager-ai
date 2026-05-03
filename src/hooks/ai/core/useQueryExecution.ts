@@ -14,6 +14,10 @@ import { generateClarification } from '@/lib/ai/clarification-generator';
 import type { AIRateLimitErrorDetails } from '@/lib/ai/error-details';
 import { classifyQuery } from '@/lib/ai/query-classifier';
 import {
+  buildRouteDecision,
+  type RouteDecision,
+} from '@/lib/ai/route-decision';
+import {
   analyzeQueryComplexity,
   shouldForceJobQueue,
 } from '@/lib/ai/utils/query-complexity';
@@ -90,6 +94,7 @@ export interface QueryExecutionDeps {
   getMessages: () => UIMessage[];
   setMessages: SetMessagesLike;
   setState: StateSetter;
+  onRouteDecision?: (decision: RouteDecision) => void;
   /** AI SDK useChat의 chatStatus — 동시 요청 방지에 사용 */
   chatStatus: string;
   refs: {
@@ -118,6 +123,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
     getMessages,
     setMessages,
     setState,
+    onRouteDecision,
     chatStatus,
     refs,
     analysisMode,
@@ -247,6 +253,27 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
       const isComplex =
         !hasAttachments &&
         (analysis.score > modeAdjustedThreshold || forceJobQueue.force);
+      const routeDecision = buildRouteDecision({
+        intent: isComplex ? 'job' : 'chat',
+        executionPath: isComplex ? 'job' : 'stream',
+        complexity: analysis.level,
+        reasonCodes: isComplex
+          ? [
+              forceJobQueue.force
+                ? 'force_job_queue_keyword'
+                : 'complexity_threshold_exceeded',
+            ]
+          : [
+              hasAttachments
+                ? 'attachment_streaming'
+                : 'complexity_below_threshold',
+            ],
+        decidedBy: 'frontend',
+        ...(queryAsOfDataSlot?.timeLabel && {
+          dataSlot: queryAsOfDataSlot.timeLabel,
+        }),
+      });
+      onRouteDecision?.(routeDecision);
 
       if (process.env.NODE_ENV === 'development') {
         logger.info(
@@ -491,6 +518,7 @@ export function useQueryExecution(deps: QueryExecutionDeps) {
       sendMessage,
       getActiveRateLimitDetails,
       onBeforeStreamingSend,
+      onRouteDecision,
       getMessages,
       setMessages,
       setState,

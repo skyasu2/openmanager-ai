@@ -7,6 +7,7 @@ const {
   mockExecuteSupervisorStream,
   mockResolveSupervisorModeDecision,
   mockBuildSupervisorModeMetadata,
+  mockBuildSupervisorRouteDecision,
   mockFlushLangfuseBestEffort,
 } = vi.hoisted(() => ({
   mockCreateUIMessageStream: vi.fn((config: unknown) => config),
@@ -27,6 +28,14 @@ const {
       ? { autoSelectedByComplexity: decision.autoSelectedByComplexity }
       : {}),
   })),
+  mockBuildSupervisorRouteDecision: vi.fn(() => ({
+    intent: 'chat',
+    executionPath: 'stream',
+    mode: 'single',
+    reasonCodes: ['auto_complexity'],
+    ruleVersion: '2026-05-03-v1',
+    decidedBy: 'cloud-run',
+  })),
   mockFlushLangfuseBestEffort: vi.fn(async () => undefined),
 }));
 
@@ -43,6 +52,7 @@ vi.mock('./supervisor-single-agent', () => ({
 vi.mock('./supervisor-mode', () => ({
   resolveSupervisorModeDecision: mockResolveSupervisorModeDecision,
   buildSupervisorModeMetadata: mockBuildSupervisorModeMetadata,
+  buildSupervisorRouteDecision: mockBuildSupervisorRouteDecision,
 }));
 
 vi.mock('../../lib/error-handler', () => ({
@@ -119,16 +129,18 @@ describe('createSupervisorStreamResponse', () => {
       'X-Session-Id': 'session-1',
       'X-Stream-Protocol': 'ui-message-stream',
     });
-    expect(writes).toContainEqual({
-      type: 'data-mode',
-      data: {
+    expect(writes).toContainEqual(
+      expect.objectContaining({
+        type: 'data-mode',
+        data: expect.objectContaining({
         mode: 'single',
         requestedMode: 'auto',
         resolvedMode: 'single',
         modeSelectionSource: 'auto_complexity',
         autoSelectedByComplexity: 'single',
-      },
-    });
+        }),
+      }),
+    );
     expect(writes).toContainEqual(
       expect.objectContaining({
         type: 'data-done',
@@ -140,6 +152,14 @@ describe('createSupervisorStreamResponse', () => {
             resolvedMode: 'single',
             modeSelectionSource: 'auto_complexity',
             autoSelectedByComplexity: 'single',
+            routeDecision: {
+              intent: 'chat',
+              executionPath: 'stream',
+              mode: 'single',
+              reasonCodes: ['auto_complexity'],
+              ruleVersion: '2026-05-03-v1',
+              decidedBy: 'cloud-run',
+            },
           }),
         }),
       }),

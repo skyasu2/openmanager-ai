@@ -6,6 +6,7 @@ import {
   buildServerSnapshotJson,
   buildServerSnapshotMarkdown,
   readServerSnapshotAlerts,
+  readServerSnapshotSummary,
   readServerSnapshotTimeLabel,
   readServerSnapshotTopServers,
 } from '@/lib/ai/chat-artifacts/server-snapshot-artifact';
@@ -72,6 +73,7 @@ export function ServerSnapshotArtifactCard({
   const topServers = readServerSnapshotTopServers(artifact).slice(0, 3);
   const alerts = readServerSnapshotAlerts(artifact).slice(0, 3);
   const timeLabel = readServerSnapshotTimeLabel(artifact);
+  const summary = readServerSnapshotSummary(artifact);
 
   return (
     <section className="mt-3 rounded-lg border border-slate-200 bg-white p-3 shadow-xs">
@@ -87,7 +89,7 @@ export function ServerSnapshotArtifactCard({
             {artifact.title}
           </h3>
           <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-600">
-            {artifact.summary}
+            {summary}
           </p>
           <div className="mt-2 flex flex-wrap gap-1.5 text-xs text-slate-500">
             <span>source {artifact.source ?? 'unknown'}</span>

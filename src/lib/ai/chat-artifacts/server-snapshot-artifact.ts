@@ -120,6 +120,14 @@ export function readServerSnapshotAlerts(
   return Array.isArray(artifact.alerts) ? artifact.alerts : [];
 }
 
+export function readServerSnapshotSummary(
+  artifact: ServerSnapshotArtifact
+): string {
+  return typeof artifact.summary === 'string' && artifact.summary.trim()
+    ? artifact.summary
+    : '요약 정보 없음';
+}
+
 export async function generateServerSnapshotArtifact({
   queryAsOfDataSlot,
   signal,
@@ -210,7 +218,7 @@ export function buildServerSnapshotMarkdown(
     '',
     alerts,
     '',
-    artifact.summary,
+    readServerSnapshotSummary(artifact),
   ].join('\n');
 }
 

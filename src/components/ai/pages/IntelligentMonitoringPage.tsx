@@ -168,7 +168,11 @@ export default function IntelligentMonitoringPage({
   queryAsOfDataSlot,
 }: IntelligentMonitoringPageProps = {}) {
   // 서버 데이터 (React Query)
-  const { data: servers = [] } = useServerQuery();
+  const {
+    data: servers = [],
+    isLoading: isServerListLoading,
+    isError: isServerListError,
+  } = useServerQuery();
 
   // 상태
   const [selectedServer, setSelectedServer] = useState<string>('');
@@ -287,9 +291,14 @@ export default function IntelligentMonitoringPage({
       if (selectedServer) {
         // 단일 서버 분석
         const serverInfo = servers.find((s) => s.id === selectedServer);
+        if (!serverInfo) {
+          throw new Error(
+            '선택한 서버 데이터를 찾을 수 없습니다. 서버 목록을 다시 확인해 주세요.'
+          );
+        }
         const serverResult = await analyzeSingleServer(
           selectedServer,
-          serverInfo?.name || selectedServer,
+          serverInfo.name,
           serverInfo // Pass server info
         );
 
@@ -349,6 +358,14 @@ export default function IntelligentMonitoringPage({
     queryAsOfDataSlot,
   ]);
 
+  const serverListStatusLabel = isServerListLoading
+    ? '서버 목록 로딩 중'
+    : servers.length > 0
+      ? `전체 시스템 (${servers.length}개 서버)`
+      : isServerListError
+        ? '전체 시스템 (서버 목록 로드 실패)'
+        : '전체 시스템 (서버 목록 없음)';
+
   // 초기화
   const resetAnalysis = useCallback(() => {
     setResult(null);
@@ -390,29 +407,22 @@ export default function IntelligentMonitoringPage({
               id="server-select"
               value={selectedServer}
               onChange={handleServerChange}
-              disabled={isAnalyzing}
+              disabled={isAnalyzing || isServerListLoading}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500 disabled:opacity-50"
             >
-              <option value="">
-                전체 시스템 ({servers.length || 4}개 서버)
-              </option>
-              {servers.length > 0
-                ? servers.map((server) => (
-                    <option key={server.id} value={server.id}>
-                      {server.name}
-                    </option>
-                  ))
-                : [
-                    { id: 'web-server-01', name: '웹 서버 01' },
-                    { id: 'web-server-02', name: '웹 서버 02' },
-                    { id: 'db-server-01', name: 'DB 서버 01' },
-                    { id: 'api-server-01', name: 'API 서버 01' },
-                  ].map((server) => (
-                    <option key={server.id} value={server.id}>
-                      {server.name}
-                    </option>
-                  ))}
+              <option value="">{serverListStatusLabel}</option>
+              {servers.map((server) => (
+                <option key={server.id} value={server.id}>
+                  {server.name}
+                </option>
+              ))}
             </select>
+            {servers.length === 0 && !isServerListLoading && (
+              <p className="mt-1 text-xs text-amber-700">
+                서버 목록을 불러오지 못해 단일 서버 분석 옵션은 숨겼습니다. 전체
+                분석은 AI Engine의 현재 데이터 슬롯 기준으로 실행됩니다.
+              </p>
+            )}
           </div>
 
           {/* 버튼 그룹 */}

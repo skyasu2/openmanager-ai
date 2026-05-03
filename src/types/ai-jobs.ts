@@ -6,6 +6,7 @@
  */
 
 import type { AIErrorDetails } from '@/lib/ai/error-details';
+import type { RouteDecision } from '@/lib/ai/route-decision';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
 
 // ============================================
@@ -79,6 +80,7 @@ export interface CreateJobResponse {
   triggerStatus?: TriggerStatus;
   routingMode?: 'job-queue';
   complexity?: QueryComplexity;
+  routeDecision?: RouteDecision;
 }
 
 /** Job 상태 조회 응답 */
@@ -135,6 +137,7 @@ export interface AIJob {
     enableRAG?: boolean;
     enableWebSearch?: boolean;
     queryAsOf?: JobQueryAsOf;
+    routeDecision?: RouteDecision;
   };
 }
 

@@ -5,6 +5,7 @@ import {
   extractAIErrorDetailsFromPayload,
   inferAIErrorDetailsFromMessage,
 } from '@/lib/ai/error-details';
+import { normalizeRouteDecision } from '@/lib/ai/route-decision';
 import { normalizeRetrievalMetadata } from '@/lib/ai/utils/retrieval-status';
 import { logger } from '@/lib/logging';
 import { calculateBackoff } from '@/lib/utils/retry';
@@ -198,6 +199,7 @@ export function connectAsyncQuerySSE(
       );
       const fallbackReason = getNonEmptyString(metadata.fallbackReason);
       const ttfbMs = getFiniteNumber(metadata.ttfbMs);
+      const routeDecision = normalizeRouteDecision(metadata.routeDecision);
 
       onResult({
         success: true,
@@ -236,6 +238,7 @@ export function connectAsyncQuerySSE(
         }),
         ...(fallbackReason && { fallbackReason }),
         ...(ttfbMs !== undefined && { ttfbMs }),
+        ...(routeDecision && { routeDecision }),
         analysisMode:
           metadata.analysisMode === 'auto' ||
           metadata.analysisMode === 'thinking'

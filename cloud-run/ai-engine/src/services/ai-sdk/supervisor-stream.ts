@@ -42,6 +42,7 @@ import {
 } from './supervisor-multi-fallback';
 import {
   buildSupervisorModeMetadata,
+  buildSupervisorRouteDecision,
   resolveSupervisorModeDecision,
   type ResolvedSupervisorModeDecision,
 } from './supervisor-mode';
@@ -132,6 +133,10 @@ export async function* executeSupervisorStream(
 ): AsyncGenerator<StreamEvent> {
   const startTime = Date.now();
   const modeDecision = resolveSupervisorModeDecision(request);
+  const routeDecision = buildSupervisorRouteDecision(modeDecision, {
+    traceId: request.traceId,
+    queryAsOf: request.queryAsOf,
+  });
   const mode = modeDecision.resolvedMode;
 
   logger.info({
@@ -204,6 +209,7 @@ export async function* executeSupervisorStream(
                 ...existingMetadata,
                 ...(request.queryAsOf && { queryAsOf: request.queryAsOf }),
                 ...buildSupervisorModeMetadata(modeDecision),
+                routeDecision,
               },
             },
           };
@@ -256,6 +262,12 @@ async function* streamSingleAgent(
   modeDecision?: ResolvedSupervisorModeDecision,
 ): AsyncGenerator<StreamEvent> {
   const hasImages = request.images && request.images.length > 0;
+  const routeDecision = modeDecision
+    ? buildSupervisorRouteDecision(modeDecision, {
+        traceId: request.traceId,
+        queryAsOf: request.queryAsOf,
+      })
+    : undefined;
   const excludedProviders: ProviderName[] = [];
   const MAX_PROVIDER_ATTEMPTS = 3;
 
@@ -323,6 +335,7 @@ async function* streamSingleAgent(
             mode: 'single',
             ...(request.queryAsOf && { queryAsOf: request.queryAsOf }),
             ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
+            ...(routeDecision && { routeDecision }),
             ...buildDegradedMetadata(degradedFallbackContext, {
               fallback: true,
               fallbackReason: 'no_provider',
@@ -807,6 +820,7 @@ async function* streamSingleAgent(
             traceId: trace.id,
             ...(request.queryAsOf && { queryAsOf: request.queryAsOf }),
             ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
+            ...(routeDecision && { routeDecision }),
             ...buildDegradedMetadata(degradedFallbackContext, {}),
             ...(attempt > 0 && { providerRetries: attempt }),
           },

@@ -103,6 +103,16 @@ export interface SupervisorResponse {
     modeSelectionSource?: SupervisorModeSelectionSource;
     autoSelectedByComplexity?: Exclude<SupervisorMode, 'auto'>;
     analysisMode?: AnalysisMode;
+    routeDecision?: {
+      intent: 'chat';
+      executionPath: 'stream';
+      mode: Exclude<SupervisorMode, 'auto'>;
+      reasonCodes: string[];
+      ruleVersion: string;
+      dataSlot?: string;
+      traceId?: string;
+      decidedBy: 'cloud-run';
+    };
     traceId?: string;
     handoffs?: Array<{ from: string; to: string; reason?: string }>;
     toolResultSummaries?: Array<{

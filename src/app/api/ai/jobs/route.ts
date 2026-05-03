@@ -15,6 +15,10 @@ import { randomUUID } from 'crypto';
 import { after, type NextRequest, NextResponse } from 'next/server';
 import { buildJobQueryAsOf } from '@/lib/ai/query-as-of';
 import {
+  buildRouteDecision,
+  type RouteDecisionComplexity,
+} from '@/lib/ai/route-decision';
+import {
   analyzeJobQueryComplexity,
   inferJobType,
 } from '@/lib/ai/utils/query-complexity';
@@ -69,6 +73,18 @@ interface JobToolOptions {
   analysisMode?: AnalysisMode;
   enableRAG?: boolean;
   enableWebSearch?: boolean;
+}
+
+function mapJobComplexityToRouteDecision(
+  complexity: string
+): RouteDecisionComplexity | undefined {
+  if (complexity === 'simple' || complexity === 'complex') {
+    return complexity;
+  }
+  if (complexity === 'medium') {
+    return 'moderate';
+  }
+  return undefined;
 }
 
 function isAnalysisMode(value: unknown): value is AnalysisMode {
@@ -134,6 +150,16 @@ async function handlePOST(request: NextRequest) {
       now,
       options?.metadata?.queryAsOfDataSlot
     );
+    const routeDecision = buildRouteDecision({
+      intent: 'job',
+      executionPath: 'job',
+      ...(mapJobComplexityToRouteDecision(complexity.level) && {
+        complexity: mapJobComplexityToRouteDecision(complexity.level),
+      }),
+      reasonCodes: ['job_queue_api'],
+      decidedBy: 'bff',
+      dataSlot: queryAsOf.dataSlot.timeLabel,
+    });
 
     // Redis에 Job 저장
     const job: AIJob = {
@@ -155,6 +181,7 @@ async function handlePOST(request: NextRequest) {
         factors: complexity.factors,
         ownerKey,
         queryAsOf,
+        routeDecision,
         ...toolOptions,
       },
     };
@@ -226,6 +253,7 @@ async function handlePOST(request: NextRequest) {
       triggerStatus: initialTriggerStatus,
       routingMode: 'job-queue',
       complexity: complexity.level,
+      routeDecision,
     };
 
     return NextResponse.json(response, {

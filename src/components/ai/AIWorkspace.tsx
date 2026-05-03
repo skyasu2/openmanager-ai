@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Activity, useCallback, useEffect, useRef, useState } from 'react';
+import { CloudRunStatusIndicator } from '@/components/ai-sidebar/CloudRunStatusIndicator';
 import { EnhancedAIChat } from '@/components/ai-sidebar/EnhancedAIChat';
 import { AIErrorBoundary } from '@/components/error/AIErrorBoundary';
 import { APP_VERSION } from '@/config/app-meta';
@@ -624,9 +625,9 @@ export default function AIWorkspace({
         {/* Bottom Status */}
         <div className="shrink-0 border-t border-gray-200 px-3 py-2.5">
           <div className="flex items-center justify-between text-xs text-gray-500">
-            <div className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>AI Engine Active</span>
+            <div className="flex min-w-0 items-center gap-2">
+              <span className="font-medium text-gray-600">AI Engine</span>
+              <CloudRunStatusIndicator autoCheckInterval={300000} />
             </div>
             <span className="text-gray-400">v{APP_VERSION}</span>
           </div>
