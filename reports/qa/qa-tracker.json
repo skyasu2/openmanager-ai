@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-03T05:25:47.342Z"
+    "updatedAt": "2026-05-03T06:27:01.464Z"
   },
   "sequence": {
-    "nextRunNumber": 397
+    "nextRunNumber": 398
   },
   "summary": {
-    "totalRecordedRuns": 394,
-    "totalRuns": 322,
+    "totalRecordedRuns": 395,
+    "totalRuns": 323,
     "excludedRuns": 72,
-    "totalChecks": 2768,
-    "totalPassed": 2670,
+    "totalChecks": 2774,
+    "totalPassed": 2676,
     "totalFailed": 89,
     "completionRate": 100,
-    "completedItems": 409,
+    "completedItems": 411,
     "pendingItems": 0,
     "deferredItems": 0,
-    "wontFixItems": 20,
+    "wontFixItems": 21,
     "expertDomainsTracked": 12,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260503-0396",
-    "lastRecordedAt": "2026-05-03T05:25:47.342Z",
-    "latestRecordedRunId": "QA-20260503-0396",
-    "latestRecordedAt": "2026-05-03T05:25:47.342Z"
+    "lastRunId": "QA-20260503-0397",
+    "lastRecordedAt": "2026-05-03T06:27:01.464Z",
+    "latestRecordedRunId": "QA-20260503-0397",
+    "latestRecordedAt": "2026-05-03T06:27:01.464Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -10025,6 +10025,78 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-03T05:25:47.342Z"
+    },
+    "assistant-route-decision-metadata-m1": {
+      "id": "assistant-route-decision-metadata-m1",
+      "title": "RouteDecision metadata contract released",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260503-0397",
+      "firstSeenAt": "2026-05-03T06:27:01.464Z",
+      "lastSeenRunId": "QA-20260503-0397",
+      "lastSeenAt": "2026-05-03T06:27:01.464Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "v8.11.86 production release smoke and GitLab tag pipeline 2495869829",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-03T06:27:01.464Z"
+    },
+    "assistant-plan-result-facade-m2": {
+      "id": "assistant-plan-result-facade-m2",
+      "title": "AssistantPlan and AssistantResult facade metadata released",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260503-0397",
+      "firstSeenAt": "2026-05-03T06:27:01.464Z",
+      "lastSeenRunId": "QA-20260503-0397",
+      "lastSeenAt": "2026-05-03T06:27:01.464Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Targeted facade tests 144/144, AI Engine supervisor test 1/1, production v8.11.86 release smoke",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-03T06:27:01.464Z"
+    },
+    "ai-streaming-ui-improvement-s1-s3": {
+      "id": "ai-streaming-ui-improvement-s1-s3",
+      "title": "AI streaming UI improvements",
+      "priority": "P2",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260503-0397",
+      "firstSeenAt": "2026-05-03T06:27:01.464Z",
+      "lastSeenRunId": "QA-20260503-0397",
+      "lastSeenAt": "2026-05-03T06:27:01.464Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "",
+      "lastNote": "Draft plan exists at reports/planning/ai-streaming-ui-improvement-plan.md; not part of v8.11.86.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-05-03T06:27:01.464Z"
     }
   },
   "runs": [
@@ -39676,6 +39748,118 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260503-0397",
+      "recordedAt": "2026-05-03T06:27:01.464Z",
+      "recordedAtKst": "2026-05-03 15:27:01 KST",
+      "title": "Production Release Smoke - v8.11.86 Assistant Metadata Hardening",
+      "owner": "codex",
+      "source": "gitlab-ci-release-smoke",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260503-0397.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_2Cfxy7XNLFTNKrN7jbvhkqdR6sk5",
+        "deploymentUrl": "https://openmanager-18wfxmy4s-skyasus-projects.vercel.app",
+        "commitSha": "b721b190c27a3c92d0937a163d2b752568589a5a"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "GitLab main pipeline 2495866828 completed successfully for a99b190cf793865ce6816d8ef2b61aa3e097be43",
+        "GitLab semver tag pipeline 2495869829 completed successfully for v8.11.86 commit b721b190c27a3c92d0937a163d2b752568589a5a",
+        "Release script post-deploy smoke verified production /, /login, and /api/version",
+        "Production /api/version returned version 8.11.86, releaseTag v8.11.86, and commit b721b190c27a3c92d0937a163d2b752568589a5a",
+        "Local deterministic gates passed before release: root type-check, lint, test:quick, test:contract, AI Engine type-check/test, docs:budget, docs:ai-consistency, git diff --check",
+        "Local Playwright MCP targeted QA QA-20260503-0396 already covered the AI Assistant soft-health UI path before release"
+      ],
+      "skippedSurfaces": [
+        "Full broad Playwright production QA skipped because this was a targeted release smoke for metadata/health hardening",
+        "Real LLM chat and Cloud Run prompt execution skipped to avoid external provider usage beyond CI smoke",
+        "Modal/detail pack skipped because unchanged by AssistantPlan/AssistantResult metadata facade work",
+        "Streaming UI S1/S2/S3 plan is Draft only and was not implemented in v8.11.86"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "RouteDecision and AssistantPlan/AssistantResult metadata contracts are covered by targeted unit tests and local QA evidence.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab main and semver tag pipelines succeeded, and production /api/version points to the released tag and commit.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Deterministic root and AI Engine gates passed before release; release smoke verified production routes.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The release changes preserve routing behavior and add read-only metadata evidence without changing monitoring data calculations.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-03T15:24:31+09:00",
+          "summary": "Current billing period effective 0.6724 USD and billed 0.0000 USD after v8.11.86 production release smoke.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "Production /api/version v8.11.86",
+          "url": "https://openmanager-ai.vercel.app/api/version"
+        },
+        {
+          "type": "general",
+          "label": "v8.11.86 tag pipeline",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2495869829"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1
     }
   ],
   "experts": {
@@ -39684,16 +39868,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 186,
-      "appropriateCount": 167,
+      "seenCount": 187,
+      "appropriateCount": 168,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 28,
-      "lastRunId": "QA-20260503-0395",
-      "lastSeenAt": "2026-05-02T19:10:10.245Z",
+      "lastRunId": "QA-20260503-0397",
+      "lastSeenAt": "2026-05-03T06:27:01.464Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production browser QA verified the server-snapshot artifact still routes and renders after cancellation and reader hardening, while local targeted tests covered pre-abort and mid-flight AbortError behavior.",
+      "lastRationale": "RouteDecision and AssistantPlan/AssistantResult metadata contracts are covered by targeted unit tests and local QA evidence.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -39735,16 +39919,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 120,
-      "appropriateCount": 107,
+      "seenCount": 121,
+      "appropriateCount": 108,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 17,
-      "lastRunId": "QA-20260503-0395",
-      "lastSeenAt": "2026-05-02T19:10:10.245Z",
+      "lastRunId": "QA-20260503-0397",
+      "lastSeenAt": "2026-05-03T06:27:01.464Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The GitLab semver tag pipeline completed successfully for frontend deploy, AI engine deploy, and both post-deploy smoke jobs; production /api/version matches the release commit.",
+      "lastRationale": "GitLab main and semver tag pipelines succeeded, and production /api/version points to the released tag and commit.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -39752,16 +39936,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 157,
-      "appropriateCount": 145,
+      "seenCount": 158,
+      "appropriateCount": 146,
       "partialCount": 12,
       "inappropriateCount": 0,
       "improvementNeededCount": 13,
-      "lastRunId": "QA-20260503-0395",
-      "lastSeenAt": "2026-05-02T19:10:10.245Z",
+      "lastRunId": "QA-20260503-0397",
+      "lastSeenAt": "2026-05-03T06:27:01.464Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The run combines targeted Vitest coverage, root smoke gates, contract tests, GitLab pipeline gates, and Playwright MCP production evidence for the changed artifact path.",
+      "lastRationale": "Deterministic root and AI Engine gates passed before release; release smoke verified production routes.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -39769,16 +39953,16 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 46,
-      "appropriateCount": 27,
+      "seenCount": 47,
+      "appropriateCount": 28,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 19,
-      "lastRunId": "QA-20260430-0374",
-      "lastSeenAt": "2026-04-29T18:53:53.244Z",
+      "lastRunId": "QA-20260503-0397",
+      "lastSeenAt": "2026-05-03T06:27:01.464Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Request metadata matched the dashboard data slot: 03:40 KST slot 22, minuteOfDay 220.",
+      "lastRationale": "The release changes preserve routing behavior and add read-only metadata evidence without changing monitoring data calculations.",
       "lastNextAction": ""
     },
     "infra-reliability": {

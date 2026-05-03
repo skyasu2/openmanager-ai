@@ -1,0 +1,150 @@
+{
+  "runId": "QA-20260503-0397",
+  "recordedAt": "2026-05-03T06:27:01.464Z",
+  "recordedAtKst": "2026-05-03 15:27:01 KST",
+  "runTitle": "Production Release Smoke - v8.11.86 Assistant Metadata Hardening",
+  "owner": "codex",
+  "source": "gitlab-ci-release-smoke",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_2Cfxy7XNLFTNKrN7jbvhkqdR6sk5",
+    "deploymentUrl": "https://openmanager-18wfxmy4s-skyasus-projects.vercel.app",
+    "commitSha": "b721b190c27a3c92d0937a163d2b752568589a5a"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "dashboard-core", "ai-core"],
+  "coveredSurfaces": [
+    "GitLab main pipeline 2495866828 completed successfully for a99b190cf793865ce6816d8ef2b61aa3e097be43",
+    "GitLab semver tag pipeline 2495869829 completed successfully for v8.11.86 commit b721b190c27a3c92d0937a163d2b752568589a5a",
+    "Release script post-deploy smoke verified production /, /login, and /api/version",
+    "Production /api/version returned version 8.11.86, releaseTag v8.11.86, and commit b721b190c27a3c92d0937a163d2b752568589a5a",
+    "Local deterministic gates passed before release: root type-check, lint, test:quick, test:contract, AI Engine type-check/test, docs:budget, docs:ai-consistency, git diff --check",
+    "Local Playwright MCP targeted QA QA-20260503-0396 already covered the AI Assistant soft-health UI path before release"
+  ],
+  "skippedSurfaces": [
+    "Full broad Playwright production QA skipped because this was a targeted release smoke for metadata/health hardening",
+    "Real LLM chat and Cloud Run prompt execution skipped to avoid external provider usage beyond CI smoke",
+    "Modal/detail pack skipped because unchanged by AssistantPlan/AssistantResult metadata facade work",
+    "Streaming UI S1/S2/S3 plan is Draft only and was not implemented in v8.11.86"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "RouteDecision and AssistantPlan/AssistantResult metadata contracts are covered by targeted unit tests and local QA evidence.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab main and semver tag pipelines succeeded, and production /api/version points to the released tag and commit.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Deterministic root and AI Engine gates passed before release; release smoke verified production routes.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The release changes preserve routing behavior and add read-only metadata evidence without changing monitoring data calculations.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-03T15:24:31+09:00",
+      "summary": "Current billing period effective 0.6724 USD and billed 0.0000 USD after v8.11.86 production release smoke.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "assistant-route-decision-metadata-m1",
+      "title": "RouteDecision metadata contract released",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.11.86 production release smoke and GitLab tag pipeline 2495869829",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "assistant-plan-result-facade-m2",
+      "title": "AssistantPlan and AssistantResult facade metadata released",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Targeted facade tests 144/144, AI Engine supervisor test 1/1, production v8.11.86 release smoke",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [
+    {
+      "id": "ai-streaming-ui-improvement-s1-s3",
+      "title": "AI streaming UI improvements",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Draft plan exists at reports/planning/ai-streaming-ui-improvement-plan.md; not part of v8.11.86.",
+      "owner": "",
+      "status": "wont-fix",
+      "policyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다."
+    }
+  ],
+  "notes": [
+    "This run records release smoke evidence only; the broader local Playwright UI smoke is QA-20260503-0396.",
+    "No production LLM prompt execution was performed as part of this targeted release smoke."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production /api/version v8.11.86",
+      "url": "https://openmanager-ai.vercel.app/api/version"
+    },
+    {
+      "type": "general",
+      "label": "v8.11.86 tag pipeline",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2495869829"
+    }
+  ]
+}

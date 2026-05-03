@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-03 14:25:48 KST
+> Generated at: 2026-05-03 15:27:02 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 394 |
-| Total Runs (Counted) | 322 |
+| Total Recorded Runs | 395 |
+| Total Runs (Counted) | 323 |
 | Non-counted Runs | 72 |
-| Total Checks | 2768 |
-| Passed | 2670 |
+| Total Checks | 2774 |
+| Passed | 2676 |
 | Failed | 89 |
-| Completed Items | 409 |
+| Completed Items | 411 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 20 |
+| Wont-Fix Items | 21 |
 | Expert Domains Tracked | 12 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260503-0396 (2026-05-03T05:25:47.342Z) |
-| Latest Recorded Run | QA-20260503-0396 (2026-05-03T05:25:47.342Z) |
+| Last Counted Run | QA-20260503-0397 (2026-05-03T06:27:01.464Z) |
+| Latest Recorded Run | QA-20260503-0397 (2026-05-03T06:27:01.464Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,21 +34,24 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260503-0396 (2026-05-03T05:25:47.342Z)
+Latest run: QA-20260503-0397 (2026-05-03T06:27:01.464Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
+| Data Quality & Metrics Analyst | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | not-applicable | skipped | normal | Local targeted QA only; no Vercel deployment and no production AI/Cloud Run chat invocation. |
+| vercel | cli | checked | normal | Current billing period effective 0.6724 USD and billed 0.0000 USD after v8.11.86 production release smoke. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-02T05:25:47.342Z -> 2026-05-03T05:25:47.342Z (24h)
+- Window: 2026-05-02T06:27:01.464Z -> 2026-05-03T06:27:01.464Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 
@@ -59,25 +62,25 @@ Latest run: QA-20260503-0396 (2026-05-03T05:25:47.342Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
+- Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: SHA 29d213c4
-- Coverage Packs: dashboard-core, ai-core, ai-advanced-surface
-- Covered Surfaces: /dashboard/ai-assistant loaded in local Next.js dev with title AI Assistant | OpenManager AI, Fullscreen AI workspace no longer exposes the static 'AI Engine Active' label, AI Assistant shell rendered chat, command presets, provider routing context, and manual health check controls, Soft AI health probe /api/health?service=ai&soft=true returned HTTP 200 with status ok in the current local environment, Browser console capture after the local smoke reported 0 errors and 0 warnings, Targeted regression tests covered AI status indicator replacement, monitoring empty server-list behavior, stream fallback metadata, and soft health contract behavior, Contract tests passed after AI response metadata and health endpoint changes, Static gates passed: type-check, lint, test:quick, and git diff --check
-- Skipped Surfaces: Vercel production QA skipped because this run validates local implementation before commit/deploy, Real Cloud Run streaming chat skipped to avoid external LLM/Cloud Run cost during deterministic local validation, Cloud Run admin observability routes /monitoring and /monitoring/traces skipped because they are outside this AI Assistant UI health/fallback scope, Modal/detail pack skipped because unchanged by AI health polling, fake server fallback removal, and stream fallback evidence metadata
+- Deployment: dpl_2Cfxy7XNLFTNKrN7jbvhkqdR6sk5 / SHA b721b190
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
+- Covered Surfaces: GitLab main pipeline 2495866828 completed successfully for a99b190cf793865ce6816d8ef2b61aa3e097be43, GitLab semver tag pipeline 2495869829 completed successfully for v8.11.86 commit b721b190c27a3c92d0937a163d2b752568589a5a, Release script post-deploy smoke verified production /, /login, and /api/version, Production /api/version returned version 8.11.86, releaseTag v8.11.86, and commit b721b190c27a3c92d0937a163d2b752568589a5a, Local deterministic gates passed before release: root type-check, lint, test:quick, test:contract, AI Engine type-check/test, docs:budget, docs:ai-consistency, git diff --check, Local Playwright MCP targeted QA QA-20260503-0396 already covered the AI Assistant soft-health UI path before release
+- Skipped Surfaces: Full broad Playwright production QA skipped because this was a targeted release smoke for metadata/health hardening, Real LLM chat and Cloud Run prompt execution skipped to avoid external provider usage beyond CI smoke, Modal/detail pack skipped because unchanged by AssistantPlan/AssistantResult metadata facade work, Streaming UI S1/S2/S3 plan is Draft only and was not implemented in v8.11.86
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | Production /api/version v8.11.86 | [Production /api/version v8.11.86](https://openmanager-ai.vercel.app/api/version) | - |
+| general | v8.11.86 tag pipeline | [v8.11.86 tag pipeline](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2495869829) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Local AI Assistant soft health smoke | `reports/qa/evidence/qa-20260503-ai-health-soft-local.png` | - |
-| playwright-console | Local AI Assistant console after soft health smoke | `reports/qa/evidence/qa-20260503-ai-health-soft-console.log` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -93,7 +96,7 @@ Latest run: QA-20260503-0396 (2026-05-03T05:25:47.342Z)
 
 ## Wont-Fix Improvements
 
-- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 4, Portfolio Deferral 12
+- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 4, Portfolio Deferral 13
 
 ### Platform Constraint
 
@@ -143,6 +146,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - [P2] ai-metric-ranking-memory-path-metadata: Memory top-N query should expose deterministic metric-ranking path instead of filter fallback metadata (seen 1회, last QA-20260418-0304)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] ai-sidebar-answer-details-default-visibility: AI sidebar should show actionable response details inline by default when analysis metadata exists (seen 1회, last QA-20260430-0374)
+  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
+- [P2] ai-streaming-ui-improvement-s1-s3: AI streaming UI improvements (seen 1회, last QA-20260503-0397)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] analyst-drilldown: Analyst 서버별 드릴다운 (seen 1회, last QA-20260301-0030)
   - note: 이 항목은 즉시 개선 우선순위가 낮아 과도 개선 방지 규칙으로 자동 WONT-FIX 처리: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리 (기본 규칙(P2 기본 비차단) 적용)
@@ -267,6 +272,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - anomaly-detection-prediction: 이상감지/예측 15서버 전체 분석 (completed 1회, last QA-20260306-0051)
 - api-인증-검증-401-확인: API 인증 검증 401 확인 (completed 1회, last QA-20260301-0032)
 - approval-history-runtime-smoke: approvalStore pending/decision/history/stats runtime path verified (completed 1회, last QA-20260411-0270)
+- assistant-plan-result-facade-m2: AssistantPlan and AssistantResult facade metadata released (completed 1회, last QA-20260503-0397)
+- assistant-route-decision-metadata-m1: RouteDecision metadata contract released (completed 1회, last QA-20260503-0397)
 - auth-error-provider-copy: 인증 에러 라우트 메시지를 제공자-중립 표현으로 전환 (completed 1회, last QA-20260227-0010)
 - auto-incident-report: 자동장애 보고서 생성 및 상세보기 (completed 1회, last QA-20260306-0051)
 - biome-lint-900-files-에러-0: Biome Lint 900 files 에러 0 (completed 1회, last QA-20260301-0032)
@@ -571,6 +578,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260503-0397 | 2026-05-03T06:27:01.464Z | targeted | yes | yes | Production Release Smoke - v8.11.86 Assistant Metadata Hardening | 6 | 2 | 0 | 0 | 1 | 0 |
 | QA-20260503-0396 | 2026-05-03T05:25:47.342Z | targeted | no | yes | Local Playwright Targeted QA - AI Assistant Data Truth Hardening | 8 | 4 | 0 | 0 | 0 | 0 |
 | QA-20260503-0395 | 2026-05-02T19:10:10.245Z | targeted | yes | yes | Vercel Production Targeted QA - Server Snapshot Artifact v8.11.85 | 13 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260503-0394 | 2026-05-02T16:09:07.439Z | targeted | yes | yes | Vercel Production Targeted QA - Server Snapshot Artifact v8.11.84 | 10 | 1 | 0 | 0 | 0 | 0 |
@@ -590,4 +598,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260430-0380 | 2026-04-30T09:14:16.317Z | targeted | no | yes | Dashboard AI app-shell navigation targeted QA | 14 | 10 | 0 | 0 | 0 | 0 |
 | QA-20260430-0379 | 2026-04-30T06:12:50.431Z | broad | yes | yes | Vercel Production QA v8.11.70 - Dashboard + AI 3-Feature + Cerebras Check | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260430-0378 | 2026-04-30T05:30:46.057Z | targeted | yes | yes | Vercel Playwright QA - v8.11.70 Dashboard Navigation Contrast Recheck | 8 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260430-0377 | 2026-04-30T05:14:43.053Z | targeted | yes | yes | Vercel Playwright QA - v8.11.69 Dashboard Navigation Contrast | 15 | 1 | 1 | 0 | 0 | 2 |
