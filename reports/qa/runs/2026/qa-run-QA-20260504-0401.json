@@ -1,0 +1,159 @@
+{
+  "runId": "QA-20260504-0401",
+  "recordedAt": "2026-05-03T17:29:57.587Z",
+  "recordedAtKst": "2026-05-04 02:29:57 KST",
+  "runTitle": "v8.11.89 Release Smoke - Monitoring Source Error Contract",
+  "owner": "codex",
+  "source": "gitlab-ci+cURL",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_7f3iQxsyUvq2NifnaHLQHMCWYSsS",
+    "deploymentUrl": "https://openmanager-1ddl2y5er-skyasus-projects.vercel.app",
+    "commitSha": "6aa1560f5bad1e0e750ffb5538ac87750f9429a9"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "observability-pack"],
+  "coveredSurfaces": [
+    "GitLab semver tag pipeline v8.11.89 completed successfully",
+    "Frontend deploy job succeeded through GitLab CI deploy stage",
+    "Cloud Run ai-engine deploy job succeeded through GitLab CI deploy_ai stage",
+    "GitLab post_deploy_smoke job succeeded",
+    "GitLab post_deploy_ai_engine_smoke job succeeded",
+    "Production / returned PASS in release script verification",
+    "Production /login returned PASS in release script verification",
+    "Production /api/version reported version 8.11.89, releaseTag v8.11.89, commit 6aa1560f5bad1e0e750ffb5538ac87750f9429a9, and pipeline 2496399525",
+    "Vercel production deployment dpl_7f3iQxsyUvq2NifnaHLQHMCWYSsS inspected as Ready"
+  ],
+  "skippedSurfaces": [
+    "Playwright UI interaction was not rerun because v8.11.89 changed monitoring error pass-through and deployment metadata, not visible dashboard layout",
+    "AI live chat content QA was not rerun to avoid unnecessary LLM calls; deterministic tests and GitLab AI Engine smoke covered the runtime path",
+    "Broad dashboard modal/detail/security packs were outside this release smoke scope",
+    "Cloud Run admin /monitoring and /monitoring/traces were not manually queried; CI post_deploy_ai_engine_smoke was used as the release gate"
+  ],
+  "checks": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab semver tag deployment, Vercel production readiness, Cloud Run deploy, and post-deploy smoke all completed successfully.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Monitoring source error contract now preserves sourceMode/queryAsOf through Cloud Run route serialization and BFF pass-through, and live source remains explicitly disabled instead of silently falling back.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The changed AI monitoring path was covered by deterministic unit/route tests plus release smoke without adding unnecessary live LLM calls.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Root, contract, and AI Engine test suites passed before release; GitLab CI deployment smoke confirmed production propagation.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The patch did not alter metric values or replay data semantics; it clarified unavailable live source behavior and preserved request queryAsOf metadata.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-04T02:28:30+09:00",
+      "summary": "Current billing period checked after v8.11.89 release smoke; effective 1.3446 USD, billed remains 0.0000 USD, chargeCount 1218.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "monitoring-source-errors-bff-pass-through-v81189",
+      "title": "Monitoring source errors preserve structured sourceMode/queryAsOf payload through Cloud Run and BFF",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "0079b711d fix(ai): preserve monitoring source errors",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "release-v81189-production-smoke",
+      "title": "v8.11.89 production release smoke completed through GitLab CI semver tag pipeline",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "GitLab pipeline 2496399525 success; /api/version reports v8.11.89",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Release script production verification passed on attempt 23/81 for /, /login, and /api/version.",
+    "Production /api/version returned version 8.11.89, releaseTag v8.11.89, shortCommitSha 6aa1560f5b, and pipelineUrl https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2496399525.",
+    "This was intentionally a targeted release smoke, not a broad Playwright UI QA; prior Playwright MCP review found current UI/UX satisfactory and this patch did not change the visible dashboard layout.",
+    "No GitHub public snapshot sync was performed."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab tag pipeline 2496399525",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2496399525"
+    },
+    {
+      "type": "general",
+      "label": "Production app",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "general",
+      "label": "Production version endpoint",
+      "url": "https://openmanager-ai.vercel.app/api/version"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-1ddl2y5er-skyasus-projects.vercel.app/"
+    }
+  ]
+}
