@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-03 KST (`Streaming UI S1/S2 implemented; S3 pending`)
+**Last Updated**: 2026-05-03 KST (`Streaming UI S3 approved`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| AI Streaming UI 개선 S3 (`agent-step` stream event) | Medium | Pending | [ai-streaming-ui-improvement-plan.md](ai-streaming-ui-improvement-plan.md) — S1/S2는 구현 완료. S3는 Cloud Run `data` event + frontend `onData` contract 변경이므로 별도 승인/실패 테스트부터 진행 |
+| AI Streaming UI 개선 S3 (`agent-step` stream event) | Medium | Approved | [ai-streaming-ui-improvement-plan.md](ai-streaming-ui-improvement-plan.md) — S1/S2는 구현 완료. S3는 Cloud Run `data` event + frontend `onData` contract 변경이므로 실패 테스트부터 진행 |
 
 ---
 

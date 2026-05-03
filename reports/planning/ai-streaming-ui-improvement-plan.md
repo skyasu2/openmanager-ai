@@ -12,7 +12,7 @@
 
 진행 상태:
 - S1/S2: completed on 2026-05-03
-- S3: pending separate approval because it changes the Cloud Run stream event contract
+- S3: approved on 2026-05-03. Cloud Run stream event contract 변경이므로 failing test 커밋 후 구현한다.
 
 현재 아키텍처 분석 결과:
 - 사이드바: SSE 기반 실제 스트리밍 (`useChat` + `DefaultChatTransport`) ✅
@@ -33,7 +33,7 @@
 
 - **S1**: 전체 페이지(AIWorkspace) 실제 SSE 스트리밍 전환 — TypewriterMarkdown 제거
 - **S2**: Cold Start 대기 UX 개선 — estimatedWaitSeconds 활용한 카운트다운 표시
-- **S3**: 스트리밍 중 Agent 단계 실시간 표시 — tool 실행 시점에 metadata event 조기 전송. **이번 승인 범위에서는 제외하고 S1/S2 완료 후 별도 승인**
+- **S3**: 스트리밍 중 Agent 단계 실시간 표시 — tool 실행 시점에 metadata event 조기 전송
 
 ### 제외
 
@@ -68,7 +68,7 @@
 
 ### S3 — 스트리밍 중 Agent 단계 표시
 
-상태: Pending. Cloud Run `data` event contract 변경이므로 S1/S2 완료 후 별도 failing test와 구현 커밋으로 진행한다.
+상태: Approved. Cloud Run `data` event contract 변경이므로 별도 failing test와 구현 커밋으로 진행한다.
 
 | 항목 | 계약 |
 |------|------|
@@ -90,8 +90,8 @@
 - [x] Task 1 — S1: AIWorkspaceMessage TypewriterMarkdown → MarkdownRenderer 전환
 - [x] Task 2 — S1: TypewriterMarkdown.tsx 사용처 grep 후 삭제 또는 deprecated 마킹
 - [x] Task 3 — S2: StreamingWarmupIndicator 카운트다운 progress bar 구현
-- [ ] Task 4 — S3: Cloud Run `agent-step` data event 전송 추가 (S1/S2 완료 후 별도 승인)
-- [ ] Task 5 — S3: 프론트엔드 `onData` 핸들러에서 `agent-step` 이벤트 처리 (S1/S2 완료 후 별도 승인)
+- [ ] Task 4 — S3: Cloud Run `agent-step` data event 전송 추가
+- [ ] Task 5 — S3: 프론트엔드 `onData` 핸들러에서 `agent-step` 이벤트 처리
 - [ ] Task 6 — `npm run validate:all` 통과 확인
 - [ ] Task 7 — Playwright targeted QA + `npm run qa:record`
 - [ ] Task 8 — commit / push gitlab
