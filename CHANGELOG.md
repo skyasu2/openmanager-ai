@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.88](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.87...v8.11.88) (2026-05-03)
+
+
+### Features
+
+* **ai:** add agent step stream events ([d9cd756](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d9cd7560c01e714a2b17d72c1620eb7a0a1f8539))
+* **ai:** add ask facade wrapper ([2038789](https://gitlab.com/skyasu2/openmanager-ai/-/commit/20387897700d37855aa1c0257bd445a52fcaa773))
+* **ai:** add assistant execution mode contract ([c885b8d](https://gitlab.com/skyasu2/openmanager-ai/-/commit/c885b8d7b4d5ea63c1fd8639735a02040cde52aa))
+* **ai:** add assistant planner shadow mode ([93c5b76](https://gitlab.com/skyasu2/openmanager-ai/-/commit/93c5b76e7c9484240d159cb8b27d917f1cab54c6))
+* **ai:** add monitoring fact pack guards ([dc31d27](https://gitlab.com/skyasu2/openmanager-ai/-/commit/dc31d27d1047e525caddda93dd976bd744c145f7))
+* **ai:** improve streaming ui warmup ([d302bfd](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d302bfdd0689bb057c6a623e4d2726397f0d4cdf))
+* **ai:** measure thinking mode routing deltas ([bdfbfc2](https://gitlab.com/skyasu2/openmanager-ai/-/commit/bdfbfc21d63e128a325e6f4be46d6b8551de66d6))
+
+
+### Bug Fixes
+
+* **ai:** harden planner shadow route decision trust ([6590679](https://gitlab.com/skyasu2/openmanager-ai/-/commit/659067979081c9cae840f1bd43e1c3b85eea0ca2))
+* **ai:** measure planner shadow latency after build ([7667b1e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/7667b1eb59f90fa13c6b3b1d6306698459650b93))
+
+
+### Tests
+
+* **spec:** add agent step stream contract ([7f948c8](https://gitlab.com/skyasu2/openmanager-ai/-/commit/7f948c82d75e9f14f148527d79793a2c11aa6b7b))
+* **spec:** add ask facade wrapper contract ([46fbdb0](https://gitlab.com/skyasu2/openmanager-ai/-/commit/46fbdb0d8cab5b580b06b970ebdf9372e4534691))
+* **spec:** add assistant execution mode baseline specs ([1cfabfd](https://gitlab.com/skyasu2/openmanager-ai/-/commit/1cfabfd3d1490b576bbbffa3223da1e71c81728d))
+* **spec:** add monitoring fact pack guard contracts ([641bd39](https://gitlab.com/skyasu2/openmanager-ai/-/commit/641bd39c64fe8f88b0bba1fa70f56ef9c5cb12d9))
+* **spec:** add planner shadow drift specs ([fd28b8f](https://gitlab.com/skyasu2/openmanager-ai/-/commit/fd28b8f4f28c562a80f4b02d63d28e9be7bc7bbf))
+* **spec:** add streaming ui s1 s2 contracts ([c11feac](https://gitlab.com/skyasu2/openmanager-ai/-/commit/c11feac8ba67a34ddecb5b74e09fd4ac0d195257))
+
 ## [8.11.87](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.86...v8.11.87) (2026-05-03)
 
 
