@@ -1,12 +1,12 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-04
 > Tags: ai-assistant,architecture,assistant-plan,artifact,deterministic-analytics,vercel-ai-sdk,multi-agent,planner,durable-workflow,mcp
 
 # AI Assistant Architecture Evolution Plan
 
-- 상태: Approved (M3~M7 completed; Streaming UI S1~S3 completed; no active implementation milestone)
+- 상태: Completed (M3~M7 completed; Streaming UI S1~S3 completed; no active implementation milestone)
 - 작성일: 2026-05-03
 - TODO.md 연결: Recent Completed #274 > `AI Assistant Architecture Evolution M7 (MonitoringFactPack + eval guard)`
 - 기준 문서: [ai-assistant-initial-design-comparison.md](../../docs/reference/architecture/ai/ai-assistant-initial-design-comparison.md)
@@ -145,7 +145,7 @@ M5 이후 코드 교차 감사 반영 (2026-05-03):
 
 ## 계약 (Contract)
 
-> Approved 범위 중 M3~M7은 완료되었다. 이 계획서는 완료된 로드맵과 향후 판단 기준을 보존한다. 신규 구현은 artifact workspace/schema registry, facade authority 이전, provider-native reasoning, durable workflow/MCP/managed agent 도입처럼 별도 contract가 필요한 항목이 생길 때 새 plan 또는 기존 plan update로 다룬다.
+> 이 계획서의 구현 범위 중 M3~M7은 완료되었다. 이 문서는 완료된 로드맵과 향후 판단 기준을 보존한다. 신규 구현은 artifact workspace/schema registry, facade authority 이전, provider-native reasoning, durable workflow/MCP/managed agent 도입처럼 별도 contract가 필요한 항목이 생길 때 새 plan 또는 기존 plan update로 다룬다.
 
 ### 공통 불변조건
 
