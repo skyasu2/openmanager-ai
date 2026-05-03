@@ -81,6 +81,111 @@ describe('useQueryExecution', () => {
     });
   });
 
+  it.each([
+    {
+      label: 'simple metric lookup',
+      query: 'CPU 알려줘',
+      expected: {
+        intent: 'chat',
+        executionPath: 'stream',
+        complexity: 'simple',
+        reasonCodes: ['complexity_below_threshold'],
+        decidedBy: 'frontend',
+      },
+      expectedMode: 'streaming',
+    },
+    {
+      label: 'forced job report request',
+      query: '전체 서버 장애 원인 분석 보고서 만들어줘',
+      expected: {
+        intent: 'job',
+        executionPath: 'job',
+        complexity: 'very_complex',
+        reasonCodes: ['force_job_queue_keyword'],
+        decidedBy: 'frontend',
+      },
+      expectedMode: 'job-queue',
+    },
+  ])('pins current frontend stream/job route baseline for $label', async ({
+    query,
+    expected,
+    expectedMode,
+  }) => {
+    process.env.NODE_ENV = 'production';
+    const onRouteDecision = vi.fn();
+    const deps = {
+      ...createDeps(),
+      complexityThreshold: 19,
+      onRouteDecision,
+    };
+
+    const { result } = renderHook(() => useQueryExecution(deps));
+
+    act(() => {
+      result.current.executeQuery(query);
+    });
+
+    await Promise.resolve();
+
+    expect(onRouteDecision).toHaveBeenCalledWith(
+      expect.objectContaining(expected)
+    );
+    if (expectedMode === 'streaming') {
+      expect(deps.sendMessage).toHaveBeenCalledWith({ text: query });
+      expect(deps.asyncQuery.sendQuery).not.toHaveBeenCalled();
+    } else {
+      expect(deps.asyncQuery.sendQuery).toHaveBeenCalledWith(query);
+      expect(deps.sendMessage).not.toHaveBeenCalled();
+    }
+  });
+
+  it('pins current attachment route baseline to streaming for the future vision escalation comparison', async () => {
+    process.env.NODE_ENV = 'production';
+    const onRouteDecision = vi.fn();
+    const deps = {
+      ...createDeps(),
+      complexityThreshold: 19,
+      onRouteDecision,
+    };
+    const attachment = {
+      id: 'file-1',
+      name: 'screen.png',
+      mimeType: 'image/png',
+      size: 128,
+      data: 'data:image/png;base64,abc',
+      type: 'image' as const,
+    };
+
+    const { result } = renderHook(() => useQueryExecution(deps));
+
+    act(() => {
+      result.current.executeQuery('이 스크린샷 분석해줘', [attachment]);
+    });
+
+    await Promise.resolve();
+
+    expect(onRouteDecision).toHaveBeenCalledWith(
+      expect.objectContaining({
+        intent: 'chat',
+        executionPath: 'stream',
+        reasonCodes: ['attachment_streaming'],
+        decidedBy: 'frontend',
+      })
+    );
+    expect(deps.sendMessage).toHaveBeenCalledWith({
+      text: '이 스크린샷 분석해줘',
+      files: [
+        {
+          type: 'file',
+          mediaType: 'image/png',
+          url: 'data:image/png;base64,abc',
+          filename: 'screen.png',
+        },
+      ],
+    });
+    expect(deps.asyncQuery.sendQuery).not.toHaveBeenCalled();
+  });
+
   it('retry streaming query도 trace lifecycle hook에 retry 플래그를 전달한다', async () => {
     process.env.NODE_ENV = 'production';
     const deps = createDeps();

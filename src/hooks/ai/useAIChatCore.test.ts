@@ -640,6 +640,7 @@ describe('useAIChatCore', () => {
     expect(result.current.messages[1]?.metadata?.assistantPlan).toMatchObject({
       kind: 'artifact',
       executionPath: 'client-artifact',
+      executionMode: 'deterministic',
       stream: false,
       job: false,
       artifactKind: 'incident-report',
@@ -878,6 +879,7 @@ describe('useAIChatCore', () => {
     expect(result.current.messages[1]?.metadata?.assistantPlan).toMatchObject({
       kind: 'artifact',
       executionPath: 'client-artifact',
+      executionMode: 'deterministic',
       stream: false,
       job: false,
       artifactKind: 'monitoring-analysis',
@@ -971,6 +973,7 @@ describe('useAIChatCore', () => {
     expect(result.current.messages[1]?.metadata?.assistantPlan).toMatchObject({
       kind: 'artifact',
       executionPath: 'client-artifact',
+      executionMode: 'deterministic',
       stream: false,
       job: false,
       artifactKind: 'server-snapshot',
