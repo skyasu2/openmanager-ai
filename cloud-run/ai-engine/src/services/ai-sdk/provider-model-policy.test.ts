@@ -5,6 +5,7 @@ import {
   CEREBRAS_QWEN_DEPRECATION_DATE,
   CEREBRAS_QWEN_MODEL_ID,
   DEFAULT_CEREBRAS_MODEL,
+  getStaleProviderModelPolicyFindings,
   getCerebrasModelPolicy,
   getCerebrasModelQuota,
   getCerebrasRuntimeModelIds,
@@ -103,5 +104,37 @@ describe('provider model policy SSOT', () => {
     for (const policy of getCerebrasRuntimeModelPolicies()) {
       expect(blockedRuntimeModelIds).not.toContain(policy.recommendedReplacement);
     }
+  });
+
+  it('detects stale provider smoke metadata without making an external provider call', () => {
+    const stalePolicy = {
+      ...getCerebrasModelPolicy(CEREBRAS_LLAMA_FALLBACK_MODEL_ID),
+      smokeEvidence: [
+        '2026-04-01 smoke passed llama3.1-8b chat completions HTTP 200',
+      ],
+    };
+
+    expect(
+      getStaleProviderModelPolicyFindings([stalePolicy], {
+        asOf: new Date('2026-05-03T00:00:00Z'),
+        maxAgeDays: 14,
+      })
+    ).toEqual([
+      {
+        provider: 'cerebras',
+        modelId: CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
+        severity: 'P2',
+        reason:
+          'provider smoke metadata is older than 14 days: last verified 2026-04-01',
+        lastVerifiedAt: '2026-04-01',
+      },
+    ]);
+
+    expect(
+      getStaleProviderModelPolicyFindings(getCerebrasRuntimeModelPolicies(), {
+        asOf: new Date('2026-05-03T00:00:00Z'),
+        maxAgeDays: 14,
+      })
+    ).toEqual([]);
   });
 });

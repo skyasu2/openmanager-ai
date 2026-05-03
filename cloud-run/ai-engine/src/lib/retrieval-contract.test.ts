@@ -4,6 +4,7 @@ import type { MultiAgentResponse } from '../services/ai-sdk/agents/orchestrator-
 import type { SupervisorResponse } from '../services/ai-sdk/supervisor-types';
 import {
   createRetrievalMetadata,
+  evaluateRetrievalRecallGuard,
   legacyRagSourcesToEvidenceCards,
   RETRIEVAL_MODES,
   RETRIEVAL_SUPPRESSED_REASONS,
@@ -171,5 +172,26 @@ describe('retrieval contract', () => {
 
     expect(supervisorResponse.metadata.retrieval.retrievalUsed).toBe(true);
     expect(multiAgentResponse.evidenceCards).toHaveLength(1);
+  });
+
+  it('exposes a deterministic fallback reason when lite retrieval recall is below the minimum evidence threshold', () => {
+    const guard = evaluateRetrievalRecallGuard(
+      createRetrievalMetadata({
+        retrievalEnabled: true,
+        retrievalUsed: true,
+        retrievalMode: 'lite',
+        evidenceCount: 1,
+        webUsed: false,
+      }),
+      { minEvidenceCount: 2 }
+    );
+
+    expect(guard).toEqual({
+      ok: false,
+      retrievalMode: 'lite',
+      evidenceCount: 1,
+      minEvidenceCount: 2,
+      fallbackReason: 'insufficient_evidence',
+    });
   });
 });
