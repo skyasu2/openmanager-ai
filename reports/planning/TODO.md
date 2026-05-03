@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-03 KST (`Streaming UI S3 local implementation validated; release QA/push pending`)
+**Last Updated**: 2026-05-03 KST (`Streaming UI S3 deployed; release QA recorded`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| AI Streaming UI 개선 S3 release QA/push | Medium | Pending | [ai-streaming-ui-improvement-plan.md](ai-streaming-ui-improvement-plan.md) — S3 로컬 구현과 deterministic 검증은 완료. 남은 범위는 GitLab push/deploy 판단, 실환경 targeted QA 기록 |
+| _None_ | — | — | 현재 active task 없음 |
 
 ---
 
@@ -16,7 +16,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| _None_ | — | 현재 신규 backlog는 없음. Draft 상태의 Streaming UI 개선을 Active Task로 승격 |
+| _None_ | — | 현재 신규 backlog는 없음 |
 
 ---
 
@@ -24,7 +24,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-05-03 재검증 기준 `reports/qa=85.22MiB`, `reports/qa/evidence=79.62MiB / 404파일`. `npm run qa:evidence:audit` 결과 missing durable artifact paths `0`, orphan durable evidence `6개`, archive candidate `7개 / 2.16MiB`, size warning 유지. run-level soft budget warning은 `QA-20260330-0197`, `QA-20260330-0198` 2건으로 구조화됨. orphan/archive candidate 제거만으로는 warning 해소 효과가 낮고 top referenced legacy evidence는 modal/detail/landing proof 가치가 있어 explicit cleanup batch는 열지 않음. 새 evidence 누적 시점에만 재평가. |
+| P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-05-03 재검증 기준 `reports/qa=85.52MiB`, `reports/qa/evidence=79.85MiB / 407파일`. `npm run qa:evidence:audit` 결과 missing durable artifact paths `0`, orphan durable evidence `6개`, archive candidate `7개 / 2.16MiB`, size warning 유지. run-level soft budget warning은 `QA-20260330-0197`, `QA-20260330-0198` 2건으로 구조화됨. orphan/archive candidate 제거만으로는 warning 해소 효과가 낮고 top referenced legacy evidence는 modal/detail/landing proof 가치가 있어 explicit cleanup batch는 열지 않음. 새 evidence 누적 시점에만 재평가. |
 
 ## Backlog (완료 이력)
 
@@ -41,6 +41,14 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-03 #277)
+- [x] AI Streaming UI 개선 S3 release/deploy QA
+  - `v8.11.88` release commit/tag를 GitLab CI 경유로 배포했고, main validation pipeline `2496237525`와 tag deploy pipeline `2496239687` 모두 success 확인
+  - production `/api/version`, `/api/health`, Cloud Run `/health`가 `8.11.88`와 commit `4e6c055b572cfba69a37fde203c122001fae9bfb`를 가리키는지 확인
+  - Playwright MCP targeted QA 기록: [QA-20260503-0399](../qa/runs/2026/qa-run-QA-20260503-0399.json) `19/19`, [QA-20260503-0400](../qa/runs/2026/qa-run-QA-20260503-0400.json) `5/5`
+  - 사이드바 Job SSE, 전체 화면 `/api/ai/supervisor/stream/v2` 직접 질의, fullscreen conversation/analysis basis 복원, Cloud Run free-tier limit(`cpu=1`, `memory=512Mi`) 확인
+  - Vercel usage 재확인: effective `1.3446 USD`, billed `0.0000 USD`, chargeCount `1218`
 
 ### Completed (2026-05-03 #276)
 - [x] AI Streaming UI 개선 S3 local implementation

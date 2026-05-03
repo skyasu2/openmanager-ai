@@ -1,0 +1,123 @@
+{
+  "runId": "QA-20260503-0400",
+  "recordedAt": "2026-05-03T14:21:43.788Z",
+  "recordedAtKst": "2026-05-03 23:21:43 KST",
+  "runTitle": "v8.11.88 Fullscreen AI Stream Complementary QA",
+  "owner": "codex",
+  "source": "manual-vercel-playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_4oojSVZem8oFtY23NQVsQXG9fnQo",
+    "deploymentUrl": "https://openmanager-ffebq7vl3-skyasus-projects.vercel.app",
+    "commitSha": "4e6c055b572cfba69a37fde203c122001fae9bfb"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core"],
+  "coveredSurfaces": [
+    "Fullscreen /dashboard/ai-assistant accepted a new prompt through the visible UI input path",
+    "Fullscreen AI stream used POST /api/ai/supervisor/stream/v2 and returned HTTP 200",
+    "Fullscreen answer rendered the memory top-3 server list with grounded static OTel values",
+    "Analysis basis rendered with server metric detail tool metadata",
+    "Response footer rendered 1161ms processing time"
+  ],
+  "skippedSurfaces": [
+    "Frame-by-frame token capture was not saved as a durable artifact; network stream completion and final rendered state were recorded instead",
+    "Broad modal/detail/security packs were out of scope for this complementary QA"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Fullscreen AI workspace memory top-3 query",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "model": "production-route",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright MCP Performance API + response card footer",
+      "latencyMs": 2445,
+      "ttfbMs": 2445,
+      "processingTimeMs": 1161
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The fullscreen AI workspace accepted a new prompt and rendered a grounded answer, analysis basis, and response timing on the production stream route.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "This complementary run closes the earlier fullscreen direct-stream observation gap from QA-20260503-0399.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-03T23:21:02+09:00",
+      "summary": "Current billing period checked after fullscreen complementary QA; effective 1.3446 USD, billed remains 0.0000 USD, chargeCount 1218.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "ai-streaming-ui-s1-fullscreen-direct-stream-v81188",
+      "title": "Fullscreen AI workspace production stream path verified",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Playwright MCP production fullscreen prompt, /api/ai/supervisor/stream/v2 200, rendered memory top-3 answer",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "release decision: go",
+    "Complementary run executed after QA-20260503-0399 to cover the fullscreen new-query path directly.",
+    "Observed rendered answer: db-mysql-dc1-replica memory 63%, db-mysql-dc1-primary memory 58%, api-was-dc1-02 memory 56%.",
+    "Playwright MCP resource timing included POST /api/ai/supervisor/stream/v2 duration 2445ms, responseStatus 200."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production app",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "general",
+      "label": "Production version endpoint",
+      "url": "https://openmanager-ai.vercel.app/api/version"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-ffebq7vl3-skyasus-projects.vercel.app/"
+    }
+  ]
+}
