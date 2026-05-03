@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-03 KST (`AI Assistant AssistantPlan/AssistantResult facade M2 active`)
+**Last Updated**: 2026-05-03 KST (`AI Assistant AssistantPlan/AssistantResult facade M2 completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| AI Assistant AssistantPlan/AssistantResult facade M2 | High | Approved | [plan](ai-assistant-plan-result-facade-plan.md) - 기존 라우팅 동작을 바꾸지 않고 `routeDecision`을 read-only plan/result facade로 확장 |
+| — | — | — | 현재 계획서 기준 잔여 active task 없음 |
 
 ---
 
@@ -16,7 +16,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| — | — | 현재 계획서 기준 잔여 작업 없음 |
+| AI Streaming UI 개선 (S1~S3) | Medium | [ai-streaming-ui-improvement-plan.md](ai-streaming-ui-improvement-plan.md) — 전체 페이지 실제 SSE 전환, Cold Start 카운트다운, Agent 단계 실시간 표시 |
 
 ---
 
@@ -42,12 +42,19 @@
 
 ## Recent Completed
 
+### Completed (2026-05-03 #264)
+- [x] AI Assistant AssistantPlan/AssistantResult facade M2
+  - `AssistantPlan`/`AssistantResult` read-only facade를 `RouteDecision` 위에 추가하고 routing authority는 변경하지 않음
+  - frontend artifact/stream/job metadata, BFF job response/Redis metadata, Cloud Run supervisor stream metadata, history/restore/SSE 경로에 facade 보존
+  - 검증: root targeted facade suite `144/144`, AI Engine supervisor targeted `1/1`
+
 ### Completed (2026-05-03 #263)
 - [x] AI Assistant routeDecision metadata M1
   - `RouteDecision` read-only contract를 frontend streaming/job/artifact metadata, BFF job metadata, Cloud Run supervisor stream metadata에 연결
   - chat history/message restore, async SSE, stream done metadata에서 routeDecision을 normalize/persist하도록 보강
+  - UI health polling은 `soft=true` 계약으로 전환해 expected degraded 상태가 브라우저 503 콘솔 에러로 보이지 않게 정리
   - AssistantPlan/AssistantResult facade와 routing authority 이전은 다음 단계로 남기고, 기존 라우팅 동작은 변경하지 않음
-  - 검증: root targeted routeDecision suite `100/100`, AI Engine targeted `1/1`, root `type-check`, `lint`, `test:quick`, `test:contract`, AI Engine `type-check`, AI Engine `test`, `docs:budget`, `docs:ai-consistency`, `git diff --check`
+  - 검증: root `type-check`, `lint`, `test:quick`, `test:contract`, AI Engine `type-check`, AI Engine `test`, `docs:components:verify`, local Playwright MCP QA `QA-20260503-0396`
 
 ### Completed (2026-05-03 #262)
 - [x] Artifact/AI response regression hardening follow-up

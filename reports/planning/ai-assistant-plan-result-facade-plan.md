@@ -1,12 +1,12 @@
 > Owner: project
-> Status: In Progress
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-03
 > Tags: ai-assistant,assistant-plan,assistant-result,metadata,contract
 
 # AI Assistant Plan Result Facade Plan
 
-- 상태: In Progress
+- 상태: Completed
 - 작성일: 2026-05-03
 - TODO.md 연결: Active Tasks > `AI Assistant AssistantPlan/AssistantResult facade M2`
 
@@ -100,21 +100,21 @@ type AssistantResult = {
 
 ### 테스트 시나리오 (구현 전 확정)
 
-- [ ] `assistant-contract`: valid `routeDecision`에서 stream/job/artifact plan과 result facade를 생성하고 invalid enum drift를 reject한다.
-- [ ] `useAIChatCore`: server snapshot/incident/monitoring artifact metadata에 `assistantPlan`과 `assistantResult`를 보존한다.
-- [ ] `message-helpers`/history restore: facade가 있는 metadata는 보존하고 없는 legacy metadata도 정상 복원한다.
-- [ ] `stream-data-handler`/async SSE: stream done 및 job result metadata의 facade를 assistant metadata까지 전달한다.
-- [ ] `POST /api/ai/jobs`: 생성 응답과 stored job metadata에 `assistantPlan`을 포함한다.
-- [ ] Cloud Run supervisor stream done metadata: `routeDecision`과 compatible `assistantPlan`/`assistantResult`를 함께 노출한다.
+- [x] `assistant-contract`: valid `routeDecision`에서 stream/job/artifact plan과 result facade를 생성하고 invalid enum drift를 reject한다.
+- [x] `useAIChatCore`: server snapshot/incident/monitoring artifact metadata에 `assistantPlan`과 `assistantResult`를 보존한다.
+- [x] `message-helpers`/history restore: facade가 있는 metadata는 보존하고 없는 legacy metadata도 정상 복원한다.
+- [x] `stream-data-handler`/async SSE: stream done 및 job result metadata의 facade를 assistant metadata까지 전달한다.
+- [x] `POST /api/ai/jobs`: 생성 응답과 stored job metadata에 `assistantPlan`을 포함한다.
+- [x] Cloud Run supervisor stream done metadata: `routeDecision`과 compatible `assistantPlan`/`assistantResult`를 함께 노출한다.
 
 ## Task 목록
 
 - [x] Task 0 - failing contract tests 추가
-- [ ] Task 1 - root app 공통 facade type/helper 추가
-- [ ] Task 2 - frontend stream/job/artifact metadata 매핑
-- [ ] Task 3 - BFF job metadata 매핑
-- [ ] Task 4 - Cloud Run supervisor done/job metadata 매핑
-- [ ] Task 5 - targeted 검증 및 문서 상태 갱신
+- [x] Task 1 - root app 공통 facade type/helper 추가
+- [x] Task 2 - frontend stream/job/artifact metadata 매핑
+- [x] Task 3 - BFF job metadata 매핑
+- [x] Task 4 - Cloud Run supervisor done/job metadata 매핑
+- [x] Task 5 - targeted 검증 및 문서 상태 갱신
 
 ## 단계별 커밋/푸시/배포 판단
 
@@ -134,14 +134,14 @@ type AssistantResult = {
 
 ## 완료 기준
 
-- [ ] 테스트 시나리오 전체 통과
-- [ ] root targeted facade/routeDecision suite 통과
-- [ ] AI Engine targeted supervisor facade suite 통과
-- [ ] `npm run type-check`
-- [ ] `cd cloud-run/ai-engine && npm run type-check`
-- [ ] `npm run docs:budget`
-- [ ] `npm run docs:ai-consistency`
-- [ ] `git diff --check`
+- [x] 테스트 시나리오 전체 통과
+- [x] root targeted facade/routeDecision suite 통과 (`144/144`)
+- [x] AI Engine targeted supervisor facade suite 통과 (`1/1`)
+- [x] `npm run type-check`
+- [x] `cd cloud-run/ai-engine && npm run type-check`
+- [x] `npm run docs:budget`
+- [x] `npm run docs:ai-consistency`
+- [x] `git diff --check`
 
 ## 진행 로그
 

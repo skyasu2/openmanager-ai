@@ -154,6 +154,41 @@ flowchart TB
 - 하지만 현재 precomputed 데이터 전제 하에서는, LLM 역할을 "판단"에서 "설명"으로 명시적으로 축소하고, Planner를 deterministic-first로 강화하는 것이 가장 효과적인 개선이다.
 - 이 gap을 의식하면서 C/E 원칙을 흡수하는 것이 §1에서 제시한 점진적 개선 방향의 근거다.
 
+**구조적 복잡도의 인과관계 체인**:
+
+업계 레퍼런스(§2.5)와 비교할 때 OpenManager의 구조가 더 복잡한 근본 원인은 **Vercel + Cloud Run 인프라 분리**다. 이 분리가 4단계 연쇄로 복잡도를 누적시킨다.
+
+```text
+[원인 1] Vercel + Cloud Run 분리 (auth는 Vercel, AI 실행은 Cloud Run)
+  │
+  ├─→ BFF proxy 계층 필수
+  │     └─ stream route 611줄 (fetch → retry → timeout → resumable)
+  │     └─ 8개 BFF 엔드포인트 (각기 다른 maxDuration, 에러 핸들링)
+  │     └─ 메시지 정규화 (normalizeMessagesForCloudRun)
+  │
+  ├─→ [원인 2] Vercel maxDuration = 60초 hard limit
+  │     └─ 60초 넘는 분석 → Job Queue (Redis + Cloud Tasks) 도입
+  │     └─ /api/ai/jobs route + 상태 폴링 + progress UI
+  │     └─ 단, precomputed 데이터 기반 계산은 수 초면 완료
+  │        → 60초 초과는 "LLM 호출 실패/재시도" 시나리오뿐
+  │        → job queue의 실제 활용도가 낮은 이유
+  │
+  ├─→ [원인 3] Multi-provider 무료 tier 제약 (분리와 독립적 원인)
+  │     └─ 4개 provider × 각기 다른 rate limit, capability, structured output 지원
+  │     └─ provider-model-policy.ts + quota tracker + cooldown + fallback chain
+  │     └─ generateObjectWithFallback (JSON parse fallback 포함)
+  │     └─ 이 복잡도는 정당 — 단일 유료 provider면 불필요했을 것
+  │
+  └─→ [원인 4] Frontend/Backend 라우팅 이중화 (원인 1의 파생)
+        └─ Frontend: useQueryExecution (복잡도 판단 → streaming vs job 분기)
+        └─ Backend: supervisor-routing.ts (574줄 regex intent 분류)
+        └─ 같은 질문에 대해 두 곳에서 독립적으로 판단 → drift 위험
+```
+
+**업계 레퍼런스는 왜 단순한가**: Datadog AI, New Relic AIM 등은 단일 플랫폼(자체 인프라)에서 query engine과 LLM wrapper가 같은 런타임으로 동작한다. BFF proxy가 불필요하고, duration 제한이 없어 job queue 동기도 없다. 단일 유료 provider 계약이므로 multi-provider fallback 복잡도도 없다.
+
+**분리 자체는 올바른 결정이었다**: Vercel에 모든 것을 넣으면 AI tool 실행이 60초로 제한되고, Cloud Run에 모든 것을 넣으면 SSR/CDN/edge 이점을 포기해야 한다. 분리는 맞지만, 분리로 인한 복잡도를 §7의 개선 방향(`/api/ask` facade, `AssistantPlan` 통일, Planner를 Cloud Run 집중)으로 줄이는 것이 과제다.
+
 ### 2.5 업계 레퍼런스와 LLM 의존도 스펙트럼
 
 상용 AI 제품(ChatGPT, Grok, Claude, Gemini)과 LLM API + Framework 기반 커스텀 앱, 그리고 업계 모니터링 AI copilot들을 비교해 현재 구현의 위치를 확인한다.
@@ -617,4 +652,5 @@ Browser -> Query Planner -> Cloud Run Metrics DSL execution -> Deterministic ans
 | 2026-05-03 | 문서 목적을 현재 상태 개선 분석으로 명시 | 대안 설계를 rewrite 후보가 아니라 현재 구현의 변경·개선 필요점을 도출하는 비교 렌즈로 사용하도록 목적/§4/§7을 보강 |
 | 2026-05-03 | 대체 설계 후보 기준 강화 | `/api/ask`, `routeDecision`, `ArtifactEnvelope` 등은 대체 설계가 아니라 A의 개선 항목으로 분리. B/C/D/E는 A와 execution/state/output/control plane이 다른 후보로 재정의 |
 | 2026-05-03 | §2.5 업계 레퍼런스 비교 추가 | Datadog AI, New Relic AIM, Elastic AI 모두 "deterministic query engine + LLM narration" 패턴 확인. OpenManager 실질 동작은 업계 표준과 일치하나 구조적 복잡도에서 gap 존재를 외부 근거로 재확인 |
+| 2026-05-03 | §2.4 구조적 복잡도 인과관계 체인 추가 | Vercel+Cloud Run 분리가 BFF proxy(611줄 stream route), duration 제한→job queue, 라우팅 이중화의 1차 원인. multi-provider 무료 tier가 독립적 2차 원인. 업계 레퍼런스가 단순한 이유(단일 플랫폼, 단일 provider)와 대비. 분리 자체는 올바르나 복잡도를 §7 개선 방향으로 축소하는 것이 과제 |
 | 2026-05-03 | `routeDecision` read-only metadata M1 구현 | 라우팅 동작은 유지하되 frontend stream/job/artifact, BFF job, Cloud Run stream done/job result metadata가 같은 `RouteDecision` shape를 보존하도록 정렬. `AssistantPlan`/`AssistantResult` facade와 routing authority 이전은 다음 단계로 유지 |
