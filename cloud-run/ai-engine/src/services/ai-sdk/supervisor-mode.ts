@@ -8,6 +8,9 @@ import type {
 import { selectExecutionMode } from './supervisor-routing';
 
 export type ResolvedSupervisorMode = Exclude<SupervisorMode, 'auto'>;
+export type SupervisorAssistantExecutionMode =
+  | 'single-agent'
+  | 'multi-agent';
 export interface ResolvedSupervisorModeDecision {
   requestedMode: SupervisorMode;
   resolvedMode: ResolvedSupervisorMode;
@@ -34,6 +37,7 @@ export interface SupervisorAssistantPlan {
   planVersion: string;
   routeDecision: SupervisorRouteDecision;
   executionPath: 'stream';
+  executionMode: SupervisorAssistantExecutionMode;
   stream: true;
   job: false;
   reasonCodes: string[];
@@ -186,6 +190,8 @@ export function buildSupervisorAssistantPlan(
     planVersion: ROUTE_DECISION_RULE_VERSION,
     routeDecision,
     executionPath: 'stream',
+    executionMode:
+      routeDecision.mode === 'multi' ? 'multi-agent' : 'single-agent',
     stream: true,
     job: false,
     reasonCodes: [...routeDecision.reasonCodes],

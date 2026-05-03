@@ -1,14 +1,14 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-03 KST (`AI Assistant Architecture Evolution M5-B work plan updated`)
+**Last Updated**: 2026-05-03 KST (`M5a contract/baseline implemented; M5b shadow planner next`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
 ## Active Tasks
 
 | Task | Priority | Status | Notes |
-|------|----------|--------|-------|
-| — | — | — | 현재 계획서 기준 잔여 active task 없음 |
+|------|----------|-----------|-------|
+| AI Assistant Architecture Evolution M5b (shadow planner + drift + escalation) | High | Ready | [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) — M5-B.2~B.5: Cloud Run shadow planner, drift corpus/threshold, multi-agent escalation guard, rollout go/no-go. Failing spec commit부터 착수 |
 
 ---
 
@@ -16,8 +16,9 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| AI Assistant Architecture Evolution (M5~M7) | High | [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) — Option A 유지, Option C/E 흡수: current behavior baseline, authoritative Planner shadow, multi-agent escalation policy, `/api/ask`, deterministic fact/eval guard |
-| AI Streaming UI 개선 (S1~S3) | Medium | [ai-streaming-ui-improvement-plan.md](ai-streaming-ui-improvement-plan.md) — 전체 페이지 실제 SSE 전환, Cold Start 카운트다운, Agent 단계 실시간 표시 |
+| AI Assistant Architecture Evolution M6 (`/api/ask` facade) | High | [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) — M5b rollout go 판정 후 착수 |
+| AI Assistant Architecture Evolution M7 (`MonitoringFactPack` + eval guard) | High | [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) — M5와 **병렬 진행 가능**: precomputed-state 위에 typed fact boundary, retrieval recall guard, provider freshness guard |
+| AI Streaming UI 개선 (S1~S3) | Medium | [ai-streaming-ui-improvement-plan.md](ai-streaming-ui-improvement-plan.md) — 전체 페이지 실제 SSE 전환, Cold Start 카운트다운, Agent 단계 실시간 표시. ⚠️ S1은 M6 `/api/ask` transport와, S2는 M5 shadow planner latency 측정과 교차 가능 |
 
 ---
 
@@ -42,6 +43,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-03 #269)
+- [x] AI Assistant Architecture Evolution M5a (contract + baseline)
+  - `AssistantPlan.executionMode` contract를 `deterministic` / `single-agent` / `multi-agent`로 확장하고 legacy plan normalize는 optional metadata 없이도 유지
+  - `escalationReasonCodes`, `plannerShadow`, drift reason normalizer를 public-safe allowlist로 정규화해 owner/internal/provider raw error fragment를 client metadata에서 차단
+  - frontend artifact path는 deterministic executionMode를 표시하고, frontend stream/job decision 및 Cloud Run supervisor current behavior baseline을 회귀 테스트로 고정
+  - 검증: targeted M5a suites, metadata restore/job SSE suites, root `type-check`, root `lint`, root `test:quick`, root `test:contract`, AI Engine `type-check`, AI Engine `test`
 
 ### Completed (2026-05-03 #268)
 - [x] AI Assistant Architecture Evolution M5-B work plan

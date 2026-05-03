@@ -24,6 +24,7 @@ describe('assistant plan/result facade contract', () => {
       planVersion: ASSISTANT_CONTRACT_VERSION,
       routeDecision,
       executionPath: 'stream',
+      executionMode: 'single-agent',
       stream: true,
       job: false,
       reasonCodes: ['auto_complexity'],

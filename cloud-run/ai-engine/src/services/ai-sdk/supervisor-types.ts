@@ -127,6 +127,7 @@ export interface SupervisorResponse {
         decidedBy: 'cloud-run';
       };
       executionPath: 'stream';
+      executionMode?: 'single-agent' | 'multi-agent';
       stream: true;
       job: false;
       reasonCodes: string[];
