@@ -1,12 +1,17 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   buildSupervisorAssistantPlan,
+  buildSupervisorAssistantPlanForRequest,
   buildSupervisorPlannerShadow,
   buildSupervisorRouteDecision,
   normalizeSupervisorLocalRouteDecision,
   resolveSupervisorMode,
   resolveSupervisorModeDecision,
 } from './supervisor-mode';
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe('resolveSupervisorMode', () => {
   it('upgrades explicit single request to multi when degraded single is disallowed', () => {
@@ -413,6 +418,37 @@ describe('supervisor planner shadow', () => {
       reasonCodes: ['analysis_mode_thinking'],
       escalationReasonCodes: ['analysis_mode_thinking'],
     });
+  });
+
+  it('measures request shadow latency after candidate and drift are built', () => {
+    let contentRead = false;
+    vi.spyOn(Date, 'now').mockImplementation(() => (contentRead ? 1017 : 1000));
+
+    const routeDecision = buildSupervisorRouteDecision({
+      requestedMode: 'auto',
+      resolvedMode: 'single',
+      modeSelectionSource: 'auto_complexity',
+      autoSelectedByComplexity: 'single',
+    });
+    const plan = buildSupervisorAssistantPlanForRequest(
+      {
+        mode: 'auto',
+        sessionId: 'session-shadow-latency',
+        messages: [
+          {
+            role: 'user',
+            get content() {
+              contentRead = true;
+              return 'CPU 알려줘';
+            },
+          },
+        ],
+      },
+      routeDecision
+    );
+
+    expect(contentRead).toBe(true);
+    expect(plan.plannerShadow?.latencyMs).toBe(17);
   });
 
   it('keeps shadow planner drift within the rollout threshold on the baseline corpus', () => {

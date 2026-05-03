@@ -32,7 +32,7 @@ export type AssistantPlannerDriftReasonCode =
   | 'local_decision_missing'
   | 'shadow_plan_unavailable';
 
-export interface AssistantPlannerShadowCandidate {
+export type AssistantPlannerShadowCandidate = {
   kind: AssistantPlanKind;
   executionPath: RouteDecisionExecutionPath;
   executionMode: AssistantExecutionMode;
@@ -40,27 +40,27 @@ export interface AssistantPlannerShadowCandidate {
   reasonCodes: string[];
   escalationReasonCodes?: MultiAgentEscalationReasonCode[];
   decidedBy: RouteDecisionDecider;
-}
+};
 
-export interface AssistantPlannerShadowLocalDecision {
+export type AssistantPlannerShadowLocalDecision = {
   executionPath: RouteDecisionExecutionPath;
   mode?: RouteDecisionMode;
   reasonCodes: string[];
   decidedBy: RouteDecisionDecider;
-}
+};
 
-export interface AssistantPlannerShadowDrift {
+export type AssistantPlannerShadowDrift = {
   matched: boolean;
   reasonCodes: AssistantPlannerDriftReasonCode[];
-}
+};
 
-export interface AssistantPlannerShadow {
+export type AssistantPlannerShadow = {
   plannerVersion?: string;
   candidate: AssistantPlannerShadowCandidate;
   localDecision?: AssistantPlannerShadowLocalDecision;
   drift?: AssistantPlannerShadowDrift;
   latencyMs?: number;
-}
+};
 
 export interface AssistantPlan {
   kind: AssistantPlanKind;

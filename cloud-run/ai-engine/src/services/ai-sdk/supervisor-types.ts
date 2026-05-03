@@ -57,7 +57,7 @@ export type SupervisorModeSelectionSource =
   | 'single_disallowed_upgrade'
   | 'analysis_mode_thinking';
 
-export interface SupervisorLocalRouteDecision {
+export type SupervisorLocalRouteDecision = {
   intent: 'chat' | 'artifact' | 'job' | 'clarification';
   executionPath: SupervisorRouteDecisionExecutionPath;
   mode?: SupervisorRouteDecisionMode;
@@ -71,9 +71,9 @@ export interface SupervisorLocalRouteDecision {
   dataSlot?: string;
   traceId?: string;
   decidedBy: SupervisorRouteDecisionDecider;
-}
+};
 
-export interface SupervisorPlannerShadowCandidate {
+export type SupervisorPlannerShadowCandidate = {
   kind: 'chat' | 'artifact' | 'clarification';
   executionPath: SupervisorRouteDecisionExecutionPath;
   executionMode: SupervisorPlannerExecutionMode;
@@ -84,29 +84,29 @@ export interface SupervisorPlannerShadowCandidate {
   reasonCodes: string[];
   escalationReasonCodes?: SupervisorPlannerEscalationReasonCode[];
   decidedBy: 'cloud-run';
-}
+};
 
-export interface SupervisorPlannerShadowLocalDecision {
+export type SupervisorPlannerShadowLocalDecision = {
   intent?: SupervisorLocalRouteDecision['intent'];
   executionPath: SupervisorRouteDecisionExecutionPath;
   mode?: SupervisorRouteDecisionMode;
   complexity?: SupervisorRouteDecisionComplexity;
   reasonCodes: string[];
   decidedBy: SupervisorRouteDecisionDecider;
-}
+};
 
-export interface SupervisorPlannerShadowDrift {
+export type SupervisorPlannerShadowDrift = {
   matched: boolean;
   reasonCodes: SupervisorPlannerDriftReasonCode[];
-}
+};
 
-export interface SupervisorPlannerShadow {
+export type SupervisorPlannerShadow = {
   plannerVersion?: string;
   candidate: SupervisorPlannerShadowCandidate;
   localDecision?: SupervisorPlannerShadowLocalDecision;
   drift?: SupervisorPlannerShadowDrift;
   latencyMs?: number;
-}
+};
 
 export interface SupervisorRequest {
   messages: Array<{ role: 'user' | 'assistant'; content: string }>;

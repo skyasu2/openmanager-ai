@@ -568,12 +568,16 @@ function buildSupervisorPlannerShadowForRequest(
   routeDecision: SupervisorRouteDecision
 ): SupervisorPlannerShadow {
   const plannerStart = Date.now();
-  return buildSupervisorPlannerShadow({
+  const shadow = buildSupervisorPlannerShadow({
     request,
     routeDecision,
     localRouteDecision: request.localRouteDecision,
-    latencyMs: Date.now() - plannerStart,
   });
+
+  return {
+    ...shadow,
+    latencyMs: Math.max(0, Math.round(Date.now() - plannerStart)),
+  };
 }
 
 export function buildSupervisorAssistantPlan(

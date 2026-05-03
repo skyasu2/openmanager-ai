@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-03 KST (`M5c thinking route delta measured; M6 facade next`)
+**Last Updated**: 2026-05-03 KST (`M5 review fixes applied; M6 facade next`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -42,6 +42,12 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-03 #272)
+- [x] AI Assistant Architecture Evolution M5 review fixes
+  - shadow planner request latency 측정을 candidate/drift 생성 이후로 이동해 p95 rollout gate 관측값이 0으로 고정되지 않도록 수정
+  - latency 회귀 테스트 추가: planner candidate 생성 중 query content가 실제로 읽힌 뒤의 elapsed time만 `plannerShadow.latencyMs`에 반영
+  - 신규 shadow planner mirror 타입을 object type alias로 정리해 assistant contract와 Cloud Run supervisor type style을 일관화
 
 ### Completed (2026-05-03 #271)
 - [x] AI Assistant Architecture Evolution M5c (thinking route delta measurement)
