@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-04 KST (`Supervisor deterministic recovery success metadata recorded`)
+**Last Updated**: 2026-05-04 KST (`Vercel QA follow-up polish implemented`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -48,6 +48,14 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-04 #286)
+- [x] Vercel QA follow-up polish
+  - `QA-20260504-0404`에서 확인된 비차단 개선 후보 3건을 작은 패치로 정리
+  - `plannerShadow.latencyMs`는 `performance.now()` 기반으로 측정해 sub-ms shadow 작업도 `1ms` 관측값으로 남기도록 보강
+  - 로그 탐색기 24h 순환 샘플 범위가 날짜 역전처럼 보이지 않도록 range 전용 표시 헬퍼 추가
+  - formatting-only 재작성 요청은 stream/single 경로를 유지하되, 직전 답변의 사실·수치·문장 수를 보존하도록 system prompt 품질 규칙 보강
+  - 검증: targeted timestamp/supervisor tests, root `type-check`, `lint`, `test:quick`, `test:contract`, AI Engine `type-check`, AI Engine `test`, `git diff --check`
 
 ### Completed (2026-05-04 #285)
 - [x] Supervisor deterministic recovery success metadata

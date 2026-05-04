@@ -59,6 +59,11 @@ export function formatDashboardDateTime(value: Date): string {
   return `${parts.year}.${pad2(parts.month)}.${pad2(parts.day)} ${pad2(parts.hour)}:${pad2(parts.minute)}:${pad2(parts.second)}`;
 }
 
+function formatDashboardTime(value: Date): string {
+  const parts = getKstDateTimeParts(value);
+  return `${pad2(parts.hour)}:${pad2(parts.minute)}:${pad2(parts.second)}`;
+}
+
 export function resolveRotatingTimestamp(
   isoString: string,
   options: RotatingTimestampOptions = {}
@@ -112,4 +117,28 @@ export function formatRotatingTimestamp(
 ): string {
   const resolved = resolveRotatingTimestamp(isoString, options);
   return resolved ? formatDashboardDateTime(resolved) : isoString;
+}
+
+export function formatRotatingTimestampRange(
+  startIsoString: string,
+  endIsoString: string,
+  options: RotatingTimestampOptions = {}
+): string {
+  const start = resolveRotatingTimestamp(startIsoString, options);
+  const end = resolveRotatingTimestamp(endIsoString, options);
+
+  if (!start || !end) {
+    return `${formatRotatingTimestamp(startIsoString, options)} ~ ${formatRotatingTimestamp(endIsoString, options)}`;
+  }
+
+  if (end.getTime() < start.getTime()) {
+    const anchor = options.anchorDate ?? new Date();
+    const anchorLabel = isValidDate(anchor)
+      ? formatDashboardDateTime(anchor)
+      : formatDashboardDateTime(start);
+
+    return `순환 샘플 범위: ${formatDashboardTime(start)} ~ ${formatDashboardTime(end)} · 기준 ${anchorLabel}`;
+  }
+
+  return `${formatDashboardDateTime(start)} ~ ${formatDashboardDateTime(end)}`;
 }

@@ -31,6 +31,15 @@ describe('createSystemPrompt', () => {
     expect(prompt).toContain('단순 메트릭 조회는 NLQ Agent');
     expect(prompt).toContain('이미지/스크린샷 분석은 Vision Agent');
   });
+
+  it('should include formatting-only rewrite quality rules', () => {
+    const prompt = createSystemPrompt('desktop');
+
+    expect(prompt).toContain('재작성/문장화 요청 처리');
+    expect(prompt).toContain('직전 답변의 사실만 재표현');
+    expect(prompt).toContain('정확히 그 개수와 형식');
+    expect(prompt).toContain('완결된 한국어 문장');
+  });
 });
 
 // ============================================================================

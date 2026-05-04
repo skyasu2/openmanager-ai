@@ -62,6 +62,11 @@ const ARTIFACT_KINDS = new Set<
   NonNullable<SupervisorLocalRouteDecision['artifactKind']>
 >(['server-snapshot', 'incident-report', 'monitoring-analysis']);
 
+function normalizeMeasuredLatencyMs(elapsedMs: number): number {
+  if (!Number.isFinite(elapsedMs) || elapsedMs <= 0) return 0;
+  return Math.max(1, Math.ceil(elapsedMs));
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
@@ -572,7 +577,7 @@ function buildSupervisorPlannerShadowForRequest(
   request: SupervisorRequest,
   routeDecision: SupervisorRouteDecision
 ): SupervisorPlannerShadow {
-  const plannerStart = Date.now();
+  const plannerStart = performance.now();
   const shadow = buildSupervisorPlannerShadow({
     request,
     routeDecision,
@@ -581,7 +586,7 @@ function buildSupervisorPlannerShadowForRequest(
 
   return {
     ...shadow,
-    latencyMs: Math.max(0, Math.round(Date.now() - plannerStart)),
+    latencyMs: normalizeMeasuredLatencyMs(performance.now() - plannerStart),
   };
 }
 

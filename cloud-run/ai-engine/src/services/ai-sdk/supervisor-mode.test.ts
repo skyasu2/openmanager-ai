@@ -463,7 +463,9 @@ describe('supervisor planner shadow', () => {
 
   it('measures request shadow latency after candidate and drift are built', () => {
     let contentRead = false;
-    vi.spyOn(Date, 'now').mockImplementation(() => (contentRead ? 1017 : 1000));
+    vi.spyOn(performance, 'now').mockImplementation(() =>
+      contentRead ? 1017 : 1000
+    );
 
     const routeDecision = buildSupervisorRouteDecision({
       requestedMode: 'auto',
@@ -490,6 +492,39 @@ describe('supervisor planner shadow', () => {
 
     expect(contentRead).toBe(true);
     expect(plan.plannerShadow?.latencyMs).toBe(17);
+  });
+
+  it('records sub-millisecond shadow latency as observable telemetry', () => {
+    let contentRead = false;
+    vi.spyOn(performance, 'now').mockImplementation(() =>
+      contentRead ? 1000.2 : 1000
+    );
+
+    const routeDecision = buildSupervisorRouteDecision({
+      requestedMode: 'auto',
+      resolvedMode: 'single',
+      modeSelectionSource: 'auto_complexity',
+      autoSelectedByComplexity: 'single',
+    });
+    const plan = buildSupervisorAssistantPlanForRequest(
+      {
+        mode: 'auto',
+        sessionId: 'session-shadow-latency-sub-ms',
+        messages: [
+          {
+            role: 'user',
+            get content() {
+              contentRead = true;
+              return '운영 지표 용어 설명';
+            },
+          },
+        ],
+      },
+      routeDecision
+    );
+
+    expect(contentRead).toBe(true);
+    expect(plan.plannerShadow?.latencyMs).toBe(1);
   });
 
   it('keeps shadow planner drift within the rollout threshold on the baseline corpus', () => {

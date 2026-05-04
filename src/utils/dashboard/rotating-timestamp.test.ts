@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   formatDashboardDateTime,
   formatRotatingTimestamp,
+  formatRotatingTimestampRange,
   resolveRotatingTimestamp,
 } from './rotating-timestamp';
 
@@ -48,6 +49,26 @@ describe('rotating-timestamp', () => {
 
     expect(formatRotatingTimestamp(source, { anchorDate })).toBe(
       '2026.02.16 06:07:08'
+    );
+  });
+
+  it('순환 로그 범위가 날짜 역전처럼 보이면 샘플 범위로 표시한다', () => {
+    const anchorDate = new Date('2026-05-04T16:10:09+09:00');
+    const start = '2026-01-01T00:00:00+09:00';
+    const end = '2026-01-01T23:50:00+09:00';
+
+    expect(formatRotatingTimestampRange(start, end, { anchorDate })).toBe(
+      '순환 샘플 범위: 00:00:00 ~ 23:50:00 · 기준 2026.05.04 16:10:09'
+    );
+  });
+
+  it('정상적인 순환 로그 범위는 날짜 포함 범위로 표시한다', () => {
+    const anchorDate = new Date('2026-05-04T16:10:09+09:00');
+    const start = '2026-01-01T08:00:00+09:00';
+    const end = '2026-01-01T09:00:00+09:00';
+
+    expect(formatRotatingTimestampRange(start, end, { anchorDate })).toBe(
+      '2026.05.04 08:00:00 ~ 2026.05.04 09:00:00'
     );
   });
 
