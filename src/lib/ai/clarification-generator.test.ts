@@ -98,6 +98,15 @@ describe('generateClarification', () => {
       ).toBeNull();
     });
 
+    it('직전 답변 재작성 요청이면 서버 scope clarification을 스킵', () => {
+      expect(
+        generateClarification(
+          '위 답변을 운영 보고서용 2문장으로 다시 작성해줘. 서버 ID와 수치는 보존해.',
+          lowConfidence
+        )
+      ).toBeNull();
+    });
+
     // 한국어 활용형 테스트
     it('"CPU 높아?" → clarification 스킵 (comparisonCondition 활용형)', () => {
       expect(generateClarification('CPU 높아?', lowConfidence)).toBeNull();

@@ -398,6 +398,46 @@ describe('useQueryExecution', () => {
     });
   });
 
+  it('직전 답변 재작성 요청은 clarification 없이 streaming으로 전송한다', async () => {
+    process.env.NODE_ENV = 'production';
+    const deps = {
+      ...createDeps(),
+      getMessages: () =>
+        [
+          {
+            id: 'assistant-prior',
+            role: 'assistant',
+            parts: [
+              {
+                type: 'text',
+                text: '1. api-was-dc1-01 CPU 71%\\n2. cache-redis-dc1-01 CPU 69%\\n3. cache-redis-dc1-03 CPU 45%',
+              },
+            ],
+          },
+        ] as UIMessage[],
+    };
+
+    const { result } = renderHook(() => useQueryExecution(deps));
+
+    await act(async () => {
+      await result.current.sendQuery(
+        '위 답변을 운영 보고서용 2문장으로 다시 작성해줘. 서버 ID와 수치는 보존해.'
+      );
+    });
+    await Promise.resolve();
+
+    expect(deps.setState).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        clarification: expect.objectContaining({
+          reason: expect.stringContaining('특정 서버'),
+        }),
+      })
+    );
+    expect(deps.sendMessage).toHaveBeenCalledWith({
+      text: '위 답변을 운영 보고서용 2문장으로 다시 작성해줘. 서버 ID와 수치는 보존해.',
+    });
+  });
+
   it('job queue 요청에 dashboard data slot을 전달한다', async () => {
     process.env.NODE_ENV = 'production';
     const onRouteDecision = vi.fn();

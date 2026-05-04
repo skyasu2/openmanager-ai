@@ -77,4 +77,33 @@ describe('buildSupervisorStreamMessages', () => {
       { type: 'file', data: 'base64-pdf', mimeType: 'application/pdf' },
     ]);
   });
+
+  it('adds explicit prior assistant context for formatting-only rewrites', () => {
+    const request = {
+      sessionId: 'session-rewrite',
+      messages: [
+        { role: 'user' as const, content: 'CPU 상위 3개 서버 알려줘' },
+        {
+          role: 'assistant' as const,
+          content:
+            '1. api-was-dc1-01 CPU 71%\\n2. cache-redis-dc1-01 CPU 69%\\n3. cache-redis-dc1-03 CPU 45%',
+        },
+        {
+          role: 'user' as const,
+          content:
+            '위 답변을 운영 보고서용 2문장으로 다시 작성해줘. 서버 ID와 수치는 보존해.',
+        },
+      ],
+    };
+
+    const messages = buildSupervisorStreamMessages(request);
+    const finalContent = messages.at(-1)?.content;
+
+    expect(typeof finalContent).toBe('string');
+    expect(finalContent).toContain('[직전 assistant 답변]');
+    expect(finalContent).toContain('api-was-dc1-01 CPU 71%');
+    expect(finalContent).toContain('cache-redis-dc1-01 CPU 69%');
+    expect(finalContent).toContain('cache-redis-dc1-03 CPU 45%');
+    expect(finalContent).toContain('[사용자 재작성 요청]');
+  });
 });

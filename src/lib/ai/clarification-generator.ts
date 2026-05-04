@@ -7,6 +7,7 @@
 
 import type { QueryClassification } from './query-classifier';
 import { needsClarification } from './query-classifier';
+import { isFormattingOnlyRequest } from './utils/query-complexity';
 
 export interface ClarificationOption {
   id: string;
@@ -83,6 +84,10 @@ export function generateClarification(
   query: string,
   classification: QueryClassification
 ): ClarificationRequest | null {
+  if (isFormattingOnlyRequest(query)) {
+    return null;
+  }
+
   // 명확화가 필요하지 않으면 null 반환
   if (
     !needsClarification(classification.confidence, classification.complexity)

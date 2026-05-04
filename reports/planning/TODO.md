@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-04 KST (`Vercel QA follow-up polish implemented`)
+**Last Updated**: 2026-05-04 KST (`Formatting-only follow-up context patch implemented`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -48,6 +48,14 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-04 #287)
+- [x] Formatting-only follow-up context preservation local patch
+  - `QA-20260504-0405`에서 확인된 "위 답변을 운영 보고서용 2문장..." 재작성 follow-up이 server-scope clarification에 막히고, skip 후 직전 답변의 서버 ID/수치를 일부 누락하는 문제를 local patch로 보강
+  - frontend clarification generator가 formatting-only 재작성 요청은 clarification 없이 streaming 경로로 보내도록 정리
+  - Cloud Run Supervisor stream message builder가 재작성 요청의 마지막 user message에 직전 assistant 답변을 명시적으로 포함해 서버 ID/순위/수치/단위 보존 근거를 제공하도록 보강
+  - 검증: targeted clarification/query-execution/supervisor-stream-message tests, root `type-check`, `lint`, `test:quick`, AI Engine `type-check`, AI Engine `test`, `git diff --check`
+  - 남은 확인: 배포 후 Vercel Playwright MCP에서 `ai-formatting-rewrite-context-preservation-v81196` 재검증
 
 ### Completed (2026-05-04 #286)
 - [x] Vercel QA follow-up polish
