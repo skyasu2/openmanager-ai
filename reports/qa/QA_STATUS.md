@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-04 16:13:57 KST
+> Generated at: 2026-05-04 18:01:44 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 402 |
-| Total Runs (Counted) | 330 |
+| Total Recorded Runs | 403 |
+| Total Runs (Counted) | 331 |
 | Non-counted Runs | 72 |
-| Total Checks | 2862 |
-| Passed | 2764 |
-| Failed | 89 |
-| Completed Items | 423 |
-| Pending Items | 0 |
+| Total Checks | 2886 |
+| Passed | 2786 |
+| Failed | 91 |
+| Completed Items | 425 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
-| Wont-Fix Items | 24 |
+| Wont-Fix Items | 22 |
 | Expert Domains Tracked | 12 |
-| Expert Open Gaps | 3 |
-| Completion Rate | 100% |
-| Last Counted Run | QA-20260504-0404 (2026-05-04T07:13:56.328Z) |
-| Latest Recorded Run | QA-20260504-0404 (2026-05-04T07:13:56.328Z) |
+| Expert Open Gaps | 1 |
+| Completion Rate | 99.77% |
+| Last Counted Run | QA-20260504-0405 (2026-05-04T09:01:43.674Z) |
+| Latest Recorded Run | QA-20260504-0405 (2026-05-04T09:01:43.674Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -30,18 +30,18 @@
 
 ## Historical Trend Warnings
 
-- [warning] gate-window-regression-open: Recent gate runs still show regressions. The last 5 gate runs include 1 regression run(s), but the current release-gate-only window is clean. This warning is currently driven by QA-20260424-0340 (broad) lingering in the rolling gate window. Next: Treat this as historical gate context, not an active release-gate failure. Keep broad/release-gate QA green; the warning will clear once enough clean gate runs replace the older regression in the rolling window.
+- [warning] gate-window-regression-open: Recent gate runs still show regressions. The last 5 gate runs include 1 regression run(s), but the current release-gate-only window is clean. This warning is currently driven by QA-20260504-0405 (broad) lingering in the rolling gate window. Next: Treat this as historical gate context, not an active release-gate failure. Keep broad/release-gate QA green; the warning will clear once enough clean gate runs replace the older regression in the rolling window.
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260504-0404 (2026-05-04T07:13:56.328Z)
+Latest run: QA-20260504-0405 (2026-05-04T09:01:43.674Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | yes | Tighten the formatting-only rewrite instruction or deterministic postprocessor so '2문장 운영 보고서용' consistently returns two polished sentences. |
-| IT Monitoring & Observability SME | appropriate | yes | Normalize the logs 24h range label so the displayed start/end order is chronological or explicitly marked as a rolling synthetic window. |
+| AI Quality Assurance Specialist | partially-appropriate | yes | Fix the formatting-only follow-up path so '위 답변...' requests bypass server-scope clarification, reuse the prior assistant answer, and preserve all requested server IDs/values and sentence count. |
+| IT Monitoring & Observability SME | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | appropriate | yes | Consider higher precision or explicit sub-millisecond representation for plannerShadow.latencyMs if it will be used as a rollout gate. |
+| Test Automation Architect | appropriate | no | - |
 | Data Quality & Metrics Analyst | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
@@ -49,57 +49,55 @@ Latest run: QA-20260504-0404 (2026-05-04T07:13:56.328Z)
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
 | vercel | cli | checked | normal | Current billing period checked after Vercel Playwright MCP QA; effective 2.0188 USD, billed remains 0.0000 USD, chargeCount 1827. |
-| cloud-run | cli | checked | normal | Free-tier guardrails intact: maxScale=1, concurrency=16, timeout=300, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00410-8j9. |
+| cloud-run | cli | checked | normal | Free-tier guardrails intact: maxScale=1, concurrency=16, timeout=300, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00411-xgg. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-03T07:13:56.328Z -> 2026-05-04T07:13:56.328Z (24h)
-- Runs with observations: 5 recorded / 5 counted
-- Samples: 7
+- Window: 2026-05-03T09:01:43.674Z -> 2026-05-04T09:01:43.674Z (24h)
+- Runs with observations: 6 recorded / 6 counted
+- Samples: 10
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Supervisor | cloud-run-ai-engine | 6 | 1843ms | 3351ms | 1809ms | 2445ms | 1429ms | 2152ms | QA-20260504-0404 |
+| Supervisor | cloud-run-ai-engine | 8 | 1761ms | 3351ms | 1809ms | 2445ms | 1699ms | 2518ms | QA-20260504-0405 |
 | Supervisor | groq | 1 | 1283ms | 1283ms | - | - | 1283ms | 1283ms | QA-20260504-0403 |
+| Analyst Agent | vercel-monitoring-bff | 1 | 870ms | 870ms | - | - | 870ms | 870ms | QA-20260504-0405 |
 
 ## Coverage (Latest Run)
 
 - Scope: broad
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_Gv9w8CVdcJhejv1UUdYrWRyZyqSb / SHA b4ea434c
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: Vercel production /api/version returned 8.11.95, commit b4ea434c0d402f2542b9891e98c193fac96902a1, tag v8.11.95, pipeline 2497070918, Vercel production /api/health returned healthy with database/cache/ai connected, Cloud Run direct /health returned ai-engine version 8.11.95 with provider configs ready, Landing page / rendered in Playwright with guest user shell, Dashboard /dashboard rendered in Playwright with navigation, session timer, and guest user shell, Dashboard routes /dashboard/servers, /dashboard/alerts, /dashboard/logs, and /dashboard/topology rendered without application error text, Fullscreen /dashboard/ai-assistant loaded on Vercel production with System Context, Provider Routing, AI Engine Online, and Production environment, Manual Health Check button executed and returned to ready state as 재확인, Playwright MCP submitted CPU top-3 prompt through the visible AI Chat input, CPU top-3 response used /api/ai/supervisor/stream/v2 and returned grounded server IDs and current CPU values: db-mysql-dc1-primary CPU 44%, db-mysql-dc1-replica CPU 43%, api-was-dc1-01 CPU 39%, CPU top-3 response preserved tool evidence with getServerMetricsAdvanced and did not contain the previous false answer '서버는 없습니다', Formatting-only rewrite prompt stayed on /api/ai/supervisor/stream/v2 and rendered as general chat response, Formatting-only rewrite did not call /api/ai/jobs and did not show Reporter pipeline, artifact, anomaly/trend, or job queue text, Assistant persisted metadata included routeDecision executionPath=stream, mode=single, decidedBy=cloud-run, and featureStatus rag/web/thinking disabled, Reporter Agent tab rendered empty-state report UI with 새 보고서 and 첫 보고서 생성하기 controls; report generation was intentionally not clicked, Analyst tab rendered server selector and 전체 분석 control, Analyst 전체 분석 executed via /api/ai/intelligent-monitoring 200 and displayed 18-server result with one memory warning on cache-redis-dc1-01, Playwright console warnings/errors were 0, Vercel usage remained billed 0.0000 USD after QA, Cloud Run free-tier guardrail script passed all checks
-- Skipped Surfaces: Reporter report generation was not clicked because it is a costlier async artifact/job path and was not needed for this recheck, Mobile viewport, auth edge cases, and destructive/log-export operations were outside this Vercel recheck
+- Deployment: dpl_B35XZVaua7VJtBjeNzFxrmZNEbHo / SHA 06384b2c
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, ai-advanced-surface
+- Covered Surfaces: Vercel production /api/version returned 8.11.96, commit 06384b2cb3d786c4e2fcffa432a05d7bb2a66503, tag v8.11.96, pipeline 2497362939, Vercel production /api/health returned healthy with database/cache/ai connected, Cloud Run direct /health returned ai-engine version 8.11.96 with provider configs ready and revision ai-engine-00411-xgg active, Vercel deployment inspect returned Ready for dpl_B35XZVaua7VJtBjeNzFxrmZNEbHo, production URL https://openmanager-mapa6jh4p-skyasus-projects.vercel.app, and alias https://openmanager-ai.vercel.app, Landing page / rendered in Playwright with guest user shell and v8.11.96 footer, /main redirected to / and rendered the landing surface without application error text, /login rendered OAuth, email, guest entry, privacy link, and v8.11.96 copy, /privacy rendered policy text and back link, /auth/error rendered the auth failure fallback and guest-mode fallback, System start flow navigated /system-boot to /dashboard in Playwright, Dashboard /dashboard rendered 18 total, 17 online, 1 warning, 0 risk, 0 offline, and current resource panels, Dashboard routes /dashboard/servers, /dashboard/alerts, /dashboard/logs, and /dashboard/topology rendered without application error text, Logs route displayed the improved rolling range label: 데이터 범위: 순환 샘플 범위: 00:00:00 ~ 23:50:00 · 기준 2026.05.04 17:39:35, AI sidebar opened from /dashboard, restored prior AI chat history, and closed with ESC, Fullscreen /dashboard/ai-assistant loaded with AI Chat, Reporter Agent, Analyst Agent, System Context, AI Engine Online, and Production environment, Playwright MCP submitted CPU top-3 prompt through the visible AI Chat input, CPU top-3 response used /api/ai/supervisor/stream/v2 and returned grounded server IDs and current CPU values: api-was-dc1-01 CPU 71%, cache-redis-dc1-01 CPU 69%, cache-redis-dc1-03 CPU 45%, CPU top-3 response preserved tool evidence with getServerMetricsAdvanced and did not contain the previous false answer '서버는 없습니다', Assistant persisted metadata included routeDecision executionPath=stream, mode=single, decidedBy=cloud-run, toolsCalled=getServerMetricsAdvanced, and plannerShadow.latencyMs=5, Formatting-only rewrite prompt first triggered clarification UI with '특정 서버가 명시되지 않음' instead of directly reusing the previous answer context, After clicking '건너뛰고 바로 실행', formatting-only rewrite stayed on /api/ai/supervisor/stream/v2 and did not call /api/ai/jobs, but returned one terse sentence and dropped two of the three prior server IDs/values, Reporter Agent tab rendered empty-state report UI with 새 보고서 and 첫 보고서 생성하기 controls; report generation was intentionally not clicked, Analyst tab rendered full-system selector and 전체 분석 control, Analyst 전체 분석 executed via /api/ai/intelligent-monitoring 200 and displayed 18-server result with one memory warning on cache-redis-dc1-01 at 83%, Playwright console warnings/errors were 0, Vercel usage remained billed 0.0000 USD after QA; effective usage stayed 2.0188 USD, chargeCount 1827, Cloud Run free-tier guardrail script passed maxScale=1, concurrency=16, timeout=300, cpu=1, memory=512Mi, cpu-throttling=true
+- Skipped Surfaces: Reporter report generation was not clicked because the recheck already found an AI Chat formatting regression and report generation is a costlier artifact path, Mobile viewport, OAuth provider login, auth callback edge cases, destructive/log-export operations, and Cloud Run admin /monitoring traces were outside this Vercel Playwright recheck, Prompt-injection/security regression pack was not rerun because this QA focused on the current v8.11.96 production deployment and recent AI/log-range polish
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
 | general | Cloud Run AI Engine health | [Cloud Run AI Engine health](https://ai-engine-jdhrhws7ia-an.a.run.app/health) | - |
-| general | GitLab tag pipeline 2497070918 | [GitLab tag pipeline 2497070918](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2497070918) | - |
+| general | GitLab CI timeout guard pipeline 2497426923 | [GitLab CI timeout guard pipeline 2497426923](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2497426923) | - |
+| general | GitLab v8.11.96 tag pipeline 2497362939 | [GitLab v8.11.96 tag pipeline 2497362939](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2497362939) | Frontend deploy completed and alias was verified, but the pipeline failed because Vercel CLI timed out before the later CI guard fix. |
 | general | Production app | [Production app](https://openmanager-ai.vercel.app/) | - |
 | general | Production version endpoint | [Production version endpoint](https://openmanager-ai.vercel.app/api/version) | - |
-| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-prkqfr0qm-skyasus-projects.vercel.app/) | - |
+| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-mapa6jh4p-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | v8.11.95 Vercel Playwright MCP AI assistant recheck | `reports/qa/evidence/qa-20260504-0404-v81195-vercel-playwright-ai-assistant.png` | - |
+| playwright-screenshot | v8.11.96 Vercel Playwright MCP AI assistant recheck | `reports/qa/evidence/qa-20260504-v81196-vercel-playwright-ai-recheck.png` | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260504-0404)
-  next: Tighten the formatting-only rewrite instruction or deterministic postprocessor so '2문장 운영 보고서용' consistently returns two polished sentences.
-- observability-monitoring: IT Monitoring & Observability SME (last QA-20260504-0404)
-  next: Normalize the logs 24h range label so the displayed start/end order is chronological or explicitly marked as a rolling synthetic window.
-- test-automation: Test Automation Architect (last QA-20260504-0404)
-  next: Consider higher precision or explicit sub-millisecond representation for plannerShadow.latencyMs if it will be used as a rollout gate.
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260504-0405)
+  next: Fix the formatting-only follow-up path so '위 답변...' requests bypass server-scope clarification, reuse the prior assistant answer, and preserve all requested server IDs/values and sentence count.
 
 ## Pending Improvements
 
-- None
+- [P2] ai-formatting-rewrite-context-preservation-v81196: Formatting-only follow-up rewrite should reuse prior answer context and preserve all listed server IDs/values (seen 1회, last QA-20260504-0405)
 
 ## Deferred Improvements
 
@@ -107,7 +105,7 @@ Latest run: QA-20260504-0404 (2026-05-04T07:13:56.328Z)
 
 ## Wont-Fix Improvements
 
-- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 4, Portfolio Deferral 16
+- Reason categories: Platform Constraint 1, Free Tier Tradeoff 3, Historical Obsolete 4, Portfolio Deferral 14
 
 ### Platform Constraint
 
@@ -171,10 +169,6 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - [P2] mobile-header-density: Review dashboard mobile header density around AI CTA and profile cluster (seen 1회, last QA-20260418-0303)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 - [P2] production-login-console-init-error: production login/assistant chunk init console error triage (seen 1회, last QA-20260421-0322)
-  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
-- [P3] logs-rolling-window-range-label: Logs 24h data-range label can display a confusing non-chronological date order (seen 1회, last QA-20260504-0404)
-  - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
-- [P3] planner-shadow-latency-precision: plannerShadow latency metadata still records 0ms for fast production shadow decisions (seen 1회, last QA-20260504-0404)
   - note: 포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.
 
 ## Completed Improvements
@@ -433,6 +427,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - login-copy-neutral: 로그인 정책 카피 중립성 개선 (completed 1회, last QA-20260227-0014)
 - login-header-self-loop-cta: 로그인 페이지 헤더 self-loop CTA 제거 (completed 1회, last QA-20260401-0204)
 - login-pin-form-structure: 게스트 PIN 입력 폼 구조 정리 (completed 1회, last QA-20260226-0001)
+- logs-rolling-window-range-label: Logs 24h data-range label uses explicit rolling synthetic window wording (completed 1회, last QA-20260504-0405)
 - math-tool-implementation-validation: AI 계산 툴 라우팅/실행 검증 (completed 1회, last QA-20260228-0027)
 - metrics-drift-threshold-standard: 지표 드리프트 임계치 표준화 (completed 1회, last QA-20260302-0044)
 - modal-backdrop-close: 모달 백드롭 클릭 닫기 안정화 (completed 2회, last QA-20260226-0002)
@@ -446,6 +441,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - off-domain-relative-date-grounding: Stop stale absolute dates in off-domain relative-date answers (completed 1회, last QA-20260421-0324)
 - otel-데이터-무결성-24x15-완전: OTel 데이터 무결성 24x15 완전 (completed 1회, last QA-20260301-0032)
 - performance-bundle-excellent: 번들 성능 우수 (completed 1회, last QA-20260314-0096)
+- planner-shadow-latency-precision: plannerShadow latency metadata no longer collapses to 0ms for fast production shadow decisions (completed 1회, last QA-20260504-0405)
 - planning-backlog-clear: planning TODO 잔여 항목 정리 (completed 1회, last QA-20260226-0006)
 - preview-dashboard-entry-20260313: Preview guest -> system start -> dashboard (completed 1회, last QA-20260313-0092)
 - preview-guest-login-recovered-20260313: Preview guest login recovered after SESSION_SECRET sync (completed 1회, last QA-20260313-0092)
@@ -607,6 +603,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260504-0405 | 2026-05-04T09:01:43.674Z | broad | yes | yes | v8.11.96 Vercel Playwright MCP Recheck | 24 | 2 | 1 | 0 | 0 | 1 |
 | QA-20260504-0404 | 2026-05-04T07:13:56.328Z | broad | yes | yes | v8.11.95 Vercel Playwright MCP Broad Recheck | 20 | 2 | 0 | 0 | 3 | 3 |
 | QA-20260504-0403 | 2026-05-04T05:22:20.393Z | targeted | yes | yes | v8.11.95 AI Ranking and Formatting Rewrite Recheck | 14 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260504-0402 | 2026-05-03T23:00:39.195Z | targeted | yes | yes | v8.11.89 Vercel Playwright MCP Targeted QA | 15 | 2 | 0 | 0 | 0 | 0 |
@@ -626,4 +623,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260501-0388 | 2026-05-01T09:03:46.030Z | targeted | no | yes | Dashboard Playwright MCP Detailed Interaction QA | 12 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260501-0387 | 2026-05-01T08:52:56.763Z | smoke | yes | yes | v8.11.77 GitLab Release Smoke | 4 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260501-0386 | 2026-04-30T22:58:38.750Z | targeted | no | yes | Dashboard server/log UX Phase 3 local Playwright QA | 16 | 5 | 0 | 0 | 0 | 0 |
-| QA-20260430-0385 | 2026-04-30T14:18:18.454Z | targeted | yes | yes | Vercel/Cloud Run Production QA v8.11.76 - Cerebras llama runtime | 7 | 2 | 0 | 0 | 0 | 0 |

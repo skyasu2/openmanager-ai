@@ -1,0 +1,249 @@
+{
+  "runId": "QA-20260504-0405",
+  "recordedAt": "2026-05-04T09:01:43.674Z",
+  "recordedAtKst": "2026-05-04 18:01:43 KST",
+  "runTitle": "v8.11.96 Vercel Playwright MCP Recheck",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_B35XZVaua7VJtBjeNzFxrmZNEbHo",
+    "deploymentUrl": "https://openmanager-mapa6jh4p-skyasus-projects.vercel.app",
+    "commitSha": "06384b2cb3d786c4e2fcffa432a05d7bb2a66503"
+  },
+  "scope": "broad",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "ai-advanced-surface"
+  ],
+  "coveredSurfaces": [
+    "Vercel production /api/version returned 8.11.96, commit 06384b2cb3d786c4e2fcffa432a05d7bb2a66503, tag v8.11.96, pipeline 2497362939",
+    "Vercel production /api/health returned healthy with database/cache/ai connected",
+    "Cloud Run direct /health returned ai-engine version 8.11.96 with provider configs ready and revision ai-engine-00411-xgg active",
+    "Vercel deployment inspect returned Ready for dpl_B35XZVaua7VJtBjeNzFxrmZNEbHo, production URL https://openmanager-mapa6jh4p-skyasus-projects.vercel.app, and alias https://openmanager-ai.vercel.app",
+    "Landing page / rendered in Playwright with guest user shell and v8.11.96 footer",
+    "/main redirected to / and rendered the landing surface without application error text",
+    "/login rendered OAuth, email, guest entry, privacy link, and v8.11.96 copy",
+    "/privacy rendered policy text and back link",
+    "/auth/error rendered the auth failure fallback and guest-mode fallback",
+    "System start flow navigated /system-boot to /dashboard in Playwright",
+    "Dashboard /dashboard rendered 18 total, 17 online, 1 warning, 0 risk, 0 offline, and current resource panels",
+    "Dashboard routes /dashboard/servers, /dashboard/alerts, /dashboard/logs, and /dashboard/topology rendered without application error text",
+    "Logs route displayed the improved rolling range label: 데이터 범위: 순환 샘플 범위: 00:00:00 ~ 23:50:00 · 기준 2026.05.04 17:39:35",
+    "AI sidebar opened from /dashboard, restored prior AI chat history, and closed with ESC",
+    "Fullscreen /dashboard/ai-assistant loaded with AI Chat, Reporter Agent, Analyst Agent, System Context, AI Engine Online, and Production environment",
+    "Playwright MCP submitted CPU top-3 prompt through the visible AI Chat input",
+    "CPU top-3 response used /api/ai/supervisor/stream/v2 and returned grounded server IDs and current CPU values: api-was-dc1-01 CPU 71%, cache-redis-dc1-01 CPU 69%, cache-redis-dc1-03 CPU 45%",
+    "CPU top-3 response preserved tool evidence with getServerMetricsAdvanced and did not contain the previous false answer '서버는 없습니다'",
+    "Assistant persisted metadata included routeDecision executionPath=stream, mode=single, decidedBy=cloud-run, toolsCalled=getServerMetricsAdvanced, and plannerShadow.latencyMs=5",
+    "Formatting-only rewrite prompt first triggered clarification UI with '특정 서버가 명시되지 않음' instead of directly reusing the previous answer context",
+    "After clicking '건너뛰고 바로 실행', formatting-only rewrite stayed on /api/ai/supervisor/stream/v2 and did not call /api/ai/jobs, but returned one terse sentence and dropped two of the three prior server IDs/values",
+    "Reporter Agent tab rendered empty-state report UI with 새 보고서 and 첫 보고서 생성하기 controls; report generation was intentionally not clicked",
+    "Analyst tab rendered full-system selector and 전체 분석 control",
+    "Analyst 전체 분석 executed via /api/ai/intelligent-monitoring 200 and displayed 18-server result with one memory warning on cache-redis-dc1-01 at 83%",
+    "Playwright console warnings/errors were 0",
+    "Vercel usage remained billed 0.0000 USD after QA; effective usage stayed 2.0188 USD, chargeCount 1827",
+    "Cloud Run free-tier guardrail script passed maxScale=1, concurrency=16, timeout=300, cpu=1, memory=512Mi, cpu-throttling=true"
+  ],
+  "skippedSurfaces": [
+    "Reporter report generation was not clicked because the recheck already found an AI Chat formatting regression and report generation is a costlier artifact path",
+    "Mobile viewport, OAuth provider login, auth callback edge cases, destructive/log-export operations, and Cloud Run admin /monitoring traces were outside this Vercel Playwright recheck",
+    "Prompt-injection/security regression pack was not rerun because this QA focused on the current v8.11.96 production deployment and recent AI/log-range polish"
+  ],
+  "checks": {
+    "total": 24,
+    "passed": 22,
+    "failed": 2
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI fullscreen CPU top-3 ranking",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright MCP UI footer + Performance API",
+      "latencyMs": 1333,
+      "processingTimeMs": 2518
+    },
+    {
+      "surface": "AI fullscreen formatting-only rewrite after clarification skip",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright MCP UI footer + Performance API",
+      "latencyMs": 1698,
+      "processingTimeMs": 2500
+    },
+    {
+      "surface": "Analyst full-system monitoring analysis",
+      "agent": "Analyst Agent",
+      "provider": "vercel-monitoring-bff",
+      "route": "/api/ai/intelligent-monitoring",
+      "source": "Playwright MCP Performance API",
+      "latencyMs": 870,
+      "processingTimeMs": 870
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "CPU ranking and stream metadata were grounded, but the follow-up formatting-only rewrite did not reuse the previous answer context by default and did not preserve all server IDs/values after clarification skip.",
+      "nextAction": "Fix the formatting-only follow-up path so '위 답변...' requests bypass server-scope clarification, reuse the prior assistant answer, and preserve all requested server IDs/values and sentence count."
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The dashboard, logs rolling range label, Cloud Run health, and Analyst monitoring output all matched the current synthetic OTel source and exposed concrete timestamps/server evidence.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel production, Cloud Run health, usage checks, and free-tier guardrails were healthy after the browser QA.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP covered route rendering, visible UI submission, network requests, localStorage metadata, console cleanliness, and durable screenshot evidence; the run caught a concrete AI follow-up regression.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "CPU ranking, log range, and Analyst warning output used current monitoring data and preserved concrete server IDs/values for the primary ranking flow.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-04T17:42:05+09:00",
+      "summary": "Current billing period checked after Vercel Playwright MCP QA; effective 2.0188 USD, billed remains 0.0000 USD, chargeCount 1827.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    },
+    {
+      "platform": "cloud-run",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-04T17:42:05+09:00",
+      "summary": "Free-tier guardrails intact: maxScale=1, concurrency=16, timeout=300, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00411-xgg.",
+      "evidence": "node scripts/check-free-tier-usage.js",
+      "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "v8.11.96 Vercel Playwright MCP AI assistant recheck",
+      "path": "reports/qa/evidence/qa-20260504-v81196-vercel-playwright-ai-recheck.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "logs-rolling-window-range-label",
+      "title": "Logs 24h data-range label uses explicit rolling synthetic window wording",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Playwright MCP /dashboard/logs displayed '순환 샘플 범위: 00:00:00 ~ 23:50:00 · 기준 2026.05.04 17:39:35'.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "planner-shadow-latency-precision",
+      "title": "plannerShadow latency metadata no longer collapses to 0ms for fast production shadow decisions",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Playwright MCP localStorage metadata showed plannerShadow.latencyMs=5 for CPU top-3 and latencyMs=1 for the rewrite stream response.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "ai-formatting-rewrite-context-preservation-v81196",
+      "title": "Formatting-only follow-up rewrite should reuse prior answer context and preserve all listed server IDs/values",
+      "priority": "P2",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "release-blocking 아님; v8.11.96 Playwright MCP에서 '위 답변을 운영 보고서용 2문장...'이 먼저 server-scope clarification UI로 막혔고, '건너뛰고 바로 실행' 후에도 1문장만 반환하며 cache-redis-dc1-01/cache-redis-dc1-03 값이 누락됨. 최근 polish의 목표였던 formatting-only 품질 보강은 추가 수정 필요.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "release decision: conditional because the deployed app is healthy and core monitoring/AI ranking flows pass, but formatting-only follow-up rewrite still has a user-facing context-preservation regression.",
+    "mode audit: CPU top-3 routeDecision executionPath=stream, mode=single, decidedBy=cloud-run; plannerShadow candidate deterministic metric_lookup matched local stream path with latencyMs=5.",
+    "formatting rewrite route audit: default prompt hit clarification UI; skip path used /api/ai/supervisor/stream/v2, did not call /api/ai/jobs, and exposed plannerShadow drift execution_mode_mismatch with latencyMs=1."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Cloud Run AI Engine health",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+    },
+    {
+      "type": "general",
+      "label": "GitLab CI timeout guard pipeline 2497426923",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2497426923"
+    },
+    {
+      "type": "general",
+      "label": "GitLab v8.11.96 tag pipeline 2497362939",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2497362939",
+      "note": "Frontend deploy completed and alias was verified, but the pipeline failed because Vercel CLI timed out before the later CI guard fix."
+    },
+    {
+      "type": "general",
+      "label": "Production app",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "general",
+      "label": "Production version endpoint",
+      "url": "https://openmanager-ai.vercel.app/api/version"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-mapa6jh4p-skyasus-projects.vercel.app/"
+    }
+  ]
+}
