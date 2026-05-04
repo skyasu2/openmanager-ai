@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-04 08:00:39 KST
+> Generated at: 2026-05-04 14:22:21 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 400 |
-| Total Runs (Counted) | 328 |
+| Total Recorded Runs | 401 |
+| Total Runs (Counted) | 329 |
 | Non-counted Runs | 72 |
-| Total Checks | 2828 |
-| Passed | 2730 |
+| Total Checks | 2842 |
+| Passed | 2744 |
 | Failed | 89 |
-| Completed Items | 419 |
+| Completed Items | 421 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 21 |
 | Expert Domains Tracked | 12 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260504-0402 (2026-05-03T23:00:39.195Z) |
-| Latest Recorded Run | QA-20260504-0402 (2026-05-03T23:00:39.195Z) |
+| Last Counted Run | QA-20260504-0403 (2026-05-04T05:22:20.393Z) |
+| Latest Recorded Run | QA-20260504-0403 (2026-05-04T05:22:20.393Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,57 +34,59 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260504-0402 (2026-05-03T23:00:39.195Z)
+Latest run: QA-20260504-0403 (2026-05-04T05:22:20.393Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
 | IT Monitoring & Observability SME | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
 | Data Quality & Metrics Analyst | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked after Vercel Playwright MCP QA; effective 1.3446 USD, billed remains 0.0000 USD, chargeCount 1218. |
+| vercel | cli | checked | normal | Current billing period checked after v8.11.95 Playwright MCP QA; effective 1.3446 USD, billed remains 0.0000 USD, chargeCount 1218. |
+| cloud-run | cli | checked | normal | Free-tier guardrails intact: maxScale=1, concurrency=16, timeout=300, cpu=1, memory=512Mi, cpu-throttling=true. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-02T23:00:39.195Z -> 2026-05-03T23:00:39.195Z (24h)
-- Runs with observations: 3 recorded / 3 counted
-- Samples: 3
+- Window: 2026-05-03T05:22:20.393Z -> 2026-05-04T05:22:20.393Z (24h)
+- Runs with observations: 4 recorded / 4 counted
+- Samples: 5
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Supervisor | cloud-run-ai-engine | 3 | 2420ms | 3351ms | 1809ms | 2445ms | 1592ms | 2152ms | QA-20260504-0402 |
+| Supervisor | cloud-run-ai-engine | 4 | 2099ms | 3351ms | 1809ms | 2445ms | 1478ms | 2152ms | QA-20260504-0403 |
+| Supervisor | groq | 1 | 1283ms | 1283ms | - | - | 1283ms | 1283ms | QA-20260504-0403 |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_7f3iQxsyUvq2NifnaHLQHMCWYSsS / SHA 6aa1560f
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core
-- Covered Surfaces: Landing page rendered on Vercel production with version badge v8.11.89, System start CTA routed through /system-boot and landed on /dashboard, Dashboard rendered current OTel slot 07:20 KST with 18 total servers, 17 online, 1 warning, 0 risk, 0 offline, Dashboard system resources rendered CPU 43%, Memory 47%, Disk 39%, Dashboard resource warning Top 5 rendered api-was-dc1-01 CPU 81%, db-mysql-dc1-backup DISK 68%, db-mysql-dc1-primary DISK 63%, web-nginx-dc1-01 CPU 62%, db-mysql-dc1-replica MEM 60%, AI sidebar opened from dashboard and showed AI Engine status Ready, AI sidebar tool menu exposed RAG/Web/response mode controls and kept send disabled while input was empty, AI sidebar feature tabs rendered AI Chat, automatic incident report empty state, and anomaly/trend analysis empty state without broken controls, Fullscreen /dashboard/ai-assistant opened from the sidebar and rendered System Context with provider routing and AI Engine Online, Fullscreen AI Chat accepted a real prompt through the visible input path and POST /api/ai/supervisor/stream/v2 returned HTTP 200, Fullscreen AI response for CPU top 3 was grounded to current dashboard values: api-was-dc1-01 CPU 81%, web-nginx-dc1-01 CPU 62%, web-nginx-dc1-02 CPU 59%, Fullscreen answer rendered analysis basis with server metric detail tool metadata and 1463ms response footer, Manual Health Check button rechecked AI Engine status and remained on /dashboard/ai-assistant, Browser-side /api/version returned 8.11.89, releaseTag v8.11.89, commit 6aa1560f5bad1e0e750ffb5538ac87750f9429a9, pipeline 2496399525, Browser-side /api/health returned healthy with database/cache/ai connected
-- Skipped Surfaces: Reporter report generation button was not clicked to avoid extra artifact generation beyond tab render validation, Anomaly/trend full analysis button was not clicked to avoid additional Cloud Run work beyond tab render validation, Modal detail pack, topology deep interaction, blocked prompt/security pack, and Cloud Run admin /monitoring were outside this targeted QA, Two /api/system net::ERR_ABORTED entries were observed during route reload/navigation and were treated as non-blocking because subsequent /api/system, /api/health, /api/database, and AI stream calls returned HTTP 200
+- Deployment: dpl_Gv9w8CVdcJhejv1UUdYrWRyZyqSb / SHA b4ea434c
+- Coverage Packs: ai-core, core-routes-smoke
+- Covered Surfaces: Vercel production /api/version returned 8.11.95, commit b4ea434c0d402f2542b9891e98c193fac96902a1, tag v8.11.95, pipeline 2497070918, Vercel production /api/health returned healthy with database/cache/ai connected, Cloud Run direct /health returned ai-engine version 8.11.95 with provider configs ready, Cloud Run revision ai-engine-00410-8j9 served 100% traffic with maxScale=1, cpu=1, memory=512Mi, concurrency=16, Fullscreen /dashboard/ai-assistant loaded on Vercel production with AI Engine Online and provider routing panel configured, Playwright MCP submitted CPU top-3 prompt through the visible AI Chat input, CPU top-3 response used /api/ai/supervisor/stream/v2, called getServerMetricsAdvanced, and returned data-done.success=true, CPU top-3 response rendered server IDs and values: db-mysql-dc1-primary CPU 43%, db-mysql-dc1-replica CPU 41%, api-was-dc1-01 CPU 38%, CPU top-3 response did not contain the previous false answer '서버는 없습니다' and did not degrade into value-only lines like 'cpu 85%', Formatting-only rewrite prompt stayed on /api/ai/supervisor/stream/v2 and rendered as general chat response, Formatting-only rewrite did not call /api/ai/jobs and did not show Reporter pipeline, artifact, anomaly/trend, or job queue text, Playwright network requests under /api/ai were limited to wake-up and supervisor stream calls for this scenario, Vercel usage remained billed 0.0000 USD after QA, Cloud Run free-tier guardrail script passed all checks
+- Skipped Surfaces: Reporter report generation tab execution was not clicked because this run targeted the regression where formatting-only rewrite must not invoke Reporter, Anomaly/trend artifact generation was not clicked because this run targeted avoiding artifact false-positive routing, Cloud Run admin /monitoring and Langfuse trace lookup were outside this targeted smoke, Dashboard sidebar/mobile layout and topology deep interactions were outside this targeted smoke
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab tag pipeline 2496399525 | [GitLab tag pipeline 2496399525](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2496399525) | - |
+| general | Cloud Run AI Engine | [Cloud Run AI Engine](https://ai-engine-jdhrhws7ia-an.a.run.app/health) | - |
+| general | GitLab tag pipeline 2497070918 | [GitLab tag pipeline 2497070918](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2497070918) | - |
 | general | Production app | [Production app](https://openmanager-ai.vercel.app/) | - |
 | general | Production version endpoint | [Production version endpoint](https://openmanager-ai.vercel.app/api/version) | - |
-| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-1ddl2y5er-skyasus-projects.vercel.app/) | - |
+| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-prkqfr0qm-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Dashboard Vercel production smoke | `reports/qa/evidence/qa-20260504-v81189-dashboard.png` | - |
-| playwright-screenshot | Fullscreen AI response Vercel production smoke | `reports/qa/evidence/qa-20260504-v81189-ai-fullscreen-response.png` | - |
+| playwright-screenshot | v8.11.95 AI ranking and formatting rewrite recheck | `reports/qa/evidence/qa-20260504-v81195-ai-ranking-rewrite-recheck.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -213,6 +215,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-engine-status: AI 엔진 상태 표시 (completed 1회, last QA-20260317-0114)
 - ai-explicit-server-summary-backfill: Explicit server action summary keeps named TOP2 servers and backfills partial tool payloads (completed 1회, last QA-20260430-0376)
 - ai-fallback-done-usage-metadata: Delegated summarization fallback should report delegated provider token usage (completed 1회, last QA-20260429-0367)
+- ai-formatting-only-rewrite-routing-v81195: Formatting-only report rewrite stays on chat stream path (completed 1회, last QA-20260504-0403)
 - ai-friendly-template-todo-marker: Template TODO marker 분리 (TEMPLATE_TODO 적용) (completed 1회, last QA-20260226-0006)
 - ai-fullscreen-cpu-ranking-v81189: Fullscreen AI Chat CPU top-3 answer remains grounded to dashboard OTel values (completed 1회, last QA-20260504-0402)
 - ai-hardening-production-verification: Verify production AI hardening release on v8.11.20 (completed 1회, last QA-20260418-0303)
@@ -248,6 +251,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-summary-dashboard-parity-regression: AI assistant summary must match dashboard and OTel-derived system counts (completed 1회, last QA-20260404-0224)
 - ai-summary-delta-guidance: AI 요약이 평균 대비 변화량과 구체적 권고를 표시 (completed 1회, last QA-20260322-0157)
 - ai-summary-query-clarification-skip-production: Explicit all-server summary query skips clarification in production (completed 1회, last QA-20260310-0071)
+- ai-supervisor-advanced-ranking-recovery-v81195: Supervisor single stream returns deterministic advanced metric ranking with success metadata (completed 1회, last QA-20260504-0403)
 - ai-timing-header-ssot-policy: QA timing header SSOT standardized to X-AI-Latency-Ms (completed 1회, last QA-20260310-0081)
 - ai-timing-x-headers-production: AI proxy responses expose production timing headers (completed 1회, last QA-20260309-0070)
 - ai-topology-duplicate-tool-invocation: Topology query duplicate searchKnowledgeBase invocation removed (completed 1회, last QA-20260415-0284)
@@ -590,6 +594,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260504-0403 | 2026-05-04T05:22:20.393Z | targeted | yes | yes | v8.11.95 AI Ranking and Formatting Rewrite Recheck | 14 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260504-0402 | 2026-05-03T23:00:39.195Z | targeted | yes | yes | v8.11.89 Vercel Playwright MCP Targeted QA | 15 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260504-0401 | 2026-05-03T17:29:57.587Z | targeted | yes | yes | v8.11.89 Release Smoke - Monitoring Source Error Contract | 9 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260503-0400 | 2026-05-03T14:21:43.788Z | targeted | yes | yes | v8.11.88 Fullscreen AI Stream Complementary QA | 5 | 1 | 0 | 0 | 0 | 0 |
@@ -609,4 +614,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260501-0386 | 2026-04-30T22:58:38.750Z | targeted | no | yes | Dashboard server/log UX Phase 3 local Playwright QA | 16 | 5 | 0 | 0 | 0 | 0 |
 | QA-20260430-0385 | 2026-04-30T14:18:18.454Z | targeted | yes | yes | Vercel/Cloud Run Production QA v8.11.76 - Cerebras llama runtime | 7 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260430-0384 | 2026-04-30T13:00:04.697Z | targeted | yes | yes | Vercel Production QA v8.11.75 - Direct AI page sidebar reopen | 12 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260430-0383 | 2026-04-30T12:02:34.893Z | targeted | yes | yes | Vercel Production QA v8.11.74 - Dashboard AI app shell | 21 | 4 | 0 | 0 | 0 | 0 |
