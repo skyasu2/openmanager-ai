@@ -20,6 +20,7 @@ import {
   COMPOSITE_QUERY_PATTERNS,
   FORCE_KB_QUERY_PATTERN,
   REPORTER_QUERY_PATTERN,
+  isFormattingOnlyReportRequest,
 } from '../query-routing-signals';
 
 // ============================================================================
@@ -372,7 +373,8 @@ export function preFilterQuery(
       looksLikeAttachedVisionRequest(normalized);
     const isVisionIntent = isVisionQuery(query) || hasAttachmentVisionHint;
     const isAnalystIntent = ANALYST_QUERY_PATTERN.test(query);
-    const isReporterIntent = REPORTER_QUERY_PATTERN.test(query);
+    const isReporterIntent =
+      !isFormattingOnlyReportRequest(query) && REPORTER_QUERY_PATTERN.test(query);
     const isAdvisorIntent =
       isForceKnowledgeBaseIntent || ADVISOR_QUERY_PATTERN.test(query);
 

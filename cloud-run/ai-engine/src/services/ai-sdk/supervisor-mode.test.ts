@@ -359,6 +359,47 @@ describe('supervisor planner shadow', () => {
     });
   });
 
+  it('keeps formatting-only report rewrites out of incident report escalation', () => {
+    const query =
+      '방금 CPU 상위 3개 서버 결과를 운영 보고서용 2문장으로 다시 작성해줘';
+    const routeDecision = buildSupervisorRouteDecision(
+      resolveSupervisorModeDecision({
+        mode: 'auto',
+        analysisMode: 'thinking',
+        messages: [{ role: 'user', content: query }],
+      }),
+      { traceId: 'trace-shadow-formatting-only' }
+    );
+    const shadow = buildSupervisorPlannerShadow({
+      request: {
+        mode: 'auto',
+        analysisMode: 'thinking',
+        messages: [{ role: 'user', content: query }],
+        sessionId: 'session-shadow-formatting-only',
+      },
+      routeDecision,
+      localRouteDecision: normalizeSupervisorLocalRouteDecision({
+        intent: 'chat',
+        executionPath: 'stream',
+        mode: 'single',
+        complexity: 'simple',
+        reasonCodes: ['complexity_below_threshold'],
+        ruleVersion: '2026-05-03-v1',
+        decidedBy: 'frontend',
+      }),
+      latencyMs: 5,
+    });
+
+    expect(routeDecision.mode).toBe('single');
+    expect(shadow.candidate).toMatchObject({
+      kind: 'chat',
+      executionPath: 'stream',
+      executionMode: 'single-agent',
+      reasonCodes: ['single_agent_default'],
+    });
+    expect(shadow.candidate).not.toHaveProperty('escalationReasonCodes');
+  });
+
   it('marks thinking as a shadow escalation only when the button changes the mode decision', () => {
     const genericShadow = buildSupervisorPlannerShadow({
       request: {

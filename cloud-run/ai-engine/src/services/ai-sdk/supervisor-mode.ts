@@ -16,6 +16,7 @@ import type {
   SupervisorRouteDecisionMode,
 } from './supervisor-types';
 import { selectExecutionMode } from './supervisor-routing';
+import { isFormattingOnlyReportRequest } from './query-routing-signals';
 
 export type ResolvedSupervisorMode = Exclude<SupervisorMode, 'auto'>;
 export type SupervisorAssistantExecutionMode =
@@ -308,6 +309,10 @@ function includesPattern(query: string, pattern: RegExp): boolean {
 }
 
 function hasIncidentReportIntent(query: string): boolean {
+  if (isFormattingOnlyReportRequest(query)) {
+    return false;
+  }
+
   return includesPattern(
     query,
     /(보고서|리포트|report|incident|postmortem|장애\s*분석|사고\s*분석)/iu

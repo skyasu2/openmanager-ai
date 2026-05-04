@@ -187,6 +187,21 @@ const STREAMING_ALERT_ANALYSIS_ACTION_PATTERN =
   /(우선\s*조치|조치\s*방법|대응\s*방안|재발\s*방지)/i;
 const STREAMING_ALERT_ANALYSIS_BROAD_SCOPE_PATTERN =
   /(전체|모든|비교|예측|리포트|보고서|7일|30일|히스토리|이력|클러스터|group|cluster)/i;
+const FORMATTING_ONLY_TARGET_PATTERN =
+  /(보고서용|리포트용|문장으로|문장만|마크다운|markdown|bullet|불릿|rewrite|rephrase|paraphrase)/i;
+const FORMATTING_ONLY_ACTION_PATTERN =
+  /(방금|위\s*내용|이전\s*(결과|답변)|결과|답변|다시\s*작성|재작성|고쳐\s*써|다듬어|줄여|바꿔|정리해|rewrite|rephrase|paraphrase)/i;
+const FORMATTING_ONLY_EXECUTION_PATTERN =
+  /(아티팩트|artifact|생성|만들|다운로드|내려받|실행|돌려|뽑아|export|generate|download|create|run)/i;
+
+export function isFormattingOnlyRequest(query: string): boolean {
+  const normalizedQuery = query.toLowerCase().trim();
+  return (
+    FORMATTING_ONLY_TARGET_PATTERN.test(normalizedQuery) &&
+    FORMATTING_ONLY_ACTION_PATTERN.test(normalizedQuery) &&
+    !FORMATTING_ONLY_EXECUTION_PATTERN.test(normalizedQuery)
+  );
+}
 
 function shouldPreferStreamingSummaryQuery(query: string): boolean {
   if (query.length > 80) return false;
@@ -236,6 +251,15 @@ export function analyzeQueryComplexity(query: string): ComplexityAnalysis {
   const normalizedQuery = query.toLowerCase().trim();
   let score = 0;
   const factors: string[] = [];
+
+  if (isFormattingOnlyRequest(normalizedQuery)) {
+    return {
+      level: 'simple',
+      score: 10,
+      factors: ['formatting_only_request'],
+      recommendedTimeout: 15000,
+    };
+  }
 
   if (shouldPreferStreamingSummaryQuery(normalizedQuery)) {
     return {
@@ -434,6 +458,14 @@ export function shouldForceJobQueue(query: string): {
 } {
   const normalizedQuery = query.toLowerCase().trim();
 
+  if (isFormattingOnlyRequest(normalizedQuery)) {
+    return {
+      force: false,
+      matchedKeyword: null,
+      reason: null,
+    };
+  }
+
   for (const keyword of JOB_QUEUE_FORCE_KEYWORDS) {
     if (normalizedQuery.includes(keyword.toLowerCase())) {
       return {
@@ -542,6 +574,20 @@ export function analyzeJobQueryComplexity(
     q.includes('전체 서버') || q.includes('모든 서버')
   );
 
+  if (isFormattingOnlyRequest(q)) {
+    return {
+      level: 'simple',
+      estimatedTime: 8,
+      factors: {
+        dataVolume: 'low',
+        analysisDepth: 'shallow',
+        multiStep: false,
+        keywordCount: countKeywordMatches(q, JOB_SIMPLE_KEYWORDS),
+      },
+      useJobQueue: false,
+    };
+  }
+
   if (shouldPreferStreamingSummaryQuery(q)) {
     return {
       level: 'simple',
@@ -599,6 +645,7 @@ export function inferJobType(
   query: string
 ): 'analysis' | 'report' | 'optimization' | 'prediction' | 'general' {
   const q = query.toLowerCase();
+  if (isFormattingOnlyRequest(q)) return 'general';
   if (/리포트|보고서|report/i.test(q)) return 'report';
   if (/최적화|개선|optimize/i.test(q)) return 'optimization';
   if (/예측|forecast|predict/i.test(q)) return 'prediction';

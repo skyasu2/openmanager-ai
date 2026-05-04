@@ -12,6 +12,22 @@ export const ANALYST_QUERY_PATTERN =
 export const REPORTER_QUERY_PATTERN =
   /보고서|리포트|타임라인|인시던트|incident/i;
 
+const FORMATTING_ONLY_TARGET_PATTERN =
+  /(보고서용|리포트용|문장으로|문장만|마크다운|markdown|bullet|불릿|rewrite|rephrase|paraphrase)/i;
+const FORMATTING_ONLY_ACTION_PATTERN =
+  /(방금|위\s*내용|이전\s*(결과|답변)|결과|답변|다시\s*작성|재작성|고쳐\s*써|다듬어|줄여|바꿔|정리해|rewrite|rephrase|paraphrase)/i;
+const FORMATTING_ONLY_EXECUTION_PATTERN =
+  /(아티팩트|artifact|생성|만들|다운로드|내려받|실행|돌려|뽑아|export|generate|download|create|run)/i;
+
+export function isFormattingOnlyReportRequest(query: string): boolean {
+  const normalizedQuery = query.toLowerCase().trim();
+  return (
+    FORMATTING_ONLY_TARGET_PATTERN.test(normalizedQuery) &&
+    FORMATTING_ONLY_ACTION_PATTERN.test(normalizedQuery) &&
+    !FORMATTING_ONLY_EXECUTION_PATTERN.test(normalizedQuery)
+  );
+}
+
 export const ADVISOR_QUERY_PATTERN =
   /해결|방법|명령어|가이드|어떻게|과거.*사례|사례.*찾|이력|유사|권장\s*조치/i;
 

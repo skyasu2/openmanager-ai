@@ -44,6 +44,16 @@ describe('preFilterQuery', () => {
     expect(preFilterQuery('메모리 부족 해결 방법 알려줘').suggestedAgent).toBe('Advisor Agent');
   });
 
+  it('does not send formatting-only report rewrites to Reporter Agent', () => {
+    const result = preFilterQuery(
+      '방금 CPU 상위 3개 서버 결과를 운영 보고서용 2문장으로 다시 작성해줘'
+    );
+
+    expect(result.shouldHandoff).toBe(true);
+    expect(result.suggestedAgent).toBe('NLQ Agent');
+    expect(result.confidence).toBe(0.86);
+  });
+
   it('routes topology queries to Advisor Agent with high confidence', () => {
     const result = preFilterQuery('현재 인프라 토폴로지 알려줘. 관련된 운영 가이드도 연결해줘');
     expect(result.shouldHandoff).toBe(true);

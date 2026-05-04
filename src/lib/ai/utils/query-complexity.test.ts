@@ -12,6 +12,7 @@ import {
   calculateDynamicTimeout,
   getTimeoutGuidance,
   inferJobType,
+  shouldForceJobQueue,
 } from './query-complexity';
 
 describe('query-complexity', () => {
@@ -248,6 +249,24 @@ describe('query-complexity', () => {
       expect(result.score).toBeLessThanOrEqual(19);
       expect(result.factors).toContain('streaming_alert_analysis_query');
     });
+
+    it('should keep report-style rewrites below job routing thresholds', () => {
+      const query =
+        '방금 CPU 상위 3개 서버 결과를 운영 보고서용 2문장으로 다시 작성해줘';
+      const result = analyzeQueryComplexity(query);
+
+      expect(result).toMatchObject({
+        level: 'simple',
+        score: 10,
+        factors: ['formatting_only_request'],
+        recommendedTimeout: 15000,
+      });
+      expect(shouldForceJobQueue(query)).toEqual({
+        force: false,
+        matchedKeyword: null,
+        reason: null,
+      });
+    });
   });
 
   describe('analyzeJobQueryComplexity', () => {
@@ -307,6 +326,23 @@ describe('query-complexity', () => {
       const result = analyzeJobQueryComplexity(longSimple);
       expect(result.level).not.toBe('simple');
     });
+
+    it('should keep formatting-only report rewrites off the job queue', () => {
+      const result = analyzeJobQueryComplexity(
+        '방금 CPU 상위 3개 서버 결과를 운영 보고서용 2문장으로 다시 작성해줘'
+      );
+
+      expect(result).toMatchObject({
+        level: 'simple',
+        estimatedTime: 8,
+        factors: {
+          dataVolume: 'low',
+          analysisDepth: 'shallow',
+          multiStep: false,
+        },
+        useJobQueue: false,
+      });
+    });
   });
 
   describe('inferJobType', () => {
@@ -332,6 +368,14 @@ describe('query-complexity', () => {
     it('should default to general', () => {
       expect(inferJobType('안녕하세요')).toBe('general');
       expect(inferJobType('서버 상태 알려줘')).toBe('general');
+    });
+
+    it('should not infer report jobs for formatting-only report rewrites', () => {
+      expect(
+        inferJobType(
+          '방금 CPU 상위 3개 서버 결과를 운영 보고서용 2문장으로 다시 작성해줘'
+        )
+      ).toBe('general');
     });
   });
 

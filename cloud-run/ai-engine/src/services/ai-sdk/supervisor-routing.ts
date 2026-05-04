@@ -17,6 +17,7 @@ import {
   FORCE_KB_QUERY_PATTERN,
   INFRA_CONTEXT_PATTERN,
   REPORTER_QUERY_PATTERN,
+  isFormattingOnlyReportRequest,
 } from './query-routing-signals';
 
 // ============================================================================
@@ -224,6 +225,10 @@ export function selectExecutionMode(
   const q = query.toLowerCase();
   const hasInfraContext = INFRA_CONTEXT_PATTERN.test(q);
 
+  if (isFormattingOnlyReportRequest(q)) {
+    return 'single';
+  }
+
   if (analysisMode === 'thinking' && hasInfraContext) {
     return 'multi';
   }
@@ -430,6 +435,13 @@ export function createPrepareStep(
     if (SIMPLE_CONVERSATION_PATTERNS.test(query.trim())) {
       logger.debug('[PrepareStep] Simple conversation detected, toolChoice: none');
       return { toolChoice: 'none' as const };
+    }
+
+    if (isFormattingOnlyReportRequest(q)) {
+      return {
+        activeTools: ['finalAnswer'] as ToolName[],
+        toolChoice: 'required' as const,
+      };
     }
 
     const shouldForceRealtimeMetric = shouldForceRealtimeServerMetricTool(q);

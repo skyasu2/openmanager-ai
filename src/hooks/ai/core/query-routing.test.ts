@@ -114,4 +114,29 @@ describe('frontend analysis mode routing measurement', () => {
       },
     });
   });
+
+  it('keeps formatting-only report rewrites on the streaming path', () => {
+    expect(
+      buildFrontendQueryRoutingDecision({
+        query:
+          '방금 CPU 상위 3개 서버 결과를 운영 보고서용 2문장으로 다시 작성해줘',
+        complexityThreshold,
+        analysisMode: 'auto',
+      })
+    ).toMatchObject({
+      queryMode: 'streaming',
+      analysis: {
+        level: 'simple',
+        factors: ['formatting_only_request'],
+      },
+      forceJobQueue: {
+        force: false,
+      },
+      routeDecision: {
+        intent: 'chat',
+        executionPath: 'stream',
+        reasonCodes: ['complexity_below_threshold'],
+      },
+    });
+  });
 });

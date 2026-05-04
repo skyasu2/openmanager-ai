@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-04 KST (`Artifact formatting-only intent false-positive guard recorded`)
+**Last Updated**: 2026-05-04 KST (`Formatting-only report rewrite routing guard recorded`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -48,6 +48,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-04 #282)
+- [x] Formatting-only report rewrite routing guard
+  - `v8.11.91` Playwright MCP recheck에서 artifact false-positive는 해소됐지만, "운영 보고서용 2문장으로 다시 작성" 같은 재작성 요청이 frontend job queue와 Cloud Run Reporter pipeline으로 과도하게 승격되는 residual 확인
+  - frontend complexity/job type inference와 Cloud Run supervisor/pre-filter에 formatting-only guard를 추가해 명시적 보고서 생성이 아닌 재작성 요청은 streaming single-agent/final-answer 경로에 남도록 보강
+  - 명시적 `장애 보고서 생성/작성` 경로는 기존 multi-agent/report routing을 유지하고, shadow planner에서도 incident report escalation으로 기록하지 않도록 회귀 테스트 추가
+  - 검증: targeted root routing tests, AI Engine supervisor/pre-filter tests
 
 ### Completed (2026-05-04 #281)
 - [x] Artifact intent formatting-only false-positive guard
