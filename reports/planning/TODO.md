@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-04 KST (`Supervisor stream advanced ranking recovery recorded`)
+**Last Updated**: 2026-05-04 KST (`Supervisor deterministic recovery success metadata recorded`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -48,6 +48,12 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-04 #285)
+- [x] Supervisor deterministic recovery success metadata
+  - `v8.11.94` Playwright MCP QA에서 CPU ranking 답변 내용은 정상화됐지만 `data-done.success=false`와 `STREAM_ERROR_OCCURRED` warning이 함께 방출되는 metadata drift 확인
+  - tool result 기반 deterministic summary로 정상 복구한 경우 후행 provider stream error를 사용자-facing 실패 metadata로 남기지 않도록 정리
+  - 검증: targeted Supervisor stream recovery tests
 
 ### Completed (2026-05-04 #284)
 - [x] Supervisor stream advanced ranking recovery

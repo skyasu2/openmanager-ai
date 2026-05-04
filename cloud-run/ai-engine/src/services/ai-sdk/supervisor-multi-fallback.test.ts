@@ -402,6 +402,9 @@ describe('supervisor degraded single fallback', () => {
   it('prefers deterministic advanced metric ranking over empty finalAnswer recovery in single-agent stream', async () => {
     mockSelectExecutionMode.mockReturnValue('single');
     mockStreamText.mockReturnValue({
+      fullStream: (async function* () {
+        yield { type: 'error', error: new Error('provider stream ended after tool result') };
+      })(),
       textStream: (async function* () {})(),
       steps: Promise.resolve([
         {
@@ -467,6 +470,20 @@ describe('supervisor degraded single fallback', () => {
     expect(text).toContain('2. api-was-dc1-02: CPU 78%');
     expect(text).toContain('3. db-mysql-dc1-primary: CPU 76%');
     expect(text).not.toContain('서버는 없습니다');
+
+    const warningEvents = events.filter((event) => event.type === 'warning');
+    expect(warningEvents).toHaveLength(0);
+    const doneEvent = events.find((event) => event.type === 'done');
+    expect(doneEvent).toMatchObject({
+      data: {
+        success: true,
+        metadata: {
+          assistantResult: {
+            status: 'completed',
+          },
+        },
+      },
+    });
   });
 
   it('keeps original stream error when degraded single is not allowed', async () => {

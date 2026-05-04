@@ -783,6 +783,13 @@ async function* streamSingleAgent(
         }
         yield { type: 'text_delta', data: fullText };
         logger.info('[SupervisorStream] Recovered response from deterministic tool summary');
+        if (streamError !== null) {
+          logger.warn(
+            '[SupervisorStream] Suppressed stream error after deterministic tool summary recovery:',
+            streamError.message
+          );
+          streamError = null;
+        }
       }
 
       // Recover response from finalAnswer tool result when textStream was empty
