@@ -508,6 +508,12 @@ describe('getServerMetricsAdvanced', () => {
     );
 
     expect(result.success).toBe(true);
+    expect(result.responseKind).toBe('current_metric_ranking');
+    expect(result.dataSlot).toEqual(
+      expect.objectContaining({
+        timeLabel: expect.stringMatching(/KST$/),
+      })
+    );
     expect(result.servers).toHaveLength(3);
     expect(result.servers.map((server: { name: string }) => server.name)).toEqual([
       'cache-redis-dc1-02',

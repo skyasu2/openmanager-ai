@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-04 KST (`Advanced metric ranking deterministic answer guard recorded`)
+**Last Updated**: 2026-05-04 KST (`Supervisor stream advanced ranking recovery recorded`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -48,6 +48,12 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-04 #284)
+- [x] Supervisor stream advanced ranking recovery
+  - `v8.11.93` Playwright MCP follow-up에서 `CPU 상위 3개 서버`가 Supervisor single path에서 `getServerMetricsAdvanced`를 호출했지만, 빈 text stream 이후 잘못된 `finalAnswer`(`서버는 없습니다`)가 먼저 복구되는 문제 확인
+  - Supervisor stream이 tool result를 deterministic summary fallback으로 먼저 재구성하고, advanced metric ranking이 있으면 `finalAnswer` 복구보다 서버 ID/수치 기반 응답을 우선하도록 보강
+  - 검증: targeted Supervisor stream/summary/orchestrator stream tests
 
 ### Completed (2026-05-04 #283)
 - [x] Advanced metric ranking deterministic answer guard

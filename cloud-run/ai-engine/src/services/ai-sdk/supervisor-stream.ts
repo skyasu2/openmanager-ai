@@ -53,6 +53,7 @@ import {
   getLastUserQueryText,
 } from './supervisor-stream-messages';
 import { createStructuredTextDeltaGuard } from './supervisor-stream-text-guard';
+import { buildDeterministicSummaryFallback } from './agents/orchestrator-summary-fallback';
 import type {
   AgentStepStatus,
   StreamEvent,
@@ -107,6 +108,11 @@ type SupervisorFullStreamPart = {
   toolName?: unknown;
   toolCallId?: unknown;
   error?: unknown;
+};
+
+type CollectedToolResult = {
+  toolName: string;
+  result: unknown;
 };
 
 async function* textStreamAsFullStream(
@@ -709,6 +715,16 @@ async function* streamSingleAgent(
       await reconcileQuotaOnce(
         usage?.totalTokens ?? quotaReservation?.estimatedTokens ?? 0
       );
+      const collectedToolResults: CollectedToolResult[] = [];
+      for (const step of steps) {
+        if (!step.toolResults) continue;
+        for (const tr of step.toolResults) {
+          collectedToolResults.push({
+            toolName: tr.toolName,
+            result: extractToolResultOutput(tr),
+          });
+        }
+      }
 
       if (textDeltaGuard.hasRawToolCall() && fullText.trim().length === 0) {
         const toolName = textDeltaGuard.getRawToolCallName();
@@ -750,6 +766,23 @@ async function* streamSingleAgent(
           },
         };
         yield* emitDisplayText(fallbackText);
+      }
+
+      const deterministicSummary = buildDeterministicSummaryFallback(
+        queryText,
+        'Supervisor',
+        collectedToolResults
+      );
+      if (fullText.trim().length === 0 && deterministicSummary) {
+        fullText = deterministicSummary;
+        if (firstChunkMs === null) {
+          firstChunkMs = Date.now() - providerStartTime;
+          logger.info(
+            `[SupervisorStream] TTFB recovered via deterministic summary: ${firstChunkMs}ms (${provider}/${modelId})`
+          );
+        }
+        yield { type: 'text_delta', data: fullText };
+        logger.info('[SupervisorStream] Recovered response from deterministic tool summary');
       }
 
       // Recover response from finalAnswer tool result when textStream was empty

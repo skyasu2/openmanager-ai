@@ -63,6 +63,10 @@ export const getServerMetricsResponseSchema = z.object({
  */
 export const getServerMetricsAdvancedResponseSchema = z.object({
   success: z.boolean(),
+  responseKind: z
+    .enum(['current_metric_ranking'])
+    .optional()
+    .describe('현재값 기준 Top-N ranking 응답이면 current_metric_ranking'),
   answer: z.string().describe('⚠️ 사용자에게 이 값을 그대로 전달하세요'),
   globalSummary: z.record(z.number()).describe('전체 서버 집계: cpu_avg, cpu_max, cpu_min 등'),
   serverCount: z.number().describe('조회된 서버 수'),
@@ -82,6 +86,9 @@ export const getServerMetricsAdvancedResponseSchema = z.object({
     dataPoints: z.number().optional(),
   })).describe('상위 5개 서버 샘플'),
   hasMore: z.boolean().describe('5개 이상일 때 true'),
+  dataSlot: dataSlotSchema
+    .optional()
+    .describe('대시보드와 AI가 함께 참조하는 현재 synthetic OTel 데이터 슬롯'),
   timestamp: z.string(),
 });
 

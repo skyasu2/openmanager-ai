@@ -134,6 +134,11 @@ vi.mock('../../lib/logger', () => ({
 
 vi.mock('../../lib/config-parser', () => ({
   isSingleModeAllowed: mockIsSingleModeAllowed,
+  getUpstashConfig: vi.fn(() => ({
+    restUrl: '',
+    restToken: '',
+    configured: false,
+  })),
 }));
 
 vi.mock('./supervisor-routing', () => ({
@@ -392,6 +397,76 @@ describe('supervisor degraded single fallback', () => {
         },
       },
     });
+  });
+
+  it('prefers deterministic advanced metric ranking over empty finalAnswer recovery in single-agent stream', async () => {
+    mockSelectExecutionMode.mockReturnValue('single');
+    mockStreamText.mockReturnValue({
+      textStream: (async function* () {})(),
+      steps: Promise.resolve([
+        {
+          toolCalls: [
+            { toolName: 'getServerMetricsAdvanced' },
+            { toolName: 'finalAnswer' },
+          ],
+          toolResults: [
+            {
+              toolName: 'getServerMetricsAdvanced',
+              result: {
+                responseKind: 'current_metric_ranking',
+                servers: [
+                  {
+                    id: 'api-was-dc1-01',
+                    name: 'api-was-dc1-01',
+                    metrics: { cpu: 85 },
+                  },
+                  {
+                    id: 'api-was-dc1-02',
+                    name: 'api-was-dc1-02',
+                    metrics: { cpu: 78 },
+                  },
+                  {
+                    id: 'db-mysql-dc1-primary',
+                    name: 'db-mysql-dc1-primary',
+                    metrics: { cpu: 76 },
+                  },
+                ],
+              },
+            },
+            {
+              toolName: 'finalAnswer',
+              result: { answer: 'CPU 상위 3대 서버는 없습니다.' },
+            },
+          ],
+        },
+      ]),
+      usage: Promise.resolve({ inputTokens: 1, outputTokens: 2, totalTokens: 3 }),
+    });
+
+    const events = [];
+    for await (const event of executeSupervisorStream({
+      mode: 'auto',
+      messages: [
+        {
+          role: 'user',
+          content: 'CPU 상위 3개 서버를 현재 대시보드 수치 기준으로 짧게 알려줘',
+        },
+      ],
+      sessionId: 'session-advanced-ranking',
+    })) {
+      events.push(event);
+    }
+
+    const text = events
+      .filter((event) => event.type === 'text_delta')
+      .map((event) => String(event.data))
+      .join('');
+
+    expect(text).toContain('📊 **CPU 사용률 상위 3대**');
+    expect(text).toContain('1. api-was-dc1-01: CPU 85%');
+    expect(text).toContain('2. api-was-dc1-02: CPU 78%');
+    expect(text).toContain('3. db-mysql-dc1-primary: CPU 76%');
+    expect(text).not.toContain('서버는 없습니다');
   });
 
   it('keeps original stream error when degraded single is not allowed', async () => {

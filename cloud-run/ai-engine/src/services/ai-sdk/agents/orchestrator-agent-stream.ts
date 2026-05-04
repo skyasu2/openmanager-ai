@@ -711,7 +711,10 @@ export async function* executeAgentStream(
       // Re-evaluate after tool results are known — intent classification + data completeness.
       // This replaces the previous upfront regex check and makes routing data-driven.
       const serverToolResults = collectedToolResults.filter(
-        (r) => r.toolName === 'getServerMetrics' || r.toolName === 'filterServers'
+        (r) =>
+          r.toolName === 'getServerMetrics' ||
+          r.toolName === 'getServerMetricsAdvanced' ||
+          r.toolName === 'filterServers'
       );
       const toolResultServerCount = serverToolResults.reduce((sum, r) => {
         if (r.result && typeof r.result === 'object' && 'servers' in r.result) {
