@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.95](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.94...v8.11.95) (2026-05-04)
+
+
+### Bug Fixes
+
+* **ai:** mark deterministic stream recovery successful ([b3dccc0](https://gitlab.com/skyasu2/openmanager-ai/-/commit/b3dccc033e20f9c21c33827316b76e23e40a926f))
+
 ## [8.11.94](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.93...v8.11.94) (2026-05-04)
 
 
