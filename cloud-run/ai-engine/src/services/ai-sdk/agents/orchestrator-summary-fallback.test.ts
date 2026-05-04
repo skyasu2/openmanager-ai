@@ -417,6 +417,44 @@ describe('buildDeterministicSummaryFallback', () => {
     expect(summary).not.toContain('4. ');
   });
 
+  it('builds deterministic CPU top-N ranking from getServerMetricsAdvanced results', () => {
+    const summary = buildDeterministicSummaryFallback(
+      'CPU 상위 3개 서버를 현재 대시보드 수치 기준으로 짧게 알려줘',
+      'NLQ Agent',
+      [
+        {
+          toolName: 'getServerMetricsAdvanced',
+          result: {
+            responseKind: 'current_metric_ranking',
+            servers: [
+              {
+                id: 'api-was-dc1-01',
+                name: 'api-was-dc1-01',
+                metrics: { cpu: 85 },
+              },
+              {
+                id: 'api-was-dc1-02',
+                name: 'api-was-dc1-02',
+                metrics: { cpu: 78 },
+              },
+              {
+                id: 'db-mysql-dc1-primary',
+                name: 'db-mysql-dc1-primary',
+                metrics: { cpu: 76 },
+              },
+            ],
+          },
+        },
+      ]
+    );
+
+    expect(summary).toContain('📊 **CPU 사용률 상위 3대**');
+    expect(summary).toContain('1. api-was-dc1-01: CPU 85%');
+    expect(summary).toContain('2. api-was-dc1-02: CPU 78%');
+    expect(summary).toContain('3. db-mysql-dc1-primary: CPU 76%');
+    expect(summary).not.toContain('cpu 85%');
+  });
+
   it('builds deterministic DISK threshold ranking for analyst queries', () => {
     const summary = buildDeterministicSummaryFallback(
       '현재 18대 서버 중 DISK 사용률이 70% 이상인 서버를 모두 찾아서 위험도 순으로 정렬하고, 각 서버의 잠재적 장애 시점과 권장 조치안을 상세히 분석해줘',

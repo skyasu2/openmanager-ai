@@ -40,7 +40,7 @@ export interface AlertServerSnapshot {
 }
 
 export interface MetricsToolPayload {
-  source: 'getServerMetrics' | 'filterServers';
+  source: 'getServerMetrics' | 'getServerMetricsAdvanced' | 'filterServers';
   servers: ServerSnapshot[];
   alertServers?: AlertServerSnapshot[];
   condition?: string;
@@ -74,6 +74,22 @@ function isServerSnapshot(value: unknown): value is ServerSnapshot {
 
 function isAlertServerSnapshot(value: unknown): value is AlertServerSnapshot {
   return isRecord(value) && typeof value.id === 'string' && typeof value.status === 'string';
+}
+
+function toAdvancedServerSnapshot(value: unknown): ServerSnapshot | null {
+  if (!isRecord(value) || typeof value.id !== 'string' || !isRecord(value.metrics)) {
+    return null;
+  }
+
+  return {
+    id: value.id,
+    name: typeof value.name === 'string' ? value.name : undefined,
+    status: typeof value.status === 'string' ? value.status : 'online',
+    cpu: toNumber(value.metrics.cpu) ?? undefined,
+    memory: toNumber(value.metrics.memory) ?? undefined,
+    disk: toNumber(value.metrics.disk) ?? undefined,
+    network: toNumber(value.metrics.network) ?? undefined,
+  };
 }
 
 function toFilterSummary(value: unknown): MetricsToolPayload['filterSummary'] | undefined {
@@ -129,6 +145,23 @@ export function getMetricsPayload(
     }
 
     return { source: 'getServerMetrics', servers, alertServers };
+  }
+
+  const advancedEntry = toolResults.find(
+    (entry) =>
+      entry.toolName === 'getServerMetricsAdvanced' && isRecord(entry.result)
+  );
+
+  if (advancedEntry && isRecord(advancedEntry.result)) {
+    const servers = Array.isArray(advancedEntry.result.servers)
+      ? advancedEntry.result.servers
+          .map(toAdvancedServerSnapshot)
+          .filter((server): server is ServerSnapshot => server !== null)
+      : [];
+
+    if (servers.length > 0) {
+      return { source: 'getServerMetricsAdvanced', servers };
+    }
   }
 
   const filterEntry = toolResults.find(

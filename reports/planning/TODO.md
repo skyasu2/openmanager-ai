@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-04 KST (`Formatting-only report rewrite routing guard recorded`)
+**Last Updated**: 2026-05-04 KST (`Advanced metric ranking deterministic answer guard recorded`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -48,6 +48,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-04 #283)
+- [x] Advanced metric ranking deterministic answer guard
+  - `v8.11.92` Playwright MCP follow-up에서 `CPU 상위 3개 서버` 선행 응답이 서버 ID 없이 `cpu 85%`처럼 값만 나열되는 답변 품질 문제 확인
+  - `getServerMetricsAdvanced` current ranking 결과를 deterministic summary payload에 포함해 Top-N 응답이 서버 ID와 현재 수치를 직접 인용하도록 보강
+  - formatting-only 재작성 요청은 job/reporter/artifact 경로로 승격하지 않되, 선행 ranking 답변 자체는 deterministic answer guard로 안정화
+  - 검증: targeted AI Engine summary/stream/routing tests, AI Engine `type-check`, AI Engine `test`
 
 ### Completed (2026-05-04 #282)
 - [x] Formatting-only report rewrite routing guard
