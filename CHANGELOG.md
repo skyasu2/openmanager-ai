@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.94](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.93...v8.11.94) (2026-05-04)
+
+
+### Bug Fixes
+
+* **ai:** recover supervisor metric rankings ([6454b1b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/6454b1b77d51f6dfeb962ceee81006155d0a7a14))
+
 ## [8.11.93](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.92...v8.11.93) (2026-05-04)
 
 
