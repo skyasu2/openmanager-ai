@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.91](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.90...v8.11.91) (2026-05-04)
+
+
+### Bug Fixes
+
+* **ai:** guard formatting-only artifact intents ([ab63b87](https://gitlab.com/skyasu2/openmanager-ai/-/commit/ab63b877f39219045db2b4165cb0ecf9fc650b91))
+
 ## [8.11.90](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.89...v8.11.90) (2026-05-04)
 
 
