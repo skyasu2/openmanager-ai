@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.90](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.89...v8.11.90) (2026-05-04)
+
+
+### Bug Fixes
+
+* **ai:** clarify health and provider evidence ([24801b5](https://gitlab.com/skyasu2/openmanager-ai/-/commit/24801b5a3b515f932a5fa766dfc544cc298437e0))
+
 ## [8.11.89](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.88...v8.11.89) (2026-05-03)
 
 
