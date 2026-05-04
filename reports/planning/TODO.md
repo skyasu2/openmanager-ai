@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-04 KST (`MonitoringDataSource live-mode error contract hardened`)
+**Last Updated**: 2026-05-04 KST (`AI assistant feasible improvements and boundary doc recorded`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -16,7 +16,14 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| _None_ | — | 현재 신규 backlog는 없음 |
+| AI artifact workspace/schema registry and replay pack | High | M4 `ArtifactEnvelope` metadata는 완료됐지만 incident/report/monitoring/server snapshot artifact를 저장·복원·비교하는 portfolio-facing workspace/schema registry는 아직 없다. typed artifact 결과물을 재현 가능한 산출물로 만들되 신규 LLM 호출과 기본 DB write 증가는 별도 gate로 제한한다. 관련: [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) |
+| AI advanced surface targeted QA pack | Medium | 이번 Vercel QA는 AI Chat stream과 탭 렌더링 중심이었다. 비용 보호를 유지하면서 Reporter 1회, anomaly/trend 1회, RAG/Web 대표 질의 1회만 별도 targeted QA로 검증하고 실제 버튼/기능 동작 여부를 기록한다. 실패가 확인될 때만 코드 수정으로 승격한다. |
+| Artifact intent production-sample replay eval | High | `v8.11.80..v8.11.89` 교차검증 결과 deterministic corpus `121/121`은 통과했지만 production query 분포 검증은 별도 필요. 익명화/정규화된 실제 질의 샘플을 fixture로 편입하고 precision/recall drift guard를 보강한다. 관련: [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) |
+| Planner shadow production telemetry review | High | 현재 shadow drift/latency는 로컬 50개 baseline corpus와 단위 테스트 중심이다. `plannerShadow.latencyMs`, mismatch reason, executionMode를 운영/QA 로그에서 집계해 p95와 drift rate를 실제 수치로 확인한 뒤 authority 이전 여부를 판단한다. 관련: [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) |
+| MonitoringFactPack consumer/evidence UI expansion | Medium | M7에서 `MonitoringFactPack` 자체는 도입됐지만 모든 artifact/report/evidence panel이 같은 fact boundary를 소비하지는 않는다. metric severity는 deterministic fact pack이 책임지고 LLM은 explanation/formatting만 수행한다는 계약을 UI와 answer-quality eval까지 확장한다. 관련: [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) |
+| Provider reasoning capability policy contract | Medium | 현재 `thinking`은 provider-native reasoning이 아니라 app-level routing intensity다. 무료 tier provider의 reasoning 지원은 계정 entitlement/latency/quota가 변동되므로 `reasoningCapability`, `lastVerified`, `expiresAt`, smoke source를 policy contract로 승격한 뒤 opt-in으로만 검토한다. 관련: [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) |
+| Monitoring source error boundary documentation | Medium | `analytics-monitoring-error.ts`는 현재 deterministic monitoring routes(`/monitoring/snapshot`, `/monitoring/analyze-batch`)에 한정된다. `/analyze-server`, `/incident-report` grounding 실패까지 표준 오류로 올릴지 책임 범위를 명문화한다. 관련: [monitoring-ai-data-source-plan.md](monitoring-ai-data-source-plan.md) |
+| Streaming warmup test act warning cleanup | Low | Targeted regression은 통과하지만 `StreamingWarmupIndicator` 테스트에 React `act(...)` 경고가 남아 있다. 기능 리스크는 낮으나 테스트 품질 부채로 별도 정리한다. 관련: [ai-streaming-ui-improvement-plan.md](ai-streaming-ui-improvement-plan.md) |
 
 ---
 
@@ -41,6 +48,21 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-04 #280)
+- [x] AI response provider/model QA evidence wiring
+  - `AIWorkspace`가 마지막 완료 assistant 응답의 `metadata.provider`/`metadata.modelId`를 계산해 `SystemContextPanel`로 전달하도록 연결
+  - `SystemContextPanel`이 마지막 응답 provider chip을 활성 강조하고 `Last response: provider/model`을 표시해 Playwright QA에서 실제 runtime selection을 관측할 수 있게 보강
+  - 기존 `AnalysisBasisBadge`의 provider/model/fallback 상세 metadata 경로는 유지하며, 새 LLM/provider 호출이나 routing authority 변경 없음
+  - 검증: `npx vitest run src/components/ai/AIWorkspace.test.tsx src/components/ai/SystemContextPanel.test.tsx`
+
+### Completed (2026-05-04 #279)
+- [x] AI soft health cold-start observability normalization
+  - `/api/health?service=ai&soft=true`가 Cloud Run `/health` timeout을 받으면 `status=degraded`를 유지하되 `latency`, `reasonCode=cloud_run_health_timeout`, `recoverable=true`를 함께 반환하도록 보강
+  - `useHealthCheck`, `SystemContextPanel`, `CloudRunStatusIndicator`, `AIDebugPanel`이 recoverable cold-start degraded를 hard error가 아니라 `Warming`/웜업 상태로 표시하도록 정리
+  - `SystemBootstrap`이 soft degraded 또는 자체 timeout을 세션 동안 hard failed로 캐시하지 않고 `degraded` 상태로 보존하도록 보정
+  - 인프라 증설, always-on warmup, 추가 LLM 호출 없음
+  - 검증: targeted health/proxy/UI tests `16/16`, `type-check`, `lint`, `test:quick`, `git diff --check`
 
 ### Completed (2026-05-04 #278)
 - [x] MonitoringDataSource live-mode error contract hardening

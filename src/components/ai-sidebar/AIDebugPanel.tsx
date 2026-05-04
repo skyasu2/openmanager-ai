@@ -14,14 +14,16 @@ export function AIDebugPanel({
   showStatus = true,
 }: AIDebugPanelProps = {}) {
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState<'idle' | 'ok' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'ok' | 'warming' | 'error'>(
+    'idle'
+  );
   const [latency, setLatency] = useState<number | null>(null);
 
   const handleAction = async () => {
     setLoading(true);
     try {
       // Wake-up first if idle/error, then health check
-      if (status !== 'ok') {
+      if (status !== 'ok' && status !== 'warming') {
         const wakeRes = await fetch('/api/ai/wake-up', { method: 'POST' });
         if (wakeRes.status !== 204 && !wakeRes.ok) {
           const wakeData = await wakeRes.json();
@@ -37,6 +39,17 @@ export function AIDebugPanel({
         setStatus('ok');
         setLatency(data.latency || Date.now() - start);
         toast.success(`AI 엔진 정상 (${data.latency ?? Date.now() - start}ms)`);
+      } else if (
+        res.ok &&
+        data.status === 'degraded' &&
+        data.recoverable &&
+        data.reasonCode === 'cloud_run_health_timeout'
+      ) {
+        setStatus('warming');
+        setLatency(data.latency || Date.now() - start);
+        toast.success(
+          'AI 엔진 웜업 중입니다. 실제 질의는 재시도 경로를 사용합니다.'
+        );
       } else {
         setStatus('error');
         toast.error(`연결 실패: ${data.error || '알 수 없는 오류'}`);
@@ -78,6 +91,12 @@ export function AIDebugPanel({
                   오프라인
                 </span>
               )}
+              {status === 'warming' && (
+                <span className="flex items-center gap-1.5 text-xs font-semibold text-amber-600">
+                  <span className="h-2 w-2 rounded-full bg-amber-500" />
+                  웜업 중{latency ? ` (${latency}ms)` : ''}
+                </span>
+              )}
             </div>
           )}
 
@@ -90,7 +109,11 @@ export function AIDebugPanel({
             className="flex min-h-6 min-w-6 items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 disabled:opacity-50"
           >
             <Activity className="h-3.5 w-3.5 text-blue-600" />
-            {loading ? '확인 중…' : status === 'ok' ? '재확인' : '상태 확인'}
+            {loading
+              ? '확인 중…'
+              : status === 'ok' || status === 'warming'
+                ? '재확인'
+                : '상태 확인'}
           </button>
         </div>
       </div>

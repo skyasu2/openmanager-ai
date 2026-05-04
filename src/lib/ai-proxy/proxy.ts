@@ -345,17 +345,31 @@ export async function proxyStreamToCloudRun(
  * Cloud Run 헬스 체크
  * @param timeout - 타임아웃 (기본값: 5000ms, Cloud Run cold start 고려)
  */
-export async function checkCloudRunHealth(timeout = 5000): Promise<{
+export type CloudRunHealthReasonCode =
+  | 'cloud_run_disabled'
+  | 'cloud_run_health_timeout'
+  | 'cloud_run_health_http_error'
+  | 'cloud_run_health_network_error';
+
+export type CloudRunHealthResult = {
   healthy: boolean;
   latency?: number;
   error?: string;
-}> {
+  reasonCode?: CloudRunHealthReasonCode;
+  recoverable?: boolean;
+};
+
+export async function checkCloudRunHealth(
+  timeout = 5000
+): Promise<CloudRunHealthResult> {
   const config = getConfig();
 
   if (!isCloudRunEnabled()) {
     return {
       healthy: false,
       error: 'Cloud Run is not enabled',
+      reasonCode: 'cloud_run_disabled',
+      recoverable: false,
     };
   }
 
@@ -387,6 +401,8 @@ export async function checkCloudRunHealth(timeout = 5000): Promise<{
       healthy: false,
       latency,
       error: `Health check failed: ${response.status}`,
+      reasonCode: 'cloud_run_health_http_error',
+      recoverable: response.status >= 500,
     };
   } catch (error) {
     clearTimeout(timeoutId);
@@ -397,6 +413,8 @@ export async function checkCloudRunHealth(timeout = 5000): Promise<{
         healthy: false,
         latency,
         error: `Cloud Run health check timeout (>${timeout}ms) - possible cold start`,
+        reasonCode: 'cloud_run_health_timeout',
+        recoverable: true,
       };
     }
 
@@ -404,6 +422,8 @@ export async function checkCloudRunHealth(timeout = 5000): Promise<{
       healthy: false,
       latency,
       error: error instanceof Error ? error.message : 'Unknown error',
+      reasonCode: 'cloud_run_health_network_error',
+      recoverable: true,
     };
   }
 }

@@ -174,7 +174,21 @@ vi.mock('@/components/ai/MessageActions', () => ({
 }));
 
 vi.mock('@/components/ai/SystemContextPanel', () => ({
-  default: () => <div data-testid="system-context">System Context</div>,
+  default: ({
+    finalModelId,
+    finalProvider,
+  }: {
+    finalModelId?: string;
+    finalProvider?: string;
+  }) => (
+    <div
+      data-final-model-id={finalModelId ?? ''}
+      data-final-provider={finalProvider ?? ''}
+      data-testid="system-context"
+    >
+      System Context
+    </div>
+  ),
 }));
 
 vi.mock('@/components/error/AIErrorBoundary', () => ({
@@ -557,6 +571,78 @@ describe('AIWorkspace', () => {
     expect(lastCall?.analysisMode).toBe('thinking');
     expect(lastCall?.onSelectAnalysisMode).toEqual(expect.any(Function));
     expect(lastCall?.queuedQueries).toEqual([{ id: 1, text: 'queued' }]);
+  });
+
+  it('forwards latest completed assistant provider metadata to system context', async () => {
+    const { useAIChatCore } = await import('@/hooks/ai/useAIChatCore');
+
+    vi.mocked(useAIChatCore).mockReturnValue({
+      input: '',
+      setInput: vi.fn(),
+      messages: [
+        {
+          id: 'assistant-older',
+          role: 'assistant',
+          content: '이전 답변',
+          timestamp: new Date('2026-05-04T00:00:00.000Z'),
+          metadata: {
+            provider: 'cerebras',
+            modelId: 'llama3.1-8b',
+          },
+        },
+        {
+          id: 'assistant-latest',
+          role: 'assistant',
+          content: '최신 답변',
+          timestamp: new Date('2026-05-04T00:01:00.000Z'),
+          metadata: {
+            provider: 'groq',
+            modelId: 'llama-4-scout-17b-16e-instruct',
+          },
+        },
+      ],
+      isLoading: false,
+      hybridState: {
+        progress: null,
+        jobId: null,
+      },
+      currentMode: 'streaming',
+      error: null,
+      clearError: vi.fn(),
+      sessionState: {
+        messagesRemaining: 10,
+        isLimited: false,
+      },
+      handleNewSession: vi.fn(),
+      handleFeedback: vi.fn(),
+      regenerateLastResponse: vi.fn(),
+      retryLastQuery: vi.fn(),
+      stop: vi.fn(),
+      cancel: vi.fn(),
+      handleSendInput: vi.fn(),
+      clarification: null,
+      selectClarification: vi.fn(),
+      submitCustomClarification: vi.fn(),
+      skipClarification: vi.fn(),
+      dismissClarification: vi.fn(),
+      currentAgentStatus: null,
+      currentHandoff: null,
+      warmingUp: false,
+      estimatedWaitSeconds: 0,
+      queuedQueries: [],
+      removeQueuedQuery: vi.fn(),
+    } as unknown as ReturnType<typeof useAIChatCore>);
+
+    render(<AIWorkspace mode="fullscreen" />);
+
+    expect(screen.getByTestId('system-context')).toHaveAttribute(
+      'data-final-provider',
+      'groq'
+    );
+    expect(screen.getByTestId('system-context')).toHaveAttribute(
+      'data-final-model-id',
+      'llama-4-scout-17b-16e-instruct'
+    );
   });
 
   it('consumes pending prefill message when fullscreen chat mounts', async () => {

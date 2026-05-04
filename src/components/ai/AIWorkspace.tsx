@@ -20,7 +20,14 @@ import {
   Plus,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { Activity, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  Activity,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { CloudRunStatusIndicator } from '@/components/ai-sidebar/CloudRunStatusIndicator';
 import { EnhancedAIChat } from '@/components/ai-sidebar/EnhancedAIChat';
 import { AIErrorBoundary } from '@/components/error/AIErrorBoundary';
@@ -241,6 +248,30 @@ export default function AIWorkspace({
   });
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const latestAssistantRuntime = useMemo(() => {
+    for (let index = enhancedMessages.length - 1; index >= 0; index -= 1) {
+      const message = enhancedMessages[index];
+      if (!message) {
+        continue;
+      }
+
+      if (message.role !== 'assistant' || message.isStreaming) {
+        continue;
+      }
+
+      const provider = message.metadata?.provider?.trim();
+      if (!provider) {
+        continue;
+      }
+
+      return {
+        provider,
+        modelId: message.metadata?.modelId?.trim(),
+      };
+    }
+
+    return null;
+  }, [enhancedMessages]);
 
   useEffect(() => {
     if (embedded) {
@@ -506,7 +537,11 @@ export default function AIWorkspace({
         </div>
 
         {selectedFunction === 'chat' && isRightPanelOpen && (
-          <SystemContextPanel className="hidden xl:flex" />
+          <SystemContextPanel
+            className="hidden xl:flex"
+            finalModelId={latestAssistantRuntime?.modelId}
+            finalProvider={latestAssistantRuntime?.provider}
+          />
         )}
       </div>
     );
@@ -704,7 +739,11 @@ export default function AIWorkspace({
 
         {/* RIGHT SIDEBAR (System Context) - 실시간 헬스 체크 연동 */}
         {selectedFunction === 'chat' && isRightPanelOpen && (
-          <SystemContextPanel className="hidden lg:flex" />
+          <SystemContextPanel
+            className="hidden lg:flex"
+            finalModelId={latestAssistantRuntime?.modelId}
+            finalProvider={latestAssistantRuntime?.provider}
+          />
         )}
       </div>
     </div>

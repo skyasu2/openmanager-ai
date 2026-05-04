@@ -403,6 +403,48 @@ type MonitoringFactPack = {
 | M7 fact pack이 새 데이터 계층으로 커지는 경우 | 기존 `sourceMode/queryAsOf/evidenceRefs` tool result bundling 범위로 축소 |
 | 범위가 예상보다 2배 이상 확대 | milestone별 하위 plan으로 분리 |
 
+## 2026-05-04 교차검증 후속 계획
+
+`v8.11.80..v8.11.89` 교차검증 결과, 주요 설계 흐름은 맞지만 후속 판단에는 아래 보정이 필요하다. 참고: 실제 커밋 수는 `v8.11.80..v8.11.89` 기준 `80`개이며, `83`개는 `v8.11.79..v8.11.89` 기준이다.
+
+| 항목 | 현재 근거 | 후속 작업 | 승격 조건 |
+|------|-----------|-----------|-----------|
+| Artifact intent accuracy | deterministic fixture corpus `121/121`, `incident-report`/`monitoring-analysis`/`server-snapshot` precision `1.0000` | production query 샘플을 익명화해 replay fixture로 추가하고 category별 precision/recall drift를 측정 | 실제 사용자 질의 샘플에서 artifact false-positive 또는 false-negative가 확인되거나 artifact 종류가 추가될 때 |
+| Planner shadow drift/latency | local 50개 corpus mismatch `<=5/50`, shadow latency unit guard `<=200ms` | `plannerShadow.latencyMs`, `drift.reasonCodes`, `candidate.executionMode`를 QA/운영 로그에서 집계해 p95와 drift rate를 산출 | p95 latency 또는 drift rate가 rollout threshold를 넘거나 `/api/ai/ask` authority 이전을 검토할 때 |
+| Runtime provider/model evidence | `AIWorkspaceMessage`와 `AnalysisBasisBadge`는 `provider`, `modelId`, `providerAttempts`를 받을 수 있고 Cloud Run stream done metadata도 이를 노출한다. 다만 fullscreen `SystemContextPanel`의 `finalProvider` prop은 현재 workspace에서 전달되지 않는다 | 마지막 완료 assistant message의 provider/model metadata를 `SystemContextPanel`과 QA 증거에 연결하고, provider fallback 여부를 분석 근거 상세 패널에서 확인하는 targeted test를 추가 | 모델 routing 정책 변경, fallback 품질 이슈 조사, 또는 release-facing QA에서 "이번 응답이 어떤 provider/model로 실행됐는가"를 증명해야 할 때 |
+| Advanced AI surface execution QA | `QA-20260504-0402`는 AI Chat stream과 탭 렌더링은 통과했지만 Reporter 생성, anomaly/trend full analysis, RAG/Web 실제 질의는 비용 보호를 위해 skipped surface로 남겼다 | Reporter 1회, anomaly/trend 1회, RAG/Web 대표 질의 1회를 별도 targeted QA pack으로 실행하고 실패가 확인될 때만 코드 수정으로 승격한다 | 버튼만 있고 동작하지 않는 기능 의심이 재발하거나 broad/release-gate QA 범위를 갱신할 때 |
+| Facade authority 이전 | `/api/ai/ask`는 wrapper-only이며 기존 stream/job/artifact route authority를 유지 | authority 이전 전 go/no-go checklist를 새로 작성하고, frontend/BFF/Cloud Run route catalog를 비교 | shadow telemetry가 안정적이고 기존 route 제거 효과가 복잡도 감소로 확인될 때 |
+
+이 섹션은 active implementation scope가 아니라 다음 사이클 seed다. 구현 착수 시 `TODO.md` Backlog에서 Active Task로 승격하고, 계약 변경이면 failing spec을 먼저 추가한다.
+
+구현 기록:
+- 2026-05-04 `Runtime provider/model evidence` 항목 완료. `AIWorkspace`가 마지막 완료 assistant 응답의 provider/model metadata를 `SystemContextPanel`에 전달하고, 패널은 provider chip 활성화와 `Last response: provider/model` 표시를 제공한다.
+- 검증: `npx vitest run src/components/ai/AIWorkspace.test.tsx src/components/ai/SystemContextPanel.test.tsx`.
+
+## 2026-05-04 개선 가능 범위와 작업화 기준
+
+현재 AI assistant는 학습용/포트폴리오 결과물이면서 production path는 Free Tier 원칙을 지킨다. 따라서 개선 목표는 "더 비싼 모델을 붙여 범용 지능을 올리는 것"이 아니라, 현재 모델 조합을 deterministic data/tool/eval/artifact로 보강해 도메인 체감 품질을 올리는 것이다.
+
+불가능하거나 현재 전제에서 비추천인 항목은 별도 decision record인 [AI Assistant Improvement Boundaries](../../docs/reference/architecture/ai/ai-assistant-improvement-boundaries.md)에 둔다. 이 계획서에는 실행 가능한 개선만 남긴다.
+
+| 개선 묶음 | 작업 항목 | 가능 이유 | 구현 전 gate |
+|-----------|-----------|-----------|--------------|
+| 신뢰도 관측 | AI response provider/model QA evidence wiring | provider/model metadata 경로는 이미 있고 UI/QA 연결이 약한 상태다. 신규 provider 호출 없이 증거성을 높일 수 있다. | 마지막 assistant message metadata restore test, SystemContextPanel/analysis basis DOM test |
+| 의도 분류 품질 | Artifact intent production-sample replay eval | 현재 deterministic corpus는 통과했지만 실제 질의 분포 검증이 빠져 있다. 익명화 fixture와 precision/recall guard는 비용 영향이 없다. | 샘플 익명화 기준, class별 precision/recall threshold, false-positive handling 기준 |
+| 라우팅 품질 | Planner shadow production telemetry review | shadow planner metadata가 이미 존재한다. 실제 drift/latency 집계만 추가하면 authority 이전 판단 근거가 생긴다. | p95 latency, drift rate, mismatch reason 집계 방식과 rollout threshold |
+| 산출물 포트폴리오화 | AI artifact workspace/schema registry and replay pack | M4 envelope metadata가 있으므로 저장·복원·비교 가능한 artifact registry로 확장할 수 있다. 포트폴리오 가치가 크다. | 신규 DB write 기본값 금지, local/session-first 저장 범위, artifact version restore contract |
+| 사실 경계 확장 | MonitoringFactPack consumer/evidence UI expansion | M7 fact pack은 이미 snapshot에 붙어 있다. UI/report/eval이 같은 fact boundary를 소비하게 하면 hallucination 리스크를 줄인다. | metric severity는 deterministic rule만 사용, LLM은 explanation/formatting 전용이라는 test contract |
+| 운영 상태 혼선 제거 | AI soft health cold-start observability normalization | 실제 stream success와 soft health timeout이 다른 문제임을 UI/QA에 표현하면 운영자 오판을 줄인다. | `reasonCode`, `recoverable`, timeout latency, hard/soft degraded copy contract |
+| 비용 제한 QA | AI advanced surface targeted QA pack | Reporter/anomaly/RAG/Web을 각 1회씩만 검증하면 free-tier 부담을 제한하면서 버튼/기능 실동작을 확인할 수 있다. | QA 실행 전 provider quota/usage 확인, max output token 제한, run 기록 필수 |
+| 조건부 reasoning | Provider reasoning capability policy contract | provider-native reasoning을 바로 켜는 것이 아니라 capability/freshness metadata를 먼저 추가하는 것은 비용 영향이 낮다. | `reasoningCapability`, `lastVerified`, `expiresAt`, smoke source schema. 기본 runtime behavior 변경 금지 |
+
+### 작업화 원칙
+
+- 이미 `TODO.md` Backlog에 있는 항목은 새 계획서를 만들지 않고 이 계획서 또는 관련 기존 계획서에 상세 범위를 추가한다.
+- 신규 기능, route/schema/AI stream contract 변경, artifact storage contract 변경은 `Status: Approved` 이상으로 올린 뒤 failing spec을 먼저 작성한다.
+- 실 LLM/외부 서비스 호출이 필요한 검증은 CI가 아니라 targeted QA 또는 수동 smoke로 제한한다.
+- Cloud Run min instance, vCPU/memory 증설, paid provider default 전환은 이 개선 범위에 포함하지 않는다.
+
 ## 완료 기준
 
 - [x] M3 기준 문서가 실제 M2 contract와 future target을 분리해서 설명한다.

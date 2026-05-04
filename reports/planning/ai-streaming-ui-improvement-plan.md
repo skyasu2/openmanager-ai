@@ -117,3 +117,25 @@
 ## 9. 구현 순서 기록
 
 S1 → S2 → S3 순서로 완료했다. S1·S2는 프론트엔드 변경으로 먼저 검증했고, S3는 Cloud Run stream contract 변경이 수반되어 이후 배포/QA로 마감했다.
+
+## 10. 교차검증 후속 정리
+
+2026-05-04 targeted regression 재실행 결과 기능 테스트는 통과했다. 다만 `StreamingWarmupIndicator` 테스트에서 React `act(...)` 경고가 남아 있어 테스트 품질 부채로 기록한다.
+
+- 범위: `src/components/ai-sidebar/StreamingWarmupIndicator.test.tsx`의 fake timer/state update 검증을 `act(...)` 또는 testing-library async helper 기준으로 정리
+- 비범위: S1~S3 기능 재설계, stream protocol 변경, Cloud Run 재배포
+- 우선순위: Low. 실제 UI 실패는 아니며, test output noise와 future React upgrade 안정성을 줄이는 목적
+
+### 10.1 AI soft health/cold-start observability
+
+`QA-20260504-0402` 후속 확인에서 실제 `/api/ai/supervisor/stream/v2` 응답은 정상이고 `/api/health`도 healthy였지만, `/api/health?service=ai&soft=true`는 Cloud Run `/health` 5초 timeout으로 `degraded`를 반환했다. 이는 사용자 기능 장애가 아니라 health probe의 cold-start 관측 한계로 분류한다.
+
+- 개선 범위: `checkCloudRunHealth()` timeout 응답에 `reasonCode`, `recoverable`, `latency`를 명시하고 `useHealthCheck`/`SystemContextPanel`/`CloudRunStatusIndicator`가 cold-start degraded와 hard error를 구분해 표시하도록 정리
+- 부트스트랩 범위: `SystemBootstrap`이 soft degraded를 세션 동안 hard failed처럼 캐시하지 않도록 판단 기준을 보정
+- 비범위: Cloud Run min instance, vCPU/memory 증설, always-on warmup, 추가 LLM 호출
+- 검증: health route unit test, `useHealthCheck`/status indicator DOM test, Vercel targeted smoke에서 soft health degraded와 실제 stream success를 분리 기록
+- 우선순위: High. 기능 장애는 아니지만 운영자/QA가 AI 상태를 오판할 수 있어 관측성 개선 가치가 높다.
+
+구현 기록:
+- 2026-05-04 완료. soft health timeout metadata(`reasonCode`, `recoverable`, `latency`)와 UI `Warming` 표시를 추가했고, `SystemBootstrap`의 recoverable degraded cache semantics를 보정했다.
+- 검증: `npx vitest run src/app/api/health/route.test.ts src/lib/ai-proxy/proxy.test.ts src/components/ai/SystemContextPanel.test.tsx`, `npm run type-check`, `npm run lint`, `npm run test:quick`, `git diff --check`.

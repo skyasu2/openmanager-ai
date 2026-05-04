@@ -91,6 +91,8 @@ describe('/api/health service-specific AI health', () => {
       healthy: false,
       latency: 321,
       error: 'Cloud Run is not enabled',
+      reasonCode: 'cloud_run_disabled',
+      recoverable: false,
     });
 
     const response = await GET(
@@ -104,6 +106,35 @@ describe('/api/health service-specific AI health', () => {
       healthy: false,
       backend: 'cloud-run',
       error: 'Cloud Run is not enabled',
+      latency: 321,
+      reasonCode: 'cloud_run_disabled',
+      recoverable: false,
+    });
+  });
+
+  it('keeps cold-start timeout metadata observable on soft health polling', async () => {
+    mockCheckCloudRunHealth.mockResolvedValueOnce({
+      healthy: false,
+      latency: 5001,
+      error: 'Cloud Run health check timeout (>5000ms) - possible cold start',
+      reasonCode: 'cloud_run_health_timeout',
+      recoverable: true,
+    });
+
+    const response = await GET(
+      createHealthRequest('http://localhost/api/health?service=ai&soft=true')
+    );
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body).toMatchObject({
+      status: 'degraded',
+      healthy: false,
+      backend: 'cloud-run',
+      latency: 5001,
+      error: 'Cloud Run health check timeout (>5000ms) - possible cold start',
+      reasonCode: 'cloud_run_health_timeout',
+      recoverable: true,
     });
   });
 

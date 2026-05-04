@@ -328,6 +328,18 @@ type MonitoringErrorCode =
 - Vercel `/api/ai/intelligent-monitoring` proxy는 Cloud Run monitoring source 오류를 generic fallback으로 숨기지 않고 동일한 오류 계약과 HTTP status로 pass-through한다.
 - 실제 OTLP/Prometheus/Loki adapter, collector 운영, TSDB, live smoke는 별도 제품 결정 전까지 non-goal이다.
 
+### 13.2 교차검증 후속 경계 정리 (2026-05-04)
+
+`analytics-monitoring-error.ts`는 현재 `MonitoringDataSourceError`를 deterministic monitoring route 오류 계약으로 변환하는 helper다. 적용 범위는 Cloud Run `/monitoring/snapshot`, `/monitoring/analyze-batch`와 Vercel `/api/ai/intelligent-monitoring` pass-through 경로로 본다.
+
+후속 정리 항목:
+
+- `/analyze-server`의 tool-only deterministic insight 오류를 같은 monitoring error contract로 올릴지, 기존 generic `handleApiError` 경로로 둘지 결정한다.
+- `/incident-report`의 monitoring grounding 실패는 현재 보고서 생성을 계속하기 위한 degraded path 성격이 강하다. 이를 hard error로 올리면 보고서 availability가 낮아지므로 별도 계약 판단이 필요하다.
+- 문서와 테스트에서 `monitoring source error contract`라는 용어가 deterministic monitoring routes 전용인지, Reporter/Analyst grounding 전체를 포함하는지 명확히 분리한다.
+- Vercel Playwright MCP 후속 QA에서는 `intelligent-monitoring` full analysis 버튼을 1회만 실행해 deterministic monitoring route가 실제 UI에서 실패/성공 상태를 어떻게 표시하는지 확인한다. 새 backend 연결이나 LLM 호출 확대는 포함하지 않는다.
+- 새 live telemetry backend, TSDB, collector 운영, LLM/provider 호출 증가는 이 follow-up 범위에 포함하지 않는다.
+
 검증:
 - `cloud-run/ai-engine npm test -- src/routes/analytics.test.ts src/services/monitoring/monitoring-data-source.test.ts src/tools-ai-sdk/analyst-tools.test.ts`
 - `npx vitest run --config config/testing/vitest.config.node.ts src/app/api/ai/intelligent-monitoring/route.test.ts`

@@ -156,6 +156,42 @@ describe('ai-proxy runtime config', () => {
     expect(mockLogger.info).toHaveBeenCalledTimes(2);
   });
 
+  it('marks Cloud Run health timeouts as recoverable cold-start probe failures', async () => {
+    vi.useFakeTimers();
+    vi.stubEnv('NODE_ENV', 'production');
+    vi.stubEnv('VERCEL', '1');
+    vi.stubEnv('CLOUD_RUN_ENABLED', 'true');
+    vi.stubEnv('CLOUD_RUN_AI_URL', 'https://ai.run.app');
+    vi.stubEnv('CLOUD_RUN_API_SECRET', 'secret');
+
+    const { checkCloudRunHealth } = await loadProxy();
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((_url, init?: RequestInit) => {
+        return new Promise((_resolve, reject) => {
+          init?.signal?.addEventListener('abort', () => {
+            const abortError = new Error('Aborted');
+            abortError.name = 'AbortError';
+            reject(abortError);
+          });
+        });
+      })
+    );
+
+    const healthPromise = checkCloudRunHealth(5000);
+    await vi.advanceTimersByTimeAsync(5000);
+    const result = await healthPromise;
+
+    expect(result).toMatchObject({
+      healthy: false,
+      latency: 5000,
+      reasonCode: 'cloud_run_health_timeout',
+      recoverable: true,
+      error: 'Cloud Run health check timeout (>5000ms) - possible cold start',
+    });
+    vi.useRealTimers();
+  });
+
   it('preserves structured Cloud Run error payloads', async () => {
     vi.stubEnv('NODE_ENV', 'production');
     vi.stubEnv('VERCEL', '1');

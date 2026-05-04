@@ -43,6 +43,8 @@ export type HealthCheckResult = {
   lastChecked: Date | null;
   isSystemOnline: boolean;
   error: string | null;
+  reasonCode: string | null;
+  recoverable: boolean | null;
 };
 
 export type UseHealthCheckOptions = {
@@ -77,6 +79,8 @@ const createInitialResult = (): HealthCheckResult => ({
   lastChecked: null,
   isSystemOnline: false,
   error: null,
+  reasonCode: null,
+  recoverable: null,
 });
 
 const initialHealthResult = createInitialResult();
@@ -149,6 +153,9 @@ async function performHealthCheck(service: 'ai' | 'all' = 'ai'): Promise<void> {
         status?: string;
         providers?: Array<{ name: string; status: string; role?: string }>;
         latency?: number;
+        error?: string;
+        reasonCode?: string;
+        recoverable?: boolean;
       };
 
       // Provider 상태 매핑
@@ -176,7 +183,10 @@ async function performHealthCheck(service: 'ai' | 'all' = 'ai'): Promise<void> {
         latency: data.latency ?? elapsed,
         lastChecked: new Date(),
         isSystemOnline: isHealthy,
-        error: null,
+        error: data.error ?? null,
+        reasonCode: data.reasonCode ?? null,
+        recoverable:
+          typeof data.recoverable === 'boolean' ? data.recoverable : null,
       };
     } else {
       healthStore.result = {
@@ -186,6 +196,8 @@ async function performHealthCheck(service: 'ai' | 'all' = 'ai'): Promise<void> {
         lastChecked: new Date(),
         isSystemOnline: false,
         error: `HTTP ${response.status}`,
+        reasonCode: null,
+        recoverable: false,
       };
     }
   } catch (error) {
@@ -201,6 +213,8 @@ async function performHealthCheck(service: 'ai' | 'all' = 'ai'): Promise<void> {
       lastChecked: new Date(),
       isSystemOnline: false,
       error: error instanceof Error ? error.message : 'Unknown error',
+      reasonCode: null,
+      recoverable: false,
     };
   } finally {
     if (healthStore.abortController === controller) {

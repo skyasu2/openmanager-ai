@@ -33,11 +33,13 @@ type AIProviderStatus = Pick<AIProviderConfig, 'name' | 'role' | 'color'> & {
 type SystemContextPanelProps = {
   className?: string;
   finalProvider?: string;
+  finalModelId?: string;
 };
 
 const SystemContextPanel = memo(function SystemContextPanel({
   className = '',
   finalProvider,
+  finalModelId,
 }: SystemContextPanelProps) {
   // useHealthCheck 훅으로 통합 (10분 데이터 주기 기준으로 폴링 최소화)
   const {
@@ -47,6 +49,8 @@ const SystemContextPanel = memo(function SystemContextPanel({
     isChecking,
     check,
     error,
+    reasonCode,
+    recoverable,
   } = useHealthCheck({
     pollingInterval: 600000, // 10분 (서버 데이터 갱신 주기 정렬)
     pauseWhenHidden: true,
@@ -101,6 +105,8 @@ const SystemContextPanel = memo(function SystemContextPanel({
   };
 
   const systemStatusConfig = useMemo(() => {
+    const coldStartProbeTimeout =
+      recoverable === true && reasonCode === 'cloud_run_health_timeout';
     const configs: Record<
       HealthStatus,
       { label: string; className: string; description: string }
@@ -116,9 +122,11 @@ const SystemContextPanel = memo(function SystemContextPanel({
         description: 'Health check in progress.',
       },
       degraded: {
-        label: 'Degraded',
+        label: coldStartProbeTimeout ? 'Warming' : 'Degraded',
         className: 'text-amber-600',
-        description: 'Health endpoint responded but reported a degraded state.',
+        description: coldStartProbeTimeout
+          ? 'Cloud Run health probe timed out during a recoverable cold start.'
+          : 'Health endpoint responded but reported a degraded state.',
       },
       error: {
         label: 'Error',
@@ -133,7 +141,7 @@ const SystemContextPanel = memo(function SystemContextPanel({
     };
 
     return configs[healthStatus];
-  }, [error, healthStatus]);
+  }, [error, healthStatus, reasonCode, recoverable]);
 
   return (
     <div
@@ -208,6 +216,17 @@ const SystemContextPanel = memo(function SystemContextPanel({
             표시 역할은 현재 라우팅 정책 기준이며, 실제 요청별 선택은 쿼리
             유형과 fallback 상태에 따라 달라집니다.
           </p>
+          {finalProvider && (
+            <p
+              className="text-xs text-gray-500"
+              data-testid="last-response-runtime"
+            >
+              Last response:{' '}
+              {finalModelId
+                ? `${finalProvider}/${finalModelId}`
+                : finalProvider}
+            </p>
+          )}
           <p
             className="text-right text-xs text-gray-400"
             suppressHydrationWarning
