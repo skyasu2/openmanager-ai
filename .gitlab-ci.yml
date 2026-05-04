@@ -306,13 +306,27 @@ deploy:
       export NEXT_PUBLIC_APP_VERSION="${CI_COMMIT_TAG#v}"
       vercel build --prod --token=$VERCEL_TOKEN
     - |
-      vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN \
+      set +e
+      timeout 300s vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN \
         --env "APP_COMMIT_SHA=${CI_COMMIT_SHA:-}" \
         --env "APP_RELEASE_TAG=${CI_COMMIT_TAG:-}" \
         --env "APP_PIPELINE_URL=${CI_PIPELINE_URL:-}" \
         --meta "gitCommitSha=${CI_COMMIT_SHA:-}" \
         --meta "gitCommitRef=${CI_COMMIT_TAG:-}" \
         --meta "gitPipelineUrl=${CI_PIPELINE_URL:-}"
+      deploy_status=$?
+      set -e
+      if [ "$deploy_status" -eq 124 ]; then
+        echo "⚠️ Vercel CLI timed out after the production deploy step; verifying the alias before failing."
+        npm run test:vercel:post-deploy:smoke -- \
+          --url=https://openmanager-ai.vercel.app \
+          --expected-version="${CI_COMMIT_TAG#v}" \
+          --expected-commit-sha="${CI_COMMIT_SHA}" \
+          --retries=12 \
+          --retry-delay-ms=10000
+      elif [ "$deploy_status" -ne 0 ]; then
+        exit "$deploy_status"
+      fi
     - echo "✅ 배포 완료"
   environment:
     name: production
