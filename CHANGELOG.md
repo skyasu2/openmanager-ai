@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.96](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.95...v8.11.96) (2026-05-04)
+
+
+### Bug Fixes
+
+* **ai:** polish supervisor telemetry and log ranges ([c2e6b28](https://gitlab.com/skyasu2/openmanager-ai/-/commit/c2e6b28e1ccaea264ae3bdb9fd9974f098f2f51e))
+
+
+### Tests
+
+* **qa:** record v8.11.95 AI routing recheck ([146deb8](https://gitlab.com/skyasu2/openmanager-ai/-/commit/146deb8cf8e733adf99f10f350ed30b6db11e78b))
+* **qa:** record v8.11.95 Vercel Playwright recheck ([237af5f](https://gitlab.com/skyasu2/openmanager-ai/-/commit/237af5fe12926e6cf6f85c4b9af41470f6a1b220))
+
 ## [8.11.95](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.94...v8.11.95) (2026-05-04)
 
 
