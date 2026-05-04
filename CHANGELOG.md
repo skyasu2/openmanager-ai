@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.97](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.96...v8.11.97) (2026-05-04)
+
+
+### Bug Fixes
+
+* **ai:** preserve formatting rewrite context ([62bb624](https://gitlab.com/skyasu2/openmanager-ai/-/commit/62bb624938ef0a3ab0bb8b486a388d1b6477430a))
+* **ci:** tolerate vercel deploy timeout after alias ([262b170](https://gitlab.com/skyasu2/openmanager-ai/-/commit/262b170484e0f5a9f2204ed5b0821e4f5c72e8a8))
+
+
+### Tests
+
+* **qa:** record v8.11.96 Vercel Playwright recheck ([b7b768b](https://gitlab.com/skyasu2/openmanager-ai/-/commit/b7b768bb2c75cfb4d76f1dee8d1eacbe68b4f0db))
+
 ## [8.11.96](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.95...v8.11.96) (2026-05-04)
 
 
