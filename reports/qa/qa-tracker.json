@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-04T05:22:20.393Z"
+    "updatedAt": "2026-05-04T07:13:56.328Z"
   },
   "sequence": {
-    "nextRunNumber": 404
+    "nextRunNumber": 405
   },
   "summary": {
-    "totalRecordedRuns": 401,
-    "totalRuns": 329,
+    "totalRecordedRuns": 402,
+    "totalRuns": 330,
     "excludedRuns": 72,
-    "totalChecks": 2842,
-    "totalPassed": 2744,
+    "totalChecks": 2862,
+    "totalPassed": 2764,
     "totalFailed": 89,
     "completionRate": 100,
-    "completedItems": 421,
+    "completedItems": 423,
     "pendingItems": 0,
     "deferredItems": 0,
-    "wontFixItems": 21,
+    "wontFixItems": 24,
     "expertDomainsTracked": 12,
-    "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260504-0403",
-    "lastRecordedAt": "2026-05-04T05:22:20.393Z",
-    "latestRecordedRunId": "QA-20260504-0403",
-    "latestRecordedAt": "2026-05-04T05:22:20.393Z"
+    "expertDomainsOpenGaps": 3,
+    "lastRunId": "QA-20260504-0404",
+    "lastRecordedAt": "2026-05-04T07:13:56.328Z",
+    "latestRecordedRunId": "QA-20260504-0404",
+    "latestRecordedAt": "2026-05-04T07:13:56.328Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -10337,6 +10337,126 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-04T05:22:20.393Z"
+    },
+    "v81195-vercel-playwright-ai-routing-recheck": {
+      "id": "v81195-vercel-playwright-ai-routing-recheck",
+      "title": "AI ranking and formatting rewrite production routes remain stable on v8.11.95",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260504-0404",
+      "firstSeenAt": "2026-05-04T07:13:56.328Z",
+      "lastSeenRunId": "QA-20260504-0404",
+      "lastSeenAt": "2026-05-04T07:13:56.328Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "CPU ranking and formatting rewrite both returned through /api/ai/supervisor/stream/v2 without false job/artifact escalation.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-04T07:13:56.328Z"
+    },
+    "v81195-dashboard-core-routes-playwright-recheck": {
+      "id": "v81195-dashboard-core-routes-playwright-recheck",
+      "title": "Dashboard core routes and AI assistant tabs render in Vercel production",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260504-0404",
+      "firstSeenAt": "2026-05-04T07:13:56.328Z",
+      "lastSeenRunId": "QA-20260504-0404",
+      "lastSeenAt": "2026-05-04T07:13:56.328Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Playwright rendered /dashboard, servers, alerts, logs, topology, Reporter tab, and Analyst tab without application errors.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-04T07:13:56.328Z"
+    },
+    "planner-shadow-latency-precision": {
+      "id": "planner-shadow-latency-precision",
+      "title": "plannerShadow latency metadata still records 0ms for fast production shadow decisions",
+      "priority": "P3",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260504-0404",
+      "firstSeenAt": "2026-05-04T07:13:56.328Z",
+      "lastSeenRunId": "QA-20260504-0404",
+      "lastSeenAt": "2026-05-04T07:13:56.328Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Persisted assistant metadata showed plannerShadow.latencyMs=0 for the CPU ranking and formatting rewrite requests while visible response latency was 1163ms/1499ms.",
+      "lastNote": "The source measures after shadow construction, but Date.now() millisecond granularity can still round sub-ms planner work to 0.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "Telemetry precision only; user-facing AI response path, route choice, and latency footer are functioning.",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-05-04T07:13:56.328Z"
+    },
+    "logs-rolling-window-range-label": {
+      "id": "logs-rolling-window-range-label",
+      "title": "Logs 24h data-range label can display a confusing non-chronological date order",
+      "priority": "P3",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260504-0404",
+      "firstSeenAt": "2026-05-04T07:13:56.328Z",
+      "lastSeenRunId": "QA-20260504-0404",
+      "lastSeenAt": "2026-05-04T07:13:56.328Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Playwright logs page text included '데이터 범위: 2026.05.04 00:00:00 ~ 2026.05.03 23:50:00' during a 2026.05.04 16:10 KST session.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "Display-label normalization only; logs page rendering, filters, and counts remain usable.",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-05-04T07:13:56.328Z"
+    },
+    "ai-rewrite-report-style-quality": {
+      "id": "ai-rewrite-report-style-quality",
+      "title": "Formatting-only rewrite works but can return a terse two-line summary instead of polished report prose",
+      "priority": "P4",
+      "status": "wont-fix",
+      "firstSeenRunId": "QA-20260504-0404",
+      "firstSeenAt": "2026-05-04T07:13:56.328Z",
+      "lastSeenRunId": "QA-20260504-0404",
+      "lastSeenAt": "2026-05-04T07:13:56.328Z",
+      "seenCount": 1,
+      "completedCount": 0,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 1,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "The rewrite answer stayed on chat stream and produced the correct values, but the second sentence was a terse '조치:' list rather than a natural operations report sentence.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "Answer style quality only; routing correctly avoids Reporter/job/artifact escalation.",
+      "lastPolicyNote": "포트폴리오 운영성 우선 규칙: 비차단 항목은 과도한 개선을 방지하기 위해 WONT-FIX 처리합니다.",
+      "lastStatusChangeAt": "2026-05-04T07:13:56.328Z"
     }
   },
   "runs": [
@@ -40949,6 +41069,188 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260504-0404",
+      "recordedAt": "2026-05-04T07:13:56.328Z",
+      "recordedAtKst": "2026-05-04 16:13:56 KST",
+      "title": "v8.11.95 Vercel Playwright MCP Broad Recheck",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260504-0404.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_Gv9w8CVdcJhejv1UUdYrWRyZyqSb",
+        "deploymentUrl": "https://openmanager-prkqfr0qm-skyasus-projects.vercel.app",
+        "commitSha": "b4ea434c0d402f2542b9891e98c193fac96902a1"
+      },
+      "scope": "broad",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core"
+      ],
+      "coveredSurfaces": [
+        "Vercel production /api/version returned 8.11.95, commit b4ea434c0d402f2542b9891e98c193fac96902a1, tag v8.11.95, pipeline 2497070918",
+        "Vercel production /api/health returned healthy with database/cache/ai connected",
+        "Cloud Run direct /health returned ai-engine version 8.11.95 with provider configs ready",
+        "Landing page / rendered in Playwright with guest user shell",
+        "Dashboard /dashboard rendered in Playwright with navigation, session timer, and guest user shell",
+        "Dashboard routes /dashboard/servers, /dashboard/alerts, /dashboard/logs, and /dashboard/topology rendered without application error text",
+        "Fullscreen /dashboard/ai-assistant loaded on Vercel production with System Context, Provider Routing, AI Engine Online, and Production environment",
+        "Manual Health Check button executed and returned to ready state as 재확인",
+        "Playwright MCP submitted CPU top-3 prompt through the visible AI Chat input",
+        "CPU top-3 response used /api/ai/supervisor/stream/v2 and returned grounded server IDs and current CPU values: db-mysql-dc1-primary CPU 44%, db-mysql-dc1-replica CPU 43%, api-was-dc1-01 CPU 39%",
+        "CPU top-3 response preserved tool evidence with getServerMetricsAdvanced and did not contain the previous false answer '서버는 없습니다'",
+        "Formatting-only rewrite prompt stayed on /api/ai/supervisor/stream/v2 and rendered as general chat response",
+        "Formatting-only rewrite did not call /api/ai/jobs and did not show Reporter pipeline, artifact, anomaly/trend, or job queue text",
+        "Assistant persisted metadata included routeDecision executionPath=stream, mode=single, decidedBy=cloud-run, and featureStatus rag/web/thinking disabled",
+        "Reporter Agent tab rendered empty-state report UI with 새 보고서 and 첫 보고서 생성하기 controls; report generation was intentionally not clicked",
+        "Analyst tab rendered server selector and 전체 분석 control",
+        "Analyst 전체 분석 executed via /api/ai/intelligent-monitoring 200 and displayed 18-server result with one memory warning on cache-redis-dc1-01",
+        "Playwright console warnings/errors were 0",
+        "Vercel usage remained billed 0.0000 USD after QA",
+        "Cloud Run free-tier guardrail script passed all checks"
+      ],
+      "skippedSurfaces": [
+        "Reporter report generation was not clicked because it is a costlier async artifact/job path and was not needed for this recheck",
+        "Mobile viewport, auth edge cases, and destructive/log-export operations were outside this Vercel recheck"
+      ],
+      "checks": {
+        "total": 20,
+        "passed": 20,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "Fullscreen AI Chat CPU top 3",
+          "agent": "Supervisor",
+          "provider": "cloud-run-ai-engine",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Playwright MCP visible response footer + persisted metadata",
+          "latencyMs": 1163,
+          "processingTimeMs": 1163
+        },
+        {
+          "surface": "Fullscreen AI Chat formatting-only rewrite",
+          "agent": "Supervisor",
+          "provider": "cloud-run-ai-engine",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Playwright MCP visible response footer + persisted metadata",
+          "latencyMs": 1499,
+          "processingTimeMs": 1499
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": true,
+          "rationale": "The AI assistant executed the ranking and rewrite flows correctly through the production stream path, but the rewrite answer still follows a terse template rather than a polished operational-report style.",
+          "nextAction": "Tighten the formatting-only rewrite instruction or deterministic postprocessor so '2문장 운영 보고서용' consistently returns two polished sentences."
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": true,
+          "rationale": "Dashboard data surfaces render and Analyst detects the current memory warning, but the logs data-range label can show a confusing start/end date order for wrapped synthetic 24h data.",
+          "nextAction": "Normalize the logs 24h range label so the displayed start/end order is chronological or explicitly marked as a rolling synthetic window."
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Vercel, /api/health, Cloud Run /health, usage checks, and free-tier guardrails were healthy after the browser QA.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": true,
+          "rationale": "Playwright MCP covered rendered UI, visible input submission, network inspection, console checks, and screenshot evidence; plannerShadow latency metadata still rounds to 0 in production for fast shadow work.",
+          "nextAction": "Consider higher precision or explicit sub-millisecond representation for plannerShadow.latencyMs if it will be used as a rollout gate."
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "CPU ranking and Analyst warning output used current synthetic monitoring data and preserved concrete server IDs and values.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-04T16:11:10+09:00",
+          "summary": "Current billing period checked after Vercel Playwright MCP QA; effective 2.0188 USD, billed remains 0.0000 USD, chargeCount 1827.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        },
+        {
+          "platform": "cloud-run",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-04T16:11:10+09:00",
+          "summary": "Free-tier guardrails intact: maxScale=1, concurrency=16, timeout=300, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00410-8j9.",
+          "evidence": "node scripts/check-free-tier-usage.js",
+          "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "v8.11.95 Vercel Playwright MCP AI assistant recheck",
+          "path": "reports/qa/evidence/qa-20260504-0404-v81195-vercel-playwright-ai-assistant.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "Cloud Run AI Engine health",
+          "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+        },
+        {
+          "type": "general",
+          "label": "GitLab tag pipeline 2497070918",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2497070918"
+        },
+        {
+          "type": "general",
+          "label": "Production app",
+          "url": "https://openmanager-ai.vercel.app/"
+        },
+        {
+          "type": "general",
+          "label": "Production version endpoint",
+          "url": "https://openmanager-ai.vercel.app/api/version"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://openmanager-prkqfr0qm-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 5,
+      "expertNeedsImprovementCount": 3,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 3
     }
   ],
   "experts": {
@@ -40957,34 +41259,34 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 192,
-      "appropriateCount": 173,
+      "seenCount": 193,
+      "appropriateCount": 174,
       "partialCount": 19,
       "inappropriateCount": 0,
-      "improvementNeededCount": 28,
-      "lastRunId": "QA-20260504-0403",
-      "lastSeenAt": "2026-05-04T05:22:20.393Z",
+      "improvementNeededCount": 29,
+      "lastRunId": "QA-20260504-0404",
+      "lastSeenAt": "2026-05-04T07:13:56.328Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "The exact production regression prompts were replayed through Playwright MCP and produced grounded ranking output plus clean success metadata.",
-      "lastNextAction": ""
+      "lastImprovementNeeded": true,
+      "lastRationale": "The AI assistant executed the ranking and rewrite flows correctly through the production stream path, but the rewrite answer still follows a terse template rather than a polished operational-report style.",
+      "lastNextAction": "Tighten the formatting-only rewrite instruction or deterministic postprocessor so '2문장 운영 보고서용' consistently returns two polished sentences."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 103,
-      "appropriateCount": 74,
+      "seenCount": 104,
+      "appropriateCount": 75,
       "partialCount": 29,
       "inappropriateCount": 0,
-      "improvementNeededCount": 29,
-      "lastRunId": "QA-20260504-0403",
-      "lastSeenAt": "2026-05-04T05:22:20.393Z",
+      "improvementNeededCount": 30,
+      "lastRunId": "QA-20260504-0404",
+      "lastSeenAt": "2026-05-04T07:13:56.328Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "The answer cited current synthetic OTel slot data and preserved tool evidence with getServerMetricsAdvanced dataSlot metadata.",
-      "lastNextAction": ""
+      "lastImprovementNeeded": true,
+      "lastRationale": "Dashboard data surfaces render and Analyst detects the current memory warning, but the logs data-range label can show a confusing start/end date order for wrapped synthetic 24h data.",
+      "lastNextAction": "Normalize the logs 24h range label so the displayed start/end order is chronological or explicitly marked as a rolling synthetic window."
     },
     "ai-security-reliability": {
       "domainId": "ai-security-reliability",
@@ -41008,16 +41310,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 126,
-      "appropriateCount": 113,
+      "seenCount": 127,
+      "appropriateCount": 114,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 17,
-      "lastRunId": "QA-20260504-0403",
-      "lastSeenAt": "2026-05-04T05:22:20.393Z",
+      "lastRunId": "QA-20260504-0404",
+      "lastSeenAt": "2026-05-04T07:13:56.328Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag pipeline succeeded, Vercel and Cloud Run version endpoints match v8.11.95, and Cloud Run free-tier guardrails remain intact.",
+      "lastRationale": "Vercel, /api/health, Cloud Run /health, usage checks, and free-tier guardrails were healthy after the browser QA.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -41025,33 +41327,33 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 164,
-      "appropriateCount": 152,
+      "seenCount": 165,
+      "appropriateCount": 153,
       "partialCount": 12,
       "inappropriateCount": 0,
-      "improvementNeededCount": 13,
-      "lastRunId": "QA-20260504-0403",
-      "lastSeenAt": "2026-05-04T05:22:20.393Z",
+      "improvementNeededCount": 14,
+      "lastRunId": "QA-20260504-0404",
+      "lastSeenAt": "2026-05-04T07:13:56.328Z",
       "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "The QA used browser rendering, visible input submission, network inspection, and durable screenshot evidence.",
-      "lastNextAction": ""
+      "lastImprovementNeeded": true,
+      "lastRationale": "Playwright MCP covered rendered UI, visible input submission, network inspection, console checks, and screenshot evidence; plannerShadow latency metadata still rounds to 0 in production for fast shadow work.",
+      "lastNextAction": "Consider higher precision or explicit sub-millisecond representation for plannerShadow.latencyMs if it will be used as a rollout gate."
     },
     "data-metrics-quality": {
       "domainId": "data-metrics-quality",
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 51,
-      "appropriateCount": 32,
+      "seenCount": 52,
+      "appropriateCount": 33,
       "partialCount": 19,
       "inappropriateCount": 0,
       "improvementNeededCount": 19,
-      "lastRunId": "QA-20260504-0403",
-      "lastSeenAt": "2026-05-04T05:22:20.393Z",
+      "lastRunId": "QA-20260504-0404",
+      "lastSeenAt": "2026-05-04T07:13:56.328Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The response preserved ranked server IDs and CPU percentages from the tool result instead of relying on model-only formatting.",
+      "lastRationale": "CPU ranking and Analyst warning output used current synthetic monitoring data and preserved concrete server IDs and values.",
       "lastNextAction": ""
     },
     "infra-reliability": {
