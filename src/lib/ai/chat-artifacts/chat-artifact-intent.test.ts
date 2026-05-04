@@ -129,6 +129,20 @@ describe('classifyChatArtifactIntent', () => {
     ).toMatchObject({
       kind: 'none',
     });
+    expect(
+      classifyChatArtifactIntent(
+        '방금 CPU 상위 3개 서버 결과를 운영 보고서용 2문장으로 다시 작성해줘'
+      )
+    ).toMatchObject({
+      kind: 'none',
+    });
+    expect(
+      classifyChatArtifactIntent(
+        '이상감지 결과를 보고서용 문장으로 다시 작성해줘'
+      )
+    ).toMatchObject({
+      kind: 'none',
+    });
   });
 
   it('blocks artifact execution when query has a question mark (implicit path)', () => {
@@ -153,6 +167,16 @@ describe('classifyChatArtifactIntent', () => {
     expect(shouldUseLLMChatArtifactIntent('현재 서버 상태 분석해줘')).toBe(
       false
     );
+    expect(
+      shouldUseLLMChatArtifactIntent(
+        '방금 CPU 상위 3개 서버 결과를 운영 보고서용 2문장으로 다시 작성해줘'
+      )
+    ).toBe(false);
+    expect(
+      shouldUseLLMChatArtifactIntent(
+        '이상감지 결과를 보고서용 문장으로 다시 작성해줘'
+      )
+    ).toBe(false);
     expect(shouldUseLLMChatArtifactIntent('장애 리포트 만들어줘')).toBe(true);
     expect(shouldUseLLMChatArtifactIntent('트렌드 분석 좀 해줘')).toBe(true);
   });

@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-04 KST (`AI assistant feasible improvements and boundary doc recorded`)
+**Last Updated**: 2026-05-04 KST (`Artifact formatting-only intent false-positive guard recorded`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -48,6 +48,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-04 #281)
+- [x] Artifact intent formatting-only false-positive guard
+  - `v8.11.90` Playwright MCP release QA 중 "운영 보고서용 2문장으로 다시 작성" 같은 재작성 요청이 artifact intent LLM fallback을 거쳐 이상감지/추세 artifact로 승격되는 false-positive 확인
+  - `보고서용`/`리포트용`/`다시 작성`/`문장으로` 등 formatting-only 요청은 명시적 artifact 실행 단어가 없으면 local classifier와 LLM fallback gate 모두에서 `none`으로 유지하도록 보강
+  - deterministic corpus를 `2026-05-04-v1`로 갱신하고 production 재현 문장 및 유사 formatting-only 케이스 3개를 추가
+  - 검증: targeted classifier tests, `type-check`, `lint`, `test:quick`, `test:contract`
 
 ### Completed (2026-05-04 #280)
 - [x] AI response provider/model QA evidence wiring

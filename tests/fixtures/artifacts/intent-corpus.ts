@@ -29,7 +29,7 @@ export interface ArtifactIntentCorpusCase {
 }
 
 export const artifactIntentCorpus = {
-  version: '2026-05-02-v2',
+  version: '2026-05-04-v1',
   cases: [
     {
       id: 'ir-001',
@@ -877,6 +877,28 @@ export const artifactIntentCorpus = {
       expected: 'none',
       category: 'guidance-question',
       note: 'server snapshot 기능 설명은 실행 artifact가 아님',
+    },
+    {
+      id: 'no-044',
+      query:
+        '방금 CPU 상위 3개 서버 결과를 운영 보고서용 2문장으로 다시 작성해줘',
+      expected: 'none',
+      category: 'operational-chat',
+      note: 'production QA에서 확인된 보고서용 재작성 요청은 artifact 실행이 아님',
+    },
+    {
+      id: 'no-045',
+      query: '이상감지 결과를 보고서용 문장으로 다시 작성해줘',
+      expected: 'none',
+      category: 'operational-chat',
+      note: '기존 분석 결과 formatting-only 요청은 monitoring artifact 실행이 아님',
+    },
+    {
+      id: 'no-046',
+      query: '위 답변을 리포트용으로 다듬어줘',
+      expected: 'none',
+      category: 'operational-chat',
+      note: '리포트용 문장 다듬기는 artifact 생성 요청이 아님',
     },
   ],
 } as const satisfies {

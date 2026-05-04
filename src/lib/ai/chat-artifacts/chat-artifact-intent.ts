@@ -1,4 +1,4 @@
-export const ARTIFACT_INTENT_RULE_VERSION = '2026-05-02-v2';
+export const ARTIFACT_INTENT_RULE_VERSION = '2026-05-04-v1';
 
 type ChatArtifactIntentVersion = {
   ruleVersion: typeof ARTIFACT_INTENT_RULE_VERSION;
@@ -35,6 +35,10 @@ const ARTIFACT_NEGATION_PATTERN =
 const ARTIFACT_GUIDANCE_PRIORITY_PATTERN =
   /(어떻게|방법|어디|어떤|가능|사용법|뭐야|무엇|무슨|지원|되나|돼\?|될까|샘플|예시|화면|위치|보여줄\s*수)/i;
 const ARTIFACT_GUIDANCE_PATTERN = /(기능|설명|안내)/i;
+const ARTIFACT_FORMATTING_ONLY_PATTERN =
+  /(보고서용|리포트용|문장으로|문장만|다시\s*작성|재작성|고쳐\s*써|다듬어|rewrite|rephrase|paraphrase)/i;
+const ARTIFACT_EXPLICIT_EXECUTION_PATTERN =
+  /(아티팩트|artifact|생성|만들|다운로드|내려받|실행|돌려|뽑아|출력|export|generate|download|create|run)/i;
 const REPORT_PATTERN =
   /(장애\s*(보고서|리포트|보고)|인시던트\s*(보고서|리포트)|incident\s*report)/i;
 const REPORT_ACTION_PATTERN =
@@ -72,11 +76,22 @@ function isImplicitKeywordRequest(query: string): boolean {
   return !/[?？]/.test(normalized);
 }
 
+function isFormattingOnlyRequest(query: string): boolean {
+  return (
+    ARTIFACT_FORMATTING_ONLY_PATTERN.test(query) &&
+    !ARTIFACT_EXPLICIT_EXECUTION_PATTERN.test(query)
+  );
+}
+
 export function classifyChatArtifactIntent(query: string): ChatArtifactIntent {
   const normalized = query.trim();
   if (!normalized) return withRuleVersion({ kind: 'none' });
 
   const isNegated = ARTIFACT_NEGATION_PATTERN.test(normalized);
+
+  if (isFormattingOnlyRequest(normalized)) {
+    return withRuleVersion({ kind: 'none' });
+  }
 
   if (
     SERVER_SNAPSHOT_SUBJECT_PATTERN.test(normalized) &&
@@ -173,6 +188,7 @@ export function shouldUseLLMChatArtifactIntent(query: string): boolean {
   const normalized = query.trim();
   if (!normalized) return false;
   if (ARTIFACT_NEGATION_PATTERN.test(normalized)) return false;
+  if (isFormattingOnlyRequest(normalized)) return false;
   if (!LLM_ARTIFACT_CANDIDATE_PATTERN.test(normalized)) return false;
   if (LLM_ARTIFACT_ACTION_HINT_PATTERN.test(normalized)) return true;
 
