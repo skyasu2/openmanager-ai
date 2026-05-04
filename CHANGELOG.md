@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.92](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.91...v8.11.92) (2026-05-04)
+
+
+### Bug Fixes
+
+* **ai:** keep formatting rewrites on chat path ([a26bc0d](https://gitlab.com/skyasu2/openmanager-ai/-/commit/a26bc0db0b945f72fb6117b103033fa0af9fe979))
+
 ## [8.11.91](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.90...v8.11.91) (2026-05-04)
 
 
