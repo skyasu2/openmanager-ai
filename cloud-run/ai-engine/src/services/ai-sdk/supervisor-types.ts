@@ -11,6 +11,7 @@ import type {
 } from '../../lib/retrieval-contract';
 import type { QueryAsOf } from '../../data/query-as-of-context';
 import type { MonitoringArtifactKind } from '../../domains/monitoring/artifact-registry';
+import type { AssistantRuntimeHost } from './assistant-runtime-host';
 
 // Re-export multimodal types
 export type { ImageAttachment, FileAttachment };
@@ -145,6 +146,8 @@ export interface SupervisorRequest {
   deviceType?: 'mobile' | 'desktop';
   /** BFF/frontend route decision captured before Cloud Run planning. */
   localRouteDecision?: SupervisorLocalRouteDecision;
+  /** Internal portable runtime host. Defaults to the monitoring domain pack. */
+  runtimeHost?: AssistantRuntimeHost;
 }
 
 export interface SupervisorResponse {
@@ -230,6 +233,21 @@ export interface SupervisorResponse {
       status: 'completed' | 'failed' | 'partial';
       traceId?: string;
       errorCode?: string;
+    };
+    assistantRuntime?: {
+      domainId: string;
+      domainVersion: string;
+      routeKind: 'chat' | 'artifact' | 'clarification';
+      executionPath: 'stream' | 'job' | 'client-artifact';
+      executionMode?: 'deterministic' | 'single-agent' | 'multi-agent';
+      reasonCodes: string[];
+      adapterKinds: {
+        stateStore: string;
+        sessionStore: string;
+        jobQueue: string;
+        artifactStore?: string;
+        vectorStore?: string;
+      };
     };
     traceId?: string;
     handoffs?: Array<{ from: string; to: string; reason?: string }>;

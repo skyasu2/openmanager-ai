@@ -21,6 +21,10 @@ import {
 } from '../resilience/quota-tracker';
 import { executeMultiAgentStream } from './agents';
 import {
+  resolveMonitoringSupervisorRuntimeContext,
+  type AssistantRuntimeMetadata,
+} from './monitoring-runtime-host';
+import {
   filterToolsByRAG,
   filterToolsByWebSearch,
   resolveRAGSetting,
@@ -314,6 +318,8 @@ export async function* executeSupervisorStream(
   request: SupervisorRequest
 ): AsyncGenerator<StreamEvent> {
   const startTime = Date.now();
+  const runtimeContext = await resolveMonitoringSupervisorRuntimeContext(request);
+  const runtimeMetadata = runtimeContext.metadata;
   const modeDecision = resolveSupervisorModeDecision(request);
   const routeDecision = buildSupervisorRouteDecision(modeDecision, {
     traceId: request.traceId,
@@ -369,10 +375,16 @@ export async function* executeSupervisorStream(
                 message: '오케스트레이터 오류로 단일 분석 모드로 전환합니다.',
               },
             };
-            yield* streamSingleAgent(request, startTime, {
-              degradedFromMode: 'multi',
-              degradedReason,
-            }, modeDecision);
+            yield* streamSingleAgent(
+              request,
+              startTime,
+              {
+                degradedFromMode: 'multi',
+                degradedReason,
+              },
+              modeDecision,
+              runtimeMetadata
+            );
             return;
           }
         }
@@ -397,6 +409,7 @@ export async function* executeSupervisorStream(
                 ...buildSupervisorModeMetadata(modeDecision),
                 routeDecision,
                 assistantPlan,
+                assistantRuntime: runtimeMetadata,
                 assistantResult: buildSupervisorAssistantResult(routeDecision, {
                   status: doneData.success === false ? 'failed' : 'completed',
                   ...(doneData.success === false && {
@@ -426,10 +439,16 @@ export async function* executeSupervisorStream(
             message: '오케스트레이터 오류로 단일 분석 모드로 전환합니다.' 
           } 
         };
-        yield* streamSingleAgent(request, startTime, {
-          degradedFromMode: 'multi',
-          degradedReason: 'multi_agent_runtime_error',
-        }, modeDecision);
+        yield* streamSingleAgent(
+          request,
+          startTime,
+          {
+            degradedFromMode: 'multi',
+            degradedReason: 'multi_agent_runtime_error',
+          },
+          modeDecision,
+          runtimeMetadata
+        );
         return;
       }
 
@@ -445,7 +464,13 @@ export async function* executeSupervisorStream(
     }
   }
 
-  yield* streamSingleAgent(request, startTime, undefined, modeDecision);
+  yield* streamSingleAgent(
+    request,
+    startTime,
+    undefined,
+    modeDecision,
+    runtimeMetadata
+  );
 }
 
 async function* streamSingleAgent(
@@ -453,6 +478,7 @@ async function* streamSingleAgent(
   startTime: number,
   degradedFallbackContext?: SupervisorDegradedFallbackContext,
   modeDecision?: ResolvedSupervisorModeDecision,
+  runtimeMetadata?: AssistantRuntimeMetadata,
 ): AsyncGenerator<StreamEvent> {
   const hasImages = request.images && request.images.length > 0;
   const routeDecision = modeDecision
@@ -549,6 +575,7 @@ async function* streamSingleAgent(
               ...(routeDecision && {
                 assistantResult: buildSupervisorAssistantResult(routeDecision),
               }),
+              ...(runtimeMetadata && { assistantRuntime: runtimeMetadata }),
               ...buildDegradedMetadata(degradedFallbackContext, {}),
             },
             ...(ragSources.length > 0 && { ragSources }),
@@ -597,6 +624,7 @@ async function* streamSingleAgent(
               ...(routeDecision && {
                 assistantResult: buildSupervisorAssistantResult(routeDecision),
               }),
+              ...(runtimeMetadata && { assistantRuntime: runtimeMetadata }),
               ...buildDegradedMetadata(degradedFallbackContext, {}),
             },
             warning: {
@@ -664,6 +692,7 @@ async function* streamSingleAgent(
             ...(routeDecision && {
               assistantResult: buildSupervisorAssistantResult(routeDecision),
             }),
+            ...(runtimeMetadata && { assistantRuntime: runtimeMetadata }),
             ...buildDegradedMetadata(degradedFallbackContext, {
               fallback: true,
               fallbackReason: 'no_provider',
@@ -1278,6 +1307,7 @@ async function* streamSingleAgent(
                 }),
               }),
             }),
+            ...(runtimeMetadata && { assistantRuntime: runtimeMetadata }),
             ...buildDegradedMetadata(degradedFallbackContext, {}),
             ...(attempt > 0 && { providerRetries: attempt }),
           },

@@ -57,6 +57,7 @@ import {
   resolveAgentStage,
 } from './jobs-route-helpers';
 import { executeSupervisorStream, logProviderStatus } from '../services/ai-sdk';
+import { getDefaultMonitoringAssistantRuntimeHost } from '../services/ai-sdk/monitoring-runtime-host';
 import { normalizeSupervisorLocalRouteDecision } from '../services/ai-sdk/supervisor-mode';
 import type {
   AnalysisMode,
@@ -652,6 +653,7 @@ async function processJobSynchronously({
       enableWebSearch,
       localRouteDecision,
       queryAsOf,
+      runtimeHost: getDefaultMonitoringAssistantRuntimeHost(),
     })) {
       if (event.type === 'text_delta' && typeof event.data === 'string') {
         responseChunks.push(event.data);

@@ -7,9 +7,9 @@ import {
 import { monitoringDomainPack } from '../../domains/monitoring/domain-pack';
 import {
   createAssistantRuntimeHost,
-  createMonitoringAssistantRuntimeHost,
   resolveSupervisorRuntimeContext,
 } from './assistant-runtime-host';
+import { createMonitoringAssistantRuntimeHost } from './monitoring-runtime-host';
 import type { SupervisorRequest } from './supervisor-types';
 
 function createSupervisorRequest(
@@ -56,7 +56,8 @@ describe('assistant runtime host contract', () => {
   it('binds the default supervisor runtime to the monitoring domain pack', async () => {
     const host = createMonitoringAssistantRuntimeHost();
     const context = await resolveSupervisorRuntimeContext(
-      createSupervisorRequest('CPU 알려줘', { runtimeHost: host })
+      createSupervisorRequest('CPU 알려줘', { runtimeHost: host }),
+      host
     );
 
     expect(host.domain).toBe(monitoringDomainPack);
@@ -92,7 +93,8 @@ describe('assistant runtime host contract', () => {
     });
 
     const context = await resolveSupervisorRuntimeContext(
-      createSupervisorRequest('help me', { runtimeHost: host })
+      createSupervisorRequest('help me', { runtimeHost: host }),
+      host
     );
 
     expect(context.metadata).toMatchObject({

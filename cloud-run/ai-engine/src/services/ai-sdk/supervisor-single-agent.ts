@@ -47,6 +47,10 @@ import {
 } from './supervisor-types';
 import { logger } from '../../lib/logger';
 import {
+  resolveMonitoringSupervisorRuntimeContext,
+  type AssistantRuntimeMetadata,
+} from './monitoring-runtime-host';
+import {
   buildSupervisorModeMetadata,
   resolveSupervisorModeDecision,
   type ResolvedSupervisorModeDecision,
@@ -177,6 +181,8 @@ export async function executeSupervisor(
   request: SupervisorRequest
 ): Promise<SupervisorResponse | SupervisorError> {
   const startTime = Date.now();
+  const runtimeContext = await resolveMonitoringSupervisorRuntimeContext(request);
+  const runtimeMetadata = runtimeContext.metadata;
   const modeDecision = resolveSupervisorModeDecision(request);
   const mode = modeDecision.resolvedMode;
 
@@ -189,10 +195,21 @@ export async function executeSupervisor(
   }, '[Supervisor] Mode resolved');
 
   if (mode === 'multi') {
-    return executeMultiAgentMode(request, startTime, modeDecision);
+    return executeMultiAgentMode(
+      request,
+      startTime,
+      modeDecision,
+      runtimeMetadata
+    );
   }
 
-  return executeSingleAgentMode(request, startTime, undefined, modeDecision);
+  return executeSingleAgentMode(
+    request,
+    startTime,
+    undefined,
+    modeDecision,
+    runtimeMetadata
+  );
 }
 
 // ============================================================================
@@ -203,6 +220,7 @@ async function executeMultiAgentMode(
   request: SupervisorRequest,
   startTime: number,
   modeDecision: ResolvedSupervisorModeDecision,
+  runtimeMetadata: AssistantRuntimeMetadata,
 ): Promise<SupervisorResponse | SupervisorError> {
   try {
     const multiAgentRequest: MultiAgentRequest = {
@@ -232,10 +250,16 @@ async function executeMultiAgentMode(
         logger.info(
           `[Supervisor] Falling back to single-agent mode (degraded) after multi-agent error: ${multiAgentError.code}`
         );
-        return executeSingleAgentMode(request, startTime, {
-          degradedFromMode: 'multi',
-          degradedReason,
-        }, modeDecision);
+        return executeSingleAgentMode(
+          request,
+          startTime,
+          {
+            degradedFromMode: 'multi',
+            degradedReason,
+          },
+          modeDecision,
+          runtimeMetadata
+        );
       }
       return multiAgentError;
     }
@@ -274,6 +298,7 @@ async function executeMultiAgentMode(
         handoffs: multiResult.handoffs,
         finalAgent: multiResult.finalAgent,
         retrieval: multiResult.metadata.retrieval,
+        assistantRuntime: runtimeMetadata,
       },
     };
 
@@ -286,10 +311,16 @@ async function executeMultiAgentMode(
 
     if (isSingleModeAllowed()) {
       logger.info(`[Supervisor] Falling back to single-agent mode (degraded)`);
-      return executeSingleAgentMode(request, startTime, {
-        degradedFromMode: 'multi',
-        degradedReason: 'multi_agent_runtime_error',
-      }, modeDecision);
+      return executeSingleAgentMode(
+        request,
+        startTime,
+        {
+          degradedFromMode: 'multi',
+          degradedReason: 'multi_agent_runtime_error',
+        },
+        modeDecision,
+        runtimeMetadata
+      );
     }
 
     logger.error(`[Supervisor] Single-agent fallback NOT allowed. Failing fast.`);
@@ -310,6 +341,7 @@ async function executeSingleAgentMode(
   startTime: number,
   degradedFallbackContext?: SupervisorDegradedFallbackContext,
   modeDecision?: ResolvedSupervisorModeDecision,
+  runtimeMetadata?: AssistantRuntimeMetadata,
 ): Promise<SupervisorResponse | SupervisorError> {
   let lastError: SupervisorError | null = null;
   const failedProviders: ProviderName[] = [];
@@ -327,7 +359,8 @@ async function executeSingleAgentMode(
       startTime,
       failedProviders,
       degradedFallbackContext,
-      modeDecision
+      modeDecision,
+      runtimeMetadata
     );
 
     if (result.success) {
@@ -375,6 +408,7 @@ async function executeSupervisorAttempt(
   excludeProviders: ProviderName[] = [],
   degradedFallbackContext?: SupervisorDegradedFallbackContext,
   modeDecision?: ResolvedSupervisorModeDecision,
+  runtimeMetadata?: AssistantRuntimeMetadata,
 ): Promise<SupervisorResponse | (SupervisorError & { provider?: ProviderName })> {
   const lastUserMessage = request.messages.filter((m) => m.role === 'user').pop();
   const trace = createSupervisorTrace({
@@ -431,6 +465,7 @@ async function executeSupervisorAttempt(
         qualityFlags: quality.qualityFlags,
         latencyTier: quality.latencyTier,
         ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
+        ...(runtimeMetadata && { assistantRuntime: runtimeMetadata }),
         ...buildDegradedMetadata(degradedFallbackContext, {
           fallback: true,
           fallbackReason: 'no_provider',
@@ -624,6 +659,7 @@ async function executeSupervisorAttempt(
             toolResultSummaries,
           }),
           ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
+          ...(runtimeMetadata && { assistantRuntime: runtimeMetadata }),
           ...buildDegradedMetadata(degradedFallbackContext, {}),
         },
       };

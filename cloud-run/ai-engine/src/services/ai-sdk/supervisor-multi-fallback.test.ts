@@ -98,6 +98,30 @@ vi.mock('../../tools-ai-sdk', () => ({
   },
 }));
 
+vi.mock('../../domains/monitoring/domain-pack', () => ({
+  monitoringDomainPack: {
+    id: 'openmanager-monitoring',
+    version: 'test',
+    instructions: {
+      system: 'monitoring test domain',
+      locale: 'ko-KR',
+    },
+    routingPolicy: {
+      decide: () => ({
+        kind: 'chat',
+        executionPath: 'stream',
+        executionMode: 'single-agent',
+        domainId: 'openmanager-monitoring',
+        reasonCodes: ['monitoring_test_route'],
+      }),
+    },
+    tools: {
+      listTools: () => [],
+      resolveTool: () => undefined,
+    },
+  },
+}));
+
 vi.mock('./agents/orchestrator-web-search', () => ({
   filterToolsByRAG: vi.fn((tools: unknown) => tools),
   filterToolsByWebSearch: vi.fn((tools: unknown) => tools),
