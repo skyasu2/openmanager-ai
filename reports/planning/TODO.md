@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| _No active task_ | - | - | 2026-05-06 기준 Active plan 없음. 다음 후보는 Backlog의 `AI advanced surface targeted QA pack`, `AI artifact workspace UI/export and compare UX` 중 우선순위 재선정. |
+| _No active task_ | - | - | 2026-05-06 기준 Active plan 없음. 다음 후보는 Backlog의 `AI advanced surface targeted QA pack`, `AI artifact workspace UI wiring and compare UX` 중 우선순위 재선정. |
 
 ---
 
