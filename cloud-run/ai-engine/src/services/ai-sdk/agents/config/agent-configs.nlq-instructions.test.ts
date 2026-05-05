@@ -13,38 +13,45 @@ vi.mock('./instructions', () => ({
   VISION_INSTRUCTIONS: 'VISION',
 }));
 
-vi.mock('../../../../tools-ai-sdk', () => ({
-  getServerMetrics: { execute: vi.fn() },
-  getServerMetricsAdvanced: { execute: vi.fn() },
-  filterServers: { execute: vi.fn() },
-  getServerByGroup: { execute: vi.fn() },
-  getServerByGroupAdvanced: { execute: vi.fn() },
-  getServerLogs: { execute: vi.fn() },
-  detectAnomalies: { execute: vi.fn() },
-  detectAnomaliesAllServers: { execute: vi.fn() },
-  predictTrends: { execute: vi.fn() },
-  analyzePattern: { execute: vi.fn() },
-  correlateMetrics: { execute: vi.fn() },
-  findRootCause: { execute: vi.fn() },
-  buildIncidentTimeline: { execute: vi.fn() },
-  searchKnowledgeBase: { execute: vi.fn() },
-  recommendCommands: { execute: vi.fn() },
-  searchWeb: { execute: vi.fn() },
-  evaluateIncidentReport: { execute: vi.fn() },
-  validateReportStructure: { execute: vi.fn() },
-  scoreRootCauseConfidence: { execute: vi.fn() },
-  refineRootCauseAnalysis: { execute: vi.fn() },
-  enhanceSuggestedActions: { execute: vi.fn() },
-  extendServerCorrelation: { execute: vi.fn() },
-  finalAnswer: { execute: vi.fn() },
-  analyzeScreenshot: { execute: vi.fn() },
-  analyzeLargeLog: { execute: vi.fn() },
-  searchWithGrounding: { execute: vi.fn() },
-  analyzeUrlContent: { execute: vi.fn() },
-  evaluateMathExpression: { execute: vi.fn() },
-  computeSeriesStats: { execute: vi.fn() },
-  estimateCapacityProjection: { execute: vi.fn() },
-}));
+vi.mock('../../../../tools-ai-sdk', () => {
+  const tools = {
+    getServerMetrics: { execute: vi.fn() },
+    getServerMetricsAdvanced: { execute: vi.fn() },
+    filterServers: { execute: vi.fn() },
+    getServerByGroup: { execute: vi.fn() },
+    getServerByGroupAdvanced: { execute: vi.fn() },
+    getServerLogs: { execute: vi.fn() },
+    detectAnomalies: { execute: vi.fn() },
+    detectAnomaliesAllServers: { execute: vi.fn() },
+    predictTrends: { execute: vi.fn() },
+    analyzePattern: { execute: vi.fn() },
+    correlateMetrics: { execute: vi.fn() },
+    findRootCause: { execute: vi.fn() },
+    buildIncidentTimeline: { execute: vi.fn() },
+    searchKnowledgeBase: { execute: vi.fn() },
+    recommendCommands: { execute: vi.fn() },
+    searchWeb: { execute: vi.fn() },
+    evaluateIncidentReport: { execute: vi.fn() },
+    validateReportStructure: { execute: vi.fn() },
+    scoreRootCauseConfidence: { execute: vi.fn() },
+    refineRootCauseAnalysis: { execute: vi.fn() },
+    enhanceSuggestedActions: { execute: vi.fn() },
+    extendServerCorrelation: { execute: vi.fn() },
+    finalAnswer: { execute: vi.fn() },
+    analyzeScreenshot: { execute: vi.fn() },
+    analyzeLargeLog: { execute: vi.fn() },
+    searchWithGrounding: { execute: vi.fn() },
+    analyzeUrlContent: { execute: vi.fn() },
+    evaluateMathExpression: { execute: vi.fn() },
+    computeSeriesStats: { execute: vi.fn() },
+    estimateCapacityProjection: { execute: vi.fn() },
+  };
+
+  return {
+    ...tools,
+    allTools: tools,
+  };
+});
 
 vi.mock('../../model-provider-status', () => ({
   checkProviderStatus: vi.fn(() => ({

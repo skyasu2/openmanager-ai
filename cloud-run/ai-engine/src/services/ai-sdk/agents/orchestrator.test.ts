@@ -154,44 +154,51 @@ vi.mock('ai', () => ({
 }));
 
 // Mock tools - include all tools from agent-configs
-vi.mock('../../../tools-ai-sdk', () => ({
-  getServerMetrics: { execute: vi.fn() },
-  getServerMetricsAdvanced: { execute: vi.fn() },
-  filterServers: { execute: vi.fn() },
-  getServerByGroup: { execute: vi.fn() },
-  getServerByGroupAdvanced: { execute: vi.fn() },
-  detectAnomalies: { execute: vi.fn() },
-  detectAnomaliesAllServers: { execute: vi.fn() },
-  predictTrends: { execute: vi.fn() },
-  analyzePattern: { execute: vi.fn() },
-  correlateMetrics: { execute: vi.fn() },
-  findRootCause: { execute: vi.fn() },
-  buildIncidentTimeline: { execute: vi.fn() },
-  getServerLogs: { execute: vi.fn() },
-  searchKnowledgeBase: { execute: vi.fn() },
-  searchWeb: { execute: vi.fn() },
-  recommendCommands: { execute: vi.fn() },
-  // AI SDK v6 Best Practice: finalAnswer for graceful loop termination
-  finalAnswer: { execute: vi.fn() },
-  // Incident evaluation tools
-  evaluateIncidentReport: { execute: vi.fn() },
-  validateReportStructure: { execute: vi.fn() },
-  scoreRootCauseConfidence: { execute: vi.fn() },
-  refineRootCauseAnalysis: { execute: vi.fn() },
-  enhanceSuggestedActions: { execute: vi.fn() },
-  extendServerCorrelation: { execute: vi.fn() },
-  incidentEvaluationTools: {},
-  // Vision tools (Gemini Flash-Lite)
-  analyzeScreenshot: { execute: vi.fn() },
-  analyzeLargeLog: { execute: vi.fn() },
-  searchWithGrounding: { execute: vi.fn() },
-  analyzeUrlContent: { execute: vi.fn() },
-  evaluateMathExpression: { execute: vi.fn() },
-  computeSeriesStats: { execute: vi.fn() },
-  estimateCapacityProjection: { execute: vi.fn() },
-  visionTools: {},
-  visionToolDescriptions: {},
-}));
+vi.mock('../../../tools-ai-sdk', () => {
+  const tools = {
+    getServerMetrics: { execute: vi.fn() },
+    getServerMetricsAdvanced: { execute: vi.fn() },
+    filterServers: { execute: vi.fn() },
+    getServerByGroup: { execute: vi.fn() },
+    getServerByGroupAdvanced: { execute: vi.fn() },
+    detectAnomalies: { execute: vi.fn() },
+    detectAnomaliesAllServers: { execute: vi.fn() },
+    predictTrends: { execute: vi.fn() },
+    analyzePattern: { execute: vi.fn() },
+    correlateMetrics: { execute: vi.fn() },
+    findRootCause: { execute: vi.fn() },
+    buildIncidentTimeline: { execute: vi.fn() },
+    getServerLogs: { execute: vi.fn() },
+    searchKnowledgeBase: { execute: vi.fn() },
+    searchWeb: { execute: vi.fn() },
+    recommendCommands: { execute: vi.fn() },
+    // AI SDK v6 Best Practice: finalAnswer for graceful loop termination
+    finalAnswer: { execute: vi.fn() },
+    // Incident evaluation tools
+    evaluateIncidentReport: { execute: vi.fn() },
+    validateReportStructure: { execute: vi.fn() },
+    scoreRootCauseConfidence: { execute: vi.fn() },
+    refineRootCauseAnalysis: { execute: vi.fn() },
+    enhanceSuggestedActions: { execute: vi.fn() },
+    extendServerCorrelation: { execute: vi.fn() },
+    incidentEvaluationTools: {},
+    // Vision tools (Gemini Flash-Lite)
+    analyzeScreenshot: { execute: vi.fn() },
+    analyzeLargeLog: { execute: vi.fn() },
+    searchWithGrounding: { execute: vi.fn() },
+    analyzeUrlContent: { execute: vi.fn() },
+    evaluateMathExpression: { execute: vi.fn() },
+    computeSeriesStats: { execute: vi.fn() },
+    estimateCapacityProjection: { execute: vi.fn() },
+    visionTools: {},
+    visionToolDescriptions: {},
+  };
+
+  return {
+    ...tools,
+    allTools: tools,
+  };
+});
 
 vi.mock('../../observability/langfuse', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../../observability/langfuse')>();

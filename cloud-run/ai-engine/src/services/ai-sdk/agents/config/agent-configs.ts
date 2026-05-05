@@ -6,7 +6,7 @@
  *
  * Architecture:
  * - Instructions: Imported from ./instructions/
- * - Tools: Resolved through the monitoring domain ToolRegistry
+ * - Tools: Resolved through the runtime host tool boundary
  * - Models: Configured via getModel functions with fallback chains
  *
  * @version 1.0.0
@@ -45,7 +45,7 @@ import {
 import {
   getAgentToolAllowlist,
 } from './agent-runtime-policy';
-import { MONITORING_AGENT_TOOL_REGISTRY } from '../../../../domains/monitoring/tool-registry';
+import { resolveDefaultMonitoringAgentTools } from './agent-tool-registry';
 
 // ============================================================================
 // Type Definitions
@@ -88,12 +88,7 @@ export const AGENT_NAMES = [
 export type AgentName = (typeof AGENT_NAMES)[number];
 
 function buildAgentTools(agentName: AgentName): ToolsMap {
-  return Object.fromEntries(
-    getAgentToolAllowlist(agentName).map((toolName) => [
-      toolName,
-      MONITORING_AGENT_TOOL_REGISTRY[toolName],
-    ])
-  ) as ToolsMap;
+  return resolveDefaultMonitoringAgentTools(getAgentToolAllowlist(agentName));
 }
 
 export const AGENT_CONFIGS: Record<AgentName, AgentConfig> = {

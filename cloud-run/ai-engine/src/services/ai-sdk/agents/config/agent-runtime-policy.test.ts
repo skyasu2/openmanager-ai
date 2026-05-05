@@ -1,4 +1,8 @@
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import type { AssistantRuntimeHost } from '../../assistant-runtime-host';
 import {
   AGENT_CONFIGS,
   AGENT_NAMES,
@@ -10,6 +14,12 @@ import {
   getAgentToolAllowlist,
   getOrchestratorProviderOrder,
 } from './index';
+import {
+  resolveAgentToolsFromRuntimeHost,
+  resolveDefaultMonitoringAgentTools,
+} from './agent-tool-registry';
+
+const CONFIG_DIR = dirname(fileURLToPath(import.meta.url));
 
 const EXPECTED_POLICIES = {
   'NLQ Agent': {
@@ -131,6 +141,50 @@ describe('agent runtime policy SSOT', () => {
         [...getAgentToolAllowlist(agentName)].sort()
       );
     }
+  });
+
+  it('keeps multi-agent tool resolution behind the runtime host boundary', () => {
+    const configSource = readFileSync(
+      join(CONFIG_DIR, 'agent-configs.ts'),
+      'utf8'
+    );
+
+    expect(configSource).not.toContain('MONITORING_AGENT_TOOL_REGISTRY');
+    expect(configSource).not.toContain('domains/monitoring/tool-registry');
+    expect(configSource).toContain('resolveDefaultMonitoringAgentTools');
+  });
+
+  it('resolves monitoring agent allowlists through the default runtime host', () => {
+    const reporterAllowlist = getAgentToolAllowlist('Reporter Agent');
+    const tools = resolveDefaultMonitoringAgentTools(reporterAllowlist);
+
+    expect(Object.keys(tools).sort()).toEqual([...reporterAllowlist].sort());
+    expect(tools.searchKnowledgeBase).toBeDefined();
+    expect(tools.searchWeb).toBeDefined();
+    expect(tools.finalAnswer).toBeDefined();
+  });
+
+  it('fails fast when a runtime host cannot satisfy an agent allowlist', () => {
+    const incompleteHost = {
+      domain: {
+        id: 'sample-domain',
+      },
+      createToolSet: () => ({
+        finalAnswer: {
+          description: 'final answer',
+          inputSchema: {
+            type: 'object',
+            properties: {},
+          },
+        },
+      }),
+    } as AssistantRuntimeHost;
+
+    expect(() =>
+      resolveAgentToolsFromRuntimeHost(incompleteHost, ['searchWeb'])
+    ).toThrow(
+      'Runtime host "sample-domain" is missing agent tool(s): searchWeb'
+    );
   });
 
   it('exposes stable helpers for orchestrator routing and evidence limits', () => {
