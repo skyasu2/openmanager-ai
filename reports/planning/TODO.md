@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-05 KST (`portable AI assistant Task 0B and Task 2 runtime scaffold complete`)
+**Last Updated**: 2026-05-05 KST (`portable AI assistant Task 3 monitoring domain pack complete`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| AI assistant portable core/domain pack modularization | High | Approved | Task 0A 완료: current-code boundary guard 추가 후 monitoring artifact/prompt/source/tool ownership을 domain module로 분리했고 GitLab pipeline `2501000082` success. Task 0C 완료: route/tool trace replay, retrieval evidence recall, stream contract snapshot deterministic benchmark 추가. Task 1 완료: runtime/source inventory를 core/domain/tainted/adapter/wrapper로 분류. Task 0B/2 완료: scaffold-aware contract와 `AssistantDomain`/registry/adapter runtime scaffold 추가. 다음 단계는 Task 3 monitoring domain pack 이관. 상세: [ai-assistant-portable-core-domain-pack-plan.md](ai-assistant-portable-core-domain-pack-plan.md) |
+| AI assistant portable core/domain pack modularization | High | Approved | Task 0A 완료: current-code boundary guard 추가 후 monitoring artifact/prompt/source/tool ownership을 domain module로 분리했고 GitLab pipeline `2501000082` success. Task 0C 완료: route/tool trace replay, retrieval evidence recall, stream contract snapshot deterministic benchmark 추가. Task 1 완료: runtime/source inventory를 core/domain/tainted/adapter/wrapper로 분류. Task 0B/2 완료: scaffold-aware contract와 `AssistantDomain`/registry/adapter runtime scaffold 추가. Task 3 완료: `monitoringDomainPack`이 prompt/routing/tool/fact/artifact를 소유하고 기존 supervisor routing은 compatibility wrapper로 전환. 다음 단계는 Task 3 후속 Backlog `AI artifact workspace/schema registry and replay pack` 범위 재분류. 상세: [ai-assistant-portable-core-domain-pack-plan.md](ai-assistant-portable-core-domain-pack-plan.md) |
 
 ---
 
