@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-05 KST (`portable AI assistant baseline gate passed; plan Approved`)
+**Last Updated**: 2026-05-05 KST (`portable AI assistant plan hardened for Task 0A entry`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| AI assistant portable core/domain pack modularization | High | Approved | Task -1 baseline/current behavior integrity gate 통과. 기준 HEAD `8989906d59a8c0ed1c02dc8c5e08dfc7fd31c50d`, production `v8.11.106`, QA pending `0`. 다음 단계는 Task 0 failing contract/dependency tests 작성. 상세: [ai-assistant-portable-core-domain-pack-plan.md](ai-assistant-portable-core-domain-pack-plan.md) |
+| AI assistant portable core/domain pack modularization | High | Approved | Task -1 baseline/current behavior integrity gate 통과. 기준 HEAD `8989906d59a8c0ed1c02dc8c5e08dfc7fd31c50d`, production `v8.11.106`, QA pending `0`. 계획서 보강 완료: Task 0A current-code boundary detector와 Task 0B scaffold-aware guard 분리, Task 1 inventory 기준/renderer 보안/Backlog 재검토 게이트 추가. 다음 단계는 Task 0A failing tests 작성. 상세: [ai-assistant-portable-core-domain-pack-plan.md](ai-assistant-portable-core-domain-pack-plan.md) |
 
 ---
 
@@ -16,9 +16,9 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| AI artifact workspace/schema registry and replay pack | High | M4 `ArtifactEnvelope` metadata는 완료됐지만 incident/report/monitoring/server snapshot artifact를 저장·복원·비교하는 portfolio-facing workspace/schema registry는 아직 없다. typed artifact 결과물을 재현 가능한 산출물로 만들되 신규 LLM 호출과 기본 DB write 증가는 별도 gate로 제한한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
+| AI artifact workspace/schema registry and replay pack | High | M4 `ArtifactEnvelope` metadata는 완료됐지만 incident/report/monitoring/server snapshot artifact를 저장·복원·비교하는 portfolio-facing workspace/schema registry는 아직 없다. typed artifact 결과물을 재현 가능한 산출물로 만들되 신규 LLM 호출과 기본 DB write 증가는 별도 gate로 제한한다. Portable core plan Task 3 `ArtifactRegistry` 완료 직후 이 항목을 replay/workspace persistence 잔여로 축소할지 재검토한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
 | AI advanced surface targeted QA pack | Medium | 이번 Vercel QA는 AI Chat stream과 탭 렌더링 중심이었다. 비용 보호를 유지하면서 Reporter 1회, anomaly/trend 1회, RAG/Web 대표 질의 1회만 별도 targeted QA로 검증하고 실제 버튼/기능 동작 여부를 기록한다. 실패가 확인될 때만 코드 수정으로 승격한다. |
-| Planner shadow production telemetry review | High | 현재 shadow drift/latency는 로컬 50개 baseline corpus와 단위 테스트 중심이다. `plannerShadow.latencyMs`, mismatch reason, executionMode를 운영/QA 로그에서 집계해 p95와 drift rate를 실제 수치로 확인한 뒤 authority 이전 여부를 판단한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
+| Planner shadow production telemetry review | High | 현재 shadow drift/latency는 로컬 50개 baseline corpus와 단위 테스트 중심이다. `plannerShadow.latencyMs`, mismatch reason, executionMode를 운영/QA 로그에서 집계해 p95와 drift rate를 실제 수치로 확인한 뒤 authority 이전 여부를 판단한다. Portable core plan Task 4 `AssistantRuntimeAdapters`/observability metadata 완료 직후 production review 실행만 남길지 adapter gap을 열지 재검토한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
 | MonitoringFactPack consumer/evidence UI expansion | Medium | M7에서 `MonitoringFactPack` 자체는 도입됐지만 모든 artifact/report/evidence panel이 같은 fact boundary를 소비하지는 않는다. metric severity는 deterministic fact pack이 책임지고 LLM은 explanation/formatting만 수행한다는 계약을 UI와 answer-quality eval까지 확장한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
 | Provider reasoning capability policy contract | Medium | 현재 `thinking`은 provider-native reasoning이 아니라 app-level routing intensity다. 무료 tier provider의 reasoning 지원은 계정 entitlement/latency/quota가 변동되므로 `reasoningCapability`, `lastVerified`, `expiresAt`, smoke source를 policy contract로 승격한 뒤 opt-in으로만 검토한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
 | Monitoring source error boundary documentation | Medium | `analytics-monitoring-error.ts`는 현재 deterministic monitoring routes(`/monitoring/snapshot`, `/monitoring/analyze-batch`)에 한정된다. `/analyze-server`, `/incident-report` grounding 실패까지 표준 오류로 올릴지 책임 범위를 명문화한다. 관련: [monitoring-ai-data-source-plan.md](archive/monitoring-ai-data-source-plan.md) |
