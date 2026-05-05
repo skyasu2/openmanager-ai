@@ -424,7 +424,7 @@ portable core task가 완료될 때 기존 Backlog와 중복 설계가 생기지
 
 | Backlog 항목 | 겹치는 Task | 재검토 시점 | 조치 기준 |
 |--------------|-------------|-------------|-----------|
-| AI artifact workspace/schema registry and replay pack | Task 3 `ArtifactRegistry` | Task 3 완료 직후 | ArtifactRegistry가 schema registry 범위를 충분히 포함하면 Backlog를 replay/workspace persistence만 남기도록 축소한다. 포함하지 않으면 별도 implementation task로 유지한다. |
+| AI artifact workspace/schema registry and replay pack | Task 3 `ArtifactRegistry` | Task 3 완료 직후 | Task 3 `ArtifactRegistry`는 domain kind classify/normalize까지만 포함한다. Backlog는 workspace store, schema migration, replay pack persistence/compare 잔여로 축소한다. |
 | Planner shadow production telemetry review | Task 4 `AssistantRuntimeAdapters` / observability metadata | Task 4 완료 직후 | runtime adapter/metadata가 shadow telemetry 집계 hook을 제공하면 Backlog를 production review 실행만 남기고, 제공하지 않으면 adapter gap으로 Task 4 follow-up을 연다. |
 
 ## Task 목록
@@ -438,7 +438,7 @@ portable core task가 완료될 때 기존 Backlog와 중복 설계가 생기지
 - [x] Task 1 — read-only inventory: `core-candidate`, `domain`, `shared-but-domain-tainted`, `adapter`, `compatibility-wrapper` 분류표 작성
 - [x] Task 2 — `AssistantDomain` / registry / adapter interface 추가
 - [x] Task 3 — monitoring prompt/routing/tool/fact/artifact를 `monitoringDomainPack`으로 이관
-- [ ] Task 3 후속 — Backlog `AI artifact workspace/schema registry and replay pack` 범위 재분류
+- [x] Task 3 후속 — Backlog `AI artifact workspace/schema registry and replay pack` 범위 재분류
 - [ ] Task 4 — runtime host가 domain pack과 adapter를 주입받도록 supervisor/job/ask path 정렬
 - [ ] Task 4 후속 — Backlog `Planner shadow production telemetry review` 범위 재분류
 - [ ] Task 5 — frontend artifact renderer registry와 history restore boundary 정렬
@@ -502,3 +502,4 @@ portable core task가 완료될 때 기존 Backlog와 중복 설계가 생기지
 - 2026-05-05: Task 1 완료. runtime/source 파일을 `core-candidate`, `domain`, `shared-but-domain-tainted`, `adapter`, `compatibility-wrapper`로 분류하고, 각 행에 domain/infra signals, deterministic portability, migration target, guard, risk를 기록했다. 다음 단계는 Task 0B scaffold-aware spec checkpoint를 추가한 뒤 Task 2 `AssistantDomain`/registry/adapter interface scaffold로 들어가는 것이다.
 - 2026-05-05: Task 0B/Task 2 완료. `9b5e0b1a2`에서 scaffold-aware failing spec을 먼저 추가했고, `cloud-run/ai-engine/src/core/assistant-runtime/`에 `AssistantDomain`, `RoutingPolicy`, `ToolRegistry`, `ArtifactRegistry`, `FactPackBuilder`, `AssistantRuntimeAdapters`, in-memory adapter, `createAssistantRuntime()` scaffold를 추가했다. core dependency guard는 `services/monitoring`, `tools-ai-sdk/*monitoring*`, `precomputed-state`, `domains/monitoring`, monitoring artifact literal/prompt glossary를 차단한다. 검증: targeted scaffold contract, AI Engine `type-check`, AI Engine `npm test` `98 files / 1018 tests`, `git diff --check`. 다음 단계는 Task 3 monitoring prompt/routing/tool/fact/artifact를 `monitoringDomainPack`으로 behavior-preserving 이관하는 것이다.
 - 2026-05-05: Task 3 완료. `724a64030`에서 monitoring domain pack contract failing spec을 추가했고, `cloud-run/ai-engine/src/domains/monitoring/domain-pack.ts`와 `routing-policy.ts`로 prompt/routing/tool/fact/artifact ownership을 묶었다. 기존 `services/ai-sdk/supervisor-routing.ts`는 public import compatibility wrapper로 유지해 route/tool selection behavior를 보존한다. 검증: monitoring domain pack contract + supervisor routing/consistency/route-retrieval benchmark `74/74`, AI Engine `type-check`, AI Engine `npm test` `99 files / 1023 tests`, `git diff --check`. 다음 단계는 Task 3 후속 Backlog `AI artifact workspace/schema registry and replay pack` 범위 재분류다.
+- 2026-05-05: Task 3 후속 완료. Task 3 `ArtifactRegistry`는 domain-side artifact kind classify/normalize owner이며 portfolio-facing workspace store, artifact family/version schema migration, replay pack persistence/compare는 포함하지 않는다고 판정했다. TODO Backlog `AI artifact workspace/schema registry and replay pack`을 domain registry 중복이 아닌 local/session-first workspace/schema/replay 잔여로 축소했다. 다음 단계는 Task 4 runtime host가 domain pack과 adapter를 주입받도록 supervisor/job/ask path를 정렬하는 것이다.

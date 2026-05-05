@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-05 KST (`portable AI assistant Task 3 monitoring domain pack complete`)
+**Last Updated**: 2026-05-05 KST (`portable AI assistant Task 3 backlog scope reclassified`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| AI assistant portable core/domain pack modularization | High | Approved | Task 0A 완료: current-code boundary guard 추가 후 monitoring artifact/prompt/source/tool ownership을 domain module로 분리했고 GitLab pipeline `2501000082` success. Task 0C 완료: route/tool trace replay, retrieval evidence recall, stream contract snapshot deterministic benchmark 추가. Task 1 완료: runtime/source inventory를 core/domain/tainted/adapter/wrapper로 분류. Task 0B/2 완료: scaffold-aware contract와 `AssistantDomain`/registry/adapter runtime scaffold 추가. Task 3 완료: `monitoringDomainPack`이 prompt/routing/tool/fact/artifact를 소유하고 기존 supervisor routing은 compatibility wrapper로 전환. 다음 단계는 Task 3 후속 Backlog `AI artifact workspace/schema registry and replay pack` 범위 재분류. 상세: [ai-assistant-portable-core-domain-pack-plan.md](ai-assistant-portable-core-domain-pack-plan.md) |
+| AI assistant portable core/domain pack modularization | High | Approved | Task 0A 완료: current-code boundary guard 추가 후 monitoring artifact/prompt/source/tool ownership을 domain module로 분리했고 GitLab pipeline `2501000082` success. Task 0C 완료: route/tool trace replay, retrieval evidence recall, stream contract snapshot deterministic benchmark 추가. Task 1 완료: runtime/source inventory를 core/domain/tainted/adapter/wrapper로 분류. Task 0B/2 완료: scaffold-aware contract와 `AssistantDomain`/registry/adapter runtime scaffold 추가. Task 3 완료: `monitoringDomainPack`이 prompt/routing/tool/fact/artifact를 소유하고 기존 supervisor routing은 compatibility wrapper로 전환. Task 3 후속 완료: artifact workspace Backlog를 domain kind registry 중복이 아닌 workspace/schema migration/replay persistence 잔여로 축소. 다음 단계는 Task 4 runtime host domain pack/adapter injection 정렬. 상세: [ai-assistant-portable-core-domain-pack-plan.md](ai-assistant-portable-core-domain-pack-plan.md) |
 
 ---
 
@@ -16,7 +16,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| AI artifact workspace/schema registry and replay pack | High | M4 `ArtifactEnvelope` metadata는 완료됐지만 incident/report/monitoring/server snapshot artifact를 저장·복원·비교하는 portfolio-facing workspace/schema registry는 아직 없다. typed artifact 결과물을 재현 가능한 산출물로 만들되 신규 LLM 호출과 기본 DB write 증가는 별도 gate로 제한한다. Portable core plan Task 3 `ArtifactRegistry` 완료 직후 이 항목을 replay/workspace persistence 잔여로 축소할지 재검토한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
+| AI artifact workspace/schema registry and replay pack | High | Task 3 `monitoringDomainPack.artifacts`가 monitoring artifact kind classify/normalize ownership은 가져갔으므로 이 항목은 더 이상 domain kind registry 작업이 아니다. 남은 범위는 portfolio-facing workspace store, artifact family/version schema registry, legacy migration, replay pack 저장·복원·비교이다. 기본값은 local/session-first이며 신규 LLM 호출과 기본 DB write 증가는 별도 gate로 제한한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
 | AI advanced surface targeted QA pack | Medium | 이번 Vercel QA는 AI Chat stream과 탭 렌더링 중심이었다. 비용 보호를 유지하면서 Reporter 1회, anomaly/trend 1회, RAG/Web 대표 질의 1회만 별도 targeted QA로 검증하고 실제 버튼/기능 동작 여부를 기록한다. 실패가 확인될 때만 코드 수정으로 승격한다. |
 | Planner shadow production telemetry review | High | 현재 shadow drift/latency는 로컬 50개 baseline corpus와 단위 테스트 중심이다. `plannerShadow.latencyMs`, mismatch reason, executionMode를 운영/QA 로그에서 집계해 p95와 drift rate를 실제 수치로 확인한 뒤 authority 이전 여부를 판단한다. Portable core plan Task 4 `AssistantRuntimeAdapters`/observability metadata 완료 직후 production review 실행만 남길지 adapter gap을 열지 재검토한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
 | MonitoringFactPack consumer/evidence UI expansion | Medium | M7에서 `MonitoringFactPack` 자체는 도입됐지만 모든 artifact/report/evidence panel이 같은 fact boundary를 소비하지는 않는다. metric severity는 deterministic fact pack이 책임지고 LLM은 explanation/formatting만 수행한다는 계약을 UI와 answer-quality eval까지 확장한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
