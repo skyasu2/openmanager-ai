@@ -275,6 +275,85 @@ describe('QA scripts', () => {
     ]);
   });
 
+  it('records structured planner shadow observations into run and tracker history', () => {
+    const tempDir = createTempWorkspace();
+    const inputPath = writeInputFile(
+      tempDir,
+      createValidPayload({
+        scope: 'targeted',
+        releaseFacing: false,
+        countsTowardSummary: false,
+        coveragePacks: ['ai-core'],
+        coveredSurfaces: ['AI sidebar route decision'],
+        skippedSurfaces: [],
+        expertAssessments: [],
+        usageChecks: [],
+        checks: {
+          total: 1,
+          passed: 1,
+          failed: 0,
+        },
+        plannerShadowObservations: [
+          {
+            surface: 'AI sidebar CPU top-3',
+            route: '/api/ai/supervisor/stream/v2',
+            executionMode: 'deterministic',
+            latencyMs: 5.4,
+            classification: 'matched',
+            driftReasonCodes: [],
+            source: 'localStorage assistant metadata',
+          },
+          {
+            surface: 'AI sidebar rewrite follow-up',
+            route: '/api/ai/supervisor/stream/v2',
+            executionMode: 'single-agent',
+            latencyMs: 1,
+            classification: 'drift',
+            driftReasonCodes: ['execution_mode_mismatch', 'unknown_raw_code'],
+          },
+        ],
+      })
+    );
+
+    const recordResult = runNodeScript(
+      RECORD_QA_RUN_SCRIPT,
+      ['--input', inputPath],
+      {
+        cwd: tempDir,
+      }
+    );
+
+    expect(recordResult.status).toBe(0);
+
+    const runFilePath = findGeneratedRunFile(tempDir);
+    const runRecord = JSON.parse(readFileSync(runFilePath, 'utf8'));
+    expect(runRecord.plannerShadowObservations).toEqual([
+      {
+        surface: 'AI sidebar CPU top-3',
+        route: '/api/ai/supervisor/stream/v2',
+        executionMode: 'deterministic',
+        latencyMs: 5,
+        classification: 'matched',
+        driftReasonCodes: [],
+        source: 'localStorage assistant metadata',
+      },
+      {
+        surface: 'AI sidebar rewrite follow-up',
+        route: '/api/ai/supervisor/stream/v2',
+        executionMode: 'single-agent',
+        latencyMs: 1,
+        classification: 'drift',
+        driftReasonCodes: ['execution_mode_mismatch'],
+      },
+    ]);
+
+    const trackerPath = join(tempDir, 'reports', 'qa', 'qa-tracker.json');
+    const tracker = JSON.parse(readFileSync(trackerPath, 'utf8'));
+    expect(tracker.runs[0].plannerShadowObservations).toEqual(
+      runRecord.plannerShadowObservations
+    );
+  });
+
   it('fails when release-facing Vercel run has no deployment evidence', () => {
     const tempDir = createTempWorkspace();
     const inputPath = writeInputFile(tempDir, createValidPayload());

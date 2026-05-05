@@ -568,6 +568,146 @@ describe('qa-trends', () => {
     expect(markdown).toContain('| Reporter Agent | groq | 1 | 900ms | 900ms |');
   });
 
+  it('builds a 24h planner shadow rollup and renders it in trend dashboards', () => {
+    const tracker = {
+      summary: {},
+      items: {},
+      experts: {},
+      runs: [
+        {
+          runId: 'QA-20260417-0200',
+          recordedAt: '2026-04-17T02:00:00.000Z',
+          scope: 'broad',
+          checks: { total: 3, passed: 3, failed: 0 },
+          pendingCount: 0,
+          plannerShadowObservations: [
+            {
+              surface: 'old shadow sample',
+              route: '/api/ai/supervisor/stream/v2',
+              executionMode: 'deterministic',
+              latencyMs: 99,
+              classification: 'drift',
+              driftReasonCodes: ['execution_path_mismatch'],
+            },
+          ],
+        },
+        {
+          runId: 'QA-20260418-0300',
+          recordedAt: '2026-04-18T05:00:00.000Z',
+          scope: 'broad',
+          checks: { total: 4, passed: 4, failed: 0 },
+          pendingCount: 0,
+          plannerShadowObservations: [
+            {
+              surface: 'CPU top-3',
+              route: '/api/ai/supervisor/stream/v2',
+              executionMode: 'deterministic',
+              latencyMs: 5,
+              classification: 'matched',
+              driftReasonCodes: [],
+            },
+            {
+              surface: 'rewrite follow-up',
+              route: '/api/ai/supervisor/stream/v2',
+              executionMode: 'single-agent',
+              latencyMs: 1,
+              classification: 'drift',
+              driftReasonCodes: ['execution_mode_mismatch'],
+            },
+          ],
+        },
+        {
+          runId: 'QA-20260419-0300',
+          recordedAt: '2026-04-19T04:00:00.000Z',
+          scope: 'targeted',
+          checks: { total: 2, passed: 2, failed: 0 },
+          pendingCount: 0,
+          countsTowardSummary: false,
+          plannerShadowObservations: [
+            {
+              surface: 'RAG lookup',
+              route: '/api/ai/jobs',
+              executionMode: 'multi-agent',
+              latencyMs: 8,
+              classification: 'matched',
+              driftReasonCodes: [],
+            },
+          ],
+        },
+      ],
+    };
+    const snapshot = buildQaTrendSnapshot(tracker);
+
+    expect(snapshot.plannerShadowRollup24h).toMatchObject({
+      windowHours: 24,
+      recordedRunCount: 2,
+      countedRunCount: 1,
+      sampleCount: 3,
+      driftCount: 1,
+      driftRatePct: 33.33,
+      avgLatencyMs: 5,
+      p95LatencyMs: 8,
+      classificationCounts: {
+        matched: 2,
+        drift: 1,
+      },
+      reasonCodeCounts: {
+        execution_mode_mismatch: 1,
+      },
+    });
+    expect(snapshot.plannerShadowRollup24h.buckets).toEqual([
+      {
+        route: '/api/ai/jobs',
+        executionMode: 'multi-agent',
+        sampleCount: 1,
+        runCount: 1,
+        countedRunCount: 0,
+        driftCount: 0,
+        driftRatePct: 0,
+        avgLatencyMs: 8,
+        p95LatencyMs: 8,
+        latestRunId: 'QA-20260419-0300',
+        latestRecordedAt: '2026-04-19T04:00:00.000Z',
+      },
+      {
+        route: '/api/ai/supervisor/stream/v2',
+        executionMode: 'deterministic',
+        sampleCount: 1,
+        runCount: 1,
+        countedRunCount: 1,
+        driftCount: 0,
+        driftRatePct: 0,
+        avgLatencyMs: 5,
+        p95LatencyMs: 5,
+        latestRunId: 'QA-20260418-0300',
+        latestRecordedAt: '2026-04-18T05:00:00.000Z',
+      },
+      {
+        route: '/api/ai/supervisor/stream/v2',
+        executionMode: 'single-agent',
+        sampleCount: 1,
+        runCount: 1,
+        countedRunCount: 1,
+        driftCount: 1,
+        driftRatePct: 100,
+        avgLatencyMs: 1,
+        p95LatencyMs: 1,
+        latestRunId: 'QA-20260418-0300',
+        latestRecordedAt: '2026-04-18T05:00:00.000Z',
+      },
+    ]);
+
+    const markdown = qaTrendsMarkdown(snapshot);
+    expect(markdown).toContain('## Planner Shadow Rollup (Last 24h)');
+    expect(markdown).toContain('- Drift rate: 33.33%');
+    expect(markdown).toContain(
+      '| /api/ai/supervisor/stream/v2 | single-agent | 1 | 100% | 1ms | 1ms | QA-20260418-0300 |'
+    );
+    expect(statusMarkdown(tracker)).toContain(
+      '## Planner Shadow Rollup (Last 24h)'
+    );
+  });
+
   it('writes markdown and json artifacts for the current tracker snapshot', () => {
     const tempDir = createTempDir();
     const trackerPath = join(tempDir, 'qa-tracker.json');
