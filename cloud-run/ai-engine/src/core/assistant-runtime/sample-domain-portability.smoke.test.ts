@@ -34,9 +34,11 @@ describe('sample domain pack portability smoke', () => {
       'sampleLookupAccount',
     ]);
     await expect(
-      runtime.resolveTool('sampleLookupAccount', request)?.execute?.(
-        sampleDomainToolInput,
-        result.context
+      Promise.resolve(
+        runtime.resolveTool('sampleLookupAccount', request)?.execute?.(
+          sampleDomainToolInput,
+          result.context
+        )
       )
     ).resolves.toMatchObject({
       accountId: 'acct-123',
