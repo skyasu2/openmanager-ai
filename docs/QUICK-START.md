@@ -4,18 +4,18 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: Tutorial
-> Last reviewed: 2026-03-29
+> Last reviewed: 2026-05-05
 > Canonical: docs/QUICK-START.md
 > Tags: quickstart,onboarding,setup
 >
-> **v8.0.0** | Updated 2026-03-27
+> **v8.11.97** | Updated 2026-05-05
 
-**AI 기반 실시간 서버 모니터링 플랫폼** - 5분 만에 시작하기
+**운영 의사결정 AI 어시스턴트 기반 서버 모니터링 플랫폼** - 5분 만에 시작하기
 
 ## 📋 필수 준비사항
 
 - **Node.js** v24.x 이상
-- **npm** v10.9.2 이상
+- **npm** v11.x 이상
 - **Git**
 - **Windows 11 + WSL 2** (권장 개발 환경)
 - **Claude Code** (메인 AI 개발 도구) + Codex CLI / Gemini CLI (보조)
@@ -59,13 +59,13 @@ npm run dev
 
 ### 1. 실시간 서버 모니터링
 
-- 대시보드에서 15개 시뮬레이션 서버 상태 실시간 확인
+- 대시보드에서 18대 synthetic OTel 관측 서버 상태 확인
 - CPU, Memory, Disk 사용률 모니터링
 
 ### 2. AI 어시스턴트
 
-- **Cloud Run AI**: LLM 멀티 에이전트 기반 실시간 서버 분석 및 자연어 질의
-- **Mock 모드**: Cloud Run 연결 불가 시 자동 폴백 (시뮬레이션)
+- **Cloud Run AI**: deterministic fact layer + tool-calling LLM 기반 서버 분석 및 자연어 질의
+- **동일 데이터 기준**: Dashboard와 AI가 같은 OTel snapshot/evidence를 사용
 
 ### 3. 게스트 모드 접근
 
@@ -98,11 +98,11 @@ npm run ci:local:docker
 
 ## 📊 무료 티어 최적화
 
-이 프로젝트는 **100% 무료**로 운영 가능하도록 설계되었습니다:
+이 프로젝트는 프로덕션 인프라/API 비용을 무료 tier 안에서 유지하도록 설계되었습니다:
 
 - **Vercel**: 무료 호스팅 (30GB/월 대역폭)
 - **Supabase**: 무료 PostgreSQL + 실시간 기능
-- **모니터링**: Mock 시뮬레이션으로 실제 서버 비용 제로
+- **모니터링**: synthetic OTel 데이터셋으로 실제 서버 비용 제로
 
 ## 🔧 문제 해결
 

@@ -4,20 +4,29 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-02-15
+> Last reviewed: 2026-05-05
 > Canonical: docs/reference/README.md
 > Tags: reference,index,architecture
 
 ## Core References
 
+포트폴리오나 신규 작업자가 빠르게 구조를 파악할 때는 `architecture/`와 `design/`을 먼저 보고, 구현 근거가 필요할 때 이 `reference/` 문서를 봅니다.
+
 - [API Endpoints](./api/endpoints.md)
 - [API Contracts](./api/contracts.md)
 - [System Architecture (Hybrid 포함)](./architecture/system/system-architecture-current.md)
 - [AI Engine Architecture](./architecture/ai/ai-engine-architecture.md)
+- [OTel Data Architecture](./architecture/data/otel-data-architecture.md)
 - [Database](./architecture/infrastructure/database.md)
 - [Security](./architecture/infrastructure/security.md)
 
 ## Architecture Index
+
+- [Architecture](../architecture/README.md)
+- [Design](../design/README.md)
+- [Operations](../operations/README.md)
+- [ADR Index](../adr/README.md)
+- [Architecture Design Index](./architecture/README.md)
 
 ### AI
 - [AI Engine Architecture](./architecture/ai/ai-engine-architecture.md)
@@ -32,7 +41,6 @@
 - [Data Architecture](./architecture/data/data-architecture.md)
 - [OTel Data Architecture](./architecture/data/otel-data-architecture.md)
 - [Monitoring Stack Comparison](./architecture/data/monitoring-stack-comparison.md)
-- [Server Metadata Comparison](./architecture/data/server-metadata-comparison.md)
 
 ### Project Specs
 - [WBS (모듈 기반)](./project/wbs.md)
@@ -52,11 +60,18 @@
 - [Design Consistency](./architecture/design/consistency.md)
 
 ### Decisions (ADR)
-- [ADR-002](./architecture/decisions/adr-002-server-card-rendering-strategy.md)
-- [ADR-003](./architecture/decisions/adr-003-promql-vs-js-array-filtering.md)
+- [ADR Index](../adr/README.md)
+- [ADR-002](../adr/adr-002-server-card-rendering-strategy.md)
+- [ADR-003](../adr/adr-003-promql-vs-js-array-filtering.md)
+
+### Historical / Archived
+
+- [Server Metadata Comparison](../archived/server-metadata-comparison.md) — v8.0.0 기준 비교 기록. 현재 데이터 SSOT는 [OTel Data Architecture](./architecture/data/otel-data-architecture.md)를 사용합니다.
 
 ## Related
 
 - [Docs Home](../README.md)
 - [Guides](../guides/README.md)
+- [Development](../development/README.md)
+- [Operations](../operations/README.md)
 - [Troubleshooting](../troubleshooting/README.md)

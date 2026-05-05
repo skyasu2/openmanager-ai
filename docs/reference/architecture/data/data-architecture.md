@@ -1,14 +1,16 @@
 # 서버 데이터 아키텍처 가이드
 
 > Owner: platform-data
-> Status: Active Canonical
+> Status: Active Supporting
 > Doc type: Explanation
-> Last reviewed: 2026-04-25
-> Canonical: docs/reference/architecture/data/data-architecture.md
+> Last reviewed: 2026-05-05
+> Canonical: docs/reference/architecture/data/otel-data-architecture.md
 > Tags: data,architecture,otel,prometheus
 
-**최종 업데이트**: 2026-04-25
-**프로젝트 버전**: v8.11.32
+**최종 업데이트**: 2026-05-05
+**프로젝트 버전**: v8.11.97
+
+> **현재 SSOT**: 서버 인벤토리, OTel 파일 구조, AI/Dashboard 소비 경계는 [OTel Data Architecture](./otel-data-architecture.md)를 기준으로 합니다. 이 문서는 zero-internal-traffic 전략과 데이터 접근 배경을 설명하는 supporting 문서입니다.
 
 ---
 
@@ -122,27 +124,24 @@ npm run data:verify
 
 ---
 
-## 🖥️ 서버 구성 (15대 - OnPrem DC1)
+## 🖥️ Current Topology Note (18대 - OnPrem DC1)
 
-### 서버 목록
+현재 synthetic topology는 18대이며, 최신 서버 목록과 스펙은 [OTel Data Architecture §18대 서버 인벤토리](./otel-data-architecture.md#18대-서버-인벤토리)를 기준으로 합니다.
 
-| 유형 | ID | 이름 | 위치 |
-|------|-----|------|------|
-| **Web** | `web-nginx-dc1-01` | Nginx Web Server 01 | OnPrem-DC1-AZ1 |
-| **Web** | `web-nginx-dc1-02` | Nginx Web Server 02 | OnPrem-DC1-AZ2 |
-| **Web** | `web-nginx-dc1-03` | Nginx Web Server 03 | OnPrem-DC1-AZ3 |
-| **API** | `api-was-dc1-01` | WAS API Server 01 | OnPrem-DC1-AZ1 |
-| **API** | `api-was-dc1-02` | WAS API Server 02 | OnPrem-DC1-AZ2 |
-| **API** | `api-was-dc1-03` | WAS API Server 03 | OnPrem-DC1-AZ3 |
-| **DB** | `db-mysql-dc1-primary` | MySQL Primary | OnPrem-DC1-AZ1 |
-| **DB** | `db-mysql-dc1-replica` | MySQL Replica | OnPrem-DC1-AZ2 |
-| **DB** | `db-mysql-dc1-backup` | MySQL Backup | OnPrem-DC1-AZ3 |
-| **Cache** | `cache-redis-dc1-01` | Redis Cache 01 | OnPrem-DC1-AZ1 |
-| **Cache** | `cache-redis-dc1-02` | Redis Cache 02 | OnPrem-DC1-AZ2 |
-| **Storage** | `storage-nfs-dc1-01` | NFS Storage | OnPrem-DC1-AZ1 |
-| **Storage** | `storage-s3gw-dc1-01` | S3 Gateway Backup | OnPrem-DC1-AZ3 |
-| **LB** | `lb-haproxy-dc1-01` | HAProxy LB 01 | OnPrem-DC1-AZ1 |
-| **LB** | `lb-haproxy-dc1-02` | HAProxy LB 02 | OnPrem-DC1-AZ3 |
+이 문서는 데이터 접근 전략을 설명하는 supporting 문서이므로 서버 인벤토리를 중복 관리하지 않습니다. 과거 15대 구성은 초기 설계 배경일 뿐이며, 현재 Dashboard/AI/Topology 기준으로 사용하지 않습니다.
+
+### 현재 계층 요약
+
+| Tier | Count | Notes |
+|------|------:|------|
+| Load Balancer | 3 | HAProxy, AZ1/AZ2/AZ3 분산 |
+| Web | 3 | Nginx web tier |
+| API | 3 | WAS/API application tier |
+| DB | 3 | MySQL primary/replica/backup |
+| Cache | 3 | Redis cache tier |
+| Storage | 3 | NFS 2대 + S3 gateway 1대 |
+
+15대에서 18대로 늘어난 핵심 차이는 AZ별 capacity node 보강입니다. 이 변경으로 Dashboard는 `18개 서버 중 1-15번째 표시`처럼 페이지 단위 렌더링을 수행하고, AI Engine은 18대 전체 snapshot을 기준으로 요약/분석합니다.
 
 ### 서버 ID 명명 규칙
 
@@ -246,4 +245,3 @@ const hourlyData = JSON.parse(
 - **데이터 접근 SSOT**: `src/services/metrics/MetricsProvider.ts`
 - **데이터 보정/검증 스크립트**: `scripts/data/otel-fix.ts`, `scripts/data/otel-verify.ts`
 - **OTel 파이프라인**: `docs/reference/architecture/data/otel-data-architecture.md`
-- **시뮬레이션 가이드**: `docs/guides/simulation.md`

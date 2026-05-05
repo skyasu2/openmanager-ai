@@ -1,14 +1,16 @@
 # Monitoring Stack 비교 분석 — Prometheus & Grafana Cloud vs OpenManager AI
 
 > Owner: platform-data
-> Status: Active Canonical
+> Status: Active Supporting
 > Doc type: Reference
-> Last reviewed: 2026-02-17
+> Last reviewed: 2026-05-05
 > Canonical: docs/reference/architecture/data/monitoring-stack-comparison.md
 > Tags: prometheus,grafana,comparison,metrics,data-pipeline
 
-**대상 버전**: OpenManager AI v8.0.0
+**대상 버전**: OpenManager AI v8.11.97
 **목적**: Prometheus/Grafana Cloud 대비 데이터 모델 및 파이프라인 비교
+
+> 현재 데이터 SSOT는 [OTel Data Architecture](./otel-data-architecture.md)입니다. 이 문서는 외부 모니터링 스택 대비 설계 차이를 설명하는 supporting comparison이며, 신규 구현 기준은 OTel/Data 문서와 `public/data/otel-data`를 우선합니다.
 
 ---
 
@@ -21,7 +23,7 @@
 | 데이터 모델 | ★★☆☆☆ | counter/gauge 구분 없이 사전 계산된 % 값만 존재 |
 | Scrape 설정 | ★★★☆☆ | 개념은 맞으나 10분 간격은 비표준 |
 | Alert 임계값 | ★★★★☆ | 업계 표준과 유사 (warning=80%, critical=90%) |
-| 아키텍처 패턴 | ★★☆☆☆ | Pull → Static JSON, PromQL 없음 |
+| 아키텍처 패턴 | ★★★☆☆ | Static OTel JSON + TS 함수가 실사용 경로, PromQL 호환 엔진은 확장 대비 보조 |
 | **종합** | **★★★☆☆** | **Prometheus "영감"을 잘 받았으나 본질적 차이 존재** |
 
 ---
@@ -73,7 +75,7 @@ Prometheus 표준: `[namespace]_[subsystem]_[name]_[unit]`
 | 로그 | Loki (Index+Chunks) | JSON 파일 + Supabase (RAG) |
 | 트레이스 | Tempo (Object Storage) | 미지원 |
 | 보관 | 13개월 (메트릭), 30일 (로그) | 무제한 (Git) |
-| 비용 | 무료 한도 초과 시 과금 | $0 (GitHub Free) |
+| 비용 | 무료 한도 초과 시 과금 | $0 static data (Git-tracked, GitLab canonical) |
 
 ### 쿼리 (Query)
 
@@ -169,7 +171,7 @@ public/data/otel-data/ (Runtime SSOT, Git 관리)
 | 비용 | 초과 시 과금 | **₩0 운영** |
 | AI 통합 | 별도 설정 필요 | **내장 (NLQ → 메트릭)** |
 
-**OpenManager AI는 Prometheus/Grafana의 외형(naming, label, alert)을 충실히 모방하되, 내부 동작(counter→rate, TSDB, PromQL)은 의도적으로 생략한 교육용/데모용 아키텍처.**
+**OpenManager AI는 Prometheus/Grafana의 외형(naming, label, alert)을 참고하되, 현재 실사용 경로는 OTel-style static replay dataset + TypeScript deterministic processing입니다.** PromQL 호환 엔진은 확장 대비로 유지하지만, 현 규모에서는 ADR-003 기준으로 JS 배열 처리와 사전 계산 데이터가 기본입니다.
 
 ---
 
@@ -186,8 +188,8 @@ public/data/otel-data/ (Runtime SSOT, Git 관리)
 
 - [데이터 아키텍처 (SSOT)](./data-architecture.md)
 - [OTel 데이터 아키텍처](./otel-data-architecture.md)
-- [ADR-003: PromQL vs JS Array Filtering](../decisions/adr-003-promql-vs-js-array-filtering.md)
+- [ADR-003: PromQL vs JS Array Filtering](../../../adr/adr-003-promql-vs-js-array-filtering.md)
 
 ---
 
-_Last Updated: 2026-02-17_
+_Last Updated: 2026-05-05_

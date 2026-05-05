@@ -1,16 +1,31 @@
-# 🐘 데이터베이스 설계
+# 데이터베이스 설계
 
 > Supabase 중심 데이터베이스 스키마/운영 원칙 레퍼런스
 > Owner: platform-data
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-04-12
+> Last reviewed: 2026-05-05
 > Canonical: docs/reference/architecture/infrastructure/database.md
 > Tags: database,supabase,schema,infrastructure
 >
-> **프로젝트 버전**: v8.11.9 | **Updated**: 2026-04-12 (bootstrap blocker 해소 완료 검증)
+> **프로젝트 버전**: v8.11.97 | **Updated**: 2026-05-05
 
-## 🐘 Supabase PostgreSQL 스키마
+## 현재 역할
+
+Supabase는 인증, RAG/KB, feedback, audit 같은 영속 데이터의 기준입니다. Dashboard/AI monitoring runtime의 서버 메트릭 SSOT는 Supabase가 아니라 `public/data/otel-data` synthetic OTel dataset입니다.
+
+| 영역 | 현재 기준 |
+|---|---|
+| Auth/session | Supabase Auth + 자체 guest session |
+| RAG/KB | `knowledge_base`, `command_vectors`, Knowledge Retrieval Lite |
+| Feedback/audit | `ai_feedback`, `security_audit_logs` 계열 |
+| Monitoring runtime | `public/data/otel-data` → `MetricsProvider`/AI Engine precomputed state |
+| AI jobs/cache | Redis/Cloud Tasks, Supabase가 job store 아님 |
+| Schema source | `supabase/migrations/**` |
+
+AI나 dashboard 메트릭 구현을 바꿀 때는 이 문서보다 [OTel Data Architecture](../data/otel-data-architecture.md)를 먼저 확인합니다. Supabase schema/RLS/extension 변경이면 이 문서를 기준으로 봅니다.
+
+## Supabase PostgreSQL 스키마
 
 ### 플랫폼 구성
 - **PostgreSQL**: 17 (최신)

@@ -4,15 +4,20 @@
 > Owner: documentation
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-05-05
 > Canonical: docs/guides/README.md
 > Tags: guides,index,how-to
+
+## 역할
+
+`guides/`는 실행 방법과 운영 원칙을 짧게 확인하는 곳입니다. 전체 구조는 [Architecture](../architecture/README.md), 구현 단위 설계는 [Design](../design/README.md), 상세 레퍼런스는 [Reference](../reference/README.md)를 기준으로 봅니다.
 
 ## Categories
 
 - [AI](./ai/ai-standards.md)
 - [Testing](./testing/test-strategy.md)
 - [Standards](./standards/health-check-policy.md)
+- [Observability](./observability.md)
 
 ## Key Guides
 
@@ -34,5 +39,8 @@
 ## Related
 
 - [Docs Home](../README.md)
+- [Architecture](../architecture/README.md)
+- [Design](../design/README.md)
 - [Development](../development/README.md)
+- [Operations](../operations/README.md)
 - [Reference](../reference/README.md)

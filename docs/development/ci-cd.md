@@ -1,16 +1,18 @@
 # CI/CD 파이프라인 & 의존성 관리
 
-> GitLab canonical + GitLab CI main validate + semver tag deploy(frontend/ai-engine) + smoke 운영 가이드
+> GitLab canonical + GitLab CI main validate + semver tag deploy(frontend/ai-engine) + smoke 레퍼런스
 > Owner: platform-devops
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-04-25
+> Last reviewed: 2026-05-05
 > Canonical: docs/development/ci-cd.md
 > Tags: ci,cd,gitlab,vercel,github-actions,automation
 
 ## 개요
 
 현재 운영 기준은 **GitLab canonical repo + GitLab CI branch/main validate(frontend + ai-engine) + semver tag deploy(frontend + ai-engine) + post-deploy smoke + 로컬 Docker CI 보강 검증** 입니다. 아래 GitHub Actions 내용은 과거/보조 레퍼런스로 유지되며, primary delivery path는 아닙니다.
+
+이 문서는 CI/CD 토폴로지와 정책 배경을 설명하는 reference입니다. 실제 배포/롤백 절차를 따라야 할 때는 [Deployment Guide](../operations/deployment-guide.md)와 [Rollback Guide](../operations/rollback-guide.md)를 먼저 사용합니다.
 
 배포 시작 시점의 runner 상태에 따라 자동 분기하려면 아래 명령을 사용합니다.
 
@@ -674,7 +676,9 @@ GitLab CI `deploy_ai_engine` 필수 변수:
 
 - [프로젝트 셋업](./project-setup.md) - 로컬 개발 환경 설정
 - [Docker 가이드](./docker.md) - Cloud Run 컨테이너 배포 상세
+- [Deployment Guide](../operations/deployment-guide.md) - production 배포 runbook
+- [Rollback Guide](../operations/rollback-guide.md) - rollback 판단/실행 runbook
 - [Git Hooks 워크플로우](./git-hooks-workflow.md) - 로컬 Git hooks
 - [Free Tier 최적화](../reference/architecture/infrastructure/free-tier-optimization.md)
 
-_Last Updated: 2026-04-04_
+_Last Updated: 2026-05-05_

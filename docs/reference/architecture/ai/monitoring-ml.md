@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-04-18
+> Last reviewed: 2026-05-05
 > Canonical: docs/reference/architecture/ai/monitoring-ml.md
 > Tags: monitoring,ml,anomaly-detection,trend-prediction,architecture
 
@@ -27,6 +27,8 @@ cloud-run/ai-engine/src/lib/ai/monitoring/
 ├── TrendPredictor.enhanced.ts
 └── TrendPredictor.types.ts
 ```
+
+2026-05-05 random review에서 위 파일과 Analyst/Reporter tool 참조가 여전히 유지됨을 코드 검색으로 확인했습니다. 운영 경로는 경량 TypeScript detector/predictor와 threshold/statistical scan 중심이며, 오픈소스 ML 재도입 조건은 변경하지 않습니다.
 
 ## 변경 이력 요약 (2026-02)
 

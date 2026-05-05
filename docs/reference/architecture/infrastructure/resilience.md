@@ -4,15 +4,21 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-04-18
+> Last reviewed: 2026-05-05
 > Canonical: docs/reference/architecture/infrastructure/resilience.md
 > Tags: resilience,circuit-breaker,fallback,retry,error-handling
 >
-> **프로젝트 버전**: v8.2.0 | **Updated**: 2026-02-22
+> **프로젝트 버전**: v8.11.97 | **Updated**: 2026-05-05
 
 ## 개요
 
 이 프로젝트는 외부 AI 프로바이더(Cerebras, Groq, Mistral, Google, OpenRouter)에 의존하는 구조이므로, **장애 전파 차단**과 **자동 복구**를 위한 다층 복원력 패턴을 적용합니다.
+
+현재 운영값의 기준 구현은 `cloud-run/ai-engine/deploy.sh`,
+`cloud-run/ai-engine/src/config/timeout-config.ts`,
+`cloud-run/ai-engine/src/services/resilience/retry-with-fallback.ts`,
+`cloud-run/ai-engine/src/services/resilience/provider-fallback-control.ts`,
+`cloud-run/ai-engine/src/lib/prompt-guard.ts`입니다. 이 문서는 해당 구현을 설명하는 reference이며, 정책/제약의 SSOT는 `docs/guides/ai/ai-standards.md`를 우선합니다.
 
 ```
 사용자 요청
@@ -306,7 +312,7 @@ Cloud Run (300s hard limit)
 | API Key 보안 | `timingSafeEqual` 기반 비교 (timing attack 방어) |
 | Rate Limiter 식별 | API Key suffix 대신 SHA-256 해시 기반 식별자 |
 | Handoff 이벤트 | 무한 증가 방지 → O(1) 링 버퍼 (최대 50건) |
-| Prompt Injection | `lastIndex` 리셋 + 15개 패턴 (EN+KO) |
+| Prompt Injection | `lastIndex` 리셋 + 16개 패턴 (EN+KO) |
 | Heap 메모리 | 256MB 제한 (512Mi 컨테이너 headroom 확보) |
 
 ### 빈 데이터 방어 (Data Fallback)
@@ -389,4 +395,4 @@ curl -H "X-API-Key: $SECRET" https://ai-engine-xxx.run.app/monitoring
 - [Observability 가이드](../../../guides/observability.md) - Langfuse/Sentry 모니터링
 - [Free Tier 최적화](./free-tier-optimization.md) - 비용 제약 하의 설계
 
-_Last Updated: 2026-02-22_
+_Last Updated: 2026-05-05_

@@ -4,12 +4,12 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Policy
-> Last reviewed: 2026-02-14
+> Last reviewed: 2026-05-05
 > Canonical: docs/guides/standards/health-check-policy.md
 > Tags: health-check,policy,operations
 >
 > **작성**: 2025-11-21 08:07 KST
-> **원칙**: 모든 헬스체크는 수동 테스트 전용, 자동 호출 금지
+> **원칙**: 주기적 외부 uptime 자동 호출 금지. 수동 점검, 배포 smoke, QA gate에서만 제한적으로 사용
 
 ---
 
@@ -35,7 +35,13 @@ export async function GET(request: NextRequest) {
 - 용도: 수동 테스트 전용
 - 응답: Database, Cache, AI 서비스 상태
 - 캐싱: 응답 레벨 `Cache-Control` + 모듈 메모리 캐시(60초 TTL)
-- 자동 호출: 금지
+- 자동 호출: 주기적 uptime/cron 호출 금지. 배포 직후 smoke와 QA gate는 허용
+
+#### 3. `/api/health?service=ai&soft=true` - AI soft health
+
+- 용도: Cloud Run cold-start와 recoverable degraded 상태를 UI/QA에서 구분
+- 응답: AI health status, latency, recoverable reason
+- 정책: warming/degraded를 즉시 치명적 장애로 캐시하지 않음
 
 ---
 
@@ -49,6 +55,11 @@ export async function GET(request: NextRequest) {
 ❌ 1분/5분 간격 자동 호출
 
 이유: 불필요한 컴퓨팅 비용 발생
+
+허용:
+- 로컬 개발 중 수동 확인
+- GitLab/Vercel/Cloud Run 배포 직후 smoke
+- Playwright MCP 최종 QA에서 필요한 최소 호출
 ```
 
 ### 2. 캐싱 설정
@@ -71,6 +82,9 @@ curl "https://openmanager-ai.vercel.app/api/health?simple=true"
 
 # 상세 상태 확인
 curl https://openmanager-ai.vercel.app/api/health
+
+# AI soft health
+curl "https://openmanager-ai.vercel.app/api/health?service=ai&soft=true"
 ```
 
 ### 시스템 모니터링
@@ -116,6 +130,7 @@ Vercel Dashboard > Analytics
 - [ ] Vercel Dashboard에서 호출 패턴 주기적 확인
 - [ ] 비정상 호출 감지 시 즉시 차단
 - [ ] 월간 비용 리포트 확인
+- [ ] QA/배포 smoke 호출은 `reports/qa` evidence와 함께 기록
 
 ---
 
@@ -140,3 +155,9 @@ Vercel Dashboard > Settings > Notifications
 
 **정책 시행**: 2025-11-21부터  
 **검토 주기**: 월 1회
+
+## 관련 문서
+
+- [Operations](../../operations/README.md)
+- [Deployment Architecture](../../architecture/03-deployment-architecture.md)
+- [API Contracts](../../reference/api/contracts.md)

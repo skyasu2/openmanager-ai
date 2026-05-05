@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-04-29
+> Last reviewed: 2026-05-05
 > Canonical: docs/development/docker.md
 > Tags: docker,cloud-run,ai-engine
 
@@ -17,7 +17,7 @@
 │  Frontend (Next.js)                 │  Docker 불필요
 │  → npm run dev (로컬)               │  → Vercel (프로덕션)
 ├─────────────────────────────────────┤
-│  AI Engine (Hono + Multi-Agent)     │  Docker 사용
+│  AI Engine (Hono + AI runtime)      │  Docker 사용
 │  → docker-compose up (로컬)         │  → Cloud Run (프로덕션)
 └─────────────────────────────────────┘
 ```

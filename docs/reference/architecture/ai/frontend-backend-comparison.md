@@ -4,12 +4,12 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-02
+> Last reviewed: 2026-05-05
 > Canonical: docs/reference/architecture/ai/frontend-backend-comparison.md
 > Tags: ai,frontend,backend,comparison
 
-**분석 일시**: 2026-05-02 (Artifact intent pipeline and topology refresh)
-**버전**: v8.11.82
+**분석 일시**: 2026-05-05 (AI assistant taxonomy and runtime positioning refresh)
+**버전**: v8.11.97
 **아키텍처**: Vercel (Frontend) + Cloud Run (Backend AI Engine)
 
 ---
@@ -43,7 +43,7 @@ graph LR
     Redis["Upstash Redis<br/>Job State + Progress + Result"]
     CloudTasks["Cloud Tasks<br/>HTTP Task Queue"]
 
-    Vercel -->|"primary stream /api/ai/supervisor/stream/v2\nlegacy JSON/text /api/ai/supervisor"| CloudRun
+    Vercel -->|"primary stream /api/ai/supervisor/stream/v2\nopt-in facade /api/ai/ask\nlegacy JSON/text /api/ai/supervisor"| CloudRun
     Vercel -->|"complex query /api/ai/jobs"| Redis
     Vercel -->|"short dispatch request"| Dispatch
     Dispatch --> CloudTasks
@@ -66,10 +66,10 @@ graph LR
          - Security (52패턴 방어)               - Quad-Provider LLM
          - Resumable Stream                     - Pre-computed 144슬롯
 
-부가 경로: `/api/ai/supervisor`는 legacy JSON/text proxy이며 cache/plain callers와 local dev fallback을 담당합니다.
+부가 경로: `/api/ai/ask`는 wrapper-only opt-in facade이며 기존 stream/job/artifact route로 내부 위임합니다. `/api/ai/supervisor`는 legacy JSON/text proxy이며 cache/plain callers와 local dev fallback을 담당합니다.
 ```
 
-> Source of truth (2026-05-02): `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (5 routing LLM agents + 2 internal deterministic Evaluator/Optimizer pipeline configs), `src/app/api/**/route.ts(x)` (frontend API routes 32), `src/lib/ai/chat-artifacts/chat-artifact-intent.ts`, `tests/intent-classifier/intent-classifier.eval.test.ts`, `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')` (Cloud Run API mounts 8), `cloud-run/ai-engine/src/routes/*.ts` (12 non-test route/helper modules), `cloud-run/ai-engine/src/lib/cloud-tasks.ts`.
+> Source of truth (2026-05-04): `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (5 routing LLM agents + 2 internal deterministic Evaluator/Optimizer pipeline configs), `src/app/api/**/route.ts(x)` (frontend API routes 33), `src/app/api/ai/ask/route.ts`, `src/lib/ai/chat-artifacts/chat-artifact-intent.ts`, `tests/intent-classifier/intent-classifier.eval.test.ts`, `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')` (Cloud Run API mounts 8), `cloud-run/ai-engine/src/routes/*.ts` (12 non-test route/helper modules), `cloud-run/ai-engine/src/lib/cloud-tasks.ts`.
 
 ---
 
@@ -91,7 +91,7 @@ graph LR
 |------|:--------:|:-------:|:----:|
 | Agent 선택 UI | Quick Prompts 3종 | - | Frontend 전담 |
 | Agent 라우팅 | 쿼리 타입 힌트 전달 | Supervisor 자동 라우팅 | Backend 주도 |
-| Multi-Agent 오케스트레이션 | - | Orchestrator (5모듈 분할) | Backend 전담 |
+| 조건부 Multi-Agent 오케스트레이션 | - | Orchestrator (복잡 질의 escalation) | Backend 전담 |
 | Agent 진행 상태 표시 | InlineAgentStatus | step annotations 전송 | 양쪽 완벽 |
 | Agent 종류 (7종) | - | NLQ/Analyst/Reporter/Advisor/Vision/Evaluator/Optimizer | Backend 전담 |
 
@@ -262,10 +262,10 @@ route.ts (369줄) ──→ security.ts (596줄)
 ### Backend 아키텍처
 
 ```
-Supervisor (듀얼모드)
-├── Single-Agent Mode (단순 쿼리)
-│   └── model-provider → Agent 직접 실행
-└── Multi-Agent Mode (복잡 쿼리)
+Supervisor (deterministic/single-first)
+├── Deterministic / Single-Agent path (단순 쿼리)
+│   └── fact/tool code 또는 model-provider → Agent 직접 실행
+└── Conditional Multi-Agent escalation (복잡 쿼리)
     └── Orchestrator
         ├── Pattern-Based Routing (규칙 기반)
         ├── LLM Fallback Routing
@@ -352,12 +352,12 @@ Quad-Provider Fallback Chain:
 
 ## 8. 결론
 
-OpenManager AI v8.0.0의 AI Assistant는 **Frontend-Backend 양쪽 모두 높은 완성도**를 보입니다.
+OpenManager AI v8.11.97 기준 AI Assistant는 **Frontend-Backend 양쪽 모두 높은 완성도**를 보입니다.
 
 - **Backend (95%)**: Modular Split Architecture, Quad-Provider 폴백, 전문 도구 세트, Pre-computed Data, Circuit Breaker (Orchestrator 포함), Rate Limiting 등 AI 처리의 핵심이 모두 구현됨
 - **Frontend (93%)**: Hybrid Query Router, Resumable Streaming, Clarification Dialog, 52패턴 보안 방어, Memory+Redis 다층 캐시, Sentry AI Context 태깅 등 사용자 경험 관련 기능이 잘 구현됨
 
-**양쪽 완성도가 거의 동등합니다.** 초기 분석 이후 Rate Limiting, CB Orchestrator 통합, Sentry AI Context, 대용량 파일 분할 등 5건의 개선이 완료되어 종합 94%로 상향. 잔여 과제는 `useHybridAIQuery.ts` 추가 분할과 Cloud Run Sentry 연동 검토(선택적)로, 현재 상태에서 프로덕션 운영에 문제가 없습니다.
+**양쪽 완성도가 거의 동등합니다.** 초기 분석 이후 Rate Limiting, CB Orchestrator 통합, Sentry AI Context, 대용량 파일 분할, `/api/ai/ask` wrapper facade, planner shadow metadata, deterministic recovery/formatting guard가 누적되어 종합 94% 수준을 유지합니다. 잔여 과제는 `useHybridAIQuery.ts` 추가 분할, route catalog 정리, Cloud Run Sentry 연동 검토(선택적)입니다.
 
 ### 코드 규모 비교
 
@@ -377,6 +377,6 @@ OpenManager AI v8.0.0의 AI Assistant는 **Frontend-Backend 양쪽 모두 높은
 
 ---
 
-_Last Updated: 2026-03-03 (diagram/metadata consistency refresh)_
+_Last Updated: 2026-05-04 (as-built architecture index and route facade refresh)_
 _Analysis Method: 코드베이스 실측 (wc -l, symbol analysis)_
 _Corrections: 캐시(Memory+Redis), Sentry(AI context), Provider순서(Cerebras→Mistral→Groq→Gemini), 줄 수 오류 수정_

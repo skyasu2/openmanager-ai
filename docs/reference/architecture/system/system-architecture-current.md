@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active Canonical (hybrid-split.md 통합됨)
 > Doc type: Explanation
-> Last reviewed: 2026-05-02
+> Last reviewed: 2026-05-05
 > Canonical: docs/reference/architecture/system/system-architecture-current.md
 > Tags: system,architecture,hybrid,cloud-run,vercel
 
@@ -12,13 +12,13 @@
 
 ## 1. Overview
 
-**OpenManager AI v8.11.80 기준** AI Native Server Monitoring Platform으로, Vercel(Frontend/BFF)과 Cloud Run(AI Engine)의 **Hybrid Architecture**로 운영됩니다.
+**OpenManager AI v8.11.97 기준** 운영 의사결정 AI 어시스턴트 기반 서버 모니터링 시스템으로, Vercel(Frontend/BFF)과 Cloud Run(AI Engine)의 **Hybrid Architecture**로 운영됩니다.
 
 | 항목 | 수치 |
 |------|------|
-| React/TSX surface | 353 tracked `.tsx` files under `src/` |
+| React/TSX surface | 359 tracked `.tsx` files under `src/` |
 | Custom Hooks | ~35+ |
-| API Routes | 31 (`src/app/api/**/route.ts`, `route.tsx` 포함) |
+| API Routes | 33 (`src/app/api/**/route.ts`, `route.tsx` 포함) |
 | AI 실행 컴포넌트 | 8 (실행 에이전트 7 + Orchestrator 1) |
 | Zustand Stores | 2 |
 | 모니터링 서버 | 18 (role별 3대, AZ별 6대 synthetic topology) |
@@ -38,7 +38,7 @@ graph TB
 
     subgraph Vercel["Vercel (Frontend & BFF)"]
         NextJS["Next.js 16.1.6<br/>App Router"]
-        API["API Routes (31)<br/>(/src/app/api/**/route.ts*)"]
+        API["API Routes (33)<br/>(/src/app/api/**/route.ts*)"]
         MP["MetricsProvider<br/>(Singleton)"]
         Providers["TanStack Query +<br/>Zustand Stores"]
     end
@@ -95,7 +95,7 @@ graph TB
 │  Vercel (Next.js 16.1.6, App Router)                                  │
 │  ┌─────────────┐  ┌──────────────────┐  ┌─────────────────────────┐ │
 │  │ API Routes   │  │ MetricsProvider  │  │ Auth (NextAuth/Supabase)│ │
-│  │ (29 routes)  │  │ (OTel→hourly)    │  │ Rate Limiter, CSRF     │ │
+│  │ (33 routes)  │  │ (OTel→hourly)    │  │ Rate Limiter, CSRF     │ │
 │  └──────┬──────┘  └──────────────────┘  └─────────────────────────┘ │
 └─────────┼────────────────────────────────────────────────────────────┘
           │ Proxy (X-API-Key)
@@ -120,7 +120,7 @@ graph TB
                                    │ Cloud Run /api/jobs/process
 ```
 
-> Source of truth (2026-04-29): `src/app/api/**/route.ts(x)`, `src/app/api/ai/jobs/**`, `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')`, `cloud-run/ai-engine/src/routes/jobs.ts`, `cloud-run/ai-engine/src/lib/cloud-tasks.ts`, `cloud-run/ai-engine/src/routes/*.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (5 routing LLM agents + 2 internal deterministic Evaluator/Optimizer pipeline configs).
+> Source of truth (2026-05-04): `src/app/api/**/route.ts(x)`, `src/app/api/ai/ask/route.ts`, `src/app/api/ai/jobs/**`, `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')`, `cloud-run/ai-engine/src/routes/jobs.ts`, `cloud-run/ai-engine/src/lib/cloud-tasks.ts`, `cloud-run/ai-engine/src/routes/*.ts`, `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (5 routing LLM agents + 2 internal deterministic Evaluator/Optimizer pipeline configs).
 
 ---
 
@@ -153,6 +153,7 @@ graph TB
 1. User → AI Sidebar → 질의 입력
 2. src/components/ai-sidebar/EnhancedAIChat.tsx
 3. useHybridAIQuery() 기본 경로 → POST /api/ai/supervisor/stream/v2
+   - `NEXT_PUBLIC_AI_ASK_FACADE_ENABLED=true`이면 wrapper-only facade인 `/api/ai/ask`를 경유
 4. /api/ai/supervisor/stream/v2/route.ts:
    a. Auth 검증 (NextAuth session)
    b. Prompt injection guard
@@ -165,13 +166,14 @@ graph TB
    d. 선택된 Agent 실행 (NLQ/Analyst/Reporter/Advisor/Vision)
    e. finalAnswer tool 종료 신호로 응답 완료
 6. UIMessageStream → Vercel Proxy → Browser
-7. 스트리밍 응답 렌더링 (TypewriterMarkdown)
+7. 스트리밍 응답 렌더링 (진행 중 stream renderer, 완료 응답은 MarkdownRenderer)
 
 > 참고: `/api/ai/supervisor`는 아직 삭제되지 않았지만, 현재는 local dev JSON fallback 및 plain/cache caller용 legacy proxy로 유지됩니다.
 ```
 
 **핵심 파일 경로**:
 - `src/hooks/ai/useHybridAIQuery.ts`
+- `src/app/api/ai/ask/route.ts` (opt-in wrapper facade)
 - `src/app/api/ai/supervisor/stream/v2/route.ts`
 - `src/app/api/ai/supervisor/route.ts` (legacy fallback)
 - `cloud-run/ai-engine/src/routes/supervisor.ts`

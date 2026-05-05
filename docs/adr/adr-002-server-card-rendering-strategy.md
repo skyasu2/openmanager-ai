@@ -4,13 +4,13 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Decision
-> Last reviewed: 2026-02-14
-> Canonical: docs/reference/architecture/decisions/adr-002-server-card-rendering-strategy.md
+> Last reviewed: 2026-05-05
+> Canonical: docs/adr/adr-002-server-card-rendering-strategy.md
 > Tags: adr,rendering,dashboard,performance
 
 **Date**: 2025-10-20
 **Status**: Decided
-**Context**: This document analyzes the evolution of the server card rendering strategy on the main dashboard to optimize for Web Vitals, memory usage, and user experience. The component in question renders a list of up to 15 server cards.
+**Context**: This document analyzes the evolution of the server card rendering strategy on the main dashboard to optimize for Web Vitals, memory usage, and user experience. The component in question renders a list of up to 18 server cards.
 
 ---
 

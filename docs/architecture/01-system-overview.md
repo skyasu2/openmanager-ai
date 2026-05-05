@@ -1,0 +1,84 @@
+# 시스템 개요 아키텍처
+
+> Browser, Vercel BFF, Cloud Run AI Engine, 외부 서비스 경계를 설명하는 구현 기준 아키텍처
+> Owner: platform-architecture
+> Status: Active
+> Doc type: Reference
+> Last reviewed: 2026-05-05
+> Canonical: docs/architecture/01-system-overview.md
+> Tags: architecture,system,hybrid,vercel,cloud-run
+
+---
+
+## 현재 구현 요약
+
+OpenManager AI는 Vercel과 Cloud Run을 분리한 하이브리드 구조입니다.
+
+- Browser는 Next.js App Router UI와 Vercel API route를 호출합니다.
+- Vercel은 Frontend/BFF, 인증, rate limit, lightweight proxy, Dashboard data access를 담당합니다.
+- Cloud Run `ai-engine`은 장시간 AI 실행, Supervisor/Orchestrator, job worker를 담당합니다.
+- Redis는 job state, progress, resumable stream state를 저장합니다.
+- Cloud Tasks는 장시간 AI job을 Cloud Run worker로 전달하는 HTTP task queue입니다.
+- Supabase는 Auth/RLS, RAG/knowledge DB, 일부 저장소 역할을 담당합니다.
+- `public/data/otel-data`는 Dashboard와 AI grounding의 synthetic runtime SSOT입니다.
+
+## 설계도
+
+```mermaid
+flowchart TB
+    Browser["Browser / React UI"] --> Vercel["Vercel / Next.js BFF"]
+
+    Vercel --> Routes["src/app/api/** route handlers"]
+    Vercel --> Metrics["MetricsProvider"]
+    Metrics --> OTel["public/data/otel-data"]
+
+    Routes -->|Proxy + X-API-Key| CloudRun["Cloud Run AI Engine"]
+    CloudRun --> Supervisor["Supervisor / Orchestrator / Agents"]
+    Supervisor --> Precomputed["Precomputed OTel State"]
+    Precomputed --> OTel
+
+    Routes --> Redis["Upstash Redis"]
+    CloudRun --> Redis
+    Routes -->|short dispatch| Dispatch["/api/jobs/dispatch"]
+    Dispatch --> Tasks["Cloud Tasks"]
+    Tasks --> Worker["/api/jobs/process"]
+    Worker --> CloudRun
+
+    Supervisor --> Providers["LLM Providers"]
+    Supervisor --> Supabase["Supabase"]
+```
+
+## 주요 코드 경계
+
+| 경계 | 구현 위치 | 역할 |
+|---|---|---|
+| Next.js App Router | `src/app` | 페이지, API route, BFF |
+| Dashboard data access | `src/services/metrics/MetricsProvider.ts` | OTel hourly dataset 로딩과 변환 |
+| AI stream proxy | `src/app/api/ai/supervisor/stream/v2/route.ts` | Cloud Run UIMessageStream proxy |
+| AI facade | `src/app/api/ai/ask/route.ts` | 기존 stream/job/artifact route를 감싸는 opt-in wrapper |
+| AI job queue | `src/app/api/ai/jobs/**`, `cloud-run/ai-engine/src/routes/jobs.ts` | Redis job state와 Cloud Tasks dispatch |
+| Cloud Run AI entry | `cloud-run/ai-engine/src/routes/supervisor.ts` | Supervisor request 진입점 |
+| Runtime data | `public/data/otel-data`, `cloud-run/ai-engine/src/data/precomputed-state.ts` | synthetic OTel data 소비 |
+
+## 해야 하는 것
+
+- API route 추가/삭제 시 [Architecture Design Index](../reference/architecture/README.md)와 [API Endpoints](../reference/api/endpoints.md)를 같이 확인합니다.
+- Vercel에서 오래 걸리는 AI 실행을 직접 끝까지 처리하지 않고 Cloud Run/Cloud Tasks/Redis 경계로 넘깁니다.
+- BFF route는 인증, 입력 검증, proxy, contract preservation에 집중합니다.
+- Cloud Run route는 AI 실행, job worker, deterministic fallback, provider gate를 책임집니다.
+- 수치 변경은 `rg --files` 같은 실제 코드 기준으로 확인한 뒤 문서에 반영합니다.
+
+## 하면 안 되는 것
+
+- Vercel Function에 장시간 multi-agent 실행을 직접 넣지 않습니다.
+- `/api/ai/ask`를 독립 AI runtime으로 키우지 않습니다. 기존 route를 감싸는 facade로 유지합니다.
+- GitHub public remote를 canonical branch처럼 사용하지 않습니다.
+- Redis/Cloud Tasks/Supabase 사용 확대를 비용/쿼터 검토 없이 기본값으로 만들지 않습니다.
+- route 수, 서버 수, provider 수 같은 수치를 추측으로 문서화하지 않습니다.
+
+## 상세 문서
+
+- [System Architecture](../reference/architecture/system/system-architecture-current.md)
+- [Folder Structure](../reference/architecture/folder-structure.md)
+- [Frontend/Backend AI Comparison](../reference/architecture/ai/frontend-backend-comparison.md)
+- [API Endpoints](../reference/api/endpoints.md)

@@ -4,12 +4,12 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-03-19
+> Last reviewed: 2026-05-05
 > Canonical: docs/development/stitch-guide.md
 > Tags: stitch,ui,workflow
 >
 > stitch-improvement-workflow + stitch-sync-policy 병합
-> Last updated: 2026-03-19
+> Last updated: 2026-05-05
 
 ## 1. 핵심 원칙
 
@@ -18,6 +18,7 @@
 - 반영 단위는 "페이지 전체"가 아니라 **컴포넌트 단위**(1~2개)로 제한한다.
 - 기존 컴포넌트 경계, 상태 관리(TanStack Query/Zustand), API 계약을 유지한다.
 - Stitch는 현재 **상시 개발 루프의 기본 도구가 아니다**. 명시적인 UI 개선/프로토타이핑 요청이 있을 때만 온디맨드로 사용한다.
+- UI 설계 기준은 [프론트엔드 경험 설계](../design/05-ui-design.md)를 우선하며, Stitch는 이를 대체하지 않는다.
 
 ## 2. 운영 정책
 
@@ -58,3 +59,8 @@
 - [ ] `npm run stitch:check` 실행함
 - [ ] `stitch-project-registry.json`의 `updatedAt`, `lastVerifiedAt`, `mappedFiles` 갱신됨
 - [ ] PR에 Stitch project id와 적용 내역 기록됨
+
+## 관련 문서
+
+- [UI Design](../design/05-ui-design.md)
+- [Frontend Component Dependency Map](../reference/architecture/system/component-dependency-map.md)

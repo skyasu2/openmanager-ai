@@ -4,7 +4,7 @@
 > Owner: engineering
 > Status: Active
 > Doc type: Standard
-> Last reviewed: 2026-04-25
+> Last reviewed: 2026-05-05
 > Canonical: docs/development/coding-standards.md
 > Tags: coding,standards,typescript,javascript
 
@@ -288,7 +288,7 @@ UnifiedServerDataSource         precomputed-state.ts
 ```
 Vercel (Frontend/BFF)          Cloud Run (AI Engine)
 ├── UI/Interactive             ├── Heavy Lifting
-├── Edge Runtime               ├── Multi-Agent
+├── Edge Runtime               ├── Tool-calling AI runtime
 └── Speed First                └── Vercel AI SDK
 ```
 

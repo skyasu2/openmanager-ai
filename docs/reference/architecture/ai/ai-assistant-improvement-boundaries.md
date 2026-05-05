@@ -3,7 +3,7 @@
 > Owner: project
 > Status: Active Supporting
 > Doc type: Decision Record
-> Last reviewed: 2026-05-04
+> Last reviewed: 2026-05-05
 > Canonical: docs/reference/architecture/ai/ai-assistant-improvement-boundaries.md
 > Tags: ai,assistant,boundary,free-tier,portfolio
 
@@ -18,6 +18,14 @@ Current assumptions:
 - Monitoring data is based on pre-generated OTel replay data, not live customer telemetry.
 - Runtime text providers are Free Tier-oriented: Groq Llama 4 Scout, Cerebras `llama3.1-8b`, Mistral Small fallback, and Gemini Flash-Lite for vision.
 - The target quality pattern is domain-grounded assistant behavior: deterministic facts first, LLM explanation second.
+- The assistant is intentionally advisory. It can generate evidence, reports, commands, and action drafts, but real infrastructure changes require an operator outside the AI runtime.
+
+Generic positioning:
+
+- Korean: `운영 의사결정 AI 어시스턴트`
+- English: `Operational Decision Support AI Assistant`
+- Implementation class: `tool-augmented LLM application with a deterministic decision layer`
+- Domain instantiation: `Server Monitoring / Observability AI Assistant`
 
 In this document, "not possible" means not possible without changing these assumptions. "Not recommended" means technically possible but misaligned with cost, portfolio, or reliability goals.
 
@@ -27,7 +35,7 @@ In this document, "not possible" means not possible without changing these assum
 |------|----------|-----|------------------------|
 | GPT-4o/GPT-5-level general intelligence from the current runtime | Not possible under current model policy | Current runtime uses small/medium free-tier models. Tooling can improve domain accuracy, but it cannot turn these models into frontier general reasoning models. | Treat model intelligence as roughly GPT-3.5+ to GPT-4o-mini-near for domain tasks, and improve grounding/evals instead. |
 | Datadog/Dynatrace/New Relic enterprise AIOps parity | Not possible under current data and cost model | Enterprise AIOps depends on live metrics/logs/traces, topology, alert history, incident workflow, permissions, audit, and long-term telemetry storage. | Build a portfolio-grade observability copilot with replay data, typed artifacts, evidence refs, and targeted QA. |
-| Fully autonomous SRE/remediation agent | Not recommended | The project has no real production infrastructure authority, approval workflow, rollback control, or blast-radius guard for autonomous changes. | Keep the assistant advisory. Generate evidence-backed actions, commands, and reports, but require human execution. |
+| Fully autonomous SRE/remediation agent | Not recommended by design | The project has no real production infrastructure authority, approval workflow, rollback control, or blast-radius guard for autonomous changes. Without those controls, autonomous remediation would be performative rather than operationally meaningful. | Keep the assistant advisory. Generate evidence-backed actions, commands, and reports, but require human execution. |
 | Always-on live OTel ingestion, TSDB, and collector stack | Not recommended now | Prometheus/Mimir/Loki/Tempo/Elastic-style operation increases cost and operational scope beyond the current Free Tier replay model. | Keep `replay-json` as the default and maintain only disabled `live-otel` skeletons or adapters. |
 | Make every query multi-agent or reasoning-heavy | Not recommended | Multi-agent paths multiply LLM calls, latency, and quota pressure. Simple metric/status queries are better handled by deterministic or single-agent paths. | Use multi-agent only for RCA/report/vision/advisory/cross-domain evidence escalation. |
 | Use a paid single frontier provider as the default quality fix | Not recommended under current assumptions | It conflicts with the Free Tier production principle and makes the portfolio less about architecture/eval quality. | Keep provider-neutral policy and use paid/frontier models only for local development analysis or separately approved experiments. |

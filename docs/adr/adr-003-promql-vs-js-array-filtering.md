@@ -4,14 +4,14 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Decision
-> Last reviewed: 2026-02-17
-> Canonical: docs/reference/architecture/decisions/adr-003-promql-vs-js-array-filtering.md
+> Last reviewed: 2026-05-05
+> Canonical: docs/adr/adr-003-promql-vs-js-array-filtering.md
 > Tags: adr,promql,query,metrics
 
 **Date**: 2026-02-07
 **Status**: Decided
 **Context**: 프로젝트에 "PromQL: `rate(http_requests[5m])` 같은 복잡한 쿼리 언어 vs 클라이언트 필터링: 단순한 자바스크립트 배열 필터링으로 처리"라는 비교가 문서에 존재. 현재 구현의 적합성을 분석한다.
-**Version**: v8.0.0 (재검증)
+**Analysis basis**: 최초 v8.0.0 결정, 2026-05-05에 v8.11.97 / 18대 OTel dataset 기준으로 재검토
 
 ---
 
@@ -47,7 +47,7 @@
 **1) 데이터 규모에 맞는 설계**
 
 ```
-서버 15대 x 메트릭 10종 = 150개 값
+서버 18대 x 메트릭 10종 = 180개 값
 → Array.filter/reduce로 < 1ms 처리
 → PromQL 엔진 오버헤드가 오히려 비효율
 ```
@@ -127,7 +127,7 @@ Serverless Function: 10초 maxDuration (Free Tier)
 
 | 조건 | 현재 | 전환 시점 |
 |------|------|----------|
-| 서버 수 | 15대 | **100대 이상** |
+| 서버 수 | 18대 | **100대 이상** |
 | 데이터 소스 | 정적 JSON | **실제 Prometheus 서버 연동** |
 | 메트릭 유형 | Pre-computed % | **Raw counter (rate 필요)** |
 | 쿼리 주체 | AI Agent (내부) | **사용자 직접 PromQL 입력** |
@@ -202,10 +202,10 @@ metrics/route.ts:
 
 ## 관련 문서
 
-- [ADR-001: Unified AI Engine Cache](../../../archived/decisions/adr-001-unified-ai-engine-cache-and-providers.md)
-- [ADR-002: Server Card Rendering Strategy](adr-002-server-card-rendering-strategy.md)
-- [Monitoring Stack 비교](../data/monitoring-stack-comparison.md)
+- [ADR-001: Unified AI Engine Cache](../archived/decisions/adr-001-unified-ai-engine-cache-and-providers.md)
+- [ADR-002: Server Card Rendering Strategy](./adr-002-server-card-rendering-strategy.md)
+- [Monitoring Stack 비교](../reference/architecture/data/monitoring-stack-comparison.md)
 
 ---
 
-_분석 기준: v8.0.0, 2026-02-17_
+_최초 분석 기준: v8.0.0, 2026-02-17 / 현재 재검토 기준: v8.11.97, 2026-05-05_

@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-04-25
+> Last reviewed: 2026-05-05
 > Canonical: docs/reference/architecture/folder-structure.md
 > Tags: architecture,folder-structure,reference
 
@@ -54,10 +54,10 @@ src/app/api/
 ├── metrics/
 ├── monitoring/
 ├── security/
-└── ... (총 31 route.ts/route.tsx)
+└── ... (총 33 route.ts/route.tsx)
 ```
 
-> Source of truth (2026-04-25): `src/app/api/**/route.ts(x)` (31).
+> Source of truth (2026-05-04): `src/app/api/**/route.ts(x)` (33).
 
 상세 엔드포인트 목록은 [API Endpoints](../api/endpoints.md)를 참고합니다.
 
@@ -85,13 +85,16 @@ cloud-run/ai-engine/
 ```text
 docs/
 ├── README.md
+├── architecture/
+├── design/
 ├── development/
 │   └── vibe-coding/
 ├── guides/
+├── operations/
+├── adr/
 ├── reference/
 ├── troubleshooting/
-├── analysis/     # Historical 성격 문서
-└── reviews/      # Historical 성격 문서
+└── archived/     # Historical/absorbed documents
 ```
 
 ## Notes

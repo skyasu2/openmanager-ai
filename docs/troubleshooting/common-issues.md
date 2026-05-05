@@ -4,7 +4,7 @@
 > Owner: documentation
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-04-25
+> Last reviewed: 2026-05-05
 > Canonical: docs/troubleshooting/common-issues.md
 > Tags: troubleshooting,issues,debugging
 
@@ -97,6 +97,8 @@ sudo -u gitlab-runner -H bash -lc 'whoami && which node npm vercel gcloud && npm
 ```bash
 npm run docs:check
 ```
+- 상대 경로 링크 사용
+- 존재하지 않는 문서는 제거하거나 canonical 문서로 대체
 
 ## Git / IDE Remote Confusion
 
@@ -157,8 +159,6 @@ git config --local checkout.defaultRemote gitlab
 - 참고:
   - `.vscode/settings.json`은 현재 git ignore 대상이라 위 설정은 기본적으로 로컬 전용이다.
   - Git Graph 공식 설정 문서: https://docs.mhutchie.com/vscode-git-graph/general/extension-settings
-- 상대 경로 링크 사용
-- 존재하지 않는 문서는 제거하거나 canonical 문서로 대체
 
 ## WSL Interop Issues
 

@@ -2,16 +2,18 @@
 
 > 서버 등록 메타데이터 범위/깊이를 상용 도구와 비교한 분석 문서
 > Owner: platform-data
-> Status: Active
+> Status: Archived Supporting
 > Doc type: Reference
-> Last reviewed: 2026-02-17
-> Canonical: docs/reference/architecture/data/server-metadata-comparison.md
+> Last reviewed: 2026-05-05
+> Canonical: docs/reference/architecture/data/otel-data-architecture.md
 > Tags: server,metadata,comparison,data
 >
 > **작성일**: 2026-02-12
 > **대상 버전**: OpenManager AI v8.0.0
 > **목적**: 서버 등록/정의 시 수집하는 메타데이터가 상용 모니터링 도구 대비 어떤 수준인지 비교 분석
 > **범위**: 호스트 인벤토리(등록 시점 정적 메타데이터) 중심, 런타임 메트릭은 참고 수준
+
+> **Archive note (2026-05-05)**: 이 문서는 v8.0.0 기준 상용 도구 대비 비교 기록입니다. 현재 서버 인벤토리, OTel resource attribute, synthetic dataset SSOT는 [OTel Data Architecture](../reference/architecture/data/otel-data-architecture.md)를 기준으로 관리합니다. 신규 구현 판단에는 본문 상세 비교를 정본으로 사용하지 않습니다.
 
 > **관련 문서** (본 문서와 상호 보완적):
 > - `monitoring-stack-comparison.md` — Prometheus/Grafana Cloud vs OpenManager 메트릭/파이프라인 비교

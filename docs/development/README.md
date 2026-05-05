@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-03-30
+> Last reviewed: 2026-05-05
 > Canonical: docs/development/README.md
 > Tags: development,setup,index
 
@@ -21,7 +21,7 @@
 | [프로젝트 설정](./project-setup.md) | WSL/의존성/환경변수 부트스트랩 Canonical 가이드 |
 | [Docker 개발 환경](./docker.md) | Docker Desktop + WSL, AI Engine 로컬 테스트, 배포 |
 | [환경 변수 관리](./environment-variables.md) | 전체 환경변수 맵, Secret Manager, 주입 정책 |
-| [CI/CD 파이프라인](./ci-cd.md) | GitLab canonical + Vercel 배포 흐름 + 외부 CI 최소화 |
+| [CI/CD 파이프라인](./ci-cd.md) | GitLab canonical + Vercel/Cloud Run CI/CD 정책 레퍼런스 |
 | [Git Hooks 워크플로우](./git-hooks-workflow.md) | Pre-commit/Pre-push 품질 게이트 |
 | [개발 도구](./dev-tools.md) | Node.js/npm/IDE/로컬 도구 설정 |
 | [프로젝트 스타터 자산](./project-starter-assets.md) | 새 프로젝트 시작 시 재사용 가능한 운영 자산 인덱스 |
@@ -47,16 +47,26 @@
 | [문서 인벤토리](../../reports/docs/docs-inventory.md) | 문서 현황 요약 (자동 생성) |
 | [Stitch 가이드](./stitch-guide.md) | UI 증분 개선 워크플로우 통합 |
 
+### 4. 설계/운영 진입점
+
+| 문서 | 설명 |
+|------|------|
+| [Architecture](../architecture/README.md) | 포트폴리오 평가자/개발자가 먼저 보는 시스템 구조 요약 |
+| [Design](../design/README.md) | AI, API, 데이터, 에러 처리, UI 구현 단위 설계 |
+| [Operations](../operations/README.md) | 배포, 롤백, 헬스체크, QA evidence, 장애 대응 문서 허브 |
+| [Reference](../reference/README.md) | 상세 근거 문서와 장기 보존용 기술 레퍼런스 |
+| [ADR](../adr/README.md) | 앞으로의 구조적 결정 기록 위치 |
+
 ## 기술 스택
 
 ```
 Runtime:      Node.js 24.x (Current)
-Package:      npm 11.6.2
+Package:      npm 11.10.0
 Framework:    Next.js 16.1.3 (App Router)
 Language:     TypeScript 5.9.3 (strict mode)
 UI:           React 19, Tailwind CSS 4
 Database:     Supabase (PostgreSQL + pgVector)
-AI:           Vercel AI SDK 6, Multi-Agent
+AI:           Vercel AI SDK 6, deterministic-first tool-calling runtime
 ```
 
 ## 필수 요구사항

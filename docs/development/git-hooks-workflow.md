@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-03-27
+> Last reviewed: 2026-05-05
 > Canonical: docs/development/git-hooks-workflow.md
 > Tags: git,hooks,cicd,workflow
 >
@@ -19,7 +19,7 @@
 │                     Git Workflow Pipeline                            │
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                      │
-│ [코드 작성] → [Pre-commit] → [Commit] → [Pre-push] → [Push] → [Vercel] │
+│ [코드 작성] → [Pre-commit] → [Commit] → [Pre-push] → [Push] → [GitLab CI] │
 │                  <1초          즉시       <10초(기본)   + 로컬 Docker CI │
 │                                                                      │
 │  ┌──────────┐   ┌──────────┐   ┌──────────┐                         │
@@ -176,7 +176,7 @@ STRICT_PUSH_ENV=true PRE_PUSH_MODE=verify git push
 
 ---
 
-## CI/CD (Vercel)
+## CI/CD (GitLab Canonical)
 
 ### 역할 분담
 
@@ -184,15 +184,16 @@ STRICT_PUSH_ENV=true PRE_PUSH_MODE=verify git push
 |------|------|------|
 | **Pre-commit** | 빠른 피드백 | 포맷팅, 시크릿 감지 |
 | **Pre-push** | 빠른 정책 가드 | push 전 즉시 차단해야 하는 정책 위반 |
-| **Vercel** | 권위있는 검증 | Full Build, E2E, 배포 |
+| **GitLab CI** | 권위있는 검증/배포 게이트 | validate, semver tag deploy, smoke |
+| **Vercel** | Frontend 배포 대상 | GitLab CI `deploy` job이 호출 |
 
 ### 외부 CI 최소화 정책
 
 ```yaml
-# .github/workflows/simple-deploy.yml
+# historical GitHub workflow reference
 on:
-  # 🚫 비활성화: Vercel이 이미 Full Build 수행
-  # 외부 CI 비용/노이즈 최소화
+  # 🚫 primary delivery path 아님
+  # GitLab CI + Vercel deploy target 기준으로 운영
   workflow_dispatch:
     inputs:
       reason:
@@ -200,9 +201,10 @@ on:
 ```
 
 **이유**:
-- Vercel이 이미 push 시 자동 빌드/배포 수행
-- 외부 CI 중복 빌드 = 불필요한 비용
-- Private repo 전환 시 Actions 비용 발생 위험
+- 현재는 Vercel Git Integration이 해제되어 있고 GitLab CI가 배포 권위
+- Vercel은 GitLab CI `deploy` job이 호출하는 production target으로만 사용
+- GitHub Actions 중복 빌드 = 불필요한 비용/혼선
+- GitHub public remote는 배포 source가 아니라 snapshot
 
 ---
 
@@ -235,7 +237,7 @@ on:
 │ ✅ Pre-commit <1초                                             │
 │ ✅ Pre-push Fast Guard-Only 기본값                             │
 │ ✅ Secret Detection                                            │
-│ ✅ CI/CD 자동화 (Vercel)                                       │
+│ ✅ CI/CD 자동화 (GitLab CI + Vercel deploy target)             │
 └────────────────────────────────────────────────────────────────┘
 ```
 
@@ -333,7 +335,7 @@ SKIP_NODE_CHECK=true git push
 | `scripts/ci/local-docker-ci.sh` | 로컬 Docker 기반 전체 CI |
 | `scripts/env/precommit-check-secrets.cjs` | Secret Scanner |
 | `scripts/hooks/post-commit.js` | 커밋 완료 알림 출력 |
-| `.github/workflows/simple-deploy.yml` | Historical manual workflow |
+| `.gitlab-ci.yml` | canonical validate/deploy/smoke pipeline |
 
 ---
 
@@ -341,8 +343,9 @@ SKIP_NODE_CHECK=true git push
 
 - [코딩 표준](./coding-standards.md)
 - [테스트 전략](../guides/testing/test-strategy.md)
+- [Deployment Guide](../operations/deployment-guide.md)
 - [배포 토폴로지](../reference/architecture/system/system-architecture-current.md#9-deployment-topology)
 
 ---
 
-_Last Updated: 2026-03-27_
+_Last Updated: 2026-05-05_

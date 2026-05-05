@@ -4,12 +4,12 @@
 > Owner: platform-data
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-05-04
+> Last reviewed: 2026-05-05
 > Canonical: docs/reference/architecture/data/otel-data-architecture.md
 > Tags: otel,data,architecture,pipeline
 >
-> **(otel-pipeline-audit + observability-transition-readiness 병합)**
-> Last verified: 2026-02-17
+> **Source merge**: `otel-pipeline-audit` + `observability-transition-readiness`
+> **Review note**: 2026-05-05 기준 18대 OTel dataset, `MonitoringDataSource`, `live-otel` disabled skeleton 경계를 재확인
 
 ---
 

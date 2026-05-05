@@ -1,16 +1,32 @@
-# 🛡️ 보안 아키텍처
+# 보안 아키텍처
 
 > 인증/권한/방어 계층을 정의한 보안 아키텍처 레퍼런스
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-02-22
+> Last reviewed: 2026-05-05
 > Canonical: docs/reference/architecture/infrastructure/security.md
 > Tags: security,architecture,zero-trust
 >
-> **프로젝트 버전**: v8.0.0 | **Updated**: 2026-02-22
+> **프로젝트 버전**: v8.11.97 | **Updated**: 2026-05-05
 
-## 🛡️ Zero Trust + Defense in Depth
+## 현재 SSOT
+
+이 문서는 보안 구조를 설명하는 reference입니다. 구현 세부를 확인할 때는 아래 파일을 먼저 봅니다.
+
+| 영역 | 구현 기준 |
+|---|---|
+| Supabase browser client | `src/lib/supabase/client.ts` |
+| Supabase server client | `src/lib/supabase/server.ts`, `src/utils/supabase/middleware.ts` |
+| OAuth callback | `src/app/auth/callback/route.ts` |
+| Guest PIN login | `src/app/api/auth/guest-login/route.ts` |
+| Guest region block | `src/lib/auth/guest-region-policy.ts` |
+| Login audit | `src/lib/auth/login-audit.ts`, `security_audit_logs` |
+| API auth guard | `src/lib/auth/api-auth.ts` |
+| Security headers/CSP | `next.config.mjs`, `src/lib/security/csp-utils.ts` |
+| Supabase public surface hardening | `supabase/migrations/20260428101907_harden_supabase_rag_public_surface.sql` |
+
+## Zero Trust + Defense in Depth
 
 ### 보안 설계 원칙
 1. **Zero Trust**: 모든 요청 의심하고 검증
@@ -58,6 +74,7 @@ export async function signOut() {
 - 게스트 로그인은 `/api/auth/guest-login`에서 국가 헤더(`x-vercel-ip-country`) 기반 차단 (`GUEST_LOGIN_BLOCKED_COUNTRIES`, 기본값: `CN`).
 - 감사 로그는 서버에서 IP(`x-vercel-forwarded-for`, `x-forwarded-for`, `x-real-ip`)를 추출해 저장합니다.
 - 보호 라우트의 `proxy`는 세션/게스트 여부만 확인하며, 지역 차단은 로그인 API에서만 적용합니다.
+- Guest PIN brute-force 방어는 Upstash/Redis 기반 실패 카운트와 lock TTL을 사용하며, Redis 장애 시 로그인 흐름보다 fail-closed 여부를 우선 검토합니다.
 
 ### 데이터베이스 보안 (RLS)
 ```sql
@@ -97,6 +114,8 @@ const validateInput = (schema: z.ZodSchema) => {
 ```
 
 ### 보안 헤더
+
+실제 header 구성은 `next.config.mjs`와 `src/lib/security/csp-utils.ts`가 기준입니다. 아래 예시는 필수 방어 계층을 설명하기 위한 축약형입니다.
 ```typescript
 const securityHeaders = {
   'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
