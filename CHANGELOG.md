@@ -2,6 +2,54 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.107](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.106...v8.11.107) (2026-05-05)
+
+
+### Features
+
+* **ai:** add artifact workspace export adapter ([49c6cf9](https://gitlab.com/skyasu2/openmanager-ai/-/commit/49c6cf955966efd1da5bf54fd4d7c88ccc4067df))
+* **ai:** add artifact workspace replay registry ([ccd7f5d](https://gitlab.com/skyasu2/openmanager-ai/-/commit/ccd7f5d047e744b89340dce8ad6d65064dfc826c))
+* **ai:** add artifact workspace session store ([d261c4e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d261c4ef3e873a71f43228fc186edad4d6f546cb))
+* **ai:** implement portable assistant boundary specs ([d84b6be](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d84b6be843e80b772e0c88b192d4c6c6bbf4452b))
+* **qa:** record planner shadow observations ([57489d3](https://gitlab.com/skyasu2/openmanager-ai/-/commit/57489d3b5db04e79059fceb01aa041343006e7fa))
+
+
+### Bug Fixes
+
+* **ai:** dedupe artifact workspace legacy replay ([d1c4d86](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d1c4d867fcb648c0f46c2039fedc8d3ecc0861ef))
+* **ai:** harden artifact workspace storage failures ([c14f8dc](https://gitlab.com/skyasu2/openmanager-ai/-/commit/c14f8dc8e413f1c6efdd4bf1428c05b5ffecac56))
+
+
+### Code Refactoring
+
+* **ai:** add artifact renderer registry ([92d5423](https://gitlab.com/skyasu2/openmanager-ai/-/commit/92d54234abb66d1e681053564c9fedd22688387c))
+* **ai:** add assistant runtime scaffold ([d9a3407](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d9a3407877f9e53c8d8d96a0f12f3271e257abfc))
+* **ai:** inject assistant runtime host ([2066480](https://gitlab.com/skyasu2/openmanager-ai/-/commit/2066480214c6d23873243349aa8fc706a146739a))
+* **ai:** introduce monitoring domain pack ([d942a5f](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d942a5fa37069628871be5885557ccd1c03f8d1a))
+* **ai:** route agent tools through runtime host ([37450d1](https://gitlab.com/skyasu2/openmanager-ai/-/commit/37450d111e75229b19ee72de5c051a4121b79940))
+* **ai:** route supervisor prompts through runtime host ([c13a3df](https://gitlab.com/skyasu2/openmanager-ai/-/commit/c13a3df4f4c71b3d1f6527fd0cdf4bca09821107))
+* **ai:** wire supervisor tools through runtime host ([7ace133](https://gitlab.com/skyasu2/openmanager-ai/-/commit/7ace133c765394c469aea3f816b905b5368c115a))
+
+
+### Tests
+
+* **ai:** add artifact intent production replay guard ([8989906](https://gitlab.com/skyasu2/openmanager-ai/-/commit/8989906d59a8c0ed1c02dc8c5e08dfc7fd31c50d))
+* **ai:** add portable core baseline benchmarks ([bf2d757](https://gitlab.com/skyasu2/openmanager-ai/-/commit/bf2d757f4c08114bbf4134f1d1c81a18c397e460))
+* **ai:** add sample domain portability fixture ([78c60f7](https://gitlab.com/skyasu2/openmanager-ai/-/commit/78c60f73a9d021f739015c0538868702a66b330c))
+* **qa:** add planner shadow telemetry review ([a47b9c6](https://gitlab.com/skyasu2/openmanager-ai/-/commit/a47b9c63048138f40e493be77a20bc44bc2d66b7))
+* **qa:** record v8.11.106 targeted release QA ([7d79c56](https://gitlab.com/skyasu2/openmanager-ai/-/commit/7d79c56ec1f4700d578dac3d35e0eb2e1a1a51a4))
+* **spec:** add artifact renderer registry contract ([e198ea6](https://gitlab.com/skyasu2/openmanager-ai/-/commit/e198ea64943f36e49adb78c504533f24b1534275))
+* **spec:** add artifact workspace export contract ([085b73d](https://gitlab.com/skyasu2/openmanager-ai/-/commit/085b73d383f47446b0d3da99bb1ee4dde7e4d224))
+* **spec:** add artifact workspace replay contract ([ec7b925](https://gitlab.com/skyasu2/openmanager-ai/-/commit/ec7b92545d5158b14a85bb5267f5a41fb1cab467))
+* **spec:** add artifact workspace store contract ([4c32f39](https://gitlab.com/skyasu2/openmanager-ai/-/commit/4c32f39331d0bec8dba82c421718d471a047ecf5))
+* **spec:** add assistant runtime host contract ([f93c123](https://gitlab.com/skyasu2/openmanager-ai/-/commit/f93c123496339a0bb74dc938b9051c6579324ae8))
+* **spec:** add assistant runtime scaffold contract ([9b5e0b1](https://gitlab.com/skyasu2/openmanager-ai/-/commit/9b5e0b1a26231646a6a2d81759ad3e9b5eec3a24))
+* **spec:** add monitoring domain pack contract ([724a640](https://gitlab.com/skyasu2/openmanager-ai/-/commit/724a64030e118cc3b8445c47ada8770025eedbba))
+* **spec:** add planner shadow observation contract ([0ad923a](https://gitlab.com/skyasu2/openmanager-ai/-/commit/0ad923a0edc9d832289185fc21f57f0955dfd2d1))
+* **spec:** add portable assistant boundary guard ([c38bd68](https://gitlab.com/skyasu2/openmanager-ai/-/commit/c38bd68c38fa53edf50728fe7041f26d687564c0))
+* **spec:** add sample domain portability smoke ([438bc06](https://gitlab.com/skyasu2/openmanager-ai/-/commit/438bc0680614b9afdd354cc968ecb23ac17d93be))
+* **spec:** add supervisor domain wiring contract ([9d226d9](https://gitlab.com/skyasu2/openmanager-ai/-/commit/9d226d9f2cf08e0da0df0b7df00c73341c501fca))
+
 ## [8.11.106](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.105...v8.11.106) (2026-05-05)
 
 
