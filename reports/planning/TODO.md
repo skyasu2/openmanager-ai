@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-05 KST (`v8.11.106 release targeted QA and planning archive cleanup completed`)
+**Last Updated**: 2026-05-05 KST (`artifact intent production replay eval closed; no active AI assistant modularization plan remains`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| — | — | — | Active Task 없음. `v8.11.106` production targeted QA 기준 pending 0건이며 완료 plan은 `archive/`로 정리됨. |
+| — | — | — | Active Task 없음. AI benchmark 잔여였던 artifact intent production replay eval은 deterministic test로 완료됐고, AI Assistant 모듈화/파사드/라우팅 메타데이터 plan은 모두 archive 완료 상태임. |
 
 ---
 
@@ -18,7 +18,6 @@
 |------|----------|-------|
 | AI artifact workspace/schema registry and replay pack | High | M4 `ArtifactEnvelope` metadata는 완료됐지만 incident/report/monitoring/server snapshot artifact를 저장·복원·비교하는 portfolio-facing workspace/schema registry는 아직 없다. typed artifact 결과물을 재현 가능한 산출물로 만들되 신규 LLM 호출과 기본 DB write 증가는 별도 gate로 제한한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
 | AI advanced surface targeted QA pack | Medium | 이번 Vercel QA는 AI Chat stream과 탭 렌더링 중심이었다. 비용 보호를 유지하면서 Reporter 1회, anomaly/trend 1회, RAG/Web 대표 질의 1회만 별도 targeted QA로 검증하고 실제 버튼/기능 동작 여부를 기록한다. 실패가 확인될 때만 코드 수정으로 승격한다. |
-| Artifact intent production-sample replay eval | High | `v8.11.80..v8.11.89` 교차검증 결과 deterministic corpus `121/121`은 통과했지만 production query 분포 검증은 별도 필요. 익명화/정규화된 실제 질의 샘플을 fixture로 편입하고 precision/recall drift guard를 보강한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
 | Planner shadow production telemetry review | High | 현재 shadow drift/latency는 로컬 50개 baseline corpus와 단위 테스트 중심이다. `plannerShadow.latencyMs`, mismatch reason, executionMode를 운영/QA 로그에서 집계해 p95와 drift rate를 실제 수치로 확인한 뒤 authority 이전 여부를 판단한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
 | MonitoringFactPack consumer/evidence UI expansion | Medium | M7에서 `MonitoringFactPack` 자체는 도입됐지만 모든 artifact/report/evidence panel이 같은 fact boundary를 소비하지는 않는다. metric severity는 deterministic fact pack이 책임지고 LLM은 explanation/formatting만 수행한다는 계약을 UI와 answer-quality eval까지 확장한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
 | Provider reasoning capability policy contract | Medium | 현재 `thinking`은 provider-native reasoning이 아니라 app-level routing intensity다. 무료 tier provider의 reasoning 지원은 계정 entitlement/latency/quota가 변동되므로 `reasoningCapability`, `lastVerified`, `expiresAt`, smoke source를 policy contract로 승격한 뒤 opt-in으로만 검토한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
@@ -48,6 +47,14 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-05 #291)
+- [x] Artifact intent production-sample replay eval
+  - 작업 계획서 기준 AI benchmark 잔여를 재분류: Promptfoo golden dataset/A-B eval hardening은 #289에서 완료, artifact intent deterministic corpus `121/121` 이후 남은 항목은 production-style replay guard였음
+  - 최근 production QA query와 익명화된 운영자 질의 패턴을 `tests/fixtures/artifacts/intent-production-sample-corpus.ts` 19건 replay fixture로 분리
+  - `tests/intent-classifier/intent-classifier.production-replay.test.ts`를 추가해 active classifier rule version 정합성, replay accuracy, class별 precision/recall threshold를 고정
+  - AI Assistant 모듈화 문제는 `archive/ai-assistant-architecture-evolution-plan.md`, `archive/ai-assistant-plan-result-facade-plan.md`, `archive/ai-assistant-route-decision-metadata-plan.md`, `archive/ai-assistant-retrieval-multi-agent-refactor-plan.md` 기준 Completed이며 별도 Active plan 없음
+  - 검증: `npx vitest run tests/intent-classifier/intent-classifier.production-replay.test.ts tests/intent-classifier/intent-classifier.eval.test.ts tests/artifacts/intent-classifier.bench.ts`
 
 ### Completed (2026-05-05 #290)
 - [x] v8.11.106 release targeted QA and planning hygiene cleanup
