@@ -26,6 +26,22 @@ const EXPERT_DOMAIN_CATALOG = [
 ];
 
 const USAGE_RESULT_VALUES = new Set(['normal', 'concern', 'unknown']);
+const PLANNER_SHADOW_CLASSIFICATION_VALUES = new Set([
+  'matched',
+  'drift',
+  'unknown',
+]);
+const PLANNER_SHADOW_EXECUTION_MODE_VALUES = new Set([
+  'deterministic',
+  'single-agent',
+  'multi-agent',
+]);
+const PLANNER_SHADOW_DRIFT_REASON_CODES = new Set([
+  'execution_path_mismatch',
+  'execution_mode_mismatch',
+  'artifact_kind_mismatch',
+  'reason_code_mismatch',
+]);
 
 function slugify(text) {
   return String(text || '')
@@ -342,10 +358,67 @@ function normalizeLatencyObservation(rawItem, index) {
   };
 }
 
+function normalizePlannerShadowObservation(rawItem, index) {
+  if (!rawItem || typeof rawItem !== 'object') {
+    throw new Error(
+      `plannerShadowObservations[${index}] 항목이 비어있거나 객체가 아닙니다.`
+    );
+  }
+
+  const surface = String(rawItem.surface || '').trim();
+  if (!surface) {
+    throw new Error(`plannerShadowObservations[${index}].surface가 필요합니다.`);
+  }
+
+  const route = String(rawItem.route || '').trim();
+  if (!route) {
+    throw new Error(`plannerShadowObservations[${index}].route가 필요합니다.`);
+  }
+
+  const executionMode = String(rawItem.executionMode || '').trim().toLowerCase();
+  if (!PLANNER_SHADOW_EXECUTION_MODE_VALUES.has(executionMode)) {
+    throw new Error(
+      `plannerShadowObservations[${index}].executionMode은 deterministic, single-agent, multi-agent 중 하나여야 합니다.`
+    );
+  }
+
+  const driftReasonCodes = Array.isArray(rawItem.driftReasonCodes)
+    ? [
+        ...new Set(
+          rawItem.driftReasonCodes
+            .map((code) => String(code || '').trim().toLowerCase())
+            .filter((code) => PLANNER_SHADOW_DRIFT_REASON_CODES.has(code))
+        ),
+      ]
+    : [];
+  const rawClassification = String(rawItem.classification || '')
+    .trim()
+    .toLowerCase();
+  const classification = driftReasonCodes.length
+    ? 'drift'
+    : PLANNER_SHADOW_CLASSIFICATION_VALUES.has(rawClassification)
+      ? rawClassification
+      : 'unknown';
+
+  return {
+    surface,
+    route,
+    executionMode,
+    latencyMs: normalizeLatencyMetric(
+      rawItem.latencyMs,
+      `plannerShadowObservations[${index}].latencyMs`
+    ),
+    classification,
+    driftReasonCodes,
+    ...(rawItem.source ? { source: String(rawItem.source).trim() } : {}),
+  };
+}
+
 module.exports = {
   normalizeDodChecks,
   normalizeExpertAssessment,
   normalizeLatencyObservation,
+  normalizePlannerShadowObservation,
   normalizeItem,
   normalizePendingPolicy,
   normalizeUsageCheck,

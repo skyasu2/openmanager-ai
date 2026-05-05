@@ -53,6 +53,26 @@
       "processingTimeMs": 722
     }
   ],
+  "plannerShadowObservations": [
+    {
+      "surface": "AI sidebar CPU top-3",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "deterministic",
+      "latencyMs": 5,
+      "classification": "matched",
+      "driftReasonCodes": [],
+      "source": "assistant metadata"
+    },
+    {
+      "surface": "AI sidebar rewrite follow-up",
+      "route": "/api/ai/supervisor/stream/v2",
+      "executionMode": "single-agent",
+      "latencyMs": 1,
+      "classification": "drift",
+      "driftReasonCodes": ["execution_mode_mismatch"],
+      "source": "assistant metadata"
+    }
+  ],
   "usageChecks": [
     {
       "platform": "vercel",

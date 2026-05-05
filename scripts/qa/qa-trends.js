@@ -11,6 +11,17 @@ const TRENDS_JSON_PATH = path.resolve(
   process.cwd(),
   'reports/qa/latest-qa-trends.json'
 );
+const PLANNER_SHADOW_CLASSIFICATION_VALUES = new Set([
+  'matched',
+  'drift',
+  'unknown',
+]);
+const PLANNER_SHADOW_DRIFT_REASON_CODES = new Set([
+  'execution_path_mismatch',
+  'execution_mode_mismatch',
+  'artifact_kind_mismatch',
+  'reason_code_mismatch',
+]);
 
 function safeNumber(value) {
   return Number.isFinite(Number(value)) ? Number(value) : 0;
@@ -35,6 +46,13 @@ function percentile(values, percentileValue) {
     Math.floor((percentileValue / 100) * sorted.length)
   );
   return sorted[index];
+}
+
+function countBy(values) {
+  return values.reduce((acc, value) => {
+    acc[value] = (acc[value] || 0) + 1;
+    return acc;
+  }, {});
 }
 
 function cloneTrackerForRepair(tracker) {
@@ -94,6 +112,47 @@ function getRunDeploymentId(run) {
 
 function getRunLatencyObservations(run) {
   return Array.isArray(run?.aiLatencyObservations) ? run.aiLatencyObservations : [];
+}
+
+function normalizePlannerShadowObservationForTrend(observation) {
+  if (!observation || typeof observation !== 'object') {
+    return null;
+  }
+
+  const latencyMs = Number(observation.latencyMs);
+  if (!Number.isFinite(latencyMs) || latencyMs < 0) {
+    return null;
+  }
+
+  const driftReasonCodes = Array.isArray(observation.driftReasonCodes)
+    ? observation.driftReasonCodes
+        .map((code) => String(code || '').trim().toLowerCase())
+        .filter((code) => PLANNER_SHADOW_DRIFT_REASON_CODES.has(code))
+    : [];
+  const rawClassification = String(observation.classification || '')
+    .trim()
+    .toLowerCase();
+  const classification = driftReasonCodes.length
+    ? 'drift'
+    : PLANNER_SHADOW_CLASSIFICATION_VALUES.has(rawClassification)
+      ? rawClassification
+      : 'unknown';
+
+  return {
+    route: String(observation.route || 'unknown-route').trim() || 'unknown-route',
+    executionMode:
+      String(observation.executionMode || 'unknown').trim() || 'unknown',
+    latencyMs: Math.round(latencyMs),
+    classification,
+    driftReasonCodes,
+  };
+}
+
+function getRunPlannerShadowObservations(run) {
+  if (!Array.isArray(run?.plannerShadowObservations)) return [];
+  return run.plannerShadowObservations
+    .map(normalizePlannerShadowObservationForTrend)
+    .filter(Boolean);
 }
 
 function isGateRun(run) {
@@ -393,6 +452,132 @@ function buildAiLatencyRollup(runs, { windowHours = 24 } = {}) {
   };
 }
 
+function buildPlannerShadowRollup(runs, { windowHours = 24 } = {}) {
+  const latestRecordedRun = runs[runs.length - 1] || null;
+  const latestRecordedAt = latestRecordedRun?.recordedAt || null;
+  const latestRecordedTime = latestRecordedAt
+    ? new Date(latestRecordedAt).getTime()
+    : Number.NaN;
+  const emptyRollup = {
+    windowHours,
+    windowStart: null,
+    windowEnd: latestRecordedAt,
+    recordedRunCount: 0,
+    countedRunCount: 0,
+    sampleCount: 0,
+    driftCount: 0,
+    driftRatePct: 0,
+    avgLatencyMs: null,
+    p95LatencyMs: null,
+    classificationCounts: {},
+    reasonCodeCounts: {},
+    buckets: [],
+  };
+
+  if (!Number.isFinite(latestRecordedTime)) {
+    return emptyRollup;
+  }
+
+  const windowStartTime = latestRecordedTime - windowHours * 60 * 60 * 1000;
+  const recentRuns = runs.filter((run) => {
+    const recordedAt = run?.recordedAt ? new Date(run.recordedAt).getTime() : Number.NaN;
+    return (
+      Number.isFinite(recordedAt) &&
+      recordedAt >= windowStartTime &&
+      recordedAt <= latestRecordedTime
+    );
+  });
+  const recentRunsWithObservations = recentRuns.filter(
+    (run) => getRunPlannerShadowObservations(run).length > 0
+  );
+  const samples = recentRunsWithObservations.flatMap((run) =>
+    getRunPlannerShadowObservations(run).map((observation) => ({
+      ...observation,
+      runId: run?.runId || null,
+      recordedAt: run?.recordedAt || null,
+      counted: isCountedRun(run),
+    }))
+  );
+  const latencies = samples.map((sample) => sample.latencyMs);
+  const driftSamples = samples.filter(
+    (sample) => sample.classification === 'drift'
+  );
+  const reasonCodes = samples.flatMap((sample) => sample.driftReasonCodes);
+  const buckets = new Map();
+
+  for (const sample of samples) {
+    const key = `${sample.route}::${sample.executionMode}`;
+    const current =
+      buckets.get(key) || {
+        route: sample.route,
+        executionMode: sample.executionMode,
+        latencies: [],
+        driftCount: 0,
+        runIds: new Set(),
+        countedRunIds: new Set(),
+        latestRunId: sample.runId,
+        latestRecordedAt: sample.recordedAt,
+      };
+
+    current.latencies.push(sample.latencyMs);
+    if (sample.classification === 'drift') {
+      current.driftCount += 1;
+    }
+    if (sample.runId) {
+      current.runIds.add(sample.runId);
+      if (sample.counted) {
+        current.countedRunIds.add(sample.runId);
+      }
+    }
+    if ((sample.recordedAt || '') >= (current.latestRecordedAt || '')) {
+      current.latestRecordedAt = sample.recordedAt;
+      current.latestRunId = sample.runId;
+    }
+
+    buckets.set(key, current);
+  }
+
+  return {
+    windowHours,
+    windowStart: new Date(windowStartTime).toISOString(),
+    windowEnd: new Date(latestRecordedTime).toISOString(),
+    recordedRunCount: recentRunsWithObservations.length,
+    countedRunCount: recentRunsWithObservations.filter(isCountedRun).length,
+    sampleCount: samples.length,
+    driftCount: driftSamples.length,
+    driftRatePct: percentage(driftSamples.length, samples.length),
+    avgLatencyMs: average(latencies),
+    p95LatencyMs: percentile(latencies, 95),
+    classificationCounts: countBy(samples.map((sample) => sample.classification)),
+    reasonCodeCounts: countBy(reasonCodes),
+    buckets: [...buckets.values()]
+      .map((bucket) => ({
+        route: bucket.route,
+        executionMode: bucket.executionMode,
+        sampleCount: bucket.latencies.length,
+        runCount: bucket.runIds.size,
+        countedRunCount: bucket.countedRunIds.size,
+        driftCount: bucket.driftCount,
+        driftRatePct: percentage(bucket.driftCount, bucket.latencies.length),
+        avgLatencyMs: average(bucket.latencies),
+        p95LatencyMs: percentile(bucket.latencies, 95),
+        latestRunId: bucket.latestRunId,
+        latestRecordedAt: bucket.latestRecordedAt,
+      }))
+      .sort((a, b) => {
+        if (b.p95LatencyMs === a.p95LatencyMs) {
+          if (b.driftRatePct === a.driftRatePct) {
+            return `${a.route}:${a.executionMode}`.localeCompare(
+              `${b.route}:${b.executionMode}`
+            );
+          }
+          return b.driftRatePct - a.driftRatePct;
+        }
+        return safeNumber(b.p95LatencyMs) - safeNumber(a.p95LatencyMs);
+      }),
+  };
+}
+
 function buildRecurringItems(trackerItems, {
   openLimit = 10,
   completedLimit = 10,
@@ -666,6 +851,7 @@ function buildQaTrendSnapshot(tracker) {
     recentRegressionRuns: buildRecentRegressionRuns(runs),
     recurringItems: buildRecurringItems(normalizedTracker.items),
     aiLatencyRollup24h: buildAiLatencyRollup(runs),
+    plannerShadowRollup24h: buildPlannerShadowRollup(runs),
   };
 
   snapshot.warnings = buildTrendWarnings(snapshot);
@@ -688,6 +874,21 @@ function qaTrendsMarkdown(snapshot) {
     recordedRunCount: 0,
     countedRunCount: 0,
     sampleCount: 0,
+    buckets: [],
+  };
+  const plannerShadowRollup = snapshot.plannerShadowRollup24h || {
+    windowHours: 24,
+    windowStart: null,
+    windowEnd: null,
+    recordedRunCount: 0,
+    countedRunCount: 0,
+    sampleCount: 0,
+    driftCount: 0,
+    driftRatePct: 0,
+    avgLatencyMs: null,
+    p95LatencyMs: null,
+    classificationCounts: {},
+    reasonCodeCounts: {},
     buckets: [],
   };
   const formatLatencyValue = (value) => (value != null ? `${value}ms` : '-');
@@ -732,6 +933,37 @@ function qaTrendsMarkdown(snapshot) {
     for (const bucket of aiLatencyRollup.buckets) {
       lines.push(
         `| ${bucket.agent} | ${bucket.provider} | ${bucket.sampleCount} | ${formatLatencyValue(bucket.avgLatencyMs)} | ${formatLatencyValue(bucket.p95LatencyMs)} | ${formatLatencyValue(bucket.avgTtfbMs)} | ${formatLatencyValue(bucket.p95TtfbMs)} | ${formatLatencyValue(bucket.avgProcessingTimeMs)} | ${formatLatencyValue(bucket.p95ProcessingTimeMs)} | ${bucket.latestRunId || '-'} |`
+      );
+    }
+  }
+  lines.push('');
+  lines.push('## Planner Shadow Rollup (Last 24h)');
+  lines.push('');
+  if (plannerShadowRollup.windowStart && plannerShadowRollup.windowEnd) {
+    lines.push(
+      `- Window: ${plannerShadowRollup.windowStart} -> ${plannerShadowRollup.windowEnd} (${plannerShadowRollup.windowHours}h)`
+    );
+  }
+  lines.push(
+    `- Runs with observations: ${plannerShadowRollup.recordedRunCount} recorded / ${plannerShadowRollup.countedRunCount} counted`
+  );
+  lines.push(`- Samples: ${plannerShadowRollup.sampleCount}`);
+  lines.push(`- Drift rate: ${plannerShadowRollup.driftRatePct}%`);
+  lines.push(
+    `- Classification counts: ${JSON.stringify(plannerShadowRollup.classificationCounts)}`
+  );
+  lines.push(
+    `- Reason code counts: ${JSON.stringify(plannerShadowRollup.reasonCodeCounts)}`
+  );
+  lines.push('');
+  lines.push('| Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |');
+  lines.push('|---|---|---:|---:|---:|---:|---|');
+  if (plannerShadowRollup.buckets.length === 0) {
+    lines.push('| - | - | 0 | 0% | - | - | - |');
+  } else {
+    for (const bucket of plannerShadowRollup.buckets) {
+      lines.push(
+        `| ${bucket.route} | ${bucket.executionMode} | ${bucket.sampleCount} | ${bucket.driftRatePct}% | ${formatLatencyValue(bucket.avgLatencyMs)} | ${formatLatencyValue(bucket.p95LatencyMs)} | ${bucket.latestRunId || '-'} |`
       );
     }
   }
@@ -919,6 +1151,7 @@ module.exports = {
   buildScopeDistribution,
   buildWindowSummaries,
   buildAiLatencyRollup,
+  buildPlannerShadowRollup,
   cloneTrackerForRepair,
   getRunChecks,
   getRunDeploymentId,

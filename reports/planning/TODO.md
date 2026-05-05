@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-06 KST (`AI Engine supervisor domain wiring completed`)
+**Last Updated**: 2026-05-06 KST (`Planner shadow structured telemetry observations completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| _No active task_ | - | - | 2026-05-06 기준 Active plan 없음. 다음 후보는 Backlog의 `AI advanced surface targeted QA pack`, `Planner shadow structured telemetry observations`, `AI artifact workspace/schema registry and replay pack` 중 우선순위 재선정. |
+| _No active task_ | - | - | 2026-05-06 기준 Active plan 없음. 다음 후보는 Backlog의 `AI advanced surface targeted QA pack`, `AI artifact workspace/schema registry and replay pack` 중 우선순위 재선정. |
 
 ---
 
@@ -18,7 +18,6 @@
 |------|----------|-------|
 | AI artifact workspace/schema registry and replay pack | High | Task 3 `monitoringDomainPack.artifacts`가 monitoring artifact kind classify/normalize ownership은 가져갔으므로 이 항목은 더 이상 domain kind registry 작업이 아니다. 남은 범위는 portfolio-facing workspace store, artifact family/version schema registry, legacy migration, replay pack 저장·복원·비교이다. 기본값은 local/session-first이며 신규 LLM 호출과 기본 DB write 증가는 별도 gate로 제한한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
 | AI advanced surface targeted QA pack | Medium | 이번 Vercel QA는 AI Chat stream과 탭 렌더링 중심이었다. 비용 보호를 유지하면서 Reporter 1회, anomaly/trend 1회, RAG/Web 대표 질의 1회만 별도 targeted QA로 검증하고 실제 버튼/기능 동작 여부를 기록한다. 실패가 확인될 때만 코드 수정으로 승격한다. |
-| Planner shadow structured telemetry observations | High | `npm run qa:planner-shadow` 결과 기존 production QA evidence는 note-derived sample `3`개만 집계 가능하고 `plannerShadowObservations` 구조화 run은 `0`개다. 다음 범위는 `qa:record` 입력/normalizer/trends에 `plannerShadowObservations`를 추가해 `latencyMs`, route/executionMode, drift reason codes, matched/drift classification을 구조화하고 QA status/trends에서 p95와 drift rate를 직접 집계하는 것이다. 신규 live LLM 호출은 필요 없다. |
 | MonitoringFactPack consumer/evidence UI expansion | Medium | M7에서 `MonitoringFactPack` 자체는 도입됐지만 모든 artifact/report/evidence panel이 같은 fact boundary를 소비하지는 않는다. metric severity는 deterministic fact pack이 책임지고 LLM은 explanation/formatting만 수행한다는 계약을 UI와 answer-quality eval까지 확장한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
 | Provider reasoning capability policy contract | Medium | 현재 `thinking`은 provider-native reasoning이 아니라 app-level routing intensity다. 무료 tier provider의 reasoning 지원은 계정 entitlement/latency/quota가 변동되므로 `reasoningCapability`, `lastVerified`, `expiresAt`, smoke source를 policy contract로 승격한 뒤 opt-in으로만 검토한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
 | Monitoring source error boundary documentation | Medium | `analytics-monitoring-error.ts`는 현재 deterministic monitoring routes(`/monitoring/snapshot`, `/monitoring/analyze-batch`)에 한정된다. `/analyze-server`, `/incident-report` grounding 실패까지 표준 오류로 올릴지 책임 범위를 명문화한다. 관련: [monitoring-ai-data-source-plan.md](archive/monitoring-ai-data-source-plan.md) |
@@ -47,6 +46,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-06 #295)
+- [x] Planner shadow structured telemetry observations
+  - `qa:record` 입력과 normalizer에 `plannerShadowObservations`를 추가해 `surface`, `route`, `executionMode`, `latencyMs`, `classification`, `driftReasonCodes`, `source`를 구조화 기록
+  - run record와 `qa-tracker.json` run history에 같은 observation payload를 보존하고, `QA_STATUS`/`QA_TRENDS` snapshot에서 최근 24시간 p95 latency와 drift rate를 직접 집계
+  - 기존 `npm run qa:planner-shadow` review script는 구조화 observation이 있는 run을 우선 사용하므로 note-derived evidence에서 rollout-gate 가능한 structured evidence로 전환 가능
+  - 검증: targeted QA script/trends/planner-shadow review tests
 
 ### Completed (2026-05-06 #294)
 - [x] AI Engine production supervisor stream domain-agnostic wiring

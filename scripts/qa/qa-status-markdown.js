@@ -37,6 +37,21 @@ function statusMarkdown(tracker) {
     sampleCount: 0,
     buckets: [],
   };
+  const plannerShadowRollup = trendSnapshot.plannerShadowRollup24h || {
+    windowHours: 24,
+    windowStart: null,
+    windowEnd: null,
+    recordedRunCount: 0,
+    countedRunCount: 0,
+    sampleCount: 0,
+    driftCount: 0,
+    driftRatePct: 0,
+    avgLatencyMs: null,
+    p95LatencyMs: null,
+    classificationCounts: {},
+    reasonCodeCounts: {},
+    buckets: [],
+  };
   const itemList = Object.values(tracker.items);
   const completed = itemList
     .filter((item) => item.status === 'completed')
@@ -171,6 +186,31 @@ function statusMarkdown(tracker) {
     for (const bucket of aiLatencyRollup.buckets) {
       lines.push(
         `| ${bucket.agent} | ${bucket.provider} | ${bucket.sampleCount} | ${formatLatencyValue(bucket.avgLatencyMs)} | ${formatLatencyValue(bucket.p95LatencyMs)} | ${formatLatencyValue(bucket.avgTtfbMs)} | ${formatLatencyValue(bucket.p95TtfbMs)} | ${formatLatencyValue(bucket.avgProcessingTimeMs)} | ${formatLatencyValue(bucket.p95ProcessingTimeMs)} | ${bucket.latestRunId || '-'} |`
+      );
+    }
+  }
+  lines.push('');
+  lines.push('## Planner Shadow Rollup (Last 24h)');
+  lines.push('');
+  if (plannerShadowRollup.windowStart && plannerShadowRollup.windowEnd) {
+    lines.push(
+      `- Window: ${plannerShadowRollup.windowStart} -> ${plannerShadowRollup.windowEnd} (${plannerShadowRollup.windowHours}h)`
+    );
+  }
+  lines.push(
+    `- Runs with observations: ${plannerShadowRollup.recordedRunCount} recorded / ${plannerShadowRollup.countedRunCount} counted`
+  );
+  lines.push(`- Samples: ${plannerShadowRollup.sampleCount}`);
+  lines.push(`- Drift rate: ${plannerShadowRollup.driftRatePct}%`);
+  lines.push('');
+  lines.push('| Route | Execution Mode | Samples | Drift Rate | Avg Latency | P95 Latency | Latest Run |');
+  lines.push('|---|---|---:|---:|---:|---:|---|');
+  if (plannerShadowRollup.buckets.length === 0) {
+    lines.push('| - | - | 0 | 0% | - | - | - |');
+  } else {
+    for (const bucket of plannerShadowRollup.buckets) {
+      lines.push(
+        `| ${bucket.route} | ${bucket.executionMode} | ${bucket.sampleCount} | ${bucket.driftRatePct}% | ${formatLatencyValue(bucket.avgLatencyMs)} | ${formatLatencyValue(bucket.p95LatencyMs)} | ${bucket.latestRunId || '-'} |`
       );
     }
   }
