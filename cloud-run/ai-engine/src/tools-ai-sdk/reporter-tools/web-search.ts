@@ -36,6 +36,14 @@ interface CacheEntry {
 }
 const searchCache = new Map<string, CacheEntry>();
 
+type NormalizedSearchRequest = {
+  query: string;
+  maxResults: number;
+  searchDepth: 'basic' | 'advanced';
+  includeDomains?: string[];
+  excludeDomains?: string[];
+};
+
 function buildCacheKey(query: string, searchDepth?: string, includeDomains?: string[]): string {
   const parts = [query.toLowerCase().trim()];
   if (searchDepth && searchDepth !== 'basic') parts.push(`depth:${searchDepth}`);
@@ -74,6 +82,94 @@ function setCacheResult(query: string, results: WebSearchResult[], answer: strin
   }
 
   searchCache.set(buildCacheKey(query, searchDepth, includeDomains), { results, answer, timestamp: now });
+}
+
+function isNextJsLatestStableQuery(query: string): boolean {
+  const normalized = query.toLowerCase();
+  return (
+    /next(?:\.|\s)?js/.test(normalized) &&
+    /(latest|stable|release|version|major|최신|안정|릴리스|버전|메이저)/.test(normalized)
+  );
+}
+
+function normalizeSearchRequest({
+  query,
+  maxResults,
+  searchDepth,
+  includeDomains,
+  excludeDomains,
+}: NormalizedSearchRequest): NormalizedSearchRequest {
+  if (!isNextJsLatestStableQuery(query)) {
+    return { query, maxResults, searchDepth, includeDomains, excludeDomains };
+  }
+
+  const domains = new Set(includeDomains ?? []);
+  domains.add('nextjs.org');
+
+  return {
+    query: 'Next.js latest stable release official Next.js blog',
+    maxResults: Math.max(maxResults, 5),
+    searchDepth: 'advanced',
+    includeDomains: [...domains],
+    excludeDomains,
+  };
+}
+
+function readStableNextVersion(text: string): [number, number, number] | null {
+  const normalized = text.toLowerCase();
+  if (/(canary|rc|beta|alpha)/.test(normalized)) return null;
+
+  const matches = [
+    ...text.matchAll(/next(?:\.js)?\s+(\d+)(?:\.(\d+))?(?:\.(\d+))?/gi),
+  ];
+  const versions = matches
+    .map((match): [number, number, number] => [
+      Number(match[1] ?? 0),
+      Number(match[2] ?? 0),
+      Number(match[3] ?? 0),
+    ])
+    .filter(([major]) => Number.isFinite(major) && major > 0);
+
+  return versions.sort((left, right) => {
+    for (let index = 0; index < 3; index += 1) {
+      if (right[index] !== left[index]) return right[index] - left[index];
+    }
+    return 0;
+  })[0] ?? null;
+}
+
+function buildNextJsLatestStableAnswer(
+  query: string,
+  results: WebSearchResult[]
+): string | null {
+  if (!isNextJsLatestStableQuery(query)) return null;
+
+  const candidates = results
+    .map((result) => {
+      const version = readStableNextVersion(`${result.title} ${result.content}`);
+      if (!version) return null;
+      return { result, version };
+    })
+    .filter(
+      (candidate): candidate is { result: WebSearchResult; version: [number, number, number] } =>
+        candidate !== null
+    )
+    .sort((left, right) => {
+      for (let index = 0; index < 3; index += 1) {
+        if (right.version[index] !== left.version[index]) {
+          return right.version[index] - left.version[index];
+        }
+      }
+      return 0;
+    });
+
+  const selected = candidates[0];
+  if (!selected) return null;
+
+  const [major, minor, patch] = selected.version;
+  const release =
+    patch > 0 ? `${major}.${minor}.${patch}` : minor > 0 ? `${major}.${minor}` : `${major}`;
+  return `Next.js 최신 안정화 메이저 버전은 ${major}입니다 (공식 검색 결과 기준 최신 안정화 릴리스: Next.js ${release}).`;
 }
 
 // ============================================================================
@@ -117,6 +213,14 @@ export const searchWeb = tool({
   }) => {
     logger.info(`[Reporter Tools] Web search: ${query}`);
 
+    const normalizedRequest = normalizeSearchRequest({
+      query,
+      maxResults,
+      searchDepth,
+      includeDomains,
+      excludeDomains,
+    });
+
     // 1. Quota check (Free Tier: 1,000 req/month ~ 33/day)
     try {
       const quotaStatus = await getQuotaStatus('tavily');
@@ -136,11 +240,16 @@ export const searchWeb = tool({
     }
 
     // 2. Cache check
-    const cached = getCachedResult(query, searchDepth, includeDomains);
+    const cached = getCachedResult(
+      normalizedRequest.query,
+      normalizedRequest.searchDepth,
+      normalizedRequest.includeDomains
+    );
     if (cached) {
       return {
         success: true,
-        query,
+        query: normalizedRequest.query,
+        originalQuery: query,
         results: cached.results,
         totalFound: cached.results.length,
         _source: 'Tavily Web Search (Cached)',
@@ -163,31 +272,41 @@ export const searchWeb = tool({
 
     // 4. Execute search (with dual-key failover from lib)
     try {
-      const { results: rawResults, answer } = await executeTavilySearchWithFailover(query, {
-        maxResults,
-        searchDepth,
-        includeDomains: includeDomains || [],
-        excludeDomains: excludeDomains || [],
-      });
+      const { results: rawResults, answer } =
+        await executeTavilySearchWithFailover(normalizedRequest.query, {
+          maxResults: normalizedRequest.maxResults,
+          searchDepth: normalizedRequest.searchDepth,
+          includeDomains: normalizedRequest.includeDomains || [],
+          excludeDomains: normalizedRequest.excludeDomains || [],
+        });
 
       // Truncate content for tool output
       const results = rawResults.map(r => ({
         ...r,
         content: r.content.substring(0, 1500),
       }));
+      const normalizedAnswer =
+        buildNextJsLatestStableAnswer(query, results) ?? answer;
 
       logger.info(`[Reporter Tools] Web search: ${results.length} results`);
 
-      setCacheResult(query, results, answer, searchDepth, includeDomains);
+      setCacheResult(
+        normalizedRequest.query,
+        results,
+        normalizedAnswer,
+        normalizedRequest.searchDepth,
+        normalizedRequest.includeDomains
+      );
       recordProviderUsage('tavily', 1).catch(() => {});
 
       return {
         success: true,
-        query,
+        query: normalizedRequest.query,
+        originalQuery: query,
         results,
         totalFound: results.length,
         _source: 'Tavily Web Search',
-        answer,
+        answer: normalizedAnswer,
       };
     } catch (error) {
       const errorMsg = error instanceof AggregateError

@@ -255,4 +255,48 @@ describe('Reporter Tools - Tavily API Mocked', () => {
     expect(result.success).toBe(true);
     expect(result.results[0].content.length).toBe(1500);
   });
+
+  it('normalizes Next.js latest stable queries to official sources and answers with latest major', async () => {
+    mockExecuteSearch.mockResolvedValue({
+      results: [
+        {
+          title: 'Next.js 13.1',
+          url: 'https://nextjs.org/blog/next-13-1',
+          content: 'Next.js 13.1 is available.',
+          score: 0.7,
+        },
+        {
+          title: 'Next.js 16.2',
+          url: 'https://nextjs.org/blog/next-16-2',
+          content: 'Next.js 16.2 is now available.',
+          score: 0.95,
+        },
+        {
+          title: 'Next.js 16.3.0-canary.2',
+          url: 'https://nextjs.org/blog/next-16-3-canary',
+          content: 'Next.js 16.3.0-canary.2 is a canary release.',
+          score: 0.99,
+        },
+      ],
+      answer: 'Next.js 13.1',
+    });
+
+    const result = await searchWeb.execute({
+      query: '최신 안정화 Next.js 메이저 버전 알려줘',
+      maxResults: 2,
+      searchDepth: 'basic',
+    });
+
+    expect(mockExecuteSearch).toHaveBeenCalledWith(
+      'Next.js latest stable release official Next.js blog',
+      expect.objectContaining({
+        maxResults: 5,
+        searchDepth: 'advanced',
+        includeDomains: ['nextjs.org'],
+      })
+    );
+    expect(result.success).toBe(true);
+    expect(result.answer).toContain('메이저 버전은 16');
+    expect(result.answer).toContain('Next.js 16.2');
+  });
 });
