@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-05 KST (`artifact intent production replay eval closed; no active AI assistant modularization plan remains`)
+**Last Updated**: 2026-05-05 KST (`portable AI assistant baseline gate passed; plan Approved`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| — | — | — | Active Task 없음. AI benchmark 잔여였던 artifact intent production replay eval은 deterministic test로 완료됐고, AI Assistant 모듈화/파사드/라우팅 메타데이터 plan은 모두 archive 완료 상태임. |
+| AI assistant portable core/domain pack modularization | High | Approved | Task -1 baseline/current behavior integrity gate 통과. 기준 HEAD `8989906d59a8c0ed1c02dc8c5e08dfc7fd31c50d`, production `v8.11.106`, QA pending `0`. 다음 단계는 Task 0 failing contract/dependency tests 작성. 상세: [ai-assistant-portable-core-domain-pack-plan.md](ai-assistant-portable-core-domain-pack-plan.md) |
 
 ---
 
