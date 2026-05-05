@@ -1,15 +1,15 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Plan
-> Last reviewed: 2026-05-05
+> Last reviewed: 2026-05-06
 > Tags: ai-assistant,portable-core,domain-pack,modularization,ai-engine
 
 # AI Assistant Portable Core Domain Pack Plan
 
-- 상태: Approved
+- 상태: Completed
 - 작성일: 2026-05-05
-- TODO.md 연결: Active Tasks > `AI assistant portable core/domain pack modularization`
-- 기준 archive: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) > `2026-05-05 도메인 재사용성 평가`
+- TODO.md 연결: Recent Completed > `AI assistant portable core/domain pack modularization`
+- 기준 archive: [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) > `2026-05-05 도메인 재사용성 평가`
 
 ## 목표
 
@@ -453,7 +453,7 @@ portable core task가 완료될 때 기존 Backlog와 중복 설계가 생기지
 - [x] Task 4 후속 — Backlog `Planner shadow production telemetry review` 범위 재분류
 - [x] Task 5 — frontend artifact renderer registry와 history restore boundary 정렬
 - [x] Task 6 — mock sample domain pack으로 cross-project portability smoke 추가
-- [ ] Task 7 — targeted tests, type-check, docs/planning 상태 갱신
+- [x] Task 7 — targeted tests, type-check, docs/planning 상태 갱신
 
 ## 단계별 커밋/푸시/배포 판단
 
@@ -484,23 +484,23 @@ portable core task가 완료될 때 기존 Backlog와 중복 설계가 생기지
 
 ## 완료 기준
 
-- [ ] 테스트 시나리오 전체 통과
-- [ ] `cloud-run/ai-engine/src/core/**` dependency guard 통과
-- [ ] mock sample domain pack smoke 통과
-- [ ] 기존 monitoring assistant targeted corpus 통과
-- [ ] Route / Tool Trace Replay Benchmark 통과
-- [ ] Retrieval Evidence Recall Benchmark 통과
-- [ ] OTel/SSOT RAG replay guard 통과: 내부 문서 경로 질의가 서버 scope clarification 없이 RAG evidence를 사용하고, repo 경로를 반환하며 `/opt/otel` 또는 `/path/to/OpenManager` placeholder 경로를 반환하지 않음
-- [ ] Stream Contract Snapshot Benchmark 통과
-- [ ] root `npm run type-check`
-- [ ] root `npm run lint`
-- [ ] root `npm run test:quick`
-- [ ] root `npm run test:contract`
-- [ ] AI Engine `npm run type-check`
-- [ ] AI Engine `npm test`
-- [ ] `npm run docs:budget`
-- [ ] `npm run docs:ai-consistency`
-- [ ] `git diff --check`
+- [x] 테스트 시나리오 전체 통과
+- [x] `cloud-run/ai-engine/src/core/**` dependency guard 통과
+- [x] mock sample domain pack smoke 통과
+- [x] 기존 monitoring assistant targeted corpus 통과
+- [x] Route / Tool Trace Replay Benchmark 통과
+- [x] Retrieval Evidence Recall Benchmark 통과
+- [x] OTel/SSOT RAG replay guard 통과: 내부 문서 경로 질의가 서버 scope clarification 없이 RAG evidence를 사용하고, repo 경로를 반환하며 `/opt/otel` 또는 `/path/to/OpenManager` placeholder 경로를 반환하지 않음
+- [x] Stream Contract Snapshot Benchmark 통과
+- [x] root `npm run type-check`
+- [x] root `npm run lint`
+- [x] root `npm run test:quick`
+- [x] root `npm run test:contract`
+- [x] AI Engine `npm run type-check`
+- [x] AI Engine `npm test`
+- [x] `npm run docs:budget`
+- [x] `npm run docs:ai-consistency`
+- [x] `git diff --check`
 
 ## 진행 로그
 
@@ -519,3 +519,4 @@ portable core task가 완료될 때 기존 Backlog와 중복 설계가 생기지
 - 2026-05-05: Task 4 및 Task 4 후속 완료. `f93c12349`에서 runtime host contract failing spec을 먼저 추가했고, 구현에서 generic `assistant-runtime-host`와 monitoring default `monitoring-runtime-host`를 분리해 custom domain runtime이 monitoring import 없이 주입될 수 있게 했다. `SupervisorRequest.runtimeHost`와 public-safe `assistantRuntime` metadata를 추가하고, `executeSupervisor`, `executeSupervisorStream`, Cloud Run jobs path가 monitoring runtime host를 통해 domain/adapter metadata를 보존하도록 정렬했다. `/api/ai/ask`는 wrapper-only facade를 유지하므로 stream/job 위임 경로에서 동일 metadata를 상속한다. Planner shadow Backlog는 Task 4 metadata로 domain/adapter 관측값은 확보됐지만 production `plannerShadow.latencyMs`/drift rate 집계는 별도 QA/log review가 필요하다고 재분류했다. 검증: targeted runtime/supervisor/jobs suites `37/37`, AI Engine `type-check`, AI Engine `npm test` `100 files / 1025 tests`. 다음 단계는 Task 5 frontend artifact renderer registry와 history restore boundary 정렬이다.
 - 2026-05-05: Task 5 완료. `e198ea649`에서 frontend artifact renderer registry contract failing spec을 먼저 추가했고, 구현에서 `src/lib/ai/domain-renderers/artifact-renderer-registry.ts`와 `ArtifactRendererHost`를 추가했다. `AIWorkspaceMessage`의 artifact card 직접 import를 registry host로 대체하고, legacy `incidentReportArtifact`/`monitoringAnalysisArtifact`/`serverSnapshotArtifact` metadata와 generic `artifactEnvelopes` restore를 같은 boundary에서 처리한다. unknown/raw artifact envelope는 payload를 렌더링하지 않는 safe fallback으로 고정했고, generated artifact metadata는 renderer envelope도 함께 저장한다. 검증: targeted renderer/history/artifact suites `58/58`, root `type-check`, `lint`, `test:quick`, `test:contract`. 다음 단계는 Task 6 mock sample domain pack으로 cross-project portability smoke를 추가하는 것이다.
 - 2026-05-05: Task 6 완료. `438bc0680`에서 sample domain portability smoke failing spec을 먼저 추가했고, 구현에서 `cloud-run/ai-engine/src/test-fixtures/sample-domain-pack.ts`를 추가했다. sample domain pack은 monitoring import 없이 `sample-customer-success` domain id, deterministic artifact route, `sampleLookupAccount` tool, `sample-health-summary` artifact normalize/classify, fact pack builder를 제공한다. smoke는 `createAssistantRuntime()`과 in-memory adapters만으로 sample route/tool/artifact가 동작함을 검증해 cross-project portability guard로 고정했다. 검증: targeted runtime smoke/contract suites `6/6`, AI Engine `type-check`, AI Engine `npm test` `101 files / 1026 tests`. 다음 단계는 Task 7 targeted tests, type-check, docs/planning final 상태 갱신이다.
+- 2026-05-06: Task 7 완료. portable core/domain pack 최종 targeted guard와 전체 품질 게이트를 통과했고 plan/TODO 상태를 Completed로 정리했다. 검증: root targeted `8 files / 63 tests`, AI Engine targeted `10 files / 100 tests`, root `type-check`, `lint`, `test:quick`, `test:contract`, AI Engine `type-check`, AI Engine `npm test` `101 files / 1026 tests`, `docs:budget`, `docs:ai-consistency`, `git diff --check`.
