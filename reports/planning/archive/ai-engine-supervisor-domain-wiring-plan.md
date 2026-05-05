@@ -1,12 +1,12 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-06
 > Tags: ai-engine,supervisor,domain-pack,portable-core,tool-wiring
 
 # AI Engine Supervisor Domain Wiring Plan
 
-- 상태: Approved
+- 상태: Completed
 - 작성일: 2026-05-06
 - TODO.md 연결: Active Tasks > `AI Engine production supervisor stream domain-agnostic wiring`
 - 기준 archive: [archive/ai-assistant-portable-core-domain-pack-plan.md](archive/ai-assistant-portable-core-domain-pack-plan.md) > `사후 분석 리뷰 (2026-05-06)`
@@ -45,10 +45,10 @@ AI Engine의 production supervisor 실행 경로가 monitoring domain에 직접 
 | `cloud-run/ai-engine/src/core/**` | monitoring dependency guard 통과, domain-independent |
 | `monitoringDomainPack` | prompt/routing/tool/fact/artifact owner로 존재 |
 | supervisor runtime metadata | `resolveMonitoringSupervisorRuntimeContext()`로 이미 주입됨 |
-| supervisor actual tool execution | `supervisor-stream.ts`, `supervisor-single-agent.ts`가 아직 `allTools` 직접 사용 |
-| supervisor prompt/prepareStep | `supervisor-routing.ts` compatibility wrapper를 통해 monitoring policy 직접 사용 |
-| artifact kind normalization | `supervisor-mode.ts`가 monitoring artifact registry 직접 import |
-| multi-agent tool registry | `agent-configs.ts`가 monitoring tool registry 직접 import |
+| supervisor actual tool execution | `AssistantRuntimeHost.createToolSet()` 기반으로 전환, monitoring default host는 compatibility adapter에서 기존 `allTools` 유지 |
+| supervisor prompt/prepareStep | `AssistantRuntimeHost.createSystemPrompt()` / `createPrepareStep()` 기반으로 전환, monitoring policy는 monitoring runtime host adapter에 캡슐화 |
+| artifact kind normalization | runtime host domain artifact registry classify/normalize 경로로 전환 |
+| multi-agent tool registry | `agent-tool-registry.ts`가 runtime host tool boundary를 통해 allowlist를 resolution |
 
 ## 계약 (Contract)
 
@@ -91,14 +91,14 @@ AI Engine의 production supervisor 실행 경로가 monitoring domain에 직접 
 
 ### 테스트 시나리오 (구현 전 확정)
 
-- [ ] Stream path domain toolset contract: sample runtime host를 주입하면 `supervisor-stream.ts`가 `allTools`가 아닌 host-provided toolset을 사용한다.
-- [ ] Single-agent path domain toolset contract: sample runtime host를 주입하면 `supervisor-single-agent.ts`가 host-provided toolset을 사용한다.
-- [ ] Monitoring compatibility contract: default monitoring runtime host는 기존 `searchKnowledgeBase`, `searchWeb`, `getServerMetricsAdvanced`, `finalAnswer` availability를 유지한다.
-- [ ] Web/RAG filtering contract: host-provided toolset에서도 `filterToolsByWebSearch`/`filterToolsByRAG` 결과가 기존과 동일하게 적용된다.
-- [ ] Artifact generic contract: `supervisor-mode.ts`가 domain artifact registry를 통해 artifact kind를 classify/normalize하고 monitoring registry 직접 import 없이 통과한다.
+- [x] Stream path domain toolset contract: sample runtime host를 주입하면 `supervisor-stream.ts`가 `allTools`가 아닌 host-provided toolset을 사용한다.
+- [x] Single-agent path domain toolset contract: sample runtime host를 주입하면 `supervisor-single-agent.ts`가 host-provided toolset을 사용한다.
+- [x] Monitoring compatibility contract: default monitoring runtime host는 기존 `searchKnowledgeBase`, `searchWeb`, `getServerMetricsAdvanced`, `finalAnswer` availability를 유지한다.
+- [x] Web/RAG filtering contract: host-provided toolset에서도 `filterToolsByWebSearch`/`filterToolsByRAG` 결과가 기존과 동일하게 적용된다.
+- [x] Artifact generic contract: `supervisor-mode.ts`가 domain artifact registry를 통해 artifact kind를 classify/normalize하고 monitoring registry 직접 import 없이 통과한다.
 - [x] Multi-agent registry contract: agent allowlist가 domain tool registry를 통해 resolution되며 기존 monitoring agent configs가 같은 tool names를 노출한다.
-- [ ] Stream snapshot contract: existing `portable-core-stream-contract.bench.test.ts`와 supervisor stream targeted tests가 event shape 회귀 없이 통과한다.
-- [ ] Core dependency guard: `cloud-run/ai-engine/src/core/**`에 monitoring dependency가 추가되지 않는다.
+- [x] Stream snapshot contract: existing `portable-core-stream-contract.bench.test.ts`와 supervisor stream targeted tests가 event shape 회귀 없이 통과한다.
+- [x] Core dependency guard: `cloud-run/ai-engine/src/core/**`에 monitoring dependency가 추가되지 않는다.
 
 ## Task 목록
 
@@ -122,7 +122,7 @@ AI Engine의 production supervisor 실행 경로가 monitoring domain에 직접 
 - [x] Task 5 — multi-agent tool distribution boundary 정리
   - `agent-configs.ts` monitoring direct registry 결합 최소화
   - 필요 시 domain-aware adapter 추가
-- [ ] Task 6 — targeted/full validation 및 plan/TODO 완료 처리
+- [x] Task 6 — targeted/full validation 및 plan/TODO 완료 처리
 
 ## 단계별 커밋/푸시/배포 판단
 
@@ -147,20 +147,20 @@ AI Engine의 production supervisor 실행 경로가 monitoring domain에 직접 
 
 ## 완료 기준
 
-- [ ] 테스트 시나리오 전체 통과
+- [x] 테스트 시나리오 전체 통과
 - [x] `supervisor-stream.ts`에서 `allTools` 직접 import 제거
 - [x] `supervisor-single-agent.ts`에서 `allTools` 직접 import 제거
 - [x] `supervisor-mode.ts`에서 monitoring artifact registry 직접 import 제거
 - [x] sample/custom runtime host가 supervisor stream/single-agent toolset injection contract를 통과
 - [x] monitoring default runtime host가 기존 tool/prompt behavior를 유지
-- [ ] `cloud-run/ai-engine/src/core/**` dependency guard 통과
-- [ ] AI Engine `npm run type-check`
-- [ ] AI Engine targeted supervisor/runtime/domain tests 통과
-- [ ] AI Engine `npm test`
-- [ ] root `npm run test:contract`
-- [ ] `npm run docs:budget`
-- [ ] `npm run docs:ai-consistency`
-- [ ] `git diff --check`
+- [x] `cloud-run/ai-engine/src/core/**` dependency guard 통과
+- [x] AI Engine `npm run type-check`
+- [x] AI Engine targeted supervisor/runtime/domain tests 통과
+- [x] AI Engine `npm test`
+- [x] root `npm run test:contract`
+- [x] `npm run docs:budget`
+- [x] `npm run docs:ai-consistency`
+- [x] `git diff --check`
 
 ## 진행 로그
 
@@ -168,3 +168,4 @@ AI Engine의 production supervisor 실행 경로가 monitoring domain에 직접 
 - 2026-05-06: Task 0 failing specs를 추가했다. `supervisor-domain-wiring.contract.test.ts`는 sample runtime host toolset이 stream/single-agent 실행에 주입되는지, monitoring default host의 기존 핵심 tool availability가 유지되는지, non-monitoring artifact kind가 route decision metadata에서 보존되는지를 고정한다. 현재 production code는 아직 `allTools` 직접 authority와 monitoring artifact kind allowlist를 사용하므로 이 spec은 구현 전 의도대로 실패한다.
 - 2026-05-06: Task 1~4 구현. `AssistantRuntimeHost.createToolSet()` adapter를 추가하고, monitoring default host는 기존 `allTools` compatibility를 유지하도록 execution adapter를 제공한다. `supervisor-stream.ts`와 `supervisor-single-agent.ts`는 runtime host toolset을 web/RAG filtering에 통과시키며, web fallback 재실행도 현재 filtered toolset의 `searchWeb`을 사용한다. `supervisor-mode.ts`는 monitoring artifact registry 직접 import를 제거하고 runtime host domain artifact registry로 artifact kind를 classify한다. `/supervisor/stream/v2` route는 UIMessageStream 초기 `data-mode` metadata도 같은 runtime host 기준으로 만들도록 default monitoring host를 주입한다. 검증: `supervisor-domain-wiring.contract.test.ts` `5/5`, targeted supervisor/runtime suites `39/39`, AI Engine `type-check`, AI Engine `npm test` `102 files / 1031 tests`, route/stream targeted `12/12`, `docs:budget`, `docs:ai-consistency`, `git diff --check`.
 - 2026-05-06: Task 5 구현. `agent-configs.ts`가 `domains/monitoring/tool-registry`를 직접 import하지 않도록 `agent-tool-registry.ts` adapter를 추가했다. multi-agent allowlist는 기존 `AgentRuntimePolicy`가 소유하고, 실제 tool resolution은 `AssistantRuntimeHost.createToolSet()` 경계를 통해 수행한다. default monitoring behavior는 `getDefaultMonitoringAssistantRuntimeHost()`를 통해 유지하며, domain toolset이 allowlist를 충족하지 못하면 module import 시점에 fail-fast로 감지한다. 검증: `agent-runtime-policy.test.ts`와 `supervisor-domain-wiring.contract.test.ts` targeted run `2 files / 11 tests`.
+- 2026-05-06: Task 6 완료. 최종 리뷰 중 production stream/single-agent path에 `createSystemPrompt`/`createPrepareStep` direct monitoring re-export가 남아 있음을 확인해 `AssistantRuntimeHost.createSystemPrompt()`와 `createPrepareStep()` execution adapter를 추가했다. `supervisor-stream.ts`, `supervisor-single-agent.ts`, `supervisor-stream-messages.ts`는 runtime host가 제공하는 prompt/prepare-step을 사용하며, monitoring-specific policy는 `monitoring-runtime-host.ts` adapter 내부에만 남긴다. 최종 검증: prompt/tool/artifact targeted `3 files / 22 tests`, AI Engine `type-check`, AI Engine `npm test` `102 files / 1036 tests`, root `test:contract` `2 files / 20 tests`, docs guards, `git diff --check`.
