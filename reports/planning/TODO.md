@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-06 KST (`portable AI assistant Task 7 final validation complete`)
+**Last Updated**: 2026-05-06 KST (`AI Engine supervisor domain wiring completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| _No active task_ | - | - | 2026-05-06 기준 Active plan 없음. 다음 후보는 Backlog의 `AI advanced surface targeted QA pack`, `Planner shadow production telemetry review`, `AI artifact workspace/schema registry and replay pack` 중 우선순위 재선정. |
+| _No active task_ | - | - | 2026-05-06 기준 Active plan 없음. 다음 후보는 Backlog의 `AI advanced surface targeted QA pack`, `Planner shadow structured telemetry observations`, `AI artifact workspace/schema registry and replay pack` 중 우선순위 재선정. |
 
 ---
 
@@ -18,7 +18,7 @@
 |------|----------|-------|
 | AI artifact workspace/schema registry and replay pack | High | Task 3 `monitoringDomainPack.artifacts`가 monitoring artifact kind classify/normalize ownership은 가져갔으므로 이 항목은 더 이상 domain kind registry 작업이 아니다. 남은 범위는 portfolio-facing workspace store, artifact family/version schema registry, legacy migration, replay pack 저장·복원·비교이다. 기본값은 local/session-first이며 신규 LLM 호출과 기본 DB write 증가는 별도 gate로 제한한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
 | AI advanced surface targeted QA pack | Medium | 이번 Vercel QA는 AI Chat stream과 탭 렌더링 중심이었다. 비용 보호를 유지하면서 Reporter 1회, anomaly/trend 1회, RAG/Web 대표 질의 1회만 별도 targeted QA로 검증하고 실제 버튼/기능 동작 여부를 기록한다. 실패가 확인될 때만 코드 수정으로 승격한다. |
-| Planner shadow production telemetry review | High | Task 4 결과 `assistantRuntime` metadata가 domain/route/adapter 관측값을 제공하지만, `plannerShadow.latencyMs`, mismatch reason, executionMode의 production 집계는 아직 로컬 corpus/단위 테스트 밖에서 확인되지 않았다. 다음 범위는 운영 QA/log evidence에서 p95와 drift rate를 실제 수치로 집계하는 review이며, evidence export가 부족할 때만 telemetry adapter gap으로 승격한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
+| Planner shadow structured telemetry observations | High | `npm run qa:planner-shadow` 결과 기존 production QA evidence는 note-derived sample `3`개만 집계 가능하고 `plannerShadowObservations` 구조화 run은 `0`개다. 다음 범위는 `qa:record` 입력/normalizer/trends에 `plannerShadowObservations`를 추가해 `latencyMs`, route/executionMode, drift reason codes, matched/drift classification을 구조화하고 QA status/trends에서 p95와 drift rate를 직접 집계하는 것이다. 신규 live LLM 호출은 필요 없다. |
 | MonitoringFactPack consumer/evidence UI expansion | Medium | M7에서 `MonitoringFactPack` 자체는 도입됐지만 모든 artifact/report/evidence panel이 같은 fact boundary를 소비하지는 않는다. metric severity는 deterministic fact pack이 책임지고 LLM은 explanation/formatting만 수행한다는 계약을 UI와 answer-quality eval까지 확장한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
 | Provider reasoning capability policy contract | Medium | 현재 `thinking`은 provider-native reasoning이 아니라 app-level routing intensity다. 무료 tier provider의 reasoning 지원은 계정 entitlement/latency/quota가 변동되므로 `reasoningCapability`, `lastVerified`, `expiresAt`, smoke source를 policy contract로 승격한 뒤 opt-in으로만 검토한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
 | Monitoring source error boundary documentation | Medium | `analytics-monitoring-error.ts`는 현재 deterministic monitoring routes(`/monitoring/snapshot`, `/monitoring/analyze-batch`)에 한정된다. `/analyze-server`, `/incident-report` grounding 실패까지 표준 오류로 올릴지 책임 범위를 명문화한다. 관련: [monitoring-ai-data-source-plan.md](archive/monitoring-ai-data-source-plan.md) |
@@ -47,6 +47,21 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-06 #294)
+- [x] AI Engine production supervisor stream domain-agnostic wiring
+  - Task 0~6 완료. `AssistantRuntimeHost` execution adapter가 AI SDK `ToolSet`, system prompt, prepare-step boundary를 제공하도록 확장
+  - `supervisor-stream.ts`와 `supervisor-single-agent.ts`의 tool/prompt/prepare-step authority를 runtime host로 이동하고, monitoring-specific compatibility는 `monitoring-runtime-host.ts` adapter 내부에 캡슐화
+  - `supervisor-mode.ts` artifact kind 판정을 domain artifact registry로 이동하고, `agent-configs.ts` multi-agent tool allowlist resolution을 runtime host 경계로 정렬
+  - 검증: AI Engine targeted `3 files / 22 tests`, AI Engine `type-check`, AI Engine full `102 files / 1036 tests`, root `test:contract`, `docs:budget`, `docs:ai-consistency`, `git diff --check`
+  - 상세: [archive/ai-engine-supervisor-domain-wiring-plan.md](archive/ai-engine-supervisor-domain-wiring-plan.md)
+
+### Completed (2026-05-06 #293)
+- [x] Planner shadow production telemetry review
+  - `scripts/qa/planner-shadow-telemetry-review.js`와 `npm run qa:planner-shadow`를 추가해 기존 `reports/qa/runs/**`의 `plannerShadow` 운영 evidence를 live QA/LLM 호출 없이 deterministic하게 집계
+  - 현황: runs scanned `418`, plannerShadow evidence run `2`, note-derived samples `3`, structured observation runs `0`, latency avg/p95/max `2ms / 5ms / 5ms`, zero latency samples `1`, drift rate `33.33%`, reason code `execution_mode_mismatch=1`
+  - 판정: 운영 QA evidence는 현재 note-derived라 rollout gate로 쓰기에는 부족하며, telemetry adapter gap을 `Planner shadow structured telemetry observations` Backlog로 승격
+  - 검증: `npm run qa:planner-shadow`, `npx vitest run tests/unit/qa/planner-shadow-telemetry-review.test.ts`
 
 ### Completed (2026-05-06 #292)
 - [x] AI assistant portable core/domain pack modularization

@@ -520,3 +520,49 @@ portable core task가 완료될 때 기존 Backlog와 중복 설계가 생기지
 - 2026-05-05: Task 5 완료. `e198ea649`에서 frontend artifact renderer registry contract failing spec을 먼저 추가했고, 구현에서 `src/lib/ai/domain-renderers/artifact-renderer-registry.ts`와 `ArtifactRendererHost`를 추가했다. `AIWorkspaceMessage`의 artifact card 직접 import를 registry host로 대체하고, legacy `incidentReportArtifact`/`monitoringAnalysisArtifact`/`serverSnapshotArtifact` metadata와 generic `artifactEnvelopes` restore를 같은 boundary에서 처리한다. unknown/raw artifact envelope는 payload를 렌더링하지 않는 safe fallback으로 고정했고, generated artifact metadata는 renderer envelope도 함께 저장한다. 검증: targeted renderer/history/artifact suites `58/58`, root `type-check`, `lint`, `test:quick`, `test:contract`. 다음 단계는 Task 6 mock sample domain pack으로 cross-project portability smoke를 추가하는 것이다.
 - 2026-05-05: Task 6 완료. `438bc0680`에서 sample domain portability smoke failing spec을 먼저 추가했고, 구현에서 `cloud-run/ai-engine/src/test-fixtures/sample-domain-pack.ts`를 추가했다. sample domain pack은 monitoring import 없이 `sample-customer-success` domain id, deterministic artifact route, `sampleLookupAccount` tool, `sample-health-summary` artifact normalize/classify, fact pack builder를 제공한다. smoke는 `createAssistantRuntime()`과 in-memory adapters만으로 sample route/tool/artifact가 동작함을 검증해 cross-project portability guard로 고정했다. 검증: targeted runtime smoke/contract suites `6/6`, AI Engine `type-check`, AI Engine `npm test` `101 files / 1026 tests`. 다음 단계는 Task 7 targeted tests, type-check, docs/planning final 상태 갱신이다.
 - 2026-05-06: Task 7 완료. portable core/domain pack 최종 targeted guard와 전체 품질 게이트를 통과했고 plan/TODO 상태를 Completed로 정리했다. 검증: root targeted `8 files / 63 tests`, AI Engine targeted `10 files / 100 tests`, root `type-check`, `lint`, `test:quick`, `test:contract`, AI Engine `type-check`, AI Engine `npm test` `101 files / 1026 tests`, `docs:budget`, `docs:ai-consistency`, `git diff --check`.
+
+## 사후 분석 리뷰 (2026-05-06)
+
+> 리뷰 수행: Gemini (분석) + Codex (교정 피드백)
+> 리뷰 대상: Task 0~7 전체 완료 상태
+
+### 리뷰 요약
+
+Task 0~7의 실행은 계획서의 목표를 충실히 달성했다. Portable Core 인터페이스(`AssistantDomain`, `ToolRegistry`, `RoutingPolicy`, `ArtifactRegistry`, `FactPackBuilder`, `AssistantRuntimeAdapters`)가 정의됐고, `monitoringDomainPack`이 첫 번째 domain pack으로 구현됐으며, `sample-customer-success` domain pack이 monitoring 코드 없이 portable runtime을 통과하는 것이 검증됐다. Frontend artifact renderer registry와 history restore boundary도 정렬됐다.
+
+### 초기 외부 분석의 오류와 교정
+
+초기 분석(Gemini)에서 아래 3가지가 부정확했으며, Codex의 코드 기반 피드백으로 교정되었다.
+
+| # | 초기 분석 (부정확) | 교정 (정확) |
+|:-:|-------------------|------------|
+| 1 | "Production 경로가 portable core를 완전히 우회한다" | `supervisor-stream.ts`와 `supervisor-single-agent.ts` 모두 `resolveMonitoringSupervisorRuntimeContext()`를 호출해 runtime host metadata는 이미 portable core를 경유한다. 정확한 진단: **route/runtime metadata는 주입됐지만, 실제 prompt/tool execution authority가 아직 monitoring compatibility layer에 남아 있다.** |
+| 2 | "Core에서 monitoring 직접 참조 파일 6개" | `core/assistant-runtime/**` 자체는 dependency guard가 있고 monitoring import가 0개이다. 결합이 남아 있는 곳은 core가 아니라 `services/ai-sdk/` production adapter/supervisor layer이다. |
+| 3 | "`allTools` → `domain.tools` 전환이 전체 작업의 60%" | 단순한 import 경로 변경이 아니다. `domain.tools`는 `ToolDefinition[]`/`resolveTool()` 형태이고, AI SDK `streamText`/`generateText`는 `ToolSet` (Record<string, CoreTool>)을 기대하므로 중간 adapter가 필요하다. 또한 `filterToolsByWebSearch`, `filterToolsByRAG`, `createPrepareStep`, `createSystemPrompt`, `agent-configs.ts` multi-agent tool distribution까지 함께 봐야 한다. |
+
+### 리뷰 시점의 정확한 상태
+
+| 항목 | 완성도 | 근거 |
+|------|:------:|------|
+| Portable Core 인터페이스 | 95% | `AssistantDomain`, Runtime, Adapters 완성 |
+| Runtime Host metadata 배선 | 95% | route/metadata는 이미 portable core 경유 |
+| Monitoring Domain Pack 골격 | 80% | `domain-pack.ts` + contract test 완료 |
+| Domain portability smoke | 80% | sample domain pack 통과 |
+| Prompt/Tool execution authority 전환 | 20% | 아직 `allTools`/`createPrepareStep` 직접 사용 |
+| Multi-agent tool distribution 전환 | 10% | `agent-configs.ts` 미착수 |
+
+### 잔여 작업 (후속 plan 후보)
+
+이 plan의 scope 밖이지만, "다른 프로젝트에서 도메인만 교체해 full supervisor stream이 동작"하려면 아래 작업이 남아있다.
+
+1. **`AssistantRuntimeHost`에 AI SDK용 ToolSet/prompt/prepareStep contract 추가** — `ToolDefinition[]` → AI SDK `ToolSet` adapter 설계가 핵심
+2. **`supervisor-stream.ts`에서 `allTools` 직접 참조 → runtime host toolset 전환** — 가장 큰 위험 구간 (1362줄, provider fallback/circuit breaker/quota tracking 포함)
+3. **`supervisor-single-agent.ts` 동일 전환**
+4. **`supervisor-mode.ts` artifact kind generic화** — `detectMonitoringArtifactKind()` → `domain.artifacts.classify()` 위임
+5. **`agent-configs.ts` multi-agent tool registry 결합 정리** — `AssistantDomain` contract 확장 가능성 있음
+
+이들은 현재 plan의 확장이 아니라 **별도 plan으로 분리**하는 것이 적절하다. 주제는 "AI Engine production supervisor stream domain-agnostic wiring"이며, 이 plan의 core/interface scaffold 위에 쌓는 작업이다.
+
+### 후속 완료 메모 (2026-05-06)
+
+위 잔여 작업 1~5는 후속 plan [AI Engine Supervisor Domain Wiring Plan](ai-engine-supervisor-domain-wiring-plan.md)에서 완료됐다. Production `supervisor-stream.ts` / `supervisor-single-agent.ts`의 tool, prompt, prepareStep authority는 `AssistantRuntimeHost` execution adapter로 이동했고, monitoring-specific compatibility는 `monitoring-runtime-host.ts` 내부에 캡슐화됐다. 따라서 이 사후 리뷰의 "잔여 작업" 목록은 후속 plan 생성 배경으로만 유지한다.
