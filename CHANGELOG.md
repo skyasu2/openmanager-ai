@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.105](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.104...v8.11.105) (2026-05-05)
+
+
+### Bug Fixes
+
+* **ai:** ground internal RAG path lookups ([9e74939](https://gitlab.com/skyasu2/openmanager-ai/-/commit/9e74939987520e9f87d8c06618857c78eaebbaf6))
+
+
+### Tests
+
+* **qa:** record May 5 production QA runs ([30f8625](https://gitlab.com/skyasu2/openmanager-ai/-/commit/30f86256b877eb80d005811154bda6e452a336bd))
+
 ## [8.11.104](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.103...v8.11.104) (2026-05-05)
 
 
