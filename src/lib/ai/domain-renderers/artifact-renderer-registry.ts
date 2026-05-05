@@ -1,12 +1,16 @@
 import {
-  ARTIFACT_CONTRACT_VERSION,
+  listArtifactSchemaEntries,
+  MONITORING_ARTIFACT_DOMAIN_ID,
+} from '@/lib/ai/chat-artifacts/artifact-workspace-registry';
+import {
   type ArtifactEnvelope,
   type ArtifactSourceMode,
   type ChatArtifact,
   readArtifactEnvelope,
 } from '@/lib/ai/chat-artifacts/types';
 
-export const MONITORING_ARTIFACT_RENDERER_DOMAIN_ID = 'openmanager-monitoring';
+export const MONITORING_ARTIFACT_RENDERER_DOMAIN_ID =
+  MONITORING_ARTIFACT_DOMAIN_ID;
 
 export type ArtifactRendererKind = ChatArtifact['kind'];
 
@@ -49,13 +53,12 @@ type RawArtifactEnvelope = {
 };
 
 const MONITORING_ARTIFACT_RENDERER_KEYS = new Set(
-  ['incident-report', 'monitoring-analysis', 'server-snapshot'].map(
-    (artifactKind) =>
-      createArtifactRendererKey({
-        domainId: MONITORING_ARTIFACT_RENDERER_DOMAIN_ID,
-        artifactKind,
-        artifactVersion: ARTIFACT_CONTRACT_VERSION,
-      })
+  listArtifactSchemaEntries().map((entry) =>
+    createArtifactRendererKey({
+      domainId: entry.domainId,
+      artifactKind: entry.artifactKind,
+      artifactVersion: entry.artifactVersion,
+    })
   )
 );
 
