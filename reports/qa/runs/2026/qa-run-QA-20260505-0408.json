@@ -1,0 +1,138 @@
+{
+  "runId": "QA-20260505-0408",
+  "recordedAt": "2026-05-05T02:27:19.400Z",
+  "recordedAtKst": "2026-05-05 11:27:19 KST",
+  "runTitle": "Vercel Playwright MCP Targeted QA - v8.11.104 Web search answer recovery",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_3gio8RbSgi9PCptxFLBJtSFhr6j2",
+    "deploymentUrl": "https://openmanager-9kixyivpb-skyasus-projects.vercel.app",
+    "commitSha": "30c48e80a975630e77281a4de086c153631153fb"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core", "ai-advanced-surface"],
+  "coveredSurfaces": [
+    "Vercel production /api/version returned 8.11.104, commit 30c48e80a975630e77281a4de086c153631153fb, tag v8.11.104, pipeline 2499590190",
+    "GitLab tag pipeline 2499590190 succeeded including deploy, post_deploy_smoke, deploy_ai_engine, and post_deploy_ai_engine_smoke",
+    "GitLab main validation pipeline 2499590179 succeeded after component dependency map refresh",
+    "AI Assistant sidebar opened on /dashboard/servers/api-was-dc1-01 and a fresh AI Chat conversation was started",
+    "Web On prompt for latest stable Next.js major completed through /api/ai/supervisor/stream/v2 without the empty-response fallback",
+    "AI response returned a single-line current answer: Next.js 16.2.4 with source URL https://nextjs.org/blog/next-16-2",
+    "AI response footer showed Web 사용됨, 웹 검색 result count, analysis basis, and 도구: 웹 자료 확인",
+    "Cloud Run logs for v8.11.104 after the QA prompt showed Groq first-provider failure followed by recovery, with no empty_stream_output event"
+  ],
+  "skippedSurfaces": [
+    "This was a targeted release recheck for the Web search answer-quality regression only; broad dashboard, Reporter, Analyst, RAG document lookup, security, and mobile viewport packs were not rerun."
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Web search latest Next.js prompt",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "model": "cerebras/llama3.1-8b after groq retry",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright Performance API + UI footer",
+      "latencyMs": 8150,
+      "processingTimeMs": 6410
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The targeted Web search regression now returns a current answer with source URL and no empty-response fallback.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP reproduced the production path and captured durable screenshot evidence for this targeted regression.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Both main validation and semver tag deploy/smoke pipelines succeeded for v8.11.104.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-05T11:25:16+09:00",
+      "summary": "Current billing period checked after targeted production QA; effective 2.0188 USD, billed remains 0.0000 USD, chargeCount 1827.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "v8.11.104 Web search final answer evidence",
+      "path": "reports/qa/evidence/qa-20260505-v811104-web-search-final.png",
+      "note": "Shows AI Chat Web On response with Next.js 16.2.4 and https://nextjs.org/blog/next-16-2."
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-web-search-intent-and-answer-quality-v81197",
+      "title": "Web search query returns current sourced answer without clarification/fallback failure",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "v8.11.104 targeted Playwright MCP QA returned Next.js 16.2.4 and https://nextjs.org/blog/next-16-2 with Web 사용됨 and no empty-response fallback.",
+      "note": "Fixed through official-domain search normalization, streamed/step tool-result recovery, AI SDK output unwrapping, and direct web fallback answer priority.",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Release decision for this targeted scope: go.",
+    "The response still reflects provider retry behavior: Groq failed without output first, then the Supervisor recovered via the fallback path on Cerebras. No user-facing stream error or empty fallback remained.",
+    "This run does not supersede broad QA coverage for unrelated pending items unless separately rechecked."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.11.104 main pipeline 2499590179",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2499590179"
+    },
+    {
+      "type": "general",
+      "label": "GitLab v8.11.104 tag pipeline 2499590190",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2499590190"
+    },
+    {
+      "type": "general",
+      "label": "Production version endpoint",
+      "url": "https://openmanager-ai.vercel.app/api/version"
+    }
+  ]
+}

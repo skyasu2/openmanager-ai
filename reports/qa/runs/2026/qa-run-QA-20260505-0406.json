@@ -1,0 +1,180 @@
+{
+  "runId": "QA-20260505-0406",
+  "recordedAt": "2026-05-04T22:52:28.121Z",
+  "recordedAtKst": "2026-05-05 07:52:28 KST",
+  "runTitle": "v8.11.97 Vercel Playwright MCP Formatting Rewrite Recheck",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_i3dRjeFgabpTKkJU3oR9XDDgd3sA",
+    "deploymentUrl": "https://openmanager-nqx3dhkck-skyasus-projects.vercel.app",
+    "commitSha": "1bdb98f4dae04032d9d3c94ab2271e9ac9c38bb2"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["ai-core", "dashboard-core"],
+  "coveredSurfaces": [
+    "Vercel production /api/version returned 8.11.97, commit 1bdb98f4dae04032d9d3c94ab2271e9ac9c38bb2, tag v8.11.97, pipeline 2497858244",
+    "Vercel production /api/health returned healthy with database/cache/ai connected",
+    "Cloud Run direct /health returned ai-engine version 8.11.97 with provider configs ready and revision ai-engine-00412-bll active",
+    "Vercel deployment inspect returned Ready for dpl_i3dRjeFgabpTKkJU3oR9XDDgd3sA with production URL https://openmanager-nqx3dhkck-skyasus-projects.vercel.app and alias https://openmanager-ai.vercel.app",
+    "Landing page / rendered in Playwright MCP with guest shell and v8.11.97 footer",
+    "System start flow navigated /system-boot to /dashboard in Playwright MCP",
+    "Dashboard /dashboard rendered 18 total, 17 online, 1 warning, 0 risk, 0 offline, current slot 07:40 KST, and CPU Top-3 dashboard values api-was-dc1-01 82%, web-nginx-dc1-01 71%, web-nginx-dc1-02 68%",
+    "Fullscreen /dashboard/ai-assistant loaded with AI Chat, Reporter Agent, Analyst Agent, System Context, AI Engine Online, and Production environment",
+    "Playwright MCP submitted CPU top-3 prompt through the visible AI Chat input",
+    "CPU top-3 response used /api/ai/supervisor/stream/v2 and returned grounded server IDs and current CPU values: api-was-dc1-01 CPU 82%, web-nginx-dc1-01 CPU 71%, web-nginx-dc1-02 CPU 68%",
+    "CPU top-3 response preserved analysis basis with server metrics detail lookup and did not contain the previous false answer '서버는 없습니다'",
+    "Playwright MCP submitted formatting-only follow-up prompt: '위 답변을 운영 보고서용 2문장으로 다시 작성해줘. 서버 ID와 수치는 보존해.'",
+    "Formatting-only follow-up did not trigger server-scope clarification UI and did not show '특정 서버가 명시되지 않음' or '건너뛰고 바로 실행'",
+    "Formatting-only follow-up stayed on /api/ai/supervisor/stream/v2 and did not call /api/ai/jobs",
+    "Formatting-only follow-up preserved all prior server IDs and values: api-was-dc1-01 CPU 82%, web-nginx-dc1-01 CPU 71%, web-nginx-dc1-02 CPU 68%",
+    "Formatting-only follow-up returned two response lines/sentences; first line remains terse report-style value preservation rather than polished prose, matching the existing non-blocking P4 style residual",
+    "Playwright browser console warnings/errors were 0"
+  ],
+  "skippedSurfaces": [
+    "Reporter report generation was not clicked because this targeted run verifies the AI Chat formatting rewrite regression only",
+    "Analyst full-system analysis was not rerun because v8.11.97 changed the AI Chat follow-up context path, not the monitoring analysis BFF",
+    "Mobile viewport, OAuth provider login, auth callback edge cases, destructive/log-export operations, prompt-injection/security pack, and Cloud Run admin /monitoring traces were outside this targeted recheck"
+  ],
+  "checks": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI fullscreen CPU top-3 ranking",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright MCP UI footer + Performance API",
+      "latencyMs": 1344,
+      "processingTimeMs": 2804
+    },
+    {
+      "surface": "AI fullscreen formatting-only rewrite",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright MCP UI footer + Performance API",
+      "latencyMs": 2943,
+      "processingTimeMs": 3937
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The v8.11.97 targeted recheck verified the previously pending follow-up rewrite regression: no clarification UI, same stream route, and all prior server IDs/values preserved.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP covered visible UI input, browser-rendered response text, Performance API resource timing, console cleanliness, and durable screenshot evidence.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Vercel production, Cloud Run health, GitLab tag pipeline, Vercel usage, and Cloud Run free-tier guardrails were all healthy.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The CPU Top-3 values in the AI answer matched the dashboard slot values and the follow-up preserved the exact IDs and percentages.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-05T07:49:44+09:00",
+      "summary": "Current billing period checked after targeted Vercel Playwright MCP QA; effective 2.0188 USD, billed remains 0.0000 USD, chargeCount 1827.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    },
+    {
+      "platform": "cloud-run",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-05T07:49:44+09:00",
+      "summary": "Free-tier guardrails intact: maxScale=1, concurrency=16, timeout=300, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00412-bll.",
+      "evidence": "node scripts/check-free-tier-usage.js",
+      "url": "https://console.cloud.google.com/run/detail/asia-northeast1/ai-engine"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "v8.11.97 formatting rewrite context preservation recheck",
+      "path": "reports/qa/evidence/qa-20260505-v81197-formatting-rewrite.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-formatting-rewrite-context-preservation-v81196",
+      "title": "Formatting-only follow-up rewrite reuses prior answer context and preserves all listed server IDs/values",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "v8.11.97 Playwright MCP targeted recheck: no clarification UI, stream route stayed /api/ai/supervisor/stream/v2, and api-was-dc1-01 82%, web-nginx-dc1-01 71%, web-nginx-dc1-02 68% were preserved.",
+      "note": "Report prose can still be terse; that remains covered by existing non-blocking P4 style residual rather than the P2 context preservation regression.",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": [
+    {
+      "type": "general",
+      "label": "Cloud Run AI Engine health",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+    },
+    {
+      "type": "general",
+      "label": "GitLab v8.11.97 tag pipeline 2497858244",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2497858244"
+    },
+    {
+      "type": "general",
+      "label": "Production app",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "general",
+      "label": "Production version endpoint",
+      "url": "https://openmanager-ai.vercel.app/api/version"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-nqx3dhkck-skyasus-projects.vercel.app/"
+    }
+  ]
+}

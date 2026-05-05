@@ -1,0 +1,359 @@
+{
+  "runId": "QA-20260505-0407",
+  "recordedAt": "2026-05-04T23:33:01.502Z",
+  "recordedAtKst": "2026-05-05 08:33:01 KST",
+  "runTitle": "Vercel Playwright MCP Broad QA - v8.11.97 full surface and AI quality",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_i3dRjeFgabpTKkJU3oR9XDDgd3sA",
+    "deploymentUrl": "https://openmanager-nqx3dhkck-skyasus-projects.vercel.app",
+    "commitSha": "1bdb98f4dae04032d9d3c94ab2271e9ac9c38bb2"
+  },
+  "scope": "broad",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "ai-advanced-surface",
+    "modal-detail-pack",
+    "security-pack",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "Vercel production /api/version returned 8.11.97, commit 1bdb98f4dae04032d9d3c94ab2271e9ac9c38bb2, tag v8.11.97, pipeline 2497858244",
+    "Vercel production /api/health returned healthy with database/cache/ai connected",
+    "Cloud Run direct /health returned ai-engine version 8.11.97 with provider configs ready including tavily=true and revision ai-engine-00412-bll active",
+    "Vercel deployment inspect returned Ready for dpl_i3dRjeFgabpTKkJU3oR9XDDgd3sA with production alias https://openmanager-ai.vercel.app",
+    "Landing page / rendered with guest shell, v8.11.97 footer, system start CTA, and four feature cards",
+    "Landing feature card modals opened for AI assistant, cloud platform, tech stack, and AI development workflow",
+    "/main redirected to /",
+    "/login rendered OAuth buttons, email input, guest entry, and privacy link",
+    "/privacy rendered policy copy and back-link",
+    "/auth/error rendered auth failure fallback with retry, login page, and guest mode actions",
+    "404 fallback rendered for an unknown route with home/dashboard/login recovery links",
+    "System start CTA navigated through /system-boot to /dashboard",
+    "Dashboard /dashboard rendered 18 total, 17 online, 1 warning, 0 risk, 0 offline, slot label, data source label, resource summary, and resource warning top 5",
+    "Dashboard status filter buttons changed visible server lists for warning and online states",
+    "Dashboard more button expanded visible server cards from 3 to 6",
+    "/dashboard/alerts rendered active alert panel and alert history with api-was-dc1-01 CPU warning",
+    "/dashboard/logs rendered 9174 log records and WARN level filter reduced the list to 1099 records with active filter text",
+    "/dashboard/servers rendered 18 server list and direct server selection navigated to /dashboard/servers/api-was-dc1-01",
+    "Server detail overview rendered api-was-dc1-01 status, services, IP, uptime, and current overview metrics CPU 84%, memory 71%, disk 31%",
+    "Server detail tabs rendered overview, performance analysis, and logs/network surfaces",
+    "/dashboard/topology rendered 18 nodes, 24 edges, layer labels, minimap, and zoom/fit controls; zoom controls changed the transform",
+    "/dashboard/ai-assistant rendered AI Chat, Reporter Agent, Analyst Agent, System Context, AI Engine Online, provider routing chips, quick commands, and manual health check",
+    "AI tools menu rendered RAG Auto/On, Web Auto/On, analysis mode auto/thinking, and file attachment controls",
+    "AI summary prompt used /api/ai/supervisor/stream/v2 and returned grounded counts: total 18, normal/online 17, warning 1, risk/offline 0, with api-was-dc1-01 CPU 84%",
+    "AI CPU top-3 prompt used /api/ai/supervisor/stream/v2 and returned grounded server IDs and CPU values: api-was-dc1-01 84%, api-was-dc1-02 65%, web-nginx-dc1-02 48%",
+    "Reporter generated a report through /api/ai/incident-report in 2784ms with API server CPU overload title, affected server api-was-dc1-01, 18 total, 17 normal, 1 caution, 0 risk",
+    "Analyst full analysis used /api/ai/intelligent-monitoring in 1028ms and reported overall caution state, api-was-dc1-01 CPU 82% issue, and 18 server details",
+    "RAG On document lookup used /api/ai/jobs and EventSource /api/ai/jobs/:id/stream; async job/SSE transport completed without Job not found or worker failure",
+    "Web search prompt, after manual clarification skip, invoked searchWeb and returned an answer through /api/ai/supervisor/stream/v2 in 8795ms with analysis basis '웹 자료 확인 · 내부 지식 검색'",
+    "Security prompt-injection smoke did not leak API keys, system prompt, or internal secrets and returned a blocked/unprocessable response via /api/ai/supervisor/stream/v2",
+    "Playwright console after the blocked security prompt showed one expected 400 resource error for /api/ai/supervisor/stream/v2; normal route flows did not show additional console warnings",
+    "Vercel usage checked after production QA: effective 2.0188 USD, billed 0.0000 USD, chargeCount 1827",
+    "Cloud Run free-tier guardrails remained intact: maxScale=1, concurrency=16, timeout=300, cpu=1, memory=512Mi, cpu-throttling=true"
+  ],
+  "skippedSurfaces": [
+    "OAuth provider callback success with a real provider token was not exercised; /auth/success bare route was checked and returned 404",
+    "File upload / Vision Agent was not exercised because the run focused on text, RAG/Web, Reporter, Analyst, and dashboard surfaces",
+    "Cloud Run admin /monitoring and /monitoring/traces authenticated endpoints were not called because this run used Vercel-side observability plus direct /health/free-tier checks",
+    "Mobile viewport screenshot capture through Chrome DevTools was attempted but discarded because the attached DevTools page was blank; desktop Playwright evidence was retained"
+  ],
+  "checks": {
+    "total": 39,
+    "passed": 33,
+    "failed": 6
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI fullscreen summary",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright Performance API + UI footer",
+      "latencyMs": 1910,
+      "processingTimeMs": 2562
+    },
+    {
+      "surface": "AI fullscreen CPU top-3",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright Performance API + UI footer",
+      "latencyMs": 1338,
+      "processingTimeMs": 1847
+    },
+    {
+      "surface": "Reporter incident report",
+      "agent": "Reporter Agent",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/incident-report",
+      "source": "Playwright Performance API",
+      "latencyMs": 2784,
+      "processingTimeMs": 2784
+    },
+    {
+      "surface": "Analyst full-system analysis",
+      "agent": "Analyst Agent",
+      "provider": "vercel-monitoring-bff",
+      "route": "/api/ai/intelligent-monitoring",
+      "source": "Playwright Performance API",
+      "latencyMs": 1028,
+      "processingTimeMs": 1028
+    },
+    {
+      "surface": "RAG document lookup async job",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/jobs -> /api/ai/jobs/:id/stream",
+      "source": "Playwright Performance API",
+      "latencyMs": 2828,
+      "processingTimeMs": 4072
+    },
+    {
+      "surface": "Web search prompt",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "model": "cerebras/llama3.1-8b",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright Performance API + UI footer",
+      "latencyMs": 8795,
+      "processingTimeMs": 9897
+    },
+    {
+      "surface": "Prompt injection block",
+      "agent": "Supervisor",
+      "provider": "vercel-bff",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright Performance API",
+      "latencyMs": 340,
+      "processingTimeMs": 340
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Core metric-grounded chat passed, but RAG On document lookup hallucinated non-existent paths and Web search returned outdated/no-source content.",
+      "nextAction": "Route RAG/Web claims through required evidence checks before final answer, and add production replay tests for cited file paths and current web answers."
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Dashboard core values and Analyst are usable, but server detail performance tab reads a different history endpoint/window than the overview current slot.",
+      "nextAction": "Align server detail performance tab current values with the dashboard data slot or label it explicitly as a different 24h history endpoint."
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Prompt-injection smoke did not leak secrets and was blocked before normal answer generation.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production deployment, health endpoints, Vercel usage, and Cloud Run free-tier guardrails are normal.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Broad MCP coverage is strong, but mobile viewport capture through Chrome DevTools produced blank screenshots and needs a more reliable Playwright viewport path.",
+      "nextAction": "Use direct Playwright MCP isolated context or scripted Playwright CLI for responsive screenshot capture."
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "api-was-dc1-01 overview and performance tabs display materially different current CPU/memory values on the same detail page.",
+      "nextAction": "Make the same dataSlot/current point the SSOT for overview, metric cards, and charts."
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-05T08:31:00+09:00",
+      "summary": "Current billing period checked after broad Vercel Playwright MCP QA; effective 2.0188 USD, billed remains 0.0000 USD, chargeCount 1827.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    },
+    {
+      "platform": "cloud-run",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-05T08:31:00+09:00",
+      "summary": "Free-tier guardrails intact: maxScale=1, concurrency=16, timeout=300, cpu=1, memory=512Mi, cpu-throttling=true, latestReadyRevision=ai-engine-00412-bll.",
+      "evidence": "node scripts/check-free-tier-usage.js",
+      "url": ""
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "AI RAG/Web quality evidence",
+      "path": "reports/qa/evidence/qa-20260505-v81197-broad-ai-rag-web.png",
+      "note": "Shows Web search response returning outdated Next.js 15.4 answer while production app itself runs Next.js 16.1.6."
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Server detail performance metric drift evidence",
+      "path": "reports/qa/evidence/qa-20260505-v81197-broad-server-detail-metric-drift.png",
+      "note": "Performance tab shows api-was-dc1-01 CPU 43% and memory 57% while overview for the same server/slot showed CPU 84% and memory 71%."
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "core-dashboard-ai-streaming-broad-v81197",
+      "title": "Core dashboard and AI streaming paths remain functional on v8.11.97",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Landing, boot, dashboard, dashboard routes, AI summary, CPU top-3, Reporter, Analyst, and security prompt smoke passed on Vercel production.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-security-prompt-injection-smoke-v81197",
+      "title": "Prompt-injection smoke does not leak secrets",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Blocked prompt did not reveal system prompt, API keys, or internal secrets.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "dashboard-server-detail-metrics-tab-slot-drift-v81197",
+      "title": "Server detail performance tab current metrics drift from same-page overview values",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "api-was-dc1-01 overview showed CPU 84%, memory 71%, disk 31% while performance tab showed CPU 43%, memory 57%, disk 35% with the same LAST UPDATE label. Likely caused by overview using dashboard current slot and performance charts using unaligned 24h history tail.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-rag-on-document-lookup-hallucination-v81197",
+      "title": "RAG On internal document lookup can return hallucinated file paths",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Prompt asked for the documented Pre-generated OTel data SSOT file paths. Response returned /opt/otel/data/ssot/dashboard.yaml and /opt/otel/data/ssot/engine.yaml instead of repository paths such as public/data/otel-data, src/services/metrics/MetricsProvider.ts, or cloud-run/ai-engine/src/data/precomputed-state.ts. Analysis basis still said general conversation response with RAG active.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-web-search-intent-and-answer-quality-v81197",
+      "title": "Web search query requires clarification bypass and can return outdated/no-source answer",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "With Web On, a latest Next.js version question first triggered server-scope clarification. After manual skip it invoked searchWeb but answered Next.js 15.4 as latest stable while the production app reports Next.js 16.1.6, and no explicit source/citation was shown.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    },
+    {
+      "id": "auth-success-legacy-route-404-v81197",
+      "title": "Secondary /auth/success route returns 404 instead of legacy success handoff",
+      "priority": "P2",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Current checklist still lists /auth/success as a legacy callback handoff route. Bare production route returned the generic 404 page. If /auth/callback is the only supported route now, update the QA surface checklist instead of restoring /auth/success.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    },
+    {
+      "id": "reporter-download-action-visibility-v81197",
+      "title": "Reporter panel promises report download but generated report exposes no clear download action",
+      "priority": "P2",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Reporter copy says '클릭 시 장애 리포트 생성 및 다운로드'. Report generation worked, but generated report surface did not expose a distinct download/MD copy action in the visible button set.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Release decision for this run is conditional: core product paths passed, but advanced RAG/Web answer quality and one dashboard data-consistency issue prevent claiming all features are fully normal.",
+    "Mode audit: auto path remained single/streaming for metric summary and CPU top-3; document lookup escalated to /api/ai/jobs with SSE; Web search after clarification skip used stream path with searchWeb.",
+    "Security prompt block returned HTTP 400, which produced one browser console resource error. This is expected for the blocked-input path, but normal route flows were otherwise clean.",
+    "Server detail metric drift root-cause inference from code: ServerDetailView overview uses safeServer current metrics from dashboard route data, while MetricsTab receives realtimeData from useServerMetrics()->otelTimeSeriesToHistory('24h') and displays the history tail, which is not aligned to the current rotating dashboard slot.",
+    "RAG/Web root-cause inference from runtime evidence: enableRAG/searchWeb transport exists, but retrieved evidence is not enforced as a citation/grounding contract before the final answer."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Cloud Run AI Engine health",
+      "url": "https://ai-engine-jdhrhws7ia-an.a.run.app/health"
+    },
+    {
+      "type": "general",
+      "label": "GitLab v8.11.97 tag pipeline 2497858244",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2497858244"
+    },
+    {
+      "type": "general",
+      "label": "Production app",
+      "url": "https://openmanager-ai.vercel.app/"
+    },
+    {
+      "type": "general",
+      "label": "Production version endpoint",
+      "url": "https://openmanager-ai.vercel.app/api/version"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment",
+      "url": "https://openmanager-nqx3dhkck-skyasus-projects.vercel.app/"
+    }
+  ]
+}
