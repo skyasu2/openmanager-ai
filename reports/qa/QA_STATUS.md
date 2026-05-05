@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-05 15:13:01 KST
+> Generated at: 2026-05-05 15:31:41 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 409 |
-| Total Runs (Counted) | 336 |
+| Total Recorded Runs | 410 |
+| Total Runs (Counted) | 337 |
 | Non-counted Runs | 73 |
-| Total Checks | 2955 |
-| Passed | 2847 |
+| Total Checks | 2961 |
+| Passed | 2853 |
 | Failed | 99 |
-| Completed Items | 433 |
+| Completed Items | 436 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
 | Expert Domains Tracked | 12 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260505-0410 (2026-05-05T04:35:45.774Z) |
-| Latest Recorded Run | QA-20260505-0411 (2026-05-05T06:13:00.571Z) |
+| Last Counted Run | QA-20260505-0412 (2026-05-05T06:31:40.208Z) |
+| Latest Recorded Run | QA-20260505-0412 (2026-05-05T06:31:40.208Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,21 +34,24 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260505-0411 (2026-05-05T06:13:00.571Z)
+Latest run: QA-20260505-0412 (2026-05-05T06:31:40.208Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| IT Monitoring & Observability SME | appropriate | no | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
+| Data Quality & Metrics Analyst | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Current billing period checked after v8.11.106 production deploy; effective 2.0188 USD, billed remains 0.0000 USD, chargeCount 1827. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-04T06:13:00.571Z -> 2026-05-05T06:13:00.571Z (24h)
+- Window: 2026-05-04T06:31:40.208Z -> 2026-05-05T06:31:40.208Z (24h)
 - Runs with observations: 7 recorded / 7 counted
 - Samples: 18
 
@@ -62,25 +65,28 @@ Latest run: QA-20260505-0411 (2026-05-05T06:13:00.571Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: SHA 97d04260
-- Coverage Packs: dashboard-core, observability-pack
-- Covered Surfaces: QA-20260505-0409 production evidence: /dashboard/servers/api-was-dc1-01 overview and performance tab both showed CPU 81.0%, Memory 65.0%, Disk 32.0%, QA tracker completed improvement dashboard-server-detail-metrics-tab-slot-drift-v81197 is already completed, This run only updates the expert-domain assessment that remained stale from QA-20260505-0407
-- Skipped Surfaces: No new browser automation was executed for this metadata closure, Production deployment remains v8.11.105 / e8c8f73d for the original QA evidence
+- Release-Facing: yes
+- Counts Toward Summary: yes
+- Deployment: dpl_CmEcaLdhB64hMEiDxkmY9KQBGBT7 / SHA 0f305d78
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, ai-advanced-surface
+- Covered Surfaces: Production /api/version returned 8.11.106, commit 0f305d7858a4d3691059528a5de9e3b1ba12bc0a, tag v8.11.106, pipeline https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2499937091, Landing guest session and /system-boot navigated to /dashboard successfully, Dashboard summary displayed OpenTelemetry snapshot and Telemetry catalog copy with current data slot, AI sidebar tool menu exposed Web search Auto/On, response mode, and file attachment controls without any RAG/internal knowledge toggle text, Reporter page displayed 생성·복사·다운로드 copy and report generation controls without a RAG toggle, Intelligent Monitoring page displayed data-slot basis and analysis controls without a RAG toggle
+- Skipped Surfaces: No live LLM prompt was sent; this run targeted UI/copy regression after the RAG control removal, No broad login/privacy/security/mobile sweep was rerun; latest counted residual QA remains clean and this release QA focused on changed surfaces
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab HEAD validation pipeline 2499917776 | [GitLab HEAD validation pipeline 2499917776](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2499917776) | - |
+| general | GitLab v8.11.106 tag pipeline 2499937091 | [GitLab v8.11.106 tag pipeline 2499937091](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2499937091) | - |
 | general | Production version endpoint | [Production version endpoint](https://openmanager-ai.vercel.app/api/version) | - |
+| vercel-deployment | Vercel production deployment dpl_CmEcaLdhB64hMEiDxkmY9KQBGBT7 | [Vercel production deployment dpl_CmEcaLdhB64hMEiDxkmY9KQBGBT7](https://openmanager-fvqjndtx7-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-screenshot | AI sidebar tools without RAG control | `reports/qa/evidence/qa-20260505-v811106-ai-sidebar-tools.png` | - |
+| playwright-screenshot | Reporter copy without RAG control | `reports/qa/evidence/qa-20260505-v811106-reporter-copy.png` | - |
+| playwright-screenshot | Monitoring controls without RAG control | `reports/qa/evidence/qa-20260505-v811106-monitoring-no-rag.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -228,6 +234,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-ranking-cpu-live-route: CPU highest-server query returns live top server on production (completed 1회, last QA-20260418-0305)
 - ai-ranking-memory-live-route: Memory top-N ranking uses deterministic live metric path on production (completed 1회, last QA-20260418-0305)
 - ai-recommendation-free-tier-fit: AI 운영 권고에서 리소스 업그레이드보다 조사/캐시/분산 조치를 우선 (completed 1회, last QA-20260423-0339)
+- ai-reporter-monitoring-rag-control-hidden-v811106: Reporter and monitoring AI surfaces no longer expose RAG toggles (completed 1회, last QA-20260505-0412)
 - ai-reporter-success: Reporter Agent 보고서 생성 성공 (completed 3회, last QA-20260315-0104)
 - ai-security-prompt-injection-smoke-v81197: Prompt-injection smoke does not leak secrets (completed 1회, last QA-20260505-0407)
 - ai-server-snapshot-artifact-cancellation-v81185: Server snapshot artifact respects cancellation and preserves production rendering (completed 1회, last QA-20260503-0395)
@@ -235,6 +242,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-server-timing-hosting-path-diagnosed: Server-Timing production/local hosting path difference diagnosed (completed 1회, last QA-20260310-0081)
 - ai-sidebar-open: AI 사이드바 열기/닫기 (completed 1회, last QA-20260317-0114)
 - ai-sidebar-parity-contract-rendering: AI sidebar 상세 분석에 실제 parity metadata contract 노출 (completed 1회, last QA-20260323-0164)
+- ai-sidebar-rag-control-hidden-v811106: AI sidebar hides user-facing RAG control while keeping Web source controls visible (completed 1회, last QA-20260505-0412)
 - ai-sidebar-right-panel: AI 우측 패널 기능 메뉴 (completed 1회, last QA-20260317-0114)
 - ai-sidebar-starters: AI 스타터 프롬프트 5개 (completed 1회, last QA-20260317-0114)
 - ai-sidebar-toggle: AI 사이드바 AI Engine Ready (completed 2회, last QA-20260419-0306)
@@ -356,6 +364,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - dashboard-server-detail-metrics-tab-slot-drift-v81197: Server detail performance tab current metrics align with same-page overview values (completed 2회, last QA-20260505-0411)
 - dashboard-server-log-cross-link: 서버 카드 로그 바로가기 cross-link (completed 1회, last QA-20260501-0386)
 - dashboard-status-filter: 상태 필터 토글 (completed 1회, last QA-20260317-0114)
+- dashboard-telemetry-copy-v811106: Dashboard telemetry copy uses OpenTelemetry snapshot/catalog language (completed 1회, last QA-20260505-0412)
 - dashboard-topology-map: 토폴로지 맵 모달 (completed 1회, last QA-20260317-0114)
 - dashboard-worker-console-error-on-ai-workspace-return: Dashboard logs Web Worker fallback error after returning from fullscreen AI workspace (completed 1회, last QA-20260423-0332)
 - data-metrics-quality-slot-provenance: AI parity QA evidence includes dashboard snapshot slot/source metadata (completed 1회, last QA-20260424-0348)
@@ -602,6 +611,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260505-0412 | 2026-05-05T06:31:40.208Z | targeted | yes | yes | v8.11.106 Production Targeted QA - RAG UI and Telemetry Copy | 6 | 3 | 0 | 0 | 0 | 0 |
 | QA-20260505-0411 | 2026-05-05T06:13:00.571Z | targeted | no | no | QA Metadata Closure - Observability Server Detail Data Slot Gap | 0 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260505-0410 | 2026-05-05T04:35:45.774Z | targeted | yes | yes | v8.11.105 RAG OTel SSOT Targeted Recheck | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260505-0409 | 2026-05-05T03:39:15.190Z | targeted | yes | yes | v8.11.104 Residual Production Targeted QA | 6 | 3 | 1 | 0 | 0 | 1 |
@@ -621,4 +631,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260503-0395 | 2026-05-02T19:10:10.245Z | targeted | yes | yes | Vercel Production Targeted QA - Server Snapshot Artifact v8.11.85 | 13 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260503-0394 | 2026-05-02T16:09:07.439Z | targeted | yes | yes | Vercel Production Targeted QA - Server Snapshot Artifact v8.11.84 | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260502-0393 | 2026-05-02T09:30:16.319Z | targeted | no | no | Vercel Production Verification - Artifact Keyword Change Recheck v8.11.82 | 6 | 0 | 0 | 0 | 0 | 0 |
-| QA-20260502-0392 | 2026-05-02T09:10:56.289Z | targeted | yes | yes | Vercel Production Targeted QA - Artifact Short Keyword Pair v8.11.82 | 8 | 1 | 0 | 0 | 0 | 0 |

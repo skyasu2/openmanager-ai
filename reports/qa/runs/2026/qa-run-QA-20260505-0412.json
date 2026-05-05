@@ -1,0 +1,170 @@
+{
+  "runId": "QA-20260505-0412",
+  "recordedAt": "2026-05-05T06:31:40.208Z",
+  "recordedAtKst": "2026-05-05 15:31:40 KST",
+  "runTitle": "v8.11.106 Production Targeted QA - RAG UI and Telemetry Copy",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_CmEcaLdhB64hMEiDxkmY9KQBGBT7",
+    "deploymentUrl": "https://openmanager-fvqjndtx7-skyasus-projects.vercel.app",
+    "commitSha": "0f305d7858a4d3691059528a5de9e3b1ba12bc0a"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "ai-advanced-surface"
+  ],
+  "coveredSurfaces": [
+    "Production /api/version returned 8.11.106, commit 0f305d7858a4d3691059528a5de9e3b1ba12bc0a, tag v8.11.106, pipeline https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2499937091",
+    "Landing guest session and /system-boot navigated to /dashboard successfully",
+    "Dashboard summary displayed OpenTelemetry snapshot and Telemetry catalog copy with current data slot",
+    "AI sidebar tool menu exposed Web search Auto/On, response mode, and file attachment controls without any RAG/internal knowledge toggle text",
+    "Reporter page displayed 생성·복사·다운로드 copy and report generation controls without a RAG toggle",
+    "Intelligent Monitoring page displayed data-slot basis and analysis controls without a RAG toggle"
+  ],
+  "skippedSurfaces": [
+    "No live LLM prompt was sent; this run targeted UI/copy regression after the RAG control removal",
+    "No broad login/privacy/security/mobile sweep was rerun; latest counted residual QA remains clean and this release QA focused on changed surfaces"
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The changed AI surfaces were verified on production: user-facing RAG controls are hidden while Web search/source controls remain visible.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Playwright MCP exercised the landing-to-dashboard flow and the three changed AI UI surfaces with durable screenshots.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Dashboard telemetry copy now describes OpenTelemetry snapshot/catalog data and preserved the current data-slot label.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab tag pipeline, Vercel deployment, production version endpoint, and Vercel usage were all checked for the release.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-05T15:25:24+09:00",
+      "summary": "Current billing period checked after v8.11.106 production deploy; effective 2.0188 USD, billed remains 0.0000 USD, chargeCount 1827.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "AI sidebar tools without RAG control",
+      "path": "reports/qa/evidence/qa-20260505-v811106-ai-sidebar-tools.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Reporter copy without RAG control",
+      "path": "reports/qa/evidence/qa-20260505-v811106-reporter-copy.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Monitoring controls without RAG control",
+      "path": "reports/qa/evidence/qa-20260505-v811106-monitoring-no-rag.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-sidebar-rag-control-hidden-v811106",
+      "title": "AI sidebar hides user-facing RAG control while keeping Web source controls visible",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production AI sidebar tool menu showed Web search Auto/On, response mode, and file attachment controls; no RAG/internal knowledge text appeared.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-reporter-monitoring-rag-control-hidden-v811106",
+      "title": "Reporter and monitoring AI surfaces no longer expose RAG toggles",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production Reporter and Intelligent Monitoring tabs rendered their controls and data-slot copy without RAG toggle text.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "dashboard-telemetry-copy-v811106",
+      "title": "Dashboard telemetry copy uses OpenTelemetry snapshot/catalog language",
+      "priority": "P3",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production dashboard summary displayed OpenTelemetry snapshot and Telemetry catalog labels with the current slot.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.11.106 tag pipeline 2499937091",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2499937091"
+    },
+    {
+      "type": "general",
+      "label": "Production version endpoint",
+      "url": "https://openmanager-ai.vercel.app/api/version"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment dpl_CmEcaLdhB64hMEiDxkmY9KQBGBT7",
+      "url": "https://openmanager-fvqjndtx7-skyasus-projects.vercel.app/"
+    }
+  ]
+}

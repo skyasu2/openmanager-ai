@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-05T06:13:00.571Z"
+    "updatedAt": "2026-05-05T06:31:40.208Z"
   },
   "sequence": {
-    "nextRunNumber": 412
+    "nextRunNumber": 413
   },
   "summary": {
-    "totalRecordedRuns": 409,
-    "totalRuns": 336,
+    "totalRecordedRuns": 410,
+    "totalRuns": 337,
     "excludedRuns": 73,
-    "totalChecks": 2955,
-    "totalPassed": 2847,
+    "totalChecks": 2961,
+    "totalPassed": 2853,
     "totalFailed": 99,
     "completionRate": 100,
-    "completedItems": 433,
+    "completedItems": 436,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 22,
     "expertDomainsTracked": 12,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260505-0410",
-    "lastRecordedAt": "2026-05-05T04:35:45.774Z",
-    "latestRecordedRunId": "QA-20260505-0411",
-    "latestRecordedAt": "2026-05-05T06:13:00.571Z"
+    "lastRunId": "QA-20260505-0412",
+    "lastRecordedAt": "2026-05-05T06:31:40.208Z",
+    "latestRecordedRunId": "QA-20260505-0412",
+    "latestRecordedAt": "2026-05-05T06:31:40.208Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -10649,6 +10649,78 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-05T03:39:15.190Z"
+    },
+    "ai-sidebar-rag-control-hidden-v811106": {
+      "id": "ai-sidebar-rag-control-hidden-v811106",
+      "title": "AI sidebar hides user-facing RAG control while keeping Web source controls visible",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260505-0412",
+      "firstSeenAt": "2026-05-05T06:31:40.208Z",
+      "lastSeenRunId": "QA-20260505-0412",
+      "lastSeenAt": "2026-05-05T06:31:40.208Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production AI sidebar tool menu showed Web search Auto/On, response mode, and file attachment controls; no RAG/internal knowledge text appeared.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-05T06:31:40.208Z"
+    },
+    "ai-reporter-monitoring-rag-control-hidden-v811106": {
+      "id": "ai-reporter-monitoring-rag-control-hidden-v811106",
+      "title": "Reporter and monitoring AI surfaces no longer expose RAG toggles",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260505-0412",
+      "firstSeenAt": "2026-05-05T06:31:40.208Z",
+      "lastSeenRunId": "QA-20260505-0412",
+      "lastSeenAt": "2026-05-05T06:31:40.208Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production Reporter and Intelligent Monitoring tabs rendered their controls and data-slot copy without RAG toggle text.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-05T06:31:40.208Z"
+    },
+    "dashboard-telemetry-copy-v811106": {
+      "id": "dashboard-telemetry-copy-v811106",
+      "title": "Dashboard telemetry copy uses OpenTelemetry snapshot/catalog language",
+      "priority": "P3",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260505-0412",
+      "firstSeenAt": "2026-05-05T06:31:40.208Z",
+      "lastSeenRunId": "QA-20260505-0412",
+      "lastSeenAt": "2026-05-05T06:31:40.208Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "Production dashboard summary displayed OpenTelemetry snapshot and Telemetry catalog labels with the current slot.",
+      "lastNote": "",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-05T06:31:40.208Z"
     }
   },
   "runs": [
@@ -42558,6 +42630,138 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260505-0412",
+      "recordedAt": "2026-05-05T06:31:40.208Z",
+      "recordedAtKst": "2026-05-05 15:31:40 KST",
+      "title": "v8.11.106 Production Targeted QA - RAG UI and Telemetry Copy",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260505-0412.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_CmEcaLdhB64hMEiDxkmY9KQBGBT7",
+        "deploymentUrl": "https://openmanager-fvqjndtx7-skyasus-projects.vercel.app",
+        "commitSha": "0f305d7858a4d3691059528a5de9e3b1ba12bc0a"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "Production /api/version returned 8.11.106, commit 0f305d7858a4d3691059528a5de9e3b1ba12bc0a, tag v8.11.106, pipeline https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2499937091",
+        "Landing guest session and /system-boot navigated to /dashboard successfully",
+        "Dashboard summary displayed OpenTelemetry snapshot and Telemetry catalog copy with current data slot",
+        "AI sidebar tool menu exposed Web search Auto/On, response mode, and file attachment controls without any RAG/internal knowledge toggle text",
+        "Reporter page displayed 생성·복사·다운로드 copy and report generation controls without a RAG toggle",
+        "Intelligent Monitoring page displayed data-slot basis and analysis controls without a RAG toggle"
+      ],
+      "skippedSurfaces": [
+        "No live LLM prompt was sent; this run targeted UI/copy regression after the RAG control removal",
+        "No broad login/privacy/security/mobile sweep was rerun; latest counted residual QA remains clean and this release QA focused on changed surfaces"
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The changed AI surfaces were verified on production: user-facing RAG controls are hidden while Web search/source controls remain visible.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP exercised the landing-to-dashboard flow and the three changed AI UI surfaces with durable screenshots.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Dashboard telemetry copy now describes OpenTelemetry snapshot/catalog data and preserved the current data-slot label.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline, Vercel deployment, production version endpoint, and Vercel usage were all checked for the release.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-05T15:25:24+09:00",
+          "summary": "Current billing period checked after v8.11.106 production deploy; effective 2.0188 USD, billed remains 0.0000 USD, chargeCount 1827.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "AI sidebar tools without RAG control",
+          "path": "reports/qa/evidence/qa-20260505-v811106-ai-sidebar-tools.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Reporter copy without RAG control",
+          "path": "reports/qa/evidence/qa-20260505-v811106-reporter-copy.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Monitoring controls without RAG control",
+          "path": "reports/qa/evidence/qa-20260505-v811106-monitoring-no-rag.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.106 tag pipeline 2499937091",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2499937091"
+        },
+        {
+          "type": "general",
+          "label": "Production version endpoint",
+          "url": "https://openmanager-ai.vercel.app/api/version"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment dpl_CmEcaLdhB64hMEiDxkmY9KQBGBT7",
+          "url": "https://openmanager-fvqjndtx7-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 3,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -42566,16 +42770,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 199,
-      "appropriateCount": 177,
+      "seenCount": 200,
+      "appropriateCount": 178,
       "partialCount": 22,
       "inappropriateCount": 0,
       "improvementNeededCount": 32,
-      "lastRunId": "QA-20260505-0410",
-      "lastSeenAt": "2026-05-05T04:35:45.774Z",
+      "lastRunId": "QA-20260505-0412",
+      "lastSeenAt": "2026-05-05T06:31:40.208Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The remaining RAG hallucination regression was rechecked on production with the same internal OTel/SSOT path class and returned grounded repo paths without placeholder inference.",
+      "lastRationale": "The changed AI surfaces were verified on production: user-facing RAG controls are hidden while Web search/source controls remain visible.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -42617,16 +42821,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 133,
-      "appropriateCount": 120,
+      "seenCount": 134,
+      "appropriateCount": 121,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 17,
-      "lastRunId": "QA-20260505-0410",
-      "lastSeenAt": "2026-05-05T04:35:45.774Z",
+      "lastRunId": "QA-20260505-0412",
+      "lastSeenAt": "2026-05-05T06:31:40.208Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab main validate and v8.11.105 tag deployment pipeline completed successfully before production recheck.",
+      "lastRationale": "GitLab tag pipeline, Vercel deployment, production version endpoint, and Vercel usage were all checked for the release.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -42634,16 +42838,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 171,
-      "appropriateCount": 158,
+      "seenCount": 172,
+      "appropriateCount": 159,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 15,
-      "lastRunId": "QA-20260505-0410",
-      "lastSeenAt": "2026-05-05T04:35:45.774Z",
+      "lastRunId": "QA-20260505-0412",
+      "lastSeenAt": "2026-05-05T06:31:40.208Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Targeted production recheck used Playwright MCP UI evidence and durable QA artifacts.",
+      "lastRationale": "Playwright MCP exercised the landing-to-dashboard flow and the three changed AI UI surfaces with durable screenshots.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -42651,16 +42855,16 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 57,
-      "appropriateCount": 37,
+      "seenCount": 58,
+      "appropriateCount": 38,
       "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260505-0410",
-      "lastSeenAt": "2026-05-05T04:35:45.774Z",
+      "lastRunId": "QA-20260505-0412",
+      "lastSeenAt": "2026-05-05T06:31:40.208Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The answer now names the documented OTel runtime SSOT and loader/consumer paths rather than fabricated filesystem paths.",
+      "lastRationale": "Dashboard telemetry copy now describes OpenTelemetry snapshot/catalog data and preserved the current data-slot label.",
       "lastNextAction": ""
     },
     "infra-reliability": {
