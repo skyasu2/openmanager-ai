@@ -20,6 +20,7 @@ import type {
 } from '@/lib/ai/assistant-contract';
 import type { ChatArtifactIntentReason } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
 import type {
+  ArtifactEnvelope,
   IncidentReportArtifact,
   MonitoringAnalysisArtifact,
   ServerSnapshotArtifact,
@@ -144,6 +145,8 @@ export interface ChatMessage {
     monitoringAnalysisArtifact?: MonitoringAnalysisArtifact;
     /** 채팅에서 생성한 사용자 다운로드 가능 서버 상태 스냅샷 */
     serverSnapshotArtifact?: ServerSnapshotArtifact;
+    /** domain renderer registry가 복원할 수 있는 generic artifact envelope */
+    artifactEnvelopes?: ArtifactEnvelope[];
     /** 도구 실행 결과 요약 */
     toolResultSummaries?: ToolResultSummary[];
     /** 에이전트 handoff 이력 */

@@ -174,6 +174,16 @@ CI / 로컬 기본 gate
 | Retrieval Evidence Recall Benchmark | RAG/Retrieval Lite evidence top-k, expected path/document id, `suppressedReason` 보존 | `tests/retrieval/evidence-recall.bench.ts`, `cloud-run/ai-engine/src/lib/knowledge-retrieval-lite*.test.ts` | 0원 | Task 0C |
 | Stream Contract Snapshot Benchmark | `data-start`/`data-mode`/`data-tool-call`/`data-tool-result`/`text-*`/`data-done` event shape 보존 | `tests/ai-stream/stream-contract-replay.test.ts`, existing stream route tests | 0원 | Task 0C |
 
+### QA 답변 품질과 모델 체급 평가
+
+QA 통과 여부와 "할당된 LLM 체급 대비 기대 성능"은 별도 관점으로 본다. 최신 평가는 [AI QA Model Performance Assessment 2026-05-05](../docs/ai-qa-model-performance-assessment-2026-05-05.md)에 기록한다.
+
+핵심 판정:
+
+- 현재 raw model capability는 frontier GPT-class reasoning으로 주장하지 않는다.
+- monitoring domain 체감 품질은 deterministic tool/fact/retrieval guard 덕분에 raw model tier보다 높다.
+- RAG/Web/Reporter 품질은 최근 targeted QA에서 회복됐지만, 모델 자체의 추론력 한계와 외부 evidence 의존성을 계속 감시한다.
+
 ### 외부 무료 도구 도입 판단
 
 | 도구 | 판단 | 이유 |
@@ -441,7 +451,7 @@ portable core task가 완료될 때 기존 Backlog와 중복 설계가 생기지
 - [x] Task 3 후속 — Backlog `AI artifact workspace/schema registry and replay pack` 범위 재분류
 - [x] Task 4 — runtime host가 domain pack과 adapter를 주입받도록 supervisor/job/ask path 정렬
 - [x] Task 4 후속 — Backlog `Planner shadow production telemetry review` 범위 재분류
-- [ ] Task 5 — frontend artifact renderer registry와 history restore boundary 정렬
+- [x] Task 5 — frontend artifact renderer registry와 history restore boundary 정렬
 - [ ] Task 6 — mock sample domain pack으로 cross-project portability smoke 추가
 - [ ] Task 7 — targeted tests, type-check, docs/planning 상태 갱신
 
@@ -497,6 +507,7 @@ portable core task가 완료될 때 기존 Backlog와 중복 설계가 생기지
 - 2026-05-05: Task -1 baseline/current behavior integrity gate 통과. 기준 HEAD는 `8989906d59a8c0ed1c02dc8c5e08dfc7fd31c50d`, production `/api/version`은 `v8.11.106` / commit `0f305d7858a4d3691059528a5de9e3b1ba12bc0a`, QA tracker는 pending `0` 및 Active Gate Warning `None`이다. 검증: root targeted AI suite, Cloud Run targeted supervisor/fact/retrieval suite `29/29`, root `type-check`, `lint`, `test:quick`, `test:contract`, AI Engine `type-check`, AI Engine `npm test` `95 files / 1012 tests`, `docs:budget`, `docs:ai-consistency`, `git diff --check`. 계약 섹션과 테스트 시나리오가 확정되어 plan status를 `Approved`로 승격했다. 다음 단계는 Task 0A current-code boundary failing tests 작성이다.
 - 2026-05-05: 계획서 리뷰에서 지적된 Task 0 착수점, 결합 이관 순서, Task 1 inventory 기준, frontend renderer 보안 계약, Backlog 연결 게이트를 반영했다. Task 0은 현재 코드 기준 `0A` boundary detector와 Task 2 이후 `0B` scaffold-aware guard로 분리했다.
 - 2026-05-05: 현재 AI 벤치마크/테스트 도구를 분석해 plan에 반영했다. 기존 도구는 Vitest deterministic contract, artifact intent eval/replay, Promptfoo manual golden/redteam, Promptfoo config contract, QA tracker/Playwright evidence로 분류했다. portable core 작업 전 추가 도입은 외부 LLM judge 도구가 아니라 Task 0C의 route/tool trace replay, retrieval evidence recall, stream contract snapshot deterministic benchmark로 제한한다.
+- 2026-05-05: QA 답변 품질을 할당 모델 체급 기준으로 평가한 리포트를 추가했다. 결론은 raw model capability는 frontier GPT-class reasoning으로 주장하지 않고, monitoring domain 체감 품질은 deterministic tool/fact/retrieval guard로 보강된 fast mid/high open-model app-agent 위치로 기록한다.
 - 2026-05-05: Task 0A 완료. `c38bd68c3`에서 current-code boundary guard를 추가했고, `d84b6be84`에서 monitoring artifact registry, monitoring supervisor prompt/source module, monitoring tool registry로 domain ownership을 분리했다. 검증: boundary guard, root `type-check`/`lint`/`test:quick`/`test:contract`, AI Engine `type-check`/`npm test` `95 files / 1012 tests`, GitLab pipeline `2501000082` success. 다음 단계는 Task 0C deterministic benchmark 보강이다.
 - 2026-05-05: Task 0C 완료. `portable-core-route-retrieval.bench.test.ts`로 route/tool trace replay와 retrieval evidence recall baseline을 고정하고, `portable-core-stream-contract.bench.test.ts`로 UI message stream event shape를 고정했다. 모두 live provider/외부 DB 호출 없이 Vitest에서 실행된다. 다음 단계는 Task 1 inventory 분류표 작성이다.
 - 2026-05-05: Task 1 완료. runtime/source 파일을 `core-candidate`, `domain`, `shared-but-domain-tainted`, `adapter`, `compatibility-wrapper`로 분류하고, 각 행에 domain/infra signals, deterministic portability, migration target, guard, risk를 기록했다. 다음 단계는 Task 0B scaffold-aware spec checkpoint를 추가한 뒤 Task 2 `AssistantDomain`/registry/adapter interface scaffold로 들어가는 것이다.
@@ -504,3 +515,4 @@ portable core task가 완료될 때 기존 Backlog와 중복 설계가 생기지
 - 2026-05-05: Task 3 완료. `724a64030`에서 monitoring domain pack contract failing spec을 추가했고, `cloud-run/ai-engine/src/domains/monitoring/domain-pack.ts`와 `routing-policy.ts`로 prompt/routing/tool/fact/artifact ownership을 묶었다. 기존 `services/ai-sdk/supervisor-routing.ts`는 public import compatibility wrapper로 유지해 route/tool selection behavior를 보존한다. 검증: monitoring domain pack contract + supervisor routing/consistency/route-retrieval benchmark `74/74`, AI Engine `type-check`, AI Engine `npm test` `99 files / 1023 tests`, `git diff --check`. 다음 단계는 Task 3 후속 Backlog `AI artifact workspace/schema registry and replay pack` 범위 재분류다.
 - 2026-05-05: Task 3 후속 완료. Task 3 `ArtifactRegistry`는 domain-side artifact kind classify/normalize owner이며 portfolio-facing workspace store, artifact family/version schema migration, replay pack persistence/compare는 포함하지 않는다고 판정했다. TODO Backlog `AI artifact workspace/schema registry and replay pack`을 domain registry 중복이 아닌 local/session-first workspace/schema/replay 잔여로 축소했다. 다음 단계는 Task 4 runtime host가 domain pack과 adapter를 주입받도록 supervisor/job/ask path를 정렬하는 것이다.
 - 2026-05-05: Task 4 및 Task 4 후속 완료. `f93c12349`에서 runtime host contract failing spec을 먼저 추가했고, 구현에서 generic `assistant-runtime-host`와 monitoring default `monitoring-runtime-host`를 분리해 custom domain runtime이 monitoring import 없이 주입될 수 있게 했다. `SupervisorRequest.runtimeHost`와 public-safe `assistantRuntime` metadata를 추가하고, `executeSupervisor`, `executeSupervisorStream`, Cloud Run jobs path가 monitoring runtime host를 통해 domain/adapter metadata를 보존하도록 정렬했다. `/api/ai/ask`는 wrapper-only facade를 유지하므로 stream/job 위임 경로에서 동일 metadata를 상속한다. Planner shadow Backlog는 Task 4 metadata로 domain/adapter 관측값은 확보됐지만 production `plannerShadow.latencyMs`/drift rate 집계는 별도 QA/log review가 필요하다고 재분류했다. 검증: targeted runtime/supervisor/jobs suites `37/37`, AI Engine `type-check`, AI Engine `npm test` `100 files / 1025 tests`. 다음 단계는 Task 5 frontend artifact renderer registry와 history restore boundary 정렬이다.
+- 2026-05-05: Task 5 완료. `e198ea649`에서 frontend artifact renderer registry contract failing spec을 먼저 추가했고, 구현에서 `src/lib/ai/domain-renderers/artifact-renderer-registry.ts`와 `ArtifactRendererHost`를 추가했다. `AIWorkspaceMessage`의 artifact card 직접 import를 registry host로 대체하고, legacy `incidentReportArtifact`/`monitoringAnalysisArtifact`/`serverSnapshotArtifact` metadata와 generic `artifactEnvelopes` restore를 같은 boundary에서 처리한다. unknown/raw artifact envelope는 payload를 렌더링하지 않는 safe fallback으로 고정했고, generated artifact metadata는 renderer envelope도 함께 저장한다. 검증: targeted renderer/history/artifact suites `58/58`, root `type-check`, `lint`, `test:quick`, `test:contract`. 다음 단계는 Task 6 mock sample domain pack으로 cross-project portability smoke를 추가하는 것이다.

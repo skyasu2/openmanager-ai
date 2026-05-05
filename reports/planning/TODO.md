@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-05 KST (`portable AI assistant Task 4 runtime host injection complete`)
+**Last Updated**: 2026-05-05 KST (`portable AI assistant Task 5 renderer registry complete`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| AI assistant portable core/domain pack modularization | High | Approved | Task 0A 완료: current-code boundary guard 추가 후 monitoring artifact/prompt/source/tool ownership을 domain module로 분리했고 GitLab pipeline `2501000082` success. Task 0C 완료: route/tool trace replay, retrieval evidence recall, stream contract snapshot deterministic benchmark 추가. Task 1 완료: runtime/source inventory를 core/domain/tainted/adapter/wrapper로 분류. Task 0B/2 완료: scaffold-aware contract와 `AssistantDomain`/registry/adapter runtime scaffold 추가. Task 3 완료: `monitoringDomainPack`이 prompt/routing/tool/fact/artifact를 소유하고 기존 supervisor routing은 compatibility wrapper로 전환. Task 4 완료: generic runtime host와 monitoring default host를 분리하고 supervisor/job/ask wrapper 경로에 domain/adapter 주입 및 public-safe `assistantRuntime` metadata를 연결. Planner shadow Backlog는 production QA/log 집계 작업으로 유지. 다음 단계는 Task 5 frontend renderer registry/history restore boundary 정렬. 상세: [ai-assistant-portable-core-domain-pack-plan.md](ai-assistant-portable-core-domain-pack-plan.md) |
+| AI assistant portable core/domain pack modularization | High | Approved | Task 0A 완료: current-code boundary guard 추가 후 monitoring artifact/prompt/source/tool ownership을 domain module로 분리했고 GitLab pipeline `2501000082` success. Task 0C 완료: route/tool trace replay, retrieval evidence recall, stream contract snapshot deterministic benchmark 추가. Task 1 완료: runtime/source inventory를 core/domain/tainted/adapter/wrapper로 분류. Task 0B/2 완료: scaffold-aware contract와 `AssistantDomain`/registry/adapter runtime scaffold 추가. Task 3 완료: `monitoringDomainPack`이 prompt/routing/tool/fact/artifact를 소유하고 기존 supervisor routing은 compatibility wrapper로 전환. Task 4 완료: generic runtime host와 monitoring default host를 분리하고 supervisor/job/ask wrapper 경로에 domain/adapter 주입 및 public-safe `assistantRuntime` metadata를 연결. Task 5 완료: frontend artifact renderer registry/host를 추가해 legacy artifact metadata와 generic envelope restore를 registry boundary로 통합하고 unknown envelope safe fallback을 고정. 다음 단계는 Task 6 mock sample domain pack portability smoke 추가. 상세: [ai-assistant-portable-core-domain-pack-plan.md](ai-assistant-portable-core-domain-pack-plan.md) |
 
 ---
 

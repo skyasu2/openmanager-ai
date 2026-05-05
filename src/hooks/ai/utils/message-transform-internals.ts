@@ -5,6 +5,7 @@ import type {
 } from '@/lib/ai/assistant-contract';
 import type { ChatArtifactIntentReason } from '@/lib/ai/chat-artifacts/chat-artifact-intent';
 import type {
+  ArtifactEnvelope,
   IncidentReportArtifact,
   MonitoringAnalysisArtifact,
   ServerSnapshotArtifact,
@@ -63,6 +64,7 @@ export type MessageMetadata = {
   incidentReportArtifact?: IncidentReportArtifact;
   monitoringAnalysisArtifact?: MonitoringAnalysisArtifact;
   serverSnapshotArtifact?: ServerSnapshotArtifact;
+  artifactEnvelopes?: ArtifactEnvelope[];
   handoffHistory?: ResponseHandoff[];
   toolResultSummaries?: ToolResultSummary[];
 };

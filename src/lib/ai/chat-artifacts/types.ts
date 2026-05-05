@@ -119,6 +119,7 @@ export type ChatArtifact =
 export interface ArtifactEnvelope<
   TArtifact extends ChatArtifact = ChatArtifact,
 > {
+  domainId?: string;
   artifactVersion: string;
   kind: TArtifact['kind'];
   generatedAt: string;
@@ -131,6 +132,7 @@ export interface ArtifactEnvelope<
 }
 
 export interface CreateArtifactEnvelopeOptions {
+  domainId?: string;
   artifactVersion?: string;
   dataSlot?: string;
   sourceMode?: ArtifactSourceMode;
@@ -279,6 +281,7 @@ export function createArtifactEnvelope<TArtifact extends ChatArtifact>(
   const evidence = options.evidence ?? readArtifactEvidence(artifact.evidence);
 
   return {
+    ...(options.domainId && { domainId: options.domainId }),
     artifactVersion:
       options.artifactVersion ??
       artifact.artifactVersion ??

@@ -45,7 +45,11 @@ import {
 import { generateIncidentReportArtifact } from '@/lib/ai/chat-artifacts/incident-report-artifact';
 import { generateMonitoringAnalysisArtifact } from '@/lib/ai/chat-artifacts/monitoring-analysis-artifact';
 import { generateServerSnapshotArtifact } from '@/lib/ai/chat-artifacts/server-snapshot-artifact';
-import type { ChatArtifact } from '@/lib/ai/chat-artifacts/types';
+import {
+  type ChatArtifact,
+  createArtifactEnvelope,
+} from '@/lib/ai/chat-artifacts/types';
+import { MONITORING_ARTIFACT_RENDERER_DOMAIN_ID } from '@/lib/ai/domain-renderers/artifact-renderer-registry';
 import type { AIErrorDetails } from '@/lib/ai/error-details';
 import { buildRouteDecision } from '@/lib/ai/route-decision';
 import { logger } from '@/lib/logging';
@@ -397,6 +401,15 @@ function buildArtifactMetadata(
   });
   const assistantPlan = buildAssistantPlanFromRouteDecision(routeDecision);
   const assistantResult = buildAssistantResultFromRouteDecision(routeDecision);
+  const artifactEnvelope = createArtifactEnvelope(artifact, {
+    domainId: MONITORING_ARTIFACT_RENDERER_DOMAIN_ID,
+    sourceMode:
+      artifact.sourceMode ??
+      (artifact.kind === 'server-snapshot' ? 'otel-static' : 'tool-result'),
+    ...(queryAsOfDataSlot?.timeLabel && {
+      dataSlot: queryAsOfDataSlot.timeLabel,
+    }),
+  });
 
   if (artifact.kind === 'incident-report') {
     return {
@@ -404,6 +417,7 @@ function buildArtifactMetadata(
       routeDecision,
       assistantPlan,
       assistantResult,
+      artifactEnvelopes: [artifactEnvelope],
       incidentReportArtifact: artifact,
       toolsCalled: ['generateIncidentReportArtifact'],
       toolResultSummaries: [
@@ -423,6 +437,7 @@ function buildArtifactMetadata(
       routeDecision,
       assistantPlan,
       assistantResult,
+      artifactEnvelopes: [artifactEnvelope],
       serverSnapshotArtifact: artifact,
       toolsCalled: ['generateServerSnapshotArtifact'],
       toolResultSummaries: [
@@ -441,6 +456,7 @@ function buildArtifactMetadata(
     routeDecision,
     assistantPlan,
     assistantResult,
+    artifactEnvelopes: [artifactEnvelope],
     monitoringAnalysisArtifact: artifact,
     toolsCalled: ['generateMonitoringAnalysisArtifact'],
     toolResultSummaries: [
