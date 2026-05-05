@@ -10,6 +10,7 @@ const {
   mockCreateSupervisorTrace,
   mockSelectExecutionMode,
   mockExtractRagSources,
+  mockSearchWebExecute,
   mockMarkProviderQuotaCooldown,
   mockReconcileProviderQuotaReservation,
   mockReserveProviderQuota,
@@ -34,6 +35,17 @@ const {
   })),
   mockSelectExecutionMode: vi.fn(() => 'multi'),
   mockExtractRagSources: vi.fn(() => []),
+  mockSearchWebExecute: vi.fn(async () => ({
+    success: true,
+    answer: 'Next.js 최신 안정화 메이저 버전은 16입니다.',
+    results: [
+      {
+        title: 'Next.js 16.2',
+        url: 'https://nextjs.org/blog/next-16-2',
+        content: 'Next.js 16.2 is now available.',
+      },
+    ],
+  })),
   mockMarkProviderQuotaCooldown: vi.fn(async () => undefined),
   mockReconcileProviderQuotaReservation: vi.fn(async () => undefined),
   mockReserveProviderQuota: vi.fn(
@@ -79,7 +91,11 @@ vi.mock('../../config/timeout-config', () => ({
 }));
 
 vi.mock('../../tools-ai-sdk', () => ({
-  allTools: {},
+  allTools: {
+    searchWeb: {
+      execute: mockSearchWebExecute,
+    },
+  },
 }));
 
 vi.mock('./agents/orchestrator-web-search', () => ({
@@ -194,6 +210,18 @@ describe('supervisor degraded single fallback', () => {
     vi.clearAllMocks();
     mockIsSingleModeAllowed.mockReturnValue(false);
     mockSelectExecutionMode.mockReturnValue('multi');
+    mockExtractRagSources.mockReturnValue([]);
+    mockSearchWebExecute.mockResolvedValue({
+      success: true,
+      answer: 'Next.js 최신 안정화 메이저 버전은 16입니다.',
+      results: [
+        {
+          title: 'Next.js 16.2',
+          url: 'https://nextjs.org/blog/next-16-2',
+          content: 'Next.js 16.2 is now available.',
+        },
+      ],
+    });
     mockExecuteMultiAgent.mockResolvedValue({
       success: false,
       code: 'MODEL_UNAVAILABLE',
@@ -731,5 +759,85 @@ describe('supervisor degraded single fallback', () => {
         toolsCalled: ['searchWeb'],
       },
     });
+  });
+
+  it('re-executes searchWeb from tool-call input when an empty stream has no recoverable tool result', async () => {
+    mockSelectExecutionMode.mockReturnValue('single');
+    mockExtractRagSources.mockImplementation((toolName: string) =>
+      toolName === 'searchWeb'
+        ? [
+            {
+              title: 'Next.js 16.2',
+              similarity: 0.9,
+              sourceType: 'web',
+              url: 'https://nextjs.org/blog/next-16-2',
+            },
+          ]
+        : []
+    );
+    mockStreamText.mockReturnValue({
+      textStream: (async function* () {})(),
+      fullStream: (async function* () {
+        yield {
+          type: 'tool-call',
+          toolCallId: 'web-call-2',
+          toolName: 'searchWeb',
+          input: {
+            query: 'Next.js latest stable release official Next.js blog',
+            maxResults: 5,
+            searchDepth: 'advanced',
+            includeDomains: ['nextjs.org'],
+          },
+        };
+      })(),
+      steps: Promise.resolve([
+        {
+          toolCalls: [
+            {
+              toolCallId: 'web-call-2',
+              toolName: 'searchWeb',
+              input: {
+                query: 'Next.js latest stable release official Next.js blog',
+                maxResults: 5,
+                searchDepth: 'advanced',
+                includeDomains: ['nextjs.org'],
+              },
+            },
+          ],
+          toolResults: [],
+        },
+      ]),
+      usage: Promise.resolve({ inputTokens: 1, outputTokens: 2, totalTokens: 3 }),
+    });
+
+    const events = [];
+    for await (const event of executeSupervisorStream({
+      mode: 'auto',
+      messages: [
+        {
+          role: 'user',
+          content: 'Next.js 최신 안정화 메이저 버전을 출처와 함께 알려줘',
+        },
+      ],
+      sessionId: 'session-web-search-reexecute-fallback',
+    })) {
+      events.push(event);
+    }
+
+    const text = events
+      .filter((event) => event.type === 'text_delta')
+      .map((event) => String(event.data))
+      .join('');
+
+    expect(mockSearchWebExecute).toHaveBeenCalledWith({
+      query: 'Next.js latest stable release official Next.js blog',
+      maxResults: 5,
+      searchDepth: 'advanced',
+      includeDomains: ['nextjs.org'],
+      excludeDomains: undefined,
+    });
+    expect(text).toContain('Next.js 최신 안정화 메이저 버전은 16입니다.');
+    expect(text).toContain('https://nextjs.org/blog/next-16-2');
+    expect(text).not.toContain('응답 본문이 비어');
   });
 });

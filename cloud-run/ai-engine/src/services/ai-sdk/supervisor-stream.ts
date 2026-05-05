@@ -119,6 +119,24 @@ type CollectedToolResult = {
   result: unknown;
 };
 
+type SearchWebFallbackInput = {
+  query: string;
+  maxResults?: number;
+  searchDepth?: 'basic' | 'advanced';
+  includeDomains?: string[];
+  excludeDomains?: string[];
+};
+
+type ToolCallLike = {
+  toolName?: unknown;
+  input?: unknown;
+  args?: unknown;
+};
+
+type StepLike = {
+  toolCalls?: ToolCallLike[];
+};
+
 async function* textStreamAsFullStream(
   textStream: AsyncIterable<string>
 ): AsyncGenerator<TextDeltaStreamPart> {
@@ -131,6 +149,83 @@ function readNonEmptyString(value: unknown): string | null {
   if (typeof value !== 'string') return null;
   const trimmed = value.trim();
   return trimmed.length > 0 ? trimmed : null;
+}
+
+function readRecord(value: unknown): Record<string, unknown> | null {
+  return value !== null && typeof value === 'object'
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
+function readNumber(value: unknown): number | undefined {
+  return typeof value === 'number' && Number.isFinite(value)
+    ? value
+    : undefined;
+}
+
+function readStringArray(value: unknown): string[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  const values = value
+    .map((item) => readNonEmptyString(item))
+    .filter((item): item is string => item !== null);
+  return values.length > 0 ? values : undefined;
+}
+
+function readSearchDepth(value: unknown): 'basic' | 'advanced' | undefined {
+  return value === 'basic' || value === 'advanced' ? value : undefined;
+}
+
+function readSearchWebInput(value: unknown): SearchWebFallbackInput | null {
+  const input = readRecord(value);
+  if (!input) return null;
+
+  const query = readNonEmptyString(input.query);
+  if (!query) return null;
+
+  return {
+    query,
+    maxResults: readNumber(input.maxResults),
+    searchDepth: readSearchDepth(input.searchDepth),
+    includeDomains: readStringArray(input.includeDomains),
+    excludeDomains: readStringArray(input.excludeDomains),
+  };
+}
+
+function findSearchWebInputFromSteps(
+  steps: StepLike[]
+): SearchWebFallbackInput | null {
+  for (const step of steps) {
+    for (const toolCall of step.toolCalls ?? []) {
+      if (toolCall.toolName !== 'searchWeb') continue;
+      const input =
+        readSearchWebInput(toolCall.input) ?? readSearchWebInput(toolCall.args);
+      if (input) return input;
+    }
+  }
+
+  return null;
+}
+
+async function executeSearchWebFallbackFromSteps(
+  steps: StepLike[]
+): Promise<CollectedToolResult | null> {
+  const input = findSearchWebInputFromSteps(steps);
+  if (!input) return null;
+
+  const searchWebTool = readRecord(allTools)?.searchWeb;
+  const execute = readRecord(searchWebTool)?.execute;
+  if (typeof execute !== 'function') return null;
+
+  try {
+    const result = await execute(input);
+    return { toolName: 'searchWeb', result };
+  } catch (error) {
+    logger.warn(
+      '[SupervisorStream] searchWeb fallback execution failed:',
+      error instanceof Error ? error.message : String(error)
+    );
+    return null;
+  }
 }
 
 function readToolStep(
@@ -842,8 +937,17 @@ async function* streamSingleAgent(
       }
 
       if (fullText.trim().length === 0) {
-        const webSearchFallback =
+        let webSearchFallback =
           buildWebSearchFallbackAnswer(collectedToolResults);
+        if (!webSearchFallback) {
+          const recoveredSearchWebResult =
+            await executeSearchWebFallbackFromSteps(steps);
+          if (recoveredSearchWebResult) {
+            collectedToolResults.push(recoveredSearchWebResult);
+            webSearchFallback =
+              buildWebSearchFallbackAnswer(collectedToolResults);
+          }
+        }
         if (webSearchFallback) {
           fullText = webSearchFallback;
           if (firstChunkMs === null) {
