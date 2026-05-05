@@ -52,7 +52,10 @@ import {
   buildSupervisorStreamMessages,
   getLastUserQueryText,
 } from './supervisor-stream-messages';
-import { buildWebCitationAppendix } from './supervisor-stream-citations';
+import {
+  buildWebCitationAppendix,
+  buildWebSearchFallbackAnswer,
+} from './supervisor-stream-citations';
 import { createStructuredTextDeltaGuard } from './supervisor-stream-text-guard';
 import { buildDeterministicSummaryFallback } from './agents/orchestrator-summary-fallback';
 import type {
@@ -819,6 +822,24 @@ async function* streamSingleAgent(
               }
             }
           }
+        }
+      }
+
+      if (fullText.trim().length === 0) {
+        const webSearchFallback =
+          buildWebSearchFallbackAnswer(collectedToolResults);
+        if (webSearchFallback) {
+          fullText = webSearchFallback;
+          if (firstChunkMs === null) {
+            firstChunkMs = Date.now() - providerStartTime;
+            logger.info(
+              `[SupervisorStream] TTFB recovered via web search fallback: ${firstChunkMs}ms (${provider}/${modelId})`
+            );
+          }
+          yield { type: 'text_delta', data: fullText };
+          logger.info(
+            '[SupervisorStream] Recovered empty response from searchWeb tool result'
+          );
         }
       }
 

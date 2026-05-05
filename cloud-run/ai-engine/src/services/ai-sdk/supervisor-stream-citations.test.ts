@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { buildWebCitationAppendix } from './supervisor-stream-citations';
+import {
+  buildWebCitationAppendix,
+  buildWebSearchFallbackAnswer,
+} from './supervisor-stream-citations';
 import type { RagSource } from '../../lib/ai-sdk-utils';
 
 describe('buildWebCitationAppendix', () => {
@@ -57,5 +60,57 @@ describe('buildWebCitationAppendix', () => {
     expect(buildWebCitationAppendix('요약', sources)).toBe(
       '\n\n참고 출처\n- [Source A](https://example.com/a)'
     );
+  });
+});
+
+describe('buildWebSearchFallbackAnswer', () => {
+  it('uses the Tavily answer when the model stream is empty', () => {
+    expect(
+      buildWebSearchFallbackAnswer([
+        {
+          toolName: 'searchWeb',
+          result: {
+            success: true,
+            answer: 'Next.js 최신 안정화 메이저는 16입니다.',
+            results: [
+              {
+                title: 'Next.js 16',
+                url: 'https://nextjs.org/blog/next-16',
+              },
+            ],
+          },
+        },
+      ])
+    ).toBe('Next.js 최신 안정화 메이저는 16입니다.');
+  });
+
+  it('falls back to the first web result summary when no direct answer exists', () => {
+    expect(
+      buildWebSearchFallbackAnswer([
+        {
+          toolName: 'searchWeb',
+          result: {
+            success: true,
+            results: [
+              {
+                title: 'Next.js releases',
+                content: 'Next.js 16 is the latest stable release line.',
+                url: 'https://nextjs.org/releases',
+              },
+            ],
+          },
+        },
+      ])
+    ).toBe(
+      '웹 검색 결과 기준 요약: Next.js releases\n\nNext.js 16 is the latest stable release line.'
+    );
+  });
+
+  it('returns null when no searchWeb result is available', () => {
+    expect(
+      buildWebSearchFallbackAnswer([
+        { toolName: 'searchKnowledgeBase', result: { results: [] } },
+      ])
+    ).toBeNull();
   });
 });

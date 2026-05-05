@@ -2,6 +2,29 @@ import type { RagSource } from '../../lib/ai-sdk-utils';
 
 const URL_PATTERN = /https?:\/\//i;
 
+type ToolResultLike = {
+  toolName: string;
+  result: unknown;
+};
+
+function readRecord(value: unknown): Record<string, unknown> | null {
+  return value !== null && typeof value === 'object'
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
+function readString(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+function readWebResults(value: unknown): Array<Record<string, unknown>> {
+  return Array.isArray(value)
+    ? value.filter((item): item is Record<string, unknown> => readRecord(item) !== null)
+    : [];
+}
+
 function uniqueWebSources(sources: RagSource[]): RagSource[] {
   const seen = new Set<string>();
   return sources.filter((source) => {
@@ -26,4 +49,39 @@ export function buildWebCitationAppendix(
   });
 
   return `\n\n참고 출처\n${citations.join('\n')}`;
+}
+
+export function buildWebSearchFallbackAnswer(
+  toolResults: ToolResultLike[]
+): string | null {
+  const webResult = toolResults.find((result) => result.toolName === 'searchWeb');
+  if (!webResult) return null;
+
+  const output = readRecord(webResult.result);
+  if (!output) return null;
+
+  const answer = readString(output.answer);
+  if (answer) {
+    return answer;
+  }
+
+  const error = readString(output.error);
+  if (error) {
+    return `웹 검색 결과를 수신하지 못했습니다: ${error}`;
+  }
+
+  const results = readWebResults(output.results);
+  const firstResult = results[0];
+  if (!firstResult) return null;
+
+  const title = readString(firstResult.title) ?? '웹 검색 결과';
+  const content = readString(firstResult.content);
+
+  if (!content) {
+    return `웹 검색 결과를 확인했습니다: ${title}`;
+  }
+
+  const summary =
+    content.length > 280 ? `${content.slice(0, 277).trimEnd()}...` : content;
+  return `웹 검색 결과 기준 요약: ${title}\n\n${summary}`;
 }
