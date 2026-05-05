@@ -433,10 +433,10 @@ portable core task가 완료될 때 기존 Backlog와 중복 설계가 생기지
 
 - [x] Task -1 — 현재 동작 무결성 게이트 통과 및 baseline 재기록
 - [x] Task 0A — 현재 코드 기준 boundary violation failing tests 작성
-- [ ] Task 0B — Task 2+ scaffold-aware contract/dependency spec checkpoint 추가
+- [x] Task 0B — Task 2+ scaffold-aware contract/dependency spec checkpoint 추가
 - [x] Task 0C — portable core baseline benchmark 보강: route/tool trace replay, retrieval evidence recall, stream contract snapshot
 - [x] Task 1 — read-only inventory: `core-candidate`, `domain`, `shared-but-domain-tainted`, `adapter`, `compatibility-wrapper` 분류표 작성
-- [ ] Task 2 — `AssistantDomain` / registry / adapter interface 추가
+- [x] Task 2 — `AssistantDomain` / registry / adapter interface 추가
 - [ ] Task 3 — monitoring prompt/routing/tool/fact/artifact를 `monitoringDomainPack`으로 이관
 - [ ] Task 3 후속 — Backlog `AI artifact workspace/schema registry and replay pack` 범위 재분류
 - [ ] Task 4 — runtime host가 domain pack과 adapter를 주입받도록 supervisor/job/ask path 정렬
@@ -500,3 +500,4 @@ portable core task가 완료될 때 기존 Backlog와 중복 설계가 생기지
 - 2026-05-05: Task 0A 완료. `c38bd68c3`에서 current-code boundary guard를 추가했고, `d84b6be84`에서 monitoring artifact registry, monitoring supervisor prompt/source module, monitoring tool registry로 domain ownership을 분리했다. 검증: boundary guard, root `type-check`/`lint`/`test:quick`/`test:contract`, AI Engine `type-check`/`npm test` `95 files / 1012 tests`, GitLab pipeline `2501000082` success. 다음 단계는 Task 0C deterministic benchmark 보강이다.
 - 2026-05-05: Task 0C 완료. `portable-core-route-retrieval.bench.test.ts`로 route/tool trace replay와 retrieval evidence recall baseline을 고정하고, `portable-core-stream-contract.bench.test.ts`로 UI message stream event shape를 고정했다. 모두 live provider/외부 DB 호출 없이 Vitest에서 실행된다. 다음 단계는 Task 1 inventory 분류표 작성이다.
 - 2026-05-05: Task 1 완료. runtime/source 파일을 `core-candidate`, `domain`, `shared-but-domain-tainted`, `adapter`, `compatibility-wrapper`로 분류하고, 각 행에 domain/infra signals, deterministic portability, migration target, guard, risk를 기록했다. 다음 단계는 Task 0B scaffold-aware spec checkpoint를 추가한 뒤 Task 2 `AssistantDomain`/registry/adapter interface scaffold로 들어가는 것이다.
+- 2026-05-05: Task 0B/Task 2 완료. `9b5e0b1a2`에서 scaffold-aware failing spec을 먼저 추가했고, `cloud-run/ai-engine/src/core/assistant-runtime/`에 `AssistantDomain`, `RoutingPolicy`, `ToolRegistry`, `ArtifactRegistry`, `FactPackBuilder`, `AssistantRuntimeAdapters`, in-memory adapter, `createAssistantRuntime()` scaffold를 추가했다. core dependency guard는 `services/monitoring`, `tools-ai-sdk/*monitoring*`, `precomputed-state`, `domains/monitoring`, monitoring artifact literal/prompt glossary를 차단한다. 검증: targeted scaffold contract, AI Engine `type-check`, AI Engine `npm test` `98 files / 1018 tests`, `git diff --check`. 다음 단계는 Task 3 monitoring prompt/routing/tool/fact/artifact를 `monitoringDomainPack`으로 behavior-preserving 이관하는 것이다.
