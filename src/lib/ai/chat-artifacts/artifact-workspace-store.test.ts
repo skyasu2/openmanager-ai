@@ -144,6 +144,37 @@ describe('artifact workspace store', () => {
     expect(JSON.stringify(restored)).not.toContain('javascript:');
   });
 
+  it('degrades to an empty store when browser storage APIs throw', () => {
+    const pack = createArtifactReplayPack({
+      workspaceId: 'workspace-storage-failure',
+      createdAt: '2026-05-06T01:12:00.000Z',
+      envelopes: [
+        createArtifactEnvelope(snapshotArtifact, {
+          domainId: MONITORING_ARTIFACT_DOMAIN_ID,
+          sourceMode: 'otel-static',
+        }),
+      ],
+    });
+    const store = createArtifactWorkspaceStore({
+      storage: {
+        getItem: () => {
+          throw new Error('storage blocked');
+        },
+        setItem: () => {
+          throw new Error('storage quota exceeded');
+        },
+        removeItem: () => {
+          throw new Error('storage blocked');
+        },
+      },
+    });
+
+    expect(() => store.saveReplayPack(pack)).not.toThrow();
+    expect(store.listReplayPacks()).toEqual([]);
+    expect(store.readReplayPack('workspace-storage-failure')).toBeUndefined();
+    expect(() => store.clear()).not.toThrow();
+  });
+
   it('extracts a deterministic replay pack from envelope and legacy chat history metadata', () => {
     const replayPack = extractArtifactReplayPackFromChatHistory({
       workspaceId: 'workspace-history-1',

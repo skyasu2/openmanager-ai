@@ -115,10 +115,10 @@ function readSnapshot(
   storage: ArtifactWorkspaceStorage,
   updatedAt: string
 ): ArtifactWorkspaceSnapshot {
-  const raw = storage.getItem(ARTIFACT_WORKSPACE_STORAGE_KEY);
-  if (!raw) return createEmptySnapshot(updatedAt);
-
   try {
+    const raw = storage.getItem(ARTIFACT_WORKSPACE_STORAGE_KEY);
+    if (!raw) return createEmptySnapshot(updatedAt);
+
     const parsed = JSON.parse(raw) as unknown;
     if (!isRecord(parsed)) return createEmptySnapshot(updatedAt);
 
@@ -143,7 +143,12 @@ function writeSnapshot(
   storage: ArtifactWorkspaceStorage,
   snapshot: ArtifactWorkspaceSnapshot
 ): void {
-  storage.setItem(ARTIFACT_WORKSPACE_STORAGE_KEY, JSON.stringify(snapshot));
+  try {
+    storage.setItem(ARTIFACT_WORKSPACE_STORAGE_KEY, JSON.stringify(snapshot));
+  } catch {
+    // Browser storage can be blocked or quota-limited; artifact workspace
+    // persistence must degrade without breaking the chat surface.
+  }
 }
 
 function isSupportedChatArtifact(value: unknown): value is ChatArtifact {
@@ -198,7 +203,11 @@ export function createArtifactWorkspaceStore(
       ),
     listReplayPacks: () => readSnapshot(storage, now()).replayPacks,
     clear: () => {
-      storage.removeItem(ARTIFACT_WORKSPACE_STORAGE_KEY);
+      try {
+        storage.removeItem(ARTIFACT_WORKSPACE_STORAGE_KEY);
+      } catch {
+        // See writeSnapshot: blocked storage should not surface as UI failure.
+      }
     },
   };
 }
