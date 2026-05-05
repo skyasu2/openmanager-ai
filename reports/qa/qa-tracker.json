@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-05T02:27:19.400Z"
+    "updatedAt": "2026-05-05T03:39:15.190Z"
   },
   "sequence": {
-    "nextRunNumber": 409
+    "nextRunNumber": 410
   },
   "summary": {
-    "totalRecordedRuns": 406,
-    "totalRuns": 334,
+    "totalRecordedRuns": 407,
+    "totalRuns": 335,
     "excludedRuns": 72,
-    "totalChecks": 2946,
-    "totalPassed": 2840,
-    "totalFailed": 97,
-    "completionRate": 99.08,
-    "completedItems": 429,
-    "pendingItems": 4,
+    "totalChecks": 2952,
+    "totalPassed": 2844,
+    "totalFailed": 99,
+    "completionRate": 99.77,
+    "completedItems": 432,
+    "pendingItems": 1,
     "deferredItems": 0,
     "wontFixItems": 22,
     "expertDomainsTracked": 12,
     "expertDomainsOpenGaps": 2,
-    "lastRunId": "QA-20260505-0408",
-    "lastRecordedAt": "2026-05-05T02:27:19.400Z",
-    "latestRecordedRunId": "QA-20260505-0408",
-    "latestRecordedAt": "2026-05-05T02:27:19.400Z"
+    "lastRunId": "QA-20260505-0409",
+    "lastRecordedAt": "2026-05-05T03:39:15.190Z",
+    "latestRecordedRunId": "QA-20260505-0409",
+    "latestRecordedAt": "2026-05-05T03:39:15.190Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -10532,51 +10532,51 @@
     },
     "dashboard-server-detail-metrics-tab-slot-drift-v81197": {
       "id": "dashboard-server-detail-metrics-tab-slot-drift-v81197",
-      "title": "Server detail performance tab current metrics drift from same-page overview values",
+      "title": "Server detail performance tab current metrics align with same-page overview values",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260505-0407",
       "firstSeenAt": "2026-05-04T23:33:01.502Z",
-      "lastSeenRunId": "QA-20260505-0407",
-      "lastSeenAt": "2026-05-04T23:33:01.502Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260505-0409",
+      "lastSeenAt": "2026-05-05T03:39:15.190Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "",
+      "lastEvidence": "Production /dashboard/servers/api-was-dc1-01 overview/performance tab both showed CPU 81.0%, Memory 65.0%, Disk 32.0%.",
       "lastNote": "api-was-dc1-01 overview showed CPU 84%, memory 71%, disk 31% while performance tab showed CPU 43%, memory 57%, disk 35% with the same LAST UPDATE label. Likely caused by overview using dashboard current slot and performance charts using unaligned 24h history tail.",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-04T23:33:01.502Z"
+      "lastStatusChangeAt": "2026-05-05T03:39:15.190Z"
     },
     "ai-rag-on-document-lookup-hallucination-v81197": {
       "id": "ai-rag-on-document-lookup-hallucination-v81197",
-      "title": "RAG On internal document lookup can return hallucinated file paths",
+      "title": "RAG On internal document lookup must not ask server-scope clarification or infer placeholder file paths",
       "priority": "P1",
       "status": "pending",
       "firstSeenRunId": "QA-20260505-0407",
       "firstSeenAt": "2026-05-04T23:33:01.502Z",
-      "lastSeenRunId": "QA-20260505-0407",
-      "lastSeenAt": "2026-05-04T23:33:01.502Z",
-      "seenCount": 1,
+      "lastSeenRunId": "QA-20260505-0409",
+      "lastSeenAt": "2026-05-05T03:39:15.190Z",
+      "seenCount": 2,
       "completedCount": 0,
-      "pendingCount": 1,
+      "pendingCount": 2,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
       "lastEvidence": "",
-      "lastNote": "Prompt asked for the documented Pre-generated OTel data SSOT file paths. Response returned /opt/otel/data/ssot/dashboard.yaml and /opt/otel/data/ssot/engine.yaml instead of repository paths such as public/data/otel-data, src/services/metrics/MetricsProvider.ts, or cloud-run/ai-engine/src/data/precomputed-state.ts. Analysis basis still said general conversation response with RAG active.",
+      "lastNote": "Production v8.11.104 still showed server-scope clarification for an internal document/file path query; after skip it returned no internal evidence but suggested placeholder /path/to/OpenManager paths. Local remediation patch added clarification bypass and deterministic no-inference RAG response; production recheck remains required after deploy.",
       "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-04T23:33:01.502Z"
+      "lastStatusChangeAt": "2026-05-05T03:39:15.190Z"
     },
     "ai-web-search-intent-and-answer-quality-v81197": {
       "id": "ai-web-search-intent-and-answer-quality-v81197",
@@ -10604,51 +10604,51 @@
     },
     "auth-success-legacy-route-404-v81197": {
       "id": "auth-success-legacy-route-404-v81197",
-      "title": "Secondary /auth/success route returns 404 instead of legacy success handoff",
+      "title": "/auth/success legacy route redirects safely instead of 404",
       "priority": "P2",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260505-0407",
       "firstSeenAt": "2026-05-04T23:33:01.502Z",
-      "lastSeenRunId": "QA-20260505-0407",
-      "lastSeenAt": "2026-05-04T23:33:01.502Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260505-0409",
+      "lastSeenAt": "2026-05-05T03:39:15.190Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "",
+      "lastEvidence": "Production /auth/success navigated to /dashboard and rendered the dashboard.",
       "lastNote": "Current checklist still lists /auth/success as a legacy callback handoff route. Bare production route returned the generic 404 page. If /auth/callback is the only supported route now, update the QA surface checklist instead of restoring /auth/success.",
-      "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlocking": false,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-04T23:33:01.502Z"
+      "lastStatusChangeAt": "2026-05-05T03:39:15.190Z"
     },
     "reporter-download-action-visibility-v81197": {
       "id": "reporter-download-action-visibility-v81197",
-      "title": "Reporter panel promises report download but generated report exposes no clear download action",
+      "title": "Reporter generated report exposes visible MD copy and download actions",
       "priority": "P2",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260505-0407",
       "firstSeenAt": "2026-05-04T23:33:01.502Z",
-      "lastSeenRunId": "QA-20260505-0407",
-      "lastSeenAt": "2026-05-04T23:33:01.502Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260505-0409",
+      "lastSeenAt": "2026-05-05T03:39:15.190Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "",
+      "lastEvidence": "Production generated report card showed MD 복사 and 다운로드 buttons.",
       "lastNote": "Reporter copy says '클릭 시 장애 리포트 생성 및 다운로드'. Report generation worked, but generated report surface did not expose a distinct download/MD copy action in the visible button set.",
-      "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlocking": false,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-04T23:33:01.502Z"
+      "lastStatusChangeAt": "2026-05-05T03:39:15.190Z"
     }
   },
   "runs": [
@@ -42207,6 +42207,155 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260505-0409",
+      "recordedAt": "2026-05-05T03:39:15.190Z",
+      "recordedAtKst": "2026-05-05 12:39:15 KST",
+      "title": "v8.11.104 Residual Production Targeted QA",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260505-0409.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_3gio8RbSgi9PCptxFLBJtSFhr6j2",
+        "deploymentUrl": "https://openmanager-ai.vercel.app",
+        "commitSha": "30c48e80a975630e77281a4de086c153631153fb"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "ai-advanced-surface",
+        "modal-detail-pack"
+      ],
+      "coveredSurfaces": [
+        "Vercel production /api/version returned 8.11.104, commit 30c48e80a975630e77281a4de086c153631153fb, tag v8.11.104, pipeline https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2499590190",
+        "/auth/success redirected to /dashboard and rendered the authenticated/guest dashboard instead of returning 404",
+        "/dashboard/servers/api-was-dc1-01 server detail showed overview/current metrics CPU 81.0%, Memory 65.0%, Disk 32.0%",
+        "/dashboard/servers/api-was-dc1-01 performance tab showed the same current metrics CPU 81.0%, Memory 65.0%, Disk 32.0%, and Network 22.0%",
+        "AI sidebar RAG On internal document/file path query was sent through the UI path; production still showed server-scope clarification before execution",
+        "After skipping clarification, the RAG internal document/file path response reported no internal evidence but still suggested placeholder paths such as /path/to/OpenManager/config.yaml and /path/to/OpenManager/logs/OpenManager.log",
+        "Reporter Agent generated one incident report through /api/ai/incident-report in 2185ms and exposed visible MD copy and report download buttons",
+        "UI/UX review found Reporter actions functionally visible but cramped near the bottom summary area; local remediation patch adds sidebar-safe header wrapping and bottom padding"
+      ],
+      "skippedSurfaces": [
+        "This was a residual targeted recheck for 4 pending items only; broad landing/login/privacy/security/mobile packs were not rerun.",
+        "Cloud Run admin observability /monitoring and /monitoring/traces were not part of this targeted pass."
+      ],
+      "checks": {
+        "total": 6,
+        "passed": 4,
+        "failed": 2
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI sidebar RAG internal document lookup",
+          "agent": "Supervisor",
+          "provider": "cloud-run-ai-engine",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Performance API resource timing",
+          "latencyMs": 7758,
+          "processingTimeMs": 7758
+        },
+        {
+          "surface": "Reporter generated incident report",
+          "agent": "Reporter Agent",
+          "provider": "cloud-run-ai-engine",
+          "route": "/api/ai/incident-report",
+          "source": "Performance API resource timing",
+          "latencyMs": 2185,
+          "processingTimeMs": 2185
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "partially-appropriate",
+          "improvementNeeded": true,
+          "rationale": "Residual targeted QA found the RAG internal document lookup still fails grounding and clarification behavior on production.",
+          "nextAction": "Deploy and recheck the local RAG no-inference remediation before closing the RAG pending item."
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The residual pass used UI-driven Playwright MCP checks and kept evidence for each high-risk surface.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Server detail overview and performance tab now share the same visible current metric values for the tested server/slot.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production deployment identity and Vercel usage were checked during the targeted run.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-05T12:37:00+09:00",
+          "summary": "Current billing period checked after residual production QA; effective 2.0188 USD, billed remains 0.0000 USD, chargeCount 1827.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Server detail current metric alignment",
+          "path": "reports/qa/evidence/qa-20260505-residual-server-detail-metrics.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "RAG internal document lookup residual failure",
+          "path": "reports/qa/evidence/qa-20260505-residual-rag-document-lookup-fail.png"
+        },
+        {
+          "type": "playwright-screenshot",
+          "label": "Reporter generated report actions visible",
+          "path": "reports/qa/evidence/qa-20260505-residual-reporter-actions.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.104 tag pipeline 2499590190",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2499590190"
+        },
+        {
+          "type": "general",
+          "label": "Production version endpoint",
+          "url": "https://openmanager-ai.vercel.app/api/version"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 1,
+      "completedCount": 3,
+      "pendingCount": 1,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -42215,17 +42364,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 197,
+      "seenCount": 198,
       "appropriateCount": 176,
-      "partialCount": 21,
+      "partialCount": 22,
       "inappropriateCount": 0,
-      "improvementNeededCount": 31,
-      "lastRunId": "QA-20260505-0408",
-      "lastSeenAt": "2026-05-05T02:27:19.400Z",
-      "lastFit": "appropriate",
-      "lastImprovementNeeded": false,
-      "lastRationale": "The targeted Web search regression now returns a current answer with source URL and no empty-response fallback.",
-      "lastNextAction": ""
+      "improvementNeededCount": 32,
+      "lastRunId": "QA-20260505-0409",
+      "lastSeenAt": "2026-05-05T03:39:15.190Z",
+      "lastFit": "partially-appropriate",
+      "lastImprovementNeeded": true,
+      "lastRationale": "Residual targeted QA found the RAG internal document lookup still fails grounding and clarification behavior on production.",
+      "lastNextAction": "Deploy and recheck the local RAG no-inference remediation before closing the RAG pending item."
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -42266,16 +42415,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 131,
-      "appropriateCount": 118,
+      "seenCount": 132,
+      "appropriateCount": 119,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 17,
-      "lastRunId": "QA-20260505-0408",
-      "lastSeenAt": "2026-05-05T02:27:19.400Z",
+      "lastRunId": "QA-20260505-0409",
+      "lastSeenAt": "2026-05-05T03:39:15.190Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Both main validation and semver tag deploy/smoke pipelines succeeded for v8.11.104.",
+      "lastRationale": "Production deployment identity and Vercel usage were checked during the targeted run.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -42283,16 +42432,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 169,
-      "appropriateCount": 156,
+      "seenCount": 170,
+      "appropriateCount": 157,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 15,
-      "lastRunId": "QA-20260505-0408",
-      "lastSeenAt": "2026-05-05T02:27:19.400Z",
+      "lastRunId": "QA-20260505-0409",
+      "lastSeenAt": "2026-05-05T03:39:15.190Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP reproduced the production path and captured durable screenshot evidence for this targeted regression.",
+      "lastRationale": "The residual pass used UI-driven Playwright MCP checks and kept evidence for each high-risk surface.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -42300,17 +42449,17 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 55,
-      "appropriateCount": 35,
+      "seenCount": 56,
+      "appropriateCount": 36,
       "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260505-0407",
-      "lastSeenAt": "2026-05-04T23:33:01.502Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "api-was-dc1-01 overview and performance tabs display materially different current CPU/memory values on the same detail page.",
-      "lastNextAction": "Make the same dataSlot/current point the SSOT for overview, metric cards, and charts."
+      "lastRunId": "QA-20260505-0409",
+      "lastSeenAt": "2026-05-05T03:39:15.190Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "Server detail overview and performance tab now share the same visible current metric values for the tested server/slot.",
+      "lastNextAction": ""
     },
     "infra-reliability": {
       "domainId": "infra-reliability",

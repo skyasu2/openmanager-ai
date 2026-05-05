@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-05 11:27:20 KST
+> Generated at: 2026-05-05 12:39:16 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 406 |
-| Total Runs (Counted) | 334 |
+| Total Recorded Runs | 407 |
+| Total Runs (Counted) | 335 |
 | Non-counted Runs | 72 |
-| Total Checks | 2946 |
-| Passed | 2840 |
-| Failed | 97 |
-| Completed Items | 429 |
-| Pending Items | 4 |
+| Total Checks | 2952 |
+| Passed | 2844 |
+| Failed | 99 |
+| Completed Items | 432 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
 | Expert Domains Tracked | 12 |
 | Expert Open Gaps | 2 |
-| Completion Rate | 99.08% |
-| Last Counted Run | QA-20260505-0408 (2026-05-05T02:27:19.400Z) |
-| Latest Recorded Run | QA-20260505-0408 (2026-05-05T02:27:19.400Z) |
+| Completion Rate | 99.77% |
+| Last Counted Run | QA-20260505-0409 (2026-05-05T03:39:15.190Z) |
+| Latest Recorded Run | QA-20260505-0409 (2026-05-05T03:39:15.190Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,30 +34,31 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260505-0408 (2026-05-05T02:27:19.400Z)
+Latest run: QA-20260505-0409 (2026-05-05T03:39:15.190Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
+| AI Quality Assurance Specialist | partially-appropriate | yes | Deploy and recheck the local RAG no-inference remediation before closing the RAG pending item. |
 | Test Automation Architect | appropriate | no | - |
+| Data Quality & Metrics Analyst | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked after targeted production QA; effective 2.0188 USD, billed remains 0.0000 USD, chargeCount 1827. |
+| vercel | cli | checked | normal | Current billing period checked after residual production QA; effective 2.0188 USD, billed remains 0.0000 USD, chargeCount 1827. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-04T02:27:19.400Z -> 2026-05-05T02:27:19.400Z (24h)
-- Runs with observations: 6 recorded / 6 counted
-- Samples: 17
+- Window: 2026-05-04T03:39:15.190Z -> 2026-05-05T03:39:15.190Z (24h)
+- Runs with observations: 7 recorded / 7 counted
+- Samples: 19
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Supervisor | cloud-run-ai-engine | 12 | 2845ms | 8795ms | - | - | 3362ms | 9897ms | QA-20260505-0408 |
-| Reporter Agent | cloud-run-ai-engine | 1 | 2784ms | 2784ms | - | - | 2784ms | 2784ms | QA-20260505-0407 |
+| Supervisor | cloud-run-ai-engine | 13 | 3223ms | 8795ms | - | - | 3700ms | 9897ms | QA-20260505-0409 |
+| Reporter Agent | cloud-run-ai-engine | 2 | 2485ms | 2784ms | - | - | 2485ms | 2784ms | QA-20260505-0409 |
 | Supervisor | groq | 1 | 1283ms | 1283ms | - | - | 1283ms | 1283ms | QA-20260504-0403 |
 | Analyst Agent | vercel-monitoring-bff | 2 | 949ms | 1028ms | - | - | 949ms | 1028ms | QA-20260505-0407 |
 | Supervisor | vercel-bff | 1 | 340ms | 340ms | - | - | 340ms | 340ms | QA-20260505-0407 |
@@ -68,15 +69,14 @@ Latest run: QA-20260505-0408 (2026-05-05T02:27:19.400Z)
 - Release-Facing: yes
 - Counts Toward Summary: yes
 - Deployment: dpl_3gio8RbSgi9PCptxFLBJtSFhr6j2 / SHA 30c48e80
-- Coverage Packs: ai-core, ai-advanced-surface
-- Covered Surfaces: Vercel production /api/version returned 8.11.104, commit 30c48e80a975630e77281a4de086c153631153fb, tag v8.11.104, pipeline 2499590190, GitLab tag pipeline 2499590190 succeeded including deploy, post_deploy_smoke, deploy_ai_engine, and post_deploy_ai_engine_smoke, GitLab main validation pipeline 2499590179 succeeded after component dependency map refresh, AI Assistant sidebar opened on /dashboard/servers/api-was-dc1-01 and a fresh AI Chat conversation was started, Web On prompt for latest stable Next.js major completed through /api/ai/supervisor/stream/v2 without the empty-response fallback, AI response returned a single-line current answer: Next.js 16.2.4 with source URL https://nextjs.org/blog/next-16-2, AI response footer showed Web 사용됨, 웹 검색 result count, analysis basis, and 도구: 웹 자료 확인, Cloud Run logs for v8.11.104 after the QA prompt showed Groq first-provider failure followed by recovery, with no empty_stream_output event
-- Skipped Surfaces: This was a targeted release recheck for the Web search answer-quality regression only; broad dashboard, Reporter, Analyst, RAG document lookup, security, and mobile viewport packs were not rerun.
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, ai-advanced-surface, modal-detail-pack
+- Covered Surfaces: Vercel production /api/version returned 8.11.104, commit 30c48e80a975630e77281a4de086c153631153fb, tag v8.11.104, pipeline https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2499590190, /auth/success redirected to /dashboard and rendered the authenticated/guest dashboard instead of returning 404, /dashboard/servers/api-was-dc1-01 server detail showed overview/current metrics CPU 81.0%, Memory 65.0%, Disk 32.0%, /dashboard/servers/api-was-dc1-01 performance tab showed the same current metrics CPU 81.0%, Memory 65.0%, Disk 32.0%, and Network 22.0%, AI sidebar RAG On internal document/file path query was sent through the UI path; production still showed server-scope clarification before execution, After skipping clarification, the RAG internal document/file path response reported no internal evidence but still suggested placeholder paths such as /path/to/OpenManager/config.yaml and /path/to/OpenManager/logs/OpenManager.log, Reporter Agent generated one incident report through /api/ai/incident-report in 2185ms and exposed visible MD copy and report download buttons, UI/UX review found Reporter actions functionally visible but cramped near the bottom summary area; local remediation patch adds sidebar-safe header wrapping and bottom padding
+- Skipped Surfaces: This was a residual targeted recheck for 4 pending items only; broad landing/login/privacy/security/mobile packs were not rerun., Cloud Run admin observability /monitoring and /monitoring/traces were not part of this targeted pass.
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.11.104 main pipeline 2499590179 | [GitLab v8.11.104 main pipeline 2499590179](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2499590179) | - |
 | general | GitLab v8.11.104 tag pipeline 2499590190 | [GitLab v8.11.104 tag pipeline 2499590190](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2499590190) | - |
 | general | Production version endpoint | [Production version endpoint](https://openmanager-ai.vercel.app/api/version) | - |
 
@@ -84,21 +84,20 @@ Latest run: QA-20260505-0408 (2026-05-05T02:27:19.400Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | v8.11.104 Web search final answer evidence | `reports/qa/evidence/qa-20260505-v811104-web-search-final.png` | - |
+| playwright-screenshot | Server detail current metric alignment | `reports/qa/evidence/qa-20260505-residual-server-detail-metrics.png` | - |
+| playwright-screenshot | RAG internal document lookup residual failure | `reports/qa/evidence/qa-20260505-residual-rag-document-lookup-fail.png` | - |
+| playwright-screenshot | Reporter generated report actions visible | `reports/qa/evidence/qa-20260505-residual-reporter-actions.png` | - |
 
 ## Expert Domain Open Gaps
 
-- data-metrics-quality: Data Quality & Metrics Analyst (last QA-20260505-0407)
-  next: Make the same dataSlot/current point the SSOT for overview, metric cards, and charts.
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260505-0409)
+  next: Deploy and recheck the local RAG no-inference remediation before closing the RAG pending item.
 - observability-monitoring: IT Monitoring & Observability SME (last QA-20260505-0407)
   next: Align server detail performance tab current values with the dashboard data slot or label it explicitly as a different 24h history endpoint.
 
 ## Pending Improvements
 
-- [P1] ai-rag-on-document-lookup-hallucination-v81197: RAG On internal document lookup can return hallucinated file paths (seen 1회, last QA-20260505-0407)
-- [P1] dashboard-server-detail-metrics-tab-slot-drift-v81197: Server detail performance tab current metrics drift from same-page overview values (seen 1회, last QA-20260505-0407)
-- [P2] auth-success-legacy-route-404-v81197: Secondary /auth/success route returns 404 instead of legacy success handoff (seen 1회, last QA-20260505-0407)
-- [P2] reporter-download-action-visibility-v81197: Reporter panel promises report download but generated report exposes no clear download action (seen 1회, last QA-20260505-0407)
+- [P1] ai-rag-on-document-lookup-hallucination-v81197: RAG On internal document lookup must not ask server-scope clarification or infer placeholder file paths (seen 2회, last QA-20260505-0409)
 
 ## Deferred Improvements
 
@@ -297,6 +296,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - assistant-plan-result-facade-m2: AssistantPlan and AssistantResult facade metadata released (completed 1회, last QA-20260503-0397)
 - assistant-route-decision-metadata-m1: RouteDecision metadata contract released (completed 1회, last QA-20260503-0397)
 - auth-error-provider-copy: 인증 에러 라우트 메시지를 제공자-중립 표현으로 전환 (completed 1회, last QA-20260227-0010)
+- auth-success-legacy-route-404-v81197: /auth/success legacy route redirects safely instead of 404 (completed 1회, last QA-20260505-0409)
 - auto-incident-report: 자동장애 보고서 생성 및 상세보기 (completed 1회, last QA-20260306-0051)
 - biome-lint-900-files-에러-0: Biome Lint 900 files 에러 0 (completed 1회, last QA-20260301-0032)
 - biome-optional-chain-4: Biome useOptionalChain 4건 수정 (completed 1회, last QA-20260329-0194)
@@ -361,6 +361,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - dashboard-resources: 시스템 리소스 개요 (completed 1회, last QA-20260317-0114)
 - dashboard-server-card-selector-stabilization: 서버 카드 선택자 및 빈 상태 처리 안정화 (completed 2회, last QA-20260302-0039)
 - dashboard-server-cards: 대시보드 서버 카드 및 메트릭 (completed 2회, last QA-20260302-0038)
+- dashboard-server-detail-metrics-tab-slot-drift-v81197: Server detail performance tab current metrics align with same-page overview values (completed 1회, last QA-20260505-0409)
 - dashboard-server-log-cross-link: 서버 카드 로그 바로가기 cross-link (completed 1회, last QA-20260501-0386)
 - dashboard-status-filter: 상태 필터 토글 (completed 1회, last QA-20260317-0114)
 - dashboard-topology-map: 토폴로지 맵 모달 (completed 1회, last QA-20260317-0114)
@@ -486,6 +487,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - reporter-agent-generate: Reporter Agent 보고서 생성 신뢰도 80% (completed 1회, last QA-20260419-0306)
 - reporter-agent-pass: Reporter Agent 보고서 즉시 생성 정상 (completed 1회, last QA-20260326-0190)
 - reporter-analyst-production-mcp-functional-check-v81136: Reporter and Analyst production MCP functional check on v8.11.36 (completed 1회, last QA-20260427-0352)
+- reporter-download-action-visibility-v81197: Reporter generated report exposes visible MD copy and download actions (completed 1회, last QA-20260505-0409)
 - reporter-empty-cta-generate-v880: Reporter 빈 상태 CTA 생성 경로 검증 (completed 1회, last QA-20260308-0058)
 - reporter-empty-cta-generate-v880-quality-recheck: Reporter 빈 상태 CTA 생성 경로 재검증 (completed 1회, last QA-20260308-0059)
 - reporter-empty-cta-generate-v880-recheck-20260309: Reporter empty state CTA 생성 경로 재검증 (completed 4회, last QA-20260309-0068)
@@ -608,6 +610,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260505-0409 | 2026-05-05T03:39:15.190Z | targeted | yes | yes | v8.11.104 Residual Production Targeted QA | 6 | 3 | 1 | 0 | 0 | 1 |
 | QA-20260505-0408 | 2026-05-05T02:27:19.400Z | targeted | yes | yes | Vercel Playwright MCP Targeted QA - v8.11.104 Web search answer recovery | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260505-0407 | 2026-05-04T23:33:01.502Z | broad | yes | yes | Vercel Playwright MCP Broad QA - v8.11.97 full surface and AI quality | 39 | 2 | 5 | 0 | 0 | 4 |
 | QA-20260505-0406 | 2026-05-04T22:52:28.121Z | targeted | yes | yes | v8.11.97 Vercel Playwright MCP Formatting Rewrite Recheck | 13 | 1 | 0 | 0 | 0 | 0 |
@@ -627,4 +630,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260502-0392 | 2026-05-02T09:10:56.289Z | targeted | yes | yes | Vercel Production Targeted QA - Artifact Short Keyword Pair v8.11.82 | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260502-0391 | 2026-05-02T08:22:31.207Z | targeted | yes | yes | Vercel Production Targeted QA - Artifact Keyword Routing v8.11.82 | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260502-0390 | 2026-05-02T07:43:11.883Z | targeted | yes | yes | Vercel Production Targeted QA - Artifact Guardrails v8.11.81 | 9 | 3 | 0 | 0 | 0 | 0 |
-| QA-20260502-0389 | 2026-05-01T18:36:18.241Z | targeted | no | yes | Vercel Production AI Chat Recent Change Playwright QA v8.11.79 | 12 | 2 | 0 | 0 | 0 | 0 |

@@ -1,0 +1,26 @@
+[
+  {
+    "title": "OpenManager OTel 데이터 SSOT 경로",
+    "content": "OpenManager의 monitoring runtime SSOT는 Supabase가 아니라 `public/data/otel-data/*` synthetic OTel dataset이다. Dashboard는 `src/data/otel-data/index.ts` loader와 `src/services/metrics/MetricsProvider.ts`를 통해 이 데이터를 읽는다. Cloud Run AI Engine은 배포 시 복사된 `data/otel-data`를 우선 사용하고, 소비 로직은 `cloud-run/ai-engine/src/data/precomputed-state.ts`다. 하위 호환 fallback은 `otel-processed`이며, `/opt/otel/...` 같은 경로는 repo 기준 경로가 아니다. 질문에 `Pre-generated OTel`, `SSOT`, `파일 경로`, `data loader`가 포함되면 위 경로만 근거로 답한다.",
+    "category": "architecture",
+    "tags": [
+      "otel",
+      "ssot",
+      "pre-generated",
+      "data-loader",
+      "file-path",
+      "metrics-provider",
+      "cloud-run"
+    ],
+    "severity": "info",
+    "source": "manual",
+    "related_server_types": ["web", "api"],
+    "metadata": {
+      "source_ref": "docs/reference/architecture/system/system-architecture-current.md#data-boundary",
+      "supporting_ref": "docs/reference/architecture/infrastructure/database.md#current-role",
+      "batch": "rag-grounding-hotfix-2026-05-05",
+      "reviewed_by": "codex",
+      "reviewed_at": "2026-05-05"
+    }
+  }
+]

@@ -340,24 +340,22 @@ export default function AutoReportPage({
     <div className="flex h-full flex-col bg-linear-to-br from-slate-50 to-pink-50">
       {/* Header */}
       <div className="border-b border-gray-200 bg-white/80 px-4 pt-4 backdrop-blur-sm">
-        <div className="flex items-center justify-between pb-4">
-          <div className="flex items-center space-x-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-r from-red-500 to-pink-500">
+        <div className="flex flex-col gap-3 pb-4 min-[560px]:flex-row min-[560px]:items-start min-[560px]:justify-between">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-linear-to-r from-red-500 to-pink-500">
               <FileText className="h-5 w-5 text-white" />
             </div>
-            <div>
+            <div className="min-w-0">
               <h2 className="text-lg font-bold text-gray-800">
                 장애 보고서 작성
               </h2>
-              <p className="text-sm text-gray-600">
-                클릭 시 장애 리포트 생성 및 다운로드
-              </p>
+              <p className="text-sm text-gray-600">생성·복사·다운로드</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
             {queryAsOfDataSlot && (
-              <span className="rounded-full border border-red-100 bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700">
+              <span className="whitespace-nowrap rounded-full border border-red-100 bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700">
                 기준 {queryAsOfDataSlot.timeLabel} · slot{' '}
                 {queryAsOfDataSlot.slotIndex}
               </span>
@@ -365,7 +363,7 @@ export default function AutoReportPage({
             <button
               type="button"
               onClick={() => setRagEnabled((prev) => !prev)}
-              className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+              className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                 ragEnabled
                   ? 'bg-purple-100 text-purple-700'
                   : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
@@ -380,7 +378,7 @@ export default function AutoReportPage({
               data-testid="report-generate-btn"
               onClick={handleGenerateReport}
               disabled={isGenerating || isServersLoading}
-              className="flex items-center space-x-2 rounded-lg bg-red-500 px-4 py-2 text-white transition-all duration-200 hover:scale-105 hover:bg-red-600 active:scale-95 disabled:opacity-50"
+              className="inline-flex items-center gap-2 whitespace-nowrap rounded-lg bg-red-500 px-3 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-red-600 active:scale-95 disabled:opacity-50"
             >
               <RefreshCw
                 className={`h-4 w-4 ${isGenerating ? 'animate-spin' : ''}`}
@@ -463,7 +461,7 @@ export default function AutoReportPage({
       )}
 
       {/* Report List */}
-      <div className="flex-1 space-y-3 overflow-y-auto p-4">
+      <div className="flex-1 space-y-3 overflow-y-auto p-4 pb-24">
         {filteredReports.map((report, index) => (
           <ReportCard
             key={report.id}

@@ -708,6 +708,38 @@ describe('executeForcedRouting', () => {
     expect(kbArgs).not.toHaveProperty('useGraphRAG');
   });
 
+  it('does not infer internal document paths when direct KB retrieval has no evidence', async () => {
+    mockSearchKnowledgeBaseExecute.mockResolvedValueOnce({
+      success: true,
+      totalFound: 0,
+      results: [],
+      retrieval: {
+        retrievalEnabled: true,
+        retrievalUsed: false,
+        retrievalMode: 'lite',
+        evidenceCount: 0,
+        webUsed: false,
+        suppressedReason: 'no_results',
+      },
+    });
+
+    const result = await executeForcedRouting(
+      'Pre-generated OTel 데이터 SSOT 파일 경로와 데이터 로더 경로 알려줘',
+      'Advisor Agent',
+      Date.now(),
+      true,
+      true
+    );
+
+    expect(result?.success).toBe(true);
+    expect(result?.response).toContain('내부 근거를 찾지 못했습니다');
+    expect(result?.response).toContain('경로가 0건');
+    expect(result?.response).not.toContain('/path/to');
+    expect(result?.toolsCalled).toEqual(['searchKnowledgeBase']);
+    expect(result?.metadata.provider).toBe('deterministic');
+    expect(mockGenerateTextWithRetry).not.toHaveBeenCalled();
+  });
+
   it('propagates evidence cards from forced-routing knowledge tool results', async () => {
     mockSearchKnowledgeBaseExecute.mockResolvedValueOnce({
       success: true,

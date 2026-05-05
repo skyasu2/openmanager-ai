@@ -54,11 +54,13 @@ import {
 } from './supervisor-stream-messages';
 import {
   buildWebCitationAppendix,
+  buildKnowledgeBaseGroundedAnswer,
   buildWebSearchFallbackAnswer,
   hasWebSearchFallbackAnswer,
 } from './supervisor-stream-citations';
 import { createStructuredTextDeltaGuard } from './supervisor-stream-text-guard';
 import { buildDeterministicSummaryFallback } from './agents/orchestrator-summary-fallback';
+import { FORCE_KB_QUERY_PATTERN } from './query-routing-signals';
 import type {
   AgentStepStatus,
   StreamEvent,
@@ -480,6 +482,134 @@ async function* streamSingleAgent(
   logger.debug(`[Stream Single RAG] Setting: ${ragEnabled} (request: ${request.enableRAG})`);
   let filteredTools = filterToolsByWebSearch(allTools, webSearchEnabled);
   filteredTools = filterToolsByRAG(filteredTools, ragEnabled);
+
+  if (ragEnabled && FORCE_KB_QUERY_PATTERN.test(queryText)) {
+    const knowledgeTool = (filteredTools as Record<string, unknown>)
+      .searchKnowledgeBase as
+      | { execute?: (input: Record<string, unknown>) => Promise<unknown> }
+      | undefined;
+
+    if (typeof knowledgeTool?.execute === 'function') {
+      const directStartTime = Date.now();
+      const toolsCalled = ['searchKnowledgeBase'];
+
+      yield {
+        type: 'agent_status',
+        data: {
+          agent: 'Supervisor',
+          status: 'processing',
+          message: '내부 지식 문서를 검색 중...',
+        },
+      };
+      yield { type: 'tool_call', data: { name: 'searchKnowledgeBase' } };
+
+      try {
+        const knowledgeResult = await knowledgeTool.execute({
+          query: queryText,
+          fastMode: true,
+          includeWebSearch: false,
+        });
+        const collectedToolResults: CollectedToolResult[] = [
+          { toolName: 'searchKnowledgeBase', result: knowledgeResult },
+        ];
+        const answer =
+          buildKnowledgeBaseGroundedAnswer(queryText, collectedToolResults) ??
+          [
+            '내부 근거를 찾지 못했습니다.',
+            `- 질의: ${queryText}`,
+            '- 정확한 repo 경로, 문서명, 운영 파일 위치는 추정하지 않습니다.',
+          ].join('\n');
+        const ragSources = extractRagSources(
+          'searchKnowledgeBase',
+          knowledgeResult
+        );
+        const durationMs = Date.now() - directStartTime;
+
+        yield {
+          type: 'tool_result',
+          data: { toolName: 'searchKnowledgeBase', result: knowledgeResult },
+        };
+        yield { type: 'text_delta', data: answer };
+        yield {
+          type: 'done',
+          data: {
+            success: true,
+            toolsCalled,
+            usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+            metadata: {
+              provider: 'deterministic',
+              modelId: 'knowledge-search-direct',
+              stepsExecuted: 1,
+              durationMs,
+              mode: 'single',
+              ...(request.queryAsOf && { queryAsOf: request.queryAsOf }),
+              ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
+              ...(routeDecision && { routeDecision }),
+              ...(assistantPlan && { assistantPlan }),
+              ...(routeDecision && {
+                assistantResult: buildSupervisorAssistantResult(routeDecision),
+              }),
+              ...buildDegradedMetadata(degradedFallbackContext, {}),
+            },
+            ...(ragSources.length > 0 && { ragSources }),
+          },
+        };
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        const durationMs = Date.now() - directStartTime;
+        const answer = [
+          '내부 지식 검색을 실행하지 못했습니다.',
+          `- 질의: ${queryText}`,
+          `- 오류: ${errorMessage}`,
+          '- 검색 근거 없이 repo 경로, 문서명, 운영 파일 위치를 추정하지 않습니다.',
+        ].join('\n');
+
+        logger.warn(
+          '[SupervisorStream] Direct knowledge lookup failed:',
+          errorMessage
+        );
+        yield {
+          type: 'warning',
+          data: {
+            code: 'RAG_SEARCH_FAILED',
+            message:
+              '내부 지식 검색을 실행하지 못해 근거 없는 경로 추정을 차단했습니다.',
+          },
+        };
+        yield { type: 'text_delta', data: answer };
+        yield {
+          type: 'done',
+          data: {
+            success: true,
+            toolsCalled,
+            usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+            metadata: {
+              provider: 'deterministic',
+              modelId: 'knowledge-search-direct',
+              stepsExecuted: 1,
+              durationMs,
+              mode: 'single',
+              ...(request.queryAsOf && { queryAsOf: request.queryAsOf }),
+              ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
+              ...(routeDecision && { routeDecision }),
+              ...(assistantPlan && { assistantPlan }),
+              ...(routeDecision && {
+                assistantResult: buildSupervisorAssistantResult(routeDecision),
+              }),
+              ...buildDegradedMetadata(degradedFallbackContext, {}),
+            },
+            warning: {
+              code: 'RAG_SEARCH_FAILED',
+              message:
+                '내부 지식 검색을 실행하지 못해 근거 없는 경로 추정을 차단했습니다.',
+            },
+          },
+        };
+      }
+      return;
+    }
+  }
 
   // Provider retry loop: automatically falls back to next provider on failure
   providerLoop:

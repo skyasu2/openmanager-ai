@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-05 KST (`v8.11.97 broad QA remediation in progress`)
+**Last Updated**: 2026-05-05 KST (`v8.11.104 residual QA recheck leaves RAG pending`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| v8.11.97 broad QA remediation | High | In Progress | `QA-20260505-0407`에서 확인된 P1/P2 pending 개선 5건 보정. 상세: [v81197-broad-qa-remediation-plan.md](v81197-broad-qa-remediation-plan.md) |
+| v8.11.97 broad QA remediation | High | In Progress | `QA-20260505-0409`에서 auth success, server detail metric alignment, Reporter actions는 production 완료 확인. RAG internal document lookup 1건은 local no-inference patch와 Supabase KB OTel/SSOT seed 적용 완료, 재배포/production 재검증 필요. 상세: [v81197-broad-qa-remediation-plan.md](v81197-broad-qa-remediation-plan.md) |
 
 ---
 

@@ -55,6 +55,7 @@ import {
   type EvidenceSourceType,
   type RetrievalMetadata,
 } from '../../../lib/retrieval-contract';
+import { buildKnowledgeBaseGroundedAnswer } from '../supervisor-stream-citations';
 export { recordHandoff, getRecentHandoffs } from './orchestrator-handoff';
 export { executeReporterWithPipeline } from './orchestrator-reporter-pipeline';
 export {
@@ -591,6 +592,12 @@ function buildTopologyDirectKnowledgeResponse(
   ].join('\n');
 }
 
+function shouldUseGroundedKnowledgeAnswer(query: string): boolean {
+  return /ssot|single\s*source\s*of\s*truth|pre-generated|파일\s*경로|코드\s*위치|데이터\s*로더|data\s*loader|(?:문서|파일|경로|위치|path)/i.test(
+    query
+  );
+}
+
 export async function executeForcedRouting(
   query: string,
   suggestedAgentName: string,
@@ -696,8 +703,15 @@ export async function executeForcedRouting(
                 : parsedDirectResult.retrieval?.suppressedReason ?? 'no_results',
           });
           const durationMs = Date.now() - startTime;
+          const directToolResult = {
+            toolName: 'searchKnowledgeBase',
+            result: directSearchResult,
+          };
           const response = sanitizeChineseCharacters(
-            buildTopologyDirectKnowledgeResponse(query, directEvidence)
+            shouldUseGroundedKnowledgeAnswer(query)
+              ? buildKnowledgeBaseGroundedAnswer(query, [directToolResult]) ??
+                  buildTopologyDirectKnowledgeResponse(query, directEvidence)
+              : buildTopologyDirectKnowledgeResponse(query, directEvidence)
           );
           const quality = evaluateAgentResponseQuality('Advisor Agent', response, { durationMs });
 
@@ -723,6 +737,68 @@ export async function executeForcedRouting(
             }],
             finalAgent: suggestedAgentName,
             toolsCalled: ['searchKnowledgeBase', 'finalAnswer'],
+            usage: {
+              promptTokens: 0,
+              completionTokens: 0,
+              totalTokens: 0,
+            },
+            metadata: {
+              provider: 'deterministic',
+              modelId: 'knowledge-search-direct',
+              totalRounds: 1,
+              handoffCount: 1,
+              durationMs,
+              responseChars: quality.responseChars,
+              formatCompliance: quality.formatCompliance,
+              qualityFlags: quality.qualityFlags,
+              latencyTier: quality.latencyTier,
+              retrieval: directRetrieval,
+            },
+          };
+        }
+
+        if (
+          parsedDirectResult &&
+          parsedDirectResult.results.length === 0 &&
+          shouldUseGroundedKnowledgeAnswer(query)
+        ) {
+          const durationMs = Date.now() - startTime;
+          const response = sanitizeChineseCharacters(
+            buildKnowledgeBaseGroundedAnswer(query, [
+              { toolName: 'searchKnowledgeBase', result: directSearchResult },
+            ]) ??
+              [
+                '내부 근거를 찾지 못했습니다.',
+                `- 질의: ${query}`,
+                '- 정확한 repo 경로, 문서명, 운영 파일 위치는 추정하지 않습니다.',
+              ].join('\n')
+          );
+          const directRetrieval = createRetrievalMetadata({
+            retrievalEnabled: true,
+            retrievalUsed: false,
+            retrievalMode:
+              parsedDirectResult.retrieval?.retrievalMode ?? 'lite',
+            evidenceCount: 0,
+            webUsed: false,
+            suppressedReason:
+              parsedDirectResult.retrieval?.suppressedReason ?? 'no_results',
+          });
+          const quality = evaluateAgentResponseQuality('Advisor Agent', response, { durationMs });
+
+          logger.info(
+            `[Forced Routing] Direct KB path returned no evidence in ${durationMs}ms; suppressed path inference`
+          );
+
+          return {
+            success: true,
+            response,
+            handoffs: [{
+              from: 'Orchestrator',
+              to: suggestedAgentName,
+              reason: 'Forced routing (knowledge direct no-evidence path)',
+            }],
+            finalAgent: suggestedAgentName,
+            toolsCalled: ['searchKnowledgeBase'],
             usage: {
               promptTokens: 0,
               completionTokens: 0,

@@ -353,13 +353,15 @@ export default function ReportCard({
       style={{ animationDelay: `${index * 0.1}s` }}
     >
       {/* Header */}
-      <div className="mb-2 flex items-start justify-between">
-        <div className="flex items-center space-x-2">
+      <div className="mb-2 flex items-start justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-2">
           {getSeverityIcon(report.severity)}
-          <h3 className="font-medium text-gray-800">{report.title}</h3>
+          <h3 className="min-w-0 break-words font-medium text-gray-800">
+            {report.title}
+          </h3>
           <StatusIndicator status={report.status} />
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex shrink-0 items-center gap-2">
           <Clock className="h-4 w-4 text-gray-400" />
           <span className="text-xs text-gray-500" suppressHydrationWarning>
             {formatTime(report.timestamp)}
@@ -415,15 +417,21 @@ export default function ReportCard({
       )}
 
       {/* Footer */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center space-x-2">
+      <div
+        data-testid="report-card-footer"
+        className="mt-4 flex flex-col gap-3 border-t border-gray-100 pt-3 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <div className="flex min-w-0 items-center gap-2">
           <Server className="h-4 w-4 text-gray-400" />
           <span className="min-w-0 break-words text-xs text-gray-500">
             영향받는 서버: {report.affectedServers.join(', ') || '없음'}
           </span>
         </div>
 
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div
+          data-testid="report-card-actions"
+          className="flex w-full flex-wrap items-center justify-end gap-2 sm:w-auto"
+        >
           <span
             className={`rounded-full px-2 py-1 text-xs ${getStatusBadgeStyle(report.status)}`}
           >
@@ -459,7 +467,7 @@ export default function ReportCard({
           <button
             type="button"
             onClick={handleCopyMarkdown}
-            className={`inline-flex min-h-9 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-semibold transition-all duration-200 active:scale-95 ${
+            className={`inline-flex min-h-9 items-center gap-1.5 whitespace-nowrap rounded-md border px-2.5 py-1.5 text-xs font-semibold transition-all duration-200 active:scale-95 ${
               copyState === 'copied'
                 ? 'border-green-200 bg-green-50 text-green-700'
                 : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
@@ -479,7 +487,7 @@ export default function ReportCard({
                   downloadMenuId === report.id ? null : report.id
                 )
               }
-              className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-600 transition-all duration-200 hover:bg-gray-50 active:scale-95"
+              className="inline-flex min-h-9 items-center gap-1.5 whitespace-nowrap rounded-md border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-600 transition-all duration-200 hover:bg-gray-50 active:scale-95"
               aria-label="보고서 다운로드"
               title="보고서 다운로드"
             >

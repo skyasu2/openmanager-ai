@@ -1,0 +1,204 @@
+{
+  "runId": "QA-20260505-0409",
+  "recordedAt": "2026-05-05T03:39:15.190Z",
+  "recordedAtKst": "2026-05-05 12:39:15 KST",
+  "runTitle": "v8.11.104 Residual Production Targeted QA",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_3gio8RbSgi9PCptxFLBJtSFhr6j2",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "30c48e80a975630e77281a4de086c153631153fb"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "ai-advanced-surface",
+    "modal-detail-pack"
+  ],
+  "coveredSurfaces": [
+    "Vercel production /api/version returned 8.11.104, commit 30c48e80a975630e77281a4de086c153631153fb, tag v8.11.104, pipeline https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2499590190",
+    "/auth/success redirected to /dashboard and rendered the authenticated/guest dashboard instead of returning 404",
+    "/dashboard/servers/api-was-dc1-01 server detail showed overview/current metrics CPU 81.0%, Memory 65.0%, Disk 32.0%",
+    "/dashboard/servers/api-was-dc1-01 performance tab showed the same current metrics CPU 81.0%, Memory 65.0%, Disk 32.0%, and Network 22.0%",
+    "AI sidebar RAG On internal document/file path query was sent through the UI path; production still showed server-scope clarification before execution",
+    "After skipping clarification, the RAG internal document/file path response reported no internal evidence but still suggested placeholder paths such as /path/to/OpenManager/config.yaml and /path/to/OpenManager/logs/OpenManager.log",
+    "Reporter Agent generated one incident report through /api/ai/incident-report in 2185ms and exposed visible MD copy and report download buttons",
+    "UI/UX review found Reporter actions functionally visible but cramped near the bottom summary area; local remediation patch adds sidebar-safe header wrapping and bottom padding"
+  ],
+  "skippedSurfaces": [
+    "This was a residual targeted recheck for 4 pending items only; broad landing/login/privacy/security/mobile packs were not rerun.",
+    "Cloud Run admin observability /monitoring and /monitoring/traces were not part of this targeted pass."
+  ],
+  "checks": {
+    "total": 6,
+    "passed": 4,
+    "failed": 2
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI sidebar RAG internal document lookup",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Performance API resource timing",
+      "latencyMs": 7758,
+      "processingTimeMs": 7758
+    },
+    {
+      "surface": "Reporter generated incident report",
+      "agent": "Reporter Agent",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/incident-report",
+      "source": "Performance API resource timing",
+      "latencyMs": 2185,
+      "processingTimeMs": 2185
+    }
+  ],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Residual targeted QA found the RAG internal document lookup still fails grounding and clarification behavior on production.",
+      "nextAction": "Deploy and recheck the local RAG no-inference remediation before closing the RAG pending item."
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The residual pass used UI-driven Playwright MCP checks and kept evidence for each high-risk surface.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Server detail overview and performance tab now share the same visible current metric values for the tested server/slot.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production deployment identity and Vercel usage were checked during the targeted run.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-05T12:37:00+09:00",
+      "summary": "Current billing period checked after residual production QA; effective 2.0188 USD, billed remains 0.0000 USD, chargeCount 1827.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "Server detail current metric alignment",
+      "path": "reports/qa/evidence/qa-20260505-residual-server-detail-metrics.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "RAG internal document lookup residual failure",
+      "path": "reports/qa/evidence/qa-20260505-residual-rag-document-lookup-fail.png"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "Reporter generated report actions visible",
+      "path": "reports/qa/evidence/qa-20260505-residual-reporter-actions.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "dashboard-server-detail-metrics-tab-slot-drift-v81197",
+      "title": "Server detail performance tab current metrics align with same-page overview values",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production /dashboard/servers/api-was-dc1-01 overview/performance tab both showed CPU 81.0%, Memory 65.0%, Disk 32.0%.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "auth-success-legacy-route-404-v81197",
+      "title": "/auth/success legacy route redirects safely instead of 404",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production /auth/success navigated to /dashboard and rendered the dashboard.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "reporter-download-action-visibility-v81197",
+      "title": "Reporter generated report exposes visible MD copy and download actions",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "evidence": "Production generated report card showed MD 복사 and 다운로드 buttons.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "ai-rag-on-document-lookup-hallucination-v81197",
+      "title": "RAG On internal document lookup must not ask server-scope clarification or infer placeholder file paths",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Production v8.11.104 still showed server-scope clarification for an internal document/file path query; after skip it returned no internal evidence but suggested placeholder /path/to/OpenManager paths. Local remediation patch added clarification bypass and deterministic no-inference RAG response; production recheck remains required after deploy.",
+      "owner": "",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Targeted QA decision: conditional/no-go for the residual remediation gate because 1 P1 item remains pending on production.",
+    "Local remediation patch applied after this production QA run: frontend clarification bypass for internal knowledge/file path queries, Cloud Run deterministic RAG direct answer/no-evidence response, and Reporter sidebar readability spacing."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.11.104 tag pipeline 2499590190",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2499590190"
+    },
+    {
+      "type": "general",
+      "label": "Production version endpoint",
+      "url": "https://openmanager-ai.vercel.app/api/version"
+    }
+  ]
+}

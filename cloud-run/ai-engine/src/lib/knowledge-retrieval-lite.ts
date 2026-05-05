@@ -39,6 +39,18 @@ const MAX_QUERY_CANDIDATES = 4;
 
 const DOMAIN_QUERY_FALLBACKS = [
   {
+    domainSignals: [
+      /otel|opentelemetry|pre-generated|pre\s*generated|ssot|single\s*source\s*of\s*truth|metricsprovider|precomputed-state|public\/data\/otel-data/i,
+    ],
+    symptomSignals: [
+      /path|경로|위치|파일|file|loader|로더|data|데이터|문서화|documented|runtime|런타임/i,
+    ],
+    candidates: [
+      'OTel 데이터 SSOT data loader',
+      'Pre-generated OTel 데이터 SSOT 파일 경로',
+    ],
+  },
+  {
     domainSignals: [/redis|레디스|cache|캐시/i],
     symptomSignals: [/oom|out\s*of\s*memory|memory|메모리|부족/i],
     candidates: ['redis memory', 'redis oom', 'cache memory', '레디스 메모리'],

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  buildKnowledgeBaseGroundedAnswer,
   buildWebCitationAppendix,
   buildWebSearchFallbackAnswer,
   hasWebSearchFallbackAnswer,
@@ -162,5 +163,42 @@ describe('buildWebSearchFallbackAnswer', () => {
         { toolName: 'searchKnowledgeBase', result: { results: [] } },
       ])
     ).toBeNull();
+  });
+
+  it('returns a no-evidence answer for internal knowledge lookups with no RAG results', () => {
+    const answer = buildKnowledgeBaseGroundedAnswer(
+      'Pre-generated OTel 데이터 SSOT 파일 경로 알려줘',
+      [{ toolName: 'searchKnowledgeBase', result: { results: [] } }]
+    );
+
+    expect(answer).toContain('내부 근거를 찾지 못했습니다');
+    expect(answer).toContain('관련 문서나 파일 경로가 0건');
+    expect(answer).not.toContain('/path/to');
+  });
+
+  it('extracts only grounded repo paths from internal knowledge results', () => {
+    const answer = buildKnowledgeBaseGroundedAnswer(
+      'Pre-generated OTel 데이터 SSOT 파일 경로 알려줘',
+      [
+        {
+          toolName: 'searchKnowledgeBase',
+          result: {
+            results: [
+              {
+                title: 'Pre-generated OTel 데이터 SSOT',
+                content:
+                  'OTel SSOT는 public/data/otel-data/hourly/hour-XX.json 이며 로더는 src/data/otel-data/index.ts 입니다. /path/to/OpenManager/config.yaml 같은 예시는 쓰지 않습니다.',
+                similarity: 0.93,
+                sourceType: 'knowledge',
+              },
+            ],
+          },
+        },
+      ]
+    );
+
+    expect(answer).toContain('`public/data/otel-data/hourly/hour-XX.json`');
+    expect(answer).toContain('`src/data/otel-data/index.ts`');
+    expect(answer).not.toContain('/path/to/OpenManager/config.yaml');
   });
 });

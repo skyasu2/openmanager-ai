@@ -167,6 +167,64 @@ describe('retrieveKnowledgeEvidence', () => {
     );
   });
 
+  it('falls back to OTel SSOT query candidates for internal file path lookups', async () => {
+    const rpc = vi
+      .fn()
+      .mockResolvedValueOnce({ data: [], error: null })
+      .mockResolvedValueOnce({
+        data: [
+          {
+            id: 'kb-otel-ssot',
+            title: 'OpenManager OTel 데이터 SSOT 경로',
+            content:
+              'OpenManager monitoring runtime SSOT paths: public/data/otel-data, MetricsProvider, precomputed-state.',
+            category: 'architecture',
+            tags: ['otel', 'ssot', 'data-loader', 'file-path'],
+            text_rank: 0.61,
+            metadata: { docType: 'architecture' },
+          },
+        ],
+        error: null,
+      });
+
+    const result = await retrieveKnowledgeEvidence(
+      { query: '문서화된 Pre-generated OTel data SSOT 경로 알려줘', limit: 3 },
+      { client: createClient(rpc) }
+    );
+
+    expect(rpc).toHaveBeenNthCalledWith(1, 'search_knowledge_text', {
+      p_query_text: '문서화된 Pre-generated OTel data SSOT 경로 알려줘',
+      p_max_results: 10,
+      p_filter_category: null,
+    });
+    expect(rpc).toHaveBeenNthCalledWith(2, 'search_knowledge_text', {
+      p_query_text: 'OTel 데이터 SSOT data loader',
+      p_max_results: 10,
+      p_filter_category: null,
+    });
+    expect(result).toMatchObject({
+      success: true,
+      _source: 'Knowledge Retrieval Lite',
+      totalFound: 1,
+      metadata: {
+        retrievalEnabled: true,
+        retrievalUsed: true,
+        retrievalMode: 'lite',
+        evidenceCount: 1,
+        webUsed: false,
+      },
+    });
+    expect(result.evidenceCards[0]).toMatchObject({
+      id: 'kb-otel-ssot',
+      title: 'OpenManager OTel 데이터 SSOT 경로',
+      sourceType: 'knowledge',
+      category: 'architecture',
+    });
+    expect(result.evidenceCards[0]?.reason).toContain(
+      'query-fallback:OTel 데이터 SSOT data loader'
+    );
+  });
+
   it('uses Redis connection fallback without requiring memory signals', async () => {
     const rpc = vi
       .fn()

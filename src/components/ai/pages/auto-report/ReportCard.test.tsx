@@ -101,5 +101,11 @@ describe('ReportCard', () => {
     expect(
       screen.getByRole('button', { name: /보고서 다운로드/i })
     ).toBeInTheDocument();
+    expect(screen.getByTestId('report-card-actions').className).toContain(
+      'w-full'
+    );
+    expect(screen.getByTestId('report-card-footer').className).toContain(
+      'border-t'
+    );
   });
 });

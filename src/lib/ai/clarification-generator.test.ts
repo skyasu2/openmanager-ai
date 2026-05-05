@@ -122,6 +122,21 @@ describe('generateClarification', () => {
       ).toBeNull();
     });
 
+    it('내부 문서/파일 경로 질의는 서버 scope clarification을 스킵', () => {
+      expect(
+        generateClarification(
+          'RAG On 상태에서 OpenManager의 Pre-generated OTel 데이터 SSOT 파일 경로와 데이터 로더 경로를 근거와 함께 알려줘.',
+          lowConfidence
+        )
+      ).toBeNull();
+      expect(
+        generateClarification(
+          '프로젝트 문서에서 데이터 로더 코드 위치 찾아줘',
+          lowConfidence
+        )
+      ).toBeNull();
+    });
+
     // 한국어 활용형 테스트
     it('"CPU 높아?" → clarification 스킵 (comparisonCondition 활용형)', () => {
       expect(generateClarification('CPU 높아?', lowConfidence)).toBeNull();
