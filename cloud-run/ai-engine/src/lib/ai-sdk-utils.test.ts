@@ -3,7 +3,44 @@ import {
   extractEvidenceCards,
   extractRagSources,
   extractRetrievalMetadata,
+  extractToolResultOutput,
 } from './ai-sdk-utils';
+
+describe('extractToolResultOutput', () => {
+  it('supports legacy result and AI SDK v6 output fields', () => {
+    expect(extractToolResultOutput({ result: { success: true } })).toEqual({
+      success: true,
+    });
+    expect(extractToolResultOutput({ output: { success: true } })).toEqual({
+      success: true,
+    });
+  });
+
+  it('unwraps AI SDK typed output envelopes', () => {
+    expect(
+      extractToolResultOutput({
+        output: {
+          type: 'json',
+          value: {
+            success: true,
+            answer: 'Next.js 최신 안정화 메이저 버전은 16입니다.',
+            results: [{ title: 'Next.js 16.2' }],
+          },
+        },
+      })
+    ).toEqual({
+      success: true,
+      answer: 'Next.js 최신 안정화 메이저 버전은 16입니다.',
+      results: [{ title: 'Next.js 16.2' }],
+    });
+
+    expect(
+      extractToolResultOutput({
+        output: { type: 'text', value: 'final answer' },
+      })
+    ).toBe('final answer');
+  });
+});
 
 describe('extractRagSources', () => {
   it('maps searchKnowledgeBase similarCases to ragSources', () => {

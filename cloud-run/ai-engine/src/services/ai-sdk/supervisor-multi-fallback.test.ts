@@ -116,7 +116,20 @@ vi.mock('../resilience/quota-tracker', () => ({
 }));
 
 vi.mock('../../lib/ai-sdk-utils', () => ({
-  extractToolResultOutput: vi.fn((toolResult: { result?: unknown; output?: unknown }) => toolResult.result ?? toolResult.output),
+  extractToolResultOutput: vi.fn((toolResult: { result?: unknown; output?: unknown }) => {
+    const output = toolResult.result ?? toolResult.output;
+    if (output && typeof output === 'object') {
+      const envelope = output as Record<string, unknown>;
+      if (
+        typeof envelope.type === 'string' &&
+        (envelope.type === 'json' || envelope.type === 'text') &&
+        'value' in envelope
+      ) {
+        return envelope.value;
+      }
+    }
+    return output;
+  }),
   extractRagSources: mockExtractRagSources,
 }));
 
@@ -663,16 +676,19 @@ describe('supervisor degraded single fallback', () => {
           type: 'tool-result',
           toolCallId: 'web-call-1',
           toolName: 'searchWeb',
-          result: {
-            success: true,
-            answer: 'Next.js 최신 안정화 메이저 버전은 16입니다.',
-            results: [
-              {
-                title: 'Next.js 16.2',
-                url: 'https://nextjs.org/blog/next-16-2',
-                content: 'Next.js 16.2 is now available.',
-              },
-            ],
+          output: {
+            type: 'json',
+            value: {
+              success: true,
+              answer: 'Next.js 최신 안정화 메이저 버전은 16입니다.',
+              results: [
+                {
+                  title: 'Next.js 16.2',
+                  url: 'https://nextjs.org/blog/next-16-2',
+                  content: 'Next.js 16.2 is now available.',
+                },
+              ],
+            },
           },
         };
       })(),

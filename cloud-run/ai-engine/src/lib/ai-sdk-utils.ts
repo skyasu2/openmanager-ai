@@ -17,7 +17,24 @@ import {
  */
 export function extractToolResultOutput(toolResult: unknown): unknown {
   const tr = toolResult as Record<string, unknown>;
-  return tr.result ?? tr.output;
+  return unwrapToolOutputEnvelope(tr.result ?? tr.output);
+}
+
+function unwrapToolOutputEnvelope(output: unknown): unknown {
+  if (output === null || output === undefined || typeof output !== 'object') {
+    return output;
+  }
+
+  const envelope = output as Record<string, unknown>;
+  if (
+    typeof envelope.type === 'string' &&
+    (envelope.type === 'json' || envelope.type === 'text') &&
+    'value' in envelope
+  ) {
+    return envelope.value;
+  }
+
+  return output;
 }
 
 /**
