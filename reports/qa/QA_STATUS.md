@@ -1,15 +1,15 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-05 13:35:46 KST
+> Generated at: 2026-05-05 15:13:01 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 408 |
+| Total Recorded Runs | 409 |
 | Total Runs (Counted) | 336 |
-| Non-counted Runs | 72 |
+| Non-counted Runs | 73 |
 | Total Checks | 2955 |
 | Passed | 2847 |
 | Failed | 99 |
@@ -18,10 +18,10 @@
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
 | Expert Domains Tracked | 12 |
-| Expert Open Gaps | 1 |
+| Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260505-0410 (2026-05-05T04:35:45.774Z) |
-| Latest Recorded Run | QA-20260505-0410 (2026-05-05T04:35:45.774Z) |
+| Latest Recorded Run | QA-20260505-0411 (2026-05-05T06:13:00.571Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,63 +34,57 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260505-0410 (2026-05-05T04:35:45.774Z)
+Latest run: QA-20260505-0411 (2026-05-05T06:13:00.571Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
-| Data Quality & Metrics Analyst | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked after v8.11.105 targeted RAG QA; effective 2.0188 USD, billed remains 0.0000 USD, chargeCount 1827. |
+| - | - | - | - | - |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-04T04:35:45.774Z -> 2026-05-05T04:35:45.774Z (24h)
-- Runs with observations: 8 recorded / 8 counted
-- Samples: 20
+- Window: 2026-05-04T06:13:00.571Z -> 2026-05-05T06:13:00.571Z (24h)
+- Runs with observations: 7 recorded / 7 counted
+- Samples: 18
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Supervisor | cloud-run-ai-engine | 14 | 3268ms | 8795ms | - | - | 3712ms | 9897ms | QA-20260505-0410 |
+| Supervisor | cloud-run-ai-engine | 13 | 3432ms | 8795ms | - | - | 3910ms | 9897ms | QA-20260505-0410 |
 | Reporter Agent | cloud-run-ai-engine | 2 | 2485ms | 2784ms | - | - | 2485ms | 2784ms | QA-20260505-0409 |
-| Supervisor | groq | 1 | 1283ms | 1283ms | - | - | 1283ms | 1283ms | QA-20260504-0403 |
 | Analyst Agent | vercel-monitoring-bff | 2 | 949ms | 1028ms | - | - | 949ms | 1028ms | QA-20260505-0407 |
 | Supervisor | vercel-bff | 1 | 340ms | 340ms | - | - | 340ms | 340ms | QA-20260505-0407 |
 
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
-- Counts Toward Summary: yes
-- Deployment: dpl_CXJM2jVTN9xUBJHogHEdkmR8oENJ / SHA e8c8f73d
-- Coverage Packs: ai-core, ai-advanced-surface
-- Covered Surfaces: Vercel production /api/version returned 8.11.105, commit e8c8f73d65edd204b67c6a47c51e8b4e3f4fe9c6, tag v8.11.105, pipeline https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2499754655, AI sidebar RAG On internal OTel/SSOT document path query ran without server-scope clarification, The response used the Supabase KB-backed OTel/SSOT evidence and returned repo paths: public/data/otel-data/*, src/data/otel-data/index.ts, src/services/metrics/MetricsProvider.ts, cloud-run/ai-engine/src/data/precomputed-state.ts, The response explicitly rejected /opt/otel/... as a repo path and did not suggest placeholder /path/to/OpenManager paths, Hosted Supabase search_knowledge_text live smoke returned OpenManager OTel 데이터 SSOT 경로 evidence for the QA-like fallback query
-- Skipped Surfaces: This was a residual targeted recheck for the remaining RAG item only; broad landing/login/privacy/security/mobile packs were not rerun., Playwright safety guard blocked the landing 시스템 시작 click, so the test entered /dashboard directly and used the AI sidebar UI path from there., Reporter and server detail surfaces were already completed in QA-20260505-0409 and were not rerun.
+- Release-Facing: no
+- Counts Toward Summary: no
+- Deployment: SHA 97d04260
+- Coverage Packs: dashboard-core, observability-pack
+- Covered Surfaces: QA-20260505-0409 production evidence: /dashboard/servers/api-was-dc1-01 overview and performance tab both showed CPU 81.0%, Memory 65.0%, Disk 32.0%, QA tracker completed improvement dashboard-server-detail-metrics-tab-slot-drift-v81197 is already completed, This run only updates the expert-domain assessment that remained stale from QA-20260505-0407
+- Skipped Surfaces: No new browser automation was executed for this metadata closure, Production deployment remains v8.11.105 / e8c8f73d for the original QA evidence
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.11.105 tag pipeline 2499754655 | [GitLab v8.11.105 tag pipeline 2499754655](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2499754655) | - |
+| general | GitLab HEAD validation pipeline 2499917776 | [GitLab HEAD validation pipeline 2499917776](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2499917776) | - |
 | general | Production version endpoint | [Production version endpoint](https://openmanager-ai.vercel.app/api/version) | - |
-| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-3prb99k7c-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | RAG OTel SSOT grounded response | `reports/qa/evidence/qa-20260505-rag-otel-ssot-v811105-pass.png` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
-- observability-monitoring: IT Monitoring & Observability SME (last QA-20260505-0407)
-  next: Align server detail performance tab current values with the dashboard data slot or label it explicitly as a different 24h history endpoint.
+- None
 
 ## Pending Improvements
 
@@ -359,7 +353,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - dashboard-resources: 시스템 리소스 개요 (completed 1회, last QA-20260317-0114)
 - dashboard-server-card-selector-stabilization: 서버 카드 선택자 및 빈 상태 처리 안정화 (completed 2회, last QA-20260302-0039)
 - dashboard-server-cards: 대시보드 서버 카드 및 메트릭 (completed 2회, last QA-20260302-0038)
-- dashboard-server-detail-metrics-tab-slot-drift-v81197: Server detail performance tab current metrics align with same-page overview values (completed 1회, last QA-20260505-0409)
+- dashboard-server-detail-metrics-tab-slot-drift-v81197: Server detail performance tab current metrics align with same-page overview values (completed 2회, last QA-20260505-0411)
 - dashboard-server-log-cross-link: 서버 카드 로그 바로가기 cross-link (completed 1회, last QA-20260501-0386)
 - dashboard-status-filter: 상태 필터 토글 (completed 1회, last QA-20260317-0114)
 - dashboard-topology-map: 토폴로지 맵 모달 (completed 1회, last QA-20260317-0114)
@@ -608,6 +602,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260505-0411 | 2026-05-05T06:13:00.571Z | targeted | no | no | QA Metadata Closure - Observability Server Detail Data Slot Gap | 0 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260505-0410 | 2026-05-05T04:35:45.774Z | targeted | yes | yes | v8.11.105 RAG OTel SSOT Targeted Recheck | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260505-0409 | 2026-05-05T03:39:15.190Z | targeted | yes | yes | v8.11.104 Residual Production Targeted QA | 6 | 3 | 1 | 0 | 0 | 1 |
 | QA-20260505-0408 | 2026-05-05T02:27:19.400Z | targeted | yes | yes | Vercel Playwright MCP Targeted QA - v8.11.104 Web search answer recovery | 8 | 1 | 0 | 0 | 0 | 0 |
@@ -627,4 +622,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260503-0394 | 2026-05-02T16:09:07.439Z | targeted | yes | yes | Vercel Production Targeted QA - Server Snapshot Artifact v8.11.84 | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260502-0393 | 2026-05-02T09:30:16.319Z | targeted | no | no | Vercel Production Verification - Artifact Keyword Change Recheck v8.11.82 | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260502-0392 | 2026-05-02T09:10:56.289Z | targeted | yes | yes | Vercel Production Targeted QA - Artifact Short Keyword Pair v8.11.82 | 8 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260502-0391 | 2026-05-02T08:22:31.207Z | targeted | yes | yes | Vercel Production Targeted QA - Artifact Keyword Routing v8.11.82 | 6 | 1 | 0 | 0 | 0 | 0 |

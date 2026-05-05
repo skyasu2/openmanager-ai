@@ -2,15 +2,15 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-05T04:35:45.774Z"
+    "updatedAt": "2026-05-05T06:13:00.571Z"
   },
   "sequence": {
-    "nextRunNumber": 411
+    "nextRunNumber": 412
   },
   "summary": {
-    "totalRecordedRuns": 408,
+    "totalRecordedRuns": 409,
     "totalRuns": 336,
-    "excludedRuns": 72,
+    "excludedRuns": 73,
     "totalChecks": 2955,
     "totalPassed": 2847,
     "totalFailed": 99,
@@ -20,11 +20,11 @@
     "deferredItems": 0,
     "wontFixItems": 22,
     "expertDomainsTracked": 12,
-    "expertDomainsOpenGaps": 1,
+    "expertDomainsOpenGaps": 0,
     "lastRunId": "QA-20260505-0410",
     "lastRecordedAt": "2026-05-05T04:35:45.774Z",
-    "latestRecordedRunId": "QA-20260505-0410",
-    "latestRecordedAt": "2026-05-05T04:35:45.774Z"
+    "latestRecordedRunId": "QA-20260505-0411",
+    "latestRecordedAt": "2026-05-05T06:13:00.571Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -10537,22 +10537,22 @@
       "status": "completed",
       "firstSeenRunId": "QA-20260505-0407",
       "firstSeenAt": "2026-05-04T23:33:01.502Z",
-      "lastSeenRunId": "QA-20260505-0409",
-      "lastSeenAt": "2026-05-05T03:39:15.190Z",
-      "seenCount": 2,
-      "completedCount": 1,
+      "lastSeenRunId": "QA-20260505-0411",
+      "lastSeenAt": "2026-05-05T06:13:00.571Z",
+      "seenCount": 3,
+      "completedCount": 2,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "Production /dashboard/servers/api-was-dc1-01 overview/performance tab both showed CPU 81.0%, Memory 65.0%, Disk 32.0%.",
+      "lastEvidence": "QA-20260505-0409 production evidence: overview/performance tab both showed CPU 81.0%, Memory 65.0%, Disk 32.0% for api-was-dc1-01.",
       "lastNote": "api-was-dc1-01 overview showed CPU 84%, memory 71%, disk 31% while performance tab showed CPU 43%, memory 57%, disk 35% with the same LAST UPDATE label. Likely caused by overview using dashboard current slot and performance charts using unaligned 24h history tail.",
       "isBlocking": true,
-      "isBlockingExplicit": false,
+      "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-05T03:39:15.190Z"
+      "lastStatusChangeAt": "2026-05-05T06:13:00.571Z"
     },
     "ai-rag-on-document-lookup-hallucination-v81197": {
       "id": "ai-rag-on-document-lookup-hallucination-v81197",
@@ -42487,6 +42487,77 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260505-0411",
+      "recordedAt": "2026-05-05T06:13:00.571Z",
+      "recordedAtKst": "2026-05-05 15:13:00 KST",
+      "title": "QA Metadata Closure - Observability Server Detail Data Slot Gap",
+      "owner": "codex",
+      "source": "qa-metadata",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260505-0411.json",
+      "environment": {
+        "target": "qa-metadata",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "",
+        "deploymentUrl": "",
+        "commitSha": "97d04260ba066d0152e7ae7653e6ddde756de8c5"
+      },
+      "scope": "targeted",
+      "releaseFacing": false,
+      "countsTowardSummary": false,
+      "coveragePacks": [
+        "dashboard-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "QA-20260505-0409 production evidence: /dashboard/servers/api-was-dc1-01 overview and performance tab both showed CPU 81.0%, Memory 65.0%, Disk 32.0%",
+        "QA tracker completed improvement dashboard-server-detail-metrics-tab-slot-drift-v81197 is already completed",
+        "This run only updates the expert-domain assessment that remained stale from QA-20260505-0407"
+      ],
+      "skippedSurfaces": [
+        "No new browser automation was executed for this metadata closure",
+        "Production deployment remains v8.11.105 / e8c8f73d for the original QA evidence"
+      ],
+      "checks": {
+        "total": 0,
+        "passed": 0,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The server detail performance tab data-slot drift cited in QA-20260505-0407 was already production-rechecked in QA-20260505-0409: the overview and performance tab current values matched for api-was-dc1-01.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [],
+      "artifacts": [],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab HEAD validation pipeline 2499917776",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2499917776"
+        },
+        {
+          "type": "general",
+          "label": "Production version endpoint",
+          "url": "https://openmanager-ai.vercel.app/api/version"
+        }
+      ],
+      "expertCount": 1,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -42512,17 +42583,17 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 106,
-      "appropriateCount": 76,
+      "seenCount": 107,
+      "appropriateCount": 77,
       "partialCount": 30,
       "inappropriateCount": 0,
       "improvementNeededCount": 31,
-      "lastRunId": "QA-20260505-0407",
-      "lastSeenAt": "2026-05-04T23:33:01.502Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Dashboard core values and Analyst are usable, but server detail performance tab reads a different history endpoint/window than the overview current slot.",
-      "lastNextAction": "Align server detail performance tab current values with the dashboard data slot or label it explicitly as a different 24h history endpoint."
+      "lastRunId": "QA-20260505-0411",
+      "lastSeenAt": "2026-05-05T06:13:00.571Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "The server detail performance tab data-slot drift cited in QA-20260505-0407 was already production-rechecked in QA-20260505-0409: the overview and performance tab current values matched for api-was-dc1-01.",
+      "lastNextAction": ""
     },
     "ai-security-reliability": {
       "domainId": "ai-security-reliability",

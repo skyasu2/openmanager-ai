@@ -1,0 +1,80 @@
+{
+  "runId": "QA-20260505-0411",
+  "recordedAt": "2026-05-05T06:13:00.571Z",
+  "recordedAtKst": "2026-05-05 15:13:00 KST",
+  "runTitle": "QA Metadata Closure - Observability Server Detail Data Slot Gap",
+  "owner": "codex",
+  "source": "qa-metadata",
+  "environment": {
+    "target": "qa-metadata",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "97d04260ba066d0152e7ae7653e6ddde756de8c5"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["dashboard-core", "observability-pack"],
+  "coveredSurfaces": [
+    "QA-20260505-0409 production evidence: /dashboard/servers/api-was-dc1-01 overview and performance tab both showed CPU 81.0%, Memory 65.0%, Disk 32.0%",
+    "QA tracker completed improvement dashboard-server-detail-metrics-tab-slot-drift-v81197 is already completed",
+    "This run only updates the expert-domain assessment that remained stale from QA-20260505-0407"
+  ],
+  "skippedSurfaces": [
+    "No new browser automation was executed for this metadata closure",
+    "Production deployment remains v8.11.105 / e8c8f73d for the original QA evidence"
+  ],
+  "checks": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The server detail performance tab data-slot drift cited in QA-20260505-0407 was already production-rechecked in QA-20260505-0409: the overview and performance tab current values matched for api-was-dc1-01.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "dashboard-server-detail-metrics-tab-slot-drift-v81197",
+      "title": "Server detail performance tab current metrics align with same-page overview values",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "QA-20260505-0409 production evidence: overview/performance tab both showed CPU 81.0%, Memory 65.0%, Disk 32.0% for api-was-dc1-01.",
+      "note": "",
+      "owner": "",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab HEAD validation pipeline 2499917776",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2499917776"
+    },
+    {
+      "type": "general",
+      "label": "Production version endpoint",
+      "url": "https://openmanager-ai.vercel.app/api/version"
+    }
+  ]
+}
