@@ -4,7 +4,11 @@
 
 | Scope | Limit | Notes |
 |-------|:-----:|-------|
-| Total active (excl. archived) | 80 | Hard limit |
+| Total active (excl. archived) | 90 | Hard limit |
+| architecture/* | 12 | System-level architecture summaries and diagrams |
+| design/* | 12 | Module/function-level detailed design |
+| operations/* | 8 | Operations entry points and runbooks |
+| adr/* | 8 | Active ADR index and current decision records |
 | reference/architecture/* | 28 | Only `docs/reference/architecture/**` |
 | development/* | 28 | Dev guides + Vibe Coding docs (`development/vibe-coding/**`) |
 | guides/* | 14 | Standards, testing, AI |

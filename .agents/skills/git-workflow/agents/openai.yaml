@@ -1,4 +1,4 @@
 interface:
   display_name: "OpenManager Git Workflow"
   short_description: "Safe commit, push, and PR workflow"
-  default_prompt: "Use $openmanager-git-workflow to commit, push, or open PR with safe git rules and MCP-first workflow."
+  default_prompt: "Use $openmanager-git-workflow to commit, push, open MR/PR, or sync the public snapshot with GitLab-canonical safety checks."

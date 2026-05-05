@@ -1,7 +1,7 @@
 ---
 name: doc-management
 description: 문서 현황 점검, 예산 초과 감지, 병합/아카이브 제안. Triggers on /doc-management or 문서 정리/관리 요청.
-version: v1.3.2
+version: v1.3.3
 user-invocable: true
 allowed-tools: Bash, Read, Grep, Glob, Edit, Write
 disable-model-invocation: true
@@ -29,9 +29,9 @@ npm run docs:budget
 # AI 운영 문서 drift 검사
 npm run docs:ai-consistency
 
-# 활성 문서 수 (한도: 80)
+# 활성 문서 수 (한도: 90)
 ACTIVE=$(find docs/ -name "*.md" -not -path "*/archived/*" | wc -l)
-echo "Active: $ACTIVE / 80"
+echo "Active: $ACTIVE / 90"
 
 # 디렉토리별 분포
 find docs/ -name "*.md" -not -path "*/archived/*" | \
@@ -41,6 +41,7 @@ find docs/ -name "*.md" -not -path "*/archived/*" | \
 ### 2. 예산 초과 감지
 
 디렉토리별 한도와 비교 (SSOT: `.claude/rules/documentation.md`):
+- architecture/*: 12 | design/*: 12 | operations/*: 8 | adr/*: 8
 - reference/architecture/*: 28 | development/*: 28 | guides/*: 14
 - troubleshooting/*: 7 | root: 5
 
@@ -66,7 +67,9 @@ find docs/ -name "*.md" -not -path "*/archived/*" -mtime +90
 
 | 항목 | 현재 | 한도 | 상태 |
 |------|------|------|------|
-| 전체 | XX | 80 | OK/OVER |
+| 전체 | XX | 90 | OK/OVER |
+| architecture | XX | 12 | ... |
+| design | XX | 12 | ... |
 | reference/architecture | XX | 28 | ... |
 | ...  | ... | ... | ... |
 
@@ -90,7 +93,7 @@ find docs/ -name "*.md" -not -path "*/archived/*" -mtime +90
 
 ## Success Criteria
 
-- 활성 문서 수가 80개 한도 이내
+- 활성 문서 수가 90개 한도 이내
 - 이번 작업에서 변경한 문서는 Owner / Status / Doc type / Last reviewed 메타데이터 100% 충족
 - AI 운영 문서는 `docs:ai-consistency` 통과
 - 기존 레거시 문서는 누락 리포트 생성 후 점진 보강
@@ -105,6 +108,7 @@ find docs/ -name "*.md" -not -path "*/archived/*" -mtime +90
 
 ## Changelog
 
+- 2026-05-05: v1.3.3 - architecture/design/operations/adr 카테고리 신설 반영, 전체 한도 90 추가
 - 2026-04-24: v1.3.2 - AI 운영 문서 MCP/Skills drift 검사 추가
 - 2026-04-13: v1.3.1 - 문서 한도 80/28/28/14/7로 SSOT 재동기화
 - 2026-03-25: v1.3.0 - 문서 한도 55→60, 디렉토리별 예산 documentation.md SSOT 동기화

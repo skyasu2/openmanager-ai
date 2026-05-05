@@ -12,7 +12,11 @@ const REPORT_PATH = path.resolve(
 const STALE_DAYS = 90;
 
 const BUDGET = {
-  total: 80,
+  total: 90,
+  architecture: 12,
+  design: 12,
+  operations: 8,
+  adr: 8,
   referenceArchitecture: 28,
   development: 28,
   guides: 14,
@@ -44,6 +48,10 @@ interface MetadataStatus {
 
 interface BudgetCounts {
   total: number;
+  architecture: number;
+  design: number;
+  operations: number;
+  adr: number;
   referenceArchitecture: number;
   development: number;
   guides: number;
@@ -129,6 +137,10 @@ function countByBudgetScope(activeFiles: string[]): { counts: BudgetCounts; over
   const rel = activeFiles.map(toDocsRelative);
   const counts: BudgetCounts = {
     total: rel.length,
+    architecture: rel.filter((p) => p.startsWith('architecture/')).length,
+    design: rel.filter((p) => p.startsWith('design/')).length,
+    operations: rel.filter((p) => p.startsWith('operations/')).length,
+    adr: rel.filter((p) => p.startsWith('adr/')).length,
     referenceArchitecture: rel.filter((p) => p.startsWith('reference/architecture/')).length,
     development: rel.filter((p) => p.startsWith('development/')).length,
     guides: rel.filter((p) => p.startsWith('guides/')).length,
@@ -138,6 +150,18 @@ function countByBudgetScope(activeFiles: string[]): { counts: BudgetCounts; over
 
   const overBudget: string[] = [];
   if (counts.total > BUDGET.total) overBudget.push(`total ${counts.total}/${BUDGET.total}`);
+  if (counts.architecture > BUDGET.architecture) {
+    overBudget.push(`architecture ${counts.architecture}/${BUDGET.architecture}`);
+  }
+  if (counts.design > BUDGET.design) {
+    overBudget.push(`design ${counts.design}/${BUDGET.design}`);
+  }
+  if (counts.operations > BUDGET.operations) {
+    overBudget.push(`operations ${counts.operations}/${BUDGET.operations}`);
+  }
+  if (counts.adr > BUDGET.adr) {
+    overBudget.push(`adr ${counts.adr}/${BUDGET.adr}`);
+  }
   if (counts.referenceArchitecture > BUDGET.referenceArchitecture) {
     overBudget.push(`reference/architecture ${counts.referenceArchitecture}/${BUDGET.referenceArchitecture}`);
   }
@@ -278,6 +302,10 @@ function buildReport(): BuildReportResult {
   lines.push('');
 
   lines.push('[Detail] Budget by scope');
+  lines.push(`- architecture: ${counts.architecture} / ${BUDGET.architecture}`);
+  lines.push(`- design: ${counts.design} / ${BUDGET.design}`);
+  lines.push(`- operations: ${counts.operations} / ${BUDGET.operations}`);
+  lines.push(`- adr: ${counts.adr} / ${BUDGET.adr}`);
   lines.push(`- reference/architecture: ${counts.referenceArchitecture} / ${BUDGET.referenceArchitecture}`);
   lines.push(`- development: ${counts.development} / ${BUDGET.development}`);
   lines.push(`- guides: ${counts.guides} / ${BUDGET.guides}`);

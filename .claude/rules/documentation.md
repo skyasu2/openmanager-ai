@@ -8,8 +8,12 @@
 
 | 범위 | 한도 | 비고 |
 |------|:----:|------|
-| 전체 활성 문서 | 80개 | `docs/archived/` 제외 |
-| reference/architecture/* | 28개 | 아키텍처 문서 |
+| 전체 활성 문서 | 90개 | `docs/archived/` 제외 |
+| architecture/* | 12개 | 시스템 전체 아키텍처 정리본 |
+| design/* | 12개 | 모듈/기능 상세 설계 |
+| operations/* | 8개 | 운영 진입점과 runbook |
+| adr/* | 8개 | 현재 의사결정 기록 |
+| reference/architecture/* | 28개 | 상세 아키텍처 문서 |
 | development/* | 28개 | vibe-coding/ 포함 |
 | guides/* | 14개 | 운영 지침 |
 | troubleshooting/* | 7개 | 문제 해결 |

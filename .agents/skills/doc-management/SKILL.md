@@ -14,7 +14,7 @@ Enforce Doc Budget Policy to prevent document sprawl.
 1. Scan active documents.
    - Preferred: `npm run docs:budget`
    - `find docs/ -name "*.md" -not -path "*/archived/*" | wc -l`
-   - Compare against budget: **80 max total**
+   - Compare against budget: **90 max total**
    - `find docs/ -name "*.md" -not -path "*/archived/*" | sed 's|docs/||' | cut -d'/' -f1 | sort | uniq -c | sort -rn`
 
 2. Check AI operating documentation drift.
@@ -22,6 +22,7 @@ Enforce Doc Budget Policy to prevent document sprawl.
    - This catches stale MCP/Skills guidance outside the active `docs/` budget surface, including `AGENTS.md`, `GEMINI.md`, `.claude/rules/*.md`, and vibe-coding AI docs.
 
 3. Check per-directory budgets.
+   - architecture/*: 12 | design/*: 12 | operations/*: 8 | adr/*: 8
    - reference/architecture/*: 28 | development/*: 28 (includes vibe-coding/*) | guides/*: 14
    - troubleshooting/*: 7 | root: 5
    - Flag any directory over budget
@@ -64,7 +65,7 @@ Enforce Doc Budget Policy to prevent document sprawl.
 
 ```text
 Doc Budget Report
-- Total active: XX / 80
+- Total active: XX / 90
 - Over-budget dirs: [none | list]
 - Duplicate candidates: [none | list]
 - Stale (90d+): [count] files

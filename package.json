@@ -65,6 +65,8 @@
     "docs:check:wsl": "bash scripts/wsl/docs-management-check.sh",
     "docs:check:wsl:strict": "bash scripts/wsl/docs-management-check.sh --strict",
     "docs:ai-consistency": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON node_modules/ts-node/dist/bin.js scripts/docs/check-ai-docs-consistency.ts",
+    "docs:api:endpoints": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON node_modules/ts-node/dist/bin.js scripts/docs/generate-api-endpoints.ts --write",
+    "docs:api:endpoints:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON node_modules/ts-node/dist/bin.js scripts/docs/generate-api-endpoints.ts",
     "docs:components:map": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON node_modules/ts-node/dist/bin.js scripts/docs/generate-component-dependency-map.ts",
     "docs:components:verify": "bash scripts/docs/verify-component-dependency-map.sh",
     "docs:inventory": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON node_modules/ts-node/dist/bin.js scripts/docs/generate-inventory.ts",

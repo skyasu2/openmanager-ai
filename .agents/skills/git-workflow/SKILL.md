@@ -1,6 +1,6 @@
 ---
 name: git-workflow
-description: Safe git commit, push, and PR workflow for OpenManager with conventional commits, non-destructive rules, and MCP-first PR creation. Use when user asks to commit, push, open PR, or sync branch.
+description: Safe GitLab-canonical git commit, push, MR/PR, and public snapshot sync workflow for OpenManager with conventional commits, non-destructive rules, and pipeline verification. Use when user asks to commit, push, open PR/MR, or sync branch.
 ---
 
 # OpenManager Git Workflow
@@ -9,13 +9,13 @@ description: Safe git commit, push, and PR workflow for OpenManager with convent
 
 Use a deterministic commit/push/PR flow with safety checks.
 
-## Current topology (2026-04-03)
+## Current topology (2026-05-05)
 
 - `gitlab` remote: canonical private repo, full history/tests/docs/QA assets, release/tag authority
 - `github-public` remote: preferred public GitHub code-only snapshot with minimal public-only history
 - `origin` remote: legacy fallback for the public GitHub snapshot
-- Vercel frontend deploy source: `gitlab` `main`
-- GitLab CI policy: active branch/main validate plus semver tag deploy/deploy_ai_engine/smoke delivery
+- Frontend production deploy authority: GitLab CI semver tag `deploy` job; branch/main pushes validate but do not directly deploy production.
+- GitLab CI policy: active branch/main validate plus semver tag `deploy` / `deploy_ai_engine` / `smoke` delivery.
 - Exact job names/rules live in `.gitlab-ci.yml`; do not hardcode them in a commit message or review unless you re-read that file first.
 - Current stable shape:
   - canonical validation runs on self-hosted `wsl2-docker`
