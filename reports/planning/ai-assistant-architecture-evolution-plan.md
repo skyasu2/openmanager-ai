@@ -1,7 +1,7 @@
 > Owner: project
 > Status: Completed
 > Doc type: Plan
-> Last reviewed: 2026-05-04
+> Last reviewed: 2026-05-05
 > Tags: ai-assistant,architecture,assistant-plan,artifact,deterministic-analytics,vercel-ai-sdk,multi-agent,planner,durable-workflow,mcp
 
 # AI Assistant Architecture Evolution Plan
@@ -484,3 +484,66 @@ type MonitoringFactPack = {
 - 2026-05-03 M7 완료: `MonitoringFactPack` builder를 추가해 monitoring snapshot의 `sourceMode/queryAsOf/evidenceRefs`를 보존하면서 CPU/Memory/Disk/Network severity를 threshold 기반으로 재계산한다. Replay JSON snapshot은 `factPack`을 함께 반환한다. Retrieval Lite recall guard는 최소 evidence 미달을 `insufficient_evidence`로 노출하고, provider freshness guard는 `smokeEvidence` 날짜를 deterministic하게 검사한다. 신규 LLM/provider 호출과 route surface 증설은 없다.
 - 2026-05-04 최신 설계 트렌드 검토 반영: LangGraph류 Durable Workflow는 checkpoint/replay/HITL이 필요한 장기 RCA/report workflow가 될 때, MCP-Native Tool Fabric은 외부 runbook/GitHub/incident system tool ecosystem이 커질 때, Managed Agent Platform은 provider lock-in과 무료 티어 원칙을 의식적으로 포기할 때만 재검토한다. 현재는 Option A 유지 + C/E 원칙 흡수 + F/G/H 원칙 일부 차용이 더 합리적이다.
 - 2026-05-04 상태 보정: Streaming UI S1~S3는 v8.11.88로 배포/QA까지 완료됐다. 이 계획서의 남은 항목은 active implementation task가 아니라 facade authority 이전, artifact workspace/schema registry, provider reasoning capability policy, factPack consumer 확대 같은 차기 plan seed로만 취급한다.
+
+## 2026-05-05 도메인 재사용성 평가
+
+현재 AI assistant 구현은 `AI Engine Kernel`과 `Monitoring Domain`이 부분적으로 섞여 있다. 따라서 다른 도메인, 예를 들어 인사·보안·회계·개발 assistant를 추가할 때 현재 core를 그대로 가져다 쓰는 수준은 아직 아니다. 다만 provider/model 선택, fallback, streaming/job execution, `BaseAgent`/`AgentFactory`, tool loop, `AssistantPlan`/`AssistantResult` metadata 같은 런타임 골격은 재사용 가능한 자산이다.
+
+판정:
+
+| 항목 | 평가 | 근거 |
+|------|------|------|
+| 런타임 core 재사용성 | 높음 | provider policy, fallback, agent runtime, stream/job metadata는 도메인 독립 계층으로 추출 가능 |
+| 도메인 교체 가능성 | 낮음~중간 | routing, artifact kind, prompt, tool registry, frontend renderer가 server monitoring 전용 이름과 schema에 직접 결합 |
+| 분리 리팩터링 가능성 | 높음 | 이미 `AssistantPlan`, planner shadow, `ArtifactEnvelope`, `MonitoringFactPack` 같은 경계 후보가 존재 |
+| 즉시 새 assistant 추가 적합성 | 조건부 보류 | 새 도메인을 붙이면 core 재사용보다 monitoring assistant 복제/수정 형태가 될 가능성이 높음 |
+
+목표 분리 모델:
+
+```text
+AI Engine Kernel
+- provider/model selection
+- fallback/quota/circuit breaker
+- streaming/job execution
+- BaseAgent / AgentFactory runtime
+- tool loop execution
+- AssistantPlan / AssistantResult metadata
+- observability/cache/session
+
+Domain Pack
+- domain prompts
+- domain tools
+- domain routing policy
+- domain artifact schemas
+- domain fact/evidence builder
+- optional frontend renderers
+```
+
+주요 결합 지점:
+
+| 영역 | 현재 결합 | 개선 방향 |
+|------|-----------|-----------|
+| RouteDecision / artifact kind | `server-snapshot`, `incident-report`, `monitoring-analysis`가 고정 | `ArtifactRegistry`와 domain-owned artifact kind로 이동 |
+| Supervisor routing | server monitoring prompt, CPU/memory/incident/RCA keyword와 tool category에 직접 의존 | `RoutingPolicy`를 domain pack에서 제공 |
+| Agent config / tools | agent type과 tool registry가 monitoring tool set에 닫혀 있음 | `ToolRegistry` + domain별 agent config registry로 분리 |
+| Common instructions | common instruction 안에도 server ID, metric, monitoring 전제가 섞여 있음 | universal instruction과 monitoring instruction을 분리 |
+| Fact/evidence layer | `MonitoringFactPack`은 좋은 경계지만 monitoring metric schema에 고정 | domain별 `FactPack` 계약을 core interface로 일반화 |
+| Frontend renderer | artifact card, tab, tool presentation이 monitoring artifact를 직접 import | artifact renderer registry로 전환 |
+
+후속 작업화 기준:
+
+- 새 도메인 추가 시 core 파일 수정이 필요하면 분리 실패로 본다.
+- `cloud-run/ai-engine`의 core 계층은 monitoring tool, server metric, incident artifact를 import하지 않아야 한다.
+- 기존 server monitoring assistant는 첫 번째 `monitoringDomainPack`으로 이관한다.
+- HR/security/accounting/developer 같은 두 번째 sample domain은 core 변경 없이 등록·라우팅·렌더링 smoke가 가능해야 한다.
+- 신규 LLM/provider 호출, DB write, Cloud Run/Vercel 증설은 기본값으로 추가하지 않는다.
+
+권장 실행 순서:
+
+1. 읽기 전용 inventory: `core`, `domain`, `shared-but-domain-tainted` 파일 목록을 작성한다.
+2. interface 초안: `AssistantDomain`, `RoutingPolicy`, `ToolRegistry`, `ArtifactRegistry`, `FactPack` 경계를 정의한다.
+3. behavior no-change migration: 현재 monitoring 구현을 `monitoringDomainPack`으로 옮기되 route/API shape는 유지한다.
+4. registry 적용: supervisor routing, agent config, artifact renderer가 domain registry를 통해 동작하게 한다.
+5. second-domain smoke: 실제 제품 기능을 늘리기보다 최소 stub domain으로 core 수정 없는 확장성을 검증한다.
+
+이 항목은 즉시 구현 task가 아니라 차기 architecture refactor seed다. 구현 착수 시 `TODO.md` Backlog에 별도 항목으로 승격하고, 계약 변경 범위이므로 `Status: Draft -> Approved` 및 failing spec 선행 원칙을 적용한다.
