@@ -129,6 +129,77 @@ portable core 분리는 현재 동작이 정상이라는 전제 위에서만 진
 | production QA pending | 현재 기능 영향 여부를 판단해 blocker면 선해결 |
 | 비용/외부 provider 호출 필요 | deterministic mock/contract test로 대체, 실호출은 별도 gate |
 
+## AI 벤치마크/테스트 도구 인벤토리
+
+portable core 분리 전후의 회귀 기준은 "새 외부 도구를 많이 붙이는 것"이 아니라, 현재 검증 체계를 비용 0원 deterministic benchmark로 확장하는 것이다.
+
+### 현재 사용 중인 도구
+
+| 도구/위치 | 용도 | 실행 방식 | 비용/외부 호출 | 현재 상태 |
+|-----------|------|-----------|----------------|-----------|
+| Vitest root targeted suites | frontend/BFF/contract/intent 회귀 | `npx vitest run ...` 및 `npm run test:quick` | 없음 | 기본 gate. artifact intent eval과 bench가 포함됨 |
+| AI Engine Vitest | Cloud Run supervisor/agent/tool/retrieval/fact pack 회귀 | `cd cloud-run/ai-engine && npm test` | 없음 | 기본 gate. provider/tool은 mock 중심 |
+| Artifact intent deterministic benchmark | artifact false-positive/false-negative 방어 | `tests/intent-classifier/intent-classifier.eval.test.ts`, `tests/artifacts/intent-classifier.bench.ts` | 없음 | 현재 corpus `124/124`, precision/recall `1.0000` |
+| Artifact intent production replay | QA/운영자 패턴 기반 artifact drift 방어 | `tests/intent-classifier/intent-classifier.production-replay.test.ts` | 없음 | production-style corpus `19/19`, precision/recall `1.0000` |
+| Promptfoo golden eval | prompt/model manual A/B, NLQ/Analyst/Reporter/Supervisor micro benchmark | `cd cloud-run/ai-engine && npm run prompt:eval` | live provider 호출 가능 | 수동 전용. 25 cases, providers 2, estimated calls 50, `llm-rubric=0` |
+| Promptfoo redteam | prompt injection/off-domain/security refusal smoke | `cd cloud-run/ai-engine && npm run prompt:redteam` | live provider 호출 가능 | 수동 전용. 10 cases, estimated calls 10, `llm-rubric=0` |
+| Promptfoo config contract | Promptfoo 비용/구성 drift 방어 | `src/lib/promptfoo-config-contract.test.ts` | 없음 | `llm-rubric < 20%`, defaultTest judge 금지, warning script 확인 |
+| QA tracker / Playwright MCP evidence | production release-facing behavior evidence | `npm run qa:status`, recorded QA runs | 실환경 QA 시 외부 호출 가능 | 최신 counted run `QA-20260505-0412`, pending `0` |
+| Retrieval/provider drift tests | Knowledge Retrieval Lite, provider policy stale 문구 회귀 | targeted Vitest suites | 없음 | retrieval refactor archive와 M7 eval guard 기반 |
+
+### 현재 도구의 역할 분리
+
+```text
+CI / 로컬 기본 gate
+  -> Vitest deterministic contract
+  -> artifact intent eval/replay
+  -> Promptfoo config contract
+
+수동 / 릴리즈 전 보조 평가
+  -> Promptfoo live provider eval
+  -> Promptfoo redteam
+  -> Playwright MCP production QA
+
+도입 보류
+  -> LLM-as-a-Judge 기반 Ragas/DeepEval/TruLens/Giskard/garak broad scan
+```
+
+### portable core 작업에 추가할 벤치마크
+
+현재 외부 프레임워크를 추가하지 않고, 먼저 Vitest 기반 deterministic benchmark를 늘린다. 이 세 항목은 portable core 리팩터링의 behavior-preserving migration 기준으로 사용한다.
+
+| 추가 벤치마크 | 목적 | 위치 후보 | 비용 | 착수 시점 |
+|---------------|------|-----------|------|-----------|
+| Route / Tool Trace Replay Benchmark | stream/job/artifact, single/multi, `AssistantPlan.executionMode`, tool call sequence 보존 | `tests/ai-route-replay/*.test.ts`, `cloud-run/ai-engine/src/services/ai-sdk/*routing*.test.ts` | 0원 | Task 0C |
+| Retrieval Evidence Recall Benchmark | RAG/Retrieval Lite evidence top-k, expected path/document id, `suppressedReason` 보존 | `tests/retrieval/evidence-recall.bench.ts`, `cloud-run/ai-engine/src/lib/knowledge-retrieval-lite*.test.ts` | 0원 | Task 0C |
+| Stream Contract Snapshot Benchmark | `data-start`/`data-mode`/`data-tool-call`/`data-tool-result`/`text-*`/`data-done` event shape 보존 | `tests/ai-stream/stream-contract-replay.test.ts`, existing stream route tests | 0원 | Task 0C |
+
+### 외부 무료 도구 도입 판단
+
+| 도구 | 판단 | 이유 |
+|------|------|------|
+| Ragas | 지금은 보류, manual/nightly 후보 | RAG faithfulness/answer relevancy에는 유용하지만 metric에 따라 LLM judge 호출과 Python dependency가 늘어남 |
+| DeepEval | 지금은 보류, manual report/task-quality 후보 | agent task completion 품질 평가에는 적합하지만 기본 gate에 넣기엔 LLM judge 비용과 dependency surface가 큼 |
+| TruLens | 지금은 보류, RAG triad 수동 후보 | RAG feedback에는 좋지만 provider feedback 함수를 쓰면 비용이 생김 |
+| Giskard | 지금은 보류, 월간 security scan 후보 | LLM scan은 유용하지만 broad scan은 호출량과 Python dependency가 큼 |
+| garak | 지금은 보류, 월간 adversarial scan 후보 | jailbreak/prompt-injection probe가 많아 수동 실행만 적합 |
+| Inspect AI / OpenAI Evals / lm-eval-harness | 현재 범위 보류 | app-level route/tool/RAG 회귀보다 model capability eval 성격이 강함 |
+
+도입 기준:
+
+- 기본 CI/로컬 gate에는 live LLM judge를 넣지 않는다.
+- 외부 도구는 `manual` 또는 `nightly`로만 시작하고, 예상 provider call 수와 free-tier 영향 preflight가 있어야 한다.
+- 먼저 route/tool/retrieval/stream deterministic benchmark가 충분하지 않은 구체적 gap이 확인되어야 한다.
+
+웹 검토 근거(2026-05-05):
+
+- Promptfoo 공식 문서는 eval/redteam/CI/CD를 모두 지원하는 LLM app 평가 도구로 설명한다. 현재 repo에 이미 들어와 있으므로 신규 도구보다 기존 Promptfoo contract/preflight 강화가 우선이다. ([intro](https://www.promptfoo.dev/docs/intro/), [redteam quickstart](https://www.promptfoo.dev/docs/red-team/quickstart/))
+- Ragas는 RAG/agent/tool-use metric을 제공하지만 LLM 기반 metric이 1회 이상 LLM 호출을 쓸 수 있다고 명시한다. 기본 gate가 아니라 수동 후보로 둔다. ([metrics](https://docs.ragas.io/en/stable/concepts/metrics/available_metrics/))
+- DeepEval은 LLM-as-a-Judge를 핵심 평가 방식으로 다룬다. 품질 리포트에는 유용하지만 비용 0원 deterministic gate와는 맞지 않는다. ([LLM-as-a-Judge guide](https://deepeval.com/guides/guides-llm-as-a-judge))
+- TruLens feedback provider는 OpenAI/Bedrock/LiteLLM/LangChain 기반 LLM provider와 relevance/correctness/tool trace scoring을 제공한다. RAG feedback 수동 분석 후보로만 둔다. ([LLM provider reference](https://www.trulens.org/reference/trulens/feedback/llm_provider/))
+- Giskard와 garak은 LLM vulnerability scanning/red-team 쪽이 강하지만 broad scan은 호출량과 dependency surface가 커서 월간/릴리즈 전 수동 scan 후보가 맞다. ([Giskard scan](https://docs.giskard.ai/hub/sdk/scan/index.html), [garak probes](https://docs.garak.ai/garak/garak-components/vulnerability-probes))
+- Inspect AI와 lm-evaluation-harness는 모델/agent capability benchmark에는 강하지만, 이 작업의 1차 목표인 OpenManager app-level route/tool/RAG/stream contract 보존과는 우선순위가 낮다. ([Inspect AI](https://inspect.aisi.org.uk/), [lm-evaluation-harness](https://github.com/EleutherAI/lm-evaluation-harness))
+
 ## 범위
 
 ### 포함
@@ -324,8 +395,9 @@ portable core task가 완료될 때 기존 Backlog와 중복 설계가 생기지
 > 착수 전 Status가 Approved인지 확인한다.
 
 - [x] Task -1 — 현재 동작 무결성 게이트 통과 및 baseline 재기록
-- [ ] Task 0A — 현재 코드 기준 boundary violation failing tests 작성
+- [x] Task 0A — 현재 코드 기준 boundary violation failing tests 작성
 - [ ] Task 0B — Task 2+ scaffold-aware contract/dependency spec checkpoint 추가
+- [x] Task 0C — portable core baseline benchmark 보강: route/tool trace replay, retrieval evidence recall, stream contract snapshot
 - [ ] Task 1 — read-only inventory: `core-candidate`, `domain`, `shared-but-domain-tainted`, `adapter`, `compatibility-wrapper` 분류표 작성
 - [ ] Task 2 — `AssistantDomain` / registry / adapter interface 추가
 - [ ] Task 3 — monitoring prompt/routing/tool/fact/artifact를 `monitoringDomainPack`으로 이관
@@ -343,6 +415,7 @@ portable core task가 완료될 때 기존 Backlog와 중복 설계가 생기지
 | Task -1 | 없음 또는 `test:` | 선택 | ❌ | ❌ |
 | Task 0A | `test(spec):` | 선택 | ❌ | ❌ |
 | Task 0B | `test(spec):` | 선택 | ❌ | ❌ |
+| Task 0C | `test(spec):` | 선택 | ❌ | ❌ |
 | Task 1 | `docs:` 또는 `test:` | 선택 | ❌ | ❌ |
 | Task 2~4 | `refactor:` | ✅ | ✅ | 필요 시 |
 | Task 5 | `refactor:` | ✅ | ❌ | ✅ |
@@ -356,6 +429,7 @@ portable core task가 완료될 때 기존 Backlog와 중복 설계가 생기지
 | Task -1 완료 후 | baseline 검증이 충분한지, 남은 회귀/QA pending이 없는지 |
 | Task 0A 완료 후 | 현재 코드 위반 탐지 테스트가 portability 목표를 과도하게/부족하게 표현하지 않는지 |
 | Task 0B 및 각 scaffold checkpoint 후 | 새 core/domain/adapter guard가 실제 생성된 경로와 계약을 정확히 겨냥하는지 |
+| Task 0C 완료 후 | route/tool/retrieval/stream benchmark가 live provider 호출 없이 migration 기준선을 충분히 잡는지 |
 | Task 2 완료 후 | core interface가 monitoring 도메인 용어를 포함하지 않는지 |
 | Task 4 완료 후 | 기존 OpenManager route behavior와 cost guard가 유지되는지 |
 | Task 5 완료 후 | frontend renderer registry가 pure/sanitized renderer 계약을 지키고 XSS/unsafe artifact 렌더링을 만들지 않는지 |
@@ -367,6 +441,9 @@ portable core task가 완료될 때 기존 Backlog와 중복 설계가 생기지
 - [ ] `cloud-run/ai-engine/src/core/**` dependency guard 통과
 - [ ] mock sample domain pack smoke 통과
 - [ ] 기존 monitoring assistant targeted corpus 통과
+- [ ] Route / Tool Trace Replay Benchmark 통과
+- [ ] Retrieval Evidence Recall Benchmark 통과
+- [ ] Stream Contract Snapshot Benchmark 통과
 - [ ] root `npm run type-check`
 - [ ] root `npm run lint`
 - [ ] root `npm run test:quick`
@@ -382,3 +459,6 @@ portable core task가 완료될 때 기존 Backlog와 중복 설계가 생기지
 - 2026-05-05: 사용자가 목표를 "다른 프로젝트에서도 AI assistant/chat 기능을 처음부터 만들지 않고 가져다 쓸 수 있는 portable core와 domain pack 교체 구조"로 명확히 정의했다. 기존 archive plan은 이 목표의 기반이지만 완료 상태이므로 새 Active plan으로 분리했다.
 - 2026-05-05: Task -1 baseline/current behavior integrity gate 통과. 기준 HEAD는 `8989906d59a8c0ed1c02dc8c5e08dfc7fd31c50d`, production `/api/version`은 `v8.11.106` / commit `0f305d7858a4d3691059528a5de9e3b1ba12bc0a`, QA tracker는 pending `0` 및 Active Gate Warning `None`이다. 검증: root targeted AI suite, Cloud Run targeted supervisor/fact/retrieval suite `29/29`, root `type-check`, `lint`, `test:quick`, `test:contract`, AI Engine `type-check`, AI Engine `npm test` `95 files / 1012 tests`, `docs:budget`, `docs:ai-consistency`, `git diff --check`. 계약 섹션과 테스트 시나리오가 확정되어 plan status를 `Approved`로 승격했다. 다음 단계는 Task 0A current-code boundary failing tests 작성이다.
 - 2026-05-05: 계획서 리뷰에서 지적된 Task 0 착수점, 결합 이관 순서, Task 1 inventory 기준, frontend renderer 보안 계약, Backlog 연결 게이트를 반영했다. Task 0은 현재 코드 기준 `0A` boundary detector와 Task 2 이후 `0B` scaffold-aware guard로 분리했다.
+- 2026-05-05: 현재 AI 벤치마크/테스트 도구를 분석해 plan에 반영했다. 기존 도구는 Vitest deterministic contract, artifact intent eval/replay, Promptfoo manual golden/redteam, Promptfoo config contract, QA tracker/Playwright evidence로 분류했다. portable core 작업 전 추가 도입은 외부 LLM judge 도구가 아니라 Task 0C의 route/tool trace replay, retrieval evidence recall, stream contract snapshot deterministic benchmark로 제한한다.
+- 2026-05-05: Task 0A 완료. `c38bd68c3`에서 current-code boundary guard를 추가했고, `d84b6be84`에서 monitoring artifact registry, monitoring supervisor prompt/source module, monitoring tool registry로 domain ownership을 분리했다. 검증: boundary guard, root `type-check`/`lint`/`test:quick`/`test:contract`, AI Engine `type-check`/`npm test` `95 files / 1012 tests`, GitLab pipeline `2501000082` success. 다음 단계는 Task 0C deterministic benchmark 보강이다.
+- 2026-05-05: Task 0C 완료. `portable-core-route-retrieval.bench.test.ts`로 route/tool trace replay와 retrieval evidence recall baseline을 고정하고, `portable-core-stream-contract.bench.test.ts`로 UI message stream event shape를 고정했다. 모두 live provider/외부 DB 호출 없이 Vitest에서 실행된다. 다음 단계는 Task 1 inventory 분류표 작성이다.

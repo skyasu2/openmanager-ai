@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-05 KST (`portable AI assistant plan hardened for Task 0A entry`)
+**Last Updated**: 2026-05-05 KST (`portable AI assistant Task 0C baseline benchmarks complete`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| AI assistant portable core/domain pack modularization | High | Approved | Task -1 baseline/current behavior integrity gate 통과. 기준 HEAD `8989906d59a8c0ed1c02dc8c5e08dfc7fd31c50d`, production `v8.11.106`, QA pending `0`. 계획서 보강 완료: Task 0A current-code boundary detector와 Task 0B scaffold-aware guard 분리, Task 1 inventory 기준/renderer 보안/Backlog 재검토 게이트 추가. 다음 단계는 Task 0A failing tests 작성. 상세: [ai-assistant-portable-core-domain-pack-plan.md](ai-assistant-portable-core-domain-pack-plan.md) |
+| AI assistant portable core/domain pack modularization | High | Approved | Task 0A 완료: current-code boundary guard 추가 후 monitoring artifact/prompt/source/tool ownership을 domain module로 분리했고 GitLab pipeline `2501000082` success. Task 0C 완료: route/tool trace replay, retrieval evidence recall, stream contract snapshot deterministic benchmark 추가. 다음 단계는 Task 1 inventory 분류표 작성. 상세: [ai-assistant-portable-core-domain-pack-plan.md](ai-assistant-portable-core-domain-pack-plan.md) |
 
 ---
 
