@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-06 KST (`Artifact workspace schema/replay core completed`)
+**Last Updated**: 2026-05-06 KST (`Artifact workspace store and legacy extraction completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| _No active task_ | - | - | 2026-05-06 기준 Active plan 없음. 다음 후보는 Backlog의 `AI advanced surface targeted QA pack`, `AI artifact workspace/schema registry and replay pack` 중 우선순위 재선정. |
+| _No active task_ | - | - | 2026-05-06 기준 Active plan 없음. 다음 후보는 Backlog의 `AI advanced surface targeted QA pack`, `AI artifact workspace UI/export and compare UX` 중 우선순위 재선정. |
 
 ---
 
@@ -16,7 +16,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| AI artifact workspace store and legacy migration | High | #296에서 artifact family/version schema registry와 deterministic replay pack create/read/compare core는 완료. 남은 범위는 portfolio-facing workspace store UI/API boundary, legacy chat history migration, replay pack export/import affordance, artifact compare UX이다. 기본값은 local/session-first이며 신규 LLM 호출과 기본 DB write 증가는 별도 gate로 제한한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
+| AI artifact workspace UI/export and compare UX | High | #296에서 artifact family/version schema registry와 deterministic replay pack create/read/compare core를 완료했고, #297에서 session-first workspace store와 legacy chat history replay pack extraction core를 완료. 남은 범위는 portfolio-facing workspace UI/API boundary, replay pack export/import affordance, artifact compare UX이다. 신규 LLM 호출과 기본 DB write 증가는 별도 gate로 제한한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
 | AI advanced surface targeted QA pack | Medium | 이번 Vercel QA는 AI Chat stream과 탭 렌더링 중심이었다. 비용 보호를 유지하면서 Reporter 1회, anomaly/trend 1회, RAG/Web 대표 질의 1회만 별도 targeted QA로 검증하고 실제 버튼/기능 동작 여부를 기록한다. 실패가 확인될 때만 코드 수정으로 승격한다. |
 | MonitoringFactPack consumer/evidence UI expansion | Medium | M7에서 `MonitoringFactPack` 자체는 도입됐지만 모든 artifact/report/evidence panel이 같은 fact boundary를 소비하지는 않는다. metric severity는 deterministic fact pack이 책임지고 LLM은 explanation/formatting만 수행한다는 계약을 UI와 answer-quality eval까지 확장한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
 | Provider reasoning capability policy contract | Medium | 현재 `thinking`은 provider-native reasoning이 아니라 app-level routing intensity다. 무료 tier provider의 reasoning 지원은 계정 entitlement/latency/quota가 변동되므로 `reasoningCapability`, `lastVerified`, `expiresAt`, smoke source를 policy contract로 승격한 뒤 opt-in으로만 검토한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
@@ -46,6 +46,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-06 #297)
+- [x] AI artifact workspace store and legacy migration core
+  - `createArtifactWorkspaceStore()`를 추가해 replay pack을 session storage 우선으로 저장·복원하고, policy에 `allowsDatabaseWritesByDefault=false`를 명시
+  - 손상된 workspace snapshot과 unsupported replay entry는 restore 시 drop/sanitize해 raw unsafe payload를 노출하지 않도록 고정
+  - `extractArtifactReplayPackFromChatHistory()`를 추가해 기존 `artifactEnvelopes`와 legacy artifact metadata(`incidentReportArtifact`, `monitoringAnalysisArtifact`, `serverSnapshotArtifact`)를 deterministic replay pack으로 변환
+  - 검증: artifact workspace store targeted test
 
 ### Completed (2026-05-06 #296)
 - [x] AI artifact workspace schema registry and replay pack core
