@@ -165,7 +165,7 @@ export const nextJsApiHandlers = [
   }),
 
   /**
-   * AI Supervisor API - Cloud Run Multi-Agent Supervisor
+   * AI Supervisor API - Cloud Run AI Supervisor
    *
    * @example POST /api/ai/supervisor
    */

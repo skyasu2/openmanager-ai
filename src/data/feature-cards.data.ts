@@ -1,7 +1,7 @@
 /**
  * Feature Cards 데이터
  * 메인 페이지에 표시되는 4개의 주요 기능 카드 데이터
- * @updated 2026-05-02 - retrieval/deployment wording synced with runtime
+ * @updated 2026-05-05 - AI assistant taxonomy synced with deterministic-first runtime
  */
 
 import { Bot, Database, Sparkles, Zap } from 'lucide-react';
@@ -16,18 +16,18 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
     icon: Bot,
     gradient: 'from-indigo-500 via-purple-500 to-pink-500',
     detailedContent: {
-      overview: `운영자가 메트릭 그래프를 직접 해석하지 않아도, 질문 하나로 현재 상태, 원인 분석, 다음 조치안을 받을 수 있도록 설계한 AI 실행 계층입니다. 4개의 AI Provider(Cerebras, Groq, Mistral, Gemini)와 Vercel AI SDK 6.0 기반 5-Agent 멀티에이전트 오케스트레이션을 사용하며, Vision Agent의 대시보드 스크린샷 분석과 긴 로그 컨텍스트 분석을 지원합니다. 경량 커스텀 TypeScript ML(통계 이상 탐지 + 추세 예측), Knowledge Retrieval Lite(BM25 RPC + metadata boost), 요청 기반 웹 검색을 분리해 무료 티어 사용량을 예측 가능하게 유지합니다.`,
+      overview: `운영자가 메트릭 그래프를 직접 해석하지 않아도, 질문 하나로 현재 상태, 원인 분석, 다음 조치안을 받을 수 있도록 설계한 운영 의사결정 AI 어시스턴트입니다. 핵심 수치와 판정은 deterministic fact layer가 책임지고, LLM은 tool-calling과 설명·보고서·조치안 생성을 맡습니다. 4개의 AI Provider(Cerebras, Groq, Mistral, Gemini)를 fallback으로 사용하며, RCA/report/advisor/vision처럼 복잡한 요청만 5개 라우팅 에이전트로 escalation합니다. 경량 커스텀 TypeScript ML(통계 이상 탐지 + 추세 예측), Knowledge Retrieval Lite(BM25 RPC + metadata boost), 요청 기반 웹 검색을 분리해 무료 티어 사용량을 예측 가능하게 유지합니다.`,
       features: [
         '🧠 Cerebras Inference: 초고속 추론 인프라 (llama3.1-8b) — 짧은 컨텍스트 fallback 및 structured route 보조',
         '⚡ Groq Cloud: LPU 기반 초고속 500 Tokens/s 추론 (llama-4-scout-17b) — NLQ / Analyst / Tool-calling 1순위 모델',
         '🛡️ Mistral AI: mistral-small-latest — Groq/Cerebras 장애 또는 쿼터 초과 시 무료 티어 친화적 text last-resort fallback 담당',
         '👁️ Gemini Flash-Lite: Vision Agent 전용, 스크린샷과 긴 로그 컨텍스트 분석 — 사고 토큰 없는 안정적 비전 분석 경로',
-        '▲ Vercel AI SDK 6.0: streamText, generateObject 중심 API — 고도화된 멀티 에이전트 스트리밍 응답 아키텍처',
-        '🤖 Multi-Agent Orchestration: Orchestrator Planning + 전문 에이전트 Handoff 시스템 기반의 지능형 라우팅 및 협업 워크플로우',
+        '▲ Vercel AI SDK 6.0: streamText, generateObject 중심 API — tool-calling LLM과 structured output 기반 스트리밍 응답',
+        '🤖 Conditional Agent Escalation: 단순 조회는 deterministic/single path에 남기고 복잡 RCA/report/advisor/vision 요청만 전문 에이전트로 승격',
         '🧪 Custom Monitoring ML: SimpleAnomalyDetector + TrendPredictor.enhanced — 저지연·설명가능성 중심의 운영형 이상 탐지/예측',
         '🔍 Knowledge Retrieval Lite: BM25 RPC + metadata boost 기반 경량 지식 검색 — 외부 프레임워크 없이 직접 구성한 운영 지식 검색',
         '🐘 Supabase Postgres: 운영 지식과 사례 저장 — search_knowledge_text RPC와 RLS로 데이터 계층 단순화',
-        '📊 Langfuse: AI 호출 추적 및 품질 모니터링 — 멀티 에이전트 파이프라인 전체 추적 및 handoff 횟수 기반 지표 분석',
+        '📊 Langfuse: AI 호출 추적 및 품질 모니터링 — resolvedMode, provider fallback, handoff 횟수 기반 지표 분석',
         '⚡ Upstash Redis: 응답 캐싱 및 Rate Limiting — LLM 반복 호출 비용 절감 및 쿼터 관리',
         '☁️ GCP Cloud Run: Node.js 24 + Hono 서버리스 컨테이너 — Vercel 컴퓨팅 부하 분산 및 AI 백엔드 전담, Scale-to-Zero 하이브리드 운영',
       ],
@@ -37,7 +37,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
         'Mistral AI (Text Fallback)',
         'Gemini 2.5 Flash-Lite (Vision)',
         'Vercel AI SDK 6.0',
-        'Multi-Agent Handoff Archi',
+        'Tool-calling LLM + Decision Layer',
         'Knowledge Retrieval Lite (BM25 + metadata boost)',
         'Custom Monitoring ML (TypeScript)',
         'Supabase Postgres (Text RPC)',
@@ -62,7 +62,7 @@ export const FEATURE_CARDS_DATA: FeatureCard[] = [
       features: [
         '▲ Vercel: Next.js 16 최적화 호스팅, 글로벌 CDN, 서버리스 함수 — 프론트엔드 전담, 글로벌 저지연',
         '🐘 Supabase: PostgreSQL + Auth + RLS — 운영 지식, 사용자 상태, 접근 제어를 단일 Postgres 계층으로 통합',
-        '☁️ GCP Cloud Run: Node.js AI SDK Multi-Agent Engine 컨테이너 배포, Scale to Zero — Vercel 컴퓨팅 사용량 분산, AI 어시스턴트 백엔드 전담',
+        '☁️ GCP Cloud Run: Node.js AI SDK runtime 컨테이너 배포, Scale to Zero — Vercel 컴퓨팅 사용량 분산, AI 어시스턴트 백엔드 전담',
         '📬 Cloud Tasks: 사용자 요청에서 파생된 AI job HTTP delivery 큐 — 주기 Cron 없이 장시간 분석을 request-driven으로 분리',
         '⚡ Upstash: Serverless Redis를 이용한 초고속 데이터 캐싱 및 Rate Limiting — LLM 응답 캐싱으로 비용 절감',
         '🐋 Docker: Cloud Run 로컬 개발 환경 에뮬레이션 — 로컬과 배포 환경 차이 제거',

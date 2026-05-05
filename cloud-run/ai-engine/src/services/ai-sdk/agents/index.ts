@@ -1,10 +1,10 @@
 /**
- * Multi-Agent System with AI SDK v6 Native + BaseAgent Pattern
+ * Conditional multi-agent escalation with AI SDK v6 + BaseAgent pattern
  *
  * Architecture:
  * - BaseAgent: Abstract base class for unified agent interface
  * - AgentFactory: Factory for creating agent instances
- * - Orchestrator: Rule-based + LLM routing using generateText
+ * - Orchestrator: Rule-based + LLM fallback routing for complex requests
  *
  * Agents:
  * - NLQ Agent (Groq -> Cerebras -> Mistral): Natural language query processing + summaries

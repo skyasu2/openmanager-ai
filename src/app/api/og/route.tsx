@@ -17,8 +17,8 @@ import { getSiteUrl } from '@/lib/site-url';
 // 기본값 상수
 const DEFAULTS = {
   title: 'OpenManager AI',
-  description: 'AI Native Server Monitoring Platform',
-  tags: ['Next.js 16', 'React 19', 'Vercel AI SDK', '5-Agent System'],
+  description: 'Operational Decision Support AI Assistant',
+  tags: ['Next.js 16', 'React 19', 'Vercel AI SDK', 'Tool-calling AI'],
 } as const;
 
 export async function GET(request: NextRequest) {
@@ -197,7 +197,7 @@ export async function GET(request: NextRequest) {
           OpenManager AI
         </h1>
         <p style={{ color: '#94a3b8', fontSize: '24px' }}>
-          AI Native Server Monitoring
+          Operational Decision Support AI
         </p>
       </div>,
       {

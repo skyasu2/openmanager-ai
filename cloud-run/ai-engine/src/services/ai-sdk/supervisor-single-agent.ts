@@ -196,7 +196,7 @@ export async function executeSupervisor(
 }
 
 // ============================================================================
-// Multi-Agent Mode
+// Conditional multi-agent escalation path
 // ============================================================================
 
 async function executeMultiAgentMode(

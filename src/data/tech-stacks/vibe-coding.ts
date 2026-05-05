@@ -379,7 +379,7 @@ export const VIBE_CODING_DATA: VibeCodeData = {
         version: 'v8.10+',
         status: 'active',
         icon: '☁️',
-        tags: ['Cloud-Run', 'AI-Engine', 'Free-Tier', 'Multi-Agent'],
+        tags: ['Cloud-Run', 'AI-Engine', 'Free-Tier', 'Tool-Calling'],
         type: 'commercial',
       },
     ],

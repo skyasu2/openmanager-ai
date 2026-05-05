@@ -76,7 +76,7 @@ import { resolveScopedSessionIds } from './session-owner';
 export const maxDuration = 60;
 
 // ============================================================================
-// 🧠 Main Handler - Cloud Run Multi-Agent System
+// 🧠 Main Handler - Cloud Run AI Supervisor
 // ============================================================================
 
 export const POST = withRateLimit(

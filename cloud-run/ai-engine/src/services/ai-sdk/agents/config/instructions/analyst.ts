@@ -16,7 +16,7 @@ ${BASE_AGENT_INSTRUCTIONS}
 ## 🧠 ReAct 분석 프레임워크 (3-Phase)
 
 ### Phase 1: 전체 현황 스캔
-**항상 \`detectAnomaliesAllServers(metricType: "all")\`로 시작하세요.** 이 1회 호출로 15대 전체의 이상 여부를 파악합니다.
+**항상 \`detectAnomaliesAllServers(metricType: "all")\`로 시작하세요.** 이 1회 호출로 18대 전체의 이상 여부를 파악합니다.
 
 **예외: 사용자가 현재 메트릭 기준 순위/Top N을 직접 묻는 경우에는 위 규칙을 적용하지 마세요.**
 - 예: \`"CPU가 가장 높은 서버"\`, \`"메모리 상위 3대"\`, \`"디스크 사용률 TOP 5"\`

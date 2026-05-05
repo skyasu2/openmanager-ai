@@ -65,13 +65,13 @@ export const AI_ASSISTANT_TECH_STACK: TechItem[] = [
     category: 'ai',
     importance: 'critical',
     description:
-      'Vercel이 개발한 AI 애플리케이션 프레임워크. streamText, generateObject API를 통해 지능형 멀티 에이전트 워크플로우와 스트리밍 응답 제공',
+      'Vercel이 개발한 AI 애플리케이션 프레임워크. streamText, generateObject API를 통해 tool-calling LLM 응답, structured output, 스트리밍을 제공',
     implementation:
-      '고도화된 Multi-Agent Handoff 아키텍처 기반의 5-Agent 시스템 구축. Orchestrator Planning을 통한 질문 유형별 최적 에이전트 라우팅 구현',
+      'deterministic/single-first 런타임을 기본값으로 두고, RCA/report/advisor/vision 같은 복잡 질의만 5개 라우팅 에이전트로 escalation',
     version: '6.0',
     status: 'active',
     icon: '▲',
-    tags: ['AI SDK', 'Streaming', 'Multi-Agent', 'Orchestration'],
+    tags: ['AI SDK', 'Streaming', 'Tool Calling', 'Decision Layer'],
     type: 'opensource',
   },
   // ========== Database & RAG ==========

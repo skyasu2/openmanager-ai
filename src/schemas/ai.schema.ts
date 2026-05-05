@@ -11,7 +11,7 @@ import {
  *
  * AI 엔진 및 분석에 사용되는 스키마들
  *
- * ## v8.x: Cloud Run Multi-Agent + Gemini Vision 기준 스키마
+ * ## v8.x: Cloud Run deterministic-first AI runtime + Gemini Vision 기준 스키마
  */
 
 // ===== AI 엔진 =====
