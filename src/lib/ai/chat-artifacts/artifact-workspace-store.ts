@@ -4,6 +4,7 @@ import {
   listArtifactSchemaEntries,
   MONITORING_ARTIFACT_DOMAIN_ID,
   readArtifactReplayPack,
+  resolveArtifactSchemaEntry,
 } from './artifact-workspace-registry';
 import {
   type ArtifactEnvelope,
@@ -155,8 +156,28 @@ function isSupportedChatArtifact(value: unknown): value is ChatArtifact {
   return listArtifactSchemaEntries().some((entry) => entry.isPayload(value));
 }
 
+function isSupportedArtifactEnvelope(
+  value: unknown
+): value is ArtifactEnvelope {
+  if (!isRecord(value)) return false;
+
+  const domainId = readString(value.domainId) ?? MONITORING_ARTIFACT_DOMAIN_ID;
+  const artifactKind = readString(value.kind);
+  const artifactVersion = readString(value.artifactVersion);
+  if (!artifactKind || !artifactVersion) return false;
+
+  const schema = resolveArtifactSchemaEntry({
+    domainId,
+    artifactKind,
+    artifactVersion,
+  });
+
+  return schema?.isPayload(value.payload) ?? false;
+}
+
 function readLegacyArtifacts(
-  metadata: ArtifactWorkspaceHistoryMetadata
+  metadata: ArtifactWorkspaceHistoryMetadata,
+  ignoredKinds: ReadonlySet<ChatArtifact['kind']>
 ): ArtifactEnvelope[] {
   return [
     metadata.incidentReportArtifact,
@@ -164,6 +185,7 @@ function readLegacyArtifacts(
     metadata.serverSnapshotArtifact,
   ]
     .filter(isSupportedChatArtifact)
+    .filter((artifact) => !ignoredKinds.has(artifact.kind))
     .map((artifact) =>
       createArtifactEnvelope(artifact, {
         domainId: MONITORING_ARTIFACT_DOMAIN_ID,
@@ -222,10 +244,16 @@ export function extractArtifactReplayPackFromChatHistory({
     if (!metadata) return [];
 
     const currentEnvelopes = Array.isArray(metadata.artifactEnvelopes)
-      ? metadata.artifactEnvelopes
+      ? metadata.artifactEnvelopes.filter(isSupportedArtifactEnvelope)
       : [];
+    const currentKinds = new Set(
+      currentEnvelopes.map((envelope) => envelope.kind)
+    );
 
-    return [...currentEnvelopes, ...readLegacyArtifacts(metadata)];
+    return [
+      ...currentEnvelopes,
+      ...readLegacyArtifacts(metadata, currentKinds),
+    ];
   });
 
   return createArtifactReplayPack({

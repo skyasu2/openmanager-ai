@@ -175,6 +175,39 @@ describe('artifact workspace store', () => {
     expect(() => store.clear()).not.toThrow();
   });
 
+  it('prefers supported artifact envelopes over duplicate legacy metadata', () => {
+    const replayPack = extractArtifactReplayPackFromChatHistory({
+      workspaceId: 'workspace-dedupe-1',
+      createdAt: '2026-05-06T01:15:00.000Z',
+      messages: [
+        {
+          metadata: {
+            artifactEnvelopes: [
+              createArtifactEnvelope(snapshotArtifact, {
+                domainId: MONITORING_ARTIFACT_DOMAIN_ID,
+                sourceMode: 'otel-static',
+                dataSlot: '07:00 KST',
+              }),
+            ],
+            serverSnapshotArtifact: snapshotArtifact,
+          },
+        },
+      ],
+    });
+
+    expect(replayPack.entries).toHaveLength(1);
+    expect(replayPack.entries[0]).toMatchObject({
+      schema: {
+        domainId: MONITORING_ARTIFACT_DOMAIN_ID,
+        familyId: 'server-snapshot',
+        artifactKind: 'server-snapshot',
+        artifactVersion: ARTIFACT_CONTRACT_VERSION,
+      },
+      sourceMode: 'otel-static',
+      payload: snapshotArtifact,
+    });
+  });
+
   it('extracts a deterministic replay pack from envelope and legacy chat history metadata', () => {
     const replayPack = extractArtifactReplayPackFromChatHistory({
       workspaceId: 'workspace-history-1',
