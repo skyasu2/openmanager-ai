@@ -415,15 +415,15 @@ export default function ReportCard({
       )}
 
       {/* Footer */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex min-w-0 items-center space-x-2">
           <Server className="h-4 w-4 text-gray-400" />
-          <span className="text-xs text-gray-500">
+          <span className="min-w-0 break-words text-xs text-gray-500">
             영향받는 서버: {report.affectedServers.join(', ') || '없음'}
           </span>
         </div>
 
-        <div className="flex items-center space-x-1">
+        <div className="flex flex-wrap items-center gap-1.5">
           <span
             className={`rounded-full px-2 py-1 text-xs ${getStatusBadgeStyle(report.status)}`}
           >
@@ -438,6 +438,7 @@ export default function ReportCard({
                 ? 'bg-blue-100 text-blue-600'
                 : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'
             }`}
+            aria-label="상세보기"
             title="상세보기"
           >
             <Eye className="h-4 w-4" />
@@ -448,6 +449,7 @@ export default function ReportCard({
               type="button"
               onClick={() => onResolve(report.id)}
               className="rounded p-1.5 text-gray-400 transition-all duration-200 hover:scale-110 hover:bg-green-100 hover:text-green-600 active:scale-90"
+              aria-label="해결 완료"
               title="해결 완료"
             >
               <CheckSquare className="h-4 w-4" />
@@ -457,14 +459,16 @@ export default function ReportCard({
           <button
             type="button"
             onClick={handleCopyMarkdown}
-            className={`rounded p-1.5 transition-all duration-200 hover:scale-110 active:scale-90 ${
+            className={`inline-flex min-h-9 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-semibold transition-all duration-200 active:scale-95 ${
               copyState === 'copied'
-                ? 'bg-green-100 text-green-600'
-                : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'
+                ? 'border-green-200 bg-green-50 text-green-700'
+                : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
             }`}
+            aria-label={copyState === 'copied' ? 'MD 복사됨' : 'MD 복사'}
             title={copyState === 'copied' ? 'MD 복사됨' : 'MD로 복사'}
           >
             <ClipboardCopy className="h-4 w-4" />
+            <span>{copyState === 'copied' ? '복사됨' : 'MD 복사'}</span>
           </button>
 
           <div className="relative">
@@ -475,10 +479,12 @@ export default function ReportCard({
                   downloadMenuId === report.id ? null : report.id
                 )
               }
-              className="rounded p-1.5 text-gray-400 transition-all duration-200 hover:scale-110 hover:bg-gray-100 hover:text-gray-600 active:scale-90"
+              className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-600 transition-all duration-200 hover:bg-gray-50 active:scale-95"
+              aria-label="보고서 다운로드"
               title="보고서 다운로드"
             >
               <Download className="h-4 w-4" />
+              <span>다운로드</span>
             </button>
             <DownloadMenu
               report={report}

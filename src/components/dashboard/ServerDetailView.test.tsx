@@ -2,11 +2,22 @@
  * @vitest-environment jsdom
  */
 
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import type React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Server } from '@/types/server';
 import ServerDetailView from './ServerDetailView';
+
+const serverMetricsMock = vi.hoisted(() => ({
+  metricsHistory: [] as Array<{
+    timestamp: string;
+    cpu: number;
+    memory: number;
+    disk: number;
+    network?: number;
+  }>,
+  loadMetricsHistory: vi.fn(),
+}));
 
 vi.mock('lucide-react', () => {
   const MockIcon = () => <svg aria-hidden="true" />;
@@ -39,8 +50,8 @@ vi.mock('next/link', () => ({
 
 vi.mock('@/hooks/useServerMetrics', () => ({
   useServerMetrics: () => ({
-    metricsHistory: [],
-    loadMetricsHistory: vi.fn(),
+    metricsHistory: serverMetricsMock.metricsHistory,
+    loadMetricsHistory: serverMetricsMock.loadMetricsHistory,
   }),
 }));
 
@@ -49,7 +60,27 @@ vi.mock('./EnhancedServerModal.OverviewTab', () => ({
 }));
 
 vi.mock('./EnhancedServerModal.MetricsTab', () => ({
-  MetricsTab: () => <div data-testid="metrics-tab" />,
+  MetricsTab: ({
+    realtimeData,
+  }: {
+    realtimeData: {
+      cpu: number[];
+      memory: number[];
+      disk: number[];
+      network: number[];
+    };
+  }) => (
+    <div data-testid="metrics-tab">
+      <span data-testid="metrics-latest">
+        {[
+          realtimeData.cpu.at(-1),
+          realtimeData.memory.at(-1),
+          realtimeData.disk.at(-1),
+          realtimeData.network.at(-1),
+        ].join('/')}
+      </span>
+    </div>
+  ),
 }));
 
 vi.mock('./EnhancedServerModal.ProcessesTab', () => ({
@@ -57,15 +88,63 @@ vi.mock('./EnhancedServerModal.ProcessesTab', () => ({
 }));
 
 vi.mock('./EnhancedServerModal.LogsTab', () => ({
-  LogsTab: () => <div data-testid="logs-tab" />,
+  LogsTab: ({
+    serverMetrics,
+  }: {
+    serverMetrics: {
+      cpu: number;
+      memory: number;
+      disk: number;
+      network: number;
+    };
+  }) => (
+    <div data-testid="logs-tab">
+      <span data-testid="logs-metrics">
+        {[
+          serverMetrics.cpu,
+          serverMetrics.memory,
+          serverMetrics.disk,
+          serverMetrics.network,
+        ].join('/')}
+      </span>
+    </div>
+  ),
 }));
 
 vi.mock('./EnhancedServerModal.NetworkTab', () => ({
-  NetworkTab: () => <div data-testid="network-tab" />,
+  NetworkTab: ({
+    realtimeData,
+  }: {
+    realtimeData: {
+      network: number[];
+    };
+  }) => (
+    <div data-testid="network-tab">
+      <span data-testid="network-latest">{realtimeData.network.at(-1)}</span>
+    </div>
+  ),
 }));
 
 vi.mock('./ServerModalTabNav', () => ({
-  ServerModalTabNav: () => <div data-testid="server-modal-tab-nav" />,
+  ServerModalTabNav: ({
+    tabs,
+    onTabSelect,
+  }: {
+    tabs: Array<{ id: string; label: string }>;
+    onTabSelect: (id: 'overview' | 'metrics' | 'logs') => void;
+  }) => (
+    <div data-testid="server-modal-tab-nav">
+      {tabs.map((tab) => (
+        <button
+          key={tab.id}
+          type="button"
+          onClick={() => onTabSelect(tab.id as 'overview' | 'metrics' | 'logs')}
+        >
+          {tab.label}
+        </button>
+      ))}
+    </div>
+  ),
 }));
 
 const baseServer: Server = {
@@ -83,6 +162,7 @@ const baseServer: Server = {
 describe('ServerDetailView', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    serverMetricsMock.metricsHistory = [];
   });
 
   it('서버 type=application을 사람이 읽기 쉬운 레이블로 표시한다', () => {
@@ -109,5 +189,38 @@ describe('ServerDetailView', () => {
 
     expect(screen.getByText('Application · DC1-AZ1')).toBeInTheDocument();
     expect(screen.queryByText('unknown · DC1-AZ1')).not.toBeInTheDocument();
+  });
+
+  it('히스토리 tail이 stale이어도 성능/로그/네트워크 탭은 current slot 값을 사용한다', () => {
+    serverMetricsMock.metricsHistory = [
+      {
+        timestamp: '2026-05-05T00:00:00Z',
+        cpu: 43,
+        memory: 57,
+        disk: 35,
+        network: 25,
+      },
+    ];
+
+    render(
+      <ServerDetailView
+        server={{
+          ...baseServer,
+          cpu: 84,
+          memory: 71,
+          disk: 31,
+          network: 20,
+        }}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '성능 분석' }));
+    expect(screen.getByTestId('metrics-latest')).toHaveTextContent(
+      '84/71/31/20'
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '로그 & 네트워크' }));
+    expect(screen.getByTestId('logs-metrics')).toHaveTextContent('84/71/31/20');
+    expect(screen.getByTestId('network-latest')).toHaveTextContent('20');
   });
 });

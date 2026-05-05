@@ -16,6 +16,32 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Server } from '@/types/server';
 import EnhancedServerModal from './EnhancedServerModal';
 
+const serverMetricsMock = vi.hoisted(() => ({
+  metricsHistory: [] as Array<{
+    cpu: number;
+    memory: number;
+    disk: number;
+    network?: number;
+  }>,
+  loadMetricsHistory: vi.fn(),
+}));
+
+type LogsTabMockProps = {
+  serverId: string;
+  serverMetrics: {
+    cpu: number;
+    memory: number;
+    disk: number;
+    network: number;
+  };
+};
+
+type NetworkTabMockProps = {
+  realtimeData: {
+    network: number[];
+  };
+};
+
 // Mock 5개 탭 컴포넌트
 vi.mock('./EnhancedServerModal.OverviewTab', () => ({
   OverviewTab: vi.fn(() => (
@@ -36,13 +62,19 @@ vi.mock('./EnhancedServerModal.ProcessesTab', () => ({
 }));
 
 vi.mock('./EnhancedServerModal.LogsTab', () => ({
-  LogsTab: vi.fn(({ serverId }: { serverId: string }) => {
+  LogsTab: vi.fn(({ serverId, serverMetrics }: LogsTabMockProps) => {
     const [mountToken] = useState(() => `mount:${serverId}:${Math.random()}`);
     return (
       <div
         data-testid="mock-logs-tab"
         data-server-id={serverId}
         data-mount-token={mountToken}
+        data-metrics={[
+          serverMetrics.cpu,
+          serverMetrics.memory,
+          serverMetrics.disk,
+          serverMetrics.network,
+        ].join(',')}
       >
         Logs Tab
       </div>
@@ -51,16 +83,21 @@ vi.mock('./EnhancedServerModal.LogsTab', () => ({
 }));
 
 vi.mock('./EnhancedServerModal.NetworkTab', () => ({
-  NetworkTab: vi.fn(() => (
-    <div data-testid="mock-network-tab">Network Tab</div>
+  NetworkTab: vi.fn(({ realtimeData }: NetworkTabMockProps) => (
+    <div
+      data-testid="mock-network-tab"
+      data-network-points={realtimeData.network.join(',')}
+    >
+      Network Tab
+    </div>
   )),
 }));
 
 // 모달 오픈 시 호출되는 히스토리 로딩 훅을 목 처리하여 테스트 중 API 요청 제거
 vi.mock('@/hooks/useServerMetrics', () => ({
   useServerMetrics: vi.fn(() => ({
-    metricsHistory: [],
-    loadMetricsHistory: vi.fn(),
+    metricsHistory: serverMetricsMock.metricsHistory,
+    loadMetricsHistory: serverMetricsMock.loadMetricsHistory,
   })),
 }));
 
@@ -98,6 +135,7 @@ describe('🎯 EnhancedServerModal - User Event 테스트', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    serverMetricsMock.metricsHistory = [];
   });
 
   afterEach(() => {
@@ -240,6 +278,26 @@ describe('🎯 EnhancedServerModal - User Event 테스트', () => {
       // LogsTab과 NetworkTab이 표시됨 (통합 탭)
       expect(screen.getByTestId('mock-logs-tab')).toBeDefined();
       expect(screen.getByTestId('mock-network-tab')).toBeDefined();
+    });
+
+    it('logs/network 탭은 히스토리 tail이 오래돼도 현재 서버 수치를 사용한다', () => {
+      serverMetricsMock.metricsHistory = [
+        { cpu: 10, memory: 20, disk: 30, network: 40 },
+        { cpu: 11, memory: 21, disk: 31, network: 41 },
+      ];
+
+      render(<EnhancedServerModal server={mockServer} onClose={mockOnClose} />);
+
+      fireEvent.click(screen.getByRole('tab', { name: /로그/ }));
+
+      expect(screen.getByTestId('mock-logs-tab')).toHaveAttribute(
+        'data-metrics',
+        '45.2,62.8,73.5,28.9'
+      );
+      expect(screen.getByTestId('mock-network-tab')).toHaveAttribute(
+        'data-network-points',
+        '40,28.9'
+      );
     });
 
     it('서버가 바뀌면 LogsTab을 remount해서 로컬 상태를 초기화한다', () => {

@@ -64,4 +64,35 @@ describe('SystemOverviewSection', () => {
       metricValue: 85,
     });
   });
+
+  it('시스템 리소스 평균은 offline 서버의 0 메트릭을 제외한다', () => {
+    render(
+      <SystemOverviewSection
+        servers={
+          [
+            {
+              id: 'online-1',
+              name: 'online-1',
+              cpu: 80,
+              memory: 60,
+              disk: 40,
+              status: 'online',
+            },
+            {
+              id: 'offline-1',
+              name: 'offline-1',
+              cpu: 0,
+              memory: 0,
+              disk: 0,
+              status: 'offline',
+            },
+          ] as Server[]
+        }
+      />
+    );
+
+    expect(screen.getByText('80%')).toBeInTheDocument();
+    expect(screen.getByText('60%')).toBeInTheDocument();
+    expect(screen.getByText('40%')).toBeInTheDocument();
+  });
 });

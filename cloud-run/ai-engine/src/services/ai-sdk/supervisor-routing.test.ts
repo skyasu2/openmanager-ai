@@ -308,6 +308,21 @@ describe('createPrepareStep', () => {
     });
   });
 
+  it('should force searchKnowledgeBase for internal document path queries when RAG is ON', async () => {
+    const prepare = createPrepareStep(
+      'Pre-generated OTel 데이터 SSOT 문서와 파일 경로 알려줘',
+      {
+        enableRAG: true,
+      }
+    );
+    const result = await prepare({ stepNumber: 0 });
+    expect(result.activeTools).toContain('searchKnowledgeBase');
+    expect(result.toolChoice).toEqual({
+      type: 'tool',
+      toolName: 'searchKnowledgeBase',
+    });
+  });
+
   it('should omit searchKnowledgeBase after the forced topology lookup step', async () => {
     const prepare = createPrepareStep('현재 인프라 토폴로지 알려줘', {
       enableRAG: true,
@@ -527,6 +542,7 @@ describe('shouldForceWebSearch', () => {
     expect(shouldForceWebSearch('공식 문서 확인')).toBe(true);
     expect(shouldForceWebSearch('2026 릴리스 노트')).toBe(true);
     expect(shouldForceWebSearch('documentation for nginx')).toBe(true);
+    expect(shouldForceWebSearch('Next.js stable major 알려줘')).toBe(true);
     expect(shouldForceWebSearch('오늘 서울 날씨 알려줘')).toBe(true);
     expect(shouldForceWebSearch('환율 알려줘')).toBe(true);
   });

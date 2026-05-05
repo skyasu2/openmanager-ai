@@ -18,6 +18,25 @@ function clampPercentage(value: number): number {
   return Math.min(100, Math.max(0, value));
 }
 
+export function withCurrentMetricPoint(
+  data: number[],
+  currentValue: number | undefined,
+  options?: { clamp?: boolean }
+): number[] {
+  if (typeof currentValue !== 'number' || !Number.isFinite(currentValue)) {
+    return data;
+  }
+
+  const normalizedValue =
+    options?.clamp === true ? clampPercentage(currentValue) : currentValue;
+
+  if (data.length === 0) {
+    return [normalizedValue];
+  }
+
+  return [...data.slice(0, -1), normalizedValue];
+}
+
 function toChartData(
   status: ServerData['status'],
   descriptor: MetricDescriptor
@@ -46,28 +65,30 @@ export function buildMetricsChartConfigs(
       metric: 'cpu',
       label: 'CPU 사용률',
       icon: '🔥',
-      data: realtimeData.cpu,
+      data: withCurrentMetricPoint(realtimeData.cpu, server.cpu),
     },
     {
       value: server.memory,
       metric: 'memory',
       label: '메모리 사용률',
       icon: '💾',
-      data: realtimeData.memory,
+      data: withCurrentMetricPoint(realtimeData.memory, server.memory),
     },
     {
       value: server.disk,
       metric: 'disk',
       label: '디스크 사용률',
       icon: '💿',
-      data: realtimeData.disk,
+      data: withCurrentMetricPoint(realtimeData.disk, server.disk),
     },
     {
       value: server.network ?? 0,
       metric: 'network',
       label: '네트워크 사용률',
       icon: '🌐',
-      data: realtimeData.network.map(clampPercentage),
+      data: withCurrentMetricPoint(realtimeData.network, server.network, {
+        clamp: true,
+      }).map(clampPercentage),
     },
   ];
 

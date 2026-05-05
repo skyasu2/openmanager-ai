@@ -84,6 +84,21 @@ const statusGradients = {
   },
 };
 
+function withCurrentMetricPoint(
+  values: number[],
+  currentValue: number | undefined
+): number[] {
+  if (typeof currentValue !== 'number' || !Number.isFinite(currentValue)) {
+    return values;
+  }
+
+  if (values.length === 0) {
+    return [currentValue];
+  }
+
+  return [...values.slice(0, -1), currentValue];
+}
+
 // BUG-5 fix: Tailwind JIT는 동적 클래스를 감지 못함 → 정적 룩업 맵 사용
 const hoverShadowClasses: Record<string, string> = {
   critical: 'hover:shadow-red-500/30',
@@ -154,11 +169,20 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
     // 📊 메트릭별 히스토리 배열 (MiniLineChart용)
     const { cpuHistory, memoryHistory, diskHistory } = useMemo(
       () => ({
-        cpuHistory: metricsHistory.map((h) => h.cpu),
-        memoryHistory: metricsHistory.map((h) => h.memory),
-        diskHistory: metricsHistory.map((h) => h.disk),
+        cpuHistory: withCurrentMetricPoint(
+          metricsHistory.map((h) => h.cpu),
+          safeServer.cpu
+        ),
+        memoryHistory: withCurrentMetricPoint(
+          metricsHistory.map((h) => h.memory),
+          safeServer.memory
+        ),
+        diskHistory: withCurrentMetricPoint(
+          metricsHistory.map((h) => h.disk),
+          safeServer.disk
+        ),
       }),
-      [metricsHistory]
+      [metricsHistory, safeServer.cpu, safeServer.disk, safeServer.memory]
     );
 
     // UI Variants - 높이 증가 (그래프 영역 확대)

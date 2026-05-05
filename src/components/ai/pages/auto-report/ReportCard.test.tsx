@@ -81,4 +81,25 @@ describe('ReportCard', () => {
     ).toBeInTheDocument();
     expect(screen.queryByText('메모리 사용량 증가')).not.toBeInTheDocument();
   });
+
+  it('exposes visible markdown copy and download actions', () => {
+    render(
+      <ReportCard
+        report={createReport()}
+        index={0}
+        isSelected={false}
+        downloadMenuId={null}
+        onToggleDetail={vi.fn()}
+        onResolve={vi.fn()}
+        onSetDownloadMenuId={vi.fn()}
+      />
+    );
+
+    expect(
+      screen.getByRole('button', { name: /MD 복사/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /보고서 다운로드/i })
+    ).toBeInTheDocument();
+  });
 });

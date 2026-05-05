@@ -63,6 +63,9 @@ const METRIC_PATTERNS = {
     /cpu|memory|메모리|disk|디스크|network|네트워크|latency|응답|mysql|nginx|redis|haproxy|postgres|mariadb|apache|kafka|elasticsearch|mongo|tomcat/i,
 };
 
+const EXTERNAL_KNOWLEDGE_PATTERNS =
+  /최신|latest|stable|공식\s*문서|documentation|docs|릴리스|release|버전|version|cve|security\s*advisory|보안\s*취약점|next\.?js|react|vercel|node\.?js/i;
+
 /**
  * 쿼리가 이미 구체적인 조건을 포함하는지 확인
  */
@@ -85,6 +88,10 @@ export function generateClarification(
   classification: QueryClassification
 ): ClarificationRequest | null {
   if (isFormattingOnlyRequest(query)) {
+    return null;
+  }
+
+  if (EXTERNAL_KNOWLEDGE_PATTERNS.test(query)) {
     return null;
   }
 

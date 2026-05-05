@@ -40,7 +40,11 @@ export function SystemOverviewSection({
     if (!servers || servers.length === 0) {
       return { cpu: 0, memory: 0, disk: 0 };
     }
-    const sum = servers.reduce(
+    const activeServers = servers.filter(
+      (server) => server.status !== 'offline'
+    );
+    const averageSource = activeServers.length > 0 ? activeServers : servers;
+    const sum = averageSource.reduce(
       (acc, s) => ({
         cpu: acc.cpu + (s.cpu ?? 0),
         memory: acc.memory + (s.memory ?? 0),
@@ -48,7 +52,7 @@ export function SystemOverviewSection({
       }),
       { cpu: 0, memory: 0, disk: 0 }
     );
-    const count = servers.length;
+    const count = averageSource.length;
     return {
       cpu: Math.round(sum.cpu / count),
       memory: Math.round(sum.memory / count),

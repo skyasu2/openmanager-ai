@@ -107,6 +107,21 @@ describe('generateClarification', () => {
       ).toBeNull();
     });
 
+    it('최신 외부 문서/버전 질의는 서버 scope clarification을 스킵', () => {
+      expect(
+        generateClarification(
+          'Next.js 최신 stable major 버전 확인해줘',
+          lowConfidence
+        )
+      ).toBeNull();
+      expect(
+        generateClarification(
+          '공식 문서 기준 Next.js latest release 알려줘',
+          lowConfidence
+        )
+      ).toBeNull();
+    });
+
     // 한국어 활용형 테스트
     it('"CPU 높아?" → clarification 스킵 (comparisonCondition 활용형)', () => {
       expect(generateClarification('CPU 높아?', lowConfidence)).toBeNull();

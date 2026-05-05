@@ -55,6 +55,21 @@ function formatServerType(type: string): string {
   return SERVER_TYPE_LABELS[type.toLowerCase()] ?? type;
 }
 
+function withCurrentMetricPoint(
+  values: number[],
+  currentValue: number | undefined
+): number[] {
+  if (typeof currentValue !== 'number' || !Number.isFinite(currentValue)) {
+    return values;
+  }
+
+  if (values.length === 0) {
+    return [currentValue];
+  }
+
+  return [...values.slice(0, -1), currentValue];
+}
+
 export default function ServerDetailView({ server }: ServerDetailViewProps) {
   const [selectedTab, setSelectedTab] = useState<TabId>('overview');
   const [isRealtime, setIsRealtime] = useState(true);
@@ -71,13 +86,6 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
     [server]
   );
   const logTimestamp = useMemo(() => new Date().toISOString(), []);
-  const currentMetrics = useMemo(
-    () =>
-      metricsHistory.length > 0
-        ? metricsHistory[metricsHistory.length - 1]
-        : undefined,
-    [metricsHistory]
-  );
 
   const realtimeData: RealtimeData = useMemo(() => {
     if (!safeServer) {
@@ -85,11 +93,23 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
     }
 
     return {
-      cpu: metricsHistory.map((h) => h.cpu),
-      memory: metricsHistory.map((h) => h.memory),
-      disk: metricsHistory.map((h) => h.disk),
-      network: metricsHistory.map((h) =>
-        typeof h.network === 'number' ? h.network : 0
+      cpu: withCurrentMetricPoint(
+        metricsHistory.map((h) => h.cpu),
+        safeServer.cpu
+      ),
+      memory: withCurrentMetricPoint(
+        metricsHistory.map((h) => h.memory),
+        safeServer.memory
+      ),
+      disk: withCurrentMetricPoint(
+        metricsHistory.map((h) => h.disk),
+        safeServer.disk
+      ),
+      network: withCurrentMetricPoint(
+        metricsHistory.map((h) =>
+          typeof h.network === 'number' ? h.network : 0
+        ),
+        safeServer.network
       ),
       logs: (() => {
         const serverLogs = server?.logs;
@@ -260,15 +280,10 @@ export default function ServerDetailView({ server }: ServerDetailViewProps) {
                 key={safeServer.id}
                 serverId={safeServer.id}
                 serverMetrics={{
-                  cpu: currentMetrics?.cpu ?? safeServer.cpu,
-                  memory: currentMetrics?.memory ?? safeServer.memory,
-                  disk: currentMetrics?.disk ?? safeServer.disk,
-                  network:
-                    (typeof currentMetrics?.network === 'number'
-                      ? currentMetrics.network
-                      : null) ??
-                    safeServer.network ??
-                    0,
+                  cpu: safeServer.cpu,
+                  memory: safeServer.memory,
+                  disk: safeServer.disk,
+                  network: safeServer.network ?? 0,
                 }}
                 realtimeData={realtimeData}
                 serverContext={{

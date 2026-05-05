@@ -16,6 +16,16 @@ import type { ComponentProps } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Server } from '../../types/server';
 
+const serverMetricsMock = vi.hoisted(() => ({
+  metricsHistory: [] as Array<{
+    timestamp: string;
+    cpu: number;
+    memory: number;
+    disk: number;
+  }>,
+  loadMetricsHistory: vi.fn(),
+}));
+
 // Heavy dependencies (recharts, lucide-react) are stubbed via resolve.alias
 // in vitest.config.main.ts → __mocks__/ stubs. Do NOT add vi.mock() for them
 // here as it conflicts with alias resolution and causes WSL hang.
@@ -108,8 +118,10 @@ vi.mock('../shared/ServerMetricsChart', () => ({
 }));
 
 vi.mock('../shared/MiniLineChart', () => ({
-  MiniLineChart: vi.fn(() => (
-    <div data-testid="mock-mini-chart">Mini Chart</div>
+  MiniLineChart: vi.fn(({ data }: { data?: number[] }) => (
+    <div data-testid="mock-mini-chart" data-points={data?.join(',') ?? ''}>
+      Mini Chart
+    </div>
   )),
 }));
 
@@ -129,9 +141,9 @@ vi.mock('../error/ServerCardErrorBoundary', () => ({
 // Mock useServerMetrics to prevent filesystem I/O (OTel data loading)
 vi.mock('@/hooks/useServerMetrics', () => ({
   useServerMetrics: vi.fn(() => ({
-    metricsHistory: [],
+    metricsHistory: serverMetricsMock.metricsHistory,
     isLoadingHistory: false,
-    loadMetricsHistory: vi.fn(),
+    loadMetricsHistory: serverMetricsMock.loadMetricsHistory,
     calculateMetricsStats: vi.fn(),
     generateChartPoints: vi.fn(),
     setMetricsHistory: vi.fn(),
@@ -170,6 +182,7 @@ describe('ImprovedServerCard - User Event 테스트', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    serverMetricsMock.metricsHistory = [];
   });
 
   /** Header button — handles card click and keyboard navigation */
@@ -660,6 +673,30 @@ describe('ImprovedServerCard - User Event 테스트', () => {
       render(<ImprovedServerCard server={mockServer} onClick={mockOnClick} />);
       expect(screen.getByText('45.2%')).toBeInTheDocument();
       expect(screen.getByText('62.8%')).toBeInTheDocument();
+    });
+
+    it('미니 차트 history 마지막 포인트를 서버 카드 current 값으로 정렬한다', () => {
+      serverMetricsMock.metricsHistory = [
+        {
+          timestamp: '2026-05-05T00:00:00Z',
+          cpu: 10,
+          memory: 20,
+          disk: 30,
+        },
+        {
+          timestamp: '2026-05-05T00:10:00Z',
+          cpu: 11,
+          memory: 21,
+          disk: 31,
+        },
+      ];
+
+      render(<ImprovedServerCard server={mockServer} onClick={mockOnClick} />);
+
+      const charts = screen.getAllByTestId('mock-mini-chart');
+      expect(charts[0]).toHaveAttribute('data-points', '10,45.2');
+      expect(charts[1]).toHaveAttribute('data-points', '20,62.8');
+      expect(charts[2]).toHaveAttribute('data-points', '30,73.5');
     });
   });
 

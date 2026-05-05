@@ -52,6 +52,7 @@ import {
   buildSupervisorStreamMessages,
   getLastUserQueryText,
 } from './supervisor-stream-messages';
+import { buildWebCitationAppendix } from './supervisor-stream-citations';
 import { createStructuredTextDeltaGuard } from './supervisor-stream-text-guard';
 import { buildDeterministicSummaryFallback } from './agents/orchestrator-summary-fallback';
 import type {
@@ -909,6 +910,15 @@ async function* streamSingleAgent(
             ragSources.push(...extractRagSources(tr.toolName, trOutput));
           }
         }
+      }
+
+      const webCitationAppendix = buildWebCitationAppendix(
+        fullText,
+        ragSources
+      );
+      if (webCitationAppendix.length > 0) {
+        fullText += webCitationAppendix;
+        yield { type: 'text_delta', data: webCitationAppendix };
       }
 
       const durationMs = Date.now() - startTime;

@@ -17,6 +17,7 @@ import { logger } from '@/lib/logging';
 
 import { LogsTab } from './EnhancedServerModal.LogsTab';
 import { MetricsTab } from './EnhancedServerModal.MetricsTab';
+import { withCurrentMetricPoint } from './EnhancedServerModal.metrics.helpers';
 import { NetworkTab } from './EnhancedServerModal.NetworkTab';
 import { OverviewTab } from './EnhancedServerModal.OverviewTab';
 import { ProcessesTab } from './EnhancedServerModal.ProcessesTab';
@@ -152,15 +153,6 @@ export default function EnhancedServerModal({
   // 📅 로그 타임스탬프 메모이제이션
   const logTimestamp = useMemo(() => new Date().toISOString(), []);
 
-  // 📈 최신 메트릭 (히스토리 마지막 항목, 없으면 undefined)
-  const currentMetrics = useMemo(
-    () =>
-      metricsHistory.length > 0
-        ? metricsHistory[metricsHistory.length - 1]
-        : undefined,
-    [metricsHistory]
-  );
-
   // RealtimeData 변환 (metricsHistory -> UI 포맷)
   const realtimeData: RealtimeData = useMemo(() => {
     if (!safeServer)
@@ -173,12 +165,25 @@ export default function EnhancedServerModal({
       };
 
     return {
-      cpu: metricsHistory.map((h) => h.cpu),
-      memory: metricsHistory.map((h) => h.memory),
-      disk: metricsHistory.map((h) => h.disk),
+      cpu: withCurrentMetricPoint(
+        metricsHistory.map((h) => h.cpu),
+        safeServer.cpu
+      ),
+      memory: withCurrentMetricPoint(
+        metricsHistory.map((h) => h.memory),
+        safeServer.memory
+      ),
+      disk: withCurrentMetricPoint(
+        metricsHistory.map((h) => h.disk),
+        safeServer.disk
+      ),
       // 📊 네트워크: 단일 사용률(%)만 사용
-      network: metricsHistory.map((h) =>
-        typeof h.network === 'number' ? h.network : 0
+      network: withCurrentMetricPoint(
+        metricsHistory.map((h) =>
+          typeof h.network === 'number' ? h.network : 0
+        ),
+        safeServer.network,
+        { clamp: true }
       ),
       // 📋 시스템 알림: hourly-data 로그에서 WARN/ERROR 필터링
       logs: (() => {
@@ -411,15 +416,10 @@ export default function EnhancedServerModal({
                     key={safeServer.id}
                     serverId={safeServer.id}
                     serverMetrics={{
-                      cpu: currentMetrics?.cpu ?? safeServer.cpu,
-                      memory: currentMetrics?.memory ?? safeServer.memory,
-                      disk: currentMetrics?.disk ?? safeServer.disk,
-                      network:
-                        (typeof currentMetrics?.network === 'number'
-                          ? currentMetrics.network
-                          : null) ??
-                        safeServer.network ??
-                        0,
+                      cpu: safeServer.cpu,
+                      memory: safeServer.memory,
+                      disk: safeServer.disk,
+                      network: safeServer.network ?? 0,
                     }}
                     realtimeData={realtimeData}
                     serverContext={{
