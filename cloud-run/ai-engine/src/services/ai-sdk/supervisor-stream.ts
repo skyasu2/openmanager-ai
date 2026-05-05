@@ -2,6 +2,7 @@ import {
   hasToolCall,
   stepCountIs,
   streamText,
+  type ToolSet,
 } from 'ai';
 import { TIMEOUT_CONFIG } from '../../config/timeout-config';
 import { extractRagSources, extractToolResultOutput, type RagSource } from '../../lib/ai-sdk-utils';
@@ -9,7 +10,6 @@ import { getPublicErrorMessage, getPublicErrorResponse } from '../../lib/error-h
 import { isTavilyAvailable } from '../../lib/tavily-hybrid-rag';
 import { logger } from '../../lib/logger';
 import { isSingleModeAllowed } from '../../lib/config-parser';
-import { allTools } from '../../tools-ai-sdk';
 import { createSupervisorTrace, finalizeTrace, logGeneration, logToolCall } from '../observability/langfuse';
 import { CircuitOpenError, getCircuitBreaker } from '../resilience/circuit-breaker';
 import {
@@ -221,7 +221,8 @@ function hasSearchWebCall(steps: StepLike[]): boolean {
 
 async function executeSearchWebFallbackFromSteps(
   steps: StepLike[],
-  userQuery: string
+  userQuery: string,
+  tools: ToolSet
 ): Promise<CollectedToolResult | null> {
   if (!hasSearchWebCall(steps)) return null;
 
@@ -237,7 +238,7 @@ async function executeSearchWebFallbackFromSteps(
     maxResults: Math.max(input.maxResults ?? 0, 5),
   };
 
-  const searchWebTool = readRecord(allTools)?.searchWeb;
+  const searchWebTool = readRecord(tools)?.searchWeb;
   const execute = readRecord(searchWebTool)?.execute;
   if (typeof execute !== 'function') return null;
 
@@ -320,13 +321,20 @@ export async function* executeSupervisorStream(
   const startTime = Date.now();
   const runtimeContext = await resolveMonitoringSupervisorRuntimeContext(request);
   const runtimeMetadata = runtimeContext.metadata;
-  const modeDecision = resolveSupervisorModeDecision(request);
+  const runtimeTools = runtimeContext.host.createToolSet(
+    runtimeContext.result.context
+  );
+  const runtimeRequest: SupervisorRequest =
+    request.runtimeHost === runtimeContext.host
+      ? request
+      : { ...request, runtimeHost: runtimeContext.host };
+  const modeDecision = resolveSupervisorModeDecision(runtimeRequest);
   const routeDecision = buildSupervisorRouteDecision(modeDecision, {
     traceId: request.traceId,
     queryAsOf: request.queryAsOf,
   });
   const assistantPlan = buildSupervisorAssistantPlanForRequest(
-    request,
+    runtimeRequest,
     routeDecision
   );
   const mode = modeDecision.resolvedMode;
@@ -376,8 +384,9 @@ export async function* executeSupervisorStream(
               },
             };
             yield* streamSingleAgent(
-              request,
+              runtimeRequest,
               startTime,
+              runtimeTools,
               {
                 degradedFromMode: 'multi',
                 degradedReason,
@@ -440,8 +449,9 @@ export async function* executeSupervisorStream(
           } 
         };
         yield* streamSingleAgent(
-          request,
+          runtimeRequest,
           startTime,
+          runtimeTools,
           {
             degradedFromMode: 'multi',
             degradedReason: 'multi_agent_runtime_error',
@@ -465,8 +475,9 @@ export async function* executeSupervisorStream(
   }
 
   yield* streamSingleAgent(
-    request,
+    runtimeRequest,
     startTime,
+    runtimeTools,
     undefined,
     modeDecision,
     runtimeMetadata
@@ -476,6 +487,7 @@ export async function* executeSupervisorStream(
 async function* streamSingleAgent(
   request: SupervisorRequest,
   startTime: number,
+  runtimeTools: ToolSet,
   degradedFallbackContext?: SupervisorDegradedFallbackContext,
   modeDecision?: ResolvedSupervisorModeDecision,
   runtimeMetadata?: AssistantRuntimeMetadata,
@@ -506,7 +518,7 @@ async function* streamSingleAgent(
   logger.debug(`[Stream Single WebSearch] Setting resolved: ${webSearchEnabled} (request: ${request.enableWebSearch})`);
   const ragEnabled = resolveRAGSetting(request.enableRAG, queryText);
   logger.debug(`[Stream Single RAG] Setting: ${ragEnabled} (request: ${request.enableRAG})`);
-  let filteredTools = filterToolsByWebSearch(allTools, webSearchEnabled);
+  let filteredTools = filterToolsByWebSearch(runtimeTools, webSearchEnabled);
   filteredTools = filterToolsByRAG(filteredTools, ragEnabled);
 
   if (ragEnabled && FORCE_KB_QUERY_PATTERN.test(queryText)) {
@@ -1117,7 +1129,11 @@ async function* streamSingleAgent(
       if (fullText.trim().length === 0) {
         if (!hasWebSearchFallbackAnswer(collectedToolResults)) {
           const recoveredSearchWebResult =
-            await executeSearchWebFallbackFromSteps(steps, queryText);
+            await executeSearchWebFallbackFromSteps(
+              steps,
+              queryText,
+              filteredTools
+            );
           if (recoveredSearchWebResult) {
             collectedToolResults.push(recoveredSearchWebResult);
           }

@@ -3,6 +3,7 @@ import {
   type AssistantRuntimeAdapters,
 } from '../../core/assistant-runtime';
 import { monitoringDomainPack } from '../../domains/monitoring/domain-pack';
+import { allTools } from '../../tools-ai-sdk';
 import {
   createAssistantRuntimeHost,
   resolveSupervisorRuntimeContext,
@@ -37,6 +38,11 @@ export function createMonitoringAssistantRuntimeHost(
     domain: monitoringDomainPack,
     adapters: config.adapters ?? createInMemoryAssistantRuntimeAdapters(),
     adapterKinds: config.adapterKinds ?? IN_MEMORY_ADAPTER_KINDS,
+    executionAdapter: {
+      createToolSet() {
+        return allTools;
+      },
+    },
   });
 }
 

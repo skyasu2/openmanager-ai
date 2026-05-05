@@ -8,6 +8,7 @@ import {
   resolveSupervisorMode,
   resolveSupervisorModeDecision,
 } from './supervisor-mode';
+import { createMonitoringAssistantRuntimeHost } from './monitoring-runtime-host';
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -677,12 +678,14 @@ describe('supervisor planner shadow', () => {
     expect(cases).toHaveLength(50);
 
     const startedAt = Date.now();
+    const runtimeHost = createMonitoringAssistantRuntimeHost();
     let mismatches = 0;
     for (const item of cases) {
       const routeDecision = buildSupervisorRouteDecision(
         resolveSupervisorModeDecision({
           mode: 'auto',
           messages: [{ role: 'user', content: item.query }],
+          runtimeHost,
         })
       );
       const localRouteDecision = normalizeSupervisorLocalRouteDecision(
@@ -694,6 +697,7 @@ describe('supervisor planner shadow', () => {
           messages: [{ role: 'user', content: item.query }],
           sessionId: 'session-shadow-corpus',
           images: item.images,
+          runtimeHost,
         },
         routeDecision,
         localRouteDecision,

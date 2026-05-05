@@ -10,6 +10,7 @@ import {
   stepCountIs,
   hasToolCall,
   type ModelMessage,
+  type ToolSet,
 } from 'ai';
 import {
   getSupervisorModel,
@@ -20,7 +21,6 @@ import {
 import {
   TIMEOUT_CONFIG,
 } from '../../config/timeout-config';
-import { allTools } from '../../tools-ai-sdk';
 import { executeMultiAgent, type MultiAgentRequest, type MultiAgentResponse } from './agents';
 import {
   filterToolsByRAG,
@@ -47,6 +47,7 @@ import {
 } from './supervisor-types';
 import { logger } from '../../lib/logger';
 import {
+  getDefaultMonitoringAssistantRuntimeHost,
   resolveMonitoringSupervisorRuntimeContext,
   type AssistantRuntimeMetadata,
 } from './monitoring-runtime-host';
@@ -183,7 +184,14 @@ export async function executeSupervisor(
   const startTime = Date.now();
   const runtimeContext = await resolveMonitoringSupervisorRuntimeContext(request);
   const runtimeMetadata = runtimeContext.metadata;
-  const modeDecision = resolveSupervisorModeDecision(request);
+  const runtimeTools = runtimeContext.host.createToolSet(
+    runtimeContext.result.context
+  );
+  const runtimeRequest: SupervisorRequest =
+    request.runtimeHost === runtimeContext.host
+      ? request
+      : { ...request, runtimeHost: runtimeContext.host };
+  const modeDecision = resolveSupervisorModeDecision(runtimeRequest);
   const mode = modeDecision.resolvedMode;
 
   logger.info({
@@ -196,19 +204,21 @@ export async function executeSupervisor(
 
   if (mode === 'multi') {
     return executeMultiAgentMode(
-      request,
+      runtimeRequest,
       startTime,
       modeDecision,
-      runtimeMetadata
+      runtimeMetadata,
+      runtimeTools
     );
   }
 
   return executeSingleAgentMode(
-    request,
+    runtimeRequest,
     startTime,
     undefined,
     modeDecision,
-    runtimeMetadata
+    runtimeMetadata,
+    runtimeTools
   );
 }
 
@@ -221,6 +231,7 @@ async function executeMultiAgentMode(
   startTime: number,
   modeDecision: ResolvedSupervisorModeDecision,
   runtimeMetadata: AssistantRuntimeMetadata,
+  runtimeTools: ToolSet,
 ): Promise<SupervisorResponse | SupervisorError> {
   try {
     const multiAgentRequest: MultiAgentRequest = {
@@ -258,7 +269,8 @@ async function executeMultiAgentMode(
             degradedReason,
           },
           modeDecision,
-          runtimeMetadata
+          runtimeMetadata,
+          runtimeTools
         );
       }
       return multiAgentError;
@@ -319,7 +331,8 @@ async function executeMultiAgentMode(
           degradedReason: 'multi_agent_runtime_error',
         },
         modeDecision,
-        runtimeMetadata
+        runtimeMetadata,
+        runtimeTools
       );
     }
 
@@ -342,6 +355,7 @@ async function executeSingleAgentMode(
   degradedFallbackContext?: SupervisorDegradedFallbackContext,
   modeDecision?: ResolvedSupervisorModeDecision,
   runtimeMetadata?: AssistantRuntimeMetadata,
+  runtimeTools?: ToolSet,
 ): Promise<SupervisorResponse | SupervisorError> {
   let lastError: SupervisorError | null = null;
   const failedProviders: ProviderName[] = [];
@@ -360,7 +374,8 @@ async function executeSingleAgentMode(
       failedProviders,
       degradedFallbackContext,
       modeDecision,
-      runtimeMetadata
+      runtimeMetadata,
+      runtimeTools
     );
 
     if (result.success) {
@@ -409,6 +424,7 @@ async function executeSupervisorAttempt(
   degradedFallbackContext?: SupervisorDegradedFallbackContext,
   modeDecision?: ResolvedSupervisorModeDecision,
   runtimeMetadata?: AssistantRuntimeMetadata,
+  runtimeTools?: ToolSet,
 ): Promise<SupervisorResponse | (SupervisorError & { provider?: ProviderName })> {
   const lastUserMessage = request.messages.filter((m) => m.role === 'user').pop();
   const trace = createSupervisorTrace({
@@ -515,7 +531,10 @@ async function executeSupervisorAttempt(
       }
       logger.debug(`[Single WebSearch] Setting resolved: ${webSearchEnabled} (request: ${request.enableWebSearch})`);
       const ragEnabled = resolveRAGSetting(request.enableRAG, queryText);
-      let filteredTools = filterToolsByWebSearch(allTools, webSearchEnabled);
+      let filteredTools = filterToolsByWebSearch(
+        runtimeTools ?? {},
+        webSearchEnabled
+      );
       filteredTools = filterToolsByRAG(filteredTools, ragEnabled);
 
       const modelMessages: ModelMessage[] = [
@@ -690,7 +709,15 @@ async function executeSupervisorAttempt(
 export async function checkSupervisorHealth(): Promise<SupervisorHealth> {
   try {
     const { provider, modelId } = getSupervisorModel();
-    const toolCount = Object.keys(allTools).length;
+    const runtimeHost = getDefaultMonitoringAssistantRuntimeHost();
+    const toolCount = Object.keys(
+      runtimeHost.createToolSet({
+        id: 'supervisor-health-check',
+        domainId: runtimeHost.domain.id,
+        message: 'health check',
+        messages: [{ role: 'user', content: 'health check' }],
+      })
+    ).length;
 
     return {
       status: 'ok',

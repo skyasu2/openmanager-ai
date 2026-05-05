@@ -10,7 +10,6 @@ import type {
   RetrievalMetadata,
 } from '../../lib/retrieval-contract';
 import type { QueryAsOf } from '../../data/query-as-of-context';
-import type { MonitoringArtifactKind } from '../../domains/monitoring/artifact-registry';
 import type { AssistantRuntimeHost } from './assistant-runtime-host';
 
 // Re-export multimodal types
@@ -63,7 +62,7 @@ export type SupervisorLocalRouteDecision = {
   intent: 'chat' | 'artifact' | 'job' | 'clarification';
   executionPath: SupervisorRouteDecisionExecutionPath;
   mode?: SupervisorRouteDecisionMode;
-  artifactKind?: MonitoringArtifactKind;
+  artifactKind?: string;
   complexity?: SupervisorRouteDecisionComplexity;
   reasonCodes: string[];
   ruleVersion: string;
@@ -76,7 +75,7 @@ export type SupervisorPlannerShadowCandidate = {
   kind: 'chat' | 'artifact' | 'clarification';
   executionPath: SupervisorRouteDecisionExecutionPath;
   executionMode: SupervisorPlannerExecutionMode;
-  artifactKind?: MonitoringArtifactKind;
+  artifactKind?: string;
   reasonCodes: string[];
   escalationReasonCodes?: SupervisorPlannerEscalationReasonCode[];
   decidedBy: 'cloud-run';

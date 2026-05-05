@@ -2,10 +2,13 @@ import {
   createAssistantRuntime,
   type AssistantDomain,
   type AssistantRequest,
+  type AssistantRequestContext,
   type AssistantRuntime,
   type AssistantRuntimeAdapters,
   type AssistantRuntimeResult,
+  type ToolDefinition,
 } from '../../core/assistant-runtime';
+import type { ToolSet } from 'ai';
 import type { SupervisorRequest } from './supervisor-types';
 
 export interface AssistantRuntimeAdapterKinds {
@@ -32,12 +35,18 @@ export interface AssistantRuntimeHost {
   readonly adapterKinds: AssistantRuntimeAdapterKinds;
   readonly runtime: AssistantRuntime;
   handle(request: AssistantRequest): Promise<AssistantRuntimeResult>;
+  createToolSet(input: AssistantRequest | AssistantRequestContext): ToolSet;
+}
+
+export interface AssistantRuntimeExecutionAdapter {
+  createToolSet(input: AssistantRequest | AssistantRequestContext): ToolSet;
 }
 
 export interface AssistantRuntimeHostConfig {
   domain: AssistantDomain;
   adapters: AssistantRuntimeAdapters;
   adapterKinds?: AssistantRuntimeAdapterKinds;
+  executionAdapter?: AssistantRuntimeExecutionAdapter;
 }
 
 export interface SupervisorRuntimeContext {
@@ -111,6 +120,64 @@ function createRuntimeMetadata(
   };
 }
 
+function isAssistantRequestContext(
+  input: AssistantRequest | AssistantRequestContext
+): input is AssistantRequestContext {
+  return 'requestId' in input;
+}
+
+function toAssistantRequestContext(
+  domain: AssistantDomain,
+  input: AssistantRequest | AssistantRequestContext
+): AssistantRequestContext {
+  if (isAssistantRequestContext(input)) return input;
+
+  return {
+    requestId: input.id,
+    domainId: input.domainId ?? domain.id,
+    message: input.message,
+    messages: input.messages,
+    ...(input.sessionId && { sessionId: input.sessionId }),
+    ...(input.traceId && { traceId: input.traceId }),
+    ...(input.metadata && { metadata: input.metadata }),
+  };
+}
+
+function createDefaultInputSchema() {
+  return {
+    type: 'object',
+    properties: {},
+    additionalProperties: true,
+  };
+}
+
+function toAiSdkTool(
+  tool: ToolDefinition,
+  context: AssistantRequestContext
+): ToolSet[string] {
+  return {
+    description: tool.description,
+    inputSchema: tool.inputSchema ?? createDefaultInputSchema(),
+    ...(tool.execute && {
+      execute: (input: unknown) => tool.execute?.(input, context),
+    }),
+  } as ToolSet[string];
+}
+
+function createDomainToolSet(
+  runtime: AssistantRuntime,
+  domain: AssistantDomain,
+  input: AssistantRequest | AssistantRequestContext
+): ToolSet {
+  const context = toAssistantRequestContext(domain, input);
+  return Object.fromEntries(
+    runtime.listTools(context).map((tool) => [
+      tool.name,
+      toAiSdkTool(tool, context),
+    ])
+  ) as ToolSet;
+}
+
 export function createAssistantRuntimeHost(
   config: AssistantRuntimeHostConfig
 ): AssistantRuntimeHost {
@@ -130,6 +197,12 @@ export function createAssistantRuntimeHost(
     runtime,
     handle(request: AssistantRequest) {
       return runtime.handle(request);
+    },
+    createToolSet(input: AssistantRequest | AssistantRequestContext) {
+      return (
+        config.executionAdapter?.createToolSet(input) ??
+        createDomainToolSet(runtime, config.domain, input)
+      );
     },
   };
 }

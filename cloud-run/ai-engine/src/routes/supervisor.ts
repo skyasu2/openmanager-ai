@@ -39,6 +39,7 @@ import {
 } from '../data/query-as-of-context';
 import { logger } from '../lib/logger';
 import { normalizeSupervisorLocalRouteDecision } from '../services/ai-sdk/supervisor-mode';
+import { getDefaultMonitoringAssistantRuntimeHost } from '../services/ai-sdk/monitoring-runtime-host';
 import { flushLangfuseBestEffort } from '../services/observability/langfuse-flush';
 import { extractTraceId } from './supervisor-trace';
 import { emitSupervisorStreamError } from './supervisor-stream-error';
@@ -522,6 +523,7 @@ supervisorRouter.post('/stream/v2', async (c: Context) => {
       queryAsOf,
       deviceType,
       localRouteDecision,
+      runtimeHost: getDefaultMonitoringAssistantRuntimeHost(),
     });
 
     logger.info('SupervisorStreamV2 response created');

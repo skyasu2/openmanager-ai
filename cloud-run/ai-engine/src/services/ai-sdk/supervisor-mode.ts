@@ -1,9 +1,6 @@
 import { isSingleModeAllowed } from '../../lib/config-parser';
 import { logger } from '../../lib/logger';
-import {
-  detectMonitoringArtifactKind,
-  MONITORING_ARTIFACT_KINDS,
-} from '../../domains/monitoring/artifact-registry';
+import type { AssistantRequestContext } from '../../core/assistant-runtime';
 import type {
   SupervisorLocalRouteDecision,
   SupervisorMode,
@@ -62,9 +59,6 @@ const LOCAL_INTENTS = new Set<SupervisorLocalRouteDecision['intent']>([
   'job',
   'clarification',
 ]);
-const ARTIFACT_KINDS = new Set<
-  NonNullable<SupervisorLocalRouteDecision['artifactKind']>
->(MONITORING_ARTIFACT_KINDS);
 
 function normalizeMeasuredLatencyMs(elapsedMs: number): number {
   if (!Number.isFinite(elapsedMs) || elapsedMs <= 0) return 0;
@@ -108,7 +102,7 @@ export function normalizeSupervisorLocalRouteDecision(
   if (!intent || !executionPath || !decidedBy) return undefined;
 
   const mode = fromSet(value.mode, ROUTE_MODES);
-  const artifactKind = fromSet(value.artifactKind, ARTIFACT_KINDS);
+  const artifactKind = nonEmptyString(value.artifactKind);
   const complexity = fromSet(value.complexity, COMPLEXITIES);
   const dataSlot = nonEmptyString(value.dataSlot);
   const traceId = nonEmptyString(value.traceId);
@@ -174,7 +168,10 @@ export interface SupervisorAssistantResult {
  * @version 2.0.0
  */
 export function resolveSupervisorModeDecision(
-  request: Pick<SupervisorRequest, 'mode' | 'messages' | 'analysisMode'>,
+  request: Pick<
+    SupervisorRequest,
+    'mode' | 'messages' | 'analysisMode' | 'runtimeHost'
+  >,
 ): ResolvedSupervisorModeDecision {
   const requestedMode = request.mode || 'auto';
   const singleAllowed = isSingleModeAllowed();
@@ -247,7 +244,10 @@ export function resolveSupervisorModeDecision(
 }
 
 export function resolveSupervisorMode(
-  request: Pick<SupervisorRequest, 'mode' | 'messages' | 'analysisMode'>,
+  request: Pick<
+    SupervisorRequest,
+    'mode' | 'messages' | 'analysisMode' | 'runtimeHost'
+  >,
 ): ResolvedSupervisorMode {
   return resolveSupervisorModeDecision(request).resolvedMode;
 }
@@ -358,16 +358,56 @@ function hasMetricLookupIntent(query: string): boolean {
   );
 }
 
+function createArtifactClassificationContext(
+  request: Pick<SupervisorRequest, 'messages' | 'runtimeHost' | 'sessionId' | 'traceId'>,
+  message: string
+): AssistantRequestContext {
+  const host = request.runtimeHost;
+  if (!host) {
+    return {
+      requestId: request.traceId ?? 'artifact-classification',
+      domainId: 'unknown',
+      message,
+      messages: request.messages,
+      ...(request.sessionId && { sessionId: request.sessionId }),
+      ...(request.traceId && { traceId: request.traceId }),
+    };
+  }
+
+  return {
+    requestId: request.traceId ?? `${host.domain.id}:artifact-classification`,
+    domainId: host.domain.id,
+    message,
+    messages: request.messages,
+    ...(request.sessionId && { sessionId: request.sessionId }),
+    ...(request.traceId && { traceId: request.traceId }),
+  };
+}
+
 function detectArtifactKind(
+  request: Pick<SupervisorRequest, 'messages' | 'runtimeHost' | 'sessionId' | 'traceId'>,
   query: string
 ): SupervisorPlannerShadowCandidate['artifactKind'] | undefined {
-  return detectMonitoringArtifactKind(query);
+  const host = request.runtimeHost;
+  if (!host) return undefined;
+
+  const artifact = host.domain.artifacts?.classify(
+    createArtifactClassificationContext(request, query)
+  );
+  return nonEmptyString(artifact?.kind);
 }
 
 function buildShadowCandidate(
   request: Pick<
     SupervisorRequest,
-    'analysisMode' | 'files' | 'images' | 'messages' | 'queryAsOf' | 'traceId'
+    | 'analysisMode'
+    | 'files'
+    | 'images'
+    | 'messages'
+    | 'queryAsOf'
+    | 'runtimeHost'
+    | 'sessionId'
+    | 'traceId'
   >
 ): SupervisorPlannerShadowCandidate {
   const query = getLastUserMessageContent(request);
@@ -396,7 +436,7 @@ function buildShadowCandidate(
     ]);
   }
 
-  const artifactKind = detectArtifactKind(query);
+  const artifactKind = detectArtifactKind(request, query);
   if (artifactKind) {
     return buildCandidate(
       'client-artifact',
@@ -526,7 +566,14 @@ export function buildSupervisorPlannerShadow({
 }: {
   request: Pick<
     SupervisorRequest,
-    'analysisMode' | 'files' | 'images' | 'messages' | 'queryAsOf' | 'traceId'
+    | 'analysisMode'
+    | 'files'
+    | 'images'
+    | 'messages'
+    | 'queryAsOf'
+    | 'runtimeHost'
+    | 'sessionId'
+    | 'traceId'
   >;
   routeDecision: SupervisorRouteDecision;
   localRouteDecision?: SupervisorLocalRouteDecision;
