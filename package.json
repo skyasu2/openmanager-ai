@@ -151,6 +151,7 @@
     "qa:evidence:audit:storage:strict": "node scripts/qa/audit-qa-evidence.js --all --strict-storage",
     "qa:evidence:audit:strict": "node scripts/qa/audit-qa-evidence.js --strict",
     "qa:evidence:build": "node scripts/qa/build-validation-evidence.js",
+    "qa:planner-shadow": "node scripts/qa/planner-shadow-telemetry-review.js",
     "qa:record": "node scripts/qa/record-qa-run.js",
     "qa:status": "node scripts/qa/print-qa-status.js",
     "qa:status:sync": "node scripts/qa/print-qa-status.js --write",
