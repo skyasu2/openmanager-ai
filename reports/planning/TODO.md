@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| Promptfoo evaluation hardening & A/B testing | High | Active | `promptfoo-evaluation-hardening-plan.md` Approved. `llm-rubric` judge 비중을 낮추고 deterministic assertion/golden dataset/preflight warning으로 Free Tier 회귀 방어를 강화. |
+| — | — | — | Active Task 없음. Promptfoo deterministic eval hardening은 local config/test 작업으로 완료됐고 production deploy/QA 대상 아님. |
 
 ---
 
@@ -48,6 +48,14 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-05 #289)
+- [x] Promptfoo evaluation hardening & A/B testing
+  - `promptfoo-evaluation-hardening-plan.md` Completed 처리
+  - 기본 Promptfoo config를 Cerebras/Groq runtime-aligned provider, 25개 golden dataset, deterministic assertion 중심으로 재구성하고 test별 대상 prompt를 명시해 예상 provider call을 `200 → 50`으로 축소
+  - `llm-rubric` judge assertion을 main/redteam config 모두 0건으로 낮추고, `javascript` schema-sensitive guard 6건 추가
+  - `prompt:eval` / `prompt:redteam` 실행 전 live provider call estimate와 judge ratio를 출력하는 preflight 추가
+  - 검증: Promptfoo config contract test, preflight main/redteam, AI Engine `type-check`, AI Engine full test
 
 ### Completed (2026-05-05 #288)
 - [x] v8.11.97 broad QA remediation residual closure
