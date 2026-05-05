@@ -37,7 +37,6 @@ import {
   recordModelUsage,
   type ProviderName,
 } from './model-provider';
-import { createPrepareStep } from './supervisor-routing';
 import {
   buildDegradedMetadata,
   hasMeaningfulMultiAgentOutput,
@@ -507,7 +506,14 @@ async function* streamSingleAgent(
 
   // Provider-independent setup (hoisted outside retry loop)
   const queryText = getLastUserQueryText(request.messages);
-  const modelMessages = buildSupervisorStreamMessages(request);
+  const runtimeHost = request.runtimeHost;
+  if (!runtimeHost) {
+    throw new Error('Supervisor runtime host is required for stream execution');
+  }
+  const modelMessages = buildSupervisorStreamMessages(
+    request,
+    runtimeHost.createSystemPrompt({ deviceType: request.deviceType })
+  );
 
   let webSearchEnabled = resolveWebSearchSetting(request.enableWebSearch, queryText);
   if (webSearchEnabled && !isTavilyAvailable()) {
@@ -827,14 +833,16 @@ async function* streamSingleAgent(
       const abortController = new AbortController();
       const textDeltaGuard = createStructuredTextDeltaGuard();
 
+      const prepareStep = runtimeHost.createPrepareStep(queryText, {
+        enableWebSearch: webSearchEnabled,
+        enableRAG: ragEnabled,
+      });
+
       const result = streamText({
         model,
         messages: modelMessages,
         tools: filteredTools,
-        prepareStep: createPrepareStep(queryText, {
-          enableWebSearch: webSearchEnabled,
-          enableRAG: ragEnabled,
-        }),
+        ...(prepareStep && { prepareStep }),
         stopWhen: [hasToolCall('finalAnswer'), stepCountIs(4)],
         temperature: 0.3,
         maxOutputTokens: 2048,

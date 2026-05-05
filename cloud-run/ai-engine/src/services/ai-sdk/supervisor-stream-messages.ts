@@ -1,6 +1,5 @@
 import type { ModelMessage, UserContent } from 'ai';
 import { buildMultimodalContent } from '../../lib/ai-sdk-utils';
-import { createSystemPrompt } from './supervisor-routing';
 import type { SupervisorRequest } from './supervisor-types';
 import { isFormattingOnlyReportRequest } from './query-routing-signals';
 
@@ -63,9 +62,9 @@ function buildFormattingRewriteContent(
 }
 
 export function buildSupervisorStreamMessages(
-  request: SupervisorRequest
+  request: SupervisorRequest,
+  systemPrompt: string
 ): ModelMessage[] {
-  const systemPrompt = createSystemPrompt(request.deviceType);
   const queryAsOfInstruction = buildQueryAsOfInstruction(request.queryAsOf);
 
   return [

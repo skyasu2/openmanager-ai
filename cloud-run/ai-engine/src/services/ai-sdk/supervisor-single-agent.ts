@@ -64,10 +64,8 @@ import {
   type SupervisorDegradedFallbackContext,
 } from './supervisor-multi-fallback';
 import {
-  createSystemPrompt,
   RETRY_CONFIG,
   getIntentCategory,
-  createPrepareStep,
 } from './supervisor-routing';
 
 import { evaluateAgentResponseQuality } from './agents/response-quality';
@@ -531,6 +529,17 @@ async function executeSupervisorAttempt(
       }
       logger.debug(`[Single WebSearch] Setting resolved: ${webSearchEnabled} (request: ${request.enableWebSearch})`);
       const ragEnabled = resolveRAGSetting(request.enableRAG, queryText);
+      const runtimeHost = request.runtimeHost;
+      if (!runtimeHost) {
+        throw new Error('Supervisor runtime host is required for single-agent execution');
+      }
+      const systemPrompt = runtimeHost.createSystemPrompt({
+        deviceType: request.deviceType,
+      });
+      const prepareStep = runtimeHost.createPrepareStep(queryText, {
+        enableWebSearch: webSearchEnabled,
+        enableRAG: ragEnabled,
+      });
       let filteredTools = filterToolsByWebSearch(
         runtimeTools ?? {},
         webSearchEnabled
@@ -538,7 +547,7 @@ async function executeSupervisorAttempt(
       filteredTools = filterToolsByRAG(filteredTools, ragEnabled);
 
       const modelMessages: ModelMessage[] = [
-        { role: 'system', content: createSystemPrompt(request.deviceType) },
+        { role: 'system', content: systemPrompt },
         ...request.messages.map((m) => ({
           role: m.role as 'user' | 'assistant',
           content: m.content,
@@ -549,10 +558,7 @@ async function executeSupervisorAttempt(
         model,
         messages: modelMessages,
         tools: filteredTools,
-        prepareStep: createPrepareStep(queryText, {
-          enableWebSearch: webSearchEnabled,
-          enableRAG: ragEnabled,
-        }),
+        ...(prepareStep && { prepareStep }),
         stopWhen: [hasToolCall('finalAnswer'), stepCountIs(5)],
         temperature: 0.3,
         maxOutputTokens: 2048,

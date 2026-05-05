@@ -221,8 +221,10 @@ vi.mock('./supervisor-quality-retry', () => ({
 
 vi.mock('./supervisor-stream-messages', () => ({
   buildSupervisorStreamMessages: vi.fn(
-    (request: { messages: Array<{ role: string; content: string }> }) =>
-      request.messages
+    (
+      request: { messages: Array<{ role: string; content: string }> },
+      systemPrompt: string
+    ) => [{ role: 'system', content: systemPrompt }, ...request.messages]
   ),
   getLastUserQueryText: vi.fn(
     (messages: Array<{ role: string; content: string }>) =>
@@ -323,6 +325,15 @@ function readToolNames(value: unknown): string[] {
   return Object.keys(value as Record<string, unknown>).sort();
 }
 
+function readSystemPrompt(value: unknown): string | undefined {
+  const messages = (value as { messages?: Array<{ content?: unknown }> })
+    .messages;
+  const firstMessage = messages?.[0];
+  return typeof firstMessage?.content === 'string'
+    ? firstMessage.content
+    : undefined;
+}
+
 describe('supervisor domain wiring contract', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -364,21 +375,25 @@ describe('supervisor domain wiring contract', () => {
     expect(mockStreamText).toHaveBeenCalledTimes(1);
     const tools = (mockStreamText.mock.calls[0]?.[0] as { tools?: unknown })
       .tools;
+    const systemPrompt = readSystemPrompt(mockStreamText.mock.calls[0]?.[0]);
 
     expect(readToolNames(tools)).toContain(SAMPLE_TOOL_NAME);
     expect(readToolNames(tools)).not.toContain('legacyMonitoringOnly');
+    expect(systemPrompt).toBe('Sample support domain.');
   });
 
   it('uses the injected runtime host domain toolset for supervisor single-agent execution', async () => {
     const result = await executeSupervisor(createSupervisorRequest());
 
-    expect(result.success).toBe(true);
     expect(mockGenerateText).toHaveBeenCalledTimes(1);
+    expect(result).toEqual(expect.objectContaining({ success: true }));
     const tools = (mockGenerateText.mock.calls[0]?.[0] as { tools?: unknown })
       .tools;
+    const systemPrompt = readSystemPrompt(mockGenerateText.mock.calls[0]?.[0]);
 
     expect(readToolNames(tools)).toContain(SAMPLE_TOOL_NAME);
     expect(readToolNames(tools)).not.toContain('legacyMonitoringOnly');
+    expect(systemPrompt).toBe('Sample support domain.');
   });
 
   it('keeps monitoring compatibility tools available through the default monitoring domain pack', () => {
@@ -430,5 +445,24 @@ describe('supervisor domain wiring contract', () => {
     );
     expect(source).not.toContain('detectMonitoringArtifactKind');
     expect(source).not.toContain('MONITORING_ARTIFACT_KINDS');
+  });
+
+  it('keeps supervisor execution free of direct monitoring prompt and prepare-step helpers', () => {
+    const executionFiles = [
+      'src/services/ai-sdk/supervisor-stream.ts',
+      'src/services/ai-sdk/supervisor-single-agent.ts',
+      'src/services/ai-sdk/supervisor-stream-messages.ts',
+    ];
+
+    for (const file of executionFiles) {
+      const source = readFileSync(join(process.cwd(), file), 'utf8');
+
+      expect(source).not.toMatch(
+        /import\s*\{[\s\S]*?createSystemPrompt[\s\S]*?\}\s*from ['"]\.\/supervisor-routing['"]/
+      );
+      expect(source).not.toMatch(
+        /import\s*\{[\s\S]*?createPrepareStep[\s\S]*?\}\s*from ['"]\.\/supervisor-routing['"]/
+      );
+    }
   });
 });

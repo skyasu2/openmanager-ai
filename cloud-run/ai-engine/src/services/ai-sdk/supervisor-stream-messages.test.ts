@@ -35,11 +35,12 @@ describe('buildSupervisorStreamMessages', () => {
       ],
     };
 
-    const messages = buildSupervisorStreamMessages(request);
+    const systemPrompt = createSystemPrompt('desktop');
+    const messages = buildSupervisorStreamMessages(request, systemPrompt);
 
     expect(messages[0]).toEqual({
       role: 'system',
-      content: createSystemPrompt('desktop'),
+      content: systemPrompt,
     });
     expect(messages[1]).toEqual({
       role: 'user',
@@ -63,7 +64,10 @@ describe('buildSupervisorStreamMessages', () => {
       files: [{ data: 'base64-pdf', mimeType: 'application/pdf' }],
     };
 
-    const messages = buildSupervisorStreamMessages(request);
+    const messages = buildSupervisorStreamMessages(
+      request,
+      createSystemPrompt('mobile')
+    );
     const finalContent = messages[2]?.content;
 
     expect(messages[1]).toEqual({
@@ -96,7 +100,10 @@ describe('buildSupervisorStreamMessages', () => {
       ],
     };
 
-    const messages = buildSupervisorStreamMessages(request);
+    const messages = buildSupervisorStreamMessages(
+      request,
+      createSystemPrompt()
+    );
     const finalContent = messages.at(-1)?.content;
 
     expect(typeof finalContent).toBe('string');

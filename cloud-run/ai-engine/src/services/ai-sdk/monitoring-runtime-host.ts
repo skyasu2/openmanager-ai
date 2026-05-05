@@ -2,7 +2,13 @@ import {
   createInMemoryAssistantRuntimeAdapters,
   type AssistantRuntimeAdapters,
 } from '../../core/assistant-runtime';
-import { monitoringDomainPack } from '../../domains/monitoring/domain-pack';
+import {
+  createMonitoringDomainInstructions,
+  monitoringDomainPack,
+} from '../../domains/monitoring/domain-pack';
+import {
+  createPrepareStep as createMonitoringPrepareStep,
+} from '../../domains/monitoring/routing-policy';
 import { allTools } from '../../tools-ai-sdk';
 import {
   createAssistantRuntimeHost,
@@ -41,6 +47,12 @@ export function createMonitoringAssistantRuntimeHost(
     executionAdapter: {
       createToolSet() {
         return allTools;
+      },
+      createSystemPrompt(options) {
+        return createMonitoringDomainInstructions(options?.deviceType).system;
+      },
+      createPrepareStep(query, options) {
+        return createMonitoringPrepareStep(query, options);
       },
     },
   });

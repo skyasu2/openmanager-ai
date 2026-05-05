@@ -8,7 +8,7 @@ import {
   type AssistantRuntimeResult,
   type ToolDefinition,
 } from '../../core/assistant-runtime';
-import type { ToolSet } from 'ai';
+import type { PrepareStepFunction, ToolSet } from 'ai';
 import type { SupervisorRequest } from './supervisor-types';
 
 export interface AssistantRuntimeAdapterKinds {
@@ -36,10 +36,31 @@ export interface AssistantRuntimeHost {
   readonly runtime: AssistantRuntime;
   handle(request: AssistantRequest): Promise<AssistantRuntimeResult>;
   createToolSet(input: AssistantRequest | AssistantRequestContext): ToolSet;
+  createSystemPrompt(options?: AssistantRuntimePromptOptions): string;
+  createPrepareStep(
+    query: string,
+    options?: AssistantRuntimePrepareStepOptions
+  ): AssistantRuntimePrepareStep | undefined;
 }
+
+export interface AssistantRuntimePromptOptions {
+  deviceType?: SupervisorRequest['deviceType'];
+}
+
+export interface AssistantRuntimePrepareStepOptions {
+  enableWebSearch?: boolean;
+  enableRAG?: boolean;
+}
+
+export type AssistantRuntimePrepareStep = PrepareStepFunction<ToolSet>;
 
 export interface AssistantRuntimeExecutionAdapter {
   createToolSet(input: AssistantRequest | AssistantRequestContext): ToolSet;
+  createSystemPrompt?(options?: AssistantRuntimePromptOptions): string;
+  createPrepareStep?(
+    query: string,
+    options?: AssistantRuntimePrepareStepOptions
+  ): AssistantRuntimePrepareStep | undefined;
 }
 
 export interface AssistantRuntimeHostConfig {
@@ -203,6 +224,18 @@ export function createAssistantRuntimeHost(
         config.executionAdapter?.createToolSet(input) ??
         createDomainToolSet(runtime, config.domain, input)
       );
+    },
+    createSystemPrompt(options?: AssistantRuntimePromptOptions) {
+      return (
+        config.executionAdapter?.createSystemPrompt?.(options) ??
+        config.domain.instructions.system
+      );
+    },
+    createPrepareStep(
+      query: string,
+      options?: AssistantRuntimePrepareStepOptions
+    ) {
+      return config.executionAdapter?.createPrepareStep?.(query, options);
     },
   };
 }

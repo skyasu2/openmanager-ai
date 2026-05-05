@@ -99,6 +99,10 @@ vi.mock('../../tools-ai-sdk', () => ({
 }));
 
 vi.mock('../../domains/monitoring/domain-pack', () => ({
+  createMonitoringDomainInstructions: vi.fn(() => ({
+    system: 'monitoring test domain',
+    locale: 'ko-KR',
+  })),
   monitoringDomainPack: {
     id: 'openmanager-monitoring',
     version: 'test',
@@ -120,6 +124,10 @@ vi.mock('../../domains/monitoring/domain-pack', () => ({
       resolveTool: () => undefined,
     },
   },
+}));
+
+vi.mock('../../domains/monitoring/routing-policy', () => ({
+  createPrepareStep: vi.fn(() => undefined),
 }));
 
 vi.mock('./agents/orchestrator-web-search', () => ({
@@ -222,7 +230,12 @@ vi.mock('./supervisor-quality-retry', () => ({
 }));
 
 vi.mock('./supervisor-stream-messages', () => ({
-  buildSupervisorStreamMessages: vi.fn((request: { messages: Array<{ role: string; content: string }> }) => request.messages),
+  buildSupervisorStreamMessages: vi.fn(
+    (
+      request: { messages: Array<{ role: string; content: string }> },
+      systemPrompt: string
+    ) => [{ role: 'system', content: systemPrompt }, ...request.messages]
+  ),
   getLastUserQueryText: vi.fn((messages: Array<{ role: string; content: string }>) => messages.find((message) => message.role === 'user')?.content ?? ''),
 }));
 

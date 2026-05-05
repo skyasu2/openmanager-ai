@@ -106,4 +106,24 @@ describe('assistant runtime host contract', () => {
       reasonCodes: ['sample_domain_route'],
     });
   });
+
+  it('exposes domain prompt defaults and monitoring execution adapters through the host boundary', () => {
+    const sampleHost = createAssistantRuntimeHost({
+      domain: createSampleDomain(),
+      adapters: createInMemoryAssistantRuntimeAdapters(),
+    });
+    const monitoringHost = createMonitoringAssistantRuntimeHost();
+
+    expect(sampleHost.createSystemPrompt()).toBe('Sample support domain.');
+    expect(sampleHost.createPrepareStep('help me')).toBeUndefined();
+    expect(
+      monitoringHost.createSystemPrompt({ deviceType: 'desktop' })
+    ).toContain('서버 모니터링 AI 어시스턴트');
+    expect(
+      monitoringHost.createPrepareStep('CPU 상태', {
+        enableWebSearch: false,
+        enableRAG: false,
+      })
+    ).toBeTypeOf('function');
+  });
 });
