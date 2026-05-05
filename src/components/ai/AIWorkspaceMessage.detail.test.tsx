@@ -300,4 +300,40 @@ describe('AIWorkspaceMessage detail affordance', () => {
     expect(screen.getByText('현재 서버 상태 스냅샷')).toBeInTheDocument();
     expect(screen.getByText('source otel-static')).toBeInTheDocument();
   });
+
+  it('renders unsupported artifact envelopes through a safe fallback', () => {
+    const message = {
+      id: 'assistant-unsupported-artifact',
+      role: 'assistant',
+      content: '알 수 없는 아티팩트를 받았습니다.',
+      timestamp: new Date('2026-05-05T00:00:00.000Z'),
+      isStreaming: false,
+      metadata: {
+        artifactEnvelopes: [
+          {
+            domainId: 'sample-domain',
+            kind: 'unsafe-widget',
+            artifactVersion: '2026-05-05-test',
+            generatedAt: '2026-05-05T00:00:00.000Z',
+            sourceMode: 'tool-result',
+            payload: {
+              html: '<script>alert(1)</script>',
+              url: 'javascript:alert(1)',
+            },
+          },
+        ],
+      },
+    } as unknown as EnhancedChatMessage;
+
+    render(<AIWorkspaceMessage message={message} isLastMessage={true} />);
+
+    expect(
+      screen.getByTestId('unsupported-artifact-fallback')
+    ).toHaveTextContent('지원하지 않는 아티팩트');
+    expect(
+      screen.getByText('sample-domain / unsafe-widget')
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/<script>/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/javascript:/i)).not.toBeInTheDocument();
+  });
 });
