@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-05 KST (`v8.11.105 residual QA recheck closed all pending items`)
+**Last Updated**: 2026-05-05 KST (`v8.11.106 release targeted QA and planning archive cleanup completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| — | — | — | Active Task 없음. Promptfoo deterministic eval hardening은 local config/test 작업으로 완료됐고 production deploy/QA 대상 아님. |
+| — | — | — | Active Task 없음. `v8.11.106` production targeted QA 기준 pending 0건이며 완료 plan은 `archive/`로 정리됨. |
 
 ---
 
@@ -16,14 +16,14 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| AI artifact workspace/schema registry and replay pack | High | M4 `ArtifactEnvelope` metadata는 완료됐지만 incident/report/monitoring/server snapshot artifact를 저장·복원·비교하는 portfolio-facing workspace/schema registry는 아직 없다. typed artifact 결과물을 재현 가능한 산출물로 만들되 신규 LLM 호출과 기본 DB write 증가는 별도 gate로 제한한다. 관련: [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) |
+| AI artifact workspace/schema registry and replay pack | High | M4 `ArtifactEnvelope` metadata는 완료됐지만 incident/report/monitoring/server snapshot artifact를 저장·복원·비교하는 portfolio-facing workspace/schema registry는 아직 없다. typed artifact 결과물을 재현 가능한 산출물로 만들되 신규 LLM 호출과 기본 DB write 증가는 별도 gate로 제한한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
 | AI advanced surface targeted QA pack | Medium | 이번 Vercel QA는 AI Chat stream과 탭 렌더링 중심이었다. 비용 보호를 유지하면서 Reporter 1회, anomaly/trend 1회, RAG/Web 대표 질의 1회만 별도 targeted QA로 검증하고 실제 버튼/기능 동작 여부를 기록한다. 실패가 확인될 때만 코드 수정으로 승격한다. |
-| Artifact intent production-sample replay eval | High | `v8.11.80..v8.11.89` 교차검증 결과 deterministic corpus `121/121`은 통과했지만 production query 분포 검증은 별도 필요. 익명화/정규화된 실제 질의 샘플을 fixture로 편입하고 precision/recall drift guard를 보강한다. 관련: [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) |
-| Planner shadow production telemetry review | High | 현재 shadow drift/latency는 로컬 50개 baseline corpus와 단위 테스트 중심이다. `plannerShadow.latencyMs`, mismatch reason, executionMode를 운영/QA 로그에서 집계해 p95와 drift rate를 실제 수치로 확인한 뒤 authority 이전 여부를 판단한다. 관련: [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) |
-| MonitoringFactPack consumer/evidence UI expansion | Medium | M7에서 `MonitoringFactPack` 자체는 도입됐지만 모든 artifact/report/evidence panel이 같은 fact boundary를 소비하지는 않는다. metric severity는 deterministic fact pack이 책임지고 LLM은 explanation/formatting만 수행한다는 계약을 UI와 answer-quality eval까지 확장한다. 관련: [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) |
-| Provider reasoning capability policy contract | Medium | 현재 `thinking`은 provider-native reasoning이 아니라 app-level routing intensity다. 무료 tier provider의 reasoning 지원은 계정 entitlement/latency/quota가 변동되므로 `reasoningCapability`, `lastVerified`, `expiresAt`, smoke source를 policy contract로 승격한 뒤 opt-in으로만 검토한다. 관련: [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) |
-| Monitoring source error boundary documentation | Medium | `analytics-monitoring-error.ts`는 현재 deterministic monitoring routes(`/monitoring/snapshot`, `/monitoring/analyze-batch`)에 한정된다. `/analyze-server`, `/incident-report` grounding 실패까지 표준 오류로 올릴지 책임 범위를 명문화한다. 관련: [monitoring-ai-data-source-plan.md](monitoring-ai-data-source-plan.md) |
-| Streaming warmup test act warning cleanup | Low | Targeted regression은 통과하지만 `StreamingWarmupIndicator` 테스트에 React `act(...)` 경고가 남아 있다. 기능 리스크는 낮으나 테스트 품질 부채로 별도 정리한다. 관련: [ai-streaming-ui-improvement-plan.md](ai-streaming-ui-improvement-plan.md) |
+| Artifact intent production-sample replay eval | High | `v8.11.80..v8.11.89` 교차검증 결과 deterministic corpus `121/121`은 통과했지만 production query 분포 검증은 별도 필요. 익명화/정규화된 실제 질의 샘플을 fixture로 편입하고 precision/recall drift guard를 보강한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
+| Planner shadow production telemetry review | High | 현재 shadow drift/latency는 로컬 50개 baseline corpus와 단위 테스트 중심이다. `plannerShadow.latencyMs`, mismatch reason, executionMode를 운영/QA 로그에서 집계해 p95와 drift rate를 실제 수치로 확인한 뒤 authority 이전 여부를 판단한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
+| MonitoringFactPack consumer/evidence UI expansion | Medium | M7에서 `MonitoringFactPack` 자체는 도입됐지만 모든 artifact/report/evidence panel이 같은 fact boundary를 소비하지는 않는다. metric severity는 deterministic fact pack이 책임지고 LLM은 explanation/formatting만 수행한다는 계약을 UI와 answer-quality eval까지 확장한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
+| Provider reasoning capability policy contract | Medium | 현재 `thinking`은 provider-native reasoning이 아니라 app-level routing intensity다. 무료 tier provider의 reasoning 지원은 계정 entitlement/latency/quota가 변동되므로 `reasoningCapability`, `lastVerified`, `expiresAt`, smoke source를 policy contract로 승격한 뒤 opt-in으로만 검토한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
+| Monitoring source error boundary documentation | Medium | `analytics-monitoring-error.ts`는 현재 deterministic monitoring routes(`/monitoring/snapshot`, `/monitoring/analyze-batch`)에 한정된다. `/analyze-server`, `/incident-report` grounding 실패까지 표준 오류로 올릴지 책임 범위를 명문화한다. 관련: [monitoring-ai-data-source-plan.md](archive/monitoring-ai-data-source-plan.md) |
+| Streaming warmup test act warning cleanup | Low | Targeted regression은 통과하지만 `StreamingWarmupIndicator` 테스트에 React `act(...)` 경고가 남아 있다. 기능 리스크는 낮으나 테스트 품질 부채로 별도 정리한다. 관련: [ai-streaming-ui-improvement-plan.md](archive/ai-streaming-ui-improvement-plan.md) |
 
 ---
 
@@ -31,14 +31,14 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-05-04 Playwright MCP QA 후 재검증 기준 `reports/qa=85.77MiB`, `reports/qa/evidence=80.07MiB / 409파일`. `npm run qa:evidence:audit` 결과 missing durable artifact paths `0`, orphan durable evidence `6개`, archive candidate `7개 / 2.16MiB`, size warning 유지. run-level soft budget warning은 `QA-20260330-0197`, `QA-20260330-0198` 2건으로 구조화됨. orphan/archive candidate 제거만으로는 warning 해소 효과가 낮고 top referenced legacy evidence는 modal/detail/landing proof 가치가 있어 explicit cleanup batch는 열지 않음. 새 evidence 누적 시점에만 재평가. |
+| P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-05-05 `v8.11.106` targeted QA 후 재검증 기준 `reports/qa=90MiB`, `reports/qa/evidence=83MiB`. `npm run qa:evidence:audit` 결과 missing durable artifact paths `0`, orphan durable evidence `6개`, size warning 유지. run-level soft budget warning은 `QA-20260330-0197`, `QA-20260330-0198` 2건으로 구조화됨. orphan/archive candidate 제거만으로는 warning 해소 효과가 낮고 top referenced legacy evidence는 modal/detail/landing proof 가치가 있어 explicit cleanup batch는 열지 않음. 새 evidence 누적 시점에만 재평가. |
 
 ## Backlog (완료 이력)
 
 | Task | Priority | Notes |
 |------|----------|-------|
 | ~~Dashboard 알림 UX 개선 (A1~A7)~~ | — | **완료** — 한국어 통일, border-left, StatCell 클릭 필터, 스크롤 자동 로드, 로그 크로스링크 전부 적용. [archive/dashboard-alert-ux-plan.md](archive/dashboard-alert-ux-plan.md) |
-| ~~IntersectionObserver 전환 (B1~B6)~~ | — | **완료** — scroll event 제거, sentinel 패턴, 로그+알림 더보기 버튼 fallback 적용. [dashboard-scroll-observer-plan.md](dashboard-scroll-observer-plan.md) |
+| ~~IntersectionObserver 전환 (B1~B6)~~ | — | **완료** — scroll event 제거, sentinel 패턴, 로그+알림 더보기 버튼 fallback 적용. [dashboard-scroll-observer-plan.md](archive/dashboard-scroll-observer-plan.md) |
 | ~~AI Assistant Surface Parity Refactor~~ | — | **완료** — archive 이동. |
 | ~~AI assistant retrieval and multi-agent runtime refactor~~ | — | **완료** — archive 이동. Task 0~8 전체 완료. Knowledge Retrieval Lite 도입, GraphRAG 제거, provider model policy SSOT, 18대 서버 topology contract, frontend retrieval status contract 모두 반영. 상세: [archive/ai-assistant-retrieval-multi-agent-refactor-plan.md](archive/ai-assistant-retrieval-multi-agent-refactor-plan.md) |
 | ~~AI Response Visibility & Rate Limit (Phase 1~5)~~ | — | **완료** — archive 이동. write bucket 재평가 결과 `supervisor 10/min`, `jobs/process 5/min`, `daily 100` 유지 결정 로그는 archived plan에 유지. |
@@ -49,9 +49,16 @@
 
 ## Recent Completed
 
+### Completed (2026-05-05 #290)
+- [x] v8.11.106 release targeted QA and planning hygiene cleanup
+  - `v8.11.106` GitLab tag pipeline `2499937091` success 및 production `/api/version` `8.11.106` 확인
+  - Production targeted QA `QA-20260505-0412`에서 dashboard telemetry copy, AI sidebar tool menu, Reporter copy, Intelligent Monitoring RAG copy removal을 재검증
+  - QA tracker summary 기준 completed/pending/deferred/wont-fix: `436/0/0/22`
+  - 완료된 root plan 파일 23개를 `reports/planning/archive/`로 이동하고 TODO.md의 archive 링크를 보정
+
 ### Completed (2026-05-05 #289)
 - [x] Promptfoo evaluation hardening & A/B testing
-  - `promptfoo-evaluation-hardening-plan.md` Completed 처리
+  - `archive/promptfoo-evaluation-hardening-plan.md` Completed 처리
   - 기본 Promptfoo config를 Cerebras/Groq runtime-aligned provider, 25개 golden dataset, deterministic assertion 중심으로 재구성하고 test별 대상 prompt를 명시해 예상 provider call을 `200 → 50`으로 축소
   - `llm-rubric` judge assertion을 main/redteam config 모두 0건으로 낮추고, `javascript` schema-sensitive guard 6건 추가
   - `prompt:eval` / `prompt:redteam` 실행 전 live provider call estimate와 judge ratio를 출력하는 preflight 추가
@@ -207,12 +214,12 @@
 - [x] AI Assistant Architecture Evolution M5-B work plan
   - 현재 실제 동작 surface를 frontend artifact path, frontend stream/job decision, Cloud Run supervisor mode로 분해해 기존 계획서에 반영
   - M5 구현 전 baseline corpus, `executionMode` contract spec, Cloud Run shadow planner, drift corpus, multi-agent escalation guard, rollout decision 단계 추가
-  - 신규 계획서 생성 없이 기존 [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md)에 작업 계획을 통합
+  - 신규 계획서 생성 없이 기존 [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md)에 작업 계획을 통합
   - 검증: `npm run docs:budget`, `npm run docs:ai-consistency`, `git diff --check`
 
 ### Completed (2026-05-03 #267)
 - [x] AI Assistant Architecture Evolution M5-A planning
-  - 기존 [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md)에 multi-agent 유지/축소 판단을 M5 하위 계약으로 편입
+  - 기존 [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md)에 multi-agent 유지/축소 판단을 M5 하위 계약으로 편입
   - multi-agent는 폐기하지 않고 RCA/report/vision/advisory/cross-domain evidence용 escalation path로 유지하며, 기본 실행 모델은 deterministic/single로 낮추는 방향을 명시
   - 신규 계획서 생성 없이 기존 M5 Cloud Run Planner shadow mode 범위에 `executionMode`, escalation reason, drift metadata 테스트 시나리오 추가
   - 검증: `npm run docs:budget`, `npm run docs:ai-consistency`, `git diff --check`
@@ -226,7 +233,7 @@
 
 ### Completed (2026-05-03 #265)
 - [x] AI Assistant Architecture Evolution M3
-  - [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md)를 M3 범위 Approved로 정리하고 기준 문서 정합성 보정
+  - [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md)를 M3 범위 Approved로 정리하고 기준 문서 정합성 보정
   - `ai-assistant-initial-design-comparison.md`가 M2 실제 read-only `AssistantPlan`/`AssistantResult` contract와 future authoritative planner target을 분리해서 설명하도록 수정
   - 종합 점수 분모를 9개 기준 기준 `/45`로 정정하고 M4~M7 gap table 추가
   - 웹/공식 문서 기준으로 현재 상태를 Option A 개선 중간 단계로 명시하고, AI SDK v6 `Output.object` 방향, Vercel route/runtime duration 표현, tool guardrail/eval/OTel observability/token limit 관점 보강
@@ -407,7 +414,7 @@
 
 ### Completed (2026-05-01 #241)
 - [x] Dashboard Log→Alert 역방향 크로스링크
-  - Plan completed: [dashboard-log-alert-crosslink-plan.md](dashboard-log-alert-crosslink-plan.md)
+  - Plan completed: [dashboard-log-alert-crosslink-plan.md](archive/dashboard-log-alert-crosslink-plan.md)
   - `AlertHistoryPanel`에 `initialServerId` 계약을 추가하고 `/dashboard/alerts?server=...` 및 legacy `serverId` query를 초기 서버 필터로 연결
   - `LogExplorerModal` 로그 행/반복 그룹 상세 행에 서버별 "알림" 버튼 추가, URL encoding 및 no-param fallback 테스트 보강
   - 서버 상세 `로그 & 네트워크` 탭에 같은 서버 알림 이력 이동 버튼 추가
@@ -415,7 +422,7 @@
 
 ### Completed (2026-05-01 #240)
 - [x] 서버 상세 페이지 2가지 버그 수정
-  - Plan completed: [dashboard-server-detail-fix-plan.md](dashboard-server-detail-fix-plan.md)
+  - Plan completed: [dashboard-server-detail-fix-plan.md](archive/dashboard-server-detail-fix-plan.md)
   - `LogsTab.parts`의 LegacyLogView/StreamsView dark 배경 잔재를 white UI로 정리하고 Streams empty state를 한국어로 통일
   - `normalizeServerData`에 서버 ID 기반 타입 추론 fallback 추가, `ServerDetailView` 헤더 타입 라벨 표시 개선
   - Next.js 16 `cacheComponents` 환경에서 `/dashboard/servers/{serverId}` 상세 route가 404/500으로 흔들리지 않도록 registry 기반 `generateStaticParams` 추가
@@ -423,7 +430,7 @@
 
 ### Completed (2026-05-01 #239)
 - [x] orchestrator-summary-fallback operational/status builder 분리
-  - Plan completed: [ai-engine-code-quality-plan.md](ai-engine-code-quality-plan.md) Task 3-B.3
+  - Plan completed: [ai-engine-code-quality-plan.md](archive/ai-engine-code-quality-plan.md) Task 3-B.3
   - operational characterization tests 보강: critical 우선순위, offline operational section, metric ranking drift 방지
   - `orchestrator-summary-operational.ts` 추가: status/explicit-server operational predicates, action/recommendation/trend/summary builders 분리
   - `orchestrator-summary-fallback.ts`는 deterministic facade와 metric/operational builder dispatch만 유지
@@ -433,7 +440,7 @@
 
 ### Completed (2026-05-01 #238)
 - [x] orchestrator-summary-fallback metric builder 분리
-  - Plan partial completed: [ai-engine-code-quality-plan.md](ai-engine-code-quality-plan.md) Task 3-B.2
+  - Plan partial completed: [ai-engine-code-quality-plan.md](archive/ai-engine-code-quality-plan.md) Task 3-B.2
   - metric characterization tests 보강: partial filter summary, trusted filter rows, network ranking, ascending CPU ranking
   - `orchestrator-summary-metric.ts` 추가: metric threshold/ranking builders and private metric helpers 분리
   - `orchestrator-summary-fallback.ts`는 public facade와 operational/status renderer 유지
@@ -443,7 +450,7 @@
 
 ### Completed (2026-05-01 #237)
 - [x] orchestrator-summary-fallback payload adapter 분리
-  - Plan partial completed: [ai-engine-code-quality-plan.md](ai-engine-code-quality-plan.md) Task 3-B.1
+  - Plan partial completed: [ai-engine-code-quality-plan.md](archive/ai-engine-code-quality-plan.md) Task 3-B.1
   - public facade characterization tests 보강: payload precedence, malformed getServerMetrics, empty status filter summary
   - `orchestrator-summary-payload.ts` 추가: payload types, tool result parsing, current-state payload construction, evidence count helper 분리
   - `orchestrator-summary-fallback.ts`는 기존 public facade와 renderer/query builder 로직 유지
@@ -453,7 +460,7 @@
 
 ### Completed (2026-05-01 #236)
 - [x] orchestrator-routing AgentFactory 경로 분리
-  - Plan partial completed: [ai-engine-code-quality-plan.md](ai-engine-code-quality-plan.md) Task 3-A
+  - Plan partial completed: [ai-engine-code-quality-plan.md](archive/ai-engine-code-quality-plan.md) Task 3-A
   - `executeWithAgentFactory`, `getAgentTypeFromName`을 `orchestrator-factory.ts`로 이동
   - `orchestrator-routing.ts`는 기존 import/mock 호환을 위해 re-export 유지
   - SDD 선행 테스트 커밋: `88e5ff5ae test(spec): orchestrator factory split contract`
@@ -462,7 +469,7 @@
 
 ### Completed (2026-05-01 #235)
 - [x] quota-tracker.ts 레이어 분리
-  - Plan partial completed: [ai-engine-code-quality-plan.md](ai-engine-code-quality-plan.md) Task 2
+  - Plan partial completed: [ai-engine-code-quality-plan.md](archive/ai-engine-code-quality-plan.md) Task 2
   - `quota-types.ts`, `quota-store-memory.ts`, `quota-store-redis.ts` 추가
   - `quota-tracker.ts`는 기존 public facade와 core API를 유지하고 내부 store/config 의존만 분리
   - Redis reservation/reconcile은 memory store에 숨은 write를 하지 않고 facade가 동기화하도록 정렬
@@ -472,7 +479,7 @@
 
 ### Completed (2026-05-01 #234)
 - [x] Dashboard Server & Log UX 개선
-  - Plan completed: [dashboard-server-log-ux-plan.md](dashboard-server-log-ux-plan.md)
+  - Plan completed: [dashboard-server-log-ux-plan.md](archive/dashboard-server-log-ux-plan.md)
   - Phase 1: 서버 카드 상태 accent, 임계치 메트릭 강조, 로그 ERROR 행/통계 필터 정렬 완료
   - Phase 2: 서버 리스트/그리드 보기 토글, 정렬 셀렉트, 로그 1줄 압축/확장 완료
   - Phase 3: 서버 카드 로그 cross-link, URL 기반 서버 필터, 반복 로그 그룹핑, 50개 청크+페이지 로드 완료
@@ -484,7 +491,7 @@
 
 ### Completed (2026-04-30 #233)
 - [x] approval write 레이어 제거
-  - Plan completed: [ai-engine-code-quality-plan.md](ai-engine-code-quality-plan.md) Task 1
+  - Plan completed: [ai-engine-code-quality-plan.md](archive/ai-engine-code-quality-plan.md) Task 1
   - `ApprovalStore` class, Memory Map, Redis sync, TTL cleanup, pending/decision write APIs 제거
   - `/approval/history`, `/approval/history/stats`는 Supabase read 함수 직접 호출로 정렬
   - `approval-store.ts`는 `fetchApprovalHistory`, `fetchApprovalHistoryStats` read-only facade로 축소
@@ -494,7 +501,7 @@
 
 ### Completed (2026-04-30 #232)
 - [x] Cerebras Qwen deprecation 대응
-  - Plan completed: [ai-engine-code-quality-plan.md](ai-engine-code-quality-plan.md) Task 4
+  - Plan completed: [ai-engine-code-quality-plan.md](archive/ai-engine-code-quality-plan.md) Task 4
   - Cerebras runtime default를 `llama3.1-8b`로 전환하고 Qwen 235B Preview는 excluded metadata/override 감지용으로만 유지
   - 16K/32K context 요구 경로는 8K Cerebras runtime을 건너뛰고 Groq/Mistral fallback으로 이동하도록 capability gate 정렬
   - Cloud Run deploy env에 `CEREBRAS_MODEL_ID=llama3.1-8b`, 빈 `CEREBRAS_FALLBACK_MODEL_IDS` 명시
@@ -503,7 +510,7 @@
 
 ### Completed (2026-04-30 #231)
 - [x] Dashboard app shell + modal-to-route refactor
-  - Plan completed: [dashboard-app-shell-navigation-refactor-plan.md](dashboard-app-shell-navigation-refactor-plan.md)
+  - Plan completed: [dashboard-app-shell-navigation-refactor-plan.md](archive/dashboard-app-shell-navigation-refactor-plan.md)
   - `/dashboard` 좌측 navigation rail과 모바일 drawer 추가, 우측 AI sidebar/session/auto-shutdown 흐름 유지
   - `/dashboard/servers`, `/dashboard/servers/[serverId]`, `/dashboard/alerts`, `/dashboard/logs`, `/dashboard/topology` route 추가
   - Active Alerts, Alert History, Log Explorer, Topology, Server Detail 모달 본문을 page-ready panel/view로 분리하고 기존 modal wrapper는 호환 유지
@@ -513,7 +520,7 @@
 
 ### Completed (2026-04-30 #230)
 - [x] Monitoring AI data source / Reporter-Analyst grounding
-  - Plan completed: [monitoring-ai-data-source-plan.md](monitoring-ai-data-source-plan.md)
+  - Plan completed: [monitoring-ai-data-source-plan.md](archive/monitoring-ai-data-source-plan.md)
   - Cloud Run `MonitoringDataSource` 계약, replay-json provider, live-otel disabled skeleton 추가
   - `/api/ai/monitoring/snapshot`, `/api/ai/monitoring/analyze-batch` endpoint 및 AI SDK monitoring tools 추가
   - Intelligent Monitoring 전체 분석을 Vercel 서버별 fan-out에서 Cloud Run batch proxy 1회 호출로 전환
@@ -567,7 +574,7 @@
   - `query-type-classifier.ts` 제거, NLQ instruction layering을 `classifyQueryIntent()` 기반으로 통합
   - `supervisor-routing.ts`의 direct server ID 감지를 resource-catalog 기반 lazy pattern으로 전환하고 metric ranking 강제 라우팅을 intent classifier에 위임
   - Tool 결과가 있는데 모델 본문이 제목/골격만 반환하는 경우 `LOW_INFORMATION_RESPONSE`로 감지해 summarization fallback을 추가 전송
-  - Plan completed: [query-routing-hardcode-cleanup-plan.md](query-routing-hardcode-cleanup-plan.md)
+  - Plan completed: [query-routing-hardcode-cleanup-plan.md](archive/query-routing-hardcode-cleanup-plan.md)
   - 검증: `orchestrator-agent-stream.test.ts` 12/12, `cloud-run/ai-engine npm test` 913/913, `cloud-run/ai-engine npm run type-check`, `git diff --check`, `npm run lint:changed` 통과
 
 ### Completed (2026-04-29 #223)
@@ -586,7 +593,7 @@
 
 ### Completed (2026-04-29 #220)
 - [x] Deployment drift guard and AI deploy skip
-  - Plan completed: [deployment-drift-guard-plan.md](deployment-drift-guard-plan.md)
+  - Plan completed: [deployment-drift-guard-plan.md](archive/deployment-drift-guard-plan.md)
   - `/api/version`에 `commitSha`, `shortCommitSha`, `releaseTag`, `pipelineUrl`, `deploymentProvider` 메타데이터 추가
   - Vercel post-deploy smoke가 release version과 GitLab commit SHA를 함께 검증하도록 확장
   - QA용 `check-vercel-deployment-drift.mjs` preflight 추가: version/tag/commit mismatch를 deployment drift로 분리
@@ -596,7 +603,7 @@
 
 ### Completed (2026-04-29 #219)
 - [x] Dashboard modal/search display hardening
-  - Plan completed: [dashboard-modal-search-hardening-plan.md](dashboard-modal-search-hardening-plan.md)
+  - Plan completed: [dashboard-modal-search-hardening-plan.md](archive/dashboard-modal-search-hardening-plan.md)
   - 랜딩페이지 금지 경로를 제외하고 대시보드 모달만 개선
   - `TopologyModal`, `AILoginRequiredModal` shell을 light mode로 정렬하고 graph/terminal dark 예외를 분리
   - 로그 탐색기 필터 summary/reset, 로그 terminal 높이/줄바꿈, 알림 이력 row wrapping, 서버 상세 metrics/logs panel wrapping 보강
@@ -613,7 +620,7 @@
 
 ### Completed (2026-04-29 #217)
 - [x] AI Assistant UX polish
-  - Plan completed: [ai-assistant-ux-polish-plan.md](ai-assistant-ux-polish-plan.md)
+  - Plan completed: [ai-assistant-ux-polish-plan.md](archive/ai-assistant-ux-polish-plan.md)
   - SDD gate followed: failing tests were committed before implementation
   - Typography scale, desktop/mobile target sizes, fullscreen light theme, System Context AI Engine status consolidation, and provider routing active-chip contract implemented
   - Production QA `QA-20260429-0360` passed on `v8.11.57`: desktop body/html light background, mobile 44px action targets, desktop 24px targets, health/version endpoints, GitLab main/tag pipelines, Vercel usage normal
@@ -649,7 +656,7 @@
   - Cloud Run Hono `/api/jobs/dispatch`가 Cloud Tasks HTTP task를 생성해 `/api/jobs/process`를 비동기로 호출하도록 구현
   - 기존 direct trigger는 기본값으로 유지하고, retry route도 같은 trigger mode와 source/thinking 옵션 보존 적용
   - Cloud Tasks 설정/env/docs/deploy script 반영. GCP queue/IAM 생성 및 production 활성화는 별도 운영 단계로 남김
-  - Plan completed: [cloud-tasks-job-queue-plan.md](cloud-tasks-job-queue-plan.md)
+  - Plan completed: [cloud-tasks-job-queue-plan.md](archive/cloud-tasks-job-queue-plan.md)
 
 ### Completed (2026-04-28 #212)
 - [x] Supabase free-tier hardening
@@ -657,7 +664,7 @@
   - 서버 경유로만 사용하는 public table/view direct privilege를 service role 전용으로 정리
   - unused vector-era index `idx_knowledge_base_embedding_hnsw`, `idx_knowledge_base_content_trgm`, `idx_command_vectors_embedding_hnsw` 제거, BM25 `idx_knowledge_base_search_vector` 유지
   - 원격 Supabase migration 적용 및 live 검증 완료: RPC/table 권한, index 상태, KRL RPC smoke 3건 반환
-  - Plan completed: [supabase-free-tier-hardening-plan.md](supabase-free-tier-hardening-plan.md)
+  - Plan completed: [supabase-free-tier-hardening-plan.md](archive/supabase-free-tier-hardening-plan.md)
 
 ### Completed (2026-04-28 #211)
 - [x] AI Workspace mobile function nav parity
@@ -671,7 +678,7 @@
   - UI 선택지를 `Auto / On`으로 단순화하고 `Off`는 노출하지 않음
   - Auto 상태에서는 `enableRAG`/`enableWebSearch`를 요청에서 생략해 Cloud Run conservative auto-detection을 사용
   - Streaming, Job Queue, local dev fallback, stream redirect Job Queue 경로의 source option 생성 로직을 공통화
-  - Plan completed: [ai-assistant-source-mode-plan.md](ai-assistant-source-mode-plan.md)
+  - Plan completed: [ai-assistant-source-mode-plan.md](archive/ai-assistant-source-mode-plan.md)
 
 ### Completed (2026-04-28 #209)
 - [x] AI Provider 재배치 및 응답 품질 강화 완료 (v8.11.46)
@@ -680,7 +687,7 @@
   - Phase 3.5/4.1: AI SDK timeout abortSignal 전달, forced-routing context floor 보강
   - Production QA `QA-20260428-0356`: Analyst/Reporter/Advisor 실제 응답 3/3 pass, Analyst/Advisor 8K Cerebras fallback 및 function-call JSON 노출 회귀 해소
   - GitLab tag pipeline `2484111299` success: `deploy`, `deploy_ai_engine`, `post_deploy_smoke`, `post_deploy_ai_engine_smoke`
-  - Plan completed: [ai-provider-quality-plan.md](ai-provider-quality-plan.md)
+  - Plan completed: [ai-provider-quality-plan.md](archive/ai-provider-quality-plan.md)
 
 ### Completed (2026-04-27 #208)
 - [x] AI Provider 분산 배치 (Spider-Web) 완료 (v8.11.38)
