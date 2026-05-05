@@ -1,7 +1,7 @@
 # Promptfoo Evaluation & Golden Dataset Hardening Plan
 
 **Owner**: project
-**Status**: Draft
+**Status**: Approved
 **Created**: 2026-05-05
 
 ## Context & Motivation
@@ -15,6 +15,18 @@
 - **Golden Dataset 정예화**: 엣지 케이스 및 Tool Calling 스키마 검증 위주의 20~30개 내외 핵심 마이크로 벤치마크 구성.
 - **A/B 테스트 환경**: `promptfooconfig.yaml`에 Cerebras와 Groq 등 실제 런타임 무료 모델들을 등록하여, 동일한 프롬프트(의도)에 대해 어떤 모델이 Tool Calling 실패율이 적은지 비교 측정.
 - **옵저버빌리티(Langfuse) & Contract(Vitest) 연계**: Promptfoo는 Prompt 튜닝과 로컬 벤치마크를 전담하고, 실 배포 환경 평가는 비동기 Langfuse Eval, HTTP/Stream 검증은 Vitest에 위임하는 역할 명확화.
+
+## Contract
+
+| 항목 | 계약 |
+|------|------|
+| 비용 경계 | `prompt:eval`은 실제 provider 호출 가능성을 실행 전에 명시적으로 경고한다. Judge용 추가 LLM 호출은 기본 경로에서 제거한다. |
+| assertion 비율 | 기본 `promptfooconfig.yaml`의 `llm-rubric` assertion은 전체 assertion의 20% 미만이어야 한다. `defaultTest`에는 `llm-rubric`을 두지 않는다. |
+| deterministic guard | 핵심 회귀는 `contains-any`, `not-contains`, `javascript` assertion으로 검증한다. Tool/JSON/route/schema 성격의 검증은 LLM-as-a-Judge가 아니라 구조 검사로 고정한다. |
+| provider 정렬 | eval provider label/config는 production runtime chain(Cerebras → Groq → Mistral)을 기준으로 설명한다. 실제 provider 호출은 로컬 수동 실행 전용이며 CI 기본 경로에는 포함하지 않는다. |
+| golden dataset | 기본 config는 RAG/Web/Search/Reporter/NLQ/Supervisor edge case를 포함한 20~30개 micro benchmark를 유지한다. |
+| redteam 분리 | redteam config는 별도 수동 실행 경로로 유지하되, 같은 deterministic assertion 원칙을 적용한다. |
+| 검증 | Promptfoo config contract test가 assertion 비율, defaultTest 금지, javascript guard 수, script warning을 deterministic하게 검사한다. |
 
 ## Task Breakdown
 

@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| — | — | — | Active Task 없음. `QA-20260505-0410`에서 v8.11.97 broad QA remediation 잔여 RAG item까지 production 완료 확인. |
+| Promptfoo evaluation hardening & A/B testing | High | Active | `promptfoo-evaluation-hardening-plan.md` Approved. `llm-rubric` judge 비중을 낮추고 deterministic assertion/golden dataset/preflight warning으로 Free Tier 회귀 방어를 강화. |
 
 ---
 
@@ -16,7 +16,6 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| Promptfoo evaluation hardening & A/B testing | High | 기존에 구축된 Promptfoo 프레임워크(`cloud-run/ai-engine/promptfoo`)의 `llm-rubric` 검증 비중을 낮추고, 비용 0의 결정론적 평가로 전환. Cerebras/Groq 등 실제 런타임 모델들의 A/B 라우팅 평가가 가능하도록 최적화. 관련: [promptfoo-evaluation-hardening-plan.md](promptfoo-evaluation-hardening-plan.md) |
 | AI artifact workspace/schema registry and replay pack | High | M4 `ArtifactEnvelope` metadata는 완료됐지만 incident/report/monitoring/server snapshot artifact를 저장·복원·비교하는 portfolio-facing workspace/schema registry는 아직 없다. typed artifact 결과물을 재현 가능한 산출물로 만들되 신규 LLM 호출과 기본 DB write 증가는 별도 gate로 제한한다. 관련: [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) |
 | AI advanced surface targeted QA pack | Medium | 이번 Vercel QA는 AI Chat stream과 탭 렌더링 중심이었다. 비용 보호를 유지하면서 Reporter 1회, anomaly/trend 1회, RAG/Web 대표 질의 1회만 별도 targeted QA로 검증하고 실제 버튼/기능 동작 여부를 기록한다. 실패가 확인될 때만 코드 수정으로 승격한다. |
 | Artifact intent production-sample replay eval | High | `v8.11.80..v8.11.89` 교차검증 결과 deterministic corpus `121/121`은 통과했지만 production query 분포 검증은 별도 필요. 익명화/정규화된 실제 질의 샘플을 fixture로 편입하고 precision/recall drift guard를 보강한다. 관련: [ai-assistant-architecture-evolution-plan.md](ai-assistant-architecture-evolution-plan.md) |
