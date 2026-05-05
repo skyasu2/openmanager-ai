@@ -1,5 +1,6 @@
 import {
   type ArtifactReplayPack,
+  compareArtifactReplayPacks,
   createArtifactReplayPack,
   listArtifactSchemaEntries,
   MONITORING_ARTIFACT_DOMAIN_ID,
@@ -29,9 +30,34 @@ export interface ArtifactWorkspaceSnapshot {
 export interface ArtifactWorkspaceStore {
   policy: ArtifactWorkspaceStorePolicy;
   saveReplayPack: (pack: ArtifactReplayPack) => void;
+  importReplayPackExport: (contents: string) => ArtifactReplayPackImportResult;
   readReplayPack: (workspaceId: string) => ArtifactReplayPack | undefined;
   listReplayPacks: () => ArtifactReplayPack[];
   clear: () => void;
+}
+
+export interface ArtifactReplayPackExport {
+  fileName: string;
+  mimeType: 'application/json';
+  contents: string;
+}
+
+export type ArtifactReplayPackImportResult =
+  | {
+      status: 'accepted';
+      replayPack: ArtifactReplayPack;
+    }
+  | {
+      status: 'rejected';
+      reason: 'invalid_json' | 'unsupported_replay_pack';
+    };
+
+export interface ArtifactReplayPackComparisonSummary {
+  status: 'identical' | 'different';
+  matchedCount: number;
+  missingCount: number;
+  addedCount: number;
+  changedCount: number;
 }
 
 export interface CreateArtifactWorkspaceStoreOptions {
@@ -152,6 +178,16 @@ function writeSnapshot(
   }
 }
 
+function toSafeFileSegment(value: string): string {
+  return (
+    value
+      .trim()
+      .replace(/[^a-zA-Z0-9_-]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 96) || 'workspace'
+  );
+}
+
 function isSupportedChatArtifact(value: unknown): value is ChatArtifact {
   return listArtifactSchemaEntries().some((entry) => entry.isPayload(value));
 }
@@ -219,6 +255,22 @@ export function createArtifactWorkspaceStore(
         replayPacks: [...replayPacks, restoredPack],
       });
     },
+    importReplayPackExport: (contents) => {
+      const result = readArtifactReplayPackExport(contents);
+      if (result.status === 'accepted') {
+        const updatedAt = now();
+        const snapshot = readSnapshot(storage, updatedAt);
+        const replayPacks = snapshot.replayPacks.filter(
+          (entry) => entry.workspaceId !== result.replayPack.workspaceId
+        );
+        writeSnapshot(storage, {
+          storeVersion: ARTIFACT_WORKSPACE_STORE_VERSION,
+          updatedAt,
+          replayPacks: [...replayPacks, result.replayPack],
+        });
+      }
+      return result;
+    },
     readReplayPack: (workspaceId) =>
       readSnapshot(storage, now()).replayPacks.find(
         (pack) => pack.workspaceId === workspaceId
@@ -261,6 +313,69 @@ export function extractArtifactReplayPackFromChatHistory({
     createdAt,
     envelopes,
   });
+}
+
+export function createArtifactReplayPackExport(
+  value: unknown
+): ArtifactReplayPackExport | undefined {
+  const replayPack = readArtifactReplayPack(value);
+  if (!replayPack) return undefined;
+
+  return {
+    fileName: `artifact-replay-${toSafeFileSegment(
+      replayPack.workspaceId
+    )}-${toSafeFileSegment(replayPack.createdAt)}.json`,
+    mimeType: 'application/json',
+    contents: JSON.stringify(replayPack, null, 2),
+  };
+}
+
+export function readArtifactReplayPackExport(
+  contents: string
+): ArtifactReplayPackImportResult {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(contents) as unknown;
+  } catch {
+    return {
+      status: 'rejected',
+      reason: 'invalid_json',
+    };
+  }
+
+  const replayPack = readArtifactReplayPack(parsed);
+  if (!replayPack) {
+    return {
+      status: 'rejected',
+      reason: 'unsupported_replay_pack',
+    };
+  }
+
+  return {
+    status: 'accepted',
+    replayPack,
+  };
+}
+
+export function createArtifactReplayPackComparisonSummary(
+  expected: unknown,
+  actual: unknown
+): ArtifactReplayPackComparisonSummary {
+  const comparison = compareArtifactReplayPacks(expected, actual);
+  const missingCount = comparison.missing.length;
+  const addedCount = comparison.added.length;
+  const changedCount = comparison.changed.length;
+
+  return {
+    status:
+      missingCount === 0 && addedCount === 0 && changedCount === 0
+        ? 'identical'
+        : 'different',
+    matchedCount: comparison.matched.length,
+    missingCount,
+    addedCount,
+    changedCount,
+  };
 }
 
 export function createEmptyArtifactWorkspaceSnapshot(

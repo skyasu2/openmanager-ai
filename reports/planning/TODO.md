@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-06 KST (`Artifact workspace store and legacy extraction completed`)
+**Last Updated**: 2026-05-06 KST (`Artifact workspace export/import adapter completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -16,7 +16,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| AI artifact workspace UI/export and compare UX | High | #296에서 artifact family/version schema registry와 deterministic replay pack create/read/compare core를 완료했고, #297에서 session-first workspace store와 legacy chat history replay pack extraction core를 완료. 남은 범위는 portfolio-facing workspace UI/API boundary, replay pack export/import affordance, artifact compare UX이다. 신규 LLM 호출과 기본 DB write 증가는 별도 gate로 제한한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
+| AI artifact workspace UI wiring and compare UX | High | #296에서 artifact family/version schema registry와 deterministic replay pack create/read/compare core를 완료했고, #297에서 session-first workspace store와 legacy chat history replay pack extraction core를 완료. #298에서 replay pack export/import/compare adapter를 완료했으므로 남은 범위는 portfolio-facing workspace UI boundary, 버튼/파일 선택 wiring, artifact compare 결과 표시 UX이다. 신규 LLM 호출과 기본 DB write 증가는 별도 gate로 제한한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
 | AI advanced surface targeted QA pack | Medium | 이번 Vercel QA는 AI Chat stream과 탭 렌더링 중심이었다. 비용 보호를 유지하면서 Reporter 1회, anomaly/trend 1회, RAG/Web 대표 질의 1회만 별도 targeted QA로 검증하고 실제 버튼/기능 동작 여부를 기록한다. 실패가 확인될 때만 코드 수정으로 승격한다. |
 | MonitoringFactPack consumer/evidence UI expansion | Medium | M7에서 `MonitoringFactPack` 자체는 도입됐지만 모든 artifact/report/evidence panel이 같은 fact boundary를 소비하지는 않는다. metric severity는 deterministic fact pack이 책임지고 LLM은 explanation/formatting만 수행한다는 계약을 UI와 answer-quality eval까지 확장한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
 | Provider reasoning capability policy contract | Medium | 현재 `thinking`은 provider-native reasoning이 아니라 app-level routing intensity다. 무료 tier provider의 reasoning 지원은 계정 entitlement/latency/quota가 변동되므로 `reasoningCapability`, `lastVerified`, `expiresAt`, smoke source를 policy contract로 승격한 뒤 opt-in으로만 검토한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
@@ -46,6 +46,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-06 #298)
+- [x] AI artifact workspace export/import adapter
+  - replay pack을 deterministic JSON download payload(`fileName`, `mimeType`, `contents`)로 변환하는 export helper 추가
+  - JSON import는 기존 replay pack normalizer를 통과한 supported pack만 session store에 저장하고 invalid/unsupported input은 reject
+  - compare UX가 바로 사용할 수 있도록 `matched/missing/added/changed` count summary helper 추가
+  - 검증: artifact workspace store targeted test
 
 ### Completed (2026-05-06 #297)
 - [x] AI artifact workspace store and legacy migration core
