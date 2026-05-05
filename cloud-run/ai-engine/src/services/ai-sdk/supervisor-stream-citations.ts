@@ -54,34 +54,52 @@ export function buildWebCitationAppendix(
 export function buildWebSearchFallbackAnswer(
   toolResults: ToolResultLike[]
 ): string | null {
-  const webResult = toolResults.find((result) => result.toolName === 'searchWeb');
-  if (!webResult) return null;
+  const webOutputs = toolResults
+    .filter((result) => result.toolName === 'searchWeb')
+    .map((result) => readRecord(result.result))
+    .filter((result): result is Record<string, unknown> => result !== null);
+  if (webOutputs.length === 0) return null;
 
-  const output = readRecord(webResult.result);
-  if (!output) return null;
-
-  const answer = readString(output.answer);
-  if (answer) {
-    return answer;
+  for (const output of webOutputs) {
+    const answer = readString(output.answer);
+    if (answer) {
+      return answer;
+    }
   }
 
-  const error = readString(output.error);
-  if (error) {
-    return `웹 검색 결과를 수신하지 못했습니다: ${error}`;
+  for (const output of webOutputs) {
+    const error = readString(output.error);
+    if (error) {
+      return `웹 검색 결과를 수신하지 못했습니다: ${error}`;
+    }
   }
 
-  const results = readWebResults(output.results);
-  const firstResult = results[0];
-  if (!firstResult) return null;
+  for (const output of webOutputs) {
+    const results = readWebResults(output.results);
+    const firstResult = results[0];
+    if (!firstResult) continue;
 
-  const title = readString(firstResult.title) ?? '웹 검색 결과';
-  const content = readString(firstResult.content);
+    const title = readString(firstResult.title) ?? '웹 검색 결과';
+    const content = readString(firstResult.content);
 
-  if (!content) {
-    return `웹 검색 결과를 확인했습니다: ${title}`;
+    if (!content) {
+      return `웹 검색 결과를 확인했습니다: ${title}`;
+    }
+
+    const summary =
+      content.length > 280 ? `${content.slice(0, 277).trimEnd()}...` : content;
+    return `웹 검색 결과 기준 요약: ${title}\n\n${summary}`;
   }
 
-  const summary =
-    content.length > 280 ? `${content.slice(0, 277).trimEnd()}...` : content;
-  return `웹 검색 결과 기준 요약: ${title}\n\n${summary}`;
+  return null;
+}
+
+export function hasWebSearchFallbackAnswer(
+  toolResults: ToolResultLike[]
+): boolean {
+  return toolResults.some((result) => {
+    if (result.toolName !== 'searchWeb') return false;
+    const output = readRecord(result.result);
+    return output !== null && readString(output.answer) !== null;
+  });
 }

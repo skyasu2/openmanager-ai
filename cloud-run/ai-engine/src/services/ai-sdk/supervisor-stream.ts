@@ -55,6 +55,7 @@ import {
 import {
   buildWebCitationAppendix,
   buildWebSearchFallbackAnswer,
+  hasWebSearchFallbackAnswer,
 } from './supervisor-stream-citations';
 import { createStructuredTextDeltaGuard } from './supervisor-stream-text-guard';
 import { buildDeterministicSummaryFallback } from './agents/orchestrator-summary-fallback';
@@ -206,18 +207,36 @@ function findSearchWebInputFromSteps(
   return null;
 }
 
+function hasSearchWebCall(steps: StepLike[]): boolean {
+  return steps.some((step) =>
+    (step.toolCalls ?? []).some((toolCall) => toolCall.toolName === 'searchWeb')
+  );
+}
+
 async function executeSearchWebFallbackFromSteps(
-  steps: StepLike[]
+  steps: StepLike[],
+  userQuery: string
 ): Promise<CollectedToolResult | null> {
-  const input = findSearchWebInputFromSteps(steps);
-  if (!input) return null;
+  if (!hasSearchWebCall(steps)) return null;
+
+  const input = findSearchWebInputFromSteps(steps) ?? {
+    query: userQuery,
+  };
+  const query = readNonEmptyString(userQuery) ?? input.query;
+  if (!query) return null;
+
+  const fallbackInput: SearchWebFallbackInput = {
+    ...input,
+    query,
+    maxResults: Math.max(input.maxResults ?? 0, 5),
+  };
 
   const searchWebTool = readRecord(allTools)?.searchWeb;
   const execute = readRecord(searchWebTool)?.execute;
   if (typeof execute !== 'function') return null;
 
   try {
-    const result = await execute(input);
+    const result = await execute(fallbackInput);
     return { toolName: 'searchWeb', result };
   } catch (error) {
     logger.warn(
@@ -937,17 +956,15 @@ async function* streamSingleAgent(
       }
 
       if (fullText.trim().length === 0) {
-        let webSearchFallback =
-          buildWebSearchFallbackAnswer(collectedToolResults);
-        if (!webSearchFallback) {
+        if (!hasWebSearchFallbackAnswer(collectedToolResults)) {
           const recoveredSearchWebResult =
-            await executeSearchWebFallbackFromSteps(steps);
+            await executeSearchWebFallbackFromSteps(steps, queryText);
           if (recoveredSearchWebResult) {
             collectedToolResults.push(recoveredSearchWebResult);
-            webSearchFallback =
-              buildWebSearchFallbackAnswer(collectedToolResults);
           }
         }
+        const webSearchFallback =
+          buildWebSearchFallbackAnswer(collectedToolResults);
         if (webSearchFallback) {
           fullText = webSearchFallback;
           if (firstChunkMs === null) {

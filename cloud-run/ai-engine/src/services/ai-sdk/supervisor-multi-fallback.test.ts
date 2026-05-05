@@ -830,7 +830,7 @@ describe('supervisor degraded single fallback', () => {
       .join('');
 
     expect(mockSearchWebExecute).toHaveBeenCalledWith({
-      query: 'Next.js latest stable release official Next.js blog',
+      query: 'Next.js 최신 안정화 메이저 버전을 출처와 함께 알려줘',
       maxResults: 5,
       searchDepth: 'advanced',
       includeDomains: ['nextjs.org'],

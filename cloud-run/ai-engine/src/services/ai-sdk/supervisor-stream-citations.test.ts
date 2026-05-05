@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildWebCitationAppendix,
   buildWebSearchFallbackAnswer,
+  hasWebSearchFallbackAnswer,
 } from './supervisor-stream-citations';
 import type { RagSource } from '../../lib/ai-sdk-utils';
 
@@ -104,6 +105,55 @@ describe('buildWebSearchFallbackAnswer', () => {
     ).toBe(
       '웹 검색 결과 기준 요약: Next.js releases\n\nNext.js 16 is the latest stable release line.'
     );
+  });
+
+  it('prefers a later direct web answer over an earlier generic summary', () => {
+    expect(
+      buildWebSearchFallbackAnswer([
+        {
+          toolName: 'searchWeb',
+          result: {
+            success: true,
+            results: [
+              {
+                title: 'Next.js blog',
+                content: 'Next.js 15.4 includes performance updates.',
+                url: 'https://nextjs.org/blog',
+              },
+            ],
+          },
+        },
+        {
+          toolName: 'searchWeb',
+          result: {
+            success: true,
+            answer: 'Next.js 최신 안정화 메이저 버전은 16입니다.',
+            results: [
+              {
+                title: 'Next.js 16.2',
+                url: 'https://nextjs.org/blog/next-16-2',
+              },
+            ],
+          },
+        },
+      ])
+    ).toBe('Next.js 최신 안정화 메이저 버전은 16입니다.');
+  });
+
+  it('detects whether searchWeb has a direct fallback answer', () => {
+    expect(
+      hasWebSearchFallbackAnswer([
+        { toolName: 'searchWeb', result: { results: [] } },
+      ])
+    ).toBe(false);
+    expect(
+      hasWebSearchFallbackAnswer([
+        {
+          toolName: 'searchWeb',
+          result: { answer: '공식 검색 결과 기준 최신 메이저는 16입니다.' },
+        },
+      ])
+    ).toBe(true);
   });
 
   it('returns null when no searchWeb result is available', () => {
