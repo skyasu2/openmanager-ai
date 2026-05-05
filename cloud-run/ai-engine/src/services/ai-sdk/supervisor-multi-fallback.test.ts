@@ -9,6 +9,7 @@ const {
   mockIsSingleModeAllowed,
   mockCreateSupervisorTrace,
   mockSelectExecutionMode,
+  mockExtractRagSources,
   mockMarkProviderQuotaCooldown,
   mockReconcileProviderQuotaReservation,
   mockReserveProviderQuota,
@@ -32,6 +33,7 @@ const {
     update: vi.fn(),
   })),
   mockSelectExecutionMode: vi.fn(() => 'multi'),
+  mockExtractRagSources: vi.fn(() => []),
   mockMarkProviderQuotaCooldown: vi.fn(async () => undefined),
   mockReconcileProviderQuotaReservation: vi.fn(async () => undefined),
   mockReserveProviderQuota: vi.fn(
@@ -115,7 +117,7 @@ vi.mock('../resilience/quota-tracker', () => ({
 
 vi.mock('../../lib/ai-sdk-utils', () => ({
   extractToolResultOutput: vi.fn((toolResult: { result?: unknown; output?: unknown }) => toolResult.result ?? toolResult.output),
-  extractRagSources: vi.fn(() => []),
+  extractRagSources: mockExtractRagSources,
 }));
 
 vi.mock('../../lib/error-handler', () => ({
@@ -630,6 +632,87 @@ describe('supervisor degraded single fallback', () => {
       data: {
         tool: 'getServerMetrics',
         status: 'done',
+      },
+    });
+  });
+
+  it('recovers an empty web-search stream from streamed tool-result output', async () => {
+    mockSelectExecutionMode.mockReturnValue('single');
+    mockExtractRagSources.mockImplementation((toolName: string) =>
+      toolName === 'searchWeb'
+        ? [
+            {
+              title: 'Next.js 16.2',
+              similarity: 0.9,
+              sourceType: 'web',
+              url: 'https://nextjs.org/blog/next-16-2',
+            },
+          ]
+        : []
+    );
+    mockStreamText.mockReturnValue({
+      textStream: (async function* () {})(),
+      fullStream: (async function* () {
+        yield {
+          type: 'tool-call',
+          toolCallId: 'web-call-1',
+          toolName: 'searchWeb',
+          input: { query: 'Next.js latest stable release' },
+        };
+        yield {
+          type: 'tool-result',
+          toolCallId: 'web-call-1',
+          toolName: 'searchWeb',
+          result: {
+            success: true,
+            answer: 'Next.js 최신 안정화 메이저 버전은 16입니다.',
+            results: [
+              {
+                title: 'Next.js 16.2',
+                url: 'https://nextjs.org/blog/next-16-2',
+                content: 'Next.js 16.2 is now available.',
+              },
+            ],
+          },
+        };
+      })(),
+      steps: Promise.resolve([]),
+      usage: Promise.resolve({ inputTokens: 1, outputTokens: 2, totalTokens: 3 }),
+    });
+
+    const events = [];
+    for await (const event of executeSupervisorStream({
+      mode: 'auto',
+      messages: [
+        {
+          role: 'user',
+          content: 'Next.js 최신 안정화 메이저 버전을 출처와 함께 알려줘',
+        },
+      ],
+      sessionId: 'session-web-stream-tool-result',
+    })) {
+      events.push(event);
+    }
+
+    const text = events
+      .filter((event) => event.type === 'text_delta')
+      .map((event) => String(event.data))
+      .join('');
+
+    expect(text).toContain('Next.js 최신 안정화 메이저 버전은 16입니다.');
+    expect(text).toContain('https://nextjs.org/blog/next-16-2');
+    expect(text).not.toContain('응답 본문이 비어');
+    expect(events).not.toContainEqual(
+      expect.objectContaining({
+        type: 'warning',
+        data: expect.objectContaining({ code: 'EMPTY_RESPONSE' }),
+      })
+    );
+    expect(events.at(-1)).toMatchObject({
+      type: 'done',
+      data: {
+        success: true,
+        toolsCalled: ['searchWeb'],
       },
     });
   });

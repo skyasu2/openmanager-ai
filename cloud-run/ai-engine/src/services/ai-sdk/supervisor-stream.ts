@@ -531,6 +531,12 @@ async function* streamSingleAgent(
       });
 
       const toolsCalled: string[] = [];
+      const recordedToolsCalled = new Set<string>();
+      const recordToolCalled = (toolName: string) => {
+        if (recordedToolsCalled.has(toolName)) return;
+        recordedToolsCalled.add(toolName);
+        toolsCalled.push(toolName);
+      };
       let fullText = '';
       let streamError: Error | null = null;
       const abortController = new AbortController();
@@ -622,6 +628,7 @@ async function* streamSingleAgent(
 
       const startedAgentSteps = new Set<string>();
       const completedAgentSteps = new Set<string>();
+      const collectedToolResults: CollectedToolResult[] = [];
       const streamParts =
         result.fullStream ?? textStreamAsFullStream(result.textStream);
 
@@ -681,6 +688,7 @@ async function* streamSingleAgent(
         } else if (streamPart.type === 'tool-call') {
           const toolStep = readToolStep(streamPart);
           if (toolStep && !startedAgentSteps.has(toolStep.key)) {
+            recordToolCalled(toolStep.tool);
             startedAgentSteps.add(toolStep.key);
             markFirstStreamOutput();
             yield buildAgentStepEvent(toolStep.tool, 'start');
@@ -691,6 +699,15 @@ async function* streamSingleAgent(
           streamPart.type === 'tool-output-denied'
         ) {
           const toolStep = readToolStep(streamPart);
+          if (streamPart.type === 'tool-result' && toolStep) {
+            const streamToolResult = extractToolResultOutput(streamPart);
+            if (streamToolResult !== undefined) {
+              collectedToolResults.push({
+                toolName: toolStep.tool,
+                result: streamToolResult,
+              });
+            }
+          }
           if (toolStep && !completedAgentSteps.has(toolStep.key)) {
             completedAgentSteps.add(toolStep.key);
             markFirstStreamOutput();
@@ -719,7 +736,6 @@ async function* streamSingleAgent(
       await reconcileQuotaOnce(
         usage?.totalTokens ?? quotaReservation?.estimatedTokens ?? 0
       );
-      const collectedToolResults: CollectedToolResult[] = [];
       for (const step of steps) {
         if (!step.toolResults) continue;
         for (const tr of step.toolResults) {
@@ -917,7 +933,7 @@ async function* streamSingleAgent(
       for (const step of steps) {
         for (const toolCall of step.toolCalls) {
           const toolName = toolCall.toolName;
-          toolsCalled.push(toolName);
+          recordToolCalled(toolName);
           yield { type: 'tool_call', data: { name: toolName } };
         }
         if (step.toolResults) {
@@ -931,6 +947,9 @@ async function* streamSingleAgent(
             ragSources.push(...extractRagSources(tr.toolName, trOutput));
           }
         }
+      }
+      for (const tr of collectedToolResults) {
+        ragSources.push(...extractRagSources(tr.toolName, tr.result));
       }
 
       const webCitationAppendix = buildWebCitationAppendix(
