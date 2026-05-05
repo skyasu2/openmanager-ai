@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-05 12:39:16 KST
+> Generated at: 2026-05-05 13:35:46 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 407 |
-| Total Runs (Counted) | 335 |
+| Total Recorded Runs | 408 |
+| Total Runs (Counted) | 336 |
 | Non-counted Runs | 72 |
-| Total Checks | 2952 |
-| Passed | 2844 |
+| Total Checks | 2955 |
+| Passed | 2847 |
 | Failed | 99 |
-| Completed Items | 432 |
-| Pending Items | 1 |
+| Completed Items | 433 |
+| Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
 | Expert Domains Tracked | 12 |
-| Expert Open Gaps | 2 |
-| Completion Rate | 99.77% |
-| Last Counted Run | QA-20260505-0409 (2026-05-05T03:39:15.190Z) |
-| Latest Recorded Run | QA-20260505-0409 (2026-05-05T03:39:15.190Z) |
+| Expert Open Gaps | 1 |
+| Completion Rate | 100% |
+| Last Counted Run | QA-20260505-0410 (2026-05-05T04:35:45.774Z) |
+| Latest Recorded Run | QA-20260505-0410 (2026-05-05T04:35:45.774Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,11 +34,11 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260505-0409 (2026-05-05T03:39:15.190Z)
+Latest run: QA-20260505-0410 (2026-05-05T04:35:45.774Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | partially-appropriate | yes | Deploy and recheck the local RAG no-inference remediation before closing the RAG pending item. |
+| AI Quality Assurance Specialist | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
 | Data Quality & Metrics Analyst | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
@@ -47,17 +47,17 @@ Latest run: QA-20260505-0409 (2026-05-05T03:39:15.190Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked after residual production QA; effective 2.0188 USD, billed remains 0.0000 USD, chargeCount 1827. |
+| vercel | cli | checked | normal | Current billing period checked after v8.11.105 targeted RAG QA; effective 2.0188 USD, billed remains 0.0000 USD, chargeCount 1827. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-04T03:39:15.190Z -> 2026-05-05T03:39:15.190Z (24h)
-- Runs with observations: 7 recorded / 7 counted
-- Samples: 19
+- Window: 2026-05-04T04:35:45.774Z -> 2026-05-05T04:35:45.774Z (24h)
+- Runs with observations: 8 recorded / 8 counted
+- Samples: 20
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Supervisor | cloud-run-ai-engine | 13 | 3223ms | 8795ms | - | - | 3700ms | 9897ms | QA-20260505-0409 |
+| Supervisor | cloud-run-ai-engine | 14 | 3268ms | 8795ms | - | - | 3712ms | 9897ms | QA-20260505-0410 |
 | Reporter Agent | cloud-run-ai-engine | 2 | 2485ms | 2784ms | - | - | 2485ms | 2784ms | QA-20260505-0409 |
 | Supervisor | groq | 1 | 1283ms | 1283ms | - | - | 1283ms | 1283ms | QA-20260504-0403 |
 | Analyst Agent | vercel-monitoring-bff | 2 | 949ms | 1028ms | - | - | 949ms | 1028ms | QA-20260505-0407 |
@@ -68,36 +68,33 @@ Latest run: QA-20260505-0409 (2026-05-05T03:39:15.190Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_3gio8RbSgi9PCptxFLBJtSFhr6j2 / SHA 30c48e80
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, ai-advanced-surface, modal-detail-pack
-- Covered Surfaces: Vercel production /api/version returned 8.11.104, commit 30c48e80a975630e77281a4de086c153631153fb, tag v8.11.104, pipeline https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2499590190, /auth/success redirected to /dashboard and rendered the authenticated/guest dashboard instead of returning 404, /dashboard/servers/api-was-dc1-01 server detail showed overview/current metrics CPU 81.0%, Memory 65.0%, Disk 32.0%, /dashboard/servers/api-was-dc1-01 performance tab showed the same current metrics CPU 81.0%, Memory 65.0%, Disk 32.0%, and Network 22.0%, AI sidebar RAG On internal document/file path query was sent through the UI path; production still showed server-scope clarification before execution, After skipping clarification, the RAG internal document/file path response reported no internal evidence but still suggested placeholder paths such as /path/to/OpenManager/config.yaml and /path/to/OpenManager/logs/OpenManager.log, Reporter Agent generated one incident report through /api/ai/incident-report in 2185ms and exposed visible MD copy and report download buttons, UI/UX review found Reporter actions functionally visible but cramped near the bottom summary area; local remediation patch adds sidebar-safe header wrapping and bottom padding
-- Skipped Surfaces: This was a residual targeted recheck for 4 pending items only; broad landing/login/privacy/security/mobile packs were not rerun., Cloud Run admin observability /monitoring and /monitoring/traces were not part of this targeted pass.
+- Deployment: dpl_CXJM2jVTN9xUBJHogHEdkmR8oENJ / SHA e8c8f73d
+- Coverage Packs: ai-core, ai-advanced-surface
+- Covered Surfaces: Vercel production /api/version returned 8.11.105, commit e8c8f73d65edd204b67c6a47c51e8b4e3f4fe9c6, tag v8.11.105, pipeline https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2499754655, AI sidebar RAG On internal OTel/SSOT document path query ran without server-scope clarification, The response used the Supabase KB-backed OTel/SSOT evidence and returned repo paths: public/data/otel-data/*, src/data/otel-data/index.ts, src/services/metrics/MetricsProvider.ts, cloud-run/ai-engine/src/data/precomputed-state.ts, The response explicitly rejected /opt/otel/... as a repo path and did not suggest placeholder /path/to/OpenManager paths, Hosted Supabase search_knowledge_text live smoke returned OpenManager OTel 데이터 SSOT 경로 evidence for the QA-like fallback query
+- Skipped Surfaces: This was a residual targeted recheck for the remaining RAG item only; broad landing/login/privacy/security/mobile packs were not rerun., Playwright safety guard blocked the landing 시스템 시작 click, so the test entered /dashboard directly and used the AI sidebar UI path from there., Reporter and server detail surfaces were already completed in QA-20260505-0409 and were not rerun.
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.11.104 tag pipeline 2499590190 | [GitLab v8.11.104 tag pipeline 2499590190](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2499590190) | - |
+| general | GitLab v8.11.105 tag pipeline 2499754655 | [GitLab v8.11.105 tag pipeline 2499754655](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2499754655) | - |
 | general | Production version endpoint | [Production version endpoint](https://openmanager-ai.vercel.app/api/version) | - |
+| vercel-deployment | Vercel production deployment | [Vercel production deployment](https://openmanager-3prb99k7c-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Server detail current metric alignment | `reports/qa/evidence/qa-20260505-residual-server-detail-metrics.png` | - |
-| playwright-screenshot | RAG internal document lookup residual failure | `reports/qa/evidence/qa-20260505-residual-rag-document-lookup-fail.png` | - |
-| playwright-screenshot | Reporter generated report actions visible | `reports/qa/evidence/qa-20260505-residual-reporter-actions.png` | - |
+| playwright-screenshot | RAG OTel SSOT grounded response | `reports/qa/evidence/qa-20260505-rag-otel-ssot-v811105-pass.png` | - |
 
 ## Expert Domain Open Gaps
 
-- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260505-0409)
-  next: Deploy and recheck the local RAG no-inference remediation before closing the RAG pending item.
 - observability-monitoring: IT Monitoring & Observability SME (last QA-20260505-0407)
   next: Align server detail performance tab current values with the dashboard data slot or label it explicitly as a different 24h history endpoint.
 
 ## Pending Improvements
 
-- [P1] ai-rag-on-document-lookup-hallucination-v81197: RAG On internal document lookup must not ask server-scope clarification or infer placeholder file paths (seen 2회, last QA-20260505-0409)
+- None
 
 ## Deferred Improvements
 
@@ -233,6 +230,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-provider-forced-routing-context-floor: Forced-routing quality agents skip 8K Cerebras fallback (completed 1회, last QA-20260428-0356)
 - ai-provider-phase4-supervisor-routing-hints: Supervisor routing hints deployed (completed 1회, last QA-20260428-0356)
 - ai-provider-queue-exceeded-retry-amplification: Cerebras queue_exceeded should not amplify retries before provider fallback (completed 1회, last QA-20260429-0366)
+- ai-rag-on-document-lookup-hallucination-v81197: RAG On internal document lookup must not ask server-scope clarification or infer placeholder file paths (completed 1회, last QA-20260505-0410)
 - ai-ranking-cpu-live-route: CPU highest-server query returns live top server on production (completed 1회, last QA-20260418-0305)
 - ai-ranking-memory-live-route: Memory top-N ranking uses deterministic live metric path on production (completed 1회, last QA-20260418-0305)
 - ai-recommendation-free-tier-fit: AI 운영 권고에서 리소스 업그레이드보다 조사/캐시/분산 조치를 우선 (completed 1회, last QA-20260423-0339)
@@ -610,6 +608,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260505-0410 | 2026-05-05T04:35:45.774Z | targeted | yes | yes | v8.11.105 RAG OTel SSOT Targeted Recheck | 3 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260505-0409 | 2026-05-05T03:39:15.190Z | targeted | yes | yes | v8.11.104 Residual Production Targeted QA | 6 | 3 | 1 | 0 | 0 | 1 |
 | QA-20260505-0408 | 2026-05-05T02:27:19.400Z | targeted | yes | yes | Vercel Playwright MCP Targeted QA - v8.11.104 Web search answer recovery | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260505-0407 | 2026-05-04T23:33:01.502Z | broad | yes | yes | Vercel Playwright MCP Broad QA - v8.11.97 full surface and AI quality | 39 | 2 | 5 | 0 | 0 | 4 |
@@ -629,4 +628,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260502-0393 | 2026-05-02T09:30:16.319Z | targeted | no | no | Vercel Production Verification - Artifact Keyword Change Recheck v8.11.82 | 6 | 0 | 0 | 0 | 0 | 0 |
 | QA-20260502-0392 | 2026-05-02T09:10:56.289Z | targeted | yes | yes | Vercel Production Targeted QA - Artifact Short Keyword Pair v8.11.82 | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260502-0391 | 2026-05-02T08:22:31.207Z | targeted | yes | yes | Vercel Production Targeted QA - Artifact Keyword Routing v8.11.82 | 6 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260502-0390 | 2026-05-02T07:43:11.883Z | targeted | yes | yes | Vercel Production Targeted QA - Artifact Guardrails v8.11.81 | 9 | 3 | 0 | 0 | 0 | 0 |

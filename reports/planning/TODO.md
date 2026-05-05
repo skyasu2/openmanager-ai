@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-05 KST (`v8.11.104 residual QA recheck leaves RAG pending`)
+**Last Updated**: 2026-05-05 KST (`v8.11.105 residual QA recheck closed all pending items`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| v8.11.97 broad QA remediation | High | In Progress | `QA-20260505-0409`에서 auth success, server detail metric alignment, Reporter actions는 production 완료 확인. RAG internal document lookup 1건은 local no-inference patch와 Supabase KB OTel/SSOT seed 적용 완료, 재배포/production 재검증 필요. 상세: [v81197-broad-qa-remediation-plan.md](v81197-broad-qa-remediation-plan.md) |
+| — | — | — | Active Task 없음. `QA-20260505-0410`에서 v8.11.97 broad QA remediation 잔여 RAG item까지 production 완료 확인. |
 
 ---
 
@@ -49,6 +49,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-05 #288)
+- [x] v8.11.97 broad QA remediation residual closure
+  - `v8.11.105` GitLab tag pipeline `2499754655` success 및 production `/api/version` `8.11.105` 확인
+  - Supabase `knowledge_base`에 `OpenManager OTel 데이터 SSOT 경로` 문서를 seed/upsert하고 KRL OTel fallback query candidate를 추가
+  - Production targeted QA `QA-20260505-0410`에서 RAG On 내부 OTel/SSOT 경로 질의가 clarification 없이 실행되고, `public/data/otel-data/*`, `src/data/otel-data/index.ts`, `src/services/metrics/MetricsProvider.ts`, `cloud-run/ai-engine/src/data/precomputed-state.ts`를 반환하는지 확인
+  - QA tracker summary 기준 completed/pending/deferred/wont-fix: `433/0/0/22`
 
 ### Completed (2026-05-04 #287)
 - [x] Formatting-only follow-up context preservation local patch

@@ -1,22 +1,22 @@
 > Owner: project
-> Status: In Progress
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-05
 > Tags: qa,vercel,dashboard,ai-assistant,rag,web-search,auth,reporter
 
 # v8.11.97 Broad QA Remediation Plan
 
-- 상태: In Progress
+- 상태: Completed
 - 작성일: 2026-05-05
 - TODO.md 연결: Active Tasks > v8.11.97 broad QA remediation
 - 근거 QA: `QA-20260505-0407` (`v8.11.97`, commit `1bdb98f4dae04032d9d3c94ab2271e9ac9c38bb2`)
-- 최신 QA 반영: `QA-20260505-0409` (`v8.11.104`, commit `30c48e80a975630e77281a4de086c153631153fb`)에서 Web search에 이어 auth success, server detail metric alignment, Reporter actions는 production targeted recheck로 완료했다. RAG internal document lookup은 production에서 여전히 서버 scope clarification과 placeholder path inference가 재현되어 local remediation을 추가했다.
+- 최신 QA 반영: `QA-20260505-0410` (`v8.11.105`, commit `e8c8f73d65edd204b67c6a47c51e8b4e3f4fe9c6`)에서 Web search, auth success, server detail metric alignment, Reporter actions에 이어 RAG internal document lookup까지 production targeted recheck로 완료했다.
 
 ## 목표
 
 Vercel Playwright MCP broad QA에서 확인된 pending 개선 5건을 작은 코드 보정과 회귀 테스트로 정리한다. 새 provider, 새 DB write, 인프라 증설, Cloud Run 리소스 증설은 포함하지 않는다.
 
-`QA-20260505-0409` 이후 기준으로 5건 중 4건은 production에서 완료 확인됐다. 남은 작업은 RAG internal document lookup local remediation을 배포한 뒤 **production에서 같은 질의를 다시 실행해 QA tracker pending을 닫을 수 있는지 확인하는 것**이다. 재검증에서 실패가 남으면 RAG grounding만 다시 코드 수정으로 승격한다.
+`QA-20260505-0410` 기준으로 5건 모두 production에서 완료 확인됐다. 잔여 RAG internal document lookup은 `v8.11.105` 배포 후 Supabase KB OTel/SSOT seed와 deterministic no-inference guard가 적용된 상태에서 재검증했고, QA tracker pending은 0건으로 닫혔다.
 
 ## 문제 목록과 원인 분석
 
@@ -30,11 +30,11 @@ Vercel Playwright MCP broad QA에서 확인된 pending 개선 5건을 작은 코
 
 ## 최신 QA 후 잔여 작업
 
-`QA-20260505-0409`는 남은 4개 항목을 targeted로 재검증했다. `reports/qa/QA_STATUS.md` 기준 pending은 RAG internal document lookup 1건만 남아 있다.
+`QA-20260505-0409`는 4개 항목 중 3개를 완료했고, `QA-20260505-0410`은 남은 RAG internal document lookup 1건을 targeted로 재검증했다. `reports/qa/QA_STATUS.md` 기준 pending은 0건이다.
 
 | ID | 우선순위 | 현재 상태 | 다음 확인 |
 |---|---:|---|---|
-| `ai-rag-on-document-lookup-hallucination-v81197` | P1 | `QA-20260505-0409`에서 production 실패 재현. 서버 scope clarification이 먼저 뜨고, skip 후 `/path/to/OpenManager/...` placeholder path inference가 응답에 포함됨. local remediation 적용 완료 | 재배포 후 RAG On 상태에서 같은 Pre-generated OTel/SSOT 파일 경로 질의를 실행하고, clarification 없이 `searchKnowledgeBase` 직접 경로로 가며 근거 없을 때 경로를 추정하지 않는지 확인 |
+| `ai-rag-on-document-lookup-hallucination-v81197` | P1 | `QA-20260505-0410`에서 완료. 서버 scope clarification 없이 실행됐고, `/path/to/OpenManager/...` placeholder path inference 없이 OTel/SSOT repo 경로를 반환 | 완료 |
 | `dashboard-server-detail-metrics-tab-slot-drift-v81197` | P1 | `QA-20260505-0409`에서 완료 | `/dashboard/servers/api-was-dc1-01` overview/performance tab 모두 CPU 81.0%, MEM 65.0%, DISK 32.0% 확인 |
 | `auth-success-legacy-route-404-v81197` | P2 | `QA-20260505-0409`에서 완료 | `/auth/success`가 `/dashboard`로 안전하게 redirect됨 |
 | `reporter-download-action-visibility-v81197` | P2 | `QA-20260505-0409`에서 완료. 추가 UI/UX 가독성 polish local patch 적용 | Reporter 생성 결과에서 `MD 복사`/`다운로드` 버튼 확인. local patch로 좁은 사이드바 header/action spacing 보강 |
@@ -112,11 +112,11 @@ Vercel Playwright MCP broad QA에서 확인된 pending 개선 5건을 작은 코
   - `ImprovedServerCard` 미니 차트 history tail을 카드 current metric 값으로 정렬
   - `SystemOverviewSection` 시스템 리소스 평균은 `MetricsProvider.getSystemSummary()`와 동일하게 offline 서버의 0 메트릭을 제외
 - [x] Task 8 — residual production targeted QA
-  - [ ] RAG internal document lookup hallucination 재검증: `QA-20260505-0409`에서 실패 유지
+  - [x] RAG internal document lookup hallucination 재검증: `QA-20260505-0410`에서 완료
   - [x] dashboard/server-detail/server-card current metric alignment 재검증
   - [x] `/auth/success` legacy handoff route 재검증
   - [x] Reporter generated report copy/download action visibility 재검증
-  - [x] QA tracker에 완료/잔여 실패 기록 (`QA-20260505-0409`)
+  - [x] QA tracker에 완료/잔여 실패 기록 (`QA-20260505-0409`, `QA-20260505-0410`)
 - [x] Task 9 — RAG residual + Reporter UI/UX local remediation
   - frontend clarification generator가 내부 문서/파일 경로/RAG/SSOT 질의는 서버 scope clarification 없이 실행하도록 보강
   - Cloud Run Supervisor stream이 FORCE_KB query를 `searchKnowledgeBase` 직접 실행 + deterministic grounded answer로 처리하고, 근거 0건이면 경로를 추정하지 않도록 보강
@@ -136,4 +136,4 @@ Vercel Playwright MCP broad QA에서 확인된 pending 개선 5건을 작은 코
 - [x] Web search answer recovery는 `QA-20260505-0408`에서 production targeted recheck 통과
 - [x] Auth success, server detail metric alignment, Reporter actions는 `QA-20260505-0409`에서 production targeted recheck 통과
 - [x] hosted Supabase RAG corpus가 OTel/SSOT 경로 문서를 반환하는지 live RPC smoke로 확인
-- [ ] RAG internal document lookup local remediation을 배포 후 Vercel Playwright MCP targeted QA로 재검증한다.
+- [x] RAG internal document lookup local remediation을 배포 후 Vercel Playwright MCP targeted QA로 재검증한다 (`QA-20260505-0410`)

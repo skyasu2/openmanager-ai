@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-05T03:39:15.190Z"
+    "updatedAt": "2026-05-05T04:35:45.774Z"
   },
   "sequence": {
-    "nextRunNumber": 410
+    "nextRunNumber": 411
   },
   "summary": {
-    "totalRecordedRuns": 407,
-    "totalRuns": 335,
+    "totalRecordedRuns": 408,
+    "totalRuns": 336,
     "excludedRuns": 72,
-    "totalChecks": 2952,
-    "totalPassed": 2844,
+    "totalChecks": 2955,
+    "totalPassed": 2847,
     "totalFailed": 99,
-    "completionRate": 99.77,
-    "completedItems": 432,
-    "pendingItems": 1,
+    "completionRate": 100,
+    "completedItems": 433,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 22,
     "expertDomainsTracked": 12,
-    "expertDomainsOpenGaps": 2,
-    "lastRunId": "QA-20260505-0409",
-    "lastRecordedAt": "2026-05-05T03:39:15.190Z",
-    "latestRecordedRunId": "QA-20260505-0409",
-    "latestRecordedAt": "2026-05-05T03:39:15.190Z"
+    "expertDomainsOpenGaps": 1,
+    "lastRunId": "QA-20260505-0410",
+    "lastRecordedAt": "2026-05-05T04:35:45.774Z",
+    "latestRecordedRunId": "QA-20260505-0410",
+    "latestRecordedAt": "2026-05-05T04:35:45.774Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -10558,25 +10558,25 @@
       "id": "ai-rag-on-document-lookup-hallucination-v81197",
       "title": "RAG On internal document lookup must not ask server-scope clarification or infer placeholder file paths",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260505-0407",
       "firstSeenAt": "2026-05-04T23:33:01.502Z",
-      "lastSeenRunId": "QA-20260505-0409",
-      "lastSeenAt": "2026-05-05T03:39:15.190Z",
-      "seenCount": 2,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260505-0410",
+      "lastSeenAt": "2026-05-05T04:35:45.774Z",
+      "seenCount": 3,
+      "completedCount": 1,
       "pendingCount": 2,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "",
-      "lastEvidence": "",
+      "lastEvidence": "Production v8.11.105 AI sidebar query returned documented OTel/SSOT repo paths and rejected /opt/otel/... without placeholder /path/to/OpenManager suggestions.",
       "lastNote": "Production v8.11.104 still showed server-scope clarification for an internal document/file path query; after skip it returned no internal evidence but suggested placeholder /path/to/OpenManager paths. Local remediation patch added clarification bypass and deterministic no-inference RAG response; production recheck remains required after deploy.",
       "isBlocking": true,
-      "isBlockingExplicit": true,
+      "isBlockingExplicit": false,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-05T03:39:15.190Z"
+      "lastStatusChangeAt": "2026-05-05T04:35:45.774Z"
     },
     "ai-web-search-intent-and-answer-quality-v81197": {
       "id": "ai-web-search-intent-and-answer-quality-v81197",
@@ -42356,6 +42356,137 @@
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260505-0410",
+      "recordedAt": "2026-05-05T04:35:45.774Z",
+      "recordedAtKst": "2026-05-05 13:35:45 KST",
+      "title": "v8.11.105 RAG OTel SSOT Targeted Recheck",
+      "owner": "codex",
+      "source": "manual",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260505-0410.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_CXJM2jVTN9xUBJHogHEdkmR8oENJ",
+        "deploymentUrl": "https://openmanager-3prb99k7c-skyasus-projects.vercel.app",
+        "commitSha": "e8c8f73d65edd204b67c6a47c51e8b4e3f4fe9c6"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "Vercel production /api/version returned 8.11.105, commit e8c8f73d65edd204b67c6a47c51e8b4e3f4fe9c6, tag v8.11.105, pipeline https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2499754655",
+        "AI sidebar RAG On internal OTel/SSOT document path query ran without server-scope clarification",
+        "The response used the Supabase KB-backed OTel/SSOT evidence and returned repo paths: public/data/otel-data/*, src/data/otel-data/index.ts, src/services/metrics/MetricsProvider.ts, cloud-run/ai-engine/src/data/precomputed-state.ts",
+        "The response explicitly rejected /opt/otel/... as a repo path and did not suggest placeholder /path/to/OpenManager paths",
+        "Hosted Supabase search_knowledge_text live smoke returned OpenManager OTel 데이터 SSOT 경로 evidence for the QA-like fallback query"
+      ],
+      "skippedSurfaces": [
+        "This was a residual targeted recheck for the remaining RAG item only; broad landing/login/privacy/security/mobile packs were not rerun.",
+        "Playwright safety guard blocked the landing 시스템 시작 click, so the test entered /dashboard directly and used the AI sidebar UI path from there.",
+        "Reporter and server detail surfaces were already completed in QA-20260505-0409 and were not rerun."
+      ],
+      "checks": {
+        "total": 3,
+        "passed": 3,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI sidebar RAG OTel SSOT lookup",
+          "agent": "Supervisor",
+          "provider": "cloud-run-ai-engine",
+          "model": "knowledge-search-direct",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "AI sidebar response footer",
+          "latencyMs": 3859,
+          "processingTimeMs": 3859
+        }
+      ],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The remaining RAG hallucination regression was rechecked on production with the same internal OTel/SSOT path class and returned grounded repo paths without placeholder inference.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Targeted production recheck used Playwright MCP UI evidence and durable QA artifacts.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The answer now names the documented OTel runtime SSOT and loader/consumer paths rather than fabricated filesystem paths.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab main validate and v8.11.105 tag deployment pipeline completed successfully before production recheck.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-05T13:32:31+09:00",
+          "summary": "Current billing period checked after v8.11.105 targeted RAG QA; effective 2.0188 USD, billed remains 0.0000 USD, chargeCount 1827.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "RAG OTel SSOT grounded response",
+          "path": "reports/qa/evidence/qa-20260505-rag-otel-ssot-v811105-pass.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.105 tag pipeline 2499754655",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2499754655"
+        },
+        {
+          "type": "general",
+          "label": "Production version endpoint",
+          "url": "https://openmanager-ai.vercel.app/api/version"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment",
+          "url": "https://openmanager-3prb99k7c-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 4,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -42364,17 +42495,17 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 198,
-      "appropriateCount": 176,
+      "seenCount": 199,
+      "appropriateCount": 177,
       "partialCount": 22,
       "inappropriateCount": 0,
       "improvementNeededCount": 32,
-      "lastRunId": "QA-20260505-0409",
-      "lastSeenAt": "2026-05-05T03:39:15.190Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Residual targeted QA found the RAG internal document lookup still fails grounding and clarification behavior on production.",
-      "lastNextAction": "Deploy and recheck the local RAG no-inference remediation before closing the RAG pending item."
+      "lastRunId": "QA-20260505-0410",
+      "lastSeenAt": "2026-05-05T04:35:45.774Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "The remaining RAG hallucination regression was rechecked on production with the same internal OTel/SSOT path class and returned grounded repo paths without placeholder inference.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
@@ -42415,16 +42546,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 132,
-      "appropriateCount": 119,
+      "seenCount": 133,
+      "appropriateCount": 120,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 17,
-      "lastRunId": "QA-20260505-0409",
-      "lastSeenAt": "2026-05-05T03:39:15.190Z",
+      "lastRunId": "QA-20260505-0410",
+      "lastSeenAt": "2026-05-05T04:35:45.774Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production deployment identity and Vercel usage were checked during the targeted run.",
+      "lastRationale": "GitLab main validate and v8.11.105 tag deployment pipeline completed successfully before production recheck.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -42432,16 +42563,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 170,
-      "appropriateCount": 157,
+      "seenCount": 171,
+      "appropriateCount": 158,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 15,
-      "lastRunId": "QA-20260505-0409",
-      "lastSeenAt": "2026-05-05T03:39:15.190Z",
+      "lastRunId": "QA-20260505-0410",
+      "lastSeenAt": "2026-05-05T04:35:45.774Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The residual pass used UI-driven Playwright MCP checks and kept evidence for each high-risk surface.",
+      "lastRationale": "Targeted production recheck used Playwright MCP UI evidence and durable QA artifacts.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -42449,16 +42580,16 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 56,
-      "appropriateCount": 36,
+      "seenCount": 57,
+      "appropriateCount": 37,
       "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260505-0409",
-      "lastSeenAt": "2026-05-05T03:39:15.190Z",
+      "lastRunId": "QA-20260505-0410",
+      "lastSeenAt": "2026-05-05T04:35:45.774Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Server detail overview and performance tab now share the same visible current metric values for the tested server/slot.",
+      "lastRationale": "The answer now names the documented OTel runtime SSOT and loader/consumer paths rather than fabricated filesystem paths.",
       "lastNextAction": ""
     },
     "infra-reliability": {
