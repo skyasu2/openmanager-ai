@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.106](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.105...v8.11.106) (2026-05-05)
+
+
+### Features
+
+* promptfoo deterministic eval hardening implement to pass specs ([c483a49](https://gitlab.com/skyasu2/openmanager-ai/-/commit/c483a4958aa0d4e67b262683dbea767ae05c80d9))
+
+
+### Code Refactoring
+
+* **ai:** hide rag controls and clarify telemetry copy ([5736bc4](https://gitlab.com/skyasu2/openmanager-ai/-/commit/5736bc452a180286ba7c1a78b169f973eb5096c6))
+
+
+### Tests
+
+* **qa:** close observability metadata gap ([6cd9d75](https://gitlab.com/skyasu2/openmanager-ai/-/commit/6cd9d75f181bfd41e405fbfcf2a8a151208b8158))
+* **qa:** close residual RAG production recheck ([ad0b718](https://gitlab.com/skyasu2/openmanager-ai/-/commit/ad0b718f2d121f199e6f72f4ab29187dad5bbaf6))
+* **spec:** add promptfoo deterministic eval contract ([cc6b747](https://gitlab.com/skyasu2/openmanager-ai/-/commit/cc6b747436518c89e57580837eaeea186fbdbefe))
+
 ## [8.11.105](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.104...v8.11.105) (2026-05-05)
 
 
