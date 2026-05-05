@@ -8,8 +8,11 @@ import {
 } from './artifact-workspace-registry';
 import {
   ARTIFACT_WORKSPACE_STORAGE_KEY,
+  createArtifactReplayPackComparisonSummary,
+  createArtifactReplayPackExport,
   createArtifactWorkspaceStore,
   extractArtifactReplayPackFromChatHistory,
+  readArtifactReplayPackExport,
 } from './artifact-workspace-store';
 import {
   ARTIFACT_CONTRACT_VERSION,
@@ -95,6 +98,148 @@ describe('artifact workspace store', () => {
 
     const restored = createArtifactWorkspaceStore().listReplayPacks();
     expect(restored).toEqual([pack]);
+  });
+
+  it('exports replay packs as deterministic JSON download payloads', () => {
+    const pack = createArtifactReplayPack({
+      workspaceId: 'workspace/session 1',
+      createdAt: '2026-05-06T01:10:00.000Z',
+      envelopes: [
+        createArtifactEnvelope(snapshotArtifact, {
+          domainId: MONITORING_ARTIFACT_DOMAIN_ID,
+          sourceMode: 'otel-static',
+          dataSlot: '07:00 KST',
+          traceId: 'trace-workspace-store-1',
+        }),
+      ],
+    });
+
+    const exported = createArtifactReplayPackExport(pack);
+
+    expect(exported).toEqual({
+      fileName:
+        'artifact-replay-workspace-session-1-2026-05-06T01-10-00-000Z.json',
+      mimeType: 'application/json',
+      contents: expect.stringContaining('"workspaceId": "workspace/session 1"'),
+    });
+    expect(JSON.parse(exported!.contents)).toEqual(pack);
+  });
+
+  it('imports replay pack JSON into the session store without leaking unsupported raw payloads', () => {
+    const importResult = createArtifactWorkspaceStore().importReplayPackExport(
+      JSON.stringify({
+        replayPackVersion: ARTIFACT_REPLAY_PACK_VERSION,
+        workspaceId: 'workspace-import-1',
+        createdAt: '2026-05-06T01:10:00.000Z',
+        entries: [
+          {
+            id: 'unsafe-entry',
+            schema: {
+              domainId: 'sample-domain',
+              familyId: 'unsafe-widget',
+              artifactKind: 'unsafe-widget',
+              artifactVersion: '2026-05-06-test',
+            },
+            generatedAt: '2026-05-06T01:00:00.000Z',
+            sourceMode: 'tool-result',
+            payload: {
+              kind: 'unsafe-widget',
+              html: '<script>alert(1)</script>',
+              url: 'javascript:alert(1)',
+            },
+          },
+        ],
+      })
+    );
+
+    expect(importResult).toEqual({
+      status: 'accepted',
+      replayPack: expect.objectContaining({
+        workspaceId: 'workspace-import-1',
+        entries: [],
+      }),
+    });
+
+    const restored =
+      createArtifactWorkspaceStore().readReplayPack('workspace-import-1');
+    expect(restored?.entries).toEqual([]);
+    expect(JSON.stringify(restored)).not.toContain('<script>');
+    expect(JSON.stringify(restored)).not.toContain('javascript:');
+  });
+
+  it('rejects invalid replay pack exports without mutating the store', () => {
+    const store = createArtifactWorkspaceStore();
+
+    expect(store.importReplayPackExport('{not-json')).toEqual({
+      status: 'rejected',
+      reason: 'invalid_json',
+    });
+    expect(
+      store.importReplayPackExport(
+        JSON.stringify({
+          replayPackVersion: '2026-01-01-legacy',
+          workspaceId: 'workspace-legacy',
+          createdAt: '2026-05-06T01:10:00.000Z',
+          entries: [],
+        })
+      )
+    ).toEqual({
+      status: 'rejected',
+      reason: 'unsupported_replay_pack',
+    });
+    expect(readArtifactReplayPackExport('{not-json')).toEqual({
+      status: 'rejected',
+      reason: 'invalid_json',
+    });
+    expect(store.listReplayPacks()).toEqual([]);
+  });
+
+  it('summarizes replay pack comparisons for compare UX', () => {
+    const expected = createArtifactReplayPack({
+      workspaceId: 'workspace-compare',
+      createdAt: '2026-05-06T01:10:00.000Z',
+      envelopes: [
+        createArtifactEnvelope(snapshotArtifact, {
+          domainId: MONITORING_ARTIFACT_DOMAIN_ID,
+          sourceMode: 'otel-static',
+        }),
+      ],
+    });
+    const actual = createArtifactReplayPack({
+      workspaceId: 'workspace-compare',
+      createdAt: '2026-05-06T01:11:00.000Z',
+      envelopes: [
+        createArtifactEnvelope(
+          {
+            ...snapshotArtifact,
+            summary: '4대 서버 중 위험 2대입니다.',
+          },
+          {
+            domainId: MONITORING_ARTIFACT_DOMAIN_ID,
+            sourceMode: 'otel-static',
+          }
+        ),
+      ],
+    });
+
+    expect(
+      createArtifactReplayPackComparisonSummary(expected, expected)
+    ).toEqual({
+      status: 'identical',
+      matchedCount: 1,
+      missingCount: 0,
+      addedCount: 0,
+      changedCount: 0,
+    });
+    expect(createArtifactReplayPackComparisonSummary(expected, actual)).toEqual(
+      {
+        status: 'different',
+        matchedCount: 0,
+        missingCount: 0,
+        addedCount: 0,
+        changedCount: 1,
+      }
+    );
   });
 
   it('drops corrupt or unsupported replay packs without exposing unsafe raw payloads', () => {
