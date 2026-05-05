@@ -1,3 +1,4 @@
+import { MONITORING_ROUTE_DECISION_ARTIFACT_KINDS } from './domains/monitoring/artifact-registry';
 import {
   normalizeRouteDecision,
   type RouteDecision,
@@ -142,11 +143,9 @@ const EXECUTION_PATHS = new Set<RouteDecisionExecutionPath>([
   'client-artifact',
 ]);
 const ROUTE_MODES = new Set<RouteDecisionMode>(['single', 'multi']);
-const ARTIFACT_KINDS = new Set<RouteDecisionArtifactKind>([
-  'server-snapshot',
-  'incident-report',
-  'monitoring-analysis',
-]);
+const ARTIFACT_KINDS = new Set<RouteDecisionArtifactKind>(
+  MONITORING_ROUTE_DECISION_ARTIFACT_KINDS
+);
 const DECIDERS = new Set<RouteDecisionDecider>([
   'frontend',
   'bff',

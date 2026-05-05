@@ -1,5 +1,9 @@
 import { isSingleModeAllowed } from '../../lib/config-parser';
 import { logger } from '../../lib/logger';
+import {
+  detectMonitoringArtifactKind,
+  MONITORING_ARTIFACT_KINDS,
+} from '../../domains/monitoring/artifact-registry';
 import type {
   SupervisorLocalRouteDecision,
   SupervisorMode,
@@ -60,7 +64,7 @@ const LOCAL_INTENTS = new Set<SupervisorLocalRouteDecision['intent']>([
 ]);
 const ARTIFACT_KINDS = new Set<
   NonNullable<SupervisorLocalRouteDecision['artifactKind']>
->(['server-snapshot', 'incident-report', 'monitoring-analysis']);
+>(MONITORING_ARTIFACT_KINDS);
 
 function normalizeMeasuredLatencyMs(elapsedMs: number): number {
   if (!Number.isFinite(elapsedMs) || elapsedMs <= 0) return 0;
@@ -357,34 +361,7 @@ function hasMetricLookupIntent(query: string): boolean {
 function detectArtifactKind(
   query: string
 ): SupervisorPlannerShadowCandidate['artifactKind'] | undefined {
-  if (
-    includesPattern(
-      query,
-      /(server\s*snapshot|서버\s*상태\s*스냅샷|인프라\s*상태\s*카드|snapshot\s*export)/iu
-    )
-  ) {
-    return 'server-snapshot';
-  }
-
-  if (
-    includesPattern(
-      query,
-      /(incident\s*report\s*artifact|incident\s*card|장애\s*리포트\s*카드|사고\s*보고서\s*카드)/iu
-    )
-  ) {
-    return 'incident-report';
-  }
-
-  if (
-    includesPattern(
-      query,
-      /(monitoring\s*analysis\s*artifact|monitoring\s*card|모니터링\s*분석\s*카드)/iu
-    )
-  ) {
-    return 'monitoring-analysis';
-  }
-
-  return undefined;
+  return detectMonitoringArtifactKind(query);
 }
 
 function buildShadowCandidate(

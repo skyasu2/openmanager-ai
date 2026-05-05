@@ -1,3 +1,8 @@
+import {
+  MONITORING_ROUTE_DECISION_ARTIFACT_KINDS,
+  type MonitoringRouteDecisionArtifactKind,
+} from './domains/monitoring/artifact-registry';
+
 export const ROUTE_DECISION_RULE_VERSION = '2026-05-03-v1';
 
 export type RouteDecisionIntent = 'chat' | 'artifact' | 'job' | 'clarification';
@@ -6,10 +11,7 @@ export type RouteDecisionExecutionPath = 'stream' | 'job' | 'client-artifact';
 
 export type RouteDecisionMode = 'single' | 'multi';
 
-export type RouteDecisionArtifactKind =
-  | 'server-snapshot'
-  | 'incident-report'
-  | 'monitoring-analysis';
+export type RouteDecisionArtifactKind = MonitoringRouteDecisionArtifactKind;
 
 export type RouteDecisionComplexity =
   | 'simple'
@@ -52,11 +54,9 @@ const EXECUTION_PATHS = new Set<RouteDecisionExecutionPath>([
   'client-artifact',
 ]);
 const MODES = new Set<RouteDecisionMode>(['single', 'multi']);
-const ARTIFACT_KINDS = new Set<RouteDecisionArtifactKind>([
-  'server-snapshot',
-  'incident-report',
-  'monitoring-analysis',
-]);
+const ARTIFACT_KINDS = new Set<RouteDecisionArtifactKind>(
+  MONITORING_ROUTE_DECISION_ARTIFACT_KINDS
+);
 const COMPLEXITIES = new Set<RouteDecisionComplexity>([
   'simple',
   'moderate',

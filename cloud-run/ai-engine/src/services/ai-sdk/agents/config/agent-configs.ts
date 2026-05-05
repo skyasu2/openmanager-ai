@@ -6,7 +6,7 @@
  *
  * Architecture:
  * - Instructions: Imported from ./instructions/
- * - Tools: Imported from ../../../../tools-ai-sdk
+ * - Tools: Resolved through the monitoring domain ToolRegistry
  * - Models: Configured via getModel functions with fallback chains
  *
  * @version 1.0.0
@@ -44,84 +44,8 @@ import {
 } from './agent-pipeline-instructions';
 import {
   getAgentToolAllowlist,
-  type AgentToolName,
 } from './agent-runtime-policy';
-
-// Tools (AI SDK tools)
-import {
-  // Server metrics tools
-  getServerMetrics,
-  getServerMetricsAdvanced,
-  filterServers,
-  getServerByGroup,
-  getServerByGroupAdvanced,
-  getServerLogs,
-  // Analysis tools
-  detectAnomalies,
-  detectAnomaliesAllServers,
-  predictTrends,
-  analyzePattern,
-  correlateMetrics,
-  findRootCause,
-  // Reporting tools
-  buildIncidentTimeline,
-  // RAG tools
-  searchKnowledgeBase,
-  recommendCommands,
-  // Web search
-  searchWeb,
-  // Incident evaluation tools (Evaluator-Optimizer pattern)
-  evaluateIncidentReport,
-  validateReportStructure,
-  scoreRootCauseConfidence,
-  refineRootCauseAnalysis,
-  enhanceSuggestedActions,
-  extendServerCorrelation,
-  // Final answer (AI SDK v6 Best Practice)
-  finalAnswer,
-  // Vision tools (Gemini Flash-Lite)
-  analyzeScreenshot,
-  analyzeLargeLog,
-  searchWithGrounding,
-  analyzeUrlContent,
-  // Calculation tools
-  evaluateMathExpression,
-  computeSeriesStats,
-  estimateCapacityProjection,
-} from '../../../../tools-ai-sdk';
-
-const AGENT_TOOL_REGISTRY: Record<AgentToolName, ToolsMap[string]> = {
-  getServerMetrics,
-  getServerMetricsAdvanced,
-  filterServers,
-  getServerByGroup,
-  getServerByGroupAdvanced,
-  getServerLogs,
-  detectAnomalies,
-  detectAnomaliesAllServers,
-  predictTrends,
-  analyzePattern,
-  correlateMetrics,
-  findRootCause,
-  buildIncidentTimeline,
-  searchKnowledgeBase,
-  recommendCommands,
-  searchWeb,
-  evaluateIncidentReport,
-  validateReportStructure,
-  scoreRootCauseConfidence,
-  refineRootCauseAnalysis,
-  enhanceSuggestedActions,
-  extendServerCorrelation,
-  finalAnswer,
-  analyzeScreenshot,
-  analyzeLargeLog,
-  searchWithGrounding,
-  analyzeUrlContent,
-  evaluateMathExpression,
-  computeSeriesStats,
-  estimateCapacityProjection,
-};
+import { MONITORING_AGENT_TOOL_REGISTRY } from '../../../../domains/monitoring/tool-registry';
 
 // ============================================================================
 // Type Definitions
@@ -167,7 +91,7 @@ function buildAgentTools(agentName: AgentName): ToolsMap {
   return Object.fromEntries(
     getAgentToolAllowlist(agentName).map((toolName) => [
       toolName,
-      AGENT_TOOL_REGISTRY[toolName],
+      MONITORING_AGENT_TOOL_REGISTRY[toolName],
     ])
   ) as ToolsMap;
 }
