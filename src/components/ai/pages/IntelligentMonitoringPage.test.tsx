@@ -106,7 +106,7 @@ describe('IntelligentMonitoringPage', () => {
     );
   });
 
-  it('keeps selected server and RAG toggle state after analysis and reset', async () => {
+  it('keeps selected server after analysis and reset without exposing a RAG toggle', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 200,
@@ -169,7 +169,9 @@ describe('IntelligentMonitoringPage', () => {
     fireEvent.change(screen.getByLabelText('분석 대상'), {
       target: { value: 'server-1' },
     });
-    fireEvent.click(screen.getByRole('button', { name: /RAG/i }));
+    expect(
+      screen.queryByRole('button', { name: /RAG/i })
+    ).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '분석 시작' }));
 
     await waitFor(() => {
@@ -181,17 +183,16 @@ describe('IntelligentMonitoringPage', () => {
     expect(JSON.parse(String(request?.body))).toMatchObject({
       action: 'analyze_server',
       serverId: 'server-1',
-      enableRAG: true,
     });
+    expect(JSON.parse(String(request?.body))).not.toHaveProperty('enableRAG');
 
     fireEvent.click(screen.getByRole('button', { name: '초기화' }));
 
     expect(screen.getByText('empty')).toBeInTheDocument();
     expect(screen.getByLabelText('분석 대상')).toHaveValue('server-1');
-    expect(screen.getByRole('button', { name: /RAG/i })).toHaveAttribute(
-      'aria-pressed',
-      'true'
-    );
+    expect(
+      screen.queryByRole('button', { name: /RAG/i })
+    ).not.toBeInTheDocument();
   });
 
   it('전체 시스템 분석은 서버별 fan-out 없이 batch 요청 1회만 보낸다', async () => {
@@ -318,7 +319,6 @@ describe('IntelligentMonitoringPage', () => {
       action: 'analyze_batch',
       serverId: 'all',
       analysisType: 'full',
-      enableRAG: false,
       queryAsOf: {
         source: 'vercel-static-otel',
         datasetVersion: '24h-rotating-v1.0.0',
@@ -329,5 +329,6 @@ describe('IntelligentMonitoringPage', () => {
         },
       },
     });
+    expect(JSON.parse(String(request?.body))).not.toHaveProperty('enableRAG');
   });
 });

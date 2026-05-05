@@ -87,9 +87,9 @@ export const TECH_STACK_ITEMS: TechItem[] = [
     category: 'framework',
     importance: 'high',
     description:
-      'CNCF 표준 모니터링 데이터 포맷. 라벨 기반 다차원 시계열 모델. hourly-data SSOT의 기본 네이밍으로, OTel Standard로 빌드 타임 변환되어 2-Tier 데이터 아키텍처 구성',
+      'CNCF 표준 모니터링 데이터 포맷. 라벨 기반 다차원 시계열 모델을 OpenTelemetry metric model과 함께 사용해 대시보드와 AI 분석 데이터 계약을 정렬',
     implementation:
-      '→ otel-data/hourly/hour-XX.json(24개, OTel-native SSOT) → MetricsProvider가 직접 소비. Resource Catalog + Timeseries로 서버 메타데이터 표준화',
+      '→ 24시간 metrics/logs window와 Resource Catalog/Timeseries를 기준으로 서버 메타데이터와 시계열 조회를 표준화',
     version: 'OpenMetrics',
     status: 'active',
     icon: '🔥',
@@ -103,7 +103,7 @@ export const TECH_STACK_ITEMS: TechItem[] = [
     description:
       'CNCF 관측성 표준. Prometheus 메트릭을 OTel Semantic Convention으로 변환하여 시스템 전체 데이터 일관성 확보. Resource Catalog로 서버 메타데이터 표준화',
     implementation:
-      '→ otel-data/가 OTel-native SSOT. MetricsProvider(Vercel)와 precomputed-state(Cloud Run) 모두 OTel 포맷 직접 소비. Resource Catalog로 서버 메타데이터 표준화',
+      '→ dashboard와 AI Engine이 같은 OpenTelemetry snapshot contract를 소비하고, Resource Catalog로 서버 메타데이터를 표준화',
     version: 'Semantic Conv. 1.x',
     status: 'active',
     icon: '🔭',

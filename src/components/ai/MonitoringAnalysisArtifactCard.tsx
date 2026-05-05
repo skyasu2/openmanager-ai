@@ -114,6 +114,16 @@ function readTimeLabel(artifact: MonitoringAnalysisArtifact): string {
   );
 }
 
+function formatMonitoringSourceLabel(sourceMode: string): string {
+  if (sourceMode === 'live-otel') {
+    return 'Live telemetry';
+  }
+  if (sourceMode === 'replay-json') {
+    return 'OpenTelemetry snapshot';
+  }
+  return 'Monitoring snapshot';
+}
+
 export function MonitoringAnalysisArtifactCard({
   artifact,
 }: {
@@ -143,7 +153,7 @@ export function MonitoringAnalysisArtifactCard({
             {artifact.summary}
           </p>
           <div className="mt-2 flex flex-wrap gap-1.5 text-xs text-slate-500">
-            <span>source {sourceMode}</span>
+            <span>데이터 {formatMonitoringSourceLabel(sourceMode)}</span>
             <span>기준 {timeLabel}</span>
             {isStale && <span className="text-amber-700">stale data</span>}
           </div>

@@ -28,7 +28,6 @@ vi.mock('next/link', () => ({
 
 vi.mock('lucide-react', () => ({
   AlertCircle: () => <svg data-testid="icon-alert-circle" />,
-  BookOpen: () => <svg data-testid="icon-book-open" />,
   FileText: () => <svg data-testid="icon-file-text" />,
   RefreshCw: () => <svg data-testid="icon-refresh" />,
   X: () => <svg data-testid="icon-x" />,
@@ -150,6 +149,9 @@ describe('AutoReportPage', () => {
 
     render(<AutoReportPage />);
 
+    expect(
+      screen.queryByRole('button', { name: /RAG/i })
+    ).not.toBeInTheDocument();
     fireEvent.click(screen.getByTestId('report-generate-btn'));
 
     await waitFor(() => {
@@ -199,6 +201,7 @@ describe('AutoReportPage', () => {
         },
       },
     });
+    expect(JSON.parse(String(request?.body))).not.toHaveProperty('enableRAG');
   });
 
   it('does not render the persistent history tab', () => {

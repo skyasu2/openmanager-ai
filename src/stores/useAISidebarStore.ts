@@ -291,7 +291,7 @@ interface AISidebarState {
   // 웹 검색 source mode. false=Auto, true=On.
   webSearchEnabled: boolean;
 
-  // RAG (Knowledge Base) source mode. false=Auto, true=On.
+  // Internal RAG override. Product UI no longer exposes this; false means Auto.
   ragEnabled: boolean;
 
   // 분석 강도 모드
@@ -517,7 +517,6 @@ export const useAISidebarStore = create<AISidebarState>()(
           activeTab: state.activeTab,
           sidebarWidth: state.sidebarWidth, // 사이드바 너비 영속화
           webSearchEnabled: state.webSearchEnabled,
-          ragEnabled: state.ragEnabled,
           analysisMode: state.analysisMode,
           restoreBannerDismissed: state.restoreBannerDismissed,
           functionTab: state.functionTab,
@@ -534,6 +533,7 @@ export const useAISidebarStore = create<AISidebarState>()(
           // Hydration 후 초기 상태 정규화
           if (state) {
             state.isOpen = false; // 초기에는 항상 닫힌 상태로 시작
+            state.ragEnabled = false; // stale hidden UI override 방지: Auto mode
           }
         },
       }

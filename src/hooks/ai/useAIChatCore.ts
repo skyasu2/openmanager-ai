@@ -480,7 +480,7 @@ export function useAIChatCore(
     null
   );
 
-  // 웹 검색 / RAG 토글 상태 (Store에서 읽기)
+  // 웹 검색 UI 상태와 내부 RAG override 상태 (Store에서 읽기)
   const webSearchEnabled = useAISidebarStore((s) => s.webSearchEnabled);
   const ragEnabled = useAISidebarStore((s) => s.ragEnabled);
   const analysisMode = useAISidebarStore((s) => s.analysisMode);

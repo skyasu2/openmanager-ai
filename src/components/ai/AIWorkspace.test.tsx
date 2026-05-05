@@ -502,13 +502,12 @@ describe('AIWorkspace', () => {
     );
   });
 
-  it('forwards sidebar parity props to fullscreen chat', async () => {
+  it('forwards user-facing source and analysis props to fullscreen chat', async () => {
     const { useAIChatCore } = await import('@/hooks/ai/useAIChatCore');
 
     mockSidebarState = {
       ...mockSidebarState,
       webSearchEnabled: true,
-      ragEnabled: true,
       analysisMode: 'thinking',
     };
 
@@ -567,7 +566,7 @@ describe('AIWorkspace', () => {
     expect(lastCall?.warmingUp).toBe(true);
     expect(lastCall?.estimatedWaitSeconds).toBe(30);
     expect(lastCall?.webSearchEnabled).toBe(true);
-    expect(lastCall?.ragEnabled).toBe(true);
+    expect(lastCall).not.toHaveProperty('ragEnabled');
     expect(lastCall?.analysisMode).toBe('thinking');
     expect(lastCall?.onSelectAnalysisMode).toEqual(expect.any(Function));
     expect(lastCall?.queuedQueries).toEqual([{ id: 1, text: 'queued' }]);

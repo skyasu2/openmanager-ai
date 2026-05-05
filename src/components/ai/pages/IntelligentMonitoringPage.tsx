@@ -12,7 +12,7 @@
 
 'use client';
 
-import { BookOpen, Monitor, Play, RefreshCw, Server } from 'lucide-react';
+import { Monitor, Play, RefreshCw, Server } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import AnalysisResultsCard from '@/components/ai/AnalysisResultsCard';
 import { useServerQuery } from '@/hooks/useServerQuery';
@@ -180,7 +180,6 @@ export default function IntelligentMonitoringPage({
   const [progress, setProgress] = useState({ current: 0, total: 0 });
   const [result, setResult] = useState<AnalysisResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [ragEnabled, setRagEnabled] = useState(false);
 
   // 🔧 P3: useCallback으로 핸들러 메모이제이션
   const handleServerChange = useCallback(
@@ -223,7 +222,6 @@ export default function IntelligentMonitoringPage({
             serverId,
             analysisType: 'full',
             currentMetrics,
-            enableRAG: ragEnabled,
             queryAsOf: createQueryAsOf(queryAsOfDataSlot),
           }),
         });
@@ -277,7 +275,7 @@ export default function IntelligentMonitoringPage({
         return null;
       }
     },
-    [ragEnabled, queryAsOfDataSlot]
+    [queryAsOfDataSlot]
   );
 
   // 분석 실행
@@ -318,7 +316,6 @@ export default function IntelligentMonitoringPage({
             action: 'analyze_batch',
             serverId: 'all',
             analysisType: 'full',
-            enableRAG: ragEnabled,
             queryAsOf: createQueryAsOf(queryAsOfDataSlot),
           }),
         });
@@ -350,13 +347,7 @@ export default function IntelligentMonitoringPage({
       setIsAnalyzing(false);
       setProgress({ current: 0, total: 0 });
     }
-  }, [
-    selectedServer,
-    servers,
-    analyzeSingleServer,
-    ragEnabled,
-    queryAsOfDataSlot,
-  ]);
+  }, [selectedServer, servers, analyzeSingleServer, queryAsOfDataSlot]);
 
   const serverListStatusLabel = isServerListLoading
     ? '서버 목록 로딩 중'
@@ -427,20 +418,6 @@ export default function IntelligentMonitoringPage({
 
           {/* 버튼 그룹 */}
           <div className="flex items-end gap-2">
-            <button
-              type="button"
-              onClick={() => setRagEnabled((prev) => !prev)}
-              aria-pressed={ragEnabled}
-              className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                ragEnabled
-                  ? 'bg-purple-100 text-purple-700'
-                  : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-              }`}
-              title={ragEnabled ? 'RAG 검색 끄기' : 'RAG 검색 켜기'}
-            >
-              <BookOpen className="mr-1.5 inline h-4 w-4" />
-              RAG
-            </button>
             <button
               type="button"
               onClick={resetAnalysis}

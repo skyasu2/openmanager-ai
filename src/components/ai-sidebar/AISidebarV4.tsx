@@ -58,8 +58,6 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
     setSelectedFunction,
     webSearchEnabled,
     toggleWebSearch,
-    ragEnabled,
-    toggleRAG,
     analysisMode,
     selectAnalysisMode,
     pendingEntryState,
@@ -340,8 +338,6 @@ export const AISidebarV4: FC<AISidebarV3Props> = ({
               currentHandoff={currentHandoff}
               webSearchEnabled={webSearchEnabled}
               onToggleWebSearch={toggleWebSearch}
-              ragEnabled={ragEnabled}
-              onToggleRAG={toggleRAG}
               analysisMode={analysisMode}
               onSelectAnalysisMode={selectAnalysisMode}
               warmingUp={warmingUp}

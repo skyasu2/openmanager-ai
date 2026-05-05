@@ -9,11 +9,14 @@ export interface SourceToolRequestOptions {
 }
 
 /**
- * UI source controls expose Auto/On only.
+ * Source controls expose Auto/On semantics.
  *
  * - false/undefined means Auto: omit the request flag and let Cloud Run apply
  *   conservative query-based detection.
  * - true means On: force-enable the corresponding source tool.
+ *
+ * RAG is intentionally not user-facing in the product UI. This helper still
+ * accepts a programmatic RAG override for tests and controlled experiments.
  */
 export function buildSourceToolRequestOptions({
   ragEnabled,

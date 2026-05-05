@@ -166,8 +166,6 @@ export default function AIWorkspace({
     setSelectedFunction,
     webSearchEnabled,
     toggleWebSearch,
-    ragEnabled,
-    toggleRAG,
     analysisMode,
     selectAnalysisMode,
     pendingEntryState,
@@ -432,8 +430,6 @@ export default function AIWorkspace({
           currentHandoff={currentHandoff}
           webSearchEnabled={webSearchEnabled}
           onToggleWebSearch={toggleWebSearch}
-          ragEnabled={ragEnabled}
-          onToggleRAG={toggleRAG}
           analysisMode={analysisMode}
           onSelectAnalysisMode={selectAnalysisMode}
           warmingUp={warmingUp}

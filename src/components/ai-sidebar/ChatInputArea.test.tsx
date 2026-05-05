@@ -96,7 +96,6 @@ describe('ChatInputArea popover', () => {
         onRemoveFile={vi.fn()}
         onClearFileErrors={vi.fn()}
         onPaste={vi.fn()}
-        onToggleRAG={vi.fn()}
         onToggleWebSearch={vi.fn()}
         onSelectAnalysisMode={vi.fn()}
       />
@@ -112,8 +111,9 @@ describe('ChatInputArea popover', () => {
     expect(
       screen.getByText('최신 문서/CVE는 보수적 자동 판단')
     ).toBeInTheDocument();
-    expect(screen.getAllByRole('button', { name: 'Auto' })).toHaveLength(2);
-    expect(screen.getAllByRole('button', { name: 'On' })).toHaveLength(2);
+    expect(screen.getAllByRole('button', { name: 'Auto' })).toHaveLength(1);
+    expect(screen.getAllByRole('button', { name: 'On' })).toHaveLength(1);
+    expect(screen.queryByText('RAG 검색 (내부 지식)')).not.toBeInTheDocument();
 
     fireEvent.touchStart(document.body);
 
@@ -170,7 +170,6 @@ describe('ChatInputArea popover', () => {
         onRemoveFile={vi.fn()}
         onClearFileErrors={vi.fn()}
         onPaste={vi.fn()}
-        onToggleRAG={vi.fn()}
         onToggleWebSearch={vi.fn()}
         onSelectAnalysisMode={vi.fn()}
       />
@@ -179,7 +178,7 @@ describe('ChatInputArea popover', () => {
     expect(screen.getByRole('button', { name: '요청 처리 중' })).toBeDisabled();
   });
 
-  it('keeps RAG/Web names and explains them with short parenthetical labels', () => {
+  it('keeps Web source control visible and removes user-facing RAG control', () => {
     render(
       <ChatInputArea
         textareaRef={createRef<HTMLTextAreaElement>()}
@@ -201,20 +200,18 @@ describe('ChatInputArea popover', () => {
         onRemoveFile={vi.fn()}
         onClearFileErrors={vi.fn()}
         onPaste={vi.fn()}
-        onToggleRAG={vi.fn()}
         onToggleWebSearch={vi.fn()}
       />
     );
 
     fireEvent.click(screen.getByRole('button', { name: '도구 메뉴 열기' }));
 
-    expect(screen.getByText('RAG 검색 (내부 지식)')).toBeInTheDocument();
     expect(screen.getByText('Web 검색 (외부 웹)')).toBeInTheDocument();
-    expect(screen.queryByText('내부 지식')).not.toBeInTheDocument();
+    expect(screen.queryByText('RAG 검색 (내부 지식)')).not.toBeInTheDocument();
     expect(screen.queryByText('외부 웹')).not.toBeInTheDocument();
   });
 
-  it('labels active input badges as forced On rather than used tools', () => {
+  it('labels active Web input badge as forced On rather than a used tool', () => {
     render(
       <ChatInputArea
         textareaRef={createRef<HTMLTextAreaElement>()}
@@ -236,15 +233,13 @@ describe('ChatInputArea popover', () => {
         onRemoveFile={vi.fn()}
         onClearFileErrors={vi.fn()}
         onPaste={vi.fn()}
-        ragEnabled={true}
-        onToggleRAG={vi.fn()}
         webSearchEnabled={true}
         onToggleWebSearch={vi.fn()}
       />
     );
 
-    expect(screen.getByText('RAG On')).toBeInTheDocument();
     expect(screen.getByText('Web On')).toBeInTheDocument();
+    expect(screen.queryByText('RAG On')).not.toBeInTheDocument();
     expect(screen.queryByText('RAG 사용됨')).not.toBeInTheDocument();
     expect(screen.queryByText('Web 사용됨')).not.toBeInTheDocument();
   });

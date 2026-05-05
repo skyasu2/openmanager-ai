@@ -11,7 +11,7 @@ describe('buildSourceToolRequestOptions', () => {
     ).toEqual({});
   });
 
-  it('sends true only when the user explicitly selects On', () => {
+  it('sends true only when a source tool is explicitly forced On', () => {
     expect(
       buildSourceToolRequestOptions({
         ragEnabled: true,

@@ -75,7 +75,7 @@ export function TopologyView({ servers, active = true }: TopologyViewProps) {
             단일 사이트: OnPrem-DC1
           </div>
           <div className="hidden sm:flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] text-amber-700">
-            synthetic 메트릭 모델
+            OpenTelemetry metric model
           </div>
         </div>
       </div>
@@ -123,7 +123,7 @@ export function TopologyView({ servers, active = true }: TopologyViewProps) {
         <div className="text-xs text-gray-500">
           데이터 소스:{' '}
           <span className="font-mono text-gray-700">
-            Vercel static OTel · 24h rotation
+            OpenTelemetry metrics · 24h window
           </span>
         </div>
         <div className="flex flex-wrap items-center gap-3 text-xs">

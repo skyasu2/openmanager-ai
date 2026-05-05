@@ -176,7 +176,7 @@ describe('DashboardSummary status filter cards', () => {
     expect(screen.getAllByText('오프라인').length).toBeGreaterThanOrEqual(2);
   });
 
-  it('synthetic OTel data slot 메타데이터를 표시한다', () => {
+  it('OpenTelemetry snapshot data slot 메타데이터를 표시한다', () => {
     render(
       <DashboardSummary
         stats={mockStats}
@@ -196,12 +196,10 @@ describe('DashboardSummary status filter cards', () => {
     );
 
     expect(
-      screen.getByText('Vercel static OTel · 12:20 KST (slot 74/143)')
+      screen.getByText('OpenTelemetry snapshot · 12:20 KST (slot 74/143)')
     ).toBeInTheDocument();
     expect(
-      screen.getByText(
-        '24h rotating dataset v1.0.0 · catalog 2026-02-15 03:56Z'
-      )
+      screen.getByText('Telemetry catalog v1.0.0 · updated 2026-02-15 03:56Z')
     ).toBeInTheDocument();
   });
 
@@ -219,10 +217,10 @@ describe('DashboardSummary status filter cards', () => {
     );
 
     expect(
-      screen.getByText('Vercel static OTel · 17:20 KST (slot 104/143)')
+      screen.getByText('OpenTelemetry snapshot · 17:20 KST (slot 104/143)')
     ).toBeInTheDocument();
     expect(
-      screen.queryByText('Vercel static OTel · 17:30 KST (slot 105/143)')
+      screen.queryByText('OpenTelemetry snapshot · 17:30 KST (slot 105/143)')
     ).not.toBeInTheDocument();
   });
 });

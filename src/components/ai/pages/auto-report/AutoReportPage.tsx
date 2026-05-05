@@ -10,7 +10,7 @@
 
 'use client';
 
-import { AlertCircle, BookOpen, FileText, RefreshCw, X } from 'lucide-react';
+import { AlertCircle, FileText, RefreshCw, X } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useState } from 'react';
 import { rulesLoader } from '@/config/rules/loader';
@@ -101,7 +101,6 @@ export default function AutoReportPage({
   const [selectedReport, setSelectedReport] = useState<string | null>(null);
   const [downloadMenuId, setDownloadMenuId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [ragEnabled, setRagEnabled] = useState(false);
 
   // Generate new report
   const handleGenerateReport = useCallback(async () => {
@@ -130,7 +129,6 @@ export default function AutoReportPage({
           action: 'generate',
           metrics,
           notify: true,
-          enableRAG: ragEnabled,
           queryAsOf: createQueryAsOf(queryAsOfDataSlot),
         }),
       });
@@ -286,7 +284,7 @@ export default function AutoReportPage({
     } finally {
       setIsGenerating(false);
     }
-  }, [servers, ragEnabled, setReports, queryAsOfDataSlot]);
+  }, [servers, setReports, queryAsOfDataSlot]);
 
   // Event handlers
   const handleResolve = useCallback(
@@ -360,19 +358,6 @@ export default function AutoReportPage({
                 {queryAsOfDataSlot.slotIndex}
               </span>
             )}
-            <button
-              type="button"
-              onClick={() => setRagEnabled((prev) => !prev)}
-              className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                ragEnabled
-                  ? 'bg-purple-100 text-purple-700'
-                  : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-              }`}
-              title={ragEnabled ? 'RAG 검색 끄기' : 'RAG 검색 켜기'}
-            >
-              <BookOpen className="h-4 w-4" />
-              RAG
-            </button>
             <button
               type="button"
               data-testid="report-generate-btn"

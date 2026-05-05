@@ -229,7 +229,9 @@ describe('AI artifact cards', () => {
       />
     );
 
-    expect(screen.getByText('source replay-json')).toBeInTheDocument();
+    expect(
+      screen.getByText('데이터 OpenTelemetry snapshot')
+    ).toBeInTheDocument();
     expect(screen.getByText('기준 23:50 KST')).toBeInTheDocument();
     expect(
       screen.getByRole('link', { name: /api-was-dc1-01/i })
@@ -260,7 +262,7 @@ describe('AI artifact cards', () => {
     render(<MonitoringAnalysisArtifactCard artifact={restoredArtifact} />);
 
     expect(screen.getByText('복원된 이상감지/추세 분석')).toBeInTheDocument();
-    expect(screen.getByText('source unknown')).toBeInTheDocument();
+    expect(screen.getByText('데이터 Monitoring snapshot')).toBeInTheDocument();
     expect(screen.getByText('기준 현재')).toBeInTheDocument();
   });
 
