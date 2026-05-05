@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.98](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.97...v8.11.98) (2026-05-05)
+
+
+### Bug Fixes
+
+* **app:** remediate broad QA regressions ([58f045e](https://gitlab.com/skyasu2/openmanager-ai/-/commit/58f045e8db90751449dee966722496f2acb9d82c))
+
 ## [8.11.97](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.96...v8.11.97) (2026-05-04)
 
 
