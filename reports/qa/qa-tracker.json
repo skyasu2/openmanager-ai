@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-06T04:35:44.343Z"
+    "updatedAt": "2026-05-06T05:49:24.582Z"
   },
   "sequence": {
-    "nextRunNumber": 414
+    "nextRunNumber": 415
   },
   "summary": {
-    "totalRecordedRuns": 411,
-    "totalRuns": 338,
+    "totalRecordedRuns": 412,
+    "totalRuns": 339,
     "excludedRuns": 73,
-    "totalChecks": 2974,
-    "totalPassed": 2866,
+    "totalChecks": 2984,
+    "totalPassed": 2876,
     "totalFailed": 99,
     "completionRate": 100,
-    "completedItems": 438,
+    "completedItems": 439,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 22,
     "expertDomainsTracked": 12,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260506-0413",
-    "lastRecordedAt": "2026-05-06T04:35:44.343Z",
-    "latestRecordedRunId": "QA-20260506-0413",
-    "latestRecordedAt": "2026-05-06T04:35:44.343Z"
+    "lastRunId": "QA-20260506-0414",
+    "lastRecordedAt": "2026-05-06T05:49:24.582Z",
+    "latestRecordedRunId": "QA-20260506-0414",
+    "latestRecordedAt": "2026-05-06T05:49:24.582Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -10769,6 +10769,30 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-06T04:35:44.343Z"
+    },
+    "ai-artifact-workspace-ui-wiring-v811108": {
+      "id": "ai-artifact-workspace-ui-wiring-v811108",
+      "title": "AI artifact workspace UI wiring and compare UX production verification",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260506-0414",
+      "firstSeenAt": "2026-05-06T05:49:24.582Z",
+      "lastSeenRunId": "QA-20260506-0414",
+      "lastSeenAt": "2026-05-06T05:49:24.582Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "",
+      "lastNote": "Production v8.11.108 verified empty state, invalid import rejection, valid import/listing, same-pack rejection, deterministic compare result, and no AI/artifact/replay API request during import/compare.",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-06T05:49:24.582Z"
     }
   },
   "runs": [
@@ -42970,6 +42994,150 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260506-0414",
+      "recordedAt": "2026-05-06T05:49:24.582Z",
+      "recordedAtKst": "2026-05-06 14:49:24 KST",
+      "title": "v8.11.108 Artifact Workspace UI Targeted QA",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260506-0414.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_6aLTSBYbFKpCziucwaS4MbyHc8KQ",
+        "deploymentUrl": "https://openmanager-pkdnbxaki-skyasus-projects.vercel.app",
+        "commitSha": "cd2a672faed1a44a9e510341f920474b1a636870"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "GitLab v8.11.108 tag pipeline 2503214512 succeeded for cd2a672faed1a44a9e510341f920474b1a636870",
+        "Production /api/version returned version 8.11.108, releaseTag v8.11.108, commit cd2a672faed1a44a9e510341f920474b1a636870",
+        "Vercel production deployment dpl_6aLTSBYbFKpCziucwaS4MbyHc8KQ is Ready and aliased to openmanager-ai.vercel.app",
+        "/dashboard/ai-assistant rendered fullscreen AI workspace and System Context with AI Engine Online / Production status",
+        "Artifact workspace panel rendered in the AI workspace side context",
+        "Empty local replay workspace showed replay pack 0개 and disabled compare control",
+        "Unsupported JSON import was rejected with visible error: 지원하지 않는 replay pack입니다.",
+        "Two valid local replay packs were imported via the browser file input and listed as qa-pack-a / qa-pack-b with one entry each",
+        "Same replay pack selection was rejected with visible error: 서로 다른 replay pack을 선택하세요.",
+        "Different replay packs compared deterministically and rendered matched 0, missing 0, added 0, changed 1",
+        "Performance resource delta during import/compare contained no /api/ai, artifact, or replay API requests, preserving the local/session-first contract"
+      ],
+      "skippedSurfaces": [
+        "No new live LLM or AI chat query was sent during this QA because the changed surface is deterministic replay-pack UI wiring and import/compare must not call providers",
+        "Reporter, anomaly/trend, mobile, privacy/auth fallback, and broad dashboard modal packs were not rerun in this targeted pass",
+        "Cloud Run admin /monitoring and /monitoring/traces were not queried; tag pipeline post_deploy_ai_engine_smoke covered AI Engine health"
+      ],
+      "checks": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Artifact replay import/compare behavior was verified with deterministic positive and rejection paths without provider calls.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The replay pack payload stayed within the monitoring artifact schema and production AI Engine status remained Online after deploy smoke.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Unsupported JSON was rejected visibly and imported payloads were normalized through the artifact schema before compare rendering.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag deploy, Vercel production smoke, Cloud Run deploy, and AI Engine post-deploy smoke all completed successfully.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Playwright MCP exercised the production UI state transitions and preserved durable visual evidence.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Replay pack comparison produced the expected stable-json diff counts: matched 0, missing 0, added 0, changed 1.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-06T14:40:23+09:00",
+          "summary": "Current billing period checked after v8.11.108 production deploy; effective 2.6964 USD, billed remains 0.0000 USD, chargeCount 2436.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "Artifact workspace imported replay packs and deterministic compare result on v8.11.108",
+          "path": "reports/qa/evidence/qa-20260506-v811108-artifact-workspace-compare.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.108 tag pipeline 2503214512",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2503214512"
+        },
+        {
+          "type": "general",
+          "label": "Production version endpoint",
+          "url": "https://openmanager-ai.vercel.app/api/version"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment dpl_6aLTSBYbFKpCziucwaS4MbyHc8KQ",
+          "url": "https://openmanager-pkdnbxaki-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 6,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -42978,16 +43146,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 201,
-      "appropriateCount": 179,
+      "seenCount": 202,
+      "appropriateCount": 180,
       "partialCount": 22,
       "inappropriateCount": 0,
       "improvementNeededCount": 32,
-      "lastRunId": "QA-20260506-0413",
-      "lastSeenAt": "2026-05-06T04:35:44.343Z",
+      "lastRunId": "QA-20260506-0414",
+      "lastSeenAt": "2026-05-06T05:49:24.582Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production AI sidebar exercised the changed supervisor stream path and returned grounded tool-backed output.",
+      "lastRationale": "Artifact replay import/compare behavior was verified with deterministic positive and rejection paths without provider calls.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -42995,16 +43163,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 108,
-      "appropriateCount": 78,
+      "seenCount": 109,
+      "appropriateCount": 79,
       "partialCount": 30,
       "inappropriateCount": 0,
       "improvementNeededCount": 31,
-      "lastRunId": "QA-20260506-0413",
-      "lastSeenAt": "2026-05-06T04:35:44.343Z",
+      "lastRunId": "QA-20260506-0414",
+      "lastSeenAt": "2026-05-06T05:49:24.582Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Dashboard data slot, tool basis, Cloud Run health, and release pipeline evidence were captured.",
+      "lastRationale": "The replay pack payload stayed within the monitoring artifact schema and production AI Engine status remained Online after deploy smoke.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -43012,16 +43180,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 52,
-      "appropriateCount": 39,
+      "seenCount": 53,
+      "appropriateCount": 40,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 12,
-      "lastRunId": "QA-20260505-0407",
-      "lastSeenAt": "2026-05-04T23:33:01.502Z",
+      "lastRunId": "QA-20260506-0414",
+      "lastSeenAt": "2026-05-06T05:49:24.582Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Prompt-injection smoke did not leak secrets and was blocked before normal answer generation.",
+      "lastRationale": "Unsupported JSON was rejected visibly and imported payloads were normalized through the artifact schema before compare rendering.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -43029,16 +43197,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 135,
-      "appropriateCount": 122,
+      "seenCount": 136,
+      "appropriateCount": 123,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 17,
-      "lastRunId": "QA-20260506-0413",
-      "lastSeenAt": "2026-05-06T04:35:44.343Z",
+      "lastRunId": "QA-20260506-0414",
+      "lastSeenAt": "2026-05-06T05:49:24.582Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab main validate, semver tag pipeline, Vercel deploy, Cloud Run deploy, and post-deploy smoke all completed successfully.",
+      "lastRationale": "GitLab tag deploy, Vercel production smoke, Cloud Run deploy, and AI Engine post-deploy smoke all completed successfully.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -43046,16 +43214,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 173,
-      "appropriateCount": 160,
+      "seenCount": 174,
+      "appropriateCount": 161,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 15,
-      "lastRunId": "QA-20260506-0413",
-      "lastSeenAt": "2026-05-06T04:35:44.343Z",
+      "lastRunId": "QA-20260506-0414",
+      "lastSeenAt": "2026-05-06T05:49:24.582Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Local deterministic gates, GitLab CI, Cloud Run smoke, and Playwright MCP production UI verification were combined for the release decision.",
+      "lastRationale": "Playwright MCP exercised the production UI state transitions and preserved durable visual evidence.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -43063,16 +43231,16 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 59,
-      "appropriateCount": 39,
+      "seenCount": 60,
+      "appropriateCount": 40,
       "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260506-0413",
-      "lastSeenAt": "2026-05-06T04:35:44.343Z",
+      "lastRunId": "QA-20260506-0414",
+      "lastSeenAt": "2026-05-06T05:49:24.582Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "AI answer matched the visible dashboard server counts and the cache-redis-dc1-01 warning surface.",
+      "lastRationale": "Replay pack comparison produced the expected stable-json diff counts: matched 0, missing 0, added 0, changed 1.",
       "lastNextAction": ""
     },
     "infra-reliability": {
