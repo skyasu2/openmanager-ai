@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.109](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.108...v8.11.109) (2026-05-06)
+
+
+### Bug Fixes
+
+* **ai:** suppress repeated raw tool-call JSON ([1583239](https://gitlab.com/skyasu2/openmanager-ai/-/commit/15832396be67f86467853dce6d42717a859589ad))
+
+
+### Tests
+
+* **qa:** record v8.11.108 artifact workspace QA ([5ec3161](https://gitlab.com/skyasu2/openmanager-ai/-/commit/5ec3161f6a8679677e2cd1d8103c3b5c9ea4ec80))
+
 ## [8.11.108](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.107...v8.11.108) (2026-05-06)
 
 
