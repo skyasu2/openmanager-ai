@@ -1,0 +1,202 @@
+{
+  "runId": "QA-20260506-0415",
+  "recordedAt": "2026-05-06T06:28:57.301Z",
+  "recordedAtKst": "2026-05-06 15:28:57 KST",
+  "runTitle": "v8.11.108 AI Advanced Surface Targeted QA",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_6aLTSBYbFKpCziucwaS4MbyHc8KQ",
+    "deploymentUrl": "https://openmanager-pkdnbxaki-skyasus-projects.vercel.app",
+    "commitSha": "cd2a672faed1a44a9e510341f920474b1a636870"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "ai-core", "ai-advanced-surface"],
+  "coveredSurfaces": [
+    "Production /api/version returned version 8.11.108, releaseTag v8.11.108, commit cd2a672faed1a44a9e510341f920474b1a636870",
+    "Production /dashboard/ai-assistant rendered fullscreen AI workspace with AI Engine Online status",
+    "Reporter Agent surface opened from the assistant action list and the generate action remained visible",
+    "Reporter Agent generation called /api/ai/incident-report and returned 200 in 3599ms",
+    "Reporter result rendered a visible incident report card: Redis 서버 메모리 과부하 경고, 심각 1, affected server cache-redis-dc1-01, MD 복사 and 다운로드 actions",
+    "Anomaly/trend surface opened from the assistant action list and 전체 분석 action remained visible",
+    "Anomaly/trend 전체 분석 called /api/ai/intelligent-monitoring and returned 200 in 1273ms",
+    "Anomaly/trend result rendered 전체 시스템 상태 with 17 정상, 1 주의, 0 위험 and key issue cache-redis-dc1-01 memory 81%",
+    "RAG/Web representative query was sent once with Web On state: OpenManager OTel 데이터 SSOT 경로를 내부 지식/RAG와 Web On 상태 기준으로 요약하고, 실제 파일 경로 3개를 알려줘",
+    "RAG/Web stream route /api/ai/supervisor/stream/v2 returned 200, but the assistant answer leaked repeated raw tool-call JSON for searchKnowledgeBase/searchWeb instead of a readable grounded answer"
+  ],
+  "skippedSurfaces": [
+    "No additional live AI queries were sent after the RAG/Web failure was confirmed to stay within cost-protected targeted QA scope",
+    "Mobile, auth fallback, broad dashboard modal packs, and release-gate broad smoke were not rerun in this targeted pass",
+    "Cloud Run admin /monitoring and /monitoring/traces were not queried; this run focused on production UI surfaces"
+  ],
+  "checks": {
+    "total": 3,
+    "passed": 2,
+    "failed": 1
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "Reporter Agent generate incident report",
+      "agent": "Reporter Agent",
+      "provider": "unknown",
+      "route": "/api/ai/incident-report",
+      "source": "Playwright fetch instrumentation",
+      "latencyMs": 3599
+    },
+    {
+      "surface": "Anomaly/trend 전체 분석",
+      "agent": "Analyst Agent",
+      "provider": "deterministic",
+      "route": "/api/ai/intelligent-monitoring",
+      "source": "Playwright fetch instrumentation",
+      "latencyMs": 1273
+    },
+    {
+      "surface": "RAG/Web representative OTel SSOT query",
+      "agent": "Supervisor",
+      "provider": "unknown",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright fetch instrumentation and performance resource timing",
+      "latencyMs": 3016,
+      "ttfbMs": 1239
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Reporter and anomaly/trend surfaces passed, but the representative RAG/Web query exposed raw tool-call JSON to the user-facing answer.",
+      "nextAction": "Add a regression guard for repeated semicolon-separated tool-call JSON and fix the supervisor stream text guard before re-running the RAG/Web targeted check."
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Reporter and anomaly/trend monitoring outputs rendered grounded server/state details for the sampled production surfaces.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "Raw internal tool-call JSON leaked implementation details and should be suppressed or recovered before user display.",
+      "nextAction": "Treat repeated raw tool-call JSON as a blocked display format and route to provider fallback or deterministic tool-result summary."
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Production version, deployment identity, AI Engine online status, and Vercel usage guard were checked before targeted QA.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "partially-appropriate",
+      "improvementNeeded": true,
+      "rationale": "The current stream text guard covers single raw JSON objects but lacks a regression case for repeated JSON tool calls emitted as plain text.",
+      "nextAction": "Add a deterministic unit test for semicolon-separated repeated tool-call JSON chunks."
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The anomaly/trend sample rendered expected aggregate counts and cache-redis-dc1-01 memory risk detail.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-06T15:27:38+09:00",
+      "summary": "Current billing period checked before v8.11.108 advanced surface targeted QA; effective 2.6964 USD, billed remains 0.0000 USD, chargeCount 2436.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "RAG/Web answer leaked raw searchKnowledgeBase/searchWeb tool-call JSON on v8.11.108",
+      "path": "reports/qa/evidence/qa-20260506-v811108-ai-advanced-rag-web-raw-tool-json.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-advanced-reporter-surface-v811108",
+      "title": "Reporter Agent production surface generated a visible report with copy/download actions",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Production v8.11.108 /api/ai/incident-report returned 200 and the generated Redis memory incident report rendered with affected server and MD/download actions.",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "ai-advanced-anomaly-trend-surface-v811108",
+      "title": "Anomaly/trend production surface generated visible monitoring analysis",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "",
+      "note": "Production v8.11.108 /api/ai/intelligent-monitoring returned 200 and rendered 17 정상, 1 주의, 0 위험 with cache-redis-dc1-01 memory 81% key issue.",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [
+    {
+      "id": "ai-rag-web-raw-tool-call-json-leakage-v811108",
+      "title": "RAG/Web representative query leaks repeated raw tool-call JSON in production AI Chat",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "reports/qa/evidence/qa-20260506-v811108-ai-advanced-rag-web-raw-tool-json.png",
+      "note": "Production v8.11.108 /api/ai/supervisor/stream/v2 returned 200, but the user-facing assistant response consisted of repeated {name, arguments} JSON for searchKnowledgeBase/searchWeb rather than a grounded readable answer.",
+      "owner": "codex",
+      "status": "pending",
+      "policyNote": ""
+    }
+  ],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Backlog item AI advanced surface targeted QA pack was executed within the intended cost-protected scope: Reporter 1, anomaly/trend 1, RAG/Web 1.",
+    "Because a failure was confirmed, the backlog item should be promoted into code remediation before another production targeted recheck."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "Production version endpoint",
+      "url": "https://openmanager-ai.vercel.app/api/version"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment dpl_6aLTSBYbFKpCziucwaS4MbyHc8KQ",
+      "url": "https://openmanager-pkdnbxaki-skyasus-projects.vercel.app/"
+    }
+  ]
+}

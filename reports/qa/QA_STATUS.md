@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-06 14:49:26 KST
+> Generated at: 2026-05-06 15:28:59 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 412 |
-| Total Runs (Counted) | 339 |
+| Total Recorded Runs | 413 |
+| Total Runs (Counted) | 340 |
 | Non-counted Runs | 73 |
-| Total Checks | 2984 |
-| Passed | 2876 |
-| Failed | 99 |
-| Completed Items | 439 |
-| Pending Items | 0 |
+| Total Checks | 2987 |
+| Passed | 2878 |
+| Failed | 100 |
+| Completed Items | 441 |
+| Pending Items | 1 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
 | Expert Domains Tracked | 12 |
-| Expert Open Gaps | 0 |
-| Completion Rate | 100% |
-| Last Counted Run | QA-20260506-0414 (2026-05-06T05:49:24.582Z) |
-| Latest Recorded Run | QA-20260506-0414 (2026-05-06T05:49:24.582Z) |
+| Expert Open Gaps | 3 |
+| Completion Rate | 99.77% |
+| Last Counted Run | QA-20260506-0415 (2026-05-06T06:28:57.301Z) |
+| Latest Recorded Run | QA-20260506-0415 (2026-05-06T06:28:57.301Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,36 +34,39 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260506-0414 (2026-05-06T05:49:24.582Z)
+Latest run: QA-20260506-0415 (2026-05-06T06:28:57.301Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
+| AI Quality Assurance Specialist | partially-appropriate | yes | Add a regression guard for repeated semicolon-separated tool-call JSON and fix the supervisor stream text guard before re-running the RAG/Web targeted check. |
 | IT Monitoring & Observability SME | appropriate | no | - |
-| AI Security & Reliability Architect | appropriate | no | - |
+| AI Security & Reliability Architect | partially-appropriate | yes | Treat repeated raw tool-call JSON as a blocked display format and route to provider fallback or deterministic tool-result summary. |
 | DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
+| Test Automation Architect | partially-appropriate | yes | Add a deterministic unit test for semicolon-separated repeated tool-call JSON chunks. |
 | Data Quality & Metrics Analyst | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked after v8.11.108 production deploy; effective 2.6964 USD, billed remains 0.0000 USD, chargeCount 2436. |
+| vercel | cli | checked | normal | Current billing period checked before v8.11.108 advanced surface targeted QA; effective 2.6964 USD, billed remains 0.0000 USD, chargeCount 2436. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-05T05:49:24.582Z -> 2026-05-06T05:49:24.582Z (24h)
-- Runs with observations: 1 recorded / 1 counted
-- Samples: 1
+- Window: 2026-05-05T06:28:57.301Z -> 2026-05-06T06:28:57.301Z (24h)
+- Runs with observations: 2 recorded / 2 counted
+- Samples: 4
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
+| Reporter Agent | unknown | 1 | 3599ms | 3599ms | - | - | - | - | QA-20260506-0415 |
+| Supervisor | unknown | 1 | 3016ms | 3016ms | 1239ms | 1239ms | - | - | QA-20260506-0415 |
 | Supervisor | cloud-run-ai-engine | 1 | 2915ms | 2915ms | - | - | 2915ms | 2915ms | QA-20260506-0413 |
+| Analyst Agent | deterministic | 1 | 1273ms | 1273ms | - | - | - | - | QA-20260506-0415 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-05T05:49:24.582Z -> 2026-05-06T05:49:24.582Z (24h)
+- Window: 2026-05-05T06:28:57.301Z -> 2026-05-06T06:28:57.301Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -79,14 +82,13 @@ Latest run: QA-20260506-0414 (2026-05-06T05:49:24.582Z)
 - Counts Toward Summary: yes
 - Deployment: dpl_6aLTSBYbFKpCziucwaS4MbyHc8KQ / SHA cd2a672f
 - Coverage Packs: core-routes-smoke, ai-core, ai-advanced-surface
-- Covered Surfaces: GitLab v8.11.108 tag pipeline 2503214512 succeeded for cd2a672faed1a44a9e510341f920474b1a636870, Production /api/version returned version 8.11.108, releaseTag v8.11.108, commit cd2a672faed1a44a9e510341f920474b1a636870, Vercel production deployment dpl_6aLTSBYbFKpCziucwaS4MbyHc8KQ is Ready and aliased to openmanager-ai.vercel.app, /dashboard/ai-assistant rendered fullscreen AI workspace and System Context with AI Engine Online / Production status, Artifact workspace panel rendered in the AI workspace side context, Empty local replay workspace showed replay pack 0개 and disabled compare control, Unsupported JSON import was rejected with visible error: 지원하지 않는 replay pack입니다., Two valid local replay packs were imported via the browser file input and listed as qa-pack-a / qa-pack-b with one entry each, Same replay pack selection was rejected with visible error: 서로 다른 replay pack을 선택하세요., Different replay packs compared deterministically and rendered matched 0, missing 0, added 0, changed 1, Performance resource delta during import/compare contained no /api/ai, artifact, or replay API requests, preserving the local/session-first contract
-- Skipped Surfaces: No new live LLM or AI chat query was sent during this QA because the changed surface is deterministic replay-pack UI wiring and import/compare must not call providers, Reporter, anomaly/trend, mobile, privacy/auth fallback, and broad dashboard modal packs were not rerun in this targeted pass, Cloud Run admin /monitoring and /monitoring/traces were not queried; tag pipeline post_deploy_ai_engine_smoke covered AI Engine health
+- Covered Surfaces: Production /api/version returned version 8.11.108, releaseTag v8.11.108, commit cd2a672faed1a44a9e510341f920474b1a636870, Production /dashboard/ai-assistant rendered fullscreen AI workspace with AI Engine Online status, Reporter Agent surface opened from the assistant action list and the generate action remained visible, Reporter Agent generation called /api/ai/incident-report and returned 200 in 3599ms, Reporter result rendered a visible incident report card: Redis 서버 메모리 과부하 경고, 심각 1, affected server cache-redis-dc1-01, MD 복사 and 다운로드 actions, Anomaly/trend surface opened from the assistant action list and 전체 분석 action remained visible, Anomaly/trend 전체 분석 called /api/ai/intelligent-monitoring and returned 200 in 1273ms, Anomaly/trend result rendered 전체 시스템 상태 with 17 정상, 1 주의, 0 위험 and key issue cache-redis-dc1-01 memory 81%, RAG/Web representative query was sent once with Web On state: OpenManager OTel 데이터 SSOT 경로를 내부 지식/RAG와 Web On 상태 기준으로 요약하고, 실제 파일 경로 3개를 알려줘, RAG/Web stream route /api/ai/supervisor/stream/v2 returned 200, but the assistant answer leaked repeated raw tool-call JSON for searchKnowledgeBase/searchWeb instead of a readable grounded answer
+- Skipped Surfaces: No additional live AI queries were sent after the RAG/Web failure was confirmed to stay within cost-protected targeted QA scope, Mobile, auth fallback, broad dashboard modal packs, and release-gate broad smoke were not rerun in this targeted pass, Cloud Run admin /monitoring and /monitoring/traces were not queried; this run focused on production UI surfaces
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.11.108 tag pipeline 2503214512 | [GitLab v8.11.108 tag pipeline 2503214512](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2503214512) | - |
 | general | Production version endpoint | [Production version endpoint](https://openmanager-ai.vercel.app/api/version) | - |
 | vercel-deployment | Vercel production deployment dpl_6aLTSBYbFKpCziucwaS4MbyHc8KQ | [Vercel production deployment dpl_6aLTSBYbFKpCziucwaS4MbyHc8KQ](https://openmanager-pkdnbxaki-skyasus-projects.vercel.app/) | - |
 
@@ -94,15 +96,20 @@ Latest run: QA-20260506-0414 (2026-05-06T05:49:24.582Z)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | Artifact workspace imported replay packs and deterministic compare result on v8.11.108 | `reports/qa/evidence/qa-20260506-v811108-artifact-workspace-compare.png` | - |
+| playwright-screenshot | RAG/Web answer leaked raw searchKnowledgeBase/searchWeb tool-call JSON on v8.11.108 | `reports/qa/evidence/qa-20260506-v811108-ai-advanced-rag-web-raw-tool-json.png` | - |
 
 ## Expert Domain Open Gaps
 
-- None
+- ai-quality-assurance: AI Quality Assurance Specialist (last QA-20260506-0415)
+  next: Add a regression guard for repeated semicolon-separated tool-call JSON and fix the supervisor stream text guard before re-running the RAG/Web targeted check.
+- ai-security-reliability: AI Security & Reliability Architect (last QA-20260506-0415)
+  next: Treat repeated raw tool-call JSON as a blocked display format and route to provider fallback or deterministic tool-result summary.
+- test-automation: Test Automation Architect (last QA-20260506-0415)
+  next: Add a deterministic unit test for semicolon-separated repeated tool-call JSON chunks.
 
 ## Pending Improvements
 
-- None
+- [P1] ai-rag-web-raw-tool-call-json-leakage-v811108: RAG/Web representative query leaks repeated raw tool-call JSON in production AI Chat (seen 1회, last QA-20260506-0415)
 
 ## Deferred Improvements
 
@@ -180,6 +187,8 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 - active-alerts-modal-ai-prefill: 활성 알림 모달에서 AI 사이드바 컨텍스트 자동 주입 (completed 1회, last QA-20260323-0166)
 - admin-log-level-admin-auth: 관리자 로그레벨 API 관리자 권한 강제 (completed 1회, last QA-20260325-0183)
+- ai-advanced-anomaly-trend-surface-v811108: Anomaly/trend production surface generated visible monitoring analysis (completed 1회, last QA-20260506-0415)
+- ai-advanced-reporter-surface-v811108: Reporter Agent production surface generated a visible report with copy/download actions (completed 1회, last QA-20260506-0415)
 - ai-alert-status-advisory-response-drift: Alert-status advisory queries stay grounded and do not drift into unrelated metric rankings (completed 2회, last QA-20260430-0374)
 - ai-analysis-main-response-empty-on-cerebras-quota: Prevent empty main AI analysis response when Cerebras queue or token quota fails (completed 1회, last QA-20260429-0370)
 - ai-analysis-mode-route-selection-production: Production auto/thinking analysis mode route selection verified (completed 1회, last QA-20260428-0355)
@@ -622,6 +631,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260506-0415 | 2026-05-06T06:28:57.301Z | targeted | yes | yes | v8.11.108 AI Advanced Surface Targeted QA | 3 | 2 | 1 | 0 | 0 | 3 |
 | QA-20260506-0414 | 2026-05-06T05:49:24.582Z | targeted | yes | yes | v8.11.108 Artifact Workspace UI Targeted QA | 10 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260506-0413 | 2026-05-06T04:35:44.343Z | targeted | yes | yes | v8.11.107 Production Targeted QA - Supervisor Runtime Host Wiring | 13 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260505-0412 | 2026-05-05T06:31:40.208Z | targeted | yes | yes | v8.11.106 Production Targeted QA - RAG UI and Telemetry Copy | 6 | 3 | 0 | 0 | 0 | 0 |
@@ -641,4 +651,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260503-0398 | 2026-05-03T07:53:49.065Z | smoke | yes | yes | Production Release Smoke v8.11.87 | 6 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260503-0397 | 2026-05-03T06:27:01.464Z | targeted | yes | yes | Production Release Smoke - v8.11.86 Assistant Metadata Hardening | 6 | 2 | 0 | 0 | 1 | 0 |
 | QA-20260503-0396 | 2026-05-03T05:25:47.342Z | targeted | no | yes | Local Playwright Targeted QA - AI Assistant Data Truth Hardening | 8 | 4 | 0 | 0 | 0 | 0 |
-| QA-20260503-0395 | 2026-05-02T19:10:10.245Z | targeted | yes | yes | Vercel Production Targeted QA - Server Snapshot Artifact v8.11.85 | 13 | 1 | 0 | 0 | 0 | 0 |

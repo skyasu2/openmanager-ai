@@ -57,6 +57,29 @@ describe('supervisor stream text guard', () => {
         '{"toolCalls":[{"type":"tool-call","toolName":"getServerMetrics","args":{"serverId":"web-01"}}]}'
       )
     ).toBe('getServerMetrics');
+    expect(
+      getRawToolCallNameFromText(
+        '{"name":"searchKnowledgeBase","arguments":{"query":"OpenManager OTel 데이터 SSOT 경로"}}; {"name":"searchWeb","arguments":{"query":"OpenManager OTel 데이터 SSOT 경로","searchDepth":"basic"}}'
+      )
+    ).toBe('searchKnowledgeBase');
+  });
+
+  it('suppresses repeated semicolon-separated raw tool-call JSON text', () => {
+    const guard = createStructuredTextDeltaGuard();
+
+    expect(
+      guard.push(
+        '{"name":"searchKnowledgeBase","arguments":{"query":"OpenManager OTel 데이터 SSOT 경로"}}'
+      )
+    ).toEqual([]);
+    expect(
+      guard.push(
+        '; {"name":"searchWeb","arguments":{"query":"OpenManager OTel 데이터 SSOT 경로","searchDepth":"basic"}}'
+      )
+    ).toEqual([]);
+    expect(guard.flush()).toEqual([]);
+    expect(guard.hasRawToolCall()).toBe(true);
+    expect(guard.getRawToolCallName()).toBe('searchKnowledgeBase');
   });
 
   it('does not classify ordinary JSON as a tool call', () => {

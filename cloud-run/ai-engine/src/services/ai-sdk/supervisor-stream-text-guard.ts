@@ -51,6 +51,66 @@ function parseJsonRecord(text: string): JsonRecord | null {
   }
 }
 
+function readFirstJsonObjectText(text: string): string | null {
+  const normalized = stripJsonCodeFence(text);
+  if (!normalized.startsWith('{')) {
+    return null;
+  }
+
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+
+  for (let index = 0; index < normalized.length; index += 1) {
+    const char = normalized[index];
+
+    if (escaped) {
+      escaped = false;
+      continue;
+    }
+
+    if (char === '\\' && inString) {
+      escaped = true;
+      continue;
+    }
+
+    if (char === '"') {
+      inString = !inString;
+      continue;
+    }
+
+    if (inString) {
+      continue;
+    }
+
+    if (char === '{') {
+      depth += 1;
+      continue;
+    }
+
+    if (char === '}') {
+      depth -= 1;
+      if (depth === 0) {
+        return normalized.slice(0, index + 1);
+      }
+    }
+  }
+
+  return null;
+}
+
+function parseFirstJsonRecord(text: string): JsonRecord | null {
+  const firstObjectText = readFirstJsonObjectText(text);
+  if (!firstObjectText) return null;
+
+  try {
+    const parsed: unknown = JSON.parse(firstObjectText);
+    return isRecord(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
 function hasToolArguments(record: JsonRecord): boolean {
   return (
     'arguments' in record ||
@@ -98,7 +158,7 @@ function getRawToolCallName(value: unknown): string | null {
 }
 
 export function getRawToolCallNameFromText(text: string): string | null {
-  return getRawToolCallName(parseJsonRecord(text));
+  return getRawToolCallName(parseJsonRecord(text) ?? parseFirstJsonRecord(text));
 }
 
 export function extractDisplayTextFromStructuredText(
@@ -126,6 +186,11 @@ function classifyStructuredTextBuffer(
 
   const parsed = parseJsonRecord(buffer);
   if (!parsed) {
+    const rawToolCallName = getRawToolCallName(parseFirstJsonRecord(buffer));
+    if (rawToolCallName) {
+      return { type: 'raw-tool-call', toolName: rawToolCallName };
+    }
+
     if (!final && buffer.length <= STRUCTURED_TEXT_BUFFER_LIMIT) {
       return { type: 'pending' };
     }
@@ -175,6 +240,7 @@ export function createStructuredTextDeltaGuard(): StructuredTextDeltaGuard {
   return {
     push(chunk: string): string[] {
       if (chunk.length === 0) return [];
+      if (rawToolCallName !== null) return [];
 
       if (!buffering && startsWithStructuredPayload(chunk)) {
         buffering = true;
