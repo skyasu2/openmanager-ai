@@ -26,9 +26,9 @@
 
 | Inventory Slice | Count |
 | --- | --- |
-| Shared component graph scope (`src/components/**/*.tsx`) | 147 |
+| Shared component graph scope (`src/components/**/*.tsx`) | 148 |
 | Route-local components excluded from graph (`src/app/**/components/**/*.tsx`) | 7 |
-| Total TSX component inventory | 154 |
+| Total TSX component inventory | 155 |
 
 ## App Route-Local Component Distribution
 
@@ -51,12 +51,12 @@ Route-local component files:
 
 | Metric | Value |
 | --- | --- |
-| Component source lines | 29623 |
-| Component nodes | 147 |
-| Component edges | 138 |
+| Component source lines | 30053 |
+| Component nodes | 148 |
+| Component edges | 139 |
 | Graph density | 0.64% |
 | Alias edges (`@/components/*`) | 42 |
-| Relative edges (`./`, `../`) | 96 |
+| Relative edges (`./`, `../`) | 97 |
 | Isolated components | 31 |
 | SCC cycle groups | 0 |
 | Largest cycle size | 0 |
@@ -65,7 +65,7 @@ Route-local component files:
 
 ```mermaid
 flowchart LR
-  d0["ai (37)"]
+  d0["ai (38)"]
   d1["ai-sidebar (15)"]
   d2["auth (1)"]
   d3["charts (2)"]
@@ -79,7 +79,7 @@ flowchart LR
   d11["ui (22)"]
   d12["unified-profile (3)"]
   d4 -->|36| d4
-  d0 -->|30| d0
+  d0 -->|31| d0
   d1 -->|13| d1
   d1 -->|11| d0
   d9 -->|10| d9
@@ -106,7 +106,7 @@ flowchart LR
 
 | Domain | Node Count |
 | --- | --- |
-| ai | 37 |
+| ai | 38 |
 | dashboard | 32 |
 | shared | 23 |
 | ui | 22 |
@@ -125,7 +125,7 @@ flowchart LR
 | From | To | Edge Count |
 | --- | --- | --- |
 | dashboard | dashboard | 36 |
-| ai | ai | 30 |
+| ai | ai | 31 |
 | ai-sidebar | ai-sidebar | 13 |
 | ai-sidebar | ai | 11 |
 | shared | shared | 10 |
@@ -168,7 +168,7 @@ flowchart LR
 
 | Component | Out-Degree |
 | --- | --- |
-| ai/AIWorkspace | 10 |
+| ai/AIWorkspace | 11 |
 | ai-sidebar/EnhancedAIChat | 9 |
 | ai-sidebar/AISidebarV4 | 7 |
 | ai-sidebar/SidebarMessage | 7 |
