@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-06T06:28:57.301Z"
+    "updatedAt": "2026-05-06T06:59:36.046Z"
   },
   "sequence": {
-    "nextRunNumber": 416
+    "nextRunNumber": 417
   },
   "summary": {
-    "totalRecordedRuns": 413,
-    "totalRuns": 340,
+    "totalRecordedRuns": 414,
+    "totalRuns": 341,
     "excludedRuns": 73,
-    "totalChecks": 2987,
-    "totalPassed": 2878,
+    "totalChecks": 2991,
+    "totalPassed": 2882,
     "totalFailed": 100,
-    "completionRate": 99.77,
-    "completedItems": 441,
-    "pendingItems": 1,
+    "completionRate": 100,
+    "completedItems": 443,
+    "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 22,
     "expertDomainsTracked": 12,
-    "expertDomainsOpenGaps": 3,
-    "lastRunId": "QA-20260506-0415",
-    "lastRecordedAt": "2026-05-06T06:28:57.301Z",
-    "latestRecordedRunId": "QA-20260506-0415",
-    "latestRecordedAt": "2026-05-06T06:28:57.301Z"
+    "expertDomainsOpenGaps": 0,
+    "lastRunId": "QA-20260506-0416",
+    "lastRecordedAt": "2026-05-06T06:59:36.046Z",
+    "latestRecordedRunId": "QA-20260506-0416",
+    "latestRecordedAt": "2026-05-06T06:59:36.046Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -10844,27 +10844,51 @@
     },
     "ai-rag-web-raw-tool-call-json-leakage-v811108": {
       "id": "ai-rag-web-raw-tool-call-json-leakage-v811108",
-      "title": "RAG/Web representative query leaks repeated raw tool-call JSON in production AI Chat",
+      "title": "RAG/Web representative query no longer leaks repeated raw tool-call JSON in production AI Chat",
       "priority": "P1",
-      "status": "pending",
+      "status": "completed",
       "firstSeenRunId": "QA-20260506-0415",
       "firstSeenAt": "2026-05-06T06:28:57.301Z",
-      "lastSeenRunId": "QA-20260506-0415",
-      "lastSeenAt": "2026-05-06T06:28:57.301Z",
-      "seenCount": 1,
-      "completedCount": 0,
+      "lastSeenRunId": "QA-20260506-0416",
+      "lastSeenAt": "2026-05-06T06:59:36.046Z",
+      "seenCount": 2,
+      "completedCount": 1,
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0,
       "aliases": [],
       "owner": "codex",
-      "lastEvidence": "reports/qa/evidence/qa-20260506-v811108-ai-advanced-rag-web-raw-tool-json.png",
-      "lastNote": "Production v8.11.108 /api/ai/supervisor/stream/v2 returned 200, but the user-facing assistant response consisted of repeated {name, arguments} JSON for searchKnowledgeBase/searchWeb rather than a grounded readable answer.",
+      "lastEvidence": "reports/qa/evidence/qa-20260506-v811109-rag-web-raw-json-fixed.png",
+      "lastNote": "Production v8.11.109 verified the latest assistant response has rawToolJsonCount=0 and contains grounded file paths public/data/otel-data/*, src/data/otel-data/index.ts, src/services/metrics/MetricsProvider.ts.",
       "isBlocking": true,
       "isBlockingExplicit": true,
       "overengineeringScope": "",
       "lastPolicyNote": "",
-      "lastStatusChangeAt": "2026-05-06T06:28:57.301Z"
+      "lastStatusChangeAt": "2026-05-06T06:59:36.046Z"
+    },
+    "ai-advanced-surface-targeted-qa-pack-v811109": {
+      "id": "ai-advanced-surface-targeted-qa-pack-v811109",
+      "title": "AI advanced surface targeted QA pack completed after RAG/Web closure",
+      "priority": "P2",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260506-0416",
+      "firstSeenAt": "2026-05-06T06:59:36.046Z",
+      "lastSeenRunId": "QA-20260506-0416",
+      "lastSeenAt": "2026-05-06T06:59:36.046Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "",
+      "lastNote": "Reporter and anomaly/trend passed in QA-20260506-0415; RAG/Web failed there, was fixed, deployed, and passed closure in v8.11.109.",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-06T06:59:36.046Z"
     }
   },
   "runs": [
@@ -43374,6 +43398,162 @@
       "pendingCount": 1,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260506-0416",
+      "recordedAt": "2026-05-06T06:59:36.046Z",
+      "recordedAtKst": "2026-05-06 15:59:36 KST",
+      "title": "v8.11.109 RAG/Web Raw Tool JSON Closure QA",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260506-0416.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_6GzAoiA64FgYrDUoRnkuGSbsocNn",
+        "deploymentUrl": "https://openmanager-d34e8rp88-skyasus-projects.vercel.app",
+        "commitSha": "0933fdb1a41e3a0091c079e872d30de4d2d50229"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "ai-core",
+        "ai-advanced-surface"
+      ],
+      "coveredSurfaces": [
+        "GitLab v8.11.109 tag pipeline 2503341142 succeeded for 0933fdb1a41e3a0091c079e872d30de4d2d50229",
+        "Production /api/version returned version 8.11.109, releaseTag v8.11.109, commit 0933fdb1a41e3a0091c079e872d30de4d2d50229",
+        "Cloud Run /health returned ai-engine version 8.11.109 with status ok",
+        "Vercel production deployment dpl_6GzAoiA64FgYrDUoRnkuGSbsocNn is Ready and aliased to openmanager-ai.vercel.app",
+        "Production /dashboard/ai-assistant loaded a clean AI Chat session with Web On and AI Engine Online",
+        "RAG/Web representative query was sent once: OpenManager OTel 데이터 SSOT 경로를 내부 지식/RAG와 Web On 상태 기준으로 요약하고, 실제 파일 경로 3개를 알려줘",
+        "The stream route /api/ai/supervisor/stream/v2 returned 200 and no repeated raw searchKnowledgeBase/searchWeb tool-call JSON appeared in the latest assistant response",
+        "The assistant response rendered a readable grounded answer with concrete repo paths: public/data/otel-data/*, src/data/otel-data/index.ts, src/services/metrics/MetricsProvider.ts",
+        "Analysis basis showed 내부 지식 검색 / 오토 mode instead of leaked tool-call JSON"
+      ],
+      "skippedSurfaces": [
+        "Reporter and anomaly/trend were not rerun in this closure pass because they passed in QA-20260506-0415 and the fix only touched AI Engine stream text guard behavior",
+        "Mobile, auth fallback, broad dashboard modal packs, and release-gate broad smoke were not rerun in this targeted closure pass"
+      ],
+      "checks": {
+        "total": 4,
+        "passed": 4,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "RAG/Web representative OTel SSOT query",
+          "agent": "Supervisor",
+          "provider": "unknown",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Playwright fetch instrumentation plus assistant UI elapsed time",
+          "latencyMs": 4925,
+          "ttfbMs": 1259
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The previously failing RAG/Web representative query now renders a readable grounded answer and no raw tool-call JSON in the latest response.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The response correctly identifies the repo-local OpenManager OTel SSOT paths rather than non-repo runtime paths.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The user-facing stream no longer exposes repeated internal tool-call JSON for searchKnowledgeBase/searchWeb.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab tag pipeline, Vercel production version, Cloud Run AI Engine health, and usage guard were all checked.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The production closure is backed by a deterministic unit regression for semicolon-separated raw tool-call JSON and a Playwright production recheck.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The grounded answer included the expected OTel data source and loader/provider file paths.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-06T15:58:42+09:00",
+          "summary": "Current billing period checked after v8.11.109 production deploy and RAG/Web closure QA; effective 2.6964 USD, billed remains 0.0000 USD, chargeCount 2436.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "RAG/Web answer rendered grounded file paths without raw tool-call JSON on v8.11.109",
+          "path": "reports/qa/evidence/qa-20260506-v811109-rag-web-raw-json-fixed.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.109 tag pipeline 2503341142",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2503341142"
+        },
+        {
+          "type": "general",
+          "label": "Production version endpoint",
+          "url": "https://openmanager-ai.vercel.app/api/version"
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run AI Engine health",
+          "url": "https://ai-engine-490817238363.asia-northeast1.run.app/health"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment dpl_6GzAoiA64FgYrDUoRnkuGSbsocNn",
+          "url": "https://openmanager-d34e8rp88-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 6,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -43382,33 +43562,33 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 203,
-      "appropriateCount": 180,
+      "seenCount": 204,
+      "appropriateCount": 181,
       "partialCount": 23,
       "inappropriateCount": 0,
       "improvementNeededCount": 33,
-      "lastRunId": "QA-20260506-0415",
-      "lastSeenAt": "2026-05-06T06:28:57.301Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Reporter and anomaly/trend surfaces passed, but the representative RAG/Web query exposed raw tool-call JSON to the user-facing answer.",
-      "lastNextAction": "Add a regression guard for repeated semicolon-separated tool-call JSON and fix the supervisor stream text guard before re-running the RAG/Web targeted check."
+      "lastRunId": "QA-20260506-0416",
+      "lastSeenAt": "2026-05-06T06:59:36.046Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "The previously failing RAG/Web representative query now renders a readable grounded answer and no raw tool-call JSON in the latest response.",
+      "lastNextAction": ""
     },
     "observability-monitoring": {
       "domainId": "observability-monitoring",
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 110,
-      "appropriateCount": 80,
+      "seenCount": 111,
+      "appropriateCount": 81,
       "partialCount": 30,
       "inappropriateCount": 0,
       "improvementNeededCount": 31,
-      "lastRunId": "QA-20260506-0415",
-      "lastSeenAt": "2026-05-06T06:28:57.301Z",
+      "lastRunId": "QA-20260506-0416",
+      "lastSeenAt": "2026-05-06T06:59:36.046Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Reporter and anomaly/trend monitoring outputs rendered grounded server/state details for the sampled production surfaces.",
+      "lastRationale": "The response correctly identifies the repo-local OpenManager OTel SSOT paths rather than non-repo runtime paths.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -43416,33 +43596,33 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 54,
-      "appropriateCount": 40,
+      "seenCount": 55,
+      "appropriateCount": 41,
       "partialCount": 14,
       "inappropriateCount": 0,
       "improvementNeededCount": 13,
-      "lastRunId": "QA-20260506-0415",
-      "lastSeenAt": "2026-05-06T06:28:57.301Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "Raw internal tool-call JSON leaked implementation details and should be suppressed or recovered before user display.",
-      "lastNextAction": "Treat repeated raw tool-call JSON as a blocked display format and route to provider fallback or deterministic tool-result summary."
+      "lastRunId": "QA-20260506-0416",
+      "lastSeenAt": "2026-05-06T06:59:36.046Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "The user-facing stream no longer exposes repeated internal tool-call JSON for searchKnowledgeBase/searchWeb.",
+      "lastNextAction": ""
     },
     "sre-devops": {
       "domainId": "sre-devops",
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 137,
-      "appropriateCount": 124,
+      "seenCount": 138,
+      "appropriateCount": 125,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 17,
-      "lastRunId": "QA-20260506-0415",
-      "lastSeenAt": "2026-05-06T06:28:57.301Z",
+      "lastRunId": "QA-20260506-0416",
+      "lastSeenAt": "2026-05-06T06:59:36.046Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Production version, deployment identity, AI Engine online status, and Vercel usage guard were checked before targeted QA.",
+      "lastRationale": "GitLab tag pipeline, Vercel production version, Cloud Run AI Engine health, and usage guard were all checked.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -43450,33 +43630,33 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 175,
-      "appropriateCount": 161,
+      "seenCount": 176,
+      "appropriateCount": 162,
       "partialCount": 14,
       "inappropriateCount": 0,
       "improvementNeededCount": 16,
-      "lastRunId": "QA-20260506-0415",
-      "lastSeenAt": "2026-05-06T06:28:57.301Z",
-      "lastFit": "partially-appropriate",
-      "lastImprovementNeeded": true,
-      "lastRationale": "The current stream text guard covers single raw JSON objects but lacks a regression case for repeated JSON tool calls emitted as plain text.",
-      "lastNextAction": "Add a deterministic unit test for semicolon-separated repeated tool-call JSON chunks."
+      "lastRunId": "QA-20260506-0416",
+      "lastSeenAt": "2026-05-06T06:59:36.046Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "The production closure is backed by a deterministic unit regression for semicolon-separated raw tool-call JSON and a Playwright production recheck.",
+      "lastNextAction": ""
     },
     "data-metrics-quality": {
       "domainId": "data-metrics-quality",
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 61,
-      "appropriateCount": 41,
+      "seenCount": 62,
+      "appropriateCount": 42,
       "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260506-0415",
-      "lastSeenAt": "2026-05-06T06:28:57.301Z",
+      "lastRunId": "QA-20260506-0416",
+      "lastSeenAt": "2026-05-06T06:59:36.046Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The anomaly/trend sample rendered expected aggregate counts and cache-redis-dc1-01 memory risk detail.",
+      "lastRationale": "The grounded answer included the expected OTel data source and loader/provider file paths.",
       "lastNextAction": ""
     },
     "infra-reliability": {

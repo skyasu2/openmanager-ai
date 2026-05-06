@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-06 KST (`AI artifact workspace UI wiring completed`)
+**Last Updated**: 2026-05-06 KST (`AI advanced surface targeted QA pack completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -16,7 +16,6 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| AI advanced surface targeted QA pack | Medium | 이번 Vercel QA는 AI Chat stream과 탭 렌더링 중심이었다. 비용 보호를 유지하면서 Reporter 1회, anomaly/trend 1회, RAG/Web 대표 질의 1회만 별도 targeted QA로 검증하고 실제 버튼/기능 동작 여부를 기록한다. 실패가 확인될 때만 코드 수정으로 승격한다. |
 | MonitoringFactPack consumer/evidence UI expansion | Medium | M7에서 `MonitoringFactPack` 자체는 도입됐지만 모든 artifact/report/evidence panel이 같은 fact boundary를 소비하지는 않는다. metric severity는 deterministic fact pack이 책임지고 LLM은 explanation/formatting만 수행한다는 계약을 UI와 answer-quality eval까지 확장한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
 | Provider reasoning capability policy contract | Medium | 현재 `thinking`은 provider-native reasoning이 아니라 app-level routing intensity다. 무료 tier provider의 reasoning 지원은 계정 entitlement/latency/quota가 변동되므로 `reasoningCapability`, `lastVerified`, `expiresAt`, smoke source를 policy contract로 승격한 뒤 opt-in으로만 검토한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
 | Monitoring source error boundary documentation | Medium | `analytics-monitoring-error.ts`는 현재 deterministic monitoring routes(`/monitoring/snapshot`, `/monitoring/analyze-batch`)에 한정된다. `/analyze-server`, `/incident-report` grounding 실패까지 표준 오류로 올릴지 책임 범위를 명문화한다. 관련: [monitoring-ai-data-source-plan.md](archive/monitoring-ai-data-source-plan.md) |
@@ -45,6 +44,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-06 #300)
+- [x] AI advanced surface targeted QA pack and RAG/Web raw JSON closure
+  - Production `v8.11.108` targeted QA에서 Reporter 1회와 anomaly/trend 1회는 pass, RAG/Web 대표 질의는 repeated `searchKnowledgeBase`/`searchWeb` raw tool-call JSON 노출로 fail 확인
+  - AI Engine stream text guard가 단일 JSON 객체만 차단하던 한계를 보강해 semicolon-separated repeated tool-call JSON을 첫 완성 객체 기준으로 suppress하고 같은 provider attempt의 후속 raw chunks도 차단
+  - `v8.11.109` 배포 후 RAG/Web closure QA에서 rawToolJsonCount `0`, grounded file paths `public/data/otel-data/*`, `src/data/otel-data/index.ts`, `src/services/metrics/MetricsProvider.ts` 반환 확인
+  - 검증: AI Engine targeted stream guard/supervisor/orchestrator tests, AI Engine `type-check`, AI Engine full test, root `test:contract`, `git diff --check`, production QA [QA-20260506-0415](../qa/runs/2026/qa-run-QA-20260506-0415.json) / [QA-20260506-0416](../qa/runs/2026/qa-run-QA-20260506-0416.json)
 
 ### Completed (2026-05-06 #299)
 - [x] AI artifact workspace UI wiring and compare UX
