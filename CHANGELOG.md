@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.108](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.107...v8.11.108) (2026-05-06)
+
+
+### Features
+
+* **ai:** implement artifact workspace UI wiring ([fa5b389](https://gitlab.com/skyasu2/openmanager-ai/-/commit/fa5b389499ddcace95d0559f7e5d27296fe9c76b))
+
+
+### Tests
+
+* **qa:** record v8.11.107 supervisor runtime QA ([bdd47e6](https://gitlab.com/skyasu2/openmanager-ai/-/commit/bdd47e6240330c29e8dc129d8f710b9a67e88cb9))
+* **spec:** add artifact workspace UI wiring specs ([fb24b42](https://gitlab.com/skyasu2/openmanager-ai/-/commit/fb24b4216dbdb6ac1f5896aff5dfa6602c695473))
+
 ## [8.11.107](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.106...v8.11.107) (2026-05-05)
 
 
