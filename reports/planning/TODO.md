@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-06 KST (`Monitoring source error boundary documentation completed`)
+**Last Updated**: 2026-05-06 KST (`AI assistant portable productization plan approved`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| _No active task_ | — | — | Backlog only. |
+| AI assistant portable productization and provider policy hardening | Medium | Approved | Internal portable core/domain wiring은 완료됨. 남은 external reuse/package boundary, adoption guide, provider-native reasoning capability policy를 [ai-assistant-portable-productization-plan.md](ai-assistant-portable-productization-plan.md)에서 추적. |
 
 ---
 
@@ -16,7 +16,6 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| Provider reasoning capability policy contract | Medium | 현재 `thinking`은 provider-native reasoning이 아니라 app-level routing intensity다. 무료 tier provider의 reasoning 지원은 계정 entitlement/latency/quota가 변동되므로 `reasoningCapability`, `lastVerified`, `expiresAt`, smoke source를 policy contract로 승격한 뒤 opt-in으로만 검토한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
 | Streaming warmup test act warning cleanup | Low | Targeted regression은 통과하지만 `StreamingWarmupIndicator` 테스트에 React `act(...)` 경고가 남아 있다. 기능 리스크는 낮으나 테스트 품질 부채로 별도 정리한다. 관련: [ai-streaming-ui-improvement-plan.md](archive/ai-streaming-ui-improvement-plan.md) |
 
 ---
