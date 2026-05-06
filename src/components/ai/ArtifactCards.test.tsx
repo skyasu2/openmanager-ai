@@ -242,6 +242,136 @@ describe('AI artifact cards', () => {
     ).toBeInTheDocument();
   });
 
+  it('prefers MonitoringFactPack signals and evidence over legacy risk payloads', () => {
+    const artifact = {
+      kind: 'monitoring-analysis',
+      generatedAt: '2026-05-02T00:01:00.000Z',
+      title: '전체 서버 이상감지/추세 분석',
+      summary: '18개 서버 분석 완료, fact pack 위험 신호 1건',
+      serverCount: 18,
+      riskSignalCount: 1,
+      warningServers: 0,
+      criticalServers: 1,
+      analysis: {
+        success: true,
+        sourceMode: 'replay-json',
+        queryAsOf: '2026-05-02T00:00:00.000Z',
+        slot: {
+          slotIndex: 143,
+          hour: 23,
+          slotInHour: 5,
+          minuteOfDay: 1430,
+          timeLabel: '23:50 KST',
+          startTime: '2026-05-02T00:00:00.000Z',
+          endTime: '2026-05-02T00:10:00.000Z',
+        },
+        summary: '18개 서버 분석 완료',
+        servers: [],
+        riskSignals: [
+          {
+            id: 'legacy-risk-api-cpu',
+            serverId: 'api-was-dc1-01',
+            serverName: 'api-was-dc1-01',
+            serverType: 'api',
+            metric: 'cpu',
+            value: 41,
+            threshold: 90,
+            trend: 'stable',
+            severity: 'warning',
+            evidenceRefId: 'legacy-evidence-api-cpu',
+          },
+        ],
+        evidenceRefs: [
+          {
+            id: 'legacy-evidence-api-cpu',
+            kind: 'metric',
+            serverId: 'api-was-dc1-01',
+            metric: 'cpu',
+            timeRange: {
+              from: '2026-05-02T00:00:00.000Z',
+              to: '2026-05-02T00:10:00.000Z',
+            },
+            summary:
+              'Legacy evidence should not render while fact pack exists.',
+            value: 41,
+            threshold: 90,
+            severity: 'warning',
+          },
+        ],
+        factPack: {
+          factPackVersion: '2026-05-03-v1',
+          dataSlot: '23:50 KST',
+          sourceMode: 'replay-json',
+          queryAsOf: '2026-05-02T00:00:00.000Z',
+          thresholds: {
+            cpu: { warning: 80, critical: 90 },
+            memory: { warning: 80, critical: 90 },
+            disk: { warning: 80, critical: 90 },
+            network: { warning: 80, critical: 90 },
+          },
+          summary: {
+            total: 18,
+            online: 17,
+            warning: 0,
+            critical: 1,
+            offline: 0,
+          },
+          signals: [
+            {
+              id: 'fact-api-cpu',
+              serverId: 'api-was-dc1-01',
+              serverName: 'api-was-dc1-01',
+              serverType: 'api',
+              metric: 'cpu',
+              value: 95,
+              threshold: 90,
+              thresholdLevel: 'critical',
+              severity: 'critical',
+              evidenceRefId: 'evidence-api-cpu',
+            },
+          ],
+          evidenceRefs: [
+            {
+              id: 'evidence-api-cpu',
+              kind: 'metric',
+              serverId: 'api-was-dc1-01',
+              metric: 'cpu',
+              timeRange: {
+                from: '2026-05-02T00:00:00.000Z',
+                to: '2026-05-02T00:10:00.000Z',
+              },
+              summary:
+                'FactPack 기준 api-was-dc1-01 CPU가 critical 임계치를 초과했습니다.',
+              value: 95,
+              threshold: 90,
+              severity: 'critical',
+            },
+          ],
+        },
+        dataFreshness: {
+          generatedAt: '2026-05-02T00:00:00.000Z',
+          sourceUpdatedAt: '2026-05-02T00:00:00.000Z',
+          stale: false,
+        },
+      },
+    } as unknown as MonitoringAnalysisArtifact;
+
+    render(<MonitoringAnalysisArtifactCard artifact={artifact} />);
+
+    expect(screen.getByText('cpu 95%')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'FactPack 기준 api-was-dc1-01 CPU가 critical 임계치를 초과했습니다.'
+      )
+    ).toBeInTheDocument();
+    expect(screen.queryByText('cpu 41%')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        'Legacy evidence should not render while fact pack exists.'
+      )
+    ).not.toBeInTheDocument();
+  });
+
   it('renders restored monitoring artifacts defensively when optional payload sections are missing', () => {
     const restoredArtifact = {
       kind: 'monitoring-analysis',
