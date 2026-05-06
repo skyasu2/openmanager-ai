@@ -16,7 +16,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| _No backlog task_ | — | No open backlog item. |
+| AI Engine domain-owned agent registry | Medium | `AgentType` 7개 하드코딩 + monitoring agent 설명을 domain 쪽으로 분리. `AgentFactory.createByDomain()` 추가. sample domain smoke로 cross-domain portability 검증. 관련: [ai-engine-agent-registry-plan.md](ai-engine-agent-registry-plan.md) |
 
 ---
 
