@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-05
+> Last reviewed: 2026-05-07
 > Canonical: docs/reference/architecture/infrastructure/resilience.md
 > Tags: resilience,circuit-breaker,fallback,retry,error-handling
 >
-> **프로젝트 버전**: v8.11.97 | **Updated**: 2026-05-05
+> **프로젝트 버전**: v8.11.110 | **Updated**: 2026-05-07
 
 ## 개요
 
@@ -388,6 +388,36 @@ curl -H "X-API-Key: $SECRET" https://ai-engine-xxx.run.app/monitoring
 
 ---
 
+## Part 6: 외부 서비스 의존성 & Graceful Degradation 맵
+
+Redis(Upstash)와 Supabase가 다운될 때 시스템이 어떻게 동작하는지 정리합니다.
+
+### Redis (Upstash) 의존성
+
+| 사용처 | 역할 | Redis 없을 때 동작 |
+|--------|------|-------------------|
+| AI 응답 캐시 (`lib/redis/ai-cache.ts`) | 동일 쿼리 결과 재사용 | cache miss 처리 — AI 매번 새로 호출, 느려지지만 정상 동작 |
+| Rate Limiter (`lib/redis/rate-limiter.ts`) | API 요청 횟수 제한 | 인스턴스별 메모리 폴백 — 인스턴스 간 공유 안 됨 |
+| Circuit Breaker 분산 저장 (`lib/redis/circuit-breaker-store.ts`) | 인스턴스 간 차단 상태 공유 | 인스턴스별 독립 판단 — 분산 동기화 없음 |
+| AI 스트림 resume 상태 (`api/ai/supervisor/stream/v2/stream-state.ts`) | 스트림 중단 후 재연결 | resume 불가 — 신규 요청은 정상 동작 |
+| 게스트 PIN 잠금 (`api/auth/guest-login/route.ts`) | 브루트포스 차단 (5회 실패→60초 잠금) | 인스턴스별 메모리 폴백 — 인스턴스 재시작 시 카운트 초기화 |
+
+**결론**: Redis 다운 시 시스템은 계속 동작합니다. 캐시 없이 느려지고, rate limit/pin lock이 인스턴스 간 공유되지 않는 수준입니다.
+
+### Supabase 의존성
+
+| 사용처 | 역할 | Supabase 없을 때 동작 |
+|--------|------|----------------------|
+| GitHub OAuth 로그인 (`lib/auth/api-auth.ts`) | JWT 서명 검증 | 로그인 불가 — guest PIN 로그인은 Supabase 무관하여 계속 동작 |
+| AI 피드백 저장 (`api/ai/feedback/route.ts`) | 👍👎 기록 (`ai_feedback` 테이블) | graceful — 저장 실패해도 API 정상 응답, 피드백만 소실 |
+| Knowledge Retrieval Lite (`search_knowledge_text` RPC) | 지식베이스 텍스트 검색 | RPC 실패 시 BM25 인메모리 경로 또는 빈 결과 반환 |
+| 로그인 감사 로그 (`lib/auth/login-audit.ts`) | 보안 이벤트 기록 | graceful — 로그 소실, 기능 영향 없음 |
+| 헬스체크 (`api/health/route.ts`) | DB 상태 표시 | `error` 상태 노출, 서비스는 정상 운영 |
+
+**결론**: Supabase 다운 시 GitHub 로그인이 막힙니다. guest PIN 로그인·AI 대화·대시보드는 정상 동작합니다.
+
+---
+
 ## 관련 문서
 
 - [AI Engine 아키텍처](../ai/ai-engine-architecture.md) - 에이전트 실행 구조
@@ -395,4 +425,4 @@ curl -H "X-API-Key: $SECRET" https://ai-engine-xxx.run.app/monitoring
 - [Observability 가이드](../../../guides/observability.md) - Langfuse/Sentry 모니터링
 - [Free Tier 최적화](./free-tier-optimization.md) - 비용 제약 하의 설계
 
-_Last Updated: 2026-05-05_
+_Last Updated: 2026-05-07_

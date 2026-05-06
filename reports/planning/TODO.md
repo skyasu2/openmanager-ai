@@ -1,14 +1,18 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-06 KST (`AI Engine precomputed-state decoupling completed`)
+**Last Updated**: 2026-05-07 KST (`Dead code / Sentry 계획서 갱신, AI 피드백 Codex 위임`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
 ## Active Tasks
 
+> **권장 실행 순서**: ① Sentry DSN 등록(사용자 직접) → ② AI 피드백 제거(Codex, 진행 중) → ③ Dead code 제거(Codex)
+
 | Task | Priority | Status | Notes |
-|------|----------|-----------|-------|
-| _No active task_ | — | — | Backlog도 현재 비어 있음. |
+|------|----------|--------|-------|
+| ⚡ Sentry DSN 등록 — production 에러 수집 활성화 | High | **사용자 액션 필요** | `NEXT_PUBLIC_SENTRY_DSN` Vercel production 환경변수 미설정. 코드·tunnel·sampling은 완비. DSN 1개만 등록하면 즉시 활성화. 상세: [dead-code-sentry-cleanup-plan.md § B-1](dead-code-sentry-cleanup-plan.md) |
+| AI 피드백 기능 제거 → QA 기반 품질 루프 전환 | High | In Progress (Codex) | 실 사용자 없어 👍/👎 무의미. Cloud Run cold start 낭비. Codex 위임 완료. 상세: [ai-feedback-removal-plan.md](ai-feedback-removal-plan.md) |
+| Dead code 정리 (5개 항목) | Medium | Approved (Codex 대기) | AI 피드백 제거 완료 후 진행. 상세: [dead-code-sentry-cleanup-plan.md § Part A](dead-code-sentry-cleanup-plan.md) |
 
 ---
 
@@ -16,7 +20,8 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| _No backlog task_ | — | Active task 없음. |
+| Sentry 소스맵 업로드 검토 | Low | 현재 `sourcemaps.disable: true`. 스택트레이스가 minified라 디버깅 어려우면 개발 빌드 한정 소스맵 활성화 검토. DSN 등록 후 실제 에러를 보고 판단. |
+| Sentry tunnel 라우트 필요성 재검토 | Low | CSP 정책상 sentry.io 직접 호출 차단 여부 확인. 불필요하면 `/api/sentry-tunnel` + Vercel function 호출 제거 가능. |
 
 ---
 
@@ -25,6 +30,7 @@
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
 | P2: QA evidence 저장소 용량 정리 | Medium | tracking-only | 2026-05-05 `v8.11.106` targeted QA 후 재검증 기준 `reports/qa=90MiB`, `reports/qa/evidence=83MiB`. `npm run qa:evidence:audit` 결과 missing durable artifact paths `0`, orphan durable evidence `6개`, size warning 유지. run-level soft budget warning은 `QA-20260330-0197`, `QA-20260330-0198` 2건으로 구조화됨. orphan/archive candidate 제거만으로는 warning 해소 효과가 낮고 top referenced legacy evidence는 modal/detail/landing proof 가치가 있어 explicit cleanup batch는 열지 않음. 새 evidence 누적 시점에만 재평가. |
+| P3: GraphRAG 410 tombstone 파일 제거 검토 | Low | tracking-only | `cloud-run/ai-engine/src/routes/graphrag.ts` (34줄)는 현재 모든 엔드포인트가 410 반환만 함. `server.ts`에서 동적 import로 등록 중. 호환 기간 충분히 지난 후 파일 삭제 + `server.ts` import 제거 가능. 선행 조건: `/api/ai/graphrag/*` 외부 클라이언트 사용 여부 로그 확인. |
 
 ## Backlog (완료 이력)
 
