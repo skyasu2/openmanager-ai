@@ -11,7 +11,16 @@ import {
 } from './index';
 
 const AI_ENGINE_ROOT = process.cwd();
+const REPO_ROOT = join(AI_ENGINE_ROOT, '..', '..');
 const CORE_ROOT = join(AI_ENGINE_ROOT, 'src/core');
+const PUBLIC_RUNTIME_FACADE = join(
+  AI_ENGINE_ROOT,
+  'src/core/assistant-runtime/index.ts'
+);
+const AI_ENGINE_ARCHITECTURE_DOC = join(
+  REPO_ROOT,
+  'docs/reference/architecture/ai/ai-engine-architecture.md'
+);
 
 const DISALLOWED_CORE_PATTERNS: Array<{
   label: string;
@@ -124,6 +133,46 @@ function createSampleRequest(): AssistantRequest {
 }
 
 describe('assistant runtime scaffold contract', () => {
+  it('keeps the public assistant runtime facade domain-neutral', () => {
+    const source = readFileSync(PUBLIC_RUNTIME_FACADE, 'utf8');
+    const forbiddenPatterns = [
+      /domains\/monitoring/,
+      /monitoring-runtime-host/,
+      /provider-model-policy/,
+      /services\/monitoring/,
+      /tools-ai-sdk/,
+    ];
+
+    expect(source).toContain("from './runtime'");
+    expect(source).toContain("from './in-memory-adapters'");
+    expect(source).toContain('createAssistantRuntime');
+    expect(source).toContain('createInMemoryAssistantRuntimeAdapters');
+    expect(source).toContain('AssistantDomain');
+
+    const findings = forbiddenPatterns.flatMap((pattern) => {
+      const match = pattern.exec(source);
+      if (!match) return [];
+
+      return [`${relative(AI_ENGINE_ROOT, PUBLIC_RUNTIME_FACADE)} must not expose ${pattern}`];
+    });
+
+    expect(findings).toEqual([]);
+  });
+
+  it('documents portable adoption using the real public facade and sample domain fixture', () => {
+    const guide = readFileSync(AI_ENGINE_ARCHITECTURE_DOC, 'utf8');
+
+    expect(guide).toContain('Portable Assistant Runtime Adoption');
+    expect(guide).toContain('cloud-run/ai-engine/src/core/assistant-runtime');
+    expect(guide).toContain(
+      'cloud-run/ai-engine/src/test-fixtures/sample-domain-pack.ts'
+    );
+    expect(guide).toContain('createAssistantRuntime');
+    expect(guide).toContain('createInMemoryAssistantRuntimeAdapters');
+    expect(guide).toContain('AssistantDomain');
+    expect(guide).toContain('reasoningCapability');
+  });
+
   it('keeps core source files free of monitoring domain dependencies', () => {
     expect(existsSync(CORE_ROOT)).toBe(true);
 

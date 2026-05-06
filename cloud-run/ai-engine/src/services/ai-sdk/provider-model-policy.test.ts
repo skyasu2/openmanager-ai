@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import * as providerModelPolicy from './provider-model-policy';
 import {
+  CEREBRAS_MODEL_POLICIES,
   CEREBRAS_GPT_OSS_MODEL_ID,
   CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
   CEREBRAS_QWEN_DEPRECATION_DATE,
@@ -12,6 +14,35 @@ import {
   getCerebrasRuntimeModelPolicies,
   getDeprecatedProviderModelPolicyFindings,
 } from './provider-model-policy';
+
+type ReasoningCapabilityStatusOptions = {
+  asOf?: Date;
+  optIn?: boolean;
+};
+
+type ReasoningCapabilityStatus = {
+  enabled: boolean;
+  reasonCode: string;
+  publicMetadata: Record<string, unknown>;
+};
+
+type ReasoningCapabilityFinding = {
+  provider: string;
+  modelId: string;
+  severity: 'P1' | 'P2';
+  reason: string;
+};
+
+const providerReasoningPolicyModule = providerModelPolicy as typeof providerModelPolicy & {
+  getProviderReasoningCapabilityStatus?: (
+    policy: unknown,
+    options?: ReasoningCapabilityStatusOptions
+  ) => ReasoningCapabilityStatus;
+  getProviderReasoningCapabilityFindings?: (
+    policies: readonly unknown[],
+    options?: ReasoningCapabilityStatusOptions
+  ) => ReasoningCapabilityFinding[];
+};
 
 describe('provider model policy SSOT', () => {
   it('uses Cerebras llama3.1-8b as the only runtime default after Qwen preview de-scope', () => {
@@ -136,5 +167,99 @@ describe('provider model policy SSOT', () => {
         maxAgeDays: 14,
       })
     ).toEqual([]);
+  });
+
+  it('requires every provider policy entry to expose public-safe reasoning capability metadata', () => {
+    const allPolicies = [
+      ...Object.values(CEREBRAS_MODEL_POLICIES),
+      getCerebrasModelPolicy('custom-override-model'),
+    ].map((policy) => policy as { reasoningCapability?: Record<string, unknown> });
+
+    for (const policy of allPolicies) {
+      expect(policy.reasoningCapability).toMatchObject({
+        kind: expect.stringMatching(/^(none|provider-native)$/),
+        defaultEnabled: false,
+        smokeSource: expect.stringMatching(
+          /^(mock-contract|manual-smoke|provider-doc)$/
+        ),
+        publicSummary: expect.any(String),
+      });
+
+      expect(JSON.stringify(policy.reasoningCapability)).not.toMatch(
+        /(?:sk-|api[_-]?key|bearer\s+|rawProvider|stackTrace)/i
+      );
+    }
+  });
+
+  it('keeps app-level thinking out of provider-native reasoning capability defaults', () => {
+    const runtimePolicy = getCerebrasModelPolicy(CEREBRAS_LLAMA_FALLBACK_MODEL_ID) as {
+      reasoningCapability?: Record<string, unknown>;
+    };
+
+    expect(runtimePolicy.reasoningCapability).toMatchObject({
+      kind: 'none',
+      defaultEnabled: false,
+      requiresOptIn: false,
+      optionShape: 'unknown',
+    });
+  });
+
+  it('disables expired provider-native reasoning capability even when explicitly opted in', () => {
+    expect(
+      providerReasoningPolicyModule.getProviderReasoningCapabilityStatus
+    ).toEqual(expect.any(Function));
+    expect(
+      providerReasoningPolicyModule.getProviderReasoningCapabilityFindings
+    ).toEqual(expect.any(Function));
+
+    const expiredNativeReasoningPolicy = {
+      ...getCerebrasModelPolicy(CEREBRAS_LLAMA_FALLBACK_MODEL_ID),
+      reasoningCapability: {
+        kind: 'provider-native',
+        defaultEnabled: false,
+        requiresOptIn: true,
+        lastVerified: '2026-04-01',
+        expiresAt: '2026-04-15',
+        smokeSource: 'manual-smoke',
+        optionShape: 'reasoning_effort',
+        publicSummary: 'Manual smoke only; disabled after verification expiry.',
+      },
+    };
+
+    expect(
+      providerReasoningPolicyModule.getProviderReasoningCapabilityStatus?.(
+        expiredNativeReasoningPolicy,
+        {
+          asOf: new Date('2026-05-06T00:00:00Z'),
+          optIn: true,
+        }
+      )
+    ).toMatchObject({
+      enabled: false,
+      reasonCode: 'expired',
+      publicMetadata: {
+        kind: 'provider-native',
+        enabled: false,
+        expiresAt: '2026-04-15',
+      },
+    });
+
+    expect(
+      providerReasoningPolicyModule.getProviderReasoningCapabilityFindings?.(
+        [expiredNativeReasoningPolicy],
+        {
+          asOf: new Date('2026-05-06T00:00:00Z'),
+          optIn: true,
+        }
+      )
+    ).toEqual([
+      {
+        provider: 'cerebras',
+        modelId: CEREBRAS_LLAMA_FALLBACK_MODEL_ID,
+        severity: 'P2',
+        reason:
+          'provider-native reasoning capability expired on 2026-04-15; disabled until re-verified',
+      },
+    ]);
   });
 });
