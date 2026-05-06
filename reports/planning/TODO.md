@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-06 KST (`AI assistant portable productization completed`)
+**Last Updated**: 2026-05-06 KST (`AI Engine SDK decoupling completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -41,6 +41,15 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-06 #305)
+- [x] AI Engine SDK decoupling
+  - `domains/monitoring/tool-registry.ts`의 Vercel AI SDK `ToolSet` type import를 제거하고 `ToolDefinition` registry로 전환
+  - `AssistantRuntimeHost`에 `executeLLMStream` / `executeLLMGenerate` adapter boundary를 추가하고 monitoring host가 AI SDK `streamText` / `generateText`를 캡슐화
+  - `supervisor-stream.ts` / `supervisor-single-agent.ts`는 직접 LLM execution 호출 대신 runtime host 경유로 전환
+  - Task 4.5 후속으로 execution params/result 타입명을 `AiSdkStreamExecutionParams` / `AiSdkGenerateExecutionParams` 계열로 교정하고, `monitoringDomainPack.tools` ↔ production `allTools` drift guard를 contract test로 추가
+  - 검증: targeted contract/domain/supervisor tests `4 files / 19 tests`, AI Engine `type-check`, AI Engine full test `102 files / 1046 tests`, root `type-check`, `lint`, `test:quick`, `test:contract`, `docs:budget`, `docs:ai-consistency`, `git diff --check`
+  - 상세: [archive/ai-engine-sdk-decoupling-plan.md](archive/ai-engine-sdk-decoupling-plan.md)
 
 ### Completed (2026-05-06 #303)
 - [x] AI assistant portable productization and provider policy hardening
