@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-06 KST (`AI advanced surface targeted QA pack completed`)
+**Last Updated**: 2026-05-06 KST (`MonitoringFactPack consumer/evidence UI plan approved`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| _No active task_ | — | — | Backlog only. |
+| MonitoringFactPack consumer/evidence UI expansion | Medium | Approved | Backlog 항목을 실행 계획으로 승격. 구현 전 failing spec부터 작성. 상세: [monitoring-factpack-consumer-evidence-ui-plan.md](monitoring-factpack-consumer-evidence-ui-plan.md) |
 
 ---
 
@@ -16,7 +16,6 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| MonitoringFactPack consumer/evidence UI expansion | Medium | M7에서 `MonitoringFactPack` 자체는 도입됐지만 모든 artifact/report/evidence panel이 같은 fact boundary를 소비하지는 않는다. metric severity는 deterministic fact pack이 책임지고 LLM은 explanation/formatting만 수행한다는 계약을 UI와 answer-quality eval까지 확장한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
 | Provider reasoning capability policy contract | Medium | 현재 `thinking`은 provider-native reasoning이 아니라 app-level routing intensity다. 무료 tier provider의 reasoning 지원은 계정 entitlement/latency/quota가 변동되므로 `reasoningCapability`, `lastVerified`, `expiresAt`, smoke source를 policy contract로 승격한 뒤 opt-in으로만 검토한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
 | Monitoring source error boundary documentation | Medium | `analytics-monitoring-error.ts`는 현재 deterministic monitoring routes(`/monitoring/snapshot`, `/monitoring/analyze-batch`)에 한정된다. `/analyze-server`, `/incident-report` grounding 실패까지 표준 오류로 올릴지 책임 범위를 명문화한다. 관련: [monitoring-ai-data-source-plan.md](archive/monitoring-ai-data-source-plan.md) |
 | Streaming warmup test act warning cleanup | Low | Targeted regression은 통과하지만 `StreamingWarmupIndicator` 테스트에 React `act(...)` 경고가 남아 있다. 기능 리스크는 낮으나 테스트 품질 부채로 별도 정리한다. 관련: [ai-streaming-ui-improvement-plan.md](archive/ai-streaming-ui-improvement-plan.md) |
