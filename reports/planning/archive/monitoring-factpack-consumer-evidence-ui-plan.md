@@ -1,12 +1,12 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-06
 > Tags: ai-assistant, monitoring, fact-pack, artifact, evidence-ui
 
 # MonitoringFactPack Consumer Evidence UI Plan
 
-- 상태: Approved
+- 상태: Completed
 - 작성일: 2026-05-06
 - TODO.md 연결: Active Tasks > `MonitoringFactPack consumer/evidence UI expansion`
 - 출처: [archive/ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md)의 "사실 경계 확장" Backlog 승격
@@ -145,15 +145,15 @@ type MonitoringBatchFactPack = {
 
 ## Task 목록
 
-- [ ] Task 0 — failing spec 작성 및 현재 실패 확인
+- [x] Task 0 — failing spec 작성 및 현재 실패 확인
   - 완료 기준: 위 테스트 시나리오 중 parser/artifact/UI 우선순위 spec이 구현 전 실패한다.
-- [ ] Task 1 — frontend type/schema와 artifact evidence bridge 구현
+- [x] Task 1 — frontend type/schema와 artifact evidence bridge 구현
   - 완료 기준: `MonitoringBatchFactPack` 타입, Zod schema, sanitized envelope evidence mapping이 통과한다.
-- [ ] Task 2 — evidence UI fact-pack 우선 렌더링
+- [x] Task 2 — evidence UI fact-pack 우선 렌더링
   - 완료 기준: fact-pack signal/evidence 표시와 legacy fallback test가 통과한다.
-- [ ] Task 3 — deterministic eval/contract guard 추가
+- [x] Task 3 — deterministic eval/contract guard 추가
   - 완료 기준: severity/ranking source가 fact-pack임을 fixture 기반 test로 고정한다.
-- [ ] Task 4 — 검증, 코드리뷰, QA 판단
+- [x] Task 4 — 검증, 코드리뷰, QA 판단
   - 완료 기준: targeted tests, `type-check`, `lint`, `test:quick`, 필요 시 `test:contract`, docs checks 통과. production QA 필요 여부 기록.
 
 ## 단계별 커밋/푸시/배포 판단
@@ -176,8 +176,28 @@ type MonitoringBatchFactPack = {
 
 ## 완료 기준
 
-- [ ] TODO.md Active Task가 Completed 이력으로 이동한다.
-- [ ] plan 파일 Status가 Completed로 변경되고 archive로 이동한다.
-- [ ] fact-pack 포함 artifact와 legacy artifact가 모두 테스트로 보호된다.
-- [ ] 코드리뷰에서 보안, 비용, backward compatibility blocker가 없다.
-- [ ] QA tracker에 production targeted QA 필요 여부 또는 생략 사유가 기록된다.
+- [x] TODO.md Active Task가 Completed 이력으로 이동한다.
+- [x] plan 파일 Status가 Completed로 변경되고 archive로 이동한다.
+- [x] fact-pack 포함 artifact와 legacy artifact가 모두 테스트로 보호된다.
+- [x] 코드리뷰에서 보안, 비용, backward compatibility blocker가 없다.
+- [x] QA tracker에 production targeted QA 필요 여부 또는 생략 사유가 기록된다.
+
+## Completion Log
+
+완료일: 2026-05-06
+
+- Plan approval commit: `7ee1b3aff docs(planning): approve monitoring factpack evidence UI plan`
+- Failing spec commit: `de9db6512 test(spec): add monitoring factpack consumer evidence specs`
+- Implementation commit: `cc301affd feat(ai): consume monitoring factpack evidence in artifacts`
+- QA record commit: `1a410e083 test(qa): record monitoring factpack evidence validation`
+- QA run: [QA-20260506-0417](../../qa/runs/2026/qa-run-QA-20260506-0417.json)
+- Production targeted QA: skipped. No Vercel or Cloud Run deployment was performed; Cloud Run producer contract was unchanged and this task only changed frontend parser/artifact/UI consumers.
+
+Validation:
+
+- `npx vitest run src/lib/ai/chat-artifacts/monitoring-analysis-artifact.test.ts src/components/ai/ArtifactCards.test.tsx`
+- `npm run type-check`
+- `npm run lint`
+- `npm run test:quick`
+- `npm run test:contract`
+- `git diff --check`

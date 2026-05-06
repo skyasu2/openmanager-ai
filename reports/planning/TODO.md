@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-06 KST (`MonitoringFactPack consumer/evidence UI plan approved`)
+**Last Updated**: 2026-05-06 KST (`MonitoringFactPack consumer/evidence UI completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| MonitoringFactPack consumer/evidence UI expansion | Medium | Approved | Backlog 항목을 실행 계획으로 승격. 구현 전 failing spec부터 작성. 상세: [monitoring-factpack-consumer-evidence-ui-plan.md](monitoring-factpack-consumer-evidence-ui-plan.md) |
+| _No active task_ | — | — | Backlog only. |
 
 ---
 
@@ -43,6 +43,16 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-06 #301)
+- [x] MonitoringFactPack consumer/evidence UI expansion
+  - Backlog 항목을 Approved plan으로 승격하고 SDD 순서대로 failing spec → implementation → QA record를 분리 커밋
+  - Frontend `MonitoringBatchAnalysisResponse`에 public-safe `MonitoringBatchFactPack` 타입/검증 schema를 추가하고 malformed `factPack`은 drop하되 legacy `riskSignals/evidenceRefs` fallback은 유지
+  - Monitoring artifact metadata가 fact-pack evidence를 sanitized envelope evidence로 보존하고, artifact card/markdown 렌더링은 `factPack.signals/evidenceRefs`를 legacy payload보다 우선 사용
+  - `factPack` unknown field stripping guard를 추가해 새 JSON/export 표면이 raw tool/provider payload를 넓히지 않도록 고정
+  - Production targeted QA는 배포가 없어 생략. Local deterministic QA [QA-20260506-0417](../qa/runs/2026/qa-run-QA-20260506-0417.json)에 skip 사유와 검증 결과 기록
+  - 검증: targeted artifact tests `17/17`, `type-check`, `lint`, `test:quick`, `test:contract`, `git diff --check`
+  - 상세: [archive/monitoring-factpack-consumer-evidence-ui-plan.md](archive/monitoring-factpack-consumer-evidence-ui-plan.md)
 
 ### Completed (2026-05-06 #300)
 - [x] AI advanced surface targeted QA pack and RAG/Web raw JSON closure
