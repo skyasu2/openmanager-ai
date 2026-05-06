@@ -6,8 +6,13 @@ import { useAIEntryController } from '@/hooks/ai/useAIEntryController';
 import type { MonitoringAnalysisArtifact } from '@/lib/ai/chat-artifacts/types';
 import type {
   MonitoringBatchEvidenceRef,
+  MonitoringBatchFactSignal,
   MonitoringBatchRiskSignal,
 } from '@/types/intelligent-monitoring.types';
+
+type MonitoringDisplaySignal =
+  | MonitoringBatchRiskSignal
+  | MonitoringBatchFactSignal;
 
 function downloadBlob({
   content,
@@ -30,7 +35,7 @@ function downloadBlob({
 }
 
 function buildAnalysisMarkdown(artifact: MonitoringAnalysisArtifact): string {
-  const riskSignals = readRiskSignals(artifact);
+  const riskSignals = readDisplaySignals(artifact);
   const timeLabel = readTimeLabel(artifact);
   const warningLines =
     riskSignals.length > 0
@@ -98,9 +103,28 @@ function readRiskSignals(
     : [];
 }
 
+function readFactSignals(
+  artifact: MonitoringAnalysisArtifact
+): MonitoringBatchFactSignal[] {
+  return Array.isArray(artifact.analysis.factPack?.signals)
+    ? artifact.analysis.factPack.signals
+    : [];
+}
+
+function readDisplaySignals(
+  artifact: MonitoringAnalysisArtifact
+): MonitoringDisplaySignal[] {
+  const factSignals = readFactSignals(artifact);
+  return factSignals.length > 0 ? factSignals : readRiskSignals(artifact);
+}
+
 function readEvidenceRefs(
   artifact: MonitoringAnalysisArtifact
 ): MonitoringBatchEvidenceRef[] {
+  if (Array.isArray(artifact.analysis.factPack?.evidenceRefs)) {
+    return artifact.analysis.factPack.evidenceRefs;
+  }
+
   return Array.isArray(artifact.analysis.evidenceRefs)
     ? artifact.analysis.evidenceRefs
     : [];
@@ -130,7 +154,7 @@ export function MonitoringAnalysisArtifactCard({
   artifact: MonitoringAnalysisArtifact;
 }) {
   const { openFullscreen } = useAIEntryController();
-  const riskSignals = readRiskSignals(artifact).slice(0, 3);
+  const riskSignals = readDisplaySignals(artifact).slice(0, 3);
   const evidenceRefs = readEvidenceRefs(artifact).slice(0, 3);
   const timeLabel = readTimeLabel(artifact);
   const sourceMode = artifact.analysis.sourceMode ?? 'unknown';
@@ -204,7 +228,8 @@ export function MonitoringAnalysisArtifactCard({
                       {signal.metric} {Math.round(signal.value)}%
                     </span>
                     <span className="text-slate-500">
-                      임계치 {Math.round(signal.threshold)}% · {signal.trend}
+                      임계치 {Math.round(signal.threshold)}% ·{' '}
+                      {'trend' in signal ? signal.trend : signal.thresholdLevel}
                     </span>
                   </div>
                 ))}

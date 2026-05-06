@@ -186,6 +186,52 @@ export interface MonitoringBatchEvidenceRef {
   severity: 'info' | 'warning' | 'critical';
 }
 
+export type MonitoringBatchFactMetric = 'cpu' | 'memory' | 'disk' | 'network';
+
+export type MonitoringBatchFactSeverity = 'warning' | 'critical';
+
+export interface MonitoringBatchFactThreshold {
+  warning: number;
+  critical: number;
+}
+
+export type MonitoringBatchFactThresholds = Record<
+  MonitoringBatchFactMetric,
+  MonitoringBatchFactThreshold
+>;
+
+export interface MonitoringBatchFactSummary {
+  total: number;
+  online: number;
+  warning: number;
+  critical: number;
+  offline: number;
+}
+
+export interface MonitoringBatchFactSignal {
+  id: string;
+  serverId: string;
+  serverName: string;
+  serverType: string;
+  metric: MonitoringBatchFactMetric;
+  value: number;
+  threshold: number;
+  thresholdLevel: MonitoringBatchFactSeverity;
+  severity: MonitoringBatchFactSeverity;
+  evidenceRefId?: string;
+}
+
+export interface MonitoringBatchFactPack {
+  factPackVersion: string;
+  dataSlot: string;
+  sourceMode: 'replay-json' | 'live-otel';
+  queryAsOf: string;
+  thresholds: MonitoringBatchFactThresholds;
+  summary: MonitoringBatchFactSummary;
+  signals: MonitoringBatchFactSignal[];
+  evidenceRefs: MonitoringBatchEvidenceRef[];
+}
+
 export interface MonitoringBatchAnalysisResponse {
   success: boolean;
   sourceMode: 'replay-json' | 'live-otel';
@@ -203,6 +249,7 @@ export interface MonitoringBatchAnalysisResponse {
   servers: MonitoringBatchServer[];
   riskSignals: MonitoringBatchRiskSignal[];
   evidenceRefs: MonitoringBatchEvidenceRef[];
+  factPack?: MonitoringBatchFactPack;
   dataFreshness: {
     generatedAt: string | null;
     sourceUpdatedAt: string | null;

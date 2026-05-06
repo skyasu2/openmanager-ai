@@ -1,6 +1,9 @@
 import { z } from 'zod';
 import { createQueryAsOf } from '@/lib/ai/query-as-of';
-import type { MonitoringBatchAnalysisResponse } from '@/types/intelligent-monitoring.types';
+import type {
+  MonitoringBatchAnalysisResponse,
+  MonitoringBatchEvidenceRef,
+} from '@/types/intelligent-monitoring.types';
 import {
   attachArtifactEnvelopeMetadata,
   type ChatArtifactRequest,
@@ -35,24 +38,86 @@ const MonitoringBatchRiskSignalSchema = z
   })
   .passthrough();
 
-const MonitoringBatchEvidenceRefSchema = z
-  .object({
-    id: z.string(),
-    kind: z.enum(['metric', 'log', 'topology', 'rule', 'prediction']),
-    serverId: z.string().optional(),
-    metric: z.string().optional(),
-    timeRange: z
-      .object({
-        from: z.string(),
-        to: z.string(),
-      })
-      .passthrough(),
-    summary: z.string(),
-    value: z.union([z.number(), z.string()]).optional(),
-    threshold: z.number().optional(),
-    severity: z.enum(['info', 'warning', 'critical']),
-  })
-  .passthrough();
+const MonitoringBatchEvidenceRefBaseSchema = z.object({
+  id: z.string(),
+  kind: z.enum(['metric', 'log', 'topology', 'rule', 'prediction']),
+  serverId: z.string().optional(),
+  metric: z.string().optional(),
+  timeRange: z
+    .object({
+      from: z.string(),
+      to: z.string(),
+    })
+    .passthrough(),
+  summary: z.string(),
+  value: z.union([z.number(), z.string()]).optional(),
+  threshold: z.number().optional(),
+  severity: z.enum(['info', 'warning', 'critical']),
+});
+
+const MonitoringBatchEvidenceRefSchema =
+  MonitoringBatchEvidenceRefBaseSchema.passthrough();
+
+const MonitoringBatchFactEvidenceRefSchema = z.object({
+  id: z.string(),
+  kind: z.enum(['metric', 'log', 'topology', 'rule', 'prediction']),
+  serverId: z.string().optional(),
+  metric: z.string().optional(),
+  timeRange: z.object({
+    from: z.string(),
+    to: z.string(),
+  }),
+  summary: z.string(),
+  value: z.union([z.number(), z.string()]).optional(),
+  threshold: z.number().optional(),
+  severity: z.enum(['info', 'warning', 'critical']),
+});
+
+const MonitoringBatchFactSeveritySchema = z.enum(['warning', 'critical']);
+
+const MonitoringBatchFactThresholdSchema = z.object({
+  warning: z.number(),
+  critical: z.number(),
+});
+
+const MonitoringBatchFactThresholdsSchema = z.object({
+  cpu: MonitoringBatchFactThresholdSchema,
+  memory: MonitoringBatchFactThresholdSchema,
+  disk: MonitoringBatchFactThresholdSchema,
+  network: MonitoringBatchFactThresholdSchema,
+});
+
+const MonitoringBatchFactSummarySchema = z.object({
+  total: z.number(),
+  online: z.number(),
+  warning: z.number(),
+  critical: z.number(),
+  offline: z.number(),
+});
+
+const MonitoringBatchFactSignalSchema = z.object({
+  id: z.string(),
+  serverId: z.string(),
+  serverName: z.string(),
+  serverType: z.string(),
+  metric: z.enum(['cpu', 'memory', 'disk', 'network']),
+  value: z.number(),
+  threshold: z.number(),
+  thresholdLevel: MonitoringBatchFactSeveritySchema,
+  severity: MonitoringBatchFactSeveritySchema,
+  evidenceRefId: z.string().optional(),
+});
+
+const MonitoringBatchFactPackSchema = z.object({
+  factPackVersion: z.string(),
+  dataSlot: z.string(),
+  sourceMode: z.enum(['replay-json', 'live-otel']),
+  queryAsOf: z.string(),
+  thresholds: MonitoringBatchFactThresholdsSchema,
+  summary: MonitoringBatchFactSummarySchema,
+  signals: z.array(MonitoringBatchFactSignalSchema),
+  evidenceRefs: z.array(MonitoringBatchFactEvidenceRefSchema),
+});
 
 const MonitoringBatchAnalysisResponseSchema = z
   .object({
@@ -83,7 +148,18 @@ const MonitoringBatchAnalysisResponseSchema = z
       .passthrough(),
     _source: z.string().optional(),
   })
-  .passthrough();
+  .passthrough()
+  .transform((analysis): MonitoringBatchAnalysisResponse => {
+    const { factPack: rawFactPack, ...rest } = analysis as typeof analysis & {
+      factPack?: unknown;
+    };
+    const parsedFactPack = MonitoringBatchFactPackSchema.safeParse(rawFactPack);
+
+    return {
+      ...rest,
+      ...(parsedFactPack.success ? { factPack: parsedFactPack.data } : {}),
+    } as MonitoringBatchAnalysisResponse;
+  });
 
 export function parseMonitoringBatchAnalysisResponse(
   value: unknown
@@ -98,14 +174,20 @@ export function summarizeMonitoringAnalysis(
   MonitoringAnalysisArtifact,
   'kind' | 'generatedAt' | 'analysis' | 'source' | 'queryAsOfDataSlot'
 > {
-  const warningServers = analysis.servers.filter(
-    (server) => server.status === 'warning'
-  ).length;
-  const criticalServers = analysis.servers.filter(
-    (server) => server.status === 'critical' || server.status === 'offline'
-  ).length;
-  const serverCount = analysis.servers.length;
-  const riskSignalCount = analysis.riskSignals.length;
+  const warningServers =
+    analysis.factPack?.summary.warning ??
+    analysis.servers.filter((server) => server.status === 'warning').length;
+  const criticalServers =
+    analysis.factPack !== undefined
+      ? analysis.factPack.summary.critical + analysis.factPack.summary.offline
+      : analysis.servers.filter(
+          (server) =>
+            server.status === 'critical' || server.status === 'offline'
+        ).length;
+  const serverCount =
+    analysis.factPack?.summary.total ?? analysis.servers.length;
+  const riskSignalCount =
+    analysis.factPack?.signals.length ?? analysis.riskSignals.length;
 
   return {
     title: '전체 서버 이상감지/추세 분석',
@@ -117,6 +199,23 @@ export function summarizeMonitoringAnalysis(
     warningServers,
     criticalServers,
   };
+}
+
+function mapMonitoringFactPackEvidence(
+  evidenceRefs: MonitoringBatchEvidenceRef[] | undefined
+) {
+  if (!Array.isArray(evidenceRefs) || evidenceRefs.length === 0) {
+    return undefined;
+  }
+
+  return evidenceRefs.map((evidence) => ({
+    id: evidence.id,
+    kind: evidence.kind,
+    summary: evidence.summary,
+    ...(evidence.serverId ? { serverId: evidence.serverId } : {}),
+    ...(evidence.metric ? { metric: evidence.metric } : {}),
+    severity: evidence.severity,
+  }));
 }
 
 export async function generateMonitoringAnalysisArtifact({
@@ -157,6 +256,9 @@ export async function generateMonitoringAnalysisArtifact({
   }
 
   const summary = summarizeMonitoringAnalysis(analysis);
+  const evidence = mapMonitoringFactPackEvidence(
+    analysis.factPack?.evidenceRefs
+  );
 
   return attachArtifactEnvelopeMetadata(
     {
@@ -172,6 +274,7 @@ export async function generateMonitoringAnalysisArtifact({
     {
       sourceMode: 'tool-result',
       dataSlot: analysis.slot.timeLabel,
+      evidence,
     }
   );
 }

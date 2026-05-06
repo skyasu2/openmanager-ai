@@ -123,6 +123,37 @@ describe('parseMonitoringBatchAnalysisResponse', () => {
     });
   });
 
+  it('strips unknown fields from validated MonitoringFactPack payloads', () => {
+    const parsed = parseMonitoringBatchAnalysisResponse({
+      ...validBatchResponse,
+      factPack: {
+        ...validFactPack,
+        rawToolJson: '{"token":"should-not-survive"}',
+        signals: [
+          {
+            ...validFactPack.signals[0],
+            rawProviderNote: 'should-not-survive',
+          },
+        ],
+        evidenceRefs: [
+          {
+            ...validFactPack.evidenceRefs[0],
+            rawErrorStack: 'should-not-survive',
+            timeRange: {
+              ...validFactPack.evidenceRefs[0].timeRange,
+              rawTrace: 'should-not-survive',
+            },
+          },
+        ],
+      },
+    }) as (typeof validBatchResponse & { factPack?: unknown }) | null;
+
+    expect(parsed).not.toBeNull();
+    expect(JSON.stringify(parsed?.factPack)).not.toContain(
+      'should-not-survive'
+    );
+  });
+
   it('drops only malformed MonitoringFactPack payloads and keeps legacy risk/evidence fields parseable', () => {
     const parsed = parseMonitoringBatchAnalysisResponse({
       ...validBatchResponse,
