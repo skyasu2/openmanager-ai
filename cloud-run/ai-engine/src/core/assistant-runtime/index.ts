@@ -3,6 +3,8 @@ export { createAssistantRuntime } from './runtime';
 export type {
   ArtifactCandidate,
   ArtifactRegistry,
+  AgentRole,
+  AgentRoleRegistry,
   AssistantArtifact,
   AssistantArtifactStore,
   AssistantDomain,

@@ -21,6 +21,7 @@ import {
 import { createMonitoringSystemPrompt } from './supervisor-prompt';
 import { MONITORING_AGENT_TOOL_REGISTRY } from './tool-registry';
 import { selectExecutionMode } from './routing-policy';
+import { monitoringAgentRoleRegistry } from './agent-roles';
 
 export const MONITORING_DOMAIN_ID = 'openmanager-monitoring';
 export const MONITORING_DOMAIN_VERSION = '2026-05-05-v1';
@@ -179,4 +180,5 @@ export const monitoringDomainPack: AssistantDomain = {
   tools: monitoringToolRegistry,
   artifacts: monitoringArtifactRegistry,
   facts: monitoringFactPackBuilder,
+  agentRoles: monitoringAgentRoleRegistry,
 };

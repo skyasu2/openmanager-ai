@@ -105,6 +105,20 @@ export interface FactPackBuilder {
   build(input: DomainFactInput): DomainFactPack | Promise<DomainFactPack>;
 }
 
+export interface AgentRole {
+  id: string;
+  name: string;
+  description: string;
+  matchPatterns?: (string | RegExp)[];
+  capabilities?: string[];
+  runtimeConfigKey?: string;
+}
+
+export interface AgentRoleRegistry {
+  listRoles(): AgentRole[];
+  resolveRole(id: string): AgentRole | undefined;
+}
+
 export interface AssistantDomain {
   id: string;
   version: string;
@@ -113,6 +127,7 @@ export interface AssistantDomain {
   tools: ToolRegistry;
   artifacts?: ArtifactRegistry;
   facts?: FactPackBuilder;
+  agentRoles?: AgentRoleRegistry;
 }
 
 export interface AssistantStateStore {

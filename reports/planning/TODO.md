@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-06 KST (`AI Engine domain-owned agent registry plan approved`)
+**Last Updated**: 2026-05-06 KST (`AI Engine domain-owned agent registry completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| AI Engine domain-owned agent registry | Medium | Approved | Contract 보강 완료. 다음 단계: Task 0 failing specs. 관련: [ai-engine-agent-registry-plan.md](ai-engine-agent-registry-plan.md) |
+| _No active task_ | — | — | Backlog only. |
 
 ---
 
@@ -41,6 +41,16 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-06 #306)
+- [x] AI Engine domain-owned agent registry
+  - `AgentRole` / `AgentRoleRegistry` 계약을 portable core에 추가하고 `AssistantDomain.agentRoles?` 선택 필드로 노출
+  - monitoring domain이 7개 agent role manifest(id/name/description/matchPatterns/capabilities/runtimeConfigKey)를 소유하도록 분리
+  - `agent-configs.ts`의 monitoring description/matchPatterns를 role manifest에서 파생하고 `orchestrator-factory.ts` display-name helper drift를 제거
+  - `AgentFactory.createByDomain()` 추가: monitoring runtime binding, registry 없음 legacy fallback, unknown role, runtime binding 없음 케이스를 deterministic하게 처리
+  - sample domain이 monitoring import 없이 2개 registry-only role을 등록하는 portability smoke 추가
+  - 검증: failing specs `4 files / 7 failed`, targeted implementation tests `4 files / 40 passed`, AI Engine `type-check`, AI Engine full test `102 files / 1053 tests`, root `type-check`, `lint`, `test:quick`, `test:contract`, `docs:budget`, `docs:ai-consistency`, `git diff --check`
+  - 상세: [archive/ai-engine-agent-registry-plan.md](archive/ai-engine-agent-registry-plan.md)
 
 ### Completed (2026-05-06 #305)
 - [x] AI Engine SDK decoupling

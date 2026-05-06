@@ -1,4 +1,6 @@
 import type {
+  AgentRole,
+  AgentRoleRegistry,
   AssistantArtifact,
   AssistantDomain,
   AssistantRequest,
@@ -66,6 +68,41 @@ const sampleLookupAccountTool: ToolDefinition = {
   },
 };
 
+const sampleAgentRoles: AgentRole[] = [
+  {
+    id: 'account-health',
+    name: 'Account Health Agent',
+    description: 'Reviews deterministic account health facts.',
+    matchPatterns: ['account health', 'health summary'],
+    capabilities: ['sample-account-health'],
+  },
+  {
+    id: 'follow-up-advisor',
+    name: 'Follow-up Advisor Agent',
+    description: 'Suggests deterministic customer follow-up actions.',
+    matchPatterns: ['follow up', 'next action'],
+    capabilities: ['sample-follow-up'],
+  },
+];
+
+function cloneSampleAgentRole(role: AgentRole): AgentRole {
+  return {
+    ...role,
+    ...(role.matchPatterns ? { matchPatterns: [...role.matchPatterns] } : {}),
+    ...(role.capabilities ? { capabilities: [...role.capabilities] } : {}),
+  };
+}
+
+const sampleAgentRoleRegistry: AgentRoleRegistry = {
+  listRoles() {
+    return sampleAgentRoles.map(cloneSampleAgentRole);
+  },
+  resolveRole(id) {
+    const role = sampleAgentRoles.find((candidate) => candidate.id === id);
+    return role ? cloneSampleAgentRole(role) : undefined;
+  },
+};
+
 export const sampleDomainPack: AssistantDomain = {
   id: SAMPLE_DOMAIN_ID,
   version: SAMPLE_DOMAIN_VERSION,
@@ -117,6 +154,7 @@ export const sampleDomainPack: AssistantDomain = {
       };
     },
   },
+  agentRoles: sampleAgentRoleRegistry,
 };
 
 export function createSampleDomainRequest(message: string): AssistantRequest {

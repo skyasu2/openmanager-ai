@@ -1,22 +1,24 @@
 import { TIMEOUT_CONFIG } from '../../../config/timeout-config';
 import { logger } from '../../../lib/logger';
-import { AgentFactory, type AgentType } from './agent-factory';
+import {
+  AgentFactory,
+  CONFIG_KEY_TO_AGENT_TYPE,
+  type AgentType,
+} from './agent-factory';
 import type { ImageAttachment, FileAttachment } from './base-agent';
 import { getAgentMaxSteps } from './config';
 import { recordHandoff } from './orchestrator-handoff';
 import type { MultiAgentResponse } from './orchestrator-types';
+import { resolveMonitoringAgentRoleByName } from '../../../domains/monitoring/agent-roles';
 
 export function getAgentTypeFromName(agentName: string): AgentType | null {
-  const mapping: Record<string, AgentType> = {
-    'NLQ Agent': 'nlq',
-    'Analyst Agent': 'analyst',
-    'Reporter Agent': 'reporter',
-    'Advisor Agent': 'advisor',
-    'Vision Agent': 'vision',
-    'Evaluator Agent': 'evaluator',
-    'Optimizer Agent': 'optimizer',
-  };
-  return mapping[agentName] ?? null;
+  const role = resolveMonitoringAgentRoleByName(agentName);
+  const configKey = role?.runtimeConfigKey ?? agentName;
+  return (
+    CONFIG_KEY_TO_AGENT_TYPE[
+      configKey as keyof typeof CONFIG_KEY_TO_AGENT_TYPE
+    ] ?? null
+  );
 }
 
 export async function executeWithAgentFactory(

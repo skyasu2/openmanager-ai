@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import {
   createAssistantRuntime,
   createInMemoryAssistantRuntimeAdapters,
+  type AgentRole,
   type AssistantDomain,
   type AssistantRequest,
   type AssistantRequestContext,
@@ -91,9 +92,29 @@ function createSampleDomain(): AssistantDomain {
         'query' in input &&
         typeof input.query === 'string'
           ? input.query
-          : '',
+      : '',
     }),
   };
+  const sampleAgentRoles: AgentRole[] = [
+    {
+      id: 'sample-researcher',
+      name: 'Sample Researcher',
+      description: 'Looks up deterministic sample records.',
+      capabilities: ['sample-lookup'],
+    },
+    {
+      id: 'sample-summarizer',
+      name: 'Sample Summarizer',
+      description: 'Summarizes deterministic sample records.',
+      matchPatterns: ['summarize', 'summary'],
+      capabilities: ['sample-summary'],
+    },
+  ];
+  const cloneSampleRole = (role: AgentRole): AgentRole => ({
+    ...role,
+    ...(role.matchPatterns ? { matchPatterns: [...role.matchPatterns] } : {}),
+    ...(role.capabilities ? { capabilities: [...role.capabilities] } : {}),
+  });
 
   return {
     id: 'sample-support',
@@ -118,6 +139,15 @@ function createSampleDomain(): AssistantDomain {
       },
       resolveTool(name: string) {
         return name === sampleTool.name ? sampleTool : undefined;
+      },
+    },
+    agentRoles: {
+      listRoles() {
+        return sampleAgentRoles.map(cloneSampleRole);
+      },
+      resolveRole(id: string) {
+        const role = sampleAgentRoles.find((candidate) => candidate.id === id);
+        return role ? cloneSampleRole(role) : undefined;
       },
     },
   };

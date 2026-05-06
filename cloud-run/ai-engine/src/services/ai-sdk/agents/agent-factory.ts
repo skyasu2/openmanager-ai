@@ -9,6 +9,7 @@ import {
   type AgentName,
 } from './config';
 import { logger } from '../../../lib/logger';
+import type { AssistantDomain } from '../../../core/assistant-runtime';
 
 export type AgentType =
   | 'nlq'
@@ -32,6 +33,11 @@ const AGENT_TYPE_TO_CONFIG_KEY: Record<AgentType, AgentName> = {
 const CONFIG_KEY_TO_AGENT_TYPE = Object.fromEntries(
   Object.entries(AGENT_TYPE_TO_CONFIG_KEY).map(([k, v]) => [v, k])
 ) as Record<AgentName, AgentType>;
+
+function isAgentType(value: string): value is AgentType {
+  return Object.prototype.hasOwnProperty.call(AGENT_TYPE_TO_CONFIG_KEY, value);
+}
+
 class ConfigBasedAgent extends BaseAgent {
   private readonly configKey: AgentName;
   private readonly displayName: AgentName;
@@ -52,13 +58,7 @@ class ConfigBasedAgent extends BaseAgent {
 }
 
 export class AgentFactory {
-  static create(type: AgentType): BaseAgent | null {
-    const configKey = AGENT_TYPE_TO_CONFIG_KEY[type];
-    if (!configKey) {
-      logger.warn(`[AgentFactory] Unknown agent type: ${type}`);
-      return null;
-    }
-
+  private static createConfigAgent(configKey: AgentName): BaseAgent | null {
     const agent = new ConfigBasedAgent(configKey);
 
     if (!agent.isAvailable()) {
@@ -67,6 +67,16 @@ export class AgentFactory {
     }
 
     return agent;
+  }
+
+  static create(type: AgentType): BaseAgent | null {
+    const configKey = AGENT_TYPE_TO_CONFIG_KEY[type];
+    if (!configKey) {
+      logger.warn(`[AgentFactory] Unknown agent type: ${type}`);
+      return null;
+    }
+
+    return AgentFactory.createConfigAgent(configKey);
   }
 
   static createByName(configKey: string): BaseAgent | null {
@@ -83,15 +93,43 @@ export class AgentFactory {
         return null;
       }
 
-      const agent = new ConfigBasedAgent(configKey);
-      if (!agent.isAvailable()) {
-        logger.warn(`[AgentFactory] Agent ${configKey} not available (no model)`);
-        return null;
-      }
-      return agent;
+      return AgentFactory.createConfigAgent(configKey);
     }
 
     return AgentFactory.create(type);
+  }
+
+  static createByDomain(
+    roleId: string,
+    domain: AssistantDomain
+  ): BaseAgent | null {
+    const registry = domain.agentRoles;
+    if (!registry) {
+      return isAgentType(roleId) ? AgentFactory.create(roleId) : null;
+    }
+
+    const role = registry.resolveRole(roleId);
+    if (!role) {
+      logger.warn(`[AgentFactory] Unknown domain agent role: ${roleId}`);
+      return null;
+    }
+
+    const runtimeConfigKey = role.runtimeConfigKey;
+    if (!runtimeConfigKey) {
+      logger.warn(
+        `[AgentFactory] Domain agent role ${roleId} has no runtime config binding`
+      );
+      return null;
+    }
+
+    if (!isAgentName(runtimeConfigKey)) {
+      logger.warn(
+        `[AgentFactory] Unknown runtime config binding for role ${roleId}: ${runtimeConfigKey}`
+      );
+      return null;
+    }
+
+    return AgentFactory.createByName(runtimeConfigKey);
   }
 
   static getAvailableTypes(): AgentType[] {
