@@ -16,6 +16,7 @@ import type {
 } from '../../../lib/retrieval-contract';
 import { TIMEOUT_CONFIG } from '../../../config/timeout-config';
 import type { DomainDataSource } from '../../../core/assistant-runtime';
+import type { InternalDisclosureMode } from '../internal-disclosure-policy';
 
 // ============================================================================
 // Configuration
@@ -65,6 +66,8 @@ export interface MultiAgentRequest {
   enableWebSearch?: boolean | 'auto';
   /** RAG (Knowledge Base 검색) 활성화 여부 */
   enableRAG?: boolean;
+  /** Internal-only disclosure mode, set by the trusted BFF for PIN/dev sessions. */
+  internalDisclosureMode?: InternalDisclosureMode;
   /**
    * Image attachments for multimodal queries (Vision Agent)
    * @see https://ai-sdk.dev/docs/ai-sdk-core/prompts#image-parts

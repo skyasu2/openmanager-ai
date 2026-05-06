@@ -141,6 +141,7 @@ export interface AIJob {
     analysisMode?: AnalysisMode;
     enableRAG?: boolean;
     enableWebSearch?: boolean;
+    internalDisclosureMode?: 'developer';
     queryAsOf?: JobQueryAsOf;
     localRouteDecision?: RouteDecision;
     routeDecision?: RouteDecision;

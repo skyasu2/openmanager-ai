@@ -9,6 +9,7 @@ const {
   mockInferJobType,
   mockAfter,
   mockFetch,
+  mockGetAPIAuthContext,
 } = vi.hoisted(() => ({
   mockGetRedisClient: vi.fn(),
   mockRedisSet: vi.fn(),
@@ -17,6 +18,7 @@ const {
   mockInferJobType: vi.fn(() => 'analysis'),
   mockAfter: vi.fn(),
   mockFetch: vi.fn(),
+  mockGetAPIAuthContext: vi.fn(() => null),
 }));
 
 vi.mock('next/server', async () => {
@@ -38,7 +40,7 @@ vi.mock('@/lib/security/rate-limiter', () => ({
 
 vi.mock('@/lib/auth/api-auth', () => ({
   withAuth: (handler: unknown) => handler,
-  getAPIAuthContext: () => null,
+  getAPIAuthContext: mockGetAPIAuthContext,
 }));
 
 vi.mock('@/utils/security/csrf', () => ({
@@ -89,6 +91,7 @@ describe('POST /api/ai/jobs trigger readiness', () => {
         headers: { 'Content-Type': 'application/json' },
       })
     );
+    mockGetAPIAuthContext.mockReturnValue(null);
     process.env.CLOUD_RUN_ENABLED = 'false';
     process.env.CLOUD_RUN_AI_URL = 'https://example-ai.run.app';
     process.env.CLOUD_RUN_API_SECRET = 'test-secret';
@@ -291,6 +294,93 @@ describe('POST /api/ai/jobs trigger readiness', () => {
       enableRAG: true,
       enableWebSearch: true,
     });
+  });
+
+  it('derives and forwards developer disclosure mode for verified PIN job sessions', async () => {
+    process.env.CLOUD_RUN_ENABLED = 'true';
+    mockGetAPIAuthContext.mockReturnValue({
+      authType: 'guest',
+      userId: 'issued-guest-session-id',
+    });
+
+    const { POST } = await importRoute();
+    const request = new NextRequest('http://localhost/api/ai/jobs', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        cookie: 'auth_session_id=guest-session-xyz',
+      },
+      body: JSON.stringify({
+        query: 'OpenManager OTel SSOT는 어느 파일에 정의돼?',
+        options: { sessionId: 'session-1234' },
+      }),
+    });
+
+    const response = await POST(request);
+    const scheduled = mockAfter.mock.calls[0]?.[0] as
+      | (() => Promise<void>)
+      | undefined;
+    await scheduled?.();
+
+    expect(response.status).toBe(201);
+    const savedJob = mockRedisSet.mock.calls.find(
+      ([key]) =>
+        typeof key === 'string' &&
+        key.startsWith('job:') &&
+        !key.startsWith('job:progress:') &&
+        !key.startsWith('job:list:') &&
+        !key.startsWith('job:trigger:')
+    )?.[1] as { metadata?: Record<string, unknown> } | undefined;
+    expect(savedJob?.metadata).toMatchObject({
+      internalDisclosureMode: 'developer',
+    });
+
+    const workerBody = JSON.parse(
+      (
+        mockFetch.mock.calls[0]?.[1] as {
+          body: string;
+        }
+      ).body
+    ) as Record<string, unknown>;
+    expect(workerBody.internalDisclosureMode).toBe('developer');
+  });
+
+  it('does not trust client-supplied job disclosure mode without server auth context', async () => {
+    process.env.CLOUD_RUN_ENABLED = 'true';
+
+    const { POST } = await importRoute();
+    const request = new NextRequest('http://localhost/api/ai/jobs', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        cookie: 'auth_session_id=guest-session-xyz',
+      },
+      body: JSON.stringify({
+        query: 'OpenManager OTel SSOT는 어느 파일에 정의돼?',
+        options: {
+          sessionId: 'session-1234',
+          metadata: {
+            internalDisclosureMode: 'developer',
+          },
+        },
+      }),
+    });
+
+    const response = await POST(request);
+    const scheduled = mockAfter.mock.calls[0]?.[0] as
+      | (() => Promise<void>)
+      | undefined;
+    await scheduled?.();
+
+    expect(response.status).toBe(201);
+    const workerBody = JSON.parse(
+      (
+        mockFetch.mock.calls[0]?.[1] as {
+          body: string;
+        }
+      ).body
+    ) as Record<string, unknown>;
+    expect(workerBody.internalDisclosureMode).toBeUndefined();
   });
 
   it('Cloud Run worker trigger forwards the BFF route decision as localRouteDecision', async () => {

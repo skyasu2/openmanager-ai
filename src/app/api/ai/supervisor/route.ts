@@ -49,7 +49,7 @@ import {
   calculateDynamicTimeout,
 } from '@/lib/ai/utils/query-complexity';
 import { isCloudRunEnabled } from '@/lib/ai-proxy/proxy';
-import { withAuth } from '@/lib/auth/api-auth';
+import { getAPIAuthContext, withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { getRateLimitIdentity } from '@/lib/security/rate-limit-identity';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
@@ -57,6 +57,7 @@ import { runWithTraceId } from '@/lib/tracing/async-context';
 import { isStatusQuery, shouldSkipCache } from './cache-utils';
 import { handleCloudRunJson, handleCloudRunStream } from './cloud-run-handler';
 import { handleSupervisorError } from './error-handler';
+import { resolveSupervisorInternalDisclosureMode } from './internal-disclosure-mode';
 import {
   applySanitizedQueryToMessages,
   extractAndValidateQuery,
@@ -330,6 +331,8 @@ export const POST = withRateLimit(
             req.headers.get('X-Device-Type')
           );
           const rateLimitIdentity = getRateLimitIdentity(req);
+          const internalDisclosureMode =
+            resolveSupervisorInternalDisclosureMode(getAPIAuthContext(req));
 
           const handlerParams = {
             messagesToSend,
@@ -345,6 +348,7 @@ export const POST = withRateLimit(
             analysisMode,
             deviceType,
             rateLimitIdentity,
+            ...(internalDisclosureMode && { internalDisclosureMode }),
           };
 
           const response = wantsStream

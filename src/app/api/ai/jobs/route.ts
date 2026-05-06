@@ -25,7 +25,7 @@ import {
   inferJobType,
 } from '@/lib/ai/utils/query-complexity';
 import { getRequiredCloudRunConfig } from '@/lib/ai-proxy/cloud-run-config';
-import { withAuth } from '@/lib/auth/api-auth';
+import { getAPIAuthContext, withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import { getRedisClient, redisGet, redisMGet, redisSet } from '@/lib/redis';
 import {
@@ -46,6 +46,10 @@ import type {
 } from '@/types/ai-jobs';
 import { getErrorMessage } from '@/types/type-utils';
 import { withCSRFProtection } from '@/utils/security/csrf';
+import {
+  resolveSupervisorInternalDisclosureMode,
+  type SupervisorInternalDisclosureMode,
+} from '../supervisor/internal-disclosure-mode';
 import { buildScopedJobListKey, resolveJobOwnerKey } from './job-ownership';
 
 // ============================================
@@ -75,6 +79,7 @@ interface JobToolOptions {
   analysisMode?: AnalysisMode;
   enableRAG?: boolean;
   enableWebSearch?: boolean;
+  internalDisclosureMode?: SupervisorInternalDisclosureMode;
   localRouteDecision?: RouteDecision;
 }
 
@@ -145,6 +150,9 @@ async function handlePOST(request: NextRequest) {
     // Job 타입 자동 추론
     const jobType = body.type || inferJobType(query);
     const toolOptions = extractJobToolOptions(options?.metadata);
+    const internalDisclosureMode = resolveSupervisorInternalDisclosureMode(
+      getAPIAuthContext(request)
+    );
 
     // Job ID 생성
     const jobId = randomUUID();
@@ -166,6 +174,7 @@ async function handlePOST(request: NextRequest) {
     const assistantPlan = buildAssistantPlanFromRouteDecision(routeDecision);
     const workerToolOptions: JobToolOptions = {
       ...toolOptions,
+      ...(internalDisclosureMode && { internalDisclosureMode }),
       localRouteDecision: routeDecision,
     };
 
@@ -192,7 +201,7 @@ async function handlePOST(request: NextRequest) {
         localRouteDecision: workerToolOptions.localRouteDecision,
         routeDecision,
         assistantPlan,
-        ...toolOptions,
+        ...workerToolOptions,
       },
     };
 

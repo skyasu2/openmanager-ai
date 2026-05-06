@@ -147,6 +147,11 @@ export interface SupervisorRequest {
   localRouteDecision?: SupervisorLocalRouteDecision;
   /** Internal portable runtime host. Defaults to the monitoring domain pack. */
   runtimeHost?: AssistantRuntimeHost;
+  /**
+   * Internal-only disclosure mode. Public routes intentionally omit this field;
+   * developer/debug callers may set it in local diagnostics.
+   */
+  internalDisclosureMode?: 'user' | 'developer';
 }
 
 export interface SupervisorResponse {

@@ -47,7 +47,8 @@ export async function executeVisionOrFallback(
   images?: Parameters<typeof executeWithAgentFactory>[5],
   files?: Parameters<typeof executeWithAgentFactory>[6],
   dataSource?: DomainDataSource,
-  domainId?: string
+  domainId?: string,
+  internalDisclosureMode?: MultiAgentRequest['internalDisclosureMode']
 ): Promise<MultiAgentResponse | null> {
   const result = await executeWithAgentFactory(
     query,
@@ -75,7 +76,8 @@ export async function executeVisionOrFallback(
     files,
     undefined,
     dataSource,
-    domainId
+    domainId,
+    internalDisclosureMode
   );
 }
 

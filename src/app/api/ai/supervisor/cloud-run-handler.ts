@@ -26,6 +26,7 @@ import { logger } from '@/lib/logging';
 import { RATE_LIMIT_IDENTITY_HEADER } from '@/lib/security/rate-limit-identity';
 import { getTraceId } from '@/lib/tracing/async-context';
 import type { AnalysisMode } from '@/types/ai/analysis-mode';
+import type { SupervisorInternalDisclosureMode } from './internal-disclosure-mode';
 import { applyLegacySupervisorRouteHeaders } from './route-contract';
 import { cloudRunResponseSchema } from './schemas';
 
@@ -45,6 +46,7 @@ interface CloudRunHandlerParams {
   enableRAG?: boolean;
   analysisMode?: AnalysisMode;
   rateLimitIdentity?: string;
+  internalDisclosureMode?: SupervisorInternalDisclosureMode;
 }
 
 /**
@@ -68,6 +70,7 @@ export async function handleCloudRunStream(
     enableRAG,
     analysisMode,
     rateLimitIdentity,
+    internalDisclosureMode,
   } = params;
 
   // 🎯 W3C Trace Context: traceId from AsyncLocalStorage + traceparent 생성
@@ -104,6 +107,7 @@ export async function handleCloudRunStream(
           enableWebSearch,
           enableRAG,
           analysisMode,
+          ...(internalDisclosureMode && { internalDisclosureMode }),
         },
         timeout: dynamicTimeout,
         endpoint: 'supervisor',
@@ -229,6 +233,7 @@ export async function handleCloudRunJson(
     enableRAG,
     analysisMode,
     rateLimitIdentity,
+    internalDisclosureMode,
   } = params;
 
   // 🎯 W3C Trace Context: traceId from AsyncLocalStorage + traceparent 생성
@@ -265,6 +270,7 @@ export async function handleCloudRunJson(
           enableWebSearch,
           enableRAG,
           analysisMode,
+          ...(internalDisclosureMode && { internalDisclosureMode }),
         },
         timeout: dynamicTimeout,
         endpoint: 'supervisor',

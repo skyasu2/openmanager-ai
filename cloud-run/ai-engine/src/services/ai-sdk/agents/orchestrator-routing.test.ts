@@ -803,7 +803,7 @@ describe('executeForcedRouting', () => {
     expect(kbArgs).not.toHaveProperty('useGraphRAG');
   });
 
-  it('does not infer internal document paths when direct KB retrieval has no evidence', async () => {
+  it('refuses internal document path disclosure for user mode before inferring paths', async () => {
     mockSearchKnowledgeBaseExecute.mockResolvedValueOnce({
       success: true,
       totalFound: 0,
@@ -824,6 +824,84 @@ describe('executeForcedRouting', () => {
       Date.now(),
       true,
       true
+    );
+
+    expect(result?.success).toBe(true);
+    expect(result?.response).toContain('일반 사용자 모드');
+    expect(result?.response).toContain('구현 파일 경로');
+    expect(result?.response).not.toContain('/path/to');
+    expect(result?.toolsCalled).toEqual(['searchKnowledgeBase']);
+    expect(result?.metadata.provider).toBe('deterministic');
+    expect(mockGenerateTextWithRetry).not.toHaveBeenCalled();
+  });
+
+  it('refuses rephrased internal implementation file questions in user mode', async () => {
+    mockSearchKnowledgeBaseExecute.mockResolvedValueOnce({
+      success: true,
+      totalFound: 1,
+      results: [
+        {
+          id: 'kb-otel-ssot',
+          title: 'OpenManager OTel SSOT',
+          content:
+            'OTel SSOT는 public/data/otel-data/resource-catalog.json 파일과 src/data/otel-data/index.ts 로더에서 정의됩니다.',
+          similarity: 0.93,
+          sourceType: 'knowledge',
+          category: 'architecture',
+        },
+      ],
+      retrieval: {
+        retrievalEnabled: true,
+        retrievalUsed: true,
+        retrievalMode: 'lite',
+        evidenceCount: 1,
+        webUsed: false,
+      },
+    });
+
+    const result = await executeForcedRouting(
+      'OpenManager OTel SSOT는 어느 파일에 정의돼?',
+      'Advisor Agent',
+      Date.now(),
+      true,
+      true
+    );
+
+    expect(result?.success).toBe(true);
+    expect(result?.response).toContain('일반 사용자 모드');
+    expect(result?.response).not.toContain('public/data/otel-data');
+    expect(result?.response).not.toContain('src/data/otel-data');
+    expect(result?.toolsCalled).toEqual(['searchKnowledgeBase', 'finalAnswer']);
+    expect(mockGenerateTextWithRetry).not.toHaveBeenCalled();
+  });
+
+  it('keeps no-evidence internal path answers available in developer disclosure mode', async () => {
+    mockSearchKnowledgeBaseExecute.mockResolvedValueOnce({
+      success: true,
+      totalFound: 0,
+      results: [],
+      retrieval: {
+        retrievalEnabled: true,
+        retrievalUsed: false,
+        retrievalMode: 'lite',
+        evidenceCount: 0,
+        webUsed: false,
+        suppressedReason: 'no_results',
+      },
+    });
+
+    const result = await executeForcedRouting(
+      'Pre-generated OTel 데이터 SSOT 파일 경로와 데이터 로더 경로 알려줘',
+      'Advisor Agent',
+      Date.now(),
+      true,
+      true,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      'developer'
     );
 
     expect(result?.success).toBe(true);

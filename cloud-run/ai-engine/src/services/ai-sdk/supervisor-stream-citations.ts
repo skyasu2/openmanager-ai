@@ -1,4 +1,9 @@
 import type { RagSource } from '../../lib/ai-sdk-utils';
+import {
+  buildInternalImplementationPathRefusal,
+  shouldRefuseInternalImplementationPathRequest,
+  type InternalDisclosureMode,
+} from './internal-disclosure-policy';
 
 const URL_PATTERN = /https?:\/\//i;
 
@@ -181,8 +186,18 @@ export function hasWebSearchFallbackAnswer(
 
 export function buildKnowledgeBaseGroundedAnswer(
   query: string,
-  toolResults: ToolResultLike[]
+  toolResults: ToolResultLike[],
+  options: { internalDisclosureMode?: InternalDisclosureMode } = {}
 ): string | null {
+  if (
+    shouldRefuseInternalImplementationPathRequest(
+      query,
+      options.internalDisclosureMode
+    )
+  ) {
+    return buildInternalImplementationPathRefusal();
+  }
+
   const knowledgeOutputs = toolResults
     .filter((result) => result.toolName === 'searchKnowledgeBase')
     .map((result) => readRecord(result.result))

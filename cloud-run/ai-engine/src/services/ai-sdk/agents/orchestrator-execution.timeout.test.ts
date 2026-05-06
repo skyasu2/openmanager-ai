@@ -198,6 +198,7 @@ describe('executeMultiAgent timeout contract', () => {
       undefined,
       null,
       undefined,
+      undefined,
       undefined
     );
     expect(result.success).toBe(true);

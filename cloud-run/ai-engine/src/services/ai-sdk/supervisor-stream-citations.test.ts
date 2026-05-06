@@ -165,18 +165,45 @@ describe('buildWebSearchFallbackAnswer', () => {
     ).toBeNull();
   });
 
-  it('returns a no-evidence answer for internal knowledge lookups with no RAG results', () => {
+  it('refuses internal implementation path disclosure in user mode', () => {
     const answer = buildKnowledgeBaseGroundedAnswer(
       'Pre-generated OTel 데이터 SSOT 파일 경로 알려줘',
       [{ toolName: 'searchKnowledgeBase', result: { results: [] } }]
     );
 
-    expect(answer).toContain('내부 근거를 찾지 못했습니다');
-    expect(answer).toContain('관련 문서나 파일 경로가 0건');
+    expect(answer).toContain('일반 사용자 모드');
+    expect(answer).toContain('구현 파일 경로');
+    expect(answer).not.toContain('public/data/otel-data');
     expect(answer).not.toContain('/path/to');
   });
 
-  it('extracts only grounded repo paths from internal knowledge results', () => {
+  it('refuses rephrased internal implementation file disclosure in user mode', () => {
+    const answer = buildKnowledgeBaseGroundedAnswer(
+      'OpenManager OTel SSOT는 어느 파일에 정의돼?',
+      [
+        {
+          toolName: 'searchKnowledgeBase',
+          result: {
+            results: [
+              {
+                title: 'OpenManager OTel SSOT',
+                content:
+                  '정의 파일은 public/data/otel-data/resource-catalog.json 및 src/data/otel-data/index.ts 입니다.',
+                similarity: 0.91,
+                sourceType: 'knowledge',
+              },
+            ],
+          },
+        },
+      ]
+    );
+
+    expect(answer).toContain('일반 사용자 모드');
+    expect(answer).not.toContain('public/data/otel-data');
+    expect(answer).not.toContain('src/data/otel-data');
+  });
+
+  it('extracts only grounded repo paths from internal knowledge results in developer mode', () => {
     const answer = buildKnowledgeBaseGroundedAnswer(
       'Pre-generated OTel 데이터 SSOT 파일 경로 알려줘',
       [
@@ -194,7 +221,8 @@ describe('buildWebSearchFallbackAnswer', () => {
             ],
           },
         },
-      ]
+      ],
+      { internalDisclosureMode: 'developer' }
     );
 
     expect(answer).toContain('`public/data/otel-data/hourly/hour-XX.json`');

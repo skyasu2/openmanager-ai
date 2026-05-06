@@ -60,6 +60,11 @@ import {
   buildWebSearchFallbackAnswer,
   hasWebSearchFallbackAnswer,
 } from './supervisor-stream-citations';
+import {
+  buildInternalImplementationPathPolicyMetadata,
+  buildInternalImplementationPathRefusal,
+  shouldRefuseInternalImplementationPathRequest,
+} from './internal-disclosure-policy';
 import { createStructuredTextDeltaGuard } from './supervisor-stream-text-guard';
 import { buildDeterministicSummaryFallback } from './agents/orchestrator-summary-fallback';
 import { FORCE_KB_QUERY_PATTERN } from './query-routing-signals';
@@ -336,6 +341,7 @@ export async function* executeSupervisorStream(
     routeDecision
   );
   const mode = modeDecision.resolvedMode;
+  const queryText = getLastUserQueryText(runtimeRequest.messages);
 
   logger.info({
     sessionId: request.sessionId,
@@ -344,6 +350,36 @@ export async function* executeSupervisorStream(
     modeSelectionSource: modeDecision.modeSelectionSource,
     autoSelectedByComplexity: modeDecision.autoSelectedByComplexity,
   }, '[SupervisorStream] Mode resolved');
+
+  if (
+    shouldRefuseInternalImplementationPathRequest(
+      queryText,
+      runtimeRequest.internalDisclosureMode
+    )
+  ) {
+    const durationMs = Date.now() - startTime;
+    const answer = buildInternalImplementationPathRefusal();
+    yield { type: 'text_delta', data: answer };
+    yield {
+      type: 'done',
+      data: {
+        success: true,
+        toolsCalled: [],
+        usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+        metadata: {
+          ...buildInternalImplementationPathPolicyMetadata(durationMs),
+          mode,
+          ...(request.queryAsOf && { queryAsOf: request.queryAsOf }),
+          ...buildSupervisorModeMetadata(modeDecision),
+          routeDecision,
+          assistantPlan,
+          assistantRuntime: runtimeMetadata,
+          assistantResult: buildSupervisorAssistantResult(routeDecision),
+        },
+      },
+    };
+    return;
+  }
 
   if (mode === 'multi') {
     try {
@@ -357,6 +393,9 @@ export async function* executeSupervisorStream(
         enableTracing: request.enableTracing,
         enableWebSearch: request.enableWebSearch,
         enableRAG: request.enableRAG,
+        ...(request.internalDisclosureMode && {
+          internalDisclosureMode: request.internalDisclosureMode,
+        }),
         images: request.images,
         files: request.files,
         dataSource: runtimeContext.host.domain.dataSource,
@@ -511,6 +550,40 @@ async function* streamSingleAgent(
   if (!runtimeHost) {
     throw new Error('Supervisor runtime host is required for stream execution');
   }
+
+  if (
+    shouldRefuseInternalImplementationPathRequest(
+      queryText,
+      request.internalDisclosureMode
+    )
+  ) {
+    const durationMs = Date.now() - startTime;
+    const answer = buildInternalImplementationPathRefusal();
+    yield { type: 'text_delta', data: answer };
+    yield {
+      type: 'done',
+      data: {
+        success: true,
+        toolsCalled: [],
+        usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+        metadata: {
+          ...buildInternalImplementationPathPolicyMetadata(durationMs),
+          mode: 'single',
+          ...(request.queryAsOf && { queryAsOf: request.queryAsOf }),
+          ...(modeDecision ? buildSupervisorModeMetadata(modeDecision) : {}),
+          ...(routeDecision && { routeDecision }),
+          ...(assistantPlan && { assistantPlan }),
+          ...(routeDecision && {
+            assistantResult: buildSupervisorAssistantResult(routeDecision),
+          }),
+          ...(runtimeMetadata && { assistantRuntime: runtimeMetadata }),
+          ...buildDegradedMetadata(degradedFallbackContext, {}),
+        },
+      },
+    };
+    return;
+  }
+
   const modelMessages = buildSupervisorStreamMessages(
     request,
     runtimeHost.createSystemPrompt({ deviceType: request.deviceType })
@@ -558,7 +631,9 @@ async function* streamSingleAgent(
           { toolName: 'searchKnowledgeBase', result: knowledgeResult },
         ];
         const answer =
-          buildKnowledgeBaseGroundedAnswer(queryText, collectedToolResults) ??
+          buildKnowledgeBaseGroundedAnswer(queryText, collectedToolResults, {
+            internalDisclosureMode: request.internalDisclosureMode,
+          }) ??
           [
             '내부 근거를 찾지 못했습니다.',
             `- 질의: ${queryText}`,

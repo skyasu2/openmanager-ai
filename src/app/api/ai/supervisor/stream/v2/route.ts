@@ -33,13 +33,14 @@ import {
   normalizeMessagesForCloudRun,
 } from '@/lib/ai/utils/message-normalizer';
 import { getRequiredCloudRunConfig } from '@/lib/ai-proxy/cloud-run-config';
-import { withAuth } from '@/lib/auth/api-auth';
+import { getAPIAuthContext, withAuth } from '@/lib/auth/api-auth';
 import { logger } from '@/lib/logging';
 import {
   getRateLimitIdentity,
   RATE_LIMIT_IDENTITY_HEADER,
 } from '@/lib/security/rate-limit-identity';
 import { rateLimiters, withRateLimit } from '@/lib/security/rate-limiter';
+import { resolveSupervisorInternalDisclosureMode } from '../../internal-disclosure-mode';
 import {
   applySanitizedQueryToMessages,
   extractAndValidateQuery,
@@ -258,6 +259,9 @@ export const POST = withRateLimit(
         req.headers.get('X-Device-Type')
       );
       const rateLimitIdentity = getRateLimitIdentity(req);
+      const internalDisclosureMode = resolveSupervisorInternalDisclosureMode(
+        getAPIAuthContext(req)
+      );
       const warmupStartedAt = parseWarmupStartedAt(
         req.headers.get(AI_WARMUP_STARTED_AT_HEADER)
       );
@@ -434,6 +438,7 @@ export const POST = withRateLimit(
                 enableRAG,
                 analysisMode,
                 queryAsOf,
+                ...(internalDisclosureMode && { internalDisclosureMode }),
                 ...(localRouteDecision && { localRouteDecision }),
               }),
               signal: AbortSignal.timeout(timeoutMs),

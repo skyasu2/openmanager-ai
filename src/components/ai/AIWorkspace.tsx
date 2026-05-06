@@ -478,7 +478,7 @@ export default function AIWorkspace({
 
   if (embedded) {
     return (
-      <div className="flex h-full min-h-[680px] w-full overflow-hidden bg-white text-gray-900">
+      <div className="flex h-full min-h-0 w-full overflow-hidden bg-white text-gray-900">
         <div className="flex min-w-0 flex-1 flex-col">
           <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 py-3">
             <div className="flex min-w-0 flex-wrap items-center gap-2">

@@ -56,6 +56,7 @@ import {
   type RetrievalMetadata,
 } from '../../../lib/retrieval-contract';
 import { buildKnowledgeBaseGroundedAnswer } from '../supervisor-stream-citations';
+import type { InternalDisclosureMode } from '../internal-disclosure-policy';
 import {
   createAgentDataSourceContext,
   resolveDomainSnapshot,
@@ -642,6 +643,7 @@ export async function executeForcedRouting(
   contextSummary?: string | null,
   dataSource?: DomainDataSource,
   domainId?: string,
+  internalDisclosureMode?: InternalDisclosureMode
 ): Promise<MultiAgentResponse | null> {
   logger.info(`[Forced Routing] Looking up agent config: "${suggestedAgentName}"`);
   const dataSourceContext = createAgentDataSourceContext({ query, domainId });
@@ -766,7 +768,9 @@ export async function executeForcedRouting(
           };
           const response = sanitizeChineseCharacters(
             shouldUseGroundedKnowledgeAnswer(query)
-              ? buildKnowledgeBaseGroundedAnswer(query, [directToolResult]) ??
+              ? buildKnowledgeBaseGroundedAnswer(query, [directToolResult], {
+                  internalDisclosureMode,
+                }) ??
                   buildTopologyDirectKnowledgeResponse(query, directEvidence)
               : buildTopologyDirectKnowledgeResponse(query, directEvidence)
           );
@@ -823,7 +827,7 @@ export async function executeForcedRouting(
           const response = sanitizeChineseCharacters(
             buildKnowledgeBaseGroundedAnswer(query, [
               { toolName: 'searchKnowledgeBase', result: directSearchResult },
-            ]) ??
+            ], { internalDisclosureMode }) ??
               [
                 '내부 근거를 찾지 못했습니다.',
                 `- 질의: ${query}`,

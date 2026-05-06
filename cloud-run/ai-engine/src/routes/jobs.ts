@@ -77,7 +77,11 @@ export const jobsRouter = new Hono();
 
 type JobProcessToolOptions = Pick<
   SupervisorRequest,
-  'analysisMode' | 'enableRAG' | 'enableWebSearch' | 'localRouteDecision'
+  | 'analysisMode'
+  | 'enableRAG'
+  | 'enableWebSearch'
+  | 'internalDisclosureMode'
+  | 'localRouteDecision'
 >;
 
 const RETRIEVAL_MODE_SET = new Set<string>(RETRIEVAL_MODES);
@@ -130,6 +134,12 @@ function isWebSearchOption(
   value: unknown
 ): value is SupervisorRequest['enableWebSearch'] {
   return value === true || value === false || value === 'auto';
+}
+
+function isInternalDisclosureMode(
+  value: unknown
+): value is SupervisorRequest['internalDisclosureMode'] {
+  return value === 'user' || value === 'developer';
 }
 
 function parseRetrievalMetadata(value: unknown): RetrievalMetadata | undefined {
@@ -283,6 +293,9 @@ function extractJobProcessToolOptions(
     }),
     ...(isWebSearchOption(payload.enableWebSearch) && {
       enableWebSearch: payload.enableWebSearch,
+    }),
+    ...(isInternalDisclosureMode(payload.internalDisclosureMode) && {
+      internalDisclosureMode: payload.internalDisclosureMode,
     }),
     ...(localRouteDecision && { localRouteDecision }),
   };
@@ -570,6 +583,7 @@ async function processJobSynchronously({
   analysisMode,
   enableRAG,
   enableWebSearch,
+  internalDisclosureMode,
   localRouteDecision,
   queryAsOf,
   startTime,
@@ -580,6 +594,7 @@ async function processJobSynchronously({
   analysisMode?: AnalysisMode;
   enableRAG?: SupervisorRequest['enableRAG'];
   enableWebSearch?: SupervisorRequest['enableWebSearch'];
+  internalDisclosureMode?: SupervisorRequest['internalDisclosureMode'];
   localRouteDecision?: SupervisorRequest['localRouteDecision'];
   queryAsOf?: QueryAsOf;
   startTime: number;
@@ -651,6 +666,7 @@ async function processJobSynchronously({
       analysisMode,
       enableRAG,
       enableWebSearch,
+      internalDisclosureMode,
       localRouteDecision,
       queryAsOf,
       runtimeHost: getDefaultMonitoringAssistantRuntimeHost(),

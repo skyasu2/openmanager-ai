@@ -132,4 +132,19 @@ describe('legacy supervisor route contract headers', () => {
       })
     );
   });
+
+  it('forwards internal disclosure mode only from trusted server-side auth context', async () => {
+    await handleCloudRunJson({
+      ...defaultParams,
+      internalDisclosureMode: 'developer',
+    });
+
+    expect(mockProxyToCloudRun).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: expect.objectContaining({
+          internalDisclosureMode: 'developer',
+        }),
+      })
+    );
+  });
 });

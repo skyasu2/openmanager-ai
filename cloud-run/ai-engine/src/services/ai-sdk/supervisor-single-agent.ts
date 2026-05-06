@@ -69,6 +69,11 @@ import {
 
 import { evaluateAgentResponseQuality } from './agents/response-quality';
 import { shouldRetryForQuality } from './supervisor-quality-retry';
+import {
+  buildInternalImplementationPathPolicyMetadata,
+  buildInternalImplementationPathRefusal,
+  shouldRefuseInternalImplementationPathRequest,
+} from './internal-disclosure-policy';
 
 export { executeSupervisorStream } from './supervisor-stream';
 
@@ -190,6 +195,9 @@ export async function executeSupervisor(
       : { ...request, runtimeHost: runtimeContext.host };
   const modeDecision = resolveSupervisorModeDecision(runtimeRequest);
   const mode = modeDecision.resolvedMode;
+  const queryText = runtimeRequest.messages
+    .filter((message) => message.role === 'user')
+    .at(-1)?.content ?? '';
 
   logger.info({
     sessionId: request.sessionId,
@@ -198,6 +206,28 @@ export async function executeSupervisor(
     modeSelectionSource: modeDecision.modeSelectionSource,
     autoSelectedByComplexity: modeDecision.autoSelectedByComplexity,
   }, '[Supervisor] Mode resolved');
+
+  if (
+    shouldRefuseInternalImplementationPathRequest(
+      queryText,
+      runtimeRequest.internalDisclosureMode
+    )
+  ) {
+    const durationMs = Date.now() - startTime;
+    const response = buildInternalImplementationPathRefusal();
+    return {
+      success: true,
+      response,
+      toolsCalled: [],
+      toolResults: [],
+      usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+      metadata: {
+        ...buildInternalImplementationPathPolicyMetadata(durationMs),
+        ...buildSupervisorModeMetadata(modeDecision),
+        ...(runtimeMetadata && { assistantRuntime: runtimeMetadata }),
+      },
+    };
+  }
 
   if (mode === 'multi') {
     return executeMultiAgentMode(
@@ -240,6 +270,9 @@ async function executeMultiAgentMode(
       enableTracing: request.enableTracing,
       enableWebSearch: request.enableWebSearch,
       enableRAG: request.enableRAG,
+      ...(request.internalDisclosureMode && {
+        internalDisclosureMode: request.internalDisclosureMode,
+      }),
       images: request.images,
       files: request.files,
       dataSource: request.runtimeHost?.domain.dataSource,

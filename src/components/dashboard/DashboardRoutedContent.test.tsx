@@ -242,4 +242,20 @@ describe('DashboardRoutedContent route query contracts', () => {
       })
     );
   });
+
+  it('AI 어시스턴트 route는 외부 page scroll 대신 고정 높이 workspace를 사용한다', () => {
+    render(<DashboardRoutedContent {...baseProps} view="ai-assistant" />);
+
+    const routeFrame = screen.getByRole('main');
+    const workspaceFrame = screen.getByTestId('ai-workspace').parentElement;
+
+    expect(routeFrame).toHaveClass('overflow-hidden');
+    expect(routeFrame).not.toHaveClass('overflow-y-auto');
+    expect(workspaceFrame).toHaveClass(
+      'flex',
+      'min-h-0',
+      'flex-1',
+      'overflow-hidden'
+    );
+  });
 });

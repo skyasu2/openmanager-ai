@@ -328,6 +328,32 @@ describe('Jobs Routes', () => {
       );
     });
 
+    it('internalDisclosureMode 옵션을 supervisor stream에 보존한다', async () => {
+      const res = await app.request('/jobs/process', {
+        method: 'POST',
+        body: JSON.stringify({
+          jobId: 'job-internal-disclosure',
+          messages: [
+            {
+              role: 'user',
+              content: 'OpenManager OTel SSOT는 어느 파일에 정의돼?',
+            },
+          ],
+          sessionId: 'session-internal-disclosure',
+          internalDisclosureMode: 'developer',
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      expect(res.status).toBe(200);
+      expect(vi.mocked(executeSupervisorStream)).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sessionId: 'session-internal-disclosure',
+          internalDisclosureMode: 'developer',
+        })
+      );
+    });
+
     it('queryAsOf 데이터 슬롯을 supervisor와 결과 metadata에 보존한다', async () => {
       const queryAsOf = {
         createdAt: '2026-04-29T05:55:00.000Z',

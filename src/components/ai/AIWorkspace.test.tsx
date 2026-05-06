@@ -363,6 +363,14 @@ describe('AIWorkspace', () => {
     expect(screen.queryByText('AI Engine Active')).not.toBeInTheDocument();
   });
 
+  it('keeps embedded workspace root bounded by the dashboard route frame', () => {
+    const { container } = render(<AIWorkspace embedded />);
+    const embeddedRoot = container.firstElementChild;
+
+    expect(embeddedRoot).toHaveClass('h-full', 'min-h-0', 'overflow-hidden');
+    expect(embeddedRoot?.className).not.toContain('min-h-[680px]');
+  });
+
   it('keeps the embedded mobile AI route as a dashboard function page', async () => {
     mockViewportMedia(true);
     const setOpen = vi.fn();

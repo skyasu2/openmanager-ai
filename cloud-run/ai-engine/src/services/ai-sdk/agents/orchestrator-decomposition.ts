@@ -12,7 +12,7 @@ import { TIMEOUT_CONFIG } from '../../../config/timeout-config';
 import type { DomainDataSource } from '../../../core/assistant-runtime';
 import type { StreamEvent } from '../supervisor';
 import type { FileAttachment, ImageAttachment } from './base-agent';
-import type { MultiAgentResponse } from './orchestrator-types';
+import type { MultiAgentRequest, MultiAgentResponse } from './orchestrator-types';
 import {
   getOrchestratorModel,
   getAgentConfig,
@@ -57,6 +57,7 @@ async function executeSubtaskWithTimeout(
   files: FileAttachment[] | undefined,
   dataSource: DomainDataSource | undefined,
   domainId: string | undefined,
+  internalDisclosureMode: MultiAgentRequest['internalDisclosureMode'] | undefined,
   logPrefix: string
 ): Promise<MultiAgentResponse | null> {
   const subtaskTimeoutMs = TIMEOUT_CONFIG.subtask.hard;
@@ -86,7 +87,8 @@ async function executeSubtaskWithTimeout(
     files,
     undefined,
     dataSource,
-    domainId
+    domainId,
+    internalDisclosureMode
   );
 
   try {
@@ -209,7 +211,8 @@ export async function executeParallelSubtasks(
   images?: ImageAttachment[],
   files?: FileAttachment[],
   dataSource?: DomainDataSource,
-  domainId?: string
+  domainId?: string,
+  internalDisclosureMode?: MultiAgentRequest['internalDisclosureMode']
 ): Promise<MultiAgentResponse | null> {
   logger.info(`[Parallel] Executing ${subtasks.length} subtasks in parallel...`);
 
@@ -226,6 +229,7 @@ export async function executeParallelSubtasks(
       files,
       dataSource,
       domainId,
+      internalDisclosureMode,
       'Parallel'
     );
     return { subtask, result, index };
@@ -308,7 +312,8 @@ export async function* executeParallelSubtasksStream(
   images?: ImageAttachment[],
   files?: FileAttachment[],
   dataSource?: DomainDataSource,
-  domainId?: string
+  domainId?: string,
+  internalDisclosureMode?: MultiAgentRequest['internalDisclosureMode']
 ): AsyncGenerator<StreamEvent> {
   logger.info(`[ParallelStream] Executing ${subtasks.length} subtasks in parallel...`);
 
@@ -337,6 +342,7 @@ export async function* executeParallelSubtasksStream(
       files,
       dataSource,
       domainId,
+      internalDisclosureMode,
       'ParallelStream'
     );
     return { subtask, result, index };
@@ -441,7 +447,8 @@ export async function* executeSequentialSubtasksStream(
   images?: ImageAttachment[],
   files?: FileAttachment[],
   dataSource?: DomainDataSource,
-  domainId?: string
+  domainId?: string,
+  internalDisclosureMode?: MultiAgentRequest['internalDisclosureMode']
 ): AsyncGenerator<StreamEvent> {
   logger.info(`[SequentialStream] Executing ${subtasks.length} subtasks sequentially...`);
 
@@ -485,6 +492,7 @@ export async function* executeSequentialSubtasksStream(
       files,
       dataSource,
       domainId,
+      internalDisclosureMode,
       'SequentialStream'
     );
 
