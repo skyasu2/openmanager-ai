@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Draft
+> Status: Approved
 > Doc type: Plan
 > Last reviewed: 2026-05-06
 > Tags: ai-assistant, artifact-workspace, replay-pack, frontend, qa
@@ -59,6 +59,13 @@ The workspace UI must expose these states:
 - Comparing: two selected replay packs render a comparison summary.
 - Error: invalid JSON, unsupported export version, no selected pack, or no supported artifact entries.
 
+The compare interaction must use explicit user selection:
+
+- Compare requires two different replay packs.
+- If fewer than two packs are available, compare controls remain disabled.
+- If the same pack is selected for both sides, the UI must show an error state instead of comparing.
+- Selected packs must be compared with deterministic replay-pack data only. The compare action must not read chat messages, call network APIs, or mutate stored replay packs.
+
 Expected compare fields:
 
 - matched entries
@@ -73,7 +80,8 @@ Expected compare fields:
 - Unsupported artifacts must never be passed to typed renderer cards.
 - Session store writes must stay local to `sessionStorage` unless a test injects a storage adapter.
 - Export/import/compare must be deterministic and testable without a browser network.
-- UI tests must prove no fetch/LLM/DB write is required for the workflow.
+- UI tests must prove no `fetch`, DB client, AI route, LLM, or provider adapter call is required for the workflow.
+- Import uses browser file selection only; parsing happens in the component/hook boundary and then delegates to the existing replay-pack import helper.
 
 ## 5. Target Files
 
@@ -104,8 +112,10 @@ Failing tests must be added before implementation if this plan is approved.
 - Import action rejects unsupported export versions.
 - Import action normalizes unsupported entries according to the finalized import contract and surfaces the result clearly.
 - Compare action renders matched, missing, added, and changed counts for selected replay packs.
+- Compare action is disabled when fewer than two replay packs exist.
+- Compare action rejects selecting the same pack for both sides.
 - Clear action removes local session workspace state.
-- Unit/integration tests assert that this UI path does not call `fetch`, DB clients, or LLM/provider adapters.
+- Unit/integration tests assert that this UI path does not call `fetch`, DB clients, AI routes, or LLM/provider adapters.
 
 ## 7. Work Breakdown
 
@@ -134,9 +144,9 @@ Failing tests must be added before implementation if this plan is approved.
 
 ## 8. Approval Gate
 
-Status is `Draft`.
+Status is `Approved`.
 
-Implementation should not start until the contract and test scenarios above are accepted and the plan is moved to `Approved`.
+Implementation may start after a failing spec commit is created.
 
 ## 9. Completion Criteria
 
