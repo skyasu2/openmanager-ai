@@ -13,12 +13,40 @@ export const CEREBRAS_DEPRECATION_REPLACEMENT =
 export type ProviderModelRole = 'primary' | 'fallback' | 'vision' | 'excluded';
 export type ProviderModelLifecycle = 'production' | 'preview' | 'custom';
 export type ProviderModelSmokeStatus = 'green' | 'red' | 'unknown';
+export type ProviderReasoningCapabilityKind = 'none' | 'provider-native';
+export type ProviderReasoningCapabilitySmokeSource =
+  | 'mock-contract'
+  | 'manual-smoke'
+  | 'provider-doc';
+export type ProviderReasoningCapabilityOptionShape =
+  | 'reasoning_effort'
+  | 'reasoning_format'
+  | 'thinking_config'
+  | 'provider_options'
+  | 'unknown';
+export type ProviderReasoningCapabilityReasonCode =
+  | 'enabled'
+  | 'not-supported'
+  | 'policy-disabled'
+  | 'opt-in-required'
+  | 'expired';
 
 export interface ProviderModelQuota {
   requestsPerMinute: number;
   tokensPerMinute: number;
   requestsPerDay: number;
   tokensPerDay: number;
+}
+
+export interface ProviderReasoningCapability {
+  kind: ProviderReasoningCapabilityKind;
+  defaultEnabled: false;
+  requiresOptIn: boolean;
+  lastVerified?: string;
+  expiresAt?: string;
+  smokeSource: ProviderReasoningCapabilitySmokeSource;
+  optionShape: ProviderReasoningCapabilityOptionShape;
+  publicSummary: string;
 }
 
 export interface ProviderModelPolicy {
@@ -35,6 +63,7 @@ export interface ProviderModelPolicy {
   blockAfterDeprecation: boolean;
   smokeStatus: ProviderModelSmokeStatus;
   smokeEvidence: string[];
+  reasoningCapability: ProviderReasoningCapability;
   freeTierLimitSummary: string;
   sourceUrls: string[];
   recommendedReplacement?: string;
@@ -61,6 +90,40 @@ export type ProviderModelPolicyFreshnessOptions = {
   maxAgeDays?: number;
 };
 
+export type ProviderReasoningCapabilityStatusOptions = {
+  asOf?: Date;
+  optIn?: boolean;
+};
+
+export interface ProviderReasoningCapabilityStatus {
+  provider: ProviderName;
+  modelId: string;
+  kind: ProviderReasoningCapabilityKind;
+  enabled: boolean;
+  reasonCode: ProviderReasoningCapabilityReasonCode;
+  publicSummary: string;
+  publicMetadata: {
+    provider: ProviderName;
+    modelId: string;
+    kind: ProviderReasoningCapabilityKind;
+    enabled: boolean;
+    defaultEnabled: false;
+    requiresOptIn: boolean;
+    lastVerified?: string;
+    expiresAt?: string;
+    smokeSource: ProviderReasoningCapabilitySmokeSource;
+    optionShape: ProviderReasoningCapabilityOptionShape;
+    publicSummary: string;
+  };
+}
+
+export interface ProviderReasoningCapabilityFinding {
+  provider: ProviderName;
+  modelId: string;
+  severity: 'P2';
+  reason: string;
+}
+
 export type CerebrasRuntimeModelId =
   typeof CEREBRAS_LLAMA_FALLBACK_MODEL_ID;
 
@@ -71,6 +134,7 @@ const CEREBRAS_SOURCE_URLS = [
   'https://inference-docs.cerebras.ai/models/overview',
   'https://inference-docs.cerebras.ai/support/rate-limits',
   'https://inference-docs.cerebras.ai/capabilities/tool-use',
+  'https://inference-docs.cerebras.ai/capabilities/reasoning',
 ];
 
 const EMPTY_QUOTA: ProviderModelQuota = {
@@ -78,6 +142,26 @@ const EMPTY_QUOTA: ProviderModelQuota = {
   tokensPerMinute: 0,
   requestsPerDay: 0,
   tokensPerDay: 0,
+};
+
+const NO_PROVIDER_NATIVE_REASONING: ProviderReasoningCapability = {
+  kind: 'none',
+  defaultEnabled: false,
+  requiresOptIn: false,
+  smokeSource: 'mock-contract',
+  optionShape: 'unknown',
+  publicSummary:
+    'Provider-native reasoning is not enabled for this OpenManager runtime policy.',
+};
+
+const CEREBRAS_GPT_OSS_PROVIDER_REASONING: ProviderReasoningCapability = {
+  kind: 'provider-native',
+  defaultEnabled: false,
+  requiresOptIn: true,
+  smokeSource: 'provider-doc',
+  optionShape: 'reasoning_effort',
+  publicSummary:
+    'Official Cerebras docs describe GPT-OSS reasoning controls, but this model is not enabled for the current OpenManager runtime policy.',
 };
 
 export const CEREBRAS_MODEL_POLICIES = {
@@ -98,6 +182,7 @@ export const CEREBRAS_MODEL_POLICIES = {
       '2026-04-30 account smoke returned 429 high traffic',
       'official Cerebras docs list this as a Preview model, not Production',
     ],
+    reasoningCapability: NO_PROVIDER_NATIVE_REASONING,
     freeTierLimitSummary:
       'Preview model retained for explicit override detection only; not a production runtime default',
     sourceUrls: CEREBRAS_SOURCE_URLS,
@@ -126,6 +211,7 @@ export const CEREBRAS_MODEL_POLICIES = {
       'tool calling smoke passed',
       'generateObject smoke passed',
     ],
+    reasoningCapability: NO_PROVIDER_NATIVE_REASONING,
     freeTierLimitSummary:
       `Free: 30 RPM / 60K TPM / 14.4K RPD / 1M TPD; ~2200 t/s; deprecated ${CEREBRAS_LLAMA_DEPRECATION_DATE}`,
     sourceUrls: CEREBRAS_SOURCE_URLS,
@@ -146,6 +232,7 @@ export const CEREBRAS_MODEL_POLICIES = {
       'current account chat completions smoke returned 404',
       'not shown in account free-tier Limits list',
     ],
+    reasoningCapability: CEREBRAS_GPT_OSS_PROVIDER_REASONING,
     freeTierLimitSummary:
       'not in free-tier runtime candidates; current key chat smoke returned 404',
     sourceUrls: CEREBRAS_SOURCE_URLS,
@@ -175,6 +262,7 @@ export function getCerebrasModelPolicy(modelId = DEFAULT_CEREBRAS_MODEL): Provid
       blockAfterDeprecation: false,
       smokeStatus: 'unknown',
       smokeEvidence: ['custom override requires entitlement smoke before production use'],
+      reasoningCapability: NO_PROVIDER_NATIVE_REASONING,
       freeTierLimitSummary: 'custom override; verify account entitlement before production use',
       sourceUrls: CEREBRAS_SOURCE_URLS,
       recommendedReplacement: DEFAULT_CEREBRAS_MODEL,
@@ -259,6 +347,69 @@ export function getStaleProviderModelPolicyFindings(
   });
 }
 
+export function getProviderReasoningCapabilityStatus(
+  policy: ProviderModelPolicy,
+  options: ProviderReasoningCapabilityStatusOptions = {}
+): ProviderReasoningCapabilityStatus {
+  const capability = policy.reasoningCapability;
+  const asOf = options.asOf ?? new Date();
+  const expired = isReasoningCapabilityExpired(capability, asOf);
+  const reasonCode: ProviderReasoningCapabilityReasonCode =
+    capability.kind === 'none'
+      ? 'not-supported'
+      : !policy.enabled
+        ? 'policy-disabled'
+        : expired
+          ? 'expired'
+          : capability.requiresOptIn && !options.optIn
+            ? 'opt-in-required'
+            : 'enabled';
+  const enabled = reasonCode === 'enabled';
+
+  return {
+    provider: policy.provider,
+    modelId: policy.modelId,
+    kind: capability.kind,
+    enabled,
+    reasonCode,
+    publicSummary: capability.publicSummary,
+    publicMetadata: {
+      provider: policy.provider,
+      modelId: policy.modelId,
+      kind: capability.kind,
+      enabled,
+      defaultEnabled: capability.defaultEnabled,
+      requiresOptIn: capability.requiresOptIn,
+      lastVerified: capability.lastVerified,
+      expiresAt: capability.expiresAt,
+      smokeSource: capability.smokeSource,
+      optionShape: capability.optionShape,
+      publicSummary: capability.publicSummary,
+    },
+  };
+}
+
+export function getProviderReasoningCapabilityFindings(
+  policies: readonly ProviderModelPolicy[] = getCerebrasRuntimeModelPolicies(),
+  options: ProviderReasoningCapabilityStatusOptions = {}
+): ProviderReasoningCapabilityFinding[] {
+  return policies.flatMap((policy) => {
+    const status = getProviderReasoningCapabilityStatus(policy, options);
+    if (status.reasonCode !== 'expired') return [];
+
+    return [
+      {
+        provider: policy.provider,
+        modelId: policy.modelId,
+        severity: 'P2' as const,
+        reason: policy.reasoningCapability.expiresAt
+          ? `provider-native reasoning capability expired on ${policy.reasoningCapability.expiresAt}; disabled until re-verified`
+          : 'provider-native reasoning capability has no expiry; disabled until re-verified',
+      },
+    ];
+  });
+}
+
 function readLatestSmokeEvidenceDate(
   smokeEvidence: readonly string[]
 ): string | undefined {
@@ -271,6 +422,24 @@ function readLatestSmokeEvidenceDate(
     .filter((value): value is string => typeof value === 'string')
     .sort()
     .at(-1);
+}
+
+function isReasoningCapabilityExpired(
+  capability: ProviderReasoningCapability,
+  asOf: Date
+): boolean {
+  if (capability.kind !== 'provider-native') {
+    return false;
+  }
+
+  if (!capability.expiresAt) return true;
+
+  const expiryStart = Date.parse(`${capability.expiresAt}T00:00:00Z`);
+  if (!Number.isFinite(expiryStart)) return true;
+
+  const startOfNextDayUtc = new Date(expiryStart);
+  startOfNextDayUtc.setUTCDate(startOfNextDayUtc.getUTCDate() + 1);
+  return asOf >= startOfNextDayUtc;
 }
 
 function normalizePositiveInteger(value: number | undefined): number | undefined {

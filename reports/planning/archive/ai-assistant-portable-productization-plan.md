@@ -1,12 +1,12 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-06
 > Tags: ai-assistant,portable-core,domain-pack,provider-policy,productization
 
 # AI Assistant Portable Productization Plan
 
-- 상태: Approved
+- 상태: Completed
 - 작성일: 2026-05-06
 - TODO.md 연결: Active Tasks > `AI assistant portable productization and provider policy hardening`
 - 기준 archive:
@@ -126,14 +126,14 @@ OpenManager runtime의 현재 Cerebras 기본 모델 `llama3.1-8b`는 provider-n
 
 ### 테스트 시나리오 (구현 전 확정)
 
-- [ ] Portable package boundary guard: public facade `core/assistant-runtime/index.ts`가 monitoring domain implementation, services/monitoring, provider policy를 직접 import/export하지 않는다.
-- [ ] Core dependency guard: `cloud-run/ai-engine/src/core/assistant-runtime/**`에 monitoring/provider-specific dependency가 추가되면 실패한다.
-- [ ] Sample domain adoption smoke: sample domain pack이 public facade export와 in-memory adapters만으로 route/tool/artifact/fact path를 통과한다.
-- [ ] Supervisor compatibility smoke: monitoring default runtime host는 기존 tool/prompt/prepare-step behavior를 유지한다.
-- [ ] Provider reasoning stale guard: `expiresAt`이 지난 provider-native reasoning capability는 opt-in이어도 disabled로 평가된다.
-- [ ] Provider reasoning app-level distinction: `analysisMode='thinking'` routing intensity는 `reasoningCapability.kind='provider-native'`로 오인되지 않는다.
-- [ ] Public metadata safety: capability metadata와 assistant runtime metadata가 raw provider payload나 secret-like value를 노출하지 않는다.
-- [ ] Docs/example consistency: adoption guide의 import path와 sample fixture가 실제 exported API와 일치한다.
+- [x] Portable package boundary guard: public facade `core/assistant-runtime/index.ts`가 monitoring domain implementation, services/monitoring, provider policy를 직접 import/export하지 않는다.
+- [x] Core dependency guard: `cloud-run/ai-engine/src/core/assistant-runtime/**`에 monitoring/provider-specific dependency가 추가되면 실패한다.
+- [x] Sample domain adoption smoke: sample domain pack이 public facade export와 in-memory adapters만으로 route/tool/artifact/fact path를 통과한다.
+- [x] Supervisor compatibility smoke: monitoring default runtime host는 기존 tool/prompt/prepare-step behavior를 유지한다.
+- [x] Provider reasoning stale guard: `expiresAt`이 지난 provider-native reasoning capability는 opt-in이어도 disabled로 평가된다.
+- [x] Provider reasoning app-level distinction: `analysisMode='thinking'` routing intensity는 `reasoningCapability.kind='provider-native'`로 오인되지 않는다.
+- [x] Public metadata safety: capability metadata와 assistant runtime metadata가 raw provider payload나 secret-like value를 노출하지 않는다.
+- [x] Docs/example consistency: adoption guide의 import path와 sample fixture가 실제 exported API와 일치한다.
 
 ## Task 목록
 
@@ -143,28 +143,28 @@ OpenManager runtime의 현재 Cerebras 기본 모델 `llama3.1-8b`는 provider-n
   - public facade 파일 위치 확정
   - example/domain pack 위치 확정
   - reasoning capability field 이름과 stale 기준 확정
-- [ ] Task 1 — failing specs 작성
+- [x] Task 1 — failing specs 작성
   - package boundary guard
   - sample adoption smoke
   - provider reasoning capability policy contract
   - public metadata safety guard
-- [ ] Task 2 — portable runtime public facade 정리
+- [x] Task 2 — portable runtime public facade 정리
   - 외부 재사용 표면을 `index.ts` 또는 dedicated facade로 고정
   - internal-only API가 public facade에 섞이지 않도록 guard 추가
-- [ ] Task 3 — sample domain adoption kit 정리
+- [x] Task 3 — sample domain adoption kit 정리
   - sample domain pack을 도입 예제로 읽기 쉽게 정리
   - minimal adapter wiring 예제 추가
   - live provider/Cloud dependency 없이 동작 보장
-- [ ] Task 4 — provider reasoning capability policy 구현
+- [x] Task 4 — provider reasoning capability policy 구현
   - provider/model policy에 reasoning capability contract 추가
   - `thinking` app-level routing intensity와 native reasoning capability 구분
   - stale/expired capability disabled behavior 고정
-- [ ] Task 5 — adoption guide 작성
+- [x] Task 5 — adoption guide 작성
   - domain pack 작성 절차
   - adapter 교체 checklist
   - supervisor runtime host 연결 절차
   - Free Tier/secret/test 원칙
-- [ ] Task 6 — validation 및 planning 정리
+- [x] Task 6 — validation 및 planning 정리
   - targeted tests
   - AI Engine `type-check`
   - AI Engine test subset 또는 full test 판단
@@ -209,22 +209,23 @@ OpenManager runtime의 현재 Cerebras 기본 모델 `llama3.1-8b`는 provider-n
 
 ## 완료 기준
 
-- [ ] plan Status가 Approved 이상으로 전환된 뒤 구현 착수
-- [ ] 테스트 시나리오 전체 통과
-- [ ] portable runtime public facade 경계가 명시됨
-- [ ] sample domain adoption smoke가 external-domain 관점에서 통과
-- [ ] provider reasoning capability policy가 `thinking`과 분리됨
-- [ ] stale/expired provider-native reasoning capability가 disabled로 평가됨
-- [ ] adoption guide가 실제 import path와 일치함
-- [ ] 기존 monitoring supervisor stream/single-agent behavior 유지
-- [ ] AI Engine `npm run type-check`
-- [ ] AI Engine targeted tests 통과
-- [ ] root `npm run test:contract`
-- [ ] `npm run docs:budget`
-- [ ] `npm run docs:ai-consistency`
-- [ ] `git diff --check`
+- [x] plan Status가 Approved 이상으로 전환된 뒤 구현 착수
+- [x] 테스트 시나리오 전체 통과
+- [x] portable runtime public facade 경계가 명시됨
+- [x] sample domain adoption smoke가 external-domain 관점에서 통과
+- [x] provider reasoning capability policy가 `thinking`과 분리됨
+- [x] stale/expired provider-native reasoning capability가 disabled로 평가됨
+- [x] adoption guide가 실제 import path와 일치함
+- [x] 기존 monitoring supervisor stream/single-agent behavior 유지
+- [x] AI Engine `npm run type-check`
+- [x] AI Engine targeted tests 통과
+- [x] root `npm run test:contract`
+- [x] `npm run docs:budget`
+- [x] `npm run docs:ai-consistency`
+- [x] `git diff --check`
 
 ## 진행 로그
 
 - 2026-05-06: 최근 3일 작업 분석 결과, internal portable core/domain pack과 production supervisor domain-agnostic wiring은 완료된 것으로 판정했다. 남은 범위는 external reuse/productization, adoption guide, provider-native reasoning policy contract로 축소해 새 Draft plan으로 분리했다.
 - 2026-05-06: 계약을 Approved로 전환했다. Public facade는 `core/assistant-runtime/index.ts`, sample adoption fixture는 `src/test-fixtures/sample-domain-pack.ts`, adoption guide는 기존 AI Engine architecture 문서 병합으로 고정했다. Provider-native reasoning 공식 문서(Groq/Mistral/Gemini/Cerebras)를 재확인하고 `analysisMode='thinking'`과 별도 capability policy로 분리했다.
+- 2026-05-06: SDD 순서대로 failing spec 커밋 후 구현을 완료했다. `reasoningCapability` 정책 계약과 expired native reasoning disabled helper를 추가했고, portable adoption guide를 기존 AI Engine architecture 문서에 병합했다. 검증은 AI Engine targeted tests `6 files / 30 tests`, AI Engine `type-check`, root `test:contract`, `docs:budget`, `docs:ai-consistency`, `git diff --check` 통과.

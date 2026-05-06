@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-06 KST (`AI assistant portable productization plan approved`)
+**Last Updated**: 2026-05-06 KST (`AI assistant portable productization completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| AI assistant portable productization and provider policy hardening | Medium | Approved | Internal portable core/domain wiring은 완료됨. 남은 external reuse/package boundary, adoption guide, provider-native reasoning capability policy를 [ai-assistant-portable-productization-plan.md](ai-assistant-portable-productization-plan.md)에서 추적. |
+| _No active task_ | — | — | Backlog only. |
 
 ---
 
@@ -41,6 +41,15 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-06 #303)
+- [x] AI assistant portable productization and provider policy hardening
+  - portable runtime public facade를 `cloud-run/ai-engine/src/core/assistant-runtime/index.ts` 기준으로 고정하고 sample adoption fixture를 `cloud-run/ai-engine/src/test-fixtures/sample-domain-pack.ts`로 유지
+  - provider-native `reasoningCapability` 정책 계약과 expired native reasoning disabled helper를 추가해 `analysisMode=thinking`과 provider-native reasoning을 분리
+  - adoption guide를 신규 문서가 아닌 기존 AI Engine architecture 문서에 병합해 domain pack 작성, adapter 교체, runtime host 연결 checklist를 기록
+  - SDD 순서: plan approve → failing specs → implementation → validation
+  - 검증: AI Engine targeted tests `6 files / 30 tests`, AI Engine `type-check`, root `test:contract`, `docs:budget`, `docs:ai-consistency`, `git diff --check`
+  - 상세: [archive/ai-assistant-portable-productization-plan.md](archive/ai-assistant-portable-productization-plan.md)
 
 ### Completed (2026-05-06 #302)
 - [x] Monitoring source error boundary documentation

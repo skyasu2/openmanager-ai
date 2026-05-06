@@ -261,5 +261,24 @@ describe('provider model policy SSOT', () => {
           'provider-native reasoning capability expired on 2026-04-15; disabled until re-verified',
       },
     ]);
+
+    expect(
+      providerReasoningPolicyModule.getProviderReasoningCapabilityStatus?.(
+        {
+          ...expiredNativeReasoningPolicy,
+          reasoningCapability: {
+            ...expiredNativeReasoningPolicy.reasoningCapability,
+            expiresAt: undefined,
+          },
+        },
+        {
+          asOf: new Date('2026-05-06T00:00:00Z'),
+          optIn: true,
+        }
+      )
+    ).toMatchObject({
+      enabled: false,
+      reasonCode: 'expired',
+    });
   });
 });

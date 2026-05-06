@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-05-05
+> Last reviewed: 2026-05-06
 > Canonical: docs/reference/architecture/ai/ai-engine-architecture.md
 > Tags: ai,architecture,deterministic-runtime,multi-agent,cloud-run
 >
@@ -493,6 +493,22 @@ Degraded fallback
 | Provider-native reasoning | 미사용 | 미사용 | reasoning token / raw reasoning trace 증가 없음 | `streamText()` / fallback 호출 옵션 검토 |
 
 운영 표본에서 On/Off 차이를 볼 때는 최소한 `analysisMode`, `routeDecision.executionPath`, `resolvedMode`, `modeSelectionSource`, `assistantPlan.plannerShadow.candidate.executionMode`, `ttfbMs`, `durationMs`, `toolsCalled`, `handoffs`, `fallback`을 함께 비교합니다. UI의 `AI 처리 과정`은 사용자가 경로를 이해하는 보조 정보이고, 버튼 효과의 정량 판단은 위 metadata와 trace/log 표본을 기준으로 합니다.
+
+### Portable Assistant Runtime Adoption
+
+Portable assistant core는 `cloud-run/ai-engine/src/core/assistant-runtime`의 public facade를 기준으로 재사용합니다. 외부 프로젝트 또는 새 domain pack은 `cloud-run/ai-engine/src/core/assistant-runtime/index.ts`에서 export되는 `AssistantDomain`, `AssistantRuntimeConfig`, `createAssistantRuntime`, `createInMemoryAssistantRuntimeAdapters`를 사용하고, monitoring domain 구현이나 provider policy 파일을 직접 import하지 않습니다.
+
+Canonical sample은 `cloud-run/ai-engine/src/test-fixtures/sample-domain-pack.ts`입니다. 이 fixture는 `sample-customer-success` domain pack, deterministic tool, artifact registry, fact path를 포함하고 있으며 OpenManager OTel 데이터, Supabase, Redis, provider key 없이 동작해야 합니다. 새 domain을 붙일 때는 이 sample과 같은 순서로 `routingPolicy`, `tools`, optional `artifacts`, optional fact builder를 채우고 runtime에는 project-specific adapters만 주입합니다.
+
+Minimal wiring checklist:
+
+- `AssistantDomain.id/version/instructions`를 domain 고유 값으로 지정한다.
+- `routingPolicy.decide()`는 domain-neutral `AssistantRouteDecision`만 반환하고 monitoring artifact literal을 core로 올리지 않는다.
+- `tools.listTools()`와 `tools.resolveTool()`은 provider 호출 없이 정의 가능한 tool contract를 반환한다.
+- persistence, queue, trace는 `AssistantRuntimeAdapters`로 교체하고 core runtime 파일에서 직접 infra client를 import하지 않는다.
+- public response metadata에는 `assistantRuntime` 요약과 `reasoningCapability` 요약만 노출하고 raw provider payload, secret-like value, 내부 stack trace를 넣지 않는다.
+
+Provider-native reasoning은 adoption 기본값이 아닙니다. `analysisMode=thinking`은 위 섹션처럼 app-level routing intensity이고, provider/model별 native reasoning은 `cloud-run/ai-engine/src/services/ai-sdk/provider-model-policy.ts`의 `reasoningCapability`에서만 표현합니다. Capability가 `provider-native`여도 `defaultEnabled=false`, `requiresOptIn=true`, `expiresAt` 만료 시 disabled가 기본 계약입니다.
 
 ### Async Job Queue Boundary
 
