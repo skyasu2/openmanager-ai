@@ -103,4 +103,38 @@ describe('frontend artifact renderer registry contract', () => {
     expect(JSON.stringify(entries)).not.toContain('<script>');
     expect(JSON.stringify(entries)).not.toContain('javascript:');
   });
+
+  it('rejects malformed supported-kind envelopes before typed renderer cards receive them', () => {
+    const entries = resolveArtifactRendererEntries({
+      artifactEnvelopes: [
+        {
+          domainId: MONITORING_ARTIFACT_RENDERER_DOMAIN_ID,
+          kind: 'server-snapshot',
+          artifactVersion: ARTIFACT_CONTRACT_VERSION,
+          generatedAt: '2026-05-05T00:00:00.000Z',
+          sourceMode: 'tool-result',
+          payload: {
+            kind: 'server-snapshot',
+            generatedAt: '2026-05-05T00:00:00.000Z',
+            title: 'malformed snapshot',
+          },
+        },
+      ],
+    });
+
+    expect(entries).toEqual([
+      expect.objectContaining({
+        status: 'unsupported',
+        domainId: MONITORING_ARTIFACT_RENDERER_DOMAIN_ID,
+        artifactKind: 'server-snapshot',
+        artifactVersion: ARTIFACT_CONTRACT_VERSION,
+        reason: 'invalid_payload',
+      }),
+    ]);
+    expect(entries).not.toEqual([
+      expect.objectContaining({
+        status: 'supported',
+      }),
+    ]);
+  });
 });
