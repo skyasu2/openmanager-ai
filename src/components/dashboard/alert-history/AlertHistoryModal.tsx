@@ -10,7 +10,6 @@ import {
   useState,
   useTransition,
 } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useAlertHistory } from '@/hooks/dashboard/useAlertHistory';
 import { useScrollSentinel } from '@/hooks/dashboard/useScrollSentinel';
 import { cn } from '@/lib/utils';
@@ -414,27 +413,6 @@ export function AlertHistoryPanel({
         />
       </div>
     </div>
-  );
-}
-
-export function AlertHistoryModal({
-  open,
-  onClose,
-  serverIds,
-  onAskAIAboutAlert,
-  initialServerId,
-}: AlertHistoryModalProps) {
-  return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-h-[90vh] w-[95vw] max-w-5xl flex flex-col gap-0 p-0">
-        <AlertHistoryPanel
-          active={open}
-          serverIds={serverIds}
-          onAskAIAboutAlert={onAskAIAboutAlert}
-          initialServerId={initialServerId}
-        />
-      </DialogContent>
-    </Dialog>
   );
 }
 

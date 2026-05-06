@@ -43,10 +43,6 @@ vi.mock('@/components/dashboard/ImprovedServerCard', () => ({
   ),
 }));
 
-vi.mock('@/components/dashboard/VirtualizedServerList', () => ({
-  default: () => <div data-testid="virtualized-server-list">virtualized</div>,
-}));
-
 vi.mock('@/components/error/ServerCardErrorBoundary', () => ({
   default: ({ children }: { children: ReactNode }) => <>{children}</>,
 }));

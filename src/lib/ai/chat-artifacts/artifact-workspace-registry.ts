@@ -186,12 +186,6 @@ export function resolveArtifactSchemaEntry({
   );
 }
 
-export function isArtifactSchemaSupported(
-  input: ArtifactSchemaKeyInput
-): boolean {
-  return resolveArtifactSchemaEntry(input) !== undefined;
-}
-
 function stableValue(value: unknown): unknown {
   if (Array.isArray(value)) {
     return value.map(stableValue);

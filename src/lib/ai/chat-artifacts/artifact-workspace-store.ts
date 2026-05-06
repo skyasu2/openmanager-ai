@@ -377,13 +377,3 @@ export function createArtifactReplayPackComparisonSummary(
     changedCount,
   };
 }
-
-export function createEmptyArtifactWorkspaceSnapshot(
-  updatedAt = new Date().toISOString()
-): ArtifactWorkspaceSnapshot {
-  return {
-    storeVersion: ARTIFACT_WORKSPACE_STORE_VERSION,
-    updatedAt,
-    replayPacks: [],
-  };
-}

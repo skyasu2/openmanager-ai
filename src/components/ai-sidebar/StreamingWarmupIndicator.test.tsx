@@ -12,7 +12,7 @@ describe('StreamingWarmupIndicator', () => {
   });
 
   afterEach(() => {
-    vi.runOnlyPendingTimers();
+    vi.clearAllTimers();
     vi.useRealTimers();
   });
 

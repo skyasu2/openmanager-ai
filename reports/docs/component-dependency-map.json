@@ -6,28 +6,28 @@
     "excludedRouteLocalNodes": "src/app/**/components/**/*.tsx"
   },
   "inventory": {
-    "sharedComponentNodes": 148,
+    "sharedComponentNodes": 146,
     "routeLocalComponentNodes": 7,
-    "totalComponentNodes": 155
+    "totalComponentNodes": 153
   },
   "metrics": {
-    "componentSourceLines": 30078,
-    "componentNodes": 148,
-    "componentEdges": 139,
-    "graphDensity": 0.006389,
-    "aliasEdges": 42,
+    "componentSourceLines": 29588,
+    "componentNodes": 146,
+    "componentEdges": 136,
+    "graphDensity": 0.006424,
+    "aliasEdges": 39,
     "relativeEdges": 97,
-    "isolatedComponents": 31,
+    "isolatedComponents": 30,
     "sccCycleGroups": 0,
     "largestCycleSize": 0
   },
   "topInDegree": [
     {
-      "component": "ui/dialog",
-      "inDegree": 5
+      "component": "ai/analysis/constants",
+      "inDegree": 4
     },
     {
-      "component": "ai/analysis/constants",
+      "component": "ui/dialog",
       "inDegree": 4
     },
     {
@@ -40,10 +40,6 @@
     },
     {
       "component": "dashboard/shared/StatCell",
-      "inDegree": 3
-    },
-    {
-      "component": "error/ServerCardErrorBoundary",
       "inDegree": 3
     },
     {
@@ -68,6 +64,10 @@
     },
     {
       "component": "ai/IncidentReportArtifactCard",
+      "inDegree": 2
+    },
+    {
+      "component": "ai/MessageActions",
       "inDegree": 2
     }
   ],
@@ -125,7 +125,7 @@
     {
       "fromDomain": "dashboard",
       "toDomain": "dashboard",
-      "count": 36
+      "count": 35
     },
     {
       "fromDomain": "ai",
@@ -150,7 +150,7 @@
     {
       "fromDomain": "dashboard",
       "toDomain": "ui",
-      "count": 6
+      "count": 5
     },
     {
       "fromDomain": "dashboard",
@@ -168,11 +168,6 @@
       "count": 3
     },
     {
-      "fromDomain": "dashboard",
-      "toDomain": "error",
-      "count": 3
-    },
-    {
       "fromDomain": "ui",
       "toDomain": "ui",
       "count": 3
@@ -185,6 +180,11 @@
     {
       "fromDomain": "dashboard",
       "toDomain": "charts",
+      "count": 2
+    },
+    {
+      "fromDomain": "dashboard",
+      "toDomain": "error",
       "count": 2
     },
     {

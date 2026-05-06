@@ -26,9 +26,9 @@
 
 | Inventory Slice | Count |
 | --- | --- |
-| Shared component graph scope (`src/components/**/*.tsx`) | 148 |
+| Shared component graph scope (`src/components/**/*.tsx`) | 146 |
 | Route-local components excluded from graph (`src/app/**/components/**/*.tsx`) | 7 |
-| Total TSX component inventory | 155 |
+| Total TSX component inventory | 153 |
 
 ## App Route-Local Component Distribution
 
@@ -51,13 +51,13 @@ Route-local component files:
 
 | Metric | Value |
 | --- | --- |
-| Component source lines | 30078 |
-| Component nodes | 148 |
-| Component edges | 139 |
+| Component source lines | 29588 |
+| Component nodes | 146 |
+| Component edges | 136 |
 | Graph density | 0.64% |
-| Alias edges (`@/components/*`) | 42 |
+| Alias edges (`@/components/*`) | 39 |
 | Relative edges (`./`, `../`) | 97 |
-| Isolated components | 31 |
+| Isolated components | 30 |
 | SCC cycle groups | 0 |
 | Largest cycle size | 0 |
 
@@ -65,11 +65,11 @@ Route-local component files:
 
 ```mermaid
 flowchart LR
-  d0["ai (38)"]
+  d0["ai (37)"]
   d1["ai-sidebar (15)"]
   d2["auth (1)"]
   d3["charts (2)"]
-  d4["dashboard (32)"]
+  d4["dashboard (31)"]
   d5["emergency (1)"]
   d6["error (3)"]
   d7["home (2)"]
@@ -78,19 +78,19 @@ flowchart LR
   d10["system (2)"]
   d11["ui (22)"]
   d12["unified-profile (3)"]
-  d4 -->|36| d4
+  d4 -->|35| d4
   d0 -->|31| d0
   d1 -->|13| d1
   d1 -->|11| d0
   d9 -->|10| d9
-  d4 -->|6| d11
+  d4 -->|5| d11
   d4 -->|4| d9
   d0 -->|3| d1
   d1 -->|3| d11
-  d4 -->|3| d6
   d11 -->|3| d11
   d0 -->|2| d9
   d4 -->|2| d3
+  d4 -->|2| d6
   d8 -->|2| d8
   d9 -->|2| d12
   d12 -->|2| d12
@@ -106,8 +106,8 @@ flowchart LR
 
 | Domain | Node Count |
 | --- | --- |
-| ai | 38 |
-| dashboard | 32 |
+| ai | 37 |
+| dashboard | 31 |
 | shared | 23 |
 | ui | 22 |
 | ai-sidebar | 15 |
@@ -124,19 +124,19 @@ flowchart LR
 
 | From | To | Edge Count |
 | --- | --- | --- |
-| dashboard | dashboard | 36 |
+| dashboard | dashboard | 35 |
 | ai | ai | 31 |
 | ai-sidebar | ai-sidebar | 13 |
 | ai-sidebar | ai | 11 |
 | shared | shared | 10 |
-| dashboard | ui | 6 |
+| dashboard | ui | 5 |
 | dashboard | shared | 4 |
 | ai | ai-sidebar | 3 |
 | ai-sidebar | ui | 3 |
-| dashboard | error | 3 |
 | ui | ui | 3 |
 | ai | shared | 2 |
 | dashboard | charts | 2 |
+| dashboard | error | 2 |
 | providers | providers | 2 |
 | shared | unified-profile | 2 |
 | unified-profile | unified-profile | 2 |
@@ -151,18 +151,18 @@ flowchart LR
 
 | Component | In-Degree |
 | --- | --- |
-| ui/dialog | 5 |
 | ai/analysis/constants | 4 |
+| ui/dialog | 4 |
 | ai/AIAssistantIconPanel | 3 |
 | dashboard/EnhancedServerModal.components | 3 |
 | dashboard/shared/StatCell | 3 |
-| error/ServerCardErrorBoundary | 3 |
 | ai-sidebar/CloudRunStatusIndicator | 2 |
 | ai-sidebar/EnhancedAIChat | 2 |
 | ai/AgentHandoffBadge | 2 |
 | ai/AIContentArea | 2 |
 | ai/AnalysisBasisBadge | 2 |
 | ai/IncidentReportArtifactCard | 2 |
+| ai/MessageActions | 2 |
 
 ## Top Component Hubs by Out-Degree (Top 12)
 

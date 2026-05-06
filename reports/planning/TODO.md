@@ -16,7 +16,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| Streaming warmup test act warning cleanup | Low | Targeted regression은 통과하지만 `StreamingWarmupIndicator` 테스트에 React `act(...)` 경고가 남아 있다. 기능 리스크는 낮으나 테스트 품질 부채로 별도 정리한다. 관련: [ai-streaming-ui-improvement-plan.md](archive/ai-streaming-ui-improvement-plan.md) |
+| _No backlog task_ | — | No open backlog item. |
 
 ---
 
@@ -50,6 +50,14 @@
   - Task 4.5 후속으로 execution params/result 타입명을 `AiSdkStreamExecutionParams` / `AiSdkGenerateExecutionParams` 계열로 교정하고, `monitoringDomainPack.tools` ↔ production `allTools` drift guard를 contract test로 추가
   - 검증: targeted contract/domain/supervisor tests `4 files / 19 tests`, AI Engine `type-check`, AI Engine full test `102 files / 1046 tests`, root `type-check`, `lint`, `test:quick`, `test:contract`, `docs:budget`, `docs:ai-consistency`, `git diff --check`
   - 상세: [archive/ai-engine-sdk-decoupling-plan.md](archive/ai-engine-sdk-decoupling-plan.md)
+
+### Completed (2026-05-06 #304)
+- [x] Dead code and streaming warmup test cleanup
+  - `knip --no-exit-code --reporter compact` 기준 미사용 파일 2개(`IncidentTimeline.tsx`, `VirtualizedServerList.tsx`)를 제거
+  - 미사용 export/helper/type 정리: `getSeverityLabel`, `isArtifactSchemaSupported`, `createEmptyArtifactWorkspaceSnapshot`, incident-report route legacy response type, unused `AlertHistoryModal` wrapper
+  - routed dashboard 구조에 맞지 않는 legacy test mock을 제거하고, `StreamingWarmupIndicator` fake timer cleanup을 `clearAllTimers()`로 정리
+  - ADR-002의 서버 카드 렌더링 설명을 현재 `ServerDashboard` 내장 Show More 구현 기준으로 갱신
+  - 검증: targeted Vitest `8 files / 49 tests`, `knip:ci`, `docs:budget`
 
 ### Completed (2026-05-06 #303)
 - [x] AI assistant portable productization and provider policy hardening

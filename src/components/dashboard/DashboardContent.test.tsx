@@ -148,30 +148,6 @@ vi.mock('./ServerDashboard', () => ({
   )),
 }));
 
-vi.mock('./ActiveAlertsModal', () => ({
-  ActiveAlertsModal: vi.fn(({ open }: { open: boolean }) =>
-    open ? <div data-testid="active-alerts-modal" /> : null
-  ),
-}));
-
-vi.mock('./TopologyModal', () => ({
-  TopologyModal: vi.fn(({ open }: { open: boolean }) =>
-    open ? <div data-testid="topology-modal" /> : null
-  ),
-}));
-
-vi.mock('./alert-history/AlertHistoryModal', () => ({
-  AlertHistoryModal: vi.fn(({ open }: { open: boolean }) =>
-    open ? <div data-testid="alert-history-modal" /> : null
-  ),
-}));
-
-vi.mock('./log-explorer/LogExplorerModal', () => ({
-  LogExplorerModal: vi.fn(({ open }: { open: boolean }) =>
-    open ? <div data-testid="log-explorer-modal" /> : null
-  ),
-}));
-
 const mockedUseDashboardStats = vi.mocked(useDashboardStats);
 
 beforeEach(() => {
