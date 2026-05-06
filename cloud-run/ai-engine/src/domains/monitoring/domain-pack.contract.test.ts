@@ -109,6 +109,32 @@ describe('monitoring domain pack contract', () => {
     }
   });
 
+  it('exposes monitoring precomputed state through the domain data source', async () => {
+    const context = {
+      requestId: 'monitoring-data-source-1',
+      domainId: monitoringDomainPack.id,
+      message: '서버 상태 요약',
+      messages: [{ role: 'user' as const, content: '서버 상태 요약' }],
+    };
+    const snapshot = await monitoringDomainPack.dataSource?.snapshot(context);
+    const history = await monitoringDomainPack.dataSource?.history(6, context);
+
+    expect(snapshot).toMatchObject({
+      timestamp: expect.any(String),
+      data: {
+        servers: expect.any(Array),
+        alerts: expect.any(Array),
+      },
+    });
+    expect(history).toHaveLength(6);
+    expect(history?.[0]).toMatchObject({
+      timestamp: expect.any(String),
+      data: {
+        servers: expect.any(Array),
+      },
+    });
+  });
+
   it('owns monitoring artifact classification and normalization', () => {
     const context = {
       requestId: 'monitoring-artifact-1',

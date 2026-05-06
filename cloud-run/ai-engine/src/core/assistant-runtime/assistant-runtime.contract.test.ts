@@ -280,6 +280,20 @@ describe('assistant runtime scaffold contract', () => {
     expect(domain.agentRoles?.resolveRole('unknown-role')).toBeUndefined();
   });
 
+  it('keeps domain data source as an optional portable core contract', () => {
+    const source = readFileSync(
+      join(AI_ENGINE_ROOT, 'src/core/assistant-runtime/types.ts'),
+      'utf8'
+    );
+
+    expect(source).toContain('interface DomainDataSource');
+    expect(source).toContain('interface DomainSnapshot');
+    expect(source).toContain('interface DomainHistoryEntry');
+    expect(source).toContain('dataSource?: DomainDataSource');
+    expect(source).not.toContain('PrecomputedSlot');
+    expect(source).not.toContain('ServerSnapshot');
+  });
+
   it('provides deterministic in-memory adapters for portability smoke tests', async () => {
     const adapters = createInMemoryAssistantRuntimeAdapters();
     const request = createSampleRequest();

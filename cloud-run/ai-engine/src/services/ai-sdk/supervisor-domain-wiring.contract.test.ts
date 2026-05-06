@@ -247,9 +247,19 @@ import { executeSupervisorStream } from './supervisor-stream';
 import type { SupervisorRequest } from './supervisor-types';
 
 const SAMPLE_TOOL_NAME = 'sampleLookupAccount';
+const sampleDataSource = {
+  snapshot: vi.fn(async () => ({
+    timestamp: '2026-05-06T00:00:00+09:00',
+    data: {
+      accountId: 'acct-123',
+      health: 'warning',
+    },
+  })),
+  history: vi.fn(async () => []),
+};
 
 function createSampleDomain(tool: ToolDefinition): AssistantDomain {
-  return {
+  const domain = {
     id: 'sample-support',
     version: '2026-05-06-test',
     instructions: {
@@ -274,7 +284,10 @@ function createSampleDomain(tool: ToolDefinition): AssistantDomain {
         return name === tool.name ? tool : undefined;
       },
     },
+    dataSource: sampleDataSource,
   };
+
+  return domain as AssistantDomain;
 }
 
 function createSampleRuntimeHost() {
@@ -345,6 +358,8 @@ function readSystemPrompt(value: unknown): string | undefined {
 describe('supervisor domain wiring contract', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    sampleDataSource.snapshot.mockClear();
+    sampleDataSource.history.mockClear();
     mockIsSingleModeAllowed.mockReturnValue(false);
     mockSelectExecutionMode.mockReturnValue('single');
     mockGenerateText.mockResolvedValue({
@@ -402,6 +417,39 @@ describe('supervisor domain wiring contract', () => {
     expect(readToolNames(tools)).toContain(SAMPLE_TOOL_NAME);
     expect(readToolNames(tools)).not.toContain('legacyMonitoringOnly');
     expect(systemPrompt).toBe('Sample support domain.');
+  });
+
+  it('passes the injected runtime host domain data source to multi-agent execution', async () => {
+    mockSelectExecutionMode.mockReturnValue('multi');
+    mockExecuteMultiAgent.mockResolvedValue({
+      success: true,
+      response: 'sample multi-agent response',
+      handoffs: [],
+      finalAgent: 'Sample Agent',
+      toolsCalled: [],
+      usage: {
+        promptTokens: 1,
+        completionTokens: 2,
+        totalTokens: 3,
+      },
+      metadata: {
+        provider: 'mock',
+        modelId: 'mock-model',
+        totalRounds: 1,
+        handoffCount: 0,
+        durationMs: 1,
+      },
+    });
+
+    const result = await executeSupervisor(createSupervisorRequest());
+
+    expect(result).toEqual(expect.objectContaining({ success: true }));
+    expect(mockExecuteMultiAgent).toHaveBeenCalledTimes(1);
+    expect(mockExecuteMultiAgent.mock.calls[0]?.[0]).toEqual(
+      expect.objectContaining({
+        dataSource: sampleDataSource,
+      })
+    );
   });
 
   it('keeps monitoring compatibility tools available through the default monitoring domain pack', () => {
