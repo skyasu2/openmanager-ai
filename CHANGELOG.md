@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.110](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.109...v8.11.110) (2026-05-06)
+
+
+### Features
+
+* **ai:** consume monitoring factpack evidence in artifacts ([cc301af](https://gitlab.com/skyasu2/openmanager-ai/-/commit/cc301affd48134ec4fa6c3ed44043a36278b85a8))
+* **ai:** implement portable assistant productization policy ([f5d0113](https://gitlab.com/skyasu2/openmanager-ai/-/commit/f5d01130c2dc2cacf742ef76053e57fed238a574))
+
+
+### Code Refactoring
+
+* **ai:** decouple precomputed state data source ([8bedb03](https://gitlab.com/skyasu2/openmanager-ai/-/commit/8bedb0376d9a1f07ab6674110621560f28455236))
+* **ai:** decouple supervisor execution from ai sdk ([b7985a9](https://gitlab.com/skyasu2/openmanager-ai/-/commit/b7985a900e7d697525b4840f8ce1fb3da9728069))
+* **ai:** implement domain agent registry ([bc25ae2](https://gitlab.com/skyasu2/openmanager-ai/-/commit/bc25ae2cea3cee9814d4a1f91f486cd5ce78c862))
+
+
+### Tests
+
+* **qa:** record monitoring factpack evidence validation ([1a410e0](https://gitlab.com/skyasu2/openmanager-ai/-/commit/1a410e08327fe37803a90c636d85e6382cf101a4))
+* **qa:** record v8.11.109 RAG web closure ([748a6c5](https://gitlab.com/skyasu2/openmanager-ai/-/commit/748a6c58097b936fb6cea19aff48f9b9f3a5c48e))
+* **spec:** add domain agent registry contracts ([94f917c](https://gitlab.com/skyasu2/openmanager-ai/-/commit/94f917c0e0c611b45e3ac89ad62b7315a8a1bb01))
+* **spec:** add monitoring factpack consumer evidence specs ([de9db65](https://gitlab.com/skyasu2/openmanager-ai/-/commit/de9db6512be6351411c5f763999870d844b05b1e))
+* **spec:** add portable assistant productization specs ([977b9e5](https://gitlab.com/skyasu2/openmanager-ai/-/commit/977b9e5c0cc4ce073a4bacc3fa26c7a218e7d0c2))
+* **spec:** add precomputed state decoupling contracts ([21e7ca8](https://gitlab.com/skyasu2/openmanager-ai/-/commit/21e7ca87c7656f492310c5019025f118fbd3be3d))
+
 ## [8.11.109](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.108...v8.11.109) (2026-05-06)
 
 
