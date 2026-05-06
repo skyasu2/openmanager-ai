@@ -46,6 +46,7 @@ import UnifiedProfileHeader from '../shared/UnifiedProfileHeader';
 import type { AIAssistantFunction } from './AIAssistantIconPanel';
 import AIContentArea from './AIContentArea';
 import { AIWorkspaceMessage } from './AIWorkspaceMessage';
+import { ArtifactWorkspacePanel } from './artifact-workspace/ArtifactWorkspacePanel';
 import SystemContextPanel from './SystemContextPanel';
 
 // 🔧 공통 로직은 useAIChatCore 훅에서 관리
@@ -270,6 +271,9 @@ export default function AIWorkspace({
 
     return null;
   }, [enhancedMessages]);
+  const artifactWorkspaceId = sessionId
+    ? `ai-session-${sessionId}`
+    : 'current-ai-session';
 
   useEffect(() => {
     if (embedded) {
@@ -537,7 +541,12 @@ export default function AIWorkspace({
             className="hidden xl:flex"
             finalModelId={latestAssistantRuntime?.modelId}
             finalProvider={latestAssistantRuntime?.provider}
-          />
+          >
+            <ArtifactWorkspacePanel
+              messages={enhancedMessages}
+              workspaceId={artifactWorkspaceId}
+            />
+          </SystemContextPanel>
         )}
       </div>
     );
@@ -739,7 +748,12 @@ export default function AIWorkspace({
             className="hidden lg:flex"
             finalModelId={latestAssistantRuntime?.modelId}
             finalProvider={latestAssistantRuntime?.provider}
-          />
+          >
+            <ArtifactWorkspacePanel
+              messages={enhancedMessages}
+              workspaceId={artifactWorkspaceId}
+            />
+          </SystemContextPanel>
         )}
       </div>
     </div>

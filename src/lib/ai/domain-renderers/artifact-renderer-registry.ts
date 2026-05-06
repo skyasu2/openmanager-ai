@@ -1,6 +1,7 @@
 import {
   listArtifactSchemaEntries,
   MONITORING_ARTIFACT_DOMAIN_ID,
+  resolveArtifactSchemaEntry,
 } from '@/lib/ai/chat-artifacts/artifact-workspace-registry';
 import {
   type ArtifactEnvelope,
@@ -89,8 +90,7 @@ function isArtifactSourceMode(value: unknown): value is ArtifactSourceMode {
 }
 
 function isChatArtifact(value: unknown): value is ChatArtifact {
-  if (!isRecord(value) || !isArtifactKind(value.kind)) return false;
-  return true;
+  return listArtifactSchemaEntries().some((entry) => entry.isPayload(value));
 }
 
 function normalizeRawEnvelope(value: unknown): RawArtifactEnvelope | undefined {
@@ -202,7 +202,23 @@ export function resolveArtifactRendererEntries(
     const envelope = normalizeRawEnvelope(rawEnvelope);
     if (!envelope) continue;
 
-    if (!isArtifactKind(envelope.kind) || !isChatArtifact(envelope.payload)) {
+    if (!isArtifactKind(envelope.kind)) {
+      entries.push(toUnsupportedEntry(envelope, 'invalid_payload'));
+      continue;
+    }
+
+    const schema = resolveArtifactSchemaEntry({
+      domainId: envelope.domainId,
+      artifactKind: envelope.kind,
+      artifactVersion: envelope.artifactVersion,
+    });
+
+    if (!schema) {
+      entries.push(toUnsupportedEntry(envelope, 'unknown_renderer'));
+      continue;
+    }
+
+    if (!schema.isPayload(envelope.payload)) {
       entries.push(toUnsupportedEntry(envelope, 'invalid_payload'));
       continue;
     }

@@ -13,6 +13,7 @@
  */
 
 import { Activity, AlertCircle, Layout, RefreshCw, Server } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { memo, useMemo } from 'react';
 import { AIDebugPanel } from '@/components/ai-sidebar/AIDebugPanel';
 import { AI_PROVIDERS, type AIProviderConfig } from '@/config/ai-providers';
@@ -31,12 +32,14 @@ type AIProviderStatus = Pick<AIProviderConfig, 'name' | 'role' | 'color'> & {
 };
 
 type SystemContextPanelProps = {
+  children?: ReactNode;
   className?: string;
   finalProvider?: string;
   finalModelId?: string;
 };
 
 const SystemContextPanel = memo(function SystemContextPanel({
+  children,
   className = '',
   finalProvider,
   finalModelId,
@@ -298,6 +301,10 @@ const SystemContextPanel = memo(function SystemContextPanel({
         <div className="border-t border-gray-200 pt-4">
           <AIDebugPanel title="Manual Health Check" showStatus={false} />
         </div>
+
+        {children && (
+          <div className="border-t border-gray-200 pt-4">{children}</div>
+        )}
       </div>
     </div>
   );
