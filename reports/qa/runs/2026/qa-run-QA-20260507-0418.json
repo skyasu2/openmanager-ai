@@ -1,0 +1,204 @@
+{
+  "runId": "QA-20260507-0418",
+  "recordedAt": "2026-05-06T21:59:27.519Z",
+  "recordedAtKst": "2026-05-07 06:59:27 KST",
+  "runTitle": "v8.11.110 Production Targeted QA - Precomputed State Data Source Decoupling",
+  "owner": "codex",
+  "source": "playwright-mcp",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "dpl_GqHLaUbqvG6cASfwcM3dVfAbk12m",
+    "deploymentUrl": "https://openmanager-ftxgr35fn-skyasus-projects.vercel.app",
+    "commitSha": "ce53f6e4a569c2f3b290416f420d61f09910a231"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": [
+    "core-routes-smoke",
+    "dashboard-core",
+    "ai-core",
+    "observability-pack"
+  ],
+  "coveredSurfaces": [
+    "GitLab v8.11.110 tag pipeline 2505682212 succeeded for ce53f6e4a569c2f3b290416f420d61f09910a231",
+    "Production /api/version returned version 8.11.110, releaseTag v8.11.110, commit ce53f6e4a569c2f3b290416f420d61f09910a231, pipelineUrl https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2505682212",
+    "Vercel production deployment dpl_GqHLaUbqvG6cASfwcM3dVfAbk12m is Ready and aliased to openmanager-ai.vercel.app",
+    "Cloud Run AI Engine deployed revision ai-engine-00425-hg4 and routed 100 percent traffic to version 8.11.110",
+    "Cloud Run /health returned status ok, service ai-engine, version 8.11.110, routesReady true",
+    "Playwright production E2E dashboard-ai-chat direct-message spec passed 1/1 against https://openmanager-ai.vercel.app",
+    "Production /dashboard/ai-assistant rendered AI Engine Online and Production environment status",
+    "RAG/OTel representative query was sent once: OpenManager OTel 데이터 SSOT 경로를 내부 지식/RAG와 Web On 상태 기준으로 요약하고, 실제 파일 경로 3개를 알려줘",
+    "The stream route /api/ai/supervisor/stream/v2 completed in about 5064ms UI time / 6228ms resource duration, and raw tool-call JSON count was 0",
+    "The assistant response grounded OTel SSOT to public/data/otel-data/*, src/data/otel-data/index.ts, src/services/metrics/MetricsProvider.ts, and cloud-run/ai-engine/src/data/precomputed-state.ts",
+    "Analysis basis showed 내부 지식 검색 / 오토 mode"
+  ],
+  "skippedSurfaces": [
+    "Reporter and anomaly/trend advanced surfaces were not rerun because the changed production path was precomputed-state dataSource wiring and AI supervisor/OTel lookup; both passed in prior targeted QA after their own fixes",
+    "Mobile, OAuth provider login, broad modal packs, and full release-gate sweep were not rerun in this cost-protected targeted pass",
+    "Cloud Run admin /monitoring and /monitoring/traces were not queried; deployment smoke and /health covered runtime availability for this change"
+  ],
+  "checks": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0
+  },
+  "aiLatencyObservations": [
+    {
+      "surface": "AI sidebar server status direct-message E2E",
+      "agent": "Supervisor",
+      "provider": "cloud-run-ai-engine",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright production E2E dashboard-ai-chat direct-message spec",
+      "latencyMs": 45500
+    },
+    {
+      "surface": "RAG/OTel SSOT representative query",
+      "agent": "Supervisor",
+      "provider": "unknown",
+      "route": "/api/ai/supervisor/stream/v2",
+      "source": "Playwright MCP UI elapsed time plus Performance API resource timing",
+      "latencyMs": 6228,
+      "ttfbMs": 841,
+      "processingTimeMs": 5064
+    }
+  ],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The changed production supervisor path returned grounded, readable AI output and the existing dashboard AI chat production E2E passed.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "observability-monitoring",
+      "domainName": "IT Monitoring & Observability SME",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The representative OTel query resolved the expected SSOT paths and explicitly avoided non-repo /opt/otel style paths.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "ai-security-reliability",
+      "domainName": "AI Security & Reliability Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The RAG/OTel response had rawJsonCount=0 for searchKnowledgeBase/searchWeb/name/arguments leakage checks.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "GitLab semver tag pipeline, Vercel deploy smoke, Cloud Run deploy, AI Engine post-deploy smoke, and usage guard all passed.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The run combines CI deploy smoke, a production Playwright E2E spec, and a manual Playwright MCP targeted query with durable screenshot evidence.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "data-metrics-quality",
+      "domainName": "Data Quality & Metrics Analyst",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Dashboard and AI Engine now read the same OTel data-source family through the decoupled dataSource contract, and production output named the expected files.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-07T06:57:15+09:00",
+      "summary": "Current billing period checked after v8.11.110 production deploy and targeted QA; effective 3.3658 USD, billed remains 0.0000 USD, chargeCount 3045.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-screenshot",
+      "label": "RAG/OTel SSOT grounded answer on v8.11.110 without raw tool-call JSON",
+      "path": "reports/qa/evidence/qa-20260507-v811110-rag-otel-ssot.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-engine-precomputed-state-data-source-v811110",
+      "title": "AI Engine precomputed-state data source decoupling verified in production",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "reports/qa/evidence/qa-20260507-v811110-rag-otel-ssot.png",
+      "note": "Production v8.11.110 RAG/OTel query returned expected OTel SSOT paths and referenced cloud-run/ai-engine/src/data/precomputed-state.ts after GitLab tag deploy.",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    },
+    {
+      "id": "cloud-run-ai-engine-v811110-deploy-smoke",
+      "title": "Cloud Run AI Engine v8.11.110 deploy and post-deploy smoke verified",
+      "priority": "P1",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "GitLab pipeline 2505682212 deploy_ai_engine and post_deploy_ai_engine_smoke succeeded; /health returned version 8.11.110",
+      "note": "Revision ai-engine-00425-hg4 serves 100 percent traffic with memory 512Mi, CPU 1, max 1 instance.",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Release command created ce53f6e4a chore(release): 8.11.110 and tag v8.11.110, then pushed to canonical gitlab/main.",
+    "The initial tag push did not immediately expose a tag pipeline via GitLab API, so a v8.11.110 ref pipeline was created manually; the later duplicate tag pipeline 2505683068 was canceled to avoid double deployment.",
+    "Playwright MCP RAG/OTel evaluation result: rawJsonCount=0, pathHits included public/data/otel-data, src/data/otel-data/index.ts, src/services/metrics/MetricsProvider.ts, and cloud-run/ai-engine/src/data.",
+    "The production response explicitly states the monitoring runtime SSOT is not Supabase but the repo synthetic OTel dataset."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab main validate pipeline 2505682198",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2505682198"
+    },
+    {
+      "type": "general",
+      "label": "GitLab v8.11.110 tag pipeline 2505682212",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2505682212"
+    },
+    {
+      "type": "general",
+      "label": "Production version endpoint",
+      "url": "https://openmanager-ai.vercel.app/api/version"
+    },
+    {
+      "type": "monitoring",
+      "label": "Cloud Run AI Engine health",
+      "url": "https://ai-engine-490817238363.asia-northeast1.run.app/health"
+    },
+    {
+      "type": "vercel-deployment",
+      "label": "Vercel production deployment dpl_GqHLaUbqvG6cASfwcM3dVfAbk12m",
+      "url": "https://openmanager-ftxgr35fn-skyasus-projects.vercel.app/"
+    }
+  ]
+}

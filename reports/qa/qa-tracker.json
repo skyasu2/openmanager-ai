@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-06T07:48:50.082Z"
+    "updatedAt": "2026-05-06T21:59:27.519Z"
   },
   "sequence": {
-    "nextRunNumber": 418
+    "nextRunNumber": 419
   },
   "summary": {
-    "totalRecordedRuns": 415,
-    "totalRuns": 341,
+    "totalRecordedRuns": 416,
+    "totalRuns": 342,
     "excludedRuns": 74,
-    "totalChecks": 2991,
-    "totalPassed": 2882,
+    "totalChecks": 3002,
+    "totalPassed": 2893,
     "totalFailed": 100,
     "completionRate": 100,
-    "completedItems": 444,
+    "completedItems": 446,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 22,
     "expertDomainsTracked": 12,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260506-0416",
-    "lastRecordedAt": "2026-05-06T06:59:36.046Z",
-    "latestRecordedRunId": "QA-20260506-0417",
-    "latestRecordedAt": "2026-05-06T07:48:50.082Z"
+    "lastRunId": "QA-20260507-0418",
+    "lastRecordedAt": "2026-05-06T21:59:27.519Z",
+    "latestRecordedRunId": "QA-20260507-0418",
+    "latestRecordedAt": "2026-05-06T21:59:27.519Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -10913,6 +10913,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-06T07:48:50.082Z"
+    },
+    "ai-engine-precomputed-state-data-source-v811110": {
+      "id": "ai-engine-precomputed-state-data-source-v811110",
+      "title": "AI Engine precomputed-state data source decoupling verified in production",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260507-0418",
+      "firstSeenAt": "2026-05-06T21:59:27.519Z",
+      "lastSeenRunId": "QA-20260507-0418",
+      "lastSeenAt": "2026-05-06T21:59:27.519Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "reports/qa/evidence/qa-20260507-v811110-rag-otel-ssot.png",
+      "lastNote": "Production v8.11.110 RAG/OTel query returned expected OTel SSOT paths and referenced cloud-run/ai-engine/src/data/precomputed-state.ts after GitLab tag deploy.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-06T21:59:27.519Z"
+    },
+    "cloud-run-ai-engine-v811110-deploy-smoke": {
+      "id": "cloud-run-ai-engine-v811110-deploy-smoke",
+      "title": "Cloud Run AI Engine v8.11.110 deploy and post-deploy smoke verified",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260507-0418",
+      "firstSeenAt": "2026-05-06T21:59:27.519Z",
+      "lastSeenRunId": "QA-20260507-0418",
+      "lastSeenAt": "2026-05-06T21:59:27.519Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "GitLab pipeline 2505682212 deploy_ai_engine and post_deploy_ai_engine_smoke succeeded; /health returned version 8.11.110",
+      "lastNote": "Revision ai-engine-00425-hg4 serves 100 percent traffic with memory 512Mi, CPU 1, max 1 instance.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-06T21:59:27.519Z"
     }
   },
   "runs": [
@@ -43630,6 +43678,180 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260507-0418",
+      "recordedAt": "2026-05-06T21:59:27.519Z",
+      "recordedAtKst": "2026-05-07 06:59:27 KST",
+      "title": "v8.11.110 Production Targeted QA - Precomputed State Data Source Decoupling",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260507-0418.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_GqHLaUbqvG6cASfwcM3dVfAbk12m",
+        "deploymentUrl": "https://openmanager-ftxgr35fn-skyasus-projects.vercel.app",
+        "commitSha": "ce53f6e4a569c2f3b290416f420d61f09910a231"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "GitLab v8.11.110 tag pipeline 2505682212 succeeded for ce53f6e4a569c2f3b290416f420d61f09910a231",
+        "Production /api/version returned version 8.11.110, releaseTag v8.11.110, commit ce53f6e4a569c2f3b290416f420d61f09910a231, pipelineUrl https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2505682212",
+        "Vercel production deployment dpl_GqHLaUbqvG6cASfwcM3dVfAbk12m is Ready and aliased to openmanager-ai.vercel.app",
+        "Cloud Run AI Engine deployed revision ai-engine-00425-hg4 and routed 100 percent traffic to version 8.11.110",
+        "Cloud Run /health returned status ok, service ai-engine, version 8.11.110, routesReady true",
+        "Playwright production E2E dashboard-ai-chat direct-message spec passed 1/1 against https://openmanager-ai.vercel.app",
+        "Production /dashboard/ai-assistant rendered AI Engine Online and Production environment status",
+        "RAG/OTel representative query was sent once: OpenManager OTel 데이터 SSOT 경로를 내부 지식/RAG와 Web On 상태 기준으로 요약하고, 실제 파일 경로 3개를 알려줘",
+        "The stream route /api/ai/supervisor/stream/v2 completed in about 5064ms UI time / 6228ms resource duration, and raw tool-call JSON count was 0",
+        "The assistant response grounded OTel SSOT to public/data/otel-data/*, src/data/otel-data/index.ts, src/services/metrics/MetricsProvider.ts, and cloud-run/ai-engine/src/data/precomputed-state.ts",
+        "Analysis basis showed 내부 지식 검색 / 오토 mode"
+      ],
+      "skippedSurfaces": [
+        "Reporter and anomaly/trend advanced surfaces were not rerun because the changed production path was precomputed-state dataSource wiring and AI supervisor/OTel lookup; both passed in prior targeted QA after their own fixes",
+        "Mobile, OAuth provider login, broad modal packs, and full release-gate sweep were not rerun in this cost-protected targeted pass",
+        "Cloud Run admin /monitoring and /monitoring/traces were not queried; deployment smoke and /health covered runtime availability for this change"
+      ],
+      "checks": {
+        "total": 11,
+        "passed": 11,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI sidebar server status direct-message E2E",
+          "agent": "Supervisor",
+          "provider": "cloud-run-ai-engine",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Playwright production E2E dashboard-ai-chat direct-message spec",
+          "latencyMs": 45500
+        },
+        {
+          "surface": "RAG/OTel SSOT representative query",
+          "agent": "Supervisor",
+          "provider": "unknown",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Playwright MCP UI elapsed time plus Performance API resource timing",
+          "latencyMs": 6228,
+          "ttfbMs": 841,
+          "processingTimeMs": 5064
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The changed production supervisor path returned grounded, readable AI output and the existing dashboard AI chat production E2E passed.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The representative OTel query resolved the expected SSOT paths and explicitly avoided non-repo /opt/otel style paths.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The RAG/OTel response had rawJsonCount=0 for searchKnowledgeBase/searchWeb/name/arguments leakage checks.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab semver tag pipeline, Vercel deploy smoke, Cloud Run deploy, AI Engine post-deploy smoke, and usage guard all passed.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The run combines CI deploy smoke, a production Playwright E2E spec, and a manual Playwright MCP targeted query with durable screenshot evidence.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Dashboard and AI Engine now read the same OTel data-source family through the decoupled dataSource contract, and production output named the expected files.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-07T06:57:15+09:00",
+          "summary": "Current billing period checked after v8.11.110 production deploy and targeted QA; effective 3.3658 USD, billed remains 0.0000 USD, chargeCount 3045.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "RAG/OTel SSOT grounded answer on v8.11.110 without raw tool-call JSON",
+          "path": "reports/qa/evidence/qa-20260507-v811110-rag-otel-ssot.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab main validate pipeline 2505682198",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2505682198"
+        },
+        {
+          "type": "general",
+          "label": "GitLab v8.11.110 tag pipeline 2505682212",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2505682212"
+        },
+        {
+          "type": "general",
+          "label": "Production version endpoint",
+          "url": "https://openmanager-ai.vercel.app/api/version"
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run AI Engine health",
+          "url": "https://ai-engine-490817238363.asia-northeast1.run.app/health"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment dpl_GqHLaUbqvG6cASfwcM3dVfAbk12m",
+          "url": "https://openmanager-ftxgr35fn-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 6,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -43638,16 +43860,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 204,
-      "appropriateCount": 181,
+      "seenCount": 205,
+      "appropriateCount": 182,
       "partialCount": 23,
       "inappropriateCount": 0,
       "improvementNeededCount": 33,
-      "lastRunId": "QA-20260506-0416",
-      "lastSeenAt": "2026-05-06T06:59:36.046Z",
+      "lastRunId": "QA-20260507-0418",
+      "lastSeenAt": "2026-05-06T21:59:27.519Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The previously failing RAG/Web representative query now renders a readable grounded answer and no raw tool-call JSON in the latest response.",
+      "lastRationale": "The changed production supervisor path returned grounded, readable AI output and the existing dashboard AI chat production E2E passed.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -43655,16 +43877,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 111,
-      "appropriateCount": 81,
+      "seenCount": 112,
+      "appropriateCount": 82,
       "partialCount": 30,
       "inappropriateCount": 0,
       "improvementNeededCount": 31,
-      "lastRunId": "QA-20260506-0416",
-      "lastSeenAt": "2026-05-06T06:59:36.046Z",
+      "lastRunId": "QA-20260507-0418",
+      "lastSeenAt": "2026-05-06T21:59:27.519Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The response correctly identifies the repo-local OpenManager OTel SSOT paths rather than non-repo runtime paths.",
+      "lastRationale": "The representative OTel query resolved the expected SSOT paths and explicitly avoided non-repo /opt/otel style paths.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -43672,16 +43894,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 55,
-      "appropriateCount": 41,
+      "seenCount": 56,
+      "appropriateCount": 42,
       "partialCount": 14,
       "inappropriateCount": 0,
       "improvementNeededCount": 13,
-      "lastRunId": "QA-20260506-0416",
-      "lastSeenAt": "2026-05-06T06:59:36.046Z",
+      "lastRunId": "QA-20260507-0418",
+      "lastSeenAt": "2026-05-06T21:59:27.519Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The user-facing stream no longer exposes repeated internal tool-call JSON for searchKnowledgeBase/searchWeb.",
+      "lastRationale": "The RAG/OTel response had rawJsonCount=0 for searchKnowledgeBase/searchWeb/name/arguments leakage checks.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -43689,16 +43911,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 138,
-      "appropriateCount": 125,
+      "seenCount": 139,
+      "appropriateCount": 126,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 17,
-      "lastRunId": "QA-20260506-0416",
-      "lastSeenAt": "2026-05-06T06:59:36.046Z",
+      "lastRunId": "QA-20260507-0418",
+      "lastSeenAt": "2026-05-06T21:59:27.519Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag pipeline, Vercel production version, Cloud Run AI Engine health, and usage guard were all checked.",
+      "lastRationale": "GitLab semver tag pipeline, Vercel deploy smoke, Cloud Run deploy, AI Engine post-deploy smoke, and usage guard all passed.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -43706,16 +43928,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 176,
-      "appropriateCount": 162,
+      "seenCount": 177,
+      "appropriateCount": 163,
       "partialCount": 14,
       "inappropriateCount": 0,
       "improvementNeededCount": 16,
-      "lastRunId": "QA-20260506-0416",
-      "lastSeenAt": "2026-05-06T06:59:36.046Z",
+      "lastRunId": "QA-20260507-0418",
+      "lastSeenAt": "2026-05-06T21:59:27.519Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The production closure is backed by a deterministic unit regression for semicolon-separated raw tool-call JSON and a Playwright production recheck.",
+      "lastRationale": "The run combines CI deploy smoke, a production Playwright E2E spec, and a manual Playwright MCP targeted query with durable screenshot evidence.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -43723,16 +43945,16 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 62,
-      "appropriateCount": 42,
+      "seenCount": 63,
+      "appropriateCount": 43,
       "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260506-0416",
-      "lastSeenAt": "2026-05-06T06:59:36.046Z",
+      "lastRunId": "QA-20260507-0418",
+      "lastSeenAt": "2026-05-06T21:59:27.519Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The grounded answer included the expected OTel data source and loader/provider file paths.",
+      "lastRationale": "Dashboard and AI Engine now read the same OTel data-source family through the decoupled dataSource contract, and production output named the expected files.",
       "lastNextAction": ""
     },
     "infra-reliability": {

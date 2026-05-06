@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-06 16:48:50 KST
+> Generated at: 2026-05-07 06:59:27 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 415 |
-| Total Runs (Counted) | 341 |
+| Total Recorded Runs | 416 |
+| Total Runs (Counted) | 342 |
 | Non-counted Runs | 74 |
-| Total Checks | 2991 |
-| Passed | 2882 |
+| Total Checks | 3002 |
+| Passed | 2893 |
 | Failed | 100 |
-| Completed Items | 444 |
+| Completed Items | 446 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
 | Expert Domains Tracked | 12 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260506-0416 (2026-05-06T06:59:36.046Z) |
-| Latest Recorded Run | QA-20260506-0417 (2026-05-06T07:48:50.082Z) |
+| Last Counted Run | QA-20260507-0418 (2026-05-06T21:59:27.519Z) |
+| Latest Recorded Run | QA-20260507-0418 (2026-05-06T21:59:27.519Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,34 +34,39 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260506-0417 (2026-05-06T07:48:50.082Z)
+Latest run: QA-20260507-0418 (2026-05-06T21:59:27.519Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| - | - | - | - |
+| AI Quality Assurance Specialist | appropriate | no | - |
+| IT Monitoring & Observability SME | appropriate | no | - |
+| AI Security & Reliability Architect | appropriate | no | - |
+| DevOps / SRE Engineer | appropriate | no | - |
+| Test Automation Architect | appropriate | no | - |
+| Data Quality & Metrics Analyst | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| - | - | - | - | - |
+| vercel | cli | checked | normal | Current billing period checked after v8.11.110 production deploy and targeted QA; effective 3.3658 USD, billed remains 0.0000 USD, chargeCount 3045. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-05T07:48:50.082Z -> 2026-05-06T07:48:50.082Z (24h)
-- Runs with observations: 3 recorded / 3 counted
-- Samples: 5
+- Window: 2026-05-05T21:59:27.519Z -> 2026-05-06T21:59:27.519Z (24h)
+- Runs with observations: 4 recorded / 4 counted
+- Samples: 7
 
 | Agent | Provider | Samples | Avg Latency | P95 Latency | Avg TTFB | P95 TTFB | Avg Processing | P95 Processing | Latest Run |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Supervisor | unknown | 2 | 3971ms | 4925ms | 1249ms | 1259ms | - | - | QA-20260506-0416 |
+| Supervisor | cloud-run-ai-engine | 2 | 24208ms | 45500ms | - | - | 2915ms | 2915ms | QA-20260507-0418 |
+| Supervisor | unknown | 3 | 4723ms | 6228ms | 1113ms | 1259ms | 5064ms | 5064ms | QA-20260507-0418 |
 | Reporter Agent | unknown | 1 | 3599ms | 3599ms | - | - | - | - | QA-20260506-0415 |
-| Supervisor | cloud-run-ai-engine | 1 | 2915ms | 2915ms | - | - | 2915ms | 2915ms | QA-20260506-0413 |
 | Analyst Agent | deterministic | 1 | 1273ms | 1273ms | - | - | - | - | QA-20260506-0415 |
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-05T07:48:50.082Z -> 2026-05-06T07:48:50.082Z (24h)
+- Window: 2026-05-05T21:59:27.519Z -> 2026-05-06T21:59:27.519Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -73,24 +78,28 @@ Latest run: QA-20260506-0417 (2026-05-06T07:48:50.082Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: no
-- Counts Toward Summary: no
-- Deployment: SHA cc301aff
-- Coverage Packs: ai-core, ai-advanced-surface
-- Covered Surfaces: monitoring analysis artifact parser, monitoring analysis artifact evidence metadata, monitoring analysis artifact card fact-pack rendering
-- Skipped Surfaces: Vercel production Playwright QA - no deployment performed, Cloud Run QA - producer contract unchanged
+- Release-Facing: yes
+- Counts Toward Summary: yes
+- Deployment: dpl_GqHLaUbqvG6cASfwcM3dVfAbk12m / SHA ce53f6e4
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, observability-pack
+- Covered Surfaces: GitLab v8.11.110 tag pipeline 2505682212 succeeded for ce53f6e4a569c2f3b290416f420d61f09910a231, Production /api/version returned version 8.11.110, releaseTag v8.11.110, commit ce53f6e4a569c2f3b290416f420d61f09910a231, pipelineUrl https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2505682212, Vercel production deployment dpl_GqHLaUbqvG6cASfwcM3dVfAbk12m is Ready and aliased to openmanager-ai.vercel.app, Cloud Run AI Engine deployed revision ai-engine-00425-hg4 and routed 100 percent traffic to version 8.11.110, Cloud Run /health returned status ok, service ai-engine, version 8.11.110, routesReady true, Playwright production E2E dashboard-ai-chat direct-message spec passed 1/1 against https://openmanager-ai.vercel.app, Production /dashboard/ai-assistant rendered AI Engine Online and Production environment status, RAG/OTel representative query was sent once: OpenManager OTel 데이터 SSOT 경로를 내부 지식/RAG와 Web On 상태 기준으로 요약하고, 실제 파일 경로 3개를 알려줘, The stream route /api/ai/supervisor/stream/v2 completed in about 5064ms UI time / 6228ms resource duration, and raw tool-call JSON count was 0, The assistant response grounded OTel SSOT to public/data/otel-data/*, src/data/otel-data/index.ts, src/services/metrics/MetricsProvider.ts, and cloud-run/ai-engine/src/data/precomputed-state.ts, Analysis basis showed 내부 지식 검색 / 오토 mode
+- Skipped Surfaces: Reporter and anomaly/trend advanced surfaces were not rerun because the changed production path was precomputed-state dataSource wiring and AI supervisor/OTel lookup; both passed in prior targeted QA after their own fixes, Mobile, OAuth provider login, broad modal packs, and full release-gate sweep were not rerun in this cost-protected targeted pass, Cloud Run admin /monitoring and /monitoring/traces were not queried; deployment smoke and /health covered runtime availability for this change
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| - | - | - | - |
+| general | GitLab main validate pipeline 2505682198 | [GitLab main validate pipeline 2505682198](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2505682198) | - |
+| general | GitLab v8.11.110 tag pipeline 2505682212 | [GitLab v8.11.110 tag pipeline 2505682212](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2505682212) | - |
+| general | Production version endpoint | [Production version endpoint](https://openmanager-ai.vercel.app/api/version) | - |
+| monitoring | Cloud Run AI Engine health | [Cloud Run AI Engine health](https://ai-engine-490817238363.asia-northeast1.run.app/health) | - |
+| vercel-deployment | Vercel production deployment dpl_GqHLaUbqvG6cASfwcM3dVfAbk12m | [Vercel production deployment dpl_GqHLaUbqvG6cASfwcM3dVfAbk12m](https://openmanager-ftxgr35fn-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| - | - | - | - |
+| playwright-screenshot | RAG/OTel SSOT grounded answer on v8.11.110 without raw tool-call JSON | `reports/qa/evidence/qa-20260507-v811110-rag-otel-ssot.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -222,6 +231,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-disk-threshold-answer-accuracy-drift: AI async job answer preserves DISK threshold and dashboard metric values (completed 2회, last QA-20260429-0368)
 - ai-domain-boundary-phase2-analysis-mode: AI Domain Boundary Phase 2 analysis mode toggle (auto/thinking) (completed 1회, last QA-20260416-0297)
 - ai-engine-cloud-run-v81188-health: Cloud Run ai-engine v8.11.88 health and free-tier runtime limits verified (completed 1회, last QA-20260503-0399)
+- ai-engine-precomputed-state-data-source-v811110: AI Engine precomputed-state data source decoupling verified in production (completed 1회, last QA-20260507-0418)
 - ai-engine-status: AI 엔진 상태 표시 (completed 1회, last QA-20260317-0114)
 - ai-engine-supervisor-runtime-host-wiring-v811107: Production supervisor stream and single-agent runtime host wiring verified (completed 1회, last QA-20260506-0413)
 - ai-explicit-server-summary-backfill: Explicit server action summary keeps named TOP2 servers and backfills partial tool payloads (completed 1회, last QA-20260430-0376)
@@ -315,6 +325,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - blocked-prompt-ux-v880-quality-recheck: 보안 차단 UX 재검증 (completed 1회, last QA-20260308-0059)
 - cerebras-qwen-preview-runtime-removed: Cerebras Qwen Preview removed from production runtime default (completed 1회, last QA-20260430-0385)
 - cloud-run-ai-engine-v811107-health: Cloud Run AI Engine v8.11.107 health and authenticated supervisor health verified (completed 1회, last QA-20260506-0413)
+- cloud-run-ai-engine-v811110-deploy-smoke: Cloud Run AI Engine v8.11.110 deploy and post-deploy smoke verified (completed 1회, last QA-20260507-0418)
 - cloud-run-cerebras-env-pinned: Cloud Run env pins CEREBRAS_MODEL_ID=llama3.1-8b (completed 1회, last QA-20260430-0385)
 - cloud-run-latest-traffic-recovery: Cloud Run service traffic restored to latest revision (completed 1회, last QA-20260418-0305)
 - cloud-run-proxy-runtime-env-refresh: Cloud Run proxy runtime env refresh (completed 1회, last QA-20260325-0185)
@@ -623,6 +634,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260507-0418 | 2026-05-06T21:59:27.519Z | targeted | yes | yes | v8.11.110 Production Targeted QA - Precomputed State Data Source Decoupling | 11 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260506-0417 | 2026-05-06T07:48:50.082Z | targeted | no | no | Local deterministic QA - MonitoringFactPack evidence UI | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260506-0416 | 2026-05-06T06:59:36.046Z | targeted | yes | yes | v8.11.109 RAG/Web Raw Tool JSON Closure QA | 4 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260506-0415 | 2026-05-06T06:28:57.301Z | targeted | yes | yes | v8.11.108 AI Advanced Surface Targeted QA | 3 | 2 | 1 | 0 | 0 | 3 |
@@ -642,4 +654,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260504-0401 | 2026-05-03T17:29:57.587Z | targeted | yes | yes | v8.11.89 Release Smoke - Monitoring Source Error Contract | 9 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260503-0400 | 2026-05-03T14:21:43.788Z | targeted | yes | yes | v8.11.88 Fullscreen AI Stream Complementary QA | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260503-0399 | 2026-05-03T14:14:02.510Z | targeted | yes | yes | v8.11.88 Agent Step Streaming Release QA | 19 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260503-0398 | 2026-05-03T07:53:49.065Z | smoke | yes | yes | Production Release Smoke v8.11.87 | 6 | 1 | 0 | 0 | 0 | 0 |
