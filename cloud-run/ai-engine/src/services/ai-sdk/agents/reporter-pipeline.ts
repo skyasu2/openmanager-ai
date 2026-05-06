@@ -10,8 +10,13 @@
  * @created 2026-01-18
  */
 
-import { getCurrentState, getRecentHistory } from '../../../data/precomputed-state';
+import type { DomainDataSource } from '../../../core/assistant-runtime';
 import { logger } from '../../../lib/logger';
+import {
+  createAgentDataSourceContext,
+  resolveDomainHistory,
+  resolveDomainSnapshot,
+} from './domain-data-source';
 import {
   calculateActionabilityScore,
   calculateCompletenessScore,
@@ -20,7 +25,9 @@ import {
 import {
   determineFocusArea,
   generateInitialReport,
+  getMetricAverageFromMonitoringHistory,
   getSuggestedCommands,
+  getServerTypeFromMonitoringState,
   type ReportForEvaluation,
 } from './reporter-pipeline-report';
 
@@ -35,6 +42,10 @@ export interface PipelineConfig {
   qualityThreshold: number;
   /** Maximum execution time (ms) */
   timeout: number;
+  /** Domain-owned runtime data source */
+  dataSource?: DomainDataSource;
+  /** Runtime domain id for data source context */
+  domainId?: string;
 }
 
 export interface PipelineResult {
@@ -101,7 +112,27 @@ export async function executeReporterPipeline(
     logger.info('[Stage 1] Generating initial report...');
     agentsUsed.push('Reporter Agent');
 
-    const initialReport = generateInitialReport();
+    const dataSourceContext = createAgentDataSourceContext({
+      query,
+      domainId: finalConfig.domainId,
+    });
+    const [snapshot, historyEntries] = await Promise.all([
+      resolveDomainSnapshot(
+        finalConfig.dataSource,
+        dataSourceContext,
+        'reporter-pipeline'
+      ),
+      resolveDomainHistory(
+        finalConfig.dataSource,
+        6,
+        dataSourceContext,
+        'reporter-pipeline'
+      ),
+    ]);
+    const stateData = snapshot?.data;
+    const historyData = historyEntries;
+
+    const initialReport = generateInitialReport(stateData, historyData);
 
     // RAG is now handled by Reporter Agent via searchKnowledgeBase tool
     // (AI SDK v6 best practice: LLM calls tools directly for context inclusion)
@@ -156,7 +187,12 @@ export async function executeReporterPipeline(
         logger.info(`[Stage 3] Optimizing report (iteration ${iteration + 1})...`);
         agentsUsed.push('Optimizer (deterministic)');
 
-        const optimized = optimizeReport(currentReport, evaluation);
+        const optimized = optimizeReport(
+          currentReport,
+          evaluation,
+          stateData,
+          historyData
+        );
 
         if (optimized.report) {
           currentReport = optimized.report;
@@ -245,7 +281,9 @@ function evaluateReport(report: ReportForEvaluation): {
  */
 function optimizeReport(
   report: ReportForEvaluation,
-  evaluation: { issues: string[]; recommendations: string[] }
+  evaluation: { issues: string[]; recommendations: string[] },
+  stateData?: unknown,
+  historyData?: unknown[]
 ): {
   report: ReportForEvaluation;
   optimizations: string[];
@@ -264,20 +302,14 @@ function optimizeReport(
     const additionalEvidence: string[] = [];
     let confidenceBoost = 0;
 
-    // precomputed-state에서 최근 6슬롯(1시간) 히스토리 조회
-    const history = getRecentHistory(6);
-    if (history.length > 0) {
-      const serverCpuValues = history
-        .map((h) => h.servers.find((s) => s.id === serverId)?.cpu)
-        .filter((v): v is number => v !== undefined);
-
-      if (serverCpuValues.length > 0) {
-        const avgCpu = serverCpuValues.reduce((sum, v) => sum + v, 0) / serverCpuValues.length;
-        if (avgCpu > 85) {
-          additionalEvidence.push(`최근 1시간 평균 CPU ${avgCpu.toFixed(1)}%`);
-          confidenceBoost += 0.1;
-        }
-      }
+    const avgCpu = getMetricAverageFromMonitoringHistory(
+      historyData,
+      serverId,
+      'cpu'
+    );
+    if (avgCpu !== null && avgCpu > 85) {
+      additionalEvidence.push(`최근 1시간 평균 CPU ${avgCpu.toFixed(1)}%`);
+      confidenceBoost += 0.1;
     }
 
     optimizedReport.rootCause = {
@@ -300,8 +332,10 @@ function optimizeReport(
   // Enhance suggested actions if too generic
   if (evaluation.issues.includes('권장 조치가 너무 일반적')) {
     const focusArea = determineFocusArea(report);
-    const state = getCurrentState();
-    const serverType = state.servers.find(s => s.id === report.affectedServers[0]?.id)?.type;
+    const serverType = getServerTypeFromMonitoringState(
+      stateData,
+      report.affectedServers[0]?.id
+    );
     const commands = getSuggestedCommands(focusArea, serverType);
 
     optimizedReport.suggestedActions = optimizedReport.suggestedActions.map((action, i) => {

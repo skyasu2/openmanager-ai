@@ -351,6 +351,7 @@ export async function* executeSupervisorStream(
       for await (const event of executeMultiAgentStream({
         messages: request.messages,
         sessionId: request.sessionId,
+        domainId: runtimeContext.host.domain.id,
         ...buildSupervisorModeMetadata(modeDecision),
         traceId: request.traceId,
         enableTracing: request.enableTracing,
@@ -358,6 +359,7 @@ export async function* executeSupervisorStream(
         enableRAG: request.enableRAG,
         images: request.images,
         files: request.files,
+        dataSource: runtimeContext.host.domain.dataSource,
       })) {
         if (event.type === 'error') {
           const errorData = event.data as { code?: string };

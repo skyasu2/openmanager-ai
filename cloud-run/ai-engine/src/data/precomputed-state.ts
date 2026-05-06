@@ -12,6 +12,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { logger } from '../lib/logger';
+import { getKSTDateTime } from '../lib/time-utils';
 import { generateLogs, type GeneratedLog } from './log-generator';
 import { getActiveQuerySlotIndex } from './query-as-of-context';
 import {
@@ -42,7 +43,7 @@ import type {
   TrendDirection,
 } from './precomputed-state.types';
 
-export { buildPrecomputedStates, initOTelDataAsync };
+export { buildPrecomputedStates, getKSTDateTime, initOTelDataAsync };
 export type {
   ActivePattern,
   CompactContext,
@@ -310,31 +311,6 @@ export function exportToJson(outputPath: string): void {
 // ============================================================================
 // Date/Time Calculation (24시간 순환 + 실제 날짜)
 // ============================================================================
-
-/**
- * 현재 KST 날짜/시간 정보 반환
- */
-export function getKSTDateTime(): { date: string; time: string; slotIndex: number; minuteOfDay: number } {
-  const now = new Date();
-  const kstOffset = 9 * 60 * 60 * 1000; // 9시간 (ms)
-  const kstDate = new Date(now.getTime() + kstOffset);
-
-  const year = kstDate.getUTCFullYear();
-  const month = String(kstDate.getUTCMonth() + 1).padStart(2, '0');
-  const day = String(kstDate.getUTCDate()).padStart(2, '0');
-  const hours = String(kstDate.getUTCHours()).padStart(2, '0');
-  const minutes = String(Math.floor(kstDate.getUTCMinutes() / 10) * 10).padStart(2, '0');
-
-  const minuteOfDay = kstDate.getUTCHours() * 60 + Math.floor(kstDate.getUTCMinutes() / 10) * 10;
-  const slotIndex = Math.floor(minuteOfDay / 10);
-
-  return {
-    date: `${year}-${month}-${day}`,
-    time: `${hours}:${minutes}`,
-    slotIndex,
-    minuteOfDay,
-  };
-}
 
 /**
  * 상대 시간(분) 기준으로 실제 날짜/시간 계산

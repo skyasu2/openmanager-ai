@@ -13,6 +13,7 @@ import {
   generateTextWithRetry,
   type ProviderAttempt,
 } from '../../resilience/retry-with-fallback';
+import type { DomainDataSource } from '../../../core/assistant-runtime';
 import { sanitizeChineseCharacters } from '../../../lib/text-sanitizer';
 import { extractToolResultOutput } from '../../../lib/ai-sdk-utils';
 import {
@@ -31,7 +32,6 @@ import {
   type ModelResult,
 } from './config/agent-model-selectors';
 import type { ImageAttachment, FileAttachment } from './base-agent';
-import { getCurrentState } from '../../../data/precomputed-state';
 
 import type {
   MultiAgentResponse,
@@ -56,6 +56,10 @@ import {
   type RetrievalMetadata,
 } from '../../../lib/retrieval-contract';
 import { buildKnowledgeBaseGroundedAnswer } from '../supervisor-stream-citations';
+import {
+  createAgentDataSourceContext,
+  resolveDomainSnapshot,
+} from './domain-data-source';
 export { recordHandoff, getRecentHandoffs } from './orchestrator-handoff';
 export { executeReporterWithPipeline } from './orchestrator-reporter-pipeline';
 export {
@@ -371,6 +375,29 @@ function compactServerIds(serverIds: string[]): string {
   return serverIds.slice().sort((left, right) => left.localeCompare(right)).join(', ');
 }
 
+function getStateServers(stateData: unknown): Array<{ id: string; status: string }> {
+  if (!isRecord(stateData) || !Array.isArray(stateData.servers)) {
+    return [];
+  }
+
+  return stateData.servers
+    .filter((server): server is Record<string, unknown> => isRecord(server) && typeof server.id === 'string')
+    .map((server) => ({
+      id: server.id as string,
+      status: typeof server.status === 'string' ? server.status : 'unknown',
+    }));
+}
+
+function getStateAlertCount(stateData: unknown, servers: Array<{ status: string }>): number {
+  if (isRecord(stateData) && Array.isArray(stateData.alerts)) {
+    return stateData.alerts.length;
+  }
+
+  return servers.filter((server) =>
+    ['warning', 'critical', 'offline'].includes(server.status)
+  ).length;
+}
+
 function loadResourceCatalog(): ResourceCatalog | null {
   const candidates = [
     // Prefer the tracked OTel SSOT so local generated copies cannot mask CI drift.
@@ -410,10 +437,16 @@ function loadResourceCatalog(): ResourceCatalog | null {
   return null;
 }
 
-function buildStructuredTopologySnapshot(): StructuredTopologySnapshot | null {
+function buildStructuredTopologySnapshot(
+  stateData?: unknown
+): StructuredTopologySnapshot | null {
   const catalog = loadResourceCatalog();
   const resources = catalog?.resources;
   if (!resources || Object.keys(resources).length === 0) {
+    return null;
+  }
+  const stateServers = getStateServers(stateData);
+  if (stateServers.length === 0) {
     return null;
   }
 
@@ -429,8 +462,7 @@ function buildStructuredTopologySnapshot(): StructuredTopologySnapshot | null {
     roleGroups.set(role, [...(roleGroups.get(role) ?? []), serverId]);
   }
 
-  const currentState = getCurrentState();
-  const statusCounts = currentState.servers.reduce<Record<string, number>>(
+  const statusCounts = stateServers.reduce<Record<string, number>>(
     (acc, server) => {
       acc[server.status] = (acc[server.status] ?? 0) + 1;
       return acc;
@@ -446,8 +478,8 @@ function buildStructuredTopologySnapshot(): StructuredTopologySnapshot | null {
       .sort(([left], [right]) => left.localeCompare(right))
       .map(([role, serverIds]) => ({ role, serverIds: serverIds.sort() })),
     statusCounts,
-    alertCount: currentState.alerts.length,
-    dataSources: ['otel-resource-catalog', 'precomputed-state'],
+    alertCount: getStateAlertCount(stateData, stateServers),
+    dataSources: ['otel-resource-catalog', 'domain-data-source'],
   };
 }
 
@@ -459,9 +491,10 @@ function buildStructuredTopologyBoundaryResponse(
   query: string,
   startTime: number,
   suggestedAgentName: string,
-  ragEnabled: boolean
+  ragEnabled: boolean,
+  stateData?: unknown
 ): MultiAgentResponse | null {
-  const snapshot = buildStructuredTopologySnapshot();
+  const snapshot = buildStructuredTopologySnapshot(stateData);
   if (!snapshot) return null;
 
   const roleGroupLines = snapshot.roleGroups
@@ -485,7 +518,7 @@ function buildStructuredTopologyBoundaryResponse(
       roleGroupLines,
       '',
       '#### 근거 경계',
-      '- 서버 수, 역할, AZ, 현재 상태는 RAG 문서가 아니라 구조화된 OTel resource catalog와 precomputed metrics state를 정본으로 사용했습니다.',
+      '- 서버 수, 역할, AZ, 현재 상태는 RAG 문서가 아니라 구조화된 OTel resource catalog와 도메인 dataSource를 정본으로 사용했습니다.',
       '- 운영 절차나 장애 대응 방법이 필요하면 내부 지식 검색을 보조 근거로 별도 사용합니다.',
     ].join('\n')
   );
@@ -607,12 +640,35 @@ export async function executeForcedRouting(
   images?: ImageAttachment[],
   files?: FileAttachment[],
   contextSummary?: string | null,
+  dataSource?: DomainDataSource,
+  domainId?: string,
 ): Promise<MultiAgentResponse | null> {
   logger.info(`[Forced Routing] Looking up agent config: "${suggestedAgentName}"`);
+  const dataSourceContext = createAgentDataSourceContext({ query, domainId });
+  let snapshotResolved = false;
+  let snapshotData: unknown;
+  const getSnapshotData = async (): Promise<unknown | undefined> => {
+    if (!snapshotResolved) {
+      snapshotResolved = true;
+      snapshotData = (
+        await resolveDomainSnapshot(
+          dataSource,
+          dataSourceContext,
+          `forced-routing:${suggestedAgentName}`
+        )
+      )?.data;
+    }
+    return snapshotData;
+  };
 
   if (suggestedAgentName === 'Reporter Agent') {
     logger.info(`[Forced Routing] Routing to Reporter Pipeline`);
-    const pipelineResult = await executeReporterWithPipeline(query, startTime);
+    const pipelineResult = await executeReporterWithPipeline(
+      query,
+      startTime,
+      dataSource,
+      domainId
+    );
     if (pipelineResult) {
       return pipelineResult;
     }
@@ -648,7 +704,8 @@ export async function executeForcedRouting(
       query,
       startTime,
       suggestedAgentName,
-      ragEnabled
+      ragEnabled,
+      await getSnapshotData()
     );
     if (structuredTopologyResponse) {
       logger.info(
@@ -956,7 +1013,8 @@ export async function executeForcedRouting(
     const deterministicSummary = buildDeterministicSummaryFallback(
       query,
       suggestedAgentName,
-      collectedToolResults
+      collectedToolResults,
+      await getSnapshotData()
     );
 
     if (deterministicSummary) {
@@ -969,7 +1027,8 @@ export async function executeForcedRouting(
     } else {
       const stateSummary = buildDeterministicSummaryFromCurrentState(
         query,
-        suggestedAgentName
+        suggestedAgentName,
+        await getSnapshotData()
       );
       if (stateSummary) {
         response = stateSummary;

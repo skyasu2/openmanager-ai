@@ -234,6 +234,7 @@ async function executeMultiAgentMode(
     const multiAgentRequest: MultiAgentRequest = {
       messages: request.messages,
       sessionId: request.sessionId,
+      domainId: request.runtimeHost?.domain.id,
       ...buildSupervisorModeMetadata(modeDecision),
       traceId: request.traceId,
       enableTracing: request.enableTracing,
@@ -241,6 +242,7 @@ async function executeMultiAgentMode(
       enableRAG: request.enableRAG,
       images: request.images,
       files: request.files,
+      dataSource: request.runtimeHost?.domain.dataSource,
     };
 
     const result = await executeMultiAgent(multiAgentRequest);

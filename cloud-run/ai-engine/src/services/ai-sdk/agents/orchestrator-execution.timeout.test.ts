@@ -196,7 +196,9 @@ describe('executeMultiAgent timeout contract', () => {
       true,
       undefined,
       undefined,
-      null
+      null,
+      undefined,
+      undefined
     );
     expect(result.success).toBe(true);
     if (result.success) {
@@ -306,7 +308,9 @@ describe('executeMultiAgent timeout contract', () => {
       true,
       [{ data: 'base64', mimeType: 'image/png' }],
       undefined,
-      null
+      null,
+      undefined,
+      undefined
     );
 
     const fallbackStatus = events.find((event) => event.type === 'agent_status');
@@ -357,7 +361,9 @@ describe('executeMultiAgent timeout contract', () => {
       true,
       [{ data: 'base64', mimeType: 'image/png' }],
       undefined,
-      null
+      null,
+      undefined,
+      undefined
     );
 
     const statusMessages = events

@@ -1,12 +1,35 @@
-import { getCurrentState, getRecentHistory } from '../../../data/precomputed-state';
 import { STATUS_THRESHOLDS } from '../../../config/status-thresholds';
 import { getTrendPredictor } from '../../../lib/ai/monitoring/TrendPredictor';
 import { logger } from '../../../lib/logger';
-import {
-  getCurrentSlotIndex,
-  getHistoryForMetric,
-  toTrendDataPoints,
-} from '../../../tools-ai-sdk/analyst-tools-shared';
+
+type MonitoringMetric = 'cpu' | 'memory' | 'disk' | 'network';
+
+interface MonitoringServerState {
+  id: string;
+  name: string;
+  type?: string;
+  status: string;
+  cpu: number;
+  memory: number;
+  disk: number;
+  network: number;
+}
+
+interface MonitoringState {
+  timestamp?: string;
+  servers: MonitoringServerState[];
+}
+
+interface MonitoringHistorySlot {
+  timestamp?: string;
+  timestampMs?: number;
+  servers: Array<Partial<Record<MonitoringMetric, number>> & { id: string }>;
+}
+
+interface MetricDataPoint {
+  timestamp: number;
+  value: number;
+}
 
 const COMMAND_TEMPLATES: Record<string, string[]> = {
   cpu: [
@@ -99,9 +122,167 @@ export interface ReportForEvaluation {
   markdown?: string;
 }
 
-export function generateInitialReport(): ReportForEvaluation | null {
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function toFiniteNumber(value: unknown, fallback = 0): number {
+  return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
+}
+
+function toMonitoringServer(value: unknown): MonitoringServerState | null {
+  if (!isRecord(value) || typeof value.id !== 'string') {
+    return null;
+  }
+
+  return {
+    id: value.id,
+    name: typeof value.name === 'string' ? value.name : value.id,
+    ...(typeof value.type === 'string' && { type: value.type }),
+    status: typeof value.status === 'string' ? value.status : 'online',
+    cpu: toFiniteNumber(value.cpu),
+    memory: toFiniteNumber(value.memory),
+    disk: toFiniteNumber(value.disk),
+    network: toFiniteNumber(value.network),
+  };
+}
+
+function toMonitoringState(value: unknown): MonitoringState | null {
+  if (!isRecord(value) || !Array.isArray(value.servers)) {
+    return null;
+  }
+
+  const servers = value.servers
+    .map(toMonitoringServer)
+    .filter((server): server is MonitoringServerState => server !== null);
+  if (servers.length === 0) {
+    return null;
+  }
+
+  return {
+    ...(typeof value.timestamp === 'string' && { timestamp: value.timestamp }),
+    servers,
+  };
+}
+
+function toMonitoringHistorySlot(value: unknown): MonitoringHistorySlot | null {
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  const source = isRecord(value.data) ? value.data : value;
+  if (!Array.isArray(source.servers)) {
+    return null;
+  }
+
+  const servers = source.servers
+    .filter((server): server is Record<string, unknown> => isRecord(server) && typeof server.id === 'string')
+    .map((server) => ({
+      id: server.id as string,
+      cpu: typeof server.cpu === 'number' ? server.cpu : undefined,
+      memory: typeof server.memory === 'number' ? server.memory : undefined,
+      disk: typeof server.disk === 'number' ? server.disk : undefined,
+      network: typeof server.network === 'number' ? server.network : undefined,
+    }));
+  if (servers.length === 0) {
+    return null;
+  }
+
+  const timestamp =
+    typeof value.timestamp === 'string'
+      ? value.timestamp
+      : typeof source.timestamp === 'string'
+        ? source.timestamp
+        : typeof source.fullTimestamp === 'string'
+          ? source.fullTimestamp
+          : undefined;
+  const timestampMs = timestamp ? Date.parse(timestamp) : NaN;
+
+  return {
+    ...(timestamp && { timestamp }),
+    ...(Number.isFinite(timestampMs) && { timestampMs }),
+    servers,
+  };
+}
+
+function toMonitoringHistory(value: unknown[] | undefined): MonitoringHistorySlot[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  const slots = value
+    .map(toMonitoringHistorySlot)
+    .filter((slot): slot is MonitoringHistorySlot => slot !== null);
+
+  if (slots.every((slot) => typeof slot.timestampMs === 'number')) {
+    return slots
+      .slice()
+      .sort((left, right) => left.timestampMs! - right.timestampMs!);
+  }
+
+  return slots;
+}
+
+function toTrendDataPoints(points: MetricDataPoint[]): Array<{ timestamp: number; value: number }> {
+  return points.map((point) => ({ timestamp: point.timestamp, value: point.value }));
+}
+
+function buildHistoryForMetric(
+  history: MonitoringHistorySlot[],
+  serverId: string,
+  metric: MonitoringMetric,
+  currentValue: number
+): MetricDataPoint[] {
+  const now = Date.now();
+  const baseTime = now - (now % (10 * 60 * 1000));
+  const values = history
+    .slice(-36)
+    .map((slot) => slot.servers.find((server) => server.id === serverId)?.[metric])
+    .filter((value): value is number => typeof value === 'number' && Number.isFinite(value));
+
+  if (values.length === 0) {
+    return Array.from({ length: 36 }, (_, index) => ({
+      timestamp: baseTime - (35 - index) * 600000,
+      value: currentValue,
+    }));
+  }
+
+  return values.map((value, index) => ({
+    timestamp: baseTime - (values.length - 1 - index) * 600000,
+    value,
+  }));
+}
+
+export function getServerTypeFromMonitoringState(
+  stateInput: unknown,
+  serverId: string | undefined
+): string | undefined {
+  if (!serverId) return undefined;
+  return toMonitoringState(stateInput)?.servers.find((server) => server.id === serverId)?.type;
+}
+
+export function getMetricAverageFromMonitoringHistory(
+  historyInput: unknown[] | undefined,
+  serverId: string,
+  metric: MonitoringMetric
+): number | null {
+  const values = toMonitoringHistory(historyInput)
+    .map((slot) => slot.servers.find((server) => server.id === serverId)?.[metric])
+    .filter((value): value is number => typeof value === 'number' && Number.isFinite(value));
+  if (values.length === 0) return null;
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
+export function generateInitialReport(
+  stateInput?: unknown,
+  historyInput?: unknown[]
+): ReportForEvaluation | null {
   try {
-    const state = getCurrentState();
+    const state = toMonitoringState(stateInput);
+    if (!state) {
+      return null;
+    }
+    const history = toMonitoringHistory(historyInput);
     const now = new Date();
 
     const affectedServers = state.servers
@@ -204,7 +385,7 @@ export function generateInitialReport(): ReportForEvaluation | null {
       }
     }
 
-    const predictions = generatePredictions(affectedServers, state);
+    const predictions = generatePredictions(affectedServers, state, history);
 
     const suggestedActions: string[] = [];
     if (affectedServers.some((server) => server.primaryIssue.includes('CPU'))) {
@@ -243,14 +424,14 @@ export function generateInitialReport(): ReportForEvaluation | null {
 
 function generatePredictions(
   servers: ReportForEvaluation['affectedServers'],
-  state: ReturnType<typeof getCurrentState>
+  state: MonitoringState,
+  history: MonitoringHistorySlot[]
 ): NonNullable<ReportForEvaluation['predictions']> {
   if (servers.length === 0) {
     return [];
   }
 
   const predictor = getTrendPredictor();
-  const fixedSlot = getCurrentSlotIndex();
   const results: NonNullable<ReportForEvaluation['predictions']> = [];
 
   for (const server of servers.slice(0, 5)) {
@@ -263,14 +444,9 @@ function generatePredictions(
       if (current[metric] < 70) {
         continue;
       }
-      const history = getHistoryForMetric(
-        server.id,
-        metric,
-        current[metric],
-        fixedSlot
-      );
+      const metricHistory = buildHistoryForMetric(history, server.id, metric, current[metric]);
       const prediction = predictor.predictEnhanced(
-        toTrendDataPoints(history),
+        toTrendDataPoints(metricHistory),
         metric
       );
 

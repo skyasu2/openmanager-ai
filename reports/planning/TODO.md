@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-06 KST (`AI Engine precomputed-state decoupling plan approved`)
+**Last Updated**: 2026-05-06 KST (`AI Engine precomputed-state decoupling completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| AI Engine precomputed-state decoupling | Medium | Approved | Contract 보강 완료. 다음 단계: Task 0 failing specs. 관련: [ai-engine-precomputed-state-decoupling-plan.md](ai-engine-precomputed-state-decoupling-plan.md) |
+| _No active task_ | — | — | Backlog도 현재 비어 있음. |
 
 ---
 
@@ -16,7 +16,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| _No backlog task_ | — | Active task in progress. |
+| _No backlog task_ | — | Active task 없음. |
 
 ---
 
@@ -41,6 +41,16 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-06 #307)
+- [x] AI Engine precomputed-state decoupling
+  - `DomainDataSource` / `DomainSnapshot` / `DomainHistoryEntry` 계약을 portable core에 추가하고 `AssistantDomain.dataSource?`로 노출
+  - monitoring domain pack이 `getCurrentState()` / `getRecentHistory()`를 소유하는 `monitoringDomainDataSource`를 제공하도록 분리
+  - supervisor stream/single-agent → multi-agent request → forced routing/agent stream/reporter pipeline 경로에 domain dataSource를 전달
+  - agent runtime의 direct `precomputed-state` import와 `tools-ai-sdk/server-metrics/data` 우회 결합을 contract guard로 차단
+  - `getKSTDateTime()`은 `lib/time-utils.ts`로 분리하고 `precomputed-state`는 re-export 호환만 유지
+  - 검증: precomputed decoupling contract tests `5 files / 23 tests`, affected agent tests `6 files / 91 tests`, AI Engine `type-check`, AI Engine full test `104 files / 1063 tests`
+  - 상세: [archive/ai-engine-precomputed-state-decoupling-plan.md](archive/ai-engine-precomputed-state-decoupling-plan.md)
 
 ### Completed (2026-05-06 #306)
 - [x] AI Engine domain-owned agent registry

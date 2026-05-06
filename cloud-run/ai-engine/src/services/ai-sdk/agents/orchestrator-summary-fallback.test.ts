@@ -5,6 +5,15 @@ import {
   isDeterministicSummaryQuery,
 } from './orchestrator-summary-fallback';
 
+const sampleDomainState = {
+  servers: [
+    { id: 'web-01', status: 'online', cpu: 25, memory: 35, disk: 40 },
+    { id: 'db-mysql-dc1-primary', status: 'warning', cpu: 40, memory: 68, disk: 82 },
+    { id: 'db-mysql-dc1-backup', status: 'warning', cpu: 42, memory: 55, disk: 74 },
+    { id: 'legacy-offline-01', status: 'offline', cpu: 0, memory: 0, disk: 0 },
+  ],
+};
+
 describe('buildDeterministicSummaryFallback', () => {
   it('builds a deterministic NLQ summary from getServerMetrics results', () => {
     const summary = buildDeterministicSummaryFallback(
@@ -364,22 +373,27 @@ describe('buildDeterministicSummaryFallback', () => {
   it('backfills explicitly named servers from current state when tool results are partial', () => {
     const query =
       '현재 리소스 경고 TOP 2인 db-mysql-dc1-primary와 db-mysql-dc1-backup을 기준으로 장애 원인을 추정하고, 각 서버별 즉시 조치 1개씩만 우선순위로 제안해줘. 대시보드 현재 시점 데이터 기준으로 답해줘';
-    const summary = buildDeterministicSummaryFallback(query, 'Analyst Agent', [
-      {
-        toolName: 'getServerMetrics',
-        result: {
-          servers: [
-            {
-              id: 'db-mysql-dc1-primary',
-              status: 'warning',
-              cpu: 61,
-              memory: 68,
-              disk: 82,
-            },
-          ],
+    const summary = buildDeterministicSummaryFallback(
+      query,
+      'Analyst Agent',
+      [
+        {
+          toolName: 'getServerMetrics',
+          result: {
+            servers: [
+              {
+                id: 'db-mysql-dc1-primary',
+                status: 'warning',
+                cpu: 61,
+                memory: 68,
+                disk: 82,
+              },
+            ],
+          },
         },
-      },
-    ]);
+      ],
+      sampleDomainState
+    );
 
     expect(summary).toContain('📊 **요청 서버 2대 상태**');
     expect(summary).toContain('db-mysql-dc1-primary');
@@ -814,11 +828,28 @@ describe('buildDeterministicSummaryFallback', () => {
   it('builds deterministic summary from current state when tool results are absent', () => {
     const summary = buildDeterministicSummaryFromCurrentState(
       '현재 모든 서버의 상태를 요약해줘',
-      'NLQ Agent'
+      'NLQ Agent',
+      sampleDomainState
     );
 
     expect(summary).toBeTruthy();
     expect(summary).toContain('📊 **서버 현황 요약**');
     expect(summary).toContain('💡 **권고**');
+  });
+
+  it('does not label snapshot-only threshold values as rising trend evidence', () => {
+    const summary = buildDeterministicSummaryFromCurrentState(
+      '현재 모든 서버의 상태를 요약해줘',
+      'NLQ Agent',
+      {
+        servers: [
+          { id: 'api-01', status: 'critical', cpu: 92, memory: 88, disk: 40 },
+        ],
+      }
+    );
+
+    expect(summary).toBeTruthy();
+    expect(summary).not.toContain('상승 추세');
+    expect(summary).toContain('평균 대비 큰 변동 없이 안정적입니다');
   });
 });

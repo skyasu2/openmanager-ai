@@ -1,5 +1,6 @@
 import type { StreamEvent } from '../supervisor';
 
+import type { DomainDataSource } from '../../../core/assistant-runtime';
 import { evaluateAgentResponseQuality } from './response-quality';
 import type {
   MultiAgentError,
@@ -44,7 +45,9 @@ export async function executeVisionOrFallback(
   webSearchEnabled: boolean,
   ragEnabled: boolean,
   images?: Parameters<typeof executeWithAgentFactory>[5],
-  files?: Parameters<typeof executeWithAgentFactory>[6]
+  files?: Parameters<typeof executeWithAgentFactory>[6],
+  dataSource?: DomainDataSource,
+  domainId?: string
 ): Promise<MultiAgentResponse | null> {
   const result = await executeWithAgentFactory(
     query,
@@ -69,7 +72,10 @@ export async function executeVisionOrFallback(
     webSearchEnabled,
     ragEnabled,
     images,
-    files
+    files,
+    undefined,
+    dataSource,
+    domainId
   );
 }
 

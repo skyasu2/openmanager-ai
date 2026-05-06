@@ -1,3 +1,4 @@
+import type { DomainDataSource } from '../../../core/assistant-runtime';
 import type {
   EvidenceCard,
   LegacyRagSource,
@@ -54,6 +55,7 @@ export interface AgentRunOptions {
   sessionId?: string;
   images?: ImageAttachment[];
   files?: FileAttachment[];
+  dataSource?: DomainDataSource;
 }
 
 export interface AgentStreamEvent {
@@ -62,7 +64,7 @@ export interface AgentStreamEvent {
 }
 
 export const DEFAULT_OPTIONS: Required<
-  Omit<AgentRunOptions, 'sessionId' | 'images' | 'files'>
+  Omit<AgentRunOptions, 'sessionId' | 'images' | 'files' | 'dataSource'>
 > = {
   timeoutMs: 45_000,
   maxSteps: 10,

@@ -345,7 +345,8 @@ function buildRecommendation(
 
 function getExplicitQueryServers(
   query: string,
-  payload: MetricsToolPayload
+  payload: MetricsToolPayload,
+  lookupPayload?: MetricsToolPayload | null
 ): AlertServerSnapshot[] {
   const requestedIds = query.match(/\b[a-z0-9]+(?:-[a-z0-9]+){2,}\b/gi) ?? [];
   const seen = new Set<string>();
@@ -356,7 +357,7 @@ function getExplicitQueryServers(
     return true;
   });
 
-  const currentStatePayload = buildSummaryPayloadFromCurrentState();
+  const currentStatePayload = lookupPayload ?? buildSummaryPayloadFromCurrentState();
   const lookupServers = [
     ...payload.servers,
     ...(currentStatePayload?.servers ?? []).filter(
@@ -390,13 +391,14 @@ function buildCauseLine(server: AlertServerSnapshot): string {
 
 export function buildExplicitServerOperationalAnswer(
   query: string,
-  payload: MetricsToolPayload
+  payload: MetricsToolPayload,
+  lookupPayload?: MetricsToolPayload | null
 ): string | null {
   if (!isExplicitServerOperationalQuery(query)) {
     return null;
   }
 
-  const requestedServers = getExplicitQueryServers(query, payload);
+  const requestedServers = getExplicitQueryServers(query, payload, lookupPayload);
   if (requestedServers.length === 0) {
     return null;
   }

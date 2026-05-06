@@ -48,9 +48,14 @@ export function isDeterministicSummaryQuery(
 
 function buildDeterministicAnswerFromPayload(
   query: string,
-  payload: MetricsToolPayload
+  payload: MetricsToolPayload,
+  lookupPayload?: MetricsToolPayload | null
 ): string {
-  const explicitServerAnswer = buildExplicitServerOperationalAnswer(query, payload);
+  const explicitServerAnswer = buildExplicitServerOperationalAnswer(
+    query,
+    payload,
+    lookupPayload
+  );
   if (explicitServerAnswer) {
     return explicitServerAnswer;
   }
@@ -81,26 +86,29 @@ function buildDeterministicAnswerFromPayload(
 export function buildDeterministicSummaryFallback(
   query: string,
   agentName: string,
-  toolResults: CollectedToolResult[]
+  toolResults: CollectedToolResult[],
+  stateData?: unknown
 ): string | null {
   const payload = getMetricsPayload(toolResults);
   if (!payload) {
     return null;
   }
+  const lookupPayload = buildSummaryPayloadFromCurrentState(stateData);
 
   if (!isDeterministicSummaryQuery(query, agentName, getPayloadServerEvidenceCount(payload))) {
     return null;
   }
 
-  return buildDeterministicAnswerFromPayload(query, payload);
+  return buildDeterministicAnswerFromPayload(query, payload, lookupPayload);
 }
 
 // Final fallback for summary prompts when model emits no text and skips all tool calls.
 export function buildDeterministicSummaryFromCurrentState(
   query: string,
-  agentName: string
+  agentName: string,
+  stateData?: unknown
 ): string | null {
-  const payload = buildSummaryPayloadFromCurrentState();
+  const payload = buildSummaryPayloadFromCurrentState(stateData);
   if (!payload) {
     return null;
   }
@@ -109,5 +117,5 @@ export function buildDeterministicSummaryFromCurrentState(
     return null;
   }
 
-  return buildDeterministicAnswerFromPayload(query, payload);
+  return buildDeterministicAnswerFromPayload(query, payload, payload);
 }

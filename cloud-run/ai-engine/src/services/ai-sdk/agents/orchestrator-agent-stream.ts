@@ -6,6 +6,7 @@ import {
   type UserContent,
 } from 'ai';
 import { TIMEOUT_CONFIG } from '../../../config/timeout-config';
+import type { DomainDataSource } from '../../../core/assistant-runtime';
 import { buildMultimodalContent, extractToolResultOutput } from '../../../lib/ai-sdk-utils';
 import { logger } from '../../../lib/logger';
 import { sanitizeChineseCharacters } from '../../../lib/text-sanitizer';
@@ -41,6 +42,10 @@ import {
   isDeterministicSummaryQuery,
 } from './orchestrator-summary-fallback';
 import { createStructuredTextDeltaGuard } from '../supervisor-stream-text-guard';
+import {
+  createAgentDataSourceContext,
+  resolveDomainSnapshot,
+} from './domain-data-source';
 
 const PROVIDER_FALLBACK_BASE_DELAY_MS = 120;
 const PROVIDER_FALLBACK_JITTER_MS = 280;
@@ -309,6 +314,8 @@ export async function* executeAgentStream(
   images?: ImageAttachment[],
   files?: FileAttachment[],
   contextSummary?: string | null,
+  dataSource?: DomainDataSource,
+  domainId?: string,
 ): AsyncGenerator<StreamEvent> {
   // Buffer model text for queries that may be answered deterministically; once
   // tool results are available, the route is re-evaluated with data evidence.
@@ -318,6 +325,26 @@ export async function* executeAgentStream(
     1
   );
   let preferDeterministicSummary = mayUseDeterministicSummary;
+  const dataSourceContext = createAgentDataSourceContext({
+    query,
+    domainId,
+    sessionId,
+  });
+  let snapshotResolved = false;
+  let snapshotData: unknown;
+  const getSnapshotData = async (): Promise<unknown | undefined> => {
+    if (!snapshotResolved) {
+      snapshotResolved = true;
+      snapshotData = (
+        await resolveDomainSnapshot(
+          dataSource,
+          dataSourceContext,
+          `agent-stream:${agentName}`
+        )
+      )?.data;
+    }
+    return snapshotData;
+  };
   const agentConfig = getAgentConfig(agentName);
 
   if (!agentConfig) {
@@ -331,7 +358,12 @@ export async function* executeAgentStream(
   // Phase 3: Reporter Pipeline — run deterministic pipeline first, then stream result
   if (agentName === 'Reporter Agent') {
     try {
-      const pipelineResult = await executeReporterWithPipeline(query, startTime);
+      const pipelineResult = await executeReporterWithPipeline(
+        query,
+        startTime,
+        dataSource,
+        domainId
+      );
       if (pipelineResult) {
         const reporterTtfbMs = Date.now() - startTime;
         logger.info(`[Stream Reporter] Pipeline succeeded, streaming result`);
@@ -734,7 +766,8 @@ export async function* executeAgentStream(
       const deterministicSummary = buildDeterministicSummaryFallback(
         query,
         agentName,
-        collectedToolResults
+        collectedToolResults,
+        await getSnapshotData()
       );
 
       if (deterministicSummary && (!textDelivered || preferDeterministicSummary)) {
@@ -751,7 +784,8 @@ export async function* executeAgentStream(
       if (mayUseDeterministicSummary && !textDelivered) {
         const stateSummary = buildDeterministicSummaryFromCurrentState(
           query,
-          agentName
+          agentName,
+          await getSnapshotData()
         );
         if (stateSummary) {
           textEmitted = true;
@@ -920,7 +954,8 @@ export async function* executeAgentStream(
       if (!textDelivered) {
         const stateSummary = buildDeterministicSummaryFromCurrentState(
           query,
-          agentName
+          agentName,
+          await getSnapshotData()
         );
         if (stateSummary) {
           textEmitted = true;

@@ -4,12 +4,18 @@ import type {
   AssistantDomain,
   AssistantRequestContext,
   AssistantRouteCandidate,
+  DomainDataSource,
   DomainFactPack,
   DomainInstructionSet,
   FactPackBuilder,
   ToolDefinition,
   ToolRegistry,
 } from '../../core/assistant-runtime';
+import {
+  getCurrentState,
+  getKSTDateTime,
+  getRecentHistory,
+} from '../../data/precomputed-state';
 import { createMonitoringDataSource } from '../../services/monitoring/monitoring-data-source';
 import { MONITORING_FACT_PACK_VERSION } from '../../services/monitoring/monitoring-fact-pack';
 import type { AgentToolName } from '../../services/ai-sdk/agents/config/agent-runtime-policy';
@@ -170,6 +176,24 @@ export const monitoringFactPackBuilder: FactPackBuilder = {
   },
 };
 
+export const monitoringDomainDataSource: DomainDataSource = {
+  async snapshot() {
+    const state = getCurrentState();
+    const { date, time } = getKSTDateTime();
+    return {
+      timestamp: `${date}T${time}:00+09:00`,
+      data: state,
+    };
+  },
+  async history(count) {
+    return getRecentHistory(count).map((slot) => ({
+      timestamp: slot.fullTimestamp,
+      slotIndex: slot.slotIndex,
+      data: slot,
+    }));
+  },
+};
+
 export const monitoringDomainPack: AssistantDomain = {
   id: MONITORING_DOMAIN_ID,
   version: MONITORING_DOMAIN_VERSION,
@@ -181,4 +205,5 @@ export const monitoringDomainPack: AssistantDomain = {
   artifacts: monitoringArtifactRegistry,
   facts: monitoringFactPackBuilder,
   agentRoles: monitoringAgentRoleRegistry,
+  dataSource: monitoringDomainDataSource,
 };

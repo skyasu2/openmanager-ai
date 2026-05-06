@@ -15,6 +15,7 @@ import type {
   RetrievalMetadata,
 } from '../../../lib/retrieval-contract';
 import { TIMEOUT_CONFIG } from '../../../config/timeout-config';
+import type { DomainDataSource } from '../../../core/assistant-runtime';
 
 // ============================================================================
 // Configuration
@@ -46,6 +47,7 @@ export const ORCHESTRATOR_CONFIG = {
 export interface MultiAgentRequest {
   messages: Array<{ role: 'user' | 'assistant'; content: string }>;
   sessionId: string;
+  domainId?: string;
   requestedMode?: SupervisorMode;
   resolvedMode?: Exclude<SupervisorMode, 'auto'>;
   modeSelectionSource?: SupervisorModeSelectionSource;
@@ -73,6 +75,7 @@ export interface MultiAgentRequest {
    * @see https://ai-sdk.dev/docs/ai-sdk-core/prompts#file-parts
    */
   files?: FileAttachment[];
+  dataSource?: DomainDataSource;
 }
 
 export interface MultiAgentResponse {

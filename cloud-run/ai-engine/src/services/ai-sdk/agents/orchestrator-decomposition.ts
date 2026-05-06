@@ -9,6 +9,7 @@
 import { taskDecomposeSchema, type TaskDecomposition, type Subtask } from './schemas';
 import { TIMEOUT_CONFIG } from '../../../config/timeout-config';
 
+import type { DomainDataSource } from '../../../core/assistant-runtime';
 import type { StreamEvent } from '../supervisor';
 import type { FileAttachment, ImageAttachment } from './base-agent';
 import type { MultiAgentResponse } from './orchestrator-types';
@@ -54,6 +55,8 @@ async function executeSubtaskWithTimeout(
   ragEnabled: boolean,
   images: ImageAttachment[] | undefined,
   files: FileAttachment[] | undefined,
+  dataSource: DomainDataSource | undefined,
+  domainId: string | undefined,
   logPrefix: string
 ): Promise<MultiAgentResponse | null> {
   const subtaskTimeoutMs = TIMEOUT_CONFIG.subtask.hard;
@@ -80,7 +83,10 @@ async function executeSubtaskWithTimeout(
     webSearchEnabled,
     ragEnabled,
     images,
-    files
+    files,
+    undefined,
+    dataSource,
+    domainId
   );
 
   try {
@@ -201,7 +207,9 @@ export async function executeParallelSubtasks(
   ragEnabled = true,
   sessionId = '',
   images?: ImageAttachment[],
-  files?: FileAttachment[]
+  files?: FileAttachment[],
+  dataSource?: DomainDataSource,
+  domainId?: string
 ): Promise<MultiAgentResponse | null> {
   logger.info(`[Parallel] Executing ${subtasks.length} subtasks in parallel...`);
 
@@ -216,6 +224,8 @@ export async function executeParallelSubtasks(
       ragEnabled,
       images,
       files,
+      dataSource,
+      domainId,
       'Parallel'
     );
     return { subtask, result, index };
@@ -296,7 +306,9 @@ export async function* executeParallelSubtasksStream(
   ragEnabled = true,
   sessionId = '',
   images?: ImageAttachment[],
-  files?: FileAttachment[]
+  files?: FileAttachment[],
+  dataSource?: DomainDataSource,
+  domainId?: string
 ): AsyncGenerator<StreamEvent> {
   logger.info(`[ParallelStream] Executing ${subtasks.length} subtasks in parallel...`);
 
@@ -323,6 +335,8 @@ export async function* executeParallelSubtasksStream(
       ragEnabled,
       images,
       files,
+      dataSource,
+      domainId,
       'ParallelStream'
     );
     return { subtask, result, index };
@@ -425,7 +439,9 @@ export async function* executeSequentialSubtasksStream(
   ragEnabled = true,
   sessionId = '',
   images?: ImageAttachment[],
-  files?: FileAttachment[]
+  files?: FileAttachment[],
+  dataSource?: DomainDataSource,
+  domainId?: string
 ): AsyncGenerator<StreamEvent> {
   logger.info(`[SequentialStream] Executing ${subtasks.length} subtasks sequentially...`);
 
@@ -467,6 +483,8 @@ export async function* executeSequentialSubtasksStream(
       ragEnabled,
       images,
       files,
+      dataSource,
+      domainId,
       'SequentialStream'
     );
 

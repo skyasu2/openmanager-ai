@@ -447,6 +447,7 @@ describe('supervisor domain wiring contract', () => {
     expect(mockExecuteMultiAgent).toHaveBeenCalledTimes(1);
     expect(mockExecuteMultiAgent.mock.calls[0]?.[0]).toEqual(
       expect.objectContaining({
+        domainId: 'sample-support',
         dataSource: sampleDataSource,
       })
     );

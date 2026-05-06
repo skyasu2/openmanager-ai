@@ -151,7 +151,31 @@ function createStreamResult(options: {
   };
 }
 
-async function collectEvents(query: string) {
+function createTestDataSource() {
+  return {
+    async snapshot() {
+      return {
+        timestamp: '2026-05-06T00:00:00+09:00',
+        data: {
+          servers: [
+            { id: 'web-01', status: 'online', cpu: 32, memory: 48, disk: 28 },
+            { id: 'api-01', status: 'warning', cpu: 71, memory: 78, disk: 36 },
+            { id: 'db-01', status: 'online', cpu: 40, memory: 56, disk: 42 },
+          ],
+        },
+      };
+    },
+    async history() {
+      return [];
+    },
+  };
+}
+
+async function collectEvents(
+  query: string,
+  dataSource = createTestDataSource(),
+  domainId = 'sample-support'
+) {
   const events: Array<{ type: string; data: unknown }> = [];
   for await (const event of executeAgentStream(
     query,
@@ -159,7 +183,12 @@ async function collectEvents(query: string) {
     Date.now(),
     'test-session',
     true,
-    true
+    true,
+    undefined,
+    undefined,
+    undefined,
+    dataSource,
+    domainId
   )) {
     events.push(event);
   }
@@ -612,6 +641,36 @@ describe('executeAgentStream', () => {
 
     expect(textPayload).toContain('📊 **서버 현황 요약**');
     expect(textPayload).not.toContain('모델이 도구 없이 만든 요약');
+  });
+
+  it('passes runtime domain id to stream data source context', async () => {
+    const snapshot = vi.fn(async () => ({
+      timestamp: '2026-05-06T00:00:00+09:00',
+      data: {
+        servers: [
+          { id: 'web-01', status: 'online', cpu: 32, memory: 48, disk: 28 },
+        ],
+      },
+    }));
+
+    mockStreamText.mockReturnValue(
+      createStreamResult({
+        chunks: ['모델 요약'],
+        steps: [],
+      })
+    );
+
+    const events = await collectEvents(
+      '현재 모든 서버의 상태를 요약해줘',
+      { snapshot, history: vi.fn(async () => []) },
+      'sample-support'
+    );
+
+    expect(events.some((event) => event.type === 'done')).toBe(true);
+    expect(snapshot.mock.calls[0]?.[0]).toMatchObject({
+      domainId: 'sample-support',
+      message: '현재 모든 서버의 상태를 요약해줘',
+    });
   });
 
   it('retries the next provider when the first provider returns no output', async () => {

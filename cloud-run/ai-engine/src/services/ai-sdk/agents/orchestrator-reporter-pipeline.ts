@@ -2,13 +2,16 @@ import { sanitizeChineseCharacters } from '../../../lib/text-sanitizer';
 import { logger } from '../../../lib/logger';
 import { createSupervisorTrace } from '../../observability/langfuse';
 
+import type { DomainDataSource } from '../../../core/assistant-runtime';
 import type { MultiAgentResponse } from './orchestrator-types';
 import { executeReporterPipeline } from './reporter-pipeline';
 import { evaluateAgentResponseQuality } from './response-quality';
 
 export async function executeReporterWithPipeline(
   query: string,
-  startTime: number
+  startTime: number,
+  dataSource?: DomainDataSource,
+  domainId?: string
 ): Promise<MultiAgentResponse | null> {
   logger.info(
     `[ReporterPipeline] Starting pipeline for query: "${query.substring(0, 50)}..."`
@@ -19,6 +22,8 @@ export async function executeReporterWithPipeline(
       qualityThreshold: 0.75,
       maxIterations: 2,
       timeout: 45_000,
+      dataSource,
+      domainId,
     });
 
     if (!pipelineResult.success || !pipelineResult.report) {

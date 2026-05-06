@@ -217,6 +217,29 @@ function createResourceCatalog(serverIds: string[]) {
   };
 }
 
+function createTestDataSource(serverIds = ['web-01', 'api-01', 'db-01']) {
+  return {
+    async snapshot() {
+      return {
+        timestamp: '2026-05-06T00:00:00+09:00',
+        data: {
+          alerts: [],
+          servers: serverIds.map((serverId, index) => ({
+            id: serverId,
+            status: index === 0 ? 'warning' : 'online',
+            cpu: index === 0 ? 82 : 40,
+            memory: index === 0 ? 70 : 45,
+            disk: 50,
+          })),
+        },
+      };
+    },
+    async history() {
+      return [];
+    },
+  };
+}
+
 describe('executeForcedRouting', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -287,7 +310,13 @@ describe('executeForcedRouting', () => {
     const result = await executeForcedRouting(
       '현재 모든 서버의 상태를 요약해줘',
       'NLQ Agent',
-      Date.now()
+      Date.now(),
+      true,
+      true,
+      undefined,
+      undefined,
+      undefined,
+      createTestDataSource()
     );
 
     expect(result?.success).toBe(true);
@@ -342,7 +371,13 @@ describe('executeForcedRouting', () => {
     const result = await executeForcedRouting(
       '현재 모든 서버의 상태를 요약해줘',
       'NLQ Agent',
-      Date.now()
+      Date.now(),
+      true,
+      true,
+      undefined,
+      undefined,
+      undefined,
+      createTestDataSource()
     );
 
     expect(result?.response).toContain('📊 **서버 현황 요약**');
@@ -361,12 +396,52 @@ describe('executeForcedRouting', () => {
     const result = await executeForcedRouting(
       '현재 모든 서버의 상태를 요약해줘',
       'NLQ Agent',
-      Date.now()
+      Date.now(),
+      true,
+      true,
+      undefined,
+      undefined,
+      undefined,
+      createTestDataSource()
     );
 
     expect(result?.response).toContain('📊 **서버 현황 요약**');
     expect(result?.response).not.toContain('모델만으로 만든 요약');
     expect(mockGenerateTextWithRetry).toHaveBeenCalledTimes(1);
+  });
+
+  it('passes runtime domain id to forced-routing data source context', async () => {
+    const snapshot = vi.fn(async () => ({
+      timestamp: '2026-05-06T00:00:00+09:00',
+      data: {
+        servers: [
+          { id: 'web-01', status: 'online', cpu: 32, memory: 48, disk: 28 },
+        ],
+      },
+    }));
+
+    mockGenerateTextWithRetry.mockResolvedValueOnce(
+      createRetryResult({ text: '모델 요약', steps: [] })
+    );
+
+    const result = await executeForcedRouting(
+      '현재 모든 서버의 상태를 요약해줘',
+      'NLQ Agent',
+      Date.now(),
+      true,
+      true,
+      undefined,
+      undefined,
+      undefined,
+      { snapshot, history: vi.fn(async () => []) },
+      'sample-support'
+    );
+
+    expect(result?.response).toContain('📊 **서버 현황 요약**');
+    expect(snapshot.mock.calls[0]?.[0]).toMatchObject({
+      domainId: 'sample-support',
+      message: '현재 모든 서버의 상태를 요약해줘',
+    });
   });
 
   it('uses summarization fallback for non-summary empty responses in forced routing', async () => {
@@ -510,7 +585,11 @@ describe('executeForcedRouting', () => {
       'Advisor Agent',
       Date.now(),
       true,
-      true
+      true,
+      undefined,
+      undefined,
+      undefined,
+      createTestDataSource(Array.from({ length: 18 }, (_, index) => `server-${index + 1}`))
     );
 
     const firstCall = mockGenerateTextWithRetry.mock.calls[0]?.[0];
@@ -532,7 +611,11 @@ describe('executeForcedRouting', () => {
       'Advisor Agent',
       Date.now(),
       true,
-      true
+      true,
+      undefined,
+      undefined,
+      undefined,
+      createTestDataSource(Array.from({ length: 18 }, (_, index) => `server-${index + 1}`))
     );
 
     const firstCall = mockGenerateTextWithRetry.mock.calls[0];
@@ -553,7 +636,11 @@ describe('executeForcedRouting', () => {
       'Advisor Agent',
       Date.now(),
       true,
-      true
+      true,
+      undefined,
+      undefined,
+      undefined,
+      createTestDataSource(Array.from({ length: 18 }, (_, index) => `server-${index + 1}`))
     );
 
     expect(result?.success).toBe(true);
@@ -572,7 +659,7 @@ describe('executeForcedRouting', () => {
     expect(result?.evidenceCards?.[0]).toMatchObject({
       id: 'structured-topology-current-state',
       category: 'structured-topology',
-      reason: 'structured-evidence:otel-resource-catalog+precomputed-state',
+      reason: 'structured-evidence:otel-resource-catalog+domain-data-source',
     });
     expect(result?.metadata.retrieval).toEqual(
       expect.objectContaining({
@@ -606,7 +693,11 @@ describe('executeForcedRouting', () => {
         'Advisor Agent',
         Date.now(),
         true,
-        true
+        true,
+        undefined,
+        undefined,
+        undefined,
+        createTestDataSource(['generated-01'])
       );
 
       expect(generatedResult?.response).toContain('총 서버 수: 1대');
@@ -624,7 +715,11 @@ describe('executeForcedRouting', () => {
         'Advisor Agent',
         Date.now(),
         true,
-        true
+        true,
+        undefined,
+        undefined,
+        undefined,
+        createTestDataSource(['ssot-01', 'ssot-02'])
       );
 
       expect(ssotResult?.response).toContain('총 서버 수: 2대');

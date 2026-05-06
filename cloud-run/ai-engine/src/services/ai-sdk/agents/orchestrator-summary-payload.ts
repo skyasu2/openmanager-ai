@@ -1,8 +1,3 @@
-import {
-  get24hTrendSummaries,
-  getCurrentState,
-} from '../../../tools-ai-sdk/server-metrics/data';
-
 export interface CollectedToolResult {
   toolName: string;
   result: unknown;
@@ -190,31 +185,29 @@ export function getMetricsPayload(
   };
 }
 
-export function buildSummaryPayloadFromCurrentState(): MetricsToolPayload | null {
-  const state = getCurrentState();
+export function buildSummaryPayloadFromCurrentState(
+  stateData?: unknown
+): MetricsToolPayload | null {
+  if (!isRecord(stateData) || !Array.isArray(stateData.servers)) {
+    return null;
+  }
+
+  const state = {
+    ...stateData,
+    servers: stateData.servers.filter(isServerSnapshot),
+  };
   if (!state?.servers || state.servers.length === 0) {
     return null;
   }
 
-  const trendMap = new Map(
-    get24hTrendSummaries().map((trend) => [trend.serverId, trend])
-  );
-
   const servers: ServerSnapshot[] = state.servers.map((server) => {
-    const trend = trendMap.get(server.id);
     return {
       id: server.id,
       status: server.status,
       cpu: server.cpu,
       memory: server.memory,
       disk: server.disk,
-      ...(trend && {
-        dailyTrend: {
-          cpu: trend.cpu,
-          memory: trend.memory,
-          disk: trend.disk,
-        },
-      }),
+      network: server.network,
     };
   });
 
@@ -222,56 +215,13 @@ export function buildSummaryPayloadFromCurrentState(): MetricsToolPayload | null
     .filter((server) =>
       ['warning', 'critical', 'offline'].includes(server.status)
     )
-    .map((server) => {
-      const trend = trendMap.get(server.id);
-      const cpu = toNumber(server.cpu);
-      const memory = toNumber(server.memory);
-
-      const cpuTrend =
-        cpu !== null && trend
-          ? cpu > trend.cpu.avg * 1.1
-            ? 'rising'
-            : cpu < trend.cpu.avg * 0.9
-              ? 'falling'
-              : 'stable'
-          : 'stable';
-
-      const memoryTrend =
-        memory !== null && trend
-          ? memory > trend.memory.avg * 1.1
-            ? 'rising'
-            : memory < trend.memory.avg * 0.9
-              ? 'falling'
-              : 'stable'
-          : 'stable';
-      const disk = toNumber(server.disk);
-      const diskTrend =
-        disk !== null && trend
-          ? disk > trend.disk.avg * 1.1
-            ? 'rising'
-            : disk < trend.disk.avg * 0.9
-              ? 'falling'
-              : 'stable'
-          : 'stable';
-
-      return {
-        id: server.id,
-        status: server.status,
-        cpu: server.cpu,
-        memory: server.memory,
-        disk: server.disk,
-        cpuTrend,
-        memoryTrend,
-        diskTrend,
-        ...(trend && {
-          dailyAvg: {
-            cpu: trend.cpu.avg,
-            memory: trend.memory.avg,
-            disk: trend.disk.avg,
-          },
-        }),
-      };
-    });
+    .map((server) => ({
+      id: server.id,
+      status: server.status,
+      cpu: server.cpu,
+      memory: server.memory,
+      disk: server.disk,
+    }));
 
   return {
     source: 'getServerMetrics',

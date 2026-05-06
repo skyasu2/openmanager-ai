@@ -1,14 +1,14 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-06
 > Tags: ai-assistant,portable-core,precomputed-state,domain-data-source,multi-agent
 
 # AI Engine Precomputed-State Decoupling Plan
 
-- 상태: Approved
+- 상태: Completed
 - 작성일: 2026-05-06
-- TODO.md 연결: Active Tasks > AI Engine precomputed-state decoupling
+- TODO.md 연결: Recent Completed #307
 - 선행 완료:
   - [archive/ai-engine-agent-registry-plan.md](archive/ai-engine-agent-registry-plan.md) — AgentRole/AgentRoleRegistry 계약
 
@@ -299,14 +299,14 @@ multi-agent request에 전달하고, agent 실행 경로는 options로 전달한
 
 ## Task 목록
 
-- [ ] Task 0 — failing specs: time-utils 독립성/re-export, DomainDataSource 계약, dataSource propagation, agent import guard, summary-payload transitive guard, routing/reporter regression
-- [ ] Task 1 — `lib/time-utils.ts` 추출 + `data/precomputed-state.ts` re-export + `orchestrator-execution.ts`, `supervisor-prompt.ts` 전환
-- [ ] Task 2 — `DomainDataSource` / `DomainSnapshot` / `DomainHistoryEntry` Core 계약 추가
-- [ ] Task 3 — `monitoringDomainDataSource` 구현 + `monitoringDomainPack.dataSource` 연결
-- [ ] Task 4 — `OrchestratorContext`에 `dataSource` 필드 추가 + context 주입 배선
-- [ ] Task 5 — `orchestrator-routing.ts` / `reporter-pipeline.ts` / `reporter-pipeline-report.ts` 전환
-- [ ] Task 5.5 — deterministic summary current-state fallback의 transitive data helper 결합 제거
-- [ ] Task 6 — targeted/full validation, code review, plan 완료 처리
+- [x] Task 0 — failing specs: time-utils 독립성/re-export, DomainDataSource 계약, dataSource propagation, agent import guard, summary-payload transitive guard, routing/reporter regression
+- [x] Task 1 — `lib/time-utils.ts` 추출 + `data/precomputed-state.ts` re-export + `orchestrator-execution.ts`, `supervisor-prompt.ts` 전환
+- [x] Task 2 — `DomainDataSource` / `DomainSnapshot` / `DomainHistoryEntry` Core 계약 추가
+- [x] Task 3 — `monitoringDomainDataSource` 구현 + `monitoringDomainPack.dataSource` 연결
+- [x] Task 4 — `OrchestratorContext`에 `dataSource` 필드 추가 + context 주입 배선
+- [x] Task 5 — `orchestrator-routing.ts` / `reporter-pipeline.ts` / `reporter-pipeline-report.ts` 전환
+- [x] Task 5.5 — deterministic summary current-state fallback의 transitive data helper 결합 제거
+- [x] Task 6 — targeted/full validation, code review, plan 완료 처리
 
 ## 단계별 커밋/푸시/배포 판단
 
@@ -368,6 +368,10 @@ data-source.ts         DomainDataSource 구현   ← 이번 plan으로 추가
   planning README 기준에 부족하고 `orchestrator-summary-payload.ts`의 transitive
   precomputed-state 결합이 누락된 점을 확인. Contract/Task 0/Task ordering/후속 결합을
   보강하고 Status를 Approved로 전환.
+- 2026-05-06: failing specs를 추가한 뒤 구현 완료. `DomainDataSource` 계약과
+  monitoring domain dataSource를 추가하고 supervisor/multi-agent/agent stream 경로에
+  dataSource를 주입했다. agent runtime의 direct/transitive precomputed-state import guard를
+  통과했고, AI Engine `type-check`와 full `npm test` `104 files / 1063 tests` 통과.
 
 이 6개 파일을 작성하면 Core / SDK Host / Agent Engine을 수정 없이 새 도메인 AI assistant가 동작한다.
 

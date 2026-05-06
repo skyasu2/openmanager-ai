@@ -119,6 +119,25 @@ export interface AgentRoleRegistry {
   resolveRole(id: string): AgentRole | undefined;
 }
 
+export interface DomainSnapshot {
+  timestamp: string;
+  data: unknown;
+}
+
+export interface DomainHistoryEntry {
+  timestamp: string;
+  slotIndex?: number;
+  data: unknown;
+}
+
+export interface DomainDataSource {
+  snapshot(context: AssistantRequestContext): Promise<DomainSnapshot>;
+  history(
+    count: number,
+    context: AssistantRequestContext
+  ): Promise<DomainHistoryEntry[]>;
+}
+
 export interface AssistantDomain {
   id: string;
   version: string;
@@ -128,6 +147,7 @@ export interface AssistantDomain {
   artifacts?: ArtifactRegistry;
   facts?: FactPackBuilder;
   agentRoles?: AgentRoleRegistry;
+  dataSource?: DomainDataSource;
 }
 
 export interface AssistantStateStore {

@@ -25,7 +25,7 @@ import {
 } from './orchestrator-types';
 import { resolveRAGSetting, resolveWebSearchSetting } from './orchestrator-web-search';
 import { preFilterQuery, saveAgentFindingsToContext } from './orchestrator-context';
-import { getKSTDateTime } from '../../../data/precomputed-state';
+import { getKSTDateTime } from '../../../lib/time-utils';
 
 import {
   getOrchestratorModel,
@@ -133,6 +133,8 @@ export async function executeMultiAgent(
           request.images,
           request.files,
           contextSummary,
+          request.dataSource,
+          request.domainId,
         );
         if (!lastResult) {
           logger.warn(`⚠️ [Orchestrator] Sequential subtask failed: ${subtask.agent}`);
@@ -146,7 +148,7 @@ export async function executeMultiAgent(
       }
     } else {
       const parallelResult = await executeParallelSubtasks(
-        decomposition.subtasks, startTime, webSearchEnabled, ragEnabled, request.sessionId, request.images, request.files
+        decomposition.subtasks, startTime, webSearchEnabled, ragEnabled, request.sessionId, request.images, request.files, request.dataSource, request.domainId
       );
 
       if (parallelResult) {
@@ -171,7 +173,7 @@ export async function executeMultiAgent(
 
     if (suggestedAgentName === 'Vision Agent') {
       logger.info(`[Vision] Using AgentFactory for Vision Agent`);
-      forcedResult = await executeVisionOrFallback(query, startTime, webSearchEnabled, ragEnabled, request.images, request.files);
+      forcedResult = await executeVisionOrFallback(query, startTime, webSearchEnabled, ragEnabled, request.images, request.files, request.dataSource, request.domainId);
     } else {
       forcedResult = await executeForcedRouting(
         query,
@@ -182,6 +184,8 @@ export async function executeMultiAgent(
         request.images,
         request.files,
         contextSummary,
+        request.dataSource,
+        request.domainId,
       );
     }
 
@@ -268,7 +272,9 @@ export async function executeMultiAgent(
                 webSearchEnabled,
                 ragEnabled,
                 request.images,
-                request.files
+                request.files,
+                request.dataSource,
+                request.domainId
               )
             : await executeForcedRouting(
                 query,
@@ -279,6 +285,8 @@ export async function executeMultiAgent(
                 request.images,
                 request.files,
                 contextSummary,
+                request.dataSource,
+                request.domainId,
               );
 
         if (fallbackResult) {
@@ -321,7 +329,7 @@ export async function executeMultiAgent(
       let agentResult: MultiAgentResponse | null = null;
 
       if (selectedAgent === 'Vision Agent') {
-        agentResult = await executeVisionOrFallback(query, startTime, webSearchEnabled, ragEnabled, request.images, request.files);
+        agentResult = await executeVisionOrFallback(query, startTime, webSearchEnabled, ragEnabled, request.images, request.files, request.dataSource, request.domainId);
       } else {
         agentResult = await executeForcedRouting(
           query,
@@ -332,6 +340,8 @@ export async function executeMultiAgent(
           request.images,
           request.files,
           contextSummary,
+          request.dataSource,
+          request.domainId,
         );
       }
 
@@ -366,7 +376,9 @@ export async function executeMultiAgent(
               webSearchEnabled,
               ragEnabled,
               request.images,
-              request.files
+              request.files,
+              request.dataSource,
+              request.domainId
             )
           : await executeForcedRouting(
               query,
@@ -377,6 +389,8 @@ export async function executeMultiAgent(
               request.images,
               request.files,
               contextSummary,
+              request.dataSource,
+              request.domainId,
             );
 
       if (fallbackResult) {
@@ -489,11 +503,11 @@ export async function* executeMultiAgentStream(
 
     if (decomposition.requiresSequential) {
       yield* streamWithTrace(trace, startTime, executeSequentialSubtasksStream(
-        decomposition.subtasks, startTime, webSearchEnabled, ragEnabled, request.sessionId, request.images, request.files
+        decomposition.subtasks, startTime, webSearchEnabled, ragEnabled, request.sessionId, request.images, request.files, request.dataSource, request.domainId
       ));
     } else {
       yield* streamWithTrace(trace, startTime, executeParallelSubtasksStream(
-        decomposition.subtasks, startTime, webSearchEnabled, ragEnabled, request.sessionId, request.images, request.files
+        decomposition.subtasks, startTime, webSearchEnabled, ragEnabled, request.sessionId, request.images, request.files, request.dataSource, request.domainId
       ));
     }
     return;
@@ -524,7 +538,7 @@ export async function* executeMultiAgentStream(
     }
 
     yield* streamWithTrace(trace, startTime, executeAgentStream(
-      query, forcedTarget.targetAgent, startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files, contextSummary
+      query, forcedTarget.targetAgent, startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files, contextSummary, request.dataSource, request.domainId
     ));
     return;
   }
@@ -621,6 +635,8 @@ export async function* executeMultiAgentStream(
             request.images,
             request.files,
             contextSummary,
+            request.dataSource,
+            request.domainId,
           )
         );
         return;
@@ -659,7 +675,7 @@ export async function* executeMultiAgentStream(
       yield* streamWithTrace(
         trace,
         startTime,
-        executeAgentStream(query, selectedTarget.targetAgent, startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files, contextSummary)
+        executeAgentStream(query, selectedTarget.targetAgent, startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files, contextSummary, request.dataSource, request.domainId)
       );
       return;
     }
@@ -689,7 +705,7 @@ export async function* executeMultiAgentStream(
       yield* streamWithTrace(
         trace,
         startTime,
-        executeAgentStream(query, fallbackTarget.targetAgent, startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files, contextSummary)
+        executeAgentStream(query, fallbackTarget.targetAgent, startTime, request.sessionId, webSearchEnabled, ragEnabled, request.images, request.files, contextSummary, request.dataSource, request.domainId)
       );
       return;
     }
