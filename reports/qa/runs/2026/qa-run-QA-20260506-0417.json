@@ -1,0 +1,67 @@
+{
+  "runId": "QA-20260506-0417",
+  "recordedAt": "2026-05-06T07:48:50.082Z",
+  "recordedAtKst": "2026-05-06 16:48:50 KST",
+  "runTitle": "Local deterministic QA - MonitoringFactPack evidence UI",
+  "owner": "codex",
+  "source": "local-checks",
+  "environment": {
+    "target": "local-tests",
+    "url": "",
+    "frontend": "Vitest/TypeScript/Biome",
+    "backend": "not-used",
+    "branch": "main",
+    "deploymentId": "",
+    "deploymentUrl": "",
+    "commitSha": "cc301affd48134ec4fa6c3ed44043a36278b85a8"
+  },
+  "scope": "targeted",
+  "releaseFacing": false,
+  "countsTowardSummary": false,
+  "coveragePacks": ["ai-core", "ai-advanced-surface"],
+  "coveredSurfaces": [
+    "monitoring analysis artifact parser",
+    "monitoring analysis artifact evidence metadata",
+    "monitoring analysis artifact card fact-pack rendering"
+  ],
+  "skippedSurfaces": [
+    "Vercel production Playwright QA - no deployment performed",
+    "Cloud Run QA - producer contract unchanged"
+  ],
+  "checks": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [],
+  "usageChecks": [],
+  "artifacts": [],
+  "completedImprovements": [
+    {
+      "id": "monitoring-factpack-consumer-evidence-ui",
+      "title": "MonitoringFactPack consumer/evidence UI expansion",
+      "priority": "P2",
+      "isBlocking": false,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "Targeted Vitest, type-check, lint, test:quick, test:contract passed locally",
+      "note": "Frontend-only consumer/parser/UI change. Production targeted QA intentionally skipped until a deployment/release is requested.",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "npx vitest run src/lib/ai/chat-artifacts/monitoring-analysis-artifact.test.ts src/components/ai/ArtifactCards.test.tsx: 17 passed",
+    "npm run type-check: pass",
+    "npm run lint: pass",
+    "npm run test:quick: pass",
+    "npm run test:contract: pass"
+  ],
+  "links": []
+}

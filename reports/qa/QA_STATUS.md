@@ -1,19 +1,19 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-06 15:59:37 KST
+> Generated at: 2026-05-06 16:48:50 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 414 |
+| Total Recorded Runs | 415 |
 | Total Runs (Counted) | 341 |
-| Non-counted Runs | 73 |
+| Non-counted Runs | 74 |
 | Total Checks | 2991 |
 | Passed | 2882 |
 | Failed | 100 |
-| Completed Items | 443 |
+| Completed Items | 444 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
@@ -21,7 +21,7 @@
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
 | Last Counted Run | QA-20260506-0416 (2026-05-06T06:59:36.046Z) |
-| Latest Recorded Run | QA-20260506-0416 (2026-05-06T06:59:36.046Z) |
+| Latest Recorded Run | QA-20260506-0417 (2026-05-06T07:48:50.082Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,26 +34,21 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260506-0416 (2026-05-06T06:59:36.046Z)
+Latest run: QA-20260506-0417 (2026-05-06T07:48:50.082Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
-| AI Quality Assurance Specialist | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
-| AI Security & Reliability Architect | appropriate | no | - |
-| DevOps / SRE Engineer | appropriate | no | - |
-| Test Automation Architect | appropriate | no | - |
-| Data Quality & Metrics Analyst | appropriate | no | - |
+| - | - | - | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked after v8.11.109 production deploy and RAG/Web closure QA; effective 2.6964 USD, billed remains 0.0000 USD, chargeCount 2436. |
+| - | - | - | - | - |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-05T06:59:36.046Z -> 2026-05-06T06:59:36.046Z (24h)
+- Window: 2026-05-05T07:48:50.082Z -> 2026-05-06T07:48:50.082Z (24h)
 - Runs with observations: 3 recorded / 3 counted
 - Samples: 5
 
@@ -66,7 +61,7 @@ Latest run: QA-20260506-0416 (2026-05-06T06:59:36.046Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-05T06:59:36.046Z -> 2026-05-06T06:59:36.046Z (24h)
+- Window: 2026-05-05T07:48:50.082Z -> 2026-05-06T07:48:50.082Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -78,27 +73,24 @@ Latest run: QA-20260506-0416 (2026-05-06T06:59:36.046Z)
 ## Coverage (Latest Run)
 
 - Scope: targeted
-- Release-Facing: yes
-- Counts Toward Summary: yes
-- Deployment: dpl_6GzAoiA64FgYrDUoRnkuGSbsocNn / SHA 0933fdb1
-- Coverage Packs: core-routes-smoke, ai-core, ai-advanced-surface
-- Covered Surfaces: GitLab v8.11.109 tag pipeline 2503341142 succeeded for 0933fdb1a41e3a0091c079e872d30de4d2d50229, Production /api/version returned version 8.11.109, releaseTag v8.11.109, commit 0933fdb1a41e3a0091c079e872d30de4d2d50229, Cloud Run /health returned ai-engine version 8.11.109 with status ok, Vercel production deployment dpl_6GzAoiA64FgYrDUoRnkuGSbsocNn is Ready and aliased to openmanager-ai.vercel.app, Production /dashboard/ai-assistant loaded a clean AI Chat session with Web On and AI Engine Online, RAG/Web representative query was sent once: OpenManager OTel 데이터 SSOT 경로를 내부 지식/RAG와 Web On 상태 기준으로 요약하고, 실제 파일 경로 3개를 알려줘, The stream route /api/ai/supervisor/stream/v2 returned 200 and no repeated raw searchKnowledgeBase/searchWeb tool-call JSON appeared in the latest assistant response, The assistant response rendered a readable grounded answer with concrete repo paths: public/data/otel-data/*, src/data/otel-data/index.ts, src/services/metrics/MetricsProvider.ts, Analysis basis showed 내부 지식 검색 / 오토 mode instead of leaked tool-call JSON
-- Skipped Surfaces: Reporter and anomaly/trend were not rerun in this closure pass because they passed in QA-20260506-0415 and the fix only touched AI Engine stream text guard behavior, Mobile, auth fallback, broad dashboard modal packs, and release-gate broad smoke were not rerun in this targeted closure pass
+- Release-Facing: no
+- Counts Toward Summary: no
+- Deployment: SHA cc301aff
+- Coverage Packs: ai-core, ai-advanced-surface
+- Covered Surfaces: monitoring analysis artifact parser, monitoring analysis artifact evidence metadata, monitoring analysis artifact card fact-pack rendering
+- Skipped Surfaces: Vercel production Playwright QA - no deployment performed, Cloud Run QA - producer contract unchanged
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.11.109 tag pipeline 2503341142 | [GitLab v8.11.109 tag pipeline 2503341142](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2503341142) | - |
-| general | Production version endpoint | [Production version endpoint](https://openmanager-ai.vercel.app/api/version) | - |
-| monitoring | Cloud Run AI Engine health | [Cloud Run AI Engine health](https://ai-engine-490817238363.asia-northeast1.run.app/health) | - |
-| vercel-deployment | Vercel production deployment dpl_6GzAoiA64FgYrDUoRnkuGSbsocNn | [Vercel production deployment dpl_6GzAoiA64FgYrDUoRnkuGSbsocNn](https://openmanager-d34e8rp88-skyasus-projects.vercel.app/) | - |
+| - | - | - | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | RAG/Web answer rendered grounded file paths without raw tool-call JSON on v8.11.109 | `reports/qa/evidence/qa-20260506-v811109-rag-web-raw-json-fixed.png` | - |
+| - | - | - | - |
 
 ## Expert Domain Open Gaps
 
@@ -459,6 +451,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - modal-backdrop-close: 모달 백드롭 클릭 닫기 안정화 (completed 2회, last QA-20260226-0002)
 - modal-esc-close: ESC 모달 닫기 (completed 1회, last QA-20260317-0114)
 - monitoring-empty-server-fallback-options: Fake monitoring server options removed on empty data (completed 1회, last QA-20260503-0396)
+- monitoring-factpack-consumer-evidence-ui: MonitoringFactPack consumer/evidence UI expansion (completed 1회, last QA-20260506-0417)
 - monitoring-source-errors-bff-pass-through-v81189: Monitoring source errors preserve structured sourceMode/queryAsOf payload through Cloud Run and BFF (completed 1회, last QA-20260504-0401)
 - multi-agent-orchestration: 멀티에이전트 오케스트레이션 활성화 (Steps A-E) (completed 1회, last QA-20260307-0053)
 - multi-agent-tool-result-bubble-up: orchestrator-agent-stream.ts: tool_result yield 누락으로 분석 근거 영역 비어있던 문제 수정 (completed 1회, last QA-20260408-0252)
@@ -630,6 +623,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260506-0417 | 2026-05-06T07:48:50.082Z | targeted | no | no | Local deterministic QA - MonitoringFactPack evidence UI | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260506-0416 | 2026-05-06T06:59:36.046Z | targeted | yes | yes | v8.11.109 RAG/Web Raw Tool JSON Closure QA | 4 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260506-0415 | 2026-05-06T06:28:57.301Z | targeted | yes | yes | v8.11.108 AI Advanced Surface Targeted QA | 3 | 2 | 1 | 0 | 0 | 3 |
 | QA-20260506-0414 | 2026-05-06T05:49:24.582Z | targeted | yes | yes | v8.11.108 Artifact Workspace UI Targeted QA | 10 | 1 | 0 | 0 | 0 | 0 |
@@ -649,4 +643,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260503-0400 | 2026-05-03T14:21:43.788Z | targeted | yes | yes | v8.11.88 Fullscreen AI Stream Complementary QA | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260503-0399 | 2026-05-03T14:14:02.510Z | targeted | yes | yes | v8.11.88 Agent Step Streaming Release QA | 19 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260503-0398 | 2026-05-03T07:53:49.065Z | smoke | yes | yes | Production Release Smoke v8.11.87 | 6 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260503-0397 | 2026-05-03T06:27:01.464Z | targeted | yes | yes | Production Release Smoke - v8.11.86 Assistant Metadata Hardening | 6 | 2 | 0 | 0 | 1 | 0 |
