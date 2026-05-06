@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.111](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.110...v8.11.111) (2026-05-06)
+
+
+### Bug Fixes
+
+* **ai:** guard internal disclosure and workspace scroll ([779d1fd](https://gitlab.com/skyasu2/openmanager-ai/-/commit/779d1fdb35393f83e1f9662ae85d056069fbabad))
+
 ## [8.11.110](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.109...v8.11.110) (2026-05-06)
 
 
