@@ -155,6 +155,8 @@ import {
   runAgent,
   streamAgent,
 } from './agent-factory';
+import { monitoringDomainPack } from '../../../domains/monitoring/domain-pack';
+import { sampleDomainPack } from '../../../test-fixtures/sample-domain-pack';
 
 // ============================================================================
 // AgentFactory Tests
@@ -375,6 +377,43 @@ describe('AgentFactory', { timeout: 15000 }, () => {
     });
 
     // Note: Test for unavailable agent requires dynamic mock changes.
+  });
+
+  // ==========================================================================
+  // createByDomain() Tests
+  // ==========================================================================
+
+  describe('createByDomain()', () => {
+    it('should create monitoring agent through domain role runtime binding', () => {
+      const agent = AgentFactory.createByDomain('nlq', monitoringDomainPack);
+
+      expect(agent).not.toBeNull();
+      expect(agent!.getName()).toBe('NLQ Agent');
+    });
+
+    it('should preserve legacy-compatible fallback when domain has no registry', () => {
+      const domainWithoutRegistry = {
+        ...sampleDomainPack,
+        agentRoles: undefined,
+      };
+
+      const agent = AgentFactory.createByDomain('nlq', domainWithoutRegistry);
+
+      expect(agent).not.toBeNull();
+      expect(agent!.getName()).toBe('NLQ Agent');
+    });
+
+    it('should return null for unknown domain role ids', () => {
+      expect(
+        AgentFactory.createByDomain('unknown-role', monitoringDomainPack)
+      ).toBeNull();
+    });
+
+    it('should return null for registry-only sample roles without runtime binding', () => {
+      expect(
+        AgentFactory.createByDomain('account-health', sampleDomainPack)
+      ).toBeNull();
+    });
   });
 
   // ==========================================================================

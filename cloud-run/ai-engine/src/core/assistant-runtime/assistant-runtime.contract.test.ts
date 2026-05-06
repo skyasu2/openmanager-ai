@@ -224,6 +224,32 @@ describe('assistant runtime scaffold contract', () => {
     ).resolves.toEqual({ echoed: 'hello' });
   });
 
+  it('keeps agent role registry as an optional portable domain contract', () => {
+    const domain = createSampleDomain();
+    const roles = domain.agentRoles?.listRoles();
+
+    expect(roles).toEqual([
+      {
+        id: 'sample-researcher',
+        name: 'Sample Researcher',
+        description: 'Looks up deterministic sample records.',
+        capabilities: ['sample-lookup'],
+      },
+      {
+        id: 'sample-summarizer',
+        name: 'Sample Summarizer',
+        description: 'Summarizes deterministic sample records.',
+        matchPatterns: ['summarize', 'summary'],
+        capabilities: ['sample-summary'],
+      },
+    ]);
+    expect(domain.agentRoles?.resolveRole('sample-researcher')).toMatchObject({
+      id: 'sample-researcher',
+      name: 'Sample Researcher',
+    });
+    expect(domain.agentRoles?.resolveRole('unknown-role')).toBeUndefined();
+  });
+
   it('provides deterministic in-memory adapters for portability smoke tests', async () => {
     const adapters = createInMemoryAssistantRuntimeAdapters();
     const request = createSampleRequest();

@@ -9,6 +9,17 @@ import {
   monitoringDomainPack,
 } from './domain-pack';
 import { createMonitoringSystemPrompt } from './supervisor-prompt';
+import { AGENT_CONFIGS } from '../../services/ai-sdk/agents/config';
+
+const EXPECTED_MONITORING_AGENT_ROLES = [
+  { id: 'nlq', name: 'NLQ Agent', runtimeConfigKey: 'NLQ Agent' },
+  { id: 'analyst', name: 'Analyst Agent', runtimeConfigKey: 'Analyst Agent' },
+  { id: 'reporter', name: 'Reporter Agent', runtimeConfigKey: 'Reporter Agent' },
+  { id: 'advisor', name: 'Advisor Agent', runtimeConfigKey: 'Advisor Agent' },
+  { id: 'vision', name: 'Vision Agent', runtimeConfigKey: 'Vision Agent' },
+  { id: 'evaluator', name: 'Evaluator Agent', runtimeConfigKey: 'Evaluator Agent' },
+  { id: 'optimizer', name: 'Optimizer Agent', runtimeConfigKey: 'Optimizer Agent' },
+];
 
 function createRequest(message: string): AssistantRequest {
   return {
@@ -75,6 +86,27 @@ describe('monitoring domain pack contract', () => {
     expect(
       monitoringDomainPack.tools.resolveTool('unknownTool', context)
     ).toBeUndefined();
+  });
+
+  it('owns the monitoring multi-agent role manifest without config drift', () => {
+    const roles = monitoringDomainPack.agentRoles?.listRoles() ?? [];
+
+    expect(
+      roles.map(({ id, name, runtimeConfigKey }) => ({
+        id,
+        name,
+        runtimeConfigKey,
+      }))
+    ).toEqual(EXPECTED_MONITORING_AGENT_ROLES);
+    expect(new Set(roles.map((role) => role.id)).size).toBe(roles.length);
+    expect(new Set(roles.map((role) => role.name)).size).toBe(roles.length);
+
+    for (const role of roles) {
+      expect(role.description.trim().length).toBeGreaterThan(20);
+      expect(role.runtimeConfigKey).toBe(role.name);
+      expect(role.runtimeConfigKey).toBeDefined();
+      expect(role.runtimeConfigKey! in AGENT_CONFIGS).toBe(true);
+    }
   });
 
   it('owns monitoring artifact classification and normalization', () => {

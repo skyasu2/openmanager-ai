@@ -54,4 +54,32 @@ describe('sample domain pack portability smoke', () => {
       payload: sampleRawArtifact,
     });
   });
+
+  it('registers sample agent roles without monitoring imports or runtime bindings', () => {
+    expect(sampleDomainPack.agentRoles?.listRoles()).toEqual([
+      {
+        id: 'account-health',
+        name: 'Account Health Agent',
+        description: 'Reviews deterministic account health facts.',
+        matchPatterns: ['account health', 'health summary'],
+        capabilities: ['sample-account-health'],
+      },
+      {
+        id: 'follow-up-advisor',
+        name: 'Follow-up Advisor Agent',
+        description: 'Suggests deterministic customer follow-up actions.',
+        matchPatterns: ['follow up', 'next action'],
+        capabilities: ['sample-follow-up'],
+      },
+    ]);
+    expect(
+      sampleDomainPack.agentRoles?.resolveRole('account-health')
+    ).toMatchObject({
+      id: 'account-health',
+      name: 'Account Health Agent',
+    });
+    expect(
+      sampleDomainPack.agentRoles?.resolveRole('unknown-role')
+    ).toBeUndefined();
+  });
 });
