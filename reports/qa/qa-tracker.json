@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-05T06:31:40.208Z"
+    "updatedAt": "2026-05-06T04:35:44.343Z"
   },
   "sequence": {
-    "nextRunNumber": 413
+    "nextRunNumber": 414
   },
   "summary": {
-    "totalRecordedRuns": 410,
-    "totalRuns": 337,
+    "totalRecordedRuns": 411,
+    "totalRuns": 338,
     "excludedRuns": 73,
-    "totalChecks": 2961,
-    "totalPassed": 2853,
+    "totalChecks": 2974,
+    "totalPassed": 2866,
     "totalFailed": 99,
     "completionRate": 100,
-    "completedItems": 436,
+    "completedItems": 438,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 22,
     "expertDomainsTracked": 12,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260505-0412",
-    "lastRecordedAt": "2026-05-05T06:31:40.208Z",
-    "latestRecordedRunId": "QA-20260505-0412",
-    "latestRecordedAt": "2026-05-05T06:31:40.208Z"
+    "lastRunId": "QA-20260506-0413",
+    "lastRecordedAt": "2026-05-06T04:35:44.343Z",
+    "latestRecordedRunId": "QA-20260506-0413",
+    "latestRecordedAt": "2026-05-06T04:35:44.343Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -10721,6 +10721,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-05T06:31:40.208Z"
+    },
+    "ai-engine-supervisor-runtime-host-wiring-v811107": {
+      "id": "ai-engine-supervisor-runtime-host-wiring-v811107",
+      "title": "Production supervisor stream and single-agent runtime host wiring verified",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260506-0413",
+      "firstSeenAt": "2026-05-06T04:35:44.343Z",
+      "lastSeenRunId": "QA-20260506-0413",
+      "lastSeenAt": "2026-05-06T04:35:44.343Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "v8.11.107 Playwright MCP AI sidebar prompt completed through /api/ai/supervisor/stream/v2 with grounded server metrics basis",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-06T04:35:44.343Z"
+    },
+    "cloud-run-ai-engine-v811107-health": {
+      "id": "cloud-run-ai-engine-v811107-health",
+      "title": "Cloud Run AI Engine v8.11.107 health and authenticated supervisor health verified",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260506-0413",
+      "firstSeenAt": "2026-05-06T04:35:44.343Z",
+      "lastSeenRunId": "QA-20260506-0413",
+      "lastSeenAt": "2026-05-06T04:35:44.343Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "",
+      "lastEvidence": "npm run test:cloud:essential:strict passed /health, /warmup, and authenticated /api/ai/supervisor/health",
+      "lastNote": "",
+      "isBlocking": true,
+      "isBlockingExplicit": false,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-06T04:35:44.343Z"
     }
   },
   "runs": [
@@ -42762,6 +42810,166 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260506-0413",
+      "recordedAt": "2026-05-06T04:35:44.343Z",
+      "recordedAtKst": "2026-05-06 13:35:44 KST",
+      "title": "v8.11.107 Production Targeted QA - Supervisor Runtime Host Wiring",
+      "owner": "codex",
+      "source": "playwright-mcp",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260506-0413.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_2Lfez1J8G5WkMtoAcey5bBZvjKzM",
+        "deploymentUrl": "https://openmanager-2yteibm8r-skyasus-projects.vercel.app",
+        "commitSha": "4f9663fa82a5d95c53ca7186465ec5b80a5d32a3"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "observability-pack"
+      ],
+      "coveredSurfaces": [
+        "GitLab main validate pipeline 2502673757 succeeded for dbb39013de1b7599479abec8f4697d12b6165d82",
+        "GitLab v8.11.107 tag pipeline 2502679576 succeeded for 4f9663fa82a5d95c53ca7186465ec5b80a5d32a3",
+        "Production /api/version returned 8.11.107, releaseTag v8.11.107, commit 4f9663fa82a5d95c53ca7186465ec5b80a5d32a3",
+        "Vercel production deployment dpl_2Lfez1J8G5WkMtoAcey5bBZvjKzM is Ready and aliased to openmanager-ai.vercel.app",
+        "Landing page rendered OpenManager AI with version badge v8.11.107",
+        "System start redirected to /dashboard and dashboard rendered OpenTelemetry snapshot 13:20 KST slot 80/143",
+        "Dashboard summary displayed 18 total servers, 17 online, 1 warning, 0 risk, 0 offline",
+        "AI sidebar opened with AI Engine Ready status and Web On tool state",
+        "AI sidebar starter prompt sent through /api/ai/supervisor/stream/v2 and returned HTTP 200",
+        "Supervisor response completed in 2915ms and stayed grounded to dashboard-visible status: 18 total, 17 normal, 1 warning, cache-redis-dc1-01 memory risk",
+        "Response basis showed server metrics tool, auto mode, recent 1 hour window",
+        "Cloud Run essential smoke passed: /health, /warmup, authenticated /api/ai/supervisor/health",
+        "Vercel usage check normal after release deployment"
+      ],
+      "skippedSurfaces": [
+        "No broad login/privacy/mobile/security sweep was rerun; this targeted release QA focused on the changed supervisor runtime host path and deployment propagation",
+        "Reporter and anomaly/trend advanced surfaces were not rerun in this pass; they remain part of the separate AI advanced surface targeted QA backlog",
+        "Artifact workspace UI compare/export surface was not tested because the current completed work is core/adapter wiring and the portfolio-facing UI wiring remains backlog",
+        "Structured plannerShadowObservations were not available from this UI response; npm run qa:planner-shadow still reports telemetry-adapter-gap for structured observation rollout gating"
+      ],
+      "checks": {
+        "total": 13,
+        "passed": 13,
+        "failed": 0
+      },
+      "aiLatencyObservations": [
+        {
+          "surface": "AI sidebar server status starter prompt",
+          "agent": "Supervisor",
+          "provider": "cloud-run-ai-engine",
+          "route": "/api/ai/supervisor/stream/v2",
+          "source": "Playwright MCP UI footer plus Performance API resource timing",
+          "latencyMs": 2915,
+          "processingTimeMs": 2915
+        }
+      ],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Production AI sidebar exercised the changed supervisor stream path and returned grounded tool-backed output.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "observability-monitoring",
+          "domainName": "IT Monitoring & Observability SME",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Dashboard data slot, tool basis, Cloud Run health, and release pipeline evidence were captured.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab main validate, semver tag pipeline, Vercel deploy, Cloud Run deploy, and post-deploy smoke all completed successfully.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Local deterministic gates, GitLab CI, Cloud Run smoke, and Playwright MCP production UI verification were combined for the release decision.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "data-metrics-quality",
+          "domainName": "Data Quality & Metrics Analyst",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "AI answer matched the visible dashboard server counts and the cache-redis-dc1-01 warning surface.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-06T13:26:58+09:00",
+          "summary": "Current billing period checked after v8.11.107 production deploy; effective 2.6964 USD, billed remains 0.0000 USD, chargeCount 2436.",
+          "evidence": "npm run check:usage:vercel",
+          "url": ""
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-screenshot",
+          "label": "AI supervisor runtime host response on v8.11.107",
+          "path": "reports/qa/evidence/qa-20260506-v811107-ai-supervisor-runtime.png"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab main validate pipeline 2502673757",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2502673757"
+        },
+        {
+          "type": "general",
+          "label": "GitLab v8.11.107 tag pipeline 2502679576",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2502679576"
+        },
+        {
+          "type": "general",
+          "label": "Production version endpoint",
+          "url": "https://openmanager-ai.vercel.app/api/version"
+        },
+        {
+          "type": "monitoring",
+          "label": "Cloud Run AI Engine endpoint",
+          "url": "https://ai-engine-490817238363.asia-northeast1.run.app/"
+        },
+        {
+          "type": "vercel-deployment",
+          "label": "Vercel production deployment dpl_2Lfez1J8G5WkMtoAcey5bBZvjKzM",
+          "url": "https://openmanager-2yteibm8r-skyasus-projects.vercel.app/"
+        }
+      ],
+      "expertCount": 5,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -42770,16 +42978,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 200,
-      "appropriateCount": 178,
+      "seenCount": 201,
+      "appropriateCount": 179,
       "partialCount": 22,
       "inappropriateCount": 0,
       "improvementNeededCount": 32,
-      "lastRunId": "QA-20260505-0412",
-      "lastSeenAt": "2026-05-05T06:31:40.208Z",
+      "lastRunId": "QA-20260506-0413",
+      "lastSeenAt": "2026-05-06T04:35:44.343Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The changed AI surfaces were verified on production: user-facing RAG controls are hidden while Web search/source controls remain visible.",
+      "lastRationale": "Production AI sidebar exercised the changed supervisor stream path and returned grounded tool-backed output.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -42787,16 +42995,16 @@
       "domainName": "IT Monitoring & Observability SME",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 107,
-      "appropriateCount": 77,
+      "seenCount": 108,
+      "appropriateCount": 78,
       "partialCount": 30,
       "inappropriateCount": 0,
       "improvementNeededCount": 31,
-      "lastRunId": "QA-20260505-0411",
-      "lastSeenAt": "2026-05-05T06:13:00.571Z",
+      "lastRunId": "QA-20260506-0413",
+      "lastSeenAt": "2026-05-06T04:35:44.343Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The server detail performance tab data-slot drift cited in QA-20260505-0407 was already production-rechecked in QA-20260505-0409: the overview and performance tab current values matched for api-was-dc1-01.",
+      "lastRationale": "Dashboard data slot, tool basis, Cloud Run health, and release pipeline evidence were captured.",
       "lastNextAction": ""
     },
     "ai-security-reliability": {
@@ -42821,16 +43029,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 134,
-      "appropriateCount": 121,
+      "seenCount": 135,
+      "appropriateCount": 122,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 17,
-      "lastRunId": "QA-20260505-0412",
-      "lastSeenAt": "2026-05-05T06:31:40.208Z",
+      "lastRunId": "QA-20260506-0413",
+      "lastSeenAt": "2026-05-06T04:35:44.343Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab tag pipeline, Vercel deployment, production version endpoint, and Vercel usage were all checked for the release.",
+      "lastRationale": "GitLab main validate, semver tag pipeline, Vercel deploy, Cloud Run deploy, and post-deploy smoke all completed successfully.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -42838,16 +43046,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 172,
-      "appropriateCount": 159,
+      "seenCount": 173,
+      "appropriateCount": 160,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 15,
-      "lastRunId": "QA-20260505-0412",
-      "lastSeenAt": "2026-05-05T06:31:40.208Z",
+      "lastRunId": "QA-20260506-0413",
+      "lastSeenAt": "2026-05-06T04:35:44.343Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Playwright MCP exercised the landing-to-dashboard flow and the three changed AI UI surfaces with durable screenshots.",
+      "lastRationale": "Local deterministic gates, GitLab CI, Cloud Run smoke, and Playwright MCP production UI verification were combined for the release decision.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -42855,16 +43063,16 @@
       "domainName": "Data Quality & Metrics Analyst",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 58,
-      "appropriateCount": 38,
+      "seenCount": 59,
+      "appropriateCount": 39,
       "partialCount": 20,
       "inappropriateCount": 0,
       "improvementNeededCount": 20,
-      "lastRunId": "QA-20260505-0412",
-      "lastSeenAt": "2026-05-05T06:31:40.208Z",
+      "lastRunId": "QA-20260506-0413",
+      "lastSeenAt": "2026-05-06T04:35:44.343Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "Dashboard telemetry copy now describes OpenTelemetry snapshot/catalog data and preserved the current data-slot label.",
+      "lastRationale": "AI answer matched the visible dashboard server counts and the cache-redis-dc1-01 warning surface.",
       "lastNextAction": ""
     },
     "infra-reliability": {
