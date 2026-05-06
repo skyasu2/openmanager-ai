@@ -2,6 +2,7 @@ import {
   createInMemoryAssistantRuntimeAdapters,
   type AssistantRuntimeAdapters,
 } from '../../core/assistant-runtime';
+import { generateText, streamText } from 'ai';
 import {
   createMonitoringDomainInstructions,
   monitoringDomainPack,
@@ -53,6 +54,12 @@ export function createMonitoringAssistantRuntimeHost(
       },
       createPrepareStep(query, options) {
         return createMonitoringPrepareStep(query, options);
+      },
+      executeLLMStream(params) {
+        return streamText(params as Parameters<typeof streamText>[0]);
+      },
+      executeLLMGenerate(params) {
+        return generateText(params as Parameters<typeof generateText>[0]);
       },
     },
   });

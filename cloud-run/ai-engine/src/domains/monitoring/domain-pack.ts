@@ -26,9 +26,10 @@ export const MONITORING_DOMAIN_ID = 'openmanager-monitoring';
 export const MONITORING_DOMAIN_VERSION = '2026-05-05-v1';
 
 type RuntimeTool = {
+  name: string;
   description?: string;
   inputSchema?: unknown;
-  execute?: (input: unknown) => unknown | Promise<unknown>;
+  execute?: ToolDefinition['execute'];
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -92,14 +93,14 @@ function toToolDefinition(name: AgentToolName): ToolDefinition {
   const runtimeTool = MONITORING_AGENT_TOOL_REGISTRY[name] as RuntimeTool;
   const execute = runtimeTool.execute;
   return {
-    name,
+    name: runtimeTool.name,
     description: runtimeTool.description ?? name,
     ...(runtimeTool.inputSchema === undefined
       ? {}
       : { inputSchema: runtimeTool.inputSchema }),
     ...(execute === undefined
       ? {}
-      : { execute: (input: unknown) => execute(input) }),
+      : { execute }),
   };
 }
 

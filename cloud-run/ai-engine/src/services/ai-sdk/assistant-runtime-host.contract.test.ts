@@ -1,10 +1,13 @@
-import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { describe, expect, it, vi } from 'vitest';
 import {
   createInMemoryAssistantRuntimeAdapters,
   type AssistantDomain,
   type AssistantRequestContext,
 } from '../../core/assistant-runtime';
 import { monitoringDomainPack } from '../../domains/monitoring/domain-pack';
+import { allTools } from '../../tools-ai-sdk';
 import {
   createAssistantRuntimeHost,
   resolveSupervisorRuntimeContext,
@@ -125,5 +128,78 @@ describe('assistant runtime host contract', () => {
         enableRAG: false,
       })
     ).toBeTypeOf('function');
+  });
+
+  it('keeps monitoring domain tools free of direct AI SDK imports', () => {
+    const source = readFileSync(
+      join(process.cwd(), 'src/domains/monitoring/tool-registry.ts'),
+      'utf8'
+    );
+
+    expect(source).not.toMatch(/from ['"]ai['"]/);
+    expect(source).toContain('ToolDefinition');
+  });
+
+  it('keeps supervisor LLM execution behind the runtime host boundary', () => {
+    const executionFiles = [
+      'src/services/ai-sdk/supervisor-stream.ts',
+      'src/services/ai-sdk/supervisor-single-agent.ts',
+    ];
+
+    for (const file of executionFiles) {
+      const source = readFileSync(join(process.cwd(), file), 'utf8');
+
+      expect(source).not.toMatch(
+        /import\s*\{[\s\S]*?\b(streamText|generateText)\b[\s\S]*?\}\s*from ['"]ai['"]/
+      );
+    }
+  });
+
+  it('delegates LLM stream and generate execution to the injected adapter', async () => {
+    const executeLLMStream = vi.fn(() => ({
+      textStream: (async function* () {
+        yield 'adapter stream';
+      })(),
+    }));
+    const executeLLMGenerate = vi.fn(async () => ({
+      text: 'adapter generate',
+      steps: [],
+    }));
+    const host = createAssistantRuntimeHost({
+      domain: createSampleDomain(),
+      adapters: createInMemoryAssistantRuntimeAdapters(),
+      executionAdapter: {
+        executeLLMStream,
+        executeLLMGenerate,
+      },
+    });
+
+    expect(host.executeLLMStream?.({ model: {}, messages: [] })).toMatchObject({
+      textStream: expect.any(Object),
+    });
+    await expect(
+      host.executeLLMGenerate?.({ model: {}, messages: [] })
+    ).resolves.toMatchObject({
+      text: 'adapter generate',
+    });
+    expect(executeLLMStream).toHaveBeenCalledTimes(1);
+    expect(executeLLMGenerate).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps monitoring domain tool registry aligned with the production AI SDK toolset', () => {
+    const context: AssistantRequestContext = {
+      requestId: 'monitoring-tool-drift-guard',
+      domainId: monitoringDomainPack.id,
+      message: 'CPU 상태 알려줘',
+      messages: [{ role: 'user', content: 'CPU 상태 알려줘' }],
+      sessionId: 'monitoring-tool-drift-session',
+    };
+    const productionToolNames = new Set(Object.keys(allTools));
+    const missingTools = monitoringDomainPack.tools
+      .listTools(context)
+      .map((tool) => tool.name)
+      .filter((toolName) => !productionToolNames.has(toolName));
+
+    expect(missingTools).toEqual([]);
   });
 });

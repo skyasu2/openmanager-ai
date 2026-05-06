@@ -304,6 +304,14 @@ function createSampleRuntimeHost() {
       sessionStore: 'in-memory',
       jobQueue: 'in-memory',
     },
+    executionAdapter: {
+      executeLLMStream(params) {
+        return mockStreamText(params);
+      },
+      executeLLMGenerate(params) {
+        return mockGenerateText(params);
+      },
+    },
   });
 }
 

@@ -1,7 +1,6 @@
 import {
   hasToolCall,
   stepCountIs,
-  streamText,
   type ToolSet,
 } from 'ai';
 import { TIMEOUT_CONFIG } from '../../config/timeout-config';
@@ -838,7 +837,11 @@ async function* streamSingleAgent(
         enableRAG: ragEnabled,
       });
 
-      const result = streamText({
+      if (!runtimeHost.executeLLMStream) {
+        throw new Error('Supervisor runtime host stream execution adapter is required');
+      }
+
+      const result = runtimeHost.executeLLMStream({
         model,
         messages: modelMessages,
         tools: filteredTools,

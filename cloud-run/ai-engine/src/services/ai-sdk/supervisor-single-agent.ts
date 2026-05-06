@@ -6,7 +6,6 @@
  */
 
 import {
-  generateText,
   stepCountIs,
   hasToolCall,
   type ModelMessage,
@@ -554,7 +553,11 @@ async function executeSupervisorAttempt(
         })),
       ];
 
-      const result = await generateText({
+      if (!runtimeHost.executeLLMGenerate) {
+        throw new Error('Supervisor runtime host generate execution adapter is required');
+      }
+
+      const result = await runtimeHost.executeLLMGenerate({
         model,
         messages: modelMessages,
         tools: filteredTools,

@@ -8,8 +8,37 @@ import {
   type AssistantRuntimeResult,
   type ToolDefinition,
 } from '../../core/assistant-runtime';
-import type { PrepareStepFunction, ToolSet } from 'ai';
+import type {
+  generateText as aiGenerateText,
+  ModelMessage,
+  PrepareStepFunction,
+  streamText as aiStreamText,
+  ToolSet,
+} from 'ai';
 import type { SupervisorRequest } from './supervisor-types';
+
+type AiSdkStreamTextParams = Parameters<typeof aiStreamText>[0];
+type AiSdkGenerateTextParams = Parameters<typeof aiGenerateText>[0];
+
+export type AiSdkStreamExecutionParams = Omit<
+  AiSdkStreamTextParams,
+  'model'
+> & {
+  model: unknown;
+  messages: ModelMessage[];
+};
+
+export type AiSdkStreamExecutionResult = ReturnType<typeof aiStreamText>;
+
+export type AiSdkGenerateExecutionParams = Omit<
+  AiSdkGenerateTextParams,
+  'model'
+> & {
+  model: unknown;
+  messages: ModelMessage[];
+};
+
+export type AiSdkGenerateExecutionResult = ReturnType<typeof aiGenerateText>;
 
 export interface AssistantRuntimeAdapterKinds {
   stateStore: string;
@@ -41,6 +70,12 @@ export interface AssistantRuntimeHost {
     query: string,
     options?: AssistantRuntimePrepareStepOptions
   ): AssistantRuntimePrepareStep | undefined;
+  executeLLMStream?(
+    params: AiSdkStreamExecutionParams
+  ): AiSdkStreamExecutionResult;
+  executeLLMGenerate?(
+    params: AiSdkGenerateExecutionParams
+  ): AiSdkGenerateExecutionResult;
 }
 
 export interface AssistantRuntimePromptOptions {
@@ -55,12 +90,18 @@ export interface AssistantRuntimePrepareStepOptions {
 export type AssistantRuntimePrepareStep = PrepareStepFunction<ToolSet>;
 
 export interface AssistantRuntimeExecutionAdapter {
-  createToolSet(input: AssistantRequest | AssistantRequestContext): ToolSet;
+  createToolSet?(input: AssistantRequest | AssistantRequestContext): ToolSet;
   createSystemPrompt?(options?: AssistantRuntimePromptOptions): string;
   createPrepareStep?(
     query: string,
     options?: AssistantRuntimePrepareStepOptions
   ): AssistantRuntimePrepareStep | undefined;
+  executeLLMStream?(
+    params: AiSdkStreamExecutionParams
+  ): AiSdkStreamExecutionResult;
+  executeLLMGenerate?(
+    params: AiSdkGenerateExecutionParams
+  ): AiSdkGenerateExecutionResult;
 }
 
 export interface AssistantRuntimeHostConfig {
@@ -221,7 +262,7 @@ export function createAssistantRuntimeHost(
     },
     createToolSet(input: AssistantRequest | AssistantRequestContext) {
       return (
-        config.executionAdapter?.createToolSet(input) ??
+        config.executionAdapter?.createToolSet?.(input) ??
         createDomainToolSet(runtime, config.domain, input)
       );
     },
@@ -237,6 +278,16 @@ export function createAssistantRuntimeHost(
     ) {
       return config.executionAdapter?.createPrepareStep?.(query, options);
     },
+    ...(config.executionAdapter?.executeLLMStream && {
+      executeLLMStream(params: AiSdkStreamExecutionParams) {
+        return config.executionAdapter!.executeLLMStream!(params);
+      },
+    }),
+    ...(config.executionAdapter?.executeLLMGenerate && {
+      executeLLMGenerate(params: AiSdkGenerateExecutionParams) {
+        return config.executionAdapter!.executeLLMGenerate!(params);
+      },
+    }),
   };
 }
 
