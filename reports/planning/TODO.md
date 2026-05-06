@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-06 KST (`AI Engine SDK decoupling completed`)
+**Last Updated**: 2026-05-06 KST (`AI Engine domain-owned agent registry plan approved`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| _No active task_ | — | — | Backlog only. |
+| AI Engine domain-owned agent registry | Medium | Approved | Contract 보강 완료. 다음 단계: Task 0 failing specs. 관련: [ai-engine-agent-registry-plan.md](ai-engine-agent-registry-plan.md) |
 
 ---
 
@@ -16,7 +16,7 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| AI Engine domain-owned agent registry | Medium | `AgentType` 7개 하드코딩 + monitoring agent 설명을 domain 쪽으로 분리. `AgentFactory.createByDomain()` 추가. sample domain smoke로 cross-domain portability 검증. 관련: [ai-engine-agent-registry-plan.md](ai-engine-agent-registry-plan.md) |
+| _No backlog task_ | — | Active task in progress. |
 
 ---
 
