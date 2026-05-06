@@ -4,7 +4,7 @@
 > Owner: platform-data
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-05
+> Last reviewed: 2026-05-06
 > Canonical: docs/architecture/04-data-flow.md
 > Tags: architecture,data,monitoring,otel,rag
 
@@ -50,7 +50,7 @@ flowchart TB
 | Dashboard data | `MetricsProvider.ensureDataLoaded()`, 서버 카드/모달/차트 소비 |
 | Cloud Run data | `precomputed-state.ts`, `otel-data` 우선 + `otel-processed` compatibility fallback |
 | Monitoring source | `replay-json` 기본, `live-otel`은 disabled skeleton |
-| Error contract | monitoring source 오류에 `code`, `sourceMode`, `queryAsOf`, `requestId`, `recoverable` 포함 |
+| Error contract | deterministic monitoring routes의 source 오류에 `code`, `sourceMode`, `queryAsOf`, `requestId`, `recoverable` 포함 |
 | Fact boundary | `MonitoringFactPack`이 metric severity를 deterministic rule로 계산 |
 | RAG | Knowledge Retrieval Lite, BM25 RPC, metadata boost, recall guard |
 
@@ -75,4 +75,4 @@ flowchart TB
 - [OTel Data Architecture](../reference/architecture/data/otel-data-architecture.md)
 - [Data Architecture](../reference/architecture/data/data-architecture.md)
 - [RAG Knowledge Engine](../reference/architecture/ai/rag-knowledge-engine.md)
-- [Monitoring AI Data Source Plan](../../reports/planning/monitoring-ai-data-source-plan.md)
+- [Monitoring AI Data Source Plan](../../reports/planning/archive/monitoring-ai-data-source-plan.md)

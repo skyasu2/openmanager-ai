@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-06 KST (`MonitoringFactPack consumer/evidence UI completed`)
+**Last Updated**: 2026-05-06 KST (`Monitoring source error boundary documentation completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -17,7 +17,6 @@
 | Task | Priority | Notes |
 |------|----------|-------|
 | Provider reasoning capability policy contract | Medium | 현재 `thinking`은 provider-native reasoning이 아니라 app-level routing intensity다. 무료 tier provider의 reasoning 지원은 계정 entitlement/latency/quota가 변동되므로 `reasoningCapability`, `lastVerified`, `expiresAt`, smoke source를 policy contract로 승격한 뒤 opt-in으로만 검토한다. 관련: [ai-assistant-architecture-evolution-plan.md](archive/ai-assistant-architecture-evolution-plan.md) |
-| Monitoring source error boundary documentation | Medium | `analytics-monitoring-error.ts`는 현재 deterministic monitoring routes(`/monitoring/snapshot`, `/monitoring/analyze-batch`)에 한정된다. `/analyze-server`, `/incident-report` grounding 실패까지 표준 오류로 올릴지 책임 범위를 명문화한다. 관련: [monitoring-ai-data-source-plan.md](archive/monitoring-ai-data-source-plan.md) |
 | Streaming warmup test act warning cleanup | Low | Targeted regression은 통과하지만 `StreamingWarmupIndicator` 테스트에 React `act(...)` 경고가 남아 있다. 기능 리스크는 낮으나 테스트 품질 부채로 별도 정리한다. 관련: [ai-streaming-ui-improvement-plan.md](archive/ai-streaming-ui-improvement-plan.md) |
 
 ---
@@ -43,6 +42,14 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-06 #302)
+- [x] Monitoring source error boundary documentation
+  - `monitoring source error contract` 적용 범위를 deterministic monitoring routes로 명문화
+  - 적용 범위: Cloud Run `/api/ai/monitoring/snapshot`, `/api/ai/monitoring/analyze-batch`, Vercel `/api/ai/intelligent-monitoring` batch pass-through
+  - 비적용 범위: Cloud Run `/api/ai/analyze-server`는 generic `handleApiError`, `/api/ai/incident-report`는 보고서 availability를 위한 degraded/tool-based fallback 유지
+  - `docs/design/04-error-handling-design.md`, `docs/architecture/04-data-flow.md`, `docs/reference/architecture/data/otel-data-architecture.md`의 용어와 archived plan 링크 정리
+  - 검증: `docs:budget`, `docs:ai-consistency`, `git diff --check`
 
 ### Completed (2026-05-06 #301)
 - [x] MonitoringFactPack consumer/evidence UI expansion
