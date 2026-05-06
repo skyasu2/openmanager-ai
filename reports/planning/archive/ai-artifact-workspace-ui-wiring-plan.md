@@ -1,5 +1,5 @@
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: Plan
 > Last reviewed: 2026-05-06
 > Tags: ai-assistant, artifact-workspace, replay-pack, frontend, qa
@@ -144,7 +144,7 @@ Failing tests must be added before implementation if this plan is approved.
 
 ## 8. Approval Gate
 
-Status is `Approved`.
+Status was `Approved` before implementation.
 
 Implementation may start after a failing spec commit is created.
 
@@ -156,3 +156,21 @@ Implementation may start after a failing spec commit is created.
 - Compare UX renders deterministic summary counts.
 - Local deterministic validation passes.
 - No new DB write path, LLM call, provider call, or production deployment is introduced by default.
+
+## 10. Completion Log
+
+Completed on 2026-05-06.
+
+- Failing spec commit: `fb24b4216 test(spec): add artifact workspace UI wiring specs`
+- Implementation commit: `fa5b38949 feat(ai): implement artifact workspace UI wiring`
+- Renderer registry now validates supported artifact kinds through the schema registry before typed cards receive payloads.
+- `ArtifactWorkspacePanel` is wired into the AI workspace side context and supports local save, list, export, import, compare, and clear actions for replay packs.
+- Import remains browser-file/local-session first. No default DB write, network fetch, AI route, LLM, or provider call was added.
+- Local validation:
+  - `npx vitest run src/lib/ai/domain-renderers/artifact-renderer-registry.test.ts src/components/ai/artifact-workspace/ArtifactWorkspacePanel.test.tsx`
+  - `npx vitest run src/components/ai/AIWorkspace.test.tsx src/components/ai/SystemContextPanel.test.tsx`
+  - `npm run type-check`
+  - `npm run lint`
+  - `npm run test:quick`
+  - `npm run test:contract`
+  - `git diff --check`

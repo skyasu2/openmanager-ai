@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-06 KST (`AI artifact workspace UI wiring plan drafted`)
+**Last Updated**: 2026-05-06 KST (`AI artifact workspace UI wiring completed`)
 
 > **이력 아카이브**: `#1~#89` 완료 항목 → [archive/todo-history-to-2026-04-13.md](archive/todo-history-to-2026-04-13.md)
 
@@ -8,7 +8,7 @@
 
 | Task | Priority | Status | Notes |
 |------|----------|-----------|-------|
-| AI artifact workspace UI wiring and compare UX | High | Draft | Backlog promoted. 상세 plan: [ai-artifact-workspace-ui-wiring-plan.md](ai-artifact-workspace-ui-wiring-plan.md). 구현 전 Contract/테스트 시나리오 승인 필요. |
+| _No active task_ | — | — | Backlog only. |
 
 ---
 
@@ -45,6 +45,14 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-06 #299)
+- [x] AI artifact workspace UI wiring and compare UX
+  - AI workspace side context에 `ArtifactWorkspacePanel`을 연결해 replay pack 저장, 목록, JSON 내보내기/가져오기, 비교, 로컬 삭제 UX를 제공
+  - renderer registry가 supported `kind` 문자열만으로 typed card를 열지 않고 artifact schema registry payload validation을 통과한 경우에만 supported entry로 분류하도록 보강
+  - import/compare workflow는 local/session-first로 유지되며 기본 DB write, network fetch, AI route, LLM/provider 호출 없음
+  - 검증: renderer/workspace targeted test, AIWorkspace/SystemContextPanel integration test, `type-check`, `lint`, `test:quick`, `test:contract`, `git diff --check`
+  - 상세: [archive/ai-artifact-workspace-ui-wiring-plan.md](archive/ai-artifact-workspace-ui-wiring-plan.md)
 
 ### Completed (2026-05-06 #298)
 - [x] AI artifact workspace export/import adapter
