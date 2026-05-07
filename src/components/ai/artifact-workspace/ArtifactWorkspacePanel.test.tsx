@@ -148,6 +148,20 @@ describe('ArtifactWorkspacePanel', () => {
     expect(screen.getByText('저장된 replay pack 없음')).toBeInTheDocument();
   });
 
+  it('keeps the native file input out of the page scroll flow', () => {
+    render(
+      <ArtifactWorkspacePanel
+        messages={[]}
+        store={createArtifactWorkspaceStore()}
+        workspaceId="workspace-import-layout"
+      />
+    );
+
+    const fileInput = screen.getByTestId('artifact-replay-pack-file-input');
+    expect(fileInput).toHaveClass('hidden');
+    expect(fileInput).not.toHaveClass('sr-only');
+  });
+
   it('compares two selected replay packs and rejects selecting the same pack twice', async () => {
     const store = createArtifactWorkspaceStore();
     store.saveReplayPack(createSnapshotPack('workspace-a'));

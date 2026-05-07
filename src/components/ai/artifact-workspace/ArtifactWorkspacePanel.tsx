@@ -286,7 +286,8 @@ export function ArtifactWorkspacePanel({
         type="file"
         accept="application/json,.json"
         aria-label="replay pack JSON 가져오기"
-        className="sr-only"
+        data-testid="artifact-replay-pack-file-input"
+        className="hidden"
         onChange={(event) => {
           void handleImportFile(event);
         }}
