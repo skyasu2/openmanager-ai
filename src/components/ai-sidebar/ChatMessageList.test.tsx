@@ -80,4 +80,26 @@ describe('ChatMessageList', () => {
       'true'
     );
   });
+
+  it('keeps the message region as the only vertical scroll container', () => {
+    render(
+      <ChatMessageList
+        scrollContainerRef={createRef<HTMLDivElement>()}
+        autoReportTrigger={{ shouldGenerate: false }}
+        allMessages={[createMessage()]}
+        limitedMessages={[createMessage()]}
+        messagesEndRef={createRef<HTMLDivElement>()}
+        MessageComponent={MessageComponent}
+        isGenerating={false}
+        regenerateResponse={vi.fn()}
+        setInputValue={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole('log', { name: 'AI 대화 메시지' })).toHaveClass(
+      'min-h-0',
+      'flex-1',
+      'overflow-y-auto'
+    );
+  });
 });

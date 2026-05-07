@@ -196,7 +196,7 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
   };
 
   return (
-    <div className="flex h-full flex-col bg-linear-to-br from-slate-50 to-blue-50">
+    <div className="flex h-full min-h-0 flex-col bg-linear-to-br from-slate-50 to-blue-50">
       {/* 헤더 */}
       <div className="border-b border-gray-200 bg-white/80 p-4 backdrop-blur-sm">
         <div className="mb-3 flex items-center justify-between">
@@ -214,7 +214,7 @@ export const EnhancedAIChat = memo(function EnhancedAIChat({
 
       {/* 메시지 영역 */}
       {!hasRestored && hasPersistedHistory && allMessages.length > 0 ? (
-        <div className="flex-1 overflow-y-auto p-4 flex items-center justify-center">
+        <div className="flex min-h-0 flex-1 items-center justify-center overflow-y-auto p-4">
           <RestoreConversationBanner
             messageCount={allMessages.length}
             onRestore={handleRestore}
