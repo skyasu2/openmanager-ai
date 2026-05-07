@@ -4,7 +4,7 @@
 > Owner: documentation
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-04-24
+> Last reviewed: 2026-05-07
 > Canonical: docs/guides/testing/e2e-testing-guide.md
 > Tags: testing,e2e,playwright,playwright-mcp,chrome-devtools-mcp,vercel-qa
 
@@ -18,12 +18,14 @@
 - 범위: 로그인/게스트/대시보드/접근성/오류 복구
 - 원칙: AI 실추론 기반 장시간 시나리오는 자동 E2E에서 제외
 - 게스트 restricted 모드에서는 인라인 PIN 입력(`data-testid="guest-pin-input"`) 경로를 기본 검증
+- `x-test-secret` 기반 API/E2E 인증은 서버 검증 후 PIN 게스트 세션과 같은 developer disclosure 경로를 사용
 
 ### 현재 구성 유지 권고 (변경 최소화)
 
 - 기본 브라우저 프로젝트는 `chromium` 유지, 모바일 회귀는 `test:e2e:mobile` 또는 `PLAYWRIGHT_INCLUDE_MOBILE=1`로 선택 실행
 - 개발 서버는 `NEXT_DISABLE_DEVTOOLS=1`로 실행해 테스트 간섭 최소화
 - 배포 환경 검증 시 `x-vercel-protection-bypass` 헤더 경로 유지
+- 보호 API smoke는 `TEST_SECRET_KEY`를 `.env.e2e` 또는 CI 테스트 secret으로만 공급하고, 일반 production 런타임 env에는 기본 등록하지 않음
 - `firefox/webkit` 재활성화는 명시적 ROI 근거가 있을 때만 검토
 
 ---

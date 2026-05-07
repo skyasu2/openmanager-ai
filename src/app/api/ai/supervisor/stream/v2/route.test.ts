@@ -587,6 +587,41 @@ describe('Supervisor Stream V2 Route', () => {
       });
     });
 
+    it('test-secret auth context이면 Cloud Run에 developer disclosure mode를 전달한다', async () => {
+      mockGetAPIAuthContext.mockReturnValue({
+        authType: 'test-secret',
+      });
+
+      const request = new NextRequest(
+        'http://localhost/api/ai/supervisor/stream/v2',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Session-Id': 'session-1234',
+          },
+          body: JSON.stringify({
+            messages: [
+              {
+                role: 'user',
+                content: 'OpenManager 내부 자료 경로 알려줘',
+              },
+            ],
+          }),
+        }
+      );
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(200);
+      const fetchOptions = mockFetch.mock.calls[0]?.[1] as RequestInit;
+      const body = JSON.parse(String(fetchOptions.body));
+      expect(body).toMatchObject({
+        sessionId: 'session-1234',
+        internalDisclosureMode: 'developer',
+      });
+    });
+
     it('일반 guest full access 컨텍스트는 developer disclosure mode를 전달하지 않는다', async () => {
       mockGetAPIAuthContext.mockReturnValue({ authType: 'guest' });
 

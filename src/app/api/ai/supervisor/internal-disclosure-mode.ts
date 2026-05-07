@@ -11,7 +11,8 @@ export function resolveSupervisorInternalDisclosureMode(
 
   if (
     authContext.authType === 'development' ||
-    authContext.authType === 'test'
+    authContext.authType === 'test' ||
+    authContext.authType === 'test-secret'
   ) {
     return 'developer';
   }

@@ -45,6 +45,7 @@ vi.mock('@/lib/supabase/server', () => ({
   })),
 }));
 
+import { resolveSupervisorInternalDisclosureMode } from '@/app/api/ai/supervisor/internal-disclosure-mode';
 // Import after mocks
 import { isGuestFullAccessEnabledServer } from '@/config/guestMode.server';
 import { checkAPIAuth, getAPIAuthContext, withAuth } from '@/lib/auth/api-auth';
@@ -176,6 +177,40 @@ describe('Auth Middleware Integration', () => {
         expect(getAPIAuthContext(request)).toMatchObject({
           authType: 'test-secret',
         });
+      });
+
+      it('검증된 x-test-secret만 supervisor developer disclosure로 승격한다', async () => {
+        process.env.NODE_ENV = 'production';
+        process.env.TEST_SECRET_KEY = 'valid-test-secret-123';
+        vi.mocked(isGuestFullAccessEnabledServer).mockReturnValue(false);
+
+        const validRequest = new NextRequest('http://localhost:3000/api/test', {
+          headers: { 'x-test-secret': 'valid-test-secret-123' },
+        });
+        const invalidRequest = new NextRequest(
+          'http://localhost:3000/api/test',
+          {
+            headers: { 'x-test-secret': 'wrong-secret' },
+          }
+        );
+
+        expect(await checkAPIAuth(validRequest)).toBeNull();
+        expect(
+          resolveSupervisorInternalDisclosureMode(
+            getAPIAuthContext(validRequest)
+          )
+        ).toBe('developer');
+
+        const invalidResult = await checkAPIAuth(invalidRequest);
+        expect(invalidResult).toBeInstanceOf(NextResponse);
+        expect(getAPIAuthContext(invalidRequest)).toMatchObject({
+          authType: 'unknown',
+        });
+        expect(
+          resolveSupervisorInternalDisclosureMode(
+            getAPIAuthContext(invalidRequest)
+          )
+        ).toBeUndefined();
       });
 
       it('잘못된 x-test-secret은 인증 실패', async () => {

@@ -345,6 +345,53 @@ describe('POST /api/ai/jobs trigger readiness', () => {
     expect(workerBody.internalDisclosureMode).toBe('developer');
   });
 
+  it('derives and forwards developer disclosure mode for test-secret job sessions', async () => {
+    process.env.CLOUD_RUN_ENABLED = 'true';
+    mockGetAPIAuthContext.mockReturnValue({
+      authType: 'test-secret',
+    });
+
+    const { POST } = await importRoute();
+    const request = new NextRequest('http://localhost/api/ai/jobs', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: 'OpenManager OTel SSOT는 어느 파일에 정의돼?',
+        options: { sessionId: 'session-1234' },
+      }),
+    });
+
+    const response = await POST(request);
+    const scheduled = mockAfter.mock.calls[0]?.[0] as
+      | (() => Promise<void>)
+      | undefined;
+    await scheduled?.();
+
+    expect(response.status).toBe(201);
+    const savedJob = mockRedisSet.mock.calls.find(
+      ([key]) =>
+        typeof key === 'string' &&
+        key.startsWith('job:') &&
+        !key.startsWith('job:progress:') &&
+        !key.startsWith('job:list:') &&
+        !key.startsWith('job:trigger:')
+    )?.[1] as { metadata?: Record<string, unknown> } | undefined;
+    expect(savedJob?.metadata).toMatchObject({
+      internalDisclosureMode: 'developer',
+    });
+
+    const workerBody = JSON.parse(
+      (
+        mockFetch.mock.calls[0]?.[1] as {
+          body: string;
+        }
+      ).body
+    ) as Record<string, unknown>;
+    expect(workerBody.internalDisclosureMode).toBe('developer');
+  });
+
   it('does not trust client-supplied job disclosure mode without server auth context', async () => {
     process.env.CLOUD_RUN_ENABLED = 'true';
 

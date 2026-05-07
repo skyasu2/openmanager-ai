@@ -25,6 +25,42 @@ interface EnvConfig {
   required: boolean;
   description: string;
   example?: string;
+  sourceFiles?: string[];
+}
+
+const parsedEnvFileCache = new Map<string, Record<string, string>>();
+
+function readEnvFile(filePath: string): Record<string, string> {
+  const absolutePath = path.resolve(process.cwd(), filePath);
+  const cached = parsedEnvFileCache.get(absolutePath);
+  if (cached) {
+    return cached;
+  }
+
+  if (!fs.existsSync(absolutePath)) {
+    parsedEnvFileCache.set(absolutePath, {});
+    return {};
+  }
+
+  const parsed = dotenv.parse(fs.readFileSync(absolutePath, 'utf8'));
+  parsedEnvFileCache.set(absolutePath, parsed);
+  return parsed;
+}
+
+function getConfiguredEnvValue(envConfig: EnvConfig): string | undefined {
+  const processValue = process.env[envConfig.name];
+  if (processValue !== undefined && processValue !== '') {
+    return processValue;
+  }
+
+  for (const sourceFile of envConfig.sourceFiles ?? []) {
+    const fileValue = readEnvFile(sourceFile)[envConfig.name];
+    if (fileValue !== undefined && fileValue !== '') {
+      return fileValue;
+    }
+  }
+
+  return undefined;
 }
 
 const REQUIRED_ENV_VARS: EnvConfig[] = [
@@ -106,8 +142,9 @@ const REQUIRED_ENV_VARS: EnvConfig[] = [
   {
     name: 'TEST_SECRET_KEY',
     required: false,
-    description: 'Test-only API authentication secret',
+    description: 'E2E/API smoke x-test-secret authentication secret',
     example: 'openssl rand -hex 32',
+    sourceFiles: ['.env.e2e'],
   },
 ];
 
@@ -128,7 +165,7 @@ function checkEnvironmentVariables(): EnvCheckResult {
   const allEnvs: Record<string, boolean> = {};
 
   for (const envConfig of REQUIRED_ENV_VARS) {
-    const value = process.env[envConfig.name];
+    const value = getConfiguredEnvValue(envConfig);
     const exists = value !== undefined && value !== '';
 
     allEnvs[envConfig.name] = exists;
@@ -181,6 +218,9 @@ function printResults(result: EnvCheckResult): void {
       console.warn(`  ⚠️  ${envName}`);
       if (config?.description) {
         console.warn(`     → ${config.description}`);
+      }
+      if (config?.sourceFiles?.length) {
+        console.warn(`     → Source: ${config.sourceFiles.join(', ')} or CI`);
       }
     }
   }
