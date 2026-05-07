@@ -7,7 +7,7 @@ description: Perform OpenManager code reviews with evidence-based findings, regr
 
 > Common baseline: before editing this skill, review `docs/guides/ai/skill-standards.md` and `config/ai/skill-baselines.json`. If behavior changes are not agent-specific, update the baseline first.
 
-Run practical code reviews from 6 perspectives that surface real defects and release risks.
+Run practical code reviews from 7 perspectives that surface real defects and release risks.
 
 ## Review Mode Selection
 

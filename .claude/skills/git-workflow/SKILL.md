@@ -117,7 +117,7 @@ Git Workflow Results
 
 ## Related Skills
 
-- `code-review` - 커밋/푸시 전 6관점 리뷰 연계 (고위험 변경 또는 리뷰 요청 시)
+- `code-review` - 커밋/푸시 전 7관점 리뷰 연계 (고위험 변경 또는 리뷰 요청 시)
 - `lint-smoke` - 사전 품질 검증
 
 ## Changelog
