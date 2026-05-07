@@ -6,7 +6,6 @@ const {
   getLangfuse,
   isLangfuseOperational,
   shouldTrackLangfuseEvent,
-  consumeLangfuseQuota,
   isLangfuseUsageReady,
 } = vi.hoisted(() => {
   const mockTrace = {
@@ -31,7 +30,6 @@ const {
     getLangfuse: vi.fn(() => mockLangfuse),
     isLangfuseOperational: vi.fn(),
     shouldTrackLangfuseEvent: vi.fn(),
-    consumeLangfuseQuota: vi.fn(),
     isLangfuseUsageReady: vi.fn(),
   };
 });
@@ -43,11 +41,10 @@ vi.mock('./langfuse-client', () => ({
 
 vi.mock('./langfuse-usage', () => ({
   shouldTrackLangfuseEvent,
-  consumeLangfuseQuota,
   isLangfuseUsageReady,
 }));
 
-import { createSupervisorTrace, scoreByTraceId } from './langfuse-trace';
+import { createSupervisorTrace } from './langfuse-trace';
 
 describe('langfuse-trace', () => {
   beforeEach(() => {
@@ -55,7 +52,6 @@ describe('langfuse-trace', () => {
     isLangfuseOperational.mockReturnValue(true);
     isLangfuseUsageReady.mockReturnValue(true);
     shouldTrackLangfuseEvent.mockReturnValue(true);
-    consumeLangfuseQuota.mockReturnValue(true);
   });
 
   it('returns no-op trace before Langfuse is operational', () => {
@@ -71,16 +67,6 @@ describe('langfuse-trace', () => {
     expect(shouldTrackLangfuseEvent).not.toHaveBeenCalled();
     expect(getLangfuse).not.toHaveBeenCalled();
     expect(trace.id).toBeUndefined();
-  });
-
-  it('returns false for scoring before usage restore is ready', () => {
-    isLangfuseUsageReady.mockReturnValue(false);
-
-    const recorded = scoreByTraceId('trace-1', 'user-feedback', 1);
-
-    expect(recorded).toBe(false);
-    expect(consumeLangfuseQuota).not.toHaveBeenCalled();
-    expect(getLangfuse).not.toHaveBeenCalled();
   });
 
   it('assigns a fallback trace id when SDK trace object does not expose one', () => {
@@ -146,26 +132,4 @@ describe('langfuse-trace', () => {
     expect(mockTrace.score).not.toHaveBeenCalled();
   });
 
-  it('normalizes UUID trace ids before scoring', () => {
-    const recorded = scoreByTraceId(
-      '12345678-90ab-cdef-1234-567890abcdef',
-      'user-feedback',
-      1
-    );
-
-    expect(recorded).toBe(true);
-    expect(mockLangfuse.score).toHaveBeenCalledWith({
-      traceId: '1234567890abcdef1234567890abcdef',
-      name: 'user-feedback',
-      value: 1,
-    });
-  });
-
-  it('rejects non-hex trace ids during scoring', () => {
-    const recorded = scoreByTraceId('trace-not-hex', 'user-feedback', 1);
-
-    expect(recorded).toBe(false);
-    expect(consumeLangfuseQuota).not.toHaveBeenCalled();
-    expect(mockLangfuse.score).not.toHaveBeenCalled();
-  });
 });

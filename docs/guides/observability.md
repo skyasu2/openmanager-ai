@@ -161,7 +161,6 @@ curl -H "X-API-Key: $CLOUD_RUN_API_SECRET" \
 | **Generation** | `{provider}/{model}` | LLM 호출 (입력, 출력, 토큰) |
 | **Span** | `tool:{toolName}` | 도구 호출 (입력, 출력, 소요시간) |
 | **Event** | `agent-handoff` | 에이전트 간 핸드오프 |
-| **Score** | `user-feedback` | 사용자 좋아요(1)/싫어요(0) |
 | **Score** | `execution-success` | 실행 성공(1)/실패(0) |
 | **Score** | `timeout-occurred` | 타임아웃 여부 |
 | **Score** | `requested-mode-*` | 요청 모드 (`single` / `multi` / `auto`) |

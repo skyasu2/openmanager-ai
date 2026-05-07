@@ -29,7 +29,6 @@ export {
   logToolCall,
   logHandoff,
   finalizeTrace,
-  scoreByTraceId,
 } from './langfuse-trace';
 
 export { logTimeoutEvent, createTimeoutSpan } from './langfuse-timeout';

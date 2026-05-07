@@ -9,13 +9,9 @@ import type {
 import { getLangfuse, isLangfuseOperational } from './langfuse-client';
 import { createNoOpTrace } from './langfuse-noop';
 import {
-  consumeLangfuseQuota,
   isLangfuseUsageReady,
   shouldTrackLangfuseEvent,
 } from './langfuse-usage';
-
-const TRACE_ID_HEX_REGEX = /^[0-9a-f]{32}$/;
-const INVALID_TRACE_ID = '0'.repeat(32);
 
 function recordSupervisorModeScores(
   trace: LangfuseTrace,
@@ -65,19 +61,6 @@ function recordSupervisorModeScores(
 
 function generateLangfuseTraceId(): string {
   return randomBytes(16).toString('hex');
-}
-
-function normalizeLangfuseTraceId(traceId?: string | null): string | null {
-  if (typeof traceId !== 'string') {
-    return null;
-  }
-
-  const normalized = traceId.trim().toLowerCase().replace(/-/g, '');
-  if (!TRACE_ID_HEX_REGEX.test(normalized) || normalized === INVALID_TRACE_ID) {
-    return null;
-  }
-
-  return normalized;
 }
 
 export function createSupervisorTrace(metadata: TraceMetadata): LangfuseTrace {
@@ -205,32 +188,5 @@ export function finalizeTrace(
       name: 'execution-success',
       value: 1,
     });
-  }
-}
-
-export function scoreByTraceId(traceId: string, name: string, value: number): boolean {
-  if (!isLangfuseOperational() || !isLangfuseUsageReady()) {
-    return false;
-  }
-
-  const normalizedTraceId = normalizeLangfuseTraceId(traceId);
-  if (!normalizedTraceId) {
-    return false;
-  }
-
-  if (!consumeLangfuseQuota(1)) {
-    return false;
-  }
-
-  try {
-    const langfuse = getLangfuse();
-    langfuse.score({ traceId: normalizedTraceId, name, value });
-    return true;
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    logger.error(
-      `❌ [Langfuse] scoreByTraceId failed for trace ${normalizedTraceId}: ${errorMessage}`
-    );
-    return false;
   }
 }
