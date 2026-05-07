@@ -23,4 +23,10 @@ server.listen(0, "127.0.0.1", () => {
 PORT="${STORYBOOK_SMOKE_PORT:-$(find_free_port)}"
 echo "[storybook:smoke] using port ${PORT}"
 
-storybook dev -p "${PORT}" --ci --smoke-test
+storybook dev \
+  -p "${PORT}" \
+  --ci \
+  --smoke-test \
+  --force-build-preview \
+  --disable-telemetry \
+  --no-version-updates

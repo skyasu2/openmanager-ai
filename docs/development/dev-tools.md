@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-04-26
+> Last reviewed: 2026-05-07
 > Canonical: docs/development/dev-tools.md
 > Tags: tooling,nodejs,biome
 
@@ -296,6 +296,9 @@ npm run storybook:smoke
 curl -I http://127.0.0.1:6006
 ```
 
+`storybook:smoke`는 Storybook 공식 CLI의 `--ci`, `--smoke-test`, `--force-build-preview`, `--disable-telemetry`, `--no-version-updates` 조합을 사용합니다.
+이 조합은 비대화형 기동 확인, preview 재빌드, telemetry/update check 차단을 동시에 보장합니다.
+
 ```bash
 # Codex/Gemini에서 Storybook 작업이 필요할 때
 bash scripts/ai/agent-bridge.sh --to claude --mode query "스토리북 실행/점검 진행"
@@ -323,11 +326,11 @@ query 상태를 `Record<string, string>` 대신 `Array<[string, string]>` 튜플
 |------|------------|-------------|
 | storybook 실행 명령 | `storybook dev -p 6006` | `node node_modules/storybook/dist/bin/dispatcher.js dev -p 6006` |
 | 패키지 버전 기준 (2026-03-15) | `storybook@^10.2.10`, `@storybook/nextjs-vite@^10.2.10`, `@storybook/addon-vitest@^10.2.10` | npm 미배포 버전 지정 (`^10.2.19` 등) |
-| addon-mcp 버전 | `@storybook/addon-mcp@^0.2.3` (npm 공개 최신) | 존재하지 않는 버전 지정 (`^0.3.3`) |
+| addon-mcp 버전 | `@storybook/addon-mcp@^0.2.3` (npm 공개 최신) | 존재하지 않는 버전 지정 (`^0.3.3`, `^0.4.2`) |
 | query 타입 | `Array<[string, string]>` | `Record<string, string>` |
 | framework 설정 | `@storybook/nextjs-vite` | `@storybook/react-vite` (Next.js mock 미지원) |
 
-> **배경**: 2026-03-15 Codex가 nextjs-vite 마이그레이션 중 (1) storybook 명령을 `node_modules` 직접 경로로 변경, (2) 패키지 버전을 임의 수정한 이력이 있음. 이후 `storybook/@storybook/nextjs-vite/@storybook/addon-vitest`의 `^10.2.19` 및 `addon-mcp`의 `^0.3.3`를 지정하려다 npm `ETARGET/E404`가 발생했다. 위 표의 패턴을 의도적으로 유지할 것.
+> **배경**: 2026-03-15 Codex가 nextjs-vite 마이그레이션 중 (1) storybook 명령을 `node_modules` 직접 경로로 변경, (2) 패키지 버전을 임의 수정한 이력이 있음. 이후 `storybook/@storybook/nextjs-vite/@storybook/addon-vitest`의 `^10.2.19` 및 `addon-mcp`의 `^0.3.3`를 지정하려다 npm `ETARGET/E404`가 발생했다. 2026-05-07 재점검에서도 `addon-mcp@0.4.2`가 registry에서 조회되지 않아 `^0.2.3`으로 되돌렸다. 위 표의 패턴을 의도적으로 유지할 것.
 
 ## Git Hooks
 
