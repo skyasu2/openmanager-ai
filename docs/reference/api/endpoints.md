@@ -16,14 +16,14 @@
 
 > 계약 문서: [API Contracts](./contracts.md)
 
-총 엔드포인트: **31**
+총 엔드포인트: **29**
 
 ## Summary by Group
 
 | Group | Count |
 |---|---:|
 | admin | 1 |
-| ai | 12 |
+| ai | 11 |
 | auth | 2 |
 | csrf-token | 1 |
 | database | 1 |
@@ -33,7 +33,7 @@
 | monitoring | 1 |
 | og | 1 |
 | security | 1 |
-| servers | 4 |
+| servers | 3 |
 | servers-unified | 1 |
 | system | 1 |
 | version | 1 |
@@ -52,7 +52,6 @@
 | Endpoint | Methods | Source |
 |---|---|---|
 | `/api/ai/artifact-intent` | `POST` | `src/app/api/ai/artifact-intent/route.ts` |
-| `/api/ai/ask` | `GET, POST` | `src/app/api/ai/ask/route.ts` |
 | `/api/ai/incident-report` | `POST` | `src/app/api/ai/incident-report/route.ts` |
 | `/api/ai/intelligent-monitoring` | `GET, POST` | `src/app/api/ai/intelligent-monitoring/route.ts` |
 | `/api/ai/jobs` | `GET, POST` | `src/app/api/ai/jobs/route.ts` |
@@ -125,7 +124,6 @@
 |---|---|---|
 | `/api/servers` | `GET` | `src/app/api/servers/route.ts` |
 | `/api/servers/[id]` | `GET` | `src/app/api/servers/[id]/route.ts` |
-| `/api/servers/[id]/processes` | `GET` | `src/app/api/servers/[id]/processes/route.ts` |
 | `/api/servers/next` | `GET, POST, OPTIONS` | `src/app/api/servers/next/route.ts` |
 
 ### /api/servers-unified

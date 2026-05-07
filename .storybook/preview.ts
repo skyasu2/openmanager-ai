@@ -25,7 +25,6 @@ sb.mock(import('../src/hooks/useServerDashboard.ts'));
 sb.mock(import('../src/hooks/useServerMetrics.ts'));
 sb.mock(import('../src/hooks/useUserPermissions.ts'));
 sb.mock(import('../src/hooks/dashboard/useMonitoringReport.ts'));
-sb.mock(import('../src/hooks/use-toast.ts'));
 
 // Hooks — Profile
 sb.mock(import('../src/components/unified-profile/hooks/useProfileAuth.ts'));

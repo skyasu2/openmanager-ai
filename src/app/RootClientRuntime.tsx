@@ -20,7 +20,7 @@ const SystemBootstrap = dynamic(
 );
 
 const Toaster = dynamic(
-  () => import('@/components/ui/toaster').then((mod) => mod.Toaster),
+  () => import('react-hot-toast').then((mod) => mod.Toaster),
   { ssr: false, loading: () => null }
 );
 
@@ -41,7 +41,7 @@ export function RootClientRuntime() {
     <>
       <EmergencyBanner />
       <SystemBootstrap />
-      <Toaster />
+      <Toaster position="bottom-left" />
       <WebVitalsReporter />
     </>
   );

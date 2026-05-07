@@ -4,7 +4,7 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
   id: 'ai-assistant',
   title: 'AI Assistant Runtime Architecture',
   description:
-    '현재 구현 기준 as-built 구조. Next.js stream route와 opt-in /api/ai/ask facade가 Cloud Run Supervisor로 위임하고, 5개 routing LLM agent + deterministic Evaluator/Optimizer/recovery fallback을 무료 한도 내 provider gate로 운영.',
+    '현재 구현 기준 as-built 구조. Next.js stream route가 Cloud Run Supervisor로 위임하고, 5개 routing LLM agent + deterministic Evaluator/Optimizer/recovery fallback을 무료 한도 내 provider gate로 운영.',
   layers: [
     {
       title: 'Client',
@@ -26,7 +26,7 @@ export const AI_ASSISTANT_ARCHITECTURE: ArchitectureDiagram = {
         {
           id: 'vercel-proxy',
           label: 'Next.js API',
-          sublabel: '/api/ai/ask opt-in -> stream v2',
+          sublabel: '/api/ai/supervisor/stream/v2',
           type: 'secondary',
           icon: '▲',
         },

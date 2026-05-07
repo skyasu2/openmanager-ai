@@ -13,7 +13,6 @@
 
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
-import { useShallow } from 'zustand/react/shallow';
 import type {
   AssistantPlan,
   AssistantResult,
@@ -303,10 +302,6 @@ interface AISidebarState {
   // 대화 복원 배너 닫힘 상태 (탭 전환 시 재노출 방지)
   restoreBannerDismissed: boolean;
 
-  // 함수 패널 관련 상태
-  functionTab: 'qa' | 'report' | 'patterns' | 'logs' | 'context';
-  selectedContext: 'basic' | 'advanced' | 'custom';
-
   // 액션들
   setOpen: (open: boolean) => void;
   openWithPrefill: (message: string) => void;
@@ -324,14 +319,9 @@ interface AISidebarState {
   setRagEnabled: (enabled: boolean | ((prev: boolean) => boolean)) => void;
   setAnalysisMode: (mode: AnalysisMode) => void;
   dismissRestoreBanner: () => void;
-  resetRestoreBanner: () => void;
   setActiveTab: (
     tab: 'chat' | 'presets' | 'thinking' | 'settings' | 'functions'
   ) => void;
-  setFunctionTab: (
-    tab: 'qa' | 'report' | 'patterns' | 'logs' | 'context'
-  ) => void;
-  setSelectedContext: (context: 'basic' | 'advanced' | 'custom') => void;
 
   // 채팅 관련 액션들
   addMessage: (message: EnhancedChatMessage) => void;
@@ -365,8 +355,6 @@ export const useAISidebarStore = create<AISidebarState>()(
         ragEnabled: false,
         analysisMode: 'auto',
         restoreBannerDismissed: false,
-        functionTab: 'qa',
-        selectedContext: 'basic',
         messages: [],
         sessionId:
           typeof crypto !== 'undefined' && crypto.randomUUID
@@ -457,13 +445,8 @@ export const useAISidebarStore = create<AISidebarState>()(
         setAnalysisMode: (mode) => set({ analysisMode: mode }),
 
         dismissRestoreBanner: () => set({ restoreBannerDismissed: true }),
-        resetRestoreBanner: () => set({ restoreBannerDismissed: false }),
 
         setActiveTab: (tab) => set({ activeTab: tab }),
-
-        setFunctionTab: (tab) => set({ functionTab: tab }),
-
-        setSelectedContext: (context) => set({ selectedContext: context }),
 
         // 채팅 관련 액션들
         addMessage: (message) =>
@@ -502,8 +485,6 @@ export const useAISidebarStore = create<AISidebarState>()(
             ragEnabled: false,
             analysisMode: 'auto',
             restoreBannerDismissed: false,
-            functionTab: 'qa',
-            selectedContext: 'basic',
             messages: [],
             sessionId:
               typeof crypto !== 'undefined' && crypto.randomUUID
@@ -522,8 +503,6 @@ export const useAISidebarStore = create<AISidebarState>()(
           webSearchEnabled: state.webSearchEnabled,
           analysisMode: state.analysisMode,
           restoreBannerDismissed: state.restoreBannerDismissed,
-          functionTab: state.functionTab,
-          selectedContext: state.selectedContext,
           // 🔥 대화 기록 영속화 (최근 20개만 - localStorage 5MB 초과 방지)
           messages: state.messages.slice(-20),
           // currentEngine 제거 - v4.0: localStorage 마이그레이션으로 자동 정리됨
@@ -548,33 +527,6 @@ export const useAISidebarStore = create<AISidebarState>()(
 if (typeof window !== 'undefined' && !useAISidebarStore.persist.hasHydrated()) {
   void useAISidebarStore.persist.rehydrate();
 }
-
-// 🎛️ 선택적 훅들 (성능 최적화 - useShallow로 불필요한 리렌더링 방지)
-export const useAISidebarUI = () => {
-  return useAISidebarStore(
-    useShallow((state) => ({
-      isOpen: state.isOpen,
-      isMinimized: state.isMinimized,
-      activeTab: state.activeTab,
-      functionTab: state.functionTab,
-      sidebarWidth: state.sidebarWidth,
-      setOpen: state.setOpen,
-      setMinimized: state.setMinimized,
-      setActiveTab: state.setActiveTab,
-      setFunctionTab: state.setFunctionTab,
-      setSidebarWidth: state.setSidebarWidth,
-    }))
-  );
-};
-
-export const useAIContext = () => {
-  return useAISidebarStore(
-    useShallow((state) => ({
-      selectedContext: state.selectedContext,
-      setSelectedContext: state.setSelectedContext,
-    }))
-  );
-};
 
 // 🚨 타입 정의 추가
 export interface AISidebarSettings {

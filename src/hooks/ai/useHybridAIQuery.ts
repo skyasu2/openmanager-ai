@@ -96,6 +96,8 @@ export {
   STREAM_ERROR_REGEX,
 };
 
+const DEFAULT_AI_STREAM_ENDPOINT = '/api/ai/supervisor/stream/v2';
+
 function normalizeStreamStatus(status: string): AIStreamStatus {
   if (
     status === 'submitted' ||
@@ -352,7 +354,7 @@ export function useHybridAIQuery(
   useEffect(() => {
     queryAsOfDataSlotRef.current = queryAsOfDataSlot;
   }, [queryAsOfDataSlot]);
-  const apiEndpoint = resolveHybridAIEndpoint(customEndpoint);
+  const apiEndpoint = customEndpoint ?? DEFAULT_AI_STREAM_ENDPOINT;
   const sessionIdRef = useRef<string>(
     initialSessionId || generateMessageId('session')
   );
@@ -659,14 +661,4 @@ export function useHybridAIQuery(
     skipClarification,
     dismissClarification,
   };
-}
-
-export function resolveHybridAIEndpoint(customEndpoint?: string): string {
-  if (customEndpoint) {
-    return customEndpoint;
-  }
-
-  return process.env.NEXT_PUBLIC_AI_ASK_FACADE_ENABLED === 'true'
-    ? '/api/ai/ask'
-    : '/api/ai/supervisor/stream/v2';
 }

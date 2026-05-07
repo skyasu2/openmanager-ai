@@ -10,8 +10,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from './dialog';
-import { Input } from './input';
-import { Label } from './label';
 
 const meta = {
   title: 'UI/Dialog',
@@ -63,12 +61,30 @@ export const WithForm: Story = {
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="dialog-name">서버 이름</Label>
-            <Input id="dialog-name" placeholder="web-server-01" />
+            <label
+              className="text-sm font-medium leading-none"
+              htmlFor="dialog-name"
+            >
+              서버 이름
+            </label>
+            <input
+              className="flex h-9 w-full rounded-md border border-stone-300 bg-white px-3 py-1 text-base placeholder:text-gray-400 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-1 md:text-sm"
+              id="dialog-name"
+              placeholder="web-server-01"
+            />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="dialog-host">호스트 주소</Label>
-            <Input id="dialog-host" placeholder="192.168.1.100" />
+            <label
+              className="text-sm font-medium leading-none"
+              htmlFor="dialog-host"
+            >
+              호스트 주소
+            </label>
+            <input
+              className="flex h-9 w-full rounded-md border border-stone-300 bg-white px-3 py-1 text-base placeholder:text-gray-400 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-1 md:text-sm"
+              id="dialog-host"
+              placeholder="192.168.1.100"
+            />
           </div>
         </div>
         <DialogFooter>

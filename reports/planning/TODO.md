@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-07 KST (`테스트 방법론 SSOT/스킬 반영 (Codex)`)
+**Last Updated**: 2026-05-07 KST (`Dead code cleanup completed (Codex)`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -11,12 +11,11 @@
 
 ## Active Tasks
 
-> **권장 실행 순서**: ① Sentry DSN 등록(사용자 직접) → ② Dead code 제거(Codex)
+> **권장 실행 순서**: ① Chart 마이그레이션
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| ⚡ Sentry DSN 등록 — production 에러 수집 활성화 | High | **사용자 액션 필요** | `NEXT_PUBLIC_SENTRY_DSN` Vercel production 환경변수 미설정. 코드·tunnel·sampling은 완비. DSN 1개만 등록하면 즉시 활성화. 상세: [dead-code-sentry-cleanup-plan.md § B-1](dead-code-sentry-cleanup-plan.md) |
-| Dead code 정리 (5개 항목) | Medium | Approved (Codex 대기) | AI 피드백 제거 완료 후 진행. 상세: [dead-code-sentry-cleanup-plan.md § Part A](dead-code-sentry-cleanup-plan.md) |
+| Chart 마이그레이션: Recharts → SVG Sparkline + Nivo | Medium | Approved (Codex 대기) | MiniLineChart → 순수 SVG, TimeSeriesChart → @nivo/line, recharts 패키지 제거. 상세: [chart-migration-plan.md](chart-migration-plan.md) |
 
 ---
 
@@ -24,9 +23,9 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| Storybook CI guardrail 적용 | Medium | Draft plan. 공식 Storybook/GitLab 기준으로 path-gated `storybook:smoke`는 CI에 추가하고 full build/browser tests는 수동·스케줄로 분리. 상세: [storybook-ci-guardrail-plan.md](storybook-ci-guardrail-plan.md) |
+| Developer Panel — internal disclosure mode UI 확장 | Medium | AI 사이드바 내 개발자 진단 패널. 기존 `internalDisclosureMode='developer'` gate 재사용, 신규 auth 없음. 상세: [developer-panel-plan.md](developer-panel-plan.md) |
 | MSW 테스트 인프라 정합성 개선 | Medium | Draft plan으로 승격. false-pass 계약/통합 테스트, MSW strict boundary, live connectivity config 분리, provider handler drift, 비용/과잉 테스트 금지, Pareto/Pesticide/Risk-Based/Contract-First 방법론 검토 포함. 상세: [msw-test-infra-integrity-plan.md](msw-test-infra-integrity-plan.md) |
-| Sentry 소스맵 업로드 검토 | Low | 현재 `sourcemaps.disable: true`. 스택트레이스가 minified라 디버깅 어려우면 개발 빌드 한정 소스맵 활성화 검토. DSN 등록 후 실제 에러를 보고 판단. |
-| Sentry tunnel 라우트 필요성 재검토 | Low | CSP 정책상 sentry.io 직접 호출 차단 여부 확인. 불필요하면 `/api/sentry-tunnel` + Vercel function 호출 제거 가능. |
 
 ---
 
@@ -52,6 +51,23 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-07 #313) — Codex
+- [x] Dead code 정리 및 Sentry cleanup closure
+  - Sentry integration 제거 후 follow-up dead code A-1~A-7 완료
+  - `/api/ai/ask` facade 제거, AI stream endpoint를 `/api/ai/supervisor/stream/v2`로 고정
+  - unused store action/helper와 unused shadcn/ui components/stories/tests 제거
+  - toast system을 `react-hot-toast`로 단일화하고 shadcn toast/Radix toast 의존성 제거
+  - `/api/version`, `/api/servers/[id]`는 운영/계약 surface로 유지하고, 중복 `/api/servers/[id]/processes` mock route는 `/api/servers-unified?action=processes`로 대체
+  - 검증: targeted Vitest, `test:quick`, `type-check`, `lint`, `knip:ci`, docs checks, `git diff --check`
+  - 상세: [dead-code-sentry-cleanup-plan.md](dead-code-sentry-cleanup-plan.md)
+
+### Completed (2026-05-07 #312) — Codex
+- [x] Cloud Run local Docker Compose drift cleanup
+  - `cloud-run/docker-compose.yml`: `APP_VERSION=8.0.0` 제거, `vibe-network` 제거, Docker Compose V2 명령 주석 정리, Gemini env를 `GEMINI_API_KEY`/`GEMINI_API_KEY_PRIMARY` 중심으로 정렬
+  - `cloud-run/.env.example`, `cloud-run/README.md`, `cloud-run/ai-engine/README.md`, `docs/development/docker.md`, `docs/development/environment-variables.md`: local Compose / Cloud Build / GitLab shell executor / grouped Secret Manager 경계 정리
+  - broad build, Cloud Run deploy, external connectivity, 실 LLM 호출 없이 `docker compose config --quiet`, docs 검증, whitespace 검증으로 완료
+  - 상세: [archive/cloud-run-docker-compose-drift-cleanup-plan.md](archive/cloud-run-docker-compose-drift-cleanup-plan.md)
 
 ### Completed (2026-05-07 #311) — Codex
 - [x] AI 피드백 기능 제거 production closure

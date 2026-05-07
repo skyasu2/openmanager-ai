@@ -157,6 +157,31 @@ describe('Servers Unified Route (/api/servers-unified)', () => {
       expect(payload.error).toContain('serverId required');
     });
 
+    it('action: processes with serverId returns server process data', async () => {
+      const response = await POST(
+        postRequest({ action: 'processes', serverId: 'srv-1' })
+      );
+      expect(response.status).toBe(200);
+
+      const payload = await response.json();
+      expect(payload.success).toBe(true);
+      expect(payload.action).toBe('processes');
+      expect(payload.serverId).toBe('srv-1');
+      expect(payload.data.serverId).toBe('srv-1');
+      expect(payload.data.serverName).toBe('Web Server 1');
+      expect(payload.data.totalProcesses).toBe(payload.data.processes.length);
+      expect(payload.data.runningProcesses).toBeGreaterThan(0);
+    });
+
+    it('action: processes without serverId returns error', async () => {
+      const response = await POST(postRequest({ action: 'processes' }));
+      expect(response.status).toBe(400);
+
+      const payload = await response.json();
+      expect(payload.success).toBe(false);
+      expect(payload.error).toContain('serverId required');
+    });
+
     it('invalid JSON body returns 400', async () => {
       const request = new NextRequest('http://localhost/api/servers-unified', {
         method: 'POST',
@@ -211,6 +236,17 @@ describe('Servers Unified Route (/api/servers-unified)', () => {
       expect(payload.success).toBe(true);
       expect(payload.action).toBe('detail');
       expect(payload.data.id).toBe('srv-1');
+    });
+
+    it('GET with action=processes&serverId=srv-1 returns process data', async () => {
+      const response = await GET(getRequest('action=processes&serverId=srv-1'));
+      expect(response.status).toBe(200);
+
+      const payload = await response.json();
+      expect(payload.success).toBe(true);
+      expect(payload.action).toBe('processes');
+      expect(payload.data.serverId).toBe('srv-1');
+      expect(payload.data.processes).toHaveLength(8);
     });
 
     it('GET with pagination params works correctly', async () => {

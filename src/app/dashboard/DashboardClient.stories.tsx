@@ -7,7 +7,6 @@ import { useProfileMenu } from '../../components/unified-profile/hooks/useProfil
 import { isGuestFullAccessEnabled } from '../../config/guestMode';
 import { useMonitoringReport } from '../../hooks/dashboard/useMonitoringReport';
 import { useHealthCheck } from '../../hooks/system/useHealthCheck';
-import { useToast } from '../../hooks/use-toast';
 import { useAutoLogout } from '../../hooks/useAutoLogout';
 import { useServerDashboard } from '../../hooks/useServerDashboard';
 import { useServerMetrics } from '../../hooks/useServerMetrics';
@@ -135,7 +134,6 @@ function setupHookMocks() {
   } as never);
 
   mocked(useSystemAutoShutdown).mockReturnValue(undefined as never);
-  mocked(useToast).mockReturnValue({ toast: fn() } as never);
   mocked(isGuestFullAccessEnabled).mockReturnValue(true);
 
   // UnifiedProfileHeader transitive deps (via DashboardHeader)

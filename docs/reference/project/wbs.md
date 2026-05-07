@@ -3,11 +3,13 @@
 > Owner: project-lead
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-05-02
+> Last reviewed: 2026-05-07
 > Tags: wbs,deliverable,completion,modules
 
 **목적**: 모듈(Deliverable) 기반 WBS. 100% Rule 적용 — 모든 프로덕션 산출물 포착.
 **회고형 WBS**: `reports/planning/archive/wbs.md` (Phase 기반, 병행 유지)
+
+> 2026-05-07 정렬 메모: 이 문서는 모듈별 기준선 WBS이며, 현재 실행 순서와 active/backlog 상태는 `reports/planning/TODO.md`를 우선한다. Dead code cleanup과 chart migration 이후 WBS 수치 재산정이 필요하다.
 
 ---
 
@@ -171,4 +173,4 @@
 
 ---
 
-_Last Updated: 2026-04-24_
+_Last Updated: 2026-05-07_

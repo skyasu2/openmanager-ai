@@ -86,7 +86,6 @@ import { useHybridAIQuery } from '@/hooks/ai/useHybridAIQuery';
 describe('useHybridAIQuery Contract', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    delete process.env.NEXT_PUBLIC_AI_ASK_FACADE_ENABLED;
 
     mocks.sendMessage.mockResolvedValue(undefined);
     mocks.asyncSendQuery.mockResolvedValue({ jobId: 'job-contract-1' });
@@ -130,28 +129,33 @@ describe('useHybridAIQuery Contract', () => {
     });
   });
 
-  it('ask facade opt-in flag가 켜진 경우 스트리밍 엔드포인트를 /api/ai/ask로 전환한다', () => {
+  it('legacy ask facade opt-in flag가 있어도 공식 스트리밍 엔드포인트를 유지한다', () => {
     process.env.NEXT_PUBLIC_AI_ASK_FACADE_ENABLED = 'true';
 
-    renderHook(() => useHybridAIQuery());
+    try {
+      renderHook(() => useHybridAIQuery());
 
-    expect(mocks.defaultChatTransport).toHaveBeenCalledWith(
-      expect.objectContaining({
-        api: '/api/ai/ask',
-      })
-    );
+      expect(mocks.defaultChatTransport).toHaveBeenCalledWith(
+        expect.objectContaining({
+          api: '/api/ai/supervisor/stream/v2',
+        })
+      );
 
-    const transportOptions = mocks.defaultChatTransport.mock.calls[0]?.[0] as {
-      prepareReconnectToStreamRequest: (args: { id: string }) => {
-        api: string;
+      const transportOptions = mocks.defaultChatTransport.mock
+        .calls[0]?.[0] as {
+        prepareReconnectToStreamRequest: (args: { id: string }) => {
+          api: string;
+        };
       };
-    };
 
-    expect(
-      transportOptions.prepareReconnectToStreamRequest({ id: 'session-abc' })
-    ).toEqual({
-      api: '/api/ai/ask?sessionId=session-abc',
-    });
+      expect(
+        transportOptions.prepareReconnectToStreamRequest({ id: 'session-abc' })
+      ).toEqual({
+        api: '/api/ai/supervisor/stream/v2?sessionId=session-abc',
+      });
+    } finally {
+      delete process.env.NEXT_PUBLIC_AI_ASK_FACADE_ENABLED;
+    }
   });
 
   it('간단 쿼리는 streaming 모드로 전송하고 요청 payload 계약을 지킨다', async () => {

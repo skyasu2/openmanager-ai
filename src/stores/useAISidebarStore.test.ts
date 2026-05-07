@@ -352,26 +352,6 @@ describe('useAISidebarStore', () => {
 
       expect(result.current.activeTab).toBe('presets');
     });
-
-    it('setFunctionTab으로 함수 탭을 변경할 수 있어야 함', () => {
-      const { result } = renderHook(() => useAISidebarStore());
-
-      act(() => {
-        result.current.setFunctionTab('report');
-      });
-
-      expect(result.current.functionTab).toBe('report');
-    });
-
-    it('setSelectedContext로 컨텍스트를 변경할 수 있어야 함', () => {
-      const { result } = renderHook(() => useAISidebarStore());
-
-      act(() => {
-        result.current.setSelectedContext('advanced');
-      });
-
-      expect(result.current.selectedContext).toBe('advanced');
-    });
   });
 
   describe('사이드바 너비', () => {

@@ -8,8 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from './card';
-import { Input } from './input';
-import { Label } from './label';
 
 const meta = {
   title: 'UI/Card',
@@ -64,12 +62,24 @@ export const WithForm: Story = {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="name">서버 이름</Label>
-          <Input id="name" placeholder="web-server-01" />
+          <label className="text-sm font-medium leading-none" htmlFor="name">
+            서버 이름
+          </label>
+          <input
+            className="flex h-9 w-full rounded-md border border-stone-300 bg-white px-3 py-1 text-base placeholder:text-gray-400 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-1 md:text-sm"
+            id="name"
+            placeholder="web-server-01"
+          />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="host">호스트</Label>
-          <Input id="host" placeholder="192.168.1.100" />
+          <label className="text-sm font-medium leading-none" htmlFor="host">
+            호스트
+          </label>
+          <input
+            className="flex h-9 w-full rounded-md border border-stone-300 bg-white px-3 py-1 text-base placeholder:text-gray-400 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-1 md:text-sm"
+            id="host"
+            placeholder="192.168.1.100"
+          />
         </div>
       </CardContent>
       <CardFooter>

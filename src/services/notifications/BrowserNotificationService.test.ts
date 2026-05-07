@@ -23,8 +23,11 @@ vi.mock('@/config/rules/loader', () => ({
   shouldSendWebNotification: mockShouldSendWebNotification,
 }));
 
-vi.mock('@/hooks/use-toast', () => ({
-  toast: mockToast,
+vi.mock('react-hot-toast', () => ({
+  default: Object.assign(mockToast, {
+    error: vi.fn(),
+    success: vi.fn(),
+  }),
 }));
 
 vi.mock('@/lib/logging', () => ({
@@ -53,11 +56,8 @@ describe('BrowserNotificationService', () => {
         'critical'
       );
 
-      expect(mockToast).toHaveBeenCalledWith(
-        expect.objectContaining({
-          title: 'Web Server 01',
-          variant: 'destructive',
-        })
+      expect(mockToast.error).toHaveBeenCalledWith(
+        expect.stringContaining('Web Server 01')
       );
     });
 
@@ -105,7 +105,8 @@ describe('BrowserNotificationService', () => {
       );
 
       expect(mockToast).toHaveBeenCalledWith(
-        expect.objectContaining({ variant: 'warning' })
+        expect.stringContaining('Web Server 01'),
+        expect.objectContaining({ icon: '⚠️' })
       );
     });
 
@@ -118,8 +119,8 @@ describe('BrowserNotificationService', () => {
         'online'
       );
 
-      expect(mockToast).toHaveBeenCalledWith(
-        expect.objectContaining({ variant: 'success' })
+      expect(mockToast.success).toHaveBeenCalledWith(
+        expect.stringContaining('Web Server 01')
       );
     });
 
@@ -147,10 +148,8 @@ describe('BrowserNotificationService', () => {
         'critical'
       );
 
-      expect(mockToast).toHaveBeenCalledWith(
-        expect.objectContaining({
-          description: 'DB Server 서버가 심각한 상태입니다',
-        })
+      expect(mockToast.error).toHaveBeenCalledWith(
+        expect.stringContaining('DB Server 서버가 심각한 상태입니다')
       );
     });
 
@@ -174,9 +173,8 @@ describe('BrowserNotificationService', () => {
       );
 
       expect(mockToast).toHaveBeenCalledWith(
-        expect.objectContaining({
-          description: 'Web Server 서버에 주의가 필요합니다',
-        })
+        expect.stringContaining('Web Server 서버에 주의가 필요합니다'),
+        expect.objectContaining({ icon: '⚠️' })
       );
     });
 
@@ -198,10 +196,8 @@ describe('BrowserNotificationService', () => {
         'online'
       );
 
-      expect(mockToast).toHaveBeenCalledWith(
-        expect.objectContaining({
-          description: 'Web Server 서버가 복구되었습니다',
-        })
+      expect(mockToast.success).toHaveBeenCalledWith(
+        expect.stringContaining('Web Server 서버가 복구되었습니다')
       );
     });
 

@@ -44,8 +44,11 @@ describe('DashboardClient interactive shell loading', () => {
       useSearchParams: () => new URLSearchParams('serverId=web-nginx-dc1-01'),
     }));
 
-    vi.doMock('@/hooks/use-toast', () => ({
-      useToast: () => ({ toast: vi.fn() }),
+    vi.doMock('react-hot-toast', () => ({
+      default: Object.assign(vi.fn(), {
+        error: vi.fn(),
+        success: vi.fn(),
+      }),
     }));
 
     vi.doMock('@/hooks/useUserPermissions', () => ({

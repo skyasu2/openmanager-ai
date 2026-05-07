@@ -9,11 +9,11 @@
 import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import type { DashboardView } from '@/components/dashboard/types/dashboard-view.types';
 import AuthLoadingUI from '@/components/shared/AuthLoadingUI';
 import UnauthorizedAccessUI from '@/components/shared/UnauthorizedAccessUI';
 import { isGuestFullAccessEnabled } from '@/config/guestMode';
-import { useToast } from '@/hooks/use-toast';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { LOGIN_POLICY_COPY } from '@/lib/auth/login-policy-copy';
 import type {
@@ -69,7 +69,6 @@ function DashboardPageContent({
   });
 
   const router = useRouter();
-  const { toast } = useToast();
   const permissions = useUserPermissions();
 
   useEffect(() => {
@@ -105,11 +104,9 @@ function DashboardPageContent({
       (permissions.userType === 'guest' || permissions.userType === 'github')
     ) {
       setAuthLoading(false);
-      toast({
-        variant: 'destructive',
-        title: '접근 권한 없음',
-        description: `대시보드 접근 권한이 없습니다. ${LOGIN_POLICY_COPY.adminPinAuthText} 또는 ${LOGIN_POLICY_COPY.authPrompt}`,
-      });
+      toast.error(
+        `접근 권한 없음\n대시보드 접근 권한이 없습니다. ${LOGIN_POLICY_COPY.adminPinAuthText} 또는 ${LOGIN_POLICY_COPY.authPrompt}`
+      );
       router.push('/');
       return;
     }
@@ -117,7 +114,7 @@ function DashboardPageContent({
     if (canAccess) {
       setAuthLoading(false);
     }
-  }, [isMounted, permissions, router, testModeDetected, toast]);
+  }, [isMounted, permissions, router, testModeDetected]);
 
   const isTestEnvironment = testModeDetected;
   const isGuestFullAccess = isGuestFullAccessEnabled();

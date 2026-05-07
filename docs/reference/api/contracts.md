@@ -28,7 +28,6 @@
 | Path | Method | 현재 문서 상태 | 핵심 갭 |
 |---|---|---|---|
 | `/api/health` | GET | GET/HEAD 기본 동작, `simple`/`service` 질의, 200/503/캐시 헤더 문서화됨 | 현재 파악된 미해결 갭 없음 |
-| `/api/ai/ask` | GET, POST | `/api/ai/supervisor/stream/v2` wrapper-only facade로 route test 존재 | 별도 OpenAPI 항목은 선택 |
 | `/api/ai/artifact-intent` | POST | artifact intent local/LLM-gated classifier route test 존재 | OpenAPI 반영은 artifact schema registry 작업 시 검토 |
 | `/api/ai/jobs` | GET, POST | 인증/레이트리밋/세션·limit 파라미터/상태코드(201/400/401/500/503/429) 문서화됨 | `limit` 파싱 정합성은 문서 1:1 기준 적용 완료 |
 | `/api/ai/jobs/{id}` | GET, DELETE | 경로 파라미터, 상태코드(200/400/404/500/401), `X-Job-Status`, 캐시 헤더 정합 | 현재 문서 상태와 라우트 동작 모두 일치 |
