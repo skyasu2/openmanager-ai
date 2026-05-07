@@ -1,7 +1,11 @@
 'use client';
 
 import type { CartesianMarkerProps } from '@nivo/core';
-import type { LineSvgLayer, LineSvgProps } from '@nivo/line';
+import type {
+  LineCustomSvgLayerProps,
+  LineSvgLayer,
+  LineSvgProps,
+} from '@nivo/line';
 import { ResponsiveLine } from '@nivo/line';
 import { memo, useMemo } from 'react';
 import { ChartErrorBoundary } from '@/components/error/ChartErrorBoundary';
@@ -130,6 +134,51 @@ function createAnomalyLayer(
   anomalies: AnomalyDataPoint[] | undefined,
   showAnomalies: boolean
 ): LineSvgLayer<NivoMetricSeries> {
+  type XScale = LineCustomSvgLayerProps<NivoMetricSeries>['xScale'];
+  type DomainAwareScale = XScale & { domain?: () => unknown[] };
+
+  const resolveX = (xScale: XScale, timestamp: string): number | null => {
+    const direct = xScale(timestamp);
+    if (Number.isFinite(direct)) return direct;
+
+    const domain =
+      typeof (xScale as DomainAwareScale).domain === 'function'
+        ? ((xScale as DomainAwareScale).domain?.() ?? [])
+        : [];
+    const targetTime = Date.parse(timestamp);
+    if (!Number.isFinite(targetTime) || domain.length === 0) return null;
+
+    const candidates = domain
+      .map((value) => {
+        const domainValue = String(value);
+        return {
+          time: Date.parse(domainValue),
+          x: xScale(domainValue),
+        };
+      })
+      .filter(
+        (candidate) =>
+          Number.isFinite(candidate.time) && Number.isFinite(candidate.x)
+      )
+      .sort((a, b) => a.time - b.time);
+
+    const first = candidates[0];
+    const last = candidates[candidates.length - 1];
+    if (!first || !last || targetTime < first.time || targetTime > last.time) {
+      return null;
+    }
+
+    const before = [...candidates]
+      .reverse()
+      .find((candidate) => candidate.time <= targetTime);
+    const after = candidates.find((candidate) => candidate.time >= targetTime);
+    if (!before || !after) return null;
+    if (before.time === after.time) return before.x;
+
+    const ratio = (targetTime - before.time) / (after.time - before.time);
+    return before.x + (after.x - before.x) * ratio;
+  };
+
   const AnomalyLayer: LineSvgLayer<NivoMetricSeries> = ({
     innerHeight,
     xScale,
@@ -139,16 +188,17 @@ function createAnomalyLayer(
     return (
       <g data-testid="nivo-anomaly-layer">
         {anomalies.map((anomaly, index) => {
-          const start = xScale(anomaly.startTime);
-          const end = xScale(anomaly.endTime);
-          if (!Number.isFinite(start) || !Number.isFinite(end)) return null;
+          const start = resolveX(xScale, anomaly.startTime);
+          const end = resolveX(xScale, anomaly.endTime);
+          if (start === null || end === null) return null;
 
           const x = Math.min(start, end);
-          const width = Math.max(Math.abs(end - start), 1);
+          const width = Math.max(Math.abs(end - start), 4);
 
           return (
             <rect
               key={`${anomaly.startTime}-${anomaly.endTime}-${index}`}
+              data-testid={`nivo-anomaly-rect-${index}`}
               x={x}
               y={0}
               width={width}
@@ -350,7 +400,6 @@ function NivoTimeSeriesChartInner({
         enableGridX={false}
         enableGridY
         enableSlices="x"
-        useMesh
         layers={layers}
         markers={markers}
         legends={
@@ -392,7 +441,10 @@ function NivoTimeSeriesChartInner({
           } satisfies LineSvgProps<NivoMetricSeries>['theme']
         }
         sliceTooltip={({ slice }) => (
-          <div className="rounded-lg border border-gray-200 bg-white p-3 shadow-lg">
+          <div
+            className="rounded-lg border border-gray-200 bg-white p-3 shadow-lg"
+            data-testid="nivo-slice-tooltip"
+          >
             <p className="mb-2 text-xs text-gray-500">
               {formatTime(String(slice.points[0]?.data.x ?? ''))}
             </p>

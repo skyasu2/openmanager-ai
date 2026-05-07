@@ -50,12 +50,24 @@ const legacyResponse = (opts?: { metric?: string }) => ({
   },
 });
 
-const serverHistoryResponse = () => ({
+const serverHistoryResponse = (opts?: {
+  resolvedAt?: string | null;
+  dataPoints?: Array<{
+    timestamp: string;
+    metrics: {
+      cpu_usage?: number;
+      memory_usage?: number;
+      disk_usage?: number;
+      network_in?: number;
+      network_out?: number;
+    };
+  }>;
+}) => ({
   success: true,
   data: {
     server_info: { id: 'server-001', hostname: 'web-01' },
     history: {
-      data_points: [
+      data_points: opts?.dataPoints ?? [
         {
           timestamp: '2026-01-01T00:00:00Z',
           metrics: {
@@ -74,7 +86,10 @@ const serverHistoryResponse = () => ({
         severity: 'high',
         message: 'CPU 과부하',
         firedAt: '2026-01-01T00:05:00Z',
-        resolvedAt: '2026-01-01T00:15:00Z',
+        resolvedAt:
+          opts && 'resolvedAt' in opts
+            ? opts.resolvedAt
+            : '2026-01-01T00:15:00Z',
       },
     ],
   },
@@ -166,6 +181,36 @@ describe('useTimeSeriesMetrics', () => {
       await waitFor(() => expect(result.current.data).not.toBeNull());
       expect(result.current.data?.anomalies).toHaveLength(1);
       expect(result.current.data?.anomalies?.[0].severity).toBe('high');
+    });
+
+    it('미해소 alert는 최신 history timestamp를 anomaly endTime으로 사용한다', async () => {
+      fetchSpy.mockResolvedValueOnce(
+        ok(
+          serverHistoryResponse({
+            resolvedAt: null,
+            dataPoints: [
+              {
+                timestamp: '2026-01-01T00:00:00Z',
+                metrics: { cpu_usage: 30 },
+              },
+              {
+                timestamp: '2026-01-01T00:10:00Z',
+                metrics: { cpu_usage: 65 },
+              },
+            ],
+          })
+        )
+      );
+
+      const { result } = renderHook(() =>
+        useTimeSeriesMetrics({ ...BASE_OPTS, includeAnomalies: true })
+      );
+
+      await waitFor(() => expect(result.current.data).not.toBeNull());
+      expect(result.current.data?.anomalies?.[0]).toMatchObject({
+        startTime: '2026-01-01T00:05:00Z',
+        endTime: '2026-01-01T00:10:00Z',
+      });
     });
 
     it('includeAnomalies=false 시 anomalies가 undefined다', async () => {
