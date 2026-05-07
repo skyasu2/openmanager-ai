@@ -1,7 +1,7 @@
-# Dead Code 정리 & Sentry 모니터링 활성화 계획
+# Dead Code 정리 & Sentry Cleanup 계획
 
 > Owner: project
-> Status: Approved
+> Status: In Progress
 > Doc type: How-to
 > Last reviewed: 2026-05-07
 > Canonical: reports/planning/dead-code-sentry-cleanup-plan.md
@@ -9,7 +9,14 @@
 
 ## 배경
 
-AI 피드백 기능 제거 분석 과정에서 같은 패턴(구현됐지만 실질적으로 동작하지 않거나 읽히지 않는 기능)의 dead code를 추가로 발견. 동시에 **Sentry가 코드상으로는 완벽히 설정됐지만 production DSN이 없어서 에러 수집이 전혀 안 되고 있음** 확인.
+AI 피드백 기능 제거 분석 과정에서 같은 패턴(구현됐지만 실질적으로 동작하지 않거나 읽히지 않는 기능)의 dead code를 추가로 발견했다.
+
+Sentry는 production 에러 수집 활성화가 아니라 **프로젝트에서 완전 제거**하는 방향으로 확정했다. 이 문서는 Sentry cleanup 완료 evidence와 남은 dead code 제거 범위를 함께 추적한다.
+
+## 세션 경계
+
+- Sentry cleanup: 완료. 런타임 코드, dependency, env example, tunnel route 제거.
+- 후속 세션: Part A dead code 제거만 남음.
 
 ---
 
@@ -80,81 +87,44 @@ AI 피드백 기능 제거 분석 과정에서 같은 패턴(구현됐지만 실
 
 ---
 
-## Part B: Sentry 모니터링 활성화
+## Part B: Sentry cleanup — 완전 제거
 
-### 현재 상태 진단
+> **전략 변경**: 로컬 분석 opt-in도 효용 대비 복잡도가 높다고 판단해 Sentry를 프로젝트 실행 경로에서 완전히 제거한다.
+
+### 정리 대상
 
 | 항목 | 상태 |
 |------|------|
-| 코드 설정 (`instrumentation.ts`, `instrumentation-client.ts`) | ✅ 완벽히 구현됨 |
-| `withSentryConfig` (`next.config.mjs`) | ✅ 적용됨 |
-| `/api/sentry-tunnel` 라우트 | ✅ 구현됨 |
-| **`NEXT_PUBLIC_SENTRY_DSN` (Vercel production)** | ❌ **미설정 → 수집 완전 비활성** |
-| Sentry 프로젝트 (`org: om-4g`, `project: javascript-nextjs`) | 존재 확인 필요 |
+| `@sentry/nextjs` dependency | 제거 |
+| `instrumentation-client.ts` | 제거 |
+| `instrumentation.ts` Sentry init / `onRequestError` | 제거 |
+| `next.config.mjs` `withSentryConfig` / tunnel 설정 | 제거 |
+| `/api/sentry-tunnel` route + test | 제거 |
+| `src/lib/observability/local-sentry-*` helpers | 제거 |
+| error boundary / AI supervisor capture 호출 | 제거 |
+| `.env.example` Sentry 변수 | 제거 |
 
-**결론**: 코드는 완벽하나 DSN 환경변수 누락으로 production에서 에러가 단 하나도 Sentry로 전송되지 않고 있음.
+### Production 에러 수집 정책
 
----
+현재 코드는 Vercel production에서 Sentry를 사용하지 않는다.
 
-### 현재 코드 설정 요약 (무료 티어 최적화 상태)
+에러 모니터링이 필요할 경우 아래 대안을 사용한다:
 
-```
-Client (instrumentation-client.ts):
-  tracesSampleRate: 0.05       ← 트랜잭션 5%만 샘플링
-  replaysSessionSampleRate: 0  ← Session Replay 비활성 (비용 큰 기능)
-  replaysOnErrorSampleRate: 0  ← 에러 시 Replay도 비활성
-  tunnel: '/api/sentry-tunnel' ← CSP 우회 터널 사용
-
-Server (instrumentation.ts):
-  tracesSampleRate: 0.01       ← 서버 트랜잭션 1%만 샘플링
-
-Build (next.config.mjs):
-  sourcemaps.disable: true     ← 소스맵 업로드 비활성 (저장소 용량 절약)
-  automaticVercelMonitors: false ← Vercel Cron 모니터링 비활성
-  disableLogger: true          ← Sentry logger 제거 (번들 크기 절약)
-```
-
----
-
-### B-1. 활성화 작업
-
-**Step 1**: Sentry 대시보드에서 DSN 확인
-- `https://sentry.io` → 프로젝트 `javascript-nextjs` (org: `om-4g`) → Settings → DSN 복사
-
-**Step 2**: Vercel production 환경변수 추가
-```bash
-# NEXT_PUBLIC_SENTRY_DSN: 클라이언트·서버 공통 사용
-echo "https://xxxxx@sentry.io/xxxxxx" | vercel env add NEXT_PUBLIC_SENTRY_DSN production --force
-```
-
-**Step 3**: 재배포 후 검증
-```bash
-# 의도적 에러를 유발하거나 Sentry test 이벤트 전송
-# Sentry 대시보드에서 Issues 탭에 이벤트 수신 확인
-curl https://openmanager-ai.vercel.app/api/health
-```
-
----
-
-### B-2. 확인 필요 사항 (작업 전 판단)
-
-- [ ] **Sentry 무료 플랜 이벤트 한도**: 월 5,000 errors / 10,000 transactions. `tracesSampleRate 0.05`면 트랜잭션은 제한 없이 통과할 가능성 낮음. 실제 트래픽 규모 감안하여 충분한지 확인
-- [ ] **`SENTRY_DSN` vs `NEXT_PUBLIC_SENTRY_DSN` 이중 설정**: 서버 전용(`SENTRY_DSN`)과 클라이언트 공개(`NEXT_PUBLIC_SENTRY_DSN`)를 같은 값으로 둘다 설정할지 하나만 설정할지 결정. 현재 코드는 `NEXT_PUBLIC_SENTRY_DSN` 하나로 서버·클라이언트 모두 커버 가능
-- [ ] **소스맵 없이 에러 추적 가능성**: `sourcemaps.disable: true`이므로 에러 스택트레이스가 minified 코드 기준으로 나옴. 로컬 개발 도구로 쓰는 상황에서 이 수준이 충분한지 판단. 불충분하면 개발 빌드에서만 소스맵 업로드 허용
-- [ ] **Sentry 프로젝트 실제 존재 여부**: `org: om-4g`, `project: javascript-nextjs` 가 Sentry 대시보드에 실제로 있는지 확인 (없으면 프로젝트 생성 필요)
-- [ ] **tunnel route 필요성**: CSP 정책상 sentry.io 직접 호출이 차단되는지 확인. 불필요하면 tunnel 제거로 Vercel function 호출 절약
+- **Vercel 기본 로깅**: 런타임 에러는 Vercel Dashboard → Functions 탭에서 확인 가능
+- **Pino 로거**: `src/lib/logging/` — 서버 로그는 Vercel log drain으로 수집 가능
 
 ---
 
 ## 작업 순서
 
-1. **B-2 확인 사항** 먼저 체크 (Sentry 대시보드 접속해서 프로젝트/DSN 확인)
-2. **B-1** Sentry DSN 환경변수 등록 + 재배포 → 에러 수신 확인
-3. **A-1~A-5** dead code 제거 (Codex 위임 가능)
+1. **Part B Sentry cleanup** — 완료.
+2. **A-1~A-5 dead code 제거** — 남은 Active Task.
 
 ## 완료 기준
 
-- [ ] Sentry production에서 이벤트 수신 확인 (Issues 또는 Performance 탭)
+- [x] Sentry cleanup 결과가 Part B에 evidence로 반영됨
+- [x] production Sentry 수집 경로가 제거됐음이 문서와 코드에서 일치
+- [x] Sentry 소스맵/tunnel 검토가 별도 TODO Backlog가 아니라 Part B 안에서 종결됨
 - [ ] `/api/ai/ask` 분기 제거 후 AI 스트림 정상 동작
 - [ ] `type-check`, `lint`, `test:quick`, `knip:ci` 전부 통과
 - [ ] `useUnifiedAdminStore`, `useAISidebarStore` 미사용 액션 제거 후 타입 오류 없음

@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react';
 import { logger } from '@/lib/logging';
-import { captureLocalSentryException } from '@/lib/observability/local-sentry-client';
 
 // biome-ignore lint/suspicious/noShadowRestrictedNames: Next.js error page convention requires 'error' prop name
 export default function Error({
@@ -15,9 +14,6 @@ export default function Error({
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
       logger.error(error);
-      captureLocalSentryException(error, {
-        tags: { boundary: 'root', digest: error.digest },
-      });
     }
   }, [error]);
 

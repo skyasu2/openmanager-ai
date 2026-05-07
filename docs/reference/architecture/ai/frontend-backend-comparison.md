@@ -180,7 +180,7 @@ graph LR
 |------|:--------:|:-------:|:----:|
 | AI 품질 평가 | `reports/qa` targeted run 기록 | Langfuse trace 참고 + 코드/프롬프트 재검증 | feedback endpoint 제거 완료 |
 | AI 추적 | `traceparent`/timing header 전달 | Langfuse Tracing + Pino 상관관계 | 양쪽 완벽 |
-| 에러 모니터링 | Sentry (AI context 태그 포함) | Pino 구조화 로깅 + Cloud Logging | 양쪽 완벽 |
+| 에러 모니터링 | 에러 바운더리 + Vercel 로그 + Playwright evidence | Pino 구조화 로깅 + Cloud Logging | 양쪽 완벽 |
 | 비용 모니터링 | - | Free Tier 자동 차단 (90%) | Backend 전담 |
 
 > 관측 계약 메모: 현재 문서에서 말하는 OpenTelemetry는 `traceparent` 기반 W3C Trace Context 전파를 뜻합니다. OTLP exporter 기반 full distributed tracing/spans stitching까지 구현됐다고 가정하지 않습니다.
@@ -313,7 +313,7 @@ Quad-Provider Fallback Chain:
 | B1 | Rate Limiting | `middleware/rate-limiter.ts` 추가 (Sliding Window) | ✅ |
 | B2 | CB Orchestrator | `orchestrator-execution.ts`에 CB 사전 체크 + failure 기록 | ✅ |
 | B3 | 도구 파일 분할 | `server-metrics/` (4파일), `reporter-tools/` (3파일) 모듈 분할 | ✅ |
-| F1 | Sentry AI Context | `error-handler.ts`에 `ai_error_type`, `traceId` scope 태그 추가 | ✅ |
+| F1 | AI 에러 컨텍스트 | `error-handler.ts`에 `ai_error_type`, `traceId` 로그 컨텍스트 추가 | ✅ |
 | F2 | 유틸리티 추출 | `useHybridAIQuery.ts`에서 `hybrid-query-utils.ts` 분리 | ✅ (부분) |
 
 ### 추가 해결 (2건, v8.7.1)
@@ -328,7 +328,7 @@ Quad-Provider Fallback Chain:
 | # | 영역 | 현재 상태 | 개선 방향 | 우선순위 |
 |---|------|----------|----------|:--------:|
 | F2-r | useHybridAIQuery 추가 분할 | 유틸 추출 후 ~844줄 | 쿼리 분류 로직 등 추가 추출로 ~500줄 목표 | Low |
-| B4 | Sentry Backend 통합 | Cloud Run은 Pino만 사용 | Cloud Run에도 Sentry 연동 검토 (선택적) | Low |
+| B4 | Backend 에러 관측 | Cloud Run은 Pino + Cloud Logging 사용 | 현재 구조 유지 | Done |
 
 ---
 
@@ -355,9 +355,9 @@ Quad-Provider Fallback Chain:
 OpenManager AI v8.11.97 기준 AI Assistant는 **Frontend-Backend 양쪽 모두 높은 완성도**를 보입니다.
 
 - **Backend (95%)**: Modular Split Architecture, Quad-Provider 폴백, 전문 도구 세트, Pre-computed Data, Circuit Breaker (Orchestrator 포함), Rate Limiting 등 AI 처리의 핵심이 모두 구현됨
-- **Frontend (93%)**: Hybrid Query Router, Resumable Streaming, Clarification Dialog, 52패턴 보안 방어, Memory+Redis 다층 캐시, Sentry AI Context 태깅 등 사용자 경험 관련 기능이 잘 구현됨
+- **Frontend (93%)**: Hybrid Query Router, Resumable Streaming, Clarification Dialog, 52패턴 보안 방어, Memory+Redis 다층 캐시, AI 에러 컨텍스트 로그 등 사용자 경험 관련 기능이 잘 구현됨
 
-**양쪽 완성도가 거의 동등합니다.** 초기 분석 이후 Rate Limiting, CB Orchestrator 통합, Sentry AI Context, 대용량 파일 분할, `/api/ai/ask` wrapper facade, planner shadow metadata, deterministic recovery/formatting guard가 누적되어 종합 94% 수준을 유지합니다. 잔여 과제는 `useHybridAIQuery.ts` 추가 분할, route catalog 정리, Cloud Run Sentry 연동 검토(선택적)입니다.
+**양쪽 완성도가 거의 동등합니다.** 초기 분석 이후 Rate Limiting, CB Orchestrator 통합, AI 에러 컨텍스트 로그, 대용량 파일 분할, `/api/ai/ask` wrapper facade, planner shadow metadata, deterministic recovery/formatting guard가 누적되어 종합 94% 수준을 유지합니다. 잔여 과제는 `useHybridAIQuery.ts` 추가 분할과 route catalog 정리입니다.
 
 ### 코드 규모 비교
 
@@ -371,7 +371,7 @@ OpenManager AI v8.11.97 기준 AI Assistant는 **Frontend-Backend 양쪽 모두 
 ### 조치 권장 사항 (Low 우선순위)
 
 1. **useHybridAIQuery 추가 분할**: 유틸 추출 후 ~844줄, 쿼리 분류 로직 추가 추출로 ~500줄 목표
-2. **Cloud Run Sentry 연동 (선택)**: 현재 Pino 구조화 로깅으로 충분하나, Sentry 통합 시 Frontend와 에러 추적 통합 가능
+2. **route catalog 정리**: API route 목록과 테스트 카탈로그를 최신 구조에 맞게 유지
 
 현재 아키텍처는 Free Tier 범위 내에서 안정적으로 운영 가능하며, High 우선순위 항목은 모두 해결 완료되었습니다.
 
@@ -379,4 +379,4 @@ OpenManager AI v8.11.97 기준 AI Assistant는 **Frontend-Backend 양쪽 모두 
 
 _Last Updated: 2026-05-04 (as-built architecture index and route facade refresh)_
 _Analysis Method: 코드베이스 실측 (wc -l, symbol analysis)_
-_Corrections: 캐시(Memory+Redis), Sentry(AI context), Provider순서(Cerebras→Mistral→Groq→Gemini), 줄 수 오류 수정_
+_Corrections: 캐시(Memory+Redis), AI error context, Provider순서(Cerebras→Mistral→Groq→Gemini), 줄 수 오류 수정_

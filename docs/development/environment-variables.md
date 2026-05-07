@@ -74,7 +74,7 @@ CI_DOCKER_INSTALL_MODE=prefer-local
 
 이 값들은 앱 런타임 설정이 아니라 개발 워크플로우/검증 정책용입니다.
 
-> 추가 인증/게스트/Redis/Sentry 변수는 아래 Part 1 표를 기준으로 확장합니다.
+> 추가 인증/게스트/Redis 변수는 아래 Part 1 표를 기준으로 확장합니다.
 
 ---
 
@@ -197,16 +197,6 @@ curl -X POST https://openmanager-ai.vercel.app/api/auth/guest-login \
 | `DATABASE_ENABLE_MOCK_MODE` | DB 모의 모드 | `true` |
 | `DATABASE_CONNECTION_TIMEOUT` | DB 연결 타임아웃 (ms) | `10000` |
 | `DATABASE_QUERY_TIMEOUT` | DB 쿼리 타임아웃 (ms) | `30000` |
-
-### 선택 환경변수 — Sentry
-
-| 변수 | 용도 | 기본값 |
-|------|------|--------|
-| `SENTRY_DSN` | Server-side DSN | fallback DSN 내장 |
-| `NEXT_PUBLIC_SENTRY_DSN` | Client-side DSN | fallback DSN 내장 |
-| `SENTRY_AUTH_TOKEN` | 소스맵 업로드 (비활성) | — |
-| `SENTRY_ORG` | 조직명 | `om-4g` |
-| `SENTRY_PROJECT` | 프로젝트명 | `javascript-nextjs` |
 
 ### 선택 환경변수 — Redis
 
@@ -424,7 +414,7 @@ CI에서 `check-hardcoded-secrets.js` 스크립트가 자동 실행되어 소스
 - [프로젝트 셋업](./project-setup.md) - `.env.local` 초기 설정
 - [CI/CD 파이프라인](./ci-cd.md) - GitHub Secrets 사용
 - [Docker 가이드](./docker.md) - Cloud Run 환경변수 주입
-- [Observability 가이드](../guides/observability.md) - Langfuse/Sentry 환경변수 상세
+- [Observability 가이드](../guides/observability.md) - Langfuse 환경변수 상세
 - [보안 아키텍처](../reference/architecture/infrastructure/security.md)
 
 _Last Updated: 2026-02-22_

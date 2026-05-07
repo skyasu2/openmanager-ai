@@ -94,20 +94,6 @@ export const CLOUD_PLATFORM_TECH_STACK: TechItem[] = [
     type: 'commercial',
   },
   {
-    name: 'Sentry',
-    category: 'deployment',
-    importance: 'medium',
-    description:
-      '프로덕션 에러 모니터링 및 성능 추적 플랫폼. 크래시 리포트, 성능 병목 탐지, Release Health 추적 제공',
-    implementation:
-      '→ 에러 발생 시 스택 트레이스, 브레드크럼 자동 수집. Next.js Client/Server/Edge 전체 커버',
-    version: '10.39',
-    status: 'active',
-    icon: '🛡️',
-    tags: ['Error-Tracking', 'Performance', 'Monitoring'],
-    type: 'commercial',
-  },
-  {
     name: 'Pino',
     category: 'deployment',
     importance: 'medium',

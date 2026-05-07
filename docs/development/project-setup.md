@@ -146,7 +146,7 @@ LOCAL_DOCKER_SECRET=dev-only-secret
 - 레거시 fallback: `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - 서버 전용 로그인 감사 로그: `SUPABASE_SERVICE_ROLE_KEY`
 - 게스트 접근/로그인 PIN
-- Redis/Sentry
+- Redis/Langfuse
 - 개발 환경의 `AI_ENGINE_MODE`, `USE_LOCAL_DOCKER`, `LOCAL_DOCKER_*`
 - Cloud Run AI Engine 내부 `.env` 및 Secret Manager 매핑
 

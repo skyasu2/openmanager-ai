@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react';
 import { logger } from '@/lib/logging';
-import { captureLocalSentryException } from '@/lib/observability/local-sentry-client';
 
 export default function AuthError({
   error,
@@ -13,9 +12,6 @@ export default function AuthError({
 }) {
   useEffect(() => {
     logger.error(error);
-    captureLocalSentryException(error, {
-      tags: { boundary: 'auth', digest: error.digest },
-    });
   }, [error]);
 
   return (

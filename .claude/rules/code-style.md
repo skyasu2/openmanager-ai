@@ -192,7 +192,7 @@ describe('LoginForm', () => {
 
 ### Recommended Stack
 ```
-에러 발생 → Pino (로깅) → Sentry (모니터링) → Global Error Boundary (UI)
+에러 발생 → Pino/Vercel Logs (로깅) → Global Error Boundary (UI)
 ```
 
 ---

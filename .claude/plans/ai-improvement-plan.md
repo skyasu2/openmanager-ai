@@ -390,7 +390,7 @@ const result = streamText({
   // AI SDK v6 권장: onError 콜백
   onError: (error) => {
     console.error('[Supervisor] Stream error:', error);
-    // Sentry 또는 로깅 서비스에 전송
+    // 구조화 로깅 서비스에 전송
   },
 
   // 기존 onStepFinish 유지

@@ -37,7 +37,7 @@
 | F4 | AI 전체화면 | 채팅+AutoReport+Monitoring | 3/3 | 3/3 | Done |
 | F5 | 상태관리 Zustand | persist+devtools+useShallow | 2/2 전역 스토어 | 2/2 | Done |
 | F6 | 반응형 레이아웃 | 데스크탑+태블릿+모바일 깨짐 | 0건 | 0건 | Done |
-| F7 | 에러 바운더리 | 글로벌 에러 UI + Sentry | 적용 | 적용 | Done |
+| F7 | 에러 바운더리 | 글로벌 에러 UI + 구조화 로깅 | 적용 | 적용 | Done |
 | F8 | OAuth 인증 플로우 | 로그인→대시보드→로그아웃 | 정상 | 정상 | Done |
 | F9 | Guest 모드 | 비로그인 데모 접근 | 정상 | 정상 | Done |
 | F10 | 접근성(A11y) | ARIA+키보드+cursor:pointer | 적용 | 적용 | Done |

@@ -16,14 +16,14 @@
 
 > 계약 문서: [API Contracts](./contracts.md)
 
-총 엔드포인트: **33**
+총 엔드포인트: **31**
 
 ## Summary by Group
 
 | Group | Count |
 |---|---:|
 | admin | 1 |
-| ai | 13 |
+| ai | 12 |
 | auth | 2 |
 | csrf-token | 1 |
 | database | 1 |
@@ -33,7 +33,6 @@
 | monitoring | 1 |
 | og | 1 |
 | security | 1 |
-| sentry-tunnel | 1 |
 | servers | 4 |
 | servers-unified | 1 |
 | system | 1 |
@@ -119,12 +118,6 @@
 | Endpoint | Methods | Source |
 |---|---|---|
 | `/api/security/csp-report` | `GET, POST, OPTIONS` | `src/app/api/security/csp-report/route.ts` |
-
-### /api/sentry-tunnel
-
-| Endpoint | Methods | Source |
-|---|---|---|
-| `/api/sentry-tunnel` | `GET, POST` | `src/app/api/sentry-tunnel/route.ts` |
 
 ### /api/servers
 

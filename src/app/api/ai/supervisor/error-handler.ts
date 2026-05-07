@@ -10,7 +10,6 @@
 import { NextResponse } from 'next/server';
 import { getObservabilityConfig } from '@/config/ai-proxy.config';
 import { logger } from '@/lib/logging';
-import { captureLocalSentryException } from '@/lib/observability/local-sentry-server';
 import { getTraceId } from '@/lib/tracing/async-context';
 
 /**
@@ -22,25 +21,6 @@ export function handleSupervisorError(error: unknown): NextResponse {
   const traceId = getTraceId();
 
   logger.error('❌ AI 스트리밍 처리 실패:', error);
-
-  captureLocalSentryException(error, (scope) => {
-    scope.setTag('component', 'ai-supervisor');
-    if (traceId) scope.setTag('traceId', traceId);
-    if (error instanceof Error) {
-      const isCircuitOpen = error.message.includes('일시적으로 중단되었습니다');
-      const isTimeout =
-        error.message.includes('timeout') || error.message.includes('TIMEOUT');
-      scope.setTag(
-        'ai_error_type',
-        isCircuitOpen ? 'circuit_open' : isTimeout ? 'timeout' : 'general'
-      );
-    }
-    scope.setLevel(
-      error instanceof Error && error.message.includes('timeout')
-        ? 'warning'
-        : 'error'
-    );
-  });
 
   // 공통 헤더 생성
   const baseHeaders: Record<string, string> = {};

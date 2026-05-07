@@ -1119,7 +1119,7 @@ POST /api/ai/jobs
 | Dimension | Score | Evidence |
 |-----------|:-----:|----------|
 | Resilience | A+ | CB + capability gate + structured/tool route 분리 fallback |
-| Observability | A | Langfuse + Sentry + Pino + W3C traceparent 전파. 단, OTLP exporter 기반 full span stitching은 아직 아님 |
+| Observability | A | Langfuse + Pino + Cloud Logging + W3C traceparent 전파. 단, OTLP exporter 기반 full span stitching은 아직 아님 |
 | Security | A | 52-패턴 Injection 방어 + Zod + Rate Limit + 출력 필터링 |
 | Caching | A | legacy `/api/ai/supervisor` response cache와 `/stream/v2` Redis resumable state를 분리 운영, 엔드포인트별 TTL 차별화 |
 | Data Architecture | A | 144-slot O(1) Pre-computed State, ~100토큰 컨텍스트 |

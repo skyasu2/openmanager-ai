@@ -8,7 +8,6 @@
 import Link from 'next/link';
 import { useEffect, useMemo } from 'react';
 import { logger } from '@/lib/logging';
-import { captureLocalSentryException } from '@/lib/observability/local-sentry-client';
 import debug from '@/utils/debug';
 
 // 클라이언트 컴포넌트에서 안전하게 환경 감지
@@ -35,10 +34,6 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
 
   useEffect(() => {
     if (clientEnv.isProduction) {
-      captureLocalSentryException(error, {
-        tags: { boundary: 'global-error', digest: error.digest },
-      });
-
       const platform = clientEnv.isVercel ? 'vercel' : 'local';
 
       debug.error('[GLOBAL_ERROR]', {

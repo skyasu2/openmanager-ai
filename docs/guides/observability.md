@@ -1,34 +1,35 @@
-# Observability 가이드 (Langfuse + Sentry)
+# Observability 가이드 (Langfuse 중심)
 
-> LLM 트레이싱(Langfuse)과 에러 모니터링(Sentry) 설정, 점검, 트러블슈팅
+> LLM 트레이싱(Langfuse)과 기본 런타임 로그 점검 가이드
 > Owner: documentation
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-04-04
+> Last reviewed: 2026-05-07
 > Canonical: docs/guides/observability.md
-> Tags: observability,langfuse,sentry,monitoring
+> Tags: observability,langfuse,monitoring
 
 ## 개요
 
-이 프로젝트는 두 가지 Observability 도구를 사용합니다:
+이 프로젝트는 배포된 애플리케이션 관측에 Sentry를 사용하지 않습니다.
+LLM 호출 트레이싱은 Langfuse, 일반 런타임 오류 확인은 Vercel/Cloud Run 로그와 프로젝트 logger를 사용합니다.
 
 | 도구 | 용도 | 적용 범위 | 플랜 |
 |------|------|----------|------|
 | **Langfuse** | LLM 호출 트레이싱, 토큰 사용량 | Cloud Run AI Engine | Hobby (무료, 50K events/월) |
-| **Sentry** | 런타임 에러 캡처, 성능 모니터링 | Vercel Frontend (+ Cloud Run) | Free (50K events/월) |
+| **Vercel Logs** | Frontend/API 런타임 오류 확인 | Vercel Frontend | Vercel |
+| **Cloud Logging/Pino** | AI Engine 서버 로그 | Cloud Run AI Engine | GCP |
 
 ```
 ┌──────────────────────────────────────────────────────┐
-│  사용자 브라우저                                       │
-│  ├─ Sentry Client SDK → /api/sentry-tunnel → Sentry │
-│  └─ AI 채팅 요청                                      │
-│       ↓                                              │
-│  Vercel (Next.js)                                    │
-│  ├─ Sentry Server SDK → Sentry (에러/성능)            │
-│  └─ X-Trace-Id 헤더 → Cloud Run                      │
-│       ↓                                              │
-│  Cloud Run (AI Engine)                               │
-│  └─ Langfuse SDK → Langfuse (LLM 트레이싱)            │
+│  사용자 브라우저                                      │
+│  └─ AI 채팅 요청                                     │
+│       ↓                                             │
+│  Vercel (Next.js)                                   │
+│  └─ X-Trace-Id 헤더 → Cloud Run                     │
+│       ↓                                             │
+│  Cloud Run (AI Engine)                              │
+│  ├─ Pino/Cloud Logging (서버 로그)                   │
+│  └─ Langfuse SDK → Langfuse (LLM 트레이싱)           │
 └──────────────────────────────────────────────────────┘
 ```
 
@@ -233,127 +234,17 @@ OpenManager 권장 baseline:
 
 ---
 
-## Part 2: Sentry (에러 모니터링)
+## Part 2: Frontend/API 런타임 오류 확인
 
-### 2.1 아키텍처
+Sentry는 2026-05-07 cleanup에서 제거되었습니다.
+Frontend/API 런타임 오류는 아래 경로로 확인합니다:
 
-```
-브라우저 에러 → Sentry Client SDK
-                  ↓
-              /api/sentry-tunnel (애드블록 우회 프록시)
-                  ↓
-              Sentry EU (ingest.de.sentry.io)
-                  ↑
-              Sentry Server SDK ← 서버 에러
-```
+- Vercel Dashboard → Project → Logs/Functions
+- Vercel deployment log와 GitLab tag pipeline smoke
+- `src/lib/logging` 기반 서버 로그
+- 브라우저 console/network와 Playwright QA evidence
 
-- **Organization**: `om-4g`
-- **Project**: `javascript-nextjs`
-- **Region**: EU (DE)
-- **SDK**: `@sentry/nextjs` v10.37
-
-### 2.2 환경변수
-
-```bash
-# .env.local (Vercel Frontend)
-SENTRY_DSN=https://xxx@xxx.ingest.de.sentry.io/xxx
-NEXT_PUBLIC_SENTRY_DSN=https://xxx@xxx.ingest.de.sentry.io/xxx  # 클라이언트용
-
-# 선택 (소스맵 업로드, 현재 비활성)
-SENTRY_AUTH_TOKEN=sntrys_xxx
-SENTRY_ORG=om-4g
-SENTRY_PROJECT=javascript-nextjs
-```
-
-> DSN이 설정되지 않으면 `instrumentation.ts`의 fallback DSN이 사용됩니다.
-
-### 2.3 점검 방법
-
-#### 방법 1: 상태 확인 API
-
-```bash
-# 로컬 (개발 환경 — Sentry 비활성 상태 확인)
-curl http://localhost:3000/api/debug/sentry-test?action=info
-
-# 프로덕션 (인증 필요)
-curl -H "x-api-key: $TEST_API_KEY" \
-  https://openmanager-vibe-v5-skyasus-projects.vercel.app/api/debug/sentry-test?action=info
-```
-
-응답 예시:
-```json
-{
-  "status": "ok",
-  "sentry": {
-    "enabled": true,
-    "dsn": "configured",
-    "dsnSource": "env",
-    "environment": "production",
-    "clientInitialized": true,
-    "sdkEnabled": true,
-    "sdkDsn": "set"
-  }
-}
-```
-
-점검 포인트:
-- `enabled: true` → 프로덕션에서 활성 (개발 환경은 항상 false)
-- `dsn: "configured"` → DSN 설정됨
-- `clientInitialized: true` → SDK 초기화 완료
-
-#### 방법 2: 테스트 에러 전송
-
-```bash
-# 테스트 에러 발생 → Sentry에 캡처되는지 확인
-curl -H "x-api-key: $TEST_API_KEY" \
-  "https://...vercel.app/api/debug/sentry-test?action=error"
-# → {"status":"error_sent","message":"Test error captured and sent to Sentry"}
-
-# 테스트 메시지 전송
-curl -H "x-api-key: $TEST_API_KEY" \
-  "https://...vercel.app/api/debug/sentry-test?action=message"
-# → {"status":"message_sent","message":"Test message sent to Sentry"}
-```
-
-전송 후 [sentry.io](https://sentry.io) 대시보드에서 이벤트 확인.
-
-#### 방법 3: Sentry 대시보드 (웹 UI)
-
-1. [sentry.io](https://sentry.io) 로그인
-2. Organization: `om-4g` → Project: `javascript-nextjs`
-3. **Issues** 탭: 에러 목록 (그룹화됨)
-4. **Performance** 탭: API 응답시간, 트랜잭션 추적
-5. **Stats** 탭: 이벤트 사용량, 쿼터 확인
-
-### 2.4 Free Tier 최적화 설정
-
-| 설정 | 값 | 이유 |
-|------|-----|------|
-| `tracesSampleRate` | 0.3 (30%) | 월 10K 트랜잭션 제한, ~70% 사용 |
-| `replaysSessionSampleRate` | 0 | Replay 비활성화 (이벤트 절약) |
-| `replaysOnErrorSampleRate` | 0 | Replay 비활성화 |
-| `sourcemaps.disable` | true | 소스맵 업로드 비활성화 |
-| `enabled` | production only | 개발/테스트 환경에서 이벤트 미전송 |
-
-### 2.5 에러 캡처 지점
-
-| 위치 | 파일 | 캡처 방식 |
-|------|------|----------|
-| 글로벌 에러 바운더리 | `src/app/error.tsx` | `Sentry.captureException()` + 컴포넌트 태그 |
-| Server/Edge 요청 에러 | `instrumentation.ts` | `onRequestError()` 자동 캡처 |
-| AI Supervisor 에러 | `src/app/api/ai/supervisor/error-handler.ts` | `Sentry.withScope()` + traceId 태그 |
-| Sentry Tunnel | `src/app/sentry-tunnel/route.ts` | 클라이언트 이벤트 프록시 |
-| 클라이언트 라우팅 | `instrumentation-client.ts` | `onRouterTransitionStart` |
-
-### 2.6 Sentry Tunnel (애드블록 우회)
-
-브라우저 애드블록커가 `sentry.io` 도메인을 차단할 수 있으므로, 자체 API 라우트(`/api/sentry-tunnel`)를 통해 이벤트를 프록시합니다:
-
-```
-브라우저 → /api/sentry-tunnel (자체 도메인) → sentry.io (실제 전송)
-```
-
-`next.config.mjs`에서 tunnel 경로가 설정되어 있으며, CSP 헤더에 Sentry CDN과 인제스트 도메인이 허용됩니다.
+Sentry 관련 API route, SDK, tunnel, source map upload 설정은 현재 실행 경로에 없습니다.
 
 ---
 
@@ -367,15 +258,9 @@ curl -H "X-API-Key: $SECRET" https://ai-engine-xxx.run.app/monitoring \
   | jq '.langfuse'
 # → usagePercent < 70 확인
 
-# 2. Sentry 상태 확인
-curl -H "x-api-key: $KEY" \
-  "https://...vercel.app/api/debug/sentry-test?action=info" \
-  | jq '.sentry'
-# → enabled: true, clientInitialized: true 확인
-
-# 3. 대시보드 확인
+# 2. 대시보드 확인
 # Langfuse: https://us.cloud.langfuse.com → Dashboard 탭
-# Sentry:   https://sentry.io → Stats 탭 → 쿼터 확인
+# Vercel:   Project → Logs/Functions 탭
 ```
 
 ### 배포 후 점검
@@ -390,10 +275,8 @@ curl -H "X-API-Key: $SECRET" \
   | jq '.count'
 # → 0보다 크면 정상
 
-# 3. Sentry 테스트 에러 전송
-curl -H "x-api-key: $KEY" \
-  "https://...vercel.app/api/debug/sentry-test?action=error"
-# → Sentry 대시보드에서 "Sentry Test Error" 확인
+# 3. Frontend/API 에러 로그 확인
+# Vercel Dashboard → Project → Logs/Functions
 ```
 
 ### 장애 대응
@@ -403,9 +286,6 @@ curl -H "x-api-key: $KEY" \
 | Langfuse 이벤트 안 보임 | 쿼터 초과 (자동 차단) | `/monitoring` → `isDisabled` 확인 |
 | Langfuse 이벤트 안 보임 | API 키 만료/오류 | `/monitoring/traces` → 에러 응답 확인 |
 | Langfuse 이벤트 안 보임 | Redis 복원 실패 | Cloud Run 로그에서 `[Langfuse]` 검색 |
-| Sentry 이벤트 안 보임 | 개발 환경 (정상) | `enabled: production only` 설계 |
-| Sentry 이벤트 안 보임 | DSN 미설정 | `/api/debug/sentry-test?action=info` → `dsn` 확인 |
-| Sentry 이벤트 안 보임 | 애드블록 + Tunnel 오류 | `/api/sentry-tunnel` 응답 확인 |
 | 쿼터 초과 경고 | 이벤트 폭증 | 샘플링 비율 조정 검토 |
 
 ---
@@ -422,20 +302,6 @@ curl -H "x-api-key: $KEY" \
 | `LANGFUSE_SAMPLE_RATE` | - | 기본값: `0.1` (10% 샘플링) |
 | `LANGFUSE_TEST_MODE` | - | `true` 설정 시 100% 트레이싱 + 즉시 flush |
 
-### Sentry (Vercel Frontend)
-
-| 변수 | 필수 | 설명 |
-|------|:----:|------|
-| `SENTRY_DSN` | - | Server-side DSN (fallback DSN 내장) |
-| `NEXT_PUBLIC_SENTRY_DSN` | - | Client-side DSN (fallback DSN 내장) |
-| `SENTRY_AUTH_TOKEN` | - | 소스맵 업로드용 (현재 비활성) |
-| `SENTRY_ORG` | - | 조직명: `om-4g` |
-| `SENTRY_PROJECT` | - | 프로젝트명: `javascript-nextjs` |
-
-> Sentry는 fallback DSN이 코드에 내장되어 있어 환경변수 없이도 동작합니다 (프로덕션 한정).
-
----
-
 ## 관련 문서
 
 - [시스템 아키텍처](../reference/architecture/system/system-architecture-current.md)
@@ -443,4 +309,4 @@ curl -H "x-api-key: $KEY" \
 - [배포 토폴로지](../reference/architecture/system/system-architecture-current.md#9-deployment-topology)
 - [트러블슈팅](../troubleshooting/common-issues.md)
 
-_Last Updated: 2026-04-04_
+_Last Updated: 2026-05-07_

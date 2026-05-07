@@ -6,13 +6,8 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const captureExceptionMock = vi.fn();
 const loggerErrorMock = vi.fn();
 const debugErrorMock = vi.fn();
-
-vi.mock('@sentry/nextjs', () => ({
-  captureException: (...args: unknown[]) => captureExceptionMock(...args),
-}));
 
 vi.mock('@/lib/logging', () => ({
   logger: { error: (...args: unknown[]) => loggerErrorMock(...args) },
@@ -40,7 +35,6 @@ describe('GlobalError', () => {
 
   beforeEach(() => {
     vi.resetModules();
-    captureExceptionMock.mockClear();
     loggerErrorMock.mockClear();
     debugErrorMock.mockClear();
   });
@@ -64,13 +58,12 @@ describe('GlobalError', () => {
       );
     });
 
-    expect(captureExceptionMock).not.toHaveBeenCalled();
     expect(loggerErrorMock).not.toHaveBeenCalled();
     expect(debugErrorMock).not.toHaveBeenCalled();
     expect(screen.getByText('개발 모드 에러 정보:')).toBeInTheDocument();
   });
 
-  it('프로덕션 환경에서는 외부 에러 리포팅과 reset 버튼이 동작해야 한다', async () => {
+  it('프로덕션 환경에서는 로컬 로깅과 reset 버튼이 동작해야 한다', async () => {
     const { default: GlobalError } = await import('./global-error');
     process.env.NODE_ENV = 'production';
     process.env.NEXT_PUBLIC_VERCEL_ENV = 'production';
@@ -87,12 +80,6 @@ describe('GlobalError', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '다시 시도' }));
 
-    expect(captureExceptionMock).toHaveBeenCalledWith(
-      expect.objectContaining({ message: 'prod crash' }),
-      expect.objectContaining({
-        tags: { boundary: 'global-error', digest: 'prod-123' },
-      })
-    );
     expect(loggerErrorMock).toHaveBeenCalled();
     expect(debugErrorMock).toHaveBeenCalled();
     expect(reset).toHaveBeenCalledTimes(1);

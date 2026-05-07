@@ -30,7 +30,7 @@
 - [E2E Testing Guide](./testing/e2e-testing-guide.md)
 
 ### Observability
-- [Langfuse + Sentry 가이드](./observability.md) - LLM 트레이싱, 에러 모니터링 설정/점검
+- [Observability 가이드](./observability.md) - LLM 트레이싱, 구조화 로그, 에러 확인 경로
 
 ### Standards
 - [Coding Standards](../development/coding-standards.md) (typescript-rules.md 통합됨)

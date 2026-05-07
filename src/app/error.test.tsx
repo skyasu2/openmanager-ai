@@ -6,12 +6,7 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const captureExceptionMock = vi.fn();
 const loggerErrorMock = vi.fn();
-
-vi.mock('@sentry/nextjs', () => ({
-  captureException: (...args: unknown[]) => captureExceptionMock(...args),
-}));
 
 vi.mock('@/lib/logging', () => ({
   logger: { error: (...args: unknown[]) => loggerErrorMock(...args) },
@@ -22,7 +17,6 @@ describe('AppErrorPage', () => {
 
   beforeEach(() => {
     vi.resetModules();
-    captureExceptionMock.mockClear();
     loggerErrorMock.mockClear();
   });
 
@@ -45,11 +39,10 @@ describe('AppErrorPage', () => {
       );
     });
 
-    expect(captureExceptionMock).not.toHaveBeenCalled();
     expect(loggerErrorMock).not.toHaveBeenCalled();
   });
 
-  it('프로덕션 환경에서는 외부 에러 리포팅과 reset 버튼이 동작해야 한다', async () => {
+  it('프로덕션 환경에서는 로컬 로깅과 reset 버튼이 동작해야 한다', async () => {
     const { default: ErrorPage } = await import('./error');
     process.env.NODE_ENV = 'production';
     const reset = vi.fn();
@@ -67,12 +60,6 @@ describe('AppErrorPage', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '다시 시도' }));
 
-    expect(captureExceptionMock).toHaveBeenCalledWith(
-      expect.objectContaining({ message: 'prod root crash' }),
-      expect.objectContaining({
-        tags: { boundary: 'root', digest: 'root-prod-123' },
-      })
-    );
     expect(loggerErrorMock).toHaveBeenCalledWith(
       expect.objectContaining({ message: 'prod root crash' })
     );

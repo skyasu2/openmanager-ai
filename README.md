@@ -169,13 +169,14 @@ graph TD
     end
 
     subgraph Observability [Monitoring Architecture]
-        Sentry["Sentry: Error Tracking"]:::monitoring
+        Langfuse["Langfuse: AI Trace"]:::monitoring
+        Logs["Vercel / Cloud Logging"]:::monitoring
         OTel["OpenTelemetry: Metrics"]:::monitoring
         TargetServers[["Target Servers"]]:::client
 
-        %% Sentry는 시스템 자체를 모니터링
-        Vercel -.->|Error/Perf Tracking| Sentry
-        CR -.->|Error/Perf Tracking| Sentry
+        Vercel -.->|Error Logs| Logs
+        CR -.->|Pino Logs| Logs
+        CR -.->|AI Trace| Langfuse
 
         %% OTel은 프로덕트의 핵심 수집기
         TargetServers ==>|Metrics Ingestion| OTel
@@ -185,12 +186,13 @@ graph TD
 
 > Source of truth (2026-03-03): `src/app/api/**/route.ts` (API routes 28), `cloud-run/ai-engine/src/server.ts` `app.route('/api/...')` (Cloud Run API mounts 9), `cloud-run/ai-engine/src/routes/*.ts` (route modules 10), `cloud-run/ai-engine/src/services/ai-sdk/agents/config/agent-configs.ts` (5 routing LLM agents + 2 internal deterministic pipeline configs).
 
-### 🔭 Observability Context: Sentry vs OpenTelemetry (OTel)
-프로젝트 내에서 사용되는 두 가지 모니터링 도구는 **완전히 다른 목적**을 가집니다. 이를 혼동하지 않는 것이 중요합니다.
+### 🔭 Observability Context: Platform Logs vs OpenTelemetry (OTel)
+프로젝트 내 관측 경로는 **플랫폼 자체의 에러 확인**과 **제품 도메인 데이터 파이프라인**으로 분리됩니다. 이를 혼동하지 않는 것이 중요합니다.
 
-1. **Sentry (개발 및 시스템 운영용)**
+1. **Platform Logs / Langfuse (개발 및 시스템 운영용)**
    - **목적**: OpenManager AI **플랫폼 자체의 안정성**을 위한 도구입니다.
-   - **역할**: 코드 레벨의 에러, 프론트엔드/백엔드 크래시, 그리고 Vercel 및 Cloud Run에서 발생하는 예기치 못한 시스템 예외를 추적합니다.
+   - **역할**: Vercel Function Logs, Cloud Logging, Pino 구조화 로그, Langfuse AI trace로 코드 레벨 에러와 AI 실행 흐름을 확인합니다.
+   - **Note**: Sentry SDK, tunnel route, source map upload 설정은 2026-05-07 cleanup에서 제거되었습니다.
 
 2. **OpenTelemetry (프로덕트 핵심 비즈니스 도메인)**
    - **목적**: OpenManager AI의 **본질적인 기능(서버 모니터링)을 제공하기 위한 데이터 파이프라인**입니다.

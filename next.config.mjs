@@ -1,7 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
-import { withSentryConfig } from '@sentry/nextjs';
 
 const require = createRequire(import.meta.url);
 
@@ -231,7 +230,6 @@ const nextConfig = {
         'https://vercel.live', // Vercel Toolbar
         'https://va.vercel-scripts.com', // Vercel Analytics
         'https://vitals.vercel-insights.com', // Speed Insights
-        'https://js-de.sentry-cdn.com', // Sentry Loader (EU)
         'blob:', // 동적 스크립트 허용
       ].filter(Boolean),
       'style-src': [
@@ -262,7 +260,6 @@ const nextConfig = {
         // Cloud Run AI Engine은 별도 도메인 사용 (CLOUD_RUN_AI_URL)
         'https://va.vercel-scripts.com', // Vercel Analytics
         'https://vitals.vercel-insights.com', // Speed Insights
-        'https://*.ingest.de.sentry.io', // Sentry EU (tunnel fallback)
         // 개발 환경 WebSocket/API는 early return으로 이미 제외됨
       ].filter(Boolean),
       'font-src': [
@@ -474,30 +471,6 @@ const nextConfig = {
   },
 };
 
-// Sentry는 로컬 분석 opt-in 전용이다. Production 앱 기능으로 빌드하지 않는다.
 const baseConfig = withBundleAnalyzer(nextConfig);
-const sentryLocalAnalysisEnabled =
-  process.env.SENTRY_LOCAL_ANALYSIS === 'true' &&
-  process.env.VERCEL_ENV !== 'production';
 
-export default sentryLocalAnalysisEnabled
-  ? withSentryConfig(
-      baseConfig,
-      {
-        // 로컬 분석 기본값: 소스맵 업로드 비활성화
-        silent: true,
-        org: 'om-4g',
-        project: 'javascript-nextjs',
-        sourcemaps: { disable: true },
-      },
-      {
-        // 로컬 분석 기본값
-        widenClientFileUpload: false,
-        transpileClientSDK: false,
-        tunnelRoute: '/api/sentry-tunnel',
-        hideSourceMaps: true,
-        disableLogger: true,
-        automaticVercelMonitors: false,
-      }
-    )
-  : baseConfig;
+export default baseConfig;

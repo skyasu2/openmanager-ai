@@ -341,41 +341,18 @@ curl -H "X-API-Key: $CLOUD_RUN_API_SECRET" \
 - 기본 샘플링: 10% (무료 티어 기준 안전, 필요 시 `LANGFUSE_SAMPLE_RATE`로 조정)
 - 대응: `LANGFUSE_TEST_MODE` 환경변수 제거 확인, Cloud Run 로그에서 `⚠️ [Langfuse]` 경고 확인
 
-## Sentry Issues
+## Frontend Error Logs
 
 > 상세: [Observability 가이드](../guides/observability.md)
 
-### Sentry에 에러가 안 보임
+### 배포된 프론트엔드 에러 확인
 
-1. **개발 환경인지 확인** — Sentry는 `production`에서만 활성화됩니다.
-```bash
-curl http://localhost:3000/api/debug/sentry-test?action=info | jq '.sentry.enabled'
-# false → 정상 (개발 환경)
-```
+Sentry는 2026-05-07 cleanup에서 제거되었습니다. 프론트엔드 에러는 다음 경로로 확인합니다.
 
-1. **DSN 설정 확인**
-```bash
-curl -H "x-api-key: $TEST_API_KEY" \
-  "https://...vercel.app/api/debug/sentry-test?action=info" | jq '.sentry.dsn'
-# "configured" → 정상, "missing" → 환경변수 확인 (fallback DSN이 있으므로 보통 configured)
-```
-
-1. **테스트 에러 전송으로 확인**
-```bash
-curl -H "x-api-key: $TEST_API_KEY" \
-  "https://...vercel.app/api/debug/sentry-test?action=error"
-# → Sentry 대시보드에서 "Sentry Test Error" 확인 (1-2분 소요)
-```
-
-### Sentry Tunnel 오류
-
-클라이언트 에러가 Sentry에 도달하지 않는 경우:
-```bash
-# Tunnel 엔드포인트 직접 확인
-curl -X POST https://...vercel.app/api/sentry-tunnel
-# → 400 Bad Request 면 정상 (빈 body)
-# → 404 면 라우트 문제
-```
+- Vercel Function Logs: API route, server component, middleware 에러
+- 브라우저 DevTools Console/Network: client boundary와 hydration 에러
+- `src/lib/logging` 구조화 로그: 로컬 개발/테스트 중 traceId 기반 확인
+- Playwright QA evidence: 재현 가능한 UI 에러 스크린샷과 console 로그
 
 ## Related
 
