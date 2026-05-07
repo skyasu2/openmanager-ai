@@ -5,10 +5,15 @@
   "assignees": ["skyasu2"],
   "reviewers": ["skyasu2"],
   "rangeStrategy": "bump",
+  "timezone": "Asia/Seoul",
   "prHourlyLimit": 5,
   "prConcurrentLimit": 5,
   "dependencyDashboard": true,
   "platformAutomerge": false,
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 4am on monday"]
+  },
   "packageRules": [
     {
       "matchDepTypes": ["dependencies", "devDependencies"],
@@ -26,10 +31,20 @@
       "matchPackageNames": [
         "/^vitest$/",
         "/^@vitest\\//",
-        "/^@testing-library\\//",
-        "/^playwright$/",
-        "/^@playwright\\//"
+        "/^@testing-library\\//"
       ]
+    },
+    {
+      "description": "Keep Playwright packages aligned.",
+      "matchDepTypes": ["devDependencies"],
+      "groupName": "playwright",
+      "matchPackageNames": ["/^playwright$/", "/^@playwright\\//"]
+    },
+    {
+      "description": "Keep Storybook packages aligned.",
+      "matchDepTypes": ["devDependencies"],
+      "groupName": "storybook",
+      "matchPackageNames": ["/^storybook$/", "/^@storybook\\//"]
     },
     {
       "matchDepTypes": ["dependencies", "devDependencies"],
@@ -50,6 +65,32 @@
       "matchDepTypes": ["dependencies"],
       "groupName": "ai-sdk",
       "matchPackageNames": ["/^ai$/", "/^@ai-sdk\\//"]
+    },
+    {
+      "description": "Keep Hono runtime packages aligned.",
+      "matchDepTypes": ["dependencies"],
+      "groupName": "hono-runtime",
+      "matchPackageNames": ["/^hono$/", "/^@hono\\/node-server$/"]
+    },
+    {
+      "description": "Group AI Engine runtime infrastructure updates.",
+      "matchFileNames": ["cloud-run/ai-engine/package.json"],
+      "matchDepTypes": ["dependencies"],
+      "groupName": "ai-engine-runtime",
+      "matchPackageNames": [
+        "/^@google-cloud\\/pino-logging-gcp-config$/",
+        "/^@opentelemetry\\/api$/",
+        "/^@supabase\\/supabase-js$/",
+        "/^@tavily\\/core$/",
+        "/^@upstash\\/redis$/",
+        "/^dotenv$/",
+        "/^js-tiktoken$/",
+        "/^langfuse$/",
+        "/^pg$/",
+        "/^pino$/",
+        "/^promptfoo$/",
+        "/^zod$/"
+      ]
     },
     {
       "matchUpdateTypes": ["patch"],

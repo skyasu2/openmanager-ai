@@ -511,14 +511,17 @@ npm run renovate:run
 - 실행 주기는 Renovate config 내부가 아니라 **호스트 스케줄러**에서 관리합니다.
 - 권장 주기: 매일 00:30 KST 1회
 - Windows 기준 Task Scheduler, Linux/WSL 기준 cron/systemd timer 사용
+- `lockFileMaintenance`는 `renovate.json`에서 활성화하며, Monday before 4am KST window로 제한합니다. daily host runner는 이 window를 통과할 때만 lockfile maintenance PR을 생성합니다.
 - 현재 GitLab CI gate가 생겼더라도 **automerge는 기본 비활성** 상태를 유지합니다.
+- 수동 또는 스케줄 실행 후에는 `reports/planning/TODO.md` 또는 해당 dependency hygiene plan에 실행일, dry-run/run 여부, 생성 MR 수, blocker를 기록합니다. 토큰/시크릿 값은 기록하지 않습니다.
 
 ### 현재 Renovate 정책
 
 | 항목 | 현재값 |
 |------|--------|
-| 그룹화 | TypeScript / types / testing / linting / react / react-types / ai-sdk |
+| 그룹화 | TypeScript / types / testing / Playwright / Storybook / linting / react / react-types / ai-sdk / Hono runtime / AI Engine runtime |
 | PR 제한 | 동시 5개, 시간당 5개 |
+| lockfile maintenance | 활성, Monday before 4am KST |
 | 리뷰 기본값 | `skyasu2` assignee/reviewer |
 | patch 업데이트 | `patch-update` 라벨 부여 |
 | minor/major 업데이트 | `needs-review` 라벨 부여 |

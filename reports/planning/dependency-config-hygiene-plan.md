@@ -174,11 +174,21 @@ Task 4 결과 (2026-05-08, Codex):
 
 ### Task 5: Renovate 운영 보강
 
-- [ ] `renovate.json`에 `lockFileMaintenance` 도입 검토
-- [ ] AI Engine/Hono/Storybook/Playwright 그룹 명시 보강
-- [ ] patch PR 폭증 방지를 위해 `prHourlyLimit`, `prConcurrentLimit` 유지
-- [ ] GitLab schedule 또는 수동 `renovate:run` 결과를 TODO/운영 문서에 남기는 절차 추가
-- [ ] `npm run renovate:config:check` 검증
+- [x] `renovate.json`에 `lockFileMaintenance` 도입 검토
+- [x] AI Engine/Hono/Storybook/Playwright 그룹 명시 보강
+- [x] patch PR 폭증 방지를 위해 `prHourlyLimit`, `prConcurrentLimit` 유지
+- [x] GitLab schedule 또는 수동 `renovate:run` 결과를 TODO/운영 문서에 남기는 절차 추가
+- [x] `npm run renovate:config:check` 검증
+
+Task 5 진행 결과 (2026-05-08, Codex):
+
+- `renovate.json`에 `timezone: Asia/Seoul`과 weekly `lockFileMaintenance`를 추가했다. self-hosted runner는 daily 00:30 KST 권장을 유지하되, lockfile maintenance PR은 Monday before 4am KST window에서만 생성되도록 제한했다.
+- 기존 `prHourlyLimit: 5`, `prConcurrentLimit: 5`, `platformAutomerge: false`는 유지했다.
+- 기존 broad testing group에서 Playwright를 분리해 `playwright` 전용 그룹을 추가했다.
+- Storybook patch line alignment 문제를 Renovate가 한 PR에서 보이도록 `storybook` 전용 그룹을 추가했다.
+- Hono runtime과 AI Engine runtime infrastructure 그룹을 추가해 Cloud Run runtime dependency drift를 root dev tooling과 분리했다.
+- `docs/development/ci-cd.md`에 lockfile maintenance 정책과 Renovate 실행 결과 기록 절차를 추가했다.
+- 검증: `npm run renovate:config:check` pass.
 
 ### Task 6: 위험한/혼동되는 설정 정리
 
@@ -199,6 +209,6 @@ Task 4 결과 (2026-05-08, Codex):
 - [x] root와 AI Engine 모두 `npm ls --depth=0`에서 의도치 않은 `extraneous`가 없다.
 - [x] AI Engine runtime audit의 Hono/node-server 직접 취약점이 해소된다.
 - [x] root Next audit은 강제 downgrade 없이 추적 상태로 문서화된다.
-- [ ] Renovate가 root/AI Engine lockfile maintenance와 patch/minor PR을 관리한다.
+- [x] Renovate가 root/AI Engine lockfile maintenance와 patch/minor PR을 관리한다.
 - [ ] `clean:all`이 lockfile 운영 원칙과 충돌하지 않는다.
 - [x] 관련 문서와 TODO가 같은 dependency/config hygiene 정책을 가리킨다.
