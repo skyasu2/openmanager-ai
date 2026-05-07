@@ -380,7 +380,32 @@ STRICT_PUSH_ENV=true PRE_PUSH_MODE=verify git push gitlab main
 |------|---------|------|
 | `.env.local` | ❌ `.gitignore` | 로컬 개발 시크릿 |
 | `.env.example` | ✅ 추적 | 환경변수 목록 (값 없음) |
+| `cloud-run/.env` | ❌ `.gitignore` | legacy Docker Compose 호환용. 새 AI Engine 로컬 실행의 정본으로 쓰지 않음 |
 | `cloud-run/ai-engine/.env` | ❌ `.gitignore` | AI Engine 로컬 시크릿 |
+
+### 로컬 env 권위와 로딩 순서
+
+같은 provider 키를 root와 AI Engine 양쪽에 둘 수 있지만, 정본은 실행 대상별로 분리합니다.
+
+| 실행 대상 | 정본 파일 | 비고 |
+|----------|----------|------|
+| Frontend / Next.js 로컬 | `.env.local` | Vercel 동기화 원본. `scripts/env/sync-vercel.sh`가 읽음 |
+| AI Engine 로컬 실행 | `cloud-run/ai-engine/.env` | `ENV_FILE`이 없으면 이 파일이 root `.env.local`보다 먼저 로드됨 |
+| Cloud Run production | GCP Secret Manager / deploy script | 로컬 `.env` 파일을 production 정본으로 취급하지 않음 |
+| Docker Compose legacy | `cloud-run/.env` | Compose 호환용. 새 키 추가는 가능하면 `cloud-run/ai-engine/.env`에 먼저 반영 |
+
+AI Engine 로컬 로더는 아래 우선순위를 사용합니다.
+
+```text
+ENV_FILE
+  -> cloud-run/ai-engine/.env.local
+  -> cloud-run/ai-engine/.env
+  -> cloud-run/.env.local
+  -> cloud-run/.env
+  -> root .env.local / .env
+```
+
+따라서 AI Engine 전용 provider/Supabase/Redis 값은 `cloud-run/ai-engine/.env`에 두고, root `.env.local`은 Frontend/Vercel 동기화 기준으로 유지합니다.
 
 ### 하드코딩 방지
 

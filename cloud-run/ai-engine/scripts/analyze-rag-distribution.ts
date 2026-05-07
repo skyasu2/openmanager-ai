@@ -5,7 +5,7 @@
  *   npx tsx scripts/analyze-rag-distribution.ts
  *
  * Notes:
- * - Automatically loads ENV_FILE, .env.local, .env (near scripts/cwd)
+ * - Automatically loads ENV_FILE, then AI Engine env files before root env files
  * - Supabase credentials still required via env values
  */
 

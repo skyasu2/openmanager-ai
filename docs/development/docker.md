@@ -169,12 +169,14 @@ SUPABASE_URL=https://xxx.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your-key
 ```
 
-또는 프로젝트 루트 `.env.local`의 값을 재사용:
+또는 빠른 실험용으로만 프로젝트 루트 `.env.local`의 값을 재사용:
 
 ```bash
 # cloud-run 디렉토리에서
 source ../.env.local && docker compose up --build
 ```
+
+새 로컬 AI Engine 실행은 `cloud-run/ai-engine/.env`를 정본으로 두는 것을 권장합니다. root `.env.local`은 Frontend/Vercel 동기화 기준이므로, Cloud Run 전용 provider/Supabase/Redis 값과 섞어 관리하면 drift가 생길 수 있습니다.
 
 ### 핫리로드 개발 (Override)
 
