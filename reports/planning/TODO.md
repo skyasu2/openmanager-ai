@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-07 KST (`AI QA skill sync 완료, MSW 테스트 인프라 개선 plan 승격`)
+**Last Updated**: 2026-05-07 KST (`테스트 방법론 SSOT/스킬 반영 (Codex)`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -53,6 +53,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-07 #310) — Codex
+- [x] 테스트 방법론 기준 SSOT/스킬 반영
+  - `docs/guides/testing/test-strategy.md`: Risk-Based Local-First + Contract-First를 canonical 방법론으로 정리하고 Pareto/Defect Clustering, Pesticide Paradox, Test Pyramid, Test Size, Contract-First, FIRST, 비용/과잉 테스트 금지선을 명문화
+  - `docs/guides/ai/ai-standards.md`: 공통 원칙 4를 테스트 전략 SSOT와 연결하고 false-pass 테스트 수정/삭제 우선 기준 추가
+  - `config/ai/skill-baselines.json`, `.agents/skills/*`, `.claude/skills/*`: lint-smoke/code-review/qa-ops에 risk-based 대표 테스트, mock integrity, live/external 비용 guardrail, coverage percentage 금지 기준 반영
+  - `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`에는 중복 기재하지 않고 기존 SSOT 참조 구조 유지
 
 ### Completed (2026-05-07 #309) — Codex
 - [x] `.agents/skills` 대화형 AI QA 반영
