@@ -5,21 +5,26 @@
 ### 일상적 사용
 ```bash
 npm run test:quick          # 최소 테스트 (빠름)
+npm run test:contract       # API/AI 계약 테스트
+npm run test:gate           # 개발 중 최소 게이트 (test:quick + type-check + lint, contract 제외)
 npm run validate:all        # 전체 검증 (Lint + Type + Test)
 npm run type-check          # TypeScript 검사
 npm run lint                # Biome lint
 ```
 
+> **CI gate vs test:gate**: GitLab CI validate job은 test:quick + test:contract를 모두 실행한다.
+> `test:gate`(로컬 개발 중)는 test:quick + type-check + lint만 실행하므로 CI gate와 다르다.
+
 ### E2E 테스트
 ```bash
-npm run test:e2e            # 로컬 E2E 테스트
-npm run test:e2e:critical   # 핵심 E2E만 (smoke, guest, a11y)
+npm run test:e2e:critical   # 핵심 E2E (smoke.spec.ts + critical-auth.spec.ts)
+npm run test:e2e            # 로컬 전체 E2E
 npm run test:vercel:e2e     # Vercel Production E2E
 ```
 
-### 커버리지
+### 선택적 심화 테스트
 ```bash
-npm run test:coverage       # 커버리지 리포트 생성
+npm run test:coverage       # 커버리지 리포트 (기본 비활성, 참고용)
 ```
 
 ### Dead Code 분석
@@ -37,16 +42,10 @@ npm run knip                # 전체 보고서 (blocking)
 | E2E | Playwright | `tests/e2e/*.spec.ts` |
 | Type | Vitest | `tests/types/` |
 
-## Coverage Thresholds
+## Coverage Policy
 
-```
-Lines:      10%
-Branches:   10%
-Functions:  10%
-Statements: 10%
-```
-
-> Note: 현실적 수준으로 조정됨 (실제 커버리지 ~11%)
+커버리지 수치 목표 없음. 핵심 계약과 사용자 경로가 깨지는지에 집중.
+상세: `docs/guides/testing/test-strategy.md` § 1.7
 
 ## Test Directory Structure
 
