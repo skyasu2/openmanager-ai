@@ -104,21 +104,39 @@ AI Engine은 "최적 아님"이다. 주요 직접 의존성이 같은 major/mino
 
 ### Task 1: 현재 설치 트리 정합성 복구
 
-- [ ] root `node_modules`의 `extraneous` 잔재 정리
-- [ ] `npm ci` 후 `npm ls --depth=0` 재확인
-- [ ] AI Engine `npm ls --depth=0` 재확인
-- [ ] 로컬 audit 결과와 CI clean install 결과가 다를 수 있음을 문서화
+- [x] root `node_modules`의 `extraneous` 잔재 정리
+- [x] root 설치 트리 복구 후 `npm ls --depth=0` 재확인
+- [x] AI Engine `npm ls --depth=0` 재확인
+- [x] 로컬 audit 결과와 CI clean install 결과가 다를 수 있음을 문서화
+
+Task 1 결과 (2026-05-07, Codex):
+
+- `npm ci --prefer-offline --no-audit --no-fund`는 WSL/local `node_modules` 재구성 중 장시간 무출력으로 중단했다.
+- 중단 후 일부 직접 의존성이 `invalid`로 표시되어 `npm install --prefer-offline --no-audit --no-fund`로 lockfile 기준 설치 트리를 복구했다.
+- root의 잔여 top-level `extraneous` 5개(`@emnapi/*`, `@napi-rs/wasm-runtime`, `@tybys/wasm-util`)를 제거했다.
+- 재확인 결과 root와 AI Engine 모두 `npm ls --depth=0`에서 의도치 않은 `extraneous`가 없다.
+- 이번 단계는 tracked dependency 변경 없이 local install tree hygiene만 복구했다. CI는 계속 `npm ci` clean install 기준이다.
 
 ### Task 2: AI Engine patch/minor security batch
 
-- [ ] `@ai-sdk/*`, `ai` patch/minor 업데이트
-- [ ] `hono`, `@hono/node-server` patch/minor 업데이트
-- [ ] `@supabase/supabase-js`, `@upstash/redis`, `pg`, `langfuse`, `@google-cloud/pino-logging-gcp-config` patch/minor 업데이트
-- [ ] `vitest`, `typescript`, `@types/node`, `@types/pg` patch 업데이트
-- [ ] `cd cloud-run/ai-engine && npm run type-check`
-- [ ] `cd cloud-run/ai-engine && npm run test`
-- [ ] root 계약 영향이 있으면 `npm run test:contract`
-- [ ] `npm audit --omit=dev --audit-level=moderate` 재점검
+- [x] `@ai-sdk/*`, `ai` patch/minor 업데이트
+- [x] `hono`, `@hono/node-server` patch/minor 업데이트
+- [x] `@supabase/supabase-js`, `@upstash/redis`, `pg`, `langfuse`, `@google-cloud/pino-logging-gcp-config` patch/minor 업데이트
+- [x] `vitest`, `typescript`, `@types/node`, `@types/pg` patch 업데이트
+- [x] `cd cloud-run/ai-engine && npm run type-check`
+- [x] `cd cloud-run/ai-engine && npm run test`
+- [x] root 계약 영향이 있으면 `npm run test:contract`
+- [x] `npm audit --omit=dev --audit-level=moderate` 재점검
+
+Task 2 결과 (2026-05-08, Codex):
+
+- AI SDK 계열을 current wanted line으로 정렬했다: `ai@6.0.175`, `@ai-sdk/google@3.0.68`, `@ai-sdk/openai@3.0.62`, `@ai-sdk/groq@3.0.38`, `@ai-sdk/mistral@3.0.35`, `@ai-sdk/cerebras@2.0.50`.
+- Runtime patch/minor를 정렬했다: `hono@4.12.18`, `@hono/node-server@1.19.14`, `@supabase/supabase-js@2.105.3`, `@upstash/redis@1.38.0`, `pg@8.20.0`, `langfuse@3.38.20`, `@google-cloud/pino-logging-gcp-config@1.3.5`, `@opentelemetry/api@1.9.1`.
+- Tooling patch/minor를 정렬했다: `typescript@6.0.3`, `vitest@4.1.5`, `@types/node@25.6.0`, `@types/pg@8.20.0`.
+- `npm audit --omit=dev --audit-level=moderate`는 exit `0`이며, moderate/high/critical runtime advisory는 해소됐다.
+- 남은 audit 출력은 `@google-cloud/pino-logging-gcp-config` → `@google-cloud/logging` → `teeny-request/http-proxy-agent/@tootallnate/once` chain의 low severity/no-fix 8건이다. 별도 dependency replacement 없이는 즉시 해소 불가하므로 추적 대상으로 유지한다.
+- Major 보류 후보는 유지했다: `@hono/node-server@2`, `@tavily/core@0.7`, `dotenv@17`, `pino@10`, `promptfoo@0.121`, `zod@4`.
+- 검증: AI Engine `type-check` pass, AI Engine full test `106 files / 1062 tests` pass, root `test:contract` `20/20` pass.
 
 ### Task 3: root low-risk patch batch
 
@@ -163,7 +181,7 @@ AI Engine은 "최적 아님"이다. 주요 직접 의존성이 같은 major/mino
 ## 완료 기준
 
 - [ ] root와 AI Engine 모두 `npm ls --depth=0`에서 의도치 않은 `extraneous`가 없다.
-- [ ] AI Engine runtime audit의 Hono/node-server 직접 취약점이 해소된다.
+- [x] AI Engine runtime audit의 Hono/node-server 직접 취약점이 해소된다.
 - [ ] root Next audit은 강제 downgrade 없이 추적 상태로 문서화된다.
 - [ ] Renovate가 root/AI Engine lockfile maintenance와 patch/minor PR을 관리한다.
 - [ ] `clean:all`이 lockfile 운영 원칙과 충돌하지 않는다.
