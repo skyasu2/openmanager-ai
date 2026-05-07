@@ -196,7 +196,7 @@ Supabase 무료 티어는 **1주일 미사용 시 자동 일시 정지**.
 
 | 테이블 | 용도 | 크기 | 관리 |
 |--------|------|------|------|
-| `ai_feedback` | AI 피드백 저장 | ~1MB | 자동 증가 |
+| `ai_feedback` | legacy/inactive | ~1MB | 신규 write 없음. AI 품질 평가는 `reports/qa` 기록으로 관리 |
 | `incident_reports` | 비활성 보존 테이블 | 신규 write 없음 | 포트폴리오/free-tier 모드에서는 장애 보고서를 세션 내 아티팩트로만 유지 |
 | `server_logs` | 서버 로그/검색 호환 데이터 | ~5MB | 현재 활성 cron cleanup 없음. 용량 초과 시 수동 정리 또는 migration으로 처리 |
 | `knowledge_base` | 운영 지식 텍스트 검색(BM25 RPC + metadata boost) | ~10MB | seed/merge 스크립트 기반 수동 갱신. 주기적 백필 없음 |
