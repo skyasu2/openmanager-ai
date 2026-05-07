@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.112](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.111...v8.11.112) (2026-05-07)
+
+
+### Bug Fixes
+
+* **ai:** keep artifact upload input out of scroll flow ([d8655b3](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d8655b3c115345b5ccf8e7440a25b595cfc0dd52))
+
 ## [8.11.111](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.110...v8.11.111) (2026-05-06)
 
 
