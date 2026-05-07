@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-07 06:59:27 KST
+> Generated at: 2026-05-07 10:09:28 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 416 |
-| Total Runs (Counted) | 342 |
+| Total Recorded Runs | 417 |
+| Total Runs (Counted) | 343 |
 | Non-counted Runs | 74 |
-| Total Checks | 3002 |
-| Passed | 2893 |
+| Total Checks | 3009 |
+| Passed | 2900 |
 | Failed | 100 |
-| Completed Items | 446 |
+| Completed Items | 448 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
-| Expert Domains Tracked | 12 |
+| Expert Domains Tracked | 13 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260507-0418 (2026-05-06T21:59:27.519Z) |
-| Latest Recorded Run | QA-20260507-0418 (2026-05-06T21:59:27.519Z) |
+| Last Counted Run | QA-20260507-0419 (2026-05-07T01:09:27.132Z) |
+| Latest Recorded Run | QA-20260507-0419 (2026-05-07T01:09:27.132Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,26 +34,25 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260507-0418 (2026-05-06T21:59:27.519Z)
+Latest run: QA-20260507-0419 (2026-05-07T01:09:27.132Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
-| IT Monitoring & Observability SME | appropriate | no | - |
 | AI Security & Reliability Architect | appropriate | no | - |
+| Frontend UX Engineer | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
-| Data Quality & Metrics Analyst | appropriate | no | - |
 
 ## Usage Checks (Latest Run)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked after v8.11.110 production deploy and targeted QA; effective 3.3658 USD, billed remains 0.0000 USD, chargeCount 3045. |
+| vercel | cli | checked | normal | Current billing period checked before v8.11.112 release; effective 3.3658 USD, billed 0.0000 USD, chargeCount 3045. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-05T21:59:27.519Z -> 2026-05-06T21:59:27.519Z (24h)
+- Window: 2026-05-06T01:09:27.132Z -> 2026-05-07T01:09:27.132Z (24h)
 - Runs with observations: 4 recorded / 4 counted
 - Samples: 7
 
@@ -66,7 +65,7 @@ Latest run: QA-20260507-0418 (2026-05-06T21:59:27.519Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-05T21:59:27.519Z -> 2026-05-06T21:59:27.519Z (24h)
+- Window: 2026-05-06T01:09:27.132Z -> 2026-05-07T01:09:27.132Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -80,26 +79,23 @@ Latest run: QA-20260507-0418 (2026-05-06T21:59:27.519Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_GqHLaUbqvG6cASfwcM3dVfAbk12m / SHA ce53f6e4
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, observability-pack
-- Covered Surfaces: GitLab v8.11.110 tag pipeline 2505682212 succeeded for ce53f6e4a569c2f3b290416f420d61f09910a231, Production /api/version returned version 8.11.110, releaseTag v8.11.110, commit ce53f6e4a569c2f3b290416f420d61f09910a231, pipelineUrl https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2505682212, Vercel production deployment dpl_GqHLaUbqvG6cASfwcM3dVfAbk12m is Ready and aliased to openmanager-ai.vercel.app, Cloud Run AI Engine deployed revision ai-engine-00425-hg4 and routed 100 percent traffic to version 8.11.110, Cloud Run /health returned status ok, service ai-engine, version 8.11.110, routesReady true, Playwright production E2E dashboard-ai-chat direct-message spec passed 1/1 against https://openmanager-ai.vercel.app, Production /dashboard/ai-assistant rendered AI Engine Online and Production environment status, RAG/OTel representative query was sent once: OpenManager OTel 데이터 SSOT 경로를 내부 지식/RAG와 Web On 상태 기준으로 요약하고, 실제 파일 경로 3개를 알려줘, The stream route /api/ai/supervisor/stream/v2 completed in about 5064ms UI time / 6228ms resource duration, and raw tool-call JSON count was 0, The assistant response grounded OTel SSOT to public/data/otel-data/*, src/data/otel-data/index.ts, src/services/metrics/MetricsProvider.ts, and cloud-run/ai-engine/src/data/precomputed-state.ts, Analysis basis showed 내부 지식 검색 / 오토 mode
-- Skipped Surfaces: Reporter and anomaly/trend advanced surfaces were not rerun because the changed production path was precomputed-state dataSource wiring and AI supervisor/OTel lookup; both passed in prior targeted QA after their own fixes, Mobile, OAuth provider login, broad modal packs, and full release-gate sweep were not rerun in this cost-protected targeted pass, Cloud Run admin /monitoring and /monitoring/traces were not queried; deployment smoke and /health covered runtime availability for this change
+- Deployment: dpl_8Mef9Ac714R8xStDrn5weLHBxfzQ / SHA 89628b5f
+- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, security-pack
+- Covered Surfaces: GitLab v8.11.112 tag pipeline 2505951845 succeeded for 89628b5f2effdf7f246169741022fbcba3e7145e, Release smoke confirmed production /, /login, and /api/version after propagation attempt 24/81; /api/version served 8.11.112, /login rendered v8.11.112 and guest PIN login reached an authenticated AI Assistant session, /dashboard/ai-assistant desktop 1440x900 rendered with document/body/main scrollHeight equal to clientHeight; only AI chat and System Context inner panels scrolled, /dashboard/ai-assistant mobile 390x844 rendered with document/body/main scrollHeight equal to clientHeight; only the AI chat inner panel scrolled, Cloud Run supervisor user-mode request without internalDisclosureMode refused internal file paths/repository/private KB locations deterministically, Cloud Run disclosure refusal used provider internal-path-policy, toolsCalled [], promptTokens 0, completionTokens 0, durationMs 3
+- Skipped Surfaces: Full five-question conversational AI QA was not rerun because this release targeted layout scroll containment, internal disclosure policy guard, and testing documentation rather than answer-quality prompt tuning, Developer/PIN mode internal path disclosure was not treated as a failure; PIN-authenticated sessions intentionally map to developer disclosure mode, Reporter, anomaly/trend, modal/detail, privacy, OAuth, and broad dashboard packs were not rerun in this targeted pass, No new live LLM prompt was sent for disclosure verification; deterministic policy path was sufficient and avoided provider cost
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab main validate pipeline 2505682198 | [GitLab main validate pipeline 2505682198](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2505682198) | - |
-| general | GitLab v8.11.110 tag pipeline 2505682212 | [GitLab v8.11.110 tag pipeline 2505682212](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2505682212) | - |
+| general | GitLab v8.11.112 tag pipeline 2505951845 | [GitLab v8.11.112 tag pipeline 2505951845](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2505951845) | - |
 | general | Production version endpoint | [Production version endpoint](https://openmanager-ai.vercel.app/api/version) | - |
-| monitoring | Cloud Run AI Engine health | [Cloud Run AI Engine health](https://ai-engine-490817238363.asia-northeast1.run.app/health) | - |
-| vercel-deployment | Vercel production deployment dpl_GqHLaUbqvG6cASfwcM3dVfAbk12m | [Vercel production deployment dpl_GqHLaUbqvG6cASfwcM3dVfAbk12m](https://openmanager-ftxgr35fn-skyasus-projects.vercel.app/) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-screenshot | RAG/OTel SSOT grounded answer on v8.11.110 without raw tool-call JSON | `reports/qa/evidence/qa-20260507-v811110-rag-otel-ssot.png` | - |
+| playwright-report | v8.11.112 AI Assistant scroll and user-mode internal disclosure evidence | `reports/qa/evidence/qa-20260507-v811112-ai-scroll-internal-disclosure.md` | - |
 
 ## Expert Domain Open Gaps
 
@@ -199,6 +195,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-artifact-keyword-routing-v81182: Short artifact keywords route to the intended artifact execution path (completed 1회, last QA-20260502-0391)
 - ai-artifact-short-keyword-pair-v81182: Representative short artifact keywords route correctly in production (completed 1회, last QA-20260502-0392)
 - ai-artifact-workspace-ui-wiring-v811108: AI artifact workspace UI wiring and compare UX production verification (completed 1회, last QA-20260506-0414)
+- ai-assistant-double-scroll-v811112: AI Assistant page-level double scroll removed (completed 1회, last QA-20260507-0419)
 - ai-assistant-fullscreen-query-path: AI 전체 화면 핵심 서버 상태 요약 질의 검증 (completed 1회, last QA-20260318-0123)
 - ai-assistant-fullscreen-tools-parity: AI 전체 화면 도구 메뉴 parity 검증 (completed 1회, last QA-20260318-0123)
 - ai-assistant-guest-login-mcp-check-v81136-20260427: AI assistant works through Vercel Playwright MCP guest login on v8.11.36 (completed 1회, last QA-20260427-0351)
@@ -435,6 +432,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - health-route-envelope-test-alignment: Health route envelope/cache typing 정렬 (completed 1회, last QA-20260325-0184)
 - health-route-supabase-session-timeout: 헬스체크 Supabase 세션 프로브 타임아웃 강제 (completed 1회, last QA-20260325-0183)
 - home-semantic-nav: 홈 페이지 nav 랜드마크 보강 (completed 1회, last QA-20260226-0009)
+- internal-disclosure-user-mode-v811112: General user-mode internal path disclosure blocked (completed 1회, last QA-20260507-0419)
 - landing-bootstrap-auth-copy-hidden: 랜딩 첫 진입 bootstrap 인증 카피 숨김 (completed 1회, last QA-20260402-0206)
 - landing-bootstrap-copy-hidden: 랜딩 첫 진입 시 bootstrap auth copy 비노출 처리 (completed 2회, last QA-20260408-0250)
 - landing-copy-alignment: 랜딩/로그인 정책 카피 정합성 (completed 4회, last QA-20260227-0016)
@@ -634,6 +632,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260507-0419 | 2026-05-07T01:09:27.132Z | targeted | yes | yes | v8.11.112 AI Assistant Scroll and Internal Disclosure Targeted QA | 7 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260507-0418 | 2026-05-06T21:59:27.519Z | targeted | yes | yes | v8.11.110 Production Targeted QA - Precomputed State Data Source Decoupling | 11 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260506-0417 | 2026-05-06T07:48:50.082Z | targeted | no | no | Local deterministic QA - MonitoringFactPack evidence UI | 5 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260506-0416 | 2026-05-06T06:59:36.046Z | targeted | yes | yes | v8.11.109 RAG/Web Raw Tool JSON Closure QA | 4 | 2 | 0 | 0 | 0 | 0 |
@@ -653,4 +652,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260504-0402 | 2026-05-03T23:00:39.195Z | targeted | yes | yes | v8.11.89 Vercel Playwright MCP Targeted QA | 15 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260504-0401 | 2026-05-03T17:29:57.587Z | targeted | yes | yes | v8.11.89 Release Smoke - Monitoring Source Error Contract | 9 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260503-0400 | 2026-05-03T14:21:43.788Z | targeted | yes | yes | v8.11.88 Fullscreen AI Stream Complementary QA | 5 | 1 | 0 | 0 | 0 | 0 |
-| QA-20260503-0399 | 2026-05-03T14:14:02.510Z | targeted | yes | yes | v8.11.88 Agent Step Streaming Release QA | 19 | 2 | 0 | 0 | 0 | 0 |

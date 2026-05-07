@@ -2,29 +2,29 @@
   "version": "1.0.0",
   "meta": {
     "createdAt": "2026-02-26T00:00:00.000Z",
-    "updatedAt": "2026-05-06T21:59:27.519Z"
+    "updatedAt": "2026-05-07T01:09:27.132Z"
   },
   "sequence": {
-    "nextRunNumber": 419
+    "nextRunNumber": 420
   },
   "summary": {
-    "totalRecordedRuns": 416,
-    "totalRuns": 342,
+    "totalRecordedRuns": 417,
+    "totalRuns": 343,
     "excludedRuns": 74,
-    "totalChecks": 3002,
-    "totalPassed": 2893,
+    "totalChecks": 3009,
+    "totalPassed": 2900,
     "totalFailed": 100,
     "completionRate": 100,
-    "completedItems": 446,
+    "completedItems": 448,
     "pendingItems": 0,
     "deferredItems": 0,
     "wontFixItems": 22,
-    "expertDomainsTracked": 12,
+    "expertDomainsTracked": 13,
     "expertDomainsOpenGaps": 0,
-    "lastRunId": "QA-20260507-0418",
-    "lastRecordedAt": "2026-05-06T21:59:27.519Z",
-    "latestRecordedRunId": "QA-20260507-0418",
-    "latestRecordedAt": "2026-05-06T21:59:27.519Z"
+    "lastRunId": "QA-20260507-0419",
+    "lastRecordedAt": "2026-05-07T01:09:27.132Z",
+    "latestRecordedRunId": "QA-20260507-0419",
+    "latestRecordedAt": "2026-05-07T01:09:27.132Z"
   },
   "items": {
     "modal-backdrop-close": {
@@ -10961,6 +10961,54 @@
       "overengineeringScope": "",
       "lastPolicyNote": "",
       "lastStatusChangeAt": "2026-05-06T21:59:27.519Z"
+    },
+    "ai-assistant-double-scroll-v811112": {
+      "id": "ai-assistant-double-scroll-v811112",
+      "title": "AI Assistant page-level double scroll removed",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260507-0419",
+      "firstSeenAt": "2026-05-07T01:09:27.132Z",
+      "lastSeenRunId": "QA-20260507-0419",
+      "lastSeenAt": "2026-05-07T01:09:27.132Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "",
+      "lastNote": "Artifact replay file input no longer participates in page scroll flow; desktop and mobile production geometry confirmed document/body/main viewport parity.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-07T01:09:27.132Z"
+    },
+    "internal-disclosure-user-mode-v811112": {
+      "id": "internal-disclosure-user-mode-v811112",
+      "title": "General user-mode internal path disclosure blocked",
+      "priority": "P1",
+      "status": "completed",
+      "firstSeenRunId": "QA-20260507-0419",
+      "firstSeenAt": "2026-05-07T01:09:27.132Z",
+      "lastSeenRunId": "QA-20260507-0419",
+      "lastSeenAt": "2026-05-07T01:09:27.132Z",
+      "seenCount": 1,
+      "completedCount": 1,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0,
+      "aliases": [],
+      "owner": "codex",
+      "lastEvidence": "",
+      "lastNote": "Cloud Run supervisor request without developer disclosure mode returned deterministic refusal with no tools or provider tokens.",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "lastPolicyNote": "",
+      "lastStatusChangeAt": "2026-05-07T01:09:27.132Z"
     }
   },
   "runs": [
@@ -43852,6 +43900,135 @@
       "pendingCount": 0,
       "deferredCount": 0,
       "wontFixCount": 0
+    },
+    {
+      "runId": "QA-20260507-0419",
+      "recordedAt": "2026-05-07T01:09:27.132Z",
+      "recordedAtKst": "2026-05-07 10:09:27 KST",
+      "title": "v8.11.112 AI Assistant Scroll and Internal Disclosure Targeted QA",
+      "owner": "codex",
+      "source": "playwright-mcp + cloud-run-curl",
+      "file": "reports/qa/runs/2026/qa-run-QA-20260507-0419.json",
+      "environment": {
+        "target": "vercel-production",
+        "url": "https://openmanager-ai.vercel.app",
+        "frontend": "Vercel",
+        "backend": "Cloud Run",
+        "branch": "main",
+        "deploymentId": "dpl_8Mef9Ac714R8xStDrn5weLHBxfzQ",
+        "deploymentUrl": "https://openmanager-rld8zx4rb-skyasus-projects.vercel.app",
+        "commitSha": "89628b5f2effdf7f246169741022fbcba3e7145e"
+      },
+      "scope": "targeted",
+      "releaseFacing": true,
+      "countsTowardSummary": true,
+      "coveragePacks": [
+        "core-routes-smoke",
+        "dashboard-core",
+        "ai-core",
+        "security-pack"
+      ],
+      "coveredSurfaces": [
+        "GitLab v8.11.112 tag pipeline 2505951845 succeeded for 89628b5f2effdf7f246169741022fbcba3e7145e",
+        "Release smoke confirmed production /, /login, and /api/version after propagation attempt 24/81; /api/version served 8.11.112",
+        "/login rendered v8.11.112 and guest PIN login reached an authenticated AI Assistant session",
+        "/dashboard/ai-assistant desktop 1440x900 rendered with document/body/main scrollHeight equal to clientHeight; only AI chat and System Context inner panels scrolled",
+        "/dashboard/ai-assistant mobile 390x844 rendered with document/body/main scrollHeight equal to clientHeight; only the AI chat inner panel scrolled",
+        "Cloud Run supervisor user-mode request without internalDisclosureMode refused internal file paths/repository/private KB locations deterministically",
+        "Cloud Run disclosure refusal used provider internal-path-policy, toolsCalled [], promptTokens 0, completionTokens 0, durationMs 3"
+      ],
+      "skippedSurfaces": [
+        "Full five-question conversational AI QA was not rerun because this release targeted layout scroll containment, internal disclosure policy guard, and testing documentation rather than answer-quality prompt tuning",
+        "Developer/PIN mode internal path disclosure was not treated as a failure; PIN-authenticated sessions intentionally map to developer disclosure mode",
+        "Reporter, anomaly/trend, modal/detail, privacy, OAuth, and broad dashboard packs were not rerun in this targeted pass",
+        "No new live LLM prompt was sent for disclosure verification; deterministic policy path was sufficient and avoided provider cost"
+      ],
+      "checks": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0
+      },
+      "aiLatencyObservations": [],
+      "plannerShadowObservations": [],
+      "expertAssessments": [
+        {
+          "domainId": "ai-quality-assurance",
+          "domainName": "AI Quality Assurance Specialist",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "The targeted pass verified the AI workspace layout regression and deterministic internal-disclosure refusal without introducing live provider variability.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "ai-security-reliability",
+          "domainName": "AI Security & Reliability Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "General user-mode requests for implementation paths were refused before tools or providers executed, while PIN/developer mode remains intentionally separate.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "frontend-ux",
+          "domainName": "Frontend UX Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Desktop and mobile geometry checks showed the page root no longer expands beyond the viewport; scrolling is confined to expected inner panels.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "sre-devops",
+          "domainName": "DevOps / SRE Engineer",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "GitLab main and tag pipelines succeeded, production served v8.11.112, and release smoke passed.",
+          "nextAction": ""
+        },
+        {
+          "domainId": "test-automation",
+          "domainName": "Test Automation Architect",
+          "fit": "appropriate",
+          "improvementNeeded": false,
+          "rationale": "Regression guards cover the hidden file input scroll-flow case and Playwright MCP validated production geometry at desktop and mobile sizes.",
+          "nextAction": ""
+        }
+      ],
+      "usageChecks": [
+        {
+          "platform": "vercel",
+          "method": "cli",
+          "status": "checked",
+          "result": "normal",
+          "checkedAt": "2026-05-07T10:37:14+09:00",
+          "summary": "Current billing period checked before v8.11.112 release; effective 3.3658 USD, billed 0.0000 USD, chargeCount 3045.",
+          "evidence": "npm run check:usage:vercel",
+          "url": "https://vercel.com/dashboard"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "playwright-report",
+          "label": "v8.11.112 AI Assistant scroll and user-mode internal disclosure evidence",
+          "path": "reports/qa/evidence/qa-20260507-v811112-ai-scroll-internal-disclosure.md"
+        }
+      ],
+      "links": [
+        {
+          "type": "general",
+          "label": "GitLab v8.11.112 tag pipeline 2505951845",
+          "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2505951845"
+        },
+        {
+          "type": "general",
+          "label": "Production version endpoint",
+          "url": "https://openmanager-ai.vercel.app/api/version"
+        }
+      ],
+      "expertCount": 5,
+      "expertNeedsImprovementCount": 0,
+      "completedCount": 2,
+      "pendingCount": 0,
+      "deferredCount": 0,
+      "wontFixCount": 0
     }
   ],
   "experts": {
@@ -43860,16 +44037,16 @@
       "domainName": "AI Quality Assurance Specialist",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 205,
-      "appropriateCount": 182,
+      "seenCount": 206,
+      "appropriateCount": 183,
       "partialCount": 23,
       "inappropriateCount": 0,
       "improvementNeededCount": 33,
-      "lastRunId": "QA-20260507-0418",
-      "lastSeenAt": "2026-05-06T21:59:27.519Z",
+      "lastRunId": "QA-20260507-0419",
+      "lastSeenAt": "2026-05-07T01:09:27.132Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The changed production supervisor path returned grounded, readable AI output and the existing dashboard AI chat production E2E passed.",
+      "lastRationale": "The targeted pass verified the AI workspace layout regression and deterministic internal-disclosure refusal without introducing live provider variability.",
       "lastNextAction": ""
     },
     "observability-monitoring": {
@@ -43894,16 +44071,16 @@
       "domainName": "AI Security & Reliability Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 56,
-      "appropriateCount": 42,
+      "seenCount": 57,
+      "appropriateCount": 43,
       "partialCount": 14,
       "inappropriateCount": 0,
       "improvementNeededCount": 13,
-      "lastRunId": "QA-20260507-0418",
-      "lastSeenAt": "2026-05-06T21:59:27.519Z",
+      "lastRunId": "QA-20260507-0419",
+      "lastSeenAt": "2026-05-07T01:09:27.132Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The RAG/OTel response had rawJsonCount=0 for searchKnowledgeBase/searchWeb/name/arguments leakage checks.",
+      "lastRationale": "General user-mode requests for implementation paths were refused before tools or providers executed, while PIN/developer mode remains intentionally separate.",
       "lastNextAction": ""
     },
     "sre-devops": {
@@ -43911,16 +44088,16 @@
       "domainName": "DevOps / SRE Engineer",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 139,
-      "appropriateCount": 126,
+      "seenCount": 140,
+      "appropriateCount": 127,
       "partialCount": 13,
       "inappropriateCount": 0,
       "improvementNeededCount": 17,
-      "lastRunId": "QA-20260507-0418",
-      "lastSeenAt": "2026-05-06T21:59:27.519Z",
+      "lastRunId": "QA-20260507-0419",
+      "lastSeenAt": "2026-05-07T01:09:27.132Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "GitLab semver tag pipeline, Vercel deploy smoke, Cloud Run deploy, AI Engine post-deploy smoke, and usage guard all passed.",
+      "lastRationale": "GitLab main and tag pipelines succeeded, production served v8.11.112, and release smoke passed.",
       "lastNextAction": ""
     },
     "test-automation": {
@@ -43928,16 +44105,16 @@
       "domainName": "Test Automation Architect",
       "firstSeenRunId": "QA-20260226-0003",
       "firstSeenAt": "2026-02-26T11:15:22.325Z",
-      "seenCount": 177,
-      "appropriateCount": 163,
+      "seenCount": 178,
+      "appropriateCount": 164,
       "partialCount": 14,
       "inappropriateCount": 0,
       "improvementNeededCount": 16,
-      "lastRunId": "QA-20260507-0418",
-      "lastSeenAt": "2026-05-06T21:59:27.519Z",
+      "lastRunId": "QA-20260507-0419",
+      "lastSeenAt": "2026-05-07T01:09:27.132Z",
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
-      "lastRationale": "The run combines CI deploy smoke, a production Playwright E2E spec, and a manual Playwright MCP targeted query with durable screenshot evidence.",
+      "lastRationale": "Regression guards cover the hidden file input scroll-flow case and Playwright MCP validated production geometry at desktop and mobile sizes.",
       "lastNextAction": ""
     },
     "data-metrics-quality": {
@@ -44057,6 +44234,23 @@
       "lastFit": "appropriate",
       "lastImprovementNeeded": false,
       "lastRationale": "The tested behavior matches the chosen app-shell concept: AI is opened from the top-right action, the left navigation omits AI, the rail collapses while the right assistant is open, and the full AI route behaves as a dashboard function page.",
+      "lastNextAction": ""
+    },
+    "frontend-ux": {
+      "domainId": "frontend-ux",
+      "domainName": "Frontend UX Engineer",
+      "firstSeenRunId": "QA-20260507-0419",
+      "firstSeenAt": "2026-05-07T01:09:27.132Z",
+      "seenCount": 1,
+      "appropriateCount": 1,
+      "partialCount": 0,
+      "inappropriateCount": 0,
+      "improvementNeededCount": 0,
+      "lastRunId": "QA-20260507-0419",
+      "lastSeenAt": "2026-05-07T01:09:27.132Z",
+      "lastFit": "appropriate",
+      "lastImprovementNeeded": false,
+      "lastRationale": "Desktop and mobile geometry checks showed the page root no longer expands beyond the viewport; scrolling is confined to expected inner panels.",
       "lastNextAction": ""
     }
   }
