@@ -27,7 +27,7 @@ vi.mock('@/lib/logging', () => ({
 }));
 
 describe('FeatureCardsGrid a11y labels', () => {
-  it('카드 버튼 설명 문단은 aria-hidden=true로 노출된다', () => {
+  it('카드 버튼은 제목과 설명을 보조기술에 연결한다', () => {
     render(<FeatureCardsGrid />);
 
     const detailButtons = screen.getAllByRole('button', {
@@ -38,7 +38,12 @@ describe('FeatureCardsGrid a11y labels', () => {
     detailButtons.forEach((button) => {
       const description = button.querySelector('p');
       expect(description).not.toBeNull();
-      expect(description).toHaveAttribute('aria-hidden', 'true');
+      expect(description).not.toHaveAttribute('aria-hidden');
+      expect(description).toHaveAttribute('id');
+      expect(button).toHaveAttribute(
+        'aria-describedby',
+        description?.getAttribute('id')
+      );
     });
   });
 });
