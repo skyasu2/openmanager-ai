@@ -4,7 +4,7 @@
 > Owner: dev-experience
 > Status: Active Canonical
 > Doc type: How-to
-> Last reviewed: 2026-04-25
+> Last reviewed: 2026-05-07
 > Canonical: docs/development/project-setup.md
 > Tags: wsl,github-auth,project-setup
 
@@ -19,14 +19,14 @@
 
 제로베이스 부트스트랩 기준은 본 문서를 Canonical로 유지합니다.
 
-## 현재 저장소/배포 토폴로지 (2026-04-25)
+## 현재 저장소/배포 토폴로지 (2026-05-07)
 
 - **GitLab private (`gitlab`)**: canonical development repo
 - **Vercel Frontend**: Vercel Git Integration은 해제되어 있으며, GitLab CI semver tag `deploy` job이 `vercel build --prod` + `vercel deploy --prebuilt --prod`로 production 배포
-- **GitHub public (`github-public`, `origin` legacy)**: code-only snapshot, 수동 공개 동기화 전용
+- **GitHub public (`github-public`, `origin` legacy)**: frontend-only public snapshot, 수동 공개 동기화 전용. `.github/`, docs, tests, scripts, reports, cloud-run, 내부 agent 설정은 제외
 - **GitLab CI**: 활성 (`branch/main validate` -> `semver tag deploy/deploy_ai_engine/smoke`)
 
-개발/배포 작업은 기본적으로 GitLab 기준으로 진행하고, GitHub는 공개 코드 스냅샷이 필요할 때만 별도로 다룹니다.
+개발/배포 작업은 기본적으로 GitLab 기준으로 진행하고, GitHub는 공개 frontend snapshot이 필요할 때만 별도로 다룹니다.
 
 ## GitHub 인증 방식 비교 (WSL)
 

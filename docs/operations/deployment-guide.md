@@ -4,7 +4,7 @@
 > Owner: platform-devops
 > Status: Active Canonical
 > Doc type: Runbook
-> Last reviewed: 2026-05-05
+> Last reviewed: 2026-05-07
 > Canonical: docs/operations/deployment-guide.md
 > Tags: operations,deployment,gitlab,vercel,cloud-run
 
@@ -12,13 +12,13 @@
 
 ## 기준
 
-Production deploy 권위는 GitLab CI semver tag pipeline입니다. Frontend는 Vercel production, AI Engine은 Cloud Run production으로 배포합니다. GitHub public remote는 공개 snapshot이며 배포 source가 아닙니다.
+Production deploy 권위는 GitLab CI semver tag pipeline입니다. Frontend는 Vercel production, AI Engine은 Cloud Run production으로 배포합니다. GitHub public remote는 frontend-only public snapshot이며 배포 source가 아닙니다.
 
 | 대상 | 표준 경로 | 보조/예외 경로 |
 |---|---|---|
 | Frontend | GitLab CI `deploy` job → `vercel build --prod` → `vercel deploy --prebuilt --prod` | runner 장애 시 `npm run deploy:smart`의 `vercel --prod` fallback |
 | AI Engine | GitLab CI `deploy_ai_engine` job → `cloud-run/ai-engine/deploy.sh` | 로컬 `gcloud` 인증 후 `cd cloud-run/ai-engine && bash deploy.sh` |
-| Public snapshot | `npm run sync:github` | 직접 `git push origin/github-public` 금지 |
+| Public snapshot | `npm run sync:github` | frontend/public assets only. 직접 `git push origin/github-public` 금지 |
 
 ## 배포 전 확인
 

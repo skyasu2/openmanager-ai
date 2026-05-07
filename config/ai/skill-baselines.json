@@ -89,6 +89,7 @@
       "invariants": [
         "Inspect remotes before push or fetch.",
         "Default push target is gitlab, not GitHub public snapshot.",
+        "Treat GitHub public snapshot as frontend-only and refresh it only through npm run sync:github.",
         "After gitlab push, verify the pushed HEAD pipeline when GitLab token access is available.",
         "Do not stage or revert unrelated user changes."
       ],

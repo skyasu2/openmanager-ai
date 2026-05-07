@@ -1,6 +1,6 @@
 # GEMINI.md - Gemini Identity & Configuration
 
-<!-- Version: 8.11.15 | Last reviewed: 2026-04-25 -->
+<!-- Version: 8.11.16 | Last reviewed: 2026-05-07 -->
 **This file defines the core identity and principles for the Gemini Agent within the OpenManager AI project.**
 
 # 🚨 CRITICAL INSTRUCTION
@@ -45,10 +45,10 @@
 ## 💻 Agent Dev Server Protocol
 > **개발 서버 포트 지정**: Gemini 또는 Antigravity 등 AI 에이전트가 로컬 개발 서버를 구동할 때는 기본 포트(3000)를 피하고 **3004 또는 3005 포트를 사용**해야 합니다. (동시 작업 시 Port 충돌 방지)
 
-## 🗂 Repository & Delivery Topology (2026-04-25)
+## 🗂 Repository & Delivery Topology (2026-05-07)
 - **GitLab private (`gitlab`)**가 canonical development repo입니다. 전체 이력, 테스트, 문서, QA 자산, 내부 규칙은 GitLab 기준으로 유지합니다.
 - **Vercel Frontend**는 GitLab CI `deploy` job이 `vercel build --prod` 후 `vercel deploy --prebuilt --prod`로 production 배포합니다. Vercel Git Integration은 해제된 상태입니다.
-- **GitHub public (`github-public`, `origin` legacy)**는 code-only snapshot입니다 (docs/, tests/, scripts/, reports/, .claude/ 등 제외). 동기화는 `npm run sync:github` (`scripts/sync/github-sync.sh`) 으로만 수행하며 canonical repo나 기본 배포 소스가 아닙니다.
+- **GitHub public (`github-public`, `origin` legacy)**는 frontend-only public snapshot입니다. `.github/`, docs/, tests/, scripts/, reports/, cloud-run/, 내부 agent 설정은 제외합니다. 동기화는 `npm run sync:github` (`scripts/sync/github-sync.sh`) 으로만 수행하며 canonical repo나 기본 배포 소스가 아닙니다.
 - **GitLab CI는 활성** 상태이며 `.gitlab-ci.yml`은 branch/main validate와 semver tag deploy/deploy_ai_engine/smoke 파이프라인을 분리합니다. docs/reports 전용 push는 CI를 스킵합니다.
 - **로컬 전체 검증 기본값**은 여전히 `npm run ci:local:docker` / `npm run ci:local:docker:full` 입니다. broad/release 변경에서 GitLab CI와 별도로 사용합니다.
 - 따라서 Gemini는 push/fetch/rebase 전에 항상 `git remote -v`를 확인하고, 기본 push 대상은 `gitlab` 으로 선택해야 합니다.
@@ -233,4 +233,4 @@ plan 파일이 있는 작업은 아래 순서를 따른다.
 
 ---
 
-_Gemini Agent Configuration for OpenManager AI v8.11.14 | Last reviewed: 2026-04-24_
+_Gemini Agent Configuration for OpenManager AI v8.11.16 | Last reviewed: 2026-05-07_

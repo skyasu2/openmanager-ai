@@ -4,7 +4,7 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-05
+> Last reviewed: 2026-05-07
 > Canonical: docs/architecture/03-deployment-architecture.md
 > Tags: architecture,deployment,operations,free-tier,qa
 
@@ -18,7 +18,7 @@
 - Vercel Git Integration은 비활성화되어 있고, Frontend production은 GitLab CI deploy job이 담당합니다.
 - Cloud Run AI Engine은 1 vCPU / 512Mi 기준으로 운영합니다.
 - Vercel Pro는 유일한 유료 예외지만, 기본 설계는 무료 티어 수준을 유지합니다.
-- GitHub public remote는 frontend-focused 공개 snapshot입니다.
+- GitHub public remote는 frontend-only 공개 snapshot입니다. Cloud Run AI Engine, 내부 문서, 테스트, QA evidence, agent 설정, GitHub Actions는 공개 snapshot에 포함하지 않습니다.
 - 최종 QA는 Vercel 실환경 + Playwright MCP가 기본이며 결과는 `reports/qa`에 기록합니다.
 
 ## 설계도
@@ -45,7 +45,7 @@ flowchart LR
 | GitLab authority | branch/main validate, semver tag deploy/smoke pipeline |
 | Frontend deploy | GitLab CI에서 Vercel production deploy |
 | AI Engine deploy | Cloud Run deploy script와 CI deploy job |
-| Public snapshot | `npm run sync:github`로만 GitHub public 동기화 |
+| Public snapshot | `npm run sync:github`로만 frontend-only GitHub public 동기화 |
 | QA recording | `reports/qa/qa-tracker.json`, `npm run qa:record`, evidence audit |
 | Cost guard | Cloud Run 1 vCPU/512Mi, Cloud Build 기본 머신, Vercel 사용량 확인 |
 | Test strategy | local deterministic tests, contract tests, 실 LLM/외부 서비스 기본 금지 |

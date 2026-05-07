@@ -9,10 +9,10 @@ description: Safe GitLab-canonical git commit, push, MR/PR, and public snapshot 
 
 Use a deterministic commit/push/PR flow with safety checks.
 
-## Current topology (2026-05-05)
+## Current topology (2026-05-07)
 
 - `gitlab` remote: canonical private repo, full history/tests/docs/QA assets, release/tag authority
-- `github-public` remote: preferred public GitHub code-only snapshot with minimal public-only history
+- `github-public` remote: preferred public GitHub frontend-only snapshot with minimal public-only history
 - `origin` remote: legacy fallback for the public GitHub snapshot
 - Frontend production deploy authority: GitLab CI semver tag `deploy` job; branch/main pushes validate but do not directly deploy production.
 - GitLab CI policy: active branch/main validate plus semver tag `deploy` / `deploy_ai_engine` / `smoke` delivery.
@@ -23,7 +23,7 @@ Use a deterministic commit/push/PR flow with safety checks.
   - production deploy uses serialized execution (`resource_group: production`)
   - AI Engine production deploy runs in the `deploy_ai_engine` job through `cloud-run/ai-engine/deploy.sh`
   - post-deploy smoke validates frontend and AI Engine health
-- GitHub public repo: no releases/tags, issues/wiki/projects disabled, not a deployment control plane
+- GitHub public repo: frontend/public assets only, no `.github/`, docs, tests, scripts, reports, cloud-run, internal agent settings, releases/tags, issues/wiki/projects; not a deployment control plane
 
 Never assume `github-public/main` or `origin/main` is the canonical branch. Always inspect `git remote -v` before any push/fetch/rebase.
 

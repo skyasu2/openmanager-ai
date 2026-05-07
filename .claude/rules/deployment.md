@@ -20,22 +20,22 @@ git push gitlab --follow-tags  # canonical repo 반영
 |------|-----------|
 | Canonical repo | `gitlab` remote (private full repo) |
 | Frontend deploy source | GitLab CI `deploy` job → `vercel build --prod` + `vercel deploy --prebuilt --prod` (Vercel Git Integration 해제) |
-| Public code repo | GitHub `origin` (code-only snapshot) — `npm run sync:github` 으로 동기화 |
+| Public snapshot repo | GitHub `github-public` (`origin` legacy, frontend-only public snapshot) — `npm run sync:github` 으로 동기화 |
 | GitLab CI | **활성** — `.gitlab-ci.yml` validate → deploy (코드 변경 push 시만) |
 | GitLab CI 예산 | 월 400분 / split-runner 기준 ~4분/회 / docs·reports push 스킵 |
 
 > GitHub public snapshot은 읽기/공개 용도이며 배포 권위가 아닙니다. 배포 관련 push는 기본적으로 `git push gitlab <branch>` 기준으로 판단합니다.
 >
-> 현재 GitHub public repo는 최소 공개 이력만 유지하며, releases/tags가 없고 issues/wiki/projects도 비활성입니다. 즉 GitHub는 배포/릴리즈/협업 허브가 아니라 공개 코드 surface입니다.
+> 현재 GitHub public repo는 Vercel에 노출되는 프론트엔드/공개 자산 중심의 최소 공개 이력만 유지하며, releases/tags가 없고 issues/wiki/projects도 비활성입니다. 즉 GitHub는 배포/릴리즈/협업 허브가 아니라 공개 frontend surface입니다.
 >
-> **GitHub 동기화 워크플로우**: `git push gitlab main` (canonical) → `npm run sync:github` (선택, 코드만 필터링하여 origin push). 제외 목록: `.github-export-ignore`
+> **GitHub 동기화 워크플로우**: `git push gitlab main` (canonical) → `npm run sync:github` (선택, frontend-only 공개 snapshot 필터링). 제외 목록: `.github-export-ignore`
 
 ### Standard Delivery Flow
 
 ```bash
 git push gitlab main          # GitLab CI 트리거 → validate(self-hosted) → deploy(vercel build + deploy --prebuilt)
 git push gitlab --follow-tags # release/tag를 canonical repo에 반영할 때만
-npm run sync:github           # public code snapshot 갱신이 필요할 때만
+npm run sync:github           # frontend-only public snapshot 갱신이 필요할 때만
 HUSKY=0 git push gitlab main  # hook 스킵 긴급 push (CI는 여전히 실행됨)
 ```
 

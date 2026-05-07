@@ -4,11 +4,11 @@
 > Owner: platform-architecture
 > Status: Active
 > Doc type: Reference
-> Last reviewed: 2026-05-03
+> Last reviewed: 2026-05-07
 > Canonical: docs/reference/architecture/infrastructure/free-tier-optimization.md
 > Tags: free-tier,cost,performance,web-vitals,optimization
 >
-> **프로젝트 버전**: v8.11.87 | **Updated**: 2026-05-03
+> **프로젝트 버전**: v8.11.113 | **Updated**: 2026-05-07
 
 ## 개요
 
@@ -430,27 +430,25 @@ headers.set('Cache-Control', 'private, no-store');
 
 | 항목 | 설정 | 이유 |
 |------|------|------|
-| 리포지토리 | GitLab canonical + GitHub public snapshot | 배포 권위는 GitLab CI, GitHub는 공개/분석면 |
+| 리포지토리 | GitLab canonical + GitHub frontend-only public snapshot | 배포 권위는 GitLab CI, GitHub는 공개/분석면 |
 | Simple Deploy | 비활성화 | Vercel Git Integration을 쓰지 않고 GitLab CI deploy gate로 중복 방지 |
-| GitHub schedule | `ENABLE_ACTIONS_SCHEDULES=true` opt-in | public snapshot에서 주기 job이 우발적으로 실행되지 않게 차단 |
+| GitHub Actions | public snapshot에서 `.github/` 제외 | 공개 저장소에서 Actions CI/CD가 실행되지 않게 차단 |
+| GitHub schedule | canonical legacy workflow가 있을 때도 `ENABLE_ACTIONS_SCHEDULES=true` opt-in | 주기 job이 우발적으로 실행되지 않게 차단 |
 | 동시성 제어 | `cancel-in-progress: true` | 같은 브랜치 이전 실행 자동 취소 |
 | docs 변경 | CI 스킵 | `paths-ignore: docs/**` |
 | `[skip ci]` | 지원 | 문서/설정 변경 시 CI 완전 스킵 |
 
 ### Private 전환 대비
 
-Public → Private 전환 시 Actions 분 제한(2,000분/월)이 적용됩니다. 이를 대비해:
-- Simple Deploy는 이미 `workflow_dispatch` (수동)으로 전환 완료
-- scheduled workflow는 repository variable opt-in이 없으면 실행되지 않음
-- CI Core Gates는 `cancel-in-progress`로 중복 실행 방지
+GitHub public snapshot은 frontend-only이고 `.github/`를 포함하지 않으므로 Actions minutes를 사용하지 않습니다. 과거/보조 workflow를 canonical repo에서 다시 활성화하거나 GitHub repo를 private CI surface로 전환할 경우에만 Actions 분 제한(2,000분/월)을 다시 검토합니다.
 
 ---
 
 ## 관련 문서
 
-- [CI/CD 파이프라인](../../../development/ci-cd.md) - GitHub Actions 워크플로우 상세
+- [CI/CD 파이프라인](../../../development/ci-cd.md) - GitLab CI와 legacy GitHub Actions reference
 - [Docker 가이드](../../../development/docker.md) - Cloud Run 컨테이너 설정
 - [Observability 가이드](../../../guides/observability.md) - Langfuse와 로그 확인 경로
 - [복원력 아키텍처](./resilience.md) - 장애 대응 패턴
 
-_Last Updated: 2026-05-02_
+_Last Updated: 2026-05-07_

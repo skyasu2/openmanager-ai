@@ -1,7 +1,7 @@
 ---
 name: git-workflow
-description: Git commit, push, MR/PR creation with conventional commits and safety rules. GitLab is canonical; github-public is the preferred GitHub code-only public snapshot updated via sync:github.
-version: v2.1.1
+description: Git commit, push, MR/PR creation with conventional commits and safety rules. GitLab is canonical; github-public is the preferred GitHub frontend-only public snapshot updated via sync:github.
+version: v2.1.2
 user-invocable: true
 allowed-tools: Bash, Read, Grep, Edit
 disable-model-invocation: true
@@ -13,7 +13,7 @@ disable-model-invocation: true
 
 Git 커밋, 푸시, PR 생성을 안전한 절차로 수행합니다.
 
-**Remote 우선순위**: `gitlab` = canonical (배포 권위), `github-public` = preferred GitHub code-only snapshot, `origin` = legacy fallback only
+**Remote 우선순위**: `gitlab` = canonical (배포 권위), `github-public` = preferred GitHub frontend-only public snapshot, `origin` = legacy fallback only
 
 ## Trigger Keywords
 
@@ -72,7 +72,7 @@ Git 커밋, 푸시, PR 생성을 안전한 절차로 수행합니다.
 - 최종 보고에는 가능하면 `pipeline id/status/url` 포함
 
 1. GitHub 동기화 (선택, 코드 변경 후).
-- `npm run sync:github` — code-only 스냅샷, 배포 권위 없음
+- `npm run sync:github` — frontend-only public snapshot, 배포 권위 없음
 - docs·reports 전용 push는 sync:github 생략 가능
 
 1. 원격 상태 확인.
@@ -122,6 +122,7 @@ Git Workflow Results
 
 ## Changelog
 
+- 2026-05-07: v2.1.2 - GitHub public snapshot 범위를 frontend-only로 축소
 - 2026-05-05: v2.1.1 - `github-public` 우선/`origin` legacy fallback 정책과 GitLab canonical 표현 동기화
 - 2026-04-25: v2.1.0 - push 후 pushed HEAD GitLab pipeline 확인 및 deploy_ai_engine 권위 경로 반영
 - 2026-02-17: v1.0.0 - commit-commands + github-deploy 병합 통합
