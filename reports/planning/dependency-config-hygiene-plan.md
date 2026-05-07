@@ -140,14 +140,21 @@ Task 2 결과 (2026-05-08, Codex):
 
 ### Task 3: root low-risk patch batch
 
-- [ ] Storybook patch line: `storybook`, `@storybook/nextjs-vite`, `@storybook/addon-vitest`를 같은 patch line으로 정렬할지 결정
-- [ ] `playwright` / `@playwright/test` patch 동시 업데이트
-- [ ] `typescript`, `@types/node` patch 업데이트
+- [x] Storybook patch line: `storybook`, `@storybook/nextjs-vite`, `@storybook/addon-vitest` 정렬 가능 여부 결정
+- [x] `playwright` / `@playwright/test` patch 동시 업데이트 가능 여부 결정
+- [x] `typescript`, `@types/node` patch 업데이트
 - [ ] `jsdom 29` major는 test compatibility 확인 전 보류
 - [ ] `npm run type-check`
 - [ ] `npm run lint`
 - [ ] `npm run test:quick`
 - [ ] `npm run storybook:smoke`는 Storybook patch 변경 시만 실행
+
+Task 3 진행 결과 (2026-05-08, Codex):
+
+- `typescript@6.0.3`, `@types/node@25.6.0`만 적용했다.
+- Storybook patch line은 보류했다. `@storybook/addon-vitest@10.2.13`은 registry에 있으나 peer 범위가 `storybook@^10.2.13`이고, `storybook@10.2.13` / `@storybook/nextjs-vite@10.2.13`은 registry 조회에서 404였다. 같은 patch line 정렬이 불가능하므로 강제 설치하지 않았다.
+- Playwright patch line은 보류했다. `playwright@1.59.1`은 registry에 있으나 `@playwright/test` latest 조회가 `1.58.2`로 응답해 pair alignment가 불가능했다.
+- Vitest patch line은 보류했다. `vitest@4.1.5`와 `@vitest/*@4.1.5` 설치는 현재 `@storybook/addon-vitest@10.2.10`/`@vitest/browser@4.1.2` peer graph에서 `ERESOLVE`가 발생했다. `--force`/`--legacy-peer-deps` 없이 재현 가능한 업데이트만 허용한다.
 
 ### Task 4: `shadcn` CLI dependency 결정
 
