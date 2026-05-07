@@ -27,10 +27,14 @@ describe('feature card public data', () => {
     expect(copy).toContain('BM25 RPC + metadata boost');
     expect(copy).toContain('GitLab CI semver tag pipeline');
     expect(copy).toContain('request-driven');
+    expect(copy).toContain('Cloud Build가 만들고 로컬 Docker는 사전 검증');
     expect(copy).not.toContain('Knowledge Retrieval Lite (BM25 + pgVector)');
     expect(copy).not.toContain('Supabase pgVector');
     expect(copy).not.toContain('Tavily 하이브리드');
     expect(copy).not.toContain('Vercel 자동 배포');
+    expect(copy).not.toContain('Sentry');
+    expect(copy).not.toContain('로컬과 배포 환경 차이 제거');
+    expect(copy).not.toContain('환경 불일치 원천 차단');
   });
 
   it('aligns supporting modal and diagram data with runtime wording', () => {

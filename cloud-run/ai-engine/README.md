@@ -1,6 +1,6 @@
 # AI Engine - Cloud Run Service
 
-Vercel AI SDK Multi-Agent Supervisor for OpenManager AI v8.0.0
+Vercel AI SDK Multi-Agent Supervisor for OpenManager AI v8.11.113
 
 ## Quick Start
 
@@ -69,7 +69,7 @@ gcloud run deploy ai-engine --source . --region asia-northeast1
   - local: `bash scripts/check-artifact-registry-cleanup.sh`
   - GitLab CI: `observe_artifact_registry_cleanup`
 
-## Architecture (v8.0.0)
+## Architecture
 
 ```
 src/
@@ -97,7 +97,7 @@ src/
     └── redis-client.ts            # Upstash Redis cache
 ```
 
-## Agent Implementation Pattern (v8.0.0)
+## Agent Implementation Pattern
 
 ### BaseAgent + ToolLoopAgent (AI SDK v6 Official Pattern)
 
@@ -325,7 +325,7 @@ Notes:
 
 ## Version
 
-Current: `8.0.0`
+Current: `8.11.113`
 
 ## Changelog
 

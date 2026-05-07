@@ -54,17 +54,17 @@ export const CLOUD_PLATFORM_TECH_STACK: TechItem[] = [
     type: 'commercial',
   },
   {
-    name: 'Docker',
+    name: 'Docker Compose + Preflight',
     category: 'deployment',
     importance: 'high',
     description:
-      '컨테이너 기반 가상화 플랫폼. 애플리케이션과 의존성을 패키징하여 어디서든 동일하게 실행. 개발-프로덕션 환경 일관성 보장',
+      'Cloud Run AI Engine을 로컬에서 Compose로 실행하고 build-only preflight로 컨테이너 빌드 실패를 먼저 잡는 검증 경로',
     implementation:
-      '→ WSL + Docker로 Cloud Run 로컬 에뮬레이션. 환경 불일치 원천 차단',
+      '→ 운영 이미지는 Cloud Build가 생성하고, 로컬 Docker는 WSL 개발 환경의 AI Engine 실행과 배포 전 사전 검증에 집중',
     version: '24.0.x',
     status: 'active',
     icon: '🐋',
-    tags: ['Docker', 'Container', 'DevOps'],
+    tags: ['Docker', 'Compose', 'Preflight'],
     type: 'opensource',
   },
   {

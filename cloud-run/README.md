@@ -4,7 +4,7 @@ This directory contains the AI Engine microservice for OpenManager AI.
 
 ## Services
 
-- **`ai-engine`**: Node.js LangGraph Supervisor for multi-agent orchestration (Gemini + Groq)
+- **`ai-engine`**: Node.js AI Engine for multi-agent orchestration (Cerebras/Groq/Mistral/Gemini via Vercel AI SDK)
 
 > **Note**: Rust ML service was removed in v5.84.0. All ML features (anomaly detection, trend prediction) are now handled by TypeScript within the AI Engine.
 
@@ -23,7 +23,8 @@ cd ai-engine
 
 현재 레포 공식 배포 경로는 `./deploy.sh`입니다.
 - `deploy.sh`는 `gcloud builds submit`로 Cloud Build에서 Docker를 원격 빌드합니다.
-- `scripts/docker-preflight.sh`는 배포 전에 로컬 런타임을 검증하는 **권장 사전 점검**입니다.
+- 수동 실행 기본값은 `scripts/docker-preflight.sh`의 로컬 Docker build-only 사전 점검을 먼저 수행합니다.
+- GitLab CI `deploy_ai_engine`는 중복 로컬 빌드를 피하기 위해 `LOCAL_DOCKER_PREFLIGHT=false`로 실행하고, Cloud Build를 운영 이미지 빌드 권위로 둡니다.
 - 실 배포는 `gcloud run deploy --image ...`로 진행되며, 로컬 Docker 결과물을 바로 사용하지 않습니다.
 - 운영 반영 시에는 `--source .` 방식보다 위 스크립트를 사용해 태깅/라벨/가드레일/클린업 규칙을 일관되게 적용하세요.
 
@@ -38,11 +39,7 @@ gcloud run deploy ai-engine \
   --allow-unauthenticated \
   --memory 512Mi \
   --cpu 1 \
-  --set-secrets="GOOGLE_API_KEY=GOOGLE_API_KEY:latest" \
-  --set-secrets="GROQ_API_KEY=GROQ_API_KEY:latest" \
-  --set-secrets="SUPABASE_URL=SUPABASE_URL:latest" \
-  --set-secrets="SUPABASE_SERVICE_ROLE_KEY=SUPABASE_SERVICE_ROLE_KEY:latest" \
-  --set-secrets="CLOUD_RUN_API_SECRET=CLOUD_RUN_API_SECRET:latest"
+  --set-secrets="SUPABASE_CONFIG=supabase-config:latest,AI_PROVIDERS_CONFIG=ai-providers-config:latest,KV_CONFIG=kv-config:latest,CLOUD_RUN_API_SECRET=cloud-run-api-secret:latest,LANGFUSE_CONFIG=langfuse-config:latest"
 ```
 
 ### Verify
@@ -54,9 +51,10 @@ Check the health endpoint:
 Run locally without deploying:
 
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 - AI Engine: http://localhost:8080
+- Local Compose reads `cloud-run/.env` and prefers `GEMINI_API_KEY` / `GEMINI_API_KEY_PRIMARY` for Gemini.
 
 ## ML Features (TypeScript)
 

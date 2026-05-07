@@ -4,7 +4,7 @@
 > Owner: platform-devops
 > Status: Active
 > Doc type: How-to
-> Last reviewed: 2026-04-29
+> Last reviewed: 2026-05-07
 > Canonical: docs/development/environment-variables.md
 > Tags: env,secrets,configuration,setup
 
@@ -20,7 +20,7 @@
 │ Vercel Prod  │ Vercel Dashboard → Settings → Env    │
 │ Cloud Run    │ GCP Secret Manager + deploy.sh       │
 │ Local CI     │ shell env + Docker daemon            │
-│ CI (legacy)  │ GitHub Secrets                        │
+│ GitLab CI    │ GitLab CI/CD Variables               │
 └──────────────┴──────────────────────────────────────┘
 ```
 
@@ -124,6 +124,15 @@ curl -X POST https://openmanager-ai.vercel.app/api/auth/guest-login \
   -H "Content-Type: application/json" \
   -d '{"sessionId":"guest-tool-1","guestUserId":"guest_tool","guestPin":"1234"}'
 ```
+
+### 테스트 전용 인증 변수
+
+| 변수 | 용도 | 기본값 | 비고 |
+|------|------|--------|------|
+| `TEST_SECRET_KEY` | E2E/API smoke용 `x-test-secret` 인증 secret | — | `.env.e2e`와 CI 테스트 secret 기준. 서버 검증 후 AI supervisor developer disclosure 모드가 활성화됨 |
+
+> `TEST_SECRET_KEY`는 Vercel Deployment Protection 우회용 `VERCEL_AUTOMATION_BYPASS_SECRET`와 별개입니다.
+> 일반 production 런타임에는 기본 등록하지 말고, 보호 API production smoke가 필요한 경우에만 명시적으로 공급합니다.
 
 ### 로그인 감사 로그 관련 변수
 
@@ -302,21 +311,22 @@ ALLOWED_ORIGINS=http://localhost:3000
 
 ---
 
-## Part 3: GitHub Actions 시크릿 (Historical / Reference)
+## Part 3: GitLab CI 시크릿
 
-CI/CD 워크플로우에서 사용하는 GitHub Secrets:
+GitLab CI (`gitlab.com/skyasu2/openmanager-ai`, project ID: 80633738) 의 `validate` → `deploy` 파이프라인에서 사용하는 CI Variables:
 
-| Secret | 용도 | 사용 워크플로우 |
-|--------|------|--------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase URL | simple-deploy |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase Publishable Key (권장) | simple-deploy |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase 익명 키 (레거시 fallback) | simple-deploy |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase 관리자 키 | simple-deploy |
-| `SUPABASE_URL` | Supabase URL (keep-alive) | keep-alive |
-| `SUPABASE_ANON_KEY` | Supabase 키 (keep-alive) | keep-alive |
-| `GOOGLE_API_KEY` | Google AI 키 | prompt-eval |
-| `GROQ_API_KEY` | Groq 키 | prompt-eval |
-| `CRON_SECRET` | Cron 인증 | simple-deploy |
+| Secret | 용도 | 사용 stage |
+|--------|------|-----------|
+| `VERCEL_TOKEN` | Vercel CLI 배포 인증 | deploy |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase URL | validate/deploy |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase 익명 키 | validate/deploy |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase 관리자 키 | validate/deploy |
+| `GCP_SERVICE_KEY` | GCP 서비스 계정 키 (AI Engine 배포) | deploy_ai_engine |
+| `GCP_PROJECT_ID` | GCP 프로젝트 ID | deploy_ai_engine |
+| `CLOUD_RUN_API_SECRET` | AI Engine 인증 키 | deploy_ai_engine |
+
+> `VERCEL_TOKEN`은 GitLab CI → Settings → CI/CD → Variables (Protected, Masked) 에 설정.
+> GitHub public repo는 frontend-only snapshot이며 `.github/`가 export 제외되어 GitHub Actions CI/CD를 실행하지 않습니다.
 
 ---
 
@@ -370,7 +380,7 @@ STRICT_PUSH_ENV=true PRE_PUSH_MODE=verify git push gitlab main
 |------|---------|------|
 | `.env.local` | ❌ `.gitignore` | 로컬 개발 시크릿 |
 | `.env.example` | ✅ 추적 | 환경변수 목록 (값 없음) |
-| `cloud-run/.env` | ❌ `.gitignore` | legacy Docker Compose 호환용. 새 AI Engine 로컬 실행의 정본으로 쓰지 않음 |
+| `cloud-run/.env` | ❌ `.gitignore` | Docker Compose 로컬 호환용. AI Engine 직접 실행의 정본으로 쓰지 않음 |
 | `cloud-run/ai-engine/.env` | ❌ `.gitignore` | AI Engine 로컬 시크릿 |
 
 ### 로컬 env 권위와 로딩 순서
@@ -382,7 +392,7 @@ STRICT_PUSH_ENV=true PRE_PUSH_MODE=verify git push gitlab main
 | Frontend / Next.js 로컬 | `.env.local` | Vercel 동기화 원본. `scripts/env/sync-vercel.sh`가 읽음 |
 | AI Engine 로컬 실행 | `cloud-run/ai-engine/.env` | `ENV_FILE`이 없으면 이 파일이 root `.env.local`보다 먼저 로드됨 |
 | Cloud Run production | GCP Secret Manager / deploy script | 로컬 `.env` 파일을 production 정본으로 취급하지 않음 |
-| Docker Compose legacy | `cloud-run/.env` | Compose 호환용. 새 키 추가는 가능하면 `cloud-run/ai-engine/.env`에 먼저 반영 |
+| Docker Compose local | `cloud-run/.env` | Compose 호환용. Gemini 키는 `GEMINI_API_KEY`/`GEMINI_API_KEY_PRIMARY` 우선 |
 
 AI Engine 로컬 로더는 아래 우선순위를 사용합니다.
 
@@ -412,9 +422,9 @@ CI에서 `check-hardcoded-secrets.js` 스크립트가 자동 실행되어 소스
 ## 관련 문서
 
 - [프로젝트 셋업](./project-setup.md) - `.env.local` 초기 설정
-- [CI/CD 파이프라인](./ci-cd.md) - GitHub Secrets 사용
+- [CI/CD 파이프라인](./ci-cd.md) - GitLab CI Variables 사용
 - [Docker 가이드](./docker.md) - Cloud Run 환경변수 주입
 - [Observability 가이드](../guides/observability.md) - Langfuse 환경변수 상세
 - [보안 아키텍처](../reference/architecture/infrastructure/security.md)
 
-_Last Updated: 2026-02-22_
+_Last Updated: 2026-05-07_

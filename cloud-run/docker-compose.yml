@@ -1,6 +1,12 @@
 # ============================================================================
 # AI Engine - Local Development Docker Compose
 #
+# v4.1 - 2026-05-07 (Compose V2 & Env Drift Cleanup)
+# - Use Docker Compose V2 command style
+# - APP_VERSION defaults to a non-stale local label; pass APP_VERSION explicitly when needed
+# - Gemini env names aligned with AI Engine runtime parser
+# - legacy vibe network naming removed
+#
 # v4.0 - 2026-01-06 (SSOT Sync & Version Update)
 # - APP_VERSION sync with package.json
 # - hourly-data volume mount for development
@@ -12,11 +18,13 @@
 # - Optimized for local testing before Cloud Run deployment
 #
 # Usage:
-#   docker-compose up --build        # Build and run
-#   docker-compose up -d             # Run in background
-#   docker-compose logs -f ai-engine # View logs
-#   docker-compose down              # Stop and remove
+#   docker compose up --build        # Build and run
+#   docker compose up -d             # Run in background
+#   docker compose logs -f ai-engine # View logs
+#   docker compose down              # Stop and remove
 # ============================================================================
+
+name: openmanager-ai-engine-local
 
 services:
   ai-engine:
@@ -24,10 +32,10 @@ services:
       context: ./ai-engine
       dockerfile: Dockerfile
       args:
-        - NODE_VERSION=24
-        - APP_VERSION=8.0.0
-    image: ai-engine:local
-    container_name: ai-engine-local
+        NODE_VERSION: 24
+        APP_VERSION: ${APP_VERSION:-local}
+    image: openmanager-ai-engine:local
+    container_name: openmanager-ai-engine-local
     ports:
       - "8080:8080"
 
@@ -44,39 +52,42 @@ services:
       # LLM Provider API Keys
       # ============================================
       # Cerebras (Primary - Fast Inference)
-      - CEREBRAS_API_KEY=${CEREBRAS_API_KEY}
+      - CEREBRAS_API_KEY=${CEREBRAS_API_KEY:-}
 
       # Groq (Fallback)
-      - GROQ_API_KEY=${GROQ_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
 
       # Mistral (RAG Embedding Only)
-      - MISTRAL_API_KEY=${MISTRAL_API_KEY}
+      - MISTRAL_API_KEY=${MISTRAL_API_KEY:-}
 
       # Google/Gemini (Optional)
-      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
-      - GEMINI_API_KEY_SECONDARY=${GEMINI_API_KEY_SECONDARY}
+      # Runtime parser reads GEMINI_API_KEY first, then GEMINI_API_KEY_PRIMARY.
+      # GOOGLE_API_KEY is accepted only as a legacy local input alias.
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - GEMINI_API_KEY_PRIMARY=${GEMINI_API_KEY_PRIMARY:-${GOOGLE_API_KEY:-}}
+      - GEMINI_API_KEY_SECONDARY=${GEMINI_API_KEY_SECONDARY:-}
 
       # ============================================
       # Upstash Redis (Job Queue & Caching)
       # ============================================
-      - KV_REST_API_URL=${KV_REST_API_URL}
-      - KV_REST_API_TOKEN=${KV_REST_API_TOKEN}
+      - KV_REST_API_URL=${KV_REST_API_URL:-}
+      - KV_REST_API_TOKEN=${KV_REST_API_TOKEN:-}
       # Alternative naming (for compatibility)
-      - UPSTASH_REDIS_REST_URL=${KV_REST_API_URL}
-      - UPSTASH_REDIS_REST_TOKEN=${KV_REST_API_TOKEN}
+      - UPSTASH_REDIS_REST_URL=${KV_REST_API_URL:-}
+      - UPSTASH_REDIS_REST_TOKEN=${KV_REST_API_TOKEN:-}
 
       # ============================================
       # Supabase Configuration
       # ============================================
-      - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - SUPABASE_URL=${SUPABASE_URL:-}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY:-}
       # JSON config format (used by config-parser.ts)
       - SUPABASE_CONFIG=${SUPABASE_CONFIG:-}
 
       # ============================================
       # Tavily (Web Search)
       # ============================================
-      - TAVILY_API_KEY=${TAVILY_API_KEY}
+      - TAVILY_API_KEY=${TAVILY_API_KEY:-}
 
       # ============================================
       # Langfuse (Tracing - Optional)
@@ -105,10 +116,10 @@ services:
     restart: unless-stopped
 
     networks:
-      - vibe-network
+      - ai-engine-network
 
 networks:
-  vibe-network:
+  ai-engine-network:
     driver: bridge
 
 # ============================================================================
