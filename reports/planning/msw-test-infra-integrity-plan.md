@@ -7,6 +7,7 @@
 - 상태: Draft
 - 작성일: 2026-05-07
 - TODO.md 연결: Backlog > MSW 테스트 인프라 정합성 개선
+- 테스트 방법론 기준: `docs/guides/testing/test-strategy.md` § 0
 
 ## 목표
 
