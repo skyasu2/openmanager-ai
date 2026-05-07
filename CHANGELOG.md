@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [8.11.113](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.112...v8.11.113) (2026-05-07)
+
+
+### Features
+
+* remove ai-feedback feature ([9bbab22](https://gitlab.com/skyasu2/openmanager-ai/-/commit/9bbab22f18677c3fb6ee912bae8787298c45bc17))
+
+
+### Code Refactoring
+
+* remove unused Langfuse feedback scoring ([3258faa](https://gitlab.com/skyasu2/openmanager-ai/-/commit/3258faab365e70929a65d1d2a46295cfda44d074))
+
+
+### Tests
+
+* **spec:** remove ai-feedback feature contract ([d347bfd](https://gitlab.com/skyasu2/openmanager-ai/-/commit/d347bfd5b7369a13f70f10cb55fac53a8ef94fce))
+
 ## [8.11.112](https://gitlab.com/skyasu2/openmanager-ai/-/compare/v8.11.111...v8.11.112) (2026-05-07)
 
 
