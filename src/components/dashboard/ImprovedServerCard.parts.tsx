@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import type { Server as ServerType, Service } from '@/types/server';
 import { formatMetricValue } from '@/utils/metric-formatters';
-import { MiniLineChart } from '../shared/MiniLineChart';
+import { SvgSparkline } from '../shared/SvgSparkline';
 
 interface MetricItemProps {
   type: 'cpu' | 'memory' | 'disk' | 'network';
@@ -70,7 +70,7 @@ export const MetricItem = ({ type, value, history }: MetricItemProps) => {
         </span>
       </div>
       <div className="flex h-12 w-full items-center justify-center">
-        <MiniLineChart
+        <SvgSparkline
           data={history && history.length > 1 ? history : [value, value]}
           width={72}
           height={40}

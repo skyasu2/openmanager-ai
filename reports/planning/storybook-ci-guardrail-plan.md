@@ -96,7 +96,7 @@ Storybook은 현재 `@storybook/nextjs-vite`, addon-vitest, addon-mcp, 전역 mo
 
 ## 선행 조건
 
-- Task 4의 story 수치 재계산은 `chart-migration-plan.md` 완료 후 수행한다. (`MiniLineChart` → `SvgSparkline` story 교체 이후)
+- Chart migration은 완료됨. Task 4의 story 수치 재계산은 `SvgSparkline` story 기준으로 수행한다.
 
 ## 제외 범위
 
@@ -104,7 +104,7 @@ Storybook은 현재 `@storybook/nextjs-vite`, addon-vitest, addon-mcp, 전역 mo
 - 기본 CI에 `storybook:build:ci` 상시 추가
 - 기본 CI에 `test:storybook:experimental` 상시 추가
 - 삭제된 dead-code story 복원
-- Chart migration의 `MiniLineChart` → `SvgSparkline` story 교체 구현
+- Chart migration 자체 구현
 
 ## 리스크와 대응
 

@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { type FC, useState } from 'react';
 
-import { TimeSeriesChart } from '@/components/charts/TimeSeriesChart';
+import { NivoTimeSeriesChart } from '@/components/charts/NivoTimeSeriesChart';
 import { SERVER_DATA_INTERVAL_MS } from '@/config/server-data-polling';
 import { useTimeSeriesMetrics } from '@/hooks/useTimeSeriesMetrics';
 
@@ -398,7 +398,7 @@ export const MetricsTab: FC<MetricsTabProps> = ({
               )}
 
               {timeSeriesData && (
-                <TimeSeriesChart
+                <NivoTimeSeriesChart
                   data={timeSeriesData.history}
                   predictions={timeSeriesData.prediction}
                   anomalies={timeSeriesData.anomalies}

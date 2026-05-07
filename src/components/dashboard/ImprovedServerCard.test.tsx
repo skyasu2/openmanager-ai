@@ -26,7 +26,7 @@ const serverMetricsMock = vi.hoisted(() => ({
   loadMetricsHistory: vi.fn(),
 }));
 
-// Heavy dependencies (recharts, lucide-react) are stubbed via resolve.alias
+// Heavy dependencies (chart libraries, lucide-react) are stubbed via resolve.alias
 // in vitest.config.main.ts → __mocks__/ stubs. Do NOT add vi.mock() for them
 // here as it conflicts with alias resolution and causes WSL hang.
 
@@ -117,8 +117,8 @@ vi.mock('../shared/ServerMetricsChart', () => ({
   )),
 }));
 
-vi.mock('../shared/MiniLineChart', () => ({
-  MiniLineChart: vi.fn(({ data }: { data?: number[] }) => (
+vi.mock('../shared/SvgSparkline', () => ({
+  SvgSparkline: vi.fn(({ data }: { data?: number[] }) => (
     <div data-testid="mock-mini-chart" data-points={data?.join(',') ?? ''}>
       Mini Chart
     </div>

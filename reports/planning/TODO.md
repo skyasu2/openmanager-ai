@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-07 KST (`WBS/closeout doc consolidation analysis (Codex)`)
+**Last Updated**: 2026-05-07 KST (`Chart migration implementation (Codex)`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -11,11 +11,11 @@
 
 ## Active Tasks
 
-> **권장 실행 순서**: ① Chart 마이그레이션
+> **권장 실행 순서**: ① Dependency & config hygiene 정리
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| Chart 마이그레이션: Recharts → SVG Sparkline + Nivo | Medium | Approved (Codex 대기) | MiniLineChart → 순수 SVG, TimeSeriesChart → @nivo/line, recharts 패키지 제거. 상세: [chart-migration-plan.md](chart-migration-plan.md) |
+| — | — | — | Active Task 없음 |
 
 ---
 
@@ -23,8 +23,8 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| Dependency & config hygiene 정리 | High | Approved. root는 대체로 최신권이나 `node_modules` extraneous/Next audit 추적이 필요하고, AI Engine은 patch/minor dependency drift와 runtime audit 개선이 우선. 선행: chart-migration 완료 후 recharts 항목 재검토. 상세: [dependency-config-hygiene-plan.md](dependency-config-hygiene-plan.md) |
-| Storybook CI guardrail 적용 | Medium | Approved. path-gated `storybook:smoke` CI 추가, full build는 수동/스케줄로 분리(옵션 A 결정). 선행: chart-migration 완료 후 story 수치 재계산. 상세: [storybook-ci-guardrail-plan.md](storybook-ci-guardrail-plan.md) |
+| Dependency & config hygiene 정리 | High | Approved. root는 대체로 최신권이나 `node_modules` extraneous/Next audit 추적이 필요하고, AI Engine은 patch/minor dependency drift와 runtime audit 개선이 우선. Chart migration 완료로 recharts 재검토 항목 제거됨. 상세: [dependency-config-hygiene-plan.md](dependency-config-hygiene-plan.md) |
+| Storybook CI guardrail 적용 | Medium | Approved. path-gated `storybook:smoke` CI 추가, full build는 수동/스케줄로 분리(옵션 A 결정). Chart migration 완료로 story 수치 재계산 가능. 상세: [storybook-ci-guardrail-plan.md](storybook-ci-guardrail-plan.md) |
 | Developer Panel — internal disclosure mode UI 확장 | Medium | Approved. AI 사이드바 내 개발자 진단 패널. 기존 `internalDisclosureMode='developer'` gate 재사용, 신규 auth 없음. 상세: [developer-panel-plan.md](developer-panel-plan.md) |
 | MSW 테스트 인프라 정합성 개선 | Medium | Draft (계약 미확정). false-pass 계약/통합 테스트, MSW strict boundary, live connectivity config 분리, provider handler drift, 비용/과잉 테스트 금지 포함. 상세: [msw-test-infra-integrity-plan.md](msw-test-infra-integrity-plan.md) |
 
@@ -52,6 +52,13 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-07 #315) — Codex
+- [x] Chart 마이그레이션: Recharts → SVG Sparkline + Nivo
+  - `MiniLineChart`를 순수 SVG `SvgSparkline`으로 교체하고 Recharts 기반 파일/테스트/타입 선언 삭제
+  - `TimeSeriesChart`를 `NivoTimeSeriesChart`로 교체하고 `@nivo/line`, `@nivo/core` 도입
+  - `recharts` dependency 제거, Storybook story를 `Shared/SvgSparkline`으로 갱신
+  - 검증: targeted Vitest, `type-check`, 추가 gate 실행 결과는 chart plan에 기록
 
 ### Completed (2026-05-07 #314) — Claude
 - [x] WBS/종료보고서/project 산출물 문서군 정리

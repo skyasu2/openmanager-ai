@@ -1,7 +1,7 @@
 # Chart Migration Plan: Recharts → SVG Sparkline + Nivo
 
 > Owner: project
-> Status: Approved
+> Status: Completed
 > Doc type: How-to
 > Last reviewed: 2026-05-07
 > Canonical: reports/planning/chart-migration-plan.md
@@ -76,40 +76,57 @@ npm install @nivo/line @nivo/core
 ## 작업 범위
 
 ### Task 1: SVG Sparkline 구현 (MiniLineChart 교체)
-- [ ] `src/components/shared/SvgSparkline.tsx` 신규 작성
+- [x] `src/components/shared/SvgSparkline.tsx` 신규 작성
   - Props: `data: number[]`, `width`, `height`, `color`, `fill`, `strokeWidth`, `showTooltip`, `disableAnimation`, `showLabels` (기존 MiniLineChart와 동일)
   - 구현: SVG `path` d 계산 (`M`, `L` 명령), 채우기 `area path` 계산
   - 테스트: `SvgSparkline.test.tsx`
-- [ ] `ImprovedServerCard.parts.tsx` — import를 `SvgSparkline`으로 교체
-- [ ] `MiniLineChart.tsx` 삭제 (테스트, stories 포함)
-- [ ] `recharts.d.ts` 삭제 여부 확인 (TimeSeriesChart 마이그레이션 후)
+- [x] `ImprovedServerCard.parts.tsx` — import를 `SvgSparkline`으로 교체
+- [x] `MiniLineChart.tsx` 삭제 (테스트 포함)
+- [x] `MiniLineChart.stories.tsx` → `SvgSparkline.stories.tsx` 교체
+- [x] `recharts.d.ts` 삭제
 
 ### Task 2: Nivo Line 설치 및 TimeSeriesChart 교체
-- [ ] `npm install @nivo/line @nivo/core`
-- [ ] `src/components/charts/NivoTimeSeriesChart.tsx` 작성
+- [x] `npm install @nivo/line @nivo/core`
+- [x] `src/components/charts/NivoTimeSeriesChart.tsx` 작성
   - Props API: 기존 `TimeSeriesChartProps`와 동일하게 유지
   - 기능: 실제값 라인, 예측값 라인(점선), 신뢰구간 밴드, 이상 구간 하이라이트, 임계값 라인, 툴팁
   - Brush 제거 또는 범위 슬라이더로 대체 (Nivo 미지원)
-- [ ] `EnhancedServerModal.MetricsTab.tsx` — import 교체
-- [ ] `TimeSeriesChart.tsx` 삭제 (테스트 포함, 단 `ChartErrorBoundary` 유지)
-- [ ] `recharts` 패키지 `npm uninstall recharts`
+- [x] `EnhancedServerModal.MetricsTab.tsx` — import 교체
+- [x] `TimeSeriesChart.tsx` 삭제 (테스트 포함, 단 `ChartErrorBoundary` 유지)
+- [x] `recharts` 패키지 제거
 
 ### Task 3: 검증
-- [ ] `type-check` 통과
-- [ ] `test:quick` 통과 (테스트 업데이트 포함)
-- [ ] `knip:ci` — recharts 잔재 미사용 exports 없음 확인
-- [ ] Storybook: MiniLineChart stories → SvgSparkline stories 갱신
+- [x] `type-check` 통과
+- [x] `lint` 통과
+- [x] `test:quick` 통과 (테스트 업데이트 포함)
+- [x] `knip:ci` — recharts 잔재 미사용 exports 없음 확인
+- [x] Storybook: MiniLineChart stories → SvgSparkline stories 갱신
 
 ---
 
 ## 완료 기준
 
-- [ ] `recharts` dependency package.json에서 제거됨
-- [ ] `@nivo/line`, `@nivo/core` 추가됨
-- [ ] `SvgSparkline` 신규 컴포넌트 — 기존 MiniLineChart Props 호환
-- [ ] `NivoTimeSeriesChart` — 기존 TimeSeriesChart 기능 동등 이상
-- [ ] 번들 크기 측정: recharts 제거 후 First Load JS 감소 확인 (`npm run build` 후 출력)
-- [ ] `type-check`, `lint`, `test:quick`, `knip:ci` 전부 통과
+- [x] `recharts` dependency package.json에서 제거됨
+- [x] `@nivo/line`, `@nivo/core` 추가됨
+- [x] `SvgSparkline` 신규 컴포넌트 — 기존 MiniLineChart Props 호환
+- [x] `NivoTimeSeriesChart` — 기존 TimeSeriesChart 기능 동등 이상
+- [x] 번들 크기 측정: `npm run build` 통과. Next 16 출력은 route table 중심이라 First Load JS 숫자는 별도 표기되지 않음. 로컬 package footprint 기준 `node_modules/recharts` 7.7MiB 제거, `@nivo/line` 406KiB + `@nivo/core` 708KiB 추가 확인.
+- [x] `type-check`, `lint`, `test:quick`, `knip:ci` 전부 통과
+
+## 구현 결과
+
+- Failing spec 커밋: `47618db7b`
+- `src/components/shared/SvgSparkline.tsx`: Recharts 없이 SVG `path`/area path를 직접 렌더링한다.
+- `src/components/charts/NivoTimeSeriesChart.tsx`: Nivo `ResponsiveLine`, markers, custom anomaly layer로 상세 차트를 렌더링한다.
+- `src/components/charts/time-series-chart.types.ts`: 기존 `TimeSeriesChartProps` API를 타입 계약으로 보존한다.
+- 검증:
+  - `npx vitest run --config config/testing/vitest.config.dom.ts src/components/shared/SvgSparkline.test.tsx src/components/charts/NivoTimeSeriesChart.test.tsx src/components/dashboard/ImprovedServerCard.test.tsx` — 54 pass
+  - `npm run type-check` — pass
+  - `npm run lint` — pass
+  - `npm run test:quick` — pass
+  - `npm run knip:ci` — pass
+  - `npm run storybook:smoke` — pass
+  - `npm run build` — pass
 
 ---
 

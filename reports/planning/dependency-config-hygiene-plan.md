@@ -65,7 +65,7 @@
   - `typescript`: `6.0.2` -> `6.0.3`
   - `jsdom`: `28.1.0` -> `29.0.2`는 major라 별도 검토
 - `@upstash/ratelimit`은 현재 표시에 `v2.0.8` prefix 차이가 있으나 wanted/latest는 `2.0.8`로 실질 업데이트 필요성이 낮다.
-- `recharts@3.8.0`은 Chart migration plan에서 제거 대상이므로 지금 업그레이드하지 않는다.
+- Chart migration 완료로 `recharts`는 root dependency에서 제거되었다.
 
 결론: root는 "거의 최적"에 가깝지만, `node_modules` 잔재 정리와 root runtime audit 추적이 선행되어야 한다.
 
@@ -126,7 +126,6 @@ AI Engine은 "최적 아님"이다. 주요 직접 의존성이 같은 major/mino
 - [ ] `playwright` / `@playwright/test` patch 동시 업데이트
 - [ ] `typescript`, `@types/node` patch 업데이트
 - [ ] `jsdom 29` major는 test compatibility 확인 전 보류
-- [ ] `recharts`는 Chart migration 전까지 업데이트하지 않음
 - [ ] `npm run type-check`
 - [ ] `npm run lint`
 - [ ] `npm run test:quick`
@@ -153,17 +152,13 @@ AI Engine은 "최적 아님"이다. 주요 직접 의존성이 같은 major/mino
 - [ ] `.github/` workflow는 canonical이 아님을 유지하되, 필요 시 archive/readme 문구 정리
 - [ ] `docs/development/ci-cd.md`의 Dependabot historical section과 Renovate canonical section이 모순 없는지 재점검
 
-## 선행 조건
-
-- **Task 3의 recharts 관련 재검토**는 `chart-migration-plan.md` 완료 후 수행한다. recharts 제거가 확정되면 Task 3에서 해당 항목을 삭제한다.
-
 ## 제외 범위
 
 - `npm audit fix --force`로 Next downgrade 또는 major downgrade/upgrade 수행
 - 실 LLM/외부 유료 API 호출
 - default CI에 full `npm audit` 상시 추가
 - AI Engine major migration (`zod@4`, `pino@10`, `dotenv@17`, `@hono/node-server@2`) 즉시 적용
-- Chart migration 이전 `recharts` 업데이트
+- Chart migration 완료 후 삭제된 `recharts` 복원
 
 ## 완료 기준
 

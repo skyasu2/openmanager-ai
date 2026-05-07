@@ -4,12 +4,12 @@
 
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import {
-  type AnomalyDataPoint,
-  NivoTimeSeriesChart,
-  type PredictionDataPoint,
-} from './NivoTimeSeriesChart';
-import type { MetricDataPoint } from './TimeSeriesChart';
+import { NivoTimeSeriesChart } from './NivoTimeSeriesChart';
+import type {
+  AnomalyDataPoint,
+  MetricDataPoint,
+  PredictionDataPoint,
+} from './time-series-chart.types';
 
 vi.mock('@nivo/line', () => ({
   ResponsiveLine: ({

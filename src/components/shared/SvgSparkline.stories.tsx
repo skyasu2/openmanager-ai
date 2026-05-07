@@ -1,14 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { MiniLineChart } from './MiniLineChart';
+import { SvgSparkline } from './SvgSparkline';
 
 const meta = {
-  title: 'Shared/MiniLineChart',
-  component: MiniLineChart,
+  title: 'Shared/SvgSparkline',
+  component: SvgSparkline,
   tags: ['autodocs'],
   parameters: {
     layout: 'centered',
   },
-} satisfies Meta<typeof MiniLineChart>;
+} satisfies Meta<typeof SvgSparkline>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -62,19 +62,19 @@ export const AllColors: Story = {
     <div className="space-y-3">
       <div className="flex items-center gap-3">
         <span className="w-16 text-xs text-gray-500">CPU</span>
-        <MiniLineChart data={sampleData} color="#3b82f6" fill />
+        <SvgSparkline data={sampleData} color="#3b82f6" fill />
       </div>
       <div className="flex items-center gap-3">
         <span className="w-16 text-xs text-gray-500">Memory</span>
-        <MiniLineChart data={risingData} color="#10b981" fill />
+        <SvgSparkline data={risingData} color="#10b981" fill />
       </div>
       <div className="flex items-center gap-3">
         <span className="w-16 text-xs text-gray-500">Disk</span>
-        <MiniLineChart data={stableData} color="#f59e0b" fill />
+        <SvgSparkline data={stableData} color="#f59e0b" fill />
       </div>
       <div className="flex items-center gap-3">
         <span className="w-16 text-xs text-gray-500">Network</span>
-        <MiniLineChart data={[10, 80, 20, 70, 30, 60]} color="#8b5cf6" fill />
+        <SvgSparkline data={[10, 80, 20, 70, 30, 60]} color="#8b5cf6" fill />
       </div>
     </div>
   ),

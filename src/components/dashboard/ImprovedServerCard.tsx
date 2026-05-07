@@ -166,7 +166,7 @@ const ImprovedServerCardInner: FC<ImprovedServerCardProps> = memo(
       [safeServer]
     );
 
-    // 📊 메트릭별 히스토리 배열 (MiniLineChart용)
+    // 📊 메트릭별 히스토리 배열 (SvgSparkline용)
     const { cpuHistory, memoryHistory, diskHistory } = useMemo(
       () => ({
         cpuHistory: withCurrentMetricPoint(

@@ -55,14 +55,14 @@ export const TECH_STACK_ITEMS: TechItem[] = [
     type: 'opensource',
   },
   {
-    name: 'Recharts 3.8',
+    name: 'Nivo Line + SVG Sparkline',
     category: 'ui',
     importance: 'high',
     description:
-      'React 기반 선언적 차트 라이브러리. D3.js 위에 구축, SVG 렌더링, 반응형 컨테이너, 애니메이션 지원. 예측선, 이상치 영역, Brush 줌 등 풍부한 인터랙션 제공',
+      'Nivo Line과 순수 SVG 기반 차트 구성. 서버 카드 스파크라인은 자체 SVG로 가볍게 렌더링하고, 상세 시계열은 Nivo Line으로 예측선/이상 구간/임계값을 표현',
     implementation:
-      '→ TimeSeriesChart(예측+이상치), MiniLineChart(서버카드 스파크라인) 구현. 수백 포인트 규모 데이터에 최적',
-    version: '3.8.0',
+      '→ NivoTimeSeriesChart(예측+이상치), SvgSparkline(서버카드 스파크라인) 구현. Recharts 의존성 제거',
+    version: '0.99.x',
     status: 'active',
     icon: '📊',
     tags: ['차트', 'SVG', '인터랙티브'],
