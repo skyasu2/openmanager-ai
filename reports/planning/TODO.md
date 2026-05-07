@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-07 KST (`Dead code cleanup completed (Codex)`)
+**Last Updated**: 2026-05-07 KST (`WBS/closeout doc consolidation analysis (Codex)`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -23,6 +23,8 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
+| WBS & 종료 보고서 문서군 통합 정리 | Medium | Draft plan. WBS/DoD/QA closeout/archive completion report를 하나로 합치지 않고, 산출물 인벤토리·완료 기준·현재 상태·과거 종료 증거의 SSOT 경계를 재정렬. 상세: [wbs-closeout-doc-consolidation-plan.md](wbs-closeout-doc-consolidation-plan.md) |
+| Dependency & config hygiene 정리 | High | Draft plan. root는 대체로 최신권이나 `node_modules` extraneous/Next audit 추적이 필요하고, AI Engine은 patch/minor dependency drift와 runtime audit 개선이 우선. 상세: [dependency-config-hygiene-plan.md](dependency-config-hygiene-plan.md) |
 | Storybook CI guardrail 적용 | Medium | Draft plan. 공식 Storybook/GitLab 기준으로 path-gated `storybook:smoke`는 CI에 추가하고 full build/browser tests는 수동·스케줄로 분리. 상세: [storybook-ci-guardrail-plan.md](storybook-ci-guardrail-plan.md) |
 | Developer Panel — internal disclosure mode UI 확장 | Medium | AI 사이드바 내 개발자 진단 패널. 기존 `internalDisclosureMode='developer'` gate 재사용, 신규 auth 없음. 상세: [developer-panel-plan.md](developer-panel-plan.md) |
 | MSW 테스트 인프라 정합성 개선 | Medium | Draft plan으로 승격. false-pass 계약/통합 테스트, MSW strict boundary, live connectivity config 분리, provider handler drift, 비용/과잉 테스트 금지, Pareto/Pesticide/Risk-Based/Contract-First 방법론 검토 포함. 상세: [msw-test-infra-integrity-plan.md](msw-test-infra-integrity-plan.md) |
