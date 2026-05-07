@@ -45,4 +45,4 @@
 
 - [Runtime Architecture](../architecture/02-runtime-architecture.md)
 - [AI Engine Architecture](../reference/architecture/ai/ai-engine-architecture.md)
-- [AI Assistant Architecture Evolution Plan](../../reports/planning/ai-assistant-architecture-evolution-plan.md)
+- [AI Assistant Architecture Evolution Plan](../../reports/planning/archive/ai-assistant-architecture-evolution-plan.md)

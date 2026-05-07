@@ -74,4 +74,4 @@ flowchart TB
 - [System Architecture](../reference/architecture/system/system-architecture-current.md)
 - [Architecture Diagrams Data](../../src/data/architecture-diagrams.data.ts)
 - [Stitch Guide](../development/stitch-guide.md)
-- [AI Streaming UI Improvement Plan](../../reports/planning/ai-streaming-ui-improvement-plan.md)
+- [AI Streaming UI Improvement Plan](../../reports/planning/archive/ai-streaming-ui-improvement-plan.md)

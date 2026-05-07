@@ -66,4 +66,4 @@ The allowed path is to improve the assistant around the model, not to assume a s
 - Separate soft health/cold-start degraded states from real AI execution failures.
 - Keep external LLM calls out of deterministic CI and limit real provider checks to targeted QA.
 
-Related work plan: [AI Assistant Architecture Evolution Plan](../../../../reports/planning/ai-assistant-architecture-evolution-plan.md).
+Related work plan: [AI Assistant Architecture Evolution Plan](../../../../reports/planning/archive/ai-assistant-architecture-evolution-plan.md).

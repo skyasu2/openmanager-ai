@@ -90,4 +90,4 @@ flowchart TB
 - [Frontend/Backend AI Comparison](../reference/architecture/ai/frontend-backend-comparison.md)
 - [AI Assistant Initial Design Comparison](../reference/architecture/ai/ai-assistant-initial-design-comparison.md)
 - [RAG Knowledge Engine](../reference/architecture/ai/rag-knowledge-engine.md)
-- [AI Assistant Architecture Evolution Plan](../../reports/planning/ai-assistant-architecture-evolution-plan.md)
+- [AI Assistant Architecture Evolution Plan](../../reports/planning/archive/ai-assistant-architecture-evolution-plan.md)
