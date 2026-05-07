@@ -6,7 +6,6 @@
  * v4.0.0 - useAIChatCore 통합:
  * - AISidebarV4와 동일한 공통 훅 사용 (useAIChatCore)
  * - 세션 제한 (전체화면에서는 비활성화)
- * - 피드백 기능 통합
  */
 
 import {

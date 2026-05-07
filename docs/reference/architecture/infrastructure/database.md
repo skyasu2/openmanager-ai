@@ -12,13 +12,13 @@
 
 ## 현재 역할
 
-Supabase는 인증, RAG/KB, feedback, audit 같은 영속 데이터의 기준입니다. Dashboard/AI monitoring runtime의 서버 메트릭 SSOT는 Supabase가 아니라 `public/data/otel-data` synthetic OTel dataset입니다.
+Supabase는 인증, RAG/KB, audit 같은 영속 데이터의 기준입니다. Dashboard/AI monitoring runtime의 서버 메트릭 SSOT는 Supabase가 아니라 `public/data/otel-data` synthetic OTel dataset입니다.
 
 | 영역 | 현재 기준 |
 |---|---|
 | Auth/session | Supabase Auth + 자체 guest session |
 | RAG/KB | `knowledge_base`, `command_vectors`, Knowledge Retrieval Lite |
-| Feedback/audit | `ai_feedback`, `security_audit_logs` 계열 |
+| Audit/security logs | `security_audit_logs` 계열 |
 | Monitoring runtime | `public/data/otel-data` → `MetricsProvider`/AI Engine precomputed state |
 | AI jobs/cache | Redis/Cloud Tasks, Supabase가 job store 아님 |
 | Schema source | `supabase/migrations/**` |

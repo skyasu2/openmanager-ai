@@ -1,0 +1,135 @@
+{
+  "runId": "QA-20260507-0420",
+  "recordedAt": "2026-05-07T03:06:42.069Z",
+  "recordedAtKst": "2026-05-07 12:06:42 KST",
+  "runTitle": "v8.11.113 AI Feedback Removal Production Targeted QA",
+  "owner": "codex",
+  "source": "playwright-mcp + route status checks",
+  "environment": {
+    "target": "vercel-production",
+    "url": "https://openmanager-ai.vercel.app",
+    "frontend": "Vercel",
+    "backend": "Cloud Run",
+    "branch": "main",
+    "deploymentId": "v8.11.113",
+    "deploymentUrl": "https://openmanager-ai.vercel.app",
+    "commitSha": "e0d19690a45ab4970bc72a5ad330c49516b9e678"
+  },
+  "scope": "targeted",
+  "releaseFacing": true,
+  "countsTowardSummary": true,
+  "coveragePacks": ["core-routes-smoke", "ai-core"],
+  "coveredSurfaces": [
+    "GitLab v8.11.113 tag pipeline 2506061682 succeeded for e0d19690a45ab4970bc72a5ad330c49516b9e678",
+    "Production /api/version served 8.11.113 after release propagation",
+    "Vercel /api/ai/feedback GET returned 404",
+    "Vercel /api/ai/feedback POST returned 404",
+    "Cloud Run /api/ai/feedback GET returned 404 with production API authentication",
+    "Cloud Run /api/ai/feedback POST returned 404 with production API authentication",
+    "Production AI Assistant rendered with feedback actions removed and copy/regenerate actions retained",
+    "Message copy action still produced the copied state"
+  ],
+  "skippedSurfaces": [
+    "Full five-question conversational AI QA was not rerun because this release removed feedback collection/UI/API surfaces and did not change prompt quality, provider routing, or answer generation logic",
+    "Reporter, anomaly/trend, modal/detail, privacy, OAuth, and broad dashboard packs were not rerun in this targeted pass"
+  ],
+  "checks": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "aiLatencyObservations": [],
+  "plannerShadowObservations": [],
+  "expertAssessments": [
+    {
+      "domainId": "ai-quality-assurance",
+      "domainName": "AI Quality Assurance Specialist",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The run verified the intended feedback removal contract without adding live provider variability.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "frontend-ux",
+      "domainName": "Frontend UX Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "AI Assistant no longer exposes feedback actions while preserving the expected copy and regenerate controls.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "sre-devops",
+      "domainName": "DevOps / SRE Engineer",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "Release propagation completed, production served the expected version, and the GitLab tag pipeline succeeded.",
+      "nextAction": ""
+    },
+    {
+      "domainId": "test-automation",
+      "domainName": "Test Automation Architect",
+      "fit": "appropriate",
+      "improvementNeeded": false,
+      "rationale": "The QA combines route status checks and rendered UI action checks for the removed feature surface.",
+      "nextAction": ""
+    }
+  ],
+  "usageChecks": [
+    {
+      "platform": "vercel",
+      "method": "cli",
+      "status": "checked",
+      "result": "normal",
+      "checkedAt": "2026-05-07T12:06:03+09:00",
+      "summary": "Current billing period checked after v8.11.113 targeted QA; effective 3.3658 USD, billed 0.0000 USD, chargeCount 3045.",
+      "evidence": "npm run check:usage:vercel",
+      "url": "https://vercel.com/dashboard"
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "playwright-report",
+      "label": "v8.11.113 AI feedback removal evidence",
+      "path": "reports/qa/evidence/qa-20260507-v811113-feedback-removal.md"
+    },
+    {
+      "type": "playwright-screenshot",
+      "label": "AI Assistant feedback actions removed",
+      "path": "reports/qa/evidence/qa-20260507-v811113-feedback-removal-ai-assistant.png"
+    }
+  ],
+  "completedImprovements": [
+    {
+      "id": "ai-feedback-removal-v811113",
+      "title": "AI feedback feature removed from production",
+      "priority": "P2",
+      "isBlocking": true,
+      "isBlockingExplicit": true,
+      "overengineeringScope": "",
+      "evidence": "reports/qa/evidence/qa-20260507-v811113-feedback-removal.md",
+      "note": "Vercel and Cloud Run feedback endpoints return 404, and production AI Assistant no longer renders feedback action buttons.",
+      "owner": "codex",
+      "status": "completed",
+      "policyNote": ""
+    }
+  ],
+  "pendingImprovements": [],
+  "deferredImprovements": [],
+  "wontFixImprovements": [],
+  "notes": [
+    "Local shell DNS intermittently returned EAI_AGAIN for openmanager-ai.vercel.app; Playwright MCP and release verification reached production successfully.",
+    "Direct Cloud Run route verification used configured production API authentication without logging secret values."
+  ],
+  "links": [
+    {
+      "type": "general",
+      "label": "GitLab v8.11.113 tag pipeline 2506061682",
+      "url": "https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2506061682"
+    },
+    {
+      "type": "general",
+      "label": "Production version endpoint",
+      "url": "https://openmanager-ai.vercel.app/api/version"
+    }
+  ]
+}

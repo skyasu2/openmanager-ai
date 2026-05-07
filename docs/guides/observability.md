@@ -14,7 +14,7 @@
 
 | 도구 | 용도 | 적용 범위 | 플랜 |
 |------|------|----------|------|
-| **Langfuse** | LLM 호출 트레이싱, 토큰 사용량, 피드백 | Cloud Run AI Engine | Hobby (무료, 50K events/월) |
+| **Langfuse** | LLM 호출 트레이싱, 토큰 사용량 | Cloud Run AI Engine | Hobby (무료, 50K events/월) |
 | **Sentry** | 런타임 에러 캡처, 성능 모니터링 | Vercel Frontend (+ Cloud Run) | Free (50K events/월) |
 
 ```
@@ -28,8 +28,7 @@
 │  └─ X-Trace-Id 헤더 → Cloud Run                      │
 │       ↓                                              │
 │  Cloud Run (AI Engine)                               │
-│  ├─ Langfuse SDK → Langfuse (LLM 트레이싱)            │
-│  └─ 피드백 → Langfuse Score                           │
+│  └─ Langfuse SDK → Langfuse (LLM 트레이싱)            │
 └──────────────────────────────────────────────────────┘
 ```
 
@@ -43,7 +42,7 @@
 - **Traces**: Supervisor 실행 단위 (질문 → 답변 전체 흐름)
 - **Generations**: 개별 LLM 호출 (모델, 토큰, 지연시간)
 - **Spans**: 도구 호출 (tool 실행 시간)
-- **Scores**: 사용자 피드백 (좋아요/싫어요) + 실행 성공 여부
+- **Scores**: 기본 운영 루프에서는 사용하지 않음. AI 품질 판정은 `reports/qa/` 기록과 코드·프롬프트 재검증으로 관리
 
 ### 1.2 계정 설정
 
@@ -135,7 +134,7 @@ curl -H "X-API-Key: $CLOUD_RUN_API_SECRET" \
 2. 프로젝트 선택
 3. **Traces** 탭: 전체 실행 흐름 확인
 4. **Generations** 탭: LLM 호출 상세 (모델, 토큰, 비용)
-5. **Scores** 탭: 사용자 피드백 + supervisor mode audit 통계
+5. **Scores** 탭: 기본 운영 루프에서는 사용하지 않음. 품질 판정은 QA run 기록을 기준으로 확인
 6. **Dashboard** 탭: 사용량 요약, 비용 추이
 
 ### 1.5 Free Tier 보호 시스템

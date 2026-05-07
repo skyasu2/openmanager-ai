@@ -178,7 +178,7 @@ graph LR
 
 | 기능 | Frontend | Backend | 평가 |
 |------|:--------:|:-------:|:----:|
-| 사용자 피드백 | 좋아요/싫어요 + 텍스트 | Supabase 저장 | 양쪽 완벽 |
+| AI 품질 평가 | `reports/qa` targeted run 기록 | Langfuse trace 참고 + 코드/프롬프트 재검증 | feedback endpoint 제거 완료 |
 | AI 추적 | `traceparent`/timing header 전달 | Langfuse Tracing + Pino 상관관계 | 양쪽 완벽 |
 | 에러 모니터링 | Sentry (AI context 태그 포함) | Pino 구조화 로깅 + Cloud Logging | 양쪽 완벽 |
 | 비용 모니터링 | - | Free Tier 자동 차단 (90%) | Backend 전담 |

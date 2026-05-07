@@ -31,7 +31,6 @@ import { MessageComponent } from './SidebarMessage';
 // 🔧 공통 로직은 useAIChatCore 훅에서 관리
 // - Hybrid AI Query (Streaming + Job Queue)
 // - 세션 제한
-// - 피드백
 // - 메시지 변환
 
 // 📐 리사이즈 상수

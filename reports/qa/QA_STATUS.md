@@ -1,27 +1,27 @@
 # QA Status Dashboard
 
 > Auto-generated file. Edit `qa-tracker.json` or use `npm run qa:record`.
-> Generated at: 2026-05-07 10:09:28 KST
+> Generated at: 2026-05-07 12:06:43 KST
 
 ## Summary
 
 | Metric | Value |
 |---|---:|
-| Total Recorded Runs | 417 |
-| Total Runs (Counted) | 343 |
+| Total Recorded Runs | 418 |
+| Total Runs (Counted) | 344 |
 | Non-counted Runs | 74 |
-| Total Checks | 3009 |
-| Passed | 2900 |
+| Total Checks | 3017 |
+| Passed | 2908 |
 | Failed | 100 |
-| Completed Items | 448 |
+| Completed Items | 449 |
 | Pending Items | 0 |
 | Deferred Items | 0 |
 | Wont-Fix Items | 22 |
 | Expert Domains Tracked | 13 |
 | Expert Open Gaps | 0 |
 | Completion Rate | 100% |
-| Last Counted Run | QA-20260507-0419 (2026-05-07T01:09:27.132Z) |
-| Latest Recorded Run | QA-20260507-0419 (2026-05-07T01:09:27.132Z) |
+| Last Counted Run | QA-20260507-0420 (2026-05-07T03:06:42.069Z) |
+| Latest Recorded Run | QA-20260507-0420 (2026-05-07T03:06:42.069Z) |
 | Summary Rule | `countsTowardSummary !== false` 인 run만 Counted 집계에 반영 |
 
 ## Active Gate Warnings
@@ -34,12 +34,11 @@
 
 ## Expert Domain Assessment (Latest Run)
 
-Latest run: QA-20260507-0419 (2026-05-07T01:09:27.132Z)
+Latest run: QA-20260507-0420 (2026-05-07T03:06:42.069Z)
 
 | Domain | Fit | Improvement Needed | Next Action |
 |---|---|---|---|
 | AI Quality Assurance Specialist | appropriate | no | - |
-| AI Security & Reliability Architect | appropriate | no | - |
 | Frontend UX Engineer | appropriate | no | - |
 | DevOps / SRE Engineer | appropriate | no | - |
 | Test Automation Architect | appropriate | no | - |
@@ -48,11 +47,11 @@ Latest run: QA-20260507-0419 (2026-05-07T01:09:27.132Z)
 
 | Platform | Method | Collection | Result | Summary |
 |---|---|---|---|---|
-| vercel | cli | checked | normal | Current billing period checked before v8.11.112 release; effective 3.3658 USD, billed 0.0000 USD, chargeCount 3045. |
+| vercel | cli | checked | normal | Current billing period checked after v8.11.113 targeted QA; effective 3.3658 USD, billed 0.0000 USD, chargeCount 3045. |
 
 ## AI Latency Rollup (Last 24h)
 
-- Window: 2026-05-06T01:09:27.132Z -> 2026-05-07T01:09:27.132Z (24h)
+- Window: 2026-05-06T03:06:42.069Z -> 2026-05-07T03:06:42.069Z (24h)
 - Runs with observations: 4 recorded / 4 counted
 - Samples: 7
 
@@ -65,7 +64,7 @@ Latest run: QA-20260507-0419 (2026-05-07T01:09:27.132Z)
 
 ## Planner Shadow Rollup (Last 24h)
 
-- Window: 2026-05-06T01:09:27.132Z -> 2026-05-07T01:09:27.132Z (24h)
+- Window: 2026-05-06T03:06:42.069Z -> 2026-05-07T03:06:42.069Z (24h)
 - Runs with observations: 0 recorded / 0 counted
 - Samples: 0
 - Drift rate: 0%
@@ -79,23 +78,24 @@ Latest run: QA-20260507-0419 (2026-05-07T01:09:27.132Z)
 - Scope: targeted
 - Release-Facing: yes
 - Counts Toward Summary: yes
-- Deployment: dpl_8Mef9Ac714R8xStDrn5weLHBxfzQ / SHA 89628b5f
-- Coverage Packs: core-routes-smoke, dashboard-core, ai-core, security-pack
-- Covered Surfaces: GitLab v8.11.112 tag pipeline 2505951845 succeeded for 89628b5f2effdf7f246169741022fbcba3e7145e, Release smoke confirmed production /, /login, and /api/version after propagation attempt 24/81; /api/version served 8.11.112, /login rendered v8.11.112 and guest PIN login reached an authenticated AI Assistant session, /dashboard/ai-assistant desktop 1440x900 rendered with document/body/main scrollHeight equal to clientHeight; only AI chat and System Context inner panels scrolled, /dashboard/ai-assistant mobile 390x844 rendered with document/body/main scrollHeight equal to clientHeight; only the AI chat inner panel scrolled, Cloud Run supervisor user-mode request without internalDisclosureMode refused internal file paths/repository/private KB locations deterministically, Cloud Run disclosure refusal used provider internal-path-policy, toolsCalled [], promptTokens 0, completionTokens 0, durationMs 3
-- Skipped Surfaces: Full five-question conversational AI QA was not rerun because this release targeted layout scroll containment, internal disclosure policy guard, and testing documentation rather than answer-quality prompt tuning, Developer/PIN mode internal path disclosure was not treated as a failure; PIN-authenticated sessions intentionally map to developer disclosure mode, Reporter, anomaly/trend, modal/detail, privacy, OAuth, and broad dashboard packs were not rerun in this targeted pass, No new live LLM prompt was sent for disclosure verification; deterministic policy path was sufficient and avoided provider cost
+- Deployment: v8.11.113 / SHA e0d19690
+- Coverage Packs: core-routes-smoke, ai-core
+- Covered Surfaces: GitLab v8.11.113 tag pipeline 2506061682 succeeded for e0d19690a45ab4970bc72a5ad330c49516b9e678, Production /api/version served 8.11.113 after release propagation, Vercel /api/ai/feedback GET returned 404, Vercel /api/ai/feedback POST returned 404, Cloud Run /api/ai/feedback GET returned 404 with production API authentication, Cloud Run /api/ai/feedback POST returned 404 with production API authentication, Production AI Assistant rendered with feedback actions removed and copy/regenerate actions retained, Message copy action still produced the copied state
+- Skipped Surfaces: Full five-question conversational AI QA was not rerun because this release removed feedback collection/UI/API surfaces and did not change prompt quality, provider routing, or answer generation logic, Reporter, anomaly/trend, modal/detail, privacy, OAuth, and broad dashboard packs were not rerun in this targeted pass
 
 ## Links (Latest Run)
 
 | Type | Label | URL | Note |
 |---|---|---|---|
-| general | GitLab v8.11.112 tag pipeline 2505951845 | [GitLab v8.11.112 tag pipeline 2505951845](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2505951845) | - |
+| general | GitLab v8.11.113 tag pipeline 2506061682 | [GitLab v8.11.113 tag pipeline 2506061682](https://gitlab.com/skyasu2/openmanager-ai/-/pipelines/2506061682) | - |
 | general | Production version endpoint | [Production version endpoint](https://openmanager-ai.vercel.app/api/version) | - |
 
 ## Artifacts (Latest Run)
 
 | Type | Label | Location | Viewer |
 |---|---|---|---|
-| playwright-report | v8.11.112 AI Assistant scroll and user-mode internal disclosure evidence | `reports/qa/evidence/qa-20260507-v811112-ai-scroll-internal-disclosure.md` | - |
+| playwright-report | v8.11.113 AI feedback removal evidence | `reports/qa/evidence/qa-20260507-v811113-feedback-removal.md` | - |
+| playwright-screenshot | AI Assistant feedback actions removed | `reports/qa/evidence/qa-20260507-v811113-feedback-removal-ai-assistant.png` | - |
 
 ## Expert Domain Open Gaps
 
@@ -233,6 +233,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 - ai-engine-supervisor-runtime-host-wiring-v811107: Production supervisor stream and single-agent runtime host wiring verified (completed 1회, last QA-20260506-0413)
 - ai-explicit-server-summary-backfill: Explicit server action summary keeps named TOP2 servers and backfills partial tool payloads (completed 1회, last QA-20260430-0376)
 - ai-fallback-done-usage-metadata: Delegated summarization fallback should report delegated provider token usage (completed 1회, last QA-20260429-0367)
+- ai-feedback-removal-v811113: AI feedback feature removed from production (completed 1회, last QA-20260507-0420)
 - ai-formatting-only-rewrite-routing-v81195: Formatting-only report rewrite stays on chat stream path (completed 1회, last QA-20260504-0403)
 - ai-formatting-rewrite-context-preservation-v81196: Formatting-only follow-up rewrite reuses prior answer context and preserves all listed server IDs/values (completed 1회, last QA-20260505-0406)
 - ai-friendly-template-todo-marker: Template TODO marker 분리 (TEMPLATE_TODO 적용) (completed 1회, last QA-20260226-0006)
@@ -632,6 +633,7 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 
 | Run ID | Time (UTC) | Scope | Release-Facing | In Summary | Title | Checks | Completed | Pending | Deferred | Wont-Fix | Expert Gaps |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| QA-20260507-0420 | 2026-05-07T03:06:42.069Z | targeted | yes | yes | v8.11.113 AI Feedback Removal Production Targeted QA | 8 | 1 | 0 | 0 | 0 | 0 |
 | QA-20260507-0419 | 2026-05-07T01:09:27.132Z | targeted | yes | yes | v8.11.112 AI Assistant Scroll and Internal Disclosure Targeted QA | 7 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260507-0418 | 2026-05-06T21:59:27.519Z | targeted | yes | yes | v8.11.110 Production Targeted QA - Precomputed State Data Source Decoupling | 11 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260506-0417 | 2026-05-06T07:48:50.082Z | targeted | no | no | Local deterministic QA - MonitoringFactPack evidence UI | 5 | 1 | 0 | 0 | 0 | 0 |
@@ -651,4 +653,3 @@ _Accepted as non-blocking portfolio debt to avoid over-engineering._
 | QA-20260504-0403 | 2026-05-04T05:22:20.393Z | targeted | yes | yes | v8.11.95 AI Ranking and Formatting Rewrite Recheck | 14 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260504-0402 | 2026-05-03T23:00:39.195Z | targeted | yes | yes | v8.11.89 Vercel Playwright MCP Targeted QA | 15 | 2 | 0 | 0 | 0 | 0 |
 | QA-20260504-0401 | 2026-05-03T17:29:57.587Z | targeted | yes | yes | v8.11.89 Release Smoke - Monitoring Source Error Contract | 9 | 2 | 0 | 0 | 0 | 0 |
-| QA-20260503-0400 | 2026-05-03T14:21:43.788Z | targeted | yes | yes | v8.11.88 Fullscreen AI Stream Complementary QA | 5 | 1 | 0 | 0 | 0 | 0 |

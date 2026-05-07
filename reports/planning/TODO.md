@@ -11,12 +11,11 @@
 
 ## Active Tasks
 
-> **권장 실행 순서**: ① Sentry DSN 등록(사용자 직접) → ② AI 피드백 제거(Codex, 진행 중) → ③ Dead code 제거(Codex)
+> **권장 실행 순서**: ① Sentry DSN 등록(사용자 직접) → ② Dead code 제거(Codex)
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
 | ⚡ Sentry DSN 등록 — production 에러 수집 활성화 | High | **사용자 액션 필요** | `NEXT_PUBLIC_SENTRY_DSN` Vercel production 환경변수 미설정. 코드·tunnel·sampling은 완비. DSN 1개만 등록하면 즉시 활성화. 상세: [dead-code-sentry-cleanup-plan.md § B-1](dead-code-sentry-cleanup-plan.md) |
-| AI 피드백 기능 제거 → QA 기반 품질 루프 전환 | High | In Progress (Codex) | 로컬 제거 구현·검증 완료. 다음 release/tag 배포 후 `/api/ai/feedback` 404 production QA 기록 필요. 상세: [ai-feedback-removal-plan.md](ai-feedback-removal-plan.md) |
 | Dead code 정리 (5개 항목) | Medium | Approved (Codex 대기) | AI 피드백 제거 완료 후 진행. 상세: [dead-code-sentry-cleanup-plan.md § Part A](dead-code-sentry-cleanup-plan.md) |
 
 ---
@@ -53,6 +52,14 @@
 ---
 
 ## Recent Completed
+
+### Completed (2026-05-07 #311) — Codex
+- [x] AI 피드백 기능 제거 production closure
+  - `v8.11.113` release/tag 배포 후 GitLab tag pipeline `2506061682` success 확인
+  - Vercel `/api/ai/feedback` GET/POST 404, Cloud Run `/api/ai/feedback` GET/POST 404 확인
+  - AI Assistant production UI에서 👍/👎 feedback action 0개, 복사/재생성 action 유지 확인
+  - QA 기록: [QA-20260507-0420](../qa/runs/2026/qa-run-QA-20260507-0420.json)
+  - 상세: [archive/ai-feedback-removal-plan.md](archive/ai-feedback-removal-plan.md)
 
 ### Completed (2026-05-07 #310) — Codex
 - [x] 테스트 방법론 기준 SSOT/스킬 반영

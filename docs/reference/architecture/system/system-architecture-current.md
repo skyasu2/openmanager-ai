@@ -268,7 +268,7 @@ Cloud Run AI Engine은 **Stateless** 설계를 따르며, 영속 데이터는 Su
 | **일관성** | 메트릭은 번들 JSON, 영속 데이터는 Supabase 기준으로 일관성 유지 |
 | **비용 절감** | Cloud Run에 영속 스토리지 비용 없음 |
 
-데이터 동기화: 런타임 SSOT는 `public/data/otel-data`이며, Cloud Run 배포 시 `deploy.sh`가 이를 컨테이너 `data/otel-data`로 복사합니다. Cloud Run은 `otel-processed` 호환 폴백도 유지합니다. 영속 데이터(RAG/피드백/히스토리)는 Supabase에서 조회합니다.
+데이터 동기화: 런타임 SSOT는 `public/data/otel-data`이며, Cloud Run 배포 시 `deploy.sh`가 이를 컨테이너 `data/otel-data`로 복사합니다. Cloud Run은 `otel-processed` 호환 폴백도 유지합니다. 영속 데이터(RAG/히스토리/audit)는 Supabase에서 조회합니다.
 
 ### Build-Time Pipeline
 
