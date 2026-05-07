@@ -37,7 +37,7 @@
     "codex:local:storybook": "OPENMANAGER_STORYBOOK_MCP_MODE=on bash scripts/mcp/codex-local.sh",
     "ci:runner:health": "bash scripts/ci/runner-health-check.sh",
     "clean": "rm -rf .next node_modules/.cache",
-    "clean:all": "rm -rf .next node_modules package-lock.json && npm install",
+    "clean:all": "rm -rf .next node_modules && npm ci --prefer-offline --no-audit --no-fund",
     "data:fix": "tsx scripts/data/otel-fix.ts",
     "data:precomputed:build": "tsx cloud-run/ai-engine/scripts/build-precomputed-states.ts",
     "data:verify": "tsx scripts/data/otel-verify.ts",

@@ -202,6 +202,7 @@ CI_DOCKER_PULL_POLICY=never npm run ci:local:docker
 - `npm-ci` 모드는 새 의존성 설치가 필요할 때만 사용합니다.
 - broad change, release 전, 배포 민감 변경에서는 pre-push hook만으로 끝내지 말고 `npm run ci:local:docker`를 추가로 실행합니다.
 - docs/reports 전용 push는 `.gitlab-ci.yml`의 `changes` 규칙으로 CI가 스킵되므로, 별도 코드 검증이 필요 없을 때만 사용합니다.
+- 로컬 설치 트리 전체 재구성이 필요하면 `npm run clean:all`을 사용합니다. 이 스크립트는 `package-lock.json`을 삭제하지 않고 `npm ci --prefer-offline --no-audit --no-fund`로 lockfile 기준 설치를 복구합니다. lockfile 재생성이 필요한 dependency 변경은 별도 계획/리뷰 아래에서 `npm install` 또는 명시적 update 명령으로 처리합니다.
 
 ### `.gitlab-ci.yml` 작성 주의
 
@@ -536,7 +537,7 @@ npm run renovate:run
 
 ### historical GitHub reference
 
-아래 내용은 과거 GitHub-only 운영 참고용으로만 유지합니다.
+아래 내용은 과거 GitHub-only 운영 참고용으로만 유지합니다. `.github/README.md`와 `.github/dependabot.yml`도 같은 historical reference 범위에 속하며, public snapshot에는 `.github/` 자체가 포함되지 않습니다. 따라서 아래 Dependabot/auto-merge 정책은 현재 canonical dependency update 경로가 아니고, 실제 운영 정책은 위의 Renovate 섹션과 `renovate.json`을 기준으로 판단합니다.
 
 ### 설정 파일: `.github/dependabot.yml`
 
@@ -590,7 +591,7 @@ Dependabot PR 생성
 | 매일 실행 | patch는 빨리 흡수하고, 큰 변경은 review label로 자동 분리 |
 | 최대 5 PR | Dependabot PR이 쌓여 리뷰 부담이 되는 것 방지 |
 
-현재 canonical GitLab 운영에서는 위 정책을 **그룹화/라벨링까지만 유지**하고, 자동 머지는 보류합니다.
+현재 canonical GitLab 운영에서는 위 정책의 의도 중 **PR 폭증 방지, 그룹화, 라벨링, 수동 승인**만 Renovate 쪽에 반영하고, Dependabot 실행과 자동 머지는 사용하지 않습니다.
 
 ---
 

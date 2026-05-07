@@ -1,7 +1,7 @@
 # Dependency & Config Hygiene 계획
 
 > Owner: project
-> Status: Approved
+> Status: Implemented
 > Doc type: Plan
 > Last reviewed: 2026-05-08
 > Canonical: reports/planning/dependency-config-hygiene-plan.md
@@ -192,9 +192,16 @@ Task 5 진행 결과 (2026-05-08, Codex):
 
 ### Task 6: 위험한/혼동되는 설정 정리
 
-- [ ] `clean:all`이 lockfile 삭제를 수행하는 점을 제거하거나 legacy/dangerous로 명시
-- [ ] `.github/` workflow는 canonical이 아님을 유지하되, 필요 시 archive/readme 문구 정리
-- [ ] `docs/development/ci-cd.md`의 Dependabot historical section과 Renovate canonical section이 모순 없는지 재점검
+- [x] `clean:all`이 lockfile 삭제를 수행하는 점을 제거하거나 legacy/dangerous로 명시
+- [x] `.github/` workflow는 canonical이 아님을 유지하되, 필요 시 archive/readme 문구 정리
+- [x] `docs/development/ci-cd.md`의 Dependabot historical section과 Renovate canonical section이 모순 없는지 재점검
+
+Task 6 진행 결과 (2026-05-08, Codex):
+
+- root `clean:all`을 `rm -rf .next node_modules && npm ci --prefer-offline --no-audit --no-fund`로 변경해 `package-lock.json`을 삭제하지 않도록 고정했다.
+- `.github/README.md`를 추가해 `.github/` 전체가 private canonical workspace의 historical reference이며 public snapshot/delivery path가 아님을 명시했다.
+- `docs/development/ci-cd.md`에 `clean:all`의 lockfile 보존 원칙과 Renovate canonical / Dependabot historical 경계를 보강했다.
+- Nivo Playwright 시각 QA는 새 build가 필요하지만 이 환경에서 `next build`가 출력 없이 실패해 미실행 상태로 남겼다. stale `.next`로 QA하면 현재 변경분 검증이 아니므로 기록하지 않았다.
 
 ## 제외 범위
 
@@ -210,5 +217,5 @@ Task 5 진행 결과 (2026-05-08, Codex):
 - [x] AI Engine runtime audit의 Hono/node-server 직접 취약점이 해소된다.
 - [x] root Next audit은 강제 downgrade 없이 추적 상태로 문서화된다.
 - [x] Renovate가 root/AI Engine lockfile maintenance와 patch/minor PR을 관리한다.
-- [ ] `clean:all`이 lockfile 운영 원칙과 충돌하지 않는다.
+- [x] `clean:all`이 lockfile 운영 원칙과 충돌하지 않는다.
 - [x] 관련 문서와 TODO가 같은 dependency/config hygiene 정책을 가리킨다.

@@ -1,6 +1,6 @@
 # TODO - OpenManager AI v8
 
-**Last Updated**: 2026-05-08 KST (`Dependency hygiene Task 5 Renovate 운영 보강 (Codex)`)
+**Last Updated**: 2026-05-08 KST (`Dependency hygiene Task 6 clean/config 정리`)
 
 > **작업 주체 표기 규칙** (Codex/Gemini 등 다른 AI 참조용):
 > - `In Progress (Claude)` — Claude가 현재 진행 중. 검토만 할 것, 중복 착수 금지.
@@ -23,7 +23,8 @@
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| Dependency & config hygiene 정리 | High | Approved. Task 1 local install tree cleanup, Task 2 AI Engine patch/minor security batch, Task 3 root TypeScript/@types patch, Task 4 shadcn CLI 상시 devDependency 제거, Task 5 Renovate 운영 보강 완료. Storybook/Playwright/Vitest patch는 registry/peer alignment 문제로 보류. 다음은 Task 6 `clean:all`/GitHub historical workflow 정리. 상세: [dependency-config-hygiene-plan.md](dependency-config-hygiene-plan.md) |
+| NivoTimeSeriesChart UX 회귀 수정 | High | Implemented. 툴팁/useMesh, active anomaly endTime, anomaly layer 보간/최소폭 수정 및 targeted/type/lint/test:quick 통과. 남은 확인: Playwright hover/하이라이트 시각 QA. 상세: [nivo-chart-ux-fix-plan.md](nivo-chart-ux-fix-plan.md) |
+| Dependency & config hygiene 정리 | High | Implemented. Task 1~6 완료: local install tree, AI Engine patch/minor, root TS/@types, shadcn CLI 제거, Renovate 운영 보강, `clean:all` lockfile 보존/GitHub historical workflow 문구 정리. Storybook/Playwright/Vitest patch는 registry/peer alignment 문제로 보류. 상세: [dependency-config-hygiene-plan.md](dependency-config-hygiene-plan.md) |
 | Storybook CI guardrail 적용 | Medium | Approved. path-gated `storybook:smoke` CI 추가, full build는 수동/스케줄로 분리(옵션 A 결정). Chart migration 완료로 story 수치 재계산 가능. 상세: [storybook-ci-guardrail-plan.md](storybook-ci-guardrail-plan.md) |
 | Developer Panel — internal disclosure mode UI 확장 | Medium | Approved. AI 사이드바 내 개발자 진단 패널. 기존 `internalDisclosureMode='developer'` gate 재사용, 신규 auth 없음. 상세: [developer-panel-plan.md](developer-panel-plan.md) |
 | MSW 테스트 인프라 정합성 개선 | Medium | Draft (계약 미확정). false-pass 계약/통합 테스트, MSW strict boundary, live connectivity config 분리, provider handler drift, 비용/과잉 테스트 금지 포함. 상세: [msw-test-infra-integrity-plan.md](msw-test-infra-integrity-plan.md) |
