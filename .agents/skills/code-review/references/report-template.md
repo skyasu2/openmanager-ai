@@ -6,10 +6,11 @@ Code Review Findings
 Perspective Summary
 - Correctness: 0 findings
 - Readability: 0 findings
+- Complexity: 0 findings
 - Design: 0 findings
 - Performance: 1 finding
 - Security: 1 finding
-- Test Coverage: 0 findings
+- Test Quality: 0 findings
 
 Findings
 - [P1][Security] Example finding title
