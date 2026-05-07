@@ -5,10 +5,10 @@
  * 최상위 레벨 에러 처리 (500, unhandled errors)
  */
 
-import * as Sentry from '@sentry/nextjs';
 import Link from 'next/link';
 import { useEffect, useMemo } from 'react';
 import { logger } from '@/lib/logging';
+import { captureLocalSentryException } from '@/lib/observability/local-sentry-client';
 import debug from '@/utils/debug';
 
 // 클라이언트 컴포넌트에서 안전하게 환경 감지
@@ -35,7 +35,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
 
   useEffect(() => {
     if (clientEnv.isProduction) {
-      Sentry.captureException(error, {
+      captureLocalSentryException(error, {
         tags: { boundary: 'global-error', digest: error.digest },
       });
 

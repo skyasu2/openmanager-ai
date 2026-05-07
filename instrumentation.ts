@@ -2,7 +2,7 @@
  * Next.js Instrumentation (Next.js 16 권장 방식)
  *
  * 앱 시작 시 실행되는 초기화 코드
- * - Sentry Server/Edge SDK 통합 초기화 (production only, dynamic import)
+ * - Sentry Server/Edge SDK 통합 초기화 (local analysis opt-in only)
  * - 환경변수 검증
  *
  * @see https://nextjs.org/docs/app/building-your-application/optimizing/instrumentation
@@ -10,26 +10,31 @@
  */
 
 export async function register() {
-  // dev 모드에서는 startup instrumentation을 완전히 건너뜀.
-  // env 파싱도 root cold compile 경로에 포함되므로 local dev startup에는 비용만 추가한다.
-  if (process.env.NODE_ENV !== 'production') {
+  const { getLocalSentryDsn, isLocalSentryServerEnabled } = await import(
+    './src/lib/observability/local-sentry-server'
+  );
+  const sentryEnabled = isLocalSentryServerEnabled();
+
+  // dev 모드에서는 Sentry가 명시적으로 켜진 경우만 startup instrumentation을 실행한다.
+  if (process.env.NODE_ENV !== 'production' && !sentryEnabled) {
     return;
   }
 
   // ── Production only ──────────────────────────────────────────────────────
 
-  const SENTRY_DSN =
-    process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN;
+  const SENTRY_DSN = getLocalSentryDsn();
 
   // Node.js 런타임 (Server)
   if (process.env.NEXT_RUNTIME === 'nodejs') {
-    const { default: Sentry } = await import('@sentry/nextjs');
-    Sentry.init({
-      dsn: SENTRY_DSN,
-      tracesSampleRate: 0.01,
-      enabled: true,
-      debug: false,
-    });
+    if (sentryEnabled) {
+      const { default: Sentry } = await import('@sentry/nextjs');
+      Sentry.init({
+        dsn: SENTRY_DSN,
+        tracesSampleRate: 0.01,
+        enabled: true,
+        debug: false,
+      });
+    }
 
     // 환경변수 검증
     try {
@@ -61,7 +66,7 @@ export async function register() {
   }
 
   // Edge 런타임
-  if (process.env.NEXT_RUNTIME === 'edge') {
+  if (process.env.NEXT_RUNTIME === 'edge' && sentryEnabled) {
     const { default: Sentry } = await import('@sentry/nextjs');
     Sentry.init({
       dsn: SENTRY_DSN,
@@ -95,7 +100,10 @@ export async function onRequestError(
     renderType?: 'dynamic' | 'dynamic-resume';
   }
 ) {
-  if (process.env.NODE_ENV !== 'production') return;
+  const { isLocalSentryServerEnabled } = await import(
+    './src/lib/observability/local-sentry-server'
+  );
+  if (!isLocalSentryServerEnabled()) return;
   const { default: Sentry } = await import('@sentry/nextjs');
   Sentry.captureException(error, {
     extra: {

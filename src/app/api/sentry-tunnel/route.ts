@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { OBSERVABILITY } from '@/config/constants';
 import { logger } from '@/lib/logging';
+import { isLocalSentryServerEnabled } from '@/lib/observability/local-sentry-server';
 
 const DEFAULT_UPSTREAM_TIMEOUT_MS =
   OBSERVABILITY.SENTRY.TUNNEL_UPSTREAM_TIMEOUT_MS;
@@ -18,10 +19,13 @@ function getUpstreamTimeoutMs(): number {
 }
 
 function getTunnelEndpoint(): string | null {
+  if (!isLocalSentryServerEnabled()) return null;
+
   const dsn =
     process.env.NEXT_PUBLIC_SENTRY_DSN?.trim() ||
-    process.env.SENTRY_DSN?.trim() ||
-    OBSERVABILITY.SENTRY.DEFAULT_DSN;
+    process.env.SENTRY_DSN?.trim();
+
+  if (!dsn) return null;
 
   try {
     const parsed = new URL(dsn);
@@ -81,10 +85,14 @@ export async function POST(request: Request) {
 }
 
 export function GET() {
+  const enabled = isLocalSentryServerEnabled();
   return NextResponse.json(
     {
       ok: true,
-      message: 'Sentry tunnel endpoint is available.',
+      enabled,
+      message: enabled
+        ? 'Sentry tunnel endpoint is available for local analysis.'
+        : 'Sentry tunnel endpoint is disabled.',
       timestamp: new Date().toISOString(),
     },
     { status: 200 }

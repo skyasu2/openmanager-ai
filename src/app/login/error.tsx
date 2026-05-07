@@ -1,8 +1,8 @@
 'use client';
 
-import * as Sentry from '@sentry/nextjs';
 import { useEffect } from 'react';
 import { logger } from '@/lib/logging';
+import { captureLocalSentryException } from '@/lib/observability/local-sentry-client';
 
 export default function LoginError({
   error,
@@ -13,7 +13,7 @@ export default function LoginError({
 }) {
   useEffect(() => {
     logger.error(error);
-    Sentry.captureException(error, {
+    captureLocalSentryException(error, {
       tags: { boundary: 'login', digest: error.digest },
     });
   }, [error]);

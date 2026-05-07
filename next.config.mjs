@@ -474,23 +474,24 @@ const nextConfig = {
   },
 };
 
-// dev 모드에서 Sentry 빌드 플러그인 생략 (컴파일 속도 대폭 개선)
-// Sentry는 production에서만 필요 (소스맵, 에러 트래킹)
+// Sentry는 로컬 분석 opt-in 전용이다. Production 앱 기능으로 빌드하지 않는다.
 const baseConfig = withBundleAnalyzer(nextConfig);
+const sentryLocalAnalysisEnabled =
+  process.env.SENTRY_LOCAL_ANALYSIS === 'true' &&
+  process.env.VERCEL_ENV !== 'production';
 
-export default process.env.NODE_ENV === 'development'
-  ? baseConfig
-  : withSentryConfig(
+export default sentryLocalAnalysisEnabled
+  ? withSentryConfig(
       baseConfig,
       {
-        // 🎯 무료 티어: 소스맵 업로드 비활성화
+        // 로컬 분석 기본값: 소스맵 업로드 비활성화
         silent: true,
         org: 'om-4g',
         project: 'javascript-nextjs',
         sourcemaps: { disable: true },
       },
       {
-        // 🎯 무료 티어 최적화 설정
+        // 로컬 분석 기본값
         widenClientFileUpload: false,
         transpileClientSDK: false,
         tunnelRoute: '/api/sentry-tunnel',
@@ -498,4 +499,5 @@ export default process.env.NODE_ENV === 'development'
         disableLogger: true,
         automaticVercelMonitors: false,
       }
-    );
+    )
+  : baseConfig;
