@@ -11,6 +11,7 @@
 Production route: `/dashboard/ai-assistant`
 
 Viewport: `1440x900`
+Screenshot: `reports/qa/evidence/qa-20260507-v811112-ai-assistant-scroll-desktop-1440.png`
 
 ```json
 {
@@ -29,6 +30,7 @@ Result: page-level double scroll was not present. Only intended inner panels scr
 ## Mobile Layout
 
 Viewport: `390x844`
+Screenshot: `reports/qa/evidence/qa-20260507-v811112-ai-assistant-scroll-mobile-390.png`
 
 ```json
 {
