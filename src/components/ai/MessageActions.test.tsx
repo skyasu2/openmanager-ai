@@ -25,62 +25,40 @@ describe('MessageActions', () => {
     vi.useRealTimers();
   });
 
-  it('locks feedback after a successful submission to avoid duplicate records', async () => {
-    const onFeedback = vi.fn().mockResolvedValue(true);
+  it('does not render human feedback buttons for assistant messages', () => {
     const props = {
       messageId: 'msg-1',
       content: 'answer',
       role: 'assistant' as const,
-      onFeedback,
     };
 
     render(<MessageActions {...props} />);
 
-    const positiveButton = screen.getByTitle('도움이 됐어요');
-    const negativeButton = screen.getByTitle('개선이 필요해요');
-
-    fireEvent.click(positiveButton);
-
-    await waitFor(() => {
-      expect(onFeedback).toHaveBeenCalledTimes(1);
-    });
-
-    fireEvent.click(negativeButton);
-
-    expect(onFeedback).toHaveBeenCalledTimes(1);
-    expect(positiveButton).toBeDisabled();
-    expect(negativeButton).toBeDisabled();
+    expect(screen.queryByTitle('도움이 됐어요')).not.toBeInTheDocument();
+    expect(screen.queryByTitle('개선이 필요해요')).not.toBeInTheDocument();
   });
 
-  it('reopens feedback when the API rejects the submission', async () => {
-    const onFeedback = vi
-      .fn()
-      .mockResolvedValueOnce(false)
-      .mockResolvedValueOnce(true);
+  it('keeps copy and regenerate actions available without feedback scoring', async () => {
+    const onRegenerate = vi.fn();
     const props = {
       messageId: 'msg-2',
       content: 'answer',
       role: 'assistant' as const,
-      onFeedback,
+      onRegenerate,
+      showRegenerate: true,
     };
 
     render(<MessageActions {...props} />);
 
-    const positiveButton = screen.getByTitle('도움이 됐어요');
-    const negativeButton = screen.getByTitle('개선이 필요해요');
-
-    fireEvent.click(positiveButton);
+    fireEvent.click(screen.getByTitle('메시지 복사'));
 
     await waitFor(() => {
-      expect(onFeedback).toHaveBeenCalledTimes(1);
-      expect(positiveButton).not.toBeDisabled();
-      expect(negativeButton).not.toBeDisabled();
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith('answer');
+      expect(screen.getByText('복사됨')).toBeInTheDocument();
     });
 
-    fireEvent.click(negativeButton);
+    fireEvent.click(screen.getByTitle('다시 생성'));
 
-    await waitFor(() => {
-      expect(onFeedback).toHaveBeenCalledTimes(2);
-    });
+    expect(onRegenerate).toHaveBeenCalledWith('msg-2');
   });
 });

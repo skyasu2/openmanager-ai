@@ -7,7 +7,6 @@ import type { UIMessage } from 'ai';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => {
-  const handleFeedback = vi.fn(async () => true);
   const clearHistory = vi.fn();
   const addToQueue = vi.fn();
   const removeQueuedQuery = vi.fn();
@@ -32,7 +31,6 @@ const mocks = vi.hoisted(() => {
     | null = null;
 
   return {
-    handleFeedback,
     clearHistory,
     addToQueue,
     removeQueuedQuery,
@@ -96,12 +94,6 @@ vi.mock('@/lib/ai/chat-artifacts/monitoring-analysis-artifact', () => ({
 
 vi.mock('@/lib/ai/chat-artifacts/server-snapshot-artifact', () => ({
   generateServerSnapshotArtifact: mocks.generateServerSnapshotArtifact,
-}));
-
-vi.mock('./core/useChatFeedback', () => ({
-  useChatFeedback: () => ({
-    handleFeedback: mocks.handleFeedback,
-  }),
 }));
 
 vi.mock('./core/useChatHistory', () => ({
@@ -198,6 +190,12 @@ describe('useAIChatCore', () => {
   beforeEach(() => {
     vi.unstubAllGlobals();
     vi.clearAllMocks();
+  });
+
+  it('does not expose human feedback scoring from the shared chat core', () => {
+    const { result } = renderHook(() => useAIChatCore());
+
+    expect('handleFeedback' in result.current).toBe(false);
   });
 
   it('syncs enhanced chat snapshot into sidebar store when messages are present', async () => {
