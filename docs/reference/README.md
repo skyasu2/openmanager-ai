@@ -43,8 +43,6 @@
 - [Monitoring Stack Comparison](./architecture/data/monitoring-stack-comparison.md)
 
 ### Project Specs
-- [WBS (모듈 기반)](./project/wbs.md)
-- [Requirements (SRS)](./project/requirements.md)
 - [Definition of Done](./project/definition-of-done.md)
 
 ### Infrastructure

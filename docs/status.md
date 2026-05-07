@@ -4,11 +4,11 @@
 > Owner: documentation
 > Status: Active
 > Doc type: Status
-> Last reviewed: 2026-05-05
+> Last reviewed: 2026-05-07
 > Canonical: docs/status.md
 > Tags: status,changelog,release
 
-**상태 스냅샷 기준일**: 2026-05-05 | **문서 역할 재정리**: 2026-05-05 | **현재 버전 스냅샷**: v8.11.97 | **완성도**: 97.5%+ 정성 기준 (→ [재평가 상세](../reports/planning/archive/completion-review.md#추록-v820--v8119-재평가))
+**상태 스냅샷 기준일**: 2026-05-07 | **현재 버전 스냅샷**: v8.11.113+
 
 ## 상태 문서 역할 분리
 
@@ -33,13 +33,17 @@
 
 ## 현재 기준 문서
 
-- 프로젝트 개요: [`README.md`](../README.md)
-- 작업 현재 상태 SSOT: [`reports/planning/TODO.md`](../reports/planning/TODO.md)
-- QA 상태 SSOT: [`reports/qa/qa-tracker.json`](../reports/qa/qa-tracker.json)
-- QA 대시보드: [`reports/qa/QA_STATUS.md`](../reports/qa/QA_STATUS.md)
-- AI 설정 SSOT: [`config/ai/registry-core.yaml`](../config/ai/registry-core.yaml)
-- AI Engine 아키텍처: [AI Engine Architecture](reference/architecture/ai/ai-engine-architecture.md)
-- OTel 데이터 아키텍처: [OTel 데이터 아키텍처](reference/architecture/data/otel-data-architecture.md)
+| 질문 | 문서 |
+|------|------|
+| 프로젝트 개요 | [`README.md`](../README.md) |
+| 실제 산출물 목록 | `README.md` + `src/`/`cloud-run/` 소스 구조 + API/architecture reference (WBS 삭제, git history 보존) |
+| Done 판정 기준 (DoD) | [`docs/reference/project/definition-of-done.md`](reference/project/definition-of-done.md) |
+| 지금 열린 작업 | [`reports/planning/TODO.md`](../reports/planning/TODO.md) |
+| QA 상태 SSOT | [`reports/qa/qa-tracker.json`](../reports/qa/qa-tracker.json) |
+| QA 대시보드 | [`reports/qa/QA_STATUS.md`](../reports/qa/QA_STATUS.md) |
+| AI 설정 SSOT | [`config/ai/registry-core.yaml`](../config/ai/registry-core.yaml) |
+| AI Engine 아키텍처 | [AI Engine Architecture](reference/architecture/ai/ai-engine-architecture.md) |
+| v8.1.0 이전 이력 | `git log` (파일 삭제, git history로 보존) |
 
 ## 최근 주요 릴리스 스냅샷
 

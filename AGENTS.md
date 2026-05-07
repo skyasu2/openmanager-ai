@@ -91,7 +91,7 @@
 | Skill 변경 | `npm run skills:check` | 공통 기준 변경이면 `config/ai/skill-baselines.json` 먼저 갱신 |
 
 ### 2.5 최종 QA 운영 규칙 (Codex)
-- 현재 프로젝트의 QA 기준선은 `reports/qa/production-qa-2026-02-25.md`와 `reports/qa/qa-tracker.json`을 함께 참조합니다.
+- 현재 프로젝트의 QA 상태 기준선은 `reports/qa/qa-tracker.json`과 `reports/qa/QA_STATUS.md`를 함께 참조합니다. 과거 QA baseline 리포트는 Git history의 historical evidence로만 확인합니다.
 - 자동 CI와 로컬 기본 게이트에서는 **실 LLM/외부 서비스 호출을 금지**합니다. 대신 `test:quick`, `test:contract` 같은 deterministic local test를 우선 사용합니다.
 - 최종 QA(릴리즈 게이트)는 기본적으로 **Vercel 실환경 + Playwright MCP**에서 수행합니다.
 - AI 기능 검증이 불필요한 QA(예: 레이아웃/카피/일반 인증 동선)는 로컬 개발 서버 기반 QA로 전환할 수 있습니다.

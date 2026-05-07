@@ -1,9 +1,9 @@
 # Developer Panel — 구현 계획서
 
 > Owner: project
-> Status: Draft
-> Last Updated: 2026-05-07
+> Status: Approved
 > Doc type: Plan
+> Last reviewed: 2026-05-07
 > Canonical: reports/planning/developer-panel-plan.md
 > Tags: ai,developer-mode,diagnostics,ui
 
@@ -147,7 +147,7 @@ type DeveloperPanelData = {
   - 4개 섹션: AI Session / Stream Metadata / System Status / Knowledge Base
   - Tailwind + 기존 `cn()` 유틸, 공용 `Card` 컴포넌트 재사용
 - [ ] `T5` AI 사이드바 통합: developer 모드 조건부 토글 버튼 추가
-  - 수정 파일: `src/components/ai-sidebar/` 내 사이드바 루트 컴포넌트
+  - 수정 파일: `src/components/ai-sidebar/AISidebarV4.tsx`
 
 ### Phase 3: 테스트
 

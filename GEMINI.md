@@ -55,7 +55,7 @@
 - `GITLAB_TOKEN`이 환경변수 또는 `.env.local`에 있으면 `git push gitlab ...` 직후 `npm run gitlab:pipeline:head -- --wait`로 pushed SHA의 GitLab pipeline을 확인하고, 최종 보고에 `pipeline id/status/url`를 포함합니다. `status=not_created`면 해당 SHA에 pipeline이 생성되지 않았음을 명시합니다.
 
 ## ✅ QA Operation Protocol (Final Gate)
-- QA 기준선 문서: `reports/qa/production-qa-2026-02-25.md`
+- QA 상태 기준선: `reports/qa/qa-tracker.json` + `reports/qa/QA_STATUS.md` (과거 baseline 리포트는 Git history의 historical evidence로만 확인)
 - QA 상태 SSOT: `reports/qa/qa-tracker.json` + `reports/qa/QA_STATUS.md`
 - **자동 CI (Automatic)**: 비용 절감을 위해 **실 LLM API 호출 절대 금지**. `type-check`, `lint`, `test:quick`, `test:contract` 같은 **deterministic local gate**만 수행합니다.
 - **AI 에이전트 QA (On-demand)**: 사용자의 명시적 요청 시 **Vercel + Playwright MCP**를 사용하여 **프론트엔드 및 AI 어시스턴트 기능 전체**를 실환경 수준으로 정밀 검증.

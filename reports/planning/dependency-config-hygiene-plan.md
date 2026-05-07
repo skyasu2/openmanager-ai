@@ -1,7 +1,7 @@
 # Dependency & Config Hygiene 계획
 
 > Owner: project
-> Status: Draft
+> Status: Approved
 > Doc type: Plan
 > Last reviewed: 2026-05-07
 > Canonical: reports/planning/dependency-config-hygiene-plan.md
@@ -152,6 +152,10 @@ AI Engine은 "최적 아님"이다. 주요 직접 의존성이 같은 major/mino
 - [ ] `clean:all`이 lockfile 삭제를 수행하는 점을 제거하거나 legacy/dangerous로 명시
 - [ ] `.github/` workflow는 canonical이 아님을 유지하되, 필요 시 archive/readme 문구 정리
 - [ ] `docs/development/ci-cd.md`의 Dependabot historical section과 Renovate canonical section이 모순 없는지 재점검
+
+## 선행 조건
+
+- **Task 3의 recharts 관련 재검토**는 `chart-migration-plan.md` 완료 후 수행한다. recharts 제거가 확정되면 Task 3에서 해당 항목을 삭제한다.
 
 ## 제외 범위
 

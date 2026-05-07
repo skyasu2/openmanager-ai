@@ -1,10 +1,10 @@
-# OpenManager AI v8.11.58 - Definition of Done
+# OpenManager AI — Definition of Done
 
 > Owner: project-lead
 > Status: Active Canonical
 > Doc type: Reference
-> Last reviewed: 2026-04-29
-> Tags: dod,checklist,quality,release
+> Last reviewed: 2026-05-07
+> Tags: dod,checklist,quality,release,closeout
 
 **성격**: Living Document — 프로젝트 진화에 따라 갱신.
 
@@ -43,12 +43,16 @@
 
 - [ ] `npm run validate:all` 통과 (TypeScript + Lint + Test)
 - [ ] `npm run test:gate` 통과 (quick + type-check + lint)
-- [ ] `npm run test:e2e:critical` 통과 (현재 script 범위: `smoke` + `critical-auth`)
+- [ ] `npm run test:e2e:critical` 통과 (smoke + critical-auth)
 - [ ] CHANGELOG.md 업데이트
 - [ ] 환경변수 동기화 확인 (로컬 ↔ Vercel ↔ Cloud Run)
 - [ ] Health check 정상 (`/api/health`, Cloud Run `/health`)
 - [ ] AI 변경 시 `npm run test:contract` 통과 (스트림/요청-응답 계약)
 - [ ] Cloud Run 배포 시: `npm run test:cloud:essential` 통과
+- [ ] GitLab CI `validate` job 통과 (self-hosted runner)
+- [ ] GitLab CI `deploy` job 통과 → Vercel production 반영 확인
+- [ ] `git push gitlab --follow-tags` 완료 (semver tag 기준 릴리스)
+- [ ] `npm run gitlab:pipeline:head -- --wait` 로 pipeline status 확인
 
 ---
 
@@ -95,6 +99,36 @@ AI 생성 코드에 대한 추가 검증:
 
 ---
 
+## 7. QA Closeout & Reopen 기준
+
+### Closeout 완료 조건 (모두 충족 시 QA 닫힘)
+
+- `qa-tracker.json`의 `pendingItems === 0`
+- `QA_STATUS.md`의 `expert open gaps === 0`
+- 최신 Vercel Production QA run이 핵심 경로 전부 PASS
+  - 랜딩 → 인증 → 대시보드 → AI Chat → Reporter/Analyst → Health
+- `wont-fix` 항목은 명시적으로 레이블링되어 있어야 함
+
+> **현재 QA 상태 SSOT**: `reports/qa/qa-tracker.json` / `reports/qa/QA_STATUS.md`
+> 이 문서에 QA run 횟수나 completed count를 기록하지 않는다. 숫자는 SSOT에서 읽는다.
+
+### QA Reopen 트리거 (하나라도 해당 시 closeout 재개)
+
+1. `qa-tracker.json`에 `pendingItems > 0`이 생길 때
+2. `QA_STATUS.md`에 `expert open gaps > 0`가 다시 나타날 때
+3. 앱 코드 또는 배포 환경이 바뀌어 런타임 경로가 달라질 때
+4. Vercel/Cloud Run 헬스 응답, AI 흐름, 인증 동선 중 하나라도 실패할 때
+
+### QA Closeout 재오픈 시 실행 순서
+
+1. 상태 확인: `npm run qa:status` → `reports/qa/qa-tracker.json`
+2. DoD 검증: `npm run type-check` + `npm run lint` + `npm run test:quick`
+3. 릴리스 게이트: `npm run test:gate` → `npm run validate:all` → `npm run test:e2e:critical`
+4. 실환경 검증: Vercel + Playwright MCP로 핵심 경로 확인
+5. 결과 기록: `npm run qa:record -- --input <json>` → `npm run qa:status`
+
+---
+
 ## Quick Reference
 
 ```bash
@@ -108,8 +142,7 @@ npm run test:contract       # API/AI 계약 테스트
 npm run test:gate           # quick + type-check + lint
 npm run test:e2e:critical   # 로컬 E2E 핵심(smoke + critical-auth)
 npm run validate:all        # 전체 검증
+
+# QA 상태 확인
+npm run qa:status
 ```
-
----
-
-_Last Updated: 2026-04-02_

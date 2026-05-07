@@ -1,13 +1,15 @@
-> Owner: project
-> Status: Draft
-> Last reviewed: 2026-05-07
-
 # MSW Test Infra Integrity Plan
 
-- 상태: Draft
-- 작성일: 2026-05-07
+> Owner: project
+> Status: Draft
+> Doc type: Plan
+> Last reviewed: 2026-05-07
+> Canonical: reports/planning/msw-test-infra-integrity-plan.md
+> Tags: msw,testing,vitest,contract,infra
+
 - TODO.md 연결: Backlog > MSW 테스트 인프라 정합성 개선
 - 테스트 방법론 기준: `docs/guides/testing/test-strategy.md` § 0
+- **Status 유지 이유**: 계약 섹션 내 핵심 2~3개 테스트 시나리오 최종 선택이 구현자 확정 전.
 
 ## 목표
 

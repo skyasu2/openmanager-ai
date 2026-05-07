@@ -1,7 +1,7 @@
 # Storybook CI Guardrail 계획
 
 > Owner: project
-> Status: Draft
+> Status: Approved
 > Doc type: Plan
 > Last reviewed: 2026-05-07
 > Canonical: reports/planning/storybook-ci-guardrail-plan.md
@@ -72,10 +72,10 @@ Storybook은 현재 `@storybook/nextjs-vite`, addon-vitest, addon-mcp, 전역 mo
 
 ### Task 3: Full build 운영 경로 정리
 
-- [ ] `validate_storybook_build` job을 추가할지 결정
-  - 옵션 A: CI job은 추가하지 않고 문서만 유지
-  - 옵션 B: `web`/`schedule` source에서만 manual/full build job 추가
-- [ ] 적용 시 `npm run storybook:build:ci` 사용
+**결정: 옵션 A** — CI job 추가하지 않고 운영 문서에만 명시.
+이유: self-hosted runner CI 예산 절약, full build는 release 전 수동 실행으로 충분.
+
+- [ ] `docs/development/ci-cd.md`에 full build 수동 실행 조건 명시 (`npm run storybook:build:ci`)
 - [ ] 기본 branch/MR validate에는 포함하지 않음
 
 ### Task 4: 문서 및 스킬 반영
@@ -93,6 +93,10 @@ Storybook은 현재 `@storybook/nextjs-vite`, addon-vitest, addon-mcp, 전역 mo
 - [ ] `npm run docs:ai-consistency`
 - [ ] `git diff --check`
 - [ ] `.gitlab-ci.yml` syntax 검증 가능 시 GitLab lint 또는 local parser 사용
+
+## 선행 조건
+
+- Task 4의 story 수치 재계산은 `chart-migration-plan.md` 완료 후 수행한다. (`MiniLineChart` → `SvgSparkline` story 교체 이후)
 
 ## 제외 범위
 

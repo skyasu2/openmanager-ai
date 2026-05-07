@@ -8,7 +8,6 @@
 reports/qa/
 ├── QA_STATUS.md                    # 자동 생성 대시보드
 ├── qa-tracker.json                 # 누적 메타/요약/상태 SSOT
-├── production-qa-2026-02-25.md     # 레거시 기준 리포트(참고)
 ├── evidence/                       # run JSON artifacts에 연결된 durable evidence만 보관
 ├── repro/
 │   └── YYYY/                       # post-mortem / 실패 재현용 보조 증거 아카이브
@@ -268,9 +267,10 @@ reports/qa/
 
 - 기준선:
   - [Definition of Done](/docs/reference/project/definition-of-done.md)
-  - [Production QA Baseline](/reports/qa/production-qa-2026-02-25.md)
+  - `qa-tracker.json` + `QA_STATUS.md`
 - 실행 로드맵:
-  - [DoD Closeout Roadmap](/reports/qa/dod-closeout-roadmap.md)
+  - QA closeout/reopen 기준은 Definition of Done에 통합한다.
+  - 과거 closeout/baseline 리포트는 Git history의 historical evidence로만 확인한다.
 - 기본 원칙:
   - DoD 항목은 `completed`/`pending`/`wont-fix`를 구분하여 추적하고, 해결 시 `completedImprovements`로 전환
   - `wont-fix`는 의도적으로 미개선 처리된 항목으로, 오버엔지니어링 억제 관점의 결정값
